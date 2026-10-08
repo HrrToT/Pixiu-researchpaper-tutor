@@ -244,13 +244,13 @@ def _format_axis_prompt_block(axis_result: dict[str, Any]) -> str:
     evidence_block = format_evidence_context(
         axis_result.get("evidence") or [],
         title=f"{axis_result.get('label')}证据",
-        max_items=4,
-        max_text_chars=450,
+        max_items=6,
+        max_text_chars=1800,
     ) or "\n\n证据片段：\n- 当前未检索到相关证据。"
     evidence_safety = wrap_untrusted_context(
         f"{axis_result.get('label')} evidence",
         evidence_block,
-        max_tokens=1200,
+        max_tokens=3400,
     )
 
     return (

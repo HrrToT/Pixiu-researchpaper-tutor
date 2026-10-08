@@ -21,6 +21,8 @@ _logger = logging.getLogger(__name__)
 async def _app_lifespan(_app: FastAPI):
     # ── startup ───────────────────────────────────────────────────────
     _logger.info("Application startup: running warmup...")
+    from services.task_operation_service import get_operation_store
+    get_operation_store().recover_after_restart()
     startup_warmup()
     try:
         from services.monitor_scheduler import start_scheduler

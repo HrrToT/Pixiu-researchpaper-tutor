@@ -231,7 +231,7 @@ def _build_full_paper_context(parsed_sections, abstract: str = "") -> str:
     return context
 
 
-async def analyze_pdf(file: UploadFile) -> dict[str, Any]:
+async def analyze_pdf(file: UploadFile, *, include_ai_analysis: bool = True) -> dict[str, Any]:
     input_dir = tempfile.mkdtemp()
     output_dir = tempfile.mkdtemp()
 
@@ -258,7 +258,10 @@ async def analyze_pdf(file: UploadFile) -> dict[str, Any]:
                 tei_text_char_count=0,
             )
             if diagnostics["parseStatus"] == PARSE_STATUS_SCANNED_OR_LOW_TEXT:
-                return _build_low_text_upload_response(file.filename or "uploaded.pdf", pdf_stats)
+                response = _build_low_text_upload_response(file.filename or "uploaded.pdf", pdf_stats)
+                response.update({"readingReady": True, "questionReady": False,
+                                 "aiAnalysisStatus": "unavailable"})
+                return response
             raise RuntimeError("GROBID did not produce a TEI XML file.")
 
         tei_file = os.path.join(output_dir, xml_files[0])
@@ -308,7 +311,10 @@ async def analyze_pdf(file: UploadFile) -> dict[str, Any]:
         )
 
         paper_structure: dict[str, Any] = {}
-        if combined_context:
+        if not include_ai_analysis:
+            section_summaries = {}
+            paper_structure = {"outlineVersion": outline_version, "sections": section_outline}
+        elif combined_context:
             summary_prompt = f"""
 You are a rigorous paper reader.
 Summarize each paper section below in concise Chinese.
@@ -408,6 +414,12 @@ Paper context:
             "ragIndexed": rag_indexed,
             "ragChunkCount": rag_chunk_count,
             "parseStatus": parse_diagnostics["parseStatus"],
+            "readingReady": True,
+            "questionReady": rag_indexed,
+            "aiAnalysisStatus": (
+                "not_requested" if not include_ai_analysis else
+                "failed" if paper_structure.get("error") else "completed"
+            ),
         }
         if parse_diagnostics.get("parseMessage"):
             response["parseMessage"] = parse_diagnostics["parseMessage"]
@@ -544,6 +556,10 @@ def _build_axis_query_plan(axis: dict[str, Any]) -> dict[str, Any]:
     """
     question = " ".join(str(axis.get("question") or "").split())
     retrieval_question = " ".join(str(axis.get("retrieval_question") or "").split())
+    focus = " ".join(str(axis.get("focus_question") or "").split())
+    if focus:
+        question = focus + "；" + question
+        retrieval_question = focus + " " + retrieval_question
     keywords = [
         " ".join(str(term or "").split())
         for term in (axis.get("seed_terms") or [])
@@ -759,13 +775,15 @@ def deep_analysis(request: DeepAnalysisRequest) -> dict[str, Any]:
         analysis_context = _build_analysis_context(documents)
         axis_results = [
             _analyze_axis(
-                axis_config,
+                {**axis_config, "focus_question": request.focus_question} if request.focus_question else axis_config,
                 documents,
                 pdf_id=normalized_id,
             )
             for axis_config in ANALYSIS_AXIS_CONFIGS
         ]
-        report = _generate_structured_critical_report(axis_results, analysis_context or paper_content[:2400], resolved_from)
+        report = _generate_structured_critical_report(
+            axis_results, analysis_context or paper_content[:2400], resolved_from,
+            **({"focus_question": request.focus_question} if request.focus_question else {}))
         claims = _build_claim_support_items(report, axis_results, use_llm=True)
         assessment = _build_contribution_assessment(report, claims, axis_results)
         response_sources = _collect_response_sources(axis_results, claims)

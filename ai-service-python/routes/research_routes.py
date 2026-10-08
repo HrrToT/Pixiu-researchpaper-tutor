@@ -56,6 +56,16 @@ async def get_research_task(task_id: str):
         return JSONResponse({"status": "error", "message": str(error)}, status_code=500)
 
 
+@research_router.post("/research-tasks/{task_id}/resume")
+async def resume_research_task(task_id: str):
+    try:
+        return JSONResponse(research_task_service.resume_research_task(task_id))
+    except research_task_service.ResearchTaskNotFoundError as error:
+        return JSONResponse({"status": "error", "message": str(error)}, status_code=404)
+    except research_task_service.ResearchReviewConflictError as error:
+        return JSONResponse({"status": "error", "message": str(error)}, status_code=409)
+
+
 @research_router.post("/research-tasks/{task_id}/cancel")
 async def cancel_research_task(task_id: str):
     try:

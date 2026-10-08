@@ -115,6 +115,8 @@ class DeepSeekLLM:
         self.reasoning_effort = reasoning_effort
 
     def invoke(self, request: LLMRequest) -> LLMResult:
+        from services.operation_control import check_cancelled
+        check_cancelled()
         api_key = self.api_key or settings.deepseek_api_key
         if not api_key:
             raise LLMProviderError(
@@ -179,6 +181,8 @@ class DeepSeekLLM:
                     status_code=response.status_code,
                 )
 
+            check_cancelled()
+
             try:
                 data = response.json()
                 content = data["choices"][0]["message"]["content"]
@@ -213,6 +217,8 @@ class DeepSeekLLM:
         **kwargs: Any,
     ) -> str:
         del run_manager
+        from services.operation_control import check_cancelled
+        check_cancelled()
         extra_body = kwargs.get("extra_body")
 
         # ── 15-2: LLM response cache ────────────────────────────────
