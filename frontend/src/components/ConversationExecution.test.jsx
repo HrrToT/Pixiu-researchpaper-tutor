@@ -30,3 +30,15 @@ it('does not offer paid retry for a generated result that could not be applied',
   expect(screen.queryByText('complete report')).not.toBeInTheDocument();
   expect(screen.queryByRole('button', { name: '重试' })).not.toBeInTheDocument();
 });
+
+it('keeps an unsubmitted intent behind an explicit continue action and cancels its own ID', () => {
+  const submit = vi.fn(), cancel = vi.fn();
+  render(<ConversationExecution task={{ id: 'A' }} records={{ r: { taskId: 'A', requestId: 'r', status: 'awaiting_submission',
+    request: { message: '原问题' } } }} onSubmitSaved={submit} onCancel={cancel} />);
+  expect(screen.getByText('提交未确认')).toBeInTheDocument();
+  fireEvent.click(screen.getByRole('button', { name: '继续发送' }));
+  expect(submit).toHaveBeenCalledWith('r');
+  fireEvent.click(screen.getByRole('button', { name: '停止' }));
+  expect(cancel).toHaveBeenCalledWith('r');
+  expect(screen.queryByRole('button', { name: '重试' })).not.toBeInTheDocument();
+});

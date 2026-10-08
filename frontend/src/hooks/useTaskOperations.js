@@ -86,9 +86,17 @@ export function useTaskOperations(workspace, api) {
         for (const receipt of receipts) await publish(receipt, isCurrent);
         for (const intent of journal.filter(intent => intent.taskId === taskId && !receipts.some(receipt => receipt.requestId === intent.requestId))) {
           if (!isCurrent()) return;
-          try { await publish(intent.cancelRequested
-            ? await api.cancelOperation(taskId, intent.requestId, { kind: intent.kind, input: intent.input })
-            : await api.startOperation(taskId, { requestId: intent.requestId, kind: intent.kind, input: intent.input }), isCurrent); }
+          if (submitting.current.has(taskId)) continue;
+          if (!intent.cancelRequested) {
+            // A missing receipt does not prove the original submission was accepted.
+            // Preserve the original identity and ask for an explicit continuation;
+            // opening or refreshing the app must not start a fresh paid execution.
+            setRecords(previous => ({ ...previous, [intent.requestId]: { ...previous[intent.requestId],
+              ...intent, request: intent.input, status: 'awaiting_submission' } }));
+            continue;
+          }
+          try { await publish(await api.cancelOperation(taskId, intent.requestId,
+            { kind: intent.kind, input: intent.input }), isCurrent); }
           catch (failure) {
             if (failure.response?.status >= 400 && failure.response?.status < 500) {
               await publish({ ...intent, status: 'failed', error: failure.response?.data?.message || failure.message }, isCurrent);
@@ -176,8 +184,37 @@ export function useTaskOperations(workspace, api) {
     } catch (failure) { setTaskError(task.id, failure.response?.data?.message || failure.message || '重试未确认，请稍后查询'); }
     finally { retrying.current.delete(task.id); setRetryingTasks(current => ({ ...current, [task.id]: false })); }
   };
-  const cancel = async (taskId) => {
-    const pending = Object.values(recordsRef.current).find(item => item.taskId === taskId && active.has(item.status));
+  const submitSaved = async (taskId, requestId) => {
+    const record = recordsRef.current[requestId];
+    if (record?.taskId !== taskId || record.status !== 'awaiting_submission'
+        || submitting.current.has(taskId)
+        || Object.values(recordsRef.current).some(item => item.taskId === taskId && active.has(item.status))) return;
+    submitting.current.add(taskId);
+    setTaskError(taskId, '');
+    try {
+      let receipt;
+      try { receipt = await api.getOperation(taskId, requestId); }
+      catch (failure) { if (failure.response?.status !== 404) throw failure; }
+      if (receipt) return await publish(receipt);
+      const intent = JSON.parse(localStorage.getItem(prefix + requestId) || 'null');
+      if (intent?.taskId !== taskId || !intent.input || intent.cancelRequested)
+        throw new Error('原问题无法恢复，请保留当前内容并查询状态。');
+      setRecords(previous => ({ ...previous, [requestId]: { ...previous[requestId], status: 'unknown' } }));
+      // The server checks the original material scope and revisions before execution.
+      return await publish(await api.startOperation(taskId, { requestId, kind: intent.kind, input: intent.input }));
+    } catch (failure) {
+      setTaskError(taskId, failure.response?.data?.message || failure.message || '提交未确认，请查询状态。');
+      if (failure.response?.status >= 400 && failure.response?.status < 500) {
+        await publish({ ...record, status: 'failed', rejectedBeforeScheduling: true,
+          error: failure.response?.data?.message || failure.message });
+      }
+    } finally { submitting.current.delete(taskId); }
+  };
+  const cancel = async (taskId, requestId = null) => {
+    const taskRecords = Object.values(recordsRef.current).filter(item => item.taskId === taskId);
+    const pending = requestId ? taskRecords.find(item => item.requestId === requestId &&
+      (active.has(item.status) || item.status === 'awaiting_submission'))
+      : taskRecords.find(item => active.has(item.status)) || taskRecords.find(item => item.status === 'awaiting_submission');
     if (!pending) return;
     try {
       const key = prefix + pending.requestId;
@@ -197,5 +234,5 @@ export function useTaskOperations(workspace, api) {
     setTaskError(taskId, '');
     return receipt;
   };
-  return { start, retry, cancel, recoverResult, refresh: reconcile, busyTasks, records, error: errors[workspace.activeTaskId] || '' };
+  return { start, retry, submitSaved, cancel, recoverResult, refresh: reconcile, busyTasks, records, error: errors[workspace.activeTaskId] || '' };
 }

@@ -15,16 +15,51 @@ it('clears a temporary query error once authoritative status can be read again',
   expect(result.current.error).toBe('');
 });
 
-it('replays a missing intent even when unrelated receipts already exist', async () => {
+it('preserves a missing intent and only submits it after explicit continuation with the same ID', async () => {
   const intent = { taskId: 'A', requestId: 'missing', kind: 'learning.action', input: { action: 'pause' } };
   localStorage.setItem('pixiu-task-request-v1:missing', JSON.stringify(intent));
   const api = { listOperations: vi.fn(async () => [{ taskId: 'A', requestId: 'older', status: 'cancelled' }]),
+    getOperation: vi.fn().mockRejectedValue({ response: { status: 404 } }),
     startOperation: vi.fn(async () => ({ ...intent, status: 'cancelled' })) };
   const { result } = renderHook(() => useTaskOperations({ activeTaskId: 'A', tasks: [{ id: 'A' }] }, api));
   await act(async () => { await result.current.refresh(); });
+  expect(api.startOperation).not.toHaveBeenCalled();
+  expect(result.current.records.missing.status).toBe('awaiting_submission');
+  expect(result.current.busyTasks.A).toBeUndefined();
+  expect(localStorage.getItem('pixiu-task-request-v1:missing')).not.toBeNull();
+  await act(async () => { await result.current.submitSaved('A', 'missing'); });
   expect(api.startOperation).toHaveBeenCalledWith('A', { requestId: 'missing', kind: intent.kind, input: intent.input });
   expect(result.current.error).toBe('');
   expect(localStorage.getItem('pixiu-task-request-v1:missing')).toBeNull();
+});
+
+it('adopts an existing receipt instead of submitting again after an explicit continuation', async () => {
+  const intent = { taskId: 'A', requestId: 'r', kind: 'conversation.execute', input: { message: 'question' } };
+  localStorage.setItem('pixiu-task-request-v1:r', JSON.stringify(intent));
+  const api = { listOperations: vi.fn(async () => []), getOperation: vi.fn(async () => ({ ...intent, status: 'running' })), startOperation: vi.fn() };
+  const { result } = renderHook(() => useTaskOperations({ activeTaskId: 'A', tasks: [{ id: 'A' }] }, api));
+  await act(async () => result.current.refresh());
+  await act(async () => result.current.submitSaved('A', 'r'));
+  expect(result.current.records.r.status).toBe('running');
+  expect(api.startOperation).not.toHaveBeenCalled();
+});
+
+it('blocks duplicate saved submissions and keeps the original payload', async () => {
+  const intent = { taskId: 'A', requestId: 'r', kind: 'conversation.execute', input: { message: 'original', allowedPaperIds: ['paper-A'], expectedTaskRevision: 4 } };
+  localStorage.setItem('pixiu-task-request-v1:r', JSON.stringify(intent));
+  let finish;
+  const api = { listOperations: vi.fn(async () => []), getOperation: vi.fn().mockRejectedValue({ response: { status: 404 } }),
+    startOperation: vi.fn(() => new Promise(resolve => { finish = resolve; })) };
+  const { result } = renderHook(() => useTaskOperations({ activeTaskId: 'A', tasks: [{ id: 'A' }] }, api));
+  await act(async () => result.current.refresh());
+  let pending;
+  await act(async () => {
+    pending = result.current.submitSaved('A', 'r');
+    await result.current.submitSaved('A', 'r');
+  });
+  expect(api.startOperation).toHaveBeenCalledTimes(1);
+  expect(api.startOperation).toHaveBeenCalledWith('A', { requestId: 'r', kind: intent.kind, input: intent.input });
+  await act(async () => { finish({ ...intent, status: 'running' }); await pending; });
 });
 
 it('keeps delayed failure messages with their original task', async () => {

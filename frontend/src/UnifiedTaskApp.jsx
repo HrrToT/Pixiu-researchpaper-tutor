@@ -775,7 +775,8 @@ export default function UnifiedTaskApp() {
       <section className={`unified-chat ${!layout.chat ? 'unified-desktop-hidden' : ''}`} inert={compact && compactNavigation ? true : undefined} style={{ flexBasis: layout.reader ? `${100 - layout.readerPercent}%` : '100%' }} aria-label="任务对话">
         {activeTask && <ConversationExecution task={activeTask} records={learning.operations.records}
           busy={Boolean(learning.busyTasks[activeTaskId])} onRetry={requestId => learning.operations.retry(activeTask, requestId)}
-          onRefresh={() => learning.operations.refresh()} onCancel={() => learning.operations.cancel(activeTaskId)}
+          onSubmitSaved={requestId => learning.operations.submitSaved(activeTaskId, requestId)}
+          onRefresh={() => learning.operations.refresh()} onCancel={requestId => learning.operations.cancel(activeTaskId, requestId)}
           onOpenResult={record => { setSelectedDocument(null); setRecoveryPreview(record); patchLayout({ reader: true }); }} />}
         <div className="unified-pane-head"><MessageSquare size={17} /><strong>对话</strong><span>{activeTask?.paperIds.length || 0} 篇材料</span><button type="button" className="unified-pane-hide" onClick={() => patchLayout({ chat: false, reader: true, mode: 'reader' })} aria-label="收起对话区"><PanelLeftClose size={16} /></button></div>
         {activeTask && <ConversationResearch task={activeTask} research={research} onJumpToSource={jumpToSource}
