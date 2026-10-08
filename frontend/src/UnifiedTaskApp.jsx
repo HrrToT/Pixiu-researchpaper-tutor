@@ -247,15 +247,17 @@ export default function UnifiedTaskApp() {
 
   useEffect(() => {
     let alive = true;
-    currentPageTextRef.current = { pageIndex: 0, pageText: '', pageLayout: null };
+    currentPageTextRef.current = { pageIndex: initialPaperPage, pageText: '', pageLayout: null };
     setPage({ pageIndex: initialPaperPage, totalPages: 0 });
     setTranslationMode('original');
     setTranslationReadyKey('');
-    setTranslationState(createEmptyTranslationState(focusedPaperId));
+    setTranslationState(createEmptyTranslationState(focusedPaperId, {currentPage:initialPaperPage}));
     if (focusedPaperId) initDB().then((db) => db.get('translationStore', focusedPaperId)).then((stored) => {
       if (!alive) return;
       const restored = normalizeTranslationState(stored, focusedPaperId);
-      setTranslationState(current => ({...restored, pages:{
+      setTranslationState(current => ({...restored,
+        currentPage:current.pdfId === focusedPaperId ? current.currentPage : initialPaperPage,
+        pages:{
         ...(current.pdfId === focusedPaperId ? current.pages : {}), ...restored.pages,
       }}));
       setTranslationReadyKey(translationKey);

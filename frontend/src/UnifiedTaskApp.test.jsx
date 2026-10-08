@@ -37,7 +37,7 @@ vi.mock('./services/localDb', () => ({ initDB: async () => ({
 }) }));
 vi.mock('./hooks/useThemePreference', () => ({ useThemePreference: () => ({ theme: 'light', toggleTheme: vi.fn() }) }));
 vi.mock('./hooks/useCompactLayout', () => ({ default: () => Boolean(state.compact) }));
-vi.mock('./hooks/usePageTranslation', () => ({ usePageTranslation: () => ({}) }));
+vi.mock('./hooks/usePageTranslation', () => ({ usePageTranslation: props => { state.translationProps = props; return {}; } }));
 vi.mock('./components/PdfViewer', () => ({ default: () => null }));
 vi.mock('./components/TranslationPanel', () => ({ default: () => null }));
 vi.mock('./components/ChatPanel', () => ({ default: (props) => { state.chatProps = props; return <div data-testid="chat" />; } }));
@@ -87,6 +87,7 @@ describe('unified task conversation wiring', () => {
 
   it('waits for a slow translation cache read before persisting any replacement', async () => {
     state.task.focusedPaperId = 'a';
+    localStorage.setItem('pixiu-reading-position:["task","a"]','6');
     let finish;
     localDbGet.mockImplementation(store => store === 'translationStore'
       ? new Promise(resolve => { finish = resolve; }) : Promise.resolve(null));
@@ -94,9 +95,15 @@ describe('unified task conversation wiring', () => {
     await waitFor(() => expect(finish).toBeTypeOf('function'));
     await act(async () => { await new Promise(resolve => setTimeout(resolve,400)); });
     expect(localDbPut.mock.calls.filter(call => call[0] === 'translationStore')).toHaveLength(0);
-    await act(async () => finish({pdfId:'a',pages:{3:{status:'success',translatedText:'已有第四页译文'}}}));
+    expect(state.translationProps.translationState.currentPage).toBe(6);
+    act(() => {
+      state.translationProps.setPdfPageState({pageIndex:8,totalPages:19});
+      state.translationProps.commitTranslationState(current => ({...current,currentPage:8}));
+    });
+    await act(async () => finish({pdfId:'a',currentPage:3,pages:{3:{status:'success',translatedText:'已有第四页译文'}}}));
     await waitFor(() => expect(localDbPut).toHaveBeenCalledWith('translationStore',
-      expect.objectContaining({pages:expect.objectContaining({3:expect.objectContaining({translatedText:'已有第四页译文'})})}), 'a'));
+      expect.objectContaining({currentPage:8,pages:expect.objectContaining({3:expect.objectContaining({translatedText:'已有第四页译文'})})}), 'a'));
+    expect(state.translationProps.pdfPageState.pageIndex).toBe(8);
   });
 
   it('keeps invalid learning input and shows its actionable error above service query errors', async () => {
