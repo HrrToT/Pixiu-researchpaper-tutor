@@ -687,8 +687,8 @@ export default function UnifiedTaskApp() {
           {(activeDocument || preview) && <button type="button" onClick={() => { goToPage(page.pageIndex); setSelectedDocument(null); setRecoveryPreview(null); }}>返回论文</button>}
           {!activeDocument && !preview && paperView.url && <div className="unified-translation-modes" role="group" aria-label="翻译视图">
             <button type="button" className={translationMode === 'original' ? 'active' : ''} onClick={() => setTranslationMode('original')}>原文</button>
-            <button type="button" className={translationMode === 'translation' ? 'active' : ''} onClick={() => setTranslationMode('translation')}>译文</button>
-            <button type="button" className={translationMode === 'parallel' ? 'active' : ''} onClick={() => setTranslationMode('parallel')}>对照</button>
+            <button type="button" title={['success','partial'].includes(currentTranslationPage?.status) ? '查看已保存译文' : currentTranslationPage?.status === 'error' ? '查看翻译状态，重试需手动操作' : '打开后翻译当前页'} className={translationMode === 'translation' ? 'active' : ''} onClick={() => setTranslationMode('translation')}>译文</button>
+            <button type="button" title={['success','partial'].includes(currentTranslationPage?.status) ? '对照原文与已保存译文' : '对照原文并翻译当前页'} className={translationMode === 'parallel' ? 'active' : ''} onClick={() => setTranslationMode('parallel')}>对照</button>
           </div>}
           <button type="button" className="unified-pane-hide" onClick={() => patchLayout({ reader: false, chat: true, mode: 'chat' })} aria-label="收起阅读区"><PanelLeftClose size={16} /></button>
         </div>
@@ -754,7 +754,7 @@ export default function UnifiedTaskApp() {
                 await updateTask(activeTaskId, task => ({ notes: [...task.notes, note] }));
               }}
               targetPageIndex={jump.pdfId === focusedPaperId && jump.taskId === activeTaskId ? jump.pageIndex : initialPaperPage} targetPageJumpToken={jump.token} focusedSourceAnchorId={jump.pdfId === focusedPaperId ? jump.anchorId : null} focusedSourceAnchorToken={jump.token} /></div>
-            {translationMode !== 'original' && <div className="unified-translation"><TranslationPanel pdfId={paperView.id} pdfFileName={getPaperTitle(papers, paperView.id)} currentPage={page.pageIndex}
+            {translationMode !== 'original' && <div className="unified-translation"><TranslationPanel pdfId={paperView.id} fileUrl={paperView.url} pdfFileName={getPaperTitle(papers, paperView.id)} currentPage={page.pageIndex}
               pageData={currentTranslationPage?.status === 'translating' ? { ...currentTranslationPage, status: 'loading' } : currentTranslationPage}
               onRetry={() => handleRetryTranslation(translationState)} onCaptureArtifact={captureTranslation} /></div>}
           </div>

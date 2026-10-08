@@ -5,6 +5,7 @@ import { buildTranslationArtifact } from './artifactModel.ts';
 import MarkdownContent from './MarkdownContent';
 import { createTranslationPanelViewModel } from './translationPanelModel.js';
 import { buildFidelityTranslationLayout } from '../utils/pdfTranslationLayout.js';
+import PanoramicTranslation from './PanoramicTranslation';
 
 const ROLE_CLASS_NAMES = {
   title: 'text-center',
@@ -343,7 +344,7 @@ const TranslationFidelityStage = ({ pageLayout, translatedBlocks, resetKey }) =>
   );
 };
 
-const TranslationPanel = ({ pdfId, pdfFileName, currentPage = 0, pageData = null, onRetry, onCaptureArtifact }) => {
+const TranslationPanel = ({ pdfId, pdfFileName, fileUrl, currentPage = 0, pageData = null, onRetry, onCaptureArtifact }) => {
   const pageNumber = Number.isFinite(currentPage) ? currentPage + 1 : 1;
   const status = pageData?.status || 'idle';
   const translatedText = pageData?.translatedText || '';
@@ -356,10 +357,12 @@ const TranslationPanel = ({ pdfId, pdfFileName, currentPage = 0, pageData = null
     canRenderStructuredFallback,
     canRenderPlainColumnFallback,
     shouldShowPlainTranslation,
+    panoramicText,
   } = viewModel;
+  const artifactText = fileUrl && pageData?.translatedBlocks?.length ? panoramicText : translatedText;
   const translationArtifact = useMemo(
-    () => buildTranslationArtifact({ pdfId, pdfFileName, pageIndex: currentPage, translatedText }),
-    [currentPage, pdfFileName, pdfId, translatedText],
+    () => buildTranslationArtifact({ pdfId, pdfFileName, pageIndex: currentPage, translatedText: artifactText, status, warning: pageData?.warning }),
+    [currentPage, pdfFileName, pdfId, artifactText, status, pageData?.warning],
   );
 
   return (
@@ -377,7 +380,7 @@ const TranslationPanel = ({ pdfId, pdfFileName, currentPage = 0, pageData = null
           <button
             type="button"
             onClick={() => translationArtifact && onCaptureArtifact?.(translationArtifact)}
-            disabled={status !== 'success' || !translationArtifact || !onCaptureArtifact}
+            disabled={!['success', 'partial'].includes(status) || !translationArtifact || !onCaptureArtifact}
             title={!pdfId ? '请先打开一篇论文。' : !translationArtifact ? '当前页译文尚未生成。' : '保存当前页译文'}
             className="theme-button-secondary flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-50"
           >
@@ -397,6 +400,7 @@ const TranslationPanel = ({ pdfId, pdfFileName, currentPage = 0, pageData = null
       </div>
 
       <div className="flex-1 space-y-5 overflow-y-auto p-6">
+        {status === 'partial' && <p role="status" className="theme-text-secondary text-xs">{pageData?.warning || '部分段落未完成，已保留当前译文；可手动重试。'}</p>}
         {status === 'loading' && (
           <div className="theme-card flex items-center gap-3 rounded-2xl p-5">
             <Loader2 size={18} className="animate-spin text-pixiu" />
@@ -427,12 +431,14 @@ const TranslationPanel = ({ pdfId, pdfFileName, currentPage = 0, pageData = null
             </div>
             <p className="theme-text-primary text-sm font-semibold">打开全景翻译后，这里会展示当前页的译文。</p>
             <p className="theme-text-secondary mt-2 max-w-xs text-xs leading-relaxed">
-              新版会尽量保持原论文的标题区与双栏结构；图片、图表和表格区域不会显示在译文中。
+              正文译文与原图、表格和公式一起阅读，未完成的段落保留原文。
             </p>
           </div>
         )}
 
-        {canRenderFidelity && (
+        {fileUrl && <PanoramicTranslation fileUrl={fileUrl} pageIndex={currentPage} pageData={pageData} />}
+
+        {!fileUrl && canRenderFidelity && (
           <TranslationFidelityStage
             pageLayout={pageData?.pageLayout}
             translatedBlocks={pageData?.translatedBlocks}
@@ -440,13 +446,13 @@ const TranslationPanel = ({ pdfId, pdfFileName, currentPage = 0, pageData = null
           />
         )}
 
-        {canRenderStructuredFallback && <TranslationStructuredStage readableLayout={readableLayout} />}
+        {!fileUrl && canRenderStructuredFallback && <TranslationStructuredStage readableLayout={readableLayout} />}
 
-        {canRenderPlainColumnFallback && (
+        {!fileUrl && canRenderPlainColumnFallback && (
           <TranslationPlainColumnFallbackStage pageLayout={pageData?.pageLayout} translatedText={translatedText} />
         )}
 
-        {shouldShowPlainTranslation && (
+        {!fileUrl && shouldShowPlainTranslation && (
           <div className="theme-card rounded-2xl p-5">
             <div className="theme-text-muted mb-3 flex items-center gap-2 text-xs font-bold uppercase tracking-wider">
               <Languages size={14} className="text-pixiu" />

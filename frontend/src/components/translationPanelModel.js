@@ -1,5 +1,6 @@
 import { buildFidelityTranslationLayout, buildReadableTranslationLayout } from '../utils/pdfTranslationLayout.js';
 import { canRenderOverlay } from '../utils/translationState.js';
+import { buildPanoramicTranslation } from '../utils/panoramicTranslation.js';
 
 export const getPlainFallbackColumnMode = (pageLayout) => {
   const viewport = pageLayout?.viewport || {};
@@ -38,6 +39,10 @@ export const createTranslationPanelViewModel = (pageData = null) => {
   const baseFidelityLayout = buildFidelityTranslationLayout(pageData?.pageLayout, translatedBlocks);
   const readableLayout = buildReadableTranslationLayout(pageData?.pageLayout, translatedBlocks);
   const hasTranslatedBlocks = translatedBlocks.length > 0;
+  const panoramicLayout = buildPanoramicTranslation(pageData?.pageLayout, translatedBlocks, pageData?.excludedZones || []);
+  const panoramicText = panoramicLayout?.sections.flatMap(section => section.type === 'columns'
+    ? [...section.left, ...section.right] : section.items).filter(item => item.kind === 'translation')
+    .map(item => item.translatedText).join('\n\n');
   const canRenderFidelity = hasTranslatedBlocks && Boolean(baseFidelityLayout?.positionedItems?.length) && overlayEnabled;
   const canRenderStructuredFallback =
     hasTranslatedBlocks && !canRenderFidelity && Boolean(readableLayout?.sections?.length) && overlayEnabled;
@@ -48,6 +53,8 @@ export const createTranslationPanelViewModel = (pageData = null) => {
     getPlainFallbackColumnMode(pageData?.pageLayout) === 'two-column';
 
   return {
+    panoramicLayout,
+    panoramicText,
     baseFidelityLayout,
     readableLayout,
     canRenderFidelity,

@@ -119,6 +119,14 @@ const isLikelyFormulaTextForTranslation = (text, block = {}) => {
     readableWords <= 3 &&
     mathSignals >= 1;
 
+  // PDF summation/product glyphs can be extracted as separated capital variables (e.g. "M HWX").
+  const isDetachedMathVariables = value.length <= 24 && (bbox.width || 0) <= 0.16 &&
+    (bbox.height || 0) <= 0.025 && /^[A-Z](?:\s+[A-Z]{1,4})+$/.test(value);
+
+  if (isDetachedMathVariables) {
+    return true;
+  }
+
   if (hasOptimizationLine) {
     return true;
   }

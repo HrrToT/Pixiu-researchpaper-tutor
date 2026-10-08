@@ -56,6 +56,12 @@ const run = () => {
     pageLayout: singleColumnLayout,
   });
   assert.equal(structuredOverlay.canRenderFidelity, true);
+  assert.equal(structuredOverlay.panoramicText, '这是正文译文。');
+  const cachedFormula = createTranslationPanelViewModel({translatedBlocks:[
+    {id:'block-1',translatedText:'正文译文'}, {id:'formula',translatedText:'损坏的公式碎片'}],
+    pageLayout:{...singleColumnLayout,blocks:[...singleColumnLayout.blocks,{id:'formula',text:'C = x + y, (2)',
+      bbox:{left:0.3,top:0.5,width:0.3,height:0.03}}]}});
+  assert.equal(cachedFormula.panoramicText, '正文译文');
 
   const plainWithExcludedZones = createTranslationPanelViewModel({
     status: 'success',
