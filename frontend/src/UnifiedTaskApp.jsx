@@ -111,12 +111,15 @@ export default function UnifiedTaskApp() {
   const [showOutline, setShowOutline] = useState(false);
   const [translationMode, setTranslationMode] = useState('original');
   const [translationState, setTranslationState] = useState(createEmptyTranslationState());
+  const [translationReadyKey, setTranslationReadyKey] = useState('');
   const currentPageTextRef = useRef({ pageIndex: 0, pageText: '', pageLayout: null });
   const fileInputRef = useRef(null);
   const taskRef = useRef(new Map());
   const paperLoadToken = useRef(0);
   const materialProcessingRef = useRef(new Map());
   const focusedPaperId = activeTask?.focusedPaperId || null;
+  const translationKey = JSON.stringify([activeTaskId, focusedPaperId]);
+  const translationReady = translationReadyKey === translationKey;
   const initialPaperPage = useMemo(() => {
     try {
       const stored = Number(localStorage.getItem(readingPositionKey(activeTaskId, focusedPaperId)));
@@ -190,17 +193,17 @@ export default function UnifiedTaskApp() {
     commitTranslationState: setTranslationState,
     setPdfPageState: setReadingPage,
     pdfPageState: page,
-    isTranslated: translationMode !== 'original',
+    isTranslated: translationReady && translationMode !== 'original',
     currentPageTextRef,
   });
   useEffect(() => {
-    if (translationMode === 'original' || !focusedPaperId || paperView.id !== focusedPaperId) return;
+    if (!translationReady || translationMode === 'original' || !focusedPaperId || paperView.id !== focusedPaperId) return;
     const source = currentPageTextRef.current;
     if (!source.pageText || source.pageIndex !== page.pageIndex) return;
     const status = translationState.pages?.[page.pageIndex]?.status;
     if (['success', 'translating', 'error', 'empty'].includes(status)) return;
     void requestPageTranslation(source);
-  }, [translationMode, focusedPaperId, paperView.id, page.pageIndex, translationState.pages, requestPageTranslation]);
+  }, [translationReady, translationMode, focusedPaperId, paperView.id, page.pageIndex, translationState.pages, requestPageTranslation]);
 
   useEffect(() => { taskRef.current = new Map(tasks.map((task) => [task.id, task])); }, [tasks]);
   useEffect(() => { localStorage.setItem(LAYOUT_KEY, JSON.stringify(layout)); }, [layout]);
@@ -247,19 +250,25 @@ export default function UnifiedTaskApp() {
     currentPageTextRef.current = { pageIndex: 0, pageText: '', pageLayout: null };
     setPage({ pageIndex: initialPaperPage, totalPages: 0 });
     setTranslationMode('original');
+    setTranslationReadyKey('');
     setTranslationState(createEmptyTranslationState(focusedPaperId));
     if (focusedPaperId) initDB().then((db) => db.get('translationStore', focusedPaperId)).then((stored) => {
-      if (alive) setTranslationState(normalizeTranslationState(stored, focusedPaperId));
-    }).catch(() => {});
+      if (!alive) return;
+      const restored = normalizeTranslationState(stored, focusedPaperId);
+      setTranslationState(current => ({...restored, pages:{
+        ...(current.pdfId === focusedPaperId ? current.pages : {}), ...restored.pages,
+      }}));
+      setTranslationReadyKey(translationKey);
+    }).catch(() => { if (alive) setLocalError('译文缓存读取失败，请刷新后重试。'); });
     return () => { alive = false; };
   }, [focusedPaperId, activeTaskId, initialPaperPage]);
   useEffect(() => {
-    if (!focusedPaperId || translationState.pdfId !== focusedPaperId) return;
+    if (!translationReady || !focusedPaperId || translationState.pdfId !== focusedPaperId) return;
     const timer = setTimeout(() => {
       initDB().then((db) => persistTranslationState(db, focusedPaperId, translationState)).catch((error) => setLocalError(error.message || '译文缓存保存失败'));
     }, 300);
     return () => clearTimeout(timer);
-  }, [focusedPaperId, translationState]);
+  }, [translationReady, focusedPaperId, translationState]);
   useEffect(() => {
     const token = ++paperLoadToken.current;
     let objectUrl = null;

@@ -6,6 +6,8 @@ const state = vi.hoisted(() => ({ task: null, chatProps: null, failAnswerSave: f
 const materialProcessing = vi.hoisted(() => vi.fn(async () => undefined));
 const operationList = vi.hoisted(() => vi.fn(async () => []));
 const recoverOperation = vi.hoisted(() => vi.fn());
+const localDbGet = vi.hoisted(() => vi.fn(async () => null));
+const localDbPut = vi.hoisted(() => vi.fn(async () => {}));
 vi.mock('./hooks/useTaskWorkspace', () => ({ useTaskWorkspace: () => ({
   tasks: [state.task, ...(state.otherTasks || [])], activeTask: state.task, activeTaskId: state.task.id,
   adoptServerTask: async task => { if (state.failAnswerSave) throw new Error('本地缓存未更新'); state.task = task; },
@@ -31,7 +33,7 @@ vi.mock('./services/taskResearchApi', () => ({ taskResearchApi: {} }));
 vi.mock('./services/taskWorkspaceRemoteStore', () => ({ taskWorkspaceRemoteStore: { getUnsyncedDraft: async () => null, retainUnsyncedDraft: state.retainDraft } }));
 vi.mock('./services/localDb', () => ({ initDB: async () => ({
   getAll: async () => [{ id: 'a', title: '论文甲' }, { id: 'b', title: '论文乙' }],
-  get: async () => null, put: async () => {},
+  get: localDbGet, put: localDbPut,
 }) }));
 vi.mock('./hooks/useThemePreference', () => ({ useThemePreference: () => ({ theme: 'light', toggleTheme: vi.fn() }) }));
 vi.mock('./hooks/useCompactLayout', () => ({ default: () => Boolean(state.compact) }));
@@ -44,6 +46,8 @@ import UnifiedTaskApp from './UnifiedTaskApp';
 describe('unified task conversation wiring', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    localDbGet.mockImplementation(async () => null);
+    localDbPut.mockImplementation(async () => {});
     operationList.mockResolvedValue([]);
     materialProcessing.mockImplementation(async () => undefined);
     localStorage.clear();
@@ -79,6 +83,20 @@ describe('unified task conversation wiring', () => {
     expect(screen.getByRole('region', { name: '论文与成果' })).toHaveClass('unified-desktop-hidden');
     fireEvent.click(screen.getByRole('button', { name: '展开阅读区' }));
     expect(screen.getByRole('region', { name: '论文与成果' })).not.toHaveClass('unified-desktop-hidden');
+  });
+
+  it('waits for a slow translation cache read before persisting any replacement', async () => {
+    state.task.focusedPaperId = 'a';
+    let finish;
+    localDbGet.mockImplementation(store => store === 'translationStore'
+      ? new Promise(resolve => { finish = resolve; }) : Promise.resolve(null));
+    render(<UnifiedTaskApp />);
+    await waitFor(() => expect(finish).toBeTypeOf('function'));
+    await act(async () => { await new Promise(resolve => setTimeout(resolve,400)); });
+    expect(localDbPut.mock.calls.filter(call => call[0] === 'translationStore')).toHaveLength(0);
+    await act(async () => finish({pdfId:'a',pages:{3:{status:'success',translatedText:'已有第四页译文'}}}));
+    await waitFor(() => expect(localDbPut).toHaveBeenCalledWith('translationStore',
+      expect.objectContaining({pages:expect.objectContaining({3:expect.objectContaining({translatedText:'已有第四页译文'})})}), 'a'));
   });
 
   it('keeps invalid learning input and shows its actionable error above service query errors', async () => {
