@@ -9,6 +9,7 @@ _logger = logging.getLogger(__name__)
 
 from llm.client import get_translation_llm
 from schemas.requests import PageTranslationRequest
+from services.translation_math import protect_inline_math, has_intact_math_tokens
 
 STRUCTURED_MAX_BLOCKS_PER_BATCH = 8
 STRUCTURED_MAX_CHARS_PER_BATCH = 1000
@@ -77,7 +78,7 @@ def _normalize_layout_blocks(page_layout: dict[str, Any] | None) -> list[dict[st
         normalized.append(
             {
                 "id": block_id,
-                "text": text,
+                "text": protect_inline_math(text),
                 "style": block.get("style") or {},
             }
         )
@@ -95,6 +96,7 @@ def _build_plain_translation_prompt(page_index: int, skeleton_text: str, trimmed
 3. 专有名词如无公认译法，可保留英文并在中文中自然嵌入。
 4. 输出只包含译文正文，不要添加标题、说明、前言或结语。
 5. 追求准确与直接，不要额外润色。
+6. ⟦原式数字⟧是原图中保留的数学表达式，必须原样保留且每个出现一次；不要推测、展开、补写公式。
 
 论文结构摘要（仅供术语参考）：
 {skeleton_text}
@@ -122,6 +124,7 @@ def _build_structured_translation_prompt(page_index: int, skeleton_text: str, bl
 3. 图表、表格、图题、表题和图内文字已经被前处理排除，不要自行补回。
 4. 每个输入块都必须按原样返回相同的 id。
 5. 输出严格 JSON，不要输出任何额外说明。
+6. ⟦原式数字⟧标记必须原样保留且各出现一次；它们在原文图中显示，不能推测、展开、补写公式。
 
 JSON 格式：
 {{
@@ -162,6 +165,8 @@ def _normalize_translated_blocks(payload: Any, source_blocks: list[dict[str, Any
         block_id = str(item.get("id") or "").strip()
         translated_text = str(item.get("translatedText") or "").strip()
         if not block_id or not translated_text or block_id not in source_by_id:
+            continue
+        if not has_intact_math_tokens(source_by_id[block_id]['text'], translated_text):
             continue
         translated_by_id[block_id] = translated_text
 
@@ -270,13 +275,16 @@ def translate_page(request: PageTranslationRequest) -> dict[str, Any]:
             "renderMode": "overlay",
             "missingBlockIds": missing,
             "warning": f"还有 {len(missing)} 个段落未完成，已保留当前译文；可手动重试。" if missing else "",
+            "mathProtectionVersion": 1,
         }
 
-    trimmed_page_text = _trim_page_text(page_text)
+    trimmed_page_text = protect_inline_math(_trim_page_text(page_text))
     prompt = _build_plain_translation_prompt(page_index, skeleton_text, trimmed_page_text)
     translated_text = _call_translation_with_timeout(prompt, timeout_seconds=PLAIN_TRANSLATION_TIMEOUT_SECONDS).strip()
     if not translated_text:
         raise RuntimeError("Translation model returned empty content.")
+    if not has_intact_math_tokens(trimmed_page_text, translated_text):
+        raise RuntimeError("译文未完整保留原式标记，请查看原文；可手动重试。")
 
     return {
         "status": "success",
@@ -285,4 +293,5 @@ def translate_page(request: PageTranslationRequest) -> dict[str, Any]:
         "translatedText": translated_text,
         "translatedBlocks": [],
         "renderMode": "plain",
+        "mathProtectionVersion": 1,
     }
