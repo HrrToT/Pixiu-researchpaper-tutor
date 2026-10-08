@@ -192,7 +192,10 @@ export function usePageTranslation({
           [pageIndex]: normalizeTranslationPage({
             ...existingPage,
             sourceText: pageText || existingPage.sourceText,
-            pageLayout: pageLayout || existingPage.pageLayout || null,
+            // Cached block IDs belong to the layout used by their translation request.
+            // A fresh parser pass may regroup paragraphs and assign different IDs.
+            pageLayout: existingPage.translatedBlocks.length && existingPage.pageLayout
+              ? existingPage.pageLayout : pageLayout || existingPage.pageLayout || null,
             excludedZones: excludedZones.length > 0 ? excludedZones : existingPage.excludedZones || [],
           }),
         },

@@ -15,6 +15,20 @@ function setup(api, stored = null) {
 }
 
 describe('page translation request lifecycle', () => {
+  it('keeps cached translations paired with their original layout after parser changes', () => {
+    const api = { translatePage: vi.fn() };
+    const oldLayout = {viewport:{width:600,height:800},blocks:[{id:'old-caption',
+      text:'An original figure caption.',bbox:{left:0.1,top:0.3,width:0.8,height:0.1}}]};
+    const stored = normalizeTranslationState({pages:{0:{status:'success',pageLayout:oldLayout,
+      translatedBlocks:[{id:'old-caption',translatedText:'原图说明译文'}]}}},'A');
+    const { result } = setup(api, stored);
+    act(() => result.current.handlePageTextExtracted({pageIndex:0,pageText:'new extraction',
+      pageLayout:{...oldLayout,blocks:[{...oldLayout.blocks[0],id:'new-body'}]}}));
+    expect(result.current.translationState.pages[0].pageLayout.blocks[0].id).toBe('old-caption');
+    expect(result.current.translationState.pages[0].sourceText).toBe('new extraction');
+    expect(api.translatePage).not.toHaveBeenCalled();
+  });
+
   it('deduplicates concurrent text callbacks and reuses completed pages', async () => {
     let finish;
     const api = { translatePage: vi.fn(() => new Promise(resolve => { finish = resolve; })) };
