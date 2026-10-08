@@ -11,6 +11,8 @@ import TaskNavigation from './components/TaskNavigation';
 import DocumentVersionHistory from './components/DocumentVersionHistory';
 import DocumentOrganizer from './components/DocumentOrganizer';
 import CollapsedSources from './components/CollapsedSources';
+import DocumentOriginalPage from './components/DocumentOriginalPage';
+import { documentOriginalPage } from './utils/documentOriginalPage';
 import { documentSources } from './utils/documentSources';
 import { documentMarkdownExport } from './utils/documentExport';
 import { learningActivityHistory } from './utils/learningActivityHistory';
@@ -490,6 +492,7 @@ export default function UnifiedTaskApp() {
     ? activeTask?.[selectedDocument.collection]?.find((item) => (item.id || item.artifactId) === selectedDocument.id)
     : activeTask?.[selectedDocument.collection]?.[selectedDocument.index]) : null;
   const selectedDocumentKey = selectedDocument ? documentDraftKey(selectedDocument) : null;
+  const originalDocumentPage = documentOriginalPage(activeDocument);
   useEffect(() => { setDocumentEditing(false); }, [selectedDocumentKey]);
   const documentDirty = !!activeDocument && documentDraft !== normalizeNoteContent(activeDocument);
   const saveDocumentFromToolbar = async () => {
@@ -733,6 +736,9 @@ export default function UnifiedTaskApp() {
           <DocumentOrganizer key={`organize/${documentDraftKey(selectedDocument)}`} document={activeDocument} taskId={activeTaskId} tasks={tasks}
             dirty={documentDirty || savingDocument} onRename={renameDocument} onMove={moveDocument} />
           <CollapsedSources value={activeDocument} onJumpToSource={jumpToSource} />
+          {originalDocumentPage && activeTask.paperIds.includes(originalDocumentPage.pdfId) &&
+            <DocumentOriginalPage key={selectedDocumentKey} taskId={activeTaskId} source={originalDocumentPage}
+              title={activeDocument.title} text={documentDraft} paperTitle={getPaperTitle(papers, originalDocumentPage.pdfId)} />}
           {documentEditing ? <>
           <textarea aria-label="编辑笔记与成果" disabled={restoringDocument || movingDocument} value={documentDraft} onChange={(event) => {
             const value = event.target.value;
