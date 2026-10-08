@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 import pytest
 
-from services.research_synthesis import synthesize_research_finding
+from services.research_synthesis import synthesize_research_finding, validate_claim
 
 
 BODY = "We maximize radar SINR subject to communication QoS and an active RIS power constraint."
@@ -86,3 +86,27 @@ def test_resumed_mixed_report_does_not_revert_to_heuristic_validation():
     validate.assert_not_called()
     assert "保留的历史结论" in report and "尚未逐论断核对原文" in report
     assert "最大化雷达SINR" in report and "JUDGE" not in report
+
+
+def test_verified_long_continuous_quote_is_split_without_losing_evidence():
+    body = ("Results show that Gaussian Pruning and Recovery effectively removes redundant Gaussians, "
+            "retaining only those crucial for scene representation. SH Distillation reduces the Spherical "
+            "Harmonics degree, simplifying the lighting model with minimal quality loss. Furthermore, "
+            "Vector Quantization efficiently compresses the feature space, creating a more compact representation.")
+    assert len(body) == 372
+    checked = validate_claim(claim(body), [{**EVIDENCE[0], 'text': body}])
+    parts = [ref['quote'] for ref in checked['references']]
+    assert len(parts) > 1
+    assert all(8 <= len(part) <= 300 and part in body for part in parts)
+    assert ' '.join(parts) == body
+    assert all(ref['sourceId'] == EVIDENCE[0]['sourceId'] for ref in checked['references'])
+
+
+@pytest.mark.parametrize('quote', [
+    'Reported observations ' * 20 + 'invented ending',
+    'Reported observations ' * 15 + '... final findings',
+])
+def test_long_quote_with_invented_or_stitched_text_is_still_rejected(quote):
+    sources = [{**EVIDENCE[0], 'text': 'Reported observations ' * 30 + ' final findings'}]
+    with pytest.raises(ValueError, match='摘录无法在正文中找到'):
+        validate_claim(claim(quote), sources)

@@ -23,6 +23,23 @@ def _flat(text):
     return re.sub(r"\s+", " ", str(text or "")).strip()
 
 
+def _bounded_quote_parts(quote):
+    """Split an already verified continuous excerpt without changing its words."""
+    parts = []
+    remaining = quote.strip()
+    while len(remaining) > 300:
+        end = remaining.rfind(' ', 8, 301)
+        if end < 8:
+            end = 300
+        # Avoid a final fragment too short to remain a useful reference.
+        if len(remaining[end:].strip()) < 8:
+            end = len(remaining) - 8
+        parts.append(remaining[:end].strip())
+        remaining = remaining[end:].strip()
+    parts.append(remaining)
+    return parts
+
+
 def validate_claim(claim, sources):
     by_id = {item["sourceId"]: item for item in sources}
     if not isinstance(claim, dict) or not isinstance(claim.get("summary"), str) or not claim["summary"].strip():
@@ -37,9 +54,13 @@ def validate_claim(claim, sources):
         sid, quote = ref.get("sourceId"), ref.get("quote")
         if not isinstance(sid, str) or sid not in by_id or not isinstance(quote, str):
             raise ValueError("结论引用了不存在的证据。")
-        if not 8 <= len(quote.strip()) <= 300 or _flat(quote) not in _flat(evidence_body(by_id[sid]["text"])):
+        if not 8 <= len(quote.strip()) <= 1200:
+            raise ValueError("原文摘录长度无效，请使用简短连续摘录。")
+        if _flat(quote) not in _flat(evidence_body(by_id[sid]["text"])):
             raise ValueError("结论的摘录无法在正文中找到，已停止发布。")
-        checked.append({"sourceId": sid, "quote": quote.strip()})
+        # Verify the whole excerpt first. Splitting must never rescue invented
+        # words, stitched excerpts or a reference to another source.
+        checked.extend({"sourceId": sid, "quote": part} for part in _bounded_quote_parts(quote))
     return {"summary": claim["summary"].strip(), "kind": claim["kind"], "references": checked}
 
 
