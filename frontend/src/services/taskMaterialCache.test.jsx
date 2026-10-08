@@ -31,9 +31,61 @@ it('keeps a usable local file when the missing remote analysis fails', async () 
   const blob = new Blob(['pdf']);
   const db = cache({ 'pdfStore:paper': blob });
   const api = { getMaterialFile: vi.fn(), getMaterialAnalysis: async () => { throw new Error('offline'); } };
-  await expect(loadTaskMaterial(db, api, 'task', 'paper')).rejects.toThrow('offline');
+  const result = await loadTaskMaterial(db, api, 'task', 'paper');
+  expect(result.record.blob).toBe(blob);
+  expect(result.deconstruct).toBeNull();
+  expect(result.cacheWarning).toContain('正文状态暂不可获取');
   expect(api.getMaterialFile).not.toHaveBeenCalled();
   expect(db.values.get('pdfStore:paper')).toBe(blob);
+});
+
+it('opens an uncached PDF before analysis exists, using authoritative processing status', async () => {
+  const db = cache();
+  const blob = new Blob(['%PDF-original']);
+  const status = { pdfId: 'paper', readingReady: true, questionReady: false, processingStatus: 'parsing' };
+  const api = { getMaterialFile: vi.fn(async () => blob), getMaterialProcessing: vi.fn(async () => status),
+    getMaterialAnalysis: vi.fn().mockRejectedValue({ response: { status: 404 } }),
+    retryMaterialParse: vi.fn(), generateMaterialOverview: vi.fn() };
+  const result = await loadTaskMaterial(db, api, 'task', 'paper');
+  expect(result.record.blob).toBe(blob);
+  expect(result.deconstruct).toEqual(status);
+  expect(api.getMaterialProcessing).toHaveBeenCalledExactlyOnceWith('task', 'paper');
+  expect(api.getMaterialAnalysis).not.toHaveBeenCalled();
+  expect(api.retryMaterialParse).not.toHaveBeenCalled();
+  expect(api.generateMaterialOverview).not.toHaveBeenCalled();
+});
+
+it('keeps a downloaded PDF readable when processing status is offline without caching fake analysis', async () => {
+  const db = cache({ 'highlightStore:paper': [{ id: 'existing' }] });
+  const blob = new Blob(['%PDF-original']);
+  const api = { getMaterialFile: async () => blob, getMaterialProcessing: async () => { throw new Error('offline'); } };
+  const result = await loadTaskMaterial(db, api, 'task', 'paper');
+  expect(result.record.blob).toBe(blob);
+  expect(result.deconstruct).toBeNull();
+  expect(result.highlights).toEqual([{ id: 'existing' }]);
+  expect(db.values.has('deconstructStore:paper')).toBe(false);
+  expect(db.values.get('pdfStore:paper')).toBe(blob);
+});
+
+it('keeps a remote PDF readable when local cache persistence fails', async () => {
+  const db = cache();
+  db.transaction = () => { throw new Error('quota'); };
+  const blob = new Blob(['%PDF-original']);
+  const api = { getMaterialFile: async () => blob,
+    getMaterialProcessing: async () => ({ pdfId: 'paper', processingStatus: 'failed', questionReady: false }) };
+  const result = await loadTaskMaterial(db, api, 'task', 'paper');
+  expect(result.record.blob).toBe(blob);
+  expect(result.deconstruct.processingStatus).toBe('failed');
+  expect(result.cacheWarning).toContain('本地缓存保存失败');
+});
+
+it('does not mask ownership refusal or missing server files as a successful recovery', async () => {
+  const forbidden = { response: { status: 403 } };
+  await expect(loadTaskMaterial(cache(), { getMaterialFile: async () => new Blob(['pdf']),
+    getMaterialProcessing: async () => { throw forbidden; } }, 'task', 'paper')).rejects.toBe(forbidden);
+  const missing = { response: { status: 404 } };
+  await expect(loadTaskMaterial(cache(), { getMaterialFile: async () => { throw missing; },
+    getMaterialProcessing: async () => ({ pdfId: 'paper' }) }, 'task', 'paper')).rejects.toBe(missing);
 });
 
 it('backs up a legacy named file once without invoking analysis', async () => {
