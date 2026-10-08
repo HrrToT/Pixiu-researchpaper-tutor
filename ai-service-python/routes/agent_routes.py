@@ -32,6 +32,21 @@ from services import (
 agent_router = APIRouter()
 
 
+@agent_router.get("/agent-migration/projects")
+async def migration_projects():
+    from services.agent_migration_export import list_projects
+    return JSONResponse(list_projects())
+
+
+@agent_router.get("/agent-migration/projects/{project_id}/snapshot")
+async def migration_snapshot(project_id: str):
+    from services.agent_migration_export import export_project
+    try:
+        return JSONResponse(export_project(project_id))
+    except KeyError:
+        return JSONResponse({"status": "error", "message": "旧项目不存在"}, status_code=404)
+
+
 @agent_router.post("/agent-projects")
 async def create_agent_project(request: AgentProjectCreateRequest):
     try:
