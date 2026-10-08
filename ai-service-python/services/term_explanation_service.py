@@ -18,6 +18,7 @@ from services.evidence_service import (
     normalize_evidence_items,
 )
 from services.query_service import build_retrieval_queries
+from services.reading_context import focus_page_context
 from services.safety_service import (
     build_guarded_messages,
     summarize_safety_results,
@@ -105,7 +106,7 @@ def explain_term(request: TermExplainRequest) -> dict[str, Any]:
         },
     )
     try:
-        page_context = request.context or ""
+        page_context = focus_page_context(request.context, request.term)
         rag_query = f"Explain the selected academic text '{request.term}' with the following context: {page_context[:200]}"
         with trace_step("build_explain_query_plan", input_size=len(rag_query)) as step:
             query_plan = build_retrieval_queries(rag_query, context=page_context, task_type="explain")
@@ -144,6 +145,9 @@ def explain_term(request: TermExplainRequest) -> dict[str, Any]:
         prompt = f"""
 You are an academic research assistant.
 Explain the selected term, formula, or passage in Chinese using the provided context.
+For a paper-specific metric or formula, include every factor visible in its equation and nearby definitions,
+including products/transmittance/normalization. Do not replace the definition with an ablation's shorter list.
+When PDF math is incomplete, explain the readable factors and explicitly avoid reconstructing a full equation.
 {MATH_MARKDOWN_GUIDELINE}
 {_evidence_quality_instruction(retrieval_judge)}
 

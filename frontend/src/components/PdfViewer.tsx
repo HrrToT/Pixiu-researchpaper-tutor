@@ -17,6 +17,7 @@ import '@react-pdf-viewer/highlight/lib/styles/index.css';
 import pdfWorkerUrl from 'pdfjs-dist/build/pdf.worker.min.js?url';
 import { apiService } from '../services/api';
 import { buildExplainSelectionPayload } from '../utils/pdfFormulaSelection';
+import { focusSelectionContext } from '../utils/selectionContext';
 import { buildPageLayout } from '../utils/pdfTranslationLayout.js';
 import MarkdownContent from './MarkdownContent';
 import { getMessageMarkdownClassName } from './MessageMarkdownRenderer';
@@ -154,14 +155,6 @@ const INLINE_ACTIONS: InlineActionDef[] = [
 ];
 
 // ── Helpers ────────────────────────────────────────────────────────────────
-
-const trimExplainContext = (text: string = ''): string => {
-  const trimmed: string = String(text || '').trim();
-  if (trimmed.length <= EXPLAIN_CONTEXT_MAX_CHARS) {
-    return trimmed;
-  }
-  return `${trimmed.slice(0, EXPLAIN_CONTEXT_MAX_CHARS).trimEnd()}\n\n[当前页上下文过长，已截断]`;
-};
 
 const normalizeHighlightRecord = (
   highlight: Record<string, unknown>,
@@ -914,7 +907,7 @@ const PdfViewer: React.FC<PdfViewerProps> = ({
         ...(selectionRegion || {}),
         pageIndex,
       };
-      const context: string = trimExplainContext(pageTextByIndexRef.current[pageIndex] || '');
+      const context: string = focusSelectionContext(pageTextByIndexRef.current[pageIndex] || '', selectedText, EXPLAIN_CONTEXT_MAX_CHARS);
       const sourceAnchorId: string = `selection-${Date.now()}`;
       const requestPayload: InlineActionPayload = buildInlineActionPayload(actionId, selectedText, context);
       const highlightId: number = Date.now();
