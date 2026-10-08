@@ -34,6 +34,7 @@ vi.mock('./services/localDb', () => ({ initDB: async () => ({
   get: async () => null, put: async () => {},
 }) }));
 vi.mock('./hooks/useThemePreference', () => ({ useThemePreference: () => ({ theme: 'light', toggleTheme: vi.fn() }) }));
+vi.mock('./hooks/useCompactLayout', () => ({ default: () => Boolean(state.compact) }));
 vi.mock('./hooks/usePageTranslation', () => ({ usePageTranslation: () => ({}) }));
 vi.mock('./components/PdfViewer', () => ({ default: () => null }));
 vi.mock('./components/TranslationPanel', () => ({ default: () => null }));
@@ -47,6 +48,7 @@ describe('unified task conversation wiring', () => {
     materialProcessing.mockImplementation(async () => undefined);
     localStorage.clear();
     state.failAnswerSave = false;
+    state.compact = false;
     state.writes = 0;
     state.otherTasks = [];
     state.selectedTaskId = null;
@@ -61,6 +63,45 @@ describe('unified task conversation wiring', () => {
       };
       return { taskId, ...request, status: 'succeeded', task };
     });
+  });
+
+  it('resizes with keyboard boundaries and restores hidden desktop panes', () => {
+    render(<UnifiedTaskApp />);
+    const resize = screen.getByRole('separator');
+    fireEvent.keyDown(resize, { key: 'ArrowRight' });
+    expect(resize).toHaveAttribute('aria-valuenow', '56');
+    fireEvent.keyDown(resize, { key: 'End' });
+    fireEvent.keyDown(resize, { key: 'ArrowRight' });
+    expect(resize).toHaveAttribute('aria-valuenow', '72');
+    fireEvent.keyDown(resize, { key: 'Home' });
+    expect(resize).toHaveAttribute('aria-valuenow', '32');
+    fireEvent.click(screen.getByRole('button', { name: '收起阅读区' }));
+    expect(screen.getByRole('region', { name: '论文与成果' })).toHaveClass('unified-desktop-hidden');
+    fireEvent.click(screen.getByRole('button', { name: '展开阅读区' }));
+    expect(screen.getByRole('region', { name: '论文与成果' })).not.toHaveClass('unified-desktop-hidden');
+  });
+
+  it('keeps desktop preferences and note drafts while compact panes and navigation change', () => {
+    state.compact = true;
+    state.task.notes = [{ id: 'compact-note', title: '窄屏笔记', text: '已保存' }];
+    render(<UnifiedTaskApp />);
+    const savedLayout = localStorage.getItem('pixiu-unified-layout-v1');
+    fireEvent.click(screen.getByRole('button', { name: '任务与材料' }));
+    expect(screen.getByRole('region', { name: '任务对话' })).toHaveAttribute('inert');
+    expect(screen.getByRole('combobox', { name: '当前任务' })).toHaveFocus();
+    fireEvent.click(screen.getByRole('button', { name: '窄屏笔记' }));
+    expect(screen.getByRole('button', { name: '任务与材料' })).toHaveAttribute('aria-expanded', 'false');
+    fireEvent.click(screen.getByRole('button', { name: '编辑', exact: true }));
+    fireEvent.change(screen.getByRole('textbox', { name: '编辑笔记与成果' }), { target: { value: '窄屏草稿' } });
+    fireEvent.click(screen.getByRole('group', { name: '内容视图' }).querySelector('button:last-child'));
+    fireEvent.click(screen.getByRole('group', { name: '内容视图' }).querySelector('button:nth-child(2)'));
+    expect(screen.getByRole('textbox', { name: '编辑笔记与成果' })).toHaveValue('窄屏草稿');
+    expect(localStorage.getItem('pixiu-unified-layout-v1')).toBe(savedLayout);
+    expect(localStorage.getItem('pixiu-compact-pane-v1')).toBe('reader');
+    fireEvent.click(screen.getByRole('button', { name: '任务与材料' }));
+    fireEvent.keyDown(screen.getByRole('combobox', { name: '当前任务' }), { key: 'Escape' });
+    expect(screen.getByRole('button', { name: '任务与材料' })).toHaveFocus();
+    expect(screen.getByRole('region', { name: '论文与成果' })).not.toHaveAttribute('inert');
   });
 
   it('stops polling missing legacy material records without starting any generation', async () => {

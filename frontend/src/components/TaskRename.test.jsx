@@ -24,5 +24,17 @@ it('does not save an empty name and supports keyboard cancellation', () => {
   expect(screen.getByRole('button', { name: '保存名称' })).toBeDisabled();
   fireEvent.keyDown(screen.getByRole('textbox', { name: '任务名称' }), { key: 'Escape' });
   expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  expect(screen.getByRole('button', { name: '重命名' })).toHaveFocus();
   expect(save).not.toHaveBeenCalled();
+});
+
+it('keeps keyboard focus inside the name dialog', () => {
+  render(<TaskRename task={{ id: 'A', title: '原名称' }} onRename={vi.fn()} />);
+  fireEvent.click(screen.getByRole('button', { name: '重命名' }));
+  const input = screen.getByRole('textbox', { name: '任务名称' });
+  expect(input).toHaveFocus();
+  fireEvent.keyDown(input, { key: 'Tab', shiftKey: true });
+  expect(screen.getByRole('button', { name: '取消' })).toHaveFocus();
+  fireEvent.keyDown(screen.getByRole('button', { name: '取消' }), { key: 'Tab' });
+  expect(input).toHaveFocus();
 });

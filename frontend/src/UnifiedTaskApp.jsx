@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import TaskRename from './components/TaskRename';
+import useCompactLayout from './hooks/useCompactLayout';
 import { BookOpen, ChevronLeft, ChevronRight, FileDown, FilePlus2, Languages, MessageSquare, PanelLeftClose, PanelLeftOpen, Save, SunMoon, Upload } from 'lucide-react';
 import ChatPanel from './components/ChatPanel';
 import MarkdownContent from './components/MarkdownContent';
@@ -36,6 +37,7 @@ import { usePageTranslation } from './hooks/usePageTranslation';
 import './UnifiedTaskApp.css';
 
 const LAYOUT_KEY = 'pixiu-unified-layout-v1';
+const COMPACT_PANE_KEY = 'pixiu-compact-pane-v1';
 const DEFAULT_LAYOUT = { mode: 'split', navigation: true, reader: true, chat: true, navWidth: 258, readerPercent: 54 };
 const initialLayout = () => {
   try {
@@ -62,6 +64,24 @@ export default function UnifiedTaskApp() {
   const savedLearningActivities = learningActivityHistory(activeTask);
   const { theme, toggleTheme } = useThemePreference('pixiu-theme');
   const [layout, setLayout] = useState(initialLayout);
+  const compact = useCompactLayout();
+  const [compactPane, setCompactPane] = useState(() => {
+    try { return localStorage.getItem(COMPACT_PANE_KEY) === 'reader' ? 'reader' : 'chat'; }
+    catch { return 'chat'; }
+  });
+  const [compactNavigation, setCompactNavigation] = useState(false);
+  const compactNavigationButton = useRef(null);
+  const compactReaderButton = useRef(null);
+  const navigationRef = useRef(null);
+  const resizeCleanup = useRef(null);
+  useEffect(() => () => resizeCleanup.current?.(), []);
+  useEffect(() => {
+    if (compact && compactNavigation) navigationRef.current?.querySelector('select, button')?.focus();
+  }, [compact, compactNavigation]);
+  useEffect(() => {
+    if (!compact) { setCompactNavigation(false); return; }
+    try { localStorage.setItem(COMPACT_PANE_KEY, compactPane); } catch { /* Layout preference is optional. */ }
+  }, [compact, compactPane]);
   const [papers, setPapers] = useState([]);
   const [libraryError, setLibraryError] = useState('');
   const [uploading, setUploading] = useState(false);
@@ -239,11 +259,14 @@ export default function UnifiedTaskApp() {
     return () => { if (objectUrl) URL.revokeObjectURL(objectUrl); };
   }, [focusedPaperId, activeTaskId]);
 
-  const patchLayout = (patch) => setLayout((current) => {
-    const next = { ...current, ...patch };
-    if (!next.reader && !next.chat) next.reader = true;
-    return next;
-  });
+  const patchLayout = (patch) => {
+    if (patch.reader === true) { setCompactPane('reader'); setCompactNavigation(false); compactReaderButton.current?.focus(); }
+    setLayout((current) => {
+      const next = { ...current, ...patch };
+      if (!next.reader && !next.chat) next.reader = true;
+      return next;
+    });
+  };
   const setMode = (mode) => patchLayout(mode === 'reader'
     ? { mode, reader: true, chat: false }
     : mode === 'chat' ? { mode, reader: false, chat: true } : { mode: 'split', reader: true, chat: true });
@@ -591,10 +614,11 @@ export default function UnifiedTaskApp() {
     event.preventDefault();
     const startX = event.clientX;
     const start = layout.readerPercent;
-    const width = event.currentTarget.parentElement?.clientWidth || 800;
+    const width = (event.currentTarget.parentElement?.clientWidth || 800) - (navigationRef.current?.offsetWidth || 0) - 6;
     const move = (moveEvent) => setLayout((current) => ({ ...current, readerPercent: Math.max(32, Math.min(72, start + (moveEvent.clientX - startX) / width * 100)) }));
-    const stop = () => { window.removeEventListener('pointermove', move); window.removeEventListener('pointerup', stop); };
-    window.addEventListener('pointermove', move); window.addEventListener('pointerup', stop);
+    const stop = () => { window.removeEventListener('pointermove', move); window.removeEventListener('pointerup', stop); window.removeEventListener('pointercancel', stop); resizeCleanup.current = null; };
+    resizeCleanup.current?.(); resizeCleanup.current = stop;
+    window.addEventListener('pointermove', move); window.addEventListener('pointerup', stop); window.addEventListener('pointercancel', stop);
   };
 
   return <div className="unified-app theme-app-shell">
@@ -610,10 +634,21 @@ export default function UnifiedTaskApp() {
       </div>
       <button type="button" className="unified-header-action" onClick={toggleTheme} aria-label="切换主题"><SunMoon size={17} /></button>
     </header>
-    <main className="unified-main">
-      <div className="unified-task-nav" style={{ width: layout.navigation ? layout.navWidth : 48 }}>
-        <TaskNavigation tasks={tasks} activeTask={activeTask} papers={papers} collapsed={!layout.navigation} onToggle={() => patchLayout({ navigation: !layout.navigation })}
-          onSelectTask={selectTask} onCreateTask={() => createTask({ title: '新任务' })} onOpenPaper={openPaper} onAddPaper={addPaper} onRemovePaper={removePaper} onOpenArtifact={openDocument}>
+    {compact && <div className="unified-compact-switch" role="group" aria-label="内容视图">
+      <button type="button" ref={compactNavigationButton} aria-expanded={compactNavigation} aria-controls="unified-navigation" onClick={() => setCompactNavigation(value => !value)}>任务与材料</button>
+      <button type="button" ref={compactReaderButton} aria-pressed={compactPane === 'reader'} onClick={() => { setCompactPane('reader'); setCompactNavigation(false); }}>阅读</button>
+      <button type="button" aria-pressed={compactPane === 'chat'} onClick={() => { setCompactPane('chat'); setCompactNavigation(false); }}>对话</button>
+    </div>}
+    <main className="unified-main" data-compact-pane={compactPane} onKeyDown={event => {
+      if (event.key === 'Escape' && compactNavigation) { setCompactNavigation(false); compactNavigationButton.current?.focus(); }
+    }}>
+      {compact && compactNavigation && <button type="button" tabIndex={-1} className="unified-navigation-backdrop" aria-label="关闭任务导航" onClick={() => { setCompactNavigation(false); compactNavigationButton.current?.focus(); }} />}
+      <div id="unified-navigation" ref={navigationRef} className={`unified-task-nav ${compact && !compactNavigation ? 'unified-compact-hidden' : ''}`} style={{ width: layout.navigation ? layout.navWidth : 48 }}>
+        <TaskNavigation tasks={tasks} activeTask={activeTask} papers={papers} collapsed={compact ? false : !layout.navigation} onToggle={() => {
+          if (compact) { setCompactNavigation(false); compactNavigationButton.current?.focus(); }
+          else patchLayout({ navigation: !layout.navigation });
+        }}
+          onSelectTask={id => { selectTask(id); setCompactNavigation(false); compactNavigationButton.current?.focus(); }} onCreateTask={async () => { await createTask({ title: '新任务' }); setCompactNavigation(false); setCompactPane('chat'); }} onOpenPaper={openPaper} onAddPaper={addPaper} onRemovePaper={removePaper} onOpenArtifact={openDocument}>
           <button type="button" className="unified-upload" disabled={uploading} onClick={() => fileInputRef.current?.click()}><Upload size={15} />{uploading ? '上传中…' : '上传 PDF'}</button>
           {focusedPaperId && <div className="unified-outline">
             <button type="button" onClick={() => setShowOutline((value) => !value)}>{showOutline ? <ChevronLeft size={13} /> : <ChevronRight size={13} />} 当前论文目录</button>
@@ -621,7 +656,7 @@ export default function UnifiedTaskApp() {
           </div>}
         </TaskNavigation>
       </div>
-      {layout.reader && <section className="unified-reader" style={{ flexBasis: layout.chat ? `${layout.readerPercent}%` : '100%' }} aria-label="论文与成果">
+      <section className={`unified-reader ${!layout.reader ? 'unified-desktop-hidden' : ''}`} inert={compact && compactNavigation ? true : undefined} style={{ flexBasis: layout.chat ? `${layout.readerPercent}%` : '100%' }} aria-label="论文与成果">
         <div className="unified-pane-head">
           <BookOpen size={17} />
           <strong>{preview ? preview.kind === 'research.report' ? '研究报告' : '已生成结果' : activeDocument ? activeDocument.title || '笔记' : focusedPaperId ? getPaperTitle(papers, focusedPaperId) : '阅读区'}</strong>
@@ -697,9 +732,15 @@ export default function UnifiedTaskApp() {
           </div>
             : <div className="unified-empty"><FilePlus2 size={32} /><p>{activeTask ? '上传或选择论文，开始阅读。' : '创建任务，上传论文或提出研究目标。'}</p><button type="button" onClick={() => fileInputRef.current?.click()}>上传论文</button></div>}
         {paperView.url && !activeDocument && !preview && <div className="unified-page-indicator">第 {page.pageIndex + 1} / {page.totalPages || '—'} 页</div>}
-      </section>}
-      {layout.reader && layout.chat && <div className="unified-resizer" role="separator" aria-orientation="vertical" aria-label="调整阅读与对话宽度" onPointerDown={startResize} />}
-      {layout.chat && <section className="unified-chat" style={{ flexBasis: layout.reader ? `${100 - layout.readerPercent}%` : '100%' }} aria-label="任务对话">
+      </section>
+      {layout.reader && layout.chat && !compact && <div className="unified-resizer" role="separator" tabIndex={0} aria-orientation="vertical" aria-label="调整阅读与对话宽度" aria-valuemin={32} aria-valuemax={72} aria-valuenow={layout.readerPercent} onPointerDown={startResize} onKeyDown={event => {
+        const steps = { ArrowLeft: -2, ArrowRight: 2 };
+        if (!(event.key in steps) && !['Home', 'End'].includes(event.key)) return;
+        event.preventDefault();
+        const readerPercent = event.key === 'Home' ? 32 : event.key === 'End' ? 72 : Math.max(32, Math.min(72, layout.readerPercent + steps[event.key]));
+        patchLayout({ readerPercent });
+      }} />}
+      <section className={`unified-chat ${!layout.chat ? 'unified-desktop-hidden' : ''}`} inert={compact && compactNavigation ? true : undefined} style={{ flexBasis: layout.reader ? `${100 - layout.readerPercent}%` : '100%' }} aria-label="任务对话">
         {activeTask && <ConversationExecution task={activeTask} records={learning.operations.records}
           busy={Boolean(learning.busyTasks[activeTaskId])} onRetry={requestId => learning.operations.retry(activeTask, requestId)}
           onRefresh={() => learning.operations.refresh()} onCancel={() => learning.operations.cancel(activeTaskId)}
@@ -747,7 +788,7 @@ export default function UnifiedTaskApp() {
           else setLocalError('成果已移出或任务列表有更新，请刷新后查看。');
         }} onJumpToSource={jumpToSource} isLoading={Boolean(learning.busyTasks[activeTaskId])} contextLabel={activeTask.paperIds.length ? `任务材料 ${activeTask.paperIds.length} 篇${focusedPaperId ? ` · 正在阅读 ${getPaperTitle(papers, focusedPaperId)}` : ''}` : '当前任务暂无论文'} enableSkills />
           : <div className="unified-empty"><p>创建任务后，即可围绕论文持续讨论。</p><button type="button" onClick={() => createTask({ title: '新任务' })}>新任务</button></div>}
-      </section>}
+      </section>
       {!layout.reader && <button type="button" className="unified-restore unified-restore-reader" onClick={() => patchLayout({ reader: true, mode: 'split' })} aria-label="展开阅读区"><PanelLeftOpen size={16} />阅读</button>}
       {!layout.chat && <button type="button" className="unified-restore unified-restore-chat" onClick={() => patchLayout({ chat: true, mode: 'split' })} aria-label="展开对话区"><MessageSquare size={16} />对话</button>}
     </main>

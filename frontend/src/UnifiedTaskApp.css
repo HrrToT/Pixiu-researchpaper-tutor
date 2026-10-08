@@ -7,7 +7,8 @@
 .unified-layout-actions { display:flex; gap:3px; }
 .unified-layout-actions button,.unified-header-action { padding:6px 9px; border-radius:6px; font-size:12px; }
 .unified-layout-actions .active { background:var(--accent-soft); color:var(--accent); }
-.unified-main { display:flex; flex:1; min-height:0; overflow:hidden; }
+.unified-main { position:relative; display:flex; flex:1; min-height:0; overflow:hidden; }
+.unified-main>.unified-desktop-hidden { display:none; }
 .unified-task-nav { flex-shrink:0; display:flex; }
 .unified-task-nav>aside { width:100%; }
 .unified-reader,.unified-chat { display:flex; flex-direction:column; flex-shrink:1; min-width:0; min-height:0; overflow:hidden; }
@@ -53,7 +54,10 @@
 .unified-document-save-state { margin-left:auto; font-size:12px; color:var(--text-muted); }
 .unified-document-body { max-width:860px; margin:20px auto; font-size:15px; line-height:1.85; overflow-wrap:anywhere; }
 .unified-document-body p { margin:12px 0; }
-.unified-document-body table { display:block; max-width:100%; overflow:auto; }
+.unified-document-body table { min-width:0; max-width:100%; }
+.unified-document-body h1 { font-size:22px; font-weight:650; line-height:1.4; margin:24px 0 16px; }
+.unified-document-body h2 { font-size:18px; font-weight:600; line-height:1.5; margin:24px 0 12px; }
+.unified-document-body h3 { font-size:16px; font-weight:600; margin:20px 0 10px; }
 .unified-document-body pre { overflow:auto; }
 .unified-document-edit-preview { margin-top:16px; line-height:1.7; }
 .unified-rename-input { display:block; width:100%; margin:16px 0; padding:10px 12px; border:1px solid var(--border-subtle); border-radius:8px; }
@@ -68,6 +72,28 @@
 .unified-restore { padding:12px 8px; background:var(--panel-bg); border-left:1px solid var(--border-subtle); font-size:12px; }
 .unified-error { padding:8px 16px; background:var(--danger-soft); font-size:13px; }
 @media(max-width:900px) { .unified-brand span { display:none; } .unified-header { gap:5px; padding:6px 8px; } .unified-task-nav { max-width:190px; } }
+.unified-compact-switch { display:flex; flex:none; align-items:center; gap:6px; padding:6px 10px; border-bottom:1px solid var(--border-subtle); background:var(--panel-bg); }
+.unified-compact-switch button { padding:8px 12px; border-radius:6px; font-size:13px; min-height:40px; }
+.unified-compact-switch button[aria-pressed=true],.unified-compact-switch button[aria-expanded=true] { background:var(--accent-soft); color:var(--accent); }
+.unified-navigation-backdrop { position:absolute; inset:0; z-index:20; background:#0005; }
+@media(max-width:760px) {
+  .unified-layout-actions { display:none; }
+  .unified-header { min-height:52px; }
+  .unified-brand img { width:24px; height:24px; }
+  .unified-brand strong { display:none; }
+  .unified-main>.unified-task-nav { position:absolute; inset:0 auto 0 0; z-index:21; width:min(300px,calc(100% - 48px)) !important; max-width:none; box-shadow:8px 0 30px #0003; }
+  .unified-main>.unified-task-nav.unified-compact-hidden { display:none; }
+  .unified-main>.unified-reader,.unified-main>.unified-chat { display:flex; flex:1 1 100% !important; width:100%; }
+  .unified-main[data-compact-pane=reader]>.unified-chat,.unified-main[data-compact-pane=chat]>.unified-reader { display:none; }
+  .unified-pane-hide,.unified-restore { display:none; }
+  .unified-pane-head { flex-wrap:wrap; min-height:44px; }
+  .unified-pane-head strong { flex:1; min-width:0; }
+  .unified-document { padding:12px; }
+  .unified-material-status { flex-wrap:wrap; }
+  .unified-translation-modes { margin-left:0; }
+  .unified-error { max-height:100px; overflow:auto; }
+}
+.unified-header button:focus-visible,.unified-compact-switch button:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
 .task-draft-backdrop { position: fixed; inset: 0; background: #0007; z-index: 100; display: grid; place-items: center; padding: 24px; }
 .task-draft-dialog { width: min(760px, 100%); max-height: 85vh; display: flex; flex-direction: column; gap: 12px; padding: 20px; border-radius: 12px; box-shadow: 0 20px 70px #0005; }
 .task-draft-preview { overflow-y: auto; min-height: 80px; white-space: pre-wrap; overflow-wrap: anywhere; }
