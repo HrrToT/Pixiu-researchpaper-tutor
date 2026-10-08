@@ -1,4 +1,4 @@
-import { useCallback, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import {
   createEmptyTranslationState,
   normalizeTranslationPage,
@@ -14,6 +14,7 @@ export function usePageTranslation({
   apiService,
   pdfId,
   deconstructData,
+  translationState,
   commitTranslationState,
   setPdfPageState,
   pdfPageState,
@@ -23,6 +24,15 @@ export function usePageTranslation({
   const translationRequestsRef = useRef({});
   const translationRequestSequenceRef = useRef(0);
   const latestTranslationTokensRef = useRef({});
+  const latestPdfIdRef = useRef(pdfId);
+  const stateRef = useRef(translationState);
+  latestPdfIdRef.current = pdfId;
+  stateRef.current = translationState;
+  useEffect(() => () => {
+    for (const request of Object.values(translationRequestsRef.current)) {
+      if (request.status === 'running') { request.status = 'error'; request.controller?.abort(); }
+    }
+  }, [pdfId]);
 
   const requestPageTranslation = useCallback(async ({
     pageIndex,
@@ -31,6 +41,15 @@ export function usePageTranslation({
     force = false,
   }) => {
     if (!pdfId) return;
+    const key = JSON.stringify([pdfId, pageIndex]);
+    const cached = stateRef.current?.pdfId === pdfId ? stateRef.current.pages?.[pageIndex] : null;
+    const previousRequest = translationRequestsRef.current[key];
+    if (!force && (['success', 'error', 'translating', 'empty'].includes(cached?.status) || previousRequest)) return;
+    if (!String(sourceText || '').trim()) {
+      commitTranslationState(prev => prev?.pdfId !== pdfId ? prev : { ...prev,
+        pages: { ...prev.pages, [pageIndex]: { ...normalizeTranslationPage(prev.pages?.[pageIndex]), status: 'empty' } } });
+      return;
+    }
 
     commitTranslationState((prev) => {
       if (!prev || prev.pdfId !== pdfId) return prev;
@@ -45,18 +64,18 @@ export function usePageTranslation({
       };
     });
 
-    const previousRequest = translationRequestsRef.current[pageIndex];
     if (previousRequest?.controller) {
       previousRequest.controller.abort();
     }
 
     const requestToken = ++translationRequestSequenceRef.current;
-    latestTranslationTokensRef.current[pageIndex] = requestToken;
-    const isCurrentRequest = () => latestTranslationTokensRef.current[pageIndex] === requestToken;
+    latestTranslationTokensRef.current[key] = requestToken;
+    const controller = new AbortController();
+    const isCurrentRequest = () => !controller.signal.aborted && latestPdfIdRef.current === pdfId && latestTranslationTokensRef.current[key] === requestToken;
+    const request = { token: requestToken, controller, status: 'running' };
+    translationRequestsRef.current[key] = request;
 
     const runTranslateRequest = async (requestText, requestLayout, timeoutMs = 90000) => {
-      const controller = new AbortController();
-      translationRequestsRef.current[pageIndex] = { token: requestToken, controller };
       return apiService.translatePage(
         pdfId,
         pageIndex,
@@ -71,21 +90,11 @@ export function usePageTranslation({
       const pageLayoutBlocks = pageLayout?.blocks?.length || 0;
       const expectsStructuredResponse = pageLayoutBlocks > 0;
 
-      let response;
-      if (expectsStructuredResponse) {
-        try {
-          response = await runTranslateRequest(
-            sourceText, pageLayout, STRUCTURED_TRANSLATION_TIMEOUT_MS,
-          );
-        } catch {
-          if (!isCurrentRequest()) return;
-          response = await runTranslateRequest(sourceText, null);
-        }
-      } else {
-        response = await runTranslateRequest(sourceText, pageLayout);
-      }
+      const response = await runTranslateRequest(sourceText, pageLayout,
+        expectsStructuredResponse ? STRUCTURED_TRANSLATION_TIMEOUT_MS : 90000);
 
       if (!isCurrentRequest()) return;
+      request.status = 'success';
 
       const translatedText = response?.translatedText ?? response?.data?.translatedText ?? '';
       const translatedBlocks = Array.isArray(response?.translatedBlocks) ? response.translatedBlocks : [];
@@ -115,6 +124,7 @@ export function usePageTranslation({
         };
       });
     } catch (error) {
+      request.status = 'error';
       if (error.name === 'CanceledError' || error.message === 'canceled') return;
       if (!isCurrentRequest()) return;
 
@@ -197,7 +207,7 @@ export function usePageTranslation({
             pageLayout: translationState.pages?.[currentPage]?.pageLayout || null,
           };
 
-    requestPageTranslation({ ...pagePayload, force: true });
+    return requestPageTranslation({ ...pagePayload, force: true });
   }, [requestPageTranslation, currentPageTextRef]);
 
   return {

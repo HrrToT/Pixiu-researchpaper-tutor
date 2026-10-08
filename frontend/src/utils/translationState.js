@@ -111,6 +111,10 @@ export const normalizeTranslationState = (storedValue, pdfId = null) => {
     }
 
     const normalizedPage = normalizeTranslationPage(pageValue);
+    if (normalizedPage.status === 'translating') {
+      normalizedPage.status = normalizedPage.translatedText ? 'success' : 'error';
+      normalizedPage.error = normalizedPage.translatedText ? '' : '翻译已中断，点击重试继续。';
+    }
     if (normalizedPage.status === 'loading') {
       normalizedPage.status = normalizedPage.translatedText ? 'success' : 'idle';
       normalizedPage.error = '';

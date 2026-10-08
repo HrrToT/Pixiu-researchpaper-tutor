@@ -258,6 +258,15 @@ body {
   backdrop-filter: blur(12px);
 }
 
+@media (max-width: 760px) {
+  .pdf-explanation-popup {
+    top: auto !important;
+    bottom: 8px !important;
+    transform: none !important;
+    max-height: min(400px, calc(100% - 16px));
+  }
+}
+
 .inline-context-button {
   display: inline-flex;
   align-items: center;

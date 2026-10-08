@@ -175,6 +175,16 @@ export const flattenOutlineHierarchy = (rawItems) => {
   }));
 };
 
+export const isOutlineNoise = (label) => {
+  const text = String(label || '').trim();
+  if (/^\d+(?:\.\d+)*\s+Section\s+\d+$/i.test(text)) return true;
+  if (/^\d*\s*[A-Za-z][\w]*\s*=/.test(text)) return true;
+  if (/^(?:Ours|PSNR|SSIM|LPIPS|Train)\s*[:(].*\d/i.test(text)) return true;
+  const numbers = text.match(/\b\d+(?:\.\d+)?(?:MB|GB|fps)?\b/gi) || [];
+  if (numbers.length >= 5 && numbers.length / text.split(/\s+/).length >= .35) return true;
+  return /^\d+\s+(?:with|while|where|which|and|or)\b/.test(text) && text.split(/\s+/).length > 7;
+};
+
 export const buildPaperOutlineModel = (deconstructData) => {
   const structure = deconstructData?.paper_structure;
   const skeleton = deconstructData?.paper_skeleton;
@@ -216,7 +226,7 @@ export const buildPaperOutlineModel = (deconstructData) => {
     return {
       source: 'pdf',
       sourceLabel: outlineSourceLabels.pdf,
-      items: flattenOutlineHierarchy(items),
+      items: flattenOutlineHierarchy(items.filter(item => !isOutlineNoise(item.label))),
     };
   }
 

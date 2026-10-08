@@ -1,6 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import TaskRename from './components/TaskRename';
 import useCompactLayout from './hooks/useCompactLayout';
+import PaperPageNavigation from './components/PaperPageNavigation';
+import { selectionNote } from './utils/selectionNote';
 import { BookOpen, ChevronLeft, ChevronRight, FileDown, FilePlus2, Languages, MessageSquare, PanelLeftClose, PanelLeftOpen, Save, SunMoon, Upload } from 'lucide-react';
 import ChatPanel from './components/ChatPanel';
 import MarkdownContent from './components/MarkdownContent';
@@ -56,6 +58,7 @@ const createMessage = (role, content, extra = {}) => ({ id: makeId(), role, cont
 const getPaperTitle = (papers, id) => papers.find((paper) => paper.id === id)?.title || papers.find((paper) => paper.id === id)?.filename || id;
 const normalizeNoteContent = (note) => `${note?.text ?? note?.content ?? note?.body ?? ''}`;
 const documentDraftKey = (selection) => `pixiu-document-draft:${JSON.stringify([selection.taskId, selection.collection, selection.id ?? selection.index])}`;
+const readingPositionKey = (taskId, paperId) => `pixiu-reading-position:${JSON.stringify([taskId, paperId])}`;
 export default function UnifiedTaskApp() {
   const workspace = useTaskWorkspace();
   const learning = useTaskLearning(workspace);
@@ -114,6 +117,19 @@ export default function UnifiedTaskApp() {
   const paperLoadToken = useRef(0);
   const materialProcessingRef = useRef(new Map());
   const focusedPaperId = activeTask?.focusedPaperId || null;
+  const initialPaperPage = useMemo(() => {
+    try {
+      const stored = Number(localStorage.getItem(readingPositionKey(activeTaskId, focusedPaperId)));
+      return Number.isInteger(stored) && stored >= 0 ? stored : 0;
+    } catch { return 0; }
+  }, [activeTaskId, focusedPaperId]);
+  const setReadingPage = useCallback(next => {
+    setPage(next);
+    if (activeTaskId && focusedPaperId) {
+      try { localStorage.setItem(readingPositionKey(activeTaskId, focusedPaperId), String(next.pageIndex)); }
+      catch { /* Reading position is an optional local preference. */ }
+    }
+  }, [activeTaskId, focusedPaperId]);
   const materialKey = JSON.stringify([activeTaskId, activeTask?.paperIds || []]);
 
   useEffect(() => {
@@ -170,8 +186,9 @@ export default function UnifiedTaskApp() {
     apiService,
     pdfId: focusedPaperId,
     deconstructData: paperView.deconstruct,
+    translationState,
     commitTranslationState: setTranslationState,
-    setPdfPageState: setPage,
+    setPdfPageState: setReadingPage,
     pdfPageState: page,
     isTranslated: translationMode !== 'original',
     currentPageTextRef,
@@ -181,7 +198,7 @@ export default function UnifiedTaskApp() {
     const source = currentPageTextRef.current;
     if (!source.pageText || source.pageIndex !== page.pageIndex) return;
     const status = translationState.pages?.[page.pageIndex]?.status;
-    if (status === 'success' || status === 'translating') return;
+    if (['success', 'translating', 'error', 'empty'].includes(status)) return;
     void requestPageTranslation(source);
   }, [translationMode, focusedPaperId, paperView.id, page.pageIndex, translationState.pages, requestPageTranslation]);
 
@@ -228,13 +245,14 @@ export default function UnifiedTaskApp() {
   useEffect(() => {
     let alive = true;
     currentPageTextRef.current = { pageIndex: 0, pageText: '', pageLayout: null };
+    setPage({ pageIndex: initialPaperPage, totalPages: 0 });
     setTranslationMode('original');
     setTranslationState(createEmptyTranslationState(focusedPaperId));
     if (focusedPaperId) initDB().then((db) => db.get('translationStore', focusedPaperId)).then((stored) => {
       if (alive) setTranslationState(normalizeTranslationState(stored, focusedPaperId));
     }).catch(() => {});
     return () => { alive = false; };
-  }, [focusedPaperId]);
+  }, [focusedPaperId, activeTaskId, initialPaperPage]);
   useEffect(() => {
     if (!focusedPaperId || translationState.pdfId !== focusedPaperId) return;
     const timer = setTimeout(() => {
@@ -581,7 +599,7 @@ export default function UnifiedTaskApp() {
     setRecoveryPreview(null);
     if (targetPaperId !== activeTask.focusedPaperId) await openPaper(targetPaperId);
     const index = Number(source.pageIndex ?? source.sourcePageIndex);
-    if (Number.isInteger(index) && index >= 0) setJump({ pageIndex: index, token: Date.now(), anchorId: source.sourceAnchorId || source.sectionId || null });
+    if (Number.isInteger(index) && index >= 0) setJump({ taskId: activeTaskId, pdfId: targetPaperId, pageIndex: index, token: Date.now(), anchorId: source.sourceAnchorId || source.sectionId || null });
     patchLayout({ reader: true });
     return true;
   };
@@ -609,6 +627,8 @@ export default function UnifiedTaskApp() {
     }] }));
   };
   const currentTranslationPage = translationState.pages?.[page.pageIndex] || null;
+  const goToPage = index => setJump({ taskId: activeTaskId, pdfId: focusedPaperId,
+    pageIndex: index, token: Date.now(), anchorId: null });
   const outline = useMemo(() => buildPaperOutlineModel(paperView.deconstruct)?.items || [], [paperView.deconstruct]);
   const startResize = (event) => {
     event.preventDefault();
@@ -660,7 +680,7 @@ export default function UnifiedTaskApp() {
         <div className="unified-pane-head">
           <BookOpen size={17} />
           <strong>{preview ? preview.kind === 'research.report' ? '研究报告' : '已生成结果' : activeDocument ? activeDocument.title || '笔记' : focusedPaperId ? getPaperTitle(papers, focusedPaperId) : '阅读区'}</strong>
-          {(activeDocument || preview) && <button type="button" onClick={() => { setSelectedDocument(null); setRecoveryPreview(null); }}>返回论文</button>}
+          {(activeDocument || preview) && <button type="button" onClick={() => { goToPage(page.pageIndex); setSelectedDocument(null); setRecoveryPreview(null); }}>返回论文</button>}
           {!activeDocument && !preview && paperView.url && <div className="unified-translation-modes" role="group" aria-label="翻译视图">
             <button type="button" className={translationMode === 'original' ? 'active' : ''} onClick={() => setTranslationMode('original')}>原文</button>
             <button type="button" className={translationMode === 'translation' ? 'active' : ''} onClick={() => setTranslationMode('translation')}>译文</button>
@@ -724,14 +744,18 @@ export default function UnifiedTaskApp() {
               <PdfViewer key={paperView.id} fileUrl={paperView.url} pdfId={paperView.id} paperSkeleton={paperView.deconstruct?.paper_skeleton || null} theme={theme} parseStatus={paperView.deconstruct?.parseStatus || papers.find((paper) => paper.id === paperView.id)?.parseStatus || null} initialHighlights={paperView.highlights}
               onPageChange={handlePdfPageChange} onPageTextExtracted={handlePageTextExtracted} onSelection={syncPdfSelection}
               onHighlightsChange={async (highlights) => { const db = await initDB(); await db.put('highlightStore', highlights, paperView.id); }}
-              onSaveNote={(payload) => { if (activeTaskId) void updateTask(activeTaskId, (task) => ({ notes: [...task.notes, { id: makeId(), title: '原文笔记', text: payload?.text || payload?.content || '', paperIds: [paperView.id], source: payload, versions: [] }] })); }}
-              targetPageIndex={jump.pageIndex} targetPageJumpToken={jump.token} focusedSourceAnchorId={jump.anchorId} focusedSourceAnchorToken={jump.token} /></div>
+              onSaveNote={async payload => {
+                if (!activeTaskId || !paperView.id) throw new Error('请先打开任务论文');
+                const note = selectionNote(payload, paperView.id, makeId());
+                await updateTask(activeTaskId, task => ({ notes: [...task.notes, note] }));
+              }}
+              targetPageIndex={jump.pdfId === focusedPaperId && jump.taskId === activeTaskId ? jump.pageIndex : initialPaperPage} targetPageJumpToken={jump.token} focusedSourceAnchorId={jump.pdfId === focusedPaperId ? jump.anchorId : null} focusedSourceAnchorToken={jump.token} /></div>
             {translationMode !== 'original' && <div className="unified-translation"><TranslationPanel pdfId={paperView.id} pdfFileName={getPaperTitle(papers, paperView.id)} currentPage={page.pageIndex}
               pageData={currentTranslationPage?.status === 'translating' ? { ...currentTranslationPage, status: 'loading' } : currentTranslationPage}
               onRetry={() => handleRetryTranslation(translationState)} onCaptureArtifact={captureTranslation} /></div>}
           </div>
             : <div className="unified-empty"><FilePlus2 size={32} /><p>{activeTask ? '上传或选择论文，开始阅读。' : '创建任务，上传论文或提出研究目标。'}</p><button type="button" onClick={() => fileInputRef.current?.click()}>上传论文</button></div>}
-        {paperView.url && !activeDocument && !preview && <div className="unified-page-indicator">第 {page.pageIndex + 1} / {page.totalPages || '—'} 页</div>}
+        {paperView.url && !activeDocument && !preview && <PaperPageNavigation pageIndex={page.pageIndex} totalPages={page.totalPages} onJump={goToPage} />}
       </section>
       {layout.reader && layout.chat && !compact && <div className="unified-resizer" role="separator" tabIndex={0} aria-orientation="vertical" aria-label="调整阅读与对话宽度" aria-valuemin={32} aria-valuemax={72} aria-valuenow={layout.readerPercent} onPointerDown={startResize} onKeyDown={event => {
         const steps = { ArrowLeft: -2, ArrowRight: 2 };

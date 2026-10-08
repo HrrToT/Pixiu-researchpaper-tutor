@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Worker, Viewer } from '@react-pdf-viewer/core';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Worker, Viewer, SpecialZoomLevel, type PluginFunctions } from '@react-pdf-viewer/core';
 import { highlightPlugin, type RenderHighlightTargetProps, type RenderHighlightsProps } from '@react-pdf-viewer/highlight';
 import {
   Bookmark,
@@ -320,7 +320,10 @@ const InlineContextMenu: React.FC<InlineContextMenuProps> = ({ selectionRegion, 
     className="inline-context-menu absolute z-50 flex items-center gap-1.5"
     style={{
       top: `${selectionRegion.top + selectionRegion.height}%`,
-      left: `${selectionRegion.left}%`,
+      left: `clamp(8px, ${selectionRegion.left}%, max(8px, calc(100% - 360px)))`,
+      width: 'max-content',
+      maxWidth: 'calc(100% - 16px)',
+      flexWrap: 'wrap',
       transform: 'translateY(10px)',
     }}
   >
@@ -347,7 +350,7 @@ interface ExplanationPopupProps {
   onClose: () => void;
   onSubAsk: (query: string) => void;
   onDelete: () => void;
-  onSaveNote?: (payload: NotePayload) => void;
+  onSaveNote?: (payload: NotePayload) => void | Promise<void>;
 }
 
 export const ExplanationPopup: React.FC<ExplanationPopupProps> = ({
@@ -358,6 +361,8 @@ export const ExplanationPopup: React.FC<ExplanationPopupProps> = ({
   onSaveNote,
 }) => {
   const [query, setQuery] = useState<string>('');
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState('');
   const originalText: string = highlight.text || '暂无选中文本';
   const popupRef = useRef<HTMLDivElement | null>(null);
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
@@ -390,7 +395,8 @@ export const ExplanationPopup: React.FC<ExplanationPopupProps> = ({
     setQuery('');
   };
 
-  const handleSave = (): void => {
+  const handleSave = async (): Promise<void> => {
+    if (saving) return;
     const historyToSave: PdfViewerChatMessage[] = highlight.chatHistory.slice(1);
 
     let interpretationMarkdown: string = '';
@@ -410,7 +416,8 @@ export const ExplanationPopup: React.FC<ExplanationPopupProps> = ({
     }
 
     if (onSaveNote) {
-      onSaveNote({
+      setSaving(true); setSaveError('');
+      try { await onSaveNote({
         text: highlight.text,
         aiInterpretation: interpretationMarkdown,
         pageNumber: highlight.position.pageIndex,
@@ -419,8 +426,9 @@ export const ExplanationPopup: React.FC<ExplanationPopupProps> = ({
         sourceActionId: highlight.actionId,
         sourceActionLabel: highlight.actionLabel,
       });
-      alert('包含追问记录的完整笔记已收藏到"学术笔记"栏目。');
       onClose();
+      } catch (error) { setSaveError((error as Error).message || '保存失败，当前解释仍保留'); }
+      finally { setSaving(false); }
     }
   };
 
@@ -429,14 +437,15 @@ export const ExplanationPopup: React.FC<ExplanationPopupProps> = ({
       ref={popupRef}
       role="dialog"
       aria-label={`${highlight.actionLabel || 'AI 解释'} - p.${highlight.position.pageIndex + 1}`}
-      aria-modal="true"
-      className="theme-popup absolute z-[999] flex max-h-[400px] w-80 flex-col rounded-xl animate-in fade-in zoom-in duration-200"
+      aria-modal="false"
+      className="theme-popup pdf-explanation-popup absolute z-[999] flex max-h-[400px] flex-col rounded-xl animate-in fade-in zoom-in duration-200"
       onKeyDown={handleKeyDown}
       style={{
         ...(highlight.position.top > 55
           ? { bottom: `${100 - highlight.position.top}%`, transform: 'translateY(-12px)' }
           : { top: `${highlight.position.top + highlight.position.height}%`, transform: 'translateY(12px)' }),
-        left: `min(${highlight.position.left}%, calc(100% - 340px))`,
+        width: 'min(320px, calc(100% - 16px))',
+        left: `clamp(8px, ${highlight.position.left}%, max(8px, calc(100% - 328px)))`,
       }}
     >
       <div className="theme-popup-header flex shrink-0 items-center justify-between rounded-t-xl border-b p-3">
@@ -461,12 +470,13 @@ export const ExplanationPopup: React.FC<ExplanationPopupProps> = ({
           </div>
         </div>
         <div className="flex items-center gap-2">
-          {onSaveNote && (
+          {onSaveNote && (highlight.actionId !== 'note' || highlight.chatHistory.length > 1) && (
             <button
               onClick={handleSave}
+              disabled={saving || highlight.isLoading}
               className="rounded bg-pixiu px-2 py-1 text-[10px] text-white transition-colors hover:bg-pixiu-dark"
             >
-              存为笔记
+              {saving ? '保存中…' : '存为笔记'}
             </button>
           )}
           <button
@@ -488,6 +498,7 @@ export const ExplanationPopup: React.FC<ExplanationPopupProps> = ({
       </div>
 
       <div className="theme-panel flex-1 overflow-y-auto p-4 text-sm">
+        {saveError && <p role="alert" className="mb-3">{saveError}</p>}
         <div className="space-y-4">
           <div className="theme-card-soft rounded-xl p-3">
             <div className="theme-text-muted mb-2 text-[11px] font-bold uppercase tracking-wide">原文片段</div>
@@ -557,7 +568,7 @@ export const ExplanationPopup: React.FC<ExplanationPopupProps> = ({
 interface PdfViewerProps {
   fileUrl: string | null;
   onSelection?: (content: string, role: string, isSync: boolean, sourceMeta: Record<string, unknown>) => void;
-  onSaveNote?: (payload: NotePayload) => void;
+  onSaveNote?: (payload: NotePayload) => void | Promise<void>;
   pdfId?: string;
   paperSkeleton?: PaperSkeleton | null;
   initialHighlights?: unknown[];
@@ -594,15 +605,29 @@ const PdfViewer: React.FC<PdfViewerProps> = ({
   const [highlights, setHighlights] = useState<PdfViewerHighlight[]>([]);
   const [activeHighlightId, setActiveHighlightId] = useState<number | null>(null);
   const [isPdfLoading, setIsPdfLoading] = useState<boolean>(true);
+  const [selectionNoteError, setSelectionNoteError] = useState('');
+  const savingSelectionNote = useRef(false);
 
   const pdfDocRef = useRef<unknown>(null);
+  const mountedRef = useRef(false);
+  useEffect(() => { mountedRef.current = true; return () => { mountedRef.current = false; }; }, []);
   const currentPageRef = useRef<number>(0);
   const isFirstRender = useRef<boolean>(true);
   const latestPdfIdRef = useRef<string | undefined>(pdfId);
   const pageTextByIndexRef = useRef<Record<number, string>>({});
   const scaleRef = useRef<number>(1);
+  const navigationRef = useRef<PluginFunctions | null>(null);
+  const navigationPlugin = useMemo(() => ({
+    install: (functions: PluginFunctions) => { navigationRef.current = functions; },
+    uninstall: () => { navigationRef.current = null; },
+  }), []);
   const initialViewerPage: number = Number.isFinite(targetPageIndex) ? Math.max(0, targetPageIndex as number) : 0;
-  const viewerKey: string = `${pdfId || 'empty'}-${initialViewerPage}-${targetPageJumpToken}`;
+  const viewerKey: string = pdfId || 'empty';
+  useEffect(() => {
+    if (!pdfDocRef.current || !Number.isFinite(targetPageIndex)) return;
+    const max = Math.max(((pdfDocRef.current as { numPages?: number }).numPages || 1) - 1, 0);
+    void navigationRef.current?.jumpToPage(Math.max(0, Math.min(targetPageIndex as number, max)));
+  }, [targetPageIndex, targetPageJumpToken]);
 
   useEffect(() => {
     latestPdfIdRef.current = pdfId;
@@ -699,7 +724,7 @@ const PdfViewer: React.FC<PdfViewerProps> = ({
         const viewport = pageWithContent.getViewport({ scale: 1 });
         const { pageText, pageLayout } = buildPageLayout(textContent, viewport);
 
-        if (requestedPdfId !== latestPdfIdRef.current) {
+        if (!mountedRef.current || requestedPdfId !== latestPdfIdRef.current || pageIndex !== currentPageRef.current) {
           return;
         }
         pageTextByIndexRef.current[pageIndex] = pageText;
@@ -710,7 +735,7 @@ const PdfViewer: React.FC<PdfViewerProps> = ({
         });
       } catch (error) {
         console.warn(`Failed to extract text for page ${pageIndex + 1}.`, error);
-        if (requestedPdfId !== latestPdfIdRef.current) {
+        if (!mountedRef.current || requestedPdfId !== latestPdfIdRef.current || pageIndex !== currentPageRef.current) {
           return;
         }
         pageTextByIndexRef.current[pageIndex] = '';
@@ -726,6 +751,7 @@ const PdfViewer: React.FC<PdfViewerProps> = ({
 
   const handleDocumentLoad = useCallback(
     ({ doc }: { doc: { numPages?: number } }) => {
+      if (!mountedRef.current) return;
       pdfDocRef.current = doc;
       const maxPageIndex: number = Math.max((doc?.numPages || 1) - 1, 0);
       const initialPageIndex: number = Number.isFinite(targetPageIndex)
@@ -744,6 +770,7 @@ const PdfViewer: React.FC<PdfViewerProps> = ({
 
   const handleViewerPageChange = useCallback(
     (event: { currentPage: number; doc?: { numPages?: number } }) => {
+      if (!mountedRef.current) return;
       currentPageRef.current = event.currentPage;
       const doc = event.doc || pdfDocRef.current;
       onPageChange?.({
@@ -877,7 +904,7 @@ const PdfViewer: React.FC<PdfViewerProps> = ({
   };
 
   const handleSelectionAction = useCallback(
-    (actionId: string, props: Record<string, unknown>): void => {
+    async (actionId: string, props: Record<string, unknown>): Promise<void> => {
       const selectedText: string = props.selectedText as string;
       const highlightAreas = props.highlightAreas as HighlightArea[] | undefined;
       const selectionRegion = props.selectionRegion as Record<string, number> | undefined;
@@ -906,7 +933,11 @@ const PdfViewer: React.FC<PdfViewerProps> = ({
       };
 
       if (actionId === 'note') {
-        onSaveNote?.({
+        if (savingSelectionNote.current) return;
+        savingSelectionNote.current = true; setSelectionNoteError('');
+        try {
+        if (!onSaveNote) throw new Error('当前页面不能保存笔记');
+        await onSaveNote({
           text: selectedText,
           aiInterpretation: '已保存为边注，可继续补充自己的观察与问题。',
           pageNumber: pageIndex,
@@ -915,6 +946,7 @@ const PdfViewer: React.FC<PdfViewerProps> = ({
           sourceActionId: actionId,
           sourceActionLabel: requestPayload.actionLabel,
         });
+        if (pdfId !== latestPdfIdRef.current) return;
 
         setHighlights((prev: PdfViewerHighlight[]) => [
           ...prev,
@@ -927,6 +959,8 @@ const PdfViewer: React.FC<PdfViewerProps> = ({
         ]);
         setActiveHighlightId(highlightId);
         (props.cancel as () => void)();
+        } catch (error) { setSelectionNoteError((error as Error).message || '笔记保存失败，选区仍保留，请重试'); }
+        finally { savingSelectionNote.current = false; }
         return;
       }
 
@@ -936,7 +970,7 @@ const PdfViewer: React.FC<PdfViewerProps> = ({
       syncSelectionMessage(requestPayload.displayMessage, 'user', nextHighlight);
       handleInitialAsk(highlightId, requestPayload, pageIndex, context);
     },
-    [handleInitialAsk, onSaveNote, syncSelectionMessage],
+    [handleInitialAsk, onSaveNote, syncSelectionMessage, pdfId],
   );
 
   const handleColorHighlight = useCallback(
@@ -1058,6 +1092,7 @@ const PdfViewer: React.FC<PdfViewerProps> = ({
 
   return (
     <div className="relative h-full w-full">
+      {selectionNoteError && <div role="alert" className="absolute bottom-3 left-3 right-3 z-50 rounded theme-panel p-3 text-sm">{selectionNoteError}</div>}
       {fileUrl ? (
         <>
           {isPdfLoading && <PdfSkeleton />}
@@ -1067,7 +1102,8 @@ const PdfViewer: React.FC<PdfViewerProps> = ({
                 key={viewerKey}
                 fileUrl={fileUrl}
                 initialPage={initialViewerPage}
-                plugins={[highlightPluginInstance]}
+                defaultScale={SpecialZoomLevel.PageWidth}
+                plugins={[highlightPluginInstance, navigationPlugin]}
                 theme={theme}
                 onDocumentLoad={handleDocumentLoad}
                 onPageChange={handleViewerPageChange}
