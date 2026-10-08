@@ -390,7 +390,7 @@ const TranslationPanel = ({ pdfId, pdfFileName, fileUrl, currentPage = 0, pageDa
           <button
             type="button"
             onClick={onRetry}
-            disabled={status === 'loading'}
+            disabled={status === 'loading' || !onRetry}
             className="theme-button-secondary flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-50"
           >
             <RefreshCw size={14} />
