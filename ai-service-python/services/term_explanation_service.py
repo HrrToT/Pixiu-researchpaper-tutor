@@ -106,7 +106,9 @@ def explain_term(request: TermExplainRequest) -> dict[str, Any]:
         },
     )
     try:
-        page_context = focus_page_context(request.context, request.term)
+        # The reader already bounds selection context to 4500 characters.
+        # A second, smaller crop can remove a definition later on the same page.
+        page_context = focus_page_context(request.context, request.term, max_chars=4500)
         rag_query = f"Explain the selected academic text '{request.term}' with the following context: {page_context[:200]}"
         with trace_step("build_explain_query_plan", input_size=len(rag_query)) as step:
             query_plan = build_retrieval_queries(rag_query, context=page_context, task_type="explain")
@@ -139,7 +141,7 @@ def explain_term(request: TermExplainRequest) -> dict[str, Any]:
         page_context_safety = wrap_untrusted_context(
             f"Current page context{f' (page {request.pageNumber})' if request.pageNumber else ''}",
             page_context,
-            max_tokens=800,
+            max_tokens=1200,
         )
 
         prompt = f"""
