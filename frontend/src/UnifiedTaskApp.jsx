@@ -104,9 +104,19 @@ export default function UnifiedTaskApp() {
         const results = await Promise.allSettled(ids.map(id => taskWorkspaceApi.getMaterialProcessing(activeTaskId, id)));
         if (disposed) return;
         let pending = false;
+        let retryDelay = 2500;
         const db = await initDB();
         for (const result of results) {
-          if (result.status !== 'fulfilled') { pending = true; continue; }
+          if (result.status !== 'fulfilled') {
+            // Missing legacy files cannot become available through polling.
+            // Retry only transient failures, leaving an explicit refresh as
+            // the recovery path after restoring a file.
+            if ([400, 404].includes(result.reason?.response?.status)) continue;
+            pending = true;
+            if (result.reason?.response?.status === 429) retryDelay = Math.max(retryDelay, 15000,
+              Number(result.reason.response.data?.retryAfter || 0) * 1000);
+            continue;
+          }
           const status = result.value;
           if (!ids.includes(status?.pdfId)) continue;
           materialProcessingRef.current.set(status.pdfId, status);
@@ -116,7 +126,7 @@ export default function UnifiedTaskApp() {
           setPapers(current => current.map(paper => paper.id === status.pdfId ? { ...paper, ...status, id: paper.id } : paper));
           setPaperView(current => current.id === status.pdfId ? { ...current, deconstruct: status } : current);
         }
-        if (pending && !disposed) timer = setTimeout(poll, 2500);
+        if (pending && !disposed) timer = setTimeout(poll, retryDelay);
       } catch { if (!disposed) timer = setTimeout(poll, 5000); }
     };
     void poll();
@@ -221,7 +231,9 @@ export default function UnifiedTaskApp() {
       objectUrl = URL.createObjectURL(record.blob);
       if (token === paperLoadToken.current) setPaperView({ id: focusedPaperId, url: objectUrl, deconstruct: materialProcessingRef.current.get(focusedPaperId) || deconstruct, highlights: Array.isArray(highlights) ? highlights : [], error: '' });
       else URL.revokeObjectURL(objectUrl);
-    }).catch((error) => { if (token === paperLoadToken.current) setPaperView({ id: focusedPaperId, url: null, deconstruct: null, highlights: [], error: error.message || '论文读取失败' }); });
+    }).catch((error) => { if (token === paperLoadToken.current) setPaperView({ id: focusedPaperId, url: null, deconstruct: null, highlights: [],
+      error: error.response?.status === 404 ? '这篇论文暂不可读取，请检查任务材料或从原客户端恢复文件。原笔记与成果仍保留。'
+        : error.response?.data?.message || error.message || '论文读取失败' }); });
     return () => { if (objectUrl) URL.revokeObjectURL(objectUrl); };
   }, [focusedPaperId, activeTaskId]);
 

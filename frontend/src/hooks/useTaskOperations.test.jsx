@@ -44,15 +44,35 @@ it('keeps delayed failure messages with their original task', async () => {
   expect(localStorage.length).toBe(1);
 });
 
-it('does not poll every inactive task every three seconds', async () => {
+it('does not poll idle historical tasks even with a large task inventory', async () => {
   vi.useFakeTimers();
   const api = { listOperations: vi.fn(async () => []) };
-  const workspace = { activeTaskId: 'A', tasks: [{ id: 'A' }, { id: 'B' }], adoptServerTask: vi.fn() };
+  const workspace = { activeTaskId: 'A', tasks: [{ id: 'A' }, ...Array.from({ length: 60 }, (_, i) => ({ id: `B${i}` }))], adoptServerTask: vi.fn() };
   const { unmount } = renderHook(() => useTaskOperations(workspace, api));
   await act(async () => { await vi.advanceTimersByTimeAsync(12000); });
-  expect(api.listOperations.mock.calls.map(call => call[0])).toEqual(['A', 'B']);
+  expect(api.listOperations.mock.calls.map(call => call[0])).toEqual(['A']);
   await act(async () => { await vi.advanceTimersByTimeAsync(3000); });
-  expect(api.listOperations.mock.calls.map(call => call[0])).toEqual(['A', 'B', 'A']);
+  expect(api.listOperations.mock.calls.map(call => call[0])).toEqual(['A', 'A']);
+  unmount();
+});
+
+it('queries a newly selected task immediately and continues recovering background requests', async () => {
+  vi.useFakeTimers();
+  const intent = { taskId: 'C', requestId: 'pending-C', kind: 'conversation.execute', input: {} };
+  localStorage.setItem('pixiu-task-request-v1:pending-C', JSON.stringify(intent));
+  const api = { listOperations: vi.fn(async id => id === 'C' ? [{ ...intent, status: 'running' }] : []) };
+  const tasks = [{ id: 'A' }, { id: 'B' }, { id: 'C' }, { id: 'idle' }];
+  const { rerender, unmount } = renderHook(({ activeTaskId }) => useTaskOperations({ tasks, activeTaskId }, api), {
+    initialProps: { activeTaskId: 'A' },
+  });
+  await act(async () => { await vi.advanceTimersByTimeAsync(0); });
+  expect(api.listOperations.mock.calls.map(call => call[0])).toEqual(['A', 'C']);
+  rerender({ activeTaskId: 'B' });
+  await act(async () => { await vi.advanceTimersByTimeAsync(0); });
+  expect(api.listOperations.mock.calls.map(call => call[0])).toEqual(['A', 'C', 'B']);
+  await act(async () => { await vi.advanceTimersByTimeAsync(3000); });
+  expect(api.listOperations.mock.calls.map(call => call[0])).toEqual(['A', 'C', 'B', 'C']);
+  expect(api.listOperations).not.toHaveBeenCalledWith('idle');
   unmount();
 });
 
@@ -61,7 +81,7 @@ it('ignores a late poll from a removed task after task inventory changes', async
   const oldResponse = new Promise(resolve => { release = resolve; });
   const api = { listOperations: vi.fn(id => id === 'A' ? oldResponse : Promise.resolve([])), startOperation: vi.fn() };
   const adoptServerTask = vi.fn();
-  const { result, rerender } = renderHook(({ tasks }) => useTaskOperations({ tasks, adoptServerTask }, api), {
+  const { result, rerender } = renderHook(({ tasks }) => useTaskOperations({ tasks, activeTaskId: tasks[0]?.id, adoptServerTask }, api), {
     initialProps: { tasks: [{ id: 'A' }] },
   });
   rerender({ tasks: [{ id: 'B' }] });

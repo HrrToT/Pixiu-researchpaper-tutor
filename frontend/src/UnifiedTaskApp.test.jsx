@@ -75,6 +75,18 @@ describe('unified task conversation wiring', () => {
     expect(state.writes).toBe(0);
   });
 
+  it('stops polling missing legacy material records without starting any generation', async () => {
+    vi.useFakeTimers();
+    try {
+      materialProcessing.mockRejectedValue({ response: { status: 404 } });
+      render(<UnifiedTaskApp />);
+      await act(async () => { await vi.advanceTimersByTimeAsync(30000); });
+      expect(materialProcessing).toHaveBeenCalledTimes(2);
+      expect(state.startOperation).not.toHaveBeenCalled();
+      expect(screen.getByTestId('chat')).toBeDefined();
+    } finally { vi.useRealTimers(); }
+  });
+
   it('routes a natural comparison over the task without overwriting a paused lesson', async () => {
     render(<UnifiedTaskApp />);
     await screen.findByTestId('chat');

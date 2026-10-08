@@ -72,7 +72,11 @@ export function useTaskOperations(workspace, api) {
       if (!isCurrent()) return;
       const pending = journal.some(item => item.taskId === taskId)
         || Object.values(recordsRef.current).some(item => item.taskId === taskId && active.has(item.status));
-      const interval = pending ? 3000 : taskId === latest.current.activeTaskId ? 15000 : 60000;
+      // Read other clients' receipts when their task is selected. Idle tasks
+      // need no background polling; the local journal still recovers every
+      // unconfirmed request, including requests outside the visible task.
+      if (!pending && taskId !== latest.current.activeTaskId) continue;
+      const interval = pending ? 3000 : 15000;
       if (!force && Date.now() - (polledAt.current.get(taskId) || 0) < interval) continue;
       polledAt.current.set(taskId, Date.now());
       try {
@@ -113,7 +117,7 @@ export function useTaskOperations(workspace, api) {
     const poll = async () => { await reconcile(() => !stopped, false); if (!stopped) timer = setTimeout(poll, 3000); };
     void poll();
     return () => { stopped = true; alive.current = false; clearTimeout(timer); };
-  }, [taskKey, api]);
+  }, [taskKey, workspace.activeTaskId, api]);
   const start = async (task, kind, input) => {
     if (submitting.current.has(task.id) || Object.values(records).some(item => item.taskId === task.id && active.has(item.status))) return;
     submitting.current.add(task.id);
