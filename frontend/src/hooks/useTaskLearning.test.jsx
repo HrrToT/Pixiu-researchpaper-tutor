@@ -66,7 +66,7 @@ describe('durable task learning', () => {
     expect(result.current.busyTasks.t).toBe(true); // HTTP cancellation acknowledgement is not worker completion.
     expect(Object.values(result.current.operations.records)[0].status).toBe('cancelling');
   });
-  it('reconciles a dropped response by replaying the same identity, never appending duplicate dialogue', async () => {
+  it('waits for explicit continuation after a dropped response and submits the original identity only after a missing receipt', async () => {
     const task = {id:'t',revision:1};
     const {api,workspace} = setup(task);
     api.startOperation.mockRejectedValueOnce(new Error('timeout'));
@@ -76,7 +76,30 @@ describe('durable task learning', () => {
     const saved = {...task, revision:2, messages:[{id:request.requestId+':ai',content:'问题'}]};
     api.startOperation.mockResolvedValueOnce({taskId:'t',requestId:request.requestId,kind:'learning.start',status:'succeeded',task:saved});
     await act(async () => result.current.refresh());
+    expect(api.startOperation).toHaveBeenCalledTimes(1);
+    expect(result.current.operations.records[request.requestId].status).toBe('awaiting_submission');
+    expect(localStorage.getItem(`pixiu-task-request-v1:${request.requestId}`)).not.toBeNull();
+    api.getOperation = vi.fn().mockRejectedValue({response:{status:404}});
+    await act(async () => result.current.operations.submitSaved('t', request.requestId));
+    expect(api.getOperation).toHaveBeenCalledWith('t', request.requestId);
     expect(api.startOperation.mock.calls[1][1]).toEqual(request);
+    expect(api.getOperation.mock.invocationCallOrder[0]).toBeLessThan(api.startOperation.mock.invocationCallOrder[1]);
+    expect(workspace.adoptServerTask).toHaveBeenCalledWith(saved);
+    expect(workspace.updateTask).not.toHaveBeenCalled();
+    expect(localStorage.getItem(`pixiu-task-request-v1:${request.requestId}`)).toBeNull();
+    expect(result.current.busyTasks.t).toBeUndefined();
+  });
+  it('adopts an already completed learning response on refresh without another submission', async () => {
+    const task = {id:'t',revision:1};
+    const {api,workspace} = setup(task);
+    api.startOperation.mockRejectedValueOnce(new Error('timeout'));
+    const {result} = renderHook(() => useTaskLearning(workspace,api));
+    await act(async () => result.current.start(task,'A','read','学习目标'));
+    const request = api.startOperation.mock.calls[0][1];
+    const saved = {...task, revision:2, messages:[{id:request.requestId+':ai',content:'问题'}]};
+    api.listOperations.mockResolvedValue([{taskId:'t',requestId:request.requestId,kind:'learning.start',status:'succeeded',task:saved}]);
+    await act(async () => result.current.refresh());
+    expect(api.startOperation).toHaveBeenCalledTimes(1);
     expect(workspace.adoptServerTask).toHaveBeenCalledWith(saved);
     expect(workspace.updateTask).not.toHaveBeenCalled();
     expect(localStorage.getItem(`pixiu-task-request-v1:${request.requestId}`)).toBeNull();
