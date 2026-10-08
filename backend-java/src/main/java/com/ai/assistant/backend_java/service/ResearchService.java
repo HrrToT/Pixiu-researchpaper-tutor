@@ -20,14 +20,6 @@ public class ResearchService {
     @Value("${PYTHON_URL:http://localhost:8000/api}")
     private String PYTHON_SERVICE_URL;
 
-    public ResponseEntity<Map<String,Object>> listLegacyAgentProjects() {
-        return GatewayHelper.forward(restTemplate, PYTHON_SERVICE_URL, HttpMethod.GET, "/agent-migration/projects", null);
-    }
-    public ResponseEntity<Map<String,Object>> exportLegacyAgentProject(String projectId) {
-        return GatewayHelper.forward(restTemplate, PYTHON_SERVICE_URL, HttpMethod.GET,
-            "/agent-migration/projects/" + GatewayHelper.encode(projectId) + "/snapshot", null);
-    }
-
     public ResponseEntity<Map<String, Object>> createResearchTask(Map<String, Object> request) {
         return GatewayHelper.forward(restTemplate, PYTHON_SERVICE_URL, HttpMethod.POST, "/research-tasks", request);
     }

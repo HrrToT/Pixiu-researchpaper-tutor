@@ -1,7 +1,7 @@
 {
   "status": "passed",
   "taskId": "stage5-version-recovery-20261008",
-  "revision": 4,
+  "revision": 5,
   "emptyBodyRetained": true,
   "savedAndUnsavedVersionsRetained": true,
   "confirmedConflictPreservesOtherVersion": true,

@@ -2,9 +2,6 @@ import apiClient from './api';
 
 /** Uses the shared Java /api client, including its response-data interceptor. */
 export const createTaskWorkspaceApi = (client = apiClient) => ({
-  importAgentProject: (input) => client.post('/task-workspaces/migrations/agent-projects', input, { timeout: 30000, skipErrorLog: true }),
-  listLegacyAgentProjects: () => client.get('/task-workspaces/migrations/agent-projects', { timeout: 15000, skipErrorLog: true }),
-  exportLegacyAgentProject: (id) => client.get(`/task-workspaces/migrations/agent-projects/${encodeURIComponent(id)}/snapshot`, { timeout: 30000, skipErrorLog: true }),
   listTasks: () => client.get('/task-workspaces', { timeout: 15000, skipErrorLog: true }),
   getTask: (id) => client.get(`/task-workspaces/${encodeURIComponent(id)}`, { timeout: 15000, skipErrorLog: true }),
   identifyDocuments: (id, revision) => client.post(`/task-workspaces/${encodeURIComponent(id)}/documents/identify`, { revision }, { timeout: 15000, skipErrorLog: true }),

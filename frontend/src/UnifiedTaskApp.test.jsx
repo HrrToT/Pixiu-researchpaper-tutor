@@ -36,7 +36,6 @@ vi.mock('./services/localDb', () => ({ initDB: async () => ({
 vi.mock('./hooks/useThemePreference', () => ({ useThemePreference: () => ({ theme: 'light', toggleTheme: vi.fn() }) }));
 vi.mock('./hooks/usePageTranslation', () => ({ usePageTranslation: () => ({}) }));
 vi.mock('./components/PdfViewer', () => ({ default: () => null }));
-vi.mock('./components/LegacyAgentMigration', () => ({ default: props => { state.migrationProps = props; return null; } }));
 vi.mock('./components/TranslationPanel', () => ({ default: () => null }));
 vi.mock('./components/ChatPanel', () => ({ default: (props) => { state.chatProps = props; return <div data-testid="chat" />; } }));
 import UnifiedTaskApp from './UnifiedTaskApp';
@@ -62,17 +61,6 @@ describe('unified task conversation wiring', () => {
       };
       return { taskId, ...request, status: 'succeeded', task };
     });
-  });
-
-  it('adopts a confirmed imported task and selects it without invoking a model', async () => {
-    render(<UnifiedTaskApp />);
-    await screen.findByTestId('chat');
-    const imported = { ...state.task, id: 'imported', activeActivity: null };
-    await act(async () => state.migrationProps.onImported(imported));
-    expect(state.task.id).toBe('imported');
-    expect(state.selectedTaskId).toBe('imported');
-    expect(state.startOperation).not.toHaveBeenCalled();
-    expect(state.writes).toBe(0);
   });
 
   it('stops polling missing legacy material records without starting any generation', async () => {

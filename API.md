@@ -1003,12 +1003,9 @@ Java 核验任务材料和主论文；history 只从服务端同任务、来源�
 
 `GET /api/task-workspaces/{id}/documents/moves/{requestId}` 查询原移动结果，仅原任务可读。未完成/不存在返回404。成功返回 `status`、`requestId`、当前 `sourceTask` 和 `targetTask`。客户端超时后保留原身份并查询，不能以新身份重试。
 
-## 旧文档身份修复与研究项目迁移（阶段5）
+## 旧文档身份修复（阶段5）
 
 - `POST /api/task-workspaces/{id}/documents/identify` 接受 `{revision}`，在任务锁和版本检查后补全notes/artifacts缺失的id/artifactId。返回task、identified及有变更时的backupId；已有身份保留，重复调用无变更时不写版本。修复前完整任务备份与修复同一事务提交，旧版本返回409。
 - `GET /api/task-workspaces/{id}/migration-backups/{backupId}` 获取原始迁移/修复快照；备份归属必须为该任务，其他任务返回404。
-- `GET /api/task-workspaces/migrations/agent-projects` 只读列出旧研究项目。
-- `GET /api/task-workspaces/migrations/agent-projects/{projectId}/snapshot` 返回完整snapshot以及与其分离的materials文件可用性。snapshot保留项目、全部运行、研究任务、消息、审核、成果、时间线和辩论；旧数据库以只读连接读取，不启动或恢复旧执行。
-- `POST /api/task-workspaces/migrations/agent-projects` 接受 `{snapshot,task}`。snapshot必须包含project.projectId，task为客户端整理出的统一任务。服务端以原projectId确定稳定任务ID，备份完整snapshot后导入；响应含status、task、backupId。`imported`为新导入；`already_imported`表示同快照已导入，返回当前任务且不覆盖后续编辑；`conflicted`表示旧快照发生变化，仅新增备份、保留当前任务。导入失败时任务和新备份全部回滚。
 
-旧研究执行仅保存在迁移档案/成果中，新任务activeActivity为空、researchRuns为空；旧消息中已知context的taskId重新绑定。任务更新保留服务端legacyArchive及legacyMigration。源论文编号保持原样，缺文件以fileAvailable=false提示，不按相同文件名推断为另一篇已上传材料。当前cache接口要求已有Paper记录，缺记录旧PDF的恢复仍待补齐；项目导入成功不代表其所有论文已可阅读。
+2026-10-08按用户要求移除旧研究项目导入入口及其Java/Python专用接口。已有任务中的legacyArchive及legacyMigration仍由服务端保留，读取原有备份不受影响；不删除任务或旧项目数据。缺文件以fileAvailable=false提示，不按相同文件名推断为另一篇已上传材料。cache接口要求已有Paper记录，不提供旧研究项目或全部旧PDF恢复功能。

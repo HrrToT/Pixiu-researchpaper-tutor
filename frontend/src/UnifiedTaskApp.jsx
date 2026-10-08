@@ -32,7 +32,6 @@ import { resolveTaskContext } from './utils/taskWorkspaceModel';
 import { resolveNamedTaskPapers } from './utils/namedTaskPapers';
 import { createEmptyTranslationState, normalizeTranslationState } from './utils/translationState';
 import { usePageTranslation } from './hooks/usePageTranslation';
-import LegacyAgentMigration from './components/LegacyAgentMigration';
 import './UnifiedTaskApp.css';
 
 const LAYOUT_KEY = 'pixiu-unified-layout-v1';
@@ -602,7 +601,6 @@ export default function UnifiedTaskApp() {
         <TaskNavigation tasks={tasks} activeTask={activeTask} papers={papers} collapsed={!layout.navigation} onToggle={() => patchLayout({ navigation: !layout.navigation })}
           onSelectTask={selectTask} onCreateTask={() => createTask({ title: '新任务' })} onOpenPaper={openPaper} onAddPaper={addPaper} onRemovePaper={removePaper} onOpenArtifact={openDocument}>
           <button type="button" className="unified-upload" disabled={uploading} onClick={() => fileInputRef.current?.click()}><Upload size={15} />{uploading ? '上传中…' : '上传 PDF'}</button>
-          <LegacyAgentMigration onImported={async task => { await workspace.adoptServerTask(task); selectTask(task.id); }} />
           {focusedPaperId && <div className="unified-outline">
             <button type="button" onClick={() => setShowOutline((value) => !value)}>{showOutline ? <ChevronLeft size={13} /> : <ChevronRight size={13} />} 当前论文目录</button>
             {showOutline && <div>{outline.map((item) => <button type="button" key={item.id} style={{ paddingLeft: `${Math.max(0, item.level - 1) * 12 + 8}px` }} onClick={() => item.pageIndex != null && jumpToSource({ pdfId: focusedPaperId, pageIndex: item.pageIndex })}>{item.label}</button>)}{outline.length === 0 && <span>暂无目录</span>}</div>}
