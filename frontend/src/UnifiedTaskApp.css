@@ -31,7 +31,7 @@
 .unified-reader-content { flex:1; min-height:0; display:flex; position:relative; overflow:hidden; }
 .unified-reader-content .unified-pdf { min-width:0; }
 .unified-translation { flex:1; min-width:0; min-height:0; overflow:hidden; border-left:1px solid var(--border-subtle); }
-.unified-reader-content-translation .unified-pdf { position:absolute; inset:0; visibility:hidden; pointer-events:none; }
+.unified-reader-content-translation .unified-pdf { position:absolute; inset:0; visibility:hidden; opacity:0; pointer-events:none; }
 .unified-reader-content-translation .unified-translation { border-left:0; }
 .unified-reader-content-parallel .unified-pdf,.unified-reader-content-parallel .unified-translation { flex-basis:50%; }
 .unified-translation-modes { display:flex; gap:2px; margin-left:auto; padding:2px; border-radius:6px; background:var(--panel-muted); }

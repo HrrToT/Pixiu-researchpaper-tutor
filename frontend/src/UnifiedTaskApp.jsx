@@ -748,7 +748,7 @@ export default function UnifiedTaskApp() {
           </> : <article className="unified-document-body" aria-label="成果正文"><MarkdownContent>{documentDraft || '（空白正文）'}</MarkdownContent></article>}
         </div> : paperView.error ? <div className="unified-empty" role="alert">{paperView.error}</div>
           : paperView.url ? <div className={`unified-reader-content unified-reader-content-${translationMode}`}>
-            <div className="unified-pdf">
+            <div className="unified-pdf" aria-hidden={translationMode === 'translation'} inert={translationMode === 'translation' ? true : undefined}>
               {paperView.deconstruct?.processingStatus && <div className="unified-material-status" role="status">
                 {['queued', 'parsing'].includes(paperView.deconstruct.processingStatus) ? '原文可阅读，正文正在解析…'
                   : paperView.deconstruct.questionReady ? '正文已就绪' : paperView.deconstruct.processingError || paperView.deconstruct.parseMessage || '原文可阅读，正文尚未就绪'}
