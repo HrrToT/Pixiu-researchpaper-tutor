@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { Worker, Viewer, SpecialZoomLevel, type PluginFunctions } from '@react-pdf-viewer/core';
 import { highlightPlugin, type RenderHighlightTargetProps, type RenderHighlightsProps } from '@react-pdf-viewer/highlight';
 import {
@@ -27,6 +27,13 @@ import {
   addHighlight,
   deleteHighlight,
 } from '../services/highlightStore';
+
+const PdfLoadError = ({ onVisible }: { onVisible: () => void }) => {
+  useEffect(onVisible, [onVisible]);
+  return <div role="alert" className="theme-empty-state flex h-full items-center justify-center p-6 text-sm">
+    这份 PDF 暂时无法打开，请检查文件是否完整或重新上传。
+  </div>;
+};
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
@@ -598,6 +605,8 @@ const PdfViewer: React.FC<PdfViewerProps> = ({
   const [highlights, setHighlights] = useState<PdfViewerHighlight[]>([]);
   const [activeHighlightId, setActiveHighlightId] = useState<number | null>(null);
   const [isPdfLoading, setIsPdfLoading] = useState<boolean>(true);
+  const [displayScale, setDisplayScale] = useState(1);
+  const clearPdfLoading = useCallback(() => setIsPdfLoading(false), []);
   const [selectionNoteError, setSelectionNoteError] = useState('');
   const savingSelectionNote = useRef(false);
 
@@ -626,9 +635,10 @@ const PdfViewer: React.FC<PdfViewerProps> = ({
     latestPdfIdRef.current = pdfId;
   }, [pdfId]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (fileUrl) {
       setIsPdfLoading(true);
+      setDisplayScale(1);
     }
   }, [fileUrl]);
 
@@ -1084,12 +1094,21 @@ const PdfViewer: React.FC<PdfViewerProps> = ({
     : null;
 
   return (
-    <div className="relative h-full w-full">
+    <div className="relative flex h-full w-full flex-col">
       {selectionNoteError && <div role="alert" className="absolute bottom-3 left-3 right-3 z-50 rounded theme-panel p-3 text-sm">{selectionNoteError}</div>}
       {fileUrl ? (
         <>
-          {isPdfLoading && <PdfSkeleton />}
-          <div style={{ visibility: isPdfLoading ? 'hidden' : 'visible', height: '100%', width: '100%' }}>
+          <div role="group" aria-label="原文缩放" className="theme-panel flex shrink-0 items-center justify-end gap-2 border-b px-2 py-1 text-xs">
+            <button type="button" aria-label="缩小原文" className="rounded px-2 py-1 focus-visible:outline" disabled={isPdfLoading || !pdfDocRef.current || displayScale <= 0.25}
+              onClick={() => navigationRef.current?.zoom(Math.max(0.25, displayScale / 1.25))}>−</button>
+            <span aria-label="原文缩放比例">{Math.round(displayScale * 100)}%</span>
+            <button type="button" aria-label="放大原文" className="rounded px-2 py-1 focus-visible:outline" disabled={isPdfLoading || !pdfDocRef.current || displayScale >= 4}
+              onClick={() => navigationRef.current?.zoom(Math.min(4, displayScale * 1.25))}>＋</button>
+            <button type="button" className="rounded px-2 py-1 focus-visible:outline" disabled={isPdfLoading || !pdfDocRef.current}
+              onClick={() => navigationRef.current?.zoom(SpecialZoomLevel.PageWidth)}>适合宽度</button>
+          </div>
+          {isPdfLoading && <div className="pointer-events-none absolute inset-x-0 bottom-0 top-9 z-10"><PdfSkeleton /></div>}
+          <div className="min-h-0 flex-1" style={{ visibility: isPdfLoading ? 'hidden' : 'visible', width: '100%' }}>
             <Worker workerUrl={workerUrl}>
               <Viewer
                 key={viewerKey}
@@ -1100,8 +1119,10 @@ const PdfViewer: React.FC<PdfViewerProps> = ({
                 theme={theme}
                 onDocumentLoad={handleDocumentLoad}
                 onPageChange={handleViewerPageChange}
+                renderError={() => <PdfLoadError onVisible={clearPdfLoading} />}
                 onZoom={(event: { scale: number }) => {
                   scaleRef.current = event.scale;
+                  setDisplayScale(event.scale);
                 }}
               />
             </Worker>
