@@ -304,7 +304,10 @@ export const createApiService = (client: ApiClient, agentFallbackClient: ApiClie
   uploadTaskMaterial: async (file) => {
     const formData = new FormData();
     formData.append('file', file);
-    return client.post('/materials/upload', formData, { timeout: 60000 });
+    return client.post('/materials/upload', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+      timeout: 60000,
+    });
   },
 
   uploadCodeExecutionArtifact: async (file) => {
