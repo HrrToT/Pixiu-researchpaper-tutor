@@ -1,6 +1,5 @@
 import { buildTranslationRequestPageLayout, normalizeRelativeBbox } from './pdfTranslationLayout.js';
 
-const bottom = item => Math.min(1, item.bbox.top + item.bbox.height);
 const hasMath = text => /[=∑∏Σαβγ√^]|\\(?:frac|sum|prod)\b/.test(text || '');
 
 /** Reflow translated paragraphs while retaining every intervening PDF region. */
@@ -20,11 +19,16 @@ export function buildPanoramicTranslation(pageLayout, translatedBlocks = [], exc
       Math.abs(box.left + box.width / 2 - 0.5) <= 0.12 && box.width >= 0.34);
   }) : [];
   const fullIds = new Set(fullItems.map(item => item.id));
+  // Extracted line boxes end on the baseline; include descenders when replacing/cropping text.
+  const descender = item => Math.min(4, Number(item.style?.fontSize || 0) * 0.25) /
+    Math.max(1, Number(pageLayout.viewport?.height || 800));
+  const bottom = item => Math.min(1, item.bbox.top + item.bbox.height + descender(item));
   const used = new Set();
   const sections = [];
   const source = (left, top, width, height) => ({ kind: 'source',
     bbox: { left, top, width, height }, id: `source-${left}-${top}-${height}` });
-  const paragraph = item => ({ kind: 'translation', ...item });
+  const paragraph = item => ({ kind: 'translation', ...item,
+    bbox: {...item.bbox,height:bottom(item)-item.bbox.top} });
 
   const appendBand = (start, end) => {
     if (end <= start) return;

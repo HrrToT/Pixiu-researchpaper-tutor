@@ -23,6 +23,10 @@ assert.equal(partial.translatedCount,1);
 assert.ok(flatten(partial).some(item=>item.kind==='source' && item.bbox.top===0.4));
 const inline = buildPanoramicTranslation({blocks:[block('inline',0.1,0.2,0.8,0.1,'The covariance is E = R S S T R T.')]},translations(['inline']));
 assert.equal(flatten(inline).find(item=>item.kind==='translation').preserveMath,true);
+const withDescenders = buildPanoramicTranslation({viewport:{height:800},blocks:[{
+  ...block('body',0.1,0.3,0.8,0.1),style:{fontSize:12}}]},translations(['body']));
+assert.ok(Math.abs(flatten(withDescenders).find(item=>item.kind==='translation').bbox.height-0.10375)<1e-8);
+assert.ok(Math.abs(flatten(withDescenders).filter(item=>item.kind==='source').at(-1).bbox.top-0.40375)<1e-8);
 assert.equal(buildPanoramicTranslation({blocks:[]}),null);
 assert.deepEqual(sourcePixelRect({left:0.9,top:0.95,width:0.4,height:0.2},100,200),{x:90,y:190,width:10,height:10});
 const withHeader = buildPanoramicTranslation({...layout,blocks:[block('title',0.1,0.05,0.8,0.08),...layout.blocks]},translations(['title','left','right']));

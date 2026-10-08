@@ -1,6 +1,6 @@
 import React from 'react';
-import { act, render, screen, waitFor } from '@testing-library/react';
-import { beforeEach, expect, it, vi } from 'vitest';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 const mocks = vi.hoisted(() => ({getDocument:vi.fn(),draw:vi.fn()}));
 vi.mock('pdfjs-dist', () => ({getDocument:mocks.getDocument,GlobalWorkerOptions:{}}));
 vi.mock('./MarkdownContent', () => ({default:({children})=><div>{children}</div>}));
@@ -17,6 +17,10 @@ beforeEach(() => {
   mocks.getDocument.mockReset(); mocks.draw.mockReset();
   vi.spyOn(HTMLCanvasElement.prototype,'getContext').mockReturnValue({drawImage:mocks.draw,
     getImageData:()=>({data:new Uint8ClampedArray([0,0,0,255])})});
+});
+
+afterEach(() => {
+  delete HTMLDialogElement.prototype.showModal;
 });
 
 it('keeps the PDF document while changing pages and cancels old page rendering', async () => {
@@ -59,4 +63,16 @@ it('keeps the completed translation readable when source PDF rendering fails', a
   render(<PanoramicTranslation fileUrl="missing.pdf" pageIndex={0} pageData={data}/>);
   expect(await screen.findByText('原图暂时无法显示，请切回原文查看。')).toBeInTheDocument();
   expect(screen.getByText('完整的中文译文')).toBeInTheDocument();
+});
+
+it('opens a local enlargement of the original image without loading another document', async () => {
+  const show = vi.fn(function(){this.open=true;});
+  Object.defineProperty(HTMLDialogElement.prototype,'showModal',{configurable:true,value:show});
+  mocks.getDocument.mockReturnValue({promise:Promise.resolve({getPage:async()=>makePage(600)}),destroy:vi.fn(async()=>{})});
+  render(<PanoramicTranslation fileUrl="A.pdf" pageIndex={0} pageData={data}/>);
+  await waitFor(()=>expect(mocks.draw).toHaveBeenCalled());
+  fireEvent.click(screen.getAllByRole('button',{name:'放大论文原图、公式或尚未翻译内容'})[0]);
+  expect(show).toHaveBeenCalledOnce();
+  expect(screen.getByRole('dialog',{name:'原图放大查看'})).toBeVisible();
+  expect(mocks.getDocument).toHaveBeenCalledOnce();
 });

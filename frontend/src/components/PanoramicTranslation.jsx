@@ -32,6 +32,7 @@ function usePdfPageImage(fileUrl, pageIndex) {
       const base = page.getViewport({scale:1});
       const viewport = page.getViewport({scale:Math.min(2, 1600 / base.width)});
       const canvas = globalThis.document.createElement('canvas');
+      canvas.dataset.pdfScale = String(viewport.scale || 1);
       canvas.width = Math.ceil(viewport.width);
       canvas.height = Math.ceil(viewport.height);
       renderTask = page.render({canvasContext:canvas.getContext('2d'), viewport, background:'#ffffff'});
@@ -47,6 +48,8 @@ function usePdfPageImage(fileUrl, pageIndex) {
 
 function SourceRegion({ image, bbox, label = '论文原图、公式或尚未翻译内容', trim = true }) {
   const ref = useRef(null);
+  const dialogRef = useRef(null);
+  const zoomRef = useRef(null);
   const [empty, setEmpty] = useState(false);
   useEffect(() => {
     const canvas = ref.current;
@@ -56,26 +59,48 @@ function SourceRegion({ image, bbox, label = '论文原图、公式或尚未翻�
     const context = canvas.getContext('2d', {willReadFrequently:true});
     canvas.width = rect.width;
     canvas.height = rect.height;
+    canvas.style.width = `${rect.width / (Number(image.dataset.pdfScale) || 2) * 1.5}px`;
     context.drawImage(image,rect.x,rect.y,rect.width,rect.height,0,0,rect.width,rect.height);
     if (trim) {
       const pixels = context.getImageData(0,0,rect.width,rect.height).data;
-      let first = rect.height, last = -1;
+      let first = rect.height, last = -1, left = rect.width, right = -1;
       for (let y = 0; y < rect.height; y++) {
         for (let x = 0; x < rect.width; x++) {
           const offset = (y * rect.width + x) * 4;
           if (pixels[offset+3] && Math.min(pixels[offset],pixels[offset+1],pixels[offset+2]) < 254) {
-            first = Math.min(first,y); last = y; break;
+            first = Math.min(first,y); last = y;
+            left = Math.min(left,x); right = Math.max(right,x);
           }
         }
       }
       if (last < first) { setEmpty(true); return; }
       const top = Math.max(0,first-4), height = Math.min(rect.height,last+5)-top;
+      const cropLeft = Math.max(0,left-4), width = Math.min(rect.width,right+5)-cropLeft;
+      canvas.width = width;
       canvas.height = height;
-      context.drawImage(image,rect.x,rect.y+top,rect.width,height,0,0,rect.width,height);
+      canvas.style.width = `${width / (Number(image.dataset.pdfScale) || 2) * 1.5}px`;
+      context.drawImage(image,rect.x+cropLeft,rect.y+top,width,height,0,0,width,height);
     }
     setEmpty(false);
   }, [image, bbox, trim]);
-  return <canvas ref={ref} role="img" aria-label={label} className="panoramic-source" hidden={empty} />;
+  const openOriginal = () => {
+    const original = ref.current, zoom = zoomRef.current;
+    if (!original || !zoom) return;
+    zoom.width = original.width; zoom.height = original.height;
+    zoom.style.width = `${original.width / (Number(image.dataset.pdfScale) || 2) * 2}px`;
+    zoom.getContext('2d').drawImage(original,0,0);
+    dialogRef.current.showModal();
+  };
+  return <>
+    <button type="button" className="panoramic-source-button" hidden={empty} aria-label={`放大${label}`} onClick={openOriginal}>
+      <canvas ref={ref} role="img" aria-label={label} className="panoramic-source" hidden={empty} />
+      <span>放大原图</span>
+    </button>
+    <dialog ref={dialogRef} className="panoramic-image-dialog" aria-label="原图放大查看">
+      <header><span>原图</span><button type="button" onClick={()=>dialogRef.current.close()}>关闭</button></header>
+      <div tabIndex={0} aria-label="可滚动的原图"><canvas ref={zoomRef} role="img" aria-label={label}/></div>
+    </dialog>
+  </>;
 }
 
 function Paragraph({ item, image }) {
