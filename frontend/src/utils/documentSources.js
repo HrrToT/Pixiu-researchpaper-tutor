@@ -5,6 +5,14 @@ export function documentSources(value) {
   if (value?.sourceAnchorId) result.push({ sourceId: value.sourceAnchorId,
     pdfId: value.sourcePdfId, pageIndex: value.sourcePageIndex, sectionId: value.sourceAnchorId,
     text: value.sourceText || value.content || value.text || '' });
+  // Older page artifacts saved a paper association but no detailed excerpt.
+  // A page belongs to a single saved paper only; never assign it to all materials.
+  if (!result.length && Array.isArray(value?.paperIds)) {
+    const paperIds = [...new Set(value.paperIds.filter(id => typeof id === 'string' && id.trim()))];
+    for (const pdfId of paperIds) result.push({ pdfId,
+      ...(paperIds.length === 1 && Number.isInteger(value?.pageIndex) && value.pageIndex >= 0
+        ? { pageIndex: value.pageIndex } : {}) });
+  }
   const seen = new Set();
   return result.filter((source) => {
     if (!source || typeof source !== 'object') return false;
