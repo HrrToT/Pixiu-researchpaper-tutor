@@ -19,6 +19,23 @@ function renderChat(props = {}) {
 }
 
 describe('ChatPanel', () => {
+  it('opens the existing full artifact instead of saving a second copy of the summary', () => {
+    const open = vi.fn();
+    const capture = vi.fn();
+    renderChat({ messages: [{ role: 'ai', content: '简短结论', artifactId: 'full' }], onOpenArtifact: open, onCaptureArtifact: capture });
+    fireEvent.click(screen.getByRole('button', { name: '打开完整成果' }));
+    expect(open).toHaveBeenCalledWith('full');
+    expect(capture).not.toHaveBeenCalled();
+  });
+  it('completes an @ material mention without losing the preceding question', () => {
+    const send = vi.fn();
+    renderChat({ enableSkills: true, onSendMessage: send, materials: [{ id: 'b', title: '论文乙' }] });
+    fireEvent.change(screen.getByLabelText('输入问题'), { target: { value: '只根据 @乙' } });
+    fireEvent.click(screen.getByRole('button', { name: '论文乙', exact: true }));
+    expect(screen.getByLabelText('输入问题')).toHaveValue('只根据 @{论文乙} ');
+    fireEvent.click(screen.getByRole('button', { name: '发送消息' }));
+    expect(send).toHaveBeenCalledWith('只根据 @{论文乙}');
+  });
   it('renders input textarea', () => {
     renderChat();
     const textarea = screen.getByLabelText('输入问题');

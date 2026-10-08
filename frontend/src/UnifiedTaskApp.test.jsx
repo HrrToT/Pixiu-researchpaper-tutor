@@ -1,0 +1,281 @@
+import React from 'react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
+const state = vi.hoisted(() => ({ task: null, chatProps: null, failAnswerSave: false, writes: 0, startOperation: vi.fn(), retainDraft: vi.fn(async () => {}), api: { sendTaskMessage: vi.fn(), criticalReading: vi.fn(), backgroundKnowledge: vi.fn() } }));
+const materialProcessing = vi.hoisted(() => vi.fn(async () => undefined));
+const operationList = vi.hoisted(() => vi.fn(async () => []));
+const recoverOperation = vi.hoisted(() => vi.fn());
+vi.mock('./hooks/useTaskWorkspace', () => ({ useTaskWorkspace: () => ({
+  tasks: [state.task, ...(state.otherTasks || [])], activeTask: state.task, activeTaskId: state.task.id,
+  adoptServerTask: async task => { if (state.failAnswerSave) throw new Error('本地缓存未更新'); state.task = task; },
+  updateTask: async (id, updater) => {
+    if (id !== state.task.id) throw new Error('wrong task');
+    const patch = typeof updater === 'function' ? updater(state.task) : updater;
+    state.writes += 1;
+    if (state.failAnswerSave && patch.messages?.at(-1)?.role === 'ai') {
+      throw Object.assign(new Error('本地草稿已保留'), { code: 'TASK_CONFLICT' });
+    }
+    state.task = { ...state.task, ...patch };
+    return state.task;
+  }, selectTask: id => { state.selectedTaskId = id; }, createTask: vi.fn(),
+}) }));
+vi.mock('./services/api', () => ({ apiService: state.api }));
+vi.mock('./services/taskWorkspaceApi', () => ({ taskWorkspaceApi: {
+  startOperation: state.startOperation, listOperations: operationList, recoverOperationResult: recoverOperation, listMaterials: async () => [],
+  getMaterialProcessing: materialProcessing,
+  getMaterialFile: async () => { throw new Error('旧论文尚未保存到服务端'); },
+  getMaterialAnalysis: async () => { throw new Error('旧论文尚未保存到服务端'); },
+} }));
+vi.mock('./services/taskResearchApi', () => ({ taskResearchApi: {} }));
+vi.mock('./services/taskWorkspaceRemoteStore', () => ({ taskWorkspaceRemoteStore: { getUnsyncedDraft: async () => null, retainUnsyncedDraft: state.retainDraft } }));
+vi.mock('./services/localDb', () => ({ initDB: async () => ({
+  getAll: async () => [{ id: 'a', title: '论文甲' }, { id: 'b', title: '论文乙' }],
+  get: async () => null, put: async () => {},
+}) }));
+vi.mock('./hooks/useThemePreference', () => ({ useThemePreference: () => ({ theme: 'light', toggleTheme: vi.fn() }) }));
+vi.mock('./hooks/usePageTranslation', () => ({ usePageTranslation: () => ({}) }));
+vi.mock('./components/PdfViewer', () => ({ default: () => null }));
+vi.mock('./components/LegacyAgentMigration', () => ({ default: props => { state.migrationProps = props; return null; } }));
+vi.mock('./components/TranslationPanel', () => ({ default: () => null }));
+vi.mock('./components/ChatPanel', () => ({ default: (props) => { state.chatProps = props; return <div data-testid="chat" />; } }));
+import UnifiedTaskApp from './UnifiedTaskApp';
+
+describe('unified task conversation wiring', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    operationList.mockResolvedValue([]);
+    materialProcessing.mockImplementation(async () => undefined);
+    localStorage.clear();
+    state.failAnswerSave = false;
+    state.writes = 0;
+    state.otherTasks = [];
+    state.selectedTaskId = null;
+    state.task = { id: 'task', title: '任务', paperIds: ['a', 'b'], focusedPaperId: null,
+      messages: [], notes: [], artifacts: [], activeActivity: { id: 'lesson', paperIds: ['a'], primaryPaperId: 'a' } };
+    state.startOperation.mockImplementation(async (taskId, request) => {
+      const context = { taskId, ...request.input };
+      const task = { ...state.task, messages: [...state.task.messages,
+        { role: 'user', content: request.input.displayText },
+        { role: 'ai', content: '回答', context, sentenceSourceMap: [{ target: 'message', sentence: '回答', sourceIds: ['s'] }] }],
+        artifacts: request.input.capability === 'chat' ? state.task.artifacts : [...state.task.artifacts, { id: request.requestId + ':artifact', text: '完整成果', paperIds: request.input.allowedPaperIds }],
+      };
+      return { taskId, ...request, status: 'succeeded', task };
+    });
+  });
+
+  it('adopts a confirmed imported task and selects it without invoking a model', async () => {
+    render(<UnifiedTaskApp />);
+    await screen.findByTestId('chat');
+    const imported = { ...state.task, id: 'imported', activeActivity: null };
+    await act(async () => state.migrationProps.onImported(imported));
+    expect(state.task.id).toBe('imported');
+    expect(state.selectedTaskId).toBe('imported');
+    expect(state.startOperation).not.toHaveBeenCalled();
+    expect(state.writes).toBe(0);
+  });
+
+  it('routes a natural comparison over the task without overwriting a paused lesson', async () => {
+    render(<UnifiedTaskApp />);
+    await screen.findByTestId('chat');
+    await act(async () => state.chatProps.onSendMessage('请帮我比较两篇论文的方法'));
+    expect(state.startOperation).toHaveBeenCalledWith('task', expect.objectContaining({ kind: 'conversation.execute', input: expect.objectContaining({ capability: 'compare', allowedPaperIds: ['a', 'b'], primaryPaperId: null }) }));
+    expect(state.api.sendTaskMessage).not.toHaveBeenCalled();
+    expect(state.task.activeActivity.id).toBe('lesson');
+    expect(state.task.artifacts[0].paperIds).toEqual(['a', 'b']);
+  });
+
+  it('opens a moved artifact in the new task and keeps its unsaved local draft without generating again', async () => {
+    const original = state.task;
+    const target = { ...original, id: 'target', title: '目标任务', messages: [],
+      artifacts: [{ id: 'moved-result', title: '已移动成果', text: '已保存正文', paperIds: ['a'] }] };
+    state.otherTasks = [target];
+    const draftKey = 'pixiu-document-draft:' + JSON.stringify(['target', 'artifacts', 'moved-result']);
+    localStorage.setItem(draftKey, '目标任务未保存草稿');
+    localStorage.setItem(draftKey + ':base', JSON.stringify('已保存正文'));
+    const view = render(<UnifiedTaskApp />);
+    await screen.findByTestId('chat');
+    await act(async () => state.chatProps.onOpenArtifact('moved-result'));
+    expect(state.selectedTaskId).toBe('target');
+    state.task = target;
+    state.otherTasks = [original];
+    view.rerender(<UnifiedTaskApp />);
+    expect(await screen.findByRole('textbox', { name: '编辑笔记与成果' })).toHaveValue('目标任务未保存草稿');
+    expect(target.artifacts[0].text).toBe('已保存正文');
+    expect(state.startOperation).not.toHaveBeenCalled();
+    expect(state.writes).toBe(0);
+  });
+
+  it('opens a conflicted full result in the middle pane and saves it without rerunning or replacing a lesson', async () => {
+    const record = { taskId: 'task', requestId: 'conflict', kind: 'learning.start', status: 'conflicted',
+      paperIds: ['a'], request: { goal: '原学习目标' }, result: { message: '短结果', sources: [],
+        materialScope: { taskId: 'task', allowedPaperIds: ['a'] },
+        artifact: { text: '完整解释和证据', paperIds: ['a'], sources: [] } } };
+    operationList.mockResolvedValue([record]);
+    recoverOperation.mockImplementation(async () => ({ ...record, status: 'succeeded', task: { ...state.task,
+      artifacts: [{ id: 'conflict:artifact', sourceRequestId: 'conflict', text: '完整解释和证据', paperIds: ['a'] }] } }));
+    render(<UnifiedTaskApp />);
+    fireEvent.click(await screen.findByRole('button', { name: '打开已生成结果' }));
+    expect(screen.getByRole('region', { name: '论文与成果' })).toHaveTextContent('完整解释和证据');
+    expect(screen.getByRole('region', { name: '任务对话' })).not.toHaveTextContent('完整解释和证据');
+    fireEvent.click(screen.getByRole('button', { name: '保存为成果' }));
+    await waitFor(() => expect(screen.getByRole('textbox', { name: '编辑笔记与成果' })).toHaveValue('完整解释和证据'));
+    expect(recoverOperation).toHaveBeenCalledWith('task', 'conflict');
+    expect(state.startOperation).not.toHaveBeenCalled();
+    expect(state.task.activeActivity.id).toBe('lesson');
+  });
+
+  it('routes explicit combined actions through the bounded adapter with the full task scope', async () => {
+    render(<UnifiedTaskApp />);
+    await screen.findByTestId('chat');
+    await act(async () => state.chatProps.onSendMessage('请先补齐前置知识，再比较两篇论文的方法，最后分析它们的局限'));
+    expect(state.startOperation).toHaveBeenCalledWith('task', expect.objectContaining({ kind: 'conversation.execute', input: expect.objectContaining({
+      capability: 'compose', steps: ['background', 'compare', 'critique'], allowedPaperIds: ['a', 'b'],
+    }) }));
+    expect(state.task.activeActivity.id).toBe('lesson');
+  });
+
+  it('clarifies vague analysis without a model call and uses the selected capability', async () => {
+    render(<UnifiedTaskApp />);
+    await screen.findByTestId('chat');
+    await act(async () => state.chatProps.onSendMessage('帮我分析一下'));
+    expect(screen.getByRole('group', { name: '选择分析重点' })).toBeInTheDocument();
+    expect(state.startOperation).not.toHaveBeenCalled();
+    expect(state.writes).toBe(0);
+    fireEvent.click(screen.getByRole('button', { name: '概括与解释' }));
+    await waitFor(() => expect(state.startOperation).toHaveBeenCalledWith('task', expect.objectContaining({ input: expect.objectContaining({
+      capability: 'chat', displayText: '帮我分析一下', allowedPaperIds: ['a', 'b'],
+    }) })));
+  });
+
+  it('uses task material for an unspecified critique and reader focus only for an explicit single-paper reference', async () => {
+    state.task.focusedPaperId = 'a';
+    render(<UnifiedTaskApp />);
+    await screen.findByTestId('chat');
+    await act(async () => state.chatProps.onSendMessage('/批判 检查论证依据'));
+    expect(state.startOperation.mock.calls[0][1].input.allowedPaperIds).toEqual(['a', 'b']);
+    await act(async () => state.chatProps.onSendMessage('/批判 检查这篇论文的论证依据'));
+    expect(state.startOperation.mock.calls[1][1].input).toMatchObject({ allowedPaperIds: ['a', 'b'], primaryPaperId: 'a' });
+  });
+
+  it('queries durable material state after opening a task and blocks unready evidence before model execution', async () => {
+    materialProcessing.mockImplementation(async (taskId, paperId) => ({
+      status: 'success', pdfId: paperId, readingReady: true, questionReady: false,
+      processingStatus: 'failed', aiAnalysisStatus: 'not_requested',
+    }));
+    render(<UnifiedTaskApp />);
+    await waitFor(() => expect(state.chatProps.materials.find(item => item.id === 'b')?.questionReady).toBe(false));
+    await act(async () => state.chatProps.onSendMessage('只根据 @{b} 解释方法'));
+    expect(materialProcessing).toHaveBeenCalledWith('task', 'b');
+    expect(state.startOperation).not.toHaveBeenCalled();
+    expect(screen.getByText(/正文尚未就绪/)).toBeInTheDocument();
+  });
+
+  it('uses named material instead of the active lesson and filters old history', async () => {
+    state.task.messages = [{ role: 'ai', content: 'A secret', context: { taskId: 'task', allowedPaperIds: ['a'] } }];
+    render(<UnifiedTaskApp />);
+    await waitFor(() => expect(screen.getByText('论文乙')).toBeInTheDocument());
+    await act(async () => state.chatProps.onSendMessage('只根据《论文乙》解释方法'));
+    expect(state.startOperation.mock.calls[0][1].input).toMatchObject({ allowedPaperIds: ['b'], primaryPaperId: 'b', strictScope: true });
+    expect(state.startOperation.mock.calls[0][1].input).not.toHaveProperty('history');
+  });
+
+  it('lets an explicit different paper leave an active lesson without replacing it', async () => {
+    state.task.activeActivity = { activityId: 'lesson', status: 'active', pdfId: 'a', paperIds: ['a'], primaryPaperId: 'a' };
+    render(<UnifiedTaskApp />);
+    await waitFor(() => expect(screen.getByText('论文乙')).toBeInTheDocument());
+    await act(async () => state.chatProps.onSendMessage('只根据 @{b} 解释方法'));
+    expect(state.startOperation.mock.calls[0][1].input).toMatchObject({ allowedPaperIds: ['b'], strictScope: true });
+    expect(state.task.activeActivity.pdfId).toBe('a');
+  });
+
+  it('rejects an unknown slash command before invoking or saving a model request', async () => {
+    render(<UnifiedTaskApp />);
+    await screen.findByTestId('chat');
+    await act(async () => state.chatProps.onSendMessage('/未知 帮我看看'));
+    expect(state.api.sendTaskMessage).not.toHaveBeenCalled();
+    expect(state.writes).toBe(0);
+    expect(screen.getByText(/未识别这个命令/)).toBeInTheDocument();
+  });
+
+  it('keeps chat citations when a background request cannot use the direct paper endpoint', async () => {
+    render(<UnifiedTaskApp />);
+    await screen.findByTestId('chat');
+    await act(async () => state.chatProps.onSendMessage('/补课 解释这个术语'));
+    expect(state.api.backgroundKnowledge).not.toHaveBeenCalled();
+    expect(state.task.messages.at(-1).sentenceSourceMap).toEqual([{ target: 'message', sentence: '回答', sourceIds: ['s'] }]);
+  });
+
+  it('recovers a usable pane when a stored layout hides both main panes', async () => {
+    localStorage.setItem('pixiu-unified-layout-v1', JSON.stringify({ reader: false, chat: false }));
+    render(<UnifiedTaskApp />);
+    expect(screen.getByRole('region', { name: '论文与成果' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '展开对话区' })).toBeInTheDocument();
+  });
+  it('retains the request identity when adopting a confirmed result fails locally', async () => {
+    state.failAnswerSave = true;
+    render(<UnifiedTaskApp />);
+    await screen.findByTestId('chat');
+    await act(async () => state.chatProps.onSendMessage('解释这个术语'));
+    expect(state.writes).toBe(0);
+    expect(localStorage.getItem('pixiu-task-request-v1:' + state.startOperation.mock.calls[0][1].requestId)).not.toBeNull();
+    expect(state.chatProps.isLoading).toBe(true);
+  });
+  it('restores unsaved note edits after leaving the editor, including an intentionally empty draft', async () => {
+    state.task.notes = [{ id: 'note', title: '我的笔记', text: '已保存正文' }];
+    render(<UnifiedTaskApp />);
+    fireEvent.click(screen.getByRole('button', { name: '我的笔记' }));
+    fireEvent.change(screen.getByRole('textbox', { name: '编辑笔记与成果' }), { target: { value: '尚未提交的修改' } });
+    fireEvent.click(screen.getByRole('button', { name: '返回论文' }));
+    fireEvent.click(screen.getByRole('button', { name: '我的笔记' }));
+    expect(screen.getByRole('textbox', { name: '编辑笔记与成果' })).toHaveValue('尚未提交的修改');
+    fireEvent.change(screen.getByRole('textbox', { name: '编辑笔记与成果' }), { target: { value: '' } });
+    fireEvent.click(screen.getByRole('button', { name: '返回论文' }));
+    fireEvent.click(screen.getByRole('button', { name: '我的笔记' }));
+    expect(screen.getByRole('textbox', { name: '编辑笔记与成果' })).toHaveValue('');
+    expect(state.task.notes[0].text).toBe('已保存正文');
+  });
+  it('restores a historical note through persistence and shows the restored text in the editor', async () => {
+    state.task.notes = [{ id: 'note', title: '版本笔记', text: '当前正文', versions: [{ text: '先前正文', savedAt: '2026-10-04' }] }];
+    render(<UnifiedTaskApp />);
+    fireEvent.click(screen.getByRole('button', { name: '版本笔记' }));
+    fireEvent.change(screen.getByRole('textbox', { name: '编辑笔记与成果' }), { target: { value: '未保存修改' } });
+    fireEvent.click(screen.getByText('历史版本（1）'));
+    fireEvent.change(screen.getByLabelText('选择历史版本'), { target: { value: '0' } });
+    fireEvent.click(screen.getByRole('button', { name: '恢复这个版本' }));
+    await waitFor(() => expect(screen.getByRole('textbox', { name: '编辑笔记与成果' })).toHaveValue('先前正文'));
+    expect(state.task.notes[0].text).toBe('先前正文');
+    expect(state.task.notes[0].versions.map((item) => item.text)).toEqual(['先前正文', '当前正文', '未保存修改']);
+  });
+  it('preserves evidence when capturing a conversation as a note', async () => {
+    const source = { sourceId: 'evidence', pdfId: 'b', pageIndex: 3, text: 'original evidence' };
+    state.task.messages = [{ id: 'message', role: 'ai', content: '结论', rag_sources: [source], context: { allowedPaperIds: ['b'] } }];
+    render(<UnifiedTaskApp />);
+    await screen.findByTestId('chat');
+    await act(async () => state.chatProps.onSaveToNote(0));
+    expect(state.task.notes[0].sources).toEqual([source]);
+    expect(state.task.notes[0].paperIds).toEqual(['b']);
+    expect(screen.getByText('材料来源（1）')).toBeInTheDocument();
+  });
+
+  it('blocks an old editor draft even after background refresh adopts the newer task revision', async () => {
+    state.task.notes = [{ id: 'note', title: '并发笔记', text: '原正文' }];
+    const view = render(<UnifiedTaskApp />);
+    fireEvent.click(screen.getByRole('button', { name: '并发笔记', exact: true }));
+    fireEvent.change(screen.getByRole('textbox', { name: '编辑笔记与成果' }), { target: { value: '我的旧草稿' } });
+    state.task = { ...state.task, revision: 10, notes: [{ id: 'note', title: '并发笔记', text: '另一客户端的新正文' }] };
+    view.rerender(<UnifiedTaskApp />);
+    fireEvent.click(screen.getByRole('button', { name: '保存', exact: true }));
+    await waitFor(() => expect(state.retainDraft).toHaveBeenCalledWith(expect.objectContaining({ notes: [expect.objectContaining({ text: '我的旧草稿' })] }), 'document-conflict'));
+    expect(state.task.notes[0].text).toBe('另一客户端的新正文');
+    expect(state.writes).toBe(0);
+    fireEvent.click(screen.getByRole('button', { name: '返回论文', exact: true }));
+    fireEvent.click(screen.getByRole('button', { name: '并发笔记', exact: true }));
+    expect(screen.getByRole('textbox', { name: '编辑笔记与成果' })).toHaveValue('我的旧草稿');
+    expect(screen.getByRole('button', { name: '已核对，保留我的修改', exact: true })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: '已核对，保留我的修改', exact: true }));
+    fireEvent.click(screen.getByRole('button', { name: '保存', exact: true }));
+    await waitFor(() => expect(state.task.notes[0].text).toBe('我的旧草稿'));
+    expect(state.task.notes[0].versions[0].text).toBe('另一客户端的新正文');
+  });
+});
