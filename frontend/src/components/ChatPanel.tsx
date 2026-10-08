@@ -8,6 +8,7 @@ import CollapsedSources from './CollapsedSources';
 import { normalizeSentenceReferences } from './evidenceCitationModel.ts';
 import { getSkillSuggestions } from '../utils/conversationSkills';
 import { artifactChatPreview } from '../utils/artifactChatPreview';
+import useConversationDraft from '../hooks/useConversationDraft';
 import { completeMaterialMention, pendingMaterialMention, type MentionMaterial } from '../utils/materialMentions';
 
 interface ChatJumpSource {
@@ -44,7 +45,7 @@ interface EvidenceRef {
 
 interface ChatPanelProps {
   messages?: ChatMessage[];
-  onSendMessage: (text: string) => void;
+  onSendMessage: (text: string) => void | boolean | Promise<void | boolean>;
   onDeleteMessage?: (index: number) => void;
   onSaveToNote?: (index: number) => void;
   onCaptureArtifact?: (index: number) => void;
@@ -55,6 +56,8 @@ interface ChatPanelProps {
   contextLabel?: string;
   enableSkills?: boolean;
   materials?: MentionMaterial[];
+  conversationId?: string;
+  starterPrompts?: Array<{ label: string; text: string }>;
 }
 
 interface EvidenceReferencesProps {
@@ -106,8 +109,13 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
   contextLabel = '',
   enableSkills = false,
   materials = [],
+  conversationId,
+  starterPrompts = [],
 }) => {
-  const [inputValue, setInputValue] = useState<string>('');
+  const [inputValue, setInputValue, draftError, clearInput] = useConversationDraft(conversationId);
+  const [submitting, setSubmitting] = useState(false);
+  const submittingRef = useRef(false);
+  const [sendError, setSendError] = useState('');
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const skillSuggestions = enableSkills ? getSkillSuggestions(inputValue) : [];
@@ -119,11 +127,20 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isLoading]);
 
-  const handleSend = (): void => {
-    if (!inputValue.trim() || isLoading) return;
-    onSendMessage(inputValue.trim());
-    setInputValue('');
-    if (textareaRef.current) textareaRef.current.style.height = 'auto';
+  const handleSend = async (): Promise<void> => {
+    if (!inputValue.trim() || isLoading || submittingRef.current) return;
+    const submittedText = inputValue;
+    submittingRef.current = true;
+    setSubmitting(true); setSendError('');
+    try {
+      const action = onSendMessage(submittedText.trim());
+      const accepted = typeof (action as Promise<void | boolean>)?.then === 'function' ? await action : action;
+      if (accepted === false) return;
+      clearInput(submittedText);
+      if (textareaRef.current) textareaRef.current.style.height = 'auto';
+    } catch (error) {
+      setSendError((error as Error).message || '发送失败，输入已保留。');
+    } finally { submittingRef.current = false; setSubmitting(false); }
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>): void => {
@@ -178,6 +195,13 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
     <div className="reader-chat-shell">
       <div className="reader-chat-scroll">
         {contextLabel && <div className="reader-chat-context">▣ {contextLabel}</div>}
+
+        {!messages.length && !isLoading && starterPrompts.length > 0 && <div className="reader-chat-start" aria-label="对话起点">
+          <strong>从一个问题开始</strong>
+          <p>{materials.length ? '告诉我哪里读不懂，或选择一个起点。' : '先上传论文，或告诉我你想了解的概念。'}</p>
+          <div>{starterPrompts.map(prompt => <button key={prompt.label} type="button" disabled={submitting}
+            onClick={() => { setInputValue(prompt.text); textareaRef.current?.focus(); }}>{prompt.label}</button>)}</div>
+        </div>}
 
         {messages.map((message: ChatMessage, index: number) => {
           const isUser = message.role === 'user';
@@ -269,14 +293,15 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
           value={inputValue}
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
-          disabled={isLoading}
+          disabled={isLoading || submitting}
           aria-label="输入问题"
           placeholder={isLoading ? '正在回答...' : enableSkills ? '输入问题，/ 选功能，@ 选材料' : '输入问题'}
         />
-        <button type="button" onClick={handleSend} disabled={!inputValue.trim() || isLoading} className="reader-chat-send" aria-label="发送消息">
+        <button type="button" onClick={handleSend} disabled={!inputValue.trim() || isLoading || submitting} className="reader-chat-send" aria-label="发送消息">
           <Send size={18} />
         </button>
       </div>
+      {(draftError || sendError) && <p className="reader-chat-draft-error" role="alert">{draftError || sendError}</p>}
     </div>
   );
 };

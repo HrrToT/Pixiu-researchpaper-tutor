@@ -308,7 +308,8 @@ export default function UnifiedTaskApp() {
     });
   };
   const handleUpload = async (file) => {
-    if (!file) return;
+    if (!file || uploading) return;
+    if (!file.name.toLowerCase().endsWith('.pdf')) { setLocalError('请选择 PDF 论文文件。'); return; }
     setUploading(true); setLocalError('');
     try {
       const targetTaskId = activeTaskId || (await createTask({ title: file.name.replace(/\.pdf$/i, '') })).id;
@@ -326,27 +327,30 @@ export default function UnifiedTaskApp() {
       await transaction.done;
       setPapers((current) => [entry, ...current.filter((paper) => paper.id !== entry.id)]);
       await updateTask(targetTaskId, (task) => ({ paperIds: [...new Set([...task.paperIds, entry.id])], focusedPaperId: entry.id }));
-      selectTask(targetTaskId);
-    } catch (error) { setLocalError(error.message || '论文上传失败'); }
+      if (!activeTaskIdRef.current || activeTaskIdRef.current === targetTaskId) {
+        selectTask(targetTaskId); patchLayout({ reader: true });
+      }
+    } catch (error) { setLocalError(error?.response?.data?.message || '论文上传未完成，请重新选择文件再试；当前任务和输入草稿仍保留。'); }
     finally { setUploading(false); if (fileInputRef.current) fileInputRef.current.value = ''; }
   };
 
   const appendMessage = (taskId, message) => updateTask(taskId, (task) => ({ messages: [...task.messages, message] }));
   const sendMessage = async (rawText, chosenSkill = null) => {
     const task = activeTask;
-    if (!task || learning.busyTasks[task.id]) return;
+    if (!task || learning.busyTasks[task.id]) return false;
     const text = rawText.trim();
-    if (!text) return;
+    if (!text) return false;
+    setLocalError('');
     const intent = chosenSkill ? { skill: chosenSkill } : resolveConversationIntent(text);
     const skill = intent.skill;
     if (intent.clarification) {
       setIntentChoice({ taskId: task.id, text, ...intent.clarification });
-      return;
+      return false;
     }
     setIntentChoice(null);
     if (text.startsWith('/') && !skill) {
       setLocalError('未识别这个命令，可使用 /精读、/补课、/自测、/批判、/比较、/研究。');
-      return;
+      return false;
     }
     let explicitPaperIds;
     let initialContext;
@@ -355,7 +359,7 @@ export default function UnifiedTaskApp() {
       initialContext = resolveTaskContext(task, { text,
         ...(skill && startsNewCapability(skill.skillId) ? { activity: null } : {}),
         ...(explicitPaperIds !== undefined ? { paperIds: explicitPaperIds } : {}) });
-    } catch (error) { setLocalError(error.message); return; }
+    } catch (error) { setLocalError(error.message); return false; }
     const materialReady = (ids) => {
       const notReady = ids.filter(id => papers.find(paper => paper.id === id)?.questionReady === false);
       if (!notReady.length) return true;
@@ -372,18 +376,18 @@ export default function UnifiedTaskApp() {
         const explicit = explicitPaperIds;
         const pdfId = explicit?.length === 1 ? explicit[0] : !explicit ? task.focusedPaperId || (task.paperIds.length === 1 ? task.paperIds[0] : null) : null;
         if (!pdfId) throw new Error('请打开或明确指定一篇要学习的论文');
-        if (!materialReady([pdfId])) return;
+        if (!materialReady([pdfId])) return false;
         await learning.start(task, pdfId, skill.skillId, sendText);
-      } catch (error) { setLocalError(error.message); }
+      } catch (error) { setLocalError(error.message); return false; }
       return;
     }
     if (!skill && task.activeActivity?.status === 'active' && targetsCurrentActivity) {
-      if (!materialReady(initialContext.allowedPaperIds)) return;
+      if (!materialReady(initialContext.allowedPaperIds)) return false;
       await learning.act(task, learning.inputMode, text);
       return;
     }
     if (skill?.skillId === 'background' && task.activeActivity?.status === 'active' && targetsCurrentActivity) {
-      if (!materialReady(initialContext.allowedPaperIds)) return;
+      if (!materialReady(initialContext.allowedPaperIds)) return false;
       await learning.act(task, 'remediate', sendText);
       return;
     }
@@ -392,9 +396,9 @@ export default function UnifiedTaskApp() {
         if (!sendText) throw new Error('请在 /研究 后写下要研究的问题');
         const scope = resolveTaskContext(task, { text, activity: null, paperIds: resolveNamedTaskPapers(text, papers, task.paperIds) });
         if (!scope.allowedPaperIds.length) throw new Error('请先为任务加入研究材料');
-        if (!materialReady(scope.allowedPaperIds)) return;
+        if (!materialReady(scope.allowedPaperIds)) return false;
         await research.start(task, sendText, scope);
-      } catch (error) { setLocalError(error.message); }
+      } catch (error) { setLocalError(error.message); return false; }
       return;
     }
     if (skill && !sendText && !['critique', 'compare', 'background'].includes(skill.skillId)) {
@@ -414,8 +418,8 @@ export default function UnifiedTaskApp() {
       if ((skill?.skillId === 'compare' || skill?.steps?.includes('compare')) && context.allowedPaperIds.length < 2) throw new Error('比较至少需要两篇论文，请先在任务中加入论文。');
       if (skill?.skillId === 'critique' && context.allowedPaperIds.length === 0) throw new Error('请先加入并打开一篇论文。');
     }
-    catch (error) { await appendMessage(task.id, createMessage('ai', error.message, { isSystem: true })); return; }
-    if (!materialReady(context.allowedPaperIds)) return;
+    catch (error) { setLocalError(error.message); return false; }
+    if (!materialReady(context.allowedPaperIds)) return false;
     await learning.operations.start(task, 'conversation.execute', {
       capability: skill?.skillId || 'chat', message: sendText || requestText,
       ...(skill?.steps ? { steps: skill.steps } : {}),
@@ -754,7 +758,11 @@ export default function UnifiedTaskApp() {
               pageData={currentTranslationPage?.status === 'translating' ? { ...currentTranslationPage, status: 'loading' } : currentTranslationPage}
               onRetry={() => handleRetryTranslation(translationState)} onCaptureArtifact={captureTranslation} /></div>}
           </div>
-            : <div className="unified-empty"><FilePlus2 size={32} /><p>{activeTask ? '上传或选择论文，开始阅读。' : '创建任务，上传论文或提出研究目标。'}</p><button type="button" onClick={() => fileInputRef.current?.click()}>上传论文</button></div>}
+            : <div className="unified-empty"><FilePlus2 size={32} />
+              <strong>{workspace.ready === false ? '正在读取任务…' : activeTask?.paperIds.length ? '选择一篇论文开始阅读' : '从一篇论文开始'}</strong>
+              <p>{activeTask?.paperIds.length ? '在左侧选择论文；对话可以使用当前任务的全部材料。' : '上传 PDF 后即可阅读，再从对话中精读、补课或自测。'}</p>
+              {uploading ? <p role="status">正在上传论文，请稍候…</p> : <button type="button" disabled={workspace.ready === false} onClick={() => activeTask?.paperIds.length ? openPaper(activeTask.paperIds[0]) : fileInputRef.current?.click()}>{activeTask?.paperIds.length ? '打开任务论文' : '上传论文'}</button>}
+            </div>}
         {paperView.url && !activeDocument && !preview && <PaperPageNavigation pageIndex={page.pageIndex} totalPages={page.totalPages} onJump={goToPage} />}
       </section>
       {layout.reader && layout.chat && !compact && <div className="unified-resizer" role="separator" tabIndex={0} aria-orientation="vertical" aria-label="调整阅读与对话宽度" aria-valuemin={32} aria-valuemax={72} aria-valuenow={layout.readerPercent} onPointerDown={startResize} onKeyDown={event => {
@@ -804,7 +812,13 @@ export default function UnifiedTaskApp() {
           {intentChoice.choices.map(choice => <button type="button" key={choice.skill.skillId} disabled={learning.busyTasks[activeTaskId]} onClick={() => sendMessage(intentChoice.text, choice.skill)}>{choice.label}</button>)}
           <button type="button" onClick={() => setIntentChoice(null)}>取消</button>
         </div>}
-        {activeTask ? <ChatPanel materials={activeTask.paperIds.map(id => papers.find(paper => paper.id === id) || { id })} messages={activeTask.messages} onSendMessage={sendMessage} onDeleteMessage={deleteMessage} onSaveToNote={(index) => saveMessage(index)} onCaptureArtifact={(index) => saveMessage(index, true)} onOpenArtifact={id => {
+        {activeTask ? <ChatPanel key={activeTaskId} conversationId={activeTaskId}
+          starterPrompts={activeTask.paperIds.length ? [
+            { label: '带我读这篇', text: '/精读 帮我从研究问题与方法开始读这篇论文' },
+            { label: '解释基础概念', text: '/补课 解释理解这篇论文需要的基础概念' },
+            activeTask.paperIds.length > 1 ? { label: '比较论文', text: '/比较 这些论文的方法有什么共同点与差异？' } : { label: '检查我的理解', text: '/自测 帮我检查是否理解这篇论文的关键方法' },
+          ] : [{ label: '解释一个概念', text: '我想了解的概念是：' }]}
+          materials={activeTask.paperIds.map(id => papers.find(paper => paper.id === id) || { id })} messages={activeTask.messages} onSendMessage={sendMessage} onDeleteMessage={deleteMessage} onSaveToNote={(index) => saveMessage(index)} onCaptureArtifact={(index) => saveMessage(index, true)} onOpenArtifact={id => {
           const artifact = activeTask.artifacts.find(item => (item.id || item.artifactId) === id);
           if (artifact) { openDocument(artifact, 'artifacts'); return; }
           const owner = tasks.find(task => task.artifacts?.some(item => (item.id || item.artifactId) === id));
@@ -816,7 +830,7 @@ export default function UnifiedTaskApp() {
       {!layout.reader && <button type="button" className="unified-restore unified-restore-reader" onClick={() => patchLayout({ reader: true, mode: 'split' })} aria-label="展开阅读区"><PanelLeftOpen size={16} />阅读</button>}
       {!layout.chat && <button type="button" className="unified-restore unified-restore-chat" onClick={() => patchLayout({ chat: true, mode: 'split' })} aria-label="展开对话区"><MessageSquare size={16} />对话</button>}
     </main>
-    {(workspace.error || learning.error || research.error || libraryError || localError) && <div className="unified-error" role="alert">{workspace.error || learning.error || research.error || libraryError || localError}</div>}
+    {(workspace.error || learning.error || research.error || libraryError || localError) && <div className="unified-error" role="alert">{localError || workspace.error || libraryError || learning.error || research.error}</div>}
     <input ref={fileInputRef} type="file" accept="application/pdf,.pdf" hidden onChange={(event) => handleUpload(event.target.files?.[0])} />
   </div>;
 }

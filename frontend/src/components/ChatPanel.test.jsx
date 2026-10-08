@@ -1,6 +1,6 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { act, render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import ChatPanel from './ChatPanel.tsx';
 
 const defaultProps = {
@@ -19,6 +19,57 @@ function renderChat(props = {}) {
 }
 
 describe('ChatPanel', () => {
+  beforeEach(() => localStorage.clear());
+  it('fills a suggested question without starting any generation', () => {
+    const send = vi.fn();
+    renderChat({ starterPrompts: [{ label: '带我读这篇', text: '/精读 从研究问题开始' }], onSendMessage: send });
+    fireEvent.click(screen.getByRole('button', { name: '带我读这篇' }));
+    expect(screen.getByLabelText('输入问题')).toHaveValue('/精读 从研究问题开始');
+    expect(screen.getByLabelText('输入问题')).toHaveFocus();
+    expect(send).not.toHaveBeenCalled();
+  });
+
+  it('keeps drafts separate when tasks switch and restores them after remounting', () => {
+    const view = renderChat({ conversationId: 'A' });
+    fireEvent.change(screen.getByLabelText('输入问题'), { target: { value: 'A 的问题' } });
+    view.rerender(<ChatPanel {...defaultProps} conversationId="B" />);
+    expect(screen.getByLabelText('输入问题')).toHaveValue('');
+    fireEvent.change(screen.getByLabelText('输入问题'), { target: { value: 'B 的问题' } });
+    view.rerender(<ChatPanel {...defaultProps} conversationId="A" />);
+    expect(screen.getByLabelText('输入问题')).toHaveValue('A 的问题');
+    view.unmount();
+    renderChat({ conversationId: 'B' });
+    expect(screen.getByLabelText('输入问题')).toHaveValue('B 的问题');
+  });
+
+  it('keeps rejected or failed questions available for editing', async () => {
+    const send = vi.fn().mockResolvedValueOnce(false).mockRejectedValueOnce(new Error('连接中断'));
+    renderChat({ conversationId: 'A', onSendMessage: send });
+    fireEvent.change(screen.getByLabelText('输入问题'), { target: { value: '/精读 我的目标' } });
+    fireEvent.click(screen.getByRole('button', { name: '发送消息' }));
+    await waitFor(() => expect(screen.getByRole('button', { name: '发送消息' })).toBeEnabled());
+    expect(screen.getByLabelText('输入问题')).toHaveValue('/精读 我的目标');
+    fireEvent.click(screen.getByRole('button', { name: '发送消息' }));
+    expect(await screen.findByRole('alert')).toHaveTextContent('连接中断');
+    expect(screen.getByLabelText('输入问题')).toHaveValue('/精读 我的目标');
+  });
+
+  it('does not let a late accepted submission clear a newer draft in the same task', async () => {
+    let finish;
+    const send = vi.fn(() => new Promise(resolve => { finish = resolve; }));
+    const first = renderChat({ conversationId: 'A', onSendMessage: send });
+    fireEvent.change(screen.getByLabelText('输入问题'), { target: { value: '原问题' } });
+    fireEvent.click(screen.getByRole('button', { name: '发送消息' }));
+    fireEvent.click(screen.getByRole('button', { name: '发送消息' }));
+    expect(send).toHaveBeenCalledTimes(1);
+    first.unmount();
+    const second = renderChat({ conversationId: 'A' });
+    fireEvent.change(screen.getByLabelText('输入问题'), { target: { value: '新草稿' } });
+    await act(async () => finish(true));
+    second.unmount();
+    renderChat({ conversationId: 'A' });
+    expect(screen.getByLabelText('输入问题')).toHaveValue('新草稿');
+  });
   it('opens the existing full artifact instead of saving a second copy of the summary', () => {
     const open = vi.fn();
     const capture = vi.fn();

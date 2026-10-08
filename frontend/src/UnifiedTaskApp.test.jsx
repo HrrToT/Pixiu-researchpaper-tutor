@@ -81,6 +81,56 @@ describe('unified task conversation wiring', () => {
     expect(screen.getByRole('region', { name: '论文与成果' })).not.toHaveClass('unified-desktop-hidden');
   });
 
+  it('keeps invalid learning input and shows its actionable error above service query errors', async () => {
+    state.task.paperIds = [];
+    state.task.activeActivity = null;
+    operationList.mockRejectedValue(new Error('服务状态不可读取'));
+    render(<UnifiedTaskApp />);
+    await waitFor(() => expect(screen.getByRole('alert')).toHaveTextContent('服务状态不可读取'));
+    let accepted;
+    await act(async () => { accepted = await state.chatProps.onSendMessage('/精读 帮我读这篇论文'); });
+    expect(accepted).toBe(false);
+    expect(screen.getByRole('alert')).toHaveTextContent('请打开或明确指定一篇要学习的论文');
+    expect(state.startOperation).not.toHaveBeenCalled();
+    expect(state.chatProps.conversationId).toBe('task');
+    expect(state.chatProps.starterPrompts).toHaveLength(1);
+  });
+
+  it('keeps the task unchanged after an upload fails and shows a plain recovery message', async () => {
+    const upload = vi.fn().mockRejectedValue(new Error('Request failed with status code 500'));
+    state.api.uploadTaskMaterial = upload;
+    const initial = { ...state.task };
+    const view = render(<UnifiedTaskApp />);
+    fireEvent.change(view.container.querySelector('input[type="file"]'), { target: { files: [new File(['%PDF-'], '论文.pdf', { type: 'application/pdf' })] } });
+    expect(await screen.findByRole('alert')).toHaveTextContent('论文上传未完成，请重新选择文件再试');
+    expect(state.task).toEqual(initial);
+    expect(state.selectedTaskId).toBeNull();
+    expect(state.writes).toBe(0);
+    expect(upload).toHaveBeenCalledOnce();
+    expect(screen.getByRole('button', { name: '上传 PDF' })).toBeEnabled();
+  });
+
+  it('rejects unsupported files before creating or uploading anything', async () => {
+    state.api.uploadTaskMaterial = vi.fn();
+    const view = render(<UnifiedTaskApp />);
+    fireEvent.change(view.container.querySelector('input[type="file"]'), { target: { files: [new File(['text'], '说明.txt')] } });
+    expect(screen.getByRole('alert')).toHaveTextContent('请选择 PDF 论文文件');
+    expect(state.api.uploadTaskMaterial).not.toHaveBeenCalled();
+    expect(state.writes).toBe(0);
+  });
+
+  it('rejects insufficient comparison materials without adding a fake answer to the conversation', async () => {
+    state.task.paperIds = ['a'];
+    state.task.activeActivity = null;
+    render(<UnifiedTaskApp />);
+    let accepted;
+    await act(async () => { accepted = await state.chatProps.onSendMessage('/比较 这两篇论文'); });
+    expect(accepted).toBe(false);
+    expect(screen.getByRole('alert')).toHaveTextContent('比较至少需要两篇论文');
+    expect(state.task.messages).toEqual([]);
+    expect(state.startOperation).not.toHaveBeenCalled();
+  });
+
   it('keeps desktop preferences and note drafts while compact panes and navigation change', () => {
     state.compact = true;
     state.task.notes = [{ id: 'compact-note', title: '窄屏笔记', text: '已保存' }];
