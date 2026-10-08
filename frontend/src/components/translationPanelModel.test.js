@@ -70,6 +70,16 @@ const run = () => {
     translatedBlocks:[{id:'formula',translatedText:'损坏公式'}],pageLayout:{...singleColumnLayout,
       blocks:[{id:'formula',text:'C = x + y, (2)',bbox:{left:0.3,top:0.5,width:0.3,height:0.03}}]}});
   assert.equal(formulaOnly.panoramicArtifactText,'');
+  const mathLayout = {...singleColumnLayout,blocks:[{...singleColumnLayout.blocks[0],text:'The volume is V(Σj) = 43πabc.'}]};
+  const legacyMath = createTranslationPanelViewModel({translatedText:'体积是43πabc。',
+    translatedBlocks:[{id:'block-1',translatedText:'体积是43πabc。'}],pageLayout:mathLayout});
+  assert.equal(legacyMath.mathNotice,'旧译文未保护行内公式，请以原图为准。');
+  assert.ok(legacyMath.panoramicArtifactText.startsWith('> 旧译文未保护行内公式'));
+  assert.ok(legacyMath.panoramicArtifactText.includes('体积是43πabc。'));
+  const protectedMath = createTranslationPanelViewModel({translatedText:'体积为⟦原式1⟧。',mathProtectionVersion:1,
+    translatedBlocks:[{id:'block-1',translatedText:'体积为⟦原式1⟧。'}],pageLayout:mathLayout});
+  assert.ok(protectedMath.mathNotice.includes('原式标记'));
+  assert.ok(protectedMath.panoramicArtifactText.includes('⟦原式1⟧'));
 
   const plainWithExcludedZones = createTranslationPanelViewModel({
     status: 'success',

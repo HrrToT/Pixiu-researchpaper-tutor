@@ -358,6 +358,7 @@ const TranslationPanel = ({ pdfId, pdfFileName, fileUrl, currentPage = 0, pageDa
     canRenderPlainColumnFallback,
     shouldShowPlainTranslation,
     panoramicArtifactText,
+    mathNotice,
   } = viewModel;
   const artifactText = fileUrl ? panoramicArtifactText : translatedText;
   const translationArtifact = useMemo(
@@ -436,6 +437,7 @@ const TranslationPanel = ({ pdfId, pdfFileName, fileUrl, currentPage = 0, pageDa
           </div>
         )}
 
+        {fileUrl && mathNotice && <p className="theme-text-secondary text-xs">{mathNotice}</p>}
         {fileUrl && <PanoramicTranslation fileUrl={fileUrl} pageIndex={currentPage} pageData={pageData} />}
 
         {!fileUrl && canRenderFidelity && (

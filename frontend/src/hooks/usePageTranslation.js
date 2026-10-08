@@ -125,6 +125,7 @@ export function usePageTranslation({
               translatedText: translatedText || '暂无译文',
               status: response?.status === 'partial' ? 'partial' : 'success',
               warning: response?.warning || '',
+              mathProtectionVersion: response?.mathProtectionVersion,
               missingBlockIds: response?.missingBlockIds || [],
               error: '',
               updatedAt: Date.now(),

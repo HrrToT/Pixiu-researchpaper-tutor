@@ -82,6 +82,7 @@ export const normalizeTranslationPage = (pageValue = {}) => {
     status: pageValue?.status || (pageValue?.translatedText ? 'success' : 'idle'),
     error: String(pageValue?.error || ''),
     warning: String(pageValue?.warning || ''),
+    mathProtectionVersion: pageValue?.mathProtectionVersion === 1 ? 1 : 0,
     missingBlockIds: Array.isArray(pageValue?.missingBlockIds) ? pageValue.missingBlockIds.filter(id => typeof id === 'string') : [],
     updatedAt: pageValue?.updatedAt || null,
   };

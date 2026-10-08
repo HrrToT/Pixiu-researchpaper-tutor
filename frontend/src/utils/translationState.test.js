@@ -145,6 +145,12 @@ const run = () => {
   });
   assert.equal(structuredLegacyPage.renderMode, 'overlay');
 
+  const protectedPage = normalizeTranslationPage({ translatedText: '见 ⟦原式1⟧', mathProtectionVersion: 1 });
+  assert.equal(protectedPage.mathProtectionVersion, 1);
+  assert.equal(normalizeTranslationPage(JSON.parse(JSON.stringify(protectedPage))).mathProtectionVersion, 1);
+  assert.equal(normalizeTranslationPage({ translatedText: '旧译文' }).mathProtectionVersion, 0);
+  assert.equal(normalizeTranslationPage({ mathProtectionVersion: 99 }).mathProtectionVersion, 0);
+
   console.log('frontend translation state tests passed');
 };
 

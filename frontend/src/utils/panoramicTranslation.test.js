@@ -23,6 +23,8 @@ assert.equal(partial.translatedCount,1);
 assert.ok(flatten(partial).some(item=>item.kind==='source' && item.bbox.top===0.4));
 const inline = buildPanoramicTranslation({blocks:[block('inline',0.1,0.2,0.8,0.1,'The covariance is E = R S S T R T.')]},translations(['inline']));
 assert.equal(flatten(inline).find(item=>item.kind==='translation').preserveMath,true);
+const dimension = buildPanoramicTranslation({blocks:[block('dim',0.1,0.2,0.8,0.1,'The position lies in R3.')]},[{id:'dim',translatedText:'位置在⟦原式1⟧中。'}]);
+assert.equal(flatten(dimension).find(item=>item.kind==='translation').preserveMath,true);
 const withDescenders = buildPanoramicTranslation({viewport:{height:800},blocks:[{
   ...block('body',0.1,0.3,0.8,0.1),style:{fontSize:12}}]},translations(['body']));
 assert.ok(Math.abs(flatten(withDescenders).find(item=>item.kind==='translation').bbox.height-0.10375)<1e-8);

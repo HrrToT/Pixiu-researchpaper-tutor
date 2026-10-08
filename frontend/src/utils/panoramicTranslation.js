@@ -1,6 +1,6 @@
 import { buildTranslationRequestPageLayout, normalizeRelativeBbox } from './pdfTranslationLayout.js';
 
-const hasMath = text => /[=∑∏Σαβγ√^]|\\(?:frac|sum|prod)\b/.test(text || '');
+export const hasMath = text => /[=∈∑∏Σαβγ√^]|\bR(?:\d|\()|\\(?:frac|sum|prod)\b/.test(text || '');
 
 export function usesUnpositionedTranslation(pageLayout, translatedBlocks = []) {
   if (!pageLayout?.blocks?.length || !translatedBlocks.length) return true;
