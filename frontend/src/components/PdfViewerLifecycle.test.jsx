@@ -44,6 +44,17 @@ it('shows the load error instead of leaving it hidden behind the loading state',
   expect(screen.getByRole('button',{name:'放大原文'})).toBeDisabled();
 });
 
+it('keeps an image-only page readable and clears its text notice after changing to a text page', async () => {
+  const doc={numPages:2,getPage:async number=>({getViewport:()=>viewport,
+    getTextContent:async()=>number===1?{items:[],styles:{}}:textContent('readable paragraph')})};
+  render(<PdfViewer fileUrl="image-page.pdf" pdfId="A"/>);
+  await act(async()=>state.viewer.onDocumentLoad({doc}));
+  expect(screen.getByRole('status')).toHaveTextContent('当前页没有可选文字');
+  expect(screen.getByRole('button',{name:'放大原文'})).toBeEnabled();
+  await act(async()=>state.viewer.onPageChange({currentPage:1,doc}));
+  expect(screen.queryByRole('status')).not.toBeInTheDocument();
+});
+
 it('jumps through the installed viewer without remounting the document', async () => {
   const doc = { numPages: 19, getPage: async () => ({ getViewport: () => viewport, getTextContent: async () => textContent('body') }) };
   const view = render(<PdfViewer fileUrl="fixture.pdf" pdfId="A" targetPageIndex={0} targetPageJumpToken={0} />);

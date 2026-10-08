@@ -11,3 +11,5 @@ node scripts/prepare-panoramic-preview.mjs 'D:\3DGS\paper\LightGaussian\2311.172
 ```
 
 核验范围：图表和独立公式保留、中文正文16px重排、320/390px宽度、原图放大、滚动、关闭和Esc返回。截图和限制详见 `docs/stage2-evidence/stage6-panoramic-reflow-audit.md`。
+
+`/qa/reader.html` 使用产品PdfViewer检查损坏文件与无文字页。两份PDF由测试页面在内存中建立，不上传、不保存、不调用模型；只验证加载与文字工具提示，不能充当真实扫描论文或上传链路的完整验收。

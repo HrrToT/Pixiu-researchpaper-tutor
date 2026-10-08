@@ -606,6 +606,7 @@ const PdfViewer: React.FC<PdfViewerProps> = ({
   const [activeHighlightId, setActiveHighlightId] = useState<number | null>(null);
   const [isPdfLoading, setIsPdfLoading] = useState<boolean>(true);
   const [displayScale, setDisplayScale] = useState(1);
+  const [pageTextState, setPageTextState] = useState<'loading' | 'ready' | 'empty' | 'error'>('loading');
   const clearPdfLoading = useCallback(() => setIsPdfLoading(false), []);
   const [selectionNoteError, setSelectionNoteError] = useState('');
   const savingSelectionNote = useRef(false);
@@ -639,6 +640,7 @@ const PdfViewer: React.FC<PdfViewerProps> = ({
     if (fileUrl) {
       setIsPdfLoading(true);
       setDisplayScale(1);
+      setPageTextState('loading');
     }
   }, [fileUrl]);
 
@@ -731,6 +733,7 @@ const PdfViewer: React.FC<PdfViewerProps> = ({
           return;
         }
         pageTextByIndexRef.current[pageIndex] = pageText;
+        setPageTextState(pageText.trim() ? 'ready' : 'empty');
         onPageTextExtracted?.({
           pageIndex,
           pageText,
@@ -742,6 +745,7 @@ const PdfViewer: React.FC<PdfViewerProps> = ({
           return;
         }
         pageTextByIndexRef.current[pageIndex] = '';
+        setPageTextState('error');
         onPageTextExtracted?.({
           pageIndex,
           pageText: '',
@@ -775,6 +779,7 @@ const PdfViewer: React.FC<PdfViewerProps> = ({
     (event: { currentPage: number; doc?: { numPages?: number } }) => {
       if (!mountedRef.current) return;
       currentPageRef.current = event.currentPage;
+      setPageTextState('loading');
       const doc = event.doc || pdfDocRef.current;
       onPageChange?.({
         pageIndex: event.currentPage,
@@ -1107,6 +1112,9 @@ const PdfViewer: React.FC<PdfViewerProps> = ({
             <button type="button" className="rounded px-2 py-1 focus-visible:outline" disabled={isPdfLoading || !pdfDocRef.current}
               onClick={() => navigationRef.current?.zoom(SpecialZoomLevel.PageWidth)}>适合宽度</button>
           </div>
+          {!isPdfLoading && ['empty','error'].includes(pageTextState) && <p role="status" className="theme-panel shrink-0 px-3 py-2 text-xs theme-text-secondary">
+            {pageTextState === 'empty' ? '当前页没有可选文字，可先看原图；划词与文字翻译暂不可用。' : '当前页文字暂不可读取，可继续看原图。'}
+          </p>}
           {isPdfLoading && <div className="pointer-events-none absolute inset-x-0 bottom-0 top-9 z-10"><PdfSkeleton /></div>}
           <div className="min-h-0 flex-1" style={{ visibility: isPdfLoading ? 'hidden' : 'visible', width: '100%' }}>
             <Worker workerUrl={workerUrl}>
