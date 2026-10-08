@@ -223,10 +223,26 @@ export const buildPaperOutlineModel = (deconstructData) => {
       };
     });
 
+    const orderedItems = items.filter(item => !isOutlineNoise(item.label));
+    // Some parsers append the abstract after the body headings. Only reorder
+    // when page coordinates confirm that it appears before a root heading.
+    const abstractIndex = orderedItems.findIndex(item => /^(abstract|摘要)$/i.test(item.label) && !item.parentId);
+    if (abstractIndex >= 0) {
+      const abstract = orderedItems[abstractIndex];
+      const bodyIndex = orderedItems.findIndex((item, index) => index < abstractIndex &&
+        item.level === 1 && !item.parentId && Number.isFinite(abstract.pageIndex) &&
+        item.pageIndex === abstract.pageIndex && Number.isFinite(abstract.anchorY) &&
+        Number.isFinite(item.anchorY) && abstract.anchorY < item.anchorY);
+      if (bodyIndex >= 0) {
+        orderedItems.splice(abstractIndex, 1);
+        orderedItems.splice(bodyIndex, 0, abstract);
+      }
+    }
+
     return {
       source: 'pdf',
       sourceLabel: outlineSourceLabels.pdf,
-      items: flattenOutlineHierarchy(items.filter(item => !isOutlineNoise(item.label))),
+      items: flattenOutlineHierarchy(orderedItems),
     };
   }
 
