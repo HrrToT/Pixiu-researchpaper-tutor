@@ -3,6 +3,7 @@ import {
   createEmptyTranslationState,
   normalizeTranslationPage,
 } from '../utils/translationState.js';
+import { buildTranslationRequestPageLayout } from '../utils/pdfTranslationLayout.js';
 
 const STRUCTURED_TRANSLATION_TIMEOUT_MS = 90000;
 
@@ -44,10 +45,15 @@ export function usePageTranslation({
     const key = JSON.stringify([pdfId, pageIndex]);
     const cached = stateRef.current?.pdfId === pdfId ? stateRef.current.pages?.[pageIndex] : null;
     const previousRequest = translationRequestsRef.current[key];
-    if (!force && (['success', 'error', 'translating', 'empty'].includes(cached?.status) || previousRequest)) return;
-    if (!String(sourceText || '').trim()) {
+    if (!force && (['success', 'partial', 'error', 'translating', 'empty'].includes(cached?.status) || previousRequest)) return;
+    const excludedZones = deconstructData?.translationLayoutIndex?.[pageIndex]?.excludedZones || [];
+    const requestLayout = pageLayout?.blocks?.length
+      ? buildTranslationRequestPageLayout(pageLayout, excludedZones) : pageLayout;
+    const hasOnlyPreservedContent = pageLayout?.blocks?.length > 0 && requestLayout.blocks.length === 0;
+    if (!String(sourceText || '').trim() || hasOnlyPreservedContent) {
       commitTranslationState(prev => prev?.pdfId !== pdfId ? prev : { ...prev,
-        pages: { ...prev.pages, [pageIndex]: { ...normalizeTranslationPage(prev.pages?.[pageIndex]), status: 'empty' } } });
+        pages: { ...prev.pages, [pageIndex]: normalizeTranslationPage({ ...prev.pages?.[pageIndex],
+          sourceText, pageLayout, status: 'empty' }) } });
       return;
     }
 
@@ -90,7 +96,7 @@ export function usePageTranslation({
       const pageLayoutBlocks = pageLayout?.blocks?.length || 0;
       const expectsStructuredResponse = pageLayoutBlocks > 0;
 
-      const response = await runTranslateRequest(sourceText, pageLayout,
+      const response = await runTranslateRequest(sourceText, requestLayout,
         expectsStructuredResponse ? STRUCTURED_TRANSLATION_TIMEOUT_MS : 90000);
 
       if (!isCurrentRequest()) return;
@@ -116,7 +122,9 @@ export function usePageTranslation({
               renderMode,
               pageLayout: pageLayout || prev.pages?.[pageIndex]?.pageLayout || null,
               translatedText: translatedText || '暂无译文',
-              status: 'success',
+              status: response?.status === 'partial' ? 'partial' : 'success',
+              warning: response?.warning || '',
+              missingBlockIds: response?.missingBlockIds || [],
               error: '',
               updatedAt: Date.now(),
             }),

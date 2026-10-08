@@ -34,7 +34,8 @@ describe('page translation request lifecycle', () => {
   it('does not fall back or retry failures until an explicit retry', async () => {
     const api = { translatePage: vi.fn().mockRejectedValueOnce(new Error('timeout')).mockResolvedValue({ translatedText: '恢复译文' }) };
     const { result } = setup(api);
-    const payload = { pageIndex: 0, pageText: 'original', pageLayout: { blocks: [{ id: 'body' }] } };
+    const payload = { pageIndex: 0, pageText: 'original', pageLayout: { blocks: [{ id: 'body',
+      text: 'This paragraph explains the rendering method.', bbox: {left:0.1, top:0.4, width:0.6, height:0.1} }] } };
     await act(async () => result.current.requestPageTranslation(payload));
     expect(api.translatePage).toHaveBeenCalledTimes(1);
     expect(result.current.translationState.pages[0].status).toBe('error');
@@ -77,5 +78,39 @@ describe('page translation request lifecycle', () => {
     await act(async () => result.current.requestPageTranslation({ pageIndex: 0, pageText: '  ' }));
     expect(api.translatePage).not.toHaveBeenCalled();
     expect(result.current.translationState.pages[0].status).toBe('empty');
+  });
+
+  it('preserves partial output and its warning across reload without generating again', async () => {
+    const api = { translatePage: vi.fn().mockResolvedValue({status: 'partial', translatedText: '已有译文',
+      missingBlockIds: ['missing'], warning: '还有1段未完成'}) };
+    const { result } = setup(api);
+    await act(async () => result.current.requestPageTranslation({pageIndex: 0, pageText: 'source'}));
+    const restored = normalizeTranslationState(result.current.translationState, 'A');
+    expect(restored.pages[0]).toMatchObject({status: 'partial', translatedText: '已有译文', missingBlockIds: ['missing'], warning: '还有1段未完成'});
+    const second = setup(api, restored);
+    await act(async () => second.result.current.requestPageTranslation({pageIndex: 0, pageText: 'source'}));
+    expect(api.translatePage).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not use a plain-text fallback for pages containing only preserved formulas', async () => {
+    const api = { translatePage: vi.fn() };
+    const { result } = setup(api);
+    await act(async () => result.current.requestPageTranslation({pageIndex:0,pageText:'C = x + y, (2)',
+      pageLayout:{blocks:[{id:'formula',text:'C = x + y, (2)',bbox:{left:0.3,top:0.6,width:0.3,height:0.02}}]}}));
+    expect(api.translatePage).not.toHaveBeenCalled();
+    expect(result.current.translationState.pages[0].status).toBe('empty');
+    expect(result.current.translationState.pages[0].pageLayout.blocks).toHaveLength(1);
+  });
+
+  it('excludes standalone formulas from the model request while keeping original layout for viewing', async () => {
+    const api = { translatePage: vi.fn().mockResolvedValue({translatedText:'译文'}) };
+    const { result } = setup(api);
+    const pageLayout = {viewport:{width:600,height:800},blocks:[
+      {id:'body',text:'The paragraph explains the rendering method.',bbox:{left:0.1,top:0.4,width:0.6,height:0.1}},
+      {id:'formula',text:'C = x + y, (2)',bbox:{left:0.3,top:0.6,width:0.3,height:0.02}},
+    ]};
+    await act(async () => result.current.requestPageTranslation({pageIndex:0,pageText:'source',pageLayout}));
+    expect(api.translatePage.mock.calls[0][4].blocks.map(block=>block.id)).toEqual(['body']);
+    expect(result.current.translationState.pages[0].pageLayout.blocks).toHaveLength(2);
   });
 });
