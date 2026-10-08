@@ -62,6 +62,14 @@ const run = () => {
     pageLayout:{...singleColumnLayout,blocks:[...singleColumnLayout.blocks,{id:'formula',text:'C = x + y, (2)',
       bbox:{left:0.3,top:0.5,width:0.3,height:0.03}}]}});
   assert.equal(cachedFormula.panoramicText, '正文译文');
+  assert.equal(cachedFormula.panoramicArtifactText, '正文译文');
+  const unmatched = createTranslationPanelViewModel({translatedText:'已有全文译文',
+    translatedBlocks:[{id:'old-id',translatedText:'已有全文译文'}],pageLayout:singleColumnLayout});
+  assert.equal(unmatched.panoramicArtifactText,'已有全文译文');
+  const formulaOnly = createTranslationPanelViewModel({translatedText:'损坏公式',
+    translatedBlocks:[{id:'formula',translatedText:'损坏公式'}],pageLayout:{...singleColumnLayout,
+      blocks:[{id:'formula',text:'C = x + y, (2)',bbox:{left:0.3,top:0.5,width:0.3,height:0.03}}]}});
+  assert.equal(formulaOnly.panoramicArtifactText,'');
 
   const plainWithExcludedZones = createTranslationPanelViewModel({
     status: 'success',

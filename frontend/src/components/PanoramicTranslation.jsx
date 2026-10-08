@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { getDocument, GlobalWorkerOptions } from 'pdfjs-dist';
 import workerUrl from 'pdfjs-dist/build/pdf.worker.min.js?url';
 import MarkdownContent from './MarkdownContent';
-import { buildPanoramicTranslation, sourcePixelRect } from '../utils/panoramicTranslation.js';
+import { buildPanoramicTranslation, sourcePixelRect, usesUnpositionedTranslation } from '../utils/panoramicTranslation.js';
 import './PanoramicTranslation.css';
 
 GlobalWorkerOptions.workerSrc = workerUrl;
@@ -116,15 +116,20 @@ export default function PanoramicTranslation({fileUrl,pageIndex,pageData}) {
   const {image,error} = usePdfPageImage(fileUrl,pageIndex);
   const plan = useMemo(() => buildPanoramicTranslation(pageData?.pageLayout,
     pageData?.translatedBlocks || [],pageData?.excludedZones || []),[pageData]);
+  const unpositioned = usesUnpositionedTranslation(pageData?.pageLayout, pageData?.translatedBlocks || []);
   const renderItems = items => items.map(item => item.kind === 'translation'
     ? <Paragraph key={item.id} item={item} image={image} />
     : image ? <SourceRegion key={item.id} image={image} bbox={item.bbox} /> : null);
   return <div className="panoramic-page" aria-label="当前页图文译文">
     {!image && <p className="panoramic-status" role="status">{error || '正在载入原图…'}</p>}
-    {plan ? plan.sections.map((section,index) => section.type === 'columns'
+    {unpositioned ? <>
+      {pageData?.translatedText && <article className="panoramic-paragraph"><MarkdownContent>{pageData.translatedText}</MarkdownContent></article>}
+      {pageData?.translatedBlocks?.length > 0 && <p className="panoramic-status">译文未按段落定位，可展开原图核对。</p>}
+      {image && <details className="panoramic-original-page"><summary>查看整页原图与公式</summary>
+        <SourceRegion image={image} bbox={{left:0,top:0,width:1,height:1}} /></details>}
+    </> : plan ? plan.sections.map((section,index) => section.type === 'columns'
       ? <div key={index} className="panoramic-columns"><div>{renderItems(section.left)}</div><div>{renderItems(section.right)}</div></div>
       : <div key={index}>{renderItems(section.items)}</div>)
-      : <>{image && <SourceRegion image={image} bbox={{left:0,top:0,width:1,height:1}} />}
-        {pageData?.translatedText && <MarkdownContent>{pageData.translatedText}</MarkdownContent>}</>}
+      : null}
   </div>;
 }

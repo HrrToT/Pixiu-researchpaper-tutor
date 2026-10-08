@@ -21,4 +21,6 @@
 @media (hover:none) { .panoramic-source-button > span { opacity:1; } }
 .panoramic-math-source { margin:8px 0; font-size:11px; color:var(--text-secondary); }
 .panoramic-status { font-size:12px; color:var(--text-secondary); }
+.panoramic-original-page { margin-top:12px; font-size:12px; color:var(--text-secondary); }
+.panoramic-original-page summary { cursor:pointer; }
 @container (min-width:680px) { .panoramic-columns { grid-template-columns:minmax(0,1fr) minmax(0,1fr); } }

@@ -1,6 +1,6 @@
 import { buildFidelityTranslationLayout, buildReadableTranslationLayout } from '../utils/pdfTranslationLayout.js';
 import { canRenderOverlay } from '../utils/translationState.js';
-import { buildPanoramicTranslation } from '../utils/panoramicTranslation.js';
+import { buildPanoramicTranslation, usesUnpositionedTranslation } from '../utils/panoramicTranslation.js';
 
 export const getPlainFallbackColumnMode = (pageLayout) => {
   const viewport = pageLayout?.viewport || {};
@@ -53,6 +53,7 @@ export const createTranslationPanelViewModel = (pageData = null) => {
     getPlainFallbackColumnMode(pageData?.pageLayout) === 'two-column';
 
   return {
+    panoramicArtifactText: usesUnpositionedTranslation(pageData?.pageLayout, translatedBlocks) ? translatedText : panoramicText,
     panoramicLayout,
     panoramicText,
     baseFidelityLayout,

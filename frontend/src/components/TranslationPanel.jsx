@@ -357,9 +357,9 @@ const TranslationPanel = ({ pdfId, pdfFileName, fileUrl, currentPage = 0, pageDa
     canRenderStructuredFallback,
     canRenderPlainColumnFallback,
     shouldShowPlainTranslation,
-    panoramicText,
+    panoramicArtifactText,
   } = viewModel;
-  const artifactText = fileUrl && pageData?.translatedBlocks?.length ? panoramicText : translatedText;
+  const artifactText = fileUrl ? panoramicArtifactText : translatedText;
   const translationArtifact = useMemo(
     () => buildTranslationArtifact({ pdfId, pdfFileName, pageIndex: currentPage, translatedText: artifactText, status, warning: pageData?.warning }),
     [currentPage, pdfFileName, pdfId, artifactText, status, pageData?.warning],

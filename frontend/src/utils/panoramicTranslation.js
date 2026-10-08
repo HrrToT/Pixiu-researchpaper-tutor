@@ -2,6 +2,12 @@ import { buildTranslationRequestPageLayout, normalizeRelativeBbox } from './pdfT
 
 const hasMath = text => /[=∑∏Σαβγ√^]|\\(?:frac|sum|prod)\b/.test(text || '');
 
+export function usesUnpositionedTranslation(pageLayout, translatedBlocks = []) {
+  if (!pageLayout?.blocks?.length || !translatedBlocks.length) return true;
+  const sourceIds = new Set(pageLayout.blocks.map(block => block.id));
+  return !translatedBlocks.some(block => sourceIds.has(block.id));
+}
+
 /** Reflow translated paragraphs while retaining every intervening PDF region. */
 export function buildPanoramicTranslation(pageLayout, translatedBlocks = [], excludedZones = []) {
   if (!pageLayout?.blocks?.length) return null;

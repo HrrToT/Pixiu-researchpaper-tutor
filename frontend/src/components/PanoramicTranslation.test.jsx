@@ -65,6 +65,28 @@ it('keeps the completed translation readable when source PDF rendering fails', a
   expect(screen.getByText('完整的中文译文')).toBeInTheDocument();
 });
 
+it('shows unpositioned cached prose before a folded original page without rewriting it', async () => {
+  mocks.getDocument.mockReturnValue({promise:Promise.resolve({getPage:async()=>makePage(600)}),destroy:vi.fn(async()=>{})});
+  const text = '保留已有译文，公式错误也不擅自改写。';
+  render(<PanoramicTranslation fileUrl="A.pdf" pageIndex={3} pageData={{translatedText:text,translatedBlocks:[]}}/>);
+  expect(screen.getByText(text)).toBeInTheDocument();
+  const summary = await screen.findByText('查看整页原图与公式');
+  expect(summary.closest('details')).not.toHaveAttribute('open');
+  expect(screen.getByText(text).compareDocumentPosition(summary) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  fireEvent.click(summary);
+  expect(summary.closest('details')).toHaveAttribute('open');
+  expect(screen.getByRole('img',{name:'论文原图、公式或尚未翻译内容'})).toBeVisible();
+});
+
+it('keeps unmatched cached text readable but does not attach it to unrelated paragraph coordinates', async () => {
+  mocks.getDocument.mockReturnValue({promise:Promise.reject(new Error('unavailable')),destroy:vi.fn(async()=>{})});
+  render(<PanoramicTranslation fileUrl="A.pdf" pageIndex={3} pageData={{...data,
+    translatedText:'无坐标的已有正文',translatedBlocks:[{id:'old-id',translatedText:'无坐标的已有正文'}]}}/>);
+  expect(screen.getByText('无坐标的已有正文')).toBeInTheDocument();
+  expect(screen.getByText('译文未按段落定位，可展开原图核对。')).toBeInTheDocument();
+  expect(await screen.findByText('原图暂时无法显示，请切回原文查看。')).toBeInTheDocument();
+});
+
 it('opens a local enlargement of the original image without loading another document', async () => {
   const show = vi.fn(function(){this.open=true;});
   Object.defineProperty(HTMLDialogElement.prototype,'showModal',{configurable:true,value:show});
