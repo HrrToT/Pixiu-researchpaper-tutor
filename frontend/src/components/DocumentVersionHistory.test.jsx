@@ -4,6 +4,15 @@ import { describe, it, expect, vi } from 'vitest';
 import DocumentVersionHistory from './DocumentVersionHistory';
 
 describe('version history controls', () => {
+  it('allows preview but prevents restoration during another document write', () => {
+    const restore = vi.fn();
+    render(<DocumentVersionHistory document={{ versions: [{ text: 'previous body' }] }} onRestore={restore} disabled />);
+    fireEvent.click(screen.getByText('历史版本（1）'));
+    fireEvent.change(screen.getByLabelText('选择历史版本'), { target: { value: '0' } });
+    expect(screen.getByText('previous body')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '恢复这个版本' })).toBeDisabled();
+    expect(restore).not.toHaveBeenCalled();
+  });
   it('previews without changing the document and restores only on explicit click', async () => {
     const restore = vi.fn(async () => {});
     const version = { text: 'earlier answer', savedAt: '2026-10-04' };

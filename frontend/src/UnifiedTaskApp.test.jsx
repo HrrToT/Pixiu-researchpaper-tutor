@@ -100,7 +100,8 @@ describe('unified task conversation wiring', () => {
     state.task = target;
     state.otherTasks = [original];
     view.rerender(<UnifiedTaskApp />);
-    expect(await screen.findByRole('textbox', { name: '编辑笔记与成果' })).toHaveValue('目标任务未保存草稿');
+    expect(await screen.findByRole('article', { name: '成果正文' })).toHaveTextContent('目标任务未保存草稿');
+    expect(screen.getByText('未保存修改')).toBeInTheDocument();
     expect(target.artifacts[0].text).toBe('已保存正文');
     expect(state.startOperation).not.toHaveBeenCalled();
     expect(state.writes).toBe(0);
@@ -119,7 +120,7 @@ describe('unified task conversation wiring', () => {
     expect(screen.getByRole('region', { name: '论文与成果' })).toHaveTextContent('完整解释和证据');
     expect(screen.getByRole('region', { name: '任务对话' })).not.toHaveTextContent('完整解释和证据');
     fireEvent.click(screen.getByRole('button', { name: '保存为成果' }));
-    await waitFor(() => expect(screen.getByRole('textbox', { name: '编辑笔记与成果' })).toHaveValue('完整解释和证据'));
+    await waitFor(() => expect(screen.getByRole('article', { name: '成果正文' })).toHaveTextContent('完整解释和证据'));
     expect(recoverOperation).toHaveBeenCalledWith('task', 'conflict');
     expect(state.startOperation).not.toHaveBeenCalled();
     expect(state.task.activeActivity.id).toBe('lesson');
@@ -221,17 +222,39 @@ describe('unified task conversation wiring', () => {
     expect(localStorage.getItem('pixiu-task-request-v1:' + state.startOperation.mock.calls[0][1].requestId)).not.toBeNull();
     expect(state.chatProps.isLoading).toBe(true);
   });
+  it('opens results for reading and preserves edits when switching views without saving', async () => {
+    state.task.notes = [{ id: 'note', title: '阅读笔记', text: '**已保存正文**' }];
+    render(<UnifiedTaskApp />);
+    fireEvent.click(screen.getByRole('button', { name: '阅读笔记', exact: true }));
+    expect(screen.getByRole('article', { name: '成果正文' })).toHaveTextContent('已保存正文');
+    expect(screen.queryByRole('textbox', { name: '编辑笔记与成果' })).not.toBeInTheDocument();
+    expect(screen.getByText('已保存')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: '编辑', exact: true }));
+    expect(screen.getByRole('button', { name: '保存', exact: true })).toBeDisabled();
+    fireEvent.change(screen.getByRole('textbox', { name: '编辑笔记与成果' }), { target: { value: '' } });
+    fireEvent.click(screen.getByRole('button', { name: '阅读', exact: true }));
+    expect(screen.getByRole('article', { name: '成果正文' })).toHaveTextContent('（空白正文）');
+    expect(screen.getByText('未保存修改')).toBeInTheDocument();
+    expect(state.task.notes[0].text).toBe('**已保存正文**');
+    expect(state.writes).toBe(0);
+    fireEvent.click(screen.getByRole('button', { name: '编辑', exact: true }));
+    expect(screen.getByRole('textbox', { name: '编辑笔记与成果' })).toHaveValue('');
+  });
+
   it('restores unsaved note edits after leaving the editor, including an intentionally empty draft', async () => {
     state.task.notes = [{ id: 'note', title: '我的笔记', text: '已保存正文' }];
     render(<UnifiedTaskApp />);
     fireEvent.click(screen.getByRole('button', { name: '我的笔记' }));
+    fireEvent.click(screen.getByRole('button', { name: '编辑', exact: true }));
     fireEvent.change(screen.getByRole('textbox', { name: '编辑笔记与成果' }), { target: { value: '尚未提交的修改' } });
     fireEvent.click(screen.getByRole('button', { name: '返回论文' }));
     fireEvent.click(screen.getByRole('button', { name: '我的笔记' }));
+    fireEvent.click(screen.getByRole('button', { name: '编辑', exact: true }));
     expect(screen.getByRole('textbox', { name: '编辑笔记与成果' })).toHaveValue('尚未提交的修改');
     fireEvent.change(screen.getByRole('textbox', { name: '编辑笔记与成果' }), { target: { value: '' } });
     fireEvent.click(screen.getByRole('button', { name: '返回论文' }));
     fireEvent.click(screen.getByRole('button', { name: '我的笔记' }));
+    fireEvent.click(screen.getByRole('button', { name: '编辑', exact: true }));
     expect(screen.getByRole('textbox', { name: '编辑笔记与成果' })).toHaveValue('');
     expect(state.task.notes[0].text).toBe('已保存正文');
   });
@@ -239,6 +262,7 @@ describe('unified task conversation wiring', () => {
     state.task.notes = [{ id: 'note', title: '版本笔记', text: '当前正文', versions: [{ text: '先前正文', savedAt: '2026-10-04' }] }];
     render(<UnifiedTaskApp />);
     fireEvent.click(screen.getByRole('button', { name: '版本笔记' }));
+    fireEvent.click(screen.getByRole('button', { name: '编辑', exact: true }));
     fireEvent.change(screen.getByRole('textbox', { name: '编辑笔记与成果' }), { target: { value: '未保存修改' } });
     fireEvent.click(screen.getByText('历史版本（1）'));
     fireEvent.change(screen.getByLabelText('选择历史版本'), { target: { value: '0' } });
@@ -262,6 +286,7 @@ describe('unified task conversation wiring', () => {
     state.task.notes = [{ id: 'note', title: '并发笔记', text: '原正文' }];
     const view = render(<UnifiedTaskApp />);
     fireEvent.click(screen.getByRole('button', { name: '并发笔记', exact: true }));
+    fireEvent.click(screen.getByRole('button', { name: '编辑', exact: true }));
     fireEvent.change(screen.getByRole('textbox', { name: '编辑笔记与成果' }), { target: { value: '我的旧草稿' } });
     state.task = { ...state.task, revision: 10, notes: [{ id: 'note', title: '并发笔记', text: '另一客户端的新正文' }] };
     view.rerender(<UnifiedTaskApp />);
@@ -271,6 +296,7 @@ describe('unified task conversation wiring', () => {
     expect(state.writes).toBe(0);
     fireEvent.click(screen.getByRole('button', { name: '返回论文', exact: true }));
     fireEvent.click(screen.getByRole('button', { name: '并发笔记', exact: true }));
+    fireEvent.click(screen.getByRole('button', { name: '编辑', exact: true }));
     expect(screen.getByRole('textbox', { name: '编辑笔记与成果' })).toHaveValue('我的旧草稿');
     expect(screen.getByRole('button', { name: '已核对，保留我的修改', exact: true })).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: '已核对，保留我的修改', exact: true }));

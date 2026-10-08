@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import TaskRename from './components/TaskRename';
 import { BookOpen, ChevronLeft, ChevronRight, FileDown, FilePlus2, Languages, MessageSquare, PanelLeftClose, PanelLeftOpen, Save, SunMoon, Upload } from 'lucide-react';
 import ChatPanel from './components/ChatPanel';
 import MarkdownContent from './components/MarkdownContent';
@@ -78,6 +79,8 @@ export default function UnifiedTaskApp() {
   activeTaskIdRef.current = activeTaskId;
   const [documentDraft, setDocumentDraft] = useState('');
   const [restoringDocument, setRestoringDocument] = useState(false);
+  const [documentEditing, setDocumentEditing] = useState(false);
+  const [savingDocument, setSavingDocument] = useState(false);
   const selectedDocumentRef = useRef(null);
   selectedDocumentRef.current = selectedDocument;
   const [localError, setLocalError] = useState('');
@@ -430,6 +433,16 @@ export default function UnifiedTaskApp() {
   const activeDocument = selectedDocument?.taskId === activeTaskId ? (selectedDocument.id
     ? activeTask?.[selectedDocument.collection]?.find((item) => (item.id || item.artifactId) === selectedDocument.id)
     : activeTask?.[selectedDocument.collection]?.[selectedDocument.index]) : null;
+  const selectedDocumentKey = selectedDocument ? documentDraftKey(selectedDocument) : null;
+  useEffect(() => { setDocumentEditing(false); }, [selectedDocumentKey]);
+  const documentDirty = !!activeDocument && documentDraft !== normalizeNoteContent(activeDocument);
+  const saveDocumentFromToolbar = async () => {
+    if (savingDocument) return;
+    setSavingDocument(true); setLocalError('');
+    try { await saveDocument(); }
+    catch (error) { setLocalError(error.response?.data?.message || error.message || '保存失败，草稿仍保留'); }
+    finally { setSavingDocument(false); }
+  };
   const saveDocument = async () => {
     if (!activeDocument || !selectedDocument) return;
     const { taskId, collection } = selectedDocument;
@@ -513,6 +526,7 @@ export default function UnifiedTaskApp() {
     finally { setMovingDocument(false); }
   };
   const restoreDocument = async (version) => {
+    if (savingDocument) throw new Error('正在保存正文，请等待保存结果');
     if (movingDocument) throw new Error('正在移动文档，请等待结果确认');
     const selection = selectedDocument;
     const text = documentText(version);
@@ -588,7 +602,7 @@ export default function UnifiedTaskApp() {
       <div className="unified-brand"><img src="/貔貅紫白.png" alt="" /> <strong>貔貅</strong><span>学术工作台</span></div>
       <div className="unified-title" title={activeTask?.title || ''}>{activeTask?.title || '新任务'}</div>
       <TaskDraftRecovery taskId={activeTaskId} refreshKey={workspace.error || localError} onCreateTask={createTask} />
-      {activeTask && <button type="button" className="unified-header-action" onClick={() => { const title = window.prompt('任务名称', activeTask.title); if (title?.trim()) void updateTask(activeTaskId, { title: title.trim() }); }}>重命名</button>}
+      {activeTask && <TaskRename key={activeTaskId} task={activeTask} onRename={title => updateTask(activeTaskId, { title })} />}
       <div className="unified-layout-actions" role="group" aria-label="布局">
         <button type="button" className={layout.mode === 'split' ? 'active' : ''} onClick={() => setMode('split')}>并排</button>
         <button type="button" className={layout.mode === 'reader' ? 'active' : ''} onClick={() => setMode('reader')}>专注阅读</button>
@@ -636,11 +650,20 @@ export default function UnifiedTaskApp() {
               catch { setLocalError('草稿核对记录保存失败，请保留当前正文'); }
             }}>已核对，保留我的修改</button>
           </div>}
-          <div className="unified-document-toolbar"><button type="button" disabled={restoringDocument || movingDocument} onClick={() => saveDocument().catch((error) => setLocalError(error.message || "保存失败"))}><Save size={15} /> 保存</button><button type="button" onClick={exportDocument}><FileDown size={15} /> 下载</button></div>
-          <DocumentVersionHistory key={`${selectedDocument.taskId}/${selectedDocument.collection}/${selectedDocument.id ?? selectedDocument.index}`} document={activeDocument} onRestore={restoreDocument} />
+          <div className="unified-document-toolbar">
+            <div className="unified-document-modes" role="group" aria-label="成果视图">
+              <button type="button" aria-pressed={!documentEditing} onClick={() => setDocumentEditing(false)}>阅读</button>
+              <button type="button" aria-pressed={documentEditing} onClick={() => setDocumentEditing(true)}>编辑</button>
+            </div>
+            {(documentEditing || documentDirty) && <button type="button" disabled={savingDocument || restoringDocument || movingDocument || !documentDirty} onClick={saveDocumentFromToolbar}><Save size={15} /> {savingDocument ? '保存中…' : '保存'}</button>}
+            <button type="button" onClick={exportDocument}><FileDown size={15} /> 下载</button>
+            <span className="unified-document-save-state" role="status">{savingDocument ? '正在保存' : documentDirty ? '未保存修改' : '已保存'}</span>
+          </div>
+          <DocumentVersionHistory key={`${selectedDocument.taskId}/${selectedDocument.collection}/${selectedDocument.id ?? selectedDocument.index}`} document={activeDocument} onRestore={restoreDocument} disabled={savingDocument || movingDocument} />
           <DocumentOrganizer key={`organize/${documentDraftKey(selectedDocument)}`} document={activeDocument} taskId={activeTaskId} tasks={tasks}
-            dirty={documentDraft !== normalizeNoteContent(activeDocument)} onRename={renameDocument} onMove={moveDocument} />
+            dirty={documentDirty || savingDocument} onRename={renameDocument} onMove={moveDocument} />
           <CollapsedSources value={activeDocument} onJumpToSource={jumpToSource} />
+          {documentEditing ? <>
           <textarea aria-label="编辑笔记与成果" disabled={restoringDocument || movingDocument} value={documentDraft} onChange={(event) => {
             const value = event.target.value;
             setDocumentDraft(value);
@@ -651,7 +674,8 @@ export default function UnifiedTaskApp() {
             }
             catch { setLocalError('本地草稿保存失败，请先保存或下载当前正文'); }
           }} />
-          <div className="unified-document-preview"><h3>预览</h3><MarkdownContent>{documentDraft}</MarkdownContent></div>
+          <details className="unified-document-edit-preview"><summary>预览</summary><MarkdownContent>{documentDraft || '（空白正文）'}</MarkdownContent></details>
+          </> : <article className="unified-document-body" aria-label="成果正文"><MarkdownContent>{documentDraft || '（空白正文）'}</MarkdownContent></article>}
         </div> : paperView.error ? <div className="unified-empty" role="alert">{paperView.error}</div>
           : paperView.url ? <div className={`unified-reader-content unified-reader-content-${translationMode}`}>
             <div className="unified-pdf">

@@ -2,13 +2,14 @@ import React, { useState } from 'react';
 import MarkdownContent from './MarkdownContent';
 import { documentText } from '../utils/documentVersions';
 
-export default function DocumentVersionHistory({ document, onRestore }) {
+export default function DocumentVersionHistory({ document, onRestore, disabled = false }) {
   const [selected, setSelected] = useState(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const versions = document.versions || [];
   const version = selected === null ? null : versions[selected];
   const restore = async () => {
+    if (disabled || busy) return;
     setBusy(true); setError('');
     try { await onRestore(version); setSelected(null); }
     catch (failure) { setError(failure.message || '恢复失败，当前内容仍保留'); }
@@ -22,7 +23,7 @@ export default function DocumentVersionHistory({ document, onRestore }) {
     </select>}
     {version && <div><MarkdownContent>{documentText(version) || '（空白正文）'}</MarkdownContent>
       <p>恢复会保留当前正文及未保存的编辑。</p>
-      <button type="button" disabled={busy} onClick={restore}>{busy ? '恢复中…' : '恢复这个版本'}</button>
+      <button type="button" disabled={busy || disabled} onClick={restore}>{busy ? '恢复中…' : '恢复这个版本'}</button>
     </div>}
     {error && <p role="alert">{error}</p>}
   </details>;
