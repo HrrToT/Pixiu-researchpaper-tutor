@@ -15,6 +15,47 @@ function setup(api, stored = null) {
 }
 
 describe('page translation request lifecycle', () => {
+  it('keeps the reader page when an older translation finishes and retries the visible page', async () => {
+    let finishFirst;
+    const api = { translatePage: vi.fn()
+      .mockImplementationOnce(() => new Promise(resolve => { finishFirst = resolve; }))
+      .mockRejectedValueOnce(new Error('page two timeout'))
+      .mockResolvedValueOnce({translatedText:'第二页重试结果'}) };
+    const { result } = setup(api);
+    let firstRequest;
+    act(() => { firstRequest = result.current.requestPageTranslation({pageIndex:0,pageText:'first page'}); });
+    act(() => result.current.handlePdfPageChange({pageIndex:1,totalPages:2}));
+    await act(async () => result.current.handlePageTextExtracted({pageIndex:1,pageText:'second page'}));
+    expect(result.current.translationState.pages[1].status).toBe('error');
+    await act(async () => { finishFirst({translatedText:'第一页迟到译文'}); await firstRequest; });
+    expect(result.current.translationState.currentPage).toBe(1);
+    expect(result.current.translationState.pages[0].translatedText).toBe('第一页迟到译文');
+    await act(async () => result.current.handleRetryTranslation(result.current.translationState));
+    expect(api.translatePage.mock.calls[2].slice(0,3)).toEqual(['A',1,'second page']);
+    expect(result.current.translationState.pages[1].translatedText).toBe('第二页重试结果');
+    expect(api.translatePage).toHaveBeenCalledTimes(3);
+  });
+
+  it('retains both cached pages after out-of-order completion without changing the selected page', async () => {
+    const finish = {};
+    const api = { translatePage: vi.fn((pdfId,pageIndex) => new Promise(resolve => { finish[pageIndex] = resolve; })) };
+    const { result } = setup(api);
+    let first, second;
+    act(() => { first = result.current.requestPageTranslation({pageIndex:0,pageText:'first'}); });
+    act(() => result.current.handlePdfPageChange({pageIndex:1,totalPages:2}));
+    act(() => { second = result.current.requestPageTranslation({pageIndex:1,pageText:'second'}); });
+    await act(async () => { finish[1]({translatedText:'第二页译文'}); await second; });
+    await act(async () => { finish[0]({status:'partial',translatedText:'第一页部分译文',missingBlockIds:['remaining'],warning:'还有一段未完成'}); await first; });
+    const restored = normalizeTranslationState(result.current.translationState,'A');
+    expect(restored.currentPage).toBe(1);
+    expect(restored.pages[0]).toMatchObject({status:'partial',translatedText:'第一页部分译文',missingBlockIds:['remaining']});
+    expect(restored.pages[1]).toMatchObject({status:'success',translatedText:'第二页译文'});
+    act(() => result.current.handlePdfPageChange({pageIndex:0,totalPages:2}));
+    await act(async () => result.current.handlePageTextExtracted({pageIndex:0,pageText:'first'}));
+    expect(result.current.translationState.currentPage).toBe(0);
+    expect(api.translatePage).toHaveBeenCalledTimes(2);
+  });
+
   it('keeps cached translations paired with their original layout after parser changes', () => {
     const api = { translatePage: vi.fn() };
     const oldLayout = {viewport:{width:600,height:800},blocks:[{id:'old-caption',

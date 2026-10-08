@@ -112,7 +112,8 @@ export function usePageTranslation({
         if (prev?.pdfId !== pdfId || !isCurrentRequest()) return prev;
         return {
           ...prev,
-          currentPage: pageIndex,
+          // Completion can arrive after navigation. Only navigation/extraction
+          // changes the selected page; this response updates its own cache entry.
           pages: {
             ...prev.pages,
             [pageIndex]: normalizeTranslationPage({
