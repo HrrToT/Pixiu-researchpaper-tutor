@@ -61,6 +61,7 @@ def synthesize_research_finding(question, evidence):
 区分作者报告与你的推断；不能把检索未覆盖的信息说成论文没有提供。
 证据限制请明确写“本次检索片段未覆盖”，不要写成整篇论文或全部材料没有提供。
 每条独立结论必须附支持它的原文逐字短摘录（8到300字符），不能引用标题或来源元数据。
+每条摘录须是连续原文，不能用“...”或省略号拼接，也不能改写。需要多处依据时分成多个references，可重复sourceId。
 跨论文比较须为涉及的每篇论文提供引用，不能将同一论文的多个片段说成独立验证。
 只输出JSON：{"claims":[{"summary":"直接回答问题的一条结论", "kind":"reported或inference",
 "references":[{"sourceId":"完整原样ID", "quote":"正文原文逐字摘录"}]}],

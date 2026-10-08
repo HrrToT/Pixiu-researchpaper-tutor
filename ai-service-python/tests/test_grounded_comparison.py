@@ -63,6 +63,24 @@ def test_unknown_cell_has_no_fake_claim_or_source():
     assert [x['pdfId'] for x in result['rag_sources']] == ['A']
 
 
+def test_elliptical_quote_is_rejected_while_separate_literal_refs_are_accepted():
+    sources = copy.deepcopy(SOURCES)
+    sources[0]['text'] += ' Our second stage prunes redundant Gaussians after recovery.'
+    value = payload()
+    value['dimensions'][0]['cells'][0]['references'] = [{'sourceId':'a-1',
+        'quote':'We maximize the radar SINR... Our second stage prunes redundant Gaussians'}]
+    with patch('services.socratic_service._call_guarded_llm', return_value=json.dumps(value)):
+        with pytest.raises(ValueError, match='摘录无法在正文中找到'):
+            synthesize_comparison('比较', sources, ['A', 'B'])
+    value['dimensions'][0]['cells'][0]['references'] = [
+        {'sourceId':'a-1', 'quote':'We maximize the radar SINR'},
+        {'sourceId':'a-1', 'quote':'Our second stage prunes redundant Gaussians'},
+    ]
+    with patch('services.socratic_service._call_guarded_llm', return_value=json.dumps(value)):
+        result = synthesize_comparison('比较', sources, ['A', 'B'])
+    assert len(result['comparisonTable'][0]['cells'][0]['references']) == 2
+
+
 def test_cancelled_provider_response_is_not_published():
     cancelled = [False]
     def model(*args):
