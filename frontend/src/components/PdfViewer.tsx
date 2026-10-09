@@ -19,6 +19,7 @@ import { apiService } from '../services/api';
 import { buildExplainSelectionPayload } from '../utils/pdfFormulaSelection';
 import { focusSelectionContext } from '../utils/selectionContext';
 import { buildPageLayout } from '../utils/pdfTranslationLayout.js';
+import { recoverMathGlyphs } from '../utils/pdfMathGlyphs.js';
 import MarkdownContent from './MarkdownContent';
 import { getMessageMarkdownClassName } from './MessageMarkdownRenderer';
 import PdfSkeleton from './PdfSkeleton';
@@ -729,7 +730,7 @@ const PdfViewer: React.FC<PdfViewerProps> = ({
         const docWithPage = doc as { getPage: (n: number) => Promise<unknown> };
         const page = await docWithPage.getPage(pageIndex + 1);
         const pageWithContent = page as { getTextContent: () => Promise<unknown>; getViewport: (opts: Record<string, number>) => unknown };
-        const textContent = await pageWithContent.getTextContent();
+        const textContent = await recoverMathGlyphs(page, await pageWithContent.getTextContent(), doc);
         const viewport = pageWithContent.getViewport({ scale: 1 });
         const { pageText, pageLayout } = buildPageLayout(textContent, viewport);
 
