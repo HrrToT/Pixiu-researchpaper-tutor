@@ -783,7 +783,7 @@ def _analyze_axis(
         "evidence": evidence,
     }
 
-def deep_analysis(request: DeepAnalysisRequest) -> dict[str, Any]:
+def deep_analysis(request: DeepAnalysisRequest, *, grounded: bool = False) -> dict[str, Any]:
     trace_id = start_trace(
         "critical",
         request_meta={
@@ -802,6 +802,26 @@ def deep_analysis(request: DeepAnalysisRequest) -> dict[str, Any]:
             )
             for axis_config in ANALYSIS_AXIS_CONFIGS
         ]
+        if grounded:
+            from rag.store import normalize_id
+            from services.grounded_critique import synthesize_critique
+            from services.focused_evidence import select_focused_evidence
+            # Select before synthesis. Taking the first ten from ordered axes
+            # otherwise fills the budget with contributions/methods and drops results.
+            pool = _merge_evidence_lists(*[axis.get('evidence') or [] for axis in axis_results])
+            if not normalized_id or any(normalize_id(source.get('pdfId') or (source.get('metadata') or {}).get('id')) != normalized_id
+                                        for source in pool) or any(normalize_id((document.get('metadata') or {}).get('id')) != normalized_id
+                                                                   for document in documents):
+                raise ValueError('批判证据不属于指定论文，已停止生成。')
+            corpus = normalize_evidence_items(documents, pdf_id=normalized_id, max_text_chars=ANALYSIS_EVIDENCE_MAX_TEXT_CHARS)
+            response_sources = select_focused_evidence(pool, corpus, request.focus_question or '整体批判阅读',
+                                                       'compare', limit=ANALYSIS_RESPONSE_SOURCE_LIMIT, section_cap=2)
+            response = synthesize_critique(request.focus_question or '整体批判阅读', response_sources)
+            record_metric('axisCount', len(axis_results))
+            record_metric('responseSources', len(response['rag_sources']))
+            record_metric('literalFindings', len(response['groundedClaims']))
+            finalize_trace('success', response_meta={'resolvedFrom': resolved_from, 'grounded': True})
+            return {**response, 'resolved_from': resolved_from, 'pdf_id': normalized_id, 'traceId': trace_id}
         report = _generate_structured_critical_report(
             axis_results, analysis_context or paper_content[:2400], resolved_from,
             **({"focus_question": request.focus_question} if request.focus_question else {}))

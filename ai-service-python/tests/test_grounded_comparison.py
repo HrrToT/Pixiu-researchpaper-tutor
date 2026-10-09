@@ -110,3 +110,18 @@ def test_duplicate_source_ids_are_rejected_before_spending_a_model_call():
         with pytest.raises(ValueError, match='标识重复'):
             synthesize_comparison('比较', sources, ['A', 'B'])
     provider.assert_not_called()
+
+
+def test_comparison_can_select_excerpts_instead_of_regenerating_quotes():
+    from services.evidence_quotes import prepare_quote_sources
+    _, _, catalog = prepare_quote_sources(SOURCES)
+    value = payload()
+    for claim in [*value['claims'], *value['dimensions'][0]['cells']]:
+        for ref in claim['references']:
+            if 'quoteId' in ref:
+                continue
+            quote = ref.pop('quote')
+            ref['quoteId'] = next(qid for qid, original in catalog[ref['sourceId']].items() if original == quote)
+    result = call(value)
+    assert result['claims'][0]['references'][0]['quote'] == SOURCES[0]['text']
+    assert '[1]' in result['message'] and 'quoteId' not in result['message']

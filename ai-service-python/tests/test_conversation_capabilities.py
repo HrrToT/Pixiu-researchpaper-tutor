@@ -19,9 +19,10 @@ def comparison_model(prompts):
         for paper in payload['paperIds']:
             source = next(x for x in payload['evidence'] if x['pdfId'] == paper)
             body = source['text'].split('Detected issues:', 1)[1].split('\n', 1)[1].rsplit('\n[/UNTRUSTED', 1)[0]
-            quote = next(line for line in body.splitlines() if len(line.strip()) >= 8 and not line.startswith('['))[:100]
+            excerpt = next(line for line in body.splitlines() if line.startswith('[') and len(line.split(']', 1)[0]) == 17)
+            quote_id = excerpt.split(']', 1)[0][1:]
             cells.append({'paperId': paper, 'summary': '比较结果', 'kind': 'reported',
-                          'references': [{'sourceId': source['sourceId'], 'quote': quote}]})
+                          'references': [{'sourceId': source['sourceId'], 'quoteId': quote_id}]})
         return json.dumps({'claims': [{**cells[0], 'paperIds': [cells[0]['paperId']]}],
                            'dimensions': [{'label': '方法', 'cells': cells}], 'limitations': []})
     return call
@@ -42,13 +43,14 @@ def test_simple_question_has_one_lightweight_step(monkeypatch):
 def test_critique_passes_user_focus_without_changing_paper_scope(monkeypatch):
     from services import analysis_service
     captured = []
-    monkeypatch.setattr(analysis_service, 'deep_analysis', lambda value: captured.append(value) or {
+    monkeypatch.setattr(analysis_service, 'deep_analysis', lambda value, **options: captured.append((value, options)) or {
         'status': 'success', 'critical_analysis': '当前证据不足以判断全局最优性。', 'rag_sources': []})
     value = ConversationCapabilityRequest(taskId='task', message='重点批判最优性证明',
         capability='critique', allowedPaperIds=['A.pdf'])
     result = service.execute_conversation(value)
-    assert captured[0].focus_question == '重点批判最优性证明'
-    assert captured[0].pdf_id == 'A.pdf'
+    assert captured[0][0].focus_question == '重点批判最优性证明'
+    assert captured[0][0].pdf_id == 'A.pdf'
+    assert captured[0][1] == {'grounded': True}
     assert '全局最优性' in result['artifact']['text']
 
 
@@ -239,7 +241,7 @@ def test_summary_stops_before_detail_sections_without_dangling_heading():
 
 def test_critique_chat_uses_conclusion_and_keeps_details_in_artifact(monkeypatch):
     from services import analysis_service
-    monkeypatch.setattr(analysis_service, 'deep_analysis', lambda value: {
+    monkeypatch.setattr(analysis_service, 'deep_analysis', lambda value, **options: {
         'status': 'success', 'critical_analysis': '压缩存在质量代价，适用范围受实验条件约束。',
         'evidence_based_contributions': '完整实验细节。' * 90,
         'weaknesses': ['局限的具体依据。'], 'rag_sources': []})
@@ -257,3 +259,11 @@ def test_long_multi_paper_critique_summary_retains_each_paper(monkeypatch):
     result = service.execute_conversation(request(capability='critique'))
     assert result['message'] == '论文甲：甲需要核对实验条件。\n\n论文乙：乙有明确质量代价。'
     assert '甲完整结果' in result['artifact']['text'] and '乙完整结果' in result['artifact']['text']
+
+
+def test_short_artifact_still_keeps_quotes_and_detail_sections_out_of_chat(monkeypatch):
+    body = '主要结论。\n\n**局限**\n- 具体代价。\n\n<details><summary>原文依据</summary>Original quote.</details>'
+    monkeypatch.setattr(service,'_run_step',lambda *args:[{'message':body,'summary':'主要结论。'}])
+    result = service.execute_conversation(request(capability='critique'))
+    assert result['message'] == '主要结论。'
+    assert result['artifact']['text'] == body

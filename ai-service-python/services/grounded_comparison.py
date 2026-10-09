@@ -3,10 +3,10 @@ import json
 
 from services.agent_grounded_answer import _extract_json_object
 from services.operation_control import check_cancelled
-from services.research_synthesis import evidence_body, validate_claim
+from services.research_synthesis import validate_claim
 from services.safety_service import wrap_untrusted_context
-from services.focused_evidence import bounded_evidence_body
-from services.comparison_measurements import bounded_table_body, validate_numeric_comparison
+from services.comparison_measurements import validate_numeric_comparison
+from services.evidence_quotes import prepare_quote_sources, resolve_references
 
 
 def grounded_source_map(claims, text):
@@ -23,20 +23,7 @@ def grounded_source_map(claims, text):
 
 def synthesize_comparison(question, sources, paper_ids, prior=''):
     from services.socratic_service import _call_guarded_llm
-    clean_sources, validation_sources = [], []
-    per_source_chars = min(1400, 24000 // max(1, len(sources)))
-    for source in sources:
-        body = bounded_evidence_body(source.get('text'), per_source_chars)
-        body, verified = bounded_table_body(source, body, per_source_chars)
-        if not body or (source.get('metadata') or {}).get('fallback'):
-            continue
-        safe = wrap_untrusted_context('Comparison paper evidence', body, max_tokens=1000)
-        metadata = source.get('metadata') or {}
-        clean_sources.append({'sourceId': source['sourceId'], 'pdfId': source['pdfId'], 'text': safe['wrapped'],
-                              'evidenceKind': metadata.get('evidence_kind'),
-                              'verifiedTable': verified,
-                              'tableColumnMappingUnverified': bool(metadata.get('table_column_mapping_unverified'))})
-        validation_sources.append({**source, 'text': safe['text'], '_verifiedTable': verified})
+    clean_sources, validation_sources, quote_catalog = prepare_quote_sources(sources)
     if set(paper_ids) - {source['pdfId'] for source in clean_sources}:
         raise ValueError('部分比较论文缺少可引用正文，请等待解析或补充材料。')
     by_id = {s['sourceId']: s for s in validation_sources}
@@ -51,16 +38,17 @@ def synthesize_comparison(question, sources, paper_ids, prior=''):
 verifiedTable是PDF绘制位置与TEI逐格交叉核对的组和完整行，只有这些行允许量化结论。每条含FPS/存储/PSNR/SSIM/LPIPS数字或倍数的结论和表格单元须加measurements数组，逐项提供sourceId、row（原始行号）、group（从0起的数据集组）、metric（原样指标名）、value（原样单元格，存储值含单位）、baselineRow、dataset、hardware、baseline（原样基线方法含星号）、conditionReferences（本论文硬件依据的sourceId/quote）。引用完整结果行与基线行，并在本条summary内注明数据集、硬件和基线版本。operation默认value；有界计算允许difference（结果减基线）、ratio（结果除基线）和inverse_ratio（基线除结果，适用于压缩倍数）；倍数value无单位，summary用倍，计算值最多6位小数。条件或已核对列不足时给具体定性结果，不编数字，也不生成无依据measurements。
 上述已核对行限制针对表格。正文中作者明确报告的数字也可使用：kind须reported，measurements的quote须与本条references的一条连续摘录相同，并在该摘录同时出现指标数字、数据集和基线；提供metric、value、dataset、hardware、baseline、conditionReferences即可，无需row/group。不能从零散正文拼出一次实验。
 方法因素优先按正文公式与邻近定义完整解释；消融中列出的因素不一定等于公式全部因素。资料冲突时说明版本/段落差异，不能无声选择。
-每条结论与每个表格单元的事实必须有支持它的逐字原文摘录（8到300字符）。
-每个quote必须是同一来源中连续的一段原文，不能用“...”或省略号拼接不连续片段，不能改写或补全原文。
-一项结论涉及多个句子或方法模块时，在references中分别提供多个短摘录，可重复同一sourceId；不要合并成一条长quote。
+每条结论与每个表格单元的事实必须有支持它的原文摘录。每段text里的[16位标识]是quoteId。
+只选择摘录，references写sourceId与quoteId，不重新抄录或改写quote。系统会恢复原文。
+一项结论涉及多个句子或方法模块时，选择多个quoteId，可重复同一sourceId；不能自行拼接片段。
+measurements的quote也改为quoteId，conditionReferences同样选择sourceId/quoteId；其他实验条件规则保持。
 结论中paperIds必须列出涉及的论文；跨论文结论必须为每篇提供原文引用。
 表格每个维度都要包含每篇选中论文的一个单元。缺证据用kind=not_covered，写当前片段未覆盖并置references为空。
 区分作者报告reported和解释推断inference，不把同一论文多个片段叫独立验证。
 只输出JSON：{"claims":[{"summary":"直接回答问题的结论","kind":"reported或inference",
-"paperIds":["所涉及的论文ID"],"references":[{"sourceId":"完整原样ID","quote":"正文逐字短摘录"}]}],
+"paperIds":["所涉及的论文ID"],"references":[{"sourceId":"完整原样ID","quoteId":"正文摘录标识"}]}],
 "dimensions":[{"label":"比较维度","cells":[{"paperId":"论文ID","summary":"具体比较内容",
-"kind":"reported或inference或not_covered","references":[{"sourceId":"完整ID","quote":"原文"}]}]}],
+"kind":"reported或inference或not_covered","references":[{"sourceId":"完整ID","quoteId":"正文摘录标识"}]}]}],
 "limitations":["比较边界或无法判断的问题"]}。
 含指标数字的claims或cells额外加上面规定的measurements；无数字时可省略。不把measurements或核对过程写入summary。
 由表格计算的差值或倍数单独列为kind=inference，不把计算结果当作作者原样报告。
@@ -75,6 +63,7 @@ verifiedTable是PDF绘制位置与TEI逐格交叉核对的组和完整行，只�
         raise ValueError('比较结果格式不完整，请重试。')
     checked_claims = []
     for claim in claims:
+        claim = resolve_references(claim, quote_catalog)
         checked = validate_claim(claim, validation_sources)
         declared = claim.get('paperIds')
         covered = {by_id[ref['sourceId']]['pdfId'] for ref in checked['references']}
@@ -98,6 +87,7 @@ verifiedTable是PDF绘制位置与TEI逐格交叉核对的组和完整行，只�
                 checked_cells.append({'paperId': paper, 'summary': '当前正文片段未覆盖，需回查。',
                                       'kind': 'not_covered', 'references': []})
                 continue
+            cell = resolve_references(cell, quote_catalog)
             checked = validate_claim(cell, validation_sources)
             if any(by_id[ref['sourceId']]['pdfId'] != paper for ref in checked['references']):
                 raise ValueError('比较表引用了其他论文来证明当前论文。')

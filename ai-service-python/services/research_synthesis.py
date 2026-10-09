@@ -58,6 +58,8 @@ def validate_claim(claim, sources):
             raise ValueError("原文摘录长度无效，请使用简短连续摘录。")
         if _flat(quote) not in _flat(evidence_body(by_id[sid]["text"])):
             raise ValueError("结论的摘录无法在正文中找到，已停止发布。")
+        if '_literalBody' in by_id[sid] and _flat(quote) not in _flat(by_id[sid]['_literalBody']):
+            raise ValueError("结论摘录拼接了不连续正文，已停止发布。")
         # Verify the whole excerpt first. Splitting must never rescue invented
         # words, stitched excerpts or a reference to another source.
         checked.extend({"sourceId": sid, "quote": part} for part in _bounded_quote_parts(quote))

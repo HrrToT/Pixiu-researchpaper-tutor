@@ -70,7 +70,7 @@ def _background(request, paper_id):
 def _critique(request, paper_id):
     from schemas.requests import DeepAnalysisRequest
     from services.analysis_service import deep_analysis
-    result = deep_analysis(DeepAnalysisRequest(pdf_id=paper_id, focus_question=request.message))
+    result = deep_analysis(DeepAnalysisRequest(pdf_id=paper_id, focus_question=request.message), grounded=True)
     sections = [('证据支持的贡献', 'evidence_based_contributions'), ('局限', 'weaknesses'),
                 ('过度主张风险', 'overclaim_risks'), ('待补证据', 'missing_evidence')]
     text = [str(result.get('critical_analysis') or '')]
@@ -79,8 +79,8 @@ def _critique(request, paper_id):
         if value:
             values = value if isinstance(value, list) else [value]
             text.append(f"**{label}**\n" + '\n'.join(f'- {item}' for item in values))
-    return {**result, 'message': '\n\n'.join(part for part in text if part.strip()),
-            'summary': summarize_artifact(str(result.get('critical_analysis') or ''), limit=280)}
+    return {**result, 'message': result.get('message') or '\n\n'.join(part for part in text if part.strip()),
+            'summary': summarize_artifact(str(result.get('summary') or result.get('critical_analysis') or ''), limit=280)}
 
 
 def _compare(request, prior):
@@ -195,7 +195,8 @@ def execute_conversation(request: ConversationCapabilityRequest):
     check_cancelled()
     body = '\n\n'.join(texts)
     message = body
-    if request.capability != 'chat' and (len(body) > 600 or any(line.lstrip().startswith('|') for line in body.splitlines())):
+    explicit_summary = any(result.get('summary') for step in completed for result in step['results'])
+    if request.capability != 'chat' and (explicit_summary or len(body) > 600 or any(line.lstrip().startswith('|') for line in body.splitlines())):
         conclusion = step_summaries[-1]
         message = summarize_artifact(conclusion)
     grounded_claims = [claim for step in completed for result in step['results'] for claim in result.get('groundedClaims', [])]
