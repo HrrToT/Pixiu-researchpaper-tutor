@@ -102,7 +102,7 @@ def _experiment(binding, checked, sources):
     local = {**checked, 'summary': canonical, 'references': list(checked['references'])}
     validate_numeric_comparison({'kind': checked['kind'], 'measurements': [measurement]}, local, sources)
     checked['references'] = local['references']
-    display_unit = 'dB' if unit == 'DB' else unit
+    display_unit = 'dB' if unit == 'DB' or not unit and metric.upper() == 'PSNR' else unit
     if operation == 'difference':
         delta = '上升' if value > 0 else '下降' if value < 0 else '变化'
         display = f"{metric}{delta}{format(abs(value), 'f')} {display_unit}".strip()

@@ -30,6 +30,7 @@ def test_critique_uses_one_synthesis_with_literal_references_and_no_score():
     assert '待核查：跨场景质量' in result['message'] and '<details>' in result['message']
     assert result['groundedClaims'][0]['references'][0]['quote'] == SOURCES[0]['text']
     assert result['groundedClaims'][0]['kind'] == 'inference'
+    assert result['message'].count(result['groundedClaims'][0]['summary']) == 1
     assert 'contributionScore' not in result and '_verifiedTable' not in result['rag_sources'][0]
 
 

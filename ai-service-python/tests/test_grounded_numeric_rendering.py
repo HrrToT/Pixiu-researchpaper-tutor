@@ -67,6 +67,18 @@ def test_ratio_is_rounded_from_cells_once():
     assert '17.38倍' in check_numeric_claim(raw, sources)['summary']
 
 
+def test_psnr_difference_keeps_db_unit_and_decimal_precision():
+    raw, sources = experiment('difference', 'PSNR')
+    table = sources[0]
+    table['_verifiedTable']['groups'][0][1][0] = 'PSNR'
+    table['_verifiedTable']['rows'][0][2][0] = '27.40'
+    table['_verifiedTable']['rows'][1][2][0] = '27.13'
+    table['text'] = table['text'].replace('100 | 100MB', '27.40 | 100MB').replace('200 | 20MB', '27.13 | 20MB')
+    for ref, line in zip(raw['references'], table['text'].splitlines()):
+        ref['quote'] = line
+    assert 'PSNR下降0.27 dB' in check_numeric_claim(raw, sources)['summary']
+
+
 def test_each_dataset_value_is_bound_and_shared_hardware_is_shown_once():
     raw, sources = experiment()
     second = deepcopy(raw['numericBindings'][0])

@@ -80,10 +80,9 @@ verifiedTable中的完整行已按PDF绘制位置核对，只有这些行可以�
         return prefix + finding['summary'] + ' ' + ' '.join(f'[{numbers[sid]}]' for sid in dict.fromkeys(ref['sourceId'] for ref in finding['references']))
     lead = '\n\n'.join(render(finding) for finding in findings[:3]) or '当前正文片段不足以形成有依据的批判结论。'
     parts = [lead]
-    for section, label in SECTIONS.items():
-        items = [render(finding) for finding in findings if finding['section'] == section]
-        if items:
-            parts.append('**' + label + '**\n' + '\n'.join('- ' + item for item in items))
+    if len(findings) > 3:
+        parts.append('<details>\n<summary>补充结论</summary>\n\n'
+                     + '\n\n'.join(render(finding) for finding in findings[3:]) + '\n\n</details>')
     if questions:
         parts.append('**待核查**\n' + '\n'.join('- ' + topic for topic in questions))
     if used:
