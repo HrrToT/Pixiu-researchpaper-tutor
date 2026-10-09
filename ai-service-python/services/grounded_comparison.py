@@ -6,6 +6,7 @@ from services.operation_control import check_cancelled
 from services.research_synthesis import evidence_body, validate_claim
 from services.safety_service import wrap_untrusted_context
 from services.focused_evidence import bounded_evidence_body
+from services.comparison_measurements import bounded_table_body, validate_numeric_comparison
 
 
 def grounded_source_map(claims, text):
@@ -26,14 +27,16 @@ def synthesize_comparison(question, sources, paper_ids, prior=''):
     per_source_chars = min(1400, 24000 // max(1, len(sources)))
     for source in sources:
         body = bounded_evidence_body(source.get('text'), per_source_chars)
+        body, verified = bounded_table_body(source, body, per_source_chars)
         if not body or (source.get('metadata') or {}).get('fallback'):
             continue
         safe = wrap_untrusted_context('Comparison paper evidence', body, max_tokens=1000)
         metadata = source.get('metadata') or {}
         clean_sources.append({'sourceId': source['sourceId'], 'pdfId': source['pdfId'], 'text': safe['wrapped'],
                               'evidenceKind': metadata.get('evidence_kind'),
+                              'verifiedTable': verified,
                               'tableColumnMappingUnverified': bool(metadata.get('table_column_mapping_unverified'))})
-        validation_sources.append({**source, 'text': safe['text']})
+        validation_sources.append({**source, 'text': safe['text'], '_verifiedTable': verified})
     if set(paper_ids) - {source['pdfId'] for source in clean_sources}:
         raise ValueError('部分比较论文缺少可引用正文，请等待解析或补充材料。')
     prompt = '''根据给定论文正文用中文回答用户的比较问题，先给简短结论，再给比较表。
@@ -42,6 +45,8 @@ def synthesize_comparison(question, sources, paper_ids, prior=''):
 数字必须在同一结论或单元内注明原文可确认的数据集/场景、硬件与基线版本；条件未覆盖时宁可省略数字，不能只在末尾笼统免责声明。
 优先实验表与方法正文，不把首页单场景示例当成全数据集平均；不同实验中的速度和存储数字不可拼接成同一次实验。
 表格片段重复原始首行和单元格分隔；tableColumnMappingUnverified=true或单元格有cols/rows跨度时，列映射尚未核对，不能自行拆开合并单元格、猜测数值属于哪个数据集或指标；省略不能确认的数字，保留定性比较。
+verifiedTable是PDF绘制位置与TEI逐格交叉核对的组和完整行，只有这些行允许量化结论。每条含FPS/存储/PSNR/SSIM/LPIPS数字或倍数的结论和表格单元须加measurements数组，逐项提供sourceId、row（原始行号）、group（从0起的数据集组）、metric（原样指标名）、value（原样单元格，存储值含单位）、baselineRow、dataset、hardware、baseline（原样基线方法含星号）、conditionReferences（本论文硬件依据的sourceId/quote）。引用完整结果行与基线行，并在本条summary内注明数据集、硬件和基线版本。operation默认value；有界计算允许difference（结果减基线）、ratio（结果除基线）和inverse_ratio（基线除结果，适用于压缩倍数）；倍数value无单位，summary用倍，计算值最多6位小数。条件或已核对列不足时给具体定性结果，不编数字，也不生成无依据measurements。
+上述已核对行限制针对表格。正文中作者明确报告的数字也可使用：kind须reported，measurements的quote须与本条references的一条连续摘录相同，并在该摘录同时出现指标数字、数据集和基线；提供metric、value、dataset、hardware、baseline、conditionReferences即可，无需row/group。不能从零散正文拼出一次实验。
 方法因素优先按正文公式与邻近定义完整解释；消融中列出的因素不一定等于公式全部因素。资料冲突时说明版本/段落差异，不能无声选择。
 每条结论与每个表格单元的事实必须有支持它的逐字原文摘录（8到300字符）。
 每个quote必须是同一来源中连续的一段原文，不能用“...”或省略号拼接不连续片段，不能改写或补全原文。
@@ -54,6 +59,8 @@ def synthesize_comparison(question, sources, paper_ids, prior=''):
 "dimensions":[{"label":"比较维度","cells":[{"paperId":"论文ID","summary":"具体比较内容",
 "kind":"reported或inference或not_covered","references":[{"sourceId":"完整ID","quote":"原文"}]}]}],
 "limitations":["比较边界或无法判断的问题"]}。
+含指标数字的claims或cells额外加上面规定的measurements；无数字时可省略。不把measurements或核对过程写入summary。
+由表格计算的差值或倍数单独列为kind=inference，不把计算结果当作作者原样报告。
 通常1到4条结论、2到5个最相关维度，不凑数。资料JSON：
 ''' + json.dumps({'question': question, 'paperIds': paper_ids, 'evidence': clean_sources,
                   'prior': wrap_untrusted_context('Earlier capability results', prior, max_tokens=2000)['wrapped']}, ensure_ascii=False)
@@ -73,6 +80,7 @@ def synthesize_comparison(question, sources, paper_ids, prior=''):
         covered = {by_id[ref['sourceId']]['pdfId'] for ref in checked['references']}
         if not isinstance(declared, list) or not declared or any(not isinstance(x, str) for x in declared) or set(declared) != covered or covered - set(paper_ids):
             raise ValueError('比较结论未给涉及的每篇论文提供原文依据。')
+        validate_numeric_comparison(claim, checked, by_id)
         checked_claims.append(checked)
     checked_rows = []
     for row in dimensions:
@@ -93,6 +101,7 @@ def synthesize_comparison(question, sources, paper_ids, prior=''):
             checked = validate_claim(cell, validation_sources)
             if any(by_id[ref['sourceId']]['pdfId'] != paper for ref in checked['references']):
                 raise ValueError('比较表引用了其他论文来证明当前论文。')
+            validate_numeric_comparison(cell, checked, by_id)
             checked_cells.append({**checked, 'paperId': paper})
         checked_rows.append({'label': row['label'].strip(), 'cells': checked_cells})
     all_claims = checked_claims + [cell for row in checked_rows for cell in row['cells'] if cell['kind'] != 'not_covered']
