@@ -39,10 +39,12 @@ def synthesize_comparison(question, sources, paper_ids, prior='', *, allow_parti
 每条结论与每个表格单元的事实必须有支持它的原文摘录。每段text里的[16位标识]是quoteId。
 只选择摘录，references写sourceId与quoteId，不重新抄录或改写quote。系统会恢复原文。
 一项结论涉及多个句子或方法模块时，选择多个quoteId，可重复同一sourceId；不能自行拼接片段。
-结论中paperIds必须列出涉及的论文；跨论文结论必须为每篇提供原文引用。
+结论中paperIds只列出提供本条原文证据的论文；跨论文结论必须为每篇提供原文引用。
+某论文报告与另一方法的对照实验时，这些实验数字属于报告该实验的论文。仅引用该论文的主表时，paperIds只填该论文；基线方法源于另一篇论文不代表那篇论文也报告了同次实验。
 表格每个维度都要包含每篇选中论文的一个单元。缺证据用kind=not_covered，写当前片段未覆盖并置references为空。
 区分作者报告reported和解释推断inference，不把同一论文多个片段叫独立验证。
 limitations只写比较范围或尚需核查的主题，不填写未经绑定的数量；数字事实放入带引用和绑定的claims或cells。
+limitations用“主表”“已核对结果行”等描述位置，不写表号、页号、行号。需要精确位置或数字时放入带引用的claims或cells。
 面向读者使用自然语言，不展示内部字段名；例如写“表格列归属尚未核对”。
 只输出JSON：{"claims":[{"summary":"直接回答问题的结论","kind":"reported或inference",
 "paperIds":["所涉及的论文ID"],"references":[{"sourceId":"完整原样ID","quoteId":"正文摘录标识"}]}],

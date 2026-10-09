@@ -45,6 +45,16 @@ for case in data['plan']['cases']:
         result = _critique(request, papers[1]) if kind == 'critique' else _compare(request, [])
     assert substitute.call_count == 1 and result['partial'] is True
     assert raw_before == json.dumps(raw, sort_keys=True)
+    if data.get('verifyFix'):
+        if kind == 'compare':
+            assert 'Ours的PSNR/SSIM略低于3D-GS*，LPIPS略高' in result['message']
+            assert '另有3项判断暂未确认' in result['message']
+            assert not rejected  # Coverage and uncited scope guards still reject.
+        else:
+            assert len(rejected) == 1 and '90%' in rejected[0]['summary']
+            assert '另有1项判断暂未确认' in result['message']
+            assert result['message'].count('Mip-NeRF 360 Datasets：') == 1
+            assert '17.38倍' in result['message'] and 'PSNR下降0.27 dB' in result['message']
     replayed[kind] = {'partial': result['partial'], 'rejections': rejected,
                       'claims': result.get('groundedClaims'), 'message': result['message']}
 print(json.dumps({'providerCalls': 0, 'taskWrites': 0, 'rawResponsesUnchanged': True,

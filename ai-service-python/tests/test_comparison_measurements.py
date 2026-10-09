@@ -34,6 +34,37 @@ def check(raw, sources):
     return checked
 
 
+@pytest.mark.parametrize('summary', [
+    'Ours的PSNR/SSIM略低于3D-GS*，LPIPS略高。',
+    'SSIM优于3DGS，PSNR接近3D-GS。',
+    'PSNR低于3D-GS，LPIPS高于3D-GS*。',
+])
+def test_qualitative_metric_comparison_does_not_parse_method_name_as_value(summary):
+    raw, sources = fixture()
+    raw.pop('measurements')
+    raw['summary'] = summary
+    assert check(raw, sources)['summary'] == summary
+
+
+@pytest.mark.parametrize('summary', [
+    'SSIM为0.806。', 'PSNR下降0.27。', 'LPIPS 0.237.',
+    'PSNR 27.13，SSIM为0.806。', '3D-GS的SSIM为0.813。',
+    '体积以90%分位数归一化。',
+])
+def test_real_unbound_values_still_require_measurement_evidence(summary):
+    raw, sources = fixture()
+    raw.pop('measurements')
+    raw['summary'] = summary
+    with pytest.raises(ValueError, match='缺少逐项实验条件'):
+        check(raw, sources)
+
+
+def test_metric_parser_does_not_backtrack_into_a_partial_identifier():
+    from services.comparison_measurements import MENTION
+    assert MENTION.search('SSIM略低于27.13D-GS') is None
+    assert MENTION.search('PSNR 27.13.').group('score') == '27.13'
+
+
 def test_numeric_cell_keeps_its_dataset_hardware_baseline_and_same_paper_sources():
     raw, sources = fixture()
     checked = check(raw, sources)

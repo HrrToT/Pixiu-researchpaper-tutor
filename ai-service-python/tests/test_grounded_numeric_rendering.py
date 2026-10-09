@@ -101,6 +101,34 @@ def test_each_dataset_value_is_bound_and_shared_hardware_is_shown_once():
     assert text.count('GPU A，基线Baseline *') == 1
 
 
+def test_same_experiment_shares_dataset_label_after_all_values_are_verified():
+    raw, sources = experiment()
+    second = deepcopy(raw['numericBindings'][0])
+    second.update(id=2, metric='Size', operation='inverse_ratio')
+    raw.update(kind='inference', summary='结果为⟦数值1⟧，⟦数值2⟧。',
+               numericBindings=[second, raw['numericBindings'][0]])
+    before = deepcopy((raw, sources))
+    text = check_numeric_claim(raw, sources)['summary']
+    assert text == 'Alpha Dataset：结果为FPS 200，Size压缩5.00倍。（GPU A，基线Baseline *）'
+    assert text.count('Alpha Dataset') == 1
+    assert (raw, sources) == before
+
+
+def test_same_dataset_from_different_source_tables_keeps_local_labels():
+    raw, sources = experiment()
+    table = deepcopy(sources[0])
+    table['sourceId'] = 'other-table'
+    sources.append(table)
+    second = deepcopy(raw['numericBindings'][0])
+    second.update(id=2, sourceId='other-table', metric='Size')
+    raw['numericBindings'].append(second)
+    raw['references'].extend({'sourceId': 'other-table', 'quote': line} for line in table['text'].splitlines())
+    raw['summary'] = '结果为⟦数值1⟧与⟦数值2⟧。'
+    text = check_numeric_claim(raw, sources)['summary']
+    assert 'Alpha Dataset：FPS 200' in text and 'Alpha Dataset：Size 20 MB' in text
+    assert text.count('Alpha Dataset') == 2
+
+
 @pytest.mark.parametrize('mutation', ['free_value', 'missing', 'duplicate', 'unknown', 'extra', 'mixed_contract',
                                      'wrong_dataset', 'wrong_baseline', 'foreign_hardware', 'unverified', 'reported_ratio'])
 def test_binding_cannot_bypass_existing_evidence_or_identity_guards(mutation):

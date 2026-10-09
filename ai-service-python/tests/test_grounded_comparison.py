@@ -63,6 +63,25 @@ def test_unknown_cell_has_no_fake_claim_or_source():
     assert [x['pdfId'] for x in result['rag_sources']] == ['A']
 
 
+def test_one_paper_may_report_a_baseline_comparison_without_other_paper_evidence():
+    value = payload()
+    value['claims'] = [{'summary': '该论文报告了与另一基线的对照。',
+                       'kind': 'reported', 'paperIds': ['B'],
+                       'references': value['dimensions'][0]['cells'][1]['references']}]
+    result = call(value)
+    assert result['claims'][0]['summary'] == value['claims'][0]['summary']
+    value['claims'][0]['paperIds'] = ['A', 'B']
+    with pytest.raises(ValueError, match='每篇论文提供原文依据'):
+        call(value)
+
+
+def test_uncited_scope_numbers_remain_rejected_including_table_identifiers():
+    value = payload()
+    value['limitations'] = ['表1还有其他结果。']
+    with pytest.raises(ValueError, match='数字也需要逐项依据'):
+        call(value)
+
+
 def test_elliptical_quote_is_rejected_while_separate_literal_refs_are_accepted():
     sources = copy.deepcopy(SOURCES)
     sources[0]['text'] += ' Our second stage prunes redundant Gaussians after recovery.'

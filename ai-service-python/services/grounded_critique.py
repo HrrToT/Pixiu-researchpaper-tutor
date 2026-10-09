@@ -66,6 +66,7 @@ def synthesize_critique(question, sources, *, allow_partial=False):
 每项finding必须选择能支持整项结论的原文摘录；每条text中的[16位标识]是quoteId。
 references仅写sourceId和quoteId，系统恢复原文，不重新抄写或改写quote；涉及多处依据则选择多个摘录。
 公式与机制必须核对全部因子、求和范围、权重及归一化；原文不完整时仅作有依据的定性解释，不补造公式。
+不同方法步骤的训练视角、采样范围及优化目标须逐步核对；一个步骤的限制不能直接套用于另一步骤。推测的风险写成推断，不说成实验已经证明。
 条件或核对行不足时给具体定性结论，不编数字；不同消融步骤的基线、主实验和跨表示扩展不可混用。
 仅输出JSON：{"findings":[{"section":"contribution或weakness或risk","summary":"具体结论，最多320字",
 "kind":"reported或inference","references":[{"sourceId":"完整原样来源ID","quoteId":"摘录标识"}]}],

@@ -221,7 +221,7 @@ def check_numeric_claim(raw, sources):
     if ('⟦数值' in quantitative_text or FREE_NUMBER.search(quantitative_text)
             or MENTION.search(quantitative_text) or QUANTITY.search(quantitative_text)):
         raise ValueError('数值正文包含未绑定数字。')
-    rendered, conditions, kinds = {}, [], set()
+    rendered, conditions, kinds, experiment_contexts = {}, [], set(), []
     for binding in bindings:
         if not isinstance(binding, dict) or type(binding.get('id')) is not int or str(binding['id']) not in ids:
             raise ValueError('数值绑定身份无效。')
@@ -231,6 +231,9 @@ def check_numeric_claim(raw, sources):
         kinds.add(kind)
         if kind == 'experiment':
             rendered[key], condition = _experiment(binding, checked, by_id)
+            dataset = by_id[binding['sourceId']]['_verifiedTable']['groups'][binding['group']][0]
+            experiment_contexts.append((key, dataset, (binding['sourceId'], binding['group'],
+                                       binding['row'], binding['baselineRow'], *condition)))
             if condition not in conditions:
                 conditions.append(condition)
         else:
@@ -262,7 +265,17 @@ def check_numeric_claim(raw, sources):
         unit = re.search(r'(倍|FPS|[KMG]i?B|dB)$', value)
         if unit:
             template = re.sub(r'(⟦数值' + key + r'⟧)\s*' + re.escape(unit[1]), r'\1', template)
+    # Share a dataset label only when EVERY binding describes the exact same
+    # experiment. Mixed datasets, source tables, rows or conditions stay local.
+    shared_dataset = None
+    if (len(experiment_contexts) > 1 and len(experiment_contexts) == len(bindings)
+            and len({context for _, _, context in experiment_contexts}) == 1):
+        shared_dataset = experiment_contexts[0][1]
+        for key, dataset, _ in experiment_contexts:
+            rendered[key] = rendered[key][len(dataset) + 1:]
     checked['summary'] = TOKEN.sub(insert, template)
+    if shared_dataset:
+        checked['summary'] = f'{shared_dataset}：' + checked['summary']
     if conditions:
         checked['summary'] += '（' + '；'.join(f'{hardware}，基线{baseline}' for hardware, baseline in conditions) + '）'
     if 'author_report' in kinds:

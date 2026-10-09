@@ -10,7 +10,10 @@ UNIT = (r'frames?\s*(?:/\s*s(?:ec(?:ond)?s?)?|per\s+second)'
         r'|帧\s*(?:[/／]\s*(?:秒|s)|每\s*秒)'
         r'|FPS|KiB|MiB|GiB|KB|MB|GB|dB|PSNR|SSIM|LPIPS|倍|%|％|[x×](?!\s*\d)')
 MENTION = re.compile(rf'(?P<value>{NUMBER})\s*\+?\s*(?P<unit>{UNIT})(?![A-Za-z])'
-                     rf'|(?P<metric>PSNR|SSIM|LPIPS)\D{{0,8}}?(?P<score>{NUMBER})', re.I)
+                     # A method identifier such as 3D-GS is not a metric value.
+                     # Disallow partial decimal backtracking (27 from 27.13D).
+                     rf'|(?P<metric>PSNR|SSIM|LPIPS)\D{{0,8}}?(?P<score>{NUMBER})'
+                     rf'(?![A-Za-z0-9]|\.\d)', re.I)
 
 
 def _mention_unit(mention):
