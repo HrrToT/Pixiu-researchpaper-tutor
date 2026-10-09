@@ -253,6 +253,12 @@ def chunk_sections(sections):
                     chunk[field] = sec[field]
             if fragmented_table:
                 chunk['tableColumnMappingUnverified'] = True
+            verified = sec.get('tableVerifiedData')
+            if verified and not fragmented_table:
+                rows = [row for row in verified['rows']
+                        if f"Table row {row[0]}: " + ' | '.join([row[1], *row[2]]) in chunk['text']]
+                if rows:
+                    chunk['tableVerifiedData'] = {'groups': verified['groups'], 'rows': rows}
 
             chunks.append(chunk)
 

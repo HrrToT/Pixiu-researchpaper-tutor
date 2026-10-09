@@ -255,11 +255,15 @@ def _extract_table_sections(body):
                    'tablePrefix': '\n'.join(lines[:2] if rows else lines)}
         if page is not None:
             section.update(pageIndex=page, page=page + 1)
+            table_coords = _collect_element_coords(table or owner)
+            if len(table_coords) == 1 and table_coords[0]['pageIndex'] == page:
+                coord = table_coords[0]
+                section['tableBounds'] = [coord['x'], coord['y'], coord['width'], coord['height']]
         result.append(section)
     return result
 
 
-def parse_tei_xml(tei_path):
+def parse_tei_xml(tei_path, pdf_path=None):
     with open(tei_path, "r", encoding="utf-8") as handle:
         soup = BeautifulSoup(handle, "xml")
 
@@ -352,4 +356,7 @@ def parse_tei_xml(tei_path):
             sections.append(section_payload)
 
     sections.extend(_extract_table_sections(body))
+    if pdf_path:
+        from core.pdf_table_columns import attach_verified_table_columns
+        sections = attach_verified_table_columns(sections, pdf_path)
     return sections

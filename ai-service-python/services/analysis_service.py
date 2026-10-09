@@ -265,7 +265,7 @@ async def analyze_pdf(file: UploadFile, *, include_ai_analysis: bool = True) -> 
             raise RuntimeError("GROBID did not produce a TEI XML file.")
 
         tei_file = os.path.join(output_dir, xml_files[0])
-        parsed_sections = parse_tei_xml(tei_file)
+        parsed_sections = parse_tei_xml(tei_file, file_path)
         tei_text_char_count = sum(
             _count_non_whitespace_characters(section.get("content", ""))
             for section in parsed_sections

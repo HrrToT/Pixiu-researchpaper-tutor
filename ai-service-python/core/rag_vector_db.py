@@ -1,4 +1,5 @@
 import logging
+import json
 import os
 import shutil
 import tempfile
@@ -144,7 +145,7 @@ class LiteratureRAG:
 
             tei_path = os.path.join(output_dir, xml_files[0])
 
-            sections = parse_tei_xml(tei_path)
+            sections = parse_tei_xml(tei_path, file_path)
 
             return sections
 
@@ -231,6 +232,8 @@ class LiteratureRAG:
                 "evidence_kind": chunk.get("evidenceKind"),
                 "table_id": chunk.get("tableId"),
                 "table_column_mapping_unverified": chunk.get("tableColumnMappingUnverified"),
+                "table_verified_data": json.dumps(chunk['tableVerifiedData'], ensure_ascii=False, separators=(',', ':'))
+                    if chunk.get('tableVerifiedData') else None,
             }
             for key, value in optional_metadata.items():
                 if value is not None and value != "":
