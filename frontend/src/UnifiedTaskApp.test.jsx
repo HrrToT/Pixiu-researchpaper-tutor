@@ -37,8 +37,19 @@ vi.mock('./services/localDb', () => ({ initDB: async () => ({
 }) }));
 vi.mock('./hooks/useThemePreference', () => ({ useThemePreference: () => ({ theme: 'light', toggleTheme: vi.fn() }) }));
 vi.mock('./hooks/useCompactLayout', () => ({ default: () => Boolean(state.compact) }));
-vi.mock('./hooks/usePageTranslation', () => ({ usePageTranslation: props => { state.translationProps = props; return {}; } }));
-vi.mock('./components/PdfViewer', () => ({ default: () => null }));
+vi.mock('./hooks/usePageTranslation', () => ({ usePageTranslation: props => {
+  state.translationProps = props;
+  return {handlePdfPageChange: props.setPdfPageState};
+} }));
+vi.mock('./components/PdfViewer', () => ({ default: props => {
+  state.pdfProps = props;
+  React.useEffect(() => {
+    state.pdfMounts = (state.pdfMounts || 0) + 1;
+    props.onPageChange({pageIndex: props.targetPageIndex || 0, totalPages: 19});
+    return () => { state.pdfUnmounts = (state.pdfUnmounts || 0) + 1; };
+  }, []);
+  return <div data-testid="paper-viewer" />;
+} }));
 vi.mock('./components/TranslationPanel', () => ({ default: () => null }));
 vi.mock('./components/ChatPanel', () => ({ default: (props) => { state.chatProps = props; return <div data-testid="chat" />; } }));
 import UnifiedTaskApp from './UnifiedTaskApp';
@@ -56,6 +67,8 @@ describe('unified task conversation wiring', () => {
     state.writes = 0;
     state.otherTasks = [];
     state.selectedTaskId = null;
+    state.pdfMounts = 0;
+    state.pdfUnmounts = 0;
     state.task = { id: 'task', title: '任务', paperIds: ['a', 'b'], focusedPaperId: null,
       messages: [], notes: [], artifacts: [], activeActivity: { id: 'lesson', paperIds: ['a'], primaryPaperId: 'a' } };
     state.startOperation.mockImplementation(async (taskId, request) => {
@@ -355,6 +368,32 @@ describe('unified task conversation wiring', () => {
     expect(state.writes).toBe(0);
     fireEvent.click(screen.getByRole('button', { name: '编辑', exact: true }));
     expect(screen.getByRole('textbox', { name: '编辑笔记与成果' })).toHaveValue('');
+  });
+
+  it('keeps the loaded PDF mounted and preserves its page while reading a saved result', async () => {
+    state.task.focusedPaperId = 'a';
+    state.task.notes = [{id: 'note', title: '阅读笔记', text: '已保存正文'}];
+    localDbGet.mockImplementation(async store => store === 'pdfStore' ? new Blob(['fixture'])
+      : store === 'deconstructStore' ? {pdfId: 'a'} : null);
+    const makeUrl = vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:paper');
+    const releaseUrl = vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => {});
+    const view = render(<UnifiedTaskApp />);
+    await screen.findByTestId('paper-viewer');
+    act(() => state.pdfProps.onPageChange({pageIndex: 6, totalPages: 19}));
+    expect(screen.getByRole('textbox', {name: '跳转到页码'})).toHaveValue('7');
+    fireEvent.click(screen.getByRole('button', {name: '阅读笔记', exact: true}));
+    expect(screen.getByTestId('paper-viewer')).not.toBeVisible();
+    // A layout observer in the hidden viewer must not overwrite visible position.
+    act(() => state.pdfProps.onPageChange({pageIndex: 0, totalPages: 19}));
+    fireEvent.click(screen.getByRole('button', {name: '返回论文', exact: true}));
+    expect(screen.getByTestId('paper-viewer')).toBeVisible();
+    expect(screen.getByRole('textbox', {name: '跳转到页码'})).toHaveValue('7');
+    expect(state.pdfProps.targetPageIndex).toBe(6);
+    expect(state.pdfMounts).toBe(1);
+    expect(state.pdfUnmounts).toBe(0);
+    expect(state.startOperation).not.toHaveBeenCalled();
+    view.unmount();
+    makeUrl.mockRestore(); releaseUrl.mockRestore();
   });
 
   it('restores unsaved note edits after leaving the editor, including an intentionally empty draft', async () => {

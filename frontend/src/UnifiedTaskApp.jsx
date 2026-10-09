@@ -108,6 +108,8 @@ export default function UnifiedTaskApp() {
   const [savingDocument, setSavingDocument] = useState(false);
   const selectedDocumentRef = useRef(null);
   selectedDocumentRef.current = selectedDocument;
+  const recoveryPreviewRef = useRef(null);
+  recoveryPreviewRef.current = recoveryPreview;
   const [localError, setLocalError] = useState('');
   const [intentChoice, setIntentChoice] = useState(null);
   const [showOutline, setShowOutline] = useState(false);
@@ -129,6 +131,8 @@ export default function UnifiedTaskApp() {
     } catch { return 0; }
   }, [activeTaskId, focusedPaperId]);
   const setReadingPage = useCallback(next => {
+    // Hidden PDF layout observers must not overwrite the last visible position.
+    if (selectedDocumentRef.current || recoveryPreviewRef.current) return;
     setPage(next);
     if (activeTaskId && focusedPaperId) {
       try { localStorage.setItem(readingPositionKey(activeTaskId, focusedPaperId), String(next.pageIndex)); }
@@ -752,7 +756,10 @@ export default function UnifiedTaskApp() {
           }} />
           <details className="unified-document-edit-preview"><summary>预览</summary><MarkdownContent>{documentDraft || '（空白正文）'}</MarkdownContent></details>
           </> : <article className="unified-document-body" aria-label="成果正文"><MarkdownContent>{documentDraft || '（空白正文）'}</MarkdownContent></article>}
-        </div> : paperView.error ? <div className="unified-empty" role="alert">{paperView.error}</div>
+        </div> : null}
+        <div style={{ display: activeDocument || preview ? 'none' : 'flex', flex: 1, minHeight: 0, flexDirection: 'column' }}
+          aria-hidden={Boolean(activeDocument || preview)} inert={activeDocument || preview ? true : undefined}>
+        {paperView.error ? <div className="unified-empty" role="alert">{paperView.error}</div>
           : paperView.url ? <div className={`unified-reader-content unified-reader-content-${translationMode}`}>
             <div className="unified-pdf" aria-hidden={translationMode === 'translation'} inert={translationMode === 'translation' ? true : undefined}>
               {paperView.deconstruct?.processingStatus && <div className="unified-material-status" role="status">
@@ -763,7 +770,8 @@ export default function UnifiedTaskApp() {
                   : paperView.deconstruct.questionReady && ['not_requested', 'failed', 'interrupted'].includes(paperView.deconstruct.aiAnalysisStatus) && <button type="button" disabled={processingRequest} onClick={() => requestMaterialProcessing(true)}>{paperView.deconstruct.aiAnalysisStatus === 'not_requested' ? '生成论文概览' : '重试论文概览'}</button>}
               </div>}
               <PdfViewer key={paperView.id} fileUrl={paperView.url} pdfId={paperView.id} paperSkeleton={paperView.deconstruct?.paper_skeleton || null} theme={theme} parseStatus={paperView.deconstruct?.parseStatus || papers.find((paper) => paper.id === paperView.id)?.parseStatus || null} initialHighlights={paperView.highlights}
-              onPageChange={handlePdfPageChange} onPageTextExtracted={handlePageTextExtracted} onSelection={syncPdfSelection}
+              onPageChange={next => { if (!selectedDocumentRef.current && !recoveryPreviewRef.current) handlePdfPageChange(next); }}
+              onPageTextExtracted={next => { if (!selectedDocumentRef.current && !recoveryPreviewRef.current) handlePageTextExtracted(next); }} onSelection={syncPdfSelection}
               onHighlightsChange={async (highlights) => { const db = await initDB(); await db.put('highlightStore', highlights, paperView.id); }}
               onSaveNote={async payload => {
                 if (!activeTaskId || !paperView.id) throw new Error('请先打开任务论文');
@@ -781,6 +789,7 @@ export default function UnifiedTaskApp() {
               {uploading ? <p role="status">正在上传论文，请稍候…</p> : <button type="button" disabled={workspace.ready === false} onClick={() => activeTask?.paperIds.length ? openPaper(activeTask.paperIds[0]) : fileInputRef.current?.click()}>{activeTask?.paperIds.length ? '打开任务论文' : '上传论文'}</button>}
             </div>}
         {paperView.url && !activeDocument && !preview && <PaperPageNavigation pageIndex={page.pageIndex} totalPages={page.totalPages} onJump={goToPage} />}
+        </div>
       </section>
       {layout.reader && layout.chat && !compact && <div className="unified-resizer" role="separator" tabIndex={0} aria-orientation="vertical" aria-label="调整阅读与对话宽度" aria-valuemin={32} aria-valuemax={72} aria-valuenow={layout.readerPercent} onPointerDown={startResize} onKeyDown={event => {
         const steps = { ArrowLeft: -2, ArrowRight: 2 };
