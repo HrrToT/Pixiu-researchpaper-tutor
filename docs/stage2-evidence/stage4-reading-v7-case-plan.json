@@ -1,5 +1,5 @@
 {
-  "status": "authorized_pending_execution",
+  "status": "executed_once_all_three_cases",
   "authorization": "用户2026-10-09明确回复：允许这3个案例",
   "provider": "https://api.deepseek.com",
   "maxCases": 3,
@@ -69,5 +69,9 @@
     "此前已通过的significance固定案例不再次生成",
     "离线测试或合成夹具不计真实内容通过"
   ],
-  "authorizedAt": "2026-10-09T20:32:21.3572652+08:00"
+  "authorizedAt": "2026-10-09T20:32:21.3572652+08:00",
+  "casesExecuted": 3,
+  "totalCasesConsumed": 25,
+  "automaticResubmissions": 0,
+  "contentAcceptance": "critique_failed_absence_claim; compose_failed_numeric_contract; translation_partial_bad_scope_rejected"
 }
