@@ -787,6 +787,7 @@ export default function UnifiedTaskApp() {
               pageData={currentTranslationPage?.status === 'translating' ? { ...currentTranslationPage, status: 'loading' } : currentTranslationPage}
               onRetry={() => handleRetryTranslation(translationState)} onCaptureArtifact={captureTranslation} /></div>}
           </div>
+            : focusedPaperId ? <div className="unified-empty" role="status"><strong>正在打开论文…</strong></div>
             : <div className="unified-empty"><FilePlus2 size={32} />
               <strong>{workspace.ready === false ? '正在读取任务…' : activeTask?.paperIds.length ? '选择一篇论文开始阅读' : '从一篇论文开始'}</strong>
               <p>{activeTask?.paperIds.length ? '在左侧选择论文；对话可以使用当前任务的全部材料。' : '上传 PDF 后即可阅读，再从对话中精读、补课或自测。'}</p>
