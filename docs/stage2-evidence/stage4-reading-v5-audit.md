@@ -41,9 +41,11 @@
 
 刷新后来源返回第4页曾显示空白、总页数为“—”；原始截图 `stage6-reading-v5-source-return-browser.png` 保留。快速缓存加载时，子组件先于父组件passive effects报告文档，mounted标记尚为false，加载事件被丢掉；初始化清理还可能清空刚加载的文档。
 
-修复PdfViewer首次挂载标记及已加载文档的身份保护，保留卸载后的迟到响应拒绝。新增缓存加载和Strict Mode效果重放两项回归，先复现失败再修复；34项相关测试通过。实际浏览器刷新后第4/19页正常、PDF原图可见，再从新增笔记来源跳回第4页通过。修复后截图与可操作状态见 `stage6-reading-v5-source-return-fixed-browser.png/json`。此修复没有调用模型。
+修复PdfViewer首次挂载标记及已加载文档的身份保护，保留卸载后的迟到响应拒绝。新增缓存加载和Strict Mode效果重放两项回归，先复现失败再修复；34项相关测试通过。实际刷新正常，但后续来源返回仍因隐藏容器display:none使PDF重测到零尺寸，短暂出现负缩放并跳回第1页。`stage6-reading-v5-source-return-fixed-browser.png/json`只是第一项修复后的中间记录，其中按钮可用，画面仍为空白，不能作为完整通过证据。
 
-最终完整前端45文件275项Vitest、19组Node检查通过，类型检查和生产构建通过。日志为 `stage6-cached-load-v5-tests.log`、`stage6-cached-load-v5-typecheck.log`、`stage6-cached-load-v5-build.log`。后端代码本轮未改动，既有137项及3子测试记录保留，不把历史通过计作新的内容质量验证。
+第二项修复让成果与PDF共享固定网格，隐藏PDF保持尺寸、页码栏挂载、禁止交互；隐藏时加载只补总页数，不改阅读位置。稳定浏览器验证：阅读区579.23×513.5，笔记期间579.23×515，返回后恢复579.23×513.5；第4/19页、91%缩放、实际PDF页像素均保持。最终证据是 `stage6-reading-v5-source-return-stable-browser.png/json`。两个本地修复没有调用模型。
+
+两项修复分别完整回归：45文件275项Vitest、19组Node检查、类型检查和生产构建通过。第一项日志为 `stage6-cached-load-v5-*`，最终第二项日志为 `stage6-reader-geometry-v5-*`。后端代码本轮未改动，既有137项及3子测试记录保留，不把历史通过计作新的内容质量验证。
 
 ## 后续优先级与完整边界
 
