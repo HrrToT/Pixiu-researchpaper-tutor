@@ -42,6 +42,7 @@ verifiedTable是PDF绘制位置与TEI逐格交叉核对的组和完整行，只�
 结论中paperIds必须列出涉及的论文；跨论文结论必须为每篇提供原文引用。
 表格每个维度都要包含每篇选中论文的一个单元。缺证据用kind=not_covered，写当前片段未覆盖并置references为空。
 区分作者报告reported和解释推断inference，不把同一论文多个片段叫独立验证。
+limitations只写比较范围或尚需核查的主题，不填写未经绑定的数量；数字事实放入带引用和绑定的claims或cells。
 只输出JSON：{"claims":[{"summary":"直接回答问题的结论","kind":"reported或inference",
 "paperIds":["所涉及的论文ID"],"references":[{"sourceId":"完整原样ID","quoteId":"正文摘录标识"}]}],
 "dimensions":[{"label":"比较维度","cells":[{"paperId":"论文ID","summary":"具体比较内容",

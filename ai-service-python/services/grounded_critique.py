@@ -99,7 +99,7 @@ verifiedTable中的完整行已按PDF绘制位置核对，只有这些行可以�
         parts.append('<details>\n<summary>补充结论</summary>\n\n'
                      + '\n\n'.join(render(finding) for finding in findings[3:]) + '\n\n</details>')
     if questions:
-        parts.append('**待核查**\n' + '\n'.join('- ' + topic for topic in questions))
+        parts.append('<details>\n<summary>待核查问题</summary>\n\n' + '\n'.join('- ' + topic for topic in questions) + '\n\n</details>')
     if used:
         parts.append('<details>\n<summary>原文依据</summary>\n\n' + '\n'.join(
             f'- [{numbers[sid]}] “{quote}”' for sid, quote in dict.fromkeys(
