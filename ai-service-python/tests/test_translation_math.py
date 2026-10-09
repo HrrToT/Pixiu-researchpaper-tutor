@@ -60,3 +60,25 @@ def test_valid_math_markers_survive_a_successful_structured_translation():
         result=translate_page(request)
     assert model.call_count==1 and result['status']=='success'
     assert result['translatedText']=='体积为⟦原式1⟧。' and result['mathProtectionVersion']==1
+
+
+def test_prepositioned_markers_keep_identity_across_blocks_and_new_markers_do_not_collide():
+    from services.page_translation_service import _normalize_layout_blocks
+    blocks = _normalize_layout_blocks({'blocks':[
+        {'id':'first','text':'A formula ⟦原式7⟧.'},
+        {'id':'second','text':'A formula ⟦原式8⟧ and V(Σj) = 43πabc.'},
+        {'id':'third','text':'SH ∈ R(k+1) × 3.'}]})
+    assert '⟦原式7⟧' in blocks[0]['text']
+    assert '⟦原式8⟧' in blocks[1]['text'] and '⟦原式9⟧' in blocks[1]['text']
+    assert '⟦原式10⟧' in blocks[2]['text']
+
+
+def test_located_math_version_is_returned_only_for_supplied_source_regions():
+    request=PageTranslationRequest(pageIndex=3,pageText='The formula is T = Qj−1.',
+        pageLayout={'blocks':[{'id':'body','text':'The formula is ⟦原式8⟧.',
+                              'mathSources':[{'token':'⟦原式8⟧','bbox':{'left':0.1,'top':0.7,'width':0.2,'height':0.02}}]}]})
+    with patch('services.page_translation_service._call_translation_with_timeout',return_value=
+               '{"translatedBlocks":[{"id":"body","translatedText":"公式为⟦原式8⟧。"}]}') as model:
+        result=translate_page(request)
+    assert model.call_count==1 and result['mathProtectionVersion']==2
+    assert result['translatedText']=='公式为⟦原式8⟧。'

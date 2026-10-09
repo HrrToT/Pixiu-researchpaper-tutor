@@ -68,6 +68,7 @@ def _extract_json_payload(text: str) -> Any:
 def _normalize_layout_blocks(page_layout: dict[str, Any] | None) -> list[dict[str, Any]]:
     blocks = page_layout.get("blocks") if isinstance(page_layout, dict) else []
     normalized: list[dict[str, Any]] = []
+    math_index = 0
 
     for index, block in enumerate(blocks or []):
         block_id = str(block.get("id") or f"block-{index + 1}").strip()
@@ -75,10 +76,12 @@ def _normalize_layout_blocks(page_layout: dict[str, Any] | None) -> list[dict[st
         if not block_id or not text:
             continue
 
+        protected = protect_inline_math(text, math_index)
+        math_index = max([math_index, *[int(value) for value in re.findall(r'⟦原式(\d+)⟧', protected)]])
         normalized.append(
             {
                 "id": block_id,
-                "text": protect_inline_math(text),
+                "text": protected,
                 "style": block.get("style") or {},
             }
         )
@@ -275,7 +278,7 @@ def translate_page(request: PageTranslationRequest) -> dict[str, Any]:
             "renderMode": "overlay",
             "missingBlockIds": missing,
             "warning": f"还有 {len(missing)} 个段落未完成，已保留当前译文；可手动重试。" if missing else "",
-            "mathProtectionVersion": 1,
+            "mathProtectionVersion": 2 if any(block.get('mathSources') for block in page_layout.get('blocks', [])) else 1,
         }
 
     trimmed_page_text = protect_inline_math(_trim_page_text(page_text))

@@ -10,8 +10,8 @@ EXPRESSION = re.compile(
 TOKEN = re.compile(r"⟦原式\d+⟧")
 
 
-def protect_inline_math(text):
-    count = 0
+def protect_inline_math(text, start_index=0):
+    count = max([start_index, *[int(token[3:-1]) for token in TOKEN.findall(str(text or ''))]])
     def replace(match):
         nonlocal count
         count += 1

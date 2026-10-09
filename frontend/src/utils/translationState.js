@@ -33,6 +33,12 @@ const normalizePageLayout = (pageLayout) => {
           textAlign: String(block?.style?.textAlign || 'left'),
         },
         readingOrder: Number.isFinite(Number(block?.readingOrder)) ? Number(block.readingOrder) : index,
+        mathSources: (Array.isArray(block?.mathSources) ? block.mathSources : []).filter(source =>
+          /^⟦原式\d+⟧$/.test(source?.token) && Number.isInteger(source.start) && Number.isInteger(source.end) &&
+          source.start >= 0 && source.end > source.start && source.end <= String(block.text || '').length &&
+          String(block.text || '').slice(source.start,source.end) === source.text).map(source=>({
+            token:source.token,start:source.start,end:source.end,text:source.text,bbox:normalizeRelativeBbox(source.bbox)}))
+          .filter(source=>source.bbox.width>0 && source.bbox.height>0),
       }))
       .filter((block) => block.id && block.bbox.width > 0 && block.bbox.height > 0),
   };
@@ -82,7 +88,7 @@ export const normalizeTranslationPage = (pageValue = {}) => {
     status: pageValue?.status || (pageValue?.translatedText ? 'success' : 'idle'),
     error: String(pageValue?.error || ''),
     warning: String(pageValue?.warning || ''),
-    mathProtectionVersion: pageValue?.mathProtectionVersion === 1 ? 1 : 0,
+    mathProtectionVersion: [1,2].includes(pageValue?.mathProtectionVersion) ? pageValue.mathProtectionVersion : 0,
     missingBlockIds: Array.isArray(pageValue?.missingBlockIds) ? pageValue.missingBlockIds.filter(id => typeof id === 'string') : [],
     updatedAt: pageValue?.updatedAt || null,
   };

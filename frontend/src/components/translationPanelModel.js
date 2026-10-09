@@ -45,7 +45,7 @@ export const createTranslationPanelViewModel = (pageData = null) => {
     .map(item => item.translatedText).join('\n\n');
   const hasOriginalMath = (pageData?.pageLayout?.blocks || []).some(block => hasMath(block.text)) || /⟦原式\d+⟧/.test(translatedText);
   const mathNotice = hasOriginalMath && translatedText
-    ? pageData?.mathProtectionVersion === 1
+    ? pageData?.mathProtectionVersion >= 1
       ? '原式标记对应原图中的数学表达式，请结合原图阅读。'
       : '旧译文未保护行内公式，请以原图为准。'
     : '';
