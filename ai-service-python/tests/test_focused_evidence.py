@@ -57,6 +57,19 @@ def test_generic_axes_retain_section_diversity():
     assert [row['chunkIndex'] for row in selected] == [0, 3]
 
 
+def test_main_comparison_table_method_rows_win_over_repeated_headers_and_ablation():
+    setup = item(1, 'Experimental Settings', 'Implementation details: GPU A; dataset B; baseline retrained.')
+    header = item(10, 'Table 1 Quantitative Comparisons', 'Method | FPS | PSNR | dataset B; unrelated methods only.')
+    result = item(11, 'Table 1 Quantitative Comparisons', 'Method | FPS | PSNR; Baseline * | 100 | 25; Ours | 200 | 26')
+    ablation = item(12, 'Table 2 Ablation', 'Ablation: FPS PSNR dataset baseline quantization significance.')
+    for row in [header, result, ablation]:
+        row['metadata']['evidence_kind'] = 'table'
+    selected = select_focused_evidence([ablation, header], [setup, header, result, ablation],
+                                       '比较质量和速度', 'compare', limit=4)
+    assert {1, 11, 12} <= {row['chunkIndex'] for row in selected}
+    assert len(selected) <= 4
+
+
 def test_window_keeps_late_conditions_as_one_literal_excerpt_with_the_old_budget():
     source = 'Paper: title\n\nSection: Results\n\nContent:\n' + 'Background only. ' * 150 + '\nEquation: score definition. GPU A; dataset B; baseline C; 100 FPS.'
     body = bounded_evidence_body(source, 300)

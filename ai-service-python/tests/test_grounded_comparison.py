@@ -89,3 +89,15 @@ def test_cancelled_provider_response_is_not_published():
     with patch('services.socratic_service._call_guarded_llm', side_effect=model):
         with pytest.raises(OperationCancelled), cancellation_scope(lambda: cancelled[0]):
             synthesize_comparison('比较', SOURCES, ['A', 'B'])
+
+
+def test_comparison_prompt_retains_table_mapping_uncertainty():
+    sources = copy.deepcopy(SOURCES)
+    sources[0]['metadata'] = {'evidence_kind': 'table', 'table_column_mapping_unverified': True}
+    with patch('services.socratic_service._call_guarded_llm', return_value=json.dumps(payload())) as llm:
+        synthesize_comparison('比较', sources, ['A', 'B'])
+    prompt = llm.call_args.args[0]
+    packet = json.loads(prompt.split('资料JSON：\n', 1)[1])
+    assert packet['evidence'][0]['evidenceKind'] == 'table'
+    assert packet['evidence'][0]['tableColumnMappingUnverified'] is True
+    assert '不能自行拆开合并单元格' in prompt

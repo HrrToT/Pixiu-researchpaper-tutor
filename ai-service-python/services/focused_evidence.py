@@ -46,6 +46,8 @@ def _matches(item, terms):
 
 def _is_experiment(item):
     section = str(evidence_section_key(item) or '').lower()
+    if (item.get('metadata') or {}).get('evidence_kind') == 'table':
+        return bool(re.search(r'\b(?:FPS|PSNR|SSIM|LPIPS|accuracy|dataset|baseline)\b', _body(item), re.I))
     return any(term in section for term in ('experiment', 'result', 'ablation', 'evaluation'))
 
 
@@ -69,12 +71,13 @@ def select_focused_evidence(retrieved, documents, question, axis, limit=6, secti
         hits = sum(_matches(item, group) for group in groups)
         section_hits = sum(any(term in section for term in group) for group in groups)
         extra_results = bool(re.search(r'\b(?:more|additional|supplementary|appendix)\b', section))
-        return hits * 2 + section_hits * 5 + len(re.findall(r'equation:', body)) * 4 + len(CONTEXT_SIGNALS.findall(body)) - 12 * extra_results
+        table_bonus = 6 if (item.get('metadata') or {}).get('evidence_kind') == 'table' else 0
+        return hits * 2 + section_hits * 5 + len(re.findall(r'equation:', body)) * 4 + len(CONTEXT_SIGNALS.findall(body)) + table_bonus - 12 * extra_results
     def method_section(item):
         section = str(evidence_section_key(item) or '')
         return bool(METHOD_SECTION.search(section)) and not re.search(
             r'introduction|related work|background|reference|appendix', section, re.I)
-    method_pool = [item for item in pool if not _is_experiment(item) and (
+    method_pool = [item for item in pool if (item.get('metadata') or {}).get('evidence_kind') != 'table' and not _is_experiment(item) and (
         any(_matches(item, group) for group in groups) or (axis == 'compare' and method_section(item)))]
     if axis in ('methods', 'compare') and method_pool:
         anchor = max(method_pool, key=score)
@@ -109,13 +112,28 @@ def select_focused_evidence(retrieved, documents, question, axis, limit=6, secti
                     add(item)
                     sections.add(section)
     if axis in ('experiments', 'compare'):
-        for pattern in (
+        for facet, pattern in enumerate((
             r'\bGPU\b|\bhardware\b|implementation details',
             r'\bdataset\b|\bbaseline\b|experimental settings|experimental setup',
             r'quantitative results|\bFPS\b|\bPSNR\b|\bSSIM\b|\bLPIPS\b',
             r'ablation|significance criteria',
-        ):
+        )):
             candidates = [item for item in pool if _is_experiment(item) and re.search(pattern, _body(item) + ' ' + str(evidence_section_key(item)), re.I)]
+            if facet < 2:
+                # Prefer implementation/settings prose over a noisy extracted
+                # table caption. One passage may cover both conditions.
+                if any(_is_experiment(item) and re.search(pattern, _body(item), re.I) for item in selected):
+                    continue
+                prose = [item for item in candidates if (item.get('metadata') or {}).get('evidence_kind') != 'table']
+                candidates = prose or candidates
+            if facet == 2:
+                main_tables = [item for item in candidates if (item.get('metadata') or {}).get('evidence_kind') == 'table'
+                               and re.search(r'compar|benchmark|quantitative', str(evidence_section_key(item)), re.I)
+                               and not re.search(r'ablation', str(evidence_section_key(item)), re.I)]
+                # A repeated header alone does not supply the proposed method
+                # or baseline values. Prefer the actual method rows.
+                method_rows = [item for item in main_tables if re.search(r'\b(?:ours|proposed)\b', _body(item))]
+                candidates = method_rows or main_tables or candidates
             if candidates:
                 ranked = sorted(candidates, key=score, reverse=True)
                 add(next((item for item in ranked if _key(item) not in selected_keys), ranked[0]))

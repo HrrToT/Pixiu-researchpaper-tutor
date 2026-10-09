@@ -259,6 +259,7 @@ def _format_axis_prompt_block(axis_result: dict[str, Any]) -> str:
         f"queryPlan: {axis_result.get('queryPlan')}\n"
         f"judge: verdict={judge.get('verdict')} confidence={judge.get('confidence')} "
         f"reason={judge.get('reason')} missing={judge.get('missingAspects')}\n"
+        "表格列映射未核对时不能猜测数字归属；带cols/rows跨度或分块不完整的表格，只能保留可确认信息，不能把不同场景、硬件和基线版本拼成同一次实验。\n"
         f"{evidence_safety['wrapped']}\n"
     )
 
