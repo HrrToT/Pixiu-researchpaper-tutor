@@ -15,7 +15,7 @@ NUMBER_UNIT = r'\d+(?:\.\d+)?\s*(?:%|％|FPS|frames?\s*(?:per second|/\s*s)|[KMG
 METRIC = re.compile(r'(?P<metric>PSNR|SSIM|LPIPS)\s+(?P<direction>increase|decrease|loss|drop)'
                     r'\s+(?:of\s+)?(?P<only>only\s+)?(?P<number>\d+(?:\.\d+)?)'
                     r'(?P<unit>\s+dB)?(?:\s+on\s+(?P<dataset>[A-Za-z0-9 -]+))?', re.I)
-METRIC_PREFIX = re.compile(r'(?P<metric>PSNR|SSIM|LPIPS)\s*(?P<direction>上升|增加|提升|下降|减少|降低)'
+METRIC_PREFIX = re.compile(r'(?P<metric>PSNR|SSIM|LPIPS)\s*(?P<direction>变化为|上升|增加|提升|下降|减少|降低)'
                            r'(?P<only>仅|只有)?\s*$', re.I)
 LIMIT_PREFIX = re.compile('(' + '|'.join(sorted(CHINESE_LIMITS, key=len, reverse=True)) + r')\s*$')
 
@@ -36,7 +36,8 @@ def render_author_quantity(template, key, literal):
         direction = '上升' if metric['direction'].lower() == 'increase' else '下降'
         adjacent = METRIC_PREFIX.search(prefix)
         if adjacent:
-            actual = '上升' if adjacent['direction'] in ('上升', '增加', '提升') else '下降'
+            actual = direction if adjacent['direction'] == '变化为' else (
+                '上升' if adjacent['direction'] in ('上升', '增加', '提升') else '下降')
             if adjacent['metric'].upper() != metric['metric'].upper() or actual != direction:
                 raise ValueError('作者报告的指标或变化方向与原文不一致。')
             if adjacent['only'] and not metric['only']:
@@ -50,7 +51,7 @@ def render_author_quantity(template, key, literal):
             # The exact same dataset is already displayed next to this fact.
             # Aliases or a name elsewhere in a different sentence do not qualify.
             nearby = prefix.split('。')[-1]
-            if not re.search(r'(?:在)?' + re.escape(dataset) + r'(?:上|中)[^。！？]{0,24}$', nearby):
+            if not re.search(r'(?:在\s*)?' + re.escape(dataset) + r'\s*(?:上|中)[^。！？；;]{0,24}$', nearby):
                 display += f'（{dataset}）'
         return prefix + suffix, display
 
@@ -58,10 +59,12 @@ def render_author_quantity(template, key, literal):
     if span:
         if prefix.endswith('从'):
             template = prefix[:-1] + suffix
+        elif prefix.endswith('变化为'):
+            template = prefix[:-3] + suffix
         return template, f'从{span[1]}到{span[2]}'
 
     quantity = re.fullmatch(r'(?P<limit>at least|at most|more than|less than|up to|over|about|approximately|>=|<=|[>≥<≤≈~])?'
-                            r'\s*(?P<quantity>' + NUMBER_UNIT + ')', literal, re.I)
+                            r'\s*(?P<quantity>' + NUMBER_UNIT + r')(?P<scene>\s+on complex scenes)?', literal, re.I)
     if quantity:
         limit = LIMITS.get((quantity['limit'] or '').lower())
         adjacent = LIMIT_PREFIX.search(prefix)
@@ -74,6 +77,8 @@ def render_author_quantity(template, key, literal):
             display = quantity['limit'] + quantity['quantity']
         else:
             display = (limit[1] if limit else '') + quantity['quantity']
+        if quantity['scene'] and not re.search(r'复杂场景[^。！？；;]{0,24}$', prefix):
+            display += '（复杂场景）'
         return prefix + suffix, display
 
     return template, f'原文「{literal}」'

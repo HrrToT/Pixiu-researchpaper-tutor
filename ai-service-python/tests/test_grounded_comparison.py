@@ -125,3 +125,20 @@ def test_comparison_can_select_excerpts_instead_of_regenerating_quotes():
     result = call(value)
     assert result['claims'][0]['references'][0]['quote'] == SOURCES[0]['text']
     assert '[1]' in result['message'] and 'quoteId' not in result['message']
+
+
+def test_comparison_scope_uses_plain_language_without_changing_raw_response():
+    value = payload()
+    value['limitations'] = ['主表的 tableColumnMappingUnverified 为 true，不能据此排序。',
+                            '实验条件不同，不能直接排名。']
+    before = copy.deepcopy(value)
+    result = call(value)
+    assert '主表的 表格列归属尚未核对，不能据此排序；实验条件不同，不能直接排名。' in result['message']
+    assert 'tableColumnMappingUnverified' not in result['message'] and '。；' not in result['message']
+    assert value == before
+
+
+def test_scope_wording_does_not_rewrite_a_verified_mapping_flag():
+    value = payload()
+    value['limitations'] = ['tableColumnMappingUnverified=false']
+    assert 'tableColumnMappingUnverified=false' in call(value)['message']

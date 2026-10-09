@@ -25,6 +25,7 @@ COMPARATIVE = re.compile(r'高于|低于|优于|快于|更快|更小|领先|\b(?
 
 NUMERIC_PROMPT = '''数字输出合同：不要同时在summary和结构字段重复填写数字。
 summary中所有数值写成⟦数值1⟧等占位符，并添加numericBindings（最多12项），每项id为1到12的整数；每个id使用一次。
+提交前逐条检查：本条summary的占位符与本条numericBindings的id必须一一对应，不能附加正文未使用的绑定；定性结论不附实验数字绑定。
 没有数字时省略numericBindings。数字结论不要另加旧measurements。参数、作者主张和实验结果须分开：
 1. kind=experiment：选择sourceId、row、group（0起）、metric（原样指标名）、baselineRow、dataset、hardware、baseline和conditionReferences（sourceId/quoteId）。引用完整结果行与基线行。仅限verifiedTable的已核对列。
    operation为value、difference（结果减基线）、ratio（结果除基线）或inverse_ratio（基线除结果）；推算结论kind=inference，decimals可选0到6。不要填写value，服务端计算、舍入并说明升降。

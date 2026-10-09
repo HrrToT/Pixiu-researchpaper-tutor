@@ -61,3 +61,39 @@ def test_unknown_phrase_is_verbatim_and_never_translated_by_guessing():
     raw, sources = literal_claim('author_report', 'We report ' + literal + '.', literal)
     text = check_numeric_claim(raw, sources)['summary']
     assert f'原文「{literal}」' in text
+
+
+def test_neutral_change_prefix_and_spaced_dataset_are_rendered_once():
+    raw, sources = dataset_report()
+    raw['summary'] = '在 Mip-NeRF 360 上 SSIM 变化为⟦数值2⟧，表示规模变化为⟦数值1⟧。'
+    text = check_numeric_claim(raw, sources)['summary']
+    assert '上 SSIM仅下降0.007，表示规模从782MB到45MB。' in text
+    assert text.count('SSIM') == text.count('Mip-NeRF 360') == 1
+
+
+def test_neutral_change_cannot_change_the_verified_metric():
+    raw, sources = dataset_report()
+    raw['summary'] = 'Mip-NeRF 360上⟦数值1⟧，LPIPS变化为⟦数值2⟧。'
+    with pytest.raises(ValueError, match='指标或变化方向'):
+        check_numeric_claim(raw, sources)
+
+
+@pytest.mark.parametrize('prefix,expected', [
+    ('渲染速度为', '渲染速度为超过200 FPS（复杂场景）'),
+    ('复杂场景渲染速度为', '复杂场景渲染速度为超过200 FPS'),
+])
+def test_exact_complex_scene_condition_is_preserved_without_duplication(prefix, expected):
+    literal = 'over 200 FPS on complex scenes'
+    raw, sources = literal_claim('author_report', 'We report ' + literal + '.', literal)
+    raw['summary'] = prefix + '⟦数值1⟧。'
+    before = deepcopy((raw, sources))
+    assert expected + '。' in check_numeric_claim(raw, sources)['summary']
+    assert (raw, sources) == before
+
+
+def test_complex_scene_report_cannot_change_the_comparator():
+    literal = 'over 200 FPS on complex scenes'
+    raw, sources = literal_claim('author_report', 'We report ' + literal + '.', literal)
+    raw['summary'] = '复杂场景至少⟦数值1⟧。'
+    with pytest.raises(ValueError, match='数量上下界'):
+        check_numeric_claim(raw, sources)

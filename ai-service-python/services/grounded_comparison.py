@@ -1,5 +1,6 @@
 """One bounded comparison synthesis with per-paper, literal evidence references."""
 import json
+import re
 
 from services.agent_grounded_answer import _extract_json_object
 from services.operation_control import check_cancelled
@@ -43,6 +44,7 @@ verifiedTable是PDF绘制位置与TEI逐格交叉核对的组和完整行，只�
 表格每个维度都要包含每篇选中论文的一个单元。缺证据用kind=not_covered，写当前片段未覆盖并置references为空。
 区分作者报告reported和解释推断inference，不把同一论文多个片段叫独立验证。
 limitations只写比较范围或尚需核查的主题，不填写未经绑定的数量；数字事实放入带引用和绑定的claims或cells。
+面向读者使用自然语言，不展示内部字段名；例如写“表格列归属尚未核对”。
 只输出JSON：{"claims":[{"summary":"直接回答问题的结论","kind":"reported或inference",
 "paperIds":["所涉及的论文ID"],"references":[{"sourceId":"完整原样ID","quoteId":"正文摘录标识"}]}],
 "dimensions":[{"label":"比较维度","cells":[{"paperId":"论文ID","summary":"具体比较内容",
@@ -67,7 +69,8 @@ limitations只写比较范围或尚需核查的主题，不填写未经绑定的
                 raise ValueError('比较边界中的数字也需要逐项依据，请放入有引用的结论。')
             rejected.append('比较边界中的数字未经逐项核验。')
         else:
-            safe_limitations.append(limitation)
+            safe_limitations.append(re.sub(r'tableColumnMappingUnverified\s*(?:为|=|:)\s*true\b',
+                                           '表格列归属尚未核对', limitation, flags=re.I))
     limitations = safe_limitations
     for claim in claims:
         try:
@@ -131,7 +134,8 @@ limitations只写比较范围或尚需核查的主题，不填写未经绑定的
     for row in checked_rows:
         lines.append('| ' + table_text(row['label']) + ' | ' + ' | '.join(table_text(render(cell)) for cell in row['cells']) + ' |')
     if limitations:
-        lines.extend(['', '<details>', '<summary>比较范围</summary>', '', '；'.join(limitations), '', '</details>'])
+        lines.extend(['', '<details>', '<summary>比较范围</summary>', '',
+                      '；'.join(item.rstrip('。；;') for item in limitations) + '。', '', '</details>'])
     lines.extend(['', '<details>', '<summary>原文依据</summary>', ''])
     for paper_index, paper in enumerate(paper_ids, 1):
         title = next((s.get('title') or (s.get('metadata') or {}).get('title') for s in sources if s['pdfId'] == paper and (s.get('title') or (s.get('metadata') or {}).get('title'))), None)
