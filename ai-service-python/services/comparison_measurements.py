@@ -6,8 +6,23 @@ from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 from services.research_synthesis import evidence_body, validate_claim
 
 NUMBER = r'-?\d+(?:\.\d+)?'
-MENTION = re.compile(rf'(?P<value>{NUMBER})\s*\+?\s*(?P<unit>FPS|MB|GB|dB|PSNR|SSIM|LPIPS|倍|%)'
+UNIT = (r'frames?\s*(?:/\s*s(?:ec(?:ond)?s?)?|per\s+second)'
+        r'|帧\s*(?:[/／]\s*(?:秒|s)|每\s*秒)'
+        r'|FPS|KiB|MiB|GiB|KB|MB|GB|dB|PSNR|SSIM|LPIPS|倍|%|％|[x×](?!\s*\d)')
+MENTION = re.compile(rf'(?P<value>{NUMBER})\s*\+?\s*(?P<unit>{UNIT})(?![A-Za-z])'
                      rf'|(?P<metric>PSNR|SSIM|LPIPS)\D{{0,8}}?(?P<score>{NUMBER})', re.I)
+
+
+def _mention_unit(mention):
+    unit = re.sub(r'\s+', '', mention['unit'] or mention['metric']).lower()
+    if unit.startswith(('frame', '帧')) or unit == 'fps':
+        return 'FPS'
+    if unit in ('x', '×', '倍'):
+        return '倍'
+    if unit == '％':
+        return '%'
+    # Binary storage units deliberately remain different from MB/GB.
+    return unit.upper()
 
 
 def name_key(value):
@@ -85,7 +100,7 @@ def validate_numeric_comparison(raw, checked, sources):
                 raise ValueError('比较数字的文字报告缺少连续原文引用。')
             value, unit = _numeric(measurement.get('value'))
             metric = str(measurement.get('metric') or '').upper()
-            quoted = {(Decimal(match['value'] or match['score']), (match['unit'] or match['metric']).upper())
+            quoted = {(Decimal(match['value'] or match['score']), _mention_unit(match))
                       for match in MENTION.finditer(quote)}
             if (value, unit or metric) not in quoted:
                 raise ValueError('比较数字未在所引文字报告中明确出现。')
@@ -141,7 +156,7 @@ def validate_numeric_comparison(raw, checked, sources):
             supported.add((value, 'DB'))
     for mention in mentions:
         value = Decimal(mention['value'] or mention['score'])
-        unit = (mention['unit'] or mention['metric']).upper()
+        unit = _mention_unit(mention)
         if (value, unit) not in supported:
             raise ValueError('比较结果含未逐项核对的数字。')
 

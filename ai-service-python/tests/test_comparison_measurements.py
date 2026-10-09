@@ -85,6 +85,57 @@ def test_false_compression_ratio_is_rejected():
         check(raw, sources)
 
 
+@pytest.mark.parametrize('claim', ['999帧/秒', '999帧每秒', '999 frames per second', '999×压缩', '999x compression', '999 MiB'])
+def test_common_unit_spellings_cannot_skip_numeric_evidence_checks(claim):
+    raw, sources = fixture()
+    raw['summary'] = 'Alpha（GPU A，Baseline *）：' + claim
+    with pytest.raises(ValueError):
+        check(raw, sources)
+
+
+@pytest.mark.parametrize('unit', ['帧/秒', '帧每秒', '帧/s', 'frames per second', 'frames/sec', 'FPS'])
+def test_supported_frame_rate_spellings_keep_the_same_evidence_conditions(unit):
+    raw, sources = fixture()
+    raw['summary'] = 'Alpha（GPU A，Baseline *）：Ours 为200 ' + unit + '。'
+    check(raw, sources)
+    raw.pop('measurements')
+    with pytest.raises(ValueError, match='缺少逐项实验条件'):
+        check(raw, sources)
+
+
+@pytest.mark.parametrize('unit', ['×', 'x', '倍'])
+def test_compression_ratio_spellings_require_the_verified_calculation(unit):
+    raw, sources = fixture()
+    raw['summary'] = 'Alpha（GPU A，Baseline *）：存储压缩5' + unit + '。'
+    raw['kind'] = 'inference'
+    raw['measurements'][0].update(operation='inverse_ratio', metric='Size', value='5')
+    check(raw, sources)
+
+
+def test_matrix_dimensions_are_not_treated_as_compression_ratios():
+    raw, sources = fixture()
+    raw['summary'] += '采用3×3矩阵和2x3矩阵。'
+    check(raw, sources)
+
+
+def test_binary_storage_unit_cannot_relabel_a_decimal_storage_measurement():
+    raw, sources = fixture()
+    raw['summary'] = 'Alpha（GPU A，Baseline *）：存储20 MiB。'
+    raw['measurements'][0].update(metric='Size', value='20MB')
+    with pytest.raises(ValueError, match='未逐项核对'):
+        check(raw, sources)
+
+
+def test_author_frame_rate_report_accepts_equivalent_wording_without_changing_quotes():
+    raw, sources = fixture()
+    quote = 'On Alpha Dataset, Ours reaches 200 frames per second compared with Baseline *.'
+    sources['p'] = {'sourceId': 'p', 'pdfId': 'A', 'text': quote}
+    raw['references'] = [{'sourceId': 'p', 'quote': quote}]
+    raw['measurements'][0].update(sourceId='p', quote=quote)
+    checked = check(raw, sources)
+    assert checked['references'][0]['quote'] == quote
+
+
 def test_derived_value_cannot_be_published_as_an_author_report():
     raw, sources = fixture()
     raw['summary'] = 'Alpha（GPU A，Baseline *）：速度为2倍。'
