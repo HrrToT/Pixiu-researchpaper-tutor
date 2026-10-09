@@ -14,6 +14,23 @@ from services.evidence_service import (
 
 
 class EvidenceCitationServiceTests(unittest.TestCase):
+    def test_index_versions_distinguish_new_sources_and_preserve_existing_snapshots(self):
+        def item(version=None, source=None):
+            value = {'text': 'Original text', 'metadata': {'id': 'paper.pdf', 'chunk_index': 3}}
+            if version is not None:
+                value['metadata']['index_version'] = version
+            if source:
+                value['sourceId'] = source
+            return value
+        old = normalize_evidence_items([item()])[0]
+        new = normalize_evidence_items([item('a' * 16)])[0]
+        changed = normalize_evidence_items([item('b' * 16)])[0]
+        self.assertEqual(old['sourceId'], 'paper.pdf-chunk-3')
+        self.assertEqual(new['sourceId'], 'paper.pdf-v' + 'a' * 16 + '-chunk-3')
+        self.assertNotEqual(new['sourceId'], changed['sourceId'])
+        self.assertEqual(normalize_evidence_items([item('a' * 16, old['sourceId'])])[0]['sourceId'], old['sourceId'])
+        self.assertEqual(normalize_evidence_items([item('invalid/version')])[0]['sourceId'], old['sourceId'])
+
     def test_sentence_source_map_links_sentence_to_existing_source(self):
         sources = [
             {
