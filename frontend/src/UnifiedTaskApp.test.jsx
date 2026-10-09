@@ -383,11 +383,17 @@ describe('unified task conversation wiring', () => {
     expect(screen.getByRole('textbox', {name: '跳转到页码'})).toHaveValue('7');
     fireEvent.click(screen.getByRole('button', {name: '阅读笔记', exact: true}));
     expect(screen.getByTestId('paper-viewer')).not.toBeVisible();
+    const retainedPaper = screen.getByTestId('paper-viewer').closest('.unified-reader-paper');
+    expect(retainedPaper).toHaveStyle({visibility: 'hidden'});
+    expect(retainedPaper.style.display).not.toBe('none');
+    expect(retainedPaper).toHaveAttribute('inert');
+    expect(retainedPaper.querySelector('[aria-label="论文页码"]')).not.toBeNull();
     // A layout observer in the hidden viewer must not overwrite visible position.
-    act(() => state.pdfProps.onPageChange({pageIndex: 0, totalPages: 19}));
+    act(() => state.pdfProps.onPageChange({pageIndex: 0, totalPages: 20}));
     fireEvent.click(screen.getByRole('button', {name: '返回论文', exact: true}));
     expect(screen.getByTestId('paper-viewer')).toBeVisible();
     expect(screen.getByRole('textbox', {name: '跳转到页码'})).toHaveValue('7');
+    expect(screen.getByRole('form',{name:'论文页码'})).toHaveTextContent('/ 20 页');
     expect(state.pdfProps.targetPageIndex).toBe(6);
     expect(state.pdfMounts).toBe(1);
     expect(state.pdfUnmounts).toBe(0);

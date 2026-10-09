@@ -13,6 +13,11 @@
 .unified-task-nav>aside { width:100%; }
 .unified-reader,.unified-chat { display:flex; flex-direction:column; flex-shrink:1; min-width:0; min-height:0; overflow:hidden; }
 .unified-reader { background:var(--panel-muted); }
+.unified-reader-body { display:grid; grid-template: minmax(0,1fr) / minmax(0,1fr); flex:1; min-height:0; min-width:0; }
+.unified-reader-body > .unified-document,.unified-reader-paper { grid-area:1 / 1; min-width:0; }
+.unified-reader-body > .unified-document { z-index:1; }
+.unified-reader-paper { display:flex; min-height:0; flex-direction:column; }
+.unified-reader-paper[aria-hidden=true] * { visibility:hidden !important; }
 .unified-chat { background:var(--panel-bg); flex-grow:1; }
 .unified-pane-head { display:flex; align-items:center; flex-shrink:0; gap:8px; min-height:44px; padding:8px 12px; border-bottom:1px solid var(--border-subtle); font-size:13px; }
 .unified-pane-head strong { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-weight:500; }
