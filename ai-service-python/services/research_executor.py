@@ -1,4 +1,5 @@
 import copy
+import hashlib
 from typing import Any
 from rag.store import normalize_id
 
@@ -289,7 +290,11 @@ def ensure_stable_source_ids(items: list[dict[str, Any]], fallback_prefix: str) 
                 base = f"{pdf_id}-chunk-{chunk_index}"
             else:
                 base = f"{pdf_id}-{index + 1}"
-        current["sourceId"] = base[:80]
+        # Versioned PDF citations exceed 80 characters. Truncating their tail
+        # removes the chunk number and collapses every row to the same ID.
+        if len(base) > 180:
+            base = 'citation-' + hashlib.sha256(base.encode('utf-8')).hexdigest()
+        current["sourceId"] = base
         stabilized.append(current)
     return stabilized
 

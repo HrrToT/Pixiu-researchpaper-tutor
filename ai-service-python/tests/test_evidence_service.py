@@ -31,6 +31,15 @@ class EvidenceCitationServiceTests(unittest.TestCase):
         self.assertEqual(normalize_evidence_items([item('a' * 16, old['sourceId'])])[0]['sourceId'], old['sourceId'])
         self.assertEqual(normalize_evidence_items([item('invalid/version')])[0]['sourceId'], old['sourceId'])
 
+    def test_long_versioned_citation_ids_remain_unique_when_stabilized(self):
+        from services.research_executor import ensure_stable_source_ids
+        prefix = 'a' * 64 + '.pdf-v' + 'b' * 16 + '-chunk-'
+        sources = ensure_stable_source_ids([{'sourceId': prefix + str(i)} for i in range(2)], 'paper')
+        self.assertEqual([source['sourceId'] for source in sources], [prefix + '0', prefix + '1'])
+        huge = ensure_stable_source_ids([{'sourceId': 'x' * 200 + str(i)} for i in range(2)], 'paper')
+        self.assertNotEqual(huge[0]['sourceId'], huge[1]['sourceId'])
+        self.assertLessEqual(len(huge[0]['sourceId']), 180)
+
     def test_sentence_source_map_links_sentence_to_existing_source(self):
         sources = [
             {

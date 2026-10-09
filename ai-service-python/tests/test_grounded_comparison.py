@@ -101,3 +101,12 @@ def test_comparison_prompt_retains_table_mapping_uncertainty():
     assert packet['evidence'][0]['evidenceKind'] == 'table'
     assert packet['evidence'][0]['tableColumnMappingUnverified'] is True
     assert '不能自行拆开合并单元格' in prompt
+
+
+def test_duplicate_source_ids_are_rejected_before_spending_a_model_call():
+    sources = copy.deepcopy(SOURCES)
+    sources[1]['sourceId'] = sources[0]['sourceId']
+    with patch('services.socratic_service._call_guarded_llm') as provider:
+        with pytest.raises(ValueError, match='标识重复'):
+            synthesize_comparison('比较', sources, ['A', 'B'])
+    provider.assert_not_called()
