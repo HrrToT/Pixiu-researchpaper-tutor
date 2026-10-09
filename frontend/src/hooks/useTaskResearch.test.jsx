@@ -3,6 +3,83 @@ import { describe, expect, it, vi } from 'vitest';
 import { useTaskResearch } from './useTaskResearch';
 
 describe('task research integration', () => {
+  it('keeps the newest confirmed action when two explicit action replies arrive out of order', async () => {
+    const task={id:'t',researchRuns:[{researchId:'r'}]};
+    const workspace={tasks:[task],activeTaskId:'t',adoptServerTask:vi.fn()};
+    let releaseOlder;
+    const api={get:vi.fn(async()=>({task:{taskId:'r',status:'running'}})),
+      action:vi.fn().mockImplementationOnce(()=>new Promise(resolve=>{releaseOlder=resolve}))
+        .mockResolvedValueOnce({workspace:task,task:{taskId:'r',status:'running'}})};
+    const {result,unmount}=renderHook(()=>useTaskResearch(workspace,api));
+    await act(async()=>{});
+    let older;
+    act(()=>{older=result.current.action('t','r','cancel',{})});
+    await act(async()=>result.current.action('t','r','retry',{}));
+    await act(async()=>{releaseOlder({workspace:task,task:{taskId:'r',status:'cancelled'}});await older});
+    expect(result.current.runs['t/r'].status).toBe('running');
+    expect(workspace.adoptServerTask).toHaveBeenCalledTimes(1);
+    expect(api.action).toHaveBeenCalledTimes(2);
+    unmount();
+  });
+  it('does not expose a response with the wrong workspace identity', async () => {
+    const task={id:'t',researchRuns:[{researchId:'r'}]};
+    const workspace={tasks:[task],activeTaskId:'t',adoptServerTask:vi.fn()};
+    const api={get:vi.fn(async()=>({workspace:{id:'other'},task:{taskId:'r',status:'succeeded'}}))};
+    const {result,unmount}=renderHook(()=>useTaskResearch(workspace,api));
+    await waitFor(()=>expect(result.current.error).toContain('任务不匹配'));
+    expect(result.current.runs['t/r']).toBeUndefined();
+    expect(workspace.adoptServerTask).not.toHaveBeenCalled();
+    unmount();
+  });
+  it('ignores an obsolete poll failure after a confirmed cancellation', async () => {
+    const task={id:'t',researchRuns:[{researchId:'r'}]};
+    const workspace={tasks:[task],activeTaskId:'t',adoptServerTask:vi.fn()};
+    let rejectGet;
+    const api={get:vi.fn(()=>new Promise((_,reject)=>{rejectGet=reject})),
+      action:vi.fn(async()=>({workspace:task,task:{taskId:'r',status:'cancelled'}}))};
+    const {result,unmount}=renderHook(()=>useTaskResearch(workspace,api));
+    await act(async()=>result.current.action('t','r','cancel',{}));
+    await act(async()=>rejectGet(new Error('旧请求超时')));
+    expect(result.current.error).toBe('');
+    expect(result.current.runs['t/r'].status).toBe('cancelled');
+    unmount();
+  });
+  it('suspends GET for an action in flight while other research continues polling', async () => {
+    vi.useFakeTimers();
+    try {
+      const task={id:'t',researchRuns:[{researchId:'r'},{researchId:'other'}]};
+      const workspace={tasks:[task],activeTaskId:'t',adoptServerTask:vi.fn()};
+      let releaseAction;
+      const api={get:vi.fn(async(_,researchId)=>({task:{taskId:researchId,status:'running'}})),
+        action:vi.fn(()=>new Promise(resolve=>{releaseAction=resolve}))};
+      const {result,unmount}=renderHook(()=>useTaskResearch(workspace,api));
+      await act(async()=>{});
+      let actionPromise;
+      act(()=>{actionPromise=result.current.action('t','r','cancel',{})});
+      await act(async()=>vi.advanceTimersByTimeAsync(8000));
+      expect(api.get.mock.calls.filter(([,id])=>id==='r')).toHaveLength(1);
+      expect(api.get.mock.calls.filter(([,id])=>id==='other').length).toBeGreaterThan(1);
+      await act(async()=>{releaseAction({workspace:task,task:{taskId:'r',status:'cancelled'}});await actionPromise});
+      expect(result.current.runs['t/r'].status).toBe('cancelled');
+      unmount();
+    } finally {vi.useRealTimers()}
+  });
+  it('does not let a GET started before cancellation overwrite the confirmed cancellation', async () => {
+    const task={id:'t',revision:1,researchRuns:[{researchId:'r'}]};
+    const cancelledTask={...task,revision:2};
+    const workspace={tasks:[task],activeTaskId:'t',adoptServerTask:vi.fn()};
+    let releaseGet;
+    const api={get:vi.fn(()=>new Promise(resolve=>{releaseGet=resolve})),
+      action:vi.fn(async()=>({workspace:cancelledTask,task:{taskId:'r',status:'cancelled'}}))};
+    const {result,unmount}=renderHook(()=>useTaskResearch(workspace,api));
+    await act(async()=>result.current.action('t','r','cancel',{}));
+    expect(result.current.runs['t/r'].status).toBe('cancelled');
+    await act(async()=>releaseGet({workspace:task,task:{taskId:'r',status:'running'}}));
+    expect(result.current.runs['t/r'].status).toBe('cancelled');
+    expect(workspace.adoptServerTask).toHaveBeenCalledTimes(1);
+    expect(workspace.adoptServerTask).toHaveBeenCalledWith(cancelledTask);
+    unmount();
+  });
   it.each(['cancelled', 'failed', 'succeeded'])('stops GET polling after confirmed %s even when another run is added', async status => {
     vi.useFakeTimers();
     try {
@@ -109,5 +186,6 @@ describe('task research integration', () => {
     await waitFor(() => expect(result.current.error).toContain('保存尚未确认'));
     expect(workspace.updateTask).not.toHaveBeenCalled();
     expect(workspace.adoptServerTask).not.toHaveBeenCalled();
+    expect(result.current.runs['t/r']).toBeUndefined();
   });
 });

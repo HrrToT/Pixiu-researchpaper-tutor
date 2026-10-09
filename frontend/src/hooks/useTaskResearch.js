@@ -18,19 +18,23 @@ export function useTaskResearch(workspace, api = taskResearchApi, operations = n
   const latest = useRef(workspace);
   latest.current = workspace;
   const finished = useRef(new Set());
+  const actionVersions = useRef(new Map());
+  const pendingActions = useRef(new Set());
   const startingRef = useRef(false);
   const runKey = JSON.stringify(workspace.tasks.flatMap((task) => (task.researchRuns || []).map((run) => [task.id, run.researchId])));
-  const publish = async (taskId, researchId, result) => {
+  const publish = async (taskId, researchId, result, isCurrent = () => true) => {
+    if (!isCurrent()) return null;
     const research = result?.task;
     if (!research || research.taskId !== researchId) throw new Error('研究服务返回的任务不匹配');
     const key = `${taskId}/${researchId}`;
-    setRuns((previous) => ({ ...previous, [key]: research }));
     if (result.workspace) {
       if (result.workspace.id !== taskId) throw new Error('研究成果返回的任务不匹配');
       await latest.current.adoptServerTask(result.workspace);
     } else if (research.status === 'succeeded') {
       throw new Error('研究已完成，成果保存尚未确认，请重新查询');
     }
+    if (!isCurrent()) return null;
+    setRuns((previous) => ({ ...previous, [key]: research }));
     if (terminal.has(research.status)) finished.current.add(key);
     else finished.current.delete(key);
     return research;
@@ -40,13 +44,17 @@ export function useTaskResearch(workspace, api = taskResearchApi, operations = n
     let timer;
     const poll = async () => {
       for (const [taskId, researchId] of JSON.parse(runKey)) {
-        if (disposed || finished.current.has(`${taskId}/${researchId}`)) continue;
+        const key = `${taskId}/${researchId}`;
+        if (disposed || finished.current.has(key) || pendingActions.current.has(key)) continue;
+        const version = actionVersions.current.get(key) || 0;
+        const isCurrent = () => !disposed && !pendingActions.current.has(key)
+          && (actionVersions.current.get(key) || 0) === version;
         try {
           const response = await api.get(taskId, researchId);
-          if (disposed) return;
-          await publish(taskId, researchId, response);
-          if (!disposed) setRunError(JSON.stringify([taskId, researchId]), 'poll', '');
-        } catch (failure) { if (!disposed) setRunError(JSON.stringify([taskId, researchId]), 'poll', failure.message || '研究状态读取失败'); }
+          if (!isCurrent()) continue;
+          await publish(taskId, researchId, response, isCurrent);
+          if (isCurrent()) setRunError(JSON.stringify([taskId, researchId]), 'poll', '');
+        } catch (failure) { if (isCurrent()) setRunError(JSON.stringify([taskId, researchId]), 'poll', failure.message || '研究状态读取失败'); }
       }
       if (!disposed) timer = setTimeout(poll, 4000);
     };
@@ -71,10 +79,16 @@ export function useTaskResearch(workspace, api = taskResearchApi, operations = n
   const action = async (taskId, researchId, name, payload) => {
     // An explicit action may reopen a finished run or have an uncertain result.
     // Resume GET recovery; never resubmit the action automatically.
-    finished.current.delete(`${taskId}/${researchId}`);
+    const key = `${taskId}/${researchId}`;
+    const version = (actionVersions.current.get(key) || 0) + 1;
+    actionVersions.current.set(key, version);
+    pendingActions.current.add(key);
+    finished.current.delete(key);
+    const isCurrent = () => actionVersions.current.get(key) === version;
     setRunError(JSON.stringify([taskId, researchId]), 'action', '');
-    try { await publish(taskId, researchId, await api.action(taskId, researchId, name, payload)); }
-    catch (failure) { setRunError(JSON.stringify([taskId, researchId]), 'action', failure.message || '研究操作失败'); }
+    try { await publish(taskId, researchId, await api.action(taskId, researchId, name, payload), isCurrent); }
+    catch (failure) { if (isCurrent()) setRunError(JSON.stringify([taskId, researchId]), 'action', failure.message || '研究操作失败'); }
+    finally { if (isCurrent()) pendingActions.current.delete(key); }
   };
   return { runs, start, action, starting, error };
 }
