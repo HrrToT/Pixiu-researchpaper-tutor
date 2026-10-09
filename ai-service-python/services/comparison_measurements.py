@@ -27,8 +27,34 @@ def _mention_unit(mention):
 
 def name_key(value):
     value = re.sub(r'\[\d+\]', '', str(value)).replace('∗', '*').lower()
+    value = value.replace('&', ' and ')
     value = re.sub(r'\bdatasets?\b', '', value)
     return re.sub(r'[\s\-_:：()（）]+', '', value)
+
+
+def _hardware_display_mentions(summary, hardware):
+    if name_key(hardware) in name_key(summary):
+        return True
+    # Only shorten an identifiable model, never a generic label like GPU A.
+    # This affects display matching, not the same-paper literal source check.
+    model = re.sub(r'\b(?:NVIDIA|AMD|Intel|GPU|CPU)\b', '', hardware, flags=re.I)
+    tokens = re.findall(r'[A-Za-z0-9]+', model)
+    if not tokens or not re.search(r'[a-z]\d', ''.join(tokens), re.I):
+        return False
+    pattern = r'(?<![A-Za-z0-9])' + r'[\s-]*'.join(re.escape(token) for token in tokens) + r'(?![A-Za-z0-9])'
+    expected_vendor = re.search(r'\b(NVIDIA|AMD|Intel)\b', hardware, re.I)
+    expected_device = re.search(r'\b(GPU|CPU)\b', hardware, re.I)
+    for match in re.finditer(pattern, summary, re.I):
+        prefix = summary[max(0, match.start() - 24):match.start()]
+        suffix = summary[match.end():match.end() + 12]
+        vendor = re.search(r'\b(NVIDIA|AMD|Intel)(?:\s+(?:GPU|CPU))*\s*$', prefix, re.I)
+        device = re.search(r'\b(GPU|CPU)(?:\s+(?:NVIDIA|AMD|Intel))*\s*$', prefix, re.I) or re.match(r'\s*(GPU|CPU)\b', suffix, re.I)
+        if vendor and expected_vendor and vendor[1].lower() != expected_vendor[1].lower():
+            continue
+        if device and expected_device and device[1].lower() != expected_device[1].lower():
+            continue
+        return True
+    return False
 
 
 def verified_packet(source, body):
@@ -167,7 +193,8 @@ def _validate_conditions(measurement, checked, sources, source, dataset, version
         raise ValueError('比较数字的场景或基线版本不匹配。')
     if not isinstance(hardware, str) or not re.search(r'GPU|CPU|NVIDIA|AMD|Intel|[RG]TX|Tesla|\b[AH]\d{3,5}\b', hardware, re.I):
         raise ValueError('比较数字的硬件条件无效。')
-    if any(name_key(value) not in name_key(checked['summary']) for value in (dataset, hardware, version)):
+    if (any(name_key(value) not in name_key(checked['summary']) for value in (dataset, version))
+            or not _hardware_display_mentions(checked['summary'], hardware)):
         raise ValueError('比较数字未在本条结果注明场景、硬件和基线。')
     condition = validate_claim({'summary': '实验条件', 'kind': 'reported',
                                 'references': measurement.get('conditionReferences')}, list(sources.values()))

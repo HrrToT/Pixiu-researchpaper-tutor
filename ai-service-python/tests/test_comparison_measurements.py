@@ -41,6 +41,57 @@ def test_numeric_cell_keeps_its_dataset_hardware_baseline_and_same_paper_sources
     assert 'measurements' not in checked  # Existing public claim contract.
 
 
+def accelerator_fixture():
+    raw, sources = fixture()
+    raw['measurements'][0]['hardware'] = 'NVIDIA A6000 GPU'
+    sources['h']['text'] = 'All measurements were performed on NVIDIA A6000 GPU.'
+    raw['measurements'][0]['conditionReferences'] = [{'sourceId': 'h', 'quote': sources['h']['text']}]
+    return raw, sources
+
+
+def test_specific_hardware_model_may_be_displayed_without_vendor_and_gpu_suffix():
+    raw, sources = accelerator_fixture()
+    raw['summary'] = 'Alpha（A6000平台，Baseline *）：Ours为200 FPS。'
+    checked = check(raw, sources)
+    assert checked['summary'] == raw['summary']
+    assert any('NVIDIA A6000 GPU' in ref['quote'] for ref in checked['references'])
+
+
+@pytest.mark.parametrize('display', ['A600', 'A60000', 'A6000Ada', 'RTXA6000', 'AMD A6000', 'CPU A6000', 'AMD GPU A6000', 'CPU NVIDIA A6000', '另一块GPU'])
+def test_hardware_shortening_cannot_change_model_vendor_or_device_type(display):
+    raw, sources = accelerator_fixture()
+    raw['summary'] = f'Alpha（{display}，Baseline *）：Ours为200 FPS。'
+    with pytest.raises(ValueError, match='本条结果'):
+        check(raw, sources)
+
+
+def test_hardware_shortening_does_not_remove_same_paper_literal_condition_proof():
+    raw, sources = accelerator_fixture()
+    raw['summary'] = 'Alpha（A6000，Baseline *）：Ours为200 FPS。'
+    sources['h']['text'] = 'All measurements were performed on NVIDIA A5000 GPU.'
+    raw['measurements'][0]['conditionReferences'] = [{'sourceId': 'h', 'quote': sources['h']['text']}]
+    with pytest.raises(ValueError, match='硬件没有原文依据'):
+        check(raw, sources)
+
+
+def test_dataset_conjunction_can_use_ampersand_without_changing_group():
+    raw, sources = fixture()
+    sources['t']['_verifiedTable']['groups'][0][0] = 'Red and Blue Dataset'
+    raw['measurements'][0]['dataset'] = 'Red and Blue Dataset'
+    raw['summary'] = 'Red&Blue（GPU A，Baseline *）：Ours为200 FPS。'
+    check(raw, sources)
+    raw['summary'] = 'Red&Green（GPU A，Baseline *）：Ours为200 FPS。'
+    with pytest.raises(ValueError, match='本条结果'):
+        check(raw, sources)
+
+
+def test_generic_hardware_label_still_requires_complete_label_not_single_letter():
+    raw, sources = fixture()
+    raw['summary'] = 'Alpha（A，Baseline *）：Ours为200 FPS。'
+    with pytest.raises(ValueError, match='本条结果'):
+        check(raw, sources)
+
+
 @pytest.mark.parametrize('change', ['missing', 'wrong_group', 'wrong_value', 'wrong_baseline', 'foreign_hardware', 'hidden_conditions', 'extra_number', 'unverified_table'])
 def test_mixed_or_uncovered_experiment_numbers_are_rejected(change):
     raw, sources = fixture()
