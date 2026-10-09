@@ -11,3 +11,5 @@
 原始响应未改动，索引前后SHA256均4708c07a18e305c6aed2bdb183e439ba2de02fcd5ccfa8dc867b44afbf1bf3f9；Provider、任务写入和索引写入均0，见stage4-reading-v10-native.log。重放脚本verify_cached_reading_v10.py不发布任务或覆盖旧收据。
 
 剩余问题：批判的首项仍缺数值占位符；主表实验条件及列归属仍未完整核对。比较中“剪枝步骤会避免……细节损失”还需语义验收，不能以引用存在等同完整支持。此次修正不证明未来模型必定遵守提示，也不把原真实结果记为已修复后通过。A11/A14/A18/A20及正式切换门槛保持未完成。
+
+修复提交8f164ff。两项持久任务存储确认无活动生成后，仅重启现有AI服务加载；health、GROBID、RAG均ok，原阅读任务重启前后逐字段一致、revision19保持。见stage4-reading-v10-reload.log、stage4-reading-v10-before-reload.json及stage4-reading-v10-reload-runtime.json。健康检查和任务GET为只读，没有新模型请求。
