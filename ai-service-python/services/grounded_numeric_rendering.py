@@ -4,6 +4,7 @@ from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 
 from services.comparison_measurements import MENTION, _numeric, validate_numeric_comparison
 from services.research_synthesis import validate_claim
+from services.evidence_quantity_text import render_author_quantity
 
 TOKEN = re.compile(r'⟦数值([1-9]|1[0-2])⟧')
 FREE_NUMBER = re.compile(r'(?<![A-Za-z0-9])\d+(?:\.\d+)?(?![A-Za-z0-9])')
@@ -30,6 +31,7 @@ summary中所有数值写成⟦数值1⟧等占位符，并添加numericBindings
    服务端插入数据集、指标、数值及紧凑硬件/基线条件，summary只写解释，不重复这些条件或手写下降幅度。
 2. kind=method_parameter：选择sourceId/quoteId、label（原文参数名）和literal（同一摘录中的完整数值及单位）。只用于有明确参数/归一化/分位等定义的数值，不用于FPS、存储或质量提升。
 3. kind=author_report：结论kind=reported，选择sourceId/quoteId及literal（原文完整数值表达式，保留≥、范围、at least等限定与单位）。只展示作者报告，不据此比较高低；分辨率等限制也分别绑定。
+   完整数值短语的指标、升降或上下界由服务端呈现，summary不要在占位符旁重复这些词，更不能填写相反方向。
 literal必须原样来自本条references的同一摘录，不改写引用。方法参数和作者主张不能用于绕过实验比较条件。
 数据集名称中的数字不是测量值；名称仍须出现在引用正文并由已核对表格的数据集名称确认。作者报告可以绑定一段完整连续的数字短语，例如from 782MB to 45MB；保留短语中的全部数量、单位和限定。
 例：{"summary":"作者报告实时渲染为⟦数值1⟧。","kind":"reported","numericBindings":[{"id":1,"kind":"author_report","sourceId":"来源ID","quoteId":"摘录ID","literal":"≥30fps"}],"references":[{"sourceId":"来源ID","quoteId":"摘录ID"}]}。
@@ -232,6 +234,8 @@ def check_numeric_claim(raw, sources):
                 conditions.append(condition)
         else:
             rendered[key] = _literal(binding, checked, by_id)
+            if kind == 'author_report':
+                template, rendered[key] = render_author_quantity(template, key, rendered[key])
     if 'author_report' in kinds and (checked['kind'] != 'reported' or 'experiment' in kinds or COMPARATIVE.search(without_tokens)):
         raise ValueError('作者主张不能作为同条件实验比较。')
     if 'author_report' in kinds:

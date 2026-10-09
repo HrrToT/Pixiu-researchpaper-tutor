@@ -17,12 +17,13 @@ def dataset_report():
     return raw, sources
 
 
-def test_contiguous_multi_quantity_report_preserves_source_phrase_and_dataset_identity():
+def test_contiguous_multi_quantity_report_preserves_values_and_source_phrase_and_dataset_identity():
     raw, sources = dataset_report()
     before = deepcopy((raw, sources))
     result = check_numeric_claim(raw, sources)
-    assert 'from 782MB to 45MB' in result['summary']
-    assert 'SSIM decrease of only 0.007 on Mip-NeRF 360' in result['summary']
+    assert '从782MB到45MB' in result['summary']
+    assert 'SSIM仅下降0.007' in result['summary']
+    assert result['references'][0]['quote'] == before[0]['references'][0]['quote']
     assert result['summary'].endswith('（作者报告，未作同条件比较）')
     assert (raw, sources) == before
 
