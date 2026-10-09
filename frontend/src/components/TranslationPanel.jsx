@@ -386,7 +386,7 @@ const TranslationPanel = ({ pdfId, pdfFileName, fileUrl, currentPage = 0, pageDa
             className="theme-button-secondary flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-50"
           >
             <Archive size={14} />
-            加入工作台
+            保存译文
           </button>
           <button
             type="button"
