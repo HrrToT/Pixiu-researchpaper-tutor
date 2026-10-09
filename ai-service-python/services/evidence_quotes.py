@@ -7,6 +7,11 @@ from services.comparison_measurements import bounded_table_body, verified_packet
 from services.focused_evidence import bounded_evidence_body
 from services.safety_service import wrap_untrusted_context
 
+TABLE_VERIFICATION_PROMPT = '''verifiedTable是按PDF绘制位置逐格核对的行白名单，groups只用于rows列出的完整行。
+tableColumnMappingUnverified=true表示原始片段仍有未核对的行或合并单元格，不否定verifiedTable白名单中的行；不能因此把整张表都说成未核对。
+数字只取白名单中的结果行与基线行，按groups选择数据集及指标，并核对同论文硬件和实验条件。未列出的行、缺失白名单或损坏单元格不能推测列归属，不能自行拆开合并单元格或外推验证范围。
+'''
+
 
 def excerpt_catalog(source_id, body):
     excerpts = []

@@ -43,6 +43,17 @@ def test_server_computes_values_and_keeps_local_conditions(operation, metric, di
     assert (raw, sources) == before
 
 
+def test_unverified_surrounding_table_does_not_expand_or_invalidate_checked_row_whitelist():
+    raw, sources = experiment()
+    sources[0]['metadata']['table_column_mapping_unverified'] = True
+    sources[0]['text'] += '\nTable row 4: Unknown | 999 | 20MB | 400 | 30MB'
+    _, validation, _ = prepare_quote_sources(sources)
+    assert 'FPS 200' in check_numeric_claim(raw, validation)['summary']
+    raw['numericBindings'][0]['row'] = 4
+    with pytest.raises(ValueError, match='实验绑定结果、基线或指标未核对'):
+        check_numeric_claim(raw, validation)
+
+
 def test_rounding_and_direction_come_from_source_cells_not_duplicate_model_values():
     raw, sources = experiment('difference', 'FPS')
     table = sources[0]

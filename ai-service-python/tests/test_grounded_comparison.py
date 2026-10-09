@@ -101,6 +101,7 @@ def test_comparison_prompt_retains_table_mapping_uncertainty():
     assert packet['evidence'][0]['evidenceKind'] == 'table'
     assert packet['evidence'][0]['tableColumnMappingUnverified'] is True
     assert '不能自行拆开合并单元格' in prompt
+    assert '不否定verifiedTable白名单中的行' in prompt
 
 
 def test_duplicate_source_ids_are_rejected_before_spending_a_model_call():

@@ -79,3 +79,17 @@ def test_filtered_lines_cannot_be_stitched_into_a_continuous_quote():
     with pytest.raises(ValueError,match='不连续正文'):
         validate_claim({'summary':'拼接','kind':'reported',
                         'references':[{'sourceId':'s','quote':first+' '+last}]},sources)
+
+
+def test_partial_table_verification_preserves_both_checked_rows_and_raw_uncertainty():
+    from test_comparison_measurements import fixture
+    _, sources = fixture()
+    table = sources['t']
+    table['metadata']['table_column_mapping_unverified'] = True
+    table['text'] += '\nTable row 4: Unknown [cols=3, rows=1] | merged values'
+    before = deepcopy(table)
+    clean, validation, _ = prepare_quote_sources([table])
+    assert clean[0]['tableColumnMappingUnverified'] is True
+    assert [row[0] for row in clean[0]['verifiedTable']['rows']] == [2, 3]
+    assert validation[0]['_verifiedTable'] == clean[0]['verifiedTable']
+    assert table == before

@@ -5,7 +5,7 @@ import re
 from services.agent_grounded_answer import _extract_json_object
 from services.operation_control import check_cancelled
 from services.safety_service import wrap_untrusted_context
-from services.evidence_quotes import prepare_quote_sources, resolve_references
+from services.evidence_quotes import prepare_quote_sources, resolve_references, TABLE_VERIFICATION_PROMPT
 from services.grounded_numeric_rendering import NUMERIC_PROMPT, check_numeric_claim, FREE_NUMBER, QUANTITY, MENTION
 
 
@@ -34,8 +34,7 @@ def synthesize_comparison(question, sources, paper_ids, prior='', *, allow_parti
 不要把检索未覆盖说成论文未提供，不臆造数字，不把不同实验条件下的指标直接排序。
 实验比较数字必须绑定原文可确认的数据集/场景、硬件与基线版本；条件未覆盖时给定性比较。
 优先实验表与方法正文，不把首页单场景示例当成全数据集平均；不同实验中的速度和存储数字不可拼接成同一次实验。
-表格片段重复原始首行和单元格分隔；tableColumnMappingUnverified=true或单元格有cols/rows跨度时，列映射尚未核对，不能自行拆开合并单元格、猜测数值属于哪个数据集或指标；省略不能确认的数字，保留定性比较。
-verifiedTable是PDF绘制位置与TEI逐格交叉核对的组和完整行，只有这些行允许表格量化结论。不能从零散正文拼出一次实验。
+表格片段重复原始首行和单元格分隔。省略不能确认的数字，保留定性比较；不能从零散正文拼出一次实验。
 方法因素优先按正文公式与邻近定义完整解释；消融中列出的因素不一定等于公式全部因素。资料冲突时说明版本/段落差异，不能无声选择。
 每条结论与每个表格单元的事实必须有支持它的原文摘录。每段text里的[16位标识]是quoteId。
 只选择摘录，references写sourceId与quoteId，不重新抄录或改写quote。系统会恢复原文。
@@ -51,7 +50,7 @@ limitations只写比较范围或尚需核查的主题，不填写未经绑定的
 "kind":"reported或inference或not_covered","references":[{"sourceId":"完整ID","quoteId":"正文摘录标识"}]}]}],
 "limitations":["比较边界或无法判断的问题"]}。
 由表格计算的差值或倍数单独列为kind=inference，不把计算结果当作作者原样报告。
-''' + NUMERIC_PROMPT + '''
+''' + TABLE_VERIFICATION_PROMPT + NUMERIC_PROMPT + '''
 通常1到4条结论、2到5个最相关维度，不凑数。资料JSON：
 ''' + json.dumps({'question': question, 'paperIds': paper_ids, 'evidence': clean_sources,
                   'prior': wrap_untrusted_context('Earlier capability results', prior, max_tokens=2000)['wrapped']}, ensure_ascii=False)

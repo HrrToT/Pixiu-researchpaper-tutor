@@ -3,7 +3,7 @@ import json
 import re
 
 from services.agent_grounded_answer import _extract_json_object
-from services.evidence_quotes import prepare_quote_sources, resolve_references
+from services.evidence_quotes import prepare_quote_sources, resolve_references, TABLE_VERIFICATION_PROMPT
 from services.grounded_numeric_rendering import NUMERIC_PROMPT, check_numeric_claim
 from services.operation_control import check_cancelled
 from services.trace_service import trace_step
@@ -66,12 +66,11 @@ def synthesize_critique(question, sources, *, allow_partial=False):
 每项finding必须选择能支持整项结论的原文摘录；每条text中的[16位标识]是quoteId。
 references仅写sourceId和quoteId，系统恢复原文，不重新抄写或改写quote；涉及多处依据则选择多个摘录。
 公式与机制必须核对全部因子、求和范围、权重及归一化；原文不完整时仅作有依据的定性解释，不补造公式。
-verifiedTable中的完整行已按PDF绘制位置核对，只有这些行可以生成表格数字。tableColumnMappingUnverified=true时不能自行猜测其他行列。
 条件或核对行不足时给具体定性结论，不编数字；不同消融步骤的基线、主实验和跨表示扩展不可混用。
 仅输出JSON：{"findings":[{"section":"contribution或weakness或risk","summary":"具体结论，最多320字",
 "kind":"reported或inference","references":[{"sourceId":"完整原样来源ID","quoteId":"摘录标识"}]}],
 "pendingQuestions":[{"topic":"待核查的主题，最多100字"}]}。
-''' + NUMERIC_PROMPT + '''
+''' + TABLE_VERIFICATION_PROMPT + NUMERIC_PROMPT + '''
 资料JSON：
 ''' + json.dumps({'question': question, 'evidence': clean}, ensure_ascii=False)
     check_cancelled()
