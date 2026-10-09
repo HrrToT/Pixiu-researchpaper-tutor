@@ -5,7 +5,7 @@ from services.agent_grounded_answer import _extract_json_object
 from services.operation_control import check_cancelled
 from services.safety_service import wrap_untrusted_context
 from services.evidence_quotes import prepare_quote_sources, resolve_references
-from services.grounded_numeric_rendering import NUMERIC_PROMPT, check_numeric_claim
+from services.grounded_numeric_rendering import NUMERIC_PROMPT, check_numeric_claim, FREE_NUMBER, QUANTITY, MENTION
 
 
 def grounded_source_map(claims, text):
@@ -20,7 +20,7 @@ def grounded_source_map(claims, text):
     return rows
 
 
-def synthesize_comparison(question, sources, paper_ids, prior=''):
+def synthesize_comparison(question, sources, paper_ids, prior='', *, allow_partial=False):
     from services.socratic_service import _call_guarded_llm
     clean_sources, validation_sources, quote_catalog = prepare_quote_sources(sources)
     if set(paper_ids) - {source['pdfId'] for source in clean_sources}:
@@ -58,14 +58,29 @@ verifiedTable是PDF绘制位置与TEI逐格交叉核对的组和完整行，只�
     claims, dimensions, limitations = result.get('claims'), result.get('dimensions'), result.get('limitations', [])
     if not isinstance(claims, list) or not isinstance(dimensions, list) or not dimensions or not isinstance(limitations, list) or any(not isinstance(x, str) for x in limitations):
         raise ValueError('比较结果格式不完整，请重试。')
-    checked_claims = []
+    checked_claims, rejected = [], []
+    safe_limitations = []
+    for limitation in limitations:
+        if FREE_NUMBER.search(limitation) or QUANTITY.search(limitation) or MENTION.search(limitation):
+            if not allow_partial:
+                raise ValueError('比较边界中的数字也需要逐项依据，请放入有引用的结论。')
+            rejected.append('比较边界中的数字未经逐项核验。')
+        else:
+            safe_limitations.append(limitation)
+    limitations = safe_limitations
     for claim in claims:
-        claim = resolve_references(claim, quote_catalog)
-        checked = check_numeric_claim(claim, validation_sources)
-        declared = claim.get('paperIds')
-        covered = {by_id[ref['sourceId']]['pdfId'] for ref in checked['references']}
-        if not isinstance(declared, list) or not declared or any(not isinstance(x, str) for x in declared) or set(declared) != covered or covered - set(paper_ids):
-            raise ValueError('比较结论未给涉及的每篇论文提供原文依据。')
+        try:
+            claim = resolve_references(claim, quote_catalog)
+            checked = check_numeric_claim(claim, validation_sources)
+            declared = claim.get('paperIds')
+            covered = {by_id[ref['sourceId']]['pdfId'] for ref in checked['references']}
+            if not isinstance(declared, list) or not declared or any(not isinstance(x, str) for x in declared) or set(declared) != covered or covered - set(paper_ids):
+                raise ValueError('比较结论未给涉及的每篇论文提供原文依据。')
+        except ValueError as error:
+            if not allow_partial:
+                raise
+            rejected.append(str(error))
+            continue
         checked_claims.append(checked)
     checked_rows = []
     for row in dimensions:
@@ -83,13 +98,23 @@ verifiedTable是PDF绘制位置与TEI逐格交叉核对的组和完整行，只�
                 checked_cells.append({'paperId': paper, 'summary': '当前正文片段未覆盖，需回查。',
                                       'kind': 'not_covered', 'references': []})
                 continue
-            cell = resolve_references(cell, quote_catalog)
-            checked = check_numeric_claim(cell, validation_sources)
-            if any(by_id[ref['sourceId']]['pdfId'] != paper for ref in checked['references']):
-                raise ValueError('比较表引用了其他论文来证明当前论文。')
+            try:
+                cell = resolve_references(cell, quote_catalog)
+                checked = check_numeric_claim(cell, validation_sources)
+                if any(by_id[ref['sourceId']]['pdfId'] != paper for ref in checked['references']):
+                    raise ValueError('比较表引用了其他论文来证明当前论文。')
+            except ValueError as error:
+                if not allow_partial:
+                    raise
+                rejected.append(str(error))
+                checked_cells.append({'paperId': paper, 'summary': '该项暂无法核验。',
+                                      'kind': 'not_covered', 'verificationStatus': 'rejected', 'references': []})
+                continue
             checked_cells.append({**checked, 'paperId': paper})
         checked_rows.append({'label': row['label'].strip(), 'cells': checked_cells})
     all_claims = checked_claims + [cell for row in checked_rows for cell in row['cells'] if cell['kind'] != 'not_covered']
+    if rejected and not all_claims:
+        raise ValueError('尚未形成可核验的比较结果，原问题已保留。')
     used = list(dict.fromkeys(ref['sourceId'] for claim in all_claims for ref in claim['references']))
     numbers = {sid: index + 1 for index, sid in enumerate(used)}
     def render(claim):
@@ -105,7 +130,7 @@ verifiedTable是PDF绘制位置与TEI逐格交叉核对的组和完整行，只�
     for row in checked_rows:
         lines.append('| ' + table_text(row['label']) + ' | ' + ' | '.join(table_text(render(cell)) for cell in row['cells']) + ' |')
     if limitations:
-        lines.extend(['', '比较边界：' + '；'.join(limitations)])
+        lines.extend(['', '<details>', '<summary>比较范围</summary>', '', '；'.join(limitations), '', '</details>'])
     lines.extend(['', '<details>', '<summary>原文依据</summary>', ''])
     for paper_index, paper in enumerate(paper_ids, 1):
         title = next((s.get('title') or (s.get('metadata') or {}).get('title') for s in sources if s['pdfId'] == paper and (s.get('title') or (s.get('metadata') or {}).get('title'))), None)
@@ -113,6 +138,9 @@ verifiedTable是PDF绘制位置与TEI逐格交叉核对的组和完整行，只�
     quotes = list(dict.fromkeys((ref['sourceId'], ref['quote']) for claim in all_claims for ref in claim['references']))
     lines.extend(f"- [{numbers[sid]}] “{quote}”" for sid, quote in quotes)
     lines.extend(['', '</details>'])
-    return {'message': '\n\n'.join(lines[:len(checked_claims)]) + '\n\n' + '\n'.join(lines[len(checked_claims):]) if checked_claims else '\n'.join(lines),
+    message = '\n\n'.join(lines[:len(checked_claims)]) + '\n\n' + '\n'.join(lines[len(checked_claims):]) if checked_claims else '\n'.join(lines)
+    if rejected:
+        message = '**部分比较**\n\n' + message + f'\n\n<details>\n<summary>尚待确认</summary>\n\n另有{len(rejected)}项判断暂未确认，未纳入本次结论。\n\n</details>'
+    return {'message': message, 'partial': bool(rejected),
             'claims': all_claims, 'comparisonTable': checked_rows,
             'rag_sources': [source for source in sources if source['sourceId'] in used]}

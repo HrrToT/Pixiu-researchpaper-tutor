@@ -129,7 +129,7 @@ def _compare(request, prior):
         if not evidence:
             raise ValueError('部分比较材料尚未建立索引，请等待解析后重试')
         sources.extend(evidence)
-    result = synthesize_comparison(request.message, sources, request.allowedPaperIds, _format_prior(prior))
+    result = synthesize_comparison(request.message, sources, request.allowedPaperIds, _format_prior(prior), allow_partial=True)
     return {'status': 'success', **result, 'groundedClaims': result['claims'],
             'sentenceSourceMap': grounded_source_map(result['claims'], result['message'])}
 
@@ -200,16 +200,19 @@ def execute_conversation(request: ConversationCapabilityRequest):
         conclusion = step_summaries[-1]
         message = summarize_artifact(conclusion)
     grounded_claims = [claim for step in completed for result in step['results'] for claim in result.get('groundedClaims', [])]
+    partial = any(result.get('partial') for step in completed for result in step['results'])
+    if partial:
+        message = '部分结果：\n\n' + message
     def source_map(text):
         if grounded_claims:
             from services.grounded_comparison import grounded_source_map
             return grounded_source_map(grounded_claims, text)
         return build_sentence_source_map(text, sources, target='message')
-    return {'status': 'success', 'capability': request.capability, 'message': message,
+    return {'status': 'success', 'partial': partial, 'capability': request.capability, 'message': message,
             'sources': sources, 'sentenceSourceMap': source_map(message),
             'materialScope': {'taskId': request.taskId, 'allowedPaperIds': request.allowedPaperIds,
                               'primaryPaperId': request.primaryPaperId, 'strictScope': request.strictScope},
-            'steps': completed, 'artifact': {'text': body, 'paperIds': request.allowedPaperIds,
+            'steps': completed, 'artifact': {'text': body, 'partial': partial, 'paperIds': request.allowedPaperIds,
                                             'sources': sources,
                                             'sentenceSourceMap': source_map(body)}
             if request.capability != 'chat' else None}

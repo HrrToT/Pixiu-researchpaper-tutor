@@ -816,7 +816,7 @@ def deep_analysis(request: DeepAnalysisRequest, *, grounded: bool = False) -> di
             corpus = normalize_evidence_items(documents, pdf_id=normalized_id, max_text_chars=ANALYSIS_EVIDENCE_MAX_TEXT_CHARS)
             response_sources = select_focused_evidence(pool, corpus, request.focus_question or '整体批判阅读',
                                                        'compare', limit=ANALYSIS_RESPONSE_SOURCE_LIMIT, section_cap=2)
-            response = synthesize_critique(request.focus_question or '整体批判阅读', response_sources)
+            response = synthesize_critique(request.focus_question or '整体批判阅读', response_sources, allow_partial=True)
             record_metric('axisCount', len(axis_results))
             record_metric('responseSources', len(response['rag_sources']))
             record_metric('literalFindings', len(response['groundedClaims']))
