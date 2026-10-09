@@ -67,12 +67,17 @@
     "此前已通过的significance固定案例不再次生成",
     "离线测试或合成夹具不计真实内容通过"
   ],
-  "status": "planned_not_authorized_not_executed",
+  "status": "executed_once_all_three_cases",
   "previousCasesConsumed": 25,
-  "casesExecuted": 0,
+  "casesExecuted": 3,
   "sourceCommits": [
     "43a08ed",
     "3007020"
   ],
-  "purpose": "Confirm new generation after verified quantity display and original-font operator repairs; offline replay does not count."
+  "purpose": "Confirm new generation after verified quantity display and original-font operator repairs; offline replay does not count.",
+  "authorization": "用户2026-10-09明确回复：允许这3个修复后案例",
+  "authorizedAt": "2026-10-09T14:24:48.163896+00:00",
+  "totalCasesConsumed": 28,
+  "automaticResubmissions": 0,
+  "contentAcceptance": "critique_partial; compose_complete_but_readability_and_table_mapping_unmet; page4_conservative_translation_saved_exported"
 }
