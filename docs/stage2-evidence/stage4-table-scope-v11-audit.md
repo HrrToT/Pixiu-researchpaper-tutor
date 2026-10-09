@@ -13,3 +13,5 @@
 独立Edge本轮通过Windows工具识别到运行窗口，但获取浏览器状态时工具停止：无法足够可靠地确定当前URL以执行策略。停止后没有继续UI输入，没有绕过保护；没有打开本地应用、读取成果或完成独立恢复。A18仍未通过。用户随后选择本人参与体验，A20尚未实际执行，不以选择参与等同体验完成。
 
 旧真实批判仍partial，缺占位符的实验结论仍被拒绝。新提示是否被真实模型遵守，以及完整语义质量，尚待实际核对。阶段4–7及默认入口仍未完成。
+
+修复提交5867020，持久生成存储检查空闲后已重启加载。health/GROBID/RAG均ok，新版入口HTTP200；原阅读任务与重启前快照逐字段相同，revision19保持。证据stage4-table-scope-v11-reload.log、stage4-table-scope-v11-before-reload.json与stage4-table-scope-v11-reload-runtime.json。这些是服务及读取核验，不计浏览器体验或新模型生成通过。
