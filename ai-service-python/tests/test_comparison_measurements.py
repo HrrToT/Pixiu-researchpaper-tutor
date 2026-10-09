@@ -115,3 +115,14 @@ def test_table_packet_and_body_share_existing_budget_and_visible_complete_rows()
     assert BASE in body and OURS in body and body in source['text']
     clipped, unavailable = bounded_table_body(source, source['text'], 30)
     assert unavailable is None
+
+
+def test_critique_axis_receives_checked_columns_without_mutating_source_snapshots():
+    from core.pdf_quality import _format_axis_prompt_block
+    raw, sources = fixture()
+    original = deepcopy(sources['t'])
+    prompt = _format_axis_prompt_block({'label': '实验', 'key': 'experiments', 'evidence': [sources['t']]})
+    assert 'PDF交叉核对的表格列' in prompt
+    assert 'Alpha Dataset' in prompt and 'Beta Dataset' in prompt
+    assert BASE in prompt and OURS in prompt
+    assert sources['t'] == original
