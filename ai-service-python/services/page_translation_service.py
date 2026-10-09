@@ -9,7 +9,8 @@ _logger = logging.getLogger(__name__)
 
 from llm.client import get_translation_llm
 from schemas.requests import PageTranslationRequest
-from services.translation_math import protect_inline_math, has_intact_math_tokens
+from services.translation_math import (SCOPE_POLICY, protect_inline_math, has_intact_math_tokens,
+                                       visible_math_context, has_unsafe_subtraction_scope)
 
 STRUCTURED_MAX_BLOCKS_PER_BATCH = 8
 STRUCTURED_MAX_CHARS_PER_BATCH = 1000
@@ -83,6 +84,7 @@ def _normalize_layout_blocks(page_layout: dict[str, Any] | None) -> list[dict[st
                 "id": block_id,
                 "text": protected,
                 "style": block.get("style") or {},
+                "mathContext": visible_math_context(protected, block.get('mathSources')),
             }
         )
 
@@ -100,6 +102,7 @@ def _build_plain_translation_prompt(page_index: int, skeleton_text: str, trimmed
 4. 输出只包含译文正文，不要添加标题、说明、前言或结语。
 5. 追求准确与直接，不要额外润色。
 6. ⟦原式数字⟧是原图中保留的数学表达式，必须原样保留且每个出现一次；不要推测、展开、补写公式。
+{SCOPE_POLICY}
 
 论文结构摘要（仅供术语参考）：
 {skeleton_text}
@@ -114,7 +117,8 @@ def _build_plain_translation_prompt(page_index: int, skeleton_text: str, trimmed
 
 def _build_structured_translation_prompt(page_index: int, skeleton_text: str, blocks: list[dict[str, Any]]) -> str:
     block_payload = json.dumps(
-        [{"id": block["id"], "text": block["text"], "style": block.get("style") or {}} for block in blocks],
+        [{"id": block["id"], "text": block["text"], "style": block.get("style") or {},
+          "mathContext": block.get('mathContext') or []} for block in blocks],
         ensure_ascii=False,
         indent=2,
     )
@@ -128,6 +132,7 @@ def _build_structured_translation_prompt(page_index: int, skeleton_text: str, bl
 4. 每个输入块都必须按原样返回相同的 id。
 5. 输出严格 JSON，不要输出任何额外说明。
 6. ⟦原式数字⟧标记必须原样保留且各出现一次；它们在原文图中显示，不能推测、展开、补写公式。
+{SCOPE_POLICY}
 
 JSON 格式：
 {{
@@ -171,6 +176,8 @@ def _normalize_translated_blocks(payload: Any, source_blocks: list[dict[str, Any
             continue
         if not has_intact_math_tokens(source_by_id[block_id]['text'], translated_text):
             continue
+        if has_unsafe_subtraction_scope(source_by_id[block_id]['text'], translated_text):
+            continue
         translated_by_id[block_id] = translated_text
 
     return [
@@ -190,7 +197,8 @@ def _chunk_layout_blocks(
     current_chars = 0
 
     for block in blocks:
-        block_chars = len(block["text"])
+        context = block.get('mathContext') or []
+        block_chars = len(block["text"]) + (len(json.dumps(context, ensure_ascii=False)) if context else 0)
         should_start_next_batch = (
             current_batch
             and (len(current_batch) >= max_blocks or current_chars + block_chars > max_chars)
@@ -288,6 +296,8 @@ def translate_page(request: PageTranslationRequest) -> dict[str, Any]:
         raise RuntimeError("Translation model returned empty content.")
     if not has_intact_math_tokens(trimmed_page_text, translated_text):
         raise RuntimeError("译文未完整保留原式标记，请查看原文；可手动重试。")
+    if has_unsafe_subtraction_scope(trimmed_page_text, translated_text):
+        raise RuntimeError('译文改变了原式的运算范围，请查看原文；可手动重试。')
 
     return {
         "status": "success",
