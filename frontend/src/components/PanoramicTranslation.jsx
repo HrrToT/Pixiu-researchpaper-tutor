@@ -46,7 +46,8 @@ function usePdfPageImage(fileUrl, pageIndex) {
   return { image: image?.fileUrl === fileUrl && image?.pageIndex === pageIndex ? image.canvas : null, error };
 }
 
-function SourceRegion({ image, bbox, label = '论文原图、公式或尚未翻译内容', trim = true }) {
+function SourceRegion({ image, bbox, label = '论文原图、公式或尚未翻译内容', trim = true,
+  openOnMount = false, onClose }) {
   const ref = useRef(null);
   const dialogRef = useRef(null);
   const zoomRef = useRef(null);
@@ -91,22 +92,37 @@ function SourceRegion({ image, bbox, label = '论文原图、公式或尚未翻�
     zoom.getContext('2d').drawImage(original,0,0);
     dialogRef.current.showModal();
   };
+  useEffect(() => {
+    if (image && openOnMount && !dialogRef.current?.open) openOriginal();
+  }, [image,openOnMount]);
   return <>
-    <button type="button" className="panoramic-source-button" hidden={empty} aria-label={`放大${label}`} onClick={openOriginal}>
+    <button type="button" className="panoramic-source-button" hidden={empty || openOnMount} aria-label={`放大${label}`} onClick={openOriginal}>
       <canvas ref={ref} role="img" aria-label={label} className="panoramic-source" hidden={empty} />
       <span>放大原图</span>
     </button>
-    <dialog ref={dialogRef} className="panoramic-image-dialog" aria-label="原图放大查看">
-      <header><span>原图</span><button type="button" onClick={()=>dialogRef.current.close()}>关闭</button></header>
+    <dialog ref={dialogRef} className="panoramic-image-dialog" aria-label="原图放大查看" onClose={onClose}>
+      <header><span>{openOnMount ? label : '原图'}</span><button type="button" onClick={()=>dialogRef.current.close()}>关闭</button></header>
       <div tabIndex={0} aria-label="可滚动的原图"><canvas ref={zoomRef} role="img" aria-label={label}/></div>
     </dialog>
   </>;
 }
 
-function Paragraph({ item, image }) {
+function Paragraph({ item, image, locatedMath }) {
+  const [selected,setSelected] = useState(null);
+  const sources = locatedMath ? (item.mathSources || []).filter(source => item.translatedText.includes(source.token)) : [];
+  const text = sources.reduce((value,source) => value.replaceAll(source.token,
+    `[${source.token}](#original-formula-${source.token.match(/\d+/)[0]})`), item.translatedText);
+  const components = {a:({href,children,title}) => {
+    const source = sources.find(source=>href===`#original-formula-${source.token.match(/\d+/)[0]}`);
+    return source ? <button type="button" className="panoramic-formula-reference" disabled={!image}
+      aria-label={`查看${source.token}`} onClick={()=>setSelected(previous=>({source,serial:(previous?.serial || 0)+1}))}>{children}</button>
+      : <a href={href} title={title}>{children}</a>;
+  }};
   return <article className="panoramic-paragraph">
-    <MarkdownContent>{item.translatedText}</MarkdownContent>
-    {image && (item.preserveMath ? <div className="panoramic-math-source">
+    <MarkdownContent components={components}>{text}</MarkdownContent>
+    {selected && image && <SourceRegion key={`${selected.source.token}-${selected.serial}`} image={image}
+      bbox={selected.source.bbox} label={selected.source.token} trim={false} openOnMount onClose={()=>setSelected(null)} />}
+    {image && (item.preserveMath && !sources.length ? <div className="panoramic-math-source">
       <span>原文公式上下文</span><SourceRegion image={image} bbox={item.bbox} label="本段原文与公式" trim={false} />
     </div> : <details><summary>原文</summary><SourceRegion image={image} bbox={item.bbox} label="本段论文原文" trim={false} /></details>)}
   </article>;
@@ -118,7 +134,7 @@ export default function PanoramicTranslation({fileUrl,pageIndex,pageData}) {
     pageData?.translatedBlocks || [],pageData?.excludedZones || []),[pageData]);
   const unpositioned = usesUnpositionedTranslation(pageData?.pageLayout, pageData?.translatedBlocks || []);
   const renderItems = items => items.map(item => item.kind === 'translation'
-    ? <Paragraph key={item.id} item={item} image={image} />
+    ? <Paragraph key={`${fileUrl}-${pageIndex}-${item.id}`} item={item} image={image} locatedMath={pageData?.mathProtectionVersion===2} />
     : image ? <SourceRegion key={item.id} image={image} bbox={item.bbox} /> : null);
   return <div className="panoramic-page" aria-label="当前页图文译文">
     {!image && <p className="panoramic-status" role="status">{error || '正在载入原图…'}</p>}
