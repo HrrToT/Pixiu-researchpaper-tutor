@@ -3,10 +3,9 @@ import json
 import re
 
 from services.agent_grounded_answer import _extract_json_object
-from services.comparison_measurements import validate_numeric_comparison
 from services.evidence_quotes import prepare_quote_sources, resolve_references
+from services.grounded_numeric_rendering import NUMERIC_PROMPT, check_numeric_claim
 from services.operation_control import check_cancelled
-from services.research_synthesis import validate_claim
 from services.trace_service import trace_step
 
 SECTIONS = {'contribution': '证据支持的贡献', 'weakness': '局限与代价', 'risk': '主张适用边界'}
@@ -25,7 +24,6 @@ def check_critique_payload(payload, sources, catalog):
     pending = payload.get('pendingQuestions', [])
     if not isinstance(pending, list) or len(pending) > 4:
         raise ValueError('待核查问题格式无效。')
-    by_id = {source['sourceId']: source for source in sources}
     findings, questions = [], []
     for raw in payload['findings']:
         if not isinstance(raw, dict) or raw.get('section') not in SECTIONS:
@@ -33,8 +31,7 @@ def check_critique_payload(payload, sources, catalog):
         if not isinstance(raw.get('summary'), str) or len(raw['summary']) > 320 or ABSENCE.search(raw['summary']):
             raise ValueError('不能把检索缺口发布为论文缺陷，请改为待核查问题。')
         selected = resolve_references(raw, catalog, require_selection=True)
-        checked = validate_claim(selected, sources)
-        validate_numeric_comparison(selected, checked, by_id)
+        checked = check_numeric_claim(selected, sources)
         findings.append({**checked, 'section': raw['section']})
     for question in pending:
         if not isinstance(question, dict) or not isinstance(question.get('topic'), str):
@@ -62,15 +59,12 @@ def synthesize_critique(question, sources):
 每项finding必须选择能支持整项结论的原文摘录；每条text中的[16位标识]是quoteId。
 references仅写sourceId和quoteId，系统恢复原文，不重新抄写或改写quote；涉及多处依据则选择多个摘录。
 公式与机制必须核对全部因子、求和范围、权重及归一化；原文不完整时仅作有依据的定性解释，不补造公式。
-每条含FPS/MB/GB/PSNR/SSIM/LPIPS/百分比/倍数的结果须加measurements，并在该条summary注明数据集、硬件和基线版本。
 verifiedTable中的完整行已按PDF绘制位置核对，只有这些行可以生成表格数字。tableColumnMappingUnverified=true时不能自行猜测其他行列。
-measurements格式：sourceId、row（原始行号）、group（0起的数据集组）、metric（原样指标名）、value（原样值含单位）、baselineRow、dataset、hardware、baseline（含星号）、conditionReferences（同论文硬件依据sourceId/quoteId）。引用结果行和基线行。
-作者正文明确报告的数字可用kind=reported并以quoteId代替row/group，所选同一摘录须同时包含指标、数据集和基线，硬件仍需conditionReferences。
-按表计算的difference（结果减基线）、ratio（结果除基线）、inverse_ratio（基线除结果，压缩倍数）须kind=inference和operation；最多6位小数，倍数value不加单位而summary用“倍”。
 条件或核对行不足时给具体定性结论，不编数字；不同消融步骤的基线、主实验和跨表示扩展不可混用。
 仅输出JSON：{"findings":[{"section":"contribution或weakness或risk","summary":"具体结论，最多320字",
 "kind":"reported或inference","references":[{"sourceId":"完整原样来源ID","quoteId":"摘录标识"}]}],
-"pendingQuestions":[{"topic":"待核查的主题，最多100字"}]}。含数字的finding额外加上述measurements。
+"pendingQuestions":[{"topic":"待核查的主题，最多100字"}]}。
+''' + NUMERIC_PROMPT + '''
 资料JSON：
 ''' + json.dumps({'question': question, 'evidence': clean}, ensure_ascii=False)
     check_cancelled()

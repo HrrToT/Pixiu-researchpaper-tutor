@@ -119,4 +119,19 @@ def resolve_references(raw, catalog, *, require_selection=False):
             if 'conditionReferences' in item:
                 measurement['conditionReferences'] = resolve_references({'references': item['conditionReferences']}, catalog, require_selection=require_selection)['references']
             claim['measurements'].append(measurement)
+    bindings = raw.get('numericBindings')
+    if isinstance(bindings, list):
+        claim['numericBindings'] = []
+        for item in bindings:
+            if not isinstance(item, dict):
+                raise ValueError('数值绑定格式无效。')
+            binding = {**item}
+            if item.get('kind') in ('method_parameter', 'author_report'):
+                binding['quote'] = resolve_references({'references': [item]}, catalog,
+                                                       require_selection=True)['references'][0]['quote']
+            if 'conditionReferences' in item:
+                binding['conditionReferences'] = resolve_references(
+                    {'references': item['conditionReferences']}, catalog,
+                    require_selection=True)['references']
+            claim['numericBindings'].append(binding)
     return claim
