@@ -469,6 +469,17 @@ def _build_inline_documents(paper_content: str) -> list[dict[str, Any]]:
         })
     return normalize_evidence_items(documents, source_type="current_paper", max_text_chars=1800)
 
+def _assert_analysis_scope(items: list[dict[str, Any]], pdf_id: str) -> None:
+    """Check original identities before normalization assigns the caller's ID."""
+    expected = normalize_id(pdf_id)
+    for item in items:
+        metadata = item.get('metadata') or {}
+        identities = [item.get('pdfId'), item.get('pdf_id'),
+                      metadata.get('pdfId'), metadata.get('pdf_id'), metadata.get('id')]
+        if any(value and normalize_id(value) != expected for value in identities):
+            raise ValueError('批判检索返回了指定论文之外的证据')
+
+
 def _load_analysis_source(request: DeepAnalysisRequest) -> tuple[list[dict[str, Any]], str, str | None, str]:
     with trace_step(
         "load_analysis_source",
@@ -493,6 +504,7 @@ def _load_analysis_source(request: DeepAnalysisRequest) -> tuple[list[dict[str, 
                     RAG_INDEX_UNAVAILABLE_ERROR_CODE,
                 )
             raw_documents = rag.get_documents_by_metadata({"id": normalized_id}, limit=400)
+            _assert_analysis_scope(raw_documents, normalized_id)
             documents = normalize_evidence_items(
                 raw_documents,
                 source_type="current_paper",
@@ -526,7 +538,7 @@ def _build_axis_query(query_plan: dict[str, Any], axis: dict[str, Any]) -> str:
     刻意不把 keywords 全拼进去：向量检索要的是简洁自然查询，堆词会稀释语义；
     精确术语召回交给 BM25 那一路（HybridRetriever 内部已按论文分片建索引）。
     """
-    for candidate in (query_plan.get("rewritten"), query_plan.get("original"), axis.get("question")):
+    for candidate in (query_plan.get("retrieval"), query_plan.get("rewritten"), query_plan.get("original"), axis.get("question")):
         query = " ".join(str(candidate or "").split())
         if query:
             return query[:300]
@@ -552,7 +564,7 @@ def _build_axis_query_plan(axis: dict[str, Any]) -> dict[str, Any]:
 
     keywords 直接用轴自带的 seed_terms（本来就是常量）。下游 _normalize_terms 与
     _build_axis_terms 都会去重，所以与调用点里已有的 seed_terms 拼接不会重复计分，
-    query_plan 的字段形状也与 LLM 版逐键一致。
+    保留旧计划字段，retrieval 额外记录实际检索式，关注问题仍完整留在 original/rewritten。
     """
     question = " ".join(str(axis.get("question") or "").split())
     retrieval_question = " ".join(str(axis.get("retrieval_question") or "").split())
@@ -560,6 +572,8 @@ def _build_axis_query_plan(axis: dict[str, Any]) -> dict[str, Any]:
     if focus:
         question = focus + "；" + question
         retrieval_question = focus + " " + retrieval_question
+    from services.focused_evidence import focus_groups
+    local_terms = list(dict.fromkeys(term for group in focus_groups(focus) for term in group))
     keywords = [
         " ".join(str(term or "").split())
         for term in (axis.get("seed_terms") or [])
@@ -568,6 +582,7 @@ def _build_axis_query_plan(axis: dict[str, Any]) -> dict[str, Any]:
     return {
         "original": question,
         "rewritten": retrieval_question or question,
+        "retrieval": ' '.join([str(axis.get('retrieval_question') or ''), *local_terms]).strip() or retrieval_question or question,
         "keywords": keywords,
         "taskType": "critical",
         "source": "axis-fixed",
@@ -584,7 +599,7 @@ def _retrieve_axis_evidence(
     """按轴取证据。
 
     有 pdf_id 时走真检索：HybridRetriever 的向量 + BM25 + 融合，按论文分片建索引，
-    中文轴问题会被自动改写成英文，similarity 是真实余弦。
+    使用确定性英文轴问题与本地主题提示，不调用查询翻译模型；similarity 是真实余弦。
 
     旧实现在预加载的 documents 上做子串计数，similarity 由 0.42 + coverage*0.4 合成，
     既不反映语义相关性，也让“轴问题中文 × 论文英文”这个组合恒零命中：
@@ -610,7 +625,9 @@ def _retrieve_axis_evidence(
                 query,
                 top_k=ANALYSIS_RETRIEVAL_TOP_K,
                 filter_metadata={"id": pdf_id},
+                allow_query_rewrite=False,
             )
+            _assert_analysis_scope([*retrieved, *documents], pdf_id)
             # 先全量归一化、再按章节挑：归一化时就截断等于把 BM25 追加在后半段的
             # 补召回又砍掉，那就回到改动前的行为了。所以这里不传 limit。
             normalized = normalize_evidence_items(
@@ -619,8 +636,12 @@ def _retrieve_axis_evidence(
                 pdf_id=pdf_id,
                 max_text_chars=ANALYSIS_EVIDENCE_MAX_TEXT_CHARS,
             )
-            evidence = select_section_diverse_evidence(
+            from services.focused_evidence import select_focused_evidence
+            evidence = select_focused_evidence(
                 normalized,
+                documents,
+                axis.get('focus_question') or '',
+                axis.get('key'),
                 limit=limit,
                 # 在调用时读本模块常量，而不是把它当默认参数绑到公共函数上：
                 # 运行期配置与测试补丁（patch.object ANALYSIS_AXIS_SECTION_CAP）才能生效。

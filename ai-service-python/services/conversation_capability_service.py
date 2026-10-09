@@ -86,6 +86,7 @@ def _compare(request, prior):
     from services.evidence_service import normalize_evidence_items
     from services.grounded_comparison import synthesize_comparison, grounded_source_map
     from services.research_executor import ensure_stable_source_ids
+    from services.focused_evidence import select_focused_evidence
     sources = []
     for paper_id in request.allowedPaperIds:
         check_cancelled()
@@ -118,6 +119,10 @@ def _compare(request, prior):
                for document in documents):
             raise ValueError('比较检索返回了指定论文之外的证据')
         evidence = normalize_evidence_items(documents, source_type='current_paper', pdf_id=paper_id, max_text_chars=1400)
+        if any(normalize_id((document.get('metadata') or {}).get('id')) != metadata['id'] for document in overview):
+            raise ValueError('比较正文库返回了指定论文之外的证据')
+        corpus = normalize_evidence_items(overview, source_type='current_paper', pdf_id=paper_id, max_text_chars=1800)
+        evidence = select_focused_evidence(evidence, corpus, request.message, 'compare', limit=10, section_cap=2)
         evidence = ensure_stable_source_ids(evidence, fallback_prefix=paper_id)
         if not evidence:
             raise ValueError('部分比较材料尚未建立索引，请等待解析后重试')

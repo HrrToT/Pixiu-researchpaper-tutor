@@ -5,6 +5,7 @@ from services.agent_grounded_answer import _extract_json_object
 from services.operation_control import check_cancelled
 from services.research_synthesis import evidence_body, validate_claim
 from services.safety_service import wrap_untrusted_context
+from services.focused_evidence import bounded_evidence_body
 
 
 def grounded_source_map(claims, text):
@@ -24,7 +25,7 @@ def synthesize_comparison(question, sources, paper_ids, prior=''):
     clean_sources, validation_sources = [], []
     per_source_chars = min(1400, 24000 // max(1, len(sources)))
     for source in sources:
-        body = evidence_body(source.get('text'))[:per_source_chars]
+        body = bounded_evidence_body(source.get('text'), per_source_chars)
         if not body or (source.get('metadata') or {}).get('fallback'):
             continue
         safe = wrap_untrusted_context('Comparison paper evidence', body, max_tokens=1000)
