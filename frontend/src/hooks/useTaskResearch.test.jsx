@@ -3,6 +3,45 @@ import { describe, expect, it, vi } from 'vitest';
 import { useTaskResearch } from './useTaskResearch';
 
 describe('task research integration', () => {
+  it.each(['cancelled', 'failed', 'succeeded'])('stops GET polling after confirmed %s even when another run is added', async status => {
+    vi.useFakeTimers();
+    try {
+      const task = { id:'t', researchRuns:[{researchId:'done'}] };
+      const workspace = { tasks:[task], activeTaskId:'t', adoptServerTask:vi.fn() };
+      const api = { get:vi.fn(async (_taskId, researchId) => ({workspace:task,
+        task:{taskId:researchId,status:researchId === 'done' ? status : 'running'}})) };
+      const {rerender,unmount} = renderHook(({current}) => useTaskResearch(current,api), {initialProps:{current:workspace}});
+      await act(async () => {});
+      await act(async () => vi.advanceTimersByTimeAsync(12000));
+      expect(api.get.mock.calls.filter(([,id])=>id==='done')).toHaveLength(1);
+      rerender({current:{...workspace,tasks:[{...task,researchRuns:[...task.researchRuns,{researchId:'new'}]}]}});
+      await act(async () => vi.advanceTimersByTimeAsync(4000));
+      expect(api.get.mock.calls.filter(([,id])=>id==='done')).toHaveLength(1);
+      expect(api.get.mock.calls.filter(([,id])=>id==='new').length).toBeGreaterThan(1);
+      unmount();
+    } finally { vi.useRealTimers(); }
+  });
+  it('resumes GET recovery after an explicit action with an uncertain response without repeating the action', async () => {
+    vi.useFakeTimers();
+    try {
+      const task = {id:'t',researchRuns:[{researchId:'r'}]};
+      const workspace = {tasks:[task],activeTaskId:'t',adoptServerTask:vi.fn()};
+      let status='cancelled';
+      const api = {get:vi.fn(async () => ({workspace:task,task:{taskId:'r',status}})),
+        action:vi.fn(async () => {status='running';throw new Error('操作返回未确认');})};
+      const {result,unmount} = renderHook(() => useTaskResearch(workspace,api));
+      await act(async () => {});
+      await act(async () => vi.advanceTimersByTimeAsync(4000));
+      expect(api.get).toHaveBeenCalledTimes(1);
+      await act(async () => result.current.action('t','r','retry',{}));
+      await act(async () => vi.advanceTimersByTimeAsync(8000));
+      expect(result.current.runs['t/r'].status).toBe('running');
+      expect(api.get.mock.calls.length).toBeGreaterThan(1);
+      expect(api.action).toHaveBeenCalledTimes(1);
+      expect(result.current.error).toBe('操作返回未确认');
+      unmount();
+    } finally { vi.useRealTimers(); }
+  });
   it('clears a recovered poll error and keeps other task failures out of the current task', async () => {
     vi.useFakeTimers();
     try {

@@ -17,6 +17,7 @@ export function useTaskResearch(workspace, api = taskResearchApi, operations = n
   const [starting, setStarting] = useState(false);
   const latest = useRef(workspace);
   latest.current = workspace;
+  const finished = useRef(new Set());
   const startingRef = useRef(false);
   const runKey = JSON.stringify(workspace.tasks.flatMap((task) => (task.researchRuns || []).map((run) => [task.id, run.researchId])));
   const publish = async (taskId, researchId, result) => {
@@ -30,21 +31,21 @@ export function useTaskResearch(workspace, api = taskResearchApi, operations = n
     } else if (research.status === 'succeeded') {
       throw new Error('研究已完成，成果保存尚未确认，请重新查询');
     }
+    if (terminal.has(research.status)) finished.current.add(key);
+    else finished.current.delete(key);
     return research;
   };
   useEffect(() => {
     let disposed = false;
     let timer;
-    const finished = new Set();
     const poll = async () => {
       for (const [taskId, researchId] of JSON.parse(runKey)) {
-        if (disposed || finished.has(`${taskId}/${researchId}`)) continue;
+        if (disposed || finished.current.has(`${taskId}/${researchId}`)) continue;
         try {
           const response = await api.get(taskId, researchId);
           if (disposed) return;
-          const research = await publish(taskId, researchId, response);
+          await publish(taskId, researchId, response);
           if (!disposed) setRunError(JSON.stringify([taskId, researchId]), 'poll', '');
-          if (research.status === 'succeeded') finished.add(`${taskId}/${researchId}`);
         } catch (failure) { if (!disposed) setRunError(JSON.stringify([taskId, researchId]), 'poll', failure.message || '研究状态读取失败'); }
       }
       if (!disposed) timer = setTimeout(poll, 4000);
@@ -68,6 +69,9 @@ export function useTaskResearch(workspace, api = taskResearchApi, operations = n
     finally { startingRef.current = false; setStarting(false); }
   };
   const action = async (taskId, researchId, name, payload) => {
+    // An explicit action may reopen a finished run or have an uncertain result.
+    // Resume GET recovery; never resubmit the action automatically.
+    finished.current.delete(`${taskId}/${researchId}`);
     setRunError(JSON.stringify([taskId, researchId]), 'action', '');
     try { await publish(taskId, researchId, await api.action(taskId, researchId, name, payload)); }
     catch (failure) { setRunError(JSON.stringify([taskId, researchId]), 'action', failure.message || '研究操作失败'); }
