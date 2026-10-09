@@ -1,4 +1,4 @@
-"""Two bounded live cases; start is disabled until explicit plan authorization."""
+"""Bounded v12/v13 cases; start is disabled until explicit plan authorization."""
 import json
 import sys
 from datetime import datetime, timezone
@@ -7,7 +7,9 @@ from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 
 HERE = Path(__file__).parent
-plan = json.loads((HERE / 'stage4-analysis-v12-case-plan.json').read_text(encoding='utf-8-sig'))
+version = sys.argv[3] if len(sys.argv) == 4 else 'v12'
+assert len(sys.argv) in {3, 4} and version in {'v12', 'v13'}
+plan = json.loads((HERE / f'stage4-analysis-{version}-case-plan.json').read_text(encoding='utf-8-sig'))
 case, action = sys.argv[1:3]
 assert case in {'critique', 'compare'} and action in {'start', 'query'}
 assert plan['provider'] == 'https://api.deepseek.com' and plan['maxCases'] == 2
@@ -18,7 +20,7 @@ papers = [B] if case == 'critique' else [A, B]
 fixed = next(item for item in plan['cases'] if item['capability'] == case)
 task_id, request_id = fixed['taskId'], fixed['requestId']
 base = 'http://127.0.0.1:8081/api/task-workspaces'
-attempt = HERE / f'stage4-{case}-v12-attempt.json'
+attempt = HERE / f'stage4-{case}-{version}-attempt.json'
 
 
 def http(path, body=None):
@@ -40,7 +42,7 @@ except HTTPError as missing:
     except HTTPError as absent:
         if absent.code != 404:
             raise
-        task = http('', {'id': task_id, 'title': f'阶段4：{case}表格范围修复核验-v12', 'paperIds': papers})
+        task = http('', {'id': task_id, 'title': f'阶段4：{case}表格范围修复核验-{version}', 'paperIds': papers})
     for paper in papers:
         assert http(f'/{task_id}/materials/{paper}/processing')['questionReady']
     body = {'requestId': request_id, 'kind': 'conversation.execute', 'input': {
@@ -53,7 +55,7 @@ except HTTPError as missing:
                    'taskId': task_id, 'requestId': request_id, 'submitAttempts': 1,
                    'automaticRetryAllowed': False}, stream, ensure_ascii=False, indent=2)
     receipt = http(f'/{task_id}/operations', body)
-(HERE / f'stage4-{case}-v12-receipt.json').write_text(json.dumps(receipt, ensure_ascii=False, indent=2), encoding='utf-8')
+(HERE / f'stage4-{case}-{version}-receipt.json').write_text(json.dumps(receipt, ensure_ascii=False, indent=2), encoding='utf-8')
 if receipt['status'] == 'succeeded':
     result = receipt['result']
     assert result['capability'] == case and result['materialScope']['allowedPaperIds'] == papers
