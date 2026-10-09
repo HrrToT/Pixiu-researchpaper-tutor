@@ -228,6 +228,9 @@ class LiteratureRAG:
                 "section_title": chunk.get("sectionTitle") or chunk.get("section"),
                 "page_index": chunk.get("pageIndex") if chunk.get("pageIndex") is not None else chunk.get("page_index"),
                 "page": chunk.get("page"),
+                "evidence_kind": chunk.get("evidenceKind"),
+                "table_id": chunk.get("tableId"),
+                "table_column_mapping_unverified": chunk.get("tableColumnMappingUnverified"),
             }
             for key, value in optional_metadata.items():
                 if value is not None and value != "":
