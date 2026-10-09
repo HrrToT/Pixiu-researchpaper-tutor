@@ -230,3 +230,30 @@ def test_composed_chat_preserves_conclusion_but_keeps_table_in_full_artifact(mon
 
 def test_table_only_result_uses_open_artifact_notice_without_cutting_a_row():
     assert service.summarize_artifact('| 论文 | 目标 |\n| A | MI |') == '完整结果已保存在成果中。'
+
+
+def test_summary_stops_before_detail_sections_without_dangling_heading():
+    text = '结论受实验场景约束。\n\n**证据支持的贡献**\n- ' + '数字和实验细节。' * 70 + '\n\n**局限**'
+    assert service.summarize_artifact(text) == '结论受实验场景约束。'
+
+
+def test_critique_chat_uses_conclusion_and_keeps_details_in_artifact(monkeypatch):
+    from services import analysis_service
+    monkeypatch.setattr(analysis_service, 'deep_analysis', lambda value: {
+        'status': 'success', 'critical_analysis': '压缩存在质量代价，适用范围受实验条件约束。',
+        'evidence_based_contributions': '完整实验细节。' * 90,
+        'weaknesses': ['局限的具体依据。'], 'rag_sources': []})
+    result = service.execute_conversation(ConversationCapabilityRequest(taskId='task', message='批判',
+        capability='critique', allowedPaperIds=['A.pdf']))
+    assert result['message'] == '压缩存在质量代价，适用范围受实验条件约束。'
+    assert '完整实验细节' in result['artifact']['text']
+    assert '局限的具体依据' in result['artifact']['text']
+
+
+def test_long_multi_paper_critique_summary_retains_each_paper(monkeypatch):
+    monkeypatch.setattr(service, '_run_step', lambda *args: [
+        {'paperId': 'A.pdf', 'title': '论文甲', 'message': '甲完整结果。' * 200, 'summary': '甲需要核对实验条件。'},
+        {'paperId': 'B.pdf', 'title': '论文乙', 'message': '乙完整结果。' * 200, 'summary': '乙有明确质量代价。'}])
+    result = service.execute_conversation(request(capability='critique'))
+    assert result['message'] == '论文甲：甲需要核对实验条件。\n\n论文乙：乙有明确质量代价。'
+    assert '甲完整结果' in result['artifact']['text'] and '乙完整结果' in result['artifact']['text']

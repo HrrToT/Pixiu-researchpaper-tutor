@@ -15,9 +15,10 @@ def summarize_artifact(text, limit=600):
     lines, size = [], 0
     for raw in text.splitlines():
         line = raw.strip()
-        if line.startswith('|') or line.startswith('```'):
+        heading = line.startswith('#') or bool(re.fullmatch(r'\*\*[^*]+\*\*[:：]?', line))
+        if line.startswith('|') or line.startswith('```') or line.startswith('<details') or (heading and lines):
             break
-        if not line or line.startswith('#'):
+        if not line or heading:
             continue
         if size + len(line) + 2 > limit:
             if not lines:
@@ -78,7 +79,8 @@ def _critique(request, paper_id):
         if value:
             values = value if isinstance(value, list) else [value]
             text.append(f"**{label}**\n" + '\n'.join(f'- {item}' for item in values))
-    return {**result, 'message': '\n\n'.join(part for part in text if part.strip())}
+    return {**result, 'message': '\n\n'.join(part for part in text if part.strip()),
+            'summary': summarize_artifact(str(result.get('critical_analysis') or ''), limit=280)}
 
 
 def _compare(request, prior):
@@ -160,10 +162,11 @@ def execute_conversation(request: ConversationCapabilityRequest):
         raise ValueError('材料索引标识冲突，请重新选择论文')
     if len(allowed) > 4 and any(step != 'chat' for step in plan):
         raise ValueError('单次分析最多四篇论文，请明确选择材料')
-    completed, sources, texts = [], [], []
+    completed, sources, texts, step_summaries = [], [], [], []
     for step in plan:
         check_cancelled()
         results = _run_step(step, request, completed)
+        summaries = []
         for result in results:
             if result.get('status') not in (None, 'success') or not str(result.get('message') or '').strip():
                 raise ValueError('能力没有返回可用结果')
@@ -175,21 +178,25 @@ def execute_conversation(request: ConversationCapabilityRequest):
                 if source not in sources:
                     sources.append(source)
             text = result['message']
+            summary = result.get('summary') or text
             if request.capability == 'compose' and step == 'chat':
                 text = summarize_artifact(text, limit=500)
             if len(results) > 1:
                 label = result.get('title') or f"论文 {request.allowedPaperIds.index(result['paperId']) + 1}"
                 text = f"### {label}\n\n{text}"
+                summary = f"{label}：{summarize_artifact(summary, limit=max(80, 520 // len(results)))}"
             if request.capability == 'compose':
                 labels = {'chat': '解释与结论', 'background': '前置知识', 'critique': '批判分析', 'compare': '比较结果'}
                 text = f"## {labels[step]}\n\n{text}"
             texts.append(text)
+            summaries.append(summary)
+        step_summaries.append('\n\n'.join(summaries))
         completed.append({'capability': step, 'results': results})
     check_cancelled()
     body = '\n\n'.join(texts)
     message = body
     if request.capability != 'chat' and (len(body) > 600 or any(line.lstrip().startswith('|') for line in body.splitlines())):
-        conclusion = texts[-1] if request.capability == 'compose' else body
+        conclusion = step_summaries[-1]
         message = summarize_artifact(conclusion)
     grounded_claims = [claim for step in completed for result in step['results'] for claim in result.get('groundedClaims', [])]
     def source_map(text):
