@@ -1,12 +1,13 @@
 import React from 'react';
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { beforeEach, expect, it, vi } from 'vitest';
-const state = vi.hoisted(() => ({ viewer: null, mounts: 0, jump: vi.fn(), zoom: vi.fn(), loadError: false }));
+const state = vi.hoisted(() => ({ viewer: null, mounts: 0, jump: vi.fn(), zoom: vi.fn(), loadError: false, cachedDoc: null }));
 vi.mock('@react-pdf-viewer/core', () => ({ SpecialZoomLevel: { PageWidth: 'PageWidth' }, Worker: ({ children }) => children, Viewer: props => {
   state.viewer = props;
   React.useEffect(() => {
     state.mounts += 1;
     props.plugins.forEach(plugin => plugin.install?.({ jumpToPage: state.jump, zoom: state.zoom }));
+    if (state.cachedDoc) props.onDocumentLoad({doc: state.cachedDoc});
     return () => props.plugins.forEach(plugin => plugin.uninstall?.({}));
   }, []);
   return state.loadError ? props.renderError({name:'InvalidPDFException',message:'broken'}) : <div />;
@@ -15,9 +16,33 @@ vi.mock('@react-pdf-viewer/highlight', () => ({ highlightPlugin: () => ({}) }));
 vi.mock('../services/highlightStore', () => ({ loadHighlights: async () => [], addHighlight: vi.fn(), deleteHighlight: vi.fn() }));
 import PdfViewer from './PdfViewer';
 
-beforeEach(() => { state.mounts = 0; state.jump.mockReset(); state.zoom.mockReset(); state.loadError = false; });
+beforeEach(() => { state.mounts = 0; state.jump.mockReset(); state.zoom.mockReset(); state.loadError = false; state.cachedDoc = null; });
 const viewport = { width: 600, height: 800 };
 const textContent = text => ({ items: [{ str: text, transform: [1, 0, 0, 12, 20, 700], width: 100, height: 12 }], styles: {} });
+
+it('accepts a cached document loading before the parent passive effects', async () => {
+  state.cachedDoc = {numPages:19,getPage:async()=>({getViewport:()=>viewport,getTextContent:async()=>textContent('cached page')})};
+  const pageChange = vi.fn();
+  const extracted = vi.fn();
+  const view = render(<PdfViewer fileUrl="cached.pdf" pdfId="A" targetPageIndex={3} onPageChange={pageChange} onPageTextExtracted={extracted}/>);
+  expect(pageChange).toHaveBeenCalledWith({pageIndex:3,totalPages:19});
+  expect(screen.getByRole('button',{name:'放大原文'})).toBeEnabled();
+  await act(async()=>{});
+  expect(extracted).toHaveBeenCalledWith(expect.objectContaining({pageIndex:3,pageText:'cached page'}));
+  view.rerender(<PdfViewer fileUrl="cached.pdf" pdfId="A" targetPageIndex={4} targetPageJumpToken={1}/>);
+  expect(state.jump).toHaveBeenLastCalledWith(4);
+});
+
+it('keeps a cached document ready through Strict Mode effect replay', async () => {
+  state.cachedDoc = {numPages:19,getPage:async()=>({getViewport:()=>viewport,getTextContent:async()=>textContent('cached page')})};
+  const pageChange = vi.fn();
+  const view = render(<React.StrictMode><PdfViewer fileUrl="cached.pdf" pdfId="A" targetPageIndex={3} onPageChange={pageChange}/></React.StrictMode>);
+  await act(async()=>{});
+  expect(pageChange).toHaveBeenCalledWith({pageIndex:3,totalPages:19});
+  expect(screen.getByRole('button',{name:'放大原文'})).toBeEnabled();
+  view.rerender(<React.StrictMode><PdfViewer fileUrl="cached.pdf" pdfId="A" targetPageIndex={4} targetPageJumpToken={1}/></React.StrictMode>);
+  expect(state.jump).toHaveBeenLastCalledWith(4);
+});
 
 it('zooms a loaded paper and fits its width without remounting or changing page', async () => {
   const doc = {numPages:19,getPage:async()=>({getViewport:()=>viewport,getTextContent:async()=>textContent('body')})};

@@ -612,7 +612,9 @@ const PdfViewer: React.FC<PdfViewerProps> = ({
   const savingSelectionNote = useRef(false);
 
   const pdfDocRef = useRef<unknown>(null);
-  const mountedRef = useRef(false);
+  // A cached child can report its document before this parent's passive effects.
+  const mountedRef = useRef(true);
+  const loadedDocumentRef = useRef<{ fileUrl: string | null; pdfId?: string } | null>(null);
   useEffect(() => { mountedRef.current = true; return () => { mountedRef.current = false; }; }, []);
   const currentPageRef = useRef<number>(0);
   const isFirstRender = useRef<boolean>(true);
@@ -637,7 +639,7 @@ const PdfViewer: React.FC<PdfViewerProps> = ({
   }, [pdfId]);
 
   useLayoutEffect(() => {
-    if (fileUrl) {
+    if (fileUrl && loadedDocumentRef.current?.fileUrl !== fileUrl) {
       setIsPdfLoading(true);
       setDisplayScale(1);
       setPageTextState('loading');
@@ -647,9 +649,11 @@ const PdfViewer: React.FC<PdfViewerProps> = ({
   useEffect(() => {
     setActiveHighlightId(null);
     setHighlights(normalizeHighlightCollection(initialHighlights));
-    pdfDocRef.current = null;
-    currentPageRef.current = 0;
-    pageTextByIndexRef.current = {};
+    if (loadedDocumentRef.current?.pdfId !== pdfId) {
+      pdfDocRef.current = null;
+      currentPageRef.current = 0;
+      pageTextByIndexRef.current = {};
+    }
     // We only want to reset annotations when switching papers, not when parent persistence echoes state back.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pdfId]);
@@ -760,6 +764,7 @@ const PdfViewer: React.FC<PdfViewerProps> = ({
     ({ doc }: { doc: { numPages?: number } }) => {
       if (!mountedRef.current) return;
       pdfDocRef.current = doc;
+      loadedDocumentRef.current = {fileUrl, pdfId};
       const maxPageIndex: number = Math.max((doc?.numPages || 1) - 1, 0);
       const initialPageIndex: number = Number.isFinite(targetPageIndex)
         ? Math.max(0, Math.min(targetPageIndex as number, maxPageIndex))
@@ -772,7 +777,7 @@ const PdfViewer: React.FC<PdfViewerProps> = ({
       });
       extractPageText(initialPageIndex, doc);
     },
-    [extractPageText, onPageChange, targetPageIndex],
+    [extractPageText, onPageChange, targetPageIndex, fileUrl, pdfId],
   );
 
   const handleViewerPageChange = useCallback(
