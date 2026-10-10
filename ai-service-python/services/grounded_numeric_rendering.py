@@ -71,6 +71,24 @@ def _quantity_spans(text):
     return sorted(set(spans))
 
 
+def _mask_cited_table_labels(text, checked, sources):
+    """A cited, checked table's caption number identifies evidence, not a value."""
+    numbers = set()
+    for ref in checked['references']:
+        source = sources[ref['sourceId']]
+        if not source.get('_verifiedTable'):
+            continue
+        title = (source.get('metadata') or {}).get('section_title', '')
+        match = re.match(r'^\s*Table\s+([1-9]\d*)\s*(?=[:.：]|$)', title, re.I)
+        if match:
+            numbers.add(match.group(1))
+    for number in numbers:
+        text = re.sub(r'(?<![A-Za-z0-9])(?:Table\s+|表\s*)' + number
+                      + r'(?![\d.A-Za-z]|\s*(?:%|％|倍|FPS|[KMG]i?B))',
+                      '引用表格', text, flags=re.I)
+    return text
+
+
 def _literal_ranges(literal, quote, checked, sources):
     """Accept contiguous short quantitative phrases, never cut a unit or comparator."""
     if not 1 <= len(literal) <= 200:
@@ -267,6 +285,7 @@ def check_numeric_claim(raw, sources):
         raise ValueError('数值占位符缺失、重复或多余。')
     without_tokens = TOKEN.sub('', template)
     quantitative_text = _mask_dataset_names(without_tokens, checked, by_id)
+    quantitative_text = _mask_cited_table_labels(quantitative_text, checked, by_id)
     quantitative_text, resolution_conditions = _supported_resolution(quantitative_text, checked, by_id)
     if ('⟦数值' in quantitative_text or FREE_NUMBER.search(quantitative_text)
             or MENTION.search(quantitative_text) or QUANTITY.search(quantitative_text)):

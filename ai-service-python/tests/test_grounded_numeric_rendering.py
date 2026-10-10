@@ -43,6 +43,34 @@ def test_server_computes_values_and_keeps_local_conditions(operation, metric, di
     assert (raw, sources) == before
 
 
+@pytest.mark.parametrize('label', ['表1', '表 1', 'Table 1'])
+def test_cited_verified_table_label_is_not_an_unbound_measurement(label):
+    raw, sources = experiment()
+    sources[0]['metadata']['section_title'] = 'Table 1 : Quantitative comparisons'
+    raw['summary'] = label + '显示结果为⟦数值1⟧。'
+    checked = check_numeric_claim(raw, sources)
+    assert label in checked['summary'] and 'FPS 200' in checked['summary']
+
+
+@pytest.mark.parametrize('mutation', ['wrong_number', 'uncited', 'unverified', 'quantity', 'decimal'])
+def test_table_label_exception_cannot_hide_unsupported_numbers(mutation):
+    raw, sources = experiment()
+    sources[0]['metadata']['section_title'] = 'Table 1 : Quantitative comparisons'
+    raw['summary'] = '表1显示结果为⟦数值1⟧。'
+    if mutation == 'wrong_number':
+        raw['summary'] = raw['summary'].replace('表1', '表2')
+    elif mutation == 'uncited':
+        raw['references'] = [ref for ref in raw['references'] if ref['sourceId'] != 't']
+    elif mutation == 'unverified':
+        sources[0].pop('_verifiedTable')
+    elif mutation == 'quantity':
+        raw['summary'] = raw['summary'].replace('表1', '表1%')
+    else:
+        raw['summary'] = raw['summary'].replace('表1', '表1.5')
+    with pytest.raises(ValueError):
+        check_numeric_claim(raw, sources)
+
+
 def test_unverified_surrounding_table_does_not_expand_or_invalidate_checked_row_whitelist():
     raw, sources = experiment()
     sources[0]['metadata']['table_column_mapping_unverified'] = True
