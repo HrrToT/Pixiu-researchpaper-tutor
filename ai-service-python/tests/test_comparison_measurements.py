@@ -72,6 +72,24 @@ def test_numeric_cell_keeps_its_dataset_hardware_baseline_and_same_paper_sources
     assert 'measurements' not in checked  # Existing public claim contract.
 
 
+def test_legacy_measurement_cannot_publish_a_distorted_rounded_ratio():
+    raw, sources = fixture()
+    raw['kind'] = 'inference'
+    raw['summary'] = 'Alpha（GPU A，Baseline *）中，Ours占基线的0.1倍。'
+    raw['measurements'][0].update(metric='Size', operation='ratio', value='0.1')
+    table = sources['t']
+    table['_verifiedTable']['rows'][0][2][1] = '782MB'
+    table['_verifiedTable']['rows'][1][2][1] = '45MB'
+    table['text'] = table['text'].replace('100MB', '782MB').replace('20MB', '45MB')
+    for ref, line in zip(raw['references'], table['text'].splitlines()):
+        ref['quote'] = line
+    with pytest.raises(ValueError, match='比值精度会扭曲'):
+        check(raw, sources)
+    raw['summary'] = raw['summary'].replace('0.1倍', '0.058倍')
+    raw['measurements'][0]['value'] = '0.058'
+    assert '0.058倍' in check(raw, sources)['summary']
+
+
 def accelerator_fixture():
     raw, sources = fixture()
     raw['measurements'][0]['hardware'] = 'NVIDIA A6000 GPU'

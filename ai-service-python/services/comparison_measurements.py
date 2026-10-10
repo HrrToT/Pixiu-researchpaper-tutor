@@ -103,6 +103,12 @@ def _numeric(value):
     return Decimal(match[1]), match[2].upper()
 
 
+def ratio_rounding_distorts(exact, rounded):
+    """Bound rounding error to 1%, and preserve whether a ratio differs from one."""
+    return ((exact != 0 and abs(rounded - exact) > abs(exact) * Decimal('0.01'))
+            or exact != 1 and rounded == 1)
+
+
 def validate_numeric_comparison(raw, checked, sources):
     mentions = list(MENTION.finditer(checked['summary'].replace('−', '-')))
     if not mentions:
@@ -167,7 +173,10 @@ def validate_numeric_comparison(raw, checked, sources):
                 places = -value.as_tuple().exponent
                 if not 0 <= places <= 6:
                     raise ValueError('比较数字精度无效。')
-                expected = expected.quantize(Decimal(1).scaleb(-places), rounding=ROUND_HALF_UP)
+                rounded = expected.quantize(Decimal(1).scaleb(-places), rounding=ROUND_HALF_UP)
+                if operation in ('ratio', 'inverse_ratio') and ratio_rounding_distorts(expected, rounded):
+                    raise ValueError('比较比值精度会扭曲原始结果。')
+                expected = rounded
                 unit = '' if operation in ('ratio', 'inverse_ratio') else unit
             if value != expected or declared_unit != unit:
                 raise ValueError('比较数字与核对过的表格单元不一致。')

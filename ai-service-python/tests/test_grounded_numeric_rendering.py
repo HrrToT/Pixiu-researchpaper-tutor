@@ -78,6 +78,46 @@ def test_ratio_is_rounded_from_cells_once():
     assert '17.38倍' in check_numeric_claim(raw, sources)['summary']
 
 
+@pytest.mark.parametrize('baseline,result', [('782MB', '45MB'), ('433MB', '25MB')])
+def test_coarse_model_precision_cannot_distort_small_storage_ratios(baseline, result):
+    raw, sources = experiment('ratio', 'Size')
+    raw['numericBindings'][0]['decimals'] = 1
+    table = sources[0]
+    table['_verifiedTable']['rows'][0][2][1] = baseline
+    table['_verifiedTable']['rows'][1][2][1] = result
+    table['text'] = table['text'].replace('100MB', baseline).replace('20MB', result)
+    for ref, line in zip(raw['references'], table['text'].splitlines()):
+        ref['quote'] = line
+    before = deepcopy((raw, sources))
+    text = check_numeric_claim(raw, sources)['summary']
+    assert '0.058倍' in text and '0.1倍' not in text
+    assert (raw, sources) == before
+
+
+def test_ratio_precision_preserves_real_changes_near_one():
+    raw, sources = experiment('ratio', 'FPS')
+    raw['numericBindings'][0]['decimals'] = 2
+    table = sources[0]
+    table['_verifiedTable']['rows'][0][2][0] = '1000'
+    table['_verifiedTable']['rows'][1][2][0] = '1000.4'
+    table['text'] = table['text'].replace('100 | 100MB', '1000 | 100MB').replace('200 | 20MB', '1000.4 | 20MB')
+    for ref, line in zip(raw['references'], table['text'].splitlines()):
+        ref['quote'] = line
+    assert '1.0004倍' in check_numeric_claim(raw, sources)['summary']
+
+
+def test_ratio_that_cannot_be_represented_without_distortion_is_rejected():
+    raw, sources = experiment('ratio', 'Size')
+    table = sources[0]
+    table['_verifiedTable']['rows'][0][2][1] = '100000000MB'
+    table['_verifiedTable']['rows'][1][2][1] = '1MB'
+    table['text'] = table['text'].replace('100MB', '100000000MB').replace('20MB', '1MB')
+    for ref, line in zip(raw['references'], table['text'].splitlines()):
+        ref['quote'] = line
+    with pytest.raises(ValueError, match='比值在可显示精度内仍失真'):
+        check_numeric_claim(raw, sources)
+
+
 def test_psnr_difference_keeps_db_unit_and_decimal_precision():
     raw, sources = experiment('difference', 'PSNR')
     table = sources[0]

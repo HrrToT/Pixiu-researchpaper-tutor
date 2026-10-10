@@ -2,7 +2,7 @@
 import re
 from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 
-from services.comparison_measurements import MENTION, _numeric, validate_numeric_comparison
+from services.comparison_measurements import MENTION, _numeric, ratio_rounding_distorts, validate_numeric_comparison
 from services.research_synthesis import validate_claim
 from services.evidence_quantity_text import render_author_quantity
 from services.experiment_facts import expand_fact_binding
@@ -29,7 +29,7 @@ summary中所有数值写成⟦数值1⟧等占位符，并添加numericBindings
 提交前逐条检查：本条summary的占位符与本条numericBindings的id必须一一对应，不能附加正文未使用的绑定；定性结论不附实验数字绑定。
 没有数字时省略numericBindings。数字结论不要另加旧measurements。参数、作者主张和实验结果须分开：
 1. kind=experiment：仅从experimentFacts选择factId。不再填写sourceId、row、group、metric、dataset、hardware、baseline或conditionReferences；系统恢复完整结果行、基线行与条件引用。没有experimentFacts则只作定性解释。
-   operation=value只显示选中模型的一项结果，不填baselineFactId；difference（结果减基线）、ratio（结果除基线）、inverse_ratio（基线除结果）必须另选baselineFactId，且两个选项属于同一表、数据集、指标与硬件。factId是结果，baselineFactId是比较基线，不得互换。计算结论kind=inference，decimals可选0到6。不填写value。
+   operation=value只显示选中模型的一项结果，不填baselineFactId；difference（结果减基线）、ratio（结果除基线）、inverse_ratio（基线除结果）必须另选baselineFactId，且两个选项属于同一表、数据集、指标与硬件。factId是结果，baselineFactId是比较基线，不得互换。计算结论kind=inference，decimals可选0到6，比值过度舍入时服务端提高精度。ratio表示“占基线多少倍”，压缩倍数用inverse_ratio。不填写value。
    例：{"id":1,"kind":"experiment","factId":"给定选项ID","operation":"value"}；计算例另加"baselineFactId":"同条件基线选项ID"。纯数值结论的references可为空，系统补齐所选实验的原文依据；定性事实仍须选择摘录。
    服务端插入数据集、指标、数值及紧凑硬件/基线条件，summary只写解释，不重复这些条件或手写下降幅度。
 2. kind=method_parameter：选择quoteId、label（原文参数名）和literal（同一摘录中的完整数值及单位）。不重复填写sourceId。只用于有明确参数/归一化/分位等定义的数值，不用于FPS、存储或质量提升。
@@ -176,6 +176,14 @@ def _experiment(binding, checked, sources):
             value = value - base if operation == 'difference' else base / value if operation == 'inverse_ratio' else value / base
             # Do not round a genuine nonzero change to zero.
             rounded = value.quantize(Decimal(1).scaleb(-decimals), rounding=ROUND_HALF_UP)
+            if operation in ('ratio', 'inverse_ratio'):
+                # Precision is a display preference, never permission to turn
+                # 45/782 into 0.1 or hide a real change by displaying 1.00.
+                while ratio_rounding_distorts(value, rounded) and decimals < 6:
+                    decimals += 1
+                    rounded = value.quantize(Decimal(1).scaleb(-decimals), rounding=ROUND_HALF_UP)
+                if ratio_rounding_distorts(value, rounded):
+                    raise ValueError('实验绑定比值在可显示精度内仍失真。')
             if value != 0 and rounded == 0:
                 raise ValueError('实验绑定精度会隐藏非零差异。')
             value = rounded
