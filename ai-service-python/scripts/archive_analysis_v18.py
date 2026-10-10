@@ -1,4 +1,4 @@
-"""Read cached v18 response and replay their exact prompts with Provider disabled."""
+"""Read the bounded plan's cached response and replay exact prompts, Provider disabled."""
 import hashlib
 import json
 import sqlite3
@@ -25,7 +25,7 @@ for key, model, temperature, system_hash, user_hash, response, created in rows:
         payload = _extract_json_object(response)
     except (ValueError, TypeError):
         continue
-    if isinstance(payload, dict) and ('findings' in payload or 'dimensions' in payload):
+    if isinstance(payload, dict) and any(key in payload for key in ('findings', 'assessments', 'dimensions')):
         candidates.append({'cacheKey': key, 'model': model, 'temperature': temperature,
                            'systemPromptHash': system_hash, 'userPromptHash': user_hash,
                            'rawResponse': response, 'response': payload, 'createdAt': created})
@@ -34,7 +34,9 @@ papers = [item['pdfId'] for item in plan['materials']]
 records = []
 for case in plan['cases']:
     kind = case['capability']
-    selected = [row for row in candidates if ('findings' if kind == 'critique' else 'dimensions') in row['response']]
+    selected = [row for row in candidates if (
+        any(key in row['response'] for key in ('findings', 'assessments'))
+        if kind == 'critique' else 'dimensions' in row['response'])]
     assert len(selected) == 1
     row = selected[0]
     expected_papers = [papers[0]] if kind == 'critique' else papers

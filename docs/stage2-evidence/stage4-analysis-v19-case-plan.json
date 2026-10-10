@@ -1,5 +1,5 @@
 {
-  "status": "authorized",
+  "status": "executed_once_single_case",
   "authorization": "用户2026-10-10明确回复：允许这1个新版批判案例",
   "authorizedAt": "2026-10-10T07:00:20+00:00",
   "providerOriginVerified": true,
@@ -12,9 +12,9 @@
     "sourceCommit": "2bbc095"
   },
   "maxCases": 1,
-  "casesExecuted": 0,
+  "casesExecuted": 1,
   "previousCasesConsumed": 35,
-  "totalCasesConsumed": 35,
+  "totalCasesConsumed": 36,
   "materials": [{
     "name": "LightGaussian",
     "path": "D:/3DGS/paper/LightGaussian/2311.17245v6.pdf",
@@ -43,5 +43,10 @@
     "不重跑已通过的比较、解释和翻译，不启用外部搜索",
     "受控回放不能计为真实模型通过，不改写旧结果或本人体验记录"
   ],
-  "purpose": "核验独立事实/推断协议的真实执行及剩余批判质量"
+  "purpose": "核验独立事实/推断协议的真实执行及剩余批判质量",
+  "automaticResubmissions": 0,
+  "terminalStatuses": {"critique": "succeeded"},
+  "partial": true,
+  "contentAcceptance": {"critique": "not_accepted_unbound_method_parameter_and_incomplete_pruning_risk"},
+  "summaryFixAfterExecution": "643ba9e；仅原始响应离线验证，不改写本次收据或成果"
 }
