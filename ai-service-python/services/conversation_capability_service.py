@@ -80,7 +80,10 @@ def _critique(request, paper_id):
             values = value if isinstance(value, list) else [value]
             text.append(f"**{label}**\n" + '\n'.join(f'- {item}' for item in values))
     return {**result, 'message': result.get('message') or '\n\n'.join(part for part in text if part.strip()),
-            'summary': summarize_artifact(str(result.get('summary') or result.get('critical_analysis') or ''), limit=280)}
+            # The final conversation adapter applies the shared chat budget.
+            # Trimming an explicit lead here can discard the conclusion after
+            # a short setup paragraph before that final budget is considered.
+            'summary': result.get('summary') or summarize_artifact(str(result.get('critical_analysis') or ''), limit=280)}
 
 
 def _compare(request, prior):

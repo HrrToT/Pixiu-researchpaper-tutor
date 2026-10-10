@@ -190,6 +190,35 @@ def test_long_result_preserves_complete_artifact_and_short_dialogue(monkeypatch)
     assert result['artifact']['text'] == body
 
 
+@pytest.mark.parametrize('partial', [False, True])
+def test_critique_adapter_preserves_bounded_conclusion_after_setup_paragraph(monkeypatch, partial):
+    from services import analysis_service
+    setup = '作者在同一硬件上使用原始代码重训比较基线，主表提供同条件结果。 [1]'
+    conclusion = (
+        '推断：在已核对的两组场景中，模型体积分别压缩17.38倍和17.32倍，'
+        '达到237和357 FPS，但PSNR和LPIPS显示质量代价。'
+        '这些结果受相同硬件、训练设置、数据集和基线约束，不能直接推广到所有设备和场景。'
+        '剪枝以训练视图中的贡献排序；SH降阶减少表达能力，蒸馏用于补偿质量损失；'
+        'VQ用共享码本替代部分特征，细节保持依赖显著性排序与外观相似假设。'
+        '恢复步骤用于补偿剪枝造成的损失，不能把被删除高斯全部恢复或视为无损压缩。'
+        '实际部署需按目标场景核对质量与压缩的取舍，不能只依据标题中的速度或平均压缩率判断。 [2] [3]'
+    )
+    lead = setup + '\n\n' + conclusion
+    assert 280 < len(lead) < 550
+    body = lead + '\n\n<details>\n<summary>原文依据</summary>\n完整摘录。\n</details>'
+    monkeypatch.setattr(analysis_service, 'deep_analysis', lambda *args, **kwargs: {
+        'status': 'success', 'partial': partial, 'message': body,
+        'summary': ('**部分分析**\n\n' if partial else '') + lead, 'rag_sources': []})
+    value = ConversationCapabilityRequest(taskId='task', message='批判压缩与质量取舍',
+        capability='critique', allowedPaperIds=['A.pdf'], primaryPaperId='A.pdf')
+    result = service.execute_conversation(value)
+    assert conclusion in result['message']
+    assert len(result['message']) <= 600
+    assert ('部分结果：' in result['message']) is partial
+    assert '完整摘录' not in result['message']
+    assert result['artifact']['text'] == body
+
+
 def test_budget_is_checked_before_any_composed_model_call(monkeypatch):
     monkeypatch.setattr(service, '_chat', lambda *_: pytest.fail('must validate every step before first call'))
     value = ConversationCapabilityRequest(taskId='task', message='analyse', capability='compose', steps=['chat', 'critique'], allowedPaperIds=[f'{i}.pdf' for i in range(5)])
