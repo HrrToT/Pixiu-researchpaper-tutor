@@ -44,6 +44,8 @@ if mode == 'after':
     checks['allTaskSnapshotsUnchangedAcrossReload'] = True
 output = {'checks': checks, 'taskHashes': hashes, 'readingRevision': reading['revision'],
           'health': health, 'providerCallsByCheck': 0, 'taskWritesByCheck': 0}
-(HERE / f'stage4-analysis-v12-preservation-{mode}.json').write_text(
+output_path = HERE / (sys.argv[2] if len(sys.argv) == 3 else f'stage4-analysis-v12-preservation-{mode}.json')
+assert output_path.parent.resolve() == HERE.resolve() and output_path.suffix == '.json'
+output_path.write_text(
     json.dumps(output, ensure_ascii=False, indent=2), encoding='utf-8')
 print(json.dumps({'mode': mode, 'checks': checks, 'readingRevision': 19, 'health': health['status']}))

@@ -1,5 +1,5 @@
 {
-  "status": "execution_started",
+  "status": "executed_once_all_two_cases",
   "authorization": "用户2026-10-10明确回复：授权待选的新增两例复测",
   "authorizedAt": "2026-10-10T12:29:23+08:00",
   "providerOriginVerified": true,
@@ -61,5 +61,13 @@
     "离线回放不计新模型验收"
   ],
   "totalCasesConsumed": 32,
-  "automaticResubmissions": 0
+  "automaticResubmissions": 0,
+  "terminalStatuses": {
+    "compare": "succeeded",
+    "critique": "succeeded"
+  },
+  "contentAcceptance": {
+    "compare": "partial_not_accepted",
+    "critique": "partial_not_accepted"
+  }
 }

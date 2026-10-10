@@ -1,4 +1,4 @@
-"""Replay original v12 responses and collect exact rejections, no Provider."""
+"""Replay archived responses and collect exact rejections, no Provider or publication."""
 import json
 import sys
 from unittest.mock import patch
@@ -20,6 +20,16 @@ for case in data['plan']['cases']:
     original = module.check_numeric_claim
     original_resolve = module.resolve_references
     rejected = []
+    payload_rejected = []
+    original_payload = grounded_critique.check_critique_payload
+
+    def inspect_payload(payload, sources, catalog, **kwargs):
+        for finding in payload['findings']:
+            try:
+                original_payload({'findings': [finding], 'pendingQuestions': []}, sources, catalog)
+            except ValueError as error:
+                payload_rejected.append({'summary': finding['summary'], 'reason': str(error)})
+        return original_payload(payload, sources, catalog, **kwargs)
 
     def inspect(claim, sources):
         try:
@@ -41,7 +51,8 @@ for case in data['plan']['cases']:
     with (patch.object(DeepSeekLLM, 'invoke', side_effect=AssertionError('Provider forbidden')),
           patch('services.socratic_service._call_guarded_llm', return_value=json.dumps(raw)) as substitute,
           patch.object(module, 'check_numeric_claim', side_effect=inspect),
-          patch.object(module, 'resolve_references', side_effect=inspect_selection)):
+          patch.object(module, 'resolve_references', side_effect=inspect_selection),
+          patch.object(grounded_critique, 'check_critique_payload', side_effect=inspect_payload)):
         result = _critique(request, papers[1]) if kind == 'critique' else _compare(request, [])
     assert substitute.call_count == 1 and result['partial'] is True
     assert raw_before == json.dumps(raw, sort_keys=True)
@@ -55,7 +66,9 @@ for case in data['plan']['cases']:
             assert '另有1项判断暂未确认' in result['message']
             assert result['message'].count('Mip-NeRF 360 Datasets：') == 1
             assert '17.38倍' in result['message'] and 'PSNR下降0.27 dB' in result['message']
-    replayed[kind] = {'partial': result['partial'], 'rejections': rejected,
+    unique_rejections = list({json.dumps(item, sort_keys=True): item for item in rejected}.values())
+    replayed[kind] = {'partial': result['partial'], 'rejections': unique_rejections,
+                      'payloadRejections': payload_rejected,
                       'claims': result.get('groundedClaims'), 'message': result['message']}
 print(json.dumps({'providerCalls': 0, 'taskWrites': 0, 'rawResponsesUnchanged': True,
                   'results': replayed}, ensure_ascii=False))
