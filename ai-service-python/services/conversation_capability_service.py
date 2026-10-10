@@ -198,14 +198,15 @@ def execute_conversation(request: ConversationCapabilityRequest):
     check_cancelled()
     body = '\n\n'.join(texts)
     message = body
+    partial = any(result.get('partial') for step in completed for result in step['results'])
+    partial_prefix = '部分结果：\n\n' if partial else ''
     explicit_summary = any(result.get('summary') for step in completed for result in step['results'])
     if request.capability != 'chat' and (explicit_summary or len(body) > 600 or any(line.lstrip().startswith('|') for line in body.splitlines())):
         conclusion = step_summaries[-1]
-        message = summarize_artifact(conclusion)
+        message = summarize_artifact(conclusion, limit=600 - len(partial_prefix))
     grounded_claims = [claim for step in completed for result in step['results'] for claim in result.get('groundedClaims', [])]
-    partial = any(result.get('partial') for step in completed for result in step['results'])
     if partial:
-        message = '部分结果：\n\n' + message
+        message = partial_prefix + message
     def source_map(text):
         if grounded_claims:
             from services.grounded_comparison import grounded_source_map

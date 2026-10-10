@@ -128,3 +128,29 @@ def test_foreign_critique_evidence_fails_before_provider():
         with pytest.raises(ValueError,match='不属于指定论文'):
             analysis_service.deep_analysis(DeepAnalysisRequest(pdf_id='A.pdf'),grounded=True)
     model.assert_not_called()
+
+
+@pytest.mark.parametrize('summary', ['最大体积归一化可避免漂浮高斯。',
+                                     'maximum volume normalization is used.',
+                                     '归一化参考是最大体积。'])
+def test_sorting_reference_is_not_published_as_global_maximum(summary):
+    original = [{'sourceId': 'parameter', 'pdfId': 'A.pdf',
+                 'text': 'The volume is normalized by the 90% largest of all sorted Gaussians.'}]
+    _, sources, catalog = prepare_quote_sources(original)
+    value = {'findings': [{'section': 'weakness', 'summary': summary, 'kind': 'reported',
+             'references': [{'quoteId': next(iter(catalog['parameter']))}]}]}
+    with pytest.raises(ValueError, match='归一化参考'):
+        check_critique_payload(value, sources, catalog)
+
+
+@pytest.mark.parametrize('quote,summary', [
+    ('The volume is normalized by the 90% largest of all sorted Gaussians.', '归一化采用按体积排序的参考值。'),
+    ('The volume is normalized by the 90% largest of all sorted Gaussians.', '采用排序参考，而非最大体积归一化。'),
+    ('The maximum volume is used for normalization.', '最大体积归一化。'),
+])
+def test_parameter_type_is_preserved_without_requiring_unrequested_percentages(quote, summary):
+    _, sources, catalog = prepare_quote_sources([{'sourceId': 'p', 'pdfId': 'A.pdf', 'text': quote}])
+    value = {'findings': [{'section': 'weakness', 'summary': summary, 'kind': 'reported',
+             'references': [{'quoteId': next(iter(catalog['p']))}]}]}
+    findings, _ = check_critique_payload(value, sources, catalog)
+    assert findings[0]['summary'] == summary

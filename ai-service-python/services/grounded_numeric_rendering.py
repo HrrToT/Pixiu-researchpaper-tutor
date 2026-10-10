@@ -370,3 +370,36 @@ def check_numeric_claim(raw, sources):
     if 'author_report' in kinds:
         checked['summary'] += '（作者报告，未作同条件比较）'
     return checked
+
+
+def brief_experiment_claim(raw, checked, sources):
+    """Compact already validated experiment selections without changing the full claim."""
+    bindings = raw.get('numericBindings')
+    if not bindings or any(binding.get('kind') != 'experiment' or 'factId' not in binding
+                           for binding in bindings):
+        return checked['summary']
+    by_id = {source['sourceId']: source for source in sources}
+    local = {**checked, 'references': list(checked['references'])}
+    groups = {}
+    for original in bindings:
+        binding, _ = expand_fact_binding(original, by_id)
+        display, condition = _experiment(binding, local, by_id)
+        dataset = by_id[binding['sourceId']]['_verifiedTable']['groups'][binding['group']][0]
+        label = _dataset_label(dataset, by_id)
+        model = binding['_factModel']
+        # Keep table, dataset, row, hardware and comparative baseline separate.
+        # A shared name is insufficient to merge measurements from distinct experiments.
+        identity = (binding['sourceId'], binding['group'], binding['row'],
+                    binding['baselineRow'] if binding['operation'] != 'value' else None,
+                    condition)
+        group = groups.setdefault(identity, {'label': label, 'condition': condition, 'values': []})
+        prefix = f'{label}：{model} '
+        assert display.startswith(prefix)
+        group['values'].append(display[len(prefix):])
+    sections = [f"{group['label']}（{group['condition'][0]}，{group['condition'][1]}）："
+                + '、'.join(group['values']) for group in groups.values()]
+    # Retain independently stated conditions or limitations from the original template.
+    # Never cut a numeric clause into an orphaned value or infer a new quality judgment.
+    tail = [sentence.strip() for sentence in re.split(r'(?<=[。！？])', raw['summary'])
+            if sentence.strip() and not TOKEN.search(sentence)]
+    return '；'.join(sections) + '。' + ''.join(tail)

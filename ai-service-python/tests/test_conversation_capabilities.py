@@ -219,6 +219,16 @@ def test_critique_adapter_preserves_bounded_conclusion_after_setup_paragraph(mon
     assert result['artifact']['text'] == body
 
 
+def test_partial_status_is_included_in_total_chat_budget(monkeypatch):
+    lead = '甲' * 300 + '。\n\n' + '乙' * 289 + '。'
+    monkeypatch.setattr(service, '_run_step', lambda *args: [{'status': 'success', 'partial': True,
+        'message': lead + '\n\n<details>更多依据</details>', 'summary': lead, 'rag_sources': []}])
+    request = ConversationCapabilityRequest(taskId='task', message='批判', capability='critique',
+        allowedPaperIds=['A.pdf'], primaryPaperId='A.pdf')
+    result = service.execute_conversation(request)
+    assert result['message'].startswith('部分结果：') and len(result['message']) <= 600
+
+
 def test_budget_is_checked_before_any_composed_model_call(monkeypatch):
     monkeypatch.setattr(service, '_chat', lambda *_: pytest.fail('must validate every step before first call'))
     value = ConversationCapabilityRequest(taskId='task', message='analyse', capability='compose', steps=['chat', 'critique'], allowedPaperIds=[f'{i}.pdf' for i in range(5)])

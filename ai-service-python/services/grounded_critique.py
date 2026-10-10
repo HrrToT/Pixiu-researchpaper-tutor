@@ -4,7 +4,7 @@ import re
 
 from services.agent_grounded_answer import _extract_json_object
 from services.evidence_quotes import prepare_quote_sources, resolve_references, TABLE_VERIFICATION_PROMPT
-from services.grounded_numeric_rendering import NUMERIC_PROMPT, check_numeric_claim
+from services.grounded_numeric_rendering import NUMERIC_PROMPT, check_numeric_claim, brief_experiment_claim
 from services.operation_control import check_cancelled
 from services.trace_service import trace_step
 
@@ -56,7 +56,7 @@ def _atomic_findings(payload):
     return findings
 
 
-def check_critique_payload(payload, sources, catalog, *, allow_partial=False, rejected=None):
+def check_critique_payload(payload, sources, catalog, *, allow_partial=False, rejected=None, summaries=None):
     atomic = _atomic_findings(payload)
     pending = payload.get('pendingQuestions', [])
     if not isinstance(pending, list) or len(pending) > 4:
@@ -69,6 +69,17 @@ def check_critique_payload(payload, sources, catalog, *, allow_partial=False, re
             if not isinstance(raw.get('summary'), str) or len(raw['summary']) > 320 or ABSENCE.search(raw['summary']):
                 raise ValueError('不能把检索缺口发布为论文缺陷，请改为待核查问题。')
             selected = resolve_references(raw, catalog, require_selection=True)
+            if (raw['kind'] == 'reported'
+                    and re.search(r'(?:最大(?:体积|值)|maximum\s+(?:volume|value))[^。！？]{0,35}(?:归一化|normaliz)'
+                                  r'|(?:归一化|normaliz)[^。！？]{0,35}(?:最大(?:体积|值)|maximum\s+(?:volume|value))',
+                                  raw['summary'], re.I)
+                    and not re.search(r'(?:而非|并非|不是|不用|不使用|不能使用|不能用|不按)[^。；]{0,8}最大'
+                                      r'|\b(?:not|rather than)\s+(?:the\s+)?maximum', raw['summary'], re.I)
+                    and any(re.search(r'(?:\d+(?:\.\d+)?\s*%\s+(?:largest|smallest)[^.]{0,60}sort|percentile|quantile)',
+                                      ref['quote'], re.I) for ref in selected['references'])
+                    and not any(re.search(r'(?:maximum|maximal)\s+(?:volume|value)[^.]{0,60}normaliz',
+                                          ref['quote'], re.I) for ref in selected['references'])):
+                raise ValueError('排序或分位归一化参考不能概括为全局最大值。')
             checked = check_numeric_claim(selected, sources)
         except ValueError as error:
             if not allow_partial:
@@ -77,6 +88,8 @@ def check_critique_payload(payload, sources, catalog, *, allow_partial=False, re
                 rejected.append(str(error))
             continue
         findings.append({**checked, 'section': raw['section']})
+        if summaries is not None:
+            summaries.append(brief_experiment_claim(selected, checked, sources))
     for question in pending:
         if not isinstance(question, dict) or not isinstance(question.get('topic'), str):
             raise ValueError('待核查问题格式无效。')
@@ -108,6 +121,7 @@ def synthesize_critique(question, sources, *, allow_partial=False):
 每个observation或inference必须选择能支持整句结论的原文摘录；每条text中的[16位标识]是quoteId。
 references只写quoteId，系统唯一恢复来源和原文，不重复填写sourceId，不重新抄写或改写quote；涉及多处依据则选择多个摘录。
 公式与机制必须核对全部因子、求和范围、权重及归一化；原文不完整时仅作有依据的定性解释，不补造公式。
+归一化参考的统计含义必须保留：排序截点或分位参考、全局最大值和均值不可互换。省略具体百分数时仍需保留“排序参考”或“分位参考”的含义；没有完整参数绑定时可作这类定性说明，不能改称最大值。
 公式定义与设计代价分别组织并分别引用。只有局部代价的摘录时，只讨论该代价，不顺带概述未完整引用的计算公式。
 不同方法步骤的训练视角、采样范围及优化目标须逐步核对；一个步骤的限制不能直接套用于另一步骤。推测的风险写成推断，不说成实验已经证明。
 训练采样分布不等于模型泛化能力的硬边界；不要把高斯分布误作有界区域。若没有目标域测试依据，只将远视角泛化列为待核查问题，不断言补偿能力局限于采样范围。
@@ -128,9 +142,9 @@ observation和inference均可省略，但同一assessment至少提供一个；�
         raw = _call_guarded_llm(prompt, '只依据正文批判阅读，选择摘录，输出规定JSON。')
         step['outputSize'] = len(str(raw or ''))
     check_cancelled()
-    rejected = []
+    rejected, summaries = [], []
     findings, questions = check_critique_payload(_extract_json_object(raw), validation, catalog,
-                                               allow_partial=allow_partial, rejected=rejected)
+                                               allow_partial=allow_partial, rejected=rejected, summaries=summaries)
     if rejected and not findings:
         raise ValueError('尚未形成可核验的批判结论，原问题已保留。')
     used = list(dict.fromkeys(ref['sourceId'] for finding in findings for ref in finding['references']))
@@ -153,7 +167,9 @@ observation和inference均可省略，但同一assessment至少提供一个；�
         parts.append('<details>\n<summary>原文依据</summary>\n\n' + '\n'.join(
             f'- [{numbers[sid]}] “{quote}”' for sid, quote in dict.fromkeys(
                 (ref['sourceId'], ref['quote']) for finding in findings for ref in finding['references'])) + '\n\n</details>')
-    return {'status': 'success', 'partial': bool(rejected), 'message': '\n\n'.join(parts), 'summary': lead,
+    chat_summary = '\n\n'.join(render({**finding, 'summary': summary})
+                              for finding, summary in zip(findings[:3], summaries[:3]))
+    return {'status': 'success', 'partial': bool(rejected), 'message': '\n\n'.join(parts), 'summary': chat_summary or lead,
             'groundedClaims': findings, 'pendingQuestions': questions,
             'rag_sources': [{key: value for key, value in source.items() if not key.startswith('_')}
                             for source in validation if source['sourceId'] in used]}
