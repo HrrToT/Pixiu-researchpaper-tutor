@@ -1,5 +1,5 @@
 {
-  "status": "execution_started",
+  "status": "executed_once",
   "authorization": "用户明确回复：统一授权。覆盖当前重构必要复测，使用既定公开LightGaussian/3DGS片段发送至https://api.deepseek.com；固定案例、仅一次提交、不自动重试。",
   "provider": "https://api.deepseek.com",
   "sourceCommit": "c926abf",
@@ -50,5 +50,7 @@
       "grounded_critique.py": "438e54e2c5652700ec2b1b98678e7a00c6d8aecd6fc835ca775af73605c37670"
     }
   },
-  "totalCasesConsumed": 40
+  "totalCasesConsumed": 40,
+  "actualStatus": "succeeded",
+  "partial": false
 }
