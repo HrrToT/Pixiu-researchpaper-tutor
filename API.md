@@ -977,6 +977,8 @@ input 必须包含 expectedTaskRevision。学习创建包含 pdfId、mode 和可
 
 `conversation.execute` 的 input 包含 `expectedTaskRevision`、`message`、可选 `displayText`、`capability`（chat/background/critique/compare/compose）、`allowedPaperIds`、`primaryPaperId`、`strictScope`。compose 另含二至三个不同的白名单 `steps`；单能力 steps 为空。单次专业分析最多四篇，比较至少两篇；不满足时在调度前返回 400，不静默缩小材料。普通空任务问答允许空材料，不能检索全库。
 
+比较/批判的模型内部数值输出采用服务端实验选项：`numericBindings`选择`factId`，`operation=value`没有比较基线；difference/ratio/inverse_ratio另选同条件`baselineFactId`并标为推断。选项来自本次可见的核对表格及同论文明确硬件条件，系统恢复实际值与原文引用；未知选项、混合条件或重复填写行号/条件/值会被拒绝。此为内部生成协议，浏览器不提交这些字段，对外operation输入不变。旧记录不重写；partial继续表示有判断未通过核验。比较摘要来自最终有效内容，完整表与依据保存在同次成果中。
+
 Java 核验任务材料和主论文；history 只从服务端同任务、来源范围为当前范围子集的最近 20 条对话建立，浏览器的 history 不作为执行依据。外部检索保持关闭。Python 专业能力输出必须带范围内来源，能力之间沿用不可变范围并检查取消。
 
 成功 result 含 capability、message（短结果）、sources、sentenceSourceMap、materialScope、steps 和可空 artifact。Java 独立核对材料快照和来源；消息、完整成果及 appliedRequestIds 同一事务保存。重复 GET 不重复追加，其他客户端笔记和学习活动保留。artifact 存在时，消息带 artifactId，前端可在中栏打开完整正文。此处描述实现契约；完整阶段的真实运行验收尚未完成。
