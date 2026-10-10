@@ -1,12 +1,15 @@
 """Archive only two expected structured responses; refuse unrelated cache rows."""
 import json
 import subprocess
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
 from urllib.request import urlopen
 
 HERE = Path(__file__).parent
-plan = json.loads((HERE / 'stage4-analysis-v12-case-plan.json').read_text(encoding='utf-8-sig'))
+version = sys.argv[1] if len(sys.argv) == 2 else 'v12'
+assert version in {'v12', 'v13'} and len(sys.argv) <= 2
+plan = json.loads((HERE / f'stage4-analysis-{version}-case-plan.json').read_text(encoding='utf-8-sig'))
 for case in plan['cases']:
     with urlopen('http://127.0.0.1:8081/api/task-workspaces/' + case['taskId'] + '/operations/' + case['requestId']) as response:
         receipt = json.load(response)
@@ -37,9 +40,11 @@ cached = subprocess.run(['docker', 'exec', 'ai_service_python', 'python', '-c', 
                          json.dumps([paper['pdfId'] for paper in plan['materials']])],
                          text=True, encoding='utf-8', capture_output=True, check=True)
 responses = json.loads(cached.stdout)
-(HERE / 'stage4-analysis-v12-cached-responses.json').write_text(json.dumps({
+output = HERE / f'stage4-analysis-{version}-cached-responses.json'
+with output.open('x', encoding='utf-8') as stream:
+    stream.write(json.dumps({
     'scope': 'Two structured cache rows in authorization window with references restricted to approved papers; rows are not request or charge totals',
     'startUtc': datetime.fromtimestamp(start, timezone.utc).isoformat(),
     'endUtc': datetime.fromtimestamp(end, timezone.utc).isoformat(),
-    'cacheRows': responses, 'newModelCalls': 0}, ensure_ascii=False, indent=2), encoding='utf-8')
+    'cacheRows': responses, 'newModelCalls': 0}, ensure_ascii=False, indent=2))
 print(json.dumps({'cacheRows': len(responses), 'newModelCalls': 0}))
