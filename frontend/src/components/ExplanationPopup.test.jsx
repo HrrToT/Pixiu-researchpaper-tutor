@@ -20,6 +20,7 @@ it('preserves a failed note and closes only after a confirmed save', async () =>
   await waitFor(() => expect(close).toHaveBeenCalledTimes(1));
   const note = selectionNote(save.mock.calls[0][0], 'paper-A', 'note-A');
   expect(note.text).toContain('已完成的解释');
+  expect(Number.isFinite(Date.parse(note.createdAt))).toBe(true);
   expect(note.sources[0]).toMatchObject({ pdfId: 'paper-A', pageIndex: 3, sourceId: 'selection-A', text: '原文片段' });
 });
 

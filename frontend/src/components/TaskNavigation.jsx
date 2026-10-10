@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Plus, ChevronLeft, ChevronRight, FileText, NotebookPen, X } from 'lucide-react';
+import { taskDocumentNavigation } from '../utils/taskDocumentNavigation';
 
 export default function TaskNavigation({ tasks, activeTask, papers, collapsed, onToggle,
   onSelectTask, onCreateTask, onOpenPaper, onAddPaper, onRemovePaper, onOpenArtifact, children }) {
@@ -36,7 +37,7 @@ export default function TaskNavigation({ tasks, activeTask, papers, collapsed, o
       </div>}
       {children}
       <h2 className="theme-text-secondary mb-2 mt-5 text-sm">笔记与成果</h2>
-      {[...(activeTask?.notes || []), ...(activeTask?.artifacts || [])].map((item, index) => <button type="button" key={item.id || item.artifactId || index} onClick={() => onOpenArtifact(item)} className="theme-text-primary flex w-full items-center gap-2 py-2 text-left text-sm"><NotebookPen size={15} className="shrink-0" /><span className="truncate">{item.title || item.text?.slice(0, 30) || '笔记'}</span></button>)}
+      {taskDocumentNavigation(activeTask).map(({ item, title, detail, index }) => <button type="button" key={item.id || item.artifactId || index} title={[title, detail].filter(Boolean).join('\n')} onClick={() => onOpenArtifact(item)} className="theme-text-primary flex w-full items-center gap-2 rounded py-2 text-left text-sm"><NotebookPen size={15} className="shrink-0" /><span className="min-w-0"><span className="block truncate">{title}</span>{detail && <span className="theme-text-muted block truncate text-xs">{detail}</span>}</span></button>)}
     </div>}
   </aside>;
 }
