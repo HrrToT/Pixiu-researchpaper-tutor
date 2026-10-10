@@ -6,12 +6,13 @@
 
 - `stage2-evidence/stage4-analysis-v22-case-plan.json`准备了唯一一例修复后批判，复用LightGaussian及原问题，前36例额度已用完；状态pending_new_authorization。用户未答复前不发送、不创建任务、不占用attempt。
 - 对v22运行缺授权/越计划预检，两类操作均在网络前拒绝，见`stage4-analysis-v22-preflight.log`。既有通用运行器已支持此单例身份，start仍须明确授权。
+- v22执行器还强制比较新记录的`providerVerification`与当前配置：origin、model、runningSince及三个服务源文件SHA256。缺验证、配置变更、停机/重启或源码变更均在HTTP前拒绝；10种模拟条件检查通过，见`stage4-analysis-v22-runtime-guard.log`。模拟授权只在内存中使用，真实计划仍pending，实际网络/Docker/Provider调用和任务写入均0。带检查的缺授权/越计划预检见`stage4-analysis-v22-preflight-guarded.log`。
 - `stage2-evidence/stage7-default-entry.patch`是尚未应用的入口补丁。普通地址及`?unified=1`进入统一界面；`/share/`仍交旧App处理；`?unified=0`保留旧界面回退，不删除数据或修改数据库。
 - 当前前端303项、Python相关172项、Java48项、类型与构建通过；四服务健康、9任务/8收据与已加载v21基准一致。见阶段5/6报告及`stage7-final-state-20261010.json`。这些结果不证明尚未应用的入口补丁已经实际验收。
 
 ## 执行顺序与完成证据
 
-1. 得到此新增单例明确授权后，核对实际Provider仍为`https://api.deepseek.com`、模型及运行版本，保存授权及核对结果。仅提交一次并沿原requestId查询；失联或超时不新建身份重发。
+1. 得到此新增单例明确授权后，核对实际Provider仍为`https://api.deepseek.com`、模型及运行版本，保存授权及核对结果。`providerOriginVerified`须为true；`providerVerification`保存origin、model、runningSince和sourceHashes，后者须包含conversation_capability_service.py、grounded_numeric_rendering.py、grounded_critique.py，来自实际核对，不能手填为猜测的通过值。仅提交一次并沿原requestId查询；失联或超时不新建身份重发。
 2. 保存原始结构响应、收据、任务和逐项依据诊断。核对剪枝、SH与VQ的实质性回应、独立事实/推断、参数绑定、压缩/FPS/质量条件、简洁摘要。不得以人工补填绑定、删掉问题项或离线样例冒充真实回答通过。失败先定位，不自动追加模型调用。
 3. A11通过后应用入口补丁，完成入口及相关构建检查。实际浏览器直接打开根地址、刷新恢复、打开已有论文与成果；检查共享页仍可达及`?unified=0`回退，不清缓存或修改任务来制造通过。
 4. 核对任务/收据及共享契约保持，更新A01和阶段4/7报告、运行指南，分别报告阶段完成。只有当前适用范围逐项有证据，才标记完整目标完成。

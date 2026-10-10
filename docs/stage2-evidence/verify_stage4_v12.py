@@ -1,5 +1,7 @@
 """Bounded analysis cases; start is disabled until explicit plan authorization."""
 import json
+import hashlib
+import subprocess
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -17,6 +19,25 @@ assert len(plan['cases']) == plan['maxCases']
 assert any(item['capability'] == case for item in plan['cases']), 'Case outside fixed plan'
 if action == 'start':
     assert plan['status'] in {'authorized', 'execution_started'} and plan.get('authorization'), 'Explicit new authorization required'
+    if version == 'v22':
+        assert plan.get('providerOriginVerified') is True, 'Fresh runtime verification required'
+        verified = plan.get('providerVerification', {})
+        assert verified.get('origin') == plan['provider'], 'Verified Provider does not match plan'
+        assert verified.get('model') and verified.get('runningSince'), 'Incomplete runtime verification'
+        expected_hashes = verified.get('sourceHashes', {})
+        service_root = HERE.parent.parent / 'ai-service-python/services'
+        for name in ('conversation_capability_service.py', 'grounded_numeric_rendering.py', 'grounded_critique.py'):
+            assert expected_hashes.get(name) == hashlib.sha256((service_root / name).read_bytes()).hexdigest(), 'Verified source changed'
+        runtime = json.loads(subprocess.check_output(['docker', 'inspect', '--format',
+            '{{json .State}}', 'ai_service_python'], text=True, encoding='utf-8'))
+        assert runtime['Running'] and runtime['StartedAt'] == verified['runningSince'], 'Verified runtime changed'
+        actual = json.loads(subprocess.check_output(['docker', 'exec', 'ai_service_python', 'python', '-c',
+            'import json; from urllib.parse import urlsplit; from core.config import settings; '
+            'u=urlsplit(settings.deepseek_base_url); '
+            'print(json.dumps({"scheme":u.scheme,"hostname":u.hostname,"port":u.port,"model":settings.deepseek_model}))'
+        ], text=True, encoding='utf-8'))
+        assert actual['scheme'] == 'https' and actual['hostname'] == 'api.deepseek.com' and actual['port'] in (None, 443), 'Actual Provider changed'
+        assert actual['model'] == verified['model'], 'Actual model changed'
 materials = [material['pdfId'] for material in plan['materials']]
 A, B = materials[0], materials[-1]
 papers = [B] if case == 'critique' else [A, B]
