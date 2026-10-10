@@ -117,6 +117,27 @@
 .unified-learning-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 8px 12px; border-bottom: 1px solid var(--border-color, #8883); font-size: 12px; }
 .unified-learning-controls button, .unified-learning-controls select { border: 1px solid #8884; border-radius: 6px; padding: 3px 7px; background: transparent; color: inherit; }
 .unified-learning-question { flex-basis: 100%; margin: 4px 0; line-height: 1.6; }
+.unified-chat > .reader-chat-shell { flex:1; height:auto; }
+.unified-learning-history { flex:none; min-width:0; border-bottom:1px solid var(--border-subtle); font-size:12px; line-height:1.5; background:var(--panel-bg); }
+.unified-learning-history summary { list-style:none; cursor:pointer; }
+.unified-learning-history summary::-webkit-details-marker { display:none; }
+.unified-learning-history-toggle { display:flex; align-items:center; gap:6px; min-height:36px; padding:8px 12px; color:var(--text-secondary); }
+.unified-learning-history summary > svg { flex:none; transition:transform .15s; }
+.unified-learning-history details[open] > summary > svg,.unified-learning-history[open] > summary > svg { transform:rotate(90deg); }
+.unified-learning-history summary:focus-visible { outline:2px solid var(--accent); outline-offset:-2px; border-radius:4px; }
+.unified-learning-history-list { max-height:min(200px,25dvh); overflow-y:auto; overscroll-behavior:contain; padding:0 12px 8px; }
+.unified-learning-record + .unified-learning-record { margin-top:4px; }
+.unified-learning-record { border:1px solid var(--border-subtle); border-radius:7px; overflow:hidden; }
+.unified-learning-record-toggle { display:flex; align-items:center; gap:7px; min-height:36px; padding:7px 8px; }
+.unified-learning-record-toggle:hover,.unified-learning-record[open] > summary { background:var(--panel-muted); }
+.unified-learning-record-mode { flex:none; padding:1px 5px; border-radius:4px; font-size:11px; color:var(--accent); background:var(--accent-soft); }
+.unified-learning-record-title { flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-weight:500; }
+.unified-learning-record-status { flex:none; color:var(--text-muted); font-size:11px; }
+.unified-learning-record-body { padding:10px 12px; border-top:1px solid var(--border-subtle); font-size:13px; line-height:1.7; overflow-wrap:anywhere; }
+.unified-learning-record-body h3 { margin:10px 0 4px; font-size:12px; font-weight:600; color:var(--text-secondary); }
+.unified-learning-record-body p { margin:0; white-space:pre-wrap; }
+.unified-learning-record-body .unified-learning-record-paper { font-size:11px; color:var(--text-muted); }
+.unified-learning-record-body section + section { margin-top:12px; border-top:1px solid var(--border-subtle); padding-top:4px; }
 .conversation-research-list { max-height: 45%; overflow-y: auto; flex-shrink: 1; }
 .conversation-research-card { margin: 8px 12px; padding: 12px; border: 1px solid #8883; border-radius: 8px; font-size: 13px; }
 .conversation-research-card textarea { display: block; width: 100%; min-height: 90px; background: transparent; color: inherit; border: 1px solid #8885; padding: 8px; }

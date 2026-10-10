@@ -25,6 +25,7 @@ import { useTaskResearch } from './hooks/useTaskResearch';
 import ConversationResearch from './components/ConversationResearch';
 import { sanitizeResearchReport } from './components/deepResearchPanelModel';
 import ConversationExecution from './components/ConversationExecution';
+import LearningHistory from './components/LearningHistory';
 import { useThemePreference } from './hooks/useThemePreference';
 import { apiService } from './services/api';
 import { initDB } from './services/localDb';
@@ -816,12 +817,7 @@ export default function UnifiedTaskApp() {
             requestId: run.researchId, kind: 'research.report', paperIds: run.paperIds,
             result: { artifact: { text: sanitizeResearchReport(result.report) }, sources: (result.findings || []).flatMap(finding => finding.sources || []) } });
             patchLayout({ reader: true }); }} />}
-        {savedLearningActivities.length > 0 && <details className="unified-learning-history"><summary>学习记录（{savedLearningActivities.length}）</summary>
-          {savedLearningActivities.map((activity, index) => <div key={`${activity.activityId || activity.id}-${activity.revision}-${index}`}>
-            <strong>{getPaperTitle(papers, activity.pdfId || activity.primaryPaperId)} · {activity.imported ? '导入记录' : activity.status === 'finished' ? '已结束' : activity.status === 'paused' ? '已暂停' : '已保存'}</strong>
-            <p>{activity.concepts?.find(concept => concept.id === activity.currentConceptId)?.question || activity.goal || '已保存学习记录'}</p>
-          </div>)}
-        </details>}
+        <LearningHistory key={activeTaskId} activities={savedLearningActivities} papers={papers} />
         {research.starting && <p role="status">正在创建研究…</p>}
         {learning.busyTasks[activeTaskId] && <div className="unified-learning-controls" role="status">
           <span>{Object.values(learning.operations.records).some(item => item.taskId === activeTaskId && item.status === 'cancelling') ? '正在停止…' : '正在处理…'}</span>
