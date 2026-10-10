@@ -1,5 +1,5 @@
 {
-  "status": "execution_started",
+  "status": "executed_once_single_case",
   "authorization": "用户2026-10-10明确回复：允许这1个批判案例",
   "providerOriginVerified": true,
   "provider": "https://api.deepseek.com",
@@ -50,5 +50,12 @@
     "runningSince": "2026-10-10T06:04:36.675666382Z",
     "sourceCommit": "e1db3e6"
   },
-  "automaticResubmissions": 0
+  "automaticResubmissions": 0,
+  "terminalStatuses": {
+    "critique": "succeeded"
+  },
+  "contentAcceptance": {
+    "critique": "not_accepted_partial_and_attribution_issue"
+  },
+  "partial": true
 }

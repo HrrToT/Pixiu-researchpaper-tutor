@@ -1,13 +1,26 @@
-"""Pending single critique is unauthorized; comparison is outside the plan."""
+"""Simulated missing authorization and an out-of-plan case fail before network."""
+import json
 import runpy
 import sys
 from pathlib import Path
 from unittest.mock import patch
 
 runner = Path(__file__).with_name('verify_stage4_v12.py')
+read_text = Path.read_text
+
+
+def pending_plan(path, *args, **kwargs):
+    original = read_text(path, *args, **kwargs)
+    if path.name == 'stage4-analysis-v18-case-plan.json':
+        plan = json.loads(original)
+        plan.update(status='pending_new_authorization', authorization=None)
+        return json.dumps(plan)
+    return original
+
 for case, reason in [('critique', 'Explicit new authorization required'),
                      ('compare', 'Case outside fixed plan')]:
     with (patch.object(sys, 'argv', [str(runner), case, 'start', 'v18']),
+          patch.object(Path, 'read_text', pending_plan),
           patch('urllib.request.urlopen', side_effect=AssertionError('Network forbidden')) as network):
         try:
             runpy.run_path(str(runner), run_name='__main__')

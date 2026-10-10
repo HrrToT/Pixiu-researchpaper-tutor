@@ -72,5 +72,5 @@ else:
         assert hashes == before['taskHashes'] and receipt_hashes == before['receiptHashes']
     with (HERE / f'stage4-analysis-v18-preservation-{mode}.json').open('x', encoding='utf-8') as stream:
         json.dump(report, stream, ensure_ascii=False, indent=2)
-    print(json.dumps({'mode': mode, 'oldReceiptsUnchanged': 6, 'oldTasksUnchanged': 7,
+    print(json.dumps({'mode': mode, 'archivedResultsUnchanged': 6, 'baselineTaskCount': 7,
                       'readingRevision': reading['revision'], 'providerCalls': 0, 'taskWrites': 0}))
