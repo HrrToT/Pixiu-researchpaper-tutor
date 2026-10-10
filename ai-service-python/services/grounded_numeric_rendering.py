@@ -32,12 +32,12 @@ summary中所有数值写成⟦数值1⟧等占位符，并添加numericBindings
    operation=value只显示选中模型的一项结果，不填baselineFactId；difference（结果减基线）、ratio（结果除基线）、inverse_ratio（基线除结果）必须另选baselineFactId，且两个选项属于同一表、数据集、指标与硬件。factId是结果，baselineFactId是比较基线，不得互换。计算结论kind=inference，decimals可选0到6。不填写value。
    例：{"id":1,"kind":"experiment","factId":"给定选项ID","operation":"value"}；计算例另加"baselineFactId":"同条件基线选项ID"。纯数值结论的references可为空，系统补齐所选实验的原文依据；定性事实仍须选择摘录。
    服务端插入数据集、指标、数值及紧凑硬件/基线条件，summary只写解释，不重复这些条件或手写下降幅度。
-2. kind=method_parameter：选择sourceId/quoteId、label（原文参数名）和literal（同一摘录中的完整数值及单位）。只用于有明确参数/归一化/分位等定义的数值，不用于FPS、存储或质量提升。
-3. kind=author_report：结论kind=reported，选择sourceId/quoteId及literal（原文完整数值表达式，保留≥、范围、at least等限定与单位）。只展示作者报告，不据此比较高低；分辨率等限制也分别绑定。
+2. kind=method_parameter：选择quoteId、label（原文参数名）和literal（同一摘录中的完整数值及单位）。不重复填写sourceId。只用于有明确参数/归一化/分位等定义的数值，不用于FPS、存储或质量提升。
+3. kind=author_report：结论kind=reported，选择quoteId及literal（原文完整数值表达式，保留≥、范围、at least等限定与单位）。不重复填写sourceId。只展示作者报告，不据此比较高低；分辨率等限制也分别绑定。
    完整数值短语的指标、升降或上下界由服务端呈现，summary不要在占位符旁重复这些词，更不能填写相反方向。
 literal必须原样来自本条references的同一摘录，不改写引用。方法参数和作者主张不能用于绕过实验比较条件。
 数据集名称中的数字不是测量值；名称仍须出现在引用正文并由已核对表格的数据集名称确认。作者报告可以绑定一段完整连续的数字短语，例如from 782MB to 45MB；保留短语中的全部数量、单位和限定。
-例：{"summary":"作者报告实时渲染为⟦数值1⟧。","kind":"reported","numericBindings":[{"id":1,"kind":"author_report","sourceId":"来源ID","quoteId":"摘录ID","literal":"≥30fps"}],"references":[{"sourceId":"来源ID","quoteId":"摘录ID"}]}。
+例：{"summary":"作者报告实时渲染为⟦数值1⟧。","kind":"reported","numericBindings":[{"id":1,"kind":"author_report","quoteId":"摘录ID","literal":"≥30fps"}],"references":[{"quoteId":"摘录ID"}]}。
 '''
 
 

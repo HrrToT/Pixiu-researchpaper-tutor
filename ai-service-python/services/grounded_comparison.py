@@ -55,7 +55,7 @@ def synthesize_comparison(question, sources, paper_ids, prior='', *, allow_parti
 表格片段重复原始首行和单元格分隔。省略不能确认的数字，保留定性比较；不能从零散正文拼出一次实验。
 方法因素优先按正文公式与邻近定义完整解释；消融中列出的因素不一定等于公式全部因素。资料冲突时说明版本/段落差异，不能无声选择。
 每条结论与每个表格单元的事实必须有支持它的原文摘录。每段text里的[16位标识]是quoteId。
-只选择摘录，references写sourceId与quoteId，不重新抄录或改写quote。系统会恢复原文。
+只选择摘录，references只写quoteId，不重复填写sourceId，不重新抄录或改写quote。系统唯一恢复来源和原文。
 一项结论涉及多个句子或方法模块时，选择多个quoteId，可重复同一sourceId；不能自行拼接片段。
 结论中paperIds只列出提供本条原文证据的论文；跨论文结论必须为每篇提供原文引用。
 某论文报告与另一方法的对照实验时，这些实验数字属于报告该实验的论文。仅引用该论文的主表时，paperIds只填该论文；基线方法源于另一篇论文不代表那篇论文也报告了同次实验。
@@ -65,9 +65,9 @@ limitations只写比较范围或尚需核查的主题，不填写未经绑定的
 limitations用“主表”“已核对结果行”等描述位置，不写表号、页号、行号。需要精确位置或数字时放入带引用的claims或cells。
 面向读者使用自然语言，不展示内部字段名；例如写“表格列归属尚未核对”。
 只输出JSON：{"claims":[{"summary":"直接回答问题的结论","kind":"reported或inference",
-"paperIds":["所涉及的论文ID"],"references":[{"sourceId":"完整原样ID","quoteId":"正文摘录标识"}]}],
+"paperIds":["所涉及的论文ID"],"references":[{"quoteId":"正文摘录标识"}]}],
 "dimensions":[{"label":"比较维度","cells":[{"paperId":"论文ID","summary":"具体比较内容",
-"kind":"reported或inference或not_covered","references":[{"sourceId":"完整ID","quoteId":"正文摘录标识"}]}]}],
+"kind":"reported或inference或not_covered","references":[{"quoteId":"正文摘录标识"}]}]}],
 "limitations":["比较边界或无法判断的问题"]}。
 由表格计算的差值或倍数单独列为kind=inference，不把计算结果当作作者原样报告。
 ''' + TABLE_VERIFICATION_PROMPT + NUMERIC_PROMPT + '''

@@ -243,6 +243,24 @@ def test_catalog_selection_resolves_bindings_without_mutating_generated_json():
         resolve_references(raw, catalog, require_selection=True)
 
 
+def test_quote_only_parameter_binding_restores_source_for_both_binding_and_claim():
+    raw, sources = literal_claim('method_parameter', 'Volume normalization uses the 90% quantile.', '90%', 'quantile')
+    _, validation, catalog = prepare_quote_sources(sources)
+    qid = next(iter(catalog['p']))
+    raw['references'] = [{'quoteId': qid}]
+    binding = raw['numericBindings'][0]
+    binding.pop('sourceId')
+    binding.pop('quote')
+    binding['quoteId'] = qid
+    before = deepcopy(raw)
+    selected = resolve_references(raw, catalog, require_selection=True)
+    result = check_numeric_claim(selected, validation)
+    assert result['summary'] == '正文定义为90%。'
+    assert result['references'][0]['sourceId'] == 'p'
+    assert selected['numericBindings'][0]['sourceId'] == 'p'
+    assert raw == before
+
+
 def test_token_without_bindings_never_leaks_to_published_output():
     raw, sources = experiment()
     raw.pop('numericBindings')

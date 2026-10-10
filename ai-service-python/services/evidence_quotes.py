@@ -105,6 +105,11 @@ def resolve_references(raw, catalog, *, require_selection=False):
             raise ValueError('证据格式无效。')
         sid, qid = ref.get('sourceId'), ref.get('quoteId')
         if qid is not None:
+            if 'sourceId' not in ref and isinstance(qid, str):
+                owners = [source_id for source_id, quotes in catalog.items() if qid in quotes]
+                if len(owners) != 1:
+                    raise ValueError('摘录选择不存在或无法唯一确定来源。')
+                sid = owners[0]
             quote = catalog.get(sid, {}).get(qid) if isinstance(sid, str) and isinstance(qid, str) else None
             if quote is None or ('quote' in ref and ref['quote'] != quote):
                 raise ValueError('摘录选择不存在、归属错误或被改写。')
@@ -123,7 +128,8 @@ def resolve_references(raw, catalog, *, require_selection=False):
                 raise ValueError('数字依据格式无效。')
             measurement = {**item}
             if 'quoteId' in item:
-                measurement['quote'] = resolve_references({'references': [item]}, catalog, require_selection=require_selection)['references'][0]['quote']
+                selected = resolve_references({'references': [item]}, catalog, require_selection=require_selection)['references'][0]
+                measurement.update(sourceId=selected['sourceId'], quote=selected['quote'])
             if 'conditionReferences' in item:
                 measurement['conditionReferences'] = resolve_references({'references': item['conditionReferences']}, catalog, require_selection=require_selection)['references']
             claim['measurements'].append(measurement)
@@ -135,8 +141,9 @@ def resolve_references(raw, catalog, *, require_selection=False):
                 raise ValueError('数值绑定格式无效。')
             binding = {**item}
             if item.get('kind') in ('method_parameter', 'author_report'):
-                binding['quote'] = resolve_references({'references': [item]}, catalog,
-                                                       require_selection=True)['references'][0]['quote']
+                selected = resolve_references({'references': [item]}, catalog,
+                                              require_selection=True)['references'][0]
+                binding.update(sourceId=selected['sourceId'], quote=selected['quote'])
             if 'conditionReferences' in item:
                 binding['conditionReferences'] = resolve_references(
                     {'references': item['conditionReferences']}, catalog,

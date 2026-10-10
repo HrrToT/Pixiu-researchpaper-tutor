@@ -34,6 +34,19 @@ def test_critique_uses_one_synthesis_with_literal_references_and_no_score():
     assert 'contributionScore' not in result and '_verifiedTable' not in result['rag_sources'][0]
 
 
+def test_critique_accepts_quote_only_selection_and_requests_atomic_supported_mechanisms():
+    value, _, _ = payload()
+    for ref in value['findings'][0]['references']:
+        ref.pop('sourceId')
+    with patch('services.socratic_service._call_guarded_llm', return_value=json.dumps(value)) as model:
+        result = synthesize_critique('批判剪枝和蒸馏', SOURCES)
+    assert result['groundedClaims'][0]['references'][0]['sourceId'] == 'method'
+    prompt = model.call_args.args[0]
+    assert '每项只回答一个独立判断' in prompt
+    assert 'references只写quoteId' in prompt
+    assert '符号定义或师生关系本身不能支持采样分布' in prompt
+
+
 @pytest.mark.parametrize('text', [
     '泛化结果不完整：扩展实验未提供质量、模型大小和完整基线数据。',
     '作者缺少动态场景验证。', '论文没有给出完整证明。'])

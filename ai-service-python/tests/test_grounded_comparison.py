@@ -147,6 +147,19 @@ def test_comparison_can_select_excerpts_instead_of_regenerating_quotes():
     assert '[1]' in result['message'] and 'quoteId' not in result['message']
 
 
+def test_quote_only_selection_still_enforces_per_paper_evidence_coverage():
+    from services.evidence_quotes import prepare_quote_sources
+    _, _, catalog = prepare_quote_sources(SOURCES)
+    value = payload()
+    for claim in [*value['claims'], *value['dimensions'][0]['cells']]:
+        claim['references'] = [{'quoteId': next(qid for qid, original in catalog[ref['sourceId']].items()
+                                                if original == ref['quote'])} for ref in claim['references']]
+    assert {ref['sourceId'] for ref in call(value)['claims'][0]['references']} == {'a-1', 'b-1'}
+    value['dimensions'][0]['cells'][0]['references'] = value['dimensions'][0]['cells'][1]['references']
+    with pytest.raises(ValueError, match='其他论文'):
+        call(value)
+
+
 def test_comparison_scope_uses_plain_language_without_changing_raw_response():
     value = payload()
     value['limitations'] = ['主表的 tableColumnMappingUnverified 为 true，不能据此排序。',
