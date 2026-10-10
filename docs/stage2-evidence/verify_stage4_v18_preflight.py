@@ -8,7 +8,7 @@ from unittest.mock import patch
 runner = Path(__file__).with_name('verify_stage4_v12.py')
 read_text = Path.read_text
 version = sys.argv[1] if len(sys.argv) > 1 else 'v18'
-assert version in {'v18', 'v19'}
+assert version in {'v18', 'v19', 'v22'}
 
 
 def pending_plan(path, *args, **kwargs):
