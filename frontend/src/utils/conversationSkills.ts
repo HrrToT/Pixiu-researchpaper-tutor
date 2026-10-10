@@ -57,7 +57,8 @@ export function resolveConversationIntent(input: string): ConversationIntent {
   const actions: (ConversationSkillId | 'chat')[] = [];
   const clauses = text.split(/(?:[，,；;。]\s*(?=(?:请|帮我|先|首先|然后|再|最后|同时|并|以及|比较|对比|补课|补齐|分析|批判|解释|概括|精读|自测|研究|深入研究))|\s*(?:然后|接着|再来|并且|以及|同时)\s*)/u);
   for (const clause of clauses) {
-    const value = clause.trim().replace(/^(?:请)?(?:帮我|给我|为我)?(?:首先|先|然后|最后|再|并)?\s*/u, '');
+    const value = clause.trim().replace(/^(?:请)?(?:帮我|给我|为我)?(?:首先|先|然后|最后|再|并)?\s*/u, '')
+      .replace(/^(?:用|以)(?:一|两|二|三)句话\s*(?=解释|概括|总结)/u, '');
     if (!value || /^(?:不|别|无需|不要)/u.test(value)) continue;
     const skill = resolveConversationSkill(value);
     const action = skill?.skillId || (/^(?:解释|概括|总结)(?!这个词|一词|是什么意思)/u.test(value) ? 'chat' : null);

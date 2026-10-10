@@ -50,6 +50,14 @@ describe('conversation skill commands', () => {
     expect(mixed.clarification?.choices.map(choice => choice.skill.skillId)).toEqual(['read', 'quiz']);
   });
 
+  it('recognizes concise explanation before another requested capability', () => {
+    expect(resolveConversationIntent('请先用一句话解释高斯数量和SH阶数的区别，再比较两篇论文').skill)
+      .toMatchObject({ skillId: 'compose', steps: ['chat', 'compare'] });
+    expect(resolveConversationIntent('先以两句话概括核心概念，然后批判这篇论文').skill)
+      .toMatchObject({ skillId: 'compose', steps: ['chat', 'critique'] });
+    expect(resolveConversationIntent('不要用一句话解释，再比较两篇论文').skill?.skillId).toBe('compare');
+  });
+
   it('keeps explicit slash commands authoritative and ignores mentions and negated actions', () => {
     expect(resolveConversationIntent('/比较 解释核心概念，然后批判这些论文').skill?.skillId).toBe('compare');
     for (const input of ['比较是什么意思？', '这篇论文先比较算法，然后解释结果', '不要比较，然后也不要批判', '解释比较和批判这两个词的意思']) {
