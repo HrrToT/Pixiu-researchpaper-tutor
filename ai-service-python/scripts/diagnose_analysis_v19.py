@@ -31,7 +31,7 @@ def inspect(payload, sources, catalog, **kwargs):
     return check_critique_payload(payload, sources, catalog, **kwargs)
 
 paper = row['inputVerification']['allowedPaperIds'][0]
-request = ConversationCapabilityRequest(taskId='stage4-3dgs-critique-20261010-v19',
+request = ConversationCapabilityRequest(taskId=row['requestId'].removesuffix('-request'),
     capability='critique',
     message='重点批判LightGaussian的15倍压缩与200+FPS主张：证据适用于哪些场景、比较条件和质量代价？剪枝、球谐降阶和向量量化分别有什么局限？',
     allowedPaperIds=[paper], primaryPaperId=paper, strictScope=True)
