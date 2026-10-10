@@ -1,9 +1,16 @@
 {
-  "status": "pending_new_authorization",
-  "authorization": null,
-  "providerOriginVerified": false,
+  "status": "authorized",
+  "authorization": "用户2026-10-10明确回复：允许这1个新版批判案例",
+  "authorizedAt": "2026-10-10T07:00:20+00:00",
+  "providerOriginVerified": true,
   "provider": "https://api.deepseek.com",
   "sourceCommit": "2bbc095",
+  "providerVerification": {
+    "origin": "https://api.deepseek.com",
+    "model": "deepseek-v4-pro",
+    "runningSince": "2026-10-10T06:51:14.560362061Z",
+    "sourceCommit": "2bbc095"
+  },
   "maxCases": 1,
   "casesExecuted": 0,
   "previousCasesConsumed": 35,
