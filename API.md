@@ -981,6 +981,8 @@ input 必须包含 expectedTaskRevision。学习创建包含 pdfId、mode 和可
 
 模型内部`references`可只选择`quoteId`，由服务端在本次摘录目录中唯一恢复`sourceId`和原文；参数/作者报告绑定也可只选摘录ID。兼容显式sourceId但仍严格校验其与摘录归属，不自动纠正旧错配。对外回答仍返回实际来源与原文引用，不返回选择ID来替代证据。
 
+比值展示由服务端计算并校验精度：ratio为结果值/基线值，inverse_ratio为其倒数。若模型指定的小数位使相对误差超过1%，或将非1比值显示为1，逐步增加至最多6位；仍不满足则拒绝该判断。旧自由字段绑定同样拒绝这种粗舍入。此精度校验不证明机制解释或引用语义正确，仍需内容核对。
+
 Java 核验任务材料和主论文；history 只从服务端同任务、来源范围为当前范围子集的最近 20 条对话建立，浏览器的 history 不作为执行依据。外部检索保持关闭。Python 专业能力输出必须带范围内来源，能力之间沿用不可变范围并检查取消。
 
 成功 result 含 capability、message（短结果）、sources、sentenceSourceMap、materialScope、steps 和可空 artifact。Java 独立核对材料快照和来源；消息、完整成果及 appliedRequestIds 同一事务保存。重复 GET 不重复追加，其他客户端笔记和学习活动保留。artifact 存在时，消息带 artifactId，前端可在中栏打开完整正文。此处描述实现契约；完整阶段的真实运行验收尚未完成。
