@@ -9,7 +9,7 @@ import { ToastProvider } from './components/Toast.jsx'
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <ToastProvider>
-      {!location.pathname.startsWith('/share/') && new URLSearchParams(location.search).get('unified') === '1' ? <UnifiedTaskApp /> : <App />}
+      {!location.pathname.startsWith('/share/') && new URLSearchParams(location.search).get('unified') !== '0' ? <UnifiedTaskApp /> : <App />}
     </ToastProvider>
   </StrictMode>,
 )
