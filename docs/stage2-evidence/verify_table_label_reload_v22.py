@@ -20,12 +20,12 @@ with contextlib.redirect_stdout(io.StringIO()):
     sys.argv = [str(HERE / 'verify_analysis_preservation_v19.py'), 'inspect']
     check = runpy.run_path(sys.argv[0], run_name='__main__')
 report = check['report']
-for version in ('v19', 'v22'):
-    identity = 'stage4-3dgs-critique-20261010-' + version
-    report['taskHashes'][version + '-critique'] = check['digest'](check['get']('/' + identity))
+for prior_version in ('v19', 'v22'):
+    identity = 'stage4-3dgs-critique-20261010-' + prior_version
+    report['taskHashes'][prior_version + '-critique'] = check['digest'](check['get']('/' + identity))
     receipt = check['get'](f'/{identity}/operations/{identity}-request')
     assert receipt['status'] == 'succeeded' and receipt['result']['partial'] is True
-    report['receiptHashes'][version + '-critique'] = check['digest'](receipt)
+    report['receiptHashes'][prior_version + '-critique'] = check['digest'](receipt)
 report.update(mode=mode, checkedAt=datetime.now(timezone.utc).isoformat())
 report['runningSince'] = subprocess.check_output(['docker', 'inspect', '--format',
     '{{.State.StartedAt}}', 'ai_service_python'], text=True).strip()

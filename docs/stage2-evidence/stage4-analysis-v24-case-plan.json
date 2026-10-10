@@ -1,11 +1,11 @@
 {
-  "status": "pending_new_authorization",
-  "authorization": null,
+  "status": "execution_started",
+  "authorization": "用户明确回复：统一授权。覆盖当前重构必要复测，使用既定公开LightGaussian/3DGS片段发送至https://api.deepseek.com；固定案例、仅一次提交、不自动重试。",
   "provider": "https://api.deepseek.com",
   "sourceCommit": "c57381d",
-  "providerOriginVerified": false,
+  "providerOriginVerified": true,
   "maxCases": 1,
-  "casesExecuted": 0,
+  "casesExecuted": 1,
   "previousCasesConsumed": 37,
   "materials": [
     {
@@ -32,12 +32,23 @@
     }
   ],
   "executionRules": [
-    "37个旧固定案例已用完，须明确批准新增这一例后才执行",
+    "用户已统一授权当前重构必要复测；本批仍限定一个固定案例，仅提交一次并保存结果",
     "执行前核对实际Provider域名、模型及运行源码；未核对不得发送",
     "仅一次提交，独占attempt并保存原始响应、收据和任务，不自动重试",
     "批判可能包含多个内部初始请求，案例数不等于请求数",
     "不重跑比较、解释或翻译，不启用外部搜索",
     "离线回放及人工受控样例不替代真实质量证据"
   ],
-  "authorizedAt": null
+  "authorizedAt": "2026-10-10T21:11:29.51815+08:00",
+  "providerVerification": {
+    "origin": "https://api.deepseek.com",
+    "model": "deepseek-v4-pro",
+    "runningSince": "2026-10-10T11:00:47.85708324Z",
+    "sourceHashes": {
+      "conversation_capability_service.py": "3e63dadd8cbf06df64d1210909c66c7234eeec90b14eb71c3926d39f87e3954e",
+      "grounded_numeric_rendering.py": "e88ddeab736291b88c58a46afff71a66d04ee6f31445ea59e274118f217d504f",
+      "grounded_critique.py": "0508e7e390f726c0e8ba6a5ac118c8bab2a55614b512aa6038d2c0c947ea592e"
+    }
+  },
+  "totalCasesConsumed": 38
 }

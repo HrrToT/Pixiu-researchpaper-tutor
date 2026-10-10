@@ -30,6 +30,7 @@ assert report['taskHashes'] == baseline['taskHashes'] and report['receiptHashes'
 runtime = json.loads(subprocess.check_output(['docker', 'inspect', '--format', '{{json .State}}',
     'ai_service_python'], text=True, encoding='utf-8'))
 assert runtime['Running']
+assert runtime['StartedAt'] == baseline['runningSince']
 probe = '''import hashlib,json
 from urllib.parse import urlsplit
 from core.config import settings
@@ -44,7 +45,12 @@ assert actual['scheme'] == 'https' and actual['hostname'] == 'api.deepseek.com' 
 assert actual['model'] == 'deepseek-v4-pro'
 for name, digest in actual['sourceHashes'].items():
     assert digest == hashlib.sha256((ROOT / 'ai-service-python/services' / name).read_bytes()).hexdigest()
-    assert digest == baseline['sourceHashes'][name]
+    committed = subprocess.check_output(['git', 'show',
+        plan['sourceCommit'] + ':ai-service-python/services/' + name], cwd=ROOT)
+    working = (ROOT / 'ai-service-python/services' / name).read_bytes()
+    assert working.replace(b'\r\n', b'\n') == committed.replace(b'\r\n', b'\n')
+    if name in baseline['sourceHashes']:
+        assert digest == baseline['sourceHashes'][name]
 with urlopen('http://127.0.0.1:8000/health', timeout=30) as response:
     assert json.load(response)['status'] == 'ok'
 with urlopen('http://127.0.0.1:8081/api/task-workspaces/stage4-3dgs-critique-20261010-v22/materials/'
@@ -54,7 +60,10 @@ verification = {'origin': plan['provider'], 'model': actual['model'], 'runningSi
                 'sourceHashes': actual['sourceHashes']}
 plan.update(status='authorized', authorizedAt=datetime.now(timezone.utc).isoformat(),
             providerOriginVerified=True, providerVerification=verification)
-report.update(checkedAt=plan['authorizedAt'], runtimeVerification=verification, providerCalls=0, taskWrites=0)
+report.update(checkedAt=plan['authorizedAt'], runtimeVerification=verification,
+              sourceCommitVerified=plan['sourceCommit'],
+              baselineMissingSourceFields=sorted(set(actual['sourceHashes']) - set(baseline['sourceHashes'])),
+              providerCalls=0, taskWrites=0)
 with (HERE / 'stage4-analysis-v24-preservation-before.json').open('x', encoding='utf-8') as stream:
     json.dump(report, stream, ensure_ascii=False, indent=2)
 path.write_text(json.dumps(plan, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
