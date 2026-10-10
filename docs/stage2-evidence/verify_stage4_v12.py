@@ -1,4 +1,4 @@
-"""Bounded v12/v13 cases; start is disabled until explicit plan authorization."""
+"""Bounded analysis cases; start is disabled until explicit plan authorization."""
 import json
 import sys
 from datetime import datetime, timezone
@@ -8,7 +8,7 @@ from urllib.request import Request, urlopen
 
 HERE = Path(__file__).parent
 version = sys.argv[3] if len(sys.argv) == 4 else 'v12'
-assert len(sys.argv) in {3, 4} and version in {'v12', 'v13'}
+assert len(sys.argv) in {3, 4} and version in {'v12', 'v13', 'v16'}
 plan = json.loads((HERE / f'stage4-analysis-{version}-case-plan.json').read_text(encoding='utf-8-sig'))
 case, action = sys.argv[1:3]
 assert case in {'critique', 'compare'} and action in {'start', 'query'}
