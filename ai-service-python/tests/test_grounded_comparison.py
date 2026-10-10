@@ -161,4 +161,38 @@ def test_comparison_scope_uses_plain_language_without_changing_raw_response():
 def test_scope_wording_does_not_rewrite_a_verified_mapping_flag():
     value = payload()
     value['limitations'] = ['tableColumnMappingUnverified=false']
-    assert 'tableColumnMappingUnverified=false' in call(value)['message']
+    text = call(value)['message']
+    assert '未标记原始表格列归属问题' in text
+    assert 'tableColumnMappingUnverified' not in text and '表格列归属尚未核对' not in text
+
+
+def test_bare_internal_scope_flag_is_not_published_even_inside_parentheses():
+    value = payload()
+    value['limitations'] = ['原始表格仍有未核对部分（tableColumnMappingUnverified）。',
+                            'tableColumnMappingUnverified 只描述原始片段。']
+    text = call(value)['message']
+    assert 'tableColumnMappingUnverified' not in text
+    assert '原始表格仍有未核对部分' in text
+
+
+def test_summary_does_not_point_at_numbers_rejected_from_the_final_table():
+    value = payload()
+    value['claims'][0]['summary'] += '；具体数字见比较表。'
+    value['dimensions'][0]['cells'][1]['summary'] = '质量达到99 PSNR。'
+    before = copy.deepcopy(value)
+    with patch('services.socratic_service._call_guarded_llm', return_value=json.dumps(value)):
+        result = synthesize_comparison('比较', SOURCES, ['A', 'B'], allow_partial=True)
+    assert result['partial'] is True and '该项暂无法核验' in result['message']
+    assert '具体数字见比较表' not in result['summary'] + result['message']
+    assert '优化目标分别为雷达SINR与互信息' in result['summary']
+    assert value == before
+
+
+def test_summary_uses_valid_cells_when_all_top_level_claims_are_rejected():
+    value = payload()
+    value['claims'][0]['summary'] = '具体数字见比较表。'
+    with patch('services.socratic_service._call_guarded_llm', return_value=json.dumps(value)):
+        result = synthesize_comparison('比较', SOURCES, ['A', 'B'], allow_partial=True)
+    assert result['partial'] is True
+    assert '雷达SINR' in result['summary'] and '互信息' in result['summary']
+    assert '比较表' not in result['summary']

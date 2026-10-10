@@ -6,6 +6,7 @@ import re
 from services.comparison_measurements import bounded_table_body, verified_packet
 from services.focused_evidence import bounded_evidence_body
 from services.safety_service import wrap_untrusted_context
+from services.experiment_facts import attach_experiment_facts
 
 TABLE_VERIFICATION_PROMPT = '''verifiedTable是按PDF绘制位置逐格核对的行白名单，groups只用于rows列出的完整行。
 tableColumnMappingUnverified=true表示原始片段仍有未核对的行或合并单元格，不否定verifiedTable白名单中的行；不能因此把整张表都说成未核对。
@@ -84,8 +85,10 @@ def prepare_quote_sources(sources):
         # Two checks prevent a free-form historical quote from stitching across
         # filtered lines. The model selects only the visible catalog excerpts.
         safe_original = '\n'.join(line for line in body.splitlines() if not line.startswith('[SANITIZED INJECTION-LIKE CONTENT:'))
-        validation.append({**source, 'text': safe_original, '_literalBody': literal_body, '_verifiedTable': packet})
+        original = {key: value for key, value in source.items() if key != '_experimentFacts'}
+        validation.append({**original, 'text': safe_original, '_literalBody': literal_body, '_verifiedTable': packet})
         catalog[sid] = chosen
+    attach_experiment_facts(clean, validation, catalog)
     return clean, validation, catalog
 
 

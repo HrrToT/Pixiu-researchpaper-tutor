@@ -9,6 +9,24 @@ from services.evidence_quotes import prepare_quote_sources, resolve_references, 
 from services.grounded_numeric_rendering import NUMERIC_PROMPT, check_numeric_claim, FREE_NUMBER, QUANTITY, MENTION
 
 
+def _scope_text(text):
+    text = re.sub(r'tableColumnMappingUnverified\s*(?:为|=|:)\s*(true|false)\b',
+                  lambda match: '表格列归属尚未核对' if match[1].lower() == 'true'
+                  else '未标记原始表格列归属问题', text, flags=re.I)
+    text = re.sub(r'[（(]\s*tableColumnMappingUnverified\s*[）)]', '', text, flags=re.I)
+    return re.sub(r'tableColumnMappingUnverified', '原始表格列核对标记', text, flags=re.I)
+
+
+def _without_table_pointer(checked):
+    # Navigation is supplied by the UI. A model's forward pointer can become
+    # false when a later table cell is rejected; keep only the checked claim.
+    text = re.sub(r'(?:[；;]\s*)?(?:具体|详细)?(?:数字|数值|数据|结果)(?:请|可)?'
+                  r'(?:见|详见|参见)[^。；;\n]*(?:。|$)', '', checked['summary']).strip()
+    if not text:
+        raise ValueError('比较结论只包含表格指引，缺少独立结论。')
+    return {**checked, 'summary': text}
+
+
 def grounded_source_map(claims, text):
     rows = []
     for claim in claims:
@@ -70,13 +88,12 @@ limitations用“主表”“已核对结果行”等描述位置，不写表号
                 raise ValueError('比较边界中的数字也需要逐项依据，请放入有引用的结论。')
             rejected.append('比较边界中的数字未经逐项核验。')
         else:
-            safe_limitations.append(re.sub(r'tableColumnMappingUnverified\s*(?:为|=|:)\s*true\b',
-                                           '表格列归属尚未核对', limitation, flags=re.I))
+            safe_limitations.append(_scope_text(limitation))
     limitations = safe_limitations
     for claim in claims:
         try:
             claim = resolve_references(claim, quote_catalog)
-            checked = check_numeric_claim(claim, validation_sources)
+            checked = _without_table_pointer(check_numeric_claim(claim, validation_sources))
             declared = claim.get('paperIds')
             covered = {by_id[ref['sourceId']]['pdfId'] for ref in checked['references']}
             if not isinstance(declared, list) or not declared or any(not isinstance(x, str) for x in declared) or set(declared) != covered or covered - set(paper_ids):
@@ -105,7 +122,7 @@ limitations用“主表”“已核对结果行”等描述位置，不写表号
                 continue
             try:
                 cell = resolve_references(cell, quote_catalog)
-                checked = check_numeric_claim(cell, validation_sources)
+                checked = _without_table_pointer(check_numeric_claim(cell, validation_sources))
                 if any(by_id[ref['sourceId']]['pdfId'] != paper for ref in checked['references']):
                     raise ValueError('比较表引用了其他论文来证明当前论文。')
             except ValueError as error:
@@ -147,6 +164,9 @@ limitations用“主表”“已核对结果行”等描述位置，不写表号
     message = '\n\n'.join(lines[:len(checked_claims)]) + '\n\n' + '\n'.join(lines[len(checked_claims):]) if checked_claims else '\n'.join(lines)
     if rejected:
         message = '**部分比较**\n\n' + message + f'\n\n<details>\n<summary>尚待确认</summary>\n\n另有{len(rejected)}项判断暂未确认，未纳入本次结论。\n\n</details>'
-    return {'message': message, 'partial': bool(rejected),
+    summary = '\n\n'.join(render(claim) for claim in checked_claims)
+    if not summary:
+        summary = '\n\n'.join(render(claim) for claim in all_claims[:2])
+    return {'message': message, 'summary': summary, 'partial': bool(rejected),
             'claims': all_claims, 'comparisonTable': checked_rows,
             'rag_sources': [source for source in sources if source['sourceId'] in used]}

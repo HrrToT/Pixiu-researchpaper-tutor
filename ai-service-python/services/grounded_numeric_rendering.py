@@ -5,6 +5,7 @@ from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 from services.comparison_measurements import MENTION, _numeric, validate_numeric_comparison
 from services.research_synthesis import validate_claim
 from services.evidence_quantity_text import render_author_quantity
+from services.experiment_facts import expand_fact_binding
 
 TOKEN = re.compile(r'⟦数值([1-9]|1[0-2])⟧')
 FREE_NUMBER = re.compile(r'(?<![A-Za-z0-9])\d+(?:\.\d+)?(?![A-Za-z0-9])')
@@ -27,8 +28,9 @@ NUMERIC_PROMPT = '''数字输出合同：不要同时在summary和结构字段�
 summary中所有数值写成⟦数值1⟧等占位符，并添加numericBindings（最多12项），每项id为1到12的整数；每个id使用一次。
 提交前逐条检查：本条summary的占位符与本条numericBindings的id必须一一对应，不能附加正文未使用的绑定；定性结论不附实验数字绑定。
 没有数字时省略numericBindings。数字结论不要另加旧measurements。参数、作者主张和实验结果须分开：
-1. kind=experiment：选择sourceId、row、group（0起）、metric（原样指标名）、baselineRow、dataset、hardware、baseline和conditionReferences（sourceId/quoteId）。引用完整结果行与基线行。仅限verifiedTable的已核对列。
-   operation为value、difference（结果减基线）、ratio（结果除基线）或inverse_ratio（基线除结果）；推算结论kind=inference，decimals可选0到6。不要填写value，服务端计算、舍入并说明升降。
+1. kind=experiment：仅从experimentFacts选择factId。不再填写sourceId、row、group、metric、dataset、hardware、baseline或conditionReferences；系统恢复完整结果行、基线行与条件引用。没有experimentFacts则只作定性解释。
+   operation=value只显示选中模型的一项结果，不填baselineFactId；difference（结果减基线）、ratio（结果除基线）、inverse_ratio（基线除结果）必须另选baselineFactId，且两个选项属于同一表、数据集、指标与硬件。factId是结果，baselineFactId是比较基线，不得互换。计算结论kind=inference，decimals可选0到6。不填写value。
+   例：{"id":1,"kind":"experiment","factId":"给定选项ID","operation":"value"}；计算例另加"baselineFactId":"同条件基线选项ID"。纯数值结论的references可为空，系统补齐所选实验的原文依据；定性事实仍须选择摘录。
    服务端插入数据集、指标、数值及紧凑硬件/基线条件，summary只写解释，不重复这些条件或手写下降幅度。
 2. kind=method_parameter：选择sourceId/quoteId、label（原文参数名）和literal（同一摘录中的完整数值及单位）。只用于有明确参数/归一化/分位等定义的数值，不用于FPS、存储或质量提升。
 3. kind=author_report：结论kind=reported，选择sourceId/quoteId及literal（原文完整数值表达式，保留≥、范围、at least等限定与单位）。只展示作者报告，不据此比较高低；分辨率等限制也分别绑定。
@@ -196,12 +198,35 @@ def _experiment(binding, checked, sources):
         display = f"{metric}{'压缩' if operation == 'inverse_ratio' else '为基线的'}{number}倍"
     else:
         display = f"{metric} {number} {display_unit}".strip()
-    return f'{dataset}：{display}', (binding['hardware'], baseline[1])
+    label = baseline[1]
+    if '_factModel' in binding:
+        model = binding['_factModel']
+        display = f'{model} {display}'
+        label = f'模型{model}' if operation == 'value' else f'{model}相对基线{baseline[1]}'
+    else:
+        label = f'基线{label}'
+    return f'{dataset}：{display}', (binding['hardware'], label)
 
 
 def check_numeric_claim(raw, sources):
     """Legacy recorded payloads stay strict; new bindings never use free values."""
+    if not isinstance(raw, dict):
+        raise ValueError('结论格式无效。')
     by_id = {source['sourceId']: source for source in sources}
+    if isinstance(raw.get('numericBindings'), list):
+        bindings, refs = [], list(raw.get('references') or [])
+        for binding in raw['numericBindings']:
+            if isinstance(binding, dict) and any(str(key).startswith('_') for key in binding):
+                raise ValueError('数值绑定不能填写服务端内部字段。')
+            if isinstance(binding, dict) and 'factId' in binding:
+                if binding.get('kind') != 'experiment' or type(binding.get('id')) is not int:
+                    raise ValueError('实验选项绑定身份或类别无效。')
+                binding, selected_refs = expand_fact_binding(binding, by_id)
+                for ref in selected_refs:
+                    if ref not in refs:
+                        refs.append(ref)
+            bindings.append(binding)
+        raw = {**raw, 'numericBindings': bindings, 'references': refs}
     checked = validate_claim(raw, sources)
     if 'numericBindings' not in raw:
         if '⟦数值' in checked['summary']:
@@ -221,7 +246,7 @@ def check_numeric_claim(raw, sources):
     if ('⟦数值' in quantitative_text or FREE_NUMBER.search(quantitative_text)
             or MENTION.search(quantitative_text) or QUANTITY.search(quantitative_text)):
         raise ValueError('数值正文包含未绑定数字。')
-    rendered, conditions, kinds, experiment_contexts = {}, [], set(), []
+    rendered, conditions, kinds, experiment_contexts, fact_contexts = {}, [], set(), [], []
     for binding in bindings:
         if not isinstance(binding, dict) or type(binding.get('id')) is not int or str(binding['id']) not in ids:
             raise ValueError('数值绑定身份无效。')
@@ -234,6 +259,10 @@ def check_numeric_claim(raw, sources):
             dataset = by_id[binding['sourceId']]['_verifiedTable']['groups'][binding['group']][0]
             experiment_contexts.append((key, dataset, (binding['sourceId'], binding['group'],
                                        binding['row'], binding['baselineRow'], *condition)))
+            if '_factModel' in binding:
+                fact_contexts.append((key, dataset, (binding['sourceId'], binding['group'], binding['row'],
+                                      binding['hardware'], binding['_factModel']),
+                                      binding['baselineRow'] if binding['operation'] != 'value' else None))
             if condition not in conditions:
                 conditions.append(condition)
         else:
@@ -267,17 +296,33 @@ def check_numeric_claim(raw, sources):
             template = re.sub(r'(⟦数值' + key + r'⟧)\s*' + re.escape(unit[1]), r'\1', template)
     # Share a dataset label only when EVERY binding describes the exact same
     # experiment. Mixed datasets, source tables, rows or conditions stay local.
-    shared_dataset = None
-    if (len(experiment_contexts) > 1 and len(experiment_contexts) == len(bindings)
+    shared_dataset, shared_model = None, None
+    if (len(fact_contexts) > 1 and len(fact_contexts) == len(bindings)
+            and len({context for _, _, context, _ in fact_contexts}) == 1
+            and len({baseline for _, _, _, baseline in fact_contexts if baseline is not None}) <= 1):
+        shared_dataset = fact_contexts[0][1]
+        shared_model = fact_contexts[0][2][-1]
+        for key, dataset, _, _ in fact_contexts:
+            prefix = f'{dataset}：{shared_model} '
+            rendered[key] = rendered[key][len(prefix):]
+    elif (len(experiment_contexts) > 1 and len(experiment_contexts) == len(bindings)
             and len({context for _, _, context in experiment_contexts}) == 1):
         shared_dataset = experiment_contexts[0][1]
         for key, dataset, _ in experiment_contexts:
             rendered[key] = rendered[key][len(dataset) + 1:]
     checked['summary'] = TOKEN.sub(insert, template)
     if shared_dataset:
-        checked['summary'] = f'{shared_dataset}：' + checked['summary']
+        model = f'（{shared_model}）' if shared_model else ''
+        checked['summary'] = f'{shared_dataset}{model}：' + checked['summary']
+    # A value has no comparative baseline. When that same model/hardware also
+    # has a checked difference, its comparison label already identifies it.
+    for _, _, context, baseline in fact_contexts:
+        hardware, model = context[-2:]
+        if baseline is None and any(hw == hardware and label.startswith(f'{model}相对基线')
+                                    for hw, label in conditions):
+            conditions = [condition for condition in conditions if condition != (hardware, f'模型{model}')]
     if conditions:
-        checked['summary'] += '（' + '；'.join(f'{hardware}，基线{baseline}' for hardware, baseline in conditions) + '）'
+        checked['summary'] += '（' + '；'.join(f'{hardware}，{baseline}' for hardware, baseline in conditions) + '）'
     if 'author_report' in kinds:
         checked['summary'] += '（作者报告，未作同条件比较）'
     return checked
