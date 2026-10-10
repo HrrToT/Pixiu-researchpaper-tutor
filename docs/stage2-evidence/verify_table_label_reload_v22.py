@@ -14,8 +14,8 @@ HERE = Path(__file__).resolve().parent
 mode = sys.argv[1]
 assert mode in {'before', 'after'}
 version = sys.argv[2] if len(sys.argv) > 2 else 'v22'
-assert version in {'v22', 'v23'}
-prefix = 'stage4-table-label-v22' if version == 'v22' else 'stage4-output-v23'
+assert version in {'v22', 'v23', 'v23-final'}
+prefix = 'stage4-table-label-v22' if version == 'v22' else 'stage4-output-' + version
 with contextlib.redirect_stdout(io.StringIO()):
     sys.argv = [str(HERE / 'verify_analysis_preservation_v19.py'), 'inspect']
     check = runpy.run_path(sys.argv[0], run_name='__main__')

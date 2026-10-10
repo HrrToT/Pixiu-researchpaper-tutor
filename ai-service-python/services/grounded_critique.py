@@ -169,6 +169,8 @@ observation和inference均可省略，但同一assessment至少提供一个；�
                 (ref['sourceId'], ref['quote']) for finding in findings for ref in finding['references'])) + '\n\n</details>')
     chat_summary = '\n\n'.join(render({**finding, 'summary': summary})
                               for finding, summary in zip(findings[:3], summaries[:3]))
+    if rejected and chat_summary:
+        chat_summary = '**部分分析**\n\n' + chat_summary
     return {'status': 'success', 'partial': bool(rejected), 'message': '\n\n'.join(parts), 'summary': chat_summary or lead,
             'groundedClaims': findings, 'pendingQuestions': questions,
             'rag_sources': [{key: value for key, value in source.items() if not key.startswith('_')}
