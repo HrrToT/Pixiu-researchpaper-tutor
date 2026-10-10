@@ -12,20 +12,23 @@ from urllib.request import urlopen
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent.parent
-path = HERE / 'stage4-analysis-v24-case-plan.json'
+version = sys.argv[1] if len(sys.argv) > 1 else 'v24'
+assert version in {'v24', 'v25'}
+path = HERE / f'stage4-analysis-{version}-case-plan.json'
 plan = json.loads(path.read_text(encoding='utf-8-sig'))
 assert plan['status'] == 'authorized_pending_runtime' and plan.get('authorization')
 assert plan['casesExecuted'] == 0 and plan['maxCases'] == 1
-assert not (HERE / 'stage4-critique-v24-attempt.json').exists()
+assert not (HERE / f'stage4-critique-{version}-attempt.json').exists()
 with contextlib.redirect_stdout(io.StringIO()):
     sys.argv = [str(HERE / 'verify_analysis_preservation_v19.py'), 'inspect']
     check = runpy.run_path(sys.argv[0], run_name='__main__')
 report = check['report']
-for version in ('v19', 'v22'):
-    identity = 'stage4-3dgs-critique-20261010-' + version
-    report['taskHashes'][version + '-critique'] = check['digest'](check['get']('/' + identity))
-    report['receiptHashes'][version + '-critique'] = check['digest'](check['get'](f'/{identity}/operations/{identity}-request'))
-baseline = json.loads((HERE / 'stage4-output-v23-final-reload-after.json').read_text(encoding='utf-8'))
+for prior_version in (('v19', 'v22', 'v24') if version == 'v25' else ('v19', 'v22')):
+    identity = 'stage4-3dgs-critique-20261010-' + prior_version
+    report['taskHashes'][prior_version + '-critique'] = check['digest'](check['get']('/' + identity))
+    report['receiptHashes'][prior_version + '-critique'] = check['digest'](check['get'](f'/{identity}/operations/{identity}-request'))
+baseline_version = 'v25' if version == 'v25' else 'v23-final'
+baseline = json.loads((HERE / f'stage4-output-{baseline_version}-reload-after.json').read_text(encoding='utf-8'))
 assert report['taskHashes'] == baseline['taskHashes'] and report['receiptHashes'] == baseline['receiptHashes']
 runtime = json.loads(subprocess.check_output(['docker', 'inspect', '--format', '{{json .State}}',
     'ai_service_python'], text=True, encoding='utf-8'))
@@ -64,8 +67,9 @@ report.update(checkedAt=plan['authorizedAt'], runtimeVerification=verification,
               sourceCommitVerified=plan['sourceCommit'],
               baselineMissingSourceFields=sorted(set(actual['sourceHashes']) - set(baseline['sourceHashes'])),
               providerCalls=0, taskWrites=0)
-with (HERE / 'stage4-analysis-v24-preservation-before.json').open('x', encoding='utf-8') as stream:
+with (HERE / f'stage4-analysis-{version}-preservation-before.json').open('x', encoding='utf-8') as stream:
     json.dump(report, stream, ensure_ascii=False, indent=2)
 path.write_text(json.dumps(plan, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
 print(json.dumps({'authorizedCases': 1, 'provider': plan['provider'], 'model': actual['model'],
-                  'oldTasksUnchanged': 10, 'oldReceiptsUnchanged': 9, 'providerCalls': 0, 'taskWrites': 0}))
+                  'oldTasksUnchanged': len(report['taskHashes']), 'oldReceiptsUnchanged': len(report['receiptHashes']),
+                  'providerCalls': 0, 'taskWrites': 0}))

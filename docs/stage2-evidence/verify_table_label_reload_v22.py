@@ -14,13 +14,13 @@ HERE = Path(__file__).resolve().parent
 mode = sys.argv[1]
 assert mode in {'before', 'after'}
 version = sys.argv[2] if len(sys.argv) > 2 else 'v22'
-assert version in {'v22', 'v23', 'v23-final'}
+assert version in {'v22', 'v23', 'v23-final', 'v25'}
 prefix = 'stage4-table-label-v22' if version == 'v22' else 'stage4-output-' + version
 with contextlib.redirect_stdout(io.StringIO()):
     sys.argv = [str(HERE / 'verify_analysis_preservation_v19.py'), 'inspect']
     check = runpy.run_path(sys.argv[0], run_name='__main__')
 report = check['report']
-for prior_version in ('v19', 'v22'):
+for prior_version in (('v19', 'v22', 'v24') if version == 'v25' else ('v19', 'v22')):
     identity = 'stage4-3dgs-critique-20261010-' + prior_version
     report['taskHashes'][prior_version + '-critique'] = check['digest'](check['get']('/' + identity))
     receipt = check['get'](f'/{identity}/operations/{identity}-request')
@@ -48,5 +48,5 @@ if mode == 'after':
     assert report['health']['status'] == 'ok'
 with (HERE / f'{prefix}-reload-{mode}.json').open('x', encoding='utf-8') as stream:
     json.dump(report, stream, ensure_ascii=False, indent=2)
-print(json.dumps({'mode': mode, 'tasksUnchanged': 10, 'receiptsUnchanged': 9,
+print(json.dumps({'mode': mode, 'tasksUnchanged': len(report['taskHashes']), 'receiptsUnchanged': len(report['receiptHashes']),
                   'providerCalls': 0, 'taskWrites': 0}))

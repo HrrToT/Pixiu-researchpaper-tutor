@@ -10,16 +10,16 @@ from urllib.request import Request, urlopen
 
 HERE = Path(__file__).parent
 version = sys.argv[3] if len(sys.argv) == 4 else 'v12'
-assert len(sys.argv) in {3, 4} and version in {'v12', 'v13', 'v16', 'v18', 'v19', 'v22', 'v24'}
+assert len(sys.argv) in {3, 4} and version in {'v12', 'v13', 'v16', 'v18', 'v19', 'v22', 'v24', 'v25'}
 plan = json.loads((HERE / f'stage4-analysis-{version}-case-plan.json').read_text(encoding='utf-8-sig'))
 case, action = sys.argv[1:3]
 assert case in {'critique', 'compare'} and action in {'start', 'query'}
-assert plan['provider'] == 'https://api.deepseek.com' and plan['maxCases'] == (1 if version in {'v18', 'v19', 'v22', 'v24'} else 2)
+assert plan['provider'] == 'https://api.deepseek.com' and plan['maxCases'] == (1 if version in {'v18', 'v19', 'v22', 'v24', 'v25'} else 2)
 assert len(plan['cases']) == plan['maxCases']
 assert any(item['capability'] == case for item in plan['cases']), 'Case outside fixed plan'
 if action == 'start':
     assert plan['status'] in {'authorized', 'execution_started'} and plan.get('authorization'), 'Explicit new authorization required'
-    if version in {'v22', 'v24'}:
+    if version in {'v22', 'v24', 'v25'}:
         assert plan.get('providerOriginVerified') is True, 'Fresh runtime verification required'
         verified = plan.get('providerVerification', {})
         assert verified.get('origin') == plan['provider'], 'Verified Provider does not match plan'

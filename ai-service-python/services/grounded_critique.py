@@ -75,11 +75,19 @@ def check_critique_payload(payload, sources, catalog, *, allow_partial=False, re
                                   raw['summary'], re.I)
                     and not re.search(r'(?:而非|并非|不是|不用|不使用|不能使用|不能用|不按)[^。；]{0,8}最大'
                                       r'|\b(?:not|rather than)\s+(?:the\s+)?maximum', raw['summary'], re.I)
+                    and not (re.search(r'(?:按|经|经过)?排序(?:截断|截点)[^。；]{0,5}最大(?:值|体积)', raw['summary'])
+                             and not re.search(r'全局最大(?:值|体积)', raw['summary']))
                     and any(re.search(r'(?:\d+(?:\.\d+)?\s*%\s+(?:largest|smallest)[^.]{0,60}sort|percentile|quantile)',
                                       ref['quote'], re.I) for ref in selected['references'])
                     and not any(re.search(r'(?:maximum|maximal)\s+(?:volume|value)[^.]{0,60}normaliz',
                                           ref['quote'], re.I) for ref in selected['references'])):
                 raise ValueError('排序或分位归一化参考不能概括为全局最大值。')
+            if (raw['kind'] == 'inference'
+                    and any(re.search(r'Gaussian (?:distribution|noise)', ref['quote'], re.I)
+                            for ref in selected['references'])
+                    and re.search(r'(?:远离|远视角|训练分布外)[^。；]{0,45}(?:不受|不由|不被)[^。；]{0,18}约束',
+                                  raw['summary'])):
+                raise ValueError('高斯采样不能推出远视角误差不受损失约束，请保留为待核查问题。')
             checked = check_numeric_claim(selected, sources)
         except ValueError as error:
             if not allow_partial:
@@ -125,6 +133,7 @@ references只写quoteId，系统唯一恢复来源和原文，不重复填写sou
 公式定义与设计代价分别组织并分别引用。只有局部代价的摘录时，只讨论该代价，不顺带概述未完整引用的计算公式。
 不同方法步骤的训练视角、采样范围及优化目标须逐步核对；一个步骤的限制不能直接套用于另一步骤。推测的风险写成推断，不说成实验已经证明。
 训练采样分布不等于模型泛化能力的硬边界；不要把高斯分布误作有界区域。若没有目标域测试依据，只将远视角泛化列为待核查问题，不断言补偿能力局限于采样范围。
+尤其不能由高斯位置采样推出“远视角误差不受损失直接约束”：分布尾部仍有非零概率，是否约束以及效果需要实际样本和评估依据。SH可讨论正文支持的降阶质量代价与蒸馏补偿机制；目标视角效果放待核查，勿强行给每项事实配一个风险推断。
 “仅”“全部”“只比较”等排他性描述也必须有直接对应摘录；符号定义或师生关系本身不能支持采样分布、损失函数或实验泛化结论。无法核对的外推风险放pendingQuestions，assessments说明已知机制与可证明的代价。
 条件或核对行不足时给具体定性结论，不编数字；不同消融步骤的基线、主实验和跨表示扩展不可混用。
 仅输出JSON：{"assessments":[{"section":"contribution或weakness或risk",

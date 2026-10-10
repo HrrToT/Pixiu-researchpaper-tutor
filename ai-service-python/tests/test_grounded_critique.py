@@ -132,7 +132,8 @@ def test_foreign_critique_evidence_fails_before_provider():
 
 @pytest.mark.parametrize('summary', ['最大体积归一化可避免漂浮高斯。',
                                      'maximum volume normalization is used.',
-                                     '归一化参考是最大体积。'])
+                                     '归一化参考是最大体积。',
+                                     '按排序截断的最大值归一化即全局最大值归一化。'])
 def test_sorting_reference_is_not_published_as_global_maximum(summary):
     original = [{'sourceId': 'parameter', 'pdfId': 'A.pdf',
                  'text': 'The volume is normalized by the 90% largest of all sorted Gaussians.'}]
@@ -146,6 +147,7 @@ def test_sorting_reference_is_not_published_as_global_maximum(summary):
 @pytest.mark.parametrize('quote,summary', [
     ('The volume is normalized by the 90% largest of all sorted Gaussians.', '归一化采用按体积排序的参考值。'),
     ('The volume is normalized by the 90% largest of all sorted Gaussians.', '采用排序参考，而非最大体积归一化。'),
+    ('The volume is normalized by the 90% largest of all sorted Gaussians.', '按排序截断的最大值归一化体积。'),
     ('The maximum volume is used for normalization.', '最大体积归一化。'),
 ])
 def test_parameter_type_is_preserved_without_requiring_unrequested_percentages(quote, summary):
@@ -154,3 +156,20 @@ def test_parameter_type_is_preserved_without_requiring_unrequested_percentages(q
              'references': [{'quoteId': next(iter(catalog['p']))}]}]}
     findings, _ = check_critique_payload(value, sources, catalog)
     assert findings[0]['summary'] == summary
+
+
+@pytest.mark.parametrize('summary,reject', [
+    ('高斯采样在训练位置附近，因此远离训练分布视角下的重建误差不由该损失直接约束。', True),
+    ('高斯采样以训练位置为中心，训练分布与目标视角关系需要结合实际采样评估。', False),
+])
+def test_gaussian_sampling_does_not_establish_zero_loss_constraint(summary, reject):
+    _, sources, catalog = prepare_quote_sources([{'sourceId': 'p', 'pdfId': 'A.pdf',
+        'text': 'Camera positions are sampled around each training view according to a Gaussian distribution.'}])
+    value = {'findings': [{'section': 'weakness', 'summary': summary, 'kind': 'inference',
+             'references': [{'quoteId': next(iter(catalog['p']))}]}]}
+    if reject:
+        with pytest.raises(ValueError, match='高斯采样'):
+            check_critique_payload(value, sources, catalog)
+    else:
+        findings, _ = check_critique_payload(value, sources, catalog)
+        assert findings[0]['summary'] == summary
