@@ -130,9 +130,23 @@ def test_malformed_new_contract_is_not_partially_repaired(mutation):
     elif mutation == 'invalid_section':
         assessment['section'] = 'whatever'
     else:
-        payload['assessments'] *= 5
+        payload['assessments'] *= 9
     with pytest.raises(ValueError):
         check_critique_payload(payload, sources, catalog, allow_partial=True)
+
+
+@pytest.mark.parametrize('count', [5, 8])
+def test_bounded_assessments_validate_every_paired_claim(count):
+    payload, sources, catalog = fixture()
+    payload['assessments'] = [deepcopy(payload['assessments'][0]) for _ in range(count)]
+    original = deepcopy(payload)
+    findings, _ = check_critique_payload(payload, sources, catalog)
+    assert len(findings) == 2 * count and payload == original
+    payload['assessments'][-1]['inference']['references'] = [{'quoteId': 'unknown'}]
+    rejected = []
+    findings, _ = check_critique_payload(payload, sources, catalog, allow_partial=True, rejected=rejected)
+    # The final pair is not silently trimmed to fit the output budget.
+    assert len(findings) == 2 * count - 1 and len(rejected) == 1
 
 
 def test_all_invalid_components_do_not_publish_pending_questions_as_success():

@@ -13,7 +13,7 @@ from urllib.request import urlopen
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent.parent
 version = sys.argv[1] if len(sys.argv) > 1 else 'v24'
-assert version in {'v24', 'v25'}
+assert version in {'v24', 'v25', 'v26'}
 path = HERE / f'stage4-analysis-{version}-case-plan.json'
 plan = json.loads(path.read_text(encoding='utf-8-sig'))
 assert plan['status'] == 'authorized_pending_runtime' and plan.get('authorization')
@@ -23,11 +23,12 @@ with contextlib.redirect_stdout(io.StringIO()):
     sys.argv = [str(HERE / 'verify_analysis_preservation_v19.py'), 'inspect']
     check = runpy.run_path(sys.argv[0], run_name='__main__')
 report = check['report']
-for prior_version in (('v19', 'v22', 'v24') if version == 'v25' else ('v19', 'v22')):
+for prior_version in (('v19', 'v22', 'v24', 'v25') if version == 'v26' else
+                      ('v19', 'v22', 'v24') if version == 'v25' else ('v19', 'v22')):
     identity = 'stage4-3dgs-critique-20261010-' + prior_version
     report['taskHashes'][prior_version + '-critique'] = check['digest'](check['get']('/' + identity))
     report['receiptHashes'][prior_version + '-critique'] = check['digest'](check['get'](f'/{identity}/operations/{identity}-request'))
-baseline_version = 'v25' if version == 'v25' else 'v23-final'
+baseline_version = version if version != 'v24' else 'v23-final'
 baseline = json.loads((HERE / f'stage4-output-{baseline_version}-reload-after.json').read_text(encoding='utf-8'))
 assert report['taskHashes'] == baseline['taskHashes'] and report['receiptHashes'] == baseline['receiptHashes']
 runtime = json.loads(subprocess.check_output(['docker', 'inspect', '--format', '{{json .State}}',
