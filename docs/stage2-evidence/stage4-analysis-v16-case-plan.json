@@ -1,11 +1,11 @@
 {
-  "status": "authorized",
+  "status": "executed_once_all_two_cases",
   "authorization": "用户2026-10-10明确回复：允许这2个修复后案例",
   "providerOriginVerified": true,
   "provider": "https://api.deepseek.com",
   "sourceCommit": "fd03ada",
   "maxCases": 2,
-  "casesExecuted": 0,
+  "casesExecuted": 2,
   "previousCasesConsumed": 32,
   "materials": [
     {
@@ -59,7 +59,7 @@
     "不重跑解释、组合或翻译，不外部搜索",
     "离线回放不计新模型验收"
   ],
-  "totalCasesConsumed": 32,
+  "totalCasesConsumed": 34,
   "automaticResubmissions": 0,
   "frontendCommit": "b7e3250",
   "purpose": "Verify v14 verified fact selection and v15 unique excerpt selection in actual model output; preserve the same two prompts and do not repeat reading tools.",
@@ -69,5 +69,13 @@
     "model": "deepseek-v4-pro",
     "runningSince": "2026-10-10T05:11:08.499771282Z",
     "sourceCommit": "fd03ada"
+  },
+  "terminalStatuses": {
+    "critique": "succeeded",
+    "compare": "succeeded"
+  },
+  "contentAcceptance": {
+    "compare": "accepted_fixed_case",
+    "critique": "not_accepted_content_despite_partial_false"
   }
 }
