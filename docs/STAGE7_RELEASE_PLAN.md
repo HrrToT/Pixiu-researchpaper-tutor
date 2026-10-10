@@ -2,6 +2,8 @@
 
 日期：2026-10-10。阶段0–3、5、6已验收；阶段4剩余批判内容确认，阶段7尚未正式切换。用户已免验A18独立浏览器恢复子项和A20完整新手观察，不再追加这些步骤。
 
+最新执行：v22已获明确授权并仅提交一次，累计37例。实际收据succeeded/partial=true；表号误判已定位修复，原样响应离线8项均通过，但实际收据保留部分状态，摘要质量代价与归一化表述仍需改善。默认入口补丁未应用。详见stage2-evidence/stage4-analysis-v22-audit.md。下文pending计划是执行前记录，不能据其重复发送。
+
 ## 当前可直接执行的成果
 
 - `stage2-evidence/stage4-analysis-v22-case-plan.json`准备了唯一一例修复后批判，复用LightGaussian及原问题，前36例额度已用完；状态pending_new_authorization。用户未答复前不发送、不创建任务、不占用attempt。

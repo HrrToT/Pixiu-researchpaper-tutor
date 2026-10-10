@@ -1,11 +1,11 @@
 {
-  "status": "authorized",
+  "status": "executed_once",
   "authorization": "用户明确回复：允许这 1 个批判案例",
   "provider": "https://api.deepseek.com",
   "sourceCommit": "6164a45",
   "providerOriginVerified": true,
   "maxCases": 1,
-  "casesExecuted": 0,
+  "casesExecuted": 1,
   "previousCasesConsumed": 36,
   "materials": [
     {
@@ -38,7 +38,7 @@
     "不重跑比较、解释或翻译，不启用外部搜索",
     "离线回放及人工受控样例不替代真实质量证据"
   ],
-  "authorizedAt": "2026-10-10T10:37:25.222670+00:00",
+  "authorizedAt": "2026-10-10T18:37:25.22267+08:00",
   "providerVerification": {
     "origin": "https://api.deepseek.com",
     "model": "deepseek-v4-pro",
@@ -48,5 +48,7 @@
       "grounded_numeric_rendering.py": "3e7255f923733e53c58c3bc9ba8cef5beb033851fff85d42087a19db1f39da5f",
       "grounded_critique.py": "32e8ee9bb6d2e568e11997c10429c0e0320b43b72ea1c74305e2e013637a5c49"
     }
-  }
+  },
+  "totalCasesConsumed": 37,
+  "outcome": "succeeded_partial; table-label false rejection diagnosed; original receipt preserved"
 }
