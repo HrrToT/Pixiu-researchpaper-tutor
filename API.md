@@ -985,6 +985,8 @@ input 必须包含 expectedTaskRevision。学习创建包含 pdfId、mode 和可
 
 批判模型内部输出按`assessments`组织，每项含`section`及可选`observation`、`inference`，至少提供一个。两个对象各自包含`summary`、`references`及可选`numericBindings`，不共享引用、不填写或覆盖`kind`；服务端分别固定为reported/inference并独立校验，计算必须放inference。全部独立判断合计最多8项；待核查主题仍单独放`pendingQuestions`。某项校验失败保留其他有效项并标记partial，全无有效判断时不发布成功。旧`findings`继续按原边界和kind校验，不自动截句、重分类或重写旧记录；两种顶层格式不得混用。此为内部生成协议，公共operation输入和结果结构保持不变；分离字段不能证明模型遵守事实/推断的语义边界。
 
+方法参数即使已在references原文中出现，也必须在所属observation/inference内以`numericBindings(kind=method_parameter)`绑定完整literal、quoteId及原文参数名；不从引用自动补填遗漏绑定。展示可去除数据集名称末尾的表头词`Datasets`，但若缩短后与另一数据集名称冲突则保留原名；服务端实验选项中以字节计量的Size显示为“存储”。原材料身份、核对表、数值精度、模型、基线、硬件及原文引用保持。
+
 Java 核验任务材料和主论文；history 只从服务端同任务、来源范围为当前范围子集的最近 20 条对话建立，浏览器的 history 不作为执行依据。外部检索保持关闭。Python 专业能力输出必须带范围内来源，能力之间沿用不可变范围并检查取消。
 
 成功 result 含 capability、message（短结果）、sources、sentenceSourceMap、materialScope、steps 和可空 artifact。Java 独立核对材料快照和来源；消息、完整成果及 appliedRequestIds 同一事务保存。重复 GET 不重复追加，其他客户端笔记和学习活动保留。artifact 存在时，消息带 artifactId，前端可在中栏打开完整正文。此处描述实现契约；完整阶段的真实运行验收尚未完成。

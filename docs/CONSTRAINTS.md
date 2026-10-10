@@ -103,6 +103,9 @@
 
 ## 批判阅读数值证据字段
 
+- 方法参数出现在引用中不等于已完成数字绑定；绑定必须位于对应事实或推断对象内，缺单位、改值或借用其他引用仍拒绝。提示示例不允许服务端自动修复旧响应。
+- 数值显示别名不改变证据身份：仅在无名称冲突时移除末尾表头词Datasets，实验选项中有字节单位的Size可显示为“存储”；数据集、模型、来源表和条件仍逐项核验，不能借精简标签合并不同实验。
+
 - `POST /api/critical-reading/{pdfId}` 由 Java 转发到 Python `POST /api/deep-analysis`，Java 继续透传 Python 响应并包装到 `analysis`。
 - `analysis.claims[*].numericVerificationStatus` 兼容取值：
   - `not_applicable`

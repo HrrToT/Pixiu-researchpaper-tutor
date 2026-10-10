@@ -23,6 +23,37 @@ def fixture():
     return {'assessments': [{'section': 'risk', 'observation': fact, 'inference': inference}]}, sources, catalog
 
 
+@pytest.mark.parametrize('mutation', [None, 'unbound', 'changed_value', 'missing_unit', 'wrong_reference'])
+def test_nested_method_parameter_requires_its_own_exact_literal_binding(mutation):
+    quote = 'The Gaussian volume is normalized by the 90% largest of all sorted Gaussians.'
+    _, sources, catalog = prepare_quote_sources([
+        {'sourceId': 'parameter', 'pdfId': 'A', 'text': quote}, *SOURCES])
+    qid = next(iter(catalog['parameter']))
+    fact = {'summary': '作者采用⟦数值1⟧分位的体积归一化参考。',
+        'references': [{'quoteId': qid}],
+        'numericBindings': [{'id': 1, 'kind': 'method_parameter', 'quoteId': qid,
+                             'label': 'normalized', 'literal': '90%'}]}
+    if mutation == 'unbound':
+        fact['summary'] = fact['summary'].replace('⟦数值1⟧', '90%')
+        fact.pop('numericBindings')
+    elif mutation == 'changed_value':
+        fact['numericBindings'][0]['literal'] = '95%'
+    elif mutation == 'missing_unit':
+        fact['numericBindings'][0]['literal'] = '90'
+    elif mutation == 'wrong_reference':
+        fact['numericBindings'][0]['quoteId'] = next(iter(catalog['method']))
+    payload = {'assessments': [{'section': 'weakness', 'observation': fact}]}
+    before = deepcopy(payload)
+    if mutation:
+        with pytest.raises(ValueError):
+            check_critique_payload(payload, sources, catalog)
+    else:
+        findings, _ = check_critique_payload(payload, sources, catalog)
+        assert findings[0]['kind'] == 'reported' and '90%' in findings[0]['summary']
+        assert findings[0]['references'] == [{'sourceId': 'parameter', 'quote': quote}]
+    assert payload == before
+
+
 def test_roles_and_references_stay_independent_without_mutating_response():
     payload, sources, catalog = fixture()
     original = deepcopy(payload)

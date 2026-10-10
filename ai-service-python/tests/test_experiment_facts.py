@@ -45,8 +45,8 @@ def test_fact_ids_are_stable_and_only_visible_cells_become_choices():
 @pytest.mark.parametrize('operation,metric,expected', [
     ('value', 'FPS', 'Ours FPS 200'),
     ('difference', 'FPS', 'Ours FPS上升100'),
-    ('ratio', 'Size', 'Ours Size为基线的0.20倍'),
-    ('inverse_ratio', 'Size', 'Ours Size压缩5.00倍'),
+    ('ratio', 'Size', 'Ours 存储为基线的0.20倍'),
+    ('inverse_ratio', 'Size', 'Ours 存储压缩5.00倍'),
 ])
 def test_selected_fact_restores_numbers_conditions_and_all_references(operation, metric, expected):
     clean, validation, catalog = facts()
@@ -108,6 +108,55 @@ def test_same_model_and_dataset_share_labels_for_values_and_computed_differences
     raw.update(summary='变化为⟦数值1⟧，结果为⟦数值2⟧。', numericBindings=[raw['numericBindings'][0], second])
     text = check_numeric_claim(raw, validation)['summary']
     assert text == 'Alpha Dataset（Ours）：变化为FPS上升100，结果为FPS 200。（GPU A，Ours相对基线Baseline *）'
+
+
+def renamed_datasets(first, second):
+    _, sources = fixture()
+    packet = deepcopy(sources['t']['_verifiedTable'])
+    packet['groups'][0][0], packet['groups'][1][0] = first, second
+    sources['t']['_verifiedTable'] = packet
+    sources['t']['metadata']['table_verified_data'] = json.dumps(packet)
+    return prepare_quote_sources(list(sources.values()))
+
+
+def test_plural_header_suffix_is_shortened_without_sharing_two_dataset_identities():
+    clean, validation, _ = renamed_datasets('Alpha Datasets', 'Beta Datasets')
+    first = {'id': 1, 'kind': 'experiment',
+             'factId': choose(clean, dataset='Alpha Datasets'), 'operation': 'value'}
+    second = {'id': 2, 'kind': 'experiment',
+              'factId': choose(clean, dataset='Beta Datasets'), 'operation': 'value'}
+    raw = {'summary': '分别为⟦数值1⟧与⟦数值2⟧。', 'kind': 'reported',
+           'references': [], 'numericBindings': [first, second]}
+    before = deepcopy((raw, validation))
+    result = check_numeric_claim(raw, validation)
+    assert 'Alpha：Ours FPS 200' in result['summary']
+    assert 'Beta：Ours FPS 400' in result['summary']
+    assert 'Datasets' not in result['summary']
+    assert {ref['sourceId'] for ref in result['references']} == {'t', 'h'}
+    assert (raw, validation) == before
+
+
+def test_shortening_is_disabled_when_distinct_dataset_names_would_collide():
+    clean, validation, _ = renamed_datasets('Alpha', 'Alpha Datasets')
+    bindings = [{'id': i, 'kind': 'experiment', 'factId': choose(clean, dataset=name), 'operation': 'value'}
+                for i, name in enumerate(('Alpha', 'Alpha Datasets'), 1)]
+    raw = {'summary': '分别为⟦数值1⟧与⟦数值2⟧。', 'kind': 'reported',
+           'references': [], 'numericBindings': bindings}
+    text = check_numeric_claim(raw, validation)['summary']
+    assert 'Alpha：Ours FPS 200' in text and 'Alpha Datasets：Ours FPS 400' in text
+
+
+def test_shared_short_label_keeps_storage_and_speed_values_and_the_same_baseline():
+    clean, validation, _ = renamed_datasets('Alpha Datasets', 'Beta Datasets')
+    size = {'id': 1, 'kind': 'experiment', 'operation': 'inverse_ratio',
+            'factId': choose(clean, dataset='Alpha Datasets', metric='Size'),
+            'baselineFactId': choose(clean, 'Baseline *', 'Alpha Datasets', 'Size')}
+    fps = {'id': 2, 'kind': 'experiment', 'operation': 'value',
+           'factId': choose(clean, dataset='Alpha Datasets')}
+    raw = {'summary': '结果为⟦数值1⟧，⟦数值2⟧。', 'kind': 'inference',
+           'references': [], 'numericBindings': [size, fps]}
+    text = check_numeric_claim(raw, validation)['summary']
+    assert text == 'Alpha（Ours）：结果为存储压缩5.00倍，FPS 200。（GPU A，Ours相对基线Baseline *）'
 
 
 @pytest.mark.parametrize('other_model,other_dataset', [('Baseline *', 'Alpha Dataset'), ('Ours', 'Beta Dataset')])
