@@ -114,13 +114,15 @@ it('restores the list position when search closes without switching the reading 
   expect(handlers.onOpenArtifact).not.toHaveBeenCalled();
 });
 
-it('opens matching learning questions, answers and feedback independently of document filters', () => {
+it('filters learning records and searches their questions, answers and feedback', () => {
   const handlers=props(),open=vi.fn();
   const activity={activityId:'learning',pdfId:'p1',status:'paused',concepts:[{id:'c',question:'如何解释稀疏性？'}],
     turns:[{conceptId:'c',action:'answer',text:'计算资源会减少',feedback:'需要补充误差边界'}]};
   render(<TaskNavigation {...handlers} learningRecords={[activity]} onOpenLearning={open} selectedLearningId="learning"/>);
   fireEvent.click(screen.getByRole('button', { name: '筛选成果' }));
   fireEvent.change(screen.getByRole('combobox',{name:'成果类型'}),{target:{value:'translation'}});
+  expect(screen.queryByText('学习记录（1）')).not.toBeInTheDocument();
+  fireEvent.change(screen.getByRole('combobox',{name:'成果类型'}),{target:{value:'learning'}});
   const search=screen.getByRole('textbox',{name:'搜索材料与记录'});
   for(const query of ['稀疏性','计算资源','误差边界']) {
     fireEvent.change(search,{target:{value:query}});
@@ -144,5 +146,19 @@ it('does not infer translation from a page anchor and shows a global empty searc
   expect(screen.queryByRole('button',{name:/方法证据/})).not.toBeInTheDocument();
   fireEvent.change(screen.getByRole('textbox',{name:'搜索材料与记录'}),{target:{value:'不存在的关键词'}});
   expect(screen.getByRole('status')).toHaveTextContent('没有匹配的论文、成果或学习记录');
-  expect(screen.getByRole('combobox',{name:'成果类型'})).not.toHaveTextContent('学习');
+  expect(screen.getByRole('combobox',{name:'成果类型'})).toHaveTextContent('学习记录');
+});
+
+it('keeps parsing and failed material state beside its paper without a persistent success badge', () => {
+  const handlers = props();
+  render(<TaskNavigation {...handlers} activeTask={{ ...handlers.activeTask, paperIds: ['p1', 'p2', 'p3'] }} papers={[
+    { id: 'p1', title: '解析中论文', processingStatus: 'parsing', questionReady: false },
+    { id: 'p2', title: '失败论文', processingStatus: 'failed', questionReady: false },
+    { id: 'p3', title: '可用论文', processingStatus: 'completed', questionReady: true },
+  ]} />);
+  expect(screen.getByRole('button', { name: '解析中论文' })).toHaveTextContent('正在解析');
+  expect(screen.getByRole('button', { name: '失败论文' })).toHaveTextContent('正文未就绪 · 打开处理');
+  expect(screen.getByRole('button', { name: '可用论文' }).textContent).toBe('可用论文');
+  fireEvent.click(screen.getByRole('button', { name: '失败论文' }));
+  expect(handlers.onOpenPaper).toHaveBeenCalledWith('p2');
 });
