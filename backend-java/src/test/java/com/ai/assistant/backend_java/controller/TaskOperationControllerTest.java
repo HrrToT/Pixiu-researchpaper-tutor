@@ -123,6 +123,87 @@ class TaskOperationControllerTest {
         return Map.of("taskId", "operation-task", "requestId", "r2", "kind", "conversation.execute", "status", "succeeded",
                 "input", Map.of("paperIds", List.of("B"), "original", Map.of("displayText", "/批判 B"), "upstream", Map.of("capability", "critique", "message", "批判 B", "primaryPaperId", "B", "strictScope", true)), "result", result);
     }
+    Map<String,Object> groupedCritique() {
+        return Map.of("schemaVersion", 2, "scope", Map.of("allowedPaperIds", List.of("B"), "targetPaperIds", List.of("B"), "primaryPaperId", "B"),
+                "question", Map.of("text", "画质可信吗"),
+                "claims", List.of(Map.of("id", "c1", "paperIds", List.of("B"), "kind", "inference", "text", "条件限制", "references", List.of())),
+                "issues", List.of(Map.of("id", "i1", "paperIds", List.of("B"), "conclusionClaimId", "c1", "supportClaimIds", List.of(), "relatedPendingIds", List.of())),
+                "pending", List.of(), "presentation", Map.of("leadClaimIds", List.of("c1"), "chatIssueIds", List.of("i1"), "artifactIssueIds", List.of("i1")));
+    }
+    void saveGroupedCritique() {
+        Map<String,Object> operation = new LinkedHashMap<>(conversationReceipt("B"));
+        Map<String,Object> result = new LinkedHashMap<>((Map<String,Object>)operation.get("result"));
+        result.put("critique", groupedCritique()); operation.put("result", result);
+        task = tasks.applyOperation("operation-task", operation);
+    }
+    @Test void groupedCritiqueIsDurableAndBrowserCannotForgeClaimsOrScope() throws Exception {
+        saveGroupedCritique();
+        Map<String,Object> artifact = new LinkedHashMap<>((Map<String,Object>)((List<?>)task.get("artifacts")).getFirst());
+        org.junit.jupiter.api.Assertions.assertEquals(groupedCritique(), artifact.get("critique"));
+        org.junit.jupiter.api.Assertions.assertEquals(groupedCritique(), ((Map<?,?>)((List<?>)task.get("messages")).get(1)).get("critique"));
+        artifact.put("text", "用户补写的结论"); artifact.put("critique", Map.of("schemaVersion", 999)); artifact.put("paperIds", List.of("A")); artifact.put("edited", false);
+        task.put("artifacts", List.of(artifact)); task = tasks.updateFromClient("operation-task", task);
+        Map<?,?> stored = (Map<?,?>)((List<?>)task.get("artifacts")).getFirst();
+        org.junit.jupiter.api.Assertions.assertEquals(groupedCritique(), stored.get("critique"));
+        org.junit.jupiter.api.Assertions.assertEquals(List.of("B"), stored.get("paperIds"));
+        org.junit.jupiter.api.Assertions.assertEquals(true, stored.get("edited"));
+    }
+    @Test void followupUsesSavedVersionAndNeverAcceptsBrowserClaims() throws Exception {
+        saveGroupedCritique();
+        Map<?,?> artifact = (Map<?,?>)((List<?>)task.get("artifacts")).getFirst();
+        when(upstream.postForObject(any(java.net.URI.class), any(), eq(Map.class))).thenAnswer(call -> {
+            Map<?,?> payload = (Map<?,?>)((Map<?,?>)call.getArgument(1)).get("input");
+            Map<?,?> input = (Map<?,?>)payload.get("upstream");
+            Map<?,?> context = (Map<?,?>)input.get("critiqueContext");
+            org.junit.jupiter.api.Assertions.assertEquals("i1", context.get("focusedIssueId"));
+            org.junit.jupiter.api.Assertions.assertEquals(groupedCritique().get("claims"), context.get("claims"));
+            org.junit.jupiter.api.Assertions.assertEquals(List.of("B"), input.get("targetPaperIds"));
+            return Map.of("taskId", "operation-task", "requestId", "r1", "kind", "conversation.execute", "status", "queued");
+        });
+        Map<String,Object> original = Map.of("message", "解释第一点", "allowedPaperIds", List.of("B"), "expectedTaskRevision", task.get("revision"),
+                "critiqueContext", Map.of("claims", List.of("forged")), "followup", Map.of("artifactId", "r2:artifact", "issueId", "i1", "version", artifact.get("createdAt")));
+        mvc.perform(post(root+"/operations").contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsString(
+                Map.of("requestId", "r1", "kind", "conversation.execute", "input", original)))).andExpect(status().isOk());
+    }
+    @Test void followupRejectsStaleVersionAndUnknownIssueWithoutScheduling() throws Exception {
+        saveGroupedCritique();
+        for (Map<String,Object> followup : List.of(Map.<String,Object>of("artifactId", "r2:artifact", "version", "stale"),
+                Map.<String,Object>of("artifactId", "r2:artifact", "issueId", "unknown"))) {
+            mvc.perform(post(root+"/operations").contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsString(
+                    Map.of("requestId", "r1", "kind", "conversation.execute", "input", Map.of("message", "解释", "allowedPaperIds", List.of("B"),
+                            "expectedTaskRevision", task.get("revision"), "followup", followup)))))
+                    .andExpect(status().is(followup.containsKey("version") ? 409 : 400));
+        }
+        verify(upstream, never()).postForObject(any(java.net.URI.class), any(), eq(Map.class));
+    }
+    @Test void editedFollowupKeepsUserProseSeparateFromGroundedClaims() throws Exception {
+        saveGroupedCritique();
+        Map<String,Object> artifact = new LinkedHashMap<>((Map<String,Object>)((List<?>)task.get("artifacts")).getFirst());
+        artifact.put("text", "用户的猜想"); task.put("artifacts", List.of(artifact));
+        task = tasks.updateFromClient("operation-task", task);
+        when(upstream.postForObject(any(java.net.URI.class), any(), eq(Map.class))).thenAnswer(call -> {
+            Map<?,?> payload = (Map<?,?>)((Map<?,?>)call.getArgument(1)).get("input");
+            Map<?,?> context = (Map<?,?>)((Map<?,?>)payload.get("upstream")).get("critiqueContext");
+            org.junit.jupiter.api.Assertions.assertEquals(true, context.get("edited"));
+            org.junit.jupiter.api.Assertions.assertEquals("用户的猜想", context.get("text"));
+            org.junit.jupiter.api.Assertions.assertEquals(List.of(), context.get("claims"));
+            org.junit.jupiter.api.Assertions.assertEquals(List.of(), context.get("issues"));
+            return Map.of("taskId", "operation-task", "requestId", "r1", "kind", "conversation.execute", "status", "queued");
+        });
+        mvc.perform(post(root+"/operations").contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsString(
+                Map.of("requestId", "r1", "kind", "conversation.execute", "input", Map.of("message", "解释", "allowedPaperIds", List.of("B"),
+                        "expectedTaskRevision", task.get("revision"), "followup", Map.of("artifactId", "r2:artifact", "issueId", "i1"))))))
+                .andExpect(status().isOk());
+    }
+    @Test void invalidCritiqueDependencyIsRejectedAtomically() {
+        Map<String,Object> operation = new LinkedHashMap<>(conversationReceipt("B"));
+        Map<String,Object> result = new LinkedHashMap<>((Map<String,Object>)operation.get("result"));
+        Map<String,Object> critique = new LinkedHashMap<>(groupedCritique());
+        critique.put("presentation", Map.of("leadClaimIds", List.of("unknown"), "chatIssueIds", List.of("i1"), "artifactIssueIds", List.of("i1")));
+        result.put("critique", critique); operation.put("result", result);
+        org.junit.jupiter.api.Assertions.assertThrows(org.springframework.web.server.ResponseStatusException.class, () -> tasks.applyOperation("operation-task", operation));
+        org.junit.jupiter.api.Assertions.assertTrue(((List<?>)tasks.get("operation-task").get("messages")).isEmpty());
+    }
     @Test void conversationCommitsMessageAndArtifactOnceWithoutChangingLesson() throws Exception {
         tasks.applyOperation("operation-task", receipt("succeeded"));
         Map<String,Object> current = tasks.get("operation-task");

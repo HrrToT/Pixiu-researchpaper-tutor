@@ -101,7 +101,7 @@ public class TaskOperationService {
             List<?> plan = capability.equals("compose") ? (List<?>) steps : List.of(capability);
             if (scope.isEmpty() && plan.stream().anyMatch(p -> !p.equals("chat"))) throw bad("请先选择任务材料");
             if (plan.contains("compare") && scope.size() < 2) throw bad("比较至少需要两篇论文");
-            if (scope.size() > 4 && plan.stream().anyMatch(p -> !p.equals("chat"))) throw bad("单次分析最多四篇论文，请明确选择材料");
+            if (scope.size() > 4 && plan.stream().anyMatch(p -> p.equals("compare") || p.equals("background"))) throw bad("单次分析最多四篇论文，请明确选择材料");
             if (Boolean.TRUE.equals(original.get("allowExternalSearch")) || Boolean.TRUE.equals(original.get("allowWebSearch"))) throw bad("外部检索尚未授权");
             upstream.put("taskId", id);
             upstream.put("message", text(original.get("message")));
@@ -110,6 +110,15 @@ public class TaskOperationService {
             upstream.put("primaryPaperId", primary);
             upstream.put("strictScope", Boolean.TRUE.equals(original.get("strictScope")));
             upstream.put("steps", steps);
+            if (original.containsKey("targetPaperIds")) {
+                if (!(original.get("targetPaperIds") instanceof List<?> targets) || targets.isEmpty()
+                        || targets.size() > 4 || targets.stream().anyMatch(p -> !(p instanceof String) || !scope.contains(p))) throw bad("批判对象须属于对话材料且最多四篇");
+                upstream.put("targetPaperIds", new ArrayList<>(new LinkedHashSet<>(targets)));
+            }
+            if (original.containsKey("followup")) bindCritiqueContext(task, original.get("followup"), scope, upstream);
+            if (plan.contains("critique") && scope.size() > 4 && !upstream.containsKey("targetPaperIds")
+                    && (primary == null || String.valueOf(original.get("message")).matches("(?s).*(分别|逐篇|每篇|所有论文|全部论文|两篇|这些论文).*")))
+                throw bad("单次批判最多四篇论文，请明确选择材料");
             List<Map<String, String>> history = new ArrayList<>();
             for (Object value : (List<?>) task.get("messages")) {
                 if (!(value instanceof Map<?, ?> message) || Boolean.TRUE.equals(message.get("isSystem"))) continue;
@@ -215,6 +224,31 @@ public class TaskOperationService {
         tasks.recoverOperationResult(id, operation);
         return present(id, operation);
     }
+    private void bindCritiqueContext(Map<String, Object> task, Object raw, List<?> scope, Map<String, Object> upstream) {
+        if (!(raw instanceof Map<?, ?> followup) || !(followup.get("artifactId") instanceof String artifactId)) throw bad("追问缺少成果标识");
+        Map<?, ?> artifact = ((List<?>) task.get("artifacts")).stream()
+                .filter(value -> value instanceof Map<?, ?> item && artifactId.equals(item.get("id")))
+                .map(value -> (Map<?, ?>) value).findFirst().orElseThrow(() -> bad("追问成果不属于当前任务"));
+        if (!(artifact.get("paperIds") instanceof List<?> papers) || !scope.containsAll(papers)) throw bad("追问成果超出当前材料范围");
+        if (!(artifact.get("critique") instanceof Map<?, ?>)) throw bad("旧成果没有可追问的观点结构，请引用原文提问");
+        Map<?, ?> critique = CritiqueContract.validate(artifact.get("critique"), papers);
+        String version = String.valueOf(artifact.getOrDefault("updatedAt", null) == null ? artifact.get("createdAt") : artifact.get("updatedAt"));
+        if (followup.get("version") != null && !version.equals(String.valueOf(followup.get("version"))))
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "成果版本已更新，请刷新后追问");
+        Object issueId = followup.get("issueId");
+        if (issueId != null && (!(issueId instanceof String) || ((List<?>) critique.get("issues")).stream()
+                .noneMatch(value -> value instanceof Map<?, ?> issue && issueId.equals(issue.get("id"))))) throw bad("追问观点不属于该成果");
+        boolean edited = Boolean.TRUE.equals(artifact.get("edited"));
+        Map<String, Object> context = new LinkedHashMap<>();
+        for (String field : List.of("question", "scope")) if (critique.containsKey(field)) context.put(field, critique.get(field));
+        context.put("text", artifact.get("text"));
+        for (String field : List.of("claims", "issues", "pending")) context.put(field, edited ? List.of() : critique.get(field));
+        context.put("version", version); context.put("sourceArtifactId", artifactId); context.put("focusedIssueId", issueId);
+        context.put("edited", edited);
+        upstream.put("critiqueContext", context);
+        if (!upstream.containsKey("targetPaperIds") && critique.get("scope") instanceof Map<?, ?> material)
+            upstream.put("targetPaperIds", material.get("targetPaperIds"));
+    }
     private String endpoint(String id, String requestId) { return url + "/" + GatewayHelper.encode(id) + "/" + GatewayHelper.encode(requestId); }
     private Map<String, Object> read(String id, String requestId, boolean missingAllowed) { return invoke("get", endpoint(id, requestId), null, missingAllowed); }
     private Map<String, Object> present(String id, Map<String, Object> op) {
@@ -224,7 +258,7 @@ public class TaskOperationService {
         if (op.get("input") instanceof Map<?, ?> saved && saved.get("original") instanceof Map<?, ?> original) {
             Map<String, Object> request = new LinkedHashMap<>();
             for (String field : List.of("expectedTaskRevision", "message", "displayText", "capability", "allowedPaperIds",
-                    "primaryPaperId", "strictScope", "steps", "pdfId", "mode", "goal", "activityId", "expectedRevision",
+                    "primaryPaperId", "strictScope", "steps", "targetPaperIds", "followup", "pdfId", "mode", "goal", "activityId", "expectedRevision",
                     "action", "text", "question", "allowExternalSearch", "allowWebSearch"))
                 if (original.containsKey(field)) request.put(field, original.get(field));
             view.put("request", request);

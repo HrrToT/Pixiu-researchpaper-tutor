@@ -80,6 +80,8 @@ public class TaskWorkspaceService {
         safe.put("activeActivity", null);
         safe.put("activityHistory", history);
         safe.put("appliedRequestIds", List.of());
+        safe.put("artifacts", protectCritiques(input.get("artifacts"), List.of(), true));
+        safe.put("messages", protectCritiques(input.get("messages"), List.of(), false));
         return create(safe);
     }
 
@@ -93,6 +95,8 @@ public class TaskWorkspaceService {
         for (String field : List.of("activeActivity", "activityHistory", "appliedRequestIds", "researchRuns", "legacyMigration", "legacyArchive")) {
             protectedInput.put(field, authority.get(field));
         }
+        protectedInput.put("artifacts", protectCritiques(input.get("artifacts"), authority.get("artifacts"), true));
+        protectedInput.put("messages", protectCritiques(input.get("messages"), authority.get("messages"), false));
         // Removing materials cannot invalidate a saved activity or research snapshot.
         List<String> ids = paperIds(protectedInput.get("paperIds"));
         if (authority.get("activeActivity") instanceof Map<?, ?> activity
@@ -221,6 +225,8 @@ public class TaskWorkspaceService {
                     "context", context, "sourceRequestId", requestId, "capability", result.get("capability")));
             answer.put("rag_sources", sources);
             answer.put("sentenceSourceMap", result.getOrDefault("sentenceSourceMap", List.of()));
+            Map<?, ?> critique = CritiqueContract.validate(result.get("critique"), scope);
+            if (critique != null) answer.put("critique", critique);
             if (result.get("artifact") instanceof Map<?, ?> artifact) {
                 if (!(artifact.get("text") instanceof String body) || body.isBlank() || !scope.equals(artifact.get("paperIds"))
                         || !sources.equals(artifact.get("sources"))) throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "成果不符合对话材料快照");
@@ -229,6 +235,10 @@ public class TaskWorkspaceService {
                         "paperIds", scope, "sources", sources, "versions", List.of(), "sourceRequestId", requestId,
                         "createdAt", Instant.now().toString()));
                 saved.put("sentenceSourceMap", artifact.getOrDefault("sentenceSourceMap", null));
+                Map<?, ?> artifactCritique = CritiqueContract.validate(artifact.get("critique"), scope);
+                if (artifactCritique != null && !artifactCritique.equals(critique))
+                    throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "成果与对话批判结构不一致");
+                if (critique != null) { saved.put("critique", critique); saved.put("generatedText", body); saved.put("edited", false); }
                 List<Object> artifacts = new ArrayList<>(array(task.get("artifacts"), "artifacts"));
                 artifacts.add(saved);
                 task.put("artifacts", artifacts);
@@ -289,6 +299,8 @@ public class TaskWorkspaceService {
                 "text", body, "paperIds", scope, "sources", sources, "versions", List.of(),
                 "sourceRequestId", requestId, "createdAt", Instant.now().toString()));
         artifact.put("sentenceSourceMap", result.containsKey("sentenceSourceMap") ? result.get("sentenceSourceMap") : List.of());
+        Map<?, ?> critique = CritiqueContract.validate(result.get("critique"), scope);
+        if (critique != null) { artifact.put("critique", critique); artifact.put("generatedText", body); artifact.put("edited", false); }
         List<Object> artifacts = new ArrayList<>(array(task.get("artifacts"), "artifacts"));
         artifacts.add(artifact); task.put("artifacts", artifacts);
         List<Object> messages = new ArrayList<>(array(task.get("messages"), "messages"));
@@ -403,6 +415,31 @@ public class TaskWorkspaceService {
     private TaskWorkspace find(String id) {
         return repository.findById(validId(id))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "任务不存在"));
+    }
+
+    /** A browser may edit prose, but cannot manufacture server-grounded claims or material provenance. */
+    private List<Object> protectCritiques(Object incoming, Object saved, boolean artifacts) {
+        List<Object> output = new ArrayList<>();
+        for (Object raw : array(incoming, artifacts ? "artifacts" : "messages")) {
+            Map<?, ?> item = (Map<?, ?>) raw;
+            Map<String, Object> copy = new LinkedHashMap<>(); item.forEach((key, value) -> copy.put(String.valueOf(key), value));
+            Map<?, ?> previous = array(saved, "saved").stream().filter(value -> value instanceof Map<?, ?> old
+                    && java.util.Objects.equals(old.get("id"), item.get("id")) && old.get("critique") instanceof Map<?, ?>)
+                    .map(value -> (Map<?, ?>) value).findFirst().orElse(null);
+            copy.remove("critique"); copy.remove("generatedText");
+            if (previous != null) {
+                for (String field : List.of("critique", "generatedText", "paperIds", "sources", "sourceRequestId", "createdAt", "context", "rag_sources"))
+                    if (previous.containsKey(field)) copy.put(field, previous.get(field));
+                if (artifacts) {
+                    boolean changed = !java.util.Objects.equals(item.get("text"), previous.get("text"));
+                    copy.put("edited", !java.util.Objects.equals(copy.get("text"), previous.get("generatedText")));
+                    if (changed) copy.put("updatedAt", Instant.now().toString());
+                    else if (previous.containsKey("updatedAt")) copy.put("updatedAt", previous.get("updatedAt"));
+                }
+            }
+            output.add(copy);
+        }
+        return output;
     }
 
     private void setContent(TaskWorkspace entity, Map<String, Object> input, String id) {
