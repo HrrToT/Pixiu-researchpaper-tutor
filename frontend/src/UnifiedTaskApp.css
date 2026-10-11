@@ -197,3 +197,6 @@
 .workbench-reader-error { display:flex; flex:none; align-items:center; gap:12px; }
 .workbench-reader-error span { flex:1; }
 .workbench-reader-error button { flex:none; min-height:32px; padding:4px 8px; border-radius:5px; }
+.critique-inline-citation { display:inline; color:var(--accent); border-radius:3px; font:inherit; padding:0 2px; }
+.critique-inline-citation:hover { background:var(--accent-soft); }
+.critique-inline-citation:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }

@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
 import { beforeEach, describe, it, expect, vi } from 'vitest';
 import ChatPanel from './ChatPanel';
 import CritiqueContent from './CritiqueContent';
@@ -19,6 +19,36 @@ const fixture = {
 
 describe('grouped critique presentation', () => {
   beforeEach(() => localStorage.clear());
+  it('opens only the cited point or lead evidence and keeps source identity without model execution', async () => {
+    const second = { ...source, sourceId: 's2', pdfId: 'p2', text: '第二篇论文的独立依据。' };
+    const value = { ...fixture, sources: [source, second], critique: { ...fixture.critique,
+      lead: '总判断。[2]', claims: [...fixture.critique.claims,
+        { id: 'c2', references: [{ sourceId: 's2', quote: second.text }] },
+        { id: 'lead-claim', references: [{ sourceId: 's2', quote: '总判断的独立原文摘录。' }] }],
+      issues: [fixture.critique.issues[0], { id: 'i2', conclusionClaimId: 'c2' }],
+      artifactBlocks: [{ issueId: 'i1', text: '第一点。[1]' }, { issueId: 'i2', text: '第二点。[2]' }],
+      presentation: { ...fixture.critique.presentation, leadClaimIds: ['lead-claim'] },
+    } };
+    const jump = vi.fn();
+    const view = render(<CritiqueContent value={value} text="" target="artifact" storageKey="citation-check" onJumpToSource={jump} />);
+    const point = view.container.querySelector('[data-critique-issue-id="i2"]');
+    fireEvent.click(within(point).getByRole('button', { name: '查看引用 2 的依据' }));
+    await waitFor(() => expect(point.querySelector('details')).toHaveAttribute('open'));
+    expect(view.container.querySelector('[data-critique-issue-id="i1"] details')).not.toHaveAttribute('open');
+    expect(within(point).getByText(second.text)).toBeInTheDocument();
+    expect(jump).not.toHaveBeenCalled();
+    fireEvent.click(screen.getAllByRole('button', { name: '查看引用 2 的依据' })[0]);
+    expect(await screen.findByText('总判断的独立原文摘录。')).toBeInTheDocument();
+    const lead = screen.getByText('总判断 查看依据 · 1 处').closest('details');
+    await waitFor(() => expect(lead).toHaveAttribute('open'));
+    expect(lead.querySelector('summary')).toHaveFocus();
+    expect(jump).not.toHaveBeenCalled();
+    await waitFor(() => expect(localStorage.getItem('citation-check:issue:lead')).toBe('open'));
+    view.unmount();
+    render(<CritiqueContent value={value} text="" target="artifact" storageKey="citation-check" onJumpToSource={jump} />);
+    expect(screen.getByText('总判断 查看依据 · 1 处').closest('details')).toHaveAttribute('open');
+    expect(screen.getByText('总判断 查看依据 · 1 处')).not.toHaveFocus();
+  });
   it('shows paper identity and restores expanded evidence when returning to the same document', async () => {
     const props = { value: fixture, text: '', target: 'artifact', papers: [{ id: 'p1', title: 'LightGaussian: Compression' }], storageKey: 'task:a:document:a1' };
     const view = render(<CritiqueContent {...props} />);
