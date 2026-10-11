@@ -7,7 +7,7 @@ import { BookOpen, ChevronLeft, ChevronRight, FilePlus2, Languages, MessageSquar
 import ChatPanel from './components/ChatPanel';
 import MarkdownContent from './components/MarkdownContent';
 import CritiqueContent from './components/CritiqueContent';
-import { critiqueVersion, resolveCritiqueFollowup } from './utils/critiqueFollowup';
+import { critiqueVersion, critiqueMessageIsCurrent, resolveCritiqueFollowup } from './utils/critiqueFollowup';
 import PdfViewer from './components/PdfViewer';
 import TaskNavigation from './components/TaskNavigation';
 import DocumentVersionHistory from './components/DocumentVersionHistory';
@@ -134,9 +134,13 @@ export default function UnifiedTaskApp() {
   const [composerDraft, setComposerDraft] = useState('');
   const [critiqueSelection, setCritiqueSelection] = useState(null);
   const [critiqueTargetChoice, setCritiqueTargetChoice] = useState(null);
-  const selectCritiqueIssue = (artifactId, issueId) => {
+  const selectCritiqueIssue = (artifactId, issueId, message) => {
     const artifact = activeTask?.artifacts?.find(item => (item.id || item.artifactId) === artifactId);
     if (!artifact || !critiqueVersion(artifact)) return;
+    if (!critiqueMessageIsCurrent(artifact, message)) {
+      setComposerError('这条回答对应旧版本，请打开成果查看当前判断，或在历史版本中找回原记录。');
+      return;
+    }
     setCritiqueSelection({ taskId: activeTaskId, title: artifact.title, followup: {
       artifactId, issueId, version: critiqueVersion(artifact),
     } });
@@ -425,6 +429,7 @@ export default function UnifiedTaskApp() {
     const text = rawText.trim();
     if (!text) return false;
     const followup = resolveCritiqueFollowup(task, text, critiqueSelection);
+    if (followup?.error) { inputError(followup.error); return false; }
     setComposerError('');
     const intent = chosenSkill ? { skill: chosenSkill } : resolveConversationIntent(text);
     const skill = intent.skill;
@@ -1146,7 +1151,7 @@ export default function UnifiedTaskApp() {
           ] : [{ label: '解释一个概念', text: '我想了解的概念是：' }]}
           materials={activeTask.paperIds.map(id => papers.find(paper => paper.id === id) || { id })} messages={timeline}
           onSendMessage={sendMessage} onDeleteMessage={index => { const original = timeline[index]?.originalIndex; if (Number.isInteger(original)) return deleteMessage(original); }}
-          onFollowupIssue={(message, issueId) => selectCritiqueIssue(message.artifactId, issueId)}
+          onFollowupIssue={(message, issueId) => selectCritiqueIssue(message.artifactId, issueId, message)}
           onSaveToNote={index => saveMessage(timeline[index]?.originalIndex, false)} onCaptureArtifact={index => saveMessage(timeline[index]?.originalIndex)}
           onOpenArtifact={openArtifact} onJumpToSource={jumpToSource} onAbortChat={() => learning.cancel(activeTaskId)}
           isLoading={Boolean(learning.busyTasks[activeTaskId])} showLoadingIndicator={false} enableSkills

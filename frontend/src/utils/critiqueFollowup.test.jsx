@@ -13,4 +13,9 @@ describe('critique followup identity', () => {
     expect(resolveCritiqueFollowup({ ...task, messages: [{ role: 'ai', content: '第一点' }] }, '第二点为什么')).toBeNull();
     expect(resolveCritiqueFollowup(task, '换个问题', { taskId: 'other', followup: { artifactId: 'foreign' } })).toBeNull();
   });
+  it('does not silently rebind an old chat answer after artifact regeneration', () => {
+    const changed = { ...task, messages: [{ ...task.messages[0], sourceRequestId: 'old' }],
+      artifacts: [{ ...task.artifacts[0], sourceRequestId: 'new' }] };
+    expect(resolveCritiqueFollowup(changed, '第二点为什么')).toEqual({ error: expect.stringContaining('旧版本') });
+  });
 });
