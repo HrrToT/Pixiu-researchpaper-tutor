@@ -10,6 +10,8 @@ TOPICS = (
     (('显著性', '重要性', 'significance'), ('significance',)),
     (('压缩', 'compress'), ('compression', 'compress')),
     (('速度', 'fps', 'speed'), ('fps', 'speed')),
+    (('质量', '画质', 'quality', 'psnr', 'ssim', 'lpips'), ('quality', 'psnr', 'ssim', 'lpips')),
+    (('泛化', '视角', 'generaliz', 'view'), ('generalization', 'view', 'camera')),
     (('实验', 'experiment'), ('experiment',)),
     (('硬件', 'hardware'), ('hardware', 'gpu')),
     (('数据集', 'dataset'), ('dataset',)),
@@ -161,3 +163,43 @@ def bounded_evidence_body(text, budget):
         starts.add(max(0, min(len(body) - budget, match.start() - budget // 3)))
     start = max(sorted(starts), key=lambda pos: len(CONTEXT_SIGNALS.findall(body[pos:pos + budget])))
     return body[start:start + budget].strip()
+
+
+def select_critique_evidence(retrieved, documents, question, limit=10):
+    """Reserve direct evaluation and counterevidence before mechanism exposition.
+
+    Selection controls coverage, not whether the paper's claims are true. Original
+    packets, experiment table metadata and literal identity remain unchanged.
+    """
+    pool, seen = [], set()
+    for item in [*retrieved, *documents]:
+        key = _key(item)
+        if key not in seen and evidence_body(item.get('text')):
+            pool.append(item)
+            seen.add(key)
+    groups = focus_groups(question)
+    def relevance(item):
+        return sum(_matches(item, group) for group in groups)
+    selected, keys = [], set()
+    def add(item):
+        if item is not None and len(selected) < limit and _key(item) not in keys:
+            selected.append(item)
+            keys.add(_key(item))
+    experimental = bool(re.search(r'画质|质量|性能|速度|压缩|实验|比较|消融|公平|几乎不变|quality|performance|experiment|compar|ablation|fps|psnr|ssim|lpips', question, re.I))
+    broad = bool(re.search(r'整体|全面|审稿|批判阅读|贡献.*局限', question))
+    if experimental or broad:
+        experiments = select_focused_evidence(retrieved, pool, question, 'experiments', limit=min(5, limit), section_cap=2)
+        for item in experiments:
+            if _is_experiment(item):
+                add(item)
+    counter = [item for item in pool if re.search(r'limitation|failure|fail(?:s|ed|ure)?|trade.?off|degrad|challeng|less effective|cannot|局限|失败|代价',
+                                                  _body(item) + ' ' + str(evidence_section_key(item)), re.I)
+               and not re.search(r'related work|references', str(evidence_section_key(item)), re.I)]
+    if counter:
+        add(max(counter, key=lambda item: (relevance(item), bool(re.search(r'limitation|failure', str(evidence_section_key(item)), re.I)))))
+    methods = select_focused_evidence(retrieved, pool, question, 'methods', limit=limit, section_cap=2)
+    for item in methods:
+        add(item)
+    for item in sorted(pool, key=relevance, reverse=True):
+        add(item)
+    return selected

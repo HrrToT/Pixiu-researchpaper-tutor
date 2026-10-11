@@ -13,6 +13,8 @@ class ConversationCapabilityRequest(BaseModel):
     capability: Literal['chat', 'background', 'critique', 'compare', 'compose'] = 'chat'
     allowedPaperIds: list[str] = Field(max_length=128)
     primaryPaperId: str | None = None
+    targetPaperIds: list[str] | None = Field(default=None, max_length=4)
+    critiqueContext: dict | None = None
     strictScope: bool = False
     history: list[dict[str, str]] = Field(default_factory=list, max_length=100)
     steps: list[Capability] = Field(default_factory=list, max_length=3)
@@ -25,6 +27,13 @@ class ConversationCapabilityRequest(BaseModel):
             raise ValueError('材料标识无效或重复')
         if self.primaryPaperId is not None and self.primaryPaperId not in self.allowedPaperIds:
             raise ValueError('主论文不属于指定材料')
+        if self.targetPaperIds is not None and (not self.targetPaperIds or len(set(self.targetPaperIds)) != len(self.targetPaperIds)
+                or any(value not in self.allowedPaperIds for value in self.targetPaperIds)):
+            raise ValueError('批判对象须属于对话材料')
+        if self.critiqueContext is not None:
+            scope = self.critiqueContext.get('scope') or {}
+            if not isinstance(scope, dict) or any(value not in self.allowedPaperIds for value in scope.get('targetPaperIds', [])):
+                raise ValueError('追问材料超出当前范围')
         if self.capability == 'compose':
             if len(self.steps) < 2 or len(set(self.steps)) != len(self.steps):
                 raise ValueError('组合任务须指定二至三个不同能力')

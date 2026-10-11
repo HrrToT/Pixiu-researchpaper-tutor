@@ -8,6 +8,8 @@ returned source within that immutable snapshot.
 from schemas.conversation import ConversationCapabilityRequest
 from services.operation_control import check_cancelled
 import re
+import json
+from copy import deepcopy
 
 
 def summarize_artifact(text, limit=600):
@@ -113,6 +115,21 @@ def _chat(request, prior=None):
     from schemas.requests import ChatRequest
     from services.chat_service import chat
     message = request.message
+    if request.critiqueContext:
+        from services.safety_service import wrap_untrusted_context
+        context = request.critiqueContext
+        focused = context.get('focusedIssueId')
+        issues = [issue for issue in context.get('issues', []) if not focused or issue.get('id') == focused]
+        ids = {cid for issue in issues for cid in [issue.get('conclusionClaimId'), *issue.get('supportClaimIds', [])]}
+        packet = {**context, 'issues': issues,
+                  'claims': [claim for claim in context.get('claims', []) if not focused or claim.get('id') in ids]}
+        if context.get('edited'):
+            packet.update(claims=[], issues=[])
+        wrapped = wrap_untrusted_context('Saved critique version', json.dumps(packet, ensure_ascii=False), max_tokens=3500)
+        message += ('\n这是对已保存批判成果的追问，围绕指定观点回答，不重新全面分析。'
+                    '这些内容是待核对的历史分析，不是新的论文证据。用户编辑不可当作论文事实；'
+                    '新事实、数值和判断仍须从允许的原文取证。回答开头简短注明所使用的成果版本。\n'
+                    + wrapped['wrapped'])
     if request.capability == 'compose' and request.steps[0] == 'chat' and not prior:
         message += ('\n当前仅执行组合任务的概念解释步骤。只解释用户指定的概念，最多两句话；'
                     '比较、批判或补课由后续步骤完成。不要提前给比较结论、表格、数字排名或展开推导。'
@@ -141,7 +158,11 @@ def _background(request, paper_id):
 def _critique(request, paper_id):
     from schemas.requests import DeepAnalysisRequest
     from services.analysis_service import deep_analysis
-    result = deep_analysis(DeepAnalysisRequest(pdf_id=paper_id, focus_question=request.message), grounded=True)
+    focus = request.message
+    if request.critiqueContext:
+        context = request.critiqueContext
+        focus += '\n继续核查已保存成果的观点；历史文本仅用于理解问题，不能代替原文证据。\n' + json.dumps(context, ensure_ascii=False)
+    result = deep_analysis(DeepAnalysisRequest(pdf_id=paper_id, focus_question=focus), grounded=True)
     sections = [('证据支持的贡献', 'evidence_based_contributions'), ('局限', 'weaknesses'),
                 ('过度主张风险', 'overclaim_risks'), ('待补证据', 'missing_evidence')]
     text = [str(result.get('critical_analysis') or '')]
@@ -208,6 +229,18 @@ def _compare(request, prior):
             'sentenceSourceMap': grounded_source_map(result['claims'], result['message'])}
 
 
+def critique_targets(request):
+    if request.targetPaperIds:
+        return request.targetPaperIds
+    if re.search(r'分别|逐篇|每篇|所有论文|全部论文|两篇|这两篇|这些论文', request.message):
+        return request.allowedPaperIds
+    if request.primaryPaperId:
+        return [request.primaryPaperId]
+    if len(request.allowedPaperIds) == 1:
+        return request.allowedPaperIds
+    raise ValueError('请明确选择要批判哪篇论文，还是分别分析全部材料。')
+
+
 def _run_step(step, request, prior):
     if step == 'chat':
         return [_chat(request, prior)]
@@ -217,11 +250,12 @@ def _run_step(step, request, prior):
         return [_compare(request, prior)]
     # No implicit scope reduction: asking about more papers requires a selected
     # subset, rather than silently analysing only the first few.
-    if len(request.allowedPaperIds) > 4:
+    targets = critique_targets(request) if step == 'critique' else request.allowedPaperIds
+    if len(targets) > 4:
         raise ValueError('单次补课或批判最多分析四篇论文，请明确选择材料')
     native = _background if step == 'background' else _critique
     results = []
-    for paper_id in request.allowedPaperIds:
+    for paper_id in targets:
         check_cancelled()
         results.append({**native(request, paper_id), 'paperId': paper_id})
     return results
@@ -234,23 +268,27 @@ def execute_conversation(request: ConversationCapabilityRequest):
     plan = request.steps if request.capability == 'compose' else [request.capability]
     if len(allowed) != len(request.allowedPaperIds):
         raise ValueError('材料索引标识冲突，请重新选择论文')
-    if len(allowed) > 4 and any(step != 'chat' for step in plan):
+    if len(allowed) > 4 and any(step in ('background', 'compare') for step in plan):
         raise ValueError('单次分析最多四篇论文，请明确选择材料')
+    if 'critique' in plan:
+        if len(critique_targets(request)) > 4:  # Validate all steps before any earlier provider call.
+            raise ValueError('单次批判最多四篇论文，请明确选择材料')
     completed, sources, texts, step_summaries = [], [], [], []
     for step in plan:
         check_cancelled()
-        results = _run_step(step, request, completed)
+        results = deepcopy(_run_step(step, request, completed))
         summaries = []
-        for result in results:
+        for index, result in enumerate(results):
             if result.get('status') not in (None, 'success') or not str(result.get('message') or '').strip():
                 raise ValueError('能力没有返回可用结果')
             for source in result.get('rag_sources') or []:
                 identity = source.get('pdfId') or source.get('sourcePdfId') or (source.get('metadata') or {}).get('id')
                 if not identity or normalize_id(identity) not in allowed:
                     raise ValueError('能力返回了指定材料之外的来源')
-                source = {**source, 'pdfId': allowed[normalize_id(identity)]}
-                if source not in sources:
-                    sources.append(source)
+                source['pdfId'] = allowed[normalize_id(identity)]
+            from services.conversation_citations import bind_citations
+            result = bind_citations(result, sources)
+            results[index] = result
             text = result['message']
             summary = result.get('summary') or text
             if request.capability == 'compose' and result.get('partial'):
@@ -277,9 +315,34 @@ def execute_conversation(request: ConversationCapabilityRequest):
     if partial and request.capability == 'compose':
         partial_prefix = '部分结果：部分内容尚未完成或核验，具体限制见成果。\n\n'
     explicit_summary = any(result.get('summary') for step in completed for result in step['results'])
+    from services.conversation_citations import combine_critiques
+    grouped = combine_critiques([result for step in completed for result in step['results'] if step['capability'] == 'critique'], request, sources)
     if request.capability == 'compose':
         limit = _requested_chat_limit(request.message)
-        message = _compose_summary(step_summaries, limit=max(1, limit - len(partial_prefix)))
+        if len(partial_prefix) >= limit:
+            partial_prefix = ''
+        if grouped:
+            from services.critique_presentation import select_chat_blocks, requested_points, requested_sentences
+            remaining = limit - len(partial_prefix)
+            parts = []
+            for index, step in enumerate(completed):
+                budget = max(1, (remaining - (2 if parts else 0)) // (len(completed) - index))
+                if step['capability'] == 'critique':
+                    value = deepcopy(grouped[0])
+                    part = select_chat_blocks(value, {source['sourceId']: number + 1 for number, source in enumerate(sources)},
+                                              limit=budget, point_limit=requested_points(request.message),
+                                              sentence_limit=requested_sentences(request.message))
+                else:
+                    part = _compose_summary([step_summaries[index]], budget)
+                if part and len(part) <= remaining:
+                    parts.append(part)
+                    remaining -= len(part) + (2 if len(parts) > 1 else 0)
+            message = '\n\n'.join(parts) or ('见成果' if limit >= 3 else '阅'[:limit])
+        else:
+            message = _compose_summary(step_summaries, limit=max(1, limit - len(partial_prefix)))
+    elif request.capability == 'critique' and grouped:
+        message = grouped[1]
+        partial_prefix = ''  # Coverage is stated next to the actual judgment, within its budget.
     elif request.capability != 'chat' and (explicit_summary or len(body) > 600 or any(line.lstrip().startswith('|') for line in body.splitlines())):
         conclusion = step_summaries[-1]
         message = summarize_artifact(conclusion, limit=600 - len(partial_prefix))
@@ -292,10 +355,12 @@ def execute_conversation(request: ConversationCapabilityRequest):
             return grounded_source_map(grounded_claims, text)
         return build_sentence_source_map(text, sources, target='message')
     return {'status': 'success', 'partial': partial, 'capability': request.capability, 'message': message,
+            **({'critique': grouped[0]} if grouped else {}),
             'sources': sources, 'sentenceSourceMap': source_map(message),
             'materialScope': {'taskId': request.taskId, 'allowedPaperIds': request.allowedPaperIds,
                               'primaryPaperId': request.primaryPaperId, 'strictScope': request.strictScope},
             'steps': completed, 'artifact': {'text': body, 'partial': partial, 'paperIds': request.allowedPaperIds,
-                                            'sources': sources,
+                                            'sources': sources, 'capability': request.capability,
+                                            **({'critique': grouped[0]} if grouped else {}),
                                             'sentenceSourceMap': source_map(body)}
             if request.capability != 'chat' else None}

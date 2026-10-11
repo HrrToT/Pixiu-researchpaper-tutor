@@ -64,7 +64,7 @@ def test_roles_and_references_stay_independent_without_mutating_response():
     assert all(claim['section'] == 'risk' for claim in findings)
 
 
-def test_invalid_absence_in_inference_does_not_discard_valid_observation_or_get_reworded():
+def test_invalid_key_inference_does_not_publish_an_orphan_observation_as_a_judgment():
     payload, _, _ = fixture()
     payload['assessments'][0]['inference']['summary'] = '原文未提供目标域外验证。'
     payload['pendingQuestions'] = [{'topic': '目标域外视角的适用性'}]
@@ -72,13 +72,12 @@ def test_invalid_absence_in_inference_does_not_discard_valid_observation_or_get_
     with patch('services.socratic_service._call_guarded_llm', return_value=json.dumps(payload)) as model:
         result = synthesize_critique('批判采样的适用性', SOURCES, allow_partial=True)
     assert model.call_count == 1 and payload == original
-    assert result['partial'] and len(result['groundedClaims']) == 1
-    assert result['groundedClaims'][0]['kind'] == 'reported'
+    assert result['partial'] and result['groundedClaims'] == []
+    assert result['critique']['issues'] == []
     assert '原文未提供' not in result['message']
     assert '待核查：目标域外视角的适用性' in result['message']
-    assert '<summary>尚待确认</summary>' in result['message']
-    assert '<summary>原文依据</summary>' in result['message']
-    assert [source['sourceId'] for source in result['rag_sources']] == ['method']
+    assert '本次尚不能判断' in result['message']
+    assert result['rag_sources'] == []
 
 
 def test_inference_cannot_borrow_the_observation_citations():
@@ -149,14 +148,16 @@ def test_bounded_assessments_validate_every_paired_claim(count):
     assert len(findings) == 2 * count - 1 and len(rejected) == 1
 
 
-def test_all_invalid_components_do_not_publish_pending_questions_as_success():
+def test_all_invalid_components_return_a_concrete_unresolved_answer_without_fake_judgments():
     payload, _, _ = fixture()
     for field in ('observation', 'inference'):
         payload['assessments'][0][field]['summary'] = '论文未验证动态场景。'
     payload['pendingQuestions'] = [{'topic': '动态场景表现'}]
     with patch('services.socratic_service._call_guarded_llm', return_value=json.dumps(payload)) as model:
-        with pytest.raises(ValueError, match='尚未形成可核验'):
-            synthesize_critique('批判', SOURCES, allow_partial=True)
+        result = synthesize_critique('批判', SOURCES, allow_partial=True)
+    assert result['partial'] and not result['critique']['issues']
+    assert result['critique']['coverage']['unresolvedQuestionPartIds'] == ['main']
+    assert '动态场景表现' in result['message']
     assert model.call_count == 1
 
 
@@ -167,7 +168,7 @@ def test_same_source_fact_and_inference_are_distinct_in_the_result():
     with patch('services.socratic_service._call_guarded_llm', return_value=json.dumps(payload)) as model:
         result = synthesize_critique('批判', SOURCES)
     assert not result['partial'] and len(result['groundedClaims']) == 2
-    assert result['summary'].count('推断：') == 1
+    assert [claim['kind'] for claim in result['critique']['claims']] == ['reported', 'inference']
     assert result['summary'].count('[1]') == 2
     assert len(result['rag_sources']) == 1
     assert model.call_count == 1

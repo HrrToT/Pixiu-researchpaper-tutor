@@ -352,7 +352,9 @@ def test_new_contract_is_used_in_actual_critique_synthesis_entry_with_mocked_pro
     assert model.call_count == 1
     assert '5.00倍' in result['message'] and '⟦数值' not in result['message']
     assert 'numericBindings' in model.call_args.args[0]
-    assert '<details>' in result['message']
+    issue = result['critique']['issues'][0]
+    assert issue['conclusionClaimId'] in {claim['id'] for claim in result['critique']['claims']}
+    assert all(claim['references'] for claim in result['critique']['claims'])
 
 
 def test_new_contract_is_used_in_actual_comparison_entry_with_mocked_provider():

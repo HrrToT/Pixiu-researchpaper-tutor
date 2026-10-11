@@ -805,7 +805,7 @@ def deep_analysis(request: DeepAnalysisRequest, *, grounded: bool = False) -> di
         if grounded:
             from rag.store import normalize_id
             from services.grounded_critique import synthesize_critique
-            from services.focused_evidence import select_focused_evidence
+            from services.focused_evidence import select_critique_evidence
             # Select before synthesis. Taking the first ten from ordered axes
             # otherwise fills the budget with contributions/methods and drops results.
             pool = _merge_evidence_lists(*[axis.get('evidence') or [] for axis in axis_results])
@@ -814,8 +814,8 @@ def deep_analysis(request: DeepAnalysisRequest, *, grounded: bool = False) -> di
                                                                    for document in documents):
                 raise ValueError('批判证据不属于指定论文，已停止生成。')
             corpus = normalize_evidence_items(documents, pdf_id=normalized_id, max_text_chars=ANALYSIS_EVIDENCE_MAX_TEXT_CHARS)
-            response_sources = select_focused_evidence(pool, corpus, request.focus_question or '整体批判阅读',
-                                                       'compare', limit=ANALYSIS_RESPONSE_SOURCE_LIMIT, section_cap=2)
+            response_sources = select_critique_evidence(pool, corpus, request.focus_question or '整体批判阅读',
+                                                        limit=ANALYSIS_RESPONSE_SOURCE_LIMIT)
             response = synthesize_critique(request.focus_question or '整体批判阅读', response_sources, allow_partial=True)
             record_metric('axisCount', len(axis_results))
             record_metric('responseSources', len(response['rag_sources']))
