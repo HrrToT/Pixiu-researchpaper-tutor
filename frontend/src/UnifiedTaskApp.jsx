@@ -601,10 +601,12 @@ export default function UnifiedTaskApp() {
     const taskId = activeTaskId;
     const source = activeTask?.messages[index];
     if (!taskId || !source) return false;
+    const isUser = source.role === 'user';
+    const sources = isUser ? documentSources(source.sourceAnchorId ? source : { sources: source.sources }) : documentSources(source);
     const matchesSource = message => source.id ? message.id === source.id : message === source
       || source.sourceRequestId && message.sourceRequestId === source.sourceRequestId && message.role === source.role;
     let saved;
-    let collection = asArtifact ? 'artifacts' : 'notes';
+    let collection = asArtifact && !isUser ? 'artifacts' : 'notes';
     await updateTask(taskId, task => {
       const currentIndex = task.messages.findIndex(matchesSource);
       if (currentIndex < 0) throw new Error('这条对话已移除，未保存其他消息。');
@@ -615,12 +617,12 @@ export default function UnifiedTaskApp() {
           || source.artifactId && (item.id || item.artifactId) === source.artifactId);
         if (existing) { saved = existing; collection = key; break; }
       }
-      saved ||= { id: makeId(), title: questionTopic(task.messages.slice(0, currentIndex).findLast(message => message.role === 'user')?.content) || '对话笔记', titleOrigin: 'generated',
-        ...(source.critique ? { critique: source.critique } : {}),
-        capability: source.capability,
-        text: source.content, paperIds: source.context?.allowedPaperIds || task.paperIds,
-        sources: documentSources(source), sentenceSourceMap: source.sentenceSourceMap || [], sourceMessageId: messageId,
-        sourceRequestId: source.sourceRequestId, type: source.capability || 'note', createdAt: new Date().toISOString(), versions: [] };
+      saved ||= { id: makeId(), title: (isUser ? String(source.content || '').trim().split(/\r?\n/u)[0].slice(0, 96) : questionTopic(task.messages.slice(0, currentIndex).findLast(message => message.role === 'user')?.content)) || '对话笔记', titleOrigin: 'generated',
+        ...(!isUser && source.critique ? { critique: source.critique } : {}),
+        capability: isUser ? undefined : source.capability,
+        text: source.content, paperIds: isUser ? [...new Set(sources.map(item => item.pdfId || item.sourcePdfId).filter(Boolean))] : source.context?.allowedPaperIds || task.paperIds,
+        sources, sentenceSourceMap: isUser ? [] : source.sentenceSourceMap || [], sourceMessageId: messageId,
+        sourceRequestId: source.sourceRequestId, type: isUser ? 'note' : source.capability || 'note', createdAt: new Date().toISOString(), versions: [] };
       return {
         [collection]: task[collection].some(item => item.id === saved.id) ? task[collection] : [...task[collection], saved],
         messages: task.messages.map((message, position) => position === currentIndex ? { ...message, id: messageId, artifactId: saved.id } : message),
@@ -1143,7 +1145,7 @@ export default function UnifiedTaskApp() {
       <section ref={readerRef} className={`unified-reader ${!layout.reader ? 'unified-desktop-hidden' : ''}`} inert={drawerOpen ? true : undefined} style={{ flexBasis: layout.chat ? `${viewLayout.readerPercent}%` : '100%' }} aria-label="论文与成果">
         <div className="unified-pane-head">
           <BookOpen size={17} />
-          {activeDocument ? <strong>成果</strong> : <strong title={focusedPaperId ? getPaperTitle(papers, focusedPaperId) : ''}>{preview ? preview.kind === 'research.report' ? '研究报告' : '已生成结果' : activeLearning ? '学习记录' : focusedPaperId ? shortPaperTitle(papers, focusedPaperId) : '阅读区'}</strong>}
+          {activeDocument ? <strong>{selectedDocument.collection === 'notes' ? '笔记' : '成果'}</strong> : <strong title={focusedPaperId ? getPaperTitle(papers, focusedPaperId) : ''}>{preview ? preview.kind === 'research.report' ? '研究报告' : '已生成结果' : activeLearning ? '学习记录' : focusedPaperId ? shortPaperTitle(papers, focusedPaperId) : '阅读区'}</strong>}
           {(activeDocument || activeLearning || preview) && focusedPaperId && <button type="button" onClick={returnToPaper}>查看原文</button>}
           {documentActions}
           {!activeDocument && !activeLearning && !preview && returnContent && <button type="button" onClick={() => { if (!reopenContent(returnContent)) setLocalError('这份记录已移动或暂不可用。'); }}>{returnContent.kind === 'learning' ? '返回学习记录' : returnContent.collection === 'notes' ? '返回笔记' : '返回成果'}</button>}

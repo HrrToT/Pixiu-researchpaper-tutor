@@ -741,6 +741,25 @@ describe('unified task conversation wiring', () => {
     expect(state.task.notes[0].text).toBe('先前正文');
     expect(state.task.notes[0].versions.map((item) => item.text)).toEqual(['先前正文', '当前正文', '未保存修改']);
   });
+  it('saves the selected user message as its own note without previous answer metadata', async () => {
+    state.task.messages = [
+      { id: 'previous', role: 'user', content: '剪枝的贡献怎么体现 真的有贡献吗' },
+      { id: 'answer', role: 'ai', content: '上一轮回答', rag_sources: [{ pdfId: 'a', text: '上一轮证据' }] },
+      { id: 'current', role: 'user', content: '什么是lightgaussian', capability: 'critique', context: { allowedPaperIds: ['a', 'b'] }, rag_sources: [{ pdfId: 'a', text: '错误继承的证据' }] },
+    ];
+    const view = render(<UnifiedTaskApp />);
+    await act(async () => state.chatProps.onSaveToNote(2));
+    view.rerender(<UnifiedTaskApp />);
+    expect(state.task.notes).toHaveLength(1);
+    expect(state.task.notes[0]).toMatchObject({ title: '什么是lightgaussian', text: '什么是lightgaussian', type: 'note', sourceMessageId: 'current', sources: [], paperIds: [], sentenceSourceMap: [] });
+    expect(state.task.notes[0].capability).toBeUndefined();
+    expect(state.task.artifacts).toHaveLength(0);
+    expect(screen.getByRole('article', { name: '成果正文' })).toHaveTextContent('什么是lightgaussian');
+    expect(screen.queryByText(/证据片段/u)).not.toBeInTheDocument();
+    await act(async () => state.chatProps.onSaveToNote(2));
+    expect(state.task.notes).toHaveLength(1);
+  });
+
   it('preserves evidence when capturing a conversation as a note', async () => {
     const source = { sourceId: 'evidence', pdfId: 'b', pageIndex: 3, text: 'original evidence' };
     state.task.messages = [{ id: 'message', role: 'ai', content: '结论', rag_sources: [source], context: { allowedPaperIds: ['b'] } }];
@@ -750,6 +769,13 @@ describe('unified task conversation wiring', () => {
     expect(state.task.notes[0].sources).toEqual([source]);
     expect(state.task.notes[0].paperIds).toEqual(['b']);
     expect(screen.getByText('证据片段（1）')).toBeInTheDocument();
+  });
+
+  it('retains an explicit quotation when saving the first user message', async () => {
+    state.task.messages = [{ id: 'first', role: 'user', content: '我的摘录想法\n补充说明', sourceAnchorId: 'quote', sourcePdfId: 'b', sourcePageIndex: 3, sourceText: '原文摘录' }];
+    render(<UnifiedTaskApp />);
+    await act(async () => state.chatProps.onSaveToNote(0));
+    expect(state.task.notes[0]).toMatchObject({ title: '我的摘录想法', text: '我的摘录想法\n补充说明', paperIds: ['b'], sources: [{ sourceId: 'quote', pdfId: 'b', pageIndex: 3, text: '原文摘录' }] });
   });
 
   it('blocks an old editor draft even after background refresh adopts the newer task revision', async () => {
