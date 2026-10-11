@@ -6,7 +6,7 @@ import useWorkbenchWidth from './hooks/useWorkbenchWidth';
 import { clamp, DEFAULT_WORKBENCH_LAYOUT, workbenchLayout } from './utils/workbenchLayout';
 import PaperPageNavigation from './components/PaperPageNavigation';
 import { selectionNote } from './utils/selectionNote';
-import { BookOpen, ChevronLeft, ChevronRight, FilePlus2, Languages, MessageSquare, PanelLeftClose, PanelLeftOpen, PanelRightOpen, Save, SunMoon, Upload } from 'lucide-react';
+import { BookOpen, ChevronLeft, ChevronRight, FilePlus2, Languages, MessageSquare, Moon, PanelLeftClose, PanelLeftOpen, PanelRightOpen, Save, Sun, Upload } from 'lucide-react';
 import ChatPanel from './components/ChatPanel';
 import MarkdownContent from './components/MarkdownContent';
 import CritiqueContent from './components/CritiqueContent';
@@ -1106,7 +1106,9 @@ export default function UnifiedTaskApp() {
             onClick={() => { patchLayout({ navPinnedMedium: !layout.navPinnedMedium, navigation: true }); close(); }}>{layout.navPinnedMedium ? '导航按需展开' : '固定导航'}</button>}
           </>}
       </WorkbenchPopover>
-      <WorkbenchPopover label="设置" trigger={<SunMoon size={18} />}><button type="button" onClick={toggleTheme} aria-label="切换主题">{theme === 'dark' ? '使用浅色外观' : '使用深色外观'}</button></WorkbenchPopover>
+      <button type="button" className="workbench-popover-trigger" onClick={toggleTheme} title={theme === 'dark' ? '切换为浅色外观' : '切换为深色外观'} aria-label={theme === 'dark' ? '切换为浅色外观' : '切换为深色外观'}>
+        {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+      </button>
     </header>
     {compact && <div className="unified-compact-switch" role="group" aria-label="内容视图">
       <button type="button" ref={compactNavigationButton} aria-expanded={compactNavigation} aria-controls="unified-navigation" onClick={() => setCompactNavigation(value => !value)}>任务与材料</button>
