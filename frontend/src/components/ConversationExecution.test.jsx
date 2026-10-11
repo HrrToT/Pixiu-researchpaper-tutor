@@ -15,7 +15,7 @@ it('shows concise failure recovery with original question and folded details', (
 
 it('offers status checking and stopping instead of retry while the result is unconfirmed', () => {
   render(<ConversationExecution task={{ id: 'task' }} records={{ pending: { taskId: 'task', requestId: 'pending', status: 'unknown' } }} />);
-  expect(screen.getByText('正在确认结果')).toBeInTheDocument();
+  expect(screen.getByText('暂时无法确认结果')).toBeInTheDocument();
   expect(screen.getByRole('button', { name: '查询状态' })).toBeInTheDocument();
   expect(screen.getByRole('button', { name: '停止' })).toBeInTheDocument();
   expect(screen.queryByRole('button', { name: '重试' })).not.toBeInTheDocument();
@@ -48,7 +48,7 @@ it('keeps an unsubmitted intent behind an explicit continue action and cancels i
   const submit = vi.fn(), cancel = vi.fn();
   render(<ConversationExecution task={{ id: 'A' }} records={{ r: { taskId: 'A', requestId: 'r', status: 'awaiting_submission',
     request: { message: '原问题' } } }} onSubmitSaved={submit} onCancel={cancel} />);
-  expect(screen.getByText('提交未确认')).toBeInTheDocument();
+  expect(screen.getByText('暂时无法确认结果')).toBeInTheDocument();
   fireEvent.click(screen.getByRole('button', { name: '继续发送' }));
   expect(submit).toHaveBeenCalledWith('r');
   fireEvent.click(screen.getByRole('button', { name: '停止' }));

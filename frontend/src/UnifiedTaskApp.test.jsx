@@ -39,10 +39,13 @@ vi.mock('./services/localDb', () => ({ initDB: async () => ({
 vi.mock('./hooks/useThemePreference', () => ({ useThemePreference: () => ({ theme: 'light', toggleTheme: vi.fn() }) }));
 vi.mock('./hooks/useCompactLayout', () => ({ default: () => Boolean(state.compact) }));
 vi.mock('./hooks/useWorkbenchWidth', () => ({ default: () => state.width || 1440 }));
-vi.mock('./hooks/usePageTranslation', () => ({ usePageTranslation: props => {
+vi.mock('./hooks/usePageTranslation', async () => {
+  const actual = await vi.importActual('./hooks/usePageTranslation');
+  return { usePageTranslation: props => {
   state.translationProps = props;
+  if (state.realTranslation) return actual.usePageTranslation({ ...props, apiService: { translatePage: state.translatePage } });
   return {handlePdfPageChange: props.setPdfPageState};
-} }));
+} }; });
 vi.mock('./components/PdfViewer', () => ({ default: function MockPdfViewer(props) {
   state.pdfProps = props;
   const initial = React.useRef(props);
@@ -72,6 +75,7 @@ describe('unified task conversation wiring', () => {
     state.failAnswerSave = false;
     state.compact = false;
     state.width = 1440;
+    state.realTranslation = false;
     state.writes = 0;
     state.beforeUpdate = null;
     state.otherTasks = [];
@@ -191,7 +195,7 @@ describe('unified task conversation wiring', () => {
     state.task.activeActivity = null;
     operationList.mockRejectedValue(new Error('服务状态不可读取'));
     render(<UnifiedTaskApp />);
-    await screen.findByText('请求状态暂不可查询');
+    await screen.findByText('暂时无法确认结果');
     let accepted;
     await act(async () => { accepted = await state.chatProps.onSendMessage('/精读 帮我读这篇论文'); });
     expect(accepted).toBe(false);
@@ -381,7 +385,8 @@ describe('unified task conversation wiring', () => {
     await screen.findByTestId('chat');
     await act(async () => state.chatProps.onFollowupIssue(state.task.messages[0], 'i2'));
     expect(state.startOperation).not.toHaveBeenCalled();
-    expect(screen.getByText(/保存于 saved-token/u)).toBeInTheDocument();
+    expect(screen.getByText(/正在追问/u)).toBeInTheDocument();
+    expect(screen.queryByText(/保存于 saved-token/u)).not.toBeInTheDocument();
     await act(async () => state.chatProps.onSendMessage('展开实验条件'));
     expect(state.startOperation).toHaveBeenCalledWith('task', expect.objectContaining({ kind: 'conversation.execute', input: expect.objectContaining({
       followup: { artifactId: 'critique-artifact', issueId: 'i2', version: 'saved-token' }, allowedPaperIds: ['a'],
@@ -638,11 +643,92 @@ describe('unified task conversation wiring', () => {
 
   it('keeps ordinary chat distinct from answering an active learning question', async () => {
     state.task.focusedPaperId = 'a';
-    state.task.activeActivity = { activityId: 'lesson', pdfId: 'a', status: 'active', concepts: [{ id: 'c', status: 'pending' }] };
+    state.task.activeActivity = { activityId: 'lesson', pdfId: 'a', paperIds: ['a'], primaryPaperId: 'a', status: 'active', concepts: [{ id: 'c', status: 'pending' }] };
     render(<UnifiedTaskApp />);
-    fireEvent.change(screen.getByRole('combobox', { name: '学习输入方式' }), { target: { value: 'chat' } });
+    expect(state.chatProps.sendLabel).toBe('发送消息');
+    fireEvent.click(screen.getByRole('button', { name: '回答这道题' }));
+    expect(state.chatProps.sendLabel).toBe('提交回答');
+    fireEvent.click(screen.getByRole('button', { name: '改为普通提问' }));
     await act(async () => state.chatProps.onSendMessage('解释一下这篇论文'));
     expect(state.startOperation).toHaveBeenCalledWith('task', expect.objectContaining({ kind: 'conversation.execute', input: expect.objectContaining({ capability: 'chat' }) }));
+  });
+
+  it('automatically translates on entering translated or comparison views and deduplicates switching', async () => {
+    state.realTranslation = true;
+    state.task.focusedPaperId = 'a';
+    let finish;
+    state.translatePage = vi.fn(() => new Promise(resolve => { finish = resolve; }));
+    localDbGet.mockImplementation(async store => store === 'pdfStore' ? new Blob(['fixture']) : store === 'deconstructStore' ? { pdfId: 'a' } : null);
+    const makeUrl = vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:automatic-translation');
+    const releaseUrl = vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => {});
+    const view = render(<UnifiedTaskApp />);
+    await screen.findByTestId('paper-viewer');
+    await act(async () => state.pdfProps.onPageTextExtracted({ pageIndex: 0, pageText: 'This is a local fixture page.' }));
+    expect(state.translatePage).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole('button', { name: '译文', exact: true }));
+    await waitFor(() => expect(state.translatePage).toHaveBeenCalledTimes(1));
+    expect(state.translationPanelProps.pageData.status).toBe('loading');
+    fireEvent.click(screen.getByRole('button', { name: '对照', exact: true }));
+    fireEvent.click(screen.getByRole('button', { name: '原文', exact: true }));
+    fireEvent.click(screen.getByRole('button', { name: '译文', exact: true }));
+    expect(state.translatePage).toHaveBeenCalledTimes(1);
+    await act(async () => state.translationPanelProps.onCancel());
+    expect(state.translatePage.mock.calls[0][5].signal.aborted).toBe(true);
+    await act(async () => finish({ translatedText: '迟到的结果' }));
+    expect(state.translationPanelProps.pageData.status).toBe('cancelled');
+    fireEvent.click(screen.getByRole('button', { name: '对照', exact: true }));
+    expect(state.translatePage).toHaveBeenCalledTimes(1);
+    let retry;
+    act(() => { retry = state.translationPanelProps.onRetry(); });
+    expect(state.translatePage).toHaveBeenCalledTimes(2);
+    await act(async () => { finish({ translatedText: '本地测试译文' }); await retry; });
+    expect(state.translationPanelProps.pageData.translatedText).toBe('本地测试译文');
+    fireEvent.click(screen.getByRole('button', { name: '原文', exact: true }));
+    fireEvent.click(screen.getByRole('button', { name: '对照', exact: true }));
+    expect(state.translatePage).toHaveBeenCalledTimes(2);
+    view.unmount(); makeUrl.mockRestore(); releaseUrl.mockRestore();
+  });
+
+  it('submits an explicit learning answer only to its activity and shows ordinary sending for other material', async () => {
+    state.task.focusedPaperId = 'a';
+    state.task.activeActivity = { activityId: 'lesson', pdfId: 'a', paperIds: ['a'], primaryPaperId: 'a', status: 'active', revision: 2, concepts: [{ id: 'c', status: 'pending' }] };
+    state.task.messages = [{ id: 'question', role: 'ai', content: '压缩可能损失什么？', context: { activityId: 'lesson' } }, { id: 'ordinary', role: 'ai', content: '普通解释' }];
+    render(<UnifiedTaskApp />);
+    expect(screen.getAllByRole('group', { name: '学习问题操作' })).toHaveLength(1);
+    fireEvent.click(screen.getByRole('button', { name: '回答这道题' }));
+    await act(async () => state.chatProps.onDraftChange('解释 @{论文乙}'));
+    expect(state.chatProps.sendLabel).toBe('发送消息');
+    await act(async () => state.chatProps.onDraftChange('/比较 两篇论文'));
+    expect(state.chatProps.sendLabel).toBe('发送消息');
+    await act(async () => state.chatProps.onDraftChange('剪枝删除冗余高斯'));
+    expect(state.chatProps.sendLabel).toBe('提交回答');
+    await act(async () => state.chatProps.onSendMessage('剪枝删除冗余高斯'));
+    expect(state.startOperation).toHaveBeenCalledWith('task', expect.objectContaining({ kind: 'learning.action', input: expect.objectContaining({ action: 'answer', activityId: 'lesson', text: '剪枝删除冗余高斯' }) }));
+    await waitFor(() => expect(state.chatProps.sendLabel).toBe('发送消息'));
+  });
+
+  it('cleans visible questions while retaining explicitly selected scope in execution', async () => {
+    state.task.activeActivity = null;
+    render(<UnifiedTaskApp />);
+    await waitFor(() => expect(state.chatProps.materials.find(item => item.id === 'b')?.title).toBe('论文乙'));
+    await act(async () => state.chatProps.onSendMessage('解释方法 @{论文乙}'));
+    expect(state.startOperation.mock.calls[0][1].input).toMatchObject({ displayText: '解释方法', allowedPaperIds: ['b'] });
+    expect(state.task.messages.find(item => item.role === 'user').content).toBe('解释方法');
+  });
+
+  it('adapts beginner choices to the task and opens paper selection without generating', async () => {
+    state.task.activeActivity = null;
+    const view = render(<UnifiedTaskApp />);
+    expect(state.chatProps.starterPrompts[0].label).toBe('先选择要读的论文');
+    await act(async () => state.chatProps.starterPrompts[0].onSelect());
+    expect(state.startOperation).not.toHaveBeenCalled();
+    state.task = { ...state.task, focusedPaperId: 'b' };
+    view.rerender(<UnifiedTaskApp />);
+    expect(state.chatProps.starterPrompts[0].label).toBe('先看懂这篇论文');
+    state.task = { ...state.task, paperIds: [], focusedPaperId: null };
+    view.rerender(<UnifiedTaskApp />);
+    expect(state.chatProps.starterPrompts[0].label).toBe('解释一个概念');
+    expect(state.startOperation).not.toHaveBeenCalled();
   });
 
   it('binds a saved answer to its identity when an earlier message was removed before persistence', async () => {

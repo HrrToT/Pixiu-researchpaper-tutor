@@ -6,6 +6,18 @@ import TranslationPanel from './TranslationPanel';
 const pageData={status:'success',translatedText:'当前页译文'};
 const deferred=()=>{let resolve,reject;const promise=new Promise((yes,no)=>{resolve=yes;reject=no;});return {promise,resolve,reject};};
 
+it('offers stop during automatic translation and explicit restart after stopping', () => {
+  const stop = vi.fn(), retry = vi.fn();
+  const view = render(<TranslationPanel pdfId="A" pageData={{status:'loading'}} onCancel={stop} onRetry={retry}/>);
+  expect(screen.queryByRole('button', {name:'重试翻译'})).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole('button', {name:'停止翻译'}));
+  expect(stop).toHaveBeenCalledTimes(1);
+  view.rerender(<TranslationPanel pdfId="A" pageData={{status:'cancelled'}} onCancel={stop} onRetry={retry}/>);
+  expect(retry).not.toHaveBeenCalled();
+  fireEvent.click(screen.getByRole('button', {name:'继续翻译'}));
+  expect(retry).toHaveBeenCalledTimes(1);
+});
+
 it('awaits saving, prevents duplicate clicks and opens the saved artifact', async()=>{
   const pending=deferred(), save=vi.fn(()=>pending.promise), open=vi.fn();
   const view=render(<TranslationPanel pdfId="A" pageData={pageData} onCaptureArtifact={save} onOpenArtifact={open}/>);

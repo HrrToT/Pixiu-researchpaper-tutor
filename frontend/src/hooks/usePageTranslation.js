@@ -45,7 +45,7 @@ export function usePageTranslation({
     const key = JSON.stringify([pdfId, pageIndex]);
     const cached = stateRef.current?.pdfId === pdfId ? stateRef.current.pages?.[pageIndex] : null;
     const previousRequest = translationRequestsRef.current[key];
-    if (!force && (['success', 'partial', 'error', 'translating', 'empty'].includes(cached?.status) || previousRequest)) return;
+    if (!force && (['success', 'partial', 'error', 'cancelled', 'translating', 'empty'].includes(cached?.status) || previousRequest)) return;
     const excludedZones = deconstructData?.translationLayoutIndex?.[pageIndex]?.excludedZones || [];
     const requestLayout = pageLayout?.blocks?.length
       ? buildTranslationRequestPageLayout(pageLayout, excludedZones) : pageLayout;
@@ -223,10 +223,21 @@ export function usePageTranslation({
     return requestPageTranslation({ ...pagePayload, force: true });
   }, [requestPageTranslation, currentPageTextRef]);
 
+  const handleCancelTranslation = useCallback((pageIndex = stateRef.current.currentPage) => {
+    const request = translationRequestsRef.current[JSON.stringify([pdfId, pageIndex])];
+    if (!request || request.status !== 'running') return;
+    request.status = 'cancelled'; request.controller.abort();
+    commitTranslationState(prev => prev?.pdfId !== pdfId ? prev : { ...prev, pages: { ...prev.pages,
+      [pageIndex]: normalizeTranslationPage({ ...prev.pages[pageIndex],
+        status: prev.pages[pageIndex]?.translatedText || prev.pages[pageIndex]?.translatedBlocks?.length ? 'partial' : 'cancelled',
+        warning: '已停止翻译，已保存的译文仍保留。', error: '', updatedAt: Date.now() }) } });
+  }, [pdfId, commitTranslationState]);
+
   return {
     requestPageTranslation,
     handlePdfPageChange,
     handlePageTextExtracted,
     handleRetryTranslation,
+    handleCancelTranslation,
   };
 }

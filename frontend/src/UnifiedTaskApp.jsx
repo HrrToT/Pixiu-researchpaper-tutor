@@ -6,6 +6,7 @@ import useWorkbenchWidth from './hooks/useWorkbenchWidth';
 import { clamp, DEFAULT_WORKBENCH_LAYOUT, workbenchLayout } from './utils/workbenchLayout';
 import PaperPageNavigation from './components/PaperPageNavigation';
 import { selectionNote } from './utils/selectionNote';
+import { materialDraft } from './utils/materialMentions';
 import { BookOpen, ChevronLeft, ChevronRight, FilePlus2, Languages, MessageSquare, Moon, PanelLeftClose, PanelLeftOpen, PanelRightOpen, Save, Sun, Upload } from 'lucide-react';
 import ChatPanel from './components/ChatPanel';
 import MarkdownContent from './components/MarkdownContent';
@@ -33,6 +34,7 @@ import { ResearchCard } from './components/ConversationResearch';
 import { sanitizeResearchReport } from './components/deepResearchPanelModel';
 import { getResearchStatusMeta } from './components/deepResearchPanelModel';
 import { OperationRecord } from './components/ConversationExecution';
+import { operationStatusText } from './components/conversationProcessingModel';
 import TaskProcessingHistory from './components/TaskProcessingHistory';
 import { LearningRecordContent } from './components/LearningHistory';
 import { conversationTimeline, documentMessageIndex } from './utils/conversationTimeline';
@@ -296,7 +298,7 @@ export default function UnifiedTaskApp() {
     finally { setProcessingRequest(false); }
   };
 
-  const { requestPageTranslation, handlePdfPageChange, handlePageTextExtracted, handleRetryTranslation } = usePageTranslation({
+  const { requestPageTranslation, handlePdfPageChange, handlePageTextExtracted, handleRetryTranslation, handleCancelTranslation } = usePageTranslation({
     apiService,
     pdfId: focusedPaperId,
     deconstructData: paperView.deconstruct,
@@ -312,7 +314,7 @@ export default function UnifiedTaskApp() {
     const source = currentPageTextRef.current;
     if (!source.pageText || source.pageIndex !== page.pageIndex) return;
     const status = translationState.pages?.[page.pageIndex]?.status;
-    if (['success', 'translating', 'error', 'empty'].includes(status)) return;
+    if (['success', 'partial', 'translating', 'cancelled', 'error', 'empty'].includes(status)) return;
     void requestPageTranslation(source);
   }, [translationReady, translationMode, focusedPaperId, paperView.id, page.pageIndex, translationState.pages, requestPageTranslation]);
 
@@ -584,7 +586,7 @@ export default function UnifiedTaskApp() {
     await learning.operations.start(task, 'conversation.execute', {
       capability: skill?.skillId || 'chat', message: sendText || requestText,
       ...(skill?.steps ? { steps: skill.steps } : {}),
-      displayText: text, allowedPaperIds: context.allowedPaperIds,
+      displayText: materialDraft(text).text.trim(), allowedPaperIds: context.allowedPaperIds,
       primaryPaperId: context.primaryPaperId, strictScope: context.strictScope,
       ...(critiqueTargets ? { targetPaperIds: critiqueTargets } : {}),
       ...(followup ? { followup } : {}),
@@ -1006,12 +1008,30 @@ export default function UnifiedTaskApp() {
   const pendingOperations = Object.values(learning.operations.records).filter(record => record.taskId === activeTaskId && !record.retriedBy
     && ['queued', 'running', 'unknown', 'awaiting_submission', 'cancelling'].includes(record.status));
   const currentLearning = activeTask?.activeActivity;
+  const learningPaperIds = currentLearning?.snapshot?.paperIds || currentLearning?.paperIds || (currentLearning?.pdfId ? [currentLearning.pdfId] : []);
+  let submittingLearningAnswer = currentLearning?.status === 'active' && learning.inputMode === 'answer'
+    && !resolveConversationIntent(composerDraft).skill && critiqueSelection?.taskId !== activeTaskId;
+  if (submittingLearningAnswer) {
+    try {
+      const named = resolveNamedTaskPapers(composerDraft, papers, activeTask.paperIds);
+      const context = resolveTaskContext(activeTask, { text: composerDraft, ...(named !== undefined ? { paperIds: named } : {}) });
+      submittingLearningAnswer = context.allowedPaperIds.length > 0 && context.allowedPaperIds.length === learningPaperIds.length
+        && context.allowedPaperIds.every(id => learningPaperIds.includes(id));
+    } catch { submittingLearningAnswer = false; }
+  }
+  const learningQuestionMessage = currentLearning?.status === 'active' && timeline.findLast(message => message.role !== 'user' && message.context?.activityId === currentLearning.activityId);
+  const learningActions = currentLearning?.status === 'active' && <div className="unified-learning-question-actions" role="group" aria-label="学习问题操作">
+    {!learning.completionSuggested && <button type="button" disabled={learning.busyTasks[activeTaskId]} onClick={() => { learning.setInputMode('answer'); locateLearning(currentLearning); }}>回答这道题</button>}
+    <WorkbenchPopover label="学习帮助">{close => <>{[['hint', '给我提示'], ['remediate', '补充基础'], ['retry', '重新回答'], ['skip', '跳过本题'], ['pause', '暂停学习'], ['finish', '结束学习']].map(([action, label]) => <button type="button" key={action} disabled={learning.busyTasks[activeTaskId]} onClick={() => { learning.act(activeTask, action); close(); }}>{label}</button>)}</>}</WorkbenchPopover>
+    {learning.completionSuggested && <button type="button" disabled={learning.busyTasks[activeTaskId]} onClick={() => learning.act(activeTask, 'finish')}>完成本轮学习</button>}
+  </div>;
   const pendingResearch = (activeTask?.researchRuns || []).filter(run => {
     const result = researchResult(run);
     return !result || !['succeeded', 'failed', 'cancelled'].includes(result.status);
   });
   const activityEntries = [
-    ...pendingOperations.map(record => ({ id: record.requestId, label: '返回当前请求', isRequest: true, locate: () => locateOperation(record) })),
+    ...pendingOperations.map(record => ({ id: record.requestId, label: operationStatusText(record), isRequest: true, locate: () => locateOperation(record),
+      ...(record.status !== 'cancelling' ? { stop: () => learning.operations.cancel(activeTaskId, record.requestId), stopLabel: '停止' } : {}) })),
     ...pendingResearch.map(run => ({ id: run.researchId, label: `研究 · ${researchResult(run) ? getResearchStatusMeta(researchResult(run).status).label : '正在读取'}`, locate: () => locateResearch(run),
       stop: () => research.action(activeTaskId, run.researchId, 'cancel') })),
     ...(currentLearning?.status === 'active' && learning.inputMode !== 'chat' && !pendingOperations.length ? [{ id: currentLearning.activityId,
@@ -1028,12 +1048,13 @@ export default function UnifiedTaskApp() {
         onRefresh={research.refresh}
         onAction={research.action} onJumpToSource={jumpToSource} onOpenReport={openReport} />}
       {record && record.status !== 'succeeded' && !record.retriedBy && !run && <OperationRecord record={record} showQuestion={false} {...operationControls} />}
+      {learningQuestionMessage && message.orderIndex === learningQuestionMessage.orderIndex && learningActions}
       {history && <button type="button" className="unified-record-entry" onClick={() => openLearningRecord(history)}>{history.mode === 'quiz' ? '自测' : '精读'}{history.status === 'paused' ? '已暂停' : '已结束'} · 查看记录</button>}
     </>;
   };
   const currentActivityBar = activityEntries.length > 0 ? <div className="unified-current-activity" aria-label="当前活动">
     <button type="button" onClick={activityEntries[0].locate}>{activityEntries[0].label}{!activityEntries[0].isRequest && ' · 查看'}</button>
-    {activityEntries[0].stop && <button type="button" onClick={() => activityEntries[0].stop()}>停止研究</button>}
+    {activityEntries[0].stop && <button type="button" onClick={() => activityEntries[0].stop()}>{activityEntries[0].stopLabel || '停止研究'}</button>}
     {activityEntries.length > 1 && <details><summary>另有 {activityEntries.length - 1} 项</summary>{activityEntries.slice(1).map(entry => <button type="button" key={entry.id} onClick={entry.locate}>{entry.label}{!entry.isRequest && ' · 查看'}</button>)}</details>}
   </div> : null;
   let draftPrimaryPaperId = null;
@@ -1048,16 +1069,11 @@ export default function UnifiedTaskApp() {
   const composerContext = <>
     {(draftPrimaryPaperId || critiqueSelection?.taskId === activeTaskId || currentLearning?.status === 'active') && <div className="unified-composer-context">
       {draftPrimaryPaperId && <span>主要参考 {shortPaperTitle(papers, draftPrimaryPaperId)}</span>}
-      {critiqueSelection?.taskId === activeTaskId && <span>{critiqueSelection.followup.regenerate ? '重新核查' : '追问'} {critiqueSelection.title || '批判成果'} · 保存于 {critiqueSelection.followup.version}
+      {critiqueSelection?.taskId === activeTaskId && <span>{critiqueSelection.followup.regenerate ? '重新核查' : '正在追问：'} {critiqueSelection.title || '批判成果'}
         <button type="button" onClick={() => setCritiqueSelection(null)}>取消追问关联</button></span>}
       {currentLearning?.status === 'active' && <>
-        <select aria-label="学习输入方式" value={learning.inputMode} onChange={event => learning.setInputMode(event.target.value)}>
-          <option value="answer" disabled={learning.completionSuggested}>回答学习问题</option><option value="ask">临时追问</option><option value="chat">普通对话</option>
-        </select>
-        <details className="unified-learning-actions"><summary>学习操作</summary>
-          {[['hint', '提示'], ['remediate', '补课'], ['retry', '重答'], ['skip', '跳过']].map(([action, label]) => <button type="button" key={action} disabled={learning.busyTasks[activeTaskId]} onClick={() => learning.act(activeTask, action)}>{label}</button>)}
-        </details>
-        {[['pause', '暂停'], ['finish', '结束']].map(([action, label]) => <button type="button" key={action} disabled={learning.busyTasks[activeTaskId]} onClick={() => learning.act(activeTask, action)}>{label}</button>)}
+        {learning.inputMode === 'answer' ? <><span>正在回答学习问题</span><button type="button" onClick={() => learning.setInputMode('chat')}>改为普通提问</button></> : learningQuestionMessage && <button type="button" onClick={() => locateLearning(currentLearning)}>回到学习问题</button>}
+        {!learningQuestionMessage && learningActions}
       </>}
     </div>}
     {intentChoice?.taskId === activeTaskId && <div className="unified-intent-choice" role="group" aria-label="选择分析重点">
@@ -1072,7 +1088,7 @@ export default function UnifiedTaskApp() {
       <button type="button" onClick={() => setCritiqueTargetChoice(null)}>取消</button>
     </div>}
     {composerError && <p className="unified-inline-error" role="alert">{composerError}<button type="button" onClick={() => setComposerError('')}>收起</button></p>}
-    {learning.error && !Object.values(learning.operations.records).some(record => record.taskId === activeTaskId && record.error === learning.error) && <details className="unified-inline-error"><summary>请求状态暂不可查询</summary>
+    {learning.error && !Object.values(learning.operations.records).some(record => record.taskId === activeTaskId && record.error === learning.error) && <details className="unified-inline-error"><summary>暂时无法确认结果</summary>
       <p>{learning.error}</p><button type="button" onClick={() => setShowProcessingHistory(true)}>查看处理记录</button><button type="button" onClick={() => learning.operations.refresh()}>查询状态</button></details>}
   </>;
 
@@ -1241,7 +1257,7 @@ export default function UnifiedTaskApp() {
             {displayedTranslationMode !== 'original' && <div className="unified-translation"><TranslationPanel pdfId={paperView.id} fileUrl={paperView.url} pdfFileName={getPaperTitle(papers, paperView.id)} currentPage={page.pageIndex}
               pageData={currentTranslationPage?.status === 'translating' ? { ...currentTranslationPage, status: 'loading' } : currentTranslationPage}
               savedArtifactId={activeTask?.artifacts.find(item => item.pageIndex === page.pageIndex && item.paperIds?.length === 1 && item.paperIds[0] === focusedPaperId && (item.type === 'translation' || /译文/u.test(item.title || '')) && normalizeNoteContent(item) === currentTranslationPage?.translatedText)?.id}
-              onOpenArtifact={openArtifact} onRetry={() => handleRetryTranslation(translationState)} onCaptureArtifact={captureTranslation} /></div>}
+              onOpenArtifact={openArtifact} onRetry={() => handleRetryTranslation(translationState)} onCancel={() => handleCancelTranslation(page.pageIndex)} onCaptureArtifact={captureTranslation} /></div>}
           </div>
             : focusedPaperId ? <div className="workbench-reader-loading" role="status" aria-label="正在打开论文"><span className="workbench-loading-title" /><span /><span /><span /><p>正在打开论文…</p></div>
             : workspace.ready === false ? <div className="workbench-reader-loading" role="status" aria-label="正在读取任务"><span className="workbench-loading-title" /><span /><span /><span /><p>正在读取任务…</p></div>
@@ -1264,10 +1280,13 @@ export default function UnifiedTaskApp() {
       <section className={`unified-chat ${!layout.chat ? 'unified-desktop-hidden' : ''}`} inert={drawerOpen ? true : undefined} style={{ flexBasis: layout.reader ? `${100 - viewLayout.readerPercent}%` : '100%' }} aria-label="任务对话">
         {activeTask ? <ChatPanel key={activeTaskId} conversationId={activeTaskId}
           showHeader onCollapse={() => patchLayout({ chat: false, reader: true, mode: 'reader' })}
-          starterPrompts={activeTask.paperIds.length ? [
-            { label: '带我读这篇', text: '/精读 帮我从研究问题与方法开始读这篇论文' },
-            { label: '解释基础概念', text: '/补课 解释理解这篇论文需要的基础概念' },
-            activeTask.paperIds.length > 1 ? { label: '比较论文', text: '/比较 这些论文的方法有什么共同点与差异？' } : { label: '检查我的理解', text: '/自测 帮我检查是否理解这篇论文的关键方法' },
+          starterPrompts={currentLearning?.status === 'active' ? [
+            { label: learning.completionSuggested ? '完成本轮学习' : '回到学习问题', text: '', onSelect: () => learning.completionSuggested ? learning.act(activeTask, 'finish') : locateLearning(currentLearning) },
+          ] : activeTask.paperIds.length ? [
+            focusedPaperId || activeTask.paperIds.length === 1 ? { label: '先看懂这篇论文', text: '/精读 帮我从研究问题、方法直觉和实验结论开始读这篇论文' }
+              : { label: '先选择要读的论文', text: '', onSelect: () => { patchLayout({ navigation: true }); setCompactNavigation(true); } },
+            { label: '解释读不懂的内容', text: '请解释这篇论文中我读不懂的这部分：' },
+            { label: '检查一个关键结论', text: '/批判 帮我检查这篇论文最重要的结论及其证据边界' },
           ] : [{ label: '解释一个概念', text: '我想了解的概念是：' }]}
           materials={activeTask.paperIds.map(id => papers.find(paper => paper.id === id) || { id })} messages={timeline}
           onSendMessage={sendMessage} onDeleteMessage={index => { const original = timeline[index]?.originalIndex; if (Number.isInteger(original)) return deleteMessage(original); }}
@@ -1275,7 +1294,9 @@ export default function UnifiedTaskApp() {
           onSaveToNote={index => saveMessage(timeline[index]?.originalIndex, false)} onCaptureArtifact={index => saveMessage(timeline[index]?.originalIndex)}
           onOpenArtifact={openArtifact} onJumpToSource={jumpToSource} onAbortChat={() => learning.cancel(activeTaskId)}
           isLoading={Boolean(learning.busyTasks[activeTaskId])} showLoadingIndicator={false} enableSkills
-          renderMessageAfter={renderAfterMessage} currentActivity={currentActivityBar} composerContext={composerContext} focusedMaterialId={focusedPaperId} focusMessage={focusMessage} onDraftChange={setComposerDraft} />
+          renderMessageAfter={renderAfterMessage} currentActivity={currentActivityBar} composerContext={composerContext} focusedMaterialId={focusedPaperId} focusMessage={focusMessage} onDraftChange={setComposerDraft}
+          sendLabel={submittingLearningAnswer ? '提交回答' : '发送消息'}
+          inputPlaceholder={submittingLearningAnswer ? '用自己的话回答这道题…' : undefined} />
           : <div className="unified-empty"><p>创建任务后，即可围绕论文持续讨论。</p><button type="button" onClick={() => createTask({ title: '新任务' })}>新任务</button></div>}
       </section>
       {!layout.reader && <button type="button" className="unified-restore unified-restore-reader" title="向右展开阅读区" onClick={() => patchLayout({ reader: true, mode: 'split' })} aria-label="展开阅读区"><PanelLeftOpen size={16} />阅读</button>}

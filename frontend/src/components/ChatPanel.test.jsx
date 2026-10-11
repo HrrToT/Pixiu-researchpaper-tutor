@@ -25,6 +25,48 @@ describe('ChatPanel', () => {
     if (!HTMLDialogElement.prototype.close) HTMLDialogElement.prototype.close = function () { this.open = false; };
   });
   beforeEach(() => localStorage.clear());
+  it('restores selected chips separately from prose and submits the restored scope after editing', async () => {
+    const materials = [{ id: 'a', title: '论文甲' }, { id: 'b', title: '论文乙' }];
+    const send = vi.fn().mockResolvedValue(false);
+    const view = renderChat({ enableSkills: true, conversationId: 'scope', materials, onSendMessage: send });
+    fireEvent.click(screen.getByRole('button', { name: '对话材料' }));
+    fireEvent.click(screen.getByRole('checkbox', { name: '论文乙' }));
+    fireEvent.keyDown(document, { key: 'Escape' });
+    expect(screen.getByRole('button', { name: '发送消息' })).toBeDisabled();
+    fireEvent.change(screen.getByLabelText('输入问题'), { target: { value: '解释方法 \n' } });
+    expect(screen.getByLabelText('输入问题')).toHaveValue('解释方法 \n');
+    view.unmount();
+    renderChat({ enableSkills: true, conversationId: 'scope', materials, onSendMessage: send });
+    expect(screen.getByLabelText('输入问题')).toHaveValue('解释方法 \n');
+    expect(screen.getByRole('button', { name: '移除材料 论文乙' })).toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText('输入问题'), { target: { value: '只解释直觉' } });
+    fireEvent.click(screen.getByRole('button', { name: '发送消息' }));
+    await waitFor(() => expect(send).toHaveBeenCalledExactlyOnceWith('只解释直觉 @{论文乙}'));
+    fireEvent.click(screen.getByRole('button', { name: '移除材料 论文乙' }));
+    expect(screen.getByLabelText('输入问题')).toHaveValue('只解释直觉');
+    expect(screen.getByText('全部材料 · 2篇')).toBeInTheDocument();
+  });
+
+  it('adds an @ completion as a chip while preserving prose and a previously selected material', () => {
+    renderChat({ enableSkills: true, materials: [{ id: 'a', title: '论文甲' }, { id: 'b', title: '论文乙' }] });
+    fireEvent.change(screen.getByLabelText('输入问题'), { target: { value: '比较方法 @{论文甲}' } });
+    fireEvent.change(screen.getByLabelText('输入问题'), { target: { value: '比较方法 @乙' } });
+    fireEvent.click(screen.getByRole('button', { name: '论文乙', exact: true }));
+    expect(screen.getByLabelText('输入问题').value.trim()).toBe('比较方法');
+    expect(screen.getByRole('button', { name: '移除材料 论文甲' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '移除材料 论文乙' })).toBeInTheDocument();
+  });
+
+  it('keeps next steps folded and preserves an existing question instead of overwriting it', () => {
+    const select = vi.fn();
+    renderChat({ messages: [{ role: 'ai', content: '现有回答' }], starterPrompts: [{ label: '下一步行动', text: '', onSelect: select }] });
+    expect(screen.getByText('下一步').closest('details')).not.toHaveAttribute('open');
+    fireEvent.click(screen.getByRole('button', { name: '下一步行动' }));
+    expect(select).toHaveBeenCalledTimes(1);
+    fireEvent.change(screen.getByLabelText('输入问题'), { target: { value: '我自己的问题' } });
+    expect(screen.queryByText('下一步')).not.toBeInTheDocument();
+    expect(screen.getByLabelText('输入问题')).toHaveValue('我自己的问题');
+  });
   it('distinguishes all materials, explicit selections and the paper being read', () => {
     renderChat({ enableSkills: true, focusedMaterialId: 'a', materials: [{ id: 'a', title: '论文甲' }, { id: 'b', title: '论文乙' }] });
     expect(screen.queryByRole('button', { name: '@ 材料' })).not.toBeInTheDocument();
@@ -36,14 +78,14 @@ describe('ChatPanel', () => {
     expect(screen.getByRole('checkbox', { name: '论文甲' })).not.toBeChecked();
     fireEvent.click(screen.getByRole('checkbox', { name: '论文甲' }));
     const input = screen.getByLabelText('输入问题');
-    expect(input).toHaveValue('解释这个方法 @{论文甲} ');
+    expect(input).toHaveValue('解释这个方法');
     expect(screen.getByRole('checkbox', { name: '论文甲' })).toBeChecked();
     expect(screen.getByRole('button', { name: '使用本任务全部材料' })).toHaveAttribute('aria-pressed', 'false');
     fireEvent.click(screen.getByRole('checkbox', { name: '论文乙' }));
     expect(screen.getByText('已指定 2 篇')).toBeInTheDocument();
     fireEvent.click(screen.getByRole('checkbox', { name: '论文甲' }));
-    expect(input.value.trim()).toBe('解释这个方法 @{论文乙}');
-    expect(screen.getByText('指定材料 1 篇')).toBeInTheDocument();
+    expect(input.value.trim()).toBe('解释这个方法');
+    expect(screen.getByText('指定材料 · 1篇')).toBeInTheDocument();
     fireEvent.click(screen.getByRole('checkbox', { name: '论文乙' }));
     expect(input.value.trim()).toBe('解释这个方法');
     expect(screen.getByRole('button', { name: '使用本任务全部材料' })).toHaveAttribute('aria-pressed', 'true');
@@ -55,11 +97,11 @@ describe('ChatPanel', () => {
     fireEvent.click(screen.getByRole('button', { name: '展开输入' }));
     const dialog = screen.getByRole('dialog', { name: '全屏输入' });
     expect(screen.getByLabelText('输入问题')).toHaveFocus();
-    expect(screen.getByText('指定材料 1 篇')).toBeInTheDocument();
+    expect(screen.getByText('指定材料 · 1篇')).toBeInTheDocument();
     fireEvent.change(screen.getByLabelText('输入问题'), { target: { value: '只根据 @{论文甲} 请帮我设计实验\n再列出对照条件' } });
     fireEvent(dialog, new Event('cancel', { bubbles: false, cancelable: true }));
     expect(screen.queryByRole('dialog', { name: '全屏输入' })).not.toBeInTheDocument();
-    expect(screen.getByLabelText('输入问题')).toHaveValue('只根据 @{论文甲} 请帮我设计实验\n再列出对照条件');
+    expect(screen.getByLabelText('输入问题')).toHaveValue('只根据 请帮我设计实验\n再列出对照条件');
     expect(screen.getByRole('button', { name: '展开输入' })).toHaveFocus();
     expect(send).not.toHaveBeenCalled();
   });
@@ -95,12 +137,12 @@ describe('ChatPanel', () => {
     fireEvent.click(screen.getByRole('checkbox', { name: '论文甲' }));
     fireEvent.click(screen.getByRole('button', { name: '完成' }));
     await waitFor(() => expect(input).toHaveFocus());
-    expect(input).toHaveValue('解释这个方法 @{论文甲} ');
+    expect(input).toHaveValue('解释这个方法');
     expect(send).not.toHaveBeenCalled();
     fireEvent.click(screen.getByRole('button', { name: '对话材料' }));
     fireEvent.click(screen.getByRole('button', { name: '使用本任务全部材料' }));
     expect(input.value.trim()).toBe('解释这个方法');
-    expect(screen.getByText('任务材料 2 篇')).toBeInTheDocument();
+    expect(screen.getByText('全部材料 · 2篇')).toBeInTheDocument();
     expect(send).not.toHaveBeenCalled();
   });
   it('uses identical outside, Escape and menu-switch dismissal for both pickers', () => {
@@ -150,7 +192,7 @@ describe('ChatPanel', () => {
     fireEvent.click(first);
     expect(first).toBeChecked(); expect(second).not.toBeChecked();
     fireEvent.click(second); fireEvent.click(first);
-    expect(screen.getByLabelText('输入问题').value.trim()).toBe('@{b}');
+    expect(screen.getByLabelText('输入问题').value.trim()).toBe('');
     expect(second).toBeChecked();
   });
   it('marks a retained old answer and opens the current document explicitly', () => {
@@ -224,7 +266,7 @@ describe('ChatPanel', () => {
     renderChat({ enableSkills: true, onSendMessage: send, materials: [{ id: 'b', title: '论文乙' }] });
     fireEvent.change(screen.getByLabelText('输入问题'), { target: { value: '只根据 @乙' } });
     fireEvent.click(screen.getByRole('button', { name: '论文乙', exact: true }));
-    expect(screen.getByLabelText('输入问题')).toHaveValue('只根据 @{论文乙} ');
+    expect(screen.getByLabelText('输入问题')).toHaveValue('只根据');
     fireEvent.click(screen.getByRole('button', { name: '发送消息' }));
     expect(send).toHaveBeenCalledWith('只根据 @{论文乙}');
   });

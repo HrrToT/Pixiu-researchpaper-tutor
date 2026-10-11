@@ -344,7 +344,7 @@ const TranslationFidelityStage = ({ pageLayout, translatedBlocks, resetKey }) =>
   );
 };
 
-const TranslationPanel = ({ pdfId, pdfFileName, fileUrl, currentPage = 0, pageData = null, onRetry, onCaptureArtifact, savedArtifactId, onOpenArtifact }) => {
+const TranslationPanel = ({ pdfId, pdfFileName, fileUrl, currentPage = 0, pageData = null, onRetry, onCancel, onCaptureArtifact, savedArtifactId, onOpenArtifact }) => {
   const pageNumber = Number.isFinite(currentPage) ? currentPage + 1 : 1;
   const status = pageData?.status || 'idle';
   const translatedText = pageData?.translatedText || '';
@@ -411,26 +411,28 @@ const TranslationPanel = ({ pdfId, pdfFileName, fileUrl, currentPage = 0, pageDa
             {currentSave.status === 'saving' ? '保存中…' : isSaved ? (savedId && onOpenArtifact ? '打开成果' : '已保存') : '保存译文'}
           </button>
           {['success', 'partial'].includes(status) && <details key={contentKey} className="relative"><summary className="theme-button-secondary cursor-pointer rounded-lg px-3 py-1.5 text-sm">更多操作</summary><button type="button" onClick={onRetry} disabled={!onRetry} className="theme-panel theme-border absolute right-0 top-full z-20 mt-1 whitespace-nowrap rounded-lg border p-3 text-sm">重新生成译文</button></details>}
-          {!['success', 'partial'].includes(status) && <button
+          {status === 'loading' && onCancel && <button type="button" className="theme-button-secondary rounded-lg px-3 py-1.5 text-sm" onClick={onCancel}>停止翻译</button>}
+          {!['success', 'partial', 'loading', 'idle'].includes(status) && <button
             type="button"
             onClick={onRetry}
             disabled={status === 'loading' || !onRetry}
             className="theme-button-secondary flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-50"
           >
             <RefreshCw size={14} />
-            重试翻译
+            {status === 'cancelled' ? '继续翻译' : '重试翻译'}
           </button>}
         </div>
       </div>
 
       <div className="flex-1 space-y-5 overflow-y-auto p-6">
         {currentSave.error && <p role="alert" className="text-sm text-red-500">{currentSave.error}</p>}
+        {status === 'cancelled' && <p role="status" className="theme-text-secondary text-sm">已停止本页翻译。点击“继续翻译”可重新开始。</p>}
         {status === 'partial' && <p role="status" className="theme-text-secondary text-xs">{pageData?.warning || '部分段落未完成，已保留当前译文；可手动重试。'}</p>}
         {status === 'loading' && (
           <div className="theme-card flex items-center gap-3 rounded-2xl p-5">
             <Loader2 size={18} className="animate-spin text-pixiu" />
             <div>
-              <p className="theme-text-primary text-sm font-semibold">正在生成当前页译文...</p>
+              <p className="theme-text-primary text-sm font-semibold">正在翻译本页…</p>
             </div>
           </div>
         )}
@@ -454,7 +456,7 @@ const TranslationPanel = ({ pdfId, pdfFileName, fileUrl, currentPage = 0, pageDa
             <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-pixiu/10">
               <ScrollText size={24} className="text-pixiu" />
             </div>
-            <p className="theme-text-primary text-sm font-semibold">打开全景翻译后，这里会展示当前页的译文。</p>
+            <p className="theme-text-primary text-sm font-semibold">正在准备本页译文…</p>
             <p className="theme-text-secondary mt-2 max-w-xs text-xs leading-relaxed">
               正文译文与原图、表格和公式一起阅读，未完成的段落保留原文。
             </p>

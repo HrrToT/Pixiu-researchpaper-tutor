@@ -19,26 +19,26 @@ export function useTaskLearning(workspace, api = taskWorkspaceApi) {
   const currentKey = activeTask ? activityKey(activeTask) : '';
   const concepts = activeTask?.activeActivity?.concepts || [];
   const completionSuggested = concepts.length > 0 && concepts.every(concept => concept.status === 'demonstrated');
-  const inputMode = inputModes[currentKey] === 'chat' ? 'chat' : completionSuggested ? 'ask' : inputModes[currentKey] || 'answer';
+  const inputMode = completionSuggested ? 'chat' : inputModes[currentKey] || 'chat';
   const setInputMode = mode => setInputModes(previous => ({ ...previous, [currentKey]: mode }));
   useEffect(() => {
     for (const record of Object.values(operations.records)) {
       if (record.kind !== 'learning.action' || record.status !== 'succeeded'
-          || record.request?.action !== 'ask' || handledDetours.current.has(record.requestId)) continue;
+          || !['ask', 'answer'].includes(record.request?.action) || handledDetours.current.has(record.requestId)) continue;
       handledDetours.current.add(record.requestId);
       try { localStorage.setItem('pixiu-learning-handled-detours', JSON.stringify([...handledDetours.current])); } catch { /* Recovery remains available in the current session. */ }
       const key = `${record.taskId}:${record.request.activityId}`;
-      // A recovered server receipt completes the detour; synchronize its separate composer mode once.
+      // A successful answer or detour completes its turn; restore ordinary chat once.
       // eslint-disable-next-line react-hooks/set-state-in-effect
-      setInputModes(previous => ({ ...previous, [key]: 'answer' }));
+      setInputModes(previous => ({ ...previous, [key]: 'chat' }));
     }
   }, [operations.records]);
   const start = (task, pdfId, mode, goal) => {
-    setInputModes(previous => ({ ...previous, [activityKey(task)]: 'answer' }));
+    setInputModes(previous => ({ ...previous, [activityKey(task)]: 'chat' }));
     return operations.start(task, 'learning.start', { pdfId, mode, goal: goal || '理解论文的关键问题、方法和证据', expectedTaskRevision: task.revision });
   };
   const act = (task, action, text = '') => {
-    if (action === 'resume' || action === 'retry') setInputModes(previous => ({ ...previous, [activityKey(task)]: 'answer' }));
+    if (action === 'resume' || action === 'retry') setInputModes(previous => ({ ...previous, [activityKey(task)]: action === 'retry' ? 'answer' : 'chat' }));
     return operations.start(task, 'learning.action', { activityId: task.activeActivity.activityId,
       expectedRevision: task.activeActivity.revision, expectedTaskRevision: task.revision, action, text });
   };

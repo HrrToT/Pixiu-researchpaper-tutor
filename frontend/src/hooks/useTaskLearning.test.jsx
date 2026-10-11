@@ -10,15 +10,31 @@ const setup = (task) => {
   return {api, workspace};
 };
 describe('durable task learning', () => {
-  it('offers follow-up after all concepts are demonstrated and answering after explicit review', () => {
+  it('returns to ordinary chat after an explicit answer succeeds and never resubmits its receipt', async () => {
+    const task = { id: 't', revision: 1, activeActivity: { activityId: 'a', revision: 0 } };
+    const { api, workspace } = setup(task);
+    const { result } = renderHook(() => useTaskLearning(workspace, api));
+    act(() => result.current.setInputMode('answer'));
+    await act(async () => result.current.act(task, 'answer', '剪枝删除冗余高斯'));
+    expect(result.current.inputMode).toBe('answer');
+    const request = api.startOperation.mock.calls[0][1];
+    api.listOperations.mockResolvedValue([{ taskId: 't', requestId: request.requestId, kind: 'learning.action', request: request.input, status: 'succeeded', task }]);
+    await act(async () => result.current.refresh());
+    expect(result.current.inputMode).toBe('chat');
+    act(() => result.current.setInputMode('answer'));
+    await act(async () => result.current.refresh());
+    expect(result.current.inputMode).toBe('answer');
+    expect(api.startOperation).toHaveBeenCalledTimes(1);
+  });
+  it('defaults to ordinary chat during learning and after all concepts are demonstrated', () => {
     const task = { id:'t', revision:1, activeActivity:{ activityId:'a', revision:1, concepts:[{ id:'c', status:'demonstrated' }] } };
     const { api, workspace } = setup(task);
     const { result, rerender } = renderHook(({ current }) => useTaskLearning(current, api), { initialProps:{ current:workspace } });
     expect(result.current.completionSuggested).toBe(true);
-    expect(result.current.inputMode).toBe('ask');
+    expect(result.current.inputMode).toBe('chat');
     rerender({ current:{ ...workspace, tasks:[{ ...task, activeActivity:{ ...task.activeActivity, concepts:[{ id:'c', status:'needs_review' }] } }] } });
     expect(result.current.completionSuggested).toBe(false);
-    expect(result.current.inputMode).toBe('answer');
+    expect(result.current.inputMode).toBe('chat');
   });
   it('keeps detour input mode within its task and activity', async () => {
     const taskA = { id:'A', revision:1, activeActivity:{ activityId:'a1', revision:0 } };
@@ -28,13 +44,13 @@ describe('durable task learning', () => {
     const { result, rerender } = renderHook(({ current }) => useTaskLearning(current, api), { initialProps:{ current:workspace } });
     act(() => result.current.setInputMode('ask'));
     rerender({ current:{ ...workspace, activeTaskId:'B' } });
-    expect(result.current.inputMode).toBe('answer');
+    expect(result.current.inputMode).toBe('chat');
     rerender({ current:workspace });
     expect(result.current.inputMode).toBe('ask');
     rerender({ current:{ ...workspace, tasks:[{ ...taskA, activeActivity:{ activityId:'a2', revision:0 } }, taskB] } });
-    expect(result.current.inputMode).toBe('answer');
+    expect(result.current.inputMode).toBe('chat');
   });
-  it('returns to answering only after the detour succeeds, without replaying a model call', async () => {
+  it('returns to ordinary chat only after the detour succeeds, without replaying a model call', async () => {
     const task = { id:'t', revision:1, activeActivity:{ activityId:'a', revision:0 } };
     const { api, workspace } = setup(task);
     const { result } = renderHook(() => useTaskLearning(workspace, api));
@@ -45,7 +61,7 @@ describe('durable task learning', () => {
     api.listOperations.mockResolvedValue([{ taskId:'t', requestId:request.requestId, kind:'learning.action',
       request:request.input, status:'succeeded', task }]);
     await act(async () => result.current.refresh());
-    expect(result.current.inputMode).toBe('answer');
+    expect(result.current.inputMode).toBe('chat');
     act(() => result.current.setInputMode('ask'));
     await act(async () => result.current.refresh());
     expect(result.current.inputMode).toBe('ask');

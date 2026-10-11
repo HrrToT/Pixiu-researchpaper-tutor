@@ -13,7 +13,7 @@ import { normalizeSentenceReferences } from './evidenceCitationModel.ts';
 import { getSkillSuggestions, parseSkillCommand, resolveConversationSkill } from '../utils/conversationSkills';
 import { artifactChatPreview } from '../utils/artifactChatPreview';
 import useConversationDraft from '../hooks/useConversationDraft';
-import { completeMaterialMention, pendingMaterialMention, type MentionMaterial } from '../utils/materialMentions';
+import { completeMaterialMention, materialDraft, pendingMaterialMention, withMaterialReferences, type MentionMaterial } from '../utils/materialMentions';
 
 interface ChatJumpSource {
   sourceId?: string;
@@ -75,7 +75,9 @@ interface ChatPanelProps {
   showHeader?: boolean;
   onCollapse?: () => void;
   focusMessage?: { id?: string | number; index?: number; token: number };
-  starterPrompts?: Array<{ label: string; text: string }>;
+  starterPrompts?: Array<{ label: string; text: string; onSelect?: () => void }>;
+  sendLabel?: string;
+  inputPlaceholder?: string;
 }
 
 interface EvidenceReferencesProps {
@@ -133,9 +135,12 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
   focusedMaterialId,
   conversationId,
   starterPrompts = [],
+  sendLabel = '发送消息', inputPlaceholder,
   renderMessageAfter, historyContent, composerContext, currentActivity, focusMessage, showHeader = false, onCollapse,
 }) => {
   const [inputValue, setInputValue, draftError, clearInput] = useConversationDraft(conversationId);
+  const draftMaterials: { text: string; references: string[] } = enableSkills ? materialDraft(inputValue) : { text: inputValue, references: [] };
+  const visibleInput = draftMaterials.text;
   useEffect(() => { onDraftChange?.(inputValue); }, [inputValue, onDraftChange]);
   const [submitting, setSubmitting] = useState(false);
   const submittingRef = useRef(false);
@@ -205,8 +210,8 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
   }, [inputValue, conversationId, inputExpanded]);
   const [suggestionsDismissed, setSuggestionsDismissed] = useState(false);
   const suggestionsRef = useRef<HTMLDivElement | null>(null);
-  const skillSuggestions = enableSkills && !suggestionsDismissed ? getSkillSuggestions(inputValue) : [];
-  const pendingMention = enableSkills && !suggestionsDismissed ? pendingMaterialMention(inputValue) : null;
+  const skillSuggestions = enableSkills && !suggestionsDismissed ? getSkillSuggestions(visibleInput) : [];
+  const pendingMention = enableSkills && !suggestionsDismissed ? pendingMaterialMention(visibleInput) : null;
   const suggestionsOpen = Boolean(pendingMention || skillSuggestions.length);
   useEffect(() => {
     if (!suggestionsOpen) return;
@@ -227,7 +232,11 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
 
   const explicitSkill = enableSkills ? parseSkillCommand(inputValue) : null;
   const recognizedSkill = enableSkills ? resolveConversationSkill(inputValue) : null;
-  const selectedMentions = enableSkills ? Array.from(new Set(Array.from(String(inputValue).matchAll(/@\{([^}]+)\}/gu), match => match[1]))) : [];
+  const selectedMentions = draftMaterials.references;
+  const materialLabel = (reference: string) => {
+    const material = materials.find(item => [item.id, item.title, item.filename].includes(reference));
+    return material?.title || material?.filename || reference;
+  };
   const searchResults = search.trim() ? messages.map((message, index) => ({ message, index }))
     .filter(({ message }) => message.content.toLocaleLowerCase().includes(search.trim().toLocaleLowerCase())) : [];
 
@@ -305,7 +314,7 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
   };
 
   const handleSend = async (): Promise<void> => {
-    if (!inputValue.trim() || isLoading || submittingRef.current) return;
+    if (!visibleInput.trim() || isLoading || submittingRef.current) return;
     const submittedText = inputValue;
     submittingRef.current = true;
     setSubmitting(true); setSendError('');
@@ -331,7 +340,7 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
 
   const handleInputChange = (event: React.ChangeEvent<HTMLTextAreaElement>): void => {
     setSuggestionsDismissed(false);
-    setInputValue(event.target.value);
+    setInputValue(enableSkills ? withMaterialReferences(event.target.value, selectedMentions) : event.target.value);
   };
 
   const renderMessageActions = (message: ChatMessage, index: number): React.ReactNode => message.synthetic ? null : (
@@ -404,8 +413,8 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
         {!messages.length && !isLoading && starterPrompts.length > 0 && <div className="reader-chat-start" aria-label="对话起点">
           <strong>从一个问题开始</strong>
           <p>{materials.length ? '告诉我哪里读不懂，或选择一个起点。' : '先上传论文，或告诉我你想了解的概念。'}</p>
-          <div>{starterPrompts.map(prompt => <button key={prompt.label} type="button" disabled={submitting}
-            onClick={() => { setInputValue(prompt.text); textareaRef.current?.focus(); }}>{prompt.label}</button>)}</div>
+          <div>{starterPrompts.map(prompt => <button key={prompt.label} type="button" disabled={submitting || Boolean(visibleInput.trim())}
+            onClick={() => { if (prompt.onSelect) prompt.onSelect(); else { setInputValue(withMaterialReferences(prompt.text, selectedMentions)); textareaRef.current?.focus(); } }}>{prompt.label}</button>)}</div>
         </div>}
 
         {messages.map((message: ChatMessage, index: number) => {
@@ -486,18 +495,18 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
         title={inputExpanded ? '收起输入（Esc）' : '展开输入'} aria-expanded={inputExpanded} aria-haspopup={inputExpanded ? undefined : 'dialog'}
         onClick={() => setInputExpanded(value => !value)}>{inputExpanded ? <Minimize2 size={14} /> : <Maximize2 size={14} />}</button>
       <div className="reader-chat-composer">
-        <textarea ref={textareaRef} rows={2} value={inputValue} onChange={handleInputChange} onKeyDown={handleKeyDown}
-          aria-label="输入问题" placeholder={enableSkills ? '输入问题，/ 选功能，@ 选材料' : '输入问题'} />
+        <textarea ref={textareaRef} rows={2} value={visibleInput} onChange={handleInputChange} onKeyDown={handleKeyDown}
+          aria-label="输入问题" placeholder={inputPlaceholder || (enableSkills ? '输入问题，/ 选功能，@ 选材料' : '输入问题')} />
       </div>
       {(composerContext !== undefined ? composerContext : contextLabel) && <div className="reader-chat-context chat-composer-context">{composerContext !== undefined ? composerContext : contextLabel}</div>}
       {copyError && <p className="reader-chat-draft-error" role="alert">{copyError}</p>}
       {(draftError || sendError) && <p className="reader-chat-draft-error" role="alert">{draftError || sendError}</p>}
       {enableSkills && <div className="chat-composer-tools">
-        <WorkbenchPopover label="对话材料" className="chat-material-selector" align="left" trigger={<><FileText size={14} /><span>{selectedMentions.length ? `指定材料 ${selectedMentions.length} 篇` : `任务材料 ${materials.length} 篇`}</span><ChevronDown size={12} /></>}>
+        <WorkbenchPopover label="对话材料" className="chat-material-selector" align="left" trigger={<><FileText size={14} /><span>{selectedMentions.length ? `指定材料 · ${selectedMentions.length}篇` : `全部材料 · ${materials.length}篇`}</span><ChevronDown size={12} /></>}>
           {(close: (restore?: boolean) => void) => <>
             <div className="chat-picker-heading"><strong>本轮对话材料</strong><span>选择即生效</span></div>
             <button type="button" className="chat-material-all" aria-label="使用本任务全部材料" aria-pressed={!selectedMentions.length}
-              onClick={() => setInputValue(inputValue.replace(/@\{[^}]+\}/gu, '').replace(/ {2,}/gu, ' ').trimStart())}>
+              onClick={() => setInputValue(visibleInput)}>
               <span className="chat-picker-check" aria-hidden="true">{!selectedMentions.length && <Check size={14} />}</span>
               <span>任务全部材料</span><span className="chat-picker-count">{materials.length} 篇</span>
             </button>
@@ -506,11 +515,13 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
               {materials.map(material => {
                 const title = material.title || material.filename || material.id;
                 const token = completeMaterialMention('@', material, materials).trim();
-                const selected = inputValue.includes(token) || selectedMentions.includes(material.id);
+                const reference = materialDraft(token).references[0];
+                const selected = selectedMentions.includes(reference) || selectedMentions.includes(material.id);
                 return <label key={material.id} className={`chat-material-option ${selected ? 'is-selected' : ''}`}>
                   <input type="checkbox" aria-label={title} checked={selected} onChange={() => {
-                    if (selected) setInputValue(inputValue.split(token).join('').split(`@{${material.id}}`).join('').replace(/ {2,}/gu, ' ').trimStart());
-                    else setInputValue(`${inputValue}${inputValue && !/\s$/u.test(inputValue) ? ' ' : ''}${token} `);
+                    setInputValue(withMaterialReferences(visibleInput, selected
+                      ? selectedMentions.filter(item => item !== reference && item !== material.id)
+                      : [...selectedMentions, reference]));
                   }} />
                   <FileText size={15} aria-hidden="true" />
                   <span className="chat-material-name" title={title}>{title}</span>
@@ -535,15 +546,16 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
         {recognizedSkill && <span className="chat-draft-chip">{recognizedSkill.command}
           {explicitSkill && <button type="button" aria-label={`取消${explicitSkill.command}功能`} onClick={() => setInputValue(inputValue.replace(/^\s*\/[^\s]+\s*/u, ''))}><X size={12} /></button>}
         </span>}
-        {selectedMentions.map(label => <span key={label} className="chat-draft-chip" title={label}><span className="chat-draft-chip-label">@{label}</span>
-          <button type="button" aria-label={`移除材料 ${label}`} onClick={() => setInputValue(inputValue.split(`@{${label}}`).join('').replace(/ {2,}/gu, ' '))}><X size={12} /></button>
+        {selectedMentions.map(label => <span key={label} className="chat-draft-chip" title={materialLabel(label)}><span className="chat-draft-chip-label">{materialLabel(label).split(/[:：]/u)[0]}</span>
+          <button type="button" aria-label={`移除材料 ${materialLabel(label)}`} onClick={() => setInputValue(withMaterialReferences(visibleInput, selectedMentions.filter(reference => reference !== label)))}><X size={12} /></button>
         </span>)}
       </div>}
+      {messages.length > 0 && !isLoading && !visibleInput.trim() && starterPrompts.length > 0 && <details className="chat-next-steps"><summary>下一步</summary><div>{starterPrompts.map(prompt => <button key={prompt.label} type="button" onClick={() => { if (prompt.onSelect) prompt.onSelect(); else { setInputValue(withMaterialReferences(prompt.text, selectedMentions)); textareaRef.current?.focus(); } }}>{prompt.label}</button>)}</div></details>}
       {pendingMention && (
         <div ref={suggestionsRef} className="chat-composer-menu theme-panel theme-border mx-4 max-h-48 overflow-auto rounded-lg border p-1" role="group" aria-label="选择任务材料">
           {materialSuggestions.map(material => <button key={material.id} type="button"
             className="theme-text-primary block w-full rounded px-3 py-2 text-left text-sm hover:bg-[var(--panel-muted)]"
-            onClick={() => { setInputValue(completeMaterialMention(inputValue, material, materials)); textareaRef.current?.focus(); }}>
+            onClick={() => { setInputValue(withMaterialReferences(completeMaterialMention(visibleInput, material, materials).trimEnd(), selectedMentions)); textareaRef.current?.focus(); }}>
             {material.title || material.filename || material.id}
           </button>)}
           {!materialSuggestions.length && <span className="theme-text-secondary block px-3 py-2 text-sm">没有匹配的任务论文</span>}
@@ -561,7 +573,8 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
       )}
       <div className="workbench-composer-send">
         {isLoading && onAbortChat && <button type="button" onClick={onAbortChat} className="chat-composer-stop" title="停止生成" aria-label="停止生成"><X size={16} />停止</button>}
-        <button type="button" onClick={handleSend} disabled={!inputValue.trim() || isLoading || submitting} className="reader-chat-send" aria-label="发送消息">
+        <button type="button" onClick={handleSend} disabled={!visibleInput.trim() || isLoading || submitting} className="reader-chat-send" aria-label={sendLabel} title={sendLabel}>
+          {sendLabel !== '发送消息' && <span>{sendLabel}</span>}
           <Send size={18} />
         </button>
       </div>

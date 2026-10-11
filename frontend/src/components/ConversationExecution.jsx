@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { operationStatusLabels, operationQuestion } from './conversationProcessingModel';
+import { operationStatusLabels, operationStatusText, operationFailureSummary, operationQuestion } from './conversationProcessingModel';
 import WorkbenchPopover from './WorkbenchPopover';
 
 const activeStatuses = new Set(['queued', 'running', 'unknown', 'cancelling']);
@@ -15,7 +15,8 @@ export function OperationRecord({ record, busy, showQuestion = true, onRetry, on
     catch (error) { setActionError(error?.message || '操作未完成，请重试。'); }
   };
   return <div className="unified-execution-row" data-request-id={record.requestId} data-status={record.status}>
-    <span role="status" className="unified-execution-status"><span className="unified-execution-dot" aria-hidden="true" />{operationStatusLabels[record.status] || record.status}</span>
+    <span role="status" className="unified-execution-status"><span className="unified-execution-dot" aria-hidden="true" />{operationStatusText(record)}</span>
+    {operationFailureSummary(record) && <span className="unified-execution-reason">{operationFailureSummary(record)}</span>}
     {showQuestion && question && <span className="unified-execution-question" title={question}>{question}</span>}
     <div className="unified-execution-actions">
     {record.retriedBy ? <span>已由后续请求接续</span> : record.status === 'succeeded'

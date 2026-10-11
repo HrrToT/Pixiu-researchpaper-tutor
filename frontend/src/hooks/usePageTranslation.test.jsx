@@ -15,6 +15,35 @@ function setup(api, stored = null) {
 }
 
 describe('page translation request lifecycle', () => {
+  it('stops only the selected page, ignores late output and requires explicit restart', async () => {
+    const finish = {};
+    const api = { translatePage: vi.fn((pdfId, pageIndex) => new Promise(resolve => { finish[pageIndex] = resolve; })) };
+    const { result } = setup(api);
+    let first, second;
+    act(() => { first = result.current.requestPageTranslation({ pageIndex: 0, pageText: 'first' }); second = result.current.requestPageTranslation({ pageIndex: 1, pageText: 'second' }); });
+    act(() => result.current.handleCancelTranslation(0));
+    expect(api.translatePage.mock.calls[0][5].signal.aborted).toBe(true);
+    expect(api.translatePage.mock.calls[1][5].signal.aborted).toBe(false);
+    expect(result.current.translationState.pages[0].status).toBe('cancelled');
+    await act(async () => { finish[0]({ translatedText: 'late' }); finish[1]({ translatedText: '第二页译文' }); await first; await second; });
+    expect(result.current.translationState.pages[0].translatedText).toBe('');
+    expect(result.current.translationState.pages[1].translatedText).toBe('第二页译文');
+    await act(async () => result.current.requestPageTranslation({ pageIndex: 0, pageText: 'first' }));
+    expect(api.translatePage).toHaveBeenCalledTimes(2);
+    expect(normalizeTranslationState(result.current.translationState, 'A').pages[0].status).toBe('cancelled');
+  });
+
+  it('keeps previous partial translation when its regeneration is stopped', async () => {
+    let finish;
+    const api = { translatePage: vi.fn(() => new Promise(resolve => { finish = resolve; })) };
+    const { result } = setup(api, { pdfId: 'A', currentPage: 0, pages: { 0: { status: 'partial', translatedText: '已有译文', sourceText: 'source' } } });
+    let request;
+    act(() => { request = result.current.handleRetryTranslation(result.current.translationState); });
+    act(() => result.current.handleCancelTranslation(0));
+    expect(result.current.translationState.pages[0]).toMatchObject({ status: 'partial', translatedText: '已有译文' });
+    await act(async () => { finish({ translatedText: 'stale' }); await request; });
+    expect(result.current.translationState.pages[0].translatedText).toBe('已有译文');
+  });
   it('keeps the reader page when an older translation finishes and retries the visible page', async () => {
     let finishFirst;
     const api = { translatePage: vi.fn()

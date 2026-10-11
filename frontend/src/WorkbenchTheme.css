@@ -167,3 +167,11 @@ html[data-theme=dark] .unified-app {
 .document-action-dialog .document-action-name { color:inherit; overflow-wrap:anywhere; }
 .document-action-footer { display:flex; justify-content:flex-end; gap:8px; padding-top:8px; }
 .document-action-footer button { padding:8px 14px; border:1px solid var(--border-subtle); border-radius:8px; }
+.unified-learning-question-actions { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin:8px 0; font-size:12px; }
+.unified-learning-question-actions > button { border:1px solid var(--border-subtle); padding:6px 10px; border-radius:6px; }
+.unified-learning-question-actions > button:first-child { color:var(--accent); background:var(--accent-soft); }
+.chat-next-steps { margin-top: 6px; font-size: 12px; color: var(--text-secondary); }
+.chat-next-steps > summary { cursor: pointer; width: fit-content; padding: 2px 4px; }
+.chat-next-steps > div { display: flex; flex-wrap: wrap; gap: 6px; padding-top: 6px; }
+.chat-next-steps button { border: 1px solid var(--border-subtle); border-radius: 8px; padding: 5px 8px; background: transparent; }
+.unified-execution-reason { color: var(--text-secondary); font-size: 12px; }
