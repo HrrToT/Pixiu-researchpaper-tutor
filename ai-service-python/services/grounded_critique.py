@@ -80,8 +80,33 @@ def check_critique_payload(payload, sources, catalog, *, allow_partial=False, re
             if not isinstance(raw.get('summary'), str) or not raw['summary'].strip() or len(raw['summary']) > 320:
                 raise ValueError('批判结论正文无效。')
             selected = resolve_references(raw, catalog, require_selection=True)
-            if not raw.get('numericBindings') and FREE_NUMBER.search(raw['summary']):
+            numeric_text = raw['summary']
+            for identifier in re.findall(r'\bExp(?:eriment)?\s*#?\s*[1-9]\d*(?:\s*(?:→|->)\s*#?\s*[1-9]\d*)?', numeric_text, re.I):
+                flat = re.sub(r'\s+', '', identifier)
+                if any(flat in re.sub(r'\s+', '', ref['quote']) for ref in selected['references']):
+                    numeric_text = numeric_text.replace(identifier, '该消融步骤')
+            if not raw.get('numericBindings') and not raw.get('measurements') and FREE_NUMBER.search(numeric_text):
                 raise ValueError('批判数值须通过绑定校验，不能在定性结论中直接填写。')
+            checked = check_numeric_claim(selected, sources)
+            selected['references'] = checked['references']
+            cited = '\n'.join(ref['quote'] for ref in checked['references'])
+            for term, evidence in ((r'剪枝', r'prun'), (r'量化', r'quantiz|\bVQ\b|VQ SH|VQ All'),
+                                   (r'蒸馏', r'distill|transfer[^.]{0,30}knowledge|knowledge[^.]{0,30}transfer|soft targets'), (r'消融', r'ablation|\bExp\s*#|Table row '),
+                                   (r'(?<![A-Za-z])SSIM(?![A-Za-z])', r'\bSSIM\b'),
+                                   (r'(?<![A-Za-z])PSNR(?![A-Za-z])', r'\bPSNR\b'),
+                                   (r'(?<![A-Za-z])LPIPS(?![A-Za-z])', r'\bLPIPS\b')):
+                if re.search(term, raw['summary'], re.I) and not re.search(evidence, cited, re.I):
+                    raise ValueError('本条判断的核心方法或指标未被其引用覆盖。')
+            if (re.search(r'(?:SSIM|PSNR|LPIPS)[^。；]{0,8}(?:恢复|还原)|(?:恢复|还原)[^。；]{0,8}(?:SSIM|PSNR|LPIPS)', raw['summary'], re.I)
+                    and not re.search(r'\b(?:restor\w*|recover\w*|preserv\w*)\b|恢复|还原', cited, re.I)):
+                raise ValueError('指标改善不能直接概括为指标恢复。')
+            if (re.search(r'避免[^。；]{0,10}(?:量化全部|全部属性|全属性量化)', raw['summary'])
+                    and not re.search(r'all (?:attributes|elements)|VQ All', cited, re.I)):
+                raise ValueError('关于全属性量化的建议缺少对应对照依据。')
+            if (re.search(r'全局显著性|Global\s+Significance|\bGS\b', raw['summary'], re.I)
+                    and not any(re.search(r'Global\s+Significance|\bGS\b|全局显著性', ref['quote'], re.I)
+                                for ref in selected['references'])):
+                raise ValueError('涉及全局显著性的判断须在本条引用中包含对应依据。')
             if (raw['kind'] == 'inference'
                     and re.search(r'(?:因此|所以|说明|意味着)[^。；]{0,35}(?:主要|仅|只)[^。；]{0,25}训练视角', raw['summary'])
                     and not any(re.search(r'(?:only|limited to)[^.]{0,50}training (?:views|viewpoints)', ref['quote'], re.I)
@@ -117,7 +142,6 @@ def check_critique_payload(payload, sources, catalog, *, allow_partial=False, re
                     and re.search(r'(?:远离|远视角|训练分布外)[^。；]{0,45}(?:不受|不由|不被)[^。；]{0,18}约束',
                                   raw['summary'])):
                 raise ValueError('高斯采样不能推出远视角误差不受损失约束，请保留为待核查问题。')
-            checked = check_numeric_claim(selected, sources)
         except ValueError as error:
             if not allow_partial:
                 raise
@@ -135,6 +159,10 @@ def check_critique_payload(payload, sources, catalog, *, allow_partial=False, re
         # the authors omitted a dataset. Mask only that exact topic for this check.
         absence_topic = re.sub(r'未见(?:过的?)?数据集|unseen\s+datasets?', '目标域', topic, flags=re.I)
         if not topic or len(topic) > 100 or ABSENCE.search(absence_topic):
+            if allow_partial:
+                if rejected is not None:
+                    rejected.append('待核查项只能描述主题，不能预设论文缺失。')
+                continue
             raise ValueError('待核查项只能描述主题，不能预设论文缺失。')
         questions.append('待核查：' + topic)
     if not findings and not questions:
@@ -153,6 +181,7 @@ def synthesize_critique(question, sources, *, allow_partial=False):
 通常给1到3组最相关结论；用户明确提出多个子问题时可分别回答，最多8组，每组最多一个observation和一个inference。不凑数、不输出分析过程或评分。
 按关注点组织assessments，每项的observation只写原文直接报告的事实，inference只写基于本项独立引用的推断；类别由对应位置确定，observation/inference对象不填写kind，numericBindings内的kind仍须填写。
 同一关注点的事实与风险可以各写一句，但必须分在两个对象中并各有自己的references，不共用引用字段，不用“上述”“这意味着”等依赖另一对象才能读懂的句子。
+每个对象中的方法名和实验条件都要被本对象的引用覆盖。例如写“使用GS缓解损失”，必须选择包含Global Significance及其作用的摘录，不能只引用VQ属性选择；observation引用了它不代表inference也已引用。
 不要在observation中追加“可能限制”“因此存在风险”等自己的推断，也不要因检索未命中追加“尚未验证”“没有提供实验”等缺失断言；需要核查的主题单独放pendingQuestions。若原文明确承认限制，可在observation中使用authorLimitation=true、以“作者明确说明”开头并选择直接说明该限制的摘录，不得据此扩大限制范围。
 例如：observation可报告作者在训练视角周围采样；inference可讨论训练监督分布与目标视角的关系；是否适用于某目标域放待核查，不把该域实验说成论文缺失。
 每项只回答一个独立判断。不同机制指向同一个问题、影响和核查方法时合并为一个关注点，不按机制名称凑数；不同步骤的依据分别准确引用。优先直接回答用户主张，再解释必要机制。
@@ -177,6 +206,7 @@ references只写quoteId，系统唯一恢复来源和原文，不重复填写sou
 每个assessment提供非断言性短主题title、同一关注点共享的topicKey、回答的questionPartIds；conclusion选择该项observation或inference作为关键判断。先展示结论再解释依据，结论被拒绝时整个观点不发布。
 实验性主张优先引用直接结果、比较条件、消融及限制；机制说明不能代替性能证据。纳入相关反例，不强制缺点、正反对称或两点凑数。用户要求的字数和句数应落实到每项独立结论句，短结论仍保留必要条件。
 可提供独立引用并校验的overall总判断；不能只给无出处的整体评级。每个结论应独立完整，避免空泛“需要更多实验”；待核查主题指出具体条件或要隔离的变量。
+首次出现且影响理解的术语，若正文有对应定义且字数允许，给一个短括注；不安排额外学习任务。可执行建议最多一项，必须对应具体疑点。定性短回答不要写具体阶数、比例或测量数字。
 仅输出JSON：{"questionParts":[{"id":"main","text":"用户要求判断的主张"}],
 "overall":{"kind":"inference","summary":"一句有依据的总判断，可省略","references":[{"quoteId":"摘录标识"}]},
 "assessments":[{"section":"contribution或weakness或risk","title":"适用条件","topicKey":"目标视角评估","questionPartIds":["main"],"conclusion":"inference",

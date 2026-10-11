@@ -62,6 +62,17 @@ def test_requested_decision_count_and_optional_pending_are_not_hidden_as_success
     assert complete['critique']['pending']
 
 
+def test_invalid_optional_pending_does_not_discard_valid_judgments_or_shift_part_identity():
+    value = fixture()
+    value['questionParts'].append({'id': 'next', 'text': '另一个需要核查的条件'})
+    value['pendingQuestions'] = [{'topic': '论文没有给出实验', 'questionPartIds': ['main']},
+                                 {'topic': '其他视角下的表现', 'questionPartIds': ['next']}]
+    result = run(value)
+    assert len(result['critique']['issues']) == 2
+    assert result['critique']['pending'][0]['questionPartIds'] == ['next']
+    assert '论文没有给出实验' not in result['message']
+
+
 def test_inability_to_match_reported_effect_is_not_a_paper_absence_claim():
     value = fixture()
     value['assessments'][0]['inference']['summary'] = '更改剪枝配置可能无法得到作者报告的质量平衡。'
@@ -117,6 +128,24 @@ def test_budget_never_slices_claim_condition_or_citation(question, limit):
     for block in result['critique']['chatBlocks']:
         assert block['text'].endswith('[1]') or block['text'].endswith('[2]')
     assert len(result['critique']['artifactBlocks']) == 2
+
+
+def test_per_point_limit_does_not_replace_the_whole_answer_limit():
+    from services.conversation_capability_service import _requested_chat_limit
+    assert _requested_chat_limit('每个结论句最多70字，给两点', 400) == 400
+    assert _requested_chat_limit('每点60字，总共150字', 400) == 150
+
+
+def test_cited_experiment_step_identifiers_are_not_unbound_measurements():
+    sources = [{'sourceId': 'ablation', 'pdfId': 'A.pdf', 'text': 'Pruning and recovery (Exp #1 →3) show negligible quality change.'}]
+    _, _, catalog = prepare_quote_sources(sources)
+    value = {'assessments': [{'section': 'contribution', 'observation': {
+        'summary': '作者报告剪枝恢复（Exp #1→3）的质量变化可忽略。',
+        'references': [{'quoteId': next(iter(catalog['ablation']))}]}}]}
+    assert len(run(value, sources=sources)['critique']['issues']) == 1
+    value['assessments'][0]['observation']['summary'] = '作者报告剪枝恢复（Exp #1→4）的质量变化可忽略。'
+    with pytest.raises(ValueError):
+        run(value, sources=sources)
 
 
 def test_explicit_author_limitation_is_retained_with_direct_attributed_reference():
@@ -247,6 +276,27 @@ def test_mult_paper_repeated_local_citations_are_remapped_once(monkeypatch):
     assert '[3]' in answer['artifact']['text'] and '[4]' in answer['artifact']['text']
     assert len({claim['id'] for claim in answer['critique']['claims']}) == 8
     assert answer['critique']['presentation']['standalone']
+    assert [issue['paperIds'][0] for issue in answer['critique']['issues']] == ['A.pdf', 'B.pdf', 'A.pdf', 'B.pdf']
+    assert [issue['paperIds'][0] for issue in answer['critique']['issues'][:2]] == ['A.pdf', 'B.pdf']
+
+
+def test_chinese_adjacent_metric_needs_its_own_selected_quote():
+    value = fixture()
+    value['assessments'][0]['observation']['summary'] = '作者报告剪枝导致SSIM下降。'
+    result = run(value)
+    assert all('SSIM' not in claim['text'] for claim in result['critique']['claims'])
+    assert len(result['critique']['issues']) == 2
+
+
+def test_improved_metric_is_not_reported_as_restored():
+    sources = [{'sourceId': 'metric', 'pdfId': 'A.pdf', 'text': 'Fine tuning improves SSIM.'}]
+    _, _, catalog = prepare_quote_sources(sources)
+    claim = {'summary': '微调使SSIM恢复。', 'references': [{'quoteId': next(iter(catalog['metric']))}]}
+    value = {'assessments': [{'section': 'risk', 'observation': claim}],
+             'pendingQuestions': [{'topic': '微调后的质量范围'}]}
+    result = run(value, sources=sources)
+    assert not result['critique']['issues']
+    assert 'SSIM恢复' not in result['message']
 
 
 def test_evidence_selection_reserves_results_conditions_ablation_and_counterevidence():

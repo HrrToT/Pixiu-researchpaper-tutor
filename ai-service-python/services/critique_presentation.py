@@ -74,13 +74,19 @@ def select_chat_blocks(critique, numbers, *, limit=400, point_limit=None, senten
     # Critical coverage gaps stay in the short answer when they fit. The full
     # artifact retains all gaps; tiny budgets can use the epistemic fallback.
     if not blocks and not lead and not (mandatory_pending and visible_pending):
-        fallback = '当前证据不足以判断，详见成果。'
+        fallback = '完整判断见成果。' if issues else '当前证据不足以判断，详见成果。'
         if len(fallback) > limit:
             fallback = '见成果' if limit >= 3 else '阅'[:limit]
         lead = fallback
         remaining = limit - len(lead)
     if not mandatory_pending and (sentence_limit == 0 or len(visible_pending) + 2 > remaining):
         visible_pending = ''
+    if point_limit and len(blocks) < min(point_limit, len(issues)) and not mandatory_pending and sentence_limit is None:
+        note = f'完整{min(point_limit, len(issues))}项判断见成果。'
+        while blocks and len('\n\n'.join([lead, *(block['text'] for block in blocks), note]).strip()) > limit:
+            blocks.pop()
+        if len('\n\n'.join([lead, *(block['text'] for block in blocks), note]).strip()) <= limit:
+            visible_pending = note
     critique['lead'] = lead
     critique['chatBlocks'] = blocks
     critique['visiblePending'] = visible_pending
@@ -152,7 +158,8 @@ def organize_critique(payload, findings, questions, paper_id, question):
     claims = [claim for claim in claims if claim['id'] in used]
     pending = []
     for index, topic in enumerate(questions):
-        raw = (payload.get('pendingQuestions') or [])[index]
+        raw = next(item for item in (payload.get('pendingQuestions') or [])
+                   if item.get('topic', '').strip() == topic.removeprefix('待核查：'))
         linked = raw.get('questionPartIds', [parts[0]['id']])
         if not isinstance(linked, list) or any(value not in part_ids for value in linked):
             raise ValueError('待核查问题覆盖格式无效。')

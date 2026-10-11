@@ -79,6 +79,12 @@ def combine_critiques(results, request, sources):
             lead_ids.extend(value['presentation']['leadClaimIds'])
         critique['question']['parts'] = parts
         critique['coverage'] = coverage
+        # Explicit multi-paper requests give each paper a first turn before
+        # secondary points consume the short answer's budget.
+        buckets = [[issue for issue in critique['issues'] if paper in issue['paperIds']]
+                   for paper in [item['paperId'] for item in items]]
+        critique['issues'] = [bucket[index] for index in range(max(map(len, buckets), default=0))
+                              for bucket in buckets if index < len(bucket)]
         critique['presentation']['artifactIssueIds'] = [issue['id'] for issue in critique['issues']]
         critique['presentation']['leadClaimIds'] = lead_ids
         critique['lead'] = '\n\n'.join(item['critique'].get('artifactLead', '') for item in items)
@@ -92,7 +98,7 @@ def combine_critiques(results, request, sources):
     numbers = {source['sourceId']: index + 1 for index, source in enumerate(sources) if source.get('sourceId')}
     # Re-render from checked groups with the shared citation map and total budget.
     summary = select_chat_blocks(critique, numbers, limit=_requested_chat_limit(request.message, 400),
-                                 point_limit=requested_points(request.message), sentence_limit=requested_sentences(request.message))
+                                 point_limit=requested_points(request.message) or max(3, len(items)), sentence_limit=requested_sentences(request.message))
     by_claim = {claim['id']: claim for claim in critique['claims']}
     from services.critique_presentation import render_claim
     critique['artifactBlocks'] = [{'issueId': issue['id'], 'text': f"**{index + 1}. {issue['title']}**\n\n" + '\n\n'.join(

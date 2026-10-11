@@ -84,7 +84,7 @@ def test_numerical_criticism_requires_the_same_experiment_checks_as_comparison()
         check_critique_payload(wrong, sources, catalog)
     wrong = deepcopy(value)
     wrong['findings'][0].pop('measurements')
-    with pytest.raises(ValueError,match='逐项实验条件'):
+    with pytest.raises(ValueError,match='逐项实验条件|绑定校验'):
         check_critique_payload(wrong, sources, catalog)
 
 
