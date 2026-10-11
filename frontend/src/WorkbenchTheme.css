@@ -157,3 +157,13 @@ html[data-theme=dark] .unified-app {
 .unified-translation-narrow button[aria-pressed=true] { background:var(--accent-soft); color:var(--accent); }
 @media(pointer:coarse) { .unified-app button:not(.reader-chat-send),.unified-app summary { min-height:44px; } .workbench-composer-container.with-tools .chat-composer-tools { min-height:44px; } .workbench-composer-container.with-tools .workbench-composer-send { bottom:12px; } }
 @media(pointer:coarse) { .chat-expand-input { width:44px; height:44px; } .workbench-composer-container .reader-chat-composer textarea { padding-right:44px; } .workbench-composer-container.is-expanded .reader-chat-composer textarea { padding-right:0; } .chat-expanded-heading { padding-right:44px; } .workbench-composer-container.is-expanded .chat-composer-menu { bottom:78px; } }
+.document-action-dialog { width:min(440px,100%); overflow:auto; gap:16px; }
+.document-action-dialog h2 { margin:0; font-size:18px; font-weight:600; }
+.document-action-dialog p { margin:0; line-height:1.6; color:var(--text-muted); font-size:14px; }
+.document-action-dialog form { display:flex; flex-direction:column; gap:16px; }
+.document-action-dialog label { display:flex; flex-direction:column; gap:8px; font-size:14px; }
+.document-action-dialog input:not([type=checkbox]), .document-action-dialog select { width:100%; padding:10px 12px; border:1px solid var(--border-subtle); border-radius:8px; background:var(--panel-bg); color:inherit; }
+.document-action-dialog .document-action-checkbox { flex-direction:row; align-items:center; }
+.document-action-dialog .document-action-name { color:inherit; overflow-wrap:anywhere; }
+.document-action-footer { display:flex; justify-content:flex-end; gap:8px; padding-top:8px; }
+.document-action-footer button { padding:8px 14px; border:1px solid var(--border-subtle); border-radius:8px; }

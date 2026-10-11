@@ -733,7 +733,7 @@ describe('unified task conversation wiring', () => {
     fireEvent.click(screen.getByRole('button', { name: '版本笔记 · 笔记' }));
     fireEvent.click(screen.getByRole('button', { name: '编辑', exact: true }));
     fireEvent.change(screen.getByRole('textbox', { name: '编辑笔记与成果' }), { target: { value: '未保存修改' } });
-    fireEvent.click(screen.getByRole('button', { name: '成果更多操作' }));
+    fireEvent.click(screen.getByRole('button', { name: '笔记更多操作' }));
     fireEvent.click(screen.getByText('历史版本（1）'));
     fireEvent.change(screen.getByLabelText('选择历史版本'), { target: { value: '0' } });
     fireEvent.click(screen.getByRole('button', { name: '恢复这个版本' }));

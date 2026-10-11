@@ -1078,12 +1078,14 @@ export default function UnifiedTaskApp() {
   </>;
 
   const documentActions = activeDocument && <DocumentActions key={selectedDocumentKey} document={activeDocument} editing={documentEditing} dirty={documentDirty}
+    kind={selectedDocument.collection === 'notes' ? '笔记' : '成果'}
+    displayTitle={documentDisplayTitle(activeDocument, activeTask, papers)}
+    getPendingMove={() => { try { return JSON.parse(localStorage.getItem(selectedDocumentKey + ':move') || 'null'); } catch { return null; } }}
     saving={savingDocument} disabled={restoringDocument || movingDocument} onEdit={() => setDocumentEditing(value => !value)} onSave={saveDocumentFromToolbar}
     onLocate={(activeDocument.sourceMessageId || activeDocument.sourceRequestId || activeDocument.sourceResearchId || activeTask.messages.some(message => message.artifactId === (activeDocument.id || activeDocument.artifactId))) ? () => locateDocument(activeDocument) : undefined}
     onRecheck={activeDocument.critique?.schemaVersion === 2 ? () => prepareCritiqueRegeneration(activeDocument) : undefined}
     recheckDisabled={documentDirty || savingDocument || learning.busyTasks[activeTaskId]}
-    onRestore={restoreDocument} taskId={activeTaskId} tasks={tasks} onRename={renameDocument} onMove={moveDocument} onExport={exportDocument}
-    sources={activeDocument.critique?.schemaVersion === 2 && !activeDocument.edited ? <CollapsedSources storageKey={`${contentPositionKey}:sources`} value={activeDocument} onJumpToSource={jumpToSource} /> : null} />;
+    onRestore={restoreDocument} taskId={activeTaskId} tasks={tasks} onRename={renameDocument} onMove={moveDocument} onExport={exportDocument} />;
 
   return <div className="unified-app theme-app-shell">
     <header className="unified-header theme-panel theme-border">

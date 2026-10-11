@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import MarkdownContent from './MarkdownContent';
 import { documentText } from '../utils/documentVersions';
 
-export default function DocumentVersionHistory({ document, onRestore, disabled = false }) {
+export default function DocumentVersionHistory({ document, onRestore, disabled = false, expanded = false }) {
   const [selected, setSelected] = useState(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
@@ -16,7 +16,7 @@ export default function DocumentVersionHistory({ document, onRestore, disabled =
     finally { setBusy(false); }
   };
   if (!versions.length) return null;
-  return <details className="document-version-history"><summary>历史版本（{versions.length}）</summary>
+  return <details className="document-version-history" open={expanded || undefined}><summary>历史版本（{versions.length}）</summary>
     {!versions.length && <p>保存修改后，先前正文会保存在这里。</p>}
     {versions.length > 0 && <select aria-label="选择历史版本" value={selected ?? ''} disabled={busy} onChange={(event) => { setSelected(event.target.value === '' ? null : Number(event.target.value)); setError(''); }}>
       <option value="">选择要查看的版本</option>
