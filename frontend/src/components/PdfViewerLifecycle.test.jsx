@@ -89,6 +89,18 @@ it('jumps through the installed viewer without remounting the document', async (
   expect(state.jump).toHaveBeenLastCalledWith(3);
 });
 
+it('publishes page controls when a PDF finished loading behind a restored artifact', async () => {
+  const doc = { numPages: 19, getPage: async () => ({ getViewport: () => viewport, getTextContent: async () => textContent('body') }) };
+  const pageChange = vi.fn();
+  const props = { fileUrl: 'fixture.pdf', pdfId: 'A', targetPageIndex: 3, onPageChange: pageChange };
+  const view = render(<PdfViewer {...props} active={false} />);
+  await act(async () => state.viewer.onDocumentLoad({ doc }));
+  expect(pageChange).not.toHaveBeenCalled();
+  view.rerender(<PdfViewer {...props} active />);
+  await waitFor(() => expect(pageChange).toHaveBeenCalledWith({ pageIndex: 3, totalPages: 19 }));
+  expect(state.mounts).toBe(1);
+});
+
 it('ignores text extraction from an old page and from an unmounted document', async () => {
   const finished = {};
   const doc = { numPages: 2, getPage: async number => ({ getViewport: () => viewport,
@@ -155,6 +167,7 @@ it('persists independent reading positions and ignores callbacks while hidden', 
   expect(JSON.parse(localStorage.getItem('pdf-reading:task:A')).top).toBe(735);
   view.rerender(<PdfViewer {...props} active/>);
   await waitFor(()=>expect(scroller.scrollTop).toBe(735));
+  expect(state.jump).not.toHaveBeenCalled();
   expect(state.mounts).toBe(1);
   view.unmount();
   const restored=render(<PdfViewer {...props}/>);
@@ -163,4 +176,15 @@ it('persists independent reading positions and ignores callbacks while hidden', 
   await waitFor(()=>expect(screen.getByTestId('pdf-scroll').scrollTop).toBe(735));
   restored.rerender(<PdfViewer {...props} readingKey="task:B"/>);
   expect(localStorage.getItem('pdf-reading:task:B')).toBeNull();
+});
+
+it('honors an explicit evidence jump on a newly opened paper over its old reading offset', async () => {
+  localStorage.setItem('pdf-reading:task:A', JSON.stringify({ scale: 1.25, top: 735, left: 0 }));
+  state.jump.mockImplementation(() => { screen.getByTestId('pdf-scroll').scrollTop = 300; });
+  render(<PdfViewer fileUrl="A.pdf" pdfId="A" readingKey="task:A" targetPageIndex={1} targetPageJumpToken={100} />);
+  await act(async () => state.viewer.onDocumentLoad({ doc: readyDoc }));
+  expect(state.jump).toHaveBeenCalledWith(1);
+  expect(screen.getByLabelText('原文缩放比例')).toHaveTextContent('125%');
+  await act(async () => {});
+  expect(screen.getByTestId('pdf-scroll').scrollTop).toBe(300);
 });

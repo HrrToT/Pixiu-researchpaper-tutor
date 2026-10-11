@@ -623,6 +623,8 @@ const PdfViewer: React.FC<PdfViewerProps> = ({
   const readerRef = useRef<HTMLDivElement | null>(null);
   const activeRef = useRef(active);
   activeRef.current = active;
+  const pageChangeRef = useRef(onPageChange);
+  pageChangeRef.current = onPageChange;
   const positionKey = readingKey || pdfId || fileUrl || 'empty';
   const positionKeyRef = useRef(positionKey);
   positionKeyRef.current = positionKey;
@@ -640,7 +642,7 @@ const PdfViewer: React.FC<PdfViewerProps> = ({
   const [highlights, setHighlights] = useState<PdfViewerHighlight[]>([]);
   const [activeHighlightId, setActiveHighlightId] = useState<number | null>(null);
   const [isPdfLoading, setIsPdfLoading] = useState<boolean>(true);
-  const [displayScale, setDisplayScale] = useState(1);
+  const [displayScale, setDisplayScale] = useState(() => Number(savedPosition?.scale) > 0 ? Number(savedPosition.scale) : 1);
   const [pageTextState, setPageTextState] = useState<'loading' | 'ready' | 'empty' | 'error'>('loading');
   const clearPdfLoading = useCallback(() => setIsPdfLoading(false), []);
   const [selectionNoteError, setSelectionNoteError] = useState('');
@@ -656,7 +658,7 @@ const PdfViewer: React.FC<PdfViewerProps> = ({
   const latestPdfIdRef = useRef<string | undefined>(pdfId);
   latestPdfIdRef.current = pdfId;
   const pageTextByIndexRef = useRef<Record<number, string>>({});
-  const scaleRef = useRef<number>(1);
+  const scaleRef = useRef<number>(Number(savedPosition?.scale) > 0 ? Number(savedPosition.scale) : 1);
   const navigationRef = useRef<PluginFunctions | null>(null);
   const navigationPlugin = useMemo(() => ({
     install: (functions: PluginFunctions) => { navigationRef.current = functions; },
@@ -672,15 +674,18 @@ const PdfViewer: React.FC<PdfViewerProps> = ({
   useEffect(() => {
     setActiveHighlightId(null);
   }, [positionKey, fileUrl, active, targetPageIndex, targetPageJumpToken]);
-  const restoredJumpTokenRef = useRef(targetPageJumpToken);
+  const observedJumpRef = useRef({ page: targetPageIndex, token: targetPageJumpToken });
+  const pendingJumpRef = useRef(targetPageJumpToken > 0);
+  const appliedJumpRef = useRef(targetPageJumpToken > 0 ? null : { page: targetPageIndex, token: targetPageJumpToken });
   useEffect(() => {
-    const explicitJump = restoredJumpTokenRef.current !== targetPageJumpToken;
-    restoredJumpTokenRef.current = targetPageJumpToken;
-    if (explicitJump || !active || isPdfLoading || !pdfDocRef.current) return;
+    if (observedJumpRef.current.page !== targetPageIndex || observedJumpRef.current.token !== targetPageJumpToken) pendingJumpRef.current = true;
+    observedJumpRef.current = { page: targetPageIndex, token: targetPageJumpToken };
+    if (pendingJumpRef.current || !active || isPdfLoading || !pdfDocRef.current) return;
     const position = readingPositionRef.current;
     if (!savedPosition && position.top === 0 && position.left === 0 && position.scale === 1) return;
     restoringPositionRef.current = true;
-    navigationRef.current?.zoom(position.scale);
+    if (Math.abs(scaleRef.current - position.scale) > 0.001) navigationRef.current?.zoom(position.scale);
+    setDisplayScale(position.scale);
     let secondFrame = 0;
     const frame = requestAnimationFrame(() => {
       secondFrame = requestAnimationFrame(() => {
@@ -690,14 +695,17 @@ const PdfViewer: React.FC<PdfViewerProps> = ({
       });
     });
     return () => { cancelAnimationFrame(frame); cancelAnimationFrame(secondFrame); restoringPositionRef.current = false; };
-  }, [active, isPdfLoading, savedPosition, positionKey, targetPageJumpToken]);
+  }, [active, isPdfLoading, savedPosition, positionKey, targetPageIndex, targetPageJumpToken]);
   const initialViewerPage: number = Number.isFinite(targetPageIndex) ? Math.max(0, targetPageIndex as number) : 0;
   const viewerKey: string = pdfId || 'empty';
   useEffect(() => {
-    if (!active || !pdfDocRef.current || !Number.isFinite(targetPageIndex)) return;
+    if (!active || isPdfLoading || !pdfDocRef.current || !Number.isFinite(targetPageIndex)) return;
+    if (!pendingJumpRef.current && appliedJumpRef.current?.page === targetPageIndex && appliedJumpRef.current?.token === targetPageJumpToken) return;
+    pendingJumpRef.current = false;
+    appliedJumpRef.current = { page: targetPageIndex, token: targetPageJumpToken };
     const max = Math.max(((pdfDocRef.current as { numPages?: number }).numPages || 1) - 1, 0);
     void navigationRef.current?.jumpToPage(Math.max(0, Math.min(targetPageIndex as number, max)));
-  }, [targetPageIndex, targetPageJumpToken, active]);
+  }, [targetPageIndex, targetPageJumpToken, active, isPdfLoading]);
 
   useEffect(() => {
     latestPdfIdRef.current = pdfId;
@@ -706,7 +714,7 @@ const PdfViewer: React.FC<PdfViewerProps> = ({
   useLayoutEffect(() => {
     if (fileUrl && loadedDocumentRef.current?.fileUrl !== fileUrl) {
       setIsPdfLoading(true);
-      setDisplayScale(1);
+      setDisplayScale(readingPositionRef.current.scale);
       setPageTextState('loading');
     }
   }, [fileUrl]);
@@ -853,7 +861,7 @@ const PdfViewer: React.FC<PdfViewerProps> = ({
 
   const handleViewerPageChange = useCallback(
     (event: { currentPage: number; doc?: { numPages?: number } }) => {
-      if (!mountedRef.current || !activeRef.current || restoringPositionRef.current) return;
+      if (!mountedRef.current || !activeRef.current) return;
       if (event.currentPage !== currentPageRef.current) setActiveHighlightId(null);
       currentPageRef.current = event.currentPage;
       setPageTextState('loading');
@@ -866,6 +874,13 @@ const PdfViewer: React.FC<PdfViewerProps> = ({
     },
     [extractPageText, onPageChange],
   );
+  useEffect(() => {
+    if (!active || isPdfLoading || !pdfDocRef.current) return;
+    // A PDF may finish loading while an artifact is restored over it. Its viewer
+    // need not emit another page event when revealed, so publish the known count.
+    pageChangeRef.current?.({ pageIndex: currentPageRef.current,
+      totalPages: (pdfDocRef.current as { numPages?: number }).numPages || 0 });
+  }, [active, isPdfLoading, positionKey]);
 
   const syncSelectionMessage = useCallback(
     (content: string, role: string, highlight: PdfViewerHighlight): void => {
@@ -1213,6 +1228,7 @@ const PdfViewer: React.FC<PdfViewerProps> = ({
               <Viewer
                 key={viewerKey}
                 fileUrl={fileUrl}
+                enableSmoothScroll={false}
                 initialPage={initialViewerPage}
                 defaultScale={Number(savedPosition?.scale) > 0 ? Number(savedPosition.scale) : SpecialZoomLevel.PageWidth}
                 plugins={[highlightPluginInstance, navigationPlugin]}
@@ -1221,8 +1237,8 @@ const PdfViewer: React.FC<PdfViewerProps> = ({
                 onPageChange={handleViewerPageChange}
                 renderError={() => <PdfLoadError onVisible={clearPdfLoading} />}
                 onZoom={(event: { scale: number }) => {
-                  if (!activeRef.current) return;
                   scaleRef.current = event.scale;
+                  if (!activeRef.current) return;
                   if (!restoringPositionRef.current) {
                     readingPositionRef.current = { ...readingPositionRef.current, scale: event.scale };
                     persistReadingPosition();
