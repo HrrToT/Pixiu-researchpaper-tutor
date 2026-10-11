@@ -34,6 +34,76 @@ def summarize_artifact(text, limit=600):
     return '\n\n'.join(lines) or '完整结果已保存在成果中。'
 
 
+def _requested_chat_limit(message, default=600):
+    """Honor explicit character budgets; numbers describing experiments are not budgets."""
+    number = r'[0-9零〇一二两三四五六七八九十百千万]+'
+    patterns = [rf'({number})\s*[-–—~～至到]\s*({number})\s*字',
+                rf'(?:不(?:要)?超过|最多|至多|控制在|限于|少于|总共|总计|共|用|约)\s*({number})\s*字',
+                rf'({number})\s*字\s*(?:以内|以下|左右|上下|之内|概括|总结|说明|解释|回答|比较)',
+                rf'({number})\s*字\s*[。！.!]?$']
+    def numeric(value):
+        if value.isdigit():
+            return int(value)
+        digits = dict(zip('零〇一二两三四五六七八九', (0, 0, 1, 2, 2, 3, 4, 5, 6, 7, 8, 9)))
+        total, section, current = 0, 0, 0
+        for char in value:
+            if char.isdigit():
+                current = current * 10 + int(char)
+            elif char in digits:
+                current = digits[char]
+            elif char == '万':
+                total += (section + current or 1) * 10000
+                section, current = 0, 0
+            else:
+                section += (current or 1) * {'十': 10, '百': 100, '千': 1000}[char]
+                current = 0
+        return total + section + current
+    limits = [numeric(match.groups()[-1]) for pattern in patterns for match in re.finditer(pattern, message)]
+    return max(1, min(limits)) if limits else default
+
+
+def _compose_summary(summaries, limit):
+    """Keep each requested capability's conclusion once, without replaying its body."""
+    seen, parts, remaining = set(), [], limit
+    def unique(text, known):
+        lines = []
+        for line in text.splitlines():
+            sentences = re.findall(r'.+?(?:[。！？](?:\s*\[\d+\])*|$)', line.strip())
+            retained = []
+            for sentence in sentences:
+                key = re.sub(r'\s+', '', sentence)
+                if key and key not in known:
+                    known.add(key)
+                    retained.append(sentence)
+            lines.append(''.join(retained))
+        return '\n'.join(lines).strip()
+    for index, summary in enumerate(summaries):
+        conclusion = unique(summary, seen.copy())
+        if not conclusion:
+            continue
+        budget = max(1, (remaining - (2 if parts else 0)) // (len(summaries) - index))
+        part = summarize_artifact(conclusion, limit=budget)
+        if part == '完整结果已保存在成果中。':
+            continue
+        # Only displayed sentences enter the deduplication set. A long earlier
+        # body must not hide a sentence retained by a later capability summary.
+        part = unique(part, seen)
+        if part:
+            parts.append(part)
+            remaining -= len(part) + (2 if len(parts) > 1 else 0)
+    return '\n\n'.join(parts) or ('完整结果已保存在成果中。' if limit >= 15 else '见成果')
+
+
+def _partial_detail(result):
+    details = []
+    for field in ('warning', 'partialReason', 'limitations', 'error'):
+        value = result.get(field)
+        for item in value if isinstance(value, list) else [value]:
+            if isinstance(item, str) and item.strip() and item.strip() not in result['message']:
+                details.append(item.strip())
+    return '\n'.join(f'- {item}' for item in dict.fromkeys(details))
+
+
 def _format_prior(prior):
     return '\n\n'.join(f"Earlier result ({step['capability']}, {item.get('paperId', 'selected materials')}):\n{item.get('message', '')}"
                         for step in prior for item in step.get('results', []))
@@ -45,7 +115,8 @@ def _chat(request, prior=None):
     message = request.message
     if request.capability == 'compose' and request.steps[0] == 'chat' and not prior:
         message += ('\n当前仅执行组合任务的概念解释步骤。只解释用户指定的概念，最多两句话；'
-                    '比较、批判或补课由后续步骤完成。不要提前给比较结论、表格、数字排名或展开推导。')
+                    '比较、批判或补课由后续步骤完成。不要提前给比较结论、表格、数字排名或展开推导。'
+                    '用户若对本步骤明确指定字数或句数，以用户要求为先。')
     if prior:
         from services.safety_service import wrap_untrusted_context
         earlier = wrap_untrusted_context('Earlier capability results', _format_prior(prior), max_tokens=3000)
@@ -182,12 +253,15 @@ def execute_conversation(request: ConversationCapabilityRequest):
                     sources.append(source)
             text = result['message']
             summary = result.get('summary') or text
-            if request.capability == 'compose' and step == 'chat':
-                text = summarize_artifact(text, limit=500)
+            if request.capability == 'compose' and result.get('partial'):
+                limitation = _partial_detail(result)
+                if limitation:
+                    text += '\n\n### 结果限制\n\n' + limitation
             if len(results) > 1:
                 label = result.get('title') or f"论文 {request.allowedPaperIds.index(result['paperId']) + 1}"
                 text = f"### {label}\n\n{text}"
-                summary = f"{label}：{summarize_artifact(summary, limit=max(80, 520 // len(results)))}"
+                lead = summary if request.capability == 'compose' else summarize_artifact(summary, limit=max(80, 520 // len(results)))
+                summary = f"{label}：{lead}"
             if request.capability == 'compose':
                 labels = {'chat': '解释与结论', 'background': '前置知识', 'critique': '批判分析', 'compare': '比较结果'}
                 text = f"## {labels[step]}\n\n{text}"
@@ -200,8 +274,13 @@ def execute_conversation(request: ConversationCapabilityRequest):
     message = body
     partial = any(result.get('partial') for step in completed for result in step['results'])
     partial_prefix = '部分结果：\n\n' if partial else ''
+    if partial and request.capability == 'compose':
+        partial_prefix = '部分结果：部分内容尚未完成或核验，具体限制见成果。\n\n'
     explicit_summary = any(result.get('summary') for step in completed for result in step['results'])
-    if request.capability != 'chat' and (explicit_summary or len(body) > 600 or any(line.lstrip().startswith('|') for line in body.splitlines())):
+    if request.capability == 'compose':
+        limit = _requested_chat_limit(request.message)
+        message = _compose_summary(step_summaries, limit=max(1, limit - len(partial_prefix)))
+    elif request.capability != 'chat' and (explicit_summary or len(body) > 600 or any(line.lstrip().startswith('|') for line in body.splitlines())):
         conclusion = step_summaries[-1]
         message = summarize_artifact(conclusion, limit=600 - len(partial_prefix))
     grounded_claims = [claim for step in completed for result in step['results'] for claim in result.get('groundedClaims', [])]

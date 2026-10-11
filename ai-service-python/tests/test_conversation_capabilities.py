@@ -1,4 +1,5 @@
 from types import SimpleNamespace
+from pathlib import Path
 import json
 import pytest
 from pydantic import ValidationError
@@ -64,7 +65,9 @@ def test_composition_shares_snapshot_and_previous_results(monkeypatch):
     result = service.execute_conversation(request(capability='compose', steps=['critique', 'compare']))
     assert calls == [('critique', ['A.pdf', 'B.pdf'], 0), ('compare', ['A.pdf', 'B.pdf'], 1)]
     assert result['sources'] == [source]
-    assert result['artifact']['text'] == result['message']
+    assert result['message'] == 'critique\n\ncompare'
+    assert '## 批判分析' in result['artifact']['text']
+    assert '## 比较结果' in result['artifact']['text']
     assert result['artifact']['paperIds'] == result['materialScope']['allowedPaperIds']
 
 
@@ -263,7 +266,7 @@ def test_composed_chat_preserves_conclusion_but_keeps_table_in_full_artifact(mon
     monkeypatch.setattr(service, '_run_step', lambda step, value, prior: [
         {'message': '核心概念解释。' if step == 'chat' else comparison}])
     result = service.execute_conversation(request(capability='compose', steps=['chat', 'compare']))
-    assert result['message'] == 'A 优化感知 SINR；B 优化雷达 MI。'
+    assert result['message'] == '核心概念解释。\n\nA 优化感知 SINR；B 优化雷达 MI。'
     assert '| B | MI |' in result['artifact']['text']
     assert '核心概念解释。' in result['artifact']['text']
     assert len(result['steps']) == 2
@@ -306,3 +309,63 @@ def test_short_artifact_still_keeps_quotes_and_detail_sections_out_of_chat(monke
     result = service.execute_conversation(request(capability='critique'))
     assert result['message'] == '主要结论。'
     assert result['artifact']['text'] == body
+
+
+_COMPOSE_REPLAYS = json.loads((Path(__file__).parent / 'fixtures' / 'conversation_compose_results.json').read_text(encoding='utf-8'))
+
+
+@pytest.mark.parametrize('replay', _COMPOSE_REPLAYS, ids=lambda replay: replay['name'])
+def test_composition_replay_keeps_requested_parts_one_artifact_and_full_evidence(monkeypatch, replay):
+    calls = []
+    def run(step, value, prior):
+        calls.append((step, len(prior)))
+        return [replay['results'][step]]
+    monkeypatch.setattr(service, '_run_step', run)
+    value = ConversationCapabilityRequest(taskId='task', message=replay['question'], capability='compose',
+        steps=['chat', 'compare'], allowedPaperIds=['A.pdf', 'B.pdf'])
+    result = service.execute_conversation(value)
+    assert calls == [('chat', 0), ('compare', 1)]
+    assert len(result['message']) <= replay['limit']
+    assert len(result['message']) > replay.get('minimum', 0)
+    assert result['partial'] is replay.get('partial', False)
+    assert isinstance(result['artifact'], dict)
+    assert '## ' not in result['message']
+    for text in replay['visible']:
+        assert text in result['message']
+    for text in replay.get('artifact_only', []):
+        assert text in result['artifact']['text']
+        assert text not in result['message']
+    if replay.get('once'):
+        assert result['message'].count(replay['once']) == 1
+    expected_sources = [source for result in replay['results'].values() for source in result.get('rag_sources', [])]
+    assert result['sources'] == expected_sources
+    assert result['artifact']['sources'] == expected_sources
+    for step in result['steps']:
+        assert step['results'][0]['message'] in result['artifact']['text']
+
+
+@pytest.mark.parametrize('message, expected', [
+    ('120字以内先解释再比较', 120), ('请用100至200字回答', 200),
+    ('总共八百字', 800), ('一千字左右', 1000), ('不要超过1千字', 1000), ('请用20字总结', 20),
+    ('比较20个场景和200阶特征', 600),
+])
+def test_composition_uses_explicit_character_budget(message, expected):
+    assert service._requested_chat_limit(message) == expected
+
+
+def test_composition_does_not_hide_a_failed_step_as_a_successful_conclusion(monkeypatch):
+    def run(step, *args):
+        return [{'message': '解释结果。'}] if step == 'chat' else [{'status': 'error', 'message': '比较失败。'}]
+    monkeypatch.setattr(service, '_run_step', run)
+    with pytest.raises(ValueError, match='没有返回可用结果'):
+        service.execute_conversation(request(capability='compose', steps=['chat', 'compare']))
+
+
+def test_composed_deduplication_only_removes_sentences_that_were_displayed():
+    early = '前置定义足够简短。' + '前置推导需要更长篇幅。' * 30 + '这是后面需要保留的明确条件。'
+    final = '这是后面需要保留的明确条件。比较表明两种方法有不同代价。'
+    summary = service._compose_summary([early, final], limit=100)
+    assert '前置定义足够简短。' in summary
+    assert '这是后面需要保留的明确条件。' in summary
+    assert '比较表明两种方法有不同代价。' in summary
+    assert len(summary) <= 100
