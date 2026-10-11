@@ -628,7 +628,6 @@ export default function UnifiedTaskApp() {
         messages: task.messages.map((message, position) => position === currentIndex ? { ...message, id: messageId, artifactId: saved.id } : message),
       };
     });
-    if (activeTaskIdRef.current === taskId) openDocument(saved, collection);
     return saved.id;
   };
   const createNote = async () => {

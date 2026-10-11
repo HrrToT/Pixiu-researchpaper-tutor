@@ -621,7 +621,8 @@ describe('unified task conversation wiring', () => {
     expect(state.writes).toBe(0);
   });
 
-  it('saves the same answer once and opens its existing result on repeated capture', async () => {
+  it('saves the same answer once without interrupting reading and opens it only on request', async () => {
+    state.task.focusedPaperId = 'a';
     state.task.messages = [{ id: 'answer', role: 'ai', content: '同一份回答', context: { allowedPaperIds: ['a'] } }];
     const view = render(<UnifiedTaskApp />);
     await act(async () => state.chatProps.onCaptureArtifact(0));
@@ -629,6 +630,9 @@ describe('unified task conversation wiring', () => {
     await act(async () => state.chatProps.onCaptureArtifact(0));
     expect(state.task.artifacts).toHaveLength(1);
     expect(state.task.messages[0].artifactId).toBe(state.task.artifacts[0].id);
+    expect(screen.queryByRole('article', { name: '成果正文' })).not.toBeInTheDocument();
+    expect(state.task.focusedPaperId).toBe('a');
+    await act(async () => state.chatProps.onOpenArtifact(state.task.artifacts[0].id));
     expect(screen.getByRole('article', { name: '成果正文' })).toHaveTextContent('同一份回答');
   });
 
@@ -754,6 +758,8 @@ describe('unified task conversation wiring', () => {
     expect(state.task.notes[0]).toMatchObject({ title: '什么是lightgaussian', text: '什么是lightgaussian', type: 'note', sourceMessageId: 'current', sources: [], paperIds: [], sentenceSourceMap: [] });
     expect(state.task.notes[0].capability).toBeUndefined();
     expect(state.task.artifacts).toHaveLength(0);
+    expect(screen.queryByRole('article', { name: '成果正文' })).not.toBeInTheDocument();
+    await act(async () => state.chatProps.onOpenArtifact(state.task.notes[0].id));
     expect(screen.getByRole('article', { name: '成果正文' })).toHaveTextContent('什么是lightgaussian');
     expect(screen.queryByText(/证据片段/u)).not.toBeInTheDocument();
     await act(async () => state.chatProps.onSaveToNote(2));
@@ -763,11 +769,13 @@ describe('unified task conversation wiring', () => {
   it('preserves evidence when capturing a conversation as a note', async () => {
     const source = { sourceId: 'evidence', pdfId: 'b', pageIndex: 3, text: 'original evidence' };
     state.task.messages = [{ id: 'message', role: 'ai', content: '结论', rag_sources: [source], context: { allowedPaperIds: ['b'] } }];
-    render(<UnifiedTaskApp />);
+    const view = render(<UnifiedTaskApp />);
     await screen.findByTestId('chat');
     await act(async () => state.chatProps.onSaveToNote(0));
     expect(state.task.notes[0].sources).toEqual([source]);
     expect(state.task.notes[0].paperIds).toEqual(['b']);
+    view.rerender(<UnifiedTaskApp />);
+    await act(async () => state.chatProps.onOpenArtifact(state.task.notes[0].id));
     expect(screen.getByText('证据片段（1）')).toBeInTheDocument();
   });
 

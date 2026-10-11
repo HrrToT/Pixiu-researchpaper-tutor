@@ -393,6 +393,17 @@ describe('ChatPanel interaction continuity', () => {
     expect(screen.queryByRole('button', { name: '已保存' })).not.toBeInTheDocument();
   });
 
+  it('offers an explicit note link after saving without opening it automatically', async () => {
+    const save = vi.fn().mockResolvedValue('note-id'), open = vi.fn();
+    renderChat({ messages: [{ id: 'u', role: 'user', content: '我的想法' }], onSaveToNote: save, onOpenArtifact: open });
+    fireEvent.click(screen.getByRole('button', { name: '保存' }));
+    const link = await screen.findByRole('button', { name: '查看笔记' });
+    expect(open).not.toHaveBeenCalled();
+    expect(link).toHaveTextContent('已保存');
+    fireEvent.click(link);
+    expect(open).toHaveBeenCalledWith('note-id');
+  });
+
   it('searches original messages and supports anchored content and parent focus requests', () => {
     const scroll = vi.spyOn(Element.prototype, 'scrollIntoView');
     const messages = [{ id: 'question', role: 'user', content: '比较论文甲' }, { id: 'answer', role: 'ai', content: '比较结果' }];

@@ -8,6 +8,13 @@ const savedTime = item => {
   return null;
 };
 
+export function documentPreview(item) {
+  const text = [item.summary, item.text, item.content, item.body].find(value => typeof value === 'string' && value.trim()) || '';
+  return text.replace(/(?:^|\n)#{1,6}\s+[^\n]*\n/gu, ' ')
+    .replace(/\[([^\]]+)\]\([^)]*\)/gu, '$1').replace(/[*_`#>]/gu, '')
+    .replace(/\[(?:\d+[\s,，]*)+\]/gu, '').replace(/\s+/gu, ' ').trim().slice(0, 100);
+}
+
 // Presentation only: keep the persisted documents, their titles and their order intact.
 export function taskDocumentNavigation(task, papers = []) {
   const items = [...(task?.notes || []), ...(task?.artifacts || [])];
@@ -32,7 +39,8 @@ export function taskDocumentNavigation(task, papers = []) {
         else details.push(`记录 ${occurrence}`);
       }
     }
-    return { item, title, detail: details.join(' · '), time, index };
+    const date = time === null ? '' : new Date(time).toLocaleString('zh-CN', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false });
+    return { item, title, detail: details.join(' · '), preview: documentPreview(item), date, time, index };
   }).sort((a, b) => {
     if (a.time !== null && b.time !== null) return b.time - a.time || a.index - b.index;
     if (a.time !== null) return -1;

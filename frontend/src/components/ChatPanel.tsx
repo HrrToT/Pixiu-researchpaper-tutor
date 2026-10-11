@@ -154,6 +154,7 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
   const [copiedMessage, setCopiedMessage] = useState<string | null>(null);
   const [copyError, setCopyError] = useState('');
   const [saveStates, setSaveStates] = useState<Record<string, 'saving' | 'saved' | 'error'>>({});
+  const [savedTargets, setSavedTargets] = useState<Record<string, string>>({});
   const savePending = useRef(new Set<string>());
   const latestDraft = useRef(inputValue);
   latestDraft.current = inputValue;
@@ -296,6 +297,7 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
     try {
       const saved = await save(index);
       if (saved === false) throw new Error('保存未完成');
+      if (typeof saved === 'string') setSavedTargets(current => ({ ...current, [key]: saved }));
       setSaveStates(current => ({ ...current, [key]: 'saved' }));
     } catch {
       setSaveStates(current => ({ ...current, [key]: 'error' }));
@@ -353,9 +355,9 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
         删除消息
       </button>}
       </WorkbenchPopover>}
-      {message.artifactId ? (
-        <button type="button" onClick={() => onOpenArtifact?.(message.artifactId!)} disabled={!onOpenArtifact} className="reader-chat-action" title="打开完整成果" aria-label="打开完整成果">
-          <FileText size={13} /> 打开成果
+      {(message.artifactId || savedTargets[saveKey(message, index)]) ? (
+        <button type="button" onClick={() => onOpenArtifact?.(message.artifactId || savedTargets[saveKey(message, index)])} disabled={!onOpenArtifact} className="reader-chat-action" title={message.role === 'user' ? '查看笔记' : '打开完整成果'} aria-label={message.role === 'user' ? '查看笔记' : '打开完整成果'}>
+          <FileText size={13} />{saveStates[saveKey(message, index)] === 'saved' && <span role="status">已保存 · </span>}{message.role === 'user' ? '查看笔记' : '查看成果'}
         </button>
       ) : (message.role === 'ai' ? onCaptureArtifact : onSaveToNote || onCaptureArtifact) && (
         <button type="button" onClick={() => saveMessage(message, index)} className="reader-chat-action"

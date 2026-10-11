@@ -1,8 +1,19 @@
 import { describe, expect, it } from 'vitest';
 import { documentDisplayTitle, questionTopic } from './documentPresentation';
-import { taskDocumentNavigation } from './taskDocumentNavigation';
+import { documentPreview, taskDocumentNavigation } from './taskDocumentNavigation';
 
 describe('document names and identities', () => {
+  it('makes same-title records distinguishable without mutating their content or merging identities', () => {
+    const task = { notes: [{ id: 'a', title: '实验', text: '## 方案\n**控制高斯数量**，测量质量。[1]', createdAt: '2026-10-12T01:00:00Z' },
+      { id: 'b', title: '实验', text: '固定 SH 阶数，测量速度。', createdAt: '2026-10-12T02:00:00Z' }] };
+    const before = JSON.stringify(task);
+    const rows = taskDocumentNavigation(task);
+    expect(rows.map(row => row.item.id)).toEqual(['b', 'a']);
+    expect(rows.map(row => row.preview)).toEqual(['固定 SH 阶数，测量速度。', '控制高斯数量，测量质量。']);
+    expect(rows.every(row => row.date)).toBe(true);
+    expect(documentPreview({ text: '' })).toBe('');
+    expect(JSON.stringify(task)).toBe(before);
+  });
   const papers = [{ id: 'light', title: 'LightGaussian: Unbounded Compression' }];
   it('derives different generic result names from their retained original questions without changing records', () => {
     const first = { id: 'one', title: '对话成果', capability: 'critique', paperIds: ['light'], critique: { question: { original: '/批判 帮我核对画质保持的条件？' } } };
