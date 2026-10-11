@@ -177,6 +177,7 @@ describe('unified task conversation wiring', () => {
     expect(state.selectedTaskId).toBeNull();
     expect(state.writes).toBe(0);
     expect(upload).toHaveBeenCalledOnce();
+    fireEvent.click(screen.getByRole('button', { name: '添加论文' }));
     expect(screen.getByRole('button', { name: '上传 PDF' })).toBeEnabled();
   });
 
@@ -208,7 +209,7 @@ describe('unified task conversation wiring', () => {
     const savedLayout = localStorage.getItem('pixiu-unified-layout-v1');
     fireEvent.click(screen.getByRole('button', { name: '任务与材料' }));
     expect(screen.getByRole('region', { name: '任务对话' })).toHaveAttribute('inert');
-    expect(screen.getByRole('combobox', { name: '当前任务' })).toHaveFocus();
+    expect(screen.getByRole('button', { name: '收起导航' })).toHaveFocus();
     fireEvent.click(screen.getByRole('button', { name: '窄屏笔记 · 笔记' }));
     expect(screen.getByRole('button', { name: '任务与材料' })).toHaveAttribute('aria-expanded', 'false');
     fireEvent.click(screen.getByRole('button', { name: '编辑', exact: true }));
@@ -219,7 +220,7 @@ describe('unified task conversation wiring', () => {
     expect(localStorage.getItem('pixiu-unified-layout-v1')).toBe(savedLayout);
     expect(localStorage.getItem('pixiu-compact-pane-v1')).toBe('reader');
     fireEvent.click(screen.getByRole('button', { name: '任务与材料' }));
-    fireEvent.keyDown(screen.getByRole('combobox', { name: '当前任务' }), { key: 'Escape' });
+    fireEvent.keyDown(screen.getByRole('button', { name: '收起导航' }), { key: 'Escape' });
     expect(screen.getByRole('button', { name: '任务与材料' })).toHaveFocus();
     expect(screen.getByRole('region', { name: '论文与成果' })).not.toHaveAttribute('inert');
   });
@@ -318,6 +319,7 @@ describe('unified task conversation wiring', () => {
     state.task.artifacts = [{ id: 'critique-artifact', title: '批判成果', text: '原成果', paperIds: ['a'], updatedAt: 'saved-token', critique }];
     render(<UnifiedTaskApp />);
     fireEvent.click(screen.getByRole('button', { name: '批判成果 · 成果' }));
+    fireEvent.click(screen.getByRole('button', { name: '成果更多操作' }));
     fireEvent.click(screen.getByRole('button', { name: '重新核查', exact: true }));
     expect(state.startOperation).not.toHaveBeenCalled();
     expect(screen.getByText(/重新核查 批判成果/u)).toBeInTheDocument();
@@ -430,11 +432,11 @@ describe('unified task conversation wiring', () => {
     fireEvent.click(screen.getByRole('button', { name: '阅读笔记 · 笔记', exact: true }));
     expect(screen.getByRole('article', { name: '成果正文' })).toHaveTextContent('已保存正文');
     expect(screen.queryByRole('textbox', { name: '编辑笔记与成果' })).not.toBeInTheDocument();
-    expect(screen.getByText('已保存')).toBeInTheDocument();
+    expect(screen.queryByText('已保存', { exact: true })).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: '编辑', exact: true }));
     expect(screen.getByRole('button', { name: '保存', exact: true })).toBeDisabled();
     fireEvent.change(screen.getByRole('textbox', { name: '编辑笔记与成果' }), { target: { value: '' } });
-    fireEvent.click(screen.getByRole('button', { name: '阅读', exact: true }));
+    fireEvent.click(screen.getByRole('button', { name: '完成编辑', exact: true }));
     expect(screen.getByRole('article', { name: '成果正文' })).toHaveTextContent('（空白正文）');
     expect(screen.getByText('未保存修改')).toBeInTheDocument();
     expect(state.task.notes[0].text).toBe('**已保存正文**');
@@ -607,8 +609,9 @@ describe('unified task conversation wiring', () => {
 
   it('keeps keyboard focus in processing history and returns it to its opener', async () => {
     render(<UnifiedTaskApp />);
-    const opener = screen.getAllByRole('button', { name: '处理记录', exact: true }).at(-1);
-    opener.focus(); fireEvent.click(opener);
+    const opener = screen.getByRole('button', { name: '切换任务' });
+    fireEvent.click(opener);
+    fireEvent.click(screen.getByRole('button', { name: '处理记录', exact: true }));
     const close = screen.getByRole('button', { name: '关闭', exact: true });
     expect(close).toHaveFocus();
     const last = screen.getByRole('combobox', { name: '处理状态筛选' });
@@ -654,6 +657,7 @@ describe('unified task conversation wiring', () => {
     fireEvent.click(screen.getByRole('button', { name: '版本笔记 · 笔记' }));
     fireEvent.click(screen.getByRole('button', { name: '编辑', exact: true }));
     fireEvent.change(screen.getByRole('textbox', { name: '编辑笔记与成果' }), { target: { value: '未保存修改' } });
+    fireEvent.click(screen.getByRole('button', { name: '成果更多操作' }));
     fireEvent.click(screen.getByText('历史版本（1）'));
     fireEvent.change(screen.getByLabelText('选择历史版本'), { target: { value: '0' } });
     fireEvent.click(screen.getByRole('button', { name: '恢复这个版本' }));

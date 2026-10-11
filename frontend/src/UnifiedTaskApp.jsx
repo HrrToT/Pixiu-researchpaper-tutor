@@ -1,9 +1,10 @@
 import React, { useCallback, useEffect, useEffectEvent, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import TaskRename from './components/TaskRename';
+import TaskSwitcher from './components/TaskSwitcher';
+import WorkbenchPopover from './components/WorkbenchPopover';
 import useCompactLayout from './hooks/useCompactLayout';
 import PaperPageNavigation from './components/PaperPageNavigation';
 import { selectionNote } from './utils/selectionNote';
-import { BookOpen, ChevronLeft, ChevronRight, FilePlus2, Languages, MessageSquare, PanelLeftClose, PanelLeftOpen, Save, SunMoon, Upload } from 'lucide-react';
+import { BookOpen, ChevronLeft, ChevronRight, FilePlus2, Languages, MessageSquare, PanelLeftClose, PanelLeftOpen, PanelsTopLeft, Save, SunMoon, Upload } from 'lucide-react';
 import ChatPanel from './components/ChatPanel';
 import MarkdownContent from './components/MarkdownContent';
 import CritiqueContent from './components/CritiqueContent';
@@ -11,14 +12,14 @@ import { critiqueVersion, critiqueMessageIsCurrent, resolveCritiqueFollowup } fr
 import { locatePdfQuote } from './utils/pdfQuoteLocator';
 import PdfViewer from './components/PdfViewer';
 import TaskNavigation from './components/TaskNavigation';
-import DocumentVersionHistory from './components/DocumentVersionHistory';
-import DocumentOrganizer from './components/DocumentOrganizer';
+import DocumentActions from './components/DocumentActions';
 import DocumentTitle from './components/DocumentTitle';
 import CollapsedSources from './components/CollapsedSources';
 import DocumentOriginalPage from './components/DocumentOriginalPage';
 import { documentOriginalPage } from './utils/documentOriginalPage';
 import { documentSources } from './utils/documentSources';
 import { documentMarkdownExport } from './utils/documentExport';
+import { documentDisplayTitle, questionTopic } from './utils/documentPresentation';
 import { learningActivityHistory } from './utils/learningActivityHistory';
 import { reviseDocument, documentText } from './utils/documentVersions';
 import TaskDraftRecovery from './components/TaskDraftRecovery';
@@ -124,11 +125,12 @@ export default function UnifiedTaskApp() {
   useEffect(() => {
     if (!showProcessingHistory) return;
     const previous = document.activeElement;
+    const returnFocus = previous?.closest('.workbench-popover')?.querySelector('.workbench-popover-trigger') || previous;
     const dialog = processingDialogRef.current;
     const background = [...(dialog?.closest('.unified-app')?.children || [])].filter(node => node.matches('header, main'));
     background.forEach(node => node.setAttribute('inert', ''));
     dialog?.querySelector('button')?.focus();
-    return () => { background.forEach(node => node.removeAttribute('inert')); if (previous?.isConnected) previous.focus(); };
+    return () => { background.forEach(node => node.removeAttribute('inert')); if (returnFocus?.isConnected) returnFocus.focus(); };
   }, [showProcessingHistory]);
   const [focusMessage, setFocusMessage] = useState(null);
   const [composerError, setComposerError] = useState('');
@@ -563,7 +565,7 @@ export default function UnifiedTaskApp() {
           || source.artifactId && (item.id || item.artifactId) === source.artifactId);
         if (existing) { saved = existing; collection = key; break; }
       }
-      saved ||= { id: makeId(), title: source.content.replace(/[#*`]/gu, '').split('\n').find(line => line.trim())?.slice(0, 46) || '对话笔记',
+      saved ||= { id: makeId(), title: questionTopic(task.messages.slice(0, currentIndex).findLast(message => message.role === 'user')?.content) || '对话笔记', titleOrigin: 'generated',
         ...(source.critique ? { critique: source.critique } : {}),
         capability: source.capability,
         text: source.content, paperIds: source.context?.allowedPaperIds || task.paperIds,
@@ -576,6 +578,13 @@ export default function UnifiedTaskApp() {
     });
     if (activeTaskIdRef.current === taskId) openDocument(saved, collection);
     return saved.id;
+  };
+  const createNote = async () => {
+    if (!activeTaskId) return;
+    const taskId = activeTaskId;
+    const note = { id: makeId(), title: '未命名笔记', titleOrigin: 'user', type: 'note', text: '', paperIds: [], createdAt: new Date().toISOString(), versions: [] };
+    await updateTask(taskId, task => ({ notes: [...task.notes, note] }));
+    if (activeTaskIdRef.current === taskId) { openDocument(note, 'notes'); setDocumentEditing(true); }
   };
   const openDocument = (item, collection = null) => {
     setRecoveryPreview(null);
@@ -730,7 +739,7 @@ export default function UnifiedTaskApp() {
       const entries = [...task[selection.collection]];
       const index = selection.id ? entries.findIndex(item => (item.id || item.artifactId) === selection.id) : selection.index;
       if (!entries[index]) throw new Error('文档已不存在，请刷新');
-      entries[index] = { ...entries[index], title };
+      entries[index] = { ...entries[index], title, titleOrigin: 'user' };
       return { [selection.collection]: entries };
     });
   };
@@ -997,21 +1006,28 @@ export default function UnifiedTaskApp() {
       <p>{learning.error}</p><button type="button" onClick={() => setShowProcessingHistory(true)}>查看处理记录</button><button type="button" onClick={() => learning.operations.refresh()}>查询状态</button></details>}
   </>;
 
+  const documentActions = activeDocument && <DocumentActions key={selectedDocumentKey} document={activeDocument} editing={documentEditing} dirty={documentDirty}
+    saving={savingDocument} disabled={restoringDocument || movingDocument} onEdit={() => setDocumentEditing(value => !value)} onSave={saveDocumentFromToolbar}
+    onLocate={(activeDocument.sourceMessageId || activeDocument.sourceRequestId || activeDocument.sourceResearchId || activeTask.messages.some(message => message.artifactId === (activeDocument.id || activeDocument.artifactId))) ? () => locateDocument(activeDocument) : undefined}
+    onRecheck={activeDocument.critique?.schemaVersion === 2 ? () => prepareCritiqueRegeneration(activeDocument) : undefined}
+    recheckDisabled={documentDirty || savingDocument || learning.busyTasks[activeTaskId]}
+    onRestore={restoreDocument} taskId={activeTaskId} tasks={tasks} onRename={renameDocument} onMove={moveDocument} onExport={exportDocument}
+    sources={activeDocument.critique?.schemaVersion === 2 && !activeDocument.edited ? <CollapsedSources storageKey={`${contentPositionKey}:sources`} value={activeDocument} onJumpToSource={jumpToSource} /> : null} />;
+
   return <div className="unified-app theme-app-shell">
     <header className="unified-header theme-panel theme-border">
-      <div className="unified-brand"><img src="/貔貅紫白.png" alt="" /> <strong>貔貅</strong><span>学术工作台</span></div>
-      <div className="unified-title" title={activeTask?.title || ''}>{activeTask?.title || '新任务'}</div>
-      <details className="unified-task-more"><summary>更多</summary>
-        <button type="button" onClick={() => setShowProcessingHistory(true)}>处理记录</button>
+      <div className="unified-brand"><img src="/貔貅紫白.png" alt="" /> <strong>貔貅</strong></div>
+      <TaskSwitcher tasks={tasks} activeTask={activeTask} onSelect={selectTask}
+        onCreate={async () => { await createTask({ title: '新任务' }); setCompactPane('chat'); }}
+        onRename={title => updateTask(activeTaskId, { title })}>
+        <button type="button" disabled={!activeTask} onClick={() => setShowProcessingHistory(true)}>处理记录</button>
         <TaskDraftRecovery taskId={activeTaskId} refreshKey={workspace.error || localError} onCreateTask={createTask} />
-      </details>
-      {activeTask && <TaskRename key={activeTaskId} task={activeTask} onRename={title => updateTask(activeTaskId, { title })} />}
-      <div className="unified-layout-actions" role="group" aria-label="布局">
-        <button type="button" className={layout.mode === 'split' ? 'active' : ''} onClick={() => setMode('split')}>并排</button>
-        <button type="button" className={layout.mode === 'reader' ? 'active' : ''} onClick={() => setMode('reader')}>专注阅读</button>
-        <button type="button" className={layout.mode === 'chat' ? 'active' : ''} onClick={() => setMode('chat')}>专注对话</button>
-      </div>
-      <button type="button" className="unified-header-action" onClick={toggleTheme} aria-label="切换主题"><SunMoon size={17} /></button>
+      </TaskSwitcher>
+      <div className="unified-header-spacer" />
+      <WorkbenchPopover label="布局" trigger={<PanelsTopLeft size={18} />}>
+        {close => [['split', '并排'], ['reader', '专注阅读'], ['chat', '专注对话']].map(([mode, label]) => <button type="button" key={mode} aria-pressed={layout.mode === mode} onClick={() => { setMode(mode); close(); }}>{label}</button>)}
+      </WorkbenchPopover>
+      <WorkbenchPopover label="设置" trigger={<SunMoon size={18} />}><button type="button" onClick={toggleTheme} aria-label="切换主题">{theme === 'dark' ? '使用浅色外观' : '使用深色外观'}</button></WorkbenchPopover>
     </header>
     {compact && <div className="unified-compact-switch" role="group" aria-label="内容视图">
       <button type="button" ref={compactNavigationButton} aria-expanded={compactNavigation} aria-controls="unified-navigation" onClick={() => setCompactNavigation(value => !value)}>任务与材料</button>
@@ -1028,10 +1044,9 @@ export default function UnifiedTaskApp() {
           else patchLayout({ navigation: !layout.navigation });
         }}
           onSelectTask={id => { selectTask(id); setCompactNavigation(false); compactNavigationButton.current?.focus(); }} onCreateTask={async () => { await createTask({ title: '新任务' }); setCompactNavigation(false); setCompactPane('chat'); }} onOpenPaper={openPaper} onAddPaper={addPaper} onRemovePaper={removePaper} onOpenArtifact={openDocument}
+          taskControlsInHeader onCreateNote={createNote} onUpload={() => fileInputRef.current?.click()} uploading={uploading}
           learningRecords={savedLearningActivities} onOpenLearning={openLearningRecord} selectedDocumentId={selectedDocument?.id} selectedLearningId={selectedLearning?.id}>
-          <button type="button" className="unified-upload" disabled={uploading} onClick={() => fileInputRef.current?.click()}><Upload size={15} />{uploading ? '上传中…' : '上传 PDF'}</button>
           {(libraryError || materialError) && <p className="unified-inline-error" role="alert">{materialError || libraryError}</p>}
-          <button type="button" className="unified-record-entry" onClick={() => setShowProcessingHistory(true)}>处理记录</button>
           {focusedPaperId && <div className="unified-outline">
             <button type="button" onClick={() => setShowOutline((value) => !value)}>{showOutline ? <ChevronLeft size={13} /> : <ChevronRight size={13} />} 当前论文目录</button>
             {showOutline && <div>{outline.map((item) => <button type="button" key={item.id} style={{ paddingLeft: `${Math.max(0, item.level - 1) * 12 + 8}px` }} onClick={() => item.pageIndex != null && jumpToSource({ pdfId: focusedPaperId, pageIndex: item.pageIndex })}>{item.label}</button>)}{outline.length === 0 && <span>暂无目录</span>}</div>}
@@ -1041,8 +1056,9 @@ export default function UnifiedTaskApp() {
       <section className={`unified-reader ${!layout.reader ? 'unified-desktop-hidden' : ''}`} inert={compact && compactNavigation ? true : undefined} style={{ flexBasis: layout.chat ? `${layout.readerPercent}%` : '100%' }} aria-label="论文与成果">
         <div className="unified-pane-head">
           <BookOpen size={17} />
-          {activeDocument ? <DocumentTitle key={selectedDocumentKey} title={activeDocument.title} onRename={renameDocument} /> : <strong title={focusedPaperId ? getPaperTitle(papers, focusedPaperId) : ''}>{preview ? preview.kind === 'research.report' ? '研究报告' : '已生成结果' : activeLearning ? '学习记录' : focusedPaperId ? shortPaperTitle(papers, focusedPaperId) : '阅读区'}</strong>}
+          {activeDocument ? <strong>成果</strong> : <strong title={focusedPaperId ? getPaperTitle(papers, focusedPaperId) : ''}>{preview ? preview.kind === 'research.report' ? '研究报告' : '已生成结果' : activeLearning ? '学习记录' : focusedPaperId ? shortPaperTitle(papers, focusedPaperId) : '阅读区'}</strong>}
           {(activeDocument || activeLearning || preview) && <button type="button" onClick={returnToPaper}>返回论文</button>}
+          {documentActions}
           {!activeDocument && !activeLearning && !preview && returnContent && <button type="button" onClick={() => { if (!reopenContent(returnContent)) setLocalError('这份记录已移动或暂不可用。'); }}>返回记录</button>}
           {!activeDocument && !activeLearning && !preview && paperView.url && <div className="unified-translation-modes" role="group" aria-label="翻译视图">
             <button type="button" className={translationMode === 'original' ? 'active' : ''} onClick={() => setTranslationMode('original')}>原文</button>
@@ -1075,22 +1091,7 @@ export default function UnifiedTaskApp() {
               catch { setLocalError('草稿核对记录保存失败，请保留当前正文'); }
             }}>已核对，保留我的修改</button>
           </div>}
-          <div className="unified-document-toolbar">
-            <div className="unified-document-modes" role="group" aria-label="成果视图">
-              <button type="button" aria-pressed={!documentEditing} onClick={() => setDocumentEditing(false)}>阅读</button>
-              <button type="button" aria-pressed={documentEditing} onClick={() => setDocumentEditing(true)}>编辑</button>
-            </div>
-            {(documentEditing || documentDirty) && <button type="button" disabled={savingDocument || restoringDocument || movingDocument || !documentDirty} onClick={saveDocumentFromToolbar}><Save size={15} /> {savingDocument ? '保存中…' : '保存'}</button>}
-            <span className="unified-document-save-state" role="status">{savingDocument ? '正在保存' : documentDirty ? '未保存修改' : '已保存'}</span>
-            {(activeDocument.sourceMessageId || activeDocument.sourceRequestId || activeDocument.sourceResearchId || activeTask.messages.some(message => message.artifactId === (activeDocument.id || activeDocument.artifactId))) && <button type="button" onClick={() => locateDocument(activeDocument)}>定位原对话</button>}
-            {activeDocument.critique?.schemaVersion === 2 && <button type="button" disabled={documentDirty || savingDocument || learning.busyTasks[activeTaskId]} onClick={() => prepareCritiqueRegeneration(activeDocument)}>重新核查</button>}
-          </div>
-          <DocumentVersionHistory key={`${selectedDocument.taskId}/${selectedDocument.collection}/${selectedDocument.id ?? selectedDocument.index}`} document={activeDocument} onRestore={restoreDocument} disabled={savingDocument || movingDocument} />
-          <DocumentOrganizer key={`organize/${documentDraftKey(selectedDocument)}`} document={activeDocument} taskId={activeTaskId} tasks={tasks}
-            dirty={documentDirty || savingDocument} onRename={renameDocument} onMove={moveDocument} onExport={exportDocument} />
-          {originalDocumentPage && activeTask.paperIds.includes(originalDocumentPage.pdfId) &&
-            <DocumentOriginalPage key={selectedDocumentKey} taskId={activeTaskId} source={originalDocumentPage}
-              title={activeDocument.title} text={documentDraft} paperTitle={getPaperTitle(papers, originalDocumentPage.pdfId)} />}
+          <h1 className="workbench-document-heading" aria-label={documentDisplayTitle(activeDocument, activeTask, papers)}><DocumentTitle key={selectedDocumentKey} title={documentDisplayTitle(activeDocument, activeTask, papers)} onRename={renameDocument} /></h1>
           {documentEditing ? <>
           <textarea aria-label="编辑笔记与成果" disabled={restoringDocument || movingDocument} value={documentDraft} onChange={(event) => {
             const value = event.target.value;
@@ -1107,7 +1108,10 @@ export default function UnifiedTaskApp() {
             value={{ ...activeDocument, edited: activeDocument.edited || documentDirty }} target="artifact"
             text={documentDraft || '（空白正文）'} onJumpToSource={jumpToSource}
             onFollowup={issueId => selectCritiqueIssue(activeDocument.id || activeDocument.artifactId, issueId)} /></article>}
-          <CollapsedSources key={contentPositionKey} storageKey={`${contentPositionKey}:sources`} value={activeDocument} onJumpToSource={jumpToSource} />
+          {(activeDocument.critique?.schemaVersion !== 2 || activeDocument.edited) && <CollapsedSources key={contentPositionKey} storageKey={`${contentPositionKey}:sources`} value={activeDocument} onJumpToSource={jumpToSource} />}
+          {originalDocumentPage && activeTask.paperIds.includes(originalDocumentPage.pdfId) &&
+            <DocumentOriginalPage key={selectedDocumentKey} taskId={activeTaskId} source={originalDocumentPage}
+              title={documentDisplayTitle(activeDocument, activeTask, papers)} text={documentDraft} paperTitle={getPaperTitle(papers, originalDocumentPage.pdfId)} />}
         </div> : null}
         <div className="unified-reader-paper" style={{ visibility: activeDocument || activeLearning || preview ? 'hidden' : 'visible', opacity: activeDocument || activeLearning || preview ? 0 : 1, pointerEvents: activeDocument || activeLearning || preview ? 'none' : undefined }}
           aria-hidden={Boolean(activeDocument || activeLearning || preview)} inert={activeDocument || activeLearning || preview ? true : undefined}>

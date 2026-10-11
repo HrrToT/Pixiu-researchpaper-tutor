@@ -1,0 +1,29 @@
+import React from 'react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { expect, it, vi } from 'vitest';
+import TaskSwitcher from './TaskSwitcher';
+
+it('searches tasks and switches by identity without creating a task', async () => {
+  const tasks = [{ id: 'a', title: '压缩阅读' }, { id: 'b', title: '实验方案' }];
+  const select = vi.fn(), create = vi.fn();
+  render(<TaskSwitcher tasks={tasks} activeTask={tasks[0]} onSelect={select} onCreate={create} />);
+  fireEvent.click(screen.getByRole('button', { name: '切换任务' }));
+  fireEvent.change(screen.getByRole('textbox', { name: '搜索任务' }), { target: { value: '实验' } });
+  fireEvent.click(screen.getByRole('button', { name: '实验方案' }));
+  await waitFor(() => expect(select).toHaveBeenCalledWith('b'));
+  expect(create).not.toHaveBeenCalled();
+  await waitFor(() => expect(screen.getByRole('button', { name: '切换任务' })).toHaveFocus());
+});
+
+it('retains a failed rename and its draft instead of presenting it as saved', async () => {
+  const task = { id: 'a', title: '原名称' };
+  const rename = vi.fn(async () => { throw new Error('服务离线'); });
+  render(<TaskSwitcher tasks={[task]} activeTask={task} onRename={rename} />);
+  fireEvent.click(screen.getByRole('button', { name: '切换任务' }));
+  fireEvent.click(screen.getByRole('button', { name: '重命名' }));
+  fireEvent.change(screen.getByRole('textbox', { name: '任务名称' }), { target: { value: '未保存名称' } });
+  fireEvent.click(screen.getByRole('button', { name: '保存名称' }));
+  expect(await screen.findByRole('alert')).toHaveTextContent('服务离线');
+  expect(screen.getByRole('textbox', { name: '任务名称' })).toHaveValue('未保存名称');
+  expect(task.title).toBe('原名称');
+});

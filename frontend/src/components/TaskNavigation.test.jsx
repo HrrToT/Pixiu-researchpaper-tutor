@@ -40,9 +40,9 @@ describe('task navigation', () => {
     const snapshot = JSON.stringify(task);
     render(<TaskNavigation {...handlers} activeTask={task} />);
     const results = screen.getAllByRole('button', { name: /第4页译文/ });
-    expect(results[0]).toHaveTextContent('记录 2 · 第 4 页');
-    expect(results[1]).toHaveTextContent('记录 1 · 第 4 页');
-    fireEvent.click(screen.getByRole('button', { name: /第4页译文.*记录 2/ }));
+    expect(results[0]).toHaveTextContent('10/09');
+    expect(results[1]).toHaveTextContent('10/08');
+    fireEvent.click(results[0]);
     expect(handlers.onOpenArtifact).toHaveBeenCalledWith(recent);
     expect(JSON.stringify(task)).toBe(snapshot);
   });
@@ -52,10 +52,10 @@ describe('task navigation', () => {
       { id: 'n2', title: '原文笔记', createdAt: 'invalid', source: { text: '第二处选区', sourcePageIndex: 2 } }];
     render(<TaskNavigation {...handlers} activeTask={{ ...handlers.activeTask, notes }} />);
     const results = screen.getAllByRole('button', { name: /原文笔记/ });
-    expect(results[0]).toHaveTextContent('记录 1 · 第一处选区');
-    expect(results[1]).toHaveTextContent('记录 2 · 第 3 页 · 第二处选区');
+    expect(results[0]).toHaveTextContent('第一处选区');
+    expect(results[1]).toHaveTextContent('第二处选区');
     expect(results[1]).not.toHaveTextContent('Invalid Date');
-    fireEvent.click(screen.getByRole('button', { name: /原文笔记.*记录 2/ }));
+    fireEvent.click(results[1]);
     expect(handlers.onOpenArtifact).toHaveBeenCalledWith(notes[1]);
   });
 });
@@ -78,6 +78,7 @@ it('opens matching learning questions, answers and feedback independently of doc
   const activity={activityId:'learning',pdfId:'p1',status:'paused',concepts:[{id:'c',question:'如何解释稀疏性？'}],
     turns:[{conceptId:'c',action:'answer',text:'计算资源会减少',feedback:'需要补充误差边界'}]};
   render(<TaskNavigation {...handlers} learningRecords={[activity]} onOpenLearning={open} selectedLearningId="learning"/>);
+  fireEvent.click(screen.getByRole('button', { name: '筛选成果' }));
   fireEvent.change(screen.getByRole('combobox',{name:'成果类型'}),{target:{value:'translation'}});
   const search=screen.getByRole('textbox',{name:'搜索材料与记录'});
   for(const query of ['稀疏性','计算资源','误差边界']) {
@@ -96,6 +97,7 @@ it('does not infer translation from a page anchor and shows a global empty searc
   const anchored={id:'evidence',pageIndex:3,title:'方法证据',text:'正文'};
   const translation={id:'old-translation',pageIndex:3,title:'第4页译文',text:'中文'};
   render(<TaskNavigation {...handlers} activeTask={{...handlers.activeTask,artifacts:[anchored,translation]}}/>);
+  fireEvent.click(screen.getByRole('button', { name: '筛选成果' }));
   fireEvent.change(screen.getByRole('combobox',{name:'成果类型'}),{target:{value:'translation'}});
   expect(screen.getByRole('button',{name:'第4页译文 · 译文'})).toBeInTheDocument();
   expect(screen.queryByRole('button',{name:/方法证据/})).not.toBeInTheDocument();

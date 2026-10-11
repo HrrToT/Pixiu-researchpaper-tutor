@@ -1,7 +1,16 @@
 .unified-app { height:100dvh; display:flex; flex-direction:column; color:var(--text-primary); background:var(--app-bg); }
-.unified-header { display:flex; align-items:center; gap:12px; min-height:58px; padding:8px 16px; border-bottom:1px solid var(--border-subtle); }
+.unified-header-spacer { flex:1; }
+.unified-header { min-height:52px; }
+.unified-brand img { width:26px; height:26px; }
+.workbench-document-actions.unified-document-toolbar { display:flex; gap:6px; flex-wrap:nowrap; margin:0 0 0 auto; }
+.workbench-document-actions > button { border:0; min-height:32px; padding:6px 9px; }
+.workbench-document-actions .unified-document-save-state { margin:0; white-space:nowrap; }
+.workbench-document-heading { max-width:800px; margin:4px auto 18px; font-size:21px; font-weight:600; line-height:1.4; }
+.workbench-document-heading .unified-document-title { display:block; width:100%; white-space:normal; overflow-wrap:anywhere; font:inherit; line-height:inherit; }
+.workbench-primary { background:var(--accent)!important; color:var(--panel-bg)!important; }
+.unified-header { display:flex; align-items:center; gap:12px; min-height:52px; padding:8px 16px; border-bottom:1px solid var(--border-subtle); }
 .unified-brand { display:flex; align-items:center; gap:8px; white-space:nowrap; }
-.unified-brand img { width:30px; height:30px; object-fit:contain; }
+.unified-brand img { width:26px; height:26px; object-fit:contain; }
 .unified-brand span { color:var(--text-secondary); font-size:12px; }
 .unified-title { flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:14px; }
 .unified-layout-actions { display:flex; gap:3px; }

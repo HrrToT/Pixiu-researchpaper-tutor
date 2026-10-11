@@ -15,6 +15,7 @@ export default function DocumentVersionHistory({ document, onRestore, disabled =
     catch (failure) { setError(failure.message || '恢复失败，当前内容仍保留'); }
     finally { setBusy(false); }
   };
+  if (!versions.length) return null;
   return <details className="document-version-history"><summary>历史版本（{versions.length}）</summary>
     {!versions.length && <p>保存修改后，先前正文会保存在这里。</p>}
     {versions.length > 0 && <select aria-label="选择历史版本" value={selected ?? ''} disabled={busy} onChange={(event) => { setSelected(event.target.value === '' ? null : Number(event.target.value)); setError(''); }}>
