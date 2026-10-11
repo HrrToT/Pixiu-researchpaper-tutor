@@ -1,7 +1,7 @@
 import React from 'react';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { expect, it, vi } from 'vitest';
-import ConversationExecution from './ConversationExecution';
+import ConversationExecution, { OperationRecord } from './ConversationExecution';
 
 it('shows concise failure recovery with original question and folded details', () => {
   const retry = vi.fn();
@@ -41,4 +41,25 @@ it('keeps an unsubmitted intent behind an explicit continue action and cancels i
   fireEvent.click(screen.getByRole('button', { name: '停止' }));
   expect(cancel).toHaveBeenCalledWith('r');
   expect(screen.queryByRole('button', { name: '重试' })).not.toBeInTheDocument();
+});
+
+
+it('can render one completed request without repeating its question and locate the original message', () => {
+  const locate = vi.fn();
+  const record = { requestId: 'done', status: 'succeeded', request: { message: '原问题' } };
+  render(<OperationRecord record={record} showQuestion={false} onLocate={locate} />);
+  expect(screen.getByText('已完成')).toBeInTheDocument();
+  expect(screen.queryByText('原问题')).not.toBeInTheDocument();
+  expect(screen.queryByRole('button', { name: '重试' })).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole('button', { name: '打开对应对话' }));
+  expect(locate).toHaveBeenCalledWith(record);
+});
+
+it('keeps asynchronous recovery errors local instead of creating another request', async () => {
+  const retry = vi.fn().mockRejectedValue(new Error('原请求状态尚未确认'));
+  render(<OperationRecord record={{ requestId: 'failed', status: 'failed', request: { message: '原问题' } }} onRetry={retry} />);
+  expect(retry).not.toHaveBeenCalled();
+  fireEvent.click(screen.getByRole('button', { name: '重试' }));
+  await waitFor(() => expect(screen.getByRole('alert')).toHaveTextContent('原请求状态尚未确认'));
+  expect(retry).toHaveBeenCalledTimes(1);
 });

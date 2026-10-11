@@ -94,10 +94,14 @@ describe('ChatPanel', () => {
     expect(textarea).not.toBeDisabled();
   });
 
-  it('disables input when loading', () => {
+  it('keeps the next draft editable while loading and prevents another send', () => {
     renderChat({ isLoading: true });
     const textarea = screen.getByLabelText('输入问题');
-    expect(textarea).toBeDisabled();
+    expect(textarea).toBeEnabled();
+    fireEvent.change(textarea, { target: { value: '下一条草稿' } });
+    expect(screen.getByRole('button', { name: '发送消息' })).toBeDisabled();
+    expect(screen.getAllByRole('button', { name: '停止生成' })).toHaveLength(1);
+    expect(screen.getByRole('button', { name: '停止生成' }).parentElement).toBe(textarea.parentElement);
   });
 
   it('calls onSendMessage when typing and clicking send', () => {
@@ -192,4 +196,134 @@ describe('ChatPanel', () => {
 
     window.confirm = originalConfirm;
   });
+});
+
+
+describe('ChatPanel interaction continuity', () => {
+  beforeEach(() => { localStorage.clear(); sessionStorage.clear(); vi.clearAllMocks(); });
+
+  it('retains edits made during an accepted request and ignores IME confirmation', async () => {
+    let finish;
+    const send = vi.fn(() => new Promise(resolve => { finish = resolve; }));
+    renderChat({ conversationId: 'editable', onSendMessage: send });
+    const input = screen.getByLabelText('输入问题');
+    fireEvent.change(input, { target: { value: '原问题' } });
+    fireEvent.keyDown(input, { key: 'Enter', isComposing: true });
+    expect(send).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole('button', { name: '发送消息' }));
+    expect(input).toBeEnabled();
+    fireEvent.change(input, { target: { value: '新的草稿' } });
+    await act(async () => finish(true));
+    expect(input).toHaveValue('新的草稿');
+  });
+
+  it('removes explicit material and function choices only from the draft', () => {
+    const send = vi.fn();
+    renderChat({ enableSkills: true, materials: [{ id: 'm', title: '论文甲' }], onSendMessage: send });
+    const input = screen.getByLabelText('输入问题');
+    fireEvent.change(input, { target: { value: '/比较 根据 @{论文甲} 回答' } });
+    fireEvent.click(screen.getByRole('button', { name: '移除材料 论文甲' }));
+    expect(input).toHaveValue('/比较 根据 回答');
+    fireEvent.click(screen.getByRole('button', { name: '取消比较功能' }));
+    expect(input).toHaveValue('根据 回答');
+    expect(send).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole('button', { name: '功能', exact: true }));
+    fireEvent.click(screen.getByRole('button', { name: /批判.*检查贡献/ }));
+    expect(input).toHaveValue('/批判 根据 回答');
+  });
+
+  it('uses one save action, prevents concurrent and repeated saves, and exposes progress', async () => {
+    let finish;
+    const capture = vi.fn(() => new Promise(resolve => { finish = resolve; }));
+    const note = vi.fn();
+    const messages = [{ id: 'answer', role: 'ai', content: '回答' }];
+    const view = renderChat({ messages, onCaptureArtifact: capture, onSaveToNote: note });
+    expect(screen.queryByRole('button', { name: '收藏到学术笔记' })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: '保存' }));
+    expect(screen.getByRole('button', { name: '保存中' })).toBeDisabled();
+    fireEvent.click(screen.getByRole('button', { name: '保存中' }));
+    expect(capture).toHaveBeenCalledTimes(1);
+    expect(note).not.toHaveBeenCalled();
+    await act(async () => finish());
+    expect(screen.getByRole('button', { name: '已保存' })).toBeDisabled();
+    view.rerender(<ChatPanel {...defaultProps} messages={[{ ...messages[0], artifactId: 'saved' }]} onCaptureArtifact={capture} />);
+    expect(screen.getByRole('button', { name: '打开完整成果' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '已保存' })).not.toBeInTheDocument();
+  });
+
+  it('searches original messages and supports anchored content and parent focus requests', () => {
+    const scroll = vi.spyOn(Element.prototype, 'scrollIntoView');
+    const messages = [{ id: 'question', role: 'user', content: '比较论文甲' }, { id: 'answer', role: 'ai', content: '比较结果' }];
+    const after = (message, index) => <span>活动 {message.id} {index}</span>;
+    const view = renderChat({ messages, renderMessageAfter: after, historyContent: <p>处理记录</p>, composerContext: <span>当前材料</span>, contextLabel: '旧上下文', currentActivity: <span>等待确认</span> });
+    expect(screen.getByText('活动 question 0').closest('[data-message-id]')).toHaveAttribute('data-message-id', 'question');
+    expect(screen.getByText('处理记录')).toBeInTheDocument();
+    expect(screen.queryByText(/旧上下文/)).not.toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText('搜索对话'), { target: { value: '论文甲' } });
+    fireEvent.click(screen.getByRole('button', { name: '第 1 条 · 比较论文甲' }));
+    expect(scroll.mock.instances.at(-1)).toHaveAttribute('data-message-id', 'question');
+    view.rerender(<ChatPanel {...defaultProps} messages={messages} focusMessage={{ id: 'answer', token: 1 }} />);
+    expect(scroll.mock.instances.at(-1)).toHaveAttribute('data-message-id', 'answer');
+    scroll.mockRestore();
+  });
+
+  it('preserves browsing position, announces new results and restores each task scroll', () => {
+    const scroll = vi.spyOn(Element.prototype, 'scrollIntoView');
+    const initial = [{ id: 1, role: 'ai', content: '旧消息' }];
+    const view = renderChat({ messages: initial, conversationId: 'scroll-A' });
+    const scroller = view.container.querySelector('.reader-chat-scroll');
+    Object.defineProperties(scroller, { scrollHeight: { configurable: true, value: 1200 }, clientHeight: { configurable: true, value: 300 } });
+    scroller.scrollTop = 120;
+    fireEvent.scroll(scroller);
+    scroll.mockClear();
+    const updated = [...initial, { id: 2, role: 'ai', content: '新回答' }];
+    view.rerender(<ChatPanel {...defaultProps} messages={updated} conversationId="scroll-A" />);
+    expect(scroll).not.toHaveBeenCalled();
+    expect(screen.getByRole('button', { name: '有新结果 · 查看最新' })).toBeInTheDocument();
+    view.rerender(<ChatPanel {...defaultProps} messages={[]} conversationId="scroll-B" />);
+    scroller.scrollTop = 320;
+    fireEvent.scroll(scroller);
+    view.rerender(<ChatPanel {...defaultProps} messages={updated} conversationId="scroll-A" />);
+    expect(scroller.scrollTop).toBe(120);
+    view.unmount();
+    const restored = renderChat({ messages: updated, conversationId: 'scroll-A' });
+    expect(restored.container.querySelector('.reader-chat-scroll').scrollTop).toBe(120);
+    scroll.mockRestore();
+  });
+
+  it('allows the parent to replace loading presentation while preserving the stop action', () => {
+    renderChat({ isLoading: true, showLoadingIndicator: false, currentActivity: <span>研究中</span> });
+    expect(screen.queryByText('生成中')).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '停止生成' })).toBeInTheDocument();
+  });
+});
+
+
+it('announces slot-only results while browsing and jumps to the newest result on demand', async () => {
+  const scroll = vi.spyOn(Element.prototype, 'scrollIntoView');
+  const messages = [{ id: 'request', role: 'user', content: '研究问题' }];
+  const view = renderChat({ conversationId: 'slot-results', messages, renderMessageAfter: () => <span>运行中</span> });
+  const scroller = view.container.querySelector('.reader-chat-scroll');
+  Object.defineProperties(scroller, { scrollHeight: { configurable: true, value: 1000 }, clientHeight: { configurable: true, value: 200 } });
+  scroller.scrollTop = 50;
+  fireEvent.scroll(scroller);
+  scroll.mockClear();
+  view.rerender(<ChatPanel {...defaultProps} conversationId="slot-results" messages={messages} renderMessageAfter={() => <span>报告已完成</span>} />);
+  await waitFor(() => expect(screen.getByRole('button', { name: '有新结果 · 查看最新' })).toBeInTheDocument());
+  expect(scroll).not.toHaveBeenCalled();
+  fireEvent.click(screen.getByRole('button', { name: '有新结果 · 查看最新' }));
+  expect(scroll).toHaveBeenCalled();
+  expect(screen.queryByRole('button', { name: '有新结果 · 查看最新' })).not.toBeInTheDocument();
+  scroll.mockRestore();
+});
+
+it('retries failed saves and lets a user message use the same visible save entry', async () => {
+  const note = vi.fn().mockRejectedValueOnce(new Error('offline')).mockResolvedValueOnce(undefined);
+  renderChat({ messages: [{ id: 'user-save', role: 'user', content: '我的问题' }], onSaveToNote: note });
+  fireEvent.click(screen.getByRole('button', { name: '保存' }));
+  expect(await screen.findByRole('alert')).toHaveTextContent('保存失败');
+  fireEvent.click(screen.getByRole('button', { name: '保存' }));
+  await waitFor(() => expect(screen.getByRole('button', { name: '已保存' })).toBeInTheDocument());
+  expect(note).toHaveBeenCalledTimes(2);
+  expect(note).toHaveBeenLastCalledWith(0);
 });

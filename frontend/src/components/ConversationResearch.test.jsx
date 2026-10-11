@@ -1,7 +1,7 @@
 import React from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import ConversationResearch from './ConversationResearch';
+import ConversationResearch, { ResearchCard } from './ConversationResearch';
 
 const task = { id: 't', researchRuns: [{ researchId: 'r', question: '比较方法' }] };
 describe('research review in conversation', () => {
@@ -33,4 +33,29 @@ describe('research review in conversation', () => {
     fireEvent.click(screen.getByRole('button', { name: '打开研究报告' }));
     expect(open).toHaveBeenCalledWith(task.researchRuns[0], result);
   });
+});
+
+
+it('renders a completed research as one saved report entry without full question or sources', () => {
+  const open = vi.fn();
+  const run = { researchId: 'finished', question: '完整研究问题'.repeat(20) };
+  const result = { status: 'succeeded', title: '消融实验方案', report: '完整报告', findings: [{ sources: [{ title: '论文来源', text: '证据原文' }] }] };
+  render(<ResearchCard taskId="t" run={run} result={result} onOpenReport={open} />);
+  expect(screen.getByText('消融实验方案')).toBeInTheDocument();
+  expect(screen.getByText('已保存')).toBeInTheDocument();
+  expect(screen.queryByText(run.question)).not.toBeInTheDocument();
+  expect(screen.queryByText('论文来源')).not.toBeInTheDocument();
+  expect(screen.queryByText('完整报告')).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole('button', { name: '打开研究报告' }));
+  expect(open).toHaveBeenCalledWith(run, result);
+});
+
+it('keeps an action failure local and permits an explicit retry', async () => {
+  const action = vi.fn().mockRejectedValueOnce(new Error('计划保存失败')).mockResolvedValueOnce(undefined);
+  render(<ResearchCard taskId="t" run={{ researchId: 'r', question: '长问题'.repeat(30) }} result={{ status: 'awaiting_plan_review', plan: ['实验公平吗？'] }} onAction={action} compactTitle="实验核对" />);
+  expect(screen.getByText('实验核对')).toBeInTheDocument();
+  fireEvent.click(screen.getByRole('button', { name: '按这些问题研究' }));
+  expect(await screen.findByRole('alert')).toHaveTextContent('计划保存失败');
+  fireEvent.click(screen.getByRole('button', { name: '按这些问题研究' }));
+  await waitFor(() => expect(action).toHaveBeenCalledTimes(2));
 });

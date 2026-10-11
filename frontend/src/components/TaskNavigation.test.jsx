@@ -59,3 +59,47 @@ describe('task navigation', () => {
     expect(handlers.onOpenArtifact).toHaveBeenCalledWith(notes[1]);
   });
 });
+
+
+it('searches document bodies and opens the retained document with the current identity', () => {
+  const handlers=props();
+  const document={id:'report',type:'research',title:'实验报告',text:'正文中的消融对比'};
+  render(<TaskNavigation {...handlers} activeTask={{...handlers.activeTask,artifacts:[document]}} selectedDocumentId="report"/>);
+  fireEvent.change(screen.getByRole('textbox',{name:'搜索材料与记录'}),{target:{value:'消融对比'}});
+  const link=screen.getByRole('button',{name:'实验报告 · 报告'});
+  expect(link).toHaveAttribute('aria-current','page');
+  fireEvent.click(link);
+  expect(handlers.onOpenArtifact).toHaveBeenCalledWith(document);
+  expect(screen.queryByRole('button',{name:'论文一'})).not.toBeInTheDocument();
+});
+
+it('opens matching learning questions, answers and feedback independently of document filters', () => {
+  const handlers=props(),open=vi.fn();
+  const activity={activityId:'learning',pdfId:'p1',status:'paused',concepts:[{id:'c',question:'如何解释稀疏性？'}],
+    turns:[{conceptId:'c',action:'answer',text:'计算资源会减少',feedback:'需要补充误差边界'}]};
+  render(<TaskNavigation {...handlers} learningRecords={[activity]} onOpenLearning={open} selectedLearningId="learning"/>);
+  fireEvent.change(screen.getByRole('combobox',{name:'成果类型'}),{target:{value:'translation'}});
+  const search=screen.getByRole('textbox',{name:'搜索材料与记录'});
+  for(const query of ['稀疏性','计算资源','误差边界']) {
+    fireEvent.change(search,{target:{value:query}});
+    const link=screen.getByRole('button',{name:'精读 · 论文一 · 已暂停'});
+    expect(link.closest('details')).toHaveAttribute('open');
+    expect(link).toHaveAttribute('aria-current','page');
+    fireEvent.click(link);
+    expect(open).toHaveBeenLastCalledWith(activity);
+  }
+  expect(screen.queryByRole('status')).not.toBeInTheDocument();
+});
+
+it('does not infer translation from a page anchor and shows a global empty search state', () => {
+  const handlers=props();
+  const anchored={id:'evidence',pageIndex:3,title:'方法证据',text:'正文'};
+  const translation={id:'old-translation',pageIndex:3,title:'第4页译文',text:'中文'};
+  render(<TaskNavigation {...handlers} activeTask={{...handlers.activeTask,artifacts:[anchored,translation]}}/>);
+  fireEvent.change(screen.getByRole('combobox',{name:'成果类型'}),{target:{value:'translation'}});
+  expect(screen.getByRole('button',{name:'第4页译文 · 译文'})).toBeInTheDocument();
+  expect(screen.queryByRole('button',{name:/方法证据/})).not.toBeInTheDocument();
+  fireEvent.change(screen.getByRole('textbox',{name:'搜索材料与记录'}),{target:{value:'不存在的关键词'}});
+  expect(screen.getByRole('status')).toHaveTextContent('没有匹配的论文、成果或学习记录');
+  expect(screen.getByRole('combobox',{name:'成果类型'})).not.toHaveTextContent('学习');
+});

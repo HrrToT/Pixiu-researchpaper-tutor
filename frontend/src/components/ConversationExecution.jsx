@@ -1,31 +1,41 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { operationStatusLabels, operationQuestion } from './conversationProcessingModel';
 
 const activeStatuses = new Set(['queued', 'running', 'unknown', 'cancelling']);
-const labels = { queued: '等待处理', running: '正在处理', unknown: '正在确认结果', cancelling: '正在停止',
-  awaiting_submission: '提交未确认', failed: '未完成', interrupted: '处理已中断', cancelled: '已停止', conflicted: '结果已生成，请核对任务' };
+/** Controls operate on the saved request ID; unconfirmed requests are queried first. */
+export function OperationRecord({ record, busy, showQuestion = true, onRetry, onSubmitSaved, onRefresh, onCancel, onOpenResult, onLocate }) {
+  const [actionError, setActionError] = useState('');
+  const question = operationQuestion(record);
+  const text = record.result?.artifact?.text || record.result?.message || record.result?.reply;
+  const invoke = (handler, ...args) => {
+    if (!handler) return;
+    setActionError('');
+    try { Promise.resolve(handler(...args)).catch(error => setActionError(error?.message || '操作未完成，请重试。')); }
+    catch (error) { setActionError(error?.message || '操作未完成，请重试。'); }
+  };
+  return <div className="unified-execution-row" data-request-id={record.requestId}>
+    <span role="status">{operationStatusLabels[record.status] || record.status}</span>
+    {showQuestion && question && <span className="unified-execution-question" title={question}>{question}</span>}
+    {record.retriedBy ? <span>已由后续请求接续</span> : record.status === 'succeeded'
+      ? onLocate && <button type="button" onClick={() => invoke(onLocate, record)}>打开对应对话</button>
+      : record.status === 'awaiting_submission'
+      ? <><button type="button" disabled={!onRefresh} onClick={() => invoke(onRefresh)}>查询状态</button><button type="button" disabled={busy || !onSubmitSaved} onClick={() => invoke(onSubmitSaved, record.requestId)}>继续发送</button><button type="button" disabled={!onCancel} onClick={() => invoke(onCancel, record.requestId)}>停止</button></>
+      : activeStatuses.has(record.status)
+      ? <><button type="button" disabled={!onRefresh} onClick={() => invoke(onRefresh)}>查询状态</button><button type="button" disabled={record.status === 'cancelling' || !onCancel} onClick={() => invoke(onCancel, record.requestId)}>停止</button></>
+      : record.status !== 'conflicted' && <button type="button" disabled={busy || !record.request || !onRetry} onClick={() => invoke(onRetry, record.requestId)}>重试</button>}
+    {record.status === 'conflicted' && text && <button type="button" disabled={!onOpenResult} onClick={() => invoke(onOpenResult, record)}>打开已生成结果</button>}
+    {record.error && <details><summary>详情</summary><p>{record.error}</p></details>}
+    {actionError && <p role="alert">{actionError}</p>}
+  </div>;
+}
 
-/** Small recovery controls; the full execution history remains folded. */
-export default function ConversationExecution({ task, records, busy, onRetry, onSubmitSaved, onRefresh, onCancel, onOpenResult }) {
+/** Legacy compact recovery list; successful records are available in task history. */
+export default function ConversationExecution({ task, records = {}, ...actions }) {
   const visible = Object.values(records).filter(record => record.taskId === task.id && !record.retriedBy && record.status !== 'succeeded');
   const active = visible.filter(record => activeStatuses.has(record.status));
-  const completed = visible.filter(record => !activeStatuses.has(record.status) && labels[record.status])
+  const completed = visible.filter(record => !activeStatuses.has(record.status) && operationStatusLabels[record.status])
     .sort((a, b) => String(b.updatedAt || b.createdAt || '').localeCompare(String(a.updatedAt || a.createdAt || '')));
-  const renderRecord = record => {
-    const input = record.request || record.input || {};
-    const question = input.displayText || input.message || input.goal || input.question || input.text || '';
-    const text = record.result?.artifact?.text || record.result?.message || record.result?.reply;
-    return <div className="unified-execution-row" key={record.requestId}>
-      <span role="status">{labels[record.status]}</span>
-      {question && <span className="unified-execution-question" title={question}>{question}</span>}
-      {record.status === 'awaiting_submission'
-        ? <><button type="button" onClick={onRefresh}>查询状态</button><button type="button" disabled={busy || !onSubmitSaved} onClick={() => onSubmitSaved(record.requestId)}>继续发送</button><button type="button" onClick={() => onCancel(record.requestId)}>停止</button></>
-        : activeStatuses.has(record.status)
-        ? <><button type="button" onClick={onRefresh}>查询状态</button><button type="button" disabled={record.status === 'cancelling'} onClick={() => onCancel(record.requestId)}>停止</button></>
-        : record.status !== 'conflicted' && input && <button type="button" disabled={busy || !record.request} onClick={() => onRetry(record.requestId)}>重试</button>}
-      {record.status === 'conflicted' && text && <button type="button" onClick={() => onOpenResult?.(record)}>打开已生成结果</button>}
-      {record.error && <details><summary>详情</summary><p>{record.error}</p></details>}
-    </div>;
-  };
+  const renderRecord = record => <OperationRecord key={record.requestId} record={record} {...actions} />;
   if (!active.length && !completed.length) return null;
   return <div className="unified-execution" aria-label="处理与恢复">
     {active.map(renderRecord)}
