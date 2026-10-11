@@ -56,3 +56,5 @@
   .workbench-paper-list,.workbench-record-list { overflow:visible; }
 }
 @media(pointer:coarse) { .workbench-paper-row .workbench-popover-trigger { opacity:1; } .workbench-record-link,.task-document-link { min-height:44px; } }
+.workbench-upload-state { display:flex; justify-content:space-between; align-items:center; padding:4px 12px 10px; font-size:12px; color:var(--text-secondary); }
+.workbench-upload-state button { padding:5px 7px; border-radius:6px; }

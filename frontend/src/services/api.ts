@@ -164,7 +164,7 @@ export interface ApiClient extends AxiosInstance {
 
 export interface ApiService {
   uploadPdf: (file: File) => Promise<UploadResponse>;
-  uploadTaskMaterial: (file: File) => Promise<UploadResponse>;
+  uploadTaskMaterial: (file: File, signal?: AbortSignal) => Promise<UploadResponse>;
   sendMessage: (message: string, pdfId: string | null, history: ChatMessage[], paperSkeleton: PaperSkeleton | null, signal?: AbortSignal | null) => Promise<ChatResponse>;
   sendTaskMessage: (request: TaskChatRequest, signal?: AbortSignal | null) => Promise<ChatResponse>;
   criticalReading: (pdfId: string, signal?: AbortSignal | null) => Promise<CriticalReadingResponse>;
@@ -301,12 +301,13 @@ export const createApiService = (client: ApiClient, agentFallbackClient: ApiClie
     });
   },
 
-  uploadTaskMaterial: async (file) => {
+  uploadTaskMaterial: async (file, signal) => {
     const formData = new FormData();
     formData.append('file', file);
     return client.post('/materials/upload', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
       timeout: 60000,
+      signal,
     });
   },
 

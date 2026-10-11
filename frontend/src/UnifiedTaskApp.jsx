@@ -125,6 +125,8 @@ export default function UnifiedTaskApp() {
   const [papers, setPapers] = useState([]);
   const [libraryError, setLibraryError] = useState('');
   const [uploading, setUploading] = useState(false);
+  const uploadController = useRef(null);
+  useEffect(() => () => uploadController.current?.abort(), []);
   const [processingRefresh, setProcessingRefresh] = useState(0);
   const [processingRequest, setProcessingRequest] = useState(false);
   const [paperView, setPaperView] = useState({ id: null, url: null, deconstruct: null, highlights: [], error: '' });
@@ -194,6 +196,18 @@ export default function UnifiedTaskApp() {
   const [intentChoice, setIntentChoice] = useState(null);
   const [showOutline, setShowOutline] = useState(false);
   const [translationMode, setTranslationMode] = useState('original');
+  const readerRef = useRef(null);
+  const [readerWidth, setReaderWidth] = useState(0);
+  const [narrowTranslationSide, setNarrowTranslationSide] = useState('original');
+  useEffect(() => {
+    const element = readerRef.current;
+    if (!element || typeof ResizeObserver === 'undefined') return;
+    const observer = new ResizeObserver(() => setReaderWidth(element.clientWidth));
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, []);
+  const narrowParallel = translationMode === 'parallel' && readerWidth > 0 && readerWidth < 900;
+  const displayedTranslationMode = narrowParallel ? narrowTranslationSide : translationMode;
   const [translationState, setTranslationState] = useState(createEmptyTranslationState());
   const [translationReadyKey, setTranslationReadyKey] = useState('');
   const currentPageTextRef = useRef({ pageIndex: 0, pageText: '', pageLayout: null });
@@ -409,12 +423,16 @@ export default function UnifiedTaskApp() {
     });
   };
   const handleUpload = async (file) => {
-    if (!file || uploading) return;
+    if (!file || uploadController.current) return;
     if (!file.name.toLowerCase().endsWith('.pdf')) { setLocalError('请选择 PDF 论文文件。'); return; }
+    const controller = new AbortController();
+    uploadController.current = controller;
     setUploading(true); setLocalError('');
     try {
       const targetTaskId = activeTaskId || (await createTask({ title: file.name.replace(/\.pdf$/i, '') })).id;
-      const response = await apiService.uploadTaskMaterial(file);
+      if (controller.signal.aborted) return;
+      const response = await apiService.uploadTaskMaterial(file, controller.signal);
+      if (controller.signal.aborted) return;
       if (!response || response.status !== 'success' || !response.pdfId) throw new Error(response?.message || '论文上传失败');
       const entry = { ...response, id: response.pdfId, title: response.title || file.name, filename: file.name, authors: response.authors || [], parseStatus: response.parseStatus || '已上传', ragIndexed: response.ragIndexed === true, timestamp: Date.now(), updatedAt: Date.now() };
       const db = await initDB();
@@ -431,8 +449,15 @@ export default function UnifiedTaskApp() {
       if (!activeTaskIdRef.current || activeTaskIdRef.current === targetTaskId) {
         selectTask(targetTaskId); patchLayout({ reader: true });
       }
-    } catch (error) { setLocalError(error?.response?.data?.message || '论文上传未完成，请重新选择文件再试；当前任务和输入草稿仍保留。'); }
-    finally { setUploading(false); if (fileInputRef.current) fileInputRef.current.value = ''; }
+    } catch (error) { if (!controller.signal.aborted) setLocalError(error?.response?.data?.message || '论文上传未完成，请重新选择文件再试；当前任务和输入草稿仍保留。'); }
+    finally { if (uploadController.current === controller) { uploadController.current = null; setUploading(false); if (fileInputRef.current) fileInputRef.current.value = ''; } }
+  };
+  const cancelUpload = () => {
+    uploadController.current?.abort();
+    // The server may already have stored the file. Cancellation stops waiting and
+    // automatic association; it never claims to delete a server-side material.
+    uploadController.current = null; setUploading(false);
+    if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
   const appendMessage = (taskId, message) => updateTask(taskId, (task) => ({ messages: [...task.messages, message] }));
@@ -1046,7 +1071,10 @@ export default function UnifiedTaskApp() {
       <div className="unified-brand"><img src="/貔貅紫白.png" alt="" /> <strong>貔貅</strong></div>
       <TaskSwitcher tasks={tasks} activeTask={activeTask} onSelect={selectTask}
         onCreate={async () => { await createTask({ title: '新任务' }); setCompactPane('chat'); }}
-        onRename={title => updateTask(activeTaskId, { title })}>
+        onRename={title => updateTask(activeTaskId, { title })} onArchive={async archived => {
+          const saved = await updateTask(activeTaskId, { archived });
+          if (saved?.archived !== archived) throw new Error('服务端尚未保存归档状态，请稍后重试。');
+        }}>
         <button type="button" disabled={!activeTask} onClick={() => setShowProcessingHistory(true)}>处理记录</button>
         <TaskDraftRecovery taskId={activeTaskId} refreshKey={workspace.error || localError} onCreateTask={createTask} />
       </TaskSwitcher>
@@ -1080,7 +1108,7 @@ export default function UnifiedTaskApp() {
           else patchLayout({ navigation: !layout.navigation });
         }}
           onSelectTask={id => { selectTask(id); setCompactNavigation(false); compactNavigationButton.current?.focus(); }} onCreateTask={async () => { await createTask({ title: '新任务' }); setCompactNavigation(false); setCompactPane('chat'); }} onOpenPaper={openPaper} onAddPaper={addPaper} onRemovePaper={removePaper} onOpenArtifact={openDocument}
-          taskControlsInHeader onCreateNote={createNote} onUpload={() => fileInputRef.current?.click()} uploading={uploading}
+          taskControlsInHeader onCreateNote={createNote} onUpload={() => fileInputRef.current?.click()} uploading={uploading} onCancelUpload={cancelUpload}
           learningRecords={savedLearningActivities} onOpenLearning={openLearningRecord} selectedDocumentId={selectedDocument?.id} selectedLearningId={selectedLearning?.id}>
           {(libraryError || materialError) && <p className="unified-inline-error" role="alert">{materialError || libraryError}</p>}
           {focusedPaperId && <div className="unified-outline">
@@ -1095,7 +1123,7 @@ export default function UnifiedTaskApp() {
         event.preventDefault();
         patchLayout({ navWidth: event.key === 'Home' ? 200 : event.key === 'End' ? Math.min(320, width - 832) : clamp(viewLayout.navWidth + steps[event.key], 200, Math.min(320, width - 832)) });
       }} />}
-      <section className={`unified-reader ${!layout.reader ? 'unified-desktop-hidden' : ''}`} inert={drawerOpen ? true : undefined} style={{ flexBasis: layout.chat ? `${viewLayout.readerPercent}%` : '100%' }} aria-label="论文与成果">
+      <section ref={readerRef} className={`unified-reader ${!layout.reader ? 'unified-desktop-hidden' : ''}`} inert={drawerOpen ? true : undefined} style={{ flexBasis: layout.chat ? `${viewLayout.readerPercent}%` : '100%' }} aria-label="论文与成果">
         <div className="unified-pane-head">
           <BookOpen size={17} />
           {activeDocument ? <strong>成果</strong> : <strong title={focusedPaperId ? getPaperTitle(papers, focusedPaperId) : ''}>{preview ? preview.kind === 'research.report' ? '研究报告' : '已生成结果' : activeLearning ? '学习记录' : focusedPaperId ? shortPaperTitle(papers, focusedPaperId) : '阅读区'}</strong>}
@@ -1109,6 +1137,12 @@ export default function UnifiedTaskApp() {
           </div>}
           <button type="button" className="unified-pane-hide" onClick={() => patchLayout({ reader: false, chat: true, mode: 'chat' })} aria-label="收起阅读区"><PanelLeftClose size={16} /></button>
         </div>
+        {narrowParallel && !activeDocument && !activeLearning && !preview && paperView.url && <div className="unified-translation-narrow" role="group" aria-label="同页对照">
+          <span>空间较窄，切换同页原文与译文</span>
+          <button type="button" aria-pressed={narrowTranslationSide === 'original'} onClick={() => setNarrowTranslationSide('original')}>看原文</button>
+          <button type="button" aria-pressed={narrowTranslationSide === 'translation'} onClick={() => setNarrowTranslationSide('translation')}>看译文</button>
+          {!compact && layout.chat && <button type="button" onClick={() => setMode('reader')}>专注阅读</button>}
+        </div>}
         <div className="unified-reader-body">
         {preview ? <div className="unified-document" ref={contentScrollRef} onScroll={saveContentPosition} aria-label="查看已生成结果">
           {!['research.report', 'paper.overview'].includes(preview.kind) && <div className="unified-document-toolbar"><button type="button" disabled={savingRecovery || (preview.paperIds || preview.result?.materialScope?.allowedPaperIds || []).some(id => !activeTask.paperIds.includes(id))} onClick={recoverResult}><Save size={15} /> {savingRecovery ? '正在保存…' : '保存为成果'}</button></div>}
@@ -1158,8 +1192,8 @@ export default function UnifiedTaskApp() {
         <div className="unified-reader-paper" style={{ visibility: activeDocument || activeLearning || preview ? 'hidden' : 'visible', opacity: activeDocument || activeLearning || preview ? 0 : 1, pointerEvents: activeDocument || activeLearning || preview ? 'none' : undefined }}
           aria-hidden={Boolean(activeDocument || activeLearning || preview)} inert={activeDocument || activeLearning || preview ? true : undefined}>
         {paperView.error ? <div className="unified-empty" role="alert">{paperView.error}</div>
-          : paperView.url ? <div className={`unified-reader-content unified-reader-content-${translationMode}`}>
-            <div className="unified-pdf" aria-hidden={translationMode === 'translation'} inert={translationMode === 'translation' ? true : undefined}>
+          : paperView.url ? <div className={`unified-reader-content unified-reader-content-${displayedTranslationMode}`}>
+            <div className="unified-pdf" aria-hidden={displayedTranslationMode === 'translation'} inert={displayedTranslationMode === 'translation' ? true : undefined}>
               {paperView.deconstruct?.processingStatus && <div className="unified-material-status" role="status">
                 {['queued', 'parsing'].includes(paperView.deconstruct.processingStatus) ? '原文可阅读，正文正在解析…'
                   : paperView.deconstruct.questionReady ? '正文已就绪' : paperView.deconstruct.processingError || paperView.deconstruct.parseMessage || '原文可阅读，正文尚未就绪'}
@@ -1168,7 +1202,7 @@ export default function UnifiedTaskApp() {
                   : paperView.deconstruct.questionReady && ['not_requested', 'failed', 'interrupted'].includes(paperView.deconstruct.aiAnalysisStatus) && <button type="button" disabled={processingRequest} onClick={() => requestMaterialProcessing(true)}>{paperView.deconstruct.aiAnalysisStatus === 'not_requested' ? '生成论文概览' : '重试论文概览'}</button>}
                 {paperView.deconstruct.aiAnalysisStatus === 'completed' && <button type="button" onClick={openPaperOverview}>查看论文概览</button>}
               </div>}
-              <PdfViewer key={`${activeTaskId}:${paperView.id}`} readingKey={`${activeTaskId}:${paperView.id}`} active={!activeDocument && !activeLearning && !preview && translationMode !== 'translation' && (compact ? compactPane === 'reader' && !compactNavigation : layout.reader)} fileUrl={paperView.url} pdfId={paperView.id} paperSkeleton={paperView.deconstruct?.paper_skeleton || null} theme={theme} parseStatus={paperView.deconstruct?.parseStatus || papers.find((paper) => paper.id === paperView.id)?.parseStatus || null} initialHighlights={paperView.highlights}
+              <PdfViewer key={`${activeTaskId}:${paperView.id}`} readingKey={`${activeTaskId}:${paperView.id}`} active={!activeDocument && !activeLearning && !preview && displayedTranslationMode !== 'translation' && (compact ? compactPane === 'reader' && !compactNavigation : layout.reader)} fileUrl={paperView.url} pdfId={paperView.id} paperSkeleton={paperView.deconstruct?.paper_skeleton || null} theme={theme} parseStatus={paperView.deconstruct?.parseStatus || papers.find((paper) => paper.id === paperView.id)?.parseStatus || null} initialHighlights={paperView.highlights}
               onPageChange={next => {
                 if (!selectedDocumentRef.current && !selectedLearningRef.current && !recoveryPreviewRef.current) handlePdfPageChange(next);
                 else if (next.totalPages > 0) setPage(current => ({ ...current, totalPages: next.totalPages }));
@@ -1181,7 +1215,7 @@ export default function UnifiedTaskApp() {
                 await updateTask(activeTaskId, task => ({ notes: [...task.notes, note] }));
               }}
               targetPageIndex={jump.pdfId === paperView.id && jump.taskId === activeTaskId ? jump.pageIndex : initialPaperPage} targetPageJumpToken={jump.pdfId === paperView.id && jump.taskId === activeTaskId ? jump.token : 0} focusedSourceAnchorId={jump.pdfId === paperView.id && jump.taskId === activeTaskId ? jump.anchorId : null} focusedSourceAnchorToken={jump.pdfId === paperView.id && jump.taskId === activeTaskId ? jump.token : 0} /></div>
-            {translationMode !== 'original' && <div className="unified-translation"><TranslationPanel pdfId={paperView.id} fileUrl={paperView.url} pdfFileName={getPaperTitle(papers, paperView.id)} currentPage={page.pageIndex}
+            {displayedTranslationMode !== 'original' && <div className="unified-translation"><TranslationPanel pdfId={paperView.id} fileUrl={paperView.url} pdfFileName={getPaperTitle(papers, paperView.id)} currentPage={page.pageIndex}
               pageData={currentTranslationPage?.status === 'translating' ? { ...currentTranslationPage, status: 'loading' } : currentTranslationPage}
               savedArtifactId={activeTask?.artifacts.find(item => item.pageIndex === page.pageIndex && item.paperIds?.length === 1 && item.paperIds[0] === focusedPaperId && (item.type === 'translation' || /译文/u.test(item.title || '')) && normalizeNoteContent(item) === currentTranslationPage?.translatedText)?.id}
               onOpenArtifact={openArtifact} onRetry={() => handleRetryTranslation(translationState)} onCaptureArtifact={captureTranslation} /></div>}

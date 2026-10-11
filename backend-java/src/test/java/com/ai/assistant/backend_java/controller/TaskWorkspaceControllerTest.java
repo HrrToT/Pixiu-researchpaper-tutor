@@ -36,6 +36,43 @@ class TaskWorkspaceControllerTest {
     }
 
     @Test
+    void archivesAndRestoresWithoutLosingContentAndPreservesArchiveForOlderClients() throws Exception {
+        String json = mvc.perform(post("/api/task-workspaces").contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(task("archive-contract"))))
+                .andExpect(status().isCreated()).andExpect(jsonPath("$.archived").value(false))
+                .andReturn().getResponse().getContentAsString();
+        Map<String, Object> current = mapper.readValue(json, new TypeReference<>() {});
+        current.put("archived", true);
+        json = mvc.perform(put("/api/task-workspaces/archive-contract").contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(current)))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.archived").value(true))
+                .andExpect(jsonPath("$.notes[0].content").value("我的理解"))
+                .andReturn().getResponse().getContentAsString();
+        current = mapper.readValue(json, new TypeReference<>() {});
+        current.remove("archived");
+        json = mvc.perform(put("/api/task-workspaces/archive-contract").contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(current)))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.archived").value(true))
+                .andReturn().getResponse().getContentAsString();
+        current = mapper.readValue(json, new TypeReference<>() {});
+        current.put("archived", false);
+        mvc.perform(put("/api/task-workspaces/archive-contract").contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(current)))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.archived").value(false));
+        mvc.perform(get("/api/task-workspaces/archive-contract"))
+                .andExpect(jsonPath("$.archived").value(false))
+                .andExpect(jsonPath("$.artifacts[0].title").value("比较表"));
+    }
+
+    @Test
+    void rejectsInvalidArchiveState() throws Exception {
+        Map<String, Object> input = task("invalid-archive");
+        input.put("archived", "true");
+        mvc.perform(post("/api/task-workspaces").contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(input))).andExpect(status().isBadRequest());
+    }
+
+    @Test
     void persistsMaterialsMessagesActivityNotesAndArtifactsAcrossRequests() throws Exception {
         Map<String, Object> input = task("task-contract-1");
         String createdJson = mvc.perform(post("/api/task-workspaces")

@@ -146,6 +146,7 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
   const [hasNewResults, setHasNewResults] = useState(false);
   const [search, setSearch] = useState('');
   const [searchOpen, setSearchOpen] = useState(false);
+  const [highlightedMessage, setHighlightedMessage] = useState<string | null>(null);
   const searchInput = useRef<HTMLInputElement | null>(null), searchTrigger = useRef<HTMLButtonElement | null>(null);
   useEffect(() => { if (searchOpen) searchInput.current?.focus(); }, [searchOpen]);
   const [copiedMessage, setCopiedMessage] = useState<string | null>(null);
@@ -159,7 +160,14 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
   const scrollKey = `pixiu-conversation-scroll:${JSON.stringify(conversationId || 'legacy')}`;
   const jumpToMessage = (index: number) => {
     messageElements.current.get(index)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    const message = messages[index];
+    if (message) setHighlightedMessage(messageId(message, index));
   };
+  useEffect(() => {
+    if (highlightedMessage === null) return;
+    const timeout = window.setTimeout(() => setHighlightedMessage(null), 5000);
+    return () => window.clearTimeout(timeout);
+  }, [highlightedMessage]);
   const scrollToLatest = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
     atBottomRef.current = true;
@@ -189,6 +197,7 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
     setHasNewResults(false);
     setSearch('');
     setSearchOpen(false);
+    setHighlightedMessage(null);
     setShowFunctions(false);
     return () => {
       try { sessionStorage.setItem(scrollKey, String(scroller.scrollTop)); } catch { /* preserve in-page navigation */ }
@@ -287,17 +296,21 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
         try { await navigator.clipboard.writeText(message.content); setCopiedMessage(messageId(message, index)); setCopyError(''); }
         catch { setCopyError('未能复制，请选择正文复制。'); }
       }}><Copy size={13} />{copiedMessage === messageId(message, index) && '已复制'}</button>
-      <button
+      {onDeleteMessage && <WorkbenchPopover label="消息更多操作">
+      {(close: (restore?: boolean) => void) => <button
         type="button"
         onClick={() => {
-          if (window.confirm('确定删除这条对话记录吗？')) onDeleteMessage?.(index);
+          close();
+          if (window.confirm('确定删除这条对话记录吗？')) onDeleteMessage(index);
         }}
         className="theme-danger-button rounded-full p-1.5"
         title="删除此消息"
         aria-label="删除此消息"
       >
         <Trash2 size={13} />
-      </button>
+        删除消息
+      </button>}
+      </WorkbenchPopover>}
       {message.artifactId ? (
         <button type="button" onClick={() => onOpenArtifact?.(message.artifactId!)} disabled={!onOpenArtifact} className="reader-chat-action" title="打开完整成果" aria-label="打开完整成果">
           <FileText size={13} /> 打开成果
@@ -375,7 +388,7 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
           if (isUser) {
             return (
               <div key={message.id ?? index} id={`chat-message-${encodeURIComponent(messageId(message, index))}`} data-message-id={messageId(message, index)} data-message-index={index}
-                ref={node => { if (node) messageElements.current.set(index, node); else messageElements.current.delete(index); }} className="chat-message-anchor">
+                ref={node => { if (node) messageElements.current.set(index, node); else messageElements.current.delete(index); }} className={`chat-message-anchor ${highlightedMessage === messageId(message, index) ? 'chat-message-highlight' : ''}`}>
               <div className="reader-chat-user-line group">
                 <div className="reader-chat-user-bubble">
                   <MarkdownContent className={getMessageMarkdownClassName(message.role, 'chat')}>{message.content}</MarkdownContent>
@@ -389,7 +402,7 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
 
           return (
             <article key={message.id ?? index} id={`chat-message-${encodeURIComponent(messageId(message, index))}`} data-message-id={messageId(message, index)} data-message-index={index}
-              ref={node => { if (node) messageElements.current.set(index, node); else messageElements.current.delete(index); }} className={`reader-chat-answer group ${isSystem ? 'reader-chat-answer-system' : ''}`}>
+              ref={node => { if (node) messageElements.current.set(index, node); else messageElements.current.delete(index); }} className={`reader-chat-answer group ${isSystem ? 'reader-chat-answer-system' : ''} ${highlightedMessage === messageId(message, index) ? 'chat-message-highlight' : ''}`}>
               {isSystem && <div className="reader-chat-answer-head">系统提示</div>}
               {message.artifactIsCurrent === false && <p className="chat-history-version">此回答对应旧版本。<button type="button" onClick={() => onOpenArtifact?.(message.artifactId!)}>查看当前成果</button></p>}
               <CritiqueContent value={message} text={displayedContent} className={getMessageMarkdownClassName(message.role, 'chat')}

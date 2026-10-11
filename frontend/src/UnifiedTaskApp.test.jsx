@@ -191,6 +191,20 @@ describe('unified task conversation wiring', () => {
     expect(state.api.uploadTaskMaterial).not.toHaveBeenCalled();
     expect(state.writes).toBe(0);
   });
+  it('cancels a pending upload and ignores late completion without attaching the material', async () => {
+    let finish;
+    state.api.uploadTaskMaterial = vi.fn(() => new Promise(resolve => { finish = resolve; }));
+    const view = render(<UnifiedTaskApp />);
+    fireEvent.change(view.container.querySelector('input[type="file"]'), { target: { files: [new File(['%PDF-'], '待上传.pdf', { type: 'application/pdf' })] } });
+    await waitFor(() => expect(state.api.uploadTaskMaterial).toHaveBeenCalledOnce());
+    const signal = state.api.uploadTaskMaterial.mock.calls[0][1];
+    fireEvent.click(screen.getByRole('button', { name: '取消上传' }));
+    expect(signal.aborted).toBe(true);
+    await act(async () => finish({ status: 'success', pdfId: 'late' }));
+    expect(state.task.paperIds).toEqual(['a', 'b']);
+    expect(state.writes).toBe(0);
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
 
   it('rejects insufficient comparison materials without adding a fake answer to the conversation', async () => {
     state.task.paperIds = ['a'];

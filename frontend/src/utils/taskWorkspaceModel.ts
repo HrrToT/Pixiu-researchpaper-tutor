@@ -1,6 +1,7 @@
 export type TaskWorkspace = {
   id: string;
   title: string;
+  archived?: boolean;
   paperIds: string[];
   messages: unknown[];
   notes: unknown[];

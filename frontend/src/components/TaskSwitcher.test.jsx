@@ -3,6 +3,21 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { expect, it, vi } from 'vitest';
 import TaskSwitcher from './TaskSwitcher';
 
+it('finds archived tasks, restores explicitly and never deletes them', async () => {
+  const tasks = [{ id: 'a', title: '进行中' }, { id: 'b', title: '已读论文', archived: true }];
+  const select = vi.fn(), archive = vi.fn();
+  const view = render(<TaskSwitcher tasks={tasks} activeTask={tasks[0]} onSelect={select} onArchive={archive} />);
+  fireEvent.click(screen.getByRole('button', { name: '切换任务' }));
+  expect(screen.queryByRole('button', { name: '已读论文 · 已归档' })).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole('button', { name: '查看归档任务' }));
+  fireEvent.click(screen.getByRole('button', { name: '已读论文 · 已归档' }));
+  await waitFor(() => expect(select).toHaveBeenCalledWith('b'));
+  view.rerender(<TaskSwitcher tasks={tasks} activeTask={tasks[1]} onSelect={select} onArchive={archive} />);
+  fireEvent.click(screen.getByRole('button', { name: '切换任务' }));
+  fireEvent.click(screen.getByRole('button', { name: '恢复任务' }));
+  await waitFor(() => expect(archive).toHaveBeenCalledWith(false));
+});
+
 it('searches tasks and switches by identity without creating a task', async () => {
   const tasks = [{ id: 'a', title: '压缩阅读' }, { id: 'b', title: '实验方案' }];
   const select = vi.fn(), create = vi.fn();

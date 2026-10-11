@@ -2,8 +2,10 @@ import React, { useEffect, useId, useLayoutEffect, useRef, useState } from 'reac
 import { MoreHorizontal } from 'lucide-react';
 import './WorkbenchPopover.css';
 
-/** Non-modal popover. Forms use normal Tab order; Escape returns focus to the trigger. */
-export default function WorkbenchPopover({ label, trigger, children, className = '', align = 'right', disabled = false }) {
+/** Non-modal popover. Forms use normal Tab order; Escape returns focus to the trigger.
+ * @param {{label: string, trigger?: import('react').ReactNode, children: import('react').ReactNode | ((close: (restore?: boolean) => void) => import('react').ReactNode), className?: string, align?: string, disabled?: boolean}} props
+ */
+export default function WorkbenchPopover({ label, trigger = null, children, className = '', align = 'right', disabled = false }) {
   const [open, setOpen] = useState(false);
   const [closeEpoch, setCloseEpoch] = useState(0);
   const root = useRef(null), button = useRef(null), panel = useRef(null);

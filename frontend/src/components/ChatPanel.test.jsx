@@ -213,6 +213,7 @@ describe('ChatPanel', () => {
 
     renderChat({ messages, onDeleteMessage: onDelete });
 
+    fireEvent.click(screen.getByRole('button', { name: '消息更多操作' }));
     fireEvent.click(screen.getByTitle('删除此消息'));
 
     expect(window.confirm).toHaveBeenCalled();
@@ -287,6 +288,7 @@ describe('ChatPanel interaction continuity', () => {
     fireEvent.change(screen.getByLabelText('搜索对话'), { target: { value: '论文甲' } });
     fireEvent.click(screen.getByRole('button', { name: '第 1 条 · 比较论文甲' }));
     expect(scroll.mock.instances.at(-1)).toHaveAttribute('data-message-id', 'question');
+    expect(screen.getByText('比较论文甲').closest('[data-message-id]')).toHaveClass('chat-message-highlight');
     view.rerender(<ChatPanel {...defaultProps} messages={messages} focusMessage={{ id: 'answer', token: 1 }} />);
     expect(scroll.mock.instances.at(-1)).toHaveAttribute('data-message-id', 'answer');
     scroll.mockRestore();

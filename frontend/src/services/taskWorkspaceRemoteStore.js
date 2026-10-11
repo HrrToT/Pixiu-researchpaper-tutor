@@ -2,7 +2,7 @@ import * as localStore from './taskWorkspaceStore';
 import { taskWorkspaceApi } from './taskWorkspaceApi';
 
 const payload = (task) => ({
-  id: task.id, title: task.title, paperIds: task.paperIds || [], messages: task.messages || [],
+  id: task.id, title: task.title, archived: task.archived === true, paperIds: task.paperIds || [], messages: task.messages || [],
   notes: task.notes || [], artifacts: task.artifacts || [], focusedPaperId: task.focusedPaperId ?? null,
   activeActivity: task.activeActivity ?? null,
   researchRuns: task.researchRuns || [],

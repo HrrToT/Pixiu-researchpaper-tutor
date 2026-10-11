@@ -63,6 +63,7 @@ public class TaskWorkspaceService {
         requireRevision(input.get("revision"), entity.getRevision());
         Map<String, Object> protectedInput = new LinkedHashMap<>(input);
         protectedInput.put("researchRuns", toResponse(entity).getOrDefault("researchRuns", List.of()));
+        if (!input.containsKey("archived")) protectedInput.put("archived", toResponse(entity).getOrDefault("archived", false));
         setContent(entity, protectedInput, id);
         return toResponse(repository.saveAndFlush(entity));
     }
@@ -512,6 +513,11 @@ public class TaskWorkspaceService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "任务标题过长");
         }
         payload.put("title", title);
+        Object archived = input.get("archived");
+        if (archived != null && !(archived instanceof Boolean)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "归档状态必须是布尔值");
+        }
+        payload.put("archived", Boolean.TRUE.equals(archived));
         List<String> paperIds = paperIds(input.get("paperIds"));
         payload.put("paperIds", paperIds);
         payload.put("messages", array(input.get("messages"), "messages"));

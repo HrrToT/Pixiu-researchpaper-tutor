@@ -27,6 +27,15 @@ const setup = (initial = [], server = []) => {
 };
 
 describe('authoritative remote task storage', () => {
+  it('sends archive state with revision and retains all content in the confirmed cache', async () => {
+    const saved = task('archive', { revision: 2, notes: [{ id: 'note', text: '保留笔记' }] });
+    const state = setup([saved]);
+    const archived = await state.store.saveTask({ ...saved, archived: true });
+    expect(state.api.saveTask.mock.calls[0][0]).toMatchObject({ archived: true, revision: 2, notes: saved.notes });
+    expect(state.tasks.get('archive')).toMatchObject({ archived: true, notes: saved.notes });
+    await state.store.saveTask({ ...archived, archived: false });
+    expect(state.api.saveTask.mock.calls[1][0]).toMatchObject({ archived: false, revision: 3 });
+  });
   it('repairs authoritative old document IDs before caching, without sending stale local content', async () => {
     const original = task('old', { revision: 3, notes: [{ content: '原文', versions: [{ text: '旧版' }] }] });
     const repaired = { ...original, revision: 4, notes: [{ ...original.notes[0], id: 'stable' }] };
