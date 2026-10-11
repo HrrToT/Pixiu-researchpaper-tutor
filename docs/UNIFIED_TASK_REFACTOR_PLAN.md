@@ -1,6 +1,8 @@
 # 统一任务式学术助手重构计划与验收
 
-日期：2026-10-04。状态：执行中，完整目标尚未验收。
+日期：2026-10-04；最终更新：2026-10-11。状态：阶段0–7及后续交互、批判组织和前端产品化已按当前设计边界实施验收。
+
+最终范围及证据见 `STAGE7_FINAL_RELEASE.md`、`INTERACTION_IMPLEMENTATION_20261011.md`、`CRITICAL_READING_IMPLEMENTATION_20261011.md`、`FRONTEND_PRODUCT_IMPLEMENTATION_20261011.md`。下文阶段安排和初始矩阵保留历史计划含义；不将用户已撤回的旧项目导入、完整新手流程或独立Edge恢复重新列为完成门槛。
 
 2026-10-05 更新：后续开发顺序、阶段交付和额度控制以 [开发阶段计划](REFACTOR_DEVELOPMENT_STAGES.md) 为准；本文保留完整产品要求与 A01–A20 验收边界。历史阶段负责人安排不代表继续开启 Astra，当前默认单代理 6.1 Sol、按批次交付。
 
