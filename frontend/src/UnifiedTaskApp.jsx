@@ -143,6 +143,14 @@ export default function UnifiedTaskApp() {
     learning.setInputMode('chat');
     setCompactPane('chat');
   };
+  const prepareCritiqueRegeneration = artifact => {
+    setCritiqueSelection({ taskId: activeTaskId, title: artifact.title, followup: {
+      artifactId: artifact.id || artifact.artifactId, version: critiqueVersion(artifact), regenerate: true,
+    } });
+    setComposerDraft(`/批判 ${artifact.critique.question?.original || '整体批判阅读这篇论文'}`);
+    learning.setInputMode('chat');
+    setCompactPane('chat');
+  };
   const [materialError, setMaterialError] = useState('');
   const [movingDocument, setMovingDocument] = useState(false);
   const [requestedDocument, setRequestedDocument] = useState(null);
@@ -501,7 +509,7 @@ export default function UnifiedTaskApp() {
       }
       if (skill?.skillId === 'critique' || skill?.steps?.includes('critique')) {
         const all = /分别|逐篇|每篇|所有论文|全部论文|两篇|这些论文/u.test(text);
-        critiqueTargets = chosenTargets || explicitPaperIds || (all ? context.allowedPaperIds :
+        critiqueTargets = followup?.regenerate ? task.artifacts.find(item => item.id === followup.artifactId)?.critique?.scope?.targetPaperIds : chosenTargets || explicitPaperIds || (all ? context.allowedPaperIds :
           context.primaryPaperId ? [context.primaryPaperId] : task.focusedPaperId ? [task.focusedPaperId] :
             context.allowedPaperIds.length === 1 ? context.allowedPaperIds : null);
         if (!critiqueTargets && !followup) {
@@ -940,7 +948,7 @@ export default function UnifiedTaskApp() {
     <div className="unified-composer-context">
       <span title={activeTask?.paperIds.map(id => getPaperTitle(papers, id)).join('\n')}>任务材料 {activeTask?.paperIds.length || 0} 篇{focusedPaperId ? ` · 当前 ${shortPaperTitle(papers, focusedPaperId)}` : ''}</span>
       {draftPrimaryPaperId && <span>主要参考 {shortPaperTitle(papers, draftPrimaryPaperId)}</span>}
-      {critiqueSelection?.taskId === activeTaskId && <span>追问 {critiqueSelection.title || '批判成果'} · 保存于 {critiqueSelection.followup.version}
+      {critiqueSelection?.taskId === activeTaskId && <span>{critiqueSelection.followup.regenerate ? '重新核查' : '追问'} {critiqueSelection.title || '批判成果'} · 保存于 {critiqueSelection.followup.version}
         <button type="button" onClick={() => setCritiqueSelection(null)}>取消追问关联</button></span>}
       {currentLearning?.status === 'active' && <>
         <select aria-label="学习输入方式" value={learning.inputMode} onChange={event => learning.setInputMode(event.target.value)}>
@@ -1054,6 +1062,7 @@ export default function UnifiedTaskApp() {
             {(documentEditing || documentDirty) && <button type="button" disabled={savingDocument || restoringDocument || movingDocument || !documentDirty} onClick={saveDocumentFromToolbar}><Save size={15} /> {savingDocument ? '保存中…' : '保存'}</button>}
             <span className="unified-document-save-state" role="status">{savingDocument ? '正在保存' : documentDirty ? '未保存修改' : '已保存'}</span>
             {(activeDocument.sourceMessageId || activeDocument.sourceRequestId || activeDocument.sourceResearchId || activeTask.messages.some(message => message.artifactId === (activeDocument.id || activeDocument.artifactId))) && <button type="button" onClick={() => locateDocument(activeDocument)}>定位原对话</button>}
+            {activeDocument.critique?.schemaVersion === 2 && <button type="button" disabled={documentDirty || savingDocument || learning.busyTasks[activeTaskId]} onClick={() => prepareCritiqueRegeneration(activeDocument)}>重新核查</button>}
           </div>
           <DocumentVersionHistory key={`${selectedDocument.taskId}/${selectedDocument.collection}/${selectedDocument.id ?? selectedDocument.index}`} document={activeDocument} onRestore={restoreDocument} disabled={savingDocument || movingDocument} />
           <DocumentOrganizer key={`organize/${documentDraftKey(selectedDocument)}`} document={activeDocument} taskId={activeTaskId} tasks={tasks}

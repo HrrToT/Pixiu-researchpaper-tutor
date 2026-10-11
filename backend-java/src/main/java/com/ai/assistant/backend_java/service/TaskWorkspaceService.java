@@ -240,7 +240,28 @@ public class TaskWorkspaceService {
                     throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "成果与对话批判结构不一致");
                 if (critique != null) { saved.put("critique", critique); saved.put("generatedText", body); saved.put("edited", false); }
                 List<Object> artifacts = new ArrayList<>(array(task.get("artifacts"), "artifacts"));
-                artifacts.add(saved);
+                if (upstream.get("critiqueContext") instanceof Map<?, ?> prior && Boolean.TRUE.equals(prior.get("regenerate"))) {
+                    int index = -1;
+                    for (int i = 0; i < artifacts.size(); i++)
+                        if (artifacts.get(i) instanceof Map<?, ?> old && java.util.Objects.equals(old.get("id"), prior.get("sourceArtifactId"))) index = i;
+                    if (index < 0) throw new ResponseStatusException(HttpStatus.CONFLICT, "原成果已移出任务，新结果保留在请求记录中");
+                    Map<?, ?> old = (Map<?, ?>) artifacts.get(index);
+                    Object oldVersion = old.get("updatedAt") == null ? old.get("createdAt") : old.get("updatedAt");
+                    if (!java.util.Objects.equals(String.valueOf(oldVersion), prior.get("version")))
+                        throw new ResponseStatusException(HttpStatus.CONFLICT, "原成果已更新，新结果保留在请求记录中");
+                    if (critique == null) throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "重新核查结果缺少批判观点结构");
+                    List<Object> versions = new ArrayList<>(array(old.get("versions"), "versions"));
+                    Map<String, Object> snapshot = new LinkedHashMap<>();
+                    for (String field : List.of("text", "critique", "generatedText", "edited", "sources", "paperIds", "sourceRequestId"))
+                        if (old.containsKey(field)) snapshot.put(field, old.get(field));
+                    snapshot.put("savedAt", oldVersion); snapshot.put("kind", "generated");
+                    versions.add(snapshot);
+                    artifactId = String.valueOf(old.get("id"));
+                    saved.put("id", artifactId); saved.put("title", old.get("title"));
+                    saved.put("createdAt", old.get("createdAt")); saved.put("updatedAt", Instant.now().toString());
+                    saved.put("versions", versions);
+                    artifacts.set(index, saved);
+                } else artifacts.add(saved);
                 task.put("artifacts", artifacts);
                 answer.put("artifactId", artifactId);
             }
@@ -432,7 +453,31 @@ public class TaskWorkspaceService {
                     if (previous.containsKey(field)) copy.put(field, previous.get(field));
                 if (artifacts) {
                     boolean changed = !java.util.Objects.equals(item.get("text"), previous.get("text"));
-                    copy.put("edited", !java.util.Objects.equals(copy.get("text"), previous.get("generatedText")));
+                    Map<?, ?> restored = array(previous.get("versions"), "versions").stream()
+                            .filter(value -> value instanceof Map<?, ?> version && version.get("critique") instanceof Map<?, ?>
+                                    && java.util.Objects.equals(version.get("text"), item.get("text")))
+                            .map(value -> (Map<?, ?>) value).findFirst().orElse(null);
+                    if (changed && restored != null)
+                        for (String field : List.of("critique", "generatedText", "paperIds", "sources", "sourceRequestId"))
+                            if (restored.containsKey(field)) copy.put(field, restored.get(field));
+                    List<Object> versions = new ArrayList<>();
+                    for (Object value : array(item.get("versions"), "versions")) {
+                        Map<?, ?> version = (Map<?, ?>) value;
+                        Map<String, Object> safeVersion = new LinkedHashMap<>();
+                        version.forEach((key, content) -> safeVersion.put(String.valueOf(key), content));
+                        safeVersion.remove("critique"); safeVersion.remove("generatedText");
+                        Map<?, ?> authority = array(previous.get("versions"), "versions").stream()
+                                .filter(old -> old instanceof Map<?, ?> oldVersion && java.util.Objects.equals(oldVersion.get("text"), version.get("text"))
+                                        && java.util.Objects.equals(oldVersion.get("savedAt"), version.get("savedAt")))
+                                .map(old -> (Map<?, ?>) old).findFirst().orElse(null);
+                        if (authority == null && java.util.Objects.equals(previous.get("text"), version.get("text"))) authority = previous;
+                        if (authority != null)
+                            for (String field : List.of("critique", "generatedText", "edited", "paperIds", "sources", "sourceRequestId"))
+                                if (authority.containsKey(field)) safeVersion.put(field, authority.get(field));
+                        versions.add(safeVersion);
+                    }
+                    copy.put("versions", versions);
+                    copy.put("edited", !java.util.Objects.equals(copy.get("text"), copy.get("generatedText")));
                     if (changed) copy.put("updatedAt", Instant.now().toString());
                     else if (previous.containsKey("updatedAt")) copy.put("updatedAt", previous.get("updatedAt"));
                 }

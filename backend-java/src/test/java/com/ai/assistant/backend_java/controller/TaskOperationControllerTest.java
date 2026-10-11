@@ -136,6 +136,53 @@ class TaskOperationControllerTest {
         result.put("critique", groupedCritique()); operation.put("result", result);
         task = tasks.applyOperation("operation-task", operation);
     }
+    Map<String,Object> regeneratedReceipt(String baseVersion) {
+        Map<String,Object> operation = new LinkedHashMap<>(conversationReceipt("B"));
+        operation.put("requestId", "r3");
+        Map<String,Object> result = new LinkedHashMap<>((Map<String,Object>)operation.get("result"));
+        result.put("critique", groupedCritique());
+        result.put("artifact", Map.of("text", "新版成果", "paperIds", List.of("B"), "sources", result.get("sources"), "critique", groupedCritique()));
+        operation.put("result", result);
+        operation.put("input", Map.of("paperIds", List.of("B"), "original", Map.of("displayText", "重新核查"),
+                "upstream", Map.of("capability", "critique", "message", "重新核查", "primaryPaperId", "B", "strictScope", true,
+                        "critiqueContext", Map.of("regenerate", true, "sourceArtifactId", "r2:artifact", "version", baseVersion))));
+        return operation;
+    }
+    @Test void regenerationCreatesOneVersionAndReplayingDoesNotDuplicateIt() {
+        saveGroupedCritique();
+        Map<?,?> previous = (Map<?,?>)((List<?>)task.get("artifacts")).getFirst();
+        Map<String,Object> operation = regeneratedReceipt(String.valueOf(previous.get("createdAt")));
+        tasks.applyOperation("operation-task", operation); task = tasks.applyOperation("operation-task", operation);
+        org.junit.jupiter.api.Assertions.assertEquals(1, ((List<?>)task.get("artifacts")).size());
+        Map<?,?> current = (Map<?,?>)((List<?>)task.get("artifacts")).getFirst();
+        org.junit.jupiter.api.Assertions.assertEquals("r2:artifact", current.get("id"));
+        org.junit.jupiter.api.Assertions.assertEquals("新版成果", current.get("text"));
+        org.junit.jupiter.api.Assertions.assertEquals(1, ((List<?>)current.get("versions")).size());
+        org.junit.jupiter.api.Assertions.assertEquals("完整成果", ((Map<?,?>)((List<?>)current.get("versions")).getFirst()).get("text"));
+    }
+    @Test void regenerationCannotOverwriteAnEditedVersion() {
+        saveGroupedCritique();
+        Map<?,?> previous = (Map<?,?>)((List<?>)task.get("artifacts")).getFirst();
+        Map<String,Object> operation = regeneratedReceipt(String.valueOf(previous.get("createdAt")));
+        Map<String,Object> edited = new LinkedHashMap<>((Map<String,Object>)previous); edited.put("text", "我的编辑");
+        task.put("artifacts", List.of(edited)); tasks.updateFromClient("operation-task", task);
+        org.junit.jupiter.api.Assertions.assertThrows(org.springframework.web.server.ResponseStatusException.class,
+                () -> tasks.applyOperation("operation-task", operation));
+        org.junit.jupiter.api.Assertions.assertEquals("我的编辑", ((Map<?,?>)((List<?>)tasks.get("operation-task").get("artifacts")).getFirst()).get("text"));
+    }
+    @Test void restoringGeneratedHistoryUsesServerClaimsAndStripsForgedHistory() {
+        saveGroupedCritique();
+        Map<?,?> previous = (Map<?,?>)((List<?>)task.get("artifacts")).getFirst();
+        task = tasks.applyOperation("operation-task", regeneratedReceipt(String.valueOf(previous.get("createdAt"))));
+        Map<String,Object> restored = new LinkedHashMap<>((Map<String,Object>)((List<?>)task.get("artifacts")).getFirst());
+        restored.put("text", "完整成果"); restored.put("critique", Map.of("schemaVersion", 999));
+        restored.put("versions", List.of(Map.of("text", "伪造历史", "savedAt", "forged", "critique", groupedCritique())));
+        task.put("artifacts", List.of(restored)); task = tasks.updateFromClient("operation-task", task);
+        Map<?,?> saved = (Map<?,?>)((List<?>)task.get("artifacts")).getFirst();
+        org.junit.jupiter.api.Assertions.assertEquals(groupedCritique(), saved.get("critique"));
+        org.junit.jupiter.api.Assertions.assertEquals(false, saved.get("edited"));
+        org.junit.jupiter.api.Assertions.assertFalse(((Map<?,?>)((List<?>)saved.get("versions")).getFirst()).containsKey("critique"));
+    }
     @Test void groupedCritiqueIsDurableAndBrowserCannotForgeClaimsOrScope() throws Exception {
         saveGroupedCritique();
         Map<String,Object> artifact = new LinkedHashMap<>((Map<String,Object>)((List<?>)task.get("artifacts")).getFirst());

@@ -312,6 +312,21 @@ describe('unified task conversation wiring', () => {
     }) }));
   });
 
+  it('prepares regeneration with the original question, target and saved version without calling the model', async () => {
+    const critique = { schemaVersion: 2, question: { original: '只检查质量主张' },
+      scope: { allowedPaperIds: ['a'], targetPaperIds: ['a'] } };
+    state.task.artifacts = [{ id: 'critique-artifact', title: '批判成果', text: '原成果', paperIds: ['a'], updatedAt: 'saved-token', critique }];
+    render(<UnifiedTaskApp />);
+    fireEvent.click(screen.getByRole('button', { name: '批判成果 · 成果' }));
+    fireEvent.click(screen.getByRole('button', { name: '重新核查', exact: true }));
+    expect(state.startOperation).not.toHaveBeenCalled();
+    expect(screen.getByText(/重新核查 批判成果/u)).toBeInTheDocument();
+    await act(async () => state.chatProps.onSendMessage('/批判 只检查质量主张'));
+    expect(state.startOperation).toHaveBeenCalledWith('task', expect.objectContaining({ input: expect.objectContaining({
+      capability: 'critique', targetPaperIds: ['a'], followup: { artifactId: 'critique-artifact', version: 'saved-token', regenerate: true },
+    }) }));
+  });
+
   it('clarifies vague analysis without a model call and uses the selected capability', async () => {
     render(<UnifiedTaskApp />);
     await screen.findByTestId('chat');

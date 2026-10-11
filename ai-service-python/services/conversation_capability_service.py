@@ -43,6 +43,9 @@ def _requested_chat_limit(message, default=600):
                 rf'(?:不(?:要)?超过|最多|至多|控制在|限于|少于|总共|总计|共|用|约)\s*({number})\s*字',
                 rf'({number})\s*字\s*(?:以内|以下|左右|上下|之内|概括|总结|说明|解释|回答|比较)',
                 rf'({number})\s*字\s*[。！.!]?$']
+    # A per-point budget must not collapse a multi-point answer to that total.
+    message = re.sub(r'(?:每(?:个|一|项|条|点)[^。；，,]{0,18}|各自[^。；，,]{0,12})'
+                     + rf'(?:不(?:要)?超过|最多|至多|控制在|用)?\s*{number}\s*字', '', message)
     def numeric(value):
         if value.isdigit():
             return int(value)
@@ -159,9 +162,11 @@ def _critique(request, paper_id):
     from schemas.requests import DeepAnalysisRequest
     from services.analysis_service import deep_analysis
     focus = request.message
-    if request.critiqueContext:
+    if request.critiqueContext and not request.critiqueContext.get('regenerate'):
         context = request.critiqueContext
-        focus += '\n继续核查已保存成果的观点；历史文本仅用于理解问题，不能代替原文证据。\n' + json.dumps(context, ensure_ascii=False)
+        from services.safety_service import wrap_untrusted_context
+        historical = wrap_untrusted_context('Saved critique', json.dumps(context, ensure_ascii=False), max_tokens=1000)
+        focus += '\n继续核查已保存成果的观点；历史文本仅用于理解问题，不能代替原文证据。\n' + historical['wrapped']
     result = deep_analysis(DeepAnalysisRequest(pdf_id=paper_id, focus_question=focus), grounded=True)
     sections = [('证据支持的贡献', 'evidence_based_contributions'), ('局限', 'weaknesses'),
                 ('过度主张风险', 'overclaim_risks'), ('待补证据', 'missing_evidence')]

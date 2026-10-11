@@ -235,6 +235,9 @@ public class TaskOperationService {
         String version = String.valueOf(artifact.getOrDefault("updatedAt", null) == null ? artifact.get("createdAt") : artifact.get("updatedAt"));
         if (followup.get("version") != null && !version.equals(String.valueOf(followup.get("version"))))
             throw new ResponseStatusException(HttpStatus.CONFLICT, "成果版本已更新，请刷新后追问");
+        boolean regenerate = Boolean.TRUE.equals(followup.get("regenerate"));
+        if (regenerate && (!"critique".equals(upstream.get("capability")) || followup.get("issueId") != null
+                || followup.get("version") == null)) throw bad("重新核查须指定整份批判成果及保存版本");
         Object issueId = followup.get("issueId");
         if (issueId != null && (!(issueId instanceof String) || ((List<?>) critique.get("issues")).stream()
                 .noneMatch(value -> value instanceof Map<?, ?> issue && issueId.equals(issue.get("id"))))) throw bad("追问观点不属于该成果");
@@ -245,6 +248,7 @@ public class TaskOperationService {
         for (String field : List.of("claims", "issues", "pending")) context.put(field, edited ? List.of() : critique.get(field));
         context.put("version", version); context.put("sourceArtifactId", artifactId); context.put("focusedIssueId", issueId);
         context.put("edited", edited);
+        context.put("regenerate", regenerate);
         upstream.put("critiqueContext", context);
         if (!upstream.containsKey("targetPaperIds") && critique.get("scope") instanceof Map<?, ?> material)
             upstream.put("targetPaperIds", material.get("targetPaperIds"));
