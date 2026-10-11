@@ -16,11 +16,31 @@ tableColumnMappingUnverified=true表示原始片段仍有未核对的行或合�
 
 def excerpt_catalog(source_id, body):
     excerpts = []
-    # Keep table rows intact; sentence splits never normalize the original text.
+    # PDF soft line breaks belong to one continuous sentence. Preserve their
+    # exact newlines instead of offering incomplete lines such as "Quantizing
+    # all attributes to" as if they were an independent supporting sentence.
+    blocks, prose = [], []
+    def flush():
+        if prose:
+            blocks.append('\n'.join(prose))
+            prose.clear()
     for line in body.splitlines():
         if line.startswith('[SANITIZED INJECTION-LIKE CONTENT:'):
+            flush()
             continue
-        units = [line] if line.startswith('Table row ') else re.split(r'(?<=[。！？])|(?<=[.!?])\s+(?=[A-Z])', line)
+        if not line.strip():
+            flush()
+        elif line.startswith(('Table row ', 'Equation:')) or (
+                len(re.findall(r'\d+(?:\.\d+)?', line)) >= 4
+                and re.search(r'\d(?:\s*%|\s*[KMG]i?B)?\s*$', line, re.I)
+                and not re.match(r'\s*(?:Table|Figure)\s+\d', line, re.I)):
+            flush()
+            blocks.append(line)
+        else:
+            prose.append(line)
+    flush()
+    for block in blocks:
+        units = [block] if block.startswith('Table row ') else re.split(r'(?<=[。！？])|(?<=[.!?])\s+(?=[A-Z])', block)
         for unit in units:
             rest = unit.strip()
             while len(rest) > 300:
@@ -101,6 +121,10 @@ def resolve_references(raw, catalog, *, require_selection=False):
         raise ValueError('结论缺少原文依据。')
     resolved = []
     for ref in refs:
+        # A bare catalog ID has the same unambiguous literal identity as
+        # {quoteId: ID}. Do not accept free quotes or invent an owning source.
+        if isinstance(ref, str) and re.fullmatch(r'[0-9a-f]{16}', ref):
+            ref = {'quoteId': ref}
         if not isinstance(ref, dict):
             raise ValueError('证据格式无效。')
         sid, qid = ref.get('sourceId'), ref.get('quoteId')

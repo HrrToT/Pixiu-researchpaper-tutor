@@ -234,6 +234,16 @@ def test_normalization_parameter_does_not_require_experimental_hardware():
     assert len(checked['references']) == 1
 
 
+def test_experimental_caption_can_bind_its_explicit_setting_without_binding_a_metric_as_a_parameter():
+    quote = 'With a Gaussian pruning ratio of 66% and SH\nreduced to 2 degrees, SSIM drops from 0.927 to 0.926.'
+    for literal, label in [('66%', 'Gaussian pruning ratio'), ('2 degrees', 'SH reduced to')]:
+        raw, sources = literal_claim('method_parameter', quote, literal, label)
+        assert literal in check_numeric_claim(raw, sources)['summary']
+    raw, sources = literal_claim('method_parameter', quote, '0.926', 'Gaussian pruning ratio')
+    with pytest.raises(ValueError):
+        check_numeric_claim(raw, sources)
+
+
 def test_scientific_method_parameter_is_preserved_without_inventing_units():
     raw, sources = literal_claim('method_parameter', 'The learning rate parameter is set to 1e-4.', '1e-4', 'learning rate')
     assert check_numeric_claim(raw, sources)['summary'] == '正文定义为1e-4。'

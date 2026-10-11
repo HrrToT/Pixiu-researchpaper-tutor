@@ -11,7 +11,7 @@ def stable_id(prefix, *values):
 
 
 def requested_points(question):
-    match = re.search(r'(?:给|列出|总结|最关键的?|主要的?|重点|只(?:要|看|说|讲|检查|回答)?)\s*([1-8一二两三四五六七八])\s*(?:个)?(?:点|项|条)', question)
+    match = re.search(r'(?:给|列出|总结|最关键的?|主要的?|重点|只(?:要|看|说|讲|检查|回答)?|最影响[^。！？：:]{0,30}的)\s*([1-8一二两三四五六七八])\s*(?:个)?(?:点|项|条|判断|观点)', question)
     if not match:
         return None
     value = match[1]
@@ -126,6 +126,10 @@ def organize_critique(payload, findings, questions, paper_id, question):
                 or not isinstance(title, str) or not title.strip() or len(title) > 48
                 or not isinstance(linked, list) or not linked or any(value not in part_ids for value in linked)):
             raise ValueError('批判观点分组格式无效。')
+        # Titles identify topics; assertions belong to independently checked claims.
+        assertion = re.search(r'决定|导致|证明|必须|需要|需|会|能够|仅|只', title)
+        if assertion:
+            title = title[:assertion.start()].strip() or {'contribution': '证据支持', 'weakness': '条件与代价', 'risk': '适用范围'}[raw['section']]
         supporting = [cid for cid in available.values() if cid != conclusion]
         if topic in by_topic:
             issue = by_topic[topic]
@@ -139,6 +143,10 @@ def organize_critique(payload, findings, questions, paper_id, question):
         by_topic[topic] = issue
     used = {cid for issue in issues for cid in [issue['conclusionClaimId'], *issue['supportClaimIds']]}
     overall = by_group.get('overall', {}).get('overall')
+    # An overview cannot keep evidence belonging only to a discarded group.
+    supported_refs = {str(ref) for claim in claims if claim['id'] in used for ref in claim['references']}
+    if overall and not all(str(ref) in supported_refs for ref in by_id[overall]['references']):
+        overall = None
     if overall and issues:
         used.add(overall)
     claims = [claim for claim in claims if claim['id'] in used]
@@ -163,8 +171,6 @@ def organize_critique(payload, findings, questions, paper_id, question):
         note = '本次尚不能判断：' + '；'.join(part['text'] for part in parts if part['id'] in unresolved) + '。'
     elif count_shortfall:
         note = f'当前仅形成{len(issues)}项有依据的判断，其余仍待核查。'
-    elif pending:
-        note = '待核查：' + pending[0]['whatToCheck'] + '。'
     else:
         note = ''
     used_sources = list(dict.fromkeys(ref['sourceId'] for claim in claims for ref in claim['references']))

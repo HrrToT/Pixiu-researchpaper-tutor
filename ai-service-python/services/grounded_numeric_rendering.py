@@ -15,8 +15,8 @@ QUANTITY = re.compile(
     r'(?:%|％|FPS|frames?\s*(?:per second|/\s*s)|[KMG]i?B|dB|倍|p)(?![A-Za-z0-9])', re.I)
 METRIC_SCALAR = re.compile(r'\b(?:PSNR|SSIM|LPIPS)\s+(?:(?:increase|decrease|loss|drop)\s+(?:of\s+)?(?:only\s+)?)?'
                            r'(?P<value>[≥≤<>]?[ ]*\d+(?:\.\d+)?)', re.I)
-PARAMETER_ROLE = re.compile(r'percentile|quantile|threshold|learning rate|hyperparameter|'
-                            r'normaliz|clipp|parameter|分位|阈值|学习率|超参数|归一化|裁剪', re.I)
+PARAMETER_ROLE = re.compile(r'percentile|quantile|threshold|learning rate|hyperparameter|pruning ratio|'
+                            r'SH\s+(?:reduced|degree|order)|normaliz|clipp|parameter|分位|阈值|学习率|超参数|归一化|裁剪', re.I)
 EXPERIMENT_ROLE = re.compile(r'FPS|frames?\s*(?:per second|/\s*s)|PSNR|SSIM|LPIPS|'
                              r'speedup|compression ratio|model size|memory consumption|'
                              r'accuracy|precision|recall|BLEU|ROUGE|improv|reduced by|'
@@ -150,17 +150,21 @@ def _literal(binding, checked, sources):
     if not any(ref['sourceId'] == sid and ref['quote'] == quote for ref in checked['references']):
         raise ValueError('数值绑定不属于本条已引用摘录。')
     ranges = _literal_ranges(literal, quote, checked, sources)
-    if binding['kind'] == 'method_parameter' and METHOD_SCALAR.fullmatch(literal):
+    if binding['kind'] == 'method_parameter' and re.fullmatch(r'-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?(?:\s+degrees?)?', literal):
         ranges.extend(match.span() for match in re.finditer(r'(?<![\w.+-])' + re.escape(literal) + r'(?!(?:\w|%|\.\d))', quote))
     if not ranges:
         raise ValueError('数值绑定改写或遗漏了原文数值、限定词或单位。')
     if binding['kind'] == 'method_parameter':
         label = binding.get('label')
-        if not isinstance(label, str) or not 1 <= len(label) <= 80 or label not in quote:
+        if (not isinstance(label, str) or not 1 <= len(label) <= 80
+                or re.sub(r'\s+', ' ', label).strip() not in re.sub(r'\s+', ' ', quote)):
             raise ValueError('方法参数没有原文名称。')
         if not any(PARAMETER_ROLE.search(quote[max(0, start - 80):end + 80])
-                   for start, end in ranges) or EXPERIMENT_ROLE.search(quote):
+                   for start, end in ranges) or EXPERIMENT_ROLE.search(label + ' ' + literal):
             raise ValueError('方法参数不能替代实验指标依据。')
+        if EXPERIMENT_ROLE.search(quote) and not re.search(
+                r'\s+'.join(map(re.escape, label.split())) + r'\s*(?:(?:of|to|is|at|=|:)\s*)?' + re.escape(literal), quote, re.I):
+            raise ValueError('实验说明中的参数须紧邻原文参数名，不能绑定其性能变化。')
     return literal
 
 

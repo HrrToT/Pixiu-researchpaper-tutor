@@ -50,6 +50,40 @@ def test_two_complete_groups_survive_chat_artifact_and_validation():
     assert critique['presentation']['chatIssueIds'] == critique['presentation']['artifactIssueIds']
 
 
+def test_requested_decision_count_and_optional_pending_are_not_hidden_as_success():
+    value = fixture()
+    value['assessments'] = value['assessments'][:1]
+    value['pendingQuestions'] = [{'topic': '新场景下的质量效果'}]
+    result = run(value, question='最影响复现和使用决策的两个判断是什么？')
+    assert result['partial'] and result['critique']['question']['requestedPoints'] == 2
+    assert '仅形成1项' in result['summary']
+    complete = run({**fixture(), 'pendingQuestions': [{'topic': '新场景下的质量效果'}]})
+    assert '待核查：新场景' not in complete['summary']
+    assert complete['critique']['pending']
+
+
+def test_inability_to_match_reported_effect_is_not_a_paper_absence_claim():
+    value = fixture()
+    value['assessments'][0]['inference']['summary'] = '更改剪枝配置可能无法得到作者报告的质量平衡。'
+    result = run(value)
+    assert len(result['critique']['issues']) == 2
+
+
+def test_training_supervision_cannot_become_a_test_view_quality_boundary():
+    value = fixture()
+    value['assessments'][0]['inference']['summary'] = '采用训练视角优化，因此质量平衡主要对应训练视角内的场景表示。'
+    result = run(value)
+    assert len(result['critique']['issues']) == 1 and result['partial']
+
+
+def test_overall_cannot_retain_references_from_a_discarded_issue():
+    value = fixture()
+    value['overall'] = {'kind': 'inference', **value['assessments'][1]['inference']}
+    value['assessments'][1]['inference']['summary'] = '论文没有给出验证实验。'
+    result = run(value)
+    assert result['critique']['presentation']['leadClaimIds'] == []
+
+
 def test_repeated_topic_merges_evidence_without_filling_requested_count():
     value = fixture()
     value['assessments'][1]['topicKey'] = 'quality'
@@ -104,6 +138,18 @@ def test_mechanism_does_not_complete_an_explicitly_unresolved_empirical_subquest
     result = run(value)
     assert result['partial'] and result['critique']['coverage']['answeredQuestionPartIds'] == []
     assert '尚不能判断' in result['message']
+
+
+def test_unseen_dataset_topic_and_bare_literal_ids_are_not_false_absence_or_free_quotes():
+    value = fixture()
+    value['pendingQuestions'] = [{'topic': '未见数据集或极端视角下的画质保持情况'}]
+    for item in value['assessments']:
+        for field in ('observation', 'inference'):
+            item[field]['references'] = [ref['quoteId'] for ref in item[field]['references']]
+    result = run(value)
+    assert len(result['critique']['issues']) == 2
+    assert '未见数据集' in result['message']
+    assert all(isinstance(ref, dict) and ref['quote'] for claim in result['critique']['claims'] for ref in claim['references'])
 
 
 def test_current_paper_is_target_without_removing_allowed_materials(monkeypatch):

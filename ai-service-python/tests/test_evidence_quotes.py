@@ -41,6 +41,15 @@ def test_selection_restores_actual_original_opening_instead_of_model_rewrite():
         validate_claim(selected, sources)
 
 
+def test_pdf_soft_breaks_preserve_the_complete_literal_sentence_without_rewriting():
+    body = 'Quantizing all attributes to\na codebook degrades quality. Some attributes (e.g.,\npositions) require precise values.'
+    catalog = excerpt_catalog('pdf', body)
+    assert 'Quantizing all attributes to\na codebook degrades quality.' in catalog.values()
+    assert 'Some attributes (e.g.,\npositions) require precise values.' in catalog.values()
+    assert 'Quantizing all attributes to' not in catalog.values()
+    assert all(quote in body for quote in catalog.values())
+
+
 def test_quote_only_reference_restores_its_unique_source_without_mutating_input():
     _, sources, catalog = prepare_quote_sources([
         {'sourceId': 'first', 'pdfId': 'A', 'text': 'First method optimizes the complete objective.'},
@@ -126,3 +135,13 @@ def test_partial_table_verification_preserves_both_checked_rows_and_raw_uncertai
     assert [row[0] for row in clean[0]['verifiedTable']['rows']] == [2, 3]
     assert validation[0]['_verifiedTable'] == clean[0]['verifiedTable']
     assert table == before
+
+
+def test_numeric_table_caption_preserves_continuous_result_sentence():
+    from services.evidence_quotes import excerpt_catalog
+    body = ('[3] Ours 140.16 MB 243 31.754 0.926 0.201\n'
+            'Table 6: With a pruning ratio of 66% and SH reduced to 2 degrees, quality nearly stays unchanged (SSIM drops from\n'
+            '0.927 to 0.926). Reducing SH further to 1 degree lowers SSIM to 0.923.')
+    quotes = list(excerpt_catalog('s', body).values())
+    assert any('SSIM drops from\n0.927 to 0.926).' in quote for quote in quotes)
+    assert not any(quote.endswith('drops from') for quote in quotes)

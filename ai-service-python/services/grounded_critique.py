@@ -4,7 +4,7 @@ import re
 
 from services.agent_grounded_answer import _extract_json_object
 from services.evidence_quotes import prepare_quote_sources, resolve_references, TABLE_VERIFICATION_PROMPT
-from services.grounded_numeric_rendering import NUMERIC_PROMPT, check_numeric_claim, brief_experiment_claim
+from services.grounded_numeric_rendering import NUMERIC_PROMPT, FREE_NUMBER, check_numeric_claim, brief_experiment_claim
 from services.operation_control import check_cancelled
 from services.trace_service import trace_step
 
@@ -12,7 +12,7 @@ SECTIONS = {'contribution': '证据支持的贡献', 'weakness': '局限与代�
 # Retrieval cannot establish whole-paper absence. Describe assumptions/tradeoffs,
 # or put the unresolved topic in a separately rendered question.
 ABSENCE = re.compile(
-    r'(?:未|没有|无|缺少|缺乏|缺失|不足|欠缺)[^。！？\n]{0,24}'
+    r'(?:未|没有|无(?!法|损)|缺少|缺乏|缺失|不足|欠缺)[^。！？\n]{0,24}'
     r'(?:提供|报告|给出|披露|实验|数据|基线|评估|验证|证明|测试|细节|结果)'
     r'|(?:没有|缺少|缺乏|缺失|不足|欠缺)[^。！？\n]{0,24}(?:证据|论证)'
     r'|\b(?:not\s+(?:provide|report|evaluate|test)|lack(?:s|ing)?\s+(?:evidence|data|experiment))\b', re.I)
@@ -80,6 +80,17 @@ def check_critique_payload(payload, sources, catalog, *, allow_partial=False, re
             if not isinstance(raw.get('summary'), str) or not raw['summary'].strip() or len(raw['summary']) > 320:
                 raise ValueError('批判结论正文无效。')
             selected = resolve_references(raw, catalog, require_selection=True)
+            if not raw.get('numericBindings') and FREE_NUMBER.search(raw['summary']):
+                raise ValueError('批判数值须通过绑定校验，不能在定性结论中直接填写。')
+            if (raw['kind'] == 'inference'
+                    and re.search(r'(?:因此|所以|说明|意味着)[^。；]{0,35}(?:主要|仅|只)[^。；]{0,25}训练视角', raw['summary'])
+                    and not any(re.search(r'(?:only|limited to)[^.]{0,50}training (?:views|viewpoints)', ref['quote'], re.I)
+                                for ref in selected['references'])):
+                raise ValueError('训练视角监督不能推出测试质量或泛化能力主要限于训练视角。')
+            if (raw['kind'] == 'inference'
+                    and re.search(r'(?:画质|质量)[^。；]{0,18}(?:不变|无损)[^。；]{0,10}仅[^。；]{0,100}成立', raw['summary'])
+                    and not re.search(r'本次|该(?:实验|消融|设置)|作者(?:报告|测试)', raw['summary'])):
+                raise ValueError('局部实验不能证明质量保持的普遍必要条件。')
             if ABSENCE.search(raw['summary']) and not (
                     raw.get('authorLimitation') is True and raw['kind'] == 'reported'
                     and re.match(r'作者(?:明确)?(?:指出|说明|承认)', raw['summary'])
@@ -120,7 +131,10 @@ def check_critique_payload(payload, sources, catalog, *, allow_partial=False, re
         if not isinstance(question, dict) or not isinstance(question.get('topic'), str):
             raise ValueError('待核查问题格式无效。')
         topic = question['topic'].strip()
-        if not topic or len(topic) > 100 or ABSENCE.search(topic):
+        # "Unseen datasets" names an evaluation domain; it does not claim that
+        # the authors omitted a dataset. Mask only that exact topic for this check.
+        absence_topic = re.sub(r'未见(?:过的?)?数据集|unseen\s+datasets?', '目标域', topic, flags=re.I)
+        if not topic or len(topic) > 100 or ABSENCE.search(absence_topic):
             raise ValueError('待核查项只能描述主题，不能预设论文缺失。')
         questions.append('待核查：' + topic)
     if not findings and not questions:
@@ -146,12 +160,16 @@ def synthesize_critique(question, sources, *, allow_partial=False):
 分析有依据的设计假设、质量代价、比较条件和适用边界。不要因检索没覆盖就说论文未提供实验、数据、基线或证明。
 不能以本次检索缺口断言论文缺失；尚不能判断的内容放pendingQuestions，只写需核查主题，不预设答案。论文明确承认的限制按上述authorLimitation合同准确引用。
 每个observation或inference必须选择能支持整句结论的原文摘录；每条text中的[16位标识]是quoteId。
+引用必须覆盖整句中每个方法步骤、比较对象、实验条件和强度；不能只引用结果行就推断基线对比，也不能用“Quantizing all attributes to”“Some attributes (e.g.,”等未完整表达含义的半句支持质量损失。一个摘录不足时选择完整上下文和其他独立依据，无法补齐则删除该判断或列待核查。
+用户没有要求具体数值时，优先引用表格说明中的完整定性结果，不附numericBindings。用户问质量保持的条件时，可分别回答作者在消融中报告的蒸馏补偿结果及量化属性选择的代价，逐项限定为该实验的结果；不要将这些步骤写成所有场景下的必要条件。
+“几乎不变”“必要条件”“会出现”等强度须严格对应实验范围：指标接近不等于无损，消融中改善不等于所有场景的必要条件。说明作者测试条件下的观察和使用建议，不将个别消融提升到普遍因果结论。
 references只写quoteId，系统唯一恢复来源和原文，不重复填写sourceId，不重新抄写或改写quote；涉及多处依据则选择多个摘录。
 公式与机制必须核对全部因子、求和范围、权重及归一化；原文不完整时仅作有依据的定性解释，不补造公式。
 归一化参考的统计含义必须保留：排序截点或分位参考、全局最大值和均值不可互换。省略具体百分数时仍需保留“排序参考”或“分位参考”的含义；没有完整参数绑定时可作这类定性说明，不能改称最大值。
 公式定义与设计代价分别组织并分别引用。只有局部代价的摘录时，只讨论该代价，不顺带概述未完整引用的计算公式。
 不同方法步骤的训练视角、采样范围及优化目标须逐步核对；一个步骤的限制不能直接套用于另一步骤。推测的风险写成推断，不说成实验已经证明。
 训练采样分布不等于模型泛化能力的硬边界；不要把高斯分布误作有界区域。若没有目标域测试依据，只将远视角泛化列为待核查问题，不断言补偿能力局限于采样范围。
+尤其不要由“使用训练视角监督”写出“质量平衡主要对应训练视角内”：训练视角用于优化，测试质量与泛化范围须看实验评估。硬件条件限定帧率测量，不因此限定文件大小；评估条件和视角泛化不能拼成一个因果判断。
 尤其不能由高斯位置采样推出“远视角误差不受损失直接约束”：分布尾部仍有非零概率，是否约束以及效果需要实际样本和评估依据。SH可讨论正文支持的降阶质量代价与蒸馏补偿机制；目标视角效果放待核查，勿强行给每项事实配一个风险推断。
 “仅”“全部”“只比较”等排他性描述也必须有直接对应摘录；符号定义或师生关系本身不能支持采样分布、损失函数或实验泛化结论。无法核对的外推风险放pendingQuestions，assessments说明已知机制与可证明的代价。
 条件或核对行不足时给具体定性结论，不编数字；不同消融步骤的基线、主实验和跨表示扩展不可混用。
