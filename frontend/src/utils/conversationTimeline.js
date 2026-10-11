@@ -2,7 +2,7 @@ export const operationInput = record => record.request || record.input?.original
 export const operationQuestion = record => {
   const input = operationInput(record);
   return input.displayText || input.message || input.question || input.text || input.goal ||
-    ({ hint: '给我一个提示', pause: '暂停学习', resume: '继续学习', finish: '结束学习', skip: '跳过这个问题', retry: '重新回答', remediate: '补充前置知识' }[input.action]) || '处理请求';
+    ({ hint: '给我一个提示', pause: '暂停学习', resume: '继续学习', finish: '结束学习', skip: '跳过这个问题', retry: '重新回答', remediate: '补充前置知识', answer: '回答学习问题', ask: '临时追问' }[input.action]) || '处理请求';
 };
 const timeOf = value => {
   if (value === null || value === undefined) return null;

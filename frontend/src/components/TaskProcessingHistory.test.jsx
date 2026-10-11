@@ -39,3 +39,14 @@ it('locates original entries and reuses request recovery without automatic retri
   expect(open).toHaveBeenCalledWith(run, result);
   expect(screen.queryByText('报告正文')).not.toBeInTheDocument();
 });
+
+it('names learning actions for users and represents the research creation once', () => {
+  const task = { id: 't', researchRuns: [{ ...run, requestId: 'start' }] };
+  render(<TaskProcessingHistory task={task} records={{
+    start: { taskId: 't', requestId: 'start', kind: 'research.start', status: 'succeeded', request: { question: '剪枝实验方案' } },
+    pause: { taskId: 't', requestId: 'pause', kind: 'learning.action', status: 'succeeded', request: { action: 'pause' } },
+  }} research={research} />);
+  expect(screen.getByText('2 条处理记录')).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: '暂停学习' })).toBeInTheDocument();
+  expect(screen.queryByText('learning.action')).not.toBeInTheDocument();
+});

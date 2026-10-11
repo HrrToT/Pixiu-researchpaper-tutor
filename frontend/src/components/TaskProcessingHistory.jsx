@@ -8,7 +8,8 @@ export default function TaskProcessingHistory({ task, records = {}, research = {
   onRetry, onSubmitSaved, onRefresh, onCancel, onOpenResult, onOpenReport, busy, queryError }) {
   const [query, setQuery] = useState('');
   const [status, setStatus] = useState('all');
-  const operations = Object.values(records).filter(record => record.taskId === task.id).map(record => ({
+  const operations = Object.values(records).filter(record => record.taskId === task.id
+    && !(record.kind === 'research.start' && task.researchRuns?.some(run => run.requestId === record.requestId))).map(record => ({
     key: `operation-${record.requestId}`, type: 'operation', record, status: record.status,
     title: operationQuestion(record) || record.kind || '处理请求', date: record.updatedAt || record.createdAt || '',
   }));
