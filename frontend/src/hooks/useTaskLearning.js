@@ -2,23 +2,34 @@ import { useEffect, useRef, useState } from 'react';
 import { taskWorkspaceApi } from '../services/taskWorkspaceApi';
 import { useTaskOperations } from './useTaskOperations';
 
+const readHandledDetours = () => {
+  try { return new Set(JSON.parse(localStorage.getItem('pixiu-learning-handled-detours') || '[]')); }
+  catch { return new Set(); }
+};
+
 export function useTaskLearning(workspace, api = taskWorkspaceApi) {
   const operations = useTaskOperations(workspace, api);
-  const [inputModes, setInputModes] = useState({});
-  const handledDetours = useRef(new Set());
+  const [inputModes, setInputModes] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('pixiu-learning-input-modes') || '{}'); } catch { return {}; }
+  });
+  useEffect(() => { try { localStorage.setItem('pixiu-learning-input-modes', JSON.stringify(inputModes)); } catch { /* Drafts and saved learning remain available. */ } }, [inputModes]);
+  const handledDetours = useRef(readHandledDetours());
   const activityKey = task => `${task.id}:${task.activeActivity?.activityId || ''}`;
   const activeTask = workspace.tasks?.find(task => task.id === workspace.activeTaskId);
   const currentKey = activeTask ? activityKey(activeTask) : '';
   const concepts = activeTask?.activeActivity?.concepts || [];
   const completionSuggested = concepts.length > 0 && concepts.every(concept => concept.status === 'demonstrated');
-  const inputMode = completionSuggested ? 'ask' : inputModes[currentKey] || 'answer';
+  const inputMode = inputModes[currentKey] === 'chat' ? 'chat' : completionSuggested ? 'ask' : inputModes[currentKey] || 'answer';
   const setInputMode = mode => setInputModes(previous => ({ ...previous, [currentKey]: mode }));
   useEffect(() => {
     for (const record of Object.values(operations.records)) {
       if (record.kind !== 'learning.action' || record.status !== 'succeeded'
           || record.request?.action !== 'ask' || handledDetours.current.has(record.requestId)) continue;
       handledDetours.current.add(record.requestId);
+      try { localStorage.setItem('pixiu-learning-handled-detours', JSON.stringify([...handledDetours.current])); } catch { /* Recovery remains available in the current session. */ }
       const key = `${record.taskId}:${record.request.activityId}`;
+      // A recovered server receipt completes the detour; synchronize its separate composer mode once.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setInputModes(previous => ({ ...previous, [key]: 'answer' }));
     }
   }, [operations.records]);

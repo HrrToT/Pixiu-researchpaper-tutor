@@ -7,7 +7,7 @@ export function operationQuestion(record) {
 }
 
 export function researchTitle(run, result, compactTitle) {
-  const title = compactTitle || result?.title || result?.reportTitle || run.title || run.question || '研究';
+  const title = compactTitle || result?.title || result?.reportTitle || run.title || '论文研究';
   const line = String(title).replace(/\s+/gu, ' ').trim();
   return line.length > 32 ? `${line.slice(0, 32)}…` : line;
 }

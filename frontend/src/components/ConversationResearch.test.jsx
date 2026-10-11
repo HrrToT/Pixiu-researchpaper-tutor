@@ -1,9 +1,10 @@
 import React from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import ConversationResearch, { ResearchCard } from './ConversationResearch';
 
 const task = { id: 't', researchRuns: [{ researchId: 'r', question: '比较方法' }] };
+beforeEach(() => localStorage.clear());
 describe('research review in conversation', () => {
   it('requires a user action before approving the research plan', async () => {
     const action = vi.fn(async () => {});
@@ -58,4 +59,22 @@ it('keeps an action failure local and permits an explicit retry', async () => {
   expect(await screen.findByRole('alert')).toHaveTextContent('计划保存失败');
   fireEvent.click(screen.getByRole('button', { name: '按这些问题研究' }));
   await waitFor(() => expect(action).toHaveBeenCalledTimes(2));
+});
+
+it('restores an edited plan after leaving and reopening without starting research', () => {
+  const action = vi.fn();
+  const props = { taskId: 't', run: { researchId: 'r' }, result: { status: 'awaiting_plan_review', plan: ['原问题'] }, onAction: action };
+  const first = render(<ResearchCard {...props} />);
+  fireEvent.change(screen.getByRole('textbox', { name: '研究问题列表' }), { target: { value: '编辑后只做一个对照' } });
+  first.unmount(); render(<ResearchCard {...props} />);
+  expect(screen.getByRole('textbox', { name: '研究问题列表' })).toHaveValue('编辑后只做一个对照');
+  expect(action).not.toHaveBeenCalled();
+});
+
+it('offers a status query at the affected research when its service cannot be read', () => {
+  const refresh = vi.fn();
+  render(<ResearchCard taskId="t" run={{ researchId: 'r' }} error={{ poll: '服务暂不可用' }} onRefresh={refresh} />);
+  fireEvent.click(screen.getByText('研究状态需确认'));
+  fireEvent.click(screen.getByRole('button', { name: '查询研究状态' }));
+  expect(refresh).toHaveBeenCalledWith('t', 'r');
 });

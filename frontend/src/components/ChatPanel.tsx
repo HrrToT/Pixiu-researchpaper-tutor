@@ -27,6 +27,7 @@ interface ChatJumpSource {
 
 interface ChatMessage {
   artifactId?: string;
+  synthetic?: boolean;
   id?: string | number;
   role: 'user' | 'ai';
   isSystem?: boolean;
@@ -48,6 +49,7 @@ interface EvidenceRef {
 interface ChatPanelProps {
   messages?: ChatMessage[];
   onSendMessage: (text: string) => void | boolean | Promise<void | boolean>;
+  onDraftChange?: (text: string) => void;
   onDeleteMessage?: (index: number) => void;
   onSaveToNote?: (index: number) => void | Promise<unknown>;
   onCaptureArtifact?: (index: number) => void | Promise<unknown>;
@@ -86,7 +88,7 @@ const EvidenceReferences: React.FC<EvidenceReferencesProps> = ({ references = []
         className="reader-chat-citation"
       >
         <FileText size={12} />
-        来源 {references.length}
+        引用依据 {references.length} 处
         {isExpanded ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
       </button>
       {isExpanded && (
@@ -107,6 +109,7 @@ const EvidenceReferences: React.FC<EvidenceReferencesProps> = ({ references = []
 const ChatPanel: React.FC<ChatPanelProps> = ({
   messages = [],
   onSendMessage,
+  onDraftChange,
   onDeleteMessage,
   onSaveToNote,
   onCaptureArtifact,
@@ -123,6 +126,7 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
   renderMessageAfter, historyContent, composerContext, currentActivity, focusMessage,
 }) => {
   const [inputValue, setInputValue, draftError, clearInput] = useConversationDraft(conversationId);
+  useEffect(() => { onDraftChange?.(inputValue); }, [inputValue, onDraftChange]);
   const [submitting, setSubmitting] = useState(false);
   const submittingRef = useRef(false);
   const [sendError, setSendError] = useState('');
@@ -263,7 +267,7 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
     textarea.style.height = `${Math.min(textarea.scrollHeight, 120)}px`;
   };
 
-  const renderMessageActions = (message: ChatMessage, index: number): React.ReactNode => (
+  const renderMessageActions = (message: ChatMessage, index: number): React.ReactNode => message.synthetic ? null : (
     <div className="reader-chat-message-actions">
       <button
         type="button"
@@ -276,7 +280,7 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
       >
         <Trash2 size={13} />
       </button>
-      {message.role === 'ai' && message.artifactId ? (
+      {message.artifactId ? (
         <button type="button" onClick={() => onOpenArtifact?.(message.artifactId!)} disabled={!onOpenArtifact} className="reader-chat-action" title="打开完整成果" aria-label="打开完整成果">
           <FileText size={13} /> 打开成果
         </button>

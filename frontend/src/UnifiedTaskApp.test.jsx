@@ -13,6 +13,7 @@ vi.mock('./hooks/useTaskWorkspace', () => ({ useTaskWorkspace: () => ({
   adoptServerTask: async task => { if (state.failAnswerSave) throw new Error('本地缓存未更新'); state.task = task; },
   updateTask: async (id, updater) => {
     if (id !== state.task.id) throw new Error('wrong task');
+    if (state.beforeUpdate) { const mutate = state.beforeUpdate; state.beforeUpdate = null; mutate(); }
     const patch = typeof updater === 'function' ? updater(state.task) : updater;
     state.writes += 1;
     if (state.failAnswerSave && patch.messages?.at(-1)?.role === 'ai') {
@@ -50,8 +51,10 @@ vi.mock('./components/PdfViewer', () => ({ default: props => {
   }, []);
   return <div data-testid="paper-viewer" />;
 } }));
-vi.mock('./components/TranslationPanel', () => ({ default: () => null }));
-vi.mock('./components/ChatPanel', () => ({ default: (props) => { state.chatProps = props; return <div data-testid="chat" />; } }));
+vi.mock('./components/TranslationPanel', () => ({ default: props => { state.translationPanelProps = props; return null; } }));
+vi.mock('./components/ChatPanel', () => ({ default: (props) => { state.chatProps = props; return <div data-testid="chat">
+  {props.currentActivity}{props.composerContext}{props.messages?.map((message, index) => <React.Fragment key={message.id || index}>{props.renderMessageAfter?.(message, index)}</React.Fragment>)}{props.historyContent}
+</div>; } }));
 import UnifiedTaskApp from './UnifiedTaskApp';
 
 describe('unified task conversation wiring', () => {
@@ -65,6 +68,7 @@ describe('unified task conversation wiring', () => {
     state.failAnswerSave = false;
     state.compact = false;
     state.writes = 0;
+    state.beforeUpdate = null;
     state.otherTasks = [];
     state.selectedTaskId = null;
     state.pdfMounts = 0;
@@ -124,7 +128,7 @@ describe('unified task conversation wiring', () => {
     state.task.activeActivity = null;
     operationList.mockRejectedValue(new Error('服务状态不可读取'));
     render(<UnifiedTaskApp />);
-    await waitFor(() => expect(screen.getByRole('alert')).toHaveTextContent('服务状态不可读取'));
+    await screen.findByText('请求状态暂不可查询');
     let accepted;
     await act(async () => { accepted = await state.chatProps.onSendMessage('/精读 帮我读这篇论文'); });
     expect(accepted).toBe(false);
@@ -177,7 +181,7 @@ describe('unified task conversation wiring', () => {
     fireEvent.click(screen.getByRole('button', { name: '任务与材料' }));
     expect(screen.getByRole('region', { name: '任务对话' })).toHaveAttribute('inert');
     expect(screen.getByRole('combobox', { name: '当前任务' })).toHaveFocus();
-    fireEvent.click(screen.getByRole('button', { name: '窄屏笔记' }));
+    fireEvent.click(screen.getByRole('button', { name: '窄屏笔记 · 笔记' }));
     expect(screen.getByRole('button', { name: '任务与材料' })).toHaveAttribute('aria-expanded', 'false');
     fireEvent.click(screen.getByRole('button', { name: '编辑', exact: true }));
     fireEvent.change(screen.getByRole('textbox', { name: '编辑笔记与成果' }), { target: { value: '窄屏草稿' } });
@@ -354,7 +358,7 @@ describe('unified task conversation wiring', () => {
   it('opens results for reading and preserves edits when switching views without saving', async () => {
     state.task.notes = [{ id: 'note', title: '阅读笔记', text: '**已保存正文**' }];
     render(<UnifiedTaskApp />);
-    fireEvent.click(screen.getByRole('button', { name: '阅读笔记', exact: true }));
+    fireEvent.click(screen.getByRole('button', { name: '阅读笔记 · 笔记', exact: true }));
     expect(screen.getByRole('article', { name: '成果正文' })).toHaveTextContent('已保存正文');
     expect(screen.queryByRole('textbox', { name: '编辑笔记与成果' })).not.toBeInTheDocument();
     expect(screen.getByText('已保存')).toBeInTheDocument();
@@ -381,7 +385,7 @@ describe('unified task conversation wiring', () => {
     await screen.findByTestId('paper-viewer');
     act(() => state.pdfProps.onPageChange({pageIndex: 6, totalPages: 19}));
     expect(screen.getByRole('textbox', {name: '跳转到页码'})).toHaveValue('7');
-    fireEvent.click(screen.getByRole('button', {name: '阅读笔记', exact: true}));
+    fireEvent.click(screen.getByRole('button', {name: '阅读笔记 · 笔记', exact: true}));
     expect(screen.getByTestId('paper-viewer')).not.toBeVisible();
     const retainedPaper = screen.getByTestId('paper-viewer').closest('.unified-reader-paper');
     expect(retainedPaper).toHaveStyle({visibility: 'hidden'});
@@ -394,7 +398,8 @@ describe('unified task conversation wiring', () => {
     expect(screen.getByTestId('paper-viewer')).toBeVisible();
     expect(screen.getByRole('textbox', {name: '跳转到页码'})).toHaveValue('7');
     expect(screen.getByRole('form',{name:'论文页码'})).toHaveTextContent('/ 20 页');
-    expect(state.pdfProps.targetPageIndex).toBe(6);
+    expect(state.pdfProps.active).toBe(true);
+    expect(state.pdfProps.readingKey).toBe('task:a');
     expect(state.pdfMounts).toBe(1);
     expect(state.pdfUnmounts).toBe(0);
     expect(state.startOperation).not.toHaveBeenCalled();
@@ -402,19 +407,130 @@ describe('unified task conversation wiring', () => {
     makeUrl.mockRestore(); releaseUrl.mockRestore();
   });
 
+  it('keeps completed learning in the task navigation and restores the last opened record after refresh', async () => {
+    state.task.activeActivity = { activityId: 'finished', pdfId: 'a', status: 'finished', mode: 'read',
+      concepts: [{ id: 'c', question: '压缩会丢失什么？', status: 'skipped' }], turns: [] };
+    const view = render(<UnifiedTaskApp />);
+    await act(async () => {});
+    expect(screen.getByRole('region', { name: '任务对话' }).querySelector('.unified-learning-history')).toBeNull();
+    fireEvent.click(screen.getByText('学习记录（1）'));
+    fireEvent.click(screen.getByRole('button', { name: '精读 · 论文甲 · 已结束' }));
+    expect(screen.getByRole('article', { name: '学习记录详情' })).toHaveTextContent('已跳过');
+    expect(screen.getByRole('article', { name: '学习记录详情' })).not.toHaveTextContent('已掌握');
+    view.unmount();
+    render(<UnifiedTaskApp />);
+    await waitFor(() => expect(screen.getByRole('article', { name: '学习记录详情' })).toHaveTextContent('压缩会丢失什么'));
+    expect(state.startOperation).not.toHaveBeenCalled();
+  });
+
+  it('restores a document draft and scroll position across evidence navigation and refresh', async () => {
+    state.task.focusedPaperId = 'a';
+    state.task.notes = [{ id: 'n', title: '实验笔记', text: '原正文' }];
+    const view = render(<UnifiedTaskApp />);
+    fireEvent.click(screen.getByRole('button', { name: '实验笔记 · 笔记' }));
+    fireEvent.click(screen.getByRole('button', { name: '编辑', exact: true }));
+    fireEvent.change(screen.getByRole('textbox', { name: '编辑笔记与成果' }), { target: { value: '未保存的实验想法' } });
+    const panel = screen.getByRole('textbox', { name: '编辑笔记与成果' }).closest('.unified-document');
+    fireEvent.scroll(panel, { target: { scrollTop: 135 } });
+    await act(async () => state.chatProps.onJumpToSource({ pdfId: 'a', pageIndex: 3 }));
+    fireEvent.click(screen.getByRole('button', { name: '返回记录' }));
+    expect(screen.getByRole('article', { name: '成果正文' })).toHaveTextContent('未保存的实验想法');
+    expect(screen.getByRole('article', { name: '成果正文' }).closest('.unified-document').scrollTop).toBe(135);
+    view.unmount();
+    render(<UnifiedTaskApp />);
+    await waitFor(() => expect(screen.getByRole('article', { name: '成果正文' })).toHaveTextContent('未保存的实验想法'));
+    expect(state.task.notes[0].text).toBe('原正文');
+    expect(state.writes).toBe(0);
+  });
+
+  it('saves the same answer once and opens its existing result on repeated capture', async () => {
+    state.task.messages = [{ id: 'answer', role: 'ai', content: '同一份回答', context: { allowedPaperIds: ['a'] } }];
+    const view = render(<UnifiedTaskApp />);
+    await act(async () => state.chatProps.onCaptureArtifact(0));
+    view.rerender(<UnifiedTaskApp />);
+    await act(async () => state.chatProps.onCaptureArtifact(0));
+    expect(state.task.artifacts).toHaveLength(1);
+    expect(state.task.messages[0].artifactId).toBe(state.task.artifacts[0].id);
+    expect(screen.getByRole('article', { name: '成果正文' })).toHaveTextContent('同一份回答');
+  });
+
+  it('keeps ordinary chat distinct from answering an active learning question', async () => {
+    state.task.focusedPaperId = 'a';
+    state.task.activeActivity = { activityId: 'lesson', pdfId: 'a', status: 'active', concepts: [{ id: 'c', status: 'pending' }] };
+    render(<UnifiedTaskApp />);
+    fireEvent.change(screen.getByRole('combobox', { name: '学习输入方式' }), { target: { value: 'chat' } });
+    await act(async () => state.chatProps.onSendMessage('解释一下这篇论文'));
+    expect(state.startOperation).toHaveBeenCalledWith('task', expect.objectContaining({ kind: 'conversation.execute', input: expect.objectContaining({ capability: 'chat' }) }));
+  });
+
+  it('binds a saved answer to its identity when an earlier message was removed before persistence', async () => {
+    state.task.messages = [{ id: 'first', role: 'user', content: '旧问题' }, { id: 'answer', role: 'ai', content: '要保存的回答' }];
+    render(<UnifiedTaskApp />);
+    state.beforeUpdate = () => { state.task = { ...state.task, messages: state.task.messages.slice(1) }; };
+    await act(async () => state.chatProps.onCaptureArtifact(1));
+    expect(state.task.messages).toEqual([expect.objectContaining({ id: 'answer', artifactId: state.task.artifacts[0].id })]);
+    expect(state.task.artifacts[0].text).toBe('要保存的回答');
+  });
+
+  it('keeps ten completed activities available in navigation without occupying the current activity bar', async () => {
+    state.task.activeActivity = null;
+    state.task.activityHistory = Array.from({ length: 10 }, (_, index) => ({ activityId: `ended-${index}`, mode: 'read', status: 'finished', pdfId: 'a', concepts: [{ question: `历史问题${index}`, status: 'skipped' }] }));
+    render(<UnifiedTaskApp />);
+    await act(async () => {});
+    expect(screen.queryByLabelText('当前活动')).not.toBeInTheDocument();
+    expect(screen.getByRole('region', { name: '任务对话' })).not.toHaveTextContent('历史问题');
+    fireEvent.change(screen.getByRole('textbox', { name: '搜索材料与记录' }), { target: { value: '历史问题9' } });
+    fireEvent.click(screen.getByRole('button', { name: '精读 · 论文甲 · 已结束' }));
+    expect(screen.getByRole('article', { name: '学习记录详情' })).toHaveTextContent('历史问题9');
+    expect(state.startOperation).not.toHaveBeenCalled();
+  });
+
+  it('reuses the same page translation and preserves revisions only when its content changes', async () => {
+    state.task.focusedPaperId = 'a';
+    localDbGet.mockImplementation(async store => store === 'pdfStore' ? new Blob(['fixture']) : store === 'deconstructStore' ? { pdfId: 'a' } : null);
+    vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:translation');
+    vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => {});
+    const view = render(<UnifiedTaskApp />);
+    await screen.findByTestId('paper-viewer');
+    fireEvent.click(screen.getByRole('button', { name: '译文', exact: true }));
+    await act(async () => state.translationPanelProps.onCaptureArtifact({ text: '第一页译文' }));
+    view.rerender(<UnifiedTaskApp />);
+    await act(async () => state.translationPanelProps.onCaptureArtifact({ text: '第一页译文' }));
+    await act(async () => state.translationPanelProps.onCaptureArtifact({ text: '修订后的译文' }));
+    expect(state.task.artifacts).toHaveLength(1);
+    expect(state.task.artifacts[0]).toMatchObject({ type: 'translation', text: '修订后的译文', pageIndex: 0 });
+    expect(state.task.artifacts[0].versions).toHaveLength(1);
+    expect(state.task.artifacts[0].versions[0].text).toBe('第一页译文');
+    vi.restoreAllMocks();
+  });
+
+  it('keeps keyboard focus in processing history and returns it to its opener', async () => {
+    render(<UnifiedTaskApp />);
+    const opener = screen.getAllByRole('button', { name: '处理记录', exact: true }).at(-1);
+    opener.focus(); fireEvent.click(opener);
+    const close = screen.getByRole('button', { name: '关闭', exact: true });
+    expect(close).toHaveFocus();
+    const last = screen.getByRole('combobox', { name: '处理状态筛选' });
+    last.focus(); fireEvent.keyDown(last, { key: 'Tab' });
+    expect(close).toHaveFocus();
+    fireEvent.keyDown(close, { key: 'Escape' });
+    expect(screen.queryByRole('dialog', { name: '处理记录' })).not.toBeInTheDocument();
+    expect(opener).toHaveFocus();
+  });
+
   it('restores unsaved note edits after leaving the editor, including an intentionally empty draft', async () => {
     state.task.notes = [{ id: 'note', title: '我的笔记', text: '已保存正文' }];
     render(<UnifiedTaskApp />);
-    fireEvent.click(screen.getByRole('button', { name: '我的笔记' }));
+    fireEvent.click(screen.getByRole('button', { name: '我的笔记 · 笔记' }));
     fireEvent.click(screen.getByRole('button', { name: '编辑', exact: true }));
     fireEvent.change(screen.getByRole('textbox', { name: '编辑笔记与成果' }), { target: { value: '尚未提交的修改' } });
     fireEvent.click(screen.getByRole('button', { name: '返回论文' }));
-    fireEvent.click(screen.getByRole('button', { name: '我的笔记' }));
+    fireEvent.click(screen.getByRole('button', { name: '我的笔记 · 笔记' }));
     fireEvent.click(screen.getByRole('button', { name: '编辑', exact: true }));
     expect(screen.getByRole('textbox', { name: '编辑笔记与成果' })).toHaveValue('尚未提交的修改');
     fireEvent.change(screen.getByRole('textbox', { name: '编辑笔记与成果' }), { target: { value: '' } });
     fireEvent.click(screen.getByRole('button', { name: '返回论文' }));
-    fireEvent.click(screen.getByRole('button', { name: '我的笔记' }));
+    fireEvent.click(screen.getByRole('button', { name: '我的笔记 · 笔记' }));
     fireEvent.click(screen.getByRole('button', { name: '编辑', exact: true }));
     expect(screen.getByRole('textbox', { name: '编辑笔记与成果' })).toHaveValue('');
     expect(state.task.notes[0].text).toBe('已保存正文');
@@ -422,7 +538,7 @@ describe('unified task conversation wiring', () => {
   it('restores a historical note through persistence and shows the restored text in the editor', async () => {
     state.task.notes = [{ id: 'note', title: '版本笔记', text: '当前正文', versions: [{ text: '先前正文', savedAt: '2026-10-04' }] }];
     render(<UnifiedTaskApp />);
-    fireEvent.click(screen.getByRole('button', { name: '版本笔记' }));
+    fireEvent.click(screen.getByRole('button', { name: '版本笔记 · 笔记' }));
     fireEvent.click(screen.getByRole('button', { name: '编辑', exact: true }));
     fireEvent.change(screen.getByRole('textbox', { name: '编辑笔记与成果' }), { target: { value: '未保存修改' } });
     fireEvent.click(screen.getByText('历史版本（1）'));
@@ -440,13 +556,13 @@ describe('unified task conversation wiring', () => {
     await act(async () => state.chatProps.onSaveToNote(0));
     expect(state.task.notes[0].sources).toEqual([source]);
     expect(state.task.notes[0].paperIds).toEqual(['b']);
-    expect(screen.getByText('材料来源（1）')).toBeInTheDocument();
+    expect(screen.getByText('证据片段（1）')).toBeInTheDocument();
   });
 
   it('blocks an old editor draft even after background refresh adopts the newer task revision', async () => {
     state.task.notes = [{ id: 'note', title: '并发笔记', text: '原正文' }];
     const view = render(<UnifiedTaskApp />);
-    fireEvent.click(screen.getByRole('button', { name: '并发笔记', exact: true }));
+    fireEvent.click(screen.getByRole('button', { name: '并发笔记 · 笔记', exact: true }));
     fireEvent.click(screen.getByRole('button', { name: '编辑', exact: true }));
     fireEvent.change(screen.getByRole('textbox', { name: '编辑笔记与成果' }), { target: { value: '我的旧草稿' } });
     state.task = { ...state.task, revision: 10, notes: [{ id: 'note', title: '并发笔记', text: '另一客户端的新正文' }] };
@@ -456,7 +572,7 @@ describe('unified task conversation wiring', () => {
     expect(state.task.notes[0].text).toBe('另一客户端的新正文');
     expect(state.writes).toBe(0);
     fireEvent.click(screen.getByRole('button', { name: '返回论文', exact: true }));
-    fireEvent.click(screen.getByRole('button', { name: '并发笔记', exact: true }));
+    fireEvent.click(screen.getByRole('button', { name: '并发笔记 · 笔记', exact: true }));
     fireEvent.click(screen.getByRole('button', { name: '编辑', exact: true }));
     expect(screen.getByRole('textbox', { name: '编辑笔记与成果' })).toHaveValue('我的旧草稿');
     expect(screen.getByRole('button', { name: '已核对，保留我的修改', exact: true })).toBeInTheDocument();

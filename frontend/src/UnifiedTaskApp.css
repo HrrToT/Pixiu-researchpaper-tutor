@@ -143,3 +143,30 @@
 .conversation-research-card textarea { display: block; width: 100%; min-height: 90px; background: transparent; color: inherit; border: 1px solid #8885; padding: 8px; }
 .conversation-research-card button, .conversation-research-card select { margin: 6px 4px 0 0; padding: 4px 8px; border: 1px solid #8884; border-radius: 5px; background: transparent; color: inherit; }
 .conversation-research-card details button, .research-risk { display: block; text-align: left; }
+.unified-task-more { position:relative; font-size:12px; flex:none; }
+.unified-task-more summary { cursor:pointer; padding:6px; }
+.unified-task-more[open] { padding:6px; background:var(--panel-bg); border:1px solid var(--border-subtle); border-radius:6px; }
+.unified-task-more button { display:block; padding:5px; }
+.unified-current-activity { display:flex; align-items:center; gap:10px; min-height:28px; padding:3px 12px; font-size:12px; color:var(--text-secondary); border-top:1px solid var(--border-subtle); }
+.unified-current-activity > button { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; min-width:0; text-align:left; }
+.unified-current-activity details { position:relative; flex:none; }
+.unified-current-activity details[open] { max-height:110px; overflow:auto; }
+.unified-current-activity details button { display:block; padding:4px; }
+.unified-composer-context { display:flex; flex-wrap:wrap; align-items:center; gap:6px; padding:6px 12px; font-size:11px; color:var(--text-muted); }
+.unified-composer-context > span { flex:1; min-width:100px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.unified-composer-context select { max-width:140px; background:var(--panel-bg); color:var(--text-secondary); border:1px solid var(--border-subtle); border-radius:5px; padding:3px; }
+.unified-learning-actions { position:relative; }
+.unified-learning-actions summary { cursor:pointer; padding:4px; }
+.unified-learning-actions[open] { display:flex; flex-wrap:wrap; }
+.unified-learning-actions button { padding:5px; color:var(--accent); }
+.unified-inline-error { color:var(--text-secondary); background:var(--danger-soft); font-size:12px; line-height:1.5; padding:6px 12px; overflow-wrap:anywhere; }
+.unified-record-entry { display:block; margin:6px 0; padding:5px 8px; border-radius:6px; color:var(--accent); font-size:12px; text-align:left; }
+.unified-record-entry:hover { background:var(--accent-soft); }
+.task-draft-dialog > section { overflow:auto; min-height:0; }
+.task-processing-history input,.task-processing-history select { padding:6px 8px; border:1px solid var(--border-subtle); border-radius:5px; background:var(--panel-bg); color:var(--text-primary); max-width:100%; }
+.task-processing-history article { padding:8px 0; border-bottom:1px solid var(--border-subtle); font-size:13px; }
+.task-processing-history .conversation-research-card { margin:4px 0; }
+
+.unified-document-title { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; text-align:left; font-weight:500; }
+.unified-document-title-edit { min-width:0; display:flex; flex-wrap:wrap; gap:4px; }
+.unified-document-title-edit input { min-width:80px; width:140px; padding:3px; background:var(--panel-bg); border:1px solid var(--border-subtle); color:var(--text-primary); }

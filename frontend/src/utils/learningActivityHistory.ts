@@ -11,6 +11,6 @@ export function learningActivityHistory(task?: { activityHistory?: Activity[]; a
     const previous = grouped.get(id);
     if (!previous || (activity.revision || 0) >= (previous.revision || 0)) grouped.set(id, activity);
   }
-  if (currentId && current?.status === 'finished') grouped.set(currentId, current);
+  if (currentId && ['finished', 'paused'].includes(`${current?.status}`)) grouped.set(currentId, current);
   return [...grouped.values()];
 }

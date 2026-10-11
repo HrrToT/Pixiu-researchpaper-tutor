@@ -90,5 +90,14 @@ export function useTaskResearch(workspace, api = taskResearchApi, operations = n
     catch (failure) { if (isCurrent()) setRunError(JSON.stringify([taskId, researchId]), 'action', failure.message || '研究操作失败'); }
     finally { if (isCurrent()) pendingActions.current.delete(key); }
   };
-  return { runs, start, action, starting, error };
+  const refresh = async (taskId, researchId) => {
+    const key = `${taskId}/${researchId}`;
+    const version = actionVersions.current.get(key) || 0;
+    const isCurrent = () => !pendingActions.current.has(key) && (actionVersions.current.get(key) || 0) === version;
+    try {
+      await publish(taskId, researchId, await api.get(taskId, researchId), isCurrent);
+      if (isCurrent()) setRunError(JSON.stringify([taskId, researchId]), 'poll', '');
+    } catch (failure) { if (isCurrent()) setRunError(JSON.stringify([taskId, researchId]), 'poll', failure.message || '研究状态读取失败'); }
+  };
+  return { runs, start, action, refresh, starting, error, errors };
 }

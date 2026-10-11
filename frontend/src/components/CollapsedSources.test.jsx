@@ -15,7 +15,7 @@ describe('saved source provenance', () => {
     const jump = vi.fn();
     const { container } = render(<CollapsedSources value={{ sources: [{ sourceId: 's', pdfId: 'B', pageIndex: 2, text: 'evidence' }] }} onJumpToSource={jump} />);
     expect(container.querySelector('details')).not.toHaveAttribute('open');
-    fireEvent.click(screen.getByText('材料来源（1）'));
+    fireEvent.click(screen.getByText('证据片段（1）'));
     fireEvent.click(screen.getByRole('button', { name: /跳回原文/ }));
     expect(jump).toHaveBeenCalledWith(expect.objectContaining({ pdfId: 'B', pageIndex: 2 }));
   });

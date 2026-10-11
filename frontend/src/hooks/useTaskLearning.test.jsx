@@ -66,6 +66,20 @@ describe('durable task learning', () => {
     expect(result.current.busyTasks.t).toBe(true); // HTTP cancellation acknowledgement is not worker completion.
     expect(Object.values(result.current.operations.records)[0].status).toBe('cancelling');
   });
+
+  it('restores ordinary-chat mode without replaying an already handled detour receipt', async () => {
+    const task = { id: 't', activeActivity: { activityId: 'a', revision: 1 } };
+    const { api, workspace } = setup(task);
+    api.listOperations.mockResolvedValue([{ taskId: 't', requestId: 'past-detour', kind: 'learning.action', request: { activityId: 'a', action: 'ask' }, status: 'succeeded', task }]);
+    const first = renderHook(() => useTaskLearning(workspace, api));
+    await act(async () => first.result.current.refresh());
+    act(() => first.result.current.setInputMode('chat'));
+    first.unmount();
+    const restored = renderHook(() => useTaskLearning(workspace, api));
+    await act(async () => restored.result.current.refresh());
+    expect(restored.result.current.inputMode).toBe('chat');
+    expect(api.startOperation).not.toHaveBeenCalled();
+  });
   it('waits for explicit continuation after a dropped response and submits the original identity only after a missing receipt', async () => {
     const task = {id:'t',revision:1};
     const {api,workspace} = setup(task);

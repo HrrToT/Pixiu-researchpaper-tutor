@@ -5,7 +5,7 @@ import { researchTitle, operationQuestion, operationStatusLabels } from './conve
 import { getResearchStatusMeta } from './deepResearchPanelModel';
 
 export default function TaskProcessingHistory({ task, records = {}, research = {}, onLocateOperation, onLocateResearch,
-  onRetry, onSubmitSaved, onRefresh, onCancel, onOpenResult, onOpenReport, busy }) {
+  onRetry, onSubmitSaved, onRefresh, onCancel, onOpenResult, onOpenReport, busy, queryError }) {
   const [query, setQuery] = useState('');
   const [status, setStatus] = useState('all');
   const operations = Object.values(records).filter(record => record.taskId === task.id).map(record => ({
@@ -13,9 +13,10 @@ export default function TaskProcessingHistory({ task, records = {}, research = {
     title: operationQuestion(record) || record.kind || '处理请求', date: record.updatedAt || record.createdAt || '',
   }));
   const runs = (task.researchRuns || []).map(run => {
-    const result = research.runs?.[`${task.id}/${run.researchId}`];
+    const result = research.runs?.[`${task.id}/${run.researchId}`] || (task.artifacts?.some(item => item.sourceResearchId === run.researchId || (item.id || item.artifactId) === `research:${run.researchId}:artifact`) ? { status: 'succeeded' } : null);
+    const savedTitle = task.artifacts?.find(item => item.sourceResearchId === run.researchId || (item.id || item.artifactId) === `research:${run.researchId}:artifact`)?.title;
     return { key: `research-${run.researchId}`, type: 'research', run, result,
-      status: result?.status || run.status || 'unknown', title: researchTitle(run, result),
+      status: result?.status || run.status || 'unknown', title: researchTitle(run, result, savedTitle),
       date: result?.updatedAt || run.updatedAt || run.createdAt || '' };
   });
   const entries = [...operations, ...runs].sort((a, b) => String(b.date).localeCompare(String(a.date)));
@@ -24,6 +25,7 @@ export default function TaskProcessingHistory({ task, records = {}, research = {
   const labelFor = entry => entry.type === 'operation' ? operationStatusLabels[entry.status] || entry.status : getResearchStatusMeta(entry.status).label;
   const states = Array.from(new Set(entries.map(entry => entry.status)));
   return <section aria-label="任务处理记录" className="task-processing-history">
+    {queryError && <details><summary>部分请求记录暂不可读取</summary><p>{queryError}。以下仅显示已读取或本地保留的记录。</p><button type="button" onClick={onRefresh}>查询状态</button></details>}
     <div className="flex flex-wrap items-center gap-2 py-2">
       <input className="theme-input min-w-0 flex-1 rounded px-2 py-1" aria-label="搜索处理记录" placeholder="搜索处理记录" value={query} onChange={event => setQuery(event.target.value)} />
       <select className="theme-input rounded px-2 py-1" aria-label="处理状态筛选" value={status} onChange={event => setStatus(event.target.value)}>
@@ -42,7 +44,7 @@ export default function TaskProcessingHistory({ task, records = {}, research = {
       </div>
       {entry.type === 'operation' ? <OperationRecord record={entry.record} showQuestion={false} busy={busy} onRetry={onRetry} onSubmitSaved={onSubmitSaved}
         onRefresh={onRefresh} onCancel={onCancel} onOpenResult={onOpenResult} onLocate={onLocateOperation} />
-        : <ResearchCard taskId={task.id} run={entry.run} result={entry.result} onAction={research.action} onOpenReport={onOpenReport} />}
+        : <ResearchCard taskId={task.id} run={entry.run} result={entry.result} compactTitle={entry.title} error={research.errors?.[JSON.stringify([task.id, entry.run.researchId])]} onRefresh={research.refresh} onAction={research.action} onOpenReport={onOpenReport} />}
     </article>)}
   </section>;
 }

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import TaskRename from './components/TaskRename';
 import useCompactLayout from './hooks/useCompactLayout';
 import PaperPageNavigation from './components/PaperPageNavigation';
@@ -10,6 +10,7 @@ import PdfViewer from './components/PdfViewer';
 import TaskNavigation from './components/TaskNavigation';
 import DocumentVersionHistory from './components/DocumentVersionHistory';
 import DocumentOrganizer from './components/DocumentOrganizer';
+import DocumentTitle from './components/DocumentTitle';
 import CollapsedSources from './components/CollapsedSources';
 import DocumentOriginalPage from './components/DocumentOriginalPage';
 import { documentOriginalPage } from './utils/documentOriginalPage';
@@ -22,10 +23,13 @@ import TranslationPanel from './components/TranslationPanel';
 import { useTaskWorkspace } from './hooks/useTaskWorkspace';
 import { useTaskLearning } from './hooks/useTaskLearning';
 import { useTaskResearch } from './hooks/useTaskResearch';
-import ConversationResearch from './components/ConversationResearch';
+import { ResearchCard } from './components/ConversationResearch';
 import { sanitizeResearchReport } from './components/deepResearchPanelModel';
-import ConversationExecution from './components/ConversationExecution';
-import LearningHistory from './components/LearningHistory';
+import { getResearchStatusMeta } from './components/deepResearchPanelModel';
+import { OperationRecord } from './components/ConversationExecution';
+import TaskProcessingHistory from './components/TaskProcessingHistory';
+import { LearningRecordContent } from './components/LearningHistory';
+import { conversationTimeline, documentMessageIndex } from './utils/conversationTimeline';
 import { useThemePreference } from './hooks/useThemePreference';
 import { apiService } from './services/api';
 import { initDB } from './services/localDb';
@@ -62,6 +66,15 @@ const getPaperTitle = (papers, id) => papers.find((paper) => paper.id === id)?.t
 const normalizeNoteContent = (note) => `${note?.text ?? note?.content ?? note?.body ?? ''}`;
 const documentDraftKey = (selection) => `pixiu-document-draft:${JSON.stringify([selection.taskId, selection.collection, selection.id ?? selection.index])}`;
 const readingPositionKey = (taskId, paperId) => `pixiu-reading-position:${JSON.stringify([taskId, paperId])}`;
+const contentViewKey = taskId => `pixiu-content-view:${taskId}`;
+const contentReturnKey = taskId => `pixiu-content-return:${taskId}`;
+const storeView = (taskId, value, keepReturn = false) => {
+  try {
+    localStorage.setItem(contentViewKey(taskId), JSON.stringify(value));
+    if (keepReturn) localStorage.setItem(contentReturnKey(taskId), JSON.stringify(value));
+  } catch { /* The saved task remains available if local preferences are disabled. */ }
+};
+const shortPaperTitle = (papers, id) => getPaperTitle(papers, id).split(/[:：]/u)[0].slice(0, 56);
 export default function UnifiedTaskApp() {
   const workspace = useTaskWorkspace();
   const learning = useTaskLearning(workspace);
@@ -97,6 +110,27 @@ export default function UnifiedTaskApp() {
   const [page, setPage] = useState({ pageIndex: 0, totalPages: 0 });
   const [jump, setJump] = useState({ pageIndex: 0, token: 0, anchorId: null });
   const [selectedDocument, setSelectedDocument] = useState(null);
+  const [selectedLearning, setSelectedLearning] = useState(null);
+  const selectedLearningRef = useRef(null);
+  selectedLearningRef.current = selectedLearning;
+  const [returnContent, setReturnContent] = useState(null);
+  const restoredContentTask = useRef(null);
+  const contentScrollRef = useRef(null);
+  const [showProcessingHistory, setShowProcessingHistory] = useState(false);
+  const processingDialogRef = useRef(null);
+  useEffect(() => {
+    if (!showProcessingHistory) return;
+    const previous = document.activeElement;
+    const dialog = processingDialogRef.current;
+    const background = [...(dialog?.closest('.unified-app')?.children || [])].filter(node => node.matches('header, main'));
+    background.forEach(node => node.setAttribute('inert', ''));
+    dialog?.querySelector('button')?.focus();
+    return () => { background.forEach(node => node.removeAttribute('inert')); if (previous?.isConnected) previous.focus(); };
+  }, [showProcessingHistory]);
+  const [focusMessage, setFocusMessage] = useState(null);
+  const [composerError, setComposerError] = useState('');
+  const [composerDraft, setComposerDraft] = useState('');
+  const [materialError, setMaterialError] = useState('');
   const [movingDocument, setMovingDocument] = useState(false);
   const [requestedDocument, setRequestedDocument] = useState(null);
   const [recoveryPreview, setRecoveryPreview] = useState(null);
@@ -133,7 +167,7 @@ export default function UnifiedTaskApp() {
   }, [activeTaskId, focusedPaperId]);
   const setReadingPage = useCallback(next => {
     // Hidden PDF layout observers must not overwrite the last visible position.
-    if (selectedDocumentRef.current || recoveryPreviewRef.current) return;
+    if (selectedDocumentRef.current || selectedLearningRef.current || recoveryPreviewRef.current) return;
     setPage(next);
     if (activeTaskId && focusedPaperId) {
       try { localStorage.setItem(readingPositionKey(activeTaskId, focusedPaperId), String(next.pageIndex)); }
@@ -188,7 +222,7 @@ export default function UnifiedTaskApp() {
       if (overview) await taskWorkspaceApi.generateMaterialOverview(activeTaskId, focusedPaperId);
       else await taskWorkspaceApi.retryMaterialParse(activeTaskId, focusedPaperId);
       setProcessingRefresh(value => value + 1);
-    } catch (error) { setLocalError(error.response?.data?.message || error.message || '处理请求失败'); }
+    } catch (error) { setMaterialError(error.response?.data?.message || error.message || '处理请求失败'); }
     finally { setProcessingRequest(false); }
   };
 
@@ -214,7 +248,11 @@ export default function UnifiedTaskApp() {
 
   useEffect(() => { taskRef.current = new Map(tasks.map((task) => [task.id, task])); }, [tasks]);
   useEffect(() => { localStorage.setItem(LAYOUT_KEY, JSON.stringify(layout)); }, [layout]);
-  useEffect(() => { setSelectedDocument(null); setRecoveryPreview(null); setDocumentDraft(''); setLocalError(''); }, [activeTaskId]);
+  useEffect(() => {
+    setSelectedDocument(null); setSelectedLearning(null); setRecoveryPreview(null); setDocumentDraft('');
+    setLocalError(''); setComposerError(''); setMaterialError(''); setShowProcessingHistory(false);
+    setReturnContent(null); setFocusMessage(null);
+  }, [activeTaskId]);
   useEffect(() => {
     if (!requestedDocument || requestedDocument.taskId !== activeTaskId) return;
     const item = activeTask?.artifacts?.find(document => (document.id || document.artifactId) === requestedDocument.id);
@@ -226,7 +264,10 @@ export default function UnifiedTaskApp() {
       draft = localStorage.getItem(key);
       if (draft !== null) selection.baseText = JSON.parse(localStorage.getItem(key + ':base') || 'null');
     } catch { setLocalError('本地编辑草稿暂不可用'); }
+    setSelectedLearning(null); setRecoveryPreview(null);
     setSelectedDocument(selection); setDocumentDraft(draft ?? normalizeNoteContent(item));
+    const view = { kind: 'document', collection: 'artifacts', id: requestedDocument.id };
+    storeView(activeTaskId, view, true); setReturnContent(view);
     setRequestedDocument(null); patchLayout({ reader: true });
   }, [activeTaskId, activeTask, requestedDocument]);
   useEffect(() => {
@@ -310,7 +351,9 @@ export default function UnifiedTaskApp() {
     const task = taskRef.current.get(taskId);
     if (!task?.paperIds.includes(paperId)) throw new Error('这篇论文不属于当前任务');
     setSelectedDocument(null);
+    setSelectedLearning(null);
     setRecoveryPreview(null);
+    storeView(taskId, { kind: 'paper' });
     patchLayout({ reader: true });
     await updateTask(taskId, { focusedPaperId: paperId });
   }, [activeTaskId, updateTask]);
@@ -356,9 +399,10 @@ export default function UnifiedTaskApp() {
   const sendMessage = async (rawText, chosenSkill = null) => {
     const task = activeTask;
     if (!task || learning.busyTasks[task.id]) return false;
+    const inputError = message => { if (activeTaskIdRef.current === task.id) setComposerError(message); };
     const text = rawText.trim();
     if (!text) return false;
-    setLocalError('');
+    setComposerError('');
     const intent = chosenSkill ? { skill: chosenSkill } : resolveConversationIntent(text);
     const skill = intent.skill;
     if (intent.clarification) {
@@ -367,7 +411,7 @@ export default function UnifiedTaskApp() {
     }
     setIntentChoice(null);
     if (text.startsWith('/') && !skill) {
-      setLocalError('未识别这个命令，可使用 /精读、/补课、/自测、/批判、/比较、/研究。');
+      setComposerError('未识别这个命令，可使用 /精读、/补课、/自测、/批判、/比较、/研究。');
       return false;
     }
     let explicitPaperIds;
@@ -375,13 +419,13 @@ export default function UnifiedTaskApp() {
     try {
       explicitPaperIds = resolveNamedTaskPapers(text, papers, task.paperIds);
       initialContext = resolveTaskContext(task, { text,
-        ...(skill && startsNewCapability(skill.skillId) ? { activity: null } : {}),
+        ...((skill && startsNewCapability(skill.skillId)) || learning.inputMode === 'chat' ? { activity: null } : {}),
         ...(explicitPaperIds !== undefined ? { paperIds: explicitPaperIds } : {}) });
-    } catch (error) { setLocalError(error.message); return false; }
+    } catch (error) { setComposerError(error.message); return false; }
     const materialReady = (ids) => {
       const notReady = ids.filter(id => papers.find(paper => paper.id === id)?.questionReady === false);
       if (!notReady.length) return true;
-      setLocalError(`以下材料正文尚未就绪：${notReady.map(id => getPaperTitle(papers, id)).join('、')}。可先阅读原文，或在论文栏重试解析。`);
+      setComposerError(`以下材料正文尚未就绪：${notReady.map(id => getPaperTitle(papers, id)).join('、')}。可先阅读原文，或在论文栏重试解析。`);
       return false;
     };
     const activityPapers = task.activeActivity?.snapshot?.paperIds || task.activeActivity?.paperIds || (task.activeActivity?.pdfId ? [task.activeActivity.pdfId] : []);
@@ -396,10 +440,10 @@ export default function UnifiedTaskApp() {
         if (!pdfId) throw new Error('请打开或明确指定一篇要学习的论文');
         if (!materialReady([pdfId])) return false;
         await learning.start(task, pdfId, skill.skillId, sendText);
-      } catch (error) { setLocalError(error.message); return false; }
+      } catch (error) { inputError(error.message); return false; }
       return;
     }
-    if (!skill && task.activeActivity?.status === 'active' && targetsCurrentActivity) {
+    if (!skill && learning.inputMode !== 'chat' && task.activeActivity?.status === 'active' && targetsCurrentActivity) {
       if (!materialReady(initialContext.allowedPaperIds)) return false;
       await learning.act(task, learning.inputMode, text);
       return;
@@ -409,6 +453,7 @@ export default function UnifiedTaskApp() {
       await learning.act(task, 'remediate', sendText);
       return;
     }
+    if (skill && startsNewCapability(skill.skillId)) learning.setInputMode('chat');
     if (skill?.skillId === 'research') {
       try {
         if (!sendText) throw new Error('请在 /研究 后写下要研究的问题');
@@ -416,7 +461,7 @@ export default function UnifiedTaskApp() {
         if (!scope.allowedPaperIds.length) throw new Error('请先为任务加入研究材料');
         if (!materialReady(scope.allowedPaperIds)) return false;
         await research.start(task, sendText, scope);
-      } catch (error) { setLocalError(error.message); return false; }
+      } catch (error) { inputError(error.message); return false; }
       return;
     }
     if (skill && !sendText && !['critique', 'compare', 'background'].includes(skill.skillId)) {
@@ -431,12 +476,12 @@ export default function UnifiedTaskApp() {
       const explicitPaperIds = resolveNamedTaskPapers(text, papers, task.paperIds);
       const skillPaperIds = explicitPaperIds;
       context = resolveTaskContext(task, { text: requestText,
-        ...(skill && startsNewCapability(skill.skillId) ? { activity: null } : {}),
+        ...((skill && startsNewCapability(skill.skillId)) || learning.inputMode === 'chat' ? { activity: null } : {}),
         ...(skillPaperIds !== undefined ? { paperIds: skillPaperIds } : {}) });
       if ((skill?.skillId === 'compare' || skill?.steps?.includes('compare')) && context.allowedPaperIds.length < 2) throw new Error('比较至少需要两篇论文，请先在任务中加入论文。');
       if (skill?.skillId === 'critique' && context.allowedPaperIds.length === 0) throw new Error('请先加入并打开一篇论文。');
     }
-    catch (error) { setLocalError(error.message); return false; }
+    catch (error) { setComposerError(error.message); return false; }
     if (!materialReady(context.allowedPaperIds)) return false;
     await learning.operations.start(task, 'conversation.execute', {
       capability: skill?.skillId || 'chat', message: sendText || requestText,
@@ -446,19 +491,43 @@ export default function UnifiedTaskApp() {
       expectedTaskRevision: task.revision,
     });
   };
-  const deleteMessage = async (index) => { if (activeTaskId) await updateTask(activeTaskId, (task) => ({ messages: task.messages.filter((_, itemIndex) => itemIndex !== index) })); };
-  const saveMessage = async (index, asArtifact = false) => {
-    if (!activeTaskId) return;
+  const deleteMessage = async index => {
     const source = activeTask?.messages[index];
-    if (!source) return;
-    const entry = { id: makeId(), title: `${asArtifact ? '成果' : '笔记'} · ${new Date().toLocaleDateString('zh-CN')}`, text: source.content, paperIds: source.context?.allowedPaperIds || activeTask.paperIds, sources: documentSources(source), sentenceSourceMap: source.sentenceSourceMap || [], sourceMessageId: source.id, createdAt: new Date().toISOString(), versions: [] };
-    await updateTask(activeTaskId, (task) => ({ [asArtifact ? 'artifacts' : 'notes']: [...task[asArtifact ? 'artifacts' : 'notes'], entry] }));
-    setSelectedDocument({ taskId: activeTaskId, collection: asArtifact ? 'artifacts' : 'notes', id: entry.id, baseText: entry.text });
-    setDocumentDraft(entry.text);
-    patchLayout({ reader: true });
+    if (activeTaskId && source) await updateTask(activeTaskId, task => ({ messages: task.messages.filter(message => source.id ? message.id !== source.id : message !== source) }));
+  };
+  const saveMessage = async (index, asArtifact = true) => {
+    const taskId = activeTaskId;
+    const source = activeTask?.messages[index];
+    if (!taskId || !source) return false;
+    const matchesSource = message => source.id ? message.id === source.id : message === source
+      || source.sourceRequestId && message.sourceRequestId === source.sourceRequestId && message.role === source.role;
+    let saved;
+    let collection = asArtifact ? 'artifacts' : 'notes';
+    await updateTask(taskId, task => {
+      const currentIndex = task.messages.findIndex(matchesSource);
+      if (currentIndex < 0) throw new Error('这条对话已移除，未保存其他消息。');
+      const messageId = source.id || `legacy-message:${index}`;
+      saved = null;
+      for (const key of ['artifacts', 'notes']) {
+        const existing = task[key].find(item => item.sourceMessageId === messageId
+          || source.artifactId && (item.id || item.artifactId) === source.artifactId);
+        if (existing) { saved = existing; collection = key; break; }
+      }
+      saved ||= { id: makeId(), title: source.content.replace(/[#*`]/gu, '').split('\n').find(line => line.trim())?.slice(0, 46) || '对话笔记',
+        text: source.content, paperIds: source.context?.allowedPaperIds || task.paperIds,
+        sources: documentSources(source), sentenceSourceMap: source.sentenceSourceMap || [], sourceMessageId: messageId,
+        sourceRequestId: source.sourceRequestId, type: source.capability || 'note', createdAt: new Date().toISOString(), versions: [] };
+      return {
+        [collection]: task[collection].some(item => item.id === saved.id) ? task[collection] : [...task[collection], saved],
+        messages: task.messages.map((message, position) => position === currentIndex ? { ...message, id: messageId, artifactId: saved.id } : message),
+      };
+    });
+    if (activeTaskIdRef.current === taskId) openDocument(saved, collection);
+    return saved.id;
   };
   const openDocument = (item, collection = null) => {
     setRecoveryPreview(null);
+    setSelectedLearning(null); setLocalError('');
     const source = collection || (activeTask?.artifacts.includes(item) ? 'artifacts' : 'notes');
     const index = activeTask?.[source]?.findIndex((candidate) => candidate === item || (item.id && candidate.id === item.id)) ?? -1;
     const selection = { taskId: activeTaskId, collection: source, index, id: item.id || item.artifactId };
@@ -474,8 +543,49 @@ export default function UnifiedTaskApp() {
     catch { setLocalError('本地编辑草稿暂不可用'); }
     setSelectedDocument(selection);
     setDocumentDraft(draft ?? normalizeNoteContent(item));
+    const view = { kind: 'document', collection: source, id: selection.id, index };
+    storeView(activeTaskId, view, true); setReturnContent(view);
     patchLayout({ reader: true });
   };
+  const openLearningRecord = activity => {
+    const view = { kind: 'learning', id: activity.activityId || activity.id };
+    setSelectedDocument(null); setRecoveryPreview(null); setLocalError('');
+    setSelectedLearning({ taskId: activeTaskId, id: view.id });
+    storeView(activeTaskId, view, true); setReturnContent(view); patchLayout({ reader: true });
+  };
+  const returnToPaper = () => {
+    setSelectedDocument(null); setSelectedLearning(null); setRecoveryPreview(null); setLocalError('');
+    storeView(activeTaskId, { kind: 'paper' });
+  };
+  const openPreview = record => {
+    setSelectedDocument(null); setSelectedLearning(null); setRecoveryPreview(record);
+    const view = { kind: 'preview', record };
+    storeView(activeTaskId, view, true); setReturnContent(view); patchLayout({ reader: true });
+  };
+  const reopenContent = view => {
+    if (view?.kind === 'document') {
+      const item = view.id ? activeTask?.[view.collection]?.find(entry => (entry.id || entry.artifactId) === view.id)
+        : activeTask?.[view.collection]?.[view.index];
+      if (item) { openDocument(item, view.collection); return true; }
+    }
+    if (view?.kind === 'learning') {
+      const item = savedLearningActivities.find(entry => (entry.activityId || entry.id) === view.id)
+        || ((activeTask?.activeActivity?.activityId || activeTask?.activeActivity?.id) === view.id ? activeTask.activeActivity : null);
+      if (item) { openLearningRecord(item); return true; }
+    }
+    if (view?.kind === 'preview' && view.record?.taskId === activeTaskId) { openPreview(view.record); return true; }
+    return false;
+  };
+  useEffect(() => {
+    if (!activeTask || restoredContentTask.current === activeTaskId) return;
+    restoredContentTask.current = activeTaskId;
+    try {
+      const previous = JSON.parse(localStorage.getItem(contentReturnKey(activeTaskId)) || 'null');
+      setReturnContent(previous);
+      const view = JSON.parse(localStorage.getItem(contentViewKey(activeTaskId)) || 'null');
+      if (view && view.kind !== 'paper' && !reopenContent(view)) setLocalError('上次打开的记录已移动或暂不可用，请从任务导航重新选择。');
+    } catch { setLocalError('上次阅读位置暂不可用，任务记录仍保留。'); }
+  }, [activeTaskId, activeTask]);
   const preview = recoveryPreview?.taskId === activeTaskId ? recoveryPreview : null;
   const recoverResult = async () => {
     if (!preview || savingRecovery) return;
@@ -497,6 +607,22 @@ export default function UnifiedTaskApp() {
     ? activeTask?.[selectedDocument.collection]?.find((item) => (item.id || item.artifactId) === selectedDocument.id)
     : activeTask?.[selectedDocument.collection]?.[selectedDocument.index]) : null;
   const selectedDocumentKey = selectedDocument ? documentDraftKey(selectedDocument) : null;
+  const activeLearning = selectedLearning?.taskId === activeTaskId
+    ? savedLearningActivities.find(item => (item.activityId || item.id) === selectedLearning.id)
+      || ((activeTask?.activeActivity?.activityId || activeTask?.activeActivity?.id) === selectedLearning.id ? activeTask.activeActivity : null)
+    : null;
+  const contentPositionKey = activeDocument ? `pixiu-content-scroll:${selectedDocumentKey}`
+    : activeLearning ? `pixiu-learning-scroll:${activeTaskId}:${selectedLearning.id}`
+      : preview ? `pixiu-result-scroll:${activeTaskId}:${preview.requestId}` : null;
+  useLayoutEffect(() => {
+    const element = contentScrollRef.current;
+    if (!element || !contentPositionKey) return;
+    try { element.scrollTop = Number(localStorage.getItem(contentPositionKey)) || 0; } catch { /* Optional preference. */ }
+    return () => { try { localStorage.setItem(contentPositionKey, String(element.scrollTop)); } catch { /* Optional preference. */ } };
+  }, [contentPositionKey]);
+  const saveContentPosition = event => {
+    if (contentPositionKey) { try { localStorage.setItem(contentPositionKey, String(event.currentTarget.scrollTop)); } catch { /* Optional preference. */ } }
+  };
   const originalDocumentPage = documentOriginalPage(activeDocument);
   useEffect(() => { setDocumentEditing(false); }, [selectedDocumentKey]);
   const documentDirty = !!activeDocument && documentDraft !== normalizeNoteContent(activeDocument);
@@ -619,7 +745,9 @@ export default function UnifiedTaskApp() {
     const targetPaperId = source?.pdfId || source?.sourcePdfId || activeTask?.focusedPaperId;
     if (!targetPaperId || !activeTask?.paperIds.includes(targetPaperId)) return false;
     setSelectedDocument(null);
+    setSelectedLearning(null);
     setRecoveryPreview(null);
+    storeView(activeTaskId, { kind: 'paper' });
     if (targetPaperId !== activeTask.focusedPaperId) await openPaper(targetPaperId);
     const index = Number(source.pageIndex ?? source.sourcePageIndex);
     if (Number.isInteger(index) && index >= 0) setJump({ taskId: activeTaskId, pdfId: targetPaperId, pageIndex: index, token: Date.now(), anchorId: source.sourceAnchorId || source.sectionId || null });
@@ -640,14 +768,27 @@ export default function UnifiedTaskApp() {
     }));
   };
   const captureTranslation = async (artifact) => {
-    if (!activeTaskId || !paperView.id || !artifact) return;
+    if (!activeTaskId || !paperView.id || !artifact) return false;
     const content = `${artifact.text || artifact.content || translationState.pages?.[page.pageIndex]?.translatedText || ''}`;
-    if (!content.trim()) return;
-    await updateTask(activeTaskId, (task) => ({ artifacts: [...task.artifacts, {
-      id: makeId(), title: artifact.title || `${getPaperTitle(papers, paperView.id)} · 第 ${page.pageIndex + 1} 页译文`,
-      text: content, paperIds: [paperView.id], pageIndex: page.pageIndex,
-      createdAt: new Date().toISOString(), versions: [],
-    }] }));
+    if (!content.trim()) return false;
+    const taskId = activeTaskId, pdfId = paperView.id, pageIndex = page.pageIndex;
+    let saved;
+    await updateTask(taskId, task => {
+      const index = task.artifacts.findIndex(item => item.pageIndex === pageIndex && item.paperIds?.length === 1 && item.paperIds[0] === pdfId
+        && (item.type === 'translation' || /译文/u.test(item.title || '')));
+      const artifacts = [...task.artifacts];
+      if (index >= 0) {
+        const previous = artifacts[index];
+        saved = normalizeNoteContent(previous) === content ? previous : { ...reviseDocument(previous, content), type: 'translation' };
+        artifacts[index] = saved;
+      } else {
+        saved = { ...artifact, id: makeId(), type: 'translation', title: artifact.title || `${getPaperTitle(papers, pdfId)} · 第 ${pageIndex + 1} 页译文`,
+          text: content, paperIds: [pdfId], pageIndex, createdAt: new Date().toISOString(), versions: [] };
+        artifacts.push(saved);
+      }
+      return { artifacts };
+    });
+    return saved.id;
   };
   const currentTranslationPage = translationState.pages?.[page.pageIndex] || null;
   const goToPage = index => setJump({ taskId: activeTaskId, pdfId: focusedPaperId,
@@ -664,11 +805,126 @@ export default function UnifiedTaskApp() {
     window.addEventListener('pointermove', move); window.addEventListener('pointerup', stop); window.addEventListener('pointercancel', stop);
   };
 
+  const timeline = useMemo(() => conversationTimeline(activeTask, learning.operations.records).map(message => {
+    const sourceId = activeTask?.messages[message.originalIndex]?.id || message.id || `legacy-message:${message.originalIndex}`;
+    const saved = [...(activeTask?.artifacts || []), ...(activeTask?.notes || [])].find(item => item.sourceMessageId === sourceId);
+    return { ...message, id: message.id ?? `legacy-message:${message.originalIndex}`, ...(saved ? { artifactId: saved.id || saved.artifactId } : {}) };
+  }), [activeTask, learning.operations.records]);
+  const locateMessage = message => {
+    if (!message) { setComposerError('未找到原对话，请尝试搜索相关问题。'); return; }
+    setShowProcessingHistory(false); setCompactNavigation(false); setCompactPane('chat');
+    patchLayout({ chat: true }); setFocusMessage({ id: message.id, token: Date.now() });
+  };
+  const locateOperation = record => locateMessage(timeline.find(message => message.role === 'user'
+    && (message.sourceRequestId === record.requestId || message.timelineRequestIds?.includes(record.requestId))));
+  const locateResearch = run => locateMessage(timeline.find(message => message.timelineResearchId === run.researchId));
+  const locateLearning = activity => locateMessage(timeline.findLast(message => message.context?.activityId === (activity.activityId || activity.id)));
+  const locateDocument = document => {
+    if (document.sourceResearchId) { locateResearch({ researchId: document.sourceResearchId }); return; }
+    const originalIndex = documentMessageIndex(activeTask, document);
+    locateMessage(timeline.find(message => message.originalIndex === originalIndex));
+  };
+  const openArtifact = id => {
+    const artifact = activeTask?.artifacts?.find(item => (item.id || item.artifactId) === id);
+    const note = activeTask?.notes?.find(item => (item.id || item.artifactId) === id);
+    if (artifact || note) { openDocument(artifact || note, artifact ? 'artifacts' : 'notes'); return; }
+    const owner = tasks.find(task => task.artifacts?.some(item => (item.id || item.artifactId) === id));
+    if (owner) { setRequestedDocument({ taskId: owner.id, id }); selectTask(owner.id); }
+    else setComposerError('成果已移出或任务列表有更新，请刷新后查看。');
+  };
+  const openReport = (run, result) => {
+    setShowProcessingHistory(false);
+    const saved = activeTask.artifacts.find(item => item.sourceResearchId === run.researchId || (item.id || item.artifactId) === `research:${run.researchId}:artifact`);
+    if (saved) { openDocument(saved, 'artifacts'); return; }
+    openPreview({ taskId: activeTaskId, requestId: run.researchId, kind: 'research.report', paperIds: run.paperIds,
+      result: { artifact: { text: sanitizeResearchReport(result.report) }, sources: (result.findings || []).flatMap(finding => finding.sources || []) } });
+  };
+  const openOperationResult = record => { setShowProcessingHistory(false); openPreview(record); };
+  const openPaperOverview = () => {
+    const labels = { abstract: '摘要', introduction: '研究问题', methods: '方法', results: '结果', discussion: '讨论', conclusion: '结论' };
+    const sections = Object.entries(paperView.deconstruct?.paper_skeleton || {}).filter(([, value]) => value && typeof value === 'string');
+    openPreview({ taskId: activeTaskId, requestId: `overview:${paperView.id}`, kind: 'paper.overview', paperIds: [paperView.id],
+      result: { artifact: { text: sections.map(([key, value]) => `## ${labels[key] || key}\n${value}`).join('\n\n') || '尚无可显示的概览。' } } });
+  };
+  const researchResult = run => research.runs[`${activeTaskId}/${run.researchId}`]
+    || (activeTask?.artifacts.some(item => item.sourceResearchId === run.researchId || (item.id || item.artifactId) === `research:${run.researchId}:artifact`) ? { status: 'succeeded' } : null);
+  const operationControls = {
+    busy: Boolean(learning.busyTasks[activeTaskId]), onRetry: requestId => learning.operations.retry(activeTask, requestId),
+    onSubmitSaved: requestId => learning.operations.submitSaved(activeTaskId, requestId),
+    onRefresh: () => learning.operations.refresh(), onCancel: requestId => learning.operations.cancel(activeTaskId, requestId), onOpenResult: openOperationResult,
+  };
+  const pendingOperations = Object.values(learning.operations.records).filter(record => record.taskId === activeTaskId && !record.retriedBy
+    && ['queued', 'running', 'unknown', 'awaiting_submission', 'cancelling'].includes(record.status));
+  const currentLearning = activeTask?.activeActivity;
+  const pendingResearch = (activeTask?.researchRuns || []).filter(run => {
+    const result = researchResult(run);
+    return !result || !['succeeded', 'failed', 'cancelled'].includes(result.status);
+  });
+  const activityEntries = [
+    ...pendingOperations.map(record => ({ id: record.requestId, label: record.status === 'unknown' ? '正在确认结果' : record.status === 'awaiting_submission' ? '提交待确认' : record.status === 'cancelling' ? '正在停止' : '正在处理', locate: () => locateOperation(record) })),
+    ...pendingResearch.map(run => ({ id: run.researchId, label: `研究 · ${researchResult(run) ? getResearchStatusMeta(researchResult(run).status).label : '正在读取'}`, locate: () => locateResearch(run),
+      stop: () => research.action(activeTaskId, run.researchId, 'cancel') })),
+    ...(currentLearning?.status === 'active' && learning.inputMode !== 'chat' && !pendingOperations.length ? [{ id: currentLearning.activityId,
+      label: `${currentLearning.mode === 'quiz' ? '自测' : '精读'} · ${learning.completionSuggested ? '可结束本轮' : '待回答'}`, locate: () => locateLearning(currentLearning) }] : []),
+  ];
+  const renderAfterMessage = message => {
+    const run = message.timelineResearchId && activeTask.researchRuns?.find(item => item.researchId === message.timelineResearchId);
+    const record = message.timelineOperationId && learning.operations.records[message.timelineOperationId];
+    const history = message.role !== 'user' && savedLearningActivities.find(activity => message.context?.activityId === (activity.activityId || activity.id)
+      && !timeline.some(other => other.role !== 'user' && other.context?.activityId === message.context.activityId && other.orderIndex > message.orderIndex));
+    return <>
+      {run && <ResearchCard taskId={activeTaskId} run={run} result={researchResult(run)} error={research.errors?.[JSON.stringify([activeTaskId, run.researchId])]}
+        compactTitle={activeTask.artifacts.find(item => item.sourceResearchId === run.researchId || (item.id || item.artifactId) === `research:${run.researchId}:artifact`)?.title}
+        onRefresh={research.refresh}
+        onAction={research.action} onJumpToSource={jumpToSource} onOpenReport={openReport} />}
+      {record && record.status !== 'succeeded' && !record.retriedBy && !run && <OperationRecord record={record} showQuestion={false} {...operationControls} />}
+      {history && <button type="button" className="unified-record-entry" onClick={() => openLearningRecord(history)}>{history.mode === 'quiz' ? '自测' : '精读'}{history.status === 'paused' ? '已暂停' : '已结束'} · 查看记录</button>}
+    </>;
+  };
+  const currentActivityBar = activityEntries.length > 0 ? <div className="unified-current-activity" aria-label="当前活动">
+    <button type="button" onClick={activityEntries[0].locate}>{activityEntries[0].label} · 定位</button>
+    {activityEntries[0].stop && <button type="button" onClick={() => activityEntries[0].stop()}>停止研究</button>}
+    {activityEntries.length > 1 && <details><summary>另有 {activityEntries.length - 1} 项</summary>{activityEntries.slice(1).map(entry => <button type="button" key={entry.id} onClick={entry.locate}>{entry.label} · 定位</button>)}</details>}
+  </div> : null;
+  let draftPrimaryPaperId = null;
+  if (activeTask && composerDraft.trim() && !/@\{/u.test(composerDraft)) {
+    try {
+      const skill = resolveConversationIntent(composerDraft).skill;
+      draftPrimaryPaperId = resolveTaskContext(activeTask, { text: composerDraft,
+        ...((skill && startsNewCapability(skill.skillId)) || learning.inputMode === 'chat' ? { activity: null } : {}),
+        paperIds: resolveNamedTaskPapers(composerDraft, papers, activeTask.paperIds) }).primaryPaperId;
+    } catch { /* Submission explains an ambiguous scope without guessing its primary paper. */ }
+  }
+  const composerContext = <>
+    <div className="unified-composer-context">
+      <span title={activeTask?.paperIds.map(id => getPaperTitle(papers, id)).join('\n')}>任务材料 {activeTask?.paperIds.length || 0} 篇{focusedPaperId ? ` · 当前 ${shortPaperTitle(papers, focusedPaperId)}` : ''}</span>
+      {draftPrimaryPaperId && <span>主要参考 {shortPaperTitle(papers, draftPrimaryPaperId)}</span>}
+      {currentLearning?.status === 'active' && <>
+        <select aria-label="学习输入方式" value={learning.inputMode} onChange={event => learning.setInputMode(event.target.value)}>
+          <option value="answer" disabled={learning.completionSuggested}>回答学习问题</option><option value="ask">临时追问</option><option value="chat">普通对话</option>
+        </select>
+        <details className="unified-learning-actions"><summary>学习操作</summary>
+          {[['hint', '提示'], ['remediate', '补课'], ['retry', '重答'], ['skip', '跳过'], ['pause', '暂停'], ['finish', '结束']].map(([action, label]) => <button type="button" key={action} disabled={learning.busyTasks[activeTaskId]} onClick={() => learning.act(activeTask, action)}>{label}</button>)}
+        </details>
+      </>}
+    </div>
+    {intentChoice?.taskId === activeTaskId && <div className="unified-intent-choice" role="group" aria-label="选择分析重点">
+      <span>{intentChoice.prompt}</span>{intentChoice.choices.map(choice => <button type="button" key={choice.skill.skillId} disabled={learning.busyTasks[activeTaskId]} onClick={() => sendMessage(intentChoice.text, choice.skill)}>{choice.label}</button>)}
+      <button type="button" onClick={() => setIntentChoice(null)}>取消</button>
+    </div>}
+    {composerError && <p className="unified-inline-error" role="alert">{composerError}<button type="button" onClick={() => setComposerError('')}>收起</button></p>}
+    {learning.error && !Object.values(learning.operations.records).some(record => record.taskId === activeTaskId && record.error === learning.error) && <details className="unified-inline-error"><summary>请求状态暂不可查询</summary>
+      <p>{learning.error}</p><button type="button" onClick={() => setShowProcessingHistory(true)}>查看处理记录</button><button type="button" onClick={() => learning.operations.refresh()}>查询状态</button></details>}
+  </>;
+
   return <div className="unified-app theme-app-shell">
     <header className="unified-header theme-panel theme-border">
       <div className="unified-brand"><img src="/貔貅紫白.png" alt="" /> <strong>貔貅</strong><span>学术工作台</span></div>
       <div className="unified-title" title={activeTask?.title || ''}>{activeTask?.title || '新任务'}</div>
-      <TaskDraftRecovery taskId={activeTaskId} refreshKey={workspace.error || localError} onCreateTask={createTask} />
+      <details className="unified-task-more"><summary>更多</summary>
+        <button type="button" onClick={() => setShowProcessingHistory(true)}>处理记录</button>
+        <TaskDraftRecovery taskId={activeTaskId} refreshKey={workspace.error || localError} onCreateTask={createTask} />
+      </details>
       {activeTask && <TaskRename key={activeTaskId} task={activeTask} onRename={title => updateTask(activeTaskId, { title })} />}
       <div className="unified-layout-actions" role="group" aria-label="布局">
         <button type="button" className={layout.mode === 'split' ? 'active' : ''} onClick={() => setMode('split')}>并排</button>
@@ -691,8 +947,11 @@ export default function UnifiedTaskApp() {
           if (compact) { setCompactNavigation(false); compactNavigationButton.current?.focus(); }
           else patchLayout({ navigation: !layout.navigation });
         }}
-          onSelectTask={id => { selectTask(id); setCompactNavigation(false); compactNavigationButton.current?.focus(); }} onCreateTask={async () => { await createTask({ title: '新任务' }); setCompactNavigation(false); setCompactPane('chat'); }} onOpenPaper={openPaper} onAddPaper={addPaper} onRemovePaper={removePaper} onOpenArtifact={openDocument}>
+          onSelectTask={id => { selectTask(id); setCompactNavigation(false); compactNavigationButton.current?.focus(); }} onCreateTask={async () => { await createTask({ title: '新任务' }); setCompactNavigation(false); setCompactPane('chat'); }} onOpenPaper={openPaper} onAddPaper={addPaper} onRemovePaper={removePaper} onOpenArtifact={openDocument}
+          learningRecords={savedLearningActivities} onOpenLearning={openLearningRecord} selectedDocumentId={selectedDocument?.id} selectedLearningId={selectedLearning?.id}>
           <button type="button" className="unified-upload" disabled={uploading} onClick={() => fileInputRef.current?.click()}><Upload size={15} />{uploading ? '上传中…' : '上传 PDF'}</button>
+          {(libraryError || materialError) && <p className="unified-inline-error" role="alert">{materialError || libraryError}</p>}
+          <button type="button" className="unified-record-entry" onClick={() => setShowProcessingHistory(true)}>处理记录</button>
           {focusedPaperId && <div className="unified-outline">
             <button type="button" onClick={() => setShowOutline((value) => !value)}>{showOutline ? <ChevronLeft size={13} /> : <ChevronRight size={13} />} 当前论文目录</button>
             {showOutline && <div>{outline.map((item) => <button type="button" key={item.id} style={{ paddingLeft: `${Math.max(0, item.level - 1) * 12 + 8}px` }} onClick={() => item.pageIndex != null && jumpToSource({ pdfId: focusedPaperId, pageIndex: item.pageIndex })}>{item.label}</button>)}{outline.length === 0 && <span>暂无目录</span>}</div>}
@@ -702,9 +961,10 @@ export default function UnifiedTaskApp() {
       <section className={`unified-reader ${!layout.reader ? 'unified-desktop-hidden' : ''}`} inert={compact && compactNavigation ? true : undefined} style={{ flexBasis: layout.chat ? `${layout.readerPercent}%` : '100%' }} aria-label="论文与成果">
         <div className="unified-pane-head">
           <BookOpen size={17} />
-          <strong>{preview ? preview.kind === 'research.report' ? '研究报告' : '已生成结果' : activeDocument ? activeDocument.title || '笔记' : focusedPaperId ? getPaperTitle(papers, focusedPaperId) : '阅读区'}</strong>
-          {(activeDocument || preview) && <button type="button" onClick={() => { goToPage(page.pageIndex); setSelectedDocument(null); setRecoveryPreview(null); }}>返回论文</button>}
-          {!activeDocument && !preview && paperView.url && <div className="unified-translation-modes" role="group" aria-label="翻译视图">
+          {activeDocument ? <DocumentTitle key={selectedDocumentKey} title={activeDocument.title} onRename={renameDocument} /> : <strong title={focusedPaperId ? getPaperTitle(papers, focusedPaperId) : ''}>{preview ? preview.kind === 'research.report' ? '研究报告' : '已生成结果' : activeLearning ? '学习记录' : focusedPaperId ? shortPaperTitle(papers, focusedPaperId) : '阅读区'}</strong>}
+          {(activeDocument || activeLearning || preview) && <button type="button" onClick={returnToPaper}>返回论文</button>}
+          {!activeDocument && !activeLearning && !preview && returnContent && <button type="button" onClick={() => { if (!reopenContent(returnContent)) setLocalError('这份记录已移动或暂不可用。'); }}>返回记录</button>}
+          {!activeDocument && !activeLearning && !preview && paperView.url && <div className="unified-translation-modes" role="group" aria-label="翻译视图">
             <button type="button" className={translationMode === 'original' ? 'active' : ''} onClick={() => setTranslationMode('original')}>原文</button>
             <button type="button" title={['success','partial'].includes(currentTranslationPage?.status) ? '查看已保存译文' : currentTranslationPage?.status === 'error' ? '查看翻译状态，重试需手动操作' : '打开后翻译当前页'} className={translationMode === 'translation' ? 'active' : ''} onClick={() => setTranslationMode('translation')}>译文</button>
             <button type="button" title={['success','partial'].includes(currentTranslationPage?.status) ? '对照原文与已保存译文' : '对照原文并翻译当前页'} className={translationMode === 'parallel' ? 'active' : ''} onClick={() => setTranslationMode('parallel')}>对照</button>
@@ -712,13 +972,18 @@ export default function UnifiedTaskApp() {
           <button type="button" className="unified-pane-hide" onClick={() => patchLayout({ reader: false, chat: true, mode: 'chat' })} aria-label="收起阅读区"><PanelLeftClose size={16} /></button>
         </div>
         <div className="unified-reader-body">
-        {preview ? <div className="unified-document" aria-label="查看已生成结果">
-          {preview.kind !== 'research.report' && <div className="unified-document-toolbar"><button type="button" disabled={savingRecovery || (preview.paperIds || preview.result?.materialScope?.allowedPaperIds || []).some(id => !activeTask.paperIds.includes(id))} onClick={recoverResult}><Save size={15} /> {savingRecovery ? '正在保存…' : '保存为成果'}</button></div>}
-          <p>{preview.kind === 'research.report' ? '核对报告后，在对话中确认并保存结果。' : '保存完整结果，保留当前学习位置。'}</p>
+        {preview ? <div className="unified-document" ref={contentScrollRef} onScroll={saveContentPosition} aria-label="查看已生成结果">
+          {!['research.report', 'paper.overview'].includes(preview.kind) && <div className="unified-document-toolbar"><button type="button" disabled={savingRecovery || (preview.paperIds || preview.result?.materialScope?.allowedPaperIds || []).some(id => !activeTask.paperIds.includes(id))} onClick={recoverResult}><Save size={15} /> {savingRecovery ? '正在保存…' : '保存为成果'}</button></div>}
+          <p>{preview.kind === 'paper.overview' ? '论文概览' : preview.kind === 'research.report' ? '核对报告后，在对话中确认并保存结果。' : '保存完整结果，保留当前学习位置。'}</p>
           {(preview.paperIds || preview.result?.materialScope?.allowedPaperIds || []).some(id => !activeTask.paperIds.includes(id)) && <p role="status">请先恢复原请求材料，再保存成果。</p>}
           <CollapsedSources value={{ sources: preview.result?.sources || [] }} onJumpToSource={jumpToSource} />
           <div className="unified-document-preview"><MarkdownContent>{preview.result?.artifact?.text || preview.result?.message || preview.result?.reply}</MarkdownContent></div>
-        </div> : activeDocument ? <div className="unified-document">
+        </div> : activeLearning ? <div className="unified-document" ref={contentScrollRef} onScroll={saveContentPosition}>
+          <div className="unified-document-toolbar"><button type="button" onClick={() => locateLearning(activeLearning)}>定位原对话</button>
+            {currentLearning?.activityId === activeLearning.activityId && currentLearning.status === 'paused' && <button type="button" disabled={learning.busyTasks[activeTaskId]} onClick={async () => { await learning.act(activeTask, 'resume'); setCompactPane('chat'); }}>继续学习</button>}
+          </div>
+          <LearningRecordContent activity={activeLearning} papers={papers} />
+        </div> : activeDocument ? <div className="unified-document" ref={contentScrollRef} onScroll={saveContentPosition}>
           {(selectedDocument.baseText === null || normalizeNoteContent(activeDocument) !== selectedDocument.baseText) && <div role="alert">
             <p>笔记已有新版本，请核对后再保存。当前草稿已保留。</p>
             <details><summary>最新已保存正文</summary><MarkdownContent>{normalizeNoteContent(activeDocument)}</MarkdownContent></details>
@@ -737,6 +1002,7 @@ export default function UnifiedTaskApp() {
             {(documentEditing || documentDirty) && <button type="button" disabled={savingDocument || restoringDocument || movingDocument || !documentDirty} onClick={saveDocumentFromToolbar}><Save size={15} /> {savingDocument ? '保存中…' : '保存'}</button>}
             <button type="button" onClick={exportDocument}><FileDown size={15} /> 下载</button>
             <span className="unified-document-save-state" role="status">{savingDocument ? '正在保存' : documentDirty ? '未保存修改' : '已保存'}</span>
+            {(activeDocument.sourceMessageId || activeDocument.sourceRequestId || activeDocument.sourceResearchId || activeTask.messages.some(message => message.artifactId === (activeDocument.id || activeDocument.artifactId))) && <button type="button" onClick={() => locateDocument(activeDocument)}>定位原对话</button>}
           </div>
           <DocumentVersionHistory key={`${selectedDocument.taskId}/${selectedDocument.collection}/${selectedDocument.id ?? selectedDocument.index}`} document={activeDocument} onRestore={restoreDocument} disabled={savingDocument || movingDocument} />
           <DocumentOrganizer key={`organize/${documentDraftKey(selectedDocument)}`} document={activeDocument} taskId={activeTaskId} tasks={tasks}
@@ -759,8 +1025,8 @@ export default function UnifiedTaskApp() {
           <details className="unified-document-edit-preview"><summary>预览</summary><MarkdownContent>{documentDraft || '（空白正文）'}</MarkdownContent></details>
           </> : <article className="unified-document-body" aria-label="成果正文"><MarkdownContent>{documentDraft || '（空白正文）'}</MarkdownContent></article>}
         </div> : null}
-        <div className="unified-reader-paper" style={{ visibility: activeDocument || preview ? 'hidden' : 'visible', opacity: activeDocument || preview ? 0 : 1, pointerEvents: activeDocument || preview ? 'none' : undefined }}
-          aria-hidden={Boolean(activeDocument || preview)} inert={activeDocument || preview ? true : undefined}>
+        <div className="unified-reader-paper" style={{ visibility: activeDocument || activeLearning || preview ? 'hidden' : 'visible', opacity: activeDocument || activeLearning || preview ? 0 : 1, pointerEvents: activeDocument || activeLearning || preview ? 'none' : undefined }}
+          aria-hidden={Boolean(activeDocument || activeLearning || preview)} inert={activeDocument || activeLearning || preview ? true : undefined}>
         {paperView.error ? <div className="unified-empty" role="alert">{paperView.error}</div>
           : paperView.url ? <div className={`unified-reader-content unified-reader-content-${translationMode}`}>
             <div className="unified-pdf" aria-hidden={translationMode === 'translation'} inert={translationMode === 'translation' ? true : undefined}>
@@ -770,10 +1036,11 @@ export default function UnifiedTaskApp() {
                 {['failed', 'interrupted', 'degraded'].includes(paperView.deconstruct.processingStatus) && !paperView.deconstruct.questionReady && <button type="button" disabled={processingRequest} onClick={() => requestMaterialProcessing(false)}>重试解析</button>}
                 {paperView.deconstruct.aiAnalysisStatus === 'running' ? <span> · 正在生成概览…</span>
                   : paperView.deconstruct.questionReady && ['not_requested', 'failed', 'interrupted'].includes(paperView.deconstruct.aiAnalysisStatus) && <button type="button" disabled={processingRequest} onClick={() => requestMaterialProcessing(true)}>{paperView.deconstruct.aiAnalysisStatus === 'not_requested' ? '生成论文概览' : '重试论文概览'}</button>}
+                {paperView.deconstruct.aiAnalysisStatus === 'completed' && <button type="button" onClick={openPaperOverview}>查看论文概览</button>}
               </div>}
-              <PdfViewer key={paperView.id} fileUrl={paperView.url} pdfId={paperView.id} paperSkeleton={paperView.deconstruct?.paper_skeleton || null} theme={theme} parseStatus={paperView.deconstruct?.parseStatus || papers.find((paper) => paper.id === paperView.id)?.parseStatus || null} initialHighlights={paperView.highlights}
+              <PdfViewer key={`${activeTaskId}:${paperView.id}`} readingKey={`${activeTaskId}:${paperView.id}`} active={!activeDocument && !activeLearning && !preview && translationMode !== 'translation' && (compact ? compactPane === 'reader' && !compactNavigation : layout.reader)} fileUrl={paperView.url} pdfId={paperView.id} paperSkeleton={paperView.deconstruct?.paper_skeleton || null} theme={theme} parseStatus={paperView.deconstruct?.parseStatus || papers.find((paper) => paper.id === paperView.id)?.parseStatus || null} initialHighlights={paperView.highlights}
               onPageChange={next => {
-                if (!selectedDocumentRef.current && !recoveryPreviewRef.current) handlePdfPageChange(next);
+                if (!selectedDocumentRef.current && !selectedLearningRef.current && !recoveryPreviewRef.current) handlePdfPageChange(next);
                 else if (next.totalPages > 0) setPage(current => ({ ...current, totalPages: next.totalPages }));
               }}
               onPageTextExtracted={next => { if (!selectedDocumentRef.current && !recoveryPreviewRef.current) handlePageTextExtracted(next); }} onSelection={syncPdfSelection}
@@ -786,7 +1053,8 @@ export default function UnifiedTaskApp() {
               targetPageIndex={jump.pdfId === focusedPaperId && jump.taskId === activeTaskId ? jump.pageIndex : initialPaperPage} targetPageJumpToken={jump.token} focusedSourceAnchorId={jump.pdfId === focusedPaperId ? jump.anchorId : null} focusedSourceAnchorToken={jump.token} /></div>
             {translationMode !== 'original' && <div className="unified-translation"><TranslationPanel pdfId={paperView.id} fileUrl={paperView.url} pdfFileName={getPaperTitle(papers, paperView.id)} currentPage={page.pageIndex}
               pageData={currentTranslationPage?.status === 'translating' ? { ...currentTranslationPage, status: 'loading' } : currentTranslationPage}
-              onRetry={() => handleRetryTranslation(translationState)} onCaptureArtifact={captureTranslation} /></div>}
+              savedArtifactId={activeTask?.artifacts.find(item => item.pageIndex === page.pageIndex && item.paperIds?.length === 1 && item.paperIds[0] === focusedPaperId && (item.type === 'translation' || /译文/u.test(item.title || '')) && normalizeNoteContent(item) === currentTranslationPage?.translatedText)?.id}
+              onOpenArtifact={openArtifact} onRetry={() => handleRetryTranslation(translationState)} onCaptureArtifact={captureTranslation} /></div>}
           </div>
             : focusedPaperId ? <div className="unified-empty" role="status"><strong>正在打开论文…</strong></div>
             : <div className="unified-empty"><FilePlus2 size={32} />
@@ -806,60 +1074,39 @@ export default function UnifiedTaskApp() {
         patchLayout({ readerPercent });
       }} />}
       <section className={`unified-chat ${!layout.chat ? 'unified-desktop-hidden' : ''}`} inert={compact && compactNavigation ? true : undefined} style={{ flexBasis: layout.reader ? `${100 - layout.readerPercent}%` : '100%' }} aria-label="任务对话">
-        {activeTask && <ConversationExecution task={activeTask} records={learning.operations.records}
-          busy={Boolean(learning.busyTasks[activeTaskId])} onRetry={requestId => learning.operations.retry(activeTask, requestId)}
-          onSubmitSaved={requestId => learning.operations.submitSaved(activeTaskId, requestId)}
-          onRefresh={() => learning.operations.refresh()} onCancel={requestId => learning.operations.cancel(activeTaskId, requestId)}
-          onOpenResult={record => { setSelectedDocument(null); setRecoveryPreview(record); patchLayout({ reader: true }); }} />}
         <div className="unified-pane-head"><MessageSquare size={17} /><strong>对话</strong><span>{activeTask?.paperIds.length || 0} 篇材料</span><button type="button" className="unified-pane-hide" onClick={() => patchLayout({ chat: false, reader: true, mode: 'reader' })} aria-label="收起对话区"><PanelLeftClose size={16} /></button></div>
-        {activeTask && <ConversationResearch task={activeTask} research={research} onJumpToSource={jumpToSource}
-          onOpenReport={(run, result) => { setSelectedDocument(null); setRecoveryPreview({ taskId: activeTaskId,
-            requestId: run.researchId, kind: 'research.report', paperIds: run.paperIds,
-            result: { artifact: { text: sanitizeResearchReport(result.report) }, sources: (result.findings || []).flatMap(finding => finding.sources || []) } });
-            patchLayout({ reader: true }); }} />}
-        <LearningHistory key={activeTaskId} activities={savedLearningActivities} papers={papers} />
-        {research.starting && <p role="status">正在创建研究…</p>}
-        {learning.busyTasks[activeTaskId] && <div className="unified-learning-controls" role="status">
-          <span>{Object.values(learning.operations.records).some(item => item.taskId === activeTaskId && item.status === 'cancelling') ? '正在停止…' : '正在处理…'}</span>
-          <button type="button" onClick={() => learning.cancel(activeTaskId)}>停止处理</button>
-        </div>}
-        {activeTask?.activeActivity?.activityId && activeTask.activeActivity.status !== 'finished' && <div className="unified-learning-controls" aria-label="当前学习活动">
-          <span>{activeTask.activeActivity.mode === 'quiz' ? '自测' : '精读'} · {getPaperTitle(papers, activeTask.activeActivity.pdfId)}</span>
-          <button type="button" disabled={learning.busyTasks[activeTaskId]} onClick={() => learning.refresh(activeTask)}>刷新活动</button>
-          {activeTask.activeActivity.status === 'paused'
-            ? <button type="button" disabled={learning.busyTasks[activeTaskId]} onClick={() => learning.act(activeTask, 'resume')}>继续学习</button>
-            : <>
-              {learning.completionSuggested ? <span>本轮概念已核验，可结束或继续追问。</span> : <select aria-label="学习输入方式" disabled={learning.busyTasks[activeTaskId]} value={learning.inputMode} onChange={(event) => learning.setInputMode(event.target.value)}><option value="answer">回答当前问题</option><option value="ask">临时追问</option></select>}
-              {[['hint', '提示'], ['remediate', '补课'], ['retry', '重答'], ['skip', '跳过'], ['pause', '暂停']].map(([action, label]) => <button type="button" key={action} disabled={learning.busyTasks[activeTaskId]} onClick={() => learning.act(activeTask, action)}>{label}</button>)}
-            </>}
-          <button type="button" disabled={learning.busyTasks[activeTaskId]} onClick={() => learning.act(activeTask, 'finish')}>结束</button>
-          {learning.busyTasks[activeTaskId] && <span role="status">正在处理…</span>}
-          {!learning.completionSuggested && <p className="unified-learning-question">{activeTask.activeActivity.concepts?.find((concept) => concept.id === activeTask.activeActivity.currentConceptId)?.question}</p>}
-        </div>}
-        {intentChoice?.taskId === activeTaskId && <div className="unified-intent-choice" role="group" aria-label="选择分析重点">
-          <span>{intentChoice.prompt}</span>
-          {intentChoice.choices.map(choice => <button type="button" key={choice.skill.skillId} disabled={learning.busyTasks[activeTaskId]} onClick={() => sendMessage(intentChoice.text, choice.skill)}>{choice.label}</button>)}
-          <button type="button" onClick={() => setIntentChoice(null)}>取消</button>
-        </div>}
         {activeTask ? <ChatPanel key={activeTaskId} conversationId={activeTaskId}
           starterPrompts={activeTask.paperIds.length ? [
             { label: '带我读这篇', text: '/精读 帮我从研究问题与方法开始读这篇论文' },
             { label: '解释基础概念', text: '/补课 解释理解这篇论文需要的基础概念' },
             activeTask.paperIds.length > 1 ? { label: '比较论文', text: '/比较 这些论文的方法有什么共同点与差异？' } : { label: '检查我的理解', text: '/自测 帮我检查是否理解这篇论文的关键方法' },
           ] : [{ label: '解释一个概念', text: '我想了解的概念是：' }]}
-          materials={activeTask.paperIds.map(id => papers.find(paper => paper.id === id) || { id })} messages={activeTask.messages} onSendMessage={sendMessage} onDeleteMessage={deleteMessage} onSaveToNote={(index) => saveMessage(index)} onCaptureArtifact={(index) => saveMessage(index, true)} onOpenArtifact={id => {
-          const artifact = activeTask.artifacts.find(item => (item.id || item.artifactId) === id);
-          if (artifact) { openDocument(artifact, 'artifacts'); return; }
-          const owner = tasks.find(task => task.artifacts?.some(item => (item.id || item.artifactId) === id));
-          if (owner) { setRequestedDocument({ taskId: owner.id, id }); selectTask(owner.id); }
-          else setLocalError('成果已移出或任务列表有更新，请刷新后查看。');
-        }} onJumpToSource={jumpToSource} isLoading={Boolean(learning.busyTasks[activeTaskId])} contextLabel={activeTask.paperIds.length ? `任务材料 ${activeTask.paperIds.length} 篇${focusedPaperId ? ` · 正在阅读 ${getPaperTitle(papers, focusedPaperId)}` : ''}` : '当前任务暂无论文'} enableSkills />
+          materials={activeTask.paperIds.map(id => papers.find(paper => paper.id === id) || { id })} messages={timeline}
+          onSendMessage={sendMessage} onDeleteMessage={index => { const original = timeline[index]?.originalIndex; if (Number.isInteger(original)) return deleteMessage(original); }}
+          onSaveToNote={index => saveMessage(timeline[index]?.originalIndex, false)} onCaptureArtifact={index => saveMessage(timeline[index]?.originalIndex)}
+          onOpenArtifact={openArtifact} onJumpToSource={jumpToSource} onAbortChat={() => learning.cancel(activeTaskId)}
+          isLoading={Boolean(learning.busyTasks[activeTaskId])} showLoadingIndicator={false} enableSkills
+          renderMessageAfter={renderAfterMessage} currentActivity={currentActivityBar} composerContext={composerContext} focusMessage={focusMessage} onDraftChange={setComposerDraft} />
           : <div className="unified-empty"><p>创建任务后，即可围绕论文持续讨论。</p><button type="button" onClick={() => createTask({ title: '新任务' })}>新任务</button></div>}
       </section>
       {!layout.reader && <button type="button" className="unified-restore unified-restore-reader" onClick={() => patchLayout({ reader: true, mode: 'split' })} aria-label="展开阅读区"><PanelLeftOpen size={16} />阅读</button>}
       {!layout.chat && <button type="button" className="unified-restore unified-restore-chat" onClick={() => patchLayout({ chat: true, mode: 'split' })} aria-label="展开对话区"><MessageSquare size={16} />对话</button>}
     </main>
-    {(workspace.error || learning.error || research.error || libraryError || localError) && <div className="unified-error" role="alert">{localError || workspace.error || libraryError || learning.error || research.error}</div>}
+    {(workspace.error || localError) && <div className="unified-error" role="alert">{localError || workspace.error}</div>}
+    {showProcessingHistory && activeTask && <div className="task-draft-backdrop" onKeyDown={event => { if (event.key === 'Escape') setShowProcessingHistory(false); }}>
+      <div ref={processingDialogRef} className="task-draft-dialog theme-panel" role="dialog" aria-modal="true" aria-label="处理记录" onKeyDown={event => {
+        if (event.key !== 'Tab') return;
+        const controls = [...event.currentTarget.querySelectorAll('button:not(:disabled), input, select, textarea, summary, a[href]')].filter(node => !node.closest('details:not([open])') || node.tagName === 'SUMMARY');
+        const first = controls[0], last = controls[controls.length - 1];
+        if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
+        else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
+      }}>
+        <div className="unified-document-toolbar"><strong>处理记录</strong><button type="button" onClick={() => setShowProcessingHistory(false)}>关闭</button></div>
+        <TaskProcessingHistory task={activeTask} records={learning.operations.records} research={research}
+          queryError={learning.error && !Object.values(learning.operations.records).some(record => record.taskId === activeTaskId && record.error === learning.error) ? learning.error : ''}
+          onLocateOperation={locateOperation} onLocateResearch={locateResearch} onOpenReport={openReport} {...operationControls} />
+      </div>
+    </div>}
     <input ref={fileInputRef} type="file" accept="application/pdf,.pdf" hidden onChange={(event) => handleUpload(event.target.files?.[0])} />
   </div>;
 }
