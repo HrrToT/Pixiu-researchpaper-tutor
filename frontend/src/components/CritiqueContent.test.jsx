@@ -28,8 +28,9 @@ describe('grouped critique presentation', () => {
     expect(screen.queryByText('次要核查目标')).not.toBeInTheDocument();
     fireEvent.click(screen.getByText('查看依据 · 1 处'));
     expect(screen.getByText(source.text)).toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: '跳回原文 p.4' }));
+    fireEvent.click(screen.getByRole('button', { name: '跳回原文 · 按摘录定位' }));
     expect(jump).toHaveBeenCalledWith(expect.objectContaining({ pdfId: 'p1', pageIndex: 3, sourceId: 's1' }));
+    expect(jump).toHaveBeenCalledWith(expect.objectContaining({ literalQuote: source.text }));
     fireEvent.click(screen.getAllByRole('button', { name: '追问这一点' })[1]);
     expect(follow).toHaveBeenCalledWith(fixture, 'i2');
     expect(send).not.toHaveBeenCalled();

@@ -15,6 +15,12 @@ def test_excerpts_are_bounded_literal_and_stable_with_source_identity():
     assert all(8 <= len(quote) <= 300 and quote in body for quote in first.values())
 
 
+def test_complete_long_sentence_keeps_its_final_scope_in_one_literal_selection():
+    body = 'By removing high-degree SHs, ' + 'the method demonstrates the benefits of soft targets ' * 5 + 'with negligible changes in specular reflection.'
+    assert 300 < len(body) < 600
+    assert body in excerpt_catalog('long', body).values()
+
+
 @pytest.mark.parametrize('mutation', ['foreign_source', 'unknown_id', 'rewritten_text'])
 def test_excerpt_selection_cannot_change_or_cross_source(mutation):
     _, sources, catalog = prepare_quote_sources([{'sourceId':'s','pdfId':'A','text':'The method preserves continuous original wording.'}])

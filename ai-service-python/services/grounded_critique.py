@@ -80,6 +80,11 @@ def check_critique_payload(payload, sources, catalog, *, allow_partial=False, re
             if not isinstance(raw.get('summary'), str) or not raw['summary'].strip() or len(raw['summary']) > 320:
                 raise ValueError('批判结论正文无效。')
             selected = resolve_references(raw, catalog, require_selection=True)
+            if any(len(ref['quote']) > 100 and re.match(r'[A-Za-z]', ref['quote'])
+                   and not ref['quote'].startswith(('Table row ', 'Equation:'))
+                   and not re.search(r'[.!?。！？]$', ref['quote'])
+                   for ref in selected['references']):
+                raise ValueError('批判引用的长正文摘录缺少完整句尾，请选择完整依据。')
             numeric_text = raw['summary']
             for identifier in re.findall(r'\bExp(?:eriment)?\s*#?\s*[1-9]\d*(?:\s*(?:→|->)\s*#?\s*[1-9]\d*)?', numeric_text, re.I):
                 flat = re.sub(r'\s+', '', identifier)
@@ -189,7 +194,7 @@ def synthesize_critique(question, sources, *, allow_partial=False):
 分析有依据的设计假设、质量代价、比较条件和适用边界。不要因检索没覆盖就说论文未提供实验、数据、基线或证明。
 不能以本次检索缺口断言论文缺失；尚不能判断的内容放pendingQuestions，只写需核查主题，不预设答案。论文明确承认的限制按上述authorLimitation合同准确引用。
 每个observation或inference必须选择能支持整句结论的原文摘录；每条text中的[16位标识]是quoteId。
-引用必须覆盖整句中每个方法步骤、比较对象、实验条件和强度；不能只引用结果行就推断基线对比，也不能用“Quantizing all attributes to”“Some attributes (e.g.,”等未完整表达含义的半句支持质量损失。一个摘录不足时选择完整上下文和其他独立依据，无法补齐则删除该判断或列待核查。
+引用必须覆盖整句中每个方法步骤、比较对象、实验条件和强度；不能只引用结果行就推断基线对比，也不能用“Quantizing all attributes to”“Some attributes (e.g.,”等未完整表达含义的半句支持质量损失。长正文必须选择有完整句尾的摘录，不使用跨页被截断的句子；无法补齐则选择其他独立判断或列待核查。指标改善不能概括为恢复到基线，提到指标必须在本对象引用中包含该指标及相应比较。
 用户没有要求具体数值时，优先引用表格说明中的完整定性结果，不附numericBindings。用户问质量保持的条件时，可分别回答作者在消融中报告的蒸馏补偿结果及量化属性选择的代价，逐项限定为该实验的结果；不要将这些步骤写成所有场景下的必要条件。
 “几乎不变”“必要条件”“会出现”等强度须严格对应实验范围：指标接近不等于无损，消融中改善不等于所有场景的必要条件。说明作者测试条件下的观察和使用建议，不将个别消融提升到普遍因果结论。
 references只写quoteId，系统唯一恢复来源和原文，不重复填写sourceId，不重新抄写或改写quote；涉及多处依据则选择多个摘录。

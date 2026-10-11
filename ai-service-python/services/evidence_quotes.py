@@ -43,6 +43,9 @@ def excerpt_catalog(source_id, body):
         units = [block] if block.startswith('Table row ') else re.split(r'(?<=[。！？])|(?<=[.!?])\s+(?=[A-Z])', block)
         for unit in units:
             rest = unit.strip()
+            if len(rest) <= 600 and re.search(r'[.!?。！？]$', rest):
+                excerpts.append(rest)
+                continue
             while len(rest) > 300:
                 end = rest.rfind(' ', 8, 301)
                 if end < 8:

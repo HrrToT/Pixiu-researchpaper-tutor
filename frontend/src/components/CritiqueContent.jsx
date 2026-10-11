@@ -23,7 +23,7 @@ export function critiqueIssues(value, target = 'chat') {
       const sourceId = typeof reference === 'string' ? reference : reference.sourceId;
       // The source lookup owns excerpt and paper identity, never the user's prose.
       const source = lookup.get(sourceId);
-      return source ? [{ ...source, text: reference.quote || source.text }] : [];
+      return source ? [{ ...source, text: reference.quote || source.text, literalQuote: reference.quote }] : [];
     }));
     const unique = [...new Map(references.map(source => [JSON.stringify([source.sourceId || source.id, source.text]), source])).values()];
     return [{ ...issue, text: blocks.get(id),
@@ -68,7 +68,8 @@ function IssueActions({ issue, label = '', onJumpToSource, onFollowup }) {
     {issue.sources.length > 0 && <details><summary className="reader-chat-citation">{label} 查看依据 · {issue.sources.length} 处</summary>
       {issue.sources.flatMap(source => normalizeEvidenceSources([source])).map((source, index) => <div key={`${source.sourceId}:${index}`} className="theme-card-soft rounded-lg p-3 text-xs leading-5">
         <MarkdownContent>{source.text}</MarkdownContent>
-        <SourceChip source={source} onJumpToSource={onJumpToSource} />
+        <SourceChip source={{ ...source, literalQuote: issue.sources[index]?.literalQuote,
+          ...(issue.sources[index]?.literalQuote ? { canJumpToSource: true, locationLabel: '· 按摘录定位' } : {}) }} onJumpToSource={onJumpToSource} />
       </div>)}
     </details>}
     {onFollowup && <button type="button" className="reader-chat-citation" onClick={() => onFollowup(issue.id)}>{label} 追问这一点</button>}

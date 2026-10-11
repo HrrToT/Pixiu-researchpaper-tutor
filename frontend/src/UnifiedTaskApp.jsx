@@ -8,6 +8,7 @@ import ChatPanel from './components/ChatPanel';
 import MarkdownContent from './components/MarkdownContent';
 import CritiqueContent from './components/CritiqueContent';
 import { critiqueVersion, critiqueMessageIsCurrent, resolveCritiqueFollowup } from './utils/critiqueFollowup';
+import { locatePdfQuote } from './utils/pdfQuoteLocator';
 import PdfViewer from './components/PdfViewer';
 import TaskNavigation from './components/TaskNavigation';
 import DocumentVersionHistory from './components/DocumentVersionHistory';
@@ -797,13 +798,28 @@ export default function UnifiedTaskApp() {
   const jumpToSource = async (source) => {
     const targetPaperId = source?.pdfId || source?.sourcePdfId || activeTask?.focusedPaperId;
     if (!targetPaperId || !activeTask?.paperIds.includes(targetPaperId)) return false;
+    let index = Number(source.pageIndex ?? source.sourcePageIndex);
+    if (source.literalQuote) {
+      try {
+        const db = await initDB();
+        const { record } = await loadTaskMaterial(db, taskWorkspaceApi, activeTaskId, targetPaperId);
+        index = await locatePdfQuote(record.blob, targetPaperId, source.literalQuote);
+        if (index === null) {
+          setLocalError('这处摘录暂不能唯一定位到PDF页面，原摘录仍可查看。');
+          return false;
+        }
+      } catch {
+        setLocalError('原文定位暂不可用，原摘录仍可查看。');
+        return false;
+      }
+    }
+    if (activeTaskIdRef.current !== activeTaskId) return false;
     setSelectedDocument(null);
     setSelectedLearning(null);
     setRecoveryPreview(null);
     storeView(activeTaskId, { kind: 'paper' });
     if (targetPaperId !== activeTask.focusedPaperId) await openPaper(targetPaperId);
     if (activeTaskIdRef.current !== activeTaskId) return false;
-    const index = Number(source.pageIndex ?? source.sourcePageIndex);
     if (Number.isInteger(index) && index >= 0) setJump({ taskId: activeTaskId, pdfId: targetPaperId, pageIndex: index, token: Date.now(), anchorId: source.sourceAnchorId || source.sectionId || null });
     patchLayout({ reader: true });
     return true;
