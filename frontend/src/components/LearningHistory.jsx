@@ -2,6 +2,7 @@ import React from 'react';
 import { ChevronRight } from 'lucide-react';
 import MarkdownContent from './MarkdownContent';
 import { questionTopic } from '../utils/documentPresentation';
+import { searchExcerpt } from '../utils/navigationSearch';
 import './TaskNavigationDetails.css';
 
 const statusLabel = activity => ({ finished: '已结束', paused: '已暂停', running: '进行中', active: '进行中' }[activity.status]
@@ -53,7 +54,7 @@ export default function LearningHistory({ activities = [], papers = [], onOpen, 
         const recordTitle = topic && !topic.includes(shortTitle) ? `${shortTitle}：${topic}` : topic || shortTitle;
         if (onOpen) return <button type="button" className="unified-learning-record-toggle unified-learning-record-link" key={activity.activityId || activity.id || index}
           aria-current={selectedLearningId && selectedLearningId === (activity.activityId || activity.id) ? 'page' : undefined} aria-label={`${mode} · ${recordTitle} · ${statusLabel(activity)}`} title={`${mode} · ${recordTitle} · ${statusLabel(activity)}`} onClick={() => onOpen(activity)}>
-          <span className="unified-learning-record-mode">{mode}</span><span className="unified-learning-record-title">{recordTitle}</span><span className="unified-learning-record-status">{statusLabel(activity)}</span>
+          <span className="unified-learning-record-mode">{mode}</span><span className="unified-learning-record-title">{recordTitle}{searchActive && <span className="workbench-search-excerpt">{searchExcerpt(learningSearchText(activity, papers), searchQuery)}</span>}</span><span className="unified-learning-record-status">{statusLabel(activity)}</span>
         </button>;
         return <details className="unified-learning-record" key={activity.activityId || activity.id || index}>
           <summary className="unified-learning-record-toggle">

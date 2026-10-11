@@ -58,3 +58,13 @@
 @media(pointer:coarse) { .workbench-paper-row .workbench-popover-trigger { opacity:1; } .workbench-record-link,.task-document-link { min-height:44px; } }
 .workbench-upload-state { display:flex; justify-content:space-between; align-items:center; padding:4px 12px 10px; font-size:12px; color:var(--text-secondary); }
 .workbench-upload-state button { padding:5px 7px; border-radius:6px; }
+.workbench-search-scope { flex:none; padding:0 12px 8px; margin:0; font-size:11px; line-height:1.5; color:var(--text-muted); }
+.workbench-navigation-search > button { flex:none; display:grid; place-items:center; border-radius:4px; min-width:24px; min-height:24px; }
+.workbench-search-excerpt { display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; white-space:normal; overflow-wrap:anywhere; font-size:11px; line-height:1.5; color:var(--text-muted); margin-top:3px; }
+.workbench-search-excerpt:empty { display:none; }
+.workbench-recent-visits { flex:none; padding:0 12px 10px; border-bottom:1px solid var(--border-subtle); }
+.workbench-recent-visits h2,.workbench-recent-visits p { font-size:11px; color:var(--text-muted); margin:0 0 4px; }
+.workbench-recent-visits button { display:flex; align-items:center; gap:8px; width:100%; min-height:32px; padding:5px; text-align:left; border-radius:5px; font-size:12px; }
+.workbench-recent-visits button:hover { background:var(--accent-soft); }
+.workbench-recent-visits button span { flex:1; min-width:0; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
+.workbench-recent-visits small { flex:none; color:var(--text-muted); font-size:10px; }

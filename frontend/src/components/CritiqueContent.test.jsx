@@ -1,6 +1,6 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { beforeEach, describe, it, expect, vi } from 'vitest';
 import ChatPanel from './ChatPanel';
 import CritiqueContent from './CritiqueContent';
 
@@ -18,6 +18,23 @@ const fixture = {
 };
 
 describe('grouped critique presentation', () => {
+  beforeEach(() => localStorage.clear());
+  it('shows paper identity and restores expanded evidence when returning to the same document', async () => {
+    const props = { value: fixture, text: '', target: 'artifact', papers: [{ id: 'p1', title: 'LightGaussian: Compression' }], storageKey: 'task:a:document:a1' };
+    const view = render(<CritiqueContent {...props} />);
+    const details = screen.getByText('查看依据 · 1 处').closest('details');
+    fireEvent.click(screen.getByText('查看依据 · 1 处'));
+    await waitFor(() => expect(localStorage.getItem('task:a:document:a1:issue:i1')).toBe('open'));
+    expect(screen.getByText('LightGaussian')).toBeInTheDocument();
+    expect(screen.queryByText(/p\.4/u)).not.toBeInTheDocument();
+    expect(details).toHaveAttribute('open');
+    view.unmount();
+    const returned = render(<CritiqueContent {...props} />);
+    expect(screen.getByText('查看依据 · 1 处').closest('details')).toHaveAttribute('open');
+    returned.unmount();
+    render(<CritiqueContent {...props} storageKey="task:b:document:a1" />);
+    expect(screen.getByText('查看依据 · 1 处').closest('details')).not.toHaveAttribute('open');
+  });
   it('preserves both complete chat points beyond the old preview budget and expands source locally', () => {
     const jump = vi.fn();
     const send = vi.fn();

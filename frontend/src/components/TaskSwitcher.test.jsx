@@ -3,6 +3,19 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { expect, it, vi } from 'vitest';
 import TaskSwitcher from './TaskSwitcher';
 
+it('closes after an actual parent task change while the selection promise completes', async () => {
+  const tasks = [{ id: 'first', title: '任务一' }, { id: 'second', title: '任务二' }];
+  function Wrapper() {
+    const [active, setActive] = React.useState(tasks[0]);
+    return <TaskSwitcher tasks={tasks} activeTask={active} onSelect={async id => { setActive(tasks.find(task => task.id === id)); await Promise.resolve(); }} />;
+  }
+  render(<Wrapper />);
+  fireEvent.click(screen.getByRole('button', { name: '切换任务' }));
+  fireEvent.click(screen.getByRole('button', { name: '任务二' }));
+  await waitFor(() => expect(screen.queryByRole('dialog', { name: '切换任务' })).not.toBeInTheDocument());
+  expect(screen.getByRole('button', { name: '切换任务' })).toHaveTextContent('任务二');
+});
+
 it('finds archived tasks, restores explicitly and never deletes them', async () => {
   const tasks = [{ id: 'a', title: '进行中' }, { id: 'b', title: '已读论文', archived: true }];
   const select = vi.fn(), archive = vi.fn();

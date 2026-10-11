@@ -205,6 +205,13 @@ describe('unified task conversation wiring', () => {
     expect(state.writes).toBe(0);
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
   });
+  it('opens a new blank note directly in edit mode and creates it once', async () => {
+    render(<UnifiedTaskApp />);
+    fireEvent.click(screen.getByRole('button', { name: '新建笔记' }));
+    expect(await screen.findByRole('textbox', { name: '编辑笔记与成果' })).toHaveValue('');
+    expect(state.task.notes).toHaveLength(1);
+    expect(screen.getByRole('button', { name: '完成编辑' })).toBeInTheDocument();
+  });
 
   it('rejects insufficient comparison materials without adding a fake answer to the conversation', async () => {
     state.task.paperIds = ['a'];

@@ -18,6 +18,9 @@ describe('temporary workbench adaptation', () => {
     const preference = { ...DEFAULT_WORKBENCH_LAYOUT, navPinnedMedium: true, navWidth: 320 };
     expect(workbenchLayout(preference, 1280).navigation).toBe(true);
     expect(workbenchLayout(preference, 1100).drawer).toBe(true);
+    const tight = workbenchLayout(preference, 1152);
+    expect(tight.minPercent).toBeLessThanOrEqual(tight.maxPercent);
+    expect(tight.available * tight.readerPercent / 100).toBeGreaterThanOrEqual(479.99);
     expect(workbenchLayout(preference, 900).compact).toBe(true);
     expect(workbenchLayout(preference, 390).compact).toBe(true);
   });

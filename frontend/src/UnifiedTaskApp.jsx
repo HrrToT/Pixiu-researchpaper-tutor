@@ -216,6 +216,16 @@ export default function UnifiedTaskApp() {
   const paperLoadToken = useRef(0);
   const materialProcessingRef = useRef(new Map());
   const focusedPaperId = activeTask?.focusedPaperId || null;
+  useEffect(() => {
+    try { setShowOutline(localStorage.getItem(`pixiu-outline:${JSON.stringify([activeTaskId, focusedPaperId])}`) === 'open'); }
+    catch { setShowOutline(false); }
+  }, [activeTaskId, focusedPaperId]);
+  const toggleOutline = () => {
+    const next = !showOutline;
+    setShowOutline(next);
+    try { localStorage.setItem(`pixiu-outline:${JSON.stringify([activeTaskId, focusedPaperId])}`, next ? 'open' : 'closed'); }
+    catch { /* The in-page directory remains usable without preferences. */ }
+  };
   const translationKey = JSON.stringify([activeTaskId, focusedPaperId]);
   const translationReady = translationReadyKey === translationKey;
   const initialPaperPage = useMemo(() => {
@@ -424,12 +434,13 @@ export default function UnifiedTaskApp() {
   };
   const handleUpload = async (file) => {
     if (!file || uploadController.current) return;
-    if (!file.name.toLowerCase().endsWith('.pdf')) { setLocalError('请选择 PDF 论文文件。'); return; }
+    if (!file.name.toLowerCase().endsWith('.pdf')) { setMaterialError('请选择 PDF 论文文件。'); return; }
     const controller = new AbortController();
     uploadController.current = controller;
-    setUploading(true); setLocalError('');
+    let targetTaskId = activeTaskId;
+    setUploading(true); setMaterialError('');
     try {
-      const targetTaskId = activeTaskId || (await createTask({ title: file.name.replace(/\.pdf$/i, '') })).id;
+      targetTaskId = activeTaskId || (await createTask({ title: file.name.replace(/\.pdf$/i, '') })).id;
       if (controller.signal.aborted) return;
       const response = await apiService.uploadTaskMaterial(file, controller.signal);
       if (controller.signal.aborted) return;
@@ -445,11 +456,12 @@ export default function UnifiedTaskApp() {
       ]);
       await transaction.done;
       setPapers((current) => [entry, ...current.filter((paper) => paper.id !== entry.id)]);
+      if (controller.signal.aborted) return;
       await updateTask(targetTaskId, (task) => ({ paperIds: [...new Set([...task.paperIds, entry.id])], focusedPaperId: entry.id }));
       if (!activeTaskIdRef.current || activeTaskIdRef.current === targetTaskId) {
         selectTask(targetTaskId); patchLayout({ reader: true });
       }
-    } catch (error) { if (!controller.signal.aborted) setLocalError(error?.response?.data?.message || '论文上传未完成，请重新选择文件再试；当前任务和输入草稿仍保留。'); }
+    } catch (error) { if (!controller.signal.aborted && activeTaskIdRef.current === targetTaskId) setMaterialError(error?.response?.data?.message || '论文上传未完成，请重新选择文件再试；当前任务和输入草稿仍保留。'); }
     finally { if (uploadController.current === controller) { uploadController.current = null; setUploading(false); if (fileInputRef.current) fileInputRef.current.value = ''; } }
   };
   const cancelUpload = () => {
@@ -620,14 +632,14 @@ export default function UnifiedTaskApp() {
     const taskId = activeTaskId;
     const note = { id: makeId(), title: '未命名笔记', titleOrigin: 'user', type: 'note', text: '', paperIds: [], createdAt: new Date().toISOString(), versions: [] };
     await updateTask(taskId, task => ({ notes: [...task.notes, note] }));
-    if (activeTaskIdRef.current === taskId) { openDocument(note, 'notes'); setDocumentEditing(true); }
+    if (activeTaskIdRef.current === taskId) openDocument(note, 'notes', true);
   };
-  const openDocument = (item, collection = null) => {
+  const openDocument = (item, collection = null, startEditing = false) => {
     setRecoveryPreview(null);
     setSelectedLearning(null); setLocalError('');
     const source = collection || (activeTask?.artifacts.includes(item) ? 'artifacts' : 'notes');
     const index = activeTask?.[source]?.findIndex((candidate) => candidate === item || (item.id && candidate.id === item.id)) ?? -1;
-    const selection = { taskId: activeTaskId, collection: source, index, id: item.id || item.artifactId };
+    const selection = { taskId: activeTaskId, collection: source, index, id: item.id || item.artifactId, startEditing };
     let draft = null;
     selection.baseText = normalizeNoteContent(item);
     try {
@@ -723,7 +735,7 @@ export default function UnifiedTaskApp() {
     if (contentPositionKey) { try { localStorage.setItem(contentPositionKey, String(event.currentTarget.scrollTop)); } catch { /* Optional preference. */ } }
   };
   const originalDocumentPage = documentOriginalPage(activeDocument);
-  useEffect(() => { setDocumentEditing(false); }, [selectedDocumentKey]);
+  useEffect(() => { setDocumentEditing(Boolean(selectedDocument?.startEditing)); }, [selectedDocumentKey, selectedDocument?.startEditing]);
   const documentDirty = !!activeDocument && documentDraft !== normalizeNoteContent(activeDocument);
   const saveDocumentFromToolbar = async () => {
     if (savingDocument) return;
@@ -859,6 +871,7 @@ export default function UnifiedTaskApp() {
       }
     }
     if (activeTaskIdRef.current !== activeTaskId) return false;
+    setLocalError('');
     setSelectedDocument(null);
     setSelectedLearning(null);
     setRecoveryPreview(null);
@@ -1112,7 +1125,7 @@ export default function UnifiedTaskApp() {
           learningRecords={savedLearningActivities} onOpenLearning={openLearningRecord} selectedDocumentId={selectedDocument?.id} selectedLearningId={selectedLearning?.id}>
           {(libraryError || materialError) && <p className="unified-inline-error" role="alert">{materialError || libraryError}</p>}
           {focusedPaperId && <div className="unified-outline">
-            <button type="button" onClick={() => setShowOutline((value) => !value)}>{showOutline ? <ChevronLeft size={13} /> : <ChevronRight size={13} />} 当前论文目录</button>
+            <button type="button" aria-expanded={showOutline} onClick={toggleOutline}>{showOutline ? <ChevronLeft size={13} /> : <ChevronRight size={13} />} 当前论文目录</button>
             {showOutline && <div>{outline.map((item) => <button type="button" key={item.id} style={{ paddingLeft: `${Math.max(0, item.level - 1) * 12 + 8}px` }} onClick={() => item.pageIndex != null && jumpToSource({ pdfId: focusedPaperId, pageIndex: item.pageIndex })}>{item.label}</button>)}{outline.length === 0 && <span>暂无目录</span>}</div>}
           </div>}
         </TaskNavigation>
@@ -1137,6 +1150,7 @@ export default function UnifiedTaskApp() {
           </div>}
           <button type="button" className="unified-pane-hide" onClick={() => patchLayout({ reader: false, chat: true, mode: 'chat' })} aria-label="收起阅读区"><PanelLeftClose size={16} /></button>
         </div>
+        {localError && <div className="unified-inline-error workbench-reader-error" role="alert"><span>{localError}</span><button type="button" onClick={() => setLocalError('')}>收起</button></div>}
         {narrowParallel && !activeDocument && !activeLearning && !preview && paperView.url && <div className="unified-translation-narrow" role="group" aria-label="同页对照">
           <span>空间较窄，切换同页原文与译文</span>
           <button type="button" aria-pressed={narrowTranslationSide === 'original'} onClick={() => setNarrowTranslationSide('original')}>看原文</button>
@@ -1148,7 +1162,7 @@ export default function UnifiedTaskApp() {
           {!['research.report', 'paper.overview'].includes(preview.kind) && <div className="unified-document-toolbar"><button type="button" disabled={savingRecovery || (preview.paperIds || preview.result?.materialScope?.allowedPaperIds || []).some(id => !activeTask.paperIds.includes(id))} onClick={recoverResult}><Save size={15} /> {savingRecovery ? '正在保存…' : '保存为成果'}</button></div>}
           <p>{preview.kind === 'paper.overview' ? '论文概览' : preview.kind === 'research.report' ? '核对报告后，在对话中确认并保存结果。' : '保存完整结果，保留当前学习位置。'}</p>
           {(preview.paperIds || preview.result?.materialScope?.allowedPaperIds || []).some(id => !activeTask.paperIds.includes(id)) && <p role="status">请先恢复原请求材料，再保存成果。</p>}
-          <div className="unified-document-preview"><CritiqueContent value={preview.result || {}} target="artifact"
+          <div className="unified-document-preview"><CritiqueContent key={contentPositionKey} value={preview.result || {}} target="artifact" papers={papers} storageKey={contentPositionKey}
             text={preview.result?.artifact?.text || preview.result?.message || preview.result?.reply} onJumpToSource={jumpToSource} /></div>
           <CollapsedSources key={contentPositionKey} storageKey={`${contentPositionKey}:sources`} value={{ sources: preview.result?.sources || [] }} onJumpToSource={jumpToSource} />
         </div> : activeLearning ? <div className="unified-document" ref={contentScrollRef} onScroll={saveContentPosition}>
@@ -1180,7 +1194,7 @@ export default function UnifiedTaskApp() {
             catch { setLocalError('本地草稿保存失败，请先保存或下载当前正文'); }
           }} />
           <details className="unified-document-edit-preview"><summary>预览</summary><MarkdownContent>{documentDraft || '（空白正文）'}</MarkdownContent></details>
-          </> : <article className="unified-document-body" aria-label="成果正文"><CritiqueContent
+          </> : <article className="unified-document-body" aria-label="成果正文"><CritiqueContent key={contentPositionKey} papers={papers} storageKey={contentPositionKey}
             value={{ ...activeDocument, edited: activeDocument.edited || documentDirty }} target="artifact"
             text={documentDraft || '（空白正文）'} onJumpToSource={jumpToSource}
             onFollowup={issueId => selectCritiqueIssue(activeDocument.id || activeDocument.artifactId, issueId)} /></article>}
@@ -1220,9 +1234,10 @@ export default function UnifiedTaskApp() {
               savedArtifactId={activeTask?.artifacts.find(item => item.pageIndex === page.pageIndex && item.paperIds?.length === 1 && item.paperIds[0] === focusedPaperId && (item.type === 'translation' || /译文/u.test(item.title || '')) && normalizeNoteContent(item) === currentTranslationPage?.translatedText)?.id}
               onOpenArtifact={openArtifact} onRetry={() => handleRetryTranslation(translationState)} onCaptureArtifact={captureTranslation} /></div>}
           </div>
-            : focusedPaperId ? <div className="unified-empty" role="status"><strong>正在打开论文…</strong></div>
+            : focusedPaperId ? <div className="workbench-reader-loading" role="status" aria-label="正在打开论文"><span className="workbench-loading-title" /><span /><span /><span /><p>正在打开论文…</p></div>
+            : workspace.ready === false ? <div className="workbench-reader-loading" role="status" aria-label="正在读取任务"><span className="workbench-loading-title" /><span /><span /><span /><p>正在读取任务…</p></div>
             : <div className="unified-empty"><FilePlus2 size={32} />
-              <strong>{workspace.ready === false ? '正在读取任务…' : activeTask?.paperIds.length ? '选择一篇论文开始阅读' : '从一篇论文开始'}</strong>
+              <strong>{activeTask?.paperIds.length ? '选择一篇论文开始阅读' : '从一篇论文开始'}</strong>
               <p>{activeTask?.paperIds.length ? '在左侧选择论文；对话可以使用当前任务的全部材料。' : '上传 PDF 后即可阅读，再从对话中精读、补课或自测。'}</p>
               {uploading ? <p role="status">正在上传论文，请稍候…</p> : <button type="button" disabled={workspace.ready === false} onClick={() => activeTask?.paperIds.length ? openPaper(activeTask.paperIds[0]) : fileInputRef.current?.click()}>{activeTask?.paperIds.length ? '打开任务论文' : '上传论文'}</button>}
             </div>}
@@ -1230,7 +1245,7 @@ export default function UnifiedTaskApp() {
         </div>
         </div>
       </section>
-      {layout.reader && layout.chat && !compact && <div className="unified-resizer" role="separator" tabIndex={drawerOpen ? -1 : 0} inert={drawerOpen ? true : undefined} aria-orientation="vertical" aria-label="调整阅读与对话宽度" aria-valuemin={Math.ceil(viewLayout.minPercent)} aria-valuemax={Math.floor(viewLayout.maxPercent)} aria-valuenow={Math.round(viewLayout.readerPercent)} onPointerDown={startResize} onKeyDown={event => {
+      {layout.reader && layout.chat && !compact && <div className="unified-resizer" role="separator" tabIndex={drawerOpen ? -1 : 0} inert={drawerOpen ? true : undefined} aria-orientation="vertical" aria-label="调整阅读与对话宽度" aria-valuemin={Number(viewLayout.minPercent.toFixed(2))} aria-valuemax={Number(viewLayout.maxPercent.toFixed(2))} aria-valuenow={Number(viewLayout.readerPercent.toFixed(2))} onPointerDown={startResize} onKeyDown={event => {
         const steps = { ArrowLeft: -2, ArrowRight: 2 };
         if (!(event.key in steps) && !['Home', 'End'].includes(event.key)) return;
         event.preventDefault();
@@ -1257,7 +1272,7 @@ export default function UnifiedTaskApp() {
       {!layout.reader && <button type="button" className="unified-restore unified-restore-reader" onClick={() => patchLayout({ reader: true, mode: 'split' })} aria-label="展开阅读区"><PanelLeftOpen size={16} />阅读</button>}
       {!layout.chat && <button type="button" className="unified-restore unified-restore-chat" onClick={() => patchLayout({ chat: true, mode: 'split' })} aria-label="展开对话区"><MessageSquare size={16} />对话</button>}
     </main>
-    {(workspace.error || localError) && <div className="unified-error" role="alert">{localError || workspace.error}</div>}
+    {workspace.error && <div className="unified-error" role="alert">{workspace.error}</div>}
     {showProcessingHistory && activeTask && <div className="task-draft-backdrop" onKeyDown={event => { if (event.key === 'Escape') setShowProcessingHistory(false); }}>
       <div ref={processingDialogRef} className="task-draft-dialog theme-panel" role="dialog" aria-modal="true" aria-label="处理记录" onKeyDown={event => {
         if (event.key !== 'Tab') return;

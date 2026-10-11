@@ -1,6 +1,6 @@
 import React from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import TaskNavigation from './TaskNavigation';
 
 const props = () => ({ tasks: [{ id: 'a', title: '任务 A' }, { id: 'b', title: '任务 B' }],
@@ -8,6 +8,7 @@ const props = () => ({ tasks: [{ id: 'a', title: '任务 A' }, { id: 'b', title:
   papers: [{ id: 'p1', title: '论文一' }, { id: 'p2', title: '论文二' }], collapsed: false,
   onToggle: vi.fn(), onSelectTask: vi.fn(), onCreateTask: vi.fn(), onOpenPaper: vi.fn(),
   onAddPaper: vi.fn(), onRemovePaper: vi.fn(), onOpenArtifact: vi.fn() });
+beforeEach(() => localStorage.clear());
 
 describe('task navigation', () => {
   it('distinguishes opening a paper from adding a task material', async () => {
@@ -63,14 +64,54 @@ describe('task navigation', () => {
 
 it('searches document bodies and opens the retained document with the current identity', () => {
   const handlers=props();
-  const document={id:'report',type:'research',title:'实验报告',text:'正文中的消融对比'};
+  const document={id:'report',type:'research',title:'实验报告',text:'**正文**中的消融对比'};
   render(<TaskNavigation {...handlers} activeTask={{...handlers.activeTask,artifacts:[document]}} selectedDocumentId="report"/>);
   fireEvent.change(screen.getByRole('textbox',{name:'搜索材料与记录'}),{target:{value:'消融对比'}});
   const link=screen.getByRole('button',{name:'实验报告 · 报告'});
+  expect(link).toHaveTextContent('正文中的消融对比');
   expect(link).toHaveAttribute('aria-current','page');
+  expect(screen.queryByRole('button',{name:'论文一'})).not.toBeInTheDocument();
   fireEvent.click(link);
   expect(handlers.onOpenArtifact).toHaveBeenCalledWith(document);
-  expect(screen.queryByRole('button',{name:'论文一'})).not.toBeInTheDocument();
+  expect(screen.getByRole('textbox',{name:'搜索材料与记录'})).toHaveValue('');
+  expect(screen.getByRole('button',{name:'论文一'})).toBeInTheDocument();
+});
+
+it('retains recent visits across reloads, excludes unavailable records and keeps tasks separate', () => {
+  const handlers = props(), document = { id: 'note', title: '实验条件', text: '固定预算' };
+  const task = { ...handlers.activeTask, notes: [document] };
+  const first = render(<TaskNavigation {...handlers} activeTask={task} />);
+  fireEvent.click(screen.getByRole('button', { name: '实验条件 · 笔记' }));
+  first.unmount();
+  const second = render(<TaskNavigation {...handlers} activeTask={task} />);
+  fireEvent.focus(screen.getByRole('textbox', { name: '搜索材料与记录' }));
+  const recent = screen.getByRole('region', { name: '最近访问' });
+  expect(recent).toHaveTextContent('实验条件');
+  fireEvent.click(recent.querySelector('button'));
+  expect(handlers.onOpenArtifact).toHaveBeenLastCalledWith(document);
+  expect(screen.queryByRole('region', { name: '最近访问' })).not.toBeInTheDocument();
+  second.rerender(<TaskNavigation {...handlers} activeTask={{ ...task, notes: [] }} />);
+  fireEvent.focus(screen.getByRole('textbox', { name: '搜索材料与记录' }));
+  expect(screen.getByRole('region', { name: '最近访问' })).not.toHaveTextContent('实验条件');
+  second.rerender(<TaskNavigation {...handlers} activeTask={{ ...task, id: 'b' }} />);
+  fireEvent.focus(screen.getByRole('textbox', { name: '搜索材料与记录' }));
+  expect(screen.getByRole('region', { name: '最近访问' })).not.toHaveTextContent('实验条件');
+});
+
+it('restores the list position when search closes without switching the reading object', () => {
+  const handlers = props();
+  render(<TaskNavigation {...handlers} />);
+  const papers = screen.getByRole('region', { name: '论文与材料列表' }).querySelector('.workbench-paper-list');
+  const records = screen.getByRole('region', { name: '笔记与成果列表' }).querySelector('.workbench-record-list');
+  papers.scrollTop = 37; records.scrollTop = 120;
+  const input = screen.getByRole('textbox', { name: '搜索材料与记录' });
+  fireEvent.change(input, { target: { value: '没有命中' } });
+  papers.scrollTop = 0; records.scrollTop = 0;
+  fireEvent.keyDown(input, { key: 'Escape' });
+  expect(input).toHaveValue('');
+  expect(papers.scrollTop).toBe(37); expect(records.scrollTop).toBe(120);
+  expect(handlers.onOpenPaper).not.toHaveBeenCalled();
+  expect(handlers.onOpenArtifact).not.toHaveBeenCalled();
 });
 
 it('opens matching learning questions, answers and feedback independently of document filters', () => {

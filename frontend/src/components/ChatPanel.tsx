@@ -159,6 +159,7 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
   const messageId = (message: ChatMessage, index: number) => String(message.id ?? `index-${index}`);
   const scrollKey = `pixiu-conversation-scroll:${JSON.stringify(conversationId || 'legacy')}`;
   const jumpToMessage = (index: number) => {
+    atBottomRef.current = false;
     messageElements.current.get(index)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
     const message = messages[index];
     if (message) setHighlightedMessage(messageId(message, index));
@@ -405,7 +406,7 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
               ref={node => { if (node) messageElements.current.set(index, node); else messageElements.current.delete(index); }} className={`reader-chat-answer group ${isSystem ? 'reader-chat-answer-system' : ''} ${highlightedMessage === messageId(message, index) ? 'chat-message-highlight' : ''}`}>
               {isSystem && <div className="reader-chat-answer-head">系统提示</div>}
               {message.artifactIsCurrent === false && <p className="chat-history-version">此回答对应旧版本。<button type="button" onClick={() => onOpenArtifact?.(message.artifactId!)}>查看当前成果</button></p>}
-              <CritiqueContent value={message} text={displayedContent} className={getMessageMarkdownClassName(message.role, 'chat')}
+              <CritiqueContent value={message} text={displayedContent} papers={materials} className={getMessageMarkdownClassName(message.role, 'chat')}
                 onJumpToSource={onJumpToSource} onFollowup={message.artifactId && message.artifactIsCurrent !== false && onFollowupIssue ? (issueId: string) => onFollowupIssue(message, issueId) : undefined} />
               {!grouped && <EvidenceReferences references={references} onJumpToSource={onJumpToSource} />}
               {sourceFooter}

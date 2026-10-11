@@ -1,7 +1,8 @@
-import React, { useRef, useState } from 'react';
-import { Plus, ChevronLeft, ChevronRight, FileText, NotebookPen, Search, SlidersHorizontal } from 'lucide-react';
+import React, { useLayoutEffect, useRef, useState } from 'react';
+import { Plus, ChevronLeft, ChevronRight, FileText, NotebookPen, Search, SlidersHorizontal, X } from 'lucide-react';
 import { taskDocumentNavigation } from '../utils/taskDocumentNavigation';
 import { documentKind, paperShortName } from '../utils/documentPresentation';
+import { searchExcerpt, readNavigationVisits, rememberNavigationVisit } from '../utils/navigationSearch';
 import WorkbenchPopover from './WorkbenchPopover';
 import LearningHistory, { learningSearchText } from './LearningHistory';
 import './TaskNavigationDetails.css';
@@ -11,15 +12,39 @@ export default function TaskNavigation({ tasks, activeTask, papers, collapsed, o
   onUpload, uploading = false, onCancelUpload, taskControlsInHeader = false, learningRecords = [], onOpenLearning, selectedDocumentId, selectedLearningId, children }) {
   const [adding, setAdding] = useState(false);
   const [query, setQuery] = useState('');
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [visits, setVisits] = useState(() => ({ taskId: activeTask?.id, items: readNavigationVisits(activeTask?.id) }));
   const [type, setType] = useState('all');
   const [papersOpen, setPapersOpen] = useState(true);
   const [removedPaper, setRemovedPaper] = useState(null);
+  const paperListRef = useRef(null), recordListRef = useRef(null), searchScroll = useRef(null);
+  useLayoutEffect(() => { searchScroll.current = null; }, [activeTask?.id]);
+  const searching = Boolean(query.trim());
+  useLayoutEffect(() => {
+    if (!searching && searchScroll.current) {
+      if (paperListRef.current) paperListRef.current.scrollTop = searchScroll.current.papers;
+      if (recordListRef.current) recordListRef.current.scrollTop = searchScroll.current.records;
+      searchScroll.current = null;
+    }
+  }, [searching]);
+  const changeQuery = value => {
+    if (!query.trim() && value.trim()) searchScroll.current = { papers: paperListRef.current?.scrollTop || 0, records: recordListRef.current?.scrollTop || 0 };
+    setQuery(value);
+  };
   const operationEpoch = useRef(0), busyRef = useRef(false);
-  React.useEffect(() => { operationEpoch.current += 1; busyRef.current = false; setBusy(false); setError(''); setQuery(''); setType('all'); setAdding(false); setRemovedPaper(null); }, [activeTask?.id]);
+  React.useEffect(() => { operationEpoch.current += 1; busyRef.current = false; setBusy(false); setError(''); setQuery(''); setSearchOpen(false); setType('all'); setAdding(false); setRemovedPaper(null); }, [activeTask?.id]);
+  React.useEffect(() => {
+    const taskId = activeTask?.id;
+    const visit = selectedDocumentId ? { kind: 'document', id: selectedDocumentId }
+      : selectedLearningId ? { kind: 'learning', id: selectedLearningId }
+        : activeTask?.focusedPaperId ? { kind: 'paper', id: activeTask.focusedPaperId } : null;
+    setVisits({ taskId, items: visit ? rememberNavigationVisit(taskId, visit) : readNavigationVisits(taskId) });
+  }, [activeTask?.id, activeTask?.focusedPaperId, selectedDocumentId, selectedLearningId]);
   const matches = value => !query.trim() || `${value || ''}`.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase());
   const kindOf = item => documentKind(item, activeTask);
   const typeLabels = { note: '笔记', research: '报告', compare: '比较', translation: '译文', critique: '批判', background: '补课', compose: '组合', artifact: '成果' };
-  const documents = taskDocumentNavigation(activeTask, papers).filter(({ item, title }) => matches([
+  const allDocuments = taskDocumentNavigation(activeTask, papers);
+  const documents = allDocuments.filter(({ item, title }) => matches([
     title, item.title, item.text, item.content, item.summary, item.aiInterpretation, item.source?.text,
   ].filter(Boolean).join(' ')) && (type === 'all' || kindOf(item) === type));
   const paperIds = (activeTask?.paperIds || []).filter(id => {
@@ -27,6 +52,20 @@ export default function TaskNavigation({ tasks, activeTask, papers, collapsed, o
     return matches(`${paper?.title || ''} ${paper?.filename || ''} ${id}`);
   });
   const matchingLearning = learningRecords.filter(activity => matches(learningSearchText(activity, papers)));
+  const remember = (kind, id) => setVisits({ taskId: activeTask?.id, items: rememberNavigationVisit(activeTask?.id, { kind, id }) });
+  const finishSearch = () => { changeQuery(''); setSearchOpen(false); };
+  const recentItems = (visits.taskId === activeTask?.id ? visits.items : []).flatMap(visit => {
+    if (visit.kind === 'paper') {
+      const paper = papers.find(item => item.id === visit.id && activeTask?.paperIds.includes(item.id));
+      return paper ? [{ ...visit, title: paperShortName(paper), label: '论文', open: () => onOpenPaper(paper.id) }] : [];
+    }
+    if (visit.kind === 'document') {
+      const entry = allDocuments.find(({ item }) => (item.id || item.artifactId) === visit.id);
+      return entry ? [{ ...visit, title: entry.title, label: typeLabels[kindOf(entry.item)] || '成果', open: () => onOpenArtifact(entry.item) }] : [];
+    }
+    const activity = learningRecords.find(item => (item.activityId || item.id) === visit.id);
+    return activity && onOpenLearning ? [{ ...visit, title: activity.title || activity.goal || `${paperShortName(papers.find(paper => paper.id === (activity.pdfId || activity.primaryPaperId)), '论文')} · 学习记录`, label: '学习', open: () => onOpenLearning(activity) }] : [];
+  }).slice(0, 4);
   const noSearchResults = query.trim() && !paperIds.length && !documents.length && !matchingLearning.length;
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
@@ -50,7 +89,9 @@ export default function TaskNavigation({ tasks, activeTask, papers, collapsed, o
     </div>
     {!taskControlsInHeader && <button type="button" disabled={busy} onClick={() => perform(() => onCreateTask())} className="theme-text-primary m-2 flex items-center gap-2 rounded p-2 text-sm" aria-label="新任务"><Plus size={16} />{!collapsed && '新任务'}</button>}
     {!collapsed && <>
-      <div className="workbench-navigation-search"><Search size={15} /><input className="unified-nav-search" aria-label="搜索材料与记录" placeholder="搜索本任务" value={query} onChange={event => setQuery(event.target.value)} /></div>
+      <div className="workbench-navigation-search"><Search size={15} /><input className="unified-nav-search" aria-label="搜索材料与记录" placeholder="搜索本任务" value={query} onFocus={() => setSearchOpen(true)} onKeyDown={event => { if (event.key === 'Escape') { event.stopPropagation(); finishSearch(); } }} onChange={event => { setSearchOpen(true); changeQuery(event.target.value); }} />{(searchOpen || searching) && <button type="button" aria-label="结束导航搜索" onClick={finishSearch}><X size={14} /></button>}</div>
+      {searching && <p className="workbench-search-scope">搜索本任务已加载的材料名称、成果与学习记录</p>}
+      {searchOpen && !searching && <section className="workbench-recent-visits" aria-label="最近访问"><h2>最近访问</h2>{recentItems.length ? recentItems.map(item => <button type="button" key={`${item.kind}:${item.id}`} onClick={() => { remember(item.kind, item.id); finishSearch(); item.open(); }}><span>{item.title}</span><small>{item.label}</small></button>) : <p>打开过的材料与记录会出现在这里。</p>}</section>}
       {uploading && <div className="workbench-upload-state" role="status"><span>正在上传…</span>{onCancelUpload && <button type="button" onClick={onCancelUpload}>取消上传</button>}</div>}
       {error && <p role="alert" className="mb-3 text-sm text-red-600">{error}</p>}
       <div className={`workbench-navigation-lists ${!papersOpen && !query ? 'papers-collapsed' : ''}`}>
@@ -60,11 +101,11 @@ export default function TaskNavigation({ tasks, activeTask, papers, collapsed, o
           {close => <><button type="button" disabled={uploading} onClick={() => { onUpload(); close(); }}>{uploading ? '上传中…' : '上传 PDF'}</button><button type="button" disabled={!activeTask} onClick={() => { setAdding(value => !value); setPapersOpen(true); close(); }}>选择已有论文</button></>}
         </WorkbenchPopover> : <button type="button" disabled={!activeTask} onClick={() => setAdding(!adding)} aria-label="添加已有论文"><Plus size={16} /></button>}
       </div>
-      {(papersOpen || query) && <div className="workbench-paper-list">
+      {(papersOpen || query) && <div ref={paperListRef} className="workbench-paper-list">
       {paperIds.map((id) => {
         const paper = papers.find((item) => item.id === id);
         return <div key={id} className="workbench-paper-row">
-          <button type="button" title={paper?.title || paper?.filename || id} aria-current={!selectedDocumentId && !selectedLearningId && activeTask.focusedPaperId === id ? 'page' : undefined} onClick={() => onOpenPaper(id)} className="workbench-record-link theme-text-primary"><FileText size={15} /><span>{paperShortName(paper, id)}</span></button>
+          <button type="button" title={paper?.title || paper?.filename || id} aria-current={!selectedDocumentId && !selectedLearningId && activeTask.focusedPaperId === id ? 'page' : undefined} onClick={() => { remember('paper', id); finishSearch(); onOpenPaper(id); }} className="workbench-record-link theme-text-primary"><FileText size={15} /><span>{paperShortName(paper, id)}</span></button>
           <WorkbenchPopover label={`论文操作：${paper?.title || paper?.filename || id}`}>
             {close => <><p className="workbench-menu-caption">移出当前任务，保留论文文件。</p><button type="button" disabled={busy} aria-label={`移出任务：${paper?.title || paper?.filename || id}`} onClick={() => perform(async isCurrent => { await onRemovePaper(id); if (isCurrent()) { setRemovedPaper({ id, title: paperShortName(paper, id) }); close(); } })}>移出任务</button></>}
           </WorkbenchPopover>
@@ -85,10 +126,10 @@ export default function TaskNavigation({ tasks, activeTask, papers, collapsed, o
         <option value="all">全部成果</option><option value="note">笔记</option><option value="research">研究报告</option><option value="compare">论文比较</option><option value="translation">译文</option><option value="critique">批判阅读</option><option value="background">补课</option><option value="compose">组合成果</option>
       </select></label></WorkbenchPopover></div></div>
       {type !== 'all' && <button type="button" className="workbench-filter-state" onClick={() => setType('all')}>{typeLabels[type] || '筛选'} · 清除筛选</button>}
-      <div className="workbench-record-list">
-      {documents.map(({ item, title, detail, index }) => <button type="button" aria-current={selectedDocumentId && selectedDocumentId === (item.id || item.artifactId) ? 'page' : undefined} key={item.id || item.artifactId || index} aria-label={[title, typeLabels[kindOf(item)] || '成果', detail].filter(Boolean).join(' · ')} title={[title, detail].filter(Boolean).join('\n')} onClick={() => onOpenArtifact(item)} className="task-document-link theme-text-primary flex w-full items-center gap-2 rounded py-2 text-left text-sm"><NotebookPen size={15} className="shrink-0" /><span className="task-document-text min-w-0 flex-1"><span className="block truncate">{title}</span>{detail && <span className="theme-text-muted block truncate text-xs">{detail}</span>}</span><span className="task-document-type theme-text-muted">{typeLabels[kindOf(item)] || '成果'}</span></button>)}
+      <div ref={recordListRef} className="workbench-record-list">
+      {documents.map(({ item, title, detail, index }) => <button type="button" aria-current={selectedDocumentId && selectedDocumentId === (item.id || item.artifactId) ? 'page' : undefined} key={item.id || item.artifactId || index} aria-label={[title, typeLabels[kindOf(item)] || '成果', detail].filter(Boolean).join(' · ')} title={[title, detail].filter(Boolean).join('\n')} onClick={() => { remember('document', item.id || item.artifactId); finishSearch(); onOpenArtifact(item); }} className="task-document-link theme-text-primary flex w-full items-center gap-2 rounded py-2 text-left text-sm"><NotebookPen size={15} className="shrink-0" /><span className="task-document-text min-w-0 flex-1"><span className="block truncate">{title}</span>{detail && <span className="theme-text-muted block truncate text-xs">{detail}</span>}{searching && <span className="workbench-search-excerpt">{searchExcerpt([item.text, item.content, item.summary, item.aiInterpretation, item.source?.text].filter(Boolean).join(' '), query)}</span>}</span><span className="task-document-type theme-text-muted">{typeLabels[kindOf(item)] || '成果'}</span></button>)}
       {!documents.length && <p className="theme-text-muted text-xs">{query || type !== 'all' ? '没有匹配的成果' : '保存的内容会出现在这里'}</p>}
-      <LearningHistory key={activeTask?.id} activities={matchingLearning} papers={papers} onOpen={onOpenLearning} searchActive={Boolean(query.trim())} searchQuery={query.trim()} selectedLearningId={selectedLearningId} />
+      <LearningHistory key={activeTask?.id} activities={matchingLearning} papers={papers} onOpen={onOpenLearning && (activity => { remember('learning', activity.activityId || activity.id); finishSearch(); onOpenLearning(activity); })} searchActive={Boolean(query.trim())} searchQuery={query.trim()} selectedLearningId={selectedLearningId} />
       {noSearchResults && <p role="status" className="task-navigation-empty theme-text-muted">没有匹配的论文、成果或学习记录。请换个关键词，或调整成果类型。</p>}
 
       </div></section></div>

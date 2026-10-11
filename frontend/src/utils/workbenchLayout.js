@@ -10,8 +10,8 @@ export function workbenchLayout(preference, width, compact = width < 1100) {
   const drawer = compact || (medium && (!preference.navPinnedMedium || !canPinNavigation));
   const navigation = !drawer && preference.navigation;
   const available = Math.max(1, width - (navigation ? navWidth + 6 : compact ? 0 : 48) - 6);
-  const minPercent = Math.ceil(Math.max(32, 480 / available * 100));
-  const maxPercent = Math.floor(Math.min(72, (available - 340) / available * 100));
+  const minPercent = Math.max(32, 480 / available * 100);
+  const maxPercent = Math.min(72, (available - 340) / available * 100);
   return { compact, drawer, navigation, navWidth, available, canPinNavigation,
     minPercent, maxPercent, readerPercent: compact ? preference.readerPercent : clamp(preference.readerPercent, minPercent, maxPercent) };
 }
