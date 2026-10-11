@@ -48,6 +48,7 @@ import { resolveNamedTaskPapers } from './utils/namedTaskPapers';
 import { createEmptyTranslationState, normalizeTranslationState } from './utils/translationState';
 import { usePageTranslation } from './hooks/usePageTranslation';
 import './UnifiedTaskApp.css';
+import './WorkbenchTheme.css';
 
 const LAYOUT_KEY = 'pixiu-unified-layout-v1';
 const COMPACT_PANE_KEY = 'pixiu-compact-pane-v1';
@@ -887,7 +888,9 @@ export default function UnifiedTaskApp() {
   const timeline = useMemo(() => conversationTimeline(activeTask, learning.operations.records).map(message => {
     const sourceId = activeTask?.messages[message.originalIndex]?.id || message.id || `legacy-message:${message.originalIndex}`;
     const saved = [...(activeTask?.artifacts || []), ...(activeTask?.notes || [])].find(item => item.sourceMessageId === sourceId);
-    return { ...message, id: message.id ?? `legacy-message:${message.originalIndex}`, ...(saved ? { artifactId: saved.id || saved.artifactId } : {}) };
+    const linked = saved || activeTask?.artifacts?.find(item => (item.id || item.artifactId) === message.artifactId);
+    return { ...message, id: message.id ?? `legacy-message:${message.originalIndex}`, ...(saved ? { artifactId: saved.id || saved.artifactId } : {}),
+      ...(linked?.critique?.schemaVersion === 2 && message.critique ? { artifactIsCurrent: critiqueMessageIsCurrent(linked, message) } : {}) };
   }), [activeTask, learning.operations.records]);
   const locateMessage = message => {
     if (!message) { setComposerError('未找到原对话，请尝试搜索相关问题。'); return; }
@@ -976,7 +979,7 @@ export default function UnifiedTaskApp() {
   }
   const composerContext = <>
     <div className="unified-composer-context">
-      <span title={activeTask?.paperIds.map(id => getPaperTitle(papers, id)).join('\n')}>任务材料 {activeTask?.paperIds.length || 0} 篇{focusedPaperId ? ` · 当前 ${shortPaperTitle(papers, focusedPaperId)}` : ''}</span>
+      {focusedPaperId && <span title={getPaperTitle(papers, focusedPaperId)}>当前论文：{shortPaperTitle(papers, focusedPaperId)}</span>}
       {draftPrimaryPaperId && <span>主要参考 {shortPaperTitle(papers, draftPrimaryPaperId)}</span>}
       {critiqueSelection?.taskId === activeTaskId && <span>{critiqueSelection.followup.regenerate ? '重新核查' : '追问'} {critiqueSelection.title || '批判成果'} · 保存于 {critiqueSelection.followup.version}
         <button type="button" onClick={() => setCritiqueSelection(null)}>取消追问关联</button></span>}
@@ -1109,7 +1112,7 @@ export default function UnifiedTaskApp() {
             text={documentDraft || '（空白正文）'} onJumpToSource={jumpToSource}
             onFollowup={issueId => selectCritiqueIssue(activeDocument.id || activeDocument.artifactId, issueId)} /></article>}
           {(activeDocument.critique?.schemaVersion !== 2 || activeDocument.edited) && <CollapsedSources key={contentPositionKey} storageKey={`${contentPositionKey}:sources`} value={activeDocument} onJumpToSource={jumpToSource} />}
-          {originalDocumentPage && activeTask.paperIds.includes(originalDocumentPage.pdfId) &&
+          {activeDocument.critique?.schemaVersion !== 2 && originalDocumentPage && activeTask.paperIds.includes(originalDocumentPage.pdfId) &&
             <DocumentOriginalPage key={selectedDocumentKey} taskId={activeTaskId} source={originalDocumentPage}
               title={documentDisplayTitle(activeDocument, activeTask, papers)} text={documentDraft} paperTitle={getPaperTitle(papers, originalDocumentPage.pdfId)} />}
         </div> : null}
@@ -1162,8 +1165,8 @@ export default function UnifiedTaskApp() {
         patchLayout({ readerPercent });
       }} />}
       <section className={`unified-chat ${!layout.chat ? 'unified-desktop-hidden' : ''}`} inert={compact && compactNavigation ? true : undefined} style={{ flexBasis: layout.reader ? `${100 - layout.readerPercent}%` : '100%' }} aria-label="任务对话">
-        <div className="unified-pane-head"><MessageSquare size={17} /><strong>对话</strong><span>{activeTask?.paperIds.length || 0} 篇材料</span><button type="button" className="unified-pane-hide" onClick={() => patchLayout({ chat: false, reader: true, mode: 'reader' })} aria-label="收起对话区"><PanelLeftClose size={16} /></button></div>
         {activeTask ? <ChatPanel key={activeTaskId} conversationId={activeTaskId}
+          showHeader onCollapse={() => patchLayout({ chat: false, reader: true, mode: 'reader' })}
           starterPrompts={activeTask.paperIds.length ? [
             { label: '带我读这篇', text: '/精读 帮我从研究问题与方法开始读这篇论文' },
             { label: '解释基础概念', text: '/补课 解释理解这篇论文需要的基础概念' },

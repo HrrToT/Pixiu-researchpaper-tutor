@@ -1,5 +1,5 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { ChevronDown, ChevronUp, FileText, Link2, Plus, Send, Trash2, X } from 'lucide-react';
+import { ChevronDown, ChevronUp, Copy, FileText, Link2, MessageSquare, PanelLeftClose, Plus, Search, Send, Trash2, X } from 'lucide-react';
 
 import './ChatPanelInteraction.css';
 
@@ -8,6 +8,7 @@ import CritiqueContent, { hasGroupedCritique } from './CritiqueContent';
 import { getMessageMarkdownClassName } from './MessageMarkdownRenderer';
 import SourceList from './SourceCitation.jsx';
 import CollapsedSources from './CollapsedSources';
+import WorkbenchPopover from './WorkbenchPopover';
 import { normalizeSentenceReferences } from './evidenceCitationModel.ts';
 import { getSkillSuggestions, parseSkillCommand, resolveConversationSkill } from '../utils/conversationSkills';
 import { artifactChatPreview } from '../utils/artifactChatPreview';
@@ -29,6 +30,7 @@ interface ChatJumpSource {
 interface ChatMessage {
   critique?: unknown;
   artifactId?: string;
+  artifactIsCurrent?: boolean;
   synthetic?: boolean;
   id?: string | number;
   role: 'user' | 'ai';
@@ -69,6 +71,8 @@ interface ChatPanelProps {
   historyContent?: React.ReactNode;
   composerContext?: React.ReactNode;
   currentActivity?: React.ReactNode;
+  showHeader?: boolean;
+  onCollapse?: () => void;
   focusMessage?: { id?: string | number; index?: number; token: number };
   starterPrompts?: Array<{ label: string; text: string }>;
 }
@@ -127,7 +131,7 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
   materials = [],
   conversationId,
   starterPrompts = [],
-  renderMessageAfter, historyContent, composerContext, currentActivity, focusMessage,
+  renderMessageAfter, historyContent, composerContext, currentActivity, focusMessage, showHeader = false, onCollapse,
 }) => {
   const [inputValue, setInputValue, draftError, clearInput] = useConversationDraft(conversationId);
   useEffect(() => { onDraftChange?.(inputValue); }, [inputValue, onDraftChange]);
@@ -141,6 +145,11 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
   const messageElements = useRef(new Map<number, HTMLElement>());
   const [hasNewResults, setHasNewResults] = useState(false);
   const [search, setSearch] = useState('');
+  const [searchOpen, setSearchOpen] = useState(false);
+  const searchInput = useRef<HTMLInputElement | null>(null), searchTrigger = useRef<HTMLButtonElement | null>(null);
+  useEffect(() => { if (searchOpen) searchInput.current?.focus(); }, [searchOpen]);
+  const [copiedMessage, setCopiedMessage] = useState<string | null>(null);
+  const [copyError, setCopyError] = useState('');
   const [saveStates, setSaveStates] = useState<Record<string, 'saving' | 'saved' | 'error'>>({});
   const savePending = useRef(new Set<string>());
   const latestDraft = useRef(inputValue);
@@ -179,6 +188,7 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
     atBottomRef.current = scroller.scrollHeight - scroller.scrollTop - scroller.clientHeight < 48;
     setHasNewResults(false);
     setSearch('');
+    setSearchOpen(false);
     setShowFunctions(false);
     return () => {
       try { sessionStorage.setItem(scrollKey, String(scroller.scrollTop)); } catch { /* preserve in-page navigation */ }
@@ -268,11 +278,15 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
     setInputValue(event.target.value);
     const textarea = event.target;
     textarea.style.height = 'auto';
-    textarea.style.height = `${Math.min(textarea.scrollHeight, 120)}px`;
+    textarea.style.height = `${Math.min(textarea.scrollHeight, 192)}px`;
   };
 
   const renderMessageActions = (message: ChatMessage, index: number): React.ReactNode => message.synthetic ? null : (
     <div className="reader-chat-message-actions">
+      <button type="button" className="reader-chat-action" aria-label={message.role === 'ai' ? '复制回答' : '复制消息'} title="复制内容" onClick={async () => {
+        try { await navigator.clipboard.writeText(message.content); setCopiedMessage(messageId(message, index)); setCopyError(''); }
+        catch { setCopyError('未能复制，请选择正文复制。'); }
+      }}><Copy size={13} />{copiedMessage === messageId(message, index) && '已复制'}</button>
       <button
         type="button"
         onClick={() => {
@@ -306,8 +320,15 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
 
   return (
     <div className="reader-chat-shell">
-      <div className="chat-history-search">
-        <input aria-label="搜索对话" placeholder="搜索对话" value={search} onChange={event => setSearch(event.target.value)} />
+      <div className={showHeader ? 'unified-pane-head chat-panel-heading' : 'chat-history-tools'}>
+        {showHeader && <><MessageSquare size={17} /><strong>对话</strong></>}
+        <button ref={searchTrigger} type="button" aria-label="查找对话" title="查找对话" aria-expanded={searchOpen} onClick={() => { setSearchOpen(value => !value); setSearch(''); }}><Search size={16} /></button>
+        {onCollapse && <button type="button" className="unified-pane-hide" onClick={onCollapse} aria-label="收起对话区"><PanelLeftClose size={16} /></button>}
+      </div>
+      {searchOpen && <div className="chat-history-search">
+        <input ref={searchInput} aria-label="搜索对话" placeholder="搜索对话" value={search} onChange={event => setSearch(event.target.value)} onKeyDown={event => {
+          if (event.key === 'Escape') { event.preventDefault(); setSearch(''); setSearchOpen(false); searchTrigger.current?.focus(); }
+        }} />
         {search && <button type="button" onClick={() => setSearch('')} aria-label="清除对话搜索"><X size={13} /></button>}
         {search.trim() && <div className="chat-search-results" role="group" aria-label="对话搜索结果">
           <span>{searchResults.length} 条匹配</span>
@@ -315,7 +336,7 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
             第 {index + 1} 条 · {message.content.slice(0, 70)}
           </button>)}
         </div>}
-      </div>
+      </div>}
       <div className="reader-chat-scroll" ref={scrollRef} onScroll={event => {
         const node = event.currentTarget;
         atBottomRef.current = node.scrollHeight - node.scrollTop - node.clientHeight < 48;
@@ -369,17 +390,15 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
           return (
             <article key={message.id ?? index} id={`chat-message-${encodeURIComponent(messageId(message, index))}`} data-message-id={messageId(message, index)} data-message-index={index}
               ref={node => { if (node) messageElements.current.set(index, node); else messageElements.current.delete(index); }} className={`reader-chat-answer group ${isSystem ? 'reader-chat-answer-system' : ''}`}>
-              <div className="reader-chat-answer-head">
-                <img src="/貔貅紫白.png" alt="" width="27" height="27" />
-                <span>{isSystem ? '系统提示' : '阅读助手'}</span>
-                {renderMessageActions(message, index)}
-              </div>
+              {isSystem && <div className="reader-chat-answer-head">系统提示</div>}
+              {message.artifactIsCurrent === false && <p className="chat-history-version">此回答对应旧版本。<button type="button" onClick={() => onOpenArtifact?.(message.artifactId!)}>查看当前成果</button></p>}
               <CritiqueContent value={message} text={displayedContent} className={getMessageMarkdownClassName(message.role, 'chat')}
-                onJumpToSource={onJumpToSource} onFollowup={message.artifactId && onFollowupIssue ? (issueId: string) => onFollowupIssue(message, issueId) : undefined} />
+                onJumpToSource={onJumpToSource} onFollowup={message.artifactId && message.artifactIsCurrent !== false && onFollowupIssue ? (issueId: string) => onFollowupIssue(message, issueId) : undefined} />
               {!grouped && <EvidenceReferences references={references} onJumpToSource={onJumpToSource} />}
               {sourceFooter}
               {!grouped && !references.length && !message.sourceAnchorId && <CollapsedSources value={message} onJumpToSource={onJumpToSource} />}
               {renderMessageAfter?.(message, index)}
+              {renderMessageActions(message, index)}
             </article>
           );
         })}
@@ -402,8 +421,20 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
 
       {hasNewResults && <button type="button" className="chat-new-results" onClick={scrollToLatest}>有新结果 · 查看最新</button>}
       {currentActivity && <div className="chat-current-activity">{currentActivity}</div>}
-      {(composerContext !== undefined ? composerContext : contextLabel) && <div className="reader-chat-context chat-composer-context">{composerContext !== undefined ? composerContext : `▣ ${contextLabel}`}</div>}
+      <div className={`workbench-composer-container ${enableSkills ? 'with-tools' : ''} ${isLoading ? 'is-generating' : ''}`}>
+      <div className="reader-chat-composer">
+        <textarea ref={textareaRef} rows={3} value={inputValue} onChange={handleInputChange} onKeyDown={handleKeyDown}
+          aria-label="输入问题" placeholder={enableSkills ? '输入问题，/ 选功能，@ 选材料' : '输入问题'} />
+      </div>
+      {(composerContext !== undefined ? composerContext : contextLabel) && <div className="reader-chat-context chat-composer-context">{composerContext !== undefined ? composerContext : contextLabel}</div>}
       {enableSkills && <div className="chat-composer-tools">
+        <WorkbenchPopover label="对话材料" align="left" trigger={<><FileText size={13} /><span>{selectedMentions.length ? `指定材料 ${selectedMentions.length} 篇` : `任务材料 ${materials.length} 篇`}</span></>}>
+          {(close: (restore?: boolean) => void) => <><p className="workbench-menu-caption">默认可使用任务全部材料。指定论文后，使用指定材料。</p>
+            <button type="button" onClick={() => { setInputValue(inputValue.replace(/@\{[^}]+\}/gu, '').replace(/ {2,}/gu, ' ').trimStart()); close(); }}>使用本任务全部材料</button>
+            {materials.map(material => <button key={material.id} type="button" onClick={() => {
+              setInputValue(completeMaterialMention(`${inputValue}${inputValue && !/\s$/u.test(inputValue) ? ' ' : ''}@`, material, materials)); close(false); textareaRef.current?.focus();
+            }}>{material.title || material.filename || material.id}</button>)}</>}
+        </WorkbenchPopover>
         <button type="button" aria-expanded={showFunctions} onClick={() => { setShowFunctions(value => !value); textareaRef.current?.focus(); }}>功能</button>
         <button type="button" onClick={() => { setInputValue(`${inputValue}${inputValue && !/\s$/u.test(inputValue) ? ' ' : ''}@`); textareaRef.current?.focus(); }}>@ 材料</button>
         {recognizedSkill && <span className="chat-draft-chip">{recognizedSkill.command}
@@ -433,21 +464,14 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
           ))}
         </div>
       )}
-      <div className="reader-chat-composer">
-        <textarea
-          ref={textareaRef}
-          rows={1}
-          value={inputValue}
-          onChange={handleInputChange}
-          onKeyDown={handleKeyDown}
-          aria-label="输入问题"
-          placeholder={enableSkills ? '输入问题，/ 选功能，@ 选材料' : '输入问题'}
-        />
+      <div className="workbench-composer-send">
         {isLoading && onAbortChat && <button type="button" onClick={onAbortChat} className="chat-composer-stop" title="停止生成" aria-label="停止生成"><X size={16} />停止</button>}
         <button type="button" onClick={handleSend} disabled={!inputValue.trim() || isLoading || submitting} className="reader-chat-send" aria-label="发送消息">
           <Send size={18} />
         </button>
       </div>
+      </div>
+      {copyError && <p className="reader-chat-draft-error" role="alert">{copyError}</p>}
       {(draftError || sendError) && <p className="reader-chat-draft-error" role="alert">{draftError || sendError}</p>}
     </div>
   );

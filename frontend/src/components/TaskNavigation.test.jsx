@@ -83,7 +83,7 @@ it('opens matching learning questions, answers and feedback independently of doc
   const search=screen.getByRole('textbox',{name:'搜索材料与记录'});
   for(const query of ['稀疏性','计算资源','误差边界']) {
     fireEvent.change(search,{target:{value:query}});
-    const link=screen.getByRole('button',{name:'精读 · 论文一 · 已暂停'});
+    const link=screen.getByRole('button',{name:'精读 · 论文一：如何解释稀疏性 · 已暂停'});
     expect(link.closest('details')).toHaveAttribute('open');
     expect(link).toHaveAttribute('aria-current','page');
     fireEvent.click(link);

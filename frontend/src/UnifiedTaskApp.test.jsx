@@ -511,7 +511,7 @@ describe('unified task conversation wiring', () => {
     await act(async () => {});
     expect(screen.getByRole('region', { name: '任务对话' }).querySelector('.unified-learning-history')).toBeNull();
     fireEvent.click(screen.getByText('学习记录（1）'));
-    fireEvent.click(screen.getByRole('button', { name: '精读 · 论文甲 · 已结束' }));
+    fireEvent.click(screen.getByRole('button', { name: '精读 · 论文甲：压缩会丢失什么 · 已结束' }));
     expect(screen.getByRole('article', { name: '学习记录详情' })).toHaveTextContent('已跳过');
     expect(screen.getByRole('article', { name: '学习记录详情' })).not.toHaveTextContent('已掌握');
     view.unmount();
@@ -583,7 +583,7 @@ describe('unified task conversation wiring', () => {
     expect(screen.queryByLabelText('当前活动')).not.toBeInTheDocument();
     expect(screen.getByRole('region', { name: '任务对话' })).not.toHaveTextContent('历史问题');
     fireEvent.change(screen.getByRole('textbox', { name: '搜索材料与记录' }), { target: { value: '历史问题9' } });
-    fireEvent.click(screen.getByRole('button', { name: '精读 · 论文甲 · 已结束' }));
+    fireEvent.click(screen.getByRole('button', { name: '精读 · 论文甲：历史问题9 · 已结束' }));
     expect(screen.getByRole('article', { name: '学习记录详情' })).toHaveTextContent('历史问题9');
     expect(state.startOperation).not.toHaveBeenCalled();
   });

@@ -20,6 +20,30 @@ function renderChat(props = {}) {
 
 describe('ChatPanel', () => {
   beforeEach(() => localStorage.clear());
+  it('selects materials without sending and returns to the preserved question', async () => {
+    const send = vi.fn();
+    renderChat({ enableSkills: true, onSendMessage: send, materials: [{ id: 'a', title: '论文甲' }, { id: 'b', title: '论文乙' }] });
+    const input = screen.getByRole('textbox', { name: '输入问题' });
+    fireEvent.change(input, { target: { value: '解释这个方法' } });
+    fireEvent.click(screen.getByRole('button', { name: '对话材料' }));
+    fireEvent.click(screen.getByRole('button', { name: '论文甲' }));
+    await waitFor(() => expect(input).toHaveFocus());
+    expect(input).toHaveValue('解释这个方法 @{论文甲} ');
+    expect(send).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole('button', { name: '对话材料' }));
+    fireEvent.click(screen.getByRole('button', { name: '使用本任务全部材料' }));
+    expect(input.value.trim()).toBe('解释这个方法');
+    expect(screen.getByText('任务材料 2 篇')).toBeInTheDocument();
+    expect(send).not.toHaveBeenCalled();
+  });
+  it('marks a retained old answer and opens the current document explicitly', () => {
+    const open = vi.fn();
+    renderChat({ messages: [{ id: 'old', role: 'ai', content: '旧判断', artifactId: 'report', artifactIsCurrent: false }], onOpenArtifact: open });
+    expect(screen.getByText(/此回答对应旧版本/)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: '查看当前成果' }));
+    expect(open).toHaveBeenCalledWith('report');
+    expect(screen.getByText('旧判断')).toBeInTheDocument();
+  });
   it('fills a suggested question without starting any generation', () => {
     const send = vi.fn();
     renderChat({ starterPrompts: [{ label: '带我读这篇', text: '/精读 从研究问题开始' }], onSendMessage: send });
@@ -101,7 +125,7 @@ describe('ChatPanel', () => {
     fireEvent.change(textarea, { target: { value: '下一条草稿' } });
     expect(screen.getByRole('button', { name: '发送消息' })).toBeDisabled();
     expect(screen.getAllByRole('button', { name: '停止生成' })).toHaveLength(1);
-    expect(screen.getByRole('button', { name: '停止生成' }).parentElement).toBe(textarea.parentElement);
+    expect(screen.getByRole('button', { name: '停止生成' }).closest('.workbench-composer-container')).toBe(textarea.closest('.workbench-composer-container'));
   });
 
   it('calls onSendMessage when typing and clicking send', () => {
@@ -111,7 +135,7 @@ describe('ChatPanel', () => {
     const textarea = screen.getByLabelText('输入问题');
     fireEvent.change(textarea, { target: { value: '这篇论文的核心贡献？' } });
 
-    const sendButton = textarea.parentElement.querySelector('button:last-child');
+    const sendButton = screen.getByRole('button', { name: '发送消息' });
     fireEvent.click(sendButton);
 
     expect(onSend).toHaveBeenCalledWith('这篇论文的核心贡献？');
@@ -172,7 +196,7 @@ describe('ChatPanel', () => {
   it('disables send button when input is empty', () => {
     renderChat();
     const textarea = screen.getByLabelText('输入问题');
-    const sendButton = textarea.parentElement.querySelector('button:last-child');
+    const sendButton = screen.getByRole('button', { name: '发送消息' });
     expect(sendButton).toBeDisabled();
   });
 
@@ -259,6 +283,7 @@ describe('ChatPanel interaction continuity', () => {
     expect(screen.getByText('活动 question 0').closest('[data-message-id]')).toHaveAttribute('data-message-id', 'question');
     expect(screen.getByText('处理记录')).toBeInTheDocument();
     expect(screen.queryByText(/旧上下文/)).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: '查找对话' }));
     fireEvent.change(screen.getByLabelText('搜索对话'), { target: { value: '论文甲' } });
     fireEvent.click(screen.getByRole('button', { name: '第 1 条 · 比较论文甲' }));
     expect(scroll.mock.instances.at(-1)).toHaveAttribute('data-message-id', 'question');

@@ -22,7 +22,7 @@ export default function WorkbenchPopover({ label, trigger, children, className =
     observer?.observe(panel.current);
     return () => { window.removeEventListener('resize', place); window.removeEventListener('scroll', place, true); observer?.disconnect(); };
   }, [open, align]);
-  const close = () => { setOpen(false); setCloseEpoch(value => value + 1); };
+  const close = (restore = true) => { setOpen(false); if (restore) setCloseEpoch(value => value + 1); };
   useEffect(() => { if (closeEpoch) button.current?.focus(); }, [closeEpoch]);
   useEffect(() => {
     if (!open) return;

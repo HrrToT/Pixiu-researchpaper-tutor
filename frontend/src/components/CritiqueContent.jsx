@@ -4,6 +4,7 @@ import { SourceChip } from './SourceCitation';
 import { normalizeEvidenceSources } from './evidenceCitationModel';
 
 export const hasGroupedCritique = value => value?.critique?.schemaVersion === 2;
+const readableCitationSpacing = text => typeof text === 'string' ? text.replace(/([。！？.!?）)])\s+(\[\d+\])/gu, '$1\u00a0$2') : text;
 
 // Only explicit server identities establish relationships. Legacy prose is never parsed.
 export function critiqueIssues(value, target = 'chat') {
@@ -44,9 +45,9 @@ export default function CritiqueContent({ value, text, target = 'chat', onJumpTo
   return <div className={className}>
     {value.edited && grouped && <p className="theme-text-muted text-xs">此版本含用户编辑；修改内容不作为论文原文依据。</p>}
     {structured ? <>
-      {typeof lead === 'string' && lead && <MarkdownContent>{lead}</MarkdownContent>}
+      {typeof lead === 'string' && lead && <MarkdownContent>{readableCitationSpacing(lead)}</MarkdownContent>}
       {issues.map(issue => <section key={issue.id} data-critique-issue-id={issue.id}>
-        <MarkdownContent>{issue.text}</MarkdownContent>
+        <MarkdownContent>{readableCitationSpacing(issue.text)}</MarkdownContent>
         {issue.pending.map(item => <p key={item.id}>待核查：{item.whatToCheck || item.topic}</p>)}
         <IssueActions issue={issue} onJumpToSource={onJumpToSource} onFollowup={onFollowup} />
       </section>)}
@@ -64,7 +65,7 @@ export default function CritiqueContent({ value, text, target = 'chat', onJumpTo
 }
 
 function IssueActions({ issue, label = '', onJumpToSource, onFollowup }) {
-  return <div className="reader-chat-citations">
+  return <div className="reader-chat-citations critique-issue-actions">
     {issue.sources.length > 0 && <details><summary className="reader-chat-citation">{label} 查看依据 · {issue.sources.length} 处</summary>
       {issue.sources.flatMap(source => normalizeEvidenceSources([source])).map((source, index) => <div key={`${source.sourceId}:${index}`} className="theme-card-soft rounded-lg p-3 text-xs leading-5">
         <MarkdownContent>{source.text}</MarkdownContent>
