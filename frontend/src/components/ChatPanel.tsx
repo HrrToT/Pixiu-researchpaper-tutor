@@ -4,6 +4,7 @@ import { ChevronDown, ChevronUp, FileText, Link2, Plus, Send, Trash2, X } from '
 import './ChatPanelInteraction.css';
 
 import MarkdownContent from './MarkdownContent';
+import CritiqueContent, { hasGroupedCritique } from './CritiqueContent';
 import { getMessageMarkdownClassName } from './MessageMarkdownRenderer';
 import SourceList from './SourceCitation.jsx';
 import CollapsedSources from './CollapsedSources';
@@ -26,6 +27,7 @@ interface ChatJumpSource {
 }
 
 interface ChatMessage {
+  critique?: unknown;
   artifactId?: string;
   synthetic?: boolean;
   id?: string | number;
@@ -54,6 +56,7 @@ interface ChatPanelProps {
   onSaveToNote?: (index: number) => void | Promise<unknown>;
   onCaptureArtifact?: (index: number) => void | Promise<unknown>;
   onOpenArtifact?: (id: string) => void;
+  onFollowupIssue?: (message: ChatMessage, issueId: string) => void;
   onJumpToSource?: (source: ChatJumpSource) => void;
   onAbortChat?: () => void;
   isLoading?: boolean;
@@ -114,6 +117,7 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
   onSaveToNote,
   onCaptureArtifact,
   onOpenArtifact,
+  onFollowupIssue,
   onJumpToSource,
   onAbortChat,
   isLoading = false,
@@ -329,7 +333,8 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
         {messages.map((message: ChatMessage, index: number) => {
           const isUser = message.role === 'user';
           const isSystem = Boolean(message.isSystem);
-          const displayedContent = message.artifactId && !isUser ? artifactChatPreview(message.content) : message.content;
+          const grouped = hasGroupedCritique(message);
+          const displayedContent = message.artifactId && !isUser && !grouped ? artifactChatPreview(message.content) : message.content;
           const references = normalizeSentenceReferences(message.sentenceSourceMap, message.rag_sources, { target: 'message' }) as EvidenceRef[];
           const sourceFooter = message.sourceAnchorId ? (
             <div className="reader-chat-citations">
@@ -369,10 +374,11 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
                 <span>{isSystem ? '系统提示' : '阅读助手'}</span>
                 {renderMessageActions(message, index)}
               </div>
-              <MarkdownContent className={getMessageMarkdownClassName(message.role, 'chat')}>{displayedContent}</MarkdownContent>
-              <EvidenceReferences references={references} onJumpToSource={onJumpToSource} />
+              <CritiqueContent value={message} text={displayedContent} className={getMessageMarkdownClassName(message.role, 'chat')}
+                onJumpToSource={onJumpToSource} onFollowup={message.artifactId && onFollowupIssue ? (issueId: string) => onFollowupIssue(message, issueId) : undefined} />
+              {!grouped && <EvidenceReferences references={references} onJumpToSource={onJumpToSource} />}
               {sourceFooter}
-              {!references.length && !message.sourceAnchorId && <CollapsedSources value={message} onJumpToSource={onJumpToSource} />}
+              {!grouped && !references.length && !message.sourceAnchorId && <CollapsedSources value={message} onJumpToSource={onJumpToSource} />}
               {renderMessageAfter?.(message, index)}
             </article>
           );

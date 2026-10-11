@@ -6,6 +6,8 @@ import { selectionNote } from './utils/selectionNote';
 import { BookOpen, ChevronLeft, ChevronRight, FilePlus2, Languages, MessageSquare, PanelLeftClose, PanelLeftOpen, Save, SunMoon, Upload } from 'lucide-react';
 import ChatPanel from './components/ChatPanel';
 import MarkdownContent from './components/MarkdownContent';
+import CritiqueContent from './components/CritiqueContent';
+import { critiqueVersion, resolveCritiqueFollowup } from './utils/critiqueFollowup';
 import PdfViewer from './components/PdfViewer';
 import TaskNavigation from './components/TaskNavigation';
 import DocumentVersionHistory from './components/DocumentVersionHistory';
@@ -130,6 +132,17 @@ export default function UnifiedTaskApp() {
   const [focusMessage, setFocusMessage] = useState(null);
   const [composerError, setComposerError] = useState('');
   const [composerDraft, setComposerDraft] = useState('');
+  const [critiqueSelection, setCritiqueSelection] = useState(null);
+  const [critiqueTargetChoice, setCritiqueTargetChoice] = useState(null);
+  const selectCritiqueIssue = (artifactId, issueId) => {
+    const artifact = activeTask?.artifacts?.find(item => (item.id || item.artifactId) === artifactId);
+    if (!artifact || !critiqueVersion(artifact)) return;
+    setCritiqueSelection({ taskId: activeTaskId, title: artifact.title, followup: {
+      artifactId, issueId, version: critiqueVersion(artifact),
+    } });
+    learning.setInputMode('chat');
+    setCompactPane('chat');
+  };
   const [materialError, setMaterialError] = useState('');
   const [movingDocument, setMovingDocument] = useState(false);
   const [requestedDocument, setRequestedDocument] = useState(null);
@@ -397,12 +410,13 @@ export default function UnifiedTaskApp() {
   };
 
   const appendMessage = (taskId, message) => updateTask(taskId, (task) => ({ messages: [...task.messages, message] }));
-  const sendMessage = async (rawText, chosenSkill = null) => {
+  const sendMessage = async (rawText, chosenSkill = null, chosenTargets = null) => {
     const task = activeTask;
     if (!task || learning.busyTasks[task.id]) return false;
     const inputError = message => { if (activeTaskIdRef.current === task.id) setComposerError(message); };
     const text = rawText.trim();
     if (!text) return false;
+    const followup = resolveCritiqueFollowup(task, text, critiqueSelection);
     setComposerError('');
     const intent = chosenSkill ? { skill: chosenSkill } : resolveConversationIntent(text);
     const skill = intent.skill;
@@ -444,7 +458,7 @@ export default function UnifiedTaskApp() {
       } catch (error) { inputError(error.message); return false; }
       return;
     }
-    if (!skill && learning.inputMode !== 'chat' && task.activeActivity?.status === 'active' && targetsCurrentActivity) {
+    if (!followup && !skill && learning.inputMode !== 'chat' && task.activeActivity?.status === 'active' && targetsCurrentActivity) {
       if (!materialReady(initialContext.allowedPaperIds)) return false;
       await learning.act(task, learning.inputMode, text);
       return;
@@ -469,16 +483,33 @@ export default function UnifiedTaskApp() {
       await appendMessage(task.id, createMessage('ai', `请在 /${skill.command} 后写下你想解决的问题。`, { isSystem: true }));
       return;
     }
-    const requestText = skill?.skillId === 'critique' ? `分析论文的贡献、假设、实验依据和局限，并指出证据不足之处。${sendText}`
+    const requestText = skill?.skillId === 'critique' ? sendText || '整体批判阅读这篇论文'
       : skill?.skillId === 'compare' ? `比较任务中相关论文的方法、实验、贡献与局限。${sendText}`
         : skill?.skillId === 'background' ? `解释理解论文所需的前置知识。${sendText}` : text;
     let context;
+    let critiqueTargets;
     try {
       const explicitPaperIds = resolveNamedTaskPapers(text, papers, task.paperIds);
       const skillPaperIds = explicitPaperIds;
       context = resolveTaskContext(task, { text: requestText,
         ...((skill && startsNewCapability(skill.skillId)) || learning.inputMode === 'chat' ? { activity: null } : {}),
         ...(skillPaperIds !== undefined ? { paperIds: skillPaperIds } : {}) });
+      if (followup) {
+        const artifact = task.artifacts.find(item => (item.id || item.artifactId) === followup.artifactId);
+        const ids = artifact?.critique?.scope?.allowedPaperIds || artifact?.paperIds || [];
+        context = resolveTaskContext(task, { text: requestText, activity: null, paperIds: ids });
+      }
+      if (skill?.skillId === 'critique' || skill?.steps?.includes('critique')) {
+        const all = /分别|逐篇|每篇|所有论文|全部论文|两篇|这些论文/u.test(text);
+        critiqueTargets = chosenTargets || explicitPaperIds || (all ? context.allowedPaperIds :
+          context.primaryPaperId ? [context.primaryPaperId] : task.focusedPaperId ? [task.focusedPaperId] :
+            context.allowedPaperIds.length === 1 ? context.allowedPaperIds : null);
+        if (!critiqueTargets && !followup) {
+          setCritiqueTargetChoice({ taskId: task.id, text, skill, paperIds: context.allowedPaperIds });
+          return false;
+        }
+        if (critiqueTargets?.some(id => !context.allowedPaperIds.includes(id))) throw new Error('批判对象不属于当前材料。');
+      }
       if ((skill?.skillId === 'compare' || skill?.steps?.includes('compare')) && context.allowedPaperIds.length < 2) throw new Error('比较至少需要两篇论文，请先在任务中加入论文。');
       if (skill?.skillId === 'critique' && context.allowedPaperIds.length === 0) throw new Error('请先加入并打开一篇论文。');
     }
@@ -489,8 +520,12 @@ export default function UnifiedTaskApp() {
       ...(skill?.steps ? { steps: skill.steps } : {}),
       displayText: text, allowedPaperIds: context.allowedPaperIds,
       primaryPaperId: context.primaryPaperId, strictScope: context.strictScope,
+      ...(critiqueTargets ? { targetPaperIds: critiqueTargets } : {}),
+      ...(followup ? { followup } : {}),
       expectedTaskRevision: task.revision,
     });
+    setCritiqueSelection(null);
+    setCritiqueTargetChoice(null);
   };
   const deleteMessage = async index => {
     const source = activeTask?.messages[index];
@@ -515,6 +550,8 @@ export default function UnifiedTaskApp() {
         if (existing) { saved = existing; collection = key; break; }
       }
       saved ||= { id: makeId(), title: source.content.replace(/[#*`]/gu, '').split('\n').find(line => line.trim())?.slice(0, 46) || '对话笔记',
+        ...(source.critique ? { critique: source.critique } : {}),
+        capability: source.capability,
         text: source.content, paperIds: source.context?.allowedPaperIds || task.paperIds,
         sources: documentSources(source), sentenceSourceMap: source.sentenceSourceMap || [], sourceMessageId: messageId,
         sourceRequestId: source.sourceRequestId, type: source.capability || 'note', createdAt: new Date().toISOString(), versions: [] };
@@ -903,6 +940,8 @@ export default function UnifiedTaskApp() {
     <div className="unified-composer-context">
       <span title={activeTask?.paperIds.map(id => getPaperTitle(papers, id)).join('\n')}>任务材料 {activeTask?.paperIds.length || 0} 篇{focusedPaperId ? ` · 当前 ${shortPaperTitle(papers, focusedPaperId)}` : ''}</span>
       {draftPrimaryPaperId && <span>主要参考 {shortPaperTitle(papers, draftPrimaryPaperId)}</span>}
+      {critiqueSelection?.taskId === activeTaskId && <span>追问 {critiqueSelection.title || '批判成果'} · 保存于 {critiqueSelection.followup.version}
+        <button type="button" onClick={() => setCritiqueSelection(null)}>取消追问关联</button></span>}
       {currentLearning?.status === 'active' && <>
         <select aria-label="学习输入方式" value={learning.inputMode} onChange={event => learning.setInputMode(event.target.value)}>
           <option value="answer" disabled={learning.completionSuggested}>回答学习问题</option><option value="ask">临时追问</option><option value="chat">普通对话</option>
@@ -916,6 +955,13 @@ export default function UnifiedTaskApp() {
     {intentChoice?.taskId === activeTaskId && <div className="unified-intent-choice" role="group" aria-label="选择分析重点">
       <span>{intentChoice.prompt}</span>{intentChoice.choices.map(choice => <button type="button" key={choice.skill.skillId} disabled={learning.busyTasks[activeTaskId]} onClick={() => sendMessage(intentChoice.text, choice.skill)}>{choice.label}</button>)}
       <button type="button" onClick={() => setIntentChoice(null)}>取消</button>
+    </div>}
+    {critiqueTargetChoice?.taskId === activeTaskId && <div className="unified-intent-choice" role="group" aria-label="选择批判对象">
+      <span>要批判哪篇论文？</span>
+      {critiqueTargetChoice.paperIds.map(id => <button type="button" key={id}
+        onClick={() => sendMessage(critiqueTargetChoice.text, critiqueTargetChoice.skill, [id])}>{shortPaperTitle(papers, id)}</button>)}
+      <button type="button" onClick={() => sendMessage(critiqueTargetChoice.text, critiqueTargetChoice.skill, critiqueTargetChoice.paperIds)}>分别分析全部</button>
+      <button type="button" onClick={() => setCritiqueTargetChoice(null)}>取消</button>
     </div>}
     {composerError && <p className="unified-inline-error" role="alert">{composerError}<button type="button" onClick={() => setComposerError('')}>收起</button></p>}
     {learning.error && !Object.values(learning.operations.records).some(record => record.taskId === activeTaskId && record.error === learning.error) && <details className="unified-inline-error"><summary>请求状态暂不可查询</summary>
@@ -981,8 +1027,9 @@ export default function UnifiedTaskApp() {
           {!['research.report', 'paper.overview'].includes(preview.kind) && <div className="unified-document-toolbar"><button type="button" disabled={savingRecovery || (preview.paperIds || preview.result?.materialScope?.allowedPaperIds || []).some(id => !activeTask.paperIds.includes(id))} onClick={recoverResult}><Save size={15} /> {savingRecovery ? '正在保存…' : '保存为成果'}</button></div>}
           <p>{preview.kind === 'paper.overview' ? '论文概览' : preview.kind === 'research.report' ? '核对报告后，在对话中确认并保存结果。' : '保存完整结果，保留当前学习位置。'}</p>
           {(preview.paperIds || preview.result?.materialScope?.allowedPaperIds || []).some(id => !activeTask.paperIds.includes(id)) && <p role="status">请先恢复原请求材料，再保存成果。</p>}
+          <div className="unified-document-preview"><CritiqueContent value={preview.result || {}} target="artifact"
+            text={preview.result?.artifact?.text || preview.result?.message || preview.result?.reply} onJumpToSource={jumpToSource} /></div>
           <CollapsedSources key={contentPositionKey} storageKey={`${contentPositionKey}:sources`} value={{ sources: preview.result?.sources || [] }} onJumpToSource={jumpToSource} />
-          <div className="unified-document-preview"><MarkdownContent>{preview.result?.artifact?.text || preview.result?.message || preview.result?.reply}</MarkdownContent></div>
         </div> : activeLearning ? <div className="unified-document" ref={contentScrollRef} onScroll={saveContentPosition}>
           <div className="unified-document-toolbar"><button type="button" onClick={() => locateLearning(activeLearning)}>定位原对话</button>
             {currentLearning?.activityId === activeLearning.activityId && currentLearning.status === 'paused' && <button type="button" disabled={learning.busyTasks[activeTaskId]} onClick={async () => { await learning.act(activeTask, 'resume'); setCompactPane('chat'); }}>继续学习</button>}
@@ -1011,7 +1058,6 @@ export default function UnifiedTaskApp() {
           <DocumentVersionHistory key={`${selectedDocument.taskId}/${selectedDocument.collection}/${selectedDocument.id ?? selectedDocument.index}`} document={activeDocument} onRestore={restoreDocument} disabled={savingDocument || movingDocument} />
           <DocumentOrganizer key={`organize/${documentDraftKey(selectedDocument)}`} document={activeDocument} taskId={activeTaskId} tasks={tasks}
             dirty={documentDirty || savingDocument} onRename={renameDocument} onMove={moveDocument} onExport={exportDocument} />
-          <CollapsedSources key={contentPositionKey} storageKey={`${contentPositionKey}:sources`} value={activeDocument} onJumpToSource={jumpToSource} />
           {originalDocumentPage && activeTask.paperIds.includes(originalDocumentPage.pdfId) &&
             <DocumentOriginalPage key={selectedDocumentKey} taskId={activeTaskId} source={originalDocumentPage}
               title={activeDocument.title} text={documentDraft} paperTitle={getPaperTitle(papers, originalDocumentPage.pdfId)} />}
@@ -1027,7 +1073,11 @@ export default function UnifiedTaskApp() {
             catch { setLocalError('本地草稿保存失败，请先保存或下载当前正文'); }
           }} />
           <details className="unified-document-edit-preview"><summary>预览</summary><MarkdownContent>{documentDraft || '（空白正文）'}</MarkdownContent></details>
-          </> : <article className="unified-document-body" aria-label="成果正文"><MarkdownContent>{documentDraft || '（空白正文）'}</MarkdownContent></article>}
+          </> : <article className="unified-document-body" aria-label="成果正文"><CritiqueContent
+            value={{ ...activeDocument, edited: activeDocument.edited || documentDirty }} target="artifact"
+            text={documentDraft || '（空白正文）'} onJumpToSource={jumpToSource}
+            onFollowup={issueId => selectCritiqueIssue(activeDocument.id || activeDocument.artifactId, issueId)} /></article>}
+          <CollapsedSources key={contentPositionKey} storageKey={`${contentPositionKey}:sources`} value={activeDocument} onJumpToSource={jumpToSource} />
         </div> : null}
         <div className="unified-reader-paper" style={{ visibility: activeDocument || activeLearning || preview ? 'hidden' : 'visible', opacity: activeDocument || activeLearning || preview ? 0 : 1, pointerEvents: activeDocument || activeLearning || preview ? 'none' : undefined }}
           aria-hidden={Boolean(activeDocument || activeLearning || preview)} inert={activeDocument || activeLearning || preview ? true : undefined}>
@@ -1087,6 +1137,7 @@ export default function UnifiedTaskApp() {
           ] : [{ label: '解释一个概念', text: '我想了解的概念是：' }]}
           materials={activeTask.paperIds.map(id => papers.find(paper => paper.id === id) || { id })} messages={timeline}
           onSendMessage={sendMessage} onDeleteMessage={index => { const original = timeline[index]?.originalIndex; if (Number.isInteger(original)) return deleteMessage(original); }}
+          onFollowupIssue={(message, issueId) => selectCritiqueIssue(message.artifactId, issueId)}
           onSaveToNote={index => saveMessage(timeline[index]?.originalIndex, false)} onCaptureArtifact={index => saveMessage(timeline[index]?.originalIndex)}
           onOpenArtifact={openArtifact} onJumpToSource={jumpToSource} onAbortChat={() => learning.cancel(activeTaskId)}
           isLoading={Boolean(learning.busyTasks[activeTaskId])} showLoadingIndicator={false} enableSkills

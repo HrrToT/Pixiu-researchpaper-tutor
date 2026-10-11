@@ -89,6 +89,31 @@ describe('unified task conversation wiring', () => {
     });
   });
 
+  it('asks once for an ambiguous critique object and retains the question until selection', async () => {
+    state.task.activeActivity = null;
+    render(<UnifiedTaskApp />);
+    await screen.findByTestId('chat');
+    await act(async () => state.chatProps.onSendMessage('/批判 画质几乎不变可信吗'));
+    expect(state.startOperation).not.toHaveBeenCalled();
+    expect(screen.getByRole('group', { name: '选择批判对象' })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: '分别分析全部' }));
+    await waitFor(() => expect(state.startOperation).toHaveBeenCalled());
+    expect(state.startOperation.mock.calls[0][1].input).toMatchObject({
+      message: '画质几乎不变可信吗', allowedPaperIds: ['a', 'b'], targetPaperIds: ['a', 'b'], capability: 'critique',
+    });
+  });
+
+  it('uses the currently open paper as critique target while permitting all task materials', async () => {
+    state.task.activeActivity = null;
+    state.task.focusedPaperId = 'b';
+    render(<UnifiedTaskApp />);
+    await screen.findByTestId('chat');
+    await act(async () => state.chatProps.onSendMessage('/批判 画质几乎不变可信吗，只给两点'));
+    expect(state.startOperation.mock.calls[0][1].input).toMatchObject({
+      allowedPaperIds: ['a', 'b'], targetPaperIds: ['b'], message: '画质几乎不变可信吗，只给两点',
+    });
+  });
+
   it('resizes with keyboard boundaries and restores hidden desktop panes', () => {
     render(<UnifiedTaskApp />);
     const resize = screen.getByRole('separator');
@@ -270,6 +295,21 @@ describe('unified task conversation wiring', () => {
       capability: 'compose', steps: ['background', 'compare', 'critique'], allowedPaperIds: ['a', 'b'],
     }) }));
     expect(state.task.activeActivity.id).toBe('lesson');
+  });
+
+  it('carries a selected critique issue and saved version into a scoped followup without generating on selection', async () => {
+    const critique = { schemaVersion: 2, scope: { allowedPaperIds: ['a'] }, presentation: { chatIssueIds: ['i1', 'i2'] } };
+    state.task.messages = [{ id: 'critique-message', role: 'ai', artifactId: 'critique-artifact', content: '两点判断', critique }];
+    state.task.artifacts = [{ id: 'critique-artifact', title: '批判成果', text: '用户编辑后的正文', paperIds: ['a'], updatedAt: 'saved-token', edited: true, critique }];
+    render(<UnifiedTaskApp />);
+    await screen.findByTestId('chat');
+    await act(async () => state.chatProps.onFollowupIssue(state.task.messages[0], 'i2'));
+    expect(state.startOperation).not.toHaveBeenCalled();
+    expect(screen.getByText(/保存于 saved-token/u)).toBeInTheDocument();
+    await act(async () => state.chatProps.onSendMessage('展开实验条件'));
+    expect(state.startOperation).toHaveBeenCalledWith('task', expect.objectContaining({ kind: 'conversation.execute', input: expect.objectContaining({
+      followup: { artifactId: 'critique-artifact', issueId: 'i2', version: 'saved-token' }, allowedPaperIds: ['a'],
+    }) }));
   });
 
   it('clarifies vague analysis without a model call and uses the selected capability', async () => {
