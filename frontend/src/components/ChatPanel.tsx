@@ -434,8 +434,8 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
               <div className="reader-chat-user-line group">
                 <div className="reader-chat-user-bubble">
                   <MarkdownContent className={getMessageMarkdownClassName(message.role, 'chat')}>{message.content}</MarkdownContent>
-                  {renderMessageActions(message, index)}
                 </div>
+                {renderMessageActions(message, index)}
               </div>
               {renderMessageAfter?.(message, index)}
               </div>
