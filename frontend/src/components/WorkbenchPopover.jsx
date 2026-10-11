@@ -16,14 +16,15 @@ export default function WorkbenchPopover({ label, trigger = null, children, clas
     const place = () => {
       const anchor = button.current.getBoundingClientRect();
       const width = panel.current.offsetWidth, height = panel.current.offsetHeight;
-      setPosition({ top: Math.max(8, Math.min(anchor.bottom + 6, window.innerHeight - height - 8)),
+      const top = anchor.bottom + 6 + height <= window.innerHeight - 8 ? anchor.bottom + 6 : anchor.top - height - 6;
+      setPosition({ top: Math.max(8, Math.min(top, window.innerHeight - height - 8)),
         left: Math.max(8, Math.min(align === 'left' ? anchor.left : anchor.right - width, window.innerWidth - width - 8)) });
     };
     place(); window.addEventListener('resize', place); window.addEventListener('scroll', place, true);
     const observer = typeof ResizeObserver === 'function' ? new ResizeObserver(place) : null;
     observer?.observe(panel.current);
     return () => { window.removeEventListener('resize', place); window.removeEventListener('scroll', place, true); observer?.disconnect(); };
-  }, [open, align]);
+  }, [open, align, children]);
   const close = (restore = true) => { setOpen(false); if (restore) setCloseEpoch(value => value + 1); };
   useEffect(() => { if (closeEpoch) button.current?.focus(); }, [closeEpoch]);
   useEffect(() => {

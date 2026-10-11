@@ -1,5 +1,5 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { ChevronDown, ChevronUp, Copy, FileText, Link2, Maximize2, MessageSquare, Minimize2, PanelLeftClose, Plus, Search, Send, Trash2, X } from 'lucide-react';
+import { Check, ChevronDown, ChevronUp, Copy, FileText, Link2, Maximize2, MessageSquare, Minimize2, PanelLeftClose, Plus, Search, Send, Trash2, X } from 'lucide-react';
 
 import './ChatPanelInteraction.css';
 
@@ -202,16 +202,31 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
     const maxHeight = parseFloat(getComputedStyle(textarea).maxHeight) || 160;
     textarea.style.height = `${Math.min(textarea.scrollHeight, maxHeight)}px`;
   }, [inputValue, conversationId, inputExpanded]);
-  const [showFunctions, setShowFunctions] = useState(false);
-  const skillSuggestions = enableSkills ? getSkillSuggestions(showFunctions ? '/' : inputValue) : [];
-  const pendingMention = enableSkills ? pendingMaterialMention(inputValue) : null;
+  const [suggestionsDismissed, setSuggestionsDismissed] = useState(false);
+  const suggestionsRef = useRef<HTMLDivElement | null>(null);
+  const skillSuggestions = enableSkills && !suggestionsDismissed ? getSkillSuggestions(inputValue) : [];
+  const pendingMention = enableSkills && !suggestionsDismissed ? pendingMaterialMention(inputValue) : null;
+  const suggestionsOpen = Boolean(pendingMention || skillSuggestions.length);
+  useEffect(() => {
+    if (!suggestionsOpen) return;
+    const outside = (event: PointerEvent) => {
+      if (!suggestionsRef.current?.contains(event.target as Node) && !textareaRef.current?.contains(event.target as Node)) setSuggestionsDismissed(true);
+    };
+    const escape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && !event.defaultPrevented) {
+        event.preventDefault(); event.stopPropagation(); setSuggestionsDismissed(true); textareaRef.current?.focus();
+      }
+    };
+    document.addEventListener('pointerdown', outside);
+    document.addEventListener('keydown', escape);
+    return () => { document.removeEventListener('pointerdown', outside); document.removeEventListener('keydown', escape); };
+  }, [suggestionsOpen]);
   const materialSuggestions = pendingMention ? materials.filter(material =>
     [material.title, material.filename, material.id].some(label => label?.toLocaleLowerCase().includes(pendingMention.query))) : [];
 
   const explicitSkill = enableSkills ? parseSkillCommand(inputValue) : null;
   const recognizedSkill = enableSkills ? resolveConversationSkill(inputValue) : null;
   const selectedMentions = enableSkills ? Array.from(new Set(Array.from(String(inputValue).matchAll(/@\{([^}]+)\}/gu), match => match[1]))) : [];
-  const focusedMaterial = materials.find(material => material.id === focusedMaterialId);
   const searchResults = search.trim() ? messages.map((message, index) => ({ message, index }))
     .filter(({ message }) => message.content.toLocaleLowerCase().includes(search.trim().toLocaleLowerCase())) : [];
 
@@ -226,7 +241,7 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
     setSearch('');
     setSearchOpen(false);
     setHighlightedMessage(null);
-    setShowFunctions(false);
+    setSuggestionsDismissed(false);
     return () => {
       try { sessionStorage.setItem(scrollKey, String(scroller.scrollTop)); } catch { /* preserve in-page navigation */ }
     };
@@ -313,6 +328,7 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
   };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLTextAreaElement>): void => {
+    setSuggestionsDismissed(false);
     setInputValue(event.target.value);
   };
 
@@ -476,18 +492,44 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
       {(draftError || sendError) && <p className="reader-chat-draft-error" role="alert">{draftError || sendError}</p>}
       {enableSkills && <div className="chat-composer-tools">
         <WorkbenchPopover label="对话材料" className="chat-material-selector" align="left" trigger={<><FileText size={14} /><span>{selectedMentions.length ? `指定材料 ${selectedMentions.length} 篇` : `任务材料 ${materials.length} 篇`}</span><ChevronDown size={12} /></>}>
-          {(close: (restore?: boolean) => void) => <><p className="workbench-menu-caption">默认可使用任务全部材料。指定论文后，使用指定材料。</p>
-            {focusedMaterial && <p className="workbench-menu-caption">当前论文：{focusedMaterial.title || focusedMaterial.filename || focusedMaterial.id}。“这篇”以它为主，显式指定优先。</p>}
-            <button type="button" onClick={() => { setInputValue(inputValue.replace(/@\{[^}]+\}/gu, '').replace(/ {2,}/gu, ' ').trimStart()); close(); }}>使用本任务全部材料</button>
-            {materials.map(material => <button key={material.id} type="button" onClick={() => {
-              const label = material.title || material.filename || material.id;
-              if (!selectedMentions.includes(label) && !selectedMentions.includes(material.id)) {
-                setInputValue(completeMaterialMention(`${inputValue}${inputValue && !/\s$/u.test(inputValue) ? ' ' : ''}@`, material, materials));
-              }
-              close(false); textareaRef.current?.focus();
-            }}>{material.title || material.filename || material.id}</button>)}</>}
+          {(close: (restore?: boolean) => void) => <>
+            <div className="chat-picker-heading"><strong>本轮对话材料</strong><span>选择即生效</span></div>
+            <button type="button" className="chat-material-all" aria-label="使用本任务全部材料" aria-pressed={!selectedMentions.length}
+              onClick={() => setInputValue(inputValue.replace(/@\{[^}]+\}/gu, '').replace(/ {2,}/gu, ' ').trimStart())}>
+              <span className="chat-picker-check" aria-hidden="true">{!selectedMentions.length && <Check size={14} />}</span>
+              <span>任务全部材料</span><span className="chat-picker-count">{materials.length} 篇</span>
+            </button>
+            <div className="chat-picker-section">或指定论文 · 可多选</div>
+            <div className="chat-material-options">
+              {materials.map(material => {
+                const title = material.title || material.filename || material.id;
+                const token = completeMaterialMention('@', material, materials).trim();
+                const selected = inputValue.includes(token) || selectedMentions.includes(material.id);
+                return <label key={material.id} className={`chat-material-option ${selected ? 'is-selected' : ''}`}>
+                  <input type="checkbox" aria-label={title} checked={selected} onChange={() => {
+                    if (selected) setInputValue(inputValue.split(token).join('').split(`@{${material.id}}`).join('').replace(/ {2,}/gu, ' ').trimStart());
+                    else setInputValue(`${inputValue}${inputValue && !/\s$/u.test(inputValue) ? ' ' : ''}${token} `);
+                  }} />
+                  <FileText size={15} aria-hidden="true" />
+                  <span className="chat-material-name" title={title}>{title}</span>
+                  {material.id === focusedMaterialId && <span className="chat-material-reading">阅读中</span>}
+                </label>;
+              })}
+              {!materials.length && <p className="workbench-menu-caption">任务中还没有论文</p>}
+            </div>
+            <div className="chat-picker-footer"><span>{selectedMentions.length ? `已指定 ${selectedMentions.length} 篇` : '使用任务全部材料'}</span>
+              <button type="button" onClick={() => { close(false); textareaRef.current?.focus(); }}>完成</button></div>
+          </>}
         </WorkbenchPopover>
-        <button type="button" aria-expanded={showFunctions} onClick={() => { setShowFunctions(value => !value); textareaRef.current?.focus(); }}>功能</button>
+        <WorkbenchPopover label="功能" className="chat-function-selector" align="left" trigger={<><span>功能</span><ChevronDown size={12} /></>}>
+          {(close: (restore?: boolean) => void) => <><div className="chat-picker-heading"><strong>选择功能</strong><span>选后继续描述需求</span></div>
+            {getSkillSuggestions('/').map(skill => <button key={skill.id} type="button" className="chat-function-option" aria-label={`/${skill.command}`}
+              aria-pressed={explicitSkill?.skillId === skill.id} onClick={() => {
+                setInputValue(`/${skill.command} ${inputValue.replace(/^\s*\/[^\s]*\s*/u, '')}`);
+                close(false); textareaRef.current?.focus();
+              }}><span><strong>{skill.command}</strong><small>{skill.description}</small></span><code>/{skill.command}</code></button>)}
+          </>}
+        </WorkbenchPopover>
         {recognizedSkill && <span className="chat-draft-chip">{recognizedSkill.command}
           {explicitSkill && <button type="button" aria-label={`取消${explicitSkill.command}功能`} onClick={() => setInputValue(inputValue.replace(/^\s*\/[^\s]+\s*/u, ''))}><X size={12} /></button>}
         </span>}
@@ -496,7 +538,7 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
         </span>)}
       </div>}
       {pendingMention && (
-        <div className="chat-composer-menu theme-panel theme-border mx-4 max-h-48 overflow-auto rounded-lg border p-1" role="group" aria-label="选择任务材料">
+        <div ref={suggestionsRef} className="chat-composer-menu theme-panel theme-border mx-4 max-h-48 overflow-auto rounded-lg border p-1" role="group" aria-label="选择任务材料">
           {materialSuggestions.map(material => <button key={material.id} type="button"
             className="theme-text-primary block w-full rounded px-3 py-2 text-left text-sm hover:bg-[var(--panel-muted)]"
             onClick={() => { setInputValue(completeMaterialMention(inputValue, material, materials)); textareaRef.current?.focus(); }}>
@@ -506,10 +548,10 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
         </div>
       )}
       {skillSuggestions.length > 0 && (
-        <div className="chat-composer-menu theme-panel theme-border mx-4 rounded-lg border p-1" role="group" aria-label="功能命令">
+        <div ref={suggestionsRef} className="chat-composer-menu theme-panel theme-border mx-4 rounded-lg border p-1" role="group" aria-label="功能命令">
           {skillSuggestions.map((skill) => (
             <button key={skill.id} type="button" className="theme-text-primary flex w-full items-center gap-3 rounded px-3 py-2 text-left text-sm hover:bg-[var(--panel-muted)]"
-              onClick={() => { setInputValue(`/${skill.command} ${inputValue.replace(/^\s*\/[^\s]*\s*/u, '')}`); setShowFunctions(false); textareaRef.current?.focus(); }}>
+              onClick={() => { setInputValue(`/${skill.command} ${inputValue.replace(/^\s*\/[^\s]*\s*/u, '')}`); textareaRef.current?.focus(); }}>
               <span>/{skill.command}</span><span className="theme-text-secondary text-xs">{skill.description}</span>
             </button>
           ))}

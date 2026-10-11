@@ -25,19 +25,28 @@ describe('ChatPanel', () => {
     if (!HTMLDialogElement.prototype.close) HTMLDialogElement.prototype.close = function () { this.open = false; };
   });
   beforeEach(() => localStorage.clear());
-  it('uses one material entry and keeps reader focus inside its popover', () => {
-    renderChat({ enableSkills: true, focusedMaterialId: 'a', materials: [{ id: 'a', title: '论文甲' }] });
+  it('distinguishes all materials, explicit selections and the paper being read', () => {
+    renderChat({ enableSkills: true, focusedMaterialId: 'a', materials: [{ id: 'a', title: '论文甲' }, { id: 'b', title: '论文乙' }] });
     expect(screen.queryByRole('button', { name: '@ 材料' })).not.toBeInTheDocument();
-    expect(screen.queryByText(/当前论文：/)).not.toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText('输入问题'), { target: { value: '解释这个方法' } });
     fireEvent.click(screen.getByRole('button', { name: '对话材料' }));
-    expect(screen.getByText(/当前论文：论文甲/)).toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: '论文甲', exact: true }));
+    expect(screen.getByText('本轮对话材料')).toBeInTheDocument();
+    expect(screen.getByText('阅读中').closest('label')).toContainElement(screen.getByRole('checkbox', { name: '论文甲' }));
+    expect(screen.getByRole('button', { name: '使用本任务全部材料' })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByRole('checkbox', { name: '论文甲' })).not.toBeChecked();
+    fireEvent.click(screen.getByRole('checkbox', { name: '论文甲' }));
     const input = screen.getByLabelText('输入问题');
-    const selected = input.value;
-    fireEvent.click(screen.getByRole('button', { name: '对话材料' }));
-    fireEvent.click(screen.getByRole('button', { name: '论文甲', exact: true }));
-    expect(input).toHaveValue(selected);
+    expect(input).toHaveValue('解释这个方法 @{论文甲} ');
+    expect(screen.getByRole('checkbox', { name: '论文甲' })).toBeChecked();
+    expect(screen.getByRole('button', { name: '使用本任务全部材料' })).toHaveAttribute('aria-pressed', 'false');
+    fireEvent.click(screen.getByRole('checkbox', { name: '论文乙' }));
+    expect(screen.getByText('已指定 2 篇')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('checkbox', { name: '论文甲' }));
+    expect(input.value.trim()).toBe('解释这个方法 @{论文乙}');
     expect(screen.getByText('指定材料 1 篇')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('checkbox', { name: '论文乙' }));
+    expect(input.value.trim()).toBe('解释这个方法');
+    expect(screen.getByRole('button', { name: '使用本任务全部材料' })).toHaveAttribute('aria-pressed', 'true');
   });
   it('expands the same draft and material scope, then returns with Escape without sending', () => {
     const send = vi.fn();
@@ -83,7 +92,8 @@ describe('ChatPanel', () => {
     const input = screen.getByRole('textbox', { name: '输入问题' });
     fireEvent.change(input, { target: { value: '解释这个方法' } });
     fireEvent.click(screen.getByRole('button', { name: '对话材料' }));
-    fireEvent.click(screen.getByRole('button', { name: '论文甲' }));
+    fireEvent.click(screen.getByRole('checkbox', { name: '论文甲' }));
+    fireEvent.click(screen.getByRole('button', { name: '完成' }));
     await waitFor(() => expect(input).toHaveFocus());
     expect(input).toHaveValue('解释这个方法 @{论文甲} ');
     expect(send).not.toHaveBeenCalled();
@@ -92,6 +102,56 @@ describe('ChatPanel', () => {
     expect(input.value.trim()).toBe('解释这个方法');
     expect(screen.getByText('任务材料 2 篇')).toBeInTheDocument();
     expect(send).not.toHaveBeenCalled();
+  });
+  it('uses identical outside, Escape and menu-switch dismissal for both pickers', () => {
+    const send = vi.fn();
+    renderChat({ enableSkills: true, onSendMessage: send, materials: [{ id: 'a', title: '论文甲' }] });
+    for (const name of ['对话材料', '功能']) {
+      const trigger = screen.getByRole('button', { name, exact: true });
+      fireEvent.click(trigger);
+      expect(screen.getByRole('dialog', { name, exact: true })).toBeInTheDocument();
+      fireEvent.pointerDown(document.body);
+      expect(screen.queryByRole('dialog', { name, exact: true })).not.toBeInTheDocument();
+      fireEvent.click(trigger);
+      fireEvent.keyDown(document, { key: 'Escape' });
+      expect(screen.queryByRole('dialog', { name, exact: true })).not.toBeInTheDocument();
+      expect(trigger).toHaveFocus();
+    }
+    fireEvent.click(screen.getByRole('button', { name: '对话材料', exact: true }));
+    const functions = screen.getByRole('button', { name: '功能', exact: true });
+    fireEvent.pointerDown(functions); fireEvent.click(functions);
+    expect(screen.queryByRole('dialog', { name: '对话材料', exact: true })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: '/精读', exact: true }));
+    expect(screen.getByLabelText('输入问题')).toHaveValue('/精读 ');
+    expect(screen.getByLabelText('输入问题')).toHaveFocus();
+    expect(screen.queryByRole('dialog', { name: '功能', exact: true })).not.toBeInTheDocument();
+    expect(send).not.toHaveBeenCalled();
+  });
+  it('dismisses typed slash and mention suggestions without deleting the draft', () => {
+    renderChat({ enableSkills: true, materials: [{ id: 'a', title: '论文甲' }] });
+    const input = screen.getByLabelText('输入问题');
+    for (const [text, name] of [['/', '功能命令'], ['解释 @', '选择任务材料']]) {
+      fireEvent.change(input, { target: { value: text } });
+      expect(screen.getByRole('group', { name })).toBeInTheDocument();
+      fireEvent.pointerDown(document.body);
+      expect(screen.queryByRole('group', { name })).not.toBeInTheDocument();
+      expect(input).toHaveValue(text);
+      fireEvent.change(input, { target: { value: `${text}甲` } });
+      fireEvent.change(input, { target: { value: text } });
+      fireEvent.keyDown(document, { key: 'Escape' });
+      expect(screen.queryByRole('group', { name })).not.toBeInTheDocument();
+      expect(input).toHaveValue(text);
+    }
+  });
+  it('keeps materials with identical titles independently selectable by ID', () => {
+    renderChat({ enableSkills: true, materials: [{ id: 'a', title: '同名论文' }, { id: 'b', title: '同名论文' }] });
+    fireEvent.click(screen.getByRole('button', { name: '对话材料' }));
+    const [first, second] = screen.getAllByRole('checkbox', { name: '同名论文' });
+    fireEvent.click(first);
+    expect(first).toBeChecked(); expect(second).not.toBeChecked();
+    fireEvent.click(second); fireEvent.click(first);
+    expect(screen.getByLabelText('输入问题').value.trim()).toBe('@{b}');
+    expect(second).toBeChecked();
   });
   it('marks a retained old answer and opens the current document explicitly', () => {
     const open = vi.fn();
@@ -310,7 +370,7 @@ describe('ChatPanel interaction continuity', () => {
     expect(input).toHaveValue('根据 回答');
     expect(send).not.toHaveBeenCalled();
     fireEvent.click(screen.getByRole('button', { name: '功能', exact: true }));
-    fireEvent.click(screen.getByRole('button', { name: /批判.*检查贡献/ }));
+    fireEvent.click(screen.getByRole('button', { name: '/批判', exact: true }));
     expect(input).toHaveValue('/批判 根据 回答');
   });
 
