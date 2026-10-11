@@ -1,5 +1,5 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { ChevronDown, ChevronUp, Copy, FileText, Link2, MessageSquare, PanelLeftClose, Plus, Search, Send, Trash2, X } from 'lucide-react';
+import { ChevronDown, ChevronUp, Copy, FileText, Link2, Maximize2, MessageSquare, Minimize2, PanelLeftClose, Plus, Search, Send, Trash2, X } from 'lucide-react';
 
 import './ChatPanelInteraction.css';
 
@@ -66,6 +66,7 @@ interface ChatPanelProps {
   contextLabel?: string;
   enableSkills?: boolean;
   materials?: MentionMaterial[];
+  focusedMaterialId?: string | null;
   conversationId?: string;
   renderMessageAfter?: (message: ChatMessage, index: number) => React.ReactNode;
   historyContent?: React.ReactNode;
@@ -129,6 +130,7 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
   contextLabel = '',
   enableSkills = false,
   materials = [],
+  focusedMaterialId,
   conversationId,
   starterPrompts = [],
   renderMessageAfter, historyContent, composerContext, currentActivity, focusMessage, showHeader = false, onCollapse,
@@ -176,6 +178,30 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
   };
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const [inputExpanded, setInputExpanded] = useState(false);
+  const composerRef = useRef<HTMLDivElement | HTMLDialogElement | null>(null);
+  const expandButtonRef = useRef<HTMLButtonElement | null>(null);
+  const previouslyExpanded = useRef(false);
+  const ComposerSurface = inputExpanded ? 'dialog' : 'div';
+  useLayoutEffect(() => {
+    if (!inputExpanded) {
+      if (previouslyExpanded.current) expandButtonRef.current?.focus();
+      previouslyExpanded.current = false;
+      return;
+    }
+    previouslyExpanded.current = true;
+    const dialog = composerRef.current as HTMLDialogElement;
+    dialog.showModal?.();
+    textareaRef.current?.focus();
+    return () => { if (dialog.open) dialog.close(); };
+  }, [inputExpanded]);
+  useLayoutEffect(() => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+    textarea.style.height = 'auto';
+    const maxHeight = parseFloat(getComputedStyle(textarea).maxHeight) || 160;
+    textarea.style.height = `${Math.min(textarea.scrollHeight, maxHeight)}px`;
+  }, [inputValue, conversationId, inputExpanded]);
   const [showFunctions, setShowFunctions] = useState(false);
   const skillSuggestions = enableSkills ? getSkillSuggestions(showFunctions ? '/' : inputValue) : [];
   const pendingMention = enableSkills ? pendingMaterialMention(inputValue) : null;
@@ -185,6 +211,7 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
   const explicitSkill = enableSkills ? parseSkillCommand(inputValue) : null;
   const recognizedSkill = enableSkills ? resolveConversationSkill(inputValue) : null;
   const selectedMentions = enableSkills ? Array.from(new Set(Array.from(String(inputValue).matchAll(/@\{([^}]+)\}/gu), match => match[1]))) : [];
+  const focusedMaterial = materials.find(material => material.id === focusedMaterialId);
   const searchResults = search.trim() ? messages.map((message, index) => ({ message, index }))
     .filter(({ message }) => message.content.toLocaleLowerCase().includes(search.trim().toLocaleLowerCase())) : [];
 
@@ -269,6 +296,7 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
       const action = onSendMessage(submittedText.trim());
       const accepted = typeof (action as Promise<void | boolean>)?.then === 'function' ? await action : action;
       if (accepted === false) return;
+      setInputExpanded(false);
       if (latestDraft.current === submittedText) clearInput(submittedText);
       if (latestDraft.current === submittedText && textareaRef.current) textareaRef.current.style.height = 'auto';
     } catch (error) {
@@ -278,7 +306,7 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>): void => {
     if (event.nativeEvent.isComposing || event.keyCode === 229) return;
-    if (event.key === 'Enter' && !event.shiftKey) {
+    if (event.key === 'Enter' && !event.shiftKey && (!inputExpanded || event.ctrlKey || event.metaKey)) {
       event.preventDefault();
       handleSend();
     }
@@ -286,9 +314,6 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
 
   const handleInputChange = (event: React.ChangeEvent<HTMLTextAreaElement>): void => {
     setInputValue(event.target.value);
-    const textarea = event.target;
-    textarea.style.height = 'auto';
-    textarea.style.height = `${Math.min(textarea.scrollHeight, 192)}px`;
   };
 
   const renderMessageActions = (message: ChatMessage, index: number): React.ReactNode => message.synthetic ? null : (
@@ -435,26 +460,38 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
 
       {hasNewResults && <button type="button" className="chat-new-results" onClick={scrollToLatest}>有新结果 · 查看最新</button>}
       {currentActivity && <div className="chat-current-activity">{currentActivity}</div>}
-      <div className={`workbench-composer-container ${enableSkills ? 'with-tools' : ''} ${isLoading ? 'is-generating' : ''}`}>
+      <ComposerSurface ref={(node: HTMLDivElement | HTMLDialogElement | null) => { composerRef.current = node; }} aria-label={inputExpanded ? '全屏输入' : undefined}
+        onCancel={event => { event.preventDefault(); setInputExpanded(false); }}
+        className={`workbench-composer-container ${enableSkills ? 'with-tools' : ''} ${isLoading ? 'is-generating' : ''} ${inputExpanded ? 'is-expanded' : ''}`}>
+      {inputExpanded && <div className="chat-expanded-heading"><strong>编辑问题</strong><span>Enter 换行 · Ctrl / ⌘ + Enter 发送</span></div>}
+      <button ref={expandButtonRef} type="button" className="chat-expand-input" aria-label={inputExpanded ? '收起输入' : '展开输入'}
+        title={inputExpanded ? '收起输入（Esc）' : '展开输入'} aria-expanded={inputExpanded} aria-haspopup={inputExpanded ? undefined : 'dialog'}
+        onClick={() => setInputExpanded(value => !value)}>{inputExpanded ? <Minimize2 size={14} /> : <Maximize2 size={14} />}</button>
       <div className="reader-chat-composer">
-        <textarea ref={textareaRef} rows={3} value={inputValue} onChange={handleInputChange} onKeyDown={handleKeyDown}
+        <textarea ref={textareaRef} rows={2} value={inputValue} onChange={handleInputChange} onKeyDown={handleKeyDown}
           aria-label="输入问题" placeholder={enableSkills ? '输入问题，/ 选功能，@ 选材料' : '输入问题'} />
       </div>
       {(composerContext !== undefined ? composerContext : contextLabel) && <div className="reader-chat-context chat-composer-context">{composerContext !== undefined ? composerContext : contextLabel}</div>}
+      {copyError && <p className="reader-chat-draft-error" role="alert">{copyError}</p>}
+      {(draftError || sendError) && <p className="reader-chat-draft-error" role="alert">{draftError || sendError}</p>}
       {enableSkills && <div className="chat-composer-tools">
-        <WorkbenchPopover label="对话材料" align="left" trigger={<><FileText size={13} /><span>{selectedMentions.length ? `指定材料 ${selectedMentions.length} 篇` : `任务材料 ${materials.length} 篇`}</span></>}>
+        <WorkbenchPopover label="对话材料" className="chat-material-selector" align="left" trigger={<><FileText size={14} /><span>{selectedMentions.length ? `指定材料 ${selectedMentions.length} 篇` : `任务材料 ${materials.length} 篇`}</span><ChevronDown size={12} /></>}>
           {(close: (restore?: boolean) => void) => <><p className="workbench-menu-caption">默认可使用任务全部材料。指定论文后，使用指定材料。</p>
+            {focusedMaterial && <p className="workbench-menu-caption">当前论文：{focusedMaterial.title || focusedMaterial.filename || focusedMaterial.id}。“这篇”以它为主，显式指定优先。</p>}
             <button type="button" onClick={() => { setInputValue(inputValue.replace(/@\{[^}]+\}/gu, '').replace(/ {2,}/gu, ' ').trimStart()); close(); }}>使用本任务全部材料</button>
             {materials.map(material => <button key={material.id} type="button" onClick={() => {
-              setInputValue(completeMaterialMention(`${inputValue}${inputValue && !/\s$/u.test(inputValue) ? ' ' : ''}@`, material, materials)); close(false); textareaRef.current?.focus();
+              const label = material.title || material.filename || material.id;
+              if (!selectedMentions.includes(label) && !selectedMentions.includes(material.id)) {
+                setInputValue(completeMaterialMention(`${inputValue}${inputValue && !/\s$/u.test(inputValue) ? ' ' : ''}@`, material, materials));
+              }
+              close(false); textareaRef.current?.focus();
             }}>{material.title || material.filename || material.id}</button>)}</>}
         </WorkbenchPopover>
         <button type="button" aria-expanded={showFunctions} onClick={() => { setShowFunctions(value => !value); textareaRef.current?.focus(); }}>功能</button>
-        <button type="button" onClick={() => { setInputValue(`${inputValue}${inputValue && !/\s$/u.test(inputValue) ? ' ' : ''}@`); textareaRef.current?.focus(); }}>@ 材料</button>
         {recognizedSkill && <span className="chat-draft-chip">{recognizedSkill.command}
           {explicitSkill && <button type="button" aria-label={`取消${explicitSkill.command}功能`} onClick={() => setInputValue(inputValue.replace(/^\s*\/[^\s]+\s*/u, ''))}><X size={12} /></button>}
         </span>}
-        {selectedMentions.map(label => <span key={label} className="chat-draft-chip" title={label}>@{label}
+        {selectedMentions.map(label => <span key={label} className="chat-draft-chip" title={label}><span className="chat-draft-chip-label">@{label}</span>
           <button type="button" aria-label={`移除材料 ${label}`} onClick={() => setInputValue(inputValue.split(`@{${label}}`).join('').replace(/ {2,}/gu, ' '))}><X size={12} /></button>
         </span>)}
       </div>}
@@ -484,9 +521,7 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
           <Send size={18} />
         </button>
       </div>
-      </div>
-      {copyError && <p className="reader-chat-draft-error" role="alert">{copyError}</p>}
-      {(draftError || sendError) && <p className="reader-chat-draft-error" role="alert">{draftError || sendError}</p>}
+      </ComposerSurface>
     </div>
   );
 };

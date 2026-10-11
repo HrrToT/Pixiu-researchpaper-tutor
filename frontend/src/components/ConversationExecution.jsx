@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { operationStatusLabels, operationQuestion } from './conversationProcessingModel';
+import WorkbenchPopover from './WorkbenchPopover';
 
 const activeStatuses = new Set(['queued', 'running', 'unknown', 'cancelling']);
 /** Controls operate on the saved request ID; unconfirmed requests are queried first. */
@@ -13,17 +14,23 @@ export function OperationRecord({ record, busy, showQuestion = true, onRetry, on
     try { Promise.resolve(handler(...args)).catch(error => setActionError(error?.message || '操作未完成，请重试。')); }
     catch (error) { setActionError(error?.message || '操作未完成，请重试。'); }
   };
-  return <div className="unified-execution-row" data-request-id={record.requestId}>
-    <span role="status">{operationStatusLabels[record.status] || record.status}</span>
+  return <div className="unified-execution-row" data-request-id={record.requestId} data-status={record.status}>
+    <span role="status" className="unified-execution-status"><span className="unified-execution-dot" aria-hidden="true" />{operationStatusLabels[record.status] || record.status}</span>
     {showQuestion && question && <span className="unified-execution-question" title={question}>{question}</span>}
+    <div className="unified-execution-actions">
     {record.retriedBy ? <span>已由后续请求接续</span> : record.status === 'succeeded'
       ? onLocate && <button type="button" onClick={() => invoke(onLocate, record)}>打开对应对话</button>
       : record.status === 'awaiting_submission'
       ? <><button type="button" disabled={!onRefresh} onClick={() => invoke(onRefresh)}>查询状态</button><button type="button" disabled={busy || !onSubmitSaved} onClick={() => invoke(onSubmitSaved, record.requestId)}>继续发送</button><button type="button" disabled={!onCancel} onClick={() => invoke(onCancel, record.requestId)}>停止</button></>
       : activeStatuses.has(record.status)
-      ? <><button type="button" disabled={!onRefresh} onClick={() => invoke(onRefresh)}>查询状态</button><button type="button" disabled={record.status === 'cancelling' || !onCancel} onClick={() => invoke(onCancel, record.requestId)}>停止</button></>
+      ? <>{record.status === 'unknown' && <button type="button" onClick={() => invoke(onRefresh)} disabled={!onRefresh}>查询状态</button>}
+        <button type="button" disabled={record.status === 'cancelling' || !onCancel} onClick={() => invoke(onCancel, record.requestId)}>{record.status === 'cancelling' ? '停止中' : '停止'}</button>
+        {record.status !== 'unknown' && onRefresh && <WorkbenchPopover label="请求更多操作">
+          {close => <button type="button" onClick={() => { invoke(onRefresh); close(); }}>查询状态</button>}
+        </WorkbenchPopover>}</>
       : record.status !== 'conflicted' && <button type="button" disabled={busy || !record.request || !onRetry} onClick={() => invoke(onRetry, record.requestId)}>重试</button>}
     {record.status === 'conflicted' && text && <button type="button" disabled={!onOpenResult} onClick={() => invoke(onOpenResult, record)}>打开已生成结果</button>}
+    </div>
     {record.error && <details><summary>详情</summary><p>{record.error}</p></details>}
     {actionError && <p role="alert">{actionError}</p>}
   </div>;

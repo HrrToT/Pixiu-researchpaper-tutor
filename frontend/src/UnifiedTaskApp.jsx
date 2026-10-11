@@ -1005,7 +1005,7 @@ export default function UnifiedTaskApp() {
     return !result || !['succeeded', 'failed', 'cancelled'].includes(result.status);
   });
   const activityEntries = [
-    ...pendingOperations.map(record => ({ id: record.requestId, label: record.status === 'unknown' ? '正在确认结果' : record.status === 'awaiting_submission' ? '提交待确认' : record.status === 'cancelling' ? '正在停止' : '正在处理', locate: () => locateOperation(record) })),
+    ...pendingOperations.map(record => ({ id: record.requestId, label: '返回当前请求', isRequest: true, locate: () => locateOperation(record) })),
     ...pendingResearch.map(run => ({ id: run.researchId, label: `研究 · ${researchResult(run) ? getResearchStatusMeta(researchResult(run).status).label : '正在读取'}`, locate: () => locateResearch(run),
       stop: () => research.action(activeTaskId, run.researchId, 'cancel') })),
     ...(currentLearning?.status === 'active' && learning.inputMode !== 'chat' && !pendingOperations.length ? [{ id: currentLearning.activityId,
@@ -1026,9 +1026,9 @@ export default function UnifiedTaskApp() {
     </>;
   };
   const currentActivityBar = activityEntries.length > 0 ? <div className="unified-current-activity" aria-label="当前活动">
-    <button type="button" onClick={activityEntries[0].locate}>{activityEntries[0].label} · 定位</button>
+    <button type="button" onClick={activityEntries[0].locate}>{activityEntries[0].label}{!activityEntries[0].isRequest && ' · 查看'}</button>
     {activityEntries[0].stop && <button type="button" onClick={() => activityEntries[0].stop()}>停止研究</button>}
-    {activityEntries.length > 1 && <details><summary>另有 {activityEntries.length - 1} 项</summary>{activityEntries.slice(1).map(entry => <button type="button" key={entry.id} onClick={entry.locate}>{entry.label} · 定位</button>)}</details>}
+    {activityEntries.length > 1 && <details><summary>另有 {activityEntries.length - 1} 项</summary>{activityEntries.slice(1).map(entry => <button type="button" key={entry.id} onClick={entry.locate}>{entry.label}{!entry.isRequest && ' · 查看'}</button>)}</details>}
   </div> : null;
   let draftPrimaryPaperId = null;
   if (activeTask && composerDraft.trim() && !/@\{/u.test(composerDraft)) {
@@ -1040,8 +1040,7 @@ export default function UnifiedTaskApp() {
     } catch { /* Submission explains an ambiguous scope without guessing its primary paper. */ }
   }
   const composerContext = <>
-    <div className="unified-composer-context">
-      {focusedPaperId && <span title={getPaperTitle(papers, focusedPaperId)}>当前论文：{shortPaperTitle(papers, focusedPaperId)}</span>}
+    {(draftPrimaryPaperId || critiqueSelection?.taskId === activeTaskId || currentLearning?.status === 'active') && <div className="unified-composer-context">
       {draftPrimaryPaperId && <span>主要参考 {shortPaperTitle(papers, draftPrimaryPaperId)}</span>}
       {critiqueSelection?.taskId === activeTaskId && <span>{critiqueSelection.followup.regenerate ? '重新核查' : '追问'} {critiqueSelection.title || '批判成果'} · 保存于 {critiqueSelection.followup.version}
         <button type="button" onClick={() => setCritiqueSelection(null)}>取消追问关联</button></span>}
@@ -1054,7 +1053,7 @@ export default function UnifiedTaskApp() {
         </details>
         {[['pause', '暂停'], ['finish', '结束']].map(([action, label]) => <button type="button" key={action} disabled={learning.busyTasks[activeTaskId]} onClick={() => learning.act(activeTask, action)}>{label}</button>)}
       </>}
-    </div>
+    </div>}
     {intentChoice?.taskId === activeTaskId && <div className="unified-intent-choice" role="group" aria-label="选择分析重点">
       <span>{intentChoice.prompt}</span>{intentChoice.choices.map(choice => <button type="button" key={choice.skill.skillId} disabled={learning.busyTasks[activeTaskId]} onClick={() => sendMessage(intentChoice.text, choice.skill)}>{choice.label}</button>)}
       <button type="button" onClick={() => setIntentChoice(null)}>取消</button>
@@ -1266,7 +1265,7 @@ export default function UnifiedTaskApp() {
           onSaveToNote={index => saveMessage(timeline[index]?.originalIndex, false)} onCaptureArtifact={index => saveMessage(timeline[index]?.originalIndex)}
           onOpenArtifact={openArtifact} onJumpToSource={jumpToSource} onAbortChat={() => learning.cancel(activeTaskId)}
           isLoading={Boolean(learning.busyTasks[activeTaskId])} showLoadingIndicator={false} enableSkills
-          renderMessageAfter={renderAfterMessage} currentActivity={currentActivityBar} composerContext={composerContext} focusMessage={focusMessage} onDraftChange={setComposerDraft} />
+          renderMessageAfter={renderAfterMessage} currentActivity={currentActivityBar} composerContext={composerContext} focusedMaterialId={focusedPaperId} focusMessage={focusMessage} onDraftChange={setComposerDraft} />
           : <div className="unified-empty"><p>创建任务后，即可围绕论文持续讨论。</p><button type="button" onClick={() => createTask({ title: '新任务' })}>新任务</button></div>}
       </section>
       {!layout.reader && <button type="button" className="unified-restore unified-restore-reader" onClick={() => patchLayout({ reader: true, mode: 'split' })} aria-label="展开阅读区"><PanelLeftOpen size={16} />阅读</button>}

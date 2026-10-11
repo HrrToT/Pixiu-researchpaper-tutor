@@ -1,6 +1,6 @@
 import React from 'react';
 import { act, render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import ChatPanel from './ChatPanel.tsx';
 
 const defaultProps = {
@@ -19,7 +19,64 @@ function renderChat(props = {}) {
 }
 
 describe('ChatPanel', () => {
+  beforeAll(() => {
+    // jsdom does not implement the native dialog top layer; real focus trapping is checked in-browser.
+    if (!HTMLDialogElement.prototype.showModal) HTMLDialogElement.prototype.showModal = function () { this.open = true; };
+    if (!HTMLDialogElement.prototype.close) HTMLDialogElement.prototype.close = function () { this.open = false; };
+  });
   beforeEach(() => localStorage.clear());
+  it('uses one material entry and keeps reader focus inside its popover', () => {
+    renderChat({ enableSkills: true, focusedMaterialId: 'a', materials: [{ id: 'a', title: '论文甲' }] });
+    expect(screen.queryByRole('button', { name: '@ 材料' })).not.toBeInTheDocument();
+    expect(screen.queryByText(/当前论文：/)).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: '对话材料' }));
+    expect(screen.getByText(/当前论文：论文甲/)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: '论文甲', exact: true }));
+    const input = screen.getByLabelText('输入问题');
+    const selected = input.value;
+    fireEvent.click(screen.getByRole('button', { name: '对话材料' }));
+    fireEvent.click(screen.getByRole('button', { name: '论文甲', exact: true }));
+    expect(input).toHaveValue(selected);
+    expect(screen.getByText('指定材料 1 篇')).toBeInTheDocument();
+  });
+  it('expands the same draft and material scope, then returns with Escape without sending', () => {
+    const send = vi.fn();
+    renderChat({ enableSkills: true, conversationId: 'expanded', onSendMessage: send, materials: [{ id: 'a', title: '论文甲' }] });
+    fireEvent.change(screen.getByLabelText('输入问题'), { target: { value: '只根据 @{论文甲} 请帮我设计实验' } });
+    fireEvent.click(screen.getByRole('button', { name: '展开输入' }));
+    const dialog = screen.getByRole('dialog', { name: '全屏输入' });
+    expect(screen.getByLabelText('输入问题')).toHaveFocus();
+    expect(screen.getByText('指定材料 1 篇')).toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText('输入问题'), { target: { value: '只根据 @{论文甲} 请帮我设计实验\n再列出对照条件' } });
+    fireEvent(dialog, new Event('cancel', { bubbles: false, cancelable: true }));
+    expect(screen.queryByRole('dialog', { name: '全屏输入' })).not.toBeInTheDocument();
+    expect(screen.getByLabelText('输入问题')).toHaveValue('只根据 @{论文甲} 请帮我设计实验\n再列出对照条件');
+    expect(screen.getByRole('button', { name: '展开输入' })).toHaveFocus();
+    expect(send).not.toHaveBeenCalled();
+  });
+  it('uses Enter for fullscreen writing and Ctrl+Enter to send and return to chat', async () => {
+    const send = vi.fn().mockResolvedValue(true);
+    renderChat({ onSendMessage: send });
+    fireEvent.change(screen.getByLabelText('输入问题'), { target: { value: '多行问题' } });
+    fireEvent.click(screen.getByRole('button', { name: '展开输入' }));
+    fireEvent.keyDown(screen.getByLabelText('输入问题'), { key: 'Enter' });
+    expect(send).not.toHaveBeenCalled();
+    fireEvent.keyDown(screen.getByLabelText('输入问题'), { key: 'Enter', ctrlKey: true });
+    await waitFor(() => expect(screen.queryByRole('dialog', { name: '全屏输入' })).not.toBeInTheDocument());
+    expect(send).toHaveBeenCalledExactlyOnceWith('多行问题');
+    expect(screen.getByLabelText('输入问题')).toHaveValue('');
+  });
+  it('keeps a failed fullscreen submission visible and editable', async () => {
+    renderChat({ onSendMessage: vi.fn().mockRejectedValue(new Error('网络不可用')) });
+    fireEvent.change(screen.getByLabelText('输入问题'), { target: { value: '保留这个问题' } });
+    fireEvent.click(screen.getByRole('button', { name: '展开输入' }));
+    fireEvent.click(screen.getByRole('button', { name: '发送消息' }));
+    await waitFor(() => expect(screen.getByRole('alert')).toHaveTextContent('网络不可用'));
+    expect(screen.getByRole('dialog', { name: '全屏输入' })).toContainElement(screen.getByRole('alert'));
+    expect(screen.getByLabelText('输入问题')).toHaveValue('保留这个问题');
+    fireEvent.click(screen.getByRole('button', { name: '收起输入' }));
+    expect(screen.getByLabelText('输入问题')).toHaveValue('保留这个问题');
+  });
   it('selects materials without sending and returns to the preserved question', async () => {
     const send = vi.fn();
     renderChat({ enableSkills: true, onSendMessage: send, materials: [{ id: 'a', title: '论文甲' }, { id: 'b', title: '论文乙' }] });

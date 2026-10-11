@@ -21,6 +21,19 @@ it('offers status checking and stopping instead of retry while the result is unc
   expect(screen.queryByRole('button', { name: '重试' })).not.toBeInTheDocument();
 });
 
+it('keeps normal processing compact and moves manual checking behind more actions', () => {
+  const cancel = vi.fn(), refresh = vi.fn();
+  render(<OperationRecord record={{ requestId: 'running-id', status: 'running' }} onCancel={cancel} onRefresh={refresh} />);
+  expect(screen.getAllByRole('status')).toHaveLength(1);
+  expect(screen.queryByRole('button', { name: '查询状态' })).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole('button', { name: '停止', exact: true }));
+  expect(cancel).toHaveBeenCalledExactlyOnceWith('running-id');
+  fireEvent.click(screen.getByRole('button', { name: '请求更多操作' }));
+  fireEvent.click(screen.getByRole('button', { name: '查询状态' }));
+  expect(refresh).toHaveBeenCalledTimes(1);
+  expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+});
+
 it('does not offer paid retry for a generated result that could not be applied', () => {
   const open = vi.fn();
   const record = { taskId: 'task', requestId: 'conflict', status: 'conflicted', result: { artifact: { text: 'complete report' } } };
