@@ -316,14 +316,14 @@ interface InlineContextMenuProps {
   onAction: (actionId: string) => void;
 }
 
-const InlineContextMenu: React.FC<InlineContextMenuProps> = ({ selectionRegion, onAction }) => (
+const InlineContextMenu: React.FC<InlineContextMenuProps & { onColorHighlight?: (color: string) => void }> = ({ selectionRegion, onAction, onColorHighlight }) => (
   <div
     className="inline-context-menu absolute z-50 flex items-center gap-1.5"
     style={{
       top: `${selectionRegion.top + selectionRegion.height}%`,
       left: `clamp(8px, ${selectionRegion.left}%, max(8px, calc(100% - 360px)))`,
       width: 'max-content',
-      maxWidth: 'calc(100% - 16px)',
+      maxWidth: 'min(360px, calc(100% - 16px))',
       flexWrap: 'wrap',
       transform: 'translateY(10px)',
     }}
@@ -343,6 +343,12 @@ const InlineContextMenu: React.FC<InlineContextMenuProps> = ({ selectionRegion, 
         </button>
       );
     })}
+    {onColorHighlight && <div role="group" aria-label="高亮颜色" style={{ display: 'flex', gap: 6, padding: '4px 8px' }}>
+      {HIGHLIGHT_COLORS.map(color => <button key={color.value} type="button" title={color.label}
+        onClick={() => onColorHighlight(color.value)}
+        style={{ width: 20, height: 20, borderRadius: '50%', backgroundColor: color.hex,
+          border: '2px solid #fff', boxShadow: '0 0 0 1px rgba(0,0,0,0.2)', cursor: 'pointer' }} />)}
+    </div>}
   </div>
 );
 
@@ -1111,21 +1117,11 @@ const PdfViewer: React.FC<PdfViewerProps> = ({
       }
 
       return !activeHighlightId ? (
-        <>
-          <div style={{ display: 'flex', gap: 6, padding: '0 8px 4px', justifyContent: 'center' }}>
-            {HIGHLIGHT_COLORS.map((c) => (
-              <button key={c.value} type="button"
-                onClick={() => handleColorHighlight(c.value, props as unknown as Record<string, unknown>)}
-                style={{ width: 20, height: 20, borderRadius: '50%', backgroundColor: c.hex,
-                  border: '2px solid #fff', boxShadow: '0 0 0 1px rgba(0,0,0,0.2)', cursor: 'pointer' }}
-                title={c.label} />
-            ))}
-          </div>
           <InlineContextMenu
             selectionRegion={props.selectionRegion}
             onAction={(actionId: string) => handleSelectionAction(actionId, props as unknown as Record<string, unknown>)}
+            onColorHighlight={(color: string) => handleColorHighlight(color, props as unknown as Record<string, unknown>)}
           />
-        </>
       ) : null;
     },
     renderHighlights: (props: RenderHighlightsProps) => (

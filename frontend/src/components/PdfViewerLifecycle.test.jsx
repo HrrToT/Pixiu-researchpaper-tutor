@@ -4,11 +4,13 @@ import { beforeEach, expect, it, vi } from 'vitest';
 const state = vi.hoisted(() => ({ viewer: null, mounts: 0, jump: vi.fn(), zoom: vi.fn(), loadError: false, cachedDoc: null }));
 vi.mock('@react-pdf-viewer/core', () => ({ SpecialZoomLevel: { PageWidth: 'PageWidth' }, Worker: ({ children }) => children, Viewer: props => {
   state.viewer = props;
+  const initial = React.useRef(props);
   React.useEffect(() => {
     state.mounts += 1;
-    props.plugins.forEach(plugin => plugin.install?.({ jumpToPage: state.jump, zoom: state.zoom }));
-    if (state.cachedDoc) props.onDocumentLoad({doc: state.cachedDoc});
-    return () => props.plugins.forEach(plugin => plugin.uninstall?.({}));
+    const loadedProps = initial.current;
+    loadedProps.plugins.forEach(plugin => plugin.install?.({ jumpToPage: state.jump, zoom: state.zoom }));
+    if (state.cachedDoc) loadedProps.onDocumentLoad({doc: state.cachedDoc});
+    return () => loadedProps.plugins.forEach(plugin => plugin.uninstall?.({}));
   }, []);
   return state.loadError ? props.renderError({name:'InvalidPDFException',message:'broken'}) : <div className="rpv-core__inner-pages" data-testid="pdf-scroll">{props.plugins.map((plugin, index) => <React.Fragment key={index}>{plugin.renderHighlights?.({pageIndex:0,rotation:0,getCssProperties:()=>({})})}</React.Fragment>)}</div>;
 } }));
@@ -123,6 +125,24 @@ const highlight = {id:1,sourceAnchorId:'anchor-1',text:'selected phrase',positio
   highlightAreas:[{pageIndex:0,top:10,left:10,width:20,height:3}],actionId:'explain',actionLabel:'解释',
   chatHistory:[{role:'user',content:'selected phrase'},{role:'ai',content:'A'.repeat(260)+'完整解释末尾'}]};
 const readyDoc = {numPages:2,getPage:async()=>({getViewport:()=>viewport,getTextContent:async()=>textContent('body')})};
+
+it('keeps color controls beside selection actions and saves a reopenable highlight', async () => {
+  render(<PdfViewer fileUrl="A.pdf" pdfId="A" />);
+  await act(async () => state.viewer.onDocumentLoad({doc: readyDoc}));
+  const cancel = vi.fn();
+  const target = state.viewer.plugins.find(plugin => plugin.renderHighlightTarget).renderHighlightTarget({
+    selectedText: 'selected phrase', selectionRegion: highlight.position,
+    highlightAreas: highlight.highlightAreas, cancel,
+  });
+  const menu = render(target);
+  expect(screen.getByRole('group', {name: '高亮颜色'}).closest('.inline-context-menu'))
+    .toBe(screen.getByRole('button', {name: '解释', exact: true}).closest('.inline-context-menu'));
+  fireEvent.click(screen.getByRole('button', {name: '黄色', exact: true}));
+  expect(cancel).toHaveBeenCalledOnce();
+  menu.unmount();
+  fireEvent.click(screen.getByRole('button', {name: '查看划线解释：selected phrase'}));
+  expect(screen.getByRole('dialog')).toHaveTextContent('文本高亮标记');
+});
 
 it('collapses long explanations and closes them on Escape, page changes and hidden readers without deleting highlights', async () => {
   const props = {fileUrl:'A.pdf',pdfId:'A',initialHighlights:[highlight]};
