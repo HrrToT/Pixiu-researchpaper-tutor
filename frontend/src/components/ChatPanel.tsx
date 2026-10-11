@@ -1,5 +1,5 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { Check, ChevronDown, ChevronUp, Copy, FileText, Link2, Maximize2, MessageSquare, Minimize2, PanelLeftClose, Plus, Search, Send, Trash2, X } from 'lucide-react';
+import { Check, ChevronDown, ChevronUp, Copy, FileText, Link2, Maximize2, MessageSquare, Minimize2, PanelRightClose, Plus, Search, Send, Trash2, X } from 'lucide-react';
 
 import './ChatPanelInteraction.css';
 
@@ -378,7 +378,7 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
       <div className={showHeader ? 'unified-pane-head chat-panel-heading' : 'chat-history-tools'}>
         {showHeader && <><MessageSquare size={17} /><strong>对话</strong></>}
         <button ref={searchTrigger} type="button" aria-label="查找对话" title="查找对话" aria-expanded={searchOpen} onClick={() => { setSearchOpen(value => !value); setSearch(''); }}><Search size={16} /></button>
-        {onCollapse && <button type="button" className="unified-pane-hide" onClick={onCollapse} aria-label="收起对话区"><PanelLeftClose size={16} /></button>}
+        {onCollapse && <button type="button" className="unified-pane-hide" title="向右收起对话区" onClick={onCollapse} aria-label="收起对话区"><PanelRightClose size={16} /></button>}
       </div>
       {searchOpen && <div className="chat-history-search">
         <input ref={searchInput} aria-label="搜索对话" placeholder="搜索对话" value={search} onChange={event => setSearch(event.target.value)} onKeyDown={event => {

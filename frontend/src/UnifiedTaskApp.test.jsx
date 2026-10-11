@@ -132,6 +132,39 @@ describe('unified task conversation wiring', () => {
     expect(screen.getByRole('region', { name: '论文与成果' })).not.toHaveClass('unified-desktop-hidden');
   });
 
+  it('keeps layout selection consistent with collapse and preserves resized proportions', () => {
+    render(<UnifiedTaskApp />);
+    fireEvent.keyDown(screen.getByRole('separator', { name: '调整阅读与对话宽度' }), { key: 'ArrowRight' });
+    fireEvent.click(screen.getByRole('button', { name: '收起阅读区' }));
+    fireEvent.click(screen.getByRole('button', { name: '布局', exact: true }));
+    expect(screen.getByRole('button', { name: '仅对话', exact: true })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.queryByRole('button', { name: '重置栏宽' })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: '阅读与对话', exact: true }));
+    expect(screen.getByRole('separator', { name: '调整阅读与对话宽度' })).toHaveAttribute('aria-valuenow', '68');
+    expect(screen.getByRole('region', { name: '论文与成果' })).not.toHaveClass('unified-desktop-hidden');
+  });
+
+  it('offers only usable single-pane layouts on compact screens', () => {
+    state.compact = true;
+    render(<UnifiedTaskApp />);
+    fireEvent.click(screen.getByRole('button', { name: '布局', exact: true }));
+    expect(screen.queryByRole('button', { name: '阅读与对话', exact: true })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '仅阅读', exact: true })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '仅对话', exact: true })).toBeInTheDocument();
+  });
+
+  it('clears contextual return when opening the original normally', async () => {
+    state.task.focusedPaperId = 'a';
+    state.task.notes = [{ id: 'n', title: '实验笔记', text: '正文' }];
+    render(<UnifiedTaskApp />);
+    expect(screen.queryByRole('button', { name: '返回记录' })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: '实验笔记 · 笔记' }));
+    await act(async () => state.chatProps.onJumpToSource({ pdfId: 'a', pageIndex: 3 }));
+    fireEvent.click(screen.getByRole('button', { name: '返回笔记' }));
+    fireEvent.click(screen.getByRole('button', { name: '查看原文', exact: true }));
+    expect(screen.queryByRole('button', { name: '返回笔记' })).not.toBeInTheDocument();
+  });
+
   it('waits for a slow translation cache read before persisting any replacement', async () => {
     state.task.focusedPaperId = 'a';
     localStorage.setItem('pixiu-reading-position:["task","a"]','6');
@@ -507,7 +540,7 @@ describe('unified task conversation wiring', () => {
     expect(retainedPaper.querySelector('[aria-label="论文页码"]')).not.toBeNull();
     // A layout observer in the hidden viewer must not overwrite visible position.
     act(() => state.pdfProps.onPageChange({pageIndex: 0, totalPages: 20}));
-    fireEvent.click(screen.getByRole('button', {name: '返回论文', exact: true}));
+    fireEvent.click(screen.getByRole('button', {name: '查看原文', exact: true}));
     expect(screen.getByTestId('paper-viewer')).toBeVisible();
     expect(screen.getByRole('textbox', {name: '跳转到页码'})).toHaveValue('7');
     expect(screen.getByRole('form',{name:'论文页码'})).toHaveTextContent('/ 20 页');
@@ -578,7 +611,7 @@ describe('unified task conversation wiring', () => {
       set(value) { liveScrollTop = value; },
     });
     await act(async () => state.chatProps.onJumpToSource({ pdfId: 'a', pageIndex: 3 }));
-    fireEvent.click(screen.getByRole('button', { name: '返回记录' }));
+    fireEvent.click(screen.getByRole('button', { name: '返回笔记' }));
     expect(screen.getByRole('article', { name: '成果正文' })).toHaveTextContent('未保存的实验想法');
     expect(screen.getByRole('article', { name: '成果正文' }).closest('.unified-document').scrollTop).toBe(135);
     view.unmount();
@@ -677,17 +710,18 @@ describe('unified task conversation wiring', () => {
   });
 
   it('restores unsaved note edits after leaving the editor, including an intentionally empty draft', async () => {
+    state.task.focusedPaperId = 'a';
     state.task.notes = [{ id: 'note', title: '我的笔记', text: '已保存正文' }];
     render(<UnifiedTaskApp />);
     fireEvent.click(screen.getByRole('button', { name: '我的笔记 · 笔记' }));
     fireEvent.click(screen.getByRole('button', { name: '编辑', exact: true }));
     fireEvent.change(screen.getByRole('textbox', { name: '编辑笔记与成果' }), { target: { value: '尚未提交的修改' } });
-    fireEvent.click(screen.getByRole('button', { name: '返回论文' }));
+    fireEvent.click(screen.getByRole('button', { name: '查看原文' }));
     fireEvent.click(screen.getByRole('button', { name: '我的笔记 · 笔记' }));
     fireEvent.click(screen.getByRole('button', { name: '编辑', exact: true }));
     expect(screen.getByRole('textbox', { name: '编辑笔记与成果' })).toHaveValue('尚未提交的修改');
     fireEvent.change(screen.getByRole('textbox', { name: '编辑笔记与成果' }), { target: { value: '' } });
-    fireEvent.click(screen.getByRole('button', { name: '返回论文' }));
+    fireEvent.click(screen.getByRole('button', { name: '查看原文' }));
     fireEvent.click(screen.getByRole('button', { name: '我的笔记 · 笔记' }));
     fireEvent.click(screen.getByRole('button', { name: '编辑', exact: true }));
     expect(screen.getByRole('textbox', { name: '编辑笔记与成果' })).toHaveValue('');
@@ -719,6 +753,7 @@ describe('unified task conversation wiring', () => {
   });
 
   it('blocks an old editor draft even after background refresh adopts the newer task revision', async () => {
+    state.task.focusedPaperId = 'a';
     state.task.notes = [{ id: 'note', title: '并发笔记', text: '原正文' }];
     const view = render(<UnifiedTaskApp />);
     fireEvent.click(screen.getByRole('button', { name: '并发笔记 · 笔记', exact: true }));
@@ -730,7 +765,7 @@ describe('unified task conversation wiring', () => {
     await waitFor(() => expect(state.retainDraft).toHaveBeenCalledWith(expect.objectContaining({ notes: [expect.objectContaining({ text: '我的旧草稿' })] }), 'document-conflict'));
     expect(state.task.notes[0].text).toBe('另一客户端的新正文');
     expect(state.writes).toBe(0);
-    fireEvent.click(screen.getByRole('button', { name: '返回论文', exact: true }));
+    fireEvent.click(screen.getByRole('button', { name: '查看原文', exact: true }));
     fireEvent.click(screen.getByRole('button', { name: '并发笔记 · 笔记', exact: true }));
     fireEvent.click(screen.getByRole('button', { name: '编辑', exact: true }));
     expect(screen.getByRole('textbox', { name: '编辑笔记与成果' })).toHaveValue('我的旧草稿');

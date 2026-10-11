@@ -6,7 +6,7 @@ import useWorkbenchWidth from './hooks/useWorkbenchWidth';
 import { clamp, DEFAULT_WORKBENCH_LAYOUT, workbenchLayout } from './utils/workbenchLayout';
 import PaperPageNavigation from './components/PaperPageNavigation';
 import { selectionNote } from './utils/selectionNote';
-import { BookOpen, ChevronLeft, ChevronRight, FilePlus2, Languages, MessageSquare, PanelLeftClose, PanelLeftOpen, PanelsTopLeft, Save, SunMoon, Upload } from 'lucide-react';
+import { BookOpen, ChevronLeft, ChevronRight, FilePlus2, Languages, MessageSquare, PanelLeftClose, PanelLeftOpen, PanelRightOpen, Save, SunMoon, Upload } from 'lucide-react';
 import ChatPanel from './components/ChatPanel';
 import MarkdownContent from './components/MarkdownContent';
 import CritiqueContent from './components/CritiqueContent';
@@ -110,6 +110,7 @@ export default function UnifiedTaskApp() {
     setLayout((current) => {
       const next = { ...current, ...patch };
       if (!next.reader && !next.chat) next.reader = true;
+      next.mode = next.reader && next.chat ? 'split' : next.reader ? 'reader' : 'chat';
       return next;
     });
   }, [compact]);
@@ -417,6 +418,7 @@ export default function UnifiedTaskApp() {
     setSelectedDocument(null);
     setSelectedLearning(null);
     setRecoveryPreview(null);
+    setReturnContent(null);
     storeView(taskId, { kind: 'paper' });
     patchLayout({ reader: true });
     await updateTask(taskId, { focusedPaperId: paperId });
@@ -663,6 +665,7 @@ export default function UnifiedTaskApp() {
     storeView(activeTaskId, view, true); setReturnContent(view); patchLayout({ reader: true });
   };
   const returnToPaper = () => {
+    setReturnContent(null);
     setSelectedDocument(null); setSelectedLearning(null); setRecoveryPreview(null); setLocalError('');
     storeView(activeTaskId, { kind: 'paper' });
   };
@@ -690,8 +693,7 @@ export default function UnifiedTaskApp() {
     if (!activeTask || restoredContentTask.current === activeTaskId) return;
     restoredContentTask.current = activeTaskId;
     try {
-      const previous = JSON.parse(localStorage.getItem(contentReturnKey(activeTaskId)) || 'null');
-      setReturnContent(previous);
+      setReturnContent(null);
       const view = JSON.parse(localStorage.getItem(contentViewKey(activeTaskId)) || 'null');
       if (view && view.kind !== 'paper' && !restoreContent(view)) setLocalError('上次打开的记录已移动或暂不可用，请从任务导航重新选择。');
     } catch { setLocalError('上次阅读位置暂不可用，任务记录仍保留。'); }
@@ -871,6 +873,8 @@ export default function UnifiedTaskApp() {
       }
     }
     if (activeTaskIdRef.current !== activeTaskId) return false;
+    const sourceReturn = selectedDocument ? { kind: 'document', collection: selectedDocument.collection, id: selectedDocument.id, index: selectedDocument.index }
+      : selectedLearning ? { kind: 'learning', id: selectedLearning.id } : recoveryPreview ? { kind: 'preview', record: recoveryPreview } : null;
     setLocalError('');
     setSelectedDocument(null);
     setSelectedLearning(null);
@@ -878,6 +882,7 @@ export default function UnifiedTaskApp() {
     storeView(activeTaskId, { kind: 'paper' });
     if (targetPaperId !== activeTask.focusedPaperId) await openPaper(targetPaperId);
     if (activeTaskIdRef.current !== activeTaskId) return false;
+    setReturnContent(sourceReturn);
     if (Number.isInteger(index) && index >= 0) setJump({ taskId: activeTaskId, pdfId: targetPaperId, pageIndex: index, token: Date.now(), anchorId: source.sourceAnchorId || source.sectionId || null });
     patchLayout({ reader: true });
     return true;
@@ -1091,11 +1096,11 @@ export default function UnifiedTaskApp() {
         <TaskDraftRecovery taskId={activeTaskId} refreshKey={workspace.error || localError} onCreateTask={createTask} />
       </TaskSwitcher>
       <div className="unified-header-spacer" />
-      <WorkbenchPopover label="布局" trigger={<PanelsTopLeft size={18} />}>
-        {close => <>{[['split', '并排'], ['reader', '专注阅读'], ['chat', '专注对话']].map(([mode, label]) => <button type="button" key={mode} aria-pressed={layout.mode === mode} onClick={() => { setMode(mode); close(); }}>{label}</button>)}
+      <WorkbenchPopover label="布局" className="unified-layout-picker" trigger={<span className={`unified-layout-glyph layout-${compact ? compactPane : layout.reader && layout.chat ? 'split' : layout.reader ? 'reader' : 'chat'}`} aria-hidden="true"><i /><i /></span>}>
+        {close => <><div className="workbench-menu-caption">切换布局</div>{[['split', '阅读与对话'], ['reader', '仅阅读'], ['chat', '仅对话']].filter(([mode]) => !compact || mode !== 'split').map(([mode, label]) => <button type="button" key={mode} aria-pressed={(compact ? compactPane : layout.reader && layout.chat ? 'split' : layout.reader ? 'reader' : 'chat') === mode} onClick={() => { setMode(mode); close(); }}><span className={`unified-layout-glyph layout-${mode}`} aria-hidden="true"><i /><i /></span><span>{label}</span></button>)}
           {!compact && width < 1360 && <button type="button" disabled={!viewLayout.canPinNavigation} aria-pressed={layout.navPinnedMedium}
             onClick={() => { patchLayout({ navPinnedMedium: !layout.navPinnedMedium, navigation: true }); close(); }}>{layout.navPinnedMedium ? '导航按需展开' : '固定导航'}</button>}
-          <button type="button" onClick={() => { patchLayout({ navWidth: DEFAULT_LAYOUT.navWidth, readerPercent: DEFAULT_LAYOUT.readerPercent }); close(); }}>重置栏宽</button></>}
+          </>}
       </WorkbenchPopover>
       <WorkbenchPopover label="设置" trigger={<SunMoon size={18} />}><button type="button" onClick={toggleTheme} aria-label="切换主题">{theme === 'dark' ? '使用浅色外观' : '使用深色外观'}</button></WorkbenchPopover>
     </header>
@@ -1139,22 +1144,22 @@ export default function UnifiedTaskApp() {
         <div className="unified-pane-head">
           <BookOpen size={17} />
           {activeDocument ? <strong>成果</strong> : <strong title={focusedPaperId ? getPaperTitle(papers, focusedPaperId) : ''}>{preview ? preview.kind === 'research.report' ? '研究报告' : '已生成结果' : activeLearning ? '学习记录' : focusedPaperId ? shortPaperTitle(papers, focusedPaperId) : '阅读区'}</strong>}
-          {(activeDocument || activeLearning || preview) && <button type="button" onClick={returnToPaper}>返回论文</button>}
+          {(activeDocument || activeLearning || preview) && focusedPaperId && <button type="button" onClick={returnToPaper}>查看原文</button>}
           {documentActions}
-          {!activeDocument && !activeLearning && !preview && returnContent && <button type="button" onClick={() => { if (!reopenContent(returnContent)) setLocalError('这份记录已移动或暂不可用。'); }}>返回记录</button>}
+          {!activeDocument && !activeLearning && !preview && returnContent && <button type="button" onClick={() => { if (!reopenContent(returnContent)) setLocalError('这份记录已移动或暂不可用。'); }}>{returnContent.kind === 'learning' ? '返回学习记录' : returnContent.collection === 'notes' ? '返回笔记' : '返回成果'}</button>}
           {!activeDocument && !activeLearning && !preview && paperView.url && <div className="unified-translation-modes" role="group" aria-label="翻译视图">
             <button type="button" className={translationMode === 'original' ? 'active' : ''} onClick={() => setTranslationMode('original')}>原文</button>
             <button type="button" title={['success','partial'].includes(currentTranslationPage?.status) ? '查看已保存译文' : currentTranslationPage?.status === 'error' ? '查看翻译状态，重试需手动操作' : '打开后翻译当前页'} className={translationMode === 'translation' ? 'active' : ''} onClick={() => setTranslationMode('translation')}>译文</button>
             <button type="button" title={['success','partial'].includes(currentTranslationPage?.status) ? '对照原文与已保存译文' : '对照原文并翻译当前页'} className={translationMode === 'parallel' ? 'active' : ''} onClick={() => setTranslationMode('parallel')}>对照</button>
           </div>}
-          <button type="button" className="unified-pane-hide" onClick={() => patchLayout({ reader: false, chat: true, mode: 'chat' })} aria-label="收起阅读区"><PanelLeftClose size={16} /></button>
+          <button type="button" className="unified-pane-hide" title="向左收起阅读区" onClick={() => patchLayout({ reader: false, chat: true, mode: 'chat' })} aria-label="收起阅读区"><PanelLeftClose size={16} /></button>
         </div>
         {localError && <div className="unified-inline-error workbench-reader-error" role="alert"><span>{localError}</span><button type="button" onClick={() => setLocalError('')}>收起</button></div>}
         {narrowParallel && !activeDocument && !activeLearning && !preview && paperView.url && <div className="unified-translation-narrow" role="group" aria-label="同页对照">
           <span>空间较窄，切换同页原文与译文</span>
           <button type="button" aria-pressed={narrowTranslationSide === 'original'} onClick={() => setNarrowTranslationSide('original')}>看原文</button>
           <button type="button" aria-pressed={narrowTranslationSide === 'translation'} onClick={() => setNarrowTranslationSide('translation')}>看译文</button>
-          {!compact && layout.chat && <button type="button" onClick={() => setMode('reader')}>专注阅读</button>}
+          {!compact && layout.chat && <button type="button" onClick={() => setMode('reader')}>仅阅读</button>}
         </div>}
         <div className="unified-reader-body">
         {preview ? <div className="unified-document" ref={contentScrollRef} onScroll={saveContentPosition} aria-label="查看已生成结果">
@@ -1268,8 +1273,8 @@ export default function UnifiedTaskApp() {
           renderMessageAfter={renderAfterMessage} currentActivity={currentActivityBar} composerContext={composerContext} focusedMaterialId={focusedPaperId} focusMessage={focusMessage} onDraftChange={setComposerDraft} />
           : <div className="unified-empty"><p>创建任务后，即可围绕论文持续讨论。</p><button type="button" onClick={() => createTask({ title: '新任务' })}>新任务</button></div>}
       </section>
-      {!layout.reader && <button type="button" className="unified-restore unified-restore-reader" onClick={() => patchLayout({ reader: true, mode: 'split' })} aria-label="展开阅读区"><PanelLeftOpen size={16} />阅读</button>}
-      {!layout.chat && <button type="button" className="unified-restore unified-restore-chat" onClick={() => patchLayout({ chat: true, mode: 'split' })} aria-label="展开对话区"><MessageSquare size={16} />对话</button>}
+      {!layout.reader && <button type="button" className="unified-restore unified-restore-reader" title="向右展开阅读区" onClick={() => patchLayout({ reader: true, mode: 'split' })} aria-label="展开阅读区"><PanelLeftOpen size={16} />阅读</button>}
+      {!layout.chat && <button type="button" className="unified-restore unified-restore-chat" title="向左展开对话区" onClick={() => patchLayout({ chat: true, mode: 'split' })} aria-label="展开对话区"><PanelRightOpen size={16} />对话</button>}
     </main>
     {workspace.error && <div className="unified-error" role="alert">{workspace.error}</div>}
     {showProcessingHistory && activeTask && <div className="task-draft-backdrop" onKeyDown={event => { if (event.key === 'Escape') setShowProcessingHistory(false); }}>

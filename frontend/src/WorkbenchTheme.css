@@ -19,6 +19,10 @@ html[data-theme=dark] .unified-app {
 .unified-app button:disabled { cursor:default; opacity:.5; }
 .unified-app button:focus-visible,.unified-app summary:focus-visible,.unified-app input:focus-visible,.unified-app select:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
 .unified-header { gap:10px; padding:6px 16px; }
+.unified-layout-glyph { display:flex; gap:3px; width:26px; height:20px; padding:2px; border:1.5px solid currentColor; border-radius:3px; flex:none; }
+.unified-layout-glyph i { display:block; flex:1; background:currentColor; border-radius:1px; opacity:.55; }
+.unified-layout-glyph.layout-reader i:last-child,.unified-layout-glyph.layout-chat i:first-child { flex:.22; opacity:.12; }
+.unified-layout-picker .workbench-popover-panel > button { gap:12px; }
 .unified-brand strong { font-size:14px; font-weight:650; }
 .unified-pane-head { min-height:48px; gap:8px; background:var(--panel-bg); font-size:13px; }
 .unified-pane-head > button { min-height:32px; padding:5px 8px; border-radius:var(--radius-control); color:var(--text-secondary); }
