@@ -1,5 +1,5 @@
 import React from 'react';
-import { act, fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { beforeEach, expect, it, vi } from 'vitest';
 const state = vi.hoisted(() => ({ viewer: null, mounts: 0, jump: vi.fn(), zoom: vi.fn(), loadError: false, cachedDoc: null }));
 vi.mock('@react-pdf-viewer/core', () => ({ SpecialZoomLevel: { PageWidth: 'PageWidth' }, Worker: ({ children }) => children, Viewer: props => {
@@ -10,13 +10,13 @@ vi.mock('@react-pdf-viewer/core', () => ({ SpecialZoomLevel: { PageWidth: 'PageW
     if (state.cachedDoc) props.onDocumentLoad({doc: state.cachedDoc});
     return () => props.plugins.forEach(plugin => plugin.uninstall?.({}));
   }, []);
-  return state.loadError ? props.renderError({name:'InvalidPDFException',message:'broken'}) : <div />;
+  return state.loadError ? props.renderError({name:'InvalidPDFException',message:'broken'}) : <div className="rpv-core__inner-pages" data-testid="pdf-scroll">{props.plugins.map((plugin, index) => <React.Fragment key={index}>{plugin.renderHighlights?.({pageIndex:0,rotation:0,getCssProperties:()=>({})})}</React.Fragment>)}</div>;
 } }));
-vi.mock('@react-pdf-viewer/highlight', () => ({ highlightPlugin: () => ({}) }));
+vi.mock('@react-pdf-viewer/highlight', () => ({ highlightPlugin: options => options }));
 vi.mock('../services/highlightStore', () => ({ loadHighlights: async () => [], addHighlight: vi.fn(), deleteHighlight: vi.fn() }));
 import PdfViewer from './PdfViewer';
 
-beforeEach(() => { state.mounts = 0; state.jump.mockReset(); state.zoom.mockReset(); state.loadError = false; state.cachedDoc = null; });
+beforeEach(() => { state.mounts = 0; state.jump.mockReset(); state.zoom.mockReset(); state.loadError = false; state.cachedDoc = null; localStorage.clear(); });
 const viewport = { width: 600, height: 800 };
 const textContent = text => ({ items: [{ str: text, transform: [1, 0, 0, 12, 20, 700], width: 100, height: 12 }], styles: {} });
 
@@ -105,4 +105,62 @@ it('ignores text extraction from an old page and from an unmounted document', as
   view.unmount();
   await act(async () => finished[1](textContent('late unmounted page')));
   expect(extracted).toHaveBeenCalledTimes(1);
+});
+
+const highlight = {id:1,sourceAnchorId:'anchor-1',text:'selected phrase',position:{pageIndex:0,top:10,left:10,width:20,height:3},
+  highlightAreas:[{pageIndex:0,top:10,left:10,width:20,height:3}],actionId:'explain',actionLabel:'解释',
+  chatHistory:[{role:'user',content:'selected phrase'},{role:'ai',content:'A'.repeat(260)+'完整解释末尾'}]};
+const readyDoc = {numPages:2,getPage:async()=>({getViewport:()=>viewport,getTextContent:async()=>textContent('body')})};
+
+it('collapses long explanations and closes them on Escape, page changes and hidden readers without deleting highlights', async () => {
+  const props = {fileUrl:'A.pdf',pdfId:'A',initialHighlights:[highlight]};
+  const view = render(<PdfViewer {...props}/>);
+  await act(async()=>state.viewer.onDocumentLoad({doc:readyDoc}));
+  const reopen = () => fireEvent.click(screen.getByRole('button',{name:'查看划线解释：selected phrase'}));
+  reopen();
+  expect(screen.getByRole('dialog')).not.toHaveTextContent('完整解释末尾');
+  fireEvent.click(screen.getByRole('button',{name:'展开完整解释'}));
+  expect(screen.getByRole('dialog')).toHaveTextContent('完整解释末尾');
+  fireEvent.keyDown(document,{key:'Escape'});
+  expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  reopen();
+  await act(async()=>state.viewer.onPageChange({currentPage:1,doc:readyDoc}));
+  expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  reopen();
+  view.rerender(<PdfViewer {...props} active={false}/>);
+  expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  view.rerender(<PdfViewer {...props} active/>);
+  reopen();
+  expect(screen.getByRole('dialog')).toBeInTheDocument();
+  view.rerender(<PdfViewer {...props} readingKey="other-task:A"/>);
+  expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+});
+
+it('persists independent reading positions and ignores callbacks while hidden', async () => {
+  const pageChange=vi.fn(), extracted=vi.fn();
+  const props={fileUrl:'A.pdf',pdfId:'A',readingKey:'task:A',onPageChange:pageChange,onPageTextExtracted:extracted};
+  const view=render(<PdfViewer {...props}/>);
+  await act(async()=>state.viewer.onDocumentLoad({doc:readyDoc}));
+  act(()=>state.viewer.onZoom({scale:1.4}));
+  const scroller=screen.getByTestId('pdf-scroll');
+  scroller.scrollTop=735; scroller.scrollLeft=24;
+  fireEvent.scroll(scroller);
+  expect(JSON.parse(localStorage.getItem('pdf-reading:task:A'))).toEqual({scale:1.4,top:735,left:24});
+  view.rerender(<PdfViewer {...props} active={false}/>);
+  pageChange.mockClear(); extracted.mockClear();
+  await act(async()=>state.viewer.onPageChange({currentPage:1,doc:readyDoc}));
+  act(()=>state.viewer.onZoom({scale:0.5}));
+  scroller.scrollTop=0; fireEvent.scroll(scroller);
+  expect(pageChange).not.toHaveBeenCalled(); expect(extracted).not.toHaveBeenCalled();
+  expect(JSON.parse(localStorage.getItem('pdf-reading:task:A')).top).toBe(735);
+  view.rerender(<PdfViewer {...props} active/>);
+  await waitFor(()=>expect(scroller.scrollTop).toBe(735));
+  expect(state.mounts).toBe(1);
+  view.unmount();
+  const restored=render(<PdfViewer {...props}/>);
+  expect(state.viewer.defaultScale).toBe(1.4);
+  await act(async()=>state.viewer.onDocumentLoad({doc:readyDoc}));
+  await waitFor(()=>expect(screen.getByTestId('pdf-scroll').scrollTop).toBe(735));
+  restored.rerender(<PdfViewer {...props} readingKey="task:B"/>);
+  expect(localStorage.getItem('pdf-reading:task:B')).toBeNull();
 });

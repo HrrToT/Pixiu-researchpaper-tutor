@@ -362,6 +362,17 @@ export const ExplanationPopup: React.FC<ExplanationPopupProps> = ({
   onSaveNote,
 }) => {
   const [query, setQuery] = useState<string>('');
+  const [expanded, setExpanded] = useState(false);
+  const explanationMessages = highlight.chatHistory.filter(message => message.role !== 'user');
+  const explanation = explanationMessages[explanationMessages.length - 1]?.content || '';
+  const shortExplanation = explanation.length > 220 ? `${explanation.slice(0, 220)}…` : explanation;
+  const canExpand = explanation.length > 220 || highlight.chatHistory.length > 2;
+  useEffect(() => { setExpanded(false); setQuery(''); }, [highlight.id]);
+  useEffect(() => {
+    const closeOnEscape = (event: KeyboardEvent) => { if (event.key === 'Escape') onClose(); };
+    document.addEventListener('keydown', closeOnEscape);
+    return () => document.removeEventListener('keydown', closeOnEscape);
+  }, [onClose]);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState('');
   const originalText: string = highlight.text || '暂无选中文本';
@@ -501,7 +512,7 @@ export const ExplanationPopup: React.FC<ExplanationPopupProps> = ({
       <div className="theme-panel flex-1 overflow-y-auto p-4 text-sm">
         {saveError && <p role="alert" className="mb-3">{saveError}</p>}
         <div className="space-y-4">
-          <div className="theme-card-soft rounded-xl p-3">
+          <div className="theme-card-soft rounded-xl p-3" hidden={!expanded}>
             <div className="theme-text-muted mb-2 text-[11px] font-bold uppercase tracking-wide">原文片段</div>
             <MarkdownContent className="theme-text-primary prose prose-sm max-w-none text-sm">
               {originalText}
@@ -509,8 +520,9 @@ export const ExplanationPopup: React.FC<ExplanationPopupProps> = ({
           </div>
 
           <div className="theme-card-soft rounded-xl p-3">
-            <div className="theme-text-muted mb-2 text-[11px] font-bold uppercase tracking-wide">当前追问链</div>
-            {highlight.chatHistory.map((message: PdfViewerChatMessage, index: number) => {
+            <div className="theme-text-muted mb-2 text-[11px] font-bold uppercase tracking-wide">{expanded ? '当前追问链' : '简短解释'}</div>
+            {!expanded && <p className="theme-text-primary whitespace-pre-wrap text-sm leading-6">{shortExplanation}</p>}
+            {expanded && highlight.chatHistory.map((message: PdfViewerChatMessage, index: number) => {
               if (index === 0 && message.role === 'user') return null;
               return (
                 <div
@@ -536,6 +548,7 @@ export const ExplanationPopup: React.FC<ExplanationPopupProps> = ({
             })}
           </div>
 
+          {(canExpand || expanded) && <button type="button" aria-expanded={expanded} onClick={() => setExpanded(value => !value)} className="text-xs text-pixiu">{expanded ? '收起解释' : '展开完整解释'}</button>}
           {highlight.isLoading && (
             <div className="theme-text-muted flex items-center gap-2 p-2 text-xs italic">
               <Sparkles size={12} className="animate-pulse" /> 正在生成...
@@ -568,6 +581,8 @@ export const ExplanationPopup: React.FC<ExplanationPopupProps> = ({
 
 interface PdfViewerProps {
   fileUrl: string | null;
+  readingKey?: string;
+  active?: boolean;
   onSelection?: (content: string, role: string, isSync: boolean, sourceMeta: Record<string, unknown>) => void;
   onSaveNote?: (payload: NotePayload) => void | Promise<void>;
   pdfId?: string;
@@ -587,6 +602,8 @@ interface PdfViewerProps {
 
 const PdfViewer: React.FC<PdfViewerProps> = ({
   fileUrl,
+  readingKey,
+  active = true,
   onSelection,
   onSaveNote,
   pdfId,
@@ -603,6 +620,23 @@ const PdfViewer: React.FC<PdfViewerProps> = ({
   parseStatus = null,
   onNarrowScreenChange,
 }) => {
+  const readerRef = useRef<HTMLDivElement | null>(null);
+  const activeRef = useRef(active);
+  activeRef.current = active;
+  const positionKey = readingKey || pdfId || fileUrl || 'empty';
+  const positionKeyRef = useRef(positionKey);
+  positionKeyRef.current = positionKey;
+  const savedPosition = useMemo(() => {
+    try {
+      const stored = JSON.parse(localStorage.getItem(`pdf-reading:${positionKey}`) || 'null');
+      return stored && typeof stored === 'object' ? stored : null;
+    } catch { return null; }
+  }, [positionKey]);
+  const readingPositionRef = useRef({ scale: 1, top: 0, left: 0 });
+  const restoringPositionRef = useRef(false);
+  const persistReadingPosition = useCallback(() => {
+    try { localStorage.setItem(`pdf-reading:${positionKey}`, JSON.stringify(readingPositionRef.current)); } catch { /* Reading remains usable without storage. */ }
+  }, [positionKey]);
   const [highlights, setHighlights] = useState<PdfViewerHighlight[]>([]);
   const [activeHighlightId, setActiveHighlightId] = useState<number | null>(null);
   const [isPdfLoading, setIsPdfLoading] = useState<boolean>(true);
@@ -620,6 +654,7 @@ const PdfViewer: React.FC<PdfViewerProps> = ({
   const currentPageRef = useRef<number>(0);
   const isFirstRender = useRef<boolean>(true);
   const latestPdfIdRef = useRef<string | undefined>(pdfId);
+  latestPdfIdRef.current = pdfId;
   const pageTextByIndexRef = useRef<Record<number, string>>({});
   const scaleRef = useRef<number>(1);
   const navigationRef = useRef<PluginFunctions | null>(null);
@@ -627,13 +662,42 @@ const PdfViewer: React.FC<PdfViewerProps> = ({
     install: (functions: PluginFunctions) => { navigationRef.current = functions; },
     uninstall: () => { navigationRef.current = null; },
   }), []);
+  useLayoutEffect(() => {
+    readingPositionRef.current = {
+      scale: Number(savedPosition?.scale) > 0 ? Number(savedPosition.scale) : 1,
+      top: Math.max(0, Number(savedPosition?.top) || 0),
+      left: Math.max(0, Number(savedPosition?.left) || 0),
+    };
+  }, [savedPosition]);
+  useEffect(() => {
+    setActiveHighlightId(null);
+  }, [positionKey, fileUrl, active, targetPageIndex, targetPageJumpToken]);
+  const restoredJumpTokenRef = useRef(targetPageJumpToken);
+  useEffect(() => {
+    const explicitJump = restoredJumpTokenRef.current !== targetPageJumpToken;
+    restoredJumpTokenRef.current = targetPageJumpToken;
+    if (explicitJump || !active || isPdfLoading || !pdfDocRef.current) return;
+    const position = readingPositionRef.current;
+    if (!savedPosition && position.top === 0 && position.left === 0 && position.scale === 1) return;
+    restoringPositionRef.current = true;
+    navigationRef.current?.zoom(position.scale);
+    let secondFrame = 0;
+    const frame = requestAnimationFrame(() => {
+      secondFrame = requestAnimationFrame(() => {
+        const scroller = readerRef.current?.querySelector<HTMLElement>('.rpv-core__inner-pages');
+        if (scroller) { scroller.scrollTop = position.top; scroller.scrollLeft = position.left; }
+        restoringPositionRef.current = false;
+      });
+    });
+    return () => { cancelAnimationFrame(frame); cancelAnimationFrame(secondFrame); restoringPositionRef.current = false; };
+  }, [active, isPdfLoading, savedPosition, positionKey, targetPageJumpToken]);
   const initialViewerPage: number = Number.isFinite(targetPageIndex) ? Math.max(0, targetPageIndex as number) : 0;
   const viewerKey: string = pdfId || 'empty';
   useEffect(() => {
-    if (!pdfDocRef.current || !Number.isFinite(targetPageIndex)) return;
+    if (!active || !pdfDocRef.current || !Number.isFinite(targetPageIndex)) return;
     const max = Math.max(((pdfDocRef.current as { numPages?: number }).numPages || 1) - 1, 0);
     void navigationRef.current?.jumpToPage(Math.max(0, Math.min(targetPageIndex as number, max)));
-  }, [targetPageIndex, targetPageJumpToken]);
+  }, [targetPageIndex, targetPageJumpToken, active]);
 
   useEffect(() => {
     latestPdfIdRef.current = pdfId;
@@ -684,7 +748,7 @@ const PdfViewer: React.FC<PdfViewerProps> = ({
   }, [highlights, onHighlightsChange]);
 
   useEffect(() => {
-    if (!focusedSourceAnchorId) {
+    if (!active || !focusedSourceAnchorId) {
       return;
     }
 
@@ -694,7 +758,7 @@ const PdfViewer: React.FC<PdfViewerProps> = ({
     if (targetHighlight) {
       setActiveHighlightId(targetHighlight.id);
     }
-  }, [focusedSourceAnchorId, focusedSourceAnchorToken, highlights]);
+  }, [focusedSourceAnchorId, focusedSourceAnchorToken, highlights, active]);
 
   // Responsive layout: detect narrow screens (< 1024px) and notify parent
   useEffect(() => {
@@ -725,6 +789,7 @@ const PdfViewer: React.FC<PdfViewerProps> = ({
       }
 
       const requestedPdfId: string | undefined = latestPdfIdRef.current;
+      const requestedPositionKey = positionKeyRef.current;
 
       try {
         const docWithPage = doc as { getPage: (n: number) => Promise<unknown> };
@@ -734,7 +799,7 @@ const PdfViewer: React.FC<PdfViewerProps> = ({
         const viewport = pageWithContent.getViewport({ scale: 1 });
         const { pageText, pageLayout } = buildPageLayout(textContent, viewport);
 
-        if (!mountedRef.current || requestedPdfId !== latestPdfIdRef.current || pageIndex !== currentPageRef.current) {
+        if (!activeRef.current || requestedPositionKey !== positionKeyRef.current || !mountedRef.current || requestedPdfId !== latestPdfIdRef.current || pageIndex !== currentPageRef.current) {
           return;
         }
         pageTextByIndexRef.current[pageIndex] = pageText;
@@ -746,7 +811,7 @@ const PdfViewer: React.FC<PdfViewerProps> = ({
         });
       } catch (error) {
         console.warn(`Failed to extract text for page ${pageIndex + 1}.`, error);
-        if (!mountedRef.current || requestedPdfId !== latestPdfIdRef.current || pageIndex !== currentPageRef.current) {
+        if (!activeRef.current || requestedPositionKey !== positionKeyRef.current || !mountedRef.current || requestedPdfId !== latestPdfIdRef.current || pageIndex !== currentPageRef.current) {
           return;
         }
         pageTextByIndexRef.current[pageIndex] = '';
@@ -761,6 +826,10 @@ const PdfViewer: React.FC<PdfViewerProps> = ({
     [onPageTextExtracted],
   );
 
+  useEffect(() => {
+    if (active && pdfDocRef.current) void extractPageText(currentPageRef.current);
+  }, [active, positionKey, extractPageText]);
+
   const handleDocumentLoad = useCallback(
     ({ doc }: { doc: { numPages?: number } }) => {
       if (!mountedRef.current) return;
@@ -772,6 +841,7 @@ const PdfViewer: React.FC<PdfViewerProps> = ({
         : currentPageRef.current;
       currentPageRef.current = initialPageIndex;
       setIsPdfLoading(false);
+      if (!activeRef.current) return;
       onPageChange?.({
         pageIndex: initialPageIndex,
         totalPages: doc?.numPages || 0,
@@ -783,7 +853,8 @@ const PdfViewer: React.FC<PdfViewerProps> = ({
 
   const handleViewerPageChange = useCallback(
     (event: { currentPage: number; doc?: { numPages?: number } }) => {
-      if (!mountedRef.current) return;
+      if (!mountedRef.current || !activeRef.current || restoringPositionRef.current) return;
+      if (event.currentPage !== currentPageRef.current) setActiveHighlightId(null);
       currentPageRef.current = event.currentPage;
       setPageTextState('loading');
       const doc = event.doc || pdfDocRef.current;
@@ -1070,6 +1141,15 @@ const PdfViewer: React.FC<PdfViewerProps> = ({
                 return (
                   <div
                     key={index}
+                    role="button"
+                    tabIndex={0}
+                    aria-label={`查看划线解释：${highlightEntity.text.slice(0, 60)}`}
+                    onKeyDown={(event) => {
+                      if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault();
+                        setActiveHighlightId(highlightEntity.id);
+                      }
+                    }}
                     style={Object.assign(
                       {},
                       {
@@ -1105,7 +1185,13 @@ const PdfViewer: React.FC<PdfViewerProps> = ({
     : null;
 
   return (
-    <div className="relative flex h-full w-full flex-col">
+    <div ref={readerRef} className="relative flex h-full w-full flex-col" onScrollCapture={(event) => {
+      if (!activeRef.current || restoringPositionRef.current) return;
+      const node = event.target as HTMLElement;
+      if (!node.classList.contains('rpv-core__inner-pages')) return;
+      readingPositionRef.current = { ...readingPositionRef.current, top: node.scrollTop, left: node.scrollLeft };
+      persistReadingPosition();
+    }}>
       {selectionNoteError && <div role="alert" className="absolute bottom-3 left-3 right-3 z-50 rounded theme-panel p-3 text-sm">{selectionNoteError}</div>}
       {fileUrl ? (
         <>
@@ -1128,14 +1214,19 @@ const PdfViewer: React.FC<PdfViewerProps> = ({
                 key={viewerKey}
                 fileUrl={fileUrl}
                 initialPage={initialViewerPage}
-                defaultScale={SpecialZoomLevel.PageWidth}
+                defaultScale={Number(savedPosition?.scale) > 0 ? Number(savedPosition.scale) : SpecialZoomLevel.PageWidth}
                 plugins={[highlightPluginInstance, navigationPlugin]}
                 theme={theme}
                 onDocumentLoad={handleDocumentLoad}
                 onPageChange={handleViewerPageChange}
                 renderError={() => <PdfLoadError onVisible={clearPdfLoading} />}
                 onZoom={(event: { scale: number }) => {
+                  if (!activeRef.current) return;
                   scaleRef.current = event.scale;
+                  if (!restoringPositionRef.current) {
+                    readingPositionRef.current = { ...readingPositionRef.current, scale: event.scale };
+                    persistReadingPosition();
+                  }
                   setDisplayScale(event.scale);
                 }}
               />
@@ -1148,7 +1239,7 @@ const PdfViewer: React.FC<PdfViewerProps> = ({
         </div>
       )}
 
-      {activeHighlight && (
+      {active && activeHighlight && (
         <ExplanationPopup
           highlight={activeHighlight}
           onClose={() => setActiveHighlightId(null)}
