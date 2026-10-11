@@ -1,9 +1,9 @@
-import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useEffectEvent, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import TaskRename from './components/TaskRename';
 import useCompactLayout from './hooks/useCompactLayout';
 import PaperPageNavigation from './components/PaperPageNavigation';
 import { selectionNote } from './utils/selectionNote';
-import { BookOpen, ChevronLeft, ChevronRight, FileDown, FilePlus2, Languages, MessageSquare, PanelLeftClose, PanelLeftOpen, Save, SunMoon, Upload } from 'lucide-react';
+import { BookOpen, ChevronLeft, ChevronRight, FilePlus2, Languages, MessageSquare, PanelLeftClose, PanelLeftOpen, Save, SunMoon, Upload } from 'lucide-react';
 import ChatPanel from './components/ChatPanel';
 import MarkdownContent from './components/MarkdownContent';
 import PdfViewer from './components/PdfViewer';
@@ -177,13 +177,13 @@ export default function UnifiedTaskApp() {
   const materialKey = JSON.stringify([activeTaskId, activeTask?.paperIds || []]);
 
   useEffect(() => {
-    if (!activeTaskId || !taskWorkspaceApi.getMaterialProcessing) return;
+    const [taskId, ids] = JSON.parse(materialKey);
+    if (!taskId || !taskWorkspaceApi.getMaterialProcessing) return;
     let disposed = false;
     let timer;
     const poll = async () => {
       try {
-        const ids = activeTask?.paperIds || [];
-        const results = await Promise.allSettled(ids.map(id => taskWorkspaceApi.getMaterialProcessing(activeTaskId, id)));
+        const results = await Promise.allSettled(ids.map(id => taskWorkspaceApi.getMaterialProcessing(taskId, id)));
         if (disposed) return;
         let pending = false;
         let retryDelay = 2500;
@@ -311,7 +311,7 @@ export default function UnifiedTaskApp() {
       setTranslationReadyKey(translationKey);
     }).catch(() => { if (alive) setLocalError('译文缓存读取失败，请刷新后重试。'); });
     return () => { alive = false; };
-  }, [focusedPaperId, activeTaskId, initialPaperPage]);
+  }, [focusedPaperId, activeTaskId, initialPaperPage, translationKey]);
   useEffect(() => {
     if (!translationReady || !focusedPaperId || translationState.pdfId !== focusedPaperId) return;
     const timer = setTimeout(() => {
@@ -350,6 +350,7 @@ export default function UnifiedTaskApp() {
   const openPaper = useCallback(async (paperId, taskId = activeTaskId) => {
     const task = taskRef.current.get(taskId);
     if (!task?.paperIds.includes(paperId)) throw new Error('这篇论文不属于当前任务');
+    setJump({ pageIndex: 0, token: 0, anchorId: null });
     setSelectedDocument(null);
     setSelectedLearning(null);
     setRecoveryPreview(null);
@@ -576,6 +577,7 @@ export default function UnifiedTaskApp() {
     if (view?.kind === 'preview' && view.record?.taskId === activeTaskId) { openPreview(view.record); return true; }
     return false;
   };
+  const restoreContent = useEffectEvent(reopenContent);
   useEffect(() => {
     if (!activeTask || restoredContentTask.current === activeTaskId) return;
     restoredContentTask.current = activeTaskId;
@@ -583,7 +585,7 @@ export default function UnifiedTaskApp() {
       const previous = JSON.parse(localStorage.getItem(contentReturnKey(activeTaskId)) || 'null');
       setReturnContent(previous);
       const view = JSON.parse(localStorage.getItem(contentViewKey(activeTaskId)) || 'null');
-      if (view && view.kind !== 'paper' && !reopenContent(view)) setLocalError('上次打开的记录已移动或暂不可用，请从任务导航重新选择。');
+      if (view && view.kind !== 'paper' && !restoreContent(view)) setLocalError('上次打开的记录已移动或暂不可用，请从任务导航重新选择。');
     } catch { setLocalError('上次阅读位置暂不可用，任务记录仍保留。'); }
   }, [activeTaskId, activeTask]);
   const preview = recoveryPreview?.taskId === activeTaskId ? recoveryPreview : null;
@@ -618,7 +620,8 @@ export default function UnifiedTaskApp() {
     const element = contentScrollRef.current;
     if (!element || !contentPositionKey) return;
     try { element.scrollTop = Number(localStorage.getItem(contentPositionKey)) || 0; } catch { /* Optional preference. */ }
-    return () => { try { localStorage.setItem(contentPositionKey, String(element.scrollTop)); } catch { /* Optional preference. */ } };
+    // Detached browser elements report scrollTop=0. Persist live scroll events
+    // instead of overwriting the last position during unmount.
   }, [contentPositionKey]);
   const saveContentPosition = event => {
     if (contentPositionKey) { try { localStorage.setItem(contentPositionKey, String(event.currentTarget.scrollTop)); } catch { /* Optional preference. */ } }
@@ -749,6 +752,7 @@ export default function UnifiedTaskApp() {
     setRecoveryPreview(null);
     storeView(activeTaskId, { kind: 'paper' });
     if (targetPaperId !== activeTask.focusedPaperId) await openPaper(targetPaperId);
+    if (activeTaskIdRef.current !== activeTaskId) return false;
     const index = Number(source.pageIndex ?? source.sourcePageIndex);
     if (Number.isInteger(index) && index >= 0) setJump({ taskId: activeTaskId, pdfId: targetPaperId, pageIndex: index, token: Date.now(), anchorId: source.sourceAnchorId || source.sectionId || null });
     patchLayout({ reader: true });
@@ -904,8 +908,9 @@ export default function UnifiedTaskApp() {
           <option value="answer" disabled={learning.completionSuggested}>回答学习问题</option><option value="ask">临时追问</option><option value="chat">普通对话</option>
         </select>
         <details className="unified-learning-actions"><summary>学习操作</summary>
-          {[['hint', '提示'], ['remediate', '补课'], ['retry', '重答'], ['skip', '跳过'], ['pause', '暂停'], ['finish', '结束']].map(([action, label]) => <button type="button" key={action} disabled={learning.busyTasks[activeTaskId]} onClick={() => learning.act(activeTask, action)}>{label}</button>)}
+          {[['hint', '提示'], ['remediate', '补课'], ['retry', '重答'], ['skip', '跳过']].map(([action, label]) => <button type="button" key={action} disabled={learning.busyTasks[activeTaskId]} onClick={() => learning.act(activeTask, action)}>{label}</button>)}
         </details>
+        {[['pause', '暂停'], ['finish', '结束']].map(([action, label]) => <button type="button" key={action} disabled={learning.busyTasks[activeTaskId]} onClick={() => learning.act(activeTask, action)}>{label}</button>)}
       </>}
     </div>
     {intentChoice?.taskId === activeTaskId && <div className="unified-intent-choice" role="group" aria-label="选择分析重点">
@@ -976,7 +981,7 @@ export default function UnifiedTaskApp() {
           {!['research.report', 'paper.overview'].includes(preview.kind) && <div className="unified-document-toolbar"><button type="button" disabled={savingRecovery || (preview.paperIds || preview.result?.materialScope?.allowedPaperIds || []).some(id => !activeTask.paperIds.includes(id))} onClick={recoverResult}><Save size={15} /> {savingRecovery ? '正在保存…' : '保存为成果'}</button></div>}
           <p>{preview.kind === 'paper.overview' ? '论文概览' : preview.kind === 'research.report' ? '核对报告后，在对话中确认并保存结果。' : '保存完整结果，保留当前学习位置。'}</p>
           {(preview.paperIds || preview.result?.materialScope?.allowedPaperIds || []).some(id => !activeTask.paperIds.includes(id)) && <p role="status">请先恢复原请求材料，再保存成果。</p>}
-          <CollapsedSources value={{ sources: preview.result?.sources || [] }} onJumpToSource={jumpToSource} />
+          <CollapsedSources key={contentPositionKey} storageKey={`${contentPositionKey}:sources`} value={{ sources: preview.result?.sources || [] }} onJumpToSource={jumpToSource} />
           <div className="unified-document-preview"><MarkdownContent>{preview.result?.artifact?.text || preview.result?.message || preview.result?.reply}</MarkdownContent></div>
         </div> : activeLearning ? <div className="unified-document" ref={contentScrollRef} onScroll={saveContentPosition}>
           <div className="unified-document-toolbar"><button type="button" onClick={() => locateLearning(activeLearning)}>定位原对话</button>
@@ -1000,14 +1005,13 @@ export default function UnifiedTaskApp() {
               <button type="button" aria-pressed={documentEditing} onClick={() => setDocumentEditing(true)}>编辑</button>
             </div>
             {(documentEditing || documentDirty) && <button type="button" disabled={savingDocument || restoringDocument || movingDocument || !documentDirty} onClick={saveDocumentFromToolbar}><Save size={15} /> {savingDocument ? '保存中…' : '保存'}</button>}
-            <button type="button" onClick={exportDocument}><FileDown size={15} /> 下载</button>
             <span className="unified-document-save-state" role="status">{savingDocument ? '正在保存' : documentDirty ? '未保存修改' : '已保存'}</span>
             {(activeDocument.sourceMessageId || activeDocument.sourceRequestId || activeDocument.sourceResearchId || activeTask.messages.some(message => message.artifactId === (activeDocument.id || activeDocument.artifactId))) && <button type="button" onClick={() => locateDocument(activeDocument)}>定位原对话</button>}
           </div>
           <DocumentVersionHistory key={`${selectedDocument.taskId}/${selectedDocument.collection}/${selectedDocument.id ?? selectedDocument.index}`} document={activeDocument} onRestore={restoreDocument} disabled={savingDocument || movingDocument} />
           <DocumentOrganizer key={`organize/${documentDraftKey(selectedDocument)}`} document={activeDocument} taskId={activeTaskId} tasks={tasks}
-            dirty={documentDirty || savingDocument} onRename={renameDocument} onMove={moveDocument} />
-          <CollapsedSources value={activeDocument} onJumpToSource={jumpToSource} />
+            dirty={documentDirty || savingDocument} onRename={renameDocument} onMove={moveDocument} onExport={exportDocument} />
+          <CollapsedSources key={contentPositionKey} storageKey={`${contentPositionKey}:sources`} value={activeDocument} onJumpToSource={jumpToSource} />
           {originalDocumentPage && activeTask.paperIds.includes(originalDocumentPage.pdfId) &&
             <DocumentOriginalPage key={selectedDocumentKey} taskId={activeTaskId} source={originalDocumentPage}
               title={activeDocument.title} text={documentDraft} paperTitle={getPaperTitle(papers, originalDocumentPage.pdfId)} />}
@@ -1050,7 +1054,7 @@ export default function UnifiedTaskApp() {
                 const note = selectionNote(payload, paperView.id, makeId());
                 await updateTask(activeTaskId, task => ({ notes: [...task.notes, note] }));
               }}
-              targetPageIndex={jump.pdfId === focusedPaperId && jump.taskId === activeTaskId ? jump.pageIndex : initialPaperPage} targetPageJumpToken={jump.token} focusedSourceAnchorId={jump.pdfId === focusedPaperId ? jump.anchorId : null} focusedSourceAnchorToken={jump.token} /></div>
+              targetPageIndex={jump.pdfId === paperView.id && jump.taskId === activeTaskId ? jump.pageIndex : initialPaperPage} targetPageJumpToken={jump.pdfId === paperView.id && jump.taskId === activeTaskId ? jump.token : 0} focusedSourceAnchorId={jump.pdfId === paperView.id && jump.taskId === activeTaskId ? jump.anchorId : null} focusedSourceAnchorToken={jump.pdfId === paperView.id && jump.taskId === activeTaskId ? jump.token : 0} /></div>
             {translationMode !== 'original' && <div className="unified-translation"><TranslationPanel pdfId={paperView.id} fileUrl={paperView.url} pdfFileName={getPaperTitle(papers, paperView.id)} currentPage={page.pageIndex}
               pageData={currentTranslationPage?.status === 'translating' ? { ...currentTranslationPage, status: 'loading' } : currentTranslationPage}
               savedArtifactId={activeTask?.artifacts.find(item => item.pageIndex === page.pageIndex && item.paperIds?.length === 1 && item.paperIds[0] === focusedPaperId && (item.type === 'translation' || /译文/u.test(item.title || '')) && normalizeNoteContent(item) === currentTranslationPage?.translatedText)?.id}

@@ -170,3 +170,6 @@
 .unified-document-title { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; text-align:left; font-weight:500; }
 .unified-document-title-edit { min-width:0; display:flex; flex-wrap:wrap; gap:4px; }
 .unified-document-title-edit input { min-width:80px; width:140px; padding:3px; background:var(--panel-bg); border:1px solid var(--border-subtle); color:var(--text-primary); }
+.unified-pane-head > strong, .unified-pane-head > .unified-document-title { flex:1; min-width:0; }
+.unified-pane-head > button:not(.unified-document-title) { flex-shrink:0; white-space:nowrap; }
+.unified-pane-head .unified-translation-modes { flex-shrink:0; }

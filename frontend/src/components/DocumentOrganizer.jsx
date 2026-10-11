@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-export default function DocumentOrganizer({ document, taskId, tasks, dirty, onRename, onMove }) {
+export default function DocumentOrganizer({ document, taskId, tasks, dirty, onRename, onMove, onExport }) {
   const [title, setTitle] = useState(document.title || '');
   const [target, setTarget] = useState('');
   const [includeMaterials, setIncludeMaterials] = useState(false);
@@ -13,6 +13,7 @@ export default function DocumentOrganizer({ document, taskId, tasks, dirty, onRe
   };
   return <details className="theme-border rounded border p-2">
     <summary>整理成果</summary>
+    {onExport && <button type="button" onClick={onExport}>下载当前正文</button>}
     <div className="flex flex-wrap items-center gap-2 py-2">
       <input aria-label="成果名称" value={title} disabled={busy} maxLength={500} onChange={event => setTitle(event.target.value)} className="theme-input rounded p-2" />
       <button type="button" disabled={busy || !title.trim()} onClick={() => perform(() => onRename(title.trim()))}>保存名称</button>

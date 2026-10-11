@@ -2,7 +2,7 @@ import React from 'react';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const state = vi.hoisted(() => ({ task: null, chatProps: null, failAnswerSave: false, writes: 0, startOperation: vi.fn(), retainDraft: vi.fn(async () => {}), api: { sendTaskMessage: vi.fn(), criticalReading: vi.fn(), backgroundKnowledge: vi.fn() } }));
+const state = vi.hoisted(() => ({ task: null, chatProps: null, failAnswerSave: false, writes: 0, startOperation: vi.fn(), researchGet: vi.fn(), researchAction: vi.fn(), retainDraft: vi.fn(async () => {}), api: { sendTaskMessage: vi.fn(), criticalReading: vi.fn(), backgroundKnowledge: vi.fn() } }));
 const materialProcessing = vi.hoisted(() => vi.fn(async () => undefined));
 const operationList = vi.hoisted(() => vi.fn(async () => []));
 const recoverOperation = vi.hoisted(() => vi.fn());
@@ -30,7 +30,7 @@ vi.mock('./services/taskWorkspaceApi', () => ({ taskWorkspaceApi: {
   getMaterialFile: async () => { throw new Error('旧论文尚未保存到服务端'); },
   getMaterialAnalysis: async () => { throw new Error('旧论文尚未保存到服务端'); },
 } }));
-vi.mock('./services/taskResearchApi', () => ({ taskResearchApi: {} }));
+vi.mock('./services/taskResearchApi', () => ({ taskResearchApi: { get: state.researchGet, action: state.researchAction } }));
 vi.mock('./services/taskWorkspaceRemoteStore', () => ({ taskWorkspaceRemoteStore: { getUnsyncedDraft: async () => null, retainUnsyncedDraft: state.retainDraft } }));
 vi.mock('./services/localDb', () => ({ initDB: async () => ({
   getAll: async () => [{ id: 'a', title: '论文甲' }, { id: 'b', title: '论文乙' }],
@@ -42,11 +42,12 @@ vi.mock('./hooks/usePageTranslation', () => ({ usePageTranslation: props => {
   state.translationProps = props;
   return {handlePdfPageChange: props.setPdfPageState};
 } }));
-vi.mock('./components/PdfViewer', () => ({ default: props => {
+vi.mock('./components/PdfViewer', () => ({ default: function MockPdfViewer(props) {
   state.pdfProps = props;
+  const initial = React.useRef(props);
   React.useEffect(() => {
     state.pdfMounts = (state.pdfMounts || 0) + 1;
-    props.onPageChange({pageIndex: props.targetPageIndex || 0, totalPages: 19});
+    initial.current.onPageChange({pageIndex: initial.current.targetPageIndex || 0, totalPages: 19});
     return () => { state.pdfUnmounts = (state.pdfUnmounts || 0) + 1; };
   }, []);
   return <div data-testid="paper-viewer" />;
@@ -63,6 +64,8 @@ describe('unified task conversation wiring', () => {
     localDbGet.mockImplementation(async () => null);
     localDbPut.mockImplementation(async () => {});
     operationList.mockResolvedValue([]);
+    state.researchGet.mockRejectedValue(new Error('测试研究不存在'));
+    state.researchAction.mockRejectedValue(new Error('测试未配置研究操作'));
     materialProcessing.mockImplementation(async () => undefined);
     localStorage.clear();
     state.failAnswerSave = false;
@@ -407,6 +410,32 @@ describe('unified task conversation wiring', () => {
     makeUrl.mockRestore(); releaseUrl.mockRestore();
   });
 
+  it('isolates source jumps from other papers and expires them on manual navigation', async () => {
+    state.task.focusedPaperId = 'a';
+    localStorage.setItem('pixiu-reading-position:["task","b"]', '6');
+    localDbGet.mockImplementation(async store => store === 'pdfStore' ? new Blob(['fixture']) : store === 'deconstructStore' ? {pdfId: 'a'} : null);
+    const makeUrl = vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:paper');
+    const releaseUrl = vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => {});
+    const view = render(<UnifiedTaskApp />);
+    await screen.findByTestId('paper-viewer');
+    await act(async () => state.chatProps.onJumpToSource({ pdfId: 'a', pageIndex: 3, sectionId: 'evidence' }));
+    expect(state.pdfProps.targetPageJumpToken).toBeGreaterThan(0);
+    expect(state.pdfProps.focusedSourceAnchorId).toBe('evidence');
+    fireEvent.click(screen.getByRole('button', { name: '论文乙', exact: true }));
+    view.rerender(<UnifiedTaskApp />);
+    await waitFor(() => expect(state.pdfProps.pdfId).toBe('b'));
+    expect(state.pdfProps.targetPageIndex).toBe(6);
+    expect(state.pdfProps.targetPageJumpToken).toBe(0);
+    expect(state.pdfProps.focusedSourceAnchorId).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: '论文甲', exact: true }));
+    view.rerender(<UnifiedTaskApp />);
+    await waitFor(() => expect(state.pdfProps.pdfId).toBe('a'));
+    expect(state.pdfProps.targetPageJumpToken).toBe(0);
+    expect(state.pdfProps.focusedSourceAnchorToken).toBe(0);
+    expect(state.startOperation).not.toHaveBeenCalled();
+    view.unmount(); makeUrl.mockRestore(); releaseUrl.mockRestore();
+  });
+
   it('keeps completed learning in the task navigation and restores the last opened record after refresh', async () => {
     state.task.activeActivity = { activityId: 'finished', pdfId: 'a', status: 'finished', mode: 'read',
       concepts: [{ id: 'c', question: '压缩会丢失什么？', status: 'skipped' }], turns: [] };
@@ -432,6 +461,12 @@ describe('unified task conversation wiring', () => {
     fireEvent.change(screen.getByRole('textbox', { name: '编辑笔记与成果' }), { target: { value: '未保存的实验想法' } });
     const panel = screen.getByRole('textbox', { name: '编辑笔记与成果' }).closest('.unified-document');
     fireEvent.scroll(panel, { target: { scrollTop: 135 } });
+    let liveScrollTop = 135;
+    Object.defineProperty(panel, 'scrollTop', {
+      configurable: true,
+      get() { return this.isConnected ? liveScrollTop : 0; },
+      set(value) { liveScrollTop = value; },
+    });
     await act(async () => state.chatProps.onJumpToSource({ pdfId: 'a', pageIndex: 3 }));
     fireEvent.click(screen.getByRole('button', { name: '返回记录' }));
     expect(screen.getByRole('article', { name: '成果正文' })).toHaveTextContent('未保存的实验想法');
@@ -516,6 +551,18 @@ describe('unified task conversation wiring', () => {
     fireEvent.keyDown(close, { key: 'Escape' });
     expect(screen.queryByRole('dialog', { name: '处理记录' })).not.toBeInTheDocument();
     expect(opener).toHaveFocus();
+  });
+
+  it('stops the running research from the current activity bar without starting a new model request', async () => {
+    state.task.researchRuns = [{ researchId: 'r', requestId: 'start-r', question: '实验方案', paperIds: ['a'] }];
+    state.researchGet.mockResolvedValue({ task: { taskId: 'r', status: 'running' } });
+    state.researchAction.mockResolvedValue({ task: { taskId: 'r', status: 'cancelled' } });
+    render(<UnifiedTaskApp />);
+    fireEvent.click(await screen.findByRole('button', { name: '停止研究', exact: true }));
+    await waitFor(() => expect(state.researchAction).toHaveBeenCalledWith('task', 'r', 'cancel', undefined));
+    await waitFor(() => expect(screen.queryByRole('button', { name: '停止研究', exact: true })).not.toBeInTheDocument());
+    expect(state.researchAction).toHaveBeenCalledTimes(1);
+    expect(state.startOperation).not.toHaveBeenCalled();
   });
 
   it('restores unsaved note edits after leaving the editor, including an intentionally empty draft', async () => {
