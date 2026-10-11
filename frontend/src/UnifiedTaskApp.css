@@ -95,7 +95,7 @@
 .unified-compact-switch button { padding:8px 12px; border-radius:6px; font-size:13px; min-height:40px; }
 .unified-compact-switch button[aria-pressed=true],.unified-compact-switch button[aria-expanded=true] { background:var(--accent-soft); color:var(--accent); }
 .unified-navigation-backdrop { position:absolute; inset:0; z-index:20; background:#0005; }
-@media(max-width:760px) {
+@media(max-width:1099px) {
   .unified-layout-actions { display:none; }
   .unified-header { min-height:52px; }
   .unified-brand img { width:24px; height:24px; }
@@ -111,6 +111,12 @@
   .unified-material-status { flex-wrap:wrap; }
   .unified-translation-modes { margin-left:0; }
   .unified-error { max-height:100px; overflow:auto; }
+}
+.unified-main[data-navigation-drawer=true][data-drawer-open=true] > .unified-task-nav > aside { position:absolute; inset:0 auto 0 0; z-index:21; width:min(300px,calc(100% - 48px)); box-shadow:8px 0 30px #0003; }
+.unified-main[data-navigation-drawer=true][data-drawer-open=true] > .unified-task-nav { z-index:21; }
+@media(min-width:1100px) {
+  .unified-reader { min-width:480px; }
+  .unified-chat { min-width:340px; }
 }
 .unified-header button:focus-visible,.unified-compact-switch button:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
 .task-draft-backdrop { position: fixed; inset: 0; background: #0007; z-index: 100; display: grid; place-items: center; padding: 24px; }

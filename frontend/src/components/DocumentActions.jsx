@@ -11,12 +11,14 @@ export default function DocumentActions({ document, editing, dirty, saving, disa
     {(editing || dirty) && <button type="button" className="workbench-primary" disabled={saving || disabled || !dirty} onClick={onSave}><Save size={15} />{saving ? '保存中…' : '保存'}</button>}
     {(editing || dirty || saving) && <span className="unified-document-save-state" role="status">{saving ? '正在保存' : dirty ? '未保存修改' : '已保存'}</span>}
     <WorkbenchPopover label="成果更多操作">
-      {onLocate && <button type="button" onClick={onLocate}>定位原对话</button>}
-      {onRecheck && <button type="button" disabled={recheckDisabled} onClick={onRecheck}>重新核查</button>}
+      {close => <>
+      {onLocate && <button type="button" onClick={() => { onLocate(); close(); }}>定位原对话</button>}
+      {onRecheck && <button type="button" disabled={recheckDisabled} onClick={() => { onRecheck(); close(); }}>重新核查</button>}
       <DocumentVersionHistory document={document} onRestore={onRestore} disabled={saving || disabled} />
       <DocumentOrganizer document={document} taskId={taskId} tasks={tasks} dirty={dirty || saving}
         onRename={onRename} onMove={onMove} onExport={onExport} />
       {sources}
+      </>}
     </WorkbenchPopover>
   </div>;
 }

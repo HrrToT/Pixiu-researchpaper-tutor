@@ -38,6 +38,7 @@ vi.mock('./services/localDb', () => ({ initDB: async () => ({
 }) }));
 vi.mock('./hooks/useThemePreference', () => ({ useThemePreference: () => ({ theme: 'light', toggleTheme: vi.fn() }) }));
 vi.mock('./hooks/useCompactLayout', () => ({ default: () => Boolean(state.compact) }));
+vi.mock('./hooks/useWorkbenchWidth', () => ({ default: () => state.width || 1440 }));
 vi.mock('./hooks/usePageTranslation', () => ({ usePageTranslation: props => {
   state.translationProps = props;
   return {handlePdfPageChange: props.setPdfPageState};
@@ -70,6 +71,7 @@ describe('unified task conversation wiring', () => {
     localStorage.clear();
     state.failAnswerSave = false;
     state.compact = false;
+    state.width = 1440;
     state.writes = 0;
     state.beforeUpdate = null;
     state.otherTasks = [];
@@ -116,14 +118,14 @@ describe('unified task conversation wiring', () => {
 
   it('resizes with keyboard boundaries and restores hidden desktop panes', () => {
     render(<UnifiedTaskApp />);
-    const resize = screen.getByRole('separator');
+    const resize = screen.getByRole('separator', { name: '调整阅读与对话宽度' });
     fireEvent.keyDown(resize, { key: 'ArrowRight' });
-    expect(resize).toHaveAttribute('aria-valuenow', '56');
+    expect(resize).toHaveAttribute('aria-valuenow', '68');
     fireEvent.keyDown(resize, { key: 'End' });
     fireEvent.keyDown(resize, { key: 'ArrowRight' });
-    expect(resize).toHaveAttribute('aria-valuenow', '72');
+    expect(resize.getAttribute('aria-valuenow')).toBe(resize.getAttribute('aria-valuemax'));
     fireEvent.keyDown(resize, { key: 'Home' });
-    expect(resize).toHaveAttribute('aria-valuenow', '32');
+    expect(resize.getAttribute('aria-valuenow')).toBe(resize.getAttribute('aria-valuemin'));
     fireEvent.click(screen.getByRole('button', { name: '收起阅读区' }));
     expect(screen.getByRole('region', { name: '论文与成果' })).toHaveClass('unified-desktop-hidden');
     fireEvent.click(screen.getByRole('button', { name: '展开阅读区' }));
@@ -223,6 +225,25 @@ describe('unified task conversation wiring', () => {
     fireEvent.keyDown(screen.getByRole('button', { name: '收起导航' }), { key: 'Escape' });
     expect(screen.getByRole('button', { name: '任务与材料' })).toHaveFocus();
     expect(screen.getByRole('region', { name: '论文与成果' })).not.toHaveAttribute('inert');
+  });
+
+  it('adapts a medium window temporarily and restores saved widths on widening', () => {
+    const { rerender } = render(<UnifiedTaskApp />);
+    fireEvent.keyDown(screen.getByRole('separator', { name: '调整导航宽度' }), { key: 'ArrowRight' });
+    const preference = localStorage.getItem('pixiu-unified-layout-v1');
+    expect(JSON.parse(preference).navWidth).toBe(240);
+    state.width = 1280;
+    rerender(<UnifiedTaskApp />);
+    expect(screen.queryByRole('separator', { name: '调整导航宽度' })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: '展开导航' }));
+    expect(screen.getByRole('dialog', { name: '任务与材料' })).toBeInTheDocument();
+    expect(screen.getByRole('region', { name: '任务对话' })).toHaveAttribute('inert');
+    fireEvent.keyDown(screen.getByRole('button', { name: '收起导航' }), { key: 'Escape' });
+    expect(screen.getByRole('button', { name: '展开导航' })).toHaveFocus();
+    state.width = 1440;
+    rerender(<UnifiedTaskApp />);
+    expect(screen.getByRole('separator', { name: '调整导航宽度' })).toHaveAttribute('aria-valuenow', '240');
+    expect(localStorage.getItem('pixiu-unified-layout-v1')).toBe(preference);
   });
 
   it('stops polling missing legacy material records without starting any generation', async () => {
