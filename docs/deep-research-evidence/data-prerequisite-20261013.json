@@ -21,7 +21,46 @@
   },
   "limits": [
     "End-to-end real model extraction and scientifically valid final output remain unverified",
-    "Existing final coverage judges whether unresolved auxiliary questions still matter; dataset claims independently require grounded availability",
-    "Runtime remains .24; .25/.26 not yet loaded; no new real case"
-  ]
+    "Existing final coverage judges whether unresolved auxiliary questions still matter; dataset claims independently require grounded availability"
+  ],
+  "runtime": {
+    "commit": "9d85507",
+    "promptVersion": "dr-v2.20261013.26",
+    "health": {
+      "api": "ok",
+      "rag": "ok",
+      "grobid": "ok"
+    },
+    "D3attempt7": {
+      "runId": "dr_run_fd9c613b7725553294170dbcb2714fe1",
+      "receipt": "tmp/dr-acceptance-receipts/D3-v7.json",
+      "status": "completed",
+      "quality": "failed",
+      "dataInvestigationPresent": true,
+      "capacityEvidenceId": "ev_ee1df5cde39d29f572e190d5bbd9053d6b43aaa88523905d439e777816a1bf43",
+      "capacityEvidenceQuote": "two scenes from the Tanks&Temples dataset[2017]and two scenes provided by Hedman et al.[Hedman et al. 2018].",
+      "outcome": "partial",
+      "modelCalls": 11,
+      "tokens": 63217,
+      "elapsedSeconds": 168,
+      "repairStatus": "skipped_budget",
+      "findings": [
+        "Data availability obligation executed and exact two-scene passage extracted",
+        "Configuration normalization and visible protocol materialization succeeded",
+        "Data claim instead chose nine Mip-NeRF360 scenes with an unavailable original ordering; rejected by semantic checker",
+        "Groups lacked an exact intervention-level audit binding; recovery budget had no concrete step count",
+        "Statistics text now includes conditional effects, interaction and bootstrap parameters; does not establish overall plan acceptance"
+      ],
+      "budgetDiagnosis": {
+        "normalTokenLimit": 50000,
+        "normalTokensUsed": 20707,
+        "remainingNormalTokens": 29293,
+        "reservationRule": "UTF-8 prompt bytes + 1024 framing + max output tokens",
+        "repairOutputCap": 8192,
+        "remainingRepairPromptByteCeiling": 20077,
+        "currentPromptByteCap": 24000,
+        "nextStep": "Fit repair evidence to actual remaining normal budget without raising caps, clipping quotations, weakening verifier or automatically resending unknown calls."
+      }
+    }
+  }
 }
