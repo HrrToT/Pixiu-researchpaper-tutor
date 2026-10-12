@@ -68,6 +68,29 @@ def test_repair_rejects_length_finish_even_if_partial_content_is_valid_json():
         lambda p: {'content': json.dumps([original]), 'finishReason': 'length'}, must_not_parse) == []
 
 
+def test_repair_normalizes_only_unambiguous_claim_text_alias_and_still_rechecks():
+    original = {'claimId': 'c', 'kind': 'reported', 'text': 'bad', 'evidenceRefs': ['e']}
+    check = {'rejected': [{'claimId': 'c'}]}
+    evidence = [{'evidenceId': 'e', 'quote': '200 FPS', 'verification': {'literal': 'passed'}}]
+    response = {k: v for k, v in original.items() if k != 'text'}
+    response['claim'] = '200 FPS'
+    revised = repair_rejected({'claims': [original]}, check, evidence, '',
+        lambda p: {'content': json.dumps([response])}, json.loads)
+    assert revised[0]['text'] == '200 FPS' and 'claim' not in revised[0]
+    assert not verify_claims(revised, evidence)['accepted']
+    response['text'] = '999 FPS'
+    assert repair_rejected({'claims': [original]}, check, evidence, '',
+        lambda p: {'content': json.dumps([response])}, json.loads) == []
+
+
+def test_selected_evidence_absence_is_still_subject_to_semantic_check():
+    ev = {'evidenceId': 'e', 'quote': 'A limited passage.', 'verification': {'literal': 'passed'}}
+    c = {'claimId': 'c', 'kind': 'inference', 'evidenceRefs': ['e'], 'text': '所选证据未提供硬件配置。'}
+    assert not verify_claims([c], [ev])['accepted']
+    assert verify_claims([c], [ev], lambda *_: [{'claimId': 'c', 'status': 'passed'}])['accepted']
+    assert verify_claims([{**c, 'text': '论文未提供硬件配置。'}], [ev])['rejected'][0]['reason'] == 'absence_not_established'
+
+
 def test_proposal_cannot_bypass_logical_verification():
     claim = {'claimId': 'p', 'kind': 'proposal', 'text': 'PSNR和LPIPS使用相同损失方向', 'evidenceRefs': []}
     result = verify_claims([claim], [], lambda c, e: [{'claimId': 'p', 'status': 'failed', 'reason': 'metric direction'}])

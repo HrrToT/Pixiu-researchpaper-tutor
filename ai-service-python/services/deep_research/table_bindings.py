@@ -12,6 +12,11 @@ def _key(text):
     return re.sub(r'\s+', '', text).casefold()
 
 
+def dataset_label(text):
+    """Drop only a generic trailing English descriptor, never a split/variant."""
+    return re.sub(r'\s+datasets?\s*$', '', text, flags=re.I).strip() or text
+
+
 def validate_table_bindings(claim, evidence):
     """Return a rejection reason; semantic checking still follows this gate."""
     text = str(claim.get('text', ''))
@@ -66,7 +71,9 @@ def validate_table_bindings(claim, evidence):
         value = row[2][column]
         if binding.get('value') != value:
             return 'table_cell_mismatch'
-        if any(_key(label) not in _key(text) for label in (dataset, row[1], metric, value)):
+        dataset_visible = any(re.search(r'(?<![a-z0-9])' + re.escape(_key(label)) + r'(?![a-z0-9])', _key(text))
+                              for label in (dataset, dataset_label(dataset)))
+        if not dataset_visible or any(_key(label) not in _key(text) for label in (row[1], metric, value)):
             return 'table_condition_not_displayed'
         match = re.fullmatch(rf'({_VALUE})([A-Za-z]*)', value)
         if match:

@@ -26,6 +26,8 @@ Rejected claims and checks:
 Exact available evidence:
 {json.dumps([{'evidenceId': short_ids[e['evidenceId']], 'quote': e.get('quote', ''), 'sourceContext': surrounding_context(e), 'location': e.get('location', {}), 'accessLevel': e.get('accessLevel'), 'conditions': e.get('conditions', {}), 'tableData': e.get('tableData')} for e in selected], ensure_ascii=False)}
 Return a COMPACT JSON array of revised claims, or [] when no supported revision is possible.
+Each revised claim uses {{"claimId":"original ID","kind":"original kind","text":"revised wording",
+"evidenceRefs":["E1"],"conditions":{{}},"detailLevel":"fulltext"}}; the wording key is "text".
 Keep claimId, kind and any designRole. Use only a subset of that claim's original evidenceRefs; never turn a fact
 into a proposal to evade checking. Preserve conditions needed for the narrower assertion.
 Use the supplied short evidence IDs (E1, E2, ...) in both evidenceRefs and tableBindings.
@@ -61,6 +63,12 @@ unexecuted proposals/hypotheses clearly. Keep the answer concise and within the 
         new_refs = row.get('evidenceRefs', [])
         if not isinstance(new_refs, list) or any(ref not in original.get('evidenceRefs', []) for ref in new_refs):
             continue
+        # One observed provider spelling is unambiguous. Normalize syntax only;
+        # the exact same identity, numeric and semantic checks still follow.
+        if isinstance(row.get('claim'), str):
+            if 'text' in row and row['text'] != row['claim']:
+                continue
+            row['text'] = row.pop('claim')
         if not isinstance(row.get('text'), str) or not row['text'].strip():
             continue
         if original.get('designRole'):

@@ -30,6 +30,24 @@ def test_reported_cells_pass_only_with_visible_dataset_method_and_exact_binding(
     assert check(ev, claim)['accepted']
 
 
+def test_dataset_descriptor_and_identifier_numbers_are_not_measurements():
+    ev, claim = fixture()
+    ev['tableData']['groups'][0][0] = 'Mip-NeRF 360 Datasets'
+    claim['text'] = '论文Table 1的' + claim['text'].replace('Dataset A', 'Mip-NeRF360')
+    claim['conditions'] = {'table': 'Table 1', 'dataset': 'Mip-NeRF 360 Datasets'}
+    assert check(ev, claim)['accepted']
+    assert not verify_claims([claim], [ev])['accepted']
+    wrong = {**claim, 'text': claim['text'].replace('FPS 134', 'FPS 360')}
+    assert check(ev, wrong)['rejected'][0]['reason'] == 'numeric_mismatch'
+    for other in ('Mip-NeRF3600', 'Mip-NeRF360-heldout'):
+        # A distinct split is not normalized away from the evidence identity.
+        changed = deepcopy(ev)
+        changed['tableData']['groups'][0][0] = other
+        assert not check(changed, claim)['accepted']
+        from services.deep_research.table_bindings import validate_table_bindings
+        assert validate_table_bindings(claim, [changed]) == 'table_condition_not_displayed'
+
+
 @pytest.mark.parametrize('mutation,reason', [
     (lambda c: c.pop('tableBindings'), 'missing_table_bindings'),
     (lambda c: c['tableBindings'][0].update(groupIndex=1), 'table_cell_mismatch'),

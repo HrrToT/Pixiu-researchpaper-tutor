@@ -42,6 +42,7 @@ def _measurement_numbers(text: str) -> set[str]:
     # Dimensional method labels are not measured quantities. The semantic
     # verifier still checks their identity; standalone dimensions stay checked.
     text = re.sub(r'(?<![A-Za-z0-9_])[234]D(?:-?[A-Za-z]+)?(?![A-Za-z0-9_])', '', text)
+    text = re.sub(r'(?<![A-Za-z])Table\s+\d+(?![A-Za-z0-9])|表\s*\d+', '', text, flags=re.I)
     # An explicit positive sign (also used to join conditions, e.g. pruning +2
     # SH degrees) does not change the quantity. Keep minus and exponent signs.
     return {normalize_quote(n).replace(' ', '').lstrip('+') for n in _NUMBER.findall(text)}
@@ -79,13 +80,25 @@ def verify_claims(claims: list[dict], evidence: list[dict],
         if any(item.get("verification", {}).get("literal") != "passed" for item in support):
             reason = reason or "unverified_quotation"
         if kind in {"reported", "inference"} and _ABSENCE.search(claim.get("text", "")):
-            scoped = any(word in claim["text"] for word in ("当前取得", "本次检索", "所读片段", "选定片段"))
+            scoped = any(word in claim["text"] for word in ("当前取得", "本次检索", "所读片段", "选定片段", "所选证据"))
             if not scoped and not any(_EXPLICIT_ABSENCE.search(item.get("quote", "")) for item in support):
                 reason = reason or "absence_not_established"
         if kind == "reported":
             if any(item.get("accessLevel") == "abstract" for item in support) and claim.get("detailLevel") != "abstract":
                 reason = reason or "abstract_only"
             claim_text = claim.get("text", "") + " " + json.dumps(claim.get("conditions") or {}, ensure_ascii=False)
+            # Numbers in parser-established dataset names are identifiers, not
+            # measurements (e.g. Mip-NeRF 360). Remove the entire exact label,
+            # not its digits globally; wrong numerical claims still fail.
+            from services.deep_research.table_bindings import dataset_label
+            from services.deep_research.table_evidence import visible_table_packet
+            for item in support:
+                packet = visible_table_packet(item.get('tableData'), item.get('quote', ''))
+                for dataset, _ in packet['groups'] if packet else []:
+                    for label in (dataset, dataset_label(dataset)):
+                        if any(ch.isalpha() for ch in label):
+                            pattern = r'(?<![A-Za-z0-9])' + re.escape(label).replace(r'\ ', r'\s*') + r'(?![A-Za-z0-9])'
+                            claim_text = re.sub(pattern, '', claim_text, flags=re.I)
             for item in support:
                 identity = item.get("sourceWorkId", "")
                 if re.fullmatch(r'arxiv:\d{4}\.\d{4,5}', identity, re.I):
