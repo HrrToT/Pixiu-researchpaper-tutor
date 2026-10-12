@@ -14,7 +14,8 @@ export default function ResearchReportText({ text, sources = [], onJumpToSource 
     const source = sources.find(value => value.evidenceIds?.includes(evidenceId) || value.evidenceId === evidenceId);
     const exact = source?.evidenceQuotes?.[evidenceId];
     const resolved = exact?.quote ? { ...source, evidenceId, quote: exact.quote, location: exact.location,
-      page: exact.location?.page ?? source.page } : source && (source.evidenceId === evidenceId || source.evidenceIds?.length === 1)
+      page: exact.location ? exact.location.page : source.page,
+      pageIndex: exact.location ? exact.location.pageIndex : source.pageIndex } : source && (source.evidenceId === evidenceId || source.evidenceIds?.length === 1)
       ? source : { unavailable: true };
     return <button type="button" className="critique-inline-citation" aria-label={`查看引用 ${children} 的依据`}
       onClick={event => { trigger.current = event.currentTarget; setSelected(resolved); }}>{children}</button>;
@@ -36,7 +37,9 @@ export default function ResearchReportText({ text, sources = [], onJumpToSource 
       <div className="research-citation-heading"><strong>{selected.title || '引用依据'}</strong><button type="button" onClick={close}>关闭</button></div>
       {selected.unavailable ? <p>这条引用暂不能恢复，请查看报告中保存的原文依据。</p> : <>
         {selected.quote && <blockquote>{selected.quote}</blockquote>}
-        <p className="theme-text-muted">{selected.accessLevel === 'abstract' ? '仅摘要' : selected.page ? `第 ${selected.page} 页` : '论文来源'}</p>
+        <p className="theme-text-muted">{selected.accessLevel === 'abstract' ? '仅摘要' : selected.page ? `第 ${selected.page} 页`
+          : selected.location?.pageResolution === 'ambiguous' ? '引文出现在多页，页码未唯一确定'
+          : selected.location?.pageResolution === 'unresolved' ? '原文引文已保存，页码暂未定位' : '论文来源'}</p>
         {external && /^https:\/\/arxiv\.org\/abs\//u.test(selected.url || '') && <a href={selected.url} target="_blank" rel="noopener noreferrer">查看来源页面</a>}
         {!external && selected.pdfId && onJumpToSource && <button type="button" onClick={() => onJumpToSource({ ...selected,
           pageIndex: selected.page != null ? selected.page - 1 : selected.pageIndex })}>查看论文原文</button>}

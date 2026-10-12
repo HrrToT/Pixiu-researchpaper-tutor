@@ -4,6 +4,17 @@ import { describe, expect, it, vi } from 'vitest';
 import ResearchReportText from './ResearchReportText';
 
 describe('research citations', () => {
+  it.each(['unresolved', 'ambiguous'])('does not inherit another quotation page when %s', pageResolution => {
+    const jump = vi.fn();
+    render(<ResearchReportText text="结论 [1](#research-evidence-ours)" sources={[
+      { pdfId: 'p', evidenceIds: ['first', 'ours'], page: 1, pageIndex: 0,
+        evidenceQuotes: { ours: { quote: 'Selected quotation', location: { pageResolution } } } },
+    ]} onJumpToSource={jump} />);
+    fireEvent.click(screen.getByRole('button', { name: /查看引用/ }));
+    expect(screen.queryByText('第 1 页')).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: '查看论文原文' }));
+    expect(jump).toHaveBeenCalledWith(expect.objectContaining({ evidenceId: 'ours', page: undefined, pageIndex: undefined }));
+  });
   it('resolves by evidence identity and jumps to the source page, independent of source ordering', () => {
     const jump = vi.fn();
     render(<ResearchReportText text="结论 [1](#research-evidence-e2)" sources={[
