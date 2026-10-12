@@ -503,7 +503,8 @@ class BudgetedSemanticChecker:
         config_roles = {'groups', 'controls', 'data', 'budget', 'steps', 'metrics'}
         config = [c for c in proposals if c.get('designRole') in config_roles] if node == 'verify' else []
         science = [c for c in proposals if c not in config]
-        proposal_batches = ([(config, 'verify_design_config')] if config else []) + ([(science, node)] if science else [])
+        science_node = 'verify_design_science' if node == 'verify' else 'verify_repair_design_science'
+        proposal_batches = ([(config, 'verify_design_config')] if config else []) + ([(science, science_node)] if science else [])
         fact_slots = max(1, 3 - len(proposal_batches))
         # Keep small answers in one request, leaving reserve for the final
         # coverage audit after a revision. Per-claim evidenceRefs remain binding.

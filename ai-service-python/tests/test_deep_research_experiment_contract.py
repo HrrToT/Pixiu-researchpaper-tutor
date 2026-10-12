@@ -110,7 +110,7 @@ def test_revision_checker_retains_design_definitions_without_promoting_context_f
                {'claimId': 'fact', 'kind': 'reported', 'text': 'UNRELATED FACT', 'evidenceRefs': ['x']}]
     result = BudgetedSemanticChecker(invoke, 'r').check_revisions([target], [], context)
     assert [v['claimId'] for v in result] == ['fix']
-    assert captured[0]['node'] == 'verify_repair' and captured[0]['use_reserve']
+    assert captured[0]['node'] == 'verify_repair_design_science' and captured[0]['use_reserve']
     assert 'L=-PSNR' in captured[0]['prompt'] and 'scene' in captured[0]['prompt']
     assert 'UNRELATED FACT' not in captured[0]['prompt']
 
