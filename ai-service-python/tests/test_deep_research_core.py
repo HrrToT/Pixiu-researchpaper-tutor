@@ -98,6 +98,24 @@ def test_contract_and_engine_versions_are_fixed():
     assert ENGINE_VERSION == "deep-research-v2"
 
 
+def test_waiting_for_human_input_does_not_spend_or_reset_active_time(repo):
+    from datetime import datetime, UTC, timedelta
+    now = datetime.now(UTC)
+    started = (now - timedelta(minutes=20)).isoformat()
+    waiting = (now - timedelta(minutes=19)).isoformat()
+    repo.create_run({'runId': 'waiting-time'})
+    repo.begin_execution('waiting-time')
+    repo.update_run('waiting-time', lambda r: {**r, 'status': STATUS_WAITING_USER, 'startedAt': started,
+        'state': {**r.get('state', {}), 'waitingSince': waiting}})
+    resumed = repo.begin_execution('waiting-time')
+    active_seconds = (datetime.now(UTC) - datetime.fromisoformat(resumed['startedAt'])).total_seconds()
+    assert 59 <= active_seconds <= 62
+    assert resumed['firstStartedAt'] == started and resumed['budget']['waitingSeconds'] > 1139
+    assert resumed['state']['waitingSince'] is None
+    repo.transition('waiting-time', STATUS_PAUSED)
+    assert repo.begin_execution('waiting-time')['startedAt'] == resumed['startedAt']
+
+
 def test_lifecycle_statuses_match_design():
     expected = {
         STATUS_QUEUED,

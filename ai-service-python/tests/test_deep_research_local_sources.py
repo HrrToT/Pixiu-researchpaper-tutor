@@ -60,3 +60,23 @@ def test_local_pdf_limit_stops_stream_before_parsing(monkeypatch):
     with pytest.raises(DeepResearchError, match='大小上限'):
         local('pruning', 'p')
     parse.assert_not_called()
+
+
+def test_actual_parser_worker_accepts_the_parent_local_limit():
+    import io
+    from PyPDF2 import PdfWriter
+    from PyPDF2.generic import DecodedStreamObject, DictionaryObject, NameObject
+    from services.deep_research.local_sources import _parse_pdf
+    writer = PdfWriter()
+    writer.add_blank_page(width=200, height=200)
+    page = writer.pages[0]
+    font = DictionaryObject({NameObject('/Type'): NameObject('/Font'), NameObject('/Subtype'): NameObject('/Type1'),
+                             NameObject('/BaseFont'): NameObject('/Helvetica')})
+    page[NameObject('/Resources')] = DictionaryObject({NameObject('/Font'): DictionaryObject({NameObject('/F1'): font})})
+    stream = DecodedStreamObject()
+    stream.set_data(b'BT /F1 12 Tf 10 100 Td (Real parser evidence.) Tj ET')
+    page[NameObject('/Contents')] = stream
+    output = io.BytesIO()
+    writer.write(output)
+    pages = _parse_pdf(output.getvalue())
+    assert pages[0]['page'] == 1 and 'Real parser evidence.' in pages[0]['text']

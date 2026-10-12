@@ -157,7 +157,7 @@ class ResearchFacade:
                             "workId": ref,
                             "versionId": version_info.get("versionId") or version_info.get("contentHash", ""),
                             "contentHash": version_info.get("contentHash", ""),
-                            "title": version_info.get("fileName") or version_info.get("title") or ref,
+                            "title": version_info.get("title") or version_info.get("fileName") or ref,
                         })
                     elif isinstance(ref, dict):
                         # Full material object
@@ -278,7 +278,10 @@ class ResearchFacade:
                 "invalid_brief_response": "研究目标未能正确解析，本次已停止。请简化问题后重新研究。",
                 "invalid_synthesis_response": "报告未能完整生成，本次已停止；已取得的资料仍保留。可补查继续，这会产生新的模型调用。",
             }.get(record.get("errorCode", ""), ""),
-            "title": record.get("question", "学术研究"),
+            "title": state.get("title") or {"direction_survey": "方向调研", "paper_comparison": "论文比较",
+                "claim_verification": "主张核查", "experiment_design": "实验方案", "research_entry": "研究切入点"}
+                .get(state.get("outputKind", record.get("outputKind")), "学术研究"),
+            "outputKind": state.get("outputKind", record.get("outputKind")),
             "activity": _build_activity_summary(record),
             "summary": (record.get("result") or {}).get("summary", ""),
             # Expose full report body for Java/UI consumption
@@ -583,8 +586,10 @@ class ResearchFacade:
             
             # Update state with clarification
             state = record.get("state", {})
+            state["waitingSince"] = state.get("waitingSince") or record.get("updatedAt")
             state["clarification"] = payload.get("answer", "")
             state["clarifiedAt"] = utc_now_iso()
+            state["clarificationNeeded"] = False
             
             return {
                 **record,

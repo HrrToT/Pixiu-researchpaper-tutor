@@ -3,6 +3,13 @@ import json
 import re
 
 
+def normalize_conditions(report):
+    for claim in report.get('claims', []):
+        if isinstance(claim, dict) and isinstance(claim.get('conditions'), str):
+            claim['conditions'] = {'context': claim['conditions']} if claim['conditions'].strip() else {}
+    return report
+
+
 def requested_character_limit(question):
     match = re.search(r'(\d{2,5})\s*(?:字|个字符|characters)\s*(?:以内|以下|内|maximum|max)?', question, re.I)
     return min(int(match[1]), 10000) if match else None
@@ -21,6 +28,7 @@ def answer_character_count(report):
 
 
 def compact_answer(report, question, invoke, parse):
+    report = normalize_conditions(report)
     limit = requested_character_limit(question)
     if not limit or answer_character_count(report) <= limit:
         return report
@@ -36,6 +44,7 @@ Answer:\n{json.dumps(report, ensure_ascii=False)}'''
     compact = parse(result.get('content', '') if isinstance(result, dict) else result.content)
     if not isinstance(compact, dict) or not isinstance(compact.get('claims'), list) or not compact['claims']:
         return None
+    compact = normalize_conditions(compact)
     original = {c.get('claimId'): c for c in report['claims'] if isinstance(c, dict)}
     for claim in compact['claims']:
         if not isinstance(claim, dict) or claim.get('claimId') not in original:

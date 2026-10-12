@@ -14,7 +14,7 @@ import copy
 import sqlite3
 import threading
 from contextlib import closing
-from datetime import datetime, UTC
+from datetime import datetime, UTC, timedelta
 from typing import Any, Callable, Iterable
 
 from services.deep_research.contracts import (
@@ -442,6 +442,17 @@ class DeepResearchRepository:
                     raise UnresolvedUnknownError(
                         normalized, [r[0] for r in unknown_rows]
                     )
+                waiting_since = record.get("state", {}).get("waitingSince") if record["status"] == STATUS_WAITING_USER else None
+                if waiting_since and record.get("startedAt"):
+                    # Human response time is not active research time. Apply once under the run lock.
+                    end = datetime.fromisoformat(now.replace("Z", "+00:00"))
+                    begin = datetime.fromisoformat(waiting_since.replace("Z", "+00:00"))
+                    duration = max(end - begin, timedelta(0))
+                    start = datetime.fromisoformat(record["startedAt"].replace("Z", "+00:00"))
+                    record["firstStartedAt"] = record.get("firstStartedAt") or record["startedAt"]
+                    record["startedAt"] = (start + duration).isoformat()
+                    record["state"]["waitingSince"] = None
+                    record["budget"]["waitingSeconds"] = record["budget"].get("waitingSeconds", 0) + duration.total_seconds()
                 record["status"] = STATUS_RUNNING
                 record["executionEpoch"] = current_epoch + 1
                 # Only set startedAt on first execution (epoch 0 → 1)

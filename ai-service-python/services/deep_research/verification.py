@@ -34,7 +34,9 @@ def make_evidence(source: dict, quote: str, original: str, *, location: dict,
             "verification": {"literal": "passed", "semantic": "unchecked"}}
 
 
-_NUMBER = re.compile(r"(?<![\w.])[-+]?\d+(?:\.\d+)?(?:[eE][-+]?\d+)?(?:\s*%|[x×])?")
+_NUMBER = re.compile(r"(?<![A-Za-z0-9_.])[-+]?\d+(?:\.\d+)?(?:[eE][-+]?\d+)?(?:\s*%|[x×])?")
+_ABSENCE = re.compile(r"未(?:给出|报告|进行|测试|验证)|没有(?:给出|报告|进行|测试)|不存在")
+_EXPLICIT_ABSENCE = re.compile(r"\b(?:do|does|did) not\b|\bnot (?:report|evaluat|test|consider)|\bno experiment|未(?:报告|进行|测试|考虑)|没有", re.I)
 
 
 def verify_claims(claims: list[dict], evidence: list[dict],
@@ -66,10 +68,15 @@ def verify_claims(claims: list[dict], evidence: list[dict],
             reason = reason or "missing_evidence"
         if any(item.get("verification", {}).get("literal") != "passed" for item in support):
             reason = reason or "unverified_quotation"
+        if kind in {"reported", "inference"} and _ABSENCE.search(claim.get("text", "")):
+            scoped = any(word in claim["text"] for word in ("当前取得", "本次检索", "所读片段", "选定片段"))
+            if not scoped and not any(_EXPLICIT_ABSENCE.search(item.get("quote", "")) for item in support):
+                reason = reason or "absence_not_established"
         if kind == "reported":
             if any(item.get("accessLevel") == "abstract" for item in support) and claim.get("detailLevel") != "abstract":
                 reason = reason or "abstract_only"
-            numbers = {normalize_quote(n).replace(" ", "") for n in _NUMBER.findall(claim.get("text", ""))}
+            claim_text = claim.get("text", "") + " " + json.dumps(claim.get("conditions") or {}, ensure_ascii=False)
+            numbers = {normalize_quote(n).replace(" ", "") for n in _NUMBER.findall(claim_text)}
             original_numbers = {normalize_quote(n).replace(" ", "") for item in support for n in _NUMBER.findall(item["quote"])}
             if not numbers <= original_numbers:
                 reason = reason or "numeric_mismatch"

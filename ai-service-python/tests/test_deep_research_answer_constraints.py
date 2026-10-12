@@ -27,3 +27,11 @@ def test_unconstrained_or_short_answers_do_not_add_paid_calls():
     assert compact_answer(report, '80字以内', invoke, json.loads) is report
     assert compact_answer(report, '详细比较', invoke, json.loads) is report
     invoke.assert_not_called()
+
+
+def test_string_conditions_are_preserved_before_length_and_evidence_checks():
+    report = {'claims': [{'claimId': 'c', 'text': '结论', 'conditions': '只在当前测试设置下'}]}
+    invoke = Mock()
+    result = compact_answer(report, '80字以内', invoke, json.loads)
+    assert result['claims'][0]['conditions'] == {'context': '只在当前测试设置下'}
+    invoke.assert_not_called()

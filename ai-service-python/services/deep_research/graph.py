@@ -34,6 +34,7 @@ from services.deep_research.contracts import (
     STATUS_RUNNING,
     STATUS_WAITING_USER,
     TERMINAL_STATUSES,
+    utc_now_iso,
 )
 
 logger = logging.getLogger(__name__)
@@ -129,14 +130,21 @@ def make_resolve_brief_node(
         prompt = f"""Analyze this research question and determine the output kind.
 Question: {question}
 Materials count: {len(materials)}
+Selected materials: {json.dumps([{'id': m.get('materialId'), 'title': m.get('title', '')} for m in materials], ensure_ascii=False)}
+Primary papers: {json.dumps(record.get('focusPaperIds', []))}
+Source policy: {json.dumps(record.get('sourcePolicy', {'mode': 'task_only'}))}
 
 Return JSON with:
 - outputKind: one of direction_survey, paper_comparison, claim_verification, experiment_design, research_entry
+- title: a short Chinese report title (12-24 characters); do not repeat the full request or its instructions
 - assumptions: list of inferred conditions
 - clarification: string if ambiguous, empty if clear
 - constraints: any explicit limitations
 
-Be conservative - if unclear, request clarification rather than guessing."""
+Clarify only consequential ambiguity about the research target or permitted materials.
+An experiment-design request is a proposed, unexecuted plan: unknown numeric settings can be
+explicitly proposed and fixed across controls. Do not pause merely to ask for optional implementation
+preferences or for facts that can be read from the selected papers. Never widen material permissions."""
         
         result = llm_invoke(run_id, "resolve_brief", prompt, {"max_tokens": 1500, "temperature": 0.1})
         
@@ -168,11 +176,13 @@ Be conservative - if unclear, request clarification rather than guessing."""
             "outputKind": output_kind,
             "assumptions": parsed.get("assumptions", []),
             "constraints": parsed.get("constraints", ""),
+            "title": parsed.get("title", "")[:40] if isinstance(parsed.get("title"), str) else "",
         }
         
         repo_update(run_id, lambda r: {**r,
             "status": STATUS_WAITING_USER if clarification else r["status"],
             "state": {**(r.get("state") or {}), **update_payload,
+                      **({"waitingSince": utc_now_iso()} if clarification else {}),
                       "clarificationNeeded": bool(clarification), "clarificationQuestion": clarification}}, expected_revision=None)
         
         if clarification:
@@ -206,6 +216,7 @@ def make_plan_node(
         prompt = f"""Create a research plan for this question.
 Question: {question}
 Output kind: {output_kind}
+User clarification: {brief_state.get('clarification', '')}
 Materials: {json.dumps([{'id': m.get('materialId'), 'title': m.get('title', '')} for m in materials[:10]], ensure_ascii=False)}
 Primary papers: {json.dumps(record.get('focusPaperIds', []))}
 User context (notes/old reports, UNVERIFIED; use only for goals and queries, never as paper facts):
@@ -881,6 +892,7 @@ def make_synthesize_node(
 Question: {question}
 Output kind: {output_kind}
 Evidence count: {len(evidence)}
+User clarification: {brief_state.get('clarification', '')}
 Gaps: {json.dumps([g.get('question') for g in gaps[:5]], ensure_ascii=False)}
 
 Evidence summaries:

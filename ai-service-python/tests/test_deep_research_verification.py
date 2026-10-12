@@ -35,6 +35,21 @@ def test_number_mismatch_cannot_be_overridden_by_model():
     assert result["rejected"][0]["reason"] == "numeric_mismatch"
 
 
+def test_chinese_numbers_and_conditions_are_checked_before_model_verdict():
+    ev = evidence()
+    assert verify_claims([claim(ev, '速度为999 FPS')], [ev], passed)['rejected'][0]['reason'] == 'numeric_mismatch'
+    assert verify_claims([claim(ev, '速度为200 FPS', conditions={'压缩率': '999x'})], [ev], passed)['rejected'][0]['reason'] == 'numeric_mismatch'
+    assert verify_claims([claim(ev, '速度为200 FPS')], [ev], passed)['accepted']
+
+
+def test_selected_evidence_cannot_establish_absence_in_the_whole_paper():
+    ev = evidence()
+    result = verify_claims([claim(ev, '论文未给出具体数值')], [ev], passed)
+    assert result['rejected'][0]['reason'] == 'absence_not_established'
+    result = verify_claims([claim(ev, '当前取得片段没有报告动态场景结果', kind='inference')], [ev], passed)
+    assert result['accepted']
+
+
 def test_abstract_cannot_establish_detailed_experimental_fact():
     ev = evidence("abstract")
     assert not verify_claims([claim(ev)], [ev], passed)["accepted"]
