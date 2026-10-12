@@ -316,6 +316,13 @@ Return a JSON ARRAY of plan items, NOT an object with items field."""
             for sid in allowed:
                 if sid not in covered:
                     validated[0]["obligations"][0]["requiredSources"].append(sid)
+
+        if output_kind == 'experiment_design':
+            from services.deep_research.data_prerequisite import ensure_data_prerequisite
+            # All task materials are permitted candidates; no invented external source.
+            candidates = allowed or list(dict.fromkeys(sid for item in validated
+                for obligation in item['obligations'] for sid in obligation['requiredSources']))
+            validated = validate_plan(ensure_data_prerequisite(validated, candidates, question))
         
         plan_ids = [item["itemId"] for item in validated]
         from services.deep_research.continuation import rebind_inherited_state

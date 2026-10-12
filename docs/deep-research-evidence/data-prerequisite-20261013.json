@@ -1,0 +1,27 @@
+{
+  "promptVersion": "dr-v2.20261013.26",
+  "implementation": "Experimental plans receive one application-owned data availability investigation, attached to the first existing plan item. Existing tracked acquisition, permission checks, extraction and coverage operate on it. No new user sub-question or budget bypass.",
+  "tests": {
+    "fullPassed": 819,
+    "warnings": 2,
+    "seconds": 82.31,
+    "command": "python -m pytest tests/test_deep_research_*.py tests/test_llm_instance_timeout.py tests/test_offline_llm.py tests/test_pdf_table_columns.py tests/test_table_evidence.py -q -p no:cacheprovider --basetemp=/tmp/dr-prerequisite-full",
+    "additionalTargetedFilePassed": 6,
+    "additionalSeconds": 2.69,
+    "note": "The 6 targeted tests include overlap with full suite; counts are not additive."
+  },
+  "localRetrieval": {
+    "query": "datasets evaluation benchmark subset scenes sample names number train test split",
+    "pdfId": "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf",
+    "results": 5,
+    "twoScenePassageRank": 1,
+    "chunkIndex": 57,
+    "queryRewrite": false,
+    "modelCalls": 0
+  },
+  "limits": [
+    "End-to-end real model extraction and scientifically valid final output remain unverified",
+    "Existing final coverage judges whether unresolved auxiliary questions still matter; dataset claims independently require grounded availability",
+    "Runtime remains .24; .25/.26 not yet loaded; no new real case"
+  ]
+}
