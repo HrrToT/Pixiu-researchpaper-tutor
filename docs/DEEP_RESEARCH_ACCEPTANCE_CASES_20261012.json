@@ -30,5 +30,6 @@
     {"id": "H5", "split": "holdout", "materials": ["scaffold"], "kind": "experiment_design", "policy": "task_only", "question": "基于Scaffold-GS设计一个最小实验，检验距离条件对远近视角表现的作用。只提一个待验证假设，给出对照、固定条件、指标、步骤与判断边界，不声称已有结果或保证新颖。", "required": ["距离条件依据可查", "去除距离输入的可实现对照", "按观察距离分层", "固定划分/预算/anchor策略", "质量与计算开销", "未执行边界"], "anchors": [{"page": 1, "label": "Abstract"}, {"page": 5, "label": "评测与设置"}]},
     {"id": "H6", "split": "holdout", "materials": [], "mode": "offline_fault_injection", "policy": "academic_external", "faults": ["发现503", "全文超限", "预算耗尽", "私网DNS与重定向"], "required": ["不自动重试", "保留已得摘要", "不抬高限额", "合理停止或降级", "查询不触发生成"], "forbidden": ["将故障fixture记为真实Provider质量通过"]}
   ],
-  "holdoutExecution": "not_started"
+  "holdoutExecution": "in_progress",
+  "holdoutResults": [{"caseId": "H1", "firstRunId": "dr_run_dc936f3dc4d15f07b50be8047fa0ec32", "firstManualOutcome": "failed", "record": "deep-research-evidence/H1-first-run-20261013.json", "futureStatus": "replacement_required_after_diagnosis"}]
 }
