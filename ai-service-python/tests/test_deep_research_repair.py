@@ -38,6 +38,61 @@ def test_repaired_wording_must_pass_numeric_and_semantic_checks_again():
     assert repair_rejected({'claims': [original]}, check, evidence, '100字以内', overlong, json.loads) == []
 
 
+def test_repair_can_use_acquired_same_version_passage_but_must_reverify():
+    original = {'claimId': 'c', 'kind': 'reported', 'text': '属性依赖视角。',
+                'evidenceRefs': ['e1'], 'obligationIds': ['mechanism']}
+    base = {'sourceWorkId': 'paper', 'sourceVersionId': 'v1', 'accessLevel': 'fulltext',
+            'verification': {'literal': 'passed'}}
+    evidence = [dict(base, evidenceId='e1', quote='Attributes depend on the viewing position.',
+                     obligationIds=['mechanism']),
+                dict(base, evidenceId='e2', quote='Inside the frustum, directions and distances condition the attributes.',
+                     obligationIds=['generalization'])]
+    revised = dict(original, text='视锥内根据方向和距离预测属性。', evidenceRefs=['E2'],
+                   obligationIds=['invented'])
+    def invoke(prompt):
+        assert '"c": ["E1", "E2"]' in prompt
+        return {'content': json.dumps([revised])}
+    result = repair_rejected({'claims': [original]}, {'rejected': [{'claimId': 'c'}]},
+                             evidence, '说明机制', invoke, json.loads)
+    assert result[0]['evidenceRefs'] == ['e2']
+    assert result[0]['obligationIds'] == ['mechanism']
+    assert not verify_claims(result, evidence)['accepted']
+    checked = verify_claims(result, evidence, lambda *_: [{'claimId': 'c', 'status': 'passed'}])
+    assert checked['accepted']
+
+
+@pytest.mark.parametrize('foreign', [
+    {'sourceWorkId': 'another-paper'}, {'sourceVersionId': 'v2'},
+    {'verification': {'literal': 'failed'}}, {'accessLevel': 'abstract'},
+])
+def test_repair_cannot_add_foreign_or_untrusted_passage(foreign):
+    original = {'claimId': 'c', 'kind': 'reported', 'text': 'fact', 'evidenceRefs': ['e1'],
+                'obligationIds': ['o']}
+    base = {'sourceWorkId': 'paper', 'sourceVersionId': 'v1', 'accessLevel': 'fulltext',
+            'verification': {'literal': 'passed'}, 'obligationIds': ['o'], 'quote': 'source passage'}
+    evidence = [dict(base, evidenceId='e1'), dict(base, evidenceId='foreign', **foreign)]
+    def invoke(prompt):
+        assert '"evidenceId": "E2"' not in prompt
+        return {'content': json.dumps([dict(original, evidenceRefs=['foreign'])])}
+    assert repair_rejected({'claims': [original]}, {'rejected': [{'claimId': 'c'}]},
+                           evidence, '', invoke, json.loads) == []
+
+
+def test_repair_cannot_cite_candidate_omitted_by_prompt_byte_limit():
+    original = {'claimId': 'c', 'kind': 'reported', 'text': 'fact', 'evidenceRefs': ['e1'],
+                'obligationIds': ['o']}
+    base = {'sourceWorkId': 'paper', 'sourceVersionId': 'v1', 'accessLevel': 'fulltext',
+            'verification': {'literal': 'passed'}, 'obligationIds': ['o']}
+    evidence = [dict(base, evidenceId='e1', quote='Known original passage.'),
+                dict(base, evidenceId='huge', quote='x' * 21000)]
+    def invoke(prompt):
+        assert 'x' * 1000 not in prompt
+        assert '"c": ["E1"]' in prompt
+        return {'content': json.dumps([dict(original, evidenceRefs=['huge'])])}
+    assert repair_rejected({'claims': [original]}, {'rejected': [{'claimId': 'c'}]},
+                           evidence, '', invoke, json.loads) == []
+
+
 def test_repair_stops_when_normal_budget_is_exhausted():
     def exhausted(_):
         raise BudgetExhaustedError('modelCalls', 15, 15)
