@@ -172,3 +172,13 @@
 - 发现并修复状态误导：核验空白、截断、缺少声明、重复或错误身份及无效状态，不再静默转换为“证据不足”，而以 `invalid_verification_response` 失败并保留资料和草稿；预算、权限和未知调用错误保持原身份。真实图集成验证无报告 outbox、无自动重发。历史失败报告保持不变。
 - 修复后相关回归 254 项通过（`tmp/dr-continued-28.log`）；随后新增完整图截断场景，与该文件其余测试共 5 项通过，不与前者累加为唯一总数。一次全目录 `-k` 收集被无关测试的 FastAPI mock 污染而失败（`tmp/dr-continued-26.log`），明确文件集回归通过，未隐藏该尝试。
 - Docker 恢复：停服后核对并清理损坏的零字节 Inference、Secrets Engine、OTel 运行端点，未修改镜像、卷或设置。引擎返回 29.1.3，GROBID `/api/isalive` 返回 true。自动恢复的当前项目旧 AI 容器与本地 8000 端口冲突，已停止该容器，保留本地新版服务。Windows Python 环境缺少 Chroma、SentenceTransformers、Torch 和 GrobidClient；容器中有依赖，但留出材料重解析与索引尚未完成。此恢复不计整套部署验收通过。
+
+## 完整依赖环境与材料处理补验
+
+- 修复 Dockerfile 安装顺序：`requirements.txt` 引用了 `requirements-deep-research.lock`，现在两者在安装前一起复制。复用现有应用镜像构建 `ai-project-dr-validation:20261012`，安装当前完整依赖清单成功，`pip check` 无损坏依赖；实际导入 LangGraph 1.2.14、SQLite checkpoint 3.1.1、langchain-core 1.6.9、Chroma 1.5.9 通过。该验证复用了基础镜像，不声称从空缓存完成全 Compose 构建。
+- 独立 8002 实例真实解析两篇留出 PDF：Scaffold-GS 57 个片段、4DGS 56 个片段，实际 Chroma 库共 113 条；`ragIndexed`、`readingReady`、`questionReady` 均 true，`aiAnalysisStatus=not_requested`。材料哈希仍为冻结清单版本，未执行留出问题的模型回答。
+- 当前开发 Python 已切为容器 `academic-dr-runtime`（127.0.0.1:8000），代码只读挂载；原 `tmp/dr-live-data` 挂载到 `/research_data`，原 `ai-service-python/data` 保留，索引使用 `tmp/dr-container-validation/chroma`。Java 和前端地址不变，Java 回调经 `host.docker.internal:8081`。8002 验收容器已停止；旧 Windows Python 启动器不再是当前运行实例。
+- 切换前真实备份 `tmp/dr-before-container-switch-20261012` 校验成功。切换前后均 28 条研究、706 条调用账本；旧 D2 记录经 Java API 可读。该轮恢复与解析没有增加研究模型调用。通过正常 Java `/materials/{id}/parse` 重新处理后，两篇材料均 `processingStatus=ready`，没有直接修改数据库状态。证据见 `tmp/dr-container-validation/*-java-reparse.json` 与 `preservation.json`。
+- 实际解析期间发现同步 GROBID/嵌入计算阻塞 ASGI 事件循环；将上传读取后的同步工作移入后台线程，保留原清理和错误逻辑。解析/错误回归 8 项通过，包含阻塞工作进行时事件循环继续执行的场景。加载修复后真实 4DGS 解析前后均仍在运行时，健康请求 0.031 秒返回，最终 56 个片段入库成功且无 AI 概述，见 `responsiveness.json`。
+
+留出材料准备现在已完成；H1—H5 内容质量、核验输出上限问题、完整发布/回退和最终界面验收仍未完成。
