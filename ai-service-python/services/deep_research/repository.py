@@ -159,6 +159,8 @@ def _clamp_budget_to_profile(budget: dict[str, Any], profile_name: str) -> dict[
         "maxTokens": "maxTokens",
         "maxWallClockSeconds": "maxWallClockSeconds",
         "reserveModelCalls": "reserveModelCalls",
+        "maxExternalSearches": "maxExternalSearches",
+        "maxFulltextFetches": "maxFulltextFetches",
     }
     for key, limit_key in limit_map.items():
         if limit_key in limits:
@@ -389,7 +391,8 @@ class DeepResearchRepository:
 
         return self.update_run(run_id, _apply, expected_revision=expected_revision)
 
-    def begin_execution(self, run_id: str, *, expected_epoch: int | None = None) -> dict[str, Any]:
+    def begin_execution(self, run_id: str, *, expected_epoch: int | None = None,
+                        expected_revision: int | None = None) -> dict[str, Any]:
         """Atomically mark a run as running and increment its executionEpoch.
 
         Rejects duplicate pending dispatch (already running), terminal runs,
@@ -411,6 +414,8 @@ class DeepResearchRepository:
                     _safe_rollback(conn)
                     raise RunNotFoundError(normalized)
                 record = json.loads(row[0])
+                if expected_revision is not None and record.get("runRevision") != expected_revision:
+                    raise RevisionConflictError(normalized, expected_revision, record.get("runRevision", 0))
                 current_epoch = int(record.get("executionEpoch") or 0)
                 if expected_epoch is not None and current_epoch != int(expected_epoch):
                     _safe_rollback(conn)
@@ -547,6 +552,11 @@ class DeepResearchRepository:
                     "SELECT * FROM deep_research_calls_v2 WHERE call_id=?", (call_id,)
                 ).fetchone()
                 if row is None:
+                    unresolved = conn.execute("SELECT call_id FROM deep_research_calls_v2 WHERE run_id=? AND status='unknown'",
+                                              (normalized_run,)).fetchall()
+                    if unresolved:
+                        from services.deep_research.contracts import UnresolvedUnknownError
+                        raise UnresolvedUnknownError(normalized_run, [row[0] for row in unresolved])
                     if delta:
                         run_record["budget"] = _apply_reservation(
                             run_record.get("budget") or {}, delta, use_reserve=use_reserve
@@ -676,7 +686,7 @@ class DeepResearchRepository:
                         normalized, int(reservation_token or 0), int(record.get("reservationToken") or 0)
                     )
                 # Settlement guard: reject if already settled and delta provided
-                if record.get("settled") and delta and not allow_late:
+                if record.get("settled") and not allow_late:
                     _safe_rollback(conn)
                     raise SettlementAlreadyError(normalized)
                 run_row = conn.execute(
@@ -710,7 +720,7 @@ class DeepResearchRepository:
                             (int(run_record["runRevision"]), json.dumps(run_record, ensure_ascii=False), now, record["runId"]),
                         )
                 # Mark settled when applying budget delta (not late-audit)
-                new_settled = 1 if (delta and not allow_late) else int(record.get("settled") or 0)
+                new_settled = 1 if (status in {CALL_STATUS_SUCCEEDED, CALL_STATUS_FAILED} and not allow_late) else int(record.get("settled") or 0)
                 conn.execute(
                     """
                     UPDATE deep_research_calls_v2
@@ -926,6 +936,9 @@ class DeepResearchRepository:
                         normalized_run, int(expected_revision), int(run_record.get("runRevision") or 0)
                     )
                 run_record["result"] = payload
+                run_record["state"] = {**run_record.get("state", {}),
+                                       "reportVersionId": payload.get("reportVersionId", ""),
+                                       "publicationId": pub_id}
                 if outcome:
                     run_record["outcome"] = outcome
                 if report_text:
@@ -1071,6 +1084,15 @@ class DeepResearchRepository:
             }
             for row in rows
         ]
+
+    def pending_publications(self, limit: int = 20) -> list[dict[str, Any]]:
+        with closing(sqlite3.connect(self.db_path, timeout=30)) as conn:
+            rows = conn.execute("""SELECT o.seq, o.run_id, o.payload, r.payload
+                FROM deep_research_outbox_v2 o JOIN deep_research_runs_v2 r ON r.run_id=o.run_id
+                WHERE o.published=0 AND o.kind='publication' ORDER BY o.seq LIMIT ?""",
+                (min(max(0, limit), 100),)).fetchall()
+        return [{"seq": row[0], "runId": row[1], "payload": json.loads(row[2]),
+                 "taskId": json.loads(row[3])["taskId"]} for row in rows]
 
     # ── maintenance ───────────────────────────────────────────────────────────
 

@@ -57,7 +57,7 @@ def verify_claims(claims: list[dict], evidence: list[dict],
         seen.add(claim_id)
         kind = claim.get("kind")
         refs = claim.get("evidenceRefs", [])
-        if kind not in {"reported", "inference", "suggestion"} or not claim.get("text"):
+        if kind not in {"reported", "inference", "suggestion", "proposal", "hypothesis"} or not claim.get("text"):
             reason = reason or "invalid_claim"
         if not isinstance(refs, list) or any(ref not in by_id for ref in refs):
             reason = reason or "unknown_evidence"
@@ -77,7 +77,8 @@ def verify_claims(claims: list[dict], evidence: list[dict],
             rejected.append({"claimId": claim_id, "reason": reason})
         else:
             candidates.append(dict(claim))
-    needs_check = [item for item in candidates if item["kind"] != "suggestion"]
+    proposals = {"suggestion", "proposal", "hypothesis"}
+    needs_check = [item for item in candidates if item["kind"] not in proposals]
     verdicts: dict[Any, dict] = {}
     if needs_check and semantic_check:
         raw = semantic_check(needs_check, evidence)
@@ -92,7 +93,7 @@ def verify_claims(claims: list[dict], evidence: list[dict],
                     verdicts[key] = verdict
     accepted = []
     for claim in candidates:
-        if claim["kind"] == "suggestion":
+        if claim["kind"] in proposals:
             accepted.append({**claim, "verification": "proposal"})
         elif verdicts.get(claim["claimId"], {}).get("status") == "passed":
             accepted.append({**claim, "verification": "semantic_passed"})

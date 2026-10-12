@@ -122,16 +122,20 @@ BUDGET_PROFILES: dict[str, dict[str, int]] = {
         "maxTokens": 100000,
         "maxWallClockSeconds": 360,
         "reserveModelCalls": 3,
+        "maxExternalSearches": 6,
+        "maxFulltextFetches": 6,
     },
     "extended": {
         "maxModelCalls": 32,
         "maxTokens": 180000,
         "maxWallClockSeconds": 720,
         "reserveModelCalls": 3,
+        "maxExternalSearches": 12,
+        "maxFulltextFetches": 12,
     },
 }
 
-BUDGET_COUNTER_KINDS = ("modelCalls", "tokens", "elapsedSeconds")
+BUDGET_COUNTER_KINDS = ("modelCalls", "tokens", "elapsedSeconds", "externalSearches", "fulltextFetches")
 
 
 def resolve_budget_profile(name: str | None) -> tuple[str, dict[str, int]]:
@@ -475,6 +479,8 @@ def check_budget_limits(budget: dict[str, Any]) -> str | None:
         "modelCalls": "maxModelCalls",
         "tokens": "maxTokens",
         "elapsedSeconds": "maxWallClockSeconds",
+        "externalSearches": "maxExternalSearches",
+        "fulltextFetches": "maxFulltextFetches",
     }
     for counter, limit_key in limits.items():
         limit_value = budget.get(limit_key)

@@ -3,8 +3,10 @@ from __future__ import annotations
 
 
 def validate_plan(items: list[dict]) -> list[dict]:
-    if not items or len(items) > 8:
+    if not isinstance(items, list) or not items or len(items) > 8 or any(not isinstance(item, dict) for item in items):
         raise ValueError("A plan needs one to eight bounded items")
+    if any(not isinstance(item.get("itemId"), str) for item in items):
+        raise ValueError("Invalid plan identity")
     by_id = {item.get("itemId"): item for item in items}
     if None in by_id or "" in by_id or len(by_id) != len(items):
         raise ValueError("Plan identities must be unique")
@@ -24,12 +26,22 @@ def validate_plan(items: list[dict]) -> list[dict]:
         visited.add(key)
     obligation_ids = set()
     for key, item in by_id.items():
-        if not item.get("question") or not item.get("obligations"):
+        if not isinstance(key, str) or len(key) > 128:
+            raise ValueError("Invalid plan identity")
+        obligations = item.get("obligations")
+        dependencies = item.get("dependencies", [])
+        if not isinstance(dependencies, list) or any(not isinstance(value, str) for value in dependencies):
+            raise ValueError("Invalid plan dependencies")
+        if not isinstance(item.get("question"), str) or not item["question"].strip() or not isinstance(obligations, list) or not obligations:
             raise ValueError("Plan must state research obligations")
         for obligation in item["obligations"]:
-            identity = obligation.get("obligationId")
-            if not identity or identity in obligation_ids or not obligation.get("question"):
+            if not isinstance(obligation, dict):
                 raise ValueError("Invalid research obligation")
+            identity = obligation.get("obligationId")
+            if not isinstance(identity, str) or not identity or len(identity) > 128 or identity in obligation_ids or not isinstance(obligation.get("question"), str) or not obligation["question"].strip():
+                raise ValueError("Invalid research obligation")
+            if not isinstance(obligation.get("requiredSources", []), list) or any(not isinstance(value, str) for value in obligation.get("requiredSources", [])):
+                raise ValueError("Invalid obligation sources")
             obligation_ids.add(identity)
         visit(key)
     return items
