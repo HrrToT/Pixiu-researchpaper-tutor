@@ -78,6 +78,17 @@
       "passed": 6
     },
     "frontendTypecheck": "passed",
-    "runtimeLoaded": false
+    "runtimeLoaded": true,
+    "runtimeHealth": {
+      "httpStatus": 200,
+      "status": "ok",
+      "grobid": "ok",
+      "rag": "ok",
+      "activeRunsBeforeRestart": 0
+    }
+  },
+  "commits": {
+    "backend": "02985d5",
+    "frontend": "e75f974"
   }
 }
