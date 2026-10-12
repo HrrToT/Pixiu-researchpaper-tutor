@@ -1080,6 +1080,18 @@ def make_verify_node(
             from services.deep_research.repair import repair_rejected
             from services.deep_research.contracts import BudgetExhaustedError
             def invoke_repair(prompt):
+                # Admit the rewrite and its independent verification as a pair.
+                # Do not spend the final seconds on wording that cannot be checked.
+                from datetime import datetime, UTC
+                maximum = float(record.get('budget', {}).get('maxWallClockSeconds') or 0)
+                started = record.get('startedAt')
+                if maximum and started:
+                    elapsed = (datetime.now(UTC) - datetime.fromisoformat(started.replace('Z', '+00:00'))).total_seconds()
+                    minimum = min(90.0, maximum / 4)
+                    if maximum - elapsed < minimum:
+                        repo_update(run_id, lambda r: {**r, 'state': {**r.get('state', {}),
+                            'repairStatus': 'skipped_time', 'repairTimeRequiredSeconds': minimum}}, expected_revision=None)
+                        raise BudgetExhaustedError('repairTimeSeconds', maximum - minimum, elapsed)
                 try:
                     response = llm_invoke(run_id, "repair_claims", prompt,
                         {"max_tokens": 3000, "temperature": 0.0})
@@ -1094,7 +1106,12 @@ def make_verify_node(
                 revised = repair_rejected(report_body, verification_result, evidence, record.get("question", ""),
                     invoke_repair, _safe_parse_json)
                 if revised:
-                    checked = verify_claims_fn(revised, evidence, budgeted_semantic)
+                    def revised_semantic(targets, sources):
+                        check = getattr(semantic_check_fn, 'check_revisions', None)
+                        if check:
+                            return check(targets, sources, verification_result.get('accepted', []))
+                        return budgeted_semantic(targets, sources)
+                    checked = verify_claims_fn(revised, evidence, revised_semantic)
                     repaired_ids = {row["claimId"] for row in checked.get("accepted", [])}
                     verification_result = {"accepted": [*verification_result.get("accepted", []),
                                                        *checked.get("accepted", [])],

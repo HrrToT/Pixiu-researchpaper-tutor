@@ -56,6 +56,7 @@ def test_verified_roles_organize_report_and_missing_budget_cannot_be_hidden():
 def test_joint_design_check_keeps_all_definitions_but_separates_factual_evidence():
     batches = []
     def invoke(**kwargs):
+        from services.deep_research.design_audit import REQUIRED
         prompt = kwargs['prompt']
         targets = json.loads(prompt.split('Claims:\n', 1)[1].split('\n\nEvidence:', 1)[0])
         batches.append(targets)
@@ -65,7 +66,9 @@ def test_joint_design_check_keeps_all_definitions_but_separates_factual_evidence
             assert 'fulfillment of its entire' in prompt
         return {'content': json.dumps([{'claimId': c['claimId'],
                 'status': 'failed' if c.get('designRole') == 'budget' else 'passed',
-                'reason': 'recovery budget unspecified' if c.get('designRole') == 'budget' else ''}
+                'reason': 'recovery budget unspecified' if c.get('designRole') == 'budget' else '',
+                'designAudit': {slot: {'claimId': c['claimId'], 'quote': c['text']}
+                                for slot in REQUIRED.get(c.get('designRole'), [])}}
                 for c in targets])}
     facts = [{'claimId': 'fact', 'kind': 'reported', 'text': 'Quality is measured.', 'evidenceRefs': ['e']}]
     evidence = [{'evidenceId': 'e', 'quote': 'UNRELATED_PAPER_QUOTE Quality is measured.',
@@ -85,3 +88,29 @@ def test_invalid_design_metadata_is_rejected_not_a_crash_or_completion():
     result = verify_claims(claims, [], lambda c, e: [])
     assert [r['reason'] for r in result['rejected']] == ['invalid_design_role'] * 2
     assert build_sections(claims, 'experiment_design')
+
+
+def test_revision_checker_retains_design_definitions_without_promoting_context_facts():
+    captured = []
+    def invoke(**kwargs):
+        captured.append(kwargs)
+        return {'content': json.dumps([{'claimId': 'fix', 'status': 'passed'}])}
+    target = {'claimId': 'fix', 'kind': 'proposal', 'text': 'Use the defined paired loss.', 'evidenceRefs': []}
+    context = [{'claimId': 'definition', 'kind': 'proposal', 'text': 'L=-PSNR',
+                'conditions': {'unit': 'scene'}},
+               {'claimId': 'fact', 'kind': 'reported', 'text': 'UNRELATED FACT', 'evidenceRefs': ['x']}]
+    result = BudgetedSemanticChecker(invoke, 'r').check_revisions([target], [], context)
+    assert [v['claimId'] for v in result] == ['fix']
+    assert captured[0]['node'] == 'verify_repair' and captured[0]['use_reserve']
+    assert 'L=-PSNR' in captured[0]['prompt'] and 'scene' in captured[0]['prompt']
+    assert 'UNRELATED FACT' not in captured[0]['prompt']
+
+
+def test_generic_pass_without_specific_configuration_audit_is_rejected():
+    c = {'claimId': 'd', 'kind': 'proposal', 'designRole': 'data',
+         'text': 'Use multiple scenes, a fixed split and the same seed.', 'evidenceRefs': []}
+    checker = BudgetedSemanticChecker(lambda **kw: {'content': json.dumps([
+        {'claimId': 'd', 'status': 'passed', 'reason': 'The configuration is complete.'}])}, 'r')
+    result = verify_claims([c], [], checker)
+    assert not result['accepted']
+    assert 'split' in result['rejected'][0]['detail']

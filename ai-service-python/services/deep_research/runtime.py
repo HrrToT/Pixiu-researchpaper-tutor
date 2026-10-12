@@ -23,10 +23,10 @@ def enabled():
 
 def research_model_options(node, options):
     """Apply role options BEFORE the ledger reserves tokens and fingerprints input."""
-    if node in {'synthesize', 'synthesize_compact', 'verify', 'repair_claims'}:
+    if node in {'synthesize', 'synthesize_compact', 'verify', 'verify_repair', 'repair_claims'}:
         # Bounded rewriting must leave room for its JSON; final verification
         # retains high reasoning and checks the rewritten claims independently.
-        effort = 'high' if node == 'verify' else 'low'
+        effort = 'high' if node in {'verify', 'verify_repair'} else 'low'
         maximum = 16384 if node in {'synthesize', 'verify'} else 8192
         return {**options, 'thinking': {'type': 'enabled'}, 'reasoning_effort': effort, 'max_tokens': maximum}
     return {**options, 'thinking': {'type': 'disabled'}, 'reasoning_effort': 'none'}

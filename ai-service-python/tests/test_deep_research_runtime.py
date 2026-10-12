@@ -109,6 +109,8 @@ def test_reasoning_options_are_reserved_before_provider_send():
     assert research_model_options('synthesize', {})['max_tokens'] == 16384
     assert research_model_options('repair_claims', {})['reasoning_effort'] == 'low'
     assert research_model_options('repair_claims', {})['max_tokens'] == 8192
+    assert research_model_options('verify_repair', {})['reasoning_effort'] == 'high'
+    assert research_model_options('verify_repair', {})['max_tokens'] == 8192
     invoke('run', 'synthesize', 'evidence', {'max_tokens': 1000}, use_reserve=True)
     assert reserve.call_args.kwargs['budget_delta']['tokens'] == len(b'evidence') + 1024 + 16384
 

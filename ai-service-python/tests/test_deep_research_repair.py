@@ -154,3 +154,51 @@ def test_elapsed_time_is_visible_for_failure_and_freezes_while_waiting():
     assert _elapsed_seconds(value) == 64
     value.update(status='waiting_user', state={'waitingSince': '2026-10-12T00:00:12Z'})
     assert _elapsed_seconds(value) == 12
+
+
+def test_late_repair_does_not_send_or_discard_verified_claims():
+    from datetime import datetime, UTC, timedelta
+    from services.deep_research.graph import make_verify_node
+    from unittest.mock import Mock
+    good = {'claimId': 'good', 'kind': 'proposal', 'text': 'Already checked.', 'evidenceRefs': []}
+    bad = {'claimId': 'bad', 'kind': 'proposal', 'text': 'Needs repair.', 'evidenceRefs': []}
+    record = {'startedAt': (datetime.now(UTC) - timedelta(seconds=300)).isoformat(),
+              'budget': {'maxWallClockSeconds': 360},
+              'state': {'reportBody': {'claims': [good, bad]}, 'evidence': []}}
+    def update(run, change, **kwargs):
+        nonlocal record
+        record = change(record)
+        return record
+    invoke = Mock()
+    verify = lambda *args: {'accepted': [good], 'rejected': [{'claimId': 'bad', 'reason': 'unsupported'}]}
+    make_verify_node(verify, None, update, llm_invoke=invoke)({'run_id': 'r'})
+    invoke.assert_not_called()
+    assert record['state']['repairStatus'] == 'skipped_time'
+    assert record['state']['verifiedReport']['verifiedClaims'] == [good]
+
+
+def test_graph_passes_accepted_design_context_to_repair_and_independent_check():
+    from services.deep_research.graph import make_verify_node
+    from unittest.mock import Mock
+    good = {'claimId': 'definition', 'kind': 'proposal', 'text': 'Loss is negative PSNR.', 'evidenceRefs': []}
+    bad = {'claimId': 'decision', 'kind': 'proposal', 'text': 'Incorrect interval decision.', 'evidenceRefs': []}
+    revised = {**bad, 'text': 'Reject zero only if the interval excludes zero.'}
+    record = {'state': {'reportBody': {'claims': [good, bad]}, 'evidence': []}}
+    def update(run, change, **kwargs):
+        nonlocal record
+        record = change(record)
+        return record
+    calls = []
+    def verify(claims, evidence, semantic):
+        calls.append(claims)
+        if len(calls) == 1:
+            return {'accepted': [good], 'rejected': [{'claimId': 'decision', 'reason': 'wrong decision'}]}
+        semantic(claims, evidence)
+        return {'accepted': claims, 'rejected': []}
+    checker = Mock()
+    def invoke(run, node, prompt, options):
+        assert 'Loss is negative PSNR.' in prompt
+        return {'content': json.dumps([revised])}
+    make_verify_node(verify, checker, update, llm_invoke=invoke)({'run_id': 'r'})
+    checker.check_revisions.assert_called_once_with([revised], [], [good])
+    assert record['state']['verifiedReport']['verificationSummary'] == {'accepted': 2, 'rejected': 0}

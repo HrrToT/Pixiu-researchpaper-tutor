@@ -482,6 +482,16 @@ class BudgetedSemanticChecker:
         self._run_id = run_id
     
     def __call__(self, claims: list[dict], evidence: list[dict]) -> list[dict]:
+        return self._check(claims, evidence, [], 'verify')
+
+    def check_revisions(self, claims, evidence, accepted_context):
+        """Retain design definitions without rechecking or promoting context facts."""
+        targets = {c['claimId'] for c in claims}
+        context = [c for c in accepted_context if c.get('claimId') not in targets
+                   and c.get('kind') in {'proposal', 'suggestion', 'hypothesis'}]
+        return self._check(claims, evidence, context, 'verify_repair')
+
+    def _check(self, claims, evidence, accepted_context, node):
         if not claims:
             return []
         # Check a prospective design jointly once: splitting its equations and
@@ -496,13 +506,14 @@ class BudgetedSemanticChecker:
         verdicts = []
         for batch in batches:
             targets = {c['claimId'] for c in batch}
-            context = [{'claimId': c.get('claimId'), 'text': c.get('text'), 'kind': c.get('kind')}
-                       for c in proposals if c['claimId'] not in targets]
-            verdicts.extend(self._check_batch(batch, evidence, context))
+            context = [{'claimId': c.get('claimId'), 'text': c.get('text'), 'kind': c.get('kind'),
+                        'conditions': c.get('conditions', {}), 'designRole': c.get('designRole')}
+                       for c in [*accepted_context, *proposals] if c['claimId'] not in targets]
+            verdicts.extend(self._check_batch(batch, evidence, context, node=node))
         by_id = {v['claimId']: v for v in verdicts}
         return [by_id[c['claimId']] for c in claims]
 
-    def _check_batch(self, claims: list[dict], evidence: list[dict], proposal_context: list[dict]) -> list[dict]:
+    def _check_batch(self, claims: list[dict], evidence: list[dict], proposal_context: list[dict], *, node='verify') -> list[dict]:
         from services.deep_research.selection import surrounding_context
         # Format claims and evidence for checking
         claims_text = json.dumps([{
@@ -565,10 +576,20 @@ Do not accept vague connections. A partly supported claim must fail until its wo
                           'requirement below. A role label, heading or vague promise is not fulfillment. Fail the ' \
                           'specific claim if its budget, split, procedure or decision criterion is unspecified. ' \
                           'Use the other target claims for shared definitions but not as factual evidence.\n' + design_requirements()
+                from services.deep_research.design_audit import REQUIRED
+                prompt += '\nFor roles in this checklist, every passed verdict MUST include designAudit. ' \
+                          'Each required slot maps to {"claimId":"ID of a target or context proposal", ' \
+                          '"quote":"exact wording of the concrete choice in its text or conditions"}. ' \
+                          'Use null for an absent or vague choice and fail that verdict. Do not count ' \
+                          '"fixed split", "same seed", "measure FPS" or "predeclare a tolerance" as a ' \
+                          'concrete protocol. Do not invent choices in the audit; proposals must already ' \
+                          'state them. Judge whether the quoted choice fulfills the requirement, not just ' \
+                          'whether relevant words occur. Shared definitions are permitted, paper facts ' \
+                          'are not an experiment configuration. Required slots:\n' + json.dumps(REQUIRED)
         try:
             result = self._invoke(
                 run_id=self._run_id,
-                node="verify",
+                node=node,
                 prompt=prompt,
                 extra_body={"max_tokens": 4000, "temperature": 0.0},
                 use_reserve=True,  # Use reserve pool for verification
@@ -586,6 +607,15 @@ Do not accept vague connections. A partly supported claim must fail until its wo
                     or {v.get('claimId') for v in parsed} != expected):
                 raise DeepResearchError('invalid_verification_response',
                                         '声明核验未完整返回；不能据此判断材料不足。')
+            from services.deep_research.design_audit import validate_design_audit
+            by_id = {c['claimId']: c for c in claims}
+            for verdict in parsed:
+                if verdict['status'] != 'passed':
+                    continue
+                missing = validate_design_audit(by_id[verdict['claimId']], verdict, [*claims, *proposal_context])
+                if missing:
+                    verdict['status'] = 'failed'
+                    verdict['reason'] = '实验方案缺少可核对的具体配置：' + ', '.join(missing)
             return parsed
             
         except DeepResearchError:

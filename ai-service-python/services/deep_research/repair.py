@@ -19,8 +19,13 @@ def repair_rejected(report, verification, evidence, question, invoke, parse):
     aliases = {f'E{i + 1}': e['evidenceId'] for i, e in enumerate(selected)}
     short_ids = {full: short for short, full in aliases.items()}
     input_claims = resolve_evidence_aliases({'claims': deepcopy(list(originals.values()))}, short_ids)['claims']
+    proposal_context = [{key: row[key] for key in ('claimId', 'text', 'kind', 'conditions', 'designRole') if key in row}
+                        for row in verification.get('accepted', [])
+                        if row.get('kind') in {'proposal', 'suggestion', 'hypothesis'}]
     prompt = f'''Revise only the rejected claims below. Narrow unsupported wording or omit the claim.
 Question: {question}
+Accepted experimental definitions (consistency only; do not revise these or treat them as paper evidence):
+{json.dumps(proposal_context, ensure_ascii=False)}
 Rejected claims and checks:
 {json.dumps([{'claim': row, 'check': rejected[row['claimId']]} for row in input_claims], ensure_ascii=False)}
 Exact available evidence:
