@@ -115,11 +115,11 @@ def test_reasoning_options_are_reserved_before_provider_send():
     assert research_model_options('verify_design_config', {})['thinking'] == {'type': 'disabled'}
     assert research_model_options('verify_design_config', {})['max_tokens'] == 6000
     for node in ('verify_design_science', 'verify_repair_design_science'):
-        assert research_model_options(node, {})['reasoning_effort'] == 'low'
-        assert research_model_options(node, {})['thinking'] == {'type': 'enabled'}
-        assert research_model_options(node, {})['max_tokens'] == 8192
+        assert research_model_options(node, {})['reasoning_effort'] == 'none'
+        assert research_model_options(node, {})['thinking'] == {'type': 'disabled'}
+        assert research_model_options(node, {})['max_tokens'] == 6000
         invoke('run', node, 'experiment protocol', {'max_tokens': 1000}, use_reserve=True)
-        assert reserve.call_args.kwargs['budget_delta']['tokens'] == len(b'experiment protocol') + 1024 + 8192
+        assert reserve.call_args.kwargs['budget_delta']['tokens'] == len(b'experiment protocol') + 1024 + 6000
     invoke('run', 'synthesize', 'evidence', {'max_tokens': 1000}, use_reserve=True)
     assert reserve.call_args.kwargs['budget_delta']['tokens'] == len(b'evidence') + 1024 + 16384
 

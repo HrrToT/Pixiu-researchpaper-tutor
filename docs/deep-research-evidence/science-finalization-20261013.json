@@ -28,11 +28,49 @@
     "warnings": 2
   },
   "realD3Retest": {
-    "status": "not_started"
+    "attempt": 2,
+    "runId": "dr_run_d8cca4ed9f3e5507aae408e2d509399b",
+    "status": "failed",
+    "receipt": "tmp/dr-acceptance-receipts/D3-v2.json",
+    "outcome": "none",
+    "modelCalls": 10,
+    "tokens": 53768,
+    "elapsedSeconds": 179.0,
+    "manualOutcome": "failed",
+    "failure": {
+      "node": "verify_design_science",
+      "finishReason": "length",
+      "outputTokens": 8192,
+      "totalTokens": 13148
+    },
+    "findings": [
+      "Low-effort hidden reasoning still exhausted the full output limit",
+      "Data scene/split placeholders were rejected by the provider",
+      "Provider wrongly approved unspecified intervention levels and emitted malformed role-array audit records; literal slot gate cannot accept those records",
+      "Draft used baseline-generated reference renders with PSNR factorial differences, which can yield non-finite baseline loss"
+    ]
   },
-  "runtimeLoaded": false,
+  "runtimeLoaded": true,
   "limits": [
     "Offline tests do not establish scientific judgement quality",
     "Concrete proposed protocol choices still require real content acceptance"
-  ]
+  ],
+  "codeCommit": "e93313b",
+  "health": {
+    "status": "ok",
+    "rag": "ok",
+    "grobid": "ok"
+  },
+  "followup": {
+    "promptVersion": "dr-v2.20261013.19",
+    "mode": "direct verdicts, thinking disabled, 6000 output tokens",
+    "changes": [
+      "Exact per-target designAudit skeleton",
+      "Explicit finite-loss and observed-reference-image guidance"
+    ],
+    "offlineTests": 35,
+    "seconds": 9.42,
+    "realModelRetest": false,
+    "runtimeLoaded": false
+  }
 }

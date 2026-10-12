@@ -634,6 +634,17 @@ Do not require an unexecuted experiment to have results. Do not judge context cl
                           'whether relevant words occur. Shared definitions are permitted, paper facts ' \
                           'are not an experiment configuration. Required slots:\n' + json.dumps(required_design_slots(metric_domains))
                 prompt += '\nThe designAudit object is FLAT: slot names are its direct keys; do not nest it under a role name.'
+                required_slots = required_design_slots(metric_domains)
+                skeleton = [{'claimId': c['claimId'], 'status': 'failed',
+                    'reason': 'replace with a concise concrete finding',
+                    'designAudit': {slot: None for slot in required_slots.get(c.get('designRole'), ())}}
+                    for c in claims]
+                prompt += '\nFill this exact per-target response skeleton. Change status only after checking. ' \
+                          'Replace a null slot with {"claimId":"target/context ID","quote":"exact concrete choice"} ' \
+                          'only if such a choice is already written; otherwise keep null and fail. ' \
+                          'Do not replace slot keys with role names or arrays. Symbolic placeholders such as ' \
+                          'an unspecified threshold or degree do not define actual intervention levels.\n' \
+                          + json.dumps(skeleton, ensure_ascii=False)
         try:
             result = self._invoke(
                 run_id=self._run_id,

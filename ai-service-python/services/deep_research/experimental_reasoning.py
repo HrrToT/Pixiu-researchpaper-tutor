@@ -10,6 +10,12 @@ Define each metric's loss L first: negate a higher-is-better metric, retain a
 lower-is-better metric. Never subtract raw metrics with opposite directions as
 though the same sign meant quality loss. Analyze metrics separately; do not
 add PSNR, SSIM and LPIPS or average their incompatible units.
+All four losses used in arithmetic must be finite and measured against the same
+reference. For image-quality evaluation, use held-out observed reference images,
+not a baseline render silently presented as ground truth. If studying distortion
+relative to a fixed teacher/baseline render instead, label that different estimand:
+the untouched baseline compared with itself has infinite PSNR, so PSNR factorial
+differences are undefined; use a finite error measure or observed ground truth.
 Conditional effects: A at B=0 is L10-L00, A at B=1 is L11-L01;
 B at A=0 is L01-L00, B at A=1 is L11-L10.
 Average main effects are [(L10-L00)+(L11-L01)]/2 for A and

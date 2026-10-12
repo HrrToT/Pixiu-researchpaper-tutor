@@ -28,10 +28,11 @@ def research_model_options(node, options):
         # not an unbounded derivation. Scientific consistency stays high below.
         return {**options, 'thinking': {'type': 'disabled'}, 'reasoning_effort': 'none', 'max_tokens': 6000}
     if node in {'verify_design_science', 'verify_repair_design_science'}:
-        # The full protocol and factorial reference are already supplied. Keep
-        # reasoning bounded so the provider can return its per-claim verdicts;
-        # a truncated response still fails, never becoming a semantic pass.
-        return {**options, 'thinking': {'type': 'enabled'}, 'reasoning_effort': 'low', 'max_tokens': 8192}
+        # Both high and low hidden-reasoning modes exhausted their output caps
+        # before returning verdicts in D3. Supply the same protocol/reference,
+        # but require direct per-claim decisions with concise explicit reasons.
+        # A truncated response still fails, never becoming a semantic pass.
+        return {**options, 'thinking': {'type': 'disabled'}, 'reasoning_effort': 'none', 'max_tokens': 6000}
     if node in {'synthesize', 'synthesize_compact', 'verify', 'verify_repair', 'repair_claims'}:
         # Bounded rewriting must leave room for its JSON; final verification
         # retains high reasoning and checks the rewritten claims independently.
