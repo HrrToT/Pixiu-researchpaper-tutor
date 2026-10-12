@@ -14,6 +14,7 @@ from typing import Any, Callable, Protocol
 from services.deep_research.contracts import (
     CALL_STATUS_FAILED,
     CALL_STATUS_SUCCEEDED,
+    DeepResearchError,
     digest,
 )
 
@@ -541,9 +542,21 @@ Do not accept vague connections. A partly supported claim must fail until its wo
             from services.deep_research.graph import _safe_parse_json
             parsed = _safe_parse_json(content)
             
-            return parsed if isinstance(parsed, list) else []
+            expected = {claim['claimId'] for claim in claims}
+            if (result.get('finishReason') == 'length' or not isinstance(parsed, list)
+                    or len(parsed) != len(expected)
+                    or any(not isinstance(v, dict) or v.get('status') not in {'passed', 'failed'}
+                           for v in parsed)
+                    or {v.get('claimId') for v in parsed} != expected):
+                raise DeepResearchError('invalid_verification_response',
+                                        '声明核验未完整返回；不能据此判断材料不足。')
+            return parsed
             
+        except DeepResearchError:
+            # Preserve budget, authorization and unknown-call recovery semantics.
+            # A missing verdict is an execution failure, not evidence of insufficiency.
+            raise
         except Exception as exc:
             logger.exception("Semantic check failed for run %s", self._run_id)
-            # Fail closed: no verdicts means claims rejected
-            return []
+            raise DeepResearchError('invalid_verification_response',
+                                    '声明核验未完成；已取得的资料仍保留。') from exc

@@ -296,6 +296,7 @@ class ResearchFacade:
                 "invalid_plan_response": "研究计划未能完整生成，本次已停止。可重新发起研究；这会产生新的模型调用。",
                 "invalid_brief_response": "研究目标未能正确解析，本次已停止。请简化问题后重新研究。",
                 "invalid_synthesis_response": "报告未能完整生成，本次已停止；已取得的资料仍保留。可补查继续，这会产生新的模型调用。",
+                "invalid_verification_response": "结论核验未完成，本次已停止；已取得的资料仍保留。这不表示论文证据不足。",
             }.get(record.get("errorCode", ""), ""),
             "title": state.get("title") or {"direction_survey": "方向调研", "paper_comparison": "论文比较",
                 "claim_verification": "主张核查", "experiment_design": "实验方案", "research_entry": "研究切入点"}

@@ -116,6 +116,35 @@ def test_real_graph_publishes_only_verified_body_and_reopens_without_generation(
         facade.shutdown()
 
 
+def test_truncated_verification_fails_without_publishing_evidence_insufficiency(tmp_path):
+    class TruncatedVerifier(FixtureModel):
+        def invoke(self, request):
+            if request.prompt.startswith('Verify these claims'):
+                self.requests.append(request)
+                return LLMResult('fixture', 'fixture-v1', '', LLMUsage(120, 8192, 8312),
+                                 finish_reason='length')
+            return super().invoke(request)
+
+    model = TruncatedVerifier()
+    repo, facade, _ = make_facade(tmp_path, model)
+    try:
+        record = create(facade)
+        rid = record['runId']
+        repo.begin_execution(rid)
+        facade._execute_graph(rid)
+        result = facade.get(rid)
+        assert result['status'] == 'failed'
+        assert result['errorCode'] == 'invalid_verification_response'
+        assert not repo.list_outbox(rid)
+        saved = repo.require_run(rid)
+        assert saved['state']['evidence'] and saved['state']['reportBody']
+        calls = [c for c in repo.list_calls(rid) if c['node'] == 'verify']
+        assert len(calls) == 1 and calls[0]['status'] == 'succeeded'
+        assert sum(r.prompt.startswith('Verify these claims') for r in model.requests) == 1
+    finally:
+        facade.shutdown()
+
+
 def test_pause_keeps_known_inflight_response_and_resume_does_not_resend_it(tmp_path):
     entered, release = threading.Event(), threading.Event()
 

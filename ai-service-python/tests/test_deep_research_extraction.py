@@ -53,7 +53,26 @@ def test_semantic_check_accepts_fenced_json_but_not_prose():
     checker = BudgetedSemanticChecker(invoke, 'r')
     assert checker([{'claimId': 'c', 'evidenceRefs': []}], [])[0]['status'] == 'passed'
     invoke.return_value = {'content': 'looks correct'}
-    assert checker([{'claimId': 'c', 'evidenceRefs': []}], []) == []
+    from services.deep_research.contracts import DeepResearchError
+    with pytest.raises(DeepResearchError) as error:
+        checker([{'claimId': 'c', 'evidenceRefs': []}], [])
+    assert error.value.code == 'invalid_verification_response'
+
+
+@pytest.mark.parametrize('response', [
+    {'content': '', 'finishReason': 'length'},
+    {'content': '[]'},
+    {'content': '[{"claimId":"other","status":"passed"}]'},
+    {'content': '[{"claimId":"c","status":"unknown"}]'},
+    {'content': '[{"claimId":"c","status":"passed"}]', 'finishReason': 'length'},
+])
+def test_incomplete_verifier_is_failure_not_insufficient_evidence(response):
+    from services.deep_research.contracts import DeepResearchError
+    invoke = Mock(return_value=response)
+    with pytest.raises(DeepResearchError) as error:
+        BudgetedSemanticChecker(invoke, 'r')([{'claimId': 'c', 'evidenceRefs': []}], [])
+    assert error.value.code == 'invalid_verification_response'
+    assert invoke.call_count == 1
 
 
 def test_new_snapshot_inherits_only_unchanged_authorized_source_versions(tmp_path):

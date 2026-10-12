@@ -167,3 +167,8 @@
 - 仅综合节点输出预留提高至 16384；压缩和核验仍为 8192，整轮 100000 tokens、18 次调用和 360 秒限制不变。预留在发送前进入账本，promptVersion 为 dr-v2.20261012.7。预算相关回归 6 项通过；修复不代表真实比较已经通过。
 - 较广离线检查 249 项通过（`tmp/dr-continued-25.log`），范围含新版研究、限流、离线 LLM 和引擎分发，不能与此前 221 项直接累计。
 - 两篇留出材料已通过普通材料接口保存，未触发 AI 分析；正文解析失败，不能作为就绪材料启动验收。当前 Docker 启动日志明确报告损坏的 `dockerInference` 运行时端点。留出内容案例尚未因此运行或调参，部署恢复仍未验收。
+
+- D2 v10 `ef4dfa99`：completed/inconclusive，17 调用、73,817 tokens、263 秒。综合正常返回（1075 字符、5140 输出 tokens、finishReason=stop），核验却为空（8192 输出 tokens、finishReason=length）。三条声明均未发布，本例仍未通过；候选正文偏重单场景消融且比较条件表述仍需审查，不能仅补足输出预算就宣称内容通过。
+- 发现并修复状态误导：核验空白、截断、缺少声明、重复或错误身份及无效状态，不再静默转换为“证据不足”，而以 `invalid_verification_response` 失败并保留资料和草稿；预算、权限和未知调用错误保持原身份。真实图集成验证无报告 outbox、无自动重发。历史失败报告保持不变。
+- 修复后相关回归 254 项通过（`tmp/dr-continued-28.log`）；随后新增完整图截断场景，与该文件其余测试共 5 项通过，不与前者累加为唯一总数。一次全目录 `-k` 收集被无关测试的 FastAPI mock 污染而失败（`tmp/dr-continued-26.log`），明确文件集回归通过，未隐藏该尝试。
+- Docker 恢复：停服后核对并清理损坏的零字节 Inference、Secrets Engine、OTel 运行端点，未修改镜像、卷或设置。引擎返回 29.1.3，GROBID `/api/isalive` 返回 true。自动恢复的当前项目旧 AI 容器与本地 8000 端口冲突，已停止该容器，保留本地新版服务。Windows Python 环境缺少 Chroma、SentenceTransformers、Torch 和 GrobidClient；容器中有依赖，但留出材料重解析与索引尚未完成。此恢复不计整套部署验收通过。
