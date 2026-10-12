@@ -1,0 +1,85 @@
+import pytest
+
+from services.deep_research.verification import make_evidence, verify_claims
+from services.deep_research.coverage import coverage_gaps, validate_plan
+
+
+def source(level="fulltext"):
+    return {"workId": "paper", "versionId": "v1", "contentHash": "hash", "accessLevel": level}
+
+
+def evidence(level="fulltext"):
+    return make_evidence(source(level), "15x reduction at 200 FPS", "Result: 15x reduction at 200 FPS.",
+                         location={"page": 4}, obligation_ids=["o1"])
+
+
+def claim(ev, text="15x reduction at 200 FPS", **kw):
+    return {"claimId": "c1", "kind": "reported", "text": text, "evidenceRefs": [ev["evidenceId"]], **kw}
+
+
+def passed(claims, _):
+    return [{"claimId": item["claimId"], "status": "passed"} for item in claims]
+
+
+def test_whitespace_only_quote_normalization():
+    ev = make_evidence(source(), "15x\n reduction", "15x   reduction", location={}, obligation_ids=[])
+    assert ev["verification"]["literal"] == "passed"
+    with pytest.raises(ValueError):
+        make_evidence(source(), "150x reduction", "15x reduction", location={}, obligation_ids=[])
+
+
+def test_number_mismatch_cannot_be_overridden_by_model():
+    ev = evidence()
+    result = verify_claims([claim(ev, "150x reduction")], [ev], passed)
+    assert not result["accepted"]
+    assert result["rejected"][0]["reason"] == "numeric_mismatch"
+
+
+def test_abstract_cannot_establish_detailed_experimental_fact():
+    ev = evidence("abstract")
+    assert not verify_claims([claim(ev)], [ev], passed)["accepted"]
+    assert verify_claims([claim(ev, detailLevel="abstract")], [ev], passed)["accepted"]
+
+
+def test_semantic_check_is_required_and_duplicate_verdict_fails_closed():
+    ev = evidence()
+    assert not verify_claims([claim(ev)], [ev])["accepted"]
+    assert not verify_claims([claim(ev)], [ev], lambda c, e: passed(c, e) * 2)["accepted"]
+    assert verify_claims([claim(ev)], [ev], passed)["accepted"]
+
+
+def test_unknown_source_and_duplicate_claim_are_not_published():
+    ev = evidence()
+    invalid = {**claim(ev), "evidenceRefs": ["foreign"]}
+    assert not verify_claims([invalid], [ev], passed)["accepted"]
+    assert len(verify_claims([claim(ev), claim(ev)], [ev], passed)["rejected"]) == 1
+
+
+def test_inference_requires_premises_proposal_is_separate():
+    inferred = {"claimId": "i", "kind": "inference", "text": "may reduce bandwidth", "evidenceRefs": []}
+    proposed = {"claimId": "p", "kind": "suggestion", "text": "Try 4 control groups", "evidenceRefs": []}
+    result = verify_claims([inferred, proposed], [], passed)
+    assert result["accepted"] == [{**proposed, "verification": "proposal"}]
+
+
+def plan():
+    return [{"itemId": "p1", "question": "compare", "obligations": [{"obligationId": "o1", "question": "mechanism"}]}]
+
+
+def test_each_paper_retains_its_own_coverage_obligation():
+    coverage = [{"obligationId": "o1", "sourceWorkId": "A", "state": "supported", "checked": True}]
+    assert [g["sourceWorkId"] for g in coverage_gaps(plan(), coverage, ["A", "B"])] == ["B"]
+
+
+def test_search_miss_is_unresolved_not_contradiction():
+    coverage = [{"obligationId": "o1", "sourceWorkId": "A", "state": "unresolved", "checked": True}]
+    assert coverage_gaps(plan(), coverage, ["A"])[0]["checked"]
+
+
+def test_plan_rejects_cycles_and_missing_dependencies():
+    assert validate_plan(plan())
+    for dependency in ["p1", "absent"]:
+        malformed = plan()
+        malformed[0]["dependencies"] = [dependency]
+        with pytest.raises(ValueError):
+            validate_plan(malformed)
