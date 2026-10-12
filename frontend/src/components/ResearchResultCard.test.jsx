@@ -122,6 +122,18 @@ describe('external source management', () => {
 });
 
 describe('plan editor in paused state', () => {
+  it('lets a followup specify its goal and explicitly select a fresh task snapshot', async () => {
+    const onAction = vi.fn().mockResolvedValue(undefined);
+    render(<ResearchResultCard {...props} result={{ ...props.result, status: 'completed', allowedActions: ['continue'] }} onAction={onAction} />);
+    fireEvent.click(screen.getByRole('button', { name: '补查缺口' }));
+    expect(onAction).not.toHaveBeenCalled();
+    fireEvent.change(screen.getByRole('textbox', { name: '继续研究什么？' }), { target: { value: '用新增论文核对反对证据' } });
+    fireEvent.click(screen.getByRole('checkbox', { name: '使用当前任务材料（含新加入的论文）' }));
+    fireEvent.click(screen.getByRole('button', { name: '开始补查' }));
+    await waitFor(() => expect(onAction).toHaveBeenCalledWith('t', 'r', 'continue', expect.objectContaining({
+      question: '用新增论文核对反对证据', materialSelection: { mode: 'task_default' }, expectedRunRevision: 4,
+    })));
+  });
   it('edits executable obligations and preserves dependency and source identities', async () => {
     const onAction = vi.fn().mockResolvedValue(undefined);
     const result = { ...props.result, status: 'paused', allowedActions: ['plan'],

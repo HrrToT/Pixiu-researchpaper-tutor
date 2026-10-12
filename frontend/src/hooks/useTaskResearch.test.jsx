@@ -3,6 +3,35 @@ import { describe, expect, it, vi } from 'vitest';
 import { useTaskResearch } from './useTaskResearch';
 
 describe('task research integration', () => {
+  it('stops polling missing historical execution records', async () => {
+    vi.useFakeTimers();
+    try {
+      const task = { id: 't', researchRuns: [{ researchId: 'missing' }] };
+      const api = { get: vi.fn().mockRejectedValue({ response: { status: 404 } }) };
+      const hook = renderHook(() => useTaskResearch({ tasks: [task] }, api));
+      await act(async () => {});
+      await act(async () => vi.advanceTimersByTimeAsync(16000));
+      expect(api.get).toHaveBeenCalledTimes(1);
+      expect(hook.result.current.error).toContain('执行记录当前不可用');
+      hook.unmount();
+    } finally { vi.useRealTimers(); }
+  });
+  it('freezes a fresh-material continuation revision across an uncertain response and reload', async () => {
+    const task = { id: 'followup-intent', revision: 4, researchRuns: [] };
+    const current = { tasks: [task], adoptServerTask: vi.fn() };
+    const api = { action: vi.fn().mockRejectedValue(new Error('返回未确认')) };
+    const payload = { requestId: 'same-followup', expectedRunRevision: 7,
+      materialSelection: { mode: 'task_default' }, question: '使用新论文补查' };
+    const first = renderHook(() => useTaskResearch(current, api));
+    await act(async () => { await expect(first.result.current.action(task.id, 'parent', 'continue', payload)).rejects.toThrow('返回未确认'); });
+    first.unmount();
+    const second = renderHook(() => useTaskResearch({ ...current, tasks: [{ ...task, revision: 9 }] }, api));
+    await act(async () => { await expect(second.result.current.action(task.id, 'parent', 'continue', payload)).rejects.toThrow('返回未确认'); });
+    expect(api.action.mock.calls[1][3]).toEqual(api.action.mock.calls[0][3]);
+    expect(api.action.mock.calls[1][3].expectedTaskRevision).toBe(4);
+    second.unmount();
+    sessionStorage.clear();
+  });
   it('starts v2 with a stable request identity after an uncertain create and keeps legacy operations unused', async () => {
     const task = { id: 't', revision: 4, researchRuns: [] };
     const workspace = { tasks: [task], adoptServerTask: vi.fn() };

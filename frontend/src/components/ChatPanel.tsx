@@ -88,6 +88,9 @@ interface ChatPanelProps {
   } | null;
   /** Current research source policy mode from parent state. */
   researchSourcePolicy?: 'task_only' | 'academic_external';
+  researchContextOptions?: Array<{ id: string; title: string }>;
+  researchContextRefs?: string[];
+  onResearchContextRefsChange?: (refs: string[]) => void;
   /** Callback when user changes research source policy. */
   onResearchSourcePolicyChange?: (mode: 'task_only' | 'academic_external') => void;
   /** Current research budget profile from parent state. */
@@ -154,6 +157,7 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
   sendLabel = '发送消息', inputPlaceholder,
   renderMessageAfter, historyContent, composerContext, currentActivity, focusMessage, showHeader = false, onCollapse,
   researchCapabilities, researchSourcePolicy = 'task_only', onResearchSourcePolicyChange,
+  researchContextOptions = [], researchContextRefs = [], onResearchContextRefsChange,
   researchBudgetProfile = 'standard', onResearchBudgetProfileChange,
 }) => {
   const [inputValue, setInputValue, draftError, clearInput] = useConversationDraft(conversationId);
@@ -551,6 +555,17 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
             <div className="chat-picker-footer"><span>{selectedMentions.length ? `已指定 ${selectedMentions.length} 篇` : '使用任务全部材料'}</span>
               <button type="button" onClick={() => { close(false); textareaRef.current?.focus(); }}>完成</button></div>
             {recognizedSkill?.skillId === 'research' && <>
+              {researchCapabilities?.enabled && researchContextOptions.length > 0 && <details className="chat-research-budget">
+                <summary>参考笔记与成果{researchContextRefs.length ? ` · ${researchContextRefs.length}` : ''}</summary>
+                <p className="workbench-menu-caption">帮助理解研究目标；论文事实仍回查原文。最多选四份。</p>
+                {researchContextOptions.map(value => <label key={value.id} className="chat-material-option">
+                  <input type="checkbox" checked={researchContextRefs.includes(value.id)}
+                    disabled={!researchContextRefs.includes(value.id) && researchContextRefs.length >= 4}
+                    onChange={() => onResearchContextRefsChange?.(researchContextRefs.includes(value.id)
+                      ? researchContextRefs.filter(ref => ref !== value.id) : [...researchContextRefs, value.id])} />
+                  <span className="chat-material-name">{value.title}</span>
+                </label>)}
+              </details>}
               <fieldset className="chat-research-scope">
                 <legend>资料来源</legend>
                 <div className="chat-research-scope-options">

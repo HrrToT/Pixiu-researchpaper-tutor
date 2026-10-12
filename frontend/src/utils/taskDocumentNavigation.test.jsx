@@ -2,6 +2,11 @@ import { describe, expect, it } from 'vitest';
 import { taskDocumentNavigation } from './taskDocumentNavigation';
 
 describe('research document navigation', () => {
+  it('keeps removed machine history persisted without bringing it back into the library', () => {
+    const task = { artifacts: [{ id: 'a', origin: 'machine', sourceRunId: 'r', hiddenFromLibrary: true }] };
+    expect(taskDocumentNavigation(task)).toEqual([]);
+    expect(task.artifacts).toHaveLength(1);
+  });
   const baseTask = { notes: [], artifacts: [] };
 
   it('returns all items when no machine duplicates exist', () => {

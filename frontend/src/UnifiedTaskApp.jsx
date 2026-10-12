@@ -205,6 +205,9 @@ export default function UnifiedTaskApp() {
   const [researchSettings, setResearchSettings] = useState({});
   const researchSourcePolicy = researchSettings[activeTaskId]?.sourcePolicy || 'task_only';
   const researchBudgetProfile = researchSettings[activeTaskId]?.budgetProfile || 'standard';
+  const researchContextRefs = researchSettings[activeTaskId]?.contextRefs || [];
+  const setResearchContextRefs = contextRefs => setResearchSettings(current => ({ ...current,
+    [activeTaskId]: { ...current[activeTaskId], contextRefs } }));
   const setResearchSourcePolicy = sourcePolicy => setResearchSettings(current => ({ ...current,
     [activeTaskId]: { ...current[activeTaskId], sourcePolicy } }));
   const setResearchBudgetProfile = budgetProfile => setResearchSettings(current => ({ ...current,
@@ -585,7 +588,8 @@ export default function UnifiedTaskApp() {
         await research.start(task, sendText, {
           ...scope,
           engineVersion: v2 ? 'deep-research-v2' : 'legacy-v1',
-          ...(v2 ? { engineVersion: 'deep-research-v2', sourcePolicy: { mode: effectivePolicy }, budgetProfile: researchBudgetProfile } : {}),
+          ...(v2 ? { engineVersion: 'deep-research-v2', sourcePolicy: { mode: effectivePolicy }, budgetProfile: researchBudgetProfile,
+            contextRefs: researchContextRefs } : {}),
         });
       } catch (error) { inputError(error.message); return false; }
       return;
@@ -1365,6 +1369,9 @@ export default function UnifiedTaskApp() {
           inputPlaceholder={submittingLearningAnswer ? '用自己的话回答这道题…' : undefined}
           researchCapabilities={researchCapabilities}
           researchSourcePolicy={researchSourcePolicy} onResearchSourcePolicyChange={setResearchSourcePolicy}
+          researchContextOptions={[...(activeTask?.notes || []).map(value => ({ id: `note:${value.id}`, title: value.title || '未命名笔记' })),
+            ...(activeTask?.artifacts || []).filter(value => value.origin !== 'machine').map(value => ({ id: `artifact:${value.id}`, title: value.title || '未命名成果' }))]}
+          researchContextRefs={researchContextRefs} onResearchContextRefsChange={setResearchContextRefs}
           researchBudgetProfile={researchBudgetProfile} onResearchBudgetProfileChange={setResearchBudgetProfile} />
           : <div className="unified-empty"><p>创建任务后，即可围绕论文持续讨论。</p><button type="button" onClick={() => createTask({ title: '新任务' })}>新任务</button></div>}
       </section>

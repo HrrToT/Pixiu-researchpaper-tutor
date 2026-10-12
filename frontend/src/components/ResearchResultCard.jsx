@@ -19,6 +19,9 @@ export default function ResearchResultCard({ taskId, run, result, error, onActio
   const [planDraft, setPlanDraft] = useState(null);
   const [addSourceBusy, setAddSourceBusy] = useState('');
   const [addedSources, setAddedSources] = useState(new Set());
+  const [followup, setFollowup] = useState(false);
+  const [followupQuestion, setFollowupQuestion] = useState('');
+  const [useCurrentMaterials, setUseCurrentMaterials] = useState(false);
   const button = useRef(null);
   const requests = useRef(new Map());
   const actions = new Set(Array.isArray(result.allowedActions) ? result.allowedActions : []);
@@ -83,11 +86,21 @@ export default function ResearchResultCard({ taskId, run, result, error, onActio
     <div className="research-result-actions">
       {report && onOpenReport && <button type="button" onClick={() => onOpenReport(run, result)}><FileText size={14} />{result.outcome === 'partial' ? '查看已有结果' : '打开报告'}</button>}
       {['cancel', 'resume', 'continue', 'pause'].filter(action => actions.has(action)).map(action =>
-        <button type="button" key={action} disabled={busy || !onAction} onClick={() => act(action)}>{actionLabels[action]}</button>)}
+        <button type="button" key={action} disabled={busy || !onAction} onClick={() => action === 'continue' ? setFollowup(value => !value) : act(action)}>{actionLabels[action]}</button>)}
       <button type="button" ref={button} aria-expanded={details} onClick={() => setDetails(value => !value)}>
         {details ? <ChevronUp size={14} /> : <ChevronDown size={14} />}{terminal ? `来源与详情${result.sourceCount ? ` (${result.sourceCount})` : ''}` : '详情'}
       </button>
     </div>
+    {followup && actions.has('continue') && <form className="research-followup" onSubmit={event => {
+      event.preventDefault(); void act('continue', { question: followupQuestion.trim() || run.question || result.title,
+        ...(useCurrentMaterials ? { materialSelection: { mode: 'task_default' } } : {}) });
+    }}>
+      <label>继续研究什么？<textarea className="theme-input" value={followupQuestion} onChange={event => setFollowupQuestion(event.target.value)}
+        placeholder="例如：补找反对证据；留空则继续补查原问题" /></label>
+      <label><input type="checkbox" checked={useCurrentMaterials} onChange={event => setUseCurrentMaterials(event.target.checked)} />使用当前任务材料（含新加入的论文）</label>
+      <p className="theme-text-muted text-sm">复用仍有效的证据；新的查询和生成会使用一次标准研究预算。</p>
+      <button type="submit" disabled={busy}>开始补查</button><button type="button" onClick={() => setFollowup(false)}>取消</button>
+    </form>}
     {shownError && <div><p role="alert">{shownError}</p>{onRefresh && <button type="button" disabled={busy} onClick={() => onRefresh(taskId, run.researchId)}>查询状态</button>}</div>}
     {details && <section className="research-result-details" aria-label="研究详情" onKeyDown={event => { if (event.key === 'Escape') { event.stopPropagation(); close(); } }}>
       <div className="research-result-details-heading"><strong>研究详情</strong><button type="button" aria-label="关闭研究详情" onClick={close}><X size={14} /></button></div>

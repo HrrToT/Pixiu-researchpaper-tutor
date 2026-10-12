@@ -41,7 +41,7 @@ function filterMachineArtifactDuplicates(items) {
 
 // Presentation only: keep the persisted documents, their titles and their order intact.
 export function taskDocumentNavigation(task, papers = []) {
-  const rawItems = [...(task?.notes || []), ...(task?.artifacts || [])];
+  const rawItems = [...(task?.notes || []), ...(task?.artifacts || [])].filter(item => !item.hiddenFromLibrary);
   const items = filterMachineArtifactDuplicates(rawItems);
   const titleOf = item => documentDisplayTitle(item, task, papers);
   const counts = new Map();

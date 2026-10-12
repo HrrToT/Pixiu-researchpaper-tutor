@@ -19,6 +19,17 @@ function renderChat(props = {}) {
 }
 
 describe('ChatPanel', () => {
+  it('selects notes as research context without adding them as paper evidence', () => {
+    const choose = vi.fn();
+    renderChat({ enableSkills: true, researchCapabilities: { enabled: true },
+      researchContextOptions: [{ id: 'note:n', title: '我的实验设想' }], onResearchContextRefsChange: choose });
+    fireEvent.change(screen.getByLabelText('输入问题'), { target: { value: '/研究 核查实验设想' } });
+    fireEvent.click(screen.getByRole('button', { name: '对话材料' }));
+    fireEvent.click(screen.getByText('参考笔记与成果'));
+    fireEvent.click(screen.getByRole('checkbox', { name: '我的实验设想' }));
+    expect(choose).toHaveBeenCalledWith(['note:n']);
+    expect(screen.getByText(/论文事实仍回查原文/)).toBeInTheDocument();
+  });
   beforeAll(() => {
     // jsdom does not implement the native dialog top layer; real focus trapping is checked in-browser.
     if (!HTMLDialogElement.prototype.showModal) HTMLDialogElement.prototype.showModal = function () { this.open = true; };

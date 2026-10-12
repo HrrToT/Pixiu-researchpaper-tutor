@@ -732,11 +732,22 @@ public class TaskWorkspaceService {
                     if (previous.containsKey(field)) copy.put(field, previous.get(field));
                 }
                 if (!java.util.Objects.equals(item.get("text"), previous.get("text"))) copy.put("edited", true);
-            } else if (Set.of("machine", "latest").contains(java.util.Objects.toString(copy.get("origin"), ""))) {
+            } else if (copy.get("sourceRunId") != null || Set.of("machine", "latest").contains(java.util.Objects.toString(copy.get("origin"), ""))) {
                 for (String field : List.of("sourceRunId", "sourceResearchId", "reportVersionId", "origin")) copy.remove(field);
                 copy.put("edited", true);
             }
             output.add(copy);
+        }
+        // A stale/full workspace PUT must not erase immutable research history.
+        for (Object raw : array(saved, "artifacts")) {
+            if (raw instanceof Map<?, ?> item && "machine".equals(item.get("origin")) && item.get("sourceRunId") != null
+                    && output.stream().noneMatch(value -> value instanceof Map<?, ?> candidate
+                        && java.util.Objects.equals(candidate.get("id"), item.get("id")))) {
+                Map<String, Object> retained = new LinkedHashMap<>();
+                item.forEach((key, value) -> retained.put(String.valueOf(key), value));
+                retained.put("hiddenFromLibrary", true);
+                output.add(retained);
+            }
         }
         return output;
     }

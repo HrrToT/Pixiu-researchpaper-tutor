@@ -706,6 +706,61 @@ class TaskResearchV2ControllerTest {
         org.junit.jupiter.api.Assertions.assertEquals(2, ((List<?>) tasks.get("work").get("artifacts")).size());
     }
 
+    @Test
+    void selectedNotesAreFrozenUnverifiedContextAndEditingRevokesTheOldSnapshot() throws Exception {
+        Map<String, Object> withNote = new LinkedHashMap<>(tasks.get("work"));
+        withNote.put("notes", List.of(Map.of("id", "n", "title", "我的猜想", "text", "尚未验证：任何压缩都不损失画质")));
+        workspace = tasks.updateFromClient("work", withNote);
+        when(research.createV2ResearchTask(any())).thenAnswer(call -> {
+            Map<?, ?> body = call.getArgument(0);
+            Map<?, ?> snapshot = (Map<?, ?>) body.get("materialSnapshot");
+            List<?> contexts = (List<?>) snapshot.get("contextMaterials");
+            Map<?, ?> context = (Map<?, ?>) contexts.getFirst();
+            org.junit.jupiter.api.Assertions.assertEquals("unverified_context", context.get("accessLevel"));
+            org.junit.jupiter.api.Assertions.assertEquals("note:n", context.get("ref"));
+            org.junit.jupiter.api.Assertions.assertEquals(64, ((String) context.get("contentHash")).length());
+            org.junit.jupiter.api.Assertions.assertFalse(((List<?>) snapshot.get("materialRefs")).contains("note:n"));
+            return v2Success("run-context", "queued", null, 0L);
+        });
+        when(research.resumeV2ResearchTask(eq("run-context"), any())).thenReturn(v2Success("run-context", "running", null, 1L));
+        Map<String, Object> input = v2StartInput(); input.put("contextRefs", List.of("note:n"));
+        mvc.perform(post("/api/task-workspaces/work/research/start").contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(input))).andExpect(status().isOk());
+        Map<String, Object> current = tasks.get("work");
+        Map<?, ?> run = (Map<?, ?>) ((List<?>) current.get("researchRuns")).getFirst();
+        String hash = (String) run.get("snapshotHash");
+        mvc.perform(post("/api/task-workspaces/work/research/run-context/scope-check").contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(Map.of("snapshotHash", hash)))).andExpect(jsonPath("$.valid").value(true));
+        current.put("notes", List.of(Map.of("id", "n", "title", "我的猜想", "text", "已修改目标")));
+        tasks.updateFromClient("work", current);
+        mvc.perform(post("/api/task-workspaces/work/research/run-context/scope-check").contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(Map.of("snapshotHash", hash)))).andExpect(jsonPath("$.valid").value(false));
+    }
+
+    @Test
+    void foreignContextIsRejectedBeforeModelDispatch() throws Exception {
+        Map<String, Object> input = v2StartInput(); input.put("contextRefs", List.of("note:foreign"));
+        mvc.perform(post("/api/task-workspaces/work/research/start").contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(input))).andExpect(status().isConflict());
+        verifyNoInteractions(research);
+    }
+
+    @Test
+    void fullWorkspaceSaveCannotEraseImmutableMachineReport() throws Exception {
+        tasks.attachResearchRun("work", workspace.get("revision"), v2RunBinding("run-keep", 1L, "running"));
+        when(research.getV2ResearchTask("run-keep")).thenReturn(ResponseEntity.ok(Map.of("status", "success",
+                "task", v2CompletedState("run-keep", "complete", "v-keep", "摘要", "保存的原稿"))));
+        mvc.perform(get("/api/task-workspaces/work/research/run-keep")).andExpect(status().isOk());
+        Map<String, Object> current = tasks.get("work"); current.put("artifacts", List.of());
+        Map<String, Object> saved = tasks.updateFromClient("work", current);
+        List<?> artifacts = (List<?>) saved.get("artifacts");
+        org.junit.jupiter.api.Assertions.assertEquals(1, artifacts.size());
+        Map<?, ?> machine = (Map<?, ?>) artifacts.getFirst();
+        org.junit.jupiter.api.Assertions.assertEquals("machine", machine.get("origin"));
+        org.junit.jupiter.api.Assertions.assertEquals("保存的原稿", machine.get("text"));
+        org.junit.jupiter.api.Assertions.assertEquals(true, machine.get("hiddenFromLibrary"));
+    }
+
     private Map<String, Object> v2StartInput() {
         Map<String, Object> input = new LinkedHashMap<>();
         input.put("requestId", "req-v2-" + System.nanoTime());

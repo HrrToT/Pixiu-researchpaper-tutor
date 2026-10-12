@@ -61,7 +61,12 @@ export function useTaskResearch(workspace, api = taskResearchApi, operations = n
           if (!isCurrent()) continue;
           await publish(taskId, researchId, response, isCurrent);
           if (isCurrent()) setRunError(JSON.stringify([taskId, researchId]), 'poll', '');
-        } catch (failure) { if (isCurrent()) setRunError(JSON.stringify([taskId, researchId]), 'poll', failure.message || '研究状态读取失败'); }
+        } catch (failure) { if (isCurrent()) {
+          const missing = failure.response?.status === 404;
+          if (missing) finished.current.add(key);
+          setRunError(JSON.stringify([taskId, researchId]), 'poll', missing
+            ? '执行记录当前不可用；已保存的成果仍可查看。' : failure.message || '研究状态读取失败');
+        } }
       }
       if (!disposed) timer = setTimeout(poll, 4000);
     };
@@ -81,6 +86,7 @@ export function useTaskResearch(workspace, api = taskResearchApi, operations = n
           materialSelection: { mode: context.allowedPaperIds.length ? 'explicit' : 'external_only', materialIds: context.allowedPaperIds },
           focusPaperIds: context.primaryPaperId ? [context.primaryPaperId] : [],
           sourcePolicy: context.sourcePolicy || { mode: 'task_only' },
+          ...(context.contextRefs?.length ? { contextRefs: context.contextRefs } : {}),
           budgetProfile: context.budgetProfile || 'standard', outputKind: context.outputKind || 'general',
           expectedTaskRevision: task.revision };
         const intentKey = researchIntentKey(task.id, input);
@@ -114,14 +120,19 @@ export function useTaskResearch(workspace, api = taskResearchApi, operations = n
     finished.current.delete(key);
     const isCurrent = () => actionVersions.current.get(key) === version;
     setRunError(JSON.stringify([taskId, researchId]), 'action', '');
+    const actionIntentKey = name === 'continue' && payload?.materialSelection && payload.requestId
+      ? JSON.stringify(['research-action', taskId, researchId, name, payload.requestId]) : null;
     try {
-      const response = await api.action(taskId, researchId, name, payload);
+      const actionPayload = actionIntentKey ? getResearchIntent(actionIntentKey, { ...payload,
+        expectedTaskRevision: latest.current.tasks?.find(task => task.id === taskId)?.revision }).input : payload;
+      const response = await api.action(taskId, researchId, name, actionPayload);
       if (name === 'continue' && response?.task?.contractVersion === 2 && response.task.runId !== researchId) {
         if (response.task.parentRunId !== researchId || !response.workspace?.researchRuns?.some(run => (run.runId || run.researchId) === response.task.runId)) {
           throw new Error('后续研究的任务绑定未确认');
         }
         await publish(taskId, response.task.runId, response, isCurrent);
       } else await publish(taskId, researchId, response, isCurrent);
+      if (actionIntentKey) clearResearchIntent(actionIntentKey);
     }
     catch (failure) {
       if (isCurrent()) setRunError(JSON.stringify([taskId, researchId]), 'action', failure.message || '研究操作失败');

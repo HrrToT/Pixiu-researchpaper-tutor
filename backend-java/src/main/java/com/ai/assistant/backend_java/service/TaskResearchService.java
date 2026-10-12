@@ -252,7 +252,10 @@ public class TaskResearchService {
             String policyMode = policy.get("mode") instanceof String pm ? pm : "task_only";
 
             List<Map<String, String>> currentVersions = buildMaterialVersions(currentMaterialIds);
-            String currentHash = computeSnapshotHash(currentVersions, focusIds, policyMode);
+            List<Map<String, String>> contexts;
+            try { contexts = buildContextMaterials(workspace, run.get("contextRefs")); }
+            catch (ResponseStatusException changed) { contexts = null; }
+            String currentHash = contexts == null ? "revoked" : computeSnapshotHash(currentVersions, focusIds, policyMode, contexts);
             if (!currentHash.equals(expectedHash)) {
                 snapshotValid = false;
             }
@@ -497,6 +500,7 @@ public class TaskResearchService {
 
         // Build material versions with contentHash (SHA-256 of pdfBytes) as version identity
         List<Map<String, String>> materialVersions = buildMaterialVersions(resolvedMaterialIds);
+        List<Map<String, String>> contextMaterials = buildContextMaterials(workspace, input.get("contextRefs"));
 
         Map<String, Object> upstream = new LinkedHashMap<>();
         upstream.put("requestId", input.get("requestId"));
@@ -520,7 +524,8 @@ public class TaskResearchService {
         snapshot.put("focusPaperIds", focusPaperIds);
         snapshot.put("sourcePolicy", Map.of("mode", policyMode));
         snapshot.put("materialVersions", materialVersions);
-        String snapshotHash = computeSnapshotHash(materialVersions, focusPaperIds, policyMode);
+        snapshot.put("contextMaterials", contextMaterials);
+        String snapshotHash = computeSnapshotHash(materialVersions, focusPaperIds, policyMode, contextMaterials);
         snapshot.put("snapshotHash", snapshotHash);
         upstream.put("materialSnapshot", snapshot);
 
@@ -554,6 +559,7 @@ public class TaskResearchService {
         run.put("question", question);
         run.put("parentRunId", parentRunId);
         run.put("snapshotHash", snapshotHash);
+        run.put("contextRefs", contextMaterials.stream().map(value -> value.get("ref")).toList());
         run.put("createdAt", Instant.now().toString());
 
         try {
@@ -616,6 +622,16 @@ public class TaskResearchService {
     private Map<String, Object> continueV2(String taskId, String runId, Map<String, Object> input) {
         requireV2Owner(taskId, runId);
         Map<String, Object> parentRun = findV2Run(taskId, runId);
+        if (input != null && input.containsKey("materialSelection")) {
+            Map<String, Object> fresh = new LinkedHashMap<>(input);
+            fresh.put("parentRunId", runId);
+            fresh.put("engineVersion", ENGINE_V2);
+            fresh.put("sourcePolicy", parentRun.get("sourcePolicy"));
+            fresh.put("outputKind", parentRun.get("outputKind"));
+            fresh.putIfAbsent("question", parentRun.get("question"));
+            fresh.putIfAbsent("contextRefs", parentRun.getOrDefault("contextRefs", List.of()));
+            return startV2(taskId, fresh);
+        }
         Map<String, Object> body = forwardBody(input, List.of("requestId", "expectedRunRevision", "question", "budgetProfile", "sourcePolicy"));
         body.put("parentRunId", runId);
         // Defer child graph start to avoid race with workspace binding
@@ -643,13 +659,18 @@ public class TaskResearchService {
                 childRun.put("paperIds", childPapers);
                 childRun.put("focusPaperIds", parentRun.get("focusPaperIds"));
                 childRun.put("sourcePolicy", parentRun.get("sourcePolicy"));
+                childRun.put("contextRefs", parentRun.getOrDefault("contextRefs", List.of()));
+                childRun.put("snapshotHash", parentRun.get("snapshotHash"));
                 childRun.put("budgetProfile", input != null && input.get("budgetProfile") instanceof String bp ? bp : parentRun.get("budgetProfile"));
                 childRun.put("outputKind", parentRun.get("outputKind"));
                 childRun.put("question", input != null && input.get("question") instanceof String q ? q : parentRun.get("question"));
                 childRun.put("parentRunId", runId);
                 childRun.put("createdAt", Instant.now().toString());
                 try { tasks.attachResearchRun(taskId, tasks.get(taskId).get("revision"), childRun); }
-                catch (RuntimeException ignored) {}
+                catch (RuntimeException conflict) {
+                    // Never activate an unbound child; the same request can recover its receipt.
+                    throw new ResponseStatusException(HttpStatus.CONFLICT, "后续研究尚未绑定到任务，未开始模型调用；请刷新后用原请求重试", conflict);
+                }
             }
         }
 
@@ -1021,6 +1042,11 @@ public class TaskResearchService {
     private String textOrNull(Object value) { return value instanceof String s ? s : null; }
 
     private String computeSnapshotHash(List<Map<String, String>> materialVersions, List<String> focusIds, String policyMode) {
+        return computeSnapshotHash(materialVersions, focusIds, policyMode, List.of());
+    }
+
+    private String computeSnapshotHash(List<Map<String, String>> materialVersions, List<String> focusIds, String policyMode,
+                                       List<Map<String, String>> contexts) {
         StringBuilder sb = new StringBuilder();
         for (Map<String, String> mv : materialVersions) {
             sb.append(mv.get("id"))
@@ -1033,6 +1059,8 @@ public class TaskResearchService {
         sb.append('|');
         for (String f : focusIds) sb.append(f).append(',');
         sb.append('|').append(policyMode);
+        for (Map<String, String> context : contexts) sb.append("|context:").append(context.get("ref"))
+                .append(':').append(context.get("contentHash"));
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             byte[] hash = digest.digest(sb.toString().getBytes(StandardCharsets.UTF_8));
@@ -1040,6 +1068,34 @@ public class TaskResearchService {
         } catch (NoSuchAlgorithmException e) {
             throw new IllegalStateException("SHA-256 not available", e);
         }
+    }
+
+    /** Notes and saved reports are user context, never direct paper evidence. */
+    private List<Map<String, String>> buildContextMaterials(Map<String, Object> workspace, Object rawRefs) {
+        if (rawRefs == null) return List.of();
+        if (!(rawRefs instanceof List<?> refs) || refs.size() > 4)
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "最多选择四份笔记或成果作为研究背景");
+        List<Map<String, String>> output = new ArrayList<>();
+        java.util.Set<String> seen = new java.util.HashSet<>();
+        for (Object raw : refs) {
+            if (!(raw instanceof String ref) || !(ref.startsWith("note:") || ref.startsWith("artifact:")) || !seen.add(ref))
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "背景材料身份无效");
+            String kind = ref.startsWith("note:") ? "note" : "artifact";
+            String id = ref.substring(ref.indexOf(':') + 1);
+            List<?> candidates = workspace.get(kind.equals("note") ? "notes" : "artifacts") instanceof List<?> list ? list : List.of();
+            Map<?, ?> document = candidates.stream().filter(value -> value instanceof Map<?, ?> item && id.equals(item.get("id")))
+                    .map(value -> (Map<?, ?>) value).findFirst().orElseThrow(() ->
+                        new ResponseStatusException(HttpStatus.CONFLICT, "所选笔记或成果已不在本任务中"));
+            String text = java.util.Objects.toString(document.get("text"), "");
+            String title = java.util.Objects.toString(document.get("title"), "未命名材料");
+            String contentHash;
+            try { contentHash = HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256")
+                    .digest((title + "\n" + text).getBytes(StandardCharsets.UTF_8))); }
+            catch (NoSuchAlgorithmException error) { throw new IllegalStateException(error); }
+            output.add(Map.of("ref", ref, "kind", kind, "title", title, "contentHash", contentHash,
+                    "text", text.substring(0, Math.min(text.length(), 1000)), "accessLevel", "unverified_context"));
+        }
+        return output;
     }
 
     /**
