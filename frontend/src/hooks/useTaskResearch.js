@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { taskResearchApi } from '../services/taskResearchApi';
+import { clearResearchIntent, getResearchIntent, researchIntentKey } from '../services/researchStartIntent';
 
 const terminal = new Set(['succeeded', 'completed', 'failed', 'cancelled']);
 export function useTaskResearch(workspace, api = taskResearchApi, operations = null) {
@@ -77,18 +78,19 @@ export function useTaskResearch(workspace, api = taskResearchApi, operations = n
     try {
       if (v2) {
         const input = { question, engineVersion: 'deep-research-v2', contractVersion: 2,
-          materialSelection: { mode: 'explicit', materialIds: context.allowedPaperIds },
+          materialSelection: { mode: context.allowedPaperIds.length ? 'explicit' : 'external_only', materialIds: context.allowedPaperIds },
           focusPaperIds: context.primaryPaperId ? [context.primaryPaperId] : [],
           sourcePolicy: context.sourcePolicy || { mode: 'task_only' },
           budgetProfile: context.budgetProfile || 'standard', outputKind: context.outputKind || 'general',
           expectedTaskRevision: task.revision };
-        const intentKey = JSON.stringify([task.id, input]);
-        const requestId = startIntents.current.get(intentKey) || globalThis.crypto.randomUUID();
-        startIntents.current.set(intentKey, requestId);
-        const response = await api.start(task.id, { ...input, requestId });
+        const intentKey = researchIntentKey(task.id, input);
+        const intent = startIntents.current.get(intentKey) || getResearchIntent(intentKey, input);
+        startIntents.current.set(intentKey, intent);
+        const response = await api.start(task.id, { ...intent.input, requestId: intent.requestId });
         if (!response?.workspace || response.workspace.id !== task.id) throw new Error('研究创建结果未确认，请查询任务记录');
         await publish(task.id, response.task?.runId, response);
         startIntents.current.delete(intentKey);
+        clearResearchIntent(intentKey);
         return response;
       }
       const response = await api.start(task.id, { question, allowedPaperIds: context.allowedPaperIds,
