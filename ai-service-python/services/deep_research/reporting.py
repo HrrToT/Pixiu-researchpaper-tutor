@@ -33,6 +33,17 @@ def build_sections(claims, output_kind, proposed_sections=None):
     return sections
 
 
+def _display_gaps(gaps):
+    """Keep the full audit in storage, show each unfinished obligation once."""
+    specific = [g for g in gaps if not isinstance(g, dict) or not g.get('wholeQuestion')]
+    selected = {}
+    for gap in specific or gaps:
+        key = (gap.get('obligationId') or gap.get('question')) if isinstance(gap, dict) else gap
+        if key and (key not in selected or isinstance(gap, dict) and gap.get('stage') == 'answer'):
+            selected[key] = gap
+    return list(selected.values())
+
+
 def render_report(payload):
     claims = {claim["claimId"]: claim for claim in payload.get("claims", []) if claim.get("claimId")}
     refs = list(dict.fromkeys(ref for claim in claims.values() for ref in claim.get("evidenceRefs", [])))
@@ -57,15 +68,15 @@ def render_report(payload):
             lines.extend([f"## {section['title']}", "", *content, ""])
     if not claims:
         lines.extend(["当前取得的证据不足以回答这个问题。", ""])
-    gaps = payload.get("gaps", [])
+    gaps = _display_gaps(payload.get("gaps", []))
     if gaps:
-        lines.extend(["## 尚未解决", ""])
+        lines.extend(["<details>", f"<summary>还有 {len(gaps)} 项未完成</summary>", ""])
         for gap in gaps[:8]:
             question = gap if isinstance(gap, str) else gap.get("question", "")
             if question:
                 reason = gap.get("missingEvidence", "") if isinstance(gap, dict) else ""
                 lines.append(f"- {question}" + (f"：{reason}" if reason else ""))
-        lines.append("")
+        lines.extend(["", "</details>", ""])
     if payload.get("limitations"):
         lines.extend([payload["limitations"], ""])
     if refs:
@@ -86,7 +97,7 @@ def conversation_summary(claims, outcome, *, max_chars=500):
     """Keep whole claims and their epistemic labels; never cut a number or condition."""
     labels = {"inference": "有依据的推断：", "hypothesis": "待验证假设：",
               "suggestion": "实验建议：", "proposal": "实验建议："}
-    boundary = {"partial": "当前仍有证据缺口，已有结果已保存。",
+    boundary = {"partial": "当前结果尚不完整，已核实的内容已保存。",
                 "inconclusive": "当前取得的证据不足以形成可靠结论。"}.get(outcome, "")
     parts = []
     length = len(boundary)

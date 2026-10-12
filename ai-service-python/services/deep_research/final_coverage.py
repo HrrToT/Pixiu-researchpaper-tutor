@@ -11,6 +11,7 @@ def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse):
     # A plan can itself omit part of the request. Audit the original question as
     # well as each planned obligation, without changing the stored research plan.
     audit_plan = list(plan)
+    identity = None
     if plan and question:
         known = {o['obligationId'] for p in plan for o in p.get('obligations', [])}
         identity = 'answer_scope'
@@ -65,5 +66,8 @@ accepted claims. Bindings must quote the final answer, never the source passages
             # Publish only supported text with an explicit coverage gap. Never
             # promote budget exhaustion to a complete answer or add a retry.
             status = 'budget_exhausted'
-    return {'status': status, 'verdicts': verdicts if isinstance(verdicts, list) else [],
-            'gaps': answer_coverage_gaps(audit_plan, claims, verdicts)}
+    gaps = answer_coverage_gaps(audit_plan, claims, verdicts)
+    for gap in gaps:
+        if identity and gap.get('obligationId') == identity:
+            gap['wholeQuestion'] = True
+    return {'status': status, 'verdicts': verdicts if isinstance(verdicts, list) else [], 'gaps': gaps}

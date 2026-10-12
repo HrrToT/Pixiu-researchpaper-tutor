@@ -93,7 +93,7 @@ def test_report_keeps_conditions_and_labels_in_summary_and_folds_evidence():
                "conditions": {"数据": "同一训练测试划分"}},
               {"claimId": "long", "kind": "reported", "text": "x" * 600}]
     summary = conversation_summary(claims, "partial")
-    assert "实验建议：" in summary and "同一训练测试划分" in summary and "证据缺口" in summary
+    assert "实验建议：" in summary and "同一训练测试划分" in summary and "结果尚不完整" in summary
     assert "xxx" not in summary
     body = render_report({"claims": claims[:1], "evidence": [{"evidenceId": "e", "quote": "original quote"}]})
     assert "<details>\n<summary>原文依据</summary>\n" in body
