@@ -304,6 +304,17 @@ class OfflineLlmTests(unittest.TestCase):
         self.assertTrue(result.usage.estimated)
         self.assertEqual(result.usage.total_tokens, result.usage.input_tokens + result.usage.output_tokens)
 
+    def test_truncated_empty_response_retains_usage_and_finish_reason(self):
+        response = Mock(status_code=200)
+        response.json.return_value = {'choices': [{'finish_reason': 'length', 'message': {'content': ''}}],
+                                      'usage': {'prompt_tokens': 100, 'completion_tokens': 8192, 'total_tokens': 8292}}
+        with patch('llm.client.requests.post', return_value=response) as post:
+            result = llm_client.DeepSeekLLM(api_key='test-key').invoke(LLMRequest(prompt='bounded output'))
+        self.assertEqual(result.finish_reason, 'length')
+        self.assertEqual(result.content, '')
+        self.assertEqual(result.usage.total_tokens, 8292)
+        post.assert_called_once()
+
     def test_deepseek_errors_are_normalized_without_response_body(self):
         response = Mock(status_code=429, text="secret upstream body")
 

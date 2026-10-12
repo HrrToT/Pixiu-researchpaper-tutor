@@ -338,6 +338,7 @@ class TrackedLLMInvoker:
             "content": result.content if hasattr(result, "content") else "",
             "provider": getattr(result, "provider", ""),
             "model": getattr(result, "model", ""),
+            "finishReason": getattr(result, "finish_reason", None),
             "usage": {
                 "total_tokens": actual_tokens,
                 "input_tokens": result.usage.input_tokens if hasattr(result.usage, "input_tokens") else 0,

@@ -27,6 +27,7 @@ class LLMResult:
     model: str
     content: str
     usage: LLMUsage
+    finish_reason: Optional[str] = None
 
 
 class LLMProviderError(RuntimeError):

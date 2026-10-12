@@ -81,8 +81,10 @@ def test_reasoning_options_are_reserved_before_provider_send():
     request = provider.invoke.call_args.args[0]
     assert request.extra_body['thinking'] == {'type': 'enabled'}
     assert request.extra_body['max_tokens'] == 8192
+    assert request.extra_body['reasoning_effort'] == 'high'
     assert reserve.call_args.kwargs['budget_delta']['tokens'] == len(b'evidence') + 1024 + 8192
-    assert research_model_options('extract', {'max_tokens': 1000}) == {'max_tokens': 1000, 'thinking': {'type': 'disabled'}}
+    assert research_model_options('extract', {'max_tokens': 1000}) == {'max_tokens': 1000, 'thinking': {'type': 'disabled'}, 'reasoning_effort': 'none'}
+    assert research_model_options('synthesize', {})['reasoning_effort'] == 'low'
 
 
 def test_routine_model_route_retains_scope_checks_and_complex_model():
