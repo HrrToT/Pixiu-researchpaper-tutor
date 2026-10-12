@@ -571,6 +571,12 @@ class DeepResearchRepository:
                         from services.deep_research.contracts import UnresolvedUnknownError
                         raise UnresolvedUnknownError(normalized_run, [row[0] for row in unresolved])
                     if delta:
+                        from services.deep_research.finalization_pool import select_reservation_pool
+                        # Select against current counters under the same write
+                        # transaction. Full budget checks below still admit or
+                        # reject; the ledger records the actual pool used.
+                        use_reserve = select_reservation_pool(run_record.get('budget') or {},
+                                                              delta, use_reserve, normalized_node)
                         run_record["budget"] = _apply_reservation(
                             run_record.get("budget") or {}, delta, use_reserve=use_reserve
                         )

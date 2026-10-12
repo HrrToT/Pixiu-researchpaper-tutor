@@ -1044,3 +1044,61 @@ def test_action_receipt_is_durable_and_payload_bound(repo: DeepResearchRepositor
 def test_nonpositive_budget_does_not_disable_limits(repo: DeepResearchRepository, limit, value):
     with pytest.raises(ValueError):
         repo.create_run({"runId": "bad-budget", "budget": {limit: value}})
+
+
+def test_finalization_fallback_records_actual_pool_and_settles_once(repo):
+    repo.create_run({'runId': 'finish-spare', 'budget': {'maxModelCalls': 4, 'reserveModelCalls': 1}})
+    repo.begin_execution('finish-spare')
+    repo.reserve_call(run_id='finish-spare', node='synthesize', tool='llm_invoke',
+        args_digest=digest('synth'), budget_delta={'modelCalls': 1, 'tokens': 100}, use_reserve=True)
+    args = dict(run_id='finish-spare', node='verify_answer_coverage', tool='llm_invoke',
+                args_digest=digest('coverage'), budget_delta={'modelCalls': 1, 'tokens': 200}, use_reserve=True)
+    call, reused = repo.reserve_call(**args)
+    assert not reused and call['usesReserve'] is False
+    repo.complete_call(call['callId'], status=CALL_STATUS_SUCCEEDED, result={'ok': True},
+                       budget_delta={'tokens': -150})
+    before = repo.require_run('finish-spare')['budget']
+    assert before['modelCalls'] == 1 and before['reservedModelCalls'] == 1
+    assert before['normalTokens'] == 50 and before['tokens'] == 150
+    repeated, reused = repo.reserve_call(**args)
+    assert reused and repeated['callId'] == call['callId'] and repeated['usesReserve'] is False
+    assert repo.require_run('finish-spare')['budget'] == before
+
+
+def test_concurrent_finalization_cannot_overspend_spare_normal_capacity(repo):
+    from services.deep_research.contracts import BudgetExhaustedError
+    repo.create_run({'runId': 'finish-race', 'budget': {'maxModelCalls': 4, 'reserveModelCalls': 1}})
+    repo.begin_execution('finish-race')
+    repo.reserve_call(run_id='finish-race', node='synthesize', tool='llm_invoke',
+        args_digest=digest('synth'), budget_delta={'modelCalls': 1}, use_reserve=True)
+    def worker(i):
+        try:
+            call, _ = repo.reserve_call(run_id='finish-race', node='verify', tool='llm_invoke',
+                args_digest=digest(i), budget_delta={'modelCalls': 1}, use_reserve=True)
+            assert call['usesReserve'] is False
+            return True
+        except BudgetExhaustedError:
+            return False
+    with ThreadPoolExecutor(max_workers=8) as pool:
+        results = list(pool.map(worker, range(8)))
+    assert sum(results) == 3
+    budget = repo.require_run('finish-race')['budget']
+    assert budget['modelCalls'] == 3 and budget['reservedModelCalls'] == 1
+    assert budget['maxModelCalls'] == 4 and budget['reserveModelCalls'] == 1
+
+
+def test_finalization_fallback_does_not_bypass_unknown_or_paused_guards(repo):
+    from services.deep_research.contracts import UnresolvedUnknownError
+    repo.create_run({'runId': 'finish-guard', 'budget': {'maxModelCalls': 4, 'reserveModelCalls': 1}})
+    repo.begin_execution('finish-guard')
+    call, _ = repo.reserve_call(run_id='finish-guard', node='synthesize', tool='llm_invoke',
+        args_digest=digest('synth'), budget_delta={'modelCalls': 1}, use_reserve=True)
+    repo.complete_call(call['callId'], status=CALL_STATUS_UNKNOWN, error={'reason': 'unknown'})
+    args = dict(run_id='finish-guard', node='verify', tool='llm_invoke', args_digest=digest('next'),
+                budget_delta={'modelCalls': 1}, use_reserve=True)
+    with pytest.raises(UnresolvedUnknownError):
+        repo.reserve_call(**args)
+    repo.update_run('finish-guard', lambda r: {**r, 'status': 'paused'})
+    with pytest.raises(CallOutsideRunningError):
+        repo.reserve_call(**args)
+    assert repo.require_run('finish-guard')['budget']['modelCalls'] == 0

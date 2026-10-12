@@ -1,0 +1,38 @@
+{
+  "date": "2026-10-13",
+  "feature": "Bounded experiment verification and finalization budget fallback",
+  "promptVersion": "dr-v2.20261013.18",
+  "qoder": {
+    "model": "bailian/qwen3.8-max-tp",
+    "patchSha256": "0559f9187501c0d834433e1c8432f1eeea8af64e381fef2c3bd932e89146e1c4",
+    "delivered": [
+      "finalization_pool.py",
+      "test_deep_research_finalization_pool.py"
+    ]
+  },
+  "behavior": [
+    "Dedicated experiment science verification uses bounded low-effort reasoning with 8192 output-token ceiling",
+    "Truncated or incomplete verdicts still fail; no automatic provider retry",
+    "Finalization may use spare normal capacity only when protected reserve is exhausted",
+    "Selection and authoritative admission occur in one database write transaction",
+    "Actual pool is persisted for accounting, settlement and idempotent reuse",
+    "All existing total/token/status/unknown-call guards remain active"
+  ],
+  "focusedRegression": {
+    "passed": 124,
+    "seconds": 10.15
+  },
+  "fullRegression": {
+    "passed": 588,
+    "seconds": 62.88,
+    "warnings": 2
+  },
+  "realD3Retest": {
+    "status": "not_started"
+  },
+  "runtimeLoaded": false,
+  "limits": [
+    "Offline tests do not establish scientific judgement quality",
+    "Concrete proposed protocol choices still require real content acceptance"
+  ]
+}
