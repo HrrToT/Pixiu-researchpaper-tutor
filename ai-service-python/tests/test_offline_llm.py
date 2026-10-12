@@ -277,6 +277,19 @@ class OfflineLlmTests(unittest.TestCase):
         self.assertEqual(result.content, "deepseek answer")
         self.assertEqual(result.usage, LLMUsage(13, 5, 18, estimated=False))
 
+    def test_deepseek_request_deadline_caps_transport_without_hidden_retry(self):
+        response = Mock(status_code=200)
+        response.json.return_value = {"choices": [{"message": {"content": "bounded"}}]}
+        llm = llm_client.DeepSeekLLM(api_key="test-key")
+        with patch("llm.client.requests.post", return_value=response) as post:
+            llm.invoke(LLMRequest(prompt="bounded call", timeout_seconds=2.5))
+        self.assertEqual(post.call_count, 1)
+        self.assertLessEqual(post.call_args.kwargs["timeout"], 2.5)
+        with patch("llm.client.requests.post") as post:
+            with self.assertRaises(ValueError):
+                llm.invoke(LLMRequest(prompt="expired", timeout_seconds=0))
+        post.assert_not_called()
+
     def test_deepseek_invoke_estimates_missing_usage(self):
         response = Mock(status_code=200)
         response.json.return_value = {

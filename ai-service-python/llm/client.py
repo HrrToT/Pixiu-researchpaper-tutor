@@ -145,6 +145,10 @@ class DeepSeekLLM:
             payload.update(request.extra_body)
 
         timeout = float(settings.deepseek_timeout_seconds)
+        if request.timeout_seconds is not None:
+            if request.timeout_seconds <= 0:
+                raise ValueError("LLM request timeout must be positive")
+            timeout = min(timeout, float(request.timeout_seconds))
         input_size = sum(len(str(item.get("content") or "")) for item in resolved_messages)
         estimated_input_tokens = sum(estimate_tokens(item.get("content") or "") for item in resolved_messages)
         with trace_step(
