@@ -85,6 +85,11 @@ against the actual requested aspect before citing it. Fix invalid proposed formu
 unexecuted proposals/hypotheses clearly. Keep the answer concise and within the user's length limit.'''
     if any(row.get('designContractVersion') == 2 for row in originals.values()):
         from services.deep_research.execution_spec import EXECUTION_SPEC_CONTRACT
+        from services.deep_research.experimental_reasoning import DESIGN_ROLES
+        prompt += '\nEvery v2 proposal/suggestion/hypothesis requires one designRole from: ' + json.dumps(sorted(DESIGN_ROLES))
+        prompt += '. For a missing role, assign the appropriate role based on its actual content; ' \
+                  'do not omit the role to bypass checks. Preserve existing valid roles. ' \
+                  'Data and analysis roles also require their complete executionSpec.'
         prompt += '\n' + EXECUTION_SPEC_CONTRACT
     template = prompt
     def render(selected_rows):
