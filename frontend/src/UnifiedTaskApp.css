@@ -200,3 +200,13 @@
 .critique-inline-citation { display:inline; color:var(--accent); border-radius:3px; font:inherit; padding:0 2px; }
 .critique-inline-citation:hover { background:var(--accent-soft); }
 .critique-inline-citation:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+.research-result-heading, .research-result-details-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.research-result-heading > span { flex-shrink: 0; font-size: 12px; }
+.research-result-summary { white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.65; }
+.research-result-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.research-result-actions button { display: inline-flex; align-items: center; gap: 4px; }
+.research-result-details { margin-top: 10px; padding: 12px; border: 1px solid var(--border-color, #ddd); border-radius: 8px; }
+.research-result-details [role="tablist"] { display: flex; gap: 8px; margin: 8px 0; }
+.research-result-details [aria-selected="true"] { font-weight: 600; text-decoration: underline; text-underline-offset: 4px; }
+.research-result-details [role="tabpanel"] { max-height: min(300px, 40vh); overflow: auto; overflow-wrap: anywhere; }
+.research-result-details li + li { margin-top: 8px; }

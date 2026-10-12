@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { getResearchStatusMeta } from './deepResearchPanelModel';
 import { researchTitle } from './conversationProcessingModel';
+import ResearchResultCard from './ResearchResultCard';
 
-export function ResearchCard({ taskId, run, result, error, onRefresh, onAction, onOpenReport, compactTitle, inline = true }) {
+export function ResearchCard({ taskId, run, result, error, onRefresh, onAction, onOpenReport, onJumpToSource, compactTitle, inline = true }) {
   const [actionError, setActionError] = useState('');
   const [busy, setBusy] = useState(false);
   const [reviews, setReviews] = useState({});
@@ -16,6 +17,7 @@ export function ResearchCard({ taskId, run, result, error, onRefresh, onAction, 
     finally { setBusy(false); }
   };
   const title = researchTitle(run, result, compactTitle);
+  if (result?.contractVersion === 2) return <ResearchResultCard {...{ taskId, run, result, error, onRefresh, onAction, onOpenReport, onJumpToSource }} />;
   const failure = actionError || error?.action || error?.poll;
   const errorDetail = failure && <details><summary>研究状态需确认</summary><p role="alert">{failure}</p>
     {onRefresh && <button type="button" disabled={busy} onClick={() => onRefresh(taskId, run.researchId)}>查询研究状态</button>}</details>;

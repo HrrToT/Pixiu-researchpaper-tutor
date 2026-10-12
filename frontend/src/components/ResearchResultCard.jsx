@@ -1,0 +1,79 @@
+import React, { useRef, useState } from 'react';
+import { ChevronDown, ChevronUp, FileText, X } from 'lucide-react';
+
+const labels = {
+  queued: '研究已排队', running: '正在研究', waiting_user: '需要明确研究范围',
+  paused: '研究已暂停', stopping: '正在停止', cancelled: '研究已停止', failed: '本次研究未完成',
+};
+const outcomes = { complete: '报告已保存', partial: '已完成部分研究', inconclusive: '当前材料不足以判断', none: '研究已结束' };
+const actionLabels = { pause: '暂停', resume: '继续研究', cancel: '停止', continue: '补查缺口' };
+
+/** Version 2 execution details are optional; the answer remains the primary content. */
+export default function ResearchResultCard({ taskId, run, result, error, onAction, onRefresh, onOpenReport, onJumpToSource }) {
+  const [details, setDetails] = useState(false);
+  const [tab, setTab] = useState('plan');
+  const [busy, setBusy] = useState(false);
+  const [failure, setFailure] = useState('');
+  const [clarification, setClarification] = useState('');
+  const button = useRef(null);
+  const requests = useRef(new Map());
+  const actions = new Set(result.allowedActions || []);
+  const terminal = ['completed', 'cancelled', 'failed'].includes(result.status);
+  const report = Boolean(result.reportVersionId || result.report?.versionId || (typeof result.report === 'string' && result.report.trim()));
+  const title = result.title || result.brief?.title || '学术研究';
+  const status = result.status === 'completed' ? outcomes[result.outcome] || '研究已完成' : labels[result.status] || '正在确认研究状态';
+  const activity = typeof result.activity === 'string' ? result.activity : result.activity?.label;
+  const shownError = failure || error?.action || error?.poll || result.error;
+  const close = () => { setDetails(false); button.current?.focus(); };
+  const act = async (name, payload = {}) => {
+    if (busy || !onAction || !actions.has(name)) return;
+    const revision = result.runRevision ?? result.revision;
+    const key = JSON.stringify([name, revision, payload]);
+    if (!requests.current.has(key)) requests.current.set(key, globalThis.crypto?.randomUUID?.() || `research-${Date.now()}-${Math.random().toString(36).slice(2)}`);
+    setBusy(true); setFailure('');
+    try {
+      await onAction(taskId, run.researchId, name, { ...payload, expectedRunRevision: revision, requestId: requests.current.get(key) });
+    } catch (cause) { setFailure(cause?.message || '操作结果暂未确认，请查询状态。'); }
+    finally { setBusy(false); }
+  };
+  const sources = result.sources || [];
+  const plan = result.plan || [];
+  const events = result.events || [];
+  return <article className="conversation-research-card research-result-card" aria-label="研究结果">
+    <div className="research-result-heading"><strong>{title}</strong><span role="status" aria-live="polite">{status}</span></div>
+    {!terminal && activity && <p className="theme-text-muted text-sm">{activity}</p>}
+    {result.summary && <p className="research-result-summary">{result.summary}</p>}
+    {result.status === 'waiting_user' && <form onSubmit={event => { event.preventDefault(); void act('clarify', { answer: clarification.trim() }); }}>
+      <label>{result.clarification?.question || '请明确本次研究目标'}
+        <input aria-label="研究范围答复" className="theme-input" value={clarification} onChange={event => setClarification(event.target.value)} />
+      </label>
+      {(result.clarification?.options || []).map(option => <button type="button" disabled={busy || !actions.has('clarify')} key={option}
+        onClick={() => act('clarify', { answer: option })}>{option}</button>)}
+      <button type="submit" disabled={busy || !clarification.trim() || !actions.has('clarify')}>继续</button>
+    </form>}
+    <div className="research-result-actions">
+      {report && onOpenReport && <button type="button" onClick={() => onOpenReport(run, result)}><FileText size={14} />{result.outcome === 'partial' ? '查看已有结果' : '打开报告'}</button>}
+      {['cancel', 'resume', 'continue', 'pause'].filter(action => actions.has(action)).map(action =>
+        <button type="button" key={action} disabled={busy || !onAction} onClick={() => act(action)}>{actionLabels[action]}</button>)}
+      <button type="button" ref={button} aria-expanded={details} onClick={() => setDetails(value => !value)}>
+        {details ? <ChevronUp size={14} /> : <ChevronDown size={14} />}{terminal ? `来源与详情${result.sourceCount ? ` (${result.sourceCount})` : ''}` : '详情'}
+      </button>
+    </div>
+    {shownError && <div><p role="alert">{shownError}</p>{onRefresh && <button type="button" disabled={busy} onClick={() => onRefresh(taskId, run.researchId)}>查询状态</button>}</div>}
+    {details && <section className="research-result-details" aria-label="研究详情" onKeyDown={event => { if (event.key === 'Escape') { event.stopPropagation(); close(); } }}>
+      <div className="research-result-details-heading"><strong>研究详情</strong><button type="button" aria-label="关闭研究详情" onClick={close}><X size={14} /></button></div>
+      <div role="tablist" aria-label="研究详情分类">{[['plan', '计划'], ['sources', '资料'], ['events', '执行记录']].map(([id, label]) =>
+        <button type="button" role="tab" aria-selected={tab === id} key={id} onClick={() => setTab(id)}>{label}</button>)}</div>
+      <div role="tabpanel" aria-label={{ plan: '计划', sources: '资料', events: '执行记录' }[tab]}>
+        {tab === 'plan' && (plan.length ? <ol>{plan.map((item, index) => <li key={item.itemId || index}>{typeof item === 'string' ? item : item.question}<span className="theme-text-muted"> {({ completed: '已完成', pending: '待研究', running: '研究中', gap: '待补查' })[item.status] || ''}</span></li>)}</ol> : <p>暂未生成计划。</p>)}
+        {tab === 'sources' && (sources.length ? <ul>{sources.map((source, index) => <li key={source.sourceId || source.workId || index}>
+          <strong>{source.title || source.pdfId || '论文来源'}</strong> · <span>{({ fulltext: '全文', full_text: '全文', abstract: '仅摘要', metadata: '仅元数据' })[source.accessLevel] || '任务材料'}</span>
+          {source.page != null && <span> · 第 {source.page} 页</span>}
+          {source.quote && <details><summary>原文依据</summary><blockquote>{source.quote}</blockquote></details>}
+          {onJumpToSource && source.pdfId && <button type="button" onClick={() => onJumpToSource(source)}>查看论文原文</button>}
+        </li>)}</ul> : <p>{result.sourceCount ? '来源详情可在报告中展开。' : '尚无可引用来源。'}</p>)}
+        {tab === 'events' && (events.length ? <ol>{events.map((event, index) => <li key={event.eventId || index}>{event.label || event.activity || event.kind}{event.summary ? `：${event.summary}` : ''}</li>)}</ol> : <p>尚无执行记录。</p>)}
+      </div>
+    </section>}
+  </article>;
+}
