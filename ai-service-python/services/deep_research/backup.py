@@ -7,6 +7,7 @@ from pathlib import Path
 import re
 import shutil
 import sqlite3
+from contextlib import closing
 
 
 def file_hash(path):
@@ -15,12 +16,13 @@ def file_hash(path):
 
 
 def _readonly(path):
-    return sqlite3.connect(Path(path).resolve().as_uri() + '?mode=ro', uri=True)
+    return closing(sqlite3.connect(Path(path).resolve().as_uri() + '?mode=ro', uri=True))
 
 
 def _snapshot(source, target):
-    with _readonly(source) as original, sqlite3.connect(target) as copied:
+    with _readonly(source) as original, closing(sqlite3.connect(target)) as copied:
         original.backup(copied)
+        copied.execute('PRAGMA journal_mode=DELETE')
         if copied.execute('PRAGMA integrity_check').fetchone()[0] != 'ok':
             raise ValueError('Database integrity check failed')
 
@@ -30,8 +32,8 @@ def create_backup(database, sources, destination, *, services_stopped=False):
     if not services_stopped:
         raise ValueError('Stop the Python service before taking a coordinated backup')
     database, sources, destination = map(Path, (database, sources, destination))
-    if not database.is_file() or not sources.is_dir():
-        raise ValueError('Database and source directory must exist')
+    if not database.is_file() or (sources.exists() and not sources.is_dir()):
+        raise ValueError('Database must exist and source cache must be a directory')
     with _readonly(database) as db:
         rows = db.execute('SELECT status, payload FROM deep_research_runs_v2').fetchall()
     if any(status in {'queued', 'running', 'stopping'} for status, _ in rows):

@@ -71,3 +71,20 @@ def test_manifest_cannot_drop_referenced_source_or_escape_directory(data):
     (data[2] / 'manifest.json').write_text(json.dumps(manifest))
     with pytest.raises(ValueError, match='Invalid backup path'):
         verify_backup(data[2])
+
+
+def test_no_external_fulltext_does_not_require_a_cache_directory(data):
+    with sqlite3.connect(data[0]) as db:
+        db.execute('UPDATE deep_research_runs_v2 SET payload=?', (json.dumps({'state': {'sources': []}}),))
+    manifest = create_backup(data[0], data[1] / 'not-created', data[2], services_stopped=True)
+    assert len(manifest['files']) == 2
+
+
+def test_wal_database_is_saved_as_standalone_file(data, tmp_path):
+    from contextlib import closing
+    with closing(sqlite3.connect(data[0])) as db:
+        db.execute('PRAGMA journal_mode=WAL')
+        manifest = create_backup(*data, services_stopped=True)
+    assert all(not name.endswith(('-wal', '-shm')) for name in manifest['files'])
+    assert not list(data[2].glob('*-wal')) and not list(data[2].glob('*-shm'))
+    restore_backup(data[2], tmp_path / 'restored-wal')
