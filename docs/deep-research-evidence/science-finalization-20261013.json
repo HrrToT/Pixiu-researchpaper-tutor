@@ -71,6 +71,12 @@
     "offlineTests": 35,
     "seconds": 9.42,
     "realModelRetest": false,
-    "runtimeLoaded": false
+    "runtimeLoaded": true,
+    "codeCommit": "9375dba",
+    "health": {
+      "status": "ok",
+      "rag": "ok",
+      "grobid": "ok"
+    }
   }
 }
