@@ -426,6 +426,204 @@ public class TaskWorkspaceService {
         return toResponse(repository.saveAndFlush(entity));
     }
 
+    /** V2: Publish completed research result with version protection. Immutable machine versions; user-edited artifacts never overwritten. */
+    @Transactional
+    @SuppressWarnings("unchecked")
+    public Map<String, Object> publishV2ResearchResult(String taskId, String runId, Map<?, ?> research) {
+        TaskWorkspace entity = repository.lockById(validId(taskId))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "任务不存在"));
+        Map<String, Object> task = toResponse(entity);
+
+        // Atomic validation under lock: runId ownership, engine version, reportVersionId, revision numeric
+        Map<?, ?> run = array(task.get("researchRuns"), "researchRuns").stream()
+                .filter(value -> value instanceof Map<?, ?> item
+                        && (runId.equals(item.get("runId")) || runId.equals(item.get("researchId"))))
+                .map(value -> (Map<?, ?>) value).findFirst()
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "研究运行不属于当前任务"));
+
+        if (!taskId.equals(research.get("taskId"))) {
+            throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "研究服务返回的任务不匹配");
+        }
+
+        // Validate engine version under lock
+        String storedEngine = run.get("engineVersion") instanceof String se ? se : null;
+        if (!"deep-research-v2".equals(storedEngine)) {
+            throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "运行引擎版本不匹配");
+        }
+
+        // Validate incoming runId matches stored
+        String returnedRunId = research.get("runId") instanceof String rr ? rr : null;
+        if (returnedRunId != null && !runId.equals(returnedRunId)) {
+            throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "研究服务返回的 runId 不匹配");
+        }
+
+        // Validate revision is numeric if present
+        Object incomingRevision = research.get("runRevision");
+        if (incomingRevision != null && !(incomingRevision instanceof Number)) {
+            throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "研究服务返回的 runRevision 不是数字");
+        }
+
+        // Stale revision guard under lock
+        Object storedRevision = run.get("runRevision");
+        if (storedRevision instanceof Number storedRev && incomingRevision instanceof Number incomingRev) {
+            if (incomingRev.longValue() < ((Number) storedRev).longValue()) {
+                return task; // Stale, skip publication
+            }
+        }
+
+        String status = research.get("status") instanceof String s ? s : null;
+        if (!"completed".equals(status) && !"cancelled".equals(status) && !"failed".equals(status)) {
+            return task;
+        }
+
+        Map<?, ?> report = research.get("report") instanceof Map<?, ?> r ? r : null;
+        if (report == null || !(report.get("body") instanceof String body) || body.isBlank()) {
+            return task;
+        }
+
+        // Validate reportVersionId is string if present
+        Object rawReportVersionId = report.get("versionId");
+        if (rawReportVersionId != null && !(rawReportVersionId instanceof String)) {
+            throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "研究服务返回的 reportVersionId 不是字符串");
+        }
+        String reportVersionId = (String) rawReportVersionId;
+        // Receipt keyed by runId + reportVersionId for proper dedup across versions
+        String receipt = "v2-research:" + runId + ":" + (reportVersionId != null ? reportVersionId : "none");
+        List<Object> applied = new ArrayList<>(array(task.get("appliedRequestIds"), "appliedRequestIds"));
+        if (applied.contains(receipt)) return task;
+
+        String origin = report.get("origin") instanceof String o ? o : "machine";
+        List<?> sources = research.get("sources") instanceof List<?> s ? s : List.of();
+        String summary = research.get("summary") instanceof String sum ? sum : "";
+        String outcome = research.get("outcome") instanceof String out ? out : "complete";
+
+        List<String> scope = paperIds(run.get("paperIds"));
+        if (!((List<?>) task.get("paperIds")).containsAll(scope)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "研究材料已移出任务，请恢复原材料后保存成果");
+        }
+
+        String now = Instant.now().toString();
+        List<Object> artifacts = new ArrayList<>(array(task.get("artifacts"), "artifacts"));
+        List<Object> messages = new ArrayList<>(array(task.get("messages"), "messages"));
+
+        // Check for existing machine version with same reportVersionId (immutable dedup)
+        boolean machineVersionExists = artifacts.stream().anyMatch(value -> value instanceof Map<?, ?> item
+                && runId.equals(item.get("sourceRunId"))
+                && "machine".equals(item.get("origin"))
+                && java.util.Objects.equals(reportVersionId, item.get("reportVersionId")));
+
+        if (!machineVersionExists) {
+            // Always save immutable machine version artifact
+            String machineArtifactId = "v2-research:" + runId + ":" + (reportVersionId != null ? reportVersionId : "machine") + ":artifact";
+            Map<String, Object> machineArtifact = new LinkedHashMap<>();
+            machineArtifact.put("id", machineArtifactId);
+            machineArtifact.put("title", run.get("question") instanceof String question && !question.isBlank() ? question : "研究成果");
+            machineArtifact.put("text", body);
+            machineArtifact.put("paperIds", scope);
+            machineArtifact.put("sources", sources);
+            machineArtifact.put("sourceRunId", runId);
+            machineArtifact.put("sourceResearchId", runId); // frontend lookup alias
+            machineArtifact.put("reportVersionId", reportVersionId);
+            machineArtifact.put("origin", "machine");
+            machineArtifact.put("outcome", outcome);
+            machineArtifact.put("versions", List.of());
+            machineArtifact.put("edited", false);
+            machineArtifact.put("createdAt", now);
+            artifacts.add(machineArtifact);
+        }
+
+        // Check if user has edited an artifact for this run.
+        // Detect user edits via: edited=true, non-empty versions list, titleOrigin="user", or origin="user".
+        boolean userEdited = artifacts.stream().anyMatch(value -> value instanceof Map<?, ?> item
+                && runId.equals(item.get("sourceRunId")) && isUserModified(item));
+
+        // Only create/update the "latest" (editable) artifact if user hasn't edited yet
+        if (!userEdited) {
+            String latestArtifactId = "v2-research:" + runId + ":latest:artifact";
+            // Remove previous latest for this run (replace with new version)
+            artifacts.removeIf(value -> value instanceof Map<?, ?> item
+                    && runId.equals(item.get("sourceRunId"))
+                    && latestArtifactId.equals(item.get("id")));
+
+            Map<String, Object> latestArtifact = new LinkedHashMap<>();
+            latestArtifact.put("id", latestArtifactId);
+            latestArtifact.put("title", run.get("question") instanceof String question && !question.isBlank() ? question : "研究成果");
+            latestArtifact.put("text", body);
+            latestArtifact.put("paperIds", scope);
+            latestArtifact.put("sources", sources);
+            latestArtifact.put("sourceRunId", runId);
+            latestArtifact.put("sourceResearchId", runId); // frontend lookup alias
+            latestArtifact.put("reportVersionId", reportVersionId);
+            latestArtifact.put("origin", "latest");
+            latestArtifact.put("outcome", outcome);
+            latestArtifact.put("versions", List.of());
+            latestArtifact.put("edited", false);
+            latestArtifact.put("createdAt", now);
+            artifacts.add(latestArtifact);
+
+            // Add/update answer message pointing to latest artifact
+            String answerId = "v2-research:" + runId + ":latest:answer";
+            messages.removeIf(value -> value instanceof Map<?, ?> item && answerId.equals(item.get("id")));
+
+            Map<String, Object> context = new LinkedHashMap<>();
+            context.put("taskId", taskId);
+            context.put("allowedPaperIds", scope);
+            context.put("strictScope", true);
+
+            String preview = !summary.isBlank() ? summary : ("研究已完成（" + outcome + "）。");
+            Map<String, Object> answer = new LinkedHashMap<>();
+            answer.put("id", answerId);
+            answer.put("role", "ai");
+            answer.put("content", preview + "\n\n完整报告已保存在成果中。");
+            answer.put("capability", "research");
+            answer.put("artifactId", latestArtifactId);
+            answer.put("sourceRunId", runId);
+            answer.put("sourceResearchId", runId); // frontend lookup alias
+            answer.put("context", context);
+            answer.put("rag_sources", sources);
+            answer.put("sentenceSourceMap", List.of());
+            answer.put("timestamp", System.currentTimeMillis());
+            messages.add(answer);
+        }
+
+        task.put("messages", messages);
+        task.put("artifacts", artifacts);
+        applied.add(receipt);
+        task.put("appliedRequestIds", applied);
+        setContent(entity, task, taskId);
+        return toResponse(repository.saveAndFlush(entity));
+    }
+
+    /** V2: Update stored run revision atomically. Stale revisions ignored. */
+    @Transactional
+    @SuppressWarnings("unchecked")
+    public Map<String, Object> updateV2RunRevision(String taskId, String runId, long revision, String status, String outcome) {
+        TaskWorkspace entity = repository.lockById(validId(taskId))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "任务不存在"));
+        Map<String, Object> task = toResponse(entity);
+        List<Object> runs = new ArrayList<>(array(task.get("researchRuns"), "researchRuns"));
+        boolean updated = false;
+        for (int i = 0; i < runs.size(); i++) {
+            if (runs.get(i) instanceof Map<?, ?> run && runId.equals(run.get("runId"))) {
+                Map<String, Object> mutable = new LinkedHashMap<>((Map<String, Object>) run);
+                Object currentRev = mutable.get("runRevision");
+                if (currentRev instanceof Number num && num.longValue() >= revision) {
+                    return task; // Stale, ignore
+                }
+                mutable.put("runRevision", revision);
+                if (status != null) mutable.put("status", status);
+                if (outcome != null) mutable.put("outcome", outcome);
+                runs.set(i, mutable);
+                updated = true;
+                break;
+            }
+        }
+        if (!updated) return task;
+        task.put("researchRuns", runs);
+        setContent(entity, task, taskId);
+        return toResponse(repository.saveAndFlush(entity));
+    }
+
     @Transactional
     public void delete(String id, long revision) {
         TaskWorkspace entity = find(id);
@@ -570,6 +768,20 @@ public class TaskWorkspaceService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, field + " 的条目必须是对象");
         }
         return items;
+    }
+
+    /**
+     * Detect whether an artifact has been modified by the user.
+     * Signals: edited=true, non-empty versions list, titleOrigin="user", or origin="user".
+     */
+    @SuppressWarnings("unchecked")
+    private boolean isUserModified(Map<?, ?> artifact) {
+        if (Boolean.TRUE.equals(artifact.get("edited"))) return true;
+        if ("user".equals(artifact.get("titleOrigin"))) return true;
+        if ("user".equals(artifact.get("origin"))) return true;
+        Object versions = artifact.get("versions");
+        if (versions instanceof List<?> vList && !vList.isEmpty()) return true;
+        return false;
     }
 
     private String validId(Object value) {

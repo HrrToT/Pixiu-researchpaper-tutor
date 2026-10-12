@@ -89,33 +89,80 @@ public class TaskWorkspaceController {
         return learning.action(id, input);
     }
 
+    // --- Unified Research Endpoints (engine-dispatched by stored run) ---
+
     @PostMapping("/{id}/research/start")
     public Map<String, Object> startResearch(@PathVariable String id, @RequestBody Map<String, Object> input) {
-        return research.start(id, input);
+        return research.startUnified(id, input);
     }
 
-    @GetMapping("/{id}/research/{researchId}")
-    public Map<String, Object> getResearch(@PathVariable String id, @PathVariable String researchId) {
-        return research.get(id, researchId);
+    /** GET dispatches by stored engine version: legacy or v2. */
+    @GetMapping("/{id}/research/{runId}")
+    public Map<String, Object> getResearch(@PathVariable String id, @PathVariable String runId) {
+        return research.getUnified(id, runId);
     }
 
-    @PostMapping("/{id}/research/{researchId}/resume")
-    public Map<String, Object> resumeResearch(@PathVariable String id, @PathVariable String researchId) {
-        return research.resume(id, researchId);
+    @PostMapping("/{id}/research/{runId}/resume")
+    public Map<String, Object> resumeResearch(@PathVariable String id, @PathVariable String runId,
+            @RequestBody(required = false) Map<String, Object> input) {
+        return research.resumeUnified(id, runId, input);
     }
 
-    @PostMapping("/{id}/research/{researchId}/cancel")
-    public Map<String, Object> cancelResearch(@PathVariable String id, @PathVariable String researchId) {
-        return research.cancel(id, researchId);
+    @PostMapping("/{id}/research/{runId}/cancel")
+    public Map<String, Object> cancelResearch(@PathVariable String id, @PathVariable String runId,
+            @RequestBody(required = false) Map<String, Object> input) {
+        return research.cancelUnified(id, runId, input);
     }
 
-    @PostMapping("/{id}/research/{researchId}/plan-review")
-    public Map<String, Object> reviewResearchPlan(@PathVariable String id, @PathVariable String researchId, @RequestBody Map<String, Object> input) {
-        return research.reviewPlan(id, researchId, input);
+    @PostMapping("/{id}/research/{runId}/pause")
+    public Map<String, Object> pauseResearch(@PathVariable String id, @PathVariable String runId,
+            @RequestBody(required = false) Map<String, Object> input) {
+        return research.pauseUnified(id, runId, input);
     }
 
-    @PostMapping("/{id}/research/{researchId}/final-review")
-    public Map<String, Object> reviewResearchFinal(@PathVariable String id, @PathVariable String researchId, @RequestBody Map<String, Object> input) {
-        return research.reviewFinal(id, researchId, input);
+    @PostMapping("/{id}/research/{runId}/clarify")
+    public Map<String, Object> clarifyResearch(@PathVariable String id, @PathVariable String runId,
+            @RequestBody(required = false) Map<String, Object> input) {
+        return research.clarifyUnified(id, runId, input);
+    }
+
+    @PostMapping("/{id}/research/{runId}/plan")
+    public Map<String, Object> planResearch(@PathVariable String id, @PathVariable String runId,
+            @RequestBody(required = false) Map<String, Object> input) {
+        return research.planUnified(id, runId, input);
+    }
+
+    @PostMapping("/{id}/research/{runId}/continue")
+    public Map<String, Object> continueResearch(@PathVariable String id, @PathVariable String runId,
+            @RequestBody(required = false) Map<String, Object> input) {
+        return research.continueUnified(id, runId, input);
+    }
+
+    @GetMapping("/{id}/research/{runId}/sources")
+    public Map<String, Object> getResearchSources(@PathVariable String id, @PathVariable String runId) {
+        return research.getSourcesUnified(id, runId);
+    }
+
+    @GetMapping("/{id}/research/{runId}/events")
+    public Map<String, Object> getResearchEvents(@PathVariable String id, @PathVariable String runId) {
+        return research.getEventsUnified(id, runId);
+    }
+
+    /** Legacy review endpoints preserved for backward compatibility. */
+    @PostMapping("/{id}/research/{runId}/plan-review")
+    public Map<String, Object> reviewResearchPlan(@PathVariable String id, @PathVariable String runId, @RequestBody Map<String, Object> input) {
+        return research.reviewPlan(id, runId, input);
+    }
+
+    @PostMapping("/{id}/research/{runId}/final-review")
+    public Map<String, Object> reviewResearchFinal(@PathVariable String id, @PathVariable String runId, @RequestBody Map<String, Object> input) {
+        return research.reviewFinal(id, runId, input);
+    }
+
+    // --- Internal scope-check endpoint for Python before model/retrieval ---
+    @PostMapping("/{id}/research/{runId}/scope-check")
+    public Map<String, Object> scopeCheck(@PathVariable String id, @PathVariable String runId,
+            @RequestBody(required = false) Map<String, Object> input) {
+        return research.scopeCheck(id, runId, input);
     }
 }
