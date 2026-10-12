@@ -234,7 +234,7 @@ User context (notes/old reports, UNVERIFIED; use only for goals and queries, nev
 Return a compact JSON array of 1-4 plan items (prefer 1-2 for a short answer), each with:
 - itemId: unique identifier
 - question: sub-question to answer
-- obligations: array of {{obligationId, question, requiredSources, searchQuery}}
+- obligations: array of {{obligationId, question, requiredSources, searchQuery, purpose, requestExcerpt}}
 - searchQuery: concise English academic search terms, preserving names and identifiers
 - dependencies: array of itemIds this depends on
 - priority: 1-3 (1=highest)
@@ -242,6 +242,14 @@ Return a compact JSON array of 1-4 plan items (prefer 1-2 for a short answer), e
 Ensure DAG structure (no cycles). Each obligation must specify which sources to check.
 Preserve the user's exact limits. If only one sub-question is requested, create exactly one item.
 Use short questions and at most two obligations per item. Do not repeat the same obligation.
+purpose is answer_requirement for anything the user asks to receive, or supporting_research
+for an auxiliary investigation used to inform that deliverable. For supporting_research,
+copy requestExcerpt (at least 8 characters) literally from the original question to
+identify the deliverable it serves. This label is only a hint: the final audit must
+independently judge whether any unanswered support question still matters. Do not mark
+requested facts, necessary experimental assumptions or requested comparisons optional.
+For experiment proposals, distinguish learning how the original method works from
+requiring a retelling of every original benchmark in the proposed experiment.
 Each obligation should ask for ONE dimension that a short passage can support (e.g. storage,
 speed, quality or evaluation conditions), not a compound demand for every result at once.
 For mechanism questions, explicitly include the requested entities' relationship,
@@ -280,6 +288,8 @@ Return a JSON ARRAY of plan items, NOT an object with items field."""
         if not validated:
             return {"error_code": "invalid_plan_response", "outcome": OUTCOME_NONE, "plan_ids": []}
 
+        from services.deep_research.obligation_purpose import normalize_obligation_purposes
+        validated = normalize_obligation_purposes(validated, question)
         allowed = [material.get("materialId") for material in materials]
         required_default = allowed if output_kind == "paper_comparison" else record.get("focusPaperIds") or allowed
         for item in validated:
@@ -958,7 +968,7 @@ Claim count is independent of display length: shorten each statement rather than
 Evidence count: {len(evidence)}
 User clarification: {brief_state.get('clarification', '')}
 Gaps: {json.dumps([g.get('question') for g in gaps[:5]], ensure_ascii=False)}
-Required answer obligations: {json.dumps([o for p in brief_state.get('plan', []) for o in p.get('obligations', [])], ensure_ascii=False)}
+Research questions (answer_requirement is a requested deliverable; supporting_research informs it): {json.dumps([o for p in brief_state.get('plan', []) for o in p.get('obligations', [])], ensure_ascii=False)}
 
 Evidence summaries:
 {evidence_marker}
@@ -1236,8 +1246,18 @@ def make_publish_node(
         rejected_count = len(verified_report.get("rejectedClaims", []))
         from services.deep_research.final_coverage import remaining_retrieval_gaps
         audit = verified_report.get('answerCoverage', {})
+        from services.deep_research.obligation_purpose import nonblocking_research_obligations
+        research_notes = nonblocking_research_obligations(brief_state.get('plan', []),
+            record.get('question', ''), accepted_claims, audit.get('verdicts'),
+            audit.get('wholeQuestionId'), audit.get('invalidAspectObligations', [])) \
+            if audit.get('status') == 'checked' else []
+        research_questions = {o.get('obligationId'): o.get('question', '')
+                              for item in brief_state.get('plan', []) for o in item.get('obligations', [])}
+        research_notes = [{**note, 'question': research_questions.get(note['obligationId'], '')}
+                          for note in research_notes]
         gaps = [*remaining_retrieval_gaps(record.get('state', {}).get('gaps', []), audit,
-                    accepted_claims, record.get('state', {}).get('evidence', [])),
+                    accepted_claims, record.get('state', {}).get('evidence', []),
+                    plan=brief_state.get('plan', []), question=record.get('question', '')),
                 *audit.get('gaps', [])]
         
         factual_claims = [claim for claim in accepted_claims if claim.get("kind") in {"reported", "inference"}]
@@ -1276,6 +1296,7 @@ def make_publish_node(
             "evidence": evidence if (evidence := record.get("state", {}).get("evidence", [])) else [],
             "limitations": "论文事实已按所列原文核对；推断、假设和实验建议已分别标明，尚不代表实验验证结果。",
             "gaps": gaps,
+            "researchNotes": research_notes,
             "outcome": outcome,
         }
         

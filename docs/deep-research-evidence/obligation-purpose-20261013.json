@@ -1,0 +1,30 @@
+{
+  "date": "2026-10-13",
+  "promptVersion": "dr-v2.20261013.22",
+  "qoder": {
+    "model": "bailian/qwen3.8-max-tp",
+    "patchSha256": "4b13bfb4f4cd87033c7f2c1e8c4e2980cea94af5ed0c078417858a056427dd4b",
+    "reviewCorrections": [
+      "Generated code incorrectly treated nested plan items as flat obligations.",
+      "Generated code used id instead of obligationId/claimId.",
+      "Generated tests mocked the binding and coverage helpers, concealing contract mismatch.",
+      "Main review corrected nesting, identity fields and independent verdict request grounding; replaced mocks with real helpers."
+    ]
+  },
+  "behavior": [
+    "Legacy and ungrounded obligations remain answer requirements.",
+    "Supporting research needs an explicit planning hint grounded in the original user question.",
+    "Final not_required disposition needs a unique verdict, reason, original-request excerpt and exact accepted-answer bindings.",
+    "Whole original request and all required obligations must be covered with valid audit aspects before any support question becomes nonblocking.",
+    "Revalidate against current accepted claims at publication, not a stored exemption list.",
+    "Keep original source gaps in run history; not_required is not converted into covered.",
+    "Collapsed report note names auxiliary questions outside current answer scope; model audit rationale is stored but not rendered as unchecked report prose."
+  ],
+  "acceptance": "Structural and integration checks only; semantic scope correctness and end-to-end content remain subject to real/manual acceptance.",
+  "offlineTests": {
+    "passed": 719,
+    "warnings": 2,
+    "seconds": 71.06,
+    "initialFailures": "Four end-to-end fixtures parsed an old prompt section header; updated only the fixture parser, retaining lifecycle and idempotency assertions."
+  }
+}

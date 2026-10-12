@@ -77,6 +77,13 @@ def render_report(payload):
                 reason = gap.get("missingEvidence", "") if isinstance(gap, dict) else ""
                 lines.append(f"- {question}" + (f"：{reason}" if reason else ""))
         lines.extend(["", "</details>", ""])
+    notes = payload.get('researchNotes')
+    if isinstance(notes, list) and notes:
+        lines.extend(['<details>', '<summary>查证范围说明</summary>', ''])
+        for note in notes:
+            if isinstance(note, dict) and isinstance(note.get('question'), str) and note['question']:
+                lines.append('- 辅助问题「' + note['question'] + '」未纳入本次回答范围。')
+        lines.extend(['', '</details>', ''])
     if payload.get("limitations"):
         lines.extend([payload["limitations"], ""])
     if refs:

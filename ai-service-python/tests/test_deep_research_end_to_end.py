@@ -55,7 +55,7 @@ class FixtureModel:
         elif prompt.startswith("Revise only the rejected claims"):
             content = []  # An unsupported claim may be dropped; do not relax checks.
         elif prompt.startswith("Audit whether the FINAL ACCEPTED ANSWER"):
-            obligations = json.loads(prompt.split('Answer obligations (including the original question): ', 1)[1].split('\nAccepted final claims:', 1)[0])
+            obligations = json.loads(prompt.split('Research and answer obligations (including the original question): ', 1)[1].split('\nAccepted final claims:', 1)[0])
             # Fixture claims retain numerical results but omit the requested
             # evaluation conditions. A factual pass is not a complete answer.
             content = [{'obligationId': o['obligationId'], 'status': 'partial',

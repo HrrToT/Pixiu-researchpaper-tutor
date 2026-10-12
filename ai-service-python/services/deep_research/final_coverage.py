@@ -10,7 +10,8 @@ def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse):
 
     # A plan can itself omit part of the request. Audit the original question as
     # well as each planned obligation, without changing the stored research plan.
-    audit_plan = list(plan)
+    from services.deep_research.obligation_purpose import normalize_obligation_purposes, nonblocking_research_obligations
+    audit_plan = normalize_obligation_purposes(plan, question)
     identity = None
     if plan and question:
         known = {o['obligationId'] for p in plan for o in p.get('obligations', [])}
@@ -21,6 +22,7 @@ def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse):
     verdicts = []
     status = 'not_checked'
     invalid_aspects = []
+    nonblocking = []
     if claims and plan and invoke:
         selected = balanced_sample(evidence,
             lambda e: (e.get('sourceWorkId'), tuple(e.get('obligationIds', []))), 20)
@@ -34,7 +36,7 @@ def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse):
         } for e in selected]
         prompt = f'''Audit whether the FINAL ACCEPTED ANSWER fully answers the user's question.
 Question: {question}
-Answer obligations (including the original question): {json.dumps([o for p in audit_plan for o in p.get('obligations', [])], ensure_ascii=False)}
+Research and answer obligations (including the original question): {json.dumps([o for p in audit_plan for o in p.get('obligations', [])], ensure_ascii=False)}
 Accepted final claims: {json.dumps(claims, ensure_ascii=False, sort_keys=True)}
 Available evidence for detecting omitted conditions: {evidence_marker}
 
@@ -50,6 +52,18 @@ For a comparison, check every requested dimension and each paper's contribution,
 just one paper's results. A source-specific, clearly stated evidence limitation can
 answer an uncertainty question; do not demand proof of a universal guarantee.
 An unexecuted experiment may be complete as a proposal; do not demand measured results.
+An obligation marked supporting_research is an auxiliary investigation, not automatically
+something the final answer must narrate. Independently check its relevance to the user's
+actual deliverable. If it is genuinely unnecessary to the accepted answer, use status
+not_required with reason (specific explanation, at least 12 characters), requestExcerpt
+(at least 8 characters copied exactly from the user's original question), and bindings
+quoting the accepted answer that makes this narrower research scope sufficient.
+Never use not_required for the original question or an answer_requirement. A planning
+label is not permission to ignore requested facts, dependencies needed by a claim,
+missing interventions/assumptions, or evidence required by the user's requested scope.
+If a supporting question is necessary and unanswered, mark partial or missing. Only
+covered means actually answered; not_required does not mean the source fact was checked.
+Judge proposed protocol completeness separately from narrating the paper's benchmarks.
 Do not rewrite the answer, add claims, change factual verdicts, or judge rejected claims.
 Before deciding covered, enumerate the minimal essential aspects separately:
 entities and their relationships, conditioning inputs, activation/applicability
@@ -64,7 +78,7 @@ essential aspects; quoting only the broad user question is insufficient.
 Check the subject of contrasts and pronouns against preceding sentences: a
 baseline's limitation cannot be assigned to the proposed method.
 Return only a JSON array, exactly one entry for each supplied obligation:
-[{{"obligationId":"ID","status":"covered|partial|missing",
+[{{"obligationId":"ID","status":"covered|partial|missing|not_required",
    "bindings":[{{"claimId":"an accepted ID","excerpt":"exact substring of that claim's text or serialized conditions, at least 8 characters"}}],
    "aspects":[{{"aspectId":"unique within this obligation","requirement":"one necessary aspect",
      "basis":{{"kind":"request|source","evidenceId":"required for source","excerpt":"exact basis text"}},
@@ -106,7 +120,13 @@ accepted claims. Bindings must quote the final answer, never the source passages
             # Publish only supported text with an explicit coverage gap. Never
             # promote budget exhaustion to a complete answer or add a retry.
             status = 'budget_exhausted'
-    gaps = answer_coverage_gaps(audit_plan, claims, verdicts)
+    if status == 'checked' and identity:
+        nonblocking = nonblocking_research_obligations(plan, question, claims, verdicts,
+                                                     identity, invalid_aspects)
+    excluded = {row['obligationId'] for row in nonblocking}
+    effective_plan = [{**item, 'obligations': [o for o in item.get('obligations', [])
+                      if o.get('obligationId') not in excluded]} for item in audit_plan]
+    gaps = answer_coverage_gaps(effective_plan, claims, verdicts)
     for gap in gaps:
         matching = [v for v in verdicts if isinstance(v, dict)
                     and v.get('obligationId') == gap.get('obligationId')] if isinstance(verdicts, list) else []
@@ -126,18 +146,27 @@ accepted claims. Bindings must quote the final answer, never the source passages
         if identity and gap.get('obligationId') == identity:
             gap['wholeQuestion'] = True
     return {'status': status, 'verdicts': verdicts if isinstance(verdicts, list) else [],
-            'gaps': gaps, 'invalidAspectObligations': invalid_aspects}
+            'gaps': gaps, 'invalidAspectObligations': invalid_aspects,
+            'wholeQuestionId': identity, 'nonblockingResearch': nonblocking}
 
 
-def remaining_retrieval_gaps(gaps, audit, claims, evidence):
-    """Close an earlier retrieval gap only with a checked answer for that source.
+def remaining_retrieval_gaps(gaps, audit, claims, evidence, *, plan=None, question=""):
+    """Return source gaps that still block the actual answer.
 
-    A bounded inference about insufficient evidence may answer an obligation
-    even when retrieval cannot find a universal guarantee. Another paper's
-    conclusion, a proposal, or an unchecked audit never closes this gap.
+    Required research keeps the source-specific closure rule: a bounded factual
+    answer may close it, never another paper's answer or an unchecked proposal.
+    Separately audited unnecessary support questions are nonblocking, not solved;
+    callers retain the untouched original gap list in the run's research history.
     """
     if audit.get('status') != 'checked':
         return list(gaps)
+    # Revalidate against current accepted claims; a stored exemption list alone
+    # is never enough, and the original source gaps remain in run history.
+    from services.deep_research.obligation_purpose import nonblocking_research_obligations
+    optional = nonblocking_research_obligations(plan, question, claims,
+        audit.get('verdicts'), audit.get('wholeQuestionId'), audit.get('invalidAspectObligations', []))
+    optional_ids = {row['obligationId'] for row in optional}
+    gaps = [gap for gap in gaps if not isinstance(gap, dict) or gap.get('obligationId') not in optional_ids]
     missing = {g.get('obligationId') for g in audit.get('gaps', [])}
     from services.deep_research.answer_coverage import answer_coverage_gaps
     check_plan = [{'obligations': [g for g in gaps if isinstance(g, dict) and g.get('obligationId')]}]
