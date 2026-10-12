@@ -947,6 +947,9 @@ Use kind reported, inference, hypothesis or proposal. A proposal cannot state an
 Follow the user's scope and length. State conflicting conditions beside the relevant conclusion.
 If the user asks for two points, produce at most two claims. The TOTAL text and conditions must fit the requested length.
 For reported facts copy numbers exactly; avoid derived differences/ratios. Any calculation is an inference, not a reported result.
+Preserve table method labels, including stars/variant markers, and distinguish reproduced baselines
+from the original paper's measurements. Reading two rows does not establish that they belong to
+one controlled compression trajectory. State them as separately reported table values when appropriate.
 Never say the authors did not test/report something merely because the selected passages omit it.
 When citing only abstract evidence use detailLevel="abstract", explicitly limit the wording to the
 abstract and do not claim to have read the full paper. Otherwise use detailLevel="fulltext".
@@ -967,7 +970,7 @@ Do NOT invent measured results or pretend unsupported conclusions are verified."
         from services.deep_research.answer_constraints import compact_answer
         parsed = compact_answer(parsed, question,
             lambda prompt: llm_invoke(run_id, "synthesize_compact", prompt,
-                {"max_tokens": 2000, "temperature": 0.0}, use_reserve=True), _safe_parse_json)
+                {"max_tokens": 2000, "temperature": 0.0}), _safe_parse_json)
         if parsed is None:
             return {"error_code": "invalid_synthesis_response"}
         

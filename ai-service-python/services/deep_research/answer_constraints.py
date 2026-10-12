@@ -35,8 +35,10 @@ def compact_answer(report, question, invoke, parse):
     # One bounded rewrite before verification. Every rewritten fact is checked later.
     prompt = f'''Shorten this structured research answer to at most {limit} characters total
 across ALL claim text and conditions. Question: {question}
-Return only ONE or TWO short claims that directly answer the user's question. You MAY DROP
+Return at most {2 if limit <= 300 else 4} short claims that directly answer the user's question. You MAY DROP
 less important claims and their sections entirely. Keep necessary conditions and remove tangential numbers.
+For comparison, preserve a supported conclusion for EACH compared paper plus the comparability
+judgment. Do not drop one paper just to keep detailed numbers for another. Keep row/method labels exact.
 Use concise Chinese, embedding conditions in text when possible instead of repeating them.
 For claims you retain, keep their original claimId, kind and evidenceRefs. Do not add facts,
 references or new claims. Do NOT copy the original answer unchanged. Target {max(40, int(limit * .7))}

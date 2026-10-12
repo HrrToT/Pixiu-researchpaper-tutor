@@ -35,7 +35,7 @@ def make_evidence(source: dict, quote: str, original: str, *, location: dict,
 
 
 _NUMBER = re.compile(r"(?<![A-Za-z0-9_.])[-+]?\d+(?:\.\d+)?(?:[eE][-+]?\d+)?(?:\s*%|[x×])?")
-_ABSENCE = re.compile(r"未(?:给出|报告|进行|测试|验证)|没有(?:给出|报告|进行|测试)|不存在")
+_ABSENCE = re.compile(r"未(?:给出|报告|提供|进行|测试|验证|覆盖|涵盖|涉及)|没有(?:给出|报告|提供|进行|测试|覆盖|涵盖|涉及)|不存在|\b(?:does|did|do) not (?:report|provide|test|evaluate)|\bno (?:experiment|evaluation|evidence)", re.I)
 _EXPLICIT_ABSENCE = re.compile(r"\b(?:do|does|did) not\b|\bnot (?:report|evaluat|test|consider)|\bno experiment|未(?:报告|进行|测试|考虑)|没有", re.I)
 
 
