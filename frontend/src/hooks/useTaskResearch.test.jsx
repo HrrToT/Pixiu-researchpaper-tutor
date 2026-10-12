@@ -3,6 +3,55 @@ import { describe, expect, it, vi } from 'vitest';
 import { useTaskResearch } from './useTaskResearch';
 
 describe('task research integration', () => {
+  it('starts v2 with a stable request identity after an uncertain create and keeps legacy operations unused', async () => {
+    const task = { id: 't', revision: 4, researchRuns: [] };
+    const workspace = { tasks: [task], adoptServerTask: vi.fn() };
+    const operations = { start: vi.fn() };
+    const api = { start: vi.fn().mockRejectedValueOnce(new Error('网络中断')).mockResolvedValueOnce({
+      workspace: { ...task, researchRuns: [{ researchId: 'r' }] },
+      task: { taskId: 't', runId: 'r', contractVersion: 2, status: 'running', runRevision: 1 },
+    }) };
+    const { result, unmount } = renderHook(() => useTaskResearch(workspace, api, operations));
+    const context = { engineVersion: 'deep-research-v2', allowedPaperIds: ['a', 'b'], primaryPaperId: 'a' };
+    await act(async () => { await expect(result.current.start(task, '研究', context)).rejects.toThrow('网络中断'); });
+    await act(async () => result.current.start(task, '研究', context));
+    expect(operations.start).not.toHaveBeenCalled();
+    const first = api.start.mock.calls[0][1];
+    expect(api.start.mock.calls[1][1].requestId).toBe(first.requestId);
+    expect(first.materialSelection).toEqual({ mode: 'explicit', materialIds: ['a', 'b'] });
+    expect(first.sourcePolicy).toEqual({ mode: 'task_only' });
+    expect(result.current.runs['t/r'].status).toBe('running');
+    unmount();
+  });
+  it('adopts a bound continuation as a child without overwriting its parent state', async () => {
+    const task = { id: 't', researchRuns: [{ researchId: 'parent' }] };
+    const saved = { ...task, researchRuns: [...task.researchRuns, { researchId: 'child' }] };
+    const workspace = { tasks: [task], adoptServerTask: vi.fn() };
+    const api = { get: vi.fn(async () => ({ workspace: task, task: {
+      taskId: 't', runId: 'parent', contractVersion: 2, status: 'completed', outcome: 'partial', runRevision: 8,
+    } })), action: vi.fn(async () => ({ workspace: saved, task: {
+      taskId: 't', runId: 'child', parentRunId: 'parent', contractVersion: 2, status: 'running', runRevision: 1,
+    } })) };
+    const { result, unmount } = renderHook(() => useTaskResearch(workspace, api));
+    await waitFor(() => expect(result.current.runs['t/parent']?.status).toBe('completed'));
+    await act(async () => result.current.action('t', 'parent', 'continue', { requestId: 'next', expectedRunRevision: 8 }));
+    expect(result.current.runs['t/parent'].runRevision).toBe(8);
+    expect(result.current.runs['t/child'].runRevision).toBe(1);
+    expect(workspace.adoptServerTask).toHaveBeenLastCalledWith(saved);
+    unmount();
+  });
+  it('rejects a continuation that points to an unbound child', async () => {
+    const task = { id: 't', researchRuns: [{ researchId: 'parent' }] };
+    const workspace = { tasks: [task], adoptServerTask: vi.fn() };
+    const api = { get: vi.fn(async () => ({ task: { taskId: 'parent', status: 'running' } })),
+      action: vi.fn(async () => ({ workspace: task, task: {
+        taskId: 't', runId: 'foreign', parentRunId: 'parent', contractVersion: 2, status: 'running', runRevision: 1,
+      } })) };
+    const { result, unmount } = renderHook(() => useTaskResearch(workspace, api));
+    await act(async () => { await expect(result.current.action('t', 'parent', 'continue', { expectedRunRevision: 1 })).rejects.toThrow('绑定未确认'); });
+    expect(workspace.adoptServerTask).not.toHaveBeenCalled();
+    unmount();
+  });
   it('rejects a v2 run belonging to another product task', async () => {
     const task = { id: 't', researchRuns: [{ researchId: 'r' }] };
     const workspace = { tasks: [task], activeTaskId: 't', adoptServerTask: vi.fn() };
