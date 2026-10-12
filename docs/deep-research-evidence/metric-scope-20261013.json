@@ -24,6 +24,13 @@
     "seconds": 65.13,
     "warnings": 2
   },
-  "runtimeLoaded": false,
-  "realD3Retest": false
+  "runtimeLoaded": true,
+  "realD3Retest": false,
+  "codeCommit": "c562f9f",
+  "promptVersion": "dr-v2.20261013.17",
+  "health": {
+    "status": "ok",
+    "rag": "ok",
+    "grobid": "ok"
+  }
 }
