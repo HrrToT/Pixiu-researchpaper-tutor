@@ -3,6 +3,28 @@ import { describe, expect, it, vi } from 'vitest';
 import { useTaskResearch } from './useTaskResearch';
 
 describe('task research integration', () => {
+  it('rejects a v2 run belonging to another product task', async () => {
+    const task = { id: 't', researchRuns: [{ researchId: 'r' }] };
+    const workspace = { tasks: [task], activeTaskId: 't', adoptServerTask: vi.fn() };
+    const api = { get: vi.fn(async () => ({ task: { contractVersion: 2, runId: 'r', taskId: 'other', status: 'running', runRevision: 1 } })) };
+    const { result, unmount } = renderHook(() => useTaskResearch(workspace, api));
+    await waitFor(() => expect(result.current.error).toContain('任务不匹配'));
+    expect(result.current.runs['t/r']).toBeUndefined();
+    unmount();
+  });
+  it('does not adopt a v2 state older than a confirmed run revision', async () => {
+    const task = { id: 't', researchRuns: [{ researchId: 'r' }] };
+    const workspace = { tasks: [task], activeTaskId: 't', adoptServerTask: vi.fn() };
+    let revision = 8;
+    const api = { get: vi.fn(async () => ({ workspace: task, task: { contractVersion: 2, runId: 'r', taskId: 't', status: 'running', runRevision: revision } })) };
+    const { result, unmount } = renderHook(() => useTaskResearch(workspace, api));
+    await waitFor(() => expect(result.current.runs['t/r']?.runRevision).toBe(8));
+    revision = 7;
+    await act(async () => result.current.refresh('t', 'r'));
+    expect(result.current.runs['t/r'].runRevision).toBe(8);
+    expect(workspace.adoptServerTask).toHaveBeenCalledTimes(1);
+    unmount();
+  });
   it('keeps the newest confirmed action when two explicit action replies arrive out of order', async () => {
     const task={id:'t',researchRuns:[{researchId:'r'}]};
     const workspace={tasks:[task],activeTaskId:'t',adoptServerTask:vi.fn()};

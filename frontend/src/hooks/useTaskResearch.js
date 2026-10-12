@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { taskResearchApi } from '../services/taskResearchApi';
 
-const terminal = new Set(['succeeded', 'failed', 'cancelled']);
+const terminal = new Set(['succeeded', 'completed', 'failed', 'cancelled']);
 export function useTaskResearch(workspace, api = taskResearchApi, operations = null) {
   const [runs, setRuns] = useState({});
   const [errors, setErrors] = useState({});
@@ -20,20 +20,25 @@ export function useTaskResearch(workspace, api = taskResearchApi, operations = n
   const finished = useRef(new Set());
   const actionVersions = useRef(new Map());
   const pendingActions = useRef(new Set());
+  const runRevisions = useRef(new Map());
   const startingRef = useRef(false);
   const runKey = JSON.stringify(workspace.tasks.flatMap((task) => (task.researchRuns || []).map((run) => [task.id, run.researchId])));
   const publish = async (taskId, researchId, result, isCurrent = () => true) => {
     if (!isCurrent()) return null;
     const research = result?.task;
-    if (!research || research.taskId !== researchId) throw new Error('研究服务返回的任务不匹配');
+    if (!research || (research.runId || research.taskId) !== researchId
+      || (research.contractVersion === 2 && research.runId && research.taskId !== taskId)) throw new Error('研究服务返回的任务不匹配');
     const key = `${taskId}/${researchId}`;
+    const revision = research.runRevision ?? research.revision;
+    if (research.contractVersion === 2 && Number.isInteger(revision) && revision < (runRevisions.current.get(key) ?? -1)) return null;
     if (result.workspace) {
       if (result.workspace.id !== taskId) throw new Error('研究成果返回的任务不匹配');
       await latest.current.adoptServerTask(result.workspace);
-    } else if (research.status === 'succeeded') {
+    } else if (research.status === 'succeeded' || (research.status === 'completed' && research.outcome !== 'none')) {
       throw new Error('研究已完成，成果保存尚未确认，请重新查询');
     }
     if (!isCurrent()) return null;
+    if (research.contractVersion === 2 && Number.isInteger(revision)) runRevisions.current.set(key, revision);
     setRuns((previous) => ({ ...previous, [key]: research }));
     if (terminal.has(research.status)) finished.current.add(key);
     else finished.current.delete(key);
@@ -87,7 +92,10 @@ export function useTaskResearch(workspace, api = taskResearchApi, operations = n
     const isCurrent = () => actionVersions.current.get(key) === version;
     setRunError(JSON.stringify([taskId, researchId]), 'action', '');
     try { await publish(taskId, researchId, await api.action(taskId, researchId, name, payload), isCurrent); }
-    catch (failure) { if (isCurrent()) setRunError(JSON.stringify([taskId, researchId]), 'action', failure.message || '研究操作失败'); }
+    catch (failure) {
+      if (isCurrent()) setRunError(JSON.stringify([taskId, researchId]), 'action', failure.message || '研究操作失败');
+      if (payload?.expectedRunRevision !== undefined) throw failure;
+    }
     finally { if (isCurrent()) pendingActions.current.delete(key); }
   };
   const refresh = async (taskId, researchId) => {
