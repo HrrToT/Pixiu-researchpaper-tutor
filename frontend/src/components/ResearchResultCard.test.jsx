@@ -9,6 +9,14 @@ const props = { taskId: 't', run: { researchId: 'r' }, result: {
 } };
 
 describe('versioned research result', () => {
+  it('renders structured failures and a versioned plan without crashing', () => {
+    render(<ResearchResultCard {...props} result={{ ...props.result, status: 'paused',
+      error: { code: 'unknown_call', message: '上次调用结果未确认' },
+      plan: { revision: 2, items: [{ itemId: 'p', question: '核对实验条件' }] } }} />);
+    expect(screen.getByRole('alert')).toHaveTextContent('上次调用结果未确认');
+    fireEvent.click(screen.getByRole('button', { name: '详情' }));
+    expect(screen.getByText('核对实验条件')).toBeInTheDocument();
+  });
   it('keeps progress compact and exposes only server-authorized actions', () => {
     render(<ResearchResultCard {...props} onAction={vi.fn()} />);
     expect(screen.getByRole('status')).toHaveTextContent('正在研究');

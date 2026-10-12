@@ -17,13 +17,14 @@ export default function ResearchResultCard({ taskId, run, result, error, onActio
   const [clarification, setClarification] = useState('');
   const button = useRef(null);
   const requests = useRef(new Map());
-  const actions = new Set(result.allowedActions || []);
+  const actions = new Set(Array.isArray(result.allowedActions) ? result.allowedActions : []);
   const terminal = ['completed', 'cancelled', 'failed'].includes(result.status);
   const report = Boolean(result.reportVersionId || result.report?.versionId || (typeof result.report === 'string' && result.report.trim()));
   const title = result.title || result.brief?.title || '学术研究';
   const status = result.status === 'completed' ? outcomes[result.outcome] || '研究已完成' : labels[result.status] || '正在确认研究状态';
   const activity = typeof result.activity === 'string' ? result.activity : result.activity?.label;
-  const shownError = failure || error?.action || error?.poll || result.error;
+  const rawError = failure || error?.action || error?.poll || result.error;
+  const shownError = typeof rawError === 'string' ? rawError : rawError?.message || '';
   const close = () => { setDetails(false); button.current?.focus(); };
   const act = async (name, payload = {}) => {
     if (busy || !onAction || !actions.has(name)) return;
@@ -36,9 +37,9 @@ export default function ResearchResultCard({ taskId, run, result, error, onActio
     } catch (cause) { setFailure(cause?.message || '操作结果暂未确认，请查询状态。'); }
     finally { setBusy(false); }
   };
-  const sources = result.sources || [];
-  const plan = result.plan || [];
-  const events = result.events || [];
+  const sources = Array.isArray(result.sources) ? result.sources : [];
+  const plan = Array.isArray(result.plan) ? result.plan : Array.isArray(result.plan?.items) ? result.plan.items : [];
+  const events = Array.isArray(result.events) ? result.events : [];
   return <article className="conversation-research-card research-result-card" aria-label="研究结果">
     <div className="research-result-heading"><strong>{title}</strong><span role="status" aria-live="polite">{status}</span></div>
     {!terminal && activity && <p className="theme-text-muted text-sm">{activity}</p>}
