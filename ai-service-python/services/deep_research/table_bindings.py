@@ -21,9 +21,12 @@ def validate_table_bindings(claim, evidence):
     metric_mentions = {(v, m.upper()) for m, v in _METRIC.findall(text)}
     unit_mentions = {(v, u.upper()) for v, u in _UNIT.findall(text)}
     bindings = claim.get('tableBindings')
+    # Location can point to a table caption containing explicit prose. Only
+    # cell-derived quotations need column binding; prose still goes through
+    # exact-number and semantic checks, even beside an unverified table.
     table_sources = {e['evidenceId']: e for e in evidence
-                     if e.get('tableData') or e.get('location', {}).get('table')
-                     or 'Table row ' in e.get('quote', '')}
+                     if e.get('tableData') or 'Table row ' in e.get('quote', '')
+                     or re.search(r'\|[^\n]*\|', e.get('quote', ''))}
     if not table_sources and not bindings:
         return None
     if not metric_mentions and not unit_mentions and not bindings:

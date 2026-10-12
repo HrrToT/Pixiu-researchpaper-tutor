@@ -66,6 +66,18 @@ def test_alias_resolution_preserves_binding_identity():
     assert resolve_evidence_aliases({'claims': [claim]}, {'E1': ev['evidenceId']})['claims'][0] == original
 
 
+def test_explicit_caption_prose_does_not_require_invented_cell_bindings():
+    text = 'With 2 SH degrees, SSIM drops from 0.927 to 0.926.'
+    ev = make_evidence({'workId': 'p', 'versionId': 'v1', 'contentHash': 'h', 'accessLevel': 'fulltext'},
+        text, text, location={'table': 't1', 'tableColumnMappingUnverified': True}, obligation_ids=[])
+    c = {'claimId': 'c', 'kind': 'reported', 'text': '2阶SH下SSIM 0.926', 'evidenceRefs': [ev['evidenceId']]}
+    assert check(ev, c)['accepted']
+    assert not verify_claims([c], [ev])['accepted']
+    assert check(ev, {**c, 'text': '2阶SH下SSIM 0.999'})['rejected'][0]['reason'] == 'numeric_mismatch'
+    ev['quote'] = 'Table row 1: Ours | 2 | 0.926'
+    assert check(ev, c)['rejected'][0]['reason'] == 'missing_table_bindings'
+
+
 @pytest.mark.parametrize('bindings', [42, 'E1', {}, [None], [{'evidenceId': []}]])
 def test_malformed_bindings_reject_without_crashing(bindings):
     ev, claim = fixture()
