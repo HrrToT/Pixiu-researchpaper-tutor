@@ -315,7 +315,7 @@ D2 v19 `a631996531c45322aefd3e31ac5dce37` 使用旧 .6 提示增量执行一次�
 
 Qoder CLI本轮实际使用用户配置的bailian/qwen3.8-max-tp，为独立客户端超时及其测试生成补丁；仅提供授权源码，禁用工具和MCP，没有发送论文、运行数据或密钥。产出位于tmp/qoder-dr-timeout-20261013/patch-output.txt。主代理审查并增加参数隔离、研究运行时集成及测试，提交 `78e0ff0`：DEEP_RESEARCH_REQUEST_TIMEOUT_SECONDS默认180秒，可配置1—360秒，同时受当前研究剩余时长限制；普通对话保持原限制。相关41项离线测试再次通过、3.81秒；提交后研究模块、模型客户端与PDF表格列映射整合回归331项通过、2条弃用警告、52.61秒（未包含另一个test_table_evidence.py文件，不与此前301项相加）。补丁来源不代表Qoder完成整体研究能力。
 
-确认无queued/running/stopping研究后重启Python服务，API/RAG/GROBID健康。D3 v6 `86b3f181a5475e99aacca3dbf4370567` 已单次提交，回执tmp/dr-live-cases/D3-v6.json；此处提交时仍在执行，结果待核查。D3 v5未知调用保持原样，未重发。DR0—DR5及留出集尚未完成验收。
+确认无queued/running/stopping研究后重启Python服务，API/RAG/GROBID健康。D3 v6 `86b3f181a5475e99aacca3dbf4370567` 单次执行，回执tmp/dr-live-cases/D3-v6.json；最终paused/unresolved_unknown，第二次verify在任务总时限附近成为未知请求，未重发、未发布。首次verify成功返回并拒绝将包含零的区间作为拒绝加性零假设的规则，一次修复改正了方向；但核验仍错误放行未明确的数据划分和指标测量口径，人工不认可完整性。草稿四组与零恢复预算有所改善，不能计作D3通过。后续需具体配置完整性证据，并调整核验与修复的总时长安排，不能只继续提高单次超时。D3 v5未知调用保持原样，未重发。DR0—DR5及留出集尚未完成验收。
 
 ## 2026-10-13：为回答修复保留预算
 
