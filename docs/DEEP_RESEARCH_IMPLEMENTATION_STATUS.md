@@ -194,3 +194,13 @@
 低思考强度诊断 65.15 秒返回，却接受了第三条未充分支持的排他性结论，不能采用为严格核验替代。回执为 `D2-v10-verifier-16384-low.json`；不计质量通过。
 
 改为最多三批顺序核验，短报告按单条分批，仅提供本批引用并要求每条声明只使用自身 evidenceRefs；实验建议额外携带其他方案声明作为一致性背景，不能用作证据。每批保持 high、输出最多 16384，均经原账本和实时范围/预算检查。标准/扩展收尾调用预留分别调整为 5/7，总调用 18/32、Token 100k/180k、时限 360/720 秒保持不变；提前结束补查以给核验留空间。promptVersion 为 dr-v2.20261012.8。260 项相关离线回归通过，见 `tmp/dr-verifier-batches-2.log`。真实分批诊断尚需单独判定。
+
+分批诊断结果：总耗时 229.02 秒，前两批返回具体不支持原因（输出分别 2752、6212 tokens）；第三批触发绝对 120 秒截止。诊断失败，不重试、不计比较通过。原始证据和模型响应保存在 `D2-v10-verifier-16384-batched.json`。后续需要检查完整索引下的取证覆盖和复合声明组织，不能通过继续提高额度或降低核验标准代替质量修复。
+
+## 开发容器持久卷修正
+
+加载核验修复时实际复现容器启动失败：绑定 Windows 目录的研究 SQLite 在重开时报告 `disk I/O error`。原库仍可完整导出；`tmp/dr-before-linux-volume-20261012` 备份校验通过（28 条运行、3 个文件）。使用备份工具恢复到新建 Linux 原生卷 `academic_dr_runtime_20261012` 的 `/research_data/store`；保留原库与备份，替换已退出容器，不直接改写记录。
+
+当前 `academic-dr-runtime` 的研究数据库路径改为 `/research_data/store/research.sqlite3`、全文缓存为 `/research_data/store/sources`。`tmp/dr-live-data` 此后是保留的迁移前副本，不能再用它判断新运行；应经 API 或容器内数据库查看。原生卷首次启动健康检查通过，integrity_check=ok，28 条运行、706 条调用保留。完整 Java 数据库恢复仍未验收。
+
+随后第二次实际重启通过：健康检查恢复、integrity_check=ok、仍为 28 条运行/706 条调用，旧 D2 记录经 Java API 可读；见 `tmp/dr-container-validation/linux-volume-restart-health.json`。该验证没有启动模型研究。
