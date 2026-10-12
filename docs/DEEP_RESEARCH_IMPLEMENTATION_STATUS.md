@@ -204,3 +204,11 @@
 当前 `academic-dr-runtime` 的研究数据库路径改为 `/research_data/store/research.sqlite3`、全文缓存为 `/research_data/store/sources`。`tmp/dr-live-data` 此后是保留的迁移前副本，不能再用它判断新运行；应经 API 或容器内数据库查看。原生卷首次启动健康检查通过，integrity_check=ok，28 条运行、706 条调用保留。完整 Java 数据库恢复仍未验收。
 
 随后第二次实际重启通过：健康检查恢复、integrity_check=ok、仍为 28 条运行/706 条调用，旧 D2 记录经 Java API 可读；见 `tmp/dr-container-validation/linux-volume-restart-health.json`。该验证没有启动模型研究。
+
+## 索引取证与账本边界补验
+
+当前索引中两篇开发论文实际均为零条，而 Java 保留此前的 ready 状态；普通解析重试因此去重，不会重建。经无 AI 分析的本地解析接口，以原 SHA-256 文件名恢复索引：LightGaussian 55 个片段、原始 3DGS 83 个片段，均 `ragIndexed=true`、`aiAnalysisStatus=not_requested`。没有直接篡改材料就绪状态，原成果不变。
+
+索引路径还会继承旧检索工具的自动查询改写，可能产生研究账本外的模型调用。新版调用现在显式传递 `allow_query_rewrite=False`，经过真实工具注册表一直传至混合检索；其他旧入口默认行为保留。补齐索引 metadata 到新版 location 的转换，保留页码、首个片段、章节、表格标识和列对应关系未核实标记。59 项相关回归及 36 个子用例通过。
+
+本地检索探针实际命中双方主实验表及实验设置，原始结果保存在原生卷 `/research_data/store/indexed-retrieval-probe.json`，摘要日志为 `tmp/dr-container-validation/indexed-retrieval-probe.log`。该探针不是模型回答质量验收。D2 v11 `a6a0e2a7` 已单次启动；中途读取确认来源有实际页码和章节，最终质量需按终态另判。
