@@ -34,7 +34,15 @@ class AuthoritativeScopeValidator:
         record = self.repo.require_run(run_id)
         materials = record.get("materials", [])
         if material_id not in {m.get("materialId") for m in materials}:
-            return False
+            external = (record.get("sourcePolicy", {}).get("mode") in {"academic_external", "external_only"}
+                        and any(s.get("workId") == material_id and s.get("sourceKind") == "arxiv"
+                                for s in record.get("state", {}).get("sources", [])))
+            if not external:
+                return False
+        return self.validate_run(run_id)
+
+    def validate_run(self, run_id):
+        record = self.repo.require_run(run_id)
         snapshot_hash = (record.get("materialSnapshot") or {}).get("snapshotHash")
         if not snapshot_hash:
             return False
@@ -63,6 +71,8 @@ class ScopedModelClient:
         class BoundClient:
             def invoke(self, request):
                 record = parent.repo.require_run(run_id)
+                if hasattr(parent.validate, "validate_run") and not parent.validate.validate_run(run_id):
+                    raise DeepResearchError("scope_revoked", "任务或材料范围已变更，请核对后继续")
                 for material in record.get("materials", []):
                     if not parent.validate(run_id, material["materialId"]):
                         raise DeepResearchError("scope_revoked", "研究材料已变更或暂不可用，请核对后继续")
@@ -109,15 +119,22 @@ def initialize_runtime():
     from llm.client import get_structured_llm
     path.parent.mkdir(parents=True, exist_ok=True)
     repo = DeepResearchRepository(str(path))
+    repo.initialize()
     repo.recover()
     scope = AuthoritativeScopeValidator(repo, origin=os.environ.get("DEEP_RESEARCH_JAVA_ORIGIN", "http://127.0.0.1:8080/api"))
     model = ScopedModelClient(repo, scope, get_structured_llm)
 
     # The facade binds the provider to a run, so every send uses its live scope.
     class RuntimeFacade(ResearchFacade):
+        def create(self, request, **kwargs):
+            from services.deep_research.external import capabilities
+            if request.get("sourcePolicy", {}).get("mode", "task_only") != "task_only" and not capabilities()["externalAcademic"]:
+                raise DeepResearchError("external_unavailable", "外部文献服务尚未启用，请使用任务材料", {"status_code": 503})
+            return super().create(request, **kwargs)
+
         def _make_llm_invoker(self, run_id):
             from services.deep_research.tools import TrackedLLMInvoker
-            return TrackedLLMInvoker(model.for_run(run_id), self._repo.reserve_call, self._repo.complete_call)
+            return TrackedLLMInvoker(model.for_run(run_id), self._repo.reserve_call, self._complete_tracked_call)
 
         def _make_semantic_checker(self, run_id):
             from services.deep_research.tools import BudgetedSemanticChecker
@@ -125,6 +142,11 @@ def initialize_runtime():
 
     facade = RuntimeFacade(repo, build_deep_research_graph, llm_client=model, scope_validator=scope,
                            source_reader=lambda rid, sid: read_acquired_source(repo, rid, sid))
+    from services.deep_research.external import AcademicAcquisition
+    facade._external_acquire = AcademicAcquisition(repo, facade._complete_tracked_call)
+    from services.deep_research.publication import PublicationDispatcher
+    facade._publication_dispatcher = PublicationDispatcher(repo, origin=scope.origin)
+    facade._publication_dispatcher.start()
     configure_dispatcher(ResearchEngineDispatcher(facade=facade, lookup=repo.get_run, allow_new=enabled))
     _runtime = facade
     return facade
@@ -133,6 +155,8 @@ def initialize_runtime():
 def shutdown_runtime():
     global _runtime
     if _runtime is not None:
+        if getattr(_runtime, "_publication_dispatcher", None):
+            _runtime._publication_dispatcher.shutdown()
         _runtime.shutdown(wait=True)
         _runtime = None
     configure_dispatcher(None)

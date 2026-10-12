@@ -82,9 +82,10 @@ class AcademicPolicy:
 
 class AcademicSourceClient:
     """账本调用 discover/fetch_fulltext；本适配器不递归，不调用模型。"""
-    def __init__(self, policy: AcademicPolicy, transport=pinned_https_get):
+    def __init__(self, policy: AcademicPolicy, transport=pinned_https_get, *, cache_dir=None):
         self.policy = policy
         self.transport = transport
+        self.cache_dir = Path(cache_dir) if cache_dir else None
 
     def _require(self, *, fulltext=False):
         if not self.policy.enabled or self.policy.mode not in {'academic_external', 'external_only'}:
@@ -150,7 +151,15 @@ class AcademicSourceClient:
             raise
         except Exception as cause:
             raise AcademicAccessError('公开全文解析未完成') from cause
+        content_hash = hashlib.sha256(body).hexdigest()
+        if self.cache_dir is not None:
+            self.cache_dir.mkdir(parents=True, exist_ok=True)
+            target = self.cache_dir / (content_hash + '.pdf')
+            if not target.exists():
+                temporary = self.cache_dir / (content_hash + '.' + __import__('uuid').uuid4().hex + '.tmp')
+                temporary.write_bytes(body)
+                temporary.replace(target)
         return {'workId': 'arxiv:' + re.sub(r'v\d+$', '', arxiv_id), 'versionId': 'arxiv:' + arxiv_id,
             'arxivId': arxiv_id, 'accessLevel': 'fulltext', 'sourceKind': 'external_academic',
-            'contentHash': hashlib.sha256(body).hexdigest(), 'pages': pages,
+            'contentHash': content_hash, 'pages': pages,
             'url': 'https://arxiv.org/pdf/' + arxiv_id, 'retrievedAt': time.time()}

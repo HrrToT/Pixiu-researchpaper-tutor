@@ -53,6 +53,12 @@ async def get_latest_research_task(pdfId: str):
         return JSONResponse({"status": "error", "message": str(error)}, status_code=500)
 
 
+@research_router.get("/research-tasks/capabilities")
+async def research_capabilities():
+    from services.deep_research.external import capabilities
+    return JSONResponse({"status": "success", **capabilities()})
+
+
 @research_router.get("/research-tasks/{task_id}")
 async def get_research_task(task_id: str):
     try:
@@ -149,6 +155,18 @@ async def get_research_sources(task_id: str):
 async def get_research_events(task_id: str):
     try:
         return JSONResponse(get_dispatcher().detail(task_id, "events"))
+    except DeepResearchError as error:
+        return _v2_error(error)
+
+
+@research_router.get("/research-tasks/{task_id}/sources/{source_id}/export")
+async def export_research_source(task_id: str, source_id: str):
+    try:
+        from services.deep_research.external import export_saved_source
+        dispatcher = get_dispatcher()
+        if not dispatcher._is_v2(task_id):
+            raise DeepResearchError("unsupported_action", "此来源不属于新版研究")
+        return JSONResponse({"status": "success", "source": export_saved_source(dispatcher.facade._repo, task_id, source_id)})
     except DeepResearchError as error:
         return _v2_error(error)
 
