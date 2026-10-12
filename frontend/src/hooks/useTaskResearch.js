@@ -24,7 +24,11 @@ export function useTaskResearch(workspace, api = taskResearchApi, operations = n
   const runRevisions = useRef(new Map());
   const startingRef = useRef(false);
   const startIntents = useRef(new Map());
-  const runKey = JSON.stringify(workspace.tasks.flatMap((task) => (task.researchRuns || []).map((run) => [task.id, run.researchId])));
+  // Server publication can reorder tasks by updatedAt. Membership, not that
+  // incidental order, controls poll lifetime; otherwise older GETs repeatedly
+  // restart the loop before recent runs are ever reached.
+  const runKey = JSON.stringify(workspace.tasks.flatMap((task) => (task.researchRuns || []).map((run) => [task.id, run.researchId]))
+    .sort(([ta, ra], [tb, rb]) => ta.localeCompare(tb) || ra.localeCompare(rb)));
   const publish = async (taskId, researchId, result, isCurrent = () => true) => {
     if (!isCurrent()) return null;
     const research = result?.task;
@@ -50,29 +54,38 @@ export function useTaskResearch(workspace, api = taskResearchApi, operations = n
     let disposed = false;
     let timer;
     const poll = async () => {
-      for (const [taskId, researchId] of JSON.parse(runKey)) {
-        const key = `${taskId}/${researchId}`;
-        if (disposed || finished.current.has(key) || pendingActions.current.has(key)) continue;
-        const version = actionVersions.current.get(key) || 0;
-        const isCurrent = () => !disposed && !pendingActions.current.has(key)
-          && (actionVersions.current.get(key) || 0) === version;
-        try {
-          const response = await api.get(taskId, researchId);
-          if (!isCurrent()) continue;
-          await publish(taskId, researchId, response, isCurrent);
-          if (isCurrent()) setRunError(JSON.stringify([taskId, researchId]), 'poll', '');
-        } catch (failure) { if (isCurrent()) {
-          const missing = failure.response?.status === 404;
-          if (missing) finished.current.add(key);
-          setRunError(JSON.stringify([taskId, researchId]), 'poll', missing
-            ? '执行记录当前不可用；已保存的成果仍可查看。' : failure.message || '研究状态读取失败');
-        } }
-      }
+      const ordered = [...latest.current.tasks].sort((a, b) => Number(b.id === visibleTaskId) - Number(a.id === visibleTaskId));
+      const queue = ordered.flatMap(task => [...(task.researchRuns || [])].reverse().map(run => [task.id, run.researchId]));
+      let cursor = 0;
+      const worker = async () => {
+        while (!disposed && cursor < queue.length) {
+          const [taskId, researchId] = queue[cursor++];
+          const key = `${taskId}/${researchId}`;
+          if (disposed || finished.current.has(key) || pendingActions.current.has(key)) continue;
+          const version = actionVersions.current.get(key) || 0;
+          const isCurrent = () => !disposed && !pendingActions.current.has(key)
+            && (actionVersions.current.get(key) || 0) === version;
+          try {
+            const response = await api.get(taskId, researchId);
+            if (!isCurrent()) continue;
+            await publish(taskId, researchId, response, isCurrent);
+            if (isCurrent()) setRunError(JSON.stringify([taskId, researchId]), 'poll', '');
+          } catch (failure) { if (isCurrent()) {
+            const missing = failure.response?.status === 404;
+            if (missing) finished.current.add(key);
+            setRunError(JSON.stringify([taskId, researchId]), 'poll', missing
+              ? '执行记录当前不可用；已保存的成果仍可查看。' : failure.message || '研究状态读取失败');
+          } }
+        }
+      };
+      // A slow historical request must not block the currently visible run.
+      // Bound concurrency instead of issuing one request per saved research.
+      await Promise.all(Array.from({ length: Math.min(3, queue.length) }, worker));
       if (!disposed) timer = setTimeout(poll, 4000);
     };
     void poll();
     return () => { disposed = true; clearTimeout(timer); };
-  }, [runKey, api]);
+  }, [runKey, api, visibleTaskId]);
   const start = async (task, question, context) => {
     const v2 = context.engineVersion ? context.engineVersion === 'deep-research-v2' : import.meta.env.VITE_DEEP_RESEARCH_V2_ENABLED === 'true';
     if (operations && !v2) return operations.start(task, 'research.start', { question, allowedPaperIds: context.allowedPaperIds,

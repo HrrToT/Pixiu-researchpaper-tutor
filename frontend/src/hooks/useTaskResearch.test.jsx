@@ -3,6 +3,42 @@ import { describe, expect, it, vi } from 'vitest';
 import { useTaskResearch } from './useTaskResearch';
 
 describe('task research integration', () => {
+  it('prioritizes the visible newest run without waiting for slow history and bounds concurrency', async () => {
+    const old = { id: 'old', researchRuns: [{ researchId: 'old-run' }] };
+    const active = { id: 'active', researchRuns: ['r1', 'r2', 'r3', 'r4'].map(researchId => ({ researchId })) };
+    const pending = new Map();
+    const api = { get: vi.fn((_taskId, researchId) => new Promise(resolve => pending.set(researchId, resolve))) };
+    const workspace = { tasks: [old, active], activeTaskId: 'active', adoptServerTask: vi.fn() };
+    const { result, unmount } = renderHook(() => useTaskResearch(workspace, api));
+    expect(api.get.mock.calls).toEqual([['active', 'r4'], ['active', 'r3'], ['active', 'r2']]);
+    await act(async () => pending.get('r4')({ task: { taskId: 'r4', status: 'running' } }));
+    expect(result.current.runs['active/r4'].status).toBe('running');
+    expect(api.get.mock.calls).toHaveLength(4);
+    expect(api.get.mock.calls[3]).toEqual(['active', 'r1']);
+    unmount();
+    await act(async () => {
+      for (const [id, resolve] of pending) resolve({ task: { taskId: id, status: 'running' } });
+    });
+    expect(api.get.mock.calls).toHaveLength(4);
+  });
+
+  it('does not restart in-flight reads when server publication reorders tasks', async () => {
+    const a = { id: 'a', researchRuns: [{ researchId: 'ra' }] };
+    const b = { id: 'b', researchRuns: [{ researchId: 'rb' }] };
+    const pending = new Map();
+    const api = { get: vi.fn((_taskId, id) => new Promise(resolve => pending.set(id, resolve))) };
+    const workspace = { tasks: [a, b], activeTaskId: 'a', adoptServerTask: vi.fn() };
+    const { result, rerender, unmount } = renderHook(({ current }) => useTaskResearch(current, api),
+      { initialProps: { current: workspace } });
+    rerender({ current: { ...workspace, tasks: [b, a] } });
+    expect(api.get).toHaveBeenCalledTimes(2);
+    await act(async () => pending.get('ra')({ task: { taskId: 'ra', status: 'running' } }));
+    expect(result.current.runs['a/ra'].status).toBe('running');
+    unmount();
+    await act(async () => pending.get('rb')({ task: { taskId: 'rb', status: 'running' } }));
+    expect(result.current.runs['b/rb']).toBeUndefined();
+  });
+
   it('stops polling missing historical execution records', async () => {
     vi.useFakeTimers();
     try {
