@@ -113,6 +113,13 @@ def verify_claims(claims: list[dict], evidence: list[dict],
             from services.deep_research.experimental_reasoning import DESIGN_ROLES
             if not isinstance(claim.get('designRole'), str) or claim['designRole'] not in DESIGN_ROLES or kind not in {'proposal', 'suggestion', 'hypothesis'}:
                 reason = reason or 'invalid_design_role'
+        if not reason and claim.get('designContractVersion') == 2:
+            from services.deep_research.execution_spec import execution_spec_errors
+            errors = execution_spec_errors(claim.get('designRole'), claim.get('executionSpec'))
+            if errors:
+                rejected.append({"claimId": claim_id, "reason": "incomplete_execution_spec",
+                                 "detail": ', '.join(errors)})
+                continue
         if reason:
             rejected.append({"claimId": claim_id, "reason": reason})
         else:

@@ -973,6 +973,8 @@ Do not use anonymous slash-separated numeric series. Without verified tableData,
 and use supported qualitative evidence. Never relabel a reported table measurement as inference to evade checks.
 Use ONLY the supplied short evidence IDs (E1, E2, ...) in evidenceRefs. Do not invent or abbreviate IDs.
 Put material limitations into claims as evidence-bounded inferences. Do not duplicate prose in extra fields.
+Evidence IDs are routing keys only: keep E1/E2/... and raw IDs OUT of text and conditions.
+Use natural source names or "所选原文片段" in prose; the UI renders links from evidenceRefs.
 
 Section titles MUST be selected from {json.dumps(section_templates, ensure_ascii=False)}.
 Each section's claimIds must reference actual claim IDs from the claims array.
@@ -1018,8 +1020,11 @@ Do NOT invent measured results or pretend unsupported conclusions are verified."
         if output_kind == "experiment_design":
             from services.deep_research.experimental_reasoning import FACTORIAL_REFERENCE, design_requirements
             prompt += "\nStatistical reference (apply only if the design has two binary factors):\n" + FACTORIAL_REFERENCE
+            from services.deep_research.execution_spec import EXECUTION_SPEC_CONTRACT
+            prompt += '\n' + EXECUTION_SPEC_CONTRACT
             prompt += '\nEach proposed design claim MUST have one designRole from the contract below. ' \
-                      'Cover every role with a separate, complete claim. These are proposals, not facts about the paper. ' \
+                      'Use exactly one complete claim per role; keep its configuration and decision rules together. ' \
+                      'These are proposals, not facts about the paper. ' \
                       'Do not replace a concrete choice with “keep everything fixed”. If no specific split/budget ' \
                       'is documented, choose and label a reproducible proposed protocol, not an invented paper setting.\n' \
                       + design_requirements(brief_state.get('metricDomains'))
@@ -1048,6 +1053,12 @@ Do NOT invent measured results or pretend unsupported conclusions are verified."
         if parsed is None:
             return {"error_code": "invalid_synthesis_response"}
         
+        if output_kind == "experiment_design":
+            # Server-owned contract version: omission by a model cannot opt out.
+            for claim in parsed.get('claims', []):
+                if isinstance(claim, dict):
+                    claim['designContractVersion'] = 2
+
         report_version_id = f"report_{run_id}_v1"
         
         repo_update(

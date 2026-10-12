@@ -514,7 +514,8 @@ class BudgetedSemanticChecker:
         for batch, batch_node in batches:
             targets = {c['claimId'] for c in batch}
             context = [{'claimId': c.get('claimId'), 'text': c.get('text'), 'kind': c.get('kind'),
-                        'conditions': c.get('conditions', {}), 'designRole': c.get('designRole')}
+                        'conditions': c.get('conditions', {}), 'designRole': c.get('designRole'),
+                        'executionSpec': c.get('executionSpec'), 'designContractVersion': c.get('designContractVersion')}
                        for c in [*accepted_context, *proposals] if c['claimId'] not in targets]
             verdicts.extend(self._check_batch(batch, evidence, context, node=batch_node))
         by_id = {v['claimId']: v for v in verdicts}
@@ -532,6 +533,8 @@ class BudgetedSemanticChecker:
             "conditions": c.get("conditions", {}),
             "tableBindings": c.get("tableBindings", []),
             "designRole": c.get("designRole"),
+            "executionSpec": c.get("executionSpec"),
+            "designContractVersion": c.get("designContractVersion"),
         } for c in claims], ensure_ascii=False)
         
         referenced = {ref for claim in claims for ref in claim.get("evidenceRefs", [])}
@@ -605,6 +608,16 @@ Return only a JSON array, one verdict per target:
 Missing configuration, contradictory choices and invalid parameter syntax fail.
 Do not require an unexecuted experiment to have results. Do not judge context claims as targets.'''
         
+        if any(c.get('designContractVersion') == 2 for c in [*claims, *proposal_context]):
+            prompt += '\nexecutionSpec is proposed configuration, not paper evidence. Check EVERY field against ' \
+                      'the normal claim text: the same dataset, actual scene selection, split, seed usage, ' \
+                      'replication, formulas and uncertainty procedure must be stated consistently. Reject ' \
+                      'a populated JSON field hidden behind vague or contradictory prose. Structural validation ' \
+                      'does not certify meaningful choices. A scene-seed pair is not automatically independent ' \
+                      'of another seed from the same scene; fixed checkpoints with no retraining do not produce ' \
+                      'independent training replicates. Require paired groups within units and resample actual ' \
+                      'independent clusters. Quoting a vague choice does not make it concrete.'
+
         if any(c.get("kind") in {"proposal", "suggestion", "hypothesis"} for c in claims):
             from services.deep_research.experimental_reasoning import FACTORIAL_REFERENCE, design_requirements
             if node == 'verify_design_config':

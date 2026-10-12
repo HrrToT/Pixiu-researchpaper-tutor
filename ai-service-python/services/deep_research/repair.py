@@ -36,7 +36,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse):
     ]
     evidence_marker, permissions_marker = uuid4().hex, uuid4().hex
     input_claims = resolve_evidence_aliases({'claims': deepcopy(list(originals.values()))}, short_ids)['claims']
-    proposal_context = [{key: row[key] for key in ('claimId', 'text', 'kind', 'conditions', 'designRole') if key in row}
+    proposal_context = [{key: row[key] for key in ('claimId', 'text', 'kind', 'conditions', 'designRole', 'executionSpec', 'designContractVersion') if key in row}
                         for row in verification.get('accepted', [])
                         if row.get('kind') in {'proposal', 'suggestion', 'hypothesis'}]
     prompt = f'''Revise only the rejected claims below. Narrow unsupported wording or omit the claim.
@@ -78,6 +78,9 @@ to their allowed evidence. These additional passages come from the same already 
 source versions; retrieval obligation labels do not prove relevance. Check each passage
 against the actual requested aspect before citing it. Fix invalid proposed formulas and label all
 unexecuted proposals/hypotheses clearly. Keep the answer concise and within the user's length limit.'''
+    if any(row.get('designContractVersion') == 2 for row in originals.values()):
+        from services.deep_research.execution_spec import EXECUTION_SPEC_CONTRACT
+        prompt += '\n' + EXECUTION_SPEC_CONTRACT
     template = prompt
     def render(selected_rows):
         visible_ids = {row['evidenceId'] for row in selected_rows}
@@ -113,6 +116,8 @@ unexecuted proposals/hypotheses clearly. Keep the answer concise and within the 
         new_refs = row.get('evidenceRefs', [])
         if not isinstance(new_refs, list) or any(ref not in allowed.get(key, []) for ref in new_refs):
             continue
+        if original.get('designContractVersion') == 2:
+            row['designContractVersion'] = 2
         # The repair cannot reassign the claim to another research obligation.
         if 'obligationIds' in original:
             row['obligationIds'] = deepcopy(original['obligationIds'])
