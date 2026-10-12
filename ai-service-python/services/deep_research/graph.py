@@ -76,6 +76,7 @@ class GraphState(TypedDict, total=False):
     previous_evidence_hashes: list[str]  # For incremental child dedup
     inherited_source_ids: list[str]  # Inherited from parent run
     inherited_evidence_ids: list[str]  # Inherited from parent run
+    assess_inherited: bool  # Check reused evidence before issuing new retrieval
     prev_source_count: int  # Track no-new-evidence stopping
 
 
@@ -294,14 +295,17 @@ Return a JSON ARRAY of plan items, NOT an object with items field."""
                     validated[0]["obligations"][0]["requiredSources"].append(sid)
         
         plan_ids = [item["itemId"] for item in validated]
+        from services.deep_research.continuation import rebind_inherited_state
+        inherited = bool(brief_state.get('inheritedEvidence'))
         
         repo_update(
             run_id,
-            lambda r: {**r, "state": {**(r.get("state") or {}), "plan": validated}},
+            lambda r: {**r, "state": rebind_inherited_state(r.get('state') or {}, validated)
+                       if inherited else {**(r.get("state") or {}), "plan": validated}},
             expected_revision=None,
         )
         
-        return {"plan_ids": plan_ids}
+        return {"plan_ids": plan_ids, "assess_inherited": inherited}
     
     return node
 
@@ -406,6 +410,7 @@ def make_acquire_node(
                                 "ownerMaterialId": owner_material_id,
                                 "versionId": material.get("versionId") or item.get("versionId", source_id),
                                 "contentHash": item.get("contentHash") or hashlib.sha256(item.get("text", "").encode()).hexdigest(),
+                                "materialContentHash": material.get("contentHash"),
                                 "accessLevel": item.get("accessLevel", "fulltext"),
                                 "text": item.get("text", ""),
                                 "tableData": item.get("tableData"),
@@ -1333,8 +1338,8 @@ def build_deep_research_graph(
     # After clarification interrupt, resume goes to plan
     workflow.add_edge("wait_clarification", "plan")
     
-    workflow.add_conditional_edges("plan", lambda state: "fail" if state.get("error_code") else "publish" if state.get("budget_exhausted") else "acquire",
-                                   {"fail": END, "acquire": "acquire", "publish": "publish"})
+    workflow.add_conditional_edges("plan", lambda state: "fail" if state.get("error_code") else "publish" if state.get("budget_exhausted") else "assess" if state.get('assess_inherited') else "acquire",
+                                   {"fail": END, "acquire": "acquire", "assess": "assess", "publish": "publish"})
     workflow.add_edge("acquire", "read")
     workflow.add_edge("read", "extract")
     workflow.add_conditional_edges("extract", lambda state: "synthesize" if state.get("budget_exhausted") else "assess",

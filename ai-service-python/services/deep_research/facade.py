@@ -217,12 +217,14 @@ class ResearchFacade:
             parent = self._repo.require_run(parent_id)
             if parent.get("taskId") != workspace_task_id or parent.get("status") not in TERMINAL_STATUSES:
                 raise DeepResearchError("invalid_parent", "只能从本任务已结束的研究继续")
-            hashes = {m["materialId"]: m.get("contentHash") for m in materials}
+            from services.deep_research.continuation import reusable_local_source
+            current_materials = {m['materialId']: m for m in materials}
+            parent_materials = {m['materialId']: m for m in parent.get('materials', [])}
             refresh = request.get("freshness") == "refresh" or any(word in request.get("question", "").lower()
                                                                     for word in ("最新", "更新到", "latest"))
             external = request.get("sourcePolicy", {}).get("mode") in {"academic_external", "external_only"}
             sources = [s for s in parent.get("state", {}).get("sources", []) if
-                       (s.get("workId") in hashes and hashes[s["workId"]] == s.get("contentHash")) or
+                       reusable_local_source(s, current_materials.get(s.get('workId')), parent_materials.get(s.get('workId'))) or
                        (s.get("sourceKind") == "arxiv" and external and not refresh)]
             source_ids = {s["sourceId"] for s in sources}
             evidence = [e for e in parent.get("state", {}).get("evidence", []) if e.get("sourceId") in source_ids]
