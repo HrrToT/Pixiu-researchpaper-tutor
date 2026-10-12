@@ -171,8 +171,9 @@ def test_proposal_cannot_bypass_logical_verification():
     assert not verify_claims([claim], [])['accepted']
 
 
-@pytest.mark.parametrize('exhausted,expected', [(True, 'skipped_budget'), (False, 'response_received')])
-def test_repair_state_distinguishes_budget_skip_from_model_response(exhausted, expected):
+@pytest.mark.parametrize('exhausted,finish,expected', [(True, None, 'skipped_budget'),
+    (False, 'stop', 'response_received'), (False, 'length', 'output_truncated')])
+def test_repair_state_distinguishes_budget_skip_from_model_response(exhausted, finish, expected):
     from services.deep_research.graph import make_verify_node
     original = {'claimId': 'c', 'kind': 'reported', 'text': 'bad', 'evidenceRefs': []}
     record = {'state': {'reportBody': {'claims': [original]}, 'evidence': []}}
@@ -183,7 +184,7 @@ def test_repair_state_distinguishes_budget_skip_from_model_response(exhausted, e
     def invoke(*args, **kwargs):
         if exhausted:
             raise BudgetExhaustedError('modelCalls', 13, 14)
-        return {'content': '[]'}
+        return {'content': '[]', 'finishReason': finish}
     verify = lambda *args: {'accepted': [], 'rejected': [{'claimId': 'c', 'reason': 'unsupported'}]}
     make_verify_node(verify, None, update, llm_invoke=invoke)({'run_id': 'r'})
     assert record['state']['repairStatus'] == expected

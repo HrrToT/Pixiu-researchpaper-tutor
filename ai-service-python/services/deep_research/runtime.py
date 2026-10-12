@@ -23,6 +23,13 @@ def enabled():
 
 def research_model_options(node, options):
     """Apply role options BEFORE the ledger reserves tokens and fingerprints input."""
+    if node == 'repair_claims':
+        # The observed low-reasoning repair exhausted 8192 output tokens with
+        # an empty body. Return the bounded edit directly; independent checks
+        # still decide whether any revision can be published.
+        from services.deep_research.repair_budget import REPAIR_OUTPUT_TOKENS
+        return {**options, 'thinking': {'type': 'disabled'}, 'reasoning_effort': 'none',
+                'max_tokens': REPAIR_OUTPUT_TOKENS}
     if node == 'verify_design_config':
         # Concrete protocol audit: reserve space for the verdict/quoted choices,
         # not an unbounded derivation. Scientific consistency stays high below.
@@ -33,14 +40,11 @@ def research_model_options(node, options):
         # but require direct per-claim decisions with concise explicit reasons.
         # A truncated response still fails, never becoming a semantic pass.
         return {**options, 'thinking': {'type': 'disabled'}, 'reasoning_effort': 'none', 'max_tokens': 6000}
-    if node in {'synthesize', 'synthesize_compact', 'verify', 'verify_repair', 'repair_claims'}:
+    if node in {'synthesize', 'synthesize_compact', 'verify', 'verify_repair'}:
         # Bounded rewriting must leave room for its JSON; final verification
         # retains high reasoning and checks the rewritten claims independently.
         effort = 'high' if node in {'verify', 'verify_repair'} else 'low'
-        from services.deep_research.repair_budget import REPAIR_OUTPUT_TOKENS
         maximum = 16384 if node in {'synthesize', 'verify'} else 8192
-        if node == 'repair_claims':
-            maximum = REPAIR_OUTPUT_TOKENS
         return {**options, 'thinking': {'type': 'enabled'}, 'reasoning_effort': effort, 'max_tokens': maximum}
     return {**options, 'thinking': {'type': 'disabled'}, 'reasoning_effort': 'none'}
 

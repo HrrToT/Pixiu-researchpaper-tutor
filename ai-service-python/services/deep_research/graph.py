@@ -1176,8 +1176,11 @@ def make_verify_node(
                     repo_update(run_id, lambda r: {**r, "state": {**r.get("state", {}),
                         "repairStatus": "skipped_budget"}}, expected_revision=None)
                     raise
+                finish = (response.get('finishReason', response.get('finish_reason'))
+                          if isinstance(response, dict) else getattr(response, 'finish_reason', None))
                 repo_update(run_id, lambda r: {**r, "state": {**r.get("state", {}),
-                    "repairStatus": "response_received"}}, expected_revision=None)
+                    "repairStatus": "output_truncated" if finish == 'length' else "response_received"}},
+                    expected_revision=None)
                 return response
             try:
                 revised = saved.get('repairDraft')
