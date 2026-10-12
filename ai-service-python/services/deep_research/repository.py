@@ -10,6 +10,7 @@ settlement.  Recovery pauses interrupted nonterminal runs instead of failing the
 from __future__ import annotations
 
 import json
+import copy
 import sqlite3
 import threading
 from contextlib import closing
@@ -321,9 +322,16 @@ class DeepResearchRepository:
                     raise RevisionConflictError(
                         normalized, int(expected_revision), int(current.get("runRevision") or 0)
                     )
-                updated = mutate(dict(current))
+                updated = mutate(copy.deepcopy(current))
                 if updated is None:
                     updated = current
+                for identity in ("runId", "taskId", "engineVersion", "contractVersion", "materialSnapshot"):
+                    if updated.get(identity) != current.get(identity):
+                        raise ValueError(f"Immutable run field changed: {identity}")
+                if updated.get("executionEpoch") != current.get("executionEpoch"):
+                    raise ValueError("Execution epoch changes require begin_execution")
+                if updated.get("status") != current.get("status"):
+                    transition_status(current, str(updated.get("status")))
                 updated["runRevision"] = int(current.get("runRevision") or 0) + 1
                 updated["updatedAt"] = utc_now_iso()
                 serialized = json.dumps(updated, ensure_ascii=False)

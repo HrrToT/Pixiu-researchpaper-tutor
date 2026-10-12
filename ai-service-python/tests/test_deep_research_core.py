@@ -982,3 +982,14 @@ def test_cancelled_or_stale_epoch_cannot_publish(repo: DeepResearchRepository):
     with pytest.raises(CallOutsideRunningError):
         repo.publish_report(run_id="publish-epoch", dedup_key="cancel-pub", payload={"body": "old"})
     assert repo.require_run("publish-epoch")["status"] == STATUS_CANCELLED
+
+
+def test_generic_update_cannot_reassign_identity_or_reopen_terminal(repo: DeepResearchRepository):
+    repo.create_run({"runId": "immutable", "taskId": "owner"})
+    for field, value in [("taskId", "foreign"), ("engineVersion", "legacy-v1"), ("executionEpoch", 99)]:
+        with pytest.raises(ValueError):
+            repo.update_run("immutable", lambda r: {**r, field: value})
+    repo.transition("immutable", STATUS_CANCELLED)
+    with pytest.raises(IllegalStatusTransitionError):
+        repo.update_run("immutable", lambda r: {**r, "status": STATUS_RUNNING})
+    assert repo.require_run("immutable")["taskId"] == "owner"
