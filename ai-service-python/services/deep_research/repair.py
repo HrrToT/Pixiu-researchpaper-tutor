@@ -36,6 +36,8 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *, 
     ]
     evidence_marker, permissions_marker = uuid4().hex, uuid4().hex
     input_claims = resolve_evidence_aliases({'claims': deepcopy(list(originals.values()))}, short_ids)['claims']
+    from services.deep_research.repair_prompt import factor_repair_questions
+    question_dictionary, packed_checks = factor_repair_questions(rejected)
     proposal_context = [{key: row[key] for key in ('claimId', 'text', 'kind', 'conditions', 'designRole', 'executionSpec', 'designContractVersion') if key in row}
                         for row in verification.get('accepted', [])
                         if row.get('kind') in {'proposal', 'suggestion', 'hypothesis'}]
@@ -49,8 +51,11 @@ passages. A finite empirical result cannot by itself establish a universal guara
 Question: {question}
 Accepted experimental definitions (consistency only; do not revise these or treat them as paper evidence):
 {json.dumps(proposal_context, ensure_ascii=False)}
+Missing-question dictionary (each missingQuestionIds entry refers to the exact question here;
+Q identifiers are internal references, never evidence or text to publish):
+{json.dumps(question_dictionary, ensure_ascii=False)}
 Rejected claims and checks:
-{json.dumps([{'claim': row, 'check': rejected[row['claimId']]} for row in input_claims], ensure_ascii=False)}
+{json.dumps([{'claim': row, 'check': packed_checks[row['claimId']]} for row in input_claims], ensure_ascii=False)}
 Allowed evidence IDs per claim (candidate permissions, not proof of support):
 {permissions_marker}
 Exact available evidence:
