@@ -22,6 +22,9 @@ def validate_design_audit(claim, verdict, context):
         return []
 
     audit = verdict.get("designAudit") if isinstance(verdict, dict) else None
+    # Accept the observed unambiguous role wrapper without weakening slot checks.
+    if isinstance(audit, dict) and set(audit) == {role} and isinstance(audit[role], dict):
+        audit = audit[role]
     if not isinstance(audit, dict):
         return list(slots)
 

@@ -42,7 +42,12 @@ This is schema only, not evidence. Copy actual rowNumber, zero-based groupIndex,
 The key is "value", never "exactStringValue". Name dataset, method and metric beside each number.
 When no verified cell is available, omit the numeric example rather than guessing a mapping.
 An abstract supports only explicitly abstract-level wording (detailLevel="abstract").
-Do not add new claims, searches, numbers or results. Fix invalid proposed formulas and label all
+Do not add new claims, searches, reported measurements or results. For an existing proposal,
+you MAY specify new numeric configuration choices (seed, split, intervention level, budget,
+confidence level) explicitly labeled as YOUR UNEXECUTED PROPOSAL, not as paper settings.
+Complete missing protocol details rather than replacing them with "to be preregistered".
+The paper need not have used a proposed setting. Keep established factual clauses restricted
+to their original evidence. Fix invalid proposed formulas and label all
 unexecuted proposals/hypotheses clearly. Keep the answer concise and within the user's length limit.'''
     try:
         response = invoke(prompt)

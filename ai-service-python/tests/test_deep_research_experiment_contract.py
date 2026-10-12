@@ -66,6 +66,8 @@ def test_joint_design_check_keeps_all_definitions_but_separates_factual_evidence
             assert all(requirement in prompt for _, requirement in DESIGN_ROLES.values())
             assert 'UNRELATED_PAPER_QUOTE' not in prompt
             assert 'fulfillment of its entire' in prompt
+            assert 'needs NO quotation' in prompt
+            assert 'Be strict: evidence must directly support EVERY clause' not in prompt
             roles = {c.get('designRole') for c in targets}
             if kwargs['node'] == 'verify_design_config':
                 assert roles == {'groups', 'controls', 'data', 'budget', 'steps', 'metrics'}

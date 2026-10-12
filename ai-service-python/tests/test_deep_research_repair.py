@@ -198,6 +198,7 @@ def test_graph_passes_accepted_design_context_to_repair_and_independent_check():
     checker = Mock()
     def invoke(run, node, prompt, options):
         assert 'Loss is negative PSNR.' in prompt
+        assert 'YOUR UNEXECUTED PROPOSAL' in prompt
         return {'content': json.dumps([revised])}
     make_verify_node(verify, checker, update, llm_invoke=invoke)({'run_id': 'r'})
     checker.check_revisions.assert_called_once_with([revised], [], [good])

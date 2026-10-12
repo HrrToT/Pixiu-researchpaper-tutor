@@ -566,6 +566,29 @@ An interaction formula must define whether larger values mean better quality or 
 one sign interpretation for PSNR/SSIM and LPIPS together. Non-significance does not prove no effect.
 Truncating coefficients is a proposed intervention, not automatically the paper's distillation procedure.
 Do not accept vague connections. A partly supported claim must fail until its wording is narrowed."""
+
+        if all(c.get('kind') in {'proposal', 'suggestion', 'hypothesis'} for c in claims):
+            # Do not inherit factual-entailment instructions for unexecuted choices.
+            prompt = f'''Verify these claims as a prospective experimental design. These targets are suggestions,
+not claims that the papers already performed this experiment. A proposed seed, split,
+factor level, recovery budget or measurement protocol needs NO quotation proving that
+the authors used it. Judge whether it is explicit, executable and coherent. Never fail
+a clearly labeled proposed choice merely because it is absent from the paper.
+Check scientific validity as well as completeness. A role can share definitions and
+protocol details with other target/context proposals; do not demand needless repetition.
+If a target also asserts an existing paper fact, check only that factual clause against
+its own evidenceRefs; shared context is not factual evidence. Reject invented paper facts.
+
+Claims:
+{claims_text}
+
+Evidence:
+{evidence_text}
+
+Return only a JSON array, one verdict per target:
+[{{"claimId":"ID","status":"passed" or "failed","reason":"brief specific finding","designAudit":{{}}}}]
+Missing configuration, contradictory choices and invalid parameter syntax fail.
+Do not require an unexecuted experiment to have results. Do not judge context claims as targets.'''
         
         if any(c.get("kind") in {"proposal", "suggestion", "hypothesis"} for c in claims):
             from services.deep_research.experimental_reasoning import FACTORIAL_REFERENCE, design_requirements
@@ -597,6 +620,7 @@ Do not accept vague connections. A partly supported claim must fail until its wo
                           'state them. Judge whether the quoted choice fulfills the requirement, not just ' \
                           'whether relevant words occur. Shared definitions are permitted, paper facts ' \
                           'are not an experiment configuration. Required slots:\n' + json.dumps(REQUIRED)
+                prompt += '\nThe designAudit object is FLAT: slot names are its direct keys; do not nest it under a role name.'
         try:
             result = self._invoke(
                 run_id=self._run_id,

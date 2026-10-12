@@ -140,6 +140,13 @@ def test_valid_audit_returns_empty_list():
     assert validate_design_audit(make_data_claim(), full_audit(), []) == []
 
 
+def test_role_wrapper_still_requires_every_exact_configuration_quote():
+    verdict = {'designAudit': {'data': full_audit()['designAudit']}}
+    assert validate_design_audit(make_data_claim(), verdict, []) == []
+    verdict['designAudit']['data']['split']['quote'] = 'invented split'
+    assert validate_design_audit(make_data_claim(), verdict, []) == ['split']
+
+
 def test_whitespace_and_reported_self_cannot_supply_proposed_configuration():
     verdict = full_audit()
     verdict['designAudit']['split']['quote'] = ' '
