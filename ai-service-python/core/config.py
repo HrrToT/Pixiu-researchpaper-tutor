@@ -92,6 +92,7 @@ class Settings(BaseSettings):
     # ── Rate limiter (15-3) ────────────────────────────────────────────
     pixiu_rate_limit_enabled: bool = True
     pixiu_rate_limit_global_rpm: int = 60
+    pixiu_rate_limit_status_rpm: int = 240
     pixiu_rate_limit_agent_rpm: int = 10
     pixiu_rate_limit_chat_rpm: int = 30
     pixiu_rate_limit_translate_rpm: int = 10
