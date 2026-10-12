@@ -120,6 +120,15 @@ CREATE TABLE IF NOT EXISTS deep_research_outbox_v2 (
 CREATE INDEX IF NOT EXISTS deep_research_outbox_run_v2
   ON deep_research_outbox_v2 (run_id, seq);
 
+CREATE TABLE IF NOT EXISTS deep_research_actions_v2 (
+  run_id TEXT NOT NULL,
+  request_id TEXT NOT NULL,
+  fingerprint TEXT NOT NULL,
+  status TEXT NOT NULL,
+  result TEXT,
+  PRIMARY KEY(run_id, request_id)
+);
+
 CREATE TABLE IF NOT EXISTS deep_research_publications_v2 (
   publication_id TEXT PRIMARY KEY,
   dedup_key TEXT NOT NULL UNIQUE,
@@ -1063,8 +1072,45 @@ class DeepResearchRepository:
 
     # ── maintenance ───────────────────────────────────────────────────────────
 
+    def claim_action(self, run_id: str, request_id: str, fingerprint: str) -> tuple[dict, bool]:
+        """Persist action intent before mutating a run or dispatching work.
+
+        Pending intent on recovery is uncertain, never a license to reissue.
+        Replay returns the stored receipt; a different payload cannot reuse it.
+        """
+        if not request_id or len(request_id) > 256 or not fingerprint:
+            raise ValueError("Action requires bounded request identity")
+        with closing(sqlite3.connect(self.db_path, timeout=30)) as conn:
+            conn.execute("BEGIN IMMEDIATE")
+            self_row = conn.execute("SELECT 1 FROM deep_research_runs_v2 WHERE run_id=?", (run_id,)).fetchone()
+            if self_row is None:
+                raise RunNotFoundError(run_id)
+            row = conn.execute("SELECT fingerprint,status,result FROM deep_research_actions_v2 WHERE run_id=? AND request_id=?", (run_id, request_id)).fetchone()
+            if row:
+                if row[0] != fingerprint:
+                    raise IdempotencyConflictError(run_id, request_id)
+                return {"status": row[1], "result": json.loads(row[2]) if row[2] else None}, False
+            conn.execute("INSERT INTO deep_research_actions_v2 VALUES (?,?,?,'pending',NULL)", (run_id, request_id, fingerprint))
+            conn.commit()
+            return {"status": "pending", "result": None}, True
+
+    def finish_action(self, run_id: str, request_id: str, result: dict, *, status: str = "completed") -> dict:
+        if status not in {"completed", "failed"}:
+            raise ValueError("Invalid action receipt status")
+        with closing(sqlite3.connect(self.db_path, timeout=30)) as conn:
+            conn.execute("BEGIN IMMEDIATE")
+            row = conn.execute("SELECT status,result FROM deep_research_actions_v2 WHERE run_id=? AND request_id=?", (run_id, request_id)).fetchone()
+            if row is None:
+                raise RunNotFoundError(f"action:{request_id}")
+            if row[0] != "pending":
+                return json.loads(row[1])
+            conn.execute("UPDATE deep_research_actions_v2 SET status=?,result=? WHERE run_id=? AND request_id=?", (status, json.dumps(result, ensure_ascii=False), run_id, request_id))
+            conn.commit()
+            return result
+
     def clear(self) -> None:
         with closing(sqlite3.connect(self.db_path, timeout=30)) as conn:
+            conn.execute("DELETE FROM deep_research_actions_v2")
             conn.execute("DELETE FROM deep_research_runs_v2")
             conn.execute("DELETE FROM deep_research_calls_v2")
             conn.execute("DELETE FROM deep_research_outbox_v2")

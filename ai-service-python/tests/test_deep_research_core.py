@@ -1006,3 +1006,16 @@ def test_reservation_rejects_negative_cost_and_expired_deadline(repo: DeepResear
     with pytest.raises(BudgetExhaustedError):
         repo.reserve_call(**args)
     assert not repo.list_calls("deadline")
+
+
+def test_action_receipt_is_durable_and_payload_bound(repo: DeepResearchRepository):
+    repo.create_run({"runId": "action-run"})
+    receipt, first = repo.claim_action("action-run", "request", "pause-payload")
+    assert first and receipt["status"] == "pending"
+    restarted = DeepResearchRepository(repo.db_path)
+    assert restarted.claim_action("action-run", "request", "pause-payload") == (receipt, False)
+    with pytest.raises(IdempotencyConflictError):
+        restarted.claim_action("action-run", "request", "cancel-payload")
+    result = {"runId": "action-run", "status": "paused"}
+    restarted.finish_action("action-run", "request", result)
+    assert restarted.claim_action("action-run", "request", "pause-payload")[0]["result"] == result
