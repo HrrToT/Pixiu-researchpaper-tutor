@@ -62,6 +62,8 @@ def test_budget_exhaustion_keeps_gaps_without_retry():
     result = audit_final_answer('r', 'q', PLAN, CLAIMS, [], invoke, json.loads)
     invoke.assert_called_once()
     assert result['status'] == 'budget_exhausted' and len(result['gaps']) == 2
+    assert all(g['missingEvidence'] == '回答完整性尚未核验' for g in result['gaps'])
+    assert all(g['auditStatus'] == 'budget_exhausted' for g in result['gaps'])
 
 
 def test_unknown_model_outcome_propagates_without_retry():

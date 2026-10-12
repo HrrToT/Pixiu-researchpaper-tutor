@@ -154,7 +154,7 @@ def test_new_snapshot_inherits_only_unchanged_authorized_source_versions(tmp_pat
     facade.shutdown()
 
 
-def test_small_verifier_batches_do_not_expose_other_claims_evidence():
+def test_small_answer_shares_call_but_preserves_each_claims_evidence_scope():
     prompts = []
     def invoke(**kwargs):
         prompt = kwargs['prompt']
@@ -163,12 +163,15 @@ def test_small_verifier_batches_do_not_expose_other_claims_evidence():
         assert kwargs['use_reserve'] is True
         return {'content': json.dumps([{'claimId': c['claimId'], 'status': 'passed'} for c in claims])}
     claims = [{'claimId': f'c{i}', 'text': f'Claim {i}', 'evidenceRefs': [f'e{i}']} for i in range(3)]
-    evidence = [{'evidenceId': f'e{i}', 'quote': f'UNIQUE_SOURCE_{i}'} for i in range(3)]
+    evidence = [{'evidenceId': f'e{i}', 'quote': f'UNIQUE_SOURCE_{i}'} for i in range(4)]
     result = BudgetedSemanticChecker(invoke, 'r')(claims, evidence)
-    assert len(result) == len(prompts) == 3
-    for i, prompt in enumerate(prompts):
-        assert f'UNIQUE_SOURCE_{i}' in prompt
-        assert all(f'UNIQUE_SOURCE_{j}' not in prompt for j in range(3) if j != i)
+    assert len(result) == 3 and len(prompts) == 1
+    prompt = prompts[0]
+    supplied = json.loads(prompt.split('Claims:\n', 1)[1].split('\n\nEvidence:', 1)[0])
+    assert [c['evidenceRefs'] for c in supplied] == [['e0'], ['e1'], ['e2']]
+    assert 'For each claim use ONLY its own evidenceRefs' in prompt
+    assert all(f'UNIQUE_SOURCE_{i}' in prompt for i in range(3))
+    assert 'UNIQUE_SOURCE_3' not in prompt
 
 
 def test_large_report_has_at_most_three_verification_batches():
@@ -181,6 +184,29 @@ def test_large_report_has_at_most_three_verification_batches():
     result = BudgetedSemanticChecker(invoke, 'r')(claims, [])
     assert len(batches) == 3
     assert [v['claimId'] for v in result] == [c['claimId'] for c in claims]
+
+
+def test_short_answer_and_revision_leave_room_for_both_coverage_audits():
+    from services.deep_research.final_coverage import audit_final_answer
+    reserved = ['synthesize']
+    def invoke(*args, **kwargs):
+        node = args[1] if args else kwargs['node']
+        assert kwargs['use_reserve']
+        reserved.append(node)
+        assert len(reserved) <= 5, 'standard reserve must cover the complete short-answer lifecycle'
+        if node == 'verify_answer_coverage':
+            return {'content': '[]'}
+        return {'content': json.dumps([{'claimId': c['claimId'], 'status': 'passed'} for c in claims])}
+    claims = [{'claimId': f'c{i}', 'text': 'A supported short statement', 'kind': 'reported',
+               'evidenceRefs': []} for i in range(2)]
+    checker = BudgetedSemanticChecker(invoke, 'r')
+    assert len(checker(claims, [])) == 2
+    plan = [{'obligations': [{'obligationId': 'o', 'question': 'Explain the mechanism'}]}]
+    audit_final_answer('r', 'Explain', plan, claims, [], invoke, json.loads)
+    assert len(checker.check_revisions(claims, [], [])) == 2
+    audit_final_answer('r', 'Explain', plan, claims, [], invoke, json.loads)
+    assert reserved == ['synthesize', 'verify', 'verify_answer_coverage',
+                        'verify_repair', 'verify_answer_coverage']
 
 
 def test_verifier_receives_literal_context_and_source_scope():

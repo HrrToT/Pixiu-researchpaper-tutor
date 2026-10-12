@@ -32,7 +32,18 @@
   "realCase": {
     "caseId": "D7",
     "attempt": 2,
-    "status": "not_submitted"
+    "status": "completed",
+    "runId": "dr_run_27339cf8b23755d09988cf214afaa0a9",
+    "outcome": "partial",
+    "manualAcceptance": "failed",
+    "modelCalls": 15,
+    "tokens": 45837,
+    "elapsedSeconds": 146.756,
+    "findings": [
+      "Both revised claims passed factual verification",
+      "Mechanism still omits direction, distance and activation details",
+      "Final answer coverage was not checked because all 5 reserved calls were consumed"
+    ]
   },
   "remaining": [
     "D3 needs executable settings and scoped metrics; scientific verification truncation unresolved",
@@ -41,5 +52,20 @@
   "publicationAndRecoveryChecks": {
     "passed": 30,
     "seconds": 8.52
+  },
+  "runtimeLoaded": true,
+  "health": {
+    "httpStatus": 200,
+    "rag": "ok",
+    "grobid": "ok"
+  },
+  "codeCommit": "051a619",
+  "followup": {
+    "shortFactBatching": "Up to 3 factual claims share a verification request; individual evidenceRefs remain binding",
+    "uncheckedCoverage": "Budget exhaustion or malformed audit is shown as unverified completeness, not confirmed omission",
+    "offlineTests": 48,
+    "runtimeLoaded": false,
+    "realModelRetest": false,
+    "remaining": "Evidence selection and repair citation coverage still need correction before another diagnostic run"
   }
 }

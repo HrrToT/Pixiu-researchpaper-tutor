@@ -503,7 +503,9 @@ class BudgetedSemanticChecker:
         science = [c for c in proposals if c not in config]
         proposal_batches = ([(config, 'verify_design_config')] if config else []) + ([(science, node)] if science else [])
         fact_slots = max(1, 3 - len(proposal_batches))
-        size = max(1, (len(facts) + fact_slots - 1) // fact_slots)
+        # Keep small answers in one request, leaving reserve for the final
+        # coverage audit after a revision. Per-claim evidenceRefs remain binding.
+        size = max(3, (len(facts) + fact_slots - 1) // fact_slots)
         batches = proposal_batches + [(facts[i:i + size], node) for i in range(0, len(facts), size)]
         verdicts = []
         for batch, batch_node in batches:

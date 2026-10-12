@@ -68,6 +68,9 @@ accepted claims. Bindings must quote the final answer, never the source passages
             status = 'budget_exhausted'
     gaps = answer_coverage_gaps(audit_plan, claims, verdicts)
     for gap in gaps:
+        if status in {'budget_exhausted', 'invalid_response'}:
+            gap['missingEvidence'] = '回答完整性尚未核验'
+            gap['auditStatus'] = status
         if identity and gap.get('obligationId') == identity:
             gap['wholeQuestion'] = True
     return {'status': status, 'verdicts': verdicts if isinstance(verdicts, list) else [], 'gaps': gaps}
