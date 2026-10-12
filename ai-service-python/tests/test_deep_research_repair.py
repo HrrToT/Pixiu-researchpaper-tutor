@@ -45,6 +45,29 @@ def test_repair_stops_when_normal_budget_is_exhausted():
     assert repair_rejected({'claims': [original]}, {'rejected': [{'claimId': 'c'}]}, [], '', exhausted, json.loads) == []
 
 
+def test_repair_short_ids_restore_claim_and_cell_identity_without_mutating_input():
+    original = {'claimId': 'c', 'kind': 'reported', 'text': 'FPS 200', 'evidenceRefs': ['ev_full_identity']}
+    evidence = [{'evidenceId': 'ev_full_identity', 'quote': 'FPS 200'}]
+    def invoke(prompt):
+        assert '"evidenceRefs": ["E1"]' in prompt
+        assert '"value":"200"' in prompt
+        return {'content': json.dumps([{**original, 'evidenceRefs': ['E1'], 'tableBindings': [
+            {'evidenceId': 'E1', 'rowNumber': 1, 'groupIndex': 0, 'metric': 'FPS', 'value': '200'}]}])}
+    revised = repair_rejected({'claims': [original]}, {'rejected': [{'claimId': 'c'}]}, evidence, '', invoke, json.loads)
+    assert revised[0]['evidenceRefs'] == ['ev_full_identity']
+    assert revised[0]['tableBindings'][0]['evidenceId'] == 'ev_full_identity'
+    assert original == {'claimId': 'c', 'kind': 'reported', 'text': 'FPS 200', 'evidenceRefs': ['ev_full_identity']}
+    assert evidence == [{'evidenceId': 'ev_full_identity', 'quote': 'FPS 200'}]
+
+
+def test_repair_rejects_length_finish_even_if_partial_content_is_valid_json():
+    original = {'claimId': 'c', 'kind': 'reported', 'text': 'partial', 'evidenceRefs': []}
+    def must_not_parse(_):
+        raise AssertionError('truncated provider output must not be salvaged')
+    assert repair_rejected({'claims': [original]}, {'rejected': [{'claimId': 'c'}]}, [], '',
+        lambda p: {'content': json.dumps([original]), 'finishReason': 'length'}, must_not_parse) == []
+
+
 def test_proposal_cannot_bypass_logical_verification():
     claim = {'claimId': 'p', 'kind': 'proposal', 'text': 'PSNR和LPIPS使用相同损失方向', 'evidenceRefs': []}
     result = verify_claims([claim], [], lambda c, e: [{'claimId': 'p', 'status': 'failed', 'reason': 'metric direction'}])
