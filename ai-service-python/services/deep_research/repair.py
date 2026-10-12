@@ -60,6 +60,8 @@ Each revised claim uses {{"claimId":"original ID","kind":"original kind","text":
 Keep claimId, kind and any designRole. Use only that claim's allowed evidence IDs; never turn a fact
 into a proposal to evade checking. Preserve conditions needed for the narrower assertion.
 Use the supplied short evidence IDs (E1, E2, ...) in both evidenceRefs and tableBindings.
+Those IDs are internal routing keys. Never print E1/E2 or raw evidence IDs in
+the claim text; use natural prose and let the interface render citation links.
 Reported table numbers require tableBindings from tableData, using exactly these JSON keys:
 {{"evidenceId":"E1","rowNumber":1,"groupIndex":0,"metric":"FPS","value":"200"}}
 This is schema only, not evidence. Copy actual rowNumber, zero-based groupIndex, metric and value.

@@ -284,3 +284,16 @@ def test_read_balances_papers_before_legacy_source_prefix_and_prefers_new_passag
     chosen = [s['workId'] for s in repo.require_run('read')['state']['readResults']]
     assert chosen.count('A') == chosen.count('B') == 6
     assert read.call_count == 12
+
+
+def test_prompt_packing_preserves_other_quotes_before_long_context():
+    from services.deep_research.selection import bounded_evidence_rows
+    from copy import deepcopy
+    rows = [{'evidenceId': str(i), 'quote': f'Complete quote {i}.',
+             'sourceContext': {'before': 'x' * 1000, 'after': ''}} for i in range(2)]
+    original = deepcopy(rows)
+    packed = bounded_evidence_rows(rows, max_bytes=400)
+    assert [r['quote'] for r in packed] == [r['quote'] for r in rows]
+    assert all(r['contextOmitted'] and r['sourceContext'] == {} for r in packed)
+    assert len(json.dumps(packed, ensure_ascii=False).encode('utf-8')) <= 400
+    assert rows == original

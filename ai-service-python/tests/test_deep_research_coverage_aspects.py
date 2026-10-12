@@ -52,3 +52,13 @@ def test_source_basis_may_use_exact_antecedent_context_but_not_invent_it():
 
 def test_ambiguous_duplicate_evidence_identity_cannot_ground_aspect():
     assert invalid_coverage_aspects([VERDICT], CLAIMS, ROWS * 2, []) == ['o']
+
+
+def test_synthetic_request_check_can_reuse_factual_obligations_without_source_duplication():
+    v = deepcopy(VERDICT)
+    v['bindings'] = v['aspects'][0]['bindings']
+    v['aspects'][0]['basis'] = {'kind': 'request', 'excerpt': 'Explain the mechanism'}
+    claims = [{**CLAIMS[0], 'kind': 'reported'}]
+    assert invalid_coverage_aspects([v], claims, ROWS, ['Explain the mechanism']) == ['o']
+    assert invalid_coverage_aspects([v], claims, ROWS, ['Explain the mechanism'],
+                                    request_only_obligations=['o']) == []

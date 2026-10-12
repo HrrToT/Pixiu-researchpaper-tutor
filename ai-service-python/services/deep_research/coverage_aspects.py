@@ -2,7 +2,7 @@
 from services.deep_research.answer_coverage import _bindings_supported, _known_claims_by_id
 
 
-def invalid_coverage_aspects(verdicts, claims, evidence_rows, questions):
+def invalid_coverage_aspects(verdicts, claims, evidence_rows, questions, *, request_only_obligations=()):
     """A covered verdict requires explicit, grounded, individually covered aspects.
 
     This cannot prove that the model found every essential aspect. It prevents
@@ -62,7 +62,8 @@ def invalid_coverage_aspects(verdicts, claims, evidence_rows, questions):
             and isinstance(known.get(b['claimId']), dict)
             and known[b['claimId']].get('kind') in {'reported', 'inference'}
             for b in bindings) if isinstance(bindings, list) else False
-        if evidence_rows and factual and not source_based:
+        if (evidence_rows and factual and not source_based
+                and verdict.get('obligationId') not in request_only_obligations):
             valid = False
         if not valid:
             invalid.append(verdict.get('obligationId'))

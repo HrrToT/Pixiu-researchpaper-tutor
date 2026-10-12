@@ -90,7 +90,8 @@ accepted claims. Bindings must quote the final answer, never the source passages
                             for a in v['aspects']) else v for v in verdicts]
                 from services.deep_research.coverage_aspects import invalid_coverage_aspects
                 invalid_aspects = invalid_coverage_aspects(verdicts, claims, rows,
-                    [question, *[o.get('question', '') for p in audit_plan for o in p.get('obligations', [])]])
+                    [question, *[o.get('question', '') for p in audit_plan for o in p.get('obligations', [])]],
+                    request_only_obligations=[identity] if identity else [])
                 if invalid_aspects:
                     verdicts = [{**v, 'status': 'partial'} if isinstance(v, dict)
                         and v.get('obligationId') in invalid_aspects else v for v in verdicts]

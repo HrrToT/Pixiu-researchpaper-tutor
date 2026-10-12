@@ -32,12 +32,29 @@ def surrounding_context(evidence, window=240):
 
 
 def bounded_evidence_rows(rows, max_bytes=14000):
-    """Select complete rows in the caller's balanced order; never clip a quote."""
+    """Preserve complete quotes before spending remaining space on context.
+
+    A long context must not silently displace another candidate's whole quote.
+    Omitted context is explicit; downstream checks must not resolve an unknown
+    subject by inventing the missing antecedent.
+    """
     selected = []
+    contexts = []
     for row in rows:
-        candidate = [*selected, row]
+        context = row.get('sourceContext')
+        compact = {**row, 'sourceContext': {}, 'contextOmitted': True} if context else dict(row)
+        candidate = [*selected, compact]
         if len(json.dumps(candidate, ensure_ascii=False).encode('utf-8')) <= max_bytes:
-            selected.append(row)
+            selected.append(compact)
+            contexts.append(context)
+    for i, context in enumerate(contexts):
+        if not context:
+            continue
+        expanded = {**selected[i], 'sourceContext': context}
+        expanded.pop('contextOmitted', None)
+        candidate = [*selected[:i], expanded, *selected[i + 1:]]
+        if len(json.dumps(candidate, ensure_ascii=False).encode('utf-8')) <= max_bytes:
+            selected[i] = expanded
     return selected
 
 
