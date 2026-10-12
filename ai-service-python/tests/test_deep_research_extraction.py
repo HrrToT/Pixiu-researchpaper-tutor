@@ -209,6 +209,25 @@ def test_prompt_sampling_covers_other_papers_and_obligations_before_repeats():
     assert balanced_sample([], lambda item: item, 10) == []
 
 
+def test_comparison_sampling_keeps_each_papers_own_verified_rows_before_baselines():
+    from copy import deepcopy
+    from services.deep_research.selection import comparison_evidence_order, balanced_sample
+    def row(work, method):
+        return {'sourceWorkId': work, 'obligationIds': ['metrics'],
+                'quote': f'Table row 1: {method} | 30',
+                'tableData': {'groups': [['Dataset', ['FPS']]], 'rows': [[1, method, ['30']]]}}
+    candidates = [row('a', f'Baseline{i}') for i in range(25)] + [row('b', 'Other'), row('a', 'Ours-30K'), row('b', 'ExampleNet*')]
+    original = deepcopy(candidates)
+    ordered = comparison_evidence_order(candidates, {'a': 'Some paper', 'b': 'ExampleNet: Efficient rendering'})
+    chosen = balanced_sample(ordered, lambda e: (e['sourceWorkId'], tuple(e['obligationIds'])), 2)
+    assert [e['tableData']['rows'][0][1] for e in chosen] == ['Ours-30K', 'ExampleNet*']
+    assert candidates == original and len(ordered) == len(candidates)
+    unverified = row('a', 'Ours-30K')
+    unverified['quote'] = 'Only a table caption is visible.'
+    prose = {'sourceWorkId': 'b', 'quote': 'Actual measured setting.'}
+    assert comparison_evidence_order([prose, unverified], {})[0] is prose
+
+
 def test_context_windows_and_utf8_packing_keep_complete_quotes():
     from services.deep_research.selection import surrounding_context, bounded_evidence_rows, balanced_sample
     quote = 'Result: 30 FPS.'
