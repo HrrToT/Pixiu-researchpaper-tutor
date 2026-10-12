@@ -12,8 +12,12 @@ export default function ResearchReportText({ text, sources = [], onJumpToSource 
     if (!href?.startsWith('#research-evidence-')) return <a href={href} target="_blank" rel="noopener noreferrer">{children}</a>;
     const evidenceId = href.slice('#research-evidence-'.length);
     const source = sources.find(value => value.evidenceIds?.includes(evidenceId) || value.evidenceId === evidenceId);
+    const exact = source?.evidenceQuotes?.[evidenceId];
+    const resolved = exact?.quote ? { ...source, evidenceId, quote: exact.quote, location: exact.location,
+      page: exact.location?.page ?? source.page } : source && (source.evidenceId === evidenceId || source.evidenceIds?.length === 1)
+      ? source : { unavailable: true };
     return <button type="button" className="critique-inline-citation" aria-label={`查看引用 ${children} 的依据`}
-      onClick={event => { trigger.current = event.currentTarget; setSelected(source || { unavailable: true }); }}>{children}</button>;
+      onClick={event => { trigger.current = event.currentTarget; setSelected(resolved); }}>{children}</button>;
   } }), [sources]);
   const external = selected?.sourceKind === 'arxiv' || selected?.sourceKind === 'external';
   return <>

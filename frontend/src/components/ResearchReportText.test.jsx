@@ -27,4 +27,25 @@ describe('research citations', () => {
     expect(screen.getByText(/这条引用暂不能恢复/)).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: '查看论文原文' })).not.toBeInTheDocument();
   });
+  it('selects the exact quotation when one source owns several evidence rows', () => {
+    const jump = vi.fn();
+    render(<ResearchReportText text="结论 [1](#research-evidence-ours)" sources={[
+      { pdfId: 'p', evidenceIds: ['baseline', 'ours'], quote: 'Baseline row', page: 6,
+        evidenceQuotes: { baseline: { quote: 'Baseline row', location: { page: 6 } },
+          ours: { quote: 'Exact author row', location: { page: 7 } } } },
+    ]} onJumpToSource={jump} />);
+    fireEvent.click(screen.getByRole('button', { name: /查看引用/ }));
+    expect(screen.getByText('Exact author row')).toBeInTheDocument();
+    expect(screen.queryByText('Baseline row')).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: '查看论文原文' }));
+    expect(jump).toHaveBeenCalledWith(expect.objectContaining({ evidenceId: 'ours', pageIndex: 6 }));
+  });
+  it('does not substitute the first quotation for ambiguous historical evidence', () => {
+    render(<ResearchReportText text="结论 [1](#research-evidence-ours)" sources={[
+      { pdfId: 'p', evidenceIds: ['baseline', 'ours'], quote: 'Wrong first row' },
+    ]} />);
+    fireEvent.click(screen.getByRole('button', { name: /查看引用/ }));
+    expect(screen.getByText(/这条引用暂不能恢复/)).toBeInTheDocument();
+    expect(screen.queryByText('Wrong first row')).not.toBeInTheDocument();
+  });
 });

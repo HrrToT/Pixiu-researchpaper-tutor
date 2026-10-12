@@ -464,6 +464,8 @@ class ResearchFacade:
                 "title": source.get("title") or source.get("workId"),
                 "quote": matched[0].get("quote", "") if matched else "",
                 "page": location.get("page"), "location": location,
+                "evidenceQuotes": {item['evidenceId']: {'quote': item.get('quote', ''),
+                    'location': item.get('location') or {}} for item in matched},
                 "evidenceIds": [item["evidenceId"] for item in matched]})
         return sources[max(0, offset):max(0, offset) + min(max(0, limit), 50)]
     
