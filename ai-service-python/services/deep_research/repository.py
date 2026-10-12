@@ -574,7 +574,13 @@ class DeepResearchRepository:
                         run_record["budget"] = _apply_reservation(
                             run_record.get("budget") or {}, delta, use_reserve=use_reserve
                         )
+                        from services.deep_research.contracts import check_exploration_headroom
                         exhausted = check_budget_limits(run_record["budget"])
+                        if not exhausted and not use_reserve and int(delta.get('modelCalls') or 0) > 0:
+                            headroom = check_exploration_headroom(run_record["budget"], normalized_node)
+                            if headroom:
+                                from services.deep_research.contracts import BudgetExhaustedError
+                                raise BudgetExhaustedError(*headroom)
                         if exhausted:
                             _safe_rollback(conn)
                             from services.deep_research.contracts import BudgetExhaustedError

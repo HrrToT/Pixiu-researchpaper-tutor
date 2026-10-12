@@ -990,7 +990,11 @@ Do NOT invent measured results or pretend unsupported conclusions are verified."
                       "not a measurement from paper B. Keep each numerical tuple with its own dataset and protocol. " \
                       "Do not transfer an abstract's resolution or speed claim onto a main-table row without evidence. " \
                       "Prefer a supported qualitative tradeoff over a long list of numbers whose conditions cannot " \
-                      "fit the requested length. If one paper lacks evidence, record that gap instead of inventing its claim."
+                      "fit the requested length. If one paper lacks evidence, record that gap instead of inventing its claim. " \
+                      "A cross-paper judgment must cite the supplied evidence from both papers that supports it. " \
+                      "Distinguish documented conflicting conditions from conditions not established by the selected evidence. " \
+                      "Unknown hardware or resolution is not proof that hardware or resolution differs. " \
+                      "Discuss every requested tradeoff (including quality) before adding secondary ablation examples."
         
         if output_kind == "experiment_design":
             from services.deep_research.experimental_reasoning import FACTORIAL_REFERENCE
@@ -1070,10 +1074,20 @@ def make_verify_node(
                 "initialVerification": verification_result}}, expected_revision=None)
             from services.deep_research.repair import repair_rejected
             from services.deep_research.contracts import BudgetExhaustedError
+            def invoke_repair(prompt):
+                try:
+                    response = llm_invoke(run_id, "repair_claims", prompt,
+                        {"max_tokens": 3000, "temperature": 0.0})
+                except BudgetExhaustedError:
+                    repo_update(run_id, lambda r: {**r, "state": {**r.get("state", {}),
+                        "repairStatus": "skipped_budget"}}, expected_revision=None)
+                    raise
+                repo_update(run_id, lambda r: {**r, "state": {**r.get("state", {}),
+                    "repairStatus": "response_received"}}, expected_revision=None)
+                return response
             try:
                 revised = repair_rejected(report_body, verification_result, evidence, record.get("question", ""),
-                    lambda prompt: llm_invoke(run_id, "repair_claims", prompt,
-                        {"max_tokens": 3000, "temperature": 0.0}), _safe_parse_json)
+                    invoke_repair, _safe_parse_json)
                 if revised:
                     checked = verify_claims_fn(revised, evidence, budgeted_semantic)
                     repaired_ids = {row["claimId"] for row in checked.get("accepted", [])}

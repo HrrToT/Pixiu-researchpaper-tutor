@@ -52,6 +52,25 @@ def test_proposal_cannot_bypass_logical_verification():
     assert not verify_claims([claim], [])['accepted']
 
 
+@pytest.mark.parametrize('exhausted,expected', [(True, 'skipped_budget'), (False, 'response_received')])
+def test_repair_state_distinguishes_budget_skip_from_model_response(exhausted, expected):
+    from services.deep_research.graph import make_verify_node
+    original = {'claimId': 'c', 'kind': 'reported', 'text': 'bad', 'evidenceRefs': []}
+    record = {'state': {'reportBody': {'claims': [original]}, 'evidence': []}}
+    def update(run, change, **kwargs):
+        nonlocal record
+        record = change(record)
+        return record
+    def invoke(*args, **kwargs):
+        if exhausted:
+            raise BudgetExhaustedError('modelCalls', 13, 14)
+        return {'content': '[]'}
+    verify = lambda *args: {'accepted': [], 'rejected': [{'claimId': 'c', 'reason': 'unsupported'}]}
+    make_verify_node(verify, None, update, llm_invoke=invoke)({'run_id': 'r'})
+    assert record['state']['repairStatus'] == expected
+    assert record['state']['verifiedReport']['verificationSummary'] == {'accepted': 0, 'rejected': 1}
+
+
 def test_capacity_rejects_before_clock_starts_and_does_not_queue_executor(tmp_path):
     repo = DeepResearchRepository(str(tmp_path / 'runs.sqlite3'))
     repo.initialize()

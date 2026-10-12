@@ -502,3 +502,23 @@ def check_budget_limits(budget: dict[str, Any]) -> str | None:
         if used > limit_int:
             return counter
     return None
+
+
+def check_exploration_headroom(budget: dict[str, Any], node: str) -> tuple[str, int, int] | None:
+    """Keep one normal call and its token allowance for bounded claim repair.
+
+    Applied to the proposed reservation, inside the repository transaction.
+    This is an earlier exploration stop, never an increase to the total budget.
+    """
+    if node not in {'extract', 'assess_relevance'}:
+        return None
+    calls = max(0, int(budget.get('maxModelCalls') or 0) - int(budget.get('reserveModelCalls') or 0))
+    if calls > 1 and int(budget.get('modelCalls') or 0) > calls - 1:
+        return ('explorationModelCalls', calls - 1, int(budget.get('modelCalls') or 0))
+    tokens = max(0, int(budget.get('maxTokens') or 0) - int(budget.get('reserveTokens') or 0))
+    # 8192 output tokens plus bounded repair input; small custom budgets keep
+    # at least half their normal pool available to evidence gathering.
+    headroom = min(12288, tokens // 2)
+    if tokens and int(budget.get('normalTokens') or 0) > tokens - headroom:
+        return ('explorationTokens', tokens - headroom, int(budget.get('normalTokens') or 0))
+    return None
