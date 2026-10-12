@@ -36,6 +36,23 @@ def test_batch_saves_calls_without_mixing_paper_locations_or_hashes(tmp_path):
     assert invoke.call_count == 1
 
 
+def test_extraction_carries_only_parser_cells_in_the_selected_quote(tmp_path):
+    repo, reads = setup(tmp_path)
+    data = {'groups': [['Room', ['FPS', 'Mem']]],
+            'rows': [[1, 'Baseline', ['30', '400MB']], [2, 'Ours*', ['60', '100MB']]]}
+    quoted = 'Table row 2: Ours* | 60 | 100MB'
+    text = 'Room benchmark. Table row 1: Baseline | 30 | 400MB\n' + quoted
+    reads[0].update(tableData=data, pages=[{'text': text}])
+    repo.update_run('r', lambda r: {**r, 'state': {**r['state'], 'readResults': [reads[0]]}})
+    invoke = Mock(return_value={'content': json.dumps([{'sourceId': 's0', 'quote': quoted,
+                                                       'obligationIds': ['o'], 'conditions': {}}])})
+    make_batched_extract_node(invoke, make_evidence, lambda *args: True, repo.update_run)({'run_id': 'r'})
+    ev = repo.require_run('r')['state']['evidence'][0]
+    assert ev['tableData'] == {'groups': data['groups'], 'rows': [data['rows'][1]]}
+    prompt_rows = json.loads(invoke.call_args.args[2].split('Passages:\n')[1])
+    assert prompt_rows[0]['tableData'] == data
+
+
 def test_foreign_identity_wrong_quote_and_revoked_passage_never_become_evidence(tmp_path):
     repo, reads = setup(tmp_path)
     invoke = Mock(return_value={'content': json.dumps([

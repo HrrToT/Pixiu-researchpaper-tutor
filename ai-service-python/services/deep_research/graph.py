@@ -408,6 +408,7 @@ def make_acquire_node(
                                 "contentHash": item.get("contentHash") or hashlib.sha256(item.get("text", "").encode()).hexdigest(),
                                 "accessLevel": item.get("accessLevel", "fulltext"),
                                 "text": item.get("text", ""),
+                                "tableData": item.get("tableData"),
                                 "location": item.get("location", {"chunkIndex": item.get("chunkIndex", 0)}),
                                 "obligationIds": [obl_id] if obl_id else [],
                                 "sourceKind": "task_paper",
@@ -530,6 +531,7 @@ def make_read_node(
                     "accessLevel": content.get("accessLevel", source_meta.get("accessLevel", "unknown")) if content else source_meta.get("accessLevel", "unknown"),
                     "pages": pages,
                     "text": source_meta.get("text", ""),  # Original chunk text
+                    "tableData": source_meta.get("tableData"),
                     "location": source_meta.get("location", {}),
                     "sourceKind": source_meta.get("sourceKind", "local"),
                     "title": source_meta.get("title", ""),
@@ -921,6 +923,7 @@ def make_synthesize_node(
                 "source": ev.get("sourceWorkId", ""),
                 "sourceTitle": paper_titles.get(ev.get("sourceWorkId"), ''),
                 "sourceContext": surrounding_context(ev),
+                "tableData": ev.get("tableData"),
                 "location": ev.get("location", {}),
                 "conditions": ev.get("conditions", {}),
                 "obligations": ev.get("obligationIds", []),

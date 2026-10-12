@@ -511,6 +511,7 @@ class BudgetedSemanticChecker:
         evidence_map = {e["evidenceId"]: {"quote": e.get("quote", ""), "conditions": e.get("conditions", {}),
                         "sourceContext": surrounding_context(e), "location": e.get("location", {}),
                         "sourceTitle": e.get("sourceTitle", ""),
+                        "tableData": e.get("tableData"),
                         "workId": e.get("sourceWorkId"), "versionId": e.get("sourceVersionId"),
                         "accessLevel": e.get("accessLevel")} for e in evidence if e["evidenceId"] in referenced}
         evidence_text = json.dumps(evidence_map, ensure_ascii=False)

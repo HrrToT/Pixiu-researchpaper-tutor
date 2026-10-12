@@ -88,7 +88,9 @@ def _indexed_source(item):
             location.setdefault(key, value)
     if metadata.get('table_column_mapping_unverified') is True:
         location['tableColumnMappingUnverified'] = True
-    return {**item, 'location': location, 'title': item.get('title') or metadata.get('title', ''),
+    from services.deep_research.table_evidence import visible_table_packet
+    packet = visible_table_packet(metadata.get('table_verified_data'), item.get('text', ''))
+    return {**item, 'tableData': packet, 'location': location, 'title': item.get('title') or metadata.get('title', ''),
             'retrievalMode': 'indexed_hybrid'}
 
 

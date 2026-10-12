@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+from services.deep_research.table_evidence import attach_table_packet, visible_table_packet
 
 
 def make_batched_extract_node(invoke, make_evidence, validate, update, *, batch_size=3):
@@ -34,6 +35,7 @@ def make_batched_extract_node(invoke, make_evidence, validate, update, *, batch_
         for start in range(0, len(pending), batch_size):
             batch = pending[start:start + batch_size]
             passages = [{"sourceId": s["sourceId"], "location": location, "text": text,
+                         "tableData": visible_table_packet(s.get('tableData'), text),
                          "obligations": [{"obligationId": oid, "question": obligations[oid]} for oid in
                              (s.get("obligationIds") or list(obligations)) if oid in obligations]}
                         for s, location, text in batch]
@@ -81,6 +83,7 @@ Passages:\n""" + json.dumps(passages, ensure_ascii=False)
                     continue
                 ev.update(sourceKind=source.get("sourceKind", "local"), sourceId=sid,
                           sourceTitle=source.get("title", ""), sourceUrl=source.get("url", ""))
+                attach_table_packet(ev, source)
                 if ev["evidenceId"] not in existing:
                     existing.add(ev["evidenceId"])
                     evidence.append(ev)
