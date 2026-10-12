@@ -123,3 +123,35 @@ def test_generic_pass_without_specific_configuration_audit_is_rejected():
     result = verify_claims([c], [], checker)
     assert not result['accepted']
     assert 'split' in result['rejected'][0]['detail']
+
+
+def test_measurement_scope_is_read_after_brief_and_used_in_prompt_and_audit():
+    scope = {'domains': None}
+    text = 'Negate PSNR, average held-out views within each scene, then average paired scene losses.'
+    c = {'claimId': 'm', 'kind': 'proposal', 'designRole': 'metrics', 'text': text, 'evidenceRefs': []}
+    prompts = []
+    def invoke(**kwargs):
+        prompts.append(kwargs['prompt'])
+        return {'content': json.dumps([{'claimId': 'm', 'status': 'passed', 'designAudit': {
+            'quality_protocol': {'claimId': 'm', 'quote': text}}}])}
+    checker = BudgetedSemanticChecker(invoke, 'r', metric_domains=lambda: scope['domains'])
+    scope['domains'] = ['quality']
+    assert verify_claims([c], [], checker)['accepted']
+    assert 'speed_protocol' not in prompts[-1] and 'storage_protocol' not in prompts[-1]
+    scope['domains'] = ['quality', 'speed']
+    result = verify_claims([c], [], checker)
+    assert not result['accepted']
+    assert 'speed_protocol' in result['rejected'][0]['detail']
+
+
+def test_brief_grounds_metric_scope_in_original_question():
+    from services.deep_research.graph import make_resolve_brief_node
+    record = {'question': '如何分离图像质量损失？', 'status': 'running', 'state': {}}
+    def update(rid, fn, **kwargs):
+        nonlocal record
+        record = fn(record)
+        return record
+    invoke = lambda *args: {'content': json.dumps({'outputKind': 'experiment_design',
+        'measurementScope': [{'domain': 'quality', 'requestExcerpt': '图像质量'}]})}
+    make_resolve_brief_node(invoke, update)({'run_id': 'r'})
+    assert record['state']['metricDomains'] == ['quality']

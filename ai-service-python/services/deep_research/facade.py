@@ -242,7 +242,7 @@ class ResearchFacade:
             "materials": materials,
             "materialSnapshot": material_snapshot,  # Immutable Java snapshot
             "contextMaterials": (material_snapshot or {}).get("contextMaterials", []) if isinstance(material_snapshot, dict) else [],
-            "promptVersion": "dr-v2.20261013.16",
+            "promptVersion": "dr-v2.20261013.17",
             "retrievalVersion": "task-pdf-metric-tables.3",
             "focusPaperIds": request.get("focusPaperIds", []),
             "sourcePolicy": request.get("sourcePolicy", {"mode": "task_only"}),
@@ -1006,7 +1006,8 @@ class ResearchFacade:
             complete_call_fn=self._complete_tracked_call,
         )
         
-        checker = BudgetedSemanticChecker(invoker, run_id)
+        checker = BudgetedSemanticChecker(invoker, run_id,
+            metric_domains=lambda: self._repo.require_run(run_id).get('state', {}).get('metricDomains'))
         return checker
     
     def _default_scope_validator(self) -> Callable[[str, str], bool]:

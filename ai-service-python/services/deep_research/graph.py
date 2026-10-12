@@ -141,6 +141,10 @@ Return JSON with:
 - assumptions: list of inferred conditions
 - clarification: string if ambiguous, empty if clear
 - constraints: any explicit limitations
+- measurementScope: for experiment_design, list of {{domain: quality|speed|storage, requestExcerpt: exact words from Question}}
+  for EVERY measurement domain explicitly requested. Never infer these from paper titles.
+  Use [] when the measurement target is unspecified. Quality-only experiments do not
+  require speed or storage protocols; include those domains when the user asks for them.
 
 Clarify only consequential ambiguity about the research target or permitted materials.
 An experiment-design request is a proposed, unexecuted plan: unknown numeric settings can be
@@ -172,9 +176,11 @@ preferences or for facts that can be read from the selected papers. Never widen 
         clarification = parsed.get("clarification", "")
         
         brief_id = f"brief_{run_id}"
+        from services.deep_research.metric_scope import grounded_metric_domains
         update_payload = {
             "briefId": brief_id,
             "outputKind": output_kind,
+            "metricDomains": grounded_metric_domains(parsed.get('measurementScope'), question),
             "assumptions": parsed.get("assumptions", []),
             "constraints": parsed.get("constraints", ""),
             "title": parsed.get("title", "")[:40] if isinstance(parsed.get("title"), str) else "",
@@ -976,6 +982,10 @@ Do not combine facts from different papers, benchmarks or protocols into one cla
 Define a common loss orientation before formulas, distinguish conditional and averaged effects, and
 separate the paper's actual distillation from any proposed truncation-only diagnostic experiment.
 Write in concise Chinese. All proposals/hypotheses must also be claims with a claimId and a section.
+Explain technical relationships in understandable Chinese; an English placeholder
+such as an input's generic name is not a substitute for explaining its components.
+When contextOmitted is true, do not invent a missing antecedent or attribute a
+baseline's statement to the paper's proposed method.
 Use kind reported, inference, hypothesis or proposal. A proposal cannot state an existing result as fact.
 Follow the user's scope and length. State conflicting conditions beside the relevant conclusion.
 Every requested aspect must be answered or have a specific evidence limitation. In a
@@ -1011,7 +1021,7 @@ Do NOT invent measured results or pretend unsupported conclusions are verified."
                       'Cover every role with a separate, complete claim. These are proposals, not facts about the paper. ' \
                       'Do not replace a concrete choice with “keep everything fixed”. If no specific split/budget ' \
                       'is documented, choose and label a reproducible proposed protocol, not an invented paper setting.\n' \
-                      + design_requirements()
+                      + design_requirements(brief_state.get('metricDomains'))
         result = llm_invoke(run_id, "synthesize", prompt, {"max_tokens": 4000, "temperature": 0.2}, use_reserve=True)
         
         if hasattr(result, "content"):

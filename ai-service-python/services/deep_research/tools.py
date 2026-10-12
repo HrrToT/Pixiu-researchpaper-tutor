@@ -477,9 +477,11 @@ class BudgetedSemanticChecker:
         self,
         llm_invoker: TrackedLLMInvoker,
         run_id: str,
+        metric_domains=None,
     ):
         self._invoke = llm_invoker
         self._run_id = run_id
+        self._metric_domains = metric_domains
     
     def __call__(self, claims: list[dict], evidence: list[dict]) -> list[dict]:
         return self._check(claims, evidence, [], 'verify')
@@ -519,6 +521,7 @@ class BudgetedSemanticChecker:
 
     def _check_batch(self, claims: list[dict], evidence: list[dict], proposal_context: list[dict], *, node='verify') -> list[dict]:
         from services.deep_research.selection import surrounding_context
+        metric_domains = self._metric_domains() if callable(self._metric_domains) else self._metric_domains
         # Format claims and evidence for checking
         claims_text = json.dumps([{
             "claimId": c.get("claimId"),
@@ -618,8 +621,8 @@ Do not require an unexecuted experiment to have results. Do not judge context cl
                 prompt += '\nFor every designRole, verify BOTH logical correctness AND fulfillment of its entire ' \
                           'requirement below. A role label, heading or vague promise is not fulfillment. Fail the ' \
                           'specific claim if its budget, split, procedure or decision criterion is unspecified. ' \
-                          'Use the other target claims for shared definitions but not as factual evidence.\n' + design_requirements()
-                from services.deep_research.design_audit import REQUIRED
+                          'Use the other target claims for shared definitions but not as factual evidence.\n' + design_requirements(metric_domains)
+                from services.deep_research.design_audit import required_design_slots
                 prompt += '\nFor roles in this checklist, every passed verdict MUST include designAudit. ' \
                           'Each required slot maps to {"claimId":"ID of a target or context proposal", ' \
                           '"quote":"exact wording of the concrete choice in its text or conditions"}. ' \
@@ -628,7 +631,7 @@ Do not require an unexecuted experiment to have results. Do not judge context cl
                           'concrete protocol. Do not invent choices in the audit; proposals must already ' \
                           'state them. Judge whether the quoted choice fulfills the requirement, not just ' \
                           'whether relevant words occur. Shared definitions are permitted, paper facts ' \
-                          'are not an experiment configuration. Required slots:\n' + json.dumps(REQUIRED)
+                          'are not an experiment configuration. Required slots:\n' + json.dumps(required_design_slots(metric_domains))
                 prompt += '\nThe designAudit object is FLAT: slot names are its direct keys; do not nest it under a role name.'
         try:
             result = self._invoke(
@@ -656,7 +659,7 @@ Do not require an unexecuted experiment to have results. Do not judge context cl
             for verdict in parsed:
                 if verdict['status'] != 'passed':
                     continue
-                missing = validate_design_audit(by_id[verdict['claimId']], verdict, [*claims, *proposal_context])
+                missing = validate_design_audit(by_id[verdict['claimId']], verdict, [*claims, *proposal_context], metric_domains)
                 if missing:
                     verdict['status'] = 'failed'
                     verdict['reason'] = '实验方案缺少可核对的具体配置：' + ', '.join(missing)

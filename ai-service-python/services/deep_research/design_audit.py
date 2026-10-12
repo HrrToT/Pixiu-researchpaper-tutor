@@ -13,11 +13,17 @@ REQUIRED = {
 _ALLOWED_REFERENCE_KINDS = ("proposal", "suggestion", "hypothesis")
 
 
-def validate_design_audit(claim, verdict, context):
+def required_design_slots(metric_domains=None):
+    from services.deep_research.metric_scope import metric_protocol_requirements
+    return {**REQUIRED, 'metrics': tuple(f'{domain}_protocol'
+            for domain in metric_protocol_requirements(metric_domains))}
+
+
+def validate_design_audit(claim, verdict, context, metric_domains=None):
     role = claim.get("designRole") if isinstance(claim, dict) else None
     if not isinstance(role, str):
         return []
-    slots = REQUIRED.get(role)
+    slots = required_design_slots(metric_domains).get(role)
     if slots is None:
         return []
 

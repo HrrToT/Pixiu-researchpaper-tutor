@@ -184,7 +184,8 @@ def initialize_runtime():
 
         def _make_semantic_checker(self, run_id):
             from services.deep_research.tools import BudgetedSemanticChecker
-            return BudgetedSemanticChecker(self._make_llm_invoker(run_id), run_id)
+            return BudgetedSemanticChecker(self._make_llm_invoker(run_id), run_id,
+                metric_domains=lambda: self._repo.require_run(run_id).get('state', {}).get('metricDomains'))
 
         def _get_make_evidence(self, run_id=None):
             from services.deep_research.local_sources import LocalTaskRetriever
