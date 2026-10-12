@@ -17,7 +17,7 @@ def parse_pdf(body: bytes, max_pages: int) -> list[dict]:
 def main():
     try:
         max_pages, max_bytes = int(sys.argv[1]), int(sys.argv[2])
-        if not 1 <= max_pages <= 100 or not 1 <= max_bytes <= 8 * 1024 * 1024:
+        if not 1 <= max_pages <= 100 or not 1 <= max_bytes <= 32 * 1024 * 1024:
             return 2
         body = sys.stdin.buffer.read(max_bytes + 1)
         if len(body) > max_bytes:

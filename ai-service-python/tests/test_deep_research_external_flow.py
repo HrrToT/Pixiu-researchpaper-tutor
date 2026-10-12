@@ -37,7 +37,7 @@ class AcademicFixture:
         self.fetches.append(arxiv_id)
         if self.fail:
             raise OSError("offline")
-        return {"accessLevel": "fulltext", "contentHash": "b" * 64,
+        return {"accessLevel": "fulltext", "contentHash": "b" * 64, "url": "https://arxiv.org/pdf/" + arxiv_id,
                 "pages": [{"page": 4, "text": "The public method reaches 95% accuracy on this fixed benchmark."}]}
 
 
@@ -51,6 +51,7 @@ def test_external_calls_are_separate_cached_and_literal_metadata_preserved(repo)
     assert len(fixture.discoveries) == len(fixture.fetches) == 1
     assert sources[0]["accessLevel"] == "fulltext" and sources[0]["location"]["page"] == 4
     assert sources[0]["sourceKind"] == "arxiv" and sources[0]["obligationIds"] == ["o"]
+    assert sources[0]["url"] == "https://arxiv.org/abs/2601.00001v1"
     assert {call["tool"] for call in repo.list_calls("r")} == {"external_discover", "external_fulltext"}
     budget = repo.require_run("r")["budget"]
     assert budget["externalSearches"] == budget["fulltextFetches"] == 1
@@ -106,6 +107,21 @@ def test_task_only_policy_never_constructs_external_client(repo):
     assert not repo.list_calls("r")
 
 
+def test_malformed_report_is_failure_and_cannot_publish_inconclusive_result(repo):
+    from services.deep_research.graph import make_synthesize_node, make_verify_node, make_publish_node
+    from unittest.mock import Mock
+    invoke = Mock(return_value={"content": "", "usage": {"output_tokens": 4000}})
+    state = {"run_id": "r", "execution_epoch": 1}
+    state.update(make_synthesize_node(invoke, repo.update_run)(state))
+    assert state["error_code"] == "invalid_synthesis_response"
+    verify, publish = Mock(), Mock()
+    assert make_verify_node(verify, None, repo.update_run)(state) == {}
+    assert make_publish_node(publish, repo.update_run)(state) == {}
+    verify.assert_not_called()
+    publish.assert_not_called()
+    assert not repo.require_run("r").get("publication", {}).get("published")
+
+
 @pytest.mark.parametrize("counter,limit", [("externalSearches", 6), ("fulltextFetches", 6)])
 def test_network_limits_are_atomic_reservations(repo, counter, limit):
     for index in range(limit):
@@ -121,6 +137,28 @@ def test_zero_delta_settlement_cannot_replace_known_result(repo):
     with pytest.raises(SettlementAlreadyError):
         repo.complete_call(call["callId"], status="failed", result={"stable": False})
     assert repo.list_calls("r")[0]["result"] == {"stable": True}
+    with pytest.raises(SettlementAlreadyError):
+        repo.complete_call(call["callId"], status="failed", result={"stable": False}, allow_late=True)
+    assert repo.list_calls("r")[0]["result"] == {"stable": True}
+
+
+def test_plan_edit_replaces_stale_query_and_cannot_expand_materials(repo):
+    from services.deep_research.facade import ResearchFacade
+    from services.deep_research.contracts import DeepResearchError
+    plan = [{"itemId": "p", "question": "original", "searchQuery": "old topic", "obligations": [
+        {"obligationId": "o", "question": "original", "searchQuery": "old topic", "requiredSources": ["paper"]}]}]
+    repo.update_run("r", lambda r: {**r, "materials": [{"materialId": "paper"}], "state": {"plan": plan}})
+    paused = repo.transition("r", "paused")
+    facade = ResearchFacade(repo, lambda **kwargs: None, scope_validator=lambda *args: True)
+    edited = [{**plan[0], "question": "new goal", "obligations": [{**plan[0]["obligations"][0], "question": "new goal"}]}]
+    result = facade._action_plan("r", paused["runRevision"], {"plan": edited})
+    assert result["planRevision"] == 1
+    assert "searchQuery" not in result["plan"][0]
+    assert "searchQuery" not in result["plan"][0]["obligations"][0]
+    edited[0]["obligations"][0]["requiredSources"] = ["foreign"]
+    with pytest.raises(DeepResearchError, match="材料范围"):
+        facade._action_plan("r", result["runRevision"], {"plan": edited})
+    facade.shutdown()
 
 
 def test_resume_revision_is_checked_inside_execution_transaction(repo):

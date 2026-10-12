@@ -133,7 +133,7 @@ class TrackedRetriever:
                     **item,
                     "sourceId": source_id,
                     "sourceWorkId": item.get("pdfId", pdf_id),
-                    "contentHash": hashlib.sha256(item.get("text", "").encode()).hexdigest(),
+                    "contentHash": item.get("contentHash") or hashlib.sha256(item.get("text", "").encode()).hexdigest(),
                 })
             
             # Complete call with result
@@ -298,7 +298,8 @@ class TrackedLLMInvoker:
         )
         
         try:
-            result = self._client.invoke(request)
+            client = self._client.for_node(node) if callable(getattr(type(self._client), "for_node", None)) else self._client
+            result = client.invoke(request)
         except LLMProviderError as exc:
             # LLMProviderError with no status_code means unknown (timeout/connection)
             # Rejected HTTP status means failed

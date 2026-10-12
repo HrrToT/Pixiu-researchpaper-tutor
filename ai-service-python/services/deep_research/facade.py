@@ -250,7 +250,11 @@ class ResearchFacade:
             "status": record.get("status", STATUS_QUEUED),
             "outcome": record.get("outcome", OUTCOME_NONE),
             "errorCode": record.get("errorCode", ""),
-            "error": (record.get("error") or {}).get("message", ""),
+            "error": (record.get("error") or {}).get("message", "") or {
+                "invalid_plan_response": "研究计划未能完整生成，本次已停止。可重新发起研究；这会产生新的模型调用。",
+                "invalid_brief_response": "研究目标未能正确解析，本次已停止。请简化问题后重新研究。",
+                "invalid_synthesis_response": "报告未能完整生成，本次已停止；已取得的资料仍保留。可补查继续，这会产生新的模型调用。",
+            }.get(record.get("errorCode", ""), ""),
             "title": record.get("question", "学术研究"),
             "activity": _build_activity_summary(record),
             "summary": (record.get("result") or {}).get("summary", ""),
@@ -264,6 +268,7 @@ class ResearchFacade:
             "parentRunId": record.get("parentRunId", ""),
             # Plan metadata for UI
             "plan": state.get("plan", []),
+            "planRevision": state.get("planRevision", 0),
             # Clarification state
             "clarification": {
                 "needed": state.get("clarificationNeeded", False),
@@ -593,6 +598,18 @@ class ResearchFacade:
                 raise IllegalStatusTransitionError(record["status"], STATUS_PAUSED)
             
             state = record.get("state", {})
+            old_items = {item["itemId"]: item for item in state.get("plan", [])}
+            allowed = {material["materialId"] for material in record.get("materials", [])}
+            for item in new_plan:
+                old = old_items.get(item["itemId"], {})
+                if item["question"] != old.get("question"):
+                    item.pop("searchQuery", None)
+                old_obligations = {value["obligationId"]: value for value in old.get("obligations", [])}
+                for obligation in item["obligations"]:
+                    if obligation["question"] != old_obligations.get(obligation["obligationId"], {}).get("question"):
+                        obligation.pop("searchQuery", None)
+                    if not set(obligation.get("requiredSources", [])).issubset(allowed):
+                        raise DeepResearchError("invalid_plan", "计划不能增加本轮材料范围")
             state["plan"] = new_plan
             state["planRevision"] = int(state.get("planRevision", 0)) + 1
             
@@ -767,6 +784,7 @@ class ResearchFacade:
                 "clarification_needed": False,
                 "clarification_question": "",
                 "requery_count": 0,
+                "max_requery_rounds": 4 if record.get("budget", {}).get("profile") == "extended" else 2,
                 "budget_exhausted": False,
                 "source_policy_mode": record.get("sourcePolicy", {}).get("mode", "task_only"),
                 "started_at": __import__("time").monotonic(),

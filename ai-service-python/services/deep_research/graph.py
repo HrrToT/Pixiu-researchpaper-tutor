@@ -66,6 +66,7 @@ class GraphState(TypedDict, total=False):
     clarification_needed: bool
     clarification_question: str
     requery_count: int
+    max_requery_rounds: int
     requery_queries: list[dict[str, Any]]
     budget_exhausted: bool
     started_at: float  # Monotonic timestamp for deadline calculation
@@ -208,7 +209,7 @@ Output kind: {output_kind}
 Materials: {json.dumps([{'id': m.get('materialId'), 'title': m.get('title', '')} for m in materials[:10]], ensure_ascii=False)}
 Primary papers: {json.dumps(record.get('focusPaperIds', []))}
 
-Return JSON array of up to 4 plan items, each with:
+Return a compact JSON array of 1-4 plan items (prefer 1-2 for a short answer), each with:
 - itemId: unique identifier
 - question: sub-question to answer
 - obligations: array of {{obligationId, question, requiredSources, searchQuery}}
@@ -218,10 +219,11 @@ Return JSON array of up to 4 plan items, each with:
 
 Ensure DAG structure (no cycles). Each obligation must specify which sources to check.
 Preserve the user's exact limits. If only one sub-question is requested, create exactly one item.
+Use short questions and at most two obligations per item. Do not repeat the same obligation.
 
 Return a JSON ARRAY of plan items, NOT an object with items field."""
         
-        result = llm_invoke(run_id, "plan", prompt, {"max_tokens": 2000, "temperature": 0.1})
+        result = llm_invoke(run_id, "plan", prompt, {"max_tokens": 5000, "temperature": 0.1})
         
         # Handle LLMResult dataclass - extract content attribute
         if hasattr(result, "content"):
@@ -581,7 +583,9 @@ Text (page {page.get('page', '?')}): {text[:3000]}
 
 Obligations (with IDs): {json.dumps(obl_context[:5], ensure_ascii=False)}
 
-Return JSON array of evidence items with:
+Return a JSON array of at most THREE self-contained, relevant evidence items. Return [] if none.
+Keep complete sentences with their conditions; omit fragmentary labels, dangling numbers and unrelated captions.
+Each item has:
 - quote: exact literal text from source
 - location: {{page, section, chunk}}
 - obligationIds: which obligation IDs this supports (must match provided IDs)
@@ -602,7 +606,7 @@ Return JSON array of evidence items with:
                 if not isinstance(parsed, list):
                     continue
                 
-                for ev in parsed:
+                for ev in parsed[:3]:
                     if not isinstance(ev, dict):
                         continue
                     quote = ev.get("quote", "")
@@ -627,7 +631,8 @@ Return JSON array of evidence items with:
                             original=text,
                             location={**read_result.get("location", {}), **{k: v for k, v in page.items() if k != "text"}},
                             obligation_ids=ev_obl_ids,
-                            conditions=ev.get("conditions") if isinstance(ev.get("conditions"), dict) else {},
+                            conditions=ev.get("conditions") if isinstance(ev.get("conditions"), dict) else
+                                {"context": ev["conditions"]} if isinstance(ev.get("conditions"), str) and ev["conditions"] else {},
                         )
                         
                         # Preserve source metadata on evidence
@@ -806,9 +811,12 @@ Only mark relevant=true if the evidence directly bears on the obligation questio
                         "missingSource": missing_source,
                     })
         
+        missing = {gap.get("obligationId") for gap in gaps}
+        progress_plan = [{**item, "status": "gap" if any(obl["obligationId"] in missing for obl in item.get("obligations", [])) else "completed"}
+                         for item in plan]
         repo_update(
             run_id,
-            lambda r: {**r, "state": {**(r.get("state") or {}), "gaps": gaps, "stopReason": stop_reason}},
+            lambda r: {**r, "state": {**(r.get("state") or {}), "plan": progress_plan, "gaps": gaps, "stopReason": stop_reason}},
             expected_revision=None,
         )
         
@@ -896,8 +904,8 @@ Do NOT invent measured results or pretend unsupported conclusions are verified."
             content = str(result)
         
         parsed = _safe_parse_json(content)
-        if not isinstance(parsed, dict):
-            parsed = {}
+        if not isinstance(parsed, dict) or not isinstance(parsed.get("claims"), list):
+            return {"error_code": "invalid_synthesis_response"}
         
         report_version_id = f"report_{run_id}_v1"
         
@@ -929,6 +937,8 @@ def make_verify_node(
     def node(state: GraphState) -> dict:
         run_id = state.get("run_id", "")
         
+        if state.get("error_code"):
+            return {}
         record = repo_update(run_id, lambda r: {**r, "stage": "verify"}, expected_revision=None)
         report_body = record.get("state", {}).get("reportBody", {})
         evidence = record.get("state", {}).get("evidence", [])
@@ -984,6 +994,8 @@ def make_publish_node(
     
     def node(state: GraphState) -> dict:
         run_id = state.get("run_id", "")
+        if state.get("error_code"):
+            return {}
         report_version_id = state.get("report_version_id") or f"report_{run_id}_v1"
         execution_epoch = state.get("execution_epoch", 0)
         
@@ -1095,7 +1107,7 @@ def route_after_assess(state: GraphState) -> str:
     if stop_reason in ("max_requery", "too_many_gaps", "no_new_evidence"):
         return "synthesize"
     # Only requery if we have changed queries and haven't exceeded bound
-    if requery_count <= 2 and requery_queries:
+    if requery_count <= state.get("max_requery_rounds", 2) and requery_queries:
         return "acquire"
     return "synthesize"
 

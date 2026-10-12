@@ -686,7 +686,7 @@ class DeepResearchRepository:
                         normalized, int(reservation_token or 0), int(record.get("reservationToken") or 0)
                     )
                 # Settlement guard: reject if already settled and delta provided
-                if record.get("settled") and not allow_late:
+                if record.get("settled") or record.get("status") in {CALL_STATUS_SUCCEEDED, CALL_STATUS_FAILED}:
                     _safe_rollback(conn)
                     raise SettlementAlreadyError(normalized)
                 run_row = conn.execute(

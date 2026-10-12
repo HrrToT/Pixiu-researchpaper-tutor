@@ -47,6 +47,7 @@ def test_scope_failure_prevents_provider_send_and_deadline_caps_request():
     request = provider.invoke.call_args.args[0]
     assert 0 < request.timeout_seconds <= 10
     assert request.messages[0]["role"] == "system"
+    assert request.extra_body["thinking"] == {"type": "disabled"}
     store.require_run.return_value["startedAt"] = (datetime.now(UTC) - timedelta(seconds=361)).isoformat()
     provider.reset_mock()
     with pytest.raises(DeepResearchError, match="预算"):
@@ -64,6 +65,22 @@ def test_reader_returns_persisted_location_and_does_not_fetch():
     assert result["contentHash"] == "h"
     with pytest.raises(DeepResearchError, match="未保存"):
         read_acquired_source(store, "run", "missing")
+
+
+def test_routine_model_route_retains_scope_checks_and_complex_model():
+    store, reasoning, routine = repo(), Mock(), Mock()
+    validate = Mock(return_value=True)
+    client = ScopedModelClient(store, validate, lambda: reasoning, lambda: routine).for_run("run")
+    for node in ("resolve_brief", "extract", "assess_relevance"):
+        client.for_node(node).invoke(LLMRequest(prompt="public evidence"))
+    assert routine.invoke.call_count == 3
+    reasoning.invoke.assert_not_called()
+    client.for_node("synthesize").invoke(LLMRequest(prompt="reasoning"))
+    assert reasoning.invoke.call_count == 1
+    validate.return_value = False
+    with pytest.raises(DeepResearchError):
+        client.for_node("extract").invoke(LLMRequest(prompt="revoked"))
+    assert routine.invoke.call_count == 3
 
 
 def test_disabled_runtime_does_not_create_store(tmp_path, monkeypatch):

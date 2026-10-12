@@ -57,7 +57,8 @@ class AcademicAcquisition:
                     continue
                 seen.add(identity)
                 fulltext = (adapter.fetch_fulltext(run_id, candidate["arxivId"]) or {}) if client.policy.allow_fulltext else {}
-                material = {**candidate, **fulltext}
+                # Public identity is the canonical abstract page; a fetch URL is transport metadata.
+                material = {**candidate, **fulltext, "url": candidate.get("url", "")}
                 pages = material.get("pages") or [{"text": material.get("abstract", "")}]
                 for page in _select_pages(pages, query):
                     text = page.get("text", "")
