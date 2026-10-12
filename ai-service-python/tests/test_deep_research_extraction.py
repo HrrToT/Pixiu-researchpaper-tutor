@@ -257,8 +257,8 @@ def test_comparison_sampling_keeps_each_papers_own_verified_rows_before_baseline
 def test_context_windows_and_utf8_packing_keep_complete_quotes():
     from services.deep_research.selection import surrounding_context, bounded_evidence_rows, balanced_sample
     quote = 'Result: 30 FPS.'
-    context = surrounding_context({'quote': quote, 'sourceContext': '前' * 1000 + quote + '后' * 1000})
-    assert context == {'before': '前' * 240, 'after': '后' * 240, 'truncated': True}
+    context = surrounding_context({'quote': quote, 'sourceContext': '前' * 3000 + quote + '后' * 3000})
+    assert context == {'before': '前' * 1000, 'after': '后' * 1000, 'truncated': True}
     rows = [{'source': p, 'quote': quote, 'sourceContext': context} for p in ['A'] * 15 + ['B'] * 15]
     selected = bounded_evidence_rows(balanced_sample(rows, lambda e: e['source'], 20))
     assert {e['source'] for e in selected} == {'A', 'B'}
