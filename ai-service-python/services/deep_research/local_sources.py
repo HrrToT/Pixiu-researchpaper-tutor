@@ -23,6 +23,7 @@ class LocalTaskRetriever:
         self.origin, self.get = origin.rstrip('/'), get
         self.parse = parse or _parse_pdf
         self.pages = {}
+        self.index_tables = {}
 
     def __call__(self, query, pdf_id, *, limit=5):
         if not self.validate(self.run_id, pdf_id):
@@ -33,7 +34,23 @@ class LocalTaskRetriever:
                 from services.research_executor import retrieve_current_paper_evidence
                 items = retrieve_current_paper_evidence(query, pdf_id, limit=limit, allow_query_rewrite=False)
                 if items:
-                    return [_indexed_source(item) for item in items]
+                    indexed = [_indexed_source(item) for item in items]
+                    metrics = _requested_metrics(query)
+                    if metrics and limit > 1:
+                        from services.tools.retrieval_tools import get_rag
+                        from services.evidence_service import normalize_evidence_items
+                        if pdf_id not in self.index_tables:
+                            rag = get_rag()
+                            owned = rag.normalize_id(pdf_id)
+                            raw = rag.get_documents_by_metadata({'id': owned}, limit=400)
+                            # Recheck owner even if a backend ignores its metadata filter.
+                            raw = [row for row in raw if row.get('metadata', {}).get('id') == owned
+                                   and row.get('metadata', {}).get('table_verified_data')]
+                            normalized = normalize_evidence_items(raw, source_type='current_paper',
+                                pdf_id=owned, max_text_chars=2000)
+                            self.index_tables[pdf_id] = [_indexed_source(row) for row in normalized]
+                        indexed = _include_metric_tables(indexed, self.index_tables[pdf_id], query, metrics, limit)
+                    return indexed
             except (ImportError, RuntimeError, OSError):
                 pass
         record = self.repo.require_run(self.run_id)
@@ -70,6 +87,46 @@ class LocalTaskRetriever:
         scores = _bm25(query, [value['text'] for value in passages])
         ranked = sorted(zip(scores, passages), key=lambda value: -value[0])
         return [value for score, value in ranked[:min(max(int(limit), 0), 5)] if score > 0]
+
+
+def _requested_metrics(query):
+    aliases = {
+        'FPS': r'\bfps\b|rendering (?:speed|performance)|渲染速度|帧率',
+        'PSNR': r'\bpsnr\b', 'SSIM': r'\bssim\b', 'LPIPS': r'\blpips\b',
+        'SIZE': r'\b(?:storage|memory|size|compression)\b|存储|大小|压缩|显存',
+    }
+    return {metric for metric, pattern in aliases.items() if re.search(pattern, query, re.I)}
+
+
+def _include_metric_tables(indexed, tables, query, metrics, limit):
+    """Reserve at most two slots for relevant verified rows, keeping prose context.
+
+    This is retrieval only: neither table validity nor ranking establishes that
+    a measurement answers the question. Later relevance and claim checks remain.
+    """
+    ranked = []
+    scores = _bm25(query, [row.get('text', '') for row in tables])
+    for row, score in zip(tables, scores):
+        packet = row.get('tableData')
+        if not packet:
+            continue
+        headers = {m.upper() for _, group in packet['groups'] for m in group}
+        if headers & {'MEM', 'MEMORY', 'STORAGE'}:
+            headers.add('SIZE')
+        overlap = len(headers & metrics)
+        if not overlap:
+            continue
+        own_result = any(re.match(r'^ours(?:\b|_)', method, re.I) for _, method, _ in packet['rows'])
+        ranked.append((overlap, own_result, score, row))
+    ranked.sort(key=lambda item: item[:3], reverse=True)
+    chosen = [item[3] for item in ranked[:min(2, limit - 1)]]
+    if not chosen:
+        return indexed
+    ids = {row['sourceId'] for row in chosen}
+    # Keep the best original prose first. Do not spend an extra slot on a table
+    # already returned by hybrid retrieval; every source retains its identity.
+    rest = [row for row in indexed if row['sourceId'] not in ids]
+    return rest[:1] + chosen + rest[1:max(1, limit - len(chosen))]
 
 
 def _indexed_source(item):

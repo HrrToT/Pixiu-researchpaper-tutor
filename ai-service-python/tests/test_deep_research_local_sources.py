@@ -74,6 +74,55 @@ def test_indexed_locations_preserve_page_zero_and_table_uncertainty():
     assert 'page' not in _indexed_source({'metadata': {}})['location']
 
 
+def test_metric_retrieval_adds_owned_verified_tables_without_more_model_calls(monkeypatch):
+    import json
+    from services.tools import retrieval_tools
+    local, get, parse, validate = fixture(monkeypatch)
+    monkeypatch.setattr('services.deep_research.local_sources.importlib.util.find_spec', lambda name: object())
+    prose = [{'text': f'Experimental results and evaluation protocol {i}.',
+              'metadata': {'id': 'p', 'chunk_index': i, 'section_title': f'Section {i}'}} for i in range(5)]
+    def table(owner, chunk, method, value):
+        return {'text': f'Table row 1: {method} | {value} | 45MB', 'metadata': {
+            'id': owner, 'chunk_index': chunk, 'table_id': 't1', 'page': 8,
+            'table_verified_data': json.dumps({'groups': [['Scenes', ['FPS', 'Size']]],
+                'rows': [[1, method, [value, '45MB']]]})}}
+    rag = Mock()
+    rag.normalize_id.side_effect = lambda value: value
+    invalid = table('p', 12, 'Broken', '500')
+    invalid['text'] = 'Truncated unrelated text.'
+    rag.get_documents_by_metadata.return_value = [table('p', 10, 'Baseline', '120'),
+        table('p', 11, 'Ours', '230'), table('foreign', 99, 'Ours', '999'), invalid]
+    monkeypatch.setattr(retrieval_tools, 'get_rag', lambda: rag)
+    retrieve = Mock(return_value=prose)
+    monkeypatch.setattr(retrieval_tools, 'retrieve_fused_evidence', retrieve)
+    found = local('storage FPS experimental results', 'p', limit=5)
+    assert len(found) == 5
+    assert [row['chunkIndex'] for row in found] == [0, 11, 10, 1, 2]
+    assert len({row['sourceId'] for row in found}) == 5
+    assert all(row['pdfId'] == 'p' for row in found)
+    assert found[1]['tableData']['rows'][0][1] == 'Ours'
+    rag.get_documents_by_metadata.assert_called_once_with({'id': 'p'}, limit=400)
+    assert len(local('FPS', 'p', limit=2)) == 2
+    assert rag.get_documents_by_metadata.call_count == 1
+    retrieve.assert_called_with('FPS', top_k=8, filter_metadata={'id': 'p'}, allow_query_rewrite=False)
+    get.assert_not_called()
+    parse.assert_not_called()
+    validate.return_value = False
+    with pytest.raises(DeepResearchError):
+        local('FPS', 'p')
+
+
+def test_table_supplement_ignores_unrelated_metrics_and_deduplicates():
+    from services.deep_research.local_sources import _include_metric_tables, _requested_metrics
+    table = {'sourceId': 't', 'text': 'FPS results', 'tableData': {
+        'groups': [['Scenes', ['FPS']]], 'rows': [[1, 'Ours', ['30']]]}}
+    prose = {'sourceId': 'p', 'text': 'Evaluation protocol'}
+    assert not _requested_metrics('explain the architecture')
+    assert _include_metric_tables([prose], [table], 'SSIM', {'SSIM'}, 5) == [prose]
+    chosen = _include_metric_tables([prose, table], [table], 'FPS', {'FPS'}, 5)
+    assert chosen == [prose, table]
+
+
 def test_foreign_material_never_constructs_file_request(monkeypatch):
     local, get, _, _ = fixture(monkeypatch, valid=False)
     with pytest.raises(DeepResearchError):
