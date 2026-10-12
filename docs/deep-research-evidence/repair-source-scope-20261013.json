@@ -43,11 +43,31 @@
     "seconds": 61.51
   },
   "realRetest": {
-    "status": "not_started"
+    "caseId": "D7",
+    "attempt": 3,
+    "runId": "dr_run_a685a543bc5b51078556a5f71dc1d0d2",
+    "status": "completed",
+    "receipt": "tmp/dr-acceptance-receipts/D7-v3.json",
+    "serverOutcome": "complete",
+    "manualOutcome": "failed",
+    "modelCalls": 12,
+    "tokens": 43521,
+    "elapsedSeconds": 135.0,
+    "repairTriggered": false,
+    "findings": [
+      "Final completeness audit executed without reserve exhaustion",
+      "Answer still omits view distance and view-frustum activation",
+      "The uncertainty passage describes a limitation of the compared method; it does not establish the same limitation for Scaffold-GS",
+      "Automatic factual and coverage checks incorrectly accepted the compressed answer",
+      "New candidate expansion path remains offline-verified only because this run did not trigger repair"
+    ]
   },
   "remaining": [
+    "Replace coarse whole-claim checking with explicit subject attribution and essential-aspect evidence binding; no immediate blind rerun",
     "D7 content quality still requires a real verification",
     "D3 executable configuration and scoped metrics",
     "Independent held-out acceptance"
-  ]
+  ],
+  "codeCommit": "8eb3eba",
+  "runtimeLoaded": true
 }
