@@ -941,7 +941,7 @@ Section titles MUST be selected from {json.dumps(section_templates, ensure_ascii
 Each section's claimIds must reference actual claim IDs from the claims array.
 Do NOT include unchecked model prose - every factual statement must have a claimId.
 For experiment_design: include hypothesis, controls, variables, data+metrics, steps, confounders, decision criteria.
-Use at most 12 claims; combine the four groups into one clear table/claim rather than many repetitive items.
+Use at most {2 if requested_limit and requested_limit <= 300 else 3 if requested_limit else 12} claims in total. Combine related information; do not repeat it across sections.
 Define a common loss orientation before formulas, distinguish conditional and averaged effects, and
 separate the paper's actual distillation from any proposed truncation-only diagnostic experiment.
 Write in concise Chinese. All proposals/hypotheses must also be claims with a claimId and a section.
@@ -975,7 +975,8 @@ Do NOT invent measured results or pretend unsupported conclusions are verified."
         from services.deep_research.answer_constraints import compact_answer
         parsed = compact_answer(parsed, question,
             lambda prompt: llm_invoke(run_id, "synthesize_compact", prompt,
-                {"max_tokens": 2000, "temperature": 0.0}), _safe_parse_json)
+                {"max_tokens": 2000, "temperature": 0.0}), _safe_parse_json,
+            output_kind=output_kind, evidence=evidence)
         if parsed is None:
             return {"error_code": "invalid_synthesis_response"}
         

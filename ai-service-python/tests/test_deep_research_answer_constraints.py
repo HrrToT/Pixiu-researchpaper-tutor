@@ -52,3 +52,30 @@ def test_list_conditions_are_preserved_without_wasting_a_compaction_call():
     result = compact_answer(report, '300字以内', invoke, json.loads)
     assert result['claims'][0]['conditions'] == {'1': '仅摘要', '2': '未读取全文'}
     invoke.assert_not_called()
+
+
+def test_comparison_compression_keeps_each_paper_and_joint_judgment():
+    claims = [{'claimId': key, 'kind': kind, 'text': '长结论' * 100, 'evidenceRefs': refs}
+              for key, kind, refs in [('a', 'reported', ['ea']), ('extra', 'reported', ['ea']),
+                                      ('b', 'reported', ['eb']), ('joint', 'inference', ['ea', 'eb'])]]
+    evidence = [{'evidenceId': 'ea', 'sourceWorkId': 'A'}, {'evidenceId': 'eb', 'sourceWorkId': 'B'}]
+    patches = [{'claimId': key, 'text': text, 'conditions': {}} for key, text in
+               [('a', '甲论文报告压缩结果。'), ('b', '乙论文报告渲染结果。'), ('joint', '两篇的实验条件尚未对齐，不能直接拼接百分比。')]]
+    invoke = Mock(return_value={'content': json.dumps({'claims': patches})})
+    result = compact_answer({'claims': claims}, '200字以内', invoke, json.loads,
+                            output_kind='paper_comparison', evidence=evidence)
+    assert [c['claimId'] for c in result['claims']] == ['a', 'b', 'joint']
+    assert result['claims'][1]['evidenceRefs'] == ['eb']
+    assert 'extra' not in invoke.call_args.args[0]
+    invoke.return_value = {'content': json.dumps({'claims': patches[:1]})}
+    assert compact_answer({'claims': claims}, '200字以内', invoke, json.loads,
+                          output_kind='paper_comparison', evidence=evidence) is None
+
+
+def test_short_rewrite_cannot_reintroduce_omitted_or_duplicate_claims():
+    claims = [{'claimId': str(i), 'text': '背景' * 100, 'kind': 'reported', 'evidenceRefs': ['e']} for i in range(4)]
+    invoke = Mock(return_value={'content': json.dumps({'claims': [claims[3]]})})
+    assert compact_answer({'claims': claims}, '100字以内', invoke, json.loads) is None
+    patch = {'claimId': '0', 'text': '短结论'}
+    invoke.return_value = {'content': json.dumps({'claims': [patch, patch]})}
+    assert compact_answer({'claims': claims}, '100字以内', invoke, json.loads) is None

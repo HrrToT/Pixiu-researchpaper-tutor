@@ -32,34 +32,59 @@ def answer_character_count(report):
     return count
 
 
-def compact_answer(report, question, invoke, parse):
+def _core_claims(claims, limit, output_kind, evidence):
+    if output_kind != 'paper_comparison':
+        return claims[:2 if limit <= 300 else 4]
+    works = {e['evidenceId']: e.get('sourceWorkId') for e in evidence}
+    selected, covered, joint = [], set(), None
+    for claim in claims:
+        identities = {works[ref] for ref in claim.get('evidenceRefs', []) if works.get(ref)}
+        if len(identities) == 1 and not identities <= covered:
+            selected.append(claim)
+            covered.update(identities)
+        elif len(identities) > 1 and claim.get('kind') == 'inference' and joint is None:
+            joint = claim
+    if joint is not None:
+        selected.append(joint)
+    return selected or claims[:3]
+
+
+def compact_answer(report, question, invoke, parse, *, output_kind='', evidence=()):
     report = normalize_conditions(report)
     limit = requested_character_limit(question)
     if not limit or answer_character_count(report) <= limit:
         return report
-    # One bounded rewrite before verification. Every rewritten fact is checked later.
-    prompt = f'''Shorten this structured research answer to at most {limit} characters total
-across ALL claim text and conditions. Question: {question}
-Return at most {2 if limit <= 300 else 4} short claims that directly answer the user's question. You MAY DROP
-less important claims and their sections entirely. Keep necessary conditions and remove tangential numbers.
-For comparison, preserve a supported conclusion for EACH compared paper plus the comparability
-judgment. Do not drop one paper just to keep detailed numbers for another. Keep row/method labels exact.
-Use concise Chinese, embedding conditions in text when possible instead of repeating them.
-For claims you retain, keep their original claimId, kind and evidenceRefs. Do not add facts,
-references or new claims. Do NOT copy the original answer unchanged. Target {max(40, int(limit * .7))}
-characters so necessary conditions also fit the strict {limit} character maximum.
-Return ONLY JSON with sections and claims.
-Answer:\n{json.dumps(report, ensure_ascii=False)}'''
+    # Reduce the rewrite's scope, not its evidence: original references and kinds
+    # are restored by code and the rewritten claims are verified afterwards.
+    core = _core_claims(report['claims'], limit, output_kind, evidence)
+    target = max(15, int(limit * .7 / max(1, len(core))))
+    prompt = f'''用中文压缩以下核心回答。用户问题：{question}
+总共最多{limit}字，每条text与conditions合计尽量不超过{target}字。
+只返回JSON：{{"claims":[{{"claimId":"原ID","text":"短结论","conditions":{{}}}}]}}。
+不要返回引用、kind、章节或额外声明，系统保留原始身份并重新核验。
+保留论断必需的实验条件、方法标签和限定词；删去旁支数字和背景。
+把条件写入text即可，不要在conditions重复。不能新增事实。
+{'必须保留每个输入ID：它们分别代表各论文结论和跨论文可比性。' if output_kind == 'paper_comparison' else 'You MAY DROP 次要声明，但保留直接回答问题的判断。'}
+输入：{json.dumps([{key: c.get(key, {} if key == 'conditions' else '') for key in ('claimId', 'text', 'conditions')} for c in core], ensure_ascii=False)}'''
     result = invoke(prompt)
     compact = parse(result.get('content', '') if isinstance(result, dict) else result.content)
     if not isinstance(compact, dict) or not isinstance(compact.get('claims'), list) or not compact['claims']:
         return None
     compact = normalize_conditions(compact)
-    original = {c.get('claimId'): c for c in report['claims'] if isinstance(c, dict)}
+    original = {c.get('claimId'): c for c in core if isinstance(c, dict)}
+    seen = set()
     for claim in compact['claims']:
-        if not isinstance(claim, dict) or claim.get('claimId') not in original:
+        if not isinstance(claim, dict) or claim.get('claimId') not in original or claim.get('claimId') in seen:
             return None
+        seen.add(claim['claimId'])
         before = original[claim['claimId']]
-        if claim.get('kind') != before.get('kind') or claim.get('evidenceRefs') != before.get('evidenceRefs'):
+        if ('kind' in claim and claim['kind'] != before.get('kind')) or ('evidenceRefs' in claim and claim['evidenceRefs'] != before.get('evidenceRefs')):
             return None
+        merged = {**before, **claim}
+        claim.clear()
+        claim.update(merged)
+    if output_kind == 'paper_comparison' and seen != set(original):
+        return None
+    if 'sections' not in compact and 'sections' in report:
+        compact['sections'] = report['sections']
     return compact if answer_character_count(compact) <= limit else None
