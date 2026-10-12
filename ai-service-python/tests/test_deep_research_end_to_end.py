@@ -6,6 +6,8 @@ import hashlib
 import json
 import re
 import threading
+from dataclasses import replace
+from unittest.mock import Mock, patch
 
 from llm.provider import LLMResult, LLMUsage
 from services.deep_research.facade import ResearchFacade
@@ -142,6 +144,49 @@ def test_truncated_verification_fails_without_publishing_evidence_insufficiency(
         assert len(calls) == 1 and calls[0]['status'] == 'succeeded'
         assert sum(r.prompt.startswith('Verify these claims') for r in model.requests) == 1
     finally:
+        facade.shutdown()
+
+
+def test_absolute_provider_timeout_preserves_unknown_and_ignores_late_response(tmp_path):
+    from llm.client import DeepSeekLLM
+    release, closed = threading.Event(), threading.Event()
+    response = Mock()
+    response.close.side_effect = closed.set
+
+    def transport(*args, **kwargs):
+        assert release.wait(2)
+        return response
+
+    class TimedVerifier(FixtureModel):
+        def invoke(self, request):
+            if request.prompt.startswith('Verify these claims'):
+                self.requests.append(request)
+                return DeepSeekLLM(api_key='fixture', base_url='https://example.invalid').invoke(
+                    replace(request, timeout_seconds=0.03))
+            return super().invoke(request)
+
+    model = TimedVerifier()
+    repo, facade, _ = make_facade(tmp_path, model)
+    try:
+        record = create(facade)
+        rid = record['runId']
+        repo.begin_execution(rid)
+        with patch('llm.client.requests.post', side_effect=transport) as post:
+            facade._execute_graph(rid)
+            assert repo.require_run(rid)['status'] == 'paused'
+            assert repo.require_run(rid)['errorCode'] == 'unresolved_unknown'
+            calls = [c for c in repo.list_calls(rid) if c['node'] == 'verify']
+            assert len(calls) == 1 and calls[0]['status'] == 'unknown'
+            assert calls[0]['reservedTokens'] > 0
+            before = repo.require_run(rid)['budget'].copy()
+            release.set()
+            assert closed.wait(1)
+            assert repo.require_run(rid)['budget'] == before
+            assert not repo.list_outbox(rid)
+            assert [c for c in repo.list_calls(rid) if c['node'] == 'verify'][0]['status'] == 'unknown'
+            post.assert_called_once()
+    finally:
+        release.set()
         facade.shutdown()
 
 

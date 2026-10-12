@@ -159,7 +159,8 @@ class DeepSeekLLM:
             record_counter("llmCalls")
             record_counter("estimatedInputTokens", estimated_input_tokens)
             try:
-                response = requests.post(
+                from llm.deadline import call_with_deadline
+                response = call_with_deadline(lambda: requests.post(
                     f"{self.base_url}/chat/completions",
                     headers={
                         "Authorization": f"Bearer {api_key}",
@@ -167,8 +168,8 @@ class DeepSeekLLM:
                     },
                     json=payload,
                     timeout=timeout,
-                )
-            except requests.RequestException as error:
+                ), timeout)
+            except (requests.RequestException, TimeoutError) as error:
                 raise LLMProviderError(
                     "DeepSeek request failed.",
                     provider="deepseek",
