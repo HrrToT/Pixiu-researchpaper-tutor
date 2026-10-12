@@ -4,6 +4,13 @@ from unittest.mock import Mock
 from services.deep_research.answer_constraints import compact_answer, requested_character_limit
 
 
+def test_prompt_local_evidence_aliases_resolve_exactly_without_prefix_guessing():
+    from services.deep_research.answer_constraints import resolve_evidence_aliases
+    report = {'claims': [{'evidenceRefs': ['E1', 'ev_1234', 'E99']}]}
+    result = resolve_evidence_aliases(report, {'E1': 'ev_123456789abcdef'})
+    assert result['claims'][0]['evidenceRefs'] == ['ev_123456789abcdef', 'ev_1234', 'E99']
+
+
 def test_bounded_compaction_retains_claim_identity_before_reverification():
     claim = {'claimId': 'c', 'text': '很长的结论' * 30, 'kind': 'reported', 'evidenceRefs': ['e']}
     compact = {'sections': [], 'claims': [{**claim, 'text': '测试条件下画质接近，仍有损失。'}]}

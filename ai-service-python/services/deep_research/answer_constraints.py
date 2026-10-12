@@ -3,6 +3,15 @@ import json
 import re
 
 
+def resolve_evidence_aliases(report, aliases):
+    """Resolve only exact IDs supplied in this prompt, never guessed hash prefixes."""
+    for claim in report.get('claims', []):
+        if isinstance(claim, dict) and isinstance(claim.get('evidenceRefs'), list):
+            claim['evidenceRefs'] = [aliases.get(ref, ref) if isinstance(ref, str) else ref
+                                     for ref in claim['evidenceRefs']]
+    return report
+
+
 def normalize_conditions(report):
     for claim in report.get('claims', []):
         if not isinstance(claim, dict):

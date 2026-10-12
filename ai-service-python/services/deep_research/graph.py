@@ -908,10 +908,13 @@ def make_synthesize_node(
         # Format evidence summaries with obligation binding
         from services.deep_research.selection import balanced_sample
         evidence_summaries = []
+        evidence_aliases = {}
         for ev in balanced_sample(evidence,
                 lambda item: (item.get("sourceWorkId", ""), tuple(item.get("obligationIds", []))), 20):
+            alias = f"E{len(evidence_aliases) + 1}"
+            evidence_aliases[alias] = ev['evidenceId']
             evidence_summaries.append({
-                "evidenceId": ev["evidenceId"],
+                "evidenceId": alias,
                 "quote": ev.get("quote", "")[:1800],
                 "source": ev.get("sourceWorkId", ""),
                 "conditions": ev.get("conditions", {}),
@@ -935,6 +938,7 @@ Evidence summaries:
 Return ONLY compact JSON with:
 - sections: array of {{title, claimIds: [claim_id_strings]}}
 - claims: array of {{claimId, text, kind, evidenceRefs, conditions, obligationIds, detailLevel}}
+Use ONLY the supplied short evidence IDs (E1, E2, ...) in evidenceRefs. Do not invent or abbreviate IDs.
 Put material limitations into claims as evidence-bounded inferences. Do not duplicate prose in extra fields.
 
 Section titles MUST be selected from {json.dumps(section_templates, ensure_ascii=False)}.
@@ -972,7 +976,8 @@ Do NOT invent measured results or pretend unsupported conclusions are verified."
         parsed = _safe_parse_json(content)
         if not isinstance(parsed, dict) or not isinstance(parsed.get("claims"), list):
             return {"error_code": "invalid_synthesis_response"}
-        from services.deep_research.answer_constraints import compact_answer
+        from services.deep_research.answer_constraints import compact_answer, resolve_evidence_aliases
+        parsed = resolve_evidence_aliases(parsed, evidence_aliases)
         parsed = compact_answer(parsed, question,
             lambda prompt: llm_invoke(run_id, "synthesize_compact", prompt,
                 {"max_tokens": 2000, "temperature": 0.0}), _safe_parse_json,

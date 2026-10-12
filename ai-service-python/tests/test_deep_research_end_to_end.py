@@ -40,7 +40,7 @@ class FixtureModel:
             content = [{"evidenceId": pair["evidenceId"], "obligationId": pair["obligationId"], "relevant": True}
                        for pair in pairs]
         elif prompt.startswith("Synthesize"):
-            ids = re.findall(r'"evidenceId":\s*"(ev_[^"]+)"', prompt)
+            ids = re.findall(r'"evidenceId":\s*"(E\d+)"', prompt)
             content = {"summary": "UNVERIFIED SUMMARY MUST NEVER BE SHOWN", "claims": [
                 {"claimId": "c1", "text": "Alpha reports 95% accuracy.", "kind": "reported", "evidenceRefs": [ids[0]]},
                 {"claimId": "c2", "text": "Beta reports 90% accuracy.", "kind": "reported", "evidenceRefs": [ids[1]]},
@@ -96,6 +96,9 @@ def test_real_graph_publishes_only_verified_body_and_reopens_without_generation(
         assert "99%" not in body and "UNVERIFIED" not in body and "UNCHECKED" not in body
         assert {paper for _, paper in retrieved} == set(PAPERS)
         assert len(repo.require_run(record["runId"])["state"]["evidence"]) == 2
+        published = repo.require_run(record["runId"])["result"]
+        known = {e['evidenceId'] for e in published['evidence']}
+        assert all(ref in known and ref.startswith('ev_') for c in published['claims'] for ref in c['evidenceRefs'])
         assert {source["pdfId"] for source in result["sources"]} == set(PAPERS)
         assert all(source["quote"] and source["page"] == 3 for source in result["sources"])
         calls = repo.list_calls(record["runId"])
