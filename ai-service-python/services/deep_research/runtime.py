@@ -23,7 +23,11 @@ def enabled():
 
 def research_model_options(node, options):
     """Apply role options BEFORE the ledger reserves tokens and fingerprints input."""
-    if node in {'synthesize', 'synthesize_compact', 'verify', 'verify_repair', 'verify_design_config', 'repair_claims'}:
+    if node == 'verify_design_config':
+        # Concrete protocol audit: reserve space for the verdict/quoted choices,
+        # not an unbounded derivation. Scientific consistency stays high below.
+        return {**options, 'thinking': {'type': 'disabled'}, 'reasoning_effort': 'none', 'max_tokens': 6000}
+    if node in {'synthesize', 'synthesize_compact', 'verify', 'verify_repair', 'repair_claims'}:
         # Bounded rewriting must leave room for its JSON; final verification
         # retains high reasoning and checks the rewritten claims independently.
         effort = 'high' if node in {'verify', 'verify_repair'} else 'low'
