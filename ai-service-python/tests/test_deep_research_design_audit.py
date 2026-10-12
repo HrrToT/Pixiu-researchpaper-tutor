@@ -1,4 +1,5 @@
 import copy
+import pytest
 import sys
 from pathlib import Path
 
@@ -170,3 +171,40 @@ def test_unrelated_or_nonstring_role_is_noop():
     assert validate_design_audit({"claimId": "x", "designRole": "ethics", "text": "n/a"}, {}, []) == []
     assert validate_design_audit({"claimId": "x", "designRole": 5, "text": "n/a"}, {}, []) == []
     assert validate_design_audit(None, {"designAudit": full_audit()["designAudit"]}, []) == []
+
+
+def test_discontinuous_effects_bind_each_exact_segment_without_rewriting():
+    claim = {'claimId': 'a', 'kind': 'proposal', 'designRole': 'analysis',
+             'text': '- A: L10-L00\n- B: L01-L00\npaired scenes; descriptive only'}
+    verdict = audit_for(effects={'quotes': [entry('A: L10-L00', 'a'), entry('B: L01-L00', 'a')]},
+                        uncertainty=entry('paired scenes', 'a'), decision_rule=entry('descriptive only', 'a'))
+    assert validate_design_audit(claim, verdict, []) == []
+    verdict['designAudit']['effects'] = entry('A: L10-L00; B: L01-L00', 'a')
+    assert validate_design_audit(claim, verdict, []) == ['effects']
+
+
+@pytest.mark.parametrize('segments', [[], [None], [{'quotes': []}],
+    [entry('seeds: 7'), entry('fabricated')], [entry('seeds: 7', 'wrong')],
+    [entry('seeds: 7')] * 33])
+def test_invalid_or_partially_forged_segments_fail_closed(segments):
+    verdict = full_audit()
+    verdict['designAudit']['seeds'] = {'quotes': segments}
+    assert validate_design_audit(make_data_claim(), verdict, []) == ['seeds']
+
+
+def test_segmented_quotes_reject_ambiguous_forms_and_fact_sources():
+    verdict = full_audit()
+    verdict['designAudit']['seeds'] = {'quotes': [entry('seeds: 7')], **entry('seeds: 7')}
+    assert validate_design_audit(make_data_claim(), verdict, []) == ['seeds']
+    verdict['designAudit']['seeds'] = {'quotes': [entry('seeds: 7', 'fact')]}
+    context = [{'claimId': 'fact', 'kind': 'reported', 'text': 'seeds: 7'}]
+    assert validate_design_audit(make_data_claim(), verdict, context) == ['seeds']
+
+
+def test_segments_can_bind_separate_proposals_without_mutation():
+    verdict = full_audit()
+    verdict['designAudit']['seeds'] = {'quotes': [entry('seeds: 7'), entry('extra seed: 8', 'p')]}
+    context = [{'claimId': 'p', 'kind': 'proposal', 'text': 'extra seed: 8'}]
+    snapshot = copy.deepcopy(verdict)
+    assert validate_design_audit(make_data_claim(), verdict, context) == []
+    assert verdict == snapshot

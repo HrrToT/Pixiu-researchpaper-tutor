@@ -672,6 +672,12 @@ The dataAvailability object is an internal audit, not new experimental results.
                           'whether relevant words occur. Shared definitions are permitted, paper facts ' \
                           'are not an experiment configuration. Required slots:\n' + json.dumps(required_design_slots(metric_domains))
                 prompt += '\nThe designAudit object is FLAT: slot names are its direct keys; do not nest it under a role name.'
+                prompt += ('\nFor a choice spread across bullets or multiple statements, use a slot object '
+                           '{"quotes":[{"claimId":"target/context ID","quote":"exact contiguous substring"}]} '
+                           'with 1 to 32 separate source-bound segments. Every segment must be copied exactly, '
+                           'including punctuation. Never join bullets with invented separators, rewrite formulas, '
+                           'or quote a summary. All segments together must substantiate the entire slot; '
+                           'a partial quotation is not proof of completeness. Do not mix quote and quotes forms.')
                 required_slots = required_design_slots(metric_domains)
                 skeleton = [{'claimId': c['claimId'], 'status': 'failed',
                     'reason': 'replace with a concise concrete finding',

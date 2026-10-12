@@ -44,6 +44,14 @@ def validate_design_audit(claim, verdict, context, metric_domains=None):
 def _slot_supported(entry, claim, context):
     if not isinstance(entry, dict):
         return False
+    if 'quotes' in entry:
+        # Non-contiguous choices retain their own source identities. Never
+        # split or normalize a fabricated combined quotation on the caller's behalf.
+        segments = entry['quotes']
+        if set(entry) != {'quotes'} or not isinstance(segments, list) or not 1 <= len(segments) <= 32:
+            return False
+        return all(isinstance(segment, dict) and 'quotes' not in segment
+                   and _slot_supported(segment, claim, context) for segment in segments)
     claim_id = entry.get("claimId")
     quote = entry.get("quote")
     if not isinstance(claim_id, str) or not isinstance(quote, str) or not quote.strip():
