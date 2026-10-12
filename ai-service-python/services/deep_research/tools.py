@@ -241,11 +241,13 @@ class TrackedLLMInvoker:
         reserve_call_fn: Callable[..., tuple],
         complete_call_fn: Callable[..., dict],
         max_input_tokens: int = 24000,
+        request_options: Callable | None = None,
     ):
         self._client = llm_client
         self._reserve = reserve_call_fn
         self._complete = complete_call_fn
         self._max_input = max_input_tokens
+        self._request_options = request_options
     
     def __call__(
         self,
@@ -256,6 +258,9 @@ class TrackedLLMInvoker:
         use_reserve: bool = False,
     ) -> dict[str, Any]:
         from llm.provider import LLMRequest, LLMProviderError
+
+        if self._request_options:
+            extra_body = self._request_options(node, dict(extra_body or {}))
         
         # Full prompt digest for stable IDs - NOT truncated
         args_digest = digest({"prompt": prompt, "extra": extra_body or {}})

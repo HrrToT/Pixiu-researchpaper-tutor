@@ -120,3 +120,31 @@
 
 - D3 v4 `0541c0b0`：partial，12 次调用、40,879 tokens、107 秒。人工核对可加性假设、三个指标的损失方向、条件效应、平均主效应及交互公式均已纠正；明确截断诊断与论文蒸馏的区别、无恢复条件、置信区间包含零不证明独立。仍有两篇论文指标计算方式的证据缺口，整体仍为部分结果，不计完整验收通过。
 - external v3 `d1d02f1c`：partial，5 次调用、7,165 tokens、31 秒。完整报告包含三个组件，但访问范围说明额外声称“摘要未包含实验数据”，质量未通过。又发现对话摘要固定最多三条导致第三组件未显示；已取消条数上限，仍按总字数保留整条声明。新增否定措辞进入硬检查，待复核；不追改历史结果。
+
+## 研究数据备份与回退演练
+
+新增 `ai-service-python/scripts/deep_research_backup.py`，先停止 Python 服务并确认没有 queued/running/stopping 运行，才能使用 `backup --services-stopped`。该参数是操作者的停服确认，工具无法替代进程检查。数据库用 SQLite backup API 导出，并转换为独立 DELETE journal 文件；checkpoint 同步保存。外部全文按运行引用的 SHA-256 校验并保存，缺失或变更时拒绝。未下载全文时允许缓存目录尚未创建。
+
+恢复只接受新的目标目录，不覆盖已有数据，不自动启动服务。备份清单不含密钥，业务数据库本身可能包含论文摘录，应使用与原数据相同的访问权限。此工具范围仅为新版研究引擎；Java 任务库、原始上传论文和部署配置需要部署侧另行备份。
+
+2026-10-12 本地真实演练：
+
+- 首次尝试发现 WAL 旁路文件问题，失败记录保留；补充真实 WAL 场景回归后修复。
+- `tmp/dr-backup-drill-20261012-v2`：20 条运行、研究数据库及 checkpoint 两个独立文件；所有运行均已终止，无外部全文缓存引用。数据库 integrity_check 和清单哈希通过。
+- `tmp/dr-restored-drill-20261012-v2`：恢复到新目录后校验通过。随后用真实 repository/facade/dispatcher 初始化及读取 20 条记录，关闭新入口，新建被拒绝，未分发到旧引擎。调用账本恢复前后均 476 条，未调用模型或网络，见 `tmp/dr-restored-drill-result.json`。
+- 备份工具 7 项离线测试通过，包括活跃任务拒绝、缺失/损坏全文、路径越界、禁止覆盖恢复、WAL 文件和无缓存场景。
+- 原服务重新启动，运行数据库未被恢复副本覆盖。该演练不计为 Docker 或整套 Java 数据库恢复通过。
+
+可执行命令（从项目根目录，停止 Python 服务后；目标目录必须不存在）：
+
+```powershell
+.\.venv-refactor\Scripts\python.exe ai-service-python/scripts/deep_research_backup.py backup --database tmp/dr-live-data/research.sqlite3 --sources tmp/dr-live-data/sources --destination tmp/research-backup-new --services-stopped
+.\.venv-refactor\Scripts\python.exe ai-service-python/scripts/deep_research_backup.py verify tmp/research-backup-new
+.\.venv-refactor\Scripts\python.exe ai-service-python/scripts/deep_research_backup.py restore --backup tmp/research-backup-new --destination tmp/research-restored-new
+```
+
+短答后续记录：D2 v5 `506b24dc`（9 调用、29,459 tokens、74 秒）、D4 v4 `f64be36d`（5 调用、14,011 tokens、38 秒）均因压缩后仍超长失败，未进入事实核验。提交 `1d066be` 改为仅重写核心声明字段，身份与引用由程序保留；比较必须保留每篇论文的声明及跨论文判断。29 项相关离线回归通过，后续真实结果另记。
+
+- D2 v6 `92145256`：failed，9 调用、23,785 tokens、65 秒。核心压缩仍超长；不计质量通过。
+- D4 v5 `223bbcaa`：partial，7 调用、13,129 tokens、30 秒。回答混淆动态视角和动态场景，人工判定失败，不能仅看模型语义检查通过。
+- 随后调整角色策略：综合、压缩、核验及有界修订恢复当前配置模型的思考能力，每次输出上限 8192，在请求摘要计算及账本预留前应用。常规抽取/初筛仍关闭思考；总 Token、调用与时间上限保持不变。此前全局禁用思考用于避免短输出截断，但内容质量不合格，不能保留该妥协并宣称成熟。新策略待真实验证。

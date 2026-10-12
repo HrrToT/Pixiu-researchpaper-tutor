@@ -67,6 +67,24 @@ def test_reader_returns_persisted_location_and_does_not_fetch():
         read_acquired_source(store, "run", "missing")
 
 
+def test_reasoning_options_are_reserved_before_provider_send():
+    from services.deep_research.runtime import research_model_options
+    from services.deep_research.tools import TrackedLLMInvoker
+    from llm.provider import LLMResult, LLMUsage
+    store, provider = repo(), Mock()
+    provider.invoke.return_value = LLMResult(content='[]', provider='fixture', model='fixture', usage=LLMUsage(8, 2, 10))
+    reserve = Mock(return_value=({'callId': 'call', 'reservationToken': 'reservation'}, False))
+    complete = Mock()
+    client = ScopedModelClient(store, lambda *args: True, lambda: provider).for_run('run')
+    invoke = TrackedLLMInvoker(client, reserve, complete, request_options=research_model_options)
+    invoke('run', 'verify', 'evidence', {'max_tokens': 1000}, use_reserve=True)
+    request = provider.invoke.call_args.args[0]
+    assert request.extra_body['thinking'] == {'type': 'enabled'}
+    assert request.extra_body['max_tokens'] == 8192
+    assert reserve.call_args.kwargs['budget_delta']['tokens'] == len(b'evidence') + 1024 + 8192
+    assert research_model_options('extract', {'max_tokens': 1000}) == {'max_tokens': 1000, 'thinking': {'type': 'disabled'}}
+
+
 def test_routine_model_route_retains_scope_checks_and_complex_model():
     store, reasoning, routine = repo(), Mock(), Mock()
     validate = Mock(return_value=True)

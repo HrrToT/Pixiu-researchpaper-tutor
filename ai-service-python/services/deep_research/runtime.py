@@ -21,6 +21,13 @@ def enabled():
     return os.environ.get("DEEP_RESEARCH_V2_ENABLED", "false").lower() == "true"
 
 
+def research_model_options(node, options):
+    """Apply role options BEFORE the ledger reserves tokens and fingerprints input."""
+    if node in {'synthesize', 'synthesize_compact', 'verify', 'repair_claims'}:
+        return {**options, 'thinking': {'type': 'enabled'}, 'max_tokens': 8192}
+    return {**options, 'thinking': {'type': 'disabled'}}
+
+
 class AuthoritativeScopeValidator:
     """Check live task membership/readiness/version through the fixed Java service.
 
@@ -97,9 +104,9 @@ class ScopedModelClient:
                     "只按用户问题和服务端材料范围研究；严格区分原文事实、推断和建议。"},
                     {"role": "user", "content": request.prompt}]
                 factory = parent.get_routine_client if self.node in {"resolve_brief", "extract", "assess_relevance"} and parent.get_routine_client else parent.get_client
-                # Structured nodes need a complete answer within their reserved output budget.
-                # Provider hidden reasoning can otherwise consume the entire cap and return empty JSON.
-                extra = {**(request.extra_body or {}), "thinking": {"type": "disabled"}}
+                # Respect the role policy already fingerprinted and reserved by the invoker.
+                # Unspecified/routine nodes stay non-thinking; complex nodes reserve more output.
+                extra = {"thinking": {"type": "disabled"}, **(request.extra_body or {})}
                 return factory().invoke(replace(request, messages=messages, timeout_seconds=timeout, extra_body=extra))
 
         return BoundClient()
@@ -151,7 +158,8 @@ def initialize_runtime():
 
         def _make_llm_invoker(self, run_id):
             from services.deep_research.tools import TrackedLLMInvoker
-            return TrackedLLMInvoker(model.for_run(run_id), self._repo.reserve_call, self._complete_tracked_call)
+            return TrackedLLMInvoker(model.for_run(run_id), self._repo.reserve_call, self._complete_tracked_call,
+                                     request_options=research_model_options)
 
         def _make_semantic_checker(self, run_id):
             from services.deep_research.tools import BudgetedSemanticChecker
