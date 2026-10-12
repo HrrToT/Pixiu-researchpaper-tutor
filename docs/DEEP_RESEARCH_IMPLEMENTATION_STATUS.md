@@ -242,3 +242,5 @@ D2 v14 `0e0f0daa` 最终 completed/partial：16 次调用、50,762 tokens、195 
 原始 3DGS 表头补验：实际 PDF 第 8 页指标使用数学字体，Train/FPS/Mem 共用绘制操作；TEI 合并部分时间、FPS 和存储单元格。解析改为归一化指标字体、按绘制 token 定位标题，并以 PDF 几何逐列核对 TEI 中明确以空白分隔的值；不依据 colspan 或数字排列直接猜列。三组数据集和五条完整方法行可通过，包括 Ours-7K、Ours-30K；带未对齐脚注的行仍保留原始文本，不自动核实。
 
 实际 PDF 几何与 TEI 最小 fixture 保存于 `tests/fixtures/dr_table1_geometry.json`。长表头分块后只允许完整独立行保留已核实的单元格映射，截断或附带额外字符的行不得继承。真实本地分块输出两块有效表格，包含双方 Ours 行。完整依赖容器中 34 项解析/表格/研究提取测试通过，包含相同数字串不同切分拒绝、虚构数据集拒绝与长表头分块；主机先前因缺 XML 依赖跳过的两项已在容器通过。未追加模型调用，索引重建及声明级绑定仍待验证。
+
+提交 `5863d73` 后确认无活动研究并重启开发容器。原始 3DGS 以冻结 SHA-256 文件名执行一次本地重解析，HTTP 200、82 个片段、readingReady/questionReady/ragIndexed 均 true、aiAnalysisStatus=not_requested。实际读取 Chroma 得到两块结构化主表；Ours-30K 的三组 FPS/Mem 分别为 134/734MB、154/411MB、137/676MB，与 PDF 几何核对一致。原回执和索引证明保存于 `tmp/dr-container-validation/original-geometry-reindex.json`、`original-geometry-index-proof.json`。旧研究不回写，本轮没有生成模型调用；该结果证明解析至索引可用，不替代声明绑定和真实比较验收。
