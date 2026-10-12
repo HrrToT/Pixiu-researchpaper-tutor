@@ -7,6 +7,8 @@ EXECUTION_SPEC_CONTRACT = (
     "executionSpec schemas (all choices are proposed unexecuted settings; "
     "the application appends their explicit readable protocol before verification. "
     "Keep the short claim introduction consistent; never invent paper settings):\n"
+    "The executionSpec object contains the fields directly: never wrap under data or analysis. "
+    "The split field key is exactly offset, not zero-based offset. "
     "data role: dataset nonblank str; scenes {mode:named,names unique nonblank len>=1} "
     "or {mode:sorted_first,count positive int,order nonblank}; "
     "split {mode:every_nth,order nonblank,stride int>=2,zero-based offset int 0<=offset<stride} "
@@ -248,6 +250,10 @@ def execution_spec_errors(role, spec):
     if not isinstance(spec, dict):
         add("spec")
         return errors
+    if 'data' in spec or 'analysis' in spec:
+        add('ambiguous_role_wrapper')
+    if isinstance(spec.get('split'), dict) and 'zero-based offset' in spec['split']:
+        add('split.ambiguous_offset')
     if role == "data":
         _validate_data(spec, add)
     else:
