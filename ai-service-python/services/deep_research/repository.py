@@ -945,6 +945,10 @@ class DeepResearchRepository:
                     run_record["report"] = report_text
                 run_record["status"] = STATUS_COMPLETED
                 run_record["finishedAt"] = now
+                if run_record.get("startedAt"):
+                    start = datetime.fromisoformat(run_record["startedAt"].replace("Z", "+00:00"))
+                    elapsed = max(0, (datetime.now(UTC) - start).total_seconds())
+                    run_record["budget"] = {**run_record.get("budget", {}), "elapsedSeconds": round(elapsed, 3)}
                 run_record["publication"] = {
                     "published": False,
                     "publicationId": pub_id,

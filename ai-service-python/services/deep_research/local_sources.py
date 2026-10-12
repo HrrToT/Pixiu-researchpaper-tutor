@@ -15,6 +15,7 @@ import requests
 
 from services.deep_research.contracts import DeepResearchError
 
+MAX_LOCAL_PDF_BYTES = 64 * 1024 * 1024
 
 class LocalTaskRetriever:
     def __init__(self, repo, run_id, validate, *, origin, get=requests.get, parse=None):
@@ -48,7 +49,7 @@ class LocalTaskRetriever:
                 chunks, size = [], 0
                 for chunk in response.iter_content(65536):
                     size += len(chunk)
-                    if size > 32 * 1024 * 1024:
+                    if size > MAX_LOCAL_PDF_BYTES:
                         raise DeepResearchError('source_too_large', '论文超过正文回查大小上限')
                     chunks.append(chunk)
             body = b''.join(chunks)
@@ -93,7 +94,7 @@ def _bm25(query, documents):
 
 
 def _parse_pdf(body):
-    process = subprocess.run([sys.executable, '-m', 'services.deep_research_pdf_parser', '100', str(32 * 1024 * 1024)],
+    process = subprocess.run([sys.executable, '-m', 'services.deep_research_pdf_parser', '100', str(MAX_LOCAL_PDF_BYTES)],
         cwd=str(Path(__file__).resolve().parents[2]), input=body, capture_output=True, timeout=20, check=False)
     if process.returncode or len(process.stdout) > 13_000_000:
         raise DeepResearchError('source_parse_failed', '论文正文回查未完成')

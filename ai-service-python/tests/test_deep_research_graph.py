@@ -914,7 +914,7 @@ class TestChildContinuation:
                 "workspaceTaskId": "task_1",
                 "operationKey": "op_1",
                 "question": "Original question",
-                "materials": [{"materialId": "p1"}],
+                "materials": [{"materialId": "p1", "contentHash": "unchanged"}],
             }, start_async=False)
             
             # Must transition through running before completing (terminal guards)
@@ -923,7 +923,8 @@ class TestChildContinuation:
             # Now set to completed with evidence
             def add_evidence(record):
                 state = record.get("state", {})
-                state["evidence"] = [{"evidenceId": "ev1", "text": "prior evidence"}]
+                state["sources"] = [{"sourceId": "s1", "workId": "p1", "contentHash": "unchanged"}]
+                state["evidence"] = [{"evidenceId": "ev1", "sourceId": "s1", "text": "prior evidence"}]
                 return {**record, "state": state, "status": STATUS_COMPLETED}
             
             repo.update_run(parent["runId"], add_evidence)

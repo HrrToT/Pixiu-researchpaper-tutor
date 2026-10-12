@@ -164,7 +164,8 @@ def initialize_runtime():
             tracked = TrackedRetriever(local, scope, repo.reserve_call, self._complete_tracked_call)
             return lambda query, pdf_id, limit=5: tracked(run_id, query, pdf_id, limit=limit)
 
-    facade = RuntimeFacade(repo, build_deep_research_graph, llm_client=model, scope_validator=scope,
+    from functools import partial
+    facade = RuntimeFacade(repo, partial(build_deep_research_graph, extract_batch_size=3), llm_client=model, scope_validator=scope,
                            source_reader=lambda rid, sid: read_acquired_source(repo, rid, sid))
     from services.deep_research.external import AcademicAcquisition
     facade._external_acquire = AcademicAcquisition(repo, facade._complete_tracked_call)

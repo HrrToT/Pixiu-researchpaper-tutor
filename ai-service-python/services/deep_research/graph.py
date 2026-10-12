@@ -208,6 +208,8 @@ Question: {question}
 Output kind: {output_kind}
 Materials: {json.dumps([{'id': m.get('materialId'), 'title': m.get('title', '')} for m in materials[:10]], ensure_ascii=False)}
 Primary papers: {json.dumps(record.get('focusPaperIds', []))}
+User context (notes/old reports, UNVERIFIED; use only for goals and queries, never as paper facts):
+{json.dumps(record.get('contextMaterials', []), ensure_ascii=False)}
 
 Return a compact JSON array of 1-4 plan items (prefer 1-2 for a short answer), each with:
 - itemId: unique identifier
@@ -698,6 +700,7 @@ def make_assess_node(
                     obligation_map[obl_id] = obl.get("question", "")
         
         # Batch relevance judgment via LLM if available
+        from services.deep_research.selection import balanced_sample
         relevance_verdicts: dict[str, bool] = {}
         if llm_invoke is not None and evidence:
             relevance_pairs = []
@@ -710,20 +713,24 @@ def make_assess_node(
                             "quote": ev.get("quote", ""),
                             "conditions": ev.get("conditions", {}),
                             "obligationQuestion": obligation_map[obl_id],
+                            "sourceWorkId": ev.get("sourceWorkId", ""),
                         })
             
             if relevance_pairs:
+                selected_pairs = balanced_sample(relevance_pairs,
+                    lambda pair: (pair["sourceWorkId"], pair["obligationId"]), 20)
                 batch_prompt = f"""For each evidence-obligation pair below, judge whether the evidence ACTUALLY addresses the obligation question. A literal quote match is NOT sufficient — the content must be topically relevant and the conditions must be compatible.
 
 Pairs:
-{json.dumps(relevance_pairs[:20], ensure_ascii=False, indent=2)}
+{json.dumps(selected_pairs, ensure_ascii=False, indent=2)}
 
-Return JSON array of {{evidenceId, obligationId, relevant: true/false, reason: string}}.
+Return a COMPACT JSON array of {{evidenceId, obligationId, relevant: true/false}}.
+Do not include reasons or extra prose; include one verdict for EVERY supplied pair.
 Only mark relevant=true if the evidence directly bears on the obligation question."""
                 
                 try:
                     result = llm_invoke(run_id, "assess_relevance", batch_prompt,
-                                        {"max_tokens": 2000, "temperature": 0.0})
+                                        {"max_tokens": 4000, "temperature": 0.0})
                     if hasattr(result, "content"):
                         resp_content = result.content
                     elif isinstance(result, dict):
@@ -858,8 +865,10 @@ def make_synthesize_node(
         section_templates = OUTPUT_KIND_SECTIONS.get(output_kind, OUTPUT_KIND_SECTIONS["direction_survey"])
         
         # Format evidence summaries with obligation binding
+        from services.deep_research.selection import balanced_sample
         evidence_summaries = []
-        for ev in evidence[:30]:
+        for ev in balanced_sample(evidence,
+                lambda item: (item.get("sourceWorkId", ""), tuple(item.get("obligationIds", []))), 20):
             evidence_summaries.append({
                 "evidenceId": ev["evidenceId"],
                 "quote": ev.get("quote", "")[:500],
@@ -875,15 +884,12 @@ Evidence count: {len(evidence)}
 Gaps: {json.dumps([g.get('question') for g in gaps[:5]], ensure_ascii=False)}
 
 Evidence summaries:
-{json.dumps(evidence_summaries[:20], ensure_ascii=False, indent=2)}
+{json.dumps(evidence_summaries, ensure_ascii=False, indent=2)}
 
-Return JSON with:
-- summary: 2-4 paragraph executive summary (from verified evidence only)
-- sections: array of {{title, content, claimIds: [claim_id_strings], citations: [source_ids]}}
+Return ONLY compact JSON with:
+- sections: array of {{title, claimIds: [claim_id_strings]}}
 - claims: array of {{claimId, text, kind, evidenceRefs, conditions, obligationIds}}
-- proposals: array of {{text, kind: "hypothesis"|"proposal"}} clearly labeled
-- limitations: explicit statement of what cannot be concluded
-- gaps: remaining unresolved questions
+Put material limitations into claims as evidence-bounded inferences. Do not duplicate prose in extra fields.
 
 Section titles MUST be selected from {json.dumps(section_templates, ensure_ascii=False)}.
 Each section's claimIds must reference actual claim IDs from the claims array.
@@ -892,6 +898,9 @@ For experiment_design: include hypothesis, controls, variables, data+metrics, st
 Write in concise Chinese. All proposals/hypotheses must also be claims with a claimId and a section.
 Use kind reported, inference, hypothesis or proposal. A proposal cannot state an existing result as fact.
 Follow the user's scope and length. State conflicting conditions beside the relevant conclusion.
+If the user asks for two points, produce at most two claims. The TOTAL text and conditions must fit the requested length.
+For reported facts copy numbers exactly; avoid derived differences/ratios. Any calculation is an inference, not a reported result.
+Never say the authors did not test/report something merely because the selected passages omit it.
 Do NOT invent measured results or pretend unsupported conclusions are verified."""
         
         result = llm_invoke(run_id, "synthesize", prompt, {"max_tokens": 4000, "temperature": 0.2}, use_reserve=True)
@@ -905,6 +914,12 @@ Do NOT invent measured results or pretend unsupported conclusions are verified."
         
         parsed = _safe_parse_json(content)
         if not isinstance(parsed, dict) or not isinstance(parsed.get("claims"), list):
+            return {"error_code": "invalid_synthesis_response"}
+        from services.deep_research.answer_constraints import compact_answer
+        parsed = compact_answer(parsed, question,
+            lambda prompt: llm_invoke(run_id, "synthesize_compact", prompt,
+                {"max_tokens": 2000, "temperature": 0.0}, use_reserve=True), _safe_parse_json)
+        if parsed is None:
             return {"error_code": "invalid_synthesis_response"}
         
         report_version_id = f"report_{run_id}_v1"
@@ -1135,6 +1150,7 @@ def build_deep_research_graph(
     validate_plan_fn: Callable[[list], list],
     checkpoint_conn: sqlite3.Connection | None = None,
     external_acquire: Callable[[str, list[dict[str, Any]]], list[dict[str, Any]]] | None = None,
+    extract_batch_size: int = 1,
 ) -> Any:
     """Build the compiled LangGraph with persistent checkpoints.
     
@@ -1175,7 +1191,13 @@ def build_deep_research_graph(
     workflow.add_node("plan", bounded(make_plan_node(llm_invoke, repo_update, validate_plan_fn)))
     workflow.add_node("acquire", make_acquire_node(retrieve_fn, scope_validator, repo_update, external_acquire=external_acquire))
     workflow.add_node("read", make_read_node(read_fn, scope_validator, repo_update))
-    workflow.add_node("extract", bounded(make_extract_node(llm_invoke, make_evidence_fn, scope_validator, repo_update)))
+    if extract_batch_size > 1:
+        from services.deep_research.extraction import make_batched_extract_node
+        extractor = make_batched_extract_node(llm_invoke, make_evidence_fn, scope_validator, repo_update,
+                                               batch_size=min(extract_batch_size, 3))
+    else:
+        extractor = make_extract_node(llm_invoke, make_evidence_fn, scope_validator, repo_update)
+    workflow.add_node("extract", bounded(extractor))
     workflow.add_node("assess", make_assess_node(coverage_gaps_fn, repo_update, llm_invoke=llm_invoke))
     workflow.add_node("synthesize", bounded(make_synthesize_node(llm_invoke, repo_update)))
     workflow.add_node("verify", make_verify_node(verify_claims_fn, semantic_check_fn, repo_update))

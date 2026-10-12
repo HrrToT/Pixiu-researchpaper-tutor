@@ -36,7 +36,7 @@ class FixtureModel:
             quote = next(text.split(". ")[0] + "." for text in PAPERS.values() if text in prompt)
             content = [{"quote": quote, "obligationIds": ["o"], "location": {"page": 3}}]
         elif prompt.startswith("For each evidence-obligation pair"):
-            pairs = json.loads(prompt.split("Pairs:\n", 1)[1].split("\n\nReturn JSON", 1)[0])
+            pairs = json.loads(prompt.split("Pairs:\n", 1)[1].split("\n\nReturn ", 1)[0])
             content = [{"evidenceId": pair["evidenceId"], "obligationId": pair["obligationId"], "relevant": True}
                        for pair in pairs]
         elif prompt.startswith("Synthesize"):

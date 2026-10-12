@@ -192,6 +192,23 @@ class ResearchFacade:
         
         # Persist materialSnapshot separately as immutable reference
         material_snapshot = request.get("materialSnapshot")
+        inherited_state = {}
+        parent_id = request.get("parentRunId")
+        if parent_id:
+            parent = self._repo.require_run(parent_id)
+            if parent.get("taskId") != workspace_task_id or parent.get("status") not in TERMINAL_STATUSES:
+                raise DeepResearchError("invalid_parent", "只能从本任务已结束的研究继续")
+            hashes = {m["materialId"]: m.get("contentHash") for m in materials}
+            refresh = request.get("freshness") == "refresh" or any(word in request.get("question", "").lower()
+                                                                    for word in ("最新", "更新到", "latest"))
+            external = request.get("sourcePolicy", {}).get("mode") in {"academic_external", "external_only"}
+            sources = [s for s in parent.get("state", {}).get("sources", []) if
+                       (s.get("workId") in hashes and hashes[s["workId"]] == s.get("contentHash")) or
+                       (s.get("sourceKind") == "arxiv" and external and not refresh)]
+            source_ids = {s["sourceId"] for s in sources}
+            evidence = [e for e in parent.get("state", {}).get("evidence", []) if e.get("sourceId") in source_ids]
+            inherited_state = {"sources": sources, "inheritedSources": sources,
+                               "evidence": evidence, "inheritedEvidence": evidence}
         
         payload = {
             "runId": run_id,
@@ -203,6 +220,9 @@ class ResearchFacade:
             "question": request.get("question", ""),
             "materials": materials,
             "materialSnapshot": material_snapshot,  # Immutable Java snapshot
+            "contextMaterials": (material_snapshot or {}).get("contextMaterials", []) if isinstance(material_snapshot, dict) else [],
+            "promptVersion": "dr-v2.20261012.3",
+            "retrievalVersion": "task-pdf-bm25.1",
             "focusPaperIds": request.get("focusPaperIds", []),
             "sourcePolicy": request.get("sourcePolicy", {"mode": "task_only"}),
             "budgetProfile": budget_profile,
@@ -210,6 +230,7 @@ class ResearchFacade:
             "requestDigest": digest(request),
             "parentRunId": request.get("parentRunId", ""),
             "outputKind": request.get("outputKind", "general"),
+            "state": inherited_state,
         }
         
         # Persist BEFORE accepting work
@@ -243,6 +264,8 @@ class ResearchFacade:
         return {
             "contractVersion": record.get("contractVersion", CONTRACT_VERSION),
             "engineVersion": record.get("engineVersion", ENGINE_VERSION),
+            "promptVersion": record.get("promptVersion", ""),
+            "retrievalVersion": record.get("retrievalVersion", ""),
             "taskId": record.get("taskId", ""),
             "runId": record["runId"],
             "runRevision": record.get("runRevision", 0),
@@ -287,6 +310,8 @@ class ResearchFacade:
                 "maxTokens": budget.get("maxTokens", 100000),
                 "externalSearches": budget.get("externalSearches", 0),
                 "fulltextFetches": budget.get("fulltextFetches", 0),
+                "elapsedSeconds": budget.get("elapsedSeconds", 0),
+                "cost": None,  # No configured price table: unknown must never appear as zero cost.
             },
         }
     
@@ -669,24 +694,9 @@ class ResearchFacade:
             "outputKind": parent.get("outputKind", "general"),
         }
         
-        # Inherit evidence BEFORE scheduling (so it's available at graph start)
-        parent_state = parent.get("state", {})
-        inherited_evidence = parent_state.get("evidence", [])
-        
-        # Create child without auto-start if deferStart requested
+        # create() filters inherited sources against the frozen scope and freshness.
+        # Do not restore the unfiltered parent state after that validation.
         child_record, _ = self.create(child_request, start_async=False)
-        
-        # Inherit evidence from parent immediately after creation
-        if inherited_evidence:
-            def inherit_evidence(record: dict[str, Any]) -> dict[str, Any]:
-                state = record.get("state", {})
-                state["inheritedEvidence"] = inherited_evidence
-                state["evidence"] = inherited_evidence
-                state["sources"] = parent_state.get("sources", [])
-                state["inheritedSources"] = parent_state.get("sources", [])
-                return {**record, "state": state}
-            
-            self._repo.update_run(child_record["runId"], inherit_evidence)
         
         if not defer_start:
             self._start_execution(child_record["runId"])

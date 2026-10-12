@@ -1,0 +1,46 @@
+"""User-visible length constraints, separate from model token budgets."""
+import json
+import re
+
+
+def requested_character_limit(question):
+    match = re.search(r'(\d{2,5})\s*(?:字|个字符|characters)\s*(?:以内|以下|内|maximum|max)?', question, re.I)
+    return min(int(match[1]), 10000) if match else None
+
+
+def answer_character_count(report):
+    count = 0
+    for claim in report.get('claims', []):
+        if not isinstance(claim, dict) or not isinstance(claim.get('text'), str):
+            return float('inf')
+        conditions = claim.get('conditions') or {}
+        if not isinstance(conditions, dict):
+            return float('inf')
+        count += len(claim['text']) + sum(len(str(key)) + len(str(value)) + 2 for key, value in conditions.items())
+    return count
+
+
+def compact_answer(report, question, invoke, parse):
+    limit = requested_character_limit(question)
+    if not limit or answer_character_count(report) <= limit:
+        return report
+    # One bounded rewrite before verification. Every rewritten fact is checked later.
+    prompt = f'''Shorten this structured research answer to at most {limit} characters total
+across ALL claim text and conditions. Question: {question}
+Keep the most important conclusions and essential conditions. Remove tangential numbers.
+Use concise Chinese, embedding conditions in text when possible instead of repeating them.
+Keep the same claimIds, kinds and evidenceRefs. Do not add facts, references or new claims.
+Return ONLY JSON with sections and claims.
+Answer:\n{json.dumps(report, ensure_ascii=False)}'''
+    result = invoke(prompt)
+    compact = parse(result.get('content', '') if isinstance(result, dict) else result.content)
+    if not isinstance(compact, dict) or not isinstance(compact.get('claims'), list) or not compact['claims']:
+        return None
+    original = {c.get('claimId'): c for c in report['claims'] if isinstance(c, dict)}
+    for claim in compact['claims']:
+        if not isinstance(claim, dict) or claim.get('claimId') not in original:
+            return None
+        before = original[claim['claimId']]
+        if claim.get('kind') != before.get('kind') or claim.get('evidenceRefs') != before.get('evidenceRefs'):
+            return None
+    return compact if answer_character_count(compact) <= limit else None

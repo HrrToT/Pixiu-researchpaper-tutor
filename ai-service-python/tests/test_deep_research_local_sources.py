@@ -52,3 +52,11 @@ def test_foreign_material_never_constructs_file_request(monkeypatch):
     with pytest.raises(DeepResearchError):
         local('pruning', 'foreign')
     get.assert_not_called()
+
+
+def test_local_pdf_limit_stops_stream_before_parsing(monkeypatch):
+    local, _, parse, _ = fixture(monkeypatch)
+    monkeypatch.setattr('services.deep_research.local_sources.MAX_LOCAL_PDF_BYTES', 16)
+    with pytest.raises(DeepResearchError, match='大小上限'):
+        local('pruning', 'p')
+    parse.assert_not_called()

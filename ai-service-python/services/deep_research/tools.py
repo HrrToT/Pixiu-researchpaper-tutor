@@ -504,7 +504,12 @@ Evidence:
 Return JSON array of verdicts:
 [{{"claimId": "...", "status": "passed" or "failed", "reason": "..."}}]
 
-Be strict: evidence must directly support the specific claim text. Do not accept vague connections."""
+Be strict: evidence must directly support EVERY clause and condition of the specific claim.
+Check each number's method, dataset, metric, unit and experimental setting, not just its presence.
+Reject claims that confuse a similar PSNR with unchanged image quality, or infer universal/exclusive
+conditions from a limited tested range. Missing passages do not prove the authors never tested it.
+For inference, verify the stated premises and reasoning; reject invented calculations or generalization.
+Do not accept vague connections. A partly supported claim must fail until its wording is narrowed."""
         
         try:
             result = self._invoke(
@@ -516,7 +521,8 @@ Be strict: evidence must directly support the specific claim text. Do not accept
             )
             
             content = result.get("content", "[]")
-            parsed = json.loads(content) if content.startswith("[") else []
+            from services.deep_research.graph import _safe_parse_json
+            parsed = _safe_parse_json(content)
             
             return parsed if isinstance(parsed, list) else []
             
