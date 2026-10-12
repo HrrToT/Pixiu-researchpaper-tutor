@@ -44,5 +44,14 @@
       "seconds": 2.73
     },
     "countsAreNotAdditive": true
-  }
+  },
+  "loadedRuntime": {
+    "commit": "81563f5",
+    "promptVersion": "dr-v2.20261013.21",
+    "activeRunsBeforeRestart": 0,
+    "health": "ok",
+    "rag": "ok",
+    "grobid": "ok"
+  },
+  "nextWork": "Separate research support questions from user-facing answer obligations before another real experiment case; keep genuine required evidence gaps and scientific checks."
 }
