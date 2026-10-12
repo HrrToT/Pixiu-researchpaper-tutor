@@ -85,6 +85,9 @@ def test_reasoning_options_are_reserved_before_provider_send():
     assert reserve.call_args.kwargs['budget_delta']['tokens'] == len(b'evidence') + 1024 + 8192
     assert research_model_options('extract', {'max_tokens': 1000}) == {'max_tokens': 1000, 'thinking': {'type': 'disabled'}, 'reasoning_effort': 'none'}
     assert research_model_options('synthesize', {})['reasoning_effort'] == 'low'
+    assert research_model_options('synthesize', {})['max_tokens'] == 16384
+    invoke('run', 'synthesize', 'evidence', {'max_tokens': 1000}, use_reserve=True)
+    assert reserve.call_args.kwargs['budget_delta']['tokens'] == len(b'evidence') + 1024 + 16384
 
 
 def test_routine_model_route_retains_scope_checks_and_complex_model():

@@ -25,7 +25,8 @@ def research_model_options(node, options):
     """Apply role options BEFORE the ledger reserves tokens and fingerprints input."""
     if node in {'synthesize', 'synthesize_compact', 'verify', 'repair_claims'}:
         effort = 'high' if node in {'verify', 'repair_claims'} else 'low'
-        return {**options, 'thinking': {'type': 'enabled'}, 'reasoning_effort': effort, 'max_tokens': 8192}
+        maximum = 16384 if node == 'synthesize' else 8192
+        return {**options, 'thinking': {'type': 'enabled'}, 'reasoning_effort': effort, 'max_tokens': maximum}
     return {**options, 'thinking': {'type': 'disabled'}, 'reasoning_effort': 'none'}
 
 

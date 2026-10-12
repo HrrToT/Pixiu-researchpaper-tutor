@@ -160,3 +160,10 @@
 - external v4 `139bbe3f`：partial，10 调用、28,429 tokens、232 秒，3 次发现、3 次全文获取。仅得摘要并明确标示，完整说明三个组件，无额外实验结果和全文缺失断言。唯一复合声明逐项原文核对均支持、三个引用精确对应摘要片段，300 字约束内。此开发外部摘要案例内容通过；不能代替 H3 实际全文研究。人工评分：目标回应 5、证据支持 5、条件完整 4、综合价值 4、可执行性不适用、可读性 5。
 - D2 v8 `31f4d5a0`：failed，11 调用、37,554 tokens、142 秒，综合返回空正文。历史账本未保存 finish_reason，因此不能断言具体截断原因。新增 Provider 结束原因记录，不保存隐藏思考过程。
 - 官方 [Chat Completions 文档](https://api-docs.deepseek.com/api/create-chat-completion/) 于 2026-10-12 核对：reasoning_effort 支持 none/low/high/max，max_tokens 约束生成输出，finish_reason=length 表示达到生成长度限制。新策略：综合/压缩使用 low、核验/修订使用 high，均先预留 8192 输出上限；常规节点同时设置 thinking=disabled 与 reasoning_effort=none，避免和客户端默认 high 冲突。promptVersion 更新为 dr-v2.20261012.6。26 项相关离线测试通过，真实比较待复核。
+
+后续诊断与修复：
+
+- D2 v9 `ed45e623`：failed，9 调用、28,527 tokens、141 秒。综合调用的正文为空，实际输出 8192 tokens、finishReason=length，直接确认输出限额耗尽。保留失败记录，不计通过。
+- 仅综合节点输出预留提高至 16384；压缩和核验仍为 8192，整轮 100000 tokens、18 次调用和 360 秒限制不变。预留在发送前进入账本，promptVersion 为 dr-v2.20261012.7。预算相关回归 6 项通过；修复不代表真实比较已经通过。
+- 较广离线检查 249 项通过（`tmp/dr-continued-25.log`），范围含新版研究、限流、离线 LLM 和引擎分发，不能与此前 221 项直接累计。
+- 两篇留出材料已通过普通材料接口保存，未触发 AI 分析；正文解析失败，不能作为就绪材料启动验收。当前 Docker 启动日志明确报告损坏的 `dockerInference` 运行时端点。留出内容案例尚未因此运行或调参，部署恢复仍未验收。
