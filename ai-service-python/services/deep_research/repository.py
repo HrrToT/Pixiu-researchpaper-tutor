@@ -167,6 +167,8 @@ def _clamp_budget_to_profile(budget: dict[str, Any], profile_name: str) -> dict[
                 client_val = int(clamped.get(key, server_max))
             except (TypeError, ValueError):
                 client_val = server_max
+            if client_val < 0 or (client_val == 0 and key != "reserveModelCalls"):
+                raise ValueError("Budget limits must be positive")
             clamped[key] = min(client_val, server_max)
     return clamped
 

@@ -1019,3 +1019,10 @@ def test_action_receipt_is_durable_and_payload_bound(repo: DeepResearchRepositor
     result = {"runId": "action-run", "status": "paused"}
     restarted.finish_action("action-run", "request", result)
     assert restarted.claim_action("action-run", "request", "pause-payload")[0]["result"] == result
+
+
+@pytest.mark.parametrize("limit", ["maxModelCalls", "maxTokens", "maxWallClockSeconds"])
+@pytest.mark.parametrize("value", [0, -1])
+def test_nonpositive_budget_does_not_disable_limits(repo: DeepResearchRepository, limit, value):
+    with pytest.raises(ValueError):
+        repo.create_run({"runId": "bad-budget", "budget": {limit: value}})
