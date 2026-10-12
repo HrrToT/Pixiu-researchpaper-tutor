@@ -50,7 +50,8 @@ def test_selected_evidence_cannot_establish_absence_in_the_whole_paper():
     assert result['accepted']
 
 
-@pytest.mark.parametrize('text', ['论文未提供动态场景验证', '论文没有涉及跨硬件评测', 'The paper does not report dynamic results'])
+@pytest.mark.parametrize('text', ['论文未提供动态场景验证', '论文没有涉及跨硬件评测', 'The paper does not report dynamic results',
+                               '摘要中未包含实验数据', '摘要不包括实验数据', 'The abstract does not contain measurements'])
 def test_other_definitive_absence_wording_requires_explicit_negative_evidence(text):
     ev = evidence()
     assert verify_claims([claim(ev, text, kind='inference')], [ev], passed)['rejected'][0]['reason'] == 'absence_not_established'

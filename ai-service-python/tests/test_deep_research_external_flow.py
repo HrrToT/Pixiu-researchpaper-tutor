@@ -100,6 +100,15 @@ def test_report_keeps_conditions_and_labels_in_summary_and_folds_evidence():
     assert "[1](#research-evidence-e)" in body
 
 
+def test_short_summary_keeps_three_components_after_scope_statement():
+    from services.deep_research.reporting import conversation_summary
+    claims = [{'claimId': str(i), 'kind': 'reported', 'text': text}
+              for i, text in enumerate(['仅取得摘要。', '第一部分：剪枝。', '第二部分：蒸馏。', '第三部分：量化。'])]
+    result = conversation_summary(claims, 'complete')
+    assert all(claim['text'] in result for claim in claims)
+    assert len(result) <= 500
+
+
 def test_task_only_policy_never_constructs_external_client(repo):
     repo.update_run("r", lambda r: {**r, "sourcePolicy": {"mode": "task_only"}})
     acquire = AcademicAcquisition(repo, repo.complete_call, client_factory=lambda record: pytest.fail("no external client"))

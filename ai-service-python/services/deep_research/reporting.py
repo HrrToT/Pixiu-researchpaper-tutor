@@ -93,8 +93,6 @@ def conversation_summary(claims, outcome, *, max_chars=500):
             continue
         parts.append(item)
         length += len(item) + 2
-        if len(parts) == 3:
-            break
     if boundary:
         parts.append(boundary)
     return "\n\n".join(parts) or "研究结果已保存，可打开报告查看。"
