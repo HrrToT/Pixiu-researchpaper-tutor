@@ -494,22 +494,24 @@ class BudgetedSemanticChecker:
     def _check(self, claims, evidence, accepted_context, node):
         if not claims:
             return []
-        # Check a prospective design jointly once: splitting its equations and
-        # definitions across three calls repeats reasoning and loses context.
-        # Facts remain separately checked against their own citations. Every
-        # call still goes through the same ledger, budget and scope validation.
+        # Separate concrete configuration from scientific interpretation while
+        # sharing all definitions. A repair stays one bounded verification call.
         proposals = [c for c in claims if c.get('kind') in {'proposal', 'suggestion', 'hypothesis'}]
         facts = [c for c in claims if c.get('kind') not in {'proposal', 'suggestion', 'hypothesis'}]
-        fact_slots = 2 if proposals else 3
+        config_roles = {'groups', 'controls', 'data', 'budget', 'steps', 'metrics'}
+        config = [c for c in proposals if c.get('designRole') in config_roles] if node == 'verify' else []
+        science = [c for c in proposals if c not in config]
+        proposal_batches = ([(config, 'verify_design_config')] if config else []) + ([(science, node)] if science else [])
+        fact_slots = max(1, 3 - len(proposal_batches))
         size = max(1, (len(facts) + fact_slots - 1) // fact_slots)
-        batches = ([proposals] if proposals else []) + [facts[i:i + size] for i in range(0, len(facts), size)]
+        batches = proposal_batches + [(facts[i:i + size], node) for i in range(0, len(facts), size)]
         verdicts = []
-        for batch in batches:
+        for batch, batch_node in batches:
             targets = {c['claimId'] for c in batch}
             context = [{'claimId': c.get('claimId'), 'text': c.get('text'), 'kind': c.get('kind'),
                         'conditions': c.get('conditions', {}), 'designRole': c.get('designRole')}
                        for c in [*accepted_context, *proposals] if c['claimId'] not in targets]
-            verdicts.extend(self._check_batch(batch, evidence, context, node=node))
+            verdicts.extend(self._check_batch(batch, evidence, context, node=batch_node))
         by_id = {v['claimId']: v for v in verdicts}
         return [by_id[c['claimId']] for c in claims]
 
@@ -567,9 +569,18 @@ Do not accept vague connections. A partly supported claim must fail until its wo
         
         if any(c.get("kind") in {"proposal", "suggestion", "hypothesis"} for c in claims):
             from services.deep_research.experimental_reasoning import FACTORIAL_REFERENCE, design_requirements
-            prompt += "\nReview all claims jointly for conflicting definitions. For every formula claim, " \
-                      "derive its meaning before issuing a verdict; state any counterexample in the reason.\n" \
-                      + FACTORIAL_REFERENCE
+            if node == 'verify_design_config':
+                prompt += '\nCheck that the target configurations are executable and mutually consistent. ' \
+                          'Check parameter syntax, explicit intervention levels, split/seed rules, budgets ' \
+                          'and measurement procedures. Reject a placeholder such as "pre-register a value". ' \
+                          'Use the shared scientific definitions for consistency, but do not rederive their ' \
+                          'formulas or issue verdicts for context statements.'
+            else:
+                prompt += '\nCheck target scientific assertions against the complete proposed configuration. ' \
+                          'Reject incompatible sampling units, insufficient independent replication, invalid ' \
+                          'metric signs and decision rules. Explain a failure concisely; no full derivation ' \
+                          'is needed in the returned reason. Shared context is not itself verified by this call.\n' \
+                          + FACTORIAL_REFERENCE
             prompt += '\nOther proposed statements, for consistency only (not evidence and not verdict targets):\n' + json.dumps(proposal_context, ensure_ascii=False)
             if any(c.get('designRole') for c in claims):
                 prompt += '\nFor every designRole, verify BOTH logical correctness AND fulfillment of its entire ' \

@@ -24,6 +24,10 @@ For practical equivalence, predeclare a metric-specific tolerance and assess
 an uncertainty interval relative to it; otherwise report the estimate and
 uncertainty without claiming no interaction. Use paired scenes/seeds, identify
 the independent sampling unit, and keep recovery/training budgets matched.
+Nearby views from one scene are not automatically independent replicates.
+One selected scene cannot supply a cross-scene bootstrap distribution. Match
+resampling to actual independent units; with inadequate replication report
+descriptive paired effects without population-level confidence claims.
 An intervention without recovery is a valid diagnostic only if explicitly
 distinguished from an end-to-end compression procedure with recovery.
 """
@@ -31,9 +35,9 @@ distinguished from an end-to-end compression procedure with recovery.
 # Each role is a separately checked deliverable, not a keyword-based verdict.
 DESIGN_ROLES = {
     'hypothesis': ('假设', 'State the testable prospective hypothesis and its limited estimand.'),
-    'groups': ('分组表', 'Specify every intervention group, factor levels and how each is constructed; distinguish truncation, distillation and the full pipeline.'),
+    'groups': ('分组表', 'Specify every intervention group, actual factor levels and how each is constructed; a promise to preregister unspecified levels is incomplete. Distinguish truncation, distillation and the full pipeline.'),
     'controls': ('固定条件', 'Fix paired baseline checkpoints, rendering settings and all other interventions, including quantization when relevant.'),
-    'data': ('固定条件', 'Give a closed scene list or deterministic selection rule, an executable train/evaluation split rule, actual paired seed values or their generation rule, and the independent sampling unit. Saying "fixed split/same seed/multiple scenes" is incomplete. Label proposed choices, never attribute them to the paper.'),
+    'data': ('固定条件', 'Give a closed scene list or deterministic selection rule, an executable train/evaluation split rule, valid integer paired seed values or an executable generation rule, and the independent sampling unit. Prefer explicit decimal seed values; do not invent symbolic numeric literals. Saying "fixed split/same seed/multiple scenes" is incomplete. Label proposed choices, never attribute them to the paper.'),
     'budget': ('固定条件', 'Specify recovery/optimization steps and matched budgets for every group. Explicit zero recovery is valid for a diagnostic; separate native-budget results from matched-budget results.'),
     'steps': ('执行步骤', 'Give executable ordered steps and saved artifacts: checkpoint identity, split, seed, intervention configuration, recovery budget, renders and raw measurements.'),
     'metrics': ('指标', 'Specify quality direction and image/view aggregation protocol; speed device/resolution, warmup, synchronization, timed region and repetitions; storage files/representation and units. A list of PSNR/SSIM/LPIPS/FPS/MB without a measurement protocol is incomplete. Never combine incompatible units.'),

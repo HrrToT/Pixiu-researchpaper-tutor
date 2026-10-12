@@ -61,9 +61,16 @@ def test_joint_design_check_keeps_all_definitions_but_separates_factual_evidence
         targets = json.loads(prompt.split('Claims:\n', 1)[1].split('\n\nEvidence:', 1)[0])
         batches.append(targets)
         if any(c.get('designRole') for c in targets):
-            assert len(targets) == len(DESIGN_ROLES)
+            # All definitions remain visible, but only one class of claims is
+            # judged in this call. Facts from other claims never become evidence.
+            assert all(requirement in prompt for _, requirement in DESIGN_ROLES.values())
             assert 'UNRELATED_PAPER_QUOTE' not in prompt
             assert 'fulfillment of its entire' in prompt
+            roles = {c.get('designRole') for c in targets}
+            if kwargs['node'] == 'verify_design_config':
+                assert roles == {'groups', 'controls', 'data', 'budget', 'steps', 'metrics'}
+            else:
+                assert roles == {'hypothesis', 'analysis', 'limits'}
         return {'content': json.dumps([{'claimId': c['claimId'],
                 'status': 'failed' if c.get('designRole') == 'budget' else 'passed',
                 'reason': 'recovery budget unspecified' if c.get('designRole') == 'budget' else '',
@@ -75,7 +82,7 @@ def test_joint_design_check_keeps_all_definitions_but_separates_factual_evidence
                  'verification': {'literal': 'passed'}}]
     claims = [*facts, *design_claims()]
     checked = verify_claims(claims, evidence, BudgetedSemanticChecker(invoke, 'r'))
-    assert len(batches) == 2
+    assert len(batches) == 3
     assert [c['claimId'] for c in checked['accepted']] == [c['claimId'] for c in claims if c['claimId'] != 'budget']
     result = publish(checked['accepted'])
     assert result['outcome'] == 'partial'

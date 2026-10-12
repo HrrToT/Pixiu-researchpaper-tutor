@@ -3,6 +3,7 @@
 import json
 
 REQUIRED = {
+    "groups": ("group_construction", "intervention_levels"),
     "data": ("scenes", "split", "seeds", "sampling_unit"),
     "metrics": ("quality_protocol", "speed_protocol", "storage_protocol"),
     "budget": ("per_group_steps",),
