@@ -497,7 +497,7 @@ class BudgetedSemanticChecker:
         return verdicts
 
     def _check_batch(self, claims: list[dict], evidence: list[dict], proposal_context: list[dict]) -> list[dict]:
-        
+        from services.deep_research.selection import surrounding_context
         # Format claims and evidence for checking
         claims_text = json.dumps([{
             "claimId": c.get("claimId"),
@@ -509,7 +509,7 @@ class BudgetedSemanticChecker:
         
         referenced = {ref for claim in claims for ref in claim.get("evidenceRefs", [])}
         evidence_map = {e["evidenceId"]: {"quote": e.get("quote", ""), "conditions": e.get("conditions", {}),
-                        "sourceContext": e.get("sourceContext", "")[:3000], "location": e.get("location", {}),
+                        "sourceContext": surrounding_context(e), "location": e.get("location", {}),
                         "sourceTitle": e.get("sourceTitle", ""),
                         "workId": e.get("sourceWorkId"), "versionId": e.get("sourceVersionId"),
                         "accessLevel": e.get("accessLevel")} for e in evidence if e["evidenceId"] in referenced}

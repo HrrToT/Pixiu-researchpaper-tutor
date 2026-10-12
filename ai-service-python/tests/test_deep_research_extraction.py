@@ -136,7 +136,8 @@ def test_verifier_receives_literal_context_and_source_scope():
     BudgetedSemanticChecker(invoke, 'r')([{'claimId': 'c', 'evidenceRefs': ['e']}], evidence)
     prompt = invoke.call_args.kwargs['prompt']
     received = json.loads(prompt.split('Evidence:\n', 1)[1].split('\n\nReturn JSON', 1)[0])['e']
-    assert received['sourceContext'] == evidence[0]['sourceContext']
+    assert received['sourceContext']['before'] == 'Synthetic dataset, supplementary results. '
+    assert received['sourceContext']['after'] == ''
     assert received['location'] == {'section': 'Supplement'}
     assert received['quote'] == 'Size falls to 7 MB.'
 
@@ -151,6 +152,19 @@ def test_prompt_sampling_covers_other_papers_and_obligations_before_repeats():
         ('a', 'quality'), ('b', 'quality'), ('b', 'speed')]
     assert len(items) == 27
     assert balanced_sample([], lambda item: item, 10) == []
+
+
+def test_context_windows_and_utf8_packing_keep_complete_quotes():
+    from services.deep_research.selection import surrounding_context, bounded_evidence_rows, balanced_sample
+    quote = 'Result: 30 FPS.'
+    context = surrounding_context({'quote': quote, 'sourceContext': '前' * 1000 + quote + '后' * 1000})
+    assert context == {'before': '前' * 240, 'after': '后' * 240, 'truncated': True}
+    rows = [{'source': p, 'quote': quote, 'sourceContext': context} for p in ['A'] * 15 + ['B'] * 15]
+    selected = bounded_evidence_rows(balanced_sample(rows, lambda e: e['source'], 20))
+    assert {e['source'] for e in selected} == {'A', 'B'}
+    assert len(json.dumps(selected, ensure_ascii=False).encode('utf-8')) <= 14000
+    assert all(e['quote'] == quote for e in selected)
+    assert bounded_evidence_rows([{'quote': '字' * 6000}]) == []
 
 
 def test_read_balances_papers_before_legacy_source_prefix_and_prefers_new_passages(tmp_path):

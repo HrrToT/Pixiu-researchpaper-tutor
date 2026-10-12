@@ -908,7 +908,7 @@ def make_synthesize_node(
         paper_titles = {m.get('materialId'): m.get('title', '') for m in record.get('materials', [])}
         
         # Format evidence summaries with obligation binding
-        from services.deep_research.selection import balanced_sample
+        from services.deep_research.selection import balanced_sample, bounded_evidence_rows, surrounding_context
         evidence_summaries = []
         evidence_aliases = {}
         for ev in balanced_sample(evidence,
@@ -917,16 +917,18 @@ def make_synthesize_node(
             evidence_aliases[alias] = ev['evidenceId']
             evidence_summaries.append({
                 "evidenceId": alias,
-                "quote": ev.get("quote", "")[:1800],
+                "quote": ev.get("quote", ""),
                 "source": ev.get("sourceWorkId", ""),
                 "sourceTitle": paper_titles.get(ev.get("sourceWorkId"), ''),
-                "sourceContext": ev.get("sourceContext", "")[:3000],
+                "sourceContext": surrounding_context(ev),
                 "location": ev.get("location", {}),
                 "conditions": ev.get("conditions", {}),
                 "obligations": ev.get("obligationIds", []),
                 "accessLevel": ev.get("accessLevel", "fulltext"),
             })
         
+        evidence_summaries = bounded_evidence_rows(evidence_summaries)
+        evidence_aliases = {row['evidenceId']: evidence_aliases[row['evidenceId']] for row in evidence_summaries}
         prompt = f"""Synthesize a complete answer to the research question.
 Question: {question}
 Output kind: {output_kind}
@@ -938,7 +940,7 @@ User clarification: {brief_state.get('clarification', '')}
 Gaps: {json.dumps([g.get('question') for g in gaps[:5]], ensure_ascii=False)}
 
 Evidence summaries:
-{json.dumps(evidence_summaries, ensure_ascii=False, indent=2)}
+{json.dumps(evidence_summaries, ensure_ascii=False)}
 
 Return ONLY compact JSON with:
 - sections: array of {{title, claimIds: [claim_id_strings]}}
