@@ -303,4 +303,4 @@ D5 v2提交被idempotency_conflict拒绝：验收脚本以同一任务ID和attem
 
 D5 v3 `c56e3d09` completed/partial，7次调用、35,045 tokens、158秒。继承30个来源、52条证据；调用账本为resolve_brief、plan、assess_relevance、synthesize、repair_claims各1次及verify 2次，全部succeeded，无retrieve/read。新增表述重新核验且结果独立保存，证明实际增量复用链路；关于FPS的回答仍缺少具体测量条件与未知条件的清晰区分，不能将其算作全部内容质量通过。首次D5为13次调用，对照仅为这两次观测，不声明稳定成本降幅。
 
-实际点击D2 v17成果引用时，发现同一source包含多条evidence，弹窗把Ours引用显示为该source第一条Compact 3D-GS基线。提交 `e59acf7` 在来源响应保存evidenceId到精确quote/location的映射，弹窗按该身份取原文与页码；旧记录有多个证据ID却缺少映射时，明确提示查看报告原文依据，不显示第一条冒充。后端1项、前端4项回归通过，类型检查通过；不追加模型请求。修复不改写旧人工成果，完整新成果的实际引用回查仍需后续验收。
+实际点击D2 v17成果引用时，发现同一source包含多条evidence，弹窗把Ours引用显示为该source第一条Compact 3D-GS基线。提交 `e59acf7` 在来源响应保存evidenceId到精确quote/location的映射，弹窗按该身份取原文与页码；旧记录有多个证据ID却缺少映射时，明确提示查看报告原文依据，不显示第一条冒充。后端1项、前端4项回归通过，类型检查通过；不追加模型请求。加载后实际Java来源接口按ev_ffe2afc返回正确的Table row 10: Ours及第6页，而非首条基线；第二次追问后父成果完整哈希仍未变，证据保存于tmp/dr-live-cases/D5-v3-parent-and-citation-check.json。浏览器实际确认旧歧义引用只显示不可恢复提示（tmp/dr-ui-ambiguous-citation-20261013.png）。修复不改写旧人工成果，完整新成果的实际引用回查仍需后续验收。最终Python health为ok。
