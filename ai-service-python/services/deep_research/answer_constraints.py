@@ -35,9 +35,12 @@ def compact_answer(report, question, invoke, parse):
     # One bounded rewrite before verification. Every rewritten fact is checked later.
     prompt = f'''Shorten this structured research answer to at most {limit} characters total
 across ALL claim text and conditions. Question: {question}
-Keep the most important conclusions and essential conditions. Remove tangential numbers.
+Return only ONE or TWO short claims that directly answer the user's question. You MAY DROP
+less important claims and their sections entirely. Keep necessary conditions and remove tangential numbers.
 Use concise Chinese, embedding conditions in text when possible instead of repeating them.
-Keep the same claimIds, kinds and evidenceRefs. Do not add facts, references or new claims.
+For claims you retain, keep their original claimId, kind and evidenceRefs. Do not add facts,
+references or new claims. Do NOT copy the original answer unchanged. Target {max(40, int(limit * .7))}
+characters so necessary conditions also fit the strict {limit} character maximum.
 Return ONLY JSON with sections and claims.
 Answer:\n{json.dumps(report, ensure_ascii=False)}'''
     result = invoke(prompt)

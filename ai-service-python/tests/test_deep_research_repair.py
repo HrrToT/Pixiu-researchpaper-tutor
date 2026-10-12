@@ -80,3 +80,12 @@ def test_capacity_rejects_before_clock_starts_and_does_not_queue_executor(tmp_pa
     finally:
         release.set()
         facade.shutdown()
+
+
+def test_elapsed_time_is_visible_for_failure_and_freezes_while_waiting():
+    from services.deep_research.facade import _elapsed_seconds
+    value = {'status': 'failed', 'startedAt': '2026-10-12T00:00:00Z',
+             'finishedAt': '2026-10-12T00:01:04Z', 'budget': {'elapsedSeconds': 0}}
+    assert _elapsed_seconds(value) == 64
+    value.update(status='waiting_user', state={'waitingSince': '2026-10-12T00:00:12Z'})
+    assert _elapsed_seconds(value) == 12

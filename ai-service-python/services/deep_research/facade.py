@@ -12,6 +12,7 @@ import logging
 import threading
 import time
 import uuid
+from datetime import datetime, UTC
 from concurrent.futures import ThreadPoolExecutor, Future
 from typing import Any, Callable
 
@@ -46,6 +47,23 @@ from services.deep_research.contracts import (
 )
 
 logger = logging.getLogger(__name__)
+
+
+def _elapsed_seconds(record):
+    started = record.get("startedAt")
+    if not started:
+        return 0
+    end = record.get("finishedAt")
+    if record.get("status") == STATUS_WAITING_USER:
+        end = record.get("state", {}).get("waitingSince") or record.get("updatedAt")
+    elif record.get("status") in {STATUS_PAUSED, STATUS_CANCELLED}:
+        end = end or record.get("updatedAt")
+    try:
+        start = datetime.fromisoformat(started.replace("Z", "+00:00"))
+        finish = datetime.fromisoformat(end.replace("Z", "+00:00")) if end else datetime.now(UTC)
+        return round(max(0, (finish - start).total_seconds()), 3)
+    except (ValueError, TypeError):
+        return record.get("budget", {}).get("elapsedSeconds", 0)
 
 
 class ResearchFacade:
@@ -314,7 +332,7 @@ class ResearchFacade:
                 "maxTokens": budget.get("maxTokens", 100000),
                 "externalSearches": budget.get("externalSearches", 0),
                 "fulltextFetches": budget.get("fulltextFetches", 0),
-                "elapsedSeconds": budget.get("elapsedSeconds", 0),
+                "elapsedSeconds": _elapsed_seconds(record),
                 "cost": None,  # No configured price table: unknown must never appear as zero cost.
             },
         }

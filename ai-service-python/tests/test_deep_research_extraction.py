@@ -90,3 +90,22 @@ def test_prompt_sampling_covers_other_papers_and_obligations_before_repeats():
         ('a', 'quality'), ('b', 'quality'), ('b', 'speed')]
     assert len(items) == 27
     assert balanced_sample([], lambda item: item, 10) == []
+
+
+def test_read_balances_papers_before_legacy_source_prefix_and_prefers_new_passages(tmp_path):
+    from services.deep_research.graph import make_read_node
+    from services.deep_research.repository import DeepResearchRepository
+    repo = DeepResearchRepository(str(tmp_path / 'reads.sqlite3'))
+    repo.initialize()
+    sources = [{'sourceId': f'a{i}', 'workId': 'A', 'contentHash': 'ha', 'text': 'old passage',
+                'obligationIds': ['o']} for i in range(25)] + [
+        {'sourceId': f'b{i}', 'workId': 'B', 'contentHash': 'hb', 'text': 'new passage',
+         'obligationIds': ['o']} for i in range(8)]
+    repo.create_run({'runId': 'read', 'taskId': 't', 'state': {'sources': sources,
+        'evidence': [{'sourceId': s['sourceId'], 'contentHash': 'ha'} for s in sources[:25]]}})
+    repo.begin_execution('read')
+    read = Mock(side_effect=lambda rid, sid: {'pages': [{'page': 1, 'text': sid}]})
+    make_read_node(read, lambda *a: True, repo.update_run)({'run_id': 'read', 'source_ids': [s['sourceId'] for s in sources]})
+    chosen = [s['workId'] for s in repo.require_run('read')['state']['readResults']]
+    assert chosen.count('A') == chosen.count('B') == 6
+    assert read.call_count == 12

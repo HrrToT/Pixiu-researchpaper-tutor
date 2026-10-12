@@ -35,3 +35,12 @@ def test_string_conditions_are_preserved_before_length_and_evidence_checks():
     result = compact_answer(report, '80字以内', invoke, json.loads)
     assert result['claims'][0]['conditions'] == {'context': '只在当前测试设置下'}
     invoke.assert_not_called()
+
+
+def test_compaction_can_drop_secondary_claims_but_retains_kept_identity():
+    important = {'claimId': 'answer', 'kind': 'inference', 'text': '需要保留的判断' * 20, 'evidenceRefs': ['e']}
+    secondary = {'claimId': 'extra', 'kind': 'reported', 'text': '不影响判断的背景' * 20, 'evidenceRefs': ['e2']}
+    compact = {'claims': [{**important, 'text': '当前证据不足以支持普遍结论。'}]}
+    invoke = Mock(return_value={'content': json.dumps(compact)})
+    assert compact_answer({'claims': [important, secondary]}, '100字以内', invoke, json.loads) == compact
+    assert 'MAY DROP' in invoke.call_args.args[0]

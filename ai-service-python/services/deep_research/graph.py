@@ -233,6 +233,8 @@ Return a compact JSON array of 1-4 plan items (prefer 1-2 for a short answer), e
 Ensure DAG structure (no cycles). Each obligation must specify which sources to check.
 Preserve the user's exact limits. If only one sub-question is requested, create exactly one item.
 Use short questions and at most two obligations per item. Do not repeat the same obligation.
+Each obligation should ask for ONE dimension that a short passage can support (e.g. storage,
+speed, quality or evaluation conditions), not a compound demand for every result at once.
 
 Return a JSON ARRAY of plan items, NOT an object with items field."""
         
@@ -487,7 +489,15 @@ def make_read_node(
         sources_map = {s["sourceId"]: s for s in record.get("state", {}).get("sources", [])}
         
         read_results = []
-        for source_id in source_ids[:20]:  # Bound to prevent runaway
+        from services.deep_research.selection import balanced_sample
+        extracted = {(e.get("sourceId"), e.get("contentHash")) for e in record.get("state", {}).get("evidence", [])}
+        available = [sources_map[sid] for sid in source_ids if sid in sources_map]
+        available.sort(key=lambda source: (source["sourceId"], source.get("contentHash")) in extracted)
+        selected = balanced_sample(available,
+            lambda source: (source.get("workId"), tuple(source.get("obligationIds", []))),
+            24 if record.get("budget", {}).get("profile") == "extended" else 12)
+        for source_meta in selected:
+            source_id = source_meta["sourceId"]
             # Map source to owner material for scope validation
             source_meta = sources_map.get(source_id, {})
             # Use ownerMaterialId (resolved in acquire) for scope validation, not source_id directly
@@ -888,6 +898,8 @@ def make_synthesize_node(
         gaps = record.get("state", {}).get("gaps", [])
         brief_state = record.get("state", {})
         output_kind = brief_state.get("outputKind", "direction_survey")
+        from services.deep_research.answer_constraints import requested_character_limit
+        requested_limit = requested_character_limit(question)
         from services.deep_research.synthesis import OUTPUT_KIND_SECTIONS
         section_templates = OUTPUT_KIND_SECTIONS.get(output_kind, OUTPUT_KIND_SECTIONS["direction_survey"])
         
@@ -898,7 +910,7 @@ def make_synthesize_node(
                 lambda item: (item.get("sourceWorkId", ""), tuple(item.get("obligationIds", []))), 20):
             evidence_summaries.append({
                 "evidenceId": ev["evidenceId"],
-                "quote": ev.get("quote", "")[:500],
+                "quote": ev.get("quote", "")[:1800],
                 "source": ev.get("sourceWorkId", ""),
                 "conditions": ev.get("conditions", {}),
                 "obligations": ev.get("obligationIds", []),
@@ -908,6 +920,9 @@ def make_synthesize_node(
         prompt = f"""Synthesize a complete answer to the research question.
 Question: {question}
 Output kind: {output_kind}
+Strict total character limit: {requested_limit or 'concise, no explicit maximum'}
+For a limit of 300 characters or less, use at most TWO claims, answer the question directly,
+and omit secondary quantitative examples. Conditions count toward the same limit.
 Evidence count: {len(evidence)}
 User clarification: {brief_state.get('clarification', '')}
 Gaps: {json.dumps([g.get('question') for g in gaps[:5]], ensure_ascii=False)}
