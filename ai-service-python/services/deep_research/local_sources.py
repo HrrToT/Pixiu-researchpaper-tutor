@@ -53,6 +53,27 @@ class LocalTaskRetriever:
                     return indexed
             except (ImportError, RuntimeError, OSError):
                 pass
+        material, pages = self.load_pages(pdf_id)
+        passages = []
+        for page in pages:
+            text = page.get('text', '')
+            for offset in range(0, len(text), 1500):
+                passage = text[offset:offset + 1800]
+                if passage.strip():
+                    location = {'page': page['page'], 'offset': offset}
+                    identity = hashlib.sha256(f"{pdf_id}:{material['contentHash']}:{location}".encode()).hexdigest()
+                    passages.append({'sourceId': 'src_' + identity, 'pdfId': pdf_id, 'text': passage,
+                        'location': location, 'contentHash': material['contentHash'], 'versionId': material.get('versionId'),
+                        'title': material.get('title', pdf_id), 'accessLevel': 'fulltext', 'retrievalMode': 'pdf_lexical_fallback'})
+        scores = _bm25(query, [value['text'] for value in passages])
+        ranked = sorted(zip(scores, passages), key=lambda value: -value[0])
+        return [value for score, value in ranked[:min(max(int(limit), 0), 5)] if score > 0]
+
+
+    def load_pages(self, pdf_id):
+        """Read only the owned snapshot version; recheck scope even on cache hits."""
+        if not self.validate(self.run_id, pdf_id):
+            raise DeepResearchError("scope_revoked", "论文范围已变更")
         record = self.repo.require_run(self.run_id)
         material = next((value for value in record.get('materials', []) if value.get('materialId') == pdf_id), None)
         if not material or not material.get('contentHash'):
@@ -73,20 +94,7 @@ class LocalTaskRetriever:
             if not body.startswith(b'%PDF-') or hashlib.sha256(body).hexdigest() != material['contentHash']:
                 raise DeepResearchError('source_changed', '论文内容与研究快照不同')
             self.pages[key] = self.parse(body)
-        passages = []
-        for page in self.pages[key]:
-            text = page.get('text', '')
-            for offset in range(0, len(text), 1500):
-                passage = text[offset:offset + 1800]
-                if passage.strip():
-                    location = {'page': page['page'], 'offset': offset}
-                    identity = hashlib.sha256(f"{pdf_id}:{material['contentHash']}:{location}".encode()).hexdigest()
-                    passages.append({'sourceId': 'src_' + identity, 'pdfId': pdf_id, 'text': passage,
-                        'location': location, 'contentHash': material['contentHash'], 'versionId': material.get('versionId'),
-                        'title': material.get('title', pdf_id), 'accessLevel': 'fulltext', 'retrievalMode': 'pdf_lexical_fallback'})
-        scores = _bm25(query, [value['text'] for value in passages])
-        ranked = sorted(zip(scores, passages), key=lambda value: -value[0])
-        return [value for score, value in ranked[:min(max(int(limit), 0), 5)] if score > 0]
+        return material, self.pages[key]
 
 
 def _requested_metrics(query):

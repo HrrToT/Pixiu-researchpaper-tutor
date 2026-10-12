@@ -242,7 +242,7 @@ class ResearchFacade:
             "materials": materials,
             "materialSnapshot": material_snapshot,  # Immutable Java snapshot
             "contextMaterials": (material_snapshot or {}).get("contextMaterials", []) if isinstance(material_snapshot, dict) else [],
-            "promptVersion": "dr-v2.20261013.11",
+            "promptVersion": "dr-v2.20261013.12",
             "retrievalVersion": "task-pdf-metric-tables.3",
             "focusPaperIds": request.get("focusPaperIds", []),
             "sourcePolicy": request.get("sourcePolicy", {"mode": "task_only"}),
@@ -801,7 +801,7 @@ class ResearchFacade:
                 retrieve_fn=self._make_retriever(run_id),
                 read_fn=self._make_reader(run_id),
                 scope_validator=self._scope_validator or self._default_scope_validator(),
-                make_evidence_fn=self._get_make_evidence(),
+                make_evidence_fn=self._get_make_evidence(run_id),
                 coverage_gaps_fn=self._get_coverage_gaps(),
                 verify_claims_fn=self._get_verify_claims(),
                 semantic_check_fn=self._make_semantic_checker(run_id),
@@ -1049,7 +1049,7 @@ class ResearchFacade:
             self._repo.complete_call(*args, **kwargs, allow_late=True)
             raise
     
-    def _get_make_evidence(self) -> Callable[..., dict]:
+    def _get_make_evidence(self, run_id=None) -> Callable[..., dict]:
         from services.deep_research.verification import make_evidence
         return make_evidence
     

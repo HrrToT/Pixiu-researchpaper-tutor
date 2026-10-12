@@ -186,6 +186,12 @@ def initialize_runtime():
             from services.deep_research.tools import BudgetedSemanticChecker
             return BudgetedSemanticChecker(self._make_llm_invoker(run_id), run_id)
 
+        def _get_make_evidence(self, run_id=None):
+            from services.deep_research.local_sources import LocalTaskRetriever
+            from services.deep_research.located_evidence import located_evidence_factory
+            return located_evidence_factory(repo, run_id,
+                LocalTaskRetriever(repo, run_id, scope, origin=scope.origin))
+
         def _make_retriever(self, run_id):
             from services.deep_research.local_sources import LocalTaskRetriever
             from services.deep_research.tools import TrackedRetriever
