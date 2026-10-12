@@ -14,6 +14,7 @@ import copy
 import sqlite3
 import threading
 from contextlib import closing
+from datetime import datetime, UTC
 from typing import Any, Callable, Iterable
 
 from services.deep_research.contracts import (
@@ -498,6 +499,9 @@ class DeepResearchRepository:
             )
         )
         delta = dict(budget_delta or {})
+        for value in delta.values():
+            if isinstance(value, bool) or not isinstance(value, int) or value < 0:
+                raise ValueError("Reservation costs must be nonnegative integers")
         now = utc_now_iso()
         call_id = _build_call_id(normalized_run, normalized_node, normalized_tool, normalized_digest)
         # Compute reserved_tokens from delta for persistence
@@ -521,6 +525,12 @@ class DeepResearchRepository:
                 if run_record.get("status") != STATUS_RUNNING:
                     _safe_rollback(conn)
                     raise CallOutsideRunningError(normalized_run, str(run_record.get("status")))
+                started = run_record.get("startedAt")
+                if started:
+                    elapsed = (datetime.now(UTC) - datetime.fromisoformat(started)).total_seconds()
+                    if elapsed > int(run_record["budget"]["maxWallClockSeconds"]):
+                        from services.deep_research.contracts import BudgetExhaustedError
+                        raise BudgetExhaustedError("elapsedSeconds", int(run_record["budget"]["maxWallClockSeconds"]), int(elapsed))
                 current_epoch = int(run_record.get("executionEpoch") or 0)
                 row = conn.execute(
                     "SELECT * FROM deep_research_calls_v2 WHERE call_id=?", (call_id,)

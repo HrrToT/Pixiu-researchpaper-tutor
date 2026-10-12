@@ -993,3 +993,16 @@ def test_generic_update_cannot_reassign_identity_or_reopen_terminal(repo: DeepRe
     with pytest.raises(IllegalStatusTransitionError):
         repo.update_run("immutable", lambda r: {**r, "status": STATUS_RUNNING})
     assert repo.require_run("immutable")["taskId"] == "owner"
+
+
+def test_reservation_rejects_negative_cost_and_expired_deadline(repo: DeepResearchRepository):
+    from services.deep_research.contracts import BudgetExhaustedError
+    repo.create_run({"runId": "deadline"})
+    repo.begin_execution("deadline")
+    args = dict(run_id="deadline", node="plan", tool="model", args_digest="unique")
+    with pytest.raises(ValueError):
+        repo.reserve_call(**args, budget_delta={"tokens": -100})
+    repo.update_run("deadline", lambda r: {**r, "startedAt": "2020-01-01T00:00:00+00:00"})
+    with pytest.raises(BudgetExhaustedError):
+        repo.reserve_call(**args)
+    assert not repo.list_calls("deadline")
