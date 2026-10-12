@@ -1,0 +1,19 @@
+{
+  "query": "Tanks and Temples datasets evaluation number of scenes",
+  "pdfId": "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf",
+  "method": "retrieve_current_paper_evidence(limit=5, allow_query_rewrite=False)",
+  "modelCalls": 0,
+  "resultCount": 5,
+  "firstHit": {
+    "chunkIndex": 57,
+    "pageIndex": 7,
+    "indexVersion": "729ba31ab10aefcb",
+    "quote": "two scenes from the Tanks&Temples dataset[2017]and two scenes provided by Hedman et al.[Hedman et al. 2018]."
+  },
+  "secondHit": {
+    "chunkIndex": 58,
+    "pageIndex": 7,
+    "quote": "taking every 8th photo for test"
+  },
+  "finding": "The existing local index retrieves the dataset cardinality as its first result for a targeted evaluation query. Next inspect whether experiment verification receives that evidence; do not hardcode this paper-specific count or call the proposal feasible without checking subset membership."
+}
