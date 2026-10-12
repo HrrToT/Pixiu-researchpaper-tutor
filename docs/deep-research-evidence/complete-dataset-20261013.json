@@ -1,0 +1,15 @@
+{
+  "promptVersion": "dr-v2.20261013.29",
+  "change": "Support scenes mode all with explicitly grounded positive count. Require exact equality with own-fulltext audited count; reject extra ordering/name rules. Selection uses entire exact dataset/subset, not the parent corpus. Semantic subset identity review remains mandatory.",
+  "tests": {
+    "targetedPassed": 136,
+    "fullPassed": 838,
+    "warnings": 2,
+    "seconds": 80.93
+  },
+  "limits": [
+    "No new real run yet",
+    "Runtime still .27; .28/.29 not loaded",
+    "Full-set support does not establish arbitrary model scientific correctness"
+  ]
+}

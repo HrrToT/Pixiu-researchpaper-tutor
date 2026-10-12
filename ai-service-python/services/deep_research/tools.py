@@ -631,6 +631,9 @@ A passed data verdict MUST additionally include dataAvailability:
 This is schema, not evidence. For sorted_first, bind the actual available unit count using
 its exact numeric token (plain decimal digits or English one..twenty), and ensure requested
 count does not exceed it. Never quote a count of views, methods, or another dataset as scenes.
+For all mode, the proposed count must equal the entire count of that EXACT dataset/subset.
+Full-set selection needs no invented ordering or per-unit name list when the quoted complete
+benchmark scope is unambiguous. An inherited subset whose identity remains unresolved fails.
 For named mode, instead provide availableNames with actual selected names explicitly present
 in the quoted passage; count fields may be omitted. Verify name membership and subset identity.
 Do not infer dataset existence/capacity from a proposed choice or another proposal. Missing

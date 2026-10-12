@@ -143,6 +143,8 @@ def _check_sorted_first(
         errors.append("DA_SCOPE_IS_COUNTQUOTE")
 
     req_count = scenes.get("count")
+    if scenes.get('mode') == 'all' and req_count != available_count:
+        errors.append('DA_COMPLETE_COUNT_MISMATCH')
     if (
         isinstance(req_count, int)
         and not isinstance(req_count, bool)
@@ -201,7 +203,9 @@ def validate_data_availability(
         return ["DA_MALFORMED_SCENES"]
 
     mode = scenes.get("mode")
-    if mode == "sorted_first":
+    if mode in ('sorted_first', 'all'):
+        if mode == 'all' and set(scenes) != {'mode', 'count'}:
+            return ['DA_CONFLICTING_COMPLETE_SELECTION']
         req_count = scenes.get("count")
         if (
             not isinstance(req_count, int)
@@ -277,7 +281,7 @@ def validate_data_availability(
     if scope_quote not in da_quote:
         return ["DA_SCOPE_NOT_IN_QUOTE"]
 
-    if mode == "sorted_first":
+    if mode in ('sorted_first', 'all'):
         count_quote = da.get('countQuote')
         if (isinstance(count_quote, str) and count_quote.strip()
                 and not _token_in_quote_with_boundary(ev_quote, count_quote.strip())):

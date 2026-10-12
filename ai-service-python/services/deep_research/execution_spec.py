@@ -11,6 +11,10 @@ EXECUTION_SPEC_CONTRACT = (
     "The split field key is exactly offset, not zero-based offset. "
     "data role: dataset nonblank str; scenes {mode:named,names unique nonblank len>=1} "
     "or {mode:sorted_first,count positive int,order nonblank}; "
+    "or {mode:all,count positive int} for ALL units of the exact cited dataset/subset. "
+    "For all, ground the complete count and exact scope; do not invent ordering or require "
+    "individual names when the cited complete benchmark is unambiguous. Never replace a "
+    "subset with its parent dataset. "
     "split {mode:every_nth,order nonblank,stride int>=2,zero-based offset int 0<=offset<stride} "
     "or {mode:explicit,train/evaluation nonempty unique disjoint str lists} "
     "or {mode:seeded_fraction,evaluationFraction finite 0<f<1,seed nonneg int}; "
@@ -68,7 +72,12 @@ def _check_str_list(lst, path, add):
 
 def _validate_scenes(scenes, add):
     mode = scenes.get("mode")
-    if mode == "named":
+    if mode == 'all':
+        if not _is_int(scenes.get('count')) or scenes['count'] <= 0:
+            add('scenes.count')
+        if set(scenes) != {'mode', 'count'}:
+            add('scenes.all_conflicting_selection')
+    elif mode == "named":
         names = scenes.get("names")
         if not isinstance(names, list) or len(names) == 0:
             add("scenes.names")

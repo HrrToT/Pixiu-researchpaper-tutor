@@ -20,7 +20,9 @@ def _render_data(spec):
     lines.append(f"数据集：{spec['dataset']}")
 
     sc = spec["scenes"]
-    if sc["mode"] == "named":
+    if sc['mode'] == 'all':
+        lines.append(f"场景选择：使用上述数据范围内的全部{sc['count']}个场景")
+    elif sc["mode"] == "named":
         lines.append(f"场景选择：指定场景 {'、'.join(sc['names'])}")
     else:
         lines.append(f"场景选择：按{sc['order']}排序后取前{sc['count']}个")
