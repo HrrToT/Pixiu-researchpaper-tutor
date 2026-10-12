@@ -129,6 +129,27 @@ class TaskResearchV2ControllerTest {
     }
 
     @Test
+    void pollingKeepsConcurrentUserEditsWhileWaitingForResearchResponse() throws Exception {
+        tasks.attachResearchRun("work", workspace.get("revision"), v2RunBinding("run-poll", 1L, "running"));
+        when(research.getV2ResearchTask("run-poll")).thenAnswer(call -> {
+            // Separate transaction commits after this HTTP request has read the workspace.
+            try (var executor = java.util.concurrent.Executors.newSingleThreadExecutor()) {
+                executor.submit(() -> {
+                    Map<String, Object> edit = new LinkedHashMap<>(tasks.get("work"));
+                    edit.put("title", "Concurrent user edit");
+                    tasks.update("work", edit);
+                }).get(5, java.util.concurrent.TimeUnit.SECONDS);
+            }
+            return v2Success("run-poll", "running", null, 2L);
+        });
+        mvc.perform(get("/api/task-workspaces/work/research/run-poll"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.task.runRevision").value(2))
+                .andExpect(jsonPath("$.workspace.title").value("Concurrent user edit"));
+        org.junit.jupiter.api.Assertions.assertEquals("Concurrent user edit", tasks.get("work").get("title"));
+    }
+
+    @Test
     void unifiedGetDispatchesToLegacyForLegacyRun() throws Exception {
         tasks.attachResearchRun("work", workspace.get("revision"), Map.of("researchId", "leg-1",
                 "runId", "leg-1", "engineVersion", "legacy-v1",
