@@ -27,7 +27,9 @@ export default function ResearchResultCard({ taskId, run, result, error, onActio
   const actions = new Set(Array.isArray(result.allowedActions) ? result.allowedActions : []);
   const terminal = ['completed', 'cancelled', 'failed'].includes(result.status);
   const report = Boolean(result.reportVersionId || result.report?.versionId || (typeof result.report === 'string' && result.report.trim()));
-  const title = result.title || result.brief?.title || '学术研究';
+  const rawTitle = result.title || result.brief?.title || '学术研究';
+  const title = rawTitle.length > 48 ? ({ paper_comparison: '论文比较', claim_verification: '主张核查',
+    experiment_design: '实验方案', direction_survey: '方向调研', research_entry: '研究切入点' }[result.outputKind || run.outputKind] || '学术研究') : rawTitle;
   const status = result.status === 'completed' ? outcomes[result.outcome] || '研究已完成' : labels[result.status] || '正在确认研究状态';
   const activity = typeof result.activity === 'string' ? result.activity : result.activity?.label;
   const rawError = failure || error?.action || error?.poll || result.error;

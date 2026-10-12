@@ -588,7 +588,8 @@ public class TaskWorkspaceService {
             String machineArtifactId = "v2-research:" + runId + ":" + (reportVersionId != null ? reportVersionId : "machine") + ":artifact";
             Map<String, Object> machineArtifact = new LinkedHashMap<>();
             machineArtifact.put("id", machineArtifactId);
-            machineArtifact.put("title", run.get("question") instanceof String question && !question.isBlank() ? question : "研究成果");
+            machineArtifact.put("title", research.get("title") instanceof String title && !title.isBlank() && title.length() <= 60 ? title
+                    : run.get("question") instanceof String question && !question.isBlank() ? question : "研究成果");
             machineArtifact.put("text", body);
             machineArtifact.put("paperIds", scope);
             machineArtifact.put("sources", sources);
@@ -618,7 +619,8 @@ public class TaskWorkspaceService {
 
             Map<String, Object> latestArtifact = new LinkedHashMap<>();
             latestArtifact.put("id", latestArtifactId);
-            latestArtifact.put("title", run.get("question") instanceof String question && !question.isBlank() ? question : "研究成果");
+            latestArtifact.put("title", research.get("title") instanceof String title && !title.isBlank() && title.length() <= 60 ? title
+                    : run.get("question") instanceof String question && !question.isBlank() ? question : "研究成果");
             latestArtifact.put("text", body);
             latestArtifact.put("paperIds", scope);
             latestArtifact.put("sources", sources);

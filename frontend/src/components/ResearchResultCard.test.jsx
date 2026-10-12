@@ -9,6 +9,11 @@ const props = { taskId: 't', run: { researchId: 'r' }, result: {
 } };
 
 describe('versioned research result', () => {
+  it('does not repeat a long user request as the card heading', () => {
+    render(<ResearchResultCard {...props} result={{ ...props.result, title: '研究质量并明确说明所有适用条件。'.repeat(8), outputKind: 'claim_verification' }} />);
+    expect(screen.getByText('主张核查')).toBeInTheDocument();
+    expect(screen.queryByText(/研究质量并明确说明所有适用条件/)).not.toBeInTheDocument();
+  });
   it('renders structured failures and a versioned plan without crashing', () => {
     render(<ResearchResultCard {...props} result={{ ...props.result, status: 'paused',
       error: { code: 'unknown_call', message: '上次调用结果未确认' },

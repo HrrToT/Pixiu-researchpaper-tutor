@@ -1114,6 +1114,15 @@ public class TaskResearchService {
                     entry.put("processingStatus", paper.getProcessingStatus() != null ? paper.getProcessingStatus() : "");
                     entry.put("uploadTime", paper.getUploadTime() != null ? paper.getUploadTime().toString() : "");
                     entry.put("fileName", paper.getFileName() != null ? paper.getFileName() : "");
+                    String title = paper.getFileName() != null ? paper.getFileName() : mid;
+                    if (paper.getAnalysisJson() != null) {
+                        try {
+                            String parsed = new com.fasterxml.jackson.databind.ObjectMapper()
+                                    .readTree(paper.getAnalysisJson()).path("title").asText("");
+                            if (!parsed.isBlank()) title = parsed;
+                        } catch (com.fasterxml.jackson.core.JsonProcessingException ignored) { /* Filename remains available. */ }
+                    }
+                    entry.put("title", title);
                     entry.put("contentHash", computeContentHash(paper.getPdfBytes()));
                 } else {
                     entry.put("processingStatus", "");
