@@ -32,11 +32,17 @@
     "seconds": 65.42,
     "warnings": 2
   },
-  "runtimeLoaded": false,
+  "runtimeLoaded": true,
   "realModelRetest": false,
   "remaining": [
     "Validate source subject attribution and per-aspect coverage with real model",
     "No claim that longer context or structural schema proves semantic completeness",
     "D3 executable configurations and independent held-out acceptance remain open"
-  ]
+  ],
+  "codeCommit": "ae01780",
+  "health": {
+    "status": "ok",
+    "rag": "ok",
+    "grobid": "ok"
+  }
 }
