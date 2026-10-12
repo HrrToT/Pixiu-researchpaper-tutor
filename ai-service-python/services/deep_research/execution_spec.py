@@ -23,7 +23,14 @@ EXECUTION_SPEC_CONTRACT = (
     "or {mode:interval_excludes_zero} "
     "or {mode:equivalence,tolerances nonempty dict metric->finite positive}.\n"
     "One claim per role; complete spec for own role; semantic reviewer checks "
-    "consistency, correctness, unit independence, concrete meaning separately."
+    "consistency, correctness, unit independence, concrete meaning separately. "
+    "Seeds, splits and intervention levels can be proposed; the existence and capacity "
+    "of a named existing dataset/subset cannot. For data selection, cite fulltext "
+    "evidence establishing enough units in that EXACT subset, or the actual selected "
+    "unit names. An inherited subset in another paper requires checking that paper; "
+    "the parent dataset's capacity does not establish the subset's capacity. "
+    "Do not invent availability, substitute a different subset, or claim a conditional "
+    "unverified data choice is already executable. State unresolved availability plainly."
 )
 
 

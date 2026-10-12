@@ -78,14 +78,21 @@ def test_internal_spec_is_not_dumped_into_user_report():
 
 def test_complete_spec_can_pass_with_semantic_verdict_and_exact_prose_audit():
     target = claim(data_spec())
+    target['evidenceRefs'] = ['dataset-source']
+    evidence = [{'evidenceId': 'dataset-source', 'accessLevel': 'fulltext',
+                 'verification': {'literal': 'passed'},
+                 'quote': 'Dataset scenes: scene-a and scene-b.'}]
     target['text'] = ('拟使用 proposed dataset 的 scene-a、scene-b；按 image id 字典序，'
                       '零起始每8张的第0张为评估，其余为训练；种子0、1、2用于固定索引，'
                       '保持同一检查点，不将种子视为独立训练；独立单位为场景。')
     def invoke(**kwargs):
         return {'content': json.dumps([{'claimId': 'd', 'status': 'passed',
+            'dataAvailability': {'evidenceId': 'dataset-source',
+                'quote': 'Dataset scenes: scene-a and scene-b.', 'scopeQuote': 'Dataset scenes',
+                'availableNames': ['scene-a', 'scene-b']},
             'designAudit': {slot: {'claimId': 'd', 'quote': target['text']}
                             for slot in ('scenes', 'split', 'seeds', 'sampling_unit')}}])}
-    result = verify_claims([target], [], BudgetedSemanticChecker(invoke, 'r'))
+    result = verify_claims([target], evidence, BudgetedSemanticChecker(invoke, 'r'))
     assert [x['claimId'] for x in result['accepted']] == ['d']
     assert result['accepted'][0]['executionSpec'] == data_spec()
     assert result['accepted'][0]['verification'] == 'proposal'

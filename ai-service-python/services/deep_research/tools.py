@@ -618,6 +618,26 @@ Do not require an unexecuted experiment to have results. Do not judge context cl
                       'independent training replicates. Require paired groups within units and resample actual ' \
                       'independent clusters. Quoting a vague choice does not make it concrete.'
 
+        if any(c.get('designContractVersion') == 2 and c.get('designRole') == 'data' for c in claims):
+            prompt += '''
+For each v2 data target, distinguish freely proposed parameters from existing data availability.
+An inherited subset is NOT the entire parent dataset. Resolve the exact dataset/subset,
+unit and membership from that target's own fulltext evidenceRefs. "Same scenes as [reference]"
+alone establishes neither count nor names. Unknown availability must fail, not be guessed.
+A passed data verdict MUST additionally include dataAvailability:
+{"evidenceId":"own fulltext ID","quote":"exact passage from its quote",
+ "scopeQuote":"exact words within that passage identifying the relevant data/subset",
+ "availableCount":2,"countQuote":"two","availableNames":[]}
+This is schema, not evidence. For sorted_first, bind the actual available unit count using
+its exact numeric token (plain decimal digits or English one..twenty), and ensure requested
+count does not exceed it. Never quote a count of views, methods, or another dataset as scenes.
+For named mode, instead provide availableNames with actual selected names explicitly present
+in the quoted passage; count fields may be omitted. Verify name membership and subset identity.
+Do not infer dataset existence/capacity from a proposed choice or another proposal. Missing
+fulltext support or unresolved subset identity fails even when every setting is concrete.
+The dataAvailability object is an internal audit, not new experimental results.
+'''
+
         if any(c.get("kind") in {"proposal", "suggestion", "hypothesis"} for c in claims):
             from services.deep_research.experimental_reasoning import FACTORIAL_REFERENCE, design_requirements
             if node == 'verify_design_config':
@@ -702,6 +722,12 @@ Do not require an unexecuted experiment to have results. Do not judge context cl
                 if missing:
                     verdict['status'] = 'failed'
                     verdict['reason'] = '实验方案缺少可核对的具体配置：' + ', '.join(missing)
+                    continue
+                from services.deep_research.data_availability import validate_data_availability
+                availability_errors = validate_data_availability(target, verdict, visible_evidence)
+                if availability_errors:
+                    verdict['status'] = 'failed'
+                    verdict['reason'] = '所选数据范围或可用数量尚未核实：' + ', '.join(availability_errors)
             return parsed
             
         except DeepResearchError:

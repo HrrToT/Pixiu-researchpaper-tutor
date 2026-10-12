@@ -250,6 +250,10 @@ independently judge whether any unanswered support question still matters. Do no
 requested facts, necessary experimental assumptions or requested comparisons optional.
 For experiment proposals, distinguish learning how the original method works from
 requiring a retelling of every original benchmark in the proposed experiment.
+For experiment designs, include dataset/subset availability in the evaluation-conditions investigation:
+retrieve the original evaluation's actual unit count or named units, particularly
+when a paper inherits a subset from another available paper. Existing data availability
+is a necessary factual prerequisite, not an optional historical benchmark retelling.
 Each obligation should ask for ONE dimension that a short passage can support (e.g. storage,
 speed, quality or evaluation conditions), not a compound demand for every result at once.
 For mechanism questions, explicitly include the requested entities' relationship,
