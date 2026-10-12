@@ -21,6 +21,22 @@ def test_fulltext_requires_separate_permission():
     assert not calls
 
 
+def test_fulltext_parse_has_process_timeout_and_no_retry(monkeypatch):
+    import subprocess
+    from services import deep_research_academic as academic
+    calls = []
+    def timeout(*args, **kwargs):
+        calls.append(kwargs)
+        raise subprocess.TimeoutExpired(args[0], kwargs['timeout'])
+    monkeypatch.setattr(academic.subprocess, 'run', timeout)
+    client = AcademicSourceClient(AcademicPolicy(enabled=True, mode='academic_external', allow_fulltext=True),
+                                  lambda *args: ('application/pdf', b'%PDF-malformed'))
+    with pytest.raises(AcademicAccessError, match='解析超时'):
+        client.fetch_fulltext('2311.17245v6')
+    assert len(calls) == 1
+    assert calls[0]['timeout'] == 20
+
+
 @pytest.mark.parametrize('value', ['https://localhost/a', '../secret', '2311.17245?x=1', '2311.17245#x', '2311.17245v0', '', None])
 def test_identifier_cannot_supply_urls_or_paths(value):
     with pytest.raises(AcademicAccessError):

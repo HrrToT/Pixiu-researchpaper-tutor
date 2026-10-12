@@ -3,13 +3,16 @@ from __future__ import annotations
 
 import hashlib
 import http.client
-import io
 import ipaddress
+import json
 import re
 import socket
 import ssl
+import subprocess
+import sys
 import time
 from dataclasses import dataclass
+from pathlib import Path
 from urllib.parse import urlencode
 from xml.etree import ElementTree
 
@@ -27,7 +30,8 @@ def public_addresses(host):
 
 def pinned_https_get(host, path, max_bytes, *, resolver=public_addresses, timeout=20):
     """解析后固定连接 IP，TLS 仍验证原主机；拒绝全部重定向。"""
-    if host not in {'export.arxiv.org', 'arxiv.org'} or not path.startswith(('/api/query?', '/pdf/')):
+    if not ((host == 'export.arxiv.org' and path.startswith('/api/query?'))
+            or (host == 'arxiv.org' and path.startswith('/pdf/'))):
         raise AcademicAccessError('学术来源超出允许范围')
     addresses = resolver(host)
     if not addresses or any(not ipaddress.ip_address(address).is_global for address in addresses):
@@ -130,20 +134,18 @@ class AcademicSourceClient:
         content_type, body = self.transport('arxiv.org', '/pdf/' + arxiv_id, self.policy.max_pdf_bytes)
         if len(body) > self.policy.max_pdf_bytes or content_type != 'application/pdf' or not body.startswith(b'%PDF-'):
             raise AcademicAccessError('公开全文格式或大小无效')
-        from PyPDF2 import PdfReader
-        started = time.monotonic()
         try:
-            reader = PdfReader(io.BytesIO(body))
-            if reader.is_encrypted or len(reader.pages) > self.policy.max_pages:
-                raise AcademicAccessError('公开全文页数或加密状态不支持')
-            pages = []
-            for index, page in enumerate(reader.pages):
-                if time.monotonic() - started > self.policy.parse_seconds:
-                    raise AcademicAccessError('公开全文解析超时')
-                text = (page.extract_text() or '')[:30000]
-                pages.append({'page': index + 1, 'text': text})
+            parsed = subprocess.run([sys.executable, '-m', 'services.deep_research_pdf_parser',
+                                     str(self.policy.max_pages), str(self.policy.max_pdf_bytes)],
+                                    cwd=str(Path(__file__).resolve().parent.parent), input=body,
+                                    capture_output=True, timeout=self.policy.parse_seconds, check=False)
+            if parsed.returncode != 0 or len(parsed.stdout) > 13_000_000:
+                raise AcademicAccessError('公开全文页数、加密状态或解析结果不支持')
+            pages = json.loads(parsed.stdout)
             if not any(page['text'].strip() for page in pages):
                 raise AcademicAccessError('公开全文未取得可读取正文')
+        except subprocess.TimeoutExpired as cause:
+            raise AcademicAccessError('公开全文解析超时') from cause
         except AcademicAccessError:
             raise
         except Exception as cause:
