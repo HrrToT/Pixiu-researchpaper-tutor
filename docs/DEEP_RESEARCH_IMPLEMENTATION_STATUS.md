@@ -305,6 +305,16 @@ D5 v3 `c56e3d09` completed/partial，7次调用、35,045 tokens、158秒。继�
 
 实际点击D2 v17成果引用时，发现同一source包含多条evidence，弹窗把Ours引用显示为该source第一条Compact 3D-GS基线。提交 `e59acf7` 在来源响应保存evidenceId到精确quote/location的映射，弹窗按该身份取原文与页码；旧记录有多个证据ID却缺少映射时，明确提示查看报告原文依据，不显示第一条冒充。后端1项、前端4项回归通过，类型检查通过；不追加模型请求。加载后实际Java来源接口按ev_ffe2afc返回正确的Table row 10: Ours及第6页，而非首条基线；第二次追问后父成果完整哈希仍未变，证据保存于tmp/dr-live-cases/D5-v3-parent-and-citation-check.json。浏览器实际确认旧歧义引用只显示不可恢复提示（tmp/dr-ui-ambiguous-citation-20261013.png）。修复不改写旧人工成果，完整新成果的实际引用回查仍需后续验收。最终Python health为ok。
 
+## 2026-10-13：D3 v7与状态轮询冲突
+
+D3 v7 `20a4377b44f25a6ca660e758d5059be0` 使用 .8 提示单次执行，最终failed/invalid_verification_response，9次模型调用、56,726 tokens、260秒，未发布报告。核验供应商调用已成功结束但finishReason=length，16,384输出tokens耗尽且没有完整判定；不是未知请求，亦未自动重发。草稿人工检查另发现无效种子0x3DGS、只选一个场景却按场景bootstrap、干预水平未具体化等问题，不能计作方案通过。回执位于tmp/dr-live-cases/D3-v7.json。下一步需重新组织核验的职责及输入，而非继续单纯提高超时。
+
+针对多次状态GET出现409，新增确定性并发测试：请求读取任务后，在等待研究服务响应期间由另一个事务修改标题，再更新研究状态。修复前稳定返回409，原因是Open EntityManager in View保留旧实体。提交 `bcc0adc` 关闭请求级实体上下文，事务内读取/锁定新实体；修复后GET返回200且并发标题修改保留。测试不自动重试写入、不放宽乐观锁，也不调用模型。
+
+55项研究/任务控制器测试通过。首次全套暴露AcademicControllerTest与ApiContractSmokeTest遗漏MaterialProcessingService mock，36项初始化失败；提交 `3c23483` 补齐依赖后本轮全部144项Java测试通过、无失败/错误/跳过。报告目录中另有旧的3项TaskAgentMigrationControllerTest结果，未计入本轮。运行使用本机JDK25、Lombok1.18.42及net.bytebuddy.experimental=true兼容参数，项目目标仍Java21。
+
+确认无运行中研究后，解决Windows旧进程占用jar问题并重新构建，在原8081端口和原H2路径后台重启Java（PID56060）。随后以4并发对两条已结束研究读取8次，均成功，返回各自真实failed/paused状态；任务标题、论文列表、笔记、消息和成果的完整内容哈希前后相同（332922eb1f4e03fdb50996400492c3b60d5b2b6f7c6eccfbeaeb15e6b2dc342b），API/RAG/GROBID健康。证据位于tmp/dr-polling-runtime-check.json。这是并发读取检查，运行时未额外修改用户内容；并发编辑冲突由隔离自动测试覆盖。本轮修复不意味着研究内容质量或DR0—DR5整体验收完成。
+
 ## 2026-10-13：具体配置依据与修复上下文
 
 提交 `b183410`，promptVersion=dr-v2.20261013.8。Qoder CLI再次实际使用bailian/qwen3.8-max-tp、medium推理，仅接收开发说明，工具/MCP关闭，输出配置审计辅助模块与测试；原始补丁保存在tmp/qoder-dr-audit-20261013/patch-output.txt。主代理修正其id/role字段与项目claimId/designRole契约不一致、空白引用及畸形kind处理，并完成运行时集成。
