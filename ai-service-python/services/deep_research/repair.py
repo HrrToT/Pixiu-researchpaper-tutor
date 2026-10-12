@@ -18,7 +18,7 @@ Question: {question}
 Rejected claims and checks:
 {json.dumps([{'claim': row, 'check': rejected[key]} for key, row in originals.items()], ensure_ascii=False)}
 Exact available evidence:
-{json.dumps([{'evidenceId': e['evidenceId'], 'quote': e.get('quote', '')[:1800], 'accessLevel': e.get('accessLevel'), 'conditions': e.get('conditions', {})} for e in evidence if e['evidenceId'] in refs], ensure_ascii=False)}
+{json.dumps([{'evidenceId': e['evidenceId'], 'quote': e.get('quote', '')[:1800], 'sourceContext': e.get('sourceContext', '')[:3000], 'location': e.get('location', {}), 'accessLevel': e.get('accessLevel'), 'conditions': e.get('conditions', {})} for e in evidence if e['evidenceId'] in refs], ensure_ascii=False)}
 Return a JSON array of revised claims, or [] when no supported revision is possible.
 Keep claimId and kind. Use only a subset of that claim's original evidenceRefs; never turn a fact
 into a proposal to evade checking. Preserve conditions needed for the narrower assertion.

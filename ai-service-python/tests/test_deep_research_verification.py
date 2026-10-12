@@ -42,6 +42,22 @@ def test_chinese_numbers_and_conditions_are_checked_before_model_verdict():
     assert verify_claims([claim(ev, '速度为200 FPS')], [ev], passed)['accepted']
 
 
+def test_dimensional_method_name_is_not_a_measured_result():
+    ev = make_evidence(source(), 'real-time (≥ 30 fps) at 1080p',
+                       'We achieve real-time (≥ 30 fps) at 1080p.', location={}, obligation_ids=[])
+    assert verify_claims([claim(ev, '3DGS在1080p达到≥30fps')], [ev], passed)['accepted']
+    assert verify_claims([claim(ev, '3D-GS在1080p达到≥30fps')], [ev], passed)['accepted']
+    assert not verify_claims([claim(ev, '3DGS达到300fps')], [ev], passed)['accepted']
+    assert not verify_claims([claim(ev, '3DGS占用3MB')], [ev], passed)['accepted']
+
+
+def test_evidence_preserves_original_context_without_promoting_it_to_quote():
+    original = 'Supplementary experiment, synthetic scenes. We reach 200 FPS.'
+    ev = make_evidence(source(), 'We reach 200 FPS.', original, location={}, obligation_ids=[])
+    assert ev['sourceContext'] == original
+    assert ev['quote'] == 'We reach 200 FPS.'
+
+
 def test_selected_evidence_cannot_establish_absence_in_the_whole_paper():
     ev = evidence()
     result = verify_claims([claim(ev, '论文未给出具体数值')], [ev], passed)

@@ -31,10 +31,18 @@ def make_evidence(source: dict, quote: str, original: str, *, location: dict,
             "sourceVersionId": source["versionId"], "contentHash": source["contentHash"],
             "accessLevel": source["accessLevel"], "quote": quote, "location": dict(location),
             "obligationIds": list(dict.fromkeys(obligation_ids)), "conditions": dict(conditions or {}),
+            "sourceContext": original,
             "verification": {"literal": "passed", "semantic": "unchecked"}}
 
 
 _NUMBER = re.compile(r"(?<![A-Za-z0-9_.])[-+]?\d+(?:\.\d+)?(?:[eE][-+]?\d+)?(?:\s*%|[x×])?")
+
+
+def _measurement_numbers(text: str) -> set[str]:
+    # Dimensional method labels are not measured quantities. The semantic
+    # verifier still checks their identity; standalone dimensions stay checked.
+    text = re.sub(r'(?<![A-Za-z0-9_])[234]D(?:-?[A-Za-z]+)?(?![A-Za-z0-9_])', '', text)
+    return {normalize_quote(n).replace(' ', '') for n in _NUMBER.findall(text)}
 _ABSENCE = re.compile(r"(?:未|没有)(?:给出|报告|提供|进行|测试|验证|覆盖|涵盖|涉及|包含|包括)|不(?:包含|包括|涉及|涵盖)|不存在|\b(?:does|did|do) not (?:report|provide|test|evaluate|contain|include)|\bno (?:experiment|evaluation|evidence)", re.I)
 _EXPLICIT_ABSENCE = re.compile(r"\b(?:do|does|did) not\b|\bnot (?:report|evaluat|test|consider)|\bno experiment|未(?:报告|进行|测试|考虑)|没有", re.I)
 
@@ -80,8 +88,8 @@ def verify_claims(claims: list[dict], evidence: list[dict],
                 identity = item.get("sourceWorkId", "")
                 if re.fullmatch(r'arxiv:\d{4}\.\d{4,5}', identity, re.I):
                     claim_text = re.sub(re.escape(identity), '', claim_text, flags=re.I)
-            numbers = {normalize_quote(n).replace(" ", "") for n in _NUMBER.findall(claim_text)}
-            original_numbers = {normalize_quote(n).replace(" ", "") for item in support for n in _NUMBER.findall(item["quote"])}
+            numbers = _measurement_numbers(claim_text)
+            original_numbers = set().union(*(_measurement_numbers(item['quote']) for item in support))
             if not numbers <= original_numbers:
                 reason = reason or "numeric_mismatch"
         if reason:

@@ -128,6 +128,19 @@ def test_large_report_has_at_most_three_verification_batches():
     assert [v['claimId'] for v in result] == [c['claimId'] for c in claims]
 
 
+def test_verifier_receives_literal_context_and_source_scope():
+    invoke = Mock(return_value={'content': '[{"claimId":"c","status":"passed"}]'})
+    evidence = [{'evidenceId': 'e', 'quote': 'Size falls to 7 MB.',
+                 'sourceContext': 'Synthetic dataset, supplementary results. Size falls to 7 MB.',
+                 'sourceTitle': 'Example paper', 'location': {'section': 'Supplement'}}]
+    BudgetedSemanticChecker(invoke, 'r')([{'claimId': 'c', 'evidenceRefs': ['e']}], evidence)
+    prompt = invoke.call_args.kwargs['prompt']
+    received = json.loads(prompt.split('Evidence:\n', 1)[1].split('\n\nReturn JSON', 1)[0])['e']
+    assert received['sourceContext'] == evidence[0]['sourceContext']
+    assert received['location'] == {'section': 'Supplement'}
+    assert received['quote'] == 'Size falls to 7 MB.'
+
+
 def test_prompt_sampling_covers_other_papers_and_obligations_before_repeats():
     from services.deep_research.selection import balanced_sample
     items = [{'paper': 'a', 'obligation': 'quality', 'i': i} for i in range(25)] + [

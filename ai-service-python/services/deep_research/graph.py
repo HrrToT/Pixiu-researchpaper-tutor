@@ -920,6 +920,8 @@ def make_synthesize_node(
                 "quote": ev.get("quote", "")[:1800],
                 "source": ev.get("sourceWorkId", ""),
                 "sourceTitle": paper_titles.get(ev.get("sourceWorkId"), ''),
+                "sourceContext": ev.get("sourceContext", "")[:3000],
+                "location": ev.get("location", {}),
                 "conditions": ev.get("conditions", {}),
                 "obligations": ev.get("obligationIds", []),
                 "accessLevel": ev.get("accessLevel", "fulltext"),

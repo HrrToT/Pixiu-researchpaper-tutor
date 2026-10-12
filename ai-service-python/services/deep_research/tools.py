@@ -509,6 +509,8 @@ class BudgetedSemanticChecker:
         
         referenced = {ref for claim in claims for ref in claim.get("evidenceRefs", [])}
         evidence_map = {e["evidenceId"]: {"quote": e.get("quote", ""), "conditions": e.get("conditions", {}),
+                        "sourceContext": e.get("sourceContext", "")[:3000], "location": e.get("location", {}),
+                        "sourceTitle": e.get("sourceTitle", ""),
                         "workId": e.get("sourceWorkId"), "versionId": e.get("sourceVersionId"),
                         "accessLevel": e.get("accessLevel")} for e in evidence if e["evidenceId"] in referenced}
         evidence_text = json.dumps(evidence_map, ensure_ascii=False)
@@ -527,6 +529,11 @@ Return JSON array of verdicts:
 Be strict: evidence must directly support EVERY clause and condition of the specific claim.
 For each claim use ONLY its own evidenceRefs; evidence cited by another claim is not its support.
 Check each number's method, dataset, metric, unit and experimental setting, not just its presence.
+SourceContext is the original passage around the exact quote, not additional permission to invent facts.
+Use it to detect lost experimental scope. A numeric comparison must identify its dataset/protocol
+or explicitly say that those conditions are unknown in the available passage. Reject an isolated
+supplemental or ablation result presented as the paper's general outcome. If necessary, remove
+the numerical example rather than approving it without its scope.
 Reject claims that confuse a similar PSNR with unchanged image quality, or infer universal/exclusive
 conditions from a limited tested range. Missing passages do not prove the authors never tested it.
 For inference, verify the stated premises and reasoning; reject invented calculations or generalization.
