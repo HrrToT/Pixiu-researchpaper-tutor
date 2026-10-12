@@ -47,6 +47,33 @@ def test_changed_bytes_never_reach_parser(monkeypatch):
     parse.assert_not_called()
 
 
+def test_indexed_retrieval_disables_untracked_query_rewrite_through_registry(monkeypatch):
+    from services.tools import retrieval_tools
+    from rag.store import DummyRAG
+    local, get, parse, _ = fixture(monkeypatch)
+    monkeypatch.setattr('services.deep_research.local_sources.importlib.util.find_spec', lambda name: object())
+    retrieve = Mock(return_value=[{'text': 'Gaussian pruning evidence from the indexed paper.',
+                                  'metadata': {'id': 'p', 'page': 4}, 'similarity': 0.9}])
+    monkeypatch.setattr(retrieval_tools, 'get_rag', lambda: DummyRAG())
+    monkeypatch.setattr(retrieval_tools, 'retrieve_fused_evidence', retrieve)
+    found = local('高斯剪枝', 'p')
+    assert found and found[0]['pdfId'] == 'p'
+    assert found[0]['location']['page'] == 4
+    assert found[0]['retrievalMode'] == 'indexed_hybrid'
+    retrieve.assert_called_once_with('高斯剪枝', top_k=8, filter_metadata={'id': 'p'}, allow_query_rewrite=False)
+    get.assert_not_called()
+    parse.assert_not_called()
+
+
+def test_indexed_locations_preserve_page_zero_and_table_uncertainty():
+    from services.deep_research.local_sources import _indexed_source
+    item = _indexed_source({'pageIndex': 0, 'chunkIndex': 0, 'metadata': {
+        'section_title': 'Main results', 'table_id': 't1', 'table_column_mapping_unverified': True}})
+    assert item['location'] == {'page': 1, 'chunk': 0, 'section': 'Main results',
+                                'table': 't1', 'tableColumnMappingUnverified': True}
+    assert 'page' not in _indexed_source({'metadata': {}})['location']
+
+
 def test_foreign_material_never_constructs_file_request(monkeypatch):
     local, get, _, _ = fixture(monkeypatch, valid=False)
     with pytest.raises(DeepResearchError):

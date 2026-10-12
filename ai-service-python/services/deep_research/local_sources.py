@@ -31,9 +31,9 @@ class LocalTaskRetriever:
         if importlib.util.find_spec('sentence_transformers') is not None:
             try:
                 from services.research_executor import retrieve_current_paper_evidence
-                items = retrieve_current_paper_evidence(query, pdf_id, limit=limit)
+                items = retrieve_current_paper_evidence(query, pdf_id, limit=limit, allow_query_rewrite=False)
                 if items:
-                    return items
+                    return [_indexed_source(item) for item in items]
             except (ImportError, RuntimeError, OSError):
                 pass
         record = self.repo.require_run(self.run_id)
@@ -70,6 +70,26 @@ class LocalTaskRetriever:
         scores = _bm25(query, [value['text'] for value in passages])
         ranked = sorted(zip(scores, passages), key=lambda value: -value[0])
         return [value for score, value in ranked[:min(max(int(limit), 0), 5)] if score > 0]
+
+
+def _indexed_source(item):
+    """Adapt legacy index metadata to the versioned research location contract."""
+    metadata = item.get('metadata') or {}
+    location = dict(item.get('location') or {})
+    page = metadata.get('page')
+    page_index = item.get('pageIndex', metadata.get('page_index'))
+    if isinstance(page, int) and not isinstance(page, bool) and page > 0:
+        location.setdefault('page', page)
+    elif isinstance(page_index, int) and not isinstance(page_index, bool) and page_index >= 0:
+        location.setdefault('page', page_index + 1)
+    for key, value in [('chunk', item.get('chunkIndex', metadata.get('chunk_index'))),
+                       ('section', metadata.get('section_title')), ('table', metadata.get('table_id'))]:
+        if value is not None:
+            location.setdefault(key, value)
+    if metadata.get('table_column_mapping_unverified') is True:
+        location['tableColumnMappingUnverified'] = True
+    return {**item, 'location': location, 'title': item.get('title') or metadata.get('title', ''),
+            'retrievalMode': 'indexed_hybrid'}
 
 
 def _tokens(text):

@@ -215,7 +215,8 @@ def research_sub_question(
     }
 
 
-def retrieve_current_paper_evidence(query: str, pdf_id: str, top_k: int = 8, limit: int = 5) -> list[dict[str, Any]]:
+def retrieve_current_paper_evidence(query: str, pdf_id: str, top_k: int = 8, limit: int = 5,
+                                    *, allow_query_rewrite: bool = True) -> list[dict[str, Any]]:
     response = invoke_tool(
         "retrieve_current_paper",
         {
@@ -226,6 +227,7 @@ def retrieve_current_paper_evidence(query: str, pdf_id: str, top_k: int = 8, lim
             # 上游先截到 700 字符，下游的 format_evidence_context 再宽也没用，
             # 所以深度研究链路上的逐条证据夹口统一抬到 2000 字符。
             "maxTextChars": 2000,
+            **({"allowQueryRewrite": False} if not allow_query_rewrite else {}),
         },
     )
     return list(response.get("items") or [])
