@@ -46,7 +46,7 @@ class ResearchEngineDispatcher:
             raise DeepResearchError("unsupported_engine", "研究引擎或契约版本无效")
         if self.facade is None or not self.allow_new():
             raise DeepResearchError("engine_unavailable", "新版研究入口尚未启用", {"status_code": 503})
-        record, _ = self.facade.create(request)
+        record, _ = self.facade.create(request, start_async=not bool(request.get("deferStart")))
         return {"status": "success", "task": self.facade.get(record["runId"])}
 
     def get(self, run_id: str):
