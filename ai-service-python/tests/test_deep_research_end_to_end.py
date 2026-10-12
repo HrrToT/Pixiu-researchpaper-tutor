@@ -49,7 +49,8 @@ class FixtureModel:
                 {"claimId": "bad", "text": "Beta reports 99% accuracy.", "kind": "reported", "evidenceRefs": [ids[1]]}],
                 "proposals": ["UNCHECKED PROPOSAL MUST NEVER BE SHOWN"], "gaps": []}
         elif prompt.startswith("Verify these claims"):
-            content = [{"claimId": "c1", "status": "passed"}, {"claimId": "c2", "status": "passed"}]
+            claims = json.loads(prompt.split('Claims:\n', 1)[1].split('\n\nEvidence:', 1)[0])
+            content = [{"claimId": c['claimId'], "status": "passed"} for c in claims]
         elif prompt.startswith("Revise only the rejected claims"):
             content = []  # An unsupported claim may be dropped; do not relax checks.
         else:
@@ -104,9 +105,9 @@ def test_real_graph_publishes_only_verified_body_and_reopens_without_generation(
         assert {source["pdfId"] for source in result["sources"]} == set(PAPERS)
         assert all(source["quote"] and source["page"] == 3 for source in result["sources"])
         calls = repo.list_calls(record["runId"])
-        assert sum(c["tool"] == "llm_invoke" for c in calls) == len(model.requests) == 8
+        assert sum(c["tool"] == "llm_invoke" for c in calls) == len(model.requests) == 9
         assert all(c["status"] == "succeeded" for c in calls)
-        assert result["budget"]["tokens"] == 1600
+        assert result["budget"]["tokens"] == 1800
         assert len(repo.list_outbox(record["runId"])) == 1
         calls_before = len(model.requests)
         restored = DeepResearchRepository(repo.db_path)
@@ -232,7 +233,7 @@ def test_actual_budget_stop_publishes_inconclusive_without_more_model_calls(tmp_
     repo, facade, _ = make_facade(tmp_path, model)
     try:
         record = create(facade)
-        repo.update_run(record["runId"], lambda r: {**r, "budget": {**r["budget"], "maxModelCalls": 4}})
+        repo.update_run(record["runId"], lambda r: {**r, "budget": {**r["budget"], "maxModelCalls": 4, "reserveModelCalls": 3}})
         repo.begin_execution(record["runId"])
         facade._execute_graph(record["runId"])
         result = facade.get(record["runId"])

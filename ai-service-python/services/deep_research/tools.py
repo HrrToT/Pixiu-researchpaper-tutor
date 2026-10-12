@@ -484,6 +484,19 @@ class BudgetedSemanticChecker:
     def __call__(self, claims: list[dict], evidence: list[dict]) -> list[dict]:
         if not claims:
             return []
+        # At most three sequential batches, each separately ledgered and subject
+        # to the live scope/time/token budget. Small reports get per-claim checks.
+        size = max(1, (len(claims) + 2) // 3)
+        proposal_context = [
+            {'claimId': c.get('claimId'), 'text': c.get('text'), 'kind': c.get('kind')}
+            for c in claims
+        ] if any(c.get('kind') in {'proposal', 'suggestion', 'hypothesis'} for c in claims) else []
+        verdicts = []
+        for offset in range(0, len(claims), size):
+            verdicts.extend(self._check_batch(claims[offset:offset + size], evidence, proposal_context))
+        return verdicts
+
+    def _check_batch(self, claims: list[dict], evidence: list[dict], proposal_context: list[dict]) -> list[dict]:
         
         # Format claims and evidence for checking
         claims_text = json.dumps([{
@@ -512,6 +525,7 @@ Return JSON array of verdicts:
 [{{"claimId": "...", "status": "passed" or "failed", "reason": "..."}}]
 
 Be strict: evidence must directly support EVERY clause and condition of the specific claim.
+For each claim use ONLY its own evidenceRefs; evidence cited by another claim is not its support.
 Check each number's method, dataset, metric, unit and experimental setting, not just its presence.
 Reject claims that confuse a similar PSNR with unchanged image quality, or infer universal/exclusive
 conditions from a limited tested range. Missing passages do not prove the authors never tested it.
@@ -529,6 +543,7 @@ Do not accept vague connections. A partly supported claim must fail until its wo
             prompt += "\nReview all claims jointly for conflicting definitions. For every formula claim, " \
                       "derive its meaning before issuing a verdict; state any counterexample in the reason.\n" \
                       + FACTORIAL_REFERENCE
+            prompt += '\nOther proposed statements, for consistency only (not evidence and not verdict targets):\n' + json.dumps(proposal_context, ensure_ascii=False)
         try:
             result = self._invoke(
                 run_id=self._run_id,

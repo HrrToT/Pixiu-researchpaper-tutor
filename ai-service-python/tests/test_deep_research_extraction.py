@@ -99,6 +99,35 @@ def test_new_snapshot_inherits_only_unchanged_authorized_source_versions(tmp_pat
     facade.shutdown()
 
 
+def test_small_verifier_batches_do_not_expose_other_claims_evidence():
+    prompts = []
+    def invoke(**kwargs):
+        prompt = kwargs['prompt']
+        prompts.append(prompt)
+        claims = json.loads(prompt.split('Claims:\n', 1)[1].split('\n\nEvidence:', 1)[0])
+        assert kwargs['use_reserve'] is True
+        return {'content': json.dumps([{'claimId': c['claimId'], 'status': 'passed'} for c in claims])}
+    claims = [{'claimId': f'c{i}', 'text': f'Claim {i}', 'evidenceRefs': [f'e{i}']} for i in range(3)]
+    evidence = [{'evidenceId': f'e{i}', 'quote': f'UNIQUE_SOURCE_{i}'} for i in range(3)]
+    result = BudgetedSemanticChecker(invoke, 'r')(claims, evidence)
+    assert len(result) == len(prompts) == 3
+    for i, prompt in enumerate(prompts):
+        assert f'UNIQUE_SOURCE_{i}' in prompt
+        assert all(f'UNIQUE_SOURCE_{j}' not in prompt for j in range(3) if j != i)
+
+
+def test_large_report_has_at_most_three_verification_batches():
+    batches = []
+    def invoke(**kwargs):
+        claims = json.loads(kwargs['prompt'].split('Claims:\n', 1)[1].split('\n\nEvidence:', 1)[0])
+        batches.append(claims)
+        return {'content': json.dumps([{'claimId': c['claimId'], 'status': 'passed'} for c in claims])}
+    claims = [{'claimId': f'c{i}', 'text': f'Claim {i}', 'evidenceRefs': []} for i in range(12)]
+    result = BudgetedSemanticChecker(invoke, 'r')(claims, [])
+    assert len(batches) == 3
+    assert [v['claimId'] for v in result] == [c['claimId'] for c in claims]
+
+
 def test_prompt_sampling_covers_other_papers_and_obligations_before_repeats():
     from services.deep_research.selection import balanced_sample
     items = [{'paper': 'a', 'obligation': 'quality', 'i': i} for i in range(25)] + [

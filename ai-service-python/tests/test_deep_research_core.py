@@ -171,12 +171,12 @@ def test_budget_profiles_match_spec():
     assert standard["maxModelCalls"] == 18
     assert standard["maxTokens"] == 100000
     assert standard["maxWallClockSeconds"] == 360
-    assert standard["reserveModelCalls"] == 3
+    assert standard["reserveModelCalls"] == 5
     extended = BUDGET_PROFILES["extended"]
     assert extended["maxModelCalls"] == 32
     assert extended["maxTokens"] == 180000
     assert extended["maxWallClockSeconds"] == 720
-    assert extended["reserveModelCalls"] == 3
+    assert extended["reserveModelCalls"] == 7
 
 
 def test_normalize_run_defaults_to_v2_schema():
@@ -510,7 +510,7 @@ def test_reserve_call_rejects_non_running_runs(repo: DeepResearchRepository):
 
 
 def test_unknown_call_retains_budget_and_blocks_reissue(repo: DeepResearchRepository):
-    repo.create_run({"runId": "unknown-block", "budget": {"maxModelCalls": 5}})
+    repo.create_run({"runId": "unknown-block", "budget": {"maxModelCalls": 5, "reserveModelCalls": 3}})
     repo.begin_execution("unknown-block")
     call, _ = repo.reserve_call(
         run_id="unknown-block",
