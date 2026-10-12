@@ -904,6 +904,8 @@ def make_synthesize_node(
         requested_limit = requested_character_limit(question)
         from services.deep_research.synthesis import OUTPUT_KIND_SECTIONS
         section_templates = OUTPUT_KIND_SECTIONS.get(output_kind, OUTPUT_KIND_SECTIONS["direction_survey"])
+        claim_limit = 5 if output_kind == 'paper_comparison' else (2 if requested_limit and requested_limit <= 300 else 3 if requested_limit else 12)
+        paper_titles = {m.get('materialId'): m.get('title', '') for m in record.get('materials', [])}
         
         # Format evidence summaries with obligation binding
         from services.deep_research.selection import balanced_sample
@@ -917,6 +919,7 @@ def make_synthesize_node(
                 "evidenceId": alias,
                 "quote": ev.get("quote", "")[:1800],
                 "source": ev.get("sourceWorkId", ""),
+                "sourceTitle": paper_titles.get(ev.get("sourceWorkId"), ''),
                 "conditions": ev.get("conditions", {}),
                 "obligations": ev.get("obligationIds", []),
                 "accessLevel": ev.get("accessLevel", "fulltext"),
@@ -926,8 +929,8 @@ def make_synthesize_node(
 Question: {question}
 Output kind: {output_kind}
 Strict total character limit: {requested_limit or 'concise, no explicit maximum'}
-For a limit of 300 characters or less, use at most TWO claims, answer the question directly,
-and omit secondary quantitative examples. Conditions count toward the same limit.
+Answer directly and omit secondary quantitative examples. Conditions count toward the same limit.
+Claim count is independent of display length: shorten each statement rather than merging unrelated facts.
 Evidence count: {len(evidence)}
 User clarification: {brief_state.get('clarification', '')}
 Gaps: {json.dumps([g.get('question') for g in gaps[:5]], ensure_ascii=False)}
@@ -945,7 +948,8 @@ Section titles MUST be selected from {json.dumps(section_templates, ensure_ascii
 Each section's claimIds must reference actual claim IDs from the claims array.
 Do NOT include unchecked model prose - every factual statement must have a claimId.
 For experiment_design: include hypothesis, controls, variables, data+metrics, steps, confounders, decision criteria.
-Use at most {2 if requested_limit and requested_limit <= 300 else 3 if requested_limit else 12} claims in total. Combine related information; do not repeat it across sections.
+Use at most {claim_limit} claims in total. Each claim must have one independently checkable conclusion.
+Do not combine facts from different papers, benchmarks or protocols into one claim to save characters.
 Define a common loss orientation before formulas, distinguish conditional and averaged effects, and
 separate the paper's actual distillation from any proposed truncation-only diagnostic experiment.
 Write in concise Chinese. All proposals/hypotheses must also be claims with a claimId and a section.
@@ -960,6 +964,15 @@ Never say the authors did not test/report something merely because the selected 
 When citing only abstract evidence use detailLevel="abstract", explicitly limit the wording to the
 abstract and do not claim to have read the full paper. Otherwise use detailLevel="fulltext".
 Do NOT invent measured results or pretend unsupported conclusions are verified."""
+
+        if output_kind == 'paper_comparison':
+            prompt += "\nFor a comparison, separate each paper's reported evidence from the cross-paper judgment. " \
+                      "Where evidence exists, provide one short reported claim per paper, followed by a separate " \
+                      "inference about comparability. A baseline reproduced in paper A is a result of paper A, " \
+                      "not a measurement from paper B. Keep each numerical tuple with its own dataset and protocol. " \
+                      "Do not transfer an abstract's resolution or speed claim onto a main-table row without evidence. " \
+                      "Prefer a supported qualitative tradeoff over a long list of numbers whose conditions cannot " \
+                      "fit the requested length. If one paper lacks evidence, record that gap instead of inventing its claim."
         
         if output_kind == "experiment_design":
             from services.deep_research.experimental_reasoning import FACTORIAL_REFERENCE
