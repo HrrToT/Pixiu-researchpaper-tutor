@@ -238,6 +238,9 @@ Preserve the user's exact limits. If only one sub-question is requested, create 
 Use short questions and at most two obligations per item. Do not repeat the same obligation.
 Each obligation should ask for ONE dimension that a short passage can support (e.g. storage,
 speed, quality or evaluation conditions), not a compound demand for every result at once.
+For mechanism questions, explicitly include the requested entities' relationship,
+conditioning inputs and activation/applicability rules in the obligation question.
+Do not substitute a generic overview for the user's requested mechanism or conditions.
 
 Return a JSON ARRAY of plan items, NOT an object with items field."""
         
@@ -633,6 +636,7 @@ Obligations (with IDs): {json.dumps(obl_context[:5], ensure_ascii=False)}
 
 Return a JSON array of at most THREE self-contained, relevant evidence items. Return [] if none.
 Keep complete sentences with their conditions; omit fragmentary labels, dangling numbers and unrelated captions.
+For requested mechanisms, retain conditioning inputs and activation/applicability rules.
 Each item has:
 - quote: exact literal text from source
 - location: {{page, section, chunk}}
@@ -947,6 +951,7 @@ Claim count is independent of display length: shorten each statement rather than
 Evidence count: {len(evidence)}
 User clarification: {brief_state.get('clarification', '')}
 Gaps: {json.dumps([g.get('question') for g in gaps[:5]], ensure_ascii=False)}
+Required answer obligations: {json.dumps([o for p in brief_state.get('plan', []) for o in p.get('obligations', [])], ensure_ascii=False)}
 
 Evidence summaries:
 {json.dumps(evidence_summaries, ensure_ascii=False)}
@@ -973,6 +978,9 @@ separate the paper's actual distillation from any proposed truncation-only diagn
 Write in concise Chinese. All proposals/hypotheses must also be claims with a claimId and a section.
 Use kind reported, inference, hypothesis or proposal. A proposal cannot state an existing result as fact.
 Follow the user's scope and length. State conflicting conditions beside the relevant conclusion.
+Every requested aspect must be answered or have a specific evidence limitation. In a
+mechanism explanation retain the relevant conditioning inputs and activation rules;
+do not replace them with a generic phrase such as 'depends on the input/view'.
 If the user asks for two points, produce at most two claims. The TOTAL text and conditions must fit the requested length.
 For reported facts copy numbers exactly; avoid derived differences/ratios. Any calculation is an inference, not a reported result.
 Preserve table method labels, including stars/variant markers, and distinguish reproduced baselines
@@ -1121,12 +1129,17 @@ def make_verify_node(
         
         accepted = verification_result.get("accepted", [])
         rejected = verification_result.get("rejected", [])
+
+        from services.deep_research.final_coverage import audit_final_answer
+        answer_coverage = audit_final_answer(run_id, record.get('question', ''),
+            record.get('state', {}).get('plan', []), accepted, evidence, llm_invoke, _safe_parse_json)
         
         # Update report with only verified claims
         verified_report = {
             **report_body,
             "verifiedClaims": accepted,
             "rejectedClaims": rejected,
+            "answerCoverage": answer_coverage,
             "verificationSummary": {
                 "accepted": len(accepted),
                 "rejected": len(rejected),
@@ -1170,7 +1183,8 @@ def make_publish_node(
         brief_state = record.get("state", {})
         output_kind = brief_state.get("outputKind", "direction_survey")
         
-        gaps = record.get("state", {}).get("gaps", [])
+        gaps = [*record.get("state", {}).get("gaps", []),
+                *verified_report.get('answerCoverage', {}).get('gaps', [])]
         accepted_claims = verified_report.get("verifiedClaims", [])
         rejected_count = len(verified_report.get("rejectedClaims", []))
         

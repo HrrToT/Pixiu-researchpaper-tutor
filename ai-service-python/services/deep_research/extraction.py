@@ -65,6 +65,8 @@ def make_batched_extract_node(invoke, make_evidence, validate, update, *, batch_
 Return ONLY a JSON array of {sourceId, quote, obligationIds, conditions}.
 Use the exact sourceId and exact literal quote from THAT passage. Never mix papers.
 Select at most THREE complete relevant sentences per passage, including necessary conditions.
+For requested mechanisms, prioritize sentences explaining the entities, conditioning
+inputs and activation/applicability rules over generic performance or background.
 For a results table, copy a complete contiguous header-and-row span retaining method, dataset,
 metric and unit labels; table rows are evidence even when they are not grammatical sentences.
 Rows present in tableData are already saved exactly; focus on prose explaining their evaluation conditions.

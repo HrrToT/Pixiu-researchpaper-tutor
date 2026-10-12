@@ -53,6 +53,12 @@ class FixtureModel:
             content = [{"claimId": c['claimId'], "status": "passed"} for c in claims]
         elif prompt.startswith("Revise only the rejected claims"):
             content = []  # An unsupported claim may be dropped; do not relax checks.
+        elif prompt.startswith("Audit whether the FINAL ACCEPTED ANSWER"):
+            obligations = json.loads(prompt.split('Answer obligations (including the original question): ', 1)[1].split('\nAccepted final claims:', 1)[0])
+            # Fixture claims retain numerical results but omit the requested
+            # evaluation conditions. A factual pass is not a complete answer.
+            content = [{'obligationId': o['obligationId'], 'status': 'partial',
+                        'bindings': [{'claimId': 'c1', 'excerpt': 'Alpha reports 95% accuracy.'}]} for o in obligations]
         else:
             raise AssertionError("Unexpected model node: " + prompt[:80])
         return LLMResult("fixture", "fixture-v1", json.dumps(content), LLMUsage(120, 80, 200))
@@ -105,9 +111,12 @@ def test_real_graph_publishes_only_verified_body_and_reopens_without_generation(
         assert {source["pdfId"] for source in result["sources"]} == set(PAPERS)
         assert all(source["quote"] and source["page"] == 3 for source in result["sources"])
         calls = repo.list_calls(record["runId"])
-        assert sum(c["tool"] == "llm_invoke" for c in calls) == len(model.requests) == 9
+        assert sum(c["tool"] == "llm_invoke" for c in calls) == len(model.requests) == 10
+        assert sum(c['node'] == 'verify_answer_coverage' for c in calls) == 1
+        assert result['outcome'] == 'partial'
+        assert any(g.get('stage') == 'answer' for g in published['gaps'])
         assert all(c["status"] == "succeeded" for c in calls)
-        assert result["budget"]["tokens"] == 1800
+        assert result["budget"]["tokens"] == 2000
         assert len(repo.list_outbox(record["runId"])) == 1
         calls_before = len(model.requests)
         restored = DeepResearchRepository(repo.db_path)
