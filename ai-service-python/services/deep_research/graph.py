@@ -1182,8 +1182,11 @@ def make_verify_node(
             try:
                 revised = saved.get('repairDraft')
                 if revised is None:
+                    from services.deep_research.repair_budget import repair_prompt_byte_limit
+                    current = repo_update(run_id, lambda r: r, expected_revision=None)
                     revised = repair_rejected(report_body, repair_targets, evidence, record.get("question", ""),
-                        invoke_repair, _safe_parse_json)
+                        invoke_repair, _safe_parse_json,
+                        max_prompt_bytes=repair_prompt_byte_limit(current.get('budget', {})))
                     repo_update(run_id, lambda r: {**r, 'state': {**r.get('state', {}),
                         'repairDraft': revised}}, expected_revision=None)
                 if revised:
@@ -1204,7 +1207,9 @@ def make_verify_node(
                             evidence, llm_invoke, _safe_parse_json)
                     verification_result = merged
             except BudgetExhaustedError:
-                pass
+                repo_update(run_id, lambda r: {**r, 'state': {**r.get('state', {}),
+                    'repairStatus': r.get('state', {}).get('repairStatus') or 'skipped_budget'}},
+                    expected_revision=None)
         
         accepted = verification_result.get("accepted", [])
         rejected = verification_result.get("rejected", [])

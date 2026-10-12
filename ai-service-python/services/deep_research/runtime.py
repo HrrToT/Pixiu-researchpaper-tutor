@@ -37,7 +37,10 @@ def research_model_options(node, options):
         # Bounded rewriting must leave room for its JSON; final verification
         # retains high reasoning and checks the rewritten claims independently.
         effort = 'high' if node in {'verify', 'verify_repair'} else 'low'
+        from services.deep_research.repair_budget import REPAIR_OUTPUT_TOKENS
         maximum = 16384 if node in {'synthesize', 'verify'} else 8192
+        if node == 'repair_claims':
+            maximum = REPAIR_OUTPUT_TOKENS
         return {**options, 'thinking': {'type': 'enabled'}, 'reasoning_effort': effort, 'max_tokens': maximum}
     return {**options, 'thinking': {'type': 'disabled'}, 'reasoning_effort': 'none'}
 

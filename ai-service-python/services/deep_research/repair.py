@@ -12,7 +12,7 @@ from uuid import uuid4
 from services.deep_research.repair_scope import repair_evidence_scope
 
 
-def repair_rejected(report, verification, evidence, question, invoke, parse):
+def repair_rejected(report, verification, evidence, question, invoke, parse, *, max_prompt_bytes=24000):
     rejected = {row['claimId']: row for row in verification.get('rejected', [])}
     originals = {row['claimId']: row for row in report.get('claims', []) if row.get('claimId') in rejected}
     if not originals:
@@ -89,7 +89,15 @@ unexecuted proposals/hypotheses clearly. Keep the answer concise and within the 
                        for key, values in allowed.items()}
         return template.replace(permissions_marker, json.dumps(permissions, ensure_ascii=False), 1).replace(
             evidence_marker, json.dumps(selected_rows, ensure_ascii=False), 1)
-    prompt, rows = fit_evidence_prompt(rows, render)
+    if max_prompt_bytes <= 0:
+        raise BudgetExhaustedError('repairPromptBytes', max_prompt_bytes, 1)
+    try:
+        prompt, rows = fit_evidence_prompt(rows, render, max_bytes=max_prompt_bytes)
+    except ValueError as exc:
+        if str(exc) != 'prompt_fixed_content_too_large':
+            raise
+        raise BudgetExhaustedError('repairPromptBytes', max_prompt_bytes,
+                                  len(render([]).encode('utf-8'))) from exc
     visible = {aliases[row['evidenceId']] for row in rows}
     allowed = {key: [ref for ref in values if ref in visible] for key, values in allowed.items()}
     try:
