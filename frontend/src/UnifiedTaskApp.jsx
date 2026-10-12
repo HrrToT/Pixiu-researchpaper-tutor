@@ -989,7 +989,7 @@ export default function UnifiedTaskApp() {
     const saved = activeTask.artifacts.find(item => item.sourceResearchId === run.researchId || (item.id || item.artifactId) === `research:${run.researchId}:artifact`);
     if (saved) { openDocument(saved, 'artifacts'); return; }
     openPreview({ taskId: activeTaskId, requestId: run.researchId, kind: 'research.report', paperIds: run.paperIds,
-      result: { artifact: { text: sanitizeResearchReport(result.report) }, sources: (result.findings || []).flatMap(finding => finding.sources || []) } });
+      result: { artifact: { text: sanitizeResearchReport(typeof result.report === 'string' ? result.report : result.report?.body || '') }, sources: result.sources || (result.findings || []).flatMap(finding => finding.sources || []) } });
   };
   const openOperationResult = record => { setShowProcessingHistory(false); openPreview(record); };
   const openPaperOverview = () => {
@@ -1027,7 +1027,7 @@ export default function UnifiedTaskApp() {
   </div>;
   const pendingResearch = (activeTask?.researchRuns || []).filter(run => {
     const result = researchResult(run);
-    return !result || !['succeeded', 'failed', 'cancelled'].includes(result.status);
+    return !result || !['succeeded', 'completed', 'failed', 'cancelled'].includes(result.status);
   });
   const activityEntries = [
     ...pendingOperations.map(record => ({ id: record.requestId, label: operationStatusText(record), isRequest: true, locate: () => locateOperation(record),
@@ -1185,7 +1185,7 @@ export default function UnifiedTaskApp() {
         <div className="unified-reader-body">
         {preview ? <div className="unified-document" ref={contentScrollRef} onScroll={saveContentPosition} aria-label="查看已生成结果">
           {!['research.report', 'paper.overview'].includes(preview.kind) && <div className="unified-document-toolbar"><button type="button" disabled={savingRecovery || (preview.paperIds || preview.result?.materialScope?.allowedPaperIds || []).some(id => !activeTask.paperIds.includes(id))} onClick={recoverResult}><Save size={15} /> {savingRecovery ? '正在保存…' : '保存为成果'}</button></div>}
-          <p>{preview.kind === 'paper.overview' ? '论文概览' : preview.kind === 'research.report' ? '核对报告后，在对话中确认并保存结果。' : '保存完整结果，保留当前学习位置。'}</p>
+          <p>{preview.kind === 'paper.overview' ? '论文概览' : preview.kind === 'research.report' ? '研究报告预览' : '保存完整结果，保留当前学习位置。'}</p>
           {(preview.paperIds || preview.result?.materialScope?.allowedPaperIds || []).some(id => !activeTask.paperIds.includes(id)) && <p role="status">请先恢复原请求材料，再保存成果。</p>}
           <div className="unified-document-preview"><CritiqueContent key={contentPositionKey} value={preview.result || {}} target="artifact" papers={papers} storageKey={contentPositionKey}
             text={preview.result?.artifact?.text || preview.result?.message || preview.result?.reply} onJumpToSource={jumpToSource} /></div>

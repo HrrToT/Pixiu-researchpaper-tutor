@@ -23,7 +23,7 @@ export default function TaskProcessingHistory({ task, records = {}, research = {
   const entries = [...operations, ...runs].sort((a, b) => String(b.date).localeCompare(String(a.date)));
   const matches = entries.filter(entry => (status === 'all' || entry.status === status) &&
     [entry.title, entry.run?.question, entry.record?.error, entry.result?.error].filter(Boolean).join(' ').toLocaleLowerCase().includes(query.trim().toLocaleLowerCase()));
-  const labelFor = entry => entry.type === 'operation' ? operationStatusLabels[entry.status] || entry.status : getResearchStatusMeta(entry.status).label;
+  const labelFor = entry => entry.type === 'operation' ? operationStatusLabels[entry.status] || entry.status : getResearchStatusMeta(entry.status, entry.result?.outcome).label;
   const states = Array.from(new Set(entries.map(entry => entry.status)));
   return <section aria-label="任务处理记录" className="task-processing-history">
     {queryError && <details><summary>部分请求记录暂不可读取</summary><p>{queryError}。以下仅显示已读取或本地保留的记录。</p><button type="button" onClick={onRefresh}>查询状态</button></details>}
