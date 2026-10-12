@@ -925,7 +925,7 @@ def make_synthesize_node(
         paper_titles = {m.get('materialId'): m.get('title', '') for m in record.get('materials', [])}
         
         # Format evidence summaries with obligation binding
-        from services.deep_research.selection import balanced_sample, bounded_evidence_rows, surrounding_context, comparison_evidence_order
+        from services.deep_research.selection import balanced_sample, surrounding_context, comparison_evidence_order
         evidence_summaries = []
         evidence_aliases = {}
         candidates = comparison_evidence_order(evidence, paper_titles) if output_kind == 'paper_comparison' else evidence
@@ -946,8 +946,9 @@ def make_synthesize_node(
                 "accessLevel": ev.get("accessLevel", "fulltext"),
             })
         
-        evidence_summaries = bounded_evidence_rows(evidence_summaries)
-        evidence_aliases = {row['evidenceId']: evidence_aliases[row['evidenceId']] for row in evidence_summaries}
+        from uuid import uuid4
+        from services.deep_research.prompt_budget import fit_evidence_prompt
+        evidence_marker = uuid4().hex
         prompt = f"""Synthesize a complete answer to the research question.
 Question: {question}
 Output kind: {output_kind}
@@ -960,7 +961,7 @@ Gaps: {json.dumps([g.get('question') for g in gaps[:5]], ensure_ascii=False)}
 Required answer obligations: {json.dumps([o for p in brief_state.get('plan', []) for o in p.get('obligations', [])], ensure_ascii=False)}
 
 Evidence summaries:
-{json.dumps(evidence_summaries, ensure_ascii=False)}
+{evidence_marker}
 
 Return ONLY compact JSON with:
 - sections: array of {{title, claimIds: [claim_id_strings]}}
@@ -1022,6 +1023,10 @@ Do NOT invent measured results or pretend unsupported conclusions are verified."
                       'Do not replace a concrete choice with “keep everything fixed”. If no specific split/budget ' \
                       'is documented, choose and label a reproducible proposed protocol, not an invented paper setting.\n' \
                       + design_requirements(brief_state.get('metricDomains'))
+        template = prompt
+        prompt, evidence_summaries = fit_evidence_prompt(evidence_summaries,
+            lambda rows: template.replace(evidence_marker, json.dumps(rows, ensure_ascii=False), 1))
+        evidence_aliases = {row['evidenceId']: evidence_aliases[row['evidenceId']] for row in evidence_summaries}
         result = llm_invoke(run_id, "synthesize", prompt, {"max_tokens": 4000, "temperature": 0.2}, use_reserve=True)
         
         if hasattr(result, "content"):

@@ -6,7 +6,7 @@ from services.deep_research.contracts import BudgetExhaustedError
 
 def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse):
     from services.deep_research.answer_coverage import answer_coverage_gaps
-    from services.deep_research.selection import balanced_sample, bounded_evidence_rows, surrounding_context
+    from services.deep_research.selection import balanced_sample, surrounding_context
 
     # A plan can itself omit part of the request. Audit the original question as
     # well as each planned obligation, without changing the stored research plan.
@@ -24,16 +24,19 @@ def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse):
     if claims and plan and invoke:
         selected = balanced_sample(evidence,
             lambda e: (e.get('sourceWorkId'), tuple(e.get('obligationIds', []))), 20)
-        rows = bounded_evidence_rows([{
+        from uuid import uuid4
+        from services.deep_research.prompt_budget import fit_evidence_prompt
+        evidence_marker = uuid4().hex
+        rows = [{
             'evidenceId': e['evidenceId'], 'quote': e.get('quote', ''),
             'sourceContext': surrounding_context(e), 'source': e.get('sourceWorkId'),
             'conditions': e.get('conditions', {}),
-        } for e in selected])
+        } for e in selected]
         prompt = f'''Audit whether the FINAL ACCEPTED ANSWER fully answers the user's question.
 Question: {question}
 Answer obligations (including the original question): {json.dumps([o for p in audit_plan for o in p.get('obligations', [])], ensure_ascii=False)}
 Accepted final claims: {json.dumps(claims, ensure_ascii=False, sort_keys=True)}
-Available evidence for detecting omitted conditions: {json.dumps(rows, ensure_ascii=False)}
+Available evidence for detecting omitted conditions: {evidence_marker}
 
 Factual support has been checked separately. Do NOT mistake a true sentence, a relevant
 retrieval, a claim's obligationIds, or the existence of a citation for a complete answer.
@@ -71,6 +74,9 @@ Covered requires every essential aspect to be covered with its own binding.
 Do not fabricate a binding for a missing aspect; use an empty bindings array.
 Only mark covered if ALL requested aspects of that obligation are answered in the
 accepted claims. Bindings must quote the final answer, never the source passages.'''
+        template = prompt
+        prompt, rows = fit_evidence_prompt(rows,
+            lambda selected_rows: template.replace(evidence_marker, json.dumps(selected_rows, ensure_ascii=False), 1))
         try:
             result = invoke(run_id, 'verify_answer_coverage', prompt,
                             {'max_tokens': 3500, 'temperature': 0.0}, use_reserve=True)

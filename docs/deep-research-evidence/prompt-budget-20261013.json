@@ -1,0 +1,44 @@
+{
+  "date": "2026-10-13",
+  "promptVersion": "dr-v2.20261013.20",
+  "qoder": {
+    "model": "bailian/qwen3.8-max-tp",
+    "patchSha256": "0eb2f4c5ba143888b0eda49ae23b682fb669f8a2d6f2055b731b52014c44e93b",
+    "reviewCorrections": [
+      "Restore entire original row including existing omission markers.",
+      "Correct no-mutation test budget and expected compact row."
+    ],
+    "integration": "synthesis, final coverage, claim repair, semantic/design verification"
+  },
+  "failedCase": {
+    "runId": "dr_run_8c1bda6d0e5451d495b91474c70b4b5c",
+    "status": "failed",
+    "errorCode": "execution_failed",
+    "reason": "synthesis prompt 24242 bytes exceeds 24000",
+    "modelCalls": 7,
+    "tokens": 17741,
+    "synthesisProviderCalled": false
+  },
+  "offlineReplay": {
+    "promptBytes": 23961,
+    "limitBytes": 24000,
+    "selectedRows": 14,
+    "availableEvidence": 17,
+    "contextsOmitted": 13,
+    "quotesIntact": true,
+    "modelCalls": 0
+  },
+  "invariants": [
+    "Count the whole rendered prompt including instructions and permission maps.",
+    "Do not clip quotes or raise provider limit.",
+    "Repair permissions and final-audit binding validation use only selected rows.",
+    "A semantic passed verdict is downgraded if referenced evidence was omitted."
+  ],
+  "acceptance": "Request construction verified offline; experimental content quality not accepted; no real retry in this change.",
+  "offlineTests": {
+    "passed": 623,
+    "warnings": 2,
+    "seconds": 68.7,
+    "scope": "all test_deep_research_*.py plus instance timeout, offline LLM, PDF table columns, table evidence"
+  }
+}

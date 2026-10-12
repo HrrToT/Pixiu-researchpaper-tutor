@@ -6,7 +6,9 @@ from copy import deepcopy
 
 from services.deep_research.answer_constraints import answer_character_count, requested_character_limit, normalize_conditions, resolve_evidence_aliases
 from services.deep_research.contracts import BudgetExhaustedError
-from services.deep_research.selection import surrounding_context, bounded_evidence_rows
+from services.deep_research.selection import surrounding_context
+from services.deep_research.prompt_budget import fit_evidence_prompt
+from uuid import uuid4
 from services.deep_research.repair_scope import repair_evidence_scope
 
 
@@ -24,16 +26,15 @@ def repair_rejected(report, verification, evidence, question, invoke, parse):
     aliases = {f'E{i + 1}': e['evidenceId'] for i, e in enumerate(selected)}
     short_ids = {full: short for short, full in aliases.items()}
     original_refs = {ref for row in originals.values() for ref in row.get('evidenceRefs', [])}
-    rows = bounded_evidence_rows([
+    rows = [
         {'evidenceId': short_ids[e['evidenceId']], 'quote': e.get('quote', ''),
          'sourceContext': surrounding_context(e), 'location': e.get('location', {}),
          'accessLevel': e.get('accessLevel'), 'conditions': e.get('conditions', {}),
          'tableData': e.get('tableData')}
         for e in sorted(selected, key=lambda e: (e['evidenceId'] not in hinted,
                                                  e['evidenceId'] not in original_refs))
-    ], max_bytes=20000)
-    visible = {aliases[row['evidenceId']] for row in rows}
-    allowed = {key: [ref for ref in values if ref in visible] for key, values in allowed.items()}
+    ]
+    evidence_marker, permissions_marker = uuid4().hex, uuid4().hex
     input_claims = resolve_evidence_aliases({'claims': deepcopy(list(originals.values()))}, short_ids)['claims']
     proposal_context = [{key: row[key] for key in ('claimId', 'text', 'kind', 'conditions', 'designRole') if key in row}
                         for row in verification.get('accepted', [])
@@ -51,9 +52,9 @@ Accepted experimental definitions (consistency only; do not revise these or trea
 Rejected claims and checks:
 {json.dumps([{'claim': row, 'check': rejected[row['claimId']]} for row in input_claims], ensure_ascii=False)}
 Allowed evidence IDs per claim (candidate permissions, not proof of support):
-{json.dumps({key: [short_ids[ref] for ref in values if ref in short_ids] for key, values in allowed.items()}, ensure_ascii=False)}
+{permissions_marker}
 Exact available evidence:
-{json.dumps(rows, ensure_ascii=False)}
+{evidence_marker}
 Return a COMPACT JSON array of revised claims, or [] when no supported revision is possible.
 Each revised claim uses {{"claimId":"original ID","kind":"original kind","text":"revised wording",
 "evidenceRefs":["E1"],"conditions":{{}},"detailLevel":"fulltext"}}; the wording key is "text".
@@ -77,6 +78,17 @@ to their allowed evidence. These additional passages come from the same already 
 source versions; retrieval obligation labels do not prove relevance. Check each passage
 against the actual requested aspect before citing it. Fix invalid proposed formulas and label all
 unexecuted proposals/hypotheses clearly. Keep the answer concise and within the user's length limit.'''
+    template = prompt
+    def render(selected_rows):
+        visible_ids = {row['evidenceId'] for row in selected_rows}
+        permissions = {key: [short_ids[ref] for ref in values
+                            if ref in short_ids and short_ids[ref] in visible_ids]
+                       for key, values in allowed.items()}
+        return template.replace(permissions_marker, json.dumps(permissions, ensure_ascii=False), 1).replace(
+            evidence_marker, json.dumps(selected_rows, ensure_ascii=False), 1)
+    prompt, rows = fit_evidence_prompt(rows, render)
+    visible = {aliases[row['evidenceId']] for row in rows}
+    allowed = {key: [ref for ref in values if ref in visible] for key, values in allowed.items()}
     try:
         response = invoke(prompt)
     except BudgetExhaustedError:

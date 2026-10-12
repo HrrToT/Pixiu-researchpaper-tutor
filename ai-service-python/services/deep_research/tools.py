@@ -541,7 +541,9 @@ class BudgetedSemanticChecker:
                         "tableData": e.get("tableData"),
                         "workId": e.get("sourceWorkId"), "versionId": e.get("sourceVersionId"),
                         "accessLevel": e.get("accessLevel")} for e in evidence if e["evidenceId"] in referenced}
-        evidence_text = json.dumps(evidence_map, ensure_ascii=False)
+        from uuid import uuid4
+        from services.deep_research.prompt_budget import fit_evidence_prompt
+        evidence_text = uuid4().hex
         
         prompt = f"""Verify these claims against the evidence. For each claim, determine if the evidence supports it.
 
@@ -645,6 +647,12 @@ Do not require an unexecuted experiment to have results. Do not judge context cl
                           'Do not replace slot keys with role names or arrays. Symbolic placeholders such as ' \
                           'an unspecified threshold or degree do not define actual intervention levels.\n' \
                           + json.dumps(skeleton, ensure_ascii=False)
+        template = prompt
+        prompt, visible_evidence = fit_evidence_prompt(
+            [{"evidenceId": key, **value} for key, value in evidence_map.items()],
+            lambda rows: template.replace(evidence_text, json.dumps({
+                row["evidenceId"]: {key: value for key, value in row.items() if key != "evidenceId"}
+                for row in rows}, ensure_ascii=False), 1))
         try:
             result = self._invoke(
                 run_id=self._run_id,
@@ -668,8 +676,14 @@ Do not require an unexecuted experiment to have results. Do not judge context cl
                                         '声明核验未完整返回；不能据此判断材料不足。')
             from services.deep_research.design_audit import validate_design_audit
             by_id = {c['claimId']: c for c in claims}
+            visible_ids = {row["evidenceId"] for row in visible_evidence}
             for verdict in parsed:
                 if verdict['status'] != 'passed':
+                    continue
+                target = by_id[verdict['claimId']]
+                if set(target.get('evidenceRefs', [])) - visible_ids:
+                    verdict['status'] = 'failed'
+                    verdict['reason'] = '请求容量限制导致引用证据未完整提供，不能确认该声明。'
                     continue
                 missing = validate_design_audit(by_id[verdict['claimId']], verdict, [*claims, *proposal_context], metric_domains)
                 if missing:
