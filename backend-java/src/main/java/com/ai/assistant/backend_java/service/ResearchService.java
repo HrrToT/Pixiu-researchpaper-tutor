@@ -59,6 +59,15 @@ public class ResearchService {
 
     // --- Deep Research v2 endpoints (Python /research-tasks dispatches dr_run_ IDs) ---
 
+    public ResponseEntity<Map<String, Object>> researchCapabilities() {
+        return GatewayHelper.forward(restTemplate, PYTHON_SERVICE_URL, HttpMethod.GET, "/research-tasks/capabilities", null);
+    }
+
+    public ResponseEntity<Map<String, Object>> exportV2Source(String runId, String sourceId) {
+        return GatewayHelper.forward(restTemplate, PYTHON_SERVICE_URL, HttpMethod.GET,
+                "/research-tasks/" + GatewayHelper.encode(runId) + "/sources/" + GatewayHelper.encode(sourceId) + "/export", null);
+    }
+
     public ResponseEntity<Map<String, Object>> createV2ResearchTask(Map<String, Object> request) {
         return GatewayHelper.forward(restTemplate, PYTHON_SERVICE_URL, HttpMethod.POST, "/research-tasks", request);
     }

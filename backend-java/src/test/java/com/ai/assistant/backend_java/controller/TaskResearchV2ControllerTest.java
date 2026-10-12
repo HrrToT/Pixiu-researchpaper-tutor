@@ -655,6 +655,57 @@ class TaskResearchV2ControllerTest {
 
     // === Helpers ===
 
+    @Test
+    void externalOnlySelectionIsExplicitAndLocalPolicyRejectsIt() throws Exception {
+        Map<String, Object> input = v2StartInput();
+        input.put("materialSelection", Map.of("mode", "external_only"));
+        mvc.perform(post("/api/task-workspaces/work/research/start").contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(input))).andExpect(status().isBadRequest());
+        input.put("sourcePolicy", Map.of("mode", "academic_external"));
+        when(research.createV2ResearchTask(any())).thenAnswer(call -> {
+            Map<?, ?> body = call.getArgument(0);
+            org.junit.jupiter.api.Assertions.assertEquals(List.of(), ((Map<?, ?>) body.get("materialSelection")).get("materialIds"));
+            return v2Success("external-run", "queued", null);
+        });
+        when(research.resumeV2ResearchTask(eq("external-run"), any())).thenReturn(v2Success("external-run", "running", null, 1L));
+        mvc.perform(post("/api/task-workspaces/work/research/start").contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(input))).andExpect(status().isOk());
+    }
+
+    @Test
+    void savedExternalMetadataAddsOnceAndConflictingRequestCannotAddAnotherSource() throws Exception {
+        Map<String, Object> run = v2RunBinding("external-run", 1L, "completed");
+        run.put("sourcePolicy", Map.of("mode", "academic_external"));
+        tasks.attachResearchRun("work", workspace.get("revision"), run);
+        Map<String, Object> source = Map.of("sourceId", "s", "workId", "arxiv:2601.00001", "arxivId", "2601.00001v1",
+                "versionId", "arxiv:2601.00001v1", "title", "A public paper", "contentHash", "a".repeat(64));
+        when(research.exportV2Source("external-run", "s")).thenReturn(ResponseEntity.ok(Map.of("status", "success", "source", source)));
+        Map<String, Object> input = Map.of("requestId", "add-1", "expectedTaskRevision", tasks.get("work").get("revision"));
+        for (int index = 0; index < 2; index++) {
+            mvc.perform(post("/api/task-workspaces/work/research/external-run/sources/s/add")
+                    .contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsString(input)))
+                    .andExpect(status().isOk()).andExpect(jsonPath("$.paperId").value("arxiv:2601.00001v1"));
+        }
+        org.junit.jupiter.api.Assertions.assertEquals("metadata", paperRepository.findById("arxiv:2601.00001v1").orElseThrow().getProcessingStatus());
+        org.junit.jupiter.api.Assertions.assertEquals(4, ((List<?>) tasks.get("work").get("paperIds")).size());
+        Map<String, Object> changed = new LinkedHashMap<>(source); changed.put("sourceId", "other");
+        when(research.exportV2Source("external-run", "other")).thenReturn(ResponseEntity.ok(Map.of("status", "success", "source", changed)));
+        mvc.perform(post("/api/task-workspaces/work/research/external-run/sources/other/add")
+                .contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsString(input))).andExpect(status().isConflict());
+    }
+
+    @Test
+    void backgroundPublicationSyncConfirmsDurableVersionWithoutDuplicateArtifacts() throws Exception {
+        tasks.attachResearchRun("work", workspace.get("revision"), v2RunBinding("background", 1L, "running"));
+        Map<String, Object> state = v2CompletedState("background", "complete", "v1", "摘要", "已核对的正文");
+        when(research.getV2ResearchTask("background")).thenReturn(ResponseEntity.ok(Map.of("status", "success", "task", state)));
+        for (int index = 0; index < 2; index++) {
+            mvc.perform(post("/api/task-workspaces/work/research/background/publication-sync").contentType(MediaType.APPLICATION_JSON).content("{}"))
+                    .andExpect(status().isOk()).andExpect(jsonPath("$.reportVersionId").value("v1"));
+        }
+        org.junit.jupiter.api.Assertions.assertEquals(2, ((List<?>) tasks.get("work").get("artifacts")).size());
+    }
+
     private Map<String, Object> v2StartInput() {
         Map<String, Object> input = new LinkedHashMap<>();
         input.put("requestId", "req-v2-" + System.nanoTime());

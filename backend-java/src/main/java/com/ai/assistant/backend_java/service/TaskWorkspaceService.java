@@ -7,6 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
@@ -24,6 +25,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class TaskWorkspaceService {
     private final TaskWorkspaceRepository repository;
     private final ObjectMapper mapper;
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    private com.ai.assistant.backend_java.repository.PaperRepository researchPapers;
 
     public TaskWorkspaceService(TaskWorkspaceRepository repository, ObjectMapper mapper) {
         this.repository = repository;
@@ -38,6 +41,72 @@ public class TaskWorkspaceService {
     @Transactional(readOnly = true)
     public Map<String, Object> get(String id) {
         return toResponse(find(id));
+    }
+
+    @Transactional
+    @SuppressWarnings("unchecked")
+    public Map<String, Object> addResearchSource(String taskId, String runId, String sourceId,
+            Map<String, Object> input, Map<String, Object> source) {
+        TaskWorkspace entity = repository.lockById(validId(taskId))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "任务不存在"));
+        Map<String, Object> task = toResponse(entity);
+        if (!array(task.get("researchRuns"), "researchRuns").stream().anyMatch(value -> value instanceof Map<?, ?> run
+                && runId.equals(run.get("runId")) && "deep-research-v2".equals(run.get("engineVersion")))) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "研究不属于当前任务");
+        }
+        String requestId = input.get("requestId") instanceof String value ? value : "";
+        if (requestId.isBlank() || requestId.length() > 128) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "请提供有效请求 ID");
+        }
+        Map<String, Object> receipts = new LinkedHashMap<>(task.get("researchSourceReceipts") instanceof Map<?, ?> saved
+                ? (Map<String, Object>) saved : Map.of());
+        if (receipts.get(requestId) instanceof Map<?, ?> previous) {
+            if (!runId.equals(previous.get("runId")) || !sourceId.equals(previous.get("sourceId"))) {
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "该请求 ID 已用于另一个来源");
+            }
+            return Map.of("status", "success", "workspace", task, "paperId", previous.get("paperId"));
+        }
+        requireRevision(input.get("expectedTaskRevision"), entity.getRevision());
+        if (researchPapers == null) throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "论文存储不可用");
+        String arxivId = source.get("arxivId") instanceof String value ? value : "";
+        if (!arxivId.matches("(?:[0-9]{4}\\.[0-9]{4,5}|[a-z][a-z.-]+/[0-9]{7})(?:v[1-9][0-9]*)?")) {
+            throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "学术来源标识无效");
+        }
+        byte[] pdf = null;
+        String hash = source.get("contentHash") instanceof String value ? value : "";
+        if (source.get("pdfBase64") instanceof String encoded) {
+            if (encoded.length() > 12 * 1024 * 1024) throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "全文过大");
+            try {
+                pdf = java.util.Base64.getDecoder().decode(encoded);
+                if (pdf.length < 5 || pdf.length > 8 * 1024 * 1024
+                        || !"%PDF-".equals(new String(pdf, 0, 5, java.nio.charset.StandardCharsets.US_ASCII))
+                        || !hash.equals(java.util.HexFormat.of().formatHex(java.security.MessageDigest.getInstance("SHA-256").digest(pdf)))) {
+                    throw new IllegalArgumentException();
+                }
+            } catch (Exception error) { throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "全文内容校验失败"); }
+        }
+        String paperId = pdf != null ? hash + ".pdf" : "arxiv:" + arxivId;
+        if (!researchPapers.existsById(paperId)) {
+            var paper = new com.ai.assistant.backend_java.model.Paper();
+            paper.setId(paperId);
+            paper.setFileName(source.get("title") instanceof String title && !title.isBlank() ? title : arxivId);
+            paper.setPdfBytes(pdf);
+            paper.setProcessingStatus(pdf == null ? "metadata" : "pending");
+            Map<String, Object> analysis = new LinkedHashMap<>();
+            analysis.put("status", "success"); analysis.put("pdfId", paperId); analysis.put("title", paper.getFileName());
+            analysis.put("externalSource", source.entrySet().stream().filter(entry -> !"pdfBase64".equals(entry.getKey()))
+                    .collect(java.util.stream.Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue() == null ? "" : entry.getValue())));
+            try { paper.setAnalysisJson(mapper.writeValueAsString(analysis)); }
+            catch (JsonProcessingException error) { throw new IllegalStateException(error); }
+            researchPapers.saveAndFlush(paper);
+        }
+        List<String> ids = new ArrayList<>(paperIds(task.get("paperIds")));
+        if (!ids.contains(paperId)) ids.add(paperId);
+        task.put("paperIds", ids);
+        receipts.put(requestId, Map.of("runId", runId, "sourceId", sourceId, "paperId", paperId));
+        task.put("researchSourceReceipts", receipts);
+        setContent(entity, task, taskId);
+        return Map.of("status", "success", "workspace", toResponse(repository.saveAndFlush(entity)), "paperId", paperId);
     }
 
     @Transactional
@@ -82,6 +151,7 @@ public class TaskWorkspaceService {
         safe.put("activityHistory", history);
         safe.put("appliedRequestIds", List.of());
         safe.put("artifacts", protectCritiques(input.get("artifacts"), List.of(), true));
+        safe.put("artifacts", protectResearchArtifacts(safe.get("artifacts"), List.of()));
         safe.put("messages", protectCritiques(input.get("messages"), List.of(), false));
         return create(safe);
     }
@@ -93,10 +163,11 @@ public class TaskWorkspaceService {
         requireRevision(input.get("revision"), entity.getRevision());
         Map<String, Object> authority = toResponse(entity);
         Map<String, Object> protectedInput = new LinkedHashMap<>(input);
-        for (String field : List.of("activeActivity", "activityHistory", "appliedRequestIds", "researchRuns", "legacyMigration", "legacyArchive")) {
+        for (String field : List.of("activeActivity", "activityHistory", "appliedRequestIds", "researchRuns", "researchSourceReceipts", "legacyMigration", "legacyArchive")) {
             protectedInput.put(field, authority.get(field));
         }
         protectedInput.put("artifacts", protectCritiques(input.get("artifacts"), authority.get("artifacts"), true));
+        protectedInput.put("artifacts", protectResearchArtifacts(protectedInput.get("artifacts"), authority.get("artifacts")));
         protectedInput.put("messages", protectCritiques(input.get("messages"), authority.get("messages"), false));
         // Removing materials cannot invalidate a saved activity or research snapshot.
         List<String> ids = paperIds(protectedInput.get("paperIds"));
@@ -590,6 +661,11 @@ public class TaskWorkspaceService {
         task.put("artifacts", artifacts);
         applied.add(receipt);
         task.put("appliedRequestIds", applied);
+        if (incomingRevision instanceof Number revision) {
+            ((Map<String, Object>) run).put("runRevision", revision.longValue());
+            ((Map<String, Object>) run).put("status", status);
+            ((Map<String, Object>) run).put("outcome", outcome);
+        }
         setContent(entity, task, taskId);
         return toResponse(repository.saveAndFlush(entity));
     }
@@ -638,6 +714,33 @@ public class TaskWorkspaceService {
     }
 
     /** A browser may edit prose, but cannot manufacture server-grounded claims or material provenance. */
+    private List<Object> protectResearchArtifacts(Object incoming, Object saved) {
+        List<Object> output = new ArrayList<>();
+        for (Object raw : array(incoming, "artifacts")) {
+            Map<?, ?> item = (Map<?, ?>) raw;
+            Map<?, ?> previous = array(saved, "artifacts").stream().filter(value -> value instanceof Map<?, ?> old
+                    && java.util.Objects.equals(old.get("id"), item.get("id")) && old.get("sourceRunId") != null)
+                    .map(value -> (Map<?, ?>) value).findFirst().orElse(null);
+            if (previous != null && "machine".equals(previous.get("origin"))) {
+                output.add(previous);
+                continue;
+            }
+            Map<String, Object> copy = new LinkedHashMap<>();
+            item.forEach((key, value) -> copy.put(String.valueOf(key), value));
+            if (previous != null) {
+                for (String field : List.of("sourceRunId", "sourceResearchId", "reportVersionId", "origin", "sources", "paperIds", "outcome", "createdAt")) {
+                    if (previous.containsKey(field)) copy.put(field, previous.get(field));
+                }
+                if (!java.util.Objects.equals(item.get("text"), previous.get("text"))) copy.put("edited", true);
+            } else if (Set.of("machine", "latest").contains(java.util.Objects.toString(copy.get("origin"), ""))) {
+                for (String field : List.of("sourceRunId", "sourceResearchId", "reportVersionId", "origin")) copy.remove(field);
+                copy.put("edited", true);
+            }
+            output.add(copy);
+        }
+        return output;
+    }
+
     private List<Object> protectCritiques(Object incoming, Object saved, boolean artifacts) {
         List<Object> output = new ArrayList<>();
         for (Object raw : array(incoming, artifacts ? "artifacts" : "messages")) {
@@ -722,6 +825,7 @@ public class TaskWorkspaceService {
         payload.put("notes", array(input.get("notes"), "notes"));
         payload.put("artifacts", array(input.get("artifacts"), "artifacts"));
         payload.put("researchRuns", array(input.get("researchRuns"), "researchRuns"));
+        payload.put("researchSourceReceipts", input.get("researchSourceReceipts") instanceof Map<?, ?> receipts ? receipts : Map.of());
         payload.put("activityHistory", array(input.get("activityHistory"), "activityHistory"));
         payload.put("appliedRequestIds", array(input.get("appliedRequestIds"), "appliedRequestIds"));
         for (String field : List.of("legacyMigration", "legacyArchive")) {

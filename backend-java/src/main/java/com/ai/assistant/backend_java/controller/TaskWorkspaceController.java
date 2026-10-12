@@ -143,6 +143,22 @@ public class TaskWorkspaceController {
         return research.getSourcesUnified(id, runId);
     }
 
+    @GetMapping("/{id}/research/capabilities")
+    public Map<String, Object> researchCapabilities(@PathVariable String id) {
+        return research.capabilities(id);
+    }
+
+    @PostMapping("/{id}/research/{runId}/publication-sync")
+    public Map<String, Object> syncResearchPublication(@PathVariable String id, @PathVariable String runId) {
+        return research.syncPublication(id, runId);
+    }
+
+    @PostMapping("/{id}/research/{runId}/sources/{sourceId}/add")
+    public Map<String, Object> addResearchSource(@PathVariable String id, @PathVariable String runId,
+            @PathVariable String sourceId, @RequestBody Map<String, Object> input) {
+        return research.addSource(id, runId, sourceId, input);
+    }
+
     @GetMapping("/{id}/research/{runId}/events")
     public Map<String, Object> getResearchEvents(@PathVariable String id, @PathVariable String runId) {
         return research.getEventsUnified(id, runId);

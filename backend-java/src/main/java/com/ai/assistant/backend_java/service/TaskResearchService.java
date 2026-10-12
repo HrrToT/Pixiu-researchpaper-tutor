@@ -31,10 +31,52 @@ public class TaskResearchService {
     private final ResearchService research;
     @org.springframework.beans.factory.annotation.Autowired(required = false)
     private com.ai.assistant.backend_java.repository.PaperRepository paperRepository;
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    private MaterialProcessingService materialProcessing;
 
     public TaskResearchService(TaskWorkspaceService tasks, ResearchService research) {
         this.tasks = tasks;
         this.research = research;
+    }
+
+    public Map<String, Object> capabilities(String taskId) {
+        tasks.get(taskId);
+        return requireSuccess(research.researchCapabilities());
+    }
+
+    public Map<String, Object> syncPublication(String taskId, String runId) {
+        requireV2Owner(taskId, runId);
+        Map<String, Object> result = getV2(taskId, runId);
+        Map<?, ?> state = (Map<?, ?>) result.get("task");
+        Map<?, ?> report = state.get("report") instanceof Map<?, ?> value ? value : Map.of();
+        if (!(report.get("versionId") instanceof String version) || version.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "报告尚未保存");
+        }
+        Map<?, ?> workspace = (Map<?, ?>) result.get("workspace");
+        boolean saved = ((List<?>) workspace.get("artifacts")).stream().anyMatch(value -> value instanceof Map<?, ?> artifact
+                && runId.equals(artifact.get("sourceRunId")) && version.equals(artifact.get("reportVersionId")));
+        if (!saved) throw new ResponseStatusException(HttpStatus.CONFLICT, "报告发布尚未确认");
+        return Map.of("status", "success", "runId", runId, "reportVersionId", version);
+    }
+
+    @SuppressWarnings("unchecked")
+    public Map<String, Object> addSource(String taskId, String runId, String sourceId, Map<String, Object> input) {
+        requireV2Owner(taskId, runId);
+        Map<String, Object> run = findV2Run(taskId, runId);
+        Map<?, ?> policy = (Map<?, ?>) run.get("sourcePolicy");
+        if (policy == null || !Set.of("academic_external", "external_only").contains(policy.get("mode"))) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "本次研究未允许外部文献");
+        }
+        Map<String, Object> exported = requireSuccess(research.exportV2Source(runId, sourceId));
+        if (!(exported.get("source") instanceof Map<?, ?> source) || !sourceId.equals(source.get("sourceId"))) {
+            throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "来源身份不匹配");
+        }
+        Map<String, Object> result = tasks.addResearchSource(taskId, runId, sourceId, input, (Map<String, Object>) source);
+        // Start ordinary PDF parsing after the task transaction has committed; never run AI analysis here.
+        if (materialProcessing != null && "fulltext".equals(source.get("accessLevel"))) {
+            materialProcessing.request(String.valueOf(result.get("paperId")), false);
+        }
+        return result;
     }
 
     // === Unified start: dispatches to legacy or v2 based on input ===
@@ -387,6 +429,9 @@ public class TaskResearchService {
                 }
                 resolvedMaterialIds = new ArrayList<>(new LinkedHashSet<>(ids.stream().map(p -> (String) p).toList()));
                 break;
+            case "external_only":
+                resolvedMaterialIds = List.of();
+                break;
             default:
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "无效的材料选择模式");
         }
@@ -405,8 +450,14 @@ public class TaskResearchService {
         if (!VALID_SOURCE_POLICIES.contains(policyMode)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "无效的来源策略模式");
         }
-        if ("external_only".equals(policyMode) && !"explicit".equals(selectionMode)) {
+        if ("external_only".equals(policyMode) && !"external_only".equals(selectionMode)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "仅外部研究模式需要显式指定材料选择策略");
+        }
+        if ("external_only".equals(selectionMode) && "task_only".equals(policyMode)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "仅外部研究需要开启外部文献范围");
+        }
+        if (resolvedMaterialIds.isEmpty() && !"external_only".equals(selectionMode)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "请添加任务材料或明确选择外部研究");
         }
         if (sourcePolicy.containsKey("hosts") || sourcePolicy.containsKey("urls")
                 || sourcePolicy.containsKey("providers") || sourcePolicy.containsKey("endpoints")) {
@@ -658,8 +709,8 @@ public class TaskResearchService {
                     String extId = source.get("workId") instanceof String eid ? eid : null;
                     String extUrl = source.get("url") instanceof String eu ? eu : null;
                     String extType = source.get("sourceType") instanceof String et ? et : null;
-                    if ("arxiv".equals(sourceKind) && extId != null && !extId.isBlank()
-                            && extUrl != null && !extUrl.isBlank()
+                    if ("arxiv".equals(sourceKind) && extId != null && extId.startsWith("arxiv:")
+                            && extUrl != null && extUrl.matches("https://arxiv\\.org/(?:abs|pdf)/[A-Za-z0-9./-]+")
                             && extType != null && !extType.isBlank()) {
                         filtered.add(s);
                     }
@@ -729,7 +780,7 @@ public class TaskResearchService {
         taskView.put("summary", state.get("summary"));
         taskView.put("sources", state.containsKey("sources") ? state.get("sources") : List.of());
         taskView.put("allowedActions", resolveAllowedActions(state));
-        for (String key : List.of("activity", "budget", "clarification", "plan", "errorCode", "sourceCount")) {
+        for (String key : List.of("activity", "budget", "clarification", "plan", "errorCode", "sourceCount", "events", "title", "error")) {
             if (state.containsKey(key)) taskView.put(key, state.get(key));
         }
         if (state.containsKey("parentRunId")) taskView.put("parentRunId", state.get("parentRunId"));

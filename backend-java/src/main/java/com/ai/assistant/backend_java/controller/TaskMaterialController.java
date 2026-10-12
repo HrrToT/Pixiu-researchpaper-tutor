@@ -36,13 +36,21 @@ public class TaskMaterialController {
             item.put("filename", paper == null ? String.valueOf(id) : paper.getFileName());
             item.put("title", item.get("filename"));
             item.put("fileAvailable", paper != null && paper.getPdfBytes() != null);
+            item.put("processingStatus", paper == null || paper.getProcessingStatus() == null ? "unknown" : paper.getProcessingStatus());
+            if (paper != null && paper.getAnalysisJson() != null) {
+                try {
+                    Map<String, Object> analysis = mapper.readValue(paper.getAnalysisJson(), new TypeReference<Map<String, Object>>() {});
+                    if (analysis.get("externalSource") instanceof Map<?, ?> source) item.put("externalSource", source);
+                } catch (java.io.IOException ignored) { }
+            }
             return item;
         }).toList();
     }
     @GetMapping("/{paperId}/file")
     public ResponseEntity<byte[]> file(@PathVariable String taskId, @PathVariable String paperId) {
         Paper paper = owned(taskId, paperId);
-        if (paper.getPdfBytes() == null) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "旧论文尚未保存到服务端，请从原客户端导入");
+        if (paper.getPdfBytes() == null) throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                "metadata".equals(paper.getProcessingStatus()) ? "此条目仅保存文献元数据，全文尚不可用，请查看来源页或上传 PDF" : "论文文件尚不可用，请重新上传 PDF");
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_PDF).body(paper.getPdfBytes());
     }
     @GetMapping("/{paperId}/analysis")
