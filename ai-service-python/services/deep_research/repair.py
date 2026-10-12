@@ -15,6 +15,9 @@ def repair_rejected(report, verification, evidence, question, invoke, parse):
     originals = {row['claimId']: row for row in report.get('claims', []) if row.get('claimId') in rejected}
     if not originals:
         return []
+    hinted = {ref for row in rejected.values() for ref in row.get('missingEvidenceRefs', [])
+              if isinstance(ref, str)}
+    evidence = sorted(evidence, key=lambda e: e.get('evidenceId') not in hinted)
     allowed = repair_evidence_scope(list(originals.values()), evidence)
     refs = {ref for values in allowed.values() for ref in values}
     selected = [e for e in evidence if e['evidenceId'] in refs]
@@ -26,7 +29,8 @@ def repair_rejected(report, verification, evidence, question, invoke, parse):
          'sourceContext': surrounding_context(e), 'location': e.get('location', {}),
          'accessLevel': e.get('accessLevel'), 'conditions': e.get('conditions', {}),
          'tableData': e.get('tableData')}
-        for e in sorted(selected, key=lambda e: e['evidenceId'] not in original_refs)
+        for e in sorted(selected, key=lambda e: (e['evidenceId'] not in hinted,
+                                                 e['evidenceId'] not in original_refs))
     ], max_bytes=20000)
     visible = {aliases[row['evidenceId']] for row in rows}
     allowed = {key: [ref for ref in values if ref in visible] for key, values in allowed.items()}

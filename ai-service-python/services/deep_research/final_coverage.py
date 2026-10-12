@@ -20,6 +20,7 @@ def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse):
         audit_plan.append({'obligations': [{'obligationId': identity, 'question': question}]})
     verdicts = []
     status = 'not_checked'
+    invalid_aspects = []
     if claims and plan and invoke:
         selected = balanced_sample(evidence,
             lambda e: (e.get('sourceWorkId'), tuple(e.get('obligationIds', []))), 20)
@@ -47,9 +48,27 @@ just one paper's results. A source-specific, clearly stated evidence limitation 
 answer an uncertainty question; do not demand proof of a universal guarantee.
 An unexecuted experiment may be complete as a proposal; do not demand measured results.
 Do not rewrite the answer, add claims, change factual verdicts, or judge rejected claims.
+Before deciding covered, enumerate the minimal essential aspects separately:
+entities and their relationships, conditioning inputs, activation/applicability
+rules, requested comparisons and guarantee boundaries, as applicable. Identify
+these from the question AND the supplied source passages, not from what the
+answer happened to mention. Do not merge distinct conditioning inputs into one
+vague aspect. A missing aspect remains missing even if every stated sentence is true.
+For each aspect quote its basis (request or source) and the exact answer text
+that covers it. A source requirement must have an evidenceId and exact excerpt.
+When checking factual claims with available evidence, include source-grounded
+essential aspects; quoting only the broad user question is insufficient.
+Check the subject of contrasts and pronouns against preceding sentences: a
+baseline's limitation cannot be assigned to the proposed method.
 Return only a JSON array, exactly one entry for each supplied obligation:
 [{{"obligationId":"ID","status":"covered|partial|missing",
-   "bindings":[{{"claimId":"an accepted ID","excerpt":"exact substring of that claim's text or serialized conditions, at least 8 characters"}}]}}]
+   "bindings":[{{"claimId":"an accepted ID","excerpt":"exact substring of that claim's text or serialized conditions, at least 8 characters"}}],
+   "aspects":[{{"aspectId":"unique within this obligation","requirement":"one necessary aspect",
+     "basis":{{"kind":"request|source","evidenceId":"required for source","excerpt":"exact basis text"}},
+     "status":"covered|partial|missing",
+     "bindings":[{{"claimId":"accepted ID","excerpt":"exact answer substring, at least 8 characters"}}]}}]}}]
+Covered requires every essential aspect to be covered with its own binding.
+Do not fabricate a binding for a missing aspect; use an empty bindings array.
 Only mark covered if ALL requested aspects of that obligation are answered in the
 accepted claims. Bindings must quote the final answer, never the source passages.'''
         try:
@@ -62,18 +81,45 @@ accepted claims. Bindings must quote the final answer, never the source passages
             except (ValueError, TypeError):
                 verdicts = None
             status = 'checked' if isinstance(verdicts, list) else 'invalid_response'
+            if isinstance(verdicts, list):
+                # Explicitly reported missing subrequirements override an
+                # inconsistent overall "covered", and remain repairable gaps.
+                verdicts = [{**v, 'status': 'partial'} if isinstance(v, dict)
+                    and v.get('status') == 'covered' and isinstance(v.get('aspects'), list)
+                    and any(isinstance(a, dict) and a.get('status') in {'partial', 'missing'}
+                            for a in v['aspects']) else v for v in verdicts]
+                from services.deep_research.coverage_aspects import invalid_coverage_aspects
+                invalid_aspects = invalid_coverage_aspects(verdicts, claims, rows,
+                    [question, *[o.get('question', '') for p in audit_plan for o in p.get('obligations', [])]])
+                if invalid_aspects:
+                    verdicts = [{**v, 'status': 'partial'} if isinstance(v, dict)
+                        and v.get('obligationId') in invalid_aspects else v for v in verdicts]
+                    status = 'invalid_response'
         except BudgetExhaustedError:
             # Publish only supported text with an explicit coverage gap. Never
             # promote budget exhaustion to a complete answer or add a retry.
             status = 'budget_exhausted'
     gaps = answer_coverage_gaps(audit_plan, claims, verdicts)
     for gap in gaps:
+        matching = [v for v in verdicts if isinstance(v, dict)
+                    and v.get('obligationId') == gap.get('obligationId')] if isinstance(verdicts, list) else []
+        if len(matching) == 1 and isinstance(matching[0].get('aspects'), list):
+            gap['missingAspects'] = list(dict.fromkeys(a['requirement'].strip()
+                for a in matching[0]['aspects'] if isinstance(a, dict)
+                and a.get('status') in {'partial', 'missing'}
+                and isinstance(a.get('requirement'), str) and a['requirement'].strip()))
+            gap['aspectEvidenceRefs'] = list(dict.fromkeys(a['basis']['evidenceId']
+                for a in matching[0]['aspects'] if isinstance(a, dict)
+                and a.get('status') in {'partial', 'missing'}
+                and isinstance(a.get('basis'), dict) and a['basis'].get('kind') == 'source'
+                and isinstance(a['basis'].get('evidenceId'), str)))
         if status in {'budget_exhausted', 'invalid_response'}:
             gap['missingEvidence'] = '回答完整性尚未核验'
             gap['auditStatus'] = status
         if identity and gap.get('obligationId') == identity:
             gap['wholeQuestion'] = True
-    return {'status': status, 'verdicts': verdicts if isinstance(verdicts, list) else [], 'gaps': gaps}
+    return {'status': status, 'verdicts': verdicts if isinstance(verdicts, list) else [],
+            'gaps': gaps, 'invalidAspectObligations': invalid_aspects}
 
 
 def remaining_retrieval_gaps(gaps, audit, claims, evidence):

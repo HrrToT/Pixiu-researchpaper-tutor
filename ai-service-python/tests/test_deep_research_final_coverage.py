@@ -15,6 +15,9 @@ CLAIMS = [{'claimId': 'c', 'text': TEXT, 'kind': 'reported', 'evidenceRefs': ['e
 
 def verdicts(status='covered'):
     return [{'obligationId': oid, 'status': status,
+             'aspects': [{'aspectId': 'conditions', 'requirement': '必要条件', 'status': status,
+                          'basis': {'kind': 'request', 'excerpt': '标定所需条件是什么？'},
+                          'bindings': [{'claimId': 'c', 'excerpt': TEXT}]}],
              'bindings': [{'claimId': 'c', 'excerpt': TEXT}]} for oid in ['o', 'answer_scope']]
 
 
@@ -32,6 +35,29 @@ def test_plan_coverage_alone_cannot_hide_omitted_user_requirement():
     invoke = Mock(return_value={'content': json.dumps(verdicts()[:1])})
     result = audit_final_answer('r', '包括预算的新问题', PLAN, CLAIMS, [], invoke, json.loads)
     assert [g['obligationId'] for g in result['gaps']] == ['answer_scope']
+
+
+def test_missing_aspect_overrides_overall_covered_and_remains_repairable():
+    rows = verdicts()
+    rows[0]['aspects'][0]['status'] = 'missing'
+    rows[0]['aspects'][0]['bindings'] = []
+    result = audit_final_answer('r', '完整问题', PLAN, CLAIMS, [],
+        Mock(return_value={'content': json.dumps(rows)}), json.loads)
+    assert result['status'] == 'checked'
+    assert result['verdicts'][0]['status'] == 'partial'
+    assert [g['obligationId'] for g in result['gaps']] == ['o']
+    assert result['gaps'][0]['missingAspects'] == ['必要条件']
+
+
+def test_bare_covered_without_aspect_trail_is_not_an_audited_complete_answer():
+    rows = verdicts()
+    for row in rows:
+        row.pop('aspects')
+    result = audit_final_answer('r', '完整问题', PLAN, CLAIMS, [],
+        Mock(return_value={'content': json.dumps(rows)}), json.loads)
+    assert result['status'] == 'invalid_response'
+    assert result['invalidAspectObligations'] == ['o', 'answer_scope']
+    assert len(result['gaps']) == 2
 
 
 @pytest.mark.parametrize('response', [{'content': 'not json'},

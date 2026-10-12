@@ -93,6 +93,24 @@ def test_repair_cannot_cite_candidate_omitted_by_prompt_byte_limit():
                            evidence, '', invoke, json.loads) == []
 
 
+def test_missing_aspect_hint_prioritizes_late_passage_without_allowing_foreign_source():
+    original = {'claimId': 'c', 'kind': 'reported', 'text': 'fact', 'evidenceRefs': ['anchor'],
+                'obligationIds': ['o']}
+    base = {'sourceWorkId': 'paper', 'sourceVersionId': 'v1', 'accessLevel': 'fulltext',
+            'verification': {'literal': 'passed'}, 'obligationIds': ['o']}
+    evidence = [dict(base, evidenceId='anchor', quote='Original passage.')]
+    evidence.extend(dict(base, evidenceId=f'e{i}', quote='Earlier but irrelevant passage.') for i in range(20))
+    evidence.extend([dict(base, evidenceId='late', quote='Essential late condition.'),
+                     dict(base, evidenceId='foreign', sourceWorkId='other', quote='Foreign source words.')])
+    def invoke(prompt):
+        assert 'Essential late condition.' in prompt
+        assert 'Foreign source words.' not in prompt
+        return {'content': json.dumps([dict(original, evidenceRefs=['late'])])}
+    result = repair_rejected({'claims': [original]}, {'rejected': [{'claimId': 'c',
+        'missingEvidenceRefs': ['late', 'foreign']}]}, evidence, '', invoke, json.loads)
+    assert result[0]['evidenceRefs'] == ['late']
+
+
 def test_repair_stops_when_normal_budget_is_exhausted():
     def exhausted(_):
         raise BudgetExhaustedError('modelCalls', 15, 15)

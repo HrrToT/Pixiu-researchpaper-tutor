@@ -552,6 +552,13 @@ Return JSON array of verdicts:
 
 Be strict: evidence must directly support EVERY clause and condition of the specific claim.
 For each claim use ONLY its own evidenceRefs; evidence cited by another claim is not its support.
+Resolve the subject of EVERY cited clause from its preceding and following sentences.
+In contrasts (however, in contrast, on the contrary), distinguish the baseline from
+the proposed method. An "it" or "this" is not automatically the paper's own method.
+A passage criticizing a baseline cannot support a limitation assigned to the proposed
+method. If the subject is unresolved in the supplied context, fail that assertion.
+For each verdict's reason, briefly identify the asserted subject, the source subject,
+and any mismatch before judging support; do not merely restate the claimed sentence.
 Check each number's method, dataset, metric, unit and experimental setting, not just its presence.
 SourceContext is the original passage around the exact quote, not additional permission to invent facts.
 Use it to detect lost experimental scope. A numeric comparison must identify its dataset/protocol

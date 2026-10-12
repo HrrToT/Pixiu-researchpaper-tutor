@@ -35,8 +35,22 @@ def test_missing_requirement_is_routed_to_its_rejected_draft_instead_of_unrelate
     assert result['rejected'] == [{'claimId': 'limit', 'reason': 'absence_not_established', 'missingQuestions': ['保证边界？']}]
 
 
+def test_repair_receives_specific_missing_aspects_from_the_audit():
+    claim = {'claimId': 'c', 'text': SHORT, 'obligationIds': ['o']}
+    result = prepare_coverage_repair({'claims': [claim]}, {'accepted': [claim], 'rejected': []},
+        {'gaps': [{'obligationId': 'o', 'question': '必要条件？',
+                   'missingAspects': ['相机主点', '固定划分', '相机主点', None],
+                   'aspectEvidenceRefs': ['late', 'late', None]}], 'verdicts': []})
+    assert result['rejected'][0]['missingQuestions'] == ['必要条件？', '相机主点', '固定划分']
+    assert result['rejected'][0]['missingEvidenceRefs'] == ['late']
+
+
 def audit_rows(text, status):
-    return [{'obligationId': oid, 'status': status, 'bindings': [{'claimId': 'c', 'excerpt': text}]}
+    return [{'obligationId': oid, 'status': status, 'bindings': [{'claimId': 'c', 'excerpt': text}],
+             'aspects': [{'aspectId': 'conditions', 'requirement': 'Necessary camera conditions',
+                          'status': status, 'basis': {'kind': 'source', 'evidenceId': 'e',
+                          'excerpt': 'Camera calibration uses focal length and principal point'},
+                          'bindings': [{'claimId': 'c', 'excerpt': text}]}]}
             for oid in ('o', 'answer_scope')]
 
 

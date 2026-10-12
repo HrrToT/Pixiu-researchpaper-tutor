@@ -82,6 +82,9 @@ def prepare_coverage_repair(report, verification, audit):
     for gap in active_gaps:
         obligation_id = gap.get("obligationId")
         question = gap.get("question")
+        details = gap.get('missingAspects')
+        questions = [question, *[value for value in details if isinstance(value, str) and value.strip()]] \
+            if isinstance(details, list) else [question]
         gap_targets = set()
 
         for cid in bindings_by_obligation.get(obligation_id, []):
@@ -109,8 +112,9 @@ def prepare_coverage_repair(report, verification, audit):
 
         for cid in gap_targets:
             bucket = targets.setdefault(cid, [])
-            if question not in bucket:
-                bucket.append(question)
+            for missing_question in questions:
+                if missing_question not in bucket:
+                    bucket.append(missing_question)
 
     targeted_ids = set(targets.keys())
 
@@ -155,6 +159,18 @@ def prepare_coverage_repair(report, verification, audit):
             }
         )
 
+    # Hints select prompt candidates only; repair independently enforces the
+    # original source/version whitelist before exposing or accepting a citation.
+    for row in out_rejected:
+        claim = next((c for c in report_claims if _claim_id(c) == _rejected_row_id(row)), {})
+        hints = []
+        for gap in active_gaps:
+            if gap.get('obligationId') in (claim.get('obligationIds') or []):
+                refs = gap.get('aspectEvidenceRefs')
+                if isinstance(refs, list):
+                    hints.extend(ref for ref in refs if isinstance(ref, str) and ref not in hints)
+        if hints:
+            row['missingEvidenceRefs'] = hints
     return {"accepted": out_accepted, "rejected": out_rejected}
 
 
