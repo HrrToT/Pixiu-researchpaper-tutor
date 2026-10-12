@@ -33,5 +33,28 @@
     "seconds": 60.56,
     "warnings": 2
   },
-  "runtimeLoaded": false
+  "runtimeLoaded": true,
+  "postSerializationChecks": {
+    "passed": 17,
+    "seconds": 5.52
+  },
+  "health": {
+    "httpStatus": 200,
+    "status": "ok",
+    "rag": "ok",
+    "grobid": "ok",
+    "activeRunsBeforeRestart": 0
+  },
+  "developmentRunId": "dr_run_006bc964976258f08b34845901bad8a2",
+  "developmentOutcome": {
+    "outcome": "partial",
+    "manualOutcome": "failed",
+    "coverageGate": "detected omissions",
+    "record": "D7-mechanism-coverage-20261013.json"
+  },
+  "reportFollowupChecks": {
+    "passed": 37,
+    "seconds": 10.77
+  },
+  "reportFollowup": "Future reports fold and deduplicate gaps; full audit stays in storage. Historical D7 report is unchanged."
 }
