@@ -74,6 +74,7 @@ class ResearchFacade:
         self._source_reader = source_reader
         self._scope_validator = scope_validator
         self._external_acquire = external_acquire
+        self._max_concurrent = max_concurrent
         self._executor = ThreadPoolExecutor(max_workers=max_concurrent)
         self._active_futures: dict[str, Future] = {}
         self._lock = threading.Lock()
@@ -563,6 +564,7 @@ class ResearchFacade:
         with self._lock:
             if run_id in self._active_futures and not self._active_futures[run_id].done():
                 raise DeepResearchError("execution_busy", "上一轮执行正在停止，请稍后继续")
+            self._require_capacity()
             self._repo.begin_execution(run_id, expected_epoch=record.get("executionEpoch"),
                                        expected_revision=expected_revision)
             future = self._executor.submit(self._execute_graph, run_id)
@@ -708,6 +710,14 @@ class ResearchFacade:
         return self.get(child_record["runId"])
     
     # ── Execution Management ───────────────────────────────────────────────────
+
+    def _require_capacity(self) -> None:
+        """Called under _lock, before beginning the budget clock or submitting."""
+        self._active_futures = {rid: future for rid, future in self._active_futures.items()
+                                if not future.done()}
+        if len(self._active_futures) >= self._max_concurrent:
+            raise DeepResearchError("execution_capacity", "当前研究任务较多，已保存请求，请稍后点击继续",
+                                    {"status_code": 503})
     
     def _start_execution(self, run_id: str) -> None:
         """Start async graph execution with restart recovery."""
@@ -719,6 +729,7 @@ class ResearchFacade:
             
             # Mark as running first
             try:
+                self._require_capacity()
                 self._repo.begin_execution(run_id)
             except Exception as exc:
                 logger.warning("Could not begin execution for %s: %s", run_id, exc)
