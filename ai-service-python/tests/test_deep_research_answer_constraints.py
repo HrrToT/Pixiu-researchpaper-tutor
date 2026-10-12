@@ -44,3 +44,11 @@ def test_compaction_can_drop_secondary_claims_but_retains_kept_identity():
     invoke = Mock(return_value={'content': json.dumps(compact)})
     assert compact_answer({'claims': [important, secondary]}, '100字以内', invoke, json.loads) == compact
     assert 'MAY DROP' in invoke.call_args.args[0]
+
+
+def test_list_conditions_are_preserved_without_wasting_a_compaction_call():
+    report = {'claims': [{'text': '摘要提出三部分方法。', 'conditions': ['仅摘要', '未读取全文']}]}
+    invoke = Mock()
+    result = compact_answer(report, '300字以内', invoke, json.loads)
+    assert result['claims'][0]['conditions'] == {'1': '仅摘要', '2': '未读取全文'}
+    invoke.assert_not_called()

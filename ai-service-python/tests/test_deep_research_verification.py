@@ -62,6 +62,12 @@ def test_abstract_cannot_establish_detailed_experimental_fact():
     assert verify_claims([claim(ev, detailLevel="abstract")], [ev], passed)["accepted"]
 
 
+def test_linked_arxiv_identity_is_not_mistaken_for_a_measured_number():
+    ev = {**evidence('abstract'), 'sourceWorkId': 'arxiv:2311.17245'}
+    assert verify_claims([claim(ev, 'arXiv:2311.17245报告200 FPS', detailLevel='abstract')], [ev], passed)['accepted']
+    assert not verify_claims([claim(ev, 'arXiv:2311.17245报告999 FPS', detailLevel='abstract')], [ev], passed)['accepted']
+
+
 def test_semantic_check_is_required_and_duplicate_verdict_fails_closed():
     ev = evidence()
     assert not verify_claims([claim(ev)], [ev])["accepted"]

@@ -219,6 +219,8 @@ Output kind: {output_kind}
 User clarification: {brief_state.get('clarification', '')}
 Materials: {json.dumps([{'id': m.get('materialId'), 'title': m.get('title', '')} for m in materials[:10]], ensure_ascii=False)}
 Primary papers: {json.dumps(record.get('focusPaperIds', []))}
+Previously acquired source identities (reuse an exact relevant arXiv identifier for lookup):
+{json.dumps(list({s.get('workId'): {'workId': s.get('workId'), 'versionId': s.get('versionId'), 'title': s.get('title')} for s in brief_state.get('sources', [])}.values())[:12], ensure_ascii=False)}
 User context (notes/old reports, UNVERIFIED; use only for goals and queries, never as paper facts):
 {json.dumps(record.get('contextMaterials', []), ensure_ascii=False)}
 
@@ -955,6 +957,9 @@ When citing only abstract evidence use detailLevel="abstract", explicitly limit 
 abstract and do not claim to have read the full paper. Otherwise use detailLevel="fulltext".
 Do NOT invent measured results or pretend unsupported conclusions are verified."""
         
+        if output_kind == "experiment_design":
+            from services.deep_research.experimental_reasoning import FACTORIAL_REFERENCE
+            prompt += "\nStatistical reference (apply only if the design has two binary factors):\n" + FACTORIAL_REFERENCE
         result = llm_invoke(run_id, "synthesize", prompt, {"max_tokens": 4000, "temperature": 0.2}, use_reserve=True)
         
         if hasattr(result, "content"):

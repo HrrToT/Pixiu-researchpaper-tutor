@@ -5,8 +5,13 @@ import re
 
 def normalize_conditions(report):
     for claim in report.get('claims', []):
-        if isinstance(claim, dict) and isinstance(claim.get('conditions'), str):
-            claim['conditions'] = {'context': claim['conditions']} if claim['conditions'].strip() else {}
+        if not isinstance(claim, dict):
+            continue
+        conditions = claim.get('conditions')
+        if isinstance(conditions, str):
+            claim['conditions'] = {'context': conditions} if conditions.strip() else {}
+        elif isinstance(conditions, list) and all(isinstance(value, str) for value in conditions):
+            claim['conditions'] = {str(index + 1): value for index, value in enumerate(conditions)}
     return report
 
 

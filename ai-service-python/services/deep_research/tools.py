@@ -517,6 +517,11 @@ one sign interpretation for PSNR/SSIM and LPIPS together. Non-significance does 
 Truncating coefficients is a proposed intervention, not automatically the paper's distillation procedure.
 Do not accept vague connections. A partly supported claim must fail until its wording is narrowed."""
         
+        if any(c.get("kind") in {"proposal", "suggestion", "hypothesis"} for c in claims):
+            from services.deep_research.experimental_reasoning import FACTORIAL_REFERENCE
+            prompt += "\nReview all claims jointly for conflicting definitions. For every formula claim, " \
+                      "derive its meaning before issuing a verdict; state any counterexample in the reason.\n" \
+                      + FACTORIAL_REFERENCE
         try:
             result = self._invoke(
                 run_id=self._run_id,

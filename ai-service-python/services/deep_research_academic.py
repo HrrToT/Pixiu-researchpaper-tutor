@@ -108,7 +108,12 @@ class AcademicSourceClient:
         elif re.search(r'\b(?:all|ti|au|abs|cat):', query):
             params['search_query'] = query.strip()
         else:
-            words = re.findall(r'[\w-]+', query, re.UNICODE)[:16]
+            generic = {'paper', 'method', 'methods', 'component', 'components', 'role', 'function',
+                       'three', 'study', 'approach', 'the', 'and', 'of', 'for', 'in'}
+            words = [word for word in re.findall(r'[\w-]+', query, re.UNICODE)
+                     if word.lower() not in generic][:6]
+            if not words:
+                raise AcademicAccessError('学术查询缺少主题')
             params['search_query'] = ' AND '.join('all:"' + word + '"' for word in words)
         path = '/api/query?' + urlencode(params)
         content_type, body = self.transport('export.arxiv.org', path, 1024 * 1024)

@@ -76,6 +76,10 @@ def verify_claims(claims: list[dict], evidence: list[dict],
             if any(item.get("accessLevel") == "abstract" for item in support) and claim.get("detailLevel") != "abstract":
                 reason = reason or "abstract_only"
             claim_text = claim.get("text", "") + " " + json.dumps(claim.get("conditions") or {}, ensure_ascii=False)
+            for item in support:
+                identity = item.get("sourceWorkId", "")
+                if re.fullmatch(r'arxiv:\d{4}\.\d{4,5}', identity, re.I):
+                    claim_text = re.sub(re.escape(identity), '', claim_text, flags=re.I)
             numbers = {normalize_quote(n).replace(" ", "") for n in _NUMBER.findall(claim_text)}
             original_numbers = {normalize_quote(n).replace(" ", "") for item in support for n in _NUMBER.findall(item["quote"])}
             if not numbers <= original_numbers:

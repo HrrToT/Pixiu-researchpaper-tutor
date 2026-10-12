@@ -77,6 +77,20 @@ def test_exact_identifier_lookup_filters_unrelated_provider_results():
     assert params['id_list'] == ['2311.17245'] and 'search_query' not in params
 
 
+def test_plain_discovery_omits_generic_request_words():
+    from urllib.parse import parse_qs, urlsplit
+    calls = []
+    def transport(*args):
+        calls.append(args)
+        return 'application/atom+xml', b'<feed xmlns="http://www.w3.org/2005/Atom" />'
+    client = AcademicSourceClient(AcademicPolicy(enabled=True, mode='academic_external'), transport)
+    client.discover('LightGaussian paper compression method components')
+    assert parse_qs(urlsplit(calls[0][1]).query)['search_query'] == ['all:"LightGaussian" AND all:"compression"']
+    with pytest.raises(AcademicAccessError, match='缺少主题'):
+        client.discover('the paper method')
+    assert len(calls) == 1
+
+
 def test_rejects_entities_and_does_not_retry():
     calls = []
     def transport(*args):
