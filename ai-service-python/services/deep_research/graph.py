@@ -997,8 +997,13 @@ Do NOT invent measured results or pretend unsupported conclusions are verified."
                       "Discuss every requested tradeoff (including quality) before adding secondary ablation examples."
         
         if output_kind == "experiment_design":
-            from services.deep_research.experimental_reasoning import FACTORIAL_REFERENCE
+            from services.deep_research.experimental_reasoning import FACTORIAL_REFERENCE, design_requirements
             prompt += "\nStatistical reference (apply only if the design has two binary factors):\n" + FACTORIAL_REFERENCE
+            prompt += '\nEach proposed design claim MUST have one designRole from the contract below. ' \
+                      'Cover every role with a separate, complete claim. These are proposals, not facts about the paper. ' \
+                      'Do not replace a concrete choice with “keep everything fixed”. If no specific split/budget ' \
+                      'is documented, choose and label a reproducible proposed protocol, not an invented paper setting.\n' \
+                      + design_requirements()
         result = llm_invoke(run_id, "synthesize", prompt, {"max_tokens": 4000, "temperature": 0.2}, use_reserve=True)
         
         if hasattr(result, "content"):
@@ -1157,9 +1162,13 @@ def make_publish_node(
         sections = build_sections(accepted_claims, output_kind, verified_report.get("sections"))
         if output_kind == "experiment_design":
             from services.deep_research.synthesis import OUTPUT_KIND_SECTIONS
+            from services.deep_research.experimental_reasoning import DESIGN_ROLE_LABELS, missing_design_roles
             present = {section["title"] for section in sections}
             gaps = [*gaps, *[{"question": f"补齐实验方案：{title}", "missingEvidence": "尚未形成经过检查的方案内容"}
                             for title in OUTPUT_KIND_SECTIONS["experiment_design"] if title not in present]]
+            gaps.extend({'question': f'补齐实验方案：{DESIGN_ROLE_LABELS[role]}',
+                         'missingEvidence': '这项方案要求尚未通过完整性和逻辑核验', 'designRole': role}
+                        for role in missing_design_roles(accepted_claims))
         complete_proposal = output_kind in {"experiment_design", "research_entry"} and bool(evidence := record.get("state", {}).get("evidence", []))
         if not accepted_claims:
             outcome = OUTCOME_INCONCLUSIVE

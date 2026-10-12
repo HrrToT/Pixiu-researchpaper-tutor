@@ -26,7 +26,7 @@ Rejected claims and checks:
 Exact available evidence:
 {json.dumps([{'evidenceId': short_ids[e['evidenceId']], 'quote': e.get('quote', ''), 'sourceContext': surrounding_context(e), 'location': e.get('location', {}), 'accessLevel': e.get('accessLevel'), 'conditions': e.get('conditions', {}), 'tableData': e.get('tableData')} for e in selected], ensure_ascii=False)}
 Return a COMPACT JSON array of revised claims, or [] when no supported revision is possible.
-Keep claimId and kind. Use only a subset of that claim's original evidenceRefs; never turn a fact
+Keep claimId, kind and any designRole. Use only a subset of that claim's original evidenceRefs; never turn a fact
 into a proposal to evade checking. Preserve conditions needed for the narrower assertion.
 Use the supplied short evidence IDs (E1, E2, ...) in both evidenceRefs and tableBindings.
 Reported table numbers require tableBindings from tableData, using exactly these JSON keys:
@@ -63,6 +63,10 @@ unexecuted proposals/hypotheses clearly. Keep the answer concise and within the 
             continue
         if not isinstance(row.get('text'), str) or not row['text'].strip():
             continue
+        if original.get('designRole'):
+            if row.get('designRole', original['designRole']) != original['designRole']:
+                continue
+            row['designRole'] = original['designRole']
         valid.append(normalize_conditions({'claims': [dict(row)]})['claims'][0])
     candidate = {'claims': [*verification.get('accepted', []), *valid]}
     limit = requested_character_limit(question)

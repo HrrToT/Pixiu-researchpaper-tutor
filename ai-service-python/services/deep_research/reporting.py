@@ -6,6 +6,15 @@ def build_sections(claims, output_kind, proposed_sections=None):
     templates = OUTPUT_KIND_SECTIONS.get(resolve_output_kind(output_kind), OUTPUT_KIND_SECTIONS["direction_survey"])
     indexed = {claim["claimId"]: claim for claim in claims if claim.get("claimId")}
     used, sections = set(), []
+    if output_kind == 'experiment_design':
+        from services.deep_research.experimental_reasoning import DESIGN_ROLES
+        for title in templates:
+            ids = [key for key, claim in indexed.items()
+                   if isinstance(claim.get('designRole'), str)
+                   and DESIGN_ROLES.get(claim['designRole'], (None,))[0] == title]
+            if ids:
+                used.update(ids)
+                sections.append({'title': title, 'claimIds': ids})
     for section in proposed_sections or []:
         if not isinstance(section, dict) or section.get("title") not in templates:
             continue

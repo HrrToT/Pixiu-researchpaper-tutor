@@ -96,6 +96,10 @@ def verify_claims(claims: list[dict], evidence: list[dict],
                 reason = reason or "numeric_mismatch"
             from services.deep_research.table_bindings import validate_table_bindings
             reason = reason or validate_table_bindings(claim, support)
+        if claim.get('designRole') is not None:
+            from services.deep_research.experimental_reasoning import DESIGN_ROLES
+            if not isinstance(claim.get('designRole'), str) or claim['designRole'] not in DESIGN_ROLES or kind not in {'proposal', 'suggestion', 'hypothesis'}:
+                reason = reason or 'invalid_design_role'
         if reason:
             rejected.append({"claimId": claim_id, "reason": reason})
         else:

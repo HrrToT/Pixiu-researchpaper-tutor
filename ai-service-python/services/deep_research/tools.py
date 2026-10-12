@@ -484,17 +484,23 @@ class BudgetedSemanticChecker:
     def __call__(self, claims: list[dict], evidence: list[dict]) -> list[dict]:
         if not claims:
             return []
-        # At most three sequential batches, each separately ledgered and subject
-        # to the live scope/time/token budget. Small reports get per-claim checks.
-        size = max(1, (len(claims) + 2) // 3)
-        proposal_context = [
-            {'claimId': c.get('claimId'), 'text': c.get('text'), 'kind': c.get('kind')}
-            for c in claims
-        ] if any(c.get('kind') in {'proposal', 'suggestion', 'hypothesis'} for c in claims) else []
+        # Check a prospective design jointly once: splitting its equations and
+        # definitions across three calls repeats reasoning and loses context.
+        # Facts remain separately checked against their own citations. Every
+        # call still goes through the same ledger, budget and scope validation.
+        proposals = [c for c in claims if c.get('kind') in {'proposal', 'suggestion', 'hypothesis'}]
+        facts = [c for c in claims if c.get('kind') not in {'proposal', 'suggestion', 'hypothesis'}]
+        fact_slots = 2 if proposals else 3
+        size = max(1, (len(facts) + fact_slots - 1) // fact_slots)
+        batches = ([proposals] if proposals else []) + [facts[i:i + size] for i in range(0, len(facts), size)]
         verdicts = []
-        for offset in range(0, len(claims), size):
-            verdicts.extend(self._check_batch(claims[offset:offset + size], evidence, proposal_context))
-        return verdicts
+        for batch in batches:
+            targets = {c['claimId'] for c in batch}
+            context = [{'claimId': c.get('claimId'), 'text': c.get('text'), 'kind': c.get('kind')}
+                       for c in proposals if c['claimId'] not in targets]
+            verdicts.extend(self._check_batch(batch, evidence, context))
+        by_id = {v['claimId']: v for v in verdicts}
+        return [by_id[c['claimId']] for c in claims]
 
     def _check_batch(self, claims: list[dict], evidence: list[dict], proposal_context: list[dict]) -> list[dict]:
         from services.deep_research.selection import surrounding_context
@@ -506,6 +512,7 @@ class BudgetedSemanticChecker:
             "evidenceRefs": c.get("evidenceRefs", []),
             "conditions": c.get("conditions", {}),
             "tableBindings": c.get("tableBindings", []),
+            "designRole": c.get("designRole"),
         } for c in claims], ensure_ascii=False)
         
         referenced = {ref for claim in claims for ref in claim.get("evidenceRefs", [])}
@@ -548,11 +555,16 @@ Truncating coefficients is a proposed intervention, not automatically the paper'
 Do not accept vague connections. A partly supported claim must fail until its wording is narrowed."""
         
         if any(c.get("kind") in {"proposal", "suggestion", "hypothesis"} for c in claims):
-            from services.deep_research.experimental_reasoning import FACTORIAL_REFERENCE
+            from services.deep_research.experimental_reasoning import FACTORIAL_REFERENCE, design_requirements
             prompt += "\nReview all claims jointly for conflicting definitions. For every formula claim, " \
                       "derive its meaning before issuing a verdict; state any counterexample in the reason.\n" \
                       + FACTORIAL_REFERENCE
             prompt += '\nOther proposed statements, for consistency only (not evidence and not verdict targets):\n' + json.dumps(proposal_context, ensure_ascii=False)
+            if any(c.get('designRole') for c in claims):
+                prompt += '\nFor every designRole, verify BOTH logical correctness AND fulfillment of its entire ' \
+                          'requirement below. A role label, heading or vague promise is not fulfillment. Fail the ' \
+                          'specific claim if its budget, split, procedure or decision criterion is unspecified. ' \
+                          'Use the other target claims for shared definitions but not as factual evidence.\n' + design_requirements()
         try:
             result = self._invoke(
                 run_id=self._run_id,

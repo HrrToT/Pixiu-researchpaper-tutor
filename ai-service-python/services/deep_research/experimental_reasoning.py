@@ -27,3 +27,31 @@ the independent sampling unit, and keep recovery/training budgets matched.
 An intervention without recovery is a valid diagnostic only if explicitly
 distinguished from an end-to-end compression procedure with recovery.
 """
+
+# Each role is a separately checked deliverable, not a keyword-based verdict.
+DESIGN_ROLES = {
+    'hypothesis': ('假设', 'State the testable prospective hypothesis and its limited estimand.'),
+    'groups': ('分组表', 'Specify every intervention group, factor levels and how each is constructed; distinguish truncation, distillation and the full pipeline.'),
+    'controls': ('固定条件', 'Fix paired baseline checkpoints, rendering settings and all other interventions, including quantization when relevant.'),
+    'data': ('固定条件', 'Specify scenes, train/evaluation split, paired seeds and the independent sampling unit. Proposed choices must not be attributed to the paper.'),
+    'budget': ('固定条件', 'Specify recovery/optimization steps and matched budgets for every group. Explicit zero recovery is valid for a diagnostic; separate native-budget results from matched-budget results.'),
+    'steps': ('执行步骤', 'Give executable ordered steps and saved artifacts: checkpoint identity, split, seed, intervention configuration, recovery budget, renders and raw measurements.'),
+    'metrics': ('指标', 'Specify quality, rendering speed and storage measurements, their direction and measurement protocol. Never combine incompatible units.'),
+    'analysis': ('结果解释', 'Specify estimable effects and uncertainty, interaction versus independence, and predeclared decision criteria. Never claim an unexecuted result.'),
+    'limits': ('风险', 'State confounders, invalidation conditions and limits of the proposed intervention, including what this experiment cannot establish.'),
+}
+DESIGN_ROLE_LABELS = {'hypothesis': '待验证假设', 'groups': '实验分组', 'controls': '固定条件',
+                     'data': '数据划分与重复试验', 'budget': '训练与恢复预算', 'steps': '执行步骤与记录',
+                     'metrics': '指标与测量口径', 'analysis': '结果判断方法', 'limits': '风险与适用边界'}
+
+
+def design_requirements():
+    return '\n'.join(f'{role}: {requirement}' for role, (_, requirement) in DESIGN_ROLES.items())
+
+
+def missing_design_roles(claims):
+    covered = {c.get('designRole') for c in claims
+               if c.get('verification') == 'proposal'
+               and isinstance(c.get('designRole'), str)
+               and c.get('kind') in {'proposal', 'suggestion', 'hypothesis'}}
+    return [role for role in DESIGN_ROLES if role not in covered]
