@@ -67,6 +67,27 @@ def test_reader_returns_persisted_location_and_does_not_fetch():
         read_acquired_source(store, "run", "missing")
 
 
+def test_research_timeout_client_is_isolated_and_still_capped_by_run(monkeypatch):
+    from llm.client import DeepSeekLLM
+    from services.deep_research.runtime import research_model
+    from core.config import settings
+    base = DeepSeekLLM(api_key='fixture-key', model='fixture-model')
+    monkeypatch.setattr('llm.client.get_structured_llm', lambda: base)
+    monkeypatch.setattr(settings, 'deep_research_request_timeout_seconds', 180)
+    client = research_model()
+    assert client is not base and client.timeout_seconds == 180
+    assert base.timeout_seconds is None and client.model == base.model
+    store = repo()
+    store.require_run.return_value['startedAt'] = (datetime.now(UTC) - timedelta(seconds=210)).isoformat()
+    received = []
+    monkeypatch.setattr(client, 'invoke', lambda request: received.append(request))
+    ScopedModelClient(store, lambda *args: True, lambda: client).for_run('run').invoke(LLMRequest(prompt='research'))
+    assert 0 < received[0].timeout_seconds <= 150
+    fixture = object()
+    monkeypatch.setattr('llm.client.get_structured_llm', lambda: fixture)
+    assert research_model() is fixture
+
+
 def test_reasoning_options_are_reserved_before_provider_send():
     from services.deep_research.runtime import research_model_options
     from services.deep_research.tools import TrackedLLMInvoker

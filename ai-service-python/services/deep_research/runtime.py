@@ -32,6 +32,19 @@ def research_model_options(node, options):
     return {**options, 'thinking': {'type': 'disabled'}, 'reasoning_effort': 'none'}
 
 
+def research_model():
+    """A separate client cap; never mutate the shared ordinary-chat client."""
+    from core.config import settings
+    from llm.client import DeepSeekLLM, get_structured_llm
+    base = get_structured_llm()
+    if not isinstance(base, DeepSeekLLM):
+        return base  # Preserve offline fixtures and alternative providers.
+    return DeepSeekLLM(model=base.model, temperature=base.temperature,
+                      api_key=base.api_key, base_url=base.base_url,
+                      thinking_type=base.thinking_type, reasoning_effort=base.reasoning_effort,
+                      timeout_seconds=settings.deep_research_request_timeout_seconds)
+
+
 class AuthoritativeScopeValidator:
     """Check live task membership/readiness/version through the fixed Java service.
 
@@ -150,7 +163,7 @@ def initialize_runtime():
                           api_key=settings.deepseek_api_key, base_url=settings.deepseek_base_url,
                           thinking_type="disabled")
 
-    model = ScopedModelClient(repo, scope, get_structured_llm, routine_model)
+    model = ScopedModelClient(repo, scope, research_model, routine_model)
 
     # The facade binds the provider to a run, so every send uses its live scope.
     class RuntimeFacade(ResearchFacade):

@@ -1,4 +1,5 @@
 import json
+import math
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -106,13 +107,19 @@ class DeepSeekLLM:
         base_url: Optional[str] = None,
         thinking_type: Optional[str] = None,
         reasoning_effort: Optional[str] = None,
+        timeout_seconds: Optional[float] = None,
     ):
+        if timeout_seconds is not None:
+            timeout_seconds = float(timeout_seconds)
+            if not math.isfinite(timeout_seconds) or timeout_seconds <= 0:
+                raise ValueError("DeepSeekLLM timeout_seconds must be finite and positive")
         self.model = model
         self.temperature = temperature
         self.api_key = api_key
         self.base_url = (base_url or DEFAULT_DEEPSEEK_BASE_URL).rstrip("/")
         self.thinking_type = thinking_type
         self.reasoning_effort = reasoning_effort
+        self.timeout_seconds = timeout_seconds
 
     def invoke(self, request: LLMRequest) -> LLMResult:
         from services.operation_control import check_cancelled
@@ -143,12 +150,15 @@ class DeepSeekLLM:
 
         if request.extra_body:
             payload.update(request.extra_body)
+        # Local transport control must never become a provider JSON parameter.
+        payload.pop("timeout_seconds", None)
 
-        timeout = float(settings.deepseek_timeout_seconds)
+        timeout = self.timeout_seconds if self.timeout_seconds is not None else float(settings.deepseek_timeout_seconds)
         if request.timeout_seconds is not None:
-            if request.timeout_seconds <= 0:
+            request_timeout = float(request.timeout_seconds)
+            if not math.isfinite(request_timeout) or request_timeout <= 0:
                 raise ValueError("LLM request timeout must be positive")
-            timeout = min(timeout, float(request.timeout_seconds))
+            timeout = min(timeout, request_timeout)
         input_size = sum(len(str(item.get("content") or "")) for item in resolved_messages)
         estimated_input_tokens = sum(estimate_tokens(item.get("content") or "") for item in resolved_messages)
         with trace_step(
