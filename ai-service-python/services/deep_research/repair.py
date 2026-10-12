@@ -23,6 +23,12 @@ def repair_rejected(report, verification, evidence, question, invoke, parse):
                         for row in verification.get('accepted', [])
                         if row.get('kind') in {'proposal', 'suggestion', 'hypothesis'}]
     prompt = f'''Revise only the rejected claims below. Narrow unsupported wording or omit the claim.
+Some targets have reason answer_incomplete: their existing text may be factually correct,
+but omits requested aspects. Fill those omissions from that claim's own supplied evidence,
+including necessary conditioning inputs and applicability rules; do not just shorten it.
+For absence_not_established, reason from the limited positive evidence actually supplied.
+Do not assert that the whole paper never reports, tests or proves something from missing
+passages. A finite empirical result cannot by itself establish a universal guarantee.
 Question: {question}
 Accepted experimental definitions (consistency only; do not revise these or treat them as paper evidence):
 {json.dumps(proposal_context, ensure_ascii=False)}

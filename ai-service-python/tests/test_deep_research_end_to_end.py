@@ -6,6 +6,7 @@ import hashlib
 import json
 import re
 import threading
+import pytest
 from dataclasses import replace
 from unittest.mock import Mock, patch
 
@@ -203,12 +204,17 @@ def test_absolute_provider_timeout_preserves_unknown_and_ignores_late_response(t
         facade.shutdown()
 
 
-def test_pause_keeps_known_inflight_response_and_resume_does_not_resend_it(tmp_path):
+@pytest.mark.parametrize('prefix,node', [
+    ('Analyze this research question', 'resolve_brief'),
+    ('Audit whether the FINAL ACCEPTED ANSWER', 'verify_answer_coverage'),
+    ('Revise only the rejected claims', 'repair_claims'),
+])
+def test_pause_keeps_known_inflight_response_and_resume_does_not_resend_it(tmp_path, prefix, node):
     entered, release = threading.Event(), threading.Event()
 
     class PausingModel(FixtureModel):
         def invoke(self, request):
-            if not self.requests:
+            if request.prompt.startswith(prefix):
                 entered.set()
                 assert release.wait(5)
             return super().invoke(request)
@@ -218,15 +224,15 @@ def test_pause_keeps_known_inflight_response_and_resume_does_not_resend_it(tmp_p
     try:
         record = create(facade)
         facade._start_execution(record["runId"])
-        assert entered.wait(3)
+        assert entered.wait(10)
         current = repo.require_run(record["runId"])
         worker = facade._active_futures[record["runId"]]
         facade.action(record["runId"], "pause", {"requestId": "pause", "expectedRunRevision": current["runRevision"]})
         release.set()
         worker.result(timeout=5)
         assert repo.require_run(record["runId"])["status"] == "paused"
-        assert len(model.requests) == 1
-        assert repo.list_calls(record["runId"])[0]["status"] == "succeeded"
+        assert sum(r.prompt.startswith(prefix) for r in model.requests) == 1
+        assert [c for c in repo.list_calls(record['runId']) if c['node'] == node][0]['status'] == 'succeeded'
         paused = repo.require_run(record["runId"])
         facade.action(record["runId"], "resume", {"requestId": "resume", "expectedRunRevision": paused["runRevision"]})
         with facade._lock:
@@ -234,7 +240,7 @@ def test_pause_keeps_known_inflight_response_and_resume_does_not_resend_it(tmp_p
         if next_worker:
             next_worker.result(timeout=5)
         assert repo.require_run(record["runId"])["status"] == "completed"
-        assert sum(r.prompt.startswith("Analyze this research question") for r in model.requests) == 1
+        assert sum(r.prompt.startswith(prefix) for r in model.requests) == 1
     finally:
         release.set()
         facade.shutdown()

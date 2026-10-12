@@ -71,3 +71,34 @@ accepted claims. Bindings must quote the final answer, never the source passages
         if identity and gap.get('obligationId') == identity:
             gap['wholeQuestion'] = True
     return {'status': status, 'verdicts': verdicts if isinstance(verdicts, list) else [], 'gaps': gaps}
+
+
+def remaining_retrieval_gaps(gaps, audit, claims, evidence):
+    """Close an earlier retrieval gap only with a checked answer for that source.
+
+    A bounded inference about insufficient evidence may answer an obligation
+    even when retrieval cannot find a universal guarantee. Another paper's
+    conclusion, a proposal, or an unchecked audit never closes this gap.
+    """
+    if audit.get('status') != 'checked':
+        return list(gaps)
+    missing = {g.get('obligationId') for g in audit.get('gaps', [])}
+    from services.deep_research.answer_coverage import answer_coverage_gaps
+    check_plan = [{'obligations': [g for g in gaps if isinstance(g, dict) and g.get('obligationId')]}]
+    missing.update(g.get('obligationId') for g in answer_coverage_gaps(check_plan, claims, audit.get('verdicts')))
+    accepted = {c.get('claimId'): c for c in claims
+                if c.get('verification') == 'semantic_passed' and c.get('kind') in {'reported', 'inference'}}
+    origins = {e.get('evidenceId'): e.get('sourceWorkId') for e in evidence
+               if e.get('verification', {}).get('literal') == 'passed'}
+    covered = {}
+    for verdict in audit.get('verdicts', []):
+        oid = verdict.get('obligationId')
+        if verdict.get('status') != 'covered' or oid in missing:
+            continue
+        works = set()
+        for binding in verdict.get('bindings', []):
+            claim = accepted.get(binding.get('claimId'), {})
+            works.update(origins[ref] for ref in claim.get('evidenceRefs', []) if origins.get(ref))
+        covered[oid] = works
+    return [gap for gap in gaps if not isinstance(gap, dict)
+            or gap.get('sourceWorkId') not in covered.get(gap.get('obligationId'), set())]

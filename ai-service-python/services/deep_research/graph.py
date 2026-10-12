@@ -1078,13 +1078,29 @@ def make_verify_node(
                 return []
             return semantic_check_fn(claims_to_check, evidence_list)
         
-        verification_result = verify_claims_fn(claims, evidence, budgeted_semantic)
+        from services.deep_research.final_coverage import audit_final_answer
+        from services.deep_research.coverage_repair import prepare_coverage_repair, merge_verified_revisions
+        saved = record.get('state', {})
+        if saved.get('repairAttempted') and 'initialAnswerCoverage' in saved and 'repairTargets' in saved:
+            verification_result = saved['initialVerification']
+            answer_coverage = saved['initialAnswerCoverage']
+            repair_targets = saved['repairTargets']
+        else:
+            verification_result = verify_claims_fn(claims, evidence, budgeted_semantic)
+            answer_coverage = audit_final_answer(run_id, record.get('question', ''),
+                saved.get('plan', []), verification_result.get('accepted', []),
+                evidence, llm_invoke, _safe_parse_json)
+            repair_targets = prepare_coverage_repair(report_body, verification_result,
+                answer_coverage if answer_coverage.get('status') == 'checked' else {'gaps': []})
+        if saved.get('repairCompleted') and saved.get('verifiedReport'):
+            return {'claim_ids': [c['claimId'] for c in saved['verifiedReport'].get('verifiedClaims', [])]}
 
         # Repair at most once, using the normal call pool so the final verifier's
         # reserve remains protected. Repaired wording passes the same checks again.
-        if verification_result.get("rejected") and llm_invoke and not record.get("state", {}).get("repairAttempted"):
+        if repair_targets.get("rejected") and llm_invoke:
             repo_update(run_id, lambda r: {**r, "state": {**r.get("state", {}), "repairAttempted": True,
-                "initialVerification": verification_result}}, expected_revision=None)
+                "initialVerification": verification_result, 'initialAnswerCoverage': answer_coverage,
+                'repairTargets': repair_targets}}, expected_revision=None)
             from services.deep_research.repair import repair_rejected
             from services.deep_research.contracts import BudgetExhaustedError
             def invoke_repair(prompt):
@@ -1111,29 +1127,35 @@ def make_verify_node(
                     "repairStatus": "response_received"}}, expected_revision=None)
                 return response
             try:
-                revised = repair_rejected(report_body, verification_result, evidence, record.get("question", ""),
-                    invoke_repair, _safe_parse_json)
+                revised = saved.get('repairDraft')
+                if revised is None:
+                    revised = repair_rejected(report_body, repair_targets, evidence, record.get("question", ""),
+                        invoke_repair, _safe_parse_json)
+                    repo_update(run_id, lambda r: {**r, 'state': {**r.get('state', {}),
+                        'repairDraft': revised}}, expected_revision=None)
                 if revised:
                     def revised_semantic(targets, sources):
                         check = getattr(semantic_check_fn, 'check_revisions', None)
                         if check:
-                            return check(targets, sources, verification_result.get('accepted', []))
+                            return check(targets, sources, repair_targets.get('accepted', []))
                         return budgeted_semantic(targets, sources)
-                    checked = verify_claims_fn(revised, evidence, revised_semantic)
-                    repaired_ids = {row["claimId"] for row in checked.get("accepted", [])}
-                    verification_result = {"accepted": [*verification_result.get("accepted", []),
-                                                       *checked.get("accepted", [])],
-                        "rejected": [row for row in verification_result["rejected"] if row["claimId"] not in repaired_ids]}
+                    merged = saved.get('repairVerification')
+                    if merged is None:
+                        checked = verify_claims_fn(revised, evidence, revised_semantic)
+                        merged = merge_verified_revisions(verification_result, checked)
+                        repo_update(run_id, lambda r: {**r, 'state': {**r.get('state', {}),
+                            'repairVerification': merged}}, expected_revision=None)
+                    if merged.get('accepted') != verification_result.get('accepted'):
+                        answer_coverage = audit_final_answer(run_id, record.get('question', ''),
+                            record.get('state', {}).get('plan', []), merged.get('accepted', []),
+                            evidence, llm_invoke, _safe_parse_json)
+                    verification_result = merged
             except BudgetExhaustedError:
                 pass
         
         accepted = verification_result.get("accepted", [])
         rejected = verification_result.get("rejected", [])
 
-        from services.deep_research.final_coverage import audit_final_answer
-        answer_coverage = audit_final_answer(run_id, record.get('question', ''),
-            record.get('state', {}).get('plan', []), accepted, evidence, llm_invoke, _safe_parse_json)
-        
         # Update report with only verified claims
         verified_report = {
             **report_body,
@@ -1150,7 +1172,8 @@ def make_verify_node(
             run_id,
             lambda r: {
                 **r,
-                "state": {**(r.get("state") or {}), "verifiedReport": verified_report},
+                "state": {**(r.get("state") or {}), "verifiedReport": verified_report,
+                          'repairCompleted': bool(r.get('state', {}).get('repairAttempted'))},
             },
             expected_revision=None,
         )
@@ -1183,10 +1206,13 @@ def make_publish_node(
         brief_state = record.get("state", {})
         output_kind = brief_state.get("outputKind", "direction_survey")
         
-        gaps = [*record.get("state", {}).get("gaps", []),
-                *verified_report.get('answerCoverage', {}).get('gaps', [])]
         accepted_claims = verified_report.get("verifiedClaims", [])
         rejected_count = len(verified_report.get("rejectedClaims", []))
+        from services.deep_research.final_coverage import remaining_retrieval_gaps
+        audit = verified_report.get('answerCoverage', {})
+        gaps = [*remaining_retrieval_gaps(record.get('state', {}).get('gaps', []), audit,
+                    accepted_claims, record.get('state', {}).get('evidence', [])),
+                *audit.get('gaps', [])]
         
         factual_claims = [claim for claim in accepted_claims if claim.get("kind") in {"reported", "inference"}]
         from services.deep_research.reporting import build_sections, conversation_summary
@@ -1203,7 +1229,7 @@ def make_publish_node(
         complete_proposal = output_kind in {"experiment_design", "research_entry"} and bool(evidence := record.get("state", {}).get("evidence", []))
         if not accepted_claims:
             outcome = OUTCOME_INCONCLUSIVE
-        elif gaps or rejected_count or (not factual_claims and not complete_proposal):
+        elif gaps or (rejected_count and audit.get('status') != 'checked') or (not factual_claims and not complete_proposal):
             outcome = OUTCOME_PARTIAL
         elif accepted_claims:
             outcome = OUTCOME_COMPLETE
@@ -1228,6 +1254,11 @@ def make_publish_node(
         }
         
         dedup_key = f"{run_id}:{report_version_id}"
+        missing_ids = {gap.get('obligationId') for gap in gaps if isinstance(gap, dict)}
+        broad_gap = any(not isinstance(gap, dict) or gap.get('wholeQuestion') for gap in gaps)
+        final_plan = [{**item, 'status': 'gap' if broad_gap or any(
+            o.get('obligationId') in missing_ids for o in item.get('obligations', [])) else 'completed'}
+            for item in brief_state.get('plan', [])]
         
         pub_record, created = repo_publish(
             run_id=run_id,
@@ -1246,6 +1277,7 @@ def make_publish_node(
                     **(r.get("state") or {}),
                     "publicationId": pub_record.get("publicationId", ""),
                     "reportText": _render_report_markdown(publication_payload),
+                    "plan": final_plan,
                 },
             },
             expected_revision=None,
