@@ -77,3 +77,17 @@ DEEP_RESEARCH_FULLTEXT_ENABLED=false
 - 新版开关关闭，实际新请求返回 503；重复发布两次均 200 且没有新增消息/成果；账本没有新增调用。
 
 此演练验证本机停服一致备份、恢复读取和关闭入口后的行为。它不替代真实研究内容质量、完整浏览器体验、生产环境发布演练或多实例故障转移。恢复检查使用的源码包含表格提取修复 `14ad3f8`，Java 代码本轮未修改。
+
+## 固定案例执行工具
+
+从仓库根目录运行。默认只预览清单中的冻结问题、材料身份和预算，不发HTTP请求：
+
+```powershell
+.venv-refactor/Scripts/python.exe ai-service-python/scripts/verify_deep_research_case.py H1
+```
+
+在已授权发送范围内，显式指定`--submit --attempt 1`才允许一次研究提交。同一案例和attempt已有回执时只GET查询，即使再次传入`--submit`也不会重新生成。研究POST前以独占文件写入并fsync意图；未收到确认则保持unconfirmed，后续运行拒绝重发，需要先核对服务端请求账本。不要删除不确定回执或用新attempt绕过核对。
+
+默认回执目录为`tmp/dr-acceptance-receipts`，`CASE-vN.json`记录意图和运行身份，`CASE-vN.result.json`保存最近一次读取。不同输入不能复用同一回执；D5还需`--task-id`及`--parent-run-id`，不能创建无父运行的追问。D6/H6故障用例使用离线集成测试，不走模型提交入口。
+
+工具不会把服务端completed标记当作质量通过，也不会把问题清单中的预期答案发送给模型。留出案例一旦用于调参，仍须按设计稿退出留出集并登记替换。
