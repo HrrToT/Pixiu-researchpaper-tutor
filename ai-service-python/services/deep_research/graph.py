@@ -271,7 +271,23 @@ Return a JSON ARRAY of plan items, NOT an object with items field."""
         for item in validated:
             for obligation in item.get("obligations", []):
                 requested = obligation.get("requiredSources", [])
-                obligation["requiredSources"] = required_default if output_kind == "paper_comparison" else [sid for sid in requested if sid in allowed] or required_default
+                external_ids = []
+                if record.get("sourcePolicy", {}).get("mode") in {"academic_external", "external_only"}:
+                    from services.deep_research_academic import checked_arxiv_id
+                    for sid in requested:
+                        if sid.lower().startswith("arxiv:"):
+                            try:
+                                external_ids.append("arxiv:" + __import__('re').sub(r'v\d+$', '', checked_arxiv_id(sid.split(':', 1)[1])))
+                            except ValueError:
+                                pass
+                obligation["requiredSources"] = [sid for sid in requested if sid in allowed] + external_ids or required_default
+        # Each comparison must inspect every selected paper, while paper-specific
+        # obligations should not require irrelevant evidence from all other papers.
+        if output_kind == "paper_comparison":
+            covered = {sid for item in validated for obl in item["obligations"] for sid in obl["requiredSources"]}
+            for sid in allowed:
+                if sid not in covered:
+                    validated[0]["obligations"][0]["requiredSources"].append(sid)
         
         plan_ids = [item["itemId"] for item in validated]
         
@@ -886,6 +902,7 @@ def make_synthesize_node(
                 "source": ev.get("sourceWorkId", ""),
                 "conditions": ev.get("conditions", {}),
                 "obligations": ev.get("obligationIds", []),
+                "accessLevel": ev.get("accessLevel", "fulltext"),
             })
         
         prompt = f"""Synthesize a complete answer to the research question.
@@ -900,19 +917,24 @@ Evidence summaries:
 
 Return ONLY compact JSON with:
 - sections: array of {{title, claimIds: [claim_id_strings]}}
-- claims: array of {{claimId, text, kind, evidenceRefs, conditions, obligationIds}}
+- claims: array of {{claimId, text, kind, evidenceRefs, conditions, obligationIds, detailLevel}}
 Put material limitations into claims as evidence-bounded inferences. Do not duplicate prose in extra fields.
 
 Section titles MUST be selected from {json.dumps(section_templates, ensure_ascii=False)}.
 Each section's claimIds must reference actual claim IDs from the claims array.
 Do NOT include unchecked model prose - every factual statement must have a claimId.
 For experiment_design: include hypothesis, controls, variables, data+metrics, steps, confounders, decision criteria.
+Use at most 12 claims; combine the four groups into one clear table/claim rather than many repetitive items.
+Define a common loss orientation before formulas, distinguish conditional and averaged effects, and
+separate the paper's actual distillation from any proposed truncation-only diagnostic experiment.
 Write in concise Chinese. All proposals/hypotheses must also be claims with a claimId and a section.
 Use kind reported, inference, hypothesis or proposal. A proposal cannot state an existing result as fact.
 Follow the user's scope and length. State conflicting conditions beside the relevant conclusion.
 If the user asks for two points, produce at most two claims. The TOTAL text and conditions must fit the requested length.
 For reported facts copy numbers exactly; avoid derived differences/ratios. Any calculation is an inference, not a reported result.
 Never say the authors did not test/report something merely because the selected passages omit it.
+When citing only abstract evidence use detailLevel="abstract", explicitly limit the wording to the
+abstract and do not claim to have read the full paper. Otherwise use detailLevel="fulltext".
 Do NOT invent measured results or pretend unsupported conclusions are verified."""
         
         result = llm_invoke(run_id, "synthesize", prompt, {"max_tokens": 4000, "temperature": 0.2}, use_reserve=True)
@@ -958,6 +980,7 @@ def make_verify_node(
     verify_claims_fn: Callable[[list, list, Callable | None], dict],
     semantic_check_fn: Callable[[list, list], list] | None,
     repo_update: Callable[[str, Callable, dict | None], dict],
+    llm_invoke: Callable[..., dict] | None = None,
 ) -> Callable[[GraphState], dict]:
     """Verify claims against evidence with literal and semantic checks. Semantic uses reserve."""
     
@@ -979,6 +1002,26 @@ def make_verify_node(
             return semantic_check_fn(claims_to_check, evidence_list)
         
         verification_result = verify_claims_fn(claims, evidence, budgeted_semantic)
+
+        # Repair at most once, using the normal call pool so the final verifier's
+        # reserve remains protected. Repaired wording passes the same checks again.
+        if verification_result.get("rejected") and llm_invoke and not record.get("state", {}).get("repairAttempted"):
+            repo_update(run_id, lambda r: {**r, "state": {**r.get("state", {}), "repairAttempted": True,
+                "initialVerification": verification_result}}, expected_revision=None)
+            from services.deep_research.repair import repair_rejected
+            from services.deep_research.contracts import BudgetExhaustedError
+            try:
+                revised = repair_rejected(report_body, verification_result, evidence, record.get("question", ""),
+                    lambda prompt: llm_invoke(run_id, "repair_claims", prompt,
+                        {"max_tokens": 3000, "temperature": 0.0}), _safe_parse_json)
+                if revised:
+                    checked = verify_claims_fn(revised, evidence, budgeted_semantic)
+                    repaired_ids = {row["claimId"] for row in checked.get("accepted", [])}
+                    verification_result = {"accepted": [*verification_result.get("accepted", []),
+                                                       *checked.get("accepted", [])],
+                        "rejected": [row for row in verification_result["rejected"] if row["claimId"] not in repaired_ids]}
+            except BudgetExhaustedError:
+                pass
         
         accepted = verification_result.get("accepted", [])
         rejected = verification_result.get("rejected", [])
@@ -1036,9 +1079,17 @@ def make_publish_node(
         rejected_count = len(verified_report.get("rejectedClaims", []))
         
         factual_claims = [claim for claim in accepted_claims if claim.get("kind") in {"reported", "inference"}]
+        from services.deep_research.reporting import build_sections, conversation_summary
+        sections = build_sections(accepted_claims, output_kind, verified_report.get("sections"))
+        if output_kind == "experiment_design":
+            from services.deep_research.synthesis import OUTPUT_KIND_SECTIONS
+            present = {section["title"] for section in sections}
+            gaps = [*gaps, *[{"question": f"补齐实验方案：{title}", "missingEvidence": "尚未形成经过检查的方案内容"}
+                            for title in OUTPUT_KIND_SECTIONS["experiment_design"] if title not in present]]
+        complete_proposal = output_kind in {"experiment_design", "research_entry"} and bool(evidence := record.get("state", {}).get("evidence", []))
         if not accepted_claims:
             outcome = OUTCOME_INCONCLUSIVE
-        elif gaps or rejected_count or not factual_claims:
+        elif gaps or rejected_count or (not factual_claims and not complete_proposal):
             outcome = OUTCOME_PARTIAL
         elif accepted_claims:
             outcome = OUTCOME_COMPLETE
@@ -1046,8 +1097,6 @@ def make_publish_node(
             outcome = OUTCOME_INCONCLUSIVE
         
         # Build sections from verified claims only, organized by output kind
-        from services.deep_research.reporting import build_sections, conversation_summary
-        sections = build_sections(accepted_claims, output_kind, verified_report.get("sections"))
         
         # Build safe summary from accepted claims only
         safe_summary = conversation_summary(accepted_claims, outcome)
@@ -1212,7 +1261,7 @@ def build_deep_research_graph(
     workflow.add_node("extract", bounded(extractor))
     workflow.add_node("assess", make_assess_node(coverage_gaps_fn, repo_update, llm_invoke=llm_invoke))
     workflow.add_node("synthesize", bounded(make_synthesize_node(llm_invoke, repo_update)))
-    workflow.add_node("verify", make_verify_node(verify_claims_fn, semantic_check_fn, repo_update))
+    workflow.add_node("verify", make_verify_node(verify_claims_fn, semantic_check_fn, repo_update, llm_invoke=llm_invoke))
     workflow.add_node("publish", make_publish_node(repo_publish, repo_update))
     
     # Set entry point

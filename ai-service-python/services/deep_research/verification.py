@@ -85,7 +85,9 @@ def verify_claims(claims: list[dict], evidence: list[dict],
         else:
             candidates.append(dict(claim))
     proposals = {"suggestion", "proposal", "hypothesis"}
-    needs_check = [item for item in candidates if item["kind"] not in proposals]
+    # Suggestions are not established facts, but still need a logic/identity check.
+    # A model must not hide a measured result or an invalid formula behind this tag.
+    needs_check = candidates
     verdicts: dict[Any, dict] = {}
     if needs_check and semantic_check:
         raw = semantic_check(needs_check, evidence)
@@ -100,10 +102,10 @@ def verify_claims(claims: list[dict], evidence: list[dict],
                     verdicts[key] = verdict
     accepted = []
     for claim in candidates:
-        if claim["kind"] in proposals:
-            accepted.append({**claim, "verification": "proposal"})
-        elif verdicts.get(claim["claimId"], {}).get("status") == "passed":
-            accepted.append({**claim, "verification": "semantic_passed"})
+        if verdicts.get(claim["claimId"], {}).get("status") == "passed":
+            accepted.append({**claim, "verification": "proposal" if claim["kind"] in proposals else "semantic_passed"})
         else:
-            rejected.append({"claimId": claim["claimId"], "reason": "semantic_unresolved"})
+            verdict = verdicts.get(claim["claimId"], {})
+            rejected.append({"claimId": claim["claimId"], "reason": "semantic_unresolved",
+                             "detail": str(verdict.get("reason", ""))[:400]})
     return {"accepted": accepted, "rejected": rejected}

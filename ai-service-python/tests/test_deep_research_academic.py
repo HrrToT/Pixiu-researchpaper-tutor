@@ -61,6 +61,22 @@ def test_discovery_preserves_version_and_abstract_identity():
     assert calls[0][1].startswith('/api/query?')
 
 
+def test_exact_identifier_lookup_filters_unrelated_provider_results():
+    from urllib.parse import parse_qs, urlsplit
+    atom = b'''<feed xmlns="http://www.w3.org/2005/Atom">
+    <entry><id>http://arxiv.org/abs/1304.1836</id><title>Unrelated</title><summary>Wrong paper</summary></entry>
+    <entry><id>http://arxiv.org/abs/2311.17245v6</id><title>Target</title><summary>Abstract</summary></entry></feed>'''
+    calls = []
+    def transport(*args):
+        calls.append(args)
+        return 'application/atom+xml', atom
+    client = AcademicSourceClient(AcademicPolicy(enabled=True, mode='academic_external'), transport)
+    results = client.discover('LightGaussian arXiv 2311.17245 compression', limit=3)
+    assert [r['workId'] for r in results] == ['arxiv:2311.17245']
+    params = parse_qs(urlsplit(calls[0][1]).query)
+    assert params['id_list'] == ['2311.17245'] and 'search_query' not in params
+
+
 def test_rejects_entities_and_does_not_retry():
     calls = []
     def transport(*args):

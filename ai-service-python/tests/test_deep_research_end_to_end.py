@@ -48,6 +48,8 @@ class FixtureModel:
                 "proposals": ["UNCHECKED PROPOSAL MUST NEVER BE SHOWN"], "gaps": []}
         elif prompt.startswith("Verify these claims"):
             content = [{"claimId": "c1", "status": "passed"}, {"claimId": "c2", "status": "passed"}]
+        elif prompt.startswith("Revise only the rejected claims"):
+            content = []  # An unsupported claim may be dropped; do not relax checks.
         else:
             raise AssertionError("Unexpected model node: " + prompt[:80])
         return LLMResult("fixture", "fixture-v1", json.dumps(content), LLMUsage(120, 80, 200))
@@ -97,9 +99,9 @@ def test_real_graph_publishes_only_verified_body_and_reopens_without_generation(
         assert {source["pdfId"] for source in result["sources"]} == set(PAPERS)
         assert all(source["quote"] and source["page"] == 3 for source in result["sources"])
         calls = repo.list_calls(record["runId"])
-        assert sum(c["tool"] == "llm_invoke" for c in calls) == len(model.requests) == 7
+        assert sum(c["tool"] == "llm_invoke" for c in calls) == len(model.requests) == 8
         assert all(c["status"] == "succeeded" for c in calls)
-        assert result["budget"]["tokens"] == 1400
+        assert result["budget"]["tokens"] == 1600
         assert len(repo.list_outbox(record["runId"])) == 1
         calls_before = len(model.requests)
         restored = DeepResearchRepository(repo.db_path)

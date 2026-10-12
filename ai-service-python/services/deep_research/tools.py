@@ -462,7 +462,7 @@ class ExternalAcademicAdapter:
 class BudgetedSemanticChecker:
     """Semantic verification using reserved model calls.
     
-    Only called for reported/inference claims, not suggestions.
+    Checks factual support and the logic of proposed experiments separately.
     Uses reserve pool explicitly.
     """
     
@@ -509,6 +509,12 @@ Check each number's method, dataset, metric, unit and experimental setting, not 
 Reject claims that confuse a similar PSNR with unchanged image quality, or infer universal/exclusive
 conditions from a limited tested range. Missing passages do not prove the authors never tested it.
 For inference, verify the stated premises and reasoning; reject invented calculations or generalization.
+For proposal/suggestion/hypothesis, do not demand that an unexecuted experiment already has results.
+Instead verify that it is clearly prospective, contains no disguised established fact, and is logically valid.
+Check formulas, metric direction, conditional versus averaged factorial effects, and sign interpretations.
+An interaction formula must define whether larger values mean better quality or greater loss; never use
+one sign interpretation for PSNR/SSIM and LPIPS together. Non-significance does not prove no effect.
+Truncating coefficients is a proposed intervention, not automatically the paper's distillation procedure.
 Do not accept vague connections. A partly supported claim must fail until its wording is narrowed."""
         
         try:
@@ -516,7 +522,7 @@ Do not accept vague connections. A partly supported claim must fail until its wo
                 run_id=self._run_id,
                 node="verify",
                 prompt=prompt,
-                extra_body={"max_tokens": 2000, "temperature": 0.0},
+                extra_body={"max_tokens": 4000, "temperature": 0.0},
                 use_reserve=True,  # Use reserve pool for verification
             )
             

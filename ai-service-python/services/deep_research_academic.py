@@ -99,7 +99,18 @@ class AcademicSourceClient:
             raise AcademicAccessError('学术查询无效')
         if isinstance(limit, bool) or not isinstance(limit, int) or not 1 <= limit <= self.policy.max_results:
             raise AcademicAccessError('学术查询数量无效')
-        path = '/api/query?' + urlencode({'search_query': query.strip(), 'start': 0, 'max_results': limit})
+        # arXiv expects a structured query; raw prose can return unrelated papers.
+        # A supplied identifier is a lookup, not a broad keyword search.
+        identifiers = list(dict.fromkeys(re.findall(r'(?<![\w.])\d{4}\.\d{4,5}(?:v[1-9]\d*)?(?![\w.])', query)))
+        params = {'start': 0, 'max_results': limit}
+        if identifiers:
+            params['id_list'] = ','.join(identifiers[:limit])
+        elif re.search(r'\b(?:all|ti|au|abs|cat):', query):
+            params['search_query'] = query.strip()
+        else:
+            words = re.findall(r'[\w-]+', query, re.UNICODE)[:16]
+            params['search_query'] = ' AND '.join('all:"' + word + '"' for word in words)
+        path = '/api/query?' + urlencode(params)
         content_type, body = self.transport('export.arxiv.org', path, 1024 * 1024)
         if content_type not in {'application/atom+xml', 'application/xml', 'text/xml'}:
             raise AcademicAccessError('学术元数据类型无效')
@@ -117,6 +128,9 @@ class AcademicSourceClient:
             if not match:
                 continue
             arxiv_id = checked_arxiv_id(match.group(1))
+            if identifiers and not any(re.sub(r'v\d+$', '', value) == re.sub(r'v\d+$', '', arxiv_id)
+                                       and (not re.search(r'v\d+$', value) or value == arxiv_id) for value in identifiers):
+                continue
             if arxiv_id in seen:
                 continue
             seen.add(arxiv_id)
