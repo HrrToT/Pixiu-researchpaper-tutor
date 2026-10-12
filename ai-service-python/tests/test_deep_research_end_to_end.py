@@ -138,6 +138,9 @@ def test_truncated_verification_fails_without_publishing_evidence_insufficiency(
         result = facade.get(rid)
         assert result['status'] == 'failed'
         assert result['errorCode'] == 'invalid_verification_response'
+        assert '结论核验未完成' in result['error']
+        assert '这不表示论文证据不足' in result['error']
+        assert '查看已保存的结果' not in result['error']
         assert not repo.list_outbox(rid)
         saved = repo.require_run(rid)
         assert saved['state']['evidence'] and saved['state']['reportBody']
