@@ -1189,7 +1189,8 @@ def make_verify_node(
                     current = repo_update(run_id, lambda r: r, expected_revision=None)
                     revised = repair_rejected(report_body, repair_targets, evidence, record.get("question", ""),
                         invoke_repair, _safe_parse_json,
-                        max_prompt_bytes=repair_prompt_byte_limit(current.get('budget', {})))
+                        max_prompt_bytes=repair_prompt_byte_limit(current.get('budget', {})),
+                        metric_domains=record.get('state', {}).get('metricDomains'))
                     repo_update(run_id, lambda r: {**r, 'state': {**r.get('state', {}),
                         'repairDraft': revised}}, expected_revision=None)
                 if revised:

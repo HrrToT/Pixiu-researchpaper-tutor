@@ -12,7 +12,7 @@ from uuid import uuid4
 from services.deep_research.repair_scope import repair_evidence_scope
 
 
-def repair_rejected(report, verification, evidence, question, invoke, parse, *, max_prompt_bytes=24000):
+def repair_rejected(report, verification, evidence, question, invoke, parse, *, max_prompt_bytes=24000, metric_domains=None):
     rejected = {row['claimId']: row for row in verification.get('rejected', [])}
     originals = {row['claimId']: row for row in report.get('claims', []) if row.get('claimId') in rejected}
     if not originals:
@@ -85,12 +85,19 @@ against the actual requested aspect before citing it. Fix invalid proposed formu
 unexecuted proposals/hypotheses clearly. Keep the answer concise and within the user's length limit.'''
     if any(row.get('designContractVersion') == 2 for row in originals.values()):
         from services.deep_research.execution_spec import EXECUTION_SPEC_CONTRACT
-        from services.deep_research.experimental_reasoning import DESIGN_ROLES
+        from services.deep_research.experimental_reasoning import DESIGN_ROLES, design_requirements
         prompt += '\nEvery v2 proposal/suggestion/hypothesis requires one designRole from: ' + json.dumps(sorted(DESIGN_ROLES))
         prompt += '. For a missing role, assign the appropriate role based on its actual content; ' \
                   'do not omit the role to bypass checks. Preserve existing valid roles. ' \
                   'Data and analysis roles also require their complete executionSpec.'
         prompt += '\n' + EXECUTION_SPEC_CONTRACT
+        prompt += '\nExperimental deliverables (apply jointly across the accepted and revised claims):\n' + design_requirements(metric_domains)
+        prompt += ('\nA structural rejection is not a content approval. Fix substantive omissions in the same revision, '
+                   'including concrete intervention levels, per-group budgets and measurement aggregation. '
+                   'Choose explicit unexecuted proposal settings when appropriate; do not wait for paper settings '
+                   'to define your own diagnostic. Cover all required roles without changing an existing valid role '
+                   'or inventing new claim IDs. Do not claim completeness when the available claims cannot cover them. '
+                   'Keep all proposed settings consistent across claims and executionSpec.')
     template = prompt
     def render(selected_rows):
         visible_ids = {row['evidenceId'] for row in selected_rows}

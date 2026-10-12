@@ -22,10 +22,14 @@ def test_missing_role_can_be_added_by_repair_and_is_checked_again():
                 'designContractVersion': 2, 'evidenceRefs': []}
     def invoke(prompt):
         assert 'requires one designRole' in prompt and 'controls' in prompt
+        assert 'structural rejection is not a content approval' in prompt
+        assert 'image/view aggregation' in prompt
+        assert 'Report the device, resolution, warmup' not in prompt
+        assert 'per-group budgets' in prompt
         return {'content': json.dumps([{**original, 'designRole': 'controls'}])}
     revised = repair_rejected({'claims': [original]},
         {'rejected': [{'claimId': 'c', 'reason': 'invalid_design_role'}]}, [],
-        'Design an experiment', invoke, json.loads)
+        'Design an experiment', invoke, json.loads, metric_domains=['quality'])
     assert revised[0]['designRole'] == 'controls'
     assert not verify_claims(revised, [])['accepted']
     checked = Mock(return_value=[{'claimId': 'c', 'status': 'passed'}])

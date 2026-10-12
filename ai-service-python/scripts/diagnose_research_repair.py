@@ -100,7 +100,8 @@ def run_diagnostic(source, output, revision, *, submit=False, client_factory=Non
         revised = repair_rejected(domain['reportBody'], initial, domain['evidence'], source['question'],
             lambda prompt: invoke(run_id, 'repair_claims', prompt, {'max_tokens': 8192}),
             _safe_parse_json, max_prompt_bytes=min(repair_prompt_byte_limit(source['budget']),
-                repair_prompt_byte_limit(repo.require_run(run_id)['budget'])))
+                repair_prompt_byte_limit(repo.require_run(run_id)['budget'])),
+            metric_domains=domain.get('metricDomains'))
         checked = verify_claims(revised, domain['evidence'], BudgetedSemanticChecker(
             invoke, run_id, metric_domains=domain.get('metricDomains')))
         result.update(status='completed', revised=revised, verification=checked)
