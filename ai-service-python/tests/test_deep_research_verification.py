@@ -42,6 +42,18 @@ def test_chinese_numbers_and_conditions_are_checked_before_model_verdict():
     assert verify_claims([claim(ev, '速度为200 FPS')], [ev], passed)['accepted']
 
 
+def test_positive_sign_in_combined_conditions_preserves_numeric_identity():
+    quote = 'At 66% pruning and 2 SH degrees, SSIM goes from 0.927 to 0.926.'
+    ev = make_evidence(source(), quote, quote, location={}, obligation_ids=[])
+    item = claim(ev, 'SSIM为0.926', conditions={'context': '66%剪枝+2阶SH'})
+    assert verify_claims([item], [ev], passed)['accepted']
+    for condition in ('66%剪枝+3阶SH', '66%剪枝-2阶SH'):
+        wrong = {**item, 'conditions': {'context': condition}}
+        assert verify_claims([wrong], [ev], passed)['rejected'][0]['reason'] == 'numeric_mismatch'
+    # Matching numbers are insufficient without an independent semantic verdict.
+    assert not verify_claims([item], [ev])['accepted']
+
+
 def test_dimensional_method_name_is_not_a_measured_result():
     ev = make_evidence(source(), 'real-time (≥ 30 fps) at 1080p',
                        'We achieve real-time (≥ 30 fps) at 1080p.', location={}, obligation_ids=[])
