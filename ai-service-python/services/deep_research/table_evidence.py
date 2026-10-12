@@ -27,7 +27,7 @@ def visible_table_packet(raw, text):
                 or len(row[2]) != columns or any(not isinstance(v, str) for v in row[2])):
             return None
         literal = f'Table row {row[0]}: ' + ' | '.join([row[1], *row[2]])
-        if literal in text:
+        if literal in {line.strip() for line in text.splitlines()}:
             visible.append(row)
     return {'groups': groups, 'rows': visible} if visible else None
 

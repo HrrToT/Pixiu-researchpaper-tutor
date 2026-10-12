@@ -254,9 +254,13 @@ def chunk_sections(sections):
             if fragmented_table:
                 chunk['tableColumnMappingUnverified'] = True
             verified = sec.get('tableVerifiedData')
-            if verified and not fragmented_table:
+            if verified:
+                # Geometry already established the group labels. A long
+                # caption must not discard intact rows, but a clipped row
+                # prefix must never inherit the original cell mapping.
+                complete_lines = set(chunk['text'].splitlines())
                 rows = [row for row in verified['rows']
-                        if f"Table row {row[0]}: " + ' | '.join([row[1], *row[2]]) in chunk['text']]
+                        if f"Table row {row[0]}: " + ' | '.join([row[1], *row[2]]) in complete_lines]
                 if rows:
                     chunk['tableVerifiedData'] = {'groups': verified['groups'], 'rows': rows}
 

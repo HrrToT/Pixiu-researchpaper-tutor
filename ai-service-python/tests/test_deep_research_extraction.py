@@ -41,7 +41,7 @@ def test_extraction_carries_only_parser_cells_in_the_selected_quote(tmp_path):
     data = {'groups': [['Room', ['FPS', 'Mem']]],
             'rows': [[1, 'Baseline', ['30', '400MB']], [2, 'Ours*', ['60', '100MB']]]}
     quoted = 'Table row 2: Ours* | 60 | 100MB'
-    text = 'Room benchmark. Table row 1: Baseline | 30 | 400MB\n' + quoted
+    text = 'Room benchmark.\nTable row 1: Baseline | 30 | 400MB\n' + quoted
     reads[0].update(tableData=data, pages=[{'text': text}])
     repo.update_run('r', lambda r: {**r, 'state': {**r['state'], 'readResults': [reads[0]]}})
     invoke = Mock(return_value={'content': json.dumps([{'sourceId': 's0', 'quote': quoted,

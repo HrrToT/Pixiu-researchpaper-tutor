@@ -4,6 +4,7 @@ This deliberately leaves irregular/rotated/multiline tables unverified. The
 private PyPDF2 font adapter is isolated here; unsupported adapters fail closed.
 """
 import re
+import unicodedata
 
 
 def compact(text):
@@ -105,7 +106,13 @@ def verify_table_columns(section, runs):
     x, y, width, height = bounds
     inside = [run for run in runs if x - 2 <= run['x'] <= x + width + 2
               and y - 2 <= run['y'] <= y + height + 2]
-    metrics = [run for run in inside if re.fullmatch(r'FPS|Size|PSNR|SSIM|LPIPS', run['text'], re.I)]
+    metrics = []
+    for run in inside:
+        # A single PDF text operation may draw several separated headings.
+        for token in run.get('tokens') or [run]:
+            name = unicodedata.normalize('NFKC', token['text'])
+            if re.fullmatch(r'FPS|Size|Mem|Train|PSNR|SSIM|LPIPS', name, re.I):
+                metrics.append({**token, 'text': name, 'y': run['y']})
     if len(metrics) < 4 or max(run['y'] for run in metrics) - min(run['y'] for run in metrics) > 1:
         return None
     metrics.sort(key=lambda run: run['x'])
@@ -117,14 +124,14 @@ def verify_table_columns(section, runs):
                                                for i in range(0, len(names), repeat)):
         return None
     header_y = metrics[0]['y']
-    group_runs = sorted([run for run in inside if re.search(r'(?:Datasets?|Scenes?|Benchmark)$', run['text'], re.I)
+    group_runs = sorted([run for run in inside if metrics[0]['x'] <= run['x'] <= metrics[-1]['x']
+                         and re.search(r'[A-Za-z0-9]', run['text'])
                          and 1 < header_y - run['y'] < 20], key=lambda run: run['x'])
     if len(group_runs) != len(names) // repeat:
         return None
-    raw_header = ' '.join(cell['text'] for cell in rows[0])
-    group_labels = re.findall(r'([^|]*?(?:Datasets?|Scenes?|Benchmark))', raw_header, re.I)
-    # TEI may put trailing metrics before the next group name. Match the
-    # actual PDF group label as a suffix of those spans, never invent a label.
+    group_labels = [cell['text'] for cell in rows[0] if cell['text'].strip()]
+    # TEI may combine labels and metrics. Match the actual PDF group name
+    # inside the header text, never infer it from a dataset list elsewhere.
     groups = []
     for i, run in enumerate(group_runs):
         column_runs = metrics[i * repeat:(i + 1) * repeat]
@@ -133,11 +140,10 @@ def verify_table_columns(section, runs):
         label = next((label for label in group_labels if compact(run['text']).lower() in compact(label).lower()), None)
         if label is None:
             return None
-        start = next((start for start in range(len(label))
-                      if compact(label[start:]).lower() == compact(run['text']).lower()), None)
-        if start is None:
+        span = re.search(r'\s*'.join(re.escape(c) for c in compact(run['text'])), label, re.I)
+        if span is None:
             return None
-        groups.append([label[start:].strip(), names[:repeat]])
+        groups.append([span.group().strip(), names[:repeat]])
     pdf_rows = []
     for run in sorted(inside, key=lambda run: (run['y'], run['x'])):
         if not pdf_rows or abs(pdf_rows[-1]['y'] - run['y']) > 3:
@@ -156,9 +162,17 @@ def verify_table_columns(section, runs):
         literal_rows.append([compact(''.join(cell)) for cell in cells])
     checked = []
     for number, row in enumerate(rows[1:], 2):
-        if len(row) != len(names) + 1 or any(cell['cols'] != 1 or cell['rows'] != 1 for cell in row):
+        if not row or any(cell['rows'] != 1 for cell in row):
             continue
         values = [cell['text'] for cell in row]
+        if len(row) != len(names) + 1:
+            # Recover only explicit whitespace-separated cells, then require
+            # every recovered cell to match an independently drawn PDF column.
+            values = [values[0], *(part for value in values[1:] for part in value.split())]
+            if len(values) != len(names) + 1:
+                continue
+        elif any(cell['cols'] != 1 for cell in row):
+            continue
         if [compact(value) for value in values] not in literal_rows:
             continue
         checked.append([number, values[0], values[1:]])
@@ -186,4 +200,11 @@ def attach_verified_table_columns(sections, pdf_path):
             verified = None
         if verified:
             section['tableVerifiedData'] = verified
+            # Keep normalized table text and the checked packet identical for
+            # downstream exact-quote checks; untouched rows retain raw TEI text.
+            lines = section.get('content', '').splitlines()
+            replacements = {f'Table row {n}: ': ' | '.join([method, *values])
+                            for n, method, values in verified['rows']}
+            section['content'] = '\n'.join(next((prefix + value for prefix, value in replacements.items()
+                                                if line.startswith(prefix)), line) for line in lines)
     return sections

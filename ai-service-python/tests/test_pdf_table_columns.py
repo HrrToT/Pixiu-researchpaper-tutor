@@ -4,6 +4,8 @@ from unittest.mock import patch
 
 from core.pdf_table_columns import drawing_runs, verify_table_columns, attach_verified_table_columns
 from core.smart_chunker import chunk_sections
+import json
+from pathlib import Path
 
 
 def fixture():
@@ -30,6 +32,41 @@ def test_grouped_header_and_each_cell_are_cross_checked_with_pdf_positions():
     assert checked['groups'] == [['Alpha Dataset', ['FPS', 'Size']], ['Beta Dataset', ['FPS', 'Size']]]
     assert checked['rows'] == [[2, 'Baseline *', ['1', '23MB', '4', '56MB']],
                                [3, 'Ours', ['2', '30MB', '5', '60MB']]]
+
+
+def test_real_three_dataset_table_with_math_headers_and_merged_tei_cells():
+    fixture_path = Path(__file__).parent / 'fixtures/dr_table1_geometry.json'
+    data = json.loads(fixture_path.read_text(encoding='utf-8'))
+    result = verify_table_columns(data['section'], data['runs'])
+    assert [g[0] for g in result['groups']] == ['Mip-NeRF360', 'Tanks&Temples', 'Deep Blending']
+    assert all(g[1] == ['SSIM', 'PSNR', 'LPIPS', 'Train', 'FPS', 'Mem'] for g in result['groups'])
+    row = next(row for row in result['rows'] if row[1] == 'Ours-30K')
+    assert row[2] == ['0.815', '27.21', '0.214', '41m33s', '134', '734MB',
+                      '0.841', '23.14', '0.183', '26m54s', '154', '411MB',
+                      '0.903', '29.41', '0.243', '36m2s', '137', '676MB']
+    # Same concatenated digits with a different boundary must not be accepted.
+    bad = deepcopy(data['section'])
+    bad['tableRows'][7][4]['text'] = '41m33s 13 4734MB'
+    assert 'Ours-30K' not in {r[1] for r in verify_table_columns(bad, data['runs'])['rows']}
+
+
+def test_dataset_label_must_be_corroborated_in_tei_and_pdf():
+    section, runs = fixture()
+    runs[4]['text'] = 'InventedDataset'
+    assert verify_table_columns(section, runs) is None
+
+
+def test_long_caption_retains_only_complete_geometry_checked_rows():
+    prefix = 'Table caption: ' + 'Long explanatory caption. ' * 35
+    row = 'Table row 2: Ours | 200'
+    section = {'section': 'Table 1', 'evidenceKind': 'table', 'tablePrefix': prefix,
+               'content': prefix + '\n' + row,
+               'tableVerifiedData': {'groups': [['Example', ['FPS']]], 'rows': [[2, 'Ours', ['200']]]}}
+    chunks = chunk_sections([section])
+    retained = [c for c in chunks if c.get('tableVerifiedData')]
+    assert retained and all(row in c['text'].splitlines() for c in retained)
+    section['content'] = prefix + '\n' + row + 'invalid'
+    assert all('tableVerifiedData' not in c for c in chunk_sections([section]))
 
 
 def test_equal_concatenation_does_not_verify_a_different_cell_split():

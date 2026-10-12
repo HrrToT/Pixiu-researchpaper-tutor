@@ -26,7 +26,8 @@ def test_packet_retains_dataset_and_variant_but_only_cited_complete_rows():
 
 def test_fragment_or_numeric_coincidence_does_not_create_table_support():
     data = packet()
-    for quote in ['Ours* achieves 60 FPS', row_text(data['rows'][1])[:-1], '60 100MB 70 120MB']:
+    for quote in ['Ours* achieves 60 FPS', row_text(data['rows'][1])[:-1],
+                  row_text(data['rows'][1]) + 'invalid', '60 100MB 70 120MB']:
         assert visible_table_packet(data, quote) is None
     assert 'tableData' not in attach_table_packet({'quote': '60 FPS'}, {'tableData': data})
 
