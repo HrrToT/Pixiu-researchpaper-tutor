@@ -9,6 +9,10 @@ def resolve_evidence_aliases(report, aliases):
         if isinstance(claim, dict) and isinstance(claim.get('evidenceRefs'), list):
             claim['evidenceRefs'] = [aliases.get(ref, ref) if isinstance(ref, str) else ref
                                      for ref in claim['evidenceRefs']]
+            bindings = claim.get('tableBindings')
+            for binding in bindings if isinstance(bindings, list) else []:
+                if isinstance(binding, dict) and isinstance(binding.get('evidenceId'), str):
+                    binding['evidenceId'] = aliases.get(binding['evidenceId'], binding['evidenceId'])
     return report
 
 

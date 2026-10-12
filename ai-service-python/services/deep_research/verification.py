@@ -92,6 +92,8 @@ def verify_claims(claims: list[dict], evidence: list[dict],
             original_numbers = set().union(*(_measurement_numbers(item['quote']) for item in support))
             if not numbers <= original_numbers:
                 reason = reason or "numeric_mismatch"
+            from services.deep_research.table_bindings import validate_table_bindings
+            reason = reason or validate_table_bindings(claim, support)
         if reason:
             rejected.append({"claimId": claim_id, "reason": reason})
         else:

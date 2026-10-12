@@ -19,10 +19,13 @@ Question: {question}
 Rejected claims and checks:
 {json.dumps([{'claim': row, 'check': rejected[key]} for key, row in originals.items()], ensure_ascii=False)}
 Exact available evidence:
-{json.dumps([{'evidenceId': e['evidenceId'], 'quote': e.get('quote', ''), 'sourceContext': surrounding_context(e), 'location': e.get('location', {}), 'accessLevel': e.get('accessLevel'), 'conditions': e.get('conditions', {})} for e in evidence if e['evidenceId'] in refs], ensure_ascii=False)}
+{json.dumps([{'evidenceId': e['evidenceId'], 'quote': e.get('quote', ''), 'sourceContext': surrounding_context(e), 'location': e.get('location', {}), 'accessLevel': e.get('accessLevel'), 'conditions': e.get('conditions', {}), 'tableData': e.get('tableData')} for e in evidence if e['evidenceId'] in refs], ensure_ascii=False)}
 Return a JSON array of revised claims, or [] when no supported revision is possible.
 Keep claimId and kind. Use only a subset of that claim's original evidenceRefs; never turn a fact
 into a proposal to evade checking. Preserve conditions needed for the narrower assertion.
+Reported table numbers require tableBindings (evidenceId, rowNumber, zero-based groupIndex, metric,
+exact string value) from tableData; name dataset, method and metric beside each number.
+When no verified cell is available, omit the numeric example rather than guessing a mapping.
 An abstract supports only explicitly abstract-level wording (detailLevel="abstract").
 Do not add new claims, searches, numbers or results. Fix invalid proposed formulas and label all
 unexecuted proposals/hypotheses clearly. Keep the answer concise and within the user's length limit.'''

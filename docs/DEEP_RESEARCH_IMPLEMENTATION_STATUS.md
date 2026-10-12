@@ -244,3 +244,11 @@ D2 v14 `0e0f0daa` 最终 completed/partial：16 次调用、50,762 tokens、195 
 实际 PDF 几何与 TEI 最小 fixture 保存于 `tests/fixtures/dr_table1_geometry.json`。长表头分块后只允许完整独立行保留已核实的单元格映射，截断或附带额外字符的行不得继承。真实本地分块输出两块有效表格，包含双方 Ours 行。完整依赖容器中 34 项解析/表格/研究提取测试通过，包含相同数字串不同切分拒绝、虚构数据集拒绝与长表头分块；主机先前因缺 XML 依赖跳过的两项已在容器通过。未追加模型调用，索引重建及声明级绑定仍待验证。
 
 提交 `5863d73` 后确认无活动研究并重启开发容器。原始 3DGS 以冻结 SHA-256 文件名执行一次本地重解析，HTTP 200、82 个片段、readingReady/questionReady/ragIndexed 均 true、aiAnalysisStatus=not_requested。实际读取 Chroma 得到两块结构化主表；Ours-30K 的三组 FPS/Mem 分别为 134/734MB、154/411MB、137/676MB，与 PDF 几何核对一致。原回执和索引证明保存于 `tmp/dr-container-validation/original-geometry-reindex.json`、`original-geometry-index-proof.json`。旧研究不回写，本轮没有生成模型调用；该结果证明解析至索引可用，不替代声明绑定和真实比较验收。
+
+## 2026-10-13：报告中的表格单元格绑定
+
+reported 表格测量声明新增 tableBindings，绑定自己的 evidenceId、完整行号、零起始数据集组、指标名和精确字符串值。核验在语义判断前检查引用中实际可见的已核实单元格；正文或条件必须保留数据集、方法变体、指标和值。错误列、未引用行、方法星号丢失、匿名数字串和未绑定测量均拒绝，模型的 passed 不能覆盖这些拒绝。非结构化表格不会自动升级为可信映射；推断与计算仍需要语义核验，不声称该守卫解决全部定量推理。
+
+综合、修订和语义核验携带绑定信息，修订可见原始 tableData；短证据 ID 只按提供的别名表解析。异常绑定类型安全拒绝。promptVersion 更新为 dr-v2.20261013.2，运行服务尚未加载本次改动。
+
+容器离线运行全部 test_deep_research_*.py 以及 PDF 表格列映射、表格证据测试，275 项通过、3 条警告，55.80 秒；包含修订后再次检查和错误数据集绑定的回归。本轮没有追加真实模型请求，真实比较质量及 DR0—DR5 最终验收仍未完成。

@@ -505,6 +505,7 @@ class BudgetedSemanticChecker:
             "kind": c.get("kind"),
             "evidenceRefs": c.get("evidenceRefs", []),
             "conditions": c.get("conditions", {}),
+            "tableBindings": c.get("tableBindings", []),
         } for c in claims], ensure_ascii=False)
         
         referenced = {ref for claim in claims for ref in claim.get("evidenceRefs", [])}

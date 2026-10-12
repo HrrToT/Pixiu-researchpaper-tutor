@@ -948,6 +948,11 @@ Evidence summaries:
 Return ONLY compact JSON with:
 - sections: array of {{title, claimIds: [claim_id_strings]}}
 - claims: array of {{claimId, text, kind, evidenceRefs, conditions, obligationIds, detailLevel}}
+For reported table measurements add tableBindings: [{{evidenceId, rowNumber, groupIndex, metric, value}}].
+Copy the exact row number, zero-based dataset group index, metric and string value from tableData.
+The text must name the dataset, method variant, metric and value beside that measurement.
+Do not use anonymous slash-separated numeric series. Without verified tableData, omit table numbers
+and use supported qualitative evidence. Never relabel a reported table measurement as inference to evade checks.
 Use ONLY the supplied short evidence IDs (E1, E2, ...) in evidenceRefs. Do not invent or abbreviate IDs.
 Put material limitations into claims as evidence-bounded inferences. Do not duplicate prose in extra fields.
 
