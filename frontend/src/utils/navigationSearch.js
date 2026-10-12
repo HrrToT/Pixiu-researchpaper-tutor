@@ -1,4 +1,11 @@
 /** Plain-text previews only: retained content is never rewritten or interpreted. */
+export function documentSearchText(item) {
+  const sourceText = source => [source?.title, source?.pdfId, source?.workId, source?.versionId,
+    source?.doi, source?.arxivId, source?.quote, source?.text, source?.section].filter(value => typeof value === 'string').join(' ');
+  return [item.title, item.text, item.content, item.body, item.summary, item.aiInterpretation,
+    sourceText(item.source), ...(item.sources || []).map(sourceText)].filter(value => typeof value === 'string').join(' ');
+}
+
 export function searchExcerpt(value, query) {
   const text = String(value || '').replace(/(\*\*|__|`)([^\n]*?)\1/gu, '$2').replace(/(?:^|\n)#{1,6}\s+/gu, ' ').replace(/\s+/gu, ' ').trim();
   const term = String(query || '').trim();

@@ -327,10 +327,11 @@ export default function UnifiedTaskApp() {
   }, [activeTaskId]);
   useEffect(() => {
     if (!requestedDocument || requestedDocument.taskId !== activeTaskId) return;
-    const item = activeTask?.artifacts?.find(document => (document.id || document.artifactId) === requestedDocument.id);
+    const collection = activeTask?.artifacts?.some(document => (document.id || document.artifactId) === requestedDocument.id) ? 'artifacts' : 'notes';
+    const item = activeTask?.[collection]?.find(document => (document.id || document.artifactId) === requestedDocument.id);
     if (!item) { setLocalError('成果已再次移动，请刷新任务列表'); setRequestedDocument(null); return; }
     let draft = null;
-    const selection = { taskId: activeTaskId, collection: 'artifacts', id: requestedDocument.id, baseText: normalizeNoteContent(item) };
+    const selection = { taskId: activeTaskId, collection, id: requestedDocument.id, baseText: normalizeNoteContent(item) };
     try {
       const key = documentDraftKey(selection);
       draft = localStorage.getItem(key);
@@ -338,7 +339,7 @@ export default function UnifiedTaskApp() {
     } catch { setLocalError('本地编辑草稿暂不可用'); }
     setSelectedLearning(null); setRecoveryPreview(null);
     setSelectedDocument(selection); setDocumentDraft(draft ?? normalizeNoteContent(item));
-    const view = { kind: 'document', collection: 'artifacts', id: requestedDocument.id };
+    const view = { kind: 'document', collection, id: requestedDocument.id };
     storeView(activeTaskId, view, true); setReturnContent(view);
     setRequestedDocument(null); patchLayout({ reader: true });
   }, [activeTaskId, activeTask, requestedDocument, patchLayout]);
@@ -1146,6 +1147,7 @@ export default function UnifiedTaskApp() {
           else patchLayout({ navigation: !layout.navigation });
         }}
           onSelectTask={id => { selectTask(id); setCompactNavigation(false); compactNavigationButton.current?.focus(); }} onCreateTask={async () => { await createTask({ title: '新任务' }); setCompactNavigation(false); setCompactPane('chat'); }} onOpenPaper={openPaper} onAddPaper={addPaper} onRemovePaper={removePaper} onOpenArtifact={openDocument}
+          onOpenTaskDocument={(taskId, item) => { setRequestedDocument({ taskId, id: item.id || item.artifactId }); selectTask(taskId); setCompactNavigation(false); }}
           taskControlsInHeader onCreateNote={createNote} onUpload={() => fileInputRef.current?.click()} uploading={uploading} onCancelUpload={cancelUpload}
           learningRecords={savedLearningActivities} onOpenLearning={openLearningRecord} selectedDocumentId={selectedDocument?.id} selectedLearningId={selectedLearning?.id}>
           {(libraryError || materialError) && <p className="unified-inline-error" role="alert">{materialError || libraryError}</p>}

@@ -10,6 +10,20 @@ const props = () => ({ tasks: [{ id: 'a', title: '任务 A' }, { id: 'b', title:
   onAddPaper: vi.fn(), onRemovePaper: vi.fn(), onOpenArtifact: vi.fn() });
 beforeEach(() => localStorage.clear());
 
+it('finds source metadata and explicitly opens other task documents without adding materials', () => {
+  const handlers = props();
+  const onOpenTaskDocument = vi.fn();
+  const note = { id: 'note-b', title: '实验建议', text: '做对照', sources: [{ title: 'LightGaussian', doi: '10.test/paper' }] };
+  render(<TaskNavigation {...handlers} onOpenTaskDocument={onOpenTaskDocument}
+    tasks={[handlers.activeTask, { id: 'b', title: '对照实验任务', paperIds: [], notes: [note], artifacts: [] }]} />);
+  fireEvent.change(screen.getByRole('textbox', { name: '搜索材料与记录' }), { target: { value: '10.test/paper' } });
+  expect(screen.queryByRole('button', { name: /实验建议/ })).not.toBeInTheDocument();
+  fireEvent.change(screen.getByRole('combobox', { name: '搜索范围' }), { target: { value: 'all' } });
+  fireEvent.click(screen.getByRole('button', { name: /实验建议/ }));
+  expect(onOpenTaskDocument).toHaveBeenCalledWith('b', note);
+  expect(handlers.onAddPaper).not.toHaveBeenCalled();
+});
+
 describe('task navigation', () => {
   it('distinguishes opening a paper from adding a task material', async () => {
     const handlers = props();
