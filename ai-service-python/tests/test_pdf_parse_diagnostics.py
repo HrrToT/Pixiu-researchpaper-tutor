@@ -1,6 +1,7 @@
 import asyncio
 import io
 import os
+import threading
 import unittest
 from unittest.mock import Mock, patch
 
@@ -19,6 +20,32 @@ class _NoOutputGrobidClient:
 
 
 class PdfParseDiagnosticsTests(unittest.TestCase):
+    def test_parse_does_not_block_other_event_loop_work(self):
+        entered, release = threading.Event(), threading.Event()
+        caller_thread = threading.get_ident()
+
+        def blocking_parse(content, filename, *, include_ai_analysis):
+            self.assertNotEqual(threading.get_ident(), caller_thread)
+            self.assertEqual((content, filename, include_ai_analysis), (b'pdf', 'paper.pdf', False))
+            entered.set()
+            if not release.wait(2):
+                raise AssertionError('Event loop did not release parsing worker')
+            return {'status': 'success'}
+
+        async def exercise():
+            pending = asyncio.create_task(analysis_service.analyze_pdf(
+                UploadFile(filename='paper.pdf', file=io.BytesIO(b'pdf')), include_ai_analysis=False))
+            try:
+                self.assertTrue(await asyncio.wait_for(asyncio.to_thread(entered.wait, 1), 1.5))
+                # A live request can execute while parsing remains blocked.
+                self.assertFalse(pending.done())
+            finally:
+                release.set()
+            self.assertEqual(await pending, {'status': 'success'})
+
+        with patch.object(analysis_service, '_analyze_pdf_bytes', side_effect=blocking_parse):
+            asyncio.run(exercise())
+
     def test_parse_only_indexes_and_builds_outline_without_any_model_call(self):
         class Grobid:
             def process(self, *args, **kwargs):

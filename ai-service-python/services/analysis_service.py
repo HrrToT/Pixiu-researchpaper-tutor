@@ -1,3 +1,4 @@
+import asyncio
 import os
 import shutil
 import tempfile
@@ -232,13 +233,20 @@ def _build_full_paper_context(parsed_sections, abstract: str = "") -> str:
 
 
 async def analyze_pdf(file: UploadFile, *, include_ai_analysis: bool = True) -> dict[str, Any]:
+    content = await file.read()
+    return await asyncio.to_thread(_analyze_pdf_bytes, content, file.filename,
+                                   include_ai_analysis=include_ai_analysis)
+
+
+def _analyze_pdf_bytes(content: bytes, filename: str | None, *, include_ai_analysis: bool) -> dict[str, Any]:
+    """Keep synchronous PDF parsing, embedding and model I/O off the ASGI loop."""
     input_dir = tempfile.mkdtemp()
     output_dir = tempfile.mkdtemp()
 
     try:
         file_path = os.path.join(input_dir, "target_paper.pdf")
         with open(file_path, "wb") as buffer:
-            buffer.write(await file.read())
+            buffer.write(content)
 
         pdf_stats = _extract_pdf_text_stats(file_path)
 
@@ -258,7 +266,7 @@ async def analyze_pdf(file: UploadFile, *, include_ai_analysis: bool = True) -> 
                 tei_text_char_count=0,
             )
             if diagnostics["parseStatus"] == PARSE_STATUS_SCANNED_OR_LOW_TEXT:
-                response = _build_low_text_upload_response(file.filename or "uploaded.pdf", pdf_stats)
+                response = _build_low_text_upload_response(filename or "uploaded.pdf", pdf_stats)
                 response.update({"readingReady": True, "questionReady": False,
                                  "aiAnalysisStatus": "unavailable"})
                 return response
@@ -369,8 +377,8 @@ Paper context:
                 "sections": section_outline,
             }
 
-        clean_pdf_id = normalize_id(file.filename)
-        title = _extract_title(parsed_sections, file.filename)
+        clean_pdf_id = normalize_id(filename)
+        title = _extract_title(parsed_sections, filename)
         authors = _extract_authors(parsed_sections)
         rag_indexed = True
         rag_message = None
