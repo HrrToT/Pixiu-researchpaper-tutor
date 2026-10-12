@@ -59,6 +59,12 @@ import './WorkbenchTheme.css';
 const LAYOUT_KEY = 'pixiu-unified-layout-v1';
 const COMPACT_PANE_KEY = 'pixiu-compact-pane-v1';
 const DEFAULT_LAYOUT = DEFAULT_WORKBENCH_LAYOUT;
+const activityPriority = status => {
+  if (['running', 'cancelling', 'stopping'].includes(status)) return 0;
+  if (status === 'queued') return 1;
+  if (['waiting_user', 'awaiting_submission', 'active'].includes(status)) return 2;
+  return 3;
+};
 const initialLayout = () => {
   try {
     const saved = JSON.parse(localStorage.getItem(LAYOUT_KEY) || '{}');
@@ -1092,13 +1098,13 @@ export default function UnifiedTaskApp() {
     return !result || !['succeeded', 'completed', 'failed', 'cancelled'].includes(result.status);
   });
   const activityEntries = [
-    ...pendingOperations.map(record => ({ id: record.requestId, label: operationStatusText(record), isRequest: true, locate: () => locateOperation(record),
+    ...pendingOperations.map(record => ({ id: record.requestId, status: record.status, label: operationStatusText(record), isRequest: true, locate: () => locateOperation(record),
       ...(record.status !== 'cancelling' ? { stop: () => learning.operations.cancel(activeTaskId, record.requestId), stopLabel: '停止' } : {}) })),
-    ...pendingResearch.map(run => ({ id: run.researchId, label: `研究 · ${researchResult(run) ? getResearchStatusMeta(researchResult(run).status).label : '正在读取'}`, locate: () => locateResearch(run),
+    ...pendingResearch.map(run => ({ id: run.researchId, status: researchResult(run)?.status, label: `研究 · ${researchResult(run) ? getResearchStatusMeta(researchResult(run).status).label : '正在读取'}`, locate: () => locateResearch(run),
       stop: () => research.action(activeTaskId, run.researchId, 'cancel') })),
-    ...(currentLearning?.status === 'active' && learning.inputMode !== 'chat' && !pendingOperations.length ? [{ id: currentLearning.activityId,
+    ...(currentLearning?.status === 'active' && learning.inputMode !== 'chat' && !pendingOperations.length ? [{ id: currentLearning.activityId, status: currentLearning.status,
       label: `${currentLearning.mode === 'quiz' ? '自测' : '精读'} · ${learning.completionSuggested ? '可结束本轮' : '待回答'}`, locate: () => locateLearning(currentLearning) }] : []),
-  ];
+  ].sort((left, right) => activityPriority(left.status) - activityPriority(right.status));
   const renderAfterMessage = message => {
     const run = message.timelineResearchId && activeTask.researchRuns?.find(item => item.researchId === message.timelineResearchId);
     const record = message.timelineOperationId && learning.operations.records[message.timelineOperationId];

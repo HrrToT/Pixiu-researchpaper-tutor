@@ -1,5 +1,5 @@
 import React from 'react';
-import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const state = vi.hoisted(() => ({ task: null, chatProps: null, failAnswerSave: false, writes: 0, startOperation: vi.fn(), researchGet: vi.fn(), researchAction: vi.fn(), retainDraft: vi.fn(async () => {}), api: { sendTaskMessage: vi.fn(), criticalReading: vi.fn(), backgroundKnowledge: vi.fn() } }));
@@ -751,6 +751,21 @@ describe('unified task conversation wiring', () => {
     fireEvent.click(screen.getByRole('button', { name: '精读 · 论文甲：历史问题9 · 已结束' }));
     expect(screen.getByRole('article', { name: '学习记录详情' })).toHaveTextContent('历史问题9');
     expect(state.startOperation).not.toHaveBeenCalled();
+  });
+
+  it('prioritizes running research over an older paused run and stops the displayed run', async () => {
+    state.task.activeActivity = null;
+    state.task.researchRuns = ['paused-old', 'running-new'].map(researchId => ({ researchId, requestId: researchId, question: researchId, paperIds: ['a'] }));
+    state.researchGet.mockImplementation(async (_, id) => ({ task: { taskId: id, status: id === 'paused-old' ? 'paused' : 'running' } }));
+    state.researchAction.mockImplementation(async (_, id) => ({ task: { taskId: id, status: 'cancelled' } }));
+    render(<UnifiedTaskApp />);
+    const activity = await screen.findByLabelText('当前活动');
+    await waitFor(() => expect(within(activity).getAllByRole('button')[0]).toHaveTextContent('研究 · 进行中'));
+    fireEvent.click(within(activity).getByText('另有 1 项'));
+    expect(within(activity).getByRole('button', { name: '研究 · 已暂停 · 查看' })).toBeVisible();
+    fireEvent.click(within(activity).getByRole('button', { name: '停止研究' }));
+    await waitFor(() => expect(state.researchAction).toHaveBeenCalledWith('task', 'running-new', 'cancel', undefined));
+    await waitFor(() => expect(within(activity).getAllByRole('button')[0]).toHaveTextContent('研究 · 已暂停'));
   });
 
   it('reuses the same page translation and preserves revisions only when its content changes', async () => {
