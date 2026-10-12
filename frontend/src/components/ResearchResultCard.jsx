@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { ChevronDown, ChevronUp, FileText, X } from 'lucide-react';
+import { ChevronDown, ChevronUp, ExternalLink, FileText, Plus, X } from 'lucide-react';
 
 const labels = {
   queued: '研究已排队', running: '正在研究', waiting_user: '需要明确研究范围',
@@ -7,14 +7,18 @@ const labels = {
 };
 const outcomes = { complete: '报告已保存', partial: '已完成部分研究', inconclusive: '当前材料不足以判断', none: '研究已结束' };
 const actionLabels = { pause: '暂停', resume: '继续研究', cancel: '停止', continue: '补查缺口' };
+const accessLabels = { fulltext: '全文', full_text: '全文', abstract: '仅摘要', metadata: '仅元数据' };
 
 /** Version 2 execution details are optional; the answer remains the primary content. */
-export default function ResearchResultCard({ taskId, run, result, error, onAction, onRefresh, onOpenReport, onJumpToSource }) {
+export default function ResearchResultCard({ taskId, run, result, error, onAction, onRefresh, onOpenReport, onJumpToSource, onAddSource }) {
   const [details, setDetails] = useState(false);
   const [tab, setTab] = useState('plan');
   const [busy, setBusy] = useState(false);
   const [failure, setFailure] = useState('');
   const [clarification, setClarification] = useState('');
+  const [planDraft, setPlanDraft] = useState(null);
+  const [addSourceBusy, setAddSourceBusy] = useState('');
+  const [addedSources, setAddedSources] = useState(new Set());
   const button = useRef(null);
   const requests = useRef(new Map());
   const actions = new Set(Array.isArray(result.allowedActions) ? result.allowedActions : []);
@@ -38,8 +42,32 @@ export default function ResearchResultCard({ taskId, run, result, error, onActio
     finally { setBusy(false); }
   };
   const sources = Array.isArray(result.sources) ? result.sources : [];
-  const plan = Array.isArray(result.plan) ? result.plan : Array.isArray(result.plan?.items) ? result.plan.items : [];
+  const planItems = Array.isArray(result.plan) ? result.plan : Array.isArray(result.plan?.items) ? result.plan.items : [];
+  const planRevision = result.plan?.revision ?? result.planRevision;
   const events = Array.isArray(result.events) ? result.events : [];
+  const canEditPlan = result.status === 'paused' && actions.has('plan') && planItems.length > 0;
+  const handlePlanSave = () => {
+    if (!canEditPlan) return;
+    const items = (planDraft || planItems).map((item, index) => ({
+      ...item,
+      itemId: item.itemId || `plan-${index}`,
+      question: item.question || '',
+      obligations: item.obligations || [],
+    })).filter(item => item.question.trim());
+    if (!items.length) return;
+    void act('plan', { plan: items, planRevision });
+  };
+  const handleAddSource = async (source) => {
+    if (!onAddSource || addSourceBusy) return;
+    const sourceId = source.sourceId || source.workId;
+    if (!sourceId) return;
+    setAddSourceBusy(sourceId);
+    try {
+      await onAddSource(taskId, run.researchId, sourceId);
+      setAddedSources(current => new Set([...current, sourceId]));
+    } catch (cause) { setFailure(cause?.message || '加入任务材料未完成，请重试。'); }
+    finally { setAddSourceBusy(''); }
+  };
   return <article className="conversation-research-card research-result-card" aria-label="研究结果">
     <div className="research-result-heading"><strong>{title}</strong><span role="status" aria-live="polite">{status}</span></div>
     {!terminal && activity && <p className="theme-text-muted text-sm">{activity}</p>}
@@ -66,14 +94,65 @@ export default function ResearchResultCard({ taskId, run, result, error, onActio
       <div role="tablist" aria-label="研究详情分类">{[['plan', '计划'], ['sources', '资料'], ['events', '执行记录']].map(([id, label]) =>
         <button type="button" role="tab" aria-selected={tab === id} key={id} onClick={() => setTab(id)}>{label}</button>)}</div>
       <div role="tabpanel" aria-label={{ plan: '计划', sources: '资料', events: '执行记录' }[tab]}>
-        {tab === 'plan' && (plan.length ? <ol>{plan.map((item, index) => <li key={item.itemId || index}>{typeof item === 'string' ? item : item.question}<span className="theme-text-muted"> {({ completed: '已完成', pending: '待研究', running: '研究中', gap: '待补查' })[item.status] || ''}</span></li>)}</ol> : <p>暂未生成计划。</p>)}
-        {tab === 'sources' && (sources.length ? <ul>{sources.map((source, index) => <li key={source.sourceId || source.workId || index}>
-          <strong>{source.title || source.pdfId || '论文来源'}</strong> · <span>{({ fulltext: '全文', full_text: '全文', abstract: '仅摘要', metadata: '仅元数据' })[source.accessLevel] || '任务材料'}</span>
-          {source.page != null && <span> · 第 {source.page} 页</span>}
-          {source.quote && <details><summary>原文依据</summary><blockquote>{source.quote}</blockquote></details>}
-          {onJumpToSource && source.pdfId && <button type="button" onClick={() => onJumpToSource(source)}>查看论文原文</button>}
-        </li>)}</ul> : <p>{result.sourceCount ? '来源详情可在报告中展开。' : '尚无可引用来源。'}</p>)}
-        {tab === 'events' && (events.length ? <ol>{events.map((event, index) => <li key={event.eventId || index}>{event.label || event.activity || event.kind}{event.summary ? `：${event.summary}` : ''}</li>)}</ol> : <p>尚无执行记录。</p>)}
+        {tab === 'plan' && <>
+          {canEditPlan && <div className="research-plan-editor">
+            <p className="theme-text-muted text-sm">研究已暂停，可调整计划后继续。</p>
+            <ol>{(planDraft || planItems).map((item, index) => <li key={item.itemId || index}>
+              <label>
+                <input className="theme-input" value={(planDraft || planItems)[index]?.question || ''}
+                  onChange={event => {
+                    const draft = [...(planDraft || planItems)];
+                    const question = event.target.value;
+                    const previous = draft[index];
+                    // A one-obligation item edits its actual executable question too.
+                    draft[index] = { ...previous, question, searchQuery: undefined, obligations: previous.obligations?.length === 1
+                      ? previous.obligations.map(obligation => ({ ...obligation, question, searchQuery: undefined })) : previous.obligations };
+                    setPlanDraft(draft);
+                  }} />
+              </label>
+              {(item.obligations || []).length > 1 && item.obligations.map((obligation, obligationIndex) => <label key={obligation.obligationId}>
+                核对问题 {obligationIndex + 1}
+                <input className="theme-input" aria-label={`核对问题 ${obligationIndex + 1}`} value={(planDraft || planItems)[index].obligations[obligationIndex].question || ''}
+                  onChange={event => {
+                    const draft = [...(planDraft || planItems)];
+                    draft[index] = { ...draft[index], obligations: draft[index].obligations.map((value, at) => at === obligationIndex ? { ...value, question: event.target.value, searchQuery: undefined } : value) };
+                    setPlanDraft(draft);
+                  }} />
+              </label>)}
+              <span className="theme-text-muted"> {({ completed: '已完成', pending: '待研究', running: '研究中', gap: '待补查' })[item.status] || ''}</span>
+            </li>)}</ol>
+            <button type="button" disabled={busy || !actions.has('plan')} onClick={handlePlanSave}>提交修改</button>
+          </div>}
+          {!canEditPlan && (planItems.length ? <ol>{planItems.map((item, index) => <li key={item.itemId || index}>{typeof item === 'string' ? item : item.question}<span className="theme-text-muted"> {({ completed: '已完成', pending: '待研究', running: '研究中', gap: '待补查' })[item.status] || ''}</span></li>)}</ol> : <p>暂未生成计划。</p>)}
+        </>}
+        {tab === 'sources' && (sources.length ? <ul className="research-source-list">{sources.map((source, index) => {
+          const sourceId = source.sourceId || source.workId || `source-${index}`;
+          const isExternal = ['external', 'arxiv'].includes(source.sourceKind) || source.external === true;
+          const addedToTask = source.addedToTask === true || addedSources.has(sourceId);
+          const adding = addSourceBusy === sourceId;
+          return <li key={sourceId} className="research-source-item">
+            <div className="research-source-header">
+              <strong>{source.title || source.pdfId || '论文来源'}</strong>
+              <span className="research-source-access">{accessLabels[source.accessLevel] || (isExternal ? '外部来源' : '任务材料')}</span>
+            </div>
+            {source.page != null && <span className="research-source-location">第 {source.page} 页{source.section ? ` · ${source.section}` : ''}</span>}
+            {source.quote && <details className="research-source-quote"><summary>原文依据</summary><blockquote>{source.quote}</blockquote></details>}
+            <div className="research-source-actions">
+              {onJumpToSource && source.pdfId && !isExternal && <button type="button" onClick={() => onJumpToSource({ ...source, pageIndex: source.page != null ? source.page - 1 : source.pageIndex })}>查看论文原文</button>}
+              {isExternal && source.url && <a href={source.url} target="_blank" rel="noopener noreferrer" className="research-source-external-link"><ExternalLink size={12} />来源页面</a>}
+              {isExternal && onAddSource && !addedToTask && <button type="button" disabled={adding} onClick={() => handleAddSource(source)}>
+                {adding ? '加入中…' : <><Plus size={12} />加入任务材料</>}
+              </button>}
+              {isExternal && addedToTask && <span className="research-source-added" role="status">已加入任务</span>}
+              {isExternal && !source.url && source.accessLevel === 'abstract' && <span className="theme-text-muted text-sm">仅获取摘要</span>}
+            </div>
+          </li>;
+        })}</ul> : <p>{result.sourceCount ? '来源详情可在报告中展开。' : '尚无可引用来源。'}</p>)}
+        {tab === 'events' && (events.length ? <ol className="research-event-list">{events.map((event, index) => <li key={event.eventId || event.callId || index}>
+          <span className="research-event-label">{event.label || event.activity || event.kind || event.toolName || '步骤'}</span>
+          {event.summary && <span className="research-event-summary">：{event.summary}</span>}
+          {event.status && event.status !== 'completed' && <span className="theme-text-muted"> ({event.status})</span>}
+        </li>)}</ol> : <p>尚无执行记录。</p>)}
       </div>
     </section>}
   </article>;

@@ -5,6 +5,7 @@ export default function DocumentTitle({ title, onRename }) {
   const [draft, setDraft] = useState(title || '');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
+  if (!onRename) return <span className="unified-document-title">{title || '成果'}</span>;
   if (!editing) return <button type="button" className="unified-document-title" title={title} aria-label="修改成果名称" onClick={() => { setDraft(title || ''); setEditing(true); }}>{title || '笔记'}</button>;
   return <form className="unified-document-title-edit" onSubmit={async event => {
     event.preventDefault(); if (busy || !draft.trim()) return;

@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import MarkdownContent from './MarkdownContent';
+import ResearchReportText from './ResearchReportText';
 import { SourceChip } from './SourceCitation';
 import { normalizeEvidenceSources } from './evidenceCitationModel';
 import { paperShortName } from '../utils/documentPresentation';
@@ -56,7 +57,7 @@ export default function CritiqueContent({ value, text, target = 'chat', papers =
       {typeof lead === 'string' && lead && <CitedSection issue={leadIssue} value={value} storageKey={storageKey} lead onJumpToSource={onJumpToSource} />}
       {issues.map(issue => <CitedSection key={issue.id} issue={issue} value={value} storageKey={storageKey} onJumpToSource={onJumpToSource} onFollowup={onFollowup} />)}
     </> : <>
-      <MarkdownContent>{text}</MarkdownContent>
+      {value.sourceRunId || text?.includes('#research-evidence-') ? <ResearchReportText text={text} sources={value.sources || value.rag_sources || []} onJumpToSource={onJumpToSource} /> : <MarkdownContent>{text}</MarkdownContent>}
       {grouped && !value.edited && issues.map((issue, index) => <section key={issue.id} data-critique-issue-id={issue.id}>
         <IssueActions issue={issue} storageKey={storageKey} label={`第 ${index + 1} 点`} onJumpToSource={onJumpToSource} onFollowup={onFollowup} />
       </section>)}

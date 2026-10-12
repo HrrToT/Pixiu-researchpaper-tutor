@@ -69,7 +69,7 @@ export function useTaskResearch(workspace, api = taskResearchApi, operations = n
     return () => { disposed = true; clearTimeout(timer); };
   }, [runKey, api]);
   const start = async (task, question, context) => {
-    const v2 = context.engineVersion === 'deep-research-v2' || import.meta.env.VITE_DEEP_RESEARCH_V2_ENABLED === 'true';
+    const v2 = context.engineVersion ? context.engineVersion === 'deep-research-v2' : import.meta.env.VITE_DEEP_RESEARCH_V2_ENABLED === 'true';
     if (operations && !v2) return operations.start(task, 'research.start', { question, allowedPaperIds: context.allowedPaperIds,
       pdfId: context.primaryPaperId || task.focusedPaperId || context.allowedPaperIds[0],
       expectedTaskRevision: task.revision, allowExternalSearch: false, allowWebSearch: false });

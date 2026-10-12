@@ -15,9 +15,34 @@ export function documentPreview(item) {
     .replace(/\[(?:\d+[\s,，]*)+\]/gu, '').replace(/\s+/gu, ' ').trim().slice(0, 100);
 }
 
+/** Hide immutable machine-origin artifacts when a user-edited or latest-origin
+ *  version exists for the same source research. Machine versions remain
+ *  accessible through the document version history control. */
+function filterMachineArtifactDuplicates(items) {
+  const bySource = new Map();
+  for (const item of items) {
+    const sourceId = item.sourceResearchId || item.sourceRequestId;
+    if (!sourceId) continue;
+    if (!bySource.has(sourceId)) bySource.set(sourceId, []);
+    bySource.get(sourceId).push(item);
+  }
+  const hidden = new Set();
+  for (const [, group] of bySource) {
+    if (group.length < 2) continue;
+    const hasUserOrLatest = group.some(item => item.origin !== 'machine');
+    if (hasUserOrLatest) {
+      for (const item of group) {
+        if (item.origin === 'machine') hidden.add(item);
+      }
+    }
+  }
+  return items.filter(item => !hidden.has(item));
+}
+
 // Presentation only: keep the persisted documents, their titles and their order intact.
 export function taskDocumentNavigation(task, papers = []) {
-  const items = [...(task?.notes || []), ...(task?.artifacts || [])];
+  const rawItems = [...(task?.notes || []), ...(task?.artifacts || [])];
+  const items = filterMachineArtifactDuplicates(rawItems);
   const titleOf = item => documentDisplayTitle(item, task, papers);
   const counts = new Map();
   items.forEach(item => counts.set(titleOf(item), (counts.get(titleOf(item)) || 0) + 1));

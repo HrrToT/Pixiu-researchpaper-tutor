@@ -78,6 +78,22 @@ interface ChatPanelProps {
   starterPrompts?: Array<{ label: string; text: string; onSelect?: () => void }>;
   sendLabel?: string;
   inputPlaceholder?: string;
+  /** Research capabilities for source scope and budget controls in the material popover. */
+  researchCapabilities?: {
+    engineVersion?: string;
+    enabled?: boolean;
+    externalAcademic?: boolean;
+    fulltext?: boolean;
+    budgetProfiles?: string[];
+  } | null;
+  /** Current research source policy mode from parent state. */
+  researchSourcePolicy?: 'task_only' | 'academic_external';
+  /** Callback when user changes research source policy. */
+  onResearchSourcePolicyChange?: (mode: 'task_only' | 'academic_external') => void;
+  /** Current research budget profile from parent state. */
+  researchBudgetProfile?: string;
+  /** Callback when user changes research budget profile. */
+  onResearchBudgetProfileChange?: (profile: string) => void;
 }
 
 interface EvidenceReferencesProps {
@@ -137,6 +153,8 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
   starterPrompts = [],
   sendLabel = '发送消息', inputPlaceholder,
   renderMessageAfter, historyContent, composerContext, currentActivity, focusMessage, showHeader = false, onCollapse,
+  researchCapabilities, researchSourcePolicy = 'task_only', onResearchSourcePolicyChange,
+  researchBudgetProfile = 'standard', onResearchBudgetProfileChange,
 }) => {
   const [inputValue, setInputValue, draftError, clearInput] = useConversationDraft(conversationId);
   const draftMaterials: { text: string; references: string[] } = enableSkills ? materialDraft(inputValue) : { text: inputValue, references: [] };
@@ -532,6 +550,38 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
             </div>
             <div className="chat-picker-footer"><span>{selectedMentions.length ? `已指定 ${selectedMentions.length} 篇` : '使用任务全部材料'}</span>
               <button type="button" onClick={() => { close(false); textareaRef.current?.focus(); }}>完成</button></div>
+            {recognizedSkill?.skillId === 'research' && <>
+              <fieldset className="chat-research-scope">
+                <legend>资料来源</legend>
+                <div className="chat-research-scope-options">
+                  <label className="chat-research-scope-option">
+                    <input type="radio" name="research-source-policy" checked={researchSourcePolicy === 'task_only'}
+                      onChange={() => onResearchSourcePolicyChange?.('task_only')} />
+                    <span>仅任务材料</span>
+                  </label>
+                  <label className="chat-research-scope-option">
+                    <input type="radio" name="research-source-policy" checked={researchSourcePolicy === 'academic_external'}
+                      disabled={!researchCapabilities?.externalAcademic}
+                      onChange={() => onResearchSourcePolicyChange?.('academic_external')} />
+                    <span>补充外部文献</span>
+                    {!researchCapabilities?.externalAcademic && <small>暂未开放</small>}
+                  </label>
+                </div>
+                {researchSourcePolicy === 'academic_external' && !researchCapabilities?.externalAcademic &&
+                  <p className="chat-research-unavailable">外部学术检索能力尚未配置，当前仅可使用任务材料。</p>}
+              </fieldset>
+              {researchCapabilities?.enabled && (researchCapabilities?.budgetProfiles?.length ?? 0) > 1 && <details className="chat-research-budget"><summary>研究设置</summary><fieldset>
+                <legend>预算档位</legend>
+                <div className="chat-research-budget-options">
+                  {(researchCapabilities?.budgetProfiles || ['standard', 'extended']).map(profile =>
+                    <label key={profile} className="chat-research-budget-option">
+                      <input type="radio" name="research-budget" checked={researchBudgetProfile === profile}
+                        onChange={() => onResearchBudgetProfileChange?.(profile)} />
+                      <span>{profile === 'standard' ? '标准' : profile === 'extended' ? '扩展' : profile}</span>
+                    </label>)}
+                </div>
+              </fieldset></details>}
+            </>}
           </>}
         </WorkbenchPopover>
         <WorkbenchPopover label="功能" className="chat-function-selector" align="left" trigger={<><span>功能</span><ChevronDown size={12} /></>}>

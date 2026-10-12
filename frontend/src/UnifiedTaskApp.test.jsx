@@ -30,7 +30,7 @@ vi.mock('./services/taskWorkspaceApi', () => ({ taskWorkspaceApi: {
   getMaterialFile: async () => { throw new Error('旧论文尚未保存到服务端'); },
   getMaterialAnalysis: async () => { throw new Error('旧论文尚未保存到服务端'); },
 } }));
-vi.mock('./services/taskResearchApi', () => ({ taskResearchApi: { get: state.researchGet, action: state.researchAction } }));
+vi.mock('./services/taskResearchApi', () => ({ taskResearchApi: { get: state.researchGet, action: state.researchAction, capabilities: vi.fn(async () => null), addSource: vi.fn(async () => ({})) } }));
 vi.mock('./services/taskWorkspaceRemoteStore', () => ({ taskWorkspaceRemoteStore: { getUnsyncedDraft: async () => null, retainUnsyncedDraft: state.retainDraft } }));
 vi.mock('./services/localDb', () => ({ initDB: async () => ({
   getAll: async () => [{ id: 'a', title: '论文甲' }, { id: 'b', title: '论文乙' }],

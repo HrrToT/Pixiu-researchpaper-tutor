@@ -43,6 +43,8 @@ import { apiService } from './services/api';
 import { initDB } from './services/localDb';
 import { persistTranslationState } from './services/workspaceSession';
 import { taskWorkspaceApi } from './services/taskWorkspaceApi';
+import { taskResearchApi } from './services/taskResearchApi';
+import { getResearchIntent, clearResearchIntent } from './services/researchStartIntent';
 import { loadTaskMaterial } from './services/taskMaterialCache';
 import { taskWorkspaceRemoteStore } from './services/taskWorkspaceRemoteStore';
 import { buildPaperOutlineModel } from './utils/appHelpers';
@@ -199,6 +201,15 @@ export default function UnifiedTaskApp() {
   const [intentChoice, setIntentChoice] = useState(null);
   const [showOutline, setShowOutline] = useState(false);
   const [translationMode, setTranslationMode] = useState('original');
+  const [researchCapabilities, setResearchCapabilities] = useState(null);
+  const [researchSettings, setResearchSettings] = useState({});
+  const researchSourcePolicy = researchSettings[activeTaskId]?.sourcePolicy || 'task_only';
+  const researchBudgetProfile = researchSettings[activeTaskId]?.budgetProfile || 'standard';
+  const setResearchSourcePolicy = sourcePolicy => setResearchSettings(current => ({ ...current,
+    [activeTaskId]: { ...current[activeTaskId], sourcePolicy } }));
+  const setResearchBudgetProfile = budgetProfile => setResearchSettings(current => ({ ...current,
+    [activeTaskId]: { ...current[activeTaskId], budgetProfile } }));
+  const sourceAddIntents = useRef(new Map());
   const readerRef = useRef(null);
   const [readerWidth, setReaderWidth] = useState(0);
   const [narrowTranslationSide, setNarrowTranslationSide] = useState('original');
@@ -219,6 +230,7 @@ export default function UnifiedTaskApp() {
   const paperLoadToken = useRef(0);
   const materialProcessingRef = useRef(new Map());
   const focusedPaperId = activeTask?.focusedPaperId || null;
+  const focusedMetadataKey = JSON.stringify(papers.find(paper => paper.id === focusedPaperId)?.externalSource || null);
   useEffect(() => {
     try { setShowOutline(localStorage.getItem(`pixiu-outline:${JSON.stringify([activeTaskId, focusedPaperId])}`) === 'open'); }
     catch { setShowOutline(false); }
@@ -359,12 +371,22 @@ export default function UnifiedTaskApp() {
       setLibraryError('');
       setPapers(current => {
         const known = new Map(current.map(item => [item.id, item]));
-        for (const item of items) known.set(item.id, { ...item, ...known.get(item.id), fileAvailable: item.fileAvailable });
+        for (const item of items) known.set(item.id, { ...known.get(item.id), ...item });
         return [...known.values()];
       });
     }).catch(error => { if (!disposed) setLibraryError(error.message || '任务论文读取失败'); });
     return () => { disposed = true; };
   }, [materialKey]);
+
+  useEffect(() => {
+    if (!activeTaskId) { setResearchCapabilities(null); return; }
+    setResearchCapabilities(null);
+    let disposed = false;
+    taskResearchApi.capabilities(activeTaskId).then(response => {
+      if (!disposed) setResearchCapabilities(response?.data || response || null);
+    }).catch(() => { if (!disposed) setResearchCapabilities(null); });
+    return () => { disposed = true; };
+  }, [activeTaskId]);
 
   useEffect(() => {
     let alive = true;
@@ -397,6 +419,11 @@ export default function UnifiedTaskApp() {
     let objectUrl = null;
     if (!focusedPaperId) { setPaperView({ id: null, url: null, deconstruct: null, highlights: [], error: '' }); return undefined; }
     setPaperView({ id: focusedPaperId, url: null, deconstruct: null, highlights: [], error: '' });
+    const selectedPaper = papers.find(paper => paper.id === focusedPaperId);
+    if (selectedPaper?.fileUnavailable === 'metadata_only') {
+      setPaperView({ id: focusedPaperId, url: null, deconstruct: null, highlights: [], error: '', metadata: selectedPaper.externalSource || selectedPaper });
+      return undefined;
+    }
     initDB().then(async (db) => {
       const { record, deconstruct, highlights, cacheWarning } = await loadTaskMaterial(db, taskWorkspaceApi, activeTaskId, focusedPaperId);
       if (cacheWarning && token === paperLoadToken.current) setLocalError(cacheWarning);
@@ -404,10 +431,10 @@ export default function UnifiedTaskApp() {
       if (token === paperLoadToken.current) setPaperView({ id: focusedPaperId, url: objectUrl, deconstruct: materialProcessingRef.current.get(focusedPaperId) || deconstruct, highlights: Array.isArray(highlights) ? highlights : [], error: '' });
       else URL.revokeObjectURL(objectUrl);
     }).catch((error) => { if (token === paperLoadToken.current) setPaperView({ id: focusedPaperId, url: null, deconstruct: null, highlights: [],
-      error: error.response?.status === 404 ? '这篇论文暂不可读取，请检查任务材料或从原客户端恢复文件。原笔记与成果仍保留。'
-        : error.response?.data?.message || error.message || '论文读取失败' }); });
+      error: error.response?.data?.message || (error.response?.status === 404 ? '这篇论文暂不可读取，请检查任务材料或恢复文件。原笔记与成果仍保留。'
+        : error.message || '论文读取失败') }); });
     return () => { if (objectUrl) URL.revokeObjectURL(objectUrl); };
-  }, [focusedPaperId, activeTaskId]);
+  }, [focusedPaperId, activeTaskId, focusedMetadataKey]);
 
   const setMode = (mode) => {
     if (mode !== 'split') setCompactPane(mode);
@@ -542,9 +569,24 @@ export default function UnifiedTaskApp() {
       try {
         if (!sendText) throw new Error('请在 /研究 后写下要研究的问题');
         const scope = resolveTaskContext(task, { text, activity: null, paperIds: resolveNamedTaskPapers(text, papers, task.paperIds) });
-        if (!scope.allowedPaperIds.length) throw new Error('请先为任务加入研究材料');
-        if (!materialReady(scope.allowedPaperIds)) return false;
-        await research.start(task, sendText, scope);
+        const v2 = researchCapabilities ? researchCapabilities.enabled === true && researchCapabilities.engineVersion === 'deep-research-v2'
+          : import.meta.env.VITE_DEEP_RESEARCH_V2_ENABLED === 'true';
+        const externalAvailable = v2 && researchCapabilities?.externalAcademic === true;
+        if (researchSourcePolicy === 'academic_external' && !externalAvailable) {
+          setComposerError('外部文献研究当前不可用，请改用任务材料或稍后重试。');
+          return false;
+        }
+        const effectivePolicy = researchSourcePolicy;
+        if (effectivePolicy === 'task_only' && !scope.allowedPaperIds.length) {
+          if (externalAvailable) throw new Error('请先为任务加入研究材料，或在材料设置中开启补充外部文献。');
+          throw new Error('请先为任务加入研究材料');
+        }
+        if (scope.allowedPaperIds.length && !materialReady(scope.allowedPaperIds)) return false;
+        await research.start(task, sendText, {
+          ...scope,
+          engineVersion: v2 ? 'deep-research-v2' : 'legacy-v1',
+          ...(v2 ? { engineVersion: 'deep-research-v2', sourcePolicy: { mode: effectivePolicy }, budgetProfile: researchBudgetProfile } : {}),
+        });
       } catch (error) { inputError(error.message); return false; }
       return;
     }
@@ -987,10 +1029,25 @@ export default function UnifiedTaskApp() {
   };
   const openReport = (run, result) => {
     setShowProcessingHistory(false);
-    const saved = activeTask.artifacts.find(item => item.sourceResearchId === run.researchId || (item.id || item.artifactId) === `research:${run.researchId}:artifact`);
+    const candidates = activeTask.artifacts.filter(item => item.sourceResearchId === run.researchId || item.sourceRunId === run.researchId || (item.id || item.artifactId) === `research:${run.researchId}:artifact`);
+    const saved = candidates.find(item => item.origin === 'latest') || candidates.find(item => item.origin !== 'machine') || candidates.at(-1);
     if (saved) { openDocument(saved, 'artifacts'); return; }
     openPreview({ taskId: activeTaskId, requestId: run.researchId, kind: 'research.report', paperIds: run.paperIds,
       result: { artifact: { text: sanitizeResearchReport(typeof result.report === 'string' ? result.report : result.report?.body || '') }, sources: result.sources || (result.findings || []).flatMap(finding => finding.sources || []) } });
+  };
+  const handleAddSource = async (taskId, runId, sourceId) => {
+    const task = taskRef.current.get(taskId);
+    if (!task) throw new Error('任务不存在');
+    const key = JSON.stringify(['source-add', taskId, runId, sourceId]);
+    const intent = sourceAddIntents.current.get(key) || getResearchIntent(key, { expectedTaskRevision: task.revision });
+    sourceAddIntents.current.set(key, intent);
+    const response = await taskResearchApi.addSource(taskId, runId, sourceId, { ...intent.input, requestId: intent.requestId });
+    if (response?.workspace) await workspace.adoptServerTask(response.workspace);
+    if (response?.paperId) {
+      sourceAddIntents.current.delete(key);
+      clearResearchIntent(key);
+    }
+    return response;
   };
   const openOperationResult = record => { setShowProcessingHistory(false); openPreview(record); };
   const openPaperOverview = () => {
@@ -1047,7 +1104,7 @@ export default function UnifiedTaskApp() {
       {run && <ResearchCard taskId={activeTaskId} run={run} result={researchResult(run)} error={research.errors?.[JSON.stringify([activeTaskId, run.researchId])]}
         compactTitle={activeTask.artifacts.find(item => item.sourceResearchId === run.researchId || (item.id || item.artifactId) === `research:${run.researchId}:artifact`)?.title}
         onRefresh={research.refresh}
-        onAction={research.action} onJumpToSource={jumpToSource} onOpenReport={openReport} />}
+        onAction={research.action} onJumpToSource={jumpToSource} onOpenReport={openReport} onAddSource={handleAddSource} />}
       {record && record.status !== 'succeeded' && !record.retriedBy && !run && <OperationRecord record={record} showQuestion={false} {...operationControls} />}
       {learningQuestionMessage && message.orderIndex === learningQuestionMessage.orderIndex && learningActions}
       {history && <button type="button" className="unified-record-entry" onClick={() => openLearningRecord(history)}>{history.mode === 'quiz' ? '自测' : '精读'}{history.status === 'paused' ? '已暂停' : '已结束'} · 查看记录</button>}
@@ -1094,6 +1151,8 @@ export default function UnifiedTaskApp() {
   </>;
 
   const documentActions = activeDocument && <DocumentActions key={selectedDocumentKey} document={activeDocument} editing={documentEditing} dirty={documentDirty}
+    researchVersions={activeDocument.sourceRunId ? activeTask.artifacts.filter(item => item.sourceRunId === activeDocument.sourceRunId) : []}
+    onOpenVersion={version => openDocument(version, 'artifacts')}
     kind={selectedDocument.collection === 'notes' ? '笔记' : '成果'}
     displayTitle={documentDisplayTitle(activeDocument, activeTask, papers)}
     getPendingMove={() => { try { return JSON.parse(localStorage.getItem(selectedDocumentKey + ':move') || 'null'); } catch { return null; } }}
@@ -1208,7 +1267,7 @@ export default function UnifiedTaskApp() {
               catch { setLocalError('草稿核对记录保存失败，请保留当前正文'); }
             }}>已核对，保留我的修改</button>
           </div>}
-          <h1 className="workbench-document-heading" aria-label={documentDisplayTitle(activeDocument, activeTask, papers)}><DocumentTitle key={selectedDocumentKey} title={documentDisplayTitle(activeDocument, activeTask, papers)} onRename={renameDocument} /></h1>
+          <h1 className="workbench-document-heading" aria-label={documentDisplayTitle(activeDocument, activeTask, papers)}><DocumentTitle key={selectedDocumentKey} title={documentDisplayTitle(activeDocument, activeTask, papers)} onRename={activeDocument.origin === 'machine' ? undefined : renameDocument} /></h1>
           {documentEditing ? <>
           <textarea aria-label="编辑笔记与成果" disabled={restoringDocument || movingDocument} value={documentDraft} onChange={(event) => {
             const value = event.target.value;
@@ -1232,7 +1291,12 @@ export default function UnifiedTaskApp() {
         </div> : null}
         <div className="unified-reader-paper" style={{ visibility: activeDocument || activeLearning || preview ? 'hidden' : 'visible', opacity: activeDocument || activeLearning || preview ? 0 : 1, pointerEvents: activeDocument || activeLearning || preview ? 'none' : undefined }}
           aria-hidden={Boolean(activeDocument || activeLearning || preview)} inert={activeDocument || activeLearning || preview ? true : undefined}>
-        {paperView.error ? <div className="unified-empty" role="alert">{paperView.error}</div>
+        {paperView.metadata ? <div className="unified-empty">
+          <h2>{paperView.metadata.title || getPaperTitle(papers, paperView.id)}</h2>
+          <p>已加入论文信息，尚无可阅读的全文。</p>
+          {paperView.metadata.abstract && <p>{paperView.metadata.abstract}</p>}
+          {/^https:\/\/arxiv\.org\/abs\//u.test(paperView.metadata.url || '') && <a href={paperView.metadata.url} target="_blank" rel="noopener noreferrer">查看来源页面</a>}
+        </div> : paperView.error ? <div className="unified-empty" role="alert">{paperView.error}</div>
           : paperView.url ? <div className={`unified-reader-content unified-reader-content-${displayedTranslationMode}`}>
             <div className="unified-pdf" aria-hidden={displayedTranslationMode === 'translation'} inert={displayedTranslationMode === 'translation' ? true : undefined}>
               {paperView.deconstruct?.processingStatus && <div className="unified-material-status" role="status">
@@ -1298,7 +1362,10 @@ export default function UnifiedTaskApp() {
           isLoading={Boolean(learning.busyTasks[activeTaskId])} showLoadingIndicator={false} enableSkills
           renderMessageAfter={renderAfterMessage} currentActivity={currentActivityBar} composerContext={composerContext} focusedMaterialId={focusedPaperId} focusMessage={focusMessage} onDraftChange={setComposerDraft}
           sendLabel={submittingLearningAnswer ? '提交回答' : '发送消息'}
-          inputPlaceholder={submittingLearningAnswer ? '用自己的话回答这道题…' : undefined} />
+          inputPlaceholder={submittingLearningAnswer ? '用自己的话回答这道题…' : undefined}
+          researchCapabilities={researchCapabilities}
+          researchSourcePolicy={researchSourcePolicy} onResearchSourcePolicyChange={setResearchSourcePolicy}
+          researchBudgetProfile={researchBudgetProfile} onResearchBudgetProfileChange={setResearchBudgetProfile} />
           : <div className="unified-empty"><p>创建任务后，即可围绕论文持续讨论。</p><button type="button" onClick={() => createTask({ title: '新任务' })}>新任务</button></div>}
       </section>
       {!layout.reader && <button type="button" className="unified-restore unified-restore-reader" title="向右展开阅读区" onClick={() => patchLayout({ reader: true, mode: 'split' })} aria-label="展开阅读区"><PanelLeftOpen size={16} />阅读</button>}
