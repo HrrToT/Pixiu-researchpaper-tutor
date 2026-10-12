@@ -133,7 +133,9 @@ unexecuted proposals/hypotheses clearly. Keep the answer concise and within the 
             if row.get('designRole', original['designRole']) != original['designRole']:
                 continue
             row['designRole'] = original['designRole']
-        valid.append(normalize_conditions({'claims': [dict(row)]})['claims'][0])
+        from services.deep_research.execution_materialization import materialize_execution_claim
+        normalized = normalize_conditions({'claims': [dict(row)]})['claims'][0]
+        valid.append(materialize_execution_claim(normalized))
     candidate = {'claims': [*verification.get('accepted', []), *valid]}
     limit = requested_character_limit(question)
     return [] if limit and answer_character_count(candidate) > limit else valid

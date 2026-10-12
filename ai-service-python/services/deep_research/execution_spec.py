@@ -5,7 +5,8 @@ import math
 EXECUTION_SPEC_CONTRACT = (
     "Add an executionSpec object to each data and analysis claim. "
     "executionSpec schemas (all choices are proposed unexecuted settings; "
-    "state consistently in normal Chinese claim text; never invent paper settings):\n"
+    "the application appends their explicit readable protocol before verification. "
+    "Keep the short claim introduction consistent; never invent paper settings):\n"
     "data role: dataset nonblank str; scenes {mode:named,names unique nonblank len>=1} "
     "or {mode:sorted_first,count positive int,order nonblank}; "
     "split {mode:every_nth,order nonblank,stride int>=2,zero-based offset int 0<=offset<stride} "

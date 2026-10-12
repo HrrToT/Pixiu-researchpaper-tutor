@@ -1056,6 +1056,10 @@ Do NOT invent measured results or pretend unsupported conclusions are verified."
             return {"error_code": "invalid_synthesis_response"}
         from services.deep_research.answer_constraints import compact_answer, resolve_evidence_aliases
         parsed = resolve_evidence_aliases(parsed, evidence_aliases)
+        if output_kind == "experiment_design":
+            from services.deep_research.execution_materialization import materialize_execution_claim
+            parsed['claims'] = [materialize_execution_claim({**claim, 'designContractVersion': 2})
+                                if isinstance(claim, dict) else claim for claim in parsed['claims']]
         parsed = compact_answer(parsed, question,
             lambda prompt: llm_invoke(run_id, "synthesize_compact", prompt,
                 {"max_tokens": 2000, "temperature": 0.0}), _safe_parse_json,
@@ -1064,10 +1068,12 @@ Do NOT invent measured results or pretend unsupported conclusions are verified."
             return {"error_code": "invalid_synthesis_response"}
         
         if output_kind == "experiment_design":
-            # Server-owned contract version: omission by a model cannot opt out.
-            for claim in parsed.get('claims', []):
-                if isinstance(claim, dict):
-                    claim['designContractVersion'] = 2
+            # Compaction must not hide required settings back in metadata.
+            parsed['claims'] = [materialize_execution_claim({**claim, 'designContractVersion': 2})
+                                if isinstance(claim, dict) else claim for claim in parsed['claims']]
+            from services.deep_research.answer_constraints import answer_character_count
+            if requested_limit and answer_character_count(parsed) > requested_limit:
+                return {"error_code": "invalid_synthesis_response"}
 
         report_version_id = f"report_{run_id}_v1"
         
