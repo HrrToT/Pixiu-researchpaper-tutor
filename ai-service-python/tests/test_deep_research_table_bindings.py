@@ -78,6 +78,21 @@ def test_explicit_caption_prose_does_not_require_invented_cell_bindings():
     assert check(ev, c)['rejected'][0]['reason'] == 'missing_table_bindings'
 
 
+def test_mixed_citations_bind_only_measurements_not_explicit_in_cited_prose():
+    table, _ = fixture()
+    quote = 'We achieve at least 30 fps at 1080p.'
+    prose = make_evidence({'workId': 'p', 'versionId': 'v1', 'contentHash': 'h', 'accessLevel': 'fulltext'},
+        quote, quote, location={'page': 1}, obligation_ids=[])
+    c = {'claimId': 'c', 'kind': 'reported', 'text': '论文报告1080p下至少30fps，并给出了模型存储表。',
+         'evidenceRefs': [prose['evidenceId'], table['evidenceId']]}
+    passed = lambda *_: [{'claimId': 'c', 'status': 'passed'}]
+    assert verify_claims([c], [table, prose], passed)['accepted']
+    wrong = {**c, 'text': 'FPS 134，Mem 734MB'}
+    assert verify_claims([wrong], [table, prose], passed)['rejected'][0]['reason'] == 'missing_table_bindings'
+    unrelated = {**c, 'evidenceRefs': [table['evidenceId']]}
+    assert not verify_claims([unrelated], [table, prose], passed)['accepted']
+
+
 @pytest.mark.parametrize('bindings', [42, 'E1', {}, [None], [{'evidenceId': []}]])
 def test_malformed_bindings_reject_without_crashing(bindings):
     ev, claim = fixture()

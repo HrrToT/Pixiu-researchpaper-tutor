@@ -31,12 +31,19 @@ def validate_table_bindings(claim, evidence):
         return None
     if not metric_mentions and not unit_mentions and not bindings:
         return None
+    prose_measurements = set()
+    for item in evidence:
+        if item['evidenceId'] in table_sources:
+            continue
+        quote = item.get('quote', '')
+        prose_measurements.update((v, m.upper()) for m, v in _METRIC.findall(quote))
+        prose_measurements.update((v, u.upper()) for v, u in _UNIT.findall(quote))
     if not isinstance(bindings, list) or not bindings:
-        return 'missing_table_bindings'
+        return 'missing_table_bindings' if (metric_mentions | unit_mentions) - prose_measurements else None
     # An anonymous slash-separated series does not expose dataset/value pairing.
     if re.search(r'\d\s*[/／]\s*\d', text):
         return 'ambiguous_table_series'
-    supported = set()
+    supported = set(prose_measurements)
     for binding in bindings:
         if not isinstance(binding, dict):
             return 'invalid_table_binding'
