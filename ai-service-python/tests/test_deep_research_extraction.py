@@ -47,7 +47,9 @@ def test_extraction_carries_only_parser_cells_in_the_selected_quote(tmp_path):
     invoke = Mock(return_value={'content': json.dumps([{'sourceId': 's0', 'quote': quoted,
                                                        'obligationIds': ['o'], 'conditions': {}}])})
     make_batched_extract_node(invoke, make_evidence, lambda *args: True, repo.update_run)({'run_id': 'r'})
-    ev = repo.require_run('r')['state']['evidence'][0]
+    saved = repo.require_run('r')['state']['evidence']
+    ev = next(e for e in saved if e['quote'] == quoted)
+    assert len(saved) == 2
     assert ev['tableData'] == {'groups': data['groups'], 'rows': [data['rows'][1]]}
     prompt_rows = json.loads(invoke.call_args.args[2].split('Passages:\n')[1])
     assert prompt_rows[0]['tableData'] == data
@@ -63,6 +65,42 @@ def test_foreign_identity_wrong_quote_and_revoked_passage_never_become_evidence(
     make_batched_extract_node(invoke, make_evidence, lambda _, pid: pid != 'p1', repo.update_run)({'run_id': 'r'})
     assert not repo.require_run('r')['state']['evidence']
     assert 's1' not in {p['sourceId'] for p in json.loads(invoke.call_args.args[2].split('Passages:\n')[1])}
+
+
+def test_verified_row_after_long_caption_survives_model_budget_exhaustion(tmp_path):
+    from services.deep_research.contracts import BudgetExhaustedError
+    repo, reads = setup(tmp_path)
+    quote = 'Table row 8: Ours-30K | 134 | 734MB'
+    reads[0].update(tableData={'groups': [['Dataset', ['FPS', 'Mem']]],
+                              'rows': [[8, 'Ours-30K', ['134', '734MB']]]},
+                    pages=[{'text': 'Caption context. ' * 240 + '\n' + quote}])
+    repo.update_run('r', lambda r: {**r, 'state': {**r['state'], 'readResults': [reads[0]]}})
+    invoke = Mock(side_effect=BudgetExhaustedError('modelCalls', 13, 13))
+    with pytest.raises(BudgetExhaustedError):
+        make_batched_extract_node(invoke, make_evidence, lambda *a: True, repo.update_run)({'run_id': 'r'})
+    saved = repo.require_run('r')['state']['evidence']
+    assert len(saved) == 1 and saved[0]['quote'] == quote
+    assert saved[0]['tableData']['rows'][0][1] == 'Ours-30K'
+    assert saved[0]['verification']['semantic'] == 'unchecked'
+    # Resume does not duplicate the exact row or spend a second transcription call.
+    make_batched_extract_node(invoke, make_evidence, lambda *a: True, repo.update_run)({'run_id': 'r'})
+    assert len(repo.require_run('r')['state']['evidence']) == 1
+    assert invoke.call_count == 1
+
+
+def test_unverified_or_revoked_rows_are_not_promoted_by_deterministic_extraction(tmp_path):
+    repo, reads = setup(tmp_path)
+    quote = 'Table row 8: Ours-30K | 134 | 734MB'
+    for index, source in enumerate(reads):
+        source.update(tableData={'groups': [['Dataset', ['FPS', 'Mem']]],
+                                 'rows': [[8, 'Ours-30K', ['134', '734MB']]]},
+                      pages=[{'text': 'Long enough surrounding evaluation context.\n' + quote}])
+    reads[0]['tableData'] = None
+    reads[1]['tableData']['rows'][0][2][1] = '999MB'
+    repo.update_run('r', lambda r: {**r, 'state': {**r['state'], 'readResults': reads}})
+    invoke = Mock(return_value={'content': '[]'})
+    make_batched_extract_node(invoke, make_evidence, lambda _, pid: pid != 'p2', repo.update_run)({'run_id': 'r'})
+    assert repo.require_run('r')['state']['evidence'] == []
 
 
 def test_semantic_check_accepts_fenced_json_but_not_prose():
