@@ -122,6 +122,7 @@ BUDGET_PROFILES: dict[str, dict[str, int]] = {
         "maxTokens": 100000,
         "maxWallClockSeconds": 360,
         "reserveModelCalls": 5,
+        "reserveTokens": 50000,
         "maxExternalSearches": 6,
         "maxFulltextFetches": 6,
     },
@@ -130,12 +131,13 @@ BUDGET_PROFILES: dict[str, dict[str, int]] = {
         "maxTokens": 180000,
         "maxWallClockSeconds": 720,
         "reserveModelCalls": 7,
+        "reserveTokens": 80000,
         "maxExternalSearches": 12,
         "maxFulltextFetches": 12,
     },
 }
 
-BUDGET_COUNTER_KINDS = ("modelCalls", "tokens", "elapsedSeconds", "externalSearches", "fulltextFetches")
+BUDGET_COUNTER_KINDS = ("modelCalls", "tokens", "normalTokens", "elapsedSeconds", "externalSearches", "fulltextFetches")
 
 
 def resolve_budget_profile(name: str | None) -> tuple[str, dict[str, int]]:
@@ -469,6 +471,10 @@ def merge_budget_counters(current: dict[str, Any], delta: dict[str, Any]) -> dic
 
 def check_budget_limits(budget: dict[str, Any]) -> str | None:
     """Return the exhausted counter name or ``None`` when within limits."""
+    token_reserve = int(budget.get('reserveTokens') or 0)
+    token_maximum = int(budget.get('maxTokens') or 0)
+    if token_reserve and token_maximum and int(budget.get('normalTokens') or 0) > max(0, token_maximum - token_reserve):
+        return 'normalTokens'
     reserve = int(budget.get("reserveModelCalls") or 0)
     normal = int(budget.get("modelCalls") or 0)
     final = int(budget.get("reservedModelCalls") or 0)

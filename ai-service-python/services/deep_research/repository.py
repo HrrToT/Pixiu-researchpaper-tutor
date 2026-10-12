@@ -159,6 +159,7 @@ def _clamp_budget_to_profile(budget: dict[str, Any], profile_name: str) -> dict[
         "maxTokens": "maxTokens",
         "maxWallClockSeconds": "maxWallClockSeconds",
         "reserveModelCalls": "reserveModelCalls",
+        "reserveTokens": "reserveTokens",
         "maxExternalSearches": "maxExternalSearches",
         "maxFulltextFetches": "maxFulltextFetches",
     }
@@ -169,9 +170,10 @@ def _clamp_budget_to_profile(budget: dict[str, Any], profile_name: str) -> dict[
                 client_val = int(clamped.get(key, server_max))
             except (TypeError, ValueError):
                 client_val = server_max
-            if client_val < 0 or (client_val == 0 and key != "reserveModelCalls"):
+            if client_val < 0 or (client_val == 0 and key not in {"reserveModelCalls", "reserveTokens"}):
                 raise ValueError("Budget limits must be positive")
             clamped[key] = min(client_val, server_max)
+    clamped['reserveTokens'] = min(clamped['reserveTokens'], clamped['maxTokens'] // 2)
     return clamped
 
 
@@ -579,7 +581,8 @@ class DeepResearchRepository:
 
                             raise BudgetExhaustedError(
                                 exhausted,
-                                int(run_record["budget"].get(f"max{exhausted[0].upper()}{exhausted[1:]}", 0)),
+                                (int(run_record['budget']['maxTokens']) - int(run_record['budget'].get('reserveTokens') or 0))
+                                if exhausted == 'normalTokens' else int(run_record["budget"].get(f"max{exhausted[0].upper()}{exhausted[1:]}", 0)),
                                 int(run_record["budget"].get(exhausted) or 0),
                             )
                         run_record["runRevision"] = int(run_record.get("runRevision") or 0) + 1
@@ -1175,6 +1178,8 @@ def _apply_reservation(budget: dict[str, Any], delta: dict[str, Any], *, use_res
     """
     merged = dict(budget)
     for kind in BUDGET_COUNTER_KINDS:
+        if kind == 'normalTokens':
+            continue  # Derived only from the authoritative call's pool.
         if kind not in delta:
             continue
         try:
@@ -1188,6 +1193,8 @@ def _apply_reservation(budget: dict[str, Any], delta: dict[str, Any], *, use_res
             continue
         base = int(merged.get(kind) or 0)
         merged[kind] = base + increment
+        if kind == 'tokens' and not use_reserve:
+            merged['normalTokens'] = int(merged.get('normalTokens') or 0) + increment
     return merged
 
 
@@ -1198,6 +1205,7 @@ def _bound_settlement(delta: dict[str, Any], call_record: dict[str, Any]) -> dic
     over-refunding when actual usage was less than reserved.
     """
     bounded = dict(delta)
+    bounded.pop('normalTokens', None)
     reserved_tokens = int(call_record.get("reservedTokens") or 0)
     if "tokens" in bounded and reserved_tokens > 0:
         try:
@@ -1207,6 +1215,8 @@ def _bound_settlement(delta: dict[str, Any], call_record: dict[str, Any]) -> dic
         # Refunds (negative delta) bounded by reservation
         if token_delta < 0:
             bounded["tokens"] = max(token_delta, -reserved_tokens)
+    if 'tokens' in bounded and not call_record.get('usesReserve'):
+        bounded['normalTokens'] = bounded['tokens']
     return bounded
 
 
