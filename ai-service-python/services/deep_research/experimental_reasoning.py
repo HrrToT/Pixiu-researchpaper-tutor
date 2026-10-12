@@ -39,11 +39,32 @@ distinguished from an end-to-end compression procedure with recovery.
 """
 
 # Each role is a separately checked deliverable, not a keyword-based verdict.
+PROSPECTIVE_DESIGN_POLICY = """
+This is an executable prospective plan, not an already executed experiment.
+Choose concrete, explicitly proposed intervention levels, per-group budgets and
+measurement rules now; "choose before running" is not a completed design. Such
+choices need not be settings used by the paper. Existing dataset identity,
+membership/capacity and claimed available assets remain facts requiring evidence.
+Use all units of an unambiguously grounded complete dataset/subset when proposed;
+the absence of a name list does not contradict that selection. Unresolved subset
+identity or capacity still fails. A random split with a fixed seed is reproducible,
+not contradictory merely because it is random. Define the seed's purpose and
+selection procedure; different training and split seeds need not be equal.
+Shared checkpoints require an executable acquisition/training and pairing rule,
+then recording the resulting artifact identity/hash at execution. Do not invent
+a hash or require a future artifact's hash to exist now. A proposed filename alone
+does not specify how to produce or select the checkpoint. Shared configuration
+may be referenced across roles without repetition, but must be explicit somewhere.
+Accepted choices constrain revisions only where they specify concrete values;
+silence is not a requirement to retain a gap. Fill missing details in allowed
+revision targets without altering or contradicting accepted statements.
+"""
+
 DESIGN_ROLES = {
     'hypothesis': ('假设', 'State the testable prospective hypothesis and its limited estimand.'),
     'groups': ('分组表', 'Specify every intervention group, actual factor levels and how each is constructed; a promise to preregister unspecified levels is incomplete. Distinguish truncation, distillation and the full pipeline.'),
     'controls': ('固定条件', 'Fix paired baseline checkpoints, rendering settings and all other interventions, including quantization when relevant.'),
-    'data': ('固定条件', 'Give a closed scene list or deterministic selection rule, an executable train/evaluation split rule, valid integer paired seed values or an executable generation rule, and the independent sampling unit. Prefer explicit decimal seed values; do not invent symbolic numeric literals. Saying "fixed split/same seed/multiple scenes" is incomplete. Label proposed choices, never attribute them to the paper.'),
+    'data': ('固定条件', 'Give a closed scene list or deterministic selection rule, an executable train/evaluation split rule, valid integer paired seed values or an executable generation rule, and the independent sampling unit. Propose concrete non-negative integer seeds; symbolic placeholders are not numeric values. Explain each seed purpose. Saying "fixed split/same seed/multiple scenes" is incomplete. Label proposed choices, never attribute them to the paper.'),
     'budget': ('固定条件', 'Specify recovery/optimization steps and matched budgets for every group. Explicit zero recovery is valid for a diagnostic; separate native-budget results from matched-budget results.'),
     'steps': ('执行步骤', 'Give executable ordered steps and saved artifacts: checkpoint identity, split, seed, intervention configuration, recovery budget, renders and raw measurements.'),
     'metrics': ('指标', 'Specify quality direction and image/view aggregation protocol; speed device/resolution, warmup, synchronization, timed region and repetitions; storage files/representation and units. A list of PSNR/SSIM/LPIPS/FPS/MB without a measurement protocol is incomplete. Never combine incompatible units.'),
@@ -60,7 +81,7 @@ def design_requirements(metric_domains=None):
     protocols = metric_protocol_requirements(metric_domains)
     metrics = '; '.join(f'{domain}: {text}' for domain, text in protocols.items())
     metrics += '. Only these requested measurement domains are mandatory; do not add unrelated protocols.'
-    return '\n'.join(f'{role}: {metrics if role == "metrics" else requirement}'
+    return PROSPECTIVE_DESIGN_POLICY + '\n'.join(f'{role}: {metrics if role == "metrics" else requirement}'
                      for role, (_, requirement) in DESIGN_ROLES.items())
 
 

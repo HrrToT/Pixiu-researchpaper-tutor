@@ -15,7 +15,7 @@ EXECUTION_SPEC_CONTRACT = (
     "For all, ground the complete count and exact scope; do not invent ordering or require "
     "individual names when the cited complete benchmark is unambiguous. Never replace a "
     "subset with its parent dataset. "
-    "split {mode:every_nth,order nonblank,stride int>=2,zero-based offset int 0<=offset<stride} "
+    "split {mode:every_nth,order nonblank,stride int>=2,offset int 0<=offset<stride (zero-based)} "
     "or {mode:explicit,train/evaluation nonempty unique disjoint str lists} "
     "or {mode:seeded_fraction,evaluationFraction finite 0<f<1,seed nonneg int}; "
     "seeds nonempty unique nonneg ints; independentUnit nonblank str; "
