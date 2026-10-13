@@ -34,7 +34,14 @@
     "repairStatus": "response_received",
     "initialAuditStatus": "checked",
     "finalAuditStatus": "checked",
-    "acceptedClaimRoles": ["hypothesis", "groups", "controls", "metrics", "analysis", "analysis"],
+    "acceptedClaimRoles": [
+      "hypothesis",
+      "groups",
+      "controls",
+      "metrics",
+      "analysis",
+      "analysis"
+    ],
     "findings": [
       "Repair and subsequent verification both ran within the existing budget",
       "Field references resolved, but structural auditing does not prove semantic quality",
@@ -52,10 +59,26 @@
       "Preserve local or inherited sources if an external supplement fails",
       "Successful empty search remains distinct from provider failure"
     ],
-    "targetedTests": {"passed": 52, "seconds": 8.55},
-    "fullOfflineRegression": {"passed": 984, "warnings": 2, "seconds": 110.71},
+    "targetedTests": {
+      "passed": 52,
+      "seconds": 8.55
+    },
+    "fullOfflineRegression": {
+      "passed": 984,
+      "warnings": 2,
+      "seconds": 110.71
+    },
     "liveRetestPerformed": false,
-    "runtimeLoaded": false
+    "runtimeLoaded": true,
+    "runtimeRevision": "28d0ebf",
+    "loadVerification": {
+      "activeRunsBeforeRestart": 0,
+      "pausedRunsPreserved": 4,
+      "health": "ok",
+      "rag": "ok",
+      "grobid": "ok",
+      "uptimeSecondsAtHealth": 59.2
+    }
   },
   "overallAcceptance": "Incomplete; historical reports and verdicts are unchanged"
 }
