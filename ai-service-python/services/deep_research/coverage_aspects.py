@@ -22,6 +22,7 @@ def invalid_coverage_aspects(verdicts, claims, evidence_rows, questions, *, requ
         valid = isinstance(aspects, list) and bool(aspects)
         seen = set()
         source_based = False
+        metadata_only = bool(aspects)
         for aspect in aspects if isinstance(aspects, list) else []:
             if not isinstance(aspect, dict):
                 valid = False
@@ -38,7 +39,27 @@ def invalid_coverage_aspects(verdicts, claims, evidence_rows, questions, *, requ
             basis = aspect.get('basis')
             if not isinstance(basis, dict):
                 valid = False
+                metadata_only = False
                 continue
+            if basis.get('kind') == 'source_metadata':
+                row = evidence.get(basis.get('evidenceId')) if isinstance(basis.get('evidenceId'), str) else None
+                request_excerpt = basis.get('requestExcerpt')
+                supported = (row is not None and basis.get('field') == 'accessLevel'
+                    and basis.get('value') in ('fulltext', 'abstract', 'user_note')
+                    and row.get('accessLevel') == basis.get('value')
+                    and isinstance(request_excerpt, str) and len(request_excerpt.strip()) >= 8
+                    and any(request_excerpt in q for q in questions if isinstance(q, str)))
+                # Metadata belongs to evidence cited by the bound answer, not an
+                # unrelated downloaded paper. Mixed content still needs prose.
+                bindings = aspect.get('bindings')
+                supported = supported and isinstance(bindings, list) and bool(bindings) and all(
+                    isinstance(b, dict) and isinstance(b.get('claimId'), str)
+                    and isinstance(known.get(b['claimId']), dict)
+                    and basis.get('evidenceId') in known[b['claimId']].get('evidenceRefs', [])
+                    for b in bindings)
+                valid = valid and supported
+                continue
+            metadata_only = False
             excerpt = basis.get('excerpt')
             if not isinstance(excerpt, str) or not excerpt.strip():
                 valid = False
@@ -62,7 +83,7 @@ def invalid_coverage_aspects(verdicts, claims, evidence_rows, questions, *, requ
             and isinstance(known.get(b['claimId']), dict)
             and known[b['claimId']].get('kind') in {'reported', 'inference'}
             for b in bindings) if isinstance(bindings, list) else False
-        if (evidence_rows and factual and not source_based
+        if (evidence_rows and factual and not source_based and not metadata_only
                 and verdict.get('obligationId') not in request_only_obligations):
             valid = False
         if not valid:

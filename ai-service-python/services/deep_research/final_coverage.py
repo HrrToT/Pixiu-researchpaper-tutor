@@ -53,6 +53,7 @@ def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, 
             'evidenceId': e['evidenceId'], 'quote': e.get('quote', ''),
             'sourceContext': surrounding_context(e), 'source': e.get('sourceWorkId'),
             'conditions': e.get('conditions', {}),
+            'accessLevel': e.get('accessLevel'),
         } for e in selected]
         prompt = f'''Audit whether the FINAL ACCEPTED ANSWER fully answers the user's question.
 Question: {question}
@@ -95,6 +96,16 @@ For each aspect quote its basis (request or source) and the exact answer text
 that covers it. A source requirement must have an evidenceId and exact excerpt.
 When checking factual claims with available evidence, include source-grounded
 essential aspects; quoting only the broad user question is insufficient.
+For an access-level requirement ONLY (what the system actually obtained), use
+basis {{"kind":"source_metadata","evidenceId":"ID cited by the bound claim",
+"field":"accessLevel","value":"fulltext|abstract|user_note",
+"requestExcerpt":"exact relevant question substring, at least 8 characters"}}.
+Copy value from the supplied evidence metadata; never infer it from page numbers.
+This proves acquisition scope only, never a method, result or scientific claim.
+Every aspect of a metadata-only obligation must use that metadata basis; mixed
+content obligations still require source-quoted aspects for their paper content.
+Keep exact final-answer bindings for metadata aspects too. A downloaded fulltext
+does not prove that the answer uses it unless the bound claim cites that evidence.
 Check the subject of contrasts and pronouns against preceding sentences: a
 baseline's limitation cannot be assigned to the proposed method.
 Return only a JSON array, exactly one entry for each supplied obligation:

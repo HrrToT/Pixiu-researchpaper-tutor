@@ -19,6 +19,28 @@ def test_grounded_aspect_with_answer_binding_is_structurally_valid():
     assert VERDICT == original
 
 
+def test_access_metadata_requires_cited_identity_exact_value_and_request_binding():
+    claims = [{'claimId': 'c', 'kind': 'reported', 'text': '本回答使用全文中的方法片段。', 'evidenceRefs': ['e']}]
+    binding = [{'claimId': 'c', 'excerpt': '使用全文中的方法片段'}]
+    basis = {'kind': 'source_metadata', 'evidenceId': 'e', 'field': 'accessLevel',
+             'value': 'fulltext', 'requestExcerpt': '实际读到的是摘要还是全文'}
+    v = {'obligationId': 'o', 'status': 'covered', 'bindings': binding, 'aspects': [{
+        'aspectId': 'access', 'requirement': '访问范围', 'status': 'covered',
+        'basis': basis, 'bindings': binding}]}
+    rows = [{'evidenceId': 'e', 'accessLevel': 'fulltext'}]
+    questions = ['实际读到的是摘要还是全文？']
+    assert invalid_coverage_aspects([v], claims, rows, questions) == []
+    for key, value in [('value', 'abstract'), ('field', 'title'), ('evidenceId', 'foreign'),
+                       ('requestExcerpt', 'invented question')]:
+        changed = deepcopy(v); changed['aspects'][0]['basis'][key] = value
+        assert invalid_coverage_aspects([changed], claims, rows, questions) == ['o']
+    assert invalid_coverage_aspects([v], [{**claims[0], 'evidenceRefs': []}], rows, questions) == ['o']
+    mixed = deepcopy(v)
+    mixed['aspects'].append({**deepcopy(v['aspects'][0]), 'aspectId': 'method',
+                            'basis': {'kind': 'request', 'excerpt': questions[0]}})
+    assert invalid_coverage_aspects([mixed], claims, rows, questions) == ['o']
+
+
 @pytest.mark.parametrize('change', ['absent', 'missing', 'invented_source', 'unknown_source',
                                    'invented_answer', 'unknown_claim', 'duplicate', 'bad_id'])
 def test_overall_covered_cannot_hide_invalid_or_missing_aspect(change):
