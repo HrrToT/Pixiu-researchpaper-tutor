@@ -11,6 +11,9 @@ def normalize_execution_spec(role, spec):
         return result
     if set(result) == {role} and isinstance(result[role], dict):
         result = result[role]
+    if role == 'data' and isinstance(result.get('replication'), str):
+        if result['replication'] in ('fixed_checkpoint', 'retrained_per_seed'):
+            result['replication'] = {'mode': result['replication']}
     if role == 'data' and isinstance(result.get('split'), dict):
         split = result['split']
         alias = 'zero-based offset'

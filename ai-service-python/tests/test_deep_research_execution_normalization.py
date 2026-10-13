@@ -55,3 +55,28 @@ def test_unknown_wrapper_and_malformed_spec_remain_invalid():
         normalized = normalize_execution_spec('data', spec)
         assert normalized == spec
         assert execution_spec_errors('data', normalized)
+
+
+@pytest.mark.parametrize('mode', ['fixed_checkpoint', 'retrained_per_seed'])
+def test_exact_replication_enum_materializes_without_choosing_new_settings(mode):
+    spec = data_spec()
+    spec['replication'] = mode
+    before = deepcopy(spec)
+    normalized = normalize_execution_spec('data', spec)
+    assert normalized['replication'] == {'mode': mode}
+    assert spec == before
+    assert normalize_execution_spec('data', normalized) == normalized
+    assert not execution_spec_errors('data', normalized)
+    claim = {'kind': 'proposal', 'designRole': 'data', 'designContractVersion': 2,
+             'text': 'Original proposed protocol.', 'executionSpec': spec}
+    rendered = materialize_execution_claim(claim)
+    assert rendered['text'].startswith(claim['text'])
+    assert len(rendered['text']) > len(claim['text'])
+
+
+@pytest.mark.parametrize('value', ['unknown', ' fixed_checkpoint', '', [], None])
+def test_unknown_replication_values_are_not_guessed(value):
+    spec = data_spec()
+    spec['replication'] = value
+    assert normalize_execution_spec('data', spec) == spec
+    assert execution_spec_errors('data', normalize_execution_spec('data', spec))
