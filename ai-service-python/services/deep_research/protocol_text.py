@@ -10,6 +10,9 @@ def _pct(fraction):
 
 
 def render_execution_spec(role, spec):
+    if role == 'groups':
+        from services.deep_research.group_spec import render_group_spec
+        return render_group_spec(spec)
     if role not in ('data', 'analysis') or execution_spec_errors(role, spec):
         return ''
     return _render_data(spec) if role == 'data' else _render_analysis(spec)

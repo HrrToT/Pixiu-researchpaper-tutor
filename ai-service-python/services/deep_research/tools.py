@@ -609,6 +609,11 @@ Missing configuration, contradictory choices and invalid parameter syntax fail.
 Do not require an unexecuted experiment to have results. Do not judge context claims as targets.'''
         
         if any(c.get('designContractVersion') == 2 for c in [*claims, *proposal_context]):
+            prompt += ('\nFor groups, every necessary numeric threshold, rate and degree must appear as '
+                       'a numeric parameter with an actual value. Audit each action against its parameters: '
+                       'an omitted required parameter or numeric threshold disguised as a categorical choice '
+                       'fails. A named symbol in an operation is not a chosen value. Check consistency with '
+                       'the rendered control/treatment values and shared definitions.')
             prompt += '\nexecutionSpec is proposed configuration, not paper evidence. Check EVERY field against ' \
                       'the normal claim text: the same dataset, actual scene selection, split, seed usage, ' \
                       'replication, formulas and uncertainty procedure must be stated consistently. Reject ' \

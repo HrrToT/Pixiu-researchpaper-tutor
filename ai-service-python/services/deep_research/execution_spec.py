@@ -3,12 +3,20 @@
 import math
 
 EXECUTION_SPEC_CONTRACT = (
-    "Add an executionSpec object to each data and analysis claim. "
+    "Add an executionSpec object to each groups, data and analysis claim. "
     "executionSpec schemas (all choices are proposed unexecuted settings; "
     "the application appends their explicit readable protocol before verification. "
     "Keep the short claim introduction consistent; never invent paper settings):\n"
     "The executionSpec object contains the fields directly: never wrap under data or analysis. "
     "The split field key is exactly offset, not zero-based offset. "
+    "groups role: exactly {factors:nonempty list}. Each factor exactly {name:nonblank unique str, "
+    "control:operation,treatment:operation}; operation exactly {action:nonblank str,parameters:list}; "
+    "parameter exactly {name:nonblank unique str,type:number|choice,value:finite nonbool number "
+    "for number or nonblank string for choice}. Include EVERY needed numeric threshold, level or "
+    "rate as a number parameter with an actual proposed value, never a symbolic placeholder. "
+    "choice is for categorical alternatives, never numeric thresholds disguised as strings. "
+    "Empty parameters only for genuinely parameter-free actions. Describe how the factors "
+    "combine into the experimental groups in the claim text.\n"
     "data role: dataset nonblank str; scenes {mode:named,names unique nonblank len>=1} "
     "or {mode:sorted_first,count positive int,order nonblank}; "
     "or {mode:all,count positive int} for ALL units of the exact cited dataset/subset. "
@@ -246,6 +254,9 @@ def _validate_analysis(spec, add):
 
 def execution_spec_errors(role, spec):
     """Return stable unique field-path errors. Never raises; never mutates."""
+    if role == 'groups':
+        from services.deep_research.group_spec import validate_group_spec
+        return validate_group_spec(spec)
     if role not in ("data", "analysis"):
         return []
     errors = []

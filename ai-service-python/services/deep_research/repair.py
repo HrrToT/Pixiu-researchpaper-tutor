@@ -42,7 +42,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *, 
                       'evidenceRefs': ['E1'], 'conditions': {}, 'detailLevel': 'fulltext'}
     if any(row.get('designContractVersion') == 2 for row in originals.values()):
         revision_shape.update(designRole='canonical role for proposals/hypotheses; omit for facts',
-                              executionSpec='complete object for data/analysis; omit for other roles')
+                              executionSpec='complete object for groups/data/analysis; omit for other roles')
     proposal_context = [{key: row[key] for key in ('claimId', 'text', 'kind', 'conditions', 'designRole', 'executionSpec', 'designContractVersion') if key in row}
                         for row in verification.get('accepted', [])
                         if row.get('kind') in {'proposal', 'suggestion', 'hypothesis'}]
@@ -94,7 +94,7 @@ unexecuted proposals/hypotheses clearly. Keep the answer concise and within the 
         prompt += '\nEvery v2 proposal/suggestion/hypothesis requires one designRole from: ' + json.dumps(sorted(DESIGN_ROLES))
         prompt += '. For a missing role, assign the appropriate role based on its actual content; ' \
                   'do not omit the role to bypass checks. Preserve existing valid roles. ' \
-                  'Data and analysis roles also require their complete executionSpec.'
+                  'Groups, data and analysis roles also require their complete executionSpec.'
         prompt += '\n' + EXECUTION_SPEC_CONTRACT
         prompt += '\nExperimental deliverables (apply jointly across the accepted and revised claims):\n' + design_requirements(metric_domains)
         prompt += ('\nA structural rejection is not a content approval. Fix substantive omissions in the same revision, '

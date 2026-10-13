@@ -972,7 +972,7 @@ def make_synthesize_node(
         evidence_marker = uuid4().hex
         claim_fields = 'claimId, text, kind, evidenceRefs, conditions, obligationIds, detailLevel'
         if output_kind == 'experiment_design':
-            claim_fields += ', designRole (required on every proposal/hypothesis), executionSpec (required for data and analysis roles)'
+            claim_fields += ', designRole (required on every proposal/hypothesis), executionSpec (required for groups, data and analysis roles)'
         prompt = f"""Synthesize a complete answer to the research question.
 Question: {question}
 Output kind: {output_kind}
