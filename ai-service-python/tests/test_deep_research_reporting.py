@@ -28,3 +28,32 @@ def test_whole_question_gap_is_not_hidden_when_it_is_the_only_gap():
 def test_partial_summary_does_not_claim_the_cause_is_missing_evidence():
     summary = conversation_summary([{'text': '原文支持的结果。'}], 'partial')
     assert '结果尚不完整' in summary and '证据缺口' not in summary
+
+
+def test_external_access_scope_comes_from_cited_evidence_not_other_downloads():
+    claims = [{'claimId': 'c', 'kind': 'reported', 'text': '摘要中的方法说明。', 'evidenceRefs': ['a']}]
+    evidence = [{'evidenceId': 'a', 'sourceKind': 'arxiv', 'accessLevel': 'abstract'},
+                {'evidenceId': 'unused', 'sourceKind': 'arxiv', 'accessLevel': 'fulltext'}]
+    body = render_report({'claims': claims, 'evidence': evidence})
+    summary = conversation_summary(claims, 'partial', evidence=evidence)
+    assert '本回答引用：摘要。' in body and '本回答引用：摘要。' in summary
+    assert '全文片段' not in body and '全文片段' not in summary
+
+
+def test_fulltext_and_abstract_are_distinguished_without_claiming_complete_reading():
+    claims = [{'claimId': 'c', 'text': '已核对的分工。', 'evidenceRefs': ['f', 'a']}]
+    evidence = [{'evidenceId': 'f', 'sourceKind': 'arxiv', 'accessLevel': 'fulltext', 'location': {'page': 4}},
+                {'evidenceId': 'a', 'sourceKind': 'arxiv', 'accessLevel': 'abstract'}]
+    body = render_report({'claims': claims, 'evidence': evidence})
+    assert '本回答引用：全文片段、摘要。' in body
+    assert '第 4 页 · 全文片段' in body
+    assert '已阅读全文' not in body
+    summary = conversation_summary(claims, 'partial', evidence=evidence, max_chars=90)
+    assert len(summary) <= 90 and '已核对的分工。' in summary
+
+
+def test_no_external_citations_adds_no_access_banner():
+    from services.deep_research.reporting import source_access_summary
+    assert source_access_summary([], [{'evidenceId': 'unused', 'sourceKind': 'arxiv'}]) == ''
+    assert source_access_summary([{'evidenceRefs': ['local']}], [
+        {'evidenceId': 'local', 'accessLevel': 'fulltext', 'sourceKind': 'local'}]) == ''

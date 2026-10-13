@@ -1319,7 +1319,8 @@ def make_publish_node(
         # Build sections from verified claims only, organized by output kind
         
         # Build safe summary from accepted claims only
-        safe_summary = conversation_summary(accepted_claims, outcome)
+        safe_summary = conversation_summary(accepted_claims, outcome,
+            evidence=record.get('state', {}).get('evidence', []))
         
         publication_payload = {
             "reportVersionId": report_version_id,

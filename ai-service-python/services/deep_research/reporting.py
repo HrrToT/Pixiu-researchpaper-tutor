@@ -44,12 +44,27 @@ def _display_gaps(gaps):
     return list(selected.values())
 
 
+def source_access_summary(claims, evidence):
+    """Describe cited external evidence, never imply the entire paper was read."""
+    refs = {ref for claim in claims for ref in claim.get('evidenceRefs', [])}
+    cited = [item for item in evidence if item.get('evidenceId') in refs]
+    if not any(item.get('sourceKind') == 'arxiv' for item in cited):
+        return ''
+    levels = {item.get('accessLevel') for item in cited}
+    labels = [label for level, label in [('fulltext', '全文片段'), ('abstract', '摘要'),
+                                         ('user_note', '笔记')] if level in levels]
+    if levels - {'fulltext', 'abstract', 'user_note'} or refs - {item.get('evidenceId') for item in cited}:
+        labels.append('访问范围未标明的材料')
+    return '本回答引用：' + '、'.join(labels) + '。'
+
+
 def render_report(payload):
     claims = {claim["claimId"]: claim for claim in payload.get("claims", []) if claim.get("claimId")}
     refs = list(dict.fromkeys(ref for claim in claims.values() for ref in claim.get("evidenceRefs", [])))
     ref_numbers = {ref: index + 1 for index, ref in enumerate(refs)}
     sources = {e["evidenceId"]: e for e in payload.get("evidence", []) if e.get("evidenceId")}
-    lines, rendered = [], set()
+    access_summary = source_access_summary(list(claims.values()), list(sources.values()))
+    lines, rendered = ([access_summary, ''] if access_summary else []), set()
     sections = payload.get("sections") or build_sections(list(claims.values()), payload.get("outputKind", "direction_survey"))
     labels = {"inference": "有依据的推断：", "hypothesis": "待验证假设：", "suggestion": "实验建议：", "proposal": "实验建议："}
     for section in sections:
@@ -92,7 +107,8 @@ def render_report(payload):
             evidence = sources.get(ref, {})
             title = evidence.get("sourceTitle") or evidence.get("sourceWorkId") or "论文来源"
             page = evidence.get("location", {}).get("page")
-            access = " · 仅摘要" if evidence.get("accessLevel") == "abstract" else ""
+            access = {'abstract': ' · 仅摘要', 'fulltext': ' · 全文片段',
+                      'user_note': ' · 笔记'}.get(evidence.get('accessLevel'), '')
             lines.append(f"**[{ref_numbers[ref]}] {title}**" + (f" · 第 {page} 页" if page else "") + access)
             if evidence.get("quote"):
                 lines.extend(["", "> " + evidence["quote"].replace("\n", "\n> "), ""])
@@ -100,14 +116,15 @@ def render_report(payload):
     return "\n".join(lines).strip()
 
 
-def conversation_summary(claims, outcome, *, max_chars=500):
+def conversation_summary(claims, outcome, *, max_chars=500, evidence=None):
     """Keep whole claims and their epistemic labels; never cut a number or condition."""
     labels = {"inference": "有依据的推断：", "hypothesis": "待验证假设：",
               "suggestion": "实验建议：", "proposal": "实验建议："}
     boundary = {"partial": "当前结果尚不完整，已核实的内容已保存。",
                 "inconclusive": "当前取得的证据不足以形成可靠结论。"}.get(outcome, "")
-    parts = []
-    length = len(boundary)
+    access = source_access_summary(claims, evidence or [])
+    parts = [access] if access else []
+    length = len(boundary) + len(access) + (2 if access else 0)
     for claim in claims:
         text = str(claim.get("text", "")).strip()
         if not text:
