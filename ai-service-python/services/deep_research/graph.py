@@ -1295,7 +1295,7 @@ def make_publish_node(
                 *audit.get('gaps', [])]
         
         factual_claims = [claim for claim in accepted_claims if claim.get("kind") in {"reported", "inference"}]
-        from services.deep_research.reporting import build_sections, conversation_summary
+        from services.deep_research.reporting import build_sections, conversation_summary, verification_notice
         sections = build_sections(accepted_claims, output_kind, verified_report.get("sections"))
         if output_kind == "experiment_design":
             from services.deep_research.synthesis import OUTPUT_KIND_SECTIONS
@@ -1329,7 +1329,7 @@ def make_publish_node(
             "sections": sections,
             "claims": accepted_claims,
             "evidence": evidence if (evidence := record.get("state", {}).get("evidence", [])) else [],
-            "limitations": "论文事实已按所列原文核对；推断、假设和实验建议已分别标明，尚不代表实验验证结果。",
+            "limitations": verification_notice(accepted_claims),
             "gaps": gaps,
             "researchNotes": research_notes,
             "outcome": outcome,

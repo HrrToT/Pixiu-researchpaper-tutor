@@ -1,6 +1,14 @@
 from copy import deepcopy
 
-from services.deep_research.reporting import render_report, conversation_summary
+from services.deep_research.reporting import render_report, conversation_summary, verification_notice
+
+
+def test_verification_notice_does_not_claim_factual_checks_for_proposals_or_empty_results():
+    assert verification_notice([]) == ''
+    assert verification_notice([{'kind': 'proposal'}]) == '假设与实验建议尚未经过实验验证。'
+    assert verification_notice([{'kind': 'inference'}]) == '推断限于所列证据和适用条件。'
+    assert verification_notice([{'kind': 'reported'}, {'kind': 'hypothesis'}]) == (
+        '论文事实已按所列原文核对。假设与实验建议尚未经过实验验证。')
 
 
 def test_repeated_audit_gaps_are_folded_without_mutating_full_record():

@@ -116,6 +116,19 @@ def render_report(payload):
     return "\n".join(lines).strip()
 
 
+def verification_notice(claims):
+    """Describe only the kinds actually retained in the published answer."""
+    kinds = {claim.get('kind') for claim in claims}
+    parts = []
+    if 'reported' in kinds:
+        parts.append('论文事实已按所列原文核对。')
+    if 'inference' in kinds:
+        parts.append('推断限于所列证据和适用条件。')
+    if kinds & {'hypothesis', 'proposal', 'suggestion'}:
+        parts.append('假设与实验建议尚未经过实验验证。')
+    return ''.join(parts)
+
+
 def conversation_summary(claims, outcome, *, max_chars=500, evidence=None):
     """Keep whole claims and their epistemic labels; never cut a number or condition."""
     labels = {"inference": "有依据的推断：", "hypothesis": "待验证假设：",

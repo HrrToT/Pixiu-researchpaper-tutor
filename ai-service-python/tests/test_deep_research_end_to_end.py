@@ -259,6 +259,8 @@ def test_actual_budget_stop_publishes_inconclusive_without_more_model_calls(tmp_
         assert result["status"] == "completed" and result["outcome"] == "inconclusive"
         assert len(model.requests) == 1
         assert "证据不足" in result["report"]["body"]
+        assert "论文事实已按" not in result["report"]["body"]
+        assert repo.require_run(record['runId'])['result']['limitations'] == ''
     finally:
         facade.shutdown()
 
