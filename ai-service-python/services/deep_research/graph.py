@@ -1143,9 +1143,10 @@ def make_verify_node(
             repair_targets = saved['repairTargets']
         else:
             verification_result = verify_claims_fn(claims, evidence, budgeted_semantic)
+            current = repo_update(run_id, lambda r: r, expected_revision=None)
             answer_coverage = audit_final_answer(run_id, record.get('question', ''),
                 saved.get('plan', []), verification_result.get('accepted', []),
-                evidence, llm_invoke, _safe_parse_json)
+                evidence, llm_invoke, _safe_parse_json, budget=current.get('budget'))
             repair_targets = prepare_coverage_repair(report_body, verification_result,
                 answer_coverage if answer_coverage.get('status') == 'checked' else {'gaps': []})
         if saved.get('repairCompleted') and saved.get('verifiedReport'):
@@ -1209,9 +1210,10 @@ def make_verify_node(
                         repo_update(run_id, lambda r: {**r, 'state': {**r.get('state', {}),
                             'repairVerification': merged}}, expected_revision=None)
                     if merged.get('accepted') != verification_result.get('accepted'):
+                        current = repo_update(run_id, lambda r: r, expected_revision=None)
                         answer_coverage = audit_final_answer(run_id, record.get('question', ''),
                             record.get('state', {}).get('plan', []), merged.get('accepted', []),
-                            evidence, llm_invoke, _safe_parse_json)
+                            evidence, llm_invoke, _safe_parse_json, budget=current.get('budget'))
                     verification_result = merged
             except BudgetExhaustedError as exc:
                 repo_update(run_id, lambda r: {**r, 'state': {**r.get('state', {}),

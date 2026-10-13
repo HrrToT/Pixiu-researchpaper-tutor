@@ -4,7 +4,26 @@ import json
 from services.deep_research.contracts import BudgetExhaustedError
 
 
-def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse):
+def coverage_prompt_byte_limit(budget):
+    """Fit to currently available finalization capacity; admission stays atomic."""
+    if not budget or 'maxTokens' not in budget:
+        return 24000
+    keys = ('maxTokens', 'tokens', 'reserveTokens', 'normalTokens',
+            'maxModelCalls', 'modelCalls', 'reserveModelCalls', 'reservedModelCalls')
+    if any(type(budget.get(k, 0)) is not int or budget.get(k, 0) < 0 for k in keys):
+        return 0
+    maximum, used, reserve, normal, calls, ordinary, reserved, final = [budget.get(k, 0) for k in keys]
+    if reserve > maximum or reserved > calls or ordinary + final >= calls:
+        return 0
+    remaining = maximum - used
+    if final >= reserved:
+        if ordinary >= calls - reserved:
+            return 0
+        remaining = min(remaining, maximum - reserve - normal)
+    return max(0, min(24000, remaining - 3500 - 1024))
+
+
+def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, *, budget=None):
     from services.deep_research.answer_coverage import answer_coverage_gaps
     from services.deep_research.selection import balanced_sample, surrounding_context
 
@@ -23,6 +42,7 @@ def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse):
     status = 'not_checked'
     invalid_aspects = []
     nonblocking = []
+    budget_limit = None
     if claims and plan and invoke:
         selected = balanced_sample(evidence,
             lambda e: (e.get('sourceWorkId'), tuple(e.get('obligationIds', []))), 20)
@@ -89,9 +109,13 @@ Do not fabricate a binding for a missing aspect; use an empty bindings array.
 Only mark covered if ALL requested aspects of that obligation are answered in the
 accepted claims. Bindings must quote the final answer, never the source passages.'''
         template = prompt
-        prompt, rows = fit_evidence_prompt(rows,
-            lambda selected_rows: template.replace(evidence_marker, json.dumps(selected_rows, ensure_ascii=False), 1))
         try:
+            limit = coverage_prompt_byte_limit(budget)
+            render = lambda selected_rows: template.replace(evidence_marker, json.dumps(selected_rows, ensure_ascii=False), 1)
+            fixed_bytes = len(render([]).encode('utf-8'))
+            if limit <= 0 or fixed_bytes > limit:
+                raise BudgetExhaustedError('coveragePromptBytes', limit, fixed_bytes)
+            prompt, rows = fit_evidence_prompt(rows, render, max_bytes=limit)
             result = invoke(run_id, 'verify_answer_coverage', prompt,
                             {'max_tokens': 3500, 'temperature': 0.0}, use_reserve=True)
             content = result.get('content', '') if isinstance(result, dict) else getattr(result, 'content', '')
@@ -116,10 +140,11 @@ accepted claims. Bindings must quote the final answer, never the source passages
                     verdicts = [{**v, 'status': 'partial'} if isinstance(v, dict)
                         and v.get('obligationId') in invalid_aspects else v for v in verdicts]
                     status = 'invalid_response'
-        except BudgetExhaustedError:
+        except BudgetExhaustedError as exc:
             # Publish only supported text with an explicit coverage gap. Never
             # promote budget exhaustion to a complete answer or add a retry.
             status = 'budget_exhausted'
+            budget_limit = exc.details
     if status == 'checked' and identity:
         nonblocking = nonblocking_research_obligations(plan, question, claims, verdicts,
                                                      identity, invalid_aspects)
@@ -147,7 +172,8 @@ accepted claims. Bindings must quote the final answer, never the source passages
             gap['wholeQuestion'] = True
     return {'status': status, 'verdicts': verdicts if isinstance(verdicts, list) else [],
             'gaps': gaps, 'invalidAspectObligations': invalid_aspects,
-            'wholeQuestionId': identity, 'nonblockingResearch': nonblocking}
+            'wholeQuestionId': identity, 'nonblockingResearch': nonblocking,
+            'budgetLimit': budget_limit}
 
 
 def remaining_retrieval_gaps(gaps, audit, claims, evidence, *, plan=None, question=""):

@@ -92,6 +92,41 @@ def test_budget_exhaustion_keeps_gaps_without_retry():
     assert all(g['auditStatus'] == 'budget_exhausted' for g in result['gaps'])
 
 
+def test_exhausted_reserve_fits_coverage_to_normal_capacity_without_clipping():
+    from services.deep_research.finalization_pool import select_reservation_pool
+    budget = {'maxTokens': 100000, 'tokens': 62990, 'reserveTokens': 50000,
+              'normalTokens': 25804, 'maxModelCalls': 18, 'modelCalls': 8,
+              'reserveModelCalls': 5, 'reservedModelCalls': 5}
+    evidence = [{'evidenceId': f'e{i}', 'quote': f'whole passage {i}: ' + 'x' * 2500,
+                 'sourceWorkId': f'p{i}', 'conditions': {}} for i in range(12)]
+    before = deepcopy((budget, evidence, CLAIMS))
+    def invoke(run_id, node, prompt, options, **kwargs):
+        delta = {'modelCalls': 1, 'tokens': len(prompt.encode()) + 1024 + options['max_tokens']}
+        assert delta['tokens'] <= 24196
+        assert select_reservation_pool(budget, delta, True, node) is False
+        assert TEXT in prompt
+        rows = json.loads(prompt.split('Available evidence for detecting omitted conditions: ')[1].split('\n\nFactual')[0])
+        assert 0 < len(rows) < len(evidence)
+        assert all(row['quote'] == next(e['quote'] for e in evidence if e['evidenceId'] == row['evidenceId']) for row in rows)
+        return {'content': '[]'}
+    call = Mock(side_effect=invoke)
+    audit_final_answer('r', 'q', PLAN, CLAIMS, evidence, call, json.loads, budget=budget)
+    call.assert_called_once()
+    assert (budget, evidence, CLAIMS) == before
+
+
+def test_fixed_answer_that_cannot_fit_keeps_explicit_gap_without_send():
+    budget = {'maxTokens': 100000, 'tokens': 99500, 'reserveTokens': 50000,
+              'normalTokens': 49000, 'maxModelCalls': 18, 'modelCalls': 8,
+              'reserveModelCalls': 5, 'reservedModelCalls': 5}
+    invoke = Mock()
+    result = audit_final_answer('r', 'q', PLAN, CLAIMS, [], invoke, json.loads, budget=budget)
+    invoke.assert_not_called()
+    assert result['status'] == 'budget_exhausted'
+    assert result['budgetLimit']
+    assert len(result['gaps']) == 2
+
+
 def test_unknown_model_outcome_propagates_without_retry():
     invoke = Mock(side_effect=DeepResearchError('call_unknown', 'unknown'))
     with pytest.raises(DeepResearchError):
