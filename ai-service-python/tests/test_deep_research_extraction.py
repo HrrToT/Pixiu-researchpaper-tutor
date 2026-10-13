@@ -183,7 +183,7 @@ def test_small_answer_shares_call_but_preserves_each_claims_evidence_scope():
     assert len(result) == 3 and len(prompts) == 1
     prompt = prompts[0]
     supplied = json.loads(prompt.split('Claims:\n', 1)[1].split('\n\nEvidence:', 1)[0])
-    wire_evidence = json.loads(prompt.split('Evidence:\n', 1)[1].split('\n\nReturn JSON', 1)[0])
+    wire_evidence = json.loads(prompt.split('Evidence:\n', 1)[1].split('\n\nReturn JSON', 1)[0])['evidence']
     assert all(len(c['evidenceRefs']) == 1 for c in supplied)
     refs = [c['evidenceRefs'][0] for c in supplied]
     assert len(set(refs)) == 3
@@ -237,7 +237,9 @@ def test_verifier_receives_literal_context_and_source_scope():
     prompt = invoke.call_args.kwargs['prompt']
     supplied = json.loads(prompt.split('Claims:\n', 1)[1].split('\n\nEvidence:', 1)[0])
     assert len(supplied[0]['evidenceRefs']) == 1
-    received = json.loads(prompt.split('Evidence:\n', 1)[1].split('\n\nReturn JSON', 1)[0])[supplied[0]['evidenceRefs'][0]]
+    view = json.loads(prompt.split('Evidence:\n', 1)[1].split('\n\nReturn JSON', 1)[0])
+    received = view['evidence'][supplied[0]['evidenceRefs'][0]]
+    assert view['sources'][received['source']]['sourceTitle'] == 'Example paper'
     assert received['sourceContext']['before'] == 'Synthetic dataset, supplementary results. '
     assert received['sourceContext']['after'] == ''
     assert received['location'] == {'section': 'Supplement'}

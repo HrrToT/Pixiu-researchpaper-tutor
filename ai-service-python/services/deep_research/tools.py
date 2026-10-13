@@ -513,7 +513,8 @@ class BudgetedSemanticChecker:
         if not claims:
             return []
         # Separate concrete configuration from scientific interpretation while
-        # sharing all definitions. A repair stays one bounded verification call.
+        # sharing all definitions. Capacity splits happen before dispatch and
+        # remain subject to the tracked invoker's existing call/token budget.
         proposals = [c for c in claims if c.get('kind') in {'proposal', 'suggestion', 'hypothesis'}]
         facts = [c for c in claims if c.get('kind') not in {'proposal', 'suggestion', 'hypothesis'}]
         config_roles = {'groups', 'controls', 'data', 'budget', 'steps', 'metrics'}
@@ -546,8 +547,14 @@ class BudgetedSemanticChecker:
         from services.deep_research.execution_materialization import verification_claim_view
         wire_claims = [verification_claim_view(c) for c in wire_claims]
         wire_context = [verification_claim_view(c) for c in proposal_context]
+        # Omit absent optional wrapper fields only. Typed configuration values,
+        # including empty collections inside executionSpec, remain untouched.
+        def present_fields(row):
+            return {key: value for key, value in row.items()
+                    if value is not None and value != {} and value != []}
+        wire_context = [present_fields(c) for c in wire_context]
         # Format claims and evidence for checking
-        claims_text = json.dumps([{
+        claims_text = json.dumps([present_fields({
             "claimId": c.get("claimId"),
             "text": c.get("text", ""),
             "kind": c.get("kind"),
@@ -557,15 +564,15 @@ class BudgetedSemanticChecker:
             "designRole": c.get("designRole"),
             "executionSpec": c.get("executionSpec"),
             "designContractVersion": c.get("designContractVersion"),
-        } for c in wire_claims], ensure_ascii=False, separators=(',', ':'))
+        }) for c in wire_claims], ensure_ascii=False, separators=(',', ':'))
         
         referenced = {ref for claim in wire_claims for ref in claim.get("evidenceRefs", [])}
-        evidence_map = {e["evidenceId"]: {"quote": e.get("quote", ""), "conditions": e.get("conditions", {}),
+        evidence_map = {e["evidenceId"]: present_fields({"quote": e.get("quote", ""), "conditions": e.get("conditions", {}),
                         "sourceContext": surrounding_context(e), "location": e.get("location", {}),
                         "sourceTitle": e.get("sourceTitle", ""),
                         "tableData": e.get("tableData"),
                         "workId": e.get("sourceWorkId"), "versionId": e.get("sourceVersionId"),
-                        "accessLevel": e.get("accessLevel")} for e in wire_evidence if e["evidenceId"] in referenced}
+                        "accessLevel": e.get("accessLevel")}) for e in wire_evidence if e["evidenceId"] in referenced}
         from uuid import uuid4
         from services.deep_research.prompt_budget import fit_evidence_prompt
         evidence_text = uuid4().hex
@@ -709,7 +716,7 @@ The dataAvailability object is an internal audit, not new experimental results.
                            'must substantiate the entire slot; valid fields do not prove scientific correctness.')
                 required_slots = required_design_slots(metric_domains)
                 skeleton = [{'claimId': c['claimId'], 'status': 'failed',
-                    'reason': 'replace with a concise concrete finding',
+                    'reason': '',
                     'designAudit': {slot: None for slot in required_slots.get(c.get('designRole'), ())}}
                     for c in claims]
                 prompt += '\nFill this exact per-target response skeleton. Change status only after checking. ' \
@@ -717,13 +724,63 @@ The dataAvailability object is an internal audit, not new experimental results.
                           'only if such a choice is already written; otherwise keep null and fail. ' \
                           'Do not replace slot keys with role names or arrays. Symbolic placeholders such as ' \
                           'an unspecified threshold or degree do not define actual intervention levels.\n' \
-                          + json.dumps(skeleton, ensure_ascii=False)
+                          + json.dumps(skeleton, ensure_ascii=False, separators=(',', ':'))
         template = prompt
-        prompt, visible_evidence = fit_evidence_prompt(
-            [{"evidenceId": key, **value} for key, value in evidence_map.items()],
-            lambda rows: template.replace(evidence_text, json.dumps({
-                row["evidenceId"]: {key: value for key, value in row.items() if key != "evidenceId"}
-                for row in rows}, ensure_ascii=False, separators=(',', ':')), 1))
+        source_keys = ('workId', 'versionId', 'sourceTitle')
+        source_registry = {}
+        source_aliases = {}
+        for row in evidence_map.values():
+            identity = tuple(row.get(key) for key in source_keys)
+            if identity not in source_aliases:
+                alias = f'P{len(source_aliases) + 1}'
+                source_aliases[identity] = alias
+                source_registry[alias] = {key: row.get(key) for key in source_keys}
+
+        def render_evidence(rows):
+            packed, used = {}, set()
+            for row in rows:
+                alias = source_aliases[tuple(row.get(key) for key in source_keys)]
+                used.add(alias)
+                packed[row['evidenceId']] = {
+                    **{key: value for key, value in row.items()
+                       if key not in (*source_keys, 'evidenceId')}, 'source': alias}
+            view = {'sources': {key: value for key, value in source_registry.items() if key in used},
+                    'evidence': packed}
+            return template.replace(evidence_text, json.dumps(
+                view, ensure_ascii=False, separators=(',', ':')), 1)
+
+        def split_before_dispatch():
+            midpoint = len(claims) // 2
+            verdicts = []
+            for batch, siblings in ((claims[:midpoint], claims[midpoint:]),
+                                    (claims[midpoint:], claims[:midpoint])):
+                context = [*proposal_context, *[{
+                    key: c[key] for key in ('claimId', 'text', 'kind', 'conditions',
+                        'designRole', 'executionSpec', 'designContractVersion') if key in c
+                } for c in siblings if c.get('kind') in {'proposal', 'suggestion', 'hypothesis'}]]
+                verdicts.extend(self._check_batch(batch, evidence, context, node=node))
+            return verdicts
+
+        try:
+            prompt, visible_evidence = fit_evidence_prompt(
+                [{"evidenceId": key, **value} for key, value in evidence_map.items()], render_evidence)
+        except ValueError as exc:
+            if str(exc) == 'prompt_fixed_content_too_large' and len(claims) > 1:
+                return split_before_dispatch()
+            if str(exc) == 'prompt_fixed_content_too_large':
+                from services.deep_research.contracts import BudgetExhaustedError
+                raise BudgetExhaustedError('verificationPromptBytes', 24000,
+                    len(render_evidence([]).encode('utf-8'))) from exc
+            raise DeepResearchError('invalid_verification_input',
+                                    '声明核验输入无效；已取得的资料仍保留。') from exc
+        # Do not spend a model call on a multi-target request already known to
+        # omit its required evidence. Preserve full sibling definitions as
+        # consistency context; each target keeps its own evidence permissions.
+        if referenced - {row['evidenceId'] for row in visible_evidence}:
+            if len(claims) > 1:
+                return split_before_dispatch()
+            return [{'claimId': claims[0]['claimId'], 'status': 'failed',
+                     'reason': '请求容量限制导致引用证据未完整提供，不能确认该声明。'}]
         visible_evidence = restore_visible_evidence(visible_evidence, reverse_aliases)
         try:
             result = self._invoke(
