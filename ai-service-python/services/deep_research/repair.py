@@ -49,7 +49,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *, 
     if any(row.get('designContractVersion') == 2 for row in originals.values()):
         revision_shape.update(designRole='canonical role for proposals/hypotheses; omit for facts',
                               executionSpec='complete object for groups/data/analysis; omit for other roles')
-    proposal_context = [{key: row[key] for key in ('claimId', 'text', 'kind', 'conditions', 'designRole', 'executionSpec', 'designContractVersion') if key in row}
+    proposal_context = [{key: row[key] for key in ('claimId', 'text', 'kind', 'conditions', 'designRole', 'executionSpec', 'designContractVersion', 'budgetContractVersion') if key in row}
                         for row in verification.get('accepted', [])
                         if row.get('kind') in {'proposal', 'suggestion', 'hypothesis'}
                         and row.get('claimId') not in originals]
@@ -106,6 +106,11 @@ in the paper. Maintain consistency with accepted definitions and complete requir
                    'to define your own diagnostic. Cover all required roles without changing an existing valid role '
                    'or inventing new claim IDs. Do not claim completeness when the available claims cannot cover them. '
                    'Keep all proposed settings consistent across claims and executionSpec.')
+    if any(row.get('budgetContractVersion') == 1 for row in originals.values()):
+        from services.deep_research.budget_spec import BUDGET_SPEC_CONTRACT
+        prompt += '\n' + BUDGET_SPEC_CONTRACT
+        prompt += '\nThe budget role owns baseline/recovery settings. Use matching binary group IDs ' \
+                  'from the factors order; other roles must remain consistent with this canonical budget.'
     template = prompt
     def render(selected_rows):
         visible_ids = {row['evidenceId'] for row in selected_rows}
@@ -151,6 +156,10 @@ in the paper. Maintain consistency with accepted definitions and complete requir
             continue
         if original.get('designContractVersion') == 2:
             row['designContractVersion'] = 2
+        if 'budgetContractVersion' in original:
+            row['budgetContractVersion'] = original['budgetContractVersion']
+        else:
+            row.pop('budgetContractVersion', None)
         # The repair cannot reassign the claim to another research obligation.
         if 'obligationIds' in original:
             row['obligationIds'] = deepcopy(original['obligationIds'])

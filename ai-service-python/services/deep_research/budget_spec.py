@@ -297,4 +297,3 @@ def budget_group_errors(budget_spec, group_spec):
             f"预算组ID宽度 {width} 与因素数量 {n_factors} 不匹配"
         ]
     return []
-

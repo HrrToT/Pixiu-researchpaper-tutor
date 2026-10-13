@@ -440,4 +440,3 @@ class TestBudgetGroupErrors:
         bs["recovery"]["groups"] = {"0": 10, "1": 10}
         gs = _group_spec_1factor()
         assert budget_group_errors(bs, gs) == []
-

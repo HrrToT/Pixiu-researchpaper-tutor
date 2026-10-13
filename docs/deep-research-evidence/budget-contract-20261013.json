@@ -1,0 +1,52 @@
+{
+  "date": "2026-10-13",
+  "baseCommit": "101ad7a",
+  "promptVersion": "dr-v2.20261013.56",
+  "budgetContractVersion": 1,
+  "change": "New run snapshots opt into typed baseline and complete binary-group recovery budgets. Invalid matched budgets fail before semantic calls; accepted budgets must match the accepted group factor arity after revision merge and at resumed publication.",
+  "scope": [
+    "Finite baseline training cap and stopping rule, or an existing-asset selection rule requiring semantic source verification.",
+    "Explicit optimizer-step, epoch or wall-second unit; complete equal-width binary group IDs.",
+    "Matched budgets require equal per-group amounts; all-zero recovery is a valid diagnostic.",
+    "Unmatched budgets require a confounding explanation and render a clear interpretation boundary.",
+    "Rendered budget choices are visible before verification; original prose is retained for contradiction checks.",
+    "Repair and missing-role allocation preserve the server-controlled budget version.",
+    "Creation snapshot controls activation; legacy runs and reports are not silently upgraded.",
+    "Publication rechecks marked budgets and invalidates stale coverage when accepted content changes."
+  ],
+  "qoder": {
+    "model": "bailian/qwen3.8-max-tp",
+    "scope": "Standalone module and offline tests from an explicit schema plus group_spec.py reference; tools disabled, no papers, runtime data or keys; zero model-request retries.",
+    "primaryReviewChanges": [
+      "Avoid exponential-size group expansion/count rendering by using count bit properties.",
+      "Complete the generation contract with required types, complete membership and proposed/factual boundaries.",
+      "Render user-facing Chinese unit/mode labels instead of internal enum names; remove developer instructions from report text.",
+      "Integrate independently with semantic checks, repair, missing-role registration, revision merging, publication and creation snapshots."
+    ]
+  },
+  "offlineReplay": {
+    "runId": "dr_run_a42e81318fe75e06b5b37c3a52b6cbdc",
+    "caseId": "D3-v20",
+    "databaseAccess": "read-only",
+    "modelCalls": 0,
+    "legacyAcceptedWithLocalFakePass": 1,
+    "newMarkedInputRejection": "incomplete_budget_spec",
+    "semanticCallsForNewMarkedInput": 0,
+    "storedInputUnchanged": true,
+    "counterexampleAmounts": {"00": 0, "10": 1000, "01": 1000, "11": 1000},
+    "canonicalFixtureRejection": "matched mode requires equal budgets for every group",
+    "boundary": "Canonical fixture uses saved numeric amounts with explicitly chosen local test structure. It is not a model-generated repaired report or a rewritten historical record."
+  },
+  "validation": {
+    "initialBudgetAndIntegration": {"passed": 58, "seconds": 8.46},
+    "initialFullRegression": {"passed": 1060, "warnings": 2, "seconds": 153.05},
+    "snapshotCompatibilityAndGraph": {"passed": 81, "warnings": 2, "seconds": 35.44},
+    "finalFullRegression": {"passed": 1062, "warnings": 2, "seconds": 150.39}
+  },
+  "limitations": [
+    "Typed consistency is not a proof of scientific validity, actual asset availability, causal independence or fairness of a complete optimization procedure.",
+    "Contradictions in free prose, effect interpretation and sampling assumptions still require semantic and manual verification.",
+    "No new real-model request was made; the last research-provider response was HTTP 402."
+  ],
+  "acceptance": "Final snapshot-compatible full regression passed. Runtime not yet loaded; real answer quality and DR0-DR5 final acceptance remain incomplete."
+}

@@ -121,6 +121,18 @@ def verify_claims(claims: list[dict], evidence: list[dict],
                 rejected.append({"claimId": claim_id, "reason": "incomplete_execution_spec",
                                  "detail": ', '.join(errors)})
                 continue
+        if not reason and 'budgetContractVersion' in claim:
+            from services.deep_research.budget_spec import validate_budget_spec
+            if (type(claim['budgetContractVersion']) is not int or claim['budgetContractVersion'] != 1
+                    or claim.get('designRole') != 'budget'
+                    or kind not in {'proposal', 'suggestion', 'hypothesis'}):
+                reason = 'invalid_budget_contract'
+            else:
+                errors = validate_budget_spec(claim.get('executionSpec'))
+                if errors:
+                    rejected.append({'claimId': claim_id, 'reason': 'incomplete_budget_spec',
+                                     'detail': ', '.join(errors)})
+                    continue
         if reason:
             rejected.append({"claimId": claim_id, "reason": reason})
         else:

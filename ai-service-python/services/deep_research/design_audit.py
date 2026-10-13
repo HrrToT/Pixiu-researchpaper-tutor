@@ -77,6 +77,7 @@ _FIELD_ROOTS = {
     'effects': ('analysis', {'effects'}),
     'uncertainty': ('analysis', {'uncertainty'}),
     'decision_rule': ('analysis', {'decision'}),
+    'per_group_steps': ('budget', {'recovery'}),
 }
 
 
@@ -94,6 +95,12 @@ def _field_supported(field, claim, context, slot):
             or not isinstance(path[1], str) or path[1] not in allowed[1]):
         return False
     from services.deep_research.execution_spec import execution_spec_errors
+    if reference.get('designRole') == 'budget':
+        from services.deep_research.budget_spec import validate_budget_spec
+        if (type(reference.get('budgetContractVersion')) is not int
+                or reference['budgetContractVersion'] != 1
+                or validate_budget_spec(reference.get('executionSpec'))):
+            return False
     if execution_spec_errors(reference.get('designRole'), reference.get('executionSpec')):
         return False
     value = reference

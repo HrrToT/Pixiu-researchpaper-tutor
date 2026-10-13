@@ -532,7 +532,8 @@ class BudgetedSemanticChecker:
             targets = {c['claimId'] for c in batch}
             context = [{'claimId': c.get('claimId'), 'text': c.get('text'), 'kind': c.get('kind'),
                         'conditions': c.get('conditions', {}), 'designRole': c.get('designRole'),
-                        'executionSpec': c.get('executionSpec'), 'designContractVersion': c.get('designContractVersion')}
+                        'executionSpec': c.get('executionSpec'), 'designContractVersion': c.get('designContractVersion'),
+                        'budgetContractVersion': c.get('budgetContractVersion')}
                        for c in [*accepted_context, *proposals] if c['claimId'] not in targets]
             verdicts.extend(self._check_batch(batch, evidence, context, node=batch_node))
         by_id = {v['claimId']: v for v in verdicts}
@@ -564,6 +565,7 @@ class BudgetedSemanticChecker:
             "designRole": c.get("designRole"),
             "executionSpec": c.get("executionSpec"),
             "designContractVersion": c.get("designContractVersion"),
+            "budgetContractVersion": c.get("budgetContractVersion"),
         }) for c in wire_claims], ensure_ascii=False, separators=(',', ':'))
         
         referenced = {ref for claim in wire_claims for ref in claim.get("evidenceRefs", [])}
@@ -652,6 +654,15 @@ Do not require an unexecuted experiment to have results. Do not judge context cl
                       'of another seed from the same scene; fixed checkpoints with no retraining do not produce ' \
                       'independent training replicates. Require paired groups within units and resample actual ' \
                       'independent clusters. Quoting a vague choice does not make it concrete.'
+        if any(c.get('budgetContractVersion') == 1 for c in [*claims, *proposal_context]):
+            prompt += '\nBudget contract 1 is the canonical baseline/recovery configuration. ' \
+                      'Check prose and all other definitions against these exact typed choices. ' \
+                      'matched means equal per-group recovery amounts in one unit; unmatched is ' \
+                      'explicitly confounded by budget and cannot answer a matched-budget comparison. ' \
+                      'Binary group ID digits correspond to factors order (0=control, 1=treatment). ' \
+                      'A finite baseline cap or grounded existing-asset selection is mandatory. ' \
+                      'Do not approve a narrative that contradicts its typed budget or promises an ' \
+                      'unsupported asset. Structure alone does not prove scientific fairness.'
 
         if any(c.get('designContractVersion') == 2 and c.get('designRole') == 'data' for c in claims):
             prompt += '''
@@ -712,6 +723,7 @@ The dataAvailability object is an internal audit, not new experimental results.
                            'Use 1-32 bindings. Allowed slot roots: intervention_levels=factors (groups); '
                            'scenes=dataset/scenes, split=split, seeds=seeds, sampling_unit=independentUnit (data); '
                            'effects=effects, uncertainty=uncertainty, decision_rule=decision (analysis). '
+                           'per_group_steps=recovery (budget contract 1 only). '
                            'Other slots require quotes. Do not mix fields with quote/quotes. All bindings together '
                            'must substantiate the entire slot; valid fields do not prove scientific correctness.')
                 required_slots = required_design_slots(metric_domains)
@@ -756,7 +768,7 @@ The dataAvailability object is an internal audit, not new experimental results.
                                     (claims[midpoint:], claims[:midpoint])):
                 context = [*proposal_context, *[{
                     key: c[key] for key in ('claimId', 'text', 'kind', 'conditions',
-                        'designRole', 'executionSpec', 'designContractVersion') if key in c
+                        'designRole', 'executionSpec', 'designContractVersion', 'budgetContractVersion') if key in c
                 } for c in siblings if c.get('kind') in {'proposal', 'suggestion', 'hypothesis'}]]
                 verdicts.extend(self._check_batch(batch, evidence, context, node=node))
             return verdicts
