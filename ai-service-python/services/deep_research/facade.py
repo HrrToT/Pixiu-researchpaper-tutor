@@ -49,6 +49,18 @@ from services.deep_research.contracts import (
 logger = logging.getLogger(__name__)
 
 
+def _execution_failure_message(calls, unknown):
+    if unknown:
+        return "上一次请求的结果尚未确认，研究已暂停以避免重复调用。可停止本次研究后再发起补查。"
+    failed_model_calls = [c for c in calls
+                          if c.get('tool') == 'llm_invoke' and c.get('status') == 'failed']
+    if failed_model_calls:
+        error = failed_model_calls[-1].get('error') or {}
+        if error.get('type') == 'provider_error' and error.get('status_code') == 402:
+            return "模型服务拒绝了请求（HTTP 402）。请检查模型账户额度与计费状态，确认可用后再发起研究。"
+    return "本次研究未能完成，请查看已保存的结果或稍后补查。"
+
+
 def _elapsed_seconds(record):
     started = record.get("startedAt")
     if not started:
@@ -905,7 +917,8 @@ class ResearchFacade:
                 return
             
             logger.exception("Graph execution failed for run %s", run_id)
-            unknown = any(call.get("status") == "unknown" for call in self._repo.list_calls(run_id))
+            calls = self._repo.list_calls(run_id)
+            unknown = any(call.get("status") == "unknown" for call in calls)
             
             def mark_failed(record: dict[str, Any]) -> dict[str, Any]:
                 if record["status"] != STATUS_RUNNING or record["executionEpoch"] != epoch:
@@ -914,7 +927,7 @@ class ResearchFacade:
                     **record,
                     "status": STATUS_PAUSED if unknown else STATUS_FAILED,
                     "errorCode": "unresolved_unknown" if unknown else getattr(exc, "code", "execution_failed"),
-                    "error": {"message": "上一次请求的结果尚未确认，研究已暂停以避免重复调用。可停止本次研究后再发起补查。" if unknown else "本次研究未能完成，请查看已保存的结果或稍后补查。"},
+                    "error": {"message": _execution_failure_message(calls, unknown)},
                     "finishedAt": utc_now_iso(),
                 }
             

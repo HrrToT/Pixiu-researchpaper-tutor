@@ -35,5 +35,30 @@
   "targetedValidation": {"capacityAndReplayTestsPassed": 8, "seconds": 4.35},
   "extractionAndCapacityValidation": {"passed": 30, "seconds": 7.62},
   "fullRegression": {"passed": 999, "warnings": 2, "seconds": 171.37},
-  "acceptance": "Full offline regression passed; new runtime quality not tested. DR0-DR5 remains incomplete."
+  "runtime": {"loadedCommit": "d8d61e8", "health": {"status": "ok", "rag": "ok", "grobid": "ok", "uptimeSeconds": 20.1}, "pausedRunsPreserved": 4},
+  "realCase": {
+    "caseId": "D3-v21",
+    "runId": "dr_run_372ccd0a70fa5c0d899a7093daac85f3",
+    "promptVersion": "dr-v2.20261013.55",
+    "submissions": 1,
+    "status": "failed",
+    "stage": "resolve_brief",
+    "outcome": "none",
+    "providerHttpStatus": 402,
+    "providerRequests": 1,
+    "retries": 0,
+    "elapsedSeconds": 1.0,
+    "ledgerReservedTokens": 4449,
+    "actualUsageTokens": null,
+    "cost": null,
+    "receipt": "tmp/dr-acceptance-receipts/D3-v21.json",
+    "rawResult": "tmp/dr-acceptance-receipts/D3-v21.result.json",
+    "interpretation": "Provider rejected the initial brief request. No extraction, repair or verification occurred. Reserved ledger tokens are not measured billed usage. HTTP 402 alone does not identify the precise account cause."
+  },
+  "failurePresentation": {
+    "change": "Confirmed model HTTP 402 failures now advise checking account quota and billing without exposing raw provider diagnostics. Unknown calls still take precedence and remain paused; unrelated or stale errors are not mislabeled.",
+    "regression": {"passed": 24, "warnings": 2, "seconds": 34.94},
+    "runtimeLoaded": false
+  },
+  "acceptance": "Full offline regression passed. New runtime content quality remains untested because the initial provider request returned HTTP 402. DR0-DR5 remains incomplete."
 }
