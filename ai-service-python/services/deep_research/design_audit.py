@@ -7,6 +7,7 @@ REQUIRED = {
     "data": ("scenes", "split", "seeds", "sampling_unit"),
     "metrics": ("quality_protocol", "speed_protocol", "storage_protocol"),
     "budget": ("per_group_steps",),
+    "steps": ("baseline_acquisition", "group_pairing", "saved_artifacts"),
     "analysis": ("effects", "uncertainty", "decision_rule"),
 }
 

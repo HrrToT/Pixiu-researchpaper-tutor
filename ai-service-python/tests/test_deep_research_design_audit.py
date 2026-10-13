@@ -46,6 +46,27 @@ def test_missing_audit_reports_every_required_slot():
     assert validate_design_audit(claim, {"designAudit": []}, []) == expected
 
 
+def test_steps_cannot_pass_with_only_an_unsubstantiated_model_verdict():
+    claim = {'claimId': 'steps', 'kind': 'proposal', 'designRole': 'steps',
+             'text': 'Train until convergence, then save the checkpoint hash.'}
+    assert validate_design_audit(claim, {'status': 'passed'}, []) == [
+        'baseline_acquisition', 'group_pairing', 'saved_artifacts']
+
+
+def test_steps_can_bind_concrete_shared_budget_without_repeating_it():
+    claim = {'claimId': 'steps', 'kind': 'proposal', 'designRole': 'steps',
+             'text': 'Copy the baseline into four groups within each scene. Save the split and raw measurements.'}
+    context = [{'claimId': 'budget', 'kind': 'proposal', 'designRole': 'budget',
+                'text': 'Train the baseline for 1000 steps with seed 42.'}]
+    verdict = audit_for(
+        baseline_acquisition=entry(context[0]['text'], 'budget'),
+        group_pairing=entry('Copy the baseline into four groups within each scene.', 'steps'),
+        saved_artifacts=entry('Save the split and raw measurements.', 'steps'))
+    assert validate_design_audit(claim, verdict, context) == []
+    verdict['designAudit']['baseline_acquisition'] = entry('Train for 2000 steps.', 'budget')
+    assert validate_design_audit(claim, verdict, context) == ['baseline_acquisition']
+
+
 def test_partial_audit_reports_only_missing_slots():
     verdict = audit_for(scenes=entry("scenes: A1/B2"), split=entry("split: 50/50"))
     assert validate_design_audit(make_data_claim(), verdict, []) == [

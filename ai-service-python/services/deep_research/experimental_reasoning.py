@@ -50,11 +50,21 @@ the absence of a name list does not contradict that selection. Unresolved subset
 identity or capacity still fails. A random split with a fixed seed is reproducible,
 not contradictory merely because it is random. Define the seed's purpose and
 selection procedure; different training and split seeds need not be equal.
+Distinguish the unit being split from the independent analysis unit. For a
+scene-specific reconstruction, hold out views within each scene; splitting whole
+scenes describes a different generalization task and cannot replace that protocol.
 Shared checkpoints require an executable acquisition/training and pairing rule,
 then recording the resulting artifact identity/hash at execution. Do not invent
 a hash or require a future artifact's hash to exist now. A proposed filename alone
 does not specify how to produce or select the checkpoint. Shared configuration
 may be referenced across roles without repetition, but must be explicit somewhere.
+For a newly trained baseline, specify a finite training budget or an operational
+stopping rule with a maximum budget; "train until convergence" alone is not one.
+For an existing baseline, specify an evidence-backed asset and selection rule.
+Then state which paired groups copy that same baseline within each analysis unit.
+Recording a path or hash documents an artifact; it does not define its acquisition.
+Align the hypothesis with the analysis: descriptive effects can explore a
+hypothesis but cannot promise a statistical test, acceptance or equivalence verdict.
 Accepted choices constrain revisions only where they specify concrete values;
 silence is not a requirement to retain a gap. Fill missing details in allowed
 revision targets without altering or contradicting accepted statements.
@@ -66,7 +76,7 @@ DESIGN_ROLES = {
     'controls': ('固定条件', 'Fix paired baseline checkpoints, rendering settings and all other interventions, including quantization when relevant.'),
     'data': ('固定条件', 'Give a closed scene list or deterministic selection rule, an executable train/evaluation split rule, valid integer paired seed values or an executable generation rule, and the independent sampling unit. Propose concrete non-negative integer seeds; symbolic placeholders are not numeric values. Explain each seed purpose. Saying "fixed split/same seed/multiple scenes" is incomplete. Label proposed choices, never attribute them to the paper.'),
     'budget': ('固定条件', 'Specify recovery/optimization steps and matched budgets for every group. Explicit zero recovery is valid for a diagnostic; separate native-budget results from matched-budget results.'),
-    'steps': ('执行步骤', 'Give executable ordered steps and saved artifacts: checkpoint identity, split, seed, intervention configuration, recovery budget, renders and raw measurements.'),
+    'steps': ('执行步骤', 'Give executable ordered steps, including baseline acquisition with a finite training/stopping budget or a grounded existing-asset selection rule, within-unit group pairing, and saved artifacts: checkpoint identity, split, seed, intervention configuration, recovery budget, renders and raw measurements.'),
     'metrics': ('指标', 'Specify quality direction and image/view aggregation protocol; speed device/resolution, warmup, synchronization, timed region and repetitions; storage files/representation and units. A list of PSNR/SSIM/LPIPS/FPS/MB without a measurement protocol is incomplete. Never combine incompatible units.'),
     'analysis': ('结果解释', 'Specify estimable effects, uncertainty calculation and confidence level, and a concrete decision rule. Separate rejection of I=0 from practical equivalence: an interval including zero cannot reject I=0; containment within a declared tolerance is needed for equivalence. If no tolerance is chosen, report uncertainty without an equivalence claim. Never claim independence or an unexecuted result.'),
     'limits': ('风险', 'State confounders, invalidation conditions and limits of the proposed intervention, including what this experiment cannot establish.'),
