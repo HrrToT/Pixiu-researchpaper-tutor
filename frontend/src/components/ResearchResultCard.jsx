@@ -7,7 +7,7 @@ const labels = {
 };
 const outcomes = { complete: '报告已保存', partial: '已完成部分研究', inconclusive: '当前材料不足以判断', none: '研究已结束' };
 const actionLabels = { pause: '暂停', resume: '继续研究', cancel: '停止', continue: '补查缺口' };
-const accessLabels = { fulltext: '全文', full_text: '全文', abstract: '仅摘要', metadata: '仅元数据' };
+const accessLabels = { fulltext: '全文片段', full_text: '全文片段', abstract: '仅摘要', metadata: '仅元数据' };
 
 /** Version 2 execution details are optional; the answer remains the primary content. */
 export default function ResearchResultCard({ taskId, run, result, error, onAction, onRefresh, onOpenReport, onJumpToSource, onAddSource }) {

@@ -3,6 +3,11 @@ import { documentDisplayTitle, questionTopic } from './documentPresentation';
 import { documentPreview, taskDocumentNavigation } from './taskDocumentNavigation';
 
 describe('document names and identities', () => {
+  it('keeps research citation targets out of navigation previews without modifying the saved report', () => {
+    const report = { text: '编码特征。[[1]](#research-evidence-e1) 解码形变。[2](#research-evidence-e2) [论文](https://arxiv.org/abs/2310.08528)' };
+    expect(documentPreview(report)).toBe('编码特征。 解码形变。 论文');
+    expect(report.text).toContain('[[1]](#research-evidence-e1)');
+  });
   it('makes same-title records distinguishable without mutating their content or merging identities', () => {
     const task = { notes: [{ id: 'a', title: '实验', text: '## 方案\n**控制高斯数量**，测量质量。[1]', createdAt: '2026-10-12T01:00:00Z' },
       { id: 'b', title: '实验', text: '固定 SH 阶数，测量速度。', createdAt: '2026-10-12T02:00:00Z' }] };

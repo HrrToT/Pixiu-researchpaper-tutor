@@ -11,6 +11,7 @@ const savedTime = item => {
 export function documentPreview(item) {
   const text = [item.summary, item.text, item.content, item.body].find(value => typeof value === 'string' && value.trim()) || '';
   return text.replace(/(?:^|\n)#{1,6}\s+[^\n]*\n/gu, ' ')
+    .replace(/\[\[?\d+\]?\]\(#research-evidence-[^)]+\)/gu, '')
     .replace(/\[([^\]]+)\]\([^)]*\)/gu, '$1').replace(/[*_`#>]/gu, '')
     .replace(/\[(?:\d+[\s,，]*)+\]/gu, '').replace(/\s+/gu, ' ').trim().slice(0, 100);
 }
