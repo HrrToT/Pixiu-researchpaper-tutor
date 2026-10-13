@@ -79,6 +79,9 @@ class AcademicAcquisition:
                             "obligationIds": [target["obligationId"]]}
                         sources.append(source)
                         by_source[source_id] = source
+        if not sources and adapter.discovery_outcomes and all(
+                outcome == 'failed' for outcome in adapter.discovery_outcomes):
+            raise DeepResearchError('external_discovery_unavailable', '外部文献获取失败')
         return sources
 
 

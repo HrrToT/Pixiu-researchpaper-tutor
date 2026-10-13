@@ -242,7 +242,7 @@ class ResearchFacade:
             "materials": materials,
             "materialSnapshot": material_snapshot,  # Immutable Java snapshot
             "contextMaterials": (material_snapshot or {}).get("contextMaterials", []) if isinstance(material_snapshot, dict) else [],
-            "promptVersion": "dr-v2.20261013.52",
+            "promptVersion": "dr-v2.20261013.53",
             "retrievalVersion": "task-pdf-metric-tables.3",
             "focusPaperIds": request.get("focusPaperIds", []),
             "sourcePolicy": request.get("sourcePolicy", {"mode": "task_only"}),
@@ -299,6 +299,7 @@ class ResearchFacade:
                 "invalid_brief_response": "研究目标未能正确解析，本次已停止。请简化问题后重新研究。",
                 "invalid_synthesis_response": "报告未能完整生成，本次已停止；已取得的资料仍保留。可补查继续，这会产生新的模型调用。",
                 "invalid_verification_response": "结论核验未完成，本次已停止；已取得的资料仍保留。这不表示论文证据不足。",
+                "external_discovery_unavailable": "外部文献暂时无法获取，本次研究已停止，尚未读到所需资料。这不表示论文缺少证据；可稍后重新研究。",
             }.get(record.get("errorCode", ""), "") or (record.get("error") or {}).get("message", ""),
             "title": state.get("title") or {"direction_survey": "方向调研", "paper_comparison": "论文比较",
                 "claim_verification": "主张核查", "experiment_design": "实验方案", "research_entry": "研究切入点"}

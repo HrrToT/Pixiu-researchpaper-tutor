@@ -15,6 +15,7 @@ from services.deep_research.contracts import (
     CALL_STATUS_FAILED,
     CALL_STATUS_SUCCEEDED,
     DeepResearchError,
+    IllegalStatusTransitionError,
     digest,
 )
 
@@ -380,9 +381,14 @@ class ExternalAcademicAdapter:
         self._client = academic_client
         self._reserve = reserve_call_fn
         self._complete = complete_call_fn
+        self.discovery_outcomes = []
     
     def discover(self, run_id: str, query: str, limit: int = 6) -> list[dict[str, Any]]:
-        args_digest = digest({"query": query, "limit": limit, "type": "discover"})
+        request_identity = {"query": query, "limit": limit, "type": "discover"}
+        if callable(getattr(type(self._client), 'discovery_request', None)):
+            request_identity = {"request": self._client.discovery_request(query, limit),
+                                "type": "discover"}
+        args_digest = digest(request_identity)
         
         try:
             call_record, reused = self._reserve(
@@ -394,10 +400,18 @@ class ExternalAcademicAdapter:
             )
             
             if reused:
+                self.discovery_outcomes.append(call_record.get('status'))
                 return (call_record.get("result") or {}).get("items", [])
             
+        except IllegalStatusTransitionError as exc:
+            if exc.details != {'currentStatus': 'failed', 'requestedStatus': 'pending'}:
+                raise
+            # The durable ledger refused an automatic resend of this failure.
+            self.discovery_outcomes.append(CALL_STATUS_FAILED)
+            return []
         except Exception as exc:
             logger.exception("Failed to reserve external discover call")
+            self.discovery_outcomes.append('not_dispatched')
             return []
         
         try:
@@ -410,6 +424,7 @@ class ExternalAcademicAdapter:
                 reservation_token=call_record.get("reservationToken"),
             )
             
+            self.discovery_outcomes.append(CALL_STATUS_SUCCEEDED)
             return results
             
         except Exception as exc:
@@ -420,6 +435,7 @@ class ExternalAcademicAdapter:
                 error={"message": str(exc)},
                 reservation_token=call_record.get("reservationToken"),
             )
+            self.discovery_outcomes.append(CALL_STATUS_FAILED)
             return []
     
     def fetch_fulltext(self, run_id: str, arxiv_id: str) -> dict[str, Any]:

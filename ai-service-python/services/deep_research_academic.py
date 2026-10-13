@@ -93,7 +93,8 @@ class AcademicSourceClient:
         if fulltext and not self.policy.allow_fulltext:
             raise AcademicAccessError('本轮未开启公开全文获取')
 
-    def discover(self, query, limit=6):
+    def discovery_request(self, query, limit=6):
+        """Return the actual request identity before reserving a network call."""
         self._require()
         if not isinstance(query, str) or not query.strip() or len(query) > 700:
             raise AcademicAccessError('学术查询无效')
@@ -115,6 +116,11 @@ class AcademicSourceClient:
             if not words:
                 raise AcademicAccessError('学术查询缺少主题')
             params['search_query'] = ' AND '.join('all:"' + word + '"' for word in words)
+        return params
+
+    def discover(self, query, limit=6):
+        params = self.discovery_request(query, limit)
+        identifiers = params.get('id_list', '').split(',') if 'id_list' in params else []
         path = '/api/query?' + urlencode(params)
         content_type, body = self.transport('export.arxiv.org', path, 1024 * 1024)
         if content_type not in {'application/atom+xml', 'application/xml', 'text/xml'}:

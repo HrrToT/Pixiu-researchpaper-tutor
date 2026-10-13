@@ -457,7 +457,14 @@ def make_acquire_node(
         # External acquisition: only when policy permits and callback provided
         use_external = source_policy_mode in ("academic_external", "external_only") and external_acquire is not None
         if use_external:
-            ext_sources = external_acquire(run_id, query_targets)
+            from services.deep_research.contracts import DeepResearchError
+            try:
+                ext_sources = external_acquire(run_id, query_targets)
+            except DeepResearchError as exc:
+                # Retain usable local/inherited sources when only the supplement failed.
+                if exc.code != 'external_discovery_unavailable' or not normalized_sources:
+                    raise
+                ext_sources = []
             for ext in ext_sources:
                 ext_source_id = ext.get("sourceId", "")
                 if not ext_source_id:
