@@ -36,6 +36,18 @@ def test_unconstrained_or_short_answers_do_not_add_paid_calls():
     invoke.assert_not_called()
 
 
+def test_truncated_compaction_is_rejected_even_when_json_is_valid():
+    from types import SimpleNamespace
+    report = {'claims': [{'claimId': 'c', 'text': 'Very long claim ' * 100}]}
+    content = json.dumps({'claims': [{'claimId': 'c', 'text': 'Short'}]})
+    for response in ({'content': content, 'finishReason': 'length'},
+                     {'content': content, 'finish_reason': 'length'},
+                     SimpleNamespace(content=content, finish_reason='length')):
+        invoke = Mock(return_value=response)
+        assert compact_answer(report, '80字以内', invoke, json.loads) is None
+        invoke.assert_called_once()
+
+
 def test_string_conditions_are_preserved_before_length_and_evidence_checks():
     report = {'claims': [{'claimId': 'c', 'text': '结论', 'conditions': '只在当前测试设置下'}]}
     invoke = Mock()

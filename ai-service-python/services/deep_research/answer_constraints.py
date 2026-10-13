@@ -80,6 +80,10 @@ def compact_answer(report, question, invoke, parse, *, output_kind='', evidence=
 {'必须保留每个输入ID：它们分别代表各论文结论和跨论文可比性。' if output_kind == 'paper_comparison' else 'You MAY DROP 次要声明，但保留直接回答问题的判断。'}
 输入：{json.dumps([{key: c.get(key, {} if key == 'conditions' else '') for key in ('claimId', 'text', 'conditions')} for c in core], ensure_ascii=False)}'''
     result = invoke(prompt)
+    finish = (result.get('finishReason', result.get('finish_reason')) if isinstance(result, dict)
+              else getattr(result, 'finish_reason', None))
+    if finish == 'length':
+        return None
     compact = parse(result.get('content', '') if isinstance(result, dict) else result.content)
     if not isinstance(compact, dict) or not isinstance(compact.get('claims'), list) or not compact['claims']:
         return None

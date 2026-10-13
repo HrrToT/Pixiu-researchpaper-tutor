@@ -1053,6 +1053,10 @@ Orient losses before formulas, distinguish conditional/averaged effects and pape
             lambda rows: template.replace(evidence_marker, json.dumps(rows, ensure_ascii=False, separators=(',', ':')), 1))
         evidence_aliases = {row['evidenceId']: evidence_aliases[row['evidenceId']] for row in evidence_summaries}
         result = llm_invoke(run_id, "synthesize", prompt, {"max_tokens": 4000, "temperature": 0.2}, use_reserve=True)
+        finish = (result.get('finishReason', result.get('finish_reason')) if isinstance(result, dict)
+                  else getattr(result, 'finish_reason', None))
+        if finish == 'length':
+            return {'error_code': 'invalid_synthesis_response'}
         
         if hasattr(result, "content"):
             content = result.content

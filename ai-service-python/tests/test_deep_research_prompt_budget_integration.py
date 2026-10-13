@@ -8,6 +8,20 @@ from services.deep_research.repair import repair_rejected
 from services.deep_research.tools import BudgetedSemanticChecker
 
 
+def test_truncated_synthesis_never_saves_even_a_valid_json_prefix():
+    from types import SimpleNamespace
+    record = {'question': 'Explain', 'state': {'evidence': []}}
+    content = json.dumps({'claims': [{'claimId': 'c', 'text': 'Incomplete result'}], 'sections': []})
+    for response in ({'content': content, 'finishReason': 'length'},
+                     {'content': content, 'finish_reason': 'length'},
+                     SimpleNamespace(content=content, finish_reason='length')):
+        invoke, update = Mock(return_value=response), Mock(return_value=record)
+        result = make_synthesize_node(invoke, update)({'run_id': 'r'})
+        assert result == {'error_code': 'invalid_synthesis_response'}
+        assert update.call_count == 1  # Only the initial stage transition, no report body.
+        invoke.assert_called_once()
+
+
 def test_synthesis_compacts_routing_without_changing_quotes_or_source_scope():
     from copy import deepcopy
     record = {'question': 'Explain', 'materials': [{'materialId': 'paper-a', 'title': 'Same title'},
