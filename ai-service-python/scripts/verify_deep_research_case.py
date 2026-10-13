@@ -17,7 +17,7 @@ from services.deep_research.acceptance_receipts import claim_submission, confirm
 
 
 def run_case(manifest, case_id, attempt, directory, api, *, submit=False,
-             task_id=None, parent_run_id=None):
+             task_id=None, parent_run_id=None, check_ready=None):
     if attempt < 1:
         raise ValueError('attempt must be positive')
     case = next((c for c in manifest['cases'] if c['id'] == case_id), None)
@@ -42,6 +42,8 @@ def run_case(manifest, case_id, attempt, directory, api, *, submit=False,
     elif not submit:
         return {'preview': True, 'intent': intent}
     else:
+        if check_ready is not None:
+            check_ready()  # Before workspace mutations or durable submission intent.
         task = api('GET', task_path, allow_missing=True)
         if task is None:
             if parent_run_id:
@@ -95,10 +97,15 @@ def main():
     parser.add_argument('--manifest', type=Path, default=root / 'docs/DEEP_RESEARCH_ACCEPTANCE_CASES_20261012.json')
     parser.add_argument('--receipts', type=Path, default=root / 'tmp/dr-acceptance-receipts')
     parser.add_argument('--origin', default='http://127.0.0.1:8081/api')
+    parser.add_argument('--ai-origin', default='http://127.0.0.1:8000')
     parser.add_argument('--task-id')
     parser.add_argument('--parent-run-id')
     args = parser.parse_args()
     import requests
+    def check_ready():
+        response = requests.get(args.ai_origin.rstrip('/') + '/health', timeout=5)
+        response.raise_for_status()
+        require_ready_health(response.json())
     def api(method, path, *, payload=None, allow_missing=False):
         response = requests.request(method, args.origin.rstrip('/') + path, json=payload, timeout=25)
         if allow_missing and response.status_code == 404:
@@ -106,8 +113,17 @@ def main():
         response.raise_for_status()
         return response.json()
     result = run_case(json.loads(args.manifest.read_text(encoding='utf-8')), args.case, args.attempt,
-                      args.receipts, api, submit=args.submit, task_id=args.task_id, parent_run_id=args.parent_run_id)
+                      args.receipts, api, submit=args.submit, task_id=args.task_id,
+                      parent_run_id=args.parent_run_id, check_ready=check_ready)
     print(json.dumps(result, ensure_ascii=False, indent=2))
+
+
+def require_ready_health(health):
+    if (not isinstance(health, dict) or health.get('status') != 'ok'
+            or not isinstance(health.get('checks'), dict)
+            or any(not isinstance(health['checks'].get(name), dict)
+                   or health['checks'][name].get('status') != 'ok' for name in ('rag', 'grobid'))):
+        raise RuntimeError('AI service is not ready; no case submitted. Check API, RAG and GROBID.')
 
 
 if __name__ == '__main__':

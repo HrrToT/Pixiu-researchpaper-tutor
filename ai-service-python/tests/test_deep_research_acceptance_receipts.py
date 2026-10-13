@@ -85,3 +85,22 @@ def test_harness_ambiguous_submission_cannot_be_sent_again(tmp_path):
     with pytest.raises(ValueError, match='unconfirmed'):
         run_case(manifest(), 'D', 1, tmp_path, api, submit=True)
     assert calls == []
+
+
+@pytest.mark.parametrize('health', [None, {}, {'status': 'ok'},
+    {'status': 'ok', 'checks': {'rag': {'status': 'loading'}, 'grobid': {'status': 'ok'}}}])
+def test_unready_service_does_not_mutate_workspace_or_claim_receipt(tmp_path, health):
+    from scripts.verify_deep_research_case import require_ready_health
+    calls = []
+    with pytest.raises(RuntimeError, match='not ready'):
+        run_case(manifest(), 'D', 1, tmp_path, lambda *a, **k: calls.append(a),
+                 submit=True, check_ready=lambda: require_ready_health(health))
+    assert calls == [] and not list(tmp_path.iterdir())
+
+
+def test_readiness_accepts_healthy_dependencies_and_preview_stays_offline(tmp_path):
+    from scripts.verify_deep_research_case import require_ready_health
+    require_ready_health({'status': 'ok', 'checks': {name: {'status': 'ok'} for name in ('rag', 'grobid')}})
+    def forbidden():
+        raise AssertionError('Preview must not check readiness over network')
+    assert run_case(manifest(), 'D', 1, tmp_path, forbidden, check_ready=forbidden)['preview']
