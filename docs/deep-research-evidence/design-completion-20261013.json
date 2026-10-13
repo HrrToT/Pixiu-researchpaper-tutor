@@ -62,7 +62,15 @@
       "The accepted hypothesis promises a significance judgment while the accepted analysis is descriptive only.",
       "Pruning uses a numeric score threshold without an operational score definition; truncation and distillation are insufficiently distinguished."
     ],
-    "nextAction": "Offline replay of verification request construction and joint design consistency; no unchanged case resubmission."
+    "verificationCapacityReplay": {
+      "modelCalls": 0,
+      "fixedPromptBytes": 22987,
+      "fittedPromptBytes": 23897,
+      "referencedEvidenceCount": 6,
+      "visibleEvidenceCount": 1,
+      "finding": "Most capacity is consumed by complete target/context definitions and repeated shared instructions, not long quotations. Preserve definitions and factual checks while changing bounded request organization."
+    },
+    "nextAction": "Improve bounded verification request organization and joint design consistency from saved inputs; no unchanged case resubmission."
   },
   "acceptance": "Offline checks passed and missing-role repair executed. Experimental-plan quality remains failed; DR0-DR5 acceptance is incomplete."
 }
