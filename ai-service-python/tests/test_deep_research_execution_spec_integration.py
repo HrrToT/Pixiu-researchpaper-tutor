@@ -40,7 +40,8 @@ def test_checker_receives_spec_and_checks_prose_consistency():
     target = claim(data_spec())
     def invoke(**kwargs):
         assert 'executionSpec' in kwargs['prompt'] and 'scene-a' in kwargs['prompt']
-        assert 'vague or contradictory prose' in kwargs['prompt']
+        assert 'not contradict fields' in kwargs['prompt']
+        assert 'concrete meaning and consistency' in kwargs['prompt']
         return {'content': json.dumps([{'claimId': 'd', 'status': 'failed', 'reason': 'inconsistent prose'}])}
     assert not verify_claims([target], [], BudgetedSemanticChecker(invoke, 'r'))['accepted']
 

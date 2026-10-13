@@ -28,13 +28,17 @@ def test_materialization_is_idempotent_and_retains_all_original_prose():
     assert original == before
 
 
-def test_compiled_formulas_are_available_for_exact_visible_text_audit():
+def test_compiled_formulas_are_available_as_fields_and_remain_in_published_text():
     target = materialize_execution_claim(analysis_claim())
     def invoke(**kwargs):
-        assert target['text'].replace('\n', '\\n') in kwargs['prompt']
+        supplied = json.JSONDecoder().raw_decode(kwargs['prompt'].split('Claims:\n', 1)[1])[0][0]
+        assert supplied['text'] == analysis_claim()['text']
+        assert supplied['executionSpec'] == target['executionSpec']
         return {'content': json.dumps([{'claimId': 'a', 'status': 'passed', 'designAudit': {
-            key: {'claimId': 'a', 'quote': target['text']}
-            for key in ('effects', 'uncertainty', 'decision_rule')}}])}
+            slot: {'fields': [{'claimId': 'a', 'path': ['executionSpec', key],
+                               'value': supplied['executionSpec'][key]}]}
+            for slot, key in [('effects', 'effects'), ('uncertainty', 'uncertainty'),
+                              ('decision_rule', 'decision')]}}])}
     accepted = verify_claims([target], [], BudgetedSemanticChecker(invoke, 'r'))['accepted']
     assert len(accepted) == 1 and accepted[0]['text'] == target['text']
 

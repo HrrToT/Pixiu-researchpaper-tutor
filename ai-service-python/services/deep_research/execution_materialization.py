@@ -39,3 +39,22 @@ def materialize_execution_claim(claim):
             # visible to the verifier, never silently replaced by metadata.
             result['text'] += suffix
     return result
+
+
+def verification_claim_view(claim):
+    """Transmit typed configuration once; retain every original prose choice.
+
+    Only remove the exact application-generated trailing rendering. It is
+    deterministically reproducible from executionSpec; changed or contradictory
+    prose is never shortened. Stored and published claims remain untouched.
+    """
+    result = deepcopy(claim)
+    if (not isinstance(result, dict) or result.get('designContractVersion') != 2
+            or result.get('kind') not in {'proposal', 'suggestion', 'hypothesis'}
+            or not isinstance(result.get('text'), str)):
+        return result
+    rendered = render_execution_spec(result.get('designRole'), result.get('executionSpec'))
+    suffix = '\n\n' + rendered if rendered else ''
+    if suffix and result['text'].endswith(suffix):
+        result['text'] = result['text'][:-len(suffix)]
+    return result

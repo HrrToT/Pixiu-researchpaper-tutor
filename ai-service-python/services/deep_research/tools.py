@@ -527,6 +527,9 @@ class BudgetedSemanticChecker:
         from services.deep_research.verification_aliases import (
             encode_verification_inputs, restore_visible_evidence, restore_verdict_evidence)
         wire_claims, wire_evidence, reverse_aliases = encode_verification_inputs(claims, evidence)
+        from services.deep_research.execution_materialization import verification_claim_view
+        wire_claims = [verification_claim_view(c) for c in wire_claims]
+        wire_context = [verification_claim_view(c) for c in proposal_context]
         # Format claims and evidence for checking
         claims_text = json.dumps([{
             "claimId": c.get("claimId"),
@@ -617,10 +620,11 @@ Do not require an unexecuted experiment to have results. Do not judge context cl
                        'an omitted required parameter or numeric threshold disguised as a categorical choice '
                        'fails. A named symbol in an operation is not a chosen value. Check consistency with '
                        'the rendered control/treatment values and shared definitions.')
-            prompt += '\nexecutionSpec is proposed configuration, not paper evidence. Check EVERY field against ' \
-                      'the normal claim text: the same dataset, actual scene selection, split, seed usage, ' \
-                      'replication, formulas and uncertainty procedure must be stated consistently. Reject ' \
-                      'a populated JSON field hidden behind vague or contradictory prose. Structural validation ' \
+            prompt += '\nexecutionSpec is proposed configuration, not paper evidence. The application renders ' \
+                      'its exact values into the published protocol; that deterministic suffix is not repeated here. ' \
+                      'Check EVERY field and original claim text for concrete meaning and consistency: dataset, ' \
+                      'scene selection, split, seeds, replication, formulas and uncertainty. Original prose must ' \
+                      'not contradict fields; do not require duplicate prose for an explicit typed choice. Structural validation ' \
                       'does not certify meaningful choices. A scene-seed pair is not automatically independent ' \
                       'of another seed from the same scene; fixed checkpoints with no retraining do not produce ' \
                       'independent training replicates. Require paired groups within units and resample actual ' \
@@ -663,36 +667,37 @@ The dataAvailability object is an internal audit, not new experimental results.
                           'metric signs and decision rules. Explain a failure concisely; no full derivation ' \
                           'is needed in the returned reason. Shared context is not itself verified by this call.\n' \
                           + FACTORIAL_REFERENCE
-            prompt += '\nOther proposed statements, for consistency only (not evidence and not verdict targets):\n' + json.dumps(proposal_context, ensure_ascii=False, separators=(',', ':'))
+            prompt += '\nOther proposed statements, for consistency only (not evidence and not verdict targets):\n' + json.dumps(wire_context, ensure_ascii=False, separators=(',', ':'))
             if any(c.get('designRole') for c in claims):
                 prompt += '\nFor every designRole, verify BOTH logical correctness AND fulfillment of its entire ' \
                           'requirement below. A role label, heading or vague promise is not fulfillment. Fail the ' \
                           'specific claim if its budget, split, procedure or decision criterion is unspecified. ' \
                           'Use the other target claims for shared definitions but not as factual evidence.\n' + design_requirements(metric_domains)
                 from services.deep_research.design_audit import required_design_slots
-                prompt += '\nFor roles in this checklist, every passed verdict MUST include designAudit. ' \
-                          'Each required slot maps to {"claimId":"ID of a target or context proposal", ' \
-                          '"quote":"exact wording of the concrete choice in its text or conditions"}. ' \
-                          'Use null for an absent or vague choice and fail that verdict. Do not count ' \
-                          '"fixed split", "same seed", "measure FPS" or "predeclare a tolerance" as a ' \
-                          'concrete protocol. Do not invent choices in the audit; proposals must already ' \
-                          'state them. Judge whether the quoted choice fulfills the requirement, not just ' \
-                          'whether relevant words occur. Shared definitions are permitted, paper facts ' \
-                          'are not an experiment configuration. Required slots:\n' + json.dumps(required_design_slots(metric_domains))
-                prompt += '\nThe designAudit object is FLAT: slot names are its direct keys; do not nest it under a role name.'
-                prompt += ('\nFor a choice spread across bullets or multiple statements, use a slot object '
-                           '{"quotes":[{"claimId":"target/context ID","quote":"exact contiguous substring"}]} '
-                           'with 1 to 32 separate source-bound segments. Every segment must be copied exactly, '
-                           'including punctuation. Never join bullets with invented separators, rewrite formulas, '
-                           'or quote a summary. All segments together must substantiate the entire slot; '
-                           'a partial quotation is not proof of completeness. Do not mix quote and quotes forms.')
+                prompt += ('\nPassed verdicts require FLAT designAudit with these slot keys: '
+                           + json.dumps(required_design_slots(metric_domains), separators=(',', ':'))
+                           + '. Each slot is {"claimId":"target/context proposal ID","quote":"exact concrete choice"}. '
+                           'Missing/vague choices use null and fail. Paper facts cannot supply configuration. '
+                           'Check that each choice fulfills the entire slot, not mere keyword presence. '
+                           'Promises such as "fixed split", "same seed", "measure FPS" or "predeclare a tolerance" fail. '
+                           'For discontinuous text use {"quotes":[{"claimId":"ID","quote":"exact substring"}]} '
+                           'with 1 to 32 segments. Copy punctuation exactly; never join, summarize or rewrite. '
+                           'Every segment must match its source and together cover the whole slot. No mixed forms.')
+                prompt += ('\nFor typed executionSpec choices prefer {"fields":[{"claimId":"target/context ID",'
+                           '"path":["executionSpec","factors",0,"treatment","parameters",0,"value"],"value":0.5}]}. '
+                           'Copy the exact existing typed value; path elements are object keys or zero-based list indices. '
+                           'Use 1-32 bindings. Allowed slot roots: intervention_levels=factors (groups); '
+                           'scenes=dataset/scenes, split=split, seeds=seeds, sampling_unit=independentUnit (data); '
+                           'effects=effects, uncertainty=uncertainty, decision_rule=decision (analysis). '
+                           'Other slots require quotes. Do not mix fields with quote/quotes. All bindings together '
+                           'must substantiate the entire slot; valid fields do not prove scientific correctness.')
                 required_slots = required_design_slots(metric_domains)
                 skeleton = [{'claimId': c['claimId'], 'status': 'failed',
                     'reason': 'replace with a concise concrete finding',
                     'designAudit': {slot: None for slot in required_slots.get(c.get('designRole'), ())}}
                     for c in claims]
                 prompt += '\nFill this exact per-target response skeleton. Change status only after checking. ' \
-                          'Replace a null slot with {"claimId":"target/context ID","quote":"exact concrete choice"} ' \
+                          'Replace a null slot with a supported quote, quotes or fields binding ' \
                           'only if such a choice is already written; otherwise keep null and fail. ' \
                           'Do not replace slot keys with role names or arrays. Symbolic placeholders such as ' \
                           'an unspecified threshold or degree do not define actual intervention levels.\n' \
