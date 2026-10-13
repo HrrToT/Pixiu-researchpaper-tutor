@@ -48,5 +48,12 @@
     "Contradictions in free prose, effect interpretation and sampling assumptions still require semantic and manual verification.",
     "No new real-model request was made; the last research-provider response was HTTP 402."
   ],
-  "acceptance": "Final snapshot-compatible full regression passed. Runtime not yet loaded; real answer quality and DR0-DR5 final acceptance remain incomplete."
+  "runtime": {
+    "loadedCommit": "20df4b6",
+    "activeRunsBeforeRestart": 0,
+    "pausedRunsPreserved": 4,
+    "health": {"status": "ok", "rag": "ok", "grobid": "ok", "uptimeSeconds": 33.5},
+    "newResearchProviderRequests": 0
+  },
+  "acceptance": "Final snapshot-compatible full regression passed and .56 loaded healthy. Real answer quality and DR0-DR5 final acceptance remain incomplete."
 }
