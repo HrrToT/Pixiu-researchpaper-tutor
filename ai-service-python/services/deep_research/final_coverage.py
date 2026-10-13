@@ -92,8 +92,17 @@ rules, requested comparisons and guarantee boundaries, as applicable. Identify
 these from the question AND the supplied source passages, not from what the
 answer happened to mention. Do not merge distinct conditioning inputs into one
 vague aspect. A missing aspect remains missing even if every stated sentence is true.
-For each aspect quote its basis (request or source) and the exact answer text
-that covers it. A source requirement must have an evidenceId and exact excerpt.
+For each aspect identify its basis and the accepted answer that covers it.
+Prefer field references to copying PDF text: a source basis is
+{{"kind":"source","evidenceId":"supplied ID","field":"quote"}}.
+Use field "sourceContext.before" or "sourceContext.after" only when that exact
+supplied context field contains the required basis. The server binds the complete
+unchanged field. Do not supply excerpt together with field, and do not infer omitted
+context. For a final-answer binding use {{"claimId":"accepted ID","field":"text"}}
+or field "conditions" for that claim's serialized conditions. Select it only if
+its actual content covers the specific aspect, not merely because it is related.
+Legacy literal excerpt bindings remain valid; never insert ellipses, normalize
+PDF spelling or punctuation, or combine noncontiguous excerpts into one string.
 When checking factual claims with available evidence, include source-grounded
 essential aspects; quoting only the broad user question is insufficient.
 For an access-level requirement ONLY (what the system actually obtained), use
@@ -108,13 +117,15 @@ Keep exact final-answer bindings for metadata aspects too. A downloaded fulltext
 does not prove that the answer uses it unless the bound claim cites that evidence.
 Check the subject of contrasts and pronouns against preceding sentences: a
 baseline's limitation cannot be assigned to the proposed method.
-Return only a JSON array, exactly one entry for each supplied obligation:
+Return only a JSON array, exactly one entry for each of these obligationIds,
+including the original-question scope: {json.dumps([o['obligationId'] for p in audit_plan for o in p.get('obligations', [])])}
 [{{"obligationId":"ID","status":"covered|partial|missing|not_required",
-   "bindings":[{{"claimId":"an accepted ID","excerpt":"exact substring of that claim's text or serialized conditions, at least 8 characters"}}],
+   "bindings":[{{"claimId":"an accepted ID","field":"text"}}],
    "aspects":[{{"aspectId":"unique within this obligation","requirement":"one necessary aspect",
-     "basis":{{"kind":"request|source","evidenceId":"required for source","excerpt":"exact basis text"}},
+     "basis":{{"kind":"source","evidenceId":"supplied evidence ID","field":"quote"}},
      "status":"covered|partial|missing",
-     "bindings":[{{"claimId":"accepted ID","excerpt":"exact answer substring, at least 8 characters"}}]}}]}}]
+     "bindings":[{{"claimId":"accepted ID","field":"text"}}]}}]}}]
+For a request basis use {{"kind":"request","excerpt":"exact question substring"}}.
 Covered requires every essential aspect to be covered with its own binding.
 Do not fabricate a binding for a missing aspect; use an empty bindings array.
 Only mark covered if ALL requested aspects of that obligation are answered in the
@@ -137,6 +148,8 @@ accepted claims. Bindings must quote the final answer, never the source passages
                 verdicts = None
             status = 'checked' if isinstance(verdicts, list) else 'invalid_response'
             if isinstance(verdicts, list):
+                from services.deep_research.coverage_references import resolve_coverage_references
+                verdicts = resolve_coverage_references(verdicts, claims, rows)
                 # Explicitly reported missing subrequirements override an
                 # inconsistent overall "covered", and remain repairable gaps.
                 verdicts = [{**v, 'status': 'partial'} if isinstance(v, dict)

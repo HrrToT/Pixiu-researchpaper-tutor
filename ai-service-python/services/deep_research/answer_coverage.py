@@ -50,6 +50,8 @@ def _bindings_supported(bindings, known_claims):
     for binding in bindings:
         if not isinstance(binding, dict):
             return False
+        if 'referenceError' in binding:
+            return False
         claim_id = binding.get("claimId")
         if not isinstance(claim_id, str):
             return False

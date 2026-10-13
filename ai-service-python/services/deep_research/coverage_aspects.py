@@ -12,7 +12,11 @@ def invalid_coverage_aspects(verdicts, claims, evidence_rows, questions, *, requ
     known = _known_claims_by_id(claims)
     evidence = {}
     for row in evidence_rows:
+        if not isinstance(row, dict):
+            continue
         eid = row.get('evidenceId')
+        if not isinstance(eid, str) or not eid:
+            continue
         evidence[eid] = row if eid not in evidence else None
     invalid = []
     for verdict in verdicts:
@@ -37,7 +41,7 @@ def invalid_coverage_aspects(verdicts, claims, evidence_rows, questions, *, requ
             if aspect.get('status') != 'covered' or not _bindings_supported(aspect.get('bindings'), known):
                 valid = False
             basis = aspect.get('basis')
-            if not isinstance(basis, dict):
+            if not isinstance(basis, dict) or 'referenceError' in basis:
                 valid = False
                 metadata_only = False
                 continue
