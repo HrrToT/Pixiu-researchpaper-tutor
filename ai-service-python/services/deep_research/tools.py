@@ -524,6 +524,9 @@ class BudgetedSemanticChecker:
     def _check_batch(self, claims: list[dict], evidence: list[dict], proposal_context: list[dict], *, node='verify') -> list[dict]:
         from services.deep_research.selection import surrounding_context
         metric_domains = self._metric_domains() if callable(self._metric_domains) else self._metric_domains
+        from services.deep_research.verification_aliases import (
+            encode_verification_inputs, restore_visible_evidence, restore_verdict_evidence)
+        wire_claims, wire_evidence, reverse_aliases = encode_verification_inputs(claims, evidence)
         # Format claims and evidence for checking
         claims_text = json.dumps([{
             "claimId": c.get("claimId"),
@@ -535,15 +538,15 @@ class BudgetedSemanticChecker:
             "designRole": c.get("designRole"),
             "executionSpec": c.get("executionSpec"),
             "designContractVersion": c.get("designContractVersion"),
-        } for c in claims], ensure_ascii=False)
+        } for c in wire_claims], ensure_ascii=False, separators=(',', ':'))
         
-        referenced = {ref for claim in claims for ref in claim.get("evidenceRefs", [])}
+        referenced = {ref for claim in wire_claims for ref in claim.get("evidenceRefs", [])}
         evidence_map = {e["evidenceId"]: {"quote": e.get("quote", ""), "conditions": e.get("conditions", {}),
                         "sourceContext": surrounding_context(e), "location": e.get("location", {}),
                         "sourceTitle": e.get("sourceTitle", ""),
                         "tableData": e.get("tableData"),
                         "workId": e.get("sourceWorkId"), "versionId": e.get("sourceVersionId"),
-                        "accessLevel": e.get("accessLevel")} for e in evidence if e["evidenceId"] in referenced}
+                        "accessLevel": e.get("accessLevel")} for e in wire_evidence if e["evidenceId"] in referenced}
         from uuid import uuid4
         from services.deep_research.prompt_budget import fit_evidence_prompt
         evidence_text = uuid4().hex
@@ -660,7 +663,7 @@ The dataAvailability object is an internal audit, not new experimental results.
                           'metric signs and decision rules. Explain a failure concisely; no full derivation ' \
                           'is needed in the returned reason. Shared context is not itself verified by this call.\n' \
                           + FACTORIAL_REFERENCE
-            prompt += '\nOther proposed statements, for consistency only (not evidence and not verdict targets):\n' + json.dumps(proposal_context, ensure_ascii=False)
+            prompt += '\nOther proposed statements, for consistency only (not evidence and not verdict targets):\n' + json.dumps(proposal_context, ensure_ascii=False, separators=(',', ':'))
             if any(c.get('designRole') for c in claims):
                 prompt += '\nFor every designRole, verify BOTH logical correctness AND fulfillment of its entire ' \
                           'requirement below. A role label, heading or vague promise is not fulfillment. Fail the ' \
@@ -699,7 +702,8 @@ The dataAvailability object is an internal audit, not new experimental results.
             [{"evidenceId": key, **value} for key, value in evidence_map.items()],
             lambda rows: template.replace(evidence_text, json.dumps({
                 row["evidenceId"]: {key: value for key, value in row.items() if key != "evidenceId"}
-                for row in rows}, ensure_ascii=False), 1))
+                for row in rows}, ensure_ascii=False, separators=(',', ':')), 1))
+        visible_evidence = restore_visible_evidence(visible_evidence, reverse_aliases)
         try:
             result = self._invoke(
                 run_id=self._run_id,
@@ -722,6 +726,7 @@ The dataAvailability object is an internal audit, not new experimental results.
                 raise DeepResearchError('invalid_verification_response',
                                         '声明核验未完整返回；不能据此判断材料不足。')
             from services.deep_research.design_audit import validate_design_audit
+            parsed = [restore_verdict_evidence(v, reverse_aliases) for v in parsed]
             by_id = {c['claimId']: c for c in claims}
             visible_ids = {row["evidenceId"] for row in visible_evidence}
             for verdict in parsed:
