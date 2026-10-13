@@ -39,7 +39,7 @@ class AcademicAcquisition:
             return []
         client = self.client_factory(record)
         adapter = ExternalAcademicAdapter(client, self.repo.reserve_call, self.complete_call)
-        sources, seen = [], set()
+        sources, materials, by_source = [], {}, {}
         for target in targets[:4]:
             # Queries contain public topics from the plan, never entire document text.
             query = str(target.get("query", "")).strip()[:700]
@@ -49,30 +49,36 @@ class AcademicAcquisition:
                 identity = candidate.get("versionId")
                 if not identity:
                     continue
-                if identity in seen:
-                    for source in sources:
-                        if source.get("versionId") == identity:
-                            source["obligationIds"] = list(dict.fromkeys(
-                                source.get("obligationIds", []) + [target["obligationId"]]))
-                    continue
-                seen.add(identity)
-                fulltext = (adapter.fetch_fulltext(run_id, candidate["arxivId"]) or {}) if client.policy.allow_fulltext else {}
-                # Public identity is the canonical abstract page; a fetch URL is transport metadata.
-                material = {**candidate, **fulltext, "url": candidate.get("url", "")}
+                if identity not in materials:
+                    fulltext = (adapter.fetch_fulltext(run_id, candidate["arxivId"]) or {}) if client.policy.allow_fulltext else {}
+                    # Cache acquisition, not the passages selected for one question.
+                    materials[identity] = {**candidate, **fulltext, "url": candidate.get("url", "")}
+                material = materials[identity]
                 pages = material.get("pages") or [{"text": material.get("abstract", "")}]
-                for page in _select_pages(pages, query):
+                question = str(target.get('question') or '')
+                # The current ranker tokenizes English. Preserve the discovery
+                # query's translated terms when the question has none.
+                reading_query = question if re.search(r'[a-z]{3,}', question.lower()) else query
+                for page in _select_pages(pages, reading_query):
                     text = page.get("text", "")
                     # Keep manageable passages and exact offsets within the original page.
                     for offset in range(0, min(len(text), 6000), 2000):
                         passage = text[offset:offset + 2000]
                         source_id = "src_" + digest({"version": identity, "hash": material["contentHash"],
                                                      "page": page.get("page"), "offset": offset})
-                        sources.append({**{key: value for key, value in material.items()
+                        if source_id in by_source:
+                            existing = by_source[source_id]
+                            existing['obligationIds'] = list(dict.fromkeys(
+                                existing['obligationIds'] + [target['obligationId']]))
+                            continue
+                        source = {**{key: value for key, value in material.items()
                                            if key not in {"pages", "text", "abstract"}},
                             "sourceId": source_id, "sourceKind": "arxiv", "sourceType": "academic_paper",
                             "ownerMaterialId": material["workId"], "text": passage,
                             "location": {"page": page["page"], "offset": offset} if page.get("page") else {"section": "摘要", "offset": offset},
-                            "obligationIds": [target["obligationId"]]})
+                            "obligationIds": [target["obligationId"]]}
+                        sources.append(source)
+                        by_source[source_id] = source
         return sources
 
 

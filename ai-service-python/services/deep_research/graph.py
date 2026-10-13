@@ -385,6 +385,7 @@ def make_acquire_node(
                     question = obligation.get("question", "")
                     if obl_id and question:
                         query_targets.append({"obligationId": obl_id, "query": obligation.get("searchQuery") or question,
+                                              "question": question,
                                               "requiredSources": obligation.get("requiredSources", [])})
         
         # Build material owner map for scope validation

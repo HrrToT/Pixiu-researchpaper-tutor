@@ -79,6 +79,29 @@ def test_one_external_work_can_support_multiple_obligations_without_refetch(repo
     assert len(fixture.fetches) == 1
 
 
+def test_repeated_work_selects_pages_for_each_question_not_discovery_identity(repo):
+    fixture = AcademicFixture()
+    original_discover = fixture.discover
+    fixture.discover = lambda query, limit: original_discover(query, limit) if not fixture.discoveries else [{
+        'workId': 'arxiv:2601.00001', 'versionId': 'arxiv:2601.00001v1', 'arxivId': '2601.00001v1'}]
+    original_fetch = fixture.fetch_fulltext
+    def fetch(identity):
+        result = original_fetch(identity)
+        return {**result, 'pages': [{'page': i + 1, 'text': 'encoder features ' * 4}
+                                  for i in range(3)] + [
+                                      {'page': 4, 'text': 'decoder deformation output ' * 4}]}
+    fixture.fetch_fulltext = fetch
+    acquire = AcademicAcquisition(repo, repo.complete_call, client_factory=lambda _: fixture)
+    sources = acquire('r', [
+        {'obligationId': 'encoder', 'query': '2310.08528v3', 'question': 'encoder features'},
+        {'obligationId': 'decoder', 'query': '2310.08528v3', 'question': 'decoder deformation output'}])
+    decoder = next(s for s in sources if s['location']['page'] == 4)
+    assert decoder['obligationIds'] == ['decoder']
+    assert 'decoder deformation output' in decoder['text']
+    assert len({s['sourceId'] for s in sources}) == len(sources)
+    assert len(fixture.fetches) == 1
+
+
 @pytest.mark.parametrize("key", ["maxExternalSearches", "maxFulltextFetches"])
 def test_client_cannot_widen_network_budget(repo, key):
     record, _ = repo.create_run({"runId": key, "taskId": "t", "budget": {key: 1000}})
