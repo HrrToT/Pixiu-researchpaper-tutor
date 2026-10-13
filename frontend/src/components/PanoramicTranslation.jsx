@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { getDocument, GlobalWorkerOptions } from 'pdfjs-dist';
 import workerUrl from 'pdfjs-dist/build/pdf.worker.min.js?url';
 import MarkdownContent from './MarkdownContent';
@@ -7,27 +7,28 @@ import './PanoramicTranslation.css';
 
 GlobalWorkerOptions.workerSrc = workerUrl;
 
-function usePdfPageImage(fileUrl, pageIndex) {
+function PdfTranslationDocument({ fileUrl, pageIndex, pageData }) {
   const [document, setDocument] = useState(null);
+  const [error, setError] = useState('');
+  useEffect(() => {
+    let active = true;
+    const loadingTask = getDocument({ url: fileUrl });
+    loadingTask.promise.then(doc => { if (active) setDocument(doc); })
+      .catch(() => { if (active) setError('原图暂时无法显示，请切回原文查看。'); });
+    return () => { active = false; void loadingTask.destroy().catch(() => {}); };
+  }, [fileUrl]);
+  return <PanoramicPage key={pageIndex} {...{ fileUrl, pageIndex, pageData, document }} documentError={error} />;
+}
+
+function usePdfPageImage(document, pageIndex) {
   const [image, setImage] = useState(null);
   const [error, setError] = useState('');
   useEffect(() => {
     let active = true;
-    setDocument(null);
-    setError('');
-    const loadingTask = getDocument({ url: fileUrl });
-    loadingTask.promise.then(doc => { if (active) setDocument({url:fileUrl, doc}); })
-      .catch(() => { if (active) setError('原图暂时无法显示，请切回原文查看。'); });
-    return () => { active = false; void loadingTask.destroy().catch(() => {}); };
-  }, [fileUrl]);
-  useEffect(() => {
-    let active = true;
     let renderTask;
-    setImage(null);
-    if (!document || document.url !== fileUrl) return;
-    setError('');
+    if (!document) return;
     (async () => {
-      const page = await document.doc.getPage(pageIndex + 1);
+      const page = await document.getPage(pageIndex + 1);
       if (!active) return;
       const base = page.getViewport({scale:1});
       const viewport = page.getViewport({scale:Math.min(2, 1600 / base.width)});
@@ -37,24 +38,29 @@ function usePdfPageImage(fileUrl, pageIndex) {
       canvas.height = Math.ceil(viewport.height);
       renderTask = page.render({canvasContext:canvas.getContext('2d'), viewport, background:'#ffffff'});
       await renderTask.promise;
-      if (active) setImage({canvas, fileUrl, pageIndex});
+      if (active) setImage(canvas);
     })().catch(error => {
       if (active && error?.name !== 'RenderingCancelledException') setError('原图暂时无法显示，请切回原文查看。');
     });
     return () => { active = false; renderTask?.cancel(); };
-  }, [document, fileUrl, pageIndex]);
-  return { image: image?.fileUrl === fileUrl && image?.pageIndex === pageIndex ? image.canvas : null, error };
+  }, [document, pageIndex]);
+  return { image, error };
 }
 
 function SourceRegion({ image, bbox, label = '论文原图、公式或尚未翻译内容', trim = true,
   openOnMount = false, onClose }) {
   const ref = useRef(null);
+  const buttonRef = useRef(null);
   const dialogRef = useRef(null);
   const zoomRef = useRef(null);
-  const [empty, setEmpty] = useState(false);
   useEffect(() => {
     const canvas = ref.current;
     if (!canvas || !image) return;
+    // Visibility belongs to the same canvas draw: blank crops have no action.
+    const setEmpty = empty => {
+      canvas.hidden = empty;
+      buttonRef.current.hidden = empty || openOnMount;
+    };
     const rect = sourcePixelRect(bbox, image.width, image.height);
     if (!rect.width || !rect.height) { setEmpty(true); return; }
     const context = canvas.getContext('2d', {willReadFrequently:true});
@@ -83,21 +89,21 @@ function SourceRegion({ image, bbox, label = '论文原图、公式或尚未翻�
       context.drawImage(image,rect.x+cropLeft,rect.y+top,width,height,0,0,width,height);
     }
     setEmpty(false);
-  }, [image, bbox, trim]);
-  const openOriginal = () => {
+  }, [image, bbox, trim, openOnMount]);
+  const openOriginal = useCallback(() => {
     const original = ref.current, zoom = zoomRef.current;
-    if (!original || !zoom) return;
+    if (!original || original.hidden || !zoom || !image) return;
     zoom.width = original.width; zoom.height = original.height;
     zoom.style.width = `${original.width / (Number(image.dataset.pdfScale) || 2) * 2}px`;
     zoom.getContext('2d').drawImage(original,0,0);
     dialogRef.current.showModal();
-  };
+  }, [image]);
   useEffect(() => {
     if (image && openOnMount && !dialogRef.current?.open) openOriginal();
-  }, [image,openOnMount]);
+  }, [image,openOnMount,openOriginal]);
   return <>
-    <button type="button" className="panoramic-source-button" hidden={empty || openOnMount} aria-label={`放大${label}`} onClick={openOriginal}>
-      <canvas ref={ref} role="img" aria-label={label} className="panoramic-source" hidden={empty} />
+    <button ref={buttonRef} type="button" className="panoramic-source-button" hidden={openOnMount} aria-label={`放大${label}`} onClick={openOriginal}>
+      <canvas ref={ref} role="img" aria-label={label} className="panoramic-source" />
       <span>放大原图</span>
     </button>
     <dialog ref={dialogRef} className="panoramic-image-dialog" aria-label="原图放大查看" onClose={onClose}>
@@ -128,8 +134,8 @@ function Paragraph({ item, image, locatedMath }) {
   </article>;
 }
 
-export default function PanoramicTranslation({fileUrl,pageIndex,pageData}) {
-  const {image,error} = usePdfPageImage(fileUrl,pageIndex);
+function PanoramicPage({fileUrl,pageIndex,pageData,document,documentError}) {
+  const {image,error} = usePdfPageImage(document,pageIndex);
   const plan = useMemo(() => buildPanoramicTranslation(pageData?.pageLayout,
     pageData?.translatedBlocks || [],pageData?.excludedZones || []),[pageData]);
   const unpositioned = usesUnpositionedTranslation(pageData?.pageLayout, pageData?.translatedBlocks || []);
@@ -137,7 +143,7 @@ export default function PanoramicTranslation({fileUrl,pageIndex,pageData}) {
     ? <Paragraph key={`${fileUrl}-${pageIndex}-${item.id}`} item={item} image={image} locatedMath={pageData?.mathProtectionVersion===2} />
     : image ? <SourceRegion key={item.id} image={image} bbox={item.bbox} /> : null);
   return <div className="panoramic-page" aria-label="当前页图文译文">
-    {!image && <p className="panoramic-status" role="status">{error || '正在载入原图…'}</p>}
+    {!image && <p className="panoramic-status" role="status">{documentError || error || '正在载入原图…'}</p>}
     {unpositioned ? <>
       {pageData?.translatedText && <article className="panoramic-paragraph"><MarkdownContent>{pageData.translatedText}</MarkdownContent></article>}
       {pageData?.translatedBlocks?.length > 0 && <p className="panoramic-status">译文未按段落定位，可展开原图核对。</p>}
@@ -148,4 +154,9 @@ export default function PanoramicTranslation({fileUrl,pageIndex,pageData}) {
       : <div key={index}>{renderItems(section.items)}</div>)
       : null}
   </div>;
+}
+
+export default function PanoramicTranslation(props) {
+  // File changes dispose the PDF; page changes reset only its rendered image.
+  return <PdfTranslationDocument key={props.fileUrl} {...props} />;
 }

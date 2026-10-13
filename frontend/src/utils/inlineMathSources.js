@@ -12,7 +12,7 @@ export function inlineMathRanges(text) {
       if (token) {
         if (/^[a-z]{3,}$/.test(token) && !/^(?:min|max|sin|cos|exp|log)$/.test(token)) break;
         end += token.length;
-      } else if (/[ \t()\[\]{}=∈×·+−\-^*/_∏∑∫]/.test(text[end])) {
+      } else if (/[ \t()[\]{}=∈×·+−\-^*/_∏∑∫]/.test(text[end])) {
         end++;
       } else if (text[end] === '.' && /\d/.test(text[end-1] || '') && /\d/.test(text[end+1] || '')) {
         end++;

@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 export default function PaperPageNavigation({ pageIndex, totalPages, onJump }) {
-  const [input, setInput] = useState(String(pageIndex + 1));
-  useEffect(() => setInput(String(pageIndex + 1)), [pageIndex]);
+  const [draft, setDraft] = useState({ pageIndex, value: String(pageIndex + 1) });
+  if (draft.pageIndex !== pageIndex) setDraft({ pageIndex, value: String(pageIndex + 1) });
+  const input = draft.pageIndex === pageIndex ? draft.value : String(pageIndex + 1);
+  const setInput = value => setDraft({ pageIndex, value });
   const submit = event => {
     event.preventDefault();
     const requested = Number(input);

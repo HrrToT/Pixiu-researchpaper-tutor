@@ -65,6 +65,32 @@ it('keeps the completed translation readable when source PDF rendering fails', a
   expect(screen.getByText('完整的中文译文')).toBeInTheDocument();
 });
 
+it('clears a failed page when navigating and keeps the same PDF document', async () => {
+  const next = deferred();
+  const getPage = vi.fn(number => number === 1 ? Promise.reject(new Error('bad page')) : next.promise);
+  mocks.getDocument.mockReturnValue({promise:Promise.resolve({getPage}),destroy:vi.fn(async()=>{})});
+  const view = render(<PanoramicTranslation fileUrl="A.pdf" pageIndex={0} pageData={data}/>);
+  expect(await screen.findByText('原图暂时无法显示，请切回原文查看。')).toBeInTheDocument();
+  view.rerender(<PanoramicTranslation fileUrl="A.pdf" pageIndex={1} pageData={data}/>);
+  expect(screen.queryByText('原图暂时无法显示，请切回原文查看。')).not.toBeInTheDocument();
+  expect(screen.getByRole('status')).toHaveTextContent('正在载入原图');
+  await act(async()=>{next.resolve(makePage(500));});
+  await waitFor(()=>expect(screen.queryByRole('status')).not.toBeInTheDocument());
+  expect(mocks.getDocument).toHaveBeenCalledOnce();
+});
+
+it('does not retain the old document error while a different PDF is loading', async () => {
+  const next = deferred();
+  mocks.getDocument.mockImplementation(({url})=>({promise:url==='A.pdf'
+    ? Promise.reject(new Error('missing')) : next.promise,destroy:vi.fn(async()=>{})}));
+  const view = render(<PanoramicTranslation fileUrl="A.pdf" pageIndex={0} pageData={data}/>);
+  expect(await screen.findByText('原图暂时无法显示，请切回原文查看。')).toBeInTheDocument();
+  view.rerender(<PanoramicTranslation fileUrl="B.pdf" pageIndex={0} pageData={data}/>);
+  expect(screen.getByRole('status')).toHaveTextContent('正在载入原图');
+  await act(async()=>{next.resolve({getPage:async()=>makePage(500)});});
+  await waitFor(()=>expect(screen.queryByRole('status')).not.toBeInTheDocument());
+});
+
 it('shows unpositioned cached prose before a folded original page without rewriting it', async () => {
   mocks.getDocument.mockReturnValue({promise:Promise.resolve({getPage:async()=>makePage(600)}),destroy:vi.fn(async()=>{})});
   const text = '保留已有译文，公式错误也不擅自改写。';
