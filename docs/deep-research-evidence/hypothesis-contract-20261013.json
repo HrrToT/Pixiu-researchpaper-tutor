@@ -47,5 +47,12 @@
     "Original free prose remains visible to semantic review; contradictions outside the typed contract still require semantic and manual checks.",
     "No real research-provider call was added after the prior HTTP 402 failure. Final DR0-DR5 acceptance is incomplete."
   ],
-  "acceptance": "Offline regression passed. Runtime loading and new real-content quality remain unverified."
+  "runtime": {
+    "loadedCommit": "6a9c285",
+    "activeRunsBeforeRestart": 0,
+    "pausedRunsPreserved": 4,
+    "health": {"status": "ok", "rag": "ok", "grobid": "ok", "uptimeSeconds": 59.2},
+    "newResearchProviderRequests": 0
+  },
+  "acceptance": "Offline regression passed and .57 loaded healthy. New real-content quality and final DR0-DR5 acceptance remain unverified."
 }
