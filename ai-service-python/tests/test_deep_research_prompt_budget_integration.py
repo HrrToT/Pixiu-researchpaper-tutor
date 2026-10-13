@@ -8,6 +8,33 @@ from services.deep_research.repair import repair_rejected
 from services.deep_research.tools import BudgetedSemanticChecker
 
 
+def test_synthesis_compacts_routing_without_changing_quotes_or_source_scope():
+    from copy import deepcopy
+    record = {'question': 'Explain', 'materials': [{'materialId': 'paper-a', 'title': 'Same title'},
+              {'materialId': 'paper-b', 'title': 'Same title'}], 'state': {
+        'plan': [{'obligations': [{'obligationId': 'o', 'question': 'Compare',
+            'purpose': 'answer_requirement', 'requestExcerpt': 'Explain',
+            'requiredSources': ['paper-a', 'paper-b'], 'searchQuery': 'SEARCH_ONLY_PAYLOAD'}]}],
+        'evidence': [{'evidenceId': f'e{i}', 'sourceWorkId': paper,
+            'quote': f'Literal quote {i}', 'conditions': {'scope': f'condition-{i}'},
+            'location': {'chunk': 123, 'pageResolution': 'resolved', 'section': 'Methods', 'page': 7},
+            'obligationIds': ['o']} for i, paper in enumerate(['paper-a', 'paper-b'])]}}
+    before = deepcopy(record)
+    invoke = Mock(return_value={'content': '{}'})
+    make_synthesize_node(invoke, lambda *a, **k: record)({'run_id': 'r'})
+    prompt = invoke.call_args.args[2]
+    registry = json.loads(prompt.split('Source registry (P keys identify papers, not evidenceRefs): ')[1].split('\n', 1)[0])
+    rows = json.loads(prompt.split('Evidence summaries:\n')[1].split('\n\nReturn ONLY')[0])
+    assert [registry[row['source']]['workId'] for row in rows] == ['paper-a', 'paper-b']
+    assert [row['quote'] for row in rows] == ['Literal quote 0', 'Literal quote 1']
+    assert all(registry[row['source']]['title'] == 'Same title' for row in rows)
+    assert [row['conditions']['scope'] for row in rows] == ['condition-0', 'condition-1']
+    assert all(row['location'] == {'section': 'Methods', 'page': 7} for row in rows)
+    assert 'SEARCH_ONLY_PAYLOAD' not in prompt
+    assert 'answer_requirement' in prompt and 'requiredSources' in prompt
+    assert record == before
+
+
 def test_experiment_synthesis_counts_instructions_and_keeps_whole_quotes():
     evidence = [{'evidenceId': f'e{i}', 'quote': '完整引文' * 350,
                  'sourceWorkId': f'p{i % 2}', 'sourceVersionId': 'v',

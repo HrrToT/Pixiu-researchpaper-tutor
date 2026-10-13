@@ -949,20 +949,28 @@ def make_synthesize_node(
         from services.deep_research.selection import balanced_sample, surrounding_context, comparison_evidence_order
         evidence_summaries = []
         evidence_aliases = {}
+        source_aliases = {}
+        source_registry = {}
         candidates = comparison_evidence_order(evidence, paper_titles) if output_kind == 'paper_comparison' else evidence
         for ev in balanced_sample(candidates,
                 lambda item: (item.get("sourceWorkId", ""), tuple(item.get("obligationIds", []))), 20):
             alias = f"E{len(evidence_aliases) + 1}"
             evidence_aliases[alias] = ev['evidenceId']
+            source_id = ev.get('sourceWorkId', '')
+            if source_id not in source_aliases:
+                source_aliases[source_id] = f'P{len(source_aliases) + 1}'
+                source_registry[source_aliases[source_id]] = {
+                    'workId': source_id,
+                    'title': paper_titles.get(source_id, '') or ev.get('sourceTitle', '')}
             evidence_summaries.append({
                 "evidenceId": alias,
                 "quote": ev.get("quote", ""),
-                "source": ev.get("sourceWorkId", ""),
-                "sourceTitle": paper_titles.get(ev.get("sourceWorkId"), ''),
+                "source": source_aliases[source_id],
                 "sourceContext": surrounding_context(ev),
-                "tableData": ev.get("tableData"),
-                "location": ev.get("location", {}),
-                "conditions": ev.get("conditions", {}),
+                **({'tableData': ev['tableData']} if ev.get('tableData') is not None else {}),
+                'location': {key: value for key, value in ev.get('location', {}).items()
+                             if key not in {'chunk', 'pageResolution'}},
+                **({'conditions': ev['conditions']} if ev.get('conditions') else {}),
                 "obligations": ev.get("obligationIds", []),
                 "accessLevel": ev.get("accessLevel", "fulltext"),
             })
@@ -973,6 +981,8 @@ def make_synthesize_node(
         claim_fields = 'claimId, text, kind, evidenceRefs, conditions, obligationIds, detailLevel'
         if output_kind == 'experiment_design':
             claim_fields += ', designRole (required on every proposal/hypothesis), executionSpec (required for groups, data and analysis roles)'
+        synthesis_obligations = [{k: o[k] for k in ('obligationId', 'question', 'purpose', 'requestExcerpt', 'requiredSources') if k in o}
+                                 for p in brief_state.get('plan', []) for o in p.get('obligations', [])]
         prompt = f"""Synthesize a complete answer to the research question.
 Question: {question}
 Output kind: {output_kind}
@@ -982,7 +992,8 @@ Claim count is independent of display length: shorten each statement rather than
 Evidence count: {len(evidence)}
 User clarification: {brief_state.get('clarification', '')}
 Gaps: {json.dumps([g.get('question') for g in gaps[:5]], ensure_ascii=False)}
-Research questions (answer_requirement is a requested deliverable; supporting_research informs it): {json.dumps([o for p in brief_state.get('plan', []) for o in p.get('obligations', [])], ensure_ascii=False)}
+Research questions (answer_requirement is a requested deliverable; supporting_research informs it): {json.dumps(synthesis_obligations, ensure_ascii=False, separators=(',', ':'))}
+Source registry (P keys identify papers, not evidenceRefs): {json.dumps(source_registry, ensure_ascii=False, separators=(',', ':'))}
 
 Evidence summaries:
 {evidence_marker}
@@ -990,43 +1001,28 @@ Evidence summaries:
 Return ONLY compact JSON with:
 - sections: array of {{title, claimIds: [claim_id_strings]}}
 - claims: array of {{{claim_fields}}}
-For reported table measurements add tableBindings: [{{evidenceId, rowNumber, groupIndex, metric, value}}].
-Copy the exact row number, zero-based dataset group index, metric and string value from tableData.
-The text must name the dataset, method variant, metric and value beside that measurement.
-Do not use anonymous slash-separated numeric series. Without verified tableData, omit table numbers
-and use supported qualitative evidence. Never relabel a reported table measurement as inference to evade checks.
-Use ONLY the supplied short evidence IDs (E1, E2, ...) in evidenceRefs. Do not invent or abbreviate IDs.
-Put material limitations into claims as evidence-bounded inferences. Do not duplicate prose in extra fields.
-Evidence IDs are routing keys only: keep E1/E2/... and raw IDs OUT of text and conditions.
-Use natural source names or "所选原文片段" in prose; the UI renders links from evidenceRefs.
-
+Table measurements require tableBindings: [{{evidenceId,rowNumber,groupIndex,metric,value}}].
+Copy exact tableData row, zero-based group, metric and string value. Name dataset, method variant,
+metric and value together; no anonymous numeric series. Without tableData use qualitative evidence;
+never bypass table checks by relabeling a reported measurement as inference.
+Use ONLY supplied E IDs in evidenceRefs. Evidence IDs are routing keys only: keep E1/E2/... and raw IDs OUT of text and conditions.
+P keys are also internal: use source titles in prose, never P1/P2/....
+Use source names in prose; UI supplies links. Missing selected evidence does not prove authors omitted a test.
+Limitations are evidence-bounded inference claims. Never invent results or present unchecked claims as verified.
 Section titles MUST be selected from {json.dumps(section_templates, ensure_ascii=False)}.
-Each section's claimIds must reference actual claim IDs from the claims array.
-Do NOT include unchecked model prose - every factual statement must have a claimId.
-For experiment_design: include hypothesis, controls, variables, data+metrics, steps, confounders, decision criteria.
-Use at most {claim_limit} claims in total. Each claim must have one independently checkable conclusion.
-Do not combine facts from different papers, benchmarks or protocols into one claim to save characters.
-Define a common loss orientation before formulas, distinguish conditional and averaged effects, and
-separate the paper's actual distillation from any proposed truncation-only diagnostic experiment.
-Write in concise Chinese. All proposals/hypotheses must also be claims with a claimId and a section.
-Explain technical relationships in understandable Chinese; an English placeholder
-such as an input's generic name is not a substitute for explaining its components.
-When contextOmitted is true, do not invent a missing antecedent or attribute a
-baseline's statement to the paper's proposed method.
-Use kind reported, inference, hypothesis or proposal. A proposal cannot state an existing result as fact.
-Follow the user's scope and length. State conflicting conditions beside the relevant conclusion.
-Every requested aspect must be answered or have a specific evidence limitation. In a
-mechanism explanation retain the relevant conditioning inputs and activation rules;
-do not replace them with a generic phrase such as 'depends on the input/view'.
-If the user asks for two points, produce at most two claims. The TOTAL text and conditions must fit the requested length.
-For reported facts copy numbers exactly; avoid derived differences/ratios. Any calculation is an inference, not a reported result.
-Preserve table method labels, including stars/variant markers, and distinguish reproduced baselines
-from the original paper's measurements. Reading two rows does not establish that they belong to
-one controlled compression trajectory. State them as separately reported table values when appropriate.
-Never say the authors did not test/report something merely because the selected passages omit it.
-When citing only abstract evidence use detailLevel="abstract", explicitly limit the wording to the
-abstract and do not claim to have read the full paper. Otherwise use detailLevel="fulltext".
-Do NOT invent measured results or pretend unsupported conclusions are verified."""
+Sections reference actual claimIds. All facts, proposals and hypotheses require claims and sections;
+no extra unchecked prose. At most {claim_limit} claims, each independently checkable; never merge
+unrelated papers, benchmarks or protocols to shorten the answer. For two requested points use at most two claims.
+Write concise understandable Chinese, explaining technical components, conditioning inputs and activation rules;
+not English placeholders or generic 'depends on the input/view'. Answer each requested aspect or state its
+specific evidence limitation. Respect scope and total text+conditions length; put conflicting conditions beside conclusions.
+Kinds: reported, inference, hypothesis, proposal. Copy reported numbers exactly; derived ratios/differences are inferences.
+Proposals are unexecuted choices, not existing facts. Preserve method labels and variant markers;
+distinguish reproduced baselines from original-paper measurements and separate results from controlled trajectories.
+With contextOmitted, never invent antecedents or attribute baseline findings to the proposed method.
+Abstract-only claims use detailLevel="abstract" and explicitly limit their scope; otherwise "fulltext".
+Experiment designs must cover hypothesis, groups, controls, data, metrics, steps, confounders and decisions.
+Orient losses before formulas, distinguish conditional/averaged effects and paper distillation from proposed truncation."""
 
         if output_kind == 'paper_comparison':
             prompt += "\nFor a comparison, separate each paper's reported evidence from the cross-paper judgment. " \
@@ -1054,7 +1050,7 @@ Do NOT invent measured results or pretend unsupported conclusions are verified."
                       + design_requirements(brief_state.get('metricDomains'))
         template = prompt
         prompt, evidence_summaries = fit_evidence_prompt(evidence_summaries,
-            lambda rows: template.replace(evidence_marker, json.dumps(rows, ensure_ascii=False), 1))
+            lambda rows: template.replace(evidence_marker, json.dumps(rows, ensure_ascii=False, separators=(',', ':')), 1))
         evidence_aliases = {row['evidenceId']: evidence_aliases[row['evidenceId']] for row in evidence_summaries}
         result = llm_invoke(run_id, "synthesize", prompt, {"max_tokens": 4000, "temperature": 0.2}, use_reserve=True)
         
