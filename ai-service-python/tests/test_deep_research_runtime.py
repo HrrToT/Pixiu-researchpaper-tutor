@@ -42,6 +42,7 @@ def test_scope_failure_prevents_provider_send_and_deadline_caps_request():
     with pytest.raises(DeepResearchError, match="材料"):
         client.invoke(LLMRequest(prompt="answer", timeout_seconds=60))
     provider.invoke.assert_not_called()
+
     validate.return_value = True
     client.invoke(LLMRequest(prompt="answer", timeout_seconds=60))
     request = provider.invoke.call_args.args[0]
@@ -52,6 +53,37 @@ def test_scope_failure_prevents_provider_send_and_deadline_caps_request():
     provider.reset_mock()
     with pytest.raises(DeepResearchError, match="预算"):
         client.invoke(LLMRequest(prompt="answer"))
+    provider.invoke.assert_not_called()
+
+
+def test_authoritative_model_send_checks_whole_snapshot_once_without_caching():
+    store, provider, post = repo(), Mock(), Mock()
+    store.require_run.return_value['materials'] = [{'materialId': 'p'}, {'materialId': 'q'}]
+    post.return_value = Mock(status_code=200, content=b'{}')
+    post.return_value.json.return_value = {'valid': True, 'snapshotValid': True,
+                                         'taskId': 'task/中文', 'runId': 'run'}
+    validate = AuthoritativeScopeValidator(store, post=post)
+    client = ScopedModelClient(store, validate, lambda: provider).for_run('run')
+    client.invoke(LLMRequest(prompt='first'))
+    assert post.call_count == 1 and provider.invoke.call_count == 1
+    post.return_value.json.return_value['valid'] = False
+    with pytest.raises(DeepResearchError):
+        client.invoke(LLMRequest(prompt='revoked'))
+    assert post.call_count == 2 and provider.invoke.call_count == 1
+    post.reset_mock()
+    assert not validate.validate_materials('run', ['foreign'])
+    post.assert_not_called()
+
+
+def test_external_only_model_send_still_checks_live_task_scope():
+    store, post = repo(), Mock()
+    store.require_run.return_value['materials'] = []
+    post.return_value = Mock(status_code=403, content=b'{}')
+    provider = Mock()
+    client = ScopedModelClient(store, AuthoritativeScopeValidator(store, post=post), lambda: provider).for_run('run')
+    with pytest.raises(DeepResearchError):
+        client.invoke(LLMRequest(prompt='external'))
+    post.assert_called_once()
     provider.invoke.assert_not_called()
 
 

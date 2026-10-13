@@ -78,9 +78,16 @@ class AuthoritativeScopeValidator:
         self.repo, self.origin, self.post = repo, origin.rstrip("/"), post
 
     def __call__(self, run_id, material_id):
+        return self.validate_materials(run_id, [material_id])
+
+    def validate_materials(self, run_id, material_ids):
+        """Check membership locally, then validate the whole live snapshot once."""
         record = self.repo.require_run(run_id)
         materials = record.get("materials", [])
-        if material_id not in {m.get("materialId") for m in materials}:
+        local = {m.get('materialId') for m in materials}
+        for material_id in material_ids:
+            if material_id in local:
+                continue
             external = (record.get("sourcePolicy", {}).get("mode") in {"academic_external", "external_only"}
                         and any(s.get("workId") == material_id and s.get("sourceKind") == "arxiv"
                                 for s in record.get("state", {}).get("sources", [])))
@@ -125,11 +132,15 @@ class ScopedModelClient:
 
             def invoke(self, request):
                 record = parent.repo.require_run(run_id)
-                if hasattr(parent.validate, "validate_run") and not parent.validate.validate_run(run_id):
-                    raise DeepResearchError("scope_revoked", "任务或材料范围已变更，请核对后继续")
-                for material in record.get("materials", []):
-                    if not parent.validate(run_id, material["materialId"]):
-                        raise DeepResearchError("scope_revoked", "研究材料已变更或暂不可用，请核对后继续")
+                if isinstance(parent.validate, AuthoritativeScopeValidator):
+                    if not parent.validate.validate_materials(run_id, [m['materialId'] for m in record.get('materials', [])]):
+                        raise DeepResearchError("scope_revoked", "任务或材料范围已变更，请核对后继续")
+                else:
+                    if hasattr(parent.validate, "validate_run") and not parent.validate.validate_run(run_id):
+                        raise DeepResearchError("scope_revoked", "任务或材料范围已变更，请核对后继续")
+                    for material in record.get("materials", []):
+                        if not parent.validate(run_id, material["materialId"]):
+                            raise DeepResearchError("scope_revoked", "研究材料已变更或暂不可用，请核对后继续")
                 started = record.get("startedAt")
                 remaining = float(record["budget"]["maxWallClockSeconds"])
                 if started:

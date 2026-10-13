@@ -19,6 +19,31 @@ def _camera_claims():
     ]
 
 
+def test_merge_initial_conflicting_identity_stays_rejected():
+    claim = _claim('c', ['o'], 'ambiguous')
+    initial = {'accepted': [claim], 'rejected': [{'claimId': 'c', 'reason': 'failed'}]}
+    for checked in ({}, {'accepted': [claim]}):
+        result = merge_verified_revisions(initial, checked)
+        assert result['accepted'] == []
+        assert result['rejected'] == initial['rejected']
+
+
+def test_merge_conflicting_revision_cannot_promote_failed_claim():
+    claim = _claim('c', ['o'], 'conflicting revision')
+    initial = {'accepted': [], 'rejected': [{'claimId': 'c', 'reason': 'failed'}]}
+    result = merge_verified_revisions(initial, {'accepted': [claim],
+        'rejected': [{'claimId': 'c', 'reason': 'also failed'}]})
+    assert result == initial
+
+
+def test_merge_conflicting_revision_preserves_unambiguous_previous_acceptance():
+    claim = _claim('c', ['o'], 'previously checked')
+    initial = {'accepted': [claim], 'rejected': []}
+    result = merge_verified_revisions(initial, {'accepted': [{**claim, 'text': 'ambiguous'}],
+        'rejected': [{'claimId': 'c', 'reason': 'failed'}]})
+    assert result == initial
+
+
 class PrepareCoverageRepairTests(unittest.TestCase):
     def test_existing_failed_target_prevents_rewriting_all_shared_obligation_claims(self):
         claims = [_claim('good', ['shared'], 'Known supported result'),

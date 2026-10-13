@@ -195,6 +195,10 @@ def merge_verified_revisions(initial, checked):
     init_accepted = initial.get("accepted") or []
     init_rejected = initial.get("rejected") or []
     checked_accepted = checked.get("accepted") or []
+    initial_conflicts = ({_claim_id(c) for c in init_accepted} &
+                         {_claim_id(c) for c in init_rejected}) - {None}
+    checked_conflicts = ({_claim_id(c) for c in checked_accepted} &
+                         {_claim_id(c) for c in (checked.get('rejected') or [])}) - {None}
 
     known_ids = set()
     for claim in init_accepted:
@@ -211,7 +215,7 @@ def merge_verified_revisions(initial, checked):
         cid = _claim_id(claim)
         if cid is not None:
             counts[cid] = counts.get(cid, 0) + 1
-    duplicated_ids = {cid for cid, count in counts.items() if count > 1}
+    duplicated_ids = {cid for cid, count in counts.items() if count > 1} | initial_conflicts | checked_conflicts
 
     checked_valid = {}
     for claim in checked_accepted:
@@ -230,6 +234,8 @@ def merge_verified_revisions(initial, checked):
     seen = set()
     for claim in init_accepted:
         cid = _claim_id(claim)
+        if cid in initial_conflicts:
+            continue
         entry = copy.deepcopy(checked_valid[cid]) if cid in checked_valid else copy.deepcopy(claim)
         if cid not in seen:
             result_accepted.append(entry)
