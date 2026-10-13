@@ -1146,6 +1146,7 @@ def make_verify_node(
         from services.deep_research.final_coverage import audit_final_answer
         from services.deep_research.coverage_repair import prepare_coverage_repair, merge_verified_revisions
         saved = record.get('state', {})
+        repair_report = saved.get('repairReport', report_body)
         if saved.get('repairAttempted') and 'initialAnswerCoverage' in saved and 'repairTargets' in saved:
             verification_result = saved['initialVerification']
             answer_coverage = saved['initialAnswerCoverage']
@@ -1156,7 +1157,11 @@ def make_verify_node(
             answer_coverage = audit_final_answer(run_id, record.get('question', ''),
                 saved.get('plan', []), verification_result.get('accepted', []),
                 evidence, llm_invoke, _safe_parse_json, budget=current.get('budget'))
-            repair_targets = prepare_coverage_repair(report_body, verification_result,
+            if saved.get('outputKind') == 'experiment_design':
+                from services.deep_research.design_completion import prepare_design_completion
+                repair_report, verification_result = prepare_design_completion(
+                    report_body, verification_result, evidence, saved.get('plan', []))
+            repair_targets = prepare_coverage_repair(repair_report, verification_result,
                 answer_coverage if answer_coverage.get('status') == 'checked' else {'gaps': []})
         if saved.get('repairCompleted') and saved.get('verifiedReport'):
             return {'claim_ids': [c['claimId'] for c in saved['verifiedReport'].get('verifiedClaims', [])]}
@@ -1166,7 +1171,7 @@ def make_verify_node(
         if repair_targets.get("rejected") and llm_invoke:
             repo_update(run_id, lambda r: {**r, "state": {**r.get("state", {}), "repairAttempted": True,
                 "initialVerification": verification_result, 'initialAnswerCoverage': answer_coverage,
-                'repairTargets': repair_targets}}, expected_revision=None)
+                'repairTargets': repair_targets, 'repairReport': repair_report}}, expected_revision=None)
             from services.deep_research.repair import repair_rejected
             from services.deep_research.contracts import BudgetExhaustedError
             def invoke_repair(prompt):
@@ -1200,7 +1205,7 @@ def make_verify_node(
                 if revised is None:
                     from services.deep_research.repair_budget import repair_prompt_byte_limit
                     current = repo_update(run_id, lambda r: r, expected_revision=None)
-                    revised = repair_rejected(report_body, repair_targets, evidence, record.get("question", ""),
+                    revised = repair_rejected(repair_report, repair_targets, evidence, record.get("question", ""),
                         invoke_repair, _safe_parse_json,
                         max_prompt_bytes=repair_prompt_byte_limit(current.get('budget', {})),
                         metric_domains=record.get('state', {}).get('metricDomains'))

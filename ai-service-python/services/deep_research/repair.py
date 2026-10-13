@@ -76,6 +76,8 @@ Return a COMPACT JSON array, or [] if no supported revision is possible. Schema:
 {json.dumps(revision_shape, ensure_ascii=False)}
 Use actual values, not schema descriptions; wording key is "text".
 Preserve claimId, kind and valid designRole; no new claims, searches or reported results.
+Empty claims with missing_design_deliverable checks are server-allocated slots:
+fill their required design content using these exact IDs, kinds and roles.
 Never disguise a fact as a proposal. Retain necessary conditions and the user's length limit.
 Each claim may cite ONLY its own allowed supplied evidence. Same-version permission and
 obligation labels do not prove relevance or support. Check every factual clause.

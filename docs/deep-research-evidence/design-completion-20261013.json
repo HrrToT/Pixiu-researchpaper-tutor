@@ -1,0 +1,32 @@
+{
+  "date": "2026-10-13",
+  "promptVersion": "dr-v2.20261013.54",
+  "change": "Register missing experimental-design roles as empty rejected repair targets; retain original claim kinds and independently verify generated content.",
+  "offlineReplay": {
+    "runId": "dr_run_b9f116b00e525189952b9bf2c10db21b",
+    "caseId": "D3-v19",
+    "databaseAccess": "read-only",
+    "modelCalls": 0,
+    "newRoles": ["budget", "steps", "limits"],
+    "repairPromptBytes": 23675,
+    "promptByteLimit": 24000,
+    "visibleEvidenceAliases": 2,
+    "limitation": "Request construction only; does not establish evidence sufficiency or generated-plan quality."
+  },
+  "targetedTests": {
+    "existingRegression": {"passed": 67, "warnings": 2, "seconds": 49.05},
+    "designCompletionAndGraphRecovery": {"passed": 7, "seconds": 5.54},
+    "coverage": [
+      "Only absent roles receive stable server-allocated identities.",
+      "Ambiguous, unverified, abstract-only or unrelated evidence cannot authorize slots.",
+      "Existing factual claims are not reclassified as proposals.",
+      "Kind, role, identity and visible evidence restrictions remain enforced.",
+      "Rejected revisions remain absent from verified output.",
+      "Recovery from a saved repair response does not resend the repair request.",
+      "Original drafts remain unchanged and empty slots are not published."
+    ]
+  },
+  "runtimePrecheck": {"activeRuns": 0, "pausedRuns": 4},
+  "fullRegression": {"passed": 991, "warnings": 2, "seconds": 163.68},
+  "acceptance": "Offline checks passed. New real-output quality verification pending."
+}
