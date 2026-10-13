@@ -84,7 +84,7 @@ def test_repair_cannot_cite_candidate_omitted_by_prompt_byte_limit():
     base = {'sourceWorkId': 'paper', 'sourceVersionId': 'v1', 'accessLevel': 'fulltext',
             'verification': {'literal': 'passed'}, 'obligationIds': ['o']}
     evidence = [dict(base, evidenceId='e1', quote='Known original passage.'),
-                dict(base, evidenceId='huge', quote='x' * 21000)]
+                dict(base, evidenceId='huge', quote='x' * 25000)]
     def invoke(prompt):
         assert 'x' * 1000 not in prompt
         assert '"c": ["E1"]' in prompt

@@ -54,13 +54,10 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *, 
                         if row.get('kind') in {'proposal', 'suggestion', 'hypothesis'}
                         and row.get('claimId') not in originals]
     proposal_context = [verification_claim_view(row) for row in proposal_context]
-    prompt = f'''Revise only the rejected claims below. Narrow unsupported wording or omit the claim.
-Some targets have reason answer_incomplete: their existing text may be factually correct,
-but omits requested aspects. Fill those omissions from that claim's allowed supplied evidence,
-including necessary conditioning inputs and applicability rules; do not just shorten it.
-For absence_not_established, reason from the limited positive evidence actually supplied.
-Do not assert that the whole paper never reports, tests or proves something from missing
-passages. A finite empirical result cannot by itself establish a universal guarantee.
+    prompt = f'''Revise only the targets; narrow unsupported wording or omit it.
+answer_incomplete requires filling requested omissions, conditioning inputs and applicability,
+not merely shortening. absence_not_established requires bounded positive evidence:
+missing passages do not prove paper-wide absence; finite results do not prove universality.
 Question: {question}
 Accepted experimental definitions (consistency only; do not revise these or treat them as paper evidence):
 {json.dumps(proposal_context, ensure_ascii=False, separators=(',', ':'))}
@@ -75,29 +72,23 @@ Allowed evidence IDs per claim (candidate permissions, not proof of support):
 {permissions_marker}
 Exact available evidence:
 {evidence_marker}
-Return a COMPACT JSON array of revised claims, or [] when no supported revision is possible.
-Each revised claim uses this field template (replace instructions with actual values, not strings describing objects):
-{json.dumps(revision_shape, ensure_ascii=False)}; the wording key is "text".
-Keep claimId, kind and any designRole. Use only that claim's allowed evidence IDs; never turn a fact
-into a proposal to evade checking. Preserve conditions needed for the narrower assertion.
-Use the supplied short evidence IDs (E1, E2, ...) in both evidenceRefs and tableBindings.
-Those IDs are internal routing keys. Never print E1/E2 or raw evidence IDs in
-the claim text; use natural prose and let the interface render citation links.
-Reported table numbers require tableBindings from tableData, using exactly these JSON keys:
+Return a COMPACT JSON array, or [] if no supported revision is possible. Schema:
+{json.dumps(revision_shape, ensure_ascii=False)}
+Use actual values, not schema descriptions; wording key is "text".
+Preserve claimId, kind and valid designRole; no new claims, searches or reported results.
+Never disguise a fact as a proposal. Retain necessary conditions and the user's length limit.
+Each claim may cite ONLY its own allowed supplied evidence. Same-version permission and
+obligation labels do not prove relevance or support. Check every factual clause.
+Use E1/E2 aliases in evidenceRefs/tableBindings, never in published text; Q IDs are not evidence.
+Table numbers require exact tableData bindings:
 {{"evidenceId":"E1","rowNumber":1,"groupIndex":0,"metric":"FPS","value":"200"}}
-This is schema only, not evidence. Copy actual rowNumber, zero-based groupIndex, metric and value.
-The key is "value", never "exactStringValue". Name dataset, method and metric beside each number.
-When no verified cell is available, omit the numeric example rather than guessing a mapping.
-An abstract supports only explicitly abstract-level wording (detailLevel="abstract").
-Do not add new claims, searches, reported measurements or results. For an existing proposal,
-you MAY specify new numeric configuration choices (seed, split, intervention level, budget,
-confidence level) explicitly labeled as YOUR UNEXECUTED PROPOSAL, not as paper settings.
-Complete missing protocol details rather than replacing them with "to be preregistered".
-The paper need not have used a proposed setting. Keep established factual clauses restricted
-to their allowed evidence. These additional passages come from the same already acquired
-source versions; retrieval obligation labels do not prove relevance. Check each passage
-against the actual requested aspect before citing it. Fix invalid proposed formulas and label all
-unexecuted proposals/hypotheses clearly. Keep the answer concise and within the user's length limit.'''
+This is schema, not evidence: copy actual rowNumber, zero-based groupIndex, metric and value
+(key "value", never "exactStringValue"). Name dataset/method/metric; omit unsupported numbers.
+Abstract evidence permits only explicit abstract-level wording (detailLevel="abstract").
+For existing proposals, choose concrete seed/split/level/budget/confidence settings as YOUR UNEXECUTED PROPOSAL,
+not paper-attributed values or promises to preregister later. Correct formulas and label
+hypotheses/proposals. Source facts still require evidence; proposed choices need not occur
+in the paper. Maintain consistency with accepted definitions and complete required details.'''
     if any(row.get('designContractVersion') == 2 for row in originals.values()):
         from services.deep_research.execution_spec import EXECUTION_SPEC_CONTRACT
         from services.deep_research.experimental_reasoning import DESIGN_ROLES, design_requirements
