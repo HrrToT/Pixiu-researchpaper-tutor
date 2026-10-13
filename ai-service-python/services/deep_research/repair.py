@@ -38,6 +38,11 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *, 
     input_claims = resolve_evidence_aliases({'claims': deepcopy(list(originals.values()))}, short_ids)['claims']
     from services.deep_research.repair_prompt import factor_repair_questions
     question_dictionary, packed_checks = factor_repair_questions(rejected)
+    revision_shape = {'claimId': 'original ID', 'kind': 'original kind', 'text': 'revised wording',
+                      'evidenceRefs': ['E1'], 'conditions': {}, 'detailLevel': 'fulltext'}
+    if any(row.get('designContractVersion') == 2 for row in originals.values()):
+        revision_shape.update(designRole='canonical role for proposals/hypotheses; omit for facts',
+                              executionSpec='complete object for data/analysis; omit for other roles')
     proposal_context = [{key: row[key] for key in ('claimId', 'text', 'kind', 'conditions', 'designRole', 'executionSpec', 'designContractVersion') if key in row}
                         for row in verification.get('accepted', [])
                         if row.get('kind') in {'proposal', 'suggestion', 'hypothesis'}]
@@ -61,8 +66,8 @@ Allowed evidence IDs per claim (candidate permissions, not proof of support):
 Exact available evidence:
 {evidence_marker}
 Return a COMPACT JSON array of revised claims, or [] when no supported revision is possible.
-Each revised claim uses {{"claimId":"original ID","kind":"original kind","text":"revised wording",
-"evidenceRefs":["E1"],"conditions":{{}},"detailLevel":"fulltext"}}; the wording key is "text".
+Each revised claim uses this field template (replace instructions with actual values, not strings describing objects):
+{json.dumps(revision_shape, ensure_ascii=False)}; the wording key is "text".
 Keep claimId, kind and any designRole. Use only that claim's allowed evidence IDs; never turn a fact
 into a proposal to evade checking. Preserve conditions needed for the narrower assertion.
 Use the supplied short evidence IDs (E1, E2, ...) in both evidenceRefs and tableBindings.

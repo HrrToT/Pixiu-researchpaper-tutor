@@ -970,6 +970,9 @@ def make_synthesize_node(
         from uuid import uuid4
         from services.deep_research.prompt_budget import fit_evidence_prompt
         evidence_marker = uuid4().hex
+        claim_fields = 'claimId, text, kind, evidenceRefs, conditions, obligationIds, detailLevel'
+        if output_kind == 'experiment_design':
+            claim_fields += ', designRole (required on every proposal/hypothesis), executionSpec (required for data and analysis roles)'
         prompt = f"""Synthesize a complete answer to the research question.
 Question: {question}
 Output kind: {output_kind}
@@ -986,7 +989,7 @@ Evidence summaries:
 
 Return ONLY compact JSON with:
 - sections: array of {{title, claimIds: [claim_id_strings]}}
-- claims: array of {{claimId, text, kind, evidenceRefs, conditions, obligationIds, detailLevel}}
+- claims: array of {{{claim_fields}}}
 For reported table measurements add tableBindings: [{{evidenceId, rowNumber, groupIndex, metric, value}}].
 Copy the exact row number, zero-based dataset group index, metric and string value from tableData.
 The text must name the dataset, method variant, metric and value beside that measurement.
