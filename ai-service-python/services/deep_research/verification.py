@@ -133,6 +133,18 @@ def verify_claims(claims: list[dict], evidence: list[dict],
                     rejected.append({'claimId': claim_id, 'reason': 'incomplete_budget_spec',
                                      'detail': ', '.join(errors)})
                     continue
+        if not reason and 'hypothesisContractVersion' in claim:
+            from services.deep_research.hypothesis_spec import validate_hypothesis_spec
+            if (type(claim['hypothesisContractVersion']) is not int or claim['hypothesisContractVersion'] != 1
+                    or claim.get('designRole') != 'hypothesis'
+                    or kind not in {'proposal', 'suggestion', 'hypothesis'}):
+                reason = 'invalid_hypothesis_contract'
+            else:
+                errors = validate_hypothesis_spec(claim.get('executionSpec'))
+                if errors:
+                    rejected.append({'claimId': claim_id, 'reason': 'incomplete_hypothesis_spec',
+                                     'detail': ', '.join(errors)})
+                    continue
         if reason:
             rejected.append({"claimId": claim_id, "reason": reason})
         else:

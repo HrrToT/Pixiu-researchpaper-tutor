@@ -533,7 +533,8 @@ class BudgetedSemanticChecker:
             context = [{'claimId': c.get('claimId'), 'text': c.get('text'), 'kind': c.get('kind'),
                         'conditions': c.get('conditions', {}), 'designRole': c.get('designRole'),
                         'executionSpec': c.get('executionSpec'), 'designContractVersion': c.get('designContractVersion'),
-                        'budgetContractVersion': c.get('budgetContractVersion')}
+                        'budgetContractVersion': c.get('budgetContractVersion'),
+                        'hypothesisContractVersion': c.get('hypothesisContractVersion')}
                        for c in [*accepted_context, *proposals] if c['claimId'] not in targets]
             verdicts.extend(self._check_batch(batch, evidence, context, node=batch_node))
         by_id = {v['claimId']: v for v in verdicts}
@@ -566,6 +567,7 @@ class BudgetedSemanticChecker:
             "executionSpec": c.get("executionSpec"),
             "designContractVersion": c.get("designContractVersion"),
             "budgetContractVersion": c.get("budgetContractVersion"),
+            "hypothesisContractVersion": c.get("hypothesisContractVersion"),
         }) for c in wire_claims], ensure_ascii=False, separators=(',', ':'))
         
         referenced = {ref for claim in wire_claims for ref in claim.get("evidenceRefs", [])}
@@ -663,6 +665,15 @@ Do not require an unexecuted experiment to have results. Do not judge context cl
                       'A finite baseline cap or grounded existing-asset selection is mandatory. ' \
                       'Do not approve a narrative that contradicts its typed budget or promises an ' \
                       'unsupported asset. Structure alone does not prove scientific fairness.'
+        if any(c.get('hypothesisContractVersion') == 1 for c in [*claims, *proposal_context]):
+            prompt += '\nHypothesis contract 1 links a prospective statement to one analysis ID and exact effect keys. ' \
+                      'Check BOTH original prose and typed statement against that actual analysis. ' \
+                      'explore permits estimates/uncertainty but no significance or equivalence verdict; ' \
+                      'test_zero needs an interval-based zero-effect decision; assess_equivalence needs ' \
+                      'declared positive metric tolerances and a valid uncertainty interval. A near-zero ' \
+                      'estimate or non-significance does not establish additivity, equivalence or independence. ' \
+                      'Reject prose that makes a stronger promise than the linked method; do not infer correctness ' \
+                      'from matching IDs, labels or nonempty formulas.'
 
         if any(c.get('designContractVersion') == 2 and c.get('designRole') == 'data' for c in claims):
             prompt += '''
@@ -768,7 +779,8 @@ The dataAvailability object is an internal audit, not new experimental results.
                                     (claims[midpoint:], claims[:midpoint])):
                 context = [*proposal_context, *[{
                     key: c[key] for key in ('claimId', 'text', 'kind', 'conditions',
-                        'designRole', 'executionSpec', 'designContractVersion', 'budgetContractVersion') if key in c
+                        'designRole', 'executionSpec', 'designContractVersion', 'budgetContractVersion',
+                        'hypothesisContractVersion') if key in c
                 } for c in siblings if c.get('kind') in {'proposal', 'suggestion', 'hypothesis'}]]
                 verdicts.extend(self._check_batch(batch, evidence, context, node=node))
             return verdicts

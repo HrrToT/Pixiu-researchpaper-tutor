@@ -33,6 +33,8 @@ def materialize_execution_claim(claim):
         result['executionSpec'] = normalize_execution_spec(result.get('designRole'), result['executionSpec'])
     if result.get('designRole') == 'budget' and result.get('budgetContractVersion') != 1:
         return result
+    if result.get('designRole') == 'hypothesis' and result.get('hypothesisContractVersion') != 1:
+        return result
     text = render_execution_spec(result.get('designRole'), result.get('executionSpec'))
     if text:
         suffix = '\n\n' + text
@@ -56,6 +58,8 @@ def verification_claim_view(claim):
             or not isinstance(result.get('text'), str)):
         return result
     if result.get('designRole') == 'budget' and result.get('budgetContractVersion') != 1:
+        return result
+    if result.get('designRole') == 'hypothesis' and result.get('hypothesisContractVersion') != 1:
         return result
     rendered = render_execution_spec(result.get('designRole'), result.get('executionSpec'))
     suffix = '\n\n' + rendered if rendered else ''

@@ -45,6 +45,8 @@ def prepare_design_completion(report, verification, evidence, plan):
                        'detailLevel': 'fulltext'})
         if role == 'budget' and type(draft.get('budgetContractVersion')) is int and draft['budgetContractVersion'] == 1:
             claims[-1]['budgetContractVersion'] = 1
+        if role == 'hypothesis' and type(draft.get('hypothesisContractVersion')) is int and draft['hypothesisContractVersion'] == 1:
+            claims[-1]['hypothesisContractVersion'] = 1
         checked.setdefault('rejected', []).append({'claimId': identity,
             'reason': 'missing_design_deliverable', 'detail': requirement})
     return draft, checked

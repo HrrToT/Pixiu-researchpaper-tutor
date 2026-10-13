@@ -948,6 +948,7 @@ def make_synthesize_node(
         brief_state = record.get("state", {})
         output_kind = brief_state.get("outputKind", "direction_survey")
         strict_budget = type(record.get('budgetContractVersion')) is int and record['budgetContractVersion'] == 1
+        strict_hypothesis = type(record.get('hypothesisContractVersion')) is int and record['hypothesisContractVersion'] == 1
         from services.deep_research.answer_constraints import requested_character_limit
         requested_limit = requested_character_limit(question)
         from services.deep_research.synthesis import OUTPUT_KIND_SECTIONS
@@ -993,6 +994,8 @@ def make_synthesize_node(
             claim_fields += ', designRole (required on every proposal/hypothesis), executionSpec (required for groups, data and analysis roles)'
             if strict_budget:
                 claim_fields += ', executionSpec also required for the budget role'
+            if strict_hypothesis:
+                claim_fields += ', executionSpec also required for the hypothesis role'
         synthesis_obligations = [{k: o[k] for k in ('obligationId', 'question', 'purpose', 'requestExcerpt', 'requiredSources') if k in o}
                                  for p in brief_state.get('plan', []) for o in p.get('obligations', [])]
         prompt = f"""Synthesize a complete answer to the research question.
@@ -1060,6 +1063,12 @@ Orient losses before formulas, distinguish conditional/averaged effects and pape
                 prompt += '\nThe budget role owns the canonical baseline/recovery configuration. ' \
                           'Other roles refer to these choices without restating different budgets. ' \
                           'Binary group IDs follow factors order (0=control, 1=treatment).'
+            if strict_hypothesis:
+                from services.deep_research.hypothesis_spec import HYPOTHESIS_SPEC_CONTRACT
+                prompt += '\n' + HYPOTHESIS_SPEC_CONTRACT
+                prompt += '\nLink the hypothesis to its actual analysis claim and exact effect keys. ' \
+                          'Choose the purpose required by the user and a compatible analysis; ' \
+                          'do not downgrade a requested statistical test into descriptive exploration.'
             prompt += '\nEach proposed design claim MUST have one designRole from the contract below. ' \
                       'Use exactly one complete claim per role; keep its configuration and decision rules together. ' \
                       'These are proposals, not facts about the paper. ' \
@@ -1092,6 +1101,8 @@ Orient losses before formulas, distinguish conditional/averaged effects and pape
             from services.deep_research.execution_materialization import materialize_execution_claim
             from services.deep_research.budget_contract import stamp_budget_contract
             parsed = stamp_budget_contract(parsed, enabled=strict_budget)
+            from services.deep_research.hypothesis_contract import stamp_hypothesis_contract
+            parsed = stamp_hypothesis_contract(parsed, enabled=strict_hypothesis)
             parsed['claims'] = [materialize_execution_claim({**claim, 'designContractVersion': 2})
                                 if isinstance(claim, dict) else claim for claim in parsed['claims']]
         parsed = compact_answer(parsed, question,
@@ -1104,6 +1115,7 @@ Orient losses before formulas, distinguish conditional/averaged effects and pape
         if output_kind == "experiment_design":
             # Compaction must not hide required settings back in metadata.
             parsed = stamp_budget_contract(parsed, enabled=strict_budget)
+            parsed = stamp_hypothesis_contract(parsed, enabled=strict_hypothesis)
             parsed['claims'] = [materialize_execution_claim({**claim, 'designContractVersion': 2})
                                 if isinstance(claim, dict) else claim for claim in parsed['claims']]
             from services.deep_research.answer_constraints import answer_character_count
@@ -1157,7 +1169,7 @@ def make_verify_node(
         
         from services.deep_research.final_coverage import audit_final_answer
         from services.deep_research.coverage_repair import prepare_coverage_repair, merge_verified_revisions
-        from services.deep_research.budget_contract import enforce_budget_consistency
+        from services.deep_research.design_consistency import enforce_design_consistency
         saved = record.get('state', {})
         repair_report = saved.get('repairReport', report_body)
         if saved.get('repairAttempted') and 'initialAnswerCoverage' in saved and 'repairTargets' in saved:
@@ -1165,7 +1177,7 @@ def make_verify_node(
             answer_coverage = saved['initialAnswerCoverage']
             repair_targets = saved['repairTargets']
         else:
-            verification_result = enforce_budget_consistency(
+            verification_result = enforce_design_consistency(
                 verify_claims_fn(claims, evidence, budgeted_semantic))
             current = repo_update(run_id, lambda r: r, expected_revision=None)
             answer_coverage = audit_final_answer(run_id, record.get('question', ''),
@@ -1234,7 +1246,7 @@ def make_verify_node(
                     merged = saved.get('repairVerification')
                     if merged is None:
                         checked = verify_claims_fn(revised, evidence, revised_semantic)
-                        merged = enforce_budget_consistency(merge_verified_revisions(verification_result, checked))
+                        merged = enforce_design_consistency(merge_verified_revisions(verification_result, checked))
                         repo_update(run_id, lambda r: {**r, 'state': {**r.get('state', {}),
                             'repairVerification': merged}}, expected_revision=None)
                     if merged.get('accepted') != verification_result.get('accepted'):
@@ -1302,16 +1314,16 @@ def make_publish_node(
         brief_state = record.get("state", {})
         output_kind = brief_state.get("outputKind", "direction_survey")
         
-        from services.deep_research.budget_contract import enforce_budget_consistency
-        checked = enforce_budget_consistency({'accepted': verified_report.get('verifiedClaims', []),
+        from services.deep_research.design_consistency import enforce_design_consistency
+        checked = enforce_design_consistency({'accepted': verified_report.get('verifiedClaims', []),
                                              'rejected': verified_report.get('rejectedClaims', [])})
         if checked['accepted'] != verified_report.get('verifiedClaims', []):
-            # A resumed publish must not trust a now-inconsistent marked budget
+            # A resumed publish must not trust inconsistent marked definitions
             # or retain a coverage verdict for an answer that has been changed.
             verified_report = {**verified_report, 'verifiedClaims': checked['accepted'],
                 'rejectedClaims': checked['rejected'],
                 'verificationSummary': {'accepted': len(checked['accepted']), 'rejected': len(checked['rejected'])},
-                'answerCoverage': {**verified_report.get('answerCoverage', {}), 'status': 'invalidated_budget_contract'}}
+                'answerCoverage': {**verified_report.get('answerCoverage', {}), 'status': 'invalidated_design_contract'}}
             repo_update(run_id, lambda r: {**r, 'state': {**r.get('state', {}),
                         'verifiedReport': verified_report}}, expected_revision=None)
         accepted_claims = verified_report.get("verifiedClaims", [])

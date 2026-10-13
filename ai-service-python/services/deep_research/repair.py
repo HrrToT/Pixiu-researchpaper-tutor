@@ -49,7 +49,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *, 
     if any(row.get('designContractVersion') == 2 for row in originals.values()):
         revision_shape.update(designRole='canonical role for proposals/hypotheses; omit for facts',
                               executionSpec='complete object for groups/data/analysis; omit for other roles')
-    proposal_context = [{key: row[key] for key in ('claimId', 'text', 'kind', 'conditions', 'designRole', 'executionSpec', 'designContractVersion', 'budgetContractVersion') if key in row}
+    proposal_context = [{key: row[key] for key in ('claimId', 'text', 'kind', 'conditions', 'designRole', 'executionSpec', 'designContractVersion', 'budgetContractVersion', 'hypothesisContractVersion') if key in row}
                         for row in verification.get('accepted', [])
                         if row.get('kind') in {'proposal', 'suggestion', 'hypothesis'}
                         and row.get('claimId') not in originals]
@@ -81,6 +81,9 @@ fill their required design content using these exact IDs, kinds and roles.
 Never disguise a fact as a proposal. Retain necessary conditions and the user's length limit.
 Each claim may cite ONLY its own allowed supplied evidence. Same-version permission and
 obligation labels do not prove relevance or support. Check every factual clause.
+For purely prospective choices or mathematical definitions, use evidenceRefs=[] when
+there is no empirical assertion. Cite only evidence actually needed for factual clauses;
+permission IDs are not citations to retain automatically. Never omit support for paper facts.
 Use E1/E2 aliases in evidenceRefs/tableBindings, never in published text; Q IDs are not evidence.
 Table numbers require exact tableData bindings:
 {{"evidenceId":"E1","rowNumber":1,"groupIndex":0,"metric":"FPS","value":"200"}}
@@ -111,6 +114,11 @@ in the paper. Maintain consistency with accepted definitions and complete requir
         prompt += '\n' + BUDGET_SPEC_CONTRACT
         prompt += '\nThe budget role owns baseline/recovery settings. Use matching binary group IDs ' \
                   'from the factors order; other roles must remain consistent with this canonical budget.'
+    if any(row.get('hypothesisContractVersion') == 1 for row in originals.values()):
+        from services.deep_research.hypothesis_spec import HYPOTHESIS_SPEC_CONTRACT
+        prompt += '\n' + HYPOTHESIS_SPEC_CONTRACT
+        prompt += '\nRepair linked hypothesis/analysis targets jointly, keeping their IDs and exact effect keys. ' \
+                  'Select a purpose and compatible method that fulfill the user request, not a weaker substitute.'
     template = prompt
     def render(selected_rows):
         visible_ids = {row['evidenceId'] for row in selected_rows}
@@ -160,6 +168,10 @@ in the paper. Maintain consistency with accepted definitions and complete requir
             row['budgetContractVersion'] = original['budgetContractVersion']
         else:
             row.pop('budgetContractVersion', None)
+        if 'hypothesisContractVersion' in original:
+            row['hypothesisContractVersion'] = original['hypothesisContractVersion']
+        else:
+            row.pop('hypothesisContractVersion', None)
         # The repair cannot reassign the claim to another research obligation.
         if 'obligationIds' in original:
             row['obligationIds'] = deepcopy(original['obligationIds'])

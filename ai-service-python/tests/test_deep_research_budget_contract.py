@@ -145,7 +145,7 @@ def test_resumed_publish_checks_marked_budget_and_invalidates_stale_coverage():
     result = make_publish_node(publish, update)({'run_id': 'r'})
     assert result['outcome'] == 'partial'
     assert [c['claimId'] for c in publish.call_args.kwargs['payload']['claims']] == ['g']
-    assert record['state']['verifiedReport']['answerCoverage']['status'] == 'invalidated_budget_contract'
+    assert record['state']['verifiedReport']['answerCoverage']['status'] == 'invalidated_design_contract'
 
 
 @pytest.mark.parametrize('enabled', [False, True])

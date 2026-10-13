@@ -1,0 +1,51 @@
+{
+  "date": "2026-10-13",
+  "baseCommit": "6b54f8b",
+  "promptVersion": "dr-v2.20261013.57",
+  "hypothesisContractVersion": 1,
+  "change": "New run snapshots link prospective hypotheses to one accepted analysis ID, exact effect keys and an explicit purpose: explore, test_zero or assess_equivalence.",
+  "gates": [
+    "Required typed fields and immutable server version are checked before semantic dispatch.",
+    "Exploration links to descriptive decisions; zero-effect tests require interval_excludes_zero; equivalence requires an equivalence decision with valid declared tolerances.",
+    "An analysis reference must resolve uniquely to a prospective analysis, not a paper fact or another role.",
+    "Purpose conflicts withhold both the hypothesis and analysis for joint repair rather than selecting a weaker purpose automatically.",
+    "Other marked hypotheses depending on a withheld analysis are also withheld.",
+    "Checks run after merging revisions and during resumed publication; changed accepted content invalidates stale coverage.",
+    "Legacy snapshots remain unmarked; model output cannot select or remove contract versions."
+  ],
+  "qoder": {
+    "model": "bailian/qwen3.8-max-tp",
+    "scope": "Standalone hypothesis module and offline tests from a schema plus execution_spec.py reference. Tools disabled, retries zero; no paper, runtime data or key sent.",
+    "primaryReviewChanges": [
+      "Use one shared purpose-to-decision mapping for validation and joint repair.",
+      "Correct wording that invented an uncertainty interval for descriptive analysis or treated interval exclusion as proof that an effect exists.",
+      "Translate standard conditional and averaged main effects accurately; JSON-quote effect labels to prevent multiline label injection.",
+      "Handle malformed keys without raising and integrate snapshot-controlled creation, materialization, repair, merge and publication."
+    ]
+  },
+  "offlineReplay": {
+    "caseId": "D3-v20",
+    "runId": "dr_run_a42e81318fe75e06b5b37c3a52b6cbdc",
+    "databaseAccess": "read-only",
+    "modelCalls": 0,
+    "fixtureAnnotation": {"hypothesisId": "c1", "analysisClaimId": "c7", "effectKeys": ["交互效应"], "purpose": "test_zero"},
+    "linkedAnalysisDecision": "descriptive",
+    "withheldIds": ["c1", "c7"],
+    "otherAcceptedIdsPreserved": ["c2", "c6", "c5", "c8"],
+    "historicalTextUnchanged": true,
+    "repairPromptBytes": 23927,
+    "repairTargets": ["c8", "c9", "c3", "c4", "c5", "design_completion_budget", "design_completion_limits", "c1", "c7"],
+    "capacityBoundary": "Saved repairReport including registered slots is annotated locally for this counterexample. No new model output is asserted; this does not establish capacity or quality for every fresh .57 run."
+  },
+  "validation": {
+    "targetedWithBudgetCompatibility": {"passed": 87, "seconds": 10.0},
+    "fullRegression": {"passed": 1141, "warnings": 2, "seconds": 129.60},
+    "coverage": ["Valid and incompatible purposes", "Missing/ambiguous/wrong-kind references", "Malformed fields", "Exact effect membership", "Joint compatible/incompatible repair with fake semantic pass", "No duplicate repair on re-entry", "Old snapshots and server version control", "Resumed publication", "No invented interval or internal analysis ID in display"]
+  },
+  "limitations": [
+    "Matching typed purpose, IDs and effect keys does not prove the statement, formula, user-intent interpretation, independent sampling assumptions or source support scientifically correct.",
+    "Original free prose remains visible to semantic review; contradictions outside the typed contract still require semantic and manual checks.",
+    "No real research-provider call was added after the prior HTTP 402 failure. Final DR0-DR5 acceptance is incomplete."
+  ],
+  "acceptance": "Offline regression passed. Runtime loading and new real-content quality remain unverified."
+}

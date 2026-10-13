@@ -10,6 +10,9 @@ def _pct(fraction):
 
 
 def render_execution_spec(role, spec):
+    if role == 'hypothesis':
+        from services.deep_research.hypothesis_spec import render_hypothesis_spec
+        return render_hypothesis_spec(spec)
     if role == 'budget':
         from services.deep_research.budget_spec import render_budget_spec
         return render_budget_spec(spec)
