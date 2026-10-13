@@ -31,5 +31,5 @@
     {"id": "H6", "split": "holdout", "materials": [], "mode": "offline_fault_injection", "policy": "academic_external", "faults": ["发现503", "全文超限", "预算耗尽", "私网DNS与重定向"], "required": ["不自动重试", "保留已得摘要", "不抬高限额", "合理停止或降级", "查询不触发生成"], "forbidden": ["将故障fixture记为真实Provider质量通过"]}
   ],
   "holdoutExecution": "in_progress",
-  "holdoutResults": [{"caseId": "H1", "firstRunId": "dr_run_dc936f3dc4d15f07b50be8047fa0ec32", "firstManualOutcome": "failed", "record": "deep-research-evidence/H1-first-run-20261013.json", "futureStatus": "replacement_required_after_diagnosis"}]
+  "holdoutResults": [{"caseId": "H1", "firstRunId": "dr_run_dc936f3dc4d15f07b50be8047fa0ec32", "firstManualOutcome": "failed", "record": "deep-research-evidence/H1-first-run-20261013.json", "futureStatus": "replacement_required_after_diagnosis"}, {"caseId": "H3", "firstRunId": "dr_run_fd3af380a6845fcc81f008542a45b2ec", "firstManualOutcome": "failed", "record": "deep-research-evidence/H3-v1-external-fulltext-20261013.json", "futureStatus": "replacement_required_after_diagnosis", "note": "Original frozen case and receipts retain their historical split; subsequent H3 runs are development regressions, not independent holdout acceptance."}]
 }

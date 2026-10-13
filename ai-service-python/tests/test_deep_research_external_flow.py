@@ -102,6 +102,33 @@ def test_repeated_work_selects_pages_for_each_question_not_discovery_identity(re
     assert len(fixture.fetches) == 1
 
 
+def test_page_ranking_does_not_reward_repeated_bibliography_identifiers():
+    from services.deep_research.external import _select_pages
+    pages = [{'page': 9, 'text': 'arXiv preprint Gaussian. ' * 40},
+             {'page': 2, 'text': 'encoder ' * 50},
+             {'page': 4, 'text': 'The encoder represents temporal features for the deformation decoder.'}]
+    ranked = _select_pages(pages, 'arXiv:2310.08528v3 encoder decoder temporal deformation')
+    assert ranked[0]['page'] == 4
+    assert ranked[-1]['page'] == 9
+    assert ranked[0]['text'] == pages[2]['text']
+
+
+def test_identifier_in_chinese_question_keeps_translated_discovery_terms(repo):
+    fixture = AcademicFixture()
+    original_fetch = fixture.fetch_fulltext
+    def fetch(identity):
+        result = original_fetch(identity)
+        return {**result, 'pages': [{'page': i + 7, 'text': 'arXiv preprint. ' * 30} for i in range(3)] + [
+            {'page': 4, 'text': 'The deformation decoder maps temporal features to Gaussian offsets.'}]}
+    fixture.fetch_fulltext = fetch
+    acquire = AcademicAcquisition(repo, repo.complete_call, client_factory=lambda _: fixture)
+    sources = acquire('r', [{'obligationId': 'decoder', 'query': 'arXiv:2310.08528v3 deformation decoder',
+                            'question': 'arXiv:2310.08528v3的解码器负责什么？'}])
+    assert sources[0]['location']['page'] == 4
+    assert sources[0]['obligationIds'] == ['decoder']
+    assert len(fixture.fetches) == 1
+
+
 @pytest.mark.parametrize("key", ["maxExternalSearches", "maxFulltextFetches"])
 def test_client_cannot_widen_network_budget(repo, key):
     record, _ = repo.create_run({"runId": key, "taskId": "t", "budget": {key: 1000}})

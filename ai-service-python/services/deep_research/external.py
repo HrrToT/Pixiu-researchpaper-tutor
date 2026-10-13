@@ -58,7 +58,7 @@ class AcademicAcquisition:
                 question = str(target.get('question') or '')
                 # The current ranker tokenizes English. Preserve the discovery
                 # query's translated terms when the question has none.
-                reading_query = question if re.search(r'[a-z]{3,}', question.lower()) else query
+                reading_query = question if _reading_terms(question) else query
                 for page in _select_pages(pages, reading_query):
                     text = page.get("text", "")
                     # Keep manageable passages and exact offsets within the original page.
@@ -105,11 +105,25 @@ def _page_passages(text):
         offset = end
 
 
+def _reading_terms(query):
+    # Discovery identifiers locate a paper, not a passage inside it. Counting
+    # 'arxiv' rewards bibliography pages and masks translated mechanism terms.
+    topic = re.sub(r'https?://\S+|\b10\.\d{4,9}/\S+', ' ', query.lower())
+    stop = {'arxiv', 'doi', 'preprint', 'www', 'http', 'https', 'org',
+            'the', 'and', 'for', 'with', 'from', 'this', 'that', 'what',
+            'which', 'how', 'does', 'are', 'its', 'all'}
+    return set(re.findall(r'[a-z]{3,}', topic)) - stop
+
+
 def _select_pages(pages, query):
-    words = set(re.findall(r"[a-z]{3,}", query.lower()))
-    ranked = sorted(enumerate(pages), key=lambda pair: (
-        -sum(pair[1].get("text", "").lower().count(word) for word in words), pair[0]))
-    return [page for _, page in ranked[:3] if page.get("text", "").strip()]
+    words = _reading_terms(query)
+    def rank(pair):
+        text = pair[1].get('text', '').lower()
+        counts = [text.count(word) for word in words]
+        # Distinct requested concepts outrank repetition of a single keyword.
+        return (-sum(count > 0 for count in counts), -sum(min(count, 3) for count in counts), pair[0])
+    ranked = sorted(((i, page) for i, page in enumerate(pages) if page.get('text', '').strip()), key=rank)
+    return [page for _, page in ranked[:3]]
 
 
 def export_saved_source(repo, run_id, source_id):
