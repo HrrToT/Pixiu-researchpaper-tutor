@@ -58,7 +58,10 @@
   "failurePresentation": {
     "change": "Confirmed model HTTP 402 failures now advise checking account quota and billing without exposing raw provider diagnostics. Unknown calls still take precedence and remain paused; unrelated or stale errors are not mislabeled.",
     "regression": {"passed": 24, "warnings": 2, "seconds": 34.94},
-    "runtimeLoaded": false
+    "runtimeLoaded": true,
+    "loadedCommit": "5d9e2a2",
+    "health": {"status": "ok", "rag": "ok", "grobid": "ok", "uptimeSeconds": 55.6},
+    "loadObservation": "Initial health observations timed out during startup. The same running container subsequently returned healthy; no extra restart was performed."
   },
   "acceptance": "Full offline regression passed. New runtime content quality remains untested because the initial provider request returned HTTP 402. DR0-DR5 remains incomplete."
 }
