@@ -28,5 +28,41 @@
   },
   "runtimePrecheck": {"activeRuns": 0, "pausedRuns": 4},
   "fullRegression": {"passed": 991, "warnings": 2, "seconds": 163.68},
-  "acceptance": "Offline checks passed. New real-output quality verification pending."
+  "runtime": {
+    "loadedCommit": "1a826ab",
+    "health": {"status": "ok", "rag": "ok", "grobid": "ok", "uptimeSeconds": 32.4},
+    "pausedRunsPreserved": 4
+  },
+  "realCase": {
+    "caseId": "D3-v20",
+    "runId": "dr_run_a42e81318fe75e06b5b37c3a52b6cbdc",
+    "promptVersion": "dr-v2.20261013.54",
+    "status": "completed",
+    "outcome": "partial",
+    "submissions": 1,
+    "settledModelCalls": 12,
+    "actualTotalTokens": 62622,
+    "elapsedSeconds": 154.0,
+    "cost": null,
+    "acceptedClaims": 6,
+    "rejectedClaims": 5,
+    "repairStatus": "response_received",
+    "generatedMissingRoles": ["budget", "limits"],
+    "missingRolesAccepted": [],
+    "receipt": "tmp/dr-acceptance-receipts/D3-v20.json",
+    "rawResult": "tmp/dr-acceptance-receipts/D3-v20.result.json",
+    "manualOutcome": "failed",
+    "findings": [
+      "Missing roles were actually generated, but generation alone did not admit them into verified output.",
+      "The proposed budget simultaneously states all groups receive 1000 recovery iterations and the baseline group receives zero. The model incorrectly calls these matched.",
+      "The repair verifier received only one evidence entry after prompt fitting. Missing own references blocked several model-passed claims; this is a capacity rejection, not proof of a sound scientific verdict.",
+      "The budget audit used unsupported executionSpec paths and the returned controls audit used irrelevant slots.",
+      "The dataset revision invents a named scene list not supported by its own supplied references and still labels views as independent units.",
+      "Accepted interaction prose treats an estimate near zero as supporting additivity without a declared equivalence tolerance or uncertainty assessment.",
+      "The accepted hypothesis promises a significance judgment while the accepted analysis is descriptive only.",
+      "Pruning uses a numeric score threshold without an operational score definition; truncation and distillation are insufficiently distinguished."
+    ],
+    "nextAction": "Offline replay of verification request construction and joint design consistency; no unchanged case resubmission."
+  },
+  "acceptance": "Offline checks passed and missing-role repair executed. Experimental-plan quality remains failed; DR0-DR5 acceptance is incomplete."
 }
