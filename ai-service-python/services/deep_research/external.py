@@ -62,10 +62,10 @@ class AcademicAcquisition:
                 for page in _select_pages(pages, reading_query):
                     text = page.get("text", "")
                     # Keep manageable passages and exact offsets within the original page.
-                    for offset in range(0, min(len(text), 6000), 2000):
-                        passage = text[offset:offset + 2000]
+                    for offset, passage in _page_passages(text):
                         source_id = "src_" + digest({"version": identity, "hash": material["contentHash"],
-                                                     "page": page.get("page"), "offset": offset})
+                                                     "page": page.get("page"), "offset": offset,
+                                                     "endOffset": offset + len(passage)})
                         if source_id in by_source:
                             existing = by_source[source_id]
                             existing['obligationIds'] = list(dict.fromkeys(
@@ -80,6 +80,29 @@ class AcademicAcquisition:
                         sources.append(source)
                         by_source[source_id] = source
         return sources
+
+
+def _page_passages(text):
+    """Use exact page slices, preferring complete sentences over fixed cuts.
+
+    Keep the existing 6000-character page envelope and the extractor's
+    3000-character passage cap. No normalization or invented punctuation.
+    """
+    limit, offset = min(len(text), 6000), 0
+    boundaries = [match.end() for match in re.finditer(r'(?<=[.!?。！？])\s+|\n[ \t]*\n', text[:limit])]
+    while offset < limit:
+        end = min(offset + 2000, limit)
+        if end < limit:
+            following = next((point for point in boundaries if end <= point <= min(offset + 3000, limit)), None)
+            if following is not None:
+                end = following
+            else:
+                # A long sentence still keeps whole words where possible.
+                spaces = list(re.finditer(r'\s+', text[max(offset, end - 200):end]))
+                if spaces:
+                    end = max(offset, end - 200) + spaces[-1].end()
+        yield offset, text[offset:end]
+        offset = end
 
 
 def _select_pages(pages, query):
