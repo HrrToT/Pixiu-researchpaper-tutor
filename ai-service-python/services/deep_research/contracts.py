@@ -516,9 +516,10 @@ def check_exploration_headroom(budget: dict[str, Any], node: str) -> tuple[str, 
     if calls > 1 and int(budget.get('modelCalls') or 0) > calls - 1:
         return ('explorationModelCalls', calls - 1, int(budget.get('modelCalls') or 0))
     tokens = max(0, int(budget.get('maxTokens') or 0) - int(budget.get('reserveTokens') or 0))
-    # 8192 output tokens plus bounded repair input; small custom budgets keep
-    # at least half their normal pool available to evidence gathering.
-    headroom = min(12288, tokens // 2)
+    # Match the full repair request envelope, not just its output allowance.
+    # Small custom budgets still retain exploration capacity.
+    from services.deep_research.repair_budget import repair_exploration_headroom
+    headroom = repair_exploration_headroom(tokens)
     if tokens and int(budget.get('normalTokens') or 0) > tokens - headroom:
         return ('explorationTokens', tokens - headroom, int(budget.get('normalTokens') or 0))
     return None
