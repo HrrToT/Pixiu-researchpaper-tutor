@@ -36,8 +36,14 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *, 
     ]
     evidence_marker, permissions_marker = uuid4().hex, uuid4().hex
     input_claims = resolve_evidence_aliases({'claims': deepcopy(list(originals.values()))}, short_ids)['claims']
+    from services.deep_research.execution_materialization import verification_claim_view
+    input_claims = [verification_claim_view(row) for row in input_claims]
     from services.deep_research.repair_prompt import factor_repair_questions
     question_dictionary, packed_checks = factor_repair_questions(rejected)
+    for check in packed_checks.values():
+        if isinstance(check.get('missingEvidenceRefs'), list):
+            check['missingEvidenceRefs'] = [short_ids.get(ref, ref) if isinstance(ref, str) else ref
+                                            for ref in check['missingEvidenceRefs']]
     revision_shape = {'claimId': 'original ID', 'kind': 'original kind', 'text': 'revised wording',
                       'evidenceRefs': ['E1'], 'conditions': {}, 'detailLevel': 'fulltext'}
     if any(row.get('designContractVersion') == 2 for row in originals.values()):
@@ -45,7 +51,9 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *, 
                               executionSpec='complete object for groups/data/analysis; omit for other roles')
     proposal_context = [{key: row[key] for key in ('claimId', 'text', 'kind', 'conditions', 'designRole', 'executionSpec', 'designContractVersion') if key in row}
                         for row in verification.get('accepted', [])
-                        if row.get('kind') in {'proposal', 'suggestion', 'hypothesis'}]
+                        if row.get('kind') in {'proposal', 'suggestion', 'hypothesis'}
+                        and row.get('claimId') not in originals]
+    proposal_context = [verification_claim_view(row) for row in proposal_context]
     prompt = f'''Revise only the rejected claims below. Narrow unsupported wording or omit the claim.
 Some targets have reason answer_incomplete: their existing text may be factually correct,
 but omits requested aspects. Fill those omissions from that claim's allowed supplied evidence,
@@ -55,12 +63,14 @@ Do not assert that the whole paper never reports, tests or proves something from
 passages. A finite empirical result cannot by itself establish a universal guarantee.
 Question: {question}
 Accepted experimental definitions (consistency only; do not revise these or treat them as paper evidence):
-{json.dumps(proposal_context, ensure_ascii=False)}
+{json.dumps(proposal_context, ensure_ascii=False, separators=(',', ':'))}
+Application-generated protocol suffixes are omitted here; their complete executionSpec remains.
+The interface renders those fields. Preserve original prose consistency; do not duplicate that rendering.
 Missing-question dictionary (each missingQuestionIds entry refers to the exact question here;
 Q identifiers are internal references, never evidence or text to publish):
-{json.dumps(question_dictionary, ensure_ascii=False)}
+{json.dumps(question_dictionary, ensure_ascii=False, separators=(',', ':'))}
 Rejected claims and checks:
-{json.dumps([{'claim': row, 'check': packed_checks[row['claimId']]} for row in input_claims], ensure_ascii=False)}
+{json.dumps([{'claim': row, 'check': packed_checks[row['claimId']]} for row in input_claims], ensure_ascii=False, separators=(',', ':'))}
 Allowed evidence IDs per claim (candidate permissions, not proof of support):
 {permissions_marker}
 Exact available evidence:

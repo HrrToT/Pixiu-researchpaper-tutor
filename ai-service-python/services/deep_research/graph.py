@@ -1171,9 +1171,9 @@ def make_verify_node(
                 try:
                     response = llm_invoke(run_id, "repair_claims", prompt,
                         {"max_tokens": 3000, "temperature": 0.0})
-                except BudgetExhaustedError:
+                except BudgetExhaustedError as exc:
                     repo_update(run_id, lambda r: {**r, "state": {**r.get("state", {}),
-                        "repairStatus": "skipped_budget"}}, expected_revision=None)
+                        "repairStatus": "skipped_budget", "repairLimit": exc.details}}, expected_revision=None)
                     raise
                 finish = (response.get('finishReason', response.get('finish_reason'))
                           if isinstance(response, dict) else getattr(response, 'finish_reason', None))
@@ -1209,9 +1209,10 @@ def make_verify_node(
                             record.get('state', {}).get('plan', []), merged.get('accepted', []),
                             evidence, llm_invoke, _safe_parse_json)
                     verification_result = merged
-            except BudgetExhaustedError:
+            except BudgetExhaustedError as exc:
                 repo_update(run_id, lambda r: {**r, 'state': {**r.get('state', {}),
-                    'repairStatus': r.get('state', {}).get('repairStatus') or 'skipped_budget'}},
+                    'repairStatus': r.get('state', {}).get('repairStatus') or 'skipped_budget',
+                    'repairLimit': exc.details}},
                     expected_revision=None)
         
         accepted = verification_result.get("accepted", [])

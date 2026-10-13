@@ -20,6 +20,20 @@ def _camera_claims():
 
 
 class PrepareCoverageRepairTests(unittest.TestCase):
+    def test_existing_failed_target_prevents_rewriting_all_shared_obligation_claims(self):
+        claims = [_claim('good', ['shared'], 'Known supported result'),
+                  _claim('bad', ['shared'], 'Incomplete proposed method')]
+        audit = {'gaps': [{'obligationId': 'shared', 'question': 'Complete the method'}],
+                 'verdicts': [{'obligationId': 'shared', 'status': 'partial',
+                               'bindings': [{'claimId': 'good', 'excerpt': 'Known supported result'}]}]}
+        before = copy.deepcopy(audit)
+        result = prepare_coverage_repair({'claims': claims}, {'accepted': [claims[0]],
+            'rejected': [{'claimId': 'bad', 'reason': 'semantic_unresolved'}]}, audit)
+        self.assertEqual([c['claimId'] for c in result['accepted']], ['good'])
+        self.assertEqual([c['claimId'] for c in result['rejected']], ['bad'])
+        self.assertEqual(result['rejected'][0]['missingQuestions'], ['Complete the method'])
+        self.assertEqual(audit, before)  # Scheduling does not erase or resolve the gap.
+
     def test_targets_accepted_claim_via_verdict_bindings(self):
         claims = _camera_claims()
         report = {"claims": claims}

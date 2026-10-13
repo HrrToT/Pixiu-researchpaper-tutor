@@ -100,10 +100,17 @@ def prepare_coverage_repair(report, verification, audit):
 
         # A missing obligation may already have a rejected draft claim. Revise
         # that claim instead of making an unrelated accepted fact answer it.
+        rejected_candidates = set()
         for claim in report_claims:
             cid = _claim_id(claim)
             if cid in original_rejected_ids and isinstance(claim, dict) and obligation_id in (claim.get('obligationIds') or []):
-                gap_targets.add(cid)
+                rejected_candidates.add(cid)
+        if rejected_candidates:
+            # First repair already-failed statements for this obligation instead
+            # of rewriting every accepted statement sharing its retrieval label.
+            # This is scheduling, not coverage approval: the merged answer must
+            # still pass the independent full-question coverage audit afterwards.
+            gap_targets = rejected_candidates
 
         if not gap_targets:
             # Conservative fallback: an unmapped specific requirement withholds
