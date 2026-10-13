@@ -23,6 +23,12 @@ def enabled():
 
 def research_model_options(node, options):
     """Apply role options BEFORE the ledger reserves tokens and fingerprints input."""
+    if node == 'synthesize':
+        # Produce the structured draft directly. D3-v16's low-thinking draft
+        # timed out before any body; independent verification still gates every
+        # published claim. Keep the output cap rather than truncate the design.
+        return {**options, 'thinking': {'type': 'disabled'}, 'reasoning_effort': 'none',
+                'max_tokens': 16384}
     if node == 'repair_claims':
         # The observed low-reasoning repair exhausted 8192 output tokens with
         # an empty body. Return the bounded edit directly; independent checks
@@ -40,11 +46,11 @@ def research_model_options(node, options):
         # but require direct per-claim decisions with concise explicit reasons.
         # A truncated response still fails, never becoming a semantic pass.
         return {**options, 'thinking': {'type': 'disabled'}, 'reasoning_effort': 'none', 'max_tokens': 6000}
-    if node in {'synthesize', 'synthesize_compact', 'verify', 'verify_repair'}:
+    if node in {'synthesize_compact', 'verify', 'verify_repair'}:
         # Bounded rewriting must leave room for its JSON; final verification
         # retains high reasoning and checks the rewritten claims independently.
         effort = 'high' if node in {'verify', 'verify_repair'} else 'low'
-        maximum = 16384 if node in {'synthesize', 'verify'} else 8192
+        maximum = 16384 if node == 'verify' else 8192
         return {**options, 'thinking': {'type': 'enabled'}, 'reasoning_effort': effort, 'max_tokens': maximum}
     return {**options, 'thinking': {'type': 'disabled'}, 'reasoning_effort': 'none'}
 
