@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+from services.deep_research.literal_quote import original_quote_span
 from services.deep_research.table_evidence import attach_table_packet, visible_table_packet
 
 
@@ -81,11 +82,12 @@ Passages:\n""" + json.dumps(passages, ensure_ascii=False)
             for item in items:
                 if not isinstance(item, dict) or not isinstance(item.get("quote"), str):
                     continue
-                matches = [(s, location, text) for s, location, text in batch
-                           if s["sourceId"] == item.get("sourceId") and item["quote"] in text]
+                matches = [(s, location, text, span) for s, location, text in batch
+                           if s["sourceId"] == item.get("sourceId")
+                           and (span := original_quote_span(item['quote'], text)) is not None]
                 if len(matches) != 1 or not item["quote"].strip():
                     continue
-                source, location, original = matches[0]
+                source, location, original, quote = matches[0]
                 sid = source["sourceId"]
                 counts[sid] = counts.get(sid, 0) + 1
                 if counts[sid] > 3:
@@ -103,7 +105,7 @@ Passages:\n""" + json.dumps(passages, ensure_ascii=False)
                 try:
                     ev = make_evidence(source={"workId": source["workId"], "versionId": source["versionId"],
                         "contentHash": source["contentHash"], "accessLevel": source["accessLevel"]},
-                        quote=item["quote"], original=original, location=location, obligation_ids=refs, conditions=conditions)
+                        quote=quote, original=original, location=location, obligation_ids=refs, conditions=conditions)
                 except ValueError:
                     continue
                 ev.update(sourceKind=source.get("sourceKind", "local"), sourceId=sid,

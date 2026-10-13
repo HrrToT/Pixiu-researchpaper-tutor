@@ -36,6 +36,21 @@ def test_batch_saves_calls_without_mixing_paper_locations_or_hashes(tmp_path):
     assert invoke.call_count == 1
 
 
+def test_batch_stores_original_span_after_whitespace_only_recovery(tmp_path):
+    repo, reads = setup(tmp_path)
+    original = reads[0]['pages'][0]['text'].replace('complete result', 'complete\nresult')
+    reads[0]['pages'][0]['text'] = original
+    repo.update_run('r', lambda r: {**r, 'state': {**r['state'], 'readResults': [reads[0]]}})
+    invoke = Mock(return_value={'content': json.dumps([{'sourceId': 's0',
+        'quote': original.replace('\n', ' '), 'obligationIds': ['o'], 'conditions': {}}])})
+    make_batched_extract_node(invoke, make_evidence, lambda *a: True, repo.update_run)({'run_id': 'r'})
+    saved = repo.require_run('r')['state']['evidence']
+    assert len(saved) == 1
+    assert saved[0]['quote'] == original
+    assert saved[0]['sourceContext'] == original
+    assert saved[0]['sourceWorkId'] == 'p0' and saved[0]['location']['page'] == 2
+
+
 def test_extraction_carries_only_parser_cells_in_the_selected_quote(tmp_path):
     repo, reads = setup(tmp_path)
     data = {'groups': [['Room', ['FPS', 'Mem']]],

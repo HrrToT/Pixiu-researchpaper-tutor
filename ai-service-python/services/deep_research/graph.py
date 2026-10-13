@@ -689,8 +689,9 @@ Each item has:
                 for ev in parsed[:3]:
                     if not isinstance(ev, dict):
                         continue
-                    quote = ev.get("quote", "")
-                    if not quote or quote not in text:
+                    from services.deep_research.literal_quote import original_quote_span
+                    quote = original_quote_span(ev.get("quote", ""), text)
+                    if quote is None:
                         continue
                     
                     # Validate obligation IDs are from the supplied set
