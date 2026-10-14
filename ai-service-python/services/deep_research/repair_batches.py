@@ -11,7 +11,7 @@ def split_repair_targets(claims):
     config, science, execution = [], [], []
     for claim in claims:
         role = claim.get('designRole')
-        bucket = (config if role in {'groups', 'data', 'budget', 'metrics'}
+        bucket = (config if role in {'data', 'budget', 'metrics'}
                   else science if role in {'hypothesis', 'analysis'} else execution)
         bucket.append(claim['claimId'])
     groups = [bucket for bucket in (config, science, execution) if bucket]

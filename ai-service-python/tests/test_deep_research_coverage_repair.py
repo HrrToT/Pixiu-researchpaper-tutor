@@ -66,6 +66,21 @@ def test_ambiguous_revision_failures_do_not_overwrite_history():
 
 
 class PrepareCoverageRepairTests(unittest.TestCase):
+    def test_empty_completion_slot_does_not_steal_gap_from_existing_method_claim(self):
+        method = {**_claim('method', ['mechanism'], 'Incomplete intervention definition.'),
+                  'kind': 'proposal', 'designRole': 'groups'}
+        slot = {'claimId': 'data_slot', 'text': '', 'kind': 'proposal', 'designRole': 'data',
+                'obligationIds': ['mechanism', 'data_availability']}
+        verification = {'accepted': [method], 'rejected': [{'claimId': 'data_slot',
+                        'reason': 'missing_design_deliverable'}]}
+        audit = {'gaps': [{'obligationId': 'mechanism', 'question': 'Define the intervention score.'}],
+                 'verdicts': [{'obligationId': 'mechanism', 'bindings': [{'claimId': 'method'}]}]}
+        result = prepare_coverage_repair({'claims': [method, slot]}, verification, audit)
+        assert result['accepted'] == []
+        rejected = {row['claimId']: row for row in result['rejected']}
+        assert rejected['method']['missingQuestions'] == ['Define the intervention score.']
+        assert 'missingQuestions' not in rejected['data_slot']
+
     def test_existing_failed_target_prevents_rewriting_all_shared_obligation_claims(self):
         claims = [_claim('good', ['shared'], 'Known supported result'),
                   _claim('bad', ['shared'], 'Incomplete proposed method')]

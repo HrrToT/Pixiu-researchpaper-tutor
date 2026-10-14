@@ -74,7 +74,13 @@ def prepare_coverage_repair(report, verification, audit):
             )
 
     accepted_report_ids = [cid for cid in accepted_order if cid in report_ids]
-    original_rejected_ids = {_claim_id(row) for row in rejected}
+    # Empty completion slots hold broad source permissions. They are not an
+    # existing failed answer to every obligation sharing those permissions.
+    # Otherwise a missing data/budget slot steals a method gap from the actual
+    # accepted method claim, which then becomes incorrectly frozen in repair.
+    completion_slots = {_claim_id(row) for row in rejected
+                        if row.get('reason') == 'missing_design_deliverable'}
+    original_rejected_ids = {_claim_id(row) for row in rejected} - completion_slots
 
     # Map each targeted accepted claim id to the ordered, unique list of gap
     # questions that implicated it.
