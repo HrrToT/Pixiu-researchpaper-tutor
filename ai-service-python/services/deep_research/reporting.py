@@ -1,4 +1,5 @@
 """Organize accepted claims; never render unverified model section prose."""
+import json
 from services.deep_research.synthesis import OUTPUT_KIND_SECTIONS, resolve_output_kind
 
 
@@ -69,20 +70,36 @@ def render_report(payload):
     labels = {"inference": "有依据的推断：", "hypothesis": "待验证假设：", "suggestion": "实验建议：", "proposal": "实验建议："}
     for section in sections:
         content = []
+        analysis_protocols = set()
         for key in section.get("claimIds", []):
             claim = claims.get(key)
             if not claim or key in rendered:
                 continue
             rendered.add(key)
             citations = " ".join(f"[{ref_numbers[ref]}](#research-evidence-{ref})" for ref in claim.get("evidenceRefs", []) if ref in ref_numbers)
-            content.append(f"- {labels.get(claim.get('kind'), '')}{claim['text']} {citations}".rstrip())
+            text = claim['text']
+            if claim.get('designRole') == 'analysis':
+                from services.deep_research.execution_materialization import verification_claim_view
+                prose = verification_claim_view(claim).get('text')
+                if isinstance(prose, str) and prose != text:
+                    suffix = text[len(prose):]
+                    protocol_key = (json.dumps(claim.get('executionSpec'), sort_keys=True, ensure_ascii=False), suffix)
+                    if protocol_key in analysis_protocols:
+                        text = prose
+                    else:
+                        analysis_protocols.add(protocol_key)
+            # Only repeated deterministic protocol suffixes are hidden. Keep
+            # every original sentence, condition and source on its own claim.
+            content.append(f"- {labels.get(claim.get('kind'), '')}{text} {citations}".rstrip())
             conditions = claim.get("conditions")
             if isinstance(conditions, dict) and conditions:
                 content.append("  适用条件：" + "；".join(f"{name}：{value}" for name, value in conditions.items()))
         if content:
             lines.extend([f"## {section['title']}", "", *content, ""])
     if not claims:
-        lines.extend(["当前取得的证据不足以回答这个问题。", ""])
+        empty = ("尚未形成通过核验的实验方案。" if payload.get('outputKind') == 'experiment_design'
+                 else "当前取得的证据不足以回答这个问题。")
+        lines.extend([empty, ""])
     gaps = _display_gaps(payload.get("gaps", []))
     if gaps:
         lines.extend(["<details>", f"<summary>还有 {len(gaps)} 项未完成</summary>", ""])
@@ -129,12 +146,14 @@ def verification_notice(claims):
     return ''.join(parts)
 
 
-def conversation_summary(claims, outcome, *, max_chars=500, evidence=None):
+def conversation_summary(claims, outcome, *, max_chars=500, evidence=None, output_kind=None):
     """Keep whole claims and their epistemic labels; never cut a number or condition."""
     labels = {"inference": "有依据的推断：", "hypothesis": "待验证假设：",
               "suggestion": "实验建议：", "proposal": "实验建议："}
     boundary = {"partial": "当前结果尚不完整，已核实的内容已保存。",
                 "inconclusive": "当前取得的证据不足以形成可靠结论。"}.get(outcome, "")
+    if outcome == 'inconclusive' and output_kind == 'experiment_design':
+        boundary = '尚未形成通过核验的实验方案。'
     access = source_access_summary(claims, evidence or [])
     parts = [access] if access else []
     length = len(boundary) + len(access) + (2 if access else 0)

@@ -60,6 +60,70 @@ def test_fulltext_and_abstract_are_distinguished_without_claiming_complete_readi
     assert len(summary) <= 90 and '已核对的分工。' in summary
 
 
+def analysis_claim(identity, text, evidence):
+    from services.deep_research.execution_materialization import materialize_execution_claim
+    return materialize_execution_claim({'claimId': identity, 'kind': 'proposal',
+        'designRole': 'analysis', 'designContractVersion': 2, 'text': text,
+        'evidenceRefs': [evidence], 'conditions': {'scope': identity}, 'executionSpec': {
+            'effects': {'interaction': 'L11-L10-L01+L00'},
+            'uncertainty': {'mode': 'paired_cluster_bootstrap', 'unit': 'scene',
+                            'repetitions': 1000, 'confidence': 0.95, 'seed': 42},
+            'decision': {'mode': 'interval_excludes_zero'}}})
+
+
+def test_identical_generated_analysis_protocol_renders_once_preserving_prose_sources_and_conditions():
+    claims = [analysis_claim('a', 'Estimate the interaction.', 'e1'),
+              analysis_claim('b', 'A non-significant result is not equivalence.', 'e2')]
+    payload = {'outputKind': 'experiment_design', 'claims': claims, 'evidence': [
+        {'evidenceId': 'e1', 'quote': 'First source.'}, {'evidenceId': 'e2', 'quote': 'Second source.'}]}
+    before = deepcopy(payload)
+    body = render_report(payload)
+    assert body.count('效应定义：') == 1
+    assert 'Estimate the interaction.' in body and 'A non-significant result is not equivalence.' in body
+    assert 'scope：a' in body and 'scope：b' in body
+    assert '[1](#research-evidence-e1)' in body and '[2](#research-evidence-e2)' in body
+    assert 'First source.' in body and 'Second source.' in body
+    assert payload == before
+
+
+def test_different_analysis_configuration_and_unrecognized_suffix_are_not_hidden():
+    from services.deep_research.execution_materialization import materialize_execution_claim
+    first = analysis_claim('a', 'First.', 'e')
+    second = deepcopy(first)
+    second.update(claimId='b', text='Second.')
+    second['executionSpec']['uncertainty']['confidence'] = 0.9
+    second = materialize_execution_claim(second)
+    body = render_report({'outputKind': 'experiment_design', 'claims': [first, second]})
+    assert body.count('效应定义：') == 2 and '95%' in body and '90%' in body
+    altered = analysis_claim('c', 'Different original prose.', 'e')
+    altered['text'] += '\nAn original extra sentence after the generated protocol.'
+    body = render_report({'claims': [first, altered]})
+    assert body.count('效应定义：') == 2
+    assert 'An original extra sentence' in body
+
+
+def test_inconclusive_experiment_does_not_blame_source_insufficiency_by_default():
+    body = render_report({'outputKind': 'experiment_design', 'claims': []})
+    summary = conversation_summary([], 'inconclusive', output_kind='experiment_design')
+    assert '尚未形成通过核验的实验方案' in body and '尚未形成通过核验的实验方案' in summary
+    assert '证据不足' not in body and '证据不足' not in summary
+    assert '证据不足' in conversation_summary([], 'inconclusive')
+
+
+def test_same_rendered_assumptions_do_not_hide_different_typed_configurations():
+    from services.deep_research.execution_materialization import materialize_execution_claim
+    first = analysis_claim('a', 'First.', 'e')
+    first['text'] = 'First.'
+    first['executionSpec']['uncertainty'] = {'mode': 'analytic', 'method': 'Paired analysis',
+                                           'assumptions': ['A；B'], 'confidence': 0.95}
+    second = deepcopy(first)
+    second.update(claimId='b', text='Second.')
+    second['executionSpec']['uncertainty']['assumptions'] = ['A', 'B']
+    claims = [materialize_execution_claim(first), materialize_execution_claim(second)]
+    body = render_report({'claims': claims})
+    assert body.count('效应定义：') == 2
+
+
 def test_no_external_citations_adds_no_access_banner():
     from services.deep_research.reporting import source_access_summary
     assert source_access_summary([], [{'evidenceId': 'unused', 'sourceKind': 'arxiv'}]) == ''
