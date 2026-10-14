@@ -74,6 +74,41 @@ def test_indexed_locations_preserve_page_zero_and_table_uncertainty():
     assert 'page' not in _indexed_source({'metadata': {}})['location']
 
 
+def test_indexed_predecessor_preserves_source_identity_and_rechecks_scope(monkeypatch):
+    from services.tools import retrieval_tools
+    local, get, parse, validate = fixture(monkeypatch)
+    monkeypatch.setattr('services.deep_research.local_sources.importlib.util.find_spec', lambda name: object())
+    def passage(index, text, owner='p', version='a' * 16):
+        return {'text': text, 'metadata': {'id': owner, 'chunk_index': index,
+            'index_version': version, 'section_title': 'Method', 'page': 5}}
+    anchor = passage(16, 'where F maps images and camera matrices to Gaussian parameters.')
+    previous = passage(15, 'Inputs include images and calibrated camera projection matrices.')
+    rag = Mock()
+    rag.normalize_id.side_effect = lambda value: value
+    rag.get_documents_by_metadata.return_value = [previous,
+        passage(15, 'Foreign paper.', owner='foreign'),
+        passage(15, 'Other version.', version='b' * 16)]
+    monkeypatch.setattr(retrieval_tools, 'get_rag', lambda: rag)
+    retrieve = Mock(return_value=[anchor])
+    monkeypatch.setattr(retrieval_tools, 'retrieve_fused_evidence', retrieve)
+    found = local('camera inputs', 'p', limit=2)
+    assert len(found) == 2
+    assert [row['chunkIndex'] for row in found] == [15, 16]
+    assert found[0]['text'] == previous['text']
+    assert found[1]['text'] == anchor['text']
+    assert found[0]['sourceId'] != found[1]['sourceId']
+    assert found[0]['contextForSourceId'] == found[1]['sourceId']
+    assert found[0]['location']['page'] == 5
+    retrieve.assert_called_with('camera inputs', top_k=8, filter_metadata={'id': 'p'}, allow_query_rewrite=False)
+    assert local('camera inputs', 'p', limit=2) == found
+    rag.get_documents_by_metadata.assert_called_once_with({'id': 'p'}, limit=400)
+    validate.return_value = False
+    with pytest.raises(DeepResearchError):
+        local('camera inputs', 'p', limit=2)
+    get.assert_not_called()
+    parse.assert_not_called()
+
+
 def test_metric_retrieval_adds_owned_verified_tables_without_more_model_calls(monkeypatch):
     import json
     from services.tools import retrieval_tools

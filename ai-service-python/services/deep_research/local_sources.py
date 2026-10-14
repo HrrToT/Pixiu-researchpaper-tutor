@@ -24,6 +24,7 @@ class LocalTaskRetriever:
         self.parse = parse or _parse_pdf
         self.pages = {}
         self.index_tables = {}
+        self.index_context = {}
 
     def __call__(self, query, pdf_id, *, limit=5):
         if not self.validate(self.run_id, pdf_id):
@@ -50,6 +51,20 @@ class LocalTaskRetriever:
                                 pdf_id=owned, max_text_chars=2000)
                             self.index_tables[pdf_id] = [_indexed_source(row) for row in normalized]
                         indexed = _include_metric_tables(indexed, self.index_tables[pdf_id], query, metrics, limit)
+                    elif limit > 1:
+                        from services.deep_research.source_continuity import needs_preceding_context, include_preceding_context
+                        if any(needs_preceding_context(row) for row in indexed):
+                            from services.tools.retrieval_tools import get_rag
+                            from services.evidence_service import normalize_evidence_items
+                            rag = get_rag()
+                            owned = rag.normalize_id(pdf_id)
+                            if pdf_id not in self.index_context:
+                                raw = rag.get_documents_by_metadata({'id': owned}, limit=400)
+                                raw = [row for row in raw if row.get('metadata', {}).get('id') == owned]
+                                normalized = normalize_evidence_items(raw, source_type='current_paper',
+                                    pdf_id=owned, max_text_chars=2000)
+                                self.index_context[pdf_id] = [_indexed_source(row) for row in normalized]
+                            indexed = include_preceding_context(indexed, self.index_context[pdf_id], owned, limit)
                     return indexed
             except (ImportError, RuntimeError, OSError):
                 pass

@@ -254,10 +254,10 @@ class ResearchFacade:
             "materials": materials,
             "materialSnapshot": material_snapshot,  # Immutable Java snapshot
             "contextMaterials": (material_snapshot or {}).get("contextMaterials", []) if isinstance(material_snapshot, dict) else [],
-            "promptVersion": "dr-v2.20261015.63",
+            "promptVersion": "dr-v2.20261015.64",
             "budgetContractVersion": 1,
             "hypothesisContractVersion": 1,
-            "retrievalVersion": "task-pdf-metric-tables.3",
+            "retrievalVersion": "task-pdf-context-continuity.4",
             "focusPaperIds": request.get("focusPaperIds", []),
             "sourcePolicy": request.get("sourcePolicy", {"mode": "task_only"}),
             "budgetProfile": budget_profile,
