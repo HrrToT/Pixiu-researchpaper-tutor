@@ -37,7 +37,15 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *, 
     evidence_marker, permissions_marker = uuid4().hex, uuid4().hex
     input_claims = resolve_evidence_aliases({'claims': deepcopy(list(originals.values()))}, short_ids)['claims']
     from services.deep_research.execution_materialization import verification_claim_view
-    input_claims = [verification_claim_view(row) for row in input_claims]
+    def compact_claim_view(row):
+        row = verification_claim_view(row)
+        # Version stamps are controlled by originals/server, never repairable
+        # choices. Keep every original prose/configuration field and avoid
+        # encouraging the model to copy metadata into executionSpec.
+        return {key: value for key, value in row.items()
+                if key not in {'designContractVersion', 'budgetContractVersion', 'hypothesisContractVersion'}
+                and not (key in {'conditions', 'obligationIds'} and value in ({}, []))}
+    input_claims = [compact_claim_view(row) for row in input_claims]
     from services.deep_research.repair_prompt import factor_repair_questions
     question_dictionary, packed_checks = factor_repair_questions(rejected)
     for check in packed_checks.values():
@@ -53,7 +61,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *, 
                         for row in verification.get('accepted', [])
                         if row.get('kind') in {'proposal', 'suggestion', 'hypothesis'}
                         and row.get('claimId') not in originals]
-    proposal_context = [verification_claim_view(row) for row in proposal_context]
+    proposal_context = [compact_claim_view(row) for row in proposal_context]
     prompt = f'''Revise only the targets; narrow unsupported wording or omit it.
 answer_incomplete requires filling requested omissions, conditioning inputs and applicability,
 not merely shortening. absence_not_established requires bounded positive evidence:

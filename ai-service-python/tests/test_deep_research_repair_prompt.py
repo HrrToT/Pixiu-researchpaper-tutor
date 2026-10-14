@@ -50,6 +50,7 @@ def test_repair_target_is_not_also_frozen_and_only_generated_suffix_is_removed()
         targets = decoder.raw_decode(prompt.split('Rejected claims and checks:\n')[1])[0]
         assert targets[0]['claim']['text'] == group_claim()['text']
         assert targets[0]['claim']['executionSpec'] == target['executionSpec']
+        assert 'designContractVersion' not in targets[0]['claim']
         assert targets[0]['check']['missingEvidenceRefs'] == ['E1']
         assert 'Exact existing source' in prompt
         return {'content': '[]'}
