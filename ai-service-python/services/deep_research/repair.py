@@ -48,7 +48,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *, 
                       'evidenceRefs': ['E1'], 'conditions': {}, 'detailLevel': 'fulltext'}
     if any(row.get('designContractVersion') == 2 for row in originals.values()):
         revision_shape.update(designRole='canonical role for proposals/hypotheses; omit for facts',
-                              executionSpec='complete object for groups/data/analysis; omit for other roles')
+                              executionSpec='complete role-specific object for groups/data/analysis and versioned budget/hypothesis; omit for other roles')
     proposal_context = [{key: row[key] for key in ('claimId', 'text', 'kind', 'conditions', 'designRole', 'executionSpec', 'designContractVersion', 'budgetContractVersion', 'hypothesisContractVersion') if key in row}
                         for row in verification.get('accepted', [])
                         if row.get('kind') in {'proposal', 'suggestion', 'hypothesis'}
@@ -98,9 +98,10 @@ in the paper. Maintain consistency with accepted definitions and complete requir
         from services.deep_research.execution_spec import EXECUTION_SPEC_CONTRACT
         from services.deep_research.experimental_reasoning import DESIGN_ROLES, design_requirements
         prompt += '\nEvery v2 proposal/suggestion/hypothesis requires one designRole from: ' + json.dumps(sorted(DESIGN_ROLES))
-        prompt += '. For a missing role, assign the appropriate role based on its actual content; ' \
-                  'do not omit the role to bypass checks. Preserve existing valid roles. ' \
-                  'Groups, data and analysis roles also require their complete executionSpec.'
+        prompt += ('. For a missing role, assign the appropriate role based on its actual content; '
+                  'do not omit the role to bypass checks. Preserve existing valid roles. '
+                  'Groups, data and analysis roles require complete executionSpec; versioned budget and '
+                  'hypothesis roles require the corresponding complete executionSpec specified below.')
         prompt += '\n' + EXECUTION_SPEC_CONTRACT
         prompt += '\nExperimental deliverables (apply jointly across the accepted and revised claims):\n' + design_requirements(metric_domains)
         prompt += ('\nA structural rejection is not a content approval. Fix substantive omissions in the same revision, '

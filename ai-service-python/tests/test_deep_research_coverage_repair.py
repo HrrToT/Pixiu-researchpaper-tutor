@@ -44,6 +44,27 @@ def test_merge_conflicting_revision_preserves_unambiguous_previous_acceptance():
     assert result == initial
 
 
+def test_failed_revision_preserves_both_draft_and_current_failure_without_mutation():
+    initial = {'accepted': [], 'rejected': [{'claimId': 'c6', 'reason': 'semantic_unresolved',
+        'detail': 'Original subset is unconfirmed', 'missingQuestions': ['Select concrete data']}]}
+    checked = {'accepted': [], 'rejected': [{'claimId': 'c6', 'reason': 'semantic_unresolved',
+        'detail': 'DA_MISSING'}]}
+    before = copy.deepcopy((initial, checked))
+    result = merge_verified_revisions(initial, checked)
+    assert result['rejected'][0]['detail'] == 'Original subset is unconfirmed'
+    assert result['rejected'][0]['revisionRejection'] == checked['rejected'][0]
+    assert (initial, checked) == before
+    result['rejected'][0]['revisionRejection']['detail'] = 'edited'
+    assert checked['rejected'][0]['detail'] == 'DA_MISSING'
+
+
+def test_ambiguous_revision_failures_do_not_overwrite_history():
+    initial = {'accepted': [], 'rejected': [{'claimId': 'c', 'reason': 'original'}]}
+    checked = {'accepted': [], 'rejected': [{'claimId': 'c', 'reason': 'one'},
+        {'claimId': 'c', 'reason': 'two'}, {'claimId': 'unknown', 'reason': 'unknown'}]}
+    assert merge_verified_revisions(initial, checked) == initial
+
+
 class PrepareCoverageRepairTests(unittest.TestCase):
     def test_existing_failed_target_prevents_rewriting_all_shared_obligation_claims(self):
         claims = [_claim('good', ['shared'], 'Known supported result'),

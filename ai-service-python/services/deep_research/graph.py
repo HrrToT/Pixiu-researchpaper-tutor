@@ -1248,6 +1248,7 @@ def make_verify_node(
                         checked = verify_claims_fn(revised, evidence, revised_semantic)
                         merged = enforce_design_consistency(merge_verified_revisions(verification_result, checked))
                         repo_update(run_id, lambda r: {**r, 'state': {**r.get('state', {}),
+                            'repairVerificationChecks': checked,
                             'repairVerification': merged}}, expected_revision=None)
                     if merged.get('accepted') != verification_result.get('accepted'):
                         current = repo_update(run_id, lambda r: r, expected_revision=None)

@@ -65,6 +65,13 @@ Then state which paired groups copy that same baseline within each analysis unit
 Recording a path or hash documents an artifact; it does not define its acquisition.
 Align the hypothesis with the analysis: descriptive effects can explore a
 hypothesis but cannot promise a statistical test, acceptance or equivalence verdict.
+Align the primary experiment with the user's requested estimand. To isolate
+intervention effects, use matched recovery/optimization and other conditions;
+all-zero recovery is a valid explicitly bounded diagnostic. An unmatched native
+pipeline comparison may supplement that design but cannot replace it. Merely
+warning about confounding does not answer a request to isolate effects. If the
+user studies whole pipelines or resource budgets instead, retain that different
+objective rather than silently changing it to an isolated-intervention test.
 Accepted choices constrain revisions only where they specify concrete values;
 silence is not a requirement to retain a gap. Fill missing details in allowed
 revision targets without altering or contradicting accepted statements.

@@ -148,3 +148,6 @@ def test_graph_checks_registered_slots_and_resumes_without_resending_repair(resu
     assert len(published) == len(verification['accepted']) + (0 if rejected else 3)
     assert not any(c['claimId'] == 'bad-fact' for c in published)
     assert all(c['text'] for c in published)
+    independent = record['state']['repairVerificationChecks']
+    assert len(independent['accepted']) == (0 if rejected else 3)
+    assert len(independent['rejected']) == (3 if rejected else 0)

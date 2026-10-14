@@ -23,6 +23,7 @@ def run_case(count, availability):
     def invoke(**kwargs):
         assert 'dataAvailability' in kwargs['prompt']
         assert 'inherited subset' in kwargs['prompt']
+        assert '"dataAvailability":null' in kwargs['prompt']
         verdict = {'claimId': 'data', 'status': 'passed', 'designAudit': {
             slot: {'claimId': 'data', 'quote': claim['text']}
             for slot in ('scenes', 'split', 'seeds', 'sampling_unit')}}

@@ -494,10 +494,12 @@ class BudgetedSemanticChecker:
         llm_invoker: TrackedLLMInvoker,
         run_id: str,
         metric_domains=None,
+        research_question=None,
     ):
         self._invoke = llm_invoker
         self._run_id = run_id
         self._metric_domains = metric_domains
+        self._research_question = research_question
     
     def __call__(self, claims: list[dict], evidence: list[dict]) -> list[dict]:
         return self._check(claims, evidence, [], 'verify')
@@ -640,6 +642,17 @@ Return only a JSON array, one verdict per target:
 [{{"claimId":"ID","status":"passed" or "failed","reason":"brief specific finding","designAudit":{{}}}}]
 Missing configuration, contradictory choices and invalid parameter syntax fail.
 Do not require an unexecuted experiment to have results. Do not judge context claims as targets.'''
+
+        question = self._research_question() if callable(self._research_question) else self._research_question
+        if isinstance(question, str) and question.strip():
+            prompt += '\nOriginal research question (user objective, not source evidence):\n' + json.dumps(question, ensure_ascii=False)
+            prompt += ('\nCheck that each target fulfills its role in answering this actual objective. '
+                       'A limitation warning does not make a design capable of identifying the requested effect. '
+                       'If the user asks to isolate intervention effects, the primary comparison must hold '
+                       'recovery/optimization budgets and other interventions fixed. Unmatched native-pipeline '
+                       'budgets can be supplementary, but cannot replace that primary comparison. '
+                       'If the user explicitly studies whole pipelines or budgets themselves, judge that '
+                       'different estimand instead; do not impose an unrelated matched-budget question.')
         
         if any(c.get('designContractVersion') == 2 for c in [*claims, *proposal_context]):
             prompt += ('\nFor groups, every necessary numeric threshold, rate and degree must appear as '
@@ -740,13 +753,17 @@ The dataAvailability object is an internal audit, not new experimental results.
                 required_slots = required_design_slots(metric_domains)
                 skeleton = [{'claimId': c['claimId'], 'status': 'failed',
                     'reason': '',
-                    'designAudit': {slot: None for slot in required_slots.get(c.get('designRole'), ())}}
+                    'designAudit': {slot: None for slot in required_slots.get(c.get('designRole'), ())},
+                    **({'dataAvailability': None}
+                       if c.get('designContractVersion') == 2 and c.get('designRole') == 'data' else {})}
                     for c in claims]
                 prompt += '\nFill this exact per-target response skeleton. Change status only after checking. ' \
                           'Replace a null slot with a supported quote, quotes or fields binding ' \
                           'only if such a choice is already written; otherwise keep null and fail. ' \
                           'Do not replace slot keys with role names or arrays. Symbolic placeholders such as ' \
-                          'an unspecified threshold or degree do not define actual intervention levels.\n' \
+                          'an unspecified threshold or degree do not define actual intervention levels. ' \
+                          'A dataAvailability null must be replaced with the source-bound object specified above ' \
+                          'before a data target can pass; designAudit fields alone do not establish availability.\n' \
                           + json.dumps(skeleton, ensure_ascii=False, separators=(',', ':'))
         template = prompt
         source_keys = ('workId', 'versionId', 'sourceTitle')

@@ -1,0 +1,30 @@
+{
+  "date": "2026-10-14",
+  "promptVersion": "dr-v2.20261014.58",
+  "baseCommit": "32970b0",
+  "changes": [
+    "Keep independent revision verification checks before merging, and retain each unambiguous revision rejection beside the original draft rejection.",
+    "Final data-verdict response skeleton includes mandatory dataAvailability. The unchanged gate still rejects missing or fabricated source capacity.",
+    "Clarify that hypothesisContractVersion is server-owned claim metadata outside executionSpec; versioned hypothesis and budget roles require complete executionSpec during repair.",
+    "Initial and revised semantic verification receive the original research question from the authoritative run. Evaluate whether the main comparison identifies the requested estimand, not merely whether a confounding warning exists.",
+    "Shared synthesis and repair guidance distinguishes isolated-intervention designs from requested whole-pipeline comparisons."
+  ],
+  "offlineReplay": {
+    "caseId": "D3-v22",
+    "runId": "dr_run_10962cb43e3b5d59bd96acf5392348c9",
+    "providerRequests": 0,
+    "source": "Read-only persisted state and already settled verify_repair_design_science response",
+    "newPromptBytes": 22545,
+    "originalQuestionPresent": true,
+    "dataCapacitySkeletonPresent": true,
+    "actualDataRevisionFailure": "DA_MISSING",
+    "originalSubsetFailurePreservedSeparately": true,
+    "historicalResultUnchanged": true
+  },
+  "validation": {"targetedTestsPassed": 168, "targetedSeconds": 28.41},
+  "limitations": [
+    "Prompt guidance does not establish semantic correctness. New real-provider output quality remains unproven.",
+    "This replay checks the new request and deterministic handling of a previous response; it is not a new independent model verdict.",
+    "DR0-DR5 final quality and independent holdout acceptance remain incomplete."
+  ]
+}

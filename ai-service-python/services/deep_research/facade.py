@@ -254,7 +254,7 @@ class ResearchFacade:
             "materials": materials,
             "materialSnapshot": material_snapshot,  # Immutable Java snapshot
             "contextMaterials": (material_snapshot or {}).get("contextMaterials", []) if isinstance(material_snapshot, dict) else [],
-            "promptVersion": "dr-v2.20261013.57",
+            "promptVersion": "dr-v2.20261014.58",
             "budgetContractVersion": 1,
             "hypothesisContractVersion": 1,
             "retrievalVersion": "task-pdf-metric-tables.3",
@@ -1023,7 +1023,8 @@ class ResearchFacade:
         )
         
         checker = BudgetedSemanticChecker(invoker, run_id,
-            metric_domains=lambda: self._repo.require_run(run_id).get('state', {}).get('metricDomains'))
+            metric_domains=lambda: self._repo.require_run(run_id).get('state', {}).get('metricDomains'),
+            research_question=lambda: self._repo.require_run(run_id).get('question', ''))
         return checker
     
     def _default_scope_validator(self) -> Callable[[str, str], bool]:

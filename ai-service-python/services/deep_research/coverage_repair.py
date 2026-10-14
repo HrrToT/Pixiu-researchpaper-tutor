@@ -252,6 +252,11 @@ def merge_verified_revisions(initial, checked):
 
     result_rejected = []
     rejected_seen = set()
+    revision_failures = {}
+    for row in checked.get('rejected') or []:
+        rid = _claim_id(row)
+        if rid is not None:
+            revision_failures.setdefault(rid, []).append(row)
     for row in init_rejected:
         rid = _rejected_row_id(row)
         if rid is not None and rid in checked_valid:
@@ -259,6 +264,15 @@ def merge_verified_revisions(initial, checked):
         if rid in rejected_seen:
             continue
         rejected_seen.add(rid)
-        result_rejected.append(copy.deepcopy(row))
+        preserved = copy.deepcopy(row)
+        failures = revision_failures.get(rid, [])
+        if (len(failures) == 1 and not counts.get(rid)
+                and rid not in initial_conflicts):
+            # Keep the original rejection attached to the original draft. The
+            # revision was independently checked and may fail for a different
+            # reason; do not erase that evidence or present the old reason as
+            # the verdict on the newly submitted wording.
+            preserved['revisionRejection'] = copy.deepcopy(failures[0])
+        result_rejected.append(preserved)
 
     return {"accepted": result_accepted, "rejected": result_rejected}

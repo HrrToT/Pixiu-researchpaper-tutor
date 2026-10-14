@@ -155,3 +155,22 @@ def test_brief_grounds_metric_scope_in_original_question():
         'measurementScope': [{'domain': 'quality', 'requestExcerpt': '图像质量'}]})}
     make_resolve_brief_node(invoke, update)({'run_id': 'r'})
     assert record['state']['metricDomains'] == ['quality']
+
+
+def test_verifier_receives_current_original_objective_for_initial_and_revised_targets():
+    current = {'question': 'Isolate intervention effects with paired measurements.'}
+    prompts = []
+    claim = {'claimId': 'p', 'kind': 'proposal', 'text': 'Proposed diagnostic.', 'evidenceRefs': []}
+    def invoke(**kwargs):
+        prompts.append((kwargs['node'], kwargs['prompt']))
+        return {'content': json.dumps([{'claimId': 'p', 'status': 'failed', 'reason': 'Incomplete'}])}
+    checker = BudgetedSemanticChecker(invoke, 'r', research_question=lambda: current['question'])
+    checker([claim], [])
+    current['question'] = 'Compare complete pipelines at their native budgets.'
+    checker.check_revisions([claim], [], [])
+    assert 'Isolate intervention effects with paired measurements.' in prompts[0][1]
+    assert 'Compare complete pipelines at their native budgets.' in prompts[1][1]
+    for _, prompt in prompts:
+        assert 'Original research question (user objective, not source evidence)' in prompt
+        assert 'cannot replace that primary comparison' in prompt
+        assert 'different estimand instead' in prompt

@@ -3,13 +3,15 @@
 import json
 
 HYPOTHESIS_SPEC_CONTRACT = (
-    "Hypothesis role executionSpec (hypothesisContractVersion=1, server assigned) defines a "
+    "Hypothesis role executionSpec defines a "
     "proposed, unexecuted hypothesis and its decision scope. "
     "Exact keys: statement (nonblank prospective hypothesis text), "
     "analysisClaimId (nonblank str matching an accepted analysis claim), "
     "effectKeys (nonempty unique list of nonblank str, each must be an exact key "
     "in the linked analysis executionSpec effects dict), "
     "purpose (exactly explore|test_zero|assess_equivalence). "
+    "Do not put hypothesisContractVersion inside executionSpec; the server stamps "
+    "that metadata on the enclosing claim, outside executionSpec. "
     "Purpose must match the linked analysis decision.mode: explore->descriptive, "
     "test_zero->interval_excludes_zero, assess_equivalence->equivalence. "
     "Select the purpose required by the user, not a weaker substitute. "
