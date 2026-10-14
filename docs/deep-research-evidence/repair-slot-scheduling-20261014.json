@@ -9,13 +9,49 @@
     "providerRequests": 0,
     "additionalTarget": "c2",
     "batches": [
-      {"targetIds": ["design_completion_data", "design_completion_budget"], "promptBytes": 23913, "visibleEvidence": 7, "optionalContextsOmitted": 2},
-      {"targetIds": ["c1", "c6", "c7"], "promptBytes": 17274, "visibleEvidence": 0, "optionalContextsOmitted": 0},
-      {"targetIds": ["c2", "c3", "c4", "c8"], "promptBytes": 20294, "visibleEvidence": 2, "optionalContextsOmitted": 0}
+      {
+        "targetIds": [
+          "design_completion_data",
+          "design_completion_budget"
+        ],
+        "promptBytes": 23913,
+        "visibleEvidence": 7,
+        "optionalContextsOmitted": 2
+      },
+      {
+        "targetIds": [
+          "c1",
+          "c6",
+          "c7"
+        ],
+        "promptBytes": 17274,
+        "visibleEvidence": 0,
+        "optionalContextsOmitted": 0
+      },
+      {
+        "targetIds": [
+          "c2",
+          "c3",
+          "c4",
+          "c8"
+        ],
+        "promptBytes": 20294,
+        "visibleEvidence": 2,
+        "optionalContextsOmitted": 0
+      }
     ],
     "requiredEvidence": "All mandatory original citations and supplied hints retain their existing bounded context. Only additional optional candidates may omit context.",
     "boundary": "Empty simulated responses measure initial request capacity, not quality or the size of later context after new drafts. Each actual later request is admitted again."
   },
-  "validation": {"targetedPassed": 61, "seconds": 11.59},
-  "acceptance": "Scheduling and capacity replay pass. New real content and full DR0-DR5 acceptance remain incomplete."
+  "validation": {
+    "targetedPassed": 61,
+    "seconds": 11.59,
+    "fullRegression": {
+      "passed": 1176,
+      "warnings": 2,
+      "seconds": 147.35
+    }
+  },
+  "acceptance": "Scheduling and capacity replay pass. New real content and full DR0-DR5 acceptance remain incomplete.",
+  "implementationCommit": "12067a5"
 }
