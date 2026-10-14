@@ -21,10 +21,19 @@
     "originalSubsetFailurePreservedSeparately": true,
     "historicalResultUnchanged": true
   },
-  "validation": {"targetedTestsPassed": 168, "targetedSeconds": 28.41},
+  "validation": {
+    "targetedTestsPassed": 168,
+    "targetedSeconds": 28.41,
+    "fullRegression": {
+      "passed": 1162,
+      "warnings": 2,
+      "seconds": 201.26
+    }
+  },
   "limitations": [
     "Prompt guidance does not establish semantic correctness. New real-provider output quality remains unproven.",
     "This replay checks the new request and deterministic handling of a previous response; it is not a new independent model verdict.",
     "DR0-DR5 final quality and independent holdout acceptance remain incomplete."
-  ]
+  ],
+  "committedImplementation": "51bc3a1"
 }
