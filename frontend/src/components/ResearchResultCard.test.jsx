@@ -163,6 +163,28 @@ describe('plan editor in paused state', () => {
     expect(screen.getByDisplayValue('核对实验条件')).toBeInTheDocument();
   });
 
+  it('edits answer requirements without losing their identities or the other requirements', async () => {
+    const onAction = vi.fn().mockResolvedValue(undefined);
+    const criteria = [{ criterionId: 'role', requirement: '解释输入的作用', responseType: 'explanation' },
+      { criterionId: 'limit', requirement: '说明适用边界', responseType: 'limitation' }];
+    const result = { ...props.result, status: 'paused', allowedActions: ['plan', 'resume'],
+      plan: [{ itemId: 'p', question: '原问题', obligations: [{ obligationId: 'o', question: '原问题',
+        requiredSources: ['paper'], completionCriteria: criteria }] }] };
+    render(<ResearchResultCard {...props} result={result} onAction={onAction} />);
+    fireEvent.click(screen.getByRole('button', { name: '详情' }));
+    fireEvent.click(screen.getByText('回答要点'));
+    fireEvent.change(screen.getByLabelText('回答要点 1.1.1'), { target: { value: '给出可复现的步骤' } });
+    fireEvent.change(screen.getByLabelText('说明方式 1.1.1'), { target: { value: 'procedure' } });
+    fireEvent.click(screen.getByRole('button', { name: '提交修改' }));
+    await waitFor(() => expect(onAction).toHaveBeenCalledWith('t', 'r', 'plan', expect.objectContaining({
+      plan: [expect.objectContaining({ obligations: [expect.objectContaining({ obligationId: 'o',
+        requiredSources: ['paper'], completionCriteria: [
+          { criterionId: 'role', requirement: '给出可复现的步骤', responseType: 'procedure' }, criteria[1]],
+      })] })],
+    })));
+    expect(criteria[0].requirement).toBe('解释输入的作用');
+  });
+
   it('submits plan modifications with planRevision', async () => {
     const onAction = vi.fn().mockResolvedValue(undefined);
     const result = { ...props.result, status: 'paused', allowedActions: ['plan', 'resume'],

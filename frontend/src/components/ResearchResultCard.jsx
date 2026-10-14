@@ -134,6 +134,36 @@ export default function ResearchResultCard({ taskId, run, result, error, onActio
                     setPlanDraft(draft);
                   }} />
               </label>)}
+              {(item.obligations || []).some(obligation => obligation.completionCriteria?.length) && <details>
+                <summary>回答要点</summary>
+                <p className="theme-text-muted text-sm">调整问题时，也可以修改希望回答说明的内容。</p>
+                {(item.obligations || []).flatMap((obligation, obligationIndex) =>
+                  (obligation.completionCriteria || []).map((criterion, criterionIndex) => {
+                    const position = `${index + 1}.${obligationIndex + 1}.${criterionIndex + 1}`;
+                    const updateCriterion = change => {
+                      const draft = [...(planDraft || planItems)];
+                      draft[index] = { ...draft[index], obligations: draft[index].obligations.map((value, at) => at === obligationIndex
+                        ? { ...value, completionCriteria: value.completionCriteria.map((entry, entryAt) => entryAt === criterionIndex ? { ...entry, ...change } : entry) }
+                        : value) };
+                      setPlanDraft(draft);
+                    };
+                    return <div key={`${obligation.obligationId}-${criterion.criterionId}`}>
+                      <label>需要说明的内容
+                        <input className="theme-input" aria-label={`回答要点 ${position}`} value={criterion.requirement}
+                          onChange={event => updateCriterion({ requirement: event.target.value })} />
+                      </label>
+                      <label>说明方式
+                        <select className="theme-input" aria-label={`说明方式 ${position}`} value={criterion.responseType}
+                          onChange={event => updateCriterion({ responseType: event.target.value })}>
+                          <option value="identification">说明是什么</option>
+                          <option value="explanation">解释怎么起作用或为什么</option>
+                          <option value="procedure">给出操作步骤</option>
+                          <option value="limitation">说明适用范围或限制</option>
+                        </select>
+                      </label>
+                    </div>;
+                  }))}
+              </details>}
               <span className="theme-text-muted"> {({ completed: '已完成', pending: '待研究', running: '研究中', gap: '待补查' })[item.status] || ''}</span>
             </li>)}</ol>
             <button type="button" disabled={busy || !actions.has('plan')} onClick={handlePlanSave}>提交修改</button>
