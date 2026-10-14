@@ -14,7 +14,9 @@ def repair_exploration_headroom(normal_pool):
                max(0, normal_pool) * 2 // 3)
 
 
-def repair_prompt_byte_limit(budget):
+def repair_prompt_byte_limit(budget, output_tokens=REPAIR_OUTPUT_TOKENS):
+    if type(output_tokens) is not int or not 1 <= output_tokens <= REPAIR_OUTPUT_TOKENS:
+        return 0
     if not budget or 'maxTokens' not in budget:
         return REPAIR_INPUT_BYTES
     keys = ('maxTokens', 'reserveTokens', 'tokens', 'normalTokens')
@@ -23,4 +25,17 @@ def repair_prompt_byte_limit(budget):
         return 0
     maximum, reserve, total_used, normal_used = values
     remaining = min(maximum - total_used, maximum - reserve - normal_used)
-    return max(0, min(REPAIR_INPUT_BYTES, remaining - REPAIR_OUTPUT_TOKENS - FRAMING_TOKENS))
+    return max(0, min(REPAIR_INPUT_BYTES, remaining - output_tokens - FRAMING_TOKENS))
+
+
+def repair_batch_output_limit(target_count):
+    """Smaller target batches need less output reservation, never a larger cap."""
+    return min(REPAIR_OUTPUT_TOKENS, max(4096, 1024 * (target_count + 1)))
+
+
+def repair_output_options(options):
+    result = dict(options)
+    maximum = result.pop('_repair_output_limit', REPAIR_OUTPUT_TOKENS)
+    if type(maximum) is not int or not 1 <= maximum <= REPAIR_OUTPUT_TOKENS:
+        raise ValueError('Invalid server repair output limit')
+    return {**result, 'max_tokens': maximum}

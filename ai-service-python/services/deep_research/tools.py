@@ -263,6 +263,9 @@ class TrackedLLMInvoker:
 
         if self._request_options:
             extra_body = self._request_options(node, dict(extra_body or {}))
+        elif node == 'repair_claims' and '_repair_output_limit' in (extra_body or {}):
+            from services.deep_research.repair_budget import repair_output_options
+            extra_body = repair_output_options(extra_body)
         
         # Full prompt digest for stable IDs - NOT truncated
         args_digest = digest({"prompt": prompt, "extra": extra_body or {}})

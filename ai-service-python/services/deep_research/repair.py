@@ -140,6 +140,15 @@ in the paper. Maintain consistency with accepted definitions and complete requir
         prompt += '\n' + HYPOTHESIS_SPEC_CONTRACT
         prompt += '\nRepair linked hypothesis/analysis targets jointly, keeping their IDs and exact effect keys. ' \
                   'Select a purpose and compatible method that fulfill the user request, not a weaker substitute.'
+    shape = [{'claimId': row['claimId'], 'kind': row['kind'],
+              **({'designRole': row['designRole']} if row.get('designRole') else {}),
+              'text': '', 'evidenceRefs': []} for row in originals.values()]
+    prompt += ('\nACTIVE OUTPUT TARGETS FOR THIS REQUEST ONLY:\n' + json.dumps(shape, ensure_ascii=False, separators=(',', ':'))
+               + '\nFill only these rows, adding required executionSpec fields for their roles. '
+               'Omit a target or return [] if no supported revision is possible. '
+               'Do not output any accepted or sibling/context ID, even if it needs improvement. '
+               'Each factual clause still requires its own allowed supplied evidenceRefs. '
+               'Return only the JSON array; do not rewrite the entire experiment.')
     template = prompt
     def render(selected_rows):
         visible_ids = {row['evidenceId'] for row in selected_rows}
@@ -230,7 +239,8 @@ def _parse_repair_response(prepared, response, parse):
 
 
 def repair_rejected(report, verification, evidence, question, invoke, parse, *,
-                    max_prompt_bytes=24000, metric_domains=None, batch_state=None, checkpoint=None):
+                    max_prompt_bytes=24000, metric_domains=None, batch_state=None, checkpoint=None,
+                    current_budget=None, invoke_request=None):
     """One bounded revision round, split before dispatch when evidence cannot fit.
 
     At most three requests share full sibling design definitions. Successful
@@ -247,14 +257,15 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
     identity = digest({'report': report, 'verification': verification,
                        'evidence': evidence, 'question': question, 'metricDomains': metric_domains})
 
-    def prepare(ids, results=()):
+    def prepare(ids, results=(), byte_limit=None):
         ids = set(ids)
         prior = {row['claimId']: row for row in results}
         siblings = [prior.get(c['claimId'], c) for c in originals if c['claimId'] not in ids]
         subset = {'accepted': verification.get('accepted', []),
                   'rejected': [row for row in verification.get('rejected', []) if row['claimId'] in ids]}
         return _prepare_repair(report, subset, evidence, question,
-            max_prompt_bytes=state['maxPromptBytes'], metric_domains=metric_domains, draft_context=siblings)
+            max_prompt_bytes=state['maxPromptBytes'] if byte_limit is None else byte_limit,
+            metric_domains=metric_domains, draft_context=siblings)
 
     state = deepcopy(batch_state) if batch_state is not None else {
         'version': 1, 'inputDigest': identity, 'maxPromptBytes': max_prompt_bytes,
@@ -277,6 +288,21 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
                 or row.get('claimId') not in group for row in completed)
                 or len({row['claimId'] for row in completed}) != len(completed)):
             raise DeepResearchError('invalid_repair_plan', '保存的修订草稿身份无效。')
+    pending = state.get('pending')
+    if pending is not None:
+        if (not isinstance(pending, dict) or type(pending.get('index')) is not int
+                or pending.get('index') != len(state['results'])
+                or pending.get('index') >= len(state['batches'])
+                or not isinstance(pending.get('request'), dict)
+                or pending.get('digest') != digest(pending['request'])):
+            raise DeepResearchError('invalid_repair_plan', '保存的待发送修订请求无效。')
+        request = pending['request']
+        p = request.get('prepared', {})
+        if (not isinstance(p, dict) or not isinstance(p.get('prompt'), str)
+                or len(p['prompt'].encode('utf-8')) > state['maxPromptBytes']
+                or set(p.get('originals', {})) != set(state['batches'][pending['index']])
+                or type(request.get('outputTokens')) is not int or not 1 <= request['outputTokens'] <= 8192):
+            raise DeepResearchError('invalid_repair_plan', '保存的待发送修订请求范围无效。')
     if batch_state is None:
         try:
             prepare(state['batches'][0])
@@ -298,13 +324,31 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
         if key in state['results']:
             rows = state['results'][key]
         else:
+            if state.get('stop'):
+                break
             try:
-                prepared = prepare(group, revised)
-                response = invoke(prepared['prompt'])
-            except BudgetExhaustedError:
+                if 'pending' not in state:
+                    from services.deep_research.repair_budget import repair_batch_output_limit, repair_prompt_byte_limit
+                    output = repair_batch_output_limit(len(group)) if invoke_request else 8192
+                    cap = min(state['maxPromptBytes'], repair_prompt_byte_limit(current_budget(), output)) \
+                          if current_budget else state['maxPromptBytes']
+                    prepared = prepare(group, revised, cap)
+                    request = {'prepared': prepared, 'outputTokens': output}
+                    state['pending'] = {'index': index, 'request': request, 'digest': digest(request)}
+                    if checkpoint:
+                        checkpoint(deepcopy(state))  # Durable exact request BEFORE provider-capable dispatch.
+                request = state['pending']['request']
+                prepared = request['prepared']
+                response = (invoke_request(prepared['prompt'], request['outputTokens'])
+                            if invoke_request else invoke(prepared['prompt']))
+            except BudgetExhaustedError as exc:
+                state['stop'] = {'batch': index, **exc.details}
+                if checkpoint:
+                    checkpoint(deepcopy(state))
                 break  # Keep completed drafts, then independently verify them.
             rows = _parse_repair_response(prepared, response, parse)
             state['results'][key] = rows
+            state.pop('pending', None)
             if checkpoint:
                 checkpoint(deepcopy(state))
         revised.extend(deepcopy(rows))

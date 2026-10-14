@@ -70,6 +70,7 @@ def test_unknown_pending_batch_propagates_and_completed_batch_is_not_resent(monk
         repair_rejected(report, verification, [], 'Question', invoke, json.loads, checkpoint=saved.append)
     assert set(saved[-1]['results']) == {'0'}
     original = deepcopy(saved[-1])
+    original_snapshot = deepcopy(original)
     resumed = []
     result = repair_rejected(report, verification, [], 'Question',
         lambda prompt: (resumed.append(json.loads(prompt)) or response(prompt)), json.loads,
@@ -78,7 +79,7 @@ def test_unknown_pending_batch_propagates_and_completed_batch_is_not_resent(monk
     # separately, blocks an unresolved call rather than issuing it again.
     assert [p['targets'] for p in resumed] == [['h', 'a'], ['steps']]
     assert any(c['text'] == 'Revised data.' for c in resumed[0]['context'])
-    assert len(result) == 5 and original == saved[1]
+    assert len(result) == 5 and original == original_snapshot
 
 
 def test_budget_exhaustion_keeps_completed_drafts_without_retry(monkeypatch):
@@ -211,9 +212,11 @@ def test_real_prompt_splits_required_sources_and_restores_local_aliases():
     sent, saved = [], []
     def invoke(prompt):
         targets = json.JSONDecoder().raw_decode(prompt.split('Rejected claims and checks:\n', 1)[1])[0]
+        active = json.JSONDecoder().raw_decode(prompt.split('ACTIVE OUTPUT TARGETS FOR THIS REQUEST ONLY:\n', 1)[1])[0]
         rows = json.JSONDecoder().raw_decode(prompt.split('Exact available evidence:\n', 1)[1])[0]
         assert len(prompt.encode('utf-8')) <= 24000 and len(rows) == 1
         target = targets[0]['claim']
+        assert [row['claimId'] for row in active] == [target['claimId']]
         assert len(targets) == 1 and target['evidenceRefs'] == ['E1']
         sent.append(target['claimId'])
         assert rows[0]['quote'] == next(e['quote'] for e in evidence if e['evidenceId'] == target['claimId'])
@@ -223,3 +226,46 @@ def test_real_prompt_splits_required_sources_and_restores_local_aliases():
         {'claimId': c['claimId']} for c in claims]}, evidence, 'Question', invoke, json.loads, checkpoint=saved.append)
     assert sent == ['a', 'b', 'c']
     assert [(c['claimId'], c['evidenceRefs']) for c in result] == [(key, [key]) for key in ('a', 'b', 'c')]
+
+
+def test_settled_response_survives_lost_draft_checkpoint_with_exact_pending_request(monkeypatch, tmp_path):
+    from llm.provider import LLMResult, LLMUsage
+    from services.deep_research.repository import DeepResearchRepository
+    from services.deep_research.tools import TrackedLLMInvoker
+    report, verification = inputs()
+    report['claims'] = report['claims'][:1]
+    verification['rejected'] = verification['rejected'][:1]
+    fake_preparer(monkeypatch)
+    repo = DeepResearchRepository(str(tmp_path / 'calls.sqlite3'))
+    repo.initialize(); repo.create_run({'runId': 'r'}); repo.begin_execution('r')
+    sent, saved = [], []
+    class Provider:
+        def invoke(self, request):
+            sent.append(request.prompt)
+            return LLMResult('fixture', 'fixture', response(request.prompt)['content'], LLMUsage(8, 2, 10), 'stop')
+    tracked = TrackedLLMInvoker(Provider(), repo.reserve_call, repo.complete_call)
+    invoke = lambda prompt: tracked('r', 'repair_claims', prompt, {'max_tokens': 3000})
+    def checkpoint(state):
+        if state['results']:
+            raise InterruptedError('Crash after settlement, before draft checkpoint')
+        saved.append(state)
+    with pytest.raises(InterruptedError):
+        repair_rejected(report, verification, [], 'Question', invoke, json.loads, checkpoint=checkpoint)
+    assert saved[-1]['pending']['request']['prepared']['prompt'] == sent[0]
+    monkeypatch.setattr('services.deep_research.repair._prepare_repair',
+                        lambda *a, **k: pytest.fail('A pending request must never be rebuilt'))
+    result = repair_rejected(report, verification, [], 'Question', invoke, json.loads,
+        batch_state=saved[-1], current_budget=lambda: pytest.fail('Frozen pending request must not be reallocated'))
+    assert len(result) == 1 and len(sent) == 1
+    assert [c['status'] for c in repo.list_calls('r')] == ['succeeded']
+
+
+def test_stopped_budget_round_is_not_automatically_restarted(monkeypatch):
+    report, verification = inputs(); fake_preparer(monkeypatch)
+    saved = []
+    def exhausted(prompt):
+        raise BudgetExhaustedError('normalTokens', 50000, 53040)
+    assert repair_rejected(report, verification, [], 'Question', exhausted, json.loads, checkpoint=saved.append) == []
+    assert saved[-1]['stop']['kind'] == 'normalTokens'
+    assert repair_rejected(report, verification, [], 'Question', lambda _: pytest.fail('No budget retry'),
+                           json.loads, batch_state=saved[-1]) == []

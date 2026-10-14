@@ -1201,7 +1201,7 @@ def make_verify_node(
                 'repairTargets': repair_targets, 'repairReport': repair_report}}, expected_revision=None)
             from services.deep_research.repair import repair_rejected
             from services.deep_research.contracts import BudgetExhaustedError
-            def invoke_repair(prompt):
+            def invoke_repair(prompt, output_limit=None):
                 # Admit the rewrite and its independent verification as a pair.
                 # Do not spend the final seconds on wording that cannot be checked.
                 from datetime import datetime, UTC
@@ -1215,8 +1215,10 @@ def make_verify_node(
                             'repairStatus': 'skipped_time', 'repairTimeRequiredSeconds': minimum}}, expected_revision=None)
                         raise BudgetExhaustedError('repairTimeSeconds', maximum - minimum, elapsed)
                 try:
-                    response = llm_invoke(run_id, "repair_claims", prompt,
-                        {"max_tokens": 3000, "temperature": 0.0})
+                    options = {"max_tokens": 3000, "temperature": 0.0}
+                    if output_limit is not None:
+                        options['_repair_output_limit'] = output_limit
+                    response = llm_invoke(run_id, "repair_claims", prompt, options)
                 except BudgetExhaustedError as exc:
                     repo_update(run_id, lambda r: {**r, "state": {**r.get("state", {}),
                         "repairStatus": "skipped_budget", "repairLimit": exc.details}}, expected_revision=None)
@@ -1234,12 +1236,15 @@ def make_verify_node(
                     current = repo_update(run_id, lambda r: r, expected_revision=None)
                     def checkpoint_repair_batches(batch_state):
                         repo_update(run_id, lambda r: {**r, 'state': {**r.get('state', {}),
-                            'repairBatchState': batch_state}}, expected_revision=None)
+                            'repairBatchState': batch_state,
+                            **({'repairBatchStop': batch_state['stop']} if batch_state.get('stop') else {})}}, expected_revision=None)
                     revised = repair_rejected(repair_report, repair_targets, evidence, record.get("question", ""),
                         invoke_repair, _safe_parse_json,
                         max_prompt_bytes=repair_prompt_byte_limit(current.get('budget', {})),
                         metric_domains=record.get('state', {}).get('metricDomains'),
-                        batch_state=saved.get('repairBatchState'), checkpoint=checkpoint_repair_batches)
+                        batch_state=saved.get('repairBatchState'), checkpoint=checkpoint_repair_batches,
+                        current_budget=lambda: repo_update(run_id, lambda r: r, expected_revision=None).get('budget', {}),
+                        invoke_request=invoke_repair)
                     repo_update(run_id, lambda r: {**r, 'state': {**r.get('state', {}),
                         'repairDraft': revised}}, expected_revision=None)
                 if revised:

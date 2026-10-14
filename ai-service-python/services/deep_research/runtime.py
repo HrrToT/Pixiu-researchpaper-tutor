@@ -33,9 +33,8 @@ def research_model_options(node, options):
         # The observed low-reasoning repair exhausted 8192 output tokens with
         # an empty body. Return the bounded edit directly; independent checks
         # still decide whether any revision can be published.
-        from services.deep_research.repair_budget import REPAIR_OUTPUT_TOKENS
-        return {**options, 'thinking': {'type': 'disabled'}, 'reasoning_effort': 'none',
-                'max_tokens': REPAIR_OUTPUT_TOKENS}
+        from services.deep_research.repair_budget import repair_output_options
+        return {**repair_output_options(options), 'thinking': {'type': 'disabled'}, 'reasoning_effort': 'none'}
     if node == 'verify_design_config':
         # Concrete protocol audit: reserve space for the verdict/quoted choices,
         # not an unbounded derivation. Scientific consistency stays high below.
