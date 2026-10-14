@@ -45,7 +45,6 @@ public class TaskResearchService {
     }
 
     public Map<String, Object> syncPublication(String taskId, String runId) {
-        requireV2Owner(taskId, runId);
         Map<String, Object> result = getV2(taskId, runId);
         Map<?, ?> state = (Map<?, ?>) result.get("task");
         Map<?, ?> report = state.get("report") instanceof Map<?, ?> value ? value : Map.of();
@@ -171,7 +170,7 @@ public class TaskResearchService {
     @SuppressWarnings("unchecked")
     public Map<String, Object> scopeCheck(String taskId, String runId, Map<String, Object> input) {
         Map<String, Object> workspace = tasks.get(taskId);
-        Map<String, Object> run = findRunByEitherId(taskId, runId);
+        Map<String, Object> run = findRunByEitherId(workspace, runId);
         String engine = resolveEngine(run);
         if (!ENGINE_V2.equals(engine)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "scope-check仅适用于v2研究运行");
@@ -779,7 +778,6 @@ public class TaskResearchService {
 
         Map<String, Object> response = new LinkedHashMap<>();
         response.put("status", "success");
-        response.put("workspace", tasks.get(taskId));
         Map<String, Object> taskView = new LinkedHashMap<>();
         taskView.put("runId", runId);
         taskView.put("taskId", taskId);
@@ -810,13 +808,16 @@ public class TaskResearchService {
         // Publish terminal results
         String status = textOrNull(state.get("status"));
         String outcome = textOrNull(state.get("outcome"));
+        Map<String, Object> currentWorkspace = null;
         if (isTerminal(status) && state.get("report") instanceof Map<?, ?>) {
-            tasks.publishV2ResearchResult(taskId, runId, state);
+            currentWorkspace = tasks.publishV2ResearchResult(taskId, runId, state);
         }
         if (incomingRevision instanceof Number rev) {
-            tasks.updateV2RunRevision(taskId, runId, rev.longValue(), status, outcome);
+            currentWorkspace = tasks.updateV2RunRevision(taskId, runId, rev.longValue(), status, outcome);
         }
-        response.put("workspace", tasks.get(taskId));
+        // Both transactional mutations return the current locked projection.
+        // Reuse it rather than loading/deserializing the whole history again.
+        response.put("workspace", currentWorkspace != null ? currentWorkspace : tasks.get(taskId));
         return response;
     }
 
@@ -951,6 +952,11 @@ public class TaskResearchService {
     @SuppressWarnings("unchecked")
     private Map<String, Object> findRunByEitherId(String taskId, String id) {
         Map<String, Object> workspace = tasks.get(taskId);
+        return findRunByEitherId(workspace, id);
+    }
+
+    @SuppressWarnings("unchecked")
+    private Map<String, Object> findRunByEitherId(Map<String, Object> workspace, String id) {
         if (!(workspace.get("researchRuns") instanceof List<?> runs)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "研究运行不属于当前任务");
         }
