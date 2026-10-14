@@ -1,6 +1,7 @@
 """Full request limits and evidence permissions across actual send sites."""
 import json
 from unittest.mock import Mock
+import pytest
 
 from services.deep_research.final_coverage import audit_final_answer
 from services.deep_research.graph import make_synthesize_node
@@ -68,9 +69,11 @@ def test_experiment_synthesis_counts_instructions_and_keeps_whole_quotes():
 
 def test_repair_cannot_cite_row_removed_from_complete_request():
     claim = {'claimId': 'c', 'kind': 'reported', 'text': '待修订',
-             'evidenceRefs': ['huge', 'small']}
-    evidence = [{'evidenceId': 'huge', 'quote': '原文' * 15000},
-                {'evidenceId': 'small', 'quote': '完整短引文'}]
+             'evidenceRefs': ['small'], 'obligationIds': ['o']}
+    base = {'sourceWorkId': 'paper', 'sourceVersionId': 'v', 'accessLevel': 'fulltext',
+            'obligationIds': ['o'], 'verification': {'literal': 'passed'}}
+    evidence = [dict(base, evidenceId='huge', quote='原文' * 15000),
+                dict(base, evidenceId='small', quote='完整短引文')]
     def invoke(prompt):
         assert len(prompt.encode('utf-8')) <= 24000
         assert '\"c\": [\"E2\"]' in prompt
@@ -78,6 +81,19 @@ def test_repair_cannot_cite_row_removed_from_complete_request():
     result = repair_rejected({'claims': [claim]}, {'rejected': [{'claimId': 'c'}]},
                              evidence, '核查', invoke, json.loads)
     assert result == []
+
+
+def test_repair_stops_before_send_when_an_original_citation_cannot_fit():
+    from services.deep_research.contracts import BudgetExhaustedError
+    claim = {'claimId': 'c', 'kind': 'reported', 'text': '待修订', 'evidenceRefs': ['huge', 'small']}
+    evidence = [{'evidenceId': 'huge', 'quote': '原文' * 15000},
+                {'evidenceId': 'small', 'quote': '完整短引文'}]
+    invoke = Mock()
+    with pytest.raises(BudgetExhaustedError) as raised:
+        repair_rejected({'claims': [claim]}, {'rejected': [{'claimId': 'c'}]},
+                        evidence, '核查', invoke, json.loads)
+    assert raised.value.details['kind'] == 'repairEvidenceBytes'
+    invoke.assert_not_called()
 
 
 def test_semantic_pass_cannot_hide_evidence_omitted_for_capacity():

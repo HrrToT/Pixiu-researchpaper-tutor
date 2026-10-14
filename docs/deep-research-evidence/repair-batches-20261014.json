@@ -19,12 +19,55 @@
     "sourceAccess": "read-only SQLite",
     "providerRequests": 0,
     "batches": [
-      {"targetIds": ["design_completion_data", "design_completion_budget"], "promptBytes": 23972, "visibleEvidence": 5, "contextOmitted": 0},
-      {"targetIds": ["c1", "c6", "c7"], "promptBytes": 17274, "visibleEvidence": 0, "contextOmitted": 0},
-      {"targetIds": ["c3", "c4", "c8"], "promptBytes": 17508, "visibleEvidence": 1, "contextOmitted": 0}
+      {
+        "targetIds": [
+          "design_completion_data",
+          "design_completion_budget"
+        ],
+        "promptBytes": 23972,
+        "visibleEvidence": 5,
+        "contextOmitted": 0
+      },
+      {
+        "targetIds": [
+          "c1",
+          "c6",
+          "c7"
+        ],
+        "promptBytes": 17274,
+        "visibleEvidence": 0,
+        "contextOmitted": 0
+      },
+      {
+        "targetIds": [
+          "c3",
+          "c4",
+          "c8"
+        ],
+        "promptBytes": 17508,
+        "visibleEvidence": 1,
+        "contextOmitted": 0
+      }
     ],
     "boundary": "Purely prospective hypothesis/analysis targets had no factual citations or additional source permission. This capture used empty simulated revisions: new model drafts may enlarge later sibling context and are re-admitted before dispatch. No generated-content quality is established by this replay."
   },
-  "validation": {"targetedPassed": 73, "targetedSeconds": 25.25},
-  "limitations": ["Some inputs can still exceed capacity as an indivisible target; they stop before sending.", "Available budget or time may permit fewer than three requests; the round does not guarantee a complete repair.", "Real model output and final DR0-DR5 acceptance remain unverified for this version."]
+  "validation": {
+    "targetedPassed": 73,
+    "targetedSeconds": 25.25,
+    "capacityAndRecoveryTargeted": {
+      "passed": 80,
+      "seconds": 24.86
+    },
+    "fullRegression": {
+      "passed": 1175,
+      "warnings": 2,
+      "seconds": 205.86
+    }
+  },
+  "limitations": [
+    "Some inputs can still exceed capacity as an indivisible target; they stop before sending.",
+    "Available budget or time may permit fewer than three requests; the round does not guarantee a complete repair.",
+    "Real model output and final DR0-DR5 acceptance remain unverified for this version."
+  ],
+  "implementationCommit": "e7a5db4"
 }
