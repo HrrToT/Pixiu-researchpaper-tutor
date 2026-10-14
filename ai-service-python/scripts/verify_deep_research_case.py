@@ -14,6 +14,7 @@ from urllib.parse import quote
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from services.deep_research.acceptance_receipts import claim_submission, confirm_submission, read_receipt
+from services.deep_research.acceptance_manifest import require_frozen_case
 
 
 def run_case(manifest, case_id, attempt, directory, api, *, submit=False,
@@ -23,6 +24,7 @@ def run_case(manifest, case_id, attempt, directory, api, *, submit=False,
     case = next((c for c in manifest['cases'] if c['id'] == case_id), None)
     if not case or not case.get('question'):
         raise ValueError('Select a model case; fault-injection cases use offline tests.')
+    require_frozen_case(manifest, case)
     if case.get('mode') == 'continuation' and not (parent_run_id and task_id):
         raise ValueError('Continuation needs an existing task and parent run.')
     materials = [manifest['materials'][key]['sha256'] + '.pdf' for key in case['materials']]
