@@ -34,7 +34,9 @@ class FixtureModel:
         elif prompt.startswith("Create a research plan"):
             content = [{"itemId": "i", "question": "比较同一评测条件下的结果", "dependencies": [],
                 "obligations": [{"obligationId": "o", "question": "accuracy fixed benchmark",
-                                  "requiredSources": ["alpha", "beta"]}]}]
+                                  "requiredSources": ["alpha", "beta"], "completionCriteria": [
+                                      {"criterionId": "results", "requirement": "State both papers' reported accuracy", "responseType": "identification"},
+                                      {"criterionId": "conditions", "requirement": "State evaluation conditions and comparability", "responseType": "limitation"}]}]}]
         elif prompt.startswith("Extract evidence"):
             quote = next(text.split(". ")[0] + "." for text in PAPERS.values() if text in prompt)
             content = [{"quote": quote, "obligationIds": ["o"], "location": {"page": 3}}]

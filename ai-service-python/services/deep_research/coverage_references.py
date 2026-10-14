@@ -48,6 +48,9 @@ def resolve_coverage_references(verdicts, claims, evidence_rows):
         if not isinstance(verdict, dict):
             continue
         bind(verdict.get('bindings'))
+        for criterion in verdict.get('criteria', []) if isinstance(verdict.get('criteria'), list) else []:
+            if isinstance(criterion, dict):
+                bind(criterion.get('bindings'))
         aspects = verdict.get('aspects')
         for aspect in aspects if isinstance(aspects, list) else []:
             if not isinstance(aspect, dict):

@@ -262,6 +262,9 @@ Do not substitute a generic overview for the user's requested mechanism or condi
 
 Return a JSON ARRAY of plan items, NOT an object with items field."""
         
+        if record.get('planCompletionContractVersion') == 1:
+            from services.deep_research.completion_criteria import CRITERIA_GUIDANCE
+            prompt += '\n' + CRITERIA_GUIDANCE
         result = llm_invoke(run_id, "plan", prompt, {"max_tokens": 5000, "temperature": 0.1})
         
         # Handle LLMResult dataclass - extract content attribute
@@ -285,6 +288,8 @@ Return a JSON ARRAY of plan items, NOT an object with items field."""
         
         try:
             validated = validate_plan(parsed[:4])
+            from services.deep_research.completion_criteria import validate_completion_criteria
+            validate_completion_criteria(validated, required=record.get('planCompletionContractVersion') == 1)
         except ValueError as ve:
             logger.warning("Plan validation failed: %s", ve)
             return {"error_code": "invalid_plan_response", "outcome": OUTCOME_NONE, "plan_ids": []}
@@ -323,6 +328,7 @@ Return a JSON ARRAY of plan items, NOT an object with items field."""
             candidates = allowed or list(dict.fromkeys(sid for item in validated
                 for obligation in item['obligations'] for sid in obligation['requiredSources']))
             validated = validate_plan(ensure_data_prerequisite(validated, candidates, question))
+            validate_completion_criteria(validated, required=record.get('planCompletionContractVersion') == 1)
         
         plan_ids = [item["itemId"] for item in validated]
         from services.deep_research.continuation import rebind_inherited_state
@@ -996,7 +1002,7 @@ def make_synthesize_node(
                 claim_fields += ', executionSpec also required for the budget role'
             if strict_hypothesis:
                 claim_fields += ', executionSpec also required for the hypothesis role'
-        synthesis_obligations = [{k: o[k] for k in ('obligationId', 'question', 'purpose', 'requestExcerpt', 'requiredSources') if k in o}
+        synthesis_obligations = [{k: o[k] for k in ('obligationId', 'question', 'purpose', 'requestExcerpt', 'requiredSources', 'completionCriteria') if k in o}
                                  for p in brief_state.get('plan', []) for o in p.get('obligations', [])]
         prompt = f"""Synthesize a complete answer to the research question.
 Question: {question}
@@ -1029,6 +1035,10 @@ Sections reference actual claimIds. All facts, proposals and hypotheses require 
 no extra unchecked prose. At most {claim_limit} claims, each independently checkable; never merge
 unrelated papers, benchmarks or protocols to shorten the answer. For two requested points use at most two claims.
 Write concise understandable Chinese, explaining technical components, conditioning inputs and activation rules;
+Meet the frozen completionCriteria at their responseType: an explanation must say how/why
+the requested input changes or constrains the operation/output. Listing names is insufficient.
+For novices, explain the essential transformation in ordinary words next to its technical term.
+Do not repeat the same proposition in text and conditions; use the limited space for the mechanism.
 not English placeholders or generic 'depends on the input/view'. Answer each requested aspect or state its
 specific evidence limitation. Respect scope and total text+conditions length; put conflicting conditions beside conclusions.
 Kinds: reported, inference, hypothesis, proposal. Copy reported numbers exactly; derived ratios/differences are inferences.
@@ -1341,6 +1351,12 @@ def make_publish_node(
         rejected_count = len(verified_report.get("rejectedClaims", []))
         from services.deep_research.final_coverage import remaining_retrieval_gaps
         audit = verified_report.get('answerCoverage', {})
+        from services.deep_research.completion_criteria import revalidate_completion_audit
+        audit = revalidate_completion_audit(brief_state.get('plan', []), accepted_claims, audit)
+        if audit != verified_report.get('answerCoverage', {}):
+            verified_report = {**verified_report, 'answerCoverage': audit}
+            repo_update(run_id, lambda r: {**r, 'state': {**r.get('state', {}),
+                        'verifiedReport': verified_report}}, expected_revision=None)
         from services.deep_research.obligation_purpose import nonblocking_research_obligations
         research_notes = nonblocking_research_obligations(brief_state.get('plan', []),
             record.get('question', ''), accepted_claims, audit.get('verdicts'),

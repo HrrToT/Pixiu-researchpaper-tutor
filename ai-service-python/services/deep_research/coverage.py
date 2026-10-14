@@ -44,7 +44,8 @@ def validate_plan(items: list[dict]) -> list[dict]:
                 raise ValueError("Invalid obligation sources")
             obligation_ids.add(identity)
         visit(key)
-    return items
+    from services.deep_research.completion_criteria import validate_completion_criteria
+    return validate_completion_criteria(items)
 
 
 def coverage_gaps(plan: list[dict], coverage: list[dict], required_sources: list[str]) -> list[dict]:

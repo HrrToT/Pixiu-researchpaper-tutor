@@ -21,6 +21,10 @@ def ensure_data_prerequisite(plan, source_ids, question):
     expected = {'question': QUESTION, 'searchQuery': QUERY, 'requiredSources': sources,
                 'purpose': 'supporting_research' if len(excerpt) >= 8 else 'answer_requirement',
                 'requestExcerpt': excerpt}
+    if any('completionCriteria' in o for item in result for o in item['obligations']):
+        expected['completionCriteria'] = [{'criterionId': 'available_data',
+            'requirement': '核对拟议数据选择的现有场景或样本依据，以及已取得证据的范围。',
+            'responseType': 'identification'}]
     obligations = [o for item in result for o in item['obligations']]
     if any(all(o.get(k) == v for k, v in expected.items()) for o in obligations):
         return result

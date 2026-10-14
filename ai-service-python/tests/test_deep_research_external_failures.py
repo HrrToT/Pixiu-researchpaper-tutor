@@ -88,9 +88,11 @@ def test_real_graph_exposes_acquisition_failure_without_synthesis_or_publication
                 nodes.append('plan')
                 content = [{'itemId': 'i', 'question': 'Explain encoder and decoder', 'dependencies': [],
                     'obligations': [{'obligationId': 'o1', 'question': 'encoder',
-                        'searchQuery': '2310.08528v3 encoder', 'requiredSources': []},
+                        'searchQuery': '2310.08528v3 encoder', 'requiredSources': [],
+                        'completionCriteria': [{'criterionId': 'encoder_role', 'requirement': 'Explain how the encoder transforms its input', 'responseType': 'explanation'}]},
                         {'obligationId': 'o2', 'question': 'decoder',
-                         'searchQuery': '2310.08528v3 decoder', 'requiredSources': []}]}]
+                         'searchQuery': '2310.08528v3 decoder', 'requiredSources': [],
+                         'completionCriteria': [{'criterionId': 'decoder_role', 'requirement': 'Explain how the decoder reconstructs output', 'responseType': 'explanation'}]}]}]
             else:
                 pytest.fail('Must not generate an answer after acquisition failure: ' + request.prompt[:80])
             return LLMResult('fixture', 'fixture', json.dumps(content), LLMUsage(10, 10, 20))

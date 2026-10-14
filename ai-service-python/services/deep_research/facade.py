@@ -254,7 +254,8 @@ class ResearchFacade:
             "materials": materials,
             "materialSnapshot": material_snapshot,  # Immutable Java snapshot
             "contextMaterials": (material_snapshot or {}).get("contextMaterials", []) if isinstance(material_snapshot, dict) else [],
-            "promptVersion": "dr-v2.20261015.64",
+            "promptVersion": "dr-v2.20261015.65",
+            "planCompletionContractVersion": 1,
             "budgetContractVersion": 1,
             "hypothesisContractVersion": 1,
             "retrievalVersion": "task-pdf-context-continuity.4",
@@ -666,6 +667,12 @@ class ResearchFacade:
         def mutate(record: dict[str, Any]) -> dict[str, Any]:
             if record["status"] != STATUS_PAUSED:
                 raise IllegalStatusTransitionError(record["status"], STATUS_PAUSED)
+
+            from services.deep_research.completion_criteria import validate_completion_criteria
+            try:
+                validate_completion_criteria(new_plan, required=record.get('planCompletionContractVersion') == 1)
+            except ValueError as exc:
+                raise DeepResearchError('invalid_plan', '每个研究问题需保留1至4项有效的回答要点，请检查说明内容与方式。') from exc
             
             state = record.get("state", {})
             old_items = {item["itemId"]: item for item in state.get("plan", [])}

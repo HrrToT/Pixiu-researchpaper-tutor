@@ -72,7 +72,11 @@ def _prepare_repair(report, verification, evidence, question, *, max_prompt_byte
                        and row.get('kind') in {'proposal', 'suggestion', 'hypothesis'}]
     prompt = f'''Revise only the targets; narrow unsupported wording or omit it.
 answer_incomplete requires filling requested omissions, conditioning inputs and applicability,
-not merely shortening. absence_not_established requires bounded positive evidence:
+not merely shortening. A missing mechanism explanation needs how/why the requested
+input affects the operation/output, in ordinary words if requested for novices;
+listing names or repeating a technical operation is not sufficient. Do not add
+unsupported mechanics: use the allowed evidence or retain the limitation.
+absence_not_established requires bounded positive evidence:
 missing passages do not prove paper-wide absence; finite results do not prove universality.
 Question: {question}
 Accepted experimental definitions (consistency only; do not revise these or treat them as paper evidence):

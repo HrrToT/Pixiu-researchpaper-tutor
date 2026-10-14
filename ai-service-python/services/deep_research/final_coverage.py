@@ -41,6 +41,7 @@ def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, 
     verdicts = []
     status = 'not_checked'
     invalid_aspects = []
+    criterion_gaps = {}
     nonblocking = []
     budget_limit = None
     if claims and plan and invoke:
@@ -69,6 +70,19 @@ answer this particular question. Preserve the requested brevity: do not demand e
 paper detail, implementation detail, extra experiment or background the user did not ask for.
 For a mechanism question, check the requested entities, their relationships, the relevant
 conditioning inputs, and when the mechanism applies, using the supplied passages.
+completionCriteria are frozen in the plan before the draft. Audit every criterion
+individually; do not replace its requirement with an easier summary. An explanation
+requires how/why the requested input changes or constrains the operation/output.
+Naming the input, repeating a method name, or saying X then Y is identification,
+not an explanation of their relationship. For novice requests, unexplained technical
+terms alone cannot meet an explanation criterion. Do not demand unrelated details.
+Return criteria for every obligation with completionCriteria, exactly one verdict
+per criterionId: {{"criterionId":"planned ID","responseType":"planned type",
+"status":"covered|partial|missing","bindings":[{{"claimId":"accepted ID","field":"text"}}]}}.
+Preserve the planned responseType even when missing; do not downgrade explanation
+to identification. Bind only the actual answer span that meets the requirement,
+not a related source sentence. Missing criteria use empty bindings. Original-question
+scope and legacy obligations without completionCriteria do not need this field.
 For a comparison, check every requested dimension and each paper's contribution, not
 just one paper's results. A source-specific, clearly stated evidence limitation can
 answer an uncertainty question; do not demand proof of a universal guarantee.
@@ -150,6 +164,10 @@ accepted claims. Bindings must quote the final answer, never the source passages
             if isinstance(verdicts, list):
                 from services.deep_research.coverage_references import resolve_coverage_references
                 verdicts = resolve_coverage_references(verdicts, claims, rows)
+                from services.deep_research.completion_criteria import completion_criteria_gaps
+                criterion_gaps = completion_criteria_gaps(audit_plan, claims, verdicts)
+                verdicts = [{**v, 'status': 'partial'} if isinstance(v, dict)
+                    and v.get('obligationId') in criterion_gaps else v for v in verdicts]
                 # Explicitly reported missing subrequirements override an
                 # inconsistent overall "covered", and remain repairable gaps.
                 verdicts = [{**v, 'status': 'partial'} if isinstance(v, dict)
@@ -189,14 +207,20 @@ accepted claims. Bindings must quote the final answer, never the source passages
                 and a.get('status') in {'partial', 'missing'}
                 and isinstance(a.get('basis'), dict) and a['basis'].get('kind') == 'source'
                 and isinstance(a['basis'].get('evidenceId'), str)))
+        if gap.get('obligationId') in criterion_gaps:
+            gap['missingAspects'] = list(dict.fromkeys([
+                *gap.get('missingAspects', []), *criterion_gaps[gap['obligationId']]]))
         if status in {'budget_exhausted', 'invalid_response'}:
             gap['missingEvidence'] = '回答完整性尚未核验'
             gap['auditStatus'] = status
         if identity and gap.get('obligationId') == identity:
             gap['wholeQuestion'] = True
+    from services.deep_research.completion_criteria import completion_contract_digest
     return {'status': status, 'verdicts': verdicts if isinstance(verdicts, list) else [],
+            'completionContractDigest': completion_contract_digest(plan, claims),
             'gaps': gaps, 'invalidAspectObligations': invalid_aspects,
             'wholeQuestionId': identity, 'nonblockingResearch': nonblocking,
+            'criterionGaps': criterion_gaps,
             'budgetLimit': budget_limit}
 
 
