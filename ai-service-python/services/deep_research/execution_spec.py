@@ -48,6 +48,22 @@ EXECUTION_SPEC_CONTRACT = (
 )
 
 
+def execution_spec_contract_for_roles(roles):
+    """Keep common constraints and exact schemas for writable target roles.
+
+    Sibling definitions are read-only context in a repair batch; including a
+    schema for an absent target spends evidence capacity and suggests writing
+    unrelated roles. All scientific requirements remain independently shared.
+    """
+    prefix, groups = EXECUTION_SPEC_CONTRACT.split('groups role:', 1)
+    groups, data = groups.split('data role:', 1)
+    data, analysis = data.split('analysis role:', 1)
+    analysis, suffix = analysis.split('One claim per role;', 1)
+    schemas = {'groups': 'groups role:' + groups, 'data': 'data role:' + data,
+               'analysis': 'analysis role:' + analysis}
+    return prefix + ''.join(schemas[role] for role in schemas if role in roles) + 'One claim per role;' + suffix
+
+
 def _is_nonblank_str(v):
     return isinstance(v, str) and v.strip() != ""
 

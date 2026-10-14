@@ -20,3 +20,18 @@ def factor_repair_questions(checks):
             row['missingQuestionIds'] = ids
         packed[claim_id] = row
     return questions, packed
+
+
+def factor_design_deliverables(checks, claims, requirements):
+    """Replace only exact duplicate shared-role requirements with a role pointer."""
+    result = deepcopy(checks)
+    roles = {c['claimId']: c.get('designRole') for c in claims}
+    for identity, row in result.items():
+        role = roles.get(identity)
+        if (role in requirements and role != 'metrics'
+                and row.get('reason') == 'missing_design_deliverable'
+                and row.get('detail') == requirements[role][1]
+                and 'detailRequirementRole' not in row):
+            del row['detail']
+            row['detailRequirementRole'] = role
+    return result

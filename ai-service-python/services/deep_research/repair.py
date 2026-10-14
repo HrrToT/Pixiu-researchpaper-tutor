@@ -12,7 +12,8 @@ from uuid import uuid4
 from services.deep_research.repair_scope import repair_evidence_scope
 
 
-def repair_rejected(report, verification, evidence, question, invoke, parse, *, max_prompt_bytes=24000, metric_domains=None):
+def _prepare_repair(report, verification, evidence, question, *, max_prompt_bytes=24000,
+                    metric_domains=None, draft_context=()):
     rejected = {row['claimId']: row for row in verification.get('rejected', [])}
     originals = {row['claimId']: row for row in report.get('claims', []) if row.get('claimId') in rejected}
     if not originals:
@@ -46,8 +47,11 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *, 
                 if key not in {'designContractVersion', 'budgetContractVersion', 'hypothesisContractVersion'}
                 and not (key in {'conditions', 'obligationIds'} and value in ({}, []))}
     input_claims = [compact_claim_view(row) for row in input_claims]
-    from services.deep_research.repair_prompt import factor_repair_questions
+    from services.deep_research.repair_prompt import factor_repair_questions, factor_design_deliverables
     question_dictionary, packed_checks = factor_repair_questions(rejected)
+    if any(row.get('designContractVersion') == 2 for row in originals.values()):
+        from services.deep_research.experimental_reasoning import DESIGN_ROLES
+        packed_checks = factor_design_deliverables(packed_checks, originals.values(), DESIGN_ROLES)
     for check in packed_checks.values():
         if isinstance(check.get('missingEvidenceRefs'), list):
             check['missingEvidenceRefs'] = [short_ids.get(ref, ref) if isinstance(ref, str) else ref
@@ -62,6 +66,10 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *, 
                         if row.get('kind') in {'proposal', 'suggestion', 'hypothesis'}
                         and row.get('claimId') not in originals]
     proposal_context = [compact_claim_view(row) for row in proposal_context]
+    sibling_context = [{key: value for key, value in compact_claim_view(row).items()
+                        if key not in {'evidenceRefs', 'obligationIds', 'detailLevel', 'tableBindings'}} for row in draft_context
+                       if row.get('claimId') not in originals
+                       and row.get('kind') in {'proposal', 'suggestion', 'hypothesis'}]
     prompt = f'''Revise only the targets; narrow unsupported wording or omit it.
 answer_incomplete requires filling requested omissions, conditioning inputs and applicability,
 not merely shortening. absence_not_established requires bounded positive evidence:
@@ -69,11 +77,15 @@ missing passages do not prove paper-wide absence; finite results do not prove un
 Question: {question}
 Accepted experimental definitions (consistency only; do not revise these or treat them as paper evidence):
 {json.dumps(proposal_context, ensure_ascii=False, separators=(',', ':'))}
+Other draft definitions (UNVERIFIED consistency context, not frozen choices or paper evidence;
+these may be revised in other batches; never return a verdict or revision for these IDs):
+{json.dumps(sibling_context, ensure_ascii=False, separators=(',', ':'))}
 Application-generated protocol suffixes are omitted here; their complete executionSpec remains.
 The interface renders those fields. Preserve original prose consistency; do not duplicate that rendering.
 Missing-question dictionary (each missingQuestionIds entry refers to the exact question here;
 Q identifiers are internal references, never evidence or text to publish):
 {json.dumps(question_dictionary, ensure_ascii=False, separators=(',', ':'))}
+detailRequirementRole points to the identical required role definition under Experimental deliverables below.
 Rejected claims and checks:
 {json.dumps([{'claim': row, 'check': packed_checks[row['claimId']]} for row in input_claims], ensure_ascii=False, separators=(',', ':'))}
 Allowed evidence IDs per claim (candidate permissions, not proof of support):
@@ -103,14 +115,14 @@ not paper-attributed values or promises to preregister later. Correct formulas a
 hypotheses/proposals. Source facts still require evidence; proposed choices need not occur
 in the paper. Maintain consistency with accepted definitions and complete required details.'''
     if any(row.get('designContractVersion') == 2 for row in originals.values()):
-        from services.deep_research.execution_spec import EXECUTION_SPEC_CONTRACT
+        from services.deep_research.execution_spec import execution_spec_contract_for_roles
         from services.deep_research.experimental_reasoning import DESIGN_ROLES, design_requirements
         prompt += '\nEvery v2 proposal/suggestion/hypothesis requires one designRole from: ' + json.dumps(sorted(DESIGN_ROLES))
         prompt += ('. For a missing role, assign the appropriate role based on its actual content; '
                   'do not omit the role to bypass checks. Preserve existing valid roles. '
                   'Groups, data and analysis roles require complete executionSpec; versioned budget and '
                   'hypothesis roles require the corresponding complete executionSpec specified below.')
-        prompt += '\n' + EXECUTION_SPEC_CONTRACT
+        prompt += '\n' + execution_spec_contract_for_roles({row.get('designRole') for row in originals.values()})
         prompt += '\nExperimental deliverables (apply jointly across the accepted and revised claims):\n' + design_requirements(metric_domains)
         prompt += ('\nA structural rejection is not a content approval. Fix substantive omissions in the same revision, '
                    'including concrete intervention levels, per-group budgets and measurement aggregation. '
@@ -138,8 +150,22 @@ in the paper. Maintain consistency with accepted definitions and complete requir
             evidence_marker, json.dumps(selected_rows, ensure_ascii=False), 1)
     if max_prompt_bytes <= 0:
         raise BudgetExhaustedError('repairPromptBytes', max_prompt_bytes, 1)
+    # Allocate required full quotes AND context first. Optional candidate
+    # passages may not displace a required source's context during fitting.
+    required = {ref for claim in originals.values()
+                for ref in (claim.get('evidenceRefs', []) if claim.get('text', '').strip() else [])
+                if ref in short_ids}
+    required.update(ref for ref in hinted if ref in short_ids)
+    mandatory_rows = [row for row in rows if aliases[row['evidenceId']] in required]
+    optional_rows = [row for row in rows if aliases[row['evidenceId']] not in required]
+    mandatory_size = len(render(mandatory_rows).encode('utf-8'))
+    if mandatory_size > max_prompt_bytes:
+        kind = 'repairPromptBytes' if len(render([]).encode('utf-8')) > max_prompt_bytes else 'repairEvidenceBytes'
+        raise BudgetExhaustedError(kind, max_prompt_bytes, mandatory_size)
     try:
-        prompt, rows = fit_evidence_prompt(rows, render, max_bytes=max_prompt_bytes)
+        prompt, optional_rows = fit_evidence_prompt(optional_rows,
+            lambda optional: render([*mandatory_rows, *optional]), max_bytes=max_prompt_bytes)
+        rows = [*mandatory_rows, *optional_rows]
     except ValueError as exc:
         if str(exc) != 'prompt_fixed_content_too_large':
             raise
@@ -147,10 +173,11 @@ in the paper. Maintain consistency with accepted definitions and complete requir
                                   len(render([]).encode('utf-8'))) from exc
     visible = {aliases[row['evidenceId']] for row in rows}
     allowed = {key: [ref for ref in values if ref in visible] for key, values in allowed.items()}
-    try:
-        response = invoke(prompt)
-    except BudgetExhaustedError:
-        return []
+    return {'prompt': prompt, 'originals': originals, 'aliases': aliases, 'allowed': allowed}
+
+
+def _parse_repair_response(prepared, response, parse):
+    originals, aliases, allowed = (prepared[key] for key in ('originals', 'aliases', 'allowed'))
     finish = getattr(response, 'finish_reason', None) if not isinstance(response, dict) else response.get('finishReason', response.get('finish_reason'))
     if finish == 'length':
         return []
@@ -199,6 +226,88 @@ in the paper. Maintain consistency with accepted definitions and complete requir
         from services.deep_research.execution_materialization import materialize_execution_claim
         normalized = normalize_conditions({'claims': [dict(row)]})['claims'][0]
         valid.append(materialize_execution_claim(normalized))
-    candidate = {'claims': [*verification.get('accepted', []), *valid]}
+    return valid
+
+
+def repair_rejected(report, verification, evidence, question, invoke, parse, *,
+                    max_prompt_bytes=24000, metric_domains=None, batch_state=None, checkpoint=None):
+    """One bounded revision round, split before dispatch when evidence cannot fit.
+
+    At most three requests share full sibling design definitions. Successful
+    batch drafts are checkpointed, never promoted without the independent
+    verifier. A network/unknown error propagates; it does not create a retry.
+    """
+    from services.deep_research.contracts import digest, DeepResearchError
+    from services.deep_research.repair_batches import split_repair_targets
+
+    targets = {row['claimId'] for row in verification.get('rejected', [])}
+    originals = [c for c in report.get('claims', []) if c.get('claimId') in targets]
+    if not originals:
+        return []
+    identity = digest({'report': report, 'verification': verification,
+                       'evidence': evidence, 'question': question, 'metricDomains': metric_domains})
+
+    def prepare(ids, results=()):
+        ids = set(ids)
+        prior = {row['claimId']: row for row in results}
+        siblings = [prior.get(c['claimId'], c) for c in originals if c['claimId'] not in ids]
+        subset = {'accepted': verification.get('accepted', []),
+                  'rejected': [row for row in verification.get('rejected', []) if row['claimId'] in ids]}
+        return _prepare_repair(report, subset, evidence, question,
+            max_prompt_bytes=state['maxPromptBytes'], metric_domains=metric_domains, draft_context=siblings)
+
+    state = deepcopy(batch_state) if batch_state is not None else {
+        'version': 1, 'inputDigest': identity, 'maxPromptBytes': max_prompt_bytes,
+        'batches': [[c['claimId'] for c in originals]], 'results': {}}
+    if (type(state.get('version')) is not int or state['version'] != 1 or state.get('inputDigest') != identity
+            or type(state.get('maxPromptBytes')) is not int or not 0 <= state['maxPromptBytes'] <= 24000
+            or not isinstance(state.get('batches'), list) or not 1 <= len(state['batches']) <= 3
+            or any(not isinstance(group, list) or not group
+                   or any(not isinstance(cid, str) for cid in group) for group in state['batches'])
+            or not isinstance(state.get('results'), dict)):
+        raise DeepResearchError('invalid_repair_plan', '保存的修订计划与原始输入不一致，不能重新发送。')
+    ids = [cid for group in state['batches'] for cid in group]
+    if (len(ids) != len(set(ids)) or set(ids) != {c['claimId'] for c in originals}
+            or set(state['results']) != {str(i) for i in range(len(state['results']))}
+            or len(state['results']) > len(state['batches'])):
+        raise DeepResearchError('invalid_repair_plan', '保存的修订目标无效，不能重新发送。')
+    for key, completed in state['results'].items():
+        group = state['batches'][int(key)]
+        if (not isinstance(completed, list) or any(not isinstance(row, dict)
+                or row.get('claimId') not in group for row in completed)
+                or len({row['claimId'] for row in completed}) != len(completed)):
+            raise DeepResearchError('invalid_repair_plan', '保存的修订草稿身份无效。')
+    if batch_state is None:
+        try:
+            prepare(state['batches'][0])
+        except BudgetExhaustedError as exc:
+            if exc.details.get('kind') not in {'repairPromptBytes', 'repairEvidenceBytes'}:
+                raise
+            state['batches'] = split_repair_targets(originals)
+            if len(state['batches']) == 1:
+                raise
+            # Preflight EVERY batch before spending a model call. An atomic
+            # hypothesis/analysis component may not be split to make it fit.
+            for group in state['batches']:
+                prepare(group)
+        if checkpoint:
+            checkpoint(deepcopy(state))
+    revised = []
+    for index, group in enumerate(state['batches']):
+        key = str(index)
+        if key in state['results']:
+            rows = state['results'][key]
+        else:
+            try:
+                prepared = prepare(group, revised)
+                response = invoke(prepared['prompt'])
+            except BudgetExhaustedError:
+                break  # Keep completed drafts, then independently verify them.
+            rows = _parse_repair_response(prepared, response, parse)
+            state['results'][key] = rows
+            if checkpoint:
+                checkpoint(deepcopy(state))
+        revised.extend(deepcopy(rows))
     limit = requested_character_limit(question)
-    return [] if limit and answer_character_count(candidate) > limit else valid
+    candidate = {'claims': [*verification.get('accepted', []), *revised]}
+    return [] if limit and answer_character_count(candidate) > limit else revised

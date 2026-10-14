@@ -1192,8 +1192,9 @@ def make_verify_node(
         if saved.get('repairCompleted') and saved.get('verifiedReport'):
             return {'claim_ids': [c['claimId'] for c in saved['verifiedReport'].get('verifiedClaims', [])]}
 
-        # Repair at most once, using the normal call pool so the final verifier's
-        # reserve remains protected. Repaired wording passes the same checks again.
+        # One bounded repair round may use up to three preflighted batches from
+        # the normal pool. Final verification reserve stays protected, and all
+        # revised wording passes the same checks again.
         if repair_targets.get("rejected") and llm_invoke:
             repo_update(run_id, lambda r: {**r, "state": {**r.get("state", {}), "repairAttempted": True,
                 "initialVerification": verification_result, 'initialAnswerCoverage': answer_coverage,
@@ -1231,10 +1232,14 @@ def make_verify_node(
                 if revised is None:
                     from services.deep_research.repair_budget import repair_prompt_byte_limit
                     current = repo_update(run_id, lambda r: r, expected_revision=None)
+                    def checkpoint_repair_batches(batch_state):
+                        repo_update(run_id, lambda r: {**r, 'state': {**r.get('state', {}),
+                            'repairBatchState': batch_state}}, expected_revision=None)
                     revised = repair_rejected(repair_report, repair_targets, evidence, record.get("question", ""),
                         invoke_repair, _safe_parse_json,
                         max_prompt_bytes=repair_prompt_byte_limit(current.get('budget', {})),
-                        metric_domains=record.get('state', {}).get('metricDomains'))
+                        metric_domains=record.get('state', {}).get('metricDomains'),
+                        batch_state=saved.get('repairBatchState'), checkpoint=checkpoint_repair_batches)
                     repo_update(run_id, lambda r: {**r, 'state': {**r.get('state', {}),
                         'repairDraft': revised}}, expected_revision=None)
                 if revised:
