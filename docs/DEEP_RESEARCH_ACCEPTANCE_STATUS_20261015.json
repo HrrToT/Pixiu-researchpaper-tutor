@@ -13,10 +13,10 @@
       "scope": "Research/model/reading integration plus PDF table parsing at 221ed65, before .70 changes; historical broader scope, not silently upgraded."
     },
     "frontendVitest": {
-      "passed": 473,
-      "files": 64,
-      "seconds": 42.77,
-      "boundary": "Full suite after polling/CSS/result-card changes; subsequent preview-markup fix covered by separate focused tests."
+      "passed": 479,
+      "files": 65,
+      "seconds": 30.78,
+      "boundary": "Full suite with external reader; later page-continuity fix verified by 30 focused tests plus typecheck/build, counts overlap."
     },
     "frontendIsolatedBrowser": {
       "passed": 6,
@@ -69,24 +69,26 @@
       "boundary": "Exact citation/physical-page lookup, manual edit, original preservation and find-after-reload; content acceptance is separate."
     },
     "retiredH3RDevelopmentCalls": {
-      "calls": 16,
-      "tokens": 40798,
+      "calls": 24,
+      "tokens": 67240,
       "attempts": [
         "H3R-v2",
-        "H3R-v3"
+        "H3R-v3",
+        "H3R-v4"
       ],
       "cost": null,
       "boundary": "Known completed responses, including failed planning/verification runs; no independent holdout credit."
     },
     "retiredH5RDevelopmentCalls": {
-      "calls": 44,
-      "tokens": 190999,
+      "calls": 55,
+      "tokens": 243931,
       "attempts": [
         "H5R-v2",
         "H5R-v3",
         "H5R-v4",
         "H5R-v5",
-        "H5R-v6"
+        "H5R-v6",
+        "H5R-v7"
       ],
       "cost": null,
       "boundary": "Known completed responses, including failed planning/verification runs; no independent holdout credit."
@@ -94,8 +96,14 @@
     "currentOfflineCorrections": {
       "proof": "deep-research-evidence/structured-response-and-source-spans-20261015.json",
       "draftingProof": "deep-research-evidence/drafting-evidence-capacity-20261015.json",
-      "realGenerationOnFinalVersion": false,
+      "realGenerationOnFinalVersion": true,
       "finalNumericGuardProof": "deep-research-evidence/quantitative-condition-keys-20261015.json"
+    },
+    "externalReader": {
+      "javaIsolatedPassed": 43,
+      "focusedFrontendPassed": 30,
+      "actualUiPassed": true,
+      "proof": "deep-research-evidence/external-reader-interactions-20261015.json"
     }
   },
   "stages": [
@@ -144,30 +152,34 @@
         "deep-research-evidence/repair-capacity-and-outline-20261015.json",
         "deep-research-evidence/H5R-v6-quality-20261015.json",
         "deep-research-evidence/drafting-evidence-capacity-20261015.json",
-        "deep-research-evidence/structured-response-and-source-spans-20261015.json"
+        "deep-research-evidence/structured-response-and-source-spans-20261015.json",
+        "deep-research-evidence/H5R-v7-quality-20261015.json"
       ]
     },
     {
       "id": "DR4",
       "implementation": "Permissioned arXiv discovery, versioned fulltext acquisition, fixed network exit and degradation implemented",
-      "acceptance": "Real external v4 discovery/download and page-5 quotation verified; complete novice mechanism answer not accepted. Final PDF size/export and extraction fixes are offline verified only.",
+      "acceptance": "Real v4 external discovery/download and saved-fulltext reader verified. Latest mechanism explanation remains partial due numeric normalization and missing complete novice coverage; content not accepted.",
       "proof": [
         "deep-research-evidence/H3-v1-external-fulltext-20261013.json",
         "../ai-service-python/tests/test_deep_research_academic.py",
         "../ai-service-python/tests/test_deep_research_external_failures.py",
         "deep-research-evidence/H3R-v1-external-size-20261015.json",
-        "deep-research-evidence/H3R-v3-quality-20261015.json"
+        "deep-research-evidence/H3R-v3-quality-20261015.json",
+        "deep-research-evidence/H3R-v4-quality-20261015.json",
+        "deep-research-evidence/external-reader-interactions-20261015.json"
       ]
     },
     {
       "id": "DR5",
       "implementation": "Compact results, artifact versions/edit/search, citations and rollback implemented",
-      "acceptance": "Local report citation/PDF lookup, edit/version preservation and search verified. External citation modal shows the exact quote, page and v4 link, but lacks the required direct controlled in-app fulltext-reader action. Content and independent release gates remain incomplete.",
+      "acceptance": "Local report edit/search/version/citation checks and external cached-PDF preview, exact page, close/return and explicit task addition verified. Content quality and independent release gates remain open.",
       "proof": [
         "deep-research-evidence/frontend-integration-20261013.json",
         "deep-research-evidence/deployment-20261013.json",
         "deep-research-evidence/live-report-interactions-20261015.json",
-        "deep-research-evidence/structured-response-and-source-spans-20261015.json"
+        "deep-research-evidence/structured-response-and-source-spans-20261015.json",
+        "deep-research-evidence/external-reader-interactions-20261015.json"
       ]
     }
   ],
@@ -267,7 +279,6 @@
     "Current development cases D1/D2/D3/D5 meet every applicable content dimension at least 4/5, with all key source/number/condition claims checked.",
     "Five fresh real independent cases are executed once each and reviewed before any diagnostic reuse; failures used for tuning must retire.",
     "Known model-call outcomes, actual usage and costs where available remain separate from retained unknown reservations.",
-    "External saved-fulltext citations offer the controlled in-app reader action required by design section 6.7, without silently adding the paper to task materials.",
     "Keep PR draft and production defaults off until the actual gates are met."
   ],
   "waivedByUser": [
@@ -275,8 +286,8 @@
     "Full novice study workflow",
     "Independent Edge recovery"
   ],
-  "currentProviderConstraint": "Current model responses completed and settled. Seven older unknown runs stay paused and unretried. Remaining release limits are content quality, the external-reader interaction and fresh independent acceptance.",
-  "currentDevelopmentMode": "Primary Codex only; no Qoder. Final .79 source 9649320 passes 1301 offline checks and is loaded. Latest real tests use .76; no real .79 generation submitted.",
+  "currentProviderConstraint": "All current responses are known and settled; seven older unknowns remain paused. Remaining release limits are content quality and fresh independent acceptance, not an external-reader or provider-outage claim.",
+  "currentDevelopmentMode": "Primary Codex only; no Qoder. Python .79 real H3R-v4/H5R-v7 both finish partial, 19 settled calls/79374 tokens; neither content accepted. External reader backend/UI and cited-page continuation are live verified.",
   "loadedRuntime": {
     "commit": "9649320",
     "promptVersion": "dr-v2.20261015.79",
@@ -284,5 +295,20 @@
     "callsPreserved": 2664,
     "pausedUnknownRuns": 7,
     "proof": "deep-research-evidence/runtime-load-dr79-20261015.json"
+  },
+  "nextQualityWork": [
+    "Canonicalize comma-grouped and Chinese-unit numbers without weakening value/unit checks.",
+    "Bind scene display-name variants explicitly without globally ignoring case in source identities.",
+    "Require evidence for released checkpoint availability or choose finite prospective baseline training.",
+    "Keep the user deliverable distinct from supporting-paper research checklists and remove repeated protocol presentation."
+  ],
+  "javaReaderRuntime": {
+    "sourceCommit": "070ab1a",
+    "ready": true,
+    "proof": "deep-research-evidence/external-reader-runtime-20261015.json",
+    "ledgerRows": 2710,
+    "oldRowsChecked": 2664,
+    "pausedUnknownRuns": 7,
+    "boundary": "Two case workspace snapshots matched before explicit material addition; no whole-store hash equality claim."
   }
 }
