@@ -2,7 +2,7 @@
   "asOf": "2026-10-15",
   "objective": "Complete DR0-DR5 in DEEP_RESEARCH_DESIGN_20261012.md without redefining success around implemented subsets.",
   "overall": "incomplete",
-  "freshMaterialReadiness": "H1R2 remains unknown/unscored. H2R/H3R/H4R/H5R remain retired development cases. .84 H3R-v6 improves feedback explanation but reverses opacity/transparency terminology; H5R-v9 acquires the named scene and retains a real partial result, while concrete controls and deliverable scope remain incomplete.",
+  "freshMaterialReadiness": "H1R2 remains unknown/unscored. H2R/H3R/H4R/H5R remain retired development cases; all new source/content results need independent replacements after development quality passes.",
   "evidenceRule": "Machine completion, offline fixtures, real transport, source support, content quality and independent-case eligibility are separate. Historical results are not silently upgraded to current passes.",
   "latestVerification": {
     "backendResearchModelReadingIntegration": {
@@ -42,11 +42,13 @@
       "overlap": true
     },
     "backendCurrentResearchReadingTables": {
-      "passed": 1421,
+      "passed": 1478,
       "warnings": 1,
-      "seconds": 41.03,
-      "scope": "All test_deep_research*.py, test_reading_*.py, test_pdf_table_columns.py and test_config.py at f3103bf (.85).",
-      "boundary": "Offline functional regression, not real content-quality acceptance."
+      "seconds": 42.39,
+      "log": "tmp/pytest-dr91-full.log",
+      "sourceCommit": "640df74",
+      "scope": "Research, reading, PDF table and config regression; no frontend/Java changes this round.",
+      "proof": "deep-research-evidence/operational-repair-capacity-20261015.json"
     },
     "frontendDocumentNavigationFocused": {
       "passed": 19,
@@ -69,21 +71,23 @@
       "boundary": "Exact citation/physical-page lookup, manual edit, original preservation and find-after-reload; content acceptance is separate."
     },
     "retiredH3RDevelopmentCalls": {
-      "calls": 43,
-      "tokens": 144904,
+      "calls": 59,
+      "tokens": 208656,
       "attempts": [
         "H3R-v2",
         "H3R-v3",
         "H3R-v4",
         "H3R-v5",
-        "H3R-v6"
+        "H3R-v6",
+        "H3R-v7",
+        "H3R-v8"
       ],
       "cost": null,
       "boundary": "Known completed responses, including failed planning/verification runs; no independent holdout credit."
     },
     "retiredH5RDevelopmentCalls": {
-      "calls": 78,
-      "tokens": 356541,
+      "calls": 98,
+      "tokens": 448306,
       "attempts": [
         "H5R-v2",
         "H5R-v3",
@@ -92,17 +96,20 @@
         "H5R-v6",
         "H5R-v7",
         "H5R-v8",
-        "H5R-v9"
+        "H5R-v9",
+        "H5R-v10",
+        "H5R-v11",
+        "H5R-v12"
       ],
       "cost": null,
       "boundary": "Known completed responses, including failed planning/verification runs; no independent holdout credit."
     },
     "currentOfflineCorrections": {
-      "proof": "deep-research-evidence/structured-response-and-source-spans-20261015.json",
+      "proof": "deep-research-evidence/operational-repair-capacity-20261015.json",
       "draftingProof": "deep-research-evidence/drafting-evidence-capacity-20261015.json",
       "realGenerationOnFinalVersion": false,
       "finalNumericGuardProof": "deep-research-evidence/quantitative-condition-keys-20261015.json",
-      "boundary": "Real H3R-v6/H5R-v9 use .84. The final .85 terminology rule is offline tested and loaded, with no new real generation yet."
+      "boundary": "The loaded .91 repair correction has offline saved-input evidence only. .90 H5R-v12 and .89 H3R-v8/H5R-v11 are real partial results, all not content accepted."
     },
     "externalReader": {
       "javaIsolatedPassed": 43,
@@ -146,7 +153,7 @@
       "visibleEvidence": 6,
       "availableEvidence": 9,
       "modelCalls": 0,
-      "boundary": "Hotdog and opacity-update evidence remain visible; this does not prove drafting quality."
+      "boundary": "Historical .85 saved-input replay, not current .91 drafting capacity. Hotdog and opacity-update evidence were visible; no drafting-quality credit."
     }
   },
   "stages": [
@@ -341,22 +348,21 @@
     "Full novice study workflow",
     "Independent Edge recovery"
   ],
-  "currentProviderConstraint": "Both latest runs are terminal with known settled responses; seven older unknowns remain paused. Open release gates concern scientific terminology, executable controls, scope fidelity and fresh independent acceptance.",
-  "currentDevelopmentMode": "Primary Codex only; no Qoder. .85 loaded after 1421 offline passes. .84 two cases each submitted once, 21 settled calls/99735 tokens; neither passes scientific/content review. A real malformed-verifier response now retains partial work.",
+  "currentProviderConstraint": "Latest development runs have known terminal responses. Seven older unknown runs remain paused and unretried; content and independent-release gates remain open.",
+  "currentDevelopmentMode": "Primary Codex only, no Qoder; .91 loaded after the recorded full offline suite. .89/.90 real cases each submitted once, all partial and not content accepted; raw responses preserved.",
   "loadedRuntime": {
-    "commit": "f3103bf",
-    "promptVersion": "dr-v2.20261015.85",
+    "commit": "640df74",
+    "promptVersion": "dr-v2.20261015.91",
     "ready": true,
-    "callsPreserved": 2809,
+    "callsPreserved": 2916,
     "pausedUnknownRuns": 7,
-    "proof": "deep-research-evidence/runtime-load-dr85-terminology-20261015.json"
+    "proof": "deep-research-evidence/runtime-load-dr91-repair-20261015.json"
   },
   "nextQualityWork": [
-    "Verify that opacity 不透明度 and the non-differentiable-index/surrogate distinction survive real novice generation and independent review.",
-    "Make proposed controls/initialization/optimizer/resolution executable, and add a nonempty split precheck without inventing author-specific data counts.",
-    "Plan/audit experiment deliverables separately from supporting original-paper research; do not silently require reproduction of unrequested original benchmark settings.",
-    "Remove repeated protocol presentation and overbroad causal disclaimers without hiding necessary conditions.",
-    "Complete D1/D2/D3/D5 quality gates, then run new independent cases before tuning on them."
+    "Verify the .91 operational repair on one deliberate fixed case; then address experimental completeness and unrequested benchmark scope.",
+    "Improve novice causal explanation without disguising inference as source-reported fact or promising convergence.",
+    "Make report prose and typed settings readable without repeated presentation.",
+    "Complete D1/D2/D3/D5 content gates and then freeze/run replacement independent cases."
   ],
   "javaReaderRuntime": {
     "sourceCommit": "070ab1a",
