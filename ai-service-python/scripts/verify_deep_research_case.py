@@ -10,11 +10,37 @@ import json
 from pathlib import Path
 import sys
 import uuid
+import re
 from urllib.parse import quote
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from services.deep_research.acceptance_receipts import claim_submission, confirm_submission, read_receipt
+from services.deep_research.acceptance_receipts import claim_submission, confirm_submission, read_receipt, case_submission_lock
 from services.deep_research.acceptance_manifest import require_frozen_case
+
+
+def require_previous_cases_settled(directory, case_id, api):
+    """Check authoritative prior state before a new attempt can mutate anything.
+
+    Local result snapshots may be stale. Changing attempt or task IDs must not
+    bypass an unconfirmed submission, active run or unresolved outcome.
+    """
+    pattern = re.compile(re.escape(case_id) + r'-v[0-9]+\.json')
+    for path in sorted(Path(directory).iterdir()):
+        if not pattern.fullmatch(path.name):
+            continue
+        saved = read_receipt(path)
+        prior = saved['intent']
+        if prior.get('caseId') != case_id or not prior.get('taskId'):
+            raise ValueError('Prior receipt identity is invalid; reconcile it before submitting.')
+        if not saved['runId']:
+            raise ValueError('Prior submission is unconfirmed; reconcile it before any new attempt.')
+        old_path = '/task-workspaces/' + quote(prior['taskId'], safe='') + '/research/' + quote(saved['runId'], safe='')
+        state = api('GET', old_path)['task']
+        if state.get('runId') != saved['runId'] or state.get('taskId') != prior['taskId']:
+            raise ValueError('Prior run identity mismatch')
+        # Cancellation alone does not reconcile a potentially billed request.
+        if state.get('status') not in {'completed', 'failed'} or state.get('errorCode') == 'unresolved_unknown':
+            raise ValueError('Prior attempt has no confirmed terminal outcome; do not bypass it with a new attempt.')
 
 
 def run_case(manifest, case_id, attempt, directory, api, *, submit=False,
@@ -46,39 +72,41 @@ def run_case(manifest, case_id, attempt, directory, api, *, submit=False,
     else:
         if check_ready is not None:
             check_ready()  # Before workspace mutations or durable submission intent.
-        task = api('GET', task_path, allow_missing=True)
-        if task is None:
+        with case_submission_lock(directory, case_id):
+            require_previous_cases_settled(directory, case_id, api)
+            task = api('GET', task_path, allow_missing=True)
+            if task is None:
+                if parent_run_id:
+                    raise ValueError('Parent task is missing')
+                task = api('POST', '/task-workspaces', payload={
+                    'id': task_id, 'title': '深度研究验收 · ' + case_id,
+                    'paperIds': materials, 'focusedPaperId': materials[0] if materials else None,
+                    'notes': [], 'messages': [], 'artifacts': [], 'researchRuns': []})
+            if not set(materials) <= set(task.get('paperIds', [])):
+                raise ValueError('Frozen case materials are missing from this task')
+            request_id = str(uuid.uuid5(uuid.NAMESPACE_URL, json.dumps(intent, sort_keys=True, ensure_ascii=False)))
+            payload = {'requestId': request_id, 'question': case['question'],
+                       'budgetProfile': manifest['budgetProfile']}
             if parent_run_id:
-                raise ValueError('Parent task is missing')
-            task = api('POST', '/task-workspaces', payload={
-                'id': task_id, 'title': '深度研究验收 · ' + case_id,
-                'paperIds': materials, 'focusedPaperId': materials[0] if materials else None,
-                'notes': [], 'messages': [], 'artifacts': [], 'researchRuns': []})
-        if not set(materials) <= set(task.get('paperIds', [])):
-            raise ValueError('Frozen case materials are missing from this task')
-        request_id = str(uuid.uuid5(uuid.NAMESPACE_URL, json.dumps(intent, sort_keys=True, ensure_ascii=False)))
-        payload = {'requestId': request_id, 'question': case['question'],
-                   'budgetProfile': manifest['budgetProfile']}
-        if parent_run_id:
-            parent_path = task_path + '/research/' + quote(parent_run_id, safe='')
-            parent = api('GET', parent_path)['task']
-            if parent.get('taskId') != task_id or parent.get('runId') != parent_run_id:
-                raise ValueError('Parent identity mismatch')
-            payload['expectedRunRevision'] = parent['runRevision']
-            path = parent_path + '/continue'
-        else:
-            payload.update(engineVersion='deep-research-v2', contractVersion=2,
-                           expectedTaskRevision=task['revision'],
-                           materialSelection={'mode': 'explicit' if materials else 'external_only', 'materialIds': materials},
-                           focusPaperIds=materials[:1] if case['kind'] == 'claim_verification' else [],
-                           sourcePolicy={'mode': case['policy']}, outputKind=case['kind'])
-            path = task_path + '/research/start'
-        claim_submission(receipt, intent)  # Durable exclusive intent BEFORE model-capable POST.
-        result = api('POST', path, payload=payload)
-        state = result['task']
-        if state.get('taskId') != task_id:
-            raise ValueError('Returned task identity mismatch; receipt remains unconfirmed')
-        saved = confirm_submission(receipt, state['runId'])
+                parent_path = task_path + '/research/' + quote(parent_run_id, safe='')
+                parent = api('GET', parent_path)['task']
+                if parent.get('taskId') != task_id or parent.get('runId') != parent_run_id:
+                    raise ValueError('Parent identity mismatch')
+                payload['expectedRunRevision'] = parent['runRevision']
+                path = parent_path + '/continue'
+            else:
+                payload.update(engineVersion='deep-research-v2', contractVersion=2,
+                               expectedTaskRevision=task['revision'],
+                               materialSelection={'mode': 'explicit' if materials else 'external_only', 'materialIds': materials},
+                               focusPaperIds=materials[:1] if case['kind'] == 'claim_verification' else [],
+                               sourcePolicy={'mode': case['policy']}, outputKind=case['kind'])
+                path = task_path + '/research/start'
+            claim_submission(receipt, intent)  # Durable exclusive intent BEFORE model-capable POST.
+            result = api('POST', path, payload=payload)
+            state = result['task']
+            if state.get('taskId') != task_id:
+                raise ValueError('Returned task identity mismatch; receipt remains unconfirmed')
+            saved = confirm_submission(receipt, state['runId'])
     result = api('GET', task_path + '/research/' + quote(saved['runId'], safe=''))
     state = result.get('task', {})
     if state.get('runId') != saved['runId'] or state.get('taskId') != task_id:

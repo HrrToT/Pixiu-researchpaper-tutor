@@ -3,6 +3,7 @@ import json
 import os
 from pathlib import Path
 import tempfile
+import hashlib
 from contextlib import contextmanager
 
 
@@ -15,6 +16,20 @@ def _receipt_lock(path):
     finally:
         stream.close()
         lock.unlink()
+
+
+@contextmanager
+def case_submission_lock(directory, case_id):
+    """Serialize new attempts for one case, including different attempt IDs.
+
+    A crash leaves the exclusive lock for explicit inspection, never a timed
+    automatic retry. Existing receipts remain readable without this lock.
+    """
+    directory = Path(directory)
+    directory.mkdir(parents=True, exist_ok=True)
+    identity = hashlib.sha256(case_id.encode('utf-8')).hexdigest()
+    with _receipt_lock(directory / ('.case-' + identity)):
+        yield
 
 
 def read_receipt(path):

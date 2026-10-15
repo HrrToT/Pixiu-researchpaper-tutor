@@ -87,6 +87,74 @@ def test_harness_ambiguous_submission_cannot_be_sent_again(tmp_path):
     assert calls == []
 
 
+def test_unconfirmed_attempt_cannot_be_bypassed_by_number_or_task(tmp_path):
+    claim_submission(tmp_path / 'D-v1.json', {'caseId': 'D', 'taskId': 'original'})
+    calls = []
+    with pytest.raises(ValueError, match='unconfirmed'):
+        run_case(manifest(), 'D', 2, tmp_path, lambda *a, **k: calls.append(a),
+                 submit=True, task_id='different-task')
+    assert not calls
+    assert not (tmp_path / 'D-v2.json').exists()
+
+
+@pytest.mark.parametrize('status,code', [
+    ('running', ''), ('queued', ''), ('paused', 'unresolved_unknown'),
+    ('waiting_user', ''), ('cancelled', ''), ('failed', 'unresolved_unknown'),
+])
+def test_new_attempt_checks_live_prior_state_and_ignores_cached_completion(tmp_path, status, code):
+    claim_submission(tmp_path / 'D-v1.json', {'caseId': 'D', 'taskId': 'old'})
+    confirm_submission(tmp_path / 'D-v1.json', 'old-run')
+    (tmp_path / 'D-v1.result.json').write_text('{"task":{"status":"completed"}}')
+    calls = []
+    def api(method, path, **kwargs):
+        calls.append((method, path))
+        return {'task': {'taskId': 'old', 'runId': 'old-run', 'status': status, 'errorCode': code}}
+    with pytest.raises(ValueError, match='confirmed terminal outcome'):
+        run_case(manifest(), 'D', 2, tmp_path, api, submit=True)
+    assert calls == [('GET', '/task-workspaces/old/research/old-run')]
+    assert not (tmp_path / 'D-v2.json').exists()
+
+
+@pytest.mark.parametrize('status', ['completed', 'failed'])
+def test_confirmed_terminal_prior_attempt_allows_explicit_new_submission(tmp_path, status):
+    claim_submission(tmp_path / 'D-v1.json', {'caseId': 'D', 'taskId': 'old'})
+    confirm_submission(tmp_path / 'D-v1.json', 'old-run')
+    calls = []
+    def api(method, path, **kwargs):
+        calls.append((method, path))
+        if path.endswith('/old-run'):
+            return {'task': {'taskId': 'old', 'runId': 'old-run', 'status': status}}
+        if path.endswith('/start') or path.endswith('/new-run'):
+            return {'task': {'taskId': 'new', 'runId': 'new-run', 'status': 'running'}}
+        return {'revision': 1, 'paperIds': ['hash.pdf']}
+    run_case(manifest(), 'D', 2, tmp_path, api, submit=True, task_id='new')
+    assert [c for c in calls if c[0] == 'POST'] == [('POST', '/task-workspaces/new/research/start')]
+
+
+def test_different_attempts_cannot_race_past_prior_check(tmp_path):
+    from threading import Event
+    entered, release = Event(), Event()
+    calls = []
+    def api(method, path, **kwargs):
+        calls.append(method)
+        if path == '/task-workspaces/task':
+            entered.set()
+            assert release.wait(5)
+            return {'revision': 1, 'paperIds': ['hash.pdf']}
+        return {'task': {'taskId': 'task', 'runId': 'run', 'status': 'running'}}
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        first = pool.submit(run_case, manifest(), 'D', 1, tmp_path, api, submit=True, task_id='task')
+        try:
+            assert entered.wait(5)
+            with pytest.raises(FileExistsError):
+                run_case(manifest(), 'D', 2, tmp_path, api, submit=True, task_id='task')
+        finally:
+            release.set()
+        assert first.result()['status'] == 'running'
+    assert calls.count('POST') == 1
+    assert not (tmp_path / 'D-v2.json').exists()
+
+
 @pytest.mark.parametrize('health', [None, {}, {'status': 'ok'},
     {'status': 'ok', 'checks': {'rag': {'status': 'loading'}, 'grobid': {'status': 'ok'}}}])
 def test_unready_service_does_not_mutate_workspace_or_claim_receipt(tmp_path, health):
