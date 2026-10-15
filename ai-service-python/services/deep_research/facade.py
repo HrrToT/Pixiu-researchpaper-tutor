@@ -170,6 +170,7 @@ class ResearchFacade:
         # Normalize materialSnapshot (Java-supplied immutable snapshot) into materials list
         # Snapshot may be dict with materialRefs/materialVersions or already a list
         raw_snapshot = request.get("materialSnapshot")
+        from services.deep_research.source_labels import source_display_title
         if raw_snapshot is not None:
             if isinstance(raw_snapshot, dict):
                 # Extract from dict structure - normalize to list of material objects
@@ -188,7 +189,7 @@ class ResearchFacade:
                             "workId": ref,
                             "versionId": version_info.get("versionId") or version_info.get("contentHash", ""),
                             "contentHash": version_info.get("contentHash", ""),
-                            "title": version_info.get("title") or version_info.get("fileName") or ref,
+                            "title": source_display_title(version_info.get("title"), version_info.get("fileName"), ref),
                         })
                     elif isinstance(ref, dict):
                         # Full material object
@@ -199,7 +200,7 @@ class ResearchFacade:
                             "workId": ref.get("workId", mat_id),
                             "versionId": ref.get("versionId", ""),
                             "contentHash": ref.get("contentHash", ""),
-                            "title": ref.get("title") or ref.get("fileName") or mat_id,
+                            "title": source_display_title(ref.get("title"), ref.get("fileName"), mat_id),
                         })
             elif isinstance(raw_snapshot, list):
                 # Already a list - normalize each entry
@@ -215,6 +216,7 @@ class ResearchFacade:
                             "workId": item.get("workId", mat_id),
                             "versionId": item.get("versionId", ""),
                             "contentHash": item.get("contentHash", ""),
+                            "title": source_display_title(item.get("title"), item.get("fileName"), mat_id),
                         })
             else:
                 materials = request.get("materials", [])
@@ -254,7 +256,7 @@ class ResearchFacade:
             "materials": materials,
             "materialSnapshot": material_snapshot,  # Immutable Java snapshot
             "contextMaterials": (material_snapshot or {}).get("contextMaterials", []) if isinstance(material_snapshot, dict) else [],
-            "promptVersion": "dr-v2.20261015.71",
+            "promptVersion": "dr-v2.20261015.72",
             "planCompletionContractVersion": 1,
             "budgetContractVersion": 1,
             "hypothesisContractVersion": 1,

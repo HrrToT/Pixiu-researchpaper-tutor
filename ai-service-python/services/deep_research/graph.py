@@ -446,6 +446,7 @@ def make_acquire_node(
                             if obl_id and obl_id not in existing.get("obligationIds", []):
                                 existing["obligationIds"].append(obl_id)
                         else:
+                            from services.deep_research.source_labels import source_display_title
                             new_source = {
                                 "sourceId": source_id,
                                 "workId": source_work_id,
@@ -459,7 +460,7 @@ def make_acquire_node(
                                 "location": item.get("location", {"chunkIndex": item.get("chunkIndex", 0)}),
                                 "obligationIds": [obl_id] if obl_id else [],
                                 "sourceKind": "task_paper",
-                                "title": item.get("title") or material.get("title", ""),
+                                "title": source_display_title(item.get("title"), material.get("title")),
                                 "url": item.get("url", ""),
                             }
                             normalized_sources.append(new_source)
@@ -982,9 +983,10 @@ def make_synthesize_node(
             source_id = ev.get('sourceWorkId', '')
             if source_id not in source_aliases:
                 source_aliases[source_id] = f'P{len(source_aliases) + 1}'
+                from services.deep_research.source_labels import source_display_title
                 source_registry[source_aliases[source_id]] = {
                     'workId': source_id,
-                    'title': paper_titles.get(source_id, '') or ev.get('sourceTitle', '')}
+                    'title': source_display_title(ev.get('sourceTitle'), paper_titles.get(source_id))}
             evidence_summaries.append({
                 "evidenceId": alias,
                 "quote": ev.get("quote", ""),

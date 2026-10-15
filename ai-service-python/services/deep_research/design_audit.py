@@ -4,6 +4,7 @@ import json
 
 REQUIRED = {
     "groups": ("group_construction", "intervention_levels"),
+    "controls": ("paired_initialization", "render_settings", "optimizer_settings", "other_interventions"),
     "data": ("scenes", "split", "seeds", "sampling_unit"),
     "metrics": ("quality_protocol", "speed_protocol", "storage_protocol"),
     "budget": ("per_group_steps",),

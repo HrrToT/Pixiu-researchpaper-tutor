@@ -677,8 +677,12 @@ Do not require an unexecuted experiment to have results. Do not judge context cl
                       'not contradict fields; do not require duplicate prose for an explicit typed choice. Structural validation ' \
                       'does not certify meaningful choices. A scene-seed pair is not automatically independent ' \
                       'of another seed from the same scene; fixed checkpoints with no retraining do not produce ' \
-                      'independent training replicates. Require paired groups within units and resample actual ' \
-                      'independent clusters. Quoting a vague choice does not make it concrete.'
+                      'independent training replicates. Require paired groups within units. If resampling is proposed, ' \
+                      'resample actual independent clusters. A purely descriptive comparison with explicit scope ' \
+                      'needs no confidence interval, bootstrap or population-level inference. Still require concrete ' \
+                      'view aggregation, pairing and seed handling when there are multiple seeds. Mixed metric ' \
+                      'directions must be reported as a tradeoff, not automatically no improvement or worse. ' \
+                      'Quoting a vague choice does not make it concrete.'
         if any(c.get('budgetContractVersion') == 1 for c in [*claims, *proposal_context]):
             prompt += '\nBudget contract 1 is the canonical baseline/recovery configuration. ' \
                       'Check prose and all other definitions against these exact typed choices. ' \
@@ -742,8 +746,10 @@ The dataAvailability object is an internal audit, not new experimental results.
                           'specific claim if its budget, split, procedure or decision criterion is unspecified. ' \
                           'Use the other target claims for shared definitions but not as factual evidence.\n' + design_requirements(metric_domains)
                 from services.deep_research.design_audit import required_design_slots
+                required_slots = {role: slots for role, slots in required_design_slots(metric_domains).items()
+                                  if role in {c.get('designRole') for c in claims}}
                 prompt += ('\nPassed verdicts require FLAT designAudit with these slot keys: '
-                           + json.dumps(required_design_slots(metric_domains), separators=(',', ':'))
+                           + json.dumps(required_slots, separators=(',', ':'))
                            + '. Each slot is {"claimId":"target/context proposal ID","quote":"exact concrete choice"}. '
                            'Missing/vague choices use null and fail. Paper facts cannot supply configuration. '
                            'Check that each choice fulfills the entire slot, not mere keyword presence. '
@@ -760,7 +766,6 @@ The dataAvailability object is an internal audit, not new experimental results.
                            'per_group_steps=recovery (budget contract 1 only). '
                            'Other slots require quotes. Do not mix fields with quote/quotes. All bindings together '
                            'must substantiate the entire slot; valid fields do not prove scientific correctness.')
-                required_slots = required_design_slots(metric_domains)
                 skeleton = [{'claimId': c['claimId'], 'status': 'failed',
                     'reason': '',
                     'designAudit': {slot: None for slot in required_slots.get(c.get('designRole'), ())},

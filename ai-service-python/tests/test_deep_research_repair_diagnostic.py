@@ -25,8 +25,16 @@ class Client:
         self.calls.append(request)
         if self.fail:
             raise LLMProviderError('timeout', provider='fixture', model='fixture')
-        value = ([{**source()['state']['reportBody']['claims'][0], 'designRole': 'controls'}]
-                 if len(self.calls) == 1 else [{'claimId': 'c', 'status': 'passed'}])
+        choices = {
+            'paired_initialization': 'Copy the same baseline checkpoint and enhancement initialization to both arms.',
+            'render_settings': 'Render at 640x480 with the same renderer configuration.',
+            'optimizer_settings': 'Use Adam with learning rate 0.001 for trainable parameters.',
+            'other_interventions': 'Disable occupancy removal and compaction in both arms.',
+        }
+        value = ([{**source()['state']['reportBody']['claims'][0], 'designRole': 'controls',
+                   'text': ' '.join(choices.values())}]
+                 if len(self.calls) == 1 else [{'claimId': 'c', 'status': 'passed',
+                     'designAudit': {key: {'claimId': 'c', 'quote': text} for key, text in choices.items()}}])
         return LLMResult('fixture', 'fixture', json.dumps(value), LLMUsage(20, 10, 30), 'stop')
 
 
