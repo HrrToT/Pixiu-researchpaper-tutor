@@ -2,39 +2,181 @@
   "asOf": "2026-10-15",
   "objective": "Complete DR0-DR5 in DEEP_RESEARCH_DESIGN_20261012.md without redefining success around implemented subsets.",
   "overall": "incomplete",
-  "freshMaterialReadiness": "All four new PDFs are now locally parsed and indexed, AI overview not requested, research model ledger unchanged. Research cases remain unexecuted; see deep-research-evidence/fresh-holdout-materials-20261015.json.",
+  "freshMaterialReadiness": "Four fresh PDFs locally parsed and indexed without AI overview. H1R2-v1 submitted once after recharge, paused/unknown at resolve_brief; no content scored. Other fresh cases remain unexecuted.",
   "evidenceRule": "Machine completion, offline fixtures, real transport, source support, content quality and independent-case eligibility are separate. Historical results are not silently upgraded to current passes.",
   "latestVerification": {
-    "backendResearchModelReadingIntegration": {"passed": 1259, "warnings": 1, "seconds": 71.96},
-    "frontendVitest": {"passed": 472, "files": 64},
-    "frontendIsolatedBrowser": {"passed": 6, "seconds": 41.7, "boundary": "Closed API fixtures; no model-quality credit"},
-    "researchAndConfigSuite": {"passed": 1189, "warnings": 1, "seconds": 51.65, "scope": "test_deep_research*.py plus test_config.py"},
-    "newHoldoutSealAndReceiptTests": {"passed": 33, "seconds": 0.78, "overlapWithFullSuite": true},
-    "newHoldoutModelCalls": 0
+    "backendResearchModelReadingIntegration": {
+      "passed": 1259,
+      "warnings": 1,
+      "seconds": 71.96
+    },
+    "frontendVitest": {
+      "passed": 472,
+      "files": 64
+    },
+    "frontendIsolatedBrowser": {
+      "passed": 6,
+      "seconds": 41.7,
+      "boundary": "Closed API fixtures; no model-quality credit"
+    },
+    "researchAndConfigSuite": {
+      "passed": 1189,
+      "warnings": 1,
+      "seconds": 51.65,
+      "scope": "test_deep_research*.py plus test_config.py"
+    },
+    "newHoldoutSealAndReceiptTests": {
+      "passed": 33,
+      "seconds": 0.78,
+      "overlapWithFullSuite": true
+    },
+    "newHoldoutModelCalls": 1,
+    "newHoldoutModelCallsBoundary": "One unresolved request; reserved 4294 tokens, actual usage/cost unknown."
   },
   "stages": [
-    {"id": "DR0", "implementation": "Baseline definitions, frozen inputs, review criteria and contracts implemented", "acceptance": "Content comparisons remain open", "proof": ["DEEP_RESEARCH_ACCEPTANCE_CASES_20261012.json", "DEEP_RESEARCH_FRESH_HOLDOUTS_20261015.json", "../ai-service-python/tests/test_deep_research_acceptance_manifest.py"]},
-    {"id": "DR1", "implementation": "Durable graph, ledger, epoch guards, unknown preservation and outbox implemented", "acceptance": "Offline integration and single-instance recovery evidence available", "proof": ["deep-research-evidence/deployment-20261013.json", "deep-research-evidence/runtime-recovery-20261015.json", "../ai-service-python/tests/test_deep_research_end_to_end.py", "../ai-service-python/tests/test_deep_research_process_exit.py"]},
-    {"id": "DR2", "implementation": "Versioned sources, table bindings, physical locations and bounded source continuity implemented", "acceptance": "Real single-/multi-paper answer quality and final live citation checks incomplete", "proof": ["deep-research-evidence/source-continuity-replay-20261015.json", "deep-research-evidence/coverage-source-binding-20261015.json"]},
-    {"id": "DR3", "implementation": "Adaptive gaps, incremental reuse, bounded repair, experiment contracts and final-answer coverage implemented", "acceptance": "Experiment executability and comparison/continuation content quality incomplete", "proof": ["deep-research-evidence/d3-v25-20261014.json", "deep-research-evidence/completion-criteria-20261015.json", "deep-research-evidence/coverage-response-contract-20261015.json"]},
-    {"id": "DR4", "implementation": "Permissioned arXiv discovery, versioned fulltext acquisition, fixed network exit and degradation implemented", "acceptance": "Actual external path previously acquired fulltext; independent complete external answer not yet accepted", "proof": ["deep-research-evidence/H3-v1-external-fulltext-20261013.json", "../ai-service-python/tests/test_deep_research_academic.py", "../ai-service-python/tests/test_deep_research_external_failures.py"]},
-    {"id": "DR5", "implementation": "Compact results, artifact versions/edit/search, citations and rollback implemented", "acceptance": "Historical isolated browser and deployment checks pass; final live results and independent quality gates incomplete", "proof": ["deep-research-evidence/frontend-integration-20261013.json", "deep-research-evidence/deployment-20261013.json"]}
+    {
+      "id": "DR0",
+      "implementation": "Baseline definitions, frozen inputs, review criteria and contracts implemented",
+      "acceptance": "Content comparisons remain open",
+      "proof": [
+        "DEEP_RESEARCH_ACCEPTANCE_CASES_20261012.json",
+        "DEEP_RESEARCH_FRESH_HOLDOUTS_20261015.json",
+        "../ai-service-python/tests/test_deep_research_acceptance_manifest.py"
+      ]
+    },
+    {
+      "id": "DR1",
+      "implementation": "Durable graph, ledger, epoch guards, unknown preservation and outbox implemented",
+      "acceptance": "Offline integration and single-instance recovery evidence available",
+      "proof": [
+        "deep-research-evidence/deployment-20261013.json",
+        "deep-research-evidence/runtime-recovery-20261015.json",
+        "../ai-service-python/tests/test_deep_research_end_to_end.py",
+        "../ai-service-python/tests/test_deep_research_process_exit.py"
+      ]
+    },
+    {
+      "id": "DR2",
+      "implementation": "Versioned sources, table bindings, physical locations and bounded source continuity implemented",
+      "acceptance": "Real single-/multi-paper answer quality and final live citation checks incomplete",
+      "proof": [
+        "deep-research-evidence/source-continuity-replay-20261015.json",
+        "deep-research-evidence/coverage-source-binding-20261015.json"
+      ]
+    },
+    {
+      "id": "DR3",
+      "implementation": "Adaptive gaps, incremental reuse, bounded repair, experiment contracts and final-answer coverage implemented",
+      "acceptance": "Experiment executability and comparison/continuation content quality incomplete",
+      "proof": [
+        "deep-research-evidence/d3-v25-20261014.json",
+        "deep-research-evidence/completion-criteria-20261015.json",
+        "deep-research-evidence/coverage-response-contract-20261015.json"
+      ]
+    },
+    {
+      "id": "DR4",
+      "implementation": "Permissioned arXiv discovery, versioned fulltext acquisition, fixed network exit and degradation implemented",
+      "acceptance": "Actual external path previously acquired fulltext; independent complete external answer not yet accepted",
+      "proof": [
+        "deep-research-evidence/H3-v1-external-fulltext-20261013.json",
+        "../ai-service-python/tests/test_deep_research_academic.py",
+        "../ai-service-python/tests/test_deep_research_external_failures.py"
+      ]
+    },
+    {
+      "id": "DR5",
+      "implementation": "Compact results, artifact versions/edit/search, citations and rollback implemented",
+      "acceptance": "Historical isolated browser and deployment checks pass; final live results and independent quality gates incomplete",
+      "proof": [
+        "deep-research-evidence/frontend-integration-20261013.json",
+        "deep-research-evidence/deployment-20261013.json"
+      ]
+    }
   ],
   "developmentCases": [
-    {"id": "D1", "runId": "dr_run_66ec09fffdfe5c8d9a97a0a2f1816d75", "machine": "completed/inconclusive", "content": "not accepted; no published verified claim", "next": "Complete a source-bounded response to the focused claim, without changing uncertain evidence into universal denial."},
-    {"id": "D2", "runId": "dr_run_a631996531c45322aefd3e31ac5dce37", "machine": "completed/partial", "content": "not accepted; only one paper's claim published", "next": "Verify both papers' requested dimensions and a supported comparability judgment."},
-    {"id": "D3", "runId": "dr_run_e3521b1781825273b384a26a5edb8cdc", "machine": "paused/unresolved_unknown before planning", "content": "not evaluated; preceding D3-v25 machine complete was not quality accepted", "next": "Keep this request unretried; do not use a new attempt to bypass its unknown outcome. Continue distinct acceptance tasks when available. Concrete operation order, scoring/ranking, baseline/render settings and paired seed aggregation still require real quality validation."},
-    {"id": "D4", "runId": "dr_run_ad3740979e405b65aeecf3af6b84d993", "machine": "completed/partial", "content": "Historical fixed-case source/content review passed while explicitly preserving the generalization gap", "boundary": "The recorded partial outcome is appropriate for this evidence-insufficiency question; no claim of universal correctness or a new current model run."},
-    {"id": "D5", "runId": "dr_run_c56e3d09f3e45e2bbf2d63c41a348043", "machine": "completed/partial", "functional": "Real inherited evidence reused without retrieve/read; parent edited artifact preserved", "content": "not accepted; measurement conditions insufficiently distinguished", "next": "Validate continuation content and a complete new artifact's exact live citation lookup."},
-    {"id": "D6", "mode": "offline_fault_injection", "functional": "Real graph/ledger tests cover abrupt exit, pending unknown calls, pause/resume, late responses, budget stop and idempotent publication", "boundary": "No paid-model case required or implied; not a model-quality score."}
+    {
+      "id": "D1",
+      "runId": "dr_run_66ec09fffdfe5c8d9a97a0a2f1816d75",
+      "machine": "completed/inconclusive",
+      "content": "not accepted; no published verified claim",
+      "next": "Complete a source-bounded response to the focused claim, without changing uncertain evidence into universal denial."
+    },
+    {
+      "id": "D2",
+      "runId": "dr_run_a631996531c45322aefd3e31ac5dce37",
+      "machine": "completed/partial",
+      "content": "not accepted; only one paper's claim published",
+      "next": "Verify both papers' requested dimensions and a supported comparability judgment."
+    },
+    {
+      "id": "D3",
+      "runId": "dr_run_e3521b1781825273b384a26a5edb8cdc",
+      "machine": "paused/unresolved_unknown before planning",
+      "content": "not evaluated; preceding D3-v25 machine complete was not quality accepted",
+      "next": "Keep this request unretried; do not use a new attempt to bypass its unknown outcome. Continue distinct acceptance tasks when available. Concrete operation order, scoring/ranking, baseline/render settings and paired seed aggregation still require real quality validation."
+    },
+    {
+      "id": "D4",
+      "runId": "dr_run_ad3740979e405b65aeecf3af6b84d993",
+      "machine": "completed/partial",
+      "content": "Historical fixed-case source/content review passed while explicitly preserving the generalization gap",
+      "boundary": "The recorded partial outcome is appropriate for this evidence-insufficiency question; no claim of universal correctness or a new current model run."
+    },
+    {
+      "id": "D5",
+      "runId": "dr_run_c56e3d09f3e45e2bbf2d63c41a348043",
+      "machine": "completed/partial",
+      "functional": "Real inherited evidence reused without retrieve/read; parent edited artifact preserved",
+      "content": "not accepted; measurement conditions insufficiently distinguished",
+      "next": "Validate continuation content and a complete new artifact's exact live citation lookup."
+    },
+    {
+      "id": "D6",
+      "mode": "offline_fault_injection",
+      "functional": "Real graph/ledger tests cover abrupt exit, pending unknown calls, pause/resume, late responses, budget stop and idempotent publication",
+      "boundary": "No paid-model case required or implied; not a model-quality score."
+    }
   ],
   "activeIndependentSlots": [
-    {"slot": "H1", "case": "H1R2", "manifest": "DEEP_RESEARCH_FRESH_HOLDOUTS_20261015.json", "state": "sealed, not executed"},
-    {"slot": "H2", "case": "H2R", "manifest": "DEEP_RESEARCH_FRESH_HOLDOUTS_20261015.json", "state": "sealed, not executed"},
-    {"slot": "H3", "case": "H3R", "manifest": "DEEP_RESEARCH_HOLDOUT_REPLACEMENTS.json", "state": "sealed, not executed"},
-    {"slot": "H4", "case": "H4R", "manifest": "DEEP_RESEARCH_FRESH_HOLDOUTS_20261015.json", "state": "sealed, not executed"},
-    {"slot": "H5", "case": "H5R", "manifest": "DEEP_RESEARCH_FRESH_HOLDOUTS_20261015.json", "state": "sealed, not executed"},
-    {"slot": "H6", "case": "H6", "manifest": "DEEP_RESEARCH_ACCEPTANCE_CASES_20261012.json", "state": "offline network/failure/budget tests available; no claim of real Provider quality"}
+    {
+      "slot": "H1",
+      "case": "H1R2",
+      "manifest": "DEEP_RESEARCH_FRESH_HOLDOUTS_20261015.json",
+      "state": "one submission; paused/unresolved_unknown before paper analysis; unscored",
+      "runId": "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+      "proof": "deep-research-evidence/H1R2-v1-20261015.json"
+    },
+    {
+      "slot": "H2",
+      "case": "H2R",
+      "manifest": "DEEP_RESEARCH_FRESH_HOLDOUTS_20261015.json",
+      "state": "sealed, not executed"
+    },
+    {
+      "slot": "H3",
+      "case": "H3R",
+      "manifest": "DEEP_RESEARCH_HOLDOUT_REPLACEMENTS.json",
+      "state": "sealed, not executed"
+    },
+    {
+      "slot": "H4",
+      "case": "H4R",
+      "manifest": "DEEP_RESEARCH_FRESH_HOLDOUTS_20261015.json",
+      "state": "sealed, not executed"
+    },
+    {
+      "slot": "H5",
+      "case": "H5R",
+      "manifest": "DEEP_RESEARCH_FRESH_HOLDOUTS_20261015.json",
+      "state": "sealed, not executed"
+    },
+    {
+      "slot": "H6",
+      "case": "H6",
+      "manifest": "DEEP_RESEARCH_ACCEPTANCE_CASES_20261012.json",
+      "state": "offline network/failure/budget tests available; no claim of real Provider quality"
+    }
   ],
   "retiredIndependentClaims": "H1, H1R and original H3 were used for diagnosis. Original H2/H4/H5 share the tuned Scaffold-GS/4DGS material and are replaced for unseen-material acceptance. All original definitions/results remain preserved.",
   "releaseGatesStillOpen": [
@@ -44,6 +186,10 @@
     "Known model-call outcomes, actual usage and costs where available remain separate from retained unknown reservations.",
     "Keep PR draft and production defaults off until the actual gates are met."
   ],
-  "waivedByUser": ["Legacy project import", "Full novice study workflow", "Independent Edge recovery"],
-  "currentProviderConstraint": "Official Flash API partial outage observed; stop additional generation probes and preserve D8-v3/D3-v26 unknown calls. Offline and source work can continue, so the overall development goal is not complete or at an impasse."
+  "waivedByUser": [
+    "Legacy project import",
+    "Full novice study workflow",
+    "Independent Edge recovery"
+  ],
+  "currentProviderConstraint": "After user reported recharge, configured account balance endpoint returned 200, available=true and positive balance. H1R2-v1 still timed out at 120 seconds and is unknown. Stop additional paid cases; do not retry unknowns. Current official service status could not be fetched, so outage recovery and timeout cause remain unconfirmed."
 }

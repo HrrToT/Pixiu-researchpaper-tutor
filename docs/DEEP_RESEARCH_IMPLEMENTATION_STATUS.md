@@ -1,3 +1,5 @@
+2026-10-15 充值后验证：配置账户只读余额查询确认 available=true 且余额为正。H1R2-v1 仅提交一次，首节点 resolve_brief 在120秒后超时，已暂停并保留unknown；4,294 tokens为预留，实际用量/费用未知，尚无内容可评分。停止追加付费案例，不重发旧未知请求。服务加载前后调用账本2389条及哈希一致、原6个暂停任务保持暂停。详见 `deep-research-evidence/H1R2-v1-20261015.json`。
+
 # Deep Research 实施与验收记录
 
 设计依据：[完整设计稿](DEEP_RESEARCH_DESIGN_20261012.md)。开始日期：2026-10-12。
