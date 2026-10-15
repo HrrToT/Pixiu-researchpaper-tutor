@@ -42,13 +42,12 @@
       "overlap": true
     },
     "backendCurrentResearchReadingTables": {
-      "passed": 1478,
+      "passed": 1504,
       "warnings": 1,
-      "seconds": 42.39,
-      "log": "tmp/pytest-dr91-full.log",
-      "sourceCommit": "640df74",
-      "scope": "Research, reading, PDF table and config regression; no frontend/Java changes this round.",
-      "proof": "deep-research-evidence/operational-repair-capacity-20261015.json"
+      "seconds": 61.12,
+      "sourceCommit": "7783e79",
+      "scope": "Research/reading/PDF table/config; no frontend or Java changes.",
+      "proof": "deep-research-evidence/report-container-normalization-20261015.json"
     },
     "frontendDocumentNavigationFocused": {
       "passed": 19,
@@ -71,8 +70,8 @@
       "boundary": "Exact citation/physical-page lookup, manual edit, original preservation and find-after-reload; content acceptance is separate."
     },
     "retiredH3RDevelopmentCalls": {
-      "calls": 59,
-      "tokens": 208656,
+      "calls": 66,
+      "tokens": 233204,
       "attempts": [
         "H3R-v2",
         "H3R-v3",
@@ -80,14 +79,15 @@
         "H3R-v5",
         "H3R-v6",
         "H3R-v7",
-        "H3R-v8"
+        "H3R-v8",
+        "H3R-v9"
       ],
       "cost": null,
       "boundary": "Known completed responses, including failed planning/verification runs; no independent holdout credit."
     },
     "retiredH5RDevelopmentCalls": {
-      "calls": 98,
-      "tokens": 448306,
+      "calls": 102,
+      "tokens": 462387,
       "attempts": [
         "H5R-v2",
         "H5R-v3",
@@ -99,17 +99,18 @@
         "H5R-v9",
         "H5R-v10",
         "H5R-v11",
-        "H5R-v12"
+        "H5R-v12",
+        "H5R-v13"
       ],
       "cost": null,
       "boundary": "Known completed responses, including failed planning/verification runs; no independent holdout credit."
     },
     "currentOfflineCorrections": {
-      "proof": "deep-research-evidence/operational-repair-capacity-20261015.json",
+      "proof": "deep-research-evidence/report-container-normalization-20261015.json",
       "draftingProof": "deep-research-evidence/drafting-evidence-capacity-20261015.json",
       "realGenerationOnFinalVersion": false,
       "finalNumericGuardProof": "deep-research-evidence/quantitative-condition-keys-20261015.json",
-      "boundary": "The loaded .91 repair correction has offline saved-input evidence only. .90 H5R-v12 and .89 H3R-v8/H5R-v11 are real partial results, all not content accepted."
+      "boundary": "Final .93 has offline shape/option evidence only. .92 H3R-v9 is partial and H5R-v13 fails before verification; neither is content accepted."
     },
     "externalReader": {
       "javaIsolatedPassed": 43,
@@ -348,21 +349,22 @@
     "Full novice study workflow",
     "Independent Edge recovery"
   ],
-  "currentProviderConstraint": "Latest development runs have known terminal responses. Seven older unknown runs remain paused and unretried; content and independent-release gates remain open.",
-  "currentDevelopmentMode": "Primary Codex only, no Qoder; .91 loaded after the recorded full offline suite. .89/.90 real cases each submitted once, all partial and not content accepted; raw responses preserved.",
+  "currentProviderConstraint": "Latest cases are known terminal; seven old unknowns remain paused. Fulltext acquisition plus verification consumes the bounded repair window; no timeout-based restart or retry.",
+  "currentDevelopmentMode": "Primary Codex only, no Qoder. .93 loaded after 1504 full offline passes. Latest two real .92 cases each submitted once; source/content gates remain open.",
   "loadedRuntime": {
-    "commit": "640df74",
-    "promptVersion": "dr-v2.20261015.91",
+    "commit": "7783e79",
+    "promptVersion": "dr-v2.20261015.93",
     "ready": true,
-    "callsPreserved": 2916,
+    "callsPreserved": 2952,
     "pausedUnknownRuns": 7,
-    "proof": "deep-research-evidence/runtime-load-dr91-repair-20261015.json"
+    "proof": "deep-research-evidence/runtime-load-dr93-container-20261015.json"
   },
   "nextQualityWork": [
-    "Verify the .91 operational repair on one deliberate fixed case; then address experimental completeness and unrequested benchmark scope.",
-    "Improve novice causal explanation without disguising inference as source-reported fact or promising convergence.",
-    "Make report prose and typed settings readable without repeated presentation.",
-    "Complete D1/D2/D3/D5 content gates and then freeze/run replacement independent cases."
+    "Add safe fixed-version public-fulltext cache reuse without relaxing source policy, byte limits or content hashes.",
+    "Verify .93 JSON mode/current operational repair and eliminate irrelevant author-setting requirements in proposed experiments.",
+    "Improve evidence-bounded novice training explanations and avoid convergence promises.",
+    "Reduce repeated protocol presentation while preserving original conditions and exact parameters.",
+    "Complete D1/D2/D3/D5 and replacement independent-case acceptance; keep PR draft until the actual full gates pass."
   ],
   "javaReaderRuntime": {
     "sourceCommit": "070ab1a",
