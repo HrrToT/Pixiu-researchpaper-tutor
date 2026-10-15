@@ -350,6 +350,9 @@ class TrackedLLMInvoker:
                 "output_tokens": result.usage.output_tokens if hasattr(result.usage, "output_tokens") else 0,
             },
         }
+        reported_model = getattr(result, "reported_model", None)
+        if isinstance(reported_model, str) and reported_model.strip() and len(reported_model) <= 256:
+            response["reportedModel"] = reported_model
         
         # Settle with actual usage delta
         token_delta = actual_tokens - (estimated_input + max_output)

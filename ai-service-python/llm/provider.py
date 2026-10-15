@@ -28,6 +28,9 @@ class LLMResult:
     content: str
     usage: LLMUsage
     finish_reason: Optional[str] = None
+    # Untrusted provider-reported label, distinct from the configured model ID.
+    # It is audit metadata, not proof of underlying weights or a routing input.
+    reported_model: Optional[str] = None
 
 
 class LLMProviderError(RuntimeError):

@@ -222,7 +222,11 @@ class DeepSeekLLM:
             step["outputSize"] = len(content)
             record_counter("estimatedOutputTokens", estimate_tokens(content))
             finish_reason = (data.get('choices') or [{}])[0].get('finish_reason') if isinstance(data, dict) else None
-            return LLMResult("deepseek", self.model, content, usage, finish_reason=finish_reason)
+            reported_model = data.get('model')
+            if not isinstance(reported_model, str) or not reported_model.strip() or len(reported_model) > 256:
+                reported_model = None
+            return LLMResult("deepseek", self.model, content, usage, finish_reason=finish_reason,
+                             reported_model=reported_model)
 
     def _call(
         self,

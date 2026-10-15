@@ -66,6 +66,23 @@ def test_default_client_uses_global_timeout_cap(llm_env):
     assert deadline_timeouts == [GLOBAL_TIMEOUT_SECONDS]
 
 
+@pytest.mark.parametrize('reported,expected', [
+    ('deepseek-flash', 'deepseek-flash'), (None, None), ('   ', None),
+    (12, None), ([], None), ('x' * 257, None),
+])
+def test_provider_model_label_is_separate_bounded_metadata_and_never_changes_routing(llm_env, reported, expected):
+    mock_post, _ = llm_env
+    data = _FakeResponse().json()
+    data['model'] = reported
+    mock_post.return_value.json = lambda: data
+    client = DeepSeekLLM(model='configured-alias', api_key='test-key')
+    result = _invoke(client)
+    assert result.model == client.model == 'configured-alias'
+    assert result.reported_model == expected
+    assert mock_post.call_args.kwargs['json']['model'] == 'configured-alias'
+    mock_post.assert_called_once()
+
+
 def test_default_client_still_caps_long_research_request(llm_env):
     mock_post, deadline_timeouts = llm_env
     client = DeepSeekLLM(api_key="test-key")
