@@ -9,6 +9,7 @@ count/name units and exact dataset/subset identity.
 """
 from __future__ import annotations
 
+import re
 from typing import Any, List, Optional
 
 __all__ = ["validate_data_availability"]
@@ -175,10 +176,36 @@ def _check_named(da: dict, scenes: dict, da_quote: str) -> List[str]:
             return ["DA_NAME_NOT_IN_QUOTE"]
 
     req_names = scenes.get("names")
+    bindings = da.get('nameBindings', [])
+    if not isinstance(bindings, list):
+        return ['DA_NAME_BINDINGS_MALFORMED']
+    aliases, bound_labels = {}, set()
+    for binding in bindings:
+        if not isinstance(binding, dict) or set(binding) != {'selectedName', 'sourceLabel'}:
+            return ['DA_NAME_BINDINGS_MALFORMED']
+        selected, label = binding['selectedName'], binding['sourceLabel']
+        # This audit only permits explicit ASCII scene-label capitalization.
+        # It is never applied to evidence IDs, paths, URLs or source versions.
+        if (not isinstance(selected, str) or not isinstance(label, str)
+                or not re.fullmatch(r'[A-Za-z][A-Za-z0-9 _-]*', selected)
+                or not re.fullmatch(r'[A-Za-z][A-Za-z0-9 _-]*', label)
+                or selected.lower() != label.lower()):
+            return ['DA_NAME_BINDING_NOT_CASE_VARIANT']
+        if not isinstance(req_names, list) or selected not in req_names or label not in available_names:
+            return ['DA_NAME_BINDING_NOT_SELECTED']
+        if selected in aliases or label in bound_labels:
+            return ['DA_NAME_BINDINGS_NOT_UNIQUE']
+        aliases[selected] = label
+        bound_labels.add(label)
     if isinstance(req_names, list):
+        resolved = set()
         for rn in req_names:
-            if rn not in available_names:
+            label = aliases.get(rn, rn)
+            if label not in available_names:
                 return ["DA_NAME_NOT_AVAILABLE"]
+            if label in resolved:
+                return ['DA_NAME_BINDINGS_NOT_UNIQUE']
+            resolved.add(label)
 
     return errors
 

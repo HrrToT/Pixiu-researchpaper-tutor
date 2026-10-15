@@ -722,6 +722,10 @@ For named mode, instead provide availableNames with actual selected names explic
 in the quoted passage, including exact capitalization; count fields may be omitted.
 Do not silently lowercase a source label in this exact-quotation audit. Verify name membership
 and subset identity; a differently capitalized requested name must be resolved explicitly.
+Only when the SAME dataset/scene identity is established, add nameBindings:
+[{"selectedName":"requested label","sourceLabel":"exact label in availableNames"}].
+This permits ASCII letter-case differences only, never synonyms, path normalization, URLs,
+version IDs or fuzzy matches. Preserve the requested selection and literal source spelling.
 Do not fail named mode solely because an unasserted original view count, resolution or
 author-used split is unavailable. Ground the selected scene names and exact dataset;
 check the proposed reproducible split as a proposed choice, including nonempty selections.
