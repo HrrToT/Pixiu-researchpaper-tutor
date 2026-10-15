@@ -1,3 +1,5 @@
+2026-10-15 服务恢复与真实回归：官方05:04 UTC解除故障；H4R-v1已完成11次调用，34139 tokens、75秒，但主代理内容核查不通过。其首次结果保留并退役为开发案例。已修复跨attempt提交保护、多层表头/连续文字位置和数值识别完整性；整合1304通过、2跳过。证据见 `deep-research-evidence/H4R-v1-20261015.json` 与 `deep-research-evidence/table-and-completeness-20261015.json`。
+
 2026-10-15 02:24 UTC 官方故障确认：事件页返回200，显示 Identified / Full Outage，Pro、Flash API均受影响，正在实施修复。模型列表GET正常不代表生成恢复。当前剩余内容质量、独立案例和新成果实际交互验收依赖生成服务恢复；保持草稿，不追加未知请求。证据及恢复顺序见 `deep-research-evidence/provider-status-confirmed-20261015.json`。
 
 2026-10-15 诊断修复：模型错误增加受限的传输分类并持久化到调用账本；不推断历史错误原因，不改变unknown与保留预算，不新增付费请求。unknown提示不再建议停止后另发补查。后端整合1,271项通过，文案修改后相关端到端/账本18项通过（有重叠）。详见 `deep-research-evidence/transport-diagnostics-20261015.json`。
