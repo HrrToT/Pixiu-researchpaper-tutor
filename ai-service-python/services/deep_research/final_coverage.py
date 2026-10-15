@@ -4,7 +4,18 @@ import json
 from services.deep_research.contracts import BudgetExhaustedError
 
 
-def coverage_prompt_byte_limit(budget):
+def coverage_output_tokens(plan, claims):
+    """Allow a bounded structured audit to grow with the frozen answer contract.
+
+    This is capacity planning, never a completion verdict. Small audits keep
+    their old allowance; long ones do not share a fixed 3500-token response.
+    """
+    obligations = [o for p in plan for o in p.get('obligations', [])]
+    criteria = sum(len(o.get('completionCriteria', [])) for o in obligations)
+    return min(8192, max(3500, 512 + 450 * len(obligations) + 240 * criteria + 120 * len(claims)))
+
+
+def coverage_prompt_byte_limit(budget, output_tokens=3500):
     """Fit to currently available finalization capacity; admission stays atomic."""
     if not budget or 'maxTokens' not in budget:
         return 24000
@@ -20,7 +31,7 @@ def coverage_prompt_byte_limit(budget):
         if ordinary >= calls - reserved:
             return 0
         remaining = min(remaining, maximum - reserve - normal)
-    return max(0, min(24000, remaining - 3500 - 1024))
+    return max(0, min(24000, remaining - output_tokens - 1024))
 
 
 def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, *, budget=None):
@@ -104,14 +115,15 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
             prompt += json.dumps(criterion_shape, ensure_ascii=False, separators=(',', ':'))
         template = prompt
         try:
-            limit = coverage_prompt_byte_limit(budget)
+            output_tokens = coverage_output_tokens(audit_plan, claims)
+            limit = coverage_prompt_byte_limit(budget, output_tokens)
             render = lambda selected_rows: template.replace(evidence_marker, json.dumps(selected_rows, ensure_ascii=False, separators=(',', ':')), 1)
             fixed_bytes = len(render([]).encode('utf-8'))
             if limit <= 0 or fixed_bytes > limit:
                 raise BudgetExhaustedError('coveragePromptBytes', limit, fixed_bytes)
             prompt, rows = fit_evidence_prompt(rows, render, max_bytes=limit)
             result = invoke(run_id, 'verify_answer_coverage', prompt,
-                            {'max_tokens': 3500, 'temperature': 0.0}, use_reserve=True)
+                            {'max_tokens': output_tokens, 'temperature': 0.0}, use_reserve=True)
             content = result.get('content', '') if isinstance(result, dict) else getattr(result, 'content', '')
             finish = result.get('finishReason', result.get('finish_reason')) if isinstance(result, dict) else getattr(result, 'finish_reason', None)
             try:
