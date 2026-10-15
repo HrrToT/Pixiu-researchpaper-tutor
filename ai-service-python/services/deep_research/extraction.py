@@ -84,6 +84,9 @@ def make_batched_extract_node(invoke, make_evidence, validate, update, *, batch_
                 pending.append((source, {**source.get("location", {}), **{k: v for k, v in page.items() if k != "text"}}, text))
 
         update(run_id, lambda r: {**r, "state": {**r.get("state", {}), "evidence": evidence}}, expected_revision=None)
+        if record.get('extractionPriorityVersion') == 1:
+            from services.deep_research.extraction_priority import prioritize_extraction_passages
+            pending = prioritize_extraction_passages(pending, obligations)
         for start in range(0, len(pending), batch_size):
             batch = pending[start:start + batch_size]
             passages = [{"sourceId": s["sourceId"], "location": location, "text": text,
