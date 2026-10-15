@@ -653,6 +653,8 @@ Return only a JSON array, one verdict per target:
 Missing configuration, contradictory choices and invalid parameter syntax fail.
 Do not require an unexecuted experiment to have results. Do not judge context claims as targets.'''
 
+        from services.deep_research.synthesis import SCIENTIFIC_TERMINOLOGY
+        prompt += '\n' + SCIENTIFIC_TERMINOLOGY
         question = self._research_question() if callable(self._research_question) else self._research_question
         if isinstance(question, str) and question.strip():
             prompt += '\nOriginal research question (user objective, not source evidence):\n' + json.dumps(question, ensure_ascii=False)

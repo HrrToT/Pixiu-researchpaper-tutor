@@ -8,6 +8,7 @@ from services.deep_research.answer_constraints import answer_character_count, re
 from services.deep_research.contracts import BudgetExhaustedError
 from services.deep_research.selection import surrounding_context
 from services.deep_research.prompt_budget import fit_evidence_prompt
+from services.deep_research.synthesis import SCIENTIFIC_TERMINOLOGY
 from uuid import uuid4
 from services.deep_research.repair_scope import repair_evidence_scope
 
@@ -134,6 +135,7 @@ For existing proposals, choose concrete seed/split/level/budget/confidence setti
 not paper-attributed values or promises to preregister later. Correct formulas and label
 hypotheses/proposals. Source facts still require evidence; proposed choices need not occur
 in the paper. Maintain consistency with accepted definitions and complete required details.'''
+    prompt += '\n' + SCIENTIFIC_TERMINOLOGY
     if any(row.get('designContractVersion') == 2 for row in originals.values()):
         from services.deep_research.execution_spec import execution_spec_contract_for_roles
         from services.deep_research.experimental_reasoning import DESIGN_ROLES, design_requirements

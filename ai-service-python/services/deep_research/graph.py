@@ -1072,6 +1072,8 @@ Abstract-only claims use detailLevel="abstract" and explicitly limit their scope
 Experiment designs must cover hypothesis, groups, controls, data, metrics, steps, confounders and decisions.
 Orient losses before formulas, distinguish conditional/averaged effects and paper distillation from proposed truncation."""
 
+        from services.deep_research.synthesis import SCIENTIFIC_TERMINOLOGY
+        prompt += '\n' + SCIENTIFIC_TERMINOLOGY
         if output_kind == 'paper_comparison':
             prompt += "\nFor a comparison, separate each paper's reported evidence from the cross-paper judgment. " \
                       "Where evidence exists, provide one short reported claim per paper, followed by a separate " \

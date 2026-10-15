@@ -1,6 +1,15 @@
 """Pure report templates and structured output validation; graph.py owns model calls."""
 from typing import Any
 
+SCIENTIFIC_TERMINOLOGY = '''Preserve the source's variables and causal direction in Chinese.
+opacity alpha means 不透明度α: increasing it makes a primitive LESS transparent.
+transparency means 1-alpha, with the opposite direction. Do not translate an
+increase in opacity as 提高透明度; use 不透明度 explicitly, including in proposals.
+Distinguish a non-differentiable discrete sampling/index step from a differentiable
+surrogate or coupled parameter path. A high-level phrase "making sampling differentiable"
+does not prove the discrete index itself has ordinary derivatives. Describe the
+actual path established in the supplied detailed evidence, not a stronger shortcut.'''
+
 OUTPUT_KIND_SECTIONS = {
     "direction_survey": ["核心判断", "方法脉络", "代表工作", "关键争议", "推荐阅读顺序"],
     "paper_comparison": ["比较结论", "共同维度表", "差异原因", "选用条件"],
