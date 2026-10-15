@@ -1,0 +1,72 @@
+{
+  "date": "2026-10-15",
+  "caseId": "H5R",
+  "attempt": 3,
+  "runId": "dr_run_aedc3396b1a253c49f1bbb9aba1a6a09",
+  "promptVersion": "dr-v2.20261015.71",
+  "machineStatus": "completed",
+  "machineOutcome": "partial",
+  "qualityAccepted": false,
+  "reviewer": "Primary Codex; saved final report and original PDF physical pages 4 and 15 visually checked.",
+  "scores": {
+    "目标回应": 2,
+    "证据支持": 3,
+    "条件完整": 2,
+    "综合价值": 2,
+    "可执行性": 2,
+    "可读性": 1
+  },
+  "criteria": [
+    {
+      "requirement": "Old-layer opacity source and traceable hotdog availability",
+      "met": "partial"
+    },
+    {
+      "requirement": "Same baseline and enhancement initialization, only opacity changes",
+      "met": "partial"
+    },
+    {
+      "requirement": "Finite budgets, split, resolution, seeds and optimizer rules",
+      "met": "partial"
+    },
+    {
+      "requirement": "Matched or disabled occupancy/compaction",
+      "met": false
+    },
+    {
+      "requirement": "Executable steps, metric direction and paired aggregation",
+      "met": "partial"
+    },
+    {
+      "requirement": "Unexecuted descriptive single-scene scope without universal results",
+      "met": true
+    }
+  ],
+  "budget": {
+    "profile": "standard",
+    "modelCalls": 12,
+    "maxModelCalls": 18,
+    "tokens": 56217,
+    "maxTokens": 100000,
+    "externalSearches": 0,
+    "fulltextFetches": 0,
+    "elapsedSeconds": 127.0,
+    "cost": null
+  },
+  "costBoundary": "Settled provider tokens; monetary cost not supplied.",
+  "rawResultPath": "tmp/dr-acceptance-receipts/H5R-v3.result.json",
+  "rawResultSha256": "655cf894a8c4156743edfa6a6aec5fe98fea31a254af21bcf6c30df8081588a8",
+  "rawPayloadPath": "tmp/dr-acceptance-receipts/H5R-v3.payload.json",
+  "rawCallsPath": "tmp/dr-acceptance-receipts/H5R-v3.calls.json",
+  "findings": [
+    "Six roles were retained, including a finite proposed budget. The plan stage succeeded, but the complete experiment is still not executable.",
+    "The draft wrongly guessed hotdog belongs to Mip-NeRF360. Data availability rejected that unsupported choice and the data role was not published.",
+    "Actual original physical page 15 Table 6 places Hotdog under the synthetic Blender dataset; Table 7 contains the distinct Mip-NeRF360 scenes.",
+    "The correct caption/Hotdog row was already in the read sources, but the model extraction omitted it. This is an evidence-retention gap, not absence from the paper.",
+    "The semantic reason demanded uncertainty intervals/resampling from a purely descriptive comparison, reflecting conflicting generic reviewer guidance. Pairing, actual aggregation and metric tradeoffs still need checking.",
+    "Published controls still say same resolution/optimizer without concrete settings. New .72 control-audit slots require actual initialization, renderer, optimizer and matched other-intervention choices.",
+    "Internal E1/E2 labels and repeated audit prose appear in conditions and make the result hard to read; this remains a presentation/content defect.",
+    "Outcome correctly remains partial. No original failure, scientific conclusion or user edit was overwritten."
+  ],
+  "independence": "Retired development case; no independent acceptance credit."
+}
