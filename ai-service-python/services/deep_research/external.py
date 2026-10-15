@@ -54,7 +54,8 @@ class AcademicAcquisition:
                 if identity not in materials:
                     fulltext = (adapter.fetch_fulltext(run_id, candidate["arxivId"]) or {}) if client.policy.allow_fulltext else {}
                     # Cache acquisition, not the passages selected for one question.
-                    materials[identity] = {**candidate, **fulltext, "url": candidate.get("url", "")}
+                    materials[identity] = {**candidate, **fulltext, "url": candidate.get("url", ""),
+                                           "discoveredAt": candidate.get('retrievedAt')}
                 material = materials[identity]
                 pages = material.get("pages") or [{"text": material.get("abstract", "")}]
                 question = str(target.get('question') or '')

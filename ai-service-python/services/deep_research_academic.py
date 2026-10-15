@@ -157,9 +157,35 @@ class AcademicSourceClient:
     def fetch_fulltext(self, arxiv_id):
         self._require(fulltext=True)
         arxiv_id = checked_arxiv_id(arxiv_id)
-        content_type, body = self.transport('arxiv.org', '/pdf/' + arxiv_id, self.policy.max_pdf_bytes)
-        if len(body) > self.policy.max_pdf_bytes or content_type != 'application/pdf' or not body.startswith(b'%PDF-'):
-            raise AcademicAccessError('公开全文格式或大小无效')
+        from services.deep_research.fulltext_cache import read_cached_fulltext, store_fulltext
+        cached = read_cached_fulltext(self.cache_dir, arxiv_id, self.policy.max_pdf_bytes)
+        if cached:
+            body = cached['body']
+        else:
+            content_type, body = self.transport('arxiv.org', '/pdf/' + arxiv_id, self.policy.max_pdf_bytes)
+            if len(body) > self.policy.max_pdf_bytes or content_type != 'application/pdf' or not body.startswith(b'%PDF-'):
+                raise AcademicAccessError('公开全文格式或大小无效')
+        # Cached bytes use the same CURRENT page/byte/time limits and parser.
+        # A cached parse failure stops; it never triggers a second network attempt.
+        pages = self._parse_fulltext(body)
+        retrieved_at = cached['retrievedAt'] if cached else time.time()
+        cache_status = 'hit' if cached else 'disabled'
+        if not cached and self.cache_dir is not None:
+            try:
+                indexed = store_fulltext(self.cache_dir, arxiv_id, body, retrieved_at, self.policy.max_pdf_bytes)
+                cache_status = 'stored' if indexed else 'unversioned_pdf_only'
+            except OSError:
+                # Cache persistence is optional; do not discard downloaded,
+                # successfully parsed text or retry a provider request.
+                cache_status = 'write_failed'
+        return {'workId': 'arxiv:' + re.sub(r'v\d+$', '', arxiv_id), 'versionId': 'arxiv:' + arxiv_id,
+            'arxivId': arxiv_id, 'accessLevel': 'fulltext', 'sourceKind': 'external_academic',
+            'contentHash': hashlib.sha256(body).hexdigest(), 'pages': pages,
+            'url': 'https://arxiv.org/pdf/' + arxiv_id, 'retrievedAt': retrieved_at,
+            'accessedAt': time.time(), 'cacheHit': bool(cached), 'cacheStatus': cache_status,
+            'networkRequests': 0 if cached else 1}
+
+    def _parse_fulltext(self, body):
         try:
             parsed = subprocess.run([sys.executable, '-m', 'services.deep_research_pdf_parser',
                                      str(self.policy.max_pages), str(self.policy.max_pdf_bytes)],
@@ -176,15 +202,4 @@ class AcademicSourceClient:
             raise
         except Exception as cause:
             raise AcademicAccessError('公开全文解析未完成') from cause
-        content_hash = hashlib.sha256(body).hexdigest()
-        if self.cache_dir is not None:
-            self.cache_dir.mkdir(parents=True, exist_ok=True)
-            target = self.cache_dir / (content_hash + '.pdf')
-            if not target.exists():
-                temporary = self.cache_dir / (content_hash + '.' + __import__('uuid').uuid4().hex + '.tmp')
-                temporary.write_bytes(body)
-                temporary.replace(target)
-        return {'workId': 'arxiv:' + re.sub(r'v\d+$', '', arxiv_id), 'versionId': 'arxiv:' + arxiv_id,
-            'arxivId': arxiv_id, 'accessLevel': 'fulltext', 'sourceKind': 'external_academic',
-            'contentHash': content_hash, 'pages': pages,
-            'url': 'https://arxiv.org/pdf/' + arxiv_id, 'retrievedAt': time.time()}
+        return pages
