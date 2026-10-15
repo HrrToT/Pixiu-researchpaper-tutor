@@ -129,6 +129,23 @@ def test_identifier_in_chinese_question_keeps_translated_discovery_terms(repo):
     assert len(fixture.fetches) == 1
 
 
+def test_english_paper_name_in_chinese_question_does_not_drop_mechanism_terms(repo):
+    fixture = AcademicFixture()
+    original_fetch = fixture.fetch_fulltext
+    def fetch(identity):
+        result = original_fetch(identity)
+        return {**result, 'pages': [{'page': i + 1, 'text': 'SamplePaper introduction. ' * 20}
+                                  for i in range(4)] + [
+            {'page': 5, 'text': 'SamplePaper depth probability sampling gradient opacity training.'}]}
+    fixture.fetch_fulltext = fetch
+    sources = AcademicAcquisition(repo, repo.complete_call, client_factory=lambda _: fixture)(
+        'r', [{'obligationId': 'method', 'query': 'SamplePaper depth probability sampling gradient training',
+               'question': 'SamplePaper的深度概率采样怎样训练？'}])
+    assert sources[0]['location']['page'] == 5
+    assert sources[0]['text'] == 'SamplePaper depth probability sampling gradient opacity training.'
+    assert len(fixture.fetches) == 1
+
+
 @pytest.mark.parametrize("key", ["maxExternalSearches", "maxFulltextFetches"])
 def test_client_cannot_widen_network_budget(repo, key):
     record, _ = repo.create_run({"runId": key, "taskId": "t", "budget": {key: 1000}})
@@ -267,3 +284,19 @@ def test_capability_flags_do_not_silently_enable_external(monkeypatch):
     assert capabilities()["externalAcademic"] is False
     monkeypatch.setenv("DEEP_RESEARCH_EXTERNAL_ENABLED", "true")
     assert capabilities()["externalAcademic"] is True and capabilities()["fulltext"] is False
+
+
+def test_export_uses_server_pdf_limit_and_still_checks_original_hash(repo, tmp_path, monkeypatch):
+    from core.config import settings
+    body = b'%PDF-' + b'x' * (9 * 1024 * 1024)
+    content_hash = hashlib.sha256(body).hexdigest()
+    monkeypatch.setenv('DEEP_RESEARCH_SOURCE_DIR', str(tmp_path))
+    (tmp_path / (content_hash + '.pdf')).write_bytes(body)
+    source = {'sourceId': 'large', 'workId': 'arxiv:2601.00001', 'versionId': 'arxiv:2601.00001v1',
+              'sourceKind': 'arxiv', 'accessLevel': 'fulltext', 'contentHash': content_hash}
+    repo.update_run('r', lambda r: {**r, 'state': {'sources': [source]}})
+    monkeypatch.setattr(settings, 'deep_research_max_pdf_bytes', 32 * 1024 * 1024)
+    assert export_saved_source(repo, 'r', 'large')['accessLevel'] == 'fulltext'
+    monkeypatch.setattr(settings, 'deep_research_max_pdf_bytes', 8 * 1024 * 1024)
+    assert export_saved_source(repo, 'r', 'large')['accessLevel'] == 'metadata'
+    assert not repo.list_calls('r')

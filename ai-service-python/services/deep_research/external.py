@@ -58,9 +58,10 @@ class AcademicAcquisition:
                 material = materials[identity]
                 pages = material.get("pages") or [{"text": material.get("abstract", "")}]
                 question = str(target.get('question') or '')
-                # The current ranker tokenizes English. Preserve the discovery
-                # query's translated terms when the question has none.
-                reading_query = question if _reading_terms(question) else query
+                # A Chinese question can contain only the English paper name.
+                # Always retain the translated discovery terms as well: a title
+                # match alone does not locate the requested method passage.
+                reading_query = question + ' ' + query
                 for page in _select_pages(pages, reading_query):
                     text = page.get("text", "")
                     # Keep manageable passages and exact offsets within the original page.
@@ -145,7 +146,8 @@ def export_saved_source(repo, run_id, source_id):
     content_hash = source.get("contentHash", "")
     if source.get("accessLevel") == "fulltext" and re.fullmatch(r"[a-f0-9]{64}", content_hash):
         path = Path(os.environ.get("DEEP_RESEARCH_SOURCE_DIR", "data/deep_research_sources")) / (content_hash + ".pdf")
-        if path.is_file() and path.stat().st_size <= 8 * 1024 * 1024:
+        from core.config import settings
+        if path.is_file() and path.stat().st_size <= settings.deep_research_max_pdf_bytes:
             body = path.read_bytes()
             if body.startswith(b"%PDF-") and hashlib.sha256(body).hexdigest() == content_hash:
                 result.update(accessLevel="fulltext", pdfBase64=base64.b64encode(body).decode("ascii"))

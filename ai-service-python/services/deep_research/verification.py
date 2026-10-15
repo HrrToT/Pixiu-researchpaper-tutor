@@ -100,9 +100,14 @@ def verify_claims(claims: list[dict], evidence: list[dict],
                             pattern = r'(?<![A-Za-z0-9])' + re.escape(label).replace(r'\ ', r'\s*') + r'(?![A-Za-z0-9])'
                             claim_text = re.sub(pattern, '', claim_text, flags=re.I)
             for item in support:
-                identity = item.get("sourceWorkId", "")
-                if re.fullmatch(r'arxiv:\d{4}\.\d{4,5}', identity, re.I):
-                    claim_text = re.sub(re.escape(identity), '', claim_text, flags=re.I)
+                # Strip only complete, established identities, longest first.
+                # Removing a work-ID prefix from arxiv:...v4 leaves a spurious
+                # measurement of 4; an uncited version must remain checked.
+                identities = {item.get('sourceWorkId', ''), item.get('sourceVersionId', '')}
+                for identity in sorted(identities, key=len, reverse=True):
+                    if re.fullmatch(r'arxiv:\d{4}\.\d{4,5}(?:v\d+)?', identity, re.I):
+                        pattern = r'(?<![A-Za-z0-9_])' + re.escape(identity) + r'(?![A-Za-z0-9_.])'
+                        claim_text = re.sub(pattern, '', claim_text, flags=re.I)
             numbers = _measurement_numbers(claim_text)
             original_numbers = set().union(*(_measurement_numbers(item['quote']) for item in support))
             if not numbers <= original_numbers:

@@ -97,6 +97,16 @@ def test_linked_arxiv_identity_is_not_mistaken_for_a_measured_number():
     assert not verify_claims([claim(ev, 'arXiv:2311.17245报告999 FPS', detailLevel='abstract')], [ev], passed)['accepted']
 
 
+def test_versioned_arxiv_identity_is_exact_and_does_not_hide_measurements():
+    ev = {**evidence(), 'sourceWorkId': 'arxiv:2311.17245', 'sourceVersionId': 'arxiv:2311.17245v4'}
+    valid = claim(ev, '速度为200 FPS', conditions={'来源': '取得全文（arXiv:2311.17245v4）'})
+    assert verify_claims([valid], [ev], passed)['accepted']
+    for text in ('arXiv:2311.17245v5报告200 FPS', 'arXiv:2311.17245v40报告200 FPS',
+                 'arXiv:2311.17245报告999 FPS', '2311.17245为性能数值'):
+        assert not verify_claims([claim(ev, text)], [ev], passed)['accepted']
+    assert not verify_claims([valid], [ev])['accepted']
+
+
 def test_semantic_check_is_required_and_duplicate_verdict_fails_closed():
     ev = evidence()
     assert not verify_claims([claim(ev)], [ev])["accepted"]
