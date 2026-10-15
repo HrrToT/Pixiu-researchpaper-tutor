@@ -75,7 +75,7 @@ class AcademicPolicy:
     mode: str = 'task_only'
     allow_fulltext: bool = False
     max_results: int = 6
-    max_pdf_bytes: int = 8 * 1024 * 1024
+    max_pdf_bytes: int = 32 * 1024 * 1024
     max_pages: int = 100
     parse_seconds: float = 20
 

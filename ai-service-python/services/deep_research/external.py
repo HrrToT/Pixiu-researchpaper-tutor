@@ -28,9 +28,11 @@ class AcademicAcquisition:
         self.client_factory = client_factory or self._client
 
     def _client(self, record):
+        from core.config import settings
         flags = capabilities()
         return AcademicSourceClient(AcademicPolicy(enabled=flags["externalAcademic"],
-            mode=record["sourcePolicy"]["mode"], allow_fulltext=flags["fulltext"]),
+            mode=record["sourcePolicy"]["mode"], allow_fulltext=flags["fulltext"],
+            max_pdf_bytes=settings.deep_research_max_pdf_bytes),
             cache_dir=os.environ.get("DEEP_RESEARCH_SOURCE_DIR", "data/deep_research_sources"))
 
     def __call__(self, run_id, targets):
