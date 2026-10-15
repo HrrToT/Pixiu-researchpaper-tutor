@@ -887,7 +887,8 @@ The dataAvailability object is an internal audit, not new experimental results.
                            for v in parsed)
                     or {v.get('claimId') for v in parsed} != expected):
                 raise DeepResearchError('invalid_verification_response',
-                                        '声明核验未完整返回；不能据此判断材料不足。')
+                                        '声明核验未完整返回；不能据此判断材料不足。',
+                                        {'responseState': 'received_invalid'})
             from services.deep_research.design_audit import validate_design_audit
             parsed = [restore_verdict_evidence(v, reverse_aliases) for v in parsed]
             by_id = {c['claimId']: c for c in claims}

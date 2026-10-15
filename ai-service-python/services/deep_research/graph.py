@@ -1213,12 +1213,12 @@ def make_verify_node(
         # One bounded repair round may use up to three preflighted batches from
         # the normal pool. Final verification reserve stays protected, and all
         # revised wording passes the same checks again.
-        if repair_targets.get("rejected") and llm_invoke:
+        if repair_targets.get("rejected") and llm_invoke and not saved.get('repairVerificationError'):
             repo_update(run_id, lambda r: {**r, "state": {**r.get("state", {}), "repairAttempted": True,
                 "initialVerification": verification_result, 'initialAnswerCoverage': answer_coverage,
                 'repairTargets': repair_targets, 'repairReport': repair_report}}, expected_revision=None)
             from services.deep_research.repair import repair_rejected
-            from services.deep_research.contracts import BudgetExhaustedError
+            from services.deep_research.contracts import BudgetExhaustedError, DeepResearchError
             def invoke_repair(prompt, output_limit=None):
                 # Admit the rewrite and its independent verification as a pair.
                 # Do not spend the final seconds on wording that cannot be checked.
@@ -1288,6 +1288,18 @@ def make_verify_node(
                 repo_update(run_id, lambda r: {**r, 'state': {**r.get('state', {}),
                     'repairStatus': r.get('state', {}).get('repairStatus') or 'skipped_budget',
                     'repairLimit': exc.details}},
+                    expected_revision=None)
+            except DeepResearchError as exc:
+                # Only a confirmed, received-but-invalid verification response
+                # may preserve the previous independently checked answer. A
+                # transport/unknown call, revoked scope or programming error
+                # must still propagate through normal pause/failure handling.
+                if (exc.code != 'invalid_verification_response'
+                        or exc.details.get('responseState') != 'received_invalid'):
+                    raise
+                repo_update(run_id, lambda r: {**r, 'state': {**r.get('state', {}),
+                    'repairStatus': 'verification_invalid_response',
+                    'repairVerificationError': {'code': exc.code, 'responseState': 'received_invalid'}}},
                     expected_revision=None)
         
         accepted = verification_result.get("accepted", [])
@@ -1415,7 +1427,9 @@ def make_publish_node(
             "sections": sections,
             "claims": accepted_claims,
             "evidence": evidence if (evidence := record.get("state", {}).get("evidence", [])) else [],
-            "limitations": verification_notice(accepted_claims),
+            "limitations": verification_notice(accepted_claims) + (
+                '补充核验未完成；已保留此前核实的内容。'
+                if brief_state.get('repairStatus') == 'verification_invalid_response' else ''),
             "gaps": gaps,
             "researchNotes": research_notes,
             "outcome": outcome,
