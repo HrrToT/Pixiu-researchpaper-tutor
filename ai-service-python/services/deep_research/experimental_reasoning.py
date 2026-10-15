@@ -45,6 +45,11 @@ Choose concrete, explicitly proposed intervention levels, per-group budgets and
 measurement rules now; "choose before running" is not a completed design. Such
 choices need not be settings used by the paper. Existing dataset identity,
 membership/capacity and claimed available assets remain facts requiring evidence.
+For named scene selection, ground those exact scene names and dataset membership;
+do not demand an unasserted total scene/view count or the authors' original split.
+Proposed split fractions and seeds need no paper quotation. Require a reproducible
+split and a check that training/evaluation selections are nonempty before execution.
+Any claimed existing count, resolution or released checkpoint still needs evidence.
 Use all units of an unambiguously grounded complete dataset/subset when proposed;
 the absence of a name list does not contradict that selection. Unresolved subset
 identity or capacity still fails. A random split with a fixed seed is reproducible,

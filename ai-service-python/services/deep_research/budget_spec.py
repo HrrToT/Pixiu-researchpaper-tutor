@@ -32,8 +32,12 @@ BUDGET_SPEC_CONTRACT = (
     "or {mode:'unmatched',unit,groups,note:nonblank budget-confounding explanation}. "
     "groups is a complete binary-ID dict (0=control,1=treatment in factors order) to finite nonnegative "
     "amounts, e.g. two factors need 00,01,10,11. matched requires equal amounts for EVERY group, "
-    "including the baseline; all-zero recovery is a diagnostic. Different budgets must be labeled "
-    "unmatched and cannot establish matched-budget effects. Do not add a contradictory global default. "
+    "including the baseline; all-zero recovery is a diagnostic. "
+    "The recovery amount counts the shared optimization/training iterations for the entire group, "
+    "not updates to a switched-off parameter. Freezing one parameter does not make that group's "
+    "training budget zero when other parameters are still trained. "
+    "Different budgets must be labeled unmatched and cannot establish matched-budget effects. "
+    "Do not add a contradictory global default. "
     "These are proposed choices, not paper settings. Existing-asset availability still needs evidence."
 )
 

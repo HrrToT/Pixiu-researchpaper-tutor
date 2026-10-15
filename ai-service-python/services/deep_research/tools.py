@@ -720,6 +720,10 @@ Full-set selection needs no invented ordering or per-unit name list when the quo
 benchmark scope is unambiguous. An inherited subset whose identity remains unresolved fails.
 For named mode, instead provide availableNames with actual selected names explicitly present
 in the quoted passage; count fields may be omitted. Verify name membership and subset identity.
+Do not fail named mode solely because an unasserted original view count, resolution or
+author-used split is unavailable. Ground the selected scene names and exact dataset;
+check the proposed reproducible split as a proposed choice, including nonempty selections.
+Any factual count, released asset or paper-attributed setting still requires its own evidence.
 Do not infer dataset existence/capacity from a proposed choice or another proposal. Missing
 fulltext support or unresolved subset identity fails even when every setting is concrete.
 The dataAvailability object is an internal audit, not new experimental results.
@@ -744,7 +748,8 @@ The dataAvailability object is an internal audit, not new experimental results.
                 prompt += '\nFor every designRole, verify BOTH logical correctness AND fulfillment of its entire ' \
                           'requirement below. A role label, heading or vague promise is not fulfillment. Fail the ' \
                           'specific claim if its budget, split, procedure or decision criterion is unspecified. ' \
-                          'Use the other target claims for shared definitions but not as factual evidence.\n' + design_requirements(metric_domains)
+                          'Use the other target claims for shared definitions but not as factual evidence.\n' + design_requirements(
+                              metric_domains, roles={c.get('designRole') for c in claims})
                 from services.deep_research.design_audit import required_design_slots
                 required_slots = {role: slots for role, slots in required_design_slots(metric_domains).items()
                                   if role in {c.get('designRole') for c in claims}}

@@ -63,12 +63,18 @@ def test_joint_design_check_keeps_all_definitions_but_separates_factual_evidence
         if any(c.get('designRole') for c in targets):
             # All definitions remain visible, but only one class of claims is
             # judged in this call. Facts from other claims never become evidence.
-            assert all(requirement in prompt for _, requirement in DESIGN_ROLES.values())
+            roles = {c.get('designRole') for c in targets}
+            assert all(requirement in prompt for role, (_, requirement) in DESIGN_ROLES.items()
+                       if role in roles and role != 'metrics')
+            context = json.JSONDecoder().raw_decode(prompt.split(
+                'Other proposed statements, for consistency only (not evidence and not verdict targets):\n', 1)[1])[0]
+            expected = {c['claimId']: c['text'] for c in design_claims()}
+            supplied = {c['claimId']: c['text'] for c in [*targets, *context]}
+            assert supplied == expected  # Every actual sibling definition remains unchanged.
             assert 'UNRELATED_PAPER_QUOTE' not in prompt
             assert 'fulfillment of its entire' in prompt
             assert 'needs NO quotation' in prompt
             assert 'Be strict: evidence must directly support EVERY clause' not in prompt
-            roles = {c.get('designRole') for c in targets}
             if kwargs['node'] == 'verify_design_config':
                 assert roles == {'groups', 'controls', 'data', 'budget', 'steps', 'metrics'}
             else:
