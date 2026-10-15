@@ -96,7 +96,9 @@ Source registry (P keys are not evidenceRefs): {packed(sources)}
 Evidence summaries:
 {evidence_marker}
 
-Return ONLY compact JSON with sections: [{{title,claimIds}}], claims: [{{{claim_fields}}}].
+Return ONLY one JSON OBJECT: {{"sections":[],"claims":[]}}. Fill both arrays.
+Each section uses title/claimIds; each claim uses {claim_fields}.
+Do not combine section rows and claim rows in one array.
 Use these section titles: {packed(section_templates)}. At most {claim_limit} claims;
 include each required designRole and its complete typed configuration. Explicitly requested
 original facts/measurements still require separate supported reported/inference claims.

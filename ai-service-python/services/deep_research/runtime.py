@@ -28,7 +28,7 @@ def research_model_options(node, options):
         # timed out before any body; independent verification still gates every
         # published claim. Keep the output cap rather than truncate the design.
         return {**options, 'thinking': {'type': 'disabled'}, 'reasoning_effort': 'none',
-                'max_tokens': 16384}
+                'max_tokens': 16384, 'response_format': {'type': 'json_object'}}
     if node == 'repair_claims':
         # The observed low-reasoning repair exhausted 8192 output tokens with
         # an empty body. Return the bounded edit directly; independent checks
@@ -52,12 +52,12 @@ def research_model_options(node, options):
         # still fail and preserve previously checked claims; no automatic retry.
         return {**options, 'thinking': {'type': 'disabled'}, 'reasoning_effort': 'none',
                 'max_tokens': 8192}
-    if node in {'synthesize_compact', 'verify'}:
-        # Bounded rewriting must leave room for its JSON; final verification
-        # retains high reasoning and checks the rewritten claims independently.
-        effort = 'high' if node == 'verify' else 'low'
-        maximum = 16384 if node == 'verify' else 8192
-        return {**options, 'thinking': {'type': 'enabled'}, 'reasoning_effort': effort, 'max_tokens': maximum}
+    if node == 'synthesize_compact':
+        # A bounded wording edit must leave time for independent verification
+        # and any allowed repair. Do not spend its allowance on hidden reasoning.
+        return {**options, 'thinking': {'type': 'disabled'}, 'reasoning_effort': 'none', 'max_tokens': 8192}
+    if node == 'verify':
+        return {**options, 'thinking': {'type': 'enabled'}, 'reasoning_effort': 'high', 'max_tokens': 16384}
     return {**options, 'thinking': {'type': 'disabled'}, 'reasoning_effort': 'none'}
 
 

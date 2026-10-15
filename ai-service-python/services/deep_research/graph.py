@@ -1147,6 +1147,8 @@ Orient losses before formulas, distinguish conditional/averaged effects and pape
             content = str(result)
         
         parsed = _safe_parse_json(content)
+        from services.deep_research.synthesis_container import normalize_synthesis_container
+        parsed, container_kind = normalize_synthesis_container(parsed)
         if not isinstance(parsed, dict) or not isinstance(parsed.get("claims"), list):
             return {"error_code": "invalid_synthesis_response"}
         from services.deep_research.answer_constraints import compact_answer, resolve_evidence_aliases
@@ -1189,6 +1191,7 @@ Orient losses before formulas, distinguish conditional/averaged effects and pape
                     **(r.get("state") or {}),
                     "reportVersionId": report_version_id,
                     "reportBody": parsed,
+                    "synthesisContainer": container_kind,
                 },
             },
             expected_revision=None,

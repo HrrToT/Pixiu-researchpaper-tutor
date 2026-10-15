@@ -140,6 +140,12 @@ def test_reasoning_options_are_reserved_before_provider_send():
     assert research_model_options('synthesize', {})['reasoning_effort'] == 'none'
     assert research_model_options('synthesize', {})['thinking'] == {'type': 'disabled'}
     assert research_model_options('synthesize', {})['max_tokens'] == 16384
+    assert research_model_options('synthesize', {})['response_format'] == {'type': 'json_object'}
+    assert 'response_format' not in research_model_options('extract', {})
+    assert 'response_format' not in research_model_options('plan', {})
+    assert research_model_options('synthesize_compact', {})['thinking'] == {'type': 'disabled'}
+    assert research_model_options('synthesize_compact', {})['reasoning_effort'] == 'none'
+    assert research_model_options('synthesize_compact', {})['max_tokens'] == 8192
     assert research_model_options('repair_claims', {})['reasoning_effort'] == 'none'
     assert research_model_options('repair_claims', {})['thinking'] == {'type': 'disabled'}
     assert research_model_options('repair_claims', {})['max_tokens'] == 8192
@@ -161,6 +167,7 @@ def test_reasoning_options_are_reserved_before_provider_send():
     invoke('run', 'synthesize', 'evidence', {'max_tokens': 1000}, use_reserve=True)
     assert reserve.call_args.kwargs['budget_delta']['tokens'] == len(b'evidence') + 1024 + 16384
     assert provider.invoke.call_args.args[0].extra_body['thinking'] == {'type': 'disabled'}
+    assert provider.invoke.call_args.args[0].extra_body['response_format'] == {'type': 'json_object'}
 
 
 def test_routine_model_route_retains_scope_checks_and_complex_model():
