@@ -550,6 +550,7 @@ class BudgetedSemanticChecker:
                         'budgetContractVersion': c.get('budgetContractVersion'),
                         'hypothesisContractVersion': c.get('hypothesisContractVersion')}
                         | {'protocolContractVersion':c.get('protocolContractVersion')}
+                        | {'workflowContractVersion':c.get('workflowContractVersion')}
                        for c in [*accepted_context, *proposals] if c['claimId'] not in targets]
             verdicts.extend(self._check_batch(batch, evidence, context, node=batch_node))
         by_id = {v['claimId']: v for v in verdicts}
@@ -588,6 +589,7 @@ class BudgetedSemanticChecker:
             "budgetContractVersion": c.get("budgetContractVersion"),
             "hypothesisContractVersion": c.get("hypothesisContractVersion"),
             "protocolContractVersion": c.get("protocolContractVersion"),
+            "workflowContractVersion": c.get("workflowContractVersion"),
         }) for c in wire_claims], ensure_ascii=False, separators=(',', ':'))
         
         referenced = {ref for claim in wire_claims for ref in claim.get("evidenceRefs", [])}
@@ -696,6 +698,12 @@ Do not require an unexecuted experiment to have results. Do not judge context cl
         if any(c.get('protocolContractVersion')==1 for c in [*claims,*proposal_context]):
             from services.deep_research.experiment_protocol import PROTOCOL_REVIEW_POLICY
             prompt += '\n'+PROTOCOL_REVIEW_POLICY
+        if any(c.get('workflowContractVersion') == 1 for c in [*claims, *proposal_context]):
+            prompt += ('\nWorkflow contract 1 binds steps to exact data/budget/controls/groups definitions. '
+                'Check each new component creation rule, per-seed rebuilding or warm starts, '
+                'split-before-fitting, train-only/validation-only checkpoint selection and '
+                'consistency with all original prose. Nonempty fields do not prove these choices. '
+                'Fixed-start replications do not establish independent baseline training.')
         if any(c.get('budgetContractVersion') == 1 for c in [*claims, *proposal_context]):
             prompt += '\nBudget contract 1 is the canonical baseline/recovery configuration. ' \
                       'Check prose and all other definitions against these exact typed choices. ' \
@@ -787,9 +795,9 @@ The dataAvailability object is an internal audit, not new experimental results.
                           'specific claim if its budget, split, procedure or decision criterion is unspecified. ' \
                           'Use the other target claims for shared definitions but not as factual evidence.\n' + design_requirements(
                               metric_domains, roles={c.get('designRole') for c in claims}, policy=REVIEW_DESIGN_POLICY)
-                from services.deep_research.design_audit import required_design_slots
-                required_slots = {role: slots for role, slots in required_design_slots(metric_domains).items()
-                                  if role in {c.get('designRole') for c in claims}}
+                from services.deep_research.design_audit import design_slots_for_claim
+                required_slots = {c['designRole']: slots for c in claims if c.get('designRole')
+                                  and (slots := design_slots_for_claim(c, metric_domains)) is not None}
                 audit_prompt = ('\nPassed verdicts require FLAT designAudit with these slot keys: '
                            + json.dumps(required_slots, separators=(',', ':'))
                            + '. Each slot is {"claimId":"target/context proposal ID","quote":"exact concrete choice"}. '
@@ -811,6 +819,11 @@ The dataAvailability object is an internal audit, not new experimental results.
                            'per_group_steps=recovery (budget contract 1 only). '
                            'Other slots require quotes. Do not mix fields with quote/quotes. All bindings together '
                            'must substantiate the entire slot; valid fields do not prove scientific correctness.')
+                if any(c.get('workflowContractVersion') == 1 for c in claims):
+                    audit_prompt += ('\nSteps workflow slot roots: baseline_acquisition=refs/baselineMode/order; '
+                        'group_pairing=refs/componentInitializations/replicationMode/order; saved_artifacts=records; '
+                        'data_isolation=order/checkpointSelection; component_creation=componentInitializations; '
+                        'seed_pairing=replicationMode/refs; checkpoint_selection=checkpointSelection.')
                 skeleton = [{'claimId': c['claimId'], 'status': 'failed',
                     'reason': '',
                     'designAudit': {slot: None for slot in required_slots.get(c.get('designRole'), ())},
@@ -863,7 +876,7 @@ The dataAvailability object is an internal audit, not new experimental results.
                 context = [*proposal_context, *[{
                     key: c[key] for key in ('claimId', 'text', 'kind', 'conditions',
                         'designRole', 'executionSpec', 'designContractVersion', 'budgetContractVersion',
-                        'hypothesisContractVersion','protocolContractVersion') if key in c
+                        'hypothesisContractVersion','protocolContractVersion','workflowContractVersion') if key in c
                 } for c in siblings if c.get('kind') in {'proposal', 'suggestion', 'hypothesis'}]]
                 verdicts.extend(self._check_batch(batch, evidence, context, node=node))
             return verdicts

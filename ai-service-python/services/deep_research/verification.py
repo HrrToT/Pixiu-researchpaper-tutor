@@ -138,6 +138,17 @@ def verify_claims(claims: list[dict], evidence: list[dict],
                 rejected.append({"claimId": claim_id, "reason": "incomplete_execution_spec",
                                  "detail": ', '.join(errors)})
                 continue
+        if not reason and 'workflowContractVersion' in claim:
+            from services.deep_research.experiment_workflow import workflow_errors
+            if (type(claim['workflowContractVersion']) is not int or claim['workflowContractVersion'] != 1
+                    or claim.get('designRole') != 'steps' or kind not in {'proposal', 'suggestion', 'hypothesis'}):
+                reason = 'invalid_workflow_contract'
+            else:
+                errors = workflow_errors(claim.get('executionSpec'))
+                if errors:
+                    rejected.append({'claimId': claim_id, 'reason': 'incomplete_experiment_workflow',
+                                     'detail': ', '.join(errors)})
+                    continue
         if not reason and 'protocolContractVersion' in claim:
             from services.deep_research.experiment_protocol import protocol_errors, PROTOCOL_ROLES
             if (type(claim['protocolContractVersion']) is not int or claim['protocolContractVersion']!=1

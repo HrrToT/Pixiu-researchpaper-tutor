@@ -5,6 +5,8 @@ from services.deep_research.asset_availability import enforce_asset_prerequisite
 from services.deep_research.experiment_protocol import enforce_protocol_consistency
 
 
-def enforce_design_consistency(verification, evidence=(), protocol_required=False):
-    return enforce_hypothesis_consistency(enforce_budget_consistency(
-        enforce_asset_prerequisites(enforce_protocol_consistency(verification,protocol_required), evidence)))
+def enforce_design_consistency(verification, evidence=(), protocol_required=False, workflow_required=False):
+    from services.deep_research.experiment_workflow import enforce_workflow_consistency
+    return enforce_workflow_consistency(enforce_hypothesis_consistency(enforce_budget_consistency(
+        enforce_asset_prerequisites(enforce_protocol_consistency(verification,protocol_required), evidence))),
+        required=workflow_required)

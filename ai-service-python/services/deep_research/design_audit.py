@@ -21,11 +21,19 @@ def required_design_slots(metric_domains=None):
             for domain in metric_protocol_requirements(metric_domains))}
 
 
+def design_slots_for_claim(claim, metric_domains=None):
+    role = claim.get('designRole')
+    slots = required_design_slots(metric_domains).get(role)
+    if role == 'steps' and claim.get('workflowContractVersion') == 1:
+        slots = (*slots, 'data_isolation', 'component_creation', 'seed_pairing', 'checkpoint_selection')
+    return slots
+
+
 def validate_design_audit(claim, verdict, context, metric_domains=None):
     role = claim.get("designRole") if isinstance(claim, dict) else None
     if not isinstance(role, str):
         return []
-    slots = required_design_slots(metric_domains).get(role)
+    slots = design_slots_for_claim(claim, metric_domains)
     if slots is None:
         return []
 
@@ -87,6 +95,13 @@ _FIELD_ROOTS = {
     'render_settings': ('controls', {'rendering'}),
     'optimizer_settings': ('controls', {'optimizer'}),
     'other_interventions': ('controls', {'otherInterventions'}),
+    'baseline_acquisition': ('steps', {'refs', 'baselineMode', 'order'}),
+    'group_pairing': ('steps', {'refs', 'componentInitializations', 'replicationMode', 'order'}),
+    'saved_artifacts': ('steps', {'records'}),
+    'data_isolation': ('steps', {'order', 'checkpointSelection'}),
+    'component_creation': ('steps', {'componentInitializations'}),
+    'seed_pairing': ('steps', {'replicationMode', 'refs'}),
+    'checkpoint_selection': ('steps', {'checkpointSelection'}),
 }
 
 
@@ -112,6 +127,11 @@ def _field_supported(field, claim, context, slot):
             return False
     if execution_spec_errors(reference.get('designRole'), reference.get('executionSpec')):
         return False
+    if 'workflowContractVersion' in reference:
+        from services.deep_research.experiment_workflow import workflow_errors
+        if (type(reference['workflowContractVersion']) is not int or reference['workflowContractVersion'] != 1
+                or reference.get('designRole') != 'steps' or workflow_errors(reference.get('executionSpec'))):
+            return False
     if reference.get('designRole')=='controls' or 'protocolContractVersion' in reference:
         from services.deep_research.experiment_protocol import protocol_errors
         if (type(reference.get('protocolContractVersion')) is not int or reference['protocolContractVersion']!=1

@@ -49,6 +49,8 @@ def prepare_design_completion(report, verification, evidence, plan):
             claims[-1]['hypothesisContractVersion'] = 1
         if role in {'controls','data'} and type(draft.get('protocolContractVersion')) is int and draft['protocolContractVersion']==1:
             claims[-1]['protocolContractVersion']=1
+        if role == 'steps' and type(draft.get('workflowContractVersion')) is int and draft['workflowContractVersion'] == 1:
+            claims[-1]['workflowContractVersion'] = 1
         checked.setdefault('rejected', []).append({'claimId': identity,
             'reason': 'missing_design_deliverable', 'detail': requirement})
     return draft, checked

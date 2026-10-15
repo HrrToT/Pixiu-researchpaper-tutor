@@ -976,6 +976,7 @@ def make_synthesize_node(
         strict_budget = type(record.get('budgetContractVersion')) is int and record['budgetContractVersion'] == 1
         strict_hypothesis = type(record.get('hypothesisContractVersion')) is int and record['hypothesisContractVersion'] == 1
         strict_protocol = type(record.get('protocolContractVersion')) is int and record['protocolContractVersion'] == 1
+        strict_workflow = type(record.get('workflowContractVersion')) is int and record['workflowContractVersion'] == 1
         from services.deep_research.answer_constraints import requested_character_limit
         requested_limit = requested_character_limit(question)
         from services.deep_research.synthesis import OUTPUT_KIND_SECTIONS
@@ -1115,6 +1116,9 @@ Orient losses before formulas, distinguish conditional/averaged effects and pape
             if strict_protocol:
                 from services.deep_research.experiment_protocol import PROTOCOL_CONTRACT
                 prompt += '\n' + PROTOCOL_CONTRACT
+            if strict_workflow:
+                from services.deep_research.experiment_workflow import WORKFLOW_CONTRACT
+                prompt += '\n' + WORKFLOW_CONTRACT
             if strict_budget:
                 from services.deep_research.budget_spec import BUDGET_SPEC_CONTRACT
                 prompt += '\n' + BUDGET_SPEC_CONTRACT
@@ -1125,7 +1129,8 @@ Orient losses before formulas, distinguish conditional/averaged effects and pape
             from services.deep_research.experimental_reasoning import design_output_outline
             prompt += ('\nREQUIRED OUTPUT OUTLINE (one claim for EACH role, even when several share a section):\n'
                        + json.dumps(design_output_outline(strict_budget=strict_budget,
-                           strict_hypothesis=strict_hypothesis, strict_protocol=strict_protocol), ensure_ascii=False, separators=(',', ':'))
+                           strict_hypothesis=strict_hypothesis, strict_protocol=strict_protocol,
+                           strict_workflow=strict_workflow), ensure_ascii=False, separators=(',', ':'))
                        + '\nA section title is not a designRole. Include all roles with their own complete specs. '
                        'Budget owns the canonical preparation/per-group amounts. Link hypothesis to analysis '
                        'and exact effect keys; fulfill the requested statistical purpose, never downgrade it.')
@@ -1161,6 +1166,8 @@ Orient losses before formulas, distinguish conditional/averaged effects and pape
             parsed = stamp_hypothesis_contract(parsed, enabled=strict_hypothesis)
             from services.deep_research.experiment_protocol import stamp_protocol_contract
             parsed = stamp_protocol_contract(parsed, enabled=strict_protocol)
+            from services.deep_research.experiment_workflow import stamp_workflow_contract
+            parsed = stamp_workflow_contract(parsed, enabled=strict_workflow)
             parsed['claims'] = [materialize_execution_claim({**claim, 'designContractVersion': 2})
                                 if isinstance(claim, dict) else claim for claim in parsed['claims']]
         parsed = compact_answer(parsed, question,
@@ -1175,6 +1182,7 @@ Orient losses before formulas, distinguish conditional/averaged effects and pape
             parsed = stamp_budget_contract(parsed, enabled=strict_budget)
             parsed = stamp_hypothesis_contract(parsed, enabled=strict_hypothesis)
             parsed = stamp_protocol_contract(parsed, enabled=strict_protocol)
+            parsed = stamp_workflow_contract(parsed, enabled=strict_workflow)
             parsed['claims'] = [materialize_execution_claim({**claim, 'designContractVersion': 2})
                                 if isinstance(claim, dict) else claim for claim in parsed['claims']]
             from services.deep_research.answer_constraints import answer_character_count
@@ -1239,7 +1247,8 @@ def make_verify_node(
         else:
             verification_result = enforce_design_consistency(
                 verify_claims_fn(claims, evidence, budgeted_semantic), evidence,
-                protocol_required=record.get('protocolContractVersion')==1)
+                protocol_required=record.get('protocolContractVersion')==1,
+                workflow_required=record.get('workflowContractVersion')==1)
             current = repo_update(run_id, lambda r: r, expected_revision=None)
             answer_coverage = audit_final_answer(run_id, record.get('question', ''),
                 saved.get('plan', []), verification_result.get('accepted', []),
@@ -1318,7 +1327,8 @@ def make_verify_node(
                     if merged is None:
                         checked = verify_claims_fn(revised, evidence, revised_semantic)
                         merged = enforce_design_consistency(merge_verified_revisions(verification_result, checked), evidence,
-                            protocol_required=record.get('protocolContractVersion')==1)
+                            protocol_required=record.get('protocolContractVersion')==1,
+                            workflow_required=record.get('workflowContractVersion')==1)
                         repo_update(run_id, lambda r: {**r, 'state': {**r.get('state', {}),
                             'repairVerificationChecks': checked,
                             'repairVerification': merged}}, expected_revision=None)
@@ -1403,7 +1413,8 @@ def make_publish_node(
         checked = enforce_design_consistency({'accepted': verified_report.get('verifiedClaims', []),
                                              'rejected': verified_report.get('rejectedClaims', [])},
                                              brief_state.get('evidence', []),
-                                             protocol_required=record.get('protocolContractVersion')==1)
+                                             protocol_required=record.get('protocolContractVersion')==1,
+                                             workflow_required=record.get('workflowContractVersion')==1)
         if checked['accepted'] != verified_report.get('verifiedClaims', []):
             # A resumed publish must not trust inconsistent marked definitions
             # or retain a coverage verdict for an answer that has been changed.

@@ -4,6 +4,13 @@ from copy import deepcopy
 from services.deep_research.experiment_protocol import claim_protocol_text
 
 
+def _rendered_protocol(claim):
+    if 'workflowContractVersion' in claim:
+        from services.deep_research.experiment_workflow import workflow_text
+        return workflow_text(claim)
+    return claim_protocol_text(claim)
+
+
 def normalize_execution_spec(role, spec):
     """Normalize observed unambiguous syntax, never choose between conflicting values."""
     result = deepcopy(spec)
@@ -35,7 +42,7 @@ def materialize_execution_claim(claim):
         return result
     if result.get('designRole') == 'hypothesis' and result.get('hypothesisContractVersion') != 1:
         return result
-    text = claim_protocol_text(result)
+    text = _rendered_protocol(result)
     if text:
         suffix = '\n\n' + text
         if not result['text'].endswith(suffix):
@@ -61,7 +68,7 @@ def verification_claim_view(claim):
         return result
     if result.get('designRole') == 'hypothesis' and result.get('hypothesisContractVersion') != 1:
         return result
-    rendered = claim_protocol_text(result)
+    rendered = _rendered_protocol(result)
     suffix = '\n\n' + rendered if rendered else ''
     if suffix and result['text'].endswith(suffix):
         result['text'] = result['text'][:-len(suffix)]

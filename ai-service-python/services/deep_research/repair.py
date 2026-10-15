@@ -47,7 +47,7 @@ def _prepare_repair(report, verification, evidence, question, *, max_prompt_byte
         # choices. Keep every original prose/configuration field and avoid
         # encouraging the model to copy metadata into executionSpec.
         return {key: value for key, value in row.items()
-                if key not in {'designContractVersion', 'budgetContractVersion', 'hypothesisContractVersion','protocolContractVersion'}
+                if key not in {'designContractVersion', 'budgetContractVersion', 'hypothesisContractVersion','protocolContractVersion','workflowContractVersion'}
                 and not (key in {'conditions', 'obligationIds'} and value in ({}, []))}
     input_claims = [compact_claim_view(row) for row in input_claims]
     from services.deep_research.repair_prompt import factor_repair_questions, factor_design_deliverables
@@ -69,7 +69,7 @@ def _prepare_repair(report, verification, evidence, question, *, max_prompt_byte
     if any(row.get('designContractVersion') == 2 for row in originals.values()):
         revision_shape.update(designRole='canonical role for proposals/hypotheses; omit for facts',
                               executionSpec='complete role-specific object for groups/data/analysis and versioned controls/budget/hypothesis; omit for other roles')
-    proposal_context = [{key: row[key] for key in ('claimId', 'text', 'kind', 'conditions', 'designRole', 'executionSpec', 'designContractVersion', 'budgetContractVersion', 'hypothesisContractVersion','protocolContractVersion') if key in row}
+    proposal_context = [{key: row[key] for key in ('claimId', 'text', 'kind', 'conditions', 'designRole', 'executionSpec', 'designContractVersion', 'budgetContractVersion', 'hypothesisContractVersion','protocolContractVersion','workflowContractVersion') if key in row}
                         for row in verification.get('accepted', [])
                         if row.get('kind') in {'proposal', 'suggestion', 'hypothesis'}
                         and row.get('claimId') not in originals]
@@ -80,7 +80,8 @@ def _prepare_repair(report, verification, evidence, question, *, max_prompt_byte
                        and row.get('kind') in {'proposal', 'suggestion', 'hypothesis'}]
     from services.deep_research.verification_context import CONFIG_ROLES, configuration_context
     if (all(row.get('designRole') in CONFIG_ROLES for row in originals.values())
-            and any(row.get('protocolContractVersion') == 1 for row in originals.values())):
+            and any(row.get('protocolContractVersion') == 1 or row.get('workflowContractVersion') == 1
+                    for row in originals.values())):
         # Versioned operational repairs need all operational definitions and
         # explicit dependencies, not unrelated scientific prose. Keep accepted
         # versus unverified sibling status separate, and never change storage.
@@ -159,7 +160,7 @@ in the paper. Maintain consistency with accepted definitions and complete requir
         prompt += '\n' + execution_spec_contract_for_roles({row.get('designRole') for row in originals.values()})
         roles = {row.get('designRole') for row in originals.values()}
         from services.deep_research.design_review_policy import REVIEW_DESIGN_POLICY
-        policy = REVIEW_DESIGN_POLICY if any(row.get('protocolContractVersion') == 1
+        policy = REVIEW_DESIGN_POLICY if any(row.get('protocolContractVersion') == 1 or row.get('workflowContractVersion') == 1
                                              for row in originals.values()) else None
         # Other roles remain full consistency context and are independently
         # checked. Their writing requirements are not writable in this batch.
@@ -174,6 +175,9 @@ in the paper. Maintain consistency with accepted definitions and complete requir
     if any(row.get('protocolContractVersion')==1 for row in originals.values()):
         from services.deep_research.experiment_protocol import PROTOCOL_CONTRACT
         prompt += '\n' + PROTOCOL_CONTRACT
+    if any(row.get('workflowContractVersion') == 1 for row in originals.values()):
+        from services.deep_research.experiment_workflow import WORKFLOW_CONTRACT
+        prompt += '\n' + WORKFLOW_CONTRACT
     if any(row.get('budgetContractVersion') == 1 for row in originals.values()):
         from services.deep_research.budget_spec import BUDGET_SPEC_CONTRACT
         prompt += '\n' + BUDGET_SPEC_CONTRACT
@@ -271,6 +275,10 @@ def _parse_repair_response(prepared, response, parse):
             row['protocolContractVersion']=original['protocolContractVersion']
         else:
             row.pop('protocolContractVersion',None)
+        if 'workflowContractVersion' in original:
+            row['workflowContractVersion'] = original['workflowContractVersion']
+        else:
+            row.pop('workflowContractVersion', None)
         # The repair cannot reassign the claim to another research obligation.
         if 'obligationIds' in original:
             row['obligationIds'] = deepcopy(original['obligationIds'])
