@@ -21,6 +21,7 @@ export function useTaskResearch(workspace, api = taskResearchApi, operations = n
   latest.current = workspace;
   const finished = useRef(new Set());
   const idleRuns = useRef(new Set());
+  const pollingRuns = useRef(new Set());
   const actionVersions = useRef(new Map());
   const pendingActions = useRef(new Set());
   const runRevisions = useRef(new Map());
@@ -56,7 +57,7 @@ export function useTaskResearch(workspace, api = taskResearchApi, operations = n
   };
   useEffect(() => {
     let disposed = false;
-    let timer;
+    const timers = new Set();
     // Paused/clarification states change only through an action. Check them
     // once when revisiting this task or returning to the app, rather than
     // continuously reading every historical paused run.
@@ -68,18 +69,27 @@ export function useTaskResearch(workspace, api = taskResearchApi, operations = n
     wakeVisibleIdle();
     window.addEventListener('focus', wakeVisibleIdle);
     document.addEventListener('visibilitychange', wakeVisibleIdle);
-    const poll = async () => {
+    const foregroundKey = () => {
+      const task = latest.current.tasks.find(value => value.id === visibleTaskId);
+      const run = task?.researchRuns?.at(-1);
+      return run ? `${task.id}/${run.researchId}` : '';
+    };
+    const poll = async (foreground) => {
       const ordered = [...latest.current.tasks].sort((a, b) => Number(b.id === visibleTaskId) - Number(a.id === visibleTaskId));
-      const queue = ordered.flatMap(task => [...(task.researchRuns || [])].reverse().map(run => [task.id, run.researchId]));
+      const selected = foregroundKey();
+      const queue = ordered.flatMap(task => [...(task.researchRuns || [])].reverse().map(run => [task.id, run.researchId]))
+        .filter(([taskId, researchId]) => (`${taskId}/${researchId}` === selected) === foreground);
       let cursor = 0;
       const worker = async () => {
         while (!disposed && cursor < queue.length) {
           const [taskId, researchId] = queue[cursor++];
           const key = `${taskId}/${researchId}`;
-          if (disposed || finished.current.has(key) || idleRuns.current.has(key) || pendingActions.current.has(key)) continue;
+          if (disposed || finished.current.has(key) || idleRuns.current.has(key)
+            || pendingActions.current.has(key) || pollingRuns.current.has(key)) continue;
           const version = actionVersions.current.get(key) || 0;
           const isCurrent = () => !disposed && !pendingActions.current.has(key)
             && (actionVersions.current.get(key) || 0) === version;
+          pollingRuns.current.add(key);
           try {
             const response = await api.get(taskId, researchId);
             if (!isCurrent()) continue;
@@ -90,17 +100,22 @@ export function useTaskResearch(workspace, api = taskResearchApi, operations = n
             if (missing) finished.current.add(key);
             setRunError(JSON.stringify([taskId, researchId]), 'poll', missing
               ? '执行记录当前不可用；已保存的成果仍可查看。' : failure.message || '研究状态读取失败');
-          } }
+          } } finally { pollingRuns.current.delete(key); }
         }
       };
-      // A slow historical request must not block the currently visible run.
-      // Bound concurrency instead of issuing one request per saved research.
-      await Promise.all(Array.from({ length: Math.min(3, queue.length) }, worker));
-      if (!disposed) timer = setTimeout(poll, 4000);
+      // Reserve one lane AND its next tick for the visible newest run. Merely
+      // sorting a shared queue first still delays its next update until every
+      // historical request finishes. The other two lanes keep history current.
+      await Promise.all(Array.from({ length: Math.min(foreground ? 1 : 2, queue.length) }, worker));
+      if (!disposed) {
+        const timer = setTimeout(() => { timers.delete(timer); void poll(foreground); }, 4000);
+        timers.add(timer);
+      }
     };
-    void poll();
+    void poll(true);
+    void poll(false);
     return () => {
-      disposed = true; clearTimeout(timer);
+      disposed = true; timers.forEach(clearTimeout);
       window.removeEventListener('focus', wakeVisibleIdle);
       document.removeEventListener('visibilitychange', wakeVisibleIdle);
     };

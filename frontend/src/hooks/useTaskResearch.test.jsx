@@ -71,6 +71,9 @@ describe('task research integration', () => {
     expect(api.get.mock.calls).toEqual([['active', 'r4'], ['active', 'r3'], ['active', 'r2']]);
     await act(async () => pending.get('r4')({ task: { taskId: 'r4', status: 'running' } }));
     expect(result.current.runs['active/r4'].status).toBe('running');
+    // The foreground slot remains available for its next tick, not history.
+    expect(api.get.mock.calls).toHaveLength(3);
+    await act(async () => pending.get('r3')({ task: { taskId: 'r3', status: 'running' } }));
     expect(api.get.mock.calls).toHaveLength(4);
     expect(api.get.mock.calls[3]).toEqual(['active', 'r1']);
     unmount();
@@ -78,6 +81,29 @@ describe('task research integration', () => {
       for (const [id, resolve] of pending) resolve({ task: { taskId: id, status: 'running' } });
     });
     expect(api.get.mock.calls).toHaveLength(4);
+  });
+
+  it('keeps refreshing the newest visible result while same-task and other history stay pending', async () => {
+    vi.useFakeTimers();
+    try {
+      const active = { id: 'a', researchRuns: [{ researchId: 'older' }, { researchId: 'newest' }] };
+      const other = { id: 'b', researchRuns: [{ researchId: 'other' }] };
+      const pending = [];
+      let count = 0;
+      const api = { get: vi.fn((_, id) => id === 'newest'
+        ? Promise.resolve({ task: { taskId: id, status: ++count > 1 ? 'failed' : 'running' } })
+        : new Promise(resolve => pending.push(() => resolve({ task: { taskId: id, status: 'running' } })))) };
+      const hook = renderHook(() => useTaskResearch({ tasks: [active, other], activeTaskId: 'a' }, api));
+      await act(async () => {});
+      expect(api.get).toHaveBeenCalledTimes(3);
+      await act(async () => vi.advanceTimersByTimeAsync(4000));
+      expect(hook.result.current.runs['a/newest'].status).toBe('failed');
+      await act(async () => vi.advanceTimersByTimeAsync(12000));
+      expect(api.get.mock.calls.filter(([, id]) => id === 'newest')).toHaveLength(2);
+      expect(api.get.mock.calls.filter(([, id]) => id !== 'newest')).toHaveLength(2);
+      hook.unmount();
+      await act(async () => pending.forEach(resolve => resolve()));
+    } finally { vi.useRealTimers(); }
   });
 
   it('does not restart in-flight reads when server publication reorders tasks', async () => {
