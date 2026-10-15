@@ -1,4 +1,6 @@
 from copy import deepcopy
+import json
+from pathlib import Path
 
 import pytest
 
@@ -79,3 +81,32 @@ def test_valid_sealed_preview_stays_offline(tmp_path):
         raise AssertionError('Preview must be offline')
     assert run_case(manifest, 'H1R', 1, tmp_path, forbidden, check_ready=forbidden)['preview']
     assert not list(tmp_path.iterdir())
+
+
+@pytest.mark.parametrize('case_id', ['H1R2', 'H2R', 'H4R', 'H5R'])
+def test_actual_fresh_holdout_definition_is_sealed_and_preview_sends_nothing(tmp_path, case_id):
+    root = Path(__file__).resolve().parents[2]
+    manifest = json.loads((root/'docs/DEEP_RESEARCH_FRESH_HOLDOUTS_20261015.json').read_text(encoding='utf-8'))
+    def forbidden(*args, **kwargs):
+        raise AssertionError('Holdout preparation cannot send requests')
+    result = run_case(manifest, case_id, 1, tmp_path, forbidden, check_ready=forbidden)
+    assert result['preview'] and result['intent']['split'] == 'holdout'
+    assert result['intent']['caseId'] == case_id
+    assert not list(tmp_path.iterdir())
+
+
+def test_fresh_holdout_sources_are_distinct_from_tuned_materials_and_have_valid_anchors():
+    root = Path(__file__).resolve().parents[2]
+    fresh = json.loads((root/'docs/DEEP_RESEARCH_FRESH_HOLDOUTS_20261015.json').read_text(encoding='utf-8'))
+    old_paths = ['DEEP_RESEARCH_ACCEPTANCE_CASES_20261012.json', 'DEEP_RESEARCH_HOLDOUT_REPLACEMENTS.json']
+    tuned_hashes = {value['sha256'] for path in old_paths
+        for value in json.loads((root/'docs'/path).read_text(encoding='utf-8'))['materials'].values()}
+    assert {value['sha256'] for value in fresh['materials'].values()}.isdisjoint(tuned_hashes)
+    for case in fresh['cases']:
+        require_frozen_case(fresh, case)
+        assert case['anchors'] and case['required'] and case['forbidden']
+        assert set(case['materials']) <= set(fresh['materials'])
+        for anchor in case['anchors']:
+            assert anchor['material'] in case['materials']
+            assert 1 <= anchor['page'] <= fresh['materials'][anchor['material']]['pageCount']
+            assert anchor['pageConvention'] == 'physical_pdf_1_based'
