@@ -240,6 +240,7 @@ Return a compact JSON array of 1-4 plan items (prefer 1-2 for a short answer), e
 - priority: 1-3 (1=highest)
 
 Ensure DAG structure (no cycles). Each obligation must specify which sources to check.
+obligationId must be unique across the ENTIRE array, not just within an item.
 Preserve the user's exact limits. If only one sub-question is requested, create exactly one item.
 Use short questions and at most two obligations per item. Do not repeat the same obligation.
 purpose is answer_requirement for anything the user asks to receive, or supporting_research
@@ -287,7 +288,9 @@ Return a JSON ARRAY of plan items, NOT an object with items field."""
             return {"error_code": "invalid_plan_response", "outcome": OUTCOME_NONE, "plan_ids": []}
         
         try:
-            validated = validate_plan(parsed[:4])
+            from services.deep_research.plan_identity import normalize_generated_obligation_ids
+            generated, identity_changes = normalize_generated_obligation_ids(parsed[:4])
+            validated = validate_plan(generated)
             from services.deep_research.completion_criteria import validate_completion_criteria
             validate_completion_criteria(validated, required=record.get('planCompletionContractVersion') == 1)
         except ValueError as ve:
@@ -336,8 +339,10 @@ Return a JSON ARRAY of plan items, NOT an object with items field."""
         
         repo_update(
             run_id,
-            lambda r: {**r, "state": rebind_inherited_state(r.get('state') or {}, validated)
-                       if inherited else {**(r.get("state") or {}), "plan": validated}},
+            lambda r: {**r, "state": {
+                **(rebind_inherited_state(r.get('state') or {}, validated)
+                   if inherited else {**(r.get("state") or {}), "plan": validated}),
+                'planIdNormalization': identity_changes}},
             expected_revision=None,
         )
         
