@@ -30,6 +30,15 @@ def test_reported_cells_pass_only_with_visible_dataset_method_and_exact_binding(
     assert check(ev, claim)['accepted']
 
 
+def test_hierarchical_cell_binding_requires_both_cohort_and_aggregate_in_answer():
+    ev, claim = fixture()
+    ev['tableData']['groups'][0][0] = 'Dataset A / mean'
+    claim['text'] = 'Dataset A 的 mean 列，Ours*：FPS 134，Mem 734MB'
+    assert check(ev, claim)['accepted']
+    for text in ('mean列的Ours*：FPS 134，Mem 734MB', 'Dataset A的Ours*：FPS 134，Mem 734MB'):
+        assert check(ev, {**claim, 'text': text})['rejected'][0]['reason'] == 'table_condition_not_displayed'
+
+
 def test_dataset_descriptor_and_identifier_numbers_are_not_measurements():
     ev, claim = fixture()
     ev['tableData']['groups'][0][0] = 'Mip-NeRF 360 Datasets'

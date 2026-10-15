@@ -71,8 +71,11 @@ def validate_table_bindings(claim, evidence):
         value = row[2][column]
         if binding.get('value') != value:
             return 'table_cell_mismatch'
-        dataset_visible = any(re.search(r'(?<![a-z0-9])' + re.escape(_key(label)) + r'(?![a-z0-9])', _key(text))
-                              for label in (dataset, dataset_label(dataset)))
+        # Hierarchical headers require every level (e.g. cohort and aggregate)
+        # to be displayed, without forcing the parser's separator into prose.
+        dataset_visible = all(any(re.search(r'(?<![a-z0-9])' + re.escape(_key(label)) + r'(?![a-z0-9])', _key(text))
+                                  for label in (part, dataset_label(part)))
+                              for part in dataset.split(' / '))
         if not dataset_visible or any(_key(label) not in _key(text) for label in (row[1], metric, value)):
             return 'table_condition_not_displayed'
         match = re.fullmatch(rf'({_VALUE})([A-Za-z]*)', value)

@@ -19,6 +19,7 @@ def drawing_runs(page):
     current_font = [None]
     font_size, horizontal_scale, char_space, word_space = [0], [1], [0], [0]
     runs = []
+    text_advance = [0.0]
 
     def decode(value):
         encoding, cmap, _ = fonts[current_font[0]]
@@ -30,6 +31,11 @@ def drawing_runs(page):
         return ''.join(cmap.get(char, char) for char in decoded)
 
     def before(operator, operands, cm, tm):
+        # PyPDF2's visitor text matrix does not advance after Tj/TJ. Consecutive
+        # text-show operations share a line origin, but PDF glyph placement
+        # continues after the previous glyph, including its font/word spacing.
+        if operator in (b'BT', b'Tm', b'Td', b'TD', b'T*', b"'", b'"'):
+            text_advance[0] = 0.0
         if operator == b'Tf':
             current_font[0] = operands[0]
             font_size[0] = float(operands[1])
@@ -50,7 +56,7 @@ def drawing_runs(page):
         except (LookupError, UnicodeError, AttributeError):
             return
         if text.strip():
-            x = tm[4] * cm[0] + cm[4]
+            x = tm[4] * cm[0] + cm[4] + (text_advance[0] or 0.0)
             y = float(page.mediabox.height) - (tm[5] * cm[3] + cm[5])
             tokens = []
             ft = fonts[current_font[0]][2]
@@ -58,7 +64,7 @@ def drawing_runs(page):
             cursor, token, token_x = x, '', x
             # Only simple byte fonts with explicit widths verify cell values.
             # Header labels can still be read, but unsupported values stay raw.
-            supported = '/Widths' in ft and '/FirstChar' in ft
+            supported = text_advance[0] is not None and '/Widths' in ft and '/FirstChar' in ft
             for value in values if supported else []:
                 if isinstance(value, (int, float)):
                     gap = -float(value) / 1000 * font_size[0] * scale
@@ -91,10 +97,75 @@ def drawing_runs(page):
                     break
             if token:
                 tokens.append({'text': token, 'x': token_x})
+            text_advance[0] = (cursor - (tm[4] * cm[0] + cm[4])) if supported else None
             runs.append({'text': text, 'x': x, 'y': y, 'tokens': tokens if supported else None})
 
     page.extract_text(visitor_operand_before=before)
     return runs
+
+
+def _verified_header_groups(rows, inside, metrics, names, repeat):
+    """Retain all geometry-confirmed levels of a regular grouped header.
+
+    TEI colspans alone cannot assign a column. Each PDF header token must also
+    occur in the TEI header, and every level must align to equal metric groups.
+    Irregular or ambiguous hierarchies stay unverified.
+    """
+    header_y = metrics[0]['y']
+    header_cells = []
+    for row in rows:
+        header_cells.extend(cell['text'] for cell in row if cell['text'].strip())
+        joined = compact(' '.join(cell['text'] for cell in row)).casefold()
+        if all(name.casefold() in joined for name in names[:repeat]):
+            break
+    candidates = []
+    for run in inside:
+        if not 1 < header_y - run['y'] < 50:
+            continue
+        tokens = run.get('tokens') or [run]
+        # Keep multiword names drawn by one operation when all words occupy
+        # the same metric group and TEI corroborates the full name.
+        if (len(tokens) > 1 and any(compact(run['text']).casefold() in compact(cell).casefold()
+                                   for cell in header_cells)
+                and any(all(metrics[i]['x'] <= t['x'] <= metrics[i + repeat - 1]['x'] for t in tokens)
+                        for i in range(0, len(metrics), repeat))):
+            tokens = [run]
+        for token in tokens:
+            if (metrics[0]['x'] <= token['x'] <= metrics[-1]['x']
+                    and re.search(r'[A-Za-z0-9]', token['text'])):
+                candidates.append({**token, 'y': run['y']})
+    bands = []
+    for token in sorted(candidates, key=lambda t: (-t['y'], t['x'])):
+        if not bands or abs(bands[-1][0]['y'] - token['y']) > 1:
+            bands.append([])
+        bands[-1].append(token)
+    count = len(names) // repeat
+    if not bands or len(bands[0]) != count:
+        return None
+    paths = [[] for _ in range(count)]
+    previous_count = count + 1
+    for band in bands:
+        if len(band) > previous_count or count % len(band):
+            return None
+        width = count // len(band)
+        for i, token in enumerate(sorted(band, key=lambda t: t['x'])):
+            columns = metrics[i * width * repeat:(i + 1) * width * repeat]
+            if not columns[0]['x'] <= token['x'] <= columns[-1]['x']:
+                return None
+            label = next((label for label in header_cells
+                          if compact(token['text']).casefold() in compact(label).casefold()), None)
+            if label is None:
+                return None
+            span = re.search(r'\s*'.join(re.escape(c) for c in compact(token['text'])), label, re.I)
+            if span is None:
+                return None
+            for child in paths[i * width:(i + 1) * width]:
+                child.insert(0, span.group().strip())
+        previous_count = len(band)
+    labels = [' / '.join(path) for path in paths]
+    if len({compact(label).casefold() for label in labels}) != count:
+        return None  # Repeated subheaders without a verified parent are ambiguous.
+    return [[label, names[:repeat]] for label in labels]
 
 
 def verify_table_columns(section, runs):
@@ -124,26 +195,9 @@ def verify_table_columns(section, runs):
                                                for i in range(0, len(names), repeat)):
         return None
     header_y = metrics[0]['y']
-    group_runs = sorted([run for run in inside if metrics[0]['x'] <= run['x'] <= metrics[-1]['x']
-                         and re.search(r'[A-Za-z0-9]', run['text'])
-                         and 1 < header_y - run['y'] < 20], key=lambda run: run['x'])
-    if len(group_runs) != len(names) // repeat:
+    groups = _verified_header_groups(rows, inside, metrics, names, repeat)
+    if groups is None:
         return None
-    group_labels = [cell['text'] for cell in rows[0] if cell['text'].strip()]
-    # TEI may combine labels and metrics. Match the actual PDF group name
-    # inside the header text, never infer it from a dataset list elsewhere.
-    groups = []
-    for i, run in enumerate(group_runs):
-        column_runs = metrics[i * repeat:(i + 1) * repeat]
-        if not column_runs[0]['x'] <= run['x'] <= column_runs[-1]['x']:
-            return None
-        label = next((label for label in group_labels if compact(run['text']).lower() in compact(label).lower()), None)
-        if label is None:
-            return None
-        span = re.search(r'\s*'.join(re.escape(c) for c in compact(run['text'])), label, re.I)
-        if span is None:
-            return None
-        groups.append([span.group().strip(), names[:repeat]])
     pdf_rows = []
     for run in sorted(inside, key=lambda run: (run['y'], run['x'])):
         if not pdf_rows or abs(pdf_rows[-1]['y'] - run['y']) > 3:

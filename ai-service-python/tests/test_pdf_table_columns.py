@@ -34,6 +34,52 @@ def test_grouped_header_and_each_cell_are_cross_checked_with_pdf_positions():
                                [3, 'Ours', ['2', '30MB', '5', '60MB']]]
 
 
+def hierarchical_fixture():
+    def cell(text):
+        return {'text': text, 'cols': 1, 'rows': 1}
+    names = ['PSNR', 'SSIM', 'LPIPS'] * 6
+    xs = [50 + 20 * i for i in range(18)]
+    values = [str(100 + i) for i in range(18)]
+    section = {'tableBounds': [0, 0, 420, 70], 'tableRows': [
+        [cell('Method'), cell('Alpha'), cell('Beta')],
+        [cell(''), *map(cell, ['inner', 'outer', 'mean'] * 2)],
+        [cell(''), cell(' '.join(names))],
+        [cell('Ours'), cell(' '.join(values))]]}
+    def run(texts, starts, y):
+        return {'text': ''.join(texts), 'x': starts[0], 'y': y,
+                'tokens': [{'text': t, 'x': x} for t, x in zip(texts, starts)]}
+    runs = [run(['Alpha', 'Beta'], [70, 250], 10),
+            run(['inner', 'outer', 'mean'] * 2, [70, 130, 190, 250, 310, 370], 20),
+            run(names, xs, 30), run(['Ours'], [1], 50), run(values, xs, 50)]
+    return section, runs, values
+
+
+def test_merged_pdf_header_operations_preserve_parent_and_subgroup_identity():
+    section, runs, values = hierarchical_fixture()
+    packet = verify_table_columns(section, runs)
+    assert packet['groups'] == [[f'{parent} / {child}', ['PSNR', 'SSIM', 'LPIPS']]
+                               for parent in ['Alpha', 'Beta'] for child in ['inner', 'outer', 'mean']]
+    assert packet['rows'] == [[4, 'Ours', values]]
+
+
+def test_repeated_subheaders_without_corroborated_aligned_parents_stay_unverified():
+    section, runs, _ = hierarchical_fixture()
+    assert verify_table_columns(section, runs[1:]) is None
+    wrong_position = deepcopy(runs)
+    wrong_position[0]['tokens'][0]['x'] = 300
+    assert verify_table_columns(section, wrong_position) is None
+    missing_parent = deepcopy(section)
+    missing_parent['tableRows'][0][1]['text'] = 'Invented cohort'
+    assert verify_table_columns(missing_parent, runs) is None
+
+
+def test_hierarchy_does_not_relax_numeric_cell_correspondence():
+    section, runs, values = hierarchical_fixture()
+    values[0], values[1] = values[1], values[0]
+    section['tableRows'][-1][-1]['text'] = ' '.join(values)
+    assert verify_table_columns(section, runs) is None
+
+
 def test_real_three_dataset_table_with_math_headers_and_merged_tei_cells():
     fixture_path = Path(__file__).parent / 'fixtures/dr_table1_geometry.json'
     data = json.loads(fixture_path.read_text(encoding='utf-8'))
@@ -108,6 +154,33 @@ def test_pdf_drawing_tokens_keep_kerning_coordinates_font_widths_and_star_mappin
         runs = drawing_runs(Page())
     assert runs[0]['tokens'] == [{'text': '12', 'x': 10}, {'text': '3MB', 'x': 30}]
     assert runs[1]['text'] == '∗' and runs[1]['tokens'][0]['text'] == '∗'
+    assert runs[1]['tokens'][0]['x'] == 45  # Consecutive TJ continues after 3MB.
+
+
+def test_text_position_reset_clears_advance_and_unsupported_font_cannot_verify_next_cells():
+    class Page:
+        mediabox = SimpleNamespace(height=100)
+        def __getitem__(self, key):
+            return {'/Font': {'/F': {}, '/Unknown': {}}}
+        def extract_text(self, visitor_operand_before):
+            cm, tm = [1, 0, 0, 1, 0, 0], [1, 0, 0, 1, 10, 80]
+            visitor_operand_before(b'Tf', ['/F', 10], cm, tm)
+            visitor_operand_before(b'Tj', [b'123'], cm, tm)
+            visitor_operand_before(b'Tm', tm, cm, tm)
+            visitor_operand_before(b'Tj', [b'4'], cm, tm)
+            visitor_operand_before(b'Tf', ['/Unknown', 10], cm, tm)
+            visitor_operand_before(b'Tj', [b'?'], cm, tm)
+            visitor_operand_before(b'Tf', ['/F', 10], cm, tm)
+            visitor_operand_before(b'Tj', [b'5'], cm, tm)
+            visitor_operand_before(b'Td', [0, -10], cm, tm)
+            visitor_operand_before(b'Tj', [b'6'], cm, tm)
+    def font(name, *args):
+        return ('Type1', 100, 'latin-1', {}, {'/Widths': [500]*256, '/FirstChar': 0} if name == '/F' else {})
+    with patch('PyPDF2._cmap.build_char_map', side_effect=font):
+        runs = drawing_runs(Page())
+    assert runs[1]['tokens'] == [{'text': '4', 'x': 10}]
+    assert runs[2]['tokens'] is None and runs[3]['tokens'] is None
+    assert runs[4]['tokens'] == [{'text': '6', 'x': 10}]
 
 
 def test_unreadable_pdf_leaves_original_sections_available():
