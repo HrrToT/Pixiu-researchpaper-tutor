@@ -51,3 +51,21 @@ def test_identification_only_order_is_unchanged_and_unrelated_sources_get_no_exp
     # The selector never grants authority: the caller filters disallowed sources
     # first; their lexical signal cannot become an authorized explanation score.
     assert prioritize_extraction_passages([outside, allowed], obligations())[0][0]['sourceId'] == 'allowed'
+
+
+def test_complete_method_operation_precedes_causal_words_in_dataset_or_summary_prose():
+    general = passage('summary', 'a', 'When gradients change the input, predictions and losses improve.')
+    method = passage('method', 'a', 'Parameters remain fixed while opacity is optimized to adjust its influence.')
+    method[1]['section'] = '3.2 Methodology'
+    general[1]['section'] = 'Dataset'
+    before = deepcopy((general, method))
+    selected = prioritize_extraction_passages([general, method], obligations())
+    assert selected[0][0]['sourceId'] == 'method'
+    assert (general, method) == before
+
+
+def test_method_heading_alone_does_not_displace_a_complete_explanation():
+    heading = passage('heading', 'a', 'The methodology introduces a model and names three modules.')
+    heading[1]['section'] = 'Methodology'
+    causal = passage('causal', 'a', 'When the loss gradient updates a parameter, predictions change.')
+    assert prioritize_extraction_passages([heading, causal], obligations())[0][0]['sourceId'] == 'causal'

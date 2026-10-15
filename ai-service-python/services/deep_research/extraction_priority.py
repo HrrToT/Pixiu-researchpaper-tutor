@@ -8,8 +8,10 @@ _STOP = {'the', 'and', 'for', 'with', 'from', 'this', 'that', 'what', 'which', '
          'why', 'does', 'are', 'its', 'paper', 'arxiv', 'http', 'https', 'org'}
 _CAUSAL = [r'\b(?:gradient|loss|error|objective|reward|input|signal|stimulus)\w*',
            r'\b(?:updat|increas|decreas|optimi|adjust|learn|chang|modif|reduc|regulat)\w*',
-           r'\b(?:if|when|case|given|condition)\w*',
-           r'\b(?:result|effect|outcome|output|predict|sampl|probabil|concentrat)\w*']
+           r'\b(?:if|when|while|during|after|before|unless|case|given|condition)\w*',
+           r'\b(?:result|effect|influenc|efficien|qualit|accurac|outcome|output|predict|sampl|probabil|concentrat)\w*']
+_METHOD_SECTION = re.compile(r'^\s*(?:\d+(?:\.\d+)*[.)]?\s*)?'
+    r'(?:(?:method(?:s|ology)?|approach|algorithm|proposed model)\b|方法|算法|模型)', re.I)
 
 
 def prioritize_extraction_passages(pending, obligations):
@@ -40,8 +42,11 @@ def prioritize_extraction_passages(pending, obligations):
         # Normalize line-wrap hyphens only for ranking; supplied text is untouched.
         text = re.sub(r'(?<=[A-Za-z])-[ \t]*\r?\n[ \t]*(?=[A-Za-z])', '', item[2]).lower()
         causal = sum(bool(re.search(pattern, text)) for pattern in _CAUSAL) if explain else 0
+        # Complete method operations outrank causal vocabulary in summaries,
+        # datasets or benchmark prose. Section labels alone are not enough.
+        method = bool(explain and causal >= 2 and _METHOD_SECTION.search(str(item[1].get('section', ''))))
         counts = [text.count(term) for term in terms]
-        score = (causal, sum(count > 0 for count in counts), sum(min(count, 3) for count in counts), -index)
+        score = (method, causal, sum(count > 0 for count in counts), sum(min(count, 3) for count in counts), -index)
         ranked.append((score, item))
     ordered = [item for _, item in sorted(ranked, key=lambda row: row[0], reverse=True)]
     return balanced_sample(ordered, lambda item: item[0]['workId'], len(ordered))
