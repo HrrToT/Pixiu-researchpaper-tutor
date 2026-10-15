@@ -133,7 +133,7 @@ def main():
     args = parser.parse_args()
     import requests
     def check_ready():
-        response = requests.get(args.ai_origin.rstrip('/') + '/health', timeout=5)
+        response = requests.get(args.ai_origin.rstrip('/') + '/health', timeout=(3, 15))
         response.raise_for_status()
         require_ready_health(response.json())
     def api(method, path, *, payload=None, allow_missing=False):

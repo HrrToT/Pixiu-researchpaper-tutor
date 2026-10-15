@@ -5,7 +5,7 @@ const labels = {
   queued: '研究已排队', running: '正在研究', waiting_user: '需要明确研究范围',
   paused: '研究已暂停', stopping: '正在停止', cancelled: '研究已停止', failed: '本次研究未完成',
 };
-const outcomes = { complete: '报告已保存', partial: '已完成部分研究', inconclusive: '当前材料不足以判断', none: '研究已结束' };
+const outcomes = { complete: '报告已保存', partial: '已完成部分研究', inconclusive: '本次未形成结论', none: '研究已结束' };
 const actionLabels = { pause: '暂停', resume: '继续研究', cancel: '停止', continue: '补查缺口' };
 const accessLabels = { fulltext: '全文片段', full_text: '全文片段', abstract: '仅摘要', metadata: '仅元数据' };
 

@@ -1,8 +1,16 @@
 import { describe, expect, it } from 'vitest';
 import { documentDisplayTitle, questionTopic } from './documentPresentation';
 import { documentPreview, taskDocumentNavigation } from './taskDocumentNavigation';
+import { searchExcerpt } from './navigationSearch';
 
 describe('document names and identities', () => {
+  it('hides disclosure markup in preview and search excerpts but preserves its content', () => {
+    const text = '结论。<details open><summary>原文依据</summary>误差 < 0.5。</details> 手工备注';
+    expect(documentPreview({ text })).toBe('结论。 原文依据 误差 < 0.5。 手工备注');
+    expect(searchExcerpt(text, '手工备注')).not.toMatch(/<\/?(?:details|summary)/);
+    expect(searchExcerpt(text, '误差')).toContain('误差 < 0.5');
+    expect(text).toContain('<details open>');
+  });
   it('keeps research citation targets out of navigation previews without modifying the saved report', () => {
     const report = { text: '编码特征。[[1]](#research-evidence-e1) 解码形变。[2](#research-evidence-e2) [论文](https://arxiv.org/abs/2310.08528)' };
     expect(documentPreview(report)).toBe('编码特征。 解码形变。 论文');

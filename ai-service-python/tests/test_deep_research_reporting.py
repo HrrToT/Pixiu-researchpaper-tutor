@@ -107,7 +107,8 @@ def test_inconclusive_experiment_does_not_blame_source_insufficiency_by_default(
     summary = conversation_summary([], 'inconclusive', output_kind='experiment_design')
     assert '尚未形成通过核验的实验方案' in body and '尚未形成通过核验的实验方案' in summary
     assert '证据不足' not in body and '证据不足' not in summary
-    assert '证据不足' in conversation_summary([], 'inconclusive')
+    assert '尚未形成通过核验的结论' in conversation_summary([], 'inconclusive')
+    assert '证据不足' not in render_report({'claims': []})
 
 
 def test_same_rendered_assumptions_do_not_hide_different_typed_configurations():

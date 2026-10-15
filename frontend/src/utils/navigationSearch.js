@@ -1,4 +1,6 @@
 /** Plain-text previews only: retained content is never rewritten or interpreted. */
+export const stripDisclosureTags = value => String(value || '').replace(/<\/?(?:details|summary)\b[^>]*>/giu, ' ');
+
 export function documentSearchText(item) {
   const sourceText = source => [source?.title, source?.pdfId, source?.workId, source?.versionId,
     source?.doi, source?.arxivId, source?.quote, source?.text, source?.section].filter(value => typeof value === 'string').join(' ');
@@ -7,7 +9,7 @@ export function documentSearchText(item) {
 }
 
 export function searchExcerpt(value, query) {
-  const text = String(value || '').replace(/(\*\*|__|`)([^\n]*?)\1/gu, '$2').replace(/(?:^|\n)#{1,6}\s+/gu, ' ').replace(/\s+/gu, ' ').trim();
+  const text = stripDisclosureTags(value).replace(/(\*\*|__|`)([^\n]*?)\1/gu, '$2').replace(/(?:^|\n)#{1,6}\s+/gu, ' ').replace(/\s+/gu, ' ').trim();
   const term = String(query || '').trim();
   if (!term) return '';
   const index = text.toLocaleLowerCase().indexOf(term.toLocaleLowerCase());

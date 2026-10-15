@@ -98,7 +98,7 @@ def render_report(payload):
             lines.extend([f"## {section['title']}", "", *content, ""])
     if not claims:
         empty = ("尚未形成通过核验的实验方案。" if payload.get('outputKind') == 'experiment_design'
-                 else "当前取得的证据不足以回答这个问题。")
+                 else "本次尚未形成通过核验的结论。")
         lines.extend([empty, ""])
     gaps = _display_gaps(payload.get("gaps", []))
     if gaps:
@@ -151,7 +151,7 @@ def conversation_summary(claims, outcome, *, max_chars=500, evidence=None, outpu
     labels = {"inference": "有依据的推断：", "hypothesis": "待验证假设：",
               "suggestion": "实验建议：", "proposal": "实验建议："}
     boundary = {"partial": "当前结果尚不完整，已核实的内容已保存。",
-                "inconclusive": "当前取得的证据不足以形成可靠结论。"}.get(outcome, "")
+                "inconclusive": "本次尚未形成通过核验的结论。"}.get(outcome, "")
     if outcome == 'inconclusive' and output_kind == 'experiment_design':
         boundary = '尚未形成通过核验的实验方案。'
     access = source_access_summary(claims, evidence or [])
