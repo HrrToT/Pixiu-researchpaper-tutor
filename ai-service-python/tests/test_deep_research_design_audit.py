@@ -46,6 +46,20 @@ def test_missing_audit_reports_every_required_slot():
     assert validate_design_audit(claim, {"designAudit": []}, []) == expected
 
 
+def test_budget_audit_can_include_preparation_without_losing_per_group_binding():
+    claim = {'claimId': 'b', 'kind': 'proposal', 'designRole': 'budget', 'budgetContractVersion': 1,
+             'executionSpec': {'baseline': {'mode': 'train', 'unit': 'optimizer_steps',
+                 'maxBudget': 1000, 'stoppingRule': 'stop at cap'},
+                 'recovery': {'mode': 'matched', 'unit': 'optimizer_steps', 'groups': {'0': 500, '1': 500}}}}
+    preparation = {'claimId': 'b', 'path': ['executionSpec', 'baseline', 'maxBudget'], 'value': 1000}
+    group = {'claimId': 'b', 'path': ['executionSpec', 'recovery', 'groups'], 'value': {'0': 500, '1': 500}}
+    verdict = audit_for(per_group_steps={'fields': [preparation, group]})
+    assert validate_design_audit(claim, verdict, []) == []
+    assert validate_design_audit(claim, audit_for(per_group_steps={'fields': [preparation]}), []) == ['per_group_steps']
+    group['value'] = {'0': 500, '1': 600}
+    assert validate_design_audit(claim, verdict, []) == ['per_group_steps']
+
+
 def test_steps_cannot_pass_with_only_an_unsubstantiated_model_verdict():
     claim = {'claimId': 'steps', 'kind': 'proposal', 'designRole': 'steps',
              'text': 'Train until convergence, then save the checkpoint hash.'}

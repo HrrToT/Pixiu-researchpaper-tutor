@@ -719,7 +719,9 @@ For all mode, the proposed count must equal the entire count of that EXACT datas
 Full-set selection needs no invented ordering or per-unit name list when the quoted complete
 benchmark scope is unambiguous. An inherited subset whose identity remains unresolved fails.
 For named mode, instead provide availableNames with actual selected names explicitly present
-in the quoted passage; count fields may be omitted. Verify name membership and subset identity.
+in the quoted passage, including exact capitalization; count fields may be omitted.
+Do not silently lowercase a source label in this exact-quotation audit. Verify name membership
+and subset identity; a differently capitalized requested name must be resolved explicitly.
 Do not fail named mode solely because an unasserted original view count, resolution or
 author-used split is unavailable. Ground the selected scene names and exact dataset;
 check the proposed reproducible split as a proposed choice, including nonempty selections.

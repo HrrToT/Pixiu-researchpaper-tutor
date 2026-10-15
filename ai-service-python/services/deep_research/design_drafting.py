@@ -1,0 +1,72 @@
+"""Compact drafting instructions; independent reviewers retain the full policy.
+
+Generation must see the scientific evidence as well as the output contracts.
+This guidance does not approve claims, replace structural validation, or change
+the full scientific requirements used by verification and repair.
+"""
+from services.deep_research.experimental_reasoning import DESIGN_ROLES
+
+
+_DRAFT_POLICY = """
+Propose an executable, unexecuted experiment answering the actual user question.
+Choose concrete settings now, labeled as proposals; never attribute chosen values
+to the paper. Dataset/subset membership, available counts and existing assets
+remain factual and require the supplied fulltext. Named scenes use the exact
+quoted labels and capitalization; ground those names, not an unasserted original
+view count or author split. Do not substitute a parent dataset for a cited subset.
+Split held-out views within each reconstruction scene, with reproducible rules
+and nonempty train/evaluation checks. Explain split and training seed purposes.
+Train a baseline with a finite cap or select an evidence-backed existing asset;
+copy it within each paired unit and record its resulting identity at execution.
+Fix enhancement initialization, resolution, renderer, optimizer and learning-rate
+rules. Disable other interventions in both groups or specify their shared policy.
+For isolated effects match whole-group training budgets; freezing a parameter
+does not mean zero group training. Baseline acquisition is shared preparation,
+followed by the per-group budget in recovery, not an extra invented third phase.
+Keep all roles consistent. A simple descriptive comparison needs paired estimates
+and bounded conclusions, not invented independent views, bootstrap or significance.
+Respect the requested factors/scenes and metric domains; add no unnecessary tests.
+Unknown source facts are bounded gaps, not proof that the paper omitted them.
+"""
+
+_DRAFT_STATISTICS = """
+Statistical reference (only for two binary factors): groups 00,10,01,11.
+Define loss L by negating higher-is-better metrics; keep lower-is-better metrics.
+Use finite measurements against the same held-out observed reference; comparing
+baseline renders with themselves gives infinite PSNR. Analyze metrics separately.
+A at B=0/1: L10-L00 / L11-L01; B at A=0/1: L01-L00 / L11-L10.
+Average main effects are the averages of those pairs. Interaction
+I=L11-L10-L01+L00 tests additivity; telescoping sums do not test it.
+Pair scenes/seeds. Views or seeds of one scene are not independent scene samples.
+One scene supports descriptive effects, not cross-scene bootstrap inference.
+Zero-effect testing needs compatible uncertainty; non-significance is not
+equivalence/independence. Equivalence needs a declared metric tolerance and an
+interval contained inside it. Distinguish zero-recovery diagnostics from a full
+pipeline. Never claim an unexecuted result or add incompatible metric units.
+"""
+
+
+def design_drafting_requirements(metric_domains=None):
+    from services.deep_research.metric_scope import metric_protocol_requirements
+    protocols = metric_protocol_requirements(metric_domains)
+    metrics = '; '.join(f'{domain}: {text}' for domain, text in protocols.items())
+    return (_DRAFT_POLICY + '\n' + _DRAFT_STATISTICS + '\n'
+            + '\n'.join(f'{role}: {metrics if role == "metrics" else requirement}'
+                        for role, (_, requirement) in DESIGN_ROLES.items()))
+
+
+def synthesis_obligations(plan):
+    """Keep frozen user deliverables; research subtasks inform, not redefine them.
+
+    Supporting questions and source permissions remain visible. Their research
+    checklist is audited by the unchanged plan elsewhere, rather than repeated
+    here as a demand to reproduce every original paper setting in a proposal.
+    """
+    result = []
+    for item in plan:
+        for obligation in item.get('obligations', []):
+            keys = ('obligationId', 'question', 'purpose', 'requiredSources')
+            if obligation.get('purpose') != 'supporting_research':
+                keys += ('requestExcerpt', 'completionCriteria')
+            result.append({key: obligation[key] for key in keys if key in obligation})
+    return result

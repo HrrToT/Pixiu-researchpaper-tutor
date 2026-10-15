@@ -50,6 +50,10 @@ def _slot_supported(entry, claim, context, slot=None):
         fields = entry['fields']
         if set(entry) != {'fields'} or not isinstance(fields, list) or not 1 <= len(fields) <= 32:
             return False
+        if slot == 'per_group_steps' and not any(isinstance(field, dict)
+                and isinstance(field.get('path'), list)
+                and field['path'][:2] == ['executionSpec', 'recovery'] for field in fields):
+            return False
         return all(_field_supported(field, claim, context, slot) for field in fields)
     if 'quotes' in entry:
         # Non-contiguous choices retain their own source identities. Never
@@ -78,7 +82,7 @@ _FIELD_ROOTS = {
     'effects': ('analysis', {'effects'}),
     'uncertainty': ('analysis', {'uncertainty'}),
     'decision_rule': ('analysis', {'decision'}),
-    'per_group_steps': ('budget', {'recovery'}),
+    'per_group_steps': ('budget', {'baseline', 'recovery'}),
 }
 
 

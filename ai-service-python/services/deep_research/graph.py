@@ -1010,8 +1010,8 @@ def make_synthesize_node(
                 claim_fields += ', executionSpec also required for the budget role'
             if strict_hypothesis:
                 claim_fields += ', executionSpec also required for the hypothesis role'
-        synthesis_obligations = [{k: o[k] for k in ('obligationId', 'question', 'purpose', 'requestExcerpt', 'requiredSources', 'completionCriteria') if k in o}
-                                 for p in brief_state.get('plan', []) for o in p.get('obligations', [])]
+        from services.deep_research.design_drafting import synthesis_obligations
+        draft_obligations = synthesis_obligations(brief_state.get('plan', []))
         prompt = f"""Synthesize a complete answer to the research question.
 Question: {question}
 Output kind: {output_kind}
@@ -1021,7 +1021,7 @@ Claim count is independent of display length: shorten each statement rather than
 Evidence count: {len(evidence)}
 User clarification: {brief_state.get('clarification', '')}
 Gaps: {json.dumps([g.get('question') for g in gaps[:5]], ensure_ascii=False)}
-Research questions (answer_requirement is a requested deliverable; supporting_research informs it): {json.dumps(synthesis_obligations, ensure_ascii=False, separators=(',', ':'))}
+Research questions (answer_requirement is a requested deliverable; supporting_research informs it): {json.dumps(draft_obligations, ensure_ascii=False, separators=(',', ':'))}
 Source registry (P keys identify papers, not evidenceRefs): {json.dumps(source_registry, ensure_ascii=False, separators=(',', ':'))}
 
 Evidence summaries:
@@ -1075,38 +1075,23 @@ Orient losses before formulas, distinguish conditional/averaged effects and pape
                       "Discuss every requested tradeoff (including quality) before adding secondary ablation examples."
         
         if output_kind == "experiment_design":
-            from services.deep_research.experimental_reasoning import FACTORIAL_REFERENCE, design_requirements
-            prompt += "\nStatistical reference (apply only if the design has two binary factors):\n" + FACTORIAL_REFERENCE
+            from services.deep_research.design_drafting import design_drafting_requirements
             from services.deep_research.execution_spec import EXECUTION_SPEC_CONTRACT
             prompt += '\n' + EXECUTION_SPEC_CONTRACT
             if strict_budget:
                 from services.deep_research.budget_spec import BUDGET_SPEC_CONTRACT
                 prompt += '\n' + BUDGET_SPEC_CONTRACT
-                prompt += '\nThe budget role owns the canonical baseline/recovery configuration. ' \
-                          'Other roles refer to these choices without restating different budgets. ' \
-                          'Binary group IDs follow factors order (0=control, 1=treatment).'
             if strict_hypothesis:
                 from services.deep_research.hypothesis_spec import HYPOTHESIS_SPEC_CONTRACT
                 prompt += '\n' + HYPOTHESIS_SPEC_CONTRACT
-                prompt += '\nLink the hypothesis to its actual analysis claim and exact effect keys. ' \
-                          'Choose the purpose required by the user and a compatible analysis; ' \
-                          'do not downgrade a requested statistical test into descriptive exploration.'
-            prompt += '\nEach proposed design claim MUST have one designRole from the contract below. ' \
-                      'Use exactly one complete claim per role; keep its configuration and decision rules together. ' \
-                      'These are proposals, not facts about the paper. ' \
-                      'Do not replace a concrete choice with “keep everything fixed”. If no specific split/budget ' \
-                      'is documented, choose and label a reproducible proposed protocol, not an invented paper setting.\n' \
-                      + design_requirements(brief_state.get('metricDomains'))
-        if output_kind == 'experiment_design':
+            prompt += '\n' + design_drafting_requirements(brief_state.get('metricDomains'))
             from services.deep_research.experimental_reasoning import design_output_outline
             prompt += ('\nREQUIRED OUTPUT OUTLINE (one claim for EACH role, even when several share a section):\n'
                        + json.dumps(design_output_outline(strict_budget=strict_budget,
                            strict_hypothesis=strict_hypothesis), ensure_ascii=False, separators=(',', ':'))
-                       + '\nA section title is not a designRole. Include data and budget separately from controls; '
-                       'use limits for the risk section. Supply complete role-specific executionSpec where required. '
-                       'For a requested minimal descriptive comparison, use only the requested factors/scenes, '
-                       'finite matched budgets and descriptive paired differences; do not add bootstrap or significance tests. '
-                       'Choose explicit unexecuted settings now; factual availability still requires the supplied evidence.')
+                       + '\nA section title is not a designRole. Include all roles with their own complete specs. '
+                       'Budget owns the canonical preparation/per-group amounts. Link hypothesis to analysis '
+                       'and exact effect keys; fulfill the requested statistical purpose, never downgrade it.')
         template = prompt
         prompt, evidence_summaries = fit_evidence_prompt(evidence_summaries,
             lambda rows: template.replace(evidence_marker, json.dumps(rows, ensure_ascii=False, separators=(',', ':')), 1))
