@@ -49,10 +49,12 @@ def _measurement_numbers(text: str) -> set[str]:
 
 
 def _condition_values_text(value):
-    # Dictionary keys are labels, not assertions (models may use "1", "2").
-    # Traverse all values, including nested numbers; never globally erase digits.
+    # Pure numeric dictionary keys are labels (models may use "1", "2").
+    # Other keys can themselves assert a quantity; retain those and every
+    # nested value rather than globally erasing metadata digits.
     if isinstance(value, dict):
-        return ' '.join(_condition_values_text(item) for item in value.values())
+        return ' '.join(('' if isinstance(key, str) and key.isdigit() else str(key))
+                        + ' ' + _condition_values_text(item) for key, item in value.items())
     if isinstance(value, list):
         return ' '.join(_condition_values_text(item) for item in value)
     return str(value) if value is not None else ''

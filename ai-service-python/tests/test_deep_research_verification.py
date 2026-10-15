@@ -116,6 +116,12 @@ def test_numbered_condition_labels_do_not_become_experimental_values():
     assert not verify_claims([valid], [ev])['accepted']
 
 
+def test_quantitative_condition_keys_are_still_checked():
+    ev = evidence()
+    invalid = claim(ev, '达到200 FPS', conditions={'压缩率999x': '该测试设置'})
+    assert verify_claims([invalid], [ev], passed)['rejected'][0]['reason'] == 'numeric_mismatch'
+
+
 def test_semantic_check_is_required_and_duplicate_verdict_fails_closed():
     ev = evidence()
     assert not verify_claims([claim(ev)], [ev])["accepted"]
