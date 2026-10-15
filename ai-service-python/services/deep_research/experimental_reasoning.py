@@ -49,6 +49,9 @@ For named scene selection, ground those exact scene names and dataset membership
 do not demand an unasserted total scene/view count or the authors' original split.
 Proposed split fractions and seeds need no paper quotation. Require a reproducible
 split and a check that training/evaluation selections are nonempty before execution.
+An explicit split lists actual item identifiers, not labels such as "official train
+views". Without those identifiers, choose a proposed executable split rule. A
+conditional appeal to unknown official defaults is not an established data choice.
 Any claimed existing count, resolution or released checkpoint still needs evidence.
 Use all units of an unambiguously grounded complete dataset/subset when proposed;
 the absence of a name list does not contradict that selection. Unresolved subset
@@ -63,6 +66,11 @@ then recording the resulting artifact identity/hash at execution. Do not invent
 a hash or require a future artifact's hash to exist now. A proposed filename alone
 does not specify how to produce or select the checkpoint. Shared configuration
 may be referenced across roles without repetition, but must be explicit somewhere.
+Shared initialization needs an actual reproducible operation, its parameters and
+seed handling. "Initialize identically" alone is not that operation. Likewise,
+give actual optimizer/rates/schedule and a numeric resolution/resizing rule. Reading
+unspecified defaults later is incomplete; an executable config reference identifies
+the supplied version, file and relevant keys, otherwise choose proposed values now.
 For a newly trained baseline, specify a finite training budget or an operational
 stopping rule with a maximum budget; "train until convergence" alone is not one.
 For an existing baseline, specify an evidence-backed asset and selection rule.

@@ -1057,6 +1057,10 @@ Write concise understandable Chinese, explaining technical components, condition
 Meet the frozen completionCriteria at their responseType: an explanation must say how/why
 the requested input changes or constrains the operation/output. Listing names is insufficient.
 For novices, explain the essential transformation in ordinary words next to its technical term.
+When asked how training works, connect the error/signal, the quantity it updates,
+and how the update affects later predictions. Naming a differentiability trick
+or saying "gradients can flow" alone does not explain that path. Use only supplied evidence.
+Planning criteria describe requested deliverables, never establish scientific facts.
 Do not repeat the same proposition in text and conditions; use the limited space for the mechanism.
 not English placeholders or generic 'depends on the input/view'. Answer each requested aspect or state its
 specific evidence limitation. Respect scope and total text+conditions length; put conflicting conditions beside conclusions.

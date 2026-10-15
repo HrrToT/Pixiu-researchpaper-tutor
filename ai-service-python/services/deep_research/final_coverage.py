@@ -77,6 +77,10 @@ requires how/why the requested input changes or constrains the operation/output.
 Naming the input, repeating a method name, or saying X then Y is identification,
 not an explanation of their relationship. For novice requests, unexplained technical
 terms alone cannot meet an explanation criterion. Do not demand unrelated details.
+For requested training/feedback, check that the answer connects the error/signal,
+the intermediate or parameter updated, and the effect on later predictions when
+the supplied evidence establishes that path. "A reparameterization trick permits
+gradients" alone names a technique; it does not explain its operation to a novice.
 When asked to identify or compare particular measurements, the accepted answer
 must display each requested value and its corresponding entity, subgroup,
 aggregate and metric. Saying 'the two values refer to different groups' is

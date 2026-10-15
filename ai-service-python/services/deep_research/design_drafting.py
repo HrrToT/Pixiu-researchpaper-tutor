@@ -15,11 +15,17 @@ remain factual and require the supplied fulltext. Named scenes use the exact
 quoted labels and capitalization; ground those names, not an unasserted original
 view count or author split. Do not substitute a parent dataset for a cited subset.
 Split held-out views within each reconstruction scene, with reproducible rules
-and nonempty train/evaluation checks. Explain split and training seed purposes.
+and nonempty train/evaluation checks. Without actual file IDs, choose a proposed
+every_nth or seeded_fraction rule; "official training/test views" are not file IDs.
+Explain split and training seed purposes in prose, not invented schema fields.
 Train a baseline with a finite cap or select an evidence-backed existing asset;
 copy it within each paired unit and record its resulting identity at execution.
-Fix enhancement initialization, resolution, renderer, optimizer and learning-rate
-rules. Disable other interventions in both groups or specify their shared policy.
+Define initialization by a reproducible operation and its parameters/seed, not
+"initialize identically". Give a numeric image size or resizing rule, renderer,
+optimizer and actual learning rates/schedule for all trainable parameter groups.
+"Read defaults later" is not a choice: cite an actually supplied version/config/key
+or choose labeled proposed values now. Unknown defaults are not paper evidence.
+Disable other interventions in both groups or give their shared executable policy.
 For isolated effects match whole-group training budgets; freezing a parameter
 does not mean zero group training. Baseline acquisition is shared preparation,
 followed by the per-group budget in recovery, not an extra invented third phase.
@@ -27,6 +33,8 @@ Keep all roles consistent. A simple descriptive comparison needs paired estimate
 and bounded conclusions, not invented independent views, bootstrap or significance.
 Respect the requested factors/scenes and metric domains; add no unnecessary tests.
 Unknown source facts are bounded gaps, not proof that the paper omitted them.
+For typed roles, text adds rationale/conditions, not a second copy of the fields;
+the application already renders their full settings. Use only the documented schema.
 """
 
 _DRAFT_STATISTICS = """

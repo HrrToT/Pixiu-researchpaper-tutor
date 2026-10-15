@@ -100,6 +100,8 @@ For requested mechanisms, prioritize sentences explaining the entities, conditio
 inputs and activation/applicability rules over generic performance or background.
 Associate a quote with any relevant LISTED obligation, not only the query that found it.
 For a training/feedback question, retain the causal signal and update path when present.
+If the passage explains how a correct/incorrect prediction changes later behavior,
+retain that explanation rather than only the name of a training technique.
 For a results table, copy a complete contiguous header-and-row span retaining method, dataset,
 metric and unit labels; table rows are evidence even when they are not grammatical sentences.
 Rows present in tableData are already saved exactly; focus on prose explaining their evaluation conditions.
