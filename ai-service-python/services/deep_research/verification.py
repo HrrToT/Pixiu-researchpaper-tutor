@@ -138,6 +138,17 @@ def verify_claims(claims: list[dict], evidence: list[dict],
                 rejected.append({"claimId": claim_id, "reason": "incomplete_execution_spec",
                                  "detail": ', '.join(errors)})
                 continue
+        if not reason and 'protocolContractVersion' in claim:
+            from services.deep_research.experiment_protocol import protocol_errors, PROTOCOL_ROLES
+            if (type(claim['protocolContractVersion']) is not int or claim['protocolContractVersion']!=1
+                    or claim.get('designRole') not in PROTOCOL_ROLES
+                    or kind not in {'proposal','suggestion','hypothesis'}):
+                reason='invalid_protocol_contract'
+            else:
+                errors=protocol_errors(claim['designRole'],claim.get('executionSpec'))
+                if errors:
+                    rejected.append({'claimId':claim_id,'reason':'incomplete_experiment_protocol','detail':', '.join(errors)})
+                    continue
         if not reason and 'budgetContractVersion' in claim:
             from services.deep_research.budget_spec import validate_budget_spec
             if (type(claim['budgetContractVersion']) is not int or claim['budgetContractVersion'] != 1

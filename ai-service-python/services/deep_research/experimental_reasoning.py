@@ -122,13 +122,15 @@ def design_requirements(metric_domains=None, *, roles=None):
                      if roles is None or role in roles)
 
 
-def design_output_outline(*, strict_budget=False, strict_hypothesis=False):
+def design_output_outline(*, strict_budget=False, strict_hypothesis=False, strict_protocol=False):
     """List every deliverable explicitly, separate from the display sections."""
     typed = {'groups', 'data', 'analysis'}
     if strict_budget:
         typed.add('budget')
     if strict_hypothesis:
         typed.add('hypothesis')
+    if strict_protocol:
+        typed.add('controls')
     return [{'designRole': role, 'section': title,
              'kind': 'hypothesis' if role == 'hypothesis' else 'proposal',
              'requiresExecutionSpec': role in typed}

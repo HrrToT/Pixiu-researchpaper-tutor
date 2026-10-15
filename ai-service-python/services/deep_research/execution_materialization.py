@@ -1,7 +1,7 @@
 """Expose generated execution choices before any semantic verification."""
 from copy import deepcopy
 
-from services.deep_research.protocol_text import render_execution_spec
+from services.deep_research.experiment_protocol import claim_protocol_text
 
 
 def normalize_execution_spec(role, spec):
@@ -35,7 +35,7 @@ def materialize_execution_claim(claim):
         return result
     if result.get('designRole') == 'hypothesis' and result.get('hypothesisContractVersion') != 1:
         return result
-    text = render_execution_spec(result.get('designRole'), result.get('executionSpec'))
+    text = claim_protocol_text(result)
     if text:
         suffix = '\n\n' + text
         if not result['text'].endswith(suffix):
@@ -61,7 +61,7 @@ def verification_claim_view(claim):
         return result
     if result.get('designRole') == 'hypothesis' and result.get('hypothesisContractVersion') != 1:
         return result
-    rendered = render_execution_spec(result.get('designRole'), result.get('executionSpec'))
+    rendered = claim_protocol_text(result)
     suffix = '\n\n' + rendered if rendered else ''
     if suffix and result['text'].endswith(suffix):
         result['text'] = result['text'][:-len(suffix)]

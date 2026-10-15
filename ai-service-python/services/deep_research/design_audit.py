@@ -83,6 +83,10 @@ _FIELD_ROOTS = {
     'uncertainty': ('analysis', {'uncertainty'}),
     'decision_rule': ('analysis', {'decision'}),
     'per_group_steps': ('budget', {'baseline', 'recovery'}),
+    'paired_initialization': ('controls', {'initialization'}),
+    'render_settings': ('controls', {'rendering'}),
+    'optimizer_settings': ('controls', {'optimizer'}),
+    'other_interventions': ('controls', {'otherInterventions'}),
 }
 
 
@@ -108,6 +112,11 @@ def _field_supported(field, claim, context, slot):
             return False
     if execution_spec_errors(reference.get('designRole'), reference.get('executionSpec')):
         return False
+    if reference.get('designRole')=='controls' or 'protocolContractVersion' in reference:
+        from services.deep_research.experiment_protocol import protocol_errors
+        if (type(reference.get('protocolContractVersion')) is not int or reference['protocolContractVersion']!=1
+                or protocol_errors(reference.get('designRole'),reference.get('executionSpec'))):
+            return False
     value = reference
     for key in path:
         if isinstance(value, dict) and isinstance(key, str) and key in value:

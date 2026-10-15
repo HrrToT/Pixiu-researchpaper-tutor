@@ -14,7 +14,7 @@ from __future__ import annotations
 import json
 import math
 
-__all__ = ["validate_group_spec", "render_group_spec"]
+__all__ = ["validate_group_spec", "render_group_spec", "validate_operation"]
 
 _SPEC_KEYS = frozenset({"factors"})
 _FACTOR_KEYS = frozenset({"name", "control", "treatment"})
@@ -106,6 +106,16 @@ def _validate_factor(factor, index, errors):
     for role in ("control", "treatment"):
         _validate_operation(factor.get(role), f"{label}.{role}", errors)
     return name
+
+
+def validate_operation(operation, label='operation'):
+    """Shared exact operation/typed-parameter schema, without a truth verdict."""
+    errors = []
+    try:
+        _validate_operation(operation, label, errors)
+    except Exception:
+        return [label + ': invalid operation']
+    return errors
 
 
 def _validate_spec(spec, errors):

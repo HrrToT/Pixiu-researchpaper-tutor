@@ -332,6 +332,9 @@ Return a JSON ARRAY of plan items, NOT an object with items field."""
             candidates = allowed or list(dict.fromkeys(sid for item in validated
                 for obligation in item['obligations'] for sid in obligation['requiredSources']))
             validated = validate_plan(ensure_data_prerequisite(validated, candidates, question))
+            if record.get('experimentPlanContractVersion')==1:
+                from services.deep_research.experiment_deliverable import ensure_experiment_deliverable
+                validated=validate_plan(ensure_experiment_deliverable(validated,question,required_default or candidates))
             validate_completion_criteria(validated, required=record.get('planCompletionContractVersion') == 1)
         
         plan_ids = [item["itemId"] for item in validated]
@@ -968,6 +971,7 @@ def make_synthesize_node(
         output_kind = brief_state.get("outputKind", "direction_survey")
         strict_budget = type(record.get('budgetContractVersion')) is int and record['budgetContractVersion'] == 1
         strict_hypothesis = type(record.get('hypothesisContractVersion')) is int and record['hypothesisContractVersion'] == 1
+        strict_protocol = type(record.get('protocolContractVersion')) is int and record['protocolContractVersion'] == 1
         from services.deep_research.answer_constraints import requested_character_limit
         requested_limit = requested_character_limit(question)
         from services.deep_research.synthesis import OUTPUT_KIND_SECTIONS
@@ -1017,6 +1021,8 @@ def make_synthesize_node(
                 claim_fields += ', executionSpec also required for the budget role'
             if strict_hypothesis:
                 claim_fields += ', executionSpec also required for the hypothesis role'
+            if strict_protocol:
+                claim_fields += ', executionSpec also required for the controls role'
         from services.deep_research.design_drafting import synthesis_obligations
         draft_obligations = synthesis_obligations(brief_state.get('plan', []))
         prompt = f"""Synthesize a complete answer to the research question.
@@ -1072,6 +1078,12 @@ Abstract-only claims use detailLevel="abstract" and explicitly limit their scope
 Experiment designs must cover hypothesis, groups, controls, data, metrics, steps, confounders and decisions.
 Orient losses before formulas, distinguish conditional/averaged effects and paper distillation from proposed truncation."""
 
+        if output_kind=='experiment_design' and strict_protocol:
+            from services.deep_research.design_drafting import prospective_draft_prompt
+            prompt=prospective_draft_prompt(question=question,limit=requested_limit,
+                clarification=brief_state.get('clarification',''),gaps=[g.get('question') for g in gaps[:5]],
+                obligations=draft_obligations,sources=source_registry,evidence_marker=evidence_marker,
+                claim_fields=claim_fields,claim_limit=claim_limit,section_templates=section_templates)
         from services.deep_research.synthesis import SCIENTIFIC_TERMINOLOGY
         prompt += '\n' + SCIENTIFIC_TERMINOLOGY
         if output_kind == 'paper_comparison':
@@ -1091,17 +1103,20 @@ Orient losses before formulas, distinguish conditional/averaged effects and pape
             from services.deep_research.design_drafting import design_drafting_requirements
             from services.deep_research.execution_spec import EXECUTION_SPEC_CONTRACT
             prompt += '\n' + EXECUTION_SPEC_CONTRACT
+            if strict_protocol:
+                from services.deep_research.experiment_protocol import PROTOCOL_CONTRACT
+                prompt += '\n' + PROTOCOL_CONTRACT
             if strict_budget:
                 from services.deep_research.budget_spec import BUDGET_SPEC_CONTRACT
                 prompt += '\n' + BUDGET_SPEC_CONTRACT
             if strict_hypothesis:
                 from services.deep_research.hypothesis_spec import HYPOTHESIS_SPEC_CONTRACT
                 prompt += '\n' + HYPOTHESIS_SPEC_CONTRACT
-            prompt += '\n' + design_drafting_requirements(brief_state.get('metricDomains'))
+            prompt += '\n' + design_drafting_requirements(brief_state.get('metricDomains'),compact=strict_protocol)
             from services.deep_research.experimental_reasoning import design_output_outline
             prompt += ('\nREQUIRED OUTPUT OUTLINE (one claim for EACH role, even when several share a section):\n'
                        + json.dumps(design_output_outline(strict_budget=strict_budget,
-                           strict_hypothesis=strict_hypothesis), ensure_ascii=False, separators=(',', ':'))
+                           strict_hypothesis=strict_hypothesis, strict_protocol=strict_protocol), ensure_ascii=False, separators=(',', ':'))
                        + '\nA section title is not a designRole. Include all roles with their own complete specs. '
                        'Budget owns the canonical preparation/per-group amounts. Link hypothesis to analysis '
                        'and exact effect keys; fulfill the requested statistical purpose, never downgrade it.')
@@ -1133,6 +1148,8 @@ Orient losses before formulas, distinguish conditional/averaged effects and pape
             parsed = stamp_budget_contract(parsed, enabled=strict_budget)
             from services.deep_research.hypothesis_contract import stamp_hypothesis_contract
             parsed = stamp_hypothesis_contract(parsed, enabled=strict_hypothesis)
+            from services.deep_research.experiment_protocol import stamp_protocol_contract
+            parsed = stamp_protocol_contract(parsed, enabled=strict_protocol)
             parsed['claims'] = [materialize_execution_claim({**claim, 'designContractVersion': 2})
                                 if isinstance(claim, dict) else claim for claim in parsed['claims']]
         parsed = compact_answer(parsed, question,
@@ -1146,6 +1163,7 @@ Orient losses before formulas, distinguish conditional/averaged effects and pape
             # Compaction must not hide required settings back in metadata.
             parsed = stamp_budget_contract(parsed, enabled=strict_budget)
             parsed = stamp_hypothesis_contract(parsed, enabled=strict_hypothesis)
+            parsed = stamp_protocol_contract(parsed, enabled=strict_protocol)
             parsed['claims'] = [materialize_execution_claim({**claim, 'designContractVersion': 2})
                                 if isinstance(claim, dict) else claim for claim in parsed['claims']]
             from services.deep_research.answer_constraints import answer_character_count
@@ -1208,7 +1226,8 @@ def make_verify_node(
             repair_targets = saved['repairTargets']
         else:
             verification_result = enforce_design_consistency(
-                verify_claims_fn(claims, evidence, budgeted_semantic), evidence)
+                verify_claims_fn(claims, evidence, budgeted_semantic), evidence,
+                protocol_required=record.get('protocolContractVersion')==1)
             current = repo_update(run_id, lambda r: r, expected_revision=None)
             answer_coverage = audit_final_answer(run_id, record.get('question', ''),
                 saved.get('plan', []), verification_result.get('accepted', []),
@@ -1286,7 +1305,8 @@ def make_verify_node(
                     merged = saved.get('repairVerification')
                     if merged is None:
                         checked = verify_claims_fn(revised, evidence, revised_semantic)
-                        merged = enforce_design_consistency(merge_verified_revisions(verification_result, checked), evidence)
+                        merged = enforce_design_consistency(merge_verified_revisions(verification_result, checked), evidence,
+                            protocol_required=record.get('protocolContractVersion')==1)
                         repo_update(run_id, lambda r: {**r, 'state': {**r.get('state', {}),
                             'repairVerificationChecks': checked,
                             'repairVerification': merged}}, expected_revision=None)
@@ -1370,7 +1390,8 @@ def make_publish_node(
         from services.deep_research.design_consistency import enforce_design_consistency
         checked = enforce_design_consistency({'accepted': verified_report.get('verifiedClaims', []),
                                              'rejected': verified_report.get('rejectedClaims', [])},
-                                             brief_state.get('evidence', []))
+                                             brief_state.get('evidence', []),
+                                             protocol_required=record.get('protocolContractVersion')==1)
         if checked['accepted'] != verified_report.get('verifiedClaims', []):
             # A resumed publish must not trust inconsistent marked definitions
             # or retain a coverage verdict for an answer that has been changed.

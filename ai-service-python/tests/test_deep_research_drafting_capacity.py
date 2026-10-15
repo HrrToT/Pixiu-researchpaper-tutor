@@ -2,6 +2,7 @@
 import copy
 import json
 from unittest.mock import Mock
+import pytest
 
 from services.deep_research.design_drafting import synthesis_obligations
 from services.deep_research.graph import make_synthesize_node
@@ -25,7 +26,8 @@ def test_supporting_checklist_cannot_replace_user_deliverable_or_mutate_frozen_p
     assert plan == before
 
 
-def test_strict_experiment_prompt_keeps_late_method_and_named_scene_evidence():
+@pytest.mark.parametrize('protocol',[False,True])
+def test_strict_experiment_prompt_keeps_late_method_and_named_scene_evidence(protocol):
     texts = ['Table caption: Dataset Example contains scene Sample.\nTable row: Sample | 1.0']
     texts += ['Background observation. ' * 22 for _ in range(8)]
     method = ('When training the next layer, the earlier geometry stays fixed, while its opacity '
@@ -41,6 +43,7 @@ def test_strict_experiment_prompt_keeps_late_method_and_named_scene_evidence():
               'state': {'outputKind': 'experiment_design', 'metricDomains': ['quality'], 'evidence': evidence,
                         'plan': [{'obligations': [{'obligationId': 'o', 'purpose': 'answer_requirement',
                             'question': '设计对照', 'completionCriteria': criteria}]}]}}
+    if protocol:record['protocolContractVersion']=1
     before = copy.deepcopy(record)
     invoke = Mock(return_value={'content': '{}'})
     make_synthesize_node(invoke, lambda *a, **k: record)({'run_id': 'r'})

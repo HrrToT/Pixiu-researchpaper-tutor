@@ -547,6 +547,7 @@ class BudgetedSemanticChecker:
                         'executionSpec': c.get('executionSpec'), 'designContractVersion': c.get('designContractVersion'),
                         'budgetContractVersion': c.get('budgetContractVersion'),
                         'hypothesisContractVersion': c.get('hypothesisContractVersion')}
+                        | {'protocolContractVersion':c.get('protocolContractVersion')}
                        for c in [*accepted_context, *proposals] if c['claimId'] not in targets]
             verdicts.extend(self._check_batch(batch, evidence, context, node=batch_node))
         by_id = {v['claimId']: v for v in verdicts}
@@ -580,6 +581,7 @@ class BudgetedSemanticChecker:
             "designContractVersion": c.get("designContractVersion"),
             "budgetContractVersion": c.get("budgetContractVersion"),
             "hypothesisContractVersion": c.get("hypothesisContractVersion"),
+            "protocolContractVersion": c.get("protocolContractVersion"),
         }) for c in wire_claims], ensure_ascii=False, separators=(',', ':'))
         
         referenced = {ref for claim in wire_claims for ref in claim.get("evidenceRefs", [])}
@@ -685,6 +687,14 @@ Do not require an unexecuted experiment to have results. Do not judge context cl
                       'view aggregation, pairing and seed handling when there are multiple seeds. Mixed metric ' \
                       'directions must be reported as a tradeoff, not automatically no improvement or worse. ' \
                       'Quoting a vague choice does not make it concrete.'
+        if any(c.get('protocolContractVersion')==1 for c in [*claims,*proposal_context]):
+            from services.deep_research.experiment_protocol import PROTOCOL_CONTRACT
+            prompt += '\n' + PROTOCOL_CONTRACT
+            prompt += ('\nCheck that operation parameters actually define initialization, evaluator settings and optimizer rates, '
+                       'not numeric requirements disguised as choice strings. Structure is not proof of executability. '
+                       'Data prechecks stop on empty/overlapping splits; they do not assert an original author view count. '
+                       'Ground scene membership separately. Do not demand an unasserted original view count to approve '
+                       'a proposed split with this explicit precheck. Reject conditional unknown dataset availability.')
         if any(c.get('budgetContractVersion') == 1 for c in [*claims, *proposal_context]):
             prompt += '\nBudget contract 1 is the canonical baseline/recovery configuration. ' \
                       'Check prose and all other definitions against these exact typed choices. ' \
@@ -843,7 +853,7 @@ The dataAvailability object is an internal audit, not new experimental results.
                 context = [*proposal_context, *[{
                     key: c[key] for key in ('claimId', 'text', 'kind', 'conditions',
                         'designRole', 'executionSpec', 'designContractVersion', 'budgetContractVersion',
-                        'hypothesisContractVersion') if key in c
+                        'hypothesisContractVersion','protocolContractVersion') if key in c
                 } for c in siblings if c.get('kind') in {'proposal', 'suggestion', 'hypothesis'}]]
                 verdicts.extend(self._check_batch(batch, evidence, context, node=node))
             return verdicts
