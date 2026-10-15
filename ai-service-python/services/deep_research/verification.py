@@ -35,17 +35,13 @@ def make_evidence(source: dict, quote: str, original: str, *, location: dict,
             "verification": {"literal": "passed", "semantic": "unchecked"}}
 
 
-_NUMBER = re.compile(r"(?<![A-Za-z0-9_.])[-+]?\d+(?:\.\d+)?(?:[eE][-+]?\d+)?(?:\s*%|[x×])?")
-
-
 def _measurement_numbers(text: str) -> set[str]:
     # Dimensional method labels are not measured quantities. The semantic
     # verifier still checks their identity; standalone dimensions stay checked.
     text = re.sub(r'(?<![A-Za-z0-9_])[234]D(?:-?[A-Za-z]+)?(?![A-Za-z0-9_])', '', text)
     text = re.sub(r'(?<![A-Za-z])Table\s+\d+(?![A-Za-z0-9])|表\s*\d+', '', text, flags=re.I)
-    # An explicit positive sign (also used to join conditions, e.g. pruning +2
-    # SH degrees) does not change the quantity. Keep minus and exponent signs.
-    return {normalize_quote(n).replace(' ', '').lstrip('+') for n in _NUMBER.findall(text)}
+    from services.deep_research.measurement_numbers import measurement_numbers
+    return measurement_numbers(text)
 
 
 def _condition_values_text(value):
