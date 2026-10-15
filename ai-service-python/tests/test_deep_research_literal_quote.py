@@ -23,5 +23,14 @@ def test_ambiguous_whitespace_match_is_not_assigned_an_arbitrary_span():
 
 def test_existing_exact_quotes_and_hyphenated_words_are_not_rewritten():
     assert original_quote_span('same text', 'same text and same text') == 'same text'
-    assert original_quote_span('decoder', 'de-\ncoder') is None
+    assert original_quote_span('decoder', 'de-\ncoder') == 'de-\ncoder'
     assert original_quote_span('', 'source') is None
+
+
+def test_pdf_line_wrap_recovers_untouched_original_including_mixed_hyphens():
+    original = 'Local min-\nima occur while back-\npropagating gradients.'
+    assert original_quote_span('Local minima occur while back-propagating gradients.', original) == original
+    assert original_quote_span('Local maxima occur while back-propagating gradients.', original) is None
+    assert original_quote_span('depthvalue', 'depth-value') is None
+    assert original_quote_span('120', '1-\n20') is None
+    assert original_quote_span('decoder', 'de-\ncoder and dec-\noder') is None

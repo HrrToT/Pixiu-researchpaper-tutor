@@ -36,6 +36,31 @@ def test_batch_saves_calls_without_mixing_paper_locations_or_hashes(tmp_path):
     assert invoke.call_count == 1
 
 
+@pytest.mark.parametrize('authorized', [True, False])
+def test_live_snapshot_is_checked_once_before_extracting_and_denial_stops_send(tmp_path, authorized):
+    from services.deep_research.contracts import DeepResearchError
+    repo, reads = setup(tmp_path)
+    class SnapshotScope:
+        def __init__(self):
+            self.checks = []
+        def __call__(self, *args):
+            pytest.fail('Use the authoritative batch snapshot check')
+        def validate_materials(self, run_id, materials):
+            self.checks.append((run_id, materials))
+            return authorized
+    scope = SnapshotScope()
+    invoke = Mock(return_value={'content': '[]'})
+    node = make_batched_extract_node(invoke, make_evidence, scope, repo.update_run)
+    if authorized:
+        node({'run_id': 'r'})
+        invoke.assert_called_once()
+    else:
+        with pytest.raises(DeepResearchError, match='范围核对未通过'):
+            node({'run_id': 'r'})
+        invoke.assert_not_called()
+    assert scope.checks == [('r', ['p0', 'p1', 'p2'])]
+
+
 def test_batch_stores_original_span_after_whitespace_only_recovery(tmp_path):
     repo, reads = setup(tmp_path)
     original = reads[0]['pages'][0]['text'].replace('complete result', 'complete\nresult')

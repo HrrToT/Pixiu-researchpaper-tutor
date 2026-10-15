@@ -19,8 +19,17 @@ def make_batched_extract_node(invoke, make_evidence, validate, update, *, batch_
         existing = {e["evidenceId"] for e in evidence}
         extracted = {(e.get("sourceId"), e.get("contentHash")) for e in evidence}
         pending = []
-        for source in domain.get("readResults", []):
-            if not validate(run_id, source["workId"]):
+        sources = domain.get('readResults', [])
+        # The production authorizer checks the entire live snapshot atomically.
+        # Repeating that same network check for every already-read passage adds
+        # avoidable failures under load. Each later model send rechecks it again.
+        batch_scope = callable(getattr(type(validate), 'validate_materials', None))
+        if batch_scope and not validate.validate_materials(run_id, list(dict.fromkeys(
+                source['workId'] for source in sources))):
+            from services.deep_research.contracts import DeepResearchError
+            raise DeepResearchError('scope_revoked', '材料范围核对未通过，尚未继续提取证据；请检查任务材料或服务状态。')
+        for source in sources:
+            if not batch_scope and not validate(run_id, source["workId"]):
                 continue
             # Parser-verified rows need no model transcription. Preserve every
             # complete visible row before clipping prose or spending model budget.
@@ -81,6 +90,7 @@ def make_batched_extract_node(invoke, make_evidence, validate, update, *, batch_
             prompt = """Extract evidence from each independent passage below.
 Return ONLY a JSON array of {sourceId, quote, obligationIds, conditions}.
 Use the exact sourceId and exact literal quote from THAT passage. Never mix papers.
+Preserve PDF line-break hyphens and spelling; do not rewrite a quotation into smoother prose.
 Select at most THREE complete relevant sentences per passage, including necessary conditions.
 For requested mechanisms, prioritize sentences explaining the entities, conditioning
 inputs and activation/applicability rules over generic performance or background.
