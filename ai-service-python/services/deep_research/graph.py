@@ -1196,7 +1196,7 @@ def make_verify_node(
             repair_targets = saved['repairTargets']
         else:
             verification_result = enforce_design_consistency(
-                verify_claims_fn(claims, evidence, budgeted_semantic))
+                verify_claims_fn(claims, evidence, budgeted_semantic), evidence)
             current = repo_update(run_id, lambda r: r, expected_revision=None)
             answer_coverage = audit_final_answer(run_id, record.get('question', ''),
                 saved.get('plan', []), verification_result.get('accepted', []),
@@ -1274,7 +1274,7 @@ def make_verify_node(
                     merged = saved.get('repairVerification')
                     if merged is None:
                         checked = verify_claims_fn(revised, evidence, revised_semantic)
-                        merged = enforce_design_consistency(merge_verified_revisions(verification_result, checked))
+                        merged = enforce_design_consistency(merge_verified_revisions(verification_result, checked), evidence)
                         repo_update(run_id, lambda r: {**r, 'state': {**r.get('state', {}),
                             'repairVerificationChecks': checked,
                             'repairVerification': merged}}, expected_revision=None)
@@ -1345,7 +1345,8 @@ def make_publish_node(
         
         from services.deep_research.design_consistency import enforce_design_consistency
         checked = enforce_design_consistency({'accepted': verified_report.get('verifiedClaims', []),
-                                             'rejected': verified_report.get('rejectedClaims', [])})
+                                             'rejected': verified_report.get('rejectedClaims', [])},
+                                             brief_state.get('evidence', []))
         if checked['accepted'] != verified_report.get('verifiedClaims', []):
             # A resumed publish must not trust inconsistent marked definitions
             # or retain a coverage verdict for an answer that has been changed.

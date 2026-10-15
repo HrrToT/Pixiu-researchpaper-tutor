@@ -66,6 +66,12 @@ may be referenced across roles without repetition, but must be explicit somewher
 For a newly trained baseline, specify a finite training budget or an operational
 stopping rule with a maximum budget; "train until convergence" alone is not one.
 For an existing baseline, specify an evidence-backed asset and selection rule.
+The authors having trained a model does NOT establish publicly obtainable weights.
+Use an existing baseline only with explicit release/access evidence for the selected
+checkpoint; a code URL alone or "if available, get it from the authors" is insufficient.
+Without that evidence, propose a finite, reproducible baseline training procedure now
+and align controls, seed pairing and execution steps with it. Do not wait for an
+unknown release or silently describe a trained baseline as an existing author asset.
 Then state which paired groups copy that same baseline within each analysis unit.
 Recording a path or hash documents an artifact; it does not define its acquisition.
 Align the hypothesis with the analysis: descriptive effects can explore a

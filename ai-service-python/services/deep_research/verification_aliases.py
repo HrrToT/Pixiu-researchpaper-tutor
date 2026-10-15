@@ -36,7 +36,8 @@ def restore_visible_evidence(rows, reverse):
 
 def restore_verdict_evidence(verdict, reverse):
     restored = deepcopy(verdict)
-    binding = restored.get('dataAvailability')
-    if isinstance(binding, dict) and isinstance(binding.get('evidenceId'), str):
-        binding['evidenceId'] = reverse.get(binding['evidenceId'], binding['evidenceId'])
+    for key in ('dataAvailability', 'assetAvailability'):
+        binding = restored.get(key)
+        if isinstance(binding, dict) and isinstance(binding.get('evidenceId'), str):
+            binding['evidenceId'] = reverse.get(binding['evidenceId'], binding['evidenceId'])
     return restored

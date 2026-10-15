@@ -702,6 +702,23 @@ Do not require an unexecuted experiment to have results. Do not judge context cl
                       'Reject prose that makes a stronger promise than the linked method; do not infer correctness ' \
                       'from matching IDs, labels or nonempty formulas.'
 
+        from services.deep_research.asset_availability import requires_existing_asset
+        if any(requires_existing_asset(c) for c in claims):
+            prompt += '''
+For an existing-baseline budget target, a passed verdict MUST include assetAvailability:
+{"evidenceId":"own fulltext ID","quote":"exact passage from that evidence quote",
+ "assetQuote":"exact selected checkpoint/model-weights identity within availabilityQuote",
+ "availabilityQuote":"exact clause explicitly stating the checkpoint or pretrained weights are released/available",
+ "locator":"published https:// access locator appearing in quote"}.
+Verify that this SAME released asset matches the target's selection rule, method, scene
+and version. A paper saying its authors trained a model does NOT establish public weights.
+A code-only release, future release, available-on-request promise or guessed checkpoint
+cannot pass. Separate clauses about code availability and model training are insufficient.
+If no release/access evidence is supplied, fail this existing-asset choice; propose finite
+baseline training in a revision rather than inventing a locator or treating unknown as available.
+This audits a published reference, not a tested download; do not claim to have fetched it.
+'''
+
         if any(c.get('designContractVersion') == 2 and c.get('designRole') == 'data' for c in claims):
             prompt += '''
 For each v2 data target, distinguish freely proposed parameters from existing data availability.
@@ -781,7 +798,8 @@ The dataAvailability object is an internal audit, not new experimental results.
                     'reason': '',
                     'designAudit': {slot: None for slot in required_slots.get(c.get('designRole'), ())},
                     **({'dataAvailability': None}
-                       if c.get('designContractVersion') == 2 and c.get('designRole') == 'data' else {})}
+                       if c.get('designContractVersion') == 2 and c.get('designRole') == 'data' else {}),
+                    **({'assetAvailability': None} if requires_existing_asset(c) else {})}
                     for c in claims]
                 prompt += '\nFill this exact per-target response skeleton. Change status only after checking. ' \
                           'Replace a null slot with a supported quote, quotes or fields binding ' \

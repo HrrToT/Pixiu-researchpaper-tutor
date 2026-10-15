@@ -6,6 +6,8 @@ import json
 import re
 from typing import Any, Callable
 
+from services.deep_research.asset_availability import requires_existing_asset, enforce_asset_prerequisites
+
 
 def normalize_quote(text: str) -> str:
     # Whitespace is the only permitted transformation of an exact quotation.
@@ -183,9 +185,15 @@ def verify_claims(claims: list[dict], evidence: list[dict],
     accepted = []
     for claim in candidates:
         if verdicts.get(claim["claimId"], {}).get("status") == "passed":
-            accepted.append({**claim, "verification": "proposal" if claim["kind"] in proposals else "semantic_passed"})
+            accepted.append({**claim, "verification": "proposal" if claim["kind"] in proposals else "semantic_passed",
+                             **({'assetAvailability': verdicts[claim['claimId']].get('assetAvailability')}
+                                if requires_existing_asset(claim) else {})})
         else:
             verdict = verdicts.get(claim["claimId"], {})
             rejected.append({"claimId": claim["claimId"], "reason": "semantic_unresolved",
                              "detail": str(verdict.get("reason", ""))[:400]})
-    return {"accepted": accepted, "rejected": rejected}
+    asset_ids = {c.get('claimId') for c in claims if requires_existing_asset(c)}
+    for row in rejected:
+        if row.get('claimId') in asset_ids:
+            row['assetPrerequisite'] = True
+    return enforce_asset_prerequisites({"accepted": accepted, "rejected": rejected}, evidence)

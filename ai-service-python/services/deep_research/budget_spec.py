@@ -38,7 +38,9 @@ BUDGET_SPEC_CONTRACT = (
     "training budget zero when other parameters are still trained. "
     "Different budgets must be labeled unmatched and cannot establish matched-budget effects. "
     "Do not add a contradictory global default. "
-    "These are proposed choices, not paper settings. Existing-asset availability still needs evidence."
+    "These are proposed choices, not paper settings. Existing-asset availability needs an explicit "
+    "release/access clause and published locator from the selected asset's own fulltext evidence; "
+    "authors training a model or releasing code alone is insufficient. Otherwise choose finite baseline training."
 )
 
 _TOP_KEYS = frozenset({"baseline", "recovery"})
