@@ -4,6 +4,8 @@
 
 本文件记录实际实现与验证，不将设计要求、模拟通过或单次模型成功视为完整交付。
 
+本轮执行/审计修复：前端确认paused/waiting_user后停止后台GET轮询，手动刷新、切回任务或窗口恢复焦点时重新核对；运行/排队/停止中的任务继续轮询，不确定动作只恢复GET而不重提。供应商返回的模型标签作为可选reportedModel独立保存，不覆盖配置模型名，不用于路由，也不推断底层权重；已结算结果恢复保留标签，旧记录不回填。后端研究/模型/阅读接口整合1,259项通过、1条依赖警告，前端472项Vitest、类型检查、修改文件lint、构建及6项封闭接口浏览器检查通过。本轮无生成调用，尚不证明真实回答或新留出质量。见 [暂停轮询证据](deep-research-evidence/idle-research-polling-20261015.json)、[模型标签证据](deep-research-evidence/model-labels-20261015.json)。
+
 新留出材料准备已完成：四篇原PDF哈希核对后仅走本机解析/索引，均readingReady/questionReady=true，索引片段分别93/75/57/48，AI概览均not_requested。新版研究模型账本前后均877条，未启动任何新留出研究，6条暂停记录保留。原文关键图表及物理页码已由代理按渲染页核对，不称真人学习效果；不以就绪或索引数判断研究质量。见 [材料准备证据](deep-research-evidence/fresh-holdout-materials-20261015.json)。
 
 当前总验收状态见 [逐项验收矩阵](DEEP_RESEARCH_ACCEPTANCE_STATUS_20261015.json)。`.67`修复来源要点可借用未引用论文的问题：事实要点必须绑定实际引用该精确evidenceId的已接受事实声明，纯建议不能替其他事实完成来源核对。66项定向及研究/配置全套1,189项通过、1条依赖警告；当前新增留出封存/回执33项另行通过，有重叠不相加。见 [引用绑定修复](deep-research-evidence/coverage-source-binding-20261015.json)。
