@@ -9,6 +9,7 @@ from __future__ import annotations
 import json
 import hashlib
 import logging
+import re
 import sqlite3
 import time
 from typing import Any, Callable, TypedDict
@@ -1625,33 +1626,32 @@ def build_deep_research_graph(
 # ── Helpers ────────────────────────────────────────────────────────────────────
 
 def _safe_parse_json(text: str) -> Any:
-    """Parse JSON from LLM output, handling markdown fences and partial responses."""
+    """Parse a complete JSON root, preserving arrays inside Markdown fences."""
     if not text:
         return {}
     
-    # Strip markdown code fences
     cleaned = text.strip()
     if cleaned.startswith("```"):
-        lines = cleaned.split("\n")
-        # Remove first and last lines if they're fences
-        if lines[0].startswith("```"):
-            lines = lines[1:]
-        if lines and lines[-1].strip() == "```":
-            lines = lines[:-1]
-        cleaned = "\n".join(lines)
+        wrapper = re.fullmatch(r'```(?:json)?\s*([\s\S]*?)\s*```', cleaned, re.I)
+        if wrapper is None:
+            return {}
+        cleaned = wrapper.group(1).strip()
     
     try:
         return json.loads(cleaned)
     except json.JSONDecodeError:
-        # Try to find JSON object/array in the text
-        for start_char, end_char in [("{", "}"), ("[", "]")]:
-            start = cleaned.find(start_char)
+        # Legacy prose wrappers may surround a complete value. The earliest
+        # container is the root: never salvage an inner object from a broken
+        # array, or return the first verdict instead of the whole array.
+        root = re.search(r'[\[{]', cleaned)
+        if root:
+            end_char = ']' if root.group() == '[' else '}'
             end = cleaned.rfind(end_char)
-            if start != -1 and end != -1 and end > start:
+            if end > root.start():
                 try:
-                    return json.loads(cleaned[start:end+1])
+                    return json.loads(cleaned[root.start():end+1])
                 except json.JSONDecodeError:
-                    continue
+                    pass
         
         logger.warning("Failed to parse structured model response (%s bytes)", len(text.encode("utf-8")))
         return {}
