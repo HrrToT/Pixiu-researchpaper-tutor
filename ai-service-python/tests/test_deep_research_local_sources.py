@@ -109,6 +109,33 @@ def test_indexed_predecessor_preserves_source_identity_and_rechecks_scope(monkey
     parse.assert_not_called()
 
 
+def test_indexed_named_row_is_retrieved_with_owner_version_and_cache_guards(monkeypatch):
+    from services.tools import retrieval_tools
+    local, get, parse, validate = fixture(monkeypatch)
+    monkeypatch.setattr('services.deep_research.local_sources.importlib.util.find_spec', lambda name: object())
+    def document(index, text, owner='p', version='a'*16):
+        return {'text': text, 'metadata': {'id': owner, 'chunk_index': index,
+            'index_version': version, 'section_title': 'Evaluation', 'page': 4}}
+    top = document(0, 'Relevant method and dataset overview.')
+    low = document(1, 'Generic benchmark overview.')
+    literal = 'Table caption: Synthetic dataset.\nTable row 2: Hotdog | 0.2 | 30'
+    named = document(2, literal)
+    rag = Mock()
+    rag.normalize_id.side_effect = lambda value: value
+    rag.get_documents_by_metadata.return_value = [named, document(3,literal,owner='foreign'),
+                                                 document(4,literal,version='b'*16)]
+    monkeypatch.setattr(retrieval_tools, 'get_rag', lambda: rag)
+    monkeypatch.setattr(retrieval_tools, 'retrieve_fused_evidence', Mock(return_value=[top,low]))
+    found = local('hotdog scene selection', 'p', limit=2)
+    assert [r['chunkIndex'] for r in found] == [0,2]
+    assert found[1]['text'] == literal and found[1]['retrievalMode'] == 'indexed_requested_row'
+    assert found[1]['tableData'] is None  # Literal name retrieval grants no numeric approval.
+    assert local('hotdog scene selection','p',limit=2) == found
+    rag.get_documents_by_metadata.assert_called_once_with({'id':'p'},limit=400)
+    get.assert_not_called()
+    parse.assert_not_called()
+
+
 def test_metric_retrieval_adds_owned_verified_tables_without_more_model_calls(monkeypatch):
     import json
     from services.tools import retrieval_tools

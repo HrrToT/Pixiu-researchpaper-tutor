@@ -36,35 +36,27 @@ class LocalTaskRetriever:
                 items = retrieve_current_paper_evidence(query, pdf_id, limit=limit, allow_query_rewrite=False)
                 if items:
                     indexed = [_indexed_source(item) for item in items]
-                    metrics = _requested_metrics(query)
-                    if metrics and limit > 1:
+                    if limit > 1:
                         from services.tools.retrieval_tools import get_rag
                         from services.evidence_service import normalize_evidence_items
-                        if pdf_id not in self.index_tables:
-                            rag = get_rag()
-                            owned = rag.normalize_id(pdf_id)
+                        from services.deep_research.named_source_rows import include_requested_rows
+                        from services.deep_research.source_continuity import needs_preceding_context, include_preceding_context
+                        rag = get_rag()
+                        owned = rag.normalize_id(pdf_id)
+                        if pdf_id not in self.index_context:
                             raw = rag.get_documents_by_metadata({'id': owned}, limit=400)
-                            # Recheck owner even if a backend ignores its metadata filter.
-                            raw = [row for row in raw if row.get('metadata', {}).get('id') == owned
-                                   and row.get('metadata', {}).get('table_verified_data')]
+                            # Recheck owner even if the backend ignores its filter.
+                            raw = [row for row in raw if row.get('metadata', {}).get('id') == owned]
                             normalized = normalize_evidence_items(raw, source_type='current_paper',
                                 pdf_id=owned, max_text_chars=2000)
-                            self.index_tables[pdf_id] = [_indexed_source(row) for row in normalized]
-                        indexed = _include_metric_tables(indexed, self.index_tables[pdf_id], query, metrics, limit)
-                    elif limit > 1:
-                        from services.deep_research.source_continuity import needs_preceding_context, include_preceding_context
-                        if any(needs_preceding_context(row) for row in indexed):
-                            from services.tools.retrieval_tools import get_rag
-                            from services.evidence_service import normalize_evidence_items
-                            rag = get_rag()
-                            owned = rag.normalize_id(pdf_id)
-                            if pdf_id not in self.index_context:
-                                raw = rag.get_documents_by_metadata({'id': owned}, limit=400)
-                                raw = [row for row in raw if row.get('metadata', {}).get('id') == owned]
-                                normalized = normalize_evidence_items(raw, source_type='current_paper',
-                                    pdf_id=owned, max_text_chars=2000)
-                                self.index_context[pdf_id] = [_indexed_source(row) for row in normalized]
+                            self.index_context[pdf_id] = [_indexed_source(row) for row in normalized]
+                        metrics = _requested_metrics(query)
+                        if metrics:
+                            self.index_tables[pdf_id] = [row for row in self.index_context[pdf_id] if row.get('tableData')]
+                            indexed = _include_metric_tables(indexed, self.index_tables[pdf_id], query, metrics, limit)
+                        elif any(needs_preceding_context(row) for row in indexed):
                             indexed = include_preceding_context(indexed, self.index_context[pdf_id], owned, limit)
+                        indexed = include_requested_rows(indexed, self.index_context[pdf_id], query, owned, limit)
                     return indexed
             except (ImportError, RuntimeError, OSError):
                 pass
