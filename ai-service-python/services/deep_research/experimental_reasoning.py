@@ -112,12 +112,12 @@ DESIGN_ROLE_LABELS = {'hypothesis': '待验证假设', 'groups': '实验分组',
                      'metrics': '指标与测量口径', 'analysis': '结果判断方法', 'limits': '风险与适用边界'}
 
 
-def design_requirements(metric_domains=None, *, roles=None):
+def design_requirements(metric_domains=None, *, roles=None, policy=None):
     from services.deep_research.metric_scope import metric_protocol_requirements
     protocols = metric_protocol_requirements(metric_domains)
     metrics = '; '.join(f'{domain}: {text}' for domain, text in protocols.items())
     metrics += '. Only these requested measurement domains are mandatory; do not add unrelated protocols.'
-    return PROSPECTIVE_DESIGN_POLICY + '\n'.join(f'{role}: {metrics if role == "metrics" else requirement}'
+    return (PROSPECTIVE_DESIGN_POLICY if policy is None else policy) + '\n'.join(f'{role}: {metrics if role == "metrics" else requirement}'
                      for role, (_, requirement) in DESIGN_ROLES.items()
                      if roles is None or role in roles)
 

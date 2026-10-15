@@ -31,6 +31,16 @@ DATA_PRECHECK = ('执行前预检（尚未执行）：枚举实际样本并保�
     '否则停止实验并记录原因，不自动换数据。记录实际数量、排序、种子及随机数实现版本。'
     '这些是预检要求，不表示论文已报告或系统已确认样本数量。')
 
+PROTOCOL_REVIEW_POLICY = '''Protocol contract 1 is structurally checked before this request.
+Judge each control operation's actual scientific meaning, parameters, pairing and consistency;
+nonempty fields do not establish executable initialization, resolution or optimizer rates.
+For controls audit fields bind initialization/rendering/optimizer/otherInterventions respectively
+to paired_initialization/render_settings/optimizer_settings/other_interventions.
+Data prechecks enumerate real items, reject duplicate/missing IDs, and stop on empty or
+overlapping splits. seeded_fraction sorts IDs, shuffles with its seed and uses
+min(N-1,max(1,floor(N*f))) evaluation items for N>=2. These instructions assert no original
+view count. Ground dataset/subset membership independently; unknown availability still fails.'''
+
 
 def protocol_errors(role, spec):
     if role == 'data':

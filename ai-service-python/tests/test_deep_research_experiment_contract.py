@@ -53,7 +53,7 @@ def test_verified_roles_organize_report_and_missing_budget_cannot_be_hidden():
     assert '训练与恢复预算' in result['report_text']
 
 
-def test_joint_design_check_keeps_all_definitions_but_separates_factual_evidence():
+def test_joint_design_check_preserves_configuration_and_full_scientific_context():
     batches = []
     def invoke(**kwargs):
         from services.deep_research.design_audit import REQUIRED
@@ -61,16 +61,19 @@ def test_joint_design_check_keeps_all_definitions_but_separates_factual_evidence
         targets = json.loads(prompt.split('Claims:\n', 1)[1].split('\n\nEvidence:', 1)[0])
         batches.append(targets)
         if any(c.get('designRole') for c in targets):
-            # All definitions remain visible, but only one class of claims is
-            # judged in this call. Facts from other claims never become evidence.
+            # Operational checks retain configuration; scientific checks receive
+            # every definition. Facts from other claims never become evidence.
             roles = {c.get('designRole') for c in targets}
             assert all(requirement in prompt for role, (_, requirement) in DESIGN_ROLES.items()
                        if role in roles and role != 'metrics')
             context = json.JSONDecoder().raw_decode(prompt.split(
                 'Other proposed statements, for consistency only (not evidence and not verdict targets):\n', 1)[1])[0]
             expected = {c['claimId']: c['text'] for c in design_claims()}
+            if kwargs['node'] == 'verify_design_config':
+                from services.deep_research.verification_context import CONFIG_ROLES
+                expected = {key: value for key, value in expected.items() if key in CONFIG_ROLES}
             supplied = {c['claimId']: c['text'] for c in [*targets, *context]}
-            assert supplied == expected  # Every actual sibling definition remains unchanged.
+            assert supplied == expected  # Selected definitions remain unchanged.
             assert 'UNRELATED_PAPER_QUOTE' not in prompt
             assert 'fulfillment of its entire' in prompt
             assert 'needs NO quotation' in prompt

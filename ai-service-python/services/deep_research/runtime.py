@@ -35,7 +35,7 @@ def research_model_options(node, options):
         # still decide whether any revision can be published.
         from services.deep_research.repair_budget import repair_output_options
         return {**repair_output_options(options), 'thinking': {'type': 'disabled'}, 'reasoning_effort': 'none'}
-    if node == 'verify_design_config':
+    if node in {'verify_design_config','verify_repair_design_config'}:
         # Concrete protocol audit: reserve space for the verdict/quoted choices,
         # not an unbounded derivation. Scientific consistency stays high below.
         return {**options, 'thinking': {'type': 'disabled'}, 'reasoning_effort': 'none', 'max_tokens': 6000}

@@ -524,16 +524,18 @@ class BudgetedSemanticChecker:
     def _check(self, claims, evidence, accepted_context, node):
         if not claims:
             return []
-        # Separate concrete configuration from scientific interpretation while
-        # sharing all definitions. Capacity splits happen before dispatch and
+        # Config checks retain operational definitions and explicit dependencies;
+        # scientific interpretation receives the complete proposed configuration.
+        # Capacity splits happen before dispatch and
         # remain subject to the tracked invoker's existing call/token budget.
         proposals = [c for c in claims if c.get('kind') in {'proposal', 'suggestion', 'hypothesis'}]
         facts = [c for c in claims if c.get('kind') not in {'proposal', 'suggestion', 'hypothesis'}]
-        config_roles = {'groups', 'controls', 'data', 'budget', 'steps', 'metrics'}
-        config = [c for c in proposals if c.get('designRole') in config_roles] if node == 'verify' else []
+        from services.deep_research.verification_context import CONFIG_ROLES
+        config = [c for c in proposals if c.get('designRole') in CONFIG_ROLES]
         science = [c for c in proposals if c not in config]
         science_node = 'verify_design_science' if node == 'verify' else 'verify_repair_design_science'
-        proposal_batches = ([(config, 'verify_design_config')] if config else []) + ([(science, science_node)] if science else [])
+        config_node='verify_design_config' if node=='verify' else 'verify_repair_design_config'
+        proposal_batches = ([(config, config_node)] if config else []) + ([(science, science_node)] if science else [])
         fact_slots = max(1, 3 - len(proposal_batches))
         # Keep small answers in one request, leaving reserve for the final
         # coverage audit after a revision. Per-claim evidenceRefs remain binding.
@@ -554,6 +556,10 @@ class BudgetedSemanticChecker:
         return [by_id[c['claimId']] for c in claims]
 
     def _check_batch(self, claims: list[dict], evidence: list[dict], proposal_context: list[dict], *, node='verify') -> list[dict]:
+        config_mode=node in {'verify_design_config','verify_repair_design_config'}
+        if config_mode:
+            from services.deep_research.verification_context import configuration_context
+            proposal_context=configuration_context(claims,proposal_context)
         from services.deep_research.selection import surrounding_context
         metric_domains = self._metric_domains() if callable(self._metric_domains) else self._metric_domains
         from services.deep_research.verification_aliases import (
@@ -688,13 +694,8 @@ Do not require an unexecuted experiment to have results. Do not judge context cl
                       'directions must be reported as a tradeoff, not automatically no improvement or worse. ' \
                       'Quoting a vague choice does not make it concrete.'
         if any(c.get('protocolContractVersion')==1 for c in [*claims,*proposal_context]):
-            from services.deep_research.experiment_protocol import PROTOCOL_CONTRACT
-            prompt += '\n' + PROTOCOL_CONTRACT
-            prompt += ('\nCheck that operation parameters actually define initialization, evaluator settings and optimizer rates, '
-                       'not numeric requirements disguised as choice strings. Structure is not proof of executability. '
-                       'Data prechecks stop on empty/overlapping splits; they do not assert an original author view count. '
-                       'Ground scene membership separately. Do not demand an unasserted original view count to approve '
-                       'a proposed split with this explicit precheck. Reject conditional unknown dataset availability.')
+            from services.deep_research.experiment_protocol import PROTOCOL_REVIEW_POLICY
+            prompt += '\n'+PROTOCOL_REVIEW_POLICY
         if any(c.get('budgetContractVersion') == 1 for c in [*claims, *proposal_context]):
             prompt += '\nBudget contract 1 is the canonical baseline/recovery configuration. ' \
                       'Check prose and all other definitions against these exact typed choices. ' \
@@ -765,8 +766,9 @@ The dataAvailability object is an internal audit, not new experimental results.
 '''
 
         if any(c.get("kind") in {"proposal", "suggestion", "hypothesis"} for c in claims):
-            from services.deep_research.experimental_reasoning import FACTORIAL_REFERENCE, design_requirements
-            if node == 'verify_design_config':
+            from services.deep_research.experimental_reasoning import design_requirements
+            from services.deep_research.design_review_policy import REVIEW_DESIGN_POLICY, REVIEW_FACTORIAL_REFERENCE
+            if config_mode:
                 prompt += '\nCheck that the target configurations are executable and mutually consistent. ' \
                           'Check parameter syntax, explicit intervention levels, split/seed rules, budgets ' \
                           'and measurement procedures. Reject a placeholder such as "pre-register a value". ' \
@@ -777,18 +779,18 @@ The dataAvailability object is an internal audit, not new experimental results.
                           'Reject incompatible sampling units, insufficient independent replication, invalid ' \
                           'metric signs and decision rules. Explain a failure concisely; no full derivation ' \
                           'is needed in the returned reason. Shared context is not itself verified by this call.\n' \
-                          + FACTORIAL_REFERENCE
+                          + REVIEW_FACTORIAL_REFERENCE
             prompt += '\nOther proposed statements, for consistency only (not evidence and not verdict targets):\n' + json.dumps(wire_context, ensure_ascii=False, separators=(',', ':'))
             if any(c.get('designRole') for c in claims):
                 prompt += '\nFor every designRole, verify BOTH logical correctness AND fulfillment of its entire ' \
                           'requirement below. A role label, heading or vague promise is not fulfillment. Fail the ' \
                           'specific claim if its budget, split, procedure or decision criterion is unspecified. ' \
                           'Use the other target claims for shared definitions but not as factual evidence.\n' + design_requirements(
-                              metric_domains, roles={c.get('designRole') for c in claims})
+                              metric_domains, roles={c.get('designRole') for c in claims}, policy=REVIEW_DESIGN_POLICY)
                 from services.deep_research.design_audit import required_design_slots
                 required_slots = {role: slots for role, slots in required_design_slots(metric_domains).items()
                                   if role in {c.get('designRole') for c in claims}}
-                prompt += ('\nPassed verdicts require FLAT designAudit with these slot keys: '
+                audit_prompt = ('\nPassed verdicts require FLAT designAudit with these slot keys: '
                            + json.dumps(required_slots, separators=(',', ':'))
                            + '. Each slot is {"claimId":"target/context proposal ID","quote":"exact concrete choice"}. '
                            'Missing/vague choices use null and fail. Paper facts cannot supply configuration. '
@@ -797,10 +799,13 @@ The dataAvailability object is an internal audit, not new experimental results.
                            'For discontinuous text use {"quotes":[{"claimId":"ID","quote":"exact substring"}]} '
                            'with 1 to 32 segments. Copy punctuation exactly; never join, summarize or rewrite. '
                            'Every segment must match its source and together cover the whole slot. No mixed forms.')
-                prompt += ('\nFor typed executionSpec choices prefer {"fields":[{"claimId":"target/context ID",'
+                audit_prompt += ('\nFor typed executionSpec choices prefer {"fields":[{"claimId":"target/context ID",'
                            '"path":["executionSpec","factors",0,"treatment","parameters",0,"value"],"value":0.5}]}. '
                            'Copy the exact existing typed value; path elements are object keys or zero-based list indices. '
                            'Use 1-32 bindings. Allowed slot roots: intervention_levels=factors (groups); '
+                           'paired_initialization=initialization, render_settings=rendering, '
+                           'optimizer_settings=optimizer, other_interventions=otherInterventions '
+                           '(controls protocol contract 1); '
                            'scenes=dataset/scenes, split=split, seeds=seeds, sampling_unit=independentUnit (data); '
                            'effects=effects, uncertainty=uncertainty, decision_rule=decision (analysis). '
                            'per_group_steps=recovery (budget contract 1 only). '
@@ -813,7 +818,7 @@ The dataAvailability object is an internal audit, not new experimental results.
                        if c.get('designContractVersion') == 2 and c.get('designRole') == 'data' else {}),
                     **({'assetAvailability': None} if requires_existing_asset(c) else {})}
                     for c in claims]
-                prompt += '\nFill this exact per-target response skeleton. Change status only after checking. ' \
+                audit_prompt += '\nFill this exact per-target response skeleton. Change status only after checking. ' \
                           'Replace a null slot with a supported quote, quotes or fields binding ' \
                           'only if such a choice is already written; otherwise keep null and fail. ' \
                           'Do not replace slot keys with role names or arrays. Symbolic placeholders such as ' \
@@ -821,6 +826,11 @@ The dataAvailability object is an internal audit, not new experimental results.
                           'A dataAvailability null must be replaced with the source-bound object specified above ' \
                           'before a data target can pass; designAudit fields alone do not establish availability.\n' \
                           + json.dumps(skeleton, ensure_ascii=False, separators=(',', ':'))
+                # Hypothesis/limits have no configuration-audit slots. Keep
+                # their complete scientific requirements and context, without
+                # unrelated field-binding schemas for other roles.
+                if required_slots:
+                    prompt += audit_prompt
         template = prompt
         source_keys = ('workId', 'versionId', 'sourceTitle')
         source_registry = {}
