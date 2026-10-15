@@ -51,7 +51,7 @@ logger = logging.getLogger(__name__)
 
 def _execution_failure_message(calls, unknown):
     if unknown:
-        return "上一次请求的结果尚未确认，研究已暂停以避免重复调用。可停止本次研究后再发起补查。"
+        return "上一次请求的结果尚未确认，研究已暂停，系统不会自动重发。"
     failed_model_calls = [c for c in calls
                           if c.get('tool') == 'llm_invoke' and c.get('status') == 'failed']
     if failed_model_calls:

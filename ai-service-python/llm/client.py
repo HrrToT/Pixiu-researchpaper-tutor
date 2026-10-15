@@ -180,11 +180,28 @@ class DeepSeekLLM:
                     timeout=timeout,
                 ), timeout)
             except (requests.RequestException, TimeoutError) as error:
+                # Preserve a bounded category, never exception text: transport
+                # messages may contain proxy credentials or request URLs.
+                if isinstance(error, requests.exceptions.ProxyError):
+                    failure_kind = "proxy_error"
+                elif isinstance(error, requests.exceptions.SSLError):
+                    failure_kind = "tls_error"
+                elif isinstance(error, requests.exceptions.ConnectTimeout):
+                    failure_kind = "connect_timeout"
+                elif isinstance(error, requests.exceptions.ReadTimeout):
+                    failure_kind = "read_timeout"
+                elif isinstance(error, TimeoutError):
+                    failure_kind = "deadline_exceeded"
+                elif isinstance(error, requests.exceptions.ConnectionError):
+                    failure_kind = "connection_error"
+                else:
+                    failure_kind = "transport_error"
                 raise LLMProviderError(
                     "DeepSeek request failed.",
                     provider="deepseek",
                     model=self.model,
                     retryable=True,
+                    failure_kind=failure_kind,
                 ) from error
 
             if response.status_code >= 400:

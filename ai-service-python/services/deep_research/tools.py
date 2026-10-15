@@ -314,10 +314,14 @@ class TrackedLLMInvoker:
             # LLMProviderError with no status_code means unknown (timeout/connection)
             # Rejected HTTP status means failed
             is_unknown = exc.status_code is None or exc.retryable
+            error = {"message": str(exc), "type": "provider_error", "status_code": exc.status_code}
+            if exc.failure_kind in {"proxy_error", "tls_error", "connect_timeout", "read_timeout",
+                                    "deadline_exceeded", "connection_error", "transport_error"}:
+                error["failureKind"] = exc.failure_kind
             self._complete(
                 call_record["callId"],
                 status="unknown" if is_unknown else CALL_STATUS_FAILED,
-                error={"message": str(exc), "type": "provider_error", "status_code": exc.status_code},
+                error=error,
                 reservation_token=call_record.get("reservationToken"),
             )
             raise

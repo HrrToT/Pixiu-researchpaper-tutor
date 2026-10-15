@@ -17,6 +17,8 @@ def test_unknown_call_remains_paused_even_if_another_call_has_payment_error():
     message = _execution_failure_message([model_failure(402), {'status': 'unknown'}], True)
     assert '结果尚未确认' in message
     assert 'HTTP 402' not in message
+    assert '不会自动重发' in message
+    assert '再发起' not in message
 
 
 def test_unrelated_or_stale_payment_failure_does_not_mislabel_current_failure():

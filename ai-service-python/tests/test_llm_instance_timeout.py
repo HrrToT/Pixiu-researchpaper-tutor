@@ -16,6 +16,26 @@ from llm.provider import LLMProviderError, LLMRequest
 GLOBAL_TIMEOUT_SECONDS = 120.0
 
 
+@pytest.mark.parametrize('error,kind', [
+    (requests.exceptions.ProxyError('secret proxy URL'), 'proxy_error'),
+    (requests.exceptions.SSLError('secret TLS URL'), 'tls_error'),
+    (requests.exceptions.ConnectTimeout('secret URL'), 'connect_timeout'),
+    (requests.exceptions.ReadTimeout('secret URL'), 'read_timeout'),
+    (TimeoutError('absolute deadline'), 'deadline_exceeded'),
+    (requests.exceptions.ConnectionError('secret URL'), 'connection_error'),
+    (requests.RequestException('secret URL'), 'transport_error'),
+])
+def test_transport_failure_category_is_safe_and_does_not_retry(llm_env, error, kind):
+    mock_post, _ = llm_env
+    mock_post.side_effect = error
+    with pytest.raises(LLMProviderError) as raised:
+        _invoke(DeepSeekLLM(api_key='test-key'))
+    assert raised.value.failure_kind == kind
+    assert raised.value.status_code is None
+    assert 'secret' not in str(raised.value)
+    mock_post.assert_called_once()
+
+
 class _FakeResponse:
     status_code = 200
 

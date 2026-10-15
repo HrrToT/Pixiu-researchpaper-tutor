@@ -1,9 +1,37 @@
 from unittest.mock import Mock
 import pytest
 
-from llm.provider import LLMResult, LLMUsage
+from llm.provider import LLMResult, LLMUsage, LLMProviderError
 from services.deep_research.repository import DeepResearchRepository
 from services.deep_research.tools import TrackedLLMInvoker
+from services.deep_research.contracts import UnknownCallError
+
+
+@pytest.mark.parametrize('kind', [None, 'deadline_exceeded', 'read_timeout', 'proxy_error', 'secret URL'])
+def test_transport_diagnostics_preserve_unknown_and_reservation_after_reopen(tmp_path, kind):
+    repo = DeepResearchRepository(str(tmp_path/'research.sqlite3'))
+    repo.initialize()
+    repo.create_run({'runId': 'r', 'taskId': 't', 'question': 'Check mechanism'})
+    repo.begin_execution('r')
+    client = Mock()
+    client.invoke.side_effect = LLMProviderError('DeepSeek request failed.', provider='deepseek',
+                                                model='configured', retryable=True, failure_kind=kind)
+    invoke = TrackedLLMInvoker(client, repo.reserve_call, repo.complete_call)
+    with pytest.raises(LLMProviderError):
+        invoke('r', 'resolve_brief', 'Fixed input')
+    restored = DeepResearchRepository(repo.db_path)
+    restored.initialize()
+    call, = restored.list_calls('r')
+    assert call['status'] == 'unknown'
+    assert call['error'].get('failureKind') == (kind if kind in {'deadline_exceeded', 'read_timeout', 'proxy_error'} else None)
+    assert 'secret' not in str(call['error'])
+    assert restored.require_run('r')['budget']['tokens'] > 0
+    # An identical request remains protected after reopening; diagnostics must
+    # never turn an unknown outcome into a retryable settled failure.
+    replay = TrackedLLMInvoker(client, restored.reserve_call, restored.complete_call)
+    with pytest.raises(UnknownCallError):
+        replay('r', 'resolve_brief', 'Fixed input')
+    client.invoke.assert_called_once()
 
 
 @pytest.mark.parametrize('reported', [None, 'provider-version-label'])
