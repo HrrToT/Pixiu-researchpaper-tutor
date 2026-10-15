@@ -46,6 +46,18 @@ def _measurement_numbers(text: str) -> set[str]:
     # An explicit positive sign (also used to join conditions, e.g. pruning +2
     # SH degrees) does not change the quantity. Keep minus and exponent signs.
     return {normalize_quote(n).replace(' ', '').lstrip('+') for n in _NUMBER.findall(text)}
+
+
+def _condition_values_text(value):
+    # Dictionary keys are labels, not assertions (models may use "1", "2").
+    # Traverse all values, including nested numbers; never globally erase digits.
+    if isinstance(value, dict):
+        return ' '.join(_condition_values_text(item) for item in value.values())
+    if isinstance(value, list):
+        return ' '.join(_condition_values_text(item) for item in value)
+    return str(value) if value is not None else ''
+
+
 _ABSENCE = re.compile(r"(?:未|没有)(?:给出|报告|提供|进行|测试|验证|覆盖|涵盖|涉及|包含|包括)|不(?:包含|包括|涉及|涵盖)|不存在|\b(?:does|did|do) not (?:report|provide|test|evaluate|contain|include)|\bno (?:experiment|evaluation|evidence)", re.I)
 _EXPLICIT_ABSENCE = re.compile(r"\b(?:do|does|did) not\b|\bnot (?:report|evaluat|test|consider)|\bno experiment|未(?:报告|进行|测试|考虑)|没有", re.I)
 
@@ -86,7 +98,7 @@ def verify_claims(claims: list[dict], evidence: list[dict],
         if kind == "reported":
             if any(item.get("accessLevel") == "abstract" for item in support) and claim.get("detailLevel") != "abstract":
                 reason = reason or "abstract_only"
-            claim_text = claim.get("text", "") + " " + json.dumps(claim.get("conditions") or {}, ensure_ascii=False)
+            claim_text = claim.get("text", "") + " " + _condition_values_text(claim.get("conditions") or {})
             # Numbers in parser-established dataset names are identifiers, not
             # measurements (e.g. Mip-NeRF 360). Remove the entire exact label,
             # not its digits globally; wrong numerical claims still fail.

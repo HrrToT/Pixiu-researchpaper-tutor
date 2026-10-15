@@ -107,6 +107,15 @@ def test_versioned_arxiv_identity_is_exact_and_does_not_hide_measurements():
     assert not verify_claims([valid], [ev])['accepted']
 
 
+def test_numbered_condition_labels_do_not_become_experimental_values():
+    ev = evidence()
+    valid = claim(ev, '达到200 FPS', conditions={'1': '固定评估条件', '2': {'3': ['200 FPS']}})
+    assert verify_claims([valid], [ev], passed)['accepted']
+    wrong = {**valid, 'conditions': {'1': '固定评估条件', '2': {'3': [999]}}}
+    assert verify_claims([wrong], [ev], passed)['rejected'][0]['reason'] == 'numeric_mismatch'
+    assert not verify_claims([valid], [ev])['accepted']
+
+
 def test_semantic_check_is_required_and_duplicate_verdict_fails_closed():
     ev = evidence()
     assert not verify_claims([claim(ev)], [ev])["accepted"]

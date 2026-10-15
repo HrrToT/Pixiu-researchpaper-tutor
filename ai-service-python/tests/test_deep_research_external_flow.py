@@ -113,6 +113,19 @@ def test_page_ranking_does_not_reward_repeated_bibliography_identifiers():
     assert ranked[0]['text'] == pages[2]['text']
 
 
+def test_paper_name_in_headers_cannot_displace_substantive_method_passage():
+    from services.deep_research.external import _select_pages
+    pages = [{'page': 1, 'text': 'ExamplePaper training sampling.'},
+             {'page': 5, 'text': 'Depth sampling depth sampling depth sampling.'},
+             {'page': 8, 'text': 'ExamplePaper depth sampling training.'},
+             {'page': 12, 'text': 'ExamplePaper depth sampling training training.'}]
+    result = _select_pages(pages, 'ExamplePaper depth sampling training', title='ExamplePaper: An approach')
+    assert {page['page'] for page in result} == {5, 8, 12}
+    assert all(page in pages for page in result)
+    # Removing the only query term would leave no topic: retain deterministic fallback.
+    assert _select_pages(pages, 'ExamplePaper', title='ExamplePaper: An approach')[0]['page'] == 1
+
+
 def test_identifier_in_chinese_question_keeps_translated_discovery_terms(repo):
     fixture = AcademicFixture()
     original_fetch = fixture.fetch_fulltext

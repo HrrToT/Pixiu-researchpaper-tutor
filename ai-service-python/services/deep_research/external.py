@@ -62,7 +62,7 @@ class AcademicAcquisition:
                 # Always retain the translated discovery terms as well: a title
                 # match alone does not locate the requested method passage.
                 reading_query = question + ' ' + query
-                for page in _select_pages(pages, reading_query):
+                for page in _select_pages(pages, reading_query, title=material.get('title', '')):
                     text = page.get("text", "")
                     # Keep manageable passages and exact offsets within the original page.
                     for offset, passage in _page_passages(text):
@@ -121,8 +121,16 @@ def _reading_terms(query):
     return set(re.findall(r'[a-z]{3,}', topic)) - stop
 
 
-def _select_pages(pages, query):
+def _select_pages(pages, query, *, title=''):
     words = _reading_terms(query)
+    # A one-word paper identifier before ':' locates the work, not its method.
+    # It often repeats in page headers and can otherwise displace the passage
+    # explaining the requested operation. Keep substantive multiword titles.
+    label, separator, _ = str(title).partition(':')
+    if separator and re.fullmatch(r'[A-Za-z][A-Za-z0-9_-]*', label.strip()):
+        topic_words = words - _reading_terms(label)
+        if topic_words:
+            words = topic_words
     def rank(pair):
         text = pair[1].get('text', '').lower()
         counts = [text.count(word) for word in words]
