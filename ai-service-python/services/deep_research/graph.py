@@ -632,11 +632,13 @@ def make_extract_node(
         
         # Build obligation lookup for prompt context
         obligation_map = {}
+        obligation_definitions = {}
         for plan_item in plan:
             for obl in plan_item.get("obligations", []):
                 obl_id = obl.get("obligationId", "")
                 if obl_id:
                     obligation_map[obl_id] = obl.get("question", "")
+                    obligation_definitions[obl_id] = obl
         
         # Index existing evidence for merge
         existing_by_id = {e["evidenceId"]: e for e in existing_evidence}
@@ -653,21 +655,23 @@ def make_extract_node(
             source_kind = read_result.get("sourceKind", "local")
             source_title = read_result.get("title", "")
             source_url = read_result.get("url", "")
+            from services.deep_research.obligation_binding import eligible_obligation_ids
+            eligible = eligible_obligation_ids(read_result, obligation_definitions)
+            if not eligible:
+                continue
             
             # Skip re-extraction of already-extracted content (incremental child dedup)
             if (source_id, content_hash) in extracted_hashes:
                 for ev in all_evidence:
                     if ev.get("sourceId") == source_id and ev.get("contentHash") == content_hash:
-                        ev["obligationIds"] = list(obligation_map)
+                        ev["obligationIds"] = eligible
                 continue
             
             if not scope_validator(run_id, work_id):
                 continue
             
             # Get obligation IDs relevant to this source
-            source_obl_ids = read_result.get("obligationIds", [])
-            if not source_obl_ids:
-                source_obl_ids = list(obligation_map.keys())[:5]
+            source_obl_ids = eligible
             
             for page in pages[:5]:
                 text = page.get("text", "")[:3000]
@@ -718,7 +722,9 @@ Each item has:
                     ev_obl_ids = ev.get("obligationIds", [])
                     if not isinstance(ev_obl_ids, list):
                         ev_obl_ids = []
-                    ev_obl_ids = [oid for oid in ev_obl_ids if oid in obligation_map]
+                    ev_obl_ids = [oid for oid in ev_obl_ids if oid in source_obl_ids[:5]]
+                    if not ev_obl_ids:
+                        continue
                     
                     try:
                         evidence = make_evidence_fn(

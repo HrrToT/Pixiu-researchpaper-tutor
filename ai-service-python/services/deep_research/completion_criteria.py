@@ -152,7 +152,14 @@ CRITERIA_GUIDANCE = '''Each obligation also needs completionCriteria: 1-4 object
 {criterionId, requirement, responseType}. IDs are unique within the obligation;
 responseType is identification, explanation, procedure or limitation.
 Fix the minimal requested answer BEFORE seeing a draft. For a how/why mechanism
-question, use explanation criteria for the requested relationships: specify
+question, state a neutral deliverable, never a guessed scientific answer. Do not
+assume a particular mechanism, differentiability trick, uncertainty benefit,
+numerical result or successful outcome before reading its evidence. Criteria
+say what must be explained, not what the paper supposedly concludes.
+When the user asks how training works, require the evidence-supported path from
+model output through the training signal to parameter updates; if a step is
+non-differentiable, ask how the authors handle it rather than assuming it is differentiable.
+Use explanation criteria for the requested relationships: specify
 which input acts on which operation/output and what the reader should understand.
 Naming inputs or listing stages is identification, not an explanation of their
 roles. Do not replace a requested explanation with a fact-list criterion.

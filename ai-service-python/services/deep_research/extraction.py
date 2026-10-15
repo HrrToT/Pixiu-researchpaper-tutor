@@ -5,6 +5,7 @@ import json
 from services.deep_research.literal_quote import original_quote_span
 from services.deep_research.table_evidence import attach_table_packet, visible_table_packet
 from services.deep_research.requested_table_rows import requested_table_row_spans
+from services.deep_research.obligation_binding import eligible_obligation_ids
 
 
 def make_batched_extract_node(invoke, make_evidence, validate, update, *, batch_size=3):
@@ -14,7 +15,7 @@ def make_batched_extract_node(invoke, make_evidence, validate, update, *, batch_
         run_id = state["run_id"]
         record = update(run_id, lambda r: {**r, "stage": "extract"}, expected_revision=None)
         domain = record.get("state", {})
-        obligations = {o["obligationId"]: o["question"] for p in domain.get("plan", []) for o in p["obligations"]}
+        obligations = {o["obligationId"]: o for p in domain.get("plan", []) for o in p["obligations"]}
         evidence = list(domain.get("evidence", []))
         existing = {e["evidenceId"] for e in evidence}
         extracted = {(e.get("sourceId"), e.get("contentHash")) for e in evidence}
@@ -31,10 +32,13 @@ def make_batched_extract_node(invoke, make_evidence, validate, update, *, batch_
         for source in sources:
             if not batch_scope and not validate(run_id, source["workId"]):
                 continue
+            eligible = eligible_obligation_ids(source, obligations)
+            if not eligible:
+                continue
             # Parser-verified rows need no model transcription. Preserve every
             # complete visible row before clipping prose or spending model budget.
             supplied = source.get("obligationIds") or list(obligations)
-            refs = [oid for oid in supplied if oid in obligations]
+            refs = [oid for oid in supplied if oid in eligible]
             for page in source.get("pages", [])[:5]:
                 original = page.get("text", "")
                 location = {**source.get("location", {}), **{k: v for k, v in page.items() if k != "text"}}
@@ -71,7 +75,7 @@ def make_batched_extract_node(invoke, make_evidence, validate, update, *, batch_
                 # Relevance to the new goal is assessed separately, never inherited as passed.
                 for e in evidence:
                     if e.get("sourceId") == source["sourceId"]:
-                        e["obligationIds"] = list(obligations)
+                        e["obligationIds"] = eligible
                 continue
             for page in source.get("pages", [])[:5]:
                 text = page.get("text", "")[:3000]
@@ -84,8 +88,8 @@ def make_batched_extract_node(invoke, make_evidence, validate, update, *, batch_
             batch = pending[start:start + batch_size]
             passages = [{"sourceId": s["sourceId"], "location": location, "text": text,
                          "tableData": visible_table_packet(s.get('tableData'), text),
-                         "obligations": [{"obligationId": oid, "question": obligations[oid]} for oid in
-                             (s.get("obligationIds") or list(obligations)) if oid in obligations]}
+                         "obligations": [{"obligationId": oid, "question": obligations[oid]['question']} for oid in
+                             eligible_obligation_ids(s, obligations)]}
                         for s, location, text in batch]
             prompt = """Extract evidence from each independent passage below.
 Return ONLY a JSON array of {sourceId, quote, obligationIds, conditions}.
@@ -94,6 +98,8 @@ Preserve PDF line-break hyphens and spelling; do not rewrite a quotation into sm
 Select at most THREE complete relevant sentences per passage, including necessary conditions.
 For requested mechanisms, prioritize sentences explaining the entities, conditioning
 inputs and activation/applicability rules over generic performance or background.
+Associate a quote with any relevant LISTED obligation, not only the query that found it.
+For a training/feedback question, retain the causal signal and update path when present.
 For a results table, copy a complete contiguous header-and-row span retaining method, dataset,
 metric and unit labels; table rows are evidence even when they are not grammatical sentences.
 Rows present in tableData are already saved exactly; focus on prose explaining their evaluation conditions.
@@ -120,7 +126,7 @@ Passages:\n""" + json.dumps(passages, ensure_ascii=False)
                 counts[sid] = counts.get(sid, 0) + 1
                 if counts[sid] > 3:
                     continue
-                supplied = set(source.get("obligationIds") or obligations)
+                supplied = set(eligible_obligation_ids(source, obligations))
                 refs = item.get("obligationIds")
                 refs = [oid for oid in refs if isinstance(oid, str) and oid in obligations and oid in supplied] if isinstance(refs, list) else []
                 if not refs:
