@@ -7,9 +7,10 @@ const RUN = 'dr-ui-run';
 const BODY = '本回答引用：全文片段。\n\n编码器输出时空特征，解码器将特征映射为形变。[[1]](#research-evidence-e1)\n\n尚缺独立数据集的泛化比较。';
 const QUOTE = 'The decoder maps the encoded features to deformation parameters.';
 
-async function mountResearch(page) {
+async function mountResearch(page, { status = 'completed', outcome = 'partial' } = {}) {
   const unexpected = [];
   const mutations = [];
+  const reads = [];
   const source = { sourceId: 's1', evidenceIds: ['e1'], sourceKind: 'arxiv',
     title: 'Research UI fixture paper', accessLevel: 'fulltext', page: 4,
     url: 'https://arxiv.org/abs/2310.08528v3', quote: QUOTE,
@@ -22,9 +23,9 @@ async function mountResearch(page) {
     researchRuns: [{ researchId: RUN, question: '解释编码器与解码器各自负责什么。', createdAt: '2026-10-13T00:00:00Z' }],
     activityHistory: [], updatedAt: '2026-10-13T00:00:00Z' };
   const result = { contractVersion: 2, runId: RUN, taskId: TASK, runRevision: 4,
-    status: 'completed', outcome: 'partial', title: artifact.title, report: BODY,
+    status, outcome, title: artifact.title, report: BODY,
     reportVersionId: 'v1', summary: '本回答引用：全文片段。编码器提取时空特征，解码器预测形变；泛化效果还缺证据。',
-    sourceCount: 1, sources: [source], allowedActions: ['continue'],
+    sourceCount: 1, sources: [source], allowedActions: status === 'paused' ? ['resume', 'cancel'] : ['continue'],
     plan: [{ itemId: 'p1', question: '区分编码与解码的输入输出', status: 'completed' }],
     events: [{ eventId: 'ev1', label: '核对原文', status: 'completed' }] };
   await page.route('**/*', async route => {
@@ -40,7 +41,10 @@ async function mountResearch(page) {
     if (method === 'GET' && path === `/api/task-workspaces/${TASK}`) return send(task);
     if (method === 'GET' && [`/api/task-workspaces/${TASK}/materials`, `/api/task-workspaces/${TASK}/operations`].includes(path)) return send([]);
     if (method === 'GET' && path === `/api/task-workspaces/${TASK}/research/capabilities`) return send({ enabled: true, externalSearch: true });
-    if (method === 'GET' && path === `/api/task-workspaces/${TASK}/research/${RUN}`) return send({ task: result, workspace: task });
+    if (method === 'GET' && path === `/api/task-workspaces/${TASK}/research/${RUN}`) {
+      reads.push(request.url());
+      return send({ task: result, workspace: task });
+    }
     if (method === 'PUT' && path === `/api/task-workspaces/${TASK}`) {
       const input = request.postDataJSON();
       mutations.push(input);
@@ -53,9 +57,24 @@ async function mountResearch(page) {
   });
   await page.goto('/');
   const card = page.getByRole('article', { name: '研究结果' });
-  await expect(card).toContainText('已完成部分研究');
-  return { card, unexpected, mutations, getTask: () => task };
+  await expect(card).toContainText(status === 'paused' ? '研究已暂停' : '已完成部分研究');
+  return { card, unexpected, mutations, reads, getTask: () => task };
 }
+
+test('paused research stays quiet until focus and never submits an action automatically', async ({ page }) => {
+  const { card, reads, unexpected, mutations } = await mountResearch(page, { status: 'paused', outcome: 'none' });
+  const initialReads = reads.length;
+  expect(initialReads).toBeGreaterThan(0);
+  await page.waitForTimeout(9000); // More than two real 4-second poll periods.
+  expect(reads).toHaveLength(initialReads);
+  await page.evaluate(() => window.dispatchEvent(new Event('focus')));
+  await expect.poll(() => reads.length, { timeout: 6000 }).toBe(initialReads + 1);
+  await page.waitForTimeout(5000);
+  expect(reads).toHaveLength(initialReads + 1);
+  await expect(card).toContainText('研究已暂停');
+  expect(mutations).toEqual([]);
+  expect(unexpected).toEqual([]);
+});
 
 for (const viewport of [{ width: 1366, height: 768 }, { width: 1440, height: 900 },
   { width: 1093, height: 614 }, { width: 1152, height: 720 }]) {

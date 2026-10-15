@@ -3,6 +3,64 @@ import { describe, expect, it, vi } from 'vitest';
 import { useTaskResearch } from './useTaskResearch';
 
 describe('task research integration', () => {
+  it.each(['paused', 'waiting_user'])('does not repeatedly poll confirmed %s while active runs keep updating', async status => {
+    vi.useFakeTimers();
+    try {
+      const task = { id: 't', researchRuns: [{ researchId: 'idle' }, { researchId: 'active' }] };
+      const api = { get: vi.fn(async (_, id) => ({ task: { taskId: id, status: id === 'idle' ? status : 'running' } })) };
+      const hook = renderHook(() => useTaskResearch({ tasks: [task], activeTaskId: 't' }, api));
+      await act(async () => {});
+      await act(async () => vi.advanceTimersByTimeAsync(16000));
+      expect(api.get.mock.calls.filter(([, id]) => id === 'idle')).toHaveLength(1);
+      expect(api.get.mock.calls.filter(([, id]) => id === 'active').length).toBeGreaterThan(1);
+      hook.unmount();
+    } finally { vi.useRealTimers(); }
+  });
+
+  it('checks paused tasks again on selection and focus while keeping hidden paused history quiet', async () => {
+    vi.useFakeTimers();
+    try {
+      const a = { id: 'a', researchRuns: [{ researchId: 'ra' }] };
+      const b = { id: 'b', researchRuns: [{ researchId: 'rb' }] };
+      const api = { get: vi.fn(async (_, id) => ({ task: { taskId: id, status: 'paused' } })) };
+      const workspace = { tasks: [a, b], activeTaskId: 'a' };
+      const hook = renderHook(({ current }) => useTaskResearch(current, api), { initialProps: { current: workspace } });
+      await act(async () => {});
+      await act(async () => vi.advanceTimersByTimeAsync(12000));
+      expect(api.get).toHaveBeenCalledTimes(2);
+      hook.rerender({ current: { ...workspace, activeTaskId: 'b' } });
+      await act(async () => {});
+      expect(api.get.mock.calls.filter(([task]) => task === 'b')).toHaveLength(2);
+      act(() => window.dispatchEvent(new Event('focus')));
+      await act(async () => vi.advanceTimersByTimeAsync(8000));
+      expect(api.get.mock.calls.filter(([task]) => task === 'b')).toHaveLength(3);
+      expect(api.get.mock.calls.filter(([task]) => task === 'a')).toHaveLength(1);
+      await act(async () => hook.result.current.refresh('a', 'ra'));
+      expect(api.get.mock.calls.filter(([task]) => task === 'a')).toHaveLength(2);
+      hook.unmount();
+    } finally { vi.useRealTimers(); }
+  });
+
+  it('resumes only GET recovery after an uncertain resume from paused state', async () => {
+    vi.useFakeTimers();
+    try {
+      const task = { id: 't', researchRuns: [{ researchId: 'r' }] };
+      let status = 'paused';
+      const api = { get: vi.fn(async () => ({ task: { taskId: 'r', status } })),
+        action: vi.fn(async () => { status = 'running'; throw new Error('结果未确认'); }) };
+      const hook = renderHook(() => useTaskResearch({ tasks: [task], activeTaskId: 't' }, api));
+      await act(async () => {});
+      await act(async () => vi.advanceTimersByTimeAsync(8000));
+      expect(api.get).toHaveBeenCalledTimes(1);
+      await act(async () => hook.result.current.action('t', 'r', 'resume', {}));
+      await act(async () => vi.advanceTimersByTimeAsync(8000));
+      expect(hook.result.current.runs['t/r'].status).toBe('running');
+      expect(api.action).toHaveBeenCalledTimes(1);
+      expect(api.get.mock.calls.length).toBeGreaterThan(1);
+      hook.unmount();
+    } finally { vi.useRealTimers(); }
+  });
+
   it('prioritizes the visible newest run without waiting for slow history and bounds concurrency', async () => {
     const old = { id: 'old', researchRuns: [{ researchId: 'old-run' }] };
     const active = { id: 'active', researchRuns: ['r1', 'r2', 'r3', 'r4'].map(researchId => ({ researchId })) };

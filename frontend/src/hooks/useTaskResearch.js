@@ -3,6 +3,7 @@ import { taskResearchApi } from '../services/taskResearchApi';
 import { clearResearchIntent, getResearchIntent, researchIntentKey } from '../services/researchStartIntent';
 
 const terminal = new Set(['succeeded', 'completed', 'failed', 'cancelled']);
+const idle = new Set(['paused', 'waiting_user']);
 export function useTaskResearch(workspace, api = taskResearchApi, operations = null) {
   const [runs, setRuns] = useState({});
   const [errors, setErrors] = useState({});
@@ -19,6 +20,7 @@ export function useTaskResearch(workspace, api = taskResearchApi, operations = n
   const latest = useRef(workspace);
   latest.current = workspace;
   const finished = useRef(new Set());
+  const idleRuns = useRef(new Set());
   const actionVersions = useRef(new Map());
   const pendingActions = useRef(new Set());
   const runRevisions = useRef(new Map());
@@ -48,11 +50,24 @@ export function useTaskResearch(workspace, api = taskResearchApi, operations = n
     setRuns((previous) => ({ ...previous, [key]: research }));
     if (terminal.has(research.status)) finished.current.add(key);
     else finished.current.delete(key);
+    if (idle.has(research.status)) idleRuns.current.add(key);
+    else idleRuns.current.delete(key);
     return research;
   };
   useEffect(() => {
     let disposed = false;
     let timer;
+    // Paused/clarification states change only through an action. Check them
+    // once when revisiting this task or returning to the app, rather than
+    // continuously reading every historical paused run.
+    const wakeVisibleIdle = () => {
+      if (document.visibilityState === 'hidden') return;
+      const task = latest.current.tasks.find(value => value.id === visibleTaskId);
+      for (const run of task?.researchRuns || []) idleRuns.current.delete(`${task.id}/${run.researchId}`);
+    };
+    wakeVisibleIdle();
+    window.addEventListener('focus', wakeVisibleIdle);
+    document.addEventListener('visibilitychange', wakeVisibleIdle);
     const poll = async () => {
       const ordered = [...latest.current.tasks].sort((a, b) => Number(b.id === visibleTaskId) - Number(a.id === visibleTaskId));
       const queue = ordered.flatMap(task => [...(task.researchRuns || [])].reverse().map(run => [task.id, run.researchId]));
@@ -61,7 +76,7 @@ export function useTaskResearch(workspace, api = taskResearchApi, operations = n
         while (!disposed && cursor < queue.length) {
           const [taskId, researchId] = queue[cursor++];
           const key = `${taskId}/${researchId}`;
-          if (disposed || finished.current.has(key) || pendingActions.current.has(key)) continue;
+          if (disposed || finished.current.has(key) || idleRuns.current.has(key) || pendingActions.current.has(key)) continue;
           const version = actionVersions.current.get(key) || 0;
           const isCurrent = () => !disposed && !pendingActions.current.has(key)
             && (actionVersions.current.get(key) || 0) === version;
@@ -84,7 +99,11 @@ export function useTaskResearch(workspace, api = taskResearchApi, operations = n
       if (!disposed) timer = setTimeout(poll, 4000);
     };
     void poll();
-    return () => { disposed = true; clearTimeout(timer); };
+    return () => {
+      disposed = true; clearTimeout(timer);
+      window.removeEventListener('focus', wakeVisibleIdle);
+      document.removeEventListener('visibilitychange', wakeVisibleIdle);
+    };
   }, [runKey, api, visibleTaskId]);
   const start = async (task, question, context) => {
     const v2 = context.engineVersion ? context.engineVersion === 'deep-research-v2' : import.meta.env.VITE_DEEP_RESEARCH_V2_ENABLED === 'true';
@@ -131,6 +150,7 @@ export function useTaskResearch(workspace, api = taskResearchApi, operations = n
     actionVersions.current.set(key, version);
     pendingActions.current.add(key);
     finished.current.delete(key);
+    idleRuns.current.delete(key);
     const isCurrent = () => actionVersions.current.get(key) === version;
     setRunError(JSON.stringify([taskId, researchId]), 'action', '');
     const actionIntentKey = name === 'continue' && payload?.materialSelection && payload.requestId
