@@ -2,6 +2,7 @@
   "asOf": "2026-10-15",
   "objective": "Complete DR0-DR5 in DEEP_RESEARCH_DESIGN_20261012.md without redefining success around implemented subsets.",
   "overall": "incomplete",
+  "freshMaterialReadiness": "All four new PDFs are now locally parsed and indexed, AI overview not requested, research model ledger unchanged. Research cases remain unexecuted; see deep-research-evidence/fresh-holdout-materials-20261015.json.",
   "evidenceRule": "Machine completion, offline fixtures, real transport, source support, content quality and independent-case eligibility are separate. Historical results are not silently upgraded to current passes.",
   "latestVerification": {
     "researchAndConfigSuite": {"passed": 1189, "warnings": 1, "seconds": 51.65, "scope": "test_deep_research*.py plus test_config.py"},

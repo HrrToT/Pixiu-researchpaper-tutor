@@ -222,7 +222,7 @@
       ]
     }
   ],
-  "independence": "Only original PDFs were read/rendered to freeze criteria. No uploads, research-model requests or paper-specific engine changes were made. Candidate names/hashes had no hits in the checked engine source, development evidence and acceptance receipt paths before preparation. This is engine-development holdout independence, not a claim about model pretraining.",
+  "independence": "At definition freeze, only original PDFs had been read/rendered to establish criteria; no uploads, research-model requests or paper-specific engine changes had occurred. Candidate names/hashes had no hits in the checked engine source, development evidence and acceptance receipt paths before preparation. Subsequent parse-only readiness is recorded separately. This is engine-development holdout independence, not a claim about model pretraining.",
   "retirements": [
     {
       "case": "H1R",
