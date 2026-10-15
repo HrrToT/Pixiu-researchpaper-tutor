@@ -44,6 +44,28 @@ public class TaskResearchService {
         return requireSuccess(research.researchCapabilities());
     }
 
+    public byte[] sourceFile(String taskId, String runId, String sourceId) {
+        Map<String, Object> sources = getV2Sources(taskId, runId);
+        Map<?, ?> expected = sources.get("sources") instanceof List<?> values ? values.stream()
+                .filter(value -> value instanceof Map<?, ?> source && sourceId.equals(source.get("sourceId")))
+                .map(value -> (Map<?, ?>) value).findFirst().orElse(null) : null;
+        if (expected == null || !"arxiv".equals(expected.get("sourceKind"))) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "此研究中没有可读取的外部来源");
+        }
+        Map<String, Object> exported = requireSuccess(research.exportV2Source(runId, sourceId));
+        if (!(exported.get("source") instanceof Map<?, ?> source)) {
+            throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "来源内容未返回");
+        }
+        for (String key : List.of("sourceId", "workId", "versionId", "contentHash")) {
+            if (!(expected.get(key) instanceof String identity) || identity.isBlank() || !identity.equals(source.get(key))) {
+                throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "来源版本或内容身份不匹配");
+            }
+        }
+        byte[] pdf = "fulltext".equals(source.get("accessLevel")) ? ResearchSourcePdf.decode(source) : null;
+        if (pdf == null) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "尚未保存这篇论文的全文，可查看来源页面");
+        return pdf;
+    }
+
     public Map<String, Object> syncPublication(String taskId, String runId) {
         Map<String, Object> result = getV2(taskId, runId);
         Map<?, ?> state = (Map<?, ?>) result.get("task");

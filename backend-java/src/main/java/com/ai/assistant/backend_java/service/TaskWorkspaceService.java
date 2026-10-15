@@ -72,19 +72,8 @@ public class TaskWorkspaceService {
         if (!arxivId.matches("(?:[0-9]{4}\\.[0-9]{4,5}|[a-z][a-z.-]+/[0-9]{7})(?:v[1-9][0-9]*)?")) {
             throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "学术来源标识无效");
         }
-        byte[] pdf = null;
         String hash = source.get("contentHash") instanceof String value ? value : "";
-        if (source.get("pdfBase64") instanceof String encoded) {
-            if (encoded.length() > 12 * 1024 * 1024) throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "全文过大");
-            try {
-                pdf = java.util.Base64.getDecoder().decode(encoded);
-                if (pdf.length < 5 || pdf.length > 8 * 1024 * 1024
-                        || !"%PDF-".equals(new String(pdf, 0, 5, java.nio.charset.StandardCharsets.US_ASCII))
-                        || !hash.equals(java.util.HexFormat.of().formatHex(java.security.MessageDigest.getInstance("SHA-256").digest(pdf)))) {
-                    throw new IllegalArgumentException();
-                }
-            } catch (Exception error) { throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "全文内容校验失败"); }
-        }
+        byte[] pdf = ResearchSourcePdf.decode(source);
         String paperId = pdf != null ? hash + ".pdf" : "arxiv:" + arxivId;
         if (!researchPapers.existsById(paperId)) {
             var paper = new com.ai.assistant.backend_java.model.Paper();

@@ -677,6 +677,34 @@ class TaskResearchV2ControllerTest {
     // === Helpers ===
 
     @Test
+    void readingExternalFulltextChecksIdentityWithoutAddingTaskMaterials() throws Exception {
+        Map<String, Object> binding = v2RunBinding("read-source", 1L, "completed");
+        binding.put("sourcePolicy", Map.of("mode", "academic_external"));
+        tasks.attachResearchRun("work", workspace.get("revision"), binding);
+        byte[] bytes = "%PDF-test-cached".getBytes(java.nio.charset.StandardCharsets.US_ASCII);
+        String hash = java.util.HexFormat.of().formatHex(java.security.MessageDigest.getInstance("SHA-256").digest(bytes));
+        Map<String, Object> source = new LinkedHashMap<>(Map.of("sourceId", "s", "sourceKind", "arxiv", "workId", "arxiv:2601.00001",
+                "versionId", "arxiv:2601.00001v2", "contentHash", hash, "accessLevel", "fulltext", "sourceType", "academic_paper",
+                "url", "https://arxiv.org/abs/2601.00001v2"));
+        when(research.getV2Sources("read-source")).thenReturn(ResponseEntity.ok(Map.of("status", "success", "sources", List.of(source))));
+        Map<String, Object> exported = new LinkedHashMap<>(source);
+        exported.put("pdfBase64", java.util.Base64.getEncoder().encodeToString(bytes));
+        when(research.exportV2Source("read-source", "s")).thenReturn(ResponseEntity.ok(Map.of("status", "success", "source", exported)));
+        Object revision = tasks.get("work").get("revision");
+        mvc.perform(get("/api/task-workspaces/work/research/read-source/sources/s/file"))
+                .andExpect(status().isOk()).andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.content().bytes(bytes))
+                .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.header().string("Content-Type", "application/pdf"));
+        org.junit.jupiter.api.Assertions.assertEquals(revision, tasks.get("work").get("revision"));
+        org.junit.jupiter.api.Assertions.assertEquals(List.of("A", "B", "C"), tasks.get("work").get("paperIds"));
+        exported.put("versionId", "arxiv:2601.00001v3");
+        mvc.perform(get("/api/task-workspaces/work/research/read-source/sources/s/file")).andExpect(status().isBadGateway());
+        tasks.create(Map.of("id", "other", "paperIds", List.of()));
+        mvc.perform(get("/api/task-workspaces/other/research/read-source/sources/s/file")).andExpect(status().isNotFound());
+        exported.put("versionId", "arxiv:2601.00001v2"); exported.remove("pdfBase64"); exported.put("accessLevel", "metadata");
+        mvc.perform(get("/api/task-workspaces/work/research/read-source/sources/s/file")).andExpect(status().isNotFound());
+    }
+
+    @Test
     void externalOnlySelectionIsExplicitAndLocalPolicyRejectsIt() throws Exception {
         Map<String, Object> input = v2StartInput();
         input.put("materialSelection", Map.of("mode", "external_only"));

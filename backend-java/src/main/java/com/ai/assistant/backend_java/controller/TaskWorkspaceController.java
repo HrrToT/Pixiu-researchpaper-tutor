@@ -159,6 +159,16 @@ public class TaskWorkspaceController {
         return research.addSource(id, runId, sourceId, input);
     }
 
+    @GetMapping("/{id}/research/{runId}/sources/{sourceId}/file")
+    public ResponseEntity<byte[]> researchSourceFile(@PathVariable String id, @PathVariable String runId,
+            @PathVariable String sourceId) {
+        return ResponseEntity.ok().contentType(org.springframework.http.MediaType.APPLICATION_PDF)
+                .cacheControl(org.springframework.http.CacheControl.noStore())
+                .header("X-Content-Type-Options", "nosniff")
+                .header("Content-Disposition", "inline; filename=research-source.pdf")
+                .body(research.sourceFile(id, runId, sourceId));
+    }
+
     @GetMapping("/{id}/research/{runId}/events")
     public Map<String, Object> getResearchEvents(@PathVariable String id, @PathVariable String runId) {
         return research.getEventsUnified(id, runId);
