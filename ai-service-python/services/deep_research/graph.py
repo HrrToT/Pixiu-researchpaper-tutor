@@ -981,12 +981,15 @@ def make_synthesize_node(
         paper_titles = {m.get('materialId'): m.get('title', '') for m in record.get('materials', [])}
         
         # Format evidence summaries with obligation binding
-        from services.deep_research.selection import balanced_sample, surrounding_context, comparison_evidence_order
+        from services.deep_research.selection import (
+            balanced_sample, surrounding_context, comparison_evidence_order, distinct_evidence_candidates)
         evidence_summaries = []
         evidence_aliases = {}
         source_aliases = {}
         source_registry = {}
-        candidates = comparison_evidence_order(evidence, paper_titles) if output_kind == 'paper_comparison' else evidence
+        candidates = distinct_evidence_candidates(evidence)
+        if output_kind == 'paper_comparison':
+            candidates = comparison_evidence_order(candidates, paper_titles)
         for ev in balanced_sample(candidates,
                 lambda item: (item.get("sourceWorkId", ""), tuple(item.get("obligationIds", []))), 20):
             alias = f"E{len(evidence_aliases) + 1}"

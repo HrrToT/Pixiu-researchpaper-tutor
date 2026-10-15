@@ -28,6 +28,7 @@ _FINALIZATION_NODES: frozenset[str] = frozenset(
         "verify",
         "verify_repair",
         "verify_design_config",
+        "verify_repair_design_config",
         "verify_design_science",
         "verify_repair_design_science",
         "verify_answer_coverage",

@@ -4,6 +4,26 @@ import json
 import re
 
 
+def distinct_evidence_candidates(rows):
+    """Avoid repeating identical provenance/content in a bounded draft prompt.
+
+    Only the evidence ID may differ. Different versions, locations, conditions,
+    obligations or contexts remain separate candidates. Records without an
+    explicit work/version identity are never merged. Stored evidence is untouched.
+    """
+    selected, seen = [], set()
+    for row in rows:
+        if not row.get('sourceWorkId') or not row.get('sourceVersionId'):
+            selected.append(row)
+            continue
+        signature = json.dumps({key: value for key, value in row.items() if key != 'evidenceId'},
+                               sort_keys=True, ensure_ascii=False, separators=(',', ':'))
+        if signature not in seen:
+            selected.append(row)
+            seen.add(signature)
+    return selected
+
+
 def comparison_evidence_order(evidence, paper_titles):
     """Prefer a paper's own verified results before background baselines.
 

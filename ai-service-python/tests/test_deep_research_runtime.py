@@ -143,8 +143,12 @@ def test_reasoning_options_are_reserved_before_provider_send():
     assert research_model_options('repair_claims', {})['reasoning_effort'] == 'none'
     assert research_model_options('repair_claims', {})['thinking'] == {'type': 'disabled'}
     assert research_model_options('repair_claims', {})['max_tokens'] == 8192
-    assert research_model_options('verify_repair', {})['reasoning_effort'] == 'high'
+    assert research_model_options('verify_repair', {})['reasoning_effort'] == 'none'
+    assert research_model_options('verify_repair', {})['thinking'] == {'type': 'disabled'}
     assert research_model_options('verify_repair', {})['max_tokens'] == 8192
+    invoke('run', 'verify_repair', 'revised factual claims', {'max_tokens': 1000}, use_reserve=True)
+    assert reserve.call_args.kwargs['budget_delta']['tokens'] == len(b'revised factual claims') + 1024 + 8192
+    assert provider.invoke.call_args.args[0].extra_body['thinking'] == {'type': 'disabled'}
     assert research_model_options('verify_design_config', {})['reasoning_effort'] == 'none'
     assert research_model_options('verify_design_config', {})['thinking'] == {'type': 'disabled'}
     assert research_model_options('verify_design_config', {})['max_tokens'] == 6000

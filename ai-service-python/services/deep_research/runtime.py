@@ -37,7 +37,7 @@ def research_model_options(node, options):
         return {**repair_output_options(options), 'thinking': {'type': 'disabled'}, 'reasoning_effort': 'none'}
     if node in {'verify_design_config','verify_repair_design_config'}:
         # Concrete protocol audit: reserve space for the verdict/quoted choices,
-        # not an unbounded derivation. Scientific consistency stays high below.
+        # not an unbounded derivation. Scientific checks remain independent below.
         return {**options, 'thinking': {'type': 'disabled'}, 'reasoning_effort': 'none', 'max_tokens': 6000}
     if node in {'verify_design_science', 'verify_repair_design_science'}:
         # Both high and low hidden-reasoning modes exhausted their output caps
@@ -45,10 +45,17 @@ def research_model_options(node, options):
         # but require direct per-claim decisions with concise explicit reasons.
         # A truncated response still fails, never becoming a semantic pass.
         return {**options, 'thinking': {'type': 'disabled'}, 'reasoning_effort': 'none', 'max_tokens': 6000}
-    if node in {'synthesize_compact', 'verify', 'verify_repair'}:
+    if node == 'verify_repair':
+        # H3R-v7 used its entire 8192-token hidden-reasoning allowance without
+        # returning a verdict. Keep the same cap and independent evidence checks,
+        # but request the explicit decisions directly. Empty/truncated responses
+        # still fail and preserve previously checked claims; no automatic retry.
+        return {**options, 'thinking': {'type': 'disabled'}, 'reasoning_effort': 'none',
+                'max_tokens': 8192}
+    if node in {'synthesize_compact', 'verify'}:
         # Bounded rewriting must leave room for its JSON; final verification
         # retains high reasoning and checks the rewritten claims independently.
-        effort = 'high' if node in {'verify', 'verify_repair'} else 'low'
+        effort = 'high' if node == 'verify' else 'low'
         maximum = 16384 if node == 'verify' else 8192
         return {**options, 'thinking': {'type': 'enabled'}, 'reasoning_effort': effort, 'max_tokens': maximum}
     return {**options, 'thinking': {'type': 'disabled'}, 'reasoning_effort': 'none'}
