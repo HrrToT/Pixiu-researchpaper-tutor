@@ -220,7 +220,13 @@ def make_plan_node(
         brief_state = record.get("state", {})
         output_kind = brief_state.get("outputKind", "direction_survey")
         materials = record.get("materials", [])
-        
+        from services.deep_research.data_prerequisite import PROPOSED_PLANNING_GUIDANCE
+        proposed_protocol = output_kind == 'experiment_design' and record.get('experimentPlanContractVersion') == 1
+        data_guidance = PROPOSED_PLANNING_GUIDANCE if proposed_protocol else '''For experiment designs, include dataset/subset availability in the evaluation-conditions investigation:
+retrieve the original evaluation's actual unit count or named units, particularly
+when a paper inherits a subset from another available paper. Existing data availability
+is a necessary factual prerequisite, not an optional historical benchmark retelling.'''
+
         prompt = f"""Create a research plan for this question.
 Question: {question}
 Output kind: {output_kind}
@@ -252,10 +258,7 @@ independently judge whether any unanswered support question still matters. Do no
 requested facts, necessary experimental assumptions or requested comparisons optional.
 For experiment proposals, distinguish learning how the original method works from
 requiring a retelling of every original benchmark in the proposed experiment.
-For experiment designs, include dataset/subset availability in the evaluation-conditions investigation:
-retrieve the original evaluation's actual unit count or named units, particularly
-when a paper inherits a subset from another available paper. Existing data availability
-is a necessary factual prerequisite, not an optional historical benchmark retelling.
+{data_guidance}
 Each obligation should ask for ONE dimension that a short passage can support (e.g. storage,
 speed, quality or evaluation conditions), not a compound demand for every result at once.
 For mechanism questions, explicitly include the requested entities' relationship,
@@ -331,7 +334,8 @@ Return a JSON ARRAY of plan items, NOT an object with items field."""
             # All task materials are permitted candidates; no invented external source.
             candidates = allowed or list(dict.fromkeys(sid for item in validated
                 for obligation in item['obligations'] for sid in obligation['requiredSources']))
-            validated = validate_plan(ensure_data_prerequisite(validated, candidates, question))
+            validated = validate_plan(ensure_data_prerequisite(validated, candidates, question,
+                proposed_protocol=proposed_protocol))
             if record.get('experimentPlanContractVersion')==1:
                 from services.deep_research.experiment_deliverable import ensure_experiment_deliverable
                 validated=validate_plan(ensure_experiment_deliverable(validated,question,required_default or candidates))

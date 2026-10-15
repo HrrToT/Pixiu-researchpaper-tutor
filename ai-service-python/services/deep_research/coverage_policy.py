@@ -19,6 +19,9 @@ map EACH value to its entity, subgroup, aggregate and metric; source quotes/reje
 claims cannot supply an omitted mapping. Compare each requested dimension and paper.
 A clearly scoped evidence limitation can answer an uncertainty question; do not demand
 a universal guarantee. An unexecuted proposal needs no measured experimental results.
+New proposed splits/resolutions/budgets need not reproduce author settings. Require
+original counts/splits/iterations only when requested or needed by a stated factual
+claim; ground existing dataset/subset membership independently.
 
 supporting_research is auxiliary, not automatically required narration. Independently
 judge its necessity for the actual deliverable. If genuinely unnecessary, return

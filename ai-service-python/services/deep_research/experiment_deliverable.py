@@ -1,6 +1,49 @@
 """Separate the requested proposal from the investigations that inform it."""
 from copy import deepcopy
 
+CRITERION_ROLES = {
+    'requested_scope': {'hypothesis', 'groups'},
+    'configuration': {'controls', 'data', 'budget'},
+    'execution_analysis': {'steps', 'metrics', 'analysis'},
+    'limits': {'limits'},
+}
+
+
+def enforce_experiment_coverage(plan, question, claims, verdicts, *, whole_question_id=None):
+    """Missing accepted deliverables cannot be promoted by a coverage verdict.
+
+    This only removes an unsupported completion verdict. Present roles never
+    prove scientific correctness; ordinary binding and semantic checks remain.
+    Unmarked legacy plans retain their existing interpretation.
+    """
+    primaries = {o.get('obligationId') for item in plan for o in item.get('obligations', [])
+                 if o.get('deliverableContractVersion') == 1 and o.get('question') == question
+                 and o.get('purpose') == 'answer_requirement'}
+    if not primaries:
+        return verdicts
+    present = {c.get('designRole') for c in claims if isinstance(c.get('designRole'), str)
+               and c.get('kind') in {'proposal', 'suggestion', 'hypothesis'}
+               and c.get('designContractVersion') == 2}
+    missing = {key: sorted(roles - present) for key, roles in CRITERION_ROLES.items() if roles - present}
+    if not missing:
+        return verdicts
+    result = deepcopy(verdicts)
+    for verdict in result:
+        if not isinstance(verdict, dict):
+            continue
+        if verdict.get('obligationId') not in primaries | {whole_question_id}:
+            continue
+        if verdict.get('status') == 'covered':
+            verdict['status'] = 'partial'
+        verdict['missingDesignRoles'] = sorted({role for values in missing.values() for role in values})
+        if verdict.get('obligationId') in primaries and isinstance(verdict.get('criteria'), list):
+            for criterion in verdict['criteria']:
+                if isinstance(criterion, dict) and criterion.get('criterionId') in missing:
+                    if criterion.get('status') == 'covered':
+                        criterion['status'] = 'partial'
+                    criterion['missingDesignRoles'] = missing[criterion['criterionId']]
+    return result
+
 
 def ensure_experiment_deliverable(plan, question, source_ids):
     """Keep the complete user request mandatory; do not rewrite research as answered.

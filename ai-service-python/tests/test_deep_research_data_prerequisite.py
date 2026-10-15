@@ -3,7 +3,7 @@ import json
 import pytest
 
 from services.deep_research.coverage import validate_plan
-from services.deep_research.data_prerequisite import ensure_data_prerequisite, QUERY
+from services.deep_research.data_prerequisite import ensure_data_prerequisite, QUERY, PROPOSED_QUERY, PROPOSED_QUESTION
 from services.deep_research.graph import make_acquire_node, make_plan_node
 
 
@@ -35,6 +35,26 @@ def test_existing_id_or_untrusted_marker_does_not_suppress_prerequisite():
 def test_short_question_cannot_create_ungrounded_support_exemption():
     result = ensure_data_prerequisite(plan(), ['p'], '实验')
     assert result[0]['obligations'][0]['purpose'] == 'answer_requirement'
+
+
+def test_new_proposed_data_investigation_preserves_scope_sources_and_idempotence():
+    original = plan(); before = deepcopy(original)
+    result = ensure_data_prerequisite(original, ['p', 'q'], 'Propose a new controlled experiment.', proposed_protocol=True)
+    added = result[0]['obligations'][0]
+    assert added['question'] == PROPOSED_QUESTION and added['searchQuery'] == PROPOSED_QUERY
+    assert added['dataPrerequisiteContractVersion'] == 1 and added['requiredSources'] == ['p', 'q']
+    assert result[0]['obligations'][1:] == original[0]['obligations']
+    assert ensure_data_prerequisite(result, ['p', 'q'], 'Propose a new controlled experiment.', proposed_protocol=True) == result
+    assert original == before
+
+
+def test_proposed_investigation_does_not_replace_explicit_original_setting_request():
+    question = 'Report the original view counts and train/test split, then propose a controlled experiment.'
+    original = plan()
+    original[0]['obligations'][0]['question'] = question
+    result = ensure_data_prerequisite(original, ['p'], question, proposed_protocol=True)
+    assert result[0]['obligations'][1]['question'] == question
+    assert result[0]['obligations'][1]['searchQuery'] == original[0]['obligations'][0]['searchQuery']
 
 
 def test_added_requirement_uses_existing_scope_checked_retrieval_and_persists_binding():

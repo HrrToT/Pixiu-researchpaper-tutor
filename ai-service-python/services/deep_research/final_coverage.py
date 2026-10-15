@@ -128,6 +128,9 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
                 invalid_criteria = invalid_criterion_reviews(audit_plan, claims, verdicts)
                 if invalid_criteria:
                     status = 'invalid_response'
+                from services.deep_research.experiment_deliverable import enforce_experiment_coverage
+                verdicts = enforce_experiment_coverage(audit_plan, question, claims, verdicts,
+                                                       whole_question_id=identity)
                 criterion_gaps = completion_criteria_gaps(audit_plan, claims, verdicts)
                 verdicts = [{**v, 'status': 'partial'} if isinstance(v, dict)
                     and v.get('obligationId') in criterion_gaps else v for v in verdicts]
@@ -170,6 +173,12 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
                 and a.get('status') in {'partial', 'missing'}
                 and isinstance(a.get('basis'), dict) and a['basis'].get('kind') == 'source'
                 and isinstance(a['basis'].get('evidenceId'), str)))
+        if len(matching) == 1 and isinstance(matching[0].get('missingDesignRoles'), list):
+            from services.deep_research.experimental_reasoning import DESIGN_ROLE_LABELS
+            gap['missingDesignRoles'] = matching[0]['missingDesignRoles']
+            gap['missingAspects'] = list(dict.fromkeys([
+                *gap.get('missingAspects', []), *['缺少已核实的' + DESIGN_ROLE_LABELS[role]
+                    for role in gap['missingDesignRoles'] if role in DESIGN_ROLE_LABELS]]))
         if gap.get('obligationId') in criterion_gaps:
             gap['missingAspects'] = list(dict.fromkeys([
                 *gap.get('missingAspects', []), *criterion_gaps[gap['obligationId']]]))
