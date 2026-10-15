@@ -19,6 +19,8 @@ def coverage_prompt_byte_limit(budget, output_tokens=3500):
     """Fit to currently available finalization capacity; admission stays atomic."""
     if not budget or 'maxTokens' not in budget:
         return 24000
+    from services.deep_research.finalization_pool import prepare_finalization_budget, released_reserve_tokens
+    budget = prepare_finalization_budget(budget, {'modelCalls': 1}, True, 'verify_answer_coverage')
     keys = ('maxTokens', 'tokens', 'reserveTokens', 'normalTokens',
             'maxModelCalls', 'modelCalls', 'reserveModelCalls', 'reservedModelCalls')
     if any(type(budget.get(k, 0)) is not int or budget.get(k, 0) < 0 for k in keys):
@@ -30,7 +32,7 @@ def coverage_prompt_byte_limit(budget, output_tokens=3500):
     if final >= reserved:
         if ordinary >= calls - reserved:
             return 0
-        remaining = min(remaining, maximum - reserve - normal)
+        remaining = min(remaining, maximum - reserve - normal + released_reserve_tokens(budget))
     return max(0, min(24000, remaining - output_tokens - 1024))
 
 

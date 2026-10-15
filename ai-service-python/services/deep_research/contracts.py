@@ -469,11 +469,13 @@ def merge_budget_counters(current: dict[str, Any], delta: dict[str, Any]) -> dic
     return merged
 
 
-def check_budget_limits(budget: dict[str, Any]) -> str | None:
+def check_budget_limits(budget: dict[str, Any], *, allow_released_reserve=True) -> str | None:
     """Return the exhausted counter name or ``None`` when within limits."""
     token_reserve = int(budget.get('reserveTokens') or 0)
     token_maximum = int(budget.get('maxTokens') or 0)
-    if token_reserve and token_maximum and int(budget.get('normalTokens') or 0) > max(0, token_maximum - token_reserve):
+    from services.deep_research.finalization_pool import released_reserve_tokens
+    released = released_reserve_tokens(budget) if allow_released_reserve else 0
+    if token_reserve and token_maximum and int(budget.get('normalTokens') or 0) > max(0, token_maximum - token_reserve + released):
         return 'normalTokens'
     reserve = int(budget.get("reserveModelCalls") or 0)
     normal = int(budget.get("modelCalls") or 0)

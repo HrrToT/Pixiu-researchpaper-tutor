@@ -3,10 +3,11 @@
 ``select_reservation_pool`` is a PURE, read-only helper invoked inside an
 open database transaction *before* the authoritative budget-validation path.
 It never mutates budgets, never increases limits, never consumes capacity,
-and never bypasses status/time/unknown-call guards.  Its sole purpose is to
-let eligible finalization nodes fall back from the protected reserve pool to
-the normal pool when the reserve is exhausted but unconsumed normal capacity
-remains.
+and never bypasses status/time/unknown-call guards. Eligible finalization nodes
+can fall back to available normal capacity after the protected call slots run
+out. Versioned server-created budgets may also release unused protected tokens
+for those calls. The repository records that release in the same transaction
+as the reservation; total token and call limits remain unchanged.
 
 Return value semantics:
   * ``True``  – caller should attempt the protected reserve pool.
@@ -20,7 +21,7 @@ from __future__ import annotations
 
 from typing import Any
 
-__all__ = ["select_reservation_pool"]
+__all__ = ["select_reservation_pool", "prepare_finalization_budget", "released_reserve_tokens"]
 
 _FINALIZATION_NODES: frozenset[str] = frozenset(
     {
@@ -44,6 +45,52 @@ def _valid_nonneg_int(value: Any) -> bool:
     return isinstance(value, int) and not isinstance(value, bool) and value >= 0
 
 
+def released_reserve_tokens(budget):
+    """Read only the versioned server-owned transfer, never a wider total cap."""
+    if type(budget.get('finalizationBudgetVersion')) is not int or budget['finalizationBudgetVersion'] != 1:
+        return 0
+    value, reserve = budget.get('releasedReserveTokens', 0), budget.get('reserveTokens', 0)
+    if not _valid_nonneg_int(value) or not _valid_nonneg_int(reserve) or value > reserve:
+        return 0
+    return value
+
+
+def eligible_finalization_request(budget, requested_reserve, node):
+    return (isinstance(budget, dict) and type(budget.get('finalizationBudgetVersion')) is int
+            and budget['finalizationBudgetVersion'] == 1 and requested_reserve is True
+            and isinstance(node, str) and node in _FINALIZATION_NODES)
+
+
+def prepare_finalization_budget(budget, delta, requested_reserve, node):
+    """Release unused protected tokens only after protected call slots run out.
+
+    Pure advisory copy. The repository applies it atomically with the actual
+    reservation, after running/time/unknown guards. No limit or usage changes.
+    Legacy budgets keep their original partition and are never opted in here.
+    """
+    if not eligible_finalization_request(budget, requested_reserve, node) or not isinstance(delta, dict):
+        return budget
+    fields = (*_LIMIT_FIELDS, *_USED_FIELDS, 'releasedReserveTokens')
+    if any(not _valid_nonneg_int(budget.get(key, 0)) for key in fields):
+        return budget
+    count = delta.get('modelCalls', 0)
+    cost = delta.get('tokens', 0)
+    if not _valid_nonneg_int(count) or count <= 0 or not _valid_nonneg_int(cost):
+        return budget
+    maximum, reserve = budget.get('maxTokens', 0), budget.get('reserveTokens', 0)
+    calls, protected = budget.get('maxModelCalls', 0), budget.get('reserveModelCalls', 0)
+    normal, used = budget.get('normalTokens', 0), budget.get('tokens', 0)
+    ordinary, final = budget.get('modelCalls', 0), budget.get('reservedModelCalls', 0)
+    released = budget.get('releasedReserveTokens', 0)
+    if (maximum <= 0 or calls <= 0 or reserve > maximum or protected > calls or released > reserve
+            or normal > used or used + cost > maximum or final != protected
+            or ordinary + count > calls - protected
+            or ordinary + final + count > calls):
+        return budget
+    unused = max(0, reserve - (used - normal))
+    return {**budget, 'releasedReserveTokens': max(released, unused)}
+
+
 def select_reservation_pool(
     budget: Any,
     delta: Any,
@@ -57,6 +104,7 @@ def select_reservation_pool(
     in which case it returns ``False`` (use normal pool).
     """
 
+    budget = prepare_finalization_budget(budget, delta, requested_reserve, node)
     # --- fast-path: nothing to do unless caller asked for the reserve pool.
     if requested_reserve is not True:
         return requested_reserve
@@ -131,7 +179,7 @@ def select_reservation_pool(
         return requested_reserve
 
     # --- Condition 4: normal token capacity sufficient.
-    if normal_tokens + delta_tokens > max_tokens - reserve_tokens:
+    if normal_tokens + delta_tokens > max_tokens - reserve_tokens + released_reserve_tokens(budget):
         return requested_reserve
 
     # --- Condition 5: total token capacity sufficient.

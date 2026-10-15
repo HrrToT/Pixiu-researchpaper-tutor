@@ -571,17 +571,23 @@ class DeepResearchRepository:
                         from services.deep_research.contracts import UnresolvedUnknownError
                         raise UnresolvedUnknownError(normalized_run, [row[0] for row in unresolved])
                     if delta:
-                        from services.deep_research.finalization_pool import select_reservation_pool
+                        from services.deep_research.finalization_pool import (
+                            eligible_finalization_request, prepare_finalization_budget,
+                            released_reserve_tokens, select_reservation_pool)
                         # Select against current counters under the same write
                         # transaction. Full budget checks below still admit or
                         # reject; the ledger records the actual pool used.
+                        allow_released = eligible_finalization_request(run_record.get('budget') or {},
+                                                                      use_reserve, normalized_node)
+                        run_record['budget'] = prepare_finalization_budget(run_record.get('budget') or {},
+                                                                         delta, use_reserve, normalized_node)
                         use_reserve = select_reservation_pool(run_record.get('budget') or {},
                                                               delta, use_reserve, normalized_node)
                         run_record["budget"] = _apply_reservation(
                             run_record.get("budget") or {}, delta, use_reserve=use_reserve
                         )
                         from services.deep_research.contracts import check_exploration_headroom
-                        exhausted = check_budget_limits(run_record["budget"])
+                        exhausted = check_budget_limits(run_record["budget"], allow_released_reserve=allow_released)
                         if not exhausted and not use_reserve and int(delta.get('modelCalls') or 0) > 0:
                             headroom = check_exploration_headroom(run_record["budget"], normalized_node)
                             if headroom:
@@ -593,7 +599,8 @@ class DeepResearchRepository:
 
                             raise BudgetExhaustedError(
                                 exhausted,
-                                (int(run_record['budget']['maxTokens']) - int(run_record['budget'].get('reserveTokens') or 0))
+                                (int(run_record['budget']['maxTokens']) - int(run_record['budget'].get('reserveTokens') or 0)
+                                 + (released_reserve_tokens(run_record['budget']) if allow_released else 0))
                                 if exhausted == 'normalTokens' else int(run_record["budget"].get(f"max{exhausted[0].upper()}{exhausted[1:]}", 0)),
                                 int(run_record["budget"].get(exhausted) or 0),
                             )

@@ -256,7 +256,7 @@ class ResearchFacade:
             "materials": materials,
             "materialSnapshot": material_snapshot,  # Immutable Java snapshot
             "contextMaterials": (material_snapshot or {}).get("contextMaterials", []) if isinstance(material_snapshot, dict) else [],
-            "promptVersion": "dr-v2.20261015.100",
+            "promptVersion": "dr-v2.20261016.101",
             "workflowContractVersion": 1,
             "extractionPriorityVersion": 1,
             "planCompletionContractVersion": 1,
@@ -268,7 +268,7 @@ class ResearchFacade:
             "focusPaperIds": request.get("focusPaperIds", []),
             "sourcePolicy": request.get("sourcePolicy", {"mode": "task_only"}),
             "budgetProfile": budget_profile,
-            "budget": budget_limits,
+            "budget": {**budget_limits, 'finalizationBudgetVersion': 1, 'releasedReserveTokens': 0},
             "requestDigest": digest(request),
             "parentRunId": request.get("parentRunId", ""),
             "outputKind": request.get("outputKind", "general"),
