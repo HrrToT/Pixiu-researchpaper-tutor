@@ -64,6 +64,13 @@ quotes for scientific content. Keep exact answer bindings: downloading a PDF doe
 prove the answer uses it unless the bound claim cites it. Metadata never proves a
 method/result. Resolve contrasts/pronouns from preceding sentences; do not assign a
 baseline limitation to the proposed method.
+The app already renders sourceAccessSummary when supplied in Server-rendered answer
+metadata. For a source_metadata ASPECT ONLY, bind that visible label with
+{"claimId":"accepted ID citing the basis evidenceId","field":"sourceAccessSummary"}.
+Do not put acquisition labels into scientific conditions or require redundant prose.
+This field is forbidden in overall/criterion/scientific-aspect bindings: continue
+binding those to actual text/conditions. Its requestExcerpt must actually ask about
+acquisition/access, not an unrelated scientific substring from the question.
 
 Return one JSON object per listed obligationId, including original-question scope:
 {"obligationId":"ID","status":"covered|partial|missing|not_required",

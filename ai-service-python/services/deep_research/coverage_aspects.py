@@ -2,7 +2,7 @@
 from services.deep_research.answer_coverage import _bindings_supported, _known_claims_by_id
 
 
-def invalid_coverage_aspects(verdicts, claims, evidence_rows, questions, *, request_only_obligations=()):
+def invalid_coverage_aspects(verdicts, claims, evidence_rows, questions, *, request_only_obligations=(), display_metadata=None):
     """A covered verdict requires explicit, grounded, individually covered aspects.
 
     This cannot prove that the model found every essential aspect. It prevents
@@ -38,7 +38,7 @@ def invalid_coverage_aspects(verdicts, claims, evidence_rows, questions, *, requ
                 seen.add(identity)
             if not isinstance(aspect.get('requirement'), str) or not aspect['requirement'].strip():
                 valid = False
-            if aspect.get('status') != 'covered' or not _bindings_supported(aspect.get('bindings'), known):
+            if aspect.get('status') != 'covered':
                 valid = False
             basis = aspect.get('basis')
             if not isinstance(basis, dict) or 'referenceError' in basis:
@@ -46,12 +46,14 @@ def invalid_coverage_aspects(verdicts, claims, evidence_rows, questions, *, requ
                 metadata_only = False
                 continue
             if basis.get('kind') == 'source_metadata':
+                from services.deep_research.display_metadata import display_binding_supported, requests_access_level
                 row = evidence.get(basis.get('evidenceId')) if isinstance(basis.get('evidenceId'), str) else None
                 request_excerpt = basis.get('requestExcerpt')
                 supported = (row is not None and basis.get('field') == 'accessLevel'
                     and basis.get('value') in ('fulltext', 'abstract', 'user_note')
                     and row.get('accessLevel') == basis.get('value')
                     and isinstance(request_excerpt, str) and len(request_excerpt.strip()) >= 8
+                    and requests_access_level(request_excerpt)
                     and any(request_excerpt in q for q in questions if isinstance(q, str)))
                 # Metadata belongs to evidence cited by the bound answer, not an
                 # unrelated downloaded paper. Mixed content still needs prose.
@@ -60,10 +62,13 @@ def invalid_coverage_aspects(verdicts, claims, evidence_rows, questions, *, requ
                     isinstance(b, dict) and isinstance(b.get('claimId'), str)
                     and isinstance(known.get(b['claimId']), dict)
                     and basis.get('evidenceId') in known[b['claimId']].get('evidenceRefs', [])
+                    and (_bindings_supported([b], known) or display_binding_supported(b, known, display_metadata))
                     for b in bindings)
                 valid = valid and supported
                 continue
             metadata_only = False
+            if not _bindings_supported(aspect.get('bindings'), known):
+                valid = False
             excerpt = basis.get('excerpt')
             if not isinstance(excerpt, str) or not excerpt.strip():
                 valid = False

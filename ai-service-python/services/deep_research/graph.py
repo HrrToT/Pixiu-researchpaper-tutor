@@ -1419,6 +1419,8 @@ def make_publish_node(
         audit = verified_report.get('answerCoverage', {})
         from services.deep_research.completion_criteria import revalidate_completion_audit
         audit = revalidate_completion_audit(brief_state.get('plan', []), accepted_claims, audit)
+        from services.deep_research.display_metadata import revalidate_display_metadata
+        audit = revalidate_display_metadata(audit, accepted_claims, brief_state.get('evidence', []))
         if audit != verified_report.get('answerCoverage', {}):
             verified_report = {**verified_report, 'answerCoverage': audit}
             repo_update(run_id, lambda r: {**r, 'state': {**r.get('state', {}),

@@ -18,12 +18,12 @@ def _unique(rows, key):
     return result
 
 
-def resolve_coverage_references(verdicts, claims, evidence_rows):
+def resolve_coverage_references(verdicts, claims, evidence_rows, *, display_metadata=None):
     known = _unique(claims, 'claimId')
     evidence = _unique(evidence_rows, 'evidenceId')
     resolved = deepcopy(verdicts)
 
-    def bind(entries):
+    def bind(entries, *, metadata_aspect=False):
         for binding in entries if isinstance(entries, list) else []:
             if not isinstance(binding, dict) or 'field' not in binding:
                 continue
@@ -39,6 +39,8 @@ def resolve_coverage_references(verdicts, claims, evidence_rows):
                 excerpt = claim['text']
             elif binding['field'] == 'conditions' and isinstance(claim.get('conditions'), dict) and claim['conditions']:
                 excerpt = json.dumps(claim['conditions'], ensure_ascii=False, sort_keys=True)
+            elif metadata_aspect and binding['field'] == 'sourceAccessSummary' and isinstance(display_metadata, dict):
+                excerpt = display_metadata.get('sourceAccessSummary', '')
             if excerpt:
                 binding['excerpt'] = excerpt
             else:
@@ -55,8 +57,9 @@ def resolve_coverage_references(verdicts, claims, evidence_rows):
         for aspect in aspects if isinstance(aspects, list) else []:
             if not isinstance(aspect, dict):
                 continue
-            bind(aspect.get('bindings'))
             basis = aspect.get('basis')
+            bind(aspect.get('bindings'), metadata_aspect=isinstance(basis, dict)
+                 and basis.get('kind') == 'source_metadata')
             if not isinstance(basis, dict) or basis.get('kind') != 'source' or 'field' not in basis:
                 continue
             if 'excerpt' in basis:

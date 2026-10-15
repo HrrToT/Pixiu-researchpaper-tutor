@@ -42,6 +42,8 @@ def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, 
     # well as each planned obligation, without changing the stored research plan.
     from services.deep_research.obligation_purpose import normalize_obligation_purposes, nonblocking_research_obligations
     audit_plan = normalize_obligation_purposes(plan, question)
+    from services.deep_research.display_metadata import answer_display_metadata, display_metadata_digest
+    display_metadata = answer_display_metadata(claims, evidence)
     identity = None
     if plan and question:
         known = {o['obligationId'] for p in plan for o in p.get('obligations', [])}
@@ -97,6 +99,7 @@ def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, 
 Question: {question}
 Research and answer obligations (including the original question): {json.dumps(wire_obligations, ensure_ascii=False, separators=(',', ':'))}
 Accepted final claims: {json.dumps(wire_claims, ensure_ascii=False, sort_keys=True, separators=(',', ':'))}
+Server-rendered answer metadata: {json.dumps(display_metadata, ensure_ascii=False, separators=(',', ':'))}
 Available evidence for detecting omitted conditions: {evidence_marker}
 
 {FINAL_COVERAGE_POLICY}
@@ -135,7 +138,7 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
                 verdicts = restore_coverage_evidence(verdicts, reverse_aliases)
                 rows = restore_visible_evidence(rows, reverse_aliases)
                 from services.deep_research.coverage_references import resolve_coverage_references
-                verdicts = resolve_coverage_references(verdicts, claims, rows)
+                verdicts = resolve_coverage_references(verdicts, claims, rows, display_metadata=display_metadata)
                 from services.deep_research.completion_criteria import completion_criteria_gaps, invalid_criterion_reviews
                 invalid_criteria = invalid_criterion_reviews(audit_plan, claims, verdicts)
                 if invalid_criteria:
@@ -155,7 +158,7 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
                 from services.deep_research.coverage_aspects import invalid_coverage_aspects
                 invalid_aspects = invalid_coverage_aspects(verdicts, claims, rows,
                     [question, *[o.get('question', '') for p in audit_plan for o in p.get('obligations', [])]],
-                    request_only_obligations=[identity] if identity else [])
+                    request_only_obligations=[identity] if identity else [], display_metadata=display_metadata)
                 if invalid_aspects:
                     verdicts = [{**v, 'status': 'partial'} if isinstance(v, dict)
                         and v.get('obligationId') in invalid_aspects else v for v in verdicts]
@@ -202,6 +205,7 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
     from services.deep_research.completion_criteria import completion_contract_digest
     return {'status': status, 'verdicts': verdicts if isinstance(verdicts, list) else [],
             'completionContractDigest': completion_contract_digest(plan, claims),
+            'displayMetadataDigest': display_metadata_digest(claims, evidence),
             'gaps': gaps, 'invalidAspectObligations': invalid_aspects,
             'wholeQuestionId': identity, 'nonblockingResearch': nonblocking,
             'criterionGaps': criterion_gaps,
