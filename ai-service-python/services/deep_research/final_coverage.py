@@ -120,6 +120,12 @@ Legacy literal excerpt bindings remain valid; never insert ellipses, normalize
 PDF spelling or punctuation, or combine noncontiguous excerpts into one string.
 When checking factual claims with available evidence, include source-grounded
 essential aspects; quoting only the broad user question is insufficient.
+Each source-grounded factual aspect must bind an accepted factual claim that
+actually cites that precise evidenceId. A related quote from another paper or
+version is not a citation of the accepted answer. For a joint comparison, bind
+the relevant cited claims; do not borrow an uncited source to fill conditions.
+Purely proposed choices may use the explicit request as their basis; an unrelated
+proposal's source basis cannot substitute for grounding the factual answer.
 For an access-level requirement ONLY (what the system actually obtained), use
 basis {{"kind":"source_metadata","evidenceId":"ID cited by the bound claim",
 "field":"accessLevel","value":"fulltext|abstract|user_note",

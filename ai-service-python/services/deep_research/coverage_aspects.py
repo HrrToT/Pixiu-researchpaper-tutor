@@ -78,8 +78,19 @@ def invalid_coverage_aspects(verdicts, claims, evidence_rows, questions, *, requ
                     continue
                 context = row.get('sourceContext') or {}
                 text = context.get('before', '') + row.get('quote', '') + context.get('after', '')
-                valid = valid and excerpt in text
-                source_based = source_based or excerpt in text
+                bindings = aspect.get('bindings')
+                bound_facts = [known[b['claimId']] for b in bindings
+                    if isinstance(b, dict) and isinstance(b.get('claimId'), str)
+                    and isinstance(known.get(b['claimId']), dict)
+                    and known[b['claimId']].get('kind') in {'reported', 'inference'}] \
+                    if isinstance(bindings, list) else []
+                # A real quote from an uncited paper/version cannot ground an
+                # accepted factual answer that cites something else. Several
+                # claims may jointly answer an aspect; at least one factual
+                # binding must actually cite this precise evidence identity.
+                linked = any(eid in c.get('evidenceRefs', []) for c in bound_facts)
+                valid = valid and excerpt in text and (not bound_facts or linked)
+                source_based = source_based or (excerpt in text and linked)
             else:
                 valid = False
         bindings = verdict.get('bindings')

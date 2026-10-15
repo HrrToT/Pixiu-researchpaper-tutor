@@ -5,7 +5,8 @@ import pytest
 from services.deep_research.coverage_aspects import invalid_coverage_aspects
 
 
-CLAIMS = [{'claimId': 'c', 'text': 'The mechanism depends on direction and distance.'}]
+CLAIMS = [{'claimId': 'c', 'text': 'The mechanism depends on direction and distance.',
+           'kind': 'reported', 'evidenceRefs': ['e']}]
 ROWS = [{'evidenceId': 'e', 'quote': 'Direction and distance condition the attributes.'}]
 VERDICT = {'obligationId': 'o', 'status': 'covered', 'aspects': [{
     'aspectId': 'inputs', 'requirement': 'Conditioning inputs', 'status': 'covered',
@@ -17,6 +18,36 @@ def test_grounded_aspect_with_answer_binding_is_structurally_valid():
     original = deepcopy(VERDICT)
     assert invalid_coverage_aspects([VERDICT], CLAIMS, ROWS, []) == []
     assert VERDICT == original
+
+
+def test_exact_quote_from_an_uncited_paper_or_version_cannot_ground_the_answer():
+    v = deepcopy(VERDICT)
+    v['aspects'][0]['basis']['evidenceId'] = 'other-version'
+    rows = [*ROWS, {**ROWS[0], 'evidenceId': 'other-version'}]
+    assert invalid_coverage_aspects([v], CLAIMS, rows, []) == ['o']
+    v['aspects'][0]['basis']['evidenceId'] = 'e'
+    assert invalid_coverage_aspects([v], [{**CLAIMS[0], 'evidenceRefs': []}], ROWS, []) == ['o']
+
+
+def test_joint_answer_may_bind_several_claims_when_one_cites_the_precise_basis():
+    v = deepcopy(VERDICT)
+    v['aspects'][0]['bindings'].append({'claimId': 'b', 'excerpt': 'The second paper uses a different condition.'})
+    claims = [*CLAIMS, {'claimId': 'b', 'text': 'The second paper uses a different condition.',
+                        'kind': 'reported', 'evidenceRefs': ['b-evidence']}]
+    assert invalid_coverage_aspects([v], claims, ROWS, []) == []
+
+
+def test_pure_prospective_requirement_need_not_cite_an_unclaimed_paper_fact():
+    claims = [{**CLAIMS[0], 'kind': 'proposal', 'evidenceRefs': []}]
+    assert invalid_coverage_aspects([VERDICT], claims, ROWS, []) == []
+
+
+def test_proposal_source_cannot_replace_a_factual_answer_source_basis():
+    v = deepcopy(VERDICT)
+    v['bindings'] = deepcopy(v['aspects'][0]['bindings'])
+    proposal = {'claimId': 'p', 'kind': 'proposal', 'text': 'Use a newly proposed direction condition.', 'evidenceRefs': []}
+    v['aspects'][0]['bindings'] = [{'claimId': 'p', 'excerpt': proposal['text']}]
+    assert invalid_coverage_aspects([v], [*CLAIMS, proposal], ROWS, []) == ['o']
 
 
 def test_access_metadata_requires_cited_identity_exact_value_and_request_binding():
