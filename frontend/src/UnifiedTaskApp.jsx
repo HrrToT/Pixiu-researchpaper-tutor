@@ -14,6 +14,7 @@ import CritiqueContent from './components/CritiqueContent';
 import { critiqueVersion, critiqueMessageIsCurrent, resolveCritiqueFollowup } from './utils/critiqueFollowup';
 import { locatePdfQuote } from './utils/pdfQuoteLocator';
 import PdfViewer from './components/PdfViewer';
+import ExternalResearchReader from './components/ExternalResearchReader';
 import TaskNavigation from './components/TaskNavigation';
 import DocumentActions from './components/DocumentActions';
 import DocumentTitle from './components/DocumentTitle';
@@ -144,6 +145,7 @@ export default function UnifiedTaskApp() {
   const [page, setPage] = useState({ pageIndex: 0, totalPages: 0 });
   const [jump, setJump] = useState({ pageIndex: 0, token: 0, anchorId: null });
   const [selectedDocument, setSelectedDocument] = useState(null);
+  const [externalSource, setExternalSource] = useState(null);
   const [selectedLearning, setSelectedLearning] = useState(null);
   const selectedLearningRef = useRef(null);
   selectedLearningRef.current = selectedLearning;
@@ -343,6 +345,7 @@ export default function UnifiedTaskApp() {
   useEffect(() => { localStorage.setItem(LAYOUT_KEY, JSON.stringify(layout)); }, [layout]);
   useEffect(() => {
     setSelectedDocument(null); setSelectedLearning(null); setRecoveryPreview(null); setDocumentDraft('');
+    setExternalSource(null);
     setLocalError(''); setComposerError(''); setMaterialError(''); setShowProcessingHistory(false);
     setReturnContent(null); setFocusMessage(null);
   }, [activeTaskId]);
@@ -453,6 +456,7 @@ export default function UnifiedTaskApp() {
   const openPaper = useCallback(async (paperId, taskId = activeTaskId) => {
     const task = taskRef.current.get(taskId);
     if (!task?.paperIds.includes(paperId)) throw new Error('这篇论文不属于当前任务');
+    setExternalSource(null);
     setJump({ pageIndex: 0, token: 0, anchorId: null });
     setSelectedDocument(null);
     setSelectedLearning(null);
@@ -693,6 +697,7 @@ export default function UnifiedTaskApp() {
     if (activeTaskIdRef.current === taskId) openDocument(note, 'notes', true);
   };
   const openDocument = (item, collection = null, startEditing = false) => {
+    setExternalSource(null);
     setRecoveryPreview(null);
     setSelectedLearning(null); setLocalError('');
     const source = collection || (activeTask?.artifacts.includes(item) ? 'artifacts' : 'notes');
@@ -715,17 +720,20 @@ export default function UnifiedTaskApp() {
     patchLayout({ reader: true });
   };
   const openLearningRecord = activity => {
+    setExternalSource(null);
     const view = { kind: 'learning', id: activity.activityId || activity.id };
     setSelectedDocument(null); setRecoveryPreview(null); setLocalError('');
     setSelectedLearning({ taskId: activeTaskId, id: view.id });
     storeView(activeTaskId, view, true); setReturnContent(view); patchLayout({ reader: true });
   };
   const returnToPaper = () => {
+    setExternalSource(null);
     setReturnContent(null);
     setSelectedDocument(null); setSelectedLearning(null); setRecoveryPreview(null); setLocalError('');
     storeView(activeTaskId, { kind: 'paper' });
   };
   const openPreview = record => {
+    setExternalSource(null);
     setSelectedDocument(null); setSelectedLearning(null); setRecoveryPreview(record);
     const view = { kind: 'preview', record };
     storeView(activeTaskId, view, true); setReturnContent(view); patchLayout({ reader: true });
@@ -774,6 +782,8 @@ export default function UnifiedTaskApp() {
   const activeDocument = selectedDocument?.taskId === activeTaskId ? (selectedDocument.id
     ? activeTask?.[selectedDocument.collection]?.find((item) => (item.id || item.artifactId) === selectedDocument.id)
     : activeTask?.[selectedDocument.collection]?.[selectedDocument.index]) : null;
+  const activeExternalSource = externalSource?.taskId === activeTaskId ? externalSource : null;
+  const closeExternalSource = () => { setExternalSource(null); readerRef.current?.focus(); };
   const selectedDocumentKey = selectedDocument ? documentDraftKey(selectedDocument) : null;
   const activeLearning = selectedLearning?.taskId === activeTaskId
     ? savedLearningActivities.find(item => (item.activityId || item.id) === selectedLearning.id)
@@ -911,6 +921,13 @@ export default function UnifiedTaskApp() {
     } finally { setRestoringDocument(false); }
   };
   const jumpToSource = async (source) => {
+    if (['arxiv', 'external', 'external_academic'].includes(source?.sourceKind)) {
+      if (source.researchTaskId !== activeTaskId || !source.researchRunId || !source.sourceId) return false;
+      setExternalSource({ ...source, taskId: activeTaskId, runId: source.researchRunId });
+      patchLayout({ reader: true }); setCompactPane('reader'); setCompactNavigation(false);
+      return true;
+    }
+    setExternalSource(null);
     const targetPaperId = source?.pdfId || source?.sourcePdfId || activeTask?.focusedPaperId;
     if (!targetPaperId || !activeTask?.paperIds.includes(targetPaperId)) return false;
     let index = Number(source.pageIndex ?? source.sourcePageIndex);
@@ -1232,14 +1249,15 @@ export default function UnifiedTaskApp() {
         event.preventDefault();
         patchLayout({ navWidth: event.key === 'Home' ? 200 : event.key === 'End' ? Math.min(320, width - 832) : clamp(viewLayout.navWidth + steps[event.key], 200, Math.min(320, width - 832)) });
       }} />}
-      <section ref={readerRef} className={`unified-reader ${!layout.reader ? 'unified-desktop-hidden' : ''}`} inert={drawerOpen ? true : undefined} style={{ flexBasis: layout.chat ? `${viewLayout.readerPercent}%` : '100%' }} aria-label="论文与成果">
+      <section ref={readerRef} tabIndex={-1} className={`unified-reader ${!layout.reader ? 'unified-desktop-hidden' : ''}`} inert={drawerOpen ? true : undefined} style={{ flexBasis: layout.chat ? `${viewLayout.readerPercent}%` : '100%' }} aria-label="论文与成果">
         <div className="unified-pane-head">
           <BookOpen size={17} />
-          {activeDocument ? <strong>{selectedDocument.collection === 'notes' ? '笔记' : '成果'}</strong> : <strong title={focusedPaperId ? getPaperTitle(papers, focusedPaperId) : ''}>{preview ? preview.kind === 'research.report' ? '研究报告' : '已生成结果' : activeLearning ? '学习记录' : focusedPaperId ? shortPaperTitle(papers, focusedPaperId) : '阅读区'}</strong>}
-          {(activeDocument || activeLearning || preview) && focusedPaperId && <button type="button" onClick={returnToPaper}>查看原文</button>}
-          {documentActions}
-          {!activeDocument && !activeLearning && !preview && returnContent && <button type="button" onClick={() => { if (!reopenContent(returnContent)) setLocalError('这份记录已移动或暂不可用。'); }}>{returnContent.kind === 'learning' ? '返回学习记录' : returnContent.collection === 'notes' ? '返回笔记' : '返回成果'}</button>}
-          {!activeDocument && !activeLearning && !preview && paperView.url && <div className="unified-translation-modes" role="group" aria-label="翻译视图">
+          {activeExternalSource ? <><strong>外部论文预览</strong><button type="button" onClick={closeExternalSource}>关闭预览</button></>
+            : activeDocument ? <strong>{selectedDocument.collection === 'notes' ? '笔记' : '成果'}</strong> : <strong title={focusedPaperId ? getPaperTitle(papers, focusedPaperId) : ''}>{preview ? preview.kind === 'research.report' ? '研究报告' : '已生成结果' : activeLearning ? '学习记录' : focusedPaperId ? shortPaperTitle(papers, focusedPaperId) : '阅读区'}</strong>}
+          {!activeExternalSource && (activeDocument || activeLearning || preview) && focusedPaperId && <button type="button" onClick={returnToPaper}>查看原文</button>}
+          {!activeExternalSource && documentActions}
+          {!activeExternalSource && !activeDocument && !activeLearning && !preview && returnContent && <button type="button" onClick={() => { if (!reopenContent(returnContent)) setLocalError('这份记录已移动或暂不可用。'); }}>{returnContent.kind === 'learning' ? '返回学习记录' : returnContent.collection === 'notes' ? '返回笔记' : '返回成果'}</button>}
+          {!activeExternalSource && !activeDocument && !activeLearning && !preview && paperView.url && <div className="unified-translation-modes" role="group" aria-label="翻译视图">
             <button type="button" className={translationMode === 'original' ? 'active' : ''} onClick={() => setTranslationMode('original')}>原文</button>
             <button type="button" title={['success','partial'].includes(currentTranslationPage?.status) ? '查看已保存译文' : currentTranslationPage?.status === 'error' ? '查看翻译状态，重试需手动操作' : '打开后翻译当前页'} className={translationMode === 'translation' ? 'active' : ''} onClick={() => setTranslationMode('translation')}>译文</button>
             <button type="button" title={['success','partial'].includes(currentTranslationPage?.status) ? '对照原文与已保存译文' : '对照原文并翻译当前页'} className={translationMode === 'parallel' ? 'active' : ''} onClick={() => setTranslationMode('parallel')}>对照</button>
@@ -1247,18 +1265,21 @@ export default function UnifiedTaskApp() {
           <button type="button" className="unified-pane-hide" title="向左收起阅读区" onClick={() => patchLayout({ reader: false, chat: true, mode: 'chat' })} aria-label="收起阅读区"><PanelLeftClose size={16} /></button>
         </div>
         {localError && <div className="unified-inline-error workbench-reader-error" role="alert"><span>{localError}</span><button type="button" onClick={() => setLocalError('')}>收起</button></div>}
-        {narrowParallel && !activeDocument && !activeLearning && !preview && paperView.url && <div className="unified-translation-narrow" role="group" aria-label="同页对照">
+        {narrowParallel && !activeExternalSource && !activeDocument && !activeLearning && !preview && paperView.url && <div className="unified-translation-narrow" role="group" aria-label="同页对照">
           <span>空间较窄，切换同页原文与译文</span>
           <button type="button" aria-pressed={narrowTranslationSide === 'original'} onClick={() => setNarrowTranslationSide('original')}>看原文</button>
           <button type="button" aria-pressed={narrowTranslationSide === 'translation'} onClick={() => setNarrowTranslationSide('translation')}>看译文</button>
           {!compact && layout.chat && <button type="button" onClick={() => setMode('reader')}>仅阅读</button>}
         </div>}
         <div className="unified-reader-body">
-        {preview ? <div className="unified-document" ref={contentScrollRef} onScroll={saveContentPosition} aria-label="查看已生成结果">
+        {activeExternalSource ? <ExternalResearchReader key={JSON.stringify([activeExternalSource.taskId, activeExternalSource.runId, activeExternalSource.sourceId, activeExternalSource.pageIndex])}
+          source={activeExternalSource} taskPaperIds={activeTask.paperIds} theme={theme} onClose={closeExternalSource} onAddSource={handleAddSource} onOpenPaper={openPaper} />
+        : preview ? <div className="unified-document" ref={contentScrollRef} onScroll={saveContentPosition} aria-label="查看已生成结果">
           {!['research.report', 'paper.overview'].includes(preview.kind) && <div className="unified-document-toolbar"><button type="button" disabled={savingRecovery || (preview.paperIds || preview.result?.materialScope?.allowedPaperIds || []).some(id => !activeTask.paperIds.includes(id))} onClick={recoverResult}><Save size={15} /> {savingRecovery ? '正在保存…' : '保存为成果'}</button></div>}
           <p>{preview.kind === 'paper.overview' ? '论文概览' : preview.kind === 'research.report' ? '研究报告预览' : '保存完整结果，保留当前学习位置。'}</p>
           {(preview.paperIds || preview.result?.materialScope?.allowedPaperIds || []).some(id => !activeTask.paperIds.includes(id)) && <p role="status">请先恢复原请求材料，再保存成果。</p>}
           <div className="unified-document-preview"><CritiqueContent key={contentPositionKey} value={preview.result || {}} target="artifact" papers={papers} storageKey={contentPositionKey}
+            researchContext={{ taskId: activeTaskId, runId: preview.kind === 'research.report' ? preview.requestId : null }}
             text={preview.result?.artifact?.text || preview.result?.message || preview.result?.reply} onJumpToSource={jumpToSource} /></div>
           <CollapsedSources key={contentPositionKey} storageKey={`${contentPositionKey}:sources`} value={{ sources: preview.result?.sources || [] }} onJumpToSource={jumpToSource} />
         </div> : activeLearning ? <div className="unified-document" ref={contentScrollRef} onScroll={saveContentPosition}>
@@ -1291,6 +1312,7 @@ export default function UnifiedTaskApp() {
           }} />
           <details className="unified-document-edit-preview"><summary>预览</summary><MarkdownContent>{documentDraft || '（空白正文）'}</MarkdownContent></details>
           </> : <article className="unified-document-body" aria-label="成果正文"><CritiqueContent key={contentPositionKey} papers={papers} storageKey={contentPositionKey}
+            researchContext={{ taskId: activeTaskId, runId: activeDocument.sourceRunId || activeDocument.sourceResearchId }}
             value={{ ...activeDocument, edited: activeDocument.edited || documentDirty }} target="artifact"
             text={documentDraft || '（空白正文）'} onJumpToSource={jumpToSource}
             onFollowup={issueId => selectCritiqueIssue(activeDocument.id || activeDocument.artifactId, issueId)} /></article>}
@@ -1342,7 +1364,7 @@ export default function UnifiedTaskApp() {
               <p>{activeTask?.paperIds.length ? '在左侧选择论文；对话可以使用当前任务的全部材料。' : '上传 PDF 后即可阅读，再从对话中精读、补课或自测。'}</p>
               {uploading ? <p role="status">正在上传论文，请稍候…</p> : <button type="button" disabled={workspace.ready === false} onClick={() => activeTask?.paperIds.length ? openPaper(activeTask.paperIds[0]) : fileInputRef.current?.click()}>{activeTask?.paperIds.length ? '打开任务论文' : '上传论文'}</button>}
             </div>}
-        {paperView.url && <PaperPageNavigation pageIndex={page.pageIndex} totalPages={page.totalPages} onJump={goToPage} />}
+        {!activeExternalSource && paperView.url && <PaperPageNavigation pageIndex={page.pageIndex} totalPages={page.totalPages} onJump={goToPage} />}
         </div>
         </div>
       </section>

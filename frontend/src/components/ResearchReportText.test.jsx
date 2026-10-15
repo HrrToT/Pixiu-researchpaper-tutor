@@ -4,6 +4,22 @@ import { describe, expect, it, vi } from 'vitest';
 import ResearchReportText from './ResearchReportText';
 
 describe('research citations', () => {
+  it('opens external fulltext with its owning task/run and exact quotation page', () => {
+    const jump = vi.fn();
+    render(<ResearchReportText text="结论 [1](#research-evidence-e)" researchContext={{ taskId: 't', runId: 'r' }} onJumpToSource={jump}
+      sources={[{ sourceId: 's', sourceKind: 'arxiv', evidenceIds: ['e'], title: 'External work', accessLevel: 'fulltext',
+        evidenceQuotes: { e: { quote: 'Exact quote', location: { page: 5 } } }, url: 'https://arxiv.org/abs/2601.00001v2' }]} />);
+    fireEvent.click(screen.getByRole('button', { name: /查看引用/ }));
+    fireEvent.click(screen.getByRole('button', { name: '查看论文原文' }));
+    expect(jump).toHaveBeenCalledWith(expect.objectContaining({ researchTaskId: 't', researchRunId: 'r', sourceId: 's', pageIndex: 4 }));
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  });
+  it('does not promise a fulltext reader for abstract-only external citations', () => {
+    render(<ResearchReportText text="结论 [1](#research-evidence-e)" researchContext={{ taskId: 't', runId: 'r' }} onJumpToSource={vi.fn()}
+      sources={[{ sourceId: 's', sourceKind: 'arxiv', evidenceIds: ['e'], quote: 'Abstract', accessLevel: 'abstract' }]} />);
+    fireEvent.click(screen.getByRole('button', { name: /查看引用/ }));
+    expect(screen.queryByRole('button', { name: '查看论文原文' })).not.toBeInTheDocument();
+  });
   it.each(['unresolved', 'ambiguous'])('does not inherit another quotation page when %s', pageResolution => {
     const jump = vi.fn();
     render(<ResearchReportText text="结论 [1](#research-evidence-ours)" sources={[

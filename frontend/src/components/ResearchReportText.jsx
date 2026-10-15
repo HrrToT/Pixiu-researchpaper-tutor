@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import MarkdownContent from './MarkdownContent';
 
 /** Citation IDs come from the saved report, never from the currently open paper. */
-export default function ResearchReportText({ text, sources = [], onJumpToSource }) {
+export default function ResearchReportText({ text, sources = [], onJumpToSource, researchContext = null }) {
   const [selected, setSelected] = useState(null);
   const trigger = useRef(null);
   const preview = useRef(null);
@@ -41,6 +41,11 @@ export default function ResearchReportText({ text, sources = [], onJumpToSource 
           : selected.location?.pageResolution === 'ambiguous' ? '引文出现在多页，页码未唯一确定'
           : selected.location?.pageResolution === 'unresolved' ? '原文引文已保存，页码暂未定位' : '论文来源'}</p>
         {external && /^https:\/\/arxiv\.org\/abs\//u.test(selected.url || '') && <a href={selected.url} target="_blank" rel="noopener noreferrer">查看来源页面</a>}
+        {external && selected.accessLevel === 'fulltext' && selected.sourceId && researchContext?.runId && onJumpToSource && <button type="button" onClick={() => {
+          onJumpToSource({ ...selected, researchTaskId: researchContext.taskId, researchRunId: researchContext.runId,
+            pageIndex: selected.page != null ? selected.page - 1 : selected.pageIndex });
+          close();
+        }}>查看论文原文</button>}
         {!external && selected.pdfId && onJumpToSource && <button type="button" onClick={() => onJumpToSource({ ...selected,
           pageIndex: selected.page != null ? selected.page - 1 : selected.pageIndex })}>查看论文原文</button>}
       </>}

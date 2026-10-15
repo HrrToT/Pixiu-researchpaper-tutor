@@ -39,7 +39,7 @@ export function critiqueIssues(value, target = 'chat', papers = []) {
   });
 }
 
-export default function CritiqueContent({ value, text, target = 'chat', papers = EMPTY_PAPERS, storageKey = '', onJumpToSource, onFollowup, className = '' }) {
+export default function CritiqueContent({ value, text, target = 'chat', papers = EMPTY_PAPERS, storageKey = '', onJumpToSource, onFollowup, className = '', researchContext = null }) {
   const grouped = hasGroupedCritique(value);
   const issues = critiqueIssues(value, target, papers);
   // Edited text remains authoritative for the document view; old claim text must not overwrite it.
@@ -58,7 +58,7 @@ export default function CritiqueContent({ value, text, target = 'chat', papers =
       {issues.map(issue => <CitedSection key={issue.id} issue={issue} value={value} storageKey={storageKey} onJumpToSource={onJumpToSource} onFollowup={onFollowup} />)}
     </> : <>
       {value.sourceRunId && value.edited && <p className="theme-text-muted text-sm">我的修改稿 · 修改内容尚未重新核验，原引用保留供参考。</p>}
-      {value.sourceRunId || text?.includes('#research-evidence-') ? <ResearchReportText text={text} sources={value.sources || value.rag_sources || []} onJumpToSource={onJumpToSource} /> : <MarkdownContent>{text}</MarkdownContent>}
+      {value.sourceRunId || text?.includes('#research-evidence-') ? <ResearchReportText text={text} sources={value.sources || value.rag_sources || []} onJumpToSource={onJumpToSource} researchContext={researchContext} /> : <MarkdownContent>{text}</MarkdownContent>}
       {grouped && !value.edited && issues.map((issue, index) => <section key={issue.id} data-critique-issue-id={issue.id}>
         <IssueActions issue={issue} storageKey={storageKey} label={`第 ${index + 1} 点`} onJumpToSource={onJumpToSource} onFollowup={onFollowup} />
       </section>)}

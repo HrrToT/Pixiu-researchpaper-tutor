@@ -250,3 +250,10 @@
 .research-citation-heading button { flex: none; white-space: nowrap; }
 .research-citation-preview blockquote { margin: 12px 0; padding: 10px 14px; border-left: 3px solid var(--accent); background: var(--panel-muted); font-size: 14px; line-height: 1.7; white-space: pre-wrap; }
 .research-citation-preview button, .research-citation-preview a { padding: 6px 10px; border-radius: 8px; }
+.unified-external-reader { display: flex; flex-direction: column; height: 100%; min-height: 0; }
+.external-reader-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 10px 14px; border-bottom: 1px solid var(--border); }
+.external-reader-title { flex: 1 1 180px; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.external-reader-toolbar strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; }
+.external-reader-title small { font-size: 11px; }
+.external-reader-toolbar button { white-space: nowrap; font-size: 12px; }
+.external-pdf-content { flex: 1; min-height: 0; overflow: hidden; }

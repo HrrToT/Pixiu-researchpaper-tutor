@@ -8,4 +8,7 @@ export const taskResearchApi = {
   capabilities: (taskId) => client.get(`/task-workspaces/${encodeURIComponent(taskId)}/research/capabilities`),
   addSource: (taskId, runId, sourceId, input) => client.post(
     `${path(taskId, runId)}/sources/${encodeURIComponent(sourceId)}/add`, input),
+  sourceFile: (taskId, runId, sourceId, signal) => client.get(
+    `${path(taskId, runId)}/sources/${encodeURIComponent(sourceId)}/file`,
+    { responseType: 'blob', timeout: 60000, signal, skipErrorLog: true }),
 };

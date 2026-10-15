@@ -11,6 +11,7 @@ const accessLabels = { fulltext: '全文片段', full_text: '全文片段', abst
 
 /** Version 2 execution details are optional; the answer remains the primary content. */
 export default function ResearchResultCard({ taskId, run, result, error, onAction, onRefresh, onOpenReport, onJumpToSource, onAddSource }) {
+  const runId = run.researchId || run.runId || result.runId;
   const [details, setDetails] = useState(false);
   const [tab, setTab] = useState('plan');
   const [busy, setBusy] = useState(false);
@@ -185,6 +186,8 @@ export default function ResearchResultCard({ taskId, run, result, error, onActio
             <div className="research-source-actions">
               {onJumpToSource && source.pdfId && !isExternal && <button type="button" onClick={() => onJumpToSource({ ...source, pageIndex: source.page != null ? source.page - 1 : source.pageIndex })}>查看论文原文</button>}
               {isExternal && source.url && <a href={source.url} target="_blank" rel="noopener noreferrer" className="research-source-external-link"><ExternalLink size={12} />来源页面</a>}
+              {isExternal && source.accessLevel === 'fulltext' && sourceId && onJumpToSource && <button type="button" onClick={() => onJumpToSource({ ...source,
+                researchTaskId: taskId, researchRunId: runId, pageIndex: source.page != null ? source.page - 1 : source.pageIndex })}>查看论文原文</button>}
               {isExternal && onAddSource && !addedToTask && <button type="button" disabled={adding} onClick={() => handleAddSource(source)}>
                 {adding ? '加入中…' : <><Plus size={12} />加入任务材料</>}
               </button>}
