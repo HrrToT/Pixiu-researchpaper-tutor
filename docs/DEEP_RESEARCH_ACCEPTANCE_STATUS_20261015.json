@@ -1,5 +1,5 @@
 {
-  "asOf": "2026-10-15",
+  "asOf": "2026-10-16",
   "objective": "Complete DR0-DR5 in DEEP_RESEARCH_DESIGN_20261012.md without redefining success around implemented subsets.",
   "overall": "incomplete",
   "freshMaterialReadiness": "H1R2 remains unknown/unscored. H2R/H3R/H4R/H5R remain retired development cases; all new source/content results need independent replacements after development quality passes.",
@@ -42,13 +42,13 @@
       "overlap": true
     },
     "backendCurrentResearchReadingTables": {
-      "passed": 1561,
+      "passed": 1599,
       "warnings": 1,
-      "seconds": 51.37,
-      "log": "tmp/pytest-dr98-full.log",
-      "sourceCommit": "eb9bdfa",
+      "seconds": 56.04,
+      "sourceCommit": "64e3e8f",
+      "log": "tmp/pytest-dr100-full.log",
       "scope": "Research/reading/PDF table/config; no frontend or Java source changes.",
-      "proof": "deep-research-evidence/whole-question-access-binding-replay-20261015.json"
+      "proof": "deep-research-evidence/experiment-workflow-input-replay-20261015.json"
     },
     "frontendDocumentNavigationFocused": {
       "passed": 19,
@@ -89,8 +89,8 @@
       "boundary": "Known completed responses, including failed planning/verification runs; no independent holdout credit."
     },
     "retiredH5RDevelopmentCalls": {
-      "calls": 112,
-      "tokens": 519184,
+      "calls": 124,
+      "tokens": 582044,
       "attempts": [
         "H5R-v2",
         "H5R-v3",
@@ -104,17 +104,18 @@
         "H5R-v11",
         "H5R-v12",
         "H5R-v13",
-        "H5R-v14"
+        "H5R-v14",
+        "H5R-v15"
       ],
       "cost": null,
       "boundary": "Known completed responses, including failed planning/verification runs; no independent holdout credit."
     },
     "currentOfflineCorrections": {
-      "proof": "deep-research-evidence/whole-question-access-binding-replay-20261015.json",
+      "proof": "deep-research-evidence/H5R-v15-quality-20261016.json",
       "draftingProof": "deep-research-evidence/drafting-evidence-capacity-20261015.json",
-      "realGenerationOnFinalVersion": false,
+      "realGenerationOnFinalVersion": true,
       "finalNumericGuardProof": "deep-research-evidence/quantitative-condition-keys-20261015.json",
-      "boundary": ".97 H3R-v11 is known terminal partial and content-unaccepted. .98 replays the exact saved audit response with unchanged claims/evidence; no .98 model generation was submitted."
+      "boundary": ".100 has one real H5R-v15 generation, completed/partial and content-unaccepted. The method quote and typed workflow are real; creation and final-budget gates remain open."
     },
     "externalReader": {
       "javaIsolatedPassed": 43,
@@ -353,22 +354,23 @@
     "Full novice study workflow",
     "Independent Edge recovery"
   ],
-  "currentProviderConstraint": "Latest .94/.97 cases are known terminal. Seven historical unknowns remain paused and are not restarted or bypassed. PDF cache reuse succeeds; model output quality still needs work.",
-  "currentDevelopmentMode": "Primary Codex only, no Qoder. .98 loaded after 1561 complete offline passes. .97 novice case submitted once and preserved as partial; no further paid generation this checkpoint.",
+  "currentProviderConstraint": "H5R-v15 is known terminal; all 27 tool/LLM rows succeeded, 12 model calls and 62860 settled tokens. No active research; 3048 ledger rows, old 3021-row prefix and seven paused unknowns preserved.",
+  "currentDevelopmentMode": "Primary Codex only, no Qoder. .100 loaded after 1599 offline passes. One real experimental case submitted once and preserved as partial; source changes are committed separately.",
   "loadedRuntime": {
-    "commit": "eb9bdfa",
-    "promptVersion": "dr-v2.20261015.98",
+    "commit": "64e3e8f",
+    "promptVersion": "dr-v2.20261015.100",
     "ready": true,
     "callsPreserved": 3021,
     "pausedUnknownRuns": 7,
-    "proof": "deep-research-evidence/runtime-load-dr98-access-20261015.json"
+    "proof": "deep-research-evidence/runtime-load-dr100-workflow-20261015.json",
+    "postCaseProof": "deep-research-evidence/runtime-postcase-dr100-20261016.json"
   },
   "nextQualityWork": [
-    "Improve novice synthesis to explain the evidence-supported causal consequence in ordinary words, then verify once after concrete source changes; never turn checked transport into content acceptance.",
-    "Make new-component creation, baseline acquisition/training, seed pairing and held-out evaluation an aligned executable protocol.",
-    "Make descriptive analysis decisions explicit without an undefined noise threshold or mixed metric direction.",
-    "Reduce repeated protocol presentation without discarding original conditions or exact parameters.",
-    "Complete D1/D2/D3/D5 and fresh independent replacement gates; keep PR draft until the complete design is verified."
+    "Fit final completeness checking within the actual remaining finalization budget without omitting accepted answers or exceeding total limits.",
+    "Require an actual new-component creation/source rule; distinguish cloning an existing state from assuming a missing enhancement already exists.",
+    "Make renderer/proposed configuration concrete, prevent unsupported paper-wide omission claims and internal source aliases in published prose.",
+    "Improve ordinary-language causal explanations and simplify workflow display while preserving exact parameters and validation isolation.",
+    "Complete D1/D2/D3/D5 and fresh independent replacement gates; keep PR draft until the complete original design passes."
   ],
   "javaReaderRuntime": {
     "sourceCommit": "070ab1a",
