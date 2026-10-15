@@ -42,12 +42,13 @@
       "overlap": true
     },
     "backendCurrentResearchReadingTables": {
-      "passed": 1504,
+      "passed": 1561,
       "warnings": 1,
-      "seconds": 61.12,
-      "sourceCommit": "7783e79",
-      "scope": "Research/reading/PDF table/config; no frontend or Java changes.",
-      "proof": "deep-research-evidence/report-container-normalization-20261015.json"
+      "seconds": 51.37,
+      "log": "tmp/pytest-dr98-full.log",
+      "sourceCommit": "eb9bdfa",
+      "scope": "Research/reading/PDF table/config; no frontend or Java source changes.",
+      "proof": "deep-research-evidence/whole-question-access-binding-replay-20261015.json"
     },
     "frontendDocumentNavigationFocused": {
       "passed": 19,
@@ -70,8 +71,8 @@
       "boundary": "Exact citation/physical-page lookup, manual edit, original preservation and find-after-reload; content acceptance is separate."
     },
     "retiredH3RDevelopmentCalls": {
-      "calls": 66,
-      "tokens": 233204,
+      "calls": 81,
+      "tokens": 287813,
       "attempts": [
         "H3R-v2",
         "H3R-v3",
@@ -80,14 +81,16 @@
         "H3R-v6",
         "H3R-v7",
         "H3R-v8",
-        "H3R-v9"
+        "H3R-v9",
+        "H3R-v10",
+        "H3R-v11"
       ],
       "cost": null,
       "boundary": "Known completed responses, including failed planning/verification runs; no independent holdout credit."
     },
     "retiredH5RDevelopmentCalls": {
-      "calls": 102,
-      "tokens": 462387,
+      "calls": 112,
+      "tokens": 519184,
       "attempts": [
         "H5R-v2",
         "H5R-v3",
@@ -100,17 +103,18 @@
         "H5R-v10",
         "H5R-v11",
         "H5R-v12",
-        "H5R-v13"
+        "H5R-v13",
+        "H5R-v14"
       ],
       "cost": null,
       "boundary": "Known completed responses, including failed planning/verification runs; no independent holdout credit."
     },
     "currentOfflineCorrections": {
-      "proof": "deep-research-evidence/report-container-normalization-20261015.json",
+      "proof": "deep-research-evidence/whole-question-access-binding-replay-20261015.json",
       "draftingProof": "deep-research-evidence/drafting-evidence-capacity-20261015.json",
       "realGenerationOnFinalVersion": false,
       "finalNumericGuardProof": "deep-research-evidence/quantitative-condition-keys-20261015.json",
-      "boundary": "Final .93 has offline shape/option evidence only. .92 H3R-v9 is partial and H5R-v13 fails before verification; neither is content accepted."
+      "boundary": ".97 H3R-v11 is known terminal partial and content-unaccepted. .98 replays the exact saved audit response with unchanged claims/evidence; no .98 model generation was submitted."
     },
     "externalReader": {
       "javaIsolatedPassed": 43,
@@ -349,22 +353,22 @@
     "Full novice study workflow",
     "Independent Edge recovery"
   ],
-  "currentProviderConstraint": "Latest cases are known terminal; seven old unknowns remain paused. Fulltext acquisition plus verification consumes the bounded repair window; no timeout-based restart or retry.",
-  "currentDevelopmentMode": "Primary Codex only, no Qoder. .93 loaded after 1504 full offline passes. Latest two real .92 cases each submitted once; source/content gates remain open.",
+  "currentProviderConstraint": "Latest .94/.97 cases are known terminal. Seven historical unknowns remain paused and are not restarted or bypassed. PDF cache reuse succeeds; model output quality still needs work.",
+  "currentDevelopmentMode": "Primary Codex only, no Qoder. .98 loaded after 1561 complete offline passes. .97 novice case submitted once and preserved as partial; no further paid generation this checkpoint.",
   "loadedRuntime": {
-    "commit": "7783e79",
-    "promptVersion": "dr-v2.20261015.93",
+    "commit": "eb9bdfa",
+    "promptVersion": "dr-v2.20261015.98",
     "ready": true,
-    "callsPreserved": 2952,
+    "callsPreserved": 3021,
     "pausedUnknownRuns": 7,
-    "proof": "deep-research-evidence/runtime-load-dr93-container-20261015.json"
+    "proof": "deep-research-evidence/runtime-load-dr98-access-20261015.json"
   },
   "nextQualityWork": [
-    "Add safe fixed-version public-fulltext cache reuse without relaxing source policy, byte limits or content hashes.",
-    "Verify .93 JSON mode/current operational repair and eliminate irrelevant author-setting requirements in proposed experiments.",
-    "Improve evidence-bounded novice training explanations and avoid convergence promises.",
-    "Reduce repeated protocol presentation while preserving original conditions and exact parameters.",
-    "Complete D1/D2/D3/D5 and replacement independent-case acceptance; keep PR draft until the actual full gates pass."
+    "Improve novice synthesis to explain the evidence-supported causal consequence in ordinary words, then verify once after concrete source changes; never turn checked transport into content acceptance.",
+    "Make new-component creation, baseline acquisition/training, seed pairing and held-out evaluation an aligned executable protocol.",
+    "Make descriptive analysis decisions explicit without an undefined noise threshold or mixed metric direction.",
+    "Reduce repeated protocol presentation without discarding original conditions or exact parameters.",
+    "Complete D1/D2/D3/D5 and fresh independent replacement gates; keep PR draft until the complete design is verified."
   ],
   "javaReaderRuntime": {
     "sourceCommit": "070ab1a",

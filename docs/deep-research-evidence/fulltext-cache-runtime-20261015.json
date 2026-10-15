@@ -1,0 +1,70 @@
+{
+  "runId": "dr_run_6af877fb349f542585bb5dc04367cc9f",
+  "originCallId": "ae2436a39a139a3f19a446a035a46f26",
+  "arxivId": "2312.12337v4",
+  "contentHash": "606933b1f086ad92b5863b1b8d21a8af565bfb02b71ac47fb8c8f850d987f5b5",
+  "pdfBytes": 11520262,
+  "indexFile": "arxiv-d855803c260c20cd795d367f603dc22620cca71779bb16b6ee46cef3bea3e8f4.json",
+  "hits": [
+    {
+      "cacheHit": true,
+      "networkRequests": 0,
+      "seconds": 0.846,
+      "pages": 16,
+      "contentHashMatches": true,
+      "allOriginalPageTextMatches": true,
+      "originalRetrievalTimePreserved": true
+    },
+    {
+      "cacheHit": true,
+      "networkRequests": 0,
+      "seconds": 0.868,
+      "pages": 16,
+      "contentHashMatches": true,
+      "allOriginalPageTextMatches": true,
+      "originalRetrievalTimePreserved": true
+    }
+  ],
+  "networkRequests": 0,
+  "modelCalls": 0,
+  "currentOnePageLimitRejected": true,
+  "ledgerPreserved": true,
+  "before": {
+    "calls": 2952,
+    "ledgerSha256": "97acbe6a68d1b9fe42023d839dce6f06a69346c61eb09a3adb200514a3d4f69a",
+    "active": [],
+    "paused": [
+      "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+      "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+      "dr_run_86b3f181a5475e99aacca3dbf4370567",
+      "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+      "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+      "dr_run_e3521b1781825273b384a26a5edb8cdc",
+      "dr_run_ed10cc3347be552288079a9a588fddf5"
+    ]
+  },
+  "after": {
+    "calls": 2952,
+    "ledgerSha256": "97acbe6a68d1b9fe42023d839dce6f06a69346c61eb09a3adb200514a3d4f69a",
+    "active": [],
+    "paused": [
+      "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+      "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+      "dr_run_86b3f181a5475e99aacca3dbf4370567",
+      "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+      "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+      "dr_run_e3521b1781825273b384a26a5edb8cdc",
+      "dr_run_ed10cc3347be552288079a9a588fddf5"
+    ]
+  },
+  "boundary": "One exact already acquired public revision, not a fresh discovery or a model-quality run. Cache acquisition counters remain conservative tool-operation limits.",
+  "sourceCommit": "d66293a",
+  "promptVersion": "dr-v2.20261015.94",
+  "tests": {
+    "fullPassed": 1526,
+    "warnings": 1,
+    "seconds": 54.37,
+    "log": "tmp/pytest-dr94-full.log"
+  },
+  "liveReuseCase": "H3R-v10"
+}
