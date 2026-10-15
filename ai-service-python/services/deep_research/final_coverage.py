@@ -46,10 +46,18 @@ def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, 
     nonblocking = []
     budget_limit = None
     if claims and plan and invoke:
-        selected = balanced_sample(evidence,
+        cited = {ref for claim in claims for ref in claim.get('evidenceRefs', [])}
+        selected = balanced_sample(sorted(evidence, key=lambda e: e.get('evidenceId') not in cited),
             lambda e: (e.get('sourceWorkId'), tuple(e.get('obligationIds', []))), 20)
         from uuid import uuid4
         from services.deep_research.prompt_budget import fit_evidence_prompt
+        from services.deep_research.verification_aliases import (
+            encode_verification_inputs, restore_visible_evidence, restore_coverage_evidence)
+        # The audit can inspect uncited passages for omitted conditions; these
+        # aliases shorten identities without changing any claim's citations.
+        wire_claims, selected, reverse_aliases = encode_verification_inputs(
+            [*claims, {'evidenceRefs': [e['evidenceId'] for e in selected]}], selected)
+        wire_claims = wire_claims[:-1]
         evidence_marker = uuid4().hex
         rows = [{
             'evidenceId': e['evidenceId'], 'quote': e.get('quote', ''),
@@ -57,110 +65,34 @@ def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, 
             'conditions': e.get('conditions', {}),
             'accessLevel': e.get('accessLevel'),
         } for e in selected]
+        from services.deep_research.execution_materialization import verification_claim_view
+        # Remove only the exact generated suffix, retaining original prose,
+        # conditions and all typed values. The audit still sees the full answer;
+        # duplicated display text is reproducible from executionSpec.
+        wire_claims = [verification_claim_view(c) for c in wire_claims]
+        wire_obligations = []
+        for item in audit_plan:
+            for obligation in item.get('obligations', []):
+                # Queries guide acquisition, not final-answer requirements.
+                # Exact repeated user text is referenced, never abbreviated.
+                row = {key: value for key, value in obligation.items() if key != 'searchQuery'}
+                for field in ('question', 'requestExcerpt'):
+                    if row.get(field) == question:
+                        row[field + 'Ref'] = 'userQuestion'
+                        del row[field]
+                wire_obligations.append(row)
+        from services.deep_research.coverage_policy import FINAL_COVERAGE_POLICY
         prompt = f'''Audit whether the FINAL ACCEPTED ANSWER fully answers the user's question.
 Question: {question}
-Research and answer obligations (including the original question): {json.dumps([o for p in audit_plan for o in p.get('obligations', [])], ensure_ascii=False)}
-Accepted final claims: {json.dumps(claims, ensure_ascii=False, sort_keys=True)}
+Research and answer obligations (including the original question): {json.dumps(wire_obligations, ensure_ascii=False, separators=(',', ':'))}
+Accepted final claims: {json.dumps(wire_claims, ensure_ascii=False, sort_keys=True, separators=(',', ':'))}
 Available evidence for detecting omitted conditions: {evidence_marker}
 
-Factual support has been checked separately. Do NOT mistake a true sentence, a relevant
-retrieval, a claim's obligationIds, or the existence of a citation for a complete answer.
-Judge the actual accepted text and its conditions. An accurate high-level summary is
-partial if it omits parameters, activation rules, assumptions or comparisons needed to
-answer this particular question. Preserve the requested brevity: do not demand every
-paper detail, implementation detail, extra experiment or background the user did not ask for.
-For a mechanism question, check the requested entities, their relationships, the relevant
-conditioning inputs, and when the mechanism applies, using the supplied passages.
-completionCriteria are frozen in the plan before the draft. Audit every criterion
-individually; do not replace its requirement with an easier summary. An explanation
-requires how/why the requested input changes or constrains the operation/output.
-Naming the input, repeating a method name, or saying X then Y is identification,
-not an explanation of their relationship. For novice requests, unexplained technical
-terms alone cannot meet an explanation criterion. Do not demand unrelated details.
-For requested training/feedback, check that the answer connects the error/signal,
-the intermediate or parameter updated, and the effect on later predictions when
-the supplied evidence establishes that path. "A reparameterization trick permits
-gradients" alone names a technique; it does not explain its operation to a novice.
-When asked to identify or compare particular measurements, the accepted answer
-must display each requested value and its corresponding entity, subgroup,
-aggregate and metric. Saying 'the two values refer to different groups' is
-partial: source quotations and rejected claims cannot supply the missing mapping.
-Return criteria for every obligation with completionCriteria, exactly one verdict
-per criterionId: {{"criterionId":"planned ID","responseType":"planned type",
-"status":"covered|partial|missing","bindings":[{{"claimId":"accepted ID","field":"text"}}]}}.
-Preserve the planned responseType even when missing; do not downgrade explanation
-to identification. Bind only the actual answer span that meets the requirement,
-not a related source sentence. Missing criteria use empty bindings. Original-question
-scope and legacy obligations without completionCriteria do not need this field.
-For a comparison, check every requested dimension and each paper's contribution, not
-just one paper's results. A source-specific, clearly stated evidence limitation can
-answer an uncertainty question; do not demand proof of a universal guarantee.
-An unexecuted experiment may be complete as a proposal; do not demand measured results.
-An obligation marked supporting_research is an auxiliary investigation, not automatically
-something the final answer must narrate. Independently check its relevance to the user's
-actual deliverable. If it is genuinely unnecessary to the accepted answer, use status
-not_required with reason (specific explanation, at least 12 characters), requestExcerpt
-(at least 8 characters copied exactly from the user's original question), and bindings
-quoting the accepted answer that makes this narrower research scope sufficient.
-Never use not_required for the original question or an answer_requirement. A planning
-label is not permission to ignore requested facts, dependencies needed by a claim,
-missing interventions/assumptions, or evidence required by the user's requested scope.
-If a supporting question is necessary and unanswered, mark partial or missing. Only
-covered means actually answered; not_required does not mean the source fact was checked.
-Judge proposed protocol completeness separately from narrating the paper's benchmarks.
-Do not rewrite the answer, add claims, change factual verdicts, or judge rejected claims.
-Before deciding covered, enumerate the minimal essential aspects separately:
-entities and their relationships, conditioning inputs, activation/applicability
-rules, requested comparisons and guarantee boundaries, as applicable. Identify
-these from the question AND the supplied source passages, not from what the
-answer happened to mention. Do not merge distinct conditioning inputs into one
-vague aspect. A missing aspect remains missing even if every stated sentence is true.
-For each aspect identify its basis and the accepted answer that covers it.
-Prefer field references to copying PDF text: a source basis is
-{{"kind":"source","evidenceId":"supplied ID","field":"quote"}}.
-Use field "sourceContext.before" or "sourceContext.after" only when that exact
-supplied context field contains the required basis. The server binds the complete
-unchanged field. Do not supply excerpt together with field, and do not infer omitted
-context. For a final-answer binding use {{"claimId":"accepted ID","field":"text"}}
-or field "conditions" for that claim's serialized conditions. Select it only if
-its actual content covers the specific aspect, not merely because it is related.
-Legacy literal excerpt bindings remain valid; never insert ellipses, normalize
-PDF spelling or punctuation, or combine noncontiguous excerpts into one string.
-When checking factual claims with available evidence, include source-grounded
-essential aspects; quoting only the broad user question is insufficient.
-Each source-grounded factual aspect must bind an accepted factual claim that
-actually cites that precise evidenceId. A related quote from another paper or
-version is not a citation of the accepted answer. For a joint comparison, bind
-the relevant cited claims; do not borrow an uncited source to fill conditions.
-Purely proposed choices may use the explicit request as their basis; an unrelated
-proposal's source basis cannot substitute for grounding the factual answer.
-For an access-level requirement ONLY (what the system actually obtained), use
-basis {{"kind":"source_metadata","evidenceId":"ID cited by the bound claim",
-"field":"accessLevel","value":"fulltext|abstract|user_note",
-"requestExcerpt":"exact relevant question substring, at least 8 characters"}}.
-Copy value from the supplied evidence metadata; never infer it from page numbers.
-This proves acquisition scope only, never a method, result or scientific claim.
-Every aspect of a metadata-only obligation must use that metadata basis; mixed
-content obligations still require source-quoted aspects for their paper content.
-Keep exact final-answer bindings for metadata aspects too. A downloaded fulltext
-does not prove that the answer uses it unless the bound claim cites that evidence.
-Check the subject of contrasts and pronouns against preceding sentences: a
-baseline's limitation cannot be assigned to the proposed method.
+{FINAL_COVERAGE_POLICY}
+In input obligations, questionRef/requestExcerptRef="userQuestion" resolves to the
+EXACT full Question above. Return literal excerpts, never the reference label.
 Return only a JSON array, exactly one entry for each of these obligationIds,
-including the original-question scope: {json.dumps([o['obligationId'] for p in audit_plan for o in p.get('obligations', [])])}
-[{{"obligationId":"ID","status":"covered|partial|missing|not_required",
-   "bindings":[{{"claimId":"an accepted ID","field":"text"}}],
-   "criteria":[{{"criterionId":"planned ID","responseType":"planned type",
-     "status":"covered|partial|missing","bindings":[{{"claimId":"accepted ID","field":"text"}}]}}],
-   "aspects":[{{"aspectId":"unique within this obligation","requirement":"one necessary aspect",
-     "basis":{{"kind":"source","evidenceId":"supplied evidence ID","field":"quote"}},
-     "status":"covered|partial|missing",
-     "bindings":[{{"claimId":"accepted ID","field":"text"}}]}}]}}]
-For a request basis use {{"kind":"request","excerpt":"exact question substring"}}.
-Covered requires every essential aspect to be covered with its own binding.
-Do not fabricate a binding for a missing aspect; use an empty bindings array.
-Only mark covered if ALL requested aspects of that obligation are answered in the
-accepted claims. Bindings must quote the final answer, never the source passages.'''
+including the original-question scope: {json.dumps([o['obligationId'] for p in audit_plan for o in p.get('obligations', [])])}'''
         criterion_shape = {o['obligationId']: [
             {'criterionId': c['criterionId'], 'responseType': c['responseType'],
              'status': 'covered|partial|missing', 'bindings': []} for c in o['completionCriteria']]
@@ -173,7 +105,7 @@ accepted claims. Bindings must quote the final answer, never the source passages
         template = prompt
         try:
             limit = coverage_prompt_byte_limit(budget)
-            render = lambda selected_rows: template.replace(evidence_marker, json.dumps(selected_rows, ensure_ascii=False), 1)
+            render = lambda selected_rows: template.replace(evidence_marker, json.dumps(selected_rows, ensure_ascii=False, separators=(',', ':')), 1)
             fixed_bytes = len(render([]).encode('utf-8'))
             if limit <= 0 or fixed_bytes > limit:
                 raise BudgetExhaustedError('coveragePromptBytes', limit, fixed_bytes)
@@ -188,6 +120,8 @@ accepted claims. Bindings must quote the final answer, never the source passages
                 verdicts = None
             status = 'checked' if isinstance(verdicts, list) else 'invalid_response'
             if isinstance(verdicts, list):
+                verdicts = restore_coverage_evidence(verdicts, reverse_aliases)
+                rows = restore_visible_evidence(rows, reverse_aliases)
                 from services.deep_research.coverage_references import resolve_coverage_references
                 verdicts = resolve_coverage_references(verdicts, claims, rows)
                 from services.deep_research.completion_criteria import completion_criteria_gaps, invalid_criterion_reviews

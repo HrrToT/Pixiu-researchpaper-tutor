@@ -1074,6 +1074,8 @@ Do not repeat the same proposition in text and conditions; use the limited space
 not English placeholders or generic 'depends on the input/view'. Answer each requested aspect or state its
 specific evidence limitation. Respect scope and total text+conditions length; put conflicting conditions beside conclusions.
 Kinds: reported, inference, hypothesis, proposal. Copy reported numbers exactly; derived ratios/differences are inferences.
+Explanations derived from reported equations/parameter links are inferences: cite
+their exact premises and state the conditional update, not guaranteed convergence.
 Proposals are unexecuted choices, not existing facts. Preserve method labels and variant markers;
 distinguish reproduced baselines from original-paper measurements and separate results from controlled trajectories.
 With contextOmitted, never invent antecedents or attribute baseline findings to the proposed method.

@@ -12,6 +12,8 @@ a fixed seed is reproducible. Specify each seed's purpose and selection procedur
 training/split seeds need not match. Distinguish split units from independent analysis
 units: scene reconstruction holds out views within scenes; holding out whole scenes
 is a different generalization task. Shared definitions may be referenced across roles.
+Split before any fitting. Final evaluation views must not train or choose checkpoints;
+early stopping needs separate validation or a fixed training cap.
 Shared checkpoints need reproducible acquisition/training, parameters, seeds and
 within-unit group copying, then artifact identity/hash recorded at execution. A future
 hash need not exist now; filenames or recording hashes alone do not define acquisition.

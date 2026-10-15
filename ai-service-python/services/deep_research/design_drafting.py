@@ -18,6 +18,8 @@ view count or author split. Do not substitute a parent dataset for a cited subse
 Split held-out views within each reconstruction scene, with reproducible rules
 and nonempty train/evaluation checks. Without actual file IDs, choose a proposed
 every_nth or seeded_fraction rule; "official training/test views" are not file IDs.
+Split before fitting. Final evaluation views cannot choose checkpoints; use separate
+validation for early stopping or choose a fixed training cap.
 Explain split and training seed purposes in prose, not invented schema fields.
 Train a baseline with a finite cap or select an evidence-backed existing asset;
 copy it within each paired unit and record its resulting identity at execution.

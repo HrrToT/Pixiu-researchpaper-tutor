@@ -12,6 +12,8 @@ controls executionSpec has EXACTLY initialization, rendering, optimizer, otherIn
 Each is an operation {action:nonblank,parameters:list}; parameters use the groups schema
 {name:unique nonblank,type:number|choice,value:finite nonbool number|nonblank choice}.
 initialization specifies actual creation, seed/parameters and paired copying of states;
+Every newly introduced component needs its own creation rule; copying an existing
+baseline alone does not define a new component's initial state.
 rendering specifies evaluator/renderer and numeric resolution or resizing choices;
 optimizer specifies actual optimizer and rates/schedule for every trainable group.
 These three operations need nonempty parameters. "same"/unknown defaults are not choices.
@@ -34,6 +36,7 @@ DATA_PRECHECK = ('执行前预检（尚未执行）：枚举实际样本并保�
 PROTOCOL_REVIEW_POLICY = '''Protocol contract 1 is structurally checked before this request.
 Judge each control operation's actual scientific meaning, parameters, pairing and consistency;
 nonempty fields do not establish executable initialization, resolution or optimizer rates.
+Check creation of EACH new component; copying the baseline is not its creation rule.
 For controls audit fields bind initialization/rendering/optimizer/otherInterventions respectively
 to paired_initialization/render_settings/optimizer_settings/other_interventions.
 Data prechecks enumerate real items, reject duplicate/missing IDs, and stop on empty or

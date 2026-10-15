@@ -84,6 +84,8 @@ not merely shortening. A missing mechanism explanation needs how/why the request
 input affects the operation/output, in ordinary words if requested for novices;
 listing names or repeating a technical operation is not sufficient. Do not add
 unsupported mechanics: use the allowed evidence or retain the limitation.
+Equation/parameter-link deductions may be inference claims with explicit cited
+premises and conditional effects; they do not establish guaranteed convergence.
 If a central inference is supported but an appended list of mechanisms is not,
 retain only the supported conclusion and premises. Do not replace unsupported
 details with a paper-wide claim that those details were never measured.

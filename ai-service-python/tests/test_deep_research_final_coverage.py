@@ -107,7 +107,8 @@ def test_exhausted_reserve_fits_coverage_to_normal_capacity_without_clipping():
         assert TEXT in prompt
         rows = json.loads(prompt.split('Available evidence for detecting omitted conditions: ')[1].split('\n\nFactual')[0])
         assert 0 < len(rows) < len(evidence)
-        assert all(row['quote'] == next(e['quote'] for e in evidence if e['evidenceId'] == row['evidenceId']) for row in rows)
+        originals = {e['quote']: e for e in evidence}
+        assert all(row['quote'] in originals and row['source'] == originals[row['quote']]['sourceWorkId'] for row in rows)
         return {'content': '[]'}
     call = Mock(side_effect=invoke)
     audit_final_answer('r', 'q', PLAN, CLAIMS, evidence, call, json.loads, budget=budget)

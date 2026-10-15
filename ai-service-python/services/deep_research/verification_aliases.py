@@ -41,3 +41,18 @@ def restore_verdict_evidence(verdict, reverse):
         if isinstance(binding, dict) and isinstance(binding.get('evidenceId'), str):
             binding['evidenceId'] = reverse.get(binding['evidenceId'], binding['evidenceId'])
     return restored
+
+
+def restore_coverage_evidence(verdicts, reverse):
+    """Restore only typed source IDs; never rewrite excerpts or claim IDs."""
+    restored = deepcopy(verdicts)
+    for verdict in restored:
+        if not isinstance(verdict, dict):
+            continue
+        aspects = verdict.get('aspects')
+        for aspect in aspects if isinstance(aspects, list) else []:
+            basis = aspect.get('basis') if isinstance(aspect, dict) else None
+            if (isinstance(basis, dict) and basis.get('kind') in {'source', 'source_metadata'}
+                    and isinstance(basis.get('evidenceId'), str)):
+                basis['evidenceId'] = reverse.get(basis['evidenceId'], basis['evidenceId'])
+    return restored
