@@ -49,6 +49,47 @@ def test_all_frozen_criteria_need_current_answer_bindings_without_extra_model_ca
     assert (plan(), CLAIMS, EVIDENCE) == original
 
 
+@pytest.mark.parametrize('text,covered', [
+    ('两个结果属于不同子集的mean列，因此不同测试条件下不存在直接矛盾。', False),
+    ('61.20属于A子集的mean PSNR，另一个结果来自不同子集，因此不矛盾。', False),
+    ('61.20属于A子集的mean PSNR，28.40属于B子集的mean PSNR，条件不同不矛盾。', True),
+    ('6.12e1属于A子集的mean PSNR，2.84e1属于B子集的mean PSNR，条件不同不矛盾。', True),
+])
+def test_numeric_identification_cannot_be_satisfied_only_by_expanded_source_quote(text, covered):
+    question = '识别61.2和28.4各自的子集和指标后判断是否矛盾'
+    criterion = {'criterionId': 'measurement', 'requirement': question, 'responseType': 'identification'}
+    research_plan = [{'obligations': [{'obligationId': 'o', 'question': question,
+        'requestExcerpt': question, 'completionCriteria': [criterion]}]}]
+    claims = [{'claimId': 'c', 'text': text, 'kind': 'inference', 'evidenceRefs': ['e']}]
+    evidence = [{'evidenceId': 'e', 'quote': 'Cohort A: mean PSNR 61.2. Cohort B: mean PSNR 28.4.', 'sourceWorkId': 'paper'}]
+    binding = [{'claimId': 'c', 'field': 'text'}]
+    aspect = {'aspectId': 'values', 'requirement': question, 'status': 'covered',
+              'basis': {'kind': 'source', 'evidenceId': 'e', 'field': 'quote'}, 'bindings': binding}
+    rows = [{'obligationId': 'o', 'status': 'covered', 'bindings': binding, 'aspects': [aspect],
+             'criteria': [{**criterion, 'status': 'covered', 'bindings': binding}]},
+            {'obligationId': 'answer_scope', 'status': 'covered', 'bindings': binding, 'aspects': [aspect]}]
+    invoke = Mock(return_value={'content': json.dumps(rows)})
+    result = audit_final_answer('r', question, research_plan, claims, evidence, invoke, json.loads)
+    assert result['status'] == 'checked'
+    assert bool(result['gaps']) is not covered
+    assert result['invalidCriterionObligations'] == []  # A content gap, not invalid JSON.
+    invoke.assert_called_once()
+    if not covered:
+        assert result['criterionGaps'] == {'o': [question]}
+        repaired = prepare_coverage_repair({'claims': claims}, {'accepted': claims, 'rejected': []}, result)
+        assert repaired['rejected'][0]['reason'] == 'answer_incomplete'
+
+
+def test_identification_does_not_require_unrequested_planner_example_numbers():
+    research_plan = plan()
+    research_plan[0]['obligations'][0]['completionCriteria'] = [
+        {'criterionId': 'role', 'requirement': '识别相机信息（例如12个视图）', 'responseType': 'identification'}]
+    rows = verdicts()
+    rows[0]['criteria'] = [{'criterionId': 'role', 'responseType': 'identification',
+                           'status': 'covered', 'bindings': [{'claimId': 'c', 'field': 'text'}]}]
+    assert not audit(rows, research_plan)['gaps']
+
+
 def test_provider_response_shape_supplies_each_predeclared_id_without_changing_its_type():
     def respond(run, node, prompt, options, **kwargs):
         shape = json.loads(prompt.split('Required criterion fields by obligation: ', 1)[1])

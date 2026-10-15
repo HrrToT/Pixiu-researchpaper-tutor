@@ -5,9 +5,27 @@ still has to judge whether an excerpt explains the requested relationship.
 """
 import hashlib
 import json
+import re
+from decimal import Decimal
 from services.deep_research.answer_coverage import _bindings_supported, _known_claims_by_id
 
 RESPONSE_TYPES = {'identification', 'explanation', 'procedure', 'limitation'}
+
+
+def _numeric_identifiers(text):
+    # Numbers explicitly being identified are answer objects, not evidence in
+    # an expandable source block. Normalize notation, not units or rounding.
+    return {Decimal(value) for value in re.findall(
+        r'(?<![A-Za-z0-9_.])[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][-+]?\d+)?(?![\d.])', text)}
+
+
+def _identification_objects_present(criterion, obligation, bindings):
+    if criterion['responseType'] != 'identification':
+        return True
+    requested = _numeric_identifiers(str(obligation.get('requestExcerpt') or obligation.get('question') or ''))
+    objects = requested & _numeric_identifiers(criterion['requirement'])
+    displayed = _numeric_identifiers(' '.join(str(b.get('excerpt', '')) for b in bindings))
+    return objects <= displayed
 
 
 def validate_completion_criteria(plan, *, required=False):
@@ -62,7 +80,8 @@ def completion_criteria_gaps(plan, claims, verdicts):
                          and row.get('criterionId') == criterion['criterionId']]
                 if (unknown or len(found) != 1 or found[0].get('status') != 'covered'
                         or found[0].get('responseType') != criterion['responseType']
-                        or not _bindings_supported(found[0].get('bindings'), known)):
+                        or not _bindings_supported(found[0].get('bindings'), known)
+                        or not _identification_objects_present(criterion, obligation, found[0]['bindings'])):
                     missing.append(criterion['requirement'])
             if missing:
                 result[identity] = missing

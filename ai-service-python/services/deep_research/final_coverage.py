@@ -77,6 +77,10 @@ requires how/why the requested input changes or constrains the operation/output.
 Naming the input, repeating a method name, or saying X then Y is identification,
 not an explanation of their relationship. For novice requests, unexplained technical
 terms alone cannot meet an explanation criterion. Do not demand unrelated details.
+When asked to identify or compare particular measurements, the accepted answer
+must display each requested value and its corresponding entity, subgroup,
+aggregate and metric. Saying 'the two values refer to different groups' is
+partial: source quotations and rejected claims cannot supply the missing mapping.
 Return criteria for every obligation with completionCriteria, exactly one verdict
 per criterionId: {{"criterionId":"planned ID","responseType":"planned type",
 "status":"covered|partial|missing","bindings":[{{"claimId":"accepted ID","field":"text"}}]}}.
