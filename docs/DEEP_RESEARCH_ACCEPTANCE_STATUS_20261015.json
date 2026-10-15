@@ -6,9 +6,9 @@
   "evidenceRule": "Machine completion, offline fixtures, real transport, source support, content quality and independent-case eligibility are separate. Historical results are not silently upgraded to current passes.",
   "latestVerification": {
     "backendResearchModelReadingIntegration": {
-      "passed": 1259,
+      "passed": 1271,
       "warnings": 1,
-      "seconds": 71.96
+      "seconds": 45.03
     },
     "frontendVitest": {
       "passed": 472,
@@ -31,7 +31,12 @@
       "overlapWithFullSuite": true
     },
     "newHoldoutModelCalls": 1,
-    "newHoldoutModelCallsBoundary": "One unresolved request; reserved 4294 tokens, actual usage/cost unknown."
+    "newHoldoutModelCallsBoundary": "One unresolved request; reserved 4294 tokens, actual usage/cost unknown.",
+    "postUnknownMessageFocused": {
+      "passed": 18,
+      "seconds": 9.4,
+      "overlap": true
+    }
   },
   "stages": [
     {

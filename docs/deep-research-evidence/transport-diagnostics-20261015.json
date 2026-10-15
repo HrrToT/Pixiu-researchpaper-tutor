@@ -1,0 +1,34 @@
+{
+  "date": "2026-10-15",
+  "problem": "Transport failures all retained the same generic provider error, obscuring deadline versus connection diagnosis. Unknown-state UI also suggested starting another inquiry after stopping.",
+  "changes": [
+    "Add optional bounded failure_kind to provider errors; classify deadline, connect/read timeout, proxy, TLS, connection and generic transport errors without copying raw exception text into the field.",
+    "Persist allowlisted failureKind in research error ledger; legacy and invalid labels omitted.",
+    "Unknown-result message states paused/no automatic resend and no longer suggests creating another inquiry."
+  ],
+  "invariants": [
+    "No added generation requests or retry mechanism",
+    "Unknown remains unknown and retained budget is unchanged",
+    "Reopened SQLite prevents identical request reissue",
+    "No historical failure category guessed or backfilled"
+  ],
+  "tests": {
+    "backendResearchModelReadingIntegration": {
+      "passed": 1271,
+      "warnings": 1,
+      "seconds": 45.03
+    },
+    "postMessageChangeProviderFailureEndToEndAndLedger": {
+      "passed": 18,
+      "seconds": 9.4,
+      "overlap": true
+    }
+  },
+  "runtimeBeforeReload": {
+    "active": 0,
+    "paused": 7,
+    "ledgerRows": 2390,
+    "ledgerHash": "5bf2c869caaafc0278f5cc98e82b4636564542e3b93978d36b43f736eccb0d45"
+  },
+  "realTimeoutRootCause": "Unconfirmed. Previously recorded unknown requests predate this field; no paid replay performed."
+}
