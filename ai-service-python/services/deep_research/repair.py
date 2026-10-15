@@ -58,6 +58,11 @@ def _prepare_repair(report, verification, evidence, question, *, max_prompt_byte
                                             for ref in check['missingEvidenceRefs']]
     revision_shape = {'claimId': 'original ID', 'kind': 'original kind', 'text': 'revised wording',
                       'evidenceRefs': ['E1'], 'conditions': {}, 'detailLevel': 'fulltext'}
+    has_tables = any(row.get('tableData') for row in rows) or any(
+        row.get('tableBindings') for row in originals.values())
+    if has_tables:
+        revision_shape['tableBindings'] = [{'evidenceId': 'E1', 'rowNumber': 'actual integer',
+            'groupIndex': 'actual zero-based integer', 'metric': 'exact header', 'value': 'exact string'}]
     if any(row.get('designContractVersion') == 2 for row in originals.values()):
         revision_shape.update(designRole='canonical role for proposals/hypotheses; omit for facts',
                               executionSpec='complete role-specific object for groups/data/analysis and versioned budget/hypothesis; omit for other roles')
@@ -103,6 +108,10 @@ Preserve claimId, kind and valid designRole; no new claims, searches or reported
 Empty claims with missing_design_deliverable checks are server-allocated slots:
 fill their required design content using these exact IDs, kinds and roles.
 Never disguise a fact as a proposal. Retain necessary conditions and the user's length limit.
+The limit covers ALL revised and accepted text plus conditions together, not each claim.
+Write necessary conditions once in text and use conditions={{}} when already stated.
+Drop secondary examples before the requested identities or explanation; do not switch
+to another table/experiment merely because it contains the same number.
 Each claim may cite ONLY its own allowed supplied evidence. Same-version permission and
 obligation labels do not prove relevance or support. Check every factual clause.
 For purely prospective choices or mathematical definitions, use evidenceRefs=[] when
@@ -146,9 +155,12 @@ in the paper. Maintain consistency with accepted definitions and complete requir
                   'Select a purpose and compatible method that fulfill the user request, not a weaker substitute.'
     shape = [{'claimId': row['claimId'], 'kind': row['kind'],
               **({'designRole': row['designRole']} if row.get('designRole') else {}),
-              'text': '', 'evidenceRefs': []} for row in originals.values()]
+              'text': '', 'evidenceRefs': [], **({'tableBindings': []} if has_tables else {})}
+             for row in originals.values()]
     prompt += ('\nACTIVE OUTPUT TARGETS FOR THIS REQUEST ONLY:\n' + json.dumps(shape, ensure_ascii=False, separators=(',', ':'))
                + '\nFill only these rows, adding required executionSpec fields for their roles. '
+               'Fill tableBindings for every retained table measurement; an empty array is only '
+               'valid when no table measurements are retained. '
                'Omit a target or return [] if no supported revision is possible. '
                'Do not output any accepted or sibling/context ID, even if it needs improvement. '
                'Each factual clause still requires its own allowed supplied evidenceRefs. '
@@ -357,5 +369,20 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
                 checkpoint(deepcopy(state))
         revised.extend(deepcopy(rows))
     limit = requested_character_limit(question)
-    candidate = {'claims': [*verification.get('accepted', []), *revised]}
-    return [] if limit and answer_character_count(candidate) > limit else revised
+    if not limit:
+        return revised
+    # Preserve independently verifiable repairs that fit, rather than losing
+    # every useful revision because a different target exceeds the limit.
+    # Omitted targets retain their original rejection/coverage gaps.
+    kept, omitted = [], []
+    for row in revised:
+        candidate = {'claims': [*verification.get('accepted', []), *kept, row]}
+        if answer_character_count(candidate) <= limit:
+            kept.append(row)
+        else:
+            omitted.append(row['claimId'])
+    if omitted:
+        state['omittedForLength'] = omitted
+        if checkpoint:
+            checkpoint(deepcopy(state))
+    return kept

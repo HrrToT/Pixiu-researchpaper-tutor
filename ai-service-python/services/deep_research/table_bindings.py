@@ -17,6 +17,38 @@ def dataset_label(text):
     return re.sub(r'\s+datasets?\s*$', '', text, flags=re.I).strip() or text
 
 
+def bound_table_context(claim, evidence):
+    """Expose parser-established cell identities to a wording-only rewrite.
+
+    This is a prompt aid, not a semantic approval or permission to change a
+    binding. Only exact cells in this claim's own quotations are included.
+    """
+    cited = {e.get('evidenceId'): e for e in evidence
+             if e.get('evidenceId') in claim.get('evidenceRefs', [])}
+    bindings = claim.get('tableBindings')
+    result = []
+    for binding in bindings if isinstance(bindings, list) else []:
+        if not isinstance(binding, dict) or not isinstance(binding.get('evidenceId'), str):
+            continue
+        source = cited.get(binding['evidenceId'], {})
+        packet = visible_table_packet(source.get('tableData'), source.get('quote', ''))
+        group, number = binding.get('groupIndex'), binding.get('rowNumber')
+        if (not packet or type(group) is not int or type(number) is not int
+                or not 0 <= group < len(packet['groups'])):
+            continue
+        dataset, metrics = packet['groups'][group]
+        row = next((r for r in packet['rows'] if r[0] == number), None)
+        metric = binding.get('metric')
+        if row is None or metric not in metrics:
+            continue
+        column = sum(len(g[1]) for g in packet['groups'][:group]) + metrics.index(metric)
+        value = row[2][column]
+        if value != binding.get('value'):
+            continue
+        result.append({'group': dataset, 'method': row[1], 'metric': metric, 'value': value})
+    return result
+
+
 def validate_table_bindings(claim, evidence):
     """Return a rejection reason; semantic checking still follows this gate."""
     text = str(claim.get('text', ''))

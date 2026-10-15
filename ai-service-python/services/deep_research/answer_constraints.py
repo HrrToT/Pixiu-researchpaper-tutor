@@ -70,15 +70,22 @@ def compact_answer(report, question, invoke, parse, *, output_kind='', evidence=
     # Reduce the rewrite's scope, not its evidence: original references and kinds
     # are restored by code and the rewritten claims are verified afterwards.
     core = _core_claims(report['claims'], limit, output_kind, evidence)
+    from services.deep_research.table_bindings import bound_table_context
+    inputs = [{**{key: c.get(key, {} if key == 'conditions' else '')
+                   for key in ('claimId', 'text', 'conditions')},
+               'requiredTableContext': bound_table_context(c, evidence)} for c in core]
     target = max(15, int(limit * .7 / max(1, len(core))))
     prompt = f'''用中文压缩以下核心回答。用户问题：{question}
 总共最多{limit}字，每条text与conditions合计尽量不超过{target}字。
 只返回JSON：{{"claims":[{{"claimId":"原ID","text":"短结论","conditions":{{}}}}]}}。
 不要返回引用、kind、章节或额外声明，系统保留原始身份并重新核验。
 保留论断必需的实验条件、方法标签和限定词；删去旁支数字和背景。
+requiredTableContext给出原引用单元格的身份：若保留该数值，必须在同条text中
+保留method、group的每一层（数据集/子集/聚合列）、metric及value的对应关系。
+这些字段是改写依据，不是新增结论；不在输出JSON中重复它们。
 把条件写入text即可，不要在conditions重复。不能新增事实。
 {'必须保留每个输入ID：它们分别代表各论文结论和跨论文可比性。' if output_kind == 'paper_comparison' else 'You MAY DROP 次要声明，但保留直接回答问题的判断。'}
-输入：{json.dumps([{key: c.get(key, {} if key == 'conditions' else '') for key in ('claimId', 'text', 'conditions')} for c in core], ensure_ascii=False)}'''
+输入：{json.dumps(inputs, ensure_ascii=False)}'''
     result = invoke(prompt)
     finish = (result.get('finishReason', result.get('finish_reason')) if isinstance(result, dict)
               else getattr(result, 'finish_reason', None))
@@ -98,6 +105,11 @@ def compact_answer(report, question, invoke, parse, *, output_kind='', evidence=
         if ('kind' in claim and claim['kind'] != before.get('kind')) or ('evidenceRefs' in claim and claim['evidenceRefs'] != before.get('evidenceRefs')):
             return None
         merged = {**before, **claim}
+        # Wording-only compaction cannot rewrite the evidence/measurement
+        # contract. The final verifier still checks the revised prose.
+        if any(key in claim and claim[key] != before.get(key)
+               for key in ('tableBindings', 'obligationIds', 'executionSpec', 'designRole')):
+            return None
         claim.clear()
         claim.update(merged)
     if output_kind == 'paper_comparison' and seen != set(original):

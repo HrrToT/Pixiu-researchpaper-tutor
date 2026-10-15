@@ -133,6 +133,46 @@ def test_repair_short_ids_restore_claim_and_cell_identity_without_mutating_input
     assert evidence == [{'evidenceId': 'ev_full_identity', 'quote': 'FPS 200'}]
 
 
+def test_repair_table_fields_remain_explicit_in_active_output_shape():
+    from services.deep_research.repair import _prepare_repair
+    original = {'claimId': 'c', 'kind': 'reported', 'text': 'PSNR 28.50', 'evidenceRefs': ['e'],
+                'tableBindings': [{'evidenceId': 'e', 'rowNumber': 7, 'groupIndex': 0,
+                                   'metric': 'PSNR', 'value': '28.50'}]}
+    prepared = _prepare_repair({'claims': [original]}, {'rejected': [{'claimId': 'c'}]},
+                               [{'evidenceId': 'e', 'quote': 'source'}], '核对，100字以内')
+    active = prepared['prompt'].split('ACTIVE OUTPUT TARGETS FOR THIS REQUEST ONLY:\n')[1].splitlines()[0]
+    assert json.loads(active)[0]['tableBindings'] == []
+    assert 'ALL revised and accepted text plus conditions together' in prepared['prompt']
+    assert 'conditions={}' in prepared['prompt']
+
+
+def test_oversized_repair_does_not_discard_other_verifiable_target_or_skip_verification():
+    originals = [{'claimId': identity, 'kind': 'reported', 'text': 'bad', 'evidenceRefs': ['e']}
+                 for identity in ['large', 'small']]
+    evidence = [{'evidenceId': 'e', 'quote': 'Known result.', 'verification': {'literal': 'passed'}}]
+    revisions = [dict(originals[0], text='x' * 101), dict(originals[1], text='Known result.')]
+    states = []
+    result = repair_rejected({'claims': originals},
+        {'accepted': [], 'rejected': [{'claimId': c['claimId']} for c in originals]}, evidence,
+        '100字以内', lambda _: {'content': json.dumps(revisions)}, json.loads, checkpoint=states.append)
+    assert [c['claimId'] for c in result] == ['small']
+    assert states[-1]['omittedForLength'] == ['large']
+    assert len(states[-1]['results']['0']) == 2  # Both raw revisions preserved.
+    assert not verify_claims(result, evidence)['accepted']
+    assert verify_claims(result, evidence, lambda *_: [{'claimId': 'small', 'status': 'passed'}])['accepted']
+
+
+def test_repair_length_budget_includes_already_accepted_and_prior_kept_targets():
+    originals = [{'claimId': identity, 'kind': 'reported', 'text': 'bad', 'evidenceRefs': ['e']}
+                 for identity in ['first', 'second']]
+    revisions = [dict(c, text='a' * 40) for c in originals]
+    check = {'accepted': [{'claimId': 'accepted', 'text': 'b' * 30}],
+             'rejected': [{'claimId': c['claimId']} for c in originals]}
+    result = repair_rejected({'claims': originals}, check, [{'evidenceId': 'e', 'quote': 'x'}],
+        '100字以内', lambda _: {'content': json.dumps(revisions)}, json.loads)
+    assert [c['claimId'] for c in result] == ['first']
+
+
 def test_repair_rejects_length_finish_even_if_partial_content_is_valid_json():
     original = {'claimId': 'c', 'kind': 'reported', 'text': 'partial', 'evidenceRefs': []}
     def must_not_parse(_):

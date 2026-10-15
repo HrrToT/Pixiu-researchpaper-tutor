@@ -995,7 +995,7 @@ def make_synthesize_node(
         from uuid import uuid4
         from services.deep_research.prompt_budget import fit_evidence_prompt
         evidence_marker = uuid4().hex
-        claim_fields = 'claimId, text, kind, evidenceRefs, conditions, obligationIds, detailLevel'
+        claim_fields = 'claimId, text, kind, evidenceRefs, conditions, obligationIds, detailLevel, tableBindings (required for table measurements)'
         if output_kind == 'experiment_design':
             claim_fields += ', designRole (required on every proposal/hypothesis), executionSpec (required for groups, data and analysis roles)'
             if strict_budget:
@@ -1026,6 +1026,10 @@ Table measurements require tableBindings: [{{evidenceId,rowNumber,groupIndex,met
 Copy exact tableData row, zero-based group, metric and string value. Name dataset, method variant,
 metric and value together; no anonymous numeric series. Without tableData use qualitative evidence;
 never bypass table checks by relabeling a reported measurement as inference.
+Every numeric table claim must explicitly name its method/row label even when the user
+already named it. Preserve every hierarchical group level, including the aggregate column.
+When checking a named table, stay with that table's cells and requested metric distinction;
+an equal number in another experiment is not a substitute or a required digression.
 Use ONLY supplied E IDs in evidenceRefs. Evidence IDs are routing keys only: keep E1/E2/... and raw IDs OUT of text and conditions.
 P keys are also internal: use source titles in prose, never P1/P2/....
 Use source names in prose; UI supplies links. Missing selected evidence does not prove authors omitted a test.

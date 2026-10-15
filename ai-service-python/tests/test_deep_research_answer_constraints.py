@@ -98,3 +98,28 @@ def test_short_rewrite_cannot_reintroduce_omitted_or_duplicate_claims():
     patch = {'claimId': '0', 'text': '短结论'}
     invoke.return_value = {'content': json.dumps({'claims': [patch, patch]})}
     assert compact_answer({'claims': claims}, '100字以内', invoke, json.loads) is None
+
+
+def test_table_compaction_receives_exact_cell_identity_and_cannot_rebind_it():
+    from services.deep_research.table_bindings import bound_table_context, validate_table_bindings
+    from services.deep_research.verification import verify_claims
+    evidence = [{'evidenceId': 'e', 'quote': 'Table row 7: Model-A | 28.50',
+                 'tableData': {'groups': [['Urban / mean', ['PSNR']]],
+                               'rows': [[7, 'Model-A', ['28.50']]]},
+                 'verification': {'literal': 'passed'}}]
+    claim = {'claimId': 'c', 'text': '待精简的背景' * 50, 'kind': 'reported', 'evidenceRefs': ['e'],
+             'tableBindings': [{'evidenceId': 'e', 'rowNumber': 7, 'groupIndex': 0,
+                                'metric': 'PSNR', 'value': '28.50'}]}
+    patch = {'claimId': 'c', 'text': 'Model-A在Urban的mean列PSNR为28.50。', 'conditions': {}}
+    invoke = Mock(return_value={'content': json.dumps({'claims': [patch]})})
+    result = compact_answer({'claims': [claim]}, '100字以内', invoke, json.loads, evidence=evidence)
+    assert '"method": "Model-A"' in invoke.call_args.args[0]
+    assert 'Urban / mean' in invoke.call_args.args[0]
+    assert validate_table_bindings(result['claims'][0], evidence) is None
+    assert not verify_claims(result['claims'], evidence)['accepted']  # Still needs semantic review.
+    assert bound_table_context(claim, [{**evidence[0], 'quote': 'Only an unrelated caption.'}]) == []
+    assert bound_table_context({**claim, 'evidenceRefs': ['foreign']}, evidence) == []
+    assert bound_table_context({**claim, 'tableBindings': [dict(claim['tableBindings'][0], value='999')]}, evidence) == []
+    altered = dict(patch, tableBindings=[dict(claim['tableBindings'][0], groupIndex=1)])
+    invoke.return_value = {'content': json.dumps({'claims': [altered]})}
+    assert compact_answer({'claims': [claim]}, '100字以内', invoke, json.loads, evidence=evidence) is None
