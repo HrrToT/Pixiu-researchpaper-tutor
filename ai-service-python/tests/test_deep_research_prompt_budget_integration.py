@@ -76,7 +76,9 @@ def test_repair_cannot_cite_row_removed_from_complete_request():
                 dict(base, evidenceId='small', quote='完整短引文')]
     def invoke(prompt):
         assert len(prompt.encode('utf-8')) <= 24000
-        assert '\"c\": [\"E2\"]' in prompt
+        permissions = json.JSONDecoder().raw_decode(prompt.split(
+            'Allowed evidence IDs per claim (candidate permissions, not proof of support):\n', 1)[1])[0]
+        assert permissions['c'] == ['E2']
         return {'content': json.dumps([{**claim, 'evidenceRefs': ['E1']}])}
     result = repair_rejected({'claims': [claim]}, {'rejected': [{'claimId': 'c'}]},
                              evidence, '核查', invoke, json.loads)

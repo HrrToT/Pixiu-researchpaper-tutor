@@ -50,7 +50,9 @@ def test_repair_can_use_acquired_same_version_passage_but_must_reverify():
     revised = dict(original, text='视锥内根据方向和距离预测属性。', evidenceRefs=['E2'],
                    obligationIds=['invented'])
     def invoke(prompt):
-        assert '"c": ["E1", "E2"]' in prompt
+        permissions = json.JSONDecoder().raw_decode(prompt.split(
+            'Allowed evidence IDs per claim (candidate permissions, not proof of support):\n', 1)[1])[0]
+        assert permissions['c'] == ['E1', 'E2']
         return {'content': json.dumps([revised])}
     result = repair_rejected({'claims': [original]}, {'rejected': [{'claimId': 'c'}]},
                              evidence, '说明机制', invoke, json.loads)
@@ -87,7 +89,9 @@ def test_repair_cannot_cite_candidate_omitted_by_prompt_byte_limit():
                 dict(base, evidenceId='huge', quote='x' * 25000)]
     def invoke(prompt):
         assert 'x' * 1000 not in prompt
-        assert '"c": ["E1"]' in prompt
+        permissions = json.JSONDecoder().raw_decode(prompt.split(
+            'Allowed evidence IDs per claim (candidate permissions, not proof of support):\n', 1)[1])[0]
+        assert permissions['c'] == ['E1']
         return {'content': json.dumps([dict(original, evidenceRefs=['huge'])])}
     assert repair_rejected({'claims': [original]}, {'rejected': [{'claimId': 'c'}]},
                            evidence, '', invoke, json.loads) == []

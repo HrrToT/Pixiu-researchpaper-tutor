@@ -134,7 +134,8 @@ def test_repair_receives_exact_cells_and_revised_binding_is_checked_again():
     original.pop('tableBindings')
     rejected = check(ev, original)
     def invoke(prompt):
-        assert json.dumps(ev['tableData'], ensure_ascii=False) in prompt
+        rows = json.JSONDecoder().raw_decode(prompt.split('Exact available evidence:\n', 1)[1])[0]
+        assert rows[0]['tableData'] == ev['tableData']
         return {'content': json.dumps([valid])}
     repaired = repair_rejected({'claims': [original]}, rejected, [ev], '比较', invoke, json.loads)
     assert check(ev, repaired[0])['accepted']

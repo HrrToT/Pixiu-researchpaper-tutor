@@ -103,7 +103,7 @@ def render_report(payload):
     gaps = _display_gaps(payload.get("gaps", []))
     if gaps:
         lines.extend(["<details>", f"<summary>还有 {len(gaps)} 项未完成</summary>", ""])
-        for gap in gaps[:8]:
+        for gap in gaps:
             question = gap if isinstance(gap, str) else gap.get("question", "")
             if question:
                 reason = gap.get("missingEvidence", "") if isinstance(gap, dict) else ""

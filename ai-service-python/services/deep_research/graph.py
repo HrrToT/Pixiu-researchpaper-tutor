@@ -959,7 +959,8 @@ def make_synthesize_node(
         requested_limit = requested_character_limit(question)
         from services.deep_research.synthesis import OUTPUT_KIND_SECTIONS
         section_templates = OUTPUT_KIND_SECTIONS.get(output_kind, OUTPUT_KIND_SECTIONS["direction_survey"])
-        claim_limit = 5 if output_kind == 'paper_comparison' else (2 if requested_limit and requested_limit <= 300 else 3 if requested_limit else 12)
+        claim_limit = (12 if output_kind == 'experiment_design' else 5 if output_kind == 'paper_comparison'
+                       else 2 if requested_limit and requested_limit <= 300 else 3 if requested_limit else 12)
         paper_titles = {m.get('materialId'): m.get('title', '') for m in record.get('materials', [])}
         
         # Format evidence summaries with obligation binding
@@ -1089,6 +1090,16 @@ Orient losses before formulas, distinguish conditional/averaged effects and pape
                       'Do not replace a concrete choice with “keep everything fixed”. If no specific split/budget ' \
                       'is documented, choose and label a reproducible proposed protocol, not an invented paper setting.\n' \
                       + design_requirements(brief_state.get('metricDomains'))
+        if output_kind == 'experiment_design':
+            from services.deep_research.experimental_reasoning import design_output_outline
+            prompt += ('\nREQUIRED OUTPUT OUTLINE (one claim for EACH role, even when several share a section):\n'
+                       + json.dumps(design_output_outline(strict_budget=strict_budget,
+                           strict_hypothesis=strict_hypothesis), ensure_ascii=False, separators=(',', ':'))
+                       + '\nA section title is not a designRole. Include data and budget separately from controls; '
+                       'use limits for the risk section. Supply complete role-specific executionSpec where required. '
+                       'For a requested minimal descriptive comparison, use only the requested factors/scenes, '
+                       'finite matched budgets and descriptive paired differences; do not add bootstrap or significance tests. '
+                       'Choose explicit unexecuted settings now; factual availability still requires the supplied evidence.')
         template = prompt
         prompt, evidence_summaries = fit_evidence_prompt(evidence_summaries,
             lambda rows: template.replace(evidence_marker, json.dumps(rows, ensure_ascii=False, separators=(',', ':')), 1))

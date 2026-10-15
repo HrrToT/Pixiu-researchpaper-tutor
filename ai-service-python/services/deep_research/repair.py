@@ -28,10 +28,12 @@ def _prepare_repair(report, verification, evidence, question, *, max_prompt_byte
     short_ids = {full: short for short, full in aliases.items()}
     original_refs = {ref for row in originals.values() for ref in row.get('evidenceRefs', [])}
     rows = [
-        {'evidenceId': short_ids[e['evidenceId']], 'quote': e.get('quote', ''),
+        {key: value for key, value in {
+         'evidenceId': short_ids[e['evidenceId']], 'quote': e.get('quote', ''),
          'sourceContext': surrounding_context(e), 'location': e.get('location', {}),
          'accessLevel': e.get('accessLevel'), 'conditions': e.get('conditions', {}),
-         'tableData': e.get('tableData')}
+         'tableData': e.get('tableData')}.items()
+         if value is not None and value != {} and value != []}
         for e in sorted(selected, key=lambda e: (e['evidenceId'] not in hinted,
                                                  e['evidenceId'] not in original_refs))
     ]
@@ -81,6 +83,9 @@ not merely shortening. A missing mechanism explanation needs how/why the request
 input affects the operation/output, in ordinary words if requested for novices;
 listing names or repeating a technical operation is not sufficient. Do not add
 unsupported mechanics: use the allowed evidence or retain the limitation.
+If a central inference is supported but an appended list of mechanisms is not,
+retain only the supported conclusion and premises. Do not replace unsupported
+details with a paper-wide claim that those details were never measured.
 absence_not_established requires bounded positive evidence:
 missing passages do not prove paper-wide absence; finite results do not prove universality.
 Question: {question}
@@ -101,6 +106,8 @@ Allowed evidence IDs per claim (candidate permissions, not proof of support):
 {permissions_marker}
 Exact available evidence:
 {evidence_marker}
+missingEvidenceRefs are prioritized candidates, not guaranteed supplied passages.
+Only the evidence actually listed above and in each claim's allowed IDs is usable.
 Return a COMPACT JSON array, or [] if no supported revision is possible. Schema:
 {json.dumps(revision_shape, ensure_ascii=False)}
 Use actual values, not schema descriptions; wording key is "text".
@@ -136,7 +143,11 @@ in the paper. Maintain consistency with accepted definitions and complete requir
                   'Groups, data and analysis roles require complete executionSpec; versioned budget and '
                   'hypothesis roles require the corresponding complete executionSpec specified below.')
         prompt += '\n' + execution_spec_contract_for_roles({row.get('designRole') for row in originals.values()})
-        prompt += '\nExperimental deliverables (apply jointly across the accepted and revised claims):\n' + design_requirements(metric_domains)
+        roles = {row.get('designRole') for row in originals.values()}
+        # Other roles remain full consistency context and are independently
+        # checked. Their writing requirements are not writable in this batch.
+        prompt += '\nExperimental deliverables for the active roles (remain consistent with the other definitions):\n' + design_requirements(
+            metric_domains, roles=roles if roles <= DESIGN_ROLES.keys() else None)
         prompt += ('\nA structural rejection is not a content approval. Fix substantive omissions in the same revision, '
                    'including concrete intervention levels, per-group budgets and measurement aggregation. '
                    'Choose explicit unexecuted proposal settings when appropriate; do not wait for paper settings '
@@ -171,8 +182,8 @@ in the paper. Maintain consistency with accepted definitions and complete requir
         permissions = {key: [short_ids[ref] for ref in values
                             if ref in short_ids and short_ids[ref] in visible_ids]
                        for key, values in allowed.items()}
-        return template.replace(permissions_marker, json.dumps(permissions, ensure_ascii=False), 1).replace(
-            evidence_marker, json.dumps(selected_rows, ensure_ascii=False), 1)
+        return template.replace(permissions_marker, json.dumps(permissions, ensure_ascii=False, separators=(',', ':')), 1).replace(
+            evidence_marker, json.dumps(selected_rows, ensure_ascii=False, separators=(',', ':')), 1)
     if max_prompt_bytes <= 0:
         raise BudgetExhaustedError('repairPromptBytes', max_prompt_bytes, 1)
     # Allocate required full quotes AND context first. Optional candidate
@@ -180,7 +191,10 @@ in the paper. Maintain consistency with accepted definitions and complete requir
     required = {ref for claim in originals.values()
                 for ref in (claim.get('evidenceRefs', []) if claim.get('text', '').strip() else [])
                 if ref in short_ids}
-    required.update(ref for ref in hinted if ref in short_ids)
+    # Coverage hints are candidates, not citations the original assertion used.
+    # Keep them first among optional rows without forcing every broad hint into
+    # every batch. Full original citations and their contexts remain mandatory;
+    # permissions below remove anything that does not fit the actual request.
     mandatory_rows = [row for row in rows if aliases[row['evidenceId']] in required]
     optional_rows = [row for row in rows if aliases[row['evidenceId']] not in required]
     mandatory_size = len(render(mandatory_rows).encode('utf-8'))
