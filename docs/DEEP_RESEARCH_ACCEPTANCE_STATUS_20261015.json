@@ -196,5 +196,5 @@
     "Full novice study workflow",
     "Independent Edge recovery"
   ],
-  "currentProviderConstraint": "After user reported recharge, configured account balance endpoint returned 200, available=true and positive balance. H1R2-v1 still timed out at 120 seconds and is unknown. Stop additional paid cases; do not retry unknowns. Current official service status could not be fetched, so outage recovery and timeout cause remain unconfirmed."
+  "currentProviderConstraint": "At 2026-10-15 02:24 UTC, official incident page returned 200 and reported Identified / Full Outage affecting both Pro and Flash APIs, started 00:11 UTC. Models GET succeeds in 0.694 seconds and balance is positive; generation is not validated. Keep unknown calls unretried. Real content and final live generated-artifact acceptance require external recovery. See deep-research-evidence/provider-status-confirmed-20261015.json."
 }

@@ -1,3 +1,5 @@
+2026-10-15 02:24 UTC 官方故障确认：事件页返回200，显示 Identified / Full Outage，Pro、Flash API均受影响，正在实施修复。模型列表GET正常不代表生成恢复。当前剩余内容质量、独立案例和新成果实际交互验收依赖生成服务恢复；保持草稿，不追加未知请求。证据及恢复顺序见 `deep-research-evidence/provider-status-confirmed-20261015.json`。
+
 2026-10-15 诊断修复：模型错误增加受限的传输分类并持久化到调用账本；不推断历史错误原因，不改变unknown与保留预算，不新增付费请求。unknown提示不再建议停止后另发补查。后端整合1,271项通过，文案修改后相关端到端/账本18项通过（有重叠）。详见 `deep-research-evidence/transport-diagnostics-20261015.json`。
 
 2026-10-15 充值后验证：配置账户只读余额查询确认 available=true 且余额为正。H1R2-v1 仅提交一次，首节点 resolve_brief 在120秒后超时，已暂停并保留unknown；4,294 tokens为预留，实际用量/费用未知，尚无内容可评分。停止追加付费案例，不重发旧未知请求。服务加载前后调用账本2389条及哈希一致、原6个暂停任务保持暂停。详见 `deep-research-evidence/H1R2-v1-20261015.json`。
