@@ -101,3 +101,43 @@ def test_only_cited_external_evidence_causes_a_visible_label():
     assert answer_display_metadata([{**CLAIMS[0], 'evidenceRefs': []}], EVIDENCE) == {}
     missing = [{**CLAIMS[0], 'evidenceRefs': ['e', 'not-acquired']}]
     assert '访问范围未标明' in answer_display_metadata(missing, EVIDENCE)['sourceAccessSummary']
+
+
+def request_label_verdict():
+    row = verdicts()[-1]
+    aspect = row['aspects'][1]
+    aspect['requirement'] = '写明实际取得的是摘要还是全文'
+    aspect['basis'] = {'kind': 'request', 'excerpt': '写明实际取得的是摘要还是全文'}
+    return row
+
+
+def test_whole_question_can_bind_its_explicit_access_request_to_the_actual_label():
+    metadata = answer_display_metadata(CLAIMS, EVIDENCE)
+    resolved = resolve_coverage_references([request_label_verdict()], CLAIMS, EVIDENCE, display_metadata=metadata)
+    assert invalid_coverage_aspects(resolved, CLAIMS, EVIDENCE, [QUESTION],
+        request_only_obligations=['answer_scope'], display_metadata=metadata) == []
+
+
+@pytest.mark.parametrize('change', ['outside_whole_question', 'science_requirement', 'science_request',
+    'not_in_question', 'missing_citation', 'unknown_access', 'unknown_claim', 'empty_bindings',
+    'null_bindings', 'nonlist_bindings', 'no_visible_label'])
+def test_aggregate_label_request_never_weakens_source_or_scientific_guards(change):
+    row, claims, evidence = deepcopy((request_label_verdict(), CLAIMS, EVIDENCE))
+    aspect = row['aspects'][1]
+    metadata = answer_display_metadata(claims, evidence)
+    request_only = ['answer_scope']
+    questions = [QUESTION]
+    if change == 'outside_whole_question': request_only = []
+    elif change == 'science_requirement': aspect['requirement'] = '解释输入如何改变输出'
+    elif change == 'science_request': aspect['basis']['excerpt'] = '解释输入如何改变输出'
+    elif change == 'not_in_question': questions = ['Different actual question.']
+    elif change == 'missing_citation': claims[0]['evidenceRefs'].append('not-in-audit')
+    elif change == 'unknown_access': evidence[0]['accessLevel'] = 'unknown'
+    elif change == 'unknown_claim': aspect['bindings'][0]['claimId'] = 'not-accepted'
+    elif change == 'empty_bindings': aspect['bindings'] = []
+    elif change == 'null_bindings': aspect['bindings'] = None
+    elif change == 'nonlist_bindings': aspect['bindings'] = {'field': 'sourceAccessSummary'}
+    elif change == 'no_visible_label': metadata = {}
+    resolved = resolve_coverage_references([row], claims, evidence, display_metadata=metadata)
+    assert invalid_coverage_aspects(resolved, claims, evidence, questions,
+        request_only_obligations=request_only, display_metadata=metadata) == ['answer_scope']

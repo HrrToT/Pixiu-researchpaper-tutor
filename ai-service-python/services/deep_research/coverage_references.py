@@ -58,8 +58,9 @@ def resolve_coverage_references(verdicts, claims, evidence_rows, *, display_meta
             if not isinstance(aspect, dict):
                 continue
             basis = aspect.get('basis')
+            from services.deep_research.display_metadata import request_access_aspect
             bind(aspect.get('bindings'), metadata_aspect=isinstance(basis, dict)
-                 and basis.get('kind') == 'source_metadata')
+                 and (basis.get('kind') == 'source_metadata' or request_access_aspect(aspect)))
             if not isinstance(basis, dict) or basis.get('kind') != 'source' or 'field' not in basis:
                 continue
             if 'excerpt' in basis:

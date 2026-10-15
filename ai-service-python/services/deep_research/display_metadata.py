@@ -44,6 +44,14 @@ def display_binding_supported(binding, known_claims, metadata):
             and isinstance(known_claims.get(binding['claimId']), dict))
 
 
+def request_access_aspect(aspect):
+    """Recognize only an explicit request for the displayed acquisition label."""
+    basis = aspect.get('basis') if isinstance(aspect, dict) else None
+    return (isinstance(basis, dict) and basis.get('kind') == 'request'
+            and requests_access_level(basis.get('excerpt'))
+            and requests_access_level(aspect.get('requirement')))
+
+
 def revalidate_display_metadata(audit, claims, evidence):
     """A resumed publication cannot inherit access checks for different labels."""
     previous = audit.get('displayMetadataDigest')

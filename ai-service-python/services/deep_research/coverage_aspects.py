@@ -66,6 +66,25 @@ def invalid_coverage_aspects(verdicts, claims, evidence_rows, questions, *, requ
                     for b in bindings)
                 valid = valid and supported
                 continue
+            from services.deep_research.display_metadata import display_binding_supported, request_access_aspect
+            if request_access_aspect(aspect) and any(
+                    isinstance(b, dict) and b.get('field') == 'sourceAccessSummary'
+                    for b in (aspect.get('bindings') if isinstance(aspect.get('bindings'), list) else [])):
+                # The whole-question review can bind the actual aggregate label
+                # directly to an explicit access request. Scientific criteria
+                # and paper-specific acquisition aspects still use typed bases.
+                bindings = aspect['bindings']
+                excerpt = basis.get('excerpt')
+                supported = (verdict.get('obligationId') in request_only_obligations
+                    and isinstance(excerpt, str) and len(excerpt.strip()) >= 8
+                    and any(excerpt in q for q in questions if isinstance(q, str))
+                    and bool(bindings) and all(display_binding_supported(b, known, display_metadata)
+                        and bool(known[b['claimId']].get('evidenceRefs'))
+                        and all(evidence.get(ref) is not None
+                            and evidence[ref].get('accessLevel') in ('fulltext', 'abstract', 'user_note')
+                            for ref in known[b['claimId']]['evidenceRefs']) for b in bindings))
+                valid = valid and supported
+                continue
             metadata_only = False
             if not _bindings_supported(aspect.get('bindings'), known):
                 valid = False

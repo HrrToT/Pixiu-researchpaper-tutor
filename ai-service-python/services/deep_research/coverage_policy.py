@@ -54,23 +54,20 @@ coverage cannot rest only on a broad request basis. Purely proposed choices can 
 {"kind":"request","excerpt":"exact question substring"}; unrelated proposals cannot
 substitute for grounding facts.
 
-For acquisition access-level requirements ONLY, use
-{"kind":"source_metadata","evidenceId":"ID cited by the bound claim",
- "field":"accessLevel","value":"fulltext|abstract|user_note",
- "requestExcerpt":"exact relevant question substring, >=8 characters"}.
-Copy the actual supplied metadata; never infer access from page numbers. All aspects
-of a metadata-only obligation need this basis; mixed obligations still need source
-quotes for scientific content. Keep exact answer bindings: downloading a PDF does not
-prove the answer uses it unless the bound claim cites it. Metadata never proves a
-method/result. Resolve contrasts/pronouns from preceding sentences; do not assign a
-baseline limitation to the proposed method.
-The app already renders sourceAccessSummary when supplied in Server-rendered answer
-metadata. For a source_metadata ASPECT ONLY, bind that visible label with
-{"claimId":"accepted ID citing the basis evidenceId","field":"sourceAccessSummary"}.
-Do not put acquisition labels into scientific conditions or require redundant prose.
-This field is forbidden in overall/criterion/scientific-aspect bindings: continue
-binding those to actual text/conditions. Its requestExcerpt must actually ask about
-acquisition/access, not an unrelated scientific substring from the question.
+Access-level aspects ONLY: basis={"kind":"source_metadata","evidenceId":"cited ID",
+"field":"accessLevel","value":"fulltext|abstract|user_note",
+"requestExcerpt":"exact access request, >=8 characters"}. Copy supplied metadata,
+never infer access from page numbers. The bound claim must cite that exact evidence.
+For metadata-only obligations all aspects need this basis; mixed scientific aspects
+still require source quotes. Metadata never proves methods/results. Resolve pronouns
+and contrasts; do not attribute a baseline limitation to the proposed method.
+When the app supplies sourceAccessSummary, access ASPECTS may bind its displayed label:
+{"claimId":"accepted ID citing the basis evidence","field":"sourceAccessSummary"}.
+Do not duplicate this label in scientific conditions/prose. Overall/criterion/scientific
+bindings still require text/conditions. For ORIGINAL-QUESTION scope ONLY, an aggregate
+access-label aspect may instead use basis={"kind":"request","excerpt":"exact access request"};
+both its requirement and excerpt must ask about access, and every bound citation's
+access record must be supplied. Paper-specific access still needs the typed basis.
 
 Return one JSON object per listed obligationId, including original-question scope:
 {"obligationId":"ID","status":"covered|partial|missing|not_required",
