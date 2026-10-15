@@ -36,7 +36,7 @@ it('reads the saved version at its cited page and only adds materials on explici
   await screen.findByRole('button', { name: '打开任务论文' });
   expect(add).toHaveBeenCalledTimes(1); expect(add).toHaveBeenCalledWith('task', 'run', 'source');
   fireEvent.click(screen.getByRole('button', { name: '打开任务论文' }));
-  expect(open).toHaveBeenCalledWith('added.pdf');
+  expect(open).toHaveBeenCalledWith('added.pdf', 4);
   view.unmount(); expect(URL.revokeObjectURL).toHaveBeenCalledWith('blob:saved-pdf');
 });
 

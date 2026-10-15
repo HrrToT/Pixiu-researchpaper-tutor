@@ -1273,7 +1273,9 @@ export default function UnifiedTaskApp() {
         </div>}
         <div className="unified-reader-body">
         {activeExternalSource ? <ExternalResearchReader key={JSON.stringify([activeExternalSource.taskId, activeExternalSource.runId, activeExternalSource.sourceId, activeExternalSource.pageIndex])}
-          source={activeExternalSource} taskPaperIds={activeTask.paperIds} theme={theme} onClose={closeExternalSource} onAddSource={handleAddSource} onOpenPaper={openPaper} />
+          source={activeExternalSource} taskPaperIds={activeTask.paperIds} theme={theme} onClose={closeExternalSource} onAddSource={handleAddSource}
+          onOpenPaper={async (paperId, pageIndex) => { const taskId = activeTaskId; await openPaper(paperId, taskId);
+            if (activeTaskIdRef.current === taskId) setJump({ taskId, pdfId: paperId, pageIndex, token: Date.now(), anchorId: null }); }} />
         : preview ? <div className="unified-document" ref={contentScrollRef} onScroll={saveContentPosition} aria-label="查看已生成结果">
           {!['research.report', 'paper.overview'].includes(preview.kind) && <div className="unified-document-toolbar"><button type="button" disabled={savingRecovery || (preview.paperIds || preview.result?.materialScope?.allowedPaperIds || []).some(id => !activeTask.paperIds.includes(id))} onClick={recoverResult}><Save size={15} /> {savingRecovery ? '正在保存…' : '保存为成果'}</button></div>}
           <p>{preview.kind === 'paper.overview' ? '论文概览' : preview.kind === 'research.report' ? '研究报告预览' : '保存完整结果，保留当前学习位置。'}</p>

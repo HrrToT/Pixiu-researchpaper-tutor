@@ -59,7 +59,7 @@ export default function ExternalResearchReader({ source, onAddSource, onOpenPape
       <div className="external-reader-title"><strong title={source.title}>{source.title || '外部论文'}</strong>
         {(source.arxivId || source.versionId) && <small className="theme-text-muted">{source.arxivId ? `arXiv:${source.arxivId}` : source.versionId}</small>}
       </div>
-      {paperId ? <button type="button" onClick={() => onOpenPaper(paperId)}>打开任务论文</button>
+      {paperId ? <button type="button" onClick={() => onOpenPaper(paperId, page.totalPages ? page.pageIndex : sourcePage)}>打开任务论文</button>
         : onAddSource && <button type="button" disabled={adding} onClick={add}>{adding ? '加入中…' : '加入任务材料'}</button>}
       <button type="button" disabled={current?.status !== 'ready'} onClick={() => navigation.current?.zoom(SpecialZoomLevel.PageWidth)}>适合宽度</button>
       <button type="button" disabled={current?.status !== 'ready'} onClick={() => navigation.current?.zoom(1)}>100%</button>
