@@ -6,7 +6,7 @@ import pytest
 from services.deep_research.completion_criteria import validate_completion_criteria
 from services.deep_research.coverage import validate_plan
 from services.deep_research.final_coverage import audit_final_answer
-from services.deep_research.graph import make_plan_node, make_publish_node
+from services.deep_research.graph import make_plan_node, make_publish_node, make_verify_node
 from services.deep_research.coverage_repair import prepare_coverage_repair
 from services.deep_research.completion_criteria import revalidate_completion_audit
 
@@ -49,6 +49,21 @@ def test_all_frozen_criteria_need_current_answer_bindings_without_extra_model_ca
     assert (plan(), CLAIMS, EVIDENCE) == original
 
 
+def test_provider_response_shape_supplies_each_predeclared_id_without_changing_its_type():
+    def respond(run, node, prompt, options, **kwargs):
+        shape = json.loads(prompt.split('Required criterion fields by obligation: ', 1)[1])
+        assert set(shape) == {'o'}
+        assert [(c['criterionId'], c['responseType']) for c in shape['o']] == [('role', 'explanation'), ('depth', 'explanation')]
+        rows = verdicts()
+        rows[0]['criteria'] = [{**c, 'status': 'covered', 'bindings': [{'claimId': 'c', 'field': 'text'}]}
+                               for c in shape['o']]
+        return {'content': json.dumps(rows)}
+    invoke = Mock(side_effect=respond)
+    result = audit_final_answer('r', 'Explain matching and depth', plan(), CLAIMS, EVIDENCE, invoke, json.loads)
+    assert result['status'] == 'checked' and not result['gaps']
+    invoke.assert_called_once()
+
+
 @pytest.mark.parametrize('change', ['absent', 'missing', 'duplicate', 'unknown', 'downgrade',
     'invented_answer', 'source_as_answer', 'foreign_claim', 'bad_field', 'bad_identity'])
 def test_overall_covered_cannot_skip_or_downgrade_a_planned_explanation(change):
@@ -65,6 +80,9 @@ def test_overall_covered_cannot_skip_or_downgrade_a_planned_explanation(change):
     elif change == 'bad_field': criteria[0]['bindings'] = [{'claimId': 'c', 'field': 'text', 'excerpt': TEXT}]
     elif change == 'bad_identity': criteria[0]['criterionId'] = []
     result = audit(rows)
+    assert result['status'] == 'invalid_response'
+    assert result['invalidCriterionObligations'] == ['o']
+    assert result['gaps'][0]['missingEvidence'] == '回答完整性尚未核验'
     assert result['verdicts'][0]['status'] == 'partial'
     assert [g['obligationId'] for g in result['gaps']] == ['o']
     assert result['gaps'][0]['missingAspects']
@@ -72,6 +90,32 @@ def test_overall_covered_cannot_skip_or_downgrade_a_planned_explanation(change):
     assert not repair['accepted'] and repair['rejected'][0]['reason'] == 'answer_incomplete'
     assert all(c['requirement'] in str(repair) for c in plan()[0]['obligations'][0]['completionCriteria']
                if c['requirement'] in result['gaps'][0]['missingAspects'])
+
+
+def test_reviewed_missing_explanation_is_content_gap_not_invalid_audit():
+    rows = verdicts()
+    rows[0]['criteria'][0].update(status='missing', bindings=[])
+    result = audit(rows)
+    assert result['status'] == 'checked' and result['verdicts'][0]['status'] == 'partial'
+    assert result['gaps'][0]['missingAspects'] == [plan()[0]['obligations'][0]['completionCriteria'][0]['requirement']]
+
+
+def test_missing_audit_fields_do_not_trigger_paid_content_rewrite():
+    rows = verdicts()
+    rows[0].pop('criteria')
+    record = {'question': 'Explain matching', 'state': {'plan': plan(), 'reportBody': {'claims': CLAIMS},
+        'evidence': EVIDENCE, 'outputKind': 'claim_verification', 'gaps': []}}
+    def update(run, mutate, **kwargs):
+        nonlocal record
+        record = mutate(record)
+        return deepcopy(record)
+    invoke = Mock(return_value={'content': json.dumps(rows)})
+    make_verify_node(lambda claims, evidence, check: {'accepted': claims, 'rejected': []},
+        Mock(), update, invoke)({'run_id': 'r'})
+    invoke.assert_called_once()
+    assert invoke.call_args.args[1] == 'verify_answer_coverage'
+    assert record['state']['verifiedReport']['answerCoverage']['status'] == 'invalid_response'
+    assert not record['state'].get('repairAttempted')
 
 
 def test_legacy_plan_has_no_new_required_audit_fields():

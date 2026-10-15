@@ -80,6 +80,39 @@ def completion_contract_digest(plan, claims):
         separators=(',', ':'), allow_nan=False).encode()).hexdigest()
 
 
+def invalid_criterion_reviews(plan, claims, verdicts):
+    """Separate an unreadable audit from a genuine reviewed content gap."""
+    known = _known_claims_by_id(claims)
+    invalid = []
+    for item in plan:
+        for obligation in item.get('obligations', []):
+            criteria = obligation.get('completionCriteria')
+            if criteria is None:
+                continue
+            identity = obligation['obligationId']
+            matches = [v for v in verdicts if isinstance(v, dict) and v.get('obligationId') == identity]
+            if len(matches) == 1 and matches[0].get('status') == 'not_required':
+                continue  # Existing scope audit independently validates exemptions.
+            rows = matches[0].get('criteria') if len(matches) == 1 else None
+            valid = isinstance(rows, list) and len(rows) == len(criteria)
+            for criterion in criteria:
+                found = [r for r in rows if isinstance(r, dict) and r.get('criterionId') == criterion['criterionId']] if isinstance(rows, list) else []
+                if len(found) != 1:
+                    valid = False
+                    continue
+                row = found[0]
+                bindings = row.get('bindings')
+                status = row.get('status')
+                if (row.get('responseType') != criterion['responseType']
+                        or not isinstance(status, str) or status not in {'covered', 'partial', 'missing'}
+                        or not isinstance(bindings, list)
+                        or (status == 'covered' or bindings) and not _bindings_supported(bindings, known)):
+                    valid = False
+            if not valid:
+                invalid.append(identity)
+    return invalid
+
+
 def revalidate_completion_audit(plan, claims, audit):
     current = completion_contract_digest(plan, claims)
     if current is None:

@@ -171,7 +171,10 @@ def test_absolute_provider_timeout_preserves_unknown_and_ignores_late_response(t
     response.close.side_effect = closed.set
 
     def transport(*args, **kwargs):
-        assert release.wait(2)
+        # Only the provider's absolute 30ms deadline should expire. Logging and
+        # durable controller bookkeeping may take longer under filesystem load;
+        # the fixture must keep the late response alive until explicit release.
+        assert release.wait(30)
         return response
 
     class TimedVerifier(FixtureModel):
@@ -197,7 +200,7 @@ def test_absolute_provider_timeout_preserves_unknown_and_ignores_late_response(t
             assert calls[0]['reservedTokens'] > 0
             before = repo.require_run(rid)['budget'].copy()
             release.set()
-            assert closed.wait(1)
+            assert closed.wait(5)
             assert repo.require_run(rid)['budget'] == before
             assert not repo.list_outbox(rid)
             assert [c for c in repo.list_calls(rid) if c['node'] == 'verify'][0]['status'] == 'unknown'

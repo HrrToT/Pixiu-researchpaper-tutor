@@ -42,6 +42,7 @@ def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, 
     status = 'not_checked'
     invalid_aspects = []
     criterion_gaps = {}
+    invalid_criteria = []
     nonblocking = []
     budget_limit = None
     if claims and plan and invoke:
@@ -135,6 +136,8 @@ Return only a JSON array, exactly one entry for each of these obligationIds,
 including the original-question scope: {json.dumps([o['obligationId'] for p in audit_plan for o in p.get('obligations', [])])}
 [{{"obligationId":"ID","status":"covered|partial|missing|not_required",
    "bindings":[{{"claimId":"an accepted ID","field":"text"}}],
+   "criteria":[{{"criterionId":"planned ID","responseType":"planned type",
+     "status":"covered|partial|missing","bindings":[{{"claimId":"accepted ID","field":"text"}}]}}],
    "aspects":[{{"aspectId":"unique within this obligation","requirement":"one necessary aspect",
      "basis":{{"kind":"source","evidenceId":"supplied evidence ID","field":"quote"}},
      "status":"covered|partial|missing",
@@ -144,6 +147,15 @@ Covered requires every essential aspect to be covered with its own binding.
 Do not fabricate a binding for a missing aspect; use an empty bindings array.
 Only mark covered if ALL requested aspects of that obligation are answered in the
 accepted claims. Bindings must quote the final answer, never the source passages.'''
+        criterion_shape = {o['obligationId']: [
+            {'criterionId': c['criterionId'], 'responseType': c['responseType'],
+             'status': 'covered|partial|missing', 'bindings': []} for c in o['completionCriteria']]
+            for item in audit_plan for o in item.get('obligations', []) if o.get('completionCriteria')}
+        if criterion_shape:
+            prompt += '\nReturn BOTH aspects and criteria. Copy the following fixed criterion identities into each corresponding obligation object. '
+            prompt += 'Replace each status with one actual verdict and supply only valid answer bindings; do not omit or rename criterionIds. '
+            prompt += 'Obligations absent from this map do not require criteria.\nRequired criterion fields by obligation: '
+            prompt += json.dumps(criterion_shape, ensure_ascii=False, separators=(',', ':'))
         template = prompt
         try:
             limit = coverage_prompt_byte_limit(budget)
@@ -164,7 +176,10 @@ accepted claims. Bindings must quote the final answer, never the source passages
             if isinstance(verdicts, list):
                 from services.deep_research.coverage_references import resolve_coverage_references
                 verdicts = resolve_coverage_references(verdicts, claims, rows)
-                from services.deep_research.completion_criteria import completion_criteria_gaps
+                from services.deep_research.completion_criteria import completion_criteria_gaps, invalid_criterion_reviews
+                invalid_criteria = invalid_criterion_reviews(audit_plan, claims, verdicts)
+                if invalid_criteria:
+                    status = 'invalid_response'
                 criterion_gaps = completion_criteria_gaps(audit_plan, claims, verdicts)
                 verdicts = [{**v, 'status': 'partial'} if isinstance(v, dict)
                     and v.get('obligationId') in criterion_gaps else v for v in verdicts]
@@ -221,6 +236,7 @@ accepted claims. Bindings must quote the final answer, never the source passages
             'gaps': gaps, 'invalidAspectObligations': invalid_aspects,
             'wholeQuestionId': identity, 'nonblockingResearch': nonblocking,
             'criterionGaps': criterion_gaps,
+            'invalidCriterionObligations': invalid_criteria,
             'budgetLimit': budget_limit}
 
 
