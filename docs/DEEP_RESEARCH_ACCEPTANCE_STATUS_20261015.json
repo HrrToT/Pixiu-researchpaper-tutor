@@ -2,19 +2,21 @@
   "asOf": "2026-10-15",
   "objective": "Complete DR0-DR5 in DEEP_RESEARCH_DESIGN_20261012.md without redefining success around implemented subsets.",
   "overall": "incomplete",
-  "freshMaterialReadiness": "Four PDFs locally indexed. H1R2-v1 unknown; H4R-v1 completed but failed content review and entered diagnosis. Others unexecuted.",
+  "freshMaterialReadiness": "Four PDFs indexed. H1R2-v1 remains unknown/unscored. H2R-v1 and H5R-v1 completed partial and failed frozen content review; reviewed first, then retired for diagnostic development. H4R retired; v3 core table claim improved but one frozen criterion is still missing. H3R unexecuted.",
   "evidenceRule": "Machine completion, offline fixtures, real transport, source support, content quality and independent-case eligibility are separate. Historical results are not silently upgraded to current passes.",
   "latestVerification": {
     "backendResearchModelReadingIntegration": {
-      "passed": 1304,
+      "passed": 1308,
       "skipped": 2,
       "warnings": 1,
-      "seconds": 43.14,
-      "scope": "research/model/reading integration plus PDF table parsing"
+      "seconds": 55.4,
+      "scope": "Research/model/reading integration plus PDF table parsing at 221ed65, before .70 changes; historical broader scope, not silently upgraded."
     },
     "frontendVitest": {
-      "passed": 472,
-      "files": 64
+      "passed": 473,
+      "files": 64,
+      "seconds": 42.77,
+      "boundary": "Full suite after polling/CSS/result-card changes; subsequent preview-markup fix covered by separate focused tests."
     },
     "frontendIsolatedBrowser": {
       "passed": 6,
@@ -32,12 +34,40 @@
       "seconds": 0.78,
       "overlapWithFullSuite": true
     },
-    "newHoldoutModelCalls": 12,
-    "newHoldoutModelCallsBoundary": "H1R2 one unknown request plus H4R eleven succeeded calls. Original H4R content not accepted.",
+    "newHoldoutModelCalls": 30,
+    "newHoldoutModelCallsBoundary": "First submissions: H1R2 one unknown request; H4R 11, H2R 10 and H5R 8 succeeded. 119001 settled tokens across the 29 successful calls; H1R2 reservation is not measured usage. None of these content cases is accepted.",
     "postUnknownMessageFocused": {
       "passed": 18,
       "seconds": 9.4,
       "overlap": true
+    },
+    "backendCurrentResearchReadingTables": {
+      "passed": 1252,
+      "warnings": 1,
+      "seconds": 50.17,
+      "scope": "All test_deep_research*.py, test_reading_*.py and test_pdf_table_columns.py at 6cbac3f.",
+      "boundary": "Different scope from the preceding 1308 suite; overlapping counts are not added.",
+      "initialRun": "Sandbox TemporaryDirectory SQLite failures plus two JSON-whitespace assertions; assertions now inspect parsed data, and the same suite passed outside that temp-directory restriction."
+    },
+    "frontendDocumentNavigationFocused": {
+      "passed": 19,
+      "seconds": 6.52,
+      "overlap": true
+    },
+    "frontendBuild": "Production build passed; existing dependency warnings and large chunk warnings remain.",
+    "retiredH4RDevelopmentCalls": {
+      "calls": 18,
+      "tokens": 54193,
+      "attempts": [
+        "H4R-v2",
+        "H4R-v3"
+      ],
+      "cost": null
+    },
+    "liveReportInteractions": {
+      "passed": true,
+      "proof": "deep-research-evidence/live-report-interactions-20261015.json",
+      "boundary": "Exact citation/physical-page lookup, manual edit, original preservation and find-after-reload; content acceptance is separate."
     }
   },
   "stages": [
@@ -65,10 +95,12 @@
     {
       "id": "DR2",
       "implementation": "Versioned sources, table bindings, physical locations and bounded source continuity implemented",
-      "acceptance": "Real single-/multi-paper answer quality and final live citation checks incomplete",
+      "acceptance": "Live exact table citation and original page lookup verified; single-/multi-paper complete answer quality remains open.",
       "proof": [
         "deep-research-evidence/source-continuity-replay-20261015.json",
-        "deep-research-evidence/coverage-source-binding-20261015.json"
+        "deep-research-evidence/coverage-source-binding-20261015.json",
+        "deep-research-evidence/H4R-v3-20261015.json",
+        "deep-research-evidence/live-report-interactions-20261015.json"
       ]
     },
     {
@@ -78,7 +110,10 @@
       "proof": [
         "deep-research-evidence/d3-v25-20261014.json",
         "deep-research-evidence/completion-criteria-20261015.json",
-        "deep-research-evidence/coverage-response-contract-20261015.json"
+        "deep-research-evidence/coverage-response-contract-20261015.json",
+        "deep-research-evidence/H2R-v1-20261015.json",
+        "deep-research-evidence/H5R-v1-20261015.json",
+        "deep-research-evidence/repair-capacity-and-outline-20261015.json"
       ]
     },
     {
@@ -94,10 +129,11 @@
     {
       "id": "DR5",
       "implementation": "Compact results, artifact versions/edit/search, citations and rollback implemented",
-      "acceptance": "Historical isolated browser and deployment checks pass; final live results and independent quality gates incomplete",
+      "acceptance": "Real new-report citation, PDF page lookup, edit/version preservation and search after reload verified. Independent content quality and overall release gates remain incomplete.",
       "proof": [
         "deep-research-evidence/frontend-integration-20261013.json",
-        "deep-research-evidence/deployment-20261013.json"
+        "deep-research-evidence/deployment-20261013.json",
+        "deep-research-evidence/live-report-interactions-20261015.json"
       ]
     }
   ],
@@ -158,7 +194,9 @@
       "slot": "H2",
       "case": "H2R",
       "manifest": "DEEP_RESEARCH_FRESH_HOLDOUTS_20261015.json",
-      "state": "sealed, not executed"
+      "state": "First run completed/partial and failed content review; subsequently retired for diagnosis, replacement required.",
+      "runId": "dr_run_3978892825bc5ddcb8b55d079157ff9f",
+      "proof": "deep-research-evidence/H2R-v1-20261015.json"
     },
     {
       "slot": "H3",
@@ -177,7 +215,9 @@
       "slot": "H5",
       "case": "H5R",
       "manifest": "DEEP_RESEARCH_FRESH_HOLDOUTS_20261015.json",
-      "state": "sealed, not executed"
+      "state": "First run completed/partial and failed content review; subsequently retired for diagnosis, replacement required.",
+      "runId": "dr_run_98572e8a5a5f575cb2dda227b673455a",
+      "proof": "deep-research-evidence/H5R-v1-20261015.json"
     },
     {
       "slot": "H6",
@@ -186,11 +226,10 @@
       "state": "offline network/failure/budget tests available; no claim of real Provider quality"
     }
   ],
-  "retiredIndependentClaims": "H1, H1R and original H3 were used for diagnosis. Original H2/H4/H5 share the tuned Scaffold-GS/4DGS material and are replaced for unseen-material acceptance. All original definitions/results remain preserved. H4R first result failed quality; subsequent parser/coverage diagnosis retires it as well.",
+  "retiredIndependentClaims": "H1, H1R and original H3 were used for diagnosis. Original H2/H4/H5 share the tuned Scaffold-GS/4DGS material and are replaced for unseen-material acceptance. All original definitions/results remain preserved. H4R first result failed quality; subsequent parser/coverage diagnosis retires it as well. H2R and H5R first-run reviews were recorded before diagnosis; both are now retired. Their shared Lapis material cannot be claimed unseen in future replacement acceptance.",
   "releaseGatesStillOpen": [
     "Current development cases D1/D2/D3/D5 meet every applicable content dimension at least 4/5, with all key source/number/condition claims checked.",
     "Five fresh real independent cases are executed once each and reviewed before any diagnostic reuse; failures used for tuning must retire.",
-    "Final live result/citation/edit/find-again checks use valid new research outputs; mock browser tests alone are insufficient.",
     "Known model-call outcomes, actual usage and costs where available remain separate from retained unknown reservations.",
     "Keep PR draft and production defaults off until the actual gates are met."
   ],
@@ -199,5 +238,14 @@
     "Full novice study workflow",
     "Independent Edge recovery"
   ],
-  "currentProviderConstraint": "Official incident resolved at 2026-10-15 05:04 UTC; H4R-v1 completed 11 model calls in75 seconds. Transport recovered for this case. Unknown older requests remain protected. H4R content failed and is now a development case."
+  "currentProviderConstraint": "Recovery demonstrated by H4R-v1/v2/v3, H2R-v1 and H5R-v1 actual completed requests. Seven older unknown runs remain paused and unretried. The remaining blocker to release is content quality, not a claim of current provider outage.",
+  "currentDevelopmentMode": "Primary Codex only; Qoder is no longer used as requested. Code .70 is offline verified; no .70 model quality result yet.",
+  "loadedRuntime": {
+    "commit": "6cbac3f",
+    "promptVersion": "dr-v2.20261015.70",
+    "ready": true,
+    "callsPreserved": 2506,
+    "pausedUnknownRuns": 7,
+    "proof": "deep-research-evidence/runtime-load-dr70-20261015.json"
+  }
 }

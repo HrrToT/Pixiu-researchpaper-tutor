@@ -1,0 +1,64 @@
+{
+  "date": "2026-10-15",
+  "promptVersion": "dr-v2.20261015.70",
+  "diagnosticCase": "H5R-v1",
+  "originalOutcome": "completed/partial; not quality accepted",
+  "originalRepairLimit": {
+    "kind": "repairEvidenceBytes",
+    "limit": 24000,
+    "used": 28693
+  },
+  "mode": "Read-only offline request assembly; zero model calls",
+  "rawPayloadSha256": "30b31ed7d48d76a7c2a6ead427abb96e6b337fd25581405a8fcd468610823c44",
+  "changes": [
+    "Original assertions retain all their own exact quotes and surrounding contexts.",
+    "Coverage hints are prioritized optional candidates; unprovided IDs are excluded from actual allowed citations.",
+    "Repair writing contracts are scoped to active roles while shared scientific policy and independent verification stay intact.",
+    "Initial experimental synthesis explicitly lists all nine deliverables and required execution schemas.",
+    "Expanded report gap lists expose all counted items."
+  ],
+  "batches": [
+    {
+      "targets": [
+        "c5",
+        "design_completion_data",
+        "design_completion_budget"
+      ],
+      "promptBytes": 23803,
+      "completeQuotes": 5,
+      "mandatoryQuotesAndContexts": 2,
+      "optionalContextsOmittedWithMarker": 3,
+      "originalCitationContextsPreserved": true,
+      "unprovidedEvidenceNotAllowed": true
+    },
+    {
+      "targets": [
+        "c1",
+        "c6"
+      ],
+      "promptBytes": 22613,
+      "completeQuotes": 3,
+      "mandatoryQuotesAndContexts": 3,
+      "optionalContextsOmittedWithMarker": 0,
+      "originalCitationContextsPreserved": true,
+      "unprovidedEvidenceNotAllowed": true
+    },
+    {
+      "targets": [
+        "c2",
+        "c3",
+        "c4",
+        "c7",
+        "design_completion_limits"
+      ],
+      "promptBytes": 23661,
+      "completeQuotes": 5,
+      "mandatoryQuotesAndContexts": 2,
+      "optionalContextsOmittedWithMarker": 3,
+      "originalCitationContextsPreserved": true,
+      "unprovidedEvidenceNotAllowed": true
+    }
+  ],
+  "boundary": "Preflight capacity is verified, not the quality of future generated revisions. Optional context can be omitted only with the existing explicit contextOmitted marker. Full original quotes are never cut. No budget raised, semantic check bypassed or unknown request retried.",
+  "independence": "H2R and H5R first-run reviews were recorded before diagnosis. They now retire from independent acceptance; replacement cases are required."
+}
