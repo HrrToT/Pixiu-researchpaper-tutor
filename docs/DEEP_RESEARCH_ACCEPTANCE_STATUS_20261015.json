@@ -2,7 +2,7 @@
   "asOf": "2026-10-15",
   "objective": "Complete DR0-DR5 in DEEP_RESEARCH_DESIGN_20261012.md without redefining success around implemented subsets.",
   "overall": "incomplete",
-  "freshMaterialReadiness": "Four local PDFs indexed. H1R2 remains unknown/unscored. H2R/H4R/H5R first results failed frozen review and are retired for diagnosis. H3R first external run acquired only the abstract and failed the required mechanism explanation; reviewed before diagnosis and now retired. H3R-v3 development reaches v4 fulltext/page 5 but publishes only a partial explanation; H5R-v6 stops on a known structured-response parsing error.",
+  "freshMaterialReadiness": "H1R2 remains unknown/unscored. H2R/H3R/H4R/H5R are retired development cases, not fresh acceptance. H3R-v5 reaches machine complete but novice gradient-feedback explanation remains weak. H5R-v8 chooses finite training but has incomplete configuration and a known malformed repair-verifier response.",
   "evidenceRule": "Machine completion, offline fixtures, real transport, source support, content quality and independent-case eligibility are separate. Historical results are not silently upgraded to current passes.",
   "latestVerification": {
     "backendResearchModelReadingIntegration": {
@@ -42,11 +42,11 @@
       "overlap": true
     },
     "backendCurrentResearchReadingTables": {
-      "passed": 1301,
+      "passed": 1394,
       "warnings": 1,
-      "seconds": 47.82,
-      "scope": "All test_deep_research*.py, test_reading_*.py, test_pdf_table_columns.py and test_config.py at 9649320.",
-      "boundary": "Offline functional regression, not real content-quality acceptance. Scope differs from the historical 1308 suite; do not add overlapping counts."
+      "seconds": 49.78,
+      "scope": "All test_deep_research*.py, test_reading_*.py, test_pdf_table_columns.py and test_config.py after .81 retention logic.",
+      "boundary": "Offline functional regression. Subsequent one-sentence partial-result notice additionally verified by 20 focused tests; overlapping counts are not added."
     },
     "frontendDocumentNavigationFocused": {
       "passed": 19,
@@ -69,26 +69,28 @@
       "boundary": "Exact citation/physical-page lookup, manual edit, original preservation and find-after-reload; content acceptance is separate."
     },
     "retiredH3RDevelopmentCalls": {
-      "calls": 24,
-      "tokens": 67240,
+      "calls": 34,
+      "tokens": 104731,
       "attempts": [
         "H3R-v2",
         "H3R-v3",
-        "H3R-v4"
+        "H3R-v4",
+        "H3R-v5"
       ],
       "cost": null,
       "boundary": "Known completed responses, including failed planning/verification runs; no independent holdout credit."
     },
     "retiredH5RDevelopmentCalls": {
-      "calls": 55,
-      "tokens": 243931,
+      "calls": 66,
+      "tokens": 296979,
       "attempts": [
         "H5R-v2",
         "H5R-v3",
         "H5R-v4",
         "H5R-v5",
         "H5R-v6",
-        "H5R-v7"
+        "H5R-v7",
+        "H5R-v8"
       ],
       "cost": null,
       "boundary": "Known completed responses, including failed planning/verification runs; no independent holdout credit."
@@ -96,14 +98,31 @@
     "currentOfflineCorrections": {
       "proof": "deep-research-evidence/structured-response-and-source-spans-20261015.json",
       "draftingProof": "deep-research-evidence/drafting-evidence-capacity-20261015.json",
-      "realGenerationOnFinalVersion": true,
-      "finalNumericGuardProof": "deep-research-evidence/quantitative-condition-keys-20261015.json"
+      "realGenerationOnFinalVersion": false,
+      "finalNumericGuardProof": "deep-research-evidence/quantitative-condition-keys-20261015.json",
+      "boundary": "Real H3R-v5/H5R-v8 use .80. The final .81 failure-retention change has offline exact-response replay, not a new real generation."
     },
     "externalReader": {
       "javaIsolatedPassed": 43,
       "focusedFrontendPassed": 30,
       "actualUiPassed": true,
       "proof": "deep-research-evidence/external-reader-interactions-20261015.json"
+    },
+    "repairRetentionNoticeFocused": {
+      "passed": 20,
+      "seconds": 1.83,
+      "overlap": true,
+      "proof": "deep-research-evidence/repair-response-retention-20261015.json"
+    },
+    "quantitySceneAssetGates": {
+      "modelCalls": 0,
+      "proof": "deep-research-evidence/quantity-scene-asset-gates-20261015.json",
+      "boundary": "Saved-input deterministic replay, not semantic or real content-quality acceptance."
+    },
+    "knownRepairResponseRetention": {
+      "modelCalls": 0,
+      "proof": "deep-research-evidence/repair-response-retention-20261015.json",
+      "unknownFailuresStillPropagate": true
     }
   },
   "stages": [
@@ -136,7 +155,8 @@
         "deep-research-evidence/source-continuity-replay-20261015.json",
         "deep-research-evidence/coverage-source-binding-20261015.json",
         "deep-research-evidence/H4R-v3-20261015.json",
-        "deep-research-evidence/live-report-interactions-20261015.json"
+        "deep-research-evidence/live-report-interactions-20261015.json",
+        "deep-research-evidence/quantity-scene-asset-gates-20261015.json"
       ]
     },
     {
@@ -153,7 +173,10 @@
         "deep-research-evidence/H5R-v6-quality-20261015.json",
         "deep-research-evidence/drafting-evidence-capacity-20261015.json",
         "deep-research-evidence/structured-response-and-source-spans-20261015.json",
-        "deep-research-evidence/H5R-v7-quality-20261015.json"
+        "deep-research-evidence/H5R-v7-quality-20261015.json",
+        "deep-research-evidence/quantity-scene-asset-gates-20261015.json",
+        "deep-research-evidence/repair-response-retention-20261015.json",
+        "deep-research-evidence/H5R-v8-quality-20261015.json"
       ]
     },
     {
@@ -167,7 +190,8 @@
         "deep-research-evidence/H3R-v1-external-size-20261015.json",
         "deep-research-evidence/H3R-v3-quality-20261015.json",
         "deep-research-evidence/H3R-v4-quality-20261015.json",
-        "deep-research-evidence/external-reader-interactions-20261015.json"
+        "deep-research-evidence/external-reader-interactions-20261015.json",
+        "deep-research-evidence/H3R-v5-quality-20261015.json"
       ]
     },
     {
@@ -179,7 +203,8 @@
         "deep-research-evidence/deployment-20261013.json",
         "deep-research-evidence/live-report-interactions-20261015.json",
         "deep-research-evidence/structured-response-and-source-spans-20261015.json",
-        "deep-research-evidence/external-reader-interactions-20261015.json"
+        "deep-research-evidence/external-reader-interactions-20261015.json",
+        "deep-research-evidence/runtime-load-dr81-retention-20261015.json"
       ]
     }
   ],
@@ -286,21 +311,21 @@
     "Full novice study workflow",
     "Independent Edge recovery"
   ],
-  "currentProviderConstraint": "All current responses are known and settled; seven older unknowns remain paused. Remaining release limits are content quality and fresh independent acceptance, not an external-reader or provider-outage claim.",
-  "currentDevelopmentMode": "Primary Codex only; no Qoder. Python .79 real H3R-v4/H5R-v7 both finish partial, 19 settled calls/79374 tokens; neither content accepted. External reader backend/UI and cited-page continuation are live verified.",
+  "currentProviderConstraint": "Both new responses are terminal and known; seven older unknowns remain paused. Open gates are scientific completeness, novice explanation and fresh independent acceptance.",
+  "currentDevelopmentMode": "Primary Codex only; no Qoder. Python .81 loaded. .80 real cases total 21 settled calls/90539 tokens; neither passes all frozen content dimensions. Historical results remain unchanged.",
   "loadedRuntime": {
-    "commit": "9649320",
-    "promptVersion": "dr-v2.20261015.79",
+    "commit": "9a18c0f",
+    "promptVersion": "dr-v2.20261015.81",
     "ready": true,
-    "callsPreserved": 2664,
+    "callsPreserved": 2761,
     "pausedUnknownRuns": 7,
-    "proof": "deep-research-evidence/runtime-load-dr79-20261015.json"
+    "proof": "deep-research-evidence/runtime-load-dr81-retention-20261015.json"
   },
   "nextQualityWork": [
-    "Canonicalize comma-grouped and Chinese-unit numbers without weakening value/unit checks.",
-    "Bind scene display-name variants explicitly without globally ignoring case in source identities.",
-    "Require evidence for released checkpoint availability or choose finite prospective baseline training.",
-    "Keep the user deliverable distinct from supporting-paper research checklists and remove repeated protocol presentation."
+    "Explain training mechanisms as a concrete signal/operation/output/feedback path in novice terms, not only the name of a differentiability trick.",
+    "Generate actual control, initialization, optimizer, resolution and split choices; reject unknown defaults disguised as an executable protocol.",
+    "Remove duplicate protocol presentation without hiding source conditions or altering original model drafts.",
+    "Complete D1/D2/D3/D5 content gates, then replace and execute fresh independent cases without tuning on them."
   ],
   "javaReaderRuntime": {
     "sourceCommit": "070ab1a",
