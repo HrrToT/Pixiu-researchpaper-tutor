@@ -157,11 +157,13 @@ Java 网关源码里已经包含 Agent 转发接口，但本地运行时可能�
 
 根目录 `.env` 主要供 Docker Compose 和 Python 服务使用：
 
+官方 Flash API 的当前名称为 `deepseek-flash`。旧的 `deepseek-v4-flash` 名称仍由官方兼容路由到当前 Flash 模型；已有显式配置不会被代码改写。研究中的问题解析、证据提取和相关性评估也使用 `DEEPSEEK_TRANSLATION_MODEL`，其余研究角色沿用主模型。名称维护不代表供应商故障已恢复，未知请求仍保留暂停且不自动重发。参见 [DeepSeek 官方调用说明](https://api-docs.deepseek.com/zh-cn/)。
+
 ```env
 DEEPSEEK_API_KEY=
 DEEPSEEK_BASE_URL=https://api.deepseek.com
 DEEPSEEK_MODEL=deepseek-v4-pro
-DEEPSEEK_TRANSLATION_MODEL=deepseek-v4-flash
+DEEPSEEK_TRANSLATION_MODEL=deepseek-flash
 DEEPSEEK_THINKING_TYPE=enabled
 DEEPSEEK_REASONING_EFFORT=high
 

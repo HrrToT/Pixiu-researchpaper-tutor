@@ -32,7 +32,7 @@ class Settings(BaseSettings):
     deep_research_request_timeout_seconds: int = Field(default=180, ge=1, le=360)
     pixiu_llm_fixture_path: str = ""
 
-    deepseek_translation_model: str = "deepseek-v4-flash"
+    deepseek_translation_model: str = "deepseek-flash"
     deepseek_translation_temperature: float = 0.1
     deepseek_translation_thinking_type: str | None = None
     deepseek_translation_reasoning_effort: str | None = None
