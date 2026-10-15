@@ -2,7 +2,7 @@
   "asOf": "2026-10-15",
   "objective": "Complete DR0-DR5 in DEEP_RESEARCH_DESIGN_20261012.md without redefining success around implemented subsets.",
   "overall": "incomplete",
-  "freshMaterialReadiness": "H1R2 remains unknown/unscored. H2R/H3R/H4R/H5R are retired development cases, not fresh acceptance. H3R-v5 reaches machine complete but novice gradient-feedback explanation remains weak. H5R-v8 chooses finite training but has incomplete configuration and a known malformed repair-verifier response.",
+  "freshMaterialReadiness": "H1R2 remains unknown/unscored. H2R/H3R/H4R/H5R remain retired development cases. .84 H3R-v6 improves feedback explanation but reverses opacity/transparency terminology; H5R-v9 acquires the named scene and retains a real partial result, while concrete controls and deliverable scope remain incomplete.",
   "evidenceRule": "Machine completion, offline fixtures, real transport, source support, content quality and independent-case eligibility are separate. Historical results are not silently upgraded to current passes.",
   "latestVerification": {
     "backendResearchModelReadingIntegration": {
@@ -42,11 +42,11 @@
       "overlap": true
     },
     "backendCurrentResearchReadingTables": {
-      "passed": 1394,
+      "passed": 1421,
       "warnings": 1,
-      "seconds": 49.78,
-      "scope": "All test_deep_research*.py, test_reading_*.py, test_pdf_table_columns.py and test_config.py after .81 retention logic.",
-      "boundary": "Offline functional regression. Subsequent one-sentence partial-result notice additionally verified by 20 focused tests; overlapping counts are not added."
+      "seconds": 41.03,
+      "scope": "All test_deep_research*.py, test_reading_*.py, test_pdf_table_columns.py and test_config.py at f3103bf (.85).",
+      "boundary": "Offline functional regression, not real content-quality acceptance."
     },
     "frontendDocumentNavigationFocused": {
       "passed": 19,
@@ -69,20 +69,21 @@
       "boundary": "Exact citation/physical-page lookup, manual edit, original preservation and find-after-reload; content acceptance is separate."
     },
     "retiredH3RDevelopmentCalls": {
-      "calls": 34,
-      "tokens": 104731,
+      "calls": 43,
+      "tokens": 144904,
       "attempts": [
         "H3R-v2",
         "H3R-v3",
         "H3R-v4",
-        "H3R-v5"
+        "H3R-v5",
+        "H3R-v6"
       ],
       "cost": null,
       "boundary": "Known completed responses, including failed planning/verification runs; no independent holdout credit."
     },
     "retiredH5RDevelopmentCalls": {
-      "calls": 66,
-      "tokens": 296979,
+      "calls": 78,
+      "tokens": 356541,
       "attempts": [
         "H5R-v2",
         "H5R-v3",
@@ -90,7 +91,8 @@
         "H5R-v5",
         "H5R-v6",
         "H5R-v7",
-        "H5R-v8"
+        "H5R-v8",
+        "H5R-v9"
       ],
       "cost": null,
       "boundary": "Known completed responses, including failed planning/verification runs; no independent holdout credit."
@@ -100,7 +102,7 @@
       "draftingProof": "deep-research-evidence/drafting-evidence-capacity-20261015.json",
       "realGenerationOnFinalVersion": false,
       "finalNumericGuardProof": "deep-research-evidence/quantitative-condition-keys-20261015.json",
-      "boundary": "Real H3R-v5/H5R-v8 use .80. The final .81 failure-retention change has offline exact-response replay, not a new real generation."
+      "boundary": "Real H3R-v6/H5R-v9 use .84. The final .85 terminology rule is offline tested and loaded, with no new real generation yet."
     },
     "externalReader": {
       "javaIsolatedPassed": 43,
@@ -123,6 +125,28 @@
       "modelCalls": 0,
       "proof": "deep-research-evidence/repair-response-retention-20261015.json",
       "unknownFailuresStillPropagate": true
+    },
+    "obligationRoutingReplay": {
+      "proof": "deep-research-evidence/obligation-routing-replay-20261015.json",
+      "priorEvidence": 6,
+      "recoveredEvidence": 8,
+      "modelCalls": 0,
+      "boundary": "Exact saved responses on copied state; independent relevance remains unchecked."
+    },
+    "namedSceneLiveRetrieval": {
+      "proof": "deep-research-evidence/named-row-live-index-20261015.json",
+      "retrievalLimit": 3,
+      "literalScene": "Hotdog",
+      "modelCalls": 0,
+      "boundary": "Owned source/index version and context pair preserved; no numeric approval."
+    },
+    "executableDraftingCapacity": {
+      "proof": "deep-research-evidence/executable-drafting-capacity-20261015.json",
+      "promptBytes": 23905,
+      "visibleEvidence": 6,
+      "availableEvidence": 9,
+      "modelCalls": 0,
+      "boundary": "Hotdog and opacity-update evidence remain visible; this does not prove drafting quality."
     }
   },
   "stages": [
@@ -156,7 +180,9 @@
         "deep-research-evidence/coverage-source-binding-20261015.json",
         "deep-research-evidence/H4R-v3-20261015.json",
         "deep-research-evidence/live-report-interactions-20261015.json",
-        "deep-research-evidence/quantity-scene-asset-gates-20261015.json"
+        "deep-research-evidence/quantity-scene-asset-gates-20261015.json",
+        "deep-research-evidence/obligation-routing-replay-20261015.json",
+        "deep-research-evidence/named-row-live-index-20261015.json"
       ]
     },
     {
@@ -176,13 +202,15 @@
         "deep-research-evidence/H5R-v7-quality-20261015.json",
         "deep-research-evidence/quantity-scene-asset-gates-20261015.json",
         "deep-research-evidence/repair-response-retention-20261015.json",
-        "deep-research-evidence/H5R-v8-quality-20261015.json"
+        "deep-research-evidence/H5R-v8-quality-20261015.json",
+        "deep-research-evidence/H5R-v9-quality-20261015.json",
+        "deep-research-evidence/executable-drafting-capacity-20261015.json"
       ]
     },
     {
       "id": "DR4",
       "implementation": "Permissioned arXiv discovery, versioned fulltext acquisition, fixed network exit and degradation implemented",
-      "acceptance": "Real v4 external discovery/download and saved-fulltext reader verified. Latest mechanism explanation remains partial due numeric normalization and missing complete novice coverage; content not accepted.",
+      "acceptance": "Real v4 acquisition/reader verified. Latest answer improves training feedback but has an opacity/transparency direction error; content acceptance remains open.",
       "proof": [
         "deep-research-evidence/H3-v1-external-fulltext-20261013.json",
         "../ai-service-python/tests/test_deep_research_academic.py",
@@ -191,7 +219,8 @@
         "deep-research-evidence/H3R-v3-quality-20261015.json",
         "deep-research-evidence/H3R-v4-quality-20261015.json",
         "deep-research-evidence/external-reader-interactions-20261015.json",
-        "deep-research-evidence/H3R-v5-quality-20261015.json"
+        "deep-research-evidence/H3R-v5-quality-20261015.json",
+        "deep-research-evidence/H3R-v6-quality-20261015.json"
       ]
     },
     {
@@ -204,7 +233,8 @@
         "deep-research-evidence/live-report-interactions-20261015.json",
         "deep-research-evidence/structured-response-and-source-spans-20261015.json",
         "deep-research-evidence/external-reader-interactions-20261015.json",
-        "deep-research-evidence/runtime-load-dr81-retention-20261015.json"
+        "deep-research-evidence/runtime-load-dr81-retention-20261015.json",
+        "deep-research-evidence/runtime-load-dr85-terminology-20261015.json"
       ]
     }
   ],
@@ -311,21 +341,22 @@
     "Full novice study workflow",
     "Independent Edge recovery"
   ],
-  "currentProviderConstraint": "Both new responses are terminal and known; seven older unknowns remain paused. Open gates are scientific completeness, novice explanation and fresh independent acceptance.",
-  "currentDevelopmentMode": "Primary Codex only; no Qoder. Python .81 loaded. .80 real cases total 21 settled calls/90539 tokens; neither passes all frozen content dimensions. Historical results remain unchanged.",
+  "currentProviderConstraint": "Both latest runs are terminal with known settled responses; seven older unknowns remain paused. Open release gates concern scientific terminology, executable controls, scope fidelity and fresh independent acceptance.",
+  "currentDevelopmentMode": "Primary Codex only; no Qoder. .85 loaded after 1421 offline passes. .84 two cases each submitted once, 21 settled calls/99735 tokens; neither passes scientific/content review. A real malformed-verifier response now retains partial work.",
   "loadedRuntime": {
-    "commit": "9a18c0f",
-    "promptVersion": "dr-v2.20261015.81",
+    "commit": "f3103bf",
+    "promptVersion": "dr-v2.20261015.85",
     "ready": true,
-    "callsPreserved": 2761,
+    "callsPreserved": 2809,
     "pausedUnknownRuns": 7,
-    "proof": "deep-research-evidence/runtime-load-dr81-retention-20261015.json"
+    "proof": "deep-research-evidence/runtime-load-dr85-terminology-20261015.json"
   },
   "nextQualityWork": [
-    "Explain training mechanisms as a concrete signal/operation/output/feedback path in novice terms, not only the name of a differentiability trick.",
-    "Generate actual control, initialization, optimizer, resolution and split choices; reject unknown defaults disguised as an executable protocol.",
-    "Remove duplicate protocol presentation without hiding source conditions or altering original model drafts.",
-    "Complete D1/D2/D3/D5 content gates, then replace and execute fresh independent cases without tuning on them."
+    "Verify that opacity 不透明度 and the non-differentiable-index/surrogate distinction survive real novice generation and independent review.",
+    "Make proposed controls/initialization/optimizer/resolution executable, and add a nonempty split precheck without inventing author-specific data counts.",
+    "Plan/audit experiment deliverables separately from supporting original-paper research; do not silently require reproduction of unrequested original benchmark settings.",
+    "Remove repeated protocol presentation and overbroad causal disclaimers without hiding necessary conditions.",
+    "Complete D1/D2/D3/D5 quality gates, then run new independent cases before tuning on them."
   ],
   "javaReaderRuntime": {
     "sourceCommit": "070ab1a",
