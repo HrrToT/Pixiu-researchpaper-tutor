@@ -42,13 +42,13 @@
       "overlap": true
     },
     "backendCurrentResearchReadingTables": {
-      "passed": 1599,
+      "passed": 1624,
       "warnings": 1,
-      "seconds": 56.04,
-      "sourceCommit": "64e3e8f",
-      "log": "tmp/pytest-dr100-full.log",
+      "seconds": 55.61,
+      "sourceCommit": "97f64d9",
+      "log": "tmp/pytest-dr101-full.log",
       "scope": "Research/reading/PDF table/config; no frontend or Java source changes.",
-      "proof": "deep-research-evidence/experiment-workflow-input-replay-20261015.json"
+      "proof": "deep-research-evidence/finalization-token-release-replay-20261016.json"
     },
     "frontendDocumentNavigationFocused": {
       "passed": 19,
@@ -111,11 +111,11 @@
       "boundary": "Known completed responses, including failed planning/verification runs; no independent holdout credit."
     },
     "currentOfflineCorrections": {
-      "proof": "deep-research-evidence/H5R-v15-quality-20261016.json",
+      "proof": "deep-research-evidence/finalization-token-release-replay-20261016.json",
       "draftingProof": "deep-research-evidence/drafting-evidence-capacity-20261015.json",
-      "realGenerationOnFinalVersion": true,
+      "realGenerationOnFinalVersion": false,
       "finalNumericGuardProof": "deep-research-evidence/quantitative-condition-keys-20261015.json",
-      "boundary": ".100 has one real H5R-v15 generation, completed/partial and content-unaccepted. The method quote and typed workflow are real; creation and final-budget gates remain open."
+      "boundary": ".101 finalization capacity is offline-verified and loaded. No real model case on this version; .100 H5R-v15 remains partial and content-unaccepted."
     },
     "externalReader": {
       "javaIsolatedPassed": 43,
@@ -354,19 +354,18 @@
     "Full novice study workflow",
     "Independent Edge recovery"
   ],
-  "currentProviderConstraint": "H5R-v15 is known terminal; all 27 tool/LLM rows succeeded, 12 model calls and 62860 settled tokens. No active research; 3048 ledger rows, old 3021-row prefix and seven paused unknowns preserved.",
-  "currentDevelopmentMode": "Primary Codex only, no Qoder. .100 loaded after 1599 offline passes. One real experimental case submitted once and preserved as partial; source changes are committed separately.",
+  "currentProviderConstraint": "No new model requests. Existing H5R-v15 remains completed/partial; all 3048 ledger rows and seven historical paused unknowns unchanged during .101 load.",
+  "currentDevelopmentMode": "Primary Codex only, no Qoder. .101 budget fix loaded after 1624 offline passes. User requested stopping after this fix; no subsequent feature or paid-model validation started.",
   "loadedRuntime": {
-    "commit": "64e3e8f",
-    "promptVersion": "dr-v2.20261015.100",
+    "commit": "97f64d9",
+    "promptVersion": "dr-v2.20261016.101",
     "ready": true,
-    "callsPreserved": 3021,
+    "callsPreserved": 3048,
     "pausedUnknownRuns": 7,
-    "proof": "deep-research-evidence/runtime-load-dr100-workflow-20261015.json",
-    "postCaseProof": "deep-research-evidence/runtime-postcase-dr100-20261016.json"
+    "proof": "deep-research-evidence/runtime-load-dr101-finalization-20261016.json"
   },
   "nextQualityWork": [
-    "Fit final completeness checking within the actual remaining finalization budget without omitting accepted answers or exceeding total limits.",
+    "Deferred until user resumes: real content validation of final completeness after .101 budget release; offline capacity proof is not quality acceptance.",
     "Require an actual new-component creation/source rule; distinguish cloning an existing state from assuming a missing enhancement already exists.",
     "Make renderer/proposed configuration concrete, prevent unsupported paper-wide omission claims and internal source aliases in published prose.",
     "Improve ordinary-language causal explanations and simplify workflow display while preserving exact parameters and validation isolation.",
@@ -380,5 +379,6 @@
     "oldRowsChecked": 2664,
     "pausedUnknownRuns": 7,
     "boundary": "Two case workspace snapshots matched before explicit material addition; no whole-store hash equality claim."
-  }
+  },
+  "developmentState": "paused_after_current_budget_fix_at_user_request"
 }
