@@ -19,6 +19,8 @@ optimizer specifies actual optimizer and rates/schedule for every trainable grou
 These three operations need nonempty parameters. "same"/unknown defaults are not choices.
 otherInterventions explicitly disables or defines all relevant shared policies; genuinely
 parameter-free disabling permits []. Choices are proposed, not paper settings.
+For example, otherInterventions={"action":"Disable other shared interventions","parameters":[]}.
+Do not substitute a list or a disabledPolicies object for this operation.
 For data, keep the existing exact schema. Execution prechecks enumerate real items,
 reject duplicates/missing explicit IDs, construct the split, and stop if either side is
 empty or overlaps. Unknown original view counts are not asserted or invented. A precheck

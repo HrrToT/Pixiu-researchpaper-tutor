@@ -78,6 +78,16 @@ def _prepare_repair(report, verification, evidence, question, *, max_prompt_byte
                         if key not in {'evidenceRefs', 'obligationIds', 'detailLevel', 'tableBindings'}} for row in draft_context
                        if row.get('claimId') not in originals
                        and row.get('kind') in {'proposal', 'suggestion', 'hypothesis'}]
+    from services.deep_research.verification_context import CONFIG_ROLES, configuration_context
+    if (all(row.get('designRole') in CONFIG_ROLES for row in originals.values())
+            and any(row.get('protocolContractVersion') == 1 for row in originals.values())):
+        # Versioned operational repairs need all operational definitions and
+        # explicit dependencies, not unrelated scientific prose. Keep accepted
+        # versus unverified sibling status separate, and never change storage.
+        selected_context = configuration_context(list(originals.values()), [*proposal_context, *sibling_context])
+        retained = {row['claimId'] for row in selected_context}
+        proposal_context = [row for row in proposal_context if row['claimId'] in retained]
+        sibling_context = [row for row in sibling_context if row['claimId'] in retained]
     prompt = f'''Revise only the targets; narrow unsupported wording or omit it.
 answer_incomplete requires filling requested omissions, conditioning inputs and applicability,
 not merely shortening. A missing mechanism explanation needs how/why the requested
@@ -148,10 +158,13 @@ in the paper. Maintain consistency with accepted definitions and complete requir
                   'hypothesis roles require the corresponding complete executionSpec specified below.')
         prompt += '\n' + execution_spec_contract_for_roles({row.get('designRole') for row in originals.values()})
         roles = {row.get('designRole') for row in originals.values()}
+        from services.deep_research.design_review_policy import REVIEW_DESIGN_POLICY
+        policy = REVIEW_DESIGN_POLICY if any(row.get('protocolContractVersion') == 1
+                                             for row in originals.values()) else None
         # Other roles remain full consistency context and are independently
         # checked. Their writing requirements are not writable in this batch.
         prompt += '\nExperimental deliverables for the active roles (remain consistent with the other definitions):\n' + design_requirements(
-            metric_domains, roles=roles if roles <= DESIGN_ROLES.keys() else None)
+            metric_domains, roles=roles if roles <= DESIGN_ROLES.keys() else None, policy=policy)
         prompt += ('\nA structural rejection is not a content approval. Fix substantive omissions in the same revision, '
                    'including concrete intervention levels, per-group budgets and measurement aggregation. '
                    'Choose explicit unexecuted proposal settings when appropriate; do not wait for paper settings '

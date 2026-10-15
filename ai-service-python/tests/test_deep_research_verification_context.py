@@ -116,3 +116,25 @@ def test_limits_keep_factual_evidence_and_full_configuration_without_unused_audi
 
     result = BudgetedSemanticChecker(invoke, 'run').check_revisions([target], evidence, [shared])
     assert len(sent) == 1 and result[0]['status'] == 'failed'
+
+
+@pytest.mark.parametrize('explicit_dependency', [False, True])
+def test_operational_repair_keeps_configuration_and_never_clips_an_explicit_dependency(explicit_dependency):
+    from services.deep_research.repair import _prepare_repair
+    target = claim('c_controls', 'controls',
+        'Follow c_analysis.' if explicit_dependency else 'Fix missing operational choices.',
+        designContractVersion=2, protocolContractVersion=1)
+    accepted = [claim('c_data', 'data', 'A preserved operational definition.'),
+                claim('c_analysis', 'analysis', 'A' * 30000)]
+    before = deepcopy((target, accepted))
+    report = {'claims': [target, *accepted]}
+    verification = {'accepted': accepted, 'rejected': [{'claimId': 'c_controls', 'reason': 'incomplete_experiment_protocol'}]}
+    if explicit_dependency:
+        with pytest.raises(BudgetExhaustedError):
+            _prepare_repair(report, verification, [], 'Propose a controlled experiment.')
+    else:
+        prepared = _prepare_repair(report, verification, [], 'Propose a controlled experiment.')
+        assert accepted[0]['text'] in prepared['prompt'] and accepted[1]['text'] not in prepared['prompt']
+        assert prepared['originals']['c_controls'] == target
+        assert len(prepared['prompt'].encode()) <= 24000
+    assert (target, accepted) == before
