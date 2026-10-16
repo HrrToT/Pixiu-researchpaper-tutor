@@ -343,10 +343,10 @@ class DeepResearchRepository:
                     updated = current
                 for identity in ("runId", "taskId", "engineVersion", "contractVersion", "materialSnapshot",
                                  "verificationInputContractVersion", "audienceRewriteContractVersion",
-                                 "adaptiveResearchContractVersion"):
+                                 "adaptiveResearchContractVersion", "clarificationContractVersion"):
                     if (updated.get(identity) != current.get(identity)
                             or (identity in {'verificationInputContractVersion', 'audienceRewriteContractVersion',
-                                             'adaptiveResearchContractVersion'}
+                                             'adaptiveResearchContractVersion', 'clarificationContractVersion'}
                                 and type(updated.get(identity)) is not type(current.get(identity)))):
                         raise ValueError(f"Immutable run field changed: {identity}")
                 if updated.get("executionEpoch") != current.get("executionEpoch"):

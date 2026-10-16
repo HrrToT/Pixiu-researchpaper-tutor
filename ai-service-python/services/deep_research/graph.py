@@ -14,6 +14,8 @@ import sqlite3
 import time
 from typing import Any, Callable, TypedDict
 
+from services.deep_research.request_context import effective_question, separate_clarification
+
 try:
     from langgraph.graph import StateGraph, END
     from langgraph.checkpoint.sqlite import SqliteSaver
@@ -67,6 +69,7 @@ class GraphState(TypedDict, total=False):
     stop_reason: str
     clarification_needed: bool
     clarification_question: str
+    refresh_brief: bool
     requery_count: int
     max_requery_rounds: int
     requery_queries: list[dict[str, Any]]
@@ -85,7 +88,7 @@ class GraphState(TypedDict, total=False):
 
 # ── Node Functions ─────────────────────────────────────────────────────────────
 
-def make_wait_for_clarification_node() -> Callable[[GraphState], dict]:
+def make_wait_for_clarification_node(repo_update=None) -> Callable[[GraphState], dict]:
     """Wait for user clarification using LangGraph interrupt mechanism.
     
     Interrupt pauses execution until resume with clarification answer.
@@ -106,11 +109,18 @@ def make_wait_for_clarification_node() -> Callable[[GraphState], dict]:
             "question": question,
             "run_id": state.get("run_id", ""),
         })
+
+        refresh = False
+        if repo_update is not None:
+            from services.deep_research.request_context import enabled
+            record = repo_update(state['run_id'], lambda r: r, expected_revision=None)
+            refresh = enabled(record)
         
         # When resumed, answer contains the clarification
         return {
             "clarification_needed": False,
             "clarification_question": "",
+            "refresh_brief": refresh,
         }
     
     return node
@@ -128,7 +138,7 @@ def make_resolve_brief_node(
             return {"error_code": "missing_run_id", "outcome": OUTCOME_NONE}
         
         record = repo_update(run_id, lambda r: {**r, "stage": "resolve_brief"}, expected_revision=None)
-        question = record.get("question", "")
+        question = effective_question(record)
         materials = record.get("materials", [])
         
         prompt = f"""Analyze this research question and determine the output kind.
@@ -200,9 +210,10 @@ preferences or for facts that can be read from the selected papers. Never widen 
                 "brief_id": brief_id,
                 "clarification_needed": True,
                 "clarification_question": clarification,
+                "refresh_brief": False,
             }
         
-        return {"brief_id": brief_id, "clarification_needed": False}
+        return {"brief_id": brief_id, "clarification_needed": False, "refresh_brief": False}
     
     return node
 
@@ -218,7 +229,7 @@ def make_plan_node(
         run_id = state.get("run_id", "")
         
         record = repo_update(run_id, lambda r: {**r, "stage": "plan"}, expected_revision=None)
-        question = record.get("question", "")
+        question = effective_question(record)
         brief_state = record.get("state", {})
         output_kind = brief_state.get("outputKind", "direction_survey")
         materials = record.get("materials", [])
@@ -236,7 +247,7 @@ is a necessary factual prerequisite, not an optional historical benchmark retell
         prompt = f"""Create a research plan for this question.
 Question: {question}
 Output kind: {output_kind}
-User clarification: {brief_state.get('clarification', '')}
+User clarification: {separate_clarification(record)}
 Materials: {json.dumps([{'id': m.get('materialId'), 'title': m.get('title', '')} for m in materials[:10]], ensure_ascii=False)}
 Primary papers: {json.dumps(record.get('focusPaperIds', []))}
 Previously acquired source identities (reuse an exact relevant arXiv identifier for lookup):
@@ -1005,7 +1016,7 @@ def make_synthesize_node(
         run_id = state.get("run_id", "")
         
         record = repo_update(run_id, lambda r: {**r, "stage": "synthesize"}, expected_revision=None)
-        question = record.get("question", "")
+        question = effective_question(record)
         evidence = record.get("state", {}).get("evidence", [])
         gaps = record.get("state", {}).get("gaps", [])
         brief_state = record.get("state", {})
@@ -1082,7 +1093,7 @@ Strict total character limit: {requested_limit or 'concise, no explicit maximum'
 Answer directly and omit secondary quantitative examples. Conditions count toward the same limit.
 Claim count is independent of display length: shorten each statement rather than merging unrelated facts.
 Evidence count: {len(evidence)}
-User clarification: {brief_state.get('clarification', '')}
+User clarification: {separate_clarification(record)}
 Gaps: {json.dumps([g.get('question') for g in gaps[:5]], ensure_ascii=False)}
 Research questions (answer_requirement is a requested deliverable; supporting_research informs it): {json.dumps(draft_obligations, ensure_ascii=False, separators=(',', ':'))}
 Source registry (P keys identify papers, not evidenceRefs): {json.dumps(source_registry, ensure_ascii=False, separators=(',', ':'))}
@@ -1138,7 +1149,7 @@ Orient losses before formulas, distinguish conditional/averaged effects and pape
         if output_kind=='experiment_design' and strict_protocol:
             from services.deep_research.design_drafting import prospective_draft_prompt
             prompt=prospective_draft_prompt(question=question,limit=requested_limit,
-                clarification=brief_state.get('clarification',''),gaps=[g.get('question') for g in gaps[:5]],
+                clarification=separate_clarification(record),gaps=[g.get('question') for g in gaps[:5]],
                 obligations=draft_obligations,sources=source_registry,evidence_marker=evidence_marker,
                 claim_fields=claim_fields,claim_limit=claim_limit,section_templates=section_templates)
         from services.deep_research.synthesis import SCIENTIFIC_TERMINOLOGY
@@ -1308,7 +1319,7 @@ def make_verify_node(
                 protocol_required=record.get('protocolContractVersion', 0),
                 workflow_required=record.get('workflowContractVersion', 0))
             current = repo_update(run_id, lambda r: r, expected_revision=None)
-            answer_coverage = audit_final_answer(run_id, record.get('question', ''),
+            answer_coverage = audit_final_answer(run_id, effective_question(record),
                 saved.get('plan', []), verification_result.get('accepted', []),
                 evidence, llm_invoke, _safe_parse_json, budget=current.get('budget'))
             if saved.get('outputKind') == 'experiment_design':
@@ -1366,7 +1377,7 @@ def make_verify_node(
                         repo_update(run_id, lambda r: {**r, 'state': {**r.get('state', {}),
                             'repairBatchState': batch_state,
                             **({'repairBatchStop': batch_state['stop']} if batch_state.get('stop') else {})}}, expected_revision=None)
-                    revised = repair_rejected(repair_report, repair_targets, evidence, record.get("question", ""),
+                    revised = repair_rejected(repair_report, repair_targets, evidence, effective_question(record),
                         invoke_repair, _safe_parse_json,
                         max_prompt_bytes=repair_prompt_byte_limit(current.get('budget', {})),
                         metric_domains=record.get('state', {}).get('metricDomains'),
@@ -1392,7 +1403,7 @@ def make_verify_node(
                             'repairVerification': merged}}, expected_revision=None)
                     if merged.get('accepted') != verification_result.get('accepted'):
                         current = repo_update(run_id, lambda r: r, expected_revision=None)
-                        answer_coverage = audit_final_answer(run_id, record.get('question', ''),
+                        answer_coverage = audit_final_answer(run_id, effective_question(record),
                             record.get('state', {}).get('plan', []), merged.get('accepted', []),
                             evidence, llm_invoke, _safe_parse_json, budget=current.get('budget'))
                     verification_result = merged
@@ -1496,7 +1507,7 @@ def make_publish_node(
                         'verifiedReport': verified_report}}, expected_revision=None)
         from services.deep_research.obligation_purpose import nonblocking_research_obligations
         research_notes = nonblocking_research_obligations(brief_state.get('plan', []),
-            record.get('question', ''), accepted_claims, audit.get('verdicts'),
+            effective_question(record), accepted_claims, audit.get('verdicts'),
             audit.get('wholeQuestionId'), audit.get('invalidAspectObligations', [])) \
             if audit.get('status') == 'checked' else []
         research_questions = {o.get('obligationId'): o.get('question', '')
@@ -1505,7 +1516,7 @@ def make_publish_node(
                           for note in research_notes]
         gaps = [*remaining_retrieval_gaps(record.get('state', {}).get('gaps', []), audit,
                     accepted_claims, record.get('state', {}).get('evidence', []),
-                    plan=brief_state.get('plan', []), question=record.get('question', '')),
+                    plan=brief_state.get('plan', []), question=effective_question(record)),
                 *audit.get('gaps', [])]
         
         factual_claims = [claim for claim in accepted_claims if claim.get("kind") in {"reported", "inference"}]
@@ -1696,7 +1707,7 @@ def build_deep_research_graph(
     
     # Add nodes
     workflow.add_node("resolve_brief", bounded(make_resolve_brief_node(llm_invoke, repo_update)))
-    workflow.add_node("wait_clarification", make_wait_for_clarification_node())
+    workflow.add_node("wait_clarification", make_wait_for_clarification_node(repo_update))
     workflow.add_node("plan", bounded(make_plan_node(llm_invoke, repo_update, validate_plan_fn)))
     workflow.add_node("acquire", make_acquire_node(retrieve_fn, scope_validator, repo_update, external_acquire=external_acquire))
     workflow.add_node("read", make_read_node(read_fn, scope_validator, repo_update))
@@ -1732,8 +1743,11 @@ def build_deep_research_graph(
         "fail": END,
     })
     
-    # After clarification interrupt, resume goes to plan
-    workflow.add_edge("wait_clarification", "plan")
+    # New clarified goals refresh assumptions, metric scope and constraints
+    # before planning; old unmarked checkpoints keep their original route.
+    workflow.add_conditional_edges("wait_clarification",
+        lambda state: 'resolve_brief' if state.get('refresh_brief') else 'plan',
+        {'resolve_brief': 'resolve_brief', 'plan': 'plan'})
     
     workflow.add_conditional_edges("plan", lambda state: "fail" if state.get("error_code") else "publish" if state.get("budget_exhausted") else "assess" if state.get('assess_inherited') else "acquire",
                                    {"fail": END, "acquire": "acquire", "assess": "assess", "publish": "publish"})

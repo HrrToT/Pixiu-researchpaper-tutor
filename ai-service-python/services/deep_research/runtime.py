@@ -9,6 +9,7 @@ from pathlib import Path
 from urllib.parse import quote
 
 import requests
+from services.deep_research.request_context import effective_question
 
 from services.deep_research.contracts import DeepResearchError
 from services.research_engine_dispatch import ResearchEngineDispatcher, configure_dispatcher
@@ -228,7 +229,7 @@ def initialize_runtime():
             from services.deep_research.tools import BudgetedSemanticChecker
             return BudgetedSemanticChecker(self._make_llm_invoker(run_id), run_id,
                 metric_domains=lambda: self._repo.require_run(run_id).get('state', {}).get('metricDomains'),
-                research_question=lambda: self._repo.require_run(run_id).get('question', ''))
+                research_question=lambda: effective_question(self._repo.require_run(run_id)))
 
         def _get_make_evidence(self, run_id=None):
             from services.deep_research.local_sources import LocalTaskRetriever

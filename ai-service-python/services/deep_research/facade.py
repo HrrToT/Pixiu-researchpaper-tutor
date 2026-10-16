@@ -16,6 +16,8 @@ from datetime import datetime, UTC
 from concurrent.futures import ThreadPoolExecutor, Future
 from typing import Any, Callable
 
+from services.deep_research.request_context import effective_question
+
 from services.deep_research.contracts import (
     CONTRACT_VERSION,
     ENGINE_VERSION,
@@ -256,7 +258,8 @@ class ResearchFacade:
             "materials": materials,
             "materialSnapshot": material_snapshot,  # Immutable Java snapshot
             "contextMaterials": (material_snapshot or {}).get("contextMaterials", []) if isinstance(material_snapshot, dict) else [],
-            "promptVersion": "dr-v2.20261016.113",
+            "promptVersion": "dr-v2.20261016.114",
+            "clarificationContractVersion": 1,
             "adaptiveResearchContractVersion": 1,
             "audienceRewriteContractVersion": 1,
             "verificationInputContractVersion": 1,
@@ -635,9 +638,19 @@ class ResearchFacade:
                 raise IllegalStatusTransitionError(record["status"], STATUS_RUNNING)
             
             # Update state with clarification
-            state = record.get("state", {})
+            state = dict(record.get("state") or {})
             state["waitingSince"] = state.get("waitingSince") or record.get("updatedAt")
-            state["clarification"] = payload.get("answer", "")
+            from services.deep_research.request_context import enabled, instruction_layers
+            if enabled(record):
+                # Validate the existing history before appending; never lose a
+                # prior answer when another consequential ambiguity is asked.
+                instruction_layers(record)
+                history = list(state.get('clarificationHistory') or [])
+                if not history and state.get('clarification'):
+                    history = [{'question': '', 'answer': state['clarification']}]
+                state['clarificationHistory'] = [*history, {'question': state.get('clarificationQuestion', ''),
+                                                           'answer': payload['answer']}]
+            state["clarification"] = payload['answer']
             state["clarifiedAt"] = utc_now_iso()
             state["clarificationNeeded"] = False
             
@@ -1044,7 +1057,7 @@ class ResearchFacade:
         
         checker = BudgetedSemanticChecker(invoker, run_id,
             metric_domains=lambda: self._repo.require_run(run_id).get('state', {}).get('metricDomains'),
-            research_question=lambda: self._repo.require_run(run_id).get('question', ''))
+            research_question=lambda: effective_question(self._repo.require_run(run_id)))
         return checker
     
     def _default_scope_validator(self) -> Callable[[str, str], bool]:

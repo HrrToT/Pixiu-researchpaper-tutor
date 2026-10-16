@@ -13,6 +13,7 @@ from services.deep_research.answer_constraints import answer_character_count, re
 from services.deep_research.contracts import BudgetExhaustedError, DeepResearchError, digest
 from services.deep_research.selection import surrounding_context
 from services.deep_research.table_bindings import bound_table_context
+from services.deep_research.request_context import instruction_layers
 
 MAX_INPUT_BYTES = 24000
 OUTPUT_TOKENS = 3072
@@ -25,11 +26,18 @@ _NEGATIVE = re.compile(r'(?:不要|不用|无需|不需要)[^。！？\n]{0,8}(?
 
 
 def eligible(record, report, output_kind):
+    requested = False
+    for layer in instruction_layers(record):
+        if isinstance(layer, str) and _NEGATIVE.search(layer):
+            break
+        if isinstance(layer, str) and _REQUEST.search(layer):
+            requested = True
+            break
     return (type(record.get('audienceRewriteContractVersion')) is int
             and record['audienceRewriteContractVersion'] == 1
             and output_kind in {'direction_survey', 'claim_verification', 'paper_comparison'}
             and isinstance(record.get('question'), str)
-            and bool(_REQUEST.search(record['question'])) and not _NEGATIVE.search(record['question'])
+            and requested
             and isinstance(report, dict) and isinstance(report.get('claims'), list)
             and bool(report['claims'])
             and all(isinstance(c, dict) and c.get('kind') in {'reported', 'inference'}
