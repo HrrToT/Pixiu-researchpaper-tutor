@@ -42,13 +42,13 @@
       "overlap": true
     },
     "backendCurrentResearchReadingTables": {
-      "passed": 1844,
+      "passed": 1867,
       "warnings": 1,
-      "seconds": 70.81,
-      "sourceCommit": "b77af79",
-      "log": "tmp/pytest-dr112-full-first.log",
-      "scope": "Research/reading/PDF table/config; no frontend or Java source changes.",
-      "proof": "deep-research-evidence/incremental-assessment-replay-20261016.json"
+      "seconds": 67.47,
+      "sourceCommit": "68524d7",
+      "log": "tmp/pytest-dr113-full-first.log",
+      "scope": "Research, reading, PDF tables and config; no frontend or Java source change.",
+      "proof": "deep-research-evidence/D1-v8-plan-failure-20261016.json"
     },
     "frontendDocumentNavigationFocused": {
       "passed": 19,
@@ -119,11 +119,11 @@
       "boundary": "Known actual settled usage, no unknown reservations counted as usage. Retired development cases; no independent holdout credit."
     },
     "currentOfflineCorrections": {
-      "proof": "deep-research-evidence/incremental-assessment-replay-20261016.json",
+      "proof": "deep-research-evidence/D1-v8-plan-failure-20261016.json",
       "draftingProof": "deep-research-evidence/drafting-evidence-capacity-20261015.json",
       "realGenerationOnFinalVersion": false,
       "finalNumericGuardProof": "deep-research-evidence/quantitative-condition-keys-20261015.json",
-      "boundary": ".112 incremental assessment/review manifests and extraction-stop routing verified offline. Saved .110 input replays retain selected whole quotations/context, false verdicts preserve gaps, and settled reviews reuse without dispatch. No Provider request or content-quality score."
+      "boundary": ".113 planner schema/example/diagnostic and legacy acceptance history guard verified offline. The saved incomplete .112 plan is still rejected; no missing requirement is invented. D1-v8 failed before retrieval and is not content acceptance. No real generation on .113."
     },
     "externalReader": {
       "javaIsolatedPassed": 43,
@@ -843,6 +843,48 @@
         "scope": "Research/reading/PDF table/config; no frontend or Java source changes."
       },
       "proof": "deep-research-evidence/incremental-assessment-replay-20261016.json"
+    },
+    "acceptanceHistoryGuard": {
+      "sourceCommit": "9a9aeea",
+      "focusedOfflineTests": 56,
+      "legacyTopLevelReceiptsIncluded": true,
+      "originalAttemptIncluded": true,
+      "canonicalNewSubmissionDirectory": true,
+      "queriesOnlyForExistingReceipts": true,
+      "liveD1HistorySettled": true,
+      "liveD2LegacyUnknownBlocksNewSubmission": true,
+      "proof": "deep-research-evidence/acceptance-history-guard-20261016.json"
+    },
+    "latestFocusedClaimCase": {
+      "caseId": "D1-v8",
+      "runId": "dr_run_7ca40ccd0a305302b4f4e116e36c757a",
+      "runtimePromptVersion": "dr-v2.20261016.112",
+      "status": "failed",
+      "outcome": "none",
+      "errorCode": "invalid_plan_response",
+      "confirmedModelCalls": 2,
+      "confirmedTokens": 2049,
+      "automaticRetries": 0,
+      "contentAccepted": false,
+      "proof": "deep-research-evidence/D1-v8-plan-failure-20261016.json"
+    },
+    "planOutputShape": {
+      "sourceCommit": "68524d7",
+      "promptVersion": "dr-v2.20261016.113",
+      "primarySchemaIncludesCompletionCriteria": true,
+      "completeNeutralExample": true,
+      "invalidAndTruncatedResponseStillRejected": true,
+      "compactValidationDiagnostic": true,
+      "realGenerationOnFinalVersion": false,
+      "tests": {
+        "passed": 1867,
+        "warnings": 1,
+        "seconds": 67.47,
+        "sourceCommit": "68524d7",
+        "log": "tmp/pytest-dr113-full-first.log",
+        "scope": "Research, reading, PDF tables and config; no frontend or Java source change."
+      },
+      "proof": "deep-research-evidence/D1-v8-plan-failure-20261016.json"
     }
   },
   "stages": [
@@ -853,7 +895,10 @@
       "proof": [
         "DEEP_RESEARCH_ACCEPTANCE_CASES_20261012.json",
         "DEEP_RESEARCH_FRESH_HOLDOUTS_20261015.json",
-        "../ai-service-python/tests/test_deep_research_acceptance_manifest.py"
+        "../ai-service-python/tests/test_deep_research_acceptance_manifest.py",
+        "deep-research-evidence/acceptance-history-guard-20261016.json",
+        "deep-research-evidence/D1-v8-plan-failure-20261016.json",
+        "deep-research-evidence/runtime-load-dr113-plan-shape-20261016.json"
       ]
     },
     {
@@ -876,7 +921,10 @@
         "deep-research-evidence/beginner-rewrite-replay-20261016.json",
         "deep-research-evidence/runtime-load-dr111-beginner-rewrite-20261016.json",
         "deep-research-evidence/incremental-assessment-replay-20261016.json",
-        "deep-research-evidence/runtime-load-dr112-incremental-assessment-20261016.json"
+        "deep-research-evidence/runtime-load-dr112-incremental-assessment-20261016.json",
+        "deep-research-evidence/acceptance-history-guard-20261016.json",
+        "deep-research-evidence/D1-v8-plan-failure-20261016.json",
+        "deep-research-evidence/runtime-load-dr113-plan-shape-20261016.json"
       ]
     },
     {
@@ -933,7 +981,10 @@
         "deep-research-evidence/beginner-rewrite-replay-20261016.json",
         "deep-research-evidence/runtime-load-dr111-beginner-rewrite-20261016.json",
         "deep-research-evidence/incremental-assessment-replay-20261016.json",
-        "deep-research-evidence/runtime-load-dr112-incremental-assessment-20261016.json"
+        "deep-research-evidence/runtime-load-dr112-incremental-assessment-20261016.json",
+        "deep-research-evidence/acceptance-history-guard-20261016.json",
+        "deep-research-evidence/D1-v8-plan-failure-20261016.json",
+        "deep-research-evidence/runtime-load-dr113-plan-shape-20261016.json"
       ]
     },
     {
@@ -990,17 +1041,30 @@
   "developmentCases": [
     {
       "id": "D1",
-      "runId": "dr_run_66ec09fffdfe5c8d9a97a0a2f1816d75",
-      "machine": "completed/inconclusive",
-      "content": "not accepted; no published verified claim",
-      "next": "Complete a source-bounded response to the focused claim, without changing uncertain evidence into universal denial."
+      "runId": "dr_run_7ca40ccd0a305302b4f4e116e36c757a",
+      "machine": "failed/invalid_plan_response",
+      "content": "not scoreable: no final answer; no retrieval; planner omitted required completion criteria",
+      "next": "Validate .113 complete plan shape on a newly authorized case, then check source-bounded conclusions, conditions and unverified scope. No automatic retry.",
+      "previousResult": {
+        "runId": "dr_run_66ec09fffdfe5c8d9a97a0a2f1816d75",
+        "machine": "completed/inconclusive",
+        "content": "not accepted; no published verified claim"
+      },
+      "proof": "deep-research-evidence/D1-v8-plan-failure-20261016.json"
     },
     {
       "id": "D2",
       "runId": "dr_run_a631996531c45322aefd3e31ac5dce37",
       "machine": "completed/partial",
       "content": "not accepted; only one paper's claim published",
-      "next": "Verify both papers' requested dimensions and a supported comparability judgment."
+      "next": "Reconcile the historical D2-v11 unknown before any new comparison attempt; later terminal runs did not settle it. Both-paper content quality remains unaccepted.",
+      "blockingHistoricalRun": {
+        "attempt": "D2-v11",
+        "runId": "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+        "status": "paused",
+        "errorCode": "unresolved_unknown",
+        "proof": "deep-research-evidence/acceptance-history-guard-20261016.json"
+      }
     },
     {
       "id": "D3",
@@ -1090,18 +1154,19 @@
     "Full novice study workflow",
     "Independent Edge recovery"
   ],
-  "currentProviderConstraint": "No new real-model request on .112. Latest authorized H5R-v19/H3R-v15 each submitted once and paused/unresolved_unknown during verification. Eight calls/23208 tokens confirmed settled; two unknown reservations total 54156 tokens are not usage. Do not retry/resume or bypass with a new attempt while these outcomes remain unconfirmed. Seven historical paused unknowns plus these two remain preserved; no additional model request.",
-  "currentDevelopmentMode": "Primary Codex only, no Qoder. Active goal; .112 incremental evidence assessment loaded after 1844 offline passes. Nine unknown runs preserved; original DR0-DR5 quality/independent gates and quota pause condition unchanged.",
+  "currentProviderConstraint": "Latest newly authorized D1-v8 submitted once on .112 and failed during planning: two confirmed calls/2049 tokens, no final answer, no retry. No model request on .113. All nine unknown runs remain untouched. D2-v11 is an older unknown despite later terminal D2 attempts; the harness now checks original/legacy receipts and cannot switch new submission directories. H5R-v19/H3R-v15 unknown reservations are still not actual usage. New paid validation requires new scope authorization.",
+  "currentDevelopmentMode": "Primary Codex only, no Qoder. Active goal; .113 complete plan shape and rejection diagnostics loaded after 1867 offline passes. One authorized .112 D1-v8 failed and is preserved; no content credit. All DR0-DR5 quality/independent gates and weekly quota pause condition remain unchanged.",
   "loadedRuntime": {
-    "commit": "b77af79",
-    "promptVersion": "dr-v2.20261016.112",
+    "commit": "68524d7",
+    "promptVersion": "dr-v2.20261016.113",
     "ready": true,
-    "callsPreserved": 3208,
+    "callsPreserved": 3210,
     "pausedUnknownRuns": 9,
-    "proof": "deep-research-evidence/runtime-load-dr112-incremental-assessment-20261016.json"
+    "proof": "deep-research-evidence/runtime-load-dr113-plan-shape-20261016.json"
   },
   "nextQualityWork": [
-    "Keep all nine unknown runs untouched; reconcile actual Provider outcomes before any same-case retry or new-attempt bypass. No new Provider request in this .111 development step.",
+    "Keep all nine unknown runs untouched, including D2-v11. Reconcile actual Provider outcomes before any same-case retry/new-attempt bypass. One authorized D1-v8 ended; no additional model request on .113.",
+    "The .113 planner now has a complete primary schema and neutral JSON example, without criteria autofill or automatic regeneration. Validate actual model compliance and end-to-end D1 content in a future authorized case.",
     "New .112 extraction-stop routing, source/question-specific cached relevance, empty-passage review and exact-version coverage are implemented. Validate actual adaptive retrieval/coverage benefit on a future authorized eligible case; topical relevance cannot prove final claim support or answer completeness.",
     "The durable beginner wording pass is implemented, including citation/condition identity, length, normal-pool/time admission and exact pending-request recovery. Validate actual ordinary-language why/how completeness and conditional training explanation in a future authorized, eligible case; offline placeholders are not content evidence.",
     "Experiment plans still need actual representation-complete initial states, reproducible compatible renderer/optimizer definitions and correct factual scope. Typed shape/distribution fields or opaque model-parameter vectors cannot establish executability.",
