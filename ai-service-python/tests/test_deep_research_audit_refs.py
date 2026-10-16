@@ -1,4 +1,5 @@
 from copy import deepcopy
+import pytest
 
 from services.deep_research.design_audit import validate_design_audit
 
@@ -29,3 +30,14 @@ def test_exact_typed_refs_resolve_existing_values_without_approving_scientific_v
         bad = deepcopy(verdict)
         bad['designAudit']['sampling_unit'] = {'ref': ref}
         assert 'sampling_unit' in validate_design_audit(c, bad, [])
+
+
+@pytest.mark.parametrize('version', [None, True, 0, 99])
+def test_step_fields_cannot_bind_an_unversioned_or_unsupported_workflow(version):
+    c = {'claimId': 'steps', 'kind': 'proposal', 'designRole': 'steps',
+         'text': 'An older prose-only protocol.', 'executionSpec': {'records': ['invented']}}
+    if version is not None:
+        c['workflowContractVersion'] = version
+    verdict = {'designAudit': {'saved_artifacts': {'ref': {
+        'claimId': 'steps', 'path': ['executionSpec', 'records']}}}}
+    assert 'saved_artifacts' in validate_design_audit(c, verdict, [])

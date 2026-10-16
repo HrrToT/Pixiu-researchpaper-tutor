@@ -825,26 +825,19 @@ The dataAvailability object is an internal audit, not new experimental results.
                            'For discontinuous text use {"quotes":[{"claimId":"ID","quote":"exact substring"}]} '
                            'with 1 to 32 segments. Copy punctuation exactly; never join, summarize or rewrite. '
                            'Every segment must match its source and together cover the whole slot. No mixed forms.')
-                audit_prompt += ('\nFor a typed choice prefer {"ref":{"claimId":"target/context ID",'
-                           '"path":["executionSpec","independentUnit"]}}. The server resolves the exact existing value; '
-                           'this reference is not a scientific verdict. Never quote JSON serialization. '
-                           'For multiple choices use {"fields":[{"claimId":"target/context ID",'
-                           '"path":["executionSpec","factors",0,"treatment","parameters",0,"value"],"value":0.5}]}. '
-                           'Copy the exact existing typed value; path elements are object keys or zero-based list indices. '
-                           'Use 1-32 bindings. Allowed slot roots: intervention_levels=factors (groups); '
-                           'paired_initialization=initialization, render_settings=rendering, '
-                           'optimizer_settings=optimizer, other_interventions=otherInterventions '
-                           '(controls protocol contract 1); '
-                           'scenes=dataset/scenes, split=split, seeds=seeds, sampling_unit=independentUnit (data); '
-                           'effects=effects, uncertainty=uncertainty, decision_rule=decision (analysis). '
-                           'per_group_steps=recovery (budget contract 1 only). '
-                           'Other slots require quotes. Do not mix fields with quote/quotes. All bindings together '
-                           'must substantiate the entire slot; valid fields do not prove scientific correctness.')
-                if any(c.get('workflowContractVersion') in (1, 2, 3) for c in claims):
-                    audit_prompt += ('\nSteps workflow slot roots: baseline_acquisition=refs/baselineMode/order; '
-                        'group_pairing=refs/componentInitializations/replicationMode/order; saved_artifacts=records; '
-                        'data_isolation=order/checkpointSelection; component_creation=componentInitializations; '
-                        'seed_pairing=replicationMode/refs; checkpoint_selection=checkpointSelection.')
+                from services.deep_research.design_audit import audit_field_roots
+                roots = audit_field_roots(dict.fromkeys(slot for slots in required_slots.values() for slot in slots))
+                audit_prompt += ('\nTyped choices use {"ref":{"claimId":"target/context ID",'
+                           '"path":["executionSpec","existing allowed root"]}}; the server resolves the '
+                           'UNCHANGED existing value. For 1-32 choices use {"fields":[{'
+                           '"claimId":"ID","path":["executionSpec","existing allowed root"],"value":"exact typed value"}]}. '
+                           'Path elements are object keys or zero-based integer list indices. Never quote JSON '
+                           'serialization or mix ref/fields with quote/quotes. Allowed slot roots (under '
+                           'executionSpec, source role required): ' + json.dumps(roots, separators=(',', ':'))
+                           + '. Other slots use literal quotes. Controls require protocol contract 1; budget '
+                           'requires budget contract 1; step fields require a supported workflow contract. '
+                           'per_group_steps MUST bind recovery; baseline-only refs/fields fail. All choices '
+                           'together must fulfill the ENTIRE slot; bindings do not prove scientific correctness.')
                 skeleton = [{'claimId': c['claimId'], 'status': 'failed',
                     'reason': '',
                     'designAudit': {slot: None for slot in required_slots.get(c.get('designRole'), ())},

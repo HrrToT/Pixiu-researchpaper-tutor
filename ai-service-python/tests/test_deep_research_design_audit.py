@@ -60,6 +60,21 @@ def test_budget_audit_can_include_preparation_without_losing_per_group_binding()
     assert validate_design_audit(claim, verdict, []) == ['per_group_steps']
 
 
+@pytest.mark.parametrize('path,passes', [
+    (['executionSpec', 'baseline'], False),
+    (['executionSpec', 'baseline', 'maxBudget'], False),
+    (['executionSpec', 'recovery'], True),
+    (['executionSpec', 'recovery', 'groups'], True),
+])
+def test_budget_single_reference_obeys_the_same_recovery_requirement_as_field_bindings(path, passes):
+    claim = {'claimId': 'b', 'kind': 'proposal', 'designRole': 'budget', 'budgetContractVersion': 1,
+             'executionSpec': {'baseline': {'mode': 'train', 'unit': 'optimizer_steps',
+                 'maxBudget': 1000, 'stoppingRule': 'stop at cap'},
+                 'recovery': {'mode': 'matched', 'unit': 'optimizer_steps', 'groups': {'0': 500, '1': 500}}}}
+    verdict = audit_for(per_group_steps={'ref': {'claimId': 'b', 'path': path}})
+    assert validate_design_audit(claim, verdict, []) == ([] if passes else ['per_group_steps'])
+
+
 def test_steps_cannot_pass_with_only_an_unsubstantiated_model_verdict():
     claim = {'claimId': 'steps', 'kind': 'proposal', 'designRole': 'steps',
              'text': 'Train until convergence, then save the checkpoint hash.'}

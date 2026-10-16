@@ -71,7 +71,10 @@ def _slot_supported(entry, claim, context, slot=None):
                 value = value[key]
             else:
                 return False
-        return _field_supported({**reference, 'value': value}, claim, context, slot)
+        # A single reference is the same binding as a one-entry fields list.
+        # Reuse its slot-level requirements as well as path/value validation;
+        # baseline preparation alone cannot establish per-group recovery.
+        return _slot_supported({'fields': [{**reference, 'value': value}]}, claim, context, slot)
     if 'fields' in entry:
         fields = entry['fields']
         if set(entry) != {'fields'} or not isinstance(fields, list) or not 1 <= len(fields) <= 32:
@@ -123,6 +126,12 @@ _FIELD_ROOTS = {
 }
 
 
+def audit_field_roots(slots):
+    """Describe only active slots, using the validator's exact role/root rules."""
+    return {slot: {'role': _FIELD_ROOTS[slot][0], 'roots': sorted(_FIELD_ROOTS[slot][1])}
+            for slot in slots if slot in _FIELD_ROOTS}
+
+
 def _field_supported(field, claim, context, slot):
     """Bind an exact typed value, not a generated paraphrase or a truth verdict."""
     if not isinstance(field, dict) or set(field) != {'claimId', 'path', 'value'}:
@@ -145,9 +154,9 @@ def _field_supported(field, claim, context, slot):
             return False
     if execution_spec_errors(reference.get('designRole'), reference.get('executionSpec')):
         return False
-    if 'workflowContractVersion' in reference:
+    if reference.get('designRole') == 'steps' or 'workflowContractVersion' in reference:
         from services.deep_research.experiment_workflow import workflow_errors
-        if (not workflow_version(reference['workflowContractVersion'])
+        if (not workflow_version(reference.get('workflowContractVersion'))
                 or reference.get('designRole') != 'steps'
                 or workflow_errors(reference.get('executionSpec'), reference['workflowContractVersion'])):
             return False
