@@ -42,13 +42,13 @@
       "overlap": true
     },
     "backendCurrentResearchReadingTables": {
-      "passed": 1687,
+      "passed": 1719,
       "warnings": 1,
-      "seconds": 56.47,
-      "sourceCommit": "a48d833",
-      "log": "tmp/pytest-dr107-full-final.log",
-      "scope": "Research/reading/PDF table/config. No frontend or Java source changes this resumed development.",
-      "proof": "deep-research-evidence/audit-reference-guards-20261016.json"
+      "seconds": 57.57,
+      "sourceCommit": "4a56599",
+      "log": "tmp/pytest-dr108-full-final.log",
+      "scope": "Research/reading/PDF table/config. No frontend or Java source changes this turn.",
+      "proof": "deep-research-evidence/verification-window-controls-replay-20261016.json"
     },
     "frontendDocumentNavigationFocused": {
       "passed": 19,
@@ -115,11 +115,11 @@
       "boundary": "Known actual settled usage, no unknown reservations counted as usage. Retired development cases; no independent holdout credit."
     },
     "currentOfflineCorrections": {
-      "proof": "deep-research-evidence/complete-json-unclosed-fence-replay-20261016.json",
+      "proof": "deep-research-evidence/verification-window-controls-replay-20261016.json",
       "draftingProof": "deep-research-evidence/drafting-evidence-capacity-20261015.json",
       "realGenerationOnFinalVersion": false,
       "finalNumericGuardProof": "deep-research-evidence/quantitative-condition-keys-20261015.json",
-      "boundary": "Source .107 is offline-tested and loaded. Latest real cases ran once each on .105; neither is manually accepted. Format replay preserves a failed verdict, not a scientific pass."
+      "boundary": ".108 preserves all nine saved definitions, typed values, target quotes and contexts in a single 25207-byte controls review. An explicit failed fixture remains failed; no new Provider call and no content acceptance."
     },
     "externalReader": {
       "javaIsolatedPassed": 43,
@@ -436,6 +436,21 @@
       "extractionPriorityVersion": 2,
       "proof": "deep-research-evidence/extraction-and-repair-coverage-replay-20261016.json",
       "boundary": "Fresh state layout is structurally required; .105 scientific review still rejects missing initial values. V1/V2 historical contracts remain unchanged."
+    },
+    "versionedVerificationWindow": {
+      "contractVersion": 1,
+      "newVerificationInputBytes": 32000,
+      "legacyAndOtherNodeInputBytes": 24000,
+      "realGenerationOnFinalVersion": false,
+      "originalTotalBudgetUnchanged": true,
+      "proof": "deep-research-evidence/verification-window-controls-replay-20261016.json",
+      "tests": {
+        "passed": 1719,
+        "warnings": 1,
+        "seconds": 57.57,
+        "sourceCommit": "4a56599",
+        "log": "tmp/pytest-dr108-full-final.log"
+      }
     }
   },
   "stages": [
@@ -457,7 +472,9 @@
         "deep-research-evidence/deployment-20261013.json",
         "deep-research-evidence/runtime-recovery-20261015.json",
         "../ai-service-python/tests/test_deep_research_end_to_end.py",
-        "../ai-service-python/tests/test_deep_research_process_exit.py"
+        "../ai-service-python/tests/test_deep_research_process_exit.py",
+        "deep-research-evidence/verification-window-controls-replay-20261016.json",
+        "deep-research-evidence/runtime-load-dr108-verification-window-20261016.json"
       ]
     },
     {
@@ -498,7 +515,9 @@
         "deep-research-evidence/H5R-v16-quality-20261016.json",
         "deep-research-evidence/H5R-v17-quality-20261016.json",
         "deep-research-evidence/complete-json-unclosed-fence-replay-20261016.json",
-        "deep-research-evidence/audit-reference-guards-20261016.json"
+        "deep-research-evidence/audit-reference-guards-20261016.json",
+        "deep-research-evidence/verification-window-controls-replay-20261016.json",
+        "deep-research-evidence/runtime-load-dr108-verification-window-20261016.json"
       ]
     },
     {
@@ -640,19 +659,19 @@
     "Full novice study workflow",
     "Independent Edge recovery"
   ],
-  "currentProviderConstraint": "The two explicitly reauthorized .105 cases H5R-v17/H3R-v13 were each submitted once and are terminal. No automatic retry. Any additional paid case must respect the actual approval scope; old unknown requests remain untouched.",
-  "currentDevelopmentMode": "Primary Codex only, no Qoder. Development resumed on explicit user instruction; quota pause condition remains weekly remaining <=55%. Source .107 loaded with offline proof; original DR0-DR5 objective unchanged.",
+  "currentProviderConstraint": "No new model request this turn. H5R-v17/H3R-v13 originals remain terminal and unchanged; any additional paid case must respect actual authorization scope. Seven old paused unknowns untouched.",
+  "currentDevelopmentMode": "Primary Codex only, no Qoder. Active goal; .108 verification window and context fix loaded after 1719 offline passes. Total budget and all original DR0-DR5 acceptance gates unchanged.",
   "loadedRuntime": {
-    "commit": "a48d833",
-    "promptVersion": "dr-v2.20261016.107",
+    "commit": "4a56599",
+    "promptVersion": "dr-v2.20261016.108",
     "ready": true,
     "callsPreserved": 3132,
     "pausedUnknownRuns": 7,
-    "proof": "deep-research-evidence/runtime-load-dr107-audit-ref-20261016.json"
+    "proof": "deep-research-evidence/runtime-load-dr108-verification-window-20261016.json"
   },
   "nextQualityWork": [
     "Make fresh component initial values and baseline acquisition/paired creation consistent across all experiment roles; a state shape alone is insufficient.",
-    "Fit scientific controls review with complete required citations/context under the existing input limit; current format/audit fixes do not establish capacity for every future plan.",
+    "Saved complete controls-review input now fits the versioned 32KB window offline; real scientific verdict quality and broader plan capacity remain to validate. Final coverage and repair generation keep their 24KB caps.",
     "Produce and independently review a novice explanation with ordinary error/adjustment/consequence meaning, not just derivative terminology.",
     "Complete D1/D2/D3/D5 and fresh independent replacement gates; no diagnostic case can regain unseen eligibility. Keep PR draft until the complete original design passes."
   ],
