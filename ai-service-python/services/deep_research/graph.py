@@ -79,6 +79,8 @@ class GraphState(TypedDict, total=False):
     inherited_evidence_ids: list[str]  # Inherited from parent run
     assess_inherited: bool  # Check reused evidence before issuing new retrieval
     prev_source_count: int  # Track no-new-evidence stopping
+    prev_assessment_evidence_digest: str
+    assess_after_extraction_stop: bool
 
 
 # ── Node Functions ─────────────────────────────────────────────────────────────
@@ -798,6 +800,9 @@ def make_assess_node(
         prev_source_count = state.get("prev_source_count", 0)
         
         record = repo_update(run_id, lambda r: {**r, "stage": "assess"}, expected_revision=None)
+        from services.deep_research.adaptive_assessment import enabled, assess
+        if enabled(record):
+            return assess(state, record, repo_update, llm_invoke, coverage_gaps_fn)
         plan = record.get("state", {}).get("plan", [])
         evidence = record.get("state", {}).get("evidence", [])
         materials = record.get("materials", [])
@@ -1574,6 +1579,10 @@ def route_after_resolve_brief(state: GraphState) -> str:
     return "plan"
 
 
+def route_after_extract(state: GraphState) -> str:
+    return 'synthesize' if state.get('budget_exhausted') and not state.get('assess_after_extraction_stop') else 'assess'
+
+
 def route_after_assess(state: GraphState) -> str:
     stop_reason = state.get("stop_reason", "")
     gaps = state.get("gaps", [])
@@ -1665,7 +1674,16 @@ def build_deep_research_graph(
                                                batch_size=min(extract_batch_size, 3))
     else:
         extractor = make_extract_node(llm_invoke, make_evidence_fn, scope_validator, repo_update)
-    workflow.add_node("extract", bounded(extractor))
+    def bounded_extract(state):
+        from services.deep_research.contracts import BudgetExhaustedError
+        from services.deep_research.adaptive_assessment import enabled
+        try:
+            return extractor(state)
+        except BudgetExhaustedError:
+            record = repo_update(state['run_id'], lambda r: r, expected_revision=None)
+            return {'budget_exhausted': True, 'stop_reason': 'budget_exhausted',
+                    'assess_after_extraction_stop': enabled(record)}
+    workflow.add_node("extract", bounded_extract)
     workflow.add_node("assess", make_assess_node(coverage_gaps_fn, repo_update, llm_invoke=llm_invoke))
     workflow.add_node("synthesize", bounded(make_synthesize_node(llm_invoke, repo_update)))
     workflow.add_node("verify", make_verify_node(verify_claims_fn, semantic_check_fn, repo_update, llm_invoke=llm_invoke))
@@ -1689,7 +1707,7 @@ def build_deep_research_graph(
                                    {"fail": END, "acquire": "acquire", "assess": "assess", "publish": "publish"})
     workflow.add_edge("acquire", "read")
     workflow.add_edge("read", "extract")
-    workflow.add_conditional_edges("extract", lambda state: "synthesize" if state.get("budget_exhausted") else "assess",
+    workflow.add_conditional_edges("extract", route_after_extract,
                                    {"synthesize": "synthesize", "assess": "assess"})
     
     workflow.add_conditional_edges("assess", route_after_assess, {

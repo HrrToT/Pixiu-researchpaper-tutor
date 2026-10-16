@@ -15,6 +15,14 @@ def make_batched_extract_node(invoke, make_evidence, validate, update, *, batch_
         run_id = state["run_id"]
         record = update(run_id, lambda r: {**r, "stage": "extract"}, expected_revision=None)
         domain = record.get("state", {})
+        from services.deep_research.adaptive_assessment import enabled, passage_review_key
+        incremental = enabled(record)
+        reviewed = domain.get('reviewedExtractionPassages', {}) if incremental else {}
+        if not isinstance(reviewed, dict) or any(not isinstance(k, str) or v not in {'received', 'invalid', 'truncated'}
+                                                 for k, v in reviewed.items()):
+            from services.deep_research.contracts import DeepResearchError
+            raise DeepResearchError('invalid_extraction_review_state', '保存的片段检查记录无效，不能重新发送。')
+        reviewed = dict(reviewed)
         obligations = {o["obligationId"]: o for p in domain.get("plan", []) for o in p["obligations"]}
         evidence = list(domain.get("evidence", []))
         existing = {e["evidenceId"] for e in evidence}
@@ -71,7 +79,7 @@ def make_batched_extract_node(invoke, make_evidence, validate, update, *, batch_
                     if ev['evidenceId'] not in existing:
                         existing.add(ev['evidenceId'])
                         evidence.append(ev)
-            if (source["sourceId"], source["contentHash"]) in extracted:
+            if not incremental and (source["sourceId"], source["contentHash"]) in extracted:
                 # Relevance to the new goal is assessed separately, never inherited as passed.
                 for e in evidence:
                     if e.get("sourceId") == source["sourceId"]:
@@ -81,7 +89,11 @@ def make_batched_extract_node(invoke, make_evidence, validate, update, *, batch_
                 text = page.get("text", "")[:3000]
                 if len(text.strip()) < 50:
                     continue
-                pending.append((source, {**source.get("location", {}), **{k: v for k, v in page.items() if k != "text"}}, text))
+                location = {**source.get("location", {}), **{k: v for k, v in page.items() if k != "text"}}
+                key = passage_review_key(source, location, text, obligations, record.get('extractionPriorityVersion'))
+                if incremental and key in reviewed:
+                    continue
+                pending.append((source, location, text))
 
         update(run_id, lambda r: {**r, "state": {**r.get("state", {}), "evidence": evidence}}, expected_revision=None)
         priority_version = record.get('extractionPriorityVersion')
@@ -122,7 +134,17 @@ Passages:\n"""
             prompt += json.dumps(passages, ensure_ascii=False)
             result = invoke(run_id, "extract", prompt, {"max_tokens": 3000, "temperature": 0})
             items = _safe_parse_json(result.get("content", "") if isinstance(result, dict) else result.content)
+            finish = result.get('finishReason', result.get('finish_reason')) if isinstance(result, dict) else getattr(result, 'finish_reason', None)
+            status = 'truncated' if finish == 'length' else 'received' if isinstance(items, list) else 'invalid'
+            if incremental:
+                for s, location, text in batch:
+                    reviewed[passage_review_key(s, location, text, obligations, priority_version)] = status
+                if finish == 'length':
+                    items = []
             if not isinstance(items, list):
+                if incremental:
+                    update(run_id, lambda r: {**r, 'state': {**r.get('state', {}), 'evidence': evidence,
+                        'reviewedExtractionPassages': reviewed}}, expected_revision=None)
                 continue
             counts = {}
             for item in items:
@@ -163,7 +185,8 @@ Passages:\n"""
                     existing.add(ev["evidenceId"])
                     evidence.append(ev)
             # A later budget/stop boundary must not discard completed extraction work.
-            update(run_id, lambda r: {**r, "state": {**r.get("state", {}), "evidence": evidence}}, expected_revision=None)
+            update(run_id, lambda r: {**r, "state": {**r.get("state", {}), "evidence": evidence,
+                **({'reviewedExtractionPassages': reviewed} if incremental else {})}}, expected_revision=None)
         update(run_id, lambda r: {**r, "state": {**r.get("state", {}), "evidence": evidence}}, expected_revision=None)
         return {"evidence_ids": [e["evidenceId"] for e in evidence]}
     return node
