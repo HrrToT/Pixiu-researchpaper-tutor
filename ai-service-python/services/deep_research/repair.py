@@ -80,7 +80,7 @@ def _prepare_repair(report, verification, evidence, question, *, max_prompt_byte
                        and row.get('kind') in {'proposal', 'suggestion', 'hypothesis'}]
     from services.deep_research.verification_context import CONFIG_ROLES, configuration_context
     if (all(row.get('designRole') in CONFIG_ROLES for row in originals.values())
-            and any(row.get('protocolContractVersion') == 1 or row.get('workflowContractVersion') in (1, 2, 3)
+            and any(row.get('protocolContractVersion') in (1, 2) or row.get('workflowContractVersion') in (1, 2, 3, 4)
                     for row in originals.values())):
         # Versioned operational repairs need all operational definitions and
         # explicit dependencies, not unrelated scientific prose. Keep accepted
@@ -164,7 +164,7 @@ in the paper. Maintain consistency with accepted definitions and complete requir
         prompt += '\n' + execution_spec_contract_for_roles({row.get('designRole') for row in originals.values()})
         roles = {row.get('designRole') for row in originals.values()}
         from services.deep_research.design_review_policy import REVIEW_DESIGN_POLICY
-        policy = REVIEW_DESIGN_POLICY if any(row.get('protocolContractVersion') == 1 or row.get('workflowContractVersion') in (1, 2, 3)
+        policy = REVIEW_DESIGN_POLICY if any(row.get('protocolContractVersion') in (1, 2) or row.get('workflowContractVersion') in (1, 2, 3, 4)
                                              for row in originals.values()) else None
         # Other roles remain full consistency context and are independently
         # checked. Their writing requirements are not writable in this batch.
@@ -183,10 +183,11 @@ in the paper. Maintain consistency with accepted definitions and complete requir
                    'to define your own diagnostic. Cover all required roles without changing an existing valid role '
                    'or inventing new claim IDs. Do not claim completeness when the available claims cannot cover them. '
                    'Keep all proposed settings consistent across claims and executionSpec.')
-    if any(row.get('protocolContractVersion')==1 for row in originals.values()):
-        from services.deep_research.experiment_protocol import PROTOCOL_CONTRACT
-        prompt += '\n' + PROTOCOL_CONTRACT
-    for version in (1, 2, 3):
+    for version in (1, 2):
+        if any(row.get('protocolContractVersion')==version for row in originals.values()):
+            from services.deep_research.experiment_protocol import protocol_contract
+            prompt += '\n' + protocol_contract(version)
+    for version in (1, 2, 3, 4):
         if any(row.get('workflowContractVersion') == version for row in originals.values()):
             from services.deep_research.experiment_workflow import workflow_contract
             prompt += '\n' + workflow_contract(version)

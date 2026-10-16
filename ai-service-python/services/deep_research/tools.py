@@ -552,8 +552,8 @@ class BudgetedSemanticChecker:
         facts = [c for c in claims if c.get('kind') not in {'proposal', 'suggestion', 'hypothesis'}]
         from services.deep_research.verification_context import CONFIG_ROLES
         def requires_science(c):
-            return ((c.get('designRole') == 'controls' and c.get('protocolContractVersion') == 1)
-                or (c.get('designRole') == 'steps' and c.get('workflowContractVersion') in (2, 3)))
+            return ((c.get('designRole') == 'controls' and c.get('protocolContractVersion') in (1, 2))
+                or (c.get('designRole') == 'steps' and c.get('workflowContractVersion') in (2, 3, 4)))
         config = [c for c in proposals if c.get('designRole') in CONFIG_ROLES and not requires_science(c)]
         science = [c for c in proposals if c not in config]
         science_node = 'verify_design_science' if node == 'verify' else 'verify_repair_design_science'
@@ -731,9 +731,12 @@ Do not require an unexecuted experiment to have results. Do not judge context cl
         if any(c.get('protocolContractVersion')==1 for c in [*claims,*proposal_context]):
             from services.deep_research.experiment_protocol import PROTOCOL_REVIEW_POLICY
             prompt += '\n'+PROTOCOL_REVIEW_POLICY
-        if any(c.get('workflowContractVersion') in (1, 2, 3) for c in [*claims, *proposal_context]):
+        if any(c.get('protocolContractVersion')==2 for c in [*claims,*proposal_context]):
+            from services.deep_research.experiment_protocol import PROTOCOL_REVIEW_POLICY_V2
+            prompt += '\n' + PROTOCOL_REVIEW_POLICY_V2
+        if any(c.get('workflowContractVersion') in (1, 2, 3, 4) for c in [*claims, *proposal_context]):
             versions = sorted({c['workflowContractVersion'] for c in [*claims, *proposal_context]
-                if type(c.get('workflowContractVersion')) is int and c['workflowContractVersion'] in (1, 2, 3)})
+                if type(c.get('workflowContractVersion')) is int and c['workflowContractVersion'] in (1, 2, 3, 4)})
             prompt += ('\nWorkflow contract ' + '/'.join(map(str, versions)) +
                 ' binds steps to exact data/budget/controls/groups definitions. '
                 'Check each new component creation rule, per-seed rebuilding or warm starts, '
@@ -744,6 +747,13 @@ Do not require an unexecuted experiment to have results. Do not judge context cl
                 'does not identify a renderer, and a base model does not automatically contain a new enhancement. '
                 'Check the transformation and initial values of EVERY new trainable state, not just an RNG seed. '
                 'Fresh creation must specify shape/count and values/RNG; deriving requires valid input selectors.')
+            if 4 in versions:
+                prompt += ('\nWorkflow 4 defines baseline initialization before training and explicit '
+                    'stateDefinitions for every component. Independently enumerate ALL states required '
+                    'by the chosen representation, then check each name/dtype/shape/initializer, actual '
+                    'input axes, broadcasting, normalization and units. A valid distribution or full list '
+                    'is not scientific approval. Check whether the creation/rendering/training operations '
+                    'are compatible with those exact values; reject omitted states or conflicting prose.')
         if any(c.get('budgetContractVersion') == 1 for c in [*claims, *proposal_context]):
             prompt += '\nBudget contract 1 is the canonical baseline/recovery configuration. ' \
                       'Check prose and all other definitions against these exact typed choices. ' \
@@ -856,7 +866,10 @@ The dataAvailability object is an internal audit, not new experimental results.
                            'with 1 to 32 segments. Copy punctuation exactly; never join, summarize or rewrite. '
                            'Every segment must match its source and together cover the whole slot. No mixed forms.')
                 from services.deep_research.design_audit import audit_field_roots
-                roots = audit_field_roots(dict.fromkeys(slot for slots in required_slots.values() for slot in slots))
+                roots = audit_field_roots(dict.fromkeys(slot for slots in required_slots.values() for slot in slots),
+                    workflow_v4=any(c.get('workflowContractVersion') == 4 for c in [*claims, *proposal_context]))
+                controls_contract = ('a supported protocol contract' if any(c.get('protocolContractVersion') == 2
+                    for c in [*claims, *proposal_context]) else 'protocol contract 1')
                 audit_prompt += ('\nTyped choices use {"ref":{"claimId":"target/context ID",'
                            '"path":["executionSpec","existing allowed root"]}}; the server resolves the '
                            'UNCHANGED existing value. For 1-32 choices use {"fields":[{'
@@ -864,7 +877,7 @@ The dataAvailability object is an internal audit, not new experimental results.
                            'Path elements are object keys or zero-based integer list indices. Never quote JSON '
                            'serialization or mix ref/fields with quote/quotes. Allowed slot roots (under '
                            'executionSpec, source role required): ' + json.dumps(roots, separators=(',', ':'))
-                           + '. Other slots use literal quotes. Controls require protocol contract 1; budget '
+                           + '. Other slots use literal quotes. Controls require ' + controls_contract + '; budget '
                            'requires budget contract 1; step fields require a supported workflow contract. '
                            'per_group_steps MUST bind recovery; baseline-only refs/fields fail. All choices '
                            'together must fulfill the ENTIRE slot; bindings do not prove scientific correctness.')

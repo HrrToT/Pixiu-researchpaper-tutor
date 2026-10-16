@@ -975,7 +975,8 @@ def make_synthesize_node(
         output_kind = brief_state.get("outputKind", "direction_survey")
         strict_budget = type(record.get('budgetContractVersion')) is int and record['budgetContractVersion'] == 1
         strict_hypothesis = type(record.get('hypothesisContractVersion')) is int and record['hypothesisContractVersion'] == 1
-        strict_protocol = type(record.get('protocolContractVersion')) is int and record['protocolContractVersion'] == 1
+        from services.deep_research.experiment_protocol import protocol_version
+        strict_protocol = protocol_version(record.get('protocolContractVersion'))
         from services.deep_research.experiment_workflow import workflow_version, workflow_contract
         strict_workflow = workflow_version(record.get('workflowContractVersion'))
         from services.deep_research.answer_constraints import requested_character_limit
@@ -1123,8 +1124,8 @@ Orient losses before formulas, distinguish conditional/averaged effects and pape
             from services.deep_research.execution_spec import EXECUTION_SPEC_CONTRACT
             prompt += '\n' + EXECUTION_SPEC_CONTRACT
             if strict_protocol:
-                from services.deep_research.experiment_protocol import PROTOCOL_CONTRACT
-                prompt += '\n' + PROTOCOL_CONTRACT
+                from services.deep_research.experiment_protocol import protocol_contract
+                prompt += '\n' + protocol_contract(strict_protocol)
             if strict_workflow:
                 prompt += '\n' + workflow_contract(strict_workflow)
             if strict_budget:
@@ -1255,7 +1256,7 @@ def make_verify_node(
         else:
             verification_result = enforce_design_consistency(
                 verify_claims_fn(claims, evidence, budgeted_semantic), evidence,
-                protocol_required=record.get('protocolContractVersion')==1,
+                protocol_required=record.get('protocolContractVersion', 0),
                 workflow_required=record.get('workflowContractVersion', 0))
             current = repo_update(run_id, lambda r: r, expected_revision=None)
             answer_coverage = audit_final_answer(run_id, record.get('question', ''),
@@ -1335,7 +1336,7 @@ def make_verify_node(
                     if merged is None:
                         checked = verify_claims_fn(revised, evidence, revised_semantic)
                         merged = enforce_design_consistency(merge_verified_revisions(verification_result, checked), evidence,
-                            protocol_required=record.get('protocolContractVersion')==1,
+                            protocol_required=record.get('protocolContractVersion', 0),
                             workflow_required=record.get('workflowContractVersion', 0))
                         repo_update(run_id, lambda r: {**r, 'state': {**r.get('state', {}),
                             'repairVerificationChecks': checked,
@@ -1421,7 +1422,7 @@ def make_publish_node(
         checked = enforce_design_consistency({'accepted': verified_report.get('verifiedClaims', []),
                                              'rejected': verified_report.get('rejectedClaims', [])},
                                              brief_state.get('evidence', []),
-                                             protocol_required=record.get('protocolContractVersion')==1,
+                                             protocol_required=record.get('protocolContractVersion', 0),
                                              workflow_required=record.get('workflowContractVersion', 0))
         if checked['accepted'] != verified_report.get('verifiedClaims', []):
             # A resumed publish must not trust inconsistent marked definitions

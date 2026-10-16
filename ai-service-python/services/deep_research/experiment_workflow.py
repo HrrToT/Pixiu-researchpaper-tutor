@@ -8,7 +8,7 @@ STAGES = ('prepare_data', 'acquire_baseline', 'initialize_components', 'pair_gro
           'apply_interventions', 'recover', 'evaluate', 'record')
 RECORDS = {'baseline_identity', 'split_manifest', 'seed_manifest', 'component_states',
            'group_configs', 'recovery_budgets', 'evaluation_outputs', 'raw_measurements'}
-WORKFLOW_VERSIONS = (1, 2, 3)
+WORKFLOW_VERSIONS = (1, 2, 3, 4)
 RECORD_LABELS = {'baseline_identity': '基线身份', 'split_manifest': '数据划分清单',
     'seed_manifest': '随机种子清单', 'component_states': '新组件初始状态',
     'group_configs': '各组配置', 'recovery_budgets': '各组训练预算',
@@ -67,13 +67,40 @@ WORKFLOW_CONTRACT_V3 = WORKFLOW_CONTRACT_V2.replace('Workflow contract 2', 'Work
     'and one opacity value alone do not initialize positions, scale, orientation or appearance. '
     'Use exact input-dependent count rules when needed.\nAll splits are locked BEFORE fitting')
 
+from services.deep_research.state_initialization import STATE_CONTRACT
+WORKFLOW_CONTRACT_V4 = '''Workflow contract 4 (server assigned): steps executionSpec exactly
+{refs:{data:ID,budget:ID,controls:ID,groups:ID},
+order:[prepare_data,acquire_baseline,initialize_components,pair_groups,apply_interventions,recover,evaluate,record],
+baselineMode:train|existing,replicationMode:retrained_per_seed|fixed_checkpoint,
+baselineInitialization:null OR {initializationMode:fresh|derive,inputs,creation,stateDefinitions},
+componentInitializations:[{componentId,initializationMode:fresh|derive,inputs,creation,stateDefinitions,appliesTo:[group IDs]}],
+checkpointSelection:{mode:fixed_budget} OR {mode:train_loss,rule:operation}
+OR {mode:validation_split,split:data split schema,rule:operation},
+records:[baseline_identity,split_manifest,seed_manifest,component_states,group_configs,
+recovery_budgets,evaluation_outputs,raw_measurements,group_checkpoints]}.
+Train requires an explicit baselineInitialization BEFORE baseline fitting; existing
+requires null and grounded budget asset selection. Baseline inputs use training_data
+only. Component inputs use baseline/training_data/EARLIER component IDs; each entry is
+{state,selector:actual existing state}. fresh has inputs:[]; derive has inputs.
+creation is {action,parameters}; [] is allowed when stateDefinitions fully specify creation.
+Define actual initial values for EVERY required state, not an opaque state_layout string.
+Create once per repetition, then copy identical complete states to appliesTo groups.
+refs match accepted siblings and modes. Lock all data splits before any fitting/creation.
+Inner validation uses training data only, with nonempty/disjoint prechecks. Final
+evaluation never initializes, tunes, stops or selects. fixed_budget uses the last step.
+retrained_per_seed rebuilds train baselines per data seed; existing assets are shared
+warm starts. Controls initialization references this steps ID, never another checkpoint
+source. Keep original prose consistent. All values are prospective, not measured results.
+''' + STATE_CONTRACT
+
 
 def workflow_version(value):
     return value if type(value) is int and value in WORKFLOW_VERSIONS else 0
 
 
 def workflow_contract(version):
-    return {1: WORKFLOW_CONTRACT, 2: WORKFLOW_CONTRACT_V2, 3: WORKFLOW_CONTRACT_V3}[version]
+    return {1: WORKFLOW_CONTRACT, 2: WORKFLOW_CONTRACT_V2, 3: WORKFLOW_CONTRACT_V3,
+            4: WORKFLOW_CONTRACT_V4}[version]
 
 
 def _strings(value):
@@ -95,8 +122,9 @@ def workflow_errors(spec, version=1):
     if not isinstance(spec, dict):
         return ['workflow.spec']
     errors = []
-    if set(spec) != {'refs', 'order', 'baselineMode', 'replicationMode', 'componentInitializations',
-                     'checkpointSelection', 'records'}:
+    expected_fields = {'refs', 'order', 'baselineMode', 'replicationMode', 'componentInitializations',
+                       'checkpointSelection', 'records'} | ({'baselineInitialization'} if version >= 4 else set())
+    if set(spec) != expected_fields:
         errors.append('workflow.fields')
     refs = spec.get('refs')
     if (not isinstance(refs, dict) or set(refs) != {'data', 'budget', 'controls', 'groups'}
@@ -109,6 +137,16 @@ def workflow_errors(spec, version=1):
         errors.append('workflow.baselineMode')
     if spec.get('replicationMode') not in ('retrained_per_seed', 'fixed_checkpoint'):
         errors.append('workflow.replicationMode')
+    if version >= 4:
+        baseline = spec.get('baselineInitialization')
+        if spec.get('baselineMode') == 'existing':
+            if baseline is not None:
+                errors.append('workflow.baseline_existing_creation')
+        elif not isinstance(baseline, dict) or set(baseline) != {'initializationMode', 'inputs', 'creation', 'stateDefinitions'}:
+            errors.append('workflow.baseline_initialization')
+        else:
+            errors.extend(_creation_input_errors(baseline, set(), version, baseline=True))
+            errors.extend(_operation_errors(baseline['creation'], 'workflow.baseline_creation'))
     components = spec.get('componentInitializations')
     if not isinstance(components, list):
         errors.append('workflow.componentInitializations')
@@ -118,6 +156,8 @@ def workflow_errors(spec, version=1):
             fields = {'componentId', 'creation', 'appliesTo'}
             if version >= 2:
                 fields |= {'inputs', 'initializationMode'}
+            if version >= 4:
+                fields.add('stateDefinitions')
             if (not isinstance(component, dict) or set(component) != fields
                     or not isinstance(component.get('componentId'), str) or not component['componentId'].strip()
                     or component['componentId'] in ids
@@ -128,7 +168,7 @@ def workflow_errors(spec, version=1):
                 errors.extend(_creation_input_errors(component, ids, version))
             ids.add(component['componentId'])
             errors.extend(_operation_errors(component['creation'], 'workflow.creation'))
-            if isinstance(component['creation'], dict) and component['creation'].get('parameters') == []:
+            if version < 4 and isinstance(component['creation'], dict) and component['creation'].get('parameters') == []:
                 errors.append('workflow.creation.parameters_required')
             if not _strings(component['appliesTo']):
                 errors.append('workflow.component.appliesTo')
@@ -166,7 +206,7 @@ def workflow_errors(spec, version=1):
     return list(dict.fromkeys(errors))
 
 
-def _creation_input_errors(component, earlier, version):
+def _creation_input_errors(component, earlier, version, *, baseline=False):
     inputs, mode = component['inputs'], component['initializationMode']
     if not isinstance(mode, str) or mode not in {'derive', 'fresh'} or not isinstance(inputs, list):
         return ['workflow.creation.inputs']
@@ -175,7 +215,7 @@ def _creation_input_errors(component, earlier, version):
     errors, seen = [], set()
     operation = component.get('creation')
     parameters = operation.get('parameters') if isinstance(operation, dict) else None
-    if version >= 3 and mode == 'fresh' and (not isinstance(parameters, list) or not any(
+    if version == 3 and mode == 'fresh' and (not isinstance(parameters, list) or not any(
             isinstance(p, dict) and p.get('name') == 'state_layout' and p.get('type') == 'choice'
             and isinstance(p.get('value'), str) and p['value'].strip() for p in parameters)):
         errors.append('workflow.creation.fresh_layout_required')
@@ -184,12 +224,15 @@ def _creation_input_errors(component, earlier, version):
                 or not all(isinstance(v, str) and v.strip() for v in item.values())):
             errors.append('workflow.creation.input')
             continue
-        if item['state'] not in earlier | {'baseline', 'training_data'}:
+        if item['state'] not in (earlier | {'training_data'} | (set() if baseline else {'baseline'})):
             errors.append('workflow.creation.unavailable_input')
         identity = (item['state'], item['selector'])
         if identity in seen:
             errors.append('workflow.creation.duplicate_input')
         seen.add(identity)
+    if version >= 4:
+        from services.deep_research.state_initialization import state_definition_errors
+        errors.extend('workflow.' + error for error in state_definition_errors(component.get('stateDefinitions'), inputs))
     return errors
 
 
@@ -230,19 +273,24 @@ def workflow_text(claim):
         lines.append('2. 复用一个固定基线；多个后续种子不代表独立重训了基线。')
     lines.append('   ' + ('基线按预算项训练，仅使用训练部分。' if spec['baselineMode'] == 'train'
                          else '基线按预算项的既有资产规则获取并核对身份。'))
+    if version >= 4 and spec['baselineInitialization'] is not None:
+        lines.extend(_initialization_details(spec['baselineInitialization'], '基线初始状态'))
     lines.append('3. 每次重复先创建所需新组件，再配对复制到各组：')
     for component in spec['componentInitializations']:
         from services.deep_research.operation_text import operation_text
         if version >= 2:
             for source in component['inputs']:
                 name = {'baseline': '已有基线', 'training_data': '训练数据'}.get(source['state'], source['state'])
-                lines.append('   - ' + component['componentId'] + '的输入：' + name + '；选取规则：' + source['selector'])
+                if version < 4:
+                    lines.append('   - ' + component['componentId'] + '的输入：' + name + '；选取规则：' + source['selector'])
             if component['initializationMode'] == 'fresh':
                 lines.append('   - ' + component['componentId'] + '：从显式初值新建，不复制已有组件。')
         lines.append('   - ' + component['componentId'] + '：' + component['creation']['action'] +
             (operation_text(component['creation'], include_action=False) if version >= 2
              else '；参数=' + json.dumps(component['creation']['parameters'], ensure_ascii=False)) +
             '；相同初始状态复制到组 ' + '、'.join(component['appliesTo']))
+        if version >= 4:
+            lines.extend(_initialization_details(component, component['componentId'] + '的初始状态'))
     if not spec['componentInitializations']:
         lines.append('   本方案声明没有新建组件；是否与实际干预一致仍需科学核查。')
     lines.extend(['4. 复制配对状态，按分组项实施干预，再按预算项执行各组恢复；固定条件保持一致。',
@@ -259,6 +307,21 @@ def workflow_text(claim):
                   ('6. 保存：' + '、'.join(RECORD_LABELS.get(key, key) for key in spec['records']) + '。'
                    if version >= 2 else '6. 保存基线身份、划分与种子清单、组件初态、各组配置及恢复预算、评估输出和原始测量。')])
     return '\n'.join(lines)
+
+
+def _initialization_details(initialization, title):
+    from services.deep_research.state_initialization import state_definitions_text
+    from services.deep_research.operation_text import operation_text
+    lines = ['', '<details>', '<summary>' + title + '</summary>', '']
+    lines.append('初值来源：' + ('从显式初值新建。' if initialization['initializationMode'] == 'fresh'
+                            else '按下面列出的已有输入派生。'))
+    for i, source in enumerate(initialization['inputs']):
+        lines.append(f"输入{i}：{source['state']}；选取规则：{source['selector']}")
+    lines.extend([operation_text(initialization['creation']), '',
+        state_definitions_text(initialization['stateDefinitions']), '',
+        '执行前按实际输入核对形状、轴和初值广播规则；维度不符或引用越界时停止，不自动替换。',
+        '', '</details>', ''])
+    return lines
 
 
 def enforce_workflow_consistency(verification, required=False):
@@ -297,6 +360,11 @@ def enforce_workflow_consistency(verification, required=False):
                 groups = budget.get('recovery', {}).get('groups', {})
                 if any(group not in groups for c in spec['componentInitializations'] for group in c['appliesTo']):
                     errors.append('workflow.unknown_initialization_group')
+                if version >= 4:
+                    controls = siblings['controls']
+                    if (type(controls.get('protocolContractVersion')) is not int or controls['protocolContractVersion'] != 2
+                            or controls['executionSpec'].get('initialization') != {'workflowClaimId': claim['claimId']}):
+                        errors.append('workflow.initialization_reference_conflict')
         if errors:
             rejected.add(claim['claimId'])
             result.setdefault('rejected', []).append({'claimId': claim['claimId'],

@@ -47,8 +47,9 @@ def prepare_design_completion(report, verification, evidence, plan):
             claims[-1]['budgetContractVersion'] = 1
         if role == 'hypothesis' and type(draft.get('hypothesisContractVersion')) is int and draft['hypothesisContractVersion'] == 1:
             claims[-1]['hypothesisContractVersion'] = 1
-        if role in {'controls','data'} and type(draft.get('protocolContractVersion')) is int and draft['protocolContractVersion']==1:
-            claims[-1]['protocolContractVersion']=1
+        from services.deep_research.experiment_protocol import protocol_version
+        if role in {'controls','data'} and protocol_version(draft.get('protocolContractVersion')):
+            claims[-1]['protocolContractVersion']=draft['protocolContractVersion']
         from services.deep_research.experiment_workflow import workflow_version
         if role == 'steps' and workflow_version(draft.get('workflowContractVersion')):
             claims[-1]['workflowContractVersion'] = draft['workflowContractVersion']

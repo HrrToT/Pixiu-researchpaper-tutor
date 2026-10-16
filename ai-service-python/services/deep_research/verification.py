@@ -147,13 +147,13 @@ def verify_claims(claims: list[dict], evidence: list[dict],
                                      'detail': ', '.join(errors)})
                     continue
         if not reason and 'protocolContractVersion' in claim:
-            from services.deep_research.experiment_protocol import protocol_errors, PROTOCOL_ROLES
-            if (type(claim['protocolContractVersion']) is not int or claim['protocolContractVersion']!=1
+            from services.deep_research.experiment_protocol import protocol_errors, protocol_version, PROTOCOL_ROLES
+            if (not protocol_version(claim['protocolContractVersion'])
                     or claim.get('designRole') not in PROTOCOL_ROLES
                     or kind not in {'proposal','suggestion','hypothesis'}):
                 reason='invalid_protocol_contract'
             else:
-                errors=protocol_errors(claim['designRole'],claim.get('executionSpec'))
+                errors=protocol_errors(claim['designRole'],claim.get('executionSpec'),claim['protocolContractVersion'])
                 if errors:
                     rejected.append({'claimId':claim_id,'reason':'incomplete_experiment_protocol','detail':', '.join(errors)})
                     continue

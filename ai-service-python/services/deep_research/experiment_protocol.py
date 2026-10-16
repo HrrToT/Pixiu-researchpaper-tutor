@@ -47,8 +47,47 @@ overlapping splits. seeded_fraction sorts IDs, shuffles with its seed and uses
 min(N-1,max(1,floor(N*f))) evaluation items for N>=2. These instructions assert no original
 view count. Ground dataset/subset membership independently; unknown availability still fails.'''
 
+PROTOCOL_CONTRACT_V2 = '''Protocol contract 2 (server assigned): controls executionSpec exactly
+{initialization:{workflowClaimId:exact steps ID},rendering:operation,optimizer:operation,
+otherInterventions:operation}. Initialization is defined ONLY in that workflow's
+baselineInitialization and componentInitializations; do not repeat checkpoint paths
+or invent another starting state. Rendering names an actual compatible operation and
+numeric image-size/resize settings; optimizer defines actual rates/schedules for all
+trainable groups. An operation is {action,parameters:[{name,type:number|choice,value}]}.
+Rendering/optimizer need parameters; otherInterventions explicitly defines/disables
+shared policies and may use []. Proposed choices are not original-paper settings.
+Data keeps its exact existing schema: reproducible split/seeds/independent units and
+nonempty/disjoint prechecks. Lock splits before fitting, enumerate real items and
+record IDs/seeds/RNG version; final evaluation cannot initialize/tune/select. Existing
+dataset/subset membership still needs evidence; these prechecks assert no author counts.
+Text gives rationale, not duplicate configuration. Structural validity is not science.'''
 
-def protocol_errors(role, spec):
+PROTOCOL_REVIEW_POLICY_V2 = '''Protocol contract 2 is structurally checked before this request.
+controls.initialization.workflowClaimId resolves the ONLY initialization definition in
+that exact workflow 4 target/context. Review its baseline acquisition, every component
+state/initial value, pairing and original prose with actual optimizer/render compatibility.
+Reject competing checkpoint sources, omitted states or inconsistent copying; an exact
+reference and valid schema are not scientific approval. The paired_initialization slot
+can bind that pointer only when its full referenced protocol fulfills the requirement.
+Data prechecks enumerate actual items, reject duplicates/missing IDs, and stop on empty
+or overlapping splits. seeded_fraction sorts IDs, shuffles with its seed and takes
+min(N-1,max(1,floor(N*f))) evaluation items for N>=2. Ground dataset/subset membership
+independently; these proposed rules assert no original count or available author asset.
+Rendering and optimizer still need actual operations and numeric settings for all
+trainable groups. A general framework name or shared-default promise is insufficient.'''
+
+
+def protocol_version(value):
+    return value if type(value) is int and value in (1, 2) else 0
+
+
+def protocol_contract(version):
+    return {1: PROTOCOL_CONTRACT, 2: PROTOCOL_CONTRACT_V2}[version]
+
+
+def protocol_errors(role, spec, version=1):
+    if not protocol_version(version):
+        return ['protocol.version']
     if role == 'data':
         from services.deep_research.execution_spec import execution_spec_errors
         errors = execution_spec_errors(role,spec)
@@ -67,6 +106,12 @@ def protocol_errors(role, spec):
         return ['controls.fields']
     errors=[]
     for key in CONTROL_FIELDS:
+        if version == 2 and key == 'initialization':
+            value = spec[key]
+            if (not isinstance(value, dict) or set(value) != {'workflowClaimId'}
+                    or not isinstance(value.get('workflowClaimId'), str) or not value['workflowClaimId'].strip()):
+                errors.append('initialization.workflow_reference')
+            continue
         errors.extend(validate_operation(spec[key],key))
         if key!='otherInterventions' and isinstance(spec[key],dict) and spec[key].get('parameters')==[]:
             errors.append(key+'.parameters_required')
@@ -74,28 +119,33 @@ def protocol_errors(role, spec):
 
 
 def stamp_protocol_contract(report, enabled=True):
+    version = 1 if enabled is True else protocol_version(enabled)
     result=deepcopy(report)
     result.pop('protocolContractVersion',None)
-    if enabled:result['protocolContractVersion']=1
+    if version:result['protocolContractVersion']=version
     for claim in result.get('claims',[]):
         if isinstance(claim,dict):
             claim.pop('protocolContractVersion',None)
-            if enabled and claim.get('designRole') in PROTOCOL_ROLES:
-                claim['protocolContractVersion']=1
+            if version and claim.get('designRole') in PROTOCOL_ROLES:
+                claim['protocolContractVersion']=version
     return result
 
 
 def claim_protocol_text(claim):
     from services.deep_research.protocol_text import render_execution_spec
     role,spec=claim.get('designRole'),claim.get('executionSpec')
-    if claim.get('protocolContractVersion')!=1:
+    version = protocol_version(claim.get('protocolContractVersion'))
+    if not version:
         return render_execution_spec(role,spec)
-    if protocol_errors(role,spec):
+    if protocol_errors(role,spec,version):
         return ''
     if role=='controls':
         lines=['拟议固定条件（尚未执行）：']
         for key,label in CONTROL_FIELDS.items():
             operation=spec[key]
+            if version == 2 and key == 'initialization':
+                lines.append('- '+label+'：使用执行流程中统一定义的基线与新组件初值，并在每次重复内配对复制到各组。')
+                continue
             lines.append('- '+label+'：'+operation['action'])
             for param in operation['parameters']:
                 lines.append('  - '+param['name']+'：'+json.dumps(param['value'],ensure_ascii=False,allow_nan=False))
@@ -108,16 +158,31 @@ def claim_protocol_text(claim):
 
 def enforce_protocol_consistency(verification, required=False):
     result=deepcopy(verification)
+    required_version = 1 if required is True else protocol_version(required)
+    indexed = {}
+    for c in result.get('accepted', []):
+        identity = c.get('claimId')
+        if isinstance(identity, str):
+            indexed[identity] = c if identity not in indexed else None
     keep=[]
     for claim in result.get('accepted',[]):
         marked='protocolContractVersion' in claim
         expected=required and claim.get('designRole') in PROTOCOL_ROLES and claim.get('designContractVersion')==2
         if not marked and not expected:
             keep.append(claim);continue
-        valid=(type(claim.get('protocolContractVersion')) is int and claim['protocolContractVersion']==1
+        version = protocol_version(claim.get('protocolContractVersion'))
+        valid=(version and (not expected or version == required_version)
                and claim.get('designRole') in PROTOCOL_ROLES
                and claim.get('kind') in {'proposal','suggestion','hypothesis'})
-        errors=protocol_errors(claim.get('designRole'),claim.get('executionSpec')) if valid else ['invalid_protocol_contract']
+        errors=protocol_errors(claim.get('designRole'),claim.get('executionSpec'),version) if valid else ['invalid_protocol_contract']
+        if not errors and version == 2 and claim.get('designRole') == 'controls':
+            from services.deep_research.experiment_workflow import workflow_errors
+            target = indexed.get(claim['executionSpec']['initialization']['workflowClaimId'])
+            if (not isinstance(target, dict) or target.get('designRole') != 'steps'
+                    or type(target.get('workflowContractVersion')) is not int or target['workflowContractVersion'] != 4
+                    or workflow_errors(target.get('executionSpec'), 4)
+                    or target['executionSpec']['refs']['controls'] != claim['claimId']):
+                errors.append('initialization.unverified_workflow')
         if errors:
             result.setdefault('rejected',[]).append({'claimId':claim['claimId'],
                 'reason':'incomplete_experiment_protocol','detail':', '.join(errors)})

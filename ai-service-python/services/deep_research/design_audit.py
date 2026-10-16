@@ -116,19 +116,20 @@ _FIELD_ROOTS = {
     'render_settings': ('controls', {'rendering'}),
     'optimizer_settings': ('controls', {'optimizer'}),
     'other_interventions': ('controls', {'otherInterventions'}),
-    'baseline_acquisition': ('steps', {'refs', 'baselineMode', 'order'}),
+    'baseline_acquisition': ('steps', {'refs', 'baselineMode', 'baselineInitialization', 'order'}),
     'group_pairing': ('steps', {'refs', 'componentInitializations', 'replicationMode', 'order'}),
     'saved_artifacts': ('steps', {'records'}),
     'data_isolation': ('steps', {'order', 'checkpointSelection'}),
-    'component_creation': ('steps', {'componentInitializations'}),
+    'component_creation': ('steps', {'baselineInitialization', 'componentInitializations'}),
     'seed_pairing': ('steps', {'replicationMode', 'refs'}),
     'checkpoint_selection': ('steps', {'checkpointSelection'}),
 }
 
 
-def audit_field_roots(slots):
+def audit_field_roots(slots, *, workflow_v4=False):
     """Describe only active slots, using the validator's exact role/root rules."""
-    return {slot: {'role': _FIELD_ROOTS[slot][0], 'roots': sorted(_FIELD_ROOTS[slot][1])}
+    return {slot: {'role': _FIELD_ROOTS[slot][0], 'roots': sorted(_FIELD_ROOTS[slot][1]
+            - (set() if workflow_v4 else {'baselineInitialization'}))}
             for slot in slots if slot in _FIELD_ROOTS}
 
 
@@ -161,9 +162,9 @@ def _field_supported(field, claim, context, slot):
                 or workflow_errors(reference.get('executionSpec'), reference['workflowContractVersion'])):
             return False
     if reference.get('designRole')=='controls' or 'protocolContractVersion' in reference:
-        from services.deep_research.experiment_protocol import protocol_errors
-        if (type(reference.get('protocolContractVersion')) is not int or reference['protocolContractVersion']!=1
-                or protocol_errors(reference.get('designRole'),reference.get('executionSpec'))):
+        from services.deep_research.experiment_protocol import protocol_errors, protocol_version
+        version = protocol_version(reference.get('protocolContractVersion'))
+        if (not version or protocol_errors(reference.get('designRole'),reference.get('executionSpec'),version)):
             return False
     value = reference
     for key in path:
