@@ -42,13 +42,13 @@
       "overlap": true
     },
     "backendCurrentResearchReadingTables": {
-      "passed": 1819,
+      "passed": 1844,
       "warnings": 1,
-      "seconds": 51.21,
-      "sourceCommit": "4341a00",
-      "log": "tmp/pytest-dr111-full-final.log",
+      "seconds": 70.81,
+      "sourceCommit": "b77af79",
+      "log": "tmp/pytest-dr112-full-first.log",
       "scope": "Research/reading/PDF table/config; no frontend or Java source changes.",
-      "proof": "deep-research-evidence/beginner-rewrite-replay-20261016.json"
+      "proof": "deep-research-evidence/incremental-assessment-replay-20261016.json"
     },
     "frontendDocumentNavigationFocused": {
       "passed": 19,
@@ -119,11 +119,11 @@
       "boundary": "Known actual settled usage, no unknown reservations counted as usage. Retired development cases; no independent holdout credit."
     },
     "currentOfflineCorrections": {
-      "proof": "deep-research-evidence/beginner-rewrite-replay-20261016.json",
+      "proof": "deep-research-evidence/incremental-assessment-replay-20261016.json",
       "draftingProof": "deep-research-evidence/drafting-evidence-capacity-20261015.json",
       "realGenerationOnFinalVersion": false,
       "finalNumericGuardProof": "deep-research-evidence/quantitative-condition-keys-20261015.json",
-      "boundary": ".111 adds one durable beginner wording edit for explicitly requested factual explanations; saved .110 draft replay retains five original sources and fixed metadata. Synthetic placeholders remain rejected by independent failed verdicts. No Provider request or content-quality score."
+      "boundary": ".112 incremental assessment/review manifests and extraction-stop routing verified offline. Saved .110 input replays retain selected whole quotations/context, false verdicts preserve gaps, and settled reviews reuse without dispatch. No Provider request or content-quality score."
     },
     "externalReader": {
       "javaIsolatedPassed": 43,
@@ -819,6 +819,30 @@
         "scope": "Research/reading/PDF table/config; no frontend or Java source changes."
       },
       "proof": "deep-research-evidence/beginner-rewrite-replay-20261016.json"
+    },
+    "incrementalAssessment": {
+      "contractVersion": 1,
+      "sourceCommit": "b77af79",
+      "legacyRunsUnaffected": true,
+      "exactSourceQuestionCache": true,
+      "frozenRequestBeforeDispatch": true,
+      "extractionStopStillAssesses": true,
+      "reviewedEmptyOrInvalidPassagesNotRegenerated": true,
+      "newPagesNotSkippedBySourceLevelEvidence": true,
+      "inputLimitBytes": 24000,
+      "outputLimitTokens": 1536,
+      "totalBudgetUnchanged": true,
+      "relevanceIsNotFinalAnswerApproval": true,
+      "realGenerationOnFinalVersion": false,
+      "tests": {
+        "passed": 1844,
+        "warnings": 1,
+        "seconds": 70.81,
+        "sourceCommit": "b77af79",
+        "log": "tmp/pytest-dr112-full-first.log",
+        "scope": "Research/reading/PDF table/config; no frontend or Java source changes."
+      },
+      "proof": "deep-research-evidence/incremental-assessment-replay-20261016.json"
     }
   },
   "stages": [
@@ -850,7 +874,9 @@
         "deep-research-evidence/runtime-postcase-dr109-20261016.json",
         "deep-research-evidence/runtime-postcase-dr110-20261016.json",
         "deep-research-evidence/beginner-rewrite-replay-20261016.json",
-        "deep-research-evidence/runtime-load-dr111-beginner-rewrite-20261016.json"
+        "deep-research-evidence/runtime-load-dr111-beginner-rewrite-20261016.json",
+        "deep-research-evidence/incremental-assessment-replay-20261016.json",
+        "deep-research-evidence/runtime-load-dr112-incremental-assessment-20261016.json"
       ]
     },
     {
@@ -865,13 +891,15 @@
         "deep-research-evidence/quantity-scene-asset-gates-20261015.json",
         "deep-research-evidence/obligation-routing-replay-20261015.json",
         "deep-research-evidence/named-row-live-index-20261015.json",
-        "deep-research-evidence/extraction-and-repair-coverage-replay-20261016.json"
+        "deep-research-evidence/extraction-and-repair-coverage-replay-20261016.json",
+        "deep-research-evidence/incremental-assessment-replay-20261016.json",
+        "deep-research-evidence/runtime-load-dr112-incremental-assessment-20261016.json"
       ]
     },
     {
       "id": "DR3",
-      "implementation": "Adaptive gaps, incremental reuse, bounded repair, typed experimental contracts, canonical baseline/component initializers and final-answer coverage implemented",
-      "acceptance": ".109 experiment remains partial: invalid fresh dimensions, unsupported absence and repair capacity. .110 three-batch offline replay passes; actual scientific/content and independent replacements remain open. .110 H5R-v19 produced an unverified draft then paused on an unknown verification request; no new content credit.",
+      "implementation": "Adaptive gaps, incremental reuse, bounded repair, typed experimental contracts, canonical baseline/component initializers and final-answer coverage implemented; incremental exact-input relevance cache and partial-extraction assessment route",
+      "acceptance": ".109 experiment remains partial: invalid fresh dimensions, unsupported absence and repair capacity. .110 three-batch offline replay passes; actual scientific/content and independent replacements remain open. .110 H5R-v19 produced an unverified draft then paused on an unknown verification request; no new content credit. .112 compiled-graph stop routing, exact-version coverage and recovery offline-verified; live content/adaptive benefit remains unverified.",
       "proof": [
         "deep-research-evidence/d3-v25-20261014.json",
         "deep-research-evidence/completion-criteria-20261015.json",
@@ -903,7 +931,9 @@
         "deep-research-evidence/runtime-postcase-dr110-20261016.json",
         "deep-research-evidence/H5R-v19-unknown-20261016.json",
         "deep-research-evidence/beginner-rewrite-replay-20261016.json",
-        "deep-research-evidence/runtime-load-dr111-beginner-rewrite-20261016.json"
+        "deep-research-evidence/runtime-load-dr111-beginner-rewrite-20261016.json",
+        "deep-research-evidence/incremental-assessment-replay-20261016.json",
+        "deep-research-evidence/runtime-load-dr112-incremental-assessment-20261016.json"
       ]
     },
     {
@@ -951,7 +981,9 @@
         "deep-research-evidence/runtime-postcase-dr109-20261016.json",
         "deep-research-evidence/runtime-postcase-dr110-20261016.json",
         "deep-research-evidence/beginner-rewrite-replay-20261016.json",
-        "deep-research-evidence/runtime-load-dr111-beginner-rewrite-20261016.json"
+        "deep-research-evidence/runtime-load-dr111-beginner-rewrite-20261016.json",
+        "deep-research-evidence/incremental-assessment-replay-20261016.json",
+        "deep-research-evidence/runtime-load-dr112-incremental-assessment-20261016.json"
       ]
     }
   ],
@@ -1058,18 +1090,19 @@
     "Full novice study workflow",
     "Independent Edge recovery"
   ],
-  "currentProviderConstraint": "No new real-model request on .111. Latest authorized H5R-v19/H3R-v15 each submitted once and paused/unresolved_unknown during verification. Eight calls/23208 tokens confirmed settled; two unknown reservations total 54156 tokens are not usage. Do not retry/resume or bypass with a new attempt while these outcomes remain unconfirmed. Seven historical paused unknowns plus these two remain preserved; no additional model request.",
-  "currentDevelopmentMode": "Primary Codex only, no Qoder. Active goal; .111 beginner wording rewrite loaded after 1819 offline passes. Two latest .110 verification requests and seven earlier unknowns preserved. Original DR0-DR5 gates and weekly remaining<=55% pause rule unchanged.",
+  "currentProviderConstraint": "No new real-model request on .112. Latest authorized H5R-v19/H3R-v15 each submitted once and paused/unresolved_unknown during verification. Eight calls/23208 tokens confirmed settled; two unknown reservations total 54156 tokens are not usage. Do not retry/resume or bypass with a new attempt while these outcomes remain unconfirmed. Seven historical paused unknowns plus these two remain preserved; no additional model request.",
+  "currentDevelopmentMode": "Primary Codex only, no Qoder. Active goal; .112 incremental evidence assessment loaded after 1844 offline passes. Nine unknown runs preserved; original DR0-DR5 quality/independent gates and quota pause condition unchanged.",
   "loadedRuntime": {
-    "commit": "4341a00",
-    "promptVersion": "dr-v2.20261016.111",
+    "commit": "b77af79",
+    "promptVersion": "dr-v2.20261016.112",
     "ready": true,
     "callsPreserved": 3208,
     "pausedUnknownRuns": 9,
-    "proof": "deep-research-evidence/runtime-load-dr111-beginner-rewrite-20261016.json"
+    "proof": "deep-research-evidence/runtime-load-dr112-incremental-assessment-20261016.json"
   },
   "nextQualityWork": [
     "Keep all nine unknown runs untouched; reconcile actual Provider outcomes before any same-case retry or new-attempt bypass. No new Provider request in this .111 development step.",
+    "New .112 extraction-stop routing, source/question-specific cached relevance, empty-passage review and exact-version coverage are implemented. Validate actual adaptive retrieval/coverage benefit on a future authorized eligible case; topical relevance cannot prove final claim support or answer completeness.",
     "The durable beginner wording pass is implemented, including citation/condition identity, length, normal-pool/time admission and exact pending-request recovery. Validate actual ordinary-language why/how completeness and conditional training explanation in a future authorized, eligible case; offline placeholders are not content evidence.",
     "Experiment plans still need actual representation-complete initial states, reproducible compatible renderer/optimizer definitions and correct factual scope. Typed shape/distribution fields or opaque model-parameter vectors cannot establish executability.",
     "Complete D1/D2/D3/D5 and fresh independent replacement gates. Keep PR draft and full original DR0-DR5 scope; diagnostic cases remain retired."
