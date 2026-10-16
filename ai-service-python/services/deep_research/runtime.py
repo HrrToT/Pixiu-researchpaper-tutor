@@ -216,7 +216,9 @@ def initialize_runtime():
         def _make_llm_invoker(self, run_id):
             from services.deep_research.tools import TrackedLLMInvoker
             return TrackedLLMInvoker(model.for_run(run_id), self._repo.reserve_call, self._complete_tracked_call,
-                                     request_options=research_model_options)
+                                     request_options=research_model_options,
+                                     run_record_fn=self._repo.require_run,
+                                     verification_max_input_bytes=32000)
 
         def _make_semantic_checker(self, run_id):
             from services.deep_research.tools import BudgetedSemanticChecker

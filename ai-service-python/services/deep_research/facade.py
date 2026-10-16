@@ -256,7 +256,8 @@ class ResearchFacade:
             "materials": materials,
             "materialSnapshot": material_snapshot,  # Immutable Java snapshot
             "contextMaterials": (material_snapshot or {}).get("contextMaterials", []) if isinstance(material_snapshot, dict) else [],
-            "promptVersion": "dr-v2.20261016.107",
+            "promptVersion": "dr-v2.20261016.108",
+            "verificationInputContractVersion": 1,
             "workflowContractVersion": 3,
             "extractionPriorityVersion": 2,
             "planCompletionContractVersion": 1,
@@ -976,6 +977,8 @@ class ResearchFacade:
             llm_client=self._llm_client,
             reserve_call_fn=lambda **kw: self._repo.reserve_call(**kw),
             complete_call_fn=self._complete_tracked_call,
+            run_record_fn=self._repo.require_run,
+            verification_max_input_bytes=32000,
         )
         
         # Return invoker directly - nodes call with (run_id, node_name, prompt, extra_body, use_reserve)
@@ -1033,6 +1036,8 @@ class ResearchFacade:
             llm_client=self._llm_client,
             reserve_call_fn=lambda **kw: self._repo.reserve_call(**kw),
             complete_call_fn=self._complete_tracked_call,
+            run_record_fn=self._repo.require_run,
+            verification_max_input_bytes=32000,
         )
         
         checker = BudgetedSemanticChecker(invoker, run_id,

@@ -244,12 +244,32 @@ class TrackedLLMInvoker:
         complete_call_fn: Callable[..., dict],
         max_input_tokens: int = 24000,
         request_options: Callable | None = None,
+        run_record_fn: Callable | None = None,
+        verification_max_input_bytes: int | None = None,
     ):
         self._client = llm_client
         self._reserve = reserve_call_fn
         self._complete = complete_call_fn
         self._max_input = max_input_tokens
         self._request_options = request_options
+        self._run_record = run_record_fn
+        from services.deep_research.verification_capacity import VERIFICATION_INPUT_BYTES
+        if verification_max_input_bytes is not None and (
+                type(verification_max_input_bytes) is not int
+                or not 1 <= verification_max_input_bytes <= VERIFICATION_INPUT_BYTES):
+            raise ValueError('Invalid server verification input limit')
+        self._verification_max_input = (max_input_tokens if verification_max_input_bytes is None
+                                        else verification_max_input_bytes)
+
+    def prompt_byte_limit(self, run_id: str, node: str) -> int:
+        from services.deep_research.verification_capacity import verification_input_limit
+        record = self._run_record(run_id) if self._run_record else None
+        return verification_input_limit(record, node, self._max_input, self._verification_max_input)
+
+    def uses_verification_input_contract(self, run_id: str, node: str) -> bool:
+        from services.deep_research.verification_capacity import has_verification_input_contract
+        record = self._run_record(run_id) if self._run_record else None
+        return has_verification_input_contract(record, node)
     
     def __call__(
         self,
@@ -277,11 +297,11 @@ class TrackedLLMInvoker:
         
         # Reject overlarge input BEFORE reserve - enforce UTF-8 byte size limit
         # Reject instead of silently clipping evidence or under-reserving it.
-        max_byte_length = self._max_input
+        max_byte_length = self.prompt_byte_limit(run_id, node)
         if prompt_byte_length > max_byte_length:
             raise ValueError(
                 f"Prompt too large: {prompt_byte_length} bytes (~{estimated_input} tokens) "
-                f"exceeds max {max_byte_length} bytes (~{self._max_input} tokens)"
+                f"exceeds max {max_byte_length} bytes"
             )
         
         # Reserve BEFORE network
@@ -560,6 +580,8 @@ class BudgetedSemanticChecker:
         return [by_id[c['claimId']] for c in claims]
 
     def _check_batch(self, claims: list[dict], evidence: list[dict], proposal_context: list[dict], *, node='verify') -> list[dict]:
+        byte_limit = (self._invoke.prompt_byte_limit(self._run_id, node)
+                      if isinstance(self._invoke, TrackedLLMInvoker) else 24000)
         config_mode=node in {'verify_design_config','verify_repair_design_config'}
         if config_mode:
             from services.deep_research.verification_context import configuration_context
@@ -571,13 +593,21 @@ class BudgetedSemanticChecker:
         wire_claims, wire_evidence, reverse_aliases = encode_verification_inputs(claims, evidence)
         from services.deep_research.execution_materialization import verification_claim_view
         wire_claims = [verification_claim_view(c) for c in wire_claims]
-        wire_context = [verification_claim_view(c) for c in proposal_context]
         # Omit absent optional wrapper fields only. Typed configuration values,
         # including empty collections inside executionSpec, remain untouched.
         def present_fields(row):
             return {key: value for key, value in row.items()
                     if value is not None and value != {} and value != []}
-        wire_context = [present_fields(c) for c in wire_context]
+        if (isinstance(self._invoke, TrackedLLMInvoker)
+                and self._invoke.uses_verification_input_contract(self._run_id, node)):
+            # Our projection adds absent optional versions as None. Remove
+            # those wrapper placeholders BEFORE finding the exact generated
+            # suffix; a present workflow=None would otherwise hide the valid
+            # budget/protocol/hypothesis renderer. Keep every executionSpec
+            # value and original prose. Legacy requests retain their wire form.
+            wire_context = [verification_claim_view(present_fields(c)) for c in proposal_context]
+        else:
+            wire_context = [present_fields(verification_claim_view(c)) for c in proposal_context]
         # Format claims and evidence for checking
         claims_text = json.dumps([present_fields({
             "claimId": c.get("claimId"),
@@ -897,13 +927,14 @@ The dataAvailability object is an internal audit, not new experimental results.
 
         try:
             prompt, visible_evidence = fit_evidence_prompt(
-                [{"evidenceId": key, **value} for key, value in evidence_map.items()], render_evidence)
+                [{"evidenceId": key, **value} for key, value in evidence_map.items()], render_evidence,
+                max_bytes=byte_limit)
         except ValueError as exc:
             if str(exc) == 'prompt_fixed_content_too_large' and len(claims) > 1:
                 return split_before_dispatch()
             if str(exc) == 'prompt_fixed_content_too_large':
                 from services.deep_research.contracts import BudgetExhaustedError
-                raise BudgetExhaustedError('verificationPromptBytes', 24000,
+                raise BudgetExhaustedError('verificationPromptBytes', byte_limit,
                     len(render_evidence([]).encode('utf-8'))) from exc
             raise DeepResearchError('invalid_verification_input',
                                     '声明核验输入无效；已取得的资料仍保留。') from exc

@@ -341,8 +341,11 @@ class DeepResearchRepository:
                 updated = mutate(copy.deepcopy(current))
                 if updated is None:
                     updated = current
-                for identity in ("runId", "taskId", "engineVersion", "contractVersion", "materialSnapshot"):
-                    if updated.get(identity) != current.get(identity):
+                for identity in ("runId", "taskId", "engineVersion", "contractVersion", "materialSnapshot",
+                                 "verificationInputContractVersion"):
+                    if (updated.get(identity) != current.get(identity)
+                            or (identity == 'verificationInputContractVersion'
+                                and type(updated.get(identity)) is not type(current.get(identity)))):
                         raise ValueError(f"Immutable run field changed: {identity}")
                 if updated.get("executionEpoch") != current.get("executionEpoch"):
                     raise ValueError("Execution epoch changes require begin_execution")
