@@ -222,6 +222,10 @@ def make_plan_node(
         brief_state = record.get("state", {})
         output_kind = brief_state.get("outputKind", "direction_survey")
         materials = record.get("materials", [])
+        criteria_required = record.get('planCompletionContractVersion') == 1
+        obligation_fields = 'obligationId, question, requiredSources, searchQuery, purpose, requestExcerpt'
+        if criteria_required:
+            obligation_fields += ', completionCriteria'
         from services.deep_research.data_prerequisite import PROPOSED_PLANNING_GUIDANCE
         proposed_protocol = output_kind == 'experiment_design' and record.get('experimentPlanContractVersion') == 1
         data_guidance = PROPOSED_PLANNING_GUIDANCE if proposed_protocol else '''For experiment designs, include dataset/subset availability in the evaluation-conditions investigation:
@@ -243,7 +247,7 @@ User context (notes/old reports, UNVERIFIED; use only for goals and queries, nev
 Return a compact JSON array of 1-4 plan items (prefer 1-2 for a short answer), each with:
 - itemId: unique identifier
 - question: sub-question to answer
-- obligations: array of {{obligationId, question, requiredSources, searchQuery, purpose, requestExcerpt}}
+- obligations: array of {{{obligation_fields}}}
 - searchQuery: concise English academic search terms, preserving names and identifiers
 - dependencies: array of itemIds this depends on
 - priority: 1-3 (1=highest)
@@ -269,9 +273,24 @@ Do not substitute a generic overview for the user's requested mechanism or condi
 
 Return a JSON ARRAY of plan items, NOT an object with items field."""
         
-        if record.get('planCompletionContractVersion') == 1:
+        if criteria_required:
             from services.deep_research.completion_criteria import CRITERIA_GUIDANCE
-            prompt += '\n' + CRITERIA_GUIDANCE
+            # D1-v8 matched the shorter schema and omitted the criteria requested
+            # in later prose. Give one complete shape. Its requirements describe
+            # deliverables, never guessed paper facts.
+            shape = [{'itemId': 'item_1', 'question': '<one requested sub-question>',
+                      'obligations': [{'obligationId': 'ob_1', 'question': '<one requested dimension>',
+                                       'requiredSources': ['<permitted material id>'],
+                                       'searchQuery': '<concise query>', 'purpose': 'answer_requirement',
+                                       'requestExcerpt': '<literal excerpt from Question>',
+                                       'completionCriteria': [{'criterionId': 'requirement_1',
+                                           'requirement': '<neutral description of what the answer must explain>',
+                                           'responseType': 'explanation'}]}],
+                      'searchQuery': '<concise query>', 'dependencies': [], 'priority': 1}]
+            prompt += '\n' + CRITERIA_GUIDANCE + '\n\nRequired output shape (replace every placeholder; '
+            prompt += 'choose the appropriate responseType; include completionCriteria on EVERY obligation):\n'
+            prompt += json.dumps(shape, ensure_ascii=False, separators=(',', ':'))
+            prompt += '\nReturn only the complete JSON array, with no Markdown fences or extra commentary.'
         result = llm_invoke(run_id, "plan", prompt, {"max_tokens": 5000, "temperature": 0.1})
         
         # Handle LLMResult dataclass - extract content attribute
@@ -283,6 +302,18 @@ Return a JSON ARRAY of plan items, NOT an object with items field."""
             content = str(result)
         
         parsed = _safe_parse_json(content)
+
+        def invalid_plan(reason):
+            # Keep the rejected response in the existing settled call ledger;
+            # persist a compact diagnostic without another generation or repair.
+            repo_update(run_id, lambda r: {**r, 'state': {**(r.get('state') or {}),
+                'planFormatValidation': {'status': 'rejected', 'reason': str(reason)[:500]}}},
+                expected_revision=None)
+            return {"error_code": "invalid_plan_response", "outcome": OUTCOME_NONE, "plan_ids": []}
+
+        finish_reason = getattr(result, 'finish_reason', None) if not isinstance(result, dict) else result.get('finishReason')
+        if finish_reason == 'length':
+            return invalid_plan('Plan response was truncated')
         
         # Handle {items: [...]} wrapper format - extract items array
         if isinstance(parsed, dict) and "items" in parsed:
@@ -291,20 +322,20 @@ Return a JSON ARRAY of plan items, NOT an object with items field."""
         # Fail closed: malformed JSON list must not proceed to retrieval
         if not isinstance(parsed, list):
             logger.warning("Plan response not a list, failing closed: %s", type(parsed))
-            return {"error_code": "invalid_plan_response", "outcome": OUTCOME_NONE, "plan_ids": []}
+            return invalid_plan('Plan response is not a JSON array')
         
         try:
             from services.deep_research.plan_identity import normalize_generated_obligation_ids
             generated, identity_changes = normalize_generated_obligation_ids(parsed[:4])
             validated = validate_plan(generated)
             from services.deep_research.completion_criteria import validate_completion_criteria
-            validate_completion_criteria(validated, required=record.get('planCompletionContractVersion') == 1)
+            validate_completion_criteria(validated, required=criteria_required)
         except ValueError as ve:
             logger.warning("Plan validation failed: %s", ve)
-            return {"error_code": "invalid_plan_response", "outcome": OUTCOME_NONE, "plan_ids": []}
+            return invalid_plan(ve)
         
         if not validated:
-            return {"error_code": "invalid_plan_response", "outcome": OUTCOME_NONE, "plan_ids": []}
+            return invalid_plan('Plan has no research items')
 
         from services.deep_research.obligation_purpose import normalize_obligation_purposes
         validated = normalize_obligation_purposes(validated, question)
@@ -352,7 +383,8 @@ Return a JSON ARRAY of plan items, NOT an object with items field."""
             lambda r: {**r, "state": {
                 **(rebind_inherited_state(r.get('state') or {}, validated)
                    if inherited else {**(r.get("state") or {}), "plan": validated}),
-                'planIdNormalization': identity_changes}},
+                'planIdNormalization': identity_changes,
+                'planFormatValidation': {'status': 'validated', 'requiresCompletionCriteria': criteria_required}}},
             expected_revision=None,
         )
         
