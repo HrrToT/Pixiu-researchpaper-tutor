@@ -139,12 +139,12 @@ def verify_claims(claims: list[dict], evidence: list[dict],
                                  "detail": ', '.join(errors)})
                 continue
         if not reason and 'workflowContractVersion' in claim:
-            from services.deep_research.experiment_workflow import workflow_errors
-            if (type(claim['workflowContractVersion']) is not int or claim['workflowContractVersion'] != 1
+            from services.deep_research.experiment_workflow import workflow_errors, workflow_version
+            if (not workflow_version(claim['workflowContractVersion'])
                     or claim.get('designRole') != 'steps' or kind not in {'proposal', 'suggestion', 'hypothesis'}):
                 reason = 'invalid_workflow_contract'
             else:
-                errors = workflow_errors(claim.get('executionSpec'))
+                errors = workflow_errors(claim.get('executionSpec'), claim['workflowContractVersion'])
                 if errors:
                     rejected.append({'claimId': claim_id, 'reason': 'incomplete_experiment_workflow',
                                      'detail': ', '.join(errors)})

@@ -96,7 +96,9 @@ def completion_contract_digest(plan, claims):
     answers = [{key: c.get(key) for key in ('claimId', 'text', 'conditions', 'evidenceRefs')}
                for c in claims]
     for row, claim in zip(answers, claims):
-        if claim.get('workflowContractVersion') == 1:
+        if type(claim.get('workflowContractVersion')) is int and claim['workflowContractVersion'] in (1, 2):
+            if claim['workflowContractVersion'] == 2:
+                row['workflowContractVersion'] = 2
             row['workflowExecutionSpec'] = claim.get('executionSpec')
     return hashlib.sha256(json.dumps([requirements, answers], ensure_ascii=False, sort_keys=True,
         separators=(',', ':'), allow_nan=False).encode()).hexdigest()

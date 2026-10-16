@@ -1,6 +1,7 @@
 """Evidence-only gate: reject missing or unsupported design-audit quotes."""
 
 import json
+from services.deep_research.experiment_workflow import workflow_version
 
 REQUIRED = {
     "groups": ("group_construction", "intervention_levels"),
@@ -24,7 +25,7 @@ def required_design_slots(metric_domains=None):
 def design_slots_for_claim(claim, metric_domains=None):
     role = claim.get('designRole')
     slots = required_design_slots(metric_domains).get(role)
-    if role == 'steps' and claim.get('workflowContractVersion') == 1:
+    if role == 'steps' and workflow_version(claim.get('workflowContractVersion')):
         slots = (*slots, 'data_isolation', 'component_creation', 'seed_pairing', 'checkpoint_selection')
     return slots
 
@@ -129,8 +130,9 @@ def _field_supported(field, claim, context, slot):
         return False
     if 'workflowContractVersion' in reference:
         from services.deep_research.experiment_workflow import workflow_errors
-        if (type(reference['workflowContractVersion']) is not int or reference['workflowContractVersion'] != 1
-                or reference.get('designRole') != 'steps' or workflow_errors(reference.get('executionSpec'))):
+        if (not workflow_version(reference['workflowContractVersion'])
+                or reference.get('designRole') != 'steps'
+                or workflow_errors(reference.get('executionSpec'), reference['workflowContractVersion'])):
             return False
     if reference.get('designRole')=='controls' or 'protocolContractVersion' in reference:
         from services.deep_research.experiment_protocol import protocol_errors

@@ -14,7 +14,8 @@ Each is an operation {action:nonblank,parameters:list}; parameters use the group
 initialization specifies actual creation, seed/parameters and paired copying of states;
 Every newly introduced component needs its own creation rule; copying an existing
 baseline alone does not define a new component's initial state.
-rendering specifies evaluator/renderer and numeric resolution or resizing choices;
+rendering specifies the actual evaluation/rendering operation or implementation,
+not just a framework name, and numeric resolution or resizing choices;
 optimizer specifies actual optimizer and rates/schedule for every trainable group.
 These three operations need nonempty parameters. "same"/unknown defaults are not choices.
 otherInterventions explicitly disables or defines all relevant shared policies; genuinely

@@ -8,6 +8,12 @@ STAGES = ('prepare_data', 'acquire_baseline', 'initialize_components', 'pair_gro
           'apply_interventions', 'recover', 'evaluate', 'record')
 RECORDS = {'baseline_identity', 'split_manifest', 'seed_manifest', 'component_states',
            'group_configs', 'recovery_budgets', 'evaluation_outputs', 'raw_measurements'}
+WORKFLOW_VERSIONS = (1, 2)
+RECORD_LABELS = {'baseline_identity': '基线身份', 'split_manifest': '数据划分清单',
+    'seed_manifest': '随机种子清单', 'component_states': '新组件初始状态',
+    'group_configs': '各组配置', 'recovery_budgets': '各组训练预算',
+    'evaluation_outputs': '评估输出', 'raw_measurements': '原始测量',
+    'group_checkpoints': '各组最终检查点'}
 WORKFLOW_CONTRACT = '''Workflow contract 1 (server assigned): steps executionSpec exactly
 {refs:{data:claimId,budget:claimId,controls:claimId,groups:claimId},
 order:[prepare_data,acquire_baseline,initialize_components,pair_groups,apply_interventions,recover,evaluate,record],
@@ -29,6 +35,39 @@ for initialization, tuning, stopping or checkpoint selection. fixed_budget selec
 the final budget step. Keep prose/controls consistent; typed fields cannot override a conflict.
 All choices are unexecuted proposals. The app renders the workflow, so do not repeat it.'''
 
+WORKFLOW_CONTRACT_V2 = '''Workflow contract 2 (server assigned): steps executionSpec exactly
+{refs:{data:claimId,budget:claimId,controls:claimId,groups:claimId},
+order:[prepare_data,acquire_baseline,initialize_components,pair_groups,apply_interventions,recover,evaluate,record],
+baselineMode:train|existing,replicationMode:retrained_per_seed|fixed_checkpoint,
+componentInitializations:[{componentId,initializationMode:derive|fresh,
+inputs:[{state:baseline|training_data|EARLIER_componentId,selector:concrete existing state/selection}],
+creation:{action,parameters},appliesTo:[actual group IDs]}],
+checkpointSelection:{mode:fixed_budget} OR {mode:train_loss,rule:operation}
+OR {mode:validation_split,split:data split schema,rule:operation},
+records:[baseline_identity,split_manifest,seed_manifest,component_states,group_configs,
+recovery_budgets,evaluation_outputs,raw_measurements,group_checkpoints]}.
+refs match accepted sibling IDs; baseline/replication modes match them. Component IDs
+are unique and cannot be baseline/training_data. derive needs at least one EXISTING
+input; fresh needs inputs:[] and actual shape/value/RNG settings. Components are created
+in list order, once per repetition, then identical copies go to appliesTo. Creation
+parameters are nonempty and define the NEW state, not an instruction to copy a missing
+enhancement. Never assume a new component already exists inside the baseline.
+All splits are locked BEFORE fitting, including creation from training_data. An inner
+validation split uses only training data; stop if either inner side is empty/overlaps.
+Final evaluation cannot initialize, tune, stop or select. fixed_budget selects the last
+budget step. Train-mode retrained_per_seed rebuilds per seed; existing assets are shared
+warm starts, not independently trained baselines. Save resulting group checkpoints.
+Operations use {action,parameters:[{name,type:number|choice,value}]}.
+These are unexecuted proposals; text adds rationale, not a duplicate field listing.'''
+
+
+def workflow_version(value):
+    return value if type(value) is int and value in WORKFLOW_VERSIONS else 0
+
+
+def workflow_contract(version):
+    return WORKFLOW_CONTRACT_V2 if version == 2 else WORKFLOW_CONTRACT
+
 
 def _strings(value):
     return (isinstance(value, list) and bool(value)
@@ -43,7 +82,9 @@ def _operation_errors(operation, path):
         return [path + '.invalid_types']
 
 
-def workflow_errors(spec):
+def workflow_errors(spec, version=1):
+    if not workflow_version(version):
+        return ['workflow.version']
     if not isinstance(spec, dict):
         return ['workflow.spec']
     errors = []
@@ -67,11 +108,17 @@ def workflow_errors(spec):
     else:
         ids = set()
         for component in components:
-            if (not isinstance(component, dict) or set(component) != {'componentId', 'creation', 'appliesTo'}
+            fields = {'componentId', 'creation', 'appliesTo'}
+            if version == 2:
+                fields |= {'inputs', 'initializationMode'}
+            if (not isinstance(component, dict) or set(component) != fields
                     or not isinstance(component.get('componentId'), str) or not component['componentId'].strip()
-                    or component['componentId'] in ids):
+                    or component['componentId'] in ids
+                    or (version == 2 and component['componentId'] in {'baseline', 'training_data'})):
                 errors.append('workflow.component')
                 continue
+            if version == 2:
+                errors.extend(_creation_input_errors(component, ids))
             ids.add(component['componentId'])
             errors.extend(_operation_errors(component['creation'], 'workflow.creation'))
             if isinstance(component['creation'], dict) and component['creation'].get('parameters') == []:
@@ -106,33 +153,61 @@ def workflow_errors(spec):
                     if not isinstance(split_mode, str) or set(split) != expected.get(split_mode):
                         errors.append('workflow.validationSplit.fields')
     records = spec.get('records')
-    if not _strings(records) or not RECORDS <= set(records):
+    required_records = RECORDS | ({'group_checkpoints'} if version == 2 else set())
+    if not _strings(records) or not required_records <= set(records):
         errors.append('workflow.records')
     return list(dict.fromkeys(errors))
 
 
+def _creation_input_errors(component, earlier):
+    inputs, mode = component['inputs'], component['initializationMode']
+    if not isinstance(mode, str) or mode not in {'derive', 'fresh'} or not isinstance(inputs, list):
+        return ['workflow.creation.inputs']
+    if (mode == 'derive' and not inputs) or (mode == 'fresh' and inputs):
+        return ['workflow.creation.input_mode_conflict']
+    errors, seen = [], set()
+    for item in inputs:
+        if (not isinstance(item, dict) or set(item) != {'state', 'selector'}
+                or not all(isinstance(v, str) and v.strip() for v in item.values())):
+            errors.append('workflow.creation.input')
+            continue
+        if item['state'] not in earlier | {'baseline', 'training_data'}:
+            errors.append('workflow.creation.unavailable_input')
+        identity = (item['state'], item['selector'])
+        if identity in seen:
+            errors.append('workflow.creation.duplicate_input')
+        seen.add(identity)
+    return errors
+
+
 def stamp_workflow_contract(report, enabled=True):
+    version = 1 if enabled is True else workflow_version(enabled)
     result = deepcopy(report)
     result.pop('workflowContractVersion', None)
-    if enabled:
-        result['workflowContractVersion'] = 1
+    if version:
+        result['workflowContractVersion'] = version
     for claim in result.get('claims', []):
         if isinstance(claim, dict):
             claim.pop('workflowContractVersion', None)
-            if enabled and claim.get('designRole') == 'steps':
-                claim['workflowContractVersion'] = 1
+            if version and claim.get('designRole') == 'steps':
+                claim['workflowContractVersion'] = version
     return result
 
 
 def workflow_text(claim):
-    if claim.get('workflowContractVersion') != 1 or workflow_errors(claim.get('executionSpec')):
+    version = workflow_version(claim.get('workflowContractVersion'))
+    if not version or workflow_errors(claim.get('executionSpec'), version):
         return ''
     spec = claim['executionSpec']
     lines = ['拟议执行流程（尚未执行）：',
         '1. 先枚举数据、完成预检并锁定训练与最终评估划分；最终评估集不参与任何拟合。']
     if spec['checkpointSelection']['mode'] == 'validation_split':
+        from services.deep_research.protocol_text import render_split
         lines.append('   验证集仅从训练部分再次划出，在拟合前固定；规则：' +
-                     json.dumps(spec['checkpointSelection']['split'], ensure_ascii=False, sort_keys=True))
+                     (render_split(spec['checkpointSelection']['split'], training='拟合', evaluation='验证')
+                      if version == 2 else json.dumps(spec['checkpointSelection']['split'], ensure_ascii=False, sort_keys=True)))
+        if version == 2:
+            lines.append('   内层拟合与验证部分必须都非空且互不重叠；否则停止。')
     mode = spec['replicationMode']
     if mode == 'retrained_per_seed':
         lines.append('2. 对数据项的每个种子分别执行拟合；每次重复内配对各组。')
@@ -144,8 +219,16 @@ def workflow_text(claim):
                          else '基线按预算项的既有资产规则获取并核对身份。'))
     lines.append('3. 每次重复先创建所需新组件，再配对复制到各组：')
     for component in spec['componentInitializations']:
+        from services.deep_research.operation_text import operation_text
+        if version == 2:
+            for source in component['inputs']:
+                name = {'baseline': '已有基线', 'training_data': '训练数据'}.get(source['state'], source['state'])
+                lines.append('   - ' + component['componentId'] + '的输入：' + name + '；选取规则：' + source['selector'])
+            if component['initializationMode'] == 'fresh':
+                lines.append('   - ' + component['componentId'] + '：从显式初值新建，不复制已有组件。')
         lines.append('   - ' + component['componentId'] + '：' + component['creation']['action'] +
-            '；参数=' + json.dumps(component['creation']['parameters'], ensure_ascii=False) +
+            (operation_text(component['creation'], include_action=False) if version == 2
+             else '；参数=' + json.dumps(component['creation']['parameters'], ensure_ascii=False)) +
             '；相同初始状态复制到组 ' + '、'.join(component['appliesTo']))
     if not spec['componentInitializations']:
         lines.append('   本方案声明没有新建组件；是否与实际干预一致仍需科学核查。')
@@ -155,14 +238,18 @@ def workflow_text(claim):
     if selection['mode'] == 'fixed_budget':
         lines.append('   使用预算结束时的检查点，不根据最终评估表现挑选。')
     else:
+        from services.deep_research.operation_text import operation_text
         lines.append('   选择依据仅为' + ('训练损失' if selection['mode'] == 'train_loss' else '独立验证部分') +
-            '：' + selection['rule']['action'] + '；参数=' + json.dumps(selection['rule']['parameters'], ensure_ascii=False))
+            '：' + (operation_text(selection['rule']) if version == 2 else selection['rule']['action'] +
+                   '；参数=' + json.dumps(selection['rule']['parameters'], ensure_ascii=False)))
     lines.extend(['   最终评估集不得用于初始化、调参、早停或检查点选择。',
-                  '6. 保存基线身份、划分与种子清单、组件初态、各组配置及恢复预算、评估输出和原始测量。'])
+                  ('6. 保存：' + '、'.join(RECORD_LABELS.get(key, key) for key in spec['records']) + '。'
+                   if version == 2 else '6. 保存基线身份、划分与种子清单、组件初态、各组配置及恢复预算、评估输出和原始测量。')])
     return '\n'.join(lines)
 
 
 def enforce_workflow_consistency(verification, required=False):
+    required_version = 1 if required is True else workflow_version(required)
     result = deepcopy(verification)
     accepted = result.get('accepted', [])
     indexed = {}
@@ -175,9 +262,10 @@ def enforce_workflow_consistency(verification, required=False):
         expected = required and claim.get('designRole') == 'steps' and claim.get('designContractVersion') == 2
         if 'workflowContractVersion' not in claim and not expected:
             continue
-        valid = (type(claim.get('workflowContractVersion')) is int and claim['workflowContractVersion'] == 1
+        version = workflow_version(claim.get('workflowContractVersion'))
+        valid = (version and (not expected or version == required_version)
             and claim.get('designRole') == 'steps' and claim.get('kind') in {'proposal', 'suggestion', 'hypothesis'})
-        errors = workflow_errors(claim.get('executionSpec')) if valid else ['invalid_workflow_contract']
+        errors = workflow_errors(claim.get('executionSpec'), version) if valid else ['invalid_workflow_contract']
         if not errors:
             spec = claim['executionSpec']
             siblings = {role: indexed.get(key) for role, key in spec['refs'].items()}

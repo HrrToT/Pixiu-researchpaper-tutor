@@ -26,6 +26,11 @@ copy it within each paired unit and record its resulting identity at execution.
 Define initialization by a reproducible operation and its parameters/seed, not
 "initialize identically". Give a numeric image size or resizing rule, renderer,
 optimizer and actual learning rates/schedule for all trainable parameter groups.
+Create EVERY new state from explicitly available inputs or explicit fresh values:
+the baseline cannot supply an enhancement that has not yet been created. State
+tensor/primitive selection and transformations, not just "copy" or an RNG seed.
+Name the actual rendering/evaluation operation or implementation; a general
+framework or device name alone is not an executable rendering configuration.
 "Read defaults later" is not a choice: cite an actually supplied version/config/key
 or choose labeled proposed values now. Unknown defaults are not paper evidence.
 Disable other interventions in both groups or give their shared executable policy.

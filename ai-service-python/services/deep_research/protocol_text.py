@@ -9,6 +9,16 @@ def _pct(fraction):
     return format((Decimal(str(fraction)) * Decimal(100)).normalize(), 'f') + '%'
 
 
+def render_split(split, *, training='训练', evaluation='评估'):
+    if split['mode'] == 'every_nth':
+        return (f"按{split['order']}排列，样本从0开始编号，编号除以{split['stride']}的余数"
+                f"为{split['offset']}时划入{evaluation}集，其余为{training}集")
+    if split['mode'] == 'explicit':
+        return (f"{training}集 {'、'.join(split['train'])}；"
+                f"{evaluation}集 {'、'.join(split['evaluation'])}")
+    return f"以种子{split['seed']}随机划分，{evaluation}比例{_pct(split['evaluationFraction'])}"
+
+
 def render_execution_spec(role, spec):
     if role == 'hypothesis':
         from services.deep_research.hypothesis_spec import render_hypothesis_spec
@@ -36,21 +46,7 @@ def _render_data(spec):
     else:
         lines.append(f"场景选择：按{sc['order']}排序后取前{sc['count']}个")
 
-    sp = spec["split"]
-    if sp["mode"] == "every_nth":
-        lines.append(
-            f"数据划分：按{sp['order']}排列，"
-            f"样本从0开始编号，编号除以{sp['stride']}的余数为{sp['offset']}时划入评估集，其余为训练集"
-        )
-    elif sp["mode"] == "explicit":
-        lines.append(
-            f"数据划分：训练集 {'、'.join(sp['train'])}；"
-            f"评估集 {'、'.join(sp['evaluation'])}"
-        )
-    else:
-        lines.append(
-            f"数据划分：以种子{sp['seed']}随机划分，评估比例{_pct(sp['evaluationFraction'])}"
-        )
+    lines.append('数据划分：' + render_split(spec['split']))
 
     lines.append(f"随机种子：{'、'.join(str(s) for s in spec['seeds'])}")
     lines.append(f"独立单元：{spec['independentUnit']}")
