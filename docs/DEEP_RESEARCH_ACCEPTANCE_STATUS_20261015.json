@@ -42,13 +42,13 @@
       "overlap": true
     },
     "backendCurrentResearchReadingTables": {
-      "passed": 1770,
+      "passed": 1773,
       "warnings": 1,
-      "seconds": 63.34,
-      "sourceCommit": "174787b",
-      "log": "tmp/pytest-dr109-full-final.log",
-      "scope": "Research/reading/PDF table/config. No frontend or Java source changes this turn.",
-      "proof": "deep-research-evidence/canonical-initialization-replay-20261016.json"
+      "seconds": 45.23,
+      "log": "tmp/pytest-dr110-full-final.log",
+      "scope": "Research/reading/PDF table/config; no frontend or Java source changes.",
+      "sourceCommit": "ab35c73",
+      "proof": "deep-research-evidence/repair-scope-and-allowance-replay-20261016.json"
     },
     "frontendDocumentNavigationFocused": {
       "passed": 19,
@@ -71,8 +71,8 @@
       "boundary": "Exact citation/physical-page lookup, manual edit, original preservation and find-after-reload; content acceptance is separate."
     },
     "retiredH3RDevelopmentCalls": {
-      "calls": 97,
-      "tokens": 341758,
+      "calls": 104,
+      "tokens": 363894,
       "attempts": [
         "H3R-v2",
         "H3R-v3",
@@ -85,14 +85,15 @@
         "H3R-v10",
         "H3R-v11",
         "H3R-v12",
-        "H3R-v13"
+        "H3R-v13",
+        "H3R-v14"
       ],
       "cost": null,
       "boundary": "Known actual settled usage, no unknown reservations counted as usage. Retired development cases; no independent holdout credit."
     },
     "retiredH5RDevelopmentCalls": {
-      "calls": 140,
-      "tokens": 657762,
+      "calls": 147,
+      "tokens": 689637,
       "attempts": [
         "H5R-v2",
         "H5R-v3",
@@ -109,17 +110,18 @@
         "H5R-v14",
         "H5R-v15",
         "H5R-v16",
-        "H5R-v17"
+        "H5R-v17",
+        "H5R-v18"
       ],
       "cost": null,
       "boundary": "Known actual settled usage, no unknown reservations counted as usage. Retired development cases; no independent holdout credit."
     },
     "currentOfflineCorrections": {
-      "proof": "deep-research-evidence/canonical-initialization-replay-20261016.json",
+      "proof": "deep-research-evidence/repair-scope-and-allowance-replay-20261016.json",
       "draftingProof": "deep-research-evidence/drafting-evidence-capacity-20261015.json",
       "realGenerationOnFinalVersion": false,
       "finalNumericGuardProof": "deep-research-evidence/quantitative-condition-keys-20261015.json",
-      "boundary": ".109 rejects saved shape-only/unknown-checkpoint definitions; real-input synthesis keeps scene/mechanism quotations and repair preflights two bounded batches. Empty fixtures generate no claims/revisions. No new Provider call or content acceptance."
+      "boundary": ".110 saved-input replay fits all nine experiment targets in three requests, with all original target quotes/context. Short repair receives 185 accepted characters and 115 remaining. No Provider request or content pass on .110."
     },
     "externalReader": {
       "javaIsolatedPassed": 43,
@@ -417,17 +419,158 @@
         },
         "boundary": "One explicitly reauthorized submission per case, no automatic retry. Retired development case; no independent acceptance credit. No historical result mutation.",
         "uiProof": "deep-research-evidence/H3R-v13-report-20261016.png"
+      },
+      {
+        "date": "2026-10-16",
+        "case": "H5R-v18",
+        "runId": "dr_run_96b39876e54e527b9270892478ff5535",
+        "sourceCommit": "174787b",
+        "promptVersion": "dr-v2.20261016.109",
+        "status": "completed",
+        "outcome": "partial",
+        "budget": {
+          "maxModelCalls": 18,
+          "maxTokens": 100000,
+          "maxWallClockSeconds": 360,
+          "reserveModelCalls": 5,
+          "reserveTokens": 50000,
+          "maxExternalSearches": 6,
+          "maxFulltextFetches": 6,
+          "finalizationBudgetVersion": 1,
+          "releasedReserveTokens": 0,
+          "modelCalls": 3,
+          "tokens": 31875,
+          "normalTokens": 5957,
+          "elapsedSeconds": 80.597,
+          "externalSearches": 0,
+          "fulltextFetches": 0,
+          "reservedModelCalls": 4,
+          "exhausted": "",
+          "profile": "standard"
+        },
+        "contentAccepted": false,
+        "independentHoldoutEligible": false,
+        "callsSucceeded": 22,
+        "modelCalls": 7,
+        "finalCoverageStatus": "checked",
+        "errorCode": "",
+        "sourcePayloadSha256": "8dd054c90b16db4bafcaec119f85402bfe7059f6712edbab2b6fe399932f8822",
+        "raw": "tmp/dr-acceptance-receipts/H5R-v18.payload.json",
+        "calls": "tmp/dr-acceptance-receipts/H5R-v18.calls.json",
+        "repair": {
+          "repairStatus": "skipped_budget",
+          "repairLimit": {
+            "kind": "repairPromptBytes",
+            "limit": 24000,
+            "used": 27357
+          }
+        },
+        "review": {
+          "status": "not_accepted",
+          "scores": {
+            "目标回应": 2,
+            "证据支持": 3,
+            "条件完整": 2,
+            "综合价值": 2,
+            "可执行性": 1,
+            "可读性": 3
+          },
+          "improved": [
+            "Explicit baseline/component initializer objects and one canonical controls reference are produced.",
+            "Unknown input-dependent dimensions are rejected before publishing the workflow."
+          ],
+          "findings": [
+            "Both fresh initializers declare inputs:[] but shape references inputIndex:0; the structural rejection is correct.",
+            "A single opaque model-parameters state does not specify all representation variables or establish renderer compatibility.",
+            "Data and limits assert that the paper lacks original view counts without a source establishing paper-wide absence.",
+            "Repair targets include all nine roles. The execution/limits batch needs 27357 bytes, exceeding its 24000-byte cap before any repair request.",
+            "Published partial answer has hypothesis/groups/budget/metrics/analysis only; no verified data, controls, executable steps or limits.",
+            "New 32KB scientific verification is exercised, but no complete initializer reaches scientific review; this is not scientific executability acceptance."
+          ]
+        },
+        "boundary": "One explicitly authorized submission each, no automatic retry. Retired development cases, no independent credit. Original responses unchanged; later offline fixes are not retrospective passes."
+      },
+      {
+        "date": "2026-10-16",
+        "case": "H3R-v14",
+        "runId": "dr_run_d950d571363b5952986a01b91d94283a",
+        "sourceCommit": "174787b",
+        "promptVersion": "dr-v2.20261016.109",
+        "status": "completed",
+        "outcome": "partial",
+        "budget": {
+          "maxModelCalls": 18,
+          "maxTokens": 100000,
+          "maxWallClockSeconds": 360,
+          "reserveModelCalls": 5,
+          "reserveTokens": 50000,
+          "maxExternalSearches": 6,
+          "maxFulltextFetches": 6,
+          "finalizationBudgetVersion": 1,
+          "releasedReserveTokens": 0,
+          "modelCalls": 4,
+          "tokens": 22136,
+          "normalTokens": 8206,
+          "elapsedSeconds": 91.186,
+          "externalSearches": 1,
+          "fulltextFetches": 1,
+          "reservedModelCalls": 3,
+          "exhausted": "",
+          "profile": "standard"
+        },
+        "contentAccepted": false,
+        "independentHoldoutEligible": false,
+        "callsSucceeded": 18,
+        "modelCalls": 7,
+        "finalCoverageStatus": "invalid_response",
+        "errorCode": "",
+        "sourcePayloadSha256": "074dba02039162f48d607b3a540dd31ccbadaae214e167be61dc5b3b28133c3b",
+        "raw": "tmp/dr-acceptance-receipts/H3R-v14.payload.json",
+        "calls": "tmp/dr-acceptance-receipts/H3R-v14.calls.json",
+        "repair": {
+          "repairStatus": "response_received",
+          "repairLimit": null
+        },
+        "review": {
+          "status": "not_accepted",
+          "scores": {
+            "目标回应": 2,
+            "证据支持": 4,
+            "条件完整": 3,
+            "综合价值": 2,
+            "可执行性": null,
+            "可读性": 2
+          },
+          "notApplicable": {
+            "可执行性": "Explanation task, not an executable experimental proposal."
+          },
+          "improved": [
+            "External discovery and versioned arXiv v4 fulltext acquisition succeed.",
+            "Published training paragraph distinguishes the non-differentiable sampled index from the opacity/probability gradient path."
+          ],
+          "findings": [
+            "Initial motivation overstates what its own cited passages establish and is correctly rejected.",
+            "The attempted motivation repair repeats the accepted training mechanism and exceeds the aggregate 300-character limit; raw revision is saved but omitted.",
+            "Final published answer contains training only, not the requested motivation.",
+            "Coverage response uses the app sourceAccessSummary field in a criterion binding even though that field is allowed for access aspects only; the audit remains invalid rather than being upgraded.",
+            "The answer still assumes depth buckets, derivatives and reparameterization knowledge and does not explain image error -> adjustment -> later placement in ordinary words.",
+            "The source correct/incorrect-depth case is intuitive and conditional; the answer should preserve that scope."
+          ]
+        },
+        "boundary": "One explicitly authorized submission each, no automatic retry. Retired development cases, no independent credit. Original responses unchanged; later offline fixes are not retrospective passes."
       }
     ],
     "resumedDevelopmentUsage": {
-      "modelCalls": 32,
-      "tokens": 129663,
+      "modelCalls": 46,
+      "tokens": 183674,
       "cost": null,
       "cases": [
         "H5R-v16",
         "H3R-v12",
         "H5R-v17",
-        "H3R-v13"
+        "H3R-v13",
+        "H5R-v18",
+        "H3R-v14"
       ],
       "boundary": "Actual known settled totals; overlap with retired-case buckets, not additive. Cost unavailable, not zero."
     },
@@ -451,7 +594,13 @@
         "seconds": 57.57,
         "sourceCommit": "4a56599",
         "log": "tmp/pytest-dr108-full-final.log"
-      }
+      },
+      "realGenerationVersion": "dr-v2.20261016.109",
+      "realGenerationCases": [
+        "H5R-v18",
+        "H3R-v14"
+      ],
+      "realGenerationContentAccepted": false
     },
     "canonicalInitialization": {
       "workflowContractVersion": 4,
@@ -466,7 +615,29 @@
         "seconds": 63.34,
         "sourceCommit": "174787b",
         "log": "tmp/pytest-dr109-full-final.log"
-      }
+      },
+      "realGenerationVersion": "dr-v2.20261016.109",
+      "realGenerationCases": [
+        "H5R-v18",
+        "H3R-v14"
+      ],
+      "realGenerationContentAccepted": false
+    },
+    "repairScopeAndAllowance": {
+      "promptVersion": "dr-v2.20261016.110",
+      "inputBytes": 24000,
+      "maximumBatches": 3,
+      "canonicalInitializationPairAtomic": true,
+      "remainingCharactersExplicit": true,
+      "realGenerationOnFinalVersion": false,
+      "tests": {
+        "passed": 1773,
+        "warnings": 1,
+        "seconds": 45.23,
+        "log": "tmp/pytest-dr110-full-final.log",
+        "scope": "Research/reading/PDF table/config; no frontend or Java source changes."
+      },
+      "proof": "deep-research-evidence/repair-scope-and-allowance-replay-20261016.json"
     }
   },
   "stages": [
@@ -492,7 +663,10 @@
         "deep-research-evidence/verification-window-controls-replay-20261016.json",
         "deep-research-evidence/runtime-load-dr108-verification-window-20261016.json",
         "deep-research-evidence/canonical-initialization-replay-20261016.json",
-        "deep-research-evidence/runtime-load-dr109-canonical-initialization-20261016.json"
+        "deep-research-evidence/runtime-load-dr109-canonical-initialization-20261016.json",
+        "deep-research-evidence/repair-scope-and-allowance-replay-20261016.json",
+        "deep-research-evidence/runtime-load-dr110-repair-allowance-20261016.json",
+        "deep-research-evidence/runtime-postcase-dr109-20261016.json"
       ]
     },
     {
@@ -513,7 +687,7 @@
     {
       "id": "DR3",
       "implementation": "Adaptive gaps, incremental reuse, bounded repair, typed experimental contracts, canonical baseline/component initializers and final-answer coverage implemented",
-      "acceptance": "Canonical initialization and dependency removal offline-verified; actual scientific executability, comparison/continuation quality and independent replacements remain open.",
+      "acceptance": ".109 experiment remains partial: invalid fresh dimensions, unsupported absence and repair capacity. .110 three-batch offline replay passes; actual scientific/content and independent replacements remain open.",
       "proof": [
         "deep-research-evidence/d3-v25-20261014.json",
         "deep-research-evidence/completion-criteria-20261015.json",
@@ -537,13 +711,17 @@
         "deep-research-evidence/verification-window-controls-replay-20261016.json",
         "deep-research-evidence/runtime-load-dr108-verification-window-20261016.json",
         "deep-research-evidence/canonical-initialization-replay-20261016.json",
-        "deep-research-evidence/runtime-load-dr109-canonical-initialization-20261016.json"
+        "deep-research-evidence/runtime-load-dr109-canonical-initialization-20261016.json",
+        "deep-research-evidence/repair-scope-and-allowance-replay-20261016.json",
+        "deep-research-evidence/runtime-load-dr110-repair-allowance-20261016.json",
+        "deep-research-evidence/runtime-postcase-dr109-20261016.json",
+        "deep-research-evidence/H5R-v18-quality-20261016.json"
       ]
     },
     {
       "id": "DR4",
       "implementation": "Permissioned arXiv discovery, versioned fulltext acquisition, fixed network exit and degradation implemented",
-      "acceptance": "Real fixed-v4 acquisition/reader works; .105 retains own-method motivation and training citations and completes. Novice readability/conditional explanation still below content threshold; no independent acceptance credit.",
+      "acceptance": ".109 fixed-v4 fulltext acquired; motivation rejected and oversized revision omitted. Training-only report remains partial and below novice quality threshold. No independent credit.",
       "proof": [
         "deep-research-evidence/H3-v1-external-fulltext-20261013.json",
         "../ai-service-python/tests/test_deep_research_academic.py",
@@ -555,7 +733,8 @@
         "deep-research-evidence/H3R-v5-quality-20261015.json",
         "deep-research-evidence/H3R-v6-quality-20261015.json",
         "deep-research-evidence/H3R-v12-quality-20261016.json",
-        "deep-research-evidence/H3R-v13-quality-20261016.json"
+        "deep-research-evidence/H3R-v13-quality-20261016.json",
+        "deep-research-evidence/H3R-v14-quality-20261016.json"
       ]
     },
     {
@@ -574,7 +753,10 @@
         "deep-research-evidence/runtime-postcase-dr105-20261016.json",
         "deep-research-evidence/runtime-load-dr107-audit-ref-20261016.json",
         "deep-research-evidence/canonical-initialization-replay-20261016.json",
-        "deep-research-evidence/runtime-load-dr109-canonical-initialization-20261016.json"
+        "deep-research-evidence/runtime-load-dr109-canonical-initialization-20261016.json",
+        "deep-research-evidence/repair-scope-and-allowance-replay-20261016.json",
+        "deep-research-evidence/runtime-load-dr110-repair-allowance-20261016.json",
+        "deep-research-evidence/runtime-postcase-dr109-20261016.json"
       ]
     }
   ],
@@ -681,21 +863,21 @@
     "Full novice study workflow",
     "Independent Edge recovery"
   ],
-  "currentProviderConstraint": "No new model request this turn. Previous two fixed-case permissions have each been used once; further paid repetitions require the actual expanded authorization. Seven historical paused unknowns remain untouched.",
-  "currentDevelopmentMode": "Primary Codex only, no Qoder. Active goal; .109 canonical baseline/component initialization loaded after 1770 offline passes. Original DR0-DR5 acceptance and quota pause condition unchanged.",
+  "currentProviderConstraint": "The two explicitly approved .109 cases H5R-v18/H3R-v14 each ran once: 14 settled model calls, 54011 tokens, both completed/partial and not content accepted. No automatic retry or .110 Provider call. This specific two-case permission is used; additional paid repetitions require expanded authorization. Seven historical unknowns remain untouched.",
+  "currentDevelopmentMode": "Primary Codex only, no Qoder. Active goal; .110 repair scope/remaining allowance loaded after 1773 offline passes. Original DR0-DR5 acceptance and weekly remaining<=55% pause condition unchanged.",
   "loadedRuntime": {
-    "commit": "174787b",
-    "promptVersion": "dr-v2.20261016.109",
+    "commit": "ab35c73",
+    "promptVersion": "dr-v2.20261016.110",
     "ready": true,
-    "callsPreserved": 3132,
+    "callsPreserved": 3172,
     "pausedUnknownRuns": 7,
-    "proof": "deep-research-evidence/runtime-load-dr109-canonical-initialization-20261016.json"
+    "proof": "deep-research-evidence/runtime-load-dr110-repair-allowance-20261016.json"
   },
   "nextQualityWork": [
-    "Typed baseline/component initial values, RNG, shape rules and canonical cross-role references are implemented. Validate actual scientific adequacy, complete representation state, rendering and optimizer compatibility in a real experiment-plan response.",
-    "Saved complete controls-review input now fits the versioned 32KB window offline; real scientific verdict quality and broader plan capacity remain to validate. Final coverage and repair generation keep their 24KB caps.",
-    "Produce and independently review a novice explanation with ordinary error/adjustment/consequence meaning, not just derivative terminology.",
-    "Complete D1/D2/D3/D5 and fresh independent replacement gates; no diagnostic case can regain unseen eligibility. Keep PR draft until the complete original design passes."
+    "Validate actual representation-complete initializers, real compatible rendering/optimizer settings and canonical paired copies; .109 fresh state references undeclared input 0 and is correctly rejected.",
+    ".110 now fits all .109 repair targets in three 24KB requests offline; verify actual generated revisions and scientific verdicts without increasing total budgets or retrying unknowns.",
+    "Produce a complete novice motivation/training explanation in ordinary words, retaining conditional source scope and aggregate 300-character allowance; metadata access cannot substitute for scientific explanation.",
+    "Complete D1/D2/D3/D5 and fresh independent replacement gates; diagnostic cases remain retired. Keep PR draft until the complete original design passes."
   ],
   "javaReaderRuntime": {
     "sourceCommit": "070ab1a",
