@@ -271,9 +271,11 @@ def test_capacity_rejects_before_clock_starts_and_does_not_queue_executor(tmp_pa
     try:
         facade._start_execution('a')
         assert entered.wait(2)
-        with pytest.raises(DeepResearchError) as error:
-            facade._action_resume('b', repo.require_run('b')['runRevision'], {})
-        assert error.value.code == 'execution_capacity'
+        before_revision = repo.require_run('b')['runRevision']
+        deferred = facade._action_resume('b', before_revision, {})
+        assert deferred['resumeDeferred']['reason'] == 'execution_capacity'
+        assert deferred['runRevision'] > before_revision
+        assert 'resume' in deferred['allowedActions']
         assert repo.require_run('b')['status'] == 'queued'
         assert not repo.require_run('b').get('startedAt')
         assert set(facade._active_futures) == {'a'}
@@ -282,6 +284,7 @@ def test_capacity_rejects_before_clock_starts_and_does_not_queue_executor(tmp_pa
         worker.result(timeout=3)
         facade._action_resume('b', repo.require_run('b')['runRevision'], {})
         assert repo.require_run('b')['status'] == 'running'
+        assert 'resumeDeferred' not in repo.require_run('b')['state']
     finally:
         release.set()
         facade.shutdown()

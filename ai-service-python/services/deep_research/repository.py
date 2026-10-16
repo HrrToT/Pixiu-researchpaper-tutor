@@ -461,6 +461,7 @@ class DeepResearchRepository:
                     record["state"]["waitingSince"] = None
                     record["budget"]["waitingSeconds"] = record["budget"].get("waitingSeconds", 0) + duration.total_seconds()
                 record["status"] = STATUS_RUNNING
+                (record.get('state') or {}).pop('resumeDeferred', None)
                 record["executionEpoch"] = current_epoch + 1
                 # Only set startedAt on first execution (epoch 0 → 1)
                 if current_epoch == 0:

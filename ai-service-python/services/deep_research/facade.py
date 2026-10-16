@@ -258,7 +258,7 @@ class ResearchFacade:
             "materials": materials,
             "materialSnapshot": material_snapshot,  # Immutable Java snapshot
             "contextMaterials": (material_snapshot or {}).get("contextMaterials", []) if isinstance(material_snapshot, dict) else [],
-            "promptVersion": "dr-v2.20261016.114",
+            "promptVersion": "dr-v2.20261016.115",
             "clarificationContractVersion": 1,
             "adaptiveResearchContractVersion": 1,
             "audienceRewriteContractVersion": 1,
@@ -350,6 +350,8 @@ class ResearchFacade:
                 "needed": state.get("clarificationNeeded", False),
                 "question": state.get("clarificationQuestion", ""),
             } if state.get("clarificationNeeded") else None,
+            "resumeDeferred": state.get('resumeDeferred')
+                if 'resume' in _compute_allowed_actions(record) else None,
             # Source metadata for UI
             "sources": visible_sources,
             "events": self.get_events(run_id),
@@ -613,9 +615,20 @@ class ResearchFacade:
         # Begin new execution epoch ONCE - this transitions to RUNNING
         # Carry latest epoch into checkpoint state
         with self._lock:
-            if run_id in self._active_futures and not self._active_futures[run_id].done():
-                raise DeepResearchError("execution_busy", "上一轮执行正在停止，请稍后继续")
-            self._require_capacity()
+            try:
+                if run_id in self._active_futures and not self._active_futures[run_id].done():
+                    raise DeepResearchError("execution_busy", "上一轮执行正在停止，请稍后继续")
+                self._require_capacity()
+            except DeepResearchError as exc:
+                if exc.code not in {'execution_busy', 'execution_capacity'}:
+                    raise
+                # The human resume intent is accepted, but nothing is queued or
+                # dispatched automatically. A new revision lets the next click
+                # use a new action ID; replaying this action stays read-only.
+                self._repo.update_run(run_id, lambda r: {**r, 'state': {**(r.get('state') or {}),
+                    'resumeDeferred': {'reason': exc.code, 'requestedAt': utc_now_iso()}}},
+                    expected_revision=expected_revision)
+                return self.get(run_id)
             self._repo.begin_execution(run_id, expected_epoch=record.get("executionEpoch"),
                                        expected_revision=expected_revision)
             future = self._executor.submit(self._execute_graph, run_id)
@@ -1163,7 +1176,10 @@ def _compute_allowed_actions(record: dict[str, Any]) -> list[str]:
     elif status == STATUS_RUNNING:
         actions.extend(["pause", "cancel"])
     elif status == STATUS_WAITING_USER:
-        actions.extend(["clarify", "cancel"])
+        state = record.get('state') or {}
+        answered = (state.get('clarificationNeeded') is False
+                    and isinstance(state.get('clarification'), str) and state['clarification'].strip())
+        actions.extend(["resume", "cancel"] if answered else ["clarify", "cancel"])
     elif status == STATUS_PAUSED:
         actions.extend(["cancel"] if record.get("errorCode") == "unresolved_unknown" else ["resume", "cancel", "plan"])
     elif status == STATUS_COMPLETED:
