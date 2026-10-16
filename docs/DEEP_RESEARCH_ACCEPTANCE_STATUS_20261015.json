@@ -42,13 +42,13 @@
       "overlap": true
     },
     "backendCurrentResearchReadingTables": {
-      "passed": 1624,
+      "passed": 1687,
       "warnings": 1,
-      "seconds": 55.61,
-      "sourceCommit": "97f64d9",
-      "log": "tmp/pytest-dr101-full.log",
-      "scope": "Research/reading/PDF table/config; no frontend or Java source changes.",
-      "proof": "deep-research-evidence/finalization-token-release-replay-20261016.json"
+      "seconds": 56.47,
+      "sourceCommit": "a48d833",
+      "log": "tmp/pytest-dr107-full-final.log",
+      "scope": "Research/reading/PDF table/config. No frontend or Java source changes this resumed development.",
+      "proof": "deep-research-evidence/audit-reference-guards-20261016.json"
     },
     "frontendDocumentNavigationFocused": {
       "passed": 19,
@@ -71,8 +71,8 @@
       "boundary": "Exact citation/physical-page lookup, manual edit, original preservation and find-after-reload; content acceptance is separate."
     },
     "retiredH3RDevelopmentCalls": {
-      "calls": 81,
-      "tokens": 287813,
+      "calls": 97,
+      "tokens": 341758,
       "attempts": [
         "H3R-v2",
         "H3R-v3",
@@ -83,14 +83,16 @@
         "H3R-v8",
         "H3R-v9",
         "H3R-v10",
-        "H3R-v11"
+        "H3R-v11",
+        "H3R-v12",
+        "H3R-v13"
       ],
       "cost": null,
-      "boundary": "Known completed responses, including failed planning/verification runs; no independent holdout credit."
+      "boundary": "Known actual settled usage, no unknown reservations counted as usage. Retired development cases; no independent holdout credit."
     },
     "retiredH5RDevelopmentCalls": {
-      "calls": 124,
-      "tokens": 582044,
+      "calls": 140,
+      "tokens": 657762,
       "attempts": [
         "H5R-v2",
         "H5R-v3",
@@ -105,17 +107,19 @@
         "H5R-v12",
         "H5R-v13",
         "H5R-v14",
-        "H5R-v15"
+        "H5R-v15",
+        "H5R-v16",
+        "H5R-v17"
       ],
       "cost": null,
-      "boundary": "Known completed responses, including failed planning/verification runs; no independent holdout credit."
+      "boundary": "Known actual settled usage, no unknown reservations counted as usage. Retired development cases; no independent holdout credit."
     },
     "currentOfflineCorrections": {
-      "proof": "deep-research-evidence/finalization-token-release-replay-20261016.json",
+      "proof": "deep-research-evidence/complete-json-unclosed-fence-replay-20261016.json",
       "draftingProof": "deep-research-evidence/drafting-evidence-capacity-20261015.json",
       "realGenerationOnFinalVersion": false,
       "finalNumericGuardProof": "deep-research-evidence/quantitative-condition-keys-20261015.json",
-      "boundary": ".101 finalization capacity is offline-verified and loaded. No real model case on this version; .100 H5R-v15 remains partial and content-unaccepted."
+      "boundary": "Source .107 is offline-tested and loaded. Latest real cases ran once each on .105; neither is manually accepted. Format replay preserves a failed verdict, not a scientific pass."
     },
     "externalReader": {
       "javaIsolatedPassed": 43,
@@ -160,6 +164,278 @@
       "availableEvidence": 9,
       "modelCalls": 0,
       "boundary": "Historical .85 saved-input replay, not current .91 drafting capacity. Hotdog and opacity-update evidence were visible; no drafting-quality credit."
+    },
+    "latestDevelopmentCases": [
+      {
+        "date": "2026-10-16",
+        "case": "H5R-v16",
+        "runId": "dr_run_02b20c3ab26e58e3acc5b46db657b4e2",
+        "sourceCommit": "20d1d06",
+        "promptVersion": "dr-v2.20261016.103",
+        "status": "completed",
+        "outcome": "partial",
+        "budget": {
+          "profile": "standard",
+          "modelCalls": 9,
+          "maxModelCalls": 18,
+          "tokens": 46323,
+          "maxTokens": 100000,
+          "externalSearches": 0,
+          "fulltextFetches": 0,
+          "elapsedSeconds": 91.0,
+          "cost": null
+        },
+        "contentAccepted": false,
+        "independentHoldoutEligible": false,
+        "callsSucceeded": 25,
+        "finalCoverageStatus": "checked",
+        "releasedReserveTokens": 19197,
+        "repair": {
+          "repairStatus": "skipped_budget",
+          "repairLimit": {
+            "kind": "repairEvidenceBytes",
+            "limit": 24000,
+            "used": 24397
+          }
+        },
+        "raw": "tmp/dr-acceptance-receipts/H5R-v16.payload.json",
+        "calls": "tmp/dr-acceptance-receipts/H5R-v16.calls.json",
+        "review": {
+          "scores": {
+            "目标回应": 3,
+            "证据支持": 4,
+            "条件完整": 2,
+            "综合价值": 3,
+            "可执行性": 2,
+            "可读性": 3
+          },
+          "improved": [
+            "Final coverage actually ran within the original budget, using released protected tokens.",
+            "Published prose contains neither the prior ungrounded paper-wide omission nor E1/P aliases.",
+            "Draft returns typed creation inputs and readable workflow with group checkpoints."
+          ],
+          "findings": [
+            "Fresh Gaussian creation still defines only seed and opacity; positions/scale/orientation/appearance and count/layout are missing.",
+            "Controls still name PyTorch3D without a concrete compatible Gaussian rendering operation.",
+            "Data audit supplied an invalid escaped JSON quotation for sampling_unit; data was rejected and steps lost their accepted dependency.",
+            "Repair was skipped before any repair call: required input 24397 bytes exceeded 24000.",
+            "The published hypothesis/prose duplicates typed statement content; overall experiment is not executable."
+          ],
+          "status": "not_accepted",
+          "acceptedRoles": [
+            "hypothesis",
+            "groups",
+            "controls",
+            "budget",
+            "metrics",
+            "analysis",
+            "limits"
+          ],
+          "rejected": [
+            {
+              "claimId": "c4",
+              "reason": "semantic_unresolved",
+              "detail": "实验方案缺少可核对的具体配置：sampling_unit"
+            },
+            {
+              "claimId": "c6",
+              "reason": "inconsistent_experiment_workflow",
+              "detail": "workflow.unverified_reference.data"
+            }
+          ]
+        },
+        "boundary": "One submission per case, no automatic retries. Retired development cases; machine partial/valid audit does not establish content acceptance."
+      },
+      {
+        "date": "2026-10-16",
+        "case": "H3R-v12",
+        "runId": "dr_run_cc4d1968080d55ce8544dbc8b8b24269",
+        "sourceCommit": "20d1d06",
+        "promptVersion": "dr-v2.20261016.103",
+        "status": "completed",
+        "outcome": "partial",
+        "budget": {
+          "profile": "standard",
+          "modelCalls": 10,
+          "maxModelCalls": 18,
+          "tokens": 29641,
+          "maxTokens": 100000,
+          "externalSearches": 1,
+          "fulltextFetches": 1,
+          "elapsedSeconds": 126.0,
+          "cost": null
+        },
+        "contentAccepted": false,
+        "independentHoldoutEligible": false,
+        "callsSucceeded": 22,
+        "finalCoverageStatus": "checked",
+        "releasedReserveTokens": 0,
+        "repair": {
+          "repairStatus": "response_received",
+          "repairLimit": null
+        },
+        "raw": "tmp/dr-acceptance-receipts/H3R-v12.payload.json",
+        "calls": "tmp/dr-acceptance-receipts/H3R-v12.calls.json",
+        "review": {
+          "scores": {
+            "目标回应": 2,
+            "证据支持": 4,
+            "条件完整": 3,
+            "综合价值": 2,
+            "可执行性": null,
+            "可读性": 3
+          },
+          "improved": [
+            "Actual external versioned fulltext path succeeds and final coverage completes.",
+            "The training paragraph is shorter and includes the opacity/probability feedback example."
+          ],
+          "findings": [
+            "No author-motivation passage was retained in extracted evidence, although acquired material contains it.",
+            "Code capped three evidence items by source/PDF rather than by passage, dropping later passage items.",
+            "The final answer says the supplied evidence does not explain the motive, so the requested why-question remains unanswered.",
+            "Training uses the author illustrative correct/incorrect-depth case but does not explain the loss-conditioned update in sufficiently ordinary words."
+          ],
+          "notApplicable": {
+            "可执行性": "Explanation task, not an executable experimental proposal."
+          },
+          "status": "not_accepted",
+          "acceptedRoles": [
+            null,
+            null
+          ],
+          "rejected": []
+        },
+        "boundary": "One submission per case, no automatic retries. Retired development cases; machine partial/valid audit does not establish content acceptance.",
+        "uiProof": "deep-research-evidence/H3R-v12-report-20261016.png"
+      },
+      {
+        "date": "2026-10-16",
+        "case": "H5R-v17",
+        "runId": "dr_run_14d324d35f1d5675a873ff6054eae805",
+        "sourceCommit": "ef9f080",
+        "promptVersion": "dr-v2.20261016.105",
+        "status": "failed",
+        "outcome": "none",
+        "budget": {
+          "profile": "standard",
+          "modelCalls": 7,
+          "maxModelCalls": 18,
+          "tokens": 29395,
+          "maxTokens": 100000,
+          "externalSearches": 0,
+          "fulltextFetches": 0,
+          "elapsedSeconds": 59.0,
+          "cost": null
+        },
+        "contentAccepted": false,
+        "independentHoldoutEligible": false,
+        "callsSucceeded": 20,
+        "modelCalls": 7,
+        "finalCoverageStatus": "not_reached",
+        "errorCode": "invalid_verification_response",
+        "sourcePayloadSha256": "6d3f6299e83a2624e912f3ad5df750d532ea25827bc901af5e5a4a98ea62fa0a",
+        "raw": "tmp/dr-acceptance-receipts/H5R-v17.payload.json",
+        "calls": "tmp/dr-acceptance-receipts/H5R-v17.calls.json",
+        "review": {
+          "status": "not_accepted",
+          "scores": {
+            "目标回应": 2,
+            "证据支持": 3,
+            "条件完整": 2,
+            "综合价值": 2,
+            "可执行性": 2,
+            "可读性": 3
+          },
+          "scoreBoundary": "Review of the saved unpublished draft and failure, not of a published answer.",
+          "improved": [
+            "Fresh creation now names state variables, tensor shapes and a component count.",
+            "The scientific review explicitly rejects missing initial values, rather than approving a shape-only layout."
+          ],
+          "findings": [
+            "No report published: a complete failed verdict was wrapped in an unterminated Markdown fence and rejected by the parser.",
+            "The JSON body is valid and contains exactly the requested s1 verdict; the subsequent .106 compatibility fix preserves that failed verdict unchanged.",
+            "Fresh Gaussian state still lacks position, scale, orientation and appearance initial values or valid source transformations.",
+            "The controls describe copies of proposed checkpoint files while the workflow first creates fresh enhancement state; acquisition and pairing are not consistently defined.",
+            "The data prose asserts paper-wide absence of view counts/splits without source support and is already rejected by the absence gate.",
+            "At least one scientific target cannot retain all required evidence within the current request capacity; no missing evidence is treated as a pass."
+          ]
+        },
+        "boundary": "One explicitly reauthorized submission per case, no automatic retry. Retired development case; no independent acceptance credit. No historical result mutation."
+      },
+      {
+        "date": "2026-10-16",
+        "case": "H3R-v13",
+        "runId": "dr_run_3921c42b1096547cb3747aa37a9a5d91",
+        "sourceCommit": "ef9f080",
+        "promptVersion": "dr-v2.20261016.105",
+        "status": "completed",
+        "outcome": "complete",
+        "budget": {
+          "profile": "standard",
+          "modelCalls": 6,
+          "maxModelCalls": 18,
+          "tokens": 24304,
+          "maxTokens": 100000,
+          "externalSearches": 1,
+          "fulltextFetches": 1,
+          "elapsedSeconds": 128.0,
+          "cost": null
+        },
+        "contentAccepted": false,
+        "independentHoldoutEligible": false,
+        "callsSucceeded": 17,
+        "modelCalls": 6,
+        "finalCoverageStatus": "checked",
+        "errorCode": "",
+        "sourcePayloadSha256": "8b8a4b86281949a909c24aef0301772eaa6f0a5e7343a7295706d8ba7c112e4e",
+        "raw": "tmp/dr-acceptance-receipts/H3R-v13.payload.json",
+        "calls": "tmp/dr-acceptance-receipts/H3R-v13.calls.json",
+        "review": {
+          "status": "not_accepted",
+          "scores": {
+            "目标回应": 4,
+            "证据支持": 4,
+            "条件完整": 3,
+            "综合价值": 3,
+            "可执行性": null,
+            "可读性": 3
+          },
+          "improved": [
+            "Own-method motivation and detailed training evidence are both retained and cited.",
+            "The external version is arxiv:2312.12337v4 and the report explicitly labels fulltext excerpts.",
+            "Both requested topics are answered in 197 prose characters; all six source quotations were checked against saved fulltext excerpts."
+          ],
+          "findings": [
+            "The answer assumes that a novice knows local minima, depth buckets, gradients and backpropagation.",
+            "Training is still stated mainly through alpha/phi and a method label, without an ordinary-language account of the observed error and later sampling behavior.",
+            "Correct/incorrect-depth feedback follows the authors illustrative case, but the answer should preserve its intuitive/conditional scope rather than imply a universal update rule.",
+            "Machine complete is retained as the actual outcome; manual content acceptance remains false."
+          ],
+          "notApplicable": {
+            "可执行性": "Explanation task rather than an executable experimental proposal."
+          }
+        },
+        "boundary": "One explicitly reauthorized submission per case, no automatic retry. Retired development case; no independent acceptance credit. No historical result mutation.",
+        "uiProof": "deep-research-evidence/H3R-v13-report-20261016.png"
+      }
+    ],
+    "resumedDevelopmentUsage": {
+      "modelCalls": 32,
+      "tokens": 129663,
+      "cost": null,
+      "cases": [
+        "H5R-v16",
+        "H3R-v12",
+        "H5R-v17",
+        "H3R-v13"
+      ],
+      "boundary": "Actual known settled totals; overlap with retired-case buckets, not additive. Cost unavailable, not zero."
+    },
+    "workflowAndExtraction": {
+      "workflowContractVersion": 3,
+      "extractionPriorityVersion": 2,
+      "proof": "deep-research-evidence/extraction-and-repair-coverage-replay-20261016.json",
+      "boundary": "Fresh state layout is structurally required; .105 scientific review still rejects missing initial values. V1/V2 historical contracts remain unchanged."
     }
   },
   "stages": [
@@ -186,7 +462,7 @@
     },
     {
       "id": "DR2",
-      "implementation": "Versioned sources, table bindings, physical locations and bounded source continuity implemented",
+      "implementation": "Versioned sources, table bindings, physical locations and bounded source continuity implemented; extraction cap is three per passage rather than per PDF, with obligation-aware priority",
       "acceptance": "Live exact table citation and original page lookup verified; single-/multi-paper complete answer quality remains open.",
       "proof": [
         "deep-research-evidence/source-continuity-replay-20261015.json",
@@ -195,12 +471,13 @@
         "deep-research-evidence/live-report-interactions-20261015.json",
         "deep-research-evidence/quantity-scene-asset-gates-20261015.json",
         "deep-research-evidence/obligation-routing-replay-20261015.json",
-        "deep-research-evidence/named-row-live-index-20261015.json"
+        "deep-research-evidence/named-row-live-index-20261015.json",
+        "deep-research-evidence/extraction-and-repair-coverage-replay-20261016.json"
       ]
     },
     {
       "id": "DR3",
-      "implementation": "Adaptive gaps, incremental reuse, bounded repair, experiment contracts and final-answer coverage implemented",
+      "implementation": "Adaptive gaps, incremental reuse, bounded repair, experiment contracts and final-answer coverage implemented; versioned component inputs/fresh state layout, scientific initialization review and exact typed audit references",
       "acceptance": "Experiment executability and comparison/continuation content quality incomplete",
       "proof": [
         "deep-research-evidence/d3-v25-20261014.json",
@@ -217,13 +494,17 @@
         "deep-research-evidence/repair-response-retention-20261015.json",
         "deep-research-evidence/H5R-v8-quality-20261015.json",
         "deep-research-evidence/H5R-v9-quality-20261015.json",
-        "deep-research-evidence/executable-drafting-capacity-20261015.json"
+        "deep-research-evidence/executable-drafting-capacity-20261015.json",
+        "deep-research-evidence/H5R-v16-quality-20261016.json",
+        "deep-research-evidence/H5R-v17-quality-20261016.json",
+        "deep-research-evidence/complete-json-unclosed-fence-replay-20261016.json",
+        "deep-research-evidence/audit-reference-guards-20261016.json"
       ]
     },
     {
       "id": "DR4",
       "implementation": "Permissioned arXiv discovery, versioned fulltext acquisition, fixed network exit and degradation implemented",
-      "acceptance": "Real v4 acquisition/reader verified. Latest answer improves training feedback but has an opacity/transparency direction error; content acceptance remains open.",
+      "acceptance": "Real fixed-v4 acquisition/reader works; .105 retains own-method motivation and training citations and completes. Novice readability/conditional explanation still below content threshold; no independent acceptance credit.",
       "proof": [
         "deep-research-evidence/H3-v1-external-fulltext-20261013.json",
         "../ai-service-python/tests/test_deep_research_academic.py",
@@ -233,7 +514,9 @@
         "deep-research-evidence/H3R-v4-quality-20261015.json",
         "deep-research-evidence/external-reader-interactions-20261015.json",
         "deep-research-evidence/H3R-v5-quality-20261015.json",
-        "deep-research-evidence/H3R-v6-quality-20261015.json"
+        "deep-research-evidence/H3R-v6-quality-20261015.json",
+        "deep-research-evidence/H3R-v12-quality-20261016.json",
+        "deep-research-evidence/H3R-v13-quality-20261016.json"
       ]
     },
     {
@@ -247,7 +530,10 @@
         "deep-research-evidence/structured-response-and-source-spans-20261015.json",
         "deep-research-evidence/external-reader-interactions-20261015.json",
         "deep-research-evidence/runtime-load-dr81-retention-20261015.json",
-        "deep-research-evidence/runtime-load-dr85-terminology-20261015.json"
+        "deep-research-evidence/runtime-load-dr85-terminology-20261015.json",
+        "deep-research-evidence/H3R-v13-report-20261016.png",
+        "deep-research-evidence/runtime-postcase-dr105-20261016.json",
+        "deep-research-evidence/runtime-load-dr107-audit-ref-20261016.json"
       ]
     }
   ],
@@ -354,22 +640,21 @@
     "Full novice study workflow",
     "Independent Edge recovery"
   ],
-  "currentProviderConstraint": "No new model requests. Existing H5R-v15 remains completed/partial; all 3048 ledger rows and seven historical paused unknowns unchanged during .101 load.",
-  "currentDevelopmentMode": "Primary Codex only, no Qoder. .101 budget fix loaded after 1624 offline passes. User requested stopping after this fix; no subsequent feature or paid-model validation started.",
+  "currentProviderConstraint": "The two explicitly reauthorized .105 cases H5R-v17/H3R-v13 were each submitted once and are terminal. No automatic retry. Any additional paid case must respect the actual approval scope; old unknown requests remain untouched.",
+  "currentDevelopmentMode": "Primary Codex only, no Qoder. Development resumed on explicit user instruction; quota pause condition remains weekly remaining <=55%. Source .107 loaded with offline proof; original DR0-DR5 objective unchanged.",
   "loadedRuntime": {
-    "commit": "97f64d9",
-    "promptVersion": "dr-v2.20261016.101",
+    "commit": "a48d833",
+    "promptVersion": "dr-v2.20261016.107",
     "ready": true,
-    "callsPreserved": 3048,
+    "callsPreserved": 3132,
     "pausedUnknownRuns": 7,
-    "proof": "deep-research-evidence/runtime-load-dr101-finalization-20261016.json"
+    "proof": "deep-research-evidence/runtime-load-dr107-audit-ref-20261016.json"
   },
   "nextQualityWork": [
-    "Deferred until user resumes: real content validation of final completeness after .101 budget release; offline capacity proof is not quality acceptance.",
-    "Require an actual new-component creation/source rule; distinguish cloning an existing state from assuming a missing enhancement already exists.",
-    "Make renderer/proposed configuration concrete, prevent unsupported paper-wide omission claims and internal source aliases in published prose.",
-    "Improve ordinary-language causal explanations and simplify workflow display while preserving exact parameters and validation isolation.",
-    "Complete D1/D2/D3/D5 and fresh independent replacement gates; keep PR draft until the complete original design passes."
+    "Make fresh component initial values and baseline acquisition/paired creation consistent across all experiment roles; a state shape alone is insufficient.",
+    "Fit scientific controls review with complete required citations/context under the existing input limit; current format/audit fixes do not establish capacity for every future plan.",
+    "Produce and independently review a novice explanation with ordinary error/adjustment/consequence meaning, not just derivative terminology.",
+    "Complete D1/D2/D3/D5 and fresh independent replacement gates; no diagnostic case can regain unseen eligibility. Keep PR draft until the complete original design passes."
   ],
   "javaReaderRuntime": {
     "sourceCommit": "070ab1a",
@@ -380,5 +665,5 @@
     "pausedUnknownRuns": 7,
     "boundary": "Two case workspace snapshots matched before explicit material addition; no whole-store hash equality claim."
   },
-  "developmentState": "paused_after_current_budget_fix_at_user_request"
+  "developmentState": "active_after_explicit_user_resume"
 }
