@@ -814,7 +814,10 @@ The dataAvailability object is an internal audit, not new experimental results.
                            'For discontinuous text use {"quotes":[{"claimId":"ID","quote":"exact substring"}]} '
                            'with 1 to 32 segments. Copy punctuation exactly; never join, summarize or rewrite. '
                            'Every segment must match its source and together cover the whole slot. No mixed forms.')
-                audit_prompt += ('\nFor typed executionSpec choices prefer {"fields":[{"claimId":"target/context ID",'
+                audit_prompt += ('\nFor a typed choice prefer {"ref":{"claimId":"target/context ID",'
+                           '"path":["executionSpec","independentUnit"]}}. The server resolves the exact existing value; '
+                           'this reference is not a scientific verdict. Never quote JSON serialization. '
+                           'For multiple choices use {"fields":[{"claimId":"target/context ID",'
                            '"path":["executionSpec","factors",0,"treatment","parameters",0,"value"],"value":0.5}]}. '
                            'Copy the exact existing typed value; path elements are object keys or zero-based list indices. '
                            'Use 1-32 bindings. Allowed slot roots: intervention_levels=factors (groups); '

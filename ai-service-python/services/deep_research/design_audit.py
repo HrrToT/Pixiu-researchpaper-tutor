@@ -55,6 +55,23 @@ def validate_design_audit(claim, verdict, context, metric_domains=None):
 def _slot_supported(entry, claim, context, slot=None):
     if not isinstance(entry, dict):
         return False
+    if 'ref' in entry:
+        reference = entry['ref']
+        if set(entry) != {'ref'} or not isinstance(reference, dict) or set(reference) != {'claimId', 'path'}:
+            return False
+        path = reference['path']
+        if not isinstance(path, list):
+            return False
+        source = _resolve_reference(claim, context, reference['claimId'])
+        value = source
+        for key in path:
+            if isinstance(value, dict) and isinstance(key, str) and key in value:
+                value = value[key]
+            elif isinstance(value, list) and type(key) is int and 0 <= key < len(value):
+                value = value[key]
+            else:
+                return False
+        return _field_supported({**reference, 'value': value}, claim, context, slot)
     if 'fields' in entry:
         fields = entry['fields']
         if set(entry) != {'fields'} or not isinstance(fields, list) or not 1 <= len(fields) <= 32:

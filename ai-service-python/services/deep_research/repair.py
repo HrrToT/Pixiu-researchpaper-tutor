@@ -165,8 +165,15 @@ in the paper. Maintain consistency with accepted definitions and complete requir
                                              for row in originals.values()) else None
         # Other roles remain full consistency context and are independently
         # checked. Their writing requirements are not writable in this batch.
-        prompt += '\nExperimental deliverables for the active roles (remain consistent with the other definitions):\n' + design_requirements(
-            metric_domains, roles=roles if roles <= DESIGN_ROLES.keys() else None, policy=policy)
+        if roles <= CONFIG_ROLES and policy:
+            # Generation needs operational drafting guidance; the independent
+            # reviewer still applies the complete scientific policy afterwards.
+            from services.deep_research.design_drafting import design_drafting_requirements
+            requirements = design_drafting_requirements(metric_domains, compact=True, roles=roles)
+        else:
+            requirements = design_requirements(metric_domains,
+                roles=roles if roles <= DESIGN_ROLES.keys() else None, policy=policy)
+        prompt += '\nExperimental deliverables for the active roles (remain consistent with the other definitions):\n' + requirements
         prompt += ('\nA structural rejection is not a content approval. Fix substantive omissions in the same revision, '
                    'including concrete intervention levels, per-group budgets and measurement aggregation. '
                    'Choose explicit unexecuted proposal settings when appropriate; do not wait for paper settings '
