@@ -3,14 +3,14 @@ import { describe, expect, it, vi } from 'vitest';
 import { useTaskResearch } from './useTaskResearch';
 
 describe('task research integration', () => {
-  it('publishes a saved deferred answer without polling or automatically resuming until the next user action', async () => {
+  it.each(['waiting_user', 'queued', 'paused'])('publishes deferred %s without polling or automatically resuming until the next user action', async status => {
     vi.useFakeTimers();
     try {
       const task = { id: 't', researchRuns: [{ researchId: 'r' }] };
       let current = { contractVersion: 2, taskId: 't', runId: 'r', status: 'waiting_user', runRevision: 1,
         allowedActions: ['clarify', 'cancel'], clarification: { question: '先看哪一项？' } };
       const api = { get: vi.fn(async () => ({ task: current })), action: vi.fn(async (_task, _run, name) => {
-        current = name === 'clarify' ? { ...current, runRevision: 2, clarification: null,
+        current = name === 'clarify' ? { ...current, status, runRevision: 2, clarification: null,
           allowedActions: ['resume', 'cancel'], resumeDeferred: { reason: 'execution_capacity' } }
           : { ...current, runRevision: 3, status: 'running', allowedActions: ['cancel'], resumeDeferred: null };
         return { task: current };

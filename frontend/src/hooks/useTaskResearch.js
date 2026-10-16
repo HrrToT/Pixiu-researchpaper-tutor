@@ -51,7 +51,9 @@ export function useTaskResearch(workspace, api = taskResearchApi, operations = n
     setRuns((previous) => ({ ...previous, [key]: research }));
     if (terminal.has(research.status)) finished.current.add(key);
     else finished.current.delete(key);
-    if (idle.has(research.status)) idleRuns.current.add(key);
+    if (idle.has(research.status) || (research.resumeDeferred
+      && ['queued', 'paused', 'waiting_user'].includes(research.status)
+      && research.allowedActions?.includes('resume'))) idleRuns.current.add(key);
     else idleRuns.current.delete(key);
     return research;
   };
