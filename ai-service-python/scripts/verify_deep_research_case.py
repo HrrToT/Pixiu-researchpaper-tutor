@@ -18,25 +18,55 @@ from services.deep_research.acceptance_receipts import claim_submission, confirm
 from services.deep_research.acceptance_manifest import require_frozen_case
 
 
-def require_previous_cases_settled(directory, case_id, api):
+def _prior_submission_identity(path, case_id):
+    """Read receipt identities without trusting cached response/outcome fields.
+
+    The original live harness used CASE.json and CASE-vN.json with top-level
+    case/taskId/runId. Keep those files intact; they are history, not new intents.
+    """
+    value = json.loads(path.read_text(encoding='utf-8'))
+    if not isinstance(value, dict):
+        raise ValueError('Prior receipt schema is invalid; reconcile it before submitting.')
+    if 'schemaVersion' in value or 'intent' in value:
+        saved = read_receipt(path)
+        identity, run_id = saved['intent'], saved['runId']
+        recorded_case = identity.get('caseId')
+    else:
+        identity, run_id = value, value.get('runId')
+        recorded_case = value.get('case')
+    task_id = identity.get('taskId')
+    if recorded_case != case_id or not isinstance(task_id, str) or not task_id.strip():
+        raise ValueError('Prior receipt identity is invalid; reconcile it before submitting.')
+    if run_id is None:
+        raise ValueError('Prior submission is unconfirmed; reconcile it before any new attempt.')
+    if not isinstance(run_id, str) or not run_id.strip():
+        raise ValueError('Prior run identity is invalid; reconcile it before submitting.')
+    return task_id, run_id
+
+
+def require_previous_cases_settled(directory, case_id, api, *, history_directories=()):
     """Check authoritative prior state before a new attempt can mutate anything.
 
     Local result snapshots may be stale. Changing attempt or task IDs must not
     bypass an unconfirmed submission, active run or unresolved outcome.
     """
-    pattern = re.compile(re.escape(case_id) + r'-v[0-9]+\.json')
-    for path in sorted(Path(directory).iterdir()):
-        if not pattern.fullmatch(path.name):
+    pattern = re.compile(re.escape(case_id) + r'(?:-v[0-9]+)?\.json')
+    directories = dict.fromkeys(Path(p).resolve() for p in (directory, *history_directories))
+    identities = {}
+    for folder in directories:
+        if not folder.exists():
             continue
-        saved = read_receipt(path)
-        prior = saved['intent']
-        if prior.get('caseId') != case_id or not prior.get('taskId'):
-            raise ValueError('Prior receipt identity is invalid; reconcile it before submitting.')
-        if not saved['runId']:
-            raise ValueError('Prior submission is unconfirmed; reconcile it before any new attempt.')
-        old_path = '/task-workspaces/' + quote(prior['taskId'], safe='') + '/research/' + quote(saved['runId'], safe='')
+        for path in sorted(folder.iterdir()):
+            if not pattern.fullmatch(path.name):
+                continue
+            task_id, run_id = _prior_submission_identity(path, case_id)
+            if run_id in identities and identities[run_id] != task_id:
+                raise ValueError('Conflicting prior run identities; reconcile before submitting.')
+            identities[run_id] = task_id
+    for run_id, task_id in identities.items():
+        old_path = '/task-workspaces/' + quote(task_id, safe='') + '/research/' + quote(run_id, safe='')
         state = api('GET', old_path)['task']
-        if state.get('runId') != saved['runId'] or state.get('taskId') != prior['taskId']:
+        if state.get('runId') != run_id or state.get('taskId') != task_id:
             raise ValueError('Prior run identity mismatch')
         # Cancellation alone does not reconcile a potentially billed request.
         if state.get('status') not in {'completed', 'failed'} or state.get('errorCode') == 'unresolved_unknown':
@@ -44,7 +74,8 @@ def require_previous_cases_settled(directory, case_id, api):
 
 
 def run_case(manifest, case_id, attempt, directory, api, *, submit=False,
-             task_id=None, parent_run_id=None, check_ready=None):
+             task_id=None, parent_run_id=None, check_ready=None,
+             history_directories=(), lock_directory=None):
     if attempt < 1:
         raise ValueError('attempt must be positive')
     case = next((c for c in manifest['cases'] if c['id'] == case_id), None)
@@ -70,10 +101,12 @@ def run_case(manifest, case_id, attempt, directory, api, *, submit=False,
     elif not submit:
         return {'preview': True, 'intent': intent}
     else:
+        if lock_directory is not None and Path(directory).resolve() != Path(lock_directory).resolve():
+            raise ValueError('New submissions require the canonical receipt directory; custom folders are read-only.')
         if check_ready is not None:
             check_ready()  # Before workspace mutations or durable submission intent.
-        with case_submission_lock(directory, case_id):
-            require_previous_cases_settled(directory, case_id, api)
+        with case_submission_lock(lock_directory or directory, case_id):
+            require_previous_cases_settled(directory, case_id, api, history_directories=history_directories)
             task = api('GET', task_path, allow_missing=True)
             if task is None:
                 if parent_run_id:
@@ -125,7 +158,8 @@ def main():
     parser.add_argument('--attempt', type=int, default=1)
     parser.add_argument('--submit', action='store_true')
     parser.add_argument('--manifest', type=Path, default=root / 'docs/DEEP_RESEARCH_ACCEPTANCE_CASES_20261012.json')
-    parser.add_argument('--receipts', type=Path, default=root / 'tmp/dr-acceptance-receipts')
+    parser.add_argument('--receipts', type=Path, default=root / 'tmp/dr-acceptance-receipts',
+                        help='Existing receipt folder; new submissions use the canonical repository folder.')
     parser.add_argument('--origin', default='http://127.0.0.1:8081/api')
     parser.add_argument('--ai-origin', default='http://127.0.0.1:8000')
     parser.add_argument('--task-id')
@@ -142,9 +176,17 @@ def main():
             return None
         response.raise_for_status()
         return response.json()
-    result = run_case(json.loads(args.manifest.read_text(encoding='utf-8')), args.case, args.attempt,
+    manifest = json.loads(args.manifest.read_text(encoding='utf-8'))
+    canonical_receipts = root / 'tmp/dr-acceptance-receipts'
+    history_directories = [canonical_receipts]
+    legacy_history = manifest.get('review', {}).get('rawReceiptDirectory')
+    if legacy_history:
+        legacy_history = Path(legacy_history)
+        history_directories.append(legacy_history if legacy_history.is_absolute() else root / legacy_history)
+    result = run_case(manifest, args.case, args.attempt,
                       args.receipts, api, submit=args.submit, task_id=args.task_id,
-                      parent_run_id=args.parent_run_id, check_ready=check_ready)
+                      parent_run_id=args.parent_run_id, check_ready=check_ready,
+                      history_directories=history_directories, lock_directory=canonical_receipts)
     print(json.dumps(result, ensure_ascii=False, indent=2))
 
 

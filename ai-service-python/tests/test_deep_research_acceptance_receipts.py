@@ -3,7 +3,7 @@ import json
 import pytest
 
 from services.deep_research.acceptance_receipts import claim_submission, confirm_submission, read_receipt
-from scripts.verify_deep_research_case import run_case
+from scripts.verify_deep_research_case import run_case, require_previous_cases_settled
 
 
 def test_exclusive_claim_and_unconfirmed_never_resubmits(tmp_path):
@@ -172,3 +172,123 @@ def test_readiness_accepts_healthy_dependencies_and_preview_stays_offline(tmp_pa
     def forbidden():
         raise AssertionError('Preview must not check readiness over network')
     assert run_case(manifest(), 'D', 1, tmp_path, forbidden, check_ready=forbidden)['preview']
+
+
+@pytest.mark.parametrize('name', ['D.json', 'D-v11.json'])
+def test_legacy_unknown_in_separate_history_blocks_before_any_new_intent(tmp_path, name):
+    history, current = tmp_path / 'legacy', tmp_path / 'canonical'
+    history.mkdir()
+    (history / name).write_text(json.dumps({'case': 'D', 'taskId': 'old', 'runId': 'old-run',
+                                          'response': {'task': {'status': 'completed'}}}))
+    calls = []
+    def api(method, path, **kwargs):
+        calls.append((method, path))
+        return {'task': {'taskId': 'old', 'runId': 'old-run', 'status': 'paused',
+                         'errorCode': 'unresolved_unknown'}}
+    with pytest.raises(ValueError, match='confirmed terminal outcome'):
+        run_case(manifest(), 'D', 20, current, api, submit=True, task_id='different',
+                 history_directories=[history], lock_directory=current)
+    assert calls == [('GET', '/task-workspaces/old/research/old-run')]
+    assert not list(current.iterdir())
+
+
+@pytest.mark.parametrize('value', [
+    {'case': 'D', 'taskId': 'old', 'runId': None},
+    {'case': 'other', 'taskId': 'old', 'runId': 'run'},
+    {'case': 'D', 'taskId': '', 'runId': 'run'},
+    {'case': 'D', 'taskId': 'old', 'runId': 2},
+    {'schemaVersion': 2, 'case': 'D', 'taskId': 'old', 'runId': 'run'},
+    [],
+])
+def test_bad_or_unconfirmed_legacy_identity_fails_before_http(tmp_path, value):
+    history = tmp_path / 'legacy'
+    history.mkdir()
+    (history / 'D.json').write_text(json.dumps(value))
+    calls = []
+    with pytest.raises(ValueError):
+        run_case(manifest(), 'D', 2, tmp_path / 'current', lambda *a, **k: calls.append(a),
+                 submit=True, history_directories=[history])
+    assert not calls
+
+
+def test_legacy_and_modern_duplicate_identity_queried_once_and_diagnostics_ignored(tmp_path):
+    legacy, current = tmp_path / 'legacy', tmp_path / 'current'
+    legacy.mkdir()
+    current.mkdir()
+    (legacy / 'D.json').write_text(json.dumps({'case': 'D', 'taskId': 'old', 'runId': 'run'}))
+    (legacy / 'D-v1-verifier.json').write_text('invalid diagnostic')
+    (legacy / 'D-v1.result.json').write_text('invalid result snapshot')
+    (legacy / 'other-v1.json').write_text('invalid unrelated case')
+    claim_submission(current / 'D-v1.json', {'caseId': 'D', 'taskId': 'old'})
+    confirm_submission(current / 'D-v1.json', 'run')
+    calls = []
+    def api(method, path):
+        calls.append((method, path))
+        return {'task': {'taskId': 'old', 'runId': 'run', 'status': 'completed'}}
+    require_previous_cases_settled(current, 'D', api, history_directories=[legacy, current])
+    assert calls == [('GET', '/task-workspaces/old/research/run')]
+
+
+def test_conflicting_history_identity_blocks_before_http(tmp_path):
+    legacy, current = tmp_path / 'legacy', tmp_path / 'current'
+    legacy.mkdir()
+    current.mkdir()
+    (legacy / 'D.json').write_text(json.dumps({'case': 'D', 'taskId': 'other', 'runId': 'run'}))
+    claim_submission(current / 'D-v1.json', {'caseId': 'D', 'taskId': 'old'})
+    confirm_submission(current / 'D-v1.json', 'run')
+    calls = []
+    with pytest.raises(ValueError, match='Conflicting'):
+        require_previous_cases_settled(current, 'D', lambda *a, **k: calls.append(a),
+                                       history_directories=[legacy])
+    assert not calls
+
+
+def test_history_observation_timeout_never_creates_new_receipt(tmp_path):
+    (tmp_path / 'D.json').write_text(json.dumps({'case': 'D', 'taskId': 'old', 'runId': 'run'}))
+    calls = []
+    def api(method, path, **kwargs):
+        calls.append(method)
+        raise TimeoutError('Only observation timed out')
+    with pytest.raises(TimeoutError):
+        run_case(manifest(), 'D', 2, tmp_path, api, submit=True)
+    assert calls == ['GET']
+    assert not (tmp_path / 'D-v2.json').exists()
+
+
+def test_custom_folder_cannot_bypass_canonical_store_but_existing_reads_still_work(tmp_path):
+    custom, canonical = tmp_path / 'custom', tmp_path / 'canonical'
+    calls = []
+    with pytest.raises(ValueError, match='canonical receipt directory'):
+        run_case(manifest(), 'D', 2, custom, lambda *a, **k: calls.append(a), submit=True,
+                 lock_directory=canonical)
+    assert not calls and not custom.exists() and not canonical.exists()
+    custom.mkdir()
+    intent = run_case(manifest(), 'D', 1, custom, None, task_id='old')['intent']
+    claim_submission(custom / 'D-v1.json', intent)
+    confirm_submission(custom / 'D-v1.json', 'run')
+    def api(method, path, **kwargs):
+        calls.append(method)
+        return {'task': {'taskId': 'old', 'runId': 'run', 'status': 'paused'}}
+    assert run_case(manifest(), 'D', 1, custom, api, task_id='old', submit=True,
+                    lock_directory=canonical)['status'] == 'paused'
+    assert calls == ['GET']
+
+
+def test_cli_always_includes_canonical_and_manifest_history(monkeypatch, tmp_path, capsys):
+    from scripts import verify_deep_research_case as runner
+    fixture = manifest()
+    fixture['review'] = {'rawReceiptDirectory': str(tmp_path / 'legacy')}
+    manifest_path = tmp_path / 'manifest.json'
+    manifest_path.write_text(json.dumps(fixture))
+    captured = {}
+    def run(*args, **kwargs):
+        captured.update(kwargs)
+        return {'preview': True}
+    monkeypatch.setattr(runner, 'run_case', run)
+    monkeypatch.setattr(runner.sys, 'argv', ['verify', 'D', '--manifest', str(manifest_path),
+                                           '--receipts', str(tmp_path / 'custom')])
+    runner.main()
+    canonical = runner.Path(runner.__file__).resolve().parents[2] / 'tmp/dr-acceptance-receipts'
+    assert captured['history_directories'] == [canonical, tmp_path / 'legacy']
+    assert captured['lock_directory'] == canonical
+    assert json.loads(capsys.readouterr().out)['preview']
