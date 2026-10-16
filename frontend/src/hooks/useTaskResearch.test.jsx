@@ -3,6 +3,35 @@ import { describe, expect, it, vi } from 'vitest';
 import { useTaskResearch } from './useTaskResearch';
 
 describe('task research integration', () => {
+  it('publishes a saved deferred answer without polling or automatically resuming until the next user action', async () => {
+    vi.useFakeTimers();
+    try {
+      const task = { id: 't', researchRuns: [{ researchId: 'r' }] };
+      let current = { contractVersion: 2, taskId: 't', runId: 'r', status: 'waiting_user', runRevision: 1,
+        allowedActions: ['clarify', 'cancel'], clarification: { question: '先看哪一项？' } };
+      const api = { get: vi.fn(async () => ({ task: current })), action: vi.fn(async (_task, _run, name) => {
+        current = name === 'clarify' ? { ...current, runRevision: 2, clarification: null,
+          allowedActions: ['resume', 'cancel'], resumeDeferred: { reason: 'execution_capacity' } }
+          : { ...current, runRevision: 3, status: 'running', allowedActions: ['cancel'], resumeDeferred: null };
+        return { task: current };
+      }) };
+      const hook = renderHook(() => useTaskResearch({ tasks: [task], activeTaskId: 't' }, api));
+      await act(async () => {});
+      await act(async () => hook.result.current.action('t', 'r', 'clarify', {
+        requestId: 'clarify', expectedRunRevision: 1, answer: '只看画质。' }));
+      expect(hook.result.current.runs['t/r'].resumeDeferred.reason).toBe('execution_capacity');
+      expect(hook.result.current.runs['t/r'].allowedActions).toEqual(['resume', 'cancel']);
+      await act(async () => vi.advanceTimersByTimeAsync(16000));
+      expect(api.get).toHaveBeenCalledTimes(1);
+      expect(api.action).toHaveBeenCalledTimes(1);
+      await act(async () => hook.result.current.action('t', 'r', 'resume', { requestId: 'resume', expectedRunRevision: 2 }));
+      await act(async () => vi.advanceTimersByTimeAsync(8000));
+      expect(hook.result.current.runs['t/r'].status).toBe('running');
+      expect(api.action.mock.calls.map(call => call[2])).toEqual(['clarify', 'resume']);
+      expect(api.get.mock.calls.length).toBeGreaterThan(1);
+      hook.unmount();
+    } finally { vi.useRealTimers(); }
+  });
   it.each(['paused', 'waiting_user'])('does not repeatedly poll confirmed %s while active runs keep updating', async status => {
     vi.useFakeTimers();
     try {

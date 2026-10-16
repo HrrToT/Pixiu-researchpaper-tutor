@@ -26,12 +26,15 @@ export default function ResearchResultCard({ taskId, run, result, error, onActio
   const button = useRef(null);
   const requests = useRef(new Map());
   const actions = new Set(Array.isArray(result.allowedActions) ? result.allowedActions : []);
+  const clarificationSaved = result.status === 'waiting_user' && actions.has('resume') && !actions.has('clarify');
+  const resumeDeferred = actions.has('resume') && result.resumeDeferred;
   const terminal = ['completed', 'cancelled', 'failed'].includes(result.status);
   const report = Boolean(result.reportVersionId || result.report?.versionId || (typeof result.report === 'string' && result.report.trim()));
   const rawTitle = result.title || result.brief?.title || '学术研究';
   const title = rawTitle.length > 48 ? ({ paper_comparison: '论文比较', claim_verification: '主张核查',
     experiment_design: '实验方案', direction_survey: '方向调研', research_entry: '研究切入点' }[result.outputKind || run.outputKind] || '学术研究') : rawTitle;
-  const status = result.status === 'completed' ? outcomes[result.outcome] || '研究已完成' : labels[result.status] || '正在确认研究状态';
+  const status = clarificationSaved ? '补充已保存，等待继续' : resumeDeferred ? '等待继续研究'
+    : result.status === 'completed' ? outcomes[result.outcome] || '研究已完成' : labels[result.status] || '正在确认研究状态';
   const activity = typeof result.activity === 'string' ? result.activity : result.activity?.label;
   const rawError = failure || error?.action || error?.poll || result.error;
   const shownError = typeof rawError === 'string' ? rawError : rawError?.message || '';
@@ -76,9 +79,11 @@ export default function ResearchResultCard({ taskId, run, result, error, onActio
   };
   return <article className="conversation-research-card research-result-card" aria-label="研究结果">
     <div className="research-result-heading"><strong>{title}</strong><span role="status" aria-live="polite">{status}</span></div>
-    {!terminal && activity && <p className="theme-text-muted text-sm">{activity}</p>}
+    {!terminal && activity && !clarificationSaved && !resumeDeferred && <p className="theme-text-muted text-sm">{activity}</p>}
+    {resumeDeferred && <p className="theme-text-muted text-sm">{resumeDeferred.reason === 'execution_busy'
+      ? '上一步正在结束，稍后可继续。' : '当前研究较多，稍后可继续。'}</p>}
     {result.summary && <p className="research-result-summary">{result.summary}</p>}
-    {result.status === 'waiting_user' && <form onSubmit={event => { event.preventDefault(); void act('clarify', { answer: clarification.trim() }); }}>
+    {result.status === 'waiting_user' && actions.has('clarify') && <form onSubmit={event => { event.preventDefault(); void act('clarify', { answer: clarification.trim() }); }}>
       <label>{result.clarification?.question || '请明确本次研究目标'}
         <input aria-label="研究范围答复" className="theme-input" value={clarification} onChange={event => setClarification(event.target.value)} />
       </label>

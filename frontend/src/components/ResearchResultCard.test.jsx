@@ -9,6 +9,47 @@ const props = { taskId: 't', run: { researchId: 'r' }, result: {
 } };
 
 describe('versioned research result', () => {
+  it('keeps unanswered clarification as an input form', () => {
+    render(<ResearchResultCard {...props} result={{ ...props.result, status: 'waiting_user',
+      allowedActions: ['clarify', 'cancel'], clarification: { question: '先核查哪一项？' } }} onAction={vi.fn()} />);
+    expect(screen.getByRole('textbox', { name: '研究范围答复' })).toBeInTheDocument();
+    expect(screen.getByRole('status')).toHaveTextContent('需要明确研究范围');
+    expect(screen.queryByRole('button', { name: '继续研究' })).not.toBeInTheDocument();
+  });
+  it.each(['execution_capacity', 'execution_busy'])('shows one resume action after a saved answer deferred by %s', async reason => {
+    const action = vi.fn().mockResolvedValue(undefined);
+    render(<ResearchResultCard {...props} result={{ ...props.result, status: 'waiting_user',
+      allowedActions: ['resume', 'cancel'], clarification: null, resumeDeferred: { reason } }} onAction={action} />);
+    expect(screen.getByRole('status')).toHaveTextContent('补充已保存，等待继续');
+    expect(screen.queryByRole('textbox', { name: '研究范围答复' })).not.toBeInTheDocument();
+    expect(screen.queryByText('核对消融实验')).not.toBeInTheDocument();
+    expect(screen.getAllByRole('button', { name: '继续研究' })).toHaveLength(1);
+    expect(action).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole('button', { name: '继续研究' }));
+    await waitFor(() => expect(action).toHaveBeenCalledTimes(1));
+    expect(action.mock.calls[0][2]).toBe('resume');
+    expect(action.mock.calls[0][3]).toEqual(expect.objectContaining({ expectedRunRevision: 4, requestId: expect.any(String) }));
+  });
+  it('uses the returned revision for a new explicit resume after another busy response', async () => {
+    const action = vi.fn().mockResolvedValue(undefined);
+    const saved = { ...props.result, status: 'waiting_user', allowedActions: ['resume', 'cancel'],
+      resumeDeferred: { reason: 'execution_capacity' } };
+    const { rerender } = render(<ResearchResultCard {...props} result={saved} onAction={action} />);
+    fireEvent.click(screen.getByRole('button', { name: '继续研究' }));
+    await waitFor(() => expect(action).toHaveBeenCalledTimes(1));
+    await waitFor(() => expect(screen.getByRole('button', { name: '继续研究' })).not.toBeDisabled());
+    rerender(<ResearchResultCard {...props} result={{ ...saved, runRevision: 5 }} onAction={action} />);
+    fireEvent.click(screen.getByRole('button', { name: '继续研究' }));
+    await waitFor(() => expect(action).toHaveBeenCalledTimes(2));
+    expect(action.mock.calls[1][3].expectedRunRevision).toBe(5);
+    expect(action.mock.calls[1][3].requestId).not.toBe(action.mock.calls[0][3].requestId);
+  });
+  it('does not expose deferred resume for an unknown call without server authorization', () => {
+    render(<ResearchResultCard {...props} result={{ ...props.result, status: 'paused', allowedActions: ['cancel'],
+      error: '上次调用结果未确认', resumeDeferred: { reason: 'execution_capacity' } }} onAction={vi.fn()} />);
+    expect(screen.queryByRole('button', { name: '继续研究' })).not.toBeInTheDocument();
+    expect(screen.getByRole('status')).toHaveTextContent('研究已暂停');
+  });
   it('does not repeat a long user request as the card heading', () => {
     render(<ResearchResultCard {...props} result={{ ...props.result, title: '研究质量并明确说明所有适用条件。'.repeat(8), outputKind: 'claim_verification' }} />);
     expect(screen.getByText('主张核查')).toBeInTheDocument();
