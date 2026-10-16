@@ -13,6 +13,10 @@ initializer:one of {mode:constant,value:finite scalar or rectangular literal arr
 Constant values broadcast over the declared shape; scalar shape is []. Uniform needs
 low<high. data_seed uses each current data seed; fixed uses a chosen nonnegative seed.
 Reset the named RNG per state/seed and record its implementation version at execution.
+Fresh inputs:[] forbids EVERY inputIndex dimension/reference; choose positive integer
+dimensions, e.g. shape:[1024,3]. Input-dependent dimensions require declared derive
+inputs and an existing axis. Never bundle distinct required variables into one opaque
+"model parameters" state: each needs its own shape and compatible actual values.
 Operation inputs are explicit; [] permits an input-free analytic rule, not copying an
 undeclared state. Rule parameters define actual transformations/values. List EVERY
 required state, not just its count/shape; scientific compatibility is checked separately.'''

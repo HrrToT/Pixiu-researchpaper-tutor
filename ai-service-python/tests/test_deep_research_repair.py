@@ -127,7 +127,9 @@ def test_repair_short_ids_restore_claim_and_cell_identity_without_mutating_input
     evidence = [{'evidenceId': 'ev_full_identity', 'quote': 'FPS 200'}]
     def invoke(prompt):
         assert '"evidenceRefs": ["E1"]' in prompt
-        assert '"value":"200"' in prompt
+        # Check the actual source/claim, not a coincidentally matching number in
+        # the generic table-binding schema (this fixture has no table source).
+        assert 'FPS 200' in prompt
         return {'content': json.dumps([{**original, 'evidenceRefs': ['E1'], 'tableBindings': [
             {'evidenceId': 'E1', 'rowNumber': 1, 'groupIndex': 0, 'metric': 'FPS', 'value': '200'}]}])}
     revised = repair_rejected({'claims': [original]}, {'rejected': [{'claimId': 'c'}]}, evidence, '', invoke, json.loads)
@@ -175,6 +177,26 @@ def test_repair_length_budget_includes_already_accepted_and_prior_kept_targets()
     result = repair_rejected({'claims': originals}, check, [{'evidenceId': 'e', 'quote': 'x'}],
         '100字以内', lambda _: {'content': json.dumps(revisions)}, json.loads)
     assert [c['claimId'] for c in result] == ['first']
+
+
+def test_short_repair_receives_remaining_allowance_and_accepted_factual_content():
+    accepted = {'claimId': 'training', 'kind': 'reported', 'text': '已回答的训练机制。',
+                'conditions': {'范围': '作者的直观示例'}, 'evidenceRefs': ['e']}
+    original = {'claimId': 'motivation', 'kind': 'reported', 'text': '待修订动机。',
+                'evidenceRefs': ['e']}
+    from services.deep_research.answer_constraints import answer_character_count
+    remaining = 100 - answer_character_count({'claims': [accepted]})
+    prompts = []
+    def invoke(prompt):
+        prompts.append(prompt)
+        assert f'fit remaining={remaining}' in prompt
+        assert '已回答的训练机制。' in prompt and '作者的直观示例' in prompt
+        return {'content': json.dumps([{**original, 'text': '更短的有依据动机。'}])}
+    revised = repair_rejected({'claims': [original, accepted]},
+        {'accepted': [accepted], 'rejected': [{'claimId': 'motivation'}]},
+        [{'evidenceId': 'e', 'quote': 'Evidence.'}], '100字以内', invoke, json.loads)
+    assert len(prompts) == 1 and [c['claimId'] for c in revised] == ['motivation']
+    assert not verify_claims(revised, [])['accepted']
 
 
 def test_repair_rejects_length_finish_even_if_partial_content_is_valid_json():

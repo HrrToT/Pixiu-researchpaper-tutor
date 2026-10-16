@@ -2,7 +2,8 @@
 
 Generation must see the scientific evidence as well as the output contracts.
 This guidance does not approve claims, replace structural validation, or change
-the full scientific requirements used by verification and repair.
+the full scientific requirements used by independent verification. Repair
+generation may use this same guidance; its output is independently checked.
 """
 from services.deep_research.experimental_reasoning import DESIGN_ROLES
 import json

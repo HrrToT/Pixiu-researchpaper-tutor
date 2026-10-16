@@ -7,7 +7,8 @@ Optimizing opacity may raise OR lower alpha. Use 不透明度 explicitly in prop
 Discrete sampling/index steps are non-differentiable; distinguish them from surrogate
 or coupled gradient paths. "Making sampling differentiable" alone does not give the
 index ordinary derivatives. Describe only the actual path supported by supplied
-detailed evidence, not a stronger shortcut.'''
+detailed evidence, not a stronger shortcut. Author intuitive cases are conditional,
+not guarantees about every update.'''
 
 OUTPUT_KIND_SECTIONS = {
     "direction_survey": ["核心判断", "方法脉络", "代表工作", "关键争议", "推荐阅读顺序"],

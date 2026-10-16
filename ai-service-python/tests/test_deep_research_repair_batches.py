@@ -45,6 +45,19 @@ def test_scheduler_keeps_all_hypotheses_and_analyses_atomic_and_each_target_once
     assert sorted(cid for group in groups for cid in group) == sorted(c['claimId'] for c in report['claims'])
 
 
+def test_limits_share_scientific_batch_without_displacing_canonical_initialization_pair():
+    roles = [('data', 'data'), ('budget', 'budget'), ('h', 'hypothesis'),
+             ('a', 'analysis'), ('groups', 'groups'), ('controls', 'controls'),
+             ('steps', 'steps'), ('limits', 'limits')]
+    claims = [{'claimId': cid, 'designRole': role} for cid, role in roles]
+    claims[-2].update(workflowContractVersion=4, executionSpec={'refs': {'controls': 'controls'}})
+    assert split_repair_targets(claims) == [
+        ['data', 'budget'], ['h', 'a', 'limits'], ['groups', 'controls', 'steps']]
+    # A linked pair alone is indivisible: capacity must fail before dispatch,
+    # rather than independently drafting two incompatible initializers.
+    assert split_repair_targets(claims[-3:-1]) == [['controls', 'steps']]
+
+
 def test_all_batches_preflight_before_any_provider_send(monkeypatch):
     report, verification = inputs()
     fake_preparer(monkeypatch, limit_failure='steps')
@@ -94,6 +107,36 @@ def test_budget_exhaustion_keeps_completed_drafts_without_retry(monkeypatch):
     result = repair_rejected(report, verification, [], 'Question', invoke, json.loads, checkpoint=saved.append)
     assert [c['claimId'] for c in result] == ['data', 'budget']
     assert len(sent) == 2 and set(saved[-1]['results']) == {'0'}
+
+
+def test_later_short_batch_allowance_counts_prior_drafts_and_pending_request_stays_frozen(monkeypatch):
+    report, verification = inputs()
+    fake_preparer(monkeypatch)
+    prepared, saved = [], []
+    previous_preparer = __import__('services.deep_research.repair', fromlist=['_prepare_repair'])._prepare_repair
+    def prepare(*args, **kwargs):
+        value = previous_preparer(*args, **kwargs)
+        value['prompt'] = json.dumps({**json.loads(value['prompt']),
+                                     'prior': kwargs['prior_revisions']})
+        return value
+    monkeypatch.setattr('services.deep_research.repair._prepare_repair', prepare)
+    def invoke(prompt):
+        current = json.loads(prompt)
+        prepared.append(current)
+        if len(prepared) == 2:
+            raise InterruptedError('Pending request must remain exact')
+        return response(prompt)
+    with pytest.raises(InterruptedError):
+        repair_rejected(report, verification, [], '300字以内', invoke, json.loads, checkpoint=saved.append)
+    assert prepared[0]['prior'] == []
+    assert [r['claimId'] for r in prepared[1]['prior']] == ['data', 'budget']
+    frozen = saved[-1]['pending']['request']['prepared']['prompt']
+    resumed = []
+    def resume(prompt):
+        resumed.append(prompt)
+        return response(prompt)
+    repair_rejected(report, verification, [], '300字以内', resume, json.loads, batch_state=saved[-1])
+    assert resumed[0] == frozen and len(resumed) == 2
 
 
 def test_truncated_batch_is_final_empty_result_and_never_resubmitted(monkeypatch):

@@ -14,7 +14,7 @@ from services.deep_research.repair_scope import repair_evidence_scope
 
 
 def _prepare_repair(report, verification, evidence, question, *, max_prompt_bytes=24000,
-                    metric_domains=None, draft_context=()):
+                    metric_domains=None, draft_context=(), prior_revisions=()):
     rejected = {row['claimId']: row for row in verification.get('rejected', [])}
     originals = {row['claimId']: row for row in report.get('claims', []) if row.get('claimId') in rejected}
     if not originals:
@@ -78,6 +78,22 @@ def _prepare_repair(report, verification, evidence, question, *, max_prompt_byte
                         if key not in {'evidenceRefs', 'obligationIds', 'detailLevel', 'tableBindings'}} for row in draft_context
                        if row.get('claimId') not in originals
                        and row.get('kind') in {'proposal', 'suggestion', 'hypothesis'}]
+    character_limit = requested_character_limit(question)
+    accepted_characters = answer_character_count({'claims': verification.get('accepted', [])})
+    # Revisions from earlier batches remain unverified, but still occupy the
+    # proposed answer's length allowance. They are not silently rewritten here.
+    prior_characters = answer_character_count({'claims': prior_revisions})
+    length_contract = ''
+    if character_limit:
+        remaining = max(0, character_limit - accepted_characters - prior_characters)
+        length_contract = (f'\nAnswer character allowance: total={character_limit}; '
+                           f'immutable accepted={accepted_characters}; earlier batch drafts={prior_characters}; '
+                           f'ALL current target text plus conditions together must fit remaining={remaining}.\n'
+                           'Accepted answer content (already answered; do not repeat it):\n'
+                           + json.dumps([{key: row[key] for key in ('claimId', 'text', 'conditions') if key in row}
+                                         for row in verification.get('accepted', [])],
+                                        ensure_ascii=False, separators=(',', ':'))
+                           + '\nFill only the missing part. Do not repeat an accepted mechanism in a motivation repair.\n')
     from services.deep_research.verification_context import CONFIG_ROLES, configuration_context
     if (all(row.get('designRole') in CONFIG_ROLES for row in originals.values())
             and any(row.get('protocolContractVersion') in (1, 2) or row.get('workflowContractVersion') in (1, 2, 3, 4)
@@ -89,6 +105,11 @@ def _prepare_repair(report, verification, evidence, question, *, max_prompt_byte
         retained = {row['claimId'] for row in selected_context}
         proposal_context = [row for row in proposal_context if row['claimId'] in retained]
         sibling_context = [row for row in sibling_context if row['claimId'] in retained]
+    table_instructions = '''Table numbers require exact tableData bindings:
+{"evidenceId":"E1","rowNumber":1,"groupIndex":0,"metric":"FPS","value":"200"}
+This is schema, not evidence: copy actual rowNumber, zero-based groupIndex, metric and value
+(key "value", never "exactStringValue"). Name dataset/method/metric; omit unsupported numbers.
+''' if has_tables else ''
     prompt = f'''Revise only the targets; narrow unsupported wording or omit it.
 answer_incomplete requires filling requested omissions, conditioning inputs and applicability,
 not merely shortening. A missing mechanism explanation needs how/why the requested
@@ -107,15 +128,14 @@ details with a paper-wide claim that those details were never measured.
 absence_not_established requires bounded positive evidence:
 missing passages do not prove paper-wide absence; finite results do not prove universality.
 Question: {question}
+{length_contract}
 Accepted experimental definitions (consistency only; do not revise these or treat them as paper evidence):
 {json.dumps(proposal_context, ensure_ascii=False, separators=(',', ':'))}
 Other draft definitions (UNVERIFIED consistency context, not frozen choices or paper evidence;
 these may be revised in other batches; never return a verdict or revision for these IDs):
 {json.dumps(sibling_context, ensure_ascii=False, separators=(',', ':'))}
-Application-generated protocol suffixes are omitted here; their complete executionSpec remains.
-The interface renders those fields. Preserve original prose consistency; do not duplicate that rendering.
-Missing-question dictionary (each missingQuestionIds entry refers to the exact question here;
-Q identifiers are internal references, never evidence or text to publish):
+App suffixes are omitted; complete executionSpec remains and is rendered. Keep prose consistent; do not duplicate it.
+Missing-question dictionary (missingQuestionIds refer here; Q IDs are internal, never evidence/published text):
 {json.dumps(question_dictionary, ensure_ascii=False, separators=(',', ':'))}
 detailRequirementRole points to the identical required role definition under Experimental deliverables below.
 Rejected claims and checks:
@@ -124,8 +144,7 @@ Allowed evidence IDs per claim (candidate permissions, not proof of support):
 {permissions_marker}
 Exact available evidence:
 {evidence_marker}
-missingEvidenceRefs are prioritized candidates, not guaranteed supplied passages.
-Only the evidence actually listed above and in each claim's allowed IDs is usable.
+missingEvidenceRefs are candidates; use only each claim's allowed evidence actually listed above.
 Return a COMPACT JSON array, or [] if no supported revision is possible. Schema:
 {json.dumps(revision_shape, ensure_ascii=False)}
 Use actual values, not schema descriptions; wording key is "text".
@@ -143,10 +162,7 @@ For purely prospective choices or mathematical definitions, use evidenceRefs=[] 
 there is no empirical assertion. Cite only evidence actually needed for factual clauses;
 permission IDs are not citations to retain automatically. Never omit support for paper facts.
 Use E1/E2 aliases in evidenceRefs/tableBindings, never in published text; Q IDs are not evidence.
-Table numbers require exact tableData bindings:
-{{"evidenceId":"E1","rowNumber":1,"groupIndex":0,"metric":"FPS","value":"200"}}
-This is schema, not evidence: copy actual rowNumber, zero-based groupIndex, metric and value
-(key "value", never "exactStringValue"). Name dataset/method/metric; omit unsupported numbers.
+{table_instructions}
 Abstract evidence permits only explicit abstract-level wording (detailLevel="abstract").
 For existing proposals, choose concrete seed/split/level/budget/confidence settings as YOUR UNEXECUTED PROPOSAL,
 not paper-attributed values or promises to preregister later. Correct formulas and label
@@ -168,7 +184,9 @@ in the paper. Maintain consistency with accepted definitions and complete requir
                                              for row in originals.values()) else None
         # Other roles remain full consistency context and are independently
         # checked. Their writing requirements are not writable in this batch.
-        if roles <= CONFIG_ROLES and policy:
+        if (roles <= CONFIG_ROLES and policy) or any(
+                row.get('protocolContractVersion') == 2 or row.get('workflowContractVersion') == 4
+                for row in report.get('claims', [])):
             # Generation needs operational drafting guidance; the independent
             # reviewer still applies the complete scientific policy afterwards.
             from services.deep_research.design_drafting import design_drafting_requirements
@@ -340,7 +358,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
                   'rejected': [row for row in verification.get('rejected', []) if row['claimId'] in ids]}
         return _prepare_repair(report, subset, evidence, question,
             max_prompt_bytes=state['maxPromptBytes'] if byte_limit is None else byte_limit,
-            metric_domains=metric_domains, draft_context=siblings)
+            metric_domains=metric_domains, draft_context=siblings, prior_revisions=results)
 
     state = deepcopy(batch_state) if batch_state is not None else {
         'version': 1, 'inputDigest': identity, 'maxPromptBytes': max_prompt_bytes,
