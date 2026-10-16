@@ -71,8 +71,8 @@
       "boundary": "Exact citation/physical-page lookup, manual edit, original preservation and find-after-reload; content acceptance is separate."
     },
     "retiredH3RDevelopmentCalls": {
-      "calls": 104,
-      "tokens": 363894,
+      "calls": 108,
+      "tokens": 372376,
       "attempts": [
         "H3R-v2",
         "H3R-v3",
@@ -86,14 +86,15 @@
         "H3R-v11",
         "H3R-v12",
         "H3R-v13",
-        "H3R-v14"
+        "H3R-v14",
+        "H3R-v15"
       ],
       "cost": null,
       "boundary": "Known actual settled usage, no unknown reservations counted as usage. Retired development cases; no independent holdout credit."
     },
     "retiredH5RDevelopmentCalls": {
-      "calls": 147,
-      "tokens": 689637,
+      "calls": 151,
+      "tokens": 704363,
       "attempts": [
         "H5R-v2",
         "H5R-v3",
@@ -111,7 +112,8 @@
         "H5R-v15",
         "H5R-v16",
         "H5R-v17",
-        "H5R-v18"
+        "H5R-v18",
+        "H5R-v19"
       ],
       "cost": null,
       "boundary": "Known actual settled usage, no unknown reservations counted as usage. Retired development cases; no independent holdout credit."
@@ -119,9 +121,9 @@
     "currentOfflineCorrections": {
       "proof": "deep-research-evidence/repair-scope-and-allowance-replay-20261016.json",
       "draftingProof": "deep-research-evidence/drafting-evidence-capacity-20261015.json",
-      "realGenerationOnFinalVersion": false,
+      "realGenerationOnFinalVersion": true,
       "finalNumericGuardProof": "deep-research-evidence/quantitative-condition-keys-20261015.json",
-      "boundary": ".110 saved-input replay fits all nine experiment targets in three requests, with all original target quotes/context. Short repair receives 185 accepted characters and 115 remaining. No Provider request or content pass on .110."
+      "boundary": ".110 synthesis drafts produced; verification transports unknown in both cases. Offline repair fitting remains valid, but no actual repair/quality pass was obtained."
     },
     "externalReader": {
       "javaIsolatedPassed": 43,
@@ -558,11 +560,145 @@
           ]
         },
         "boundary": "One explicitly authorized submission each, no automatic retry. Retired development cases, no independent credit. Original responses unchanged; later offline fixes are not retrospective passes."
+      },
+      {
+        "date": "2026-10-16",
+        "case": "H5R-v19",
+        "runId": "dr_run_e9c9dc916bef519092fad8b929b2448f",
+        "sourceCommit": "ab35c73",
+        "promptVersion": "dr-v2.20261016.110",
+        "status": "paused",
+        "outcome": "none",
+        "errorCode": "unresolved_unknown",
+        "stage": "verify",
+        "budgetSnapshot": {
+          "maxModelCalls": 18,
+          "maxTokens": 100000,
+          "maxWallClockSeconds": 360,
+          "reserveModelCalls": 5,
+          "reserveTokens": 50000,
+          "maxExternalSearches": 6,
+          "maxFulltextFetches": 6,
+          "finalizationBudgetVersion": 1,
+          "releasedReserveTokens": 0,
+          "modelCalls": 3,
+          "tokens": 40932,
+          "normalTokens": 6218,
+          "elapsedSeconds": 0,
+          "externalSearches": 0,
+          "fulltextFetches": 0,
+          "reservedModelCalls": 2,
+          "exhausted": "",
+          "profile": "standard"
+        },
+        "confirmedModelCalls": 4,
+        "confirmedTokens": 14726,
+        "cost": null,
+        "unknownModelCalls": [
+          {
+            "callId": "2b9bf9988820d0a929503d1eb699b388",
+            "node": "verify_design_config",
+            "reservedTokens": 26206,
+            "reservedAt": "2026-10-16T04:00:41Z",
+            "completedAt": "2026-10-16T08:44:14Z",
+            "settled": false,
+            "error": {
+              "message": "DeepSeek request failed.",
+              "type": "provider_error",
+              "status_code": null,
+              "failureKind": "transport_error"
+            }
+          }
+        ],
+        "contentAccepted": false,
+        "independentHoldoutEligible": false,
+        "sourcePayloadSha256": "82e09544b090f14f37e91439f2195e1018f9d3060de02ffb7119ab54229b5685",
+        "raw": "tmp/dr-acceptance-receipts/H5R-v19.payload.json",
+        "calls": "tmp/dr-acceptance-receipts/H5R-v19.calls.json",
+        "review": {
+          "status": "unscored_unresolved_transport",
+          "scores": null,
+          "draftFindings": [
+            "Unverified draft now uses fixed positive dimensions, but each initializer still hides the complete representation inside one opaque parameter vector.",
+            "Draft incorrectly equates optimizing opacity with increasing it/reducing transparency; optimization can raise or lower opacity.",
+            "Draft data/limits make unsupported paper-wide absence assertions and prose repeats typed fields.",
+            "No scientific response, repair or final coverage was received. These are draft observations, not a completed content review."
+          ]
+        },
+        "boundary": "One authorized submission. Request outcome/usage unknown; reservation is not measured usage. No retry, continuation, manual confirmation or new-attempt bypass. No unchecked draft published. Long transport interval spans confirmed host sleep; Provider execution/usage remains unconfirmed.",
+        "hostSleepProof": "deep-research-evidence/host-sleep-during-dr110-20261016.json"
+      },
+      {
+        "date": "2026-10-16",
+        "case": "H3R-v15",
+        "runId": "dr_run_4738564f5ff35157996a35068c62ed32",
+        "sourceCommit": "ab35c73",
+        "promptVersion": "dr-v2.20261016.110",
+        "status": "paused",
+        "outcome": "none",
+        "errorCode": "unresolved_unknown",
+        "stage": "verify",
+        "budgetSnapshot": {
+          "maxModelCalls": 18,
+          "maxTokens": 100000,
+          "maxWallClockSeconds": 360,
+          "reserveModelCalls": 5,
+          "reserveTokens": 50000,
+          "maxExternalSearches": 6,
+          "maxFulltextFetches": 6,
+          "finalizationBudgetVersion": 1,
+          "releasedReserveTokens": 0,
+          "modelCalls": 3,
+          "tokens": 36432,
+          "normalTokens": 5181,
+          "elapsedSeconds": 0,
+          "externalSearches": 1,
+          "fulltextFetches": 1,
+          "reservedModelCalls": 2,
+          "exhausted": "",
+          "profile": "standard"
+        },
+        "confirmedModelCalls": 4,
+        "confirmedTokens": 8482,
+        "cost": null,
+        "unknownModelCalls": [
+          {
+            "callId": "920c39e5d282842cc713189a6cd15049",
+            "node": "verify",
+            "reservedTokens": 27950,
+            "reservedAt": "2026-10-16T04:00:16Z",
+            "completedAt": "2026-10-16T08:44:14Z",
+            "settled": false,
+            "error": {
+              "message": "DeepSeek request failed.",
+              "type": "provider_error",
+              "status_code": null,
+              "failureKind": "transport_error"
+            }
+          }
+        ],
+        "contentAccepted": false,
+        "independentHoldoutEligible": false,
+        "sourcePayloadSha256": "3511700bee0bd653f577d414ea08bca82f0068a8ca8fe18f01de1d105f1d26bb",
+        "raw": "tmp/dr-acceptance-receipts/H3R-v15.payload.json",
+        "calls": "tmp/dr-acceptance-receipts/H3R-v15.calls.json",
+        "review": {
+          "status": "unscored_unresolved_transport",
+          "scores": null,
+          "draftFindings": [
+            "Unverified draft retains both own-method motivation and training evidence from arXiv v4 fulltext.",
+            "Draft describes the correct-depth intuitive case as gradient ascent; the supplied author text describes gradient descent increasing opacity.",
+            "Draft remains jargon-heavy and presents the intuitive conditional example too generally.",
+            "No fact-verification response, repair or final coverage was received. These are draft observations, not a completed content review."
+          ]
+        },
+        "boundary": "One authorized submission. Request outcome/usage unknown; reservation is not measured usage. No retry, continuation, manual confirmation or new-attempt bypass. No unchecked draft published. Long transport interval spans confirmed host sleep; Provider execution/usage remains unconfirmed.",
+        "hostSleepProof": "deep-research-evidence/host-sleep-during-dr110-20261016.json"
       }
     ],
     "resumedDevelopmentUsage": {
-      "modelCalls": 46,
-      "tokens": 183674,
+      "modelCalls": 54,
+      "tokens": 206882,
       "cost": null,
       "cases": [
         "H5R-v16",
@@ -570,7 +706,9 @@
         "H5R-v17",
         "H3R-v13",
         "H5R-v18",
-        "H3R-v14"
+        "H3R-v14",
+        "H5R-v19",
+        "H3R-v15"
       ],
       "boundary": "Actual known settled totals; overlap with retired-case buckets, not additive. Cost unavailable, not zero."
     },
@@ -585,7 +723,7 @@
       "contractVersion": 1,
       "newVerificationInputBytes": 32000,
       "legacyAndOtherNodeInputBytes": 24000,
-      "realGenerationOnFinalVersion": false,
+      "realGenerationOnFinalVersion": true,
       "originalTotalBudgetUnchanged": true,
       "proof": "deep-research-evidence/verification-window-controls-replay-20261016.json",
       "tests": {
@@ -595,19 +733,20 @@
         "sourceCommit": "4a56599",
         "log": "tmp/pytest-dr108-full-final.log"
       },
-      "realGenerationVersion": "dr-v2.20261016.109",
+      "realGenerationVersion": "dr-v2.20261016.110",
       "realGenerationCases": [
-        "H5R-v18",
-        "H3R-v14"
+        "H5R-v19",
+        "H3R-v15"
       ],
-      "realGenerationContentAccepted": false
+      "realGenerationContentAccepted": false,
+      "realGenerationState": "Draft produced, verification transport unknown after host sleep; unscored."
     },
     "canonicalInitialization": {
       "workflowContractVersion": 4,
       "protocolContractVersion": 2,
       "explicitStateInitializers": true,
       "canonicalControlsReference": true,
-      "realGenerationOnFinalVersion": false,
+      "realGenerationOnFinalVersion": true,
       "proof": "deep-research-evidence/canonical-initialization-replay-20261016.json",
       "tests": {
         "passed": 1770,
@@ -616,12 +755,13 @@
         "sourceCommit": "174787b",
         "log": "tmp/pytest-dr109-full-final.log"
       },
-      "realGenerationVersion": "dr-v2.20261016.109",
+      "realGenerationVersion": "dr-v2.20261016.110",
       "realGenerationCases": [
-        "H5R-v18",
-        "H3R-v14"
+        "H5R-v19",
+        "H3R-v15"
       ],
-      "realGenerationContentAccepted": false
+      "realGenerationContentAccepted": false,
+      "realGenerationState": "Draft produced, verification transport unknown after host sleep; unscored."
     },
     "repairScopeAndAllowance": {
       "promptVersion": "dr-v2.20261016.110",
@@ -629,7 +769,7 @@
       "maximumBatches": 3,
       "canonicalInitializationPairAtomic": true,
       "remainingCharactersExplicit": true,
-      "realGenerationOnFinalVersion": false,
+      "realGenerationOnFinalVersion": true,
       "tests": {
         "passed": 1773,
         "warnings": 1,
@@ -637,7 +777,24 @@
         "log": "tmp/pytest-dr110-full-final.log",
         "scope": "Research/reading/PDF table/config; no frontend or Java source changes."
       },
-      "proof": "deep-research-evidence/repair-scope-and-allowance-replay-20261016.json"
+      "proof": "deep-research-evidence/repair-scope-and-allowance-replay-20261016.json",
+      "realGenerationCases": [
+        "H5R-v19",
+        "H3R-v15"
+      ],
+      "realGenerationState": "paused/unresolved_unknown before repair; repair improvement not live-validated"
+    },
+    "newUnknownDevelopmentCalls": {
+      "cases": [
+        "H5R-v19",
+        "H3R-v15"
+      ],
+      "calls": 2,
+      "reservedTokens": 54156,
+      "settled": false,
+      "excludedFromActualUsage": true,
+      "proof": "deep-research-evidence/runtime-postcase-dr110-20261016.json",
+      "hostSleepProof": "deep-research-evidence/host-sleep-during-dr110-20261016.json"
     }
   },
   "stages": [
@@ -666,7 +823,8 @@
         "deep-research-evidence/runtime-load-dr109-canonical-initialization-20261016.json",
         "deep-research-evidence/repair-scope-and-allowance-replay-20261016.json",
         "deep-research-evidence/runtime-load-dr110-repair-allowance-20261016.json",
-        "deep-research-evidence/runtime-postcase-dr109-20261016.json"
+        "deep-research-evidence/runtime-postcase-dr109-20261016.json",
+        "deep-research-evidence/runtime-postcase-dr110-20261016.json"
       ]
     },
     {
@@ -687,7 +845,7 @@
     {
       "id": "DR3",
       "implementation": "Adaptive gaps, incremental reuse, bounded repair, typed experimental contracts, canonical baseline/component initializers and final-answer coverage implemented",
-      "acceptance": ".109 experiment remains partial: invalid fresh dimensions, unsupported absence and repair capacity. .110 three-batch offline replay passes; actual scientific/content and independent replacements remain open.",
+      "acceptance": ".109 experiment remains partial: invalid fresh dimensions, unsupported absence and repair capacity. .110 three-batch offline replay passes; actual scientific/content and independent replacements remain open. .110 H5R-v19 produced an unverified draft then paused on an unknown verification request; no new content credit.",
       "proof": [
         "deep-research-evidence/d3-v25-20261014.json",
         "deep-research-evidence/completion-criteria-20261015.json",
@@ -715,13 +873,15 @@
         "deep-research-evidence/repair-scope-and-allowance-replay-20261016.json",
         "deep-research-evidence/runtime-load-dr110-repair-allowance-20261016.json",
         "deep-research-evidence/runtime-postcase-dr109-20261016.json",
-        "deep-research-evidence/H5R-v18-quality-20261016.json"
+        "deep-research-evidence/H5R-v18-quality-20261016.json",
+        "deep-research-evidence/runtime-postcase-dr110-20261016.json",
+        "deep-research-evidence/H5R-v19-unknown-20261016.json"
       ]
     },
     {
       "id": "DR4",
       "implementation": "Permissioned arXiv discovery, versioned fulltext acquisition, fixed network exit and degradation implemented",
-      "acceptance": ".109 fixed-v4 fulltext acquired; motivation rejected and oversized revision omitted. Training-only report remains partial and below novice quality threshold. No independent credit.",
+      "acceptance": ".109 fixed-v4 fulltext acquired; motivation rejected and oversized revision omitted. Training-only report remains partial and below novice quality threshold. No independent credit. .110 H3R-v15 acquired v4 fulltext and generated a draft but verification transport is unknown; unscored.",
       "proof": [
         "deep-research-evidence/H3-v1-external-fulltext-20261013.json",
         "../ai-service-python/tests/test_deep_research_academic.py",
@@ -734,7 +894,9 @@
         "deep-research-evidence/H3R-v6-quality-20261015.json",
         "deep-research-evidence/H3R-v12-quality-20261016.json",
         "deep-research-evidence/H3R-v13-quality-20261016.json",
-        "deep-research-evidence/H3R-v14-quality-20261016.json"
+        "deep-research-evidence/H3R-v14-quality-20261016.json",
+        "deep-research-evidence/runtime-postcase-dr110-20261016.json",
+        "deep-research-evidence/H3R-v15-unknown-20261016.json"
       ]
     },
     {
@@ -756,7 +918,8 @@
         "deep-research-evidence/runtime-load-dr109-canonical-initialization-20261016.json",
         "deep-research-evidence/repair-scope-and-allowance-replay-20261016.json",
         "deep-research-evidence/runtime-load-dr110-repair-allowance-20261016.json",
-        "deep-research-evidence/runtime-postcase-dr109-20261016.json"
+        "deep-research-evidence/runtime-postcase-dr109-20261016.json",
+        "deep-research-evidence/runtime-postcase-dr110-20261016.json"
       ]
     }
   ],
@@ -863,17 +1026,23 @@
     "Full novice study workflow",
     "Independent Edge recovery"
   ],
-  "currentProviderConstraint": "The two explicitly approved .109 cases H5R-v18/H3R-v14 each ran once: 14 settled model calls, 54011 tokens, both completed/partial and not content accepted. No automatic retry or .110 Provider call. This specific two-case permission is used; additional paid repetitions require expanded authorization. Seven historical unknowns remain untouched.",
-  "currentDevelopmentMode": "Primary Codex only, no Qoder. Active goal; .110 repair scope/remaining allowance loaded after 1773 offline passes. Original DR0-DR5 acceptance and weekly remaining<=55% pause condition unchanged.",
+  "currentProviderConstraint": "Latest authorized H5R-v19/H3R-v15 each submitted once and paused/unresolved_unknown during verification. Eight calls/23208 tokens confirmed settled; two unknown reservations total 54156 tokens are not usage. Do not retry/resume or bypass with a new attempt while these outcomes remain unconfirmed. Seven historical paused unknowns plus these two remain preserved; no additional model request.",
+  "currentDevelopmentMode": "Primary Codex only, no Qoder. Active goal; .110 loaded, 1773 offline passes. Latest two real cases paused at unconfirmed transports, no content acceptance. Original DR0-DR5 gates and quota rule unchanged.",
   "loadedRuntime": {
     "commit": "ab35c73",
     "promptVersion": "dr-v2.20261016.110",
     "ready": true,
     "callsPreserved": 3172,
     "pausedUnknownRuns": 7,
-    "proof": "deep-research-evidence/runtime-load-dr110-repair-allowance-20261016.json"
+    "proof": "deep-research-evidence/runtime-load-dr110-repair-allowance-20261016.json",
+    "latestLedgerSnapshot": {
+      "calls": 3208,
+      "pausedUnknownRuns": 9,
+      "proof": "deep-research-evidence/runtime-postcase-dr110-20261016.json"
+    }
   },
   "nextQualityWork": [
+    "Reconcile the two newly unknown verification requests without retries or manual invented success. Complete independent offline work meanwhile; transport pause is not a content verdict.",
     "Validate actual representation-complete initializers, real compatible rendering/optimizer settings and canonical paired copies; .109 fresh state references undeclared input 0 and is correctly rejected.",
     ".110 now fits all .109 repair targets in three 24KB requests offline; verify actual generated revisions and scientific verdicts without increasing total budgets or retrying unknowns.",
     "Produce a complete novice motivation/training explanation in ordinary words, retaining conditional source scope and aggregate 300-character allowance; metadata access cannot substitute for scientific explanation.",
