@@ -77,7 +77,8 @@ def design_drafting_requirements(metric_domains=None, *, compact=False, roles=No
     from services.deep_research.metric_scope import metric_protocol_requirements
     protocols = metric_protocol_requirements(metric_domains)
     metrics = '; '.join(f'{domain}: {text}' for domain, text in protocols.items())
-    return (_DRAFT_POLICY + '\n' + _DRAFT_STATISTICS + '\n'
+    statistics = _DRAFT_STATISTICS if roles is None or set(roles) & {'hypothesis', 'analysis'} else ''
+    return (_DRAFT_POLICY + '\n' + statistics + '\n'
             + '\n'.join(f'{role}: {metrics if role == "metrics" else _ROLE_HINTS[role] if compact else requirement}'
                         for role, (_, requirement) in DESIGN_ROLES.items() if roles is None or role in roles))
 

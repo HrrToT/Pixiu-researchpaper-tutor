@@ -7,6 +7,7 @@ def operation_text(operation, *, include_action=True):
     for parameter in operation['parameters']:
         value = parameter['value']
         shown = value if isinstance(value, str) else json.dumps(value, ensure_ascii=False, allow_nan=False)
-        parts.append(parameter['name'] + '：' + shown)
+        name = {'state_layout': '新组件状态与初值'}.get(parameter['name'], parameter['name'])
+        parts.append(name + '：' + shown)
     result = '；'.join(parts)
     return ('；' + result) if result and not include_action else result

@@ -531,7 +531,10 @@ class BudgetedSemanticChecker:
         proposals = [c for c in claims if c.get('kind') in {'proposal', 'suggestion', 'hypothesis'}]
         facts = [c for c in claims if c.get('kind') not in {'proposal', 'suggestion', 'hypothesis'}]
         from services.deep_research.verification_context import CONFIG_ROLES
-        config = [c for c in proposals if c.get('designRole') in CONFIG_ROLES]
+        def requires_science(c):
+            return ((c.get('designRole') == 'controls' and c.get('protocolContractVersion') == 1)
+                or (c.get('designRole') == 'steps' and c.get('workflowContractVersion') in (2, 3)))
+        config = [c for c in proposals if c.get('designRole') in CONFIG_ROLES and not requires_science(c)]
         science = [c for c in proposals if c not in config]
         science_node = 'verify_design_science' if node == 'verify' else 'verify_repair_design_science'
         config_node='verify_design_config' if node=='verify' else 'verify_repair_design_config'
@@ -698,16 +701,16 @@ Do not require an unexecuted experiment to have results. Do not judge context cl
         if any(c.get('protocolContractVersion')==1 for c in [*claims,*proposal_context]):
             from services.deep_research.experiment_protocol import PROTOCOL_REVIEW_POLICY
             prompt += '\n'+PROTOCOL_REVIEW_POLICY
-        if any(c.get('workflowContractVersion') in (1, 2) for c in [*claims, *proposal_context]):
+        if any(c.get('workflowContractVersion') in (1, 2, 3) for c in [*claims, *proposal_context]):
             versions = sorted({c['workflowContractVersion'] for c in [*claims, *proposal_context]
-                if type(c.get('workflowContractVersion')) is int and c['workflowContractVersion'] in (1, 2)})
+                if type(c.get('workflowContractVersion')) is int and c['workflowContractVersion'] in (1, 2, 3)})
             prompt += ('\nWorkflow contract ' + '/'.join(map(str, versions)) +
                 ' binds steps to exact data/budget/controls/groups definitions. '
                 'Check each new component creation rule, per-seed rebuilding or warm starts, '
                 'split-before-fitting, train-only/validation-only checkpoint selection and '
                 'consistency with all original prose. Nonempty fields do not prove these choices. '
                 'Fixed-start replications do not establish independent baseline training. '
-                'Contract 2 inputs must refer to actually available selected states: a framework name '
+                'Contract 2/3 inputs must refer to actually available selected states: a framework name '
                 'does not identify a renderer, and a base model does not automatically contain a new enhancement. '
                 'Check the transformation and initial values of EVERY new trainable state, not just an RNG seed. '
                 'Fresh creation must specify shape/count and values/RNG; deriving requires valid input selectors.')
@@ -795,6 +798,14 @@ The dataAvailability object is an internal audit, not new experimental results.
                           'metric signs and decision rules. Explain a failure concisely; no full derivation ' \
                           'is needed in the returned reason. Shared context is not itself verified by this call.\n' \
                           + REVIEW_FACTORIAL_REFERENCE
+                if any(c.get('designRole') in {'controls', 'steps'} for c in claims):
+                    prompt += ('\nFor initialization/rendering targets, enumerate the states required by the '
+                        'chosen representation and check that EACH has a defined count/shape and initial '
+                        'value/distribution or valid source transformation. A seed and one scalar do not '
+                        'initialize a whole representation. A general framework name does not specify an '
+                        'actual compatible renderer/evaluator. Fail the target when these definitions are '
+                        'missing; do not turn the omission into a harmless limitation. Check training and '
+                        'rendering losses/parameter updates against that actual state.')
             prompt += '\nOther proposed statements, for consistency only (not evidence and not verdict targets):\n' + json.dumps(wire_context, ensure_ascii=False, separators=(',', ':'))
             if any(c.get('designRole') for c in claims):
                 prompt += '\nFor every designRole, verify BOTH logical correctness AND fulfillment of its entire ' \
@@ -829,7 +840,7 @@ The dataAvailability object is an internal audit, not new experimental results.
                            'per_group_steps=recovery (budget contract 1 only). '
                            'Other slots require quotes. Do not mix fields with quote/quotes. All bindings together '
                            'must substantiate the entire slot; valid fields do not prove scientific correctness.')
-                if any(c.get('workflowContractVersion') in (1, 2) for c in claims):
+                if any(c.get('workflowContractVersion') in (1, 2, 3) for c in claims):
                     audit_prompt += ('\nSteps workflow slot roots: baseline_acquisition=refs/baselineMode/order; '
                         'group_pairing=refs/componentInitializations/replicationMode/order; saved_artifacts=records; '
                         'data_isolation=order/checkpointSelection; component_creation=componentInitializations; '

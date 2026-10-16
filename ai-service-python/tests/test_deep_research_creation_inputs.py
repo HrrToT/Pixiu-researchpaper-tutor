@@ -74,7 +74,8 @@ def test_fresh_component_then_explicit_dependent_component_are_created_in_availa
     first['inputs'] = []
     first['creation'] = {'action': 'Create a one-dimensional zero vector.',
         'parameters': [{'name': 'length', 'type': 'number', 'value': 4},
-                       {'name': 'initial_value', 'type': 'number', 'value': 0}]}
+                       {'name': 'initial_value', 'type': 'number', 'value': 0},
+                       {'name': 'state_layout', 'type': 'choice', 'value': 'one vector of length four; every entry starts at zero'}]}
     second = deepcopy(first)
     second.update(componentId='derived', initializationMode='derive',
                   inputs=[{'state': 'residual', 'selector': 'all four entries'}])

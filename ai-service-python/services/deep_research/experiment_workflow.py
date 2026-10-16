@@ -8,7 +8,7 @@ STAGES = ('prepare_data', 'acquire_baseline', 'initialize_components', 'pair_gro
           'apply_interventions', 'recover', 'evaluate', 'record')
 RECORDS = {'baseline_identity', 'split_manifest', 'seed_manifest', 'component_states',
            'group_configs', 'recovery_budgets', 'evaluation_outputs', 'raw_measurements'}
-WORKFLOW_VERSIONS = (1, 2)
+WORKFLOW_VERSIONS = (1, 2, 3)
 RECORD_LABELS = {'baseline_identity': '基线身份', 'split_manifest': '数据划分清单',
     'seed_manifest': '随机种子清单', 'component_states': '新组件初始状态',
     'group_configs': '各组配置', 'recovery_budgets': '各组训练预算',
@@ -60,13 +60,20 @@ warm starts, not independently trained baselines. Save resulting group checkpoin
 Operations use {action,parameters:[{name,type:number|choice,value}]}.
 These are unexecuted proposals; text adds rationale, not a duplicate field listing.'''
 
+WORKFLOW_CONTRACT_V3 = WORKFLOW_CONTRACT_V2.replace('Workflow contract 2', 'Workflow contract 3').replace(
+    'All splits are locked BEFORE fitting',
+    'For fresh creation include a choice parameter named state_layout describing actual '
+    'state variables, dimensions/counts and their initial values/distributions. A seed '
+    'and one opacity value alone do not initialize positions, scale, orientation or appearance. '
+    'Use exact input-dependent count rules when needed.\nAll splits are locked BEFORE fitting')
+
 
 def workflow_version(value):
     return value if type(value) is int and value in WORKFLOW_VERSIONS else 0
 
 
 def workflow_contract(version):
-    return WORKFLOW_CONTRACT_V2 if version == 2 else WORKFLOW_CONTRACT
+    return {1: WORKFLOW_CONTRACT, 2: WORKFLOW_CONTRACT_V2, 3: WORKFLOW_CONTRACT_V3}[version]
 
 
 def _strings(value):
@@ -109,16 +116,16 @@ def workflow_errors(spec, version=1):
         ids = set()
         for component in components:
             fields = {'componentId', 'creation', 'appliesTo'}
-            if version == 2:
+            if version >= 2:
                 fields |= {'inputs', 'initializationMode'}
             if (not isinstance(component, dict) or set(component) != fields
                     or not isinstance(component.get('componentId'), str) or not component['componentId'].strip()
                     or component['componentId'] in ids
-                    or (version == 2 and component['componentId'] in {'baseline', 'training_data'})):
+                    or (version >= 2 and component['componentId'] in {'baseline', 'training_data'})):
                 errors.append('workflow.component')
                 continue
-            if version == 2:
-                errors.extend(_creation_input_errors(component, ids))
+            if version >= 2:
+                errors.extend(_creation_input_errors(component, ids, version))
             ids.add(component['componentId'])
             errors.extend(_operation_errors(component['creation'], 'workflow.creation'))
             if isinstance(component['creation'], dict) and component['creation'].get('parameters') == []:
@@ -153,19 +160,25 @@ def workflow_errors(spec, version=1):
                     if not isinstance(split_mode, str) or set(split) != expected.get(split_mode):
                         errors.append('workflow.validationSplit.fields')
     records = spec.get('records')
-    required_records = RECORDS | ({'group_checkpoints'} if version == 2 else set())
+    required_records = RECORDS | ({'group_checkpoints'} if version >= 2 else set())
     if not _strings(records) or not required_records <= set(records):
         errors.append('workflow.records')
     return list(dict.fromkeys(errors))
 
 
-def _creation_input_errors(component, earlier):
+def _creation_input_errors(component, earlier, version):
     inputs, mode = component['inputs'], component['initializationMode']
     if not isinstance(mode, str) or mode not in {'derive', 'fresh'} or not isinstance(inputs, list):
         return ['workflow.creation.inputs']
     if (mode == 'derive' and not inputs) or (mode == 'fresh' and inputs):
         return ['workflow.creation.input_mode_conflict']
     errors, seen = [], set()
+    operation = component.get('creation')
+    parameters = operation.get('parameters') if isinstance(operation, dict) else None
+    if version >= 3 and mode == 'fresh' and (not isinstance(parameters, list) or not any(
+            isinstance(p, dict) and p.get('name') == 'state_layout' and p.get('type') == 'choice'
+            and isinstance(p.get('value'), str) and p['value'].strip() for p in parameters)):
+        errors.append('workflow.creation.fresh_layout_required')
     for item in inputs:
         if (not isinstance(item, dict) or set(item) != {'state', 'selector'}
                 or not all(isinstance(v, str) and v.strip() for v in item.values())):
@@ -205,8 +218,8 @@ def workflow_text(claim):
         from services.deep_research.protocol_text import render_split
         lines.append('   验证集仅从训练部分再次划出，在拟合前固定；规则：' +
                      (render_split(spec['checkpointSelection']['split'], training='拟合', evaluation='验证')
-                      if version == 2 else json.dumps(spec['checkpointSelection']['split'], ensure_ascii=False, sort_keys=True)))
-        if version == 2:
+                      if version >= 2 else json.dumps(spec['checkpointSelection']['split'], ensure_ascii=False, sort_keys=True)))
+        if version >= 2:
             lines.append('   内层拟合与验证部分必须都非空且互不重叠；否则停止。')
     mode = spec['replicationMode']
     if mode == 'retrained_per_seed':
@@ -220,14 +233,14 @@ def workflow_text(claim):
     lines.append('3. 每次重复先创建所需新组件，再配对复制到各组：')
     for component in spec['componentInitializations']:
         from services.deep_research.operation_text import operation_text
-        if version == 2:
+        if version >= 2:
             for source in component['inputs']:
                 name = {'baseline': '已有基线', 'training_data': '训练数据'}.get(source['state'], source['state'])
                 lines.append('   - ' + component['componentId'] + '的输入：' + name + '；选取规则：' + source['selector'])
             if component['initializationMode'] == 'fresh':
                 lines.append('   - ' + component['componentId'] + '：从显式初值新建，不复制已有组件。')
         lines.append('   - ' + component['componentId'] + '：' + component['creation']['action'] +
-            (operation_text(component['creation'], include_action=False) if version == 2
+            (operation_text(component['creation'], include_action=False) if version >= 2
              else '；参数=' + json.dumps(component['creation']['parameters'], ensure_ascii=False)) +
             '；相同初始状态复制到组 ' + '、'.join(component['appliesTo']))
     if not spec['componentInitializations']:
@@ -240,11 +253,11 @@ def workflow_text(claim):
     else:
         from services.deep_research.operation_text import operation_text
         lines.append('   选择依据仅为' + ('训练损失' if selection['mode'] == 'train_loss' else '独立验证部分') +
-            '：' + (operation_text(selection['rule']) if version == 2 else selection['rule']['action'] +
+            '：' + (operation_text(selection['rule']) if version >= 2 else selection['rule']['action'] +
                    '；参数=' + json.dumps(selection['rule']['parameters'], ensure_ascii=False)))
     lines.extend(['   最终评估集不得用于初始化、调参、早停或检查点选择。',
                   ('6. 保存：' + '、'.join(RECORD_LABELS.get(key, key) for key in spec['records']) + '。'
-                   if version == 2 else '6. 保存基线身份、划分与种子清单、组件初态、各组配置及恢复预算、评估输出和原始测量。')])
+                   if version >= 2 else '6. 保存基线身份、划分与种子清单、组件初态、各组配置及恢复预算、评估输出和原始测量。')])
     return '\n'.join(lines)
 
 
