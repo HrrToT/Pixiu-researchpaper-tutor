@@ -42,13 +42,13 @@
       "overlap": true
     },
     "backendCurrentResearchReadingTables": {
-      "passed": 1719,
+      "passed": 1770,
       "warnings": 1,
-      "seconds": 57.57,
-      "sourceCommit": "4a56599",
-      "log": "tmp/pytest-dr108-full-final.log",
+      "seconds": 63.34,
+      "sourceCommit": "174787b",
+      "log": "tmp/pytest-dr109-full-final.log",
       "scope": "Research/reading/PDF table/config. No frontend or Java source changes this turn.",
-      "proof": "deep-research-evidence/verification-window-controls-replay-20261016.json"
+      "proof": "deep-research-evidence/canonical-initialization-replay-20261016.json"
     },
     "frontendDocumentNavigationFocused": {
       "passed": 19,
@@ -115,11 +115,11 @@
       "boundary": "Known actual settled usage, no unknown reservations counted as usage. Retired development cases; no independent holdout credit."
     },
     "currentOfflineCorrections": {
-      "proof": "deep-research-evidence/verification-window-controls-replay-20261016.json",
+      "proof": "deep-research-evidence/canonical-initialization-replay-20261016.json",
       "draftingProof": "deep-research-evidence/drafting-evidence-capacity-20261015.json",
       "realGenerationOnFinalVersion": false,
       "finalNumericGuardProof": "deep-research-evidence/quantitative-condition-keys-20261015.json",
-      "boundary": ".108 preserves all nine saved definitions, typed values, target quotes and contexts in a single 25207-byte controls review. An explicit failed fixture remains failed; no new Provider call and no content acceptance."
+      "boundary": ".109 rejects saved shape-only/unknown-checkpoint definitions; real-input synthesis keeps scene/mechanism quotations and repair preflights two bounded batches. Empty fixtures generate no claims/revisions. No new Provider call or content acceptance."
     },
     "externalReader": {
       "javaIsolatedPassed": 43,
@@ -432,10 +432,11 @@
       "boundary": "Actual known settled totals; overlap with retired-case buckets, not additive. Cost unavailable, not zero."
     },
     "workflowAndExtraction": {
-      "workflowContractVersion": 3,
+      "workflowContractVersion": 4,
       "extractionPriorityVersion": 2,
-      "proof": "deep-research-evidence/extraction-and-repair-coverage-replay-20261016.json",
-      "boundary": "Fresh state layout is structurally required; .105 scientific review still rejects missing initial values. V1/V2 historical contracts remain unchanged."
+      "proof": "deep-research-evidence/canonical-initialization-replay-20261016.json",
+      "boundary": "Workflow 4 requires baseline/component states and canonical controls protocol 2. Structural validity remains separate from scientific quality; earlier contracts stay readable.",
+      "protocolContractVersion": 2
     },
     "versionedVerificationWindow": {
       "contractVersion": 1,
@@ -450,6 +451,21 @@
         "seconds": 57.57,
         "sourceCommit": "4a56599",
         "log": "tmp/pytest-dr108-full-final.log"
+      }
+    },
+    "canonicalInitialization": {
+      "workflowContractVersion": 4,
+      "protocolContractVersion": 2,
+      "explicitStateInitializers": true,
+      "canonicalControlsReference": true,
+      "realGenerationOnFinalVersion": false,
+      "proof": "deep-research-evidence/canonical-initialization-replay-20261016.json",
+      "tests": {
+        "passed": 1770,
+        "warnings": 1,
+        "seconds": 63.34,
+        "sourceCommit": "174787b",
+        "log": "tmp/pytest-dr109-full-final.log"
       }
     }
   },
@@ -474,7 +490,9 @@
         "../ai-service-python/tests/test_deep_research_end_to_end.py",
         "../ai-service-python/tests/test_deep_research_process_exit.py",
         "deep-research-evidence/verification-window-controls-replay-20261016.json",
-        "deep-research-evidence/runtime-load-dr108-verification-window-20261016.json"
+        "deep-research-evidence/runtime-load-dr108-verification-window-20261016.json",
+        "deep-research-evidence/canonical-initialization-replay-20261016.json",
+        "deep-research-evidence/runtime-load-dr109-canonical-initialization-20261016.json"
       ]
     },
     {
@@ -494,8 +512,8 @@
     },
     {
       "id": "DR3",
-      "implementation": "Adaptive gaps, incremental reuse, bounded repair, experiment contracts and final-answer coverage implemented; versioned component inputs/fresh state layout, scientific initialization review and exact typed audit references",
-      "acceptance": "Experiment executability and comparison/continuation content quality incomplete",
+      "implementation": "Adaptive gaps, incremental reuse, bounded repair, typed experimental contracts, canonical baseline/component initializers and final-answer coverage implemented",
+      "acceptance": "Canonical initialization and dependency removal offline-verified; actual scientific executability, comparison/continuation quality and independent replacements remain open.",
       "proof": [
         "deep-research-evidence/d3-v25-20261014.json",
         "deep-research-evidence/completion-criteria-20261015.json",
@@ -517,7 +535,9 @@
         "deep-research-evidence/complete-json-unclosed-fence-replay-20261016.json",
         "deep-research-evidence/audit-reference-guards-20261016.json",
         "deep-research-evidence/verification-window-controls-replay-20261016.json",
-        "deep-research-evidence/runtime-load-dr108-verification-window-20261016.json"
+        "deep-research-evidence/runtime-load-dr108-verification-window-20261016.json",
+        "deep-research-evidence/canonical-initialization-replay-20261016.json",
+        "deep-research-evidence/runtime-load-dr109-canonical-initialization-20261016.json"
       ]
     },
     {
@@ -552,7 +572,9 @@
         "deep-research-evidence/runtime-load-dr85-terminology-20261015.json",
         "deep-research-evidence/H3R-v13-report-20261016.png",
         "deep-research-evidence/runtime-postcase-dr105-20261016.json",
-        "deep-research-evidence/runtime-load-dr107-audit-ref-20261016.json"
+        "deep-research-evidence/runtime-load-dr107-audit-ref-20261016.json",
+        "deep-research-evidence/canonical-initialization-replay-20261016.json",
+        "deep-research-evidence/runtime-load-dr109-canonical-initialization-20261016.json"
       ]
     }
   ],
@@ -659,18 +681,18 @@
     "Full novice study workflow",
     "Independent Edge recovery"
   ],
-  "currentProviderConstraint": "No new model request this turn. H5R-v17/H3R-v13 originals remain terminal and unchanged; any additional paid case must respect actual authorization scope. Seven old paused unknowns untouched.",
-  "currentDevelopmentMode": "Primary Codex only, no Qoder. Active goal; .108 verification window and context fix loaded after 1719 offline passes. Total budget and all original DR0-DR5 acceptance gates unchanged.",
+  "currentProviderConstraint": "No new model request this turn. Previous two fixed-case permissions have each been used once; further paid repetitions require the actual expanded authorization. Seven historical paused unknowns remain untouched.",
+  "currentDevelopmentMode": "Primary Codex only, no Qoder. Active goal; .109 canonical baseline/component initialization loaded after 1770 offline passes. Original DR0-DR5 acceptance and quota pause condition unchanged.",
   "loadedRuntime": {
-    "commit": "4a56599",
-    "promptVersion": "dr-v2.20261016.108",
+    "commit": "174787b",
+    "promptVersion": "dr-v2.20261016.109",
     "ready": true,
     "callsPreserved": 3132,
     "pausedUnknownRuns": 7,
-    "proof": "deep-research-evidence/runtime-load-dr108-verification-window-20261016.json"
+    "proof": "deep-research-evidence/runtime-load-dr109-canonical-initialization-20261016.json"
   },
   "nextQualityWork": [
-    "Make fresh component initial values and baseline acquisition/paired creation consistent across all experiment roles; a state shape alone is insufficient.",
+    "Typed baseline/component initial values, RNG, shape rules and canonical cross-role references are implemented. Validate actual scientific adequacy, complete representation state, rendering and optimizer compatibility in a real experiment-plan response.",
     "Saved complete controls-review input now fits the versioned 32KB window offline; real scientific verdict quality and broader plan capacity remain to validate. Final coverage and repair generation keep their 24KB caps.",
     "Produce and independently review a novice explanation with ordinary error/adjustment/consequence meaning, not just derivative terminology.",
     "Complete D1/D2/D3/D5 and fresh independent replacement gates; no diagnostic case can regain unseen eligibility. Keep PR draft until the complete original design passes."
