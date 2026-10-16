@@ -42,13 +42,13 @@
       "overlap": true
     },
     "backendCurrentResearchReadingTables": {
-      "passed": 1867,
+      "passed": 1895,
       "warnings": 1,
-      "seconds": 67.47,
-      "sourceCommit": "68524d7",
-      "log": "tmp/pytest-dr113-full-first.log",
-      "scope": "Research, reading, PDF tables and config; no frontend or Java source change.",
-      "proof": "deep-research-evidence/D1-v8-plan-failure-20261016.json"
+      "seconds": 69.84,
+      "sourceCommit": "338b89e",
+      "log": "tmp/pytest-dr114-full-first.log",
+      "scope": "Research, reading, PDF tables and config; no frontend or Java changes.",
+      "proof": "deep-research-evidence/clarification-context-replay-20261016.json"
     },
     "frontendDocumentNavigationFocused": {
       "passed": 19,
@@ -119,11 +119,11 @@
       "boundary": "Known actual settled usage, no unknown reservations counted as usage. Retired development cases; no independent holdout credit."
     },
     "currentOfflineCorrections": {
-      "proof": "deep-research-evidence/D1-v8-plan-failure-20261016.json",
+      "proof": "deep-research-evidence/clarification-context-replay-20261016.json",
       "draftingProof": "deep-research-evidence/drafting-evidence-capacity-20261015.json",
       "realGenerationOnFinalVersion": false,
       "finalNumericGuardProof": "deep-research-evidence/quantitative-condition-keys-20261015.json",
-      "boundary": ".113 planner schema/example/diagnostic and legacy acceptance history guard verified offline. The saved incomplete .112 plan is still rejected; no missing requirement is invented. D1-v8 failed before retrieval and is not content acceptance. No real generation on .113."
+      "boundary": ".114 human clarification history, brief refresh, requested length/audience and final audit context verified offline. Synthetic real-graph/SQLite restart and repeated action use a fixed fixture model. No Provider request, content score or independent acceptance."
     },
     "externalReader": {
       "javaIsolatedPassed": 43,
@@ -885,6 +885,28 @@
         "scope": "Research, reading, PDF tables and config; no frontend or Java source change."
       },
       "proof": "deep-research-evidence/D1-v8-plan-failure-20261016.json"
+    },
+    "clarificationContext": {
+      "sourceCommit": "338b89e",
+      "contractVersion": 1,
+      "serverOwnedImmutable": true,
+      "humanHistoryRetained": true,
+      "refreshBriefBeforePlan": true,
+      "latestAudienceAndLengthRequirementsApplied": true,
+      "finalCoverageIncludesClarifications": true,
+      "sourceScopeAndTotalBudgetUnchanged": true,
+      "legacyRequestAndRouteUnchanged": true,
+      "actualProviderCallsOnThisStep": 0,
+      "realGenerationOnFinalVersion": false,
+      "tests": {
+        "passed": 1895,
+        "warnings": 1,
+        "seconds": 69.84,
+        "sourceCommit": "338b89e",
+        "log": "tmp/pytest-dr114-full-first.log",
+        "scope": "Research, reading, PDF tables and config; no frontend or Java changes."
+      },
+      "proof": "deep-research-evidence/clarification-context-replay-20261016.json"
     }
   },
   "stages": [
@@ -924,7 +946,9 @@
         "deep-research-evidence/runtime-load-dr112-incremental-assessment-20261016.json",
         "deep-research-evidence/acceptance-history-guard-20261016.json",
         "deep-research-evidence/D1-v8-plan-failure-20261016.json",
-        "deep-research-evidence/runtime-load-dr113-plan-shape-20261016.json"
+        "deep-research-evidence/runtime-load-dr113-plan-shape-20261016.json",
+        "deep-research-evidence/clarification-context-replay-20261016.json",
+        "deep-research-evidence/runtime-load-dr114-clarification-20261016.json"
       ]
     },
     {
@@ -984,7 +1008,9 @@
         "deep-research-evidence/runtime-load-dr112-incremental-assessment-20261016.json",
         "deep-research-evidence/acceptance-history-guard-20261016.json",
         "deep-research-evidence/D1-v8-plan-failure-20261016.json",
-        "deep-research-evidence/runtime-load-dr113-plan-shape-20261016.json"
+        "deep-research-evidence/runtime-load-dr113-plan-shape-20261016.json",
+        "deep-research-evidence/clarification-context-replay-20261016.json",
+        "deep-research-evidence/runtime-load-dr114-clarification-20261016.json"
       ]
     },
     {
@@ -1034,7 +1060,9 @@
         "deep-research-evidence/beginner-rewrite-replay-20261016.json",
         "deep-research-evidence/runtime-load-dr111-beginner-rewrite-20261016.json",
         "deep-research-evidence/incremental-assessment-replay-20261016.json",
-        "deep-research-evidence/runtime-load-dr112-incremental-assessment-20261016.json"
+        "deep-research-evidence/runtime-load-dr112-incremental-assessment-20261016.json",
+        "deep-research-evidence/clarification-context-replay-20261016.json",
+        "deep-research-evidence/runtime-load-dr114-clarification-20261016.json"
       ]
     }
   ],
@@ -1044,7 +1072,7 @@
       "runId": "dr_run_7ca40ccd0a305302b4f4e116e36c757a",
       "machine": "failed/invalid_plan_response",
       "content": "not scoreable: no final answer; no retrieval; planner omitted required completion criteria",
-      "next": "Validate .113 complete plan shape on a newly authorized case, then check source-bounded conclusions, conditions and unverified scope. No automatic retry.",
+      "next": "Validate the current .114 complete plan shape on a newly authorized case, then check source-bounded conclusions, conditions and unverified scope. No automatic retry.",
       "previousResult": {
         "runId": "dr_run_66ec09fffdfe5c8d9a97a0a2f1816d75",
         "machine": "completed/inconclusive",
@@ -1154,18 +1182,20 @@
     "Full novice study workflow",
     "Independent Edge recovery"
   ],
-  "currentProviderConstraint": "Latest newly authorized D1-v8 submitted once on .112 and failed during planning: two confirmed calls/2049 tokens, no final answer, no retry. No model request on .113. All nine unknown runs remain untouched. D2-v11 is an older unknown despite later terminal D2 attempts; the harness now checks original/legacy receipts and cannot switch new submission directories. H5R-v19/H3R-v15 unknown reservations are still not actual usage. New paid validation requires new scope authorization.",
-  "currentDevelopmentMode": "Primary Codex only, no Qoder. Active goal; .113 complete plan shape and rejection diagnostics loaded after 1867 offline passes. One authorized .112 D1-v8 failed and is preserved; no content credit. All DR0-DR5 quality/independent gates and weekly quota pause condition remain unchanged.",
+  "currentProviderConstraint": "Latest newly authorized D1-v8 submitted once on .112 and failed during planning: two confirmed calls/2049 tokens, no final answer, no retry. No model request on .114. All nine unknown runs remain untouched. D2-v11 is an older unknown despite later terminal D2 attempts; the harness now checks original/legacy receipts and cannot switch new submission directories. H5R-v19/H3R-v15 unknown reservations are still not actual usage. New paid validation requires new scope authorization.",
+  "currentDevelopmentMode": "Primary Codex only, no Qoder. Active goal; .114 clarification context loaded after 1895 offline passes. No Provider request in this step. Prior D1-v8 remains failed; nine unknown runs untouched; D1/D2/D3/D5 and five new independent gates remain open.",
   "loadedRuntime": {
-    "commit": "68524d7",
-    "promptVersion": "dr-v2.20261016.113",
+    "commit": "338b89e",
+    "promptVersion": "dr-v2.20261016.114",
     "ready": true,
     "callsPreserved": 3210,
     "pausedUnknownRuns": 9,
-    "proof": "deep-research-evidence/runtime-load-dr113-plan-shape-20261016.json"
+    "proof": "deep-research-evidence/runtime-load-dr114-clarification-20261016.json"
   },
   "nextQualityWork": [
-    "Keep all nine unknown runs untouched, including D2-v11. Reconcile actual Provider outcomes before any same-case retry/new-attempt bypass. One authorized D1-v8 ended; no additional model request on .113.",
+    "Keep all nine unknown runs untouched, including D2-v11. Reconcile actual Provider outcomes before any same-case retry/new-attempt bypass. One authorized D1-v8 ended; no additional model request on .114.",
+    "Known unpaid follow-up: clarify saves the answer before resume; if execution_capacity/execution_busy rejects resume, the run can remain waiting_user with clarificationNeeded=false. Preserve the answer and provide a consistent single resume action/status in API and ResearchResultCard; verify capacity recovery and no duplicate submission.",
+    "New runs preserve all human clarification answers, refresh assumptions/measurement scope before planning, and use the current goal for length, audience, repair and final coverage. Validate real model interpretation in future authorized cases; fixture flow is not content evidence.",
     "The .113 planner now has a complete primary schema and neutral JSON example, without criteria autofill or automatic regeneration. Validate actual model compliance and end-to-end D1 content in a future authorized case.",
     "New .112 extraction-stop routing, source/question-specific cached relevance, empty-passage review and exact-version coverage are implemented. Validate actual adaptive retrieval/coverage benefit on a future authorized eligible case; topical relevance cannot prove final claim support or answer completeness.",
     "The durable beginner wording pass is implemented, including citation/condition identity, length, normal-pool/time admission and exact pending-request recovery. Validate actual ordinary-language why/how completeness and conditional training explanation in a future authorized, eligible case; offline placeholders are not content evidence.",
