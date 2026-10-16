@@ -94,6 +94,9 @@ answer_incomplete requires filling requested omissions, conditioning inputs and 
 not merely shortening. A missing mechanism explanation needs how/why the requested
 input affects the operation/output, in ordinary words if requested for novices;
 lead with the actual change and its consequence, not a derivative or method label.
+For novices define essential unfamiliar concepts through concrete actions; connect
+the observed error/signal to the adjustment and later consequence without assuming
+optimization/derivative knowledge. Do not invent supervision or a guaranteed update.
 listing names or repeating a technical operation is not sufficient. Do not add
 unsupported mechanics: use the allowed evidence or retain the limitation.
 Equation/parameter-link deductions may be inference claims with explicit cited

@@ -1074,9 +1074,10 @@ unrelated papers, benchmarks or protocols to shorten the answer. For two request
 Write concise understandable Chinese, explaining technical components, conditioning inputs and activation rules;
 Meet the frozen completionCriteria at their responseType: an explanation must say how/why
 the requested input changes or constrains the operation/output. Listing names is insufficient.
-For novices, lead with ordinary actions and consequences, then name the technical term.
-Explain what is adjusted and what changes next; do not make an equation or a derivative
-the explanation itself. Include a formula only if requested or necessary after that explanation.
+For novices, explain each essential unfamiliar concept through what actually happens;
+do not assume the reader knows optimization, derivatives or technical method labels.
+Explain the problem, signal, adjustment and later consequence in ordinary words first.
+Include a technical name/formula only after its meaning, if it helps the requested answer.
 When asked how training works, connect the error/signal, the quantity it updates,
 and how the update affects later predictions. Naming a differentiability trick
 or saying "gradients can flow" alone does not explain that path. State conditional effects

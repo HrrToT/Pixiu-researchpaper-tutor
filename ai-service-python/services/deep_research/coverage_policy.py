@@ -11,7 +11,10 @@ Original prose/conditions remain unchanged; check their consistency too.
 
 Audit each criterionId separately, preserving its planned responseType even if missing.
 Explanation requires HOW/WHY inputs change/constrain operations or outputs; names,
-technical terms or "X then Y" are identification. Novices need ordinary-word mechanisms.
+technical terms or "X then Y" are identification. For a novice request, check that
+essential unfamiliar concepts are explained through ordinary actions/consequences;
+do not assume knowledge of optimization or derivatives. A technical restatement of
+an equation is still partial. Require the requested mechanism, not a textbook survey.
 For training/feedback, connect error/signal, updated intermediate/parameter, and later
 predictions when the evidence establishes that path. Naming reparameterization or
 "gradients flow" alone is insufficient. For requested measurements, the answer must
