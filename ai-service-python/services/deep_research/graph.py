@@ -996,6 +996,9 @@ def make_synthesize_node(
         candidates = distinct_evidence_candidates(evidence)
         if output_kind == 'paper_comparison':
             candidates = comparison_evidence_order(candidates, paper_titles)
+        elif output_kind == 'experiment_design':
+            from services.deep_research.selection import proposal_evidence_order
+            candidates = proposal_evidence_order(candidates, question)
         for ev in balanced_sample(candidates,
                 lambda item: (item.get("sourceWorkId", ""), tuple(item.get("obligationIds", []))), 20):
             alias = f"E{len(evidence_aliases) + 1}"
@@ -1071,10 +1074,14 @@ unrelated papers, benchmarks or protocols to shorten the answer. For two request
 Write concise understandable Chinese, explaining technical components, conditioning inputs and activation rules;
 Meet the frozen completionCriteria at their responseType: an explanation must say how/why
 the requested input changes or constrains the operation/output. Listing names is insufficient.
-For novices, explain the essential transformation in ordinary words next to its technical term.
+For novices, lead with ordinary actions and consequences, then name the technical term.
+Explain what is adjusted and what changes next; do not make an equation or a derivative
+the explanation itself. Include a formula only if requested or necessary after that explanation.
 When asked how training works, connect the error/signal, the quantity it updates,
 and how the update affects later predictions. Naming a differentiability trick
-or saying "gradients can flow" alone does not explain that path. Use only supplied evidence.
+or saying "gradients can flow" alone does not explain that path. State conditional effects
+(if the signal pushes a parameter up/down, what changes next), not guaranteed convergence.
+Use only supplied evidence, without inventing causal examples.
 Planning criteria describe requested deliverables, never establish scientific facts.
 Do not repeat the same proposition in text and conditions; use the limited space for the mechanism.
 not English placeholders or generic 'depends on the input/view'. Answer each requested aspect or state its

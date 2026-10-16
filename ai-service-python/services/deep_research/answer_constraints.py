@@ -84,6 +84,8 @@ requiredTableContext给出原引用单元格的身份：若保留该数值，必
 保留method、group的每一层（数据集/子集/聚合列）、metric及value的对应关系。
 这些字段是改写依据，不是新增结论；不在输出JSON中重复它们。
 把条件写入text即可，不要在conditions重复。不能新增事实。
+若面向初学者，保留“调整了什么→随后怎样变化”的普通语言解释；优先删公式和术语铺陈，
+不要把因果机制缩成方法名或“梯度能流动”。只保留原回答已有的机制与限定条件。
 {'必须保留每个输入ID：它们分别代表各论文结论和跨论文可比性。' if output_kind == 'paper_comparison' else 'You MAY DROP 次要声明，但保留直接回答问题的判断。'}
 输入：{json.dumps(inputs, ensure_ascii=False)}'''
     result = invoke(prompt)

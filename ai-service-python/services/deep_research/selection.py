@@ -45,6 +45,30 @@ def comparison_evidence_order(evidence, paper_titles):
     return sorted(evidence, key=rank)
 
 
+def proposal_evidence_order(evidence, question):
+    """Keep explicit rare labels and method choices ahead of generic benchmarks.
+
+    Ranking never changes evidence, permissions or semantic verdicts. Subsequent
+    paper/obligation balancing still applies. It does not declare a label relevant.
+    """
+    terms = set(re.findall(r'[A-Za-z][A-Za-z0-9_-]{2,}', question.casefold()))
+    terms -= {'the', 'and', 'for', 'with', 'from', 'this', 'that', 'paper', 'why', 'how'}
+    def matches(item):
+        quote = item.get('quote', '').casefold()
+        return {term for term in terms if re.search(r'(?<![a-z0-9_])' + re.escape(term)
+            + r'(?![a-z0-9_])', quote)}
+    matched = [matches(item) for item in evidence]
+    counts = {term: sum(term in row for row in matched) for term in terms}
+    rare = {term for term, count in counts.items() if 0 < count <= max(1, len(evidence) // 3)}
+    def rank(pair):
+        index, item = pair
+        table = bool(item.get('tableData') or re.match(r'\s*Table caption:', item.get('quote', ''), re.I))
+        method = not table and (bool(item.get('conditions')) or bool(re.search(
+            r'\b(?:train|optimi|updat|initializ|sampl|parameter)\w*|训练|初始化|更新|采样', item.get('quote', ''), re.I)))
+        return (bool(matched[index] & rare), method, not table, -index)
+    return [item for _, item in sorted(enumerate(evidence), key=rank, reverse=True)]
+
+
 def surrounding_context(evidence, window=240):
     """Keep bounded sentence context so contrast subjects survive extraction."""
     from services.deep_research.quote_context import quote_context

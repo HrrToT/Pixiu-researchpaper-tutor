@@ -58,10 +58,6 @@ def _condition_values_text(value):
     return str(value) if value is not None else ''
 
 
-_ABSENCE = re.compile(r"(?:未|没有)(?:给出|报告|提供|进行|测试|验证|覆盖|涵盖|涉及|包含|包括)|不(?:包含|包括|涉及|涵盖)|不存在|\b(?:does|did|do) not (?:report|provide|test|evaluate|contain|include)|\bno (?:experiment|evaluation|evidence)", re.I)
-_EXPLICIT_ABSENCE = re.compile(r"\b(?:do|does|did) not\b|\bnot (?:report|evaluat|test|consider)|\bno experiment|未(?:报告|进行|测试|考虑)|没有", re.I)
-
-
 def verify_claims(claims: list[dict], evidence: list[dict],
                   semantic_check: Callable[[list[dict], list[dict]], list[dict]] | None = None) -> dict:
     """Only publish supported claims; a model cannot override literal checks.
@@ -91,10 +87,11 @@ def verify_claims(claims: list[dict], evidence: list[dict],
             reason = reason or "missing_evidence"
         if any(item.get("verification", {}).get("literal") != "passed" for item in support):
             reason = reason or "unverified_quotation"
-        if kind in {"reported", "inference"} and _ABSENCE.search(claim.get("text", "")):
-            scoped = any(word in claim["text"] for word in ("当前取得", "本次检索", "所读片段", "选定片段", "所选证据"))
-            if not scoped and not any(_EXPLICIT_ABSENCE.search(item.get("quote", "")) for item in support):
-                reason = reason or "absence_not_established"
+        from services.deep_research.prose_checks import absence_not_established, leaks_internal_reference
+        if absence_not_established(claim, support):
+            reason = reason or 'absence_not_established'
+        if leaks_internal_reference(claim, support):
+            reason = reason or 'internal_reference_in_prose'
         if kind == "reported":
             if any(item.get("accessLevel") == "abstract" for item in support) and claim.get("detailLevel") != "abstract":
                 reason = reason or "abstract_only"

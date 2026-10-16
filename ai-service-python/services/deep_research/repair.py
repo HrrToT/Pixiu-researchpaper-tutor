@@ -93,6 +93,7 @@ def _prepare_repair(report, verification, evidence, question, *, max_prompt_byte
 answer_incomplete requires filling requested omissions, conditioning inputs and applicability,
 not merely shortening. A missing mechanism explanation needs how/why the requested
 input affects the operation/output, in ordinary words if requested for novices;
+lead with the actual change and its consequence, not a derivative or method label.
 listing names or repeating a technical operation is not sufficient. Do not add
 unsupported mechanics: use the allowed evidence or retain the limitation.
 Equation/parameter-link deductions may be inference claims with explicit cited
