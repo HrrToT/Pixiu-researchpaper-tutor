@@ -1714,7 +1714,14 @@ def _safe_parse_json(text: str) -> Any:
     if cleaned.startswith("```"):
         wrapper = re.fullmatch(r'```(?:json)?\s*([\s\S]*?)\s*```', cleaned, re.I)
         if wrapper is None:
-            return {}
+            # A missing Markdown terminator does not truncate a complete JSON
+            # value. Parse the ENTIRE remaining body, without legacy substring
+            # salvage, punctuation repair, or accepting trailing prose/roots.
+            body = re.sub(r'^```(?:json)?\s*', '', cleaned, count=1, flags=re.I)
+            try:
+                return json.loads(body)
+            except json.JSONDecodeError:
+                return {}
         cleaned = wrapper.group(1).strip()
     
     try:
