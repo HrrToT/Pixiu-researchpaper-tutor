@@ -1185,6 +1185,18 @@ Orient losses before formulas, distinguish conditional/averaged effects and pape
             output_kind=output_kind, evidence=evidence)
         if parsed is None:
             return {"error_code": "invalid_synthesis_response"}
+
+        from services.deep_research.audience_rewrite import eligible, rewrite_for_beginner, has_time_for_rewrite
+        if eligible(record, parsed, output_kind):
+            current = repo_update(run_id, lambda r: r, expected_revision=None)
+            def checkpoint_audience(value):
+                repo_update(run_id, lambda r: {**r, 'state': {**r.get('state', {}),
+                    'audienceRewrite': value}}, expected_revision=None)
+            parsed = rewrite_for_beginner(parsed, evidence, question,
+                lambda prompt, output: llm_invoke(run_id, 'synthesize_audience', prompt,
+                    {'max_tokens': output, 'temperature': 0.0}), _safe_parse_json,
+                saved_state=current.get('state', {}).get('audienceRewrite'), checkpoint=checkpoint_audience,
+                can_start=has_time_for_rewrite(current))
         
         if output_kind == "experiment_design":
             # Compaction must not hide required settings back in metadata.

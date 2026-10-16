@@ -56,6 +56,10 @@ def research_model_options(node, options):
         # A bounded wording edit must leave time for independent verification
         # and any allowed repair. Do not spend its allowance on hidden reasoning.
         return {**options, 'thinking': {'type': 'disabled'}, 'reasoning_effort': 'none', 'max_tokens': 8192}
+    if node == 'synthesize_audience':
+        from services.deep_research.audience_rewrite import OUTPUT_TOKENS
+        return {**options, 'thinking': {'type': 'disabled'}, 'reasoning_effort': 'none',
+                'max_tokens': OUTPUT_TOKENS, 'response_format': {'type': 'json_object'}}
     if node == 'verify':
         return {**options, 'thinking': {'type': 'enabled'}, 'reasoning_effort': 'high', 'max_tokens': 16384}
     return {**options, 'thinking': {'type': 'disabled'}, 'reasoning_effort': 'none'}
