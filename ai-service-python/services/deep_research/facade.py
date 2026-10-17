@@ -273,7 +273,8 @@ class ResearchFacade:
             "materials": materials,
             "materialSnapshot": material_snapshot,  # Immutable Java snapshot
             "contextMaterials": (material_snapshot or {}).get("contextMaterials", []) if isinstance(material_snapshot, dict) else [],
-            "promptVersion": "dr-v2.20261018.119",
+            "promptVersion": "dr-v2.20261018.120",
+            "dependencyContractVersion": 1,
             "continuationContextContractVersion": 1,
             "continuationContext": continuation_context,
             "planResumeContractVersion": 1,
@@ -749,6 +750,10 @@ class ResearchFacade:
                 state = retire_outputs(state, new_plan, plan_revision)
             state["plan"] = new_plan
             state["planRevision"] = plan_revision + 1
+            from services.deep_research.dependencies import enabled as ordered_plan, initialize
+            if ordered_plan(record):
+                state['dependencyExecution'] = initialize(new_plan, state['planRevision'])
+                state['plan'] = [{**item, 'status': 'pending'} for item in new_plan]
             
             return {
                 **record,

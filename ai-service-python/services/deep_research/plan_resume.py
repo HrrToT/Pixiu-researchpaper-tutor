@@ -14,7 +14,7 @@ def retire_outputs(state, new_plan, revision):
     retired = {key: state.pop(key) for key in list(state)
                if key.startswith(('repair', 'report', 'initialVerification', 'initialAnswerCoverage'))
                or key in {'verifiedReport', 'audienceRewrite', 'synthesisContainer', 'coverage', 'gaps',
-                          'stopReason', 'assessmentStatus', 'publicationId'}}
+                          'stopReason', 'assessmentStatus', 'publicationId', 'dependencyExecution'}}
     history = state.setdefault('planEditHistory', [])
     history.append({'planRevision': revision, 'plan': state.get('plan', []),
                     'retiredOutputs': retired, 'editedAt': utc_now_iso()})
@@ -41,6 +41,7 @@ def checkpoint_patch(record, checkpoint):
     if previous == revision:
         return None
     return {'plan_revision': revision, 'plan_ids': [i['itemId'] for i in domain['plan']],
+            'dependency_transition': '', 'dependency_wave': 0,
             'source_ids': [s['sourceId'] for s in domain.get('sources', [])],
             'evidence_ids': [e['evidenceId'] for e in domain.get('evidence', [])],
             'claim_ids': [], 'coverage_state': {}, 'gaps': [], 'requery_count': 0, 'requery_queries': [],

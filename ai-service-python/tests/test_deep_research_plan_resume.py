@@ -10,6 +10,7 @@ from services.deep_research.contracts import DeepResearchError
 from services.deep_research.facade import ResearchFacade
 from services.deep_research.graph import build_deep_research_graph
 from services.deep_research.plan_resume import checkpoint_patch
+from services.deep_research.dependencies import initialize
 from services.deep_research.repository import DeepResearchRepository
 from services.deep_research.request_context import effective_question
 from test_deep_research_clarification_context import wait_worker
@@ -54,10 +55,12 @@ def test_edit_restarts_at_evidence_assessment_not_old_verification(tmp_path, che
     old_report = {'claims': [{'claimId': 'old', 'text': 'OLD DRAFT'}]}
     repo.create_run({'runId': 'r', 'taskId': 't', 'question': '解释原方法，300字以内。',
         'planEditContractVersion': 1, 'planResumeContractVersion': 1,
+        'dependencyContractVersion': 1,
         'planCompletionContractVersion': 1, 'adaptiveResearchContractVersion': 1,
         'sourcePolicy': {'mode': 'task_only'},
         'materials': [{'materialId': 'p', 'versionId': 'v1'}],
-        'state': {'plan': plan('原问题'), 'planRevision': 0, 'sources': [source], 'evidence': [evidence],
+        'state': {'plan': plan('原问题'), 'planRevision': 0, 'dependencyExecution': initialize(plan('原问题')),
+                  'sources': [source], 'evidence': [evidence],
                   'reportBody': old_report, 'repairCompleted': True,
                   'verifiedReport': {'verifiedClaims': old_report['claims']}}})
     repo.begin_execution('r')
@@ -85,6 +88,8 @@ def test_edit_restarts_at_evidence_assessment_not_old_verification(tmp_path, che
             'planRevision': 0, 'plan': plan('只解释新的训练信号，200字以内。', 'new')})
         saved = repo.require_run('r')
         assert saved['state']['planEditHistory'][0]['retiredOutputs']['reportBody'] == old_report
+        assert saved['state']['planEditHistory'][0]['retiredOutputs']['dependencyExecution']['planRevision'] == 0
+        assert saved['state']['dependencyExecution']['planRevision'] == 1
         assert 'reportBody' not in saved['state'] and 'repairCompleted' not in saved['state']
         assert saved['state']['evidence'][0]['quote'] == evidence['quote']
         assert saved['state']['evidence'][0]['obligationIds'] == ['new']

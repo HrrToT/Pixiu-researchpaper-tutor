@@ -27,6 +27,7 @@ def test_snapshot_and_retrieved_source_keep_readable_label_and_original_identity
     try:
         record, _ = facade.create({'workspaceTaskId': 't', 'operationKey': 'o',
             'question': 'Explain the method.', 'materialSnapshot': snapshot}, start_async=False)
+        record = repo.begin_execution(record['runId'])
         material = record['materials'][0]
         assert material['title'] == '2401.00001v2.pdf'
         assert material['materialId'] == opaque and material['versionId'] == 'fixed-version'

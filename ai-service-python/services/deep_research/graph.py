@@ -85,6 +85,8 @@ class GraphState(TypedDict, total=False):
     prev_source_count: int  # Track no-new-evidence stopping
     prev_assessment_evidence_digest: str
     assess_after_extraction_stop: bool
+    dependency_transition: str
+    dependency_wave: int
 
 
 # ── Node Functions ─────────────────────────────────────────────────────────────
@@ -399,6 +401,12 @@ Return a JSON ARRAY of plan items, NOT an object with items field."""
                 'planFormatValidation': {'status': 'validated', 'requiresCompletionCriteria': criteria_required}}},
             expected_revision=None,
         )
+
+        from services.deep_research.dependencies import enabled as ordered_plan, initialize
+        if ordered_plan(record):
+            repo_update(run_id, lambda r: {**r, 'state': {**r['state'],
+                'dependencyExecution': initialize(validated, brief_state.get('planRevision', 0)),
+                'plan': [{**item, 'status': 'pending'} for item in validated]}}, expected_revision=None)
         
         return {"plan_ids": plan_ids, "assess_inherited": inherited,
                 "plan_revision": brief_state.get('planRevision', 0)}
@@ -467,42 +475,50 @@ def make_acquire_node(
         
         # Local retrieval for task materials
         if source_policy_mode != "external_only":
-            for material in materials:
-                material_id = material.get("materialId", "")
-                pdf_id = material.get("pdfId", material_id)
+            def local_jobs():
+                for material in materials:
+                    material_id = material.get("materialId", "")
+                    pdf_id = material.get("pdfId", material_id)
                 
-                if not scope_validator(run_id, material_id):
-                    continue
-                
-                for target in query_targets:
-                    if target.get("requiredSources") and material_id not in target["requiredSources"]:
+                    if not scope_validator(run_id, material_id):
                         continue
-                    if target.get("missingSource") and target["missingSource"] != material_id:
-                        continue
-                    query = target.get("query", "")
-                    obl_id = target.get("obligationId", "")
-                    if not query:
-                        continue
-                    
-                    results = retrieve_fn(query, pdf_id, limit=5)
-                    
-                    for item in results:
-                        source_id = item.get("sourceId", "")
-                        if not source_id:
+
+                    for target in query_targets:
+                        if target.get("requiredSources") and material_id not in target["requiredSources"]:
                             continue
-                        
-                        source_work_id = item.get("sourceWorkId", item.get("pdfId", ""))
-                        owner_material_id = material_owner_map.get(source_work_id)
-                        if owner_material_id != material_id:
+                        if target.get("missingSource") and target["missingSource"] != material_id:
                             continue
+                        query = target.get("query", "")
+                        if query:
+                            yield {'query': query, 'pdfId': pdf_id, 'materialId': material_id,
+                                   'obligationId': target.get('obligationId', '')}
+            from services.deep_research.retrieval_jobs import retrieve_jobs
+            from services.deep_research.dependencies import enabled as ordered_plan
+            allowed = (lambda: repo_update(run_id, lambda r: r, expected_revision=None).get('status') == 'running') if ordered_plan(record) else None
+            for job, results in retrieve_jobs(local_jobs(), retrieve_fn, parallel=ordered_plan(record), allowed=allowed):
+                material_id, obl_id = job['materialId'], job['obligationId']
+                material = next(m for m in materials if m['materialId'] == material_id)
+                for item in results:
+                    source_id = item.get("sourceId", "")
+                    if not source_id:
+                        continue
                         
-                        existing = existing_by_id.get(source_id)
-                        if existing:
-                            if obl_id and obl_id not in existing.get("obligationIds", []):
-                                existing["obligationIds"].append(obl_id)
-                        else:
-                            from services.deep_research.source_labels import source_display_title
-                            new_source = {
+                    source_work_id = item.get("sourceWorkId", item.get("pdfId", ""))
+                    owner_material_id = material_owner_map.get(source_work_id)
+                    if owner_material_id != material_id:
+                        continue
+
+                    existing = existing_by_id.get(source_id)
+                    if existing:
+                        if ordered_plan(record) and (existing.get('workId') != source_work_id
+                                or existing.get('text', '') != item.get('text', '')):
+                            from services.deep_research.contracts import DeepResearchError
+                            raise DeepResearchError('source_identity_conflict', '相同来源身份返回了不同原文，已停止合并。')
+                        if obl_id and obl_id not in existing.get("obligationIds", []):
+                            existing["obligationIds"].append(obl_id)
+                    else:
+                        from services.deep_research.source_labels import source_display_title
+                        new_source = {
                                 "sourceId": source_id,
                                 "workId": source_work_id,
                                 "ownerMaterialId": owner_material_id,
@@ -517,9 +533,9 @@ def make_acquire_node(
                                 "sourceKind": "task_paper",
                                 "title": source_display_title(item.get("title"), material.get("title")),
                                 "url": item.get("url", ""),
-                            }
-                            normalized_sources.append(new_source)
-                            existing_by_id[source_id] = new_source
+                        }
+                        normalized_sources.append(new_source)
+                        existing_by_id[source_id] = new_source
         
         # External acquisition: only when policy permits and callback provided
         use_external = source_policy_mode in ("academic_external", "external_only") and external_acquire is not None
@@ -565,6 +581,11 @@ def make_acquire_node(
                     normalized_sources.append(new_ext)
                     existing_by_id[ext_source_id] = new_ext
         
+        from services.deep_research.dependencies import enabled as ordered_plan
+        if ordered_plan(record):
+            normalized_sources.sort(key=lambda source: source['sourceId'])
+            for source in normalized_sources:
+                source['obligationIds'] = sorted(set(source.get('obligationIds', [])))
         source_ids = [s["sourceId"] for s in normalized_sources]
         
         repo_update(
@@ -1631,6 +1652,8 @@ def route_after_extract(state: GraphState) -> str:
 
 
 def route_after_assess(state: GraphState) -> str:
+    if state.get('dependency_transition'):
+        return 'advance_frontier'
     stop_reason = state.get("stop_reason", "")
     gaps = state.get("gaps", [])
     requery_count = state.get("requery_count", 0)
@@ -1700,6 +1723,8 @@ def build_deep_research_graph(
         raise RuntimeError("LangGraph not available - install langgraph package")
     
     workflow = StateGraph(GraphState)
+    from services.deep_research.dependencies import scoped_updater, finish_assessment, advance_frontier
+    frontier_update = scoped_updater(repo_update)
     def bounded(function):
         def execute(state):
             from services.deep_research.contracts import BudgetExhaustedError
@@ -1713,14 +1738,14 @@ def build_deep_research_graph(
     workflow.add_node("resolve_brief", bounded(make_resolve_brief_node(llm_invoke, repo_update)))
     workflow.add_node("wait_clarification", make_wait_for_clarification_node(repo_update))
     workflow.add_node("plan", bounded(make_plan_node(llm_invoke, repo_update, validate_plan_fn)))
-    workflow.add_node("acquire", make_acquire_node(retrieve_fn, scope_validator, repo_update, external_acquire=external_acquire))
-    workflow.add_node("read", make_read_node(read_fn, scope_validator, repo_update))
+    workflow.add_node("acquire", make_acquire_node(retrieve_fn, scope_validator, frontier_update, external_acquire=external_acquire))
+    workflow.add_node("read", make_read_node(read_fn, scope_validator, frontier_update))
     if extract_batch_size > 1:
         from services.deep_research.extraction import make_batched_extract_node
-        extractor = make_batched_extract_node(llm_invoke, make_evidence_fn, scope_validator, repo_update,
+        extractor = make_batched_extract_node(llm_invoke, make_evidence_fn, scope_validator, frontier_update,
                                                batch_size=min(extract_batch_size, 3))
     else:
-        extractor = make_extract_node(llm_invoke, make_evidence_fn, scope_validator, repo_update)
+        extractor = make_extract_node(llm_invoke, make_evidence_fn, scope_validator, frontier_update)
     def bounded_extract(state):
         from services.deep_research.contracts import BudgetExhaustedError
         from services.deep_research.adaptive_assessment import enabled
@@ -1731,7 +1756,10 @@ def build_deep_research_graph(
             return {'budget_exhausted': True, 'stop_reason': 'budget_exhausted',
                     'assess_after_extraction_stop': enabled(record)}
     workflow.add_node("extract", bounded_extract)
-    workflow.add_node("assess", make_assess_node(coverage_gaps_fn, repo_update, llm_invoke=llm_invoke))
+    assessment = make_assess_node(coverage_gaps_fn, frontier_update, llm_invoke=llm_invoke)
+    workflow.add_node("assess", lambda state: finish_assessment(state, assessment(state), repo_update))
+    workflow.add_node('advance_frontier', lambda state: advance_frontier(state, repo_update))
+    workflow.add_edge('advance_frontier', 'acquire')
     workflow.add_node("synthesize", bounded(make_synthesize_node(llm_invoke, repo_update)))
     workflow.add_node("verify", make_verify_node(verify_claims_fn, semantic_check_fn, repo_update, llm_invoke=llm_invoke))
     workflow.add_node("publish", make_publish_node(repo_publish, repo_update))
@@ -1761,6 +1789,7 @@ def build_deep_research_graph(
                                    {"synthesize": "synthesize", "assess": "assess"})
     
     workflow.add_conditional_edges("assess", route_after_assess, {
+        'advance_frontier': 'advance_frontier',
         "acquire": "acquire",
         "synthesize": "synthesize",
         "fail": END,
