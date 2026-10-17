@@ -1,0 +1,53 @@
+{
+  "date": "2026-10-16",
+  "sourceCommit": "a48d833",
+  "promptVersion": "dr-v2.20261016.107",
+  "caseInput": "H5R-v17 saved budget configuration",
+  "checks": [
+    {
+      "path": [
+        "executionSpec",
+        "baseline"
+      ],
+      "errors": [
+        "per_group_steps"
+      ]
+    },
+    {
+      "path": [
+        "executionSpec",
+        "baseline",
+        "maxBudget"
+      ],
+      "errors": [
+        "per_group_steps"
+      ]
+    },
+    {
+      "path": [
+        "executionSpec",
+        "recovery"
+      ],
+      "errors": []
+    },
+    {
+      "path": [
+        "executionSpec",
+        "recovery",
+        "groups"
+      ],
+      "errors": []
+    }
+  ],
+  "originalConfigurationUnchanged": true,
+  "stepFieldGuard": "Absent, boolean, zero and unsupported workflow versions cannot bind step fields; legacy literal quotes remain readable.",
+  "modelCalls": 0,
+  "networkRequests": 0,
+  "tests": {
+    "passed": 1687,
+    "warnings": 1,
+    "seconds": 56.47,
+    "log": "tmp/pytest-dr107-full-final.log"
+  },
+  "boundary": "Literal typed-field binding guards only, not scientific or content acceptance. Smaller active-slot schema guidance does not guarantee every full scientific review fits the input cap."
+}

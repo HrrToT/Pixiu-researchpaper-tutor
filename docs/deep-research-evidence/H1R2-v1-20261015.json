@@ -1,0 +1,35 @@
+{
+  "date": "2026-10-15",
+  "caseId": "H1R2",
+  "attempt": 1,
+  "runId": "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+  "manifest": "DEEP_RESEARCH_FRESH_HOLDOUTS_20261015.json",
+  "submissionCount": 1,
+  "status": "paused",
+  "outcome": "none",
+  "errorCode": "unresolved_unknown",
+  "node": "resolve_brief",
+  "providerResult": "unknown after 120 seconds; no response body or provider model label",
+  "reservedTokens": 4294,
+  "actualUsage": null,
+  "actualCost": null,
+  "contentReview": "not evaluated; request failed before paper analysis",
+  "independence": "No result used for tuning. Case remains unscored, with unknown attempt protected from reissue.",
+  "postRechargeReadOnlyCheck": {
+    "endpoint": "https://api.deepseek.com/user/balance",
+    "status": 200,
+    "isAvailable": true,
+    "positiveBalance": true,
+    "credentialsPrinted": false,
+    "generationRequests": 0
+  },
+  "runtimeReload": {
+    "activeBefore": 0,
+    "pausedBefore": 6,
+    "pausedAfterBeforeNewCase": 6,
+    "ledgerRowsBefore": 2389,
+    "ledgerRowsAfterBeforeNewCase": 2389,
+    "ledgerHashBeforeAndAfter": "0eeafe93b4009d5fe8c88e6ddc88699d6936f7009a38bbb10b2ccc9fa3842ff4"
+  },
+  "boundary": "Positive available balance confirms the configured account can report funds; it does not prove generation availability. Current official status page could not be fetched. Stop additional paid cases; do not classify as balance shortage or confirmed provider outage."
+}

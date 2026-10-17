@@ -1,0 +1,23 @@
+{
+  "date": "2026-10-14",
+  "caseId": "D3-v22",
+  "runId": "dr_run_10962cb43e3b5d59bd96acf5392348c9",
+  "promptVersion": "dr-v2.20261013.57",
+  "providerAvailability": {"httpStatus": 200, "isAvailable": true, "generationRequestsForCheck": 0},
+  "submissionCount": 1,
+  "automaticResubmissions": 0,
+  "result": {"status": "completed", "outcome": "partial", "modelCalls": 11, "ledgerTokens": 55430, "elapsedSeconds": 137.0, "cost": null},
+  "acceptedRoles": ["groups", "controls", "metrics", "analysis", "steps", "budget", "limits"],
+  "remainingRejections": [
+    {"claimId": "c1", "reason": "incomplete_hypothesis_spec", "detail": "Model inserted server-owned hypothesisContractVersion inside the exact-key executionSpec. Repair returned no replacement for this hypothesis."},
+    {"claimId": "c6", "reason": "semantic_unresolved", "detail": "Original data choice included an unconfirmed Tanks and Temples subset. The revised Mip-NeRF360-only claim was not accepted; inspect the verification selection/merge path before further provider tests."},
+    {"claimId": "c8", "reason": "invalid_design_role", "detail": "Original limits claim remained an inference. A separate proposal limits slot was accepted, preserving the original rejection."}
+  ],
+  "manualReview": {
+    "passed": ["Unmatched recovery budgets are explicitly rendered as confounded, not presented as matched.", "An interval containing zero is explicitly not proof of independence or equivalence.", "Partial completeness remains visible and the run is not labelled fully supported."],
+    "failed": ["Primary experiment still uses 0/5000 recovery steps tied to pruning, so it cannot isolate the requested intervention effects; a confounding warning does not fulfill the experimental objective.", "Hypothesis and data-selection deliverables remain absent from the final report.", "Pruning score implementation and SH reduction operation remain underspecified; arbitrary proposed levels and an instruction to choose thresholds later do not establish executable intervention definitions.", "Published steps omit a concrete baseline selection rule and detailed paired artifact handling."]
+  },
+  "nextWork": ["Disambiguate server-owned hypothesis metadata from the executionSpec schema.", "Trace why the revised data claim was not adopted rather than loosening source checks.", "Require the primary design to fulfill the requested estimand; keep unmatched native-budget comparisons supplementary.", "Recheck repair evidence capacity and accepted-content consistency before another paid case."],
+  "rawResults": "tmp/dr-acceptance-receipts/D3-v22.result.json",
+  "acceptance": "Provider restored and the single real case completed. Content-quality acceptance failed; DR0-DR5 remains incomplete."
+}

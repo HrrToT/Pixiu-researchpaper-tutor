@@ -1,0 +1,111 @@
+{
+  "date": "2026-10-15",
+  "sourceCommit": "cbac395",
+  "promptVersion": "dr-v2.20261015.89",
+  "inputCase": "H5R-v10",
+  "originalPromptVersion": "dr-v2.20261015.87",
+  "before": {
+    "error": "budget_exhausted",
+    "kind": "verificationPromptBytes",
+    "fixedBytes": 26294,
+    "limit": 24000,
+    "verifierRequestsDispatched": 0
+  },
+  "after": {
+    "status": "offline_replay_completed",
+    "semanticChecked": false,
+    "captures": [
+      {
+        "node": "verify_design_config",
+        "bytes": 23673,
+        "targetIds": [
+          "c_groups",
+          "c_controls",
+          "c_data"
+        ],
+        "requiredQuotes": 3,
+        "providedQuotes": 3,
+        "allRequiredQuotesProvided": true,
+        "allQuotesExact": true,
+        "contextOmitted": 2
+      },
+      {
+        "node": "verify_design_config",
+        "bytes": 20807,
+        "targetIds": [
+          "c_budget",
+          "c_steps",
+          "c_metrics"
+        ],
+        "requiredQuotes": 2,
+        "providedQuotes": 2,
+        "allRequiredQuotesProvided": true,
+        "allQuotesExact": true,
+        "contextOmitted": 0
+      },
+      {
+        "node": "verify_design_science",
+        "bytes": 20878,
+        "targetIds": [
+          "c_hypothesis"
+        ],
+        "requiredQuotes": 1,
+        "providedQuotes": 1,
+        "allRequiredQuotesProvided": true,
+        "allQuotesExact": true,
+        "contextOmitted": 0
+      },
+      {
+        "node": "verify_design_science",
+        "bytes": 22489,
+        "targetIds": [
+          "c_analysis"
+        ],
+        "requiredQuotes": 0,
+        "providedQuotes": 0,
+        "allRequiredQuotesProvided": true,
+        "allQuotesExact": true,
+        "contextOmitted": 0
+      },
+      {
+        "node": "verify_design_science",
+        "bytes": 23606,
+        "targetIds": [
+          "c_limits"
+        ],
+        "requiredQuotes": 3,
+        "providedQuotes": 3,
+        "allRequiredQuotesProvided": true,
+        "allQuotesExact": true,
+        "contextOmitted": 0
+      }
+    ],
+    "accepted": 0,
+    "rejected": 9
+  },
+  "maximumPromptBytes": 23673,
+  "modelCalls": 0,
+  "semanticQualityAccepted": false,
+  "boundaries": [
+    "Replay returns intentional failed fixture verdicts; it proves capacity and permissions, not scientific quality.",
+    "All nine targets keep their required original quotes. Two optional source contexts are explicitly marked contextOmitted by the existing fitter; no claim of all-context retention.",
+    "Operational checks keep every operational definition and exact transitive claim-ID dependencies. Scientific checks keep the full proposed configuration.",
+    "Unfit explicit dependencies still stop before dispatch. Quotes, parameter values, source versions and 24KB limit are unchanged.",
+    "Review wording preserves finite reference losses, metric directions/units, factorial arithmetic, sampling-unit, matched-budget, asset/data availability and hypothesis decision constraints.",
+    "Hypothesis/limits keep complete scientific checks without unrelated configuration-audit slot schemas."
+  ],
+  "tests": {
+    "fullSuite": {
+      "passed": 1473,
+      "warnings": 1,
+      "seconds": 42.91,
+      "log": "tmp/pytest-dr89-final3.log"
+    },
+    "files": [
+      "test_deep_research_verification_context.py",
+      "test_deep_research_verification_capacity.py",
+      "test_deep_research_distinct_candidates.py",
+      "test_deep_research_drafting_capacity.py"
+    ]
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "date": "2026-10-18",
+  "sourceCommit": "64104406",
+  "promptVersion": "dr-v2.20261018.120",
+  "contracts": {
+    "dependencyContractVersion": 1
+  },
+  "checks": {
+    "python": {
+      "passed": 1987,
+      "warnings": 1,
+      "seconds": 102.92,
+      "log": "tmp/pytest-dr120-final-verified.log"
+    }
+  },
+  "verifiedBehavior": [
+    "Durable frontiers contain at most two eligible plan items. A descendant starts only after all prerequisite coverage results have been saved.",
+    "Nodes see only active obligations; the domain store retains the full plan and all earlier gaps/coverage. Coverage readiness is not final claim verification.",
+    "A failed prerequisite blocks its descendants, but eligible independent branches can still execute. Uninvestigated descendants retain explicit unchecked gaps.",
+    "Pending and applied frontier transition identities survive process/checkpoint replay. The global targeted requery counter is not reset between frontiers.",
+    "Human plan edits archive prior dependency state and clear the old checkpoint transition. A withdrawn scheduled descendant is not dispatched on resume.",
+    "At most two local retrieval jobs are admitted concurrently. Each uses the existing tracked call identity, atomic budget, scope and execution status.",
+    "Cancellation stops admission; confirmed in-flight results remain audited. Observed errors stop further admission; no automatic retry.",
+    "Normalized source and obligation order is independent of tool completion order. Conflicting original text under one source identity is rejected.",
+    "The contract is server-owned and immutable. Unmarked historical runs retain sequential behavior."
+  ],
+  "runtime": "runtime-load-dr120-dependencies-20261018.json",
+  "modelCallsDuringOfflineWork": 0,
+  "boundary": "Real compiled LangGraph, SQLite, checkpoint and tracked-tool tests with fixed model responses. No scientific content or live parallel quality score. D1-v9 has separate authorization and receipts."
+}

@@ -1,0 +1,62 @@
+{
+  "date": "2026-10-16",
+  "case": "H3R-v12",
+  "runId": "dr_run_cc4d1968080d55ce8544dbc8b8b24269",
+  "sourceCommit": "20d1d06",
+  "promptVersion": "dr-v2.20261016.103",
+  "status": "completed",
+  "outcome": "partial",
+  "budget": {
+    "profile": "standard",
+    "modelCalls": 10,
+    "maxModelCalls": 18,
+    "tokens": 29641,
+    "maxTokens": 100000,
+    "externalSearches": 1,
+    "fulltextFetches": 1,
+    "elapsedSeconds": 126.0,
+    "cost": null
+  },
+  "contentAccepted": false,
+  "independentHoldoutEligible": false,
+  "callsSucceeded": 22,
+  "finalCoverageStatus": "checked",
+  "releasedReserveTokens": 0,
+  "repair": {
+    "repairStatus": "response_received",
+    "repairLimit": null
+  },
+  "raw": "tmp/dr-acceptance-receipts/H3R-v12.payload.json",
+  "calls": "tmp/dr-acceptance-receipts/H3R-v12.calls.json",
+  "review": {
+    "scores": {
+      "目标回应": 2,
+      "证据支持": 4,
+      "条件完整": 3,
+      "综合价值": 2,
+      "可执行性": null,
+      "可读性": 3
+    },
+    "improved": [
+      "Actual external versioned fulltext path succeeds and final coverage completes.",
+      "The training paragraph is shorter and includes the opacity/probability feedback example."
+    ],
+    "findings": [
+      "No author-motivation passage was retained in extracted evidence, although acquired material contains it.",
+      "Code capped three evidence items by source/PDF rather than by passage, dropping later passage items.",
+      "The final answer says the supplied evidence does not explain the motive, so the requested why-question remains unanswered.",
+      "Training uses the author illustrative correct/incorrect-depth case but does not explain the loss-conditioned update in sufficiently ordinary words."
+    ],
+    "notApplicable": {
+      "可执行性": "Explanation task, not an executable experimental proposal."
+    },
+    "status": "not_accepted",
+    "acceptedRoles": [
+      null,
+      null
+    ],
+    "rejected": []
+  },
+  "boundary": "One submission per case, no automatic retries. Retired development cases; machine partial/valid audit does not establish content acceptance.",
+  "uiProof": "deep-research-evidence/H3R-v12-report-20261016.png"
+}

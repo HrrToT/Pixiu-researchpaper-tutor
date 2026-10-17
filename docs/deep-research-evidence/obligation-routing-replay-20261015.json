@@ -1,0 +1,27 @@
+{
+  "date": "2026-10-15",
+  "case": "H3R-v5",
+  "modelCalls": 0,
+  "priorEvidenceCount": 6,
+  "replayedEvidenceCount": 8,
+  "recoveredGradientEvidence": {
+    "evidenceId": "ev_6dca75de93916526fb32c552e663efc3394bc66c5ef87698b83be8bdc9e42c36",
+    "sourceWorkId": "arxiv:2312.12337",
+    "sourceVersionId": "arxiv:2312.12337v4",
+    "contentHash": "606933b1f086ad92b5863b1b8d21a8af565bfb02b71ac47fb8c8f850d987f5b5",
+    "obligationIds": [
+      "ob_2"
+    ],
+    "location": {
+      "page": 5,
+      "offset": 2050
+    },
+    "quote": "Making sampling differentiable by setting α=ϕz. To\ntrain our model, we need to backpropagate gradients into\nthe probabilities of the depth buckets ϕ. This means we\nneed to compute the derivatives ∇ϕµof the mean µwith\nrespect to probabilities ϕ. Unfortunately, the sampling oper-\nation z∼pϕ(z)is not differentiable. Inspired by variational\nautoencoders [ 21], we overcome this challenge via a repa-\nrameterization trick. Accordingly, we set the opacity αof\na Gaussian to be equal to the probability of the bucket that\nit was sampled from. Consider that we sampled z∼pϕ(z).\nWe then set α=ϕz, i.e., we set αto the z-th entry of the\nvector of probabilities ϕ. This means that in each backward\npass, we assign the gradients of the loss Lwith respect to the\nopacities αto the gradients of the depth probability buckets\nϕ, i.e.,∇ϕL=∇αL.",
+    "verification": {
+      "literal": "passed",
+      "semantic": "unchecked"
+    }
+  },
+  "sourceReceiptUnchanged": "c21857c721ccd99e3762dc5f4adb253070f7380b9b5d8e15c22ba1000a3d0752",
+  "boundary": "Saved responses replayed on copied state. Routing correction retains an already-extracted literal quote; relevance and final answer quality still require independent checks. No historical run was modified."
+}

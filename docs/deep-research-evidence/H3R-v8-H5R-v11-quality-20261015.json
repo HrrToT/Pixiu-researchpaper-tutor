@@ -1,0 +1,92 @@
+{
+  "date": "2026-10-15",
+  "sourceCommit": "cbac395",
+  "promptVersion": "dr-v2.20261015.89",
+  "runs": [
+    {
+      "case": "H3R-v8",
+      "runId": "dr_run_10326076608052d3a7fd8bcd68c399ee",
+      "status": "completed",
+      "outcome": "partial",
+      "budget": {
+        "profile": "standard",
+        "modelCalls": 8,
+        "maxModelCalls": 18,
+        "tokens": 31367,
+        "maxTokens": 100000,
+        "externalSearches": 1,
+        "fulltextFetches": 1,
+        "elapsedSeconds": 138.0,
+        "cost": null
+      },
+      "errorCode": "",
+      "raw": "tmp/dr-acceptance-receipts/H3R-v8.payload.json",
+      "calls": "tmp/dr-acceptance-receipts/H3R-v8.calls.json",
+      "independentHoldoutEligible": false,
+      "contentAccepted": false,
+      "review": {
+        "opacityDirection": "Correct 不透明度 and alpha/probability relation in published text.",
+        "repairVerification": "Succeeded with an explicit verdict (300 output tokens), replacing the earlier empty 8192-token response failure mode.",
+        "remaining": "Published training explanation still substitutes reparameterization/gradient flow for the error-to-parameter-to-later-prediction path and does not clearly separate the discrete index.",
+        "finalCoverage": "checked; the missing training explanation remains a real partial gap.",
+        "scores": {
+          "目标回应": 3,
+          "证据支持": 3,
+          "条件完整": 3,
+          "综合价值": 3,
+          "可执行性": null,
+          "可读性": 4
+        }
+      }
+    },
+    {
+      "case": "H5R-v11",
+      "runId": "dr_run_4730612b3e7d58efb2c8f3327854631d",
+      "status": "completed",
+      "outcome": "partial",
+      "budget": {
+        "profile": "standard",
+        "modelCalls": 9,
+        "maxModelCalls": 18,
+        "tokens": 41781,
+        "maxTokens": 100000,
+        "externalSearches": 0,
+        "fulltextFetches": 0,
+        "elapsedSeconds": 88.0,
+        "cost": null
+      },
+      "errorCode": "",
+      "raw": "tmp/dr-acceptance-receipts/H5R-v11.payload.json",
+      "calls": "tmp/dr-acceptance-receipts/H5R-v11.calls.json",
+      "independentHoldoutEligible": false,
+      "contentAccepted": false,
+      "review": {
+        "initialVerification": "8 roles accepted, steps rejected; revision was actually checked and 9 roles were eventually accepted.",
+        "finalCoverage": {
+          "status": "budget_exhausted",
+          "kind": "coveragePromptBytes",
+          "fixedBytes": 29624,
+          "limit": 24000
+        },
+        "humanFindings": [
+          "Opacity optimization now explicitly permits raising or lowering alpha.",
+          "Copying a baseline checkpoint does not define the newly introduced enhancement state.",
+          "Baseline fitting/checkpoint selection precedes the specified split; final evaluation isolation is insufficiently defined.",
+          "Repeated prose and rendered typed settings reduce readability."
+        ],
+        "scores": {
+          "目标回应": 3,
+          "证据支持": 3,
+          "条件完整": 2,
+          "综合价值": 3,
+          "可执行性": 2,
+          "可读性": 2
+        }
+      }
+    }
+  ],
+  "knownSettledModelCalls": 17,
+  "knownSettledTokens": 73148,
+  "cost": null,
+  "boundary": "Single submissions, known terminal outcomes, saved raw responses; machine acceptance is not scientific or independent acceptance."
+}

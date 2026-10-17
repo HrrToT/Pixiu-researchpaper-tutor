@@ -1,0 +1,38 @@
+{
+  "date": "2026-10-15",
+  "promptVersion": "dr-v2.20261015.98",
+  "case": "H3R-v11",
+  "runId": "dr_run_33648b51950d5a97be5d5d7f96d0c05f",
+  "liveVersion": "dr-v2.20261015.97",
+  "before": {
+    "status": "invalid_response",
+    "invalidAspectObligations": [
+      "answer_scope"
+    ]
+  },
+  "offlineReplay": {
+    "status": "checked",
+    "invalidAspectObligations": [],
+    "gapCount": 0,
+    "rawModelResponseUnchanged": true,
+    "claimsConditionsAndEvidenceUnchanged": true
+  },
+  "modelCalls": 0,
+  "networkRequests": 0,
+  "contentAccepted": false,
+  "boundary": "Replays the exact successful saved .97 audit response under the new whole-question access-label contract. The old run is unchanged. A checked model audit does not prove the novice explanation is adequate; no new .98 generation has been submitted.",
+  "sourceCommit": "eb9bdfa",
+  "tests": {
+    "passed": 1561,
+    "warnings": 1,
+    "seconds": 51.37,
+    "log": "tmp/pytest-dr98-full.log",
+    "sourceCommit": "eb9bdfa"
+  },
+  "regressionRepair": {
+    "initialRun": "2 failed, 1559 passed",
+    "log": "tmp/pytest-dr98-full-initial-failure.log",
+    "finding": "Longer audit instructions displaced complete optional source quotes in two capacity fixtures.",
+    "correction": "Condensed instructions while retaining the same source, identity, permission and scientific checks; no larger input or total budget, no test assertion relaxed."
+  }
+}

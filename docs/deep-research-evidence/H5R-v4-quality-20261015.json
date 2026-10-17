@@ -1,0 +1,57 @@
+{
+  "date": "2026-10-15",
+  "case": "H5R-v4",
+  "runId": "dr_run_c579afa04bf05b6f9e8b0e75a7ed5b13",
+  "promptVersion": "dr-v2.20261015.72",
+  "machineStatus": "completed",
+  "machineOutcome": "partial",
+  "contentAccepted": false,
+  "reviewer": "Primary Codex; source/content review, not an independent human study",
+  "eligibility": "Retired development case; no independent holdout credit",
+  "budget": {
+    "maxModelCalls": 18,
+    "maxTokens": 100000,
+    "maxWallClockSeconds": 360,
+    "reserveModelCalls": 5,
+    "reserveTokens": 50000,
+    "maxExternalSearches": 6,
+    "maxFulltextFetches": 6,
+    "modelCalls": 7,
+    "tokens": 52370,
+    "normalTokens": 23431,
+    "elapsedSeconds": 132.37,
+    "externalSearches": 0,
+    "fulltextFetches": 0,
+    "reservedModelCalls": 4,
+    "exhausted": "",
+    "profile": "standard"
+  },
+  "modelCalls": 11,
+  "reportBody": "## 假设\n\n- 待验证假设：在LapisGS v2的hotdog场景中，训练同一个增强层时继续优化旧层透明度（联合优化）相比冻结旧层透明度，在PSNR、SSIM、LPIPS上产生描述性差异；本实验仅探索该单场景配对差异，不进行统计检验或声称等价。\n\n拟议假设与判断范围（尚未验证）\n\n假设陈述：\"在hotdog场景中，训练同一个增强层时继续优化旧层透明度（联合优化）相比冻结旧层透明度，在PSNR、SSIM、LPIPS上产生描述性差异。\"\n\n关注效应：\n  - \"psnr_diff\"\n  - \"ssim_diff\"\n  - \"lpips_diff\"\n\n本假设用于探索：报告估计值和可提供的不确定性说明，但不做显著性或等价性判定。 [1](#research-evidence-ev_fd65514c9d534ca9ca30f55eb9eb6295060557c828ea9c60d0308673b7abc3aa) [2](#research-evidence-ev_4b30fe936a20fd865437a8dc867db5be9f4b38ba44c93f7198bd08f1cdea70ee)\n  适用条件：context：hotdog场景在LapisGS论文Table 6中被报告为synthetic Blender数据集的场景之一；E5仅说明基础层从最低分辨率数据集训练，未提供hotdog场景的图像数量、分辨率、迭代次数或学习率。\n\n## 分组表\n\n- 实验建议：两组单因素设计：组0（对照）冻结旧层透明度，仅训练新增强层；组1（处理）在训练新增强层的同时继续优化旧层透明度。两组共享同一基础层和同一增强层初始化，仅透明度优化策略不同。\n\n拟议分组（尚未执行）：\n- 因素：\"旧层透明度优化\"\n  - 对照组操作：\"冻结旧层透明度参数\"\n    - 参数：未设置\n  - 实验组操作：\"继续优化旧层透明度参数\"\n    - 参数：未设置 [2](#research-evidence-ev_4b30fe936a20fd865437a8dc867db5be9f4b38ba44c93f7198bd08f1cdea70ee)\n  适用条件：context：E5仅说明基础层从最低分辨率数据集训练；本设计中的基础层获取、增强层初始化和优化器设置均为拟议选择，非论文已报告设置。\n\n## 指标\n\n- 实验建议：指标：PSNR（越高越好）、SSIM（越高越好）、LPIPS（越低越好），均在评估视图上逐视图计算后取场景内平均；三个指标分别报告，不合并为单一分数。 [1](#research-evidence-ev_fd65514c9d534ca9ca30f55eb9eb6295060557c828ea9c60d0308673b7abc3aa)\n  适用条件：context：E1的Table 6报告了SSIM和LPIPS的百分比差异，未报告PSNR；PSNR为拟议指标。\n\n## 结果解释\n\n- 实验建议：分析：对每个指标计算组1减组0的配对差值（PSNR和SSIM为组1减组0，LPIPS为组0减组1，使正值表示画质改善），报告描述性点差值和方向；不进行统计检验或置信区间。\n\n拟议配置（尚未执行）：\n\n效应定义：\n\n- psnr_diff：PSNR组1 - PSNR组0\n- ssim_diff：SSIM组1 - SSIM组0\n- lpips_diff：LPIPS组0 - LPIPS组1\n\n不确定性：描述性分析，边界为报告点差值，不推断总体\n\n判定逻辑：描述性判断，边界为报告点差值，不推断总体 [1](#research-evidence-ev_fd65514c9d534ca9ca30f55eb9eb6295060557c828ea9c60d0308673b7abc3aa)\n  适用条件：context：E1仅报告了LapisGS相对Freeze方法的百分比差异，未提供本实验所需的组间配对差值；本分析为拟议的描述性比较。\n\n## 风险\n\n- 实验建议：风险与限制：单场景、单种子、固定检查点设计不能推广到其他场景或种子；未执行统计检验，不能声称显著性或等价性；hotdog场景的具体数据规模和训练配置在论文中未充分报告，需在执行前核对实际数据可用性。 [1](#research-evidence-ev_fd65514c9d534ca9ca30f55eb9eb6295060557c828ea9c60d0308673b7abc3aa) [2](#research-evidence-ev_4b30fe936a20fd865437a8dc867db5be9f4b38ba44c93f7198bd08f1cdea70ee)\n  适用条件：context：E1和E5未提供hotdog场景的图像数量、分辨率、迭代次数或学习率；这些信息缺失限制了实验的可复现性。\n\n<details>\n<summary>还有 8 项未完成</summary>\n\n- 拟议实验可使用哪些现有数据集或论文子集？核对实际场景/样本名称或数量、训练与评估划分；沿用其他论文子集时回查该来源，不以整个数据集替代子集。：最终回答尚未完整回应这一问题\n- LapisGS v2中增强层（enhancement layer）的透明度参数在训练过程中如何被优化？具体涉及哪些参数、损失项和优化步骤？：最终回答尚未完整回应这一问题\n- LapisGS v2论文中hotdog场景的实验设置是什么？包括数据集来源、图像数量、分辨率、训练迭代次数和评估指标。：最终回答尚未完整回应这一问题\n- 补齐实验方案：固定条件：尚未形成经过检查的方案内容\n- 补齐实验方案：执行步骤：尚未形成经过检查的方案内容\n- 补齐实验方案：数据划分与重复试验：这项方案要求尚未通过完整性和逻辑核验\n- 补齐实验方案：训练与恢复预算：这项方案要求尚未通过完整性和逻辑核验\n- 补齐实验方案：执行步骤与记录：这项方案要求尚未通过完整性和逻辑核验\n\n</details>\n\n假设与实验建议尚未经过实验验证。\n\n<details>\n<summary>原文依据</summary>\n\n**[1] LapisGS: Layered Progressive 3D Gaussian Splatting for Adaptive Streaming** · 全文片段\n\n> Table caption: Table 6 . Per-scene size and quality difference in percentage of LapisGS on synthetic Blender dataset [18] at different quality levels, compared to the Freeze method.SSIM ↑ ∆ LPIPS ↓ ∆ Size ↓ ∆ SSIM ↑ ∆ LPIPS ↓ ∆ Size ↓ ∆ SSIM ↑ ∆ LPIPS ↓ ∆ Size ↓\n> Table row 1: Scene ∆ Lego 0.21% [cols=2, rows=1] | L 1 -16.43% | -113.78% | 0.65% | L 2 -40.72% | -121.51% | 1.19% | L 3 43.6% | -232.51%\n> Table row 2: Hotdog | 0.25% | -7.87% | -128.50% | 0.31% | -9.39% | -62.31% | 0.18% | 8.85% | -87.35%\n\n**[2] LapisGS: Layered Progressive 3D Gaussian Splatting for Adaptive Streaming** · 第 5 页 · 全文片段\n\n> We initially trained the base layer from the dataset with the lowest resolution.\n\n</details>",
+  "acceptedRoles": [
+    "hypothesis",
+    "groups",
+    "metrics",
+    "analysis",
+    "limits"
+  ],
+  "findings": [
+    "Named synthetic Blender Hotdog scene is now supported by the retained Table 6 caption/row; source PDF physical page 15 was inspected separately, while the runtime location remains unresolved.",
+    "Descriptive effects are no longer rejected for lacking bootstrap/CI. Hypothesis, groups, metrics, analysis and limits are retained.",
+    "Controls remain vague, the budget specifies 0 versus 3000 as matched, data/steps are unresolved; no executable complete experiment.",
+    "Repair verification request exceeded the unchanged 24000-byte cap (25052), so no oversized request was sent.",
+    "Internal E aliases and repetitive protocol materialization remain a readability problem."
+  ],
+  "scoresOutOfFive": {
+    "goal": 2,
+    "evidence": 3,
+    "conditions": 2,
+    "synthesis": 2,
+    "executability": 2,
+    "readability": 1
+  },
+  "rawPayloadSha256": "739e4ebe2aae24f8f3446b5fc9c802054c39ba8b0e1b3d85b809f1da1e3838fa",
+  "rawLedgerSha256": "4a9e8916b4ed9711f2226fc5f030534039ec908a34e9bdd28fd5d744f902be5e",
+  "rawArchive": "tmp/dr-acceptance-receipts/H5R-v4.payload.json",
+  "boundary": "Single submitted attempt; no retry. Machine outcome and transport success do not establish answer quality."
+}

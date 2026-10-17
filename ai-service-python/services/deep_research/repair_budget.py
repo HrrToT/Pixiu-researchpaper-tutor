@@ -1,0 +1,41 @@
+"""Request fitting is advisory; the ledger still reserves atomically."""
+REPAIR_OUTPUT_TOKENS = 8192
+FRAMING_TOKENS = 1024
+REPAIR_INPUT_BYTES = 24000
+
+
+def repair_exploration_headroom(normal_pool):
+    """Protect one full repair request while retaining exploration capacity.
+
+    Small custom pools keep at least one third for exploration; the repair
+    fitter still refuses requests that cannot fit the remaining actual budget.
+    """
+    return min(REPAIR_INPUT_BYTES + REPAIR_OUTPUT_TOKENS + FRAMING_TOKENS,
+               max(0, normal_pool) * 2 // 3)
+
+
+def repair_prompt_byte_limit(budget, output_tokens=REPAIR_OUTPUT_TOKENS):
+    if type(output_tokens) is not int or not 1 <= output_tokens <= REPAIR_OUTPUT_TOKENS:
+        return 0
+    if not budget or 'maxTokens' not in budget:
+        return REPAIR_INPUT_BYTES
+    keys = ('maxTokens', 'reserveTokens', 'tokens', 'normalTokens')
+    values = [budget.get(key, 0) for key in keys]
+    if any(type(value) is not int or value < 0 for value in values):
+        return 0
+    maximum, reserve, total_used, normal_used = values
+    remaining = min(maximum - total_used, maximum - reserve - normal_used)
+    return max(0, min(REPAIR_INPUT_BYTES, remaining - output_tokens - FRAMING_TOKENS))
+
+
+def repair_batch_output_limit(target_count):
+    """Smaller target batches need less output reservation, never a larger cap."""
+    return min(REPAIR_OUTPUT_TOKENS, max(4096, 1024 * (target_count + 1)))
+
+
+def repair_output_options(options):
+    result = dict(options)
+    maximum = result.pop('_repair_output_limit', REPAIR_OUTPUT_TOKENS)
+    if type(maximum) is not int or not 1 <= maximum <= REPAIR_OUTPUT_TOKENS:
+        raise ValueError('Invalid server repair output limit')
+    return {**result, 'max_tokens': maximum}

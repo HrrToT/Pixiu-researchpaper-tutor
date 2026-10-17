@@ -1,0 +1,26 @@
+{
+  "date": "2026-10-16",
+  "sourceCommit": "64e3e8f",
+  "promptVersion": "dr-v2.20261015.100",
+  "case": "H5R-v15",
+  "beforeCalls": 3021,
+  "after": {
+    "active": [],
+    "paused": [
+      "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+      "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+      "dr_run_86b3f181a5475e99aacca3dbf4370567",
+      "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+      "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+      "dr_run_e3521b1781825273b384a26a5edb8cdc",
+      "dr_run_ed10cc3347be552288079a9a588fddf5"
+    ],
+    "calls": 3048,
+    "originalPrefixSha256": "930692eb2eccbd35541f7e27fc750768b023d4ce8a4ace6e87565ab5cc0646b1"
+  },
+  "originalLedgerRowsPreserved": true,
+  "oldPausedRunsPreserved": true,
+  "modelCalls": 0,
+  "networkRequests": 0,
+  "boundary": "Read-only post-case state proof, not an extra model run or a restart."
+}

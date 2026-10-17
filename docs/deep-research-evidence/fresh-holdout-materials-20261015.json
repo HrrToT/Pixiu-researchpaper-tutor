@@ -1,0 +1,23 @@
+{
+  "date": "2026-10-15",
+  "manifest": "DEEP_RESEARCH_FRESH_HOLDOUTS_20261015.json",
+  "taskId": "dr-fresh-holdout-materials-20261015",
+  "preparation": "Original PDF hashes verified before upload. The local /materials/upload endpoint schedules /parse-pdf with ai=false; no AI overview or research endpoint was invoked.",
+  "materials": {
+    "odgs": {"sha256": "f89e33b85bfd3b970815638646ace8c73bbfc915493315517129e57432ad0adc", "physicalPages": 19, "ragChunkCount": 93, "processingStatus": "ready", "readingReady": true, "questionReady": true, "aiAnalysisStatus": "not_requested"},
+    "cat": {"sha256": "6cff256c171332b72324f87ae7229c391cdc8ade63850f288d11289bda4699d5", "physicalPages": 23, "ragChunkCount": 75, "processingStatus": "ready", "readingReady": true, "questionReady": true, "aiAnalysisStatus": "not_requested"},
+    "dlapis": {"sha256": "e9895f20dbad6b11d95974f66319dbfef68ffe3235592e5d158822f3b43c3b1e", "physicalPages": 16, "ragChunkCount": 57, "processingStatus": "ready", "readingReady": true, "questionReady": true, "aiAnalysisStatus": "not_requested"},
+    "pfgs": {"sha256": "abc53af939c9938ea19fe5877c3a04765c97e41b1bac51122975d91ee535de88", "physicalPages": 10, "ragChunkCount": 48, "processingStatus": "ready", "readingReady": true, "questionReady": true, "aiAnalysisStatus": "not_requested"}
+  },
+  "checks": {
+    "keyOriginalPagesVisuallyInspected": ["ODGS physical5: tangent projection/remapping and local covariance assumption", "CAT-3DGS physical6: triplane and spatial coding", "LapisGS physical4: hotdog and selective old-layer opacity optimization", "PFGS360 physical5: Table1 grouped PSNR/SSIM/LPIPS headers and separate Table2 pose metrics"],
+    "newResearchModelLedgerRowsBefore": 877,
+    "newResearchModelLedgerRowsAfter": 877,
+    "activeResearch": 0,
+    "pausedResearchPreserved": 6,
+    "freshResearchCasesExecuted": 0,
+    "preparationTriggeredGenerationRequests": 0
+  },
+  "rawReceipt": "tmp/dr-acceptance-receipts/fresh-material-preparation-20261015.json",
+  "boundary": "Successful local parsing/indexing is preparation, not a real research answer, scientific quality pass or independent-case score. No retrieval-ranking tests or paper-specific engine tuning were performed on these fresh cases."
+}

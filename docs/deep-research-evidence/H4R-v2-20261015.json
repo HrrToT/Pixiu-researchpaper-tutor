@@ -1,0 +1,45 @@
+{
+  "date": "2026-10-15",
+  "caseId": "H4R",
+  "attempt": 2,
+  "runId": "dr_run_0c89e6b2d68e5cb1a63e3eb8f339f494",
+  "promptVersion": "dr-v2.20261015.68",
+  "machineStatus": "completed",
+  "machineOutcome": "inconclusive",
+  "qualityAccepted": false,
+  "reviewer": "Primary Codex; saved actual result and source checked. Not independent holdout review.",
+  "findings": [
+    "Verified nested table cells now reach synthesis with correct values and cohort mappings.",
+    "The draft and compact answer omit the method/row label, so the table condition gate rejects the numeric claim.",
+    "A secondary claim digresses to a different table and lacks its own supporting citation.",
+    "The repair omits tableBindings and duplicates conditions, exceeding the total character limit. No repaired claims reached semantic review.",
+    "The final result contains no accepted claims and correctly remains inconclusive; this is not a quality pass."
+  ],
+  "budget": {
+    "profile": "standard",
+    "modelCalls": 9,
+    "maxModelCalls": 18,
+    "tokens": 19149,
+    "maxTokens": 100000,
+    "externalSearches": 0,
+    "fulltextFetches": 0,
+    "elapsedSeconds": 61.0,
+    "cost": null
+  },
+  "costBoundary": "Settled provider token usage; monetary cost not supplied. All nine model calls succeeded.",
+  "rawResultPath": "tmp/dr-acceptance-receipts/H4R-v2.result.json",
+  "rawSha256": "3523acc37177d149076cf35a96b670fece7852f4f907b7d3cc273a453254278a",
+  "rawPayloadPath": "tmp/dr-acceptance-receipts/H4R-v2.payload.json",
+  "rawCallsPath": "tmp/dr-acceptance-receipts/H4R-v2.calls.json",
+  "independence": "Development regression only; case retired after first-run diagnostic use.",
+  "fixCommit": "221ed65",
+  "fixPromptVersion": "dr-v2.20261015.69",
+  "offlineVerification": {
+    "passed": 1308,
+    "skipped": 2,
+    "warnings": 1,
+    "seconds": 55.4,
+    "scope": "Research/model/reading integration plus PDF table parsing"
+  },
+  "retestBoundary": "H4R-v3 submitted once; pending at evidence creation. No retry of the seven unknown requests."
+}

@@ -1,0 +1,29 @@
+{
+  "date": "2026-10-15",
+  "promptVersion": "dr-v2.20261015.81",
+  "sourceCase": "H5R-v8",
+  "historicalRunUnmodified": true,
+  "historicalStatus": "failed",
+  "savedResponseSha256": "1b8e066173b2166ce8120c2d5ee51bff202e26d441ec1cb5c0f5961424b14af5",
+  "offlineOutcome": "partial",
+  "acceptedPriorClaims": [
+    "c1",
+    "c2",
+    "c5",
+    "c6",
+    "c7",
+    "c8",
+    "c9"
+  ],
+  "uncheckedRevisionsExcluded": [
+    "c3",
+    "c4"
+  ],
+  "repairStatus": "verification_invalid_response",
+  "modelCalls": 0,
+  "receiptHashes": {
+    "H5R-v8.payload.json": "b46a67a5be9f3b4cc9b9354635ab31d09d59264ec6c2f21ad9f239efab47851c",
+    "H5R-v8.calls.json": "7801bab11ee06ff1c120e298e91ff1ec0eb8c13a0e99e9c66598e83606e25e01"
+  },
+  "boundary": "Copied-state replay of the exact received malformed response. No runtime run was resumed or rewritten; no new model/API request. This proves partial-result retention, not scientific content acceptance."
+}

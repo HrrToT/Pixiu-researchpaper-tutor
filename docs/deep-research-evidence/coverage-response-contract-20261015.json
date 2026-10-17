@@ -1,0 +1,19 @@
+{
+  "date": "2026-10-15",
+  "promptVersion": "dr-v2.20261015.66",
+  "changes": [
+    "The final JSON example includes criteria alongside aspects and an exact per-obligation criterion ID/type map.",
+    "Missing, duplicated, downgraded or unbound criterion review fields are invalid audit responses. They keep coverage unverified instead of declaring proven content omissions.",
+    "Invalid audit fields alone no longer trigger the existing paid content-repair path; genuine reviewed missing explanations still become content gaps.",
+    "The late-response timeout fixture waits for explicit release long enough for controller logging and durable bookkeeping; its actual provider deadline remains 30ms."
+  ],
+  "validation": {
+    "currentLocalFullDeepResearch": {"passed": 1176, "warnings": 1, "seconds": 69.96, "environment": "existing .venv-refactor on Windows"},
+    "currentTargetedCriteriaAndFinalCoverage": {"passed": 42, "seconds": 4.25},
+    "deadlineAndResponseShape": {"passed": 2, "seconds": 4.34},
+    "containerRun": "Interrupted by Docker Desktop exit; not counted as passing."
+  },
+  "runtimeIncident": "Docker startup failed on an inaccessible zero-byte dockerInference runtime reparse endpoint. The exact endpoint was renamed to dockerInference.codex-backup-20261015 within Docker/run using WSL. No image, volume, database, settings or user file was deleted/reset.",
+  "realProviderValidation": "Pending for .66. D8-v2 (.65) remains a preserved failed development case, not automatically retried or reclassified.",
+  "boundary": "Structural audit validity does not prove semantic correctness or novice readability. DR0-DR5 quality and independent acceptance remain open."
+}

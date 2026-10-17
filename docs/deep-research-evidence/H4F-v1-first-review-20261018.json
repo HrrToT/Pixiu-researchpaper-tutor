@@ -1,0 +1,57 @@
+{
+  "date": "2026-10-18",
+  "case": "H4F-v1",
+  "slot": "H4",
+  "runId": "dr_run_ee62d7b47eac52e2aa87a981085bbe16",
+  "sourceCommit": "ebcf570c",
+  "promptVersion": "dr-v2.20261018.126",
+  "caseDefinitionHash": "0ed2c929eee278e7b43f72732e1beec5deab30a4de0475ebcb92d009b5da4807",
+  "question": "3DGStream v4摘要中的每帧重建约12秒与200FPS是否矛盾？只依据本篇区分两个数字对应的操作、单位和适用范围，并说明能否据此断言从新采集输入到显示始终实时。250字以内。",
+  "materialHashes": {
+    "stream": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98"
+  },
+  "status": "completed",
+  "outcome": "partial",
+  "contentAccepted": false,
+  "firstIndependentAttempt": true,
+  "retiredForTuning": false,
+  "modelCalls": 11,
+  "settledTokens": 29250,
+  "elapsedSeconds": 34.678,
+  "externalSearches": 0,
+  "fulltextFetches": 0,
+  "cost": null,
+  "report": "## 判断\n\n- 3DGStream中每帧训练约10秒（结论部分），单位秒/帧，用于动态场景逐帧重建；200FPS指渲染，单位帧/秒，用于已重建模型实时视图合成。两者操作不同，不矛盾。 [1](#research-evidence-ev_ed3f594d3d93660e693304c329a1853c445e83554bb0be9238611c5393aecf71)\n\n<details>\n<summary>还有 2 项未完成</summary>\n\n- 在3DGStream论文中，每帧重建约12秒和200FPS分别对应的操作、单位和适用范围是什么？：最终回答尚未完整回应这一问题\n- 根据论文，能否从新采集输入到显示始终实时？：最终回答尚未完整回应这一问题\n\n</details>\n\n论文事实已按所列原文核对。\n\n<details>\n<summary>原文依据</summary>\n\n**[1] 3DGStream: On-the-Fly Training of 3D Gaussians for Efficient Streaming of Photo-Realistic Free-Viewpoint Videos** · 第 8 页 · 全文片段\n\n> While ensuring photo-realistic image quality, 3DGStream achieves on-the-fly training (∼10s per-frame) and real-time rendering (∼200FPS) at megapixel resolution with moderate requisite storage.\n\n</details>",
+  "findings": [
+    "The answer distinguishes training seconds/frame from rendering frames/second, but replaces the requested abstract value of 12 seconds with the conclusion value of about 10 seconds.",
+    "The conclusion source supports that 10-second statement, but another paper location cannot substitute for the exact abstract statement the user asked to check.",
+    "The final answer omitted the end-to-end real-time limitation after an absence assertion was rejected. Partial, not an accepted answer."
+  ],
+  "scores": {
+    "goalResponse": 2,
+    "evidenceSupport": 4,
+    "conditions": 3,
+    "synthesisValue": 2,
+    "executability": null,
+    "readability": 4
+  },
+  "rawFiles": [
+    {
+      "path": "tmp\\dr-acceptance-receipts\\H4F-v1.json",
+      "sha256": "3850c294a1a3c9e9f308143b91d397cfebe575f8685a9b558f62214ca702e18c"
+    },
+    {
+      "path": "tmp\\dr-acceptance-receipts\\H4F-v1.payload.json",
+      "sha256": "bd612e8c8fdd2e23af9c0232035c677b1005d8eccd7e251289fed08b2cea9172"
+    },
+    {
+      "path": "tmp\\dr-acceptance-receipts\\H4F-v1.calls.json",
+      "sha256": "69fcbd8cd1e551303a41d480f8d67ee4738197d109bb6226f33e941226360f10"
+    },
+    {
+      "path": "tmp\\dr-acceptance-receipts\\H4F-v1.result.json",
+      "sha256": "66d837a61caa8061df3151b21f18886f119ec922b9f89b2de1487c04487481bd"
+    }
+  ],
+  "boundary": "First results scored against the sealed requirements; no failed result was overwritten or counted as a quality pass."
+}

@@ -1,0 +1,52 @@
+{
+  "date": "2026-10-15",
+  "case": "H5R-v6",
+  "runId": "dr_run_c78295b0da0c5657a5afd9ca05788a3e",
+  "promptVersion": "dr-v2.20261015.76",
+  "machineStatus": "failed",
+  "machineOutcome": "none",
+  "contentAccepted": false,
+  "reviewer": "Primary Codex; source/content review, not an independent human study",
+  "eligibility": "Retired development case; no independent holdout credit",
+  "budget": {
+    "maxModelCalls": 18,
+    "maxTokens": 100000,
+    "maxWallClockSeconds": 360,
+    "reserveModelCalls": 5,
+    "reserveTokens": 50000,
+    "maxExternalSearches": 6,
+    "maxFulltextFetches": 6,
+    "modelCalls": 4,
+    "tokens": 19581,
+    "normalTokens": 7084,
+    "elapsedSeconds": 0,
+    "externalSearches": 0,
+    "fulltextFetches": 0,
+    "reservedModelCalls": 2,
+    "exhausted": "",
+    "profile": "standard"
+  },
+  "modelCalls": 6,
+  "reportBody": null,
+  "acceptedRoles": [],
+  "findings": [
+    "The draft now uses the supplied prior-layer opacity training rule and separates shared baseline preparation from matched group training budgets.",
+    "Run stops with invalid_verification_response on the first verifier call; no unchecked report is published.",
+    "The raw first verifier response contains the complete one-target verdict array, with the closing code fence directly after the final bracket.",
+    "Old parsing incorrectly returns an inner object instead of the array. Subsequent configuration/science checks never execute.",
+    "The draft still has vague controls, lowercase scene identity and missing other-intervention policies. Draft improvements are not content acceptance.",
+    "Scores are unassigned because the verification pipeline did not complete; preserve the original failure instead of pretending this is a complete quality evaluation."
+  ],
+  "scoresOutOfFive": {
+    "goal": null,
+    "evidence": null,
+    "conditions": null,
+    "synthesis": null,
+    "executability": null,
+    "readability": null
+  },
+  "rawPayloadSha256": "3b791fdd36d693d77bbd8fa62872003798f756cba6277e43144e2fb9cbfbc345",
+  "rawLedgerSha256": "6a88d55d6cfcf53469691d96c4cb67904cbd07babb37a58a12f76b4c59a97424",
+  "rawArchive": "tmp/dr-acceptance-receipts/H5R-v6.payload.json",
+  "boundary": "Single submitted attempt; no retry. Machine outcome and transport success do not establish answer quality."
+}

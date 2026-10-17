@@ -1,0 +1,44 @@
+{
+  "case": "H3R-v11",
+  "runId": "dr_run_33648b51950d5a97be5d5d7f96d0c05f",
+  "promptVersion": "dr-v2.20261015.97",
+  "status": "completed",
+  "outcome": "partial",
+  "budget": {
+    "profile": "standard",
+    "modelCalls": 9,
+    "maxModelCalls": 18,
+    "tokens": 30706,
+    "maxTokens": 100000,
+    "externalSearches": 1,
+    "fulltextFetches": 1,
+    "elapsedSeconds": 124.0,
+    "cost": null
+  },
+  "contentAccepted": false,
+  "independentHoldoutEligible": false,
+  "raw": "tmp/dr-acceptance-receipts/H3R-v11.payload.json",
+  "calls": "tmp/dr-acceptance-receipts/H3R-v11.calls.json",
+  "review": {
+    "status": "not_accepted",
+    "finalCoverage": "invalid_response",
+    "invalidAspectObligations": [
+      "answer_scope"
+    ],
+    "improved": [
+      "Uses exact depth/opacity gradient passages selected in the first extraction batch.",
+      "Explicitly distinguishes non-differentiable bucket sampling from the probability/opacity gradient path.",
+      "Motivation no longer attributes an unsupported uncertainty benefit to the paper.",
+      "Both semantic verification and bounded repair complete; both audit responses finish normally."
+    ],
+    "remaining": [
+      "The plain-language consequence of increasing/decreasing opacity and future sampling is omitted.",
+      "Depth bucket, reparameterization and gradient assignment remain dense for a novice reader.",
+      "Whole-question access label uses a literal request basis rather than the narrower source-metadata schema; .98 supports only this explicit aggregate access request."
+    ],
+    "publishedAnswerCharacters": 205,
+    "cacheHit": true,
+    "pdfNetworkRequests": 0,
+    "boundary": "Improved scientific distinction is not a pass on novice readability. The old partial run is unchanged."
+  }
+}

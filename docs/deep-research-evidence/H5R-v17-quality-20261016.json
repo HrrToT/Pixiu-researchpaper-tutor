@@ -1,0 +1,54 @@
+{
+  "date": "2026-10-16",
+  "case": "H5R-v17",
+  "runId": "dr_run_14d324d35f1d5675a873ff6054eae805",
+  "sourceCommit": "ef9f080",
+  "promptVersion": "dr-v2.20261016.105",
+  "status": "failed",
+  "outcome": "none",
+  "budget": {
+    "profile": "standard",
+    "modelCalls": 7,
+    "maxModelCalls": 18,
+    "tokens": 29395,
+    "maxTokens": 100000,
+    "externalSearches": 0,
+    "fulltextFetches": 0,
+    "elapsedSeconds": 59.0,
+    "cost": null
+  },
+  "contentAccepted": false,
+  "independentHoldoutEligible": false,
+  "callsSucceeded": 20,
+  "modelCalls": 7,
+  "finalCoverageStatus": "not_reached",
+  "errorCode": "invalid_verification_response",
+  "sourcePayloadSha256": "6d3f6299e83a2624e912f3ad5df750d532ea25827bc901af5e5a4a98ea62fa0a",
+  "raw": "tmp/dr-acceptance-receipts/H5R-v17.payload.json",
+  "calls": "tmp/dr-acceptance-receipts/H5R-v17.calls.json",
+  "review": {
+    "status": "not_accepted",
+    "scores": {
+      "目标回应": 2,
+      "证据支持": 3,
+      "条件完整": 2,
+      "综合价值": 2,
+      "可执行性": 2,
+      "可读性": 3
+    },
+    "scoreBoundary": "Review of the saved unpublished draft and failure, not of a published answer.",
+    "improved": [
+      "Fresh creation now names state variables, tensor shapes and a component count.",
+      "The scientific review explicitly rejects missing initial values, rather than approving a shape-only layout."
+    ],
+    "findings": [
+      "No report published: a complete failed verdict was wrapped in an unterminated Markdown fence and rejected by the parser.",
+      "The JSON body is valid and contains exactly the requested s1 verdict; the subsequent .106 compatibility fix preserves that failed verdict unchanged.",
+      "Fresh Gaussian state still lacks position, scale, orientation and appearance initial values or valid source transformations.",
+      "The controls describe copies of proposed checkpoint files while the workflow first creates fresh enhancement state; acquisition and pairing are not consistently defined.",
+      "The data prose asserts paper-wide absence of view counts/splits without source support and is already rejected by the absence gate.",
+      "At least one scientific target cannot retain all required evidence within the current request capacity; no missing evidence is treated as a pass."
+    ]
+  },
+  "boundary": "One explicitly reauthorized submission per case, no automatic retry. Retired development case; no independent acceptance credit. No historical result mutation."
+}

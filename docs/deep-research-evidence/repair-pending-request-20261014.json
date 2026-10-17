@@ -1,0 +1,33 @@
+{
+  "date": "2026-10-14",
+  "promptVersion": "dr-v2.20261014.62",
+  "changes": [
+    "End each repair prompt with an explicit active-target response skeleton; accepted and sibling IDs remain context only.",
+    "Allocate up to 4096/6144/8192 output tokens by target count, under the existing 8192 maximum; refit input before each new dispatch against the current ordinary and total token pools.",
+    "Checkpoint the exact prepared prompt, original target mapping, local evidence aliases, allowed sources, output limit and request digest before dispatch.",
+    "Pending requests are restored rather than regenerated or reallocated. A settled response can be reused after a crash before the draft checkpoint; unknown calls remain blocked by the ledger.",
+    "Persist per-batch budget/capacity stops and do not automatically restart a stopped round.",
+    "Strip internal output-allocation metadata before provider dispatch, including the plain tracked-invoker path."
+  ],
+  "unchanged": ["24KB request maximum", "Total and ordinary/reserve token pools", "Total model-call limit", "Final verifier reserve", "Source permissions", "Independent semantic and consistency verification", "No retry of empty or truncated responses"],
+  "offlineReplay": {
+    "caseId": "D3-v24 third batch",
+    "sourceAccess": "read-only SQLite",
+    "providerRequests": 0,
+    "normalTokensAlreadyUsed": 20027,
+    "normalPoolLimit": 50000,
+    "outputLimit": 6144,
+    "framingReservation": 1024,
+    "currentInputLimit": 22805,
+    "preparedPromptBytes": 22510,
+    "activeTargetSkeletonPresent": true,
+    "conservativeOrdinaryReservationTotal": 49705,
+    "boundary": "Request admission replay only; no new model response or scientific approval is asserted."
+  },
+  "validation": {
+    "targeted": {"passed": 75, "seconds": 14.84},
+    "fullRegression": {"passed": 1185, "warnings": 2, "seconds": 191.51},
+    "coverage": ["Real SQLite ledger blocks unknown pending requests", "Real settled response reused after draft-checkpoint failure", "Pending prompt not rebuilt despite changed live budget", "Stopped budget round not resubmitted", "Active response targets match each real prompt batch", "Per-batch output reservation and provider metadata filtering", "Existing scope, cancellation, publication and recovery regressions"]
+  },
+  "limitations": ["Budget or indivisible required evidence can still prevent later batches.", "Smaller output limits may produce truncated responses, which remain rejected.", "Prompt and output limits are frozen; live authorization and provider policy still apply at dispatch.", "Actual model adherence and full DR0-DR5 content acceptance remain unverified for this version."]
+}

@@ -1,0 +1,74 @@
+{
+  "date": "2026-10-16",
+  "promptVersion": "dr-v2.20261016.110",
+  "modelCalls": 0,
+  "providerNetworkRequests": 0,
+  "H5R-v18": {
+    "sourcePayloadSha256": "8dd054c90b16db4bafcaec119f85402bfe7059f6712edbab2b6fe399932f8822",
+    "requests": [
+      {
+        "bytes": 23250,
+        "targets": [
+          "c4",
+          "c5",
+          "c7"
+        ],
+        "allOriginalTargetQuotesAndContextsKept": true
+      },
+      {
+        "bytes": 23919,
+        "targets": [
+          "c1",
+          "c8",
+          "c9"
+        ],
+        "allOriginalTargetQuotesAndContextsKept": true
+      },
+      {
+        "bytes": 22808,
+        "targets": [
+          "c2",
+          "c3",
+          "c6"
+        ],
+        "allOriginalTargetQuotesAndContextsKept": true
+      }
+    ],
+    "eachTargetOnce": true,
+    "emptyFixtureProducedNoRevision": true,
+    "originalRunStatusUnchanged": "completed/partial",
+    "invalidFreshInputDimensionStillRejected": true,
+    "synthesis": {
+      "bytes": 23600,
+      "visibleEvidence": 2,
+      "hotdogAndOpacityEvidenceRetained": true,
+      "emptyFixtureGeneratedNoClaim": true
+    }
+  },
+  "H3R-v14": {
+    "sourcePayloadSha256": "074dba02039162f48d607b3a540dd31ccbadaae214e167be61dc5b3b28133c3b",
+    "requests": [
+      {
+        "bytes": 12300,
+        "targets": [
+          "c1"
+        ],
+        "allOriginalTargetQuotesAndContextsKept": true,
+        "immutableAcceptedCharacters": 185,
+        "remainingCharacters": 115
+      }
+    ],
+    "eachTargetOnce": true,
+    "emptyFixtureProducedNoRevision": true,
+    "originalRunStatusUnchanged": "completed/partial"
+  },
+  "boundary": "Saved-input capacity and constraint replay only; no scientific verdict, generated answer or content pass. Raw .109 runs remain partial. Independent release gates remain open.",
+  "sourceCommit": "ab35c73",
+  "tests": {
+    "passed": 1773,
+    "warnings": 1,
+    "seconds": 45.23,
+    "log": "tmp/pytest-dr110-full-final.log",
+    "scope": "Research/reading/PDF table/config; no frontend or Java source changes."
+  }
+}
