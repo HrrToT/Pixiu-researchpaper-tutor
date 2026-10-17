@@ -165,12 +165,12 @@ describe('task research integration', () => {
       hook.unmount();
     } finally { vi.useRealTimers(); }
   });
-  it('freezes a fresh-material continuation revision across an uncertain response and reload', async () => {
+  it.each([true, false])('freezes continuation revision across an uncertain response and reload (new materials: %s)', async newMaterials => {
     const task = { id: 'followup-intent', revision: 4, researchRuns: [] };
     const current = { tasks: [task], adoptServerTask: vi.fn() };
     const api = { action: vi.fn().mockRejectedValue(new Error('返回未确认')) };
     const payload = { requestId: 'same-followup', expectedRunRevision: 7,
-      materialSelection: { mode: 'task_default' }, question: '使用新论文补查' };
+      ...(newMaterials ? { materialSelection: { mode: 'task_default' } } : {}), question: '继续第二点' };
     const first = renderHook(() => useTaskResearch(current, api));
     await act(async () => { await expect(first.result.current.action(task.id, 'parent', 'continue', payload)).rejects.toThrow('返回未确认'); });
     first.unmount();
@@ -178,6 +178,7 @@ describe('task research integration', () => {
     await act(async () => { await expect(second.result.current.action(task.id, 'parent', 'continue', payload)).rejects.toThrow('返回未确认'); });
     expect(api.action.mock.calls[1][3]).toEqual(api.action.mock.calls[0][3]);
     expect(api.action.mock.calls[1][3].expectedTaskRevision).toBe(4);
+    expect(api.action.mock.calls[1][3].freshContinuation).toBe(true);
     second.unmount();
     sessionStorage.clear();
   });

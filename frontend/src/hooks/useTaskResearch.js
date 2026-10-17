@@ -170,10 +170,11 @@ export function useTaskResearch(workspace, api = taskResearchApi, operations = n
     idleRuns.current.delete(key);
     const isCurrent = () => actionVersions.current.get(key) === version;
     setRunError(JSON.stringify([taskId, researchId]), 'action', '');
-    const actionIntentKey = name === 'continue' && payload?.materialSelection && payload.requestId
+    const actionIntentKey = name === 'continue' && payload?.requestId
       ? JSON.stringify(['research-action', taskId, researchId, name, payload.requestId]) : null;
     try {
       const actionPayload = actionIntentKey ? getResearchIntent(actionIntentKey, { ...payload,
+        freshContinuation: true,
         expectedTaskRevision: latest.current.tasks?.find(task => task.id === taskId)?.revision }).input : payload;
       const response = await api.action(taskId, researchId, name, actionPayload);
       if (name === 'continue' && response?.task?.contractVersion === 2 && response.task.runId !== researchId) {
