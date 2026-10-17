@@ -635,7 +635,7 @@ public class TaskResearchService {
 
     private Map<String, Object> planV2(String taskId, String runId, Map<String, Object> input) {
         requireV2Owner(taskId, runId);
-        Map<String, Object> body = forwardBody(input, List.of("requestId", "expectedRunRevision", "plan"));
+        Map<String, Object> body = forwardBody(input, List.of("requestId", "expectedRunRevision", "planRevision", "plan"));
         return publishV2(taskId, runId, requireSuccess(research.planV2ResearchTask(runId, body)));
     }
 

@@ -220,11 +220,12 @@ class TaskResearchV2ControllerTest {
         when(research.planV2ResearchTask(eq("run-edit"), any())).thenAnswer(call -> {
             Map<?, ?> body = call.getArgument(1);
             org.junit.jupiter.api.Assertions.assertEquals(plan, body.get("plan"));
+            org.junit.jupiter.api.Assertions.assertEquals(0, body.get("planRevision"));
             return v2Success("run-edit", "paused", null, 3L);
         });
         mvc.perform(post("/api/task-workspaces/work/research/run-edit/plan")
                 .contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsString(
-                        Map.of("requestId", "plan-1", "expectedRunRevision", 2, "plan", plan))))
+                        Map.of("requestId", "plan-1", "expectedRunRevision", 2, "planRevision", 0, "plan", plan))))
                 .andExpect(status().isOk());
     }
 
