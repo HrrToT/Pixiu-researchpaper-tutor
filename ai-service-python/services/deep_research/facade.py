@@ -229,6 +229,7 @@ class ResearchFacade:
         # Persist materialSnapshot separately as immutable reference
         material_snapshot = request.get("materialSnapshot")
         inherited_state = {}
+        continuation_context = {}
         parent_id = request.get("parentRunId")
         if parent_id:
             parent = self._repo.require_run(parent_id)
@@ -247,6 +248,19 @@ class ResearchFacade:
             evidence = [e for e in parent.get("state", {}).get("evidence", []) if e.get("sourceId") in source_ids]
             inherited_state = {"sources": sources, "inheritedSources": sources,
                                "evidence": evidence, "inheritedEvidence": evidence}
+            from services.deep_research.request_context import instruction_layers
+            from services.deep_research.plan_resume import edited_question_context
+            parent_instructions = instruction_layers(parent)
+            edited_targets = edited_question_context(parent)
+            if edited_targets:
+                parent_instructions = [edited_targets, *parent_instructions]
+            context = request.get('continuationContext') or {}
+            snapshot_contexts = material_snapshot.get('contextMaterials', []) if isinstance(material_snapshot, dict) else []
+            if context and (not isinstance(context, dict) or context not in snapshot_contexts
+                            or context.get('kind') != 'artifact' or context.get('accessLevel') != 'unverified_context'):
+                raise DeepResearchError('invalid_continuation_context', '追问背景未绑定到当前材料快照。')
+            continuation_context = {'parentRunId': parent_id, 'parentInstructions': parent_instructions,
+                                    'artifactContext': deepcopy(context)}
         
         payload = {
             "runId": run_id,
@@ -259,7 +273,9 @@ class ResearchFacade:
             "materials": materials,
             "materialSnapshot": material_snapshot,  # Immutable Java snapshot
             "contextMaterials": (material_snapshot or {}).get("contextMaterials", []) if isinstance(material_snapshot, dict) else [],
-            "promptVersion": "dr-v2.20261018.118",
+            "promptVersion": "dr-v2.20261018.119",
+            "continuationContextContractVersion": 1,
+            "continuationContext": continuation_context,
             "planResumeContractVersion": 1,
             "exactDiscoveryContractVersion": 1,
             "planEditContractVersion": 1,

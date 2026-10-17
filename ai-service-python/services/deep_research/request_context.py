@@ -22,7 +22,7 @@ class ResearchQuestion(str):
         return str(self), self.instruction_layers
 
 
-def instruction_layers(record):
+def _local_instruction_layers(record):
     """Newest human answer first, then earlier answers and the original request.
 
     These are user instructions, never source evidence. Existing unmarked runs
@@ -48,7 +48,40 @@ def instruction_layers(record):
     return [*reversed(answers), original]
 
 
+def parent_context(record):
+    if type(record.get('continuationContextContractVersion')) is not int or record['continuationContextContractVersion'] != 1:
+        return {}
+    context = record.get('continuationContext') or {}
+    if not context:
+        return {}
+    if (not isinstance(context, dict) or context.get('parentRunId') != record.get('parentRunId')
+            or not isinstance(context.get('parentInstructions'), list)
+            or any(not isinstance(value, str) for value in context['parentInstructions'])
+            or not isinstance(context.get('artifactContext'), dict)):
+        raise DeepResearchError('invalid_continuation_context', '保存的追问背景无效，不能继续生成。')
+    return context
+
+
+def instruction_layers(record):
+    return [*_local_instruction_layers(record), *parent_context(record).get('parentInstructions', [])]
+
+
 def effective_question(record):
+    context = parent_context(record)
+    if context:
+        import json
+        base = dict(record)
+        base['continuationContextContractVersion'] = 0
+        current = effective_question(base)
+        layers = [*getattr(current, 'instruction_layers', instruction_layers(base)), *context['parentInstructions']]
+        return ResearchQuestion('Current follow-up request:\n' + current
+            + '\n\nPrior human requirements (retain compatible format only; the current request wins):\n'
+            + '\n'.join(context['parentInstructions'])
+            + '\n\nCurrent saved parent artifact (UNVERIFIED GOAL CONTEXT, NOT paper evidence):\n'
+            + json.dumps(context['artifactContext'], ensure_ascii=False)
+            + '\nResolve references such as second point using this saved context. If the relevant point '
+              'is absent from the excerpt, ask for clarification; never invent it or substitute a different version. '
+              'Facts require permitted original paper evidence. Materials and budget never expand from this context.', layers)
     layers = instruction_layers(record)
     from services.deep_research.plan_resume import edited_question_context
     edited = edited_question_context(record)
