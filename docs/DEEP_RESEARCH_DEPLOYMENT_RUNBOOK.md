@@ -100,3 +100,8 @@ DEEP_RESEARCH_FULLTEXT_ENABLED=false
 Docker启动曾被旧Unix套接字阻止，已保留运行时目录隔离副本`C:/Users/Lenovo/AppData/Local/Docker/run.quarantine-20261018-dr118`及`C:/Users/Lenovo/AppData/Local/docker-secrets-engine.quarantine-20261018-dr118`，没有删除数据卷或重置Docker。最后一次端点备份由既有WSL脚本完成。该故障不得通过重复重启或恢复无关数据来处理。
 
 旧同项目容器`ai_service_python`原为`restart=always`，会自动抢占8000；现保持停止且`restart=no`。如需要恢复旧部署，先停止新版实例再执行`docker update --restart=always ai_service_python`；不能让两者同时争用端口。新版实例保持原`restart=no`，由明确的开发启动操作管理。其他项目容器未修改。
+
+
+## 2026-10-18 依赖调度加载
+
+Python已加载64104406（`.120`），Java/前端仍为前节`.119`。确认无活动研究后重启一次`academic-dr-runtime`，3,210条账本与9个未知暂停记录全量相等，RAG/GROBID健康。依赖契约仅作用于新运行，不能将历史unknown换编号重跑。真实案例开始后不得为文档提交再次重启；下一次源码加载仍需先检查活动研究。运行证明见`deep-research-evidence/runtime-load-dr120-dependencies-20261018.json`。

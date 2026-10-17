@@ -45,11 +45,11 @@
       "overlap": true
     },
     "backendCurrentResearchReadingTables": {
-      "passed": 1962,
+      "passed": 1987,
       "warnings": 1,
-      "seconds": 102.2,
-      "log": "tmp/pytest-dr119-full-final.log",
-      "sourceCommit": "9894ad1d",
+      "seconds": 102.92,
+      "log": "tmp/pytest-dr120-final-verified.log",
+      "sourceCommit": "64104406",
       "scope": "Research, reading, PDF tables and config."
     },
     "frontendDocumentNavigationFocused": {
@@ -1062,6 +1062,36 @@
       },
       "modelCallsDuringThisWork": 0,
       "boundary": "Backend mock/provider fixtures and real persistent runtime checks, no paid provider request or scientific content score. D1-v9 submit was blocked before launch; authorization remains pending."
+    },
+    "dependencyFrontiers": {
+      "date": "2026-10-18",
+      "sourceCommit": "64104406",
+      "promptVersion": "dr-v2.20261018.120",
+      "contracts": {
+        "dependencyContractVersion": 1
+      },
+      "checks": {
+        "python": {
+          "passed": 1987,
+          "warnings": 1,
+          "seconds": 102.92,
+          "log": "tmp/pytest-dr120-final-verified.log"
+        }
+      },
+      "verifiedBehavior": [
+        "Durable frontiers contain at most two eligible plan items. A descendant starts only after all prerequisite coverage results have been saved.",
+        "Nodes see only active obligations; the domain store retains the full plan and all earlier gaps/coverage. Coverage readiness is not final claim verification.",
+        "A failed prerequisite blocks its descendants, but eligible independent branches can still execute. Uninvestigated descendants retain explicit unchecked gaps.",
+        "Pending and applied frontier transition identities survive process/checkpoint replay. The global targeted requery counter is not reset between frontiers.",
+        "Human plan edits archive prior dependency state and clear the old checkpoint transition. A withdrawn scheduled descendant is not dispatched on resume.",
+        "At most two local retrieval jobs are admitted concurrently. Each uses the existing tracked call identity, atomic budget, scope and execution status.",
+        "Cancellation stops admission; confirmed in-flight results remain audited. Observed errors stop further admission; no automatic retry.",
+        "Normalized source and obligation order is independent of tool completion order. Conflicting original text under one source identity is rejected.",
+        "The contract is server-owned and immutable. Unmarked historical runs retain sequential behavior."
+      ],
+      "runtime": "runtime-load-dr120-dependencies-20261018.json",
+      "modelCallsDuringOfflineWork": 0,
+      "boundary": "Real compiled LangGraph, SQLite, checkpoint and tracked-tool tests with fixed model responses. No scientific content or live parallel quality score. D1-v9 has separate authorization and receipts."
     }
   },
   "stages": [
@@ -1341,18 +1371,18 @@
     "Full novice study workflow",
     "Independent Edge recovery"
   ],
-  "currentProviderConstraint": "Latest newly authorized D1-v8 submitted once on .112 and failed during planning: two confirmed calls/2049 tokens, no final answer, no retry. No model request on .115. All nine unknown runs remain untouched. D2-v11 is an older unknown despite later terminal D2 attempts; the harness now checks original/legacy receipts and cannot switch new submission directories. H5R-v19/H3R-v15 unknown reservations are still not actual usage. New paid validation requires new scope authorization.",
-  "currentDevelopmentMode": "Primary Codex only, no Qoder. Active goal; .115 deferred resume loaded after 1902 backend and 487 frontend passes, typecheck/build passed. No Provider request. D1-v8 remains failed, nine unknown runs untouched, all content/independent gates remain open.",
+  "currentProviderConstraint": "User explicitly approved D1-v9 and subsequently authorized all remaining validations for this development. Existing public-material/provider scope and per-run budgets remain. Historical unknown calls are not retried or renamed; every new submission has a durable receipt. D1-v9 results are recorded separately after terminal observation.",
+  "currentDevelopmentMode": "Primary Codex only, no Qoder. Weekly quota pause monitor disabled at explicit user request. .120 dependency frontiers loaded; full DR0-DR5 acceptance remains open.",
   "loadedRuntime": {
-    "commit": "c82555f",
-    "promptVersion": "dr-v2.20261016.115",
+    "commit": "64104406",
+    "promptVersion": "dr-v2.20261018.120",
     "ready": true,
     "callsPreserved": 3210,
     "pausedUnknownRuns": 9,
-    "proof": "deep-research-evidence/runtime-load-dr115-deferred-resume-20261016.json"
+    "proof": "deep-research-evidence/runtime-load-dr120-dependencies-20261018.json"
   },
   "nextQualityWork": [
-    "Keep all nine unknown runs untouched, including D2-v11. Reconcile actual Provider outcomes before any same-case retry/new-attempt bypass. One authorized D1-v8 ended; no additional model request on .115.",
+    "Keep all nine historical unknown runs untouched, including D2-v11. D1-v9 is explicitly authorized; subsequent required validations are uniformly authorized, without overriding unknown-call reconciliation or per-run budgets.",
     "New runs preserve all human clarification answers, refresh assumptions/measurement scope before planning, and use the current goal for length, audience, repair and final coverage. Validate real model interpretation in future authorized cases; fixture flow is not content evidence.",
     "The .113 planner now has a complete primary schema and neutral JSON example, without criteria autofill or automatic regeneration. Validate actual model compliance and end-to-end D1 content in a future authorized case.",
     "New .112 extraction-stop routing, source/question-specific cached relevance, empty-passage review and exact-version coverage are implemented. Validate actual adaptive retrieval/coverage benefit on a future authorized eligible case; topical relevance cannot prove final claim support or answer completeness.",
@@ -1375,7 +1405,7 @@
     "scope": "Original DR0-DR5 design is unchanged",
     "openItems": [
       "Real D1/D2/D3/D5 quality gates and five fresh independent cases.",
-      "Actual dependency-driven within-run execution and dependency evidence traces remain unproven.",
+      "Dependency-driven execution is implemented and proven offline with durable traces; real-model content quality remains separate.",
       "Generic follow-up context binding is implemented and checked offline; real reference resolution/content quality remains unaccepted.",
       "Historical unknown calls remain unresolved; no attempt renaming or blind retry."
     ]
