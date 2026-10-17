@@ -45,11 +45,11 @@
       "overlap": true
     },
     "backendCurrentResearchReadingTables": {
-      "passed": 1987,
+      "passed": 2016,
       "warnings": 1,
-      "seconds": 102.92,
-      "log": "tmp/pytest-dr120-final-verified.log",
-      "sourceCommit": "64104406",
+      "seconds": 105.79,
+      "log": "tmp/pytest-dr123-full-final.log",
+      "sourceCommit": "92598500",
       "scope": "Research, reading, PDF tables and config."
     },
     "frontendDocumentNavigationFocused": {
@@ -1092,6 +1092,91 @@
       "runtime": "runtime-load-dr120-dependencies-20261018.json",
       "modelCallsDuringOfflineWork": 0,
       "boundary": "Real compiled LangGraph, SQLite, checkpoint and tracked-tool tests with fixed model responses. No scientific content or live parallel quality score. D1-v9 has separate authorization and receipts."
+    },
+    "conditionIdentity": {
+      "date": "2026-10-18",
+      "sourceCommit": "92598500",
+      "promptVersion": "dr-v2.20261018.123",
+      "checks": {
+        "passed": 2016,
+        "warnings": 1,
+        "seconds": 105.79,
+        "log": "tmp/pytest-dr123-full-final.log",
+        "sourceCommit": "92598500"
+      },
+      "runtime": "runtime-load-dr123-condition-identity-20261018.json",
+      "behavior": [
+        "Recognized A/H/V/RTX/GTX device IDs accompanied by hardware context must occur in that exact claim cited literal quote or bounded original context.",
+        "Another claim citation or a model-extracted condition cannot supply the device. RTX variants remain distinct; a literal match still needs independent semantic review.",
+        "Prospective device choices remain proposals rather than falsely requiring a paper measurement.",
+        "Planning requests minimum answer requirements without exhaustive extra scene-count/metric narration for short questions.",
+        "Repair preserves method variants and must cite the actual supporting condition passage or remove/narrow the condition.",
+        "Final coverage policy distinguishes an uncited source revealing a gap from a covered answer binding. Instructions are compacted without clipping original quotes or claims."
+      ],
+      "initialRegression": {
+        "log": "tmp/pytest-dr123-full.log",
+        "passed": 2013,
+        "failed": 3,
+        "finding": "Added redundant audit map/instructions broke prompt-reader fixtures and displaced a complete quote in the long-input capacity case.",
+        "resolution": "Removed the duplicate map; condensed the existing policy. Original assertions and byte/call/token limits are unchanged. Targeted capacity/identity 30 passed, then complete suite passed."
+      },
+      "boundary": "Hard literal identity is a necessary check, never proof of hardware comparison fairness or semantic truth. No real .123 content score at deployment."
+    },
+    "adaptiveExtraction": {
+      "date": "2026-10-18",
+      "sourceCommit": "d8388387",
+      "promptVersion": "dr-v2.20261018.121",
+      "checks": {
+        "passed": 2004,
+        "warnings": 1,
+        "seconds": 108.37,
+        "log": "tmp/pytest-dr121-full.log"
+      },
+      "behavior": [
+        "One extraction batch returns to coverage assessment; adequate evidence advances dependencies before unnecessary further extraction.",
+        "When coverage is missing, unreviewed already-read passages run before targeted search and do not consume a requery round.",
+        "Whole pending passages are removed from an oversized batch; literal evidence is not clipped to fit and the repair reserve is not borrowed.",
+        "Each batch-specific assessment input is frozen under its evidence/review identity, while exact confirmed pairs reuse prior verdicts.",
+        "Empty, invalid and truncated responses remain reviewed and cannot be automatically resent after repository reconstruction.",
+        "The immutable contract applies only to new runs. Graph step allowance accommodates batch/frontier routing without changing any call/token/time limit."
+      ],
+      "runtime": "runtime-load-dr121-batches-20261018.json",
+      "boundary": "Compiled graph and SQLite routing with fixed model fixtures. D1-v10 proved dependent dispatch but did not pass content review."
+    },
+    "realDevelopmentRuns20261018": {
+      "cases": [
+        {
+          "case": "D1-v9",
+          "runId": "dr_run_80033d7c6a8d55608163e92f601973fc",
+          "status": "completed",
+          "outcome": "inconclusive",
+          "contentAccepted": false,
+          "modelCalls": 7,
+          "settledTokens": 25971
+        },
+        {
+          "case": "D1-v10",
+          "runId": "dr_run_3b188e5186845ca4a80bba578b50424b",
+          "status": "completed",
+          "outcome": "inconclusive",
+          "contentAccepted": false,
+          "modelCalls": 9,
+          "settledTokens": 28911
+        },
+        {
+          "case": "D1-v11",
+          "runId": "dr_run_fbdc70975d9c558db275a79dbdb66f42",
+          "status": "completed",
+          "outcome": "partial",
+          "contentAccepted": false,
+          "modelCalls": 10,
+          "settledTokens": 39450
+        }
+      ],
+      "totalSuccessfulModelCalls": 26,
+      "totalSettledTokens": 94332,
+      "cost": null,
+      "boundary": "26 successful requests, not retries of unknown calls; none of these three runs passed content review."
     }
   },
   "stages": [
@@ -1258,16 +1343,31 @@
   "developmentCases": [
     {
       "id": "D1",
-      "runId": "dr_run_7ca40ccd0a305302b4f4e116e36c757a",
-      "machine": "failed/invalid_plan_response",
-      "content": "not scoreable: no final answer; no retrieval; planner omitted required completion criteria",
-      "next": "Validate the current .114 complete plan shape on a newly authorized case, then check source-bounded conclusions, conditions and unverified scope. No automatic retry.",
+      "runId": "dr_run_fbdc70975d9c558db275a79dbdb66f42",
+      "machine": "completed/partial",
+      "content": "Not accepted: own-citation GPU condition and final aspect/source binding failed manual review.",
+      "next": "Validate the new condition identity guard and compact minimal answer requirements in a subsequent authorized case; uniform authorization is already granted.",
       "previousResult": {
         "runId": "dr_run_66ec09fffdfe5c8d9a97a0a2f1816d75",
         "machine": "completed/inconclusive",
         "content": "not accepted; no published verified claim"
       },
-      "proof": "deep-research-evidence/D1-v8-plan-failure-20261016.json"
+      "proof": "deep-research-evidence/D1-v11-partial-20261018.json",
+      "history": [
+        {
+          "id": "D1",
+          "runId": "dr_run_7ca40ccd0a305302b4f4e116e36c757a",
+          "machine": "failed/invalid_plan_response",
+          "content": "not scoreable: no final answer; no retrieval; planner omitted required completion criteria",
+          "next": "Validate the current .114 complete plan shape on a newly authorized case, then check source-bounded conclusions, conditions and unverified scope. No automatic retry.",
+          "previousResult": {
+            "runId": "dr_run_66ec09fffdfe5c8d9a97a0a2f1816d75",
+            "machine": "completed/inconclusive",
+            "content": "not accepted; no published verified claim"
+          },
+          "proof": "deep-research-evidence/D1-v8-plan-failure-20261016.json"
+        }
+      ]
     },
     {
       "id": "D2",
@@ -1371,24 +1471,21 @@
     "Full novice study workflow",
     "Independent Edge recovery"
   ],
-  "currentProviderConstraint": "User explicitly approved D1-v9 and subsequently authorized all remaining validations for this development. Existing public-material/provider scope and per-run budgets remain. Historical unknown calls are not retried or renamed; every new submission has a durable receipt. D1-v9 results are recorded separately after terminal observation.",
-  "currentDevelopmentMode": "Primary Codex only, no Qoder. Weekly quota pause monitor disabled at explicit user request. .120 dependency frontiers loaded; full DR0-DR5 acceptance remains open.",
+  "currentProviderConstraint": "User authorized all further required validations. D1-v9/v10/v11 each executed once and settled, with raw receipts retained. Historical nine unknown identities/reservations remain untouched; no same-case retry or attempt renaming bypass.",
+  "currentDevelopmentMode": "Primary Codex only, no Qoder. Weekly quota stop monitor disabled by explicit user request. .123 loaded; original DR0-DR5 scope and real quality gates remain incomplete.",
   "loadedRuntime": {
-    "commit": "64104406",
-    "promptVersion": "dr-v2.20261018.120",
+    "commit": "92598500",
+    "promptVersion": "dr-v2.20261018.123",
     "ready": true,
-    "callsPreserved": 3210,
+    "callsPreserved": 3262,
     "pausedUnknownRuns": 9,
-    "proof": "deep-research-evidence/runtime-load-dr120-dependencies-20261018.json"
+    "proof": "deep-research-evidence/runtime-load-dr123-condition-identity-20261018.json"
   },
   "nextQualityWork": [
-    "Keep all nine historical unknown runs untouched, including D2-v11. D1-v9 is explicitly authorized; subsequent required validations are uniformly authorized, without overriding unknown-call reconciliation or per-run budgets.",
-    "New runs preserve all human clarification answers, refresh assumptions/measurement scope before planning, and use the current goal for length, audience, repair and final coverage. Validate real model interpretation in future authorized cases; fixture flow is not content evidence.",
-    "The .113 planner now has a complete primary schema and neutral JSON example, without criteria autofill or automatic regeneration. Validate actual model compliance and end-to-end D1 content in a future authorized case.",
-    "New .112 extraction-stop routing, source/question-specific cached relevance, empty-passage review and exact-version coverage are implemented. Validate actual adaptive retrieval/coverage benefit on a future authorized eligible case; topical relevance cannot prove final claim support or answer completeness.",
-    "The durable beginner wording pass is implemented, including citation/condition identity, length, normal-pool/time admission and exact pending-request recovery. Validate actual ordinary-language why/how completeness and conditional training explanation in a future authorized, eligible case; offline placeholders are not content evidence.",
-    "Experiment plans still need actual representation-complete initial states, reproducible compatible renderer/optimizer definitions and correct factual scope. Typed shape/distribution fields or opaque model-parameter vectors cannot establish executability.",
-    "Complete D1/D2/D3/D5 and fresh independent replacement gates. Keep PR draft and full original DR0-DR5 scope; diagnostic cases remain retired."
+    "Validate .123 own-citation condition identity, source-bounded claims and current completion criteria under the unchanged frozen D1 question/budget.",
+    "Execute and review the five newly sealed distinct-paper cases once each before any diagnostic reuse. Local material preparation must not supply the external-only H3F paper.",
+    "Keep all nine unknown records/reservations unchanged; D2/D3 same-case submissions still need actual outcome reconciliation.",
+    "Complete development/fresh content gates and real continuation quality. PR remains draft; user-waived legacy import/full novice workflow/independent Edge recovery stay waived."
   ],
   "javaReaderRuntime": {
     "sourceCommit": "070ab1a",
@@ -1404,10 +1501,12 @@
     "date": "2026-10-18",
     "scope": "Original DR0-DR5 design is unchanged",
     "openItems": [
-      "Real D1/D2/D3/D5 quality gates and five fresh independent cases.",
-      "Dependency-driven execution is implemented and proven offline with durable traces; real-model content quality remains separate.",
-      "Generic follow-up context binding is implemented and checked offline; real reference resolution/content quality remains unaccepted.",
-      "Historical unknown calls remain unresolved; no attempt renaming or blind retry."
+      "D1/D2/D3/D5 real content quality and five fresh independent cases.",
+      "Generic follow-up content/reference resolution remains to be accepted beyond offline context binding.",
+      "Dependency execution now has offline and real D1-v10 routing traces, but routing is not scientific quality.",
+      "Historical unknown outcomes remain unresolved; no same-case resend or attempt renaming bypass."
     ]
-  }
+  },
+  "nextIndependentCasesManifest": "DEEP_RESEARCH_INDEPENDENT_CASES_20261018.json",
+  "nextIndependentCasesStatus": "H1F-H5F frozen/sealed, not yet model-executed. Existing unknown cases remain historical and unresolved; these are different questions and papers."
 }
