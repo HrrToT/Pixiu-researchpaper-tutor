@@ -45,9 +45,23 @@ class AcademicAcquisition:
         for target in targets[:4]:
             # Queries contain public topics from the plan, never entire document text.
             query = str(target.get("query", "")).strip()[:700]
-            if not query:
+            identities = []
+            if record.get('exactDiscoveryContractVersion') == 1:
+                from services.deep_research_academic import checked_arxiv_id
+                for identity in target.get('requiredSources', []):
+                    if isinstance(identity, str) and identity.startswith('arxiv:'):
+                        identities.append(checked_arxiv_id(identity[6:]))
+                missing = target.get('missingSource')
+                if isinstance(missing, str) and missing.startswith('arxiv:'):
+                    identities = [checked_arxiv_id(missing[6:])]
+                identities = list(dict.fromkeys(identities))
+            if not query and not identities:
                 continue
-            for candidate in adapter.discover(run_id, query, limit=3):
+            # Source identity and reading question serve different purposes.
+            # Editing the question cannot turn a pinned paper into topic search.
+            candidates = (adapter.lookup(run_id, identities, limit=max(3, len(identities)))
+                          if identities else adapter.discover(run_id, query, limit=3))
+            for candidate in candidates:
                 identity = candidate.get("versionId")
                 if not identity:
                     continue

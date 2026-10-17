@@ -418,6 +418,16 @@ class ExternalAcademicAdapter:
         if callable(getattr(type(self._client), 'discovery_request', None)):
             request_identity = {"request": self._client.discovery_request(query, limit),
                                 "type": "discover"}
+        return self._discover_request(run_id, request_identity, lambda: self._client.discover(query, limit))
+
+    def lookup(self, run_id: str, identifiers: list[str], limit: int = 6) -> list[dict[str, Any]]:
+        request = self._client.lookup_request(identifiers, limit)
+        # Same HTTP request means the same ledger identity, even if a previous
+        # plan found it through a query containing the identifier.
+        return self._discover_request(run_id, {"request": request, "type": "discover"},
+                                      lambda: self._client.lookup(identifiers, limit))
+
+    def _discover_request(self, run_id, request_identity, send):
         args_digest = digest(request_identity)
         
         try:
@@ -445,7 +455,7 @@ class ExternalAcademicAdapter:
             return []
         
         try:
-            results = self._client.discover(query, limit)
+            results = send()
             
             self._complete(
                 call_record["callId"],

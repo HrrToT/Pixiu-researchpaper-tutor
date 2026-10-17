@@ -120,6 +120,24 @@ class AcademicSourceClient:
 
     def discover(self, query, limit=6):
         params = self.discovery_request(query, limit)
+        return self._discover_params(params, limit)
+
+    def lookup_request(self, identifiers, limit=6):
+        """Resolve explicit modern or legacy identities without keyword parsing."""
+        self._require()
+        if not isinstance(identifiers, (list, tuple)) or not identifiers:
+            raise AcademicAccessError('arXiv 标识列表无效')
+        if type(limit) is not int or not 1 <= limit <= self.policy.max_results:
+            raise AcademicAccessError('学术查询数量无效')
+        values = list(dict.fromkeys(checked_arxiv_id(value) for value in identifiers))
+        if len(values) > limit:
+            raise AcademicAccessError('指定论文超过本次查询数量')
+        return {'start': 0, 'max_results': limit, 'id_list': ','.join(values)}
+
+    def lookup(self, identifiers, limit=6):
+        return self._discover_params(self.lookup_request(identifiers, limit), limit)
+
+    def _discover_params(self, params, limit):
         identifiers = params.get('id_list', '').split(',') if 'id_list' in params else []
         path = '/api/query?' + urlencode(params)
         content_type, body = self.transport('export.arxiv.org', path, 1024 * 1024)
