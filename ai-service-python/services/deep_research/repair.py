@@ -109,6 +109,10 @@ def _prepare_repair(report, verification, evidence, question, *, max_prompt_byte
 {"evidenceId":"E1","rowNumber":1,"groupIndex":0,"metric":"FPS","value":"200"}
 This is schema, not evidence: copy actual rowNumber, zero-based groupIndex, metric and value
 (key "value", never "exactStringValue"). Name dataset/method/metric; omit unsupported numbers.
+Bind only numerical values stated in the revised text. Do not copy a whole table row
+or add new measurements to repair a missing label. Preserve the user's requested
+conditions/limitations before adding secondary examples. Method bibliography numbers
+may be omitted, but stars, ablation and training variants must stay distinguishable.
 ''' if has_tables else ''
     prompt = f'''Revise only the targets; narrow unsupported wording or omit it.
 answer_incomplete requires filling requested omissions, conditioning inputs and applicability,

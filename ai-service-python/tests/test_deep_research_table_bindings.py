@@ -30,6 +30,26 @@ def test_reported_cells_pass_only_with_visible_dataset_method_and_exact_binding(
     assert check(ev, claim)['accepted']
 
 
+@pytest.mark.parametrize('method,display,accepted', [
+    ('3D-GS [16]', '3D-GS', True),
+    ('3D-GS [16, 17]', '3D-GS', True),
+    ('3D-GS * [16]', '3D-GS*', True),
+    ('3D-GS * [16]', '3D-GS', False),
+    ('3D-GS [16]', '3D-GS*', False),
+    ('3D-GS [16]', 'Other3D-GS', False),
+    ('3D-GS [16]', '3D-GS-finetuned', False),
+    ('3D-GS (ours) [16]', '3D-GS', False),
+])
+def test_bibliography_suffix_is_optional_but_method_variant_is_required(method, display, accepted):
+    ev, claim = fixture()
+    ev['quote'] = ev['quote'].replace('Ours*', method)
+    ev['tableData']['rows'][0][1] = method
+    claim['text'] = claim['text'].replace('Ours*', display)
+    from services.deep_research.table_bindings import validate_table_bindings
+    reason = validate_table_bindings(claim, [ev])
+    assert (reason is None) is accepted
+
+
 def test_hierarchical_cell_binding_requires_both_cohort_and_aggregate_in_answer():
     ev, claim = fixture()
     ev['tableData']['groups'][0][0] = 'Dataset A / mean'

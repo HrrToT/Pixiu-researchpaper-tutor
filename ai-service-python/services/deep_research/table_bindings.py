@@ -17,6 +17,15 @@ def dataset_label(text):
     return re.sub(r'\s+datasets?\s*$', '', text, flags=re.I).strip() or text
 
 
+def _method_visible(method, text):
+    # A table's trailing bibliography number is not a method variant. Keep
+    # stars, ablation suffixes and training variants as part of the identity.
+    label = re.sub(r'\s*\[\d+(?:\s*[,\-–]\s*\d+)*\]\s*$', '', method)
+    token = _key(label)
+    return bool(token and re.search(r'(?<![a-z0-9*+_.-])' + re.escape(token)
+                                    + r'(?![a-z0-9*+_.-])', _key(text)))
+
+
 def bound_table_context(claim, evidence):
     """Expose parser-established cell identities to a wording-only rewrite.
 
@@ -108,7 +117,8 @@ def validate_table_bindings(claim, evidence):
         dataset_visible = all(any(re.search(r'(?<![a-z0-9])' + re.escape(_key(label)) + r'(?![a-z0-9])', _key(text))
                                   for label in (part, dataset_label(part)))
                               for part in dataset.split(' / '))
-        if not dataset_visible or any(_key(label) not in _key(text) for label in (row[1], metric, value)):
+        if (not dataset_visible or not _method_visible(row[1], text)
+                or any(_key(label) not in _key(text) for label in (metric, value))):
             return 'table_condition_not_displayed'
         match = re.fullmatch(rf'({_VALUE})([A-Za-z]*)', value)
         if match:
