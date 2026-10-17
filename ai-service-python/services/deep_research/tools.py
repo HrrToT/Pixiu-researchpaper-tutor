@@ -288,8 +288,9 @@ class TrackedLLMInvoker:
             extra_body = repair_output_options(extra_body)
         
         from services.deep_research.structured_output import enabled as native_json, messages as json_messages
-        structured = native_json(self._run_record(run_id) if self._run_record else None)
-        wire_messages = json_messages(node, prompt) if structured else None
+        transport_record = self._run_record(run_id) if self._run_record else None
+        structured = native_json(transport_record)
+        wire_messages = json_messages(node, prompt, transport_record['structuredOutputContractVersion']) if structured else None
         if structured:
             if 'messages' in (extra_body or {}):
                 raise DeepResearchError('invalid_model_options', '研究模型调用选项无效，尚未发送。')
