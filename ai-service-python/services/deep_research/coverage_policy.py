@@ -51,9 +51,9 @@ omitted context. Answer bindings are {"claimId":"accepted ID","field":"text"} or
 field="conditions" (that claim's serialized conditions); use only content actually
 covering the aspect. Legacy exact literal excerpts remain valid: no ellipses, spelling/
 punctuation normalization or joined noncontiguous excerpts. Source-grounded factual
-aspects must bind accepted factual claims citing that PRECISE evidenceId, paper/version.
-Another paper's quote or an uncited source cannot fill a missing condition. Factual
-coverage cannot rest only on a broad request basis. Purely proposed choices can use
+aspects require accepted facts citing the basis's EXACT evidenceId and paper/version.
+An uncited basis exposes a gap: return partial/missing with empty bindings, not covered.
+A broad request basis cannot supply paper facts. Purely proposed choices can use
 {"kind":"request","excerpt":"exact question substring"}; unrelated proposals cannot
 substitute for grounding facts.
 

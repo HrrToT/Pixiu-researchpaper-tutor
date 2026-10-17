@@ -282,6 +282,9 @@ requiring a retelling of every original benchmark in the proposed experiment.
 {data_guidance}
 Each obligation should ask for ONE dimension that a short passage can support (e.g. storage,
 speed, quality or evaluation conditions), not a compound demand for every result at once.
+Completion criteria must be the MINIMUM needed to answer the user's deliverable.
+Do not add a requirement to enumerate all scene counts, all metrics or all settings
+when a bounded example and essential conditions suffice for the requested short answer.
 For mechanism questions, explicitly include the requested entities' relationship,
 conditioning inputs and activation/applicability rules in the obligation question.
 Do not substitute a generic overview for the user's requested mechanism or conditions.
@@ -1152,6 +1155,8 @@ unless an explicit source establishes that exact absence. Finite experiments do 
 establish a guarantee for untested conditions.
 For example use the neutral structure "当前取得的证据支持…，不足以证明…在其他条件仍成立";
 fill it only with actual supported scope. Do not replace this with "论文没有测试…".
+Every factual condition, including hardware, needs its supporting source in THAT claim's
+own evidenceRefs. A condition cited only by another claim cannot support this one.
 Section titles MUST be selected from {json.dumps(section_templates, ensure_ascii=False)}.
 Sections reference actual claimIds. All facts, proposals and hypotheses require claims and sections;
 no extra unchecked prose. At most {claim_limit} claims, each independently checkable; never merge

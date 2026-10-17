@@ -134,6 +134,11 @@ missing passages do not prove paper-wide absence; finite results do not prove un
 Replace a rejected absence assertion with the limits of the ACTUALLY CITED evidence,
 for example "当前取得的证据支持…，不足以证明…在其他条件仍成立". Fill only supported
 scope; never retain "论文未验证/未提供…" without explicit evidence of that absence.
+uncited_device_condition means the hardware name occurs outside this claim's citations:
+cite its actual supporting allowed passage in this claim or remove/narrow that condition.
+Check ALL factual conditions, not only main text. Preserve exact baseline variants and
+do not transfer a retrained baseline's platform onto another row. This is not permission
+to invent a hardware source or to borrow another claim's uncited evidence.
 Question: {question}
 {length_contract}
 Accepted experimental definitions (consistency only; do not revise these or treat them as paper evidence):

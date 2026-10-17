@@ -92,6 +92,10 @@ def verify_claims(claims: list[dict], evidence: list[dict],
             reason = reason or 'absence_not_established'
         if leaks_internal_reference(claim, support):
             reason = reason or 'internal_reference_in_prose'
+        if kind in {'reported', 'inference'}:
+            from services.deep_research.condition_identity import unsupported_device_condition
+            if unsupported_device_condition(claim, support):
+                reason = reason or 'uncited_device_condition'
         if kind == "reported":
             if any(item.get("accessLevel") == "abstract" for item in support) and claim.get("detailLevel") != "abstract":
                 reason = reason or "abstract_only"
