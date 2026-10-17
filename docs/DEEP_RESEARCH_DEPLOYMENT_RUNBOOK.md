@@ -110,3 +110,8 @@ Python已加载64104406（`.120`），Java/前端仍为前节`.119`。确认无�
 ## 2026-10-18 条件身份检查加载
 
 Python当前为92598500（`.123`）。加载前无活动研究，3262条完整账本与9个历史未知暂停记录前后一致；RAG/GROBID健康。Java/前端沿用`.119`。既有case回执与原回答不覆写，任何真实案例期间不为文档提交而重启。加载证明见`deep-research-evidence/runtime-load-dr123-condition-identity-20261018.json`。
+
+
+## 2026-10-18 逐条事实核验加载
+
+Python当前1bf96858（`.124`）；确认无活动研究及新论文解析已完成后重启一次，3,284条完整账本和9个未知暂停身份相等，RAG/GROBID健康。后续真实运行期间不再重启。证明见`deep-research-evidence/runtime-load-dr124-fact-isolation-20261018.json`。

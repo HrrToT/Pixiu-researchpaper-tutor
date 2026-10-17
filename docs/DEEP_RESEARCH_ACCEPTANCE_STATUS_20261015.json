@@ -45,11 +45,11 @@
       "overlap": true
     },
     "backendCurrentResearchReadingTables": {
-      "passed": 2016,
+      "passed": 2025,
       "warnings": 1,
-      "seconds": 105.79,
-      "log": "tmp/pytest-dr123-full-final.log",
-      "sourceCommit": "92598500",
+      "seconds": 110.99,
+      "log": "tmp/pytest-dr124-full-final.log",
+      "sourceCommit": "1bf96858",
       "scope": "Research, reading, PDF tables and config."
     },
     "frontendDocumentNavigationFocused": {
@@ -1171,12 +1171,107 @@
           "contentAccepted": false,
           "modelCalls": 10,
           "settledTokens": 39450
+        },
+        {
+          "case": "D1-v12",
+          "runId": "dr_run_d08f82b1b1d454f79fea737a038f33be",
+          "status": "completed",
+          "outcome": "partial",
+          "contentAccepted": false,
+          "modelCalls": 10,
+          "settledTokens": 36855
         }
       ],
-      "totalSuccessfulModelCalls": 26,
-      "totalSettledTokens": 94332,
+      "totalSuccessfulModelCalls": 36,
+      "totalSettledTokens": 131187,
       "cost": null,
-      "boundary": "26 successful requests, not retries of unknown calls; none of these three runs passed content review."
+      "boundary": "36 successful model requests across four fixed development attempts, no unknown retry. None passed manual content review."
+    },
+    "factIsolation": {
+      "date": "2026-10-18",
+      "sourceCommit": "1bf96858",
+      "promptVersion": "dr-v2.20261018.124",
+      "contracts": {
+        "claimIsolationContractVersion": 1
+      },
+      "checks": {
+        "passed": 2025,
+        "warnings": 1,
+        "seconds": 110.99,
+        "log": "tmp/pytest-dr124-full-final.log"
+      },
+      "behavior": [
+        "Each new-run reported/inference claim gets a separate semantic request containing only its own cited original passages; another target source is physically absent.",
+        "Prospective design definitions still share their operational/scientific context. Historical unmarked factual runs keep their original batch.",
+        "Initial and repaired facts both isolate. Budget/unknown errors propagate unchanged, without retry or admission of later factual requests.",
+        "All sends retain existing atomic call/token/time admission and scope validation. The per-run budget is not enlarged.",
+        "Server owns the immutable contract; client booleans/strings cannot disable or change it.",
+        "The real graph/SQLite fixture now records ten calls, two factual checks and exactly 2000 settled fixture tokens; reopening adds none.",
+        "Reported numerical repairs must remove unreported computed differences/ratios and preserve exact table group labels."
+      ],
+      "initialFullCheck": {
+        "passed": 2024,
+        "failed": 1,
+        "log": "tmp/pytest-dr124-full.log",
+        "finding": "The existing end-to-end fixed call/token expectation still assumed one joint factual check.",
+        "resolution": "Updated to exactly two tracked fact checks, ten total sends and 2000 measured fixture tokens. Content/permission/reopen assertions retained; targeted 17 and full 2025 passed."
+      },
+      "runtime": "runtime-load-dr124-fact-isolation-20261018.json",
+      "boundary": "Request separation and budget accounting are proven offline; semantic-model judgment remains fallible and actual content still needs manual source review."
+    },
+    "independentMaterialReadiness": {
+      "date": "2026-10-18",
+      "manifest": "DEEP_RESEARCH_INDEPENDENT_CASES_20261018.json",
+      "definitionCommit": "c92ac734",
+      "caseDefinitionHashes": {
+        "H1F": "3d00cf3fe8b60e78a124e451fba1636924e60f9fef4d2f63954915ea48d8fa4e",
+        "H2F": "9e6517491d3b392229e071ebd55ee89ba8378e805b5c77a11c5e771201b14fcb",
+        "H3F": "cd0db4fbf039660ad54b3d9c747121e04bbc7f39800e3478d785ff59f1cafb41",
+        "H4F": "0ed2c929eee278e7b43f72732e1beec5deab30a4de0475ebcb92d009b5da4807",
+        "H5F": "def690cfcfcf8577adbcb8988441089494140027cd00918c30265a877211eaec"
+      },
+      "prepared": {
+        "stream": {
+          "sha256": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98",
+          "pdfId": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf",
+          "processingStatus": "ready",
+          "readingReady": true,
+          "questionReady": true,
+          "ragChunkCount": 61,
+          "aiAnalysisStatus": "not_requested"
+        },
+        "deform": {
+          "sha256": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854",
+          "pdfId": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf",
+          "processingStatus": "ready",
+          "readingReady": true,
+          "questionReady": true,
+          "ragChunkCount": 65,
+          "aiAnalysisStatus": "not_requested"
+        }
+      },
+      "generationRequests": 0,
+      "localContextTaskId": "dr-fresh-holdout-materials-20261018",
+      "externalOnlyCase": {
+        "case": "H3F",
+        "materialIds": [],
+        "sourcePolicy": "academic_external",
+        "codecUploadedByPreparation": false
+      },
+      "sourcePagesVisuallyInspected": {
+        "stream": [
+          5,
+          6
+        ],
+        "deform": [
+          5
+        ],
+        "codec": [
+          4,
+          5
+        ]
+      },
+      "boundary": "Only local PDF parsing/indexing; no research-model case executed by preparation. External-only paper is not supplied through this local material task."
     }
   },
   "stages": [
@@ -1343,16 +1438,16 @@
   "developmentCases": [
     {
       "id": "D1",
-      "runId": "dr_run_fbdc70975d9c558db275a79dbdb66f42",
+      "runId": "dr_run_d08f82b1b1d454f79fea737a038f33be",
       "machine": "completed/partial",
-      "content": "Not accepted: own-citation GPU condition and final aspect/source binding failed manual review.",
-      "next": "Validate the new condition identity guard and compact minimal answer requirements in a subsequent authorized case; uniform authorization is already granted.",
+      "content": "Not accepted: computed differences stayed under reported kind; the requested result point was rejected.",
+      "next": "Validate per-fact own-citation isolation and numerical repair under the unchanged D1 question/budget. Uniform authorization is already granted.",
       "previousResult": {
         "runId": "dr_run_66ec09fffdfe5c8d9a97a0a2f1816d75",
         "machine": "completed/inconclusive",
         "content": "not accepted; no published verified claim"
       },
-      "proof": "deep-research-evidence/D1-v11-partial-20261018.json",
+      "proof": "deep-research-evidence/D1-v12-partial-20261018.json",
       "history": [
         {
           "id": "D1",
@@ -1366,6 +1461,19 @@
             "content": "not accepted; no published verified claim"
           },
           "proof": "deep-research-evidence/D1-v8-plan-failure-20261016.json"
+        },
+        {
+          "id": "D1",
+          "runId": "dr_run_fbdc70975d9c558db275a79dbdb66f42",
+          "machine": "completed/partial",
+          "content": "Not accepted: own-citation GPU condition and final aspect/source binding failed manual review.",
+          "next": "Validate the new condition identity guard and compact minimal answer requirements in a subsequent authorized case; uniform authorization is already granted.",
+          "previousResult": {
+            "runId": "dr_run_66ec09fffdfe5c8d9a97a0a2f1816d75",
+            "machine": "completed/inconclusive",
+            "content": "not accepted; no published verified claim"
+          },
+          "proof": "deep-research-evidence/D1-v11-partial-20261018.json"
         }
       ]
     },
@@ -1472,17 +1580,17 @@
     "Independent Edge recovery"
   ],
   "currentProviderConstraint": "User authorized all further required validations. D1-v9/v10/v11 each executed once and settled, with raw receipts retained. Historical nine unknown identities/reservations remain untouched; no same-case retry or attempt renaming bypass.",
-  "currentDevelopmentMode": "Primary Codex only, no Qoder. Weekly quota stop monitor disabled by explicit user request. .123 loaded; original DR0-DR5 scope and real quality gates remain incomplete.",
+  "currentDevelopmentMode": "Primary Codex only, no Qoder. Quota pause monitor remains disabled at user request. .124 factual isolation loaded; original DR0-DR5 content gates remain open.",
   "loadedRuntime": {
-    "commit": "92598500",
-    "promptVersion": "dr-v2.20261018.123",
+    "commit": "1bf96858",
+    "promptVersion": "dr-v2.20261018.124",
     "ready": true,
-    "callsPreserved": 3262,
+    "callsPreserved": 3284,
     "pausedUnknownRuns": 9,
-    "proof": "deep-research-evidence/runtime-load-dr123-condition-identity-20261018.json"
+    "proof": "deep-research-evidence/runtime-load-dr124-fact-isolation-20261018.json"
   },
   "nextQualityWork": [
-    "Validate .123 own-citation condition identity, source-bounded claims and current completion criteria under the unchanged frozen D1 question/budget.",
+    "Validate .124 isolated factual requests, reported-value repairs and source-bounded conditions under the unchanged D1 question and budget.",
     "Execute and review the five newly sealed distinct-paper cases once each before any diagnostic reuse. Local material preparation must not supply the external-only H3F paper.",
     "Keep all nine unknown records/reservations unchanged; D2/D3 same-case submissions still need actual outcome reconciliation.",
     "Complete development/fresh content gates and real continuation quality. PR remains draft; user-waived legacy import/full novice workflow/independent Edge recovery stay waived."
@@ -1508,5 +1616,5 @@
     ]
   },
   "nextIndependentCasesManifest": "DEEP_RESEARCH_INDEPENDENT_CASES_20261018.json",
-  "nextIndependentCasesStatus": "H1F-H5F frozen/sealed, not yet model-executed. Existing unknown cases remain historical and unresolved; these are different questions and papers."
+  "nextIndependentCasesStatus": "H1F-H5F sealed, not yet model-executed. Local stream/deform ready with 61/65 chunks and no AI overview; H3F has empty local selection and external-only acquisition route."
 }
