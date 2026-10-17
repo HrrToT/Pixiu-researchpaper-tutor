@@ -14,6 +14,7 @@ import time
 import uuid
 from datetime import datetime, UTC
 from concurrent.futures import ThreadPoolExecutor, Future
+from copy import deepcopy
 from typing import Any, Callable
 
 from services.deep_research.request_context import effective_question
@@ -258,7 +259,8 @@ class ResearchFacade:
             "materials": materials,
             "materialSnapshot": material_snapshot,  # Immutable Java snapshot
             "contextMaterials": (material_snapshot or {}).get("contextMaterials", []) if isinstance(material_snapshot, dict) else [],
-            "promptVersion": "dr-v2.20261016.115",
+            "promptVersion": "dr-v2.20261016.116",
+            "planEditContractVersion": 1,
             "clarificationContractVersion": 1,
             "adaptiveResearchContractVersion": 1,
             "audienceRewriteContractVersion": 1,
@@ -686,7 +688,7 @@ class ResearchFacade:
         """Update plan after safe pause - validate revision + DAG."""
         from services.deep_research.coverage import validate_plan
         
-        new_plan = payload.get("plan", [])
+        new_plan = deepcopy(payload.get("plan", []))
         with self._lock:
             worker = self._active_futures.get(run_id)
             if worker is not None and not worker.done():
@@ -703,15 +705,17 @@ class ResearchFacade:
             if record["status"] != STATUS_PAUSED:
                 raise IllegalStatusTransitionError(record["status"], STATUS_PAUSED)
 
+            from services.deep_research.plan_edit import require_plan_revision, source_allowed
+            plan_revision = require_plan_revision(record, payload)
+
             from services.deep_research.completion_criteria import validate_completion_criteria
             try:
                 validate_completion_criteria(new_plan, required=record.get('planCompletionContractVersion') == 1)
             except ValueError as exc:
                 raise DeepResearchError('invalid_plan', '每个研究问题需保留1至4项有效的回答要点，请检查说明内容与方式。') from exc
             
-            state = record.get("state", {})
+            state = dict(record.get("state") or {})
             old_items = {item["itemId"]: item for item in state.get("plan", [])}
-            allowed = {material["materialId"] for material in record.get("materials", [])}
             for item in new_plan:
                 old = old_items.get(item["itemId"], {})
                 if item["question"] != old.get("question"):
@@ -720,10 +724,10 @@ class ResearchFacade:
                 for obligation in item["obligations"]:
                     if obligation["question"] != old_obligations.get(obligation["obligationId"], {}).get("question"):
                         obligation.pop("searchQuery", None)
-                    if not set(obligation.get("requiredSources", [])).issubset(allowed):
+                    if not all(source_allowed(record, identity) for identity in obligation.get("requiredSources", [])):
                         raise DeepResearchError("invalid_plan", "计划不能增加本轮材料范围")
             state["plan"] = new_plan
-            state["planRevision"] = int(state.get("planRevision", 0)) + 1
+            state["planRevision"] = plan_revision + 1
             
             return {
                 **record,
