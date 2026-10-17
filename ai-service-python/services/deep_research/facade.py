@@ -259,7 +259,8 @@ class ResearchFacade:
             "materials": materials,
             "materialSnapshot": material_snapshot,  # Immutable Java snapshot
             "contextMaterials": (material_snapshot or {}).get("contextMaterials", []) if isinstance(material_snapshot, dict) else [],
-            "promptVersion": "dr-v2.20261018.117",
+            "promptVersion": "dr-v2.20261018.118",
+            "planResumeContractVersion": 1,
             "exactDiscoveryContractVersion": 1,
             "planEditContractVersion": 1,
             "clarificationContractVersion": 1,
@@ -727,6 +728,9 @@ class ResearchFacade:
                         obligation.pop("searchQuery", None)
                     if not all(source_allowed(record, identity) for identity in obligation.get("requiredSources", [])):
                         raise DeepResearchError("invalid_plan", "计划不能增加本轮材料范围")
+            from services.deep_research.plan_resume import enabled, retire_outputs
+            if enabled(record):
+                state = retire_outputs(state, new_plan, plan_revision)
             state["plan"] = new_plan
             state["planRevision"] = plan_revision + 1
             
@@ -880,6 +884,7 @@ class ResearchFacade:
                 "workspace_task_id": record.get("taskId", ""),
                 "operation_key": record.get("idempotencyKey", ""),
                 "execution_epoch": record.get("executionEpoch", 0),
+                "plan_revision": (record.get('state') or {}).get('planRevision', 0),
                 "brief_id": "",
                 "plan_ids": [],
                 "source_ids": [],
@@ -914,7 +919,17 @@ class ResearchFacade:
             except Exception:
                 existing_checkpoint = None
             
-            if existing_checkpoint is not None:
+            from services.deep_research.plan_resume import checkpoint_patch
+            edited = checkpoint_patch(record, existing_checkpoint)
+            if edited is not None:
+                # Rebase at the plan boundary, preserving budget and call ledger.
+                # This is a durable checkpoint update, so a later restart resumes
+                # the edited route rather than regenerating a model-written plan.
+                patch = {**(initial_state if existing_checkpoint is None else {}), **edited,
+                         'execution_epoch': epoch}
+                graph.update_state(config, patch, as_node='plan')
+                final_state = graph.invoke(None, config=config)
+            elif existing_checkpoint is not None:
                 # Resume from checkpoint using Command for interrupt handling
                 logger.info("Resuming run %s from checkpoint", run_id)
                 try:

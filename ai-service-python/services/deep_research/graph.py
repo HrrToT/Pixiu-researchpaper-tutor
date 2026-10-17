@@ -57,6 +57,7 @@ class GraphState(TypedDict, total=False):
     execution_epoch: int
     brief_id: str
     plan_ids: list[str]
+    plan_revision: int
     source_ids: list[str]
     evidence_ids: list[str]
     claim_ids: list[str]
@@ -399,7 +400,8 @@ Return a JSON ARRAY of plan items, NOT an object with items field."""
             expected_revision=None,
         )
         
-        return {"plan_ids": plan_ids, "assess_inherited": inherited}
+        return {"plan_ids": plan_ids, "assess_inherited": inherited,
+                "plan_revision": brief_state.get('planRevision', 0)}
     
     return node
 
@@ -1258,7 +1260,9 @@ Orient losses before formulas, distinguish conditional/averaged effects and pape
             if requested_limit and answer_character_count(parsed) > requested_limit:
                 return {"error_code": "invalid_synthesis_response"}
 
-        report_version_id = f"report_{run_id}_v1"
+        from services.deep_research.plan_resume import enabled as editable_plan
+        version = int(brief_state.get('planRevision', 0)) + 1 if editable_plan(record) else 1
+        report_version_id = f"report_{run_id}_v{version}"
         
         repo_update(
             run_id,

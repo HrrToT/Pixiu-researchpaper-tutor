@@ -50,6 +50,17 @@ def instruction_layers(record):
 
 def effective_question(record):
     layers = instruction_layers(record)
+    from services.deep_research.plan_resume import edited_question_context
+    edited = edited_question_context(record)
+    if edited:
+        # Human changes are goal context, never evidence or source permission.
+        base = dict(record)
+        base['planResumeContractVersion'] = 0
+        original = effective_question(base)
+        return ResearchQuestion('Human-edited research targets (replace the previous plan targets, '
+            'NOT paper evidence):\n' + edited + '\n\nEarlier request and format requirements:\n' + original
+            + '\nAnswer the edited targets; preserve earlier audience/format constraints where compatible. '
+              'Source permissions and budget remain fixed by the server.', [edited, *layers])
     if len(layers) == 1:
         return layers[0]
     state = record.get('state') or {}
