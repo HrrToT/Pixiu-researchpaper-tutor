@@ -114,13 +114,13 @@ def test_real_graph_publishes_only_verified_body_and_reopens_without_generation(
         assert {source["pdfId"] for source in result["sources"]} == set(PAPERS)
         assert all(source["quote"] and source["page"] == 3 for source in result["sources"])
         calls = repo.list_calls(record["runId"])
-        assert sum(c["tool"] == "llm_invoke" for c in calls) == len(model.requests) == 9
-        assert sum(c['node'] == 'verify' for c in calls) == 1
+        assert sum(c["tool"] == "llm_invoke" for c in calls) == len(model.requests) == 10
+        assert sum(c['node'] == 'verify' for c in calls) == 2
         assert sum(c['node'] == 'verify_answer_coverage' for c in calls) == 1
         assert result['outcome'] == 'partial'
         assert any(g.get('stage') == 'answer' for g in published['gaps'])
         assert all(c["status"] == "succeeded" for c in calls)
-        assert result["budget"]["tokens"] == 1800
+        assert result["budget"]["tokens"] == 2000
         assert len(repo.list_outbox(record["runId"])) == 1
         calls_before = len(model.requests)
         restored = DeepResearchRepository(repo.db_path)

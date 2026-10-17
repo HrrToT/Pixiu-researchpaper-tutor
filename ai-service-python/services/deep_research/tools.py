@@ -535,11 +535,13 @@ class BudgetedSemanticChecker:
         run_id: str,
         metric_domains=None,
         research_question=None,
+        isolate_factual_claims=False,
     ):
         self._invoke = llm_invoker
         self._run_id = run_id
         self._metric_domains = metric_domains
         self._research_question = research_question
+        self._isolate_factual_claims = isolate_factual_claims
     
     def __call__(self, claims: list[dict], evidence: list[dict]) -> list[dict]:
         return self._check(claims, evidence, [], 'verify')
@@ -570,9 +572,12 @@ class BudgetedSemanticChecker:
         config_node='verify_design_config' if node=='verify' else 'verify_repair_design_config'
         proposal_batches = ([(config, config_node)] if config else []) + ([(science, science_node)] if science else [])
         fact_slots = max(1, 3 - len(proposal_batches))
-        # Keep small answers in one request, leaving reserve for the final
-        # coverage audit after a revision. Per-claim evidenceRefs remain binding.
-        size = max(3, (len(facts) + fact_slots - 1) // fact_slots)
+        # Legacy answers keep their original batch. New isolated factual
+        # checks never receive another target's citations; all requests still
+        # reserve from the unchanged run budget before dispatch.
+        isolated = (self._isolate_factual_claims() if callable(self._isolate_factual_claims)
+                    else self._isolate_factual_claims) is True
+        size = 1 if isolated else max(3, (len(facts) + fact_slots - 1) // fact_slots)
         batches = proposal_batches + [(facts[i:i + size], node) for i in range(0, len(facts), size)]
         verdicts = []
         for batch, batch_node in batches:

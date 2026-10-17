@@ -139,6 +139,11 @@ cite its actual supporting allowed passage in this claim or remove/narrow that c
 Check ALL factual conditions, not only main text. Preserve exact baseline variants and
 do not transfer a retrained baseline's platform onto another row. This is not permission
 to invent a hardware source or to borrow another claim's uncited evidence.
+numeric_mismatch in a reported claim requires using original cited values only:
+remove computed differences/ratios/percentages that the paper did not report.
+Keep the operands and qualitative comparison when supported; do not append your
+own calculation while preserving kind="reported". Each table group name must copy
+its exact tableData label, even if another passage uses a different spelling.
 Question: {question}
 {length_contract}
 Accepted experimental definitions (consistency only; do not revise these or treat them as paper evidence):
