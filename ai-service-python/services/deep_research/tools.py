@@ -287,8 +287,18 @@ class TrackedLLMInvoker:
             from services.deep_research.repair_budget import repair_output_options
             extra_body = repair_output_options(extra_body)
         
-        # Full prompt digest for stable IDs - NOT truncated
-        args_digest = digest({"prompt": prompt, "extra": extra_body or {}})
+        from services.deep_research.structured_output import enabled as native_json, messages as json_messages
+        structured = native_json(self._run_record(run_id) if self._run_record else None)
+        wire_messages = json_messages(node, prompt) if structured else None
+        if structured:
+            if 'messages' in (extra_body or {}):
+                raise DeepResearchError('invalid_model_options', '研究模型调用选项无效，尚未发送。')
+            extra_body = {**(extra_body or {}), 'response_format': {'type': 'json_object'}}
+        # Full actual request digest, including native transport instructions.
+        request_identity = {"prompt": prompt, "extra": extra_body or {}}
+        if structured:
+            request_identity['messages'] = wire_messages
+        args_digest = digest(request_identity)
         
         # Reserve a conservative UTF-8 byte bound, then settle measured usage.
         prompt_byte_length = len(prompt.encode("utf-8"))
@@ -323,6 +333,7 @@ class TrackedLLMInvoker:
         # Execute LLM call - send-only try
         request = LLMRequest(
             prompt=prompt,
+            messages=wire_messages,
             extra_body=extra_body or {},
             timeout_seconds=(extra_body or {}).get("timeout_seconds"),
         )
@@ -377,6 +388,9 @@ class TrackedLLMInvoker:
         reported_model = getattr(result, "reported_model", None)
         if isinstance(reported_model, str) and reported_model.strip() and len(reported_model) <= 256:
             response["reportedModel"] = reported_model
+        if structured:
+            from services.deep_research.structured_output import normalize
+            response = normalize(node, response)
         
         # Settle with actual usage delta
         token_delta = actual_tokens - (estimated_input + max_output)
