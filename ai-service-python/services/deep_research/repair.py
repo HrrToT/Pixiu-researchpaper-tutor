@@ -131,6 +131,9 @@ retain only the supported conclusion and premises. Do not replace unsupported
 details with a paper-wide claim that those details were never measured.
 absence_not_established requires bounded positive evidence:
 missing passages do not prove paper-wide absence; finite results do not prove universality.
+Replace a rejected absence assertion with the limits of the ACTUALLY CITED evidence,
+for example "当前取得的证据支持…，不足以证明…在其他条件仍成立". Fill only supported
+scope; never retain "论文未验证/未提供…" without explicit evidence of that absence.
 Question: {question}
 {length_contract}
 Accepted experimental definitions (consistency only; do not revise these or treat them as paper evidence):

@@ -22,8 +22,11 @@ def _method_visible(method, text):
     # stars, ablation suffixes and training variants as part of the identity.
     label = re.sub(r'\s*\[\d+(?:\s*[,\-–]\s*\d+)*\]\s*$', '', method)
     token = _key(label)
-    return bool(token and re.search(r'(?<![a-z0-9*+_.-])' + re.escape(token)
-                                    + r'(?![a-z0-9*+_.-])', _key(text)))
+    # Keep spaces around the displayed label: removing them would turn
+    # "Ours PSNR" into "OursPSNR" and wrongly reject a separate method name.
+    pattern = r'\s*'.join(re.escape(char) for char in token)
+    return bool(token and re.search(r'(?<![a-z0-9*+_.-])' + pattern
+        + r'(?!\s*[*+_.-]|[a-z0-9])', text.casefold()))
 
 
 def bound_table_context(claim, evidence):

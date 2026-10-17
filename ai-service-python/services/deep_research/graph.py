@@ -285,6 +285,9 @@ speed, quality or evaluation conditions), not a compound demand for every result
 For mechanism questions, explicitly include the requested entities' relationship,
 conditioning inputs and activation/applicability rules in the obligation question.
 Do not substitute a generic overview for the user's requested mechanism or conditions.
+For evidence limits, ask what the obtained evaluation actually supports and what
+cannot be inferred beyond its conditions. Do not require an explicit author admission
+of every limitation, or demand a paper-wide absence claim from missing passages.
 
 Return a JSON ARRAY of plan items, NOT an object with items field."""
         
@@ -1147,6 +1150,8 @@ Limitations are evidence-bounded inference claims. Never invent results or prese
 State the bounds of the evidence actually read; avoid paper-wide absence assertions
 unless an explicit source establishes that exact absence. Finite experiments do not
 establish a guarantee for untested conditions.
+For example use the neutral structure "当前取得的证据支持…，不足以证明…在其他条件仍成立";
+fill it only with actual supported scope. Do not replace this with "论文没有测试…".
 Section titles MUST be selected from {json.dumps(section_templates, ensure_ascii=False)}.
 Sections reference actual claimIds. All facts, proposals and hypotheses require claims and sections;
 no extra unchecked prose. At most {claim_limit} claims, each independently checkable; never merge

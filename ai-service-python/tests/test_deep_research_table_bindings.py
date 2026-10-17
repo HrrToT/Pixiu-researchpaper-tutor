@@ -39,6 +39,10 @@ def test_reported_cells_pass_only_with_visible_dataset_method_and_exact_binding(
     ('3D-GS [16]', 'Other3D-GS', False),
     ('3D-GS [16]', '3D-GS-finetuned', False),
     ('3D-GS (ours) [16]', '3D-GS', False),
+    ('Ours', 'Ours PSNR', True),
+    ('3D-GS [16]', '3D-GS PSNR', True),
+    ('3D-GS [16]', '3D-GS *', False),
+    ('3D-GS * [16]', '3D-GS * PSNR', True),
 ])
 def test_bibliography_suffix_is_optional_but_method_variant_is_required(method, display, accepted):
     ev, claim = fixture()
