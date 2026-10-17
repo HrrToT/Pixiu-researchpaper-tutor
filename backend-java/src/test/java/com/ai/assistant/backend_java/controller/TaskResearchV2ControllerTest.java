@@ -663,6 +663,81 @@ class TaskResearchV2ControllerTest {
 
     // === Legacy compatibility preserved ===
 
+    @org.junit.jupiter.params.ParameterizedTest
+    @org.junit.jupiter.params.provider.ValueSource(booleans = {false, true})
+    @SuppressWarnings("unchecked")
+    void freshContinuationUsesCurrentUserArtifactAndOriginalPapersWithReplayAndRevocation(boolean fourNotes) throws Exception {
+        if (fourNotes) {
+            Map<String, Object> notesTask = tasks.get("work");
+            notesTask.put("notes", List.of(Map.of("id", "n1", "text", "背景1"), Map.of("id", "n2", "text", "背景2"),
+                    Map.of("id", "n3", "text", "背景3"), Map.of("id", "n4", "text", "背景4")));
+            workspace = tasks.updateFromClient("work", notesTask);
+        }
+        Map<String, Object> parent = v2RunBinding("parent-context", 2L, "completed");
+        parent.put("implicitParentContextRef", "artifact:ancestor");
+        parent.put("contextRefs", fourNotes ? List.of("note:n1", "note:n2", "note:n3", "note:n4", "artifact:ancestor")
+                : List.of("artifact:ancestor"));
+        tasks.attachResearchRun("work", workspace.get("revision"), parent);
+        when(research.getV2ResearchTask("parent-context")).thenReturn(ResponseEntity.ok(Map.of("status", "success",
+                "task", v2CompletedState("parent-context", "complete", "v-parent", "摘要", "机器旧稿"))));
+        mvc.perform(get("/api/task-workspaces/work/research/parent-context")).andExpect(status().isOk());
+        Map<String, Object> current = tasks.get("work");
+        String artifactId = "v2-research:parent-context:latest:artifact";
+        Map<String, Object> artifact = (Map<String, Object>) ((List<?>) current.get("artifacts")).stream()
+                .filter(value -> value instanceof Map<?, ?> item && artifactId.equals(item.get("id"))).findFirst().orElseThrow();
+        artifact.put("text", "第一点：存储。第二点：用户当前编辑的画质条件。");
+        artifact.put("edited", true);
+        current = tasks.updateFromClient("work", current);
+        when(research.createV2ResearchTask(any())).thenAnswer(call -> {
+            Map<?, ?> body = call.getArgument(0);
+            Map<?, ?> context = (Map<?, ?>) body.get("continuationContext");
+            org.junit.jupiter.api.Assertions.assertEquals("第一点：存储。第二点：用户当前编辑的画质条件。", context.get("text"));
+            org.junit.jupiter.api.Assertions.assertEquals("unverified_context", context.get("accessLevel"));
+            Map<?, ?> snapshot = (Map<?, ?>) body.get("materialSnapshot");
+            org.junit.jupiter.api.Assertions.assertEquals(List.of("A"), snapshot.get("materialRefs"));
+            org.junit.jupiter.api.Assertions.assertTrue(((List<?>) snapshot.get("contextMaterials")).contains(context));
+            org.junit.jupiter.api.Assertions.assertEquals(fourNotes ? 5 : 1, ((List<?>) snapshot.get("contextMaterials")).size());
+            return ResponseEntity.ok(Map.of("status", "success", "task", Map.of("runId", "child-context",
+                    "taskId", "work", "status", "queued", "runRevision", 0L, "parentRunId", "parent-context")));
+        });
+        var running = ResponseEntity.ok(Map.<String, Object>of("status", "success", "task", Map.of("runId", "child-context",
+                "taskId", "work", "status", "running", "runRevision", 1L, "parentRunId", "parent-context")));
+        when(research.resumeV2ResearchTask(eq("child-context"), any())).thenReturn(running);
+        when(research.getV2ResearchTask("child-context")).thenReturn(running);
+        String body = mapper.writeValueAsString(Map.of("requestId", "context-followup", "freshContinuation", true,
+                "expectedRunRevision", 2L, "expectedTaskRevision", current.get("revision"), "question", "继续第二点"));
+        mvc.perform(post("/api/task-workspaces/work/research/parent-context/continue")
+                .contentType(MediaType.APPLICATION_JSON).content(body)).andExpect(status().isOk());
+        // The stored operation is replayable even when its starting task revision is now old.
+        mvc.perform(post("/api/task-workspaces/work/research/parent-context/continue")
+                .contentType(MediaType.APPLICATION_JSON).content(body)).andExpect(status().isOk());
+        org.mockito.Mockito.verify(research, org.mockito.Mockito.times(1)).createV2ResearchTask(any());
+        org.mockito.Mockito.verify(research, org.mockito.Mockito.never()).continueV2ResearchTask(any(), any());
+        current = tasks.get("work");
+        Map<?, ?> child = (Map<?, ?>) ((List<?>) current.get("researchRuns")).stream()
+                .filter(value -> value instanceof Map<?, ?> item && "child-context".equals(item.get("runId"))).findFirst().orElseThrow();
+        String hash = (String) child.get("snapshotHash");
+        mvc.perform(post("/api/task-workspaces/work/research/child-context/scope-check").contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(Map.of("snapshotHash", hash)))).andExpect(jsonPath("$.valid").value(true));
+        Map<String, Object> changed = (Map<String, Object>) ((List<?>) current.get("artifacts")).stream()
+                .filter(value -> value instanceof Map<?, ?> item && artifactId.equals(item.get("id"))).findFirst().orElseThrow();
+        changed.put("text", "追问开始后又修改的成果。");
+        tasks.updateFromClient("work", current);
+        mvc.perform(post("/api/task-workspaces/work/research/child-context/scope-check").contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(Map.of("snapshotHash", hash)))).andExpect(jsonPath("$.valid").value(false));
+    }
+
+    @Test
+    void freshContinuationRejectsChangedParentRevisionBeforeCreation() throws Exception {
+        tasks.attachResearchRun("work", workspace.get("revision"), v2RunBinding("parent-stale", 2L, "completed"));
+        when(research.getV2ResearchTask("parent-stale")).thenReturn(v2Success("parent-stale", "completed", "partial", 2L));
+        mvc.perform(post("/api/task-workspaces/work/research/parent-stale/continue").contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(Map.of("requestId", "stale-followup", "freshContinuation", true,
+                        "expectedTaskRevision", tasks.get("work").get("revision"), "expectedRunRevision", 1L,
+                        "question", "继续第二点")))).andExpect(status().isConflict());
+        org.mockito.Mockito.verify(research, org.mockito.Mockito.never()).createV2ResearchTask(any());
+    }
+
     @Test
     void legacyReviewEndpointsStillWork() throws Exception {
         tasks.attachResearchRun("work", workspace.get("revision"), Map.of("researchId", "leg-rev",

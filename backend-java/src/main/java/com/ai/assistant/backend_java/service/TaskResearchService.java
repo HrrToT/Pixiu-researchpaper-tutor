@@ -274,7 +274,8 @@ public class TaskResearchService {
 
             List<Map<String, String>> currentVersions = buildMaterialVersions(currentMaterialIds);
             List<Map<String, String>> contexts;
-            try { contexts = buildContextMaterials(workspace, run.get("contextRefs")); }
+            try { contexts = buildContextMaterials(workspace, run.get("contextRefs"),
+                    run.get("parentContextRef") instanceof String ? 5 : 4); }
             catch (ResponseStatusException changed) { contexts = null; }
             String currentHash = contexts == null ? "revoked" : computeSnapshotHash(currentVersions, focusIds, policyMode, contexts);
             if (!currentHash.equals(expectedHash)) {
@@ -502,6 +503,15 @@ public class TaskResearchService {
             boolean found = ((List<?>) workspace.get("researchRuns")).stream()
                     .anyMatch(r -> r instanceof Map<?, ?> run && parentRunId.equals(run.get("runId")));
             if (!found) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "父运行不属于当前任务");
+            if (Boolean.TRUE.equals(input.get("freshContinuation"))) {
+                Map<String, Object> saved = requireSuccess(research.getV2ResearchTask(parentRunId));
+                Map<?, ?> state = saved.get("task") instanceof Map<?, ?> value ? value : Map.of();
+                Object expectedRun = input.get("expectedRunRevision");
+                if (!(expectedRun instanceof Number version) || version.doubleValue() != version.longValue()
+                        || !(state.get("runRevision") instanceof Number current)
+                        || version.longValue() != current.longValue())
+                    throw new ResponseStatusException(HttpStatus.CONFLICT, "父研究已更新，请刷新后重试");
+            }
         }
 
         // Fail-closed readiness check before creation: all materials must exist and be "ready"
@@ -521,7 +531,30 @@ public class TaskResearchService {
 
         // Build material versions with contentHash (SHA-256 of pdfBytes) as version identity
         List<Map<String, String>> materialVersions = buildMaterialVersions(resolvedMaterialIds);
-        List<Map<String, String>> contextMaterials = buildContextMaterials(workspace, input.get("contextRefs"));
+        Object contextRefs = input.get("contextRefs");
+        String parentContextRef = null;
+        String implicitParentContextRef = null;
+        if (parentRunId != null && Boolean.TRUE.equals(input.get("includeParentContext"))) {
+            if (contextRefs != null && !(contextRefs instanceof List<?>))
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "背景材料身份无效");
+            if (contextRefs instanceof List<?> refs && refs.size() > 4)
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "最多选择四份笔记或成果作为研究背景");
+            List<?> artifacts = workspace.get("artifacts") instanceof List<?> values ? values : List.of();
+            String latestId = "v2-research:" + parentRunId + ":latest:artifact";
+            boolean present = artifacts.stream().anyMatch(value -> value instanceof Map<?, ?> item
+                    && parentRunId.equals(item.get("sourceRunId")) && latestId.equals(item.get("id")));
+            if (present) {
+                parentContextRef = "artifact:" + latestId;
+                List<Object> refs = new ArrayList<>(contextRefs instanceof List<?> values ? values : List.of());
+                if (!refs.contains(parentContextRef)) {
+                    refs.add(parentContextRef);
+                    implicitParentContextRef = parentContextRef;
+                }
+                contextRefs = refs;
+            }
+        }
+        List<Map<String, String>> contextMaterials = buildContextMaterials(workspace, contextRefs,
+                parentContextRef != null ? 5 : 4);
 
         Map<String, Object> upstream = new LinkedHashMap<>();
         upstream.put("requestId", input.get("requestId"));
@@ -537,6 +570,11 @@ public class TaskResearchService {
         upstream.put("budgetProfile", budgetProfile);
         upstream.put("outputKind", outputKind);
         if (parentRunId != null) upstream.put("parentRunId", parentRunId);
+        if (parentContextRef != null) {
+            String ref = parentContextRef;
+            upstream.put("continuationContext", contextMaterials.stream()
+                    .filter(value -> ref.equals(value.get("ref"))).findFirst().orElseThrow());
+        }
         // Defer graph start until after Java persists run binding to avoid race
         upstream.put("deferStart", true);
 
@@ -581,6 +619,8 @@ public class TaskResearchService {
         run.put("parentRunId", parentRunId);
         run.put("snapshotHash", snapshotHash);
         run.put("contextRefs", contextMaterials.stream().map(value -> value.get("ref")).toList());
+        if (parentContextRef != null) run.put("parentContextRef", parentContextRef);
+        if (implicitParentContextRef != null) run.put("implicitParentContextRef", implicitParentContextRef);
         run.put("createdAt", Instant.now().toString());
 
         try {
@@ -643,7 +683,7 @@ public class TaskResearchService {
     private Map<String, Object> continueV2(String taskId, String runId, Map<String, Object> input) {
         requireV2Owner(taskId, runId);
         Map<String, Object> parentRun = findV2Run(taskId, runId);
-        if (input != null && input.containsKey("materialSelection")) {
+        if (input != null && (input.containsKey("materialSelection") || Boolean.TRUE.equals(input.get("freshContinuation")))) {
             Map<String, Object> fresh = new LinkedHashMap<>(input);
             fresh.put("parentRunId", runId);
             fresh.put("engineVersion", ENGINE_V2);
@@ -651,6 +691,15 @@ public class TaskResearchService {
             fresh.put("outputKind", parentRun.get("outputKind"));
             fresh.putIfAbsent("question", parentRun.get("question"));
             fresh.putIfAbsent("contextRefs", parentRun.getOrDefault("contextRefs", List.of()));
+            if (Boolean.TRUE.equals(input.get("freshContinuation"))) {
+                if (!input.containsKey("contextRefs") && parentRun.get("implicitParentContextRef") instanceof String implicit
+                        && fresh.get("contextRefs") instanceof List<?> refs)
+                    fresh.put("contextRefs", refs.stream().filter(value -> !implicit.equals(value)).toList());
+                List<?> papers = parentRun.get("paperIds") instanceof List<?> ids ? ids : List.of();
+                fresh.putIfAbsent("materialSelection", papers.isEmpty()
+                        ? Map.of("mode", "external_only") : Map.of("mode", "explicit", "materialIds", papers));
+                fresh.put("includeParentContext", true);
+            }
             return startV2(taskId, fresh);
         }
         Map<String, Object> body = forwardBody(input, List.of("requestId", "expectedRunRevision", "question", "budgetProfile", "sourcePolicy"));
@@ -1100,8 +1149,12 @@ public class TaskResearchService {
 
     /** Notes and saved reports are user context, never direct paper evidence. */
     private List<Map<String, String>> buildContextMaterials(Map<String, Object> workspace, Object rawRefs) {
+        return buildContextMaterials(workspace, rawRefs, 4);
+    }
+
+    private List<Map<String, String>> buildContextMaterials(Map<String, Object> workspace, Object rawRefs, int maximum) {
         if (rawRefs == null) return List.of();
-        if (!(rawRefs instanceof List<?> refs) || refs.size() > 4)
+        if (!(rawRefs instanceof List<?> refs) || refs.size() > maximum)
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "最多选择四份笔记或成果作为研究背景");
         List<Map<String, String>> output = new ArrayList<>();
         java.util.Set<String> seen = new java.util.HashSet<>();
