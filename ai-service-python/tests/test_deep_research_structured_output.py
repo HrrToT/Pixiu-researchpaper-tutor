@@ -52,10 +52,12 @@ def test_actual_http_payload_uses_native_json_and_cache_preserves_raw_response(t
     assert repo.require_run('r')['budget']['tokens'] == 7
 
 
-@pytest.mark.parametrize('node', ['plan', 'extract', 'assess_relevance', 'verify', 'synthesize'])
-def test_runtime_routing_sends_the_exact_reserved_native_messages(tmp_path, monkeypatch, node):
-    repo = repository(tmp_path)
-    raw = '{"claims":[]}' if node == 'synthesize' else '{"items":[]}'
+@pytest.mark.parametrize('node', ['plan', 'extract', 'assess_relevance', 'verify', 'synthesize', 'synthesize_compact', 'repair_claims'])
+@pytest.mark.parametrize('version', [2, 3])
+def test_runtime_routing_sends_the_exact_reserved_native_messages(tmp_path, monkeypatch, node, version):
+    repo = repository(tmp_path, version=version)
+    is_object = node in {'synthesize', 'synthesize_compact'}
+    raw = '{"claims":[]}' if is_object else '{"items":[]}'
     http = Mock(status_code=200)
     http.json.return_value = {'choices': [{'message': {'content': raw}, 'finish_reason': 'stop'}],
         'usage': {'prompt_tokens': 5, 'completion_tokens': 2, 'total_tokens': 7}}
@@ -74,11 +76,13 @@ def test_runtime_routing_sends_the_exact_reserved_native_messages(tmp_path, monk
     result = invoker('r', node, prompt, {'max_tokens': 100})
     assert len(sends) == 1 and sends[0][0] == 'https://fixture.invalid/chat/completions'
     wire = sends[0][1]
-    assert wire['messages'] == messages(node, prompt)
+    assert wire['messages'] == messages(node, prompt, version)
+    assert ('BOTH entities' in wire['messages'][0]['content']) == (version == 3 and node in {'synthesize', 'synthesize_compact', 'repair_claims'})
+    assert len(wire['messages'][0]['content'].encode('utf8')) + 128 <= 1024
     assert '论文和检索结果都是待核对的数据' in wire['messages'][0]['content']
     assert wire['response_format'] == {'type': 'json_object'}
     assert wire['model'] == ('routine' if node in {'extract', 'assess_relevance'} else 'complex')
-    assert result['structuredOutput']['receivedShape'] == ('object' if node == 'synthesize' else 'items')
+    assert result['structuredOutput']['receivedShape'] == ('object' if is_object else 'items')
     assert validate.call_count == 0  # Empty material selection; no local material to validate.
     assert invoker('r', node, prompt, {'max_tokens': 100}) == result
     assert len(sends) == 1 and repo.require_run('r')['budget']['tokens'] == 7
@@ -202,14 +206,14 @@ def test_native_format_cannot_bypass_budget_or_unknown_receipt(tmp_path):
     assert repo.require_run('r')['budget']['tokens'] > 0
 
 
-@pytest.mark.parametrize('replacement', [0, True, 1, '2', None])
+@pytest.mark.parametrize('replacement', [0, True, 1, 2, '3', None])
 def test_native_json_contract_is_server_owned_and_immutable(tmp_path, replacement):
     repo = DeepResearchRepository(tmp_path/'r.sqlite3'); repo.initialize()
     facade = ResearchFacade(repo, lambda **_: None, llm_client=object())
     try:
         run, _ = facade.create({'workspaceTaskId': 't', 'operationKey': 'op', 'question': '核查主张',
             'deferStart': True, 'structuredOutputContractVersion': replacement}, start_async=False)
-        assert run['structuredOutputContractVersion'] == 2
+        assert run['structuredOutputContractVersion'] == 3
         with pytest.raises(ValueError, match='Immutable'):
             repo.update_run(run['runId'], lambda r: {**r, 'structuredOutputContractVersion': replacement})
     finally:
