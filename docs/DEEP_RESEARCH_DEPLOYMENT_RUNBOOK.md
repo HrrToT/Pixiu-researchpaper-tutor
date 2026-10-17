@@ -115,3 +115,13 @@ Python当前为92598500（`.123`）。加载前无活动研究，3262条完整�
 ## 2026-10-18 逐条事实核验加载
 
 Python当前1bf96858（`.124`）；确认无活动研究及新论文解析已完成后重启一次，3,284条完整账本和9个未知暂停身份相等，RAG/GROBID健康。后续真实运行期间不再重启。证明见`deep-research-evidence/runtime-load-dr124-fact-isolation-20261018.json`。
+
+
+## 2026-10-18 原生JSON路由修复加载
+
+Python ebcf570c（`.126`），可信消息契约2；旧契约1保留原身份。确认无活动研究后重启一次，3,299条完整账本和9个未知暂停身份一致，RAG/GROBID健康。证据：`deep-research-evidence/runtime-load-dr126-routed-json-20261018.json`。
+
+
+## 2026-10-18 修订进展与比较目的加载
+
+Python 74673c96（`.128`），原生JSON契约3/修订进展契约1；旧运行规则保留。确认全部六个新验证运行已终态后重启一次，3,440条完整账本及9个历史未知暂停身份一致；没有追加Provider请求。`deep-research-evidence/runtime-load-dr128-purpose-20261018.json`。

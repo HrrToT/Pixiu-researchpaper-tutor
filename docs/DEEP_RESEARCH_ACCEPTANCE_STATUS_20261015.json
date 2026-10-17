@@ -45,11 +45,11 @@
       "overlap": true
     },
     "backendCurrentResearchReadingTables": {
-      "passed": 2025,
+      "passed": 2081,
       "warnings": 1,
-      "seconds": 110.99,
-      "log": "tmp/pytest-dr124-full-final.log",
-      "sourceCommit": "1bf96858",
+      "seconds": 118.32,
+      "log": "tmp/pytest-dr128-full.log",
+      "sourceCommit": "74673c96",
       "scope": "Research, reading, PDF tables and config."
     },
     "frontendDocumentNavigationFocused": {
@@ -1180,12 +1180,48 @@
           "contentAccepted": false,
           "modelCalls": 10,
           "settledTokens": 36855
+        },
+        {
+          "case": "D1-v13",
+          "runId": "dr_run_734b565c889a57c8ab98084954a4d918",
+          "status": "failed",
+          "outcome": "none",
+          "contentAccepted": false,
+          "modelCalls": 2,
+          "settledTokens": 2541
+        },
+        {
+          "case": "D1-v14",
+          "runId": "dr_run_4502a72b6f2e5a8389fd2de66700b0fb",
+          "status": "completed",
+          "outcome": "inconclusive",
+          "contentAccepted": false,
+          "modelCalls": 7,
+          "settledTokens": 27507
+        },
+        {
+          "case": "D1-v15",
+          "runId": "dr_run_7aad1f21f00f5cbe8cac706868c869ff",
+          "status": "completed",
+          "outcome": "complete",
+          "contentAccepted": false,
+          "modelCalls": 8,
+          "settledTokens": 35728
+        },
+        {
+          "case": "D1-v16",
+          "runId": "dr_run_a68c2257f81051589f9841bd8b23374d",
+          "status": "completed",
+          "outcome": "partial",
+          "contentAccepted": false,
+          "modelCalls": 9,
+          "settledTokens": 37294
         }
       ],
-      "totalSuccessfulModelCalls": 36,
-      "totalSettledTokens": 131187,
+      "totalSuccessfulModelCalls": 62,
+      "totalSettledTokens": 234257,
       "cost": null,
-      "boundary": "36 successful model requests across four fixed development attempts, no unknown retry. None passed manual content review."
+      "boundary": "Original confirmed attempts preserved. Transport success is not quality acceptance. No unknown resend or budget enlargement."
     },
     "factIsolation": {
       "date": "2026-10-18",
@@ -1272,6 +1308,178 @@
         ]
       },
       "boundary": "Only local PDF parsing/indexing; no research-model case executed by preparation. External-only paper is not supplied through this local material task."
+    },
+    "routedJson": {
+      "date": "2026-10-18",
+      "sourceCommit": "ebcf570c",
+      "promptVersion": "dr-v2.20261018.126",
+      "contracts": {
+        "structuredOutputContractVersion": 2
+      },
+      "checks": {
+        "passed": 2057,
+        "warnings": 1,
+        "seconds": 115.12,
+        "log": "tmp/pytest-dr126-full-final.log"
+      },
+      "behavior": [
+        "The runtime scope wrapper reconstructs the same trusted native JSON and source-as-data messages as the tracked invoker. Exact equality and response_format are checked before provider send.",
+        "Both routine and complex routes retain these instructions. HTTP-level offline tests cross the actual runtime wrapper and DeepSeek client for planning, extraction, relevance, factual checking and synthesis.",
+        "Prompt content is unchanged; the trusted system addition remains inside the existing 1024-token framing reservation. No quote clipping or increased total budget.",
+        "Native transport version 2 is server-owned and immutable. Historical version 1 keeps its exact original request fingerprint/cache behavior; unknown requests are not retried.",
+        "Confirmed malformed output remains raw in the ledger and is rejected rather than guessed or repaired with another call.",
+        "The earlier .125 direct-client transport check missed the production wrapper overwrite; D1-v14 exposed it. The integration test now covers the missing path."
+      ],
+      "runtime": "runtime-load-dr126-routed-json-20261018.json",
+      "boundary": "Native JSON controls output syntax and envelope instructions, not factual truth or field-level compliance. Real content gates remain separate."
+    },
+    "repairProgress": {
+      "date": "2026-10-18",
+      "sourceCommit": "34a465b5",
+      "contracts": {
+        "repairProgressContractVersion": 1
+      },
+      "checks": {
+        "passed": 2071,
+        "warnings": 1,
+        "seconds": 116.55,
+        "log": "tmp/pytest-dr127-full.log"
+      },
+      "behavior": [
+        "An unchanged reported/inference fact with the same source set retains its original semantic rejection. Citation order, whitespace and binding order do not create a new basis.",
+        "Changed wording/conditions/citations/table binding still requires all normal verification. This gate does not grant acceptance.",
+        "Prospective designs retain shared-context checking. Old unmarked runs retain their historical behavior.",
+        "Graph replay/reopen does not call the verifier again for withheld unchanged facts; budget/unknown/scope guards stay in effect."
+      ],
+      "actualSavedDraftReplay": "repair-progress-real-draft-replay-20261018.json",
+      "boundary": "The saved real H1F draft replay retains two rejected facts with zero model calls. It does not change its original failed acceptance or prove new live answer quality."
+    },
+    "comparisonPurpose": {
+      "date": "2026-10-18",
+      "sourceCommit": "74673c96",
+      "promptVersion": "dr-v2.20261018.128",
+      "contracts": {
+        "structuredOutputContractVersion": 3,
+        "repairProgressContractVersion": 1
+      },
+      "checks": {
+        "passed": 2081,
+        "warnings": 1,
+        "seconds": 118.32,
+        "log": "tmp/pytest-dr128-full.log"
+      },
+      "behavior": [
+        "Comparison-preservation instructions are part of the trusted reserved system messages for synthesis, compaction and repair.",
+        "The evidence/user prompt is unchanged. Each trusted system plus framing stays inside the original 1024-token reservation; no larger total budget or quote displacement.",
+        "Native versions 1/2 retain their old exact message identities. The runtime wrapper verifies version 3 against the fingerprinted request.",
+        "Purpose instructions request a supported pair before secondary metrics and evidence-bounded conditions. They do not prove goal completeness or factual correctness."
+      ],
+      "runtime": "runtime-load-dr128-purpose-20261018.json",
+      "boundary": "Transport and deterministic repair gate are tested separately from real content acceptance.",
+      "realCase": {
+        "case": "D1-v16",
+        "proof": "deep-research-evidence/D1-v16-partial-20261018.json",
+        "comparisonBaselineRestored": true,
+        "contentAccepted": false
+      }
+    },
+    "independentFirstResults20261018": {
+      "date": "2026-10-18",
+      "sourceCommit": "ebcf570c",
+      "manifest": "DEEP_RESEARCH_INDEPENDENT_CASES_20261018.json",
+      "cases": [
+        {
+          "case": "H1F-v1",
+          "runId": "dr_run_8b35605449c15fd98026409a338a16e5",
+          "outcome": "partial",
+          "contentAccepted": false,
+          "modelCalls": 14,
+          "settledTokens": 50237,
+          "retiredForTuning": true
+        },
+        {
+          "case": "H2F-v1",
+          "runId": "dr_run_b1c6b4aa38af55a38747beb6f684c611",
+          "outcome": "partial",
+          "contentAccepted": false,
+          "modelCalls": 13,
+          "settledTokens": 46602,
+          "retiredForTuning": false
+        },
+        {
+          "case": "H3F-v1",
+          "runId": "dr_run_70fee9d21d7b56a2b8a3d76177ed8f38",
+          "outcome": "complete",
+          "contentAccepted": false,
+          "modelCalls": 11,
+          "settledTokens": 30506,
+          "retiredForTuning": false
+        },
+        {
+          "case": "H4F-v1",
+          "runId": "dr_run_ee62d7b47eac52e2aa87a981085bbe16",
+          "outcome": "partial",
+          "contentAccepted": false,
+          "modelCalls": 11,
+          "settledTokens": 29250,
+          "retiredForTuning": false
+        },
+        {
+          "case": "H5F-v1",
+          "runId": "dr_run_0fdb850b82ad52e6bf3372e359ac1758",
+          "outcome": "partial",
+          "contentAccepted": false,
+          "modelCalls": 10,
+          "settledTokens": 35935,
+          "retiredForTuning": false
+        }
+      ],
+      "confirmedModelCalls": 59,
+      "settledTokens": 192530,
+      "contentPasses": 0,
+      "externalPathAccepted": [
+        "H3F-v1"
+      ],
+      "newUnknownCalls": 0,
+      "cost": null,
+      "boundary": "External path success and machine complete are separate from full novice/content acceptance. H1F is retired after first-score recording; the manifest is not edited."
+    },
+    "runtimePostcase128": {
+      "date": "2026-10-18",
+      "loadedCodeCommit": "74673c96",
+      "promptVersion": "dr-v2.20261018.128",
+      "snapshot": {
+        "active": [],
+        "paused": [
+          "dr_run_4738564f5ff35157996a35068c62ed32",
+          "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+          "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+          "dr_run_86b3f181a5475e99aacca3dbf4370567",
+          "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+          "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+          "dr_run_e3521b1781825273b384a26a5edb8cdc",
+          "dr_run_e9c9dc916bef519092fad8b929b2448f",
+          "dr_run_ed10cc3347be552288079a9a588fddf5"
+        ],
+        "calls": 3459,
+        "ledgerSha256": "0d99f94a6086c62fd3dbbf24deb89bd18a69db5fa9fedb7c0d1f662b6cd51f98"
+      },
+      "health": {
+        "status": "ok",
+        "checks": {
+          "grobid": {
+            "status": "ok",
+            "message": "GROBID is reachable."
+          },
+          "rag": {
+            "status": "ok",
+            "message": "RAG backend is ready."
+          }
+        },
+        "uptime_seconds": 236.3
+      },
+      "additionalRows": 19,
+      "boundary": "Read-only final check; no restart or provider call. Old paused identities preserved; added rows belong to the one confirmed D1-v16 attempt."
     }
   },
   "stages": [
@@ -1401,7 +1609,13 @@
         "deep-research-evidence/H3R-v15-unknown-20261016.json",
         "deep-research-evidence/beginner-rewrite-replay-20261016.json",
         "deep-research-evidence/runtime-load-dr111-beginner-rewrite-20261016.json"
-      ]
+      ],
+      "actualExternalPath20261018": {
+        "passed": true,
+        "case": "H3F-v1",
+        "proof": "deep-research-evidence/H3F-v1-first-review-20261018.json",
+        "contentAcceptance": false
+      }
     },
     {
       "id": "DR5",
@@ -1438,16 +1652,16 @@
   "developmentCases": [
     {
       "id": "D1",
-      "runId": "dr_run_d08f82b1b1d454f79fea737a038f33be",
+      "runId": "dr_run_a68c2257f81051589f9841bd8b23374d",
       "machine": "completed/partial",
-      "content": "Not accepted: computed differences stayed under reported kind; the requested result point was rejected.",
-      "next": "Validate per-fact own-citation isolation and numerical repair under the unchanged D1 question/budget. Uniform authorization is already granted.",
+      "content": "Comparison baseline restored and original values checked; conditions point rejected for unsupported paper-wide absence. Not accepted.",
+      "next": "Improve neutral scientific planning, retrieval of precise method details, evidence-bounded limitation drafting and compact executable-design repair; validate only after a concrete change.",
       "previousResult": {
         "runId": "dr_run_66ec09fffdfe5c8d9a97a0a2f1816d75",
         "machine": "completed/inconclusive",
         "content": "not accepted; no published verified claim"
       },
-      "proof": "deep-research-evidence/D1-v12-partial-20261018.json",
+      "proof": "deep-research-evidence/D1-v16-partial-20261018.json",
       "history": [
         {
           "id": "D1",
@@ -1474,6 +1688,45 @@
             "content": "not accepted; no published verified claim"
           },
           "proof": "deep-research-evidence/D1-v11-partial-20261018.json"
+        },
+        {
+          "id": "D1",
+          "runId": "dr_run_d08f82b1b1d454f79fea737a038f33be",
+          "machine": "completed/partial",
+          "content": "Not accepted: computed differences stayed under reported kind; the requested result point was rejected.",
+          "next": "Validate per-fact own-citation isolation and numerical repair under the unchanged D1 question/budget. Uniform authorization is already granted.",
+          "previousResult": {
+            "runId": "dr_run_66ec09fffdfe5c8d9a97a0a2f1816d75",
+            "machine": "completed/inconclusive",
+            "content": "not accepted; no published verified claim"
+          },
+          "proof": "deep-research-evidence/D1-v12-partial-20261018.json"
+        },
+        {
+          "id": "D1",
+          "runId": "dr_run_4502a72b6f2e5a8389fd2de66700b0fb",
+          "machine": "completed/inconclusive",
+          "content": "Not accepted: runtime replaced JSON instructions; relevance wrapper invalid; anonymous metric series and unsupported absence rejected.",
+          "next": "Validate corrected runtime/native transport with fixed D1 inputs; then execute sealed independent cases. Further required validation is uniformly authorized.",
+          "previousResult": {
+            "runId": "dr_run_66ec09fffdfe5c8d9a97a0a2f1816d75",
+            "machine": "completed/inconclusive",
+            "content": "not accepted; no published verified claim"
+          },
+          "proof": "deep-research-evidence/D1-v14-inconclusive-20261018.json"
+        },
+        {
+          "id": "D1",
+          "runId": "dr_run_7aad1f21f00f5cbe8cac706868c869ff",
+          "machine": "completed/complete",
+          "content": "Manual fail: one-sided Ours metrics omitted the 3DGS baseline and comparative judgment; complete coverage was a model false positive.",
+          "next": "Validate preserved comparison purpose with fixed D1 inputs under .128, then address method-detail retrieval, novice mechanism explanations and bounded executable design repair.",
+          "previousResult": {
+            "runId": "dr_run_66ec09fffdfe5c8d9a97a0a2f1816d75",
+            "machine": "completed/inconclusive",
+            "content": "not accepted; no published verified claim"
+          },
+          "proof": "deep-research-evidence/D1-v15-complete-manual-fail-20261018.json"
         }
       ]
     },
@@ -1523,42 +1776,43 @@
   "activeIndependentSlots": [
     {
       "slot": "H1",
-      "case": "H1R2",
-      "manifest": "DEEP_RESEARCH_FRESH_HOLDOUTS_20261015.json",
-      "state": "one submission; paused/unresolved_unknown before paper analysis; unscored",
-      "runId": "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
-      "proof": "deep-research-evidence/H1R2-v1-20261015.json"
+      "case": "H1F",
+      "manifest": "DEEP_RESEARCH_INDEPENDENT_CASES_20261018.json",
+      "runId": "dr_run_8b35605449c15fd98026409a338a16e5",
+      "state": "First original result failed content review; retired for generic repair-progress diagnosis.",
+      "proof": "deep-research-evidence/H1F-v1-first-review-20261018.json"
     },
     {
       "slot": "H2",
-      "case": "H2R",
-      "manifest": "DEEP_RESEARCH_FRESH_HOLDOUTS_20261015.json",
-      "state": "First run completed/partial and failed content review; subsequently retired for diagnosis, replacement required.",
-      "runId": "dr_run_3978892825bc5ddcb8b55d079157ff9f",
-      "proof": "deep-research-evidence/H2R-v1-20261015.json"
+      "case": "H2F",
+      "manifest": "DEEP_RESEARCH_INDEPENDENT_CASES_20261018.json",
+      "runId": "dr_run_b1c6b4aa38af55a38747beb6f684c611",
+      "state": "First original result reviewed, content gate failed. Not reused for tuning.",
+      "proof": "deep-research-evidence/H2F-v1-first-review-20261018.json"
     },
     {
       "slot": "H3",
-      "case": "H3R",
-      "manifest": "DEEP_RESEARCH_HOLDOUT_REPLACEMENTS.json",
-      "state": "First run reviewed and failed fulltext/mechanism quality; retired before .73-.78 diagnosis; replacement required.",
-      "runId": "dr_run_e32ca497473c58dc96a18d2b9e587c3f",
-      "proof": "deep-research-evidence/H3R-v1-external-size-20261015.json"
+      "case": "H3F",
+      "manifest": "DEEP_RESEARCH_INDEPENDENT_CASES_20261018.json",
+      "runId": "dr_run_70fee9d21d7b56a2b8a3d76177ed8f38",
+      "state": "First original result reviewed, content gate failed. Not reused for tuning.",
+      "proof": "deep-research-evidence/H3F-v1-first-review-20261018.json"
     },
     {
       "slot": "H4",
-      "case": "H4R",
-      "manifest": "DEEP_RESEARCH_FRESH_HOLDOUTS_20261015.json",
-      "state": "retired after first-run content failure and diagnostic use; replacement required",
-      "proof": "deep-research-evidence/H4R-v1-20261015.json"
+      "case": "H4F",
+      "manifest": "DEEP_RESEARCH_INDEPENDENT_CASES_20261018.json",
+      "runId": "dr_run_ee62d7b47eac52e2aa87a981085bbe16",
+      "state": "First original result reviewed, content gate failed. Not reused for tuning.",
+      "proof": "deep-research-evidence/H4F-v1-first-review-20261018.json"
     },
     {
       "slot": "H5",
-      "case": "H5R",
-      "manifest": "DEEP_RESEARCH_FRESH_HOLDOUTS_20261015.json",
-      "state": "First run completed/partial and failed content review; subsequently retired for diagnosis, replacement required.",
-      "runId": "dr_run_98572e8a5a5f575cb2dda227b673455a",
-      "proof": "deep-research-evidence/H5R-v1-20261015.json"
+      "case": "H5F",
+      "manifest": "DEEP_RESEARCH_INDEPENDENT_CASES_20261018.json",
+      "runId": "dr_run_0fdb850b82ad52e6bf3372e359ac1758",
+      "state": "First original result reviewed, content gate failed. Not reused for tuning.",
+      "proof": "deep-research-evidence/H5F-v1-first-review-20261018.json"
     },
     {
       "slot": "H6",
@@ -1567,10 +1821,10 @@
       "state": "offline network/failure/budget tests available; no claim of real Provider quality"
     }
   ],
-  "retiredIndependentClaims": "H1, H1R and original H3 were used for diagnosis. Original H2/H4/H5 share the tuned Scaffold-GS/4DGS material and are replaced for unseen-material acceptance. All original definitions/results remain preserved. H4R first result failed quality; subsequent parser/coverage diagnosis retires it as well. H2R and H5R first-run reviews were recorded before diagnosis; both are now retired. Their shared Lapis material cannot be claimed unseen in future replacement acceptance. H3R was first reviewed before diagnostic reuse; its subsequent runs are development cases and cannot regain unseen-material eligibility.",
+  "retiredIndependentClaims": "H1, H1R and original H3 were used for diagnosis. Original H2/H4/H5 share the tuned Scaffold-GS/4DGS material and are replaced for unseen-material acceptance. All original definitions/results remain preserved. H4R first result failed quality; subsequent parser/coverage diagnosis retires it as well. H2R and H5R first-run reviews were recorded before diagnosis; both are now retired. Their shared Lapis material cannot be claimed unseen in future replacement acceptance. H3R was first reviewed before diagnostic reuse; its subsequent runs are development cases and cannot regain unseen-material eligibility. H1F retired after its first recorded review; original result and sealed definition remain unchanged.",
   "releaseGatesStillOpen": [
     "Current development cases D1/D2/D3/D5 meet every applicable content dimension at least 4/5, with all key source/number/condition claims checked.",
-    "Five fresh real independent cases are executed once each and reviewed before any diagnostic reuse; failures used for tuning must retire.",
+    "Fresh real independent content gates remain below 4/5; first results are recorded and H1F is retired for tuning. External access alone is not a novice/content pass.",
     "Known model-call outcomes, actual usage and costs where available remain separate from retained unknown reservations.",
     "Keep PR draft and production defaults off until the actual gates are met."
   ],
@@ -1580,18 +1834,18 @@
     "Independent Edge recovery"
   ],
   "currentProviderConstraint": "User authorized all further required validations. D1-v9/v10/v11 each executed once and settled, with raw receipts retained. Historical nine unknown identities/reservations remain untouched; no same-case retry or attempt renaming bypass.",
-  "currentDevelopmentMode": "Primary Codex only, no Qoder. Quota pause monitor remains disabled at user request. .124 factual isolation loaded; original DR0-DR5 content gates remain open.",
+  "currentDevelopmentMode": "Primary Codex only, no Qoder. Uniform further validation authorized; quota monitor disabled by user. .128 loaded; DR0-DR5/PR remain incomplete/draft.",
   "loadedRuntime": {
-    "commit": "1bf96858",
-    "promptVersion": "dr-v2.20261018.124",
+    "commit": "74673c96",
+    "promptVersion": "dr-v2.20261018.128",
     "ready": true,
-    "callsPreserved": 3284,
+    "callsPreserved": 3440,
     "pausedUnknownRuns": 9,
-    "proof": "deep-research-evidence/runtime-load-dr124-fact-isolation-20261018.json"
+    "proof": "deep-research-evidence/runtime-load-dr128-purpose-20261018.json"
   },
   "nextQualityWork": [
-    "Validate .124 isolated factual requests, reported-value repairs and source-bounded conditions under the unchanged D1 question and budget.",
-    "Execute and review the five newly sealed distinct-paper cases once each before any diagnostic reuse. Local material preparation must not supply the external-only H3F paper.",
+    "Improve neutral scientific planning, retrieval of precise method details, evidence-bounded limitation drafting and compact executable-design repair; validate only after a concrete change.",
+    "Retain all first independent failures. Replace retired cases before claiming new independent acceptance; do not count diagnostic repeats as holdout passes.",
     "Keep all nine unknown records/reservations unchanged; D2/D3 same-case submissions still need actual outcome reconciliation.",
     "Complete development/fresh content gates and real continuation quality. PR remains draft; user-waived legacy import/full novice workflow/independent Edge recovery stay waived."
   ],
@@ -1616,5 +1870,54 @@
     ]
   },
   "nextIndependentCasesManifest": "DEEP_RESEARCH_INDEPENDENT_CASES_20261018.json",
-  "nextIndependentCasesStatus": "H1F-H5F sealed, not yet model-executed. Local stream/deform ready with 61/65 chunks and no AI overview; H3F has empty local selection and external-only acquisition route."
+  "nextIndependentCasesStatus": "H1F-H5F executed once under .126 and scored before reuse: 0 full content passes. H3F external discovery/fulltext path passed separately. H1F is retired after motivating the generic unchanged-fact guard; other first originals remain recorded.",
+  "priorIndependentSlots": [
+    [
+      {
+        "slot": "H1",
+        "case": "H1R2",
+        "manifest": "DEEP_RESEARCH_FRESH_HOLDOUTS_20261015.json",
+        "state": "one submission; paused/unresolved_unknown before paper analysis; unscored",
+        "runId": "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+        "proof": "deep-research-evidence/H1R2-v1-20261015.json"
+      },
+      {
+        "slot": "H2",
+        "case": "H2R",
+        "manifest": "DEEP_RESEARCH_FRESH_HOLDOUTS_20261015.json",
+        "state": "First run completed/partial and failed content review; subsequently retired for diagnosis, replacement required.",
+        "runId": "dr_run_3978892825bc5ddcb8b55d079157ff9f",
+        "proof": "deep-research-evidence/H2R-v1-20261015.json"
+      },
+      {
+        "slot": "H3",
+        "case": "H3R",
+        "manifest": "DEEP_RESEARCH_HOLDOUT_REPLACEMENTS.json",
+        "state": "First run reviewed and failed fulltext/mechanism quality; retired before .73-.78 diagnosis; replacement required.",
+        "runId": "dr_run_e32ca497473c58dc96a18d2b9e587c3f",
+        "proof": "deep-research-evidence/H3R-v1-external-size-20261015.json"
+      },
+      {
+        "slot": "H4",
+        "case": "H4R",
+        "manifest": "DEEP_RESEARCH_FRESH_HOLDOUTS_20261015.json",
+        "state": "retired after first-run content failure and diagnostic use; replacement required",
+        "proof": "deep-research-evidence/H4R-v1-20261015.json"
+      },
+      {
+        "slot": "H5",
+        "case": "H5R",
+        "manifest": "DEEP_RESEARCH_FRESH_HOLDOUTS_20261015.json",
+        "state": "First run completed/partial and failed content review; subsequently retired for diagnosis, replacement required.",
+        "runId": "dr_run_98572e8a5a5f575cb2dda227b673455a",
+        "proof": "deep-research-evidence/H5R-v1-20261015.json"
+      },
+      {
+        "slot": "H6",
+        "case": "H6",
+        "manifest": "DEEP_RESEARCH_ACCEPTANCE_CASES_20261012.json",
+        "state": "offline network/failure/budget tests available; no claim of real Provider quality"
+      }
+    ]
+  ]
 }

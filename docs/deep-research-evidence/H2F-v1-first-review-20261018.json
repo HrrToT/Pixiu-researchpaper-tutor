@@ -1,0 +1,59 @@
+{
+  "date": "2026-10-18",
+  "case": "H2F-v1",
+  "slot": "H2",
+  "runId": "dr_run_b1c6b4aa38af55a38747beb6f684c611",
+  "sourceCommit": "ebcf570c",
+  "promptVersion": "dr-v2.20261018.126",
+  "caseDefinitionHash": "9e6517491d3b392229e071ebd55ee89ba8378e805b5c77a11c5e771201b14fcb",
+  "question": "比较3DGStream v4与Deformable 3D Gaussians v2对动态场景的处理：它们分别使用什么输入，怎样表示时间变化，训练是逐帧在线还是整体离线？只依据这两篇，指出为何不能凭各自主表FPS给出同条件速度排名，450字以内。",
+  "materialHashes": {
+    "stream": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98",
+    "deform": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854"
+  },
+  "status": "completed",
+  "outcome": "partial",
+  "contentAccepted": false,
+  "firstIndependentAttempt": true,
+  "retiredForTuning": false,
+  "modelCalls": 13,
+  "settledTokens": 46602,
+  "elapsedSeconds": 109.085,
+  "externalSearches": 0,
+  "fulltextFetches": 0,
+  "cost": null,
+  "report": "## 比较结论\n\n- 3DGStream v4采用逐帧在线训练范式，以适应动态场景变化。 [6](#research-evidence-ev_3e8091000bd752eb1fd80e918305c0bd81897baf44b973fd7c7a243f7dfce6e8)\n- Deformable 3D Gaussians v2输入单目动态场景，在规范空间学习3D高斯，用隐式变形场以位置和时间t为输入输出偏移量表示时间变化，整体离线联合优化。 [1](#research-evidence-ev_d5b7e7b5bea0edc9a1f7941ef30c58f08952ae6e2e1ed3edb034af0f2ffcc7ed) [2](#research-evidence-ev_c3b6e83df4b17b21cd7fd3592d655492af22aeb570eb01b557d0338e9cfcaf31) [3](#research-evidence-ev_4d607838fc748b0d0fc4dd8223bdf453639bc7a024640afc50cd0a3553080b4c) [4](#research-evidence-ev_864fdb4568a83fe45a3c4f9a8a080093a0fedcc1ee2ed52c11cd79fd1c995550) [5](#research-evidence-ev_9b6763cf2ecdd443ee2275dd1438a9457afe68cc31e5cdc157041bd6de913ef8)\n\n## 差异原因\n\n- 有依据的推断：两篇论文主表FPS的测试条件未在证据中明确，且训练模式不同（3DGStream v4为逐帧在线，Deformable 3D Gaussians v2为整体离线联合优化），因此不能凭主表FPS给出同条件速度排名。 [6](#research-evidence-ev_3e8091000bd752eb1fd80e918305c0bd81897baf44b973fd7c7a243f7dfce6e8) [3](#research-evidence-ev_4d607838fc748b0d0fc4dd8223bdf453639bc7a024640afc50cd0a3553080b4c)\n\n<details>\n<summary>还有 2 项未完成</summary>\n\n- 两篇论文主表中报告的FPS是在什么实验条件下测得的？为何这些条件不同导致不能直接比较速度？：回答完整性尚未核验\n- 3DGStream v4与Deformable 3D Gaussians v2分别使用什么输入，怎样表示时间变化，训练是逐帧在线还是整体离线？：回答完整性尚未核验\n\n</details>\n\n论文事实已按所列原文核对。推断限于所列证据和适用条件。\n\n<details>\n<summary>原文依据</summary>\n\n**[1] Deformable 3D Gaussians for High-Fidelity Monocular Dynamic Scene Reconstruction** · 全文片段\n\n> The deformation field takes the positions of the 3D Gaussians and the current time t as inputs, outputting δx, δr, and δs.\n\n**[2] Deformable 3D Gaussians for High-Fidelity Monocular Dynamic Scene Reconstruction** · 全文片段\n\n> The 3D Gaussians and deformation network are optimized jointly through the fast backward pass by tracking accumulated α values, together with the adaptive control of the Gaussian density.\n\n**[3] Deformable 3D Gaussians for High-Fidelity Monocular Dynamic Scene Reconstruction** · 全文片段\n\n> Rather than reconstructing the scene frame by frame[26], we condition the 3D Gaussians on time and jointly train a purely implicit deformation field with the learnable 3D Gaussians in canonical space.\n\n**[4] Deformable 3D Gaussians for High-Fidelity Monocular Dynamic Scene Reconstruction** · 第 2 页 · 全文片段\n\n> To enhance the applicability of the model, we specifically focus on the modeling of monocular dynamic scenes.\n\n**[5] Deformable 3D Gaussians for High-Fidelity Monocular Dynamic Scene Reconstruction** · 第 8 页 · 全文片段\n\n> By learning the 3D Gaussians in canonical space, we enhance the versatility of the 3D-GS differentiable rendering pipeline for dynamically captured monocular scenes.\n\n**[6] 3DGStream: On-the-Fly Training of 3D Gaussians for Efficient Streaming of Photo-Realistic Free-Viewpoint Videos** · 全文片段\n\n> Per-frame training methods[29,34,60]adapt to changes in the scene online by leveraging per-frame training, a paradigm we have also adopted.\n\n</details>",
+  "findings": [
+    "Both public papers were retrieved under separate identities, but the final answer retained only online-training wording for 3DGStream, omitting its input and temporal representation.",
+    "Deformable position/time input and joint canonical/deformation training were supported by its own sources.",
+    "The output appropriately avoided a cross-paper FPS ranking; this does not complete the requested dimension-by-dimension comparison.",
+    "The original machine result is partial; not a content pass."
+  ],
+  "scores": {
+    "goalResponse": 2,
+    "evidenceSupport": 4,
+    "conditions": 3,
+    "synthesisValue": 2,
+    "executability": null,
+    "readability": 3
+  },
+  "rawFiles": [
+    {
+      "path": "tmp\\dr-acceptance-receipts\\H2F-v1.json",
+      "sha256": "de16ccaf49fb6c1a4ea42d1735016d67f3555c9974b16dbdbb713fb6cd0c5460"
+    },
+    {
+      "path": "tmp\\dr-acceptance-receipts\\H2F-v1.payload.json",
+      "sha256": "8fe6f32691bd205d77cb3fbc06dd5d161ad7240d3876ced564d1e64cb52bcf61"
+    },
+    {
+      "path": "tmp\\dr-acceptance-receipts\\H2F-v1.calls.json",
+      "sha256": "5f9e0230209aae7547c55c1a8b19a92cd10cb9637da37c3a631055e665f7a330"
+    },
+    {
+      "path": "tmp\\dr-acceptance-receipts\\H2F-v1.result.json",
+      "sha256": "ee9eef60296fdadbe74d4f1a8fa994b447da58847773e418afdaed576c6a8650"
+    }
+  ],
+  "boundary": "First results scored against the sealed requirements; no failed result was overwritten or counted as a quality pass."
+}
