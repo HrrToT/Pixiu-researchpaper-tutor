@@ -91,3 +91,12 @@ DEEP_RESEARCH_FULLTEXT_ENABLED=false
 默认回执目录为`tmp/dr-acceptance-receipts`，`CASE-vN.json`记录意图和运行身份，`CASE-vN.result.json`保存最近一次读取。不同输入不能复用同一回执；D5还需`--task-id`及`--parent-run-id`，不能创建无父运行的追问。D6/H6故障用例使用离线集成测试，不走模型提交入口。
 
 工具不会把服务端completed标记当作质量通过，也不会把问题清单中的预期答案发送给模型。留出案例一旦用于调参，仍须按设计稿退出留出集并登记替换。
+
+
+## 2026-10-18 当前开发实例
+
+当前Java使用`tmp/dr119-java-target/backend-java-0.0.1-SNAPSHOT.jar`（源码47f94b28、PID81764），仍连接`backend-java/target/stage0-data/academic_db`。Python为`academic-dr-runtime`（.119），持久卷`academic_dr_runtime_20261012`不变。加载核对85个任务、3,210条账本、9个未知暂停记录，未发模型请求。停服H2备份在`tmp/dr119-runtime-backup-20261018`；之前的`tmp/dr118-runtime-backup-20261018`保留。
+
+Docker启动曾被旧Unix套接字阻止，已保留运行时目录隔离副本`C:/Users/Lenovo/AppData/Local/Docker/run.quarantine-20261018-dr118`及`C:/Users/Lenovo/AppData/Local/docker-secrets-engine.quarantine-20261018-dr118`，没有删除数据卷或重置Docker。最后一次端点备份由既有WSL脚本完成。该故障不得通过重复重启或恢复无关数据来处理。
+
+旧同项目容器`ai_service_python`原为`restart=always`，会自动抢占8000；现保持停止且`restart=no`。如需要恢复旧部署，先停止新版实例再执行`docker update --restart=always ai_service_python`；不能让两者同时争用端口。新版实例保持原`restart=no`，由明确的开发启动操作管理。其他项目容器未修改。
