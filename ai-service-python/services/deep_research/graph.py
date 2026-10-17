@@ -85,6 +85,7 @@ class GraphState(TypedDict, total=False):
     prev_source_count: int  # Track no-new-evidence stopping
     prev_assessment_evidence_digest: str
     assess_after_extraction_stop: bool
+    extraction_pending: bool
     dependency_transition: str
     dependency_wave: int
 
@@ -1131,6 +1132,10 @@ Table measurements require tableBindings: [{{evidenceId,rowNumber,groupIndex,met
 Copy exact tableData row, zero-based group, metric and string value. Name dataset, method variant,
 metric and value together; no anonymous numeric series. Without tableData use qualitative evidence;
 never bypass table checks by relabeling a reported measurement as inference.
+Bind only the cells whose values you actually state, not every metric on that row.
+For a short answer select the minimum sufficient numerical example and preserve space
+for requested conditions/limitations; do not reproduce entire rows or add storage/speed
+figures unless needed for the user's question. A bibliography suffix is not a method variant.
 Every numeric table claim must explicitly name its method/row label even when the user
 already named it. Preserve every hierarchical group level, including the aggregate column.
 When checking a named table, stay with that table's cells and requested metric distinction;
@@ -1139,6 +1144,9 @@ Use ONLY supplied E IDs in evidenceRefs. Evidence IDs are routing keys only: kee
 P keys are also internal: use source titles in prose, never P1/P2/....
 Use source names in prose; UI supplies links. Missing selected evidence does not prove authors omitted a test.
 Limitations are evidence-bounded inference claims. Never invent results or present unchecked claims as verified.
+State the bounds of the evidence actually read; avoid paper-wide absence assertions
+unless an explicit source establishes that exact absence. Finite experiments do not
+establish a guarantee for untested conditions.
 Section titles MUST be selected from {json.dumps(section_templates, ensure_ascii=False)}.
 Sections reference actual claimIds. All facts, proposals and hypotheses require claims and sections;
 no extra unchecked prose. At most {claim_limit} claims, each independently checkable; never merge
@@ -1654,6 +1662,8 @@ def route_after_extract(state: GraphState) -> str:
 def route_after_assess(state: GraphState) -> str:
     if state.get('dependency_transition'):
         return 'advance_frontier'
+    if state.get('extraction_pending') and state.get('gaps') and not state.get('budget_exhausted'):
+        return 'extract'
     stop_reason = state.get("stop_reason", "")
     gaps = state.get("gaps", [])
     requery_count = state.get("requery_count", 0)
@@ -1757,7 +1767,15 @@ def build_deep_research_graph(
                     'assess_after_extraction_stop': enabled(record)}
     workflow.add_node("extract", bounded_extract)
     assessment = make_assess_node(coverage_gaps_fn, frontier_update, llm_invoke=llm_invoke)
-    workflow.add_node("assess", lambda state: finish_assessment(state, assessment(state), repo_update))
+    def assess_frontier(state):
+        output = assessment(state)
+        if state.get('extraction_pending') and output.get('gaps') and not state.get('budget_exhausted'):
+            # Examine already-read, unreviewed passages before spending a
+            # targeted requery round. No settled passage is dispatched twice.
+            output = {**output, 'stop_reason': '', 'requery_queries': [],
+                      'requery_count': state.get('requery_count', 0), 'extraction_pending': True}
+        return finish_assessment(state, output, repo_update)
+    workflow.add_node("assess", assess_frontier)
     workflow.add_node('advance_frontier', lambda state: advance_frontier(state, repo_update))
     workflow.add_edge('advance_frontier', 'acquire')
     workflow.add_node("synthesize", bounded(make_synthesize_node(llm_invoke, repo_update)))
@@ -1790,6 +1808,7 @@ def build_deep_research_graph(
     
     workflow.add_conditional_edges("assess", route_after_assess, {
         'advance_frontier': 'advance_frontier',
+        'extract': 'extract',
         "acquire": "acquire",
         "synthesize": "synthesize",
         "fail": END,

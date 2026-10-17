@@ -89,6 +89,8 @@ def finish_assessment(state, output, update):
     current = deepcopy(journal(record))
     if current.get('pending'):
         return {**output, 'dependency_transition': current['pending']['id']}
+    if output.get('gaps') and output.get('extraction_pending') and not output.get('budget_exhausted'):
+        return output
     # Keep the current frontier while its bounded targeted investigation runs.
     if output.get('gaps') and not output.get('stop_reason') and output.get('requery_queries'):
         return output
@@ -132,6 +134,6 @@ def advance_frontier(state, update):
         update(state['run_id'], lambda r: {**r, 'state': {**r['state'], 'dependencyExecution': current}}, expected_revision=None)
     elif not current.get('lastTransition') or current['lastTransition'].get('id') != token:
         raise DeepResearchError('invalid_dependency_state', '依赖检查点与已保存的批次不一致。')
-    return {'dependency_transition': '', 'dependency_wave': current['wave'],
+    return {'dependency_transition': '', 'dependency_wave': current['wave'], 'extraction_pending': False,
             'requery_count': current['requeryCount'], 'requery_queries': [], 'gaps': [],
             'stop_reason': '', 'prev_source_count': 0, 'prev_assessment_evidence_digest': ''}

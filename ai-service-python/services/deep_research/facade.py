@@ -273,8 +273,9 @@ class ResearchFacade:
             "materials": materials,
             "materialSnapshot": material_snapshot,  # Immutable Java snapshot
             "contextMaterials": (material_snapshot or {}).get("contextMaterials", []) if isinstance(material_snapshot, dict) else [],
-            "promptVersion": "dr-v2.20261018.120",
+            "promptVersion": "dr-v2.20261018.121",
             "dependencyContractVersion": 1,
+            "adaptiveExtractionContractVersion": 1,
             "continuationContextContractVersion": 1,
             "continuationContext": continuation_context,
             "planResumeContractVersion": 1,
@@ -930,6 +931,10 @@ class ResearchFacade:
             
             # Execute with thread_id for checkpoint isolation
             config = {"configurable": {"thread_id": run_id}}
+            if record.get('adaptiveExtractionContractVersion') == 1:
+                # Frontier/batch routing adds graph steps, not model allowance.
+                # Every dispatched call still obeys the original run budget.
+                config['recursion_limit'] = 128
             
             # Check if checkpoint exists - resume if so, otherwise start fresh
             # LangGraph's invoke will automatically resume from checkpoint if one exists

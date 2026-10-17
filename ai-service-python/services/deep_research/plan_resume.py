@@ -41,7 +41,7 @@ def checkpoint_patch(record, checkpoint):
     if previous == revision:
         return None
     return {'plan_revision': revision, 'plan_ids': [i['itemId'] for i in domain['plan']],
-            'dependency_transition': '', 'dependency_wave': 0,
+            'dependency_transition': '', 'dependency_wave': 0, 'extraction_pending': False,
             'source_ids': [s['sourceId'] for s in domain.get('sources', [])],
             'evidence_ids': [e['evidenceId'] for e in domain.get('evidence', [])],
             'claim_ids': [], 'coverage_state': {}, 'gaps': [], 'requery_count': 0, 'requery_queries': [],
