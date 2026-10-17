@@ -1437,12 +1437,18 @@ def make_verify_node(
                         return budgeted_semantic(targets, sources)
                     merged = saved.get('repairVerification')
                     if merged is None:
-                        checked = verify_claims_fn(revised, evidence, revised_semantic)
+                        from services.deep_research.repair_progress import enabled as progress_required, partition_revisions
+                        candidates, unchanged = (partition_revisions(repair_report, verification_result, revised)
+                                                 if progress_required(record) else (revised, []))
+                        checked = (verify_claims_fn(candidates, evidence, revised_semantic) if candidates
+                                   else {'accepted': [], 'rejected': []})
+                        checked = {**checked, 'rejected': [*checked.get('rejected', []), *unchanged]}
                         merged = enforce_design_consistency(merge_verified_revisions(verification_result, checked), evidence,
                             protocol_required=record.get('protocolContractVersion', 0),
                             workflow_required=record.get('workflowContractVersion', 0))
                         repo_update(run_id, lambda r: {**r, 'state': {**r.get('state', {}),
                             'repairVerificationChecks': checked,
+                            'repairUnchangedRejections': unchanged,
                             'repairVerification': merged}}, expected_revision=None)
                     if merged.get('accepted') != verification_result.get('accepted'):
                         current = repo_update(run_id, lambda r: r, expected_revision=None)
