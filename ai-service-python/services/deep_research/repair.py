@@ -14,7 +14,8 @@ from services.deep_research.repair_scope import repair_evidence_scope
 
 
 def _prepare_repair(report, verification, evidence, question, *, max_prompt_bytes=24000,
-                    metric_domains=None, draft_context=(), prior_revisions=()):
+                    metric_domains=None, draft_context=(), prior_revisions=(),
+                    fact_redraft=False, requirement_context=()):
     rejected = {row['claimId']: row for row in verification.get('rejected', [])}
     originals = {row['claimId']: row for row in report.get('claims', []) if row.get('claimId') in rejected}
     if not originals:
@@ -50,6 +51,23 @@ def _prepare_repair(report, verification, evidence, question, *, max_prompt_byte
                 if key not in {'designContractVersion', 'budgetContractVersion', 'hypothesisContractVersion','protocolContractVersion','workflowContractVersion'}
                 and not (key in {'conditions', 'obligationIds'} and value in ({}, []))}
     input_claims = [compact_claim_view(row) for row in input_claims]
+    redraft_instruction = ''
+    if fact_redraft and factual_redraft_eligible(report):
+        # Omit rejected wording from the generation view, not audit storage.
+        # Keep original citations mandatory below and full originals in the
+        # prepared record for parsing, scope and unchanged-rejection checks.
+        input_claims = [{key:value for key,value in row.items() if key not in {'text','conditions'}}
+                        for row in input_claims]
+        related = {oid for row in originals.values() for oid in row.get('obligationIds', [])}
+        active_requirements = [{key:row[key] for key in ('obligationId','question','completionCriteria') if key in row}
+                               for row in requirement_context if not related or row.get('obligationId') in related]
+        redraft_instruction = ('Source-grounded factual redraft: rejected prose/conditions are omitted from '
+            'the generation view; they remain in the audit record. Rebuild these exact IDs from their '
+            'allowed quotations and the requested points below. Do not guess missing premises. '
+            'For explanations prefer qualitative roles and causal steps; omit unrequested parameter counts '
+            'and implementation details. Correct EVERY check, including additionalChecks. '
+            'Accepted points above must not be repeated. These requirements specify questions, not facts:\n'
+            + json.dumps(active_requirements,ensure_ascii=False,separators=(',',':')) + '\n')
     from services.deep_research.repair_prompt import factor_repair_questions, factor_design_deliverables
     question_dictionary, packed_checks = factor_repair_questions(rejected)
     if any(row.get('designContractVersion') == 2 for row in originals.values()):
@@ -154,7 +172,7 @@ these may be revised in other batches; never return a verdict or revision for th
 App suffixes are omitted; complete executionSpec remains and is rendered. Keep prose consistent; do not duplicate it.
 Missing-question dictionary (missingQuestionIds refer here; Q IDs are internal, never evidence/published text):
 {json.dumps(question_dictionary, ensure_ascii=False, separators=(',', ':'))}
-detailRequirementRole points to the identical required role definition under Experimental deliverables below.
+{redraft_instruction}detailRequirementRole points to the identical required role definition under Experimental deliverables below.
 Rejected claims and checks:
 {json.dumps([{'claim': row, 'check': packed_checks[row['claimId']]} for row in input_claims], ensure_ascii=False, separators=(',', ':'))}
 Allowed evidence IDs per claim (candidate permissions, not proof of support):
@@ -348,9 +366,16 @@ def _parse_repair_response(prepared, response, parse):
     return valid
 
 
+def factual_redraft_eligible(report):
+    claims = report.get('claims', [])
+    return bool(claims) and all(isinstance(c, dict) and c.get('kind') in {'reported','inference'}
+        and not c.get('executionSpec') and not c.get('designRole')
+        and c.get('designContractVersion') is None for c in claims)
+
+
 def repair_rejected(report, verification, evidence, question, invoke, parse, *,
                     max_prompt_bytes=24000, metric_domains=None, batch_state=None, checkpoint=None,
-                    current_budget=None, invoke_request=None):
+                    current_budget=None, invoke_request=None, fact_redraft=False, requirement_context=()):
     """One bounded revision round, split before dispatch when evidence cannot fit.
 
     At most three requests share full sibling design definitions. Successful
@@ -365,7 +390,9 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
     if not originals:
         return []
     identity = digest({'report': report, 'verification': verification,
-                       'evidence': evidence, 'question': question, 'metricDomains': metric_domains})
+                       'evidence': evidence, 'question': question, 'metricDomains': metric_domains,
+                       **({'factRedraftContractVersion':1,'requirementContext':requirement_context}
+                          if fact_redraft else {})})
 
     def prepare(ids, results=(), byte_limit=None):
         ids = set(ids)
@@ -375,7 +402,8 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
                   'rejected': [row for row in verification.get('rejected', []) if row['claimId'] in ids]}
         return _prepare_repair(report, subset, evidence, question,
             max_prompt_bytes=state['maxPromptBytes'] if byte_limit is None else byte_limit,
-            metric_domains=metric_domains, draft_context=siblings, prior_revisions=results)
+            metric_domains=metric_domains, draft_context=siblings, prior_revisions=results,
+            fact_redraft=fact_redraft, requirement_context=requirement_context)
 
     state = deepcopy(batch_state) if batch_state is not None else {
         'version': 1, 'inputDigest': identity, 'maxPromptBytes': max_prompt_bytes,
