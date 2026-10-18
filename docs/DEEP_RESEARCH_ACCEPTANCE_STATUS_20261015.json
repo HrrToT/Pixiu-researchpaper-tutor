@@ -44,11 +44,11 @@
       "overlap": true
     },
     "backendCurrentResearchReadingTables": {
-      "passed": 2859,
+      "passed": 2866,
       "warnings": 1,
-      "seconds": 177.68,
-      "sourceCommit": "803c2192",
-      "log": "tmp/pytest-dr176-full.log",
+      "seconds": 178.73,
+      "sourceCommit": "ce1fdf7d",
+      "log": "tmp/pytest-dr177-full.log",
       "scope": "Research, reading, PDF tables and config; offline fixture providers."
     },
     "frontendDocumentNavigationFocused": {
@@ -1966,7 +1966,7 @@
     {
       "id": "DR4",
       "implementation": "Permissioned arXiv discovery, versioned fulltext acquisition, fixed network exit and degradation implemented; versioned durable beginner wording pass before unchanged factual verification",
-      "acceptance": "H3F-v3 actually discovers/reads fixed-v1 fulltext and uses strict original source-field references in factual audits. Final facts and source support pass; novice explanation still fails manual readability because the audience edit copied jargon unchanged. No independent credit.",
+      "acceptance": "Actual external discovery/fulltext and final source support pass. H3F-v6 beginner edit is discarded by a source-parameter false positive, so novice content remains unaccepted; no independent credit.",
       "proof": [
         "deep-research-evidence/H3-v1-external-fulltext-20261013.json",
         "../ai-service-python/tests/test_deep_research_academic.py",
@@ -2305,22 +2305,22 @@
     "Full novice study workflow",
     "Independent Edge recovery"
   ],
-  "currentProviderConstraint": "All further necessary bounded validations uniformly authorized. Selected diagnostic sequence:282 settled model calls/1104171 tokens; not global historical usage. Cost unknown; nine historical unknowns preserved, no blind retry.",
-  "currentDevelopmentMode": "Primary Codex only; Goal active, quota monitor paused by user. Python803c2192/.176 loaded, Java27ac4beb, frontend123b0d29. H3F-v5 source support passes but optional classification was omitted and beginner explanation fails. OriginalDR0-DR5 incomplete, first-five0/5 and PR draft unchanged.",
+  "currentProviderConstraint": "All further necessary bounded validations uniformly authorized. Selected diagnostic sequence:293 settled model calls/1147218 tokens; not global historical usage. Cost unknown; nine historical unknowns preserved, no blind retry.",
+  "currentDevelopmentMode": "Primary Codex only; Goal active, quota monitor paused by user. Pythonce1fdf7d/.177 loaded, Java27ac4beb, frontend123b0d29. H3F-v6 source support passes but its readable edit is rejected by an overbroad parameter-as-measurement guard. Grouped source identity/intent/audience fix is under offline regression, not yet live. OriginalDR0-DR5 incomplete, first-five0/5 and PR draft unchanged.",
   "loadedRuntime": {
-    "commit": "803c2192",
-    "promptVersion": "dr-v2.20261018.176",
+    "commit": "ce1fdf7d",
+    "promptVersion": "dr-v2.20261018.177",
     "javaCommit": "27ac4beb",
     "frontendCommit": "123b0d29",
-    "callsAfterLatestCase": 4255,
+    "callsAfterLatestCase": 4280,
     "active": 0,
     "historicalPausedUnknown": 9,
     "tasks": 92,
-    "proof": "deep-research-evidence/runtime-load-dr176-qualitative-audience-20261018.json",
-    "postCasesProof": "deep-research-evidence/runtime-postcases-dr176-20261018.json"
+    "proof": "deep-research-evidence/runtime-load-dr177-server-classification-20261018.json",
+    "postCasesProof": "deep-research-evidence/runtime-postcases-dr177-20261018.json"
   },
   "nextQualityWork": [
-    "Conservatively classify the source-bounded purely qualitative why target on the server, not an optional model field; keep numeric and independent semantic checks. Reject unsupported uniqueness/necessity instead of merely relabeling it.",
+    "Grouped source identity/intent/audience correction: admit only parameter identifiers established in each own literal quote, preserve measured-value guards, journal edit applied/rejected, add owned input/temporal/training passages and carry byte-verified PDF revision. Then verify H2F/H3F separately once.",
     "H2F actual eight retrieval fingerprints disprove whole-question FPS pollution. Fix method-detail intent/selection and extraction coverage, then transmit verified original-PDF revision and organize per-paper support.",
     "Respect explicitly requested explore/descriptive analysis; reject PSNR-score variability alone as jitter; complete initialization and factor fixed repair redundancy under unchanged24000byte cap.",
     "Prepare fresh independent replacements after development quality passes. MVSplat/ODGS/4DGS/CAT-3DGS/PFGS-360 were already used. Three other candidates only pass exact-hash history screen and still need identity/alias checks plus frozen definitions."
@@ -2341,7 +2341,7 @@
     "openItems": [
       "Full multi-paper comparison, executable experimental-plan and external novice-content quality; five fresh independent replacements.",
       "F1 actual edited-artifact follow-up and narrow D5-v14 explanation are accepted; broader follow-up generality remains limited.",
-      "Local publication version identity, source-specific synthesis, exact internal audit binding and descriptive experimental scientific review need the fixes documented in current diagnostics.",
+      "Grouped publication identity, method intent/extraction and audience-adoption correction is under test. Experimental scientific review and bounded repair capacity remain open.",
       "Historical unknown outcomes remain unresolved; no same-case resend or attempt/task renaming bypass."
     ]
   },
@@ -2754,5 +2754,19 @@
     "elapsedSeconds": 161.625,
     "independentCredit": 0,
     "proof": "deep-research-evidence/H3F-v5-diagnostic-20261018.json"
+  },
+  "serverClassificationCheckpoint": {
+    "sourceCommit": "ce1fdf7d",
+    "promptVersion": "dr-v2.20261018.177",
+    "case": "H3F-v6",
+    "machineOutcome": "complete",
+    "sourceSupport": "passed",
+    "contentAccepted": false,
+    "sourceParameterFalsePositive": true,
+    "modelCalls": 11,
+    "settledTokens": 43047,
+    "elapsedSeconds": 130,
+    "independentCredit": 0,
+    "proof": "deep-research-evidence/H3F-v6-diagnostic-20261018.json"
   }
 }
