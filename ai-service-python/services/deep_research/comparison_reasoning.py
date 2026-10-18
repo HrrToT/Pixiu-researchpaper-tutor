@@ -9,7 +9,7 @@ import re
 
 
 def enabled(record):
-    return type(record.get('comparisonReasoningContractVersion')) is int and record['comparisonReasoningContractVersion'] in (1,2)
+    return type(record.get('comparisonReasoningContractVersion')) is int and record['comparisonReasoningContractVersion'] in (1,2,3)
 
 
 GUIDANCE='''For a requested comparison/check, lead with the qualified judgement, then the
@@ -77,10 +77,13 @@ For metric comparisons check direction and each group, not only numerical closen
 If no supported audit is possible return status=failed with the specific missing premise;
 do not invent an audit or cite irrelevant quotations to satisfy the schema.
 '''
-    if type(version) is int and version == 2:
+    if type(version) is int and version in (2,3):
         prompt += ('\nThe scope field is an ENUM, not an explanation. Copy exactly the target value '
                    'cross_study or within_study, without a colon, suffix or dataset name. '
                    'Put explanations only in reason; keep evidence IDs and quotations unchanged.\n')
+    if type(version) is int and version == 3:
+        from services.deep_research.comparison_methodology import REFERENCE
+        prompt+='\n'+REFERENCE
     return prompt
 
 
@@ -91,7 +94,7 @@ def normalize_audit_scope(claim, verdict, evidence, *, version=1):
     followed by a colon is unambiguous only if its suffix contains no other scope
     token. Every premise, quotation, alignment and support check still runs.
     """
-    if type(version) is not int or version != 2:
+    if type(version) is not int or version not in (2,3):
         return verdict
     audit = verdict.get('comparisonAudit')
     scope = audit_scope(claim, evidence)

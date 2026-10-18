@@ -16,7 +16,7 @@ from services.deep_research.repair_scope import repair_evidence_scope
 def _prepare_repair(report, verification, evidence, question, *, max_prompt_bytes=24000,
                     metric_domains=None, draft_context=(), prior_revisions=(),
                     fact_redraft=False, requirement_context=(), source_aware_redraft=False,comparison_reasoning=False,
-                    question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False):
+                    question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,comparison_methodology=False):
     rejected = {row['claimId']: row for row in verification.get('rejected', [])}
     originals = {row['claimId']: row for row in report.get('claims', []) if row.get('claimId') in rejected}
     if not originals:
@@ -319,6 +319,9 @@ in the paper. Maintain consistency with accepted definitions and complete requir
     if declared_table_refs:
         from services.deep_research.table_bindings import REFERENCE_GUIDANCE
         prompt+='\n'+REFERENCE_GUIDANCE
+    if comparison_methodology:
+        from services.deep_research.comparison_methodology import REFERENCE
+        prompt+='\n'+REFERENCE
     template = prompt
     def render(selected_rows):
         visible_ids = {row['evidenceId'] for row in selected_rows}
@@ -448,7 +451,7 @@ def factual_redraft_eligible(report):
 def repair_rejected(report, verification, evidence, question, invoke, parse, *,
                     max_prompt_bytes=24000, metric_domains=None, batch_state=None, checkpoint=None,
                     current_budget=None, invoke_request=None, fact_redraft=False, requirement_context=(),
-                    source_aware_redraft=False,comparison_reasoning=False,question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,strict_response=False):
+                    source_aware_redraft=False,comparison_reasoning=False,question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,strict_response=False,comparison_methodology=False):
     """One bounded revision round, split before dispatch when evidence cannot fit.
 
     At most three requests share full sibling design definitions. Successful
@@ -470,7 +473,8 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
                        **({'repairEvidencePriorityVersion':1} if question_priority else {}),
                        **({'factualScopeContractVersion':2 if factual_scope==2 else 1} if factual_scope else {}),
                        **({'tableReferencesContractVersion':1} if declared_table_refs else {}),
-                       **({'repairResponseContractVersion':1} if strict_response else {})})
+                       **({'repairResponseContractVersion':1} if strict_response else {}),
+                       **({'comparisonMethodologyVersion':1} if comparison_methodology else {})})
 
     def prepare(ids, results=(), byte_limit=None):
         ids = set(ids)
@@ -482,7 +486,8 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
             max_prompt_bytes=state['maxPromptBytes'] if byte_limit is None else byte_limit,
             metric_domains=metric_domains, draft_context=siblings, prior_revisions=results,
             fact_redraft=fact_redraft, requirement_context=requirement_context,source_aware_redraft=source_aware_redraft,
-            comparison_reasoning=comparison_reasoning,question_priority=question_priority,concise_factual=concise_factual,factual_scope=factual_scope,declared_table_refs=declared_table_refs)
+            comparison_reasoning=comparison_reasoning,question_priority=question_priority,concise_factual=concise_factual,
+            factual_scope=factual_scope,declared_table_refs=declared_table_refs,comparison_methodology=comparison_methodology)
 
     state = deepcopy(batch_state) if batch_state is not None else {
         'version': 1, 'inputDigest': identity, 'maxPromptBytes': max_prompt_bytes,

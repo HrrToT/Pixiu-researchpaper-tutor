@@ -1266,6 +1266,11 @@ Orient losses before formulas, distinguish conditional/averaged effects and pape
         from services.deep_research.table_bindings import declared_references_enabled,REFERENCE_GUIDANCE
         if declared_references_enabled(record):
             prompt+='\n'+REFERENCE_GUIDANCE
+        if (type(record.get('comparisonReasoningContractVersion')) is int
+                and record['comparisonReasoningContractVersion']==3
+                and output_kind in {'paper_comparison','claim_verification'}):
+            from services.deep_research.comparison_methodology import REFERENCE
+            prompt+='\n'+REFERENCE
         template = prompt
         prompt, evidence_summaries = fit_evidence_prompt(evidence_summaries,
             lambda rows: template.replace(evidence_marker, json.dumps(rows, ensure_ascii=False, separators=(',', ':')), 1))
@@ -1498,6 +1503,8 @@ def make_verify_node(
                         **({'strict_response':True} if type(record.get('repairProgressContractVersion')) is int
                            and record['repairProgressContractVersion']==2 else {}),
                         **({'comparison_reasoning':True} if comparison_enabled(record) else {}),
+                        **({'comparison_methodology':True} if type(record.get('comparisonReasoningContractVersion')) is int
+                           and record['comparisonReasoningContractVersion']==3 else {}),
                         **({'factual_scope':record['factualScopeContractVersion']} if scope_enabled(record) else {}),
                         **({'declared_table_refs':True} if declared_references_enabled(record) else {}),
                         **({'question_priority':True} if priority_enabled(record) else {}),
