@@ -45,12 +45,12 @@
       "overlap": true
     },
     "backendCurrentResearchReadingTables": {
-      "passed": 2412,
+      "passed": 2428,
       "warnings": 1,
-      "seconds": 165.35,
-      "log": "tmp/pytest-dr153-full.log",
-      "sourceCommit": "27ac4beb",
-      "scope": "Research, reading, PDF tables and configuration including new action route; fixture providers."
+      "seconds": 175.88,
+      "log": "tmp/pytest-dr154-full.log",
+      "sourceCommit": "a82f2b25",
+      "scope": "Research, reading, PDF tables, config and exact acceptance-receipt reconciliation; fixture providers."
     },
     "frontendDocumentNavigationFocused": {
       "passed": 19,
@@ -2222,8 +2222,8 @@
     "Full novice study workflow",
     "Independent Edge recovery"
   ],
-  "currentProviderConstraint": "All further necessary bounded validation uniformly authorized. Last model generation remains .151 H1F-v10/D1-v20: 22 calls/75035 settled tokens, neither content accepted. .152/.153 add zero Provider calls. No unknown retry or receipt/ID bypass.",
-  "currentDevelopmentMode": "Primary Codex only; goal active, quota monitor paused. Python/Java .153 loaded. Operation ranking and action GET verified; original DR0-DR5 quality gates remain incomplete.",
+  "currentProviderConstraint": "All further necessary bounded validations uniformly authorized. .151 two diagnostics used 22 calls/75035 tokens, D5-v4 used 9/33473; total this checkpoint sequence 31/108508 settled tokens. Every fixed case submitted once, no new unknown. D5-v2 is a definitive pre-child idempotency failure, sealed separately and freshly rechecked; nine provider unknowns remain unchanged.",
+  "currentDevelopmentMode": "Primary Codex only; goal active, quota monitor paused. Runtime stays .153 (27ac4beb), harness a82f2b25; exact receipt recovery and one new legacy-continuation product case verified. Original DR0-DR5 quality gates incomplete.",
   "loadedRuntime": {
     "commit": "27ac4beb",
     "promptVersion": "dr-v2.20261018.153",
@@ -2233,11 +2233,12 @@
     "proof": "deep-research-evidence/runtime-load-dr153-action-lookup-20261018.json"
   },
   "nextQualityWork": [
-    "Connect exact read-only action receipt reconciliation to the validation harness before a new D5 case. Preserve original bytes; pending/missing/changed/unknown identities must still block.",
-    "Validate new requested-operation extraction ordering in a product case only after improving factual repair. Source selection alone does not prove a novice answer.",
-    "Make factual generation/repair preserve supported qualitative answer points while omitting optional unreported counts and aliases; independently check every selected revision.",
-    "Complete D1 as a qualified judgement with limits, not a dense table-value list; correct baseline and cells are necessary but insufficient.",
-    "Complete original D1/D2/D3/D5, executable experiments, real continuation and fresh independent gates. Original first-five full content result remains 0/5."
+    "Pass each obligation requiredSources and explicit source identities into source-grounded factual redraft. Current generator context omits them, so a valid generic rewrite can silently drop the source-specific part and leave a hard coverage gap.",
+    "Improve joint evidence readiness for explanations/comparisons without confusing topical relevance, allowed materials, required sources and final factual approval. Never remove the hard source guard to convert D5-v4 into a pass.",
+    "Make novice factual generation omit optional derived counts and internal aliases; preserve qualitative answer points and independently verify revisions.",
+    "Complete D1 as a concise judgement with conditions and evidence limits, not a dense cell list.",
+    "Verify the frontend fresh-continuation path with current user-edited artifact context; D5-v4 only verifies legacy continuation preservation/reuse and has an empty artifactContext.",
+    "Complete original content/experiment/fresh independent gates. Original first-five full content remains 0/5; no transport/offline/self-verdict credit."
   ],
   "javaReaderRuntime": {
     "sourceCommit": "070ab1a",
@@ -2337,10 +2338,43 @@
     "apiProof": "deep-research-evidence/action-receipt-live-api-20261018.json",
     "javaRuntimeProof": "deep-research-evidence/action-receipt-java-runtime-20261018.json",
     "originalD5v2ReceiptUnchanged": true,
-    "acceptanceCliReconciliationImplemented": false,
+    "acceptanceCliReconciliationImplemented": true,
     "tasksPreserved": 91,
     "callRowsPreserved": 3747,
     "pausedUnknownIdentitiesPreserved": 9,
-    "newProviderCalls": 0
+    "newProviderCalls": 0,
+    "reconciliationProof": "deep-research-evidence/exact-action-reconciliation-regression-20261018.json"
+  },
+  "reconciledContinuationCheckpoint": {
+    "date": "2026-10-18",
+    "harnessSourceCommit": "a82f2b25",
+    "runtimeSourceCommit": "27ac4beb",
+    "runtimePromptVersion": "dr-v2.20261018.153",
+    "fullOffline": {
+      "passed": 2428,
+      "warnings": 1,
+      "seconds": 175.88,
+      "log": "tmp/pytest-dr154-full.log"
+    },
+    "receiptFocused": {
+      "passed": 72,
+      "seconds": 3.55,
+      "log": "tmp/pytest-dr154-reconciliation.log",
+      "overlapsFullSuite": true
+    },
+    "actualHistoryProof": "deep-research-evidence/exact-action-history-preflight-20261018.json",
+    "newModelCase": "deep-research-evidence/D5-v4-diagnostic-20261018.json",
+    "newModelCalls": 9,
+    "settledTokens": 33473,
+    "cost": null,
+    "productionCallRows": 3770,
+    "activeResearch": 0,
+    "pausedHistoricalUnknowns": 9,
+    "taskCount": 91,
+    "parentAndOldObjectsPreserved": true,
+    "scope": "Harness-only exact legacy continuation recovery. No engine/Java change or reload after .153.",
+    "boundary": "Definitive pre-child failed action recognized via original-byte seal plus fresh authoritative GET every admission. All other prior runs still checked. Original receipt never rewritten, no provider unknown settled. One explicit new D5 child preserves data but is partial; no content or independent credit.",
+    "contentAccepted": false,
+    "independentCredit": 0
   }
 }
