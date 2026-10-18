@@ -63,7 +63,7 @@ and pass the weaker version. This audit is internal and grants no factual approv
 '''
 
 
-def validate_audit(claim,verdict,evidence):
+def validate_audit(claim,verdict,evidence, *, source_field_bindings=False):
     if claim.get('kind') not in {'reported','inference'}:
         return []
     audit=verdict.get('scopeAudit')
@@ -88,6 +88,11 @@ def validate_audit(claim,verdict,evidence):
         return ['scope_premises_not_bound']
     normalize=lambda value:re.sub(r'\s+',' ',value).strip()
     for row in rows:
+        if source_field_bindings and isinstance(row,dict) and 'path' in row:
+            from services.deep_research.audit_source_fields import resolve
+            if resolve(row,own) is None:
+                return ['scope_premises_not_bound']
+            continue
         ev=own.get(row.get('evidenceId')) if isinstance(row,dict) else None
         quote=row.get('quote') if isinstance(row,dict) else None
         if not ev or not isinstance(quote,str) or not quote.strip():

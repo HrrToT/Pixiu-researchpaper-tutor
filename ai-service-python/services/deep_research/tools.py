@@ -553,6 +553,7 @@ class BudgetedSemanticChecker:
         isolate_factual_claims=False,
         comparison_reasoning=False,
         comparison_audit_version=1,
+        audit_source_fields=False,
         factual_scope=False,
     ):
         self._invoke = llm_invoker
@@ -562,6 +563,7 @@ class BudgetedSemanticChecker:
         self._isolate_factual_claims = isolate_factual_claims
         self._comparison_reasoning = comparison_reasoning
         self._comparison_audit_version = comparison_audit_version
+        self._audit_source_fields = audit_source_fields
         self._factual_scope = factual_scope
     
     def __call__(self, claims: list[dict], evidence: list[dict]) -> list[dict]:
@@ -952,6 +954,11 @@ The dataAvailability object is an internal audit, not new experimental results.
             targets=[c['claimId'] for c in claims if c.get('kind') in {'reported','inference'}]
             if targets:
                 prompt+=scope_prompt(targets)
+        field_bindings=(self._audit_source_fields() if callable(self._audit_source_fields)
+                        else self._audit_source_fields) is True
+        if field_bindings and (scope_enabled or comparison_enabled):
+            from services.deep_research.audit_source_fields import GUIDANCE as source_field_guidance
+            prompt+='\n'+source_field_guidance
         template = prompt
         source_keys = ('workId', 'versionId', 'sourceTitle')
         source_registry = {}
@@ -1052,14 +1059,16 @@ The dataAvailability object is an internal audit, not new experimental results.
                     continue
                 if comparison_enabled:
                     from services.deep_research.comparison_reasoning import validate_audit
-                    comparison_errors=validate_audit(target,verdict,visible_evidence)
+                    comparison_errors=validate_audit(target,verdict,visible_evidence,
+                        source_field_bindings=field_bindings)
                     if comparison_errors:
                         verdict['status']='failed'
                         verdict['reason']='比较条件或推断前提尚未核实：'+', '.join(comparison_errors)
                         continue
                 if scope_enabled:
                     from services.deep_research.factual_scope import validate_audit as validate_scope
-                    scope_errors=validate_scope(target,verdict,visible_evidence)
+                    scope_errors=validate_scope(target,verdict,visible_evidence,
+                        source_field_bindings=field_bindings)
                     if scope_errors:
                         verdict['status']='failed'
                         verdict['reason']='结论范围或必要条件尚未核实：'+', '.join(scope_errors)

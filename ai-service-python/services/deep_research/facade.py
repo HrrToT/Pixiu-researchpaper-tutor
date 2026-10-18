@@ -273,7 +273,7 @@ class ResearchFacade:
             "materials": materials,
             "materialSnapshot": material_snapshot,  # Immutable Java snapshot
             "contextMaterials": (material_snapshot or {}).get("contextMaterials", []) if isinstance(material_snapshot, dict) else [],
-            "promptVersion": "dr-v2.20261018.173",
+            "promptVersion": "dr-v2.20261018.174",
             "tableReferencesContractVersion": 1,
             "factualScopeContractVersion": 2,
             "factualReasoningContractVersion": 3,
@@ -293,6 +293,7 @@ class ResearchFacade:
             "answerFormatContractVersion": 1,
             "repairProgressContractVersion": 2,
             "reportPresentationContractVersion": 1,
+            "auditSourceFieldsContractVersion": 1,
             "structuredOutputContractVersion": 7,
             "claimIsolationContractVersion": 1,
             "dependencyContractVersion": 1,
@@ -1160,6 +1161,7 @@ class ResearchFacade:
         """Share policy wiring with the live-scope production subclass."""
         from services.deep_research.tools import BudgetedSemanticChecker
         from services.deep_research.comparison_reasoning import enabled as comparison_enabled
+        from services.deep_research.audit_source_fields import enabled as audit_fields_enabled
         from services.deep_research.factual_scope import enabled as scope_enabled
         checker = BudgetedSemanticChecker(invoker, run_id,
             metric_domains=lambda: self._repo.require_run(run_id).get('state', {}).get('metricDomains'),
@@ -1168,6 +1170,7 @@ class ResearchFacade:
                 if isolation is None else isolation,
             comparison_reasoning=lambda: comparison_enabled(self._repo.require_run(run_id)),
             comparison_audit_version=lambda: self._repo.require_run(run_id).get('comparisonReasoningContractVersion', 0),
+            audit_source_fields=lambda: audit_fields_enabled(self._repo.require_run(run_id)),
             factual_scope=lambda: scope_enabled(self._repo.require_run(run_id)))
         return checker
     

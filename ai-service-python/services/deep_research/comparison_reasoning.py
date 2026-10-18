@@ -113,7 +113,7 @@ def _normalized(text):
     return re.sub(r'\s+',' ',text).strip()
 
 
-def validate_audit(claim,verdict,evidence):
+def validate_audit(claim,verdict,evidence, *, source_field_bindings=False):
     scope=audit_scope(claim,evidence)
     if scope is None:
         return []
@@ -125,6 +125,16 @@ def validate_audit(claim,verdict,evidence):
     own={e['evidenceId']:e for e in evidence if e.get('evidenceId') in claim.get('evidenceRefs',[])}
 
     def bound(row,with_value=False):
+        if source_field_bindings and isinstance(row,dict) and 'path' in row:
+            from services.deep_research.audit_source_fields import resolve
+            resolved=resolve(row,own,with_value=with_value)
+            if resolved is None:
+                return None
+            item,text=resolved
+            if with_value and (not isinstance(row.get('value'),str) or not row['value'].strip()
+                    or _normalized(row['value']) not in _normalized(text)):
+                return None
+            return item
         keys={'evidenceId','quote','value'} if with_value else {'evidenceId','quote'}
         if not isinstance(row,dict) or set(row)!=keys:
             return None
