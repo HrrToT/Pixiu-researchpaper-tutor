@@ -13,13 +13,12 @@
       "scope": "Research/model/reading integration plus PDF table parsing at 221ed65, before .70 changes; historical broader scope, not silently upgraded."
     },
     "frontendVitest": {
-      "passed": 488,
+      "passed": 490,
       "files": 65,
-      "seconds": 87.07,
+      "seconds": 82.38,
       "workers": 4,
-      "log": "tmp/vitest-dr119-full-final.log",
-      "sourceCommit": "c3843700",
-      "boundary": "Current full suite at 4 workers, with unchanged assertions after one recorded initial image-load timeout."
+      "sourceCommit": "e6c14f57",
+      "log": "tmp/vitest-dr164-full.log"
     },
     "frontendIsolatedBrowser": {
       "passed": 6,
@@ -45,11 +44,11 @@
       "overlap": true
     },
     "backendCurrentResearchReadingTables": {
-      "passed": 2618,
+      "passed": 2665,
       "warnings": 1,
-      "seconds": 166.52,
-      "sourceCommit": "6f6a7b92",
-      "log": "tmp/pytest-dr162-full-fixed.log",
+      "seconds": 180.01,
+      "sourceCommit": "e6c14f57",
+      "log": "tmp/pytest-dr164-full.log",
       "scope": "Research, reading, PDF tables and config; fixture providers."
     },
     "frontendDocumentNavigationFocused": {
@@ -2250,19 +2249,20 @@
   "currentProviderConstraint": "All further necessary bounded validations uniformly authorized. Current .151-onward diagnostic sequence uses86 settled calls/299046tokens, including D5-v7/v8 and D1-v21 each submitted once. Nine historical unknowns and reservations unchanged; cost unknown.",
   "currentDevelopmentMode": "Primary Codex only; goal active, quota monitor paused. Python6f6a7b92/.162 loaded, Java27ac4beb and frontendc3843700 unchanged. H1F-v11 development content remains accepted; D5-v7/v8 and D1-v21 do not pass. OriginalDR0-DR5 incomplete, original first-five0/5 and PR draft unchanged.",
   "loadedRuntime": {
-    "commit": "6f6a7b92",
-    "promptVersion": "dr-v2.20261018.162",
+    "commit": "e6c14f57",
+    "promptVersion": "dr-v2.20261018.164",
     "ready": true,
-    "callsPreservedAtLoad": 3848,
-    "callsAfterLatestCase": 3875,
+    "callsPreservedAtLoad": 3935,
+    "callsAfterLatestCase": 3956,
     "pausedUnknownRuns": 9,
-    "proof": "deep-research-evidence/runtime-load-dr162-factual-20261018.json"
+    "taskCount": 92,
+    "proof": "deep-research-evidence/runtime-load-dr164-followup-format-20261018.json"
   },
   "nextQualityWork": [
-    "Separate independent dimensions in a literal compound request such as reported results, applicable conditions and unverified scope. Bind each final answer dimension independently; do not infer completeness from one source-derived aggregate aspect.",
-    "Improve comparative generation so it qualifies a why-question premise before drafting prose. The actual verifier now rejects unestablished alignment presented as a demonstrated difference; do not weaken it.",
-    "Complete current frontend fresh-continuation binding to an actually user-edited parent, stale-revision pre-child rejection and old-version preservation. A distinct sealed F1P/F1C development workflow is prepared but not submitted.",
-    "Complete experimental-design content and genuinely new independent materials/quality gates after development passes. Original first-five full-content results remain0/5."
+    "Improve short factual/comparison generation: qualified judgement and bounded unknown scope rather than numeric inventories or unsupported author-wide absence.",
+    "Complete executable experiment design content gates.",
+    "After development content gates pass, use genuinely new fixed independent material/cases; original first-five 0/5 unchanged.",
+    "Clean internal condition labels without changing verified meaning or evidence."
   ],
   "javaReaderRuntime": {
     "sourceCommit": "070ab1a",
@@ -2510,5 +2510,28 @@
     "modelCalls": 7,
     "settledTokens": 22675,
     "boundary": "Live comparison verifier correctly rejects unsupported different-conditions inference after auditable marker cleanup. This is a conservative negative case, not a positive comparison quality pass."
+  },
+  "editedArtifactContinuationCheckpoint": {
+    "sourceCommit": "e6c14f57",
+    "proof": "deep-research-evidence/F1-fresh-continuation-workflow-20261018.json",
+    "workflowAccepted": true,
+    "independentCredit": 0,
+    "modelCalls": 24,
+    "settledTokens": 56269,
+    "staleRevision409NoProviderCall": true,
+    "oldTasksPreserved": 91,
+    "originalAndUserDraftPreserved": true,
+    "oldPartialRemainsPartial": true,
+    "remainingDisplayIssue": "Internal context label and duplicate condition."
+  },
+  "literalDimensionCheckpoint": {
+    "sourceCommit": "96e41864",
+    "requestGroundingContractVersion": 3,
+    "proof": "deep-research-evidence/D1-v22-diagnostic-20261018.json",
+    "machineOutcome": "partial",
+    "contentAccepted": false,
+    "independentCredit": 0,
+    "modelCalls": 10,
+    "settledTokens": 45383
   }
 }
