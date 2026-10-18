@@ -235,10 +235,13 @@ def initialize_runtime():
                                      verification_max_input_bytes=32000)
 
         def _make_semantic_checker(self, run_id):
-            from services.deep_research.tools import BudgetedSemanticChecker
-            return BudgetedSemanticChecker(self._make_llm_invoker(run_id), run_id,
-                metric_domains=lambda: self._repo.require_run(run_id).get('state', {}).get('metricDomains'),
-                research_question=lambda: effective_question(self._repo.require_run(run_id)))
+            record = self._repo.require_run(run_id)
+            new_policy = (type(record.get('runtimeSemanticContractVersion')) is int
+                          and record['runtimeSemanticContractVersion'] == 1)
+            # Preserve saved production requests, including unresolved calls,
+            # which used the old runtime's batching despite the base marker.
+            return self._build_semantic_checker(run_id, self._make_llm_invoker(run_id),
+                                                isolation=None if new_policy else False)
 
         def _get_make_evidence(self, run_id=None):
             from services.deep_research.local_sources import LocalTaskRetriever

@@ -273,7 +273,8 @@ class ResearchFacade:
             "materials": materials,
             "materialSnapshot": material_snapshot,  # Immutable Java snapshot
             "contextMaterials": (material_snapshot or {}).get("contextMaterials", []) if isinstance(material_snapshot, dict) else [],
-            "promptVersion": "dr-v2.20261018.137",
+            "promptVersion": "dr-v2.20261018.138",
+            "runtimeSemanticContractVersion": 1,
             "evidenceCoverageContractVersion": 2,
             "sourcePrecisionContractVersion": 3,
             "absenceScopeContractVersion": 1,
@@ -1108,7 +1109,7 @@ class ResearchFacade:
     
     def _make_semantic_checker(self, run_id: str) -> Callable[[list, list], list]:
         """Create budgeted semantic checker."""
-        from services.deep_research.tools import BudgetedSemanticChecker, TrackedLLMInvoker
+        from services.deep_research.tools import TrackedLLMInvoker
         
         if not self._llm_client:
             return lambda claims, evidence: []
@@ -1121,10 +1122,16 @@ class ResearchFacade:
             verification_max_input_bytes=32000,
         )
         
+        return self._build_semantic_checker(run_id, invoker)
+
+    def _build_semantic_checker(self, run_id, invoker, *, isolation=None):
+        """Share policy wiring with the live-scope production subclass."""
+        from services.deep_research.tools import BudgetedSemanticChecker
         checker = BudgetedSemanticChecker(invoker, run_id,
             metric_domains=lambda: self._repo.require_run(run_id).get('state', {}).get('metricDomains'),
             research_question=lambda: effective_question(self._repo.require_run(run_id)),
-            isolate_factual_claims=lambda: self._repo.require_run(run_id).get('claimIsolationContractVersion') == 1)
+            isolate_factual_claims=(lambda: self._repo.require_run(run_id).get('claimIsolationContractVersion') == 1)
+                if isolation is None else isolation)
         return checker
     
     def _default_scope_validator(self) -> Callable[[str, str], bool]:
