@@ -8,6 +8,7 @@ import math
 import re
 import subprocess
 import sys
+import threading
 from pathlib import Path
 from urllib.parse import quote
 
@@ -25,24 +26,32 @@ class LocalTaskRetriever:
         self.pages = {}
         self.index_tables = {}
         self.index_context = {}
+        self._page_locks = {}
+        self._page_locks_guard = threading.Lock()
+        self._measurement_read_lock = threading.RLock()
+        self._measurement_read_failures = {}
 
     def __call__(self, query, pdf_id, *, limit=5):
         if not self.validate(self.run_id, pdf_id):
             raise DeepResearchError("scope_revoked", "论文范围已变更")
+        indexed_for_pdf = None
         # Keep the existing indexed route where its runtime is installed.
         if importlib.util.find_spec('sentence_transformers') is not None:
             try:
                 from services.research_executor import retrieve_current_paper_evidence
                 items = retrieve_current_paper_evidence(query, pdf_id, limit=limit, allow_query_rewrite=False)
                 if items:
+                    from services.tools.retrieval_tools import get_rag
+                    rag = get_rag()
+                    owned = rag.normalize_id(pdf_id)
+                    # The backend's filter is not proof of document ownership.
+                    items = [item for item in items if (item.get('metadata') or {}).get('id') == owned]
+                if items:
                     indexed = [_indexed_source(item) for item in items]
                     if limit > 1:
-                        from services.tools.retrieval_tools import get_rag
                         from services.evidence_service import normalize_evidence_items
                         from services.deep_research.named_source_rows import include_requested_rows
                         from services.deep_research.source_continuity import needs_preceding_context, include_preceding_context
-                        rag = get_rag()
-                        owned = rag.normalize_id(pdf_id)
                         if pdf_id not in self.index_context:
                             raw = rag.get_documents_by_metadata({'id': owned}, limit=400)
                             # Recheck owner even if the backend ignores its filter.
@@ -60,14 +69,37 @@ class LocalTaskRetriever:
                         if not metrics and precise_sources(self.repo.require_run(self.run_id)):
                             indexed = include_method_details(indexed, self.index_context[pdf_id], query, owned, limit)
                         precision = self.repo.require_run(self.run_id).get('sourcePrecisionContractVersion')
-                        if type(precision) is int and precision == 2:
+                        if type(precision) is int and precision in (2, 3):
                             from services.deep_research.requested_measurements import include_requested_measurements
                             indexed = include_requested_measurements(indexed, self.index_context[pdf_id], query, owned, limit)
                         indexed = include_requested_rows(indexed, self.index_context[pdf_id], query, owned, limit)
-                    return indexed
+                    if limit > 1 and type(precision) is int and precision == 3:
+                        indexed_for_pdf = indexed
+                    else:
+                        return indexed
             except (ImportError, RuntimeError, OSError):
                 pass
+        if indexed_for_pdf is not None:
+            # Keep optional PDF read failures outside the index-backend
+            # fallback catch; a programming error must not trigger a second GET.
+            return self._supplement_pdf_measurements(indexed_for_pdf, query, pdf_id, limit)
         material, pages = self.load_pages(pdf_id)
+        passages = self._pdf_passages(pdf_id, material, pages)
+        scores = _bm25(query, [value['text'] for value in passages])
+        ranked = sorted(zip(scores, passages), key=lambda value: -value[0])
+        found = [value for score, value in ranked[:min(max(int(limit), 0), 5)] if score > 0]
+        precision = self.repo.require_run(self.run_id).get('sourcePrecisionContractVersion')
+        if type(precision) is int and precision == 3:
+            from services.deep_research.requested_measurements import include_pdf_measurements
+            if not self.validate(self.run_id,pdf_id):
+                raise DeepResearchError('scope_revoked','论文范围已变更')
+            passages = [{**row,'versionId':material.get('versionId') or material['contentHash']} for row in passages]
+            found = include_pdf_measurements(found,passages,query,pdf_id,material['contentHash'],min(limit,5))
+        return found
+
+
+    @staticmethod
+    def _pdf_passages(pdf_id, material, pages):
         passages = []
         for page in pages:
             text = page.get('text', '')
@@ -79,9 +111,53 @@ class LocalTaskRetriever:
                     passages.append({'sourceId': 'src_' + identity, 'pdfId': pdf_id, 'text': passage,
                         'location': location, 'contentHash': material['contentHash'], 'versionId': material.get('versionId'),
                         'title': material.get('title', pdf_id), 'accessLevel': 'fulltext', 'retrievalMode': 'pdf_lexical_fallback'})
-        scores = _bm25(query, [value['text'] for value in passages])
-        ranked = sorted(zip(scores, passages), key=lambda value: -value[0])
-        return [value for score, value in ranked[:min(max(int(limit), 0), 5)] if score > 0]
+        return passages
+
+
+    def _supplement_pdf_measurements(self, indexed, query, pdf_id, limit):
+        from services.deep_research.requested_measurements import missing_measurements, include_pdf_measurements, owned_measurement_sources
+        # One owned PDF is parsed once, even when two local queries arrive
+        # together. A known optional read failure is not repeatedly dispatched.
+        with self._measurement_read_lock:
+            if not self.validate(self.run_id,pdf_id):
+                raise DeepResearchError('scope_revoked','论文范围已变更')
+            record = self.repo.require_run(self.run_id)
+            material = next((m for m in record.get('materials',[]) if m.get('materialId') == pdf_id),None)
+            if not material or not material.get('contentHash'):
+                raise DeepResearchError('source_missing','论文版本未保存')
+            indexed = owned_measurement_sources(indexed,pdf_id,material['contentHash'])
+            if limit < 2 or not missing_measurements(indexed,query):
+                return indexed
+            key = (pdf_id,material['contentHash'])
+            failure = self._measurement_read_failures.get(key) if key not in self.pages else None
+            if failure is None:
+                try:
+                    material,pages = self.load_pages(pdf_id)
+                except DeepResearchError as exc:
+                    if (exc.code not in {'source_unavailable','source_too_large','source_parse_failed'}
+                            or exc.details.get('status_code') in {401,403}):
+                        raise
+                    failure = {'status':'unavailable','code':exc.code}
+                except requests.RequestException:
+                    failure = {'status':'unavailable','code':'source_unavailable'}
+                except subprocess.TimeoutExpired:
+                    failure = {'status':'unavailable','code':'source_parse_timeout'}
+                if failure:
+                    self._measurement_read_failures[key] = failure
+            if not self.validate(self.run_id,pdf_id):
+                raise DeepResearchError('scope_revoked','论文范围已变更')
+            if failure:
+                if not indexed:
+                    raise DeepResearchError(failure['code'],'论文原文回读暂不可用')
+                return [{**row,**({'pdfMeasurementRead':failure} if i == 0 else {})} for i,row in enumerate(indexed)]
+            passages = self._pdf_passages(pdf_id,material,self.pages[key])
+            # An original PDF has a document hash/version, not an index version.
+            passages = [{**row,'versionId':material.get('versionId') or material['contentHash']} for row in passages]
+            found = include_pdf_measurements(indexed,passages,query,pdf_id,material['contentHash'],limit)
+            missing = missing_measurements(found,query)
+            note = {'status':'searched','pagesRead':len(self.pages[key]),
+                    'unmatchedMeasurements':sorted((str(n),u) for n,u in missing)}
+            return [{**row,**({'pdfMeasurementRead':note} if i == 0 else {})} for i,row in enumerate(found)]
 
 
     def load_pages(self, pdf_id):
@@ -93,22 +169,27 @@ class LocalTaskRetriever:
         if not material or not material.get('contentHash'):
             raise DeepResearchError("source_missing", "论文版本未保存")
         key = (pdf_id, material['contentHash'])
-        if key not in self.pages:
-            url = f"{self.origin}/task-workspaces/{quote(record['taskId'], safe='')}/materials/{quote(pdf_id, safe='')}/file"
-            with self.get(url, timeout=20, stream=True, allow_redirects=False) as response:
-                if response.status_code != 200:
-                    raise DeepResearchError('source_unavailable', '论文文件暂不可读取')
-                chunks, size = [], 0
-                for chunk in response.iter_content(65536):
-                    size += len(chunk)
-                    if size > MAX_LOCAL_PDF_BYTES:
-                        raise DeepResearchError('source_too_large', '论文超过正文回查大小上限')
-                    chunks.append(chunk)
-            body = b''.join(chunks)
-            if not body.startswith(b'%PDF-') or hashlib.sha256(body).hexdigest() != material['contentHash']:
-                raise DeepResearchError('source_changed', '论文内容与研究快照不同')
-            self.pages[key] = self.parse(body)
-        return material, self.pages[key]
+        with self._page_locks_guard:
+            lock = self._page_locks.setdefault(key,threading.RLock())
+        with lock:
+            if not self.validate(self.run_id,pdf_id):
+                raise DeepResearchError('scope_revoked','论文范围已变更')
+            if key not in self.pages:
+                url = f"{self.origin}/task-workspaces/{quote(record['taskId'], safe='')}/materials/{quote(pdf_id, safe='')}/file"
+                with self.get(url, timeout=20, stream=True, allow_redirects=False) as response:
+                    if response.status_code != 200:
+                        raise DeepResearchError('source_unavailable','论文文件暂不可读取',{'status_code':response.status_code})
+                    chunks, size = [], 0
+                    for chunk in response.iter_content(65536):
+                        size += len(chunk)
+                        if size > MAX_LOCAL_PDF_BYTES:
+                            raise DeepResearchError('source_too_large', '论文超过正文回查大小上限')
+                        chunks.append(chunk)
+                body = b''.join(chunks)
+                if not body.startswith(b'%PDF-') or hashlib.sha256(body).hexdigest() != material['contentHash']:
+                    raise DeepResearchError('source_changed', '论文内容与研究快照不同')
+                self.pages[key] = self.parse(body)
+            return material, self.pages[key]
 
 
 def _requested_metrics(query):
