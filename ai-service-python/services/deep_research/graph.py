@@ -1373,6 +1373,7 @@ def make_verify_node(
         
         from services.deep_research.final_coverage import audit_final_answer
         from services.deep_research.comparison_reasoning import enabled as comparison_enabled
+        from services.deep_research.evidence_priority import priority_enabled
         from services.deep_research.coverage_repair import prepare_coverage_repair, merge_verified_revisions
         from services.deep_research.design_consistency import enforce_design_consistency
         saved = record.get('state', {})
@@ -1453,6 +1454,7 @@ def make_verify_node(
                         current_budget=lambda: repo_update(run_id, lambda r: r, expected_revision=None).get('budget', {}),
                         invoke_request=invoke_repair,
                         **({'comparison_reasoning':True} if comparison_enabled(record) else {}),
+                        **({'question_priority':True} if priority_enabled(record) else {}),
                         **({'fact_redraft':True,'source_aware_redraft':record['factRedraftContractVersion']==2,
                             'requirement_context':[
                             {key:o[key] for key in (('obligationId','question','completionCriteria','requiredSources')

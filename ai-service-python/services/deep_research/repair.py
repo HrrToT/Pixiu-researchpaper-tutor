@@ -15,7 +15,8 @@ from services.deep_research.repair_scope import repair_evidence_scope
 
 def _prepare_repair(report, verification, evidence, question, *, max_prompt_bytes=24000,
                     metric_domains=None, draft_context=(), prior_revisions=(),
-                    fact_redraft=False, requirement_context=(), source_aware_redraft=False,comparison_reasoning=False):
+                    fact_redraft=False, requirement_context=(), source_aware_redraft=False,comparison_reasoning=False,
+                    question_priority=False):
     rejected = {row['claimId']: row for row in verification.get('rejected', [])}
     originals = {row['claimId']: row for row in report.get('claims', []) if row.get('claimId') in rejected}
     if not originals:
@@ -23,9 +24,13 @@ def _prepare_repair(report, verification, evidence, question, *, max_prompt_byte
     hinted = {ref for row in rejected.values() for ref in row.get('missingEvidenceRefs', [])
               if isinstance(ref, str)}
     evidence = sorted(evidence, key=lambda e: e.get('evidenceId') not in hinted)
-    allowed = repair_evidence_scope(list(originals.values()), evidence)
+    allowed = repair_evidence_scope(list(originals.values()), evidence,
+        **({'question':question} if question_priority else {}))
     refs = {ref for values in allowed.values() for ref in values}
     selected = [e for e in evidence if e['evidenceId'] in refs]
+    if question_priority:
+        from services.deep_research.evidence_priority import prioritize_existing_evidence
+        selected=prioritize_existing_evidence(selected,question)
     aliases = {f'E{i + 1}': e['evidenceId'] for i, e in enumerate(selected)}
     short_ids = {full: short for short, full in aliases.items()}
     original_refs = {ref for row in originals.values() for ref in row.get('evidenceRefs', [])}
@@ -399,7 +404,7 @@ def factual_redraft_eligible(report):
 def repair_rejected(report, verification, evidence, question, invoke, parse, *,
                     max_prompt_bytes=24000, metric_domains=None, batch_state=None, checkpoint=None,
                     current_budget=None, invoke_request=None, fact_redraft=False, requirement_context=(),
-                    source_aware_redraft=False,comparison_reasoning=False):
+                    source_aware_redraft=False,comparison_reasoning=False,question_priority=False):
     """One bounded revision round, split before dispatch when evidence cannot fit.
 
     At most three requests share full sibling design definitions. Successful
@@ -417,7 +422,8 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
                        'evidence': evidence, 'question': question, 'metricDomains': metric_domains,
                        **({'factRedraftContractVersion':2 if source_aware_redraft else 1,'requirementContext':requirement_context}
                           if fact_redraft else {}),
-                       **({'comparisonReasoningContractVersion':1} if comparison_reasoning else {})})
+                       **({'comparisonReasoningContractVersion':1} if comparison_reasoning else {}),
+                       **({'repairEvidencePriorityVersion':1} if question_priority else {})})
 
     def prepare(ids, results=(), byte_limit=None):
         ids = set(ids)
@@ -429,7 +435,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
             max_prompt_bytes=state['maxPromptBytes'] if byte_limit is None else byte_limit,
             metric_domains=metric_domains, draft_context=siblings, prior_revisions=results,
             fact_redraft=fact_redraft, requirement_context=requirement_context,source_aware_redraft=source_aware_redraft,
-            comparison_reasoning=comparison_reasoning)
+            comparison_reasoning=comparison_reasoning,question_priority=question_priority)
 
     state = deepcopy(batch_state) if batch_state is not None else {
         'version': 1, 'inputDigest': identity, 'maxPromptBytes': max_prompt_bytes,

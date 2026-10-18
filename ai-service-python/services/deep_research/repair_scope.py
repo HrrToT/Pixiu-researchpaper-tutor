@@ -5,7 +5,7 @@ This is NOT verification; downstream integration verifies independently.
 """
 
 
-def repair_evidence_scope(claims, evidence, max_additions=12):
+def repair_evidence_scope(claims, evidence, max_additions=12, *, question=None):
     """Return dict mapping each unique claimId to an ordered allowed evidenceId list.
 
     Preserves existing unique string evidenceRefs in original order, then appends
@@ -147,6 +147,9 @@ def repair_evidence_scope(claims, evidence, max_additions=12):
             candidates.append(row)
             added.add(eid)
 
+        if question is not None:
+            from services.deep_research.evidence_priority import prioritize_existing_evidence
+            candidates=prioritize_existing_evidence(candidates,question)
         selected = balanced_sample(candidates,
             lambda row: (row['sourceWorkId'], row['sourceVersionId'],
                          tuple(sorted(ob for ob in row['obligationIds'] if isinstance(ob, str) and ob))),
