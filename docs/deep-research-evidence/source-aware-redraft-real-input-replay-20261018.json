@@ -1,0 +1,51 @@
+{
+  "date": "2026-10-18",
+  "inputCase": "D5-v4",
+  "inputRunId": "dr_run_143996d023b75f2cbc0e4402db795ec0",
+  "savedInputSha256": "6853eaac0a1889aa4ef7d781aec002ac70b99aca450ebb8a04866e2507f01868",
+  "legacyVersionOneRequestFingerprintMatched": true,
+  "legacyArgsDigest": "1f442fc52a3ef37e3b56925b8e3201a630ef2a7bdf61498dfcb525bd83a05de0",
+  "legacyPromptBytes": 23875,
+  "newPromptBytes": 23954,
+  "newFactRedraftContractVersion": 2,
+  "sourceContext": {
+    "sources": {
+      "P1": {
+        "sourceWorkId": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf",
+        "sourceVersionId": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634",
+        "accessLevel": "fulltext",
+        "title": "LightGaussian: Unbounded 3D Gaussian Compression with 15x Reduction and 200+ FPS"
+      },
+      "P2": {
+        "sourceWorkId": "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf",
+        "sourceVersionId": "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11",
+        "accessLevel": "fulltext",
+        "title": "3D Gaussian Splatting for Real-Time Radiance Field Rendering"
+      }
+    },
+    "requirements": [
+      {
+        "obligationId": "ob_1",
+        "requiredSources": {
+          "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf": [
+            "P1"
+          ]
+        }
+      },
+      {
+        "obligationId": "ob_2",
+        "requiredSources": {
+          "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf": [
+            "P2"
+          ]
+        }
+      }
+    ]
+  },
+  "mandatoryCitationsPreservedExactly": 3,
+  "originalAuditClaimsUnchanged": true,
+  "citationWhitelistNotExpanded": true,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "boundary": "Copied real-input preparation and exact old Provider-request fingerprint replay. New source metadata/required-source mapping is visible without modifying source text, claim kinds, budgets or independent verification. No generated revision or content-quality credit."
+}

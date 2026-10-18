@@ -99,14 +99,14 @@ def test_actual_graph_supplies_frozen_requested_requirements_only_for_marked_red
     assert not record['state']['verifiedReport']['verifiedClaims']
 
 
-@pytest.mark.parametrize('replacement',[None,True,'1',0,2])
+@pytest.mark.parametrize('replacement',[None,True,'1',0,1,3])
 def test_redraft_mode_is_server_owned_and_frozen(tmp_path,replacement):
     repo=DeepResearchRepository(tmp_path/'r.sqlite3');repo.initialize()
     facade=ResearchFacade(repo,lambda **_:None,llm_client=object())
     try:
         run,_=facade.create({'workspaceTaskId':'t','operationKey':'op','question':'核查','deferStart':True,
             'factRedraftContractVersion':replacement},start_async=False)
-        assert run['factRedraftContractVersion']==1
+        assert run['factRedraftContractVersion']==2
         with pytest.raises(ValueError,match='Immutable'):
             repo.update_run(run['runId'],lambda r:{**r,'factRedraftContractVersion':replacement})
     finally:facade.shutdown()

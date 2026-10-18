@@ -1444,11 +1444,13 @@ def make_verify_node(
                         batch_state=saved.get('repairBatchState'), checkpoint=checkpoint_repair_batches,
                         current_budget=lambda: repo_update(run_id, lambda r: r, expected_revision=None).get('budget', {}),
                         invoke_request=invoke_repair,
-                        **({'fact_redraft':True,'requirement_context':[
-                            {key:o[key] for key in ('obligationId','question','completionCriteria') if key in o}
+                        **({'fact_redraft':True,'source_aware_redraft':record['factRedraftContractVersion']==2,
+                            'requirement_context':[
+                            {key:o[key] for key in (('obligationId','question','completionCriteria','requiredSources')
+                                if record['factRedraftContractVersion']==2 else ('obligationId','question','completionCriteria')) if key in o}
                             for item in record.get('state',{}).get('plan',[]) for o in item.get('obligations',[])]}
                            if type(record.get('factRedraftContractVersion')) is int
-                           and record['factRedraftContractVersion']==1 else {}))
+                           and record['factRedraftContractVersion'] in (1,2) else {}))
                     repo_update(run_id, lambda r: {**r, 'state': {**r.get('state', {}),
                         'repairDraft': revised}}, expected_revision=None)
                 if revised:

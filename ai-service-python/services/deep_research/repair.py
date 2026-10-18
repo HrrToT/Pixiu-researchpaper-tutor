@@ -15,7 +15,7 @@ from services.deep_research.repair_scope import repair_evidence_scope
 
 def _prepare_repair(report, verification, evidence, question, *, max_prompt_bytes=24000,
                     metric_domains=None, draft_context=(), prior_revisions=(),
-                    fact_redraft=False, requirement_context=()):
+                    fact_redraft=False, requirement_context=(), source_aware_redraft=False):
     rejected = {row['claimId']: row for row in verification.get('rejected', [])}
     originals = {row['claimId']: row for row in report.get('claims', []) if row.get('claimId') in rejected}
     if not originals:
@@ -52,6 +52,7 @@ def _prepare_repair(report, verification, evidence, question, *, max_prompt_byte
                 and not (key in {'conditions', 'obligationIds'} and value in ({}, []))}
     input_claims = [compact_claim_view(row) for row in input_claims]
     redraft_instruction = ''
+    source_instruction = ''
     if fact_redraft and factual_redraft_eligible(report):
         # Omit rejected wording from the generation view, not audit storage.
         # Keep original citations mandatory below and full originals in the
@@ -61,6 +62,23 @@ def _prepare_repair(report, verification, evidence, question, *, max_prompt_byte
         related = {oid for row in originals.values() for oid in row.get('obligationIds', [])}
         active_requirements = [{key:row[key] for key in ('obligationId','question','completionCriteria') if key in row}
                                for row in requirement_context if not related or row.get('obligationId') in related]
+        if source_aware_redraft:
+            from services.deep_research.factual_source_context import factual_source_context
+            context,evidence_sources=factual_source_context(selected,requirement_context,related)
+            by_evidence={item['evidenceId']:item for item in selected}
+            for row in rows:
+                full_id=aliases[row['evidenceId']]
+                row['sourceRef']=evidence_sources[full_id]
+                row['contentHash']=by_evidence[full_id]['contentHash']
+            source_instruction=('\nFrozen factual source requirements and identities (metadata, NOT paper evidence):\n'
+                +json.dumps(context,ensure_ascii=False,separators=(',',':'))
+                +'\nP IDs label source metadata, never citations or published words. Required source IDs map to '
+                'available P IDs; an empty list means that source is unavailable in this request. '
+                'Use the corresponding E quotations to satisfy EACH designated source requirement. '
+                'A generic explanation citing one work does not establish another work-specific premise. '
+                'Combine actual supplied premises when the question requires reasoning, without inventing '
+                'a measurement or claiming the author explicitly stated your inference. Do not keep '
+                'irrelevant citations to meet a count: leave the unsupported source-specific part open.\n')
         redraft_instruction = ('Source-grounded factual redraft: rejected prose/conditions are omitted from '
             'the generation view; they remain in the audit record. Rebuild these exact IDs from their '
             'allowed quotations and the requested points below. Do not guess missing premises. '
@@ -204,6 +222,8 @@ not paper-attributed values or promises to preregister later. Correct formulas a
 hypotheses/proposals. Source facts still require evidence; proposed choices need not occur
 in the paper. Maintain consistency with accepted definitions and complete required details.'''
     prompt += '\n' + SCIENTIFIC_TERMINOLOGY
+    if source_instruction:
+        prompt += source_instruction
     if any(row.get('designContractVersion') == 2 for row in originals.values()):
         from services.deep_research.execution_spec import execution_spec_contract_for_roles
         from services.deep_research.experimental_reasoning import DESIGN_ROLES, design_requirements
@@ -375,7 +395,8 @@ def factual_redraft_eligible(report):
 
 def repair_rejected(report, verification, evidence, question, invoke, parse, *,
                     max_prompt_bytes=24000, metric_domains=None, batch_state=None, checkpoint=None,
-                    current_budget=None, invoke_request=None, fact_redraft=False, requirement_context=()):
+                    current_budget=None, invoke_request=None, fact_redraft=False, requirement_context=(),
+                    source_aware_redraft=False):
     """One bounded revision round, split before dispatch when evidence cannot fit.
 
     At most three requests share full sibling design definitions. Successful
@@ -391,7 +412,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
         return []
     identity = digest({'report': report, 'verification': verification,
                        'evidence': evidence, 'question': question, 'metricDomains': metric_domains,
-                       **({'factRedraftContractVersion':1,'requirementContext':requirement_context}
+                       **({'factRedraftContractVersion':2 if source_aware_redraft else 1,'requirementContext':requirement_context}
                           if fact_redraft else {})})
 
     def prepare(ids, results=(), byte_limit=None):
@@ -403,7 +424,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
         return _prepare_repair(report, subset, evidence, question,
             max_prompt_bytes=state['maxPromptBytes'] if byte_limit is None else byte_limit,
             metric_domains=metric_domains, draft_context=siblings, prior_revisions=results,
-            fact_redraft=fact_redraft, requirement_context=requirement_context)
+            fact_redraft=fact_redraft, requirement_context=requirement_context,source_aware_redraft=source_aware_redraft)
 
     state = deepcopy(batch_state) if batch_state is not None else {
         'version': 1, 'inputDigest': identity, 'maxPromptBytes': max_prompt_bytes,

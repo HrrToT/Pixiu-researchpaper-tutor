@@ -273,10 +273,10 @@ class ResearchFacade:
             "materials": materials,
             "materialSnapshot": material_snapshot,  # Immutable Java snapshot
             "contextMaterials": (material_snapshot or {}).get("contextMaterials", []) if isinstance(material_snapshot, dict) else [],
-            "promptVersion": "dr-v2.20261018.153",
+            "promptVersion": "dr-v2.20261018.155",
             "namedRowIdentityContractVersion": 1,
             "requestGroundingContractVersion": 1,
-            "factRedraftContractVersion": 1,
+            "factRedraftContractVersion": 2,
             "verificationFeedbackContractVersion": 2,
             "quantitySpellingContractVersion": 3,
             "runtimeSemanticContractVersion": 1,
