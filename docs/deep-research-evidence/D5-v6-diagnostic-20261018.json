@@ -1,0 +1,128 @@
+{
+  "date": "2026-10-18",
+  "case": "D5-v6",
+  "runId": "dr_run_c1ce6540894a5803b3a86c4b831bb620",
+  "parentRunId": "dr_run_56107afc748d54828af1a50e84eb5d62",
+  "sourceCommit": "7b7d5e1c",
+  "promptVersion": "dr-v2.20261018.158",
+  "comparisonReasoningContractVersion": 1,
+  "status": "completed",
+  "outcome": "inconclusive",
+  "contentAccepted": false,
+  "independent": false,
+  "independentCredit": 0,
+  "modelCalls": 7,
+  "settledTokens": 23763,
+  "elapsedSeconds": 32.531,
+  "cost": null,
+  "actualRepairRequestFingerprintMatched": true,
+  "repairArgsDigest": "2e565ca6c87444111a1493d86b8bd3c698d1f475133519f29c7e73dea1fd92ca",
+  "newSemanticComparisonAuditCalls": 0,
+  "runtimeAfter": {
+    "calls": 3843,
+    "newRows": 21,
+    "active": 0,
+    "paused": [
+      "dr_run_4738564f5ff35157996a35068c62ed32",
+      "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+      "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+      "dr_run_86b3f181a5475e99aacca3dbf4370567",
+      "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+      "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+      "dr_run_e3521b1781825273b384a26a5edb8cdc",
+      "dr_run_e9c9dc916bef519092fad8b929b2448f",
+      "dr_run_ed10cc3347be552288079a9a588fddf5"
+    ],
+    "oldLedgerUnchanged": true,
+    "parentPayloadUnchanged": true
+  },
+  "parentPreservation": {
+    "previousTaskObjectsUnchanged": {
+      "notes": 0,
+      "messages": 16,
+      "artifacts": 32
+    },
+    "paperIdsAndMaterialHashesUnchanged": true,
+    "inheritedSources": 30,
+    "inheritedEvidence": 52
+  },
+  "reviewer": "Primary Codex inspection of saved draft, hard rejections, candidate scope and final output; not a participant rating.",
+  "scores": {
+    "goalResponse": 1,
+    "evidenceSupport": null,
+    "conditions": null,
+    "synthesisValue": 1,
+    "executability": null,
+    "readability": 2
+  },
+  "initialVerification": {
+    "accepted": [],
+    "rejected": [
+      {
+        "claimId": "c1",
+        "reason": "absence_not_established",
+        "detail": "本条引用没有明确建立作者或论文缺少这些验证。把结论限定为本次引用能支持的实验范围及其不能证明的推广；不要写成作者未在其他条件验证、论文没有提供或全文不存在。引用中的其他否定句不构成这项缺席判断的依据。"
+      }
+    ]
+  },
+  "repairVerificationChecks": {
+    "accepted": [],
+    "rejected": [
+      {
+        "claimId": "c1",
+        "reason": "internal_reference_in_prose"
+      }
+    ]
+  },
+  "availableConditionFactsNotSelectedForRepair": [
+    {
+      "evidenceId": "ev_7fa0ef07e954d2d0f4074b9206ed6ae6e332bec7817c80c8e47a4f9d040dfc59",
+      "obligationIds": [
+        "ob_2"
+      ],
+      "quote": "We use the same hyperparameter configuration for all experiments in our evaluation. All results are reported running on an A6000 GPU, except for the Mip-NeRF360 method (see below).",
+      "candidateSelected": false
+    },
+    {
+      "evidenceId": "ev_a3e857e64f13331e936571250b2f45f3043067a769a8e4a229ed74864c97e01e",
+      "obligationIds": [
+        "ob_1"
+      ],
+      "quote": "Mip-NeRF360[7]produces the highest visual quality, but requires over 16 seconds to render a single image. Our method strikes a balance among FPS, model size, and rendering quality, achieving the best balance among efficient representations. For fair metric and visual comparison, we re-trained 3D-GS and Compressed 3D-GS[34]using their original code and configurations on our platform (NVIDIA A6000 GPU), with results marked by * .",
+      "candidateSelected": false
+    }
+  ],
+  "findings": [
+    "Initial claim asserts that the two papers did not declare matching conditions. The existing author-absence guard rejects it before semantic verification.",
+    "Repair includes internal E IDs in published prose and again asserts different conditions. Existing internal-reference guard rejects it. No unsupported conclusion is published.",
+    "No verify/verify_repair call was dispatched. This real case therefore does not exercise the new semantic comparisonAudit; only offline tests and exact old-input replay validate that contract so far.",
+    "Both A6000 condition quotations are already present in same-version acquired evidence but outside the capped15-item repair candidate list (3 original plus12 additions). Natural candidate order favors earlier measurements over needed setup facts; improve question-driven candidate ordering without expanding scope/cap.",
+    "Acquisition assessment asks whether each individual quotation fully establishes the whole why criterion. Cross-paper methodological explanation instead needs joint premises. Individual topical support, joint evidence readiness and final factual approval must remain distinct.",
+    "D1-v20 saved planning also rewrites an imperative check into listing metric values. Literal human imperative deliverables need grounding, in addition to interrogative clauses.",
+    "All21rowssettled, no retry or new unknown. Parent payload, old objects, materials, old3822ledgerrows and nine unknown identities are unchanged."
+  ],
+  "report": "本次尚未形成通过核验的结论。\n\n<details>\n<summary>还有 2 项未完成</summary>\n\n- 为什么不同论文中的FPS不能直接相除：最终回答尚未完整回应这一问题\n- 为什么不同论文中的FPS不能直接相除：最终回答尚未完整回应这一问题\n\n</details>",
+  "rawFiles": [
+    {
+      "path": "tmp/dr-acceptance-receipts/D5-v6.json",
+      "sha256": "9decc7f59de8ba9bc8bc0f674c6c9e8b49530ba65303f8b6823ee4f7a27a46fb"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/D5-v6.payload.json",
+      "sha256": "75a65d79ea4ea2b4aa019454ef0dc13648efd3db0d320a83798b6b05d867d22e"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/D5-v6.calls.json",
+      "sha256": "ce6bfa441588c72f09a5f8f4aaa239e1ac1b8e0dfdc2903e93652de83e44da81"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/D5-v6.result.json",
+      "sha256": "de1d62b961c0f7eccfa3c3d845223d58d99c1ca7c3f89d19e1a52f3b8d15d8cf"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/D5-v6.parent-before.json",
+      "sha256": "b6d39eb733ea89210240f6f597f19118a533e08715e394bf3a09d63ddfc05908"
+    }
+  ],
+  "boundary": "Bounded development failure with conservative publication. New audit production execution and full content remain unproven; no independent or overall completion credit."
+}

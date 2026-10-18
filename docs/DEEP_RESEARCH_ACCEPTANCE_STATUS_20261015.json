@@ -45,11 +45,11 @@
       "overlap": true
     },
     "backendCurrentResearchReadingTables": {
-      "passed": 2475,
+      "passed": 2507,
       "warnings": 1,
-      "seconds": 178.1,
-      "sourceCommit": "ea10273c",
-      "log": "tmp/pytest-dr157-full.log",
+      "seconds": 161.21,
+      "sourceCommit": "7b7d5e1c",
+      "log": "tmp/pytest-dr158-full.log",
       "scope": "Research, reading, PDF tables and config; fixture providers."
     },
     "frontendDocumentNavigationFocused": {
@@ -1842,6 +1842,12 @@
       "seconds": 5.32,
       "log": "tmp/pytest-dr157-beginner-focused-final.log",
       "overlapsFullSuite": true
+    },
+    "comparisonPremiseFocused": {
+      "passed": 63,
+      "seconds": 3.89,
+      "log": "tmp/pytest-dr158-comparison-focused-fixed.log",
+      "overlapsFullSuite": true
     }
   },
   "stages": [
@@ -2234,23 +2240,23 @@
     "Full novice study workflow",
     "Independent Edge recovery"
   ],
-  "currentProviderConstraint": "All further necessary bounded validations uniformly authorized. .151 H1F-v10/D1-v20, D5-v4/D5-v5 and H1F-v11 used55 settled calls/189414 tokens. Each case submitted once, no new unknown. Old nine provider unknown identities preserved, costs unknown.",
-  "currentDevelopmentMode": "Primary Codex only; goal active, quota monitor paused. Python ea10273c/.157 loaded; Java27ac4beb unchanged. H1F-v11 development content accepted, zero independent credit. Original DR0-DR5 gates remain incomplete.",
+  "currentProviderConstraint": "All further necessary bounded validations uniformly authorized. .151 H1F-v10/D1-v20, D5-v4/v5/v6 and H1F-v11 used62 settled calls/213177tokens. Each fixed case submitted once; all new outcomes settled. Nine historical unknown identities and reservations remain unchanged; cost unknown.",
+  "currentDevelopmentMode": "Primary Codex only; goal active, quota monitor paused. Python7b7d5e1c/.158 loaded, Java27ac4beb unchanged. H1F-v11 development content remains accepted; D5-v6inconclusive does not pass. OriginalDR0-DR5 incomplete, zero new independent credit.",
   "loadedRuntime": {
-    "commit": "ea10273c",
-    "promptVersion": "dr-v2.20261018.157",
+    "commit": "7b7d5e1c",
+    "promptVersion": "dr-v2.20261018.158",
     "ready": true,
-    "callsPreservedAtLoad": 3795,
-    "callsAfterLatestCase": 3822,
+    "callsPreservedAtLoad": 3822,
+    "callsAfterLatestCase": 3843,
     "pausedUnknownRuns": 9,
-    "proof": "deep-research-evidence/runtime-load-dr157-beginner-conditions-20261018.json"
+    "proof": "deep-research-evidence/runtime-load-dr158-comparison-premises-20261018.json"
   },
   "nextQualityWork": [
-    "Distinguish demonstrated experimental differences from conditions not yet aligned; D5-v5 still fails full content criteria despite two-source machine-complete output.",
-    "Complete D1 concise judgement/limits and experimental-design content, with joint source-premise reasoning and independent checks.",
-    "Verify frontend fresh-continuation binding to current user-edited parent context; legacy D5-v5 proves preservation/evidence reuse only.",
-    "Use the accepted H1F-v11 novice case as a development regression, then complete distinct fresh independent quality gates. Original first-five full content remains0/5.",
-    "Keep result-first compact UX, actual usage reporting and unknown-call recovery boundaries; do not let diagnostic controls crowd the user interface."
+    "Prioritize acquired experimental-setting evidence for the actual comparison question before capped same-version repair candidate selection. D5-v6 has both condition quotations already acquired but excluded from its first12candidate additions; preserve caps/anchors/quotes.",
+    "Support joint evidence readiness for a frozen criterion across exact source/version premises. Individual quotation sufficiency, joint routing readiness and final claim approval remain separate; never turn a topical match into factual approval.",
+    "Ground imperative human requests such as checking a claim and separating conditions/limits. D1-v20 currently changes the task into identifying metric values, which crowds out judgement and consumes exploration budget.",
+    "Keep factual repair instructions focused on facts, conditional inference, own sources and human deliverables; exclude unrelated experimental-configuration scaffolding under a frozen new contract if changed.",
+    "Complete comparative content, experimental-design quality and actual frontend fresh-continuation binding to a user-edited parent, then distinct fresh independent gates. Original first-five full content remains0/5."
   ],
   "javaReaderRuntime": {
     "sourceCommit": "070ab1a",
@@ -2437,5 +2443,21 @@
     "activeResearch": 0,
     "historicalUnknowns": 9,
     "boundary": "Only this fixed retired novice case meets its frozen criteria. D5-v5 and original independent first-five outcomes are not upgraded."
+  },
+  "comparisonPremiseCheckpoint": {
+    "sourceCommit": "7b7d5e1c",
+    "contractVersion": 1,
+    "regressionProof": "deep-research-evidence/comparison-premise-regression-20261018.json",
+    "legacyActualRequestProof": "deep-research-evidence/comparison-premise-real-input-replay-20261018.json",
+    "newCaseProof": "deep-research-evidence/D5-v6-diagnostic-20261018.json",
+    "contentAccepted": false,
+    "independentCredit": 0,
+    "modelCalls": 7,
+    "settledTokens": 23763,
+    "newSemanticAuditProductionCalls": 0,
+    "callRows": 3843,
+    "activeResearch": 0,
+    "historicalUnknowns": 9,
+    "boundary": "The new typed comparison audit passes offline/legacy-input checks. Real D5-v6 is rejected by earlier absence/prose-ID guards, so no live semantic comparison audit was invoked and full content remains unaccepted."
   }
 }
