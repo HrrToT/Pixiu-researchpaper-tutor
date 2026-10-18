@@ -1,0 +1,19 @@
+{
+  "date": "2026-10-18",
+  "sourceCommit": "4c68f300",
+  "promptVersion": "dr-v2.20261018.166",
+  "factualScopeContractVersion": 1,
+  "fullOffline": {"passed": 2701, "warnings": 1, "seconds": 167.4, "log": "tmp/pytest-dr166-full-final.log"},
+  "focused": [
+    {"passed": 66, "seconds": 4.58, "log": "tmp/pytest-dr166-focused-final.log", "boundary": "Before one additional malformed-strength parameter; included in final full run."},
+    {"passed": 54, "seconds": 17.17, "log": "tmp/pytest-dr166-fixture-fixed.log"}
+  ],
+  "focusedOverlapWithFull": true,
+  "initialFull": {"passed": 2696, "failed": 3, "seconds": 160.62, "log": "tmp/pytest-dr166-full.log", "reason": "Existing Provider fixture omitted new scopeAudit. Added bounded own-quotation audit only; original wrong99, partial coverage, restart and pause/replay assertions retained."},
+  "legacyActualRequests": "factual-scope-real-input-replay-20261018.json",
+  "privateDraftMetadataNotPassedAsEvidence": true,
+  "newAuditRejectsBoundedPremisesForExclusiveOrUniversalConclusion": true,
+  "sameModelCallAndRunBudgets": true,
+  "initialCitationCleanup": "Reuses own-visible-marker normalization with original text and per-change audit; no factual rewrite.",
+  "boundary": "Offline structure, legacy request fingerprints and recovery tests; independent semantic judgement and real content remain separate gates. No historical production result is upgraded."
+}
