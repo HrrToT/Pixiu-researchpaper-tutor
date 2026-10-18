@@ -31,7 +31,7 @@ def requested_points(question):
     A paper's 'three contributions', model examples and parent artifact text do
     not create instructions. Ambiguous prose is left to the existing audit.
     """
-    layers = question.instruction_layers if isinstance(question, ResearchQuestion) else (question,)
+    layers = getattr(question,'point_instruction_layers',question.instruction_layers) if isinstance(question, ResearchQuestion) else (question,)
     for layer in layers:
         found = [(m.start(), None) for m in _CANCEL.finditer(layer)]
         for pattern in (_CHINESE, _ENGLISH):

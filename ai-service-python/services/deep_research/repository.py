@@ -345,13 +345,13 @@ class DeepResearchRepository:
                                  "verificationInputContractVersion", "audienceRewriteContractVersion", "verificationFeedbackContractVersion", "factRedraftContractVersion", "requestGroundingContractVersion", "namedRowIdentityContractVersion", "comparisonReasoningContractVersion", "repairEvidencePriorityVersion", "jointEvidenceContractVersion",
                                  "adaptiveResearchContractVersion", "clarificationContractVersion", "planEditContractVersion",
                                  "exactDiscoveryContractVersion", "planResumeContractVersion",
-                                 "continuationContextContractVersion", "continuationContext", "dependencyContractVersion", "adaptiveExtractionContractVersion",
+                                 "continuationContextContractVersion", "continuationFormatContractVersion", "continuationContext", "dependencyContractVersion", "adaptiveExtractionContractVersion",
                                  "claimIsolationContractVersion", "structuredOutputContractVersion", "repairProgressContractVersion", "sourcePrecisionContractVersion", "extractionPriorityVersion", "absenceScopeContractVersion", "answerFormatContractVersion", "evidenceCoverageContractVersion", "runtimeSemanticContractVersion", "quantitySpellingContractVersion"):
                     if (updated.get(identity) != current.get(identity)
                             or (identity in {'verificationInputContractVersion', 'audienceRewriteContractVersion', 'verificationFeedbackContractVersion', 'factRedraftContractVersion', 'requestGroundingContractVersion', 'namedRowIdentityContractVersion', 'comparisonReasoningContractVersion', 'repairEvidencePriorityVersion', 'jointEvidenceContractVersion',
                                              'adaptiveResearchContractVersion', 'clarificationContractVersion', 'planEditContractVersion',
                                              'exactDiscoveryContractVersion', 'planResumeContractVersion',
-                                             'continuationContextContractVersion', 'dependencyContractVersion',
+                                              'continuationContextContractVersion', 'continuationFormatContractVersion', 'dependencyContractVersion',
                                              'adaptiveExtractionContractVersion', 'claimIsolationContractVersion',
                                              'structuredOutputContractVersion', 'repairProgressContractVersion', 'sourcePrecisionContractVersion', 'extractionPriorityVersion', 'absenceScopeContractVersion', 'answerFormatContractVersion', 'evidenceCoverageContractVersion', 'runtimeSemanticContractVersion', 'quantitySpellingContractVersion'}
                                 and type(updated.get(identity)) is not type(current.get(identity)))):

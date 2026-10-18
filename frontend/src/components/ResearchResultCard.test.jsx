@@ -181,6 +181,27 @@ describe('plan editor in paused state', () => {
       question: '接着我保存的第二点，解释它的局限。', expectedRunRevision: 4,
     })));
     expect(onAction).toHaveBeenCalledTimes(1);
+    await waitFor(() => expect(screen.queryByRole('textbox', { name: '继续研究什么？' })).not.toBeInTheDocument());
+    expect(screen.getByRole('button', { name: '继续追问' })).toHaveFocus();
+  });
+  it('keeps an uncertain followup identity, closes only after confirmation, and gives a later explicit form a fresh identity', async () => {
+    const onAction = vi.fn().mockRejectedValueOnce(new Error('结果尚未确认')).mockResolvedValue(undefined);
+    render(<ResearchResultCard {...props} result={{ ...props.result, status: 'completed', outcome: 'complete', allowedActions: ['continue'] }} onAction={onAction} />);
+    fireEvent.click(screen.getByRole('button', { name: '继续追问' }));
+    fireEvent.change(screen.getByRole('textbox', { name: '继续研究什么？' }), { target: { value: '解释第二点的局限。' } });
+    fireEvent.click(screen.getByRole('button', { name: '开始追问' }));
+    await waitFor(() => expect(screen.getByRole('alert')).toHaveTextContent('结果尚未确认'));
+    expect(onAction).toHaveBeenCalledTimes(1);
+    expect(screen.getByRole('textbox', { name: '继续研究什么？' })).toHaveValue('解释第二点的局限。');
+    fireEvent.click(screen.getByRole('button', { name: '开始追问' }));
+    await waitFor(() => expect(screen.queryByRole('textbox', { name: '继续研究什么？' })).not.toBeInTheDocument());
+    expect(onAction.mock.calls[1][3].requestId).toBe(onAction.mock.calls[0][3].requestId);
+    fireEvent.click(screen.getByRole('button', { name: '继续追问' }));
+    expect(screen.getByRole('textbox', { name: '继续研究什么？' })).toHaveValue('');
+    fireEvent.change(screen.getByRole('textbox', { name: '继续研究什么？' }), { target: { value: '解释第二点的局限。' } });
+    fireEvent.click(screen.getByRole('button', { name: '开始追问' }));
+    await waitFor(() => expect(onAction).toHaveBeenCalledTimes(3));
+    expect(onAction.mock.calls[2][3].requestId).not.toBe(onAction.mock.calls[1][3].requestId);
   });
   it('lets a followup specify its goal and explicitly select a fresh task snapshot', async () => {
     const onAction = vi.fn().mockResolvedValue(undefined);

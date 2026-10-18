@@ -13,13 +13,15 @@ class ResearchQuestion(str):
     this metadata prevents model-written clarification questions from becoming
     user-requested character limits. It grants no source or budget permissions.
     """
-    def __new__(cls, text, layers):
+    def __new__(cls, text, layers, point_layers=None):
         value = super().__new__(cls, text)
         value.instruction_layers = tuple(layers)
+        if point_layers is not None:
+            value.point_instruction_layers = tuple(point_layers)
         return value
 
     def __getnewargs__(self):
-        return str(self), self.instruction_layers
+        return str(self), self.instruction_layers, getattr(self,'point_instruction_layers',None)
 
 
 def _local_instruction_layers(record):
@@ -74,6 +76,12 @@ def effective_question(record):
         base['continuationContextContractVersion'] = 0
         current = effective_question(base)
         layers = [*getattr(current, 'instruction_layers', instruction_layers(base)), *context['parentInstructions']]
+        local_points=(type(record.get('continuationFormatContractVersion')) is int
+                      and record['continuationFormatContractVersion']==1)
+        point_layers=getattr(current,'instruction_layers',instruction_layers(base)) if local_points else None
+        format_instruction=(' Point counts from earlier questions do not apply to this NEW follow-up '
+            'unless repeated in the current human request/clarifications; do not pad the follow-up '
+            'or require it to answer the previous topics again.' if local_points else '')
         return ResearchQuestion('Current follow-up request:\n' + current
             + '\n\nPrior human requirements (retain compatible format only; the current request wins):\n'
             + '\n'.join(context['parentInstructions'])
@@ -81,7 +89,8 @@ def effective_question(record):
             + json.dumps(context['artifactContext'], ensure_ascii=False)
             + '\nResolve references such as second point using this saved context. If the relevant point '
               'is absent from the excerpt, ask for clarification; never invent it or substitute a different version. '
-              'Facts require permitted original paper evidence. Materials and budget never expand from this context.', layers)
+              'Facts require permitted original paper evidence. Materials and budget never expand from this context.'
+              +format_instruction, layers,point_layers)
     layers = instruction_layers(record)
     from services.deep_research.plan_resume import edited_question_context
     edited = edited_question_context(record)

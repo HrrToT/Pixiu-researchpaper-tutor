@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ChevronDown, ChevronUp, ExternalLink, FileText, Plus, X } from 'lucide-react';
 
 const labels = {
@@ -24,8 +24,15 @@ export default function ResearchResultCard({ taskId, run, result, error, onActio
   const [followupQuestion, setFollowupQuestion] = useState('');
   const [useCurrentMaterials, setUseCurrentMaterials] = useState(false);
   const button = useRef(null);
+  const followupButton = useRef(null);
+  const restoreFollowupFocus = useRef(false);
   const requests = useRef(new Map());
   const actions = new Set(Array.isArray(result.allowedActions) ? result.allowedActions : []);
+  useEffect(() => {
+    if (restoreFollowupFocus.current && !followup && !busy) {
+      restoreFollowupFocus.current = false; followupButton.current?.focus();
+    }
+  }, [followup, busy]);
   const clarificationSaved = result.status === 'waiting_user' && actions.has('resume') && !actions.has('clarify');
   const resumeDeferred = actions.has('resume') && result.resumeDeferred;
   const terminal = ['completed', 'cancelled', 'failed'].includes(result.status);
@@ -41,14 +48,16 @@ export default function ResearchResultCard({ taskId, run, result, error, onActio
   const shownError = typeof rawError === 'string' ? rawError : rawError?.message || '';
   const close = () => { setDetails(false); button.current?.focus(); };
   const act = async (name, payload = {}) => {
-    if (busy || !onAction || !actions.has(name)) return;
+    if (busy || !onAction || !actions.has(name)) return false;
     const revision = result.runRevision ?? result.revision;
     const key = JSON.stringify([name, revision, payload]);
     if (!requests.current.has(key)) requests.current.set(key, globalThis.crypto?.randomUUID?.() || `research-${Date.now()}-${Math.random().toString(36).slice(2)}`);
     setBusy(true); setFailure('');
     try {
       await onAction(taskId, run.researchId, name, { ...payload, expectedRunRevision: revision, requestId: requests.current.get(key) });
-    } catch (cause) { setFailure(cause?.message || '操作结果暂未确认，请查询状态。'); }
+      if (name === 'continue') requests.current.delete(key); // A later explicit form is a new intent.
+      return true;
+    } catch (cause) { setFailure(cause?.message || '操作结果暂未确认，请查询状态。'); return false; }
     finally { setBusy(false); }
   };
   const sources = Array.isArray(result.sources) ? result.sources : [];
@@ -95,7 +104,7 @@ export default function ResearchResultCard({ taskId, run, result, error, onActio
     <div className="research-result-actions">
       {report && onOpenReport && <button type="button" onClick={() => onOpenReport(run, result)}><FileText size={14} />{result.outcome === 'partial' ? '查看已有结果' : '打开报告'}</button>}
       {['cancel', 'resume', 'continue', 'pause'].filter(action => actions.has(action)).map(action =>
-        <button type="button" key={action} disabled={busy || !onAction} onClick={() => action === 'continue' ? setFollowup(value => !value) : act(action)}>{action === 'continue' && completeFollowup ? '继续追问' : actionLabels[action]}</button>)}
+        <button type="button" key={action} ref={action === 'continue' ? followupButton : undefined} disabled={busy || !onAction} onClick={() => action === 'continue' ? setFollowup(value => !value) : act(action)}>{action === 'continue' && completeFollowup ? '继续追问' : actionLabels[action]}</button>)}
       <button type="button" ref={button} aria-expanded={details} onClick={() => setDetails(value => !value)}>
         {details ? <ChevronUp size={14} /> : <ChevronDown size={14} />}{terminal ? `来源与详情${result.sourceCount ? ` (${result.sourceCount})` : ''}` : '详情'}
       </button>
@@ -103,7 +112,9 @@ export default function ResearchResultCard({ taskId, run, result, error, onActio
     {followup && actions.has('continue') && <form className="research-followup" onSubmit={event => {
       event.preventDefault(); if (completeFollowup && !followupQuestion.trim()) return;
       void act('continue', { question: followupQuestion.trim() || run.question || result.title,
-        ...(useCurrentMaterials ? { materialSelection: { mode: 'task_default' } } : {}) });
+        ...(useCurrentMaterials ? { materialSelection: { mode: 'task_default' } } : {}) }).then(succeeded => {
+        if (succeeded) { restoreFollowupFocus.current = true; setFollowup(false); setFollowupQuestion(''); setUseCurrentMaterials(false); }
+      });
     }}>
       <label>继续研究什么？<textarea className="theme-input" value={followupQuestion} onChange={event => setFollowupQuestion(event.target.value)}
         placeholder={completeFollowup ? '例如：解释这个结论的适用条件' : '例如：补找反对证据；留空则继续补查原问题'} /></label>
