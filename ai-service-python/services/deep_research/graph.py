@@ -1063,6 +1063,10 @@ def make_synthesize_node(
         section_templates = OUTPUT_KIND_SECTIONS.get(output_kind, OUTPUT_KIND_SECTIONS["direction_survey"])
         claim_limit = (12 if output_kind == 'experiment_design' else 5 if output_kind == 'paper_comparison'
                        else 2 if requested_limit and requested_limit <= 300 else 3 if requested_limit else 12)
+        from services.deep_research.answer_format import enabled as format_enabled, requested_points, guidance as format_guidance
+        point_constraint = requested_points(question) if format_enabled(record) else None
+        if point_constraint and output_kind != 'experiment_design':
+            claim_limit = point_constraint['count']
         paper_titles = {m.get('materialId'): m.get('title', '') for m in record.get('materials', [])}
         
         # Format evidence summaries with obligation binding
@@ -1193,6 +1197,7 @@ Orient losses before formulas, distinguish conditional/averaged effects and pape
                 clarification=separate_clarification(record),gaps=[g.get('question') for g in gaps[:5]],
                 obligations=draft_obligations,sources=source_registry,evidence_marker=evidence_marker,
                 claim_fields=claim_fields,claim_limit=claim_limit,section_templates=section_templates)
+        prompt += format_guidance(point_constraint)
         from services.deep_research.synthesis import SCIENTIFIC_TERMINOLOGY
         prompt += '\n' + SCIENTIFIC_TERMINOLOGY
         if output_kind == 'paper_comparison':
@@ -1271,7 +1276,8 @@ Orient losses before formulas, distinguish conditional/averaged effects and pape
         parsed = compact_answer(parsed, question,
             lambda prompt: llm_invoke(run_id, "synthesize_compact", prompt,
                 {"max_tokens": 2000, "temperature": 0.0}), _safe_parse_json,
-            output_kind=output_kind, evidence=evidence)
+            output_kind=output_kind, evidence=evidence,
+            preserve_claims=bool(point_constraint and point_constraint['mode'] == 'exact'))
         if parsed is None:
             return {"error_code": "invalid_synthesis_response"}
 
@@ -1571,6 +1577,8 @@ def make_publish_node(
         factual_claims = [claim for claim in accepted_claims if claim.get("kind") in {"reported", "inference"}]
         from services.deep_research.reporting import build_sections, conversation_summary, verification_notice
         sections = build_sections(accepted_claims, output_kind, verified_report.get("sections"))
+        from services.deep_research.answer_format import publication_format_gaps
+        gaps.extend(publication_format_gaps(record, accepted_claims, sections))
         if output_kind == "experiment_design":
             from services.deep_research.synthesis import OUTPUT_KIND_SECTIONS
             from services.deep_research.experimental_reasoning import DESIGN_ROLE_LABELS, missing_design_roles

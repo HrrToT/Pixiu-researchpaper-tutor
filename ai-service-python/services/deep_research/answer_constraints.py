@@ -76,14 +76,14 @@ def _core_claims(claims, limit, output_kind, evidence):
     return selected or claims[:3]
 
 
-def compact_answer(report, question, invoke, parse, *, output_kind='', evidence=()):
+def compact_answer(report, question, invoke, parse, *, output_kind='', evidence=(), preserve_claims=False):
     report = normalize_conditions(report)
     limit = requested_character_limit(question)
     if not limit or answer_character_count(report) <= limit:
         return report
     # Reduce the rewrite's scope, not its evidence: original references and kinds
     # are restored by code and the rewritten claims are verified afterwards.
-    core = _core_claims(report['claims'], limit, output_kind, evidence)
+    core = report['claims'] if preserve_claims else _core_claims(report['claims'], limit, output_kind, evidence)
     from services.deep_research.table_bindings import bound_table_context
     inputs = [{**{key: c.get(key, {} if key == 'conditions' else '')
                    for key in ('claimId', 'text', 'conditions')},
@@ -100,7 +100,7 @@ requiredTableContext给出原引用单元格的身份：若保留该数值，必
 把条件写入text即可，不要在conditions重复。不能新增事实。
 若面向初学者，保留“调整了什么→随后怎样变化”的普通语言解释；优先删公式和术语铺陈，
 不要把因果机制缩成方法名或“梯度能流动”。只保留原回答已有的机制与限定条件。
-{'必须保留每个输入ID：它们分别代表各论文结论和跨论文可比性。' if output_kind == 'paper_comparison' else 'You MAY DROP 次要声明，但保留直接回答问题的判断。'}
+{'必须保留每个输入ID，只缩短措辞，不合并或删除回答点。' if preserve_claims else '必须保留每个输入ID：它们分别代表各论文结论和跨论文可比性。' if output_kind == 'paper_comparison' else 'You MAY DROP 次要声明，但保留直接回答问题的判断。'}
 输入：{json.dumps(inputs, ensure_ascii=False)}'''
     result = invoke(prompt)
     finish = (result.get('finishReason', result.get('finish_reason')) if isinstance(result, dict)
@@ -128,7 +128,7 @@ requiredTableContext给出原引用单元格的身份：若保留该数值，必
             return None
         claim.clear()
         claim.update(merged)
-    if output_kind == 'paper_comparison' and seen != set(original):
+    if (preserve_claims or output_kind == 'paper_comparison') and seen != set(original):
         return None
     if 'sections' not in compact and 'sections' in report:
         compact['sections'] = report['sections']

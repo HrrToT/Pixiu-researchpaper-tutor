@@ -346,14 +346,14 @@ class DeepResearchRepository:
                                  "adaptiveResearchContractVersion", "clarificationContractVersion", "planEditContractVersion",
                                  "exactDiscoveryContractVersion", "planResumeContractVersion",
                                  "continuationContextContractVersion", "continuationContext", "dependencyContractVersion", "adaptiveExtractionContractVersion",
-                                 "claimIsolationContractVersion", "structuredOutputContractVersion", "repairProgressContractVersion", "sourcePrecisionContractVersion", "extractionPriorityVersion", "absenceScopeContractVersion"):
+                                 "claimIsolationContractVersion", "structuredOutputContractVersion", "repairProgressContractVersion", "sourcePrecisionContractVersion", "extractionPriorityVersion", "absenceScopeContractVersion", "answerFormatContractVersion"):
                     if (updated.get(identity) != current.get(identity)
                             or (identity in {'verificationInputContractVersion', 'audienceRewriteContractVersion',
                                              'adaptiveResearchContractVersion', 'clarificationContractVersion', 'planEditContractVersion',
                                              'exactDiscoveryContractVersion', 'planResumeContractVersion',
                                              'continuationContextContractVersion', 'dependencyContractVersion',
                                              'adaptiveExtractionContractVersion', 'claimIsolationContractVersion',
-                                             'structuredOutputContractVersion', 'repairProgressContractVersion', 'sourcePrecisionContractVersion', 'extractionPriorityVersion', 'absenceScopeContractVersion'}
+                                             'structuredOutputContractVersion', 'repairProgressContractVersion', 'sourcePrecisionContractVersion', 'extractionPriorityVersion', 'absenceScopeContractVersion', 'answerFormatContractVersion'}
                                 and type(updated.get(identity)) is not type(current.get(identity)))):
                         raise ValueError(f"Immutable run field changed: {identity}")
                 if updated.get("executionEpoch") != current.get("executionEpoch"):
