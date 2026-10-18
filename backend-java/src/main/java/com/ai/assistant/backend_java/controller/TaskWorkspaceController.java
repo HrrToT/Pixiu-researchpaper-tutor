@@ -143,6 +143,12 @@ public class TaskWorkspaceController {
         return research.getSourcesUnified(id, runId);
     }
 
+    @GetMapping("/{id}/research/{runId}/actions/{requestId}")
+    public Map<String,Object> getResearchActionReceipt(@PathVariable String id, @PathVariable String runId,
+            @PathVariable String requestId) {
+        return research.getActionReceiptUnified(id,runId,requestId);
+    }
+
     @GetMapping("/{id}/research/capabilities")
     public Map<String, Object> researchCapabilities(@PathVariable String id) {
         return research.capabilities(id);

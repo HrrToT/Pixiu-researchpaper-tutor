@@ -62,6 +62,82 @@ class TaskResearchV2ControllerTest {
 
     // === Unified start dispatches to v2 when v2 markers present ===
 
+    private Map<String,Object> actionReceipt(String statusValue) {
+        Map<String,Object> receipt = new LinkedHashMap<>();
+        receipt.put("runId","action-parent");receipt.put("taskId","work");receipt.put("requestId","request-1");
+        receipt.put("fingerprint","a".repeat(64));receipt.put("status",statusValue);
+        receipt.put("result",statusValue.equals("failed") ? Map.of("error",Map.of("code","idempotency_conflict")) : Map.of());
+        receipt.put("matchingChildRuns",List.of());
+        return receipt;
+    }
+
+    @Test
+    void actionReceiptReadsPendingFailedAndCompletedWithoutChangingWorkspace() throws Exception {
+        tasks.attachResearchRun("work",workspace.get("revision"),v2RunBinding("action-parent",2L,"paused"));
+        Map<String,Object> before = tasks.get("work");
+        for (String receiptStatus : List.of("pending","failed","completed")) {
+            when(research.getV2ActionReceipt("action-parent","request-1")).thenReturn(
+                ResponseEntity.ok(Map.of("status","success","receipt",actionReceipt(receiptStatus))));
+            mvc.perform(get("/api/task-workspaces/work/research/action-parent/actions/request-1"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.receipt.status").value(receiptStatus))
+                .andExpect(jsonPath("$.receipt.fingerprint").value("a".repeat(64)));
+            org.junit.jupiter.api.Assertions.assertEquals(before,tasks.get("work"));
+        }
+        org.mockito.Mockito.verify(research,org.mockito.Mockito.times(3)).getV2ActionReceipt("action-parent","request-1");
+        org.mockito.Mockito.verifyNoMoreInteractions(research);
+    }
+
+    @Test
+    void foreignWorkspaceCannotReadActionReceiptOrContactPython() throws Exception {
+        tasks.attachResearchRun("work",workspace.get("revision"),v2RunBinding("action-parent",2L,"paused"));
+        tasks.create(Map.of("id","foreign","paperIds",List.of("A")));
+        mvc.perform(get("/api/task-workspaces/foreign/research/action-parent/actions/request-1"))
+            .andExpect(status().isNotFound());
+        verifyNoInteractions(research);
+    }
+
+    @Test
+    void actionReceiptRejectsChangedRunTaskRequestFingerprintAndStatus() throws Exception {
+        tasks.attachResearchRun("work",workspace.get("revision"),v2RunBinding("action-parent",2L,"paused"));
+        for (String field : List.of("runId","taskId","requestId","fingerprint","status")) {
+            Map<String,Object> value = actionReceipt("completed");value.put(field,"wrong");
+            when(research.getV2ActionReceipt("action-parent","request-1")).thenReturn(
+                ResponseEntity.ok(Map.of("status","success","receipt",value)));
+            mvc.perform(get("/api/task-workspaces/work/research/action-parent/actions/request-1"))
+                .andExpect(status().isBadGateway());
+        }
+        Map<String,Object> missing = actionReceipt("pending");missing.remove("status");
+        when(research.getV2ActionReceipt("action-parent","request-1")).thenReturn(
+            ResponseEntity.ok(Map.of("status","success","receipt",missing)));
+        mvc.perform(get("/api/task-workspaces/work/research/action-parent/actions/request-1"))
+            .andExpect(status().isBadGateway());
+    }
+
+    @Test
+    void actionReceiptRejectsForeignOrMismatchedChildIdentity() throws Exception {
+        tasks.attachResearchRun("work",workspace.get("revision"),v2RunBinding("action-parent",2L,"paused"));
+        for (Map<String,Object> child : List.of(
+                Map.<String,Object>of("runId","child","taskId","foreign","parentRunId","action-parent"),
+                Map.<String,Object>of("runId","child","taskId","work","parentRunId","other-parent"))) {
+            Map<String,Object> value=actionReceipt("completed");value.put("matchingChildRuns",List.of(child));
+            when(research.getV2ActionReceipt("action-parent","request-1")).thenReturn(
+                ResponseEntity.ok(Map.of("status","success","receipt",value)));
+            mvc.perform(get("/api/task-workspaces/work/research/action-parent/actions/request-1"))
+                .andExpect(status().isBadGateway());
+        }
+    }
+
+    @Test
+    void missingActionReceiptStaysNotFoundAndDoesNotStartResearch() throws Exception {
+        tasks.attachResearchRun("work",workspace.get("revision"),v2RunBinding("action-parent",2L,"paused"));
+        when(research.getV2ActionReceipt("action-parent","request-1")).thenReturn(
+            ResponseEntity.status(404).body(Map.of("status","error","errorCode","action_not_found")));
+        mvc.perform(get("/api/task-workspaces/work/research/action-parent/actions/request-1"))
+            .andExpect(status().isNotFound());
+        org.mockito.Mockito.verify(research).getV2ActionReceipt("action-parent","request-1");
+        org.mockito.Mockito.verifyNoMoreInteractions(research);
+    }
+
     @Test
     void retryLostStartResponseReturnsBoundRunBeforeOldTaskRevisionCheck() throws Exception {
         Map<String, Object> input = v2StartInput();

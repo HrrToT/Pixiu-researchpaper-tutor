@@ -180,6 +180,30 @@ public class TaskResearchService {
         return getV2Events(taskId, runId);
     }
 
+    public Map<String, Object> getActionReceiptUnified(String taskId, String runId, String requestId) {
+        requireV2Owner(taskId,runId);
+        if (requestId == null || requestId.isBlank() || requestId.length() > 256)
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"操作请求标识无效");
+        Map<String,Object> result = requireSuccess(research.getV2ActionReceipt(runId,requestId));
+        if (!(result.get("receipt") instanceof Map<?,?> receipt)
+                || !runId.equals(receipt.get("runId")) || !taskId.equals(receipt.get("taskId"))
+                || !requestId.equals(receipt.get("requestId"))
+                || !(receipt.get("fingerprint") instanceof String fingerprint) || !fingerprint.matches("[0-9a-f]{64}")
+                || !(receipt.get("status") instanceof String)
+                || !List.of("pending","completed","failed").contains(receipt.get("status")))
+            throw new ResponseStatusException(HttpStatus.BAD_GATEWAY,"研究操作回执身份无效");
+        if (!(receipt.get("matchingChildRuns") instanceof List<?> children))
+            throw new ResponseStatusException(HttpStatus.BAD_GATEWAY,"研究操作子记录无效");
+        for (Object value : children) {
+            if (!(value instanceof Map<?,?> child) || !taskId.equals(child.get("taskId"))
+                    || !runId.equals(child.get("parentRunId"))
+                    || !(child.get("runId") instanceof String childId) || childId.isBlank())
+                throw new ResponseStatusException(HttpStatus.BAD_GATEWAY,"研究操作子记录身份无效");
+        }
+        // Do not publish, bind a child, change a workspace revision or resume work.
+        return result;
+    }
+
     // === Internal scope-check endpoint for Python ===
     /**
      * Python calls this before each model/retrieval step to verify:

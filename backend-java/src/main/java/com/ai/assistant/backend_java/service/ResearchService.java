@@ -107,4 +107,9 @@ public class ResearchService {
     public ResponseEntity<Map<String, Object>> getV2Events(String runId) {
         return GatewayHelper.forward(restTemplate, PYTHON_SERVICE_URL, HttpMethod.GET, "/research-tasks/" + GatewayHelper.encode(runId) + "/events", null);
     }
+
+    public ResponseEntity<Map<String, Object>> getV2ActionReceipt(String runId, String requestId) {
+        return GatewayHelper.forward(restTemplate, PYTHON_SERVICE_URL, HttpMethod.GET,
+                "/research-tasks/" + GatewayHelper.encode(runId) + "/actions/" + GatewayHelper.encode(requestId), null);
+    }
 }
