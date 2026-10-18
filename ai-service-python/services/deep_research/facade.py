@@ -1281,9 +1281,9 @@ def _compute_allowed_actions(record: dict[str, Any]) -> list[str]:
     elif status == STATUS_PAUSED:
         actions.extend(["cancel"] if record.get("errorCode") == "unresolved_unknown" else ["resume", "cancel", "plan"])
     elif status == STATUS_COMPLETED:
-        actions.extend(["open_report", "view_sources"])
-        if outcome in {OUTCOME_NONE, OUTCOME_PARTIAL, OUTCOME_INCONCLUSIVE}:
-            actions.append("continue")
+        # A complete report can still be the parent of a NEW explicit question.
+        # This projection never regenerates the parent or issues a model call.
+        actions.extend(["open_report", "view_sources", "continue"])
     elif status == STATUS_CANCELLED:
         if outcome != OUTCOME_NONE:
             actions.append("view_partial")

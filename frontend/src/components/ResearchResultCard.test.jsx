@@ -168,6 +168,20 @@ describe('external source management', () => {
 });
 
 describe('plan editor in paused state', () => {
+  it('lets a complete report start only an explicit followup, without rerunning its original question', async () => {
+    const onAction = vi.fn().mockResolvedValue(undefined);
+    render(<ResearchResultCard {...props} result={{ ...props.result, status: 'completed', outcome: 'complete', allowedActions: ['continue'] }} onAction={onAction} />);
+    expect(screen.queryByRole('button', { name: '补查缺口' })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: '继续追问' }));
+    expect(onAction).not.toHaveBeenCalled();
+    expect(screen.getByRole('button', { name: '开始追问' })).toBeDisabled();
+    fireEvent.change(screen.getByRole('textbox', { name: '继续研究什么？' }), { target: { value: '接着我保存的第二点，解释它的局限。' } });
+    fireEvent.click(screen.getByRole('button', { name: '开始追问' }));
+    await waitFor(() => expect(onAction).toHaveBeenCalledWith('t', 'r', 'continue', expect.objectContaining({
+      question: '接着我保存的第二点，解释它的局限。', expectedRunRevision: 4,
+    })));
+    expect(onAction).toHaveBeenCalledTimes(1);
+  });
   it('lets a followup specify its goal and explicitly select a fresh task snapshot', async () => {
     const onAction = vi.fn().mockResolvedValue(undefined);
     render(<ResearchResultCard {...props} result={{ ...props.result, status: 'completed', allowedActions: ['continue'] }} onAction={onAction} />);
