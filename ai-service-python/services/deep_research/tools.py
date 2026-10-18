@@ -556,6 +556,7 @@ class BudgetedSemanticChecker:
         audit_source_fields=False,
         audit_target_fields=False,
         factual_scope=False,
+        qualitative_inference=False,
     ):
         self._invoke = llm_invoker
         self._run_id = run_id
@@ -567,6 +568,7 @@ class BudgetedSemanticChecker:
         self._audit_source_fields = audit_source_fields
         self._audit_target_fields = audit_target_fields
         self._factual_scope = factual_scope
+        self._qualitative_inference = qualitative_inference
     
     def __call__(self, claims: list[dict], evidence: list[dict]) -> list[dict]:
         return self._check(claims, evidence, [], 'verify')
@@ -736,6 +738,11 @@ Return only a JSON array, one verdict per target:
 Missing configuration, contradictory choices and invalid parameter syntax fail.
 Do not require an unexecuted experiment to have results. Do not judge context claims as targets.'''
 
+        inference_review = (self._qualitative_inference() if callable(self._qualitative_inference)
+                            else self._qualitative_inference) is True
+        if inference_review and any(c.get('kind') == 'inference' for c in claims):
+            from services.deep_research.audience_rewrite import QUALITATIVE_INFERENCE_REVIEW
+            prompt += '\n' + QUALITATIVE_INFERENCE_REVIEW
         from services.deep_research.synthesis import SCIENTIFIC_TERMINOLOGY
         prompt += '\n' + SCIENTIFIC_TERMINOLOGY
         question = self._research_question() if callable(self._research_question) else self._research_question

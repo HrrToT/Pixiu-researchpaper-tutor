@@ -2,8 +2,9 @@
 
 No source acquisition, new claims, configuration changes or scientific approval.
 Only server-versioned, explicitly beginner-facing factual answers are eligible.
-Version 1 freezes conditions; version 2 may consolidate unverified wording in
-text/conditions before the same independent factual and coverage checks.
+Version 1 freezes conditions; version 2 may consolidate unverified wording;
+version 3 rebuilds from sources; version 4 permits strictly qualitative why
+points to be classified as inference before independent factual/coverage checks.
 """
 from copy import deepcopy
 from datetime import datetime, UTC
@@ -36,7 +37,7 @@ def eligible(record, report, output_kind):
             requested = True
             break
     return (type(record.get('audienceRewriteContractVersion')) is int
-            and record['audienceRewriteContractVersion'] in (1,2,3)
+            and record['audienceRewriteContractVersion'] in (1,2,3,4)
             and output_kind in {'direction_survey', 'claim_verification', 'paper_comparison'}
             and isinstance(record.get('question'), str)
             and requested
@@ -59,6 +60,42 @@ def has_time_for_rewrite(record, *, now=None):
     except (ValueError, TypeError, AttributeError):
         return False
     return maximum - elapsed >= min(90.0, maximum / 4)
+
+
+_WHY = re.compile(r'为什么|为何|原因|\bwhy\b|\brationale\b', re.I)
+
+
+def _qualitative(claim, *, original=False):
+    # Reclassification must never evade the reported-quantity checks. Use the
+    # same quantity parser, including spelled counts; method labels are not data.
+    from services.deep_research.verification import _measurement_numbers
+    text = claim.get('text', '') + ' ' + json.dumps(claim.get('conditions', {}), ensure_ascii=False)
+    if original:
+        # An original Greek parameter subscript is an identifier, not a value.
+        # The beginner replacement must omit numeric parameter identifiers too.
+        text = re.sub(r'(?<![A-Za-z0-9_])[α-ωΑ-Ω]_?\d{1,2}(?![A-Za-z0-9_.%％])', '', text)
+    quantities = re.search(r'百分之|[零一二两三四五六七八九十百千万亿]+\s*(?:倍|比特|字节|毫秒|秒|FPS|fps|%)', text)
+    return (not claim.get('tableBindings') and not quantities and not _measurement_numbers(text, word_counts=True,
+            relative_references=True, artifact_references=True))
+
+
+def inference_candidates(report, requirement_context):
+    why_ids = {item['obligationId'] for item in requirement_context if isinstance(item, dict)
+               and isinstance(item.get('obligationId'), str)
+               and _WHY.search(str(item.get('question', '')))}
+    return {c['claimId'] for c in report['claims'] if c.get('kind') == 'reported' and _qualitative(c, original=True)
+            and isinstance(c.get('obligationIds'), list)
+            and any(isinstance(key, str) and key in why_ids for key in c['obligationIds'])}
+
+
+QUALITATIVE_INFERENCE_REVIEW = '''For a qualitative inference, check each paper-specific premise against
+its OWN citations and judge the reasoning, rather than requiring the conclusion verbatim in the paper.
+An explicitly stated objective containing storage/rate and reconstruction-error terms supports the
+logical explanation that optimizing it trades off both criteria. Omitting a term means that criterion
+is not directly penalized by THAT objective; it does not prove a measured loss, an unlimited quantity,
+or guaranteed degradation/improvement. Distinguish definitions/objective consequences from empirical
+and causal findings. Fail an invented premise, universal guarantee, unsupported consequence or scope
+expansion even when the claim is labeled inference. Reported facts still need direct source support.'''
 
 
 def _prepare(report, evidence, question, *, contract_version=1, requirement_context=()):
@@ -120,7 +157,7 @@ Original cited sources: {json.dumps(source_rows, ensure_ascii=False, separators=
 Return ONLY {{"claims":[{{"claimId":"same ID","text":"rewritten Chinese explanation"}}]}}.
 Exactly one row per input ID, no other fields, no sections, citations or verdicts.
 '''
-    if contract_version in (2,3):
+    if contract_version in (2,3,4):
         inputs=[]
         for claim in claims:
             bindings=claim.get('tableBindings', [])
@@ -162,7 +199,7 @@ unrequested values and their bindings may be omitted together. Preserve method/g
 value relationships for retained values; never create a new binding or swap row identities.
 For a claim without originalTableBindings, do not return retainedTableBindingIndexes.
 '''
-        if contract_version==3:
+        if contract_version in (3,4):
             targets=[]
             for row in inputs:
                 obligation_ids=row.get('obligationIds',[])
@@ -202,12 +239,23 @@ unrequested values and their bindings may be omitted together, never replaced or
 Without originalTableBindings, omit retainedTableBindingIndexes. Source table context and
 bindings identify existing cells, not a license to publish an unsupported interpretation.
 '''
+        if contract_version == 4:
+            allowed = sorted(inference_candidates(report, requirement_context))
+            prompt += f'''\nClassification exception for these server-selected why targets ONLY: {json.dumps(allowed)}.
+For such a target you MAY additionally return "kind":"inference" when the answer derives a
+qualitative explanation from its own source premises rather than reporting the author's words.
+Make that reasoning explicit in ordinary language (e.g. 据此可理解为). This is not an approval.
+No other kind changes, new citations, table values or quantities are allowed. If directly reported,
+omit kind. All other targets omit kind. Explain storage/rate as data size and distortion as image error
+when these terms are necessary. Describe an objective's competing criteria without promising outcomes.
+{QUALITATIVE_INFERENCE_REVIEW}
+'''
     if len(prompt.encode('utf8')) > MAX_INPUT_BYTES:
         return None, 'input_capacity'
     return {'prompt': prompt, 'outputTokens': OUTPUT_TOKENS}, None
 
 
-def _merge(report, content, parse, question, *, contract_version=1):
+def _merge(report, content, parse, question, *, contract_version=1, allowed_inference_ids=()):
     try:
         revised = parse(content)
     except (ValueError, TypeError):
@@ -223,9 +271,15 @@ def _merge(report, content, parse, question, *, contract_version=1):
             return None
         original=originals[row['claimId']]
         keys={'claimId','text'} if contract_version==1 else {'claimId','text','conditions'}
-        if contract_version in (2,3) and original.get('tableBindings'):
+        if contract_version in (2,3,4) and original.get('tableBindings'):
             keys.add('retainedTableBindingIndexes')
-        if set(row)!=keys or (contract_version in (2,3) and not isinstance(row['conditions'],dict)):
+        if contract_version == 4 and 'kind' in row:
+            if (row['kind'] != 'inference' or row['claimId'] not in allowed_inference_ids
+                    or original['kind'] != 'reported' or not _qualitative(original, original=True)
+                    or not _qualitative(row)):
+                return None
+            keys.add('kind')
+        if set(row)!=keys or (contract_version in (2,3,4) and not isinstance(row['conditions'],dict)):
             return None
         if 'retainedTableBindingIndexes' in keys:
             indexes=row['retainedTableBindingIndexes']
@@ -240,8 +294,10 @@ def _merge(report, content, parse, question, *, contract_version=1):
     for claim in merged['claims']:
         patch=patches[claim['claimId']]
         claim['text'] = patch['text']
-        if contract_version in (2,3):
+        if contract_version in (2,3,4):
             claim['conditions']=deepcopy(patch['conditions'])
+            if contract_version == 4 and 'kind' in patch:
+                claim['kind'] = patch['kind']
             if claim.get('tableBindings'):
                 claim['tableBindings']=[deepcopy(claim['tableBindings'][i])
                                         for i in sorted(patch['retainedTableBindingIndexes'])]
@@ -256,17 +312,17 @@ def rewrite_for_beginner(report, evidence, question, invoke, parse, *, saved_sta
     A rejected/too-long edit leaves the original draft for normal verification.
     It is never a license to publish either version without checking its facts.
     """
-    if type(contract_version) is not int or contract_version not in (1,2,3):
+    if type(contract_version) is not int or contract_version not in (1,2,3,4):
         raise DeepResearchError('invalid_audience_rewrite_state','新手改写契约版本无效。')
     identity_inputs={'report': report, 'evidence': evidence, 'question': question}
-    if contract_version in (2,3):
+    if contract_version in (2,3,4):
         identity_inputs.update(contractVersion=contract_version,requirementContext=requirement_context)
     identity = digest(identity_inputs)
     state = deepcopy(saved_state) if saved_state is not None else None
     if state is not None:
         if (not isinstance(state, dict) or type(state.get('version')) is not int or state['version'] != contract_version
                 or state.get('inputDigest') != identity
-                or (contract_version in (2,3) and state.get('originalReport')!=report)
+                or (contract_version in (2,3,4) and state.get('originalReport')!=report)
                 or state.get('status') not in {'pending', 'received', 'skipped'}):
             raise DeepResearchError('invalid_audience_rewrite_state', '保存的新手改写请求与原始输入不一致，不能重新发送。')
     else:
@@ -274,7 +330,7 @@ def rewrite_for_beginner(report, evidence, question, invoke, parse, *, saved_sta
                                    requirement_context=requirement_context)
         state = {'version': contract_version, 'inputDigest': identity, 'status': 'pending',
                  'request': request, 'requestDigest': digest(request)}
-        if contract_version in (2,3):
+        if contract_version in (2,3,4):
             state['originalReport']=deepcopy(report)
         if reason:
             state.update(status='skipped', reason=reason)
@@ -306,4 +362,14 @@ def rewrite_for_beginner(report, evidence, question, invoke, parse, *, saved_sta
             checkpoint(deepcopy(state))  # Raw response, including invalid edits.
     if state.get('finishReason') == 'length' or not isinstance(state.get('content'), str):
         return deepcopy(report)
-    return _merge(report, state['content'], parse, question,contract_version=contract_version) or deepcopy(report)
+    allowed = inference_candidates(report, requirement_context) if contract_version == 4 else ()
+    result = _merge(report, state['content'], parse, question,contract_version=contract_version,
+                    allowed_inference_ids=allowed) or deepcopy(report)
+    if contract_version == 4:
+        changes = [{'claimId': new['claimId'], 'from': old['kind'], 'to': new['kind']}
+                   for old, new in zip(report['claims'], result['claims']) if old['kind'] != new['kind']]
+        if state.get('classificationChanges') != changes:
+            state['classificationChanges'] = changes
+            if checkpoint:
+                checkpoint(deepcopy(state))
+    return result

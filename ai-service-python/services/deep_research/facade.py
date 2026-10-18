@@ -273,7 +273,7 @@ class ResearchFacade:
             "materials": materials,
             "materialSnapshot": material_snapshot,  # Immutable Java snapshot
             "contextMaterials": (material_snapshot or {}).get("contextMaterials", []) if isinstance(material_snapshot, dict) else [],
-            "promptVersion": "dr-v2.20261018.175",
+            "promptVersion": "dr-v2.20261018.176",
             "tableReferencesContractVersion": 1,
             "factualScopeContractVersion": 2,
             "factualReasoningContractVersion": 3,
@@ -305,7 +305,7 @@ class ResearchFacade:
             "planEditContractVersion": 1,
             "clarificationContractVersion": 1,
             "adaptiveResearchContractVersion": 1,
-            "audienceRewriteContractVersion": 3,
+            "audienceRewriteContractVersion": 4,
             "verificationInputContractVersion": 1,
             "workflowContractVersion": 4,
             "extractionPriorityVersion": 4,
@@ -1173,7 +1173,9 @@ class ResearchFacade:
             audit_source_fields=lambda: audit_fields_enabled(self._repo.require_run(run_id)),
             audit_target_fields=lambda: type(self._repo.require_run(run_id).get('auditSourceFieldsContractVersion')) is int
                 and self._repo.require_run(run_id)['auditSourceFieldsContractVersion']==2,
-            factual_scope=lambda: scope_enabled(self._repo.require_run(run_id)))
+            factual_scope=lambda: scope_enabled(self._repo.require_run(run_id)),
+            qualitative_inference=lambda: type(self._repo.require_run(run_id).get('audienceRewriteContractVersion')) is int
+                and self._repo.require_run(run_id)['audienceRewriteContractVersion'] == 4)
         return checker
     
     def _default_scope_validator(self) -> Callable[[str, str], bool]:
