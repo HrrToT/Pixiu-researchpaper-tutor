@@ -130,3 +130,11 @@ Python 74673c96（`.128`），原生JSON契约3/修订进展契约1；旧运行�
 ## 2026-10-18 方法细节与中性规划加载
 
 Python 2ee36ac2（`.130`），来源精度契约1/原生JSON契约4；旧运行保留原规则。确认无活动研究后重启一次，3,459条完整账本与9个历史未知暂停身份一致；RAG/GROBID健康。`deep-research-evidence/runtime-load-dr130-source-precision-20261018.json`。
+
+## 2026-10-18 原PDF补查、方法前提与回答格式加载
+
+Python先加载1e6daa48（`.133`），确认无活动研究，3,482条完整账本与9个历史未知暂停身份相等。H4F-v2/H1F-v3各执行一次，结束后3,526条账本，仅这两例追加44条已结算调用，历史行哈希保持。
+
+随后加载4bd2a7d3（`.135`）；完整2,193项离线回归通过，加载前后3,526条账本和9个暂停身份一致，RAG/GROBID健康。H1F-v4仅执行一次，结束后3,547条账本、无活动研究，原账本全量哈希及历史暂停身份保持。上述诊断均无新unknown，原有unknown不重新发出；手动保留的旧回答不改写。Java/前端仍沿用前述`.119`源码/包，本次无数据迁移、无卷重置。
+
+证明：`deep-research-evidence/runtime-load-dr133-original-pdf-priority-20261018.json`、`runtime-postcases-dr133-20261018.json`、`runtime-load-dr135-method-premise-format-20261018.json`、`runtime-postcases-dr135-20261018.json`。这些是加载与记录完整性证据，实际内容门槛仍见各案例人工评分；不得为文档提交再次重启服务。

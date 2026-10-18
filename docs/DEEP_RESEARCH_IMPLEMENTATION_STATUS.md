@@ -1,3 +1,11 @@
+2026-10-18 当前Python已加载`.135`（4bd2a7d3）。原PDF补查复用权限、文件哈希、大小/页数/独立解析超时及缓存限制；在原检索名额内找回索引遗漏的指定测量。首批排序优先具体测量和必要原因。方法中的否定前提与“论文缺少实验”分别处理，前者仍须语义核验；明确分点只取自人类要求，压缩保留回答点，发布重新检查分点及正文/条件字数。旧运行、原结果及请求身份保持。
+
+完整Python回归2,193项通过、1条既有警告、141.13秒；定向124项计入全量。初次定向检查的1项英文否定指令失败已修复，原断言保留。Java58项与前端488项/65文件沿用`.119`对应源码结果，本次未改动。加载前后3,526条账本及9个历史未知暂停身份一致；三次真实诊断后3,547条账本、无活动研究、历史账本逐行哈希保持，无新unknown。
+
+三次退役题诊断各提交一次，合计33次已结算模型调用、105,199tokens，费用未知。H4F-v2找回指定原文数字，区分操作/单位并拒绝端到端实时保证，人工诊断通过；不增加独立通过数。H1F-v3机器complete但人工失败，定位原因段误拦及两点漏检。`.135`的H1F-v4保留原因并形成三点，但前两点重复、前帧输入缺少对应引用，修订核验凭暗含上下文放行，仍人工不通过。需要的初始化段已经读取却未在覆盖关闭前提取；格式与误拦修复有效，不能替代关系取证和回答质量。
+
+原始五题的首跑全内容成绩仍为0/5，首定义/评分不覆盖。DR0—DR5、原开发题/实验配置/真实追问/新独立内容门槛仍未完成，Goal保持active，PR保留草稿。用户统一授权后续验证，不再逐例提问；不绕过unknown。证据：[原PDF预检](deep-research-evidence/original-pdf-measurement-preflight-20261018.json)、[排序回放](deep-research-evidence/extraction-priority-v3-real-replay-20261018.json)、[H4F诊断](deep-research-evidence/H4F-v2-diagnostic-20261018.json)、[H1F失败定位](deep-research-evidence/H1F-v3-diagnostic-20261018.json)、[修复回归](deep-research-evidence/method-premise-and-answer-format-regression-20261018.json)、[H1F修复复测](deep-research-evidence/H1F-v4-diagnostic-20261018.json)、[账本核对](deep-research-evidence/runtime-postcases-dr135-20261018.json)。以下保留历史检查点。
+
 2026-10-18 代码`.131`（650ad55f）完整回归2,123项通过、1条既有警告、110.19秒；服务仍为已验证的`.130`。精确数值/单位选择已实现，但真实索引检查只发现所问帧率，未找到所问时长；相同哈希的原PDF第一页明确包含该时长。需先补齐受权限/哈希/大小/页数/超时约束的原PDF回读，再部署并复测H4F。此次没有重复付费验证缺失索引内容。
 
 `.130`的H1F-v2纠正了错误属性，但仍漏掉必要原因且点数不符，规划也未遵守中性指导；不计内容或独立通过。当前3,482条账本、无活动研究、9个历史未知暂停身份保持。Goal继续active；原DR0—DR5未缩减，PR草稿。下一步明确为原PDF补查、首批原因/精确数值排序、规划与完成门槛。证据：[数值选择与限制](deep-research-evidence/requested-measurement-selection-20261018.json)、[索引与原PDF差异](deep-research-evidence/requested-measurement-real-index-gap-20261018.json)、[运行后核对](deep-research-evidence/runtime-postcase-dr130-20261018.json)。以下保留历史检查点。

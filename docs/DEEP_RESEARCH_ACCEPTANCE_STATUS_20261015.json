@@ -45,11 +45,11 @@
       "overlap": true
     },
     "backendCurrentResearchReadingTables": {
-      "passed": 2123,
+      "passed": 2193,
       "warnings": 1,
-      "seconds": 110.19,
-      "log": "tmp/pytest-dr131-full.log",
-      "sourceCommit": "650ad55f",
+      "seconds": 141.13,
+      "log": "tmp/pytest-dr135-full.log",
+      "sourceCommit": "4bd2a7d3",
       "scope": "Research, reading, PDF tables and config."
     },
     "frontendDocumentNavigationFocused": {
@@ -1568,6 +1568,76 @@
       },
       "additionalRows": 23,
       "boundary": "Read-only post-diagnostic check; no restart/provider call. New .131 source is not deployed."
+    },
+    "originalPdfMeasurements": {
+      "proof": "deep-research-evidence/original-pdf-measurement-preflight-20261018.json",
+      "sourcePrecisionContractVersion": 3,
+      "actualScopeAndOriginalFileParse": true,
+      "indexHitsReplayed": true,
+      "modelCalls": 0,
+      "retrievalSlotLimitUnchanged": true,
+      "liveDiagnostic": "deep-research-evidence/H4F-v2-diagnostic-20261018.json"
+    },
+    "extractionPriority3": {
+      "proof": "deep-research-evidence/extraction-priority-v3-real-replay-20261018.json",
+      "modelCalls": 0,
+      "boundary": "Requested measurements and necessary rationale improve; compound input/output obligation closure still omits an already-read initialization passage in H1F-v4."
+    },
+    "methodPremiseAndAnswerFormat": {
+      "proof": "deep-research-evidence/method-premise-and-answer-format-regression-20261018.json",
+      "replayProof": "deep-research-evidence/method-premise-and-answer-format-replay-20261018.json",
+      "absenceScopeContractVersion": 1,
+      "answerFormatContractVersion": 1,
+      "focusedPassed": 124,
+      "focusedOverlapsFullSuite": true,
+      "actualDiagnostic": "deep-research-evidence/H1F-v4-diagnostic-20261018.json",
+      "formatAndPremiseFixObserved": true,
+      "contentAccepted": false
+    },
+    "retiredDiagnostics133To135": [
+      {
+        "case": "H4F-v2",
+        "runId": "dr_run_58cf889dda6350e3b8537477b69aaad2",
+        "promptVersion": "dr-v2.20261018.133",
+        "evaluationUse": "retired-case diagnostic",
+        "independent": false,
+        "outcome": "complete",
+        "contentAccepted": true,
+        "modelCalls": 8,
+        "settledTokens": 28997,
+        "proof": "deep-research-evidence/H4F-v2-diagnostic-20261018.json"
+      },
+      {
+        "case": "H1F-v3",
+        "runId": "dr_run_3db7bde71b4d595085433edd6b47e277",
+        "promptVersion": "dr-v2.20261018.133",
+        "evaluationUse": "retired-case diagnostic",
+        "independent": false,
+        "outcome": "complete",
+        "contentAccepted": false,
+        "modelCalls": 14,
+        "settledTokens": 45330,
+        "proof": "deep-research-evidence/H1F-v3-diagnostic-20261018.json"
+      },
+      {
+        "case": "H1F-v4",
+        "runId": "dr_run_446bfd17a61c59e086b57ee96c913709",
+        "promptVersion": "dr-v2.20261018.135",
+        "evaluationUse": "retired-case diagnostic",
+        "independent": false,
+        "outcome": "complete",
+        "contentAccepted": false,
+        "modelCalls": 11,
+        "settledTokens": 30872,
+        "proof": "deep-research-evidence/H1F-v4-diagnostic-20261018.json"
+      }
+    ],
+    "runtimePostcase135": {
+      "proof": "deep-research-evidence/runtime-postcases-dr135-20261018.json",
+      "callRows": 3547,
+      "active": 0,
+      "historicalPausedUnknowns": 9,
+      "historicalLedgerUnchanged": true
     }
   },
   "stages": [
@@ -1870,10 +1940,10 @@
       "state": "First original result failed content review; retired for generic repair-progress diagnosis.",
       "proof": "deep-research-evidence/H1F-v1-first-review-20261018.json",
       "latestDiagnostic": {
-        "case": "H1F-v2",
-        "runId": "dr_run_07e8401470ac55f3881d9abdcc3b254f",
+        "case": "H1F-v4",
+        "runId": "dr_run_446bfd17a61c59e086b57ee96c913709",
         "contentAccepted": false,
-        "proof": "deep-research-evidence/H1F-v2-diagnostic-20261018.json"
+        "proof": "deep-research-evidence/H1F-v4-diagnostic-20261018.json"
       }
     },
     {
@@ -1899,7 +1969,13 @@
       "runId": "dr_run_ee62d7b47eac52e2aa87a981085bbe16",
       "state": "First result failed; retired before generic literal-measurement retrieval diagnosis. Original preserved.",
       "proof": "deep-research-evidence/H4F-v1-first-review-20261018.json",
-      "retirementProof": "deep-research-evidence/H4F-retirement-20261018.json"
+      "retirementProof": "deep-research-evidence/H4F-retirement-20261018.json",
+      "latestDiagnostic": {
+        "case": "H4F-v2",
+        "runId": "dr_run_58cf889dda6350e3b8537477b69aaad2",
+        "contentAccepted": true,
+        "proof": "deep-research-evidence/H4F-v2-diagnostic-20261018.json"
+      }
     },
     {
       "slot": "H5",
@@ -1929,21 +2005,22 @@
     "Independent Edge recovery"
   ],
   "currentProviderConstraint": "User authorized all further required validations. D1-v9/v10/v11 each executed once and settled, with raw receipts retained. Historical nine unknown identities/reservations remain untouched; no same-case retry or attempt renaming bypass.",
-  "currentDevelopmentMode": "Primary Codex only; goal active after user continuation. Uniform further validation authorized; quota monitor disabled. .130 method-detail retrieval and neutral planning loaded; DR0-DR5 content acceptance open.",
+  "currentDevelopmentMode": "Primary Codex only; goal active. Uniform further validation authorized; quota monitor disabled. .135 original-PDF retrieval, precise extraction priority, method-premise scope and human answer format loaded; DR0-DR5 content acceptance open.",
   "loadedRuntime": {
-    "commit": "2ee36ac2",
-    "promptVersion": "dr-v2.20261018.130",
+    "commit": "4bd2a7d3",
+    "promptVersion": "dr-v2.20261018.135",
     "ready": true,
-    "callsPreserved": 3459,
+    "callsPreserved": 3526,
     "pausedUnknownRuns": 9,
-    "proof": "deep-research-evidence/runtime-load-dr130-source-precision-20261018.json"
+    "proof": "deep-research-evidence/runtime-load-dr135-method-premise-format-20261018.json"
   },
   "nextQualityWork": [
-    "Implement bounded original-PDF supplementation when explicit requested values/units are absent from indexed text. Reuse LocalTaskRetriever.load_pages hash/scope/byte/page/process limits and caches; preserve source slots/identity and propagate scope/hash errors.",
-    "Improve first-batch extraction priority for requested literal measurements and necessary rationale (since/essential/failure reasoning). Preserve v2 behavior and freeze a new priority version; confirm real saved-source first batches before paid diagnostics.",
-    "Plan neutrality remains unproven: H1F-v2 ignored system guidance and added guessed examples. Ground or normalize AI requirements without rewriting human plan edits or breaking parent-reference context.",
-    "Fix false answer completeness and requested point format; H1F-v2 described addition but omitted its reason and displayed two rather than three requested points.",
-    "Complete original DR0-DR5 content, continuation, executable-design and fresh independent gates. H1F/H4F are retired; diagnostics never count as fresh passes. Keep all nine unknown records and reservations unchanged."
+    "Prevent compound mechanism obligations from closing after only an output definition; retain and extract already-read input/initialization premises needed by the requested relation.",
+    "Prevent a repair from gaining support for an unchanged missing premise merely by shortening unrelated wording; require the actual cited source to establish each retained input/operation relation.",
+    "Ground or normalize generated planning criteria without rewriting human plan edits or treating unverified parent artifacts as literal human instructions.",
+    "Improve novice prose and conditions: explain the operation, avoid repeated input/output statements, and do not show untranslated redundant condition strings.",
+    "Complete original D1/D2/D3/D5 content, executable design, real continuation and fresh independent gates. Retired H1F/H4F diagnostics do not count as independent passes.",
+    "Preserve all historical unknown identities/reservations and receipt guards; no automatic resend or attempt/task rename bypass."
   ],
   "javaReaderRuntime": {
     "sourceCommit": "070ab1a",
@@ -2015,11 +2092,5 @@
         "state": "offline network/failure/budget tests available; no claim of real Provider quality"
       }
     ]
-  ],
-  "pendingRuntime": {
-    "commit": "650ad55f",
-    "promptVersion": "dr-v2.20261018.131",
-    "loaded": false,
-    "reason": "Original-PDF measurement supplementation remains to implement before the next diagnostic."
-  }
+  ]
 }
