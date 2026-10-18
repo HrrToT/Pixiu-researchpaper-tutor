@@ -18,7 +18,7 @@ from services.deep_research.acceptance_receipts import claim_submission, confirm
 from services.deep_research.acceptance_manifest import require_frozen_case
 
 
-def _prior_submission_identity(path, case_id):
+def _prior_submission_identity(path, case_id, api=None):
     """Read receipt identities without trusting cached response/outcome fields.
 
     The original live harness used CASE.json and CASE-vN.json with top-level
@@ -38,6 +38,10 @@ def _prior_submission_identity(path, case_id):
     if recorded_case != case_id or not isinstance(task_id, str) or not task_id.strip():
         raise ValueError('Prior receipt identity is invalid; reconcile it before submitting.')
     if run_id is None:
+        from services.deep_research.legacy_action_reconciliation import resolution_path, require_live_legacy_resolution
+        if api is not None and resolution_path(path).exists():
+            require_live_legacy_resolution(path,case_id,api)
+            return task_id,None  # This exact pre-child failure created no run.
         raise ValueError('Prior submission is unconfirmed; reconcile it before any new attempt.')
     if not isinstance(run_id, str) or not run_id.strip():
         raise ValueError('Prior run identity is invalid; reconcile it before submitting.')
@@ -59,7 +63,9 @@ def require_previous_cases_settled(directory, case_id, api, *, history_directori
         for path in sorted(folder.iterdir()):
             if not pattern.fullmatch(path.name):
                 continue
-            task_id, run_id = _prior_submission_identity(path, case_id)
+            task_id, run_id = _prior_submission_identity(path, case_id, api)
+            if run_id is None:
+                continue  # Reconciled specific pre-child failure, never a provider unknown.
             if run_id in identities and identities[run_id] != task_id:
                 raise ValueError('Conflicting prior run identities; reconcile before submitting.')
             identities[run_id] = task_id
