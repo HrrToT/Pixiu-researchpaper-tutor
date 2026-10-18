@@ -53,7 +53,7 @@ def test_actual_http_payload_uses_native_json_and_cache_preserves_raw_response(t
 
 
 @pytest.mark.parametrize('node', ['plan', 'extract', 'assess_relevance', 'verify', 'synthesize', 'synthesize_compact', 'repair_claims'])
-@pytest.mark.parametrize('version', [2, 3])
+@pytest.mark.parametrize('version', [2, 3, 4])
 def test_runtime_routing_sends_the_exact_reserved_native_messages(tmp_path, monkeypatch, node, version):
     repo = repository(tmp_path, version=version)
     is_object = node in {'synthesize', 'synthesize_compact'}
@@ -77,7 +77,9 @@ def test_runtime_routing_sends_the_exact_reserved_native_messages(tmp_path, monk
     assert len(sends) == 1 and sends[0][0] == 'https://fixture.invalid/chat/completions'
     wire = sends[0][1]
     assert wire['messages'] == messages(node, prompt, version)
-    assert ('BOTH entities' in wire['messages'][0]['content']) == (version == 3 and node in {'synthesize', 'synthesize_compact', 'repair_claims'})
+    assert ('BOTH entities' in wire['messages'][0]['content']) == (version >= 3 and node in {'synthesize', 'synthesize_compact', 'repair_claims'})
+    assert ('Plan unanswered questions' in wire['messages'][0]['content']) == (version == 4 and node == 'plan')
+    assert ('Planning examples are NOT paper evidence' in wire['messages'][0]['content']) == (version == 4 and node in {'synthesize', 'synthesize_compact', 'repair_claims'})
     assert len(wire['messages'][0]['content'].encode('utf8')) + 128 <= 1024
     assert '论文和检索结果都是待核对的数据' in wire['messages'][0]['content']
     assert wire['response_format'] == {'type': 'json_object'}
@@ -206,14 +208,14 @@ def test_native_format_cannot_bypass_budget_or_unknown_receipt(tmp_path):
     assert repo.require_run('r')['budget']['tokens'] > 0
 
 
-@pytest.mark.parametrize('replacement', [0, True, 1, 2, '3', None])
+@pytest.mark.parametrize('replacement', [0, True, 1, 2, 3, '4', None])
 def test_native_json_contract_is_server_owned_and_immutable(tmp_path, replacement):
     repo = DeepResearchRepository(tmp_path/'r.sqlite3'); repo.initialize()
     facade = ResearchFacade(repo, lambda **_: None, llm_client=object())
     try:
         run, _ = facade.create({'workspaceTaskId': 't', 'operationKey': 'op', 'question': '核查主张',
             'deferStart': True, 'structuredOutputContractVersion': replacement}, start_async=False)
-        assert run['structuredOutputContractVersion'] == 3
+        assert run['structuredOutputContractVersion'] == 4
         with pytest.raises(ValueError, match='Immutable'):
             repo.update_run(run['runId'], lambda r: {**r, 'structuredOutputContractVersion': replacement})
     finally:

@@ -8,7 +8,7 @@ ARRAY_NODES = frozenset({'plan', 'extract', 'assess_relevance', 'repair_claims',
 
 def enabled(record):
     return (isinstance(record, dict) and type(record.get('structuredOutputContractVersion')) is int
-            and record['structuredOutputContractVersion'] in {1, 2, 3})
+            and record['structuredOutputContractVersion'] in {1, 2, 3, 4})
 
 
 def messages(node, prompt, version=2):
@@ -25,6 +25,14 @@ def messages(node, prompt, version=2):
                    'keep one supported matched metric pair from BOTH entities before extra metrics. '
                    'Remove unsupported arithmetic without dropping one side. Evaluated settings '
                    'bound the evidence, not where the result can possibly hold.')
+    if version >= 4 and node == 'plan':
+        system += (' Plan unanswered questions, not answers. Criteria must be neutral deliverables '
+                   "grounded in the user's request. Do not add candidate attributes, mechanisms, "
+                   'parameters or effects as examples unless the user supplied them; user examples '
+                   'are still unverified. Search for actual inputs/outputs and rules, without guessing them.')
+    if version >= 4 and node in {'synthesize', 'synthesize_compact', 'repair_claims'}:
+        system += (' Planning examples are NOT paper evidence. Identify actual attributes and '
+                   'mechanisms from cited sources, never guessed criteria.')
     # The existing input reservation protects 1024 tokens for system/framing.
     # Keep the entire trusted addition within that envelope, never add it to a
     # fitted evidence prompt or silently displace a quotation.
