@@ -154,3 +154,13 @@ f55df4ca（`.138`）在2,222项完整回归通过后加载；3,569条账本和9�
 5da25372（`.142`）通过2,294项全量回归后加载，3,591条账本及9个暂停身份前后相等，RAG/GROBID健康。H1F-v7及D1-v17各执行一次，追加39条已结算记录，总3,630条；原前缀及暂停身份保持，无活动研究。两例都partial，不能当作质量通过。事实隔离在v7实际两个单事实请求中得到确认。
 
 证明：`deep-research-evidence/runtime-load-dr140-quantity-priority-20261018.json`、`runtime-postcases-dr140-20261018.json`、`runtime-load-dr142-revision-instructions-20261018.json`、`runtime-postcases-dr142-20261018.json`。旧契约、回执、未知预留、原文与用户成果均不迁移或改写；Java/前端/持久卷保持。
+
+## 2026-10-18 同时反馈与原文重建修订加载
+
+959011ea（`.144`）通过2,313项全量回归后加载，3,630条旧账本和9个暂停身份前后相等；H1F-v8、D1-v18结束后为3,666条，均未通过完整内容。
+
+77e16747（`.146`）通过2,329项全量回归后加载，3,666条旧账本和9个暂停身份前后相等，RAG/GROBID健康。H1F-v9、D1-v19追加42条已结算记录，总3,708条；旧前缀哈希及暂停身份保持。实际图的修订输入摘要与新模式、冻结要求匹配；两例仍partial/inconclusive，不能作为质量通过。
+
+两次低推理组件探测使用独立本地SQLite和canonical回执，原生产数据库只读，凭据留在运行容器；原生产前缀及新42行均复核不变。探测结果没有提升全局模型路由，也不代表生产路径内容验收。回退或恢复不能用改变后的提示重新生成旧的未决请求。
+
+证明：`deep-research-evidence/runtime-load-dr144-table-condition-feedback-20261018.json`、`runtime-postcases-dr144-20261018.json`、`runtime-load-dr146-source-redraft-20261018.json`、`runtime-postcases-dr146-20261018.json`、`factual-repair-low-component-probes-20261018.json`。Java/前端和持久卷保持。

@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-18",
+  "legacyReceipt": "tmp/dr-live-cases/D5-v2.json",
+  "receiptSha256": "0c7843c20c5c414727c86445eb6ddb39f61294191a219c81251cd8192c544ba9",
+  "taskId": "dr-live-d2-20261012",
+  "parentRunId": "dr_run_56107afc748d54828af1a50e84eb5d62",
+  "requestId": "314db178-e5ec-5983-9917-043917274b62",
+  "authoritativeAction": {
+    "fingerprint": "eebd7c21bd4a209da8838916bb5cb8f0a9ca7a3fa6e8f21b9b5bb227b1b6f849",
+    "status": "failed",
+    "result": {
+      "error": {
+        "code": "idempotency_conflict",
+        "message": "Idempotency key reused with different input",
+        "details": {
+          "workspaceId": "dr-live-d2-20261012",
+          "idempotencyKey": "314db178-e5ec-5983-9917-043917274b62"
+        }
+      }
+    },
+    "matchingChildRuns": []
+  },
+  "sourceCommitInspected": "959011ea",
+  "modelCalls": 0,
+  "productionRowsChanged": 0,
+  "originalReceiptChanged": false,
+  "boundary": "Read-only diagnosis: exact forwarded continue payload fingerprint matches a definitive pre-child idempotency-conflict receipt; no matching child exists. The CLI still refuses the unconfirmed legacy receipt. This proof is not a retry authorization, receipt mutation or history-guard bypass. A proper read-only action receipt reconciliation path is needed before another D5 submission."
+}

@@ -45,11 +45,11 @@
       "overlap": true
     },
     "backendCurrentResearchReadingTables": {
-      "passed": 2294,
+      "passed": 2329,
       "warnings": 1,
-      "seconds": 173.21,
-      "log": "tmp/pytest-dr142-full.log",
-      "sourceCommit": "5da25372",
+      "seconds": 186.67,
+      "log": "tmp/pytest-dr146-full.log",
+      "sourceCommit": "77e16747",
       "scope": "Research, reading, PDF tables and config."
     },
     "frontendDocumentNavigationFocused": {
@@ -1732,6 +1732,80 @@
       "active": 0,
       "historicalPausedUnknowns": 9,
       "historicalLedgerUnchanged": true
+    },
+    "sourceGroundedFactRevision": {
+      "factRedraftContractVersion": 1,
+      "verificationFeedbackContractVersion": 2,
+      "proof": "deep-research-evidence/concurrent-feedback-and-source-redraft-regression-20261018.json",
+      "actualGraphFingerprints": "deep-research-evidence/source-redraft-actual-graph-fingerprints-20261018.json",
+      "boundary": "Actual saved graph input fingerprints include the new redraft mode and frozen requested requirements. H1F-v9 repairs previous-frame prose, but output-definition point still fails. No complete content pass."
+    },
+    "retiredAndDevelopmentDiagnostics144To146": {
+      "cases": [
+        {
+          "case": "H1F-v8",
+          "runId": "dr_run_f7aaffb1d6ad5665aced40aa199c1ce8",
+          "outcome": "partial",
+          "contentAccepted": false,
+          "modelCalls": 12,
+          "settledTokens": 35572,
+          "proof": "deep-research-evidence/H1F-v8-diagnostic-20261018.json"
+        },
+        {
+          "case": "D1-v18",
+          "runId": "dr_run_41da9df239bb5992bd07489949471741",
+          "outcome": "partial",
+          "contentAccepted": false,
+          "modelCalls": 8,
+          "settledTokens": 34168,
+          "proof": "deep-research-evidence/D1-v18-diagnostic-20261018.json"
+        },
+        {
+          "case": "H1F-v9",
+          "runId": "dr_run_36ab877f423051079ba3a107d912f6a1",
+          "outcome": "partial",
+          "contentAccepted": false,
+          "modelCalls": 14,
+          "settledTokens": 44759,
+          "proof": "deep-research-evidence/H1F-v9-diagnostic-20261018.json"
+        },
+        {
+          "case": "D1-v19",
+          "runId": "dr_run_3e393a12f94655eba68a52f08be6048e",
+          "outcome": "inconclusive",
+          "contentAccepted": false,
+          "modelCalls": 7,
+          "settledTokens": 25774,
+          "proof": "deep-research-evidence/D1-v19-diagnostic-20261018.json"
+        }
+      ],
+      "modelCalls": 41,
+      "settledTokens": 140273,
+      "cost": null,
+      "boundary": "Four single submissions; unchanged questions/materials/budgets. Retired/development diagnostics, not independent results."
+    },
+    "factualRepairReasoningProbe": {
+      "modelCalls": 2,
+      "settledTokens": 18306,
+      "cost": null,
+      "purpose": "Bounded component capability probe; no routing promotion",
+      "proof": "deep-research-evidence/factual-repair-low-component-probes-20261018.json",
+      "routingPromoted": false,
+      "boundary": "Two isolated component requests, low reasoning plus 8192 output cap. Mixed results, both not accepted. Separate local ledger, same history guard and canonical receipts; production untouched. No product-path/semantic/independent credit."
+    },
+    "runtimePostcases146": {
+      "proof": "deep-research-evidence/runtime-postcases-dr146-20261018.json",
+      "callRows": 3708,
+      "active": 0,
+      "historicalPausedUnknowns": 9,
+      "historicalLedgerUnchanged": true
+    },
+    "legacyD5ReceiptDiagnosis": {
+      "proof": "deep-research-evidence/D5-v2-authoritative-action-diagnosis-20261018.json",
+      "authoritativeStatus": "failed/idempotency_conflict",
+      "matchingChildRuns": 0,
+      "originalReceiptChanged": false,
+      "boundary": "Exact forwarded payload fingerprint matches a definitive failed pre-child action. CLI legacy receipt still unconfirmed; implement read-only receipt reconciliation rather than rename/retry bypass."
     }
   },
   "stages": [
@@ -1904,16 +1978,16 @@
   "developmentCases": [
     {
       "id": "D1",
-      "runId": "dr_run_c58d9062ee155997ad5e6d27420b668e",
-      "machine": "completed/partial",
-      "content": "Evidence-bounded limitation repaired, but numerical claim lacks exact Ours table identity; two-point answer not accepted.",
-      "next": "Provide actionable parser-established table-display feedback, keep strict bindings and verify again only after concrete correction.",
+      "runId": "dr_run_3e393a12f94655eba68a52f08be6048e",
+      "machine": "completed/inconclusive",
+      "content": "No published verified claim: star-variant display/identity and unsupported paper-wide absence persist. Not accepted.",
+      "next": "Improve requested baseline binding and structured numerical presentation, plus evidence-bounded scope. Avoid another unchanged full rerun.",
       "previousResult": {
-        "runId": "dr_run_66ec09fffdfe5c8d9a97a0a2f1816d75",
-        "machine": "completed/inconclusive",
-        "content": "not accepted; no published verified claim"
+        "runId": "dr_run_41da9df239bb5992bd07489949471741",
+        "machine": "completed/partial",
+        "proof": "deep-research-evidence/D1-v18-diagnostic-20261018.json"
       },
-      "proof": "deep-research-evidence/D1-v17-diagnostic-20261018.json",
+      "proof": "deep-research-evidence/D1-v19-diagnostic-20261018.json",
       "history": [
         {
           "id": "D1",
@@ -1992,6 +2066,19 @@
             "content": "not accepted; no published verified claim"
           },
           "proof": "deep-research-evidence/D1-v16-partial-20261018.json"
+        },
+        {
+          "id": "D1",
+          "runId": "dr_run_c58d9062ee155997ad5e6d27420b668e",
+          "machine": "completed/partial",
+          "content": "Evidence-bounded limitation repaired, but numerical claim lacks exact Ours table identity; two-point answer not accepted.",
+          "next": "Provide actionable parser-established table-display feedback, keep strict bindings and verify again only after concrete correction.",
+          "previousResult": {
+            "runId": "dr_run_66ec09fffdfe5c8d9a97a0a2f1816d75",
+            "machine": "completed/inconclusive",
+            "content": "not accepted; no published verified claim"
+          },
+          "proof": "deep-research-evidence/D1-v17-diagnostic-20261018.json"
         }
       ]
     },
@@ -2047,10 +2134,10 @@
       "state": "First original result failed content review; retired for generic repair-progress diagnosis.",
       "proof": "deep-research-evidence/H1F-v1-first-review-20261018.json",
       "latestDiagnostic": {
-        "case": "H1F-v7",
-        "runId": "dr_run_fbc8c625e6205431bc8bfe4d48cc9a02",
+        "case": "H1F-v9",
+        "runId": "dr_run_36ab877f423051079ba3a107d912f6a1",
         "contentAccepted": false,
-        "proof": "deep-research-evidence/H1F-v7-diagnostic-20261018.json"
+        "proof": "deep-research-evidence/H1F-v9-diagnostic-20261018.json"
       }
     },
     {
@@ -2111,22 +2198,24 @@
     "Full novice study workflow",
     "Independent Edge recovery"
   ],
-  "currentProviderConstraint": "All further necessary bounded validations authorized. H1F-v6/v7 and D1-v17 each submitted once and settled. Historical nine unknowns and unconfirmed legacy D5-v2 receipt remain preserved; no rename/retry bypass.",
-  "currentDevelopmentMode": "Primary Codex only; goal active, quota monitor disabled. .142 loaded; original DR0-DR5 quality gates remain open.",
+  "currentProviderConstraint": "All further necessary bounded validations authorized. Seven .140-.146 diagnostics and two component probes each submitted once. No historical unknown reissue or receipt-directory/attempt/task rename bypass. Nine unknowns preserved; legacy D5-v2 definitive failed-action diagnosis recorded without changing its unconfirmed receipt.",
+  "currentDevelopmentMode": "Primary Codex only; goal active; quota monitor disabled. .146 loaded. Original DR0-DR5 content gates remain open; component probes do not replace product acceptance.",
   "loadedRuntime": {
-    "commit": "5da25372",
-    "promptVersion": "dr-v2.20261018.142",
+    "commit": "77e16747",
+    "promptVersion": "dr-v2.20261018.146",
     "ready": true,
-    "callsPreserved": 3591,
+    "callsPreserved": 3666,
     "pausedUnknownRuns": 9,
-    "proof": "deep-research-evidence/runtime-load-dr142-revision-instructions-20261018.json"
+    "proof": "deep-research-evidence/runtime-load-dr146-source-redraft-20261018.json"
   },
   "nextQualityWork": [
-    "Remove conflicting trusted instruction to preserve rejected conditions: revision must correct both prose and factual conditions, retaining only supported necessary scope.",
-    "Give table_condition_not_displayed exact parser-established method/group identities so repair can expose Ours without changing cells or relaxing the check.",
-    "Finish evidence-grounded requested points; avoid optional encoder/loss details and repeated claims. Format-only or safe partial reports remain failures.",
-    "Validate original D1/D2/D3/D5, executable experimental designs and real continuation; historical unknowns/unconfirmed receipts need authoritative reconciliation before same-case new submissions.",
-    "Replace retired independent slots after development quality succeeds; frozen first-five full content score remains 0/5."
+    "Distinguish non-quantitative artifact/collective expressions such as 一个7维向量 and 一组数字 from measured counts, preserving true trial/frame/group counts and the strict unreported-four check.",
+    "Bind generated answer criteria to the human request; neutral planning must not introduce unprovided position/rotation/scale examples or stronger completion criteria.",
+    "Present numerical comparisons through exact bound cells and explicit baseline/variant conditions; avoid dependence on fragile free-prose labels or slash-separated anonymous series.",
+    "Keep useful independently supported assertions while rejected optional clauses remain explicit; any narrowed wording must be reverified against its own citations and the whole requested goal.",
+    "Treat author-wide absence separately from a bounded statement about cited evidence, even when the sentence begins with a soft evidence qualifier.",
+    "Implement read-only action receipt reconciliation before another D5 submission; never rewrite history or settle a provider unknown without evidence.",
+    "Complete original D1/D2/D3/D5, executable experiment design, real continuation and fresh independent content gates. Original first-five full content result remains 0/5."
   ],
   "javaReaderRuntime": {
     "sourceCommit": "070ab1a",
