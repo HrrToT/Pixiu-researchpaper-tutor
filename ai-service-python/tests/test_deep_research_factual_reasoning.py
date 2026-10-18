@@ -11,7 +11,7 @@ from services.deep_research.runtime import research_model_options
 def test_only_new_short_factual_answers_choose_reasoning(kind):
     record={'factualReasoningContractVersion':1}
     assert request_options(record,'给出判断，300字以内。',kind)=={OPTION:True}
-    for value in [None,True,False,0,5,'1']:
+    for value in [None,True,False,0,6,'1']:
         assert request_options({'factualReasoningContractVersion':value},'300字以内',kind)=={}
     for question in ['详细说明','301字以内','0字以内']:
         assert request_options(record,question,kind)=={}
@@ -79,7 +79,7 @@ def test_policy_is_server_owned_immutable_and_not_client_selected(tmp_path,repla
     try:
         p,_=facade.create({'workspaceTaskId':'t','operationKey':'k','question':'200字以内',
             'deferStart':True,'factualReasoningContractVersion':replacement},start_async=False)
-        assert p['factualReasoningContractVersion']==4
+        assert p['factualReasoningContractVersion']==5
         with pytest.raises(ValueError,match='Immutable'):
             repo.update_run(p['runId'],lambda r:{**r,'factualReasoningContractVersion':replacement})
     finally: facade.shutdown()
@@ -130,3 +130,35 @@ def test_legacy_profile_does_not_inspect_missing_or_malformed_material_context()
         record={'factualReasoningContractVersion':version,'materialSnapshot':None,'state':None}
         assert request_options(record,'200字以内','paper_comparison')==request_options(
             {'factualReasoningContractVersion':version},'200字以内','paper_comparison')
+
+
+def test_v5_bounds_extended_comparison_reasoning_without_changing_caps_or_old_requests():
+    record={'factualReasoningContractVersion':5,'materialSnapshot':{'materialRefs':['a','b']}}
+    flags=request_options(record,'比较两篇，450字以内','paper_comparison')
+    old=request_options({**record,'factualReasoningContractVersion':4},'比较两篇，450字以内','paper_comparison')
+    new_options=research_model_options('synthesize',flags)
+    old_options=research_model_options('synthesize',old)
+    assert new_options=={**old_options,'reasoning_effort':'low'}
+    assert new_options['max_tokens']==old_options['max_tokens']==8192
+    assert research_model_options('repair_claims',{**flags,'_repair_output_limit':4096})==research_model_options(
+        'repair_claims',{**old,'_repair_output_limit':4096})
+    for kind in ('claim_verification','paper_comparison'):
+        assert request_options(record,'200字以内',kind)==request_options(
+            {**record,'factualReasoningContractVersion':4},'200字以内',kind)
+    for question,kind in [('701字以内','paper_comparison'),('450字以内','claim_verification'),
+                          ('450字以内','experiment_design'),('详细比较','paper_comparison')]:
+        assert request_options(record,question,kind)=={}
+
+
+def test_v5_actual_node_still_stops_known_truncation_once_without_fallback():
+    from services.deep_research.graph import make_synthesize_node
+    record={'factualReasoningContractVersion':5,'question':'比较两篇，450字以内',
+            'materialSnapshot':{'materialRefs':['a','b']},'state':{'outputKind':'paper_comparison','evidence':[]}}
+    def update(_id,mutate,**kwargs):
+        nonlocal record
+        record=mutate(deepcopy(record));return deepcopy(record)
+    invoke=Mock(return_value={'content':'{}','finishReason':'length'})
+    assert make_synthesize_node(invoke,update)({'run_id':'r'})=={'error_code':'invalid_synthesis_response'}
+    assert invoke.call_count==1
+    options=research_model_options('synthesize',invoke.call_args.args[3])
+    assert options['reasoning_effort']=='low' and options['max_tokens']==8192
