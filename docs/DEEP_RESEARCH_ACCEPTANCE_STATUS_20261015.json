@@ -44,11 +44,11 @@
       "overlap": true
     },
     "backendCurrentResearchReadingTables": {
-      "passed": 2703,
+      "passed": 2705,
       "warnings": 1,
-      "seconds": 189.27,
-      "sourceCommit": "469bbaae",
-      "log": "tmp/pytest-dr167-full.log",
+      "seconds": 169.7,
+      "sourceCommit": "cf111653",
+      "log": "tmp/pytest-dr168-full.log",
       "scope": "Research, reading, PDF tables and config; fixture providers."
     },
     "frontendDocumentNavigationFocused": {
@@ -2184,11 +2184,11 @@
     },
     {
       "id": "D5",
-      "runId": "dr_run_86cc8e8177955a40ab9d98351fc61004",
+      "runId": "dr_run_73291abc6c2a535ea3a2f68d2bacea44",
       "machine": "completed/inconclusive",
-      "content": "Manual content fail; actual drafting metadata and direct repair are separately verified, not a content pass.",
-      "next": "Evaluate deeper synthesis reasoning at unchanged output/run caps, first with one comparison follow-up.",
-      "proof": "deep-research-evidence/D5-v11-diagnostic-20261018.json",
+      "content": "Manual fail: correct private unknown premise but causal/categorical prose; scoped current-evidence phrase additionally misrouted by absence guard.",
+      "next": "Fix bounded-current-evidence routing and trusted premise-first generation; keep semantic and all author-wide absence checks.",
+      "proof": "deep-research-evidence/D5-v12-diagnostic-20261018.json",
       "history": [
         {
           "id": "D5",
@@ -2213,6 +2213,14 @@
           "content": "Manual content fail; raw responses and exact rejection evidence retained. No independent credit.",
           "next": "Fix draftingBasis in actual JSON schema and use direct bounded repair for new short factual cases, then validate once.",
           "proof": "deep-research-evidence/D5-v10-diagnostic-20261018.json"
+        },
+        {
+          "id": "D5",
+          "runId": "dr_run_86cc8e8177955a40ab9d98351fc61004",
+          "machine": "completed/inconclusive",
+          "content": "Manual content fail; actual drafting metadata and direct repair are separately verified, not a content pass.",
+          "next": "Evaluate deeper synthesis reasoning at unchanged output/run caps, first with one comparison follow-up.",
+          "proof": "deep-research-evidence/D5-v11-diagnostic-20261018.json"
         }
       ]
     },
@@ -2299,19 +2307,20 @@
   "currentProviderConstraint": "All further necessary bounded validations uniformly authorized. Current .151-onward diagnostic sequence uses86 settled calls/299046tokens, including D5-v7/v8 and D1-v21 each submitted once. Nine historical unknowns and reservations unchanged; cost unknown.",
   "currentDevelopmentMode": "Primary Codex only; goal active, quota monitor paused. Python6f6a7b92/.162 loaded, Java27ac4beb and frontendc3843700 unchanged. H1F-v11 development content remains accepted; D5-v7/v8 and D1-v21 do not pass. OriginalDR0-DR5 incomplete, original first-five0/5 and PR draft unchanged.",
   "loadedRuntime": {
-    "commit": "469bbaae",
-    "promptVersion": "dr-v2.20261018.167",
+    "commit": "cf111653",
+    "promptVersion": "dr-v2.20261018.168",
     "ready": true,
-    "callsPreservedAtLoad": 4005,
-    "callsAfterLatestCase": 4027,
+    "callsPreservedAtLoad": 4027,
+    "callsAfterLatestCase": 4033,
     "pausedUnknownRuns": 9,
     "taskCount": 92,
-    "proof": "deep-research-evidence/runtime-load-dr167-drafting-schema-20261018.json"
+    "proof": "deep-research-evidence/runtime-load-dr168-short-reasoning-20261018.json"
   },
   "nextQualityWork": [
-    "Check a deeper short-factual synthesis profile with the same 8192 output cap and unchanged direct repair. First run one comparison follow-up only.",
-    "Keep actual invalid/empty model response distinct from lack of paper evidence; no automatic resend.",
-    "Executable design and fresh independent content gates remain open. Historical D2/D3 unknown requests are not blindly reissued."
+    "Fix current/available evidence as a direct grammatical subject without permitting author-wide absence behind a qualifier.",
+    "Native generation instruction should treat scientific question premises as unverified, lead with bounded judgement, avoid contradictory opening/limits.",
+    "Keep empty/invalid model body separate from lack of paper evidence; no automatic resend.",
+    "Complete executable design and independent content gates; old D2/D3 unknown requests remain unretried."
   ],
   "javaReaderRuntime": {
     "sourceCommit": "070ab1a",
@@ -2623,5 +2632,16 @@
     "directRepairsActuallyNonempty": true,
     "actualBoundedScopeAuditPassedForOneClaim": true,
     "boundary": "Generation metadata and one accepted claim do not establish complete response or independent content acceptance."
+  },
+  "deeperShortSynthesisCheckpoint": {
+    "sourceCommit": "cf111653",
+    "regressionProof": "deep-research-evidence/short-reasoning-regression-20261018.json",
+    "actualReplayProof": "deep-research-evidence/short-reasoning-real-input-replay-20261018.json",
+    "caseProof": "deep-research-evidence/D5-v12-diagnostic-20261018.json",
+    "modelCalls": 6,
+    "settledTokens": 32696,
+    "contentAccepted": false,
+    "singleCaseOnly": true,
+    "boundary": "Preparation is more correctly bounded but prose still overreaches; guard false positive is separate from semantic validity."
   }
 }

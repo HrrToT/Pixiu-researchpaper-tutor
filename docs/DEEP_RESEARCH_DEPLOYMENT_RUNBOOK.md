@@ -1,5 +1,7 @@
 # Deep Research 单实例备份、恢复与回退
 
+2026-10-18当前Pythoncf111653 / `.168`，Java27ac4beb、前端e6c14f57。加载保持4,027条账本；本版仅一例后4,033条、0活动、9历史未知、92任务。旧负载和任务实体保持。新综合推理深度真实启用，但D5-v12仍内容失败；当前证据缺席语法误拦与正文逻辑错误分别记录。证据：[诊断与保留](deep-research-evidence/runtime-postcases-dr168-20261018.json)。
+
 2026-10-18当前Python469bbaae / `.167`，Java27ac4beb、前端e6c14f57。加载保持4,005条账本；两例后4,027条、0活动、9历史未知、92任务。正式草稿字段实际返回、直接修订有正文；旧对象保持。两例内容仍失败，机器partial/inconclusive不计质量通过。证据：[真实字段与保留](deep-research-evidence/runtime-postcases-dr167-20261018.json)。
 
 2026-10-18当前Python4c68f300 / `.166`，Java27ac4beb、前端e6c14f57。加载保持3,979条账本；两例后4,005条、0活动、9历史未知、92任务，旧负载及目标任务原实体保持。新范围结构契约仅新运行有效，旧请求/结果不改写。真实内容均不通过，私有草稿字段遗漏及stop/空正文已留档；未加载后续未测源码。证据：[当前诊断与保留](deep-research-evidence/runtime-postcases-dr166-20261018.json)。
