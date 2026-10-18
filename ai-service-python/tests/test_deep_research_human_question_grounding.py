@@ -98,14 +98,14 @@ def test_unknown_grounded_acquisition_keeps_original_request_without_reissue(tmp
     assert provider.invoke.call_count==1 and saved==repo.require_run('r')['state']['adaptiveAssessment']
 
 
-@pytest.mark.parametrize('replacement',[None,True,'1',0,1,3])
+@pytest.mark.parametrize('replacement',[None,True,'1',0,1,2,4])
 def test_grounding_policy_is_owned_and_frozen_by_server(tmp_path,replacement):
     repo=DeepResearchRepository(tmp_path/'r.sqlite3');repo.initialize()
     facade=ResearchFacade(repo,lambda **_:None,llm_client=object())
     try:
         run,_=facade.create({'workspaceTaskId':'t','operationKey':'op','question':'What changes?',
             'requestGroundingContractVersion':replacement,'deferStart':True},start_async=False)
-        assert run['requestGroundingContractVersion']==2
+        assert run['requestGroundingContractVersion']==3
         with pytest.raises(ValueError,match='Immutable'):
             repo.update_run(run['runId'],lambda r:{**r,'requestGroundingContractVersion':replacement})
     finally:facade.shutdown()

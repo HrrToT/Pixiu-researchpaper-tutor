@@ -81,7 +81,7 @@ def test_actual_initial_plan_node_versions_the_policy_without_extra_model_calls(
     else: assert criteria==original[0]['obligations'][0]['completionCriteria']
 
 
-@pytest.mark.parametrize('version',[None,True,False,0,1,'2',3])
+@pytest.mark.parametrize('version',[None,True,False,0,1,'2',4])
 def test_imperative_policy_strict_version(version):
     assert not imperative_grounded({'requestGroundingContractVersion':version})
     assert imperative_grounded({'requestGroundingContractVersion':2})

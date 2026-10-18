@@ -359,11 +359,12 @@ Return a JSON ARRAY of plan items, NOT an object with items field."""
             return invalid_plan('Plan has no research items')
 
         from services.deep_research.evidence_requirements import enabled as requirements_enabled, normalize_generated_requirements, grounded, imperative_grounded
+        from services.deep_research.request_dimensions import enabled as dimensions_enabled
         requirement_changes = []
         if requirements_enabled(record):
             try:
                 validated, requirement_changes = normalize_generated_requirements(validated, question,
-                    literal_questions=grounded(record),literal_imperatives=imperative_grounded(record))
+                    literal_questions=grounded(record),literal_imperatives=imperative_grounded(record),atomic_dimensions=dimensions_enabled(record))
                 validated = validate_plan(validated)
             except ValueError as exc:
                 return invalid_plan(exc)
@@ -1375,6 +1376,7 @@ def make_verify_node(
             return semantic_check_fn(claims_to_check, evidence_list)
         
         from services.deep_research.final_coverage import audit_final_answer
+        from services.deep_research.request_dimensions import enabled as dimensions_enabled
         from services.deep_research.comparison_reasoning import enabled as comparison_enabled
         from services.deep_research.evidence_priority import priority_enabled
         from services.deep_research.coverage_repair import prepare_coverage_repair, merge_verified_revisions
@@ -1393,7 +1395,8 @@ def make_verify_node(
             current = repo_update(run_id, lambda r: r, expected_revision=None)
             answer_coverage = audit_final_answer(run_id, effective_question(record),
                 saved.get('plan', []), verification_result.get('accepted', []),
-                evidence, llm_invoke, _safe_parse_json, budget=current.get('budget'))
+                evidence, llm_invoke, _safe_parse_json, budget=current.get('budget'),
+                **({'literal_dimensions':True} if dimensions_enabled(record) else {}))
             if saved.get('outputKind') == 'experiment_design':
                 from services.deep_research.design_completion import prepare_design_completion
                 repair_report, verification_result = prepare_design_completion(
@@ -1493,7 +1496,8 @@ def make_verify_node(
                         current = repo_update(run_id, lambda r: r, expected_revision=None)
                         answer_coverage = audit_final_answer(run_id, effective_question(record),
                             record.get('state', {}).get('plan', []), merged.get('accepted', []),
-                            evidence, llm_invoke, _safe_parse_json, budget=current.get('budget'))
+                            evidence, llm_invoke, _safe_parse_json, budget=current.get('budget'),
+                            **({'literal_dimensions':True} if dimensions_enabled(record) else {}))
                     verification_result = merged
             except BudgetExhaustedError as exc:
                 repo_update(run_id, lambda r: {**r, 'state': {**r.get('state', {}),

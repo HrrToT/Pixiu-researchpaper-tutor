@@ -14,11 +14,11 @@ def enabled(record):
 
 
 def grounded(record):
-    return type(record.get('requestGroundingContractVersion')) is int and record['requestGroundingContractVersion'] in (1,2)
+    return type(record.get('requestGroundingContractVersion')) is int and record['requestGroundingContractVersion'] in (1,2,3)
 
 
 def imperative_grounded(record):
-    return type(record.get('requestGroundingContractVersion')) is int and record['requestGroundingContractVersion']==2
+    return type(record.get('requestGroundingContractVersion')) is int and record['requestGroundingContractVersion'] in (2,3)
 
 
 def criteria(obligation):
@@ -98,7 +98,7 @@ def _requested_type(text):
     return 'explanation' if _EXPLAIN.search(text) else 'identification'
 
 
-def normalize_generated_requirements(plan, question, *, literal_questions=False,literal_imperatives=False):
+def normalize_generated_requirements(plan, question, *, literal_questions=False,literal_imperatives=False,atomic_dimensions=False):
     """Change only the initial AI plan, never a saved human plan edit.
 
     Separate literal human questions when one generated criterion merged them.
@@ -133,11 +133,18 @@ def normalize_generated_requirements(plan, question, *, literal_questions=False,
                 requests = [part for part in parts if _ASK.search(part)]
             if not (1 if literal_questions else 2) <= len(requests) <= 4 or any(not 4 <= len(part) <= 500 for part in requests):
                 continue
-            obligation['completionCriteria'] = [
+            resolved = [
                 {'criterionId': f'human_aspect_{i+1}', 'requirement': part,
                  'responseType': _requested_type(part) if literal_imperatives else
                      'explanation' if _EXPLAIN.search(part) else 'identification'}
                 for i, part in enumerate(requests)]
+            if atomic_dimensions:
+                from services.deep_research.request_dimensions import split_dimensions
+                dimensions=[dimension for row in resolved for dimension in
+                            (split_dimensions(row['requirement']) or [{k:row[k] for k in ('requirement','responseType')}])]
+                if len(dimensions)<=4:
+                    resolved=[{'criterionId':f'human_aspect_{i+1}',**row} for i,row in enumerate(dimensions)]
+            obligation['completionCriteria'] = resolved
             if literal_questions:
                 # The generated criterion can add an unprovided attribute list
                 # even when the user asked one simple question. Use the literal
@@ -145,7 +152,7 @@ def normalize_generated_requirements(plan, question, *, literal_questions=False,
                 obligation['question'] = excerpt
                 anchored.append(excerpt)
             changes.append({'obligationId': oid, 'change': 'anchored_literal_human_aspects' if literal_questions else 'separated_literal_human_aspects',
-                            'criterionCount': len(requests)})
+                            'criterionCount': len(resolved)})
         if literal_questions and len(anchored) == len(item['obligations']):
             item['question'] = '；'.join(dict.fromkeys(anchored))
     return result, changes
