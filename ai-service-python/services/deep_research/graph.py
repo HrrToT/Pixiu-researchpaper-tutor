@@ -1255,6 +1255,9 @@ Orient losses before formulas, distinguish conditional/averaged effects and pape
         from services.deep_research.comparison_reasoning import enabled as comparison_enabled,GUIDANCE as comparison_guidance
         if comparison_enabled(record) and output_kind in {'paper_comparison','claim_verification'}:
             prompt+='\n'+comparison_guidance
+        from services.deep_research.factual_scope import enabled as scope_enabled,DRAFT_GUIDANCE
+        if scope_enabled(record) and output_kind in {'paper_comparison','claim_verification'}:
+            prompt+='\n'+DRAFT_GUIDANCE
         template = prompt
         prompt, evidence_summaries = fit_evidence_prompt(evidence_summaries,
             lambda rows: template.replace(evidence_marker, json.dumps(rows, ensure_ascii=False, separators=(',', ':')), 1))
@@ -1281,6 +1284,20 @@ Orient losses before formulas, distinguish conditional/averaged effects and pape
             return {"error_code": "invalid_synthesis_response"}
         from services.deep_research.answer_constraints import compact_answer, resolve_evidence_aliases
         parsed = resolve_evidence_aliases(parsed, evidence_aliases)
+        drafting_audit={}
+        synthesis_presentation_audit={}
+        if scope_enabled(record):
+            from services.deep_research.citation_presentation import normalize as normalize_markers
+            quotation_by_alias={row['evidenceId']:row.get('quote','')+'\n'+
+                json.dumps(row.get('sourceContext',{}),ensure_ascii=False) for row in evidence_summaries}
+            for index,claim in enumerate(parsed['claims']):
+                if isinstance(claim,dict) and 'draftingBasis' in claim:
+                    drafting_audit[claim.get('claimId','')]=claim.pop('draftingBasis')
+                if isinstance(claim,dict):
+                    normalized,audit=normalize_markers(claim,evidence_aliases,quotation_by_alias)
+                    parsed['claims'][index]=normalized
+                    if audit:
+                        synthesis_presentation_audit[claim.get('claimId','')]=audit
         if output_kind == "experiment_design":
             from services.deep_research.execution_materialization import materialize_execution_claim
             from services.deep_research.budget_contract import stamp_budget_contract
@@ -1342,6 +1359,8 @@ Orient losses before formulas, distinguish conditional/averaged effects and pape
                     "reportVersionId": report_version_id,
                     "reportBody": parsed,
                     "synthesisContainer": container_kind,
+                    **({'factualDraftingAudit':drafting_audit,
+                        'synthesisPresentationAudit':synthesis_presentation_audit} if scope_enabled(record) else {}),
                 },
             },
             expected_revision=None,
@@ -1380,6 +1399,7 @@ def make_verify_node(
         from services.deep_research.final_coverage import audit_final_answer
         from services.deep_research.request_dimensions import enabled as dimensions_enabled
         from services.deep_research.comparison_reasoning import enabled as comparison_enabled
+        from services.deep_research.factual_scope import enabled as scope_enabled
         from services.deep_research.evidence_priority import priority_enabled
         from services.deep_research.coverage_repair import prepare_coverage_repair, merge_verified_revisions
         from services.deep_research.design_consistency import enforce_design_consistency
@@ -1465,6 +1485,7 @@ def make_verify_node(
                         current_budget=lambda: repo_update(run_id, lambda r: r, expected_revision=None).get('budget', {}),
                         invoke_request=invoke_repair,
                         **({'comparison_reasoning':True} if comparison_enabled(record) else {}),
+                        **({'factual_scope':True} if scope_enabled(record) else {}),
                         **({'question_priority':True} if priority_enabled(record) else {}),
                         **({'fact_redraft':True,'source_aware_redraft':record['factRedraftContractVersion'] in (2,3),
                             **({'concise_factual':True} if record['factRedraftContractVersion']==3 else {}),

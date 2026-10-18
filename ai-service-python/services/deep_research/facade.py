@@ -273,7 +273,8 @@ class ResearchFacade:
             "materials": materials,
             "materialSnapshot": material_snapshot,  # Immutable Java snapshot
             "contextMaterials": (material_snapshot or {}).get("contextMaterials", []) if isinstance(material_snapshot, dict) else [],
-            "promptVersion": "dr-v2.20261018.165",
+            "promptVersion": "dr-v2.20261018.166",
+            "factualScopeContractVersion": 1,
             "factualReasoningContractVersion": 1,
             "continuationFormatContractVersion": 1,
             "jointEvidenceContractVersion": 1,
@@ -1157,12 +1158,14 @@ class ResearchFacade:
         """Share policy wiring with the live-scope production subclass."""
         from services.deep_research.tools import BudgetedSemanticChecker
         from services.deep_research.comparison_reasoning import enabled as comparison_enabled
+        from services.deep_research.factual_scope import enabled as scope_enabled
         checker = BudgetedSemanticChecker(invoker, run_id,
             metric_domains=lambda: self._repo.require_run(run_id).get('state', {}).get('metricDomains'),
             research_question=lambda: effective_question(self._repo.require_run(run_id)),
             isolate_factual_claims=(lambda: self._repo.require_run(run_id).get('claimIsolationContractVersion') == 1)
                 if isolation is None else isolation,
-            comparison_reasoning=lambda: comparison_enabled(self._repo.require_run(run_id)))
+            comparison_reasoning=lambda: comparison_enabled(self._repo.require_run(run_id)),
+            factual_scope=lambda: scope_enabled(self._repo.require_run(run_id)))
         return checker
     
     def _default_scope_validator(self) -> Callable[[str, str], bool]:

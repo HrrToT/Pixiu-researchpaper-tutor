@@ -36,6 +36,10 @@ def restore_visible_evidence(rows, reverse):
 
 def restore_verdict_evidence(verdict, reverse):
     restored = deepcopy(verdict)
+    scope=restored.get('scopeAudit')
+    for row in scope.get('premises',[]) if isinstance(scope,dict) and isinstance(scope.get('premises'),list) else []:
+        if isinstance(row,dict) and isinstance(row.get('evidenceId'),str):
+            row['evidenceId']=reverse.get(row['evidenceId'],row['evidenceId'])
     for key in ('dataAvailability', 'assetAvailability'):
         binding = restored.get(key)
         if isinstance(binding, dict) and isinstance(binding.get('evidenceId'), str):

@@ -16,7 +16,7 @@ from services.deep_research.repair_scope import repair_evidence_scope
 def _prepare_repair(report, verification, evidence, question, *, max_prompt_bytes=24000,
                     metric_domains=None, draft_context=(), prior_revisions=(),
                     fact_redraft=False, requirement_context=(), source_aware_redraft=False,comparison_reasoning=False,
-                    question_priority=False,concise_factual=False):
+                    question_priority=False,concise_factual=False,factual_scope=False):
     rejected = {row['claimId']: row for row in verification.get('rejected', [])}
     originals = {row['claimId']: row for row in report.get('claims', []) if row.get('claimId') in rejected}
     if not originals:
@@ -53,7 +53,7 @@ def _prepare_repair(report, verification, evidence, question, *, max_prompt_byte
         # choices. Keep every original prose/configuration field and avoid
         # encouraging the model to copy metadata into executionSpec.
         return {key: value for key, value in row.items()
-                if key not in {'designContractVersion', 'budgetContractVersion', 'hypothesisContractVersion','protocolContractVersion','workflowContractVersion'}
+                if key not in {'designContractVersion', 'budgetContractVersion', 'hypothesisContractVersion','protocolContractVersion','workflowContractVersion','draftingBasis'}
                 and not (key in {'conditions', 'obligationIds'} and value in ({}, []))}
     input_claims = [compact_claim_view(row) for row in input_claims]
     redraft_instruction = ''
@@ -301,6 +301,9 @@ in the paper. Maintain consistency with accepted definitions and complete requir
             source_instruction=source_instruction,targets=input_claims,checks=packed_checks,questions=question_dictionary,
             permissions_marker=permissions_marker,evidence_marker=evidence_marker,shape=shape,
             table_instructions=table_instructions,terminology=SCIENTIFIC_TERMINOLOGY)
+        if factual_scope:
+            from services.deep_research.factual_scope import DRAFT_GUIDANCE
+            prompt+='\n'+DRAFT_GUIDANCE
     template = prompt
     def render(selected_rows):
         visible_ids = {row['evidenceId'] for row in selected_rows}
@@ -342,7 +345,7 @@ in the paper. Maintain consistency with accepted definitions and complete requir
                 json.dumps(row.get('sourceContext',{}),ensure_ascii=False) for row in rows}} if compact_factual else {})}
 
 
-def _parse_repair_response(prepared, response, parse, presentation_audit=None):
+def _parse_repair_response(prepared, response, parse, presentation_audit=None,drafting_audit=None):
     originals, aliases, allowed = (prepared[key] for key in ('originals', 'aliases', 'allowed'))
     finish = getattr(response, 'finish_reason', None) if not isinstance(response, dict) else response.get('finishReason', response.get('finish_reason'))
     if finish == 'length':
@@ -393,6 +396,8 @@ def _parse_repair_response(prepared, response, parse, presentation_audit=None):
             row['text'] = row.pop('claim')
         if not isinstance(row.get('text'), str) or not row['text'].strip():
             continue
+        if drafting_audit is not None and 'draftingBasis' in row:
+            drafting_audit.append({'claimId':key,'basis':row.pop('draftingBasis')})
         if original.get('designRole'):
             if row.get('designRole', original['designRole']) != original['designRole']:
                 continue
@@ -417,7 +422,7 @@ def factual_redraft_eligible(report):
 def repair_rejected(report, verification, evidence, question, invoke, parse, *,
                     max_prompt_bytes=24000, metric_domains=None, batch_state=None, checkpoint=None,
                     current_budget=None, invoke_request=None, fact_redraft=False, requirement_context=(),
-                    source_aware_redraft=False,comparison_reasoning=False,question_priority=False,concise_factual=False):
+                    source_aware_redraft=False,comparison_reasoning=False,question_priority=False,concise_factual=False,factual_scope=False):
     """One bounded revision round, split before dispatch when evidence cannot fit.
 
     At most three requests share full sibling design definitions. Successful
@@ -436,7 +441,8 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
                        **({'factRedraftContractVersion':3 if concise_factual else 2 if source_aware_redraft else 1,'requirementContext':requirement_context}
                           if fact_redraft else {}),
                        **({'comparisonReasoningContractVersion':1} if comparison_reasoning else {}),
-                       **({'repairEvidencePriorityVersion':1} if question_priority else {})})
+                       **({'repairEvidencePriorityVersion':1} if question_priority else {}),
+                       **({'factualScopeContractVersion':1} if factual_scope else {})})
 
     def prepare(ids, results=(), byte_limit=None):
         ids = set(ids)
@@ -448,7 +454,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
             max_prompt_bytes=state['maxPromptBytes'] if byte_limit is None else byte_limit,
             metric_domains=metric_domains, draft_context=siblings, prior_revisions=results,
             fact_redraft=fact_redraft, requirement_context=requirement_context,source_aware_redraft=source_aware_redraft,
-            comparison_reasoning=comparison_reasoning,question_priority=question_priority,concise_factual=concise_factual)
+            comparison_reasoning=comparison_reasoning,question_priority=question_priority,concise_factual=concise_factual,factual_scope=factual_scope)
 
     state = deepcopy(batch_state) if batch_state is not None else {
         'version': 1, 'inputDigest': identity, 'maxPromptBytes': max_prompt_bytes,
@@ -530,7 +536,10 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
                     checkpoint(deepcopy(state))
                 break  # Keep completed drafts, then independently verify them.
             presentation_audit=[]
-            rows = _parse_repair_response(prepared, response, parse,presentation_audit)
+            drafting_audit=[] if factual_scope else None
+            rows = _parse_repair_response(prepared, response, parse,presentation_audit,drafting_audit)
+            if drafting_audit:
+                state.setdefault('factualDraftingAudit',{})[key]=drafting_audit
             if presentation_audit:
                 state.setdefault('citationPresentationAudit',{})[key]=presentation_audit
             state['results'][key] = rows

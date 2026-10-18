@@ -59,6 +59,13 @@ class FixtureModel:
         elif prompt.startswith("Verify these claims"):
             claims = json.loads(prompt.split('Claims:\n', 1)[1].split('\n\nEvidence:', 1)[0])
             content = [{"claimId": c['claimId'], "status": "passed"} for c in claims]
+            if 'Scope-strength audit' in prompt:
+                packet=json.JSONDecoder().raw_decode(prompt.split('Evidence:\n',1)[1])[0]
+                for verdict,c in zip(content,claims):
+                    ref=c['evidenceRefs'][0]
+                    verdict['scopeAudit']={'claimStrength':'bounded','evidenceStrength':'bounded',
+                        'supported':True,'statementExcerpt':c['text'],
+                        'premises':[{'evidenceId':ref,'quote':packet['evidence'][ref]['quote']}]}
         elif prompt.startswith(("Revise only the targets","Rebuild ONLY these rejected factual answer targets")):
             content = []  # An unsupported claim may be dropped; do not relax checks.
         elif prompt.startswith("Audit whether the FINAL ACCEPTED ANSWER"):
