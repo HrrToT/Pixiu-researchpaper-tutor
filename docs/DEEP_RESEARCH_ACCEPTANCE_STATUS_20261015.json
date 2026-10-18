@@ -44,11 +44,11 @@
       "overlap": true
     },
     "backendCurrentResearchReadingTables": {
-      "passed": 2665,
+      "passed": 2680,
       "warnings": 1,
-      "seconds": 180.01,
-      "sourceCommit": "e6c14f57",
-      "log": "tmp/pytest-dr164-full.log",
+      "seconds": 156.7,
+      "sourceCommit": "17f10918",
+      "log": "tmp/pytest-dr165-full.log",
       "scope": "Research, reading, PDF tables and config; fixture providers."
     },
     "frontendDocumentNavigationFocused": {
@@ -2026,16 +2026,11 @@
   "developmentCases": [
     {
       "id": "D1",
-      "runId": "dr_run_3e393a12f94655eba68a52f08be6048e",
-      "machine": "completed/inconclusive",
-      "content": "No published verified claim: star-variant display/identity and unsupported paper-wide absence persist. Not accepted.",
-      "next": "Improve requested baseline binding and structured numerical presentation, plus evidence-bounded scope. Avoid another unchanged full rerun.",
-      "previousResult": {
-        "runId": "dr_run_41da9df239bb5992bd07489949471741",
-        "machine": "completed/partial",
-        "proof": "deep-research-evidence/D1-v18-diagnostic-20261018.json"
-      },
-      "proof": "deep-research-evidence/D1-v19-diagnostic-20261018.json",
+      "runId": "dr_run_b54d68116ab6530cb0832ca02b78bde2",
+      "machine": "completed/partial",
+      "content": "Manual content fail; exact findings preserved in proof. No independent credit.",
+      "next": "Correct ablation/general baseline scope and bounded observations versus necessary conditions; complete unverified range.",
+      "proof": "deep-research-evidence/D1-v23-diagnostic-20261018.json",
       "history": [
         {
           "id": "D1",
@@ -2127,6 +2122,19 @@
             "content": "not accepted; no published verified claim"
           },
           "proof": "deep-research-evidence/D1-v17-diagnostic-20261018.json"
+        },
+        {
+          "id": "D1",
+          "runId": "dr_run_3e393a12f94655eba68a52f08be6048e",
+          "machine": "completed/inconclusive",
+          "content": "No published verified claim: star-variant display/identity and unsupported paper-wide absence persist. Not accepted.",
+          "next": "Improve requested baseline binding and structured numerical presentation, plus evidence-bounded scope. Avoid another unchanged full rerun.",
+          "previousResult": {
+            "runId": "dr_run_41da9df239bb5992bd07489949471741",
+            "machine": "completed/partial",
+            "proof": "deep-research-evidence/D1-v18-diagnostic-20261018.json"
+          },
+          "proof": "deep-research-evidence/D1-v19-diagnostic-20261018.json"
         }
       ]
     },
@@ -2160,11 +2168,21 @@
     },
     {
       "id": "D5",
-      "runId": "dr_run_c56e3d09f3e45e2bbf2d63c41a348043",
-      "machine": "completed/partial",
-      "functional": "Real inherited evidence reused without retrieve/read; parent edited artifact preserved",
-      "content": "not accepted; measurement conditions insufficiently distinguished",
-      "next": "Validate continuation content and a complete new artifact's exact live citation lookup."
+      "runId": "dr_run_94ae6aa1577051b88d7587f33a093374",
+      "machine": "completed/inconclusive",
+      "content": "Manual content fail; exact findings preserved in proof. No independent credit.",
+      "next": "Organize actual comparison premises before drafting; unknown alignment must not become demonstrated differences.",
+      "proof": "deep-research-evidence/D5-v9-diagnostic-20261018.json",
+      "history": [
+        {
+          "id": "D5",
+          "runId": "dr_run_c56e3d09f3e45e2bbf2d63c41a348043",
+          "machine": "completed/partial",
+          "functional": "Real inherited evidence reused without retrieve/read; parent edited artifact preserved",
+          "content": "not accepted; measurement conditions insufficiently distinguished",
+          "next": "Validate continuation content and a complete new artifact's exact live citation lookup."
+        }
+      ]
     },
     {
       "id": "D6",
@@ -2249,20 +2267,19 @@
   "currentProviderConstraint": "All further necessary bounded validations uniformly authorized. Current .151-onward diagnostic sequence uses86 settled calls/299046tokens, including D5-v7/v8 and D1-v21 each submitted once. Nine historical unknowns and reservations unchanged; cost unknown.",
   "currentDevelopmentMode": "Primary Codex only; goal active, quota monitor paused. Python6f6a7b92/.162 loaded, Java27ac4beb and frontendc3843700 unchanged. H1F-v11 development content remains accepted; D5-v7/v8 and D1-v21 do not pass. OriginalDR0-DR5 incomplete, original first-five0/5 and PR draft unchanged.",
   "loadedRuntime": {
-    "commit": "e6c14f57",
-    "promptVersion": "dr-v2.20261018.164",
+    "commit": "17f10918",
+    "promptVersion": "dr-v2.20261018.165",
     "ready": true,
-    "callsPreservedAtLoad": 3935,
-    "callsAfterLatestCase": 3956,
+    "callsPreservedAtLoad": 3956,
+    "callsAfterLatestCase": 3979,
     "pausedUnknownRuns": 9,
     "taskCount": 92,
-    "proof": "deep-research-evidence/runtime-load-dr164-followup-format-20261018.json"
+    "proof": "deep-research-evidence/runtime-load-dr165-short-factual-20261018.json"
   },
   "nextQualityWork": [
-    "Improve short factual/comparison generation: qualified judgement and bounded unknown scope rather than numeric inventories or unsupported author-wide absence.",
-    "Complete executable experiment design content gates.",
-    "After development content gates pass, use genuinely new fixed independent material/cases; original first-five 0/5 unchanged.",
-    "Clean internal condition labels without changing verified meaning or evidence."
+    "Organize factual premises and conclusion strength before drafting; require own-quote scope audit without changing old requests.",
+    "After a concrete correction, verify one fixed D1 and D5 example each; never retry unchanged or unknown calls.",
+    "Executable experiment design and new independent content gates remain open; original unknown D2/D3 calls are not blindly reissued."
   ],
   "javaReaderRuntime": {
     "sourceCommit": "070ab1a",
@@ -2533,5 +2550,18 @@
     "independentCredit": 0,
     "modelCalls": 10,
     "settledTokens": 45383
+  },
+  "boundedFactualReasoningCheckpoint": {
+    "sourceCommit": "17f10918",
+    "regressionProof": "deep-research-evidence/factual-reasoning-regression-20261018.json",
+    "replayProof": "deep-research-evidence/factual-reasoning-real-input-replay-20261018.json",
+    "realCases": [
+      "D1-v23",
+      "D5-v9"
+    ],
+    "modelCalls": 17,
+    "settledTokens": 80231,
+    "contentAccepted": 0,
+    "boundary": "Actual limited reasoning enabled; no quality pass inferred."
   }
 }
