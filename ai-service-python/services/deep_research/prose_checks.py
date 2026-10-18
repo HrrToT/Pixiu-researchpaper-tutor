@@ -12,6 +12,9 @@ _SCOPED = re.compile(r'当前取得|本次检索|所读片段|选定片段|所�
     r'|\b(?:selected|retrieved) (?:passages|evidence)\b', re.I)
 _ALIAS = re.compile(r'(?<![A-Za-z0-9_])(?:E|P)[1-9]\d*(?![A-Za-z0-9_])')
 _RAW_ID = re.compile(r'(?<![A-Za-z0-9_])ev_[0-9a-f]{64}(?![A-Za-z0-9_])')
+_PUBLICATION_OBJECT = re.compile(r'实验|评测|评估|测试|验证|证据|结果|配置|信息|报告'
+    r'|\b(?:experiment|evaluation|test|evidence|result|report|configuration)s?\b', re.I)
+_REPORTING_ABSENCE = re.compile(r'未|没有|not (?:report|provide|test|evaluate)|no (?:experiment|evaluation|evidence)', re.I)
 
 
 def _strings(value):
@@ -48,7 +51,7 @@ def leaks_internal_reference(claim, support):
     return False
 
 
-def absence_not_established(claim, support):
+def absence_not_established(claim, support, *, scope_version=0):
     explicit = any(EXPLICIT_ABSENCE.search(item.get('quote', '')) for item in support)
     if explicit:
         return False  # Independent semantic verification still checks the exact subject/scope.
@@ -59,6 +62,15 @@ def absence_not_established(claim, support):
                 prefix = sentence[:missing.start()]
                 papers = list(_PAPER.finditer(prefix))
                 scopes = list(_SCOPED.finditer(prefix))
+                if type(scope_version) is int and scope_version == 1:
+                    # This guard concerns missing research/reporting, not the
+                    # method's negative premises (e.g. an object absent from
+                    # the initial frame). Those still require semantic review.
+                    if missing.group() == '不存在' and not _PUBLICATION_OBJECT.search(sentence):
+                        continue
+                    if not papers and not _REPORTING_ABSENCE.search(missing.group()) \
+                            and not _PUBLICATION_OBJECT.search(sentence):
+                        continue
                 # A proposal still asserts a fact when it says the paper omitted X.
                 if not factual and not papers:
                     continue

@@ -273,8 +273,9 @@ class ResearchFacade:
             "materials": materials,
             "materialSnapshot": material_snapshot,  # Immutable Java snapshot
             "contextMaterials": (material_snapshot or {}).get("contextMaterials", []) if isinstance(material_snapshot, dict) else [],
-            "promptVersion": "dr-v2.20261018.133",
+            "promptVersion": "dr-v2.20261018.134",
             "sourcePrecisionContractVersion": 3,
+            "absenceScopeContractVersion": 1,
             "repairProgressContractVersion": 1,
             "structuredOutputContractVersion": 4,
             "claimIsolationContractVersion": 1,
@@ -895,7 +896,7 @@ class ResearchFacade:
                 scope_validator=self._scope_validator or self._default_scope_validator(),
                 make_evidence_fn=self._get_make_evidence(run_id),
                 coverage_gaps_fn=self._get_coverage_gaps(),
-                verify_claims_fn=self._get_verify_claims(),
+                verify_claims_fn=self._get_verify_claims(run_id),
                 semantic_check_fn=self._make_semantic_checker(run_id),
                 external_acquire=self._external_acquire,
                 repo_update=guarded_update,
@@ -1172,9 +1173,13 @@ class ResearchFacade:
         from services.deep_research.coverage import coverage_gaps
         return coverage_gaps
     
-    def _get_verify_claims(self) -> Callable[[list, list, Callable | None], dict]:
+    def _get_verify_claims(self, run_id=None) -> Callable[[list, list, Callable | None], dict]:
         from services.deep_research.verification import verify_claims
-        return verify_claims
+        if run_id is None:
+            return verify_claims
+        version = self._repo.require_run(run_id).get('absenceScopeContractVersion', 0)
+        return lambda claims, evidence, semantic=None: verify_claims(
+            claims, evidence, semantic, absence_scope_version=version)
     
     def _get_validate_plan(self) -> Callable[[list], list]:
         from services.deep_research.coverage import validate_plan

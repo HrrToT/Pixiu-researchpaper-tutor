@@ -59,7 +59,8 @@ def _condition_values_text(value):
 
 
 def verify_claims(claims: list[dict], evidence: list[dict],
-                  semantic_check: Callable[[list[dict], list[dict]], list[dict]] | None = None) -> dict:
+                  semantic_check: Callable[[list[dict], list[dict]], list[dict]] | None = None,
+                  *, absence_scope_version=0) -> dict:
     """Only publish supported claims; a model cannot override literal checks.
 
     A semantic checker is a separately budgeted call provided by the graph.
@@ -88,7 +89,7 @@ def verify_claims(claims: list[dict], evidence: list[dict],
         if any(item.get("verification", {}).get("literal") != "passed" for item in support):
             reason = reason or "unverified_quotation"
         from services.deep_research.prose_checks import absence_not_established, leaks_internal_reference
-        if absence_not_established(claim, support):
+        if absence_not_established(claim, support, scope_version=absence_scope_version):
             reason = reason or 'absence_not_established'
         if leaks_internal_reference(claim, support):
             reason = reason or 'internal_reference_in_prose'
