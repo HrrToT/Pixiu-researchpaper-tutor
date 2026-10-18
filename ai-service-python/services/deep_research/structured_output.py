@@ -8,7 +8,7 @@ ARRAY_NODES = frozenset({'plan', 'extract', 'assess_relevance', 'repair_claims',
 
 def enabled(record):
     return (isinstance(record, dict) and type(record.get('structuredOutputContractVersion')) is int
-            and record['structuredOutputContractVersion'] in {1, 2, 3, 4, 5})
+            and record['structuredOutputContractVersion'] in {1, 2, 3, 4, 5, 6})
 
 
 def messages(node, prompt, version=2):
@@ -22,14 +22,22 @@ def messages(node, prompt, version=2):
                   '只按用户问题和服务端材料范围研究；严格区分原文事实、推断和建议。' + system)
     task_specific = version >= 5 and node in {'synthesize', 'synthesize_compact', 'synthesize_audience', 'repair_claims'}
     if task_specific:
-        system += (" Use each target's own citations; planning examples are not evidence. "
-                   'Preserve IDs/kinds, requested relationships and conditions; comparisons need '
-                   'a matched metric pair from BOTH entities.')
-        if node == 'repair_claims':
+        if node == 'repair_claims' and version >= 6:
+            system += (" Use each target's own citations, not planning guesses. "
+                       'Keep IDs/kinds and requested relationships; comparisons need a matched metric pair '
+                       'from BOTH entities. Rejected drafts are not facts to copy. Fix '
+                       'check.reason/detail/missingReportedNumbers in text AND conditions: DELETE unsupported '
+                       'clauses/counts. Rebuild minimal wording; keep only necessary supported scope. '
+                       'Do not copy rejected premises. Return [] if no supported revision.')
+        else:
+            system += (" Use each target's own citations; planning examples are not evidence. "
+                       'Preserve IDs/kinds, requested relationships and conditions; comparisons need '
+                       'a matched metric pair from BOTH entities.')
+        if node == 'repair_claims' and version < 6:
             system += (' Rejected drafts are not facts to copy. Act on check.reason/detail/missingReportedNumbers: '
                        'DELETE unsupported clauses/counts; retain a narrower supported answer. Never repeat '
                        'rejected wording unchanged or invent results. Return [] if no supported revision.')
-        else:
+        elif node != 'repair_claims':
             system += (' Answer each requested part once. For beginners lead with ordinary actions and '
                        'causes; omit optional counts and implementation details. Never fill missing inputs '
                        'or mechanisms from general knowledge. Finite evaluated settings do not prove '
