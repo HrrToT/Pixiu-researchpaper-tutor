@@ -72,7 +72,12 @@ class LocalTaskRetriever:
                         if type(precision) is int and precision in (2, 3):
                             from services.deep_research.requested_measurements import include_requested_measurements
                             indexed = include_requested_measurements(indexed, self.index_context[pdf_id], query, owned, limit)
-                        indexed = include_requested_rows(indexed, self.index_context[pdf_id], query, owned, limit)
+                        from services.deep_research.requested_table_rows import enabled as named_identity, human_row_question
+                        row_record = self.repo.require_run(self.run_id)
+                        symbolic_rows = named_identity(row_record)
+                        row_question = human_row_question(row_record) if symbolic_rows else query
+                        indexed = include_requested_rows(indexed, self.index_context[pdf_id], row_question, owned, limit,
+                                                         symbol_identity=symbolic_rows)
                     if limit > 1 and type(precision) is int and precision == 3:
                         indexed_for_pdf = indexed
                     else:

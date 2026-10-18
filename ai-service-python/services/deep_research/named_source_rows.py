@@ -1,8 +1,8 @@
 """Reserve bounded retrieval slots for explicitly requested literal row labels."""
-from services.deep_research.requested_table_rows import requested_table_row_labels
+from services.deep_research.requested_table_rows import requested_table_row_labels, match_priority
 
 
-def include_requested_rows(indexed, candidates, question, owned_id, limit):
+def include_requested_rows(indexed, candidates, question, owned_id, limit, *, symbol_identity=False):
     """Keep source/owner/index identities; never approve a table's measurements.
 
     A semantic hit can overlook a rare requested scene/sample label. Matching
@@ -27,7 +27,7 @@ def include_requested_rows(indexed, candidates, question, owned_id, limit):
     counts = {}
     for row in owned:
         counts[row['sourceId']] = counts.get(row['sourceId'], 0) + 1
-    labels = {row['sourceId']: requested_table_row_labels(row.get('text', ''), question)
+    labels = {row['sourceId']: requested_table_row_labels(row.get('text', ''),question,symbol_identity=symbol_identity)
               for row in owned if counts[row['sourceId']] == 1}
     matches = [row for row in owned if labels.get(row['sourceId'])]
     requested = {label for values in labels.values() for label in values}
@@ -36,7 +36,9 @@ def include_requested_rows(indexed, candidates, question, owned_id, limit):
         for label in requested}
     # A paper/method name repeats in headers. A rare explicitly requested scene
     # or sample must not lose its only slot to another row naming that method.
-    matches.sort(key=lambda row: min(frequencies[label] for label in labels[row['sourceId']]))
+    matches.sort(key=lambda row: (
+        -max(match_priority(label,question) for label in labels[row['sourceId']]) if symbol_identity else 0,
+        min(frequencies[label] for label in labels[row['sourceId']])))
     context_ids = set()
     for row in selected:
         if row.get('contextForSourceId'):

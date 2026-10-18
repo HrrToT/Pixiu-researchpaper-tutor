@@ -93,7 +93,10 @@ def make_batched_extract_node(invoke, make_evidence, validate, update, *, batch_
                 # A requested named unit can be grounded by a literal caption
                 # and row even when merged numerical columns are unverified.
                 # This retains evidence only; it grants no numeric/table pass.
-                for quote in requested_table_row_spans(original, record.get('question', '')) if refs and source.get('accessLevel') == 'fulltext' else []:
+                from services.deep_research.requested_table_rows import enabled as named_identity, human_row_question
+                symbolic_rows = named_identity(record)
+                row_question = human_row_question(record) if symbolic_rows else record.get('question', '')
+                for quote in requested_table_row_spans(original,row_question,symbol_identity=symbolic_rows) if refs and source.get('accessLevel') == 'fulltext' else []:
                     ev = make_evidence(source={"workId": source["workId"], "versionId": source["versionId"],
                         "contentHash": source["contentHash"], "accessLevel": source["accessLevel"]},
                         quote=quote, original=original, location=location, obligation_ids=refs, conditions={})
