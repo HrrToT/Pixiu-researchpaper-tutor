@@ -45,11 +45,11 @@
       "overlap": true
     },
     "backendCurrentResearchReadingTables": {
-      "passed": 2222,
+      "passed": 2294,
       "warnings": 1,
-      "seconds": 151.34,
-      "log": "tmp/pytest-dr138-full.log",
-      "sourceCommit": "f55df4ca",
+      "seconds": 173.21,
+      "log": "tmp/pytest-dr142-full.log",
+      "sourceCommit": "5da25372",
       "scope": "Research, reading, PDF tables and config."
     },
     "frontendDocumentNavigationFocused": {
@@ -1658,8 +1658,9 @@
       "correctionProof": "deep-research-evidence/runtime-semantic-isolation-regression-20261018.json",
       "actualProductionFactoryTested": true,
       "historicalBatchShapesPreserved": true,
-      "realProviderAfterCorrection": false,
-      "boundary": "Earlier base-factory isolation tests did not prove production wiring. RuntimeFacade omitted the callback before .138. New actual factory/scoped client/ledger fixtures pass; no new real content run is claimed on .138."
+      "realProviderAfterCorrection": true,
+      "boundary": "Actual .142 production verification sent c2 and c3 in distinct tracked requests. c2 failed, c3 passed. This establishes per-fact dispatch, not semantic infallibility or full content quality; old batch shapes remain.",
+      "actualDispatchProof": "deep-research-evidence/H1F-v7-diagnostic-20261018.json"
     },
     "runtimePostcase137": {
       "proof": "deep-research-evidence/runtime-postcases-dr137-20261018.json",
@@ -1679,6 +1680,58 @@
       "modelCalls": 12,
       "settledTokens": 38205,
       "proof": "deep-research-evidence/H1F-v5-diagnostic-20261018.json"
+    },
+    "quantityAndPriority": {
+      "contracts": {
+        "quantitySpellingContractVersion": 2,
+        "evidenceCoverageContractVersion": 3
+      },
+      "proof": "deep-research-evidence/quantity-priority-regression-20261018.json",
+      "realInputReplay": "deep-research-evidence/quantity-priority-real-input-replay-20261018.json",
+      "relativeReferenceCorrection": "deep-research-evidence/relative-reference-and-revision-regression-20261018.json",
+      "boundary": "H1F-v6 real acquisition covered three criteria. Different generated explanation criteria in v7 remain unchecked; no blanket acquisition or content pass."
+    },
+    "retiredAndDevelopmentDiagnostics140To142": {
+      "cases": [
+        {
+          "case": "H1F-v6",
+          "runId": "dr_run_838687fc88c25b888537961f934dffe2",
+          "outcome": "inconclusive",
+          "contentAccepted": false,
+          "modelCalls": 11,
+          "settledTokens": 32774,
+          "proof": "deep-research-evidence/H1F-v6-diagnostic-20261018.json"
+        },
+        {
+          "case": "H1F-v7",
+          "runId": "dr_run_fbc8c625e6205431bc8bfe4d48cc9a02",
+          "outcome": "partial",
+          "contentAccepted": false,
+          "modelCalls": 12,
+          "settledTokens": 36237,
+          "proof": "deep-research-evidence/H1F-v7-diagnostic-20261018.json"
+        },
+        {
+          "case": "D1-v17",
+          "runId": "dr_run_c58d9062ee155997ad5e6d27420b668e",
+          "outcome": "partial",
+          "contentAccepted": false,
+          "modelCalls": 10,
+          "settledTokens": 40604,
+          "proof": "deep-research-evidence/D1-v17-diagnostic-20261018.json"
+        }
+      ],
+      "modelCalls": 33,
+      "settledTokens": 109615,
+      "cost": null,
+      "boundary": "Three single submissions. All original first results remain frozen; these are diagnostic/development results, not independent passes."
+    },
+    "runtimePostcases142": {
+      "proof": "deep-research-evidence/runtime-postcases-dr142-20261018.json",
+      "callRows": 3630,
+      "active": 0,
+      "historicalPausedUnknowns": 9,
+      "historicalLedgerUnchanged": true
     }
   },
   "stages": [
@@ -1851,16 +1904,16 @@
   "developmentCases": [
     {
       "id": "D1",
-      "runId": "dr_run_a68c2257f81051589f9841bd8b23374d",
+      "runId": "dr_run_c58d9062ee155997ad5e6d27420b668e",
       "machine": "completed/partial",
-      "content": "Comparison baseline restored and original values checked; conditions point rejected for unsupported paper-wide absence. Not accepted.",
-      "next": "Improve neutral scientific planning, retrieval of precise method details, evidence-bounded limitation drafting and compact executable-design repair; validate only after a concrete change.",
+      "content": "Evidence-bounded limitation repaired, but numerical claim lacks exact Ours table identity; two-point answer not accepted.",
+      "next": "Provide actionable parser-established table-display feedback, keep strict bindings and verify again only after concrete correction.",
       "previousResult": {
         "runId": "dr_run_66ec09fffdfe5c8d9a97a0a2f1816d75",
         "machine": "completed/inconclusive",
         "content": "not accepted; no published verified claim"
       },
-      "proof": "deep-research-evidence/D1-v16-partial-20261018.json",
+      "proof": "deep-research-evidence/D1-v17-diagnostic-20261018.json",
       "history": [
         {
           "id": "D1",
@@ -1926,6 +1979,19 @@
             "content": "not accepted; no published verified claim"
           },
           "proof": "deep-research-evidence/D1-v15-complete-manual-fail-20261018.json"
+        },
+        {
+          "id": "D1",
+          "runId": "dr_run_a68c2257f81051589f9841bd8b23374d",
+          "machine": "completed/partial",
+          "content": "Comparison baseline restored and original values checked; conditions point rejected for unsupported paper-wide absence. Not accepted.",
+          "next": "Improve neutral scientific planning, retrieval of precise method details, evidence-bounded limitation drafting and compact executable-design repair; validate only after a concrete change.",
+          "previousResult": {
+            "runId": "dr_run_66ec09fffdfe5c8d9a97a0a2f1816d75",
+            "machine": "completed/inconclusive",
+            "content": "not accepted; no published verified claim"
+          },
+          "proof": "deep-research-evidence/D1-v16-partial-20261018.json"
         }
       ]
     },
@@ -1981,10 +2047,10 @@
       "state": "First original result failed content review; retired for generic repair-progress diagnosis.",
       "proof": "deep-research-evidence/H1F-v1-first-review-20261018.json",
       "latestDiagnostic": {
-        "case": "H1F-v5",
-        "runId": "dr_run_7a166ca064b95ce6b06aab958999ccf7",
+        "case": "H1F-v7",
+        "runId": "dr_run_fbc8c625e6205431bc8bfe4d48cc9a02",
         "contentAccepted": false,
-        "proof": "deep-research-evidence/H1F-v5-diagnostic-20261018.json"
+        "proof": "deep-research-evidence/H1F-v7-diagnostic-20261018.json"
       }
     },
     {
@@ -2045,23 +2111,22 @@
     "Full novice study workflow",
     "Independent Edge recovery"
   ],
-  "currentProviderConstraint": "All further required bounded validations are authorized. H1F-v5 submitted once and settled; historical nine unknown identities/reservations remain unchanged. No automatic unknown reissue or attempt/task rename bypass.",
-  "currentDevelopmentMode": "Primary Codex only; goal active and further necessary validations authorized. .138 criterion coverage 2 and actual-runtime semantic policy 1 loaded. Quota monitor disabled; original DR0-DR5 content gates remain open.",
+  "currentProviderConstraint": "All further necessary bounded validations authorized. H1F-v6/v7 and D1-v17 each submitted once and settled. Historical nine unknowns and unconfirmed legacy D5-v2 receipt remain preserved; no rename/retry bypass.",
+  "currentDevelopmentMode": "Primary Codex only; goal active, quota monitor disabled. .142 loaded; original DR0-DR5 quality gates remain open.",
   "loadedRuntime": {
-    "commit": "f55df4ca",
-    "promptVersion": "dr-v2.20261018.138",
+    "commit": "5da25372",
+    "promptVersion": "dr-v2.20261018.142",
     "ready": true,
-    "callsPreserved": 3569,
+    "callsPreserved": 3591,
     "pausedUnknownRuns": 9,
-    "proof": "deep-research-evidence/runtime-load-dr138-runtime-isolation-20261018.json"
+    "proof": "deep-research-evidence/runtime-load-dr142-revision-instructions-20261018.json"
   },
   "nextQualityWork": [
-    "Prioritize route-relevant and newly unreviewed evidence for open criteria without removing other authorized cross-question candidates. H1F-v5 used its small remaining assessment window on old unrelated pairs and never assessed the new input quote.",
-    "Recognize directly written quantity spellings such as first three dimensions under a new immutable number-format contract; do not infer a reported 4 from total 7 minus 3 or weaken identity/unit/semantic checks.",
-    "Give numerical repair the exact unsupported values and preserve the requested qualitative attribute explanation. An unchanged unsupported count must not survive by cosmetic wording or kind relabeling.",
-    "Verify the corrected actual-runtime isolation on the next real case and preserve reasons for rejected premises during repair. .138 factory fixtures alone are not a real content pass.",
-    "Improve novice prose: explain operations before technical labels, avoid redundant numerical dimensions and untranslated conditions unless requested.",
-    "Complete original D1/D2/D3/D5, executable design, real continuation and fresh independent gates; H1F/H4F diagnostics do not add independent passes. Preserve every historical unknown and frozen first result."
+    "Remove conflicting trusted instruction to preserve rejected conditions: revision must correct both prose and factual conditions, retaining only supported necessary scope.",
+    "Give table_condition_not_displayed exact parser-established method/group identities so repair can expose Ours without changing cells or relaxing the check.",
+    "Finish evidence-grounded requested points; avoid optional encoder/loss details and repeated claims. Format-only or safe partial reports remain failures.",
+    "Validate original D1/D2/D3/D5, executable experimental designs and real continuation; historical unknowns/unconfirmed receipts need authoritative reconciliation before same-case new submissions.",
+    "Replace retired independent slots after development quality succeeds; frozen first-five full content score remains 0/5."
   ],
   "javaReaderRuntime": {
     "sourceCommit": "070ab1a",

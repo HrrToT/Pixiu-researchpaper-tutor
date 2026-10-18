@@ -146,3 +146,11 @@ Python先加载1e6daa48（`.133`），确认无活动研究，3,482条完整账�
 f55df4ca（`.138`）在2,222项完整回归通过后加载；3,569条账本和9个暂停身份相等，RAG/GROBID健康。新runtimeSemanticContractVersion=1接上实际工厂的单条事实策略；旧生产批次不迁移、不改写未知请求指纹。Java/前端、数据库、持久卷和来源范围不变，未执行`.138`真实模型案例。
 
 证明：`deep-research-evidence/runtime-load-dr136-criterion-coverage-20261018.json`、`runtime-load-dr137-criterion-budget-20261018.json`、`runtime-postcases-dr137-20261018.json`、`runtime-load-dr138-runtime-isolation-20261018.json`。真实质量仍见H1F-v5人工失败评分；旧基础组件检查不能替代实际工厂验证。
+
+## 2026-10-18 数字词、取证顺序与修订指令加载
+
+4a2da0e7（`.140`）通过2,264项全量回归后加载，3,569条旧账本及9个未知暂停身份前后相等。H1F-v6完成后3,591条账本；原行哈希保持。
+
+5da25372（`.142`）通过2,294项全量回归后加载，3,591条账本及9个暂停身份前后相等，RAG/GROBID健康。H1F-v7及D1-v17各执行一次，追加39条已结算记录，总3,630条；原前缀及暂停身份保持，无活动研究。两例都partial，不能当作质量通过。事实隔离在v7实际两个单事实请求中得到确认。
+
+证明：`deep-research-evidence/runtime-load-dr140-quantity-priority-20261018.json`、`runtime-postcases-dr140-20261018.json`、`runtime-load-dr142-revision-instructions-20261018.json`、`runtime-postcases-dr142-20261018.json`。旧契约、回执、未知预留、原文与用户成果均不迁移或改写；Java/前端/持久卷保持。
