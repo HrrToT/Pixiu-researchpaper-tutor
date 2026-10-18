@@ -1,0 +1,14 @@
+{
+  "date": "2026-10-18",
+  "sourceCommit": "803c2192",
+  "promptVersion": "dr-v2.20261018.176",
+  "offline": {"passed": 2859, "warnings": 1, "seconds": 177.68, "log": "tmp/pytest-dr176-full.log"},
+  "changes": [
+    "Audience4 retains source-first generation; server-selected qualitative why points may explicitly become inference, before independent source/scope/coverage checks.",
+    "Original measurements, counts and table-bound claims cannot be reclassified; revised numeric/count wording cannot use this exception. IDs and citations stay fixed, originals and classification changes stay in the durable journal.",
+    "Independent semantic review distinguishes source-supported objective consequences from empirical/causal guarantees, and can still reject an inference.",
+    "Same single rewrite, 3072output/24000input cap and unchanged whole-run budget. Old pending policy3 requests cannot be retargeted to4."
+  ],
+  "recordedReplay": "docs/deep-research-evidence/qualitative-audience-legacy-replay-20261018.json",
+  "boundary": "Six actual old Provider fingerprints match. Offline negative fixtures and source-preservation checks are not actual beginner comprehension or independent acceptance."
+}

@@ -44,11 +44,11 @@
       "overlap": true
     },
     "backendCurrentResearchReadingTables": {
-      "passed": 2843,
+      "passed": 2859,
       "warnings": 1,
-      "seconds": 167.36,
-      "sourceCommit": "48ec3b29",
-      "log": "tmp/pytest-dr175-full.log",
+      "seconds": 177.68,
+      "sourceCommit": "803c2192",
+      "log": "tmp/pytest-dr176-full.log",
       "scope": "Research, reading, PDF tables and config; offline fixture providers."
     },
     "frontendDocumentNavigationFocused": {
@@ -2305,25 +2305,25 @@
     "Full novice study workflow",
     "Independent Edge recovery"
   ],
-  "currentProviderConstraint": "All further necessary bounded validations uniformly authorized. Selected diagnostic sequence:270 settled model calls/1053538 tokens; not global historical usage. Cost unknown; nine historical unknowns preserved, no blind retry.",
-  "currentDevelopmentMode": "Primary Codex only; Goal active, quota monitor paused by user. Python48ec3b29/.175 loaded, Java27ac4beb, frontend123b0d29. D1-v27 and narrow D5-v14 development content accepted. H3F-v4 source/target binding and source support pass, but novice why explanation still fails. OriginalDR0-DR5 incomplete, first-five0/5 and PR draft unchanged.",
+  "currentProviderConstraint": "All further necessary bounded validations uniformly authorized. Selected diagnostic sequence:282 settled model calls/1104171 tokens; not global historical usage. Cost unknown; nine historical unknowns preserved, no blind retry.",
+  "currentDevelopmentMode": "Primary Codex only; Goal active, quota monitor paused by user. Python803c2192/.176 loaded, Java27ac4beb, frontend123b0d29. H3F-v5 source support passes but optional classification was omitted and beginner explanation fails. OriginalDR0-DR5 incomplete, first-five0/5 and PR draft unchanged.",
   "loadedRuntime": {
-    "commit": "48ec3b29",
-    "promptVersion": "dr-v2.20261018.175",
+    "commit": "803c2192",
+    "promptVersion": "dr-v2.20261018.176",
     "javaCommit": "27ac4beb",
     "frontendCommit": "123b0d29",
-    "callsAfterLatestCase": 4229,
+    "callsAfterLatestCase": 4255,
     "active": 0,
     "historicalPausedUnknown": 9,
     "tasks": 92,
-    "proof": "deep-research-evidence/runtime-load-dr175-source-first-audience-20261018.json",
-    "postCasesProof": "deep-research-evidence/runtime-postcases-dr175-20261018.json"
+    "proof": "deep-research-evidence/runtime-load-dr176-qualitative-audience-20261018.json",
+    "postCasesProof": "deep-research-evidence/runtime-postcases-dr176-20261018.json"
   },
   "nextQualityWork": [
-    "Distinguish source-derived qualitative reasoning from author-reported facts while retaining numerical, scope and independent semantic checks. Preserve original drafts and fixed source permissions.",
+    "Conservatively classify the source-bounded purely qualitative why target on the server, not an optional model field; keep numeric and independent semantic checks. Reject unsupported uniqueness/necessity instead of merely relabeling it.",
     "H2F actual eight retrieval fingerprints disprove whole-question FPS pollution. Fix method-detail intent/selection and extraction coverage, then transmit verified original-PDF revision and organize per-paper support.",
     "Respect explicitly requested explore/descriptive analysis; reject PSNR-score variability alone as jitter; complete initialization and factor fixed repair redundancy under unchanged24000byte cap.",
-    "Prepare fresh independent replacements after development quality passes. MVSplat/ODGS/4DGS were already used and are not fresh."
+    "Prepare fresh independent replacements after development quality passes. MVSplat/ODGS/4DGS/CAT-3DGS/PFGS-360 were already used. Three other candidates only pass exact-hash history screen and still need identity/alias checks plus frozen definitions."
   ],
   "javaReaderRuntime": {
     "sourceCommit": "070ab1a",
@@ -2740,5 +2740,19 @@
     "elapsedSeconds": 118,
     "independentCredit": 0,
     "proof": "deep-research-evidence/H3F-v4-diagnostic-20261018.json"
+  },
+  "qualitativeAudienceCheckpoint": {
+    "sourceCommit": "803c2192",
+    "promptVersion": "dr-v2.20261018.176",
+    "case": "H3F-v5",
+    "machineOutcome": "complete",
+    "sourceSupport": "passed",
+    "contentAccepted": false,
+    "optionalClassificationOmitted": true,
+    "modelCalls": 12,
+    "settledTokens": 50633,
+    "elapsedSeconds": 161.625,
+    "independentCredit": 0,
+    "proof": "deep-research-evidence/H3F-v5-diagnostic-20261018.json"
   }
 }
