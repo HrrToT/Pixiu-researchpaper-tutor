@@ -11,7 +11,7 @@ from services.deep_research.runtime import research_model_options
 def test_only_new_short_factual_answers_choose_reasoning(kind):
     record={'factualReasoningContractVersion':1}
     assert request_options(record,'给出判断，300字以内。',kind)=={OPTION:True}
-    for value in [None,True,False,0,2,'1']:
+    for value in [None,True,False,0,3,'1']:
         assert request_options({'factualReasoningContractVersion':value},'300字以内',kind)=={}
     for question in ['详细说明','301字以内','0字以内']:
         assert request_options(record,question,kind)=={}
@@ -34,6 +34,17 @@ def test_legacy_role_options_and_repair_caps_are_preserved():
     assert research_model_options('verify',{OPTION:True})['reasoning_effort']=='high'
     assert research_model_options('extract',{OPTION:True,'max_tokens':1500})=={
         'thinking':{'type':'disabled'},'reasoning_effort':'none','max_tokens':1500}
+
+
+def test_v2_keeps_synthesis_reasoning_but_uses_direct_bounded_repair_without_fallback_call():
+    from services.deep_research.factual_reasoning import DIRECT_REPAIR_OPTION
+    flags=request_options({'factualReasoningContractVersion':2},'200字以内','claim_verification')
+    assert flags=={OPTION:True,DIRECT_REPAIR_OPTION:True}
+    synth=research_model_options('synthesize',flags)
+    repair=research_model_options('repair_claims',{**flags,'_repair_output_limit':4096})
+    assert synth['thinking']=={'type':'enabled'} and synth['max_tokens']==8192
+    assert repair=={'thinking':{'type':'disabled'},'reasoning_effort':'none','max_tokens':4096}
+    assert DIRECT_REPAIR_OPTION not in synth and DIRECT_REPAIR_OPTION not in repair
 
 
 def test_new_options_are_reserved_fingerprinted_and_reused_before_provider_send():
@@ -59,7 +70,7 @@ def test_new_options_are_reserved_fingerprinted_and_reused_before_provider_send(
     assert reserve.call_args.kwargs['args_digest']!=fingerprint
 
 
-@pytest.mark.parametrize('replacement',[None,True,False,0,2,'1'])
+@pytest.mark.parametrize('replacement',[None,True,False,0,1,'1'])
 def test_policy_is_server_owned_immutable_and_not_client_selected(tmp_path,replacement):
     from services.deep_research.facade import ResearchFacade
     from services.deep_research.repository import DeepResearchRepository
@@ -68,7 +79,7 @@ def test_policy_is_server_owned_immutable_and_not_client_selected(tmp_path,repla
     try:
         p,_=facade.create({'workspaceTaskId':'t','operationKey':'k','question':'200字以内',
             'deferStart':True,'factualReasoningContractVersion':replacement},start_async=False)
-        assert p['factualReasoningContractVersion']==1
+        assert p['factualReasoningContractVersion']==2
         with pytest.raises(ValueError,match='Immutable'):
             repo.update_run(p['runId'],lambda r:{**r,'factualReasoningContractVersion':replacement})
     finally: facade.shutdown()

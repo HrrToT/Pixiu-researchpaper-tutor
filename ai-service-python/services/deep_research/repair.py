@@ -102,6 +102,9 @@ def _prepare_repair(report, verification, evidence, question, *, max_prompt_byte
                                             for ref in check['missingEvidenceRefs']]
     revision_shape = {'claimId': 'original ID', 'kind': 'original kind', 'text': 'revised wording',
                       'evidenceRefs': ['E1'], 'conditions': {}, 'detailLevel': 'fulltext'}
+    if factual_scope==2 and fact_redraft and factual_redraft_eligible(report):
+        from services.deep_research.factual_scope import DRAFTING_SCHEMA
+        revision_shape={'draftingBasis':DRAFTING_SCHEMA,**revision_shape}
     has_tables = any(row.get('tableData') for row in rows) or any(
         row.get('tableBindings') for row in originals.values())
     if has_tables:
@@ -282,7 +285,8 @@ in the paper. Maintain consistency with accepted definitions and complete requir
         prompt += '\n' + HYPOTHESIS_SPEC_CONTRACT
         prompt += '\nRepair linked hypothesis/analysis targets jointly, keeping their IDs and exact effect keys. ' \
                   'Select a purpose and compatible method that fulfill the user request, not a weaker substitute.'
-    shape = [{'claimId': row['claimId'], 'kind': row['kind'],
+    shape = [{**({'draftingBasis':DRAFTING_SCHEMA} if factual_scope==2 and fact_redraft and factual_redraft_eligible(report) else {}),
+              'claimId': row['claimId'], 'kind': row['kind'],
               **({'designRole': row['designRole']} if row.get('designRole') else {}),
               'text': '', 'evidenceRefs': [], **({'tableBindings': []} if has_tables else {})}
              for row in originals.values()]
@@ -442,7 +446,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
                           if fact_redraft else {}),
                        **({'comparisonReasoningContractVersion':1} if comparison_reasoning else {}),
                        **({'repairEvidencePriorityVersion':1} if question_priority else {}),
-                       **({'factualScopeContractVersion':1} if factual_scope else {})})
+                       **({'factualScopeContractVersion':2 if factual_scope==2 else 1} if factual_scope else {})})
 
     def prepare(ids, results=(), byte_limit=None):
         ids = set(ids)

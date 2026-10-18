@@ -63,7 +63,7 @@ def test_drafting_metadata_is_not_sent_to_independent_verifier():
     assert 'PRIVATE MODEL ANALYSIS' not in sent[0]['prompt']
 
 
-@pytest.mark.parametrize('replacement',[None,True,False,0,2,'1'])
+@pytest.mark.parametrize('replacement',[None,True,False,0,1,'1'])
 def test_scope_policy_owned_and_immutable(tmp_path,replacement):
     from services.deep_research.facade import ResearchFacade
     from services.deep_research.repository import DeepResearchRepository
@@ -72,7 +72,7 @@ def test_scope_policy_owned_and_immutable(tmp_path,replacement):
     try:
         p,_=facade.create({'workspaceTaskId':'t','operationKey':'k','question':'核查这个结论',
             'deferStart':True,'factualScopeContractVersion':replacement},start_async=False)
-        assert p['factualScopeContractVersion']==1
+        assert p['factualScopeContractVersion']==2
         checker=facade._build_semantic_checker(p['runId'],Mock())
         assert checker._factual_scope() is True
         with pytest.raises(ValueError,match='Immutable'):
@@ -132,3 +132,29 @@ def test_new_synthesis_cleans_only_own_visible_citation_marker_and_audits_origin
     audit=record['state']['synthesisPresentationAudit']['c']
     assert audit and '（E1）' in str(audit)
     assert record['state']['reportBody']['claims'][0]['evidenceRefs']==['actual']
+
+
+def test_v2_declares_drafting_basis_in_both_actual_generation_schemas_without_changing_v1():
+    from services.deep_research.graph import make_synthesize_node
+    from services.deep_research.repair import _prepare_repair
+    prompts=[]
+    for version in (1,2):
+        record={'question':'核查范围，200字以内。','factualScopeContractVersion':version,
+            'state':{'outputKind':'claim_verification','evidence':[]}}
+        def update(_rid,change,**kwargs):
+            nonlocal record
+            record=change(deepcopy(record));return deepcopy(record)
+        llm=Mock(return_value={'finishReason':'length'})
+        make_synthesize_node(llm,update)({'run_id':'r'})
+        prompts.append(llm.call_args.args[2])
+    assert ', draftingBasis (required object' not in prompts[0]
+    assert ', draftingBasis (required object' in prompts[1]
+    assert 'Required draftingBasis object on EACH output claim' in prompts[1]
+    report={'claims':[claim()]};checks={'accepted':[],'rejected':[{'claimId':'c','reason':'unsupported scope'}]}
+    old=_prepare_repair(report,checks,evidence(),'200字以内',fact_redraft=True,concise_factual=True,factual_scope=1)
+    new=_prepare_repair(report,checks,evidence(),'200字以内',fact_redraft=True,concise_factual=True,factual_scope=2)
+    def targets(prompt):
+        return json.JSONDecoder().raw_decode(prompt.split('ACTIVE OUTPUT TARGETS FOR THIS REQUEST ONLY:\n',1)[1])[0]
+    assert 'draftingBasis' not in targets(old['prompt'])[0]
+    assert 'draftingBasis' in targets(new['prompt'])[0]
+    assert new['allowed']==old['allowed'] and new['originals']==old['originals']

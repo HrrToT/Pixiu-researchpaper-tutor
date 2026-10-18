@@ -5,7 +5,18 @@ import re
 
 def enabled(record):
     return (type(record.get('factualScopeContractVersion')) is int
-            and record['factualScopeContractVersion'] == 1)
+            and record['factualScopeContractVersion'] in (1,2))
+
+
+def drafting_schema_enabled(record):
+    return (type(record.get('factualScopeContractVersion')) is int
+            and record['factualScopeContractVersion']==2)
+
+
+DRAFTING_SCHEMA={'premiseStatus':'choose established, contradicted or not_established',
+    'observations':[{'evidenceId':'own supplied E ID','quote':'exact original excerpt'}],
+    'scopeDecision':'choose reported_case, bounded_inference, exclusive or universal',
+    'unresolved':'specific evidence boundary; empty only when none remains'}
 
 
 DRAFT_GUIDANCE = '''Before writing each factual claim's text, fill draftingBasis FIRST:

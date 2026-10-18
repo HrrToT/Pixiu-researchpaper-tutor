@@ -1125,6 +1125,9 @@ def make_synthesize_node(
         from services.deep_research.prompt_budget import fit_evidence_prompt
         evidence_marker = uuid4().hex
         claim_fields = 'claimId, text, kind, evidenceRefs, conditions, obligationIds, detailLevel, tableBindings (required for table measurements)'
+        from services.deep_research.factual_scope import drafting_schema_enabled,DRAFTING_SCHEMA
+        if drafting_schema_enabled(record) and output_kind in {'claim_verification','paper_comparison'}:
+            claim_fields += ', draftingBasis (required object; fill before text using schema below)'
         if output_kind == 'experiment_design':
             claim_fields += ', designRole (required on every proposal/hypothesis), executionSpec (required for groups, data and analysis roles)'
             if strict_budget:
@@ -1258,6 +1261,8 @@ Orient losses before formulas, distinguish conditional/averaged effects and pape
         from services.deep_research.factual_scope import enabled as scope_enabled,DRAFT_GUIDANCE
         if scope_enabled(record) and output_kind in {'paper_comparison','claim_verification'}:
             prompt+='\n'+DRAFT_GUIDANCE
+            if drafting_schema_enabled(record):
+                prompt+='\nRequired draftingBasis object on EACH output claim (metadata, not evidence):\n'+json.dumps(DRAFTING_SCHEMA,ensure_ascii=False,separators=(',',':'))
         template = prompt
         prompt, evidence_summaries = fit_evidence_prompt(evidence_summaries,
             lambda rows: template.replace(evidence_marker, json.dumps(rows, ensure_ascii=False, separators=(',', ':')), 1))
@@ -1485,7 +1490,7 @@ def make_verify_node(
                         current_budget=lambda: repo_update(run_id, lambda r: r, expected_revision=None).get('budget', {}),
                         invoke_request=invoke_repair,
                         **({'comparison_reasoning':True} if comparison_enabled(record) else {}),
-                        **({'factual_scope':True} if scope_enabled(record) else {}),
+                        **({'factual_scope':record['factualScopeContractVersion']} if scope_enabled(record) else {}),
                         **({'question_priority':True} if priority_enabled(record) else {}),
                         **({'fact_redraft':True,'source_aware_redraft':record['factRedraftContractVersion'] in (2,3),
                             **({'concise_factual':True} if record['factRedraftContractVersion']==3 else {}),
