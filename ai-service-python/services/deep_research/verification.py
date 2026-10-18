@@ -60,7 +60,7 @@ def _condition_values_text(value):
 
 def verify_claims(claims: list[dict], evidence: list[dict],
                   semantic_check: Callable[[list[dict], list[dict]], list[dict]] | None = None,
-                  *, absence_scope_version=0, quantity_spelling_version=0) -> dict:
+                  *, absence_scope_version=0, quantity_spelling_version=0, feedback_version=0) -> dict:
     """Only publish supported claims; a model cannot override literal checks.
 
     A semantic checker is a separately budgeted call provided by the graph.
@@ -199,6 +199,17 @@ def verify_claims(claims: list[dict], evidence: list[dict],
                 diagnostic = {'missingReportedNumbers': missing,
                     'detail': '本条引用原文未直接报告这些数值：' + '、'.join(number_display(n) for n in missing)
                         + '。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。'}
+            elif reason == 'table_condition_not_displayed' and type(feedback_version) is int and feedback_version == 1:
+                from services.deep_research.table_bindings import bound_table_context
+                required = []
+                for cell in bound_table_context(claim, support):
+                    identity = {'group': cell['group'], 'method': cell['method']}
+                    if identity not in required:
+                        required.append(identity)
+                diagnostic = {'requiredTableDisplay': required,
+                    'detail': '保留表格数值时，同条正文或条件必须显示原表的数据组和方法身份。'
+                        '请核对requiredTableDisplay；保留星号、变体及分组层级，末尾参考文献序号可省略。'
+                        '不能只写另一个方法名代替Ours等原表标签，也不能修改单元格或加入未报告的计算。'}
             rejected.append({"claimId": claim_id, "reason": reason, **diagnostic})
         else:
             candidates.append(dict(claim))

@@ -273,7 +273,8 @@ class ResearchFacade:
             "materials": materials,
             "materialSnapshot": material_snapshot,  # Immutable Java snapshot
             "contextMaterials": (material_snapshot or {}).get("contextMaterials", []) if isinstance(material_snapshot, dict) else [],
-            "promptVersion": "dr-v2.20261018.142",
+            "promptVersion": "dr-v2.20261018.143",
+            "verificationFeedbackContractVersion": 1,
             "quantitySpellingContractVersion": 2,
             "runtimeSemanticContractVersion": 1,
             "evidenceCoverageContractVersion": 3,
@@ -1190,8 +1191,10 @@ class ResearchFacade:
         record = self._repo.require_run(run_id)
         version = record.get('absenceScopeContractVersion', 0)
         spelling = record.get('quantitySpellingContractVersion', 0)
+        feedback = record.get('verificationFeedbackContractVersion', 0)
         return lambda claims, evidence, semantic=None: verify_claims(
-            claims, evidence, semantic, absence_scope_version=version, quantity_spelling_version=spelling)
+            claims, evidence, semantic, absence_scope_version=version, quantity_spelling_version=spelling,
+            feedback_version=feedback)
     
     def _get_validate_plan(self) -> Callable[[list], list]:
         from services.deep_research.coverage import validate_plan
