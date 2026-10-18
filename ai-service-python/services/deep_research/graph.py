@@ -358,6 +358,15 @@ Return a JSON ARRAY of plan items, NOT an object with items field."""
         if not validated:
             return invalid_plan('Plan has no research items')
 
+        from services.deep_research.evidence_requirements import enabled as requirements_enabled, normalize_generated_requirements
+        requirement_changes = []
+        if requirements_enabled(record):
+            try:
+                validated, requirement_changes = normalize_generated_requirements(validated, question)
+                validated = validate_plan(validated)
+            except ValueError as exc:
+                return invalid_plan(exc)
+
         from services.deep_research.obligation_purpose import normalize_obligation_purposes
         validated = normalize_obligation_purposes(validated, question)
         allowed = [material.get("materialId") for material in materials]
@@ -405,6 +414,7 @@ Return a JSON ARRAY of plan items, NOT an object with items field."""
                 **(rebind_inherited_state(r.get('state') or {}, validated)
                    if inherited else {**(r.get("state") or {}), "plan": validated}),
                 'planIdNormalization': identity_changes,
+                **({'planRequirementNormalization': requirement_changes} if requirements_enabled(record) else {}),
                 'planFormatValidation': {'status': 'validated', 'requiresCompletionCriteria': criteria_required}}},
             expected_revision=None,
         )

@@ -42,7 +42,7 @@ class FixtureModel:
             content = [{"quote": quote, "obligationIds": ["o"], "location": {"page": 3}}]
         elif prompt.startswith("For each evidence-obligation pair"):
             pairs = json.loads(prompt.split("Pairs:\n", 1)[1].split("\n\nReturn ", 1)[0])
-            content = [{"evidenceId": pair["evidenceId"], "obligationId": pair["obligationId"], "relevant": True}
+            content = [{"pairId": pair["pairId"], "relevant": True}
                        for pair in pairs]
         elif prompt.startswith("Synthesize"):
             ids = re.findall(r'"evidenceId":\s*"(E\d+)"', prompt)
