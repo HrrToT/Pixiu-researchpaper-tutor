@@ -1,4 +1,5 @@
 import json
+import pytest
 from copy import deepcopy
 
 from services.deep_research.extraction import make_batched_extract_node
@@ -29,8 +30,10 @@ def test_motivation_and_training_both_reach_the_first_batch_from_the_same_paper(
     assert pending == original and len(selected) == len(pending)
 
 
-def test_three_per_passage_cap_does_not_drop_other_chunks_of_the_same_pdf():
+@pytest.mark.parametrize('version',[2,3])
+def test_three_per_passage_cap_does_not_drop_other_chunks_of_the_same_pdf(version):
     r = record()
+    r['extractionPriorityVersion']=version
     r['state']['readResults'][0]['pages'] = [
         {'page': 4, 'text': 'First valid complete sentence. Second valid complete sentence. Third valid complete sentence.'},
         {'page': 5, 'text': 'A separate fourth valid sentence explaining the training update mechanism.'}]
@@ -56,8 +59,10 @@ def test_three_per_passage_cap_does_not_drop_other_chunks_of_the_same_pdf():
     assert all(e['sourceWorkId'] == 'a' and e['sourceVersionId'] == 'v1' for e in r['state']['evidence'])
 
 
-def test_an_explicit_wrong_passage_id_cannot_reassign_an_otherwise_matching_quote():
+@pytest.mark.parametrize('version',[2,3])
+def test_an_explicit_wrong_passage_id_cannot_reassign_an_otherwise_matching_quote(version):
     r = record()
+    r['extractionPriorityVersion']=version
     def update(run, change, **kwargs):
         nonlocal r
         r = change(r)

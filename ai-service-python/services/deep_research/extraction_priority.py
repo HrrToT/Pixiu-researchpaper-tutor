@@ -21,8 +21,8 @@ def prioritize_extraction_passages(pending, obligations, version=1):
     Identification-only requests keep their order. Paper round-robin prevents
     one rich source from displacing the other selected papers' first passages.
     """
-    if version == 2:
-        return _balance_obligations(pending, obligations)
+    if version in (2, 3):
+        return _balance_obligations(pending, obligations, precise=version == 3)
     def requirement(source):
         rows = [obligations[key] for key in eligible_obligation_ids(source, obligations)]
         explain = any(any(c.get('responseType') == 'explanation' for c in row.get('completionCriteria', []))
@@ -54,7 +54,7 @@ def prioritize_extraction_passages(pending, obligations, version=1):
     return balanced_sample(ordered, lambda item: item[0]['workId'], len(ordered))
 
 
-def _balance_obligations(pending, obligations):
+def _balance_obligations(pending, obligations, precise=False):
     """A training question must not consume the motivation question's first batch."""
     papers = list(dict.fromkeys(item[0]['workId'] for item in pending))
     queues = []
@@ -63,20 +63,33 @@ def _balance_obligations(pending, obligations):
         explain = any(c.get('responseType') == 'explanation' for c in obligation.get('completionCriteria', []))
         why = bool(re.search(r'\bwhy\b|\breason|\bmotivat|为什么|为何|动机|理由|原因', question, re.I))
         terms = set(re.findall(r'[a-z]{3,}', (question + ' ' + obligation.get('searchQuery', '')).lower())) - _STOP
+        if precise:
+            from services.deep_research.requested_measurements import measurements
+            requested = measurements(question + ' ' + obligation.get('searchQuery','') + ' ' + obligation.get('requestExcerpt',''))
         for paper in papers:
             eligible = [i for i, item in enumerate(pending)
                         if item[0]['workId'] == paper and oid in eligible_obligation_ids(item[0], obligations)]
             def score(index):
                 item = pending[index]
-                text = re.sub(r'(?<=[A-Za-z])-[ \t]*\r?\n[ \t]*(?=[A-Za-z])', '', item[2]).lower()
+                raw = item[2]
+                if precise:
+                    from services.deep_research.requested_measurements import _body
+                    raw = _body({'text':raw})
+                text = re.sub(r'(?<=[A-Za-z])-[ \t]*\r?\n[ \t]*(?=[A-Za-z])', '', raw).lower()
                 text = re.sub(r'\s+', ' ', text)
                 causal = sum(bool(re.search(pattern, text)) for pattern in _CAUSAL) if explain else 0
                 motive = sum(bool(re.search(pattern, text)) for pattern in (
                     r'\b(?:because|motivat|reason|challenge|problem|limitation)\w*',
                     r'\b(?:local minim|instead of|to overcome|to address|in order to)',
                     r'原因|动机|为了解决|局部极小|局部最小')) if why else 0
+                if precise and why:
+                    motive += sum(bool(re.search(pattern,text)) for pattern in (
+                        r'\b(?:since|therefore|thus|hence)\b',
+                        r'\b(?:insufficient|unable|cannot|fails?|falters?)\b|\bfalls?\s+short\b|\bnot\s+present\b',
+                        r'\b(?:essential|necessary|necessity|requires?)\b|不足|不能|缺少|因此|所以|必要'))
                 method = bool(causal >= 2 and _METHOD_SECTION.search(str(item[1].get('section', ''))))
-                return (motive, method, causal, sum(term in text for term in terms), -index)
+                base = (motive, method, causal, sum(term in text for term in terms), -index)
+                return (len(measurements(raw) & requested),*base) if precise else base
             if eligible:
                 queues.append(sorted(eligible, key=score, reverse=True))
     selected, seen = [], set()

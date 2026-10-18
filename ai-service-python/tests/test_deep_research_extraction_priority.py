@@ -69,3 +69,42 @@ def test_method_heading_alone_does_not_displace_a_complete_explanation():
     heading[1]['section'] = 'Methodology'
     causal = passage('causal', 'a', 'When the loss gradient updates a parameter, predictions change.')
     assert prioritize_extraction_passages([heading, causal], obligations())[0][0]['sourceId'] == 'causal'
+
+
+def test_requested_literal_measurement_precedes_generic_method_operations_in_version_three():
+    rows=[passage('method','a','When the loss gradient updates weights, later predictions change.'),
+          passage('conclusion','a','Rendering reaches 140 FPS after 15 seconds of training.'),
+          passage('requested','a','Reconstruction takes 17 seconds and rendering reaches 140 FPS.')]
+    rows[0][1]['section']='Method'
+    obs={'measure':{'obligationId':'measure','question':'Explain the operations for 17 seconds and 140 FPS.',
+        'searchQuery':'reconstruction 17s rendering 140FPS','requiredSources':['a'],
+        'completionCriteria':[{'responseType':'explanation'}]}}
+    before=deepcopy(rows)
+    assert prioritize_extraction_passages(rows,obs,2)[0][0]['sourceId']=='method'
+    assert prioritize_extraction_passages(rows,obs,3)[0][0]['sourceId']=='requested'
+    assert rows==before
+
+
+def test_necessary_rationale_gets_its_first_slot_without_metadata_header_bias():
+    intro=passage('intro','a','Paper: Since this method requires essential input updates\nContent:\nThe model is trained using its prior representation.')
+    operation=passage('operation','a','When inputs change, a network updates parameters to predict output.')
+    operation[1]['section']='Method'
+    reason=passage('reason','a','Since existing primitives cannot represent newly observed regions, adding new primitives is necessary.')
+    obs={'how':{'obligationId':'how','question':'How does the model update its representation?',
+        'searchQuery':'model update representation','requiredSources':['a'],'completionCriteria':[{'responseType':'explanation'}]},
+         'why':{'obligationId':'why','question':'Why is adding new primitives necessary?',
+        'searchQuery':'adding new primitives observed regions','requiredSources':['a'],'completionCriteria':[{'responseType':'explanation'}]}}
+    rows=[intro,operation,reason]; before=deepcopy(rows)
+    first=prioritize_extraction_passages(rows,obs,3)[:2]
+    assert {r[0]['sourceId'] for r in first}=={'operation','reason'}
+    assert rows==before
+
+
+def test_literal_priority_keeps_paper_balance_and_does_not_grant_foreign_scope():
+    rows=[passage('a1','a','17 seconds'),passage('a2','a','17 seconds and 140FPS'),
+          passage('b1','b','A separate authorized method description.'),passage('foreign','x','17 seconds and 140FPS')]
+    obs=obligations(); obs['training']['question']='Explain 17s and 140FPS'
+    obs['training']['requiredSources']=['a','b']
+    selected=prioritize_extraction_passages(rows,obs,3)
+    assert {r[0]['workId'] for r in selected[:2]}=={'a','b'}
+    assert selected[-1][0]['sourceId']=='foreign'
