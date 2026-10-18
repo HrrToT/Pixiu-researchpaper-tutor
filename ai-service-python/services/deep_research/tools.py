@@ -673,6 +673,7 @@ class BudgetedSemanticChecker:
                         "sourceTitle": e.get("sourceTitle", ""),
                         "tableData": e.get("tableData"),
                         "workId": e.get("sourceWorkId"), "versionId": e.get("sourceVersionId"),
+                        "publicationIdentity": e.get('sourcePublicationIdentity'),
                         "accessLevel": e.get("accessLevel")}) for e in wire_evidence if e["evidenceId"] in referenced}
         from uuid import uuid4
         from services.deep_research.prompt_budget import fit_evidence_prompt
@@ -743,6 +744,9 @@ Do not require an unexecuted experiment to have results. Do not judge context cl
         if inference_review and any(c.get('kind') == 'inference' for c in claims):
             from services.deep_research.audience_rewrite import QUALITATIVE_INFERENCE_REVIEW
             prompt += '\n' + QUALITATIVE_INFERENCE_REVIEW
+        if any(row.get('publicationIdentity') for row in evidence_map.values()):
+            from services.deep_research.publication_identity import GUIDANCE as publication_guidance
+            prompt += '\n' + publication_guidance
         from services.deep_research.synthesis import SCIENTIFIC_TERMINOLOGY
         prompt += '\n' + SCIENTIFIC_TERMINOLOGY
         question = self._research_question() if callable(self._research_question) else self._research_question
@@ -984,6 +988,8 @@ The dataAvailability object is an internal audit, not new experimental results.
                 alias = f'P{len(source_aliases) + 1}'
                 source_aliases[identity] = alias
                 source_registry[alias] = {key: row.get(key) for key in source_keys}
+                if row.get('publicationIdentity'):
+                    source_registry[alias]['publicationIdentity'] = row['publicationIdentity']
 
         def render_evidence(rows):
             packed, used = {}, set()
@@ -992,7 +998,7 @@ The dataAvailability object is an internal audit, not new experimental results.
                 used.add(alias)
                 packed[row['evidenceId']] = {
                     **{key: value for key, value in row.items()
-                       if key not in (*source_keys, 'evidenceId')}, 'source': alias}
+                       if key not in (*source_keys, 'evidenceId', 'publicationIdentity')}, 'source': alias}
             view = {'sources': {key: value for key, value in source_registry.items() if key in used},
                     'evidence': packed}
             return template.replace(evidence_text, json.dumps(

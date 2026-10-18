@@ -273,7 +273,7 @@ class ResearchFacade:
             "materials": materials,
             "materialSnapshot": material_snapshot,  # Immutable Java snapshot
             "contextMaterials": (material_snapshot or {}).get("contextMaterials", []) if isinstance(material_snapshot, dict) else [],
-            "promptVersion": "dr-v2.20261018.177",
+            "promptVersion": "dr-v2.20261018.178",
             "tableReferencesContractVersion": 1,
             "factualScopeContractVersion": 2,
             "factualReasoningContractVersion": 3,
@@ -288,7 +288,7 @@ class ResearchFacade:
             "quantitySpellingContractVersion": 3,
             "runtimeSemanticContractVersion": 1,
             "evidenceCoverageContractVersion": 3,
-            "sourcePrecisionContractVersion": 3,
+            "sourcePrecisionContractVersion": 4,
             "absenceScopeContractVersion": 5,
             "answerFormatContractVersion": 1,
             "repairProgressContractVersion": 2,
@@ -305,10 +305,10 @@ class ResearchFacade:
             "planEditContractVersion": 1,
             "clarificationContractVersion": 1,
             "adaptiveResearchContractVersion": 1,
-            "audienceRewriteContractVersion": 5,
+            "audienceRewriteContractVersion": 6,
             "verificationInputContractVersion": 1,
             "workflowContractVersion": 4,
-            "extractionPriorityVersion": 4,
+            "extractionPriorityVersion": 5,
             "planCompletionContractVersion": 1,
             "budgetContractVersion": 1,
             "hypothesisContractVersion": 1,
@@ -1175,7 +1175,7 @@ class ResearchFacade:
                 and self._repo.require_run(run_id)['auditSourceFieldsContractVersion']==2,
             factual_scope=lambda: scope_enabled(self._repo.require_run(run_id)),
             qualitative_inference=lambda: type(self._repo.require_run(run_id).get('audienceRewriteContractVersion')) is int
-                and self._repo.require_run(run_id)['audienceRewriteContractVersion'] in (4,5))
+                and self._repo.require_run(run_id)['audienceRewriteContractVersion'] in (4,5,6))
         return checker
     
     def _default_scope_validator(self) -> Callable[[str, str], bool]:

@@ -7,14 +7,14 @@ from services.deep_research.source_continuity import needs_preceding_context
 
 def enabled(record):
     return (type(record.get('sourcePrecisionContractVersion')) is int
-            and record['sourcePrecisionContractVersion'] in {1, 2, 3})
+            and record['sourcePrecisionContractVersion'] in {1, 2, 3, 4})
 
 
 def _body(row):
     return re.split(r'\bContent:\s*', row.get('text', ''), maxsplit=1)[-1]
 
 
-def include_method_details(indexed, candidates, query, owned_id, limit):
+def include_method_details(indexed, candidates, query, owned_id, limit, *, semantic_intent=False):
     """Reserve up to two existing slots for an explicit operation and its context.
 
     Literal query/component matches and operational language select candidates,
@@ -25,7 +25,9 @@ def include_method_details(indexed, candidates, query, owned_id, limit):
     selected = list(indexed[:limit])
     if not selected or limit < 2:
         return selected
-    if not re.search(r'predict\w*|input\w*|output\w*|mechanism|encod\w*|anneal\w*|'
+    from services.deep_research.method_intent import query_intent, operation_score
+    intent = query_intent(query) if semantic_intent is True else None
+    if not intent and not re.search(r'predict\w*|input\w*|output\w*|mechanism|encod\w*|anneal\w*|'
                      r'deform\w*|parameter\w*|预测|输入|输出|机制|编码|退火|形变', query, re.I):
         return selected
     anchor = selected[0]
@@ -57,19 +59,29 @@ def include_method_details(indexed, candidates, query, owned_id, limit):
         exact = sum(bool(re.search(r'(?<![A-Za-z0-9])'+re.escape(term)+r'(?![A-Za-z0-9])', body))
                     for term in acronyms)
         overlap = len(terms & set(re.findall(r'[a-z]{4,}', body.lower())))
-        if (acronyms and not exact) or (not acronyms and overlap < 2):
+        rank_body = body
+        if intent and needs_preceding_context(row):
+            dm = row['metadata']
+            previous = [p for p in owned if p['metadata']['chunk_index'] == dm['chunk_index']-1
+                        and p['metadata'].get('section_title') == dm.get('section_title')]
+            if len(previous) == 1:
+                # Context affects ranking only. Return separate original sources
+                # with unchanged IDs and the existing exact-predecessor guards.
+                rank_body = _body(previous[0])+'\n'+body
+        intent_score = operation_score(rank_body, row['metadata'].get('section_title',''), intent)
+        if (acronyms and not exact) or (not acronyms and (not intent_score if intent else overlap < 2)):
             continue
         operations = len({m.group(0).lower() for m in concrete.finditer(body)})
-        if not operations:
+        if not operations and not intent_score:
             continue
-        ranked.append((exact, operations, overlap, row))
-    ranked.sort(key=lambda item: (-item[0], -item[1], -item[2], item[3]['metadata']['chunk_index']))
+        ranked.append((exact, intent_score, operations, overlap, row))
+    ranked.sort(key=lambda item: (-item[0], -item[1], -item[2], -item[3], item[4]['metadata']['chunk_index']))
     protected = {anchor.get('sourceId')}
     for row in selected:
         if row.get('contextForSourceId'):
             protected.update((row['sourceId'], row['contextForSourceId']))
     selected_ids = {row.get('sourceId') for row in selected}
-    if ranked and ranked[0][3]['sourceId'] in selected_ids:
+    if ranked and ranked[0][4]['sourceId'] in selected_ids:
         return selected
     for *_, detail in ranked:
         if detail['sourceId'] in selected_ids:

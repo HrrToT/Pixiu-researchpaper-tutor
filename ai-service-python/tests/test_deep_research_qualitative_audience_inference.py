@@ -129,3 +129,30 @@ def test_server_classification_cannot_retarget_an_unknown_optional_classificatio
         rewrite_for_beginner(report,evidence,'给新手解释',invoke,json.loads,contract_version=5,
             requirement_context=REQUIREMENTS,saved_state=states[-1])
     invoke.assert_not_called()
+
+
+def test_source_parameter_is_an_identifier_but_new_numeric_values_remain_forbidden():
+    report,evidence=fixture();evidence[0]['quote']='The parameter λ1balances rate and distortion.'
+    states=[]
+    text='据此可理解为，λ1调节数据大小和图像误差的权重，目标是兼顾两者。'
+    result=rewrite_for_beginner(report,evidence,'给新手解释',lambda *_:response(report,text=text),json.loads,
+        contract_version=6,requirement_context=REQUIREMENTS,checkpoint=states.append)
+    assert result['claims'][0]['kind']=='inference' and result['claims'][0]['text']==text
+    assert states[-1]['editOutcome']=='applied' and states[-1]['editReason']==''
+    for bad in ['λ2调节两者','λ1=999','λ1使速度达到999 FPS','一百个样本']:
+        states=[]
+        rejected=rewrite_for_beginner(report,evidence,'给新手解释',lambda *_:response(report,text=bad),json.loads,
+            contract_version=6,requirement_context=REQUIREMENTS,checkpoint=states.append)
+        assert rejected==report and states[-1]['editReason']=='nonqualitative_inference'
+
+
+def test_an_uncited_parameter_label_cannot_authorize_the_edit_and_rejection_is_durable():
+    report,evidence=fixture();evidence.append({**evidence[0],'evidenceId':'foreign','quote':'The parameter λ2 balances both.'})
+    states=[];invoke=Mock(return_value=response(report,text='λ2调节两者'))
+    result=rewrite_for_beginner(report,evidence,'给新手解释',invoke,json.loads,contract_version=6,
+        requirement_context=REQUIREMENTS,checkpoint=states.append)
+    assert result==report and states[-1]['editOutcome']=='rejected'
+    no_dispatch=Mock(side_effect=AssertionError('No retry'))
+    assert rewrite_for_beginner(report,evidence,'给新手解释',no_dispatch,json.loads,contract_version=6,
+        requirement_context=REQUIREMENTS,saved_state=states[-1])==report
+    no_dispatch.assert_not_called()

@@ -30,6 +30,8 @@ class LocalTaskRetriever:
         self._page_locks_guard = threading.Lock()
         self._measurement_read_lock = threading.RLock()
         self._measurement_read_failures = {}
+        self._publication_identity_lock = threading.RLock()
+        self._publication_identities = {}
 
     def __call__(self, query, pdf_id, *, limit=5):
         if not self.validate(self.run_id, pdf_id):
@@ -67,9 +69,10 @@ class LocalTaskRetriever:
                             indexed = include_preceding_context(indexed, self.index_context[pdf_id], owned, limit)
                         from services.deep_research.method_details import enabled as precise_sources, include_method_details
                         if not metrics and precise_sources(self.repo.require_run(self.run_id)):
-                            indexed = include_method_details(indexed, self.index_context[pdf_id], query, owned, limit)
+                            indexed = include_method_details(indexed, self.index_context[pdf_id], query, owned, limit,
+                                semantic_intent=self.repo.require_run(self.run_id).get('sourcePrecisionContractVersion') == 4)
                         precision = self.repo.require_run(self.run_id).get('sourcePrecisionContractVersion')
-                        if type(precision) is int and precision in (2, 3):
+                        if type(precision) is int and precision in (2, 3, 4):
                             from services.deep_research.requested_measurements import include_requested_measurements
                             indexed = include_requested_measurements(indexed, self.index_context[pdf_id], query, owned, limit)
                         from services.deep_research.requested_table_rows import enabled as named_identity, human_row_question
@@ -78,29 +81,59 @@ class LocalTaskRetriever:
                         row_question = human_row_question(row_record) if symbolic_rows else query
                         indexed = include_requested_rows(indexed, self.index_context[pdf_id], row_question, owned, limit,
                                                          symbol_identity=symbolic_rows)
-                    if limit > 1 and type(precision) is int and precision == 3:
+                    if limit > 1 and type(precision) is int and precision in (3,4):
                         indexed_for_pdf = indexed
                     else:
-                        return indexed
+                        return self._stamp_identity(indexed, pdf_id)
             except (ImportError, RuntimeError, OSError):
                 pass
         if indexed_for_pdf is not None:
             # Keep optional PDF read failures outside the index-backend
             # fallback catch; a programming error must not trigger a second GET.
-            return self._supplement_pdf_measurements(indexed_for_pdf, query, pdf_id, limit)
+            return self._stamp_identity(self._supplement_pdf_measurements(indexed_for_pdf, query, pdf_id, limit), pdf_id)
         material, pages = self.load_pages(pdf_id)
         passages = self._pdf_passages(pdf_id, material, pages)
         scores = _bm25(query, [value['text'] for value in passages])
         ranked = sorted(zip(scores, passages), key=lambda value: -value[0])
         found = [value for score, value in ranked[:min(max(int(limit), 0), 5)] if score > 0]
         precision = self.repo.require_run(self.run_id).get('sourcePrecisionContractVersion')
-        if type(precision) is int and precision == 3:
+        if type(precision) is int and precision in (3,4):
             from services.deep_research.requested_measurements import include_pdf_measurements
             if not self.validate(self.run_id,pdf_id):
                 raise DeepResearchError('scope_revoked','论文范围已变更')
             passages = [{**row,'versionId':material.get('versionId') or material['contentHash']} for row in passages]
             found = include_pdf_measurements(found,passages,query,pdf_id,material['contentHash'],min(limit,5))
-        return found
+        return self._stamp_identity(found, pdf_id)
+
+
+    def _stamp_identity(self, rows, pdf_id):
+        record = self.repo.require_run(self.run_id)
+        if not rows or type(record.get('sourcePrecisionContractVersion')) is not int or record['sourcePrecisionContractVersion'] != 4:
+            return rows
+        if not self.validate(self.run_id,pdf_id):
+            raise DeepResearchError('scope_revoked','论文范围已变更')
+        material=next((m for m in record.get('materials',[]) if m.get('materialId')==pdf_id),None)
+        if not material or not material.get('contentHash'):
+            raise DeepResearchError('source_missing','论文版本未保存')
+        key=(pdf_id,material['contentHash'])
+        with self._publication_identity_lock:
+            if key not in self._publication_identities:
+                try:
+                    material,pages=self.load_pages(pdf_id)
+                    from services.deep_research.publication_identity import from_verified_pages
+                    identity=from_verified_pages(material,pages)
+                except DeepResearchError as exc:
+                    if exc.code not in {'source_unavailable','source_too_large','source_parse_failed'} or exc.details.get('status_code') in {401,403}:
+                        raise
+                    identity=None
+                except (requests.RequestException,subprocess.TimeoutExpired):
+                    identity=None
+                self._publication_identities[key]=identity
+            identity=self._publication_identities[key]
+        if not self.validate(self.run_id,pdf_id):
+            raise DeepResearchError('scope_revoked','论文范围已变更')
+        from copy import deepcopy
+        return [{**row,'publicationIdentity':deepcopy(identity)} for row in rows] if identity else rows
 
 
     @staticmethod

@@ -14,6 +14,8 @@ def factual_source_context(selected, requirements, related):
             sources[alias]={key:item[key] for key in fields if item.get(key) is not None}
             if item.get('sourceTitle'):
                 sources[alias]['title']=item['sourceTitle']
+            if item.get('sourcePublicationIdentity'):
+                sources[alias]['publicationIdentity']=item['sourcePublicationIdentity']
         evidence_sources[item['evidenceId']]=alias
     targets=[]
     for row in requirements:

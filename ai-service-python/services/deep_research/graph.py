@@ -553,6 +553,10 @@ def make_acquire_node(
                                 "title": source_display_title(item.get("title"), material.get("title")),
                                 "url": item.get("url", ""),
                         }
+                        from services.deep_research.publication_identity import validated as valid_publication
+                        publication = valid_publication(item.get('publicationIdentity'),material.get('contentHash'))
+                        if publication:
+                            new_source['publicationIdentity'] = publication
                         normalized_sources.append(new_source)
                         existing_by_id[source_id] = new_source
         
@@ -687,6 +691,7 @@ def make_read_node(
                     "title": source_meta.get("title", ""),
                     "url": source_meta.get("url", ""),
                     "obligationIds": source_meta.get("obligationIds", []),
+                    **({'publicationIdentity':source_meta['publicationIdentity']} if source_meta.get('publicationIdentity') else {}),
                 })
         
         repo_update(
@@ -841,6 +846,8 @@ Each item has:
                         evidence["sourceId"] = source_id
                         evidence["sourceTitle"] = source_title
                         evidence["sourceUrl"] = source_url
+                        if read_result.get('publicationIdentity'):
+                            evidence['sourcePublicationIdentity'] = read_result['publicationIdentity']
                         
                         # Merge: skip duplicates by evidence ID
                         if evidence["evidenceId"] not in existing_by_id:
@@ -1108,6 +1115,8 @@ def make_synthesize_node(
                 source_registry[source_aliases[source_id]] = {
                     'workId': source_id,
                     'title': source_display_title(ev.get('sourceTitle'), paper_titles.get(source_id))}
+                if ev.get('sourcePublicationIdentity'):
+                    source_registry[source_aliases[source_id]]['publicationIdentity'] = ev['sourcePublicationIdentity']
             evidence_summaries.append({
                 "evidenceId": alias,
                 "quote": ev.get("quote", ""),
@@ -1218,6 +1227,9 @@ Orient losses before formulas, distinguish conditional/averaged effects and pape
         prompt += format_guidance(point_constraint)
         from services.deep_research.synthesis import SCIENTIFIC_TERMINOLOGY
         prompt += '\n' + SCIENTIFIC_TERMINOLOGY
+        if any(row.get('publicationIdentity') for row in source_registry.values()):
+            from services.deep_research.publication_identity import GUIDANCE as publication_guidance
+            prompt += '\n' + publication_guidance
         if output_kind == 'paper_comparison':
             prompt += "\nFor a comparison, separate each paper's reported evidence from the cross-paper judgment. " \
                       "Where evidence exists, provide one short reported claim per paper, followed by a separate " \
@@ -1345,7 +1357,7 @@ Orient losses before formulas, distinguish conditional/averaged effects and pape
                 **({'contract_version':current['audienceRewriteContractVersion'],'requirement_context':[
                     {key:o[key] for key in ('obligationId','question','completionCriteria','requiredSources') if key in o}
                     for item in current.get('state',{}).get('plan',[]) for o in item.get('obligations',[])]}
-                   if current.get('audienceRewriteContractVersion') in (2,3,4,5) else {}))
+                   if current.get('audienceRewriteContractVersion') in (2,3,4,5,6) else {}))
         
         if output_kind == "experiment_design":
             # Compaction must not hide required settings back in metadata.

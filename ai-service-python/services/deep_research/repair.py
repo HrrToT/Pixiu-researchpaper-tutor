@@ -39,6 +39,7 @@ def _prepare_repair(report, verification, evidence, question, *, max_prompt_byte
          'evidenceId': short_ids[e['evidenceId']], 'quote': e.get('quote', ''),
          'sourceContext': surrounding_context(e), 'location': e.get('location', {}),
          'accessLevel': e.get('accessLevel'), 'conditions': e.get('conditions', {}),
+         'publicationIdentity': e.get('sourcePublicationIdentity'),
          'tableData': e.get('tableData')}.items()
          if value is not None and value != {} and value != []}
         for e in sorted(selected, key=lambda e: (e['evidenceId'] not in hinted,
@@ -58,6 +59,9 @@ def _prepare_repair(report, verification, evidence, question, *, max_prompt_byte
     input_claims = [compact_claim_view(row) for row in input_claims]
     redraft_instruction = ''
     source_instruction = ''
+    if any(row.get('publicationIdentity') for row in rows):
+        from services.deep_research.publication_identity import GUIDANCE as publication_guidance
+        source_instruction = '\n' + publication_guidance
     if fact_redraft and factual_redraft_eligible(report):
         # Omit rejected wording from the generation view, not audit storage.
         # Keep original citations mandatory below and full originals in the
@@ -75,7 +79,7 @@ def _prepare_repair(report, verification, evidence, question, *, max_prompt_byte
                 full_id=aliases[row['evidenceId']]
                 row['sourceRef']=evidence_sources[full_id]
                 row['contentHash']=by_evidence[full_id]['contentHash']
-            source_instruction=('\nFrozen factual source requirements and identities (metadata, NOT paper evidence):\n'
+            source_instruction+=('\nFrozen factual source requirements and identities (metadata, NOT paper evidence):\n'
                 +json.dumps(context,ensure_ascii=False,separators=(',',':'))
                 +'\nP IDs label source metadata, never citations or published words. Required source IDs map to '
                 'available P IDs; an empty list means that source is unavailable in this request. '
