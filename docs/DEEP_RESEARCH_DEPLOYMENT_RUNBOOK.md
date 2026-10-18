@@ -1,5 +1,7 @@
 # Deep Research 单实例备份、恢复与回退
 
+2026-10-18当前Python6e931a51 / `.174`，Java27ac4beb、前端123b0d29；4,203条账本、0活动、9历史未知、92任务，旧对象保持。真实内部源字段绑定与最终事实支持通过，H3F-v3新手表达仍未通过；原独立成绩不改。证据：[最新保留](deep-research-evidence/runtime-postcases-dr174-20261018.json)。
+
 2026-10-18当前Python7186e037 / `.173`，Java27ac4beb、前端123b0d29；4,179条账本、0活动、9历史未知、92任务。`.172`修订异常处理同次加载；D5窄追问人工通过，三例开发回归仍内容失败。旧对象逐项保持，不改原独立成绩。证据：[最新保留](deep-research-evidence/runtime-postcases-dr173-regression-three-20261018.json)。
 
 2026-10-18当前Python6c89dad1 / `.171`，Java27ac4beb、前端123b0d29；4,087条账本、0活动、9历史未知、92任务。D1-v27开发内容人工通过，原对象保持，不计独立信用。`.172`修订异常/栏目修复源码008a288d全量离线通过，尚未单独加载。证据：[最新保留](deep-research-evidence/runtime-postcases-dr171-20261018.json)。

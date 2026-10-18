@@ -44,11 +44,11 @@
       "overlap": true
     },
     "backendCurrentResearchReadingTables": {
-      "passed": 2798,
+      "passed": 2827,
       "warnings": 1,
-      "seconds": 177.41,
-      "sourceCommit": "7186e037",
-      "log": "tmp/pytest-dr173-full.log",
+      "seconds": 171.93,
+      "sourceCommit": "6e931a51",
+      "log": "tmp/pytest-dr174-full.log",
       "scope": "Research, reading, PDF tables and config; offline fixture providers."
     },
     "frontendDocumentNavigationFocused": {
@@ -1966,7 +1966,7 @@
     {
       "id": "DR4",
       "implementation": "Permissioned arXiv discovery, versioned fulltext acquisition, fixed network exit and degradation implemented; versioned durable beginner wording pass before unchanged factual verification",
-      "acceptance": "H3F-v1/v2 actual discovery/versioned fulltext path verified. H3F-v2 factual verdicts are passed by model but exact audit bindings fail on PDF line-wrap/hyphen copying; no published novice-content or independent pass. Original unknown preserved.",
+      "acceptance": "H3F-v3 actually discovers/reads fixed-v1 fulltext and uses strict original source-field references in factual audits. Final facts and source support pass; novice explanation still fails manual readability because the audience edit copied jargon unchanged. No independent credit.",
       "proof": [
         "deep-research-evidence/H3-v1-external-fulltext-20261013.json",
         "../ai-service-python/tests/test_deep_research_academic.py",
@@ -2305,27 +2305,27 @@
     "Full novice study workflow",
     "Independent Edge recovery"
   ],
-  "currentProviderConstraint": "All further necessary bounded validations uniformly authorized. Selected current diagnostic sequence:246 settled model calls/954689 tokens; not total historical usage. Cost unknown; nine historical unknowns preserved, no blind retry.",
-  "currentDevelopmentMode": "Primary Codex only; Goal active, quota monitor paused by user. Python7186e037/.173 loaded, Java27ac4beb, frontend123b0d29. D1-v27 and narrow D5-v14 development content accepted. H2F-v2/H3F-v2/H5F-v2 content fails. OriginalDR0-DR5 incomplete, original first-five0/5 and PR draft unchanged.",
+  "currentProviderConstraint": "All further necessary bounded validations uniformly authorized. Selected diagnostic sequence:258 settled model calls/1006395 tokens; not global historical usage. Cost unknown; nine historical unknowns preserved, no blind retry.",
+  "currentDevelopmentMode": "Primary Codex only; Goal active, quota monitor paused by user. Python6e931a51/.174 loaded, Java27ac4beb, frontend123b0d29. D1-v27 and narrow D5-v14 development content accepted. H3F-v3 actual source-field binding and source support pass, but novice readability fails; machine complete is not content acceptance. OriginalDR0-DR5 incomplete, first-five0/5 and PR draft unchanged.",
   "loadedRuntime": {
-    "commit": "7186e037",
-    "promptVersion": "dr-v2.20261018.173",
+    "commit": "6e931a51",
+    "promptVersion": "dr-v2.20261018.174",
     "javaCommit": "27ac4beb",
     "frontendCommit": "123b0d29",
-    "callsAfterLatestCase": 4179,
+    "callsAfterLatestCase": 4203,
     "active": 0,
     "historicalPausedUnknown": 9,
     "tasks": 92,
-    "proof": "deep-research-evidence/runtime-load-dr173-comparison-methodology-20261018.json",
-    "postCasesProof": "deep-research-evidence/runtime-postcases-dr173-regression-three-20261018.json"
+    "proof": "deep-research-evidence/runtime-load-dr174-audit-source-fields-20261018.json",
+    "postCasesProof": "deep-research-evidence/runtime-postcases-dr174-20261018.json"
   },
   "nextQualityWork": [
-    "Use versioned typed references to unchanged visible source fields for internal audits, preserving exact original quotations and avoiding retyped PDF line-wrap/hyphen errors.",
-    "Transmit document-declared publication revision from original PDF/hash, not a guessed filename or a requirement that every excerpt repeat v4. Organize multi-paper factual targets with appropriate own-source support.",
-    "Respect an explicitly requested explore/descriptive analysis; existing schema already supports this. Keep inferential requirements for inferential tasks.",
-    "Reject score-variability-alone as a jitter measurement; require an interpretable temporal-consistency procedure with a separate quality guard and paired units.",
-    "Complete real common initialization and factor redundant fixed repair context to fit the existing24000byte cap; do not drop needed states or expand the cap.",
-    "Prepare fresh independent replacements after development quality passes. MVSplat/ODGS/4DGS exact PDFs were found in older research receipts and are not eligible fresh materials."
+    "Complete internal target-scope binding with a strict reference to unchanged target text/conditions; do not retype a paraphrased statementExcerpt.",
+    "Rebuild novice points from each original source and frozen requested requirements, omitting unverified draft prose/conditions from the generation view. Actual prior audience rewrites copied both points unchanged; no automatic retry.",
+    "Transmit original-PDF publication revision and organize per-paper factual support. H2F lacks NTC/monocular evidence in extracted pool; inspect query/selection intent, not only synthesis wording.",
+    "Investigate whether whole-question FPS context incorrectly triggers metric-table ranking for method/input subqueries; keep active intent and full user context distinct without removing scope/named-row guards.",
+    "Respect explicitly requested explore/descriptive analysis; reject PSNR-score variability alone as jitter; complete initialization and factor fixed repair redundancy under unchanged24000byte cap.",
+    "Prepare fresh independent replacements after development quality passes. MVSplat/ODGS/4DGS were already used in old receipts and are not fresh."
   ],
   "javaReaderRuntime": {
     "sourceCommit": "070ab1a",
@@ -2715,5 +2715,19 @@
     "independentCredit": 0,
     "retirement": "deep-research-evidence/H2F-H3F-H5F-development-retirement-20261018.json",
     "proof": "deep-research-evidence/runtime-postcases-dr173-regression-three-20261018.json"
+  },
+  "auditSourceFieldsCheckpoint": {
+    "sourceCommit": "6e931a51",
+    "promptVersion": "dr-v2.20261018.174",
+    "case": "H3F-v3",
+    "actualTypedSourcePaths": true,
+    "sourceSupport": "passed",
+    "machineOutcome": "complete",
+    "contentAccepted": false,
+    "modelCalls": 12,
+    "settledTokens": 51706,
+    "elapsedSeconds": 159.0,
+    "independentCredit": 0,
+    "proof": "deep-research-evidence/H3F-v3-diagnostic-20261018.json"
   }
 }
