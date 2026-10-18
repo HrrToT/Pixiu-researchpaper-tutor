@@ -13,6 +13,10 @@ def enabled(record):
     return type(record.get('evidenceCoverageContractVersion')) is int and record['evidenceCoverageContractVersion'] in (1, 2, 3)
 
 
+def grounded(record):
+    return type(record.get('requestGroundingContractVersion')) is int and record['requestGroundingContractVersion'] == 1
+
+
 def criteria(obligation):
     return obligation.get('completionCriteria') or [{'criterionId': 'whole_obligation',
         'requirement': obligation['question'], 'responseType': 'explanation'}]
@@ -34,7 +38,7 @@ def _question_parts(text):
     return parts
 
 
-def normalize_generated_requirements(plan, question):
+def normalize_generated_requirements(plan, question, *, literal_questions=False):
     """Change only the initial AI plan, never a saved human plan edit.
 
     Separate literal human questions when one generated criterion merged them.
@@ -52,6 +56,7 @@ def normalize_generated_requirements(plan, question):
             return ''
         return _EXAMPLE.sub(replace, text)
     for item in result:
+        anchored = []
         for obligation in item['obligations']:
             oid = obligation['obligationId']
             obligation['question'] = neutral(obligation['question'], oid, 'question')
@@ -63,12 +68,20 @@ def normalize_generated_requirements(plan, question):
                 continue
             parts = _question_parts(excerpt)
             requests = [part for part in parts if _ASK.search(part)]
-            if not 2 <= len(requests) <= 4 or any(not 4 <= len(part) <= 500 for part in requests):
+            if not (1 if literal_questions else 2) <= len(requests) <= 4 or any(not 4 <= len(part) <= 500 for part in requests):
                 continue
             obligation['completionCriteria'] = [
                 {'criterionId': f'human_aspect_{i+1}', 'requirement': part,
                  'responseType': 'explanation' if _EXPLAIN.search(part) else 'identification'}
                 for i, part in enumerate(requests)]
-            changes.append({'obligationId': oid, 'change': 'separated_literal_human_aspects',
+            if literal_questions:
+                # The generated criterion can add an unprovided attribute list
+                # even when the user asked one simple question. Use the literal
+                # question, not a model paraphrase of the desired answer.
+                obligation['question'] = excerpt
+                anchored.append(excerpt)
+            changes.append({'obligationId': oid, 'change': 'anchored_literal_human_aspects' if literal_questions else 'separated_literal_human_aspects',
                             'criterionCount': len(requests)})
+        if literal_questions and len(anchored) == len(item['obligations']):
+            item['question'] = '；'.join(dict.fromkeys(anchored))
     return result, changes
