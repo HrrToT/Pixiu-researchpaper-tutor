@@ -16,7 +16,7 @@ from services.deep_research.repair_scope import repair_evidence_scope
 def _prepare_repair(report, verification, evidence, question, *, max_prompt_bytes=24000,
                     metric_domains=None, draft_context=(), prior_revisions=(),
                     fact_redraft=False, requirement_context=(), source_aware_redraft=False,comparison_reasoning=False,
-                    question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,comparison_methodology=False):
+                    question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,comparison_methodology=False,experimental_intent=False):
     rejected = {row['claimId']: row for row in verification.get('rejected', [])}
     originals = {row['claimId']: row for row in report.get('claims', []) if row.get('claimId') in rejected}
     if not originals:
@@ -241,6 +241,13 @@ For existing proposals, choose concrete seed/split/level/budget/confidence setti
 not paper-attributed values or promises to preregister later. Correct formulas and label
 hypotheses/proposals. Source facts still require evidence; proposed choices need not occur
 in the paper. Maintain consistency with accepted definitions and complete required details.'''
+    prospective = experimental_intent and all(row.get('kind') in {'proposal','suggestion','hypothesis'} for row in originals.values())
+    if prospective:
+        from services.deep_research.experiment_intent import repair_prompt as experiment_repair_prompt
+        prompt = experiment_repair_prompt(question=question,length_contract=length_contract,
+            accepted=proposal_context,siblings=sibling_context,questions=question_dictionary,targets=input_claims,
+            checks=packed_checks,permissions_marker=permissions_marker,evidence_marker=evidence_marker,
+            shape=revision_shape,table_instructions=table_instructions)
     prompt += '\n' + SCIENTIFIC_TERMINOLOGY
     if source_instruction:
         prompt += source_instruction
@@ -268,7 +275,11 @@ in the paper. Maintain consistency with accepted definitions and complete requir
             # Generation needs operational drafting guidance; the independent
             # reviewer still applies the complete scientific policy afterwards.
             from services.deep_research.design_drafting import design_drafting_requirements
-            requirements = design_drafting_requirements(metric_domains, compact=True, roles=roles)
+            groups=[row.get('executionSpec',{}).get('factors') for row in report.get('claims',[])
+                    if row.get('designRole')=='groups' and isinstance(row.get('executionSpec'),dict)]
+            single_factor=bool(groups) and all(isinstance(factors,list) and len(factors)==1 for factors in groups)
+            requirements = design_drafting_requirements(metric_domains, compact=True, roles=roles,
+                **({'targeted':True,'factorial_reference':not single_factor} if prospective else {}))
         else:
             requirements = design_requirements(metric_domains,
                 roles=roles if roles <= DESIGN_ROLES.keys() else None, policy=policy)
@@ -323,7 +334,7 @@ in the paper. Maintain consistency with accepted definitions and complete requir
     if declared_table_refs:
         from services.deep_research.table_bindings import REFERENCE_GUIDANCE
         prompt+='\n'+REFERENCE_GUIDANCE
-    if comparison_methodology:
+    if comparison_methodology and not prospective:
         from services.deep_research.comparison_methodology import REFERENCE
         prompt+='\n'+REFERENCE
     template = prompt
@@ -455,7 +466,7 @@ def factual_redraft_eligible(report):
 def repair_rejected(report, verification, evidence, question, invoke, parse, *,
                     max_prompt_bytes=24000, metric_domains=None, batch_state=None, checkpoint=None,
                     current_budget=None, invoke_request=None, fact_redraft=False, requirement_context=(),
-                    source_aware_redraft=False,comparison_reasoning=False,question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,strict_response=False,comparison_methodology=False):
+                    source_aware_redraft=False,comparison_reasoning=False,question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,strict_response=False,comparison_methodology=False,experimental_intent=False):
     """One bounded revision round, split before dispatch when evidence cannot fit.
 
     At most three requests share full sibling design definitions. Successful
@@ -478,7 +489,8 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
                        **({'factualScopeContractVersion':2 if factual_scope==2 else 1} if factual_scope else {}),
                        **({'tableReferencesContractVersion':1} if declared_table_refs else {}),
                        **({'repairResponseContractVersion':1} if strict_response else {}),
-                       **({'comparisonMethodologyVersion':1} if comparison_methodology else {})})
+                       **({'comparisonMethodologyVersion':1} if comparison_methodology else {}),
+                       **({'experimentIntentContractVersion':1} if experimental_intent else {})})
 
     def prepare(ids, results=(), byte_limit=None):
         ids = set(ids)
@@ -491,7 +503,8 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
             metric_domains=metric_domains, draft_context=siblings, prior_revisions=results,
             fact_redraft=fact_redraft, requirement_context=requirement_context,source_aware_redraft=source_aware_redraft,
             comparison_reasoning=comparison_reasoning,question_priority=question_priority,concise_factual=concise_factual,
-            factual_scope=factual_scope,declared_table_refs=declared_table_refs,comparison_methodology=comparison_methodology)
+            factual_scope=factual_scope,declared_table_refs=declared_table_refs,comparison_methodology=comparison_methodology,
+            experimental_intent=experimental_intent)
 
     state = deepcopy(batch_state) if batch_state is not None else {
         'version': 1, 'inputDigest': identity, 'maxPromptBytes': max_prompt_bytes,

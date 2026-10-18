@@ -557,6 +557,7 @@ class BudgetedSemanticChecker:
         audit_target_fields=False,
         factual_scope=False,
         qualitative_inference=False,
+        experiment_intent_review=False,
     ):
         self._invoke = llm_invoker
         self._run_id = run_id
@@ -569,6 +570,7 @@ class BudgetedSemanticChecker:
         self._audit_target_fields = audit_target_fields
         self._factual_scope = factual_scope
         self._qualitative_inference = qualitative_inference
+        self._experiment_intent_review = experiment_intent_review
     
     def __call__(self, claims: list[dict], evidence: list[dict]) -> list[dict]:
         return self._check(claims, evidence, [], 'verify')
@@ -750,6 +752,11 @@ Do not require an unexecuted experiment to have results. Do not judge context cl
         from services.deep_research.synthesis import SCIENTIFIC_TERMINOLOGY
         prompt += '\n' + SCIENTIFIC_TERMINOLOGY
         question = self._research_question() if callable(self._research_question) else self._research_question
+        experiment_intent = (self._experiment_intent_review() if callable(self._experiment_intent_review)
+                             else self._experiment_intent_review) is True
+        if experiment_intent and all(c.get('kind') in {'proposal','suggestion','hypothesis'} for c in claims):
+            from services.deep_research.experiment_intent import guidance as experiment_guidance
+            prompt += '\n'+experiment_guidance(question,{c.get('designRole') for c in claims})
         if isinstance(question, str) and question.strip():
             prompt += '\nOriginal research question (user objective, not source evidence):\n' + json.dumps(question, ensure_ascii=False)
             prompt += ('\nCheck that each target fulfills its role in answering this actual objective. '

@@ -74,24 +74,72 @@ _ROLE_HINTS = {
     'limits':'Bound confounding and generalization; distinguish what a controlled within-unit contrast can identify from population claims.'}
 
 
-def design_drafting_requirements(metric_domains=None, *, compact=False, roles=None):
+_TARGETED_BASE = '''Draft only the writable roles; accepted definitions are fixed and sibling drafts are
+unverified consistency context. Use complete typed configurations and concrete proposed values now,
+not unknown defaults or later choices. Proposed values are unexecuted choices, not author settings.
+Existing dataset/subset membership, available counts, paper operations and released assets require
+own supplied fulltext. Never infer paper-wide absence. Retain the user's actual objective, scope,
+finite budgets and necessary controls. Renderer suffixes will expose fields; prose must agree and
+need not repeat them. Independent review retains the full scientific and operational policy.'''
+_TARGETED_ROLE = {
+    'data':'Ground the exact dataset/subset and scene names. Choose executable within-scene view splits with seeds, nonempty checks and split-before-fit; final evaluation cannot select checkpoints. Identify the analysis unit rather than declaring nearby views independent.',
+    'groups':'Specify the requested factors, exact control/treatment operations and all necessary numeric levels. Parameter groups and binary IDs must agree with controls, budgets, states and hypothesis; unsupported source facts cannot become proposed choices.',
+    'controls':'Define actual common initialization, state/parameter identities, renderer, numeric image sizing, optimizer/rates/schedule, other interventions and seeds. Use only available inputs/fresh states; cite a supplied version/config/key or choose explicit values, never unknown defaults.',
+    'budget':'Choose finite shared baseline acquisition/training and matched per-group optimization amounts for an isolated effect; keep stopping rules, units and IDs consistent. Existing assets require release/access evidence; otherwise propose bounded fresh training.',
+    'steps':'Order split, acquisition, explicit state creation, paired copies, interventions, optimization and matched rendering/evaluation. Record actual artifacts/hashes at execution; filenames alone do not define how initialization is obtained. No unavailable upstream state.',
+    'hypothesis':'State one bounded prospective hypothesis linked to the actual analysis ID/effect keys. Explore/descriptive does not require or promise statistical rejection/equivalence; purpose and statement must agree with the chosen decision method.',
+    'analysis':'Define each actual paired metric effect, view/time aggregation, seed handling and compatible uncertainty/decision. Descriptive paired estimates need no significance test. Inferential resampling needs actual independent units; one scene does not support cross-scene confidence. Mixed metric directions are a tradeoff.',
+    'metrics':'Define executable observations, references, units and directions for each requested metric; distinguish reconstruction quality from reference-free stability and teacher distortion. Never combine incompatible units or use infinite self-PSNR in arithmetic.',
+    'limits':'Bound inference to the selected scene/settings and measured observables. State confounding, unavailable references and generalization limits without claiming authors omitted tests. A caveat cannot rescue a design incapable of identifying the requested effect.'}
+
+
+def design_drafting_requirements(metric_domains=None, *, compact=False, roles=None,
+                                 targeted=False,factorial_reference=True,concise_policy=False):
     from services.deep_research.metric_scope import metric_protocol_requirements
     protocols = metric_protocol_requirements(metric_domains)
     metrics = '; '.join(f'{domain}: {text}' for domain, text in protocols.items())
-    statistics = _DRAFT_STATISTICS if roles is None or set(roles) & {'hypothesis', 'analysis'} else ''
+    statistics = _DRAFT_STATISTICS if factorial_reference and (roles is None or set(roles) & {'hypothesis', 'analysis'}) else ''
+    if concise_policy:
+        return (_TARGETED_BASE+'\n'+statistics+'\n'+'\n'.join(
+            role+': '+(metrics if role=='metrics' else _ROLE_HINTS[role])
+            for role in DESIGN_ROLES if roles is None or role in roles))
+    if targeted:
+        return (_TARGETED_BASE+'\n'+statistics+'\n'+'\n'.join(
+            role+': '+_TARGETED_ROLE[role]+(' '+metrics if role=='metrics' else '')
+            for role in DESIGN_ROLES if roles is None or role in roles))
     return (_DRAFT_POLICY + '\n' + statistics + '\n'
             + '\n'.join(f'{role}: {metrics if role == "metrics" else _ROLE_HINTS[role] if compact else requirement}'
                         for role, (_, requirement) in DESIGN_ROLES.items() if roles is None or role in roles))
 
 
 def prospective_draft_prompt(*, question, limit, clarification, gaps, obligations, sources,
-                             evidence_marker, claim_fields, claim_limit, section_templates):
+                             evidence_marker, claim_fields, claim_limit, section_templates,concise=False):
     """A proposal gets its own concise request, not a factual-results checklist.
 
     Full per-role contracts and the independent reviewer are appended elsewhere.
     Source permissions and every explicit user requirement stay visible.
     """
     packed=lambda value:json.dumps(value,ensure_ascii=False,separators=(',',':'))
+    if concise:
+        return f'''Design an executable, UNEXECUTED experiment for this complete user request.
+Question: {question}
+Total text/conditions character limit: {limit or 'concise; no explicit maximum'}
+User clarification: {clarification}
+Gaps: {packed(gaps)}
+Frozen research requirements (goals, never source evidence): {packed(obligations)}
+Source registry (paper identity metadata, not scientific evidence): {packed(sources)}
+Evidence summaries:
+{evidence_marker}
+Return ONLY {{"sections":[],"claims":[]}}. Sections use title/claimIds. Each claim uses {claim_fields}.
+Section titles: {packed(section_templates)}. Maximum {claim_limit} claims, including EVERY required
+designRole with its complete typed configuration. Explicit requested paper facts need separately
+supported reported/inference claims; proposed choices need no author attribution. Existing dataset/
+subset membership, method operations, counts and released assets require EACH claim's OWN supplied
+E citations. Empirical table values require exact visible tableBindings; never relabel a fact as a
+proposal or invent missing evidence, results or novelty. Abstract facts stay abstract-level.
+Write concise Chinese rationale/conditions once; typed settings are rendered by the app. Keep every
+role mutually consistent, including initialization, data split, budgets, measurements and decisions.
+Do not publish E/P IDs or raw hashes. Preserve the requested scope and name any specific evidence gap.'''
     return f'''Design an executable, UNEXECUTED experiment answering this complete user request.
 Question: {question}
 Strict total character limit: {limit or 'concise, no explicit maximum'}

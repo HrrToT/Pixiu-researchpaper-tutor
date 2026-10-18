@@ -341,14 +341,14 @@ class DeepResearchRepository:
                 updated = mutate(copy.deepcopy(current))
                 if updated is None:
                     updated = current
-                for identity in ("runId", "taskId", "engineVersion", "contractVersion", "materialSnapshot",
+                for identity in ("runId", "taskId", "engineVersion", "contractVersion", "materialSnapshot", "experimentIntentContractVersion",
                                  "verificationInputContractVersion", "audienceRewriteContractVersion", "verificationFeedbackContractVersion", "factRedraftContractVersion", "factualReasoningContractVersion", "factualScopeContractVersion", "tableReferencesContractVersion", "reportPresentationContractVersion", "auditSourceFieldsContractVersion", "requestGroundingContractVersion", "namedRowIdentityContractVersion", "comparisonReasoningContractVersion", "repairEvidencePriorityVersion", "jointEvidenceContractVersion",
                                  "adaptiveResearchContractVersion", "clarificationContractVersion", "planEditContractVersion",
                                  "exactDiscoveryContractVersion", "planResumeContractVersion",
                                  "continuationContextContractVersion", "continuationFormatContractVersion", "continuationContext", "dependencyContractVersion", "adaptiveExtractionContractVersion",
                                  "claimIsolationContractVersion", "structuredOutputContractVersion", "repairProgressContractVersion", "sourcePrecisionContractVersion", "extractionPriorityVersion", "absenceScopeContractVersion", "answerFormatContractVersion", "evidenceCoverageContractVersion", "runtimeSemanticContractVersion", "quantitySpellingContractVersion"):
                     if (updated.get(identity) != current.get(identity)
-                            or (identity in {'verificationInputContractVersion', 'audienceRewriteContractVersion', 'verificationFeedbackContractVersion', 'factRedraftContractVersion', 'factualReasoningContractVersion', 'factualScopeContractVersion', 'tableReferencesContractVersion', 'reportPresentationContractVersion', 'auditSourceFieldsContractVersion', 'requestGroundingContractVersion', 'namedRowIdentityContractVersion', 'comparisonReasoningContractVersion', 'repairEvidencePriorityVersion', 'jointEvidenceContractVersion',
+                            or (identity in {'experimentIntentContractVersion', 'verificationInputContractVersion', 'audienceRewriteContractVersion', 'verificationFeedbackContractVersion', 'factRedraftContractVersion', 'factualReasoningContractVersion', 'factualScopeContractVersion', 'tableReferencesContractVersion', 'reportPresentationContractVersion', 'auditSourceFieldsContractVersion', 'requestGroundingContractVersion', 'namedRowIdentityContractVersion', 'comparisonReasoningContractVersion', 'repairEvidencePriorityVersion', 'jointEvidenceContractVersion',
                                              'adaptiveResearchContractVersion', 'clarificationContractVersion', 'planEditContractVersion',
                                              'exactDiscoveryContractVersion', 'planResumeContractVersion',
                                               'continuationContextContractVersion', 'continuationFormatContractVersion', 'dependencyContractVersion',

@@ -1223,7 +1223,9 @@ Orient losses before formulas, distinguish conditional/averaged effects and pape
             prompt=prospective_draft_prompt(question=question,limit=requested_limit,
                 clarification=separate_clarification(record),gaps=[g.get('question') for g in gaps[:5]],
                 obligations=draft_obligations,sources=source_registry,evidence_marker=evidence_marker,
-                claim_fields=claim_fields,claim_limit=claim_limit,section_templates=section_templates)
+                claim_fields=claim_fields,claim_limit=claim_limit,section_templates=section_templates,
+                **({'concise':True} if type(record.get('experimentIntentContractVersion')) is int
+                   and record['experimentIntentContractVersion']==1 else {}))
         prompt += format_guidance(point_constraint)
         from services.deep_research.synthesis import SCIENTIFIC_TERMINOLOGY
         prompt += '\n' + SCIENTIFIC_TERMINOLOGY
@@ -1244,6 +1246,9 @@ Orient losses before formulas, distinguish conditional/averaged effects and pape
                       "Discuss every requested tradeoff (including quality) before adding secondary ablation examples."
         
         if output_kind == "experiment_design":
+            from services.deep_research.experiment_intent import enabled as intent_enabled, guidance as experiment_guidance
+            if intent_enabled(record):
+                prompt += '\n'+experiment_guidance(question,draft=True)
             from services.deep_research.design_drafting import design_drafting_requirements
             from services.deep_research.execution_spec import EXECUTION_SPEC_CONTRACT
             prompt += '\n' + EXECUTION_SPEC_CONTRACT
@@ -1258,7 +1263,10 @@ Orient losses before formulas, distinguish conditional/averaged effects and pape
             if strict_hypothesis:
                 from services.deep_research.hypothesis_spec import HYPOTHESIS_SPEC_CONTRACT
                 prompt += '\n' + HYPOTHESIS_SPEC_CONTRACT
-            prompt += '\n' + design_drafting_requirements(brief_state.get('metricDomains'),compact=strict_protocol)
+            from services.deep_research.experiment_intent import single_toggle_request
+            prompt += '\n' + design_drafting_requirements(brief_state.get('metricDomains'),compact=strict_protocol,
+                **({'concise_policy':True,'factorial_reference':not single_toggle_request(question)}
+                   if intent_enabled(record) else {}))
             from services.deep_research.experimental_reasoning import design_output_outline
             prompt += ('\nREQUIRED OUTPUT OUTLINE (one claim for EACH role, even when several share a section):\n'
                        + json.dumps(design_output_outline(strict_budget=strict_budget,
@@ -1286,6 +1294,8 @@ Orient losses before formulas, distinguish conditional/averaged effects and pape
         template = prompt
         prompt, evidence_summaries = fit_evidence_prompt(evidence_summaries,
             lambda rows: template.replace(evidence_marker, json.dumps(rows, ensure_ascii=False, separators=(',', ':')), 1))
+        if output_kind=='experiment_design' and intent_enabled(record) and evidence and not evidence_summaries:
+            return {'error_code':'synthesis_evidence_capacity'}
         evidence_aliases = {row['evidenceId']: evidence_aliases[row['evidenceId']] for row in evidence_summaries}
         from services.deep_research.factual_reasoning import request_options as factual_options
         result = llm_invoke(run_id, "synthesize", prompt,
@@ -1517,6 +1527,8 @@ def make_verify_node(
                         **({'comparison_reasoning':True} if comparison_enabled(record) else {}),
                         **({'comparison_methodology':True} if type(record.get('comparisonReasoningContractVersion')) is int
                            and record['comparisonReasoningContractVersion']==3 else {}),
+                        **({'experimental_intent':True} if type(record.get('experimentIntentContractVersion')) is int
+                           and record['experimentIntentContractVersion']==1 else {}),
                         **({'factual_scope':record['factualScopeContractVersion']} if scope_enabled(record) else {}),
                         **({'declared_table_refs':True} if declared_references_enabled(record) else {}),
                         **({'question_priority':True} if priority_enabled(record) else {}),
