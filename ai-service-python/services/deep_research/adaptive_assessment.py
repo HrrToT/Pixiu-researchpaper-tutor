@@ -134,11 +134,26 @@ def _validate_round(saved, known):
             raise DeepResearchError('invalid_assessment_state','保存的覆盖评估来源与当前依据不一致。')
 
 
+def _unfulfilled_pairs(pairs, proofs, obligations, required):
+    """Keep a successful requirement proof; inspect new evidence for open ones."""
+    def targets(row):
+        identities = {row['sourceWorkId'], row['sourceVersionId'], row.get('ownerMaterialId')}
+        return [source for source in obligations[row['obligationId']].get('requiredSources') or required
+                if source in identities]
+    covered = {(row['obligationId'], source, row['criterionId']) for row in pairs
+               if proofs.get(row['key']) is True for source in targets(row)}
+    return [row for row in pairs if any((row['obligationId'], source, row['criterionId']) not in covered
+                                      for source in targets(row))]
+
+
 def assess(state,record,update,invoke,coverage_gaps):
     from services.deep_research.evidence_requirements import enabled as requirements_enabled, criteria
     requirement_mode = requirements_enabled(record)
     run_id=state['run_id']; domain=record.get('state',{}); plan=domain.get('plan',[])
     obligations={o['obligationId']:o for item in plan for o in item.get('obligations',[])}
+    required=[m.get('materialId','') for m in record.get('materials',[])]
+    if not required:
+        required=list(dict.fromkeys(s.get('workId') for s in domain.get('sources',[]) if s.get('workId')))
     scope=digest([{key:o[key] for key in ('obligationId','question','requiredSources','completionCriteria') if key in o}
                   for o in obligations.values()])
     pairs=_pairs(record,obligations); evidence_digest=digest(sorted(r['key'] for r in pairs))
@@ -171,7 +186,9 @@ def assess(state,record,update,invoke,coverage_gaps):
     def save():
         update(run_id,lambda r:{**r,'state':{**r.get('state',{}),'adaptiveAssessment':deepcopy(journal)}},expected_revision=None)
     if current is None:
-        candidates=[r for r in pairs if r['key'] not in attempted]
+        pending_pairs = (_unfulfilled_pairs(pairs, proofs, obligations, required)
+            if type(record.get('evidenceCoverageContractVersion')) is int and record['evidenceCoverageContractVersion'] == 2 else pairs)
+        candidates=[r for r in pending_pairs if r['key'] not in attempted]
         candidates=balanced_sample(candidates,lambda r:(r['sourceWorkId'],r['obligationId']),len(candidates))
         selected=[]; cap=_input_limit(record.get('budget',{}))
         for row in candidates:
@@ -199,9 +216,6 @@ def assess(state,record,update,invoke,coverage_gaps):
         verdicts=_verdicts(current)
         attempted.update(r['key'] for r in current['pairs'])
         if verdicts is not None: proofs.update(verdicts)
-    required=[m.get('materialId','') for m in record.get('materials',[])]
-    if not required:
-        required=list(dict.fromkeys(s.get('workId') for s in domain.get('sources',[]) if s.get('workId')))
     coverage={}; new_links={}; requirement_proofs={}
     for row in pairs:
         relevant=proofs.get(row['key']); oid=row['obligationId']
@@ -238,7 +252,9 @@ def assess(state,record,update,invoke,coverage_gaps):
     if not required:
         gaps=[{'obligationId':oid,'question':o['question'],'missingEvidence':'尚未取得可用文献','checked':False} for oid,o in obligations.items()]
     count=state.get('requery_count',0); maximum=4 if record.get('budget',{}).get('profile')=='extended' else 2
-    unseen=any(r['key'] not in attempted for r in pairs)
+    pending_pairs = (_unfulfilled_pairs(pairs, proofs, obligations, required)
+        if type(record.get('evidenceCoverageContractVersion')) is int and record['evidenceCoverageContractVersion'] == 2 else pairs)
+    unseen=any(r['key'] not in attempted for r in pending_pairs)
     stop=''
     if state.get('budget_exhausted'): stop='budget_exhausted'
     elif not gaps: stop='covered'

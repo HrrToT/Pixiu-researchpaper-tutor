@@ -33,7 +33,7 @@ def store(tmp_path, **extra):
     repo = DeepResearchRepository(tmp_path / 'r.sqlite3'); repo.initialize()
     ev = evidence('The predictor outputs a translation and rotation.')
     repo.create_run({'runId': 'r', 'taskId': 't', 'adaptiveResearchContractVersion': 1,
-        'adaptiveExtractionContractVersion': 1, 'evidenceCoverageContractVersion': 1,
+        'adaptiveExtractionContractVersion': 1, 'evidenceCoverageContractVersion': 2,
         'materials': [{'materialId': 'paper'}], 'state': {'plan': plan(), 'evidence': [ev],
         'sources': [{'sourceId': 's', 'workId': 'paper'}]}, **extra})
     repo.begin_execution('r')
@@ -79,6 +79,7 @@ def test_new_input_passage_completes_all_aspects_without_rechecking_settled_pair
     def invoke(rid, node, prompt, opts):
         seen.append(prompt)
         assert ev['quote'] not in prompt and added['quote'] in prompt
+        assert {row['criterionId'] for row in rows(prompt)} == {'input'}
         return verdicts(prompt)
     result = run(repo, invoke, {'run_id': 'r', 'requery_count': 0,
         'prev_assessment_evidence_digest': first['prev_assessment_evidence_digest']})
@@ -97,6 +98,25 @@ def test_another_papers_input_cannot_close_the_requested_papers_input(tmp_path):
         assert other['quote'] not in prompt
         return verdicts(prompt)
     assert run(repo, invoke)['gaps']
+
+
+@pytest.mark.parametrize('version,expected_new_calls', [(1, 1), (2, 0)])
+def test_fulfilled_criteria_reuse_proof_after_new_unrelated_evidence(version, expected_new_calls, tmp_path):
+    repo, output = store(tmp_path, evidenceCoverageContractVersion=version)
+    init = evidence('The previous representation is initialization before applying the transform.', 2)
+    repo.update_run('r', lambda r: {**r, 'state': {**r['state'], 'evidence': [output, init]}})
+    assert run(repo, lambda rid, node, prompt, opts: verdicts(prompt))['stop_reason'] == 'covered'
+    extra = evidence('A new passage describes a rendering benchmark, without the requested input/output relationship.', 3)
+    repo.update_run('r', lambda r: {**r, 'state': {**r['state'], 'evidence': [output, init, extra]}})
+    invoke = Mock(side_effect=lambda rid, node, prompt, opts: verdicts(prompt))
+    assert run(repo, invoke, {'run_id': 'r', 'requery_count': 1})['stop_reason'] == 'covered'
+    assert invoke.call_count == expected_new_calls
+
+
+def test_saved_criterion_contract_one_cannot_be_upgraded_to_change_request_selection(tmp_path):
+    repo, _ = store(tmp_path, evidenceCoverageContractVersion=1)
+    with pytest.raises(ValueError, match='Immutable'):
+        repo.update_run('r', lambda r: {**r, 'evidenceCoverageContractVersion': 2})
 
 
 def test_compiled_graph_reads_remaining_local_input_before_new_search(tmp_path):
@@ -202,14 +222,14 @@ def test_literal_aspects_preserve_parenthesized_lists_and_decimal_values():
         '预测什么变化（如坐标，旋转）', '怎样在1.2秒内利用前一帧表示']
 
 
-@pytest.mark.parametrize('replacement', [None, True, '1', 0, 2])
+@pytest.mark.parametrize('replacement', [None, True, '2', 0, 1])
 def test_requirement_coverage_contract_is_server_owned_and_immutable(tmp_path, replacement):
     repo = DeepResearchRepository(tmp_path / 'server.sqlite3'); repo.initialize()
     facade = ResearchFacade(repo, lambda **_: None, llm_client=object())
     try:
         run, _ = facade.create({'workspaceTaskId': 't', 'operationKey': 'o', 'question': '解释输入与输出',
             'deferStart': True, 'evidenceCoverageContractVersion': replacement}, start_async=False)
-        assert run['evidenceCoverageContractVersion'] == 1
+        assert run['evidenceCoverageContractVersion'] == 2
         with pytest.raises(ValueError, match='Immutable'):
             repo.update_run(run['runId'], lambda r: {**r, 'evidenceCoverageContractVersion': replacement})
     finally: facade.shutdown()
