@@ -1,5 +1,5 @@
 {
-  "asOf": "2026-10-18",
+  "asOf": "2026-10-19",
   "objective": "Complete DR0-DR5 in DEEP_RESEARCH_DESIGN_20261012.md without redefining success around implemented subsets.",
   "overall": "incomplete",
   "freshMaterialReadiness": "H1R2 remains unknown/unscored. H2R/H3R/H4R/H5R remain retired development cases; all new source/content results need independent replacements after development quality passes.",
@@ -44,11 +44,11 @@
       "overlap": true
     },
     "backendCurrentResearchReadingTables": {
-      "passed": 2922,
+      "passed": 2944,
       "warnings": 1,
-      "seconds": 171.23,
-      "sourceCommit": "fc9916d7",
-      "log": "tmp/pytest-dr180-final-full.log",
+      "seconds": 165.95,
+      "sourceCommit": "e2133482",
+      "log": "tmp/pytest-dr181-final-full.log",
       "scope": "Research, reading, PDF tables and config; offline fixture providers."
     },
     "frontendDocumentNavigationFocused": {
@@ -1854,6 +1854,28 @@
       "factualFocused": 115,
       "realGraphFocused": 106,
       "focusedOverlapFull": true
+    },
+    "operationalEvidence181": {
+      "sourceCommit": "e2133482",
+      "promptVersion": "dr-v2.20261019.181",
+      "legacyFingerprintsMatched": 11,
+      "fixedDevelopmentCases": [
+        {
+          "case": "H2F-v4",
+          "contentAccepted": false,
+          "independentCredit": 0,
+          "proof": "deep-research-evidence/H2F-v4-diagnostic-20261019.json"
+        },
+        {
+          "case": "H5F-v4",
+          "contentAccepted": false,
+          "independentCredit": 0,
+          "proof": "deep-research-evidence/H5F-v4-diagnostic-20261019.json"
+        }
+      ],
+      "modelCalls": 25,
+      "settledTokens": 123444,
+      "nextFix": "Research/repair allocation and operative acquisition frontier; executable experiment planning."
     }
   },
   "stages": [
@@ -2306,19 +2328,19 @@
     "Full novice study workflow",
     "Independent Edge recovery"
   ],
-  "currentProviderConstraint": "All further necessary bounded validations uniformly authorized. Selected diagnostic sequence:333 settled model calls/1313116 tokens; not global historical usage. Cost unknown; nine historical unknowns preserved, no blind retry.",
-  "currentDevelopmentMode": "Primary Codex only; Goal active, quota monitor paused by user. Pythonfc9916d7/.180 loaded, Java27ac4beb, frontend123b0d29. H3F-v8 fixed beginner development content accepted after manual source/goal review; no independent credit. Full multi-paper comparison and executable scientific experiment remain unaccepted. OriginalDR0-DR5 incomplete, first-five0/5 and PR draft unchanged.",
+  "currentProviderConstraint": "All further necessary bounded validations uniformly authorized. Selected diagnostic sequence:358 settled model calls/1436560 tokens; not global historical usage. Cost unknown; nine historical unknowns preserved, no blind retry.",
+  "currentDevelopmentMode": "Primary Codex only; Goal active, quota monitor paused by user. Pythone2133482/.181 loaded, Java27ac4beb, frontend123b0d29. H3F-v8 fixed beginner content accepted with no independent credit. H2F-v4 comparison and H5F-v4 executable experiment failed; originalDR0-DR5 incomplete, first-five0/5 and PR draft unchanged.",
   "loadedRuntime": {
-    "commit": "fc9916d7",
-    "promptVersion": "dr-v2.20261018.180",
+    "commit": "e2133482",
+    "promptVersion": "dr-v2.20261019.181",
     "javaCommit": "27ac4beb",
     "frontendCommit": "123b0d29",
-    "callsAfterLatestCase": 4383,
+    "callsAfterLatestCase": 4443,
     "active": 0,
     "historicalPausedUnknown": 9,
     "tasks": 92,
-    "proof": "deep-research-evidence/runtime-load-dr180-source-science-20261018.json",
-    "postCasesProof": "deep-research-evidence/runtime-postcases-dr180-20261018.json"
+    "proof": "deep-research-evidence/runtime-load-dr181-operational-reading-20261019.json",
+    "postCasesProof": "deep-research-evidence/runtime-postcases-dr181-h5f-v4-20261019.json"
   },
   "nextQualityWork": [
     "Use actual implementation-level training premises to complete both-paper input/temporal/training/FPS interpretation. Preserve evidence-limited judgments rather than assert undocumented condition differences; the actual450-character comparison now qualifies for bounded reasoning4.",
