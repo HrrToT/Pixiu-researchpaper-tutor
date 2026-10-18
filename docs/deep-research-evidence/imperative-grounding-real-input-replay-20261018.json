@@ -1,0 +1,37 @@
+{
+  "date": "2026-10-18",
+  "inputCase": "D1-v20",
+  "inputRunId": "dr_run_8314ade8ac2f5e0a99b51a6bb5288ec4",
+  "oldPlanDigest": "1c03ece1eae11aa2adba2f3cdc01a52049dc5cec727b0226c0875763f30f528e",
+  "oldContractOnePlanUnchanged": true,
+  "newRequestGroundingContractVersion": 2,
+  "newCriteria": [
+    {
+      "criterionId": "human_aspect_1",
+      "requirement": "核查压缩后图像质量接近原始3DGS这一说法",
+      "responseType": "explanation"
+    },
+    {
+      "criterionId": "human_aspect_1",
+      "requirement": "区分作者报告的结果、成立条件和未验证范围",
+      "responseType": "limitation"
+    }
+  ],
+  "changes": [
+    {
+      "obligationId": "ob_1",
+      "change": "anchored_literal_human_aspects",
+      "criterionCount": 1
+    },
+    {
+      "obligationId": "ob_2",
+      "change": "anchored_literal_human_aspects",
+      "criterionCount": 1
+    }
+  ],
+  "sameMaterialsSourcesDependenciesAndBudget": true,
+  "originalRecordUnchanged": true,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "boundary": "Copied real initial plan normalization only. Literal judgement and limits replace generated metric listing, not scientific approval. Saved human edits and old records are not rewritten."
+}

@@ -358,12 +358,12 @@ Return a JSON ARRAY of plan items, NOT an object with items field."""
         if not validated:
             return invalid_plan('Plan has no research items')
 
-        from services.deep_research.evidence_requirements import enabled as requirements_enabled, normalize_generated_requirements, grounded
+        from services.deep_research.evidence_requirements import enabled as requirements_enabled, normalize_generated_requirements, grounded, imperative_grounded
         requirement_changes = []
         if requirements_enabled(record):
             try:
                 validated, requirement_changes = normalize_generated_requirements(validated, question,
-                    literal_questions=grounded(record))
+                    literal_questions=grounded(record),literal_imperatives=imperative_grounded(record))
                 validated = validate_plan(validated)
             except ValueError as exc:
                 return invalid_plan(exc)
