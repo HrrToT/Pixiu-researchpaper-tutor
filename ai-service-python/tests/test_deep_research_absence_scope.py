@@ -58,7 +58,7 @@ def test_server_scope_version_is_frozen_and_applies_to_both_verification_passes(
     try:
         run, _ = facade.create({'workspaceTaskId': 't', 'operationKey': 'o', 'question': '解释方法',
             'absenceScopeContractVersion': replacement, 'deferStart': True}, start_async=False)
-        assert run['absenceScopeContractVersion'] == 4
+        assert run['absenceScopeContractVersion'] == 5
         with pytest.raises(ValueError, match='Immutable'):
             repo.update_run(run['runId'], lambda r: {**r, 'absenceScopeContractVersion': replacement})
         claim, evidence = fixture('初始帧中不存在新物体。')

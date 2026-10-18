@@ -89,7 +89,7 @@ def test_repair_progress_contract_is_owned_and_frozen_by_the_server(tmp_path, re
     try:
         run, _ = facade.create({'workspaceTaskId': 't', 'operationKey': 'op', 'question': '核查主张',
             'deferStart': True, 'repairProgressContractVersion': replacement}, start_async=False)
-        assert run['repairProgressContractVersion'] == 1
+        assert run['repairProgressContractVersion'] == 2
         with pytest.raises(ValueError, match='Immutable'):
             repo.update_run(run['runId'], lambda r: {**r, 'repairProgressContractVersion': replacement})
     finally:

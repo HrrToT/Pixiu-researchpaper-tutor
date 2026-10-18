@@ -1485,6 +1485,8 @@ def make_verify_node(
                     def checkpoint_repair_batches(batch_state):
                         repo_update(run_id, lambda r: {**r, 'state': {**r.get('state', {}),
                             'repairBatchState': batch_state,
+                            **({'repairStatus':'response_invalid','repairResponseError':batch_state['responseError']}
+                               if batch_state.get('responseError') else {}),
                             **({'repairBatchStop': batch_state['stop']} if batch_state.get('stop') else {})}}, expected_revision=None)
                     revised = repair_rejected(repair_report, repair_targets, evidence, effective_question(record),
                         invoke_repair, _safe_parse_json,
@@ -1493,6 +1495,8 @@ def make_verify_node(
                         batch_state=saved.get('repairBatchState'), checkpoint=checkpoint_repair_batches,
                         current_budget=lambda: repo_update(run_id, lambda r: r, expected_revision=None).get('budget', {}),
                         invoke_request=invoke_repair,
+                        **({'strict_response':True} if type(record.get('repairProgressContractVersion')) is int
+                           and record['repairProgressContractVersion']==2 else {}),
                         **({'comparison_reasoning':True} if comparison_enabled(record) else {}),
                         **({'factual_scope':record['factualScopeContractVersion']} if scope_enabled(record) else {}),
                         **({'declared_table_refs':True} if declared_references_enabled(record) else {}),
@@ -1649,7 +1653,8 @@ def make_publish_node(
         
         factual_claims = [claim for claim in accepted_claims if claim.get("kind") in {"reported", "inference"}]
         from services.deep_research.reporting import build_sections, conversation_summary, verification_notice
-        sections = build_sections(accepted_claims, output_kind, verified_report.get("sections"))
+        sections = build_sections(accepted_claims, output_kind, verified_report.get("sections"),
+            presentation_version=record.get('reportPresentationContractVersion',0))
         from services.deep_research.answer_format import publication_format_gaps
         gaps.extend(publication_format_gaps(record, accepted_claims, sections))
         if output_kind == "experiment_design":
@@ -1686,7 +1691,9 @@ def make_publish_node(
             "evidence": evidence if (evidence := record.get("state", {}).get("evidence", [])) else [],
             "limitations": verification_notice(accepted_claims) + (
                 '补充核验未完成；已保留此前核实的内容。'
-                if brief_state.get('repairStatus') == 'verification_invalid_response' else ''),
+                if brief_state.get('repairStatus') == 'verification_invalid_response' else
+                '修订结果未能解析；已保留此前核实的内容。'
+                if brief_state.get('repairStatus') == 'response_invalid' else ''),
             "gaps": gaps,
             "researchNotes": research_notes,
             "outcome": outcome,

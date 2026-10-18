@@ -360,14 +360,25 @@ in the paper. Maintain consistency with accepted definitions and complete requir
                 json.dumps(row.get('sourceContext',{}),ensure_ascii=False) for row in rows}} if compact_factual else {})}
 
 
-def _parse_repair_response(prepared, response, parse, presentation_audit=None,drafting_audit=None):
+def _parse_repair_response(prepared, response, parse, presentation_audit=None,drafting_audit=None, *, strict_response=False):
     originals, aliases, allowed = (prepared[key] for key in ('originals', 'aliases', 'allowed'))
     finish = getattr(response, 'finish_reason', None) if not isinstance(response, dict) else response.get('finishReason', response.get('finish_reason'))
     if finish == 'length':
         return []
     content = response.content if hasattr(response, 'content') else response.get('content', '')
-    revised = parse(content)
+    try:
+        revised = parse(content)
+    except (ValueError, TypeError) as exc:
+        if not strict_response:
+            raise
+        from services.deep_research.contracts import DeepResearchError
+        raise DeepResearchError('invalid_repair_response', '修订结果未能解析；已保留此前核实的内容。',
+                                {'responseState': 'received_invalid'}) from exc
     if not isinstance(revised, list):
+        if strict_response:
+            from services.deep_research.contracts import DeepResearchError
+            raise DeepResearchError('invalid_repair_response', '修订结果未能解析；已保留此前核实的内容。',
+                                    {'responseState': 'received_invalid'})
         return []
     revised = resolve_evidence_aliases({'claims': revised}, aliases)['claims']
     valid, seen = [], set()
@@ -437,7 +448,7 @@ def factual_redraft_eligible(report):
 def repair_rejected(report, verification, evidence, question, invoke, parse, *,
                     max_prompt_bytes=24000, metric_domains=None, batch_state=None, checkpoint=None,
                     current_budget=None, invoke_request=None, fact_redraft=False, requirement_context=(),
-                    source_aware_redraft=False,comparison_reasoning=False,question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False):
+                    source_aware_redraft=False,comparison_reasoning=False,question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,strict_response=False):
     """One bounded revision round, split before dispatch when evidence cannot fit.
 
     At most three requests share full sibling design definitions. Successful
@@ -458,7 +469,8 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
                        **({'comparisonReasoningContractVersion':1} if comparison_reasoning else {}),
                        **({'repairEvidencePriorityVersion':1} if question_priority else {}),
                        **({'factualScopeContractVersion':2 if factual_scope==2 else 1} if factual_scope else {}),
-                       **({'tableReferencesContractVersion':1} if declared_table_refs else {})})
+                       **({'tableReferencesContractVersion':1} if declared_table_refs else {}),
+                       **({'repairResponseContractVersion':1} if strict_response else {})})
 
     def prepare(ids, results=(), byte_limit=None):
         ids = set(ids)
@@ -553,7 +565,22 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
                 break  # Keep completed drafts, then independently verify them.
             presentation_audit=[]
             drafting_audit=[] if factual_scope else None
-            rows = _parse_repair_response(prepared, response, parse,presentation_audit,drafting_audit)
+            try:
+                rows = _parse_repair_response(prepared, response, parse,presentation_audit,drafting_audit,
+                                              strict_response=strict_response)
+            except DeepResearchError as exc:
+                if (exc.code!='invalid_repair_response' or exc.details.get('responseState')!='received_invalid'):
+                    raise
+                # A confirmed malformed response is settled, not an unknown call
+                # and not an evidence-insufficiency finding. Checkpoint before
+                # returning earlier drafts; never dispatch this batch again.
+                state['results'][key]=[]
+                state['responseError']={'code':exc.code,'responseState':'received_invalid','batch':index}
+                state['stop']={'batch':index,'reason':'received_invalid'}
+                state.pop('pending',None)
+                if checkpoint:
+                    checkpoint(deepcopy(state))
+                break
             if drafting_audit:
                 state.setdefault('factualDraftingAudit',{})[key]=drafting_audit
             if presentation_audit:

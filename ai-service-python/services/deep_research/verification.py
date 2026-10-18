@@ -231,7 +231,7 @@ def verify_claims(claims: list[dict], evidence: list[dict],
                         + '。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。'}
             elif reason == 'table_condition_not_displayed' and type(feedback_version) is int and feedback_version in (1, 2):
                 diagnostic = _table_display_diagnostic(claim, support)
-            elif reason == 'absence_not_established' and type(absence_scope_version) is int and absence_scope_version in (2,3,4):
+            elif reason == 'absence_not_established' and type(absence_scope_version) is int and absence_scope_version in (2,3,4,5):
                 diagnostic = {'detail':'本条引用没有明确建立作者或论文缺少这些验证。'
                     '把结论限定为本次引用能支持的实验范围及其不能证明的推广；'
                     '不要写成作者未在其他条件验证、论文没有提供或全文不存在。'

@@ -4,7 +4,7 @@ import json
 
 def enabled(record):
     return (type(record.get('repairProgressContractVersion')) is int
-            and record['repairProgressContractVersion'] == 1)
+            and record['repairProgressContractVersion'] in (1,2))
 
 
 def _identity(claim):

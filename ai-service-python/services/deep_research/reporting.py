@@ -3,7 +3,7 @@ import json
 from services.deep_research.synthesis import OUTPUT_KIND_SECTIONS, resolve_output_kind
 
 
-def build_sections(claims, output_kind, proposed_sections=None):
+def build_sections(claims, output_kind, proposed_sections=None, *, presentation_version=0):
     templates = OUTPUT_KIND_SECTIONS.get(resolve_output_kind(output_kind), OUTPUT_KIND_SECTIONS["direction_survey"])
     indexed = {claim["claimId"]: claim for claim in claims if claim.get("claimId")}
     used, sections = set(), []
@@ -31,6 +31,13 @@ def build_sections(claims, output_kind, proposed_sections=None):
     if remaining:
         sections.append({"title": templates[0], "claimIds": remaining})
     sections.sort(key=lambda section: templates.index(section["title"]))
+    if (type(presentation_version) is int and presentation_version==1
+            and resolve_output_kind(output_kind)=='claim_verification'):
+        # These IDs contain independently accepted claims, including revisions
+        # whose content changed after the model's original section assignment.
+        # Actual unfinished obligations are rendered separately from payload.gaps.
+        sections=[{**section,'title':'依据与范围'} if section['title']=='未解决事项' else section
+                  for section in sections]
     return sections
 
 
