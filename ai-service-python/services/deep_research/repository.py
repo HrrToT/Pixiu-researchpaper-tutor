@@ -346,16 +346,20 @@ class DeepResearchRepository:
                                  "adaptiveResearchContractVersion", "clarificationContractVersion", "planEditContractVersion",
                                  "exactDiscoveryContractVersion", "planResumeContractVersion",
                                  "continuationContextContractVersion", "continuationFormatContractVersion", "continuationContext", "dependencyContractVersion", "adaptiveExtractionContractVersion",
-                                 "claimIsolationContractVersion", "structuredOutputContractVersion", "repairProgressContractVersion", "sourcePrecisionContractVersion", "readingPriorityContractVersion", "extractionPriorityVersion", "absenceScopeContractVersion", "answerFormatContractVersion", "evidenceCoverageContractVersion", "runtimeSemanticContractVersion", "quantitySpellingContractVersion"):
+                                 "claimIsolationContractVersion", "structuredOutputContractVersion", "repairProgressContractVersion", "sourcePrecisionContractVersion", "readingPriorityContractVersion", "extractionScheduleContractVersion", "extractionPriorityVersion", "absenceScopeContractVersion", "answerFormatContractVersion", "evidenceCoverageContractVersion", "runtimeSemanticContractVersion", "quantitySpellingContractVersion"):
                     if (updated.get(identity) != current.get(identity)
                             or (identity in {'experimentIntentContractVersion', 'verificationInputContractVersion', 'audienceRewriteContractVersion', 'verificationFeedbackContractVersion', 'factRedraftContractVersion', 'factualReasoningContractVersion', 'factualScopeContractVersion', 'tableReferencesContractVersion', 'reportPresentationContractVersion', 'auditSourceFieldsContractVersion', 'requestGroundingContractVersion', 'namedRowIdentityContractVersion', 'comparisonReasoningContractVersion', 'repairEvidencePriorityVersion', 'jointEvidenceContractVersion',
                                              'adaptiveResearchContractVersion', 'clarificationContractVersion', 'planEditContractVersion',
                                              'exactDiscoveryContractVersion', 'planResumeContractVersion',
                                               'continuationContextContractVersion', 'continuationFormatContractVersion', 'dependencyContractVersion',
                                              'adaptiveExtractionContractVersion', 'claimIsolationContractVersion',
-                                             'structuredOutputContractVersion', 'repairProgressContractVersion', 'sourcePrecisionContractVersion', 'readingPriorityContractVersion', 'extractionPriorityVersion', 'absenceScopeContractVersion', 'answerFormatContractVersion', 'evidenceCoverageContractVersion', 'runtimeSemanticContractVersion', 'quantitySpellingContractVersion'}
+                                             'structuredOutputContractVersion', 'repairProgressContractVersion', 'sourcePrecisionContractVersion', 'readingPriorityContractVersion', 'extractionScheduleContractVersion', 'extractionPriorityVersion', 'absenceScopeContractVersion', 'answerFormatContractVersion', 'evidenceCoverageContractVersion', 'runtimeSemanticContractVersion', 'quantitySpellingContractVersion'}
                                 and type(updated.get(identity)) is not type(current.get(identity)))):
                         raise ValueError(f"Immutable run field changed: {identity}")
+                previous_allocation=current.get('budget',{}).get('explorationAllocationVersion')
+                next_allocation=updated.get('budget',{}).get('explorationAllocationVersion')
+                if previous_allocation != next_allocation or type(previous_allocation) is not type(next_allocation):
+                    raise ValueError('Immutable budget field changed: explorationAllocationVersion')
                 if updated.get("executionEpoch") != current.get("executionEpoch"):
                     raise ValueError("Execution epoch changes require begin_execution")
                 if updated.get("status") != current.get("status"):

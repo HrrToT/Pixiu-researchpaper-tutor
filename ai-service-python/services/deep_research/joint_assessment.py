@@ -334,7 +334,11 @@ def assess(state,record,update,invoke,coverage_gaps):
     progress=[{**item,'status':'gap' if any(o['obligationId'] in missing for o in item.get('obligations',[])) else 'completed'} for item in plan]
     evidence=[{**e,'obligationIds':list(dict.fromkeys([*e.get('obligationIds',[]),*sorted(new_links.get(e['evidenceId'],set()))]))}
               for e in domain.get('evidence',[])]
+    from services.deep_research.extraction_schedule import enabled as complete_frontier
+    checked=bool(groups) and set(groups)<=checked_groups
+    if not complete_frontier(record):
+        checked=verdicts is not None or checked  # Historical checkpoint behavior.
     update(run_id,lambda r:{**r,'state':{**r.get('state',{}),'plan':progress,'evidence':evidence,'coverage':coverage,'gaps':gaps,
-        'stopReason':stop,'assessmentStatus':'checked' if verdicts is not None or bool(groups) and set(groups)<=checked_groups else 'unchecked'}},expected_revision=None)
+        'stopReason':stop,'assessmentStatus':'checked' if checked else 'unchecked'}},expected_revision=None)
     return {'gaps':gaps,'stop_reason':stop,'requery_count':count+1 if queries else count,'requery_queries':queries,
             'prev_source_count':len(domain.get('sources',[])),'prev_assessment_evidence_digest':pool_digest}

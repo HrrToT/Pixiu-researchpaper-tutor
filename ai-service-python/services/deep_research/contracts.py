@@ -521,7 +521,7 @@ def check_exploration_headroom(budget: dict[str, Any], node: str) -> tuple[str, 
     # Match the full repair request envelope, not just its output allowance.
     # Small custom budgets still retain exploration capacity.
     from services.deep_research.repair_budget import repair_exploration_headroom
-    headroom = repair_exploration_headroom(tokens)
+    headroom = repair_exploration_headroom(tokens,budget.get('explorationAllocationVersion'))
     if tokens and int(budget.get('normalTokens') or 0) > tokens - headroom:
         return ('explorationTokens', tokens - headroom, int(budget.get('normalTokens') or 0))
     return None

@@ -4,12 +4,20 @@ FRAMING_TOKENS = 1024
 REPAIR_INPUT_BYTES = 24000
 
 
-def repair_exploration_headroom(normal_pool):
+def repair_exploration_headroom(normal_pool, allocation_version=0):
     """Protect one full repair request while retaining exploration capacity.
 
     Small custom pools keep at least one third for exploration; the repair
     fitter still refuses requests that cannot fit the remaining actual budget.
     """
+    if type(allocation_version) is int and allocation_version == 1:
+        # Finalization already has its own isolated reserve. Allocate three
+        # fifths of the NORMAL pool to acquisition and two fifths to repair.
+        # This is an allocation target, not a promise that a full 24KB repair
+        # fits. The actual repair fitter and transactional total limits still
+        # reject any request that exceeds its complete reservation envelope.
+        return min(REPAIR_INPUT_BYTES + REPAIR_OUTPUT_TOKENS + FRAMING_TOKENS,
+                   max(0, normal_pool) * 2 // 5)
     return min(REPAIR_INPUT_BYTES + REPAIR_OUTPUT_TOKENS + FRAMING_TOKENS,
                max(0, normal_pool) * 2 // 3)
 

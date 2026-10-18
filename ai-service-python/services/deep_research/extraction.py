@@ -51,7 +51,7 @@ def _input_capacity(budget):
     normal_pool = maximum - int(budget.get('reserveTokens') or 0)
     remaining = min(maximum - int(budget.get('tokens') or 0),
                     normal_pool - int(budget.get('normalTokens') or 0)
-                    - repair_exploration_headroom(normal_pool))
+                    - repair_exploration_headroom(normal_pool,budget.get('explorationAllocationVersion')))
     return max(0, min(24000, remaining - 3000 - 1024))
 
 

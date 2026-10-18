@@ -1916,7 +1916,11 @@ def build_deep_research_graph(
     workflow.add_node("extract", bounded_extract)
     assessment = make_assess_node(coverage_gaps_fn, frontier_update, llm_invoke=llm_invoke)
     def assess_frontier(state):
-        output = assessment(state)
+        from services.deep_research.extraction_schedule import defer_assessment
+        record=frontier_update(state['run_id'],lambda r:r,expected_revision=None)
+        output=defer_assessment(state,record,frontier_update)
+        if output is None:
+            output = assessment(state)
         if state.get('extraction_pending') and output.get('gaps') and not state.get('budget_exhausted'):
             # Examine already-read, unreviewed passages before spending a
             # targeted requery round. No settled passage is dispatched twice.

@@ -34,7 +34,8 @@ def _input_limit(budget):
     maximum,reserve,normal,total=values
     from services.deep_research.repair_budget import repair_exploration_headroom
     pool=maximum-reserve
-    return max(0,min(24000,maximum-total,pool-normal-repair_exploration_headroom(pool))-OUTPUT_TOKENS-1024)
+    headroom=repair_exploration_headroom(pool,budget.get('explorationAllocationVersion'))
+    return max(0,min(24000,maximum-total,pool-normal-headroom)-OUTPUT_TOKENS-1024)
 
 
 def _pairs(record, obligations):

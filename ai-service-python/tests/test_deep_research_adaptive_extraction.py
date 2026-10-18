@@ -63,9 +63,11 @@ def test_large_batch_fits_whole_passages_without_borrowing_repair_budget(tmp_pat
     assert repo.require_run('r')['budget']['normalTokens'] == 6500  # fixture did not settle real usage
 
 
-def test_compiled_graph_checks_unread_local_batch_before_requery(tmp_path):
+@pytest.mark.parametrize('schedule', [0,1])
+@pytest.mark.parametrize('overview_evidence', [False,True])
+def test_compiled_graph_checks_unread_local_batch_before_requery(tmp_path,schedule,overview_evidence):
     repo, reads = setup(tmp_path)
-    repo = activate(repo, dependencyContractVersion=1)
+    repo = activate(repo, dependencyContractVersion=1,extractionScheduleContractVersion=schedule)
     values = [{'itemId': 'i', 'question': 'Explain the evaluation condition', 'dependencies': [],
                'obligations': [{'obligationId': 'o', 'question': 'Explain the evaluation condition', 'requiredSources': ['p']}]}]
     repo.update_run('r', lambda r: {**r,
@@ -73,7 +75,9 @@ def test_compiled_graph_checks_unread_local_batch_before_requery(tmp_path):
         'state': {**r['state'], 'plan': values, 'dependencyExecution': initialize(values), 'readResults': []}})
     texts = {f's{i}': ('Background sentence unrelated to the research request.' if i < 3
                       else 'The evaluation condition uses fixed cameras and a held-out image split.') for i in range(4)}
-    retrieves = []; extracts = []
+    if overview_evidence:
+        texts['s0']='The input overview mentions an evaluation without specifying its camera condition.'
+    retrieves = []; extracts = []; events=[]
     def retrieve(query, pdf_id, limit=5):
         retrieves.append(query)
         return [{'sourceId': sid, 'sourceWorkId': 'p', 'versionId': 'v', 'text': text,
@@ -82,13 +86,15 @@ def test_compiled_graph_checks_unread_local_batch_before_requery(tmp_path):
         if node == 'resolve_brief': result = {'outputKind': 'claim_verification', 'clarification': ''}
         elif node == 'plan': result = values
         elif node == 'extract':
+            events.append('extract')
             passages = json.loads(prompt.split('Passages:\n', 1)[1])
             extracts.append([p['sourceId'] for p in passages])
             result = [{'sourceId': p['sourceId'], 'quote': p['text'], 'obligationIds': ['o'], 'conditions': {}}
-                      for p in passages if 'fixed cameras' in p['text']]
+                      for p in passages if 'fixed cameras' in p['text'] or 'input overview' in p['text']]
         elif node == 'assess_relevance':
+            events.append('assess')
             pairs = json.loads(prompt.split('Pairs:\n', 1)[1].split('\n\nReturn', 1)[0])
-            result = [{'pairId': p['pairId'], 'relevant': True} for p in pairs]
+            result = [{'pairId': p['pairId'], 'relevant': 'fixed cameras' in p['quote']} for p in pairs]
         elif node == 'synthesize': raise DeepResearchError('fixture_stop', 'Inspect routing only')
         else: pytest.fail(node)
         return {'content': json.dumps(result), 'finishReason': 'stop'}
@@ -100,6 +106,11 @@ def test_compiled_graph_checks_unread_local_batch_before_requery(tmp_path):
     with pytest.raises(DeepResearchError, match='routing only'):
         graph.invoke({'run_id': 'r', 'execution_epoch': 1})
     assert extracts == [['s0', 's1', 's2'], ['s3']] and len(retrieves) == 1
+    # Empty extraction cannot pass readiness. The new scheduler reaches the
+    # fourth operative paragraph before the independent assessment is sent.
+    expected=(['extract','assess','extract','assess'] if overview_evidence and not schedule
+              else ['extract','extract','assess'])
+    assert events==expected
     assert repo.require_run('r')['state']['dependencyExecution']['requeryCount'] == 0
     assert not repo.require_run('r')['state']['gaps']
 
