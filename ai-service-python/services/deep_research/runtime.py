@@ -106,6 +106,20 @@ class AuthoritativeScopeValidator:
                 return False
         return self.validate_run(run_id)
 
+    def filter_materials(self, run_id, material_ids):
+        """Project allowed owners with one live check, scoped to this request.
+
+        Never cache permission across reads or provider sends. Foreign owners
+        are excluded locally; the authoritative snapshot must still be valid.
+        """
+        record = self.repo.require_run(run_id)
+        eligible = {m.get('materialId') for m in record.get('materials', [])}
+        if record.get('sourcePolicy', {}).get('mode') in {'academic_external', 'external_only'}:
+            eligible.update(s.get('workId') for s in record.get('state', {}).get('sources', [])
+                            if s.get('sourceKind') == 'arxiv')
+        owners = {owner for owner in material_ids if isinstance(owner, str) and owner in eligible}
+        return owners if owners and self.validate_run(run_id) else set()
+
     def validate_run(self, run_id):
         record = self.repo.require_run(run_id)
         snapshot_hash = (record.get("materialSnapshot") or {}).get("snapshotHash")

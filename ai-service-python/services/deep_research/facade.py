@@ -525,8 +525,18 @@ class ResearchFacade:
         state = record.get("state", {})
         evidence = state.get("evidence", [])
         sources = []
-        for source in state.get("sources", []):
-            if self._scope_validator and not self._scope_validator(run_id, source.get("ownerMaterialId", source.get("workId"))):
+        candidates = state.get("sources", [])
+        owners = {source.get("ownerMaterialId", source.get("workId")) for source in candidates}
+        # The production validator checks the entire live snapshot. Repeating
+        # that network call for every passage blocks status reads as sources
+        # accumulate. Batch within this projection only, without permission
+        # caching; simple injected validators retain their per-owner policy.
+        batch_filter = getattr(type(self._scope_validator), 'filter_materials', None)
+        allowed = (self._scope_validator.filter_materials(run_id, owners) if callable(batch_filter)
+                   else {owner for owner in owners if not self._scope_validator
+                         or self._scope_validator(run_id, owner)})
+        for source in candidates:
+            if source.get("ownerMaterialId", source.get("workId")) not in allowed:
                 continue
             matched = [item for item in evidence if item.get("sourceWorkId") == source.get("workId")
                        and item.get("contentHash") == source.get("contentHash")

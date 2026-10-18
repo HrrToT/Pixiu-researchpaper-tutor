@@ -1,3 +1,5 @@
+from asyncio import to_thread
+
 try:
     from fastapi import APIRouter
     from fastapi.responses import JSONResponse
@@ -62,7 +64,7 @@ async def research_capabilities():
 @research_router.get("/research-tasks/{task_id}")
 async def get_research_task(task_id: str):
     try:
-        return JSONResponse(get_dispatcher().get(task_id))
+        return JSONResponse(await to_thread(get_dispatcher().get, task_id))
     except DeepResearchError as error:
         return _v2_error(error)
     except research_task_service.ResearchTaskNotFoundError as error:
@@ -146,7 +148,7 @@ async def continue_research_task(task_id: str, request: dict):
 @research_router.get("/research-tasks/{task_id}/sources")
 async def get_research_sources(task_id: str):
     try:
-        return JSONResponse(get_dispatcher().detail(task_id, "sources"))
+        return JSONResponse(await to_thread(get_dispatcher().detail, task_id, "sources"))
     except DeepResearchError as error:
         return _v2_error(error)
 
@@ -154,7 +156,7 @@ async def get_research_sources(task_id: str):
 @research_router.get('/research-tasks/{task_id}/actions/{request_id}')
 async def get_research_action_receipt(task_id: str, request_id: str):
     try:
-        return JSONResponse(get_dispatcher().get_action_receipt(task_id,request_id))
+        return JSONResponse(await to_thread(get_dispatcher().get_action_receipt, task_id, request_id))
     except DeepResearchError as error:
         return _v2_error(error)
 
@@ -162,7 +164,7 @@ async def get_research_action_receipt(task_id: str, request_id: str):
 @research_router.get("/research-tasks/{task_id}/events")
 async def get_research_events(task_id: str):
     try:
-        return JSONResponse(get_dispatcher().detail(task_id, "events"))
+        return JSONResponse(await to_thread(get_dispatcher().detail, task_id, "events"))
     except DeepResearchError as error:
         return _v2_error(error)
 
