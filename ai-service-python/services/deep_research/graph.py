@@ -1263,6 +1263,9 @@ Orient losses before formulas, distinguish conditional/averaged effects and pape
             prompt+='\n'+DRAFT_GUIDANCE
             if drafting_schema_enabled(record):
                 prompt+='\nRequired draftingBasis object on EACH output claim (metadata, not evidence):\n'+json.dumps(DRAFTING_SCHEMA,ensure_ascii=False,separators=(',',':'))
+        from services.deep_research.table_bindings import declared_references_enabled,REFERENCE_GUIDANCE
+        if declared_references_enabled(record):
+            prompt+='\n'+REFERENCE_GUIDANCE
         template = prompt
         prompt, evidence_summaries = fit_evidence_prompt(evidence_summaries,
             lambda rows: template.replace(evidence_marker, json.dumps(rows, ensure_ascii=False, separators=(',', ':')), 1))
@@ -1405,6 +1408,7 @@ def make_verify_node(
         from services.deep_research.request_dimensions import enabled as dimensions_enabled
         from services.deep_research.comparison_reasoning import enabled as comparison_enabled
         from services.deep_research.factual_scope import enabled as scope_enabled
+        from services.deep_research.table_bindings import declared_references_enabled
         from services.deep_research.evidence_priority import priority_enabled
         from services.deep_research.coverage_repair import prepare_coverage_repair, merge_verified_revisions
         from services.deep_research.design_consistency import enforce_design_consistency
@@ -1491,6 +1495,7 @@ def make_verify_node(
                         invoke_request=invoke_repair,
                         **({'comparison_reasoning':True} if comparison_enabled(record) else {}),
                         **({'factual_scope':record['factualScopeContractVersion']} if scope_enabled(record) else {}),
+                        **({'declared_table_refs':True} if declared_references_enabled(record) else {}),
                         **({'question_priority':True} if priority_enabled(record) else {}),
                         **({'fact_redraft':True,'source_aware_redraft':record['factRedraftContractVersion'] in (2,3),
                             **({'concise_factual':True} if record['factRedraftContractVersion']==3 else {}),

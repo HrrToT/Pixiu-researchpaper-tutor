@@ -74,7 +74,8 @@ def _table_display_diagnostic(claim, support):
 
 def verify_claims(claims: list[dict], evidence: list[dict],
                   semantic_check: Callable[[list[dict], list[dict]], list[dict]] | None = None,
-                  *, absence_scope_version=0, quantity_spelling_version=0, feedback_version=0) -> dict:
+                  *, absence_scope_version=0, quantity_spelling_version=0, feedback_version=0,
+                  table_references_version=0) -> dict:
     """Only publish supported claims; a model cannot override literal checks.
 
     A semantic checker is a separately budgeted call provided by the graph.
@@ -113,6 +114,11 @@ def verify_claims(claims: list[dict], evidence: list[dict],
             reason = reason or 'absence_not_established'
         if leaks_internal_reference(claim, support):
             reason = reason or 'internal_reference_in_prose'
+        declared_reference_error=None
+        if kind in {'inference','proposal','suggestion','hypothesis'} and type(table_references_version) is int and table_references_version==1:
+            from services.deep_research.table_bindings import validate_declared_references
+            declared_reference_error=validate_declared_references(claim,support)
+            reason=reason or declared_reference_error
         if kind in {'reported', 'inference'}:
             from services.deep_research.condition_identity import unsupported_device_condition
             if unsupported_device_condition(claim, support):
@@ -230,9 +236,18 @@ def verify_claims(claims: list[dict], evidence: list[dict],
                     '把结论限定为本次引用能支持的实验范围及其不能证明的推广；'
                     '不要写成作者未在其他条件验证、论文没有提供或全文不存在。'
                     '引用中的其他否定句不构成这项缺席判断的依据。'}
+            if declared_reference_error:
+                from services.deep_research.table_bindings import available_reference_rows
+                reference_check={'reason':declared_reference_error,
+                    'availableTableReferences':available_reference_rows(claim,support),
+                    'detail':'tableBindings必须指向本条自身原文的真实单元格；rowNumber是源行号，不是所选行的数组下标。推算值不能伪装为原表单元格。'}
+                if declared_reference_error==reason:
+                    diagnostic={k:v for k,v in reference_check.items() if k!='reason'}
+                else:
+                    diagnostic.setdefault('additionalChecks',[]).append(reference_check)
             if concurrent_feedback and binding_reason and binding_reason != reason:
-                diagnostic['additionalChecks'] = [{'reason': binding_reason,
-                    **(_table_display_diagnostic(claim, support) if binding_reason == 'table_condition_not_displayed' else {})}]
+                diagnostic.setdefault('additionalChecks',[]).append({'reason': binding_reason,
+                    **(_table_display_diagnostic(claim, support) if binding_reason == 'table_condition_not_displayed' else {})})
             rejected.append({"claimId": claim_id, "reason": reason, **diagnostic})
         else:
             candidates.append(dict(claim))

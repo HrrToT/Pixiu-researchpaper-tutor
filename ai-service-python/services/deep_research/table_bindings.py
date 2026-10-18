@@ -61,6 +61,52 @@ def bound_table_context(claim, evidence):
     return result
 
 
+def declared_references_enabled(record):
+    return (type(record.get('tableReferencesContractVersion')) is int
+            and record['tableReferencesContractVersion']==1)
+
+
+REFERENCE_GUIDANCE=('For every tableBindings entry, rowNumber is the explicit source row ID '
+    'in the supplied tableData/quotation, NOT a zero-based position among selected rows. '
+    'Only groupIndex is zero-based. Copy exact source cells regardless of claim kind; '
+    'derived values are reasoning, not invented source-cell references.')
+
+
+def validate_declared_references(claim,evidence):
+    """Validate declared source cells without misclassifying derived quantities."""
+    if 'tableBindings' not in claim:
+        return None
+    bindings=claim['tableBindings']
+    if not isinstance(bindings,list):
+        return 'invalid_table_binding'
+    for binding in bindings:
+        target={'evidenceRefs':claim.get('evidenceRefs',[]),'tableBindings':[binding]}
+        if len(bound_table_context(target,evidence))==1:
+            continue
+        # The existing validator diagnoses malformed/out-of-scope/unknown cells.
+        # No generated prose is used as authority for the cell identity.
+        reason=validate_table_bindings({**target,'text':'','conditions':{}},evidence)
+        return reason or 'unverified_table_cell'
+    return None
+
+
+def available_reference_rows(claim,evidence):
+    """Bounded parser-established identities, advisory repair metadata only."""
+    refs=set(claim.get('evidenceRefs',[]));rows=[]
+    for ev in evidence:
+        if ev.get('evidenceId') not in refs:
+            continue
+        packet=visible_table_packet(ev.get('tableData'),ev.get('quote',''))
+        if packet:
+            rows.append({'evidenceId':ev['evidenceId'],
+                'rows':[{'rowNumber':row[0],'method':row[1]} for row in packet['rows'][:12]],
+                'groups':[{'groupIndex':i,'label':group[0],'metrics':group[1]}
+                          for i,group in enumerate(packet['groups'])]})
+        if len(rows)==8:
+            break
+    return rows
+
+
 def validate_table_bindings(claim, evidence):
     """Return a rejection reason; semantic checking still follows this gate."""
     text = str(claim.get('text', ''))
