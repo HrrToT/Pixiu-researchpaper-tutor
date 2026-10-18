@@ -50,14 +50,14 @@ def test_repair_receives_identity_feedback_and_still_needs_exact_cells_and_seman
     assert checker.call_count==1
 
 
-@pytest.mark.parametrize('replacement',[None,True,'1',0,2])
+@pytest.mark.parametrize('replacement',[None,True,'2',0,1,3])
 def test_feedback_is_server_owned_frozen_and_forwarded_by_actual_facade(tmp_path,replacement):
     repo=DeepResearchRepository(tmp_path/'r.sqlite3');repo.initialize()
     facade=ResearchFacade(repo,lambda **_:None,llm_client=object())
     try:
         run,_=facade.create({'workspaceTaskId':'t','operationKey':'op','question':'核查','deferStart':True,
             'verificationFeedbackContractVersion':replacement},start_async=False)
-        assert run['verificationFeedbackContractVersion']==1
+        assert run['verificationFeedbackContractVersion']==2
         with pytest.raises(ValueError,match='Immutable'):
             repo.update_run(run['runId'],lambda r:{**r,'verificationFeedbackContractVersion':replacement})
         ev,c=fixture();c['text']=c['text'].replace('Ours*','CompressionMethod')

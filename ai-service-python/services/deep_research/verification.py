@@ -58,6 +58,19 @@ def _condition_values_text(value):
     return str(value) if value is not None else ''
 
 
+def _table_display_diagnostic(claim, support):
+    from services.deep_research.table_bindings import bound_table_context
+    required = []
+    for cell in bound_table_context(claim, support):
+        identity = {'group': cell['group'], 'method': cell['method']}
+        if identity not in required:
+            required.append(identity)
+    return {'requiredTableDisplay': required,
+        'detail': '保留表格数值时，同条正文或条件必须显示原表的数据组和方法身份。'
+            '请核对requiredTableDisplay；保留星号、变体及分组层级，末尾参考文献序号可省略。'
+            '不能只写另一个方法名代替Ours等原表标签，也不能修改单元格或加入未报告的计算。'}
+
+
 def verify_claims(claims: list[dict], evidence: list[dict],
                   semantic_check: Callable[[list[dict], list[dict]], list[dict]] | None = None,
                   *, absence_scope_version=0, quantity_spelling_version=0, feedback_version=0) -> dict:
@@ -73,10 +86,12 @@ def verify_claims(claims: list[dict], evidence: list[dict],
     candidates, rejected, seen = [], [], set()
     word_counts = type(quantity_spelling_version) is int and quantity_spelling_version in (1, 2)
     relative_references = type(quantity_spelling_version) is int and quantity_spelling_version == 2
+    concurrent_feedback = type(feedback_version) is int and feedback_version == 2
     for claim in claims:
         claim_id = claim.get("claimId")
         reason = ""
         unsupported_numbers = set()
+        binding_reason = None
         if not claim_id or claim_id in seen:
             reason = "invalid_identity"
         seen.add(claim_id)
@@ -132,7 +147,13 @@ def verify_claims(claims: list[dict], evidence: list[dict],
                 reason = reason or "numeric_mismatch"
                 unsupported_numbers = numbers - original_numbers
             from services.deep_research.table_bindings import validate_table_bindings
-            reason = reason or validate_table_bindings(claim, support)
+            if concurrent_feedback:
+                # A fixed numeric error must not hide the next known failure
+                # from the one bounded revision. Legacy short-circuit stays.
+                binding_reason = validate_table_bindings(claim, support)
+                reason = reason or binding_reason
+            else:
+                reason = reason or validate_table_bindings(claim, support)
         if (claim.get('designRole') is not None or
                 (claim.get('designContractVersion') == 2 and kind in {'proposal', 'suggestion', 'hypothesis'})):
             from services.deep_research.experimental_reasoning import DESIGN_ROLES
@@ -199,17 +220,11 @@ def verify_claims(claims: list[dict], evidence: list[dict],
                 diagnostic = {'missingReportedNumbers': missing,
                     'detail': '本条引用原文未直接报告这些数值：' + '、'.join(number_display(n) for n in missing)
                         + '。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。'}
-            elif reason == 'table_condition_not_displayed' and type(feedback_version) is int and feedback_version == 1:
-                from services.deep_research.table_bindings import bound_table_context
-                required = []
-                for cell in bound_table_context(claim, support):
-                    identity = {'group': cell['group'], 'method': cell['method']}
-                    if identity not in required:
-                        required.append(identity)
-                diagnostic = {'requiredTableDisplay': required,
-                    'detail': '保留表格数值时，同条正文或条件必须显示原表的数据组和方法身份。'
-                        '请核对requiredTableDisplay；保留星号、变体及分组层级，末尾参考文献序号可省略。'
-                        '不能只写另一个方法名代替Ours等原表标签，也不能修改单元格或加入未报告的计算。'}
+            elif reason == 'table_condition_not_displayed' and type(feedback_version) is int and feedback_version in (1, 2):
+                diagnostic = _table_display_diagnostic(claim, support)
+            if concurrent_feedback and binding_reason and binding_reason != reason:
+                diagnostic['additionalChecks'] = [{'reason': binding_reason,
+                    **(_table_display_diagnostic(claim, support) if binding_reason == 'table_condition_not_displayed' else {})}]
             rejected.append({"claimId": claim_id, "reason": reason, **diagnostic})
         else:
             candidates.append(dict(claim))
