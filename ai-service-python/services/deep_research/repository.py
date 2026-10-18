@@ -1146,6 +1146,31 @@ class DeepResearchRepository:
 
     # ── maintenance ───────────────────────────────────────────────────────────
 
+    def get_action_receipt(self, run_id: str, request_id: str) -> dict | None:
+        """Read a consistent action/child snapshot without claiming or retrying it."""
+        if not isinstance(request_id, str) or not request_id.strip() or len(request_id) > 256:
+            raise ValueError('Action requires bounded request identity')
+        with closing(sqlite3.connect(self.db_path, timeout=30)) as conn:
+            conn.execute('PRAGMA query_only=ON')
+            conn.execute('BEGIN')
+            saved = conn.execute('SELECT payload FROM deep_research_runs_v2 WHERE run_id=?', (run_id,)).fetchone()
+            if saved is None:
+                raise RunNotFoundError(run_id)
+            parent = json.loads(saved[0])
+            row = conn.execute('SELECT fingerprint,status,result FROM deep_research_actions_v2 '
+                               'WHERE run_id=? AND request_id=?', (run_id,request_id)).fetchone()
+            if row is None:
+                return None
+            candidates = conn.execute('SELECT payload FROM deep_research_runs_v2 '
+                'WHERE workspace_id=? AND idempotency_key=?',
+                (parent.get('workspaceId',parent['taskId']),request_id)).fetchall()
+            children = [json.loads(value[0]) for value in candidates]
+            children = [{key:child.get(key) for key in ('runId','taskId','parentRunId','status','errorCode')}
+                        for child in children if child.get('parentRunId')==run_id]
+            return {'runId':run_id,'taskId':parent['taskId'],'requestId':request_id,
+                    'fingerprint':row[0],'status':row[1],'result':json.loads(row[2]) if row[2] else None,
+                    'matchingChildRuns':children}
+
     def claim_action(self, run_id: str, request_id: str, fingerprint: str) -> tuple[dict, bool]:
         """Persist action intent before mutating a run or dispatching work.
 

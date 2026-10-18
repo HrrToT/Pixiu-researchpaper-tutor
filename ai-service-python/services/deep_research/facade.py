@@ -273,7 +273,7 @@ class ResearchFacade:
             "materials": materials,
             "materialSnapshot": material_snapshot,  # Immutable Java snapshot
             "contextMaterials": (material_snapshot or {}).get("contextMaterials", []) if isinstance(material_snapshot, dict) else [],
-            "promptVersion": "dr-v2.20261018.152",
+            "promptVersion": "dr-v2.20261018.153",
             "namedRowIdentityContractVersion": 1,
             "requestGroundingContractVersion": 1,
             "factRedraftContractVersion": 1,
@@ -405,6 +405,15 @@ class ResearchFacade:
             },
         }
     
+    def get_action_receipt(self, run_id: str, request_id: str) -> dict:
+        """Pure lookup: pending/failed receipts are never reissued by GET."""
+        if not isinstance(request_id,str) or not request_id.strip() or len(request_id)>256:
+            raise DeepResearchError('invalid_request_id','操作请求标识无效。',{'status_code':422})
+        receipt = self._repo.get_action_receipt(run_id,request_id)
+        if receipt is None:
+            raise DeepResearchError('action_not_found','未找到已保存的操作回执。',{'status_code':404})
+        return receipt
+
     def action(
         self,
         run_id: str,

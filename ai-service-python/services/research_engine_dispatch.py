@@ -68,6 +68,11 @@ class ResearchEngineDispatcher:
             raise DeepResearchError("unsupported_action", "此视图仅适用于新版研究")
         return {"status": "success", name: getattr(self.facade, "get_" + name)(run_id)}
 
+    def get_action_receipt(self, run_id: str, request_id: str):
+        if not self._is_v2(run_id):
+            raise DeepResearchError('unsupported_action','操作回执仅适用于新版研究')
+        return {'status':'success','receipt':self.facade.get_action_receipt(run_id,request_id)}
+
 
 _dispatcher: ResearchEngineDispatcher | None = None
 

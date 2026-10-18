@@ -151,6 +151,14 @@ async def get_research_sources(task_id: str):
         return _v2_error(error)
 
 
+@research_router.get('/research-tasks/{task_id}/actions/{request_id}')
+async def get_research_action_receipt(task_id: str, request_id: str):
+    try:
+        return JSONResponse(get_dispatcher().get_action_receipt(task_id,request_id))
+    except DeepResearchError as error:
+        return _v2_error(error)
+
+
 @research_router.get("/research-tasks/{task_id}/events")
 async def get_research_events(task_id: str):
     try:
