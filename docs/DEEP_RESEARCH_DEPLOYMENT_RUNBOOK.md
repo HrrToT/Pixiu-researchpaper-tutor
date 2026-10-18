@@ -138,3 +138,11 @@ Python先加载1e6daa48（`.133`），确认无活动研究，3,482条完整账�
 随后加载4bd2a7d3（`.135`）；完整2,193项离线回归通过，加载前后3,526条账本和9个暂停身份一致，RAG/GROBID健康。H1F-v4仅执行一次，结束后3,547条账本、无活动研究，原账本全量哈希及历史暂停身份保持。上述诊断均无新unknown，原有unknown不重新发出；手动保留的旧回答不改写。Java/前端仍沿用前述`.119`源码/包，本次无数据迁移、无卷重置。
 
 证明：`deep-research-evidence/runtime-load-dr133-original-pdf-priority-20261018.json`、`runtime-postcases-dr133-20261018.json`、`runtime-load-dr135-method-premise-format-20261018.json`、`runtime-postcases-dr135-20261018.json`。这些是加载与记录完整性证据，实际内容门槛仍见各案例人工评分；不得为文档提交再次重启服务。
+
+## 2026-10-18 分项取证与实际语义工厂修复加载
+
+8be225d9（`.136`）和e28e7474（`.137`）分别在无活动研究时加载，3,547条完整账本及9个历史未知暂停身份前后相等。`.137`H1F-v5执行一次，追加22条已结算记录，结束后3,569条账本；原行哈希、暂停身份保持，无新unknown。
+
+f55df4ca（`.138`）在2,222项完整回归通过后加载；3,569条账本和9个暂停身份相等，RAG/GROBID健康。新runtimeSemanticContractVersion=1接上实际工厂的单条事实策略；旧生产批次不迁移、不改写未知请求指纹。Java/前端、数据库、持久卷和来源范围不变，未执行`.138`真实模型案例。
+
+证明：`deep-research-evidence/runtime-load-dr136-criterion-coverage-20261018.json`、`runtime-load-dr137-criterion-budget-20261018.json`、`runtime-postcases-dr137-20261018.json`、`runtime-load-dr138-runtime-isolation-20261018.json`。真实质量仍见H1F-v5人工失败评分；旧基础组件检查不能替代实际工厂验证。

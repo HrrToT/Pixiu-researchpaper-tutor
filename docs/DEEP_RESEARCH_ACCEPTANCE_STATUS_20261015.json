@@ -45,11 +45,11 @@
       "overlap": true
     },
     "backendCurrentResearchReadingTables": {
-      "passed": 2193,
+      "passed": 2222,
       "warnings": 1,
-      "seconds": 141.13,
-      "log": "tmp/pytest-dr135-full.log",
-      "sourceCommit": "4bd2a7d3",
+      "seconds": 151.34,
+      "log": "tmp/pytest-dr138-full.log",
+      "sourceCommit": "f55df4ca",
       "scope": "Research, reading, PDF tables and config."
     },
     "frontendDocumentNavigationFocused": {
@@ -1253,7 +1253,9 @@
         "resolution": "Updated to exactly two tracked fact checks, ten total sends and 2000 measured fixture tokens. Content/permission/reopen assertions retained; targeted 17 and full 2025 passed."
       },
       "runtime": "runtime-load-dr124-fact-isolation-20261018.json",
-      "boundary": "Request separation and budget accounting are proven offline; semantic-model judgment remains fallible and actual content still needs manual source review."
+      "boundary": "Request separation and budget accounting are proven offline; semantic-model judgment remains fallible and actual content still needs manual source review.",
+      "productionWiringCorrection": "deep-research-evidence/runtime-semantic-isolation-gap-20261018.json",
+      "currentRuntimeProof": "deep-research-evidence/runtime-semantic-isolation-regression-20261018.json"
     },
     "independentMaterialReadiness": {
       "date": "2026-10-18",
@@ -1638,6 +1640,45 @@
       "active": 0,
       "historicalPausedUnknowns": 9,
       "historicalLedgerUnchanged": true
+    },
+    "criterionAcquisitionCoverage": {
+      "evidenceCoverageContractVersion": 2,
+      "proof": "deep-research-evidence/criterion-coverage-budget-regression-20261018.json",
+      "realInputReplay": "deep-research-evidence/criterion-coverage-budget-real-replay-20261018.json",
+      "realDiagnostic": "deep-research-evidence/H1F-v5-diagnostic-20261018.json",
+      "actualLocalExtractionBatches": 2,
+      "actualRequeries": 0,
+      "inputCitationRecovered": true,
+      "acquisitionCoverageComplete": false,
+      "boundary": "The source window ran out of protected exploration capacity before reviewing the new input quote; final accepted input prose has its own correct citations. This is routing improvement, not full answer quality."
+    },
+    "runtimeSemanticIsolation": {
+      "runtimeSemanticContractVersion": 1,
+      "gapProof": "deep-research-evidence/runtime-semantic-isolation-gap-20261018.json",
+      "correctionProof": "deep-research-evidence/runtime-semantic-isolation-regression-20261018.json",
+      "actualProductionFactoryTested": true,
+      "historicalBatchShapesPreserved": true,
+      "realProviderAfterCorrection": false,
+      "boundary": "Earlier base-factory isolation tests did not prove production wiring. RuntimeFacade omitted the callback before .138. New actual factory/scoped client/ledger fixtures pass; no new real content run is claimed on .138."
+    },
+    "runtimePostcase137": {
+      "proof": "deep-research-evidence/runtime-postcases-dr137-20261018.json",
+      "callRows": 3569,
+      "active": 0,
+      "historicalPausedUnknowns": 9,
+      "historicalLedgerUnchanged": true
+    },
+    "retiredDiagnostic137": {
+      "case": "H1F-v5",
+      "runId": "dr_run_7a166ca064b95ce6b06aab958999ccf7",
+      "promptVersion": "dr-v2.20261018.137",
+      "evaluationUse": "retired-case diagnostic",
+      "independent": false,
+      "outcome": "partial",
+      "contentAccepted": false,
+      "modelCalls": 12,
+      "settledTokens": 38205,
+      "proof": "deep-research-evidence/H1F-v5-diagnostic-20261018.json"
     }
   },
   "stages": [
@@ -1940,10 +1981,10 @@
       "state": "First original result failed content review; retired for generic repair-progress diagnosis.",
       "proof": "deep-research-evidence/H1F-v1-first-review-20261018.json",
       "latestDiagnostic": {
-        "case": "H1F-v4",
-        "runId": "dr_run_446bfd17a61c59e086b57ee96c913709",
+        "case": "H1F-v5",
+        "runId": "dr_run_7a166ca064b95ce6b06aab958999ccf7",
         "contentAccepted": false,
-        "proof": "deep-research-evidence/H1F-v4-diagnostic-20261018.json"
+        "proof": "deep-research-evidence/H1F-v5-diagnostic-20261018.json"
       }
     },
     {
@@ -2004,23 +2045,23 @@
     "Full novice study workflow",
     "Independent Edge recovery"
   ],
-  "currentProviderConstraint": "User authorized all further required validations. D1-v9/v10/v11 each executed once and settled, with raw receipts retained. Historical nine unknown identities/reservations remain untouched; no same-case retry or attempt renaming bypass.",
-  "currentDevelopmentMode": "Primary Codex only; goal active. Uniform further validation authorized; quota monitor disabled. .135 original-PDF retrieval, precise extraction priority, method-premise scope and human answer format loaded; DR0-DR5 content acceptance open.",
+  "currentProviderConstraint": "All further required bounded validations are authorized. H1F-v5 submitted once and settled; historical nine unknown identities/reservations remain unchanged. No automatic unknown reissue or attempt/task rename bypass.",
+  "currentDevelopmentMode": "Primary Codex only; goal active and further necessary validations authorized. .138 criterion coverage 2 and actual-runtime semantic policy 1 loaded. Quota monitor disabled; original DR0-DR5 content gates remain open.",
   "loadedRuntime": {
-    "commit": "4bd2a7d3",
-    "promptVersion": "dr-v2.20261018.135",
+    "commit": "f55df4ca",
+    "promptVersion": "dr-v2.20261018.138",
     "ready": true,
-    "callsPreserved": 3526,
+    "callsPreserved": 3569,
     "pausedUnknownRuns": 9,
-    "proof": "deep-research-evidence/runtime-load-dr135-method-premise-format-20261018.json"
+    "proof": "deep-research-evidence/runtime-load-dr138-runtime-isolation-20261018.json"
   },
   "nextQualityWork": [
-    "Prevent compound mechanism obligations from closing after only an output definition; retain and extract already-read input/initialization premises needed by the requested relation.",
-    "Prevent a repair from gaining support for an unchanged missing premise merely by shortening unrelated wording; require the actual cited source to establish each retained input/operation relation.",
-    "Ground or normalize generated planning criteria without rewriting human plan edits or treating unverified parent artifacts as literal human instructions.",
-    "Improve novice prose and conditions: explain the operation, avoid repeated input/output statements, and do not show untranslated redundant condition strings.",
-    "Complete original D1/D2/D3/D5 content, executable design, real continuation and fresh independent gates. Retired H1F/H4F diagnostics do not count as independent passes.",
-    "Preserve all historical unknown identities/reservations and receipt guards; no automatic resend or attempt/task rename bypass."
+    "Prioritize route-relevant and newly unreviewed evidence for open criteria without removing other authorized cross-question candidates. H1F-v5 used its small remaining assessment window on old unrelated pairs and never assessed the new input quote.",
+    "Recognize directly written quantity spellings such as first three dimensions under a new immutable number-format contract; do not infer a reported 4 from total 7 minus 3 or weaken identity/unit/semantic checks.",
+    "Give numerical repair the exact unsupported values and preserve the requested qualitative attribute explanation. An unchanged unsupported count must not survive by cosmetic wording or kind relabeling.",
+    "Verify the corrected actual-runtime isolation on the next real case and preserve reasons for rejected premises during repair. .138 factory fixtures alone are not a real content pass.",
+    "Improve novice prose: explain operations before technical labels, avoid redundant numerical dimensions and untranslated conditions unless requested.",
+    "Complete original D1/D2/D3/D5, executable design, real continuation and fresh independent gates; H1F/H4F diagnostics do not add independent passes. Preserve every historical unknown and frozen first result."
   ],
   "javaReaderRuntime": {
     "sourceCommit": "070ab1a",

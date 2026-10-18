@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-18",
+  "sourceCommit": "f55df4ca",
+  "promptVersion": "dr-v2.20261018.138",
+  "runtimeSemanticContractVersion": 1,
+  "full": {
+    "passed": 2222,
+    "warnings": 1,
+    "seconds": 151.34,
+    "log": "tmp/pytest-dr138-full.log"
+  },
+  "focused": {
+    "passed": 67,
+    "seconds": 20.89,
+    "log": "tmp/pytest-dr138-runtime.log",
+    "overlapsFullSuite": true
+  },
+  "testsUseProductionInitialization": true,
+  "properties": [
+    "Tests construct RuntimeFacade through initialize_runtime, rather than testing only ResearchFacade.",
+    "The production scoped model client, native JSON transport and tracked ledger are exercised with a local provider fixture.",
+    "Both initial and repair checks send each new-run factual target with only its own citations, even when all targets would fit one request.",
+    "Historical production records without the new marker keep their old combined batch; unresolved identities and frozen inputs are not upgraded.",
+    "Runtime policy is server-owned and immutable; original scope, call and token limits remain enforced."
+  ],
+  "realProviderCalls": 0,
+  "boundary": "Actual production wiring tested offline. No .138 real content diagnostic is claimed; H1F-v5 on .137 remains partial and all original first results remain unchanged."
+}
