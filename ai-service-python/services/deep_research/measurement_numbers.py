@@ -32,7 +32,7 @@ def _chinese_count(word):
     return None
 
 
-def _count_words(text):
+def _count_words(text, *, relative_references=False):
     for match in _WORD_COUNTS.finditer(text):
         # Do not misread the tail of an unsupported compound (twenty-three)
         # as three, or invent the number of the remaining dimensions.
@@ -40,6 +40,11 @@ def _count_words(text):
         value = _WORDS[match['word'].lower()]
         yield -value if (match['sign'] or '').lower() in {'minus','negative','-','−'} else value
     for match in _CHINESE_COUNTS.finditer(text):
+        # 上一帧/下一组 locate an adjacent item; they do not report its count.
+        # Keep 前两帧/后四组 and all signed counts as actual quantities.
+        if (relative_references and match['word'] == '一' and not match['sign']
+                and re.search(r'[上下前后]\s*$', text[:match.start('word')])):
+            continue
         value = _chinese_count(match['word'])
         if value is not None:
             yield -value if match['sign'] in {'负','-','−'} else value
@@ -55,7 +60,7 @@ def number_display(identity):
     return identity
 
 
-def measurement_numbers(text: str, *, word_counts=False) -> set[str]:
+def measurement_numbers(text: str, *, word_counts=False, relative_references=False) -> set[str]:
     """Compare decimal/scientific/grouped/Chinese-scale forms exactly.
 
     Store a coefficient and exponent, without float rounding, Decimal context
@@ -90,6 +95,6 @@ def measurement_numbers(text: str, *, word_counts=False) -> set[str]:
         suffix = '%' if unit in {'%', '％'} else 'x' if unit in {'x', '×', '倍'} else ''
         numbers.add(f'{coefficient}e{exponent}{suffix}')
     if word_counts is True:
-        for value in _count_words(text):
+        for value in _count_words(text, relative_references=relative_references):
             numbers.update(measurement_numbers(str(value)))
     return numbers
