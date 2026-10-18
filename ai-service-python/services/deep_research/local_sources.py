@@ -59,6 +59,10 @@ class LocalTaskRetriever:
                         from services.deep_research.method_details import enabled as precise_sources, include_method_details
                         if not metrics and precise_sources(self.repo.require_run(self.run_id)):
                             indexed = include_method_details(indexed, self.index_context[pdf_id], query, owned, limit)
+                        precision = self.repo.require_run(self.run_id).get('sourcePrecisionContractVersion')
+                        if type(precision) is int and precision == 2:
+                            from services.deep_research.requested_measurements import include_requested_measurements
+                            indexed = include_requested_measurements(indexed, self.index_context[pdf_id], query, owned, limit)
                         indexed = include_requested_rows(indexed, self.index_context[pdf_id], query, owned, limit)
                     return indexed
             except (ImportError, RuntimeError, OSError):

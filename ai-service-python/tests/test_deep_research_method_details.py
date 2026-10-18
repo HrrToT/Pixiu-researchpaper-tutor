@@ -79,14 +79,14 @@ def test_non_acronym_queries_require_multiple_body_terms_and_operation_language(
     assert include_method_details(indexed, [detail], 'unrelated deformation output', 'p', 5) == indexed
 
 
-@pytest.mark.parametrize('replacement', [0, True, '1', None])
+@pytest.mark.parametrize('replacement', [0, True, 1, '2', None])
 def test_precision_contract_is_server_owned_and_immutable(tmp_path, replacement):
     repo = DeepResearchRepository(tmp_path/'r.sqlite3'); repo.initialize()
     facade = ResearchFacade(repo, lambda **_:None, llm_client=object())
     try:
         run,_ = facade.create({'workspaceTaskId':'t','operationKey':'op','question':'解释机制',
             'sourcePrecisionContractVersion':replacement,'deferStart':True},start_async=False)
-        assert run['sourcePrecisionContractVersion'] == 1
+        assert run['sourcePrecisionContractVersion'] == 2
         with pytest.raises(ValueError,match='Immutable'):
             repo.update_run(run['runId'],lambda r:{**r,'sourcePrecisionContractVersion':replacement})
     finally:

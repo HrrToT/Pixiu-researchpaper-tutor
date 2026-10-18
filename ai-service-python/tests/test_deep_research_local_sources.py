@@ -212,6 +212,34 @@ def test_component_detail_selection_uses_the_existing_index_cache_and_live_scope
     parse.assert_not_called()
 
 
+@pytest.mark.parametrize('version', [1, 2])
+def test_requested_measurement_is_retrieved_from_owned_index_only_under_version_two(monkeypatch, version):
+    from services.tools import retrieval_tools
+    local, get, parse, validate = fixture(monkeypatch)
+    local.repo.require_run.return_value['sourcePrecisionContractVersion'] = version
+    monkeypatch.setattr('services.deep_research.local_sources.importlib.util.find_spec', lambda name: object())
+    def document(index,text,owner='p'):
+        return {'text':text,'metadata':{'id':owner,'chunk_index':index,'index_version':'a'*16,
+            'section_title':'Results','page':4}}
+    top=document(10,'Training about 15s per frame and rendering 140FPS.')
+    low=document(11,'General benchmark overview.')
+    exact=document(0,'Reconstruction takes 17 seconds and rendering reaches 140 FPS.')
+    rag=Mock(); rag.normalize_id.side_effect=lambda value:value
+    rag.get_documents_by_metadata.return_value=[exact,document(0,'17s and 140FPS',owner='foreign')]
+    monkeypatch.setattr(retrieval_tools,'get_rag',lambda:rag)
+    retrieve=Mock(return_value=[top,low])
+    monkeypatch.setattr(retrieval_tools,'retrieve_fused_evidence',retrieve)
+    found=local('17 seconds per frame 140 FPS','p',limit=2)
+    assert [r['chunkIndex'] for r in found] == ([10,0] if version==2 else [10,11])
+    assert local('17 seconds per frame 140 FPS','p',limit=2) == found
+    if version==2:
+        assert found[1]['text']==exact['text'] and found[1]['retrievalMode']=='indexed_requested_measurement'
+    rag.get_documents_by_metadata.assert_called_once_with({'id':'p'},limit=400)
+    validate.return_value=False
+    with pytest.raises(DeepResearchError):local('17 seconds per frame 140 FPS','p',limit=2)
+    get.assert_not_called(); parse.assert_not_called()
+
+
 def test_table_supplement_ignores_unrelated_metrics_and_deduplicates():
     from services.deep_research.local_sources import _include_metric_tables, _requested_metrics
     table = {'sourceId': 't', 'text': 'FPS results', 'tableData': {
