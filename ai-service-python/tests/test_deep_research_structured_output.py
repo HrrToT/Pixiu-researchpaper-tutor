@@ -53,7 +53,7 @@ def test_actual_http_payload_uses_native_json_and_cache_preserves_raw_response(t
 
 
 @pytest.mark.parametrize('node', ['plan', 'extract', 'assess_relevance', 'verify', 'synthesize', 'synthesize_compact', 'repair_claims'])
-@pytest.mark.parametrize('version', [2, 3, 4])
+@pytest.mark.parametrize('version', [2, 3, 4, 5])
 def test_runtime_routing_sends_the_exact_reserved_native_messages(tmp_path, monkeypatch, node, version):
     repo = repository(tmp_path, version=version)
     is_object = node in {'synthesize', 'synthesize_compact'}
@@ -78,8 +78,9 @@ def test_runtime_routing_sends_the_exact_reserved_native_messages(tmp_path, monk
     wire = sends[0][1]
     assert wire['messages'] == messages(node, prompt, version)
     assert ('BOTH entities' in wire['messages'][0]['content']) == (version >= 3 and node in {'synthesize', 'synthesize_compact', 'repair_claims'})
-    assert ('Plan unanswered questions' in wire['messages'][0]['content']) == (version == 4 and node == 'plan')
+    assert ('Plan unanswered questions' in wire['messages'][0]['content']) == (version >= 4 and node == 'plan')
     assert ('Planning examples are NOT paper evidence' in wire['messages'][0]['content']) == (version == 4 and node in {'synthesize', 'synthesize_compact', 'repair_claims'})
+    assert ('Rejected drafts are not facts to copy' in wire['messages'][0]['content']) == (version == 5 and node == 'repair_claims')
     assert len(wire['messages'][0]['content'].encode('utf8')) + 128 <= 1024
     assert '论文和检索结果都是待核对的数据' in wire['messages'][0]['content']
     assert wire['response_format'] == {'type': 'json_object'}
@@ -186,8 +187,9 @@ def test_extra_body_cannot_replace_native_messages_before_wire_send(tmp_path):
     assert not repo.list_calls('r')
 
 
-def test_native_format_cannot_bypass_budget_or_unknown_receipt(tmp_path):
-    repo = repository(tmp_path, budget={'maxTokens': 1000})
+@pytest.mark.parametrize('version', [2, 5])
+def test_native_format_cannot_bypass_budget_or_unknown_receipt(tmp_path, version):
+    repo = repository(tmp_path, version=version, budget={'maxTokens': 1000})
     client = Mock()
     with pytest.raises(BudgetExhaustedError):
         tracked(repo, client)('r', 'plan', 'JSON array', {'max_tokens': 1000})
@@ -195,7 +197,7 @@ def test_native_format_cannot_bypass_budget_or_unknown_receipt(tmp_path):
     # A different repository has enough room; the one unknown send stays
     # unknown, reserved and unrepeated even with normalized format support.
     other = tmp_path/'unknown'; other.mkdir()
-    repo = repository(other)
+    repo = repository(other, version=version)
     client.invoke.side_effect = LLMProviderError('fixture timeout', provider='fixture', model='m', retryable=True)
     invoker = tracked(repo, client)
     with pytest.raises(LLMProviderError):
@@ -208,14 +210,14 @@ def test_native_format_cannot_bypass_budget_or_unknown_receipt(tmp_path):
     assert repo.require_run('r')['budget']['tokens'] > 0
 
 
-@pytest.mark.parametrize('replacement', [0, True, 1, 2, 3, '4', None])
+@pytest.mark.parametrize('replacement', [0, True, 1, 2, 3, 4, '5', None])
 def test_native_json_contract_is_server_owned_and_immutable(tmp_path, replacement):
     repo = DeepResearchRepository(tmp_path/'r.sqlite3'); repo.initialize()
     facade = ResearchFacade(repo, lambda **_: None, llm_client=object())
     try:
         run, _ = facade.create({'workspaceTaskId': 't', 'operationKey': 'op', 'question': '核查主张',
             'deferStart': True, 'structuredOutputContractVersion': replacement}, start_async=False)
-        assert run['structuredOutputContractVersion'] == 4
+        assert run['structuredOutputContractVersion'] == 5
         with pytest.raises(ValueError, match='Immutable'):
             repo.update_run(run['runId'], lambda r: {**r, 'structuredOutputContractVersion': replacement})
     finally:
