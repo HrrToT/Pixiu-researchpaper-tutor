@@ -1,0 +1,70 @@
+{
+  "date": "2026-10-18",
+  "cases": [
+    {
+      "case": "D1-v22",
+      "runId": "dr_run_915ab3baec0d5145836f47be9734eb41",
+      "legacyArgsDigest": "755ef7e00ce25e7806980cbd743c98a68189fc5f94b5e1d8c043074356006b2a",
+      "legacyProviderFingerprintMatched": true,
+      "exactPromptAndEvidenceUnchanged": true,
+      "oldOptions": {
+        "max_tokens": 16384,
+        "temperature": 0.2,
+        "thinking": {
+          "type": "disabled"
+        },
+        "reasoning_effort": "none",
+        "response_format": {
+          "type": "json_object"
+        }
+      },
+      "newOptions": {
+        "max_tokens": 8192,
+        "temperature": 0.2,
+        "thinking": {
+          "type": "enabled"
+        },
+        "reasoning_effort": "low",
+        "response_format": {
+          "type": "json_object"
+        }
+      },
+      "runBudgetUnchanged": true,
+      "originalUnchanged": true
+    },
+    {
+      "case": "D5-v8",
+      "runId": "dr_run_31617e98c83f5e7baedbc4481111b2b6",
+      "legacyArgsDigest": "ee39f137b288cb01a283b8d005974e8483aca8ad79d8e01bad3972bc3b7eca5a",
+      "legacyProviderFingerprintMatched": true,
+      "exactPromptAndEvidenceUnchanged": true,
+      "oldOptions": {
+        "max_tokens": 16384,
+        "temperature": 0.2,
+        "thinking": {
+          "type": "disabled"
+        },
+        "reasoning_effort": "none",
+        "response_format": {
+          "type": "json_object"
+        }
+      },
+      "newOptions": {
+        "max_tokens": 8192,
+        "temperature": 0.2,
+        "thinking": {
+          "type": "enabled"
+        },
+        "reasoning_effort": "low",
+        "response_format": {
+          "type": "json_object"
+        }
+      },
+      "runBudgetUnchanged": true,
+      "originalUnchanged": true
+    }
+  ],
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "boundary": "Replay verifies exact legacy synth requests and only a lower bounded reasoning output profile for copied new-policy records. No semantic pass or retrospective result upgrade."
+}

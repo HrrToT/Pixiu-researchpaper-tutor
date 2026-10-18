@@ -24,6 +24,20 @@ def enabled():
 
 def research_model_options(node, options):
     """Apply role options BEFORE the ledger reserves tokens and fingerprints input."""
+    from services.deep_research.factual_reasoning import OPTION
+    options = dict(options)
+    short_factual = options.pop(OPTION, False)
+    if type(short_factual) is not bool:
+        raise ValueError('Invalid server factual reasoning profile')
+    if short_factual and node == 'synthesize':
+        # Scoped to small factual/comparison outputs, not full experiment specs.
+        # The same request/round budget applies; length/unknown never auto-retry.
+        return {**options, 'thinking': {'type': 'enabled'}, 'reasoning_effort': 'low',
+                'max_tokens': 8192, 'response_format': {'type': 'json_object'}}
+    if short_factual and node == 'repair_claims':
+        from services.deep_research.repair_budget import repair_output_options
+        return {**repair_output_options(options), 'thinking': {'type': 'enabled'},
+                'reasoning_effort': 'low'}
     if node == 'synthesize':
         # Produce the structured draft directly. D3-v16's low-thinking draft
         # timed out before any body; independent verification still gates every

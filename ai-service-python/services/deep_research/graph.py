@@ -1259,7 +1259,9 @@ Orient losses before formulas, distinguish conditional/averaged effects and pape
         prompt, evidence_summaries = fit_evidence_prompt(evidence_summaries,
             lambda rows: template.replace(evidence_marker, json.dumps(rows, ensure_ascii=False, separators=(',', ':')), 1))
         evidence_aliases = {row['evidenceId']: evidence_aliases[row['evidenceId']] for row in evidence_summaries}
-        result = llm_invoke(run_id, "synthesize", prompt, {"max_tokens": 4000, "temperature": 0.2}, use_reserve=True)
+        from services.deep_research.factual_reasoning import request_options as factual_options
+        result = llm_invoke(run_id, "synthesize", prompt,
+            {"max_tokens": 4000, "temperature": 0.2, **factual_options(record,question,output_kind)}, use_reserve=True)
         finish = (result.get('finishReason', result.get('finish_reason')) if isinstance(result, dict)
                   else getattr(result, 'finish_reason', None))
         if finish == 'length':
@@ -1432,6 +1434,9 @@ def make_verify_node(
                     options = {"max_tokens": 3000, "temperature": 0.0}
                     if output_limit is not None:
                         options['_repair_output_limit'] = output_limit
+                    from services.deep_research.factual_reasoning import request_options as factual_options
+                    options.update(factual_options(record,effective_question(record),
+                        record.get('state',{}).get('outputKind')))
                     response = llm_invoke(run_id, "repair_claims", prompt, options)
                 except BudgetExhaustedError as exc:
                     repo_update(run_id, lambda r: {**r, "state": {**r.get("state", {}),
