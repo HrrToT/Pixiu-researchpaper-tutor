@@ -86,7 +86,7 @@ def test_precision_contract_is_server_owned_and_immutable(tmp_path, replacement)
     try:
         run,_ = facade.create({'workspaceTaskId':'t','operationKey':'op','question':'解释机制',
             'sourcePrecisionContractVersion':replacement,'deferStart':True},start_async=False)
-        assert run['sourcePrecisionContractVersion'] == 4
+        assert run['sourcePrecisionContractVersion'] == 5
         with pytest.raises(ValueError,match='Immutable'):
             repo.update_run(run['runId'],lambda r:{**r,'sourcePrecisionContractVersion':replacement})
     finally:

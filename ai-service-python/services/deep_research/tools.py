@@ -591,12 +591,24 @@ class BudgetedSemanticChecker:
         # remain subject to the tracked invoker's existing call/token budget.
         proposals = [c for c in claims if c.get('kind') in {'proposal', 'suggestion', 'hypothesis'}]
         facts = [c for c in claims if c.get('kind') not in {'proposal', 'suggestion', 'hypothesis'}]
+        policy = self._experiment_intent_review() if callable(self._experiment_intent_review) else self._experiment_intent_review
+        scientific_methods = type(policy) is int and policy == 3
+        premise_failures = []
+        if scientific_methods:
+            from services.deep_research.experiment_intent import missing_paper_operation_premise
+            question = self._research_question() if callable(self._research_question) else self._research_question
+            premise_failures = [{'claimId':c['claimId'],'status':'failed',
+                'reason':'论文所述干预缺少本条自身的已核对全文依据，不能只凭方法名称或拟议参数确认实际操作。'}
+                for c in proposals if missing_paper_operation_premise(c,evidence,question)]
+        failed_ids = {v['claimId'] for v in premise_failures}
         from services.deep_research.verification_context import CONFIG_ROLES
         def requires_science(c):
-            return ((c.get('designRole') == 'controls' and c.get('protocolContractVersion') in (1, 2))
+            return ((scientific_methods and c.get('designRole')=='groups')
+                or (c.get('designRole') == 'controls' and c.get('protocolContractVersion') in (1, 2))
                 or (c.get('designRole') == 'steps' and c.get('workflowContractVersion') in (2, 3, 4)))
-        config = [c for c in proposals if c.get('designRole') in CONFIG_ROLES and not requires_science(c)]
-        science = [c for c in proposals if c not in config]
+        config = [c for c in proposals if c['claimId'] not in failed_ids
+                  and c.get('designRole') in CONFIG_ROLES and not requires_science(c)]
+        science = [c for c in proposals if c not in config and c['claimId'] not in failed_ids]
         science_node = 'verify_design_science' if node == 'verify' else 'verify_repair_design_science'
         config_node='verify_design_config' if node=='verify' else 'verify_repair_design_config'
         proposal_batches = ([(config, config_node)] if config else []) + ([(science, science_node)] if science else [])
@@ -608,7 +620,7 @@ class BudgetedSemanticChecker:
                     else self._isolate_factual_claims) is True
         size = 1 if isolated else max(3, (len(facts) + fact_slots - 1) // fact_slots)
         batches = proposal_batches + [(facts[i:i + size], node) for i in range(0, len(facts), size)]
-        verdicts = []
+        verdicts = list(premise_failures)
         for batch, batch_node in batches:
             targets = {c['claimId'] for c in batch}
             context = [{'claimId': c.get('claimId'), 'text': c.get('text'), 'kind': c.get('kind'),
@@ -754,11 +766,11 @@ Do not require an unexecuted experiment to have results. Do not judge context cl
         question = self._research_question() if callable(self._research_question) else self._research_question
         experiment_policy = (self._experiment_intent_review() if callable(self._experiment_intent_review)
                              else self._experiment_intent_review)
-        experiment_intent = experiment_policy is True or (type(experiment_policy) is int and experiment_policy in (1,2))
+        experiment_intent = experiment_policy is True or (type(experiment_policy) is int and experiment_policy in (1,2,3))
         if experiment_intent and all(c.get('kind') in {'proposal','suggestion','hypothesis'} for c in claims):
             from services.deep_research.experiment_intent import guidance as experiment_guidance
             prompt += '\n'+experiment_guidance(question,{c.get('designRole') for c in claims},
-                policy_version=2 if type(experiment_policy) is int and experiment_policy==2 else 1)
+                policy_version=experiment_policy if type(experiment_policy) is int and experiment_policy in (2,3) else 1)
         if isinstance(question, str) and question.strip():
             prompt += '\nOriginal research question (user objective, not source evidence):\n' + json.dumps(question, ensure_ascii=False)
             prompt += ('\nCheck that each target fulfills its role in answering this actual objective. '
@@ -882,6 +894,13 @@ Do not infer dataset existence/capacity from a proposed choice or another propos
 fulltext support or unresolved subset identity fails even when every setting is concrete.
 The dataAvailability object is an internal audit, not new experimental results.
 '''
+            if type(experiment_policy) is int and experiment_policy == 3:
+                prompt += ('\nEvidence includes literal-name candidates for named data targets. These only '
+                    'identify OWN visible quotes containing selected labels; they do not establish semantic '
+                    'membership. Bind dataAvailability to the SAME name-bearing quotation after checking '
+                    'dataset/subset identity. A parent-only citation cannot bind a scene name mentioned only '
+                    'in another quote. Preserve exact source labels/quotes; fail if no candidate establishes '
+                    'the relation. Never combine an evidenceId from one row with words from another.\n')
 
         if any(c.get("kind") in {"proposal", "suggestion", "hypothesis"} for c in claims):
             from services.deep_research.experimental_reasoning import design_requirements
@@ -1010,6 +1029,12 @@ The dataAvailability object is an internal audit, not new experimental results.
                        if key not in (*source_keys, 'evidenceId', 'publicationIdentity')}, 'source': alias}
             view = {'sources': {key: value for key, value in source_registry.items() if key in used},
                     'evidence': packed}
+            if type(experiment_policy) is int and experiment_policy == 3:
+                from services.deep_research.membership_candidates import named_membership_candidates
+                candidates = named_membership_candidates(wire_claims,
+                    [e for e in wire_evidence if e['evidenceId'] in packed])
+                if candidates:
+                    view['literalNameCandidatesNotMembershipProof'] = candidates
             return template.replace(evidence_text, json.dumps(
                 view, ensure_ascii=False, separators=(',', ':')), 1)
 

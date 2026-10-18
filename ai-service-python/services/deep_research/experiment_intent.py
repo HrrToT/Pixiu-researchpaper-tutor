@@ -2,9 +2,34 @@
 import json
 import re
 
+METHOD_FIDELITY = ('For a paper-attributed intervention, verify its actual operation, input/state and schedule '
+    'against that target\'s OWN fulltext citations. A method label and numeric parameter names alone do not '
+    'implement the published technique. Proposed hyperparameter values may differ when explicitly proposed; '
+    'the paper\'s operation cannot be invented or replaced by a different loss. Context definitions are not '
+    'another target\'s source permission.')
+
+
+def missing_paper_operation_premise(claim, evidence, question):
+    if claim.get('designRole') != 'groups':
+        return False
+    pattern = r'论文所述|论文中(?:的|所)|按论文|文中(?:的|所)|作者的(?:方法|操作|算法|技术)'
+    paper_action = r'\bpaper.described\b|\bpaper[\u2019\']s\s+(?:method|operation|algorithm|technique|procedure)\b|as described in (?:the )?paper|according to (?:the )?paper'
+    text = str(question or '')+' '+str(claim.get('text',''))
+    attributed = bool(re.search(r'(?:启用|采用|使用|复现|关闭)[^。！？\n]{0,10}(?:'+pattern+r')'
+        r'|(?:use|enable|apply|replicate|reproduce)[^.!?\n]{0,20}(?:'+paper_action+r')',text,re.I))
+    spec=claim.get('executionSpec') or {}
+    for factor in spec.get('factors',[]) if isinstance(spec,dict) else []:
+        for level in ('control','treatment'):
+            choice=factor.get(level,{}) if isinstance(factor,dict) else {}
+            if isinstance(choice,dict) and re.search(pattern+'|'+paper_action,str(choice.get('action','')),re.I):
+                attributed=True
+    refs = claim.get('evidenceRefs',[])
+    return attributed and not any(e.get('evidenceId') in refs and e.get('accessLevel')=='fulltext'
+        and e.get('verification',{}).get('literal')=='passed' for e in evidence)
+
 
 def enabled(record):
-    return type(record.get('experimentIntentContractVersion')) is int and record['experimentIntentContractVersion'] in (1,2)
+    return type(record.get('experimentIntentContractVersion')) is int and record['experimentIntentContractVersion'] in (1,2,3)
 
 
 def single_toggle_request(question):
@@ -15,16 +40,21 @@ def single_toggle_request(question):
 def guidance(question, roles=None, *, draft=False, policy_version=1):
     question = question if isinstance(question,str) else ''
     parts=['Judge the proposed experiment at the inference strength actually requested, while retaining source, initialization, pairing, budget and scientific-validity checks. A future hypothesis is not an already established result.']
+    fidelity = type(policy_version) is int and policy_version == 3
+    if fidelity and roles is not None and 'groups' in roles:
+        parts.append(METHOD_FIDELITY)
     if roles is not None and None not in roles and not set(roles)&{'hypothesis','analysis','metrics','limits'}:
-        return parts[0]  # These targets cannot rewrite the supplied measurement/decision definitions.
+        return '\n'.join(parts)  # These targets cannot rewrite the supplied measurement/decision definitions.
     if draft:
         parts=['Use the requested inference strength; keep the proposed plan unexecuted, paired, controlled and finite.']
         if re.search(r'描述性|\bdescriptive\b',question,re.I):
             parts.append('Explicit descriptive comparison uses explore/descriptive modes, paired effects and bounded conclusions; no significance test or CI is required or promised.')
         if re.search(r'抖动|\bjitter\b|temporal (?:flicker|smoothness)',question,re.I):
             parts.append('Per-frame PSNR-score variance ALONE does not measure jitter. Specify actual temporal image/motion observations on the same view/time path, handle genuine motion and include a quality guard against blur/suppressed motion. Never invent GT at unseen interpolation times; reference-free stability is not reconstruction accuracy.')
+        if fidelity:
+            parts.append('When reusing a paper technique, define its actual operation, input/state and schedule with OWN E citations. A switch/name plus generic weights is insufficient. Proposed values remain proposed, not author settings.')
         return '\n'.join(parts)
-    if type(policy_version) is int and policy_version == 2:
+    if type(policy_version) is int and policy_version in (2,3):
         parts.append('Check each target against the complete linked metric, hypothesis, analysis and configuration definitions supplied here. A concrete tolerance, pose-error setting or aggregation rule defined in a linked role need not be copied into every hypothesis/limits paragraph. Fail a missing definition, contradiction or broken reference, not absence of repetition. Repair metrics and their scientific decision together.')
     if re.search(r'描述性|\bdescriptive\b',question or '',re.I):
         parts.append('The user explicitly requests DESCRIPTIVE comparison. Use the existing explore purpose, descriptive uncertainty and descriptive decision modes when appropriate. A bounded paired effect/direction under the declared scene/settings needs NO significance test, confidence interval, bootstrap or population inference. Still specify matched observations, aggregation and the paired decision rule. Do not promise acceptance of a population hypothesis, equivalence or generalization. Do not fail solely because significance is absent.')

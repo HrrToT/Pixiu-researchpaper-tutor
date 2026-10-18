@@ -7,14 +7,14 @@ from services.deep_research.source_continuity import needs_preceding_context
 
 def enabled(record):
     return (type(record.get('sourcePrecisionContractVersion')) is int
-            and record['sourcePrecisionContractVersion'] in {1, 2, 3, 4})
+            and record['sourcePrecisionContractVersion'] in {1, 2, 3, 4, 5})
 
 
 def _body(row):
     return re.split(r'\bContent:\s*', row.get('text', ''), maxsplit=1)[-1]
 
 
-def include_method_details(indexed, candidates, query, owned_id, limit, *, semantic_intent=False):
+def include_method_details(indexed, candidates, query, owned_id, limit, *, semantic_intent=False, operational_intent=False):
     """Reserve up to two existing slots for an explicit operation and its context.
 
     Literal query/component matches and operational language select candidates,
@@ -26,7 +26,7 @@ def include_method_details(indexed, candidates, query, owned_id, limit, *, seman
     if not selected or limit < 2:
         return selected
     from services.deep_research.method_intent import query_intent, operation_score
-    intent = query_intent(query) if semantic_intent is True else None
+    intent = query_intent(query,operational=operational_intent is True) if semantic_intent is True else None
     if not intent and not re.search(r'predict\w*|input\w*|output\w*|mechanism|encod\w*|anneal\w*|'
                      r'deform\w*|parameter\w*|预测|输入|输出|机制|编码|退火|形变', query, re.I):
         return selected
@@ -68,7 +68,8 @@ def include_method_details(indexed, candidates, query, owned_id, limit, *, seman
                 # Context affects ranking only. Return separate original sources
                 # with unchanged IDs and the existing exact-predecessor guards.
                 rank_body = _body(previous[0])+'\n'+body
-        intent_score = operation_score(rank_body, row['metadata'].get('section_title',''), intent)
+        intent_score = operation_score(rank_body, row['metadata'].get('section_title',''), intent,
+                                      operational=operational_intent is True)
         if (acronyms and not exact) or (not acronyms and (not intent_score if intent else overlap < 2)):
             continue
         operations = len({m.group(0).lower() for m in concrete.finditer(body)})

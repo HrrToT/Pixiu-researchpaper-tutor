@@ -78,8 +78,8 @@ def test_experiment_policy_is_server_owned_and_frozen(tmp_path):
     try:
         r,_=facade.create({'workspaceTaskId':'t','operationKey':'o','question':'设计实验',
             'experimentIntentContractVersion':0},start_async=False)
-        assert enabled(r) and r['experimentIntentContractVersion']==2
-        for value in [True,0,None,1]:
+        assert enabled(r) and r['experimentIntentContractVersion']==3
+        for value in [True,0,None,1,2]:
             with pytest.raises(ValueError,match='Immutable'):
                 repo.update_run(r['runId'],lambda old:{**old,'experimentIntentContractVersion':value})
     finally:facade.shutdown()

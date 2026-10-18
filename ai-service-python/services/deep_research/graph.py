@@ -650,9 +650,14 @@ def make_read_node(
         extracted = {(e.get("sourceId"), e.get("contentHash")) for e in record.get("state", {}).get("evidence", [])}
         available = [sources_map[sid] for sid in source_ids if sid in sources_map]
         available.sort(key=lambda source: (source["sourceId"], source.get("contentHash")) in extracted)
-        selected = balanced_sample(available,
-            lambda source: (source.get("workId"), tuple(source.get("obligationIds", []))),
-            24 if record.get("budget", {}).get("profile") == "extended" else 12)
+        read_limit = 24 if record.get("budget", {}).get("profile") == "extended" else 12
+        if type(record.get('readingPriorityContractVersion')) is int and record['readingPriorityContractVersion']==1:
+            from services.deep_research.reading_priority import select_read_sources
+            obligations={o['obligationId']:o for item in record.get('state',{}).get('plan',[]) for o in item.get('obligations',[])}
+            selected=select_read_sources(available,obligations,read_limit,extracted=extracted)
+        else:
+            selected = balanced_sample(available,
+                lambda source: (source.get("workId"), tuple(source.get("obligationIds", []))),read_limit)
         for source_meta in selected:
             source_id = source_meta["sourceId"]
             # Map source to owner material for scope validation
@@ -1225,7 +1230,7 @@ Orient losses before formulas, distinguish conditional/averaged effects and pape
                 obligations=draft_obligations,sources=source_registry,evidence_marker=evidence_marker,
                 claim_fields=claim_fields,claim_limit=claim_limit,section_templates=section_templates,
                 **({'concise':True} if type(record.get('experimentIntentContractVersion')) is int
-                   and record['experimentIntentContractVersion'] in (1,2) else {}))
+                   and record['experimentIntentContractVersion'] in (1,2,3) else {}))
         prompt += format_guidance(point_constraint)
         from services.deep_research.synthesis import SCIENTIFIC_TERMINOLOGY
         prompt += '\n' + SCIENTIFIC_TERMINOLOGY
@@ -1248,7 +1253,8 @@ Orient losses before formulas, distinguish conditional/averaged effects and pape
         if output_kind == "experiment_design":
             from services.deep_research.experiment_intent import enabled as intent_enabled, guidance as experiment_guidance
             if intent_enabled(record):
-                prompt += '\n'+experiment_guidance(question,draft=True)
+                prompt += '\n'+experiment_guidance(question,draft=True,
+                    policy_version=record['experimentIntentContractVersion'])
             from services.deep_research.design_drafting import design_drafting_requirements
             from services.deep_research.execution_spec import EXECUTION_SPEC_CONTRACT
             prompt += '\n' + EXECUTION_SPEC_CONTRACT
@@ -1535,7 +1541,7 @@ def make_verify_node(
                            and record['comparisonReasoningContractVersion']==3 else {}),
                         **({'experimental_intent':record['experimentIntentContractVersion']}
                            if type(record.get('experimentIntentContractVersion')) is int
-                           and record['experimentIntentContractVersion'] in (1,2) else {}),
+                           and record['experimentIntentContractVersion'] in (1,2,3) else {}),
                         **({'factual_scope':record['factualScopeContractVersion']} if scope_enabled(record) else {}),
                         **({'declared_table_refs':True} if declared_references_enabled(record) else {}),
                         **({'question_priority':True} if priority_enabled(record) else {}),

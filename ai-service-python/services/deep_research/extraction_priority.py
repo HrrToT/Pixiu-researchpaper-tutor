@@ -52,9 +52,10 @@ def prioritize_extraction_passages(pending, obligations, version=1):
     Identification-only requests keep their order. Paper round-robin prevents
     one rich source from displacing the other selected papers' first passages.
     """
-    if version in (2, 3, 4, 5):
-        return _balance_obligations(pending, obligations, precise=version in (3,4,5),
-                                    requested_operations=version in (4,5), method_intents=version==5)
+    if version in (2, 3, 4, 5, 6):
+        return _balance_obligations(pending, obligations, precise=version in (3,4,5,6),
+                                    requested_operations=version in (4,5,6), method_intents=version in (5,6),
+                                    operational_intents=version==6)
     def requirement(source):
         rows = [obligations[key] for key in eligible_obligation_ids(source, obligations)]
         explain = any(any(c.get('responseType') == 'explanation' for c in row.get('completionCriteria', []))
@@ -86,14 +87,15 @@ def prioritize_extraction_passages(pending, obligations, version=1):
     return balanced_sample(ordered, lambda item: item[0]['workId'], len(ordered))
 
 
-def _balance_obligations(pending, obligations, precise=False, requested_operations=False, method_intents=False):
+def _balance_obligations(pending, obligations, precise=False, requested_operations=False, method_intents=False,
+                         operational_intents=False):
     """A training question must not consume the motivation question's first batch."""
     papers = list(dict.fromkeys(item[0]['workId'] for item in pending))
     queues = []
     for oid, obligation in obligations.items():
         question = obligation.get('question', '')
         from services.deep_research.method_intent import query_intent, operation_score
-        intent = query_intent(question+' '+obligation.get('searchQuery','')) if method_intents else None
+        intent = query_intent(question+' '+obligation.get('searchQuery',''),operational=operational_intents) if method_intents else None
         output_target = requested_operations and bool(_OUTPUT_ASK.search(question)) and any(
             c.get('responseType')=='identification' for c in obligation.get('completionCriteria',[]))
         temporal_target = requested_operations and bool(_TEMPORAL_ASK.search(question))
@@ -129,7 +131,8 @@ def _balance_obligations(pending, obligations, precise=False, requested_operatio
                 if requested_operations:
                     base = (_requested_operation_score(text,output=output_target,temporal=temporal_target),*base)
                 if method_intents:
-                    base = (operation_score(raw, str(item[1].get('section','')), intent), *base)
+                    base = (operation_score(raw, str(item[1].get('section','')), intent,
+                                            operational=operational_intents), *base)
                 return (len(measurements(raw) & requested),*base) if precise else base
             if eligible:
                 queues.append(sorted(eligible, key=score, reverse=True))
