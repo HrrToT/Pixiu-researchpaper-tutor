@@ -11,7 +11,7 @@ from services.deep_research.runtime import research_model_options
 def test_only_new_short_factual_answers_choose_reasoning(kind):
     record={'factualReasoningContractVersion':1}
     assert request_options(record,'给出判断，300字以内。',kind)=={OPTION:True}
-    for value in [None,True,False,0,3,'1']:
+    for value in [None,True,False,0,4,'1']:
         assert request_options({'factualReasoningContractVersion':value},'300字以内',kind)=={}
     for question in ['详细说明','301字以内','0字以内']:
         assert request_options(record,question,kind)=={}
@@ -70,7 +70,7 @@ def test_new_options_are_reserved_fingerprinted_and_reused_before_provider_send(
     assert reserve.call_args.kwargs['args_digest']!=fingerprint
 
 
-@pytest.mark.parametrize('replacement',[None,True,False,0,1,'1'])
+@pytest.mark.parametrize('replacement',[None,True,False,0,1,2,'1'])
 def test_policy_is_server_owned_immutable_and_not_client_selected(tmp_path,replacement):
     from services.deep_research.facade import ResearchFacade
     from services.deep_research.repository import DeepResearchRepository
@@ -79,7 +79,7 @@ def test_policy_is_server_owned_immutable_and_not_client_selected(tmp_path,repla
     try:
         p,_=facade.create({'workspaceTaskId':'t','operationKey':'k','question':'200字以内',
             'deferStart':True,'factualReasoningContractVersion':replacement},start_async=False)
-        assert p['factualReasoningContractVersion']==2
+        assert p['factualReasoningContractVersion']==3
         with pytest.raises(ValueError,match='Immutable'):
             repo.update_run(p['runId'],lambda r:{**r,'factualReasoningContractVersion':replacement})
     finally: facade.shutdown()
@@ -96,3 +96,15 @@ def test_actual_synthesis_node_selects_profile_and_truncation_remains_failure():
     result=make_synthesize_node(llm,update)({'run_id':'r'})
     assert result=={'error_code':'invalid_synthesis_response'}
     assert llm.call_count==1 and llm.call_args.args[3][OPTION] is True
+
+
+def test_v3_changes_only_short_factual_synthesis_effort_with_same_output_and_direct_repair():
+    from services.deep_research.factual_reasoning import HIGH_SYNTHESIS_OPTION
+    old=request_options({'factualReasoningContractVersion':2},'200字以内','paper_comparison')
+    new=request_options({'factualReasoningContractVersion':3},'200字以内','paper_comparison')
+    old_synth=research_model_options('synthesize',old);new_synth=research_model_options('synthesize',new)
+    assert new_synth=={**old_synth,'reasoning_effort':'high'}
+    assert old_synth['max_tokens']==new_synth['max_tokens']==8192
+    assert research_model_options('repair_claims',{**new,'_repair_output_limit':4096})==research_model_options('repair_claims',{**old,'_repair_output_limit':4096})
+    assert HIGH_SYNTHESIS_OPTION not in new_synth
+    assert request_options({'factualReasoningContractVersion':3},'200字以内','experiment_design')=={}

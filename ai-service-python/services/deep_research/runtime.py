@@ -24,16 +24,17 @@ def enabled():
 
 def research_model_options(node, options):
     """Apply role options BEFORE the ledger reserves tokens and fingerprints input."""
-    from services.deep_research.factual_reasoning import OPTION,DIRECT_REPAIR_OPTION
+    from services.deep_research.factual_reasoning import OPTION,DIRECT_REPAIR_OPTION,HIGH_SYNTHESIS_OPTION
     options = dict(options)
     short_factual = options.pop(OPTION, False)
     direct_repair = options.pop(DIRECT_REPAIR_OPTION,False)
-    if type(short_factual) is not bool or type(direct_repair) is not bool:
+    high_synthesis = options.pop(HIGH_SYNTHESIS_OPTION,False)
+    if any(type(value) is not bool for value in (short_factual,direct_repair,high_synthesis)):
         raise ValueError('Invalid server factual reasoning profile')
     if short_factual and node == 'synthesize':
         # Scoped to small factual/comparison outputs, not full experiment specs.
         # The same request/round budget applies; length/unknown never auto-retry.
-        return {**options, 'thinking': {'type': 'enabled'}, 'reasoning_effort': 'low',
+        return {**options, 'thinking': {'type': 'enabled'}, 'reasoning_effort': 'high' if high_synthesis else 'low',
                 'max_tokens': 8192, 'response_format': {'type': 'json_object'}}
     if short_factual and not direct_repair and node == 'repair_claims':
         from services.deep_research.repair_budget import repair_output_options
