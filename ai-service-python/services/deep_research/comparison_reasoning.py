@@ -9,7 +9,7 @@ import re
 
 
 def enabled(record):
-    return type(record.get('comparisonReasoningContractVersion')) is int and record['comparisonReasoningContractVersion']==1
+    return type(record.get('comparisonReasoningContractVersion')) is int and record['comparisonReasoningContractVersion'] in (1,2)
 
 
 GUIDANCE='''For a requested comparison/check, lead with the qualified judgement, then the
@@ -54,8 +54,8 @@ def audit_scope(claim,evidence):
     return None
 
 
-def audit_prompt(targets):
-    return '\n'+GUIDANCE+'''
+def audit_prompt(targets, version=1):
+    prompt = '\n'+GUIDANCE+'''
 For the following comparative targets, a passed verdict MUST also include comparisonAudit.
 Target scopes (metadata, not evidence): '''+json.dumps(targets,separators=(',',':'))+'''
 Schema:
@@ -77,6 +77,33 @@ For metric comparisons check direction and each group, not only numerical closen
 If no supported audit is possible return status=failed with the specific missing premise;
 do not invent an audit or cite irrelevant quotations to satisfy the schema.
 '''
+    if type(version) is int and version == 2:
+        prompt += ('\nThe scope field is an ENUM, not an explanation. Copy exactly the target value '
+                   'cross_study or within_study, without a colon, suffix or dataset name. '
+                   'Put explanations only in reason; keep evidence IDs and quotations unchanged.\n')
+    return prompt
+
+
+def normalize_audit_scope(claim, verdict, evidence, *, version=1):
+    """Normalize only a redundant enum annotation, never a scientific judgement.
+
+    The raw provider response remains in the ledger. A valid target-scope token
+    followed by a colon is unambiguous only if its suffix contains no other scope
+    token. Every premise, quotation, alignment and support check still runs.
+    """
+    if type(version) is not int or version != 2:
+        return verdict
+    audit = verdict.get('comparisonAudit')
+    scope = audit_scope(claim, evidence)
+    value = audit.get('scope') if isinstance(audit, dict) else None
+    if not scope or not isinstance(value, str):
+        return verdict
+    match = re.fullmatch(r'(cross_study|within_study)\s*[:：]\s*([^\n]{1,300})', value)
+    if (not match or match[1] != scope or not match[2].strip()
+            or re.search(r'cross_study|within_study', match[2])):
+        return verdict
+    return {**verdict, 'comparisonAudit': {**audit, 'scope': scope},
+            'comparisonAuditNormalization': {'field': 'scope', 'original': value, 'normalized': scope}}
 
 
 def _normalized(text):

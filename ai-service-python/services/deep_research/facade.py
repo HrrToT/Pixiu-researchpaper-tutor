@@ -273,14 +273,14 @@ class ResearchFacade:
             "materials": materials,
             "materialSnapshot": material_snapshot,  # Immutable Java snapshot
             "contextMaterials": (material_snapshot or {}).get("contextMaterials", []) if isinstance(material_snapshot, dict) else [],
-            "promptVersion": "dr-v2.20261018.170",
+            "promptVersion": "dr-v2.20261018.171",
             "tableReferencesContractVersion": 1,
             "factualScopeContractVersion": 2,
             "factualReasoningContractVersion": 3,
             "continuationFormatContractVersion": 1,
             "jointEvidenceContractVersion": 1,
             "repairEvidencePriorityVersion": 1,
-            "comparisonReasoningContractVersion": 1,
+            "comparisonReasoningContractVersion": 2,
             "namedRowIdentityContractVersion": 1,
             "requestGroundingContractVersion": 3,
             "factRedraftContractVersion": 3,
@@ -289,7 +289,7 @@ class ResearchFacade:
             "runtimeSemanticContractVersion": 1,
             "evidenceCoverageContractVersion": 3,
             "sourcePrecisionContractVersion": 3,
-            "absenceScopeContractVersion": 3,
+            "absenceScopeContractVersion": 4,
             "answerFormatContractVersion": 1,
             "repairProgressContractVersion": 1,
             "structuredOutputContractVersion": 7,
@@ -1166,6 +1166,7 @@ class ResearchFacade:
             isolate_factual_claims=(lambda: self._repo.require_run(run_id).get('claimIsolationContractVersion') == 1)
                 if isolation is None else isolation,
             comparison_reasoning=lambda: comparison_enabled(self._repo.require_run(run_id)),
+            comparison_audit_version=lambda: self._repo.require_run(run_id).get('comparisonReasoningContractVersion', 0),
             factual_scope=lambda: scope_enabled(self._repo.require_run(run_id)))
         return checker
     

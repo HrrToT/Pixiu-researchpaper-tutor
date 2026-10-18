@@ -144,7 +144,7 @@ def test_new_policy_does_not_add_audit_or_calls_to_a_single_source_noncomparativ
     assert audit_scope({**c,'kind':'proposal'},e) is None
 
 
-@pytest.mark.parametrize('version',[None,False,True,0,'1',2])
+@pytest.mark.parametrize('version',[None,False,True,0,'1',3])
 def test_server_contract_version_is_strict(version):
     assert not enabled({'comparisonReasoningContractVersion':version})
     assert enabled({'comparisonReasoningContractVersion':1})
@@ -167,7 +167,7 @@ def test_client_cannot_disable_contract_and_runtime_checker_uses_frozen_server_v
     try:
         p,_=facade.create({'workspaceTaskId':'t','operationKey':'one','question':'比较实验条件','materials':[],
                           'comparisonReasoningContractVersion':0},start_async=False)
-        assert repo.require_run(p['runId'])['comparisonReasoningContractVersion']==1
+        assert repo.require_run(p['runId'])['comparisonReasoningContractVersion']==2
         checker=facade._build_semantic_checker(p['runId'],lambda **_:None)
         assert checker._comparison_reasoning() is True
     finally:

@@ -65,7 +65,7 @@ def leaks_internal_reference(claim, support):
 
 
 def absence_not_established(claim, support, *, scope_version=0):
-    reporting_scope = type(scope_version) is int and scope_version in (2,3)
+    reporting_scope = type(scope_version) is int and scope_version in (2,3,4)
     source_pattern = _SOURCE_REPORTING_ABSENCE if reporting_scope else EXPLICIT_ABSENCE
     explicit = any(source_pattern.search(item.get('quote', '')) for item in support)
     if explicit:
@@ -75,13 +75,21 @@ def absence_not_established(claim, support, *, scope_version=0):
         for sentence in re.split(r'[。！？；;.!?\n]', text):
             for missing in (_EXTENDED_ABSENCE if reporting_scope else ABSENCE).finditer(sentence):
                 prefix = sentence[:missing.start()]
+                if type(scope_version) is int and scope_version == 4:
+                    # Nominal headings and attributive untested dimensions under
+                    # a negative epistemic modal do not assert author omission.
+                    if (not prefix.strip() and re.match(r'未验证范围\s*[:：]', sentence)):
+                        continue
+                    if (re.match(r'(?:未测试|未验证)(?:的)?(?:维度|场景|条件|范围)', sentence[missing.start():])
+                            and re.search(r'(?:不能|不足以|尚不能)(?:证明|确认)[^，,；;]*$', prefix)):
+                        continue
                 papers = list(_PAPER.finditer(prefix))
                 scopes = list(_SCOPED.finditer(prefix))
-                if type(scope_version) is int and scope_version==3:
+                if type(scope_version) is int and scope_version in (3,4):
                     subject=_CURRENT_EVIDENCE_SUBJECT.search(prefix)
                     if subject:
                         scopes.append(subject)
-                if type(scope_version) is int and scope_version in (1, 2,3):
+                if type(scope_version) is int and scope_version in (1,2,3,4):
                     # This guard concerns missing research/reporting, not the
                     # method's negative premises (e.g. an object absent from
                     # the initial frame). Those still require semantic review.

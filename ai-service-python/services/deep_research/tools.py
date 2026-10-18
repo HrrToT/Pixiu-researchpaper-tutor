@@ -552,6 +552,7 @@ class BudgetedSemanticChecker:
         research_question=None,
         isolate_factual_claims=False,
         comparison_reasoning=False,
+        comparison_audit_version=1,
         factual_scope=False,
     ):
         self._invoke = llm_invoker
@@ -560,6 +561,7 @@ class BudgetedSemanticChecker:
         self._research_question = research_question
         self._isolate_factual_claims = isolate_factual_claims
         self._comparison_reasoning = comparison_reasoning
+        self._comparison_audit_version = comparison_audit_version
         self._factual_scope = factual_scope
     
     def __call__(self, claims: list[dict], evidence: list[dict]) -> list[dict]:
@@ -937,11 +939,13 @@ The dataAvailability object is an internal audit, not new experimental results.
                     prompt += audit_prompt
         comparison_enabled=(self._comparison_reasoning() if callable(self._comparison_reasoning)
                             else self._comparison_reasoning) is True
+        comparison_version=(self._comparison_audit_version() if callable(self._comparison_audit_version)
+                            else self._comparison_audit_version)
         if comparison_enabled:
             from services.deep_research.comparison_reasoning import audit_scope,audit_prompt as comparison_audit_prompt
             comparison_targets={c['claimId']:audit_scope(c,evidence) for c in claims if audit_scope(c,evidence)}
             if comparison_targets:
-                prompt+=comparison_audit_prompt(comparison_targets)
+                prompt+=comparison_audit_prompt(comparison_targets, comparison_version)
         scope_enabled=(self._factual_scope() if callable(self._factual_scope) else self._factual_scope) is True
         if scope_enabled:
             from services.deep_research.factual_scope import audit_prompt as scope_prompt
@@ -1031,6 +1035,11 @@ The dataAvailability object is an internal audit, not new experimental results.
                                         {'responseState': 'received_invalid'})
             from services.deep_research.design_audit import validate_design_audit
             parsed = [restore_verdict_evidence(v, reverse_aliases) for v in parsed]
+            if comparison_enabled:
+                from services.deep_research.comparison_reasoning import normalize_audit_scope
+                target_by_id = {c['claimId']: c for c in claims}
+                parsed = [normalize_audit_scope(target_by_id[v['claimId']], v, visible_evidence,
+                          version=comparison_version) for v in parsed]
             by_id = {c['claimId']: c for c in claims}
             visible_ids = {row["evidenceId"] for row in visible_evidence}
             for verdict in parsed:
