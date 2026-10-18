@@ -884,6 +884,9 @@ def make_assess_node(
         prev_source_count = state.get("prev_source_count", 0)
         
         record = repo_update(run_id, lambda r: {**r, "stage": "assess"}, expected_revision=None)
+        from services.deep_research.joint_assessment import enabled as joint_enabled,assess as joint_assess
+        if joint_enabled(record):
+            return joint_assess(state,record,repo_update,llm_invoke,coverage_gaps_fn)
         from services.deep_research.adaptive_assessment import enabled, assess
         if enabled(record):
             return assess(state, record, repo_update, llm_invoke, coverage_gaps_fn)

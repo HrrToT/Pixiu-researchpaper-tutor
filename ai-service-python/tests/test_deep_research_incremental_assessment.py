@@ -219,7 +219,8 @@ def test_compiled_graph_assesses_after_extraction_stop_without_new_acquisition_l
         assert final['status']=='completed',final
         assert final['state']['assessmentStatus']=='checked'
         assert final['state']['stopReason']=='budget_exhausted'
-        assert sum(req.prompt.startswith('For each evidence-obligation pair') for req in model.requests)==1
+        assert sum(req.prompt.startswith('Assess JOINT EVIDENCE READINESS') for req in model.requests)==1
+        assert sum(req.prompt.startswith('For each evidence-obligation pair') for req in model.requests)==0
         assert len(retrieved)==2
         assert '95%' in facade.get(rid)['report']['body']
     finally: facade.shutdown()

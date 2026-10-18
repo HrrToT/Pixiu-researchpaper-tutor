@@ -44,6 +44,11 @@ class FixtureModel:
             pairs = json.loads(prompt.split("Pairs:\n", 1)[1].split("\n\nReturn ", 1)[0])
             content = [{"pairId": pair["pairId"], "relevant": True}
                        for pair in pairs]
+        elif prompt.startswith('Assess JOINT EVIDENCE READINESS'):
+            units=json.JSONDecoder().raw_decode(prompt.split('Frozen units (questions, NOT facts):\n',1)[1])[0]
+            # Both source premises and fixed-split context are available here;
+            # readiness never approves bad99% or fills omitted final conditions.
+            content=[{'unitId':u['unitId'],'ready':True,'evidenceIds':u['evidenceIds']} for u in units]
         elif prompt.startswith("Synthesize"):
             ids = re.findall(r'"evidenceId":\s*"(E\d+)"', prompt)
             content = {"summary": "UNVERIFIED SUMMARY MUST NEVER BE SHOWN", "claims": [

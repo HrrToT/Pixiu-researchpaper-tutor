@@ -33,5 +33,6 @@ def prioritize_existing_evidence(evidence,question):
         quote=str(row.get('quote',''))
         dimensions=sum(bool(pattern.search(quote)) for pattern in _DIMENSIONS)
         measurement=bool(_MEASUREMENT.search(quote))
-        return (bool(dimensions and measurement),dimensions,measurement,-index)
+        specificity=sum(min(3,len({m.group().casefold() for m in pattern.finditer(quote)})) for pattern in _DIMENSIONS)
+        return (bool(dimensions and measurement),dimensions,specificity,measurement,-index)
     return [row for _,row in sorted(enumerate(evidence),key=score,reverse=True)]
