@@ -73,6 +73,7 @@ def test_acquisition_factors_human_only_context_once_and_freezes_it_in_the_exact
     captured=[]
     def invoke(rid,node,prompt,options):
         captured.append(prompt)
+        assert prompt.startswith('For each evidence-obligation pair')
         assert prompt.count(human)==1 and 'UNVERIFIED PARENT CONTENT' not in prompt
         assert all(r['humanQuestionId']=='U1' and 'humanQuestion' not in r for r in rows(prompt))
         return {'content':json.dumps([{'pairId':r['pairId'],'relevant':False} for r in rows(prompt)])}
