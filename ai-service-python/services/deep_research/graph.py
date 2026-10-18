@@ -1248,6 +1248,9 @@ Orient losses before formulas, distinguish conditional/averaged effects and pape
                        + '\nA section title is not a designRole. Include all roles with their own complete specs. '
                        'Budget owns the canonical preparation/per-group amounts. Link hypothesis to analysis '
                        'and exact effect keys; fulfill the requested statistical purpose, never downgrade it.')
+        from services.deep_research.comparison_reasoning import enabled as comparison_enabled,GUIDANCE as comparison_guidance
+        if comparison_enabled(record) and output_kind in {'paper_comparison','claim_verification'}:
+            prompt+='\n'+comparison_guidance
         template = prompt
         prompt, evidence_summaries = fit_evidence_prompt(evidence_summaries,
             lambda rows: template.replace(evidence_marker, json.dumps(rows, ensure_ascii=False, separators=(',', ':')), 1))
@@ -1369,6 +1372,7 @@ def make_verify_node(
             return semantic_check_fn(claims_to_check, evidence_list)
         
         from services.deep_research.final_coverage import audit_final_answer
+        from services.deep_research.comparison_reasoning import enabled as comparison_enabled
         from services.deep_research.coverage_repair import prepare_coverage_repair, merge_verified_revisions
         from services.deep_research.design_consistency import enforce_design_consistency
         saved = record.get('state', {})
@@ -1448,6 +1452,7 @@ def make_verify_node(
                         batch_state=saved.get('repairBatchState'), checkpoint=checkpoint_repair_batches,
                         current_budget=lambda: repo_update(run_id, lambda r: r, expected_revision=None).get('budget', {}),
                         invoke_request=invoke_repair,
+                        **({'comparison_reasoning':True} if comparison_enabled(record) else {}),
                         **({'fact_redraft':True,'source_aware_redraft':record['factRedraftContractVersion']==2,
                             'requirement_context':[
                             {key:o[key] for key in (('obligationId','question','completionCriteria','requiredSources')

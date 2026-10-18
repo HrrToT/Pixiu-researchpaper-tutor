@@ -551,12 +551,14 @@ class BudgetedSemanticChecker:
         metric_domains=None,
         research_question=None,
         isolate_factual_claims=False,
+        comparison_reasoning=False,
     ):
         self._invoke = llm_invoker
         self._run_id = run_id
         self._metric_domains = metric_domains
         self._research_question = research_question
         self._isolate_factual_claims = isolate_factual_claims
+        self._comparison_reasoning = comparison_reasoning
     
     def __call__(self, claims: list[dict], evidence: list[dict]) -> list[dict]:
         return self._check(claims, evidence, [], 'verify')
@@ -931,6 +933,13 @@ The dataAvailability object is an internal audit, not new experimental results.
                 # unrelated field-binding schemas for other roles.
                 if required_slots:
                     prompt += audit_prompt
+        comparison_enabled=(self._comparison_reasoning() if callable(self._comparison_reasoning)
+                            else self._comparison_reasoning) is True
+        if comparison_enabled:
+            from services.deep_research.comparison_reasoning import audit_scope,audit_prompt as comparison_audit_prompt
+            comparison_targets={c['claimId']:audit_scope(c,evidence) for c in claims if audit_scope(c,evidence)}
+            if comparison_targets:
+                prompt+=comparison_audit_prompt(comparison_targets)
         template = prompt
         source_keys = ('workId', 'versionId', 'sourceTitle')
         source_registry = {}
@@ -1024,6 +1033,13 @@ The dataAvailability object is an internal audit, not new experimental results.
                     verdict['status'] = 'failed'
                     verdict['reason'] = '请求容量限制导致引用证据未完整提供，不能确认该声明。'
                     continue
+                if comparison_enabled:
+                    from services.deep_research.comparison_reasoning import validate_audit
+                    comparison_errors=validate_audit(target,verdict,visible_evidence)
+                    if comparison_errors:
+                        verdict['status']='failed'
+                        verdict['reason']='比较条件或推断前提尚未核实：'+', '.join(comparison_errors)
+                        continue
                 missing = validate_design_audit(by_id[verdict['claimId']], verdict, [*claims, *proposal_context], metric_domains)
                 if missing:
                     verdict['status'] = 'failed'

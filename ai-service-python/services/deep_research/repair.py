@@ -15,7 +15,7 @@ from services.deep_research.repair_scope import repair_evidence_scope
 
 def _prepare_repair(report, verification, evidence, question, *, max_prompt_bytes=24000,
                     metric_domains=None, draft_context=(), prior_revisions=(),
-                    fact_redraft=False, requirement_context=(), source_aware_redraft=False):
+                    fact_redraft=False, requirement_context=(), source_aware_redraft=False,comparison_reasoning=False):
     rejected = {row['claimId']: row for row in verification.get('rejected', [])}
     originals = {row['claimId']: row for row in report.get('claims', []) if row.get('claimId') in rejected}
     if not originals:
@@ -224,6 +224,9 @@ in the paper. Maintain consistency with accepted definitions and complete requir
     prompt += '\n' + SCIENTIFIC_TERMINOLOGY
     if source_instruction:
         prompt += source_instruction
+    if comparison_reasoning and all(row.get('kind') in {'reported','inference'} for row in originals.values()):
+        from services.deep_research.comparison_reasoning import GUIDANCE
+        prompt+='\n'+GUIDANCE
     if any(row.get('designContractVersion') == 2 for row in originals.values()):
         from services.deep_research.execution_spec import execution_spec_contract_for_roles
         from services.deep_research.experimental_reasoning import DESIGN_ROLES, design_requirements
@@ -396,7 +399,7 @@ def factual_redraft_eligible(report):
 def repair_rejected(report, verification, evidence, question, invoke, parse, *,
                     max_prompt_bytes=24000, metric_domains=None, batch_state=None, checkpoint=None,
                     current_budget=None, invoke_request=None, fact_redraft=False, requirement_context=(),
-                    source_aware_redraft=False):
+                    source_aware_redraft=False,comparison_reasoning=False):
     """One bounded revision round, split before dispatch when evidence cannot fit.
 
     At most three requests share full sibling design definitions. Successful
@@ -413,7 +416,8 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
     identity = digest({'report': report, 'verification': verification,
                        'evidence': evidence, 'question': question, 'metricDomains': metric_domains,
                        **({'factRedraftContractVersion':2 if source_aware_redraft else 1,'requirementContext':requirement_context}
-                          if fact_redraft else {})})
+                          if fact_redraft else {}),
+                       **({'comparisonReasoningContractVersion':1} if comparison_reasoning else {})})
 
     def prepare(ids, results=(), byte_limit=None):
         ids = set(ids)
@@ -424,7 +428,8 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
         return _prepare_repair(report, subset, evidence, question,
             max_prompt_bytes=state['maxPromptBytes'] if byte_limit is None else byte_limit,
             metric_domains=metric_domains, draft_context=siblings, prior_revisions=results,
-            fact_redraft=fact_redraft, requirement_context=requirement_context,source_aware_redraft=source_aware_redraft)
+            fact_redraft=fact_redraft, requirement_context=requirement_context,source_aware_redraft=source_aware_redraft,
+            comparison_reasoning=comparison_reasoning)
 
     state = deepcopy(batch_state) if batch_state is not None else {
         'version': 1, 'inputDigest': identity, 'maxPromptBytes': max_prompt_bytes,

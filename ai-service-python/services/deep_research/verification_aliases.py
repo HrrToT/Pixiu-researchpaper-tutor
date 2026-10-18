@@ -40,6 +40,16 @@ def restore_verdict_evidence(verdict, reverse):
         binding = restored.get(key)
         if isinstance(binding, dict) and isinstance(binding.get('evidenceId'), str):
             binding['evidenceId'] = reverse.get(binding['evidenceId'], binding['evidenceId'])
+    audit=restored.get('comparisonAudit')
+    if isinstance(audit,dict):
+        rows=list(audit.get('premises',[])) if isinstance(audit.get('premises'),list) else []
+        differences=audit.get('differences')
+        for pair in differences if isinstance(differences,list) else []:
+            if isinstance(pair,dict):
+                rows.extend([pair.get('left'),pair.get('right')])
+        for row in rows:
+            if isinstance(row,dict) and isinstance(row.get('evidenceId'),str):
+                row['evidenceId']=reverse.get(row['evidenceId'],row['evidenceId'])
     return restored
 
 

@@ -342,13 +342,13 @@ class DeepResearchRepository:
                 if updated is None:
                     updated = current
                 for identity in ("runId", "taskId", "engineVersion", "contractVersion", "materialSnapshot",
-                                 "verificationInputContractVersion", "audienceRewriteContractVersion", "verificationFeedbackContractVersion", "factRedraftContractVersion", "requestGroundingContractVersion", "namedRowIdentityContractVersion",
+                                 "verificationInputContractVersion", "audienceRewriteContractVersion", "verificationFeedbackContractVersion", "factRedraftContractVersion", "requestGroundingContractVersion", "namedRowIdentityContractVersion", "comparisonReasoningContractVersion",
                                  "adaptiveResearchContractVersion", "clarificationContractVersion", "planEditContractVersion",
                                  "exactDiscoveryContractVersion", "planResumeContractVersion",
                                  "continuationContextContractVersion", "continuationContext", "dependencyContractVersion", "adaptiveExtractionContractVersion",
                                  "claimIsolationContractVersion", "structuredOutputContractVersion", "repairProgressContractVersion", "sourcePrecisionContractVersion", "extractionPriorityVersion", "absenceScopeContractVersion", "answerFormatContractVersion", "evidenceCoverageContractVersion", "runtimeSemanticContractVersion", "quantitySpellingContractVersion"):
                     if (updated.get(identity) != current.get(identity)
-                            or (identity in {'verificationInputContractVersion', 'audienceRewriteContractVersion', 'verificationFeedbackContractVersion', 'factRedraftContractVersion', 'requestGroundingContractVersion', 'namedRowIdentityContractVersion',
+                            or (identity in {'verificationInputContractVersion', 'audienceRewriteContractVersion', 'verificationFeedbackContractVersion', 'factRedraftContractVersion', 'requestGroundingContractVersion', 'namedRowIdentityContractVersion', 'comparisonReasoningContractVersion',
                                              'adaptiveResearchContractVersion', 'clarificationContractVersion', 'planEditContractVersion',
                                              'exactDiscoveryContractVersion', 'planResumeContractVersion',
                                              'continuationContextContractVersion', 'dependencyContractVersion',
