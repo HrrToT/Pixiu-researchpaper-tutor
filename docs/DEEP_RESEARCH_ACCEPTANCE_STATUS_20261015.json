@@ -44,11 +44,11 @@
       "overlap": true
     },
     "backendCurrentResearchReadingTables": {
-      "passed": 2944,
+      "passed": 2968,
       "warnings": 1,
-      "seconds": 165.95,
-      "sourceCommit": "e2133482",
-      "log": "tmp/pytest-dr181-final-full.log",
+      "seconds": 182.27,
+      "sourceCommit": "b942bd06",
+      "log": "tmp/pytest-dr183-full.log",
       "scope": "Research, reading, PDF tables and config; offline fixture providers."
     },
     "frontendDocumentNavigationFocused": {
@@ -1876,6 +1876,29 @@
       "modelCalls": 25,
       "settledTokens": 123444,
       "nextFix": "Research/repair allocation and operative acquisition frontier; executable experiment planning."
+    },
+    "extractionFrontier182": {
+      "sourceCommit": "fab469c6",
+      "promptVersion": "dr-v2.20261019.182",
+      "passed": 2966,
+      "seconds": 153.21,
+      "legacyFingerprintsMatched": 13,
+      "realCase": "H2F-v5",
+      "status": "failed",
+      "contentAccepted": false,
+      "independentCredit": 0,
+      "modelCalls": 10,
+      "settledTokens": 36967,
+      "elapsedSeconds": 141,
+      "proof": "deep-research-evidence/H2F-v5-diagnostic-20261019.json"
+    },
+    "boundedComparison183": {
+      "sourceCommit": "b942bd06",
+      "promptVersion": "dr-v2.20261019.183",
+      "legacyFingerprintsMatched": 14,
+      "runtimeLoaded": false,
+      "realCases": 0,
+      "proof": "deep-research-evidence/bounded-comparison-regression-20261019.json"
     }
   },
   "stages": [
@@ -2328,19 +2351,19 @@
     "Full novice study workflow",
     "Independent Edge recovery"
   ],
-  "currentProviderConstraint": "All further necessary bounded validations uniformly authorized. Selected diagnostic sequence:358 settled model calls/1436560 tokens; not global historical usage. Cost unknown; nine historical unknowns preserved, no blind retry.",
-  "currentDevelopmentMode": "Primary Codex only; Goal active, quota monitor paused by user. Pythone2133482/.181 loaded, Java27ac4beb, frontend123b0d29. H3F-v8 fixed beginner content accepted with no independent credit. H2F-v4 comparison and H5F-v4 executable experiment failed; originalDR0-DR5 incomplete, first-five0/5 and PR draft unchanged.",
+  "currentProviderConstraint": "All further necessary bounded validations uniformly authorized. Selected diagnostic sequence:368 settled model calls/1473527 tokens; not global historical usage. Cost unknown; nine historical unknowns preserved, no blind retry.",
+  "currentDevelopmentMode": "Primary Codex only; Goal active, quota monitor paused by user. Sourceb942bd06/.183 full offline passed but not loaded; runtimefab469c6/.182. Java27ac4beb, frontend123b0d29 unchanged. H2F-v5 generation truncated and failed, all calls settled. Fix criterion-level operative acquisition and executable experiment before new paid validation. OriginalDR0-DR5 incomplete, first-five0/5 and PR draft unchanged.",
   "loadedRuntime": {
-    "commit": "e2133482",
-    "promptVersion": "dr-v2.20261019.181",
+    "commit": "fab469c6",
+    "promptVersion": "dr-v2.20261019.182",
     "javaCommit": "27ac4beb",
     "frontendCommit": "123b0d29",
-    "callsAfterLatestCase": 4443,
+    "callsAfterLatestCase": 4482,
     "active": 0,
     "historicalPausedUnknown": 9,
     "tasks": 92,
-    "proof": "deep-research-evidence/runtime-load-dr181-operational-reading-20261019.json",
-    "postCasesProof": "deep-research-evidence/runtime-postcases-dr181-h5f-v4-20261019.json"
+    "proof": "deep-research-evidence/runtime-load-dr182-extraction-frontier-20261019.json",
+    "postCasesProof": "deep-research-evidence/runtime-postcases-dr182-h2f-v5-20261019.json"
   },
   "nextQualityWork": [
     "Use actual implementation-level training premises to complete both-paper input/temporal/training/FPS interpretation. Preserve evidence-limited judgments rather than assert undocumented condition differences; the actual450-character comparison now qualifies for bounded reasoning4.",

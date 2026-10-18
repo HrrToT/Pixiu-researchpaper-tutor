@@ -39,7 +39,7 @@
     "Actual readResults contain the 3DGStream NTC passage and Deformable implementation/training passage. Only B15/A17/B16 were model-extracted before exploration stopped. The sole joint-readiness request assessed inputs only, not all requirements.",
     "The initial draft incorrectly describes 3DGStream as having no explicit deformation field and overinfers offline training from joint optimization. Deformable B16 is its own method, and its 30000-step stabilization statement is literal evidence, not a static-baseline fabrication.",
     "Independent checks correctly reject unsupported negative source claims and training interpretations. Three received repairs add FPS or source-absence assertions outside their own target; none receives final repair verification before the budget stop.",
-    "The exploration guard protects 33333 normal-pool tokens in addition to the 50000 finalization reserve. After 8577 settled pre-synthesis tokens this leaves only 8090 tokens for a complete next reservation, causing early extraction stop under conservative full-envelope accounting. Do not interpret assessmentStatus=checked as every requested criterion checked.",
+    "The exploration guard protects 33216 normal-pool tokens in addition to the 50000 finalization reserve. After 8577 settled pre-synthesis tokens this leaves only 8207 tokens for a complete next reservation, causing early extraction stop under conservative full-envelope accounting. Do not interpret assessmentStatus=checked as every requested criterion checked.",
     "One fixed retired development submission; original scores and independent first-five 0/5 remain unchanged."
   ],
   "readOperativeSourcesButNotExtracted": true,
@@ -168,5 +168,9 @@
       "sha256": "aa5b13406cd085a0159751da307d9ddee056ee4ed8a5472b7290c11c66a853a9"
     }
   ],
-  "boundary": "One fixed retired development case, no automatic retry or independent credit. Original first-five scores and historical outcomes remain unchanged."
+  "boundary": "One fixed retired development case, no automatic retry or independent credit. Original first-five scores and historical outcomes remain unchanged.",
+  "diagnosticCorrection": {
+    "date": "2026-10-19",
+    "reason": "Headroom is min(24000+8192+1024, 50000*2//3)=33216, not33333. Pre-synthesis remaining exploration envelope is8207. Raw outputs, hashes and scores unchanged."
+  }
 }
