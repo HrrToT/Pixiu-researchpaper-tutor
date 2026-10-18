@@ -37,13 +37,13 @@ def make_evidence(source: dict, quote: str, original: str, *, location: dict,
             "verification": {"literal": "passed", "semantic": "unchecked"}}
 
 
-def _measurement_numbers(text: str) -> set[str]:
+def _measurement_numbers(text: str, *, word_counts=False) -> set[str]:
     # Dimensional method labels are not measured quantities. The semantic
     # verifier still checks their identity; standalone dimensions stay checked.
     text = re.sub(r'(?<![A-Za-z0-9_])[234]D(?:-?[A-Za-z]+)?(?![A-Za-z0-9_])', '', text)
     text = re.sub(r'(?<![A-Za-z])Table\s+\d+(?![A-Za-z0-9])|表\s*\d+', '', text, flags=re.I)
     from services.deep_research.measurement_numbers import measurement_numbers
-    return measurement_numbers(text)
+    return measurement_numbers(text, word_counts=word_counts)
 
 
 def _condition_values_text(value):
@@ -60,7 +60,7 @@ def _condition_values_text(value):
 
 def verify_claims(claims: list[dict], evidence: list[dict],
                   semantic_check: Callable[[list[dict], list[dict]], list[dict]] | None = None,
-                  *, absence_scope_version=0) -> dict:
+                  *, absence_scope_version=0, quantity_spelling_version=0) -> dict:
     """Only publish supported claims; a model cannot override literal checks.
 
     A semantic checker is a separately budgeted call provided by the graph.
@@ -71,9 +71,11 @@ def verify_claims(claims: list[dict], evidence: list[dict],
     if len(by_id) != len(evidence):
         raise ValueError("Duplicate evidence identity")
     candidates, rejected, seen = [], [], set()
+    word_counts = type(quantity_spelling_version) is int and quantity_spelling_version == 1
     for claim in claims:
         claim_id = claim.get("claimId")
         reason = ""
+        unsupported_numbers = set()
         if not claim_id or claim_id in seen:
             reason = "invalid_identity"
         seen.add(claim_id)
@@ -122,10 +124,11 @@ def verify_claims(claims: list[dict], evidence: list[dict],
                     if re.fullmatch(r'arxiv:\d{4}\.\d{4,5}(?:v\d+)?', identity, re.I):
                         pattern = r'(?<![A-Za-z0-9_])' + re.escape(identity) + r'(?![A-Za-z0-9_.])'
                         claim_text = re.sub(pattern, '', claim_text, flags=re.I)
-            numbers = _measurement_numbers(claim_text)
-            original_numbers = set().union(*(_measurement_numbers(item['quote']) for item in support))
+            numbers = _measurement_numbers(claim_text, word_counts=word_counts)
+            original_numbers = set().union(*(_measurement_numbers(item['quote'], word_counts=word_counts) for item in support))
             if not numbers <= original_numbers:
                 reason = reason or "numeric_mismatch"
+                unsupported_numbers = numbers - original_numbers
             from services.deep_research.table_bindings import validate_table_bindings
             reason = reason or validate_table_bindings(claim, support)
         if (claim.get('designRole') is not None or
@@ -187,7 +190,14 @@ def verify_claims(claims: list[dict], evidence: list[dict],
                                      'detail': ', '.join(errors)})
                     continue
         if reason:
-            rejected.append({"claimId": claim_id, "reason": reason})
+            diagnostic = {}
+            if reason == 'numeric_mismatch' and word_counts:
+                from services.deep_research.measurement_numbers import number_display
+                missing = sorted(unsupported_numbers)
+                diagnostic = {'missingReportedNumbers': missing,
+                    'detail': '本条引用原文未直接报告这些数值：' + '、'.join(number_display(n) for n in missing)
+                        + '。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。'}
+            rejected.append({"claimId": claim_id, "reason": reason, **diagnostic})
         else:
             candidates.append(dict(claim))
     proposals = {"suggestion", "proposal", "hypothesis"}

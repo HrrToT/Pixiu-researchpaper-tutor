@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import re
+from decimal import Decimal
 
 
 _SCALES = {'十': 1, '百': 2, '千': 3, '万': 4, '十万': 5, '百万': 6,
@@ -13,9 +14,48 @@ _NUMBER = re.compile(
 _VALID_NUMBER = re.compile(
     r'(?P<sign>[-+]?)(?P<integer>\d+|\d{1,3}(?:,\d{3})+)'
     r'(?:\.(?P<fraction>\d+))?(?:[eE](?P<exponent>[-+]?\d+))?\Z')
+_WORDS = dict(zip(('zero','one','two','three','four','five','six','seven','eight','nine','ten','eleven','twelve'), range(13)))
+_WORD_COUNTS = re.compile(r'(?<![A-Za-z0-9_])(?:(?P<sign>minus|negative|plus|positive|[-−+])\s*)?'
+    r'(?P<word>zero|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve)'
+    r'[\s\-‐‑–]+(?:dimensions?|dimensional|components?|channels?|outputs?|views?|frames?|images?|'
+    r'samples?|trials?|runs?|scenes?|layers?|stages?|phases?|steps?|seeds?|points?|iterations?|groups?)\b', re.I)
+_CHINESE_COUNTS = re.compile(r'(?<![A-Za-z0-9_第零一二两三四五六七八九十百千万亿点.])'
+    r'(?P<sign>[负正+＋\-−])?\s*(?P<word>[零一二两三四五六七八九十]{1,3})\s*'
+    r'(?:个|维|次|帧|层|组|张|条|篇|种|项)')
 
 
-def measurement_numbers(text: str) -> set[str]:
+def _chinese_count(word):
+    values = dict(zip('零一二两三四五六七八九', (0,1,2,2,3,4,5,6,7,8,9)))
+    if word in values: return values[word]
+    if word == '十': return 10
+    if word in ('十一', '十二'): return 10 + values[word[1]]
+    return None
+
+
+def _count_words(text):
+    for match in _WORD_COUNTS.finditer(text):
+        # Do not misread the tail of an unsupported compound (twenty-three)
+        # as three, or invent the number of the remaining dimensions.
+        if re.search(r'[A-Za-z][\-‐‑–]\s*$', text[:match.start('word')]): continue
+        value = _WORDS[match['word'].lower()]
+        yield -value if (match['sign'] or '').lower() in {'minus','negative','-','−'} else value
+    for match in _CHINESE_COUNTS.finditer(text):
+        value = _chinese_count(match['word'])
+        if value is not None:
+            yield -value if match['sign'] in {'负','-','−'} else value
+
+
+def number_display(identity):
+    """Readable exact check detail; do not expand hostile/large exponents."""
+    match = re.fullmatch(r'(-?\d+)e(-?\d+)([%x]?)', identity)
+    if not match: return identity
+    coefficient, exponent, unit = match.groups()
+    if len(coefficient) <= 24 and len(exponent) <= 3 and -6 <= int(exponent) <= 8:
+        return format(Decimal(coefficient + 'e' + exponent), 'f') + unit
+    return identity
+
+
+def measurement_numbers(text: str, *, word_counts=False) -> set[str]:
     """Compare decimal/scientific/grouped/Chinese-scale forms exactly.
 
     Store a coefficient and exponent, without float rounding, Decimal context
@@ -23,6 +63,8 @@ def measurement_numbers(text: str) -> set[str]:
     their pieces must not accidentally support an unrelated smaller number.
     Percentages and factors retain distinct identities. Other physical units
     and the relation between quantities still require semantic verification.
+    Opt-in count words recognize directly written zero-to-twelve quantities
+    beside count nouns. They do not infer remaining counts or evaluate sums.
     """
     numbers = set()
     for match in _NUMBER.finditer(text):
@@ -47,4 +89,7 @@ def measurement_numbers(text: str) -> set[str]:
         unit = match.group('unit')
         suffix = '%' if unit in {'%', '％'} else 'x' if unit in {'x', '×', '倍'} else ''
         numbers.add(f'{coefficient}e{exponent}{suffix}')
+    if word_counts is True:
+        for value in _count_words(text):
+            numbers.update(measurement_numbers(str(value)))
     return numbers
