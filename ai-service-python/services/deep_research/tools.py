@@ -554,6 +554,7 @@ class BudgetedSemanticChecker:
         comparison_reasoning=False,
         comparison_audit_version=1,
         audit_source_fields=False,
+        audit_target_fields=False,
         factual_scope=False,
     ):
         self._invoke = llm_invoker
@@ -564,6 +565,7 @@ class BudgetedSemanticChecker:
         self._comparison_reasoning = comparison_reasoning
         self._comparison_audit_version = comparison_audit_version
         self._audit_source_fields = audit_source_fields
+        self._audit_target_fields = audit_target_fields
         self._factual_scope = factual_scope
     
     def __call__(self, claims: list[dict], evidence: list[dict]) -> list[dict]:
@@ -956,9 +958,15 @@ The dataAvailability object is an internal audit, not new experimental results.
                 prompt+=scope_prompt(targets)
         field_bindings=(self._audit_source_fields() if callable(self._audit_source_fields)
                         else self._audit_source_fields) is True
-        if field_bindings and (scope_enabled or comparison_enabled):
+        target_bindings=(self._audit_target_fields() if callable(self._audit_target_fields)
+                         else self._audit_target_fields) is True
+        has_factual_targets=any(c.get('kind') in {'reported','inference'} for c in claims)
+        if field_bindings and (scope_enabled or comparison_enabled) and (has_factual_targets or not target_bindings):
             from services.deep_research.audit_source_fields import GUIDANCE as source_field_guidance
             prompt+='\n'+source_field_guidance
+        if target_bindings and scope_enabled and has_factual_targets:
+            from services.deep_research.audit_source_fields import TARGET_GUIDANCE
+            prompt+='\n'+TARGET_GUIDANCE
         template = prompt
         source_keys = ('workId', 'versionId', 'sourceTitle')
         source_registry = {}
@@ -1068,7 +1076,7 @@ The dataAvailability object is an internal audit, not new experimental results.
                 if scope_enabled:
                     from services.deep_research.factual_scope import validate_audit as validate_scope
                     scope_errors=validate_scope(target,verdict,visible_evidence,
-                        source_field_bindings=field_bindings)
+                        source_field_bindings=field_bindings,target_field_bindings=target_bindings)
                     if scope_errors:
                         verdict['status']='failed'
                         verdict['reason']='结论范围或必要条件尚未核实：'+', '.join(scope_errors)

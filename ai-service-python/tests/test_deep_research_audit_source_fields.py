@@ -104,14 +104,14 @@ def test_bounded_field_reference_does_not_establish_universal_or_exclusive_scope
     assert validate_scope(c,{'scopeAudit':a},[e],source_field_bindings=True)==['scope_stronger_than_evidence']
 
 
-@pytest.mark.parametrize('client_value',[0,True,None,'1',2])
+@pytest.mark.parametrize('client_value',[0,1,True,None,'2',3])
 def test_server_owns_frozen_field_binding_policy(tmp_path,client_value):
     repo=DeepResearchRepository(tmp_path/'r.sqlite3');repo.initialize()
     facade=ResearchFacade(repo,lambda **_:None,llm_client=object())
     try:
         run,_=facade.create({'workspaceTaskId':'t','operationKey':'op','question':'核查',
             'auditSourceFieldsContractVersion':client_value,'deferStart':True},start_async=False)
-        assert run['auditSourceFieldsContractVersion']==1 and enabled(run)
+        assert run['auditSourceFieldsContractVersion']==2 and enabled(run)
         with pytest.raises(ValueError,match='Immutable'):
             repo.update_run(run['runId'],lambda r:{**r,'auditSourceFieldsContractVersion':client_value})
         assert facade._build_semantic_checker(run['runId'],Mock())._audit_source_fields() is True

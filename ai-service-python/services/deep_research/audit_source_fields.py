@@ -22,7 +22,29 @@ own schemas remain unchanged. The paper quotations themselves must remain unchan
 
 def enabled(record):
     return (type(record.get('auditSourceFieldsContractVersion')) is int
-            and record['auditSourceFieldsContractVersion']==1)
+            and record['auditSourceFieldsContractVersion'] in (1,2))
+
+
+TARGET_GUIDANCE='''For scopeAudit's target binding, prefer "statementPath":["text"] instead
+of retyping statementExcerpt. A specific existing string condition may use
+["conditions","its exact key"]. Use exactly one of statementPath and statementExcerpt.
+This resolves the unchanged target assertion, NOT paper evidence. Judge the full actual
+text AND conditions, including their scope strength; source premises remain mandatory.
+No sourceContext, metadata, foreign target, missing field or computed path is permitted.'''
+
+
+def resolve_target(audit, claim):
+    if 'statementExcerpt' in audit:
+        return None
+    path=audit.get('statementPath')
+    if path==['text']:
+        value=claim.get('text')
+    elif (isinstance(path,list) and len(path)==2 and path[0]=='conditions'
+          and isinstance(path[1],str) and isinstance(claim.get('conditions'),dict)):
+        value=claim['conditions'].get(path[1])
+    else:
+        return None
+    return value if isinstance(value,str) and value.strip() else None
 
 
 def resolve(row, own, *, with_value=False):

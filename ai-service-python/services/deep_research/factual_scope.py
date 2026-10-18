@@ -63,7 +63,7 @@ and pass the weaker version. This audit is internal and grants no factual approv
 '''
 
 
-def validate_audit(claim,verdict,evidence, *, source_field_bindings=False):
+def validate_audit(claim,verdict,evidence, *, source_field_bindings=False,target_field_bindings=False):
     if claim.get('kind') not in {'reported','inference'}:
         return []
     audit=verdict.get('scopeAudit')
@@ -77,11 +77,16 @@ def validate_audit(claim,verdict,evidence, *, source_field_bindings=False):
     # Exclusive and universal assertions are different strengths, not substitutes.
     if audit['claimStrength']!='bounded' and audit['claimStrength']!=audit['evidenceStrength']:
         return ['scope_stronger_than_evidence']
-    excerpt=audit.get('statementExcerpt')
-    conditions=claim.get('conditions') or {}
-    fields=[claim.get('text',''),*(str(v) for v in conditions.values())] if isinstance(conditions,dict) else [claim.get('text','')]
-    if not isinstance(excerpt,str) or not excerpt.strip() or not any(excerpt in field for field in fields):
-        return ['scope_statement_not_bound']
+    if target_field_bindings and 'statementPath' in audit:
+        from services.deep_research.audit_source_fields import resolve_target
+        if resolve_target(audit,claim) is None:
+            return ['scope_statement_not_bound']
+    else:
+        excerpt=audit.get('statementExcerpt')
+        conditions=claim.get('conditions') or {}
+        fields=[claim.get('text',''),*(str(v) for v in conditions.values())] if isinstance(conditions,dict) else [claim.get('text','')]
+        if not isinstance(excerpt,str) or not excerpt.strip() or not any(excerpt in field for field in fields):
+            return ['scope_statement_not_bound']
     own={e['evidenceId']:e for e in evidence if e.get('evidenceId') in claim.get('evidenceRefs',[])}
     rows=audit.get('premises')
     if not isinstance(rows,list) or not 1 <= len(rows) <= 20:
@@ -93,7 +98,8 @@ def validate_audit(claim,verdict,evidence, *, source_field_bindings=False):
             if resolve(row,own) is None:
                 return ['scope_premises_not_bound']
             continue
-        ev=own.get(row.get('evidenceId')) if isinstance(row,dict) else None
+        identity=row.get('evidenceId') if isinstance(row,dict) else None
+        ev=own.get(identity) if isinstance(identity,str) else None
         quote=row.get('quote') if isinstance(row,dict) else None
         if not ev or not isinstance(quote,str) or not quote.strip():
             return ['scope_premises_not_bound']

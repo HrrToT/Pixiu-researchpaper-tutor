@@ -273,7 +273,7 @@ class ResearchFacade:
             "materials": materials,
             "materialSnapshot": material_snapshot,  # Immutable Java snapshot
             "contextMaterials": (material_snapshot or {}).get("contextMaterials", []) if isinstance(material_snapshot, dict) else [],
-            "promptVersion": "dr-v2.20261018.174",
+            "promptVersion": "dr-v2.20261018.175",
             "tableReferencesContractVersion": 1,
             "factualScopeContractVersion": 2,
             "factualReasoningContractVersion": 3,
@@ -293,7 +293,7 @@ class ResearchFacade:
             "answerFormatContractVersion": 1,
             "repairProgressContractVersion": 2,
             "reportPresentationContractVersion": 1,
-            "auditSourceFieldsContractVersion": 1,
+            "auditSourceFieldsContractVersion": 2,
             "structuredOutputContractVersion": 7,
             "claimIsolationContractVersion": 1,
             "dependencyContractVersion": 1,
@@ -305,7 +305,7 @@ class ResearchFacade:
             "planEditContractVersion": 1,
             "clarificationContractVersion": 1,
             "adaptiveResearchContractVersion": 1,
-            "audienceRewriteContractVersion": 2,
+            "audienceRewriteContractVersion": 3,
             "verificationInputContractVersion": 1,
             "workflowContractVersion": 4,
             "extractionPriorityVersion": 4,
@@ -1171,6 +1171,8 @@ class ResearchFacade:
             comparison_reasoning=lambda: comparison_enabled(self._repo.require_run(run_id)),
             comparison_audit_version=lambda: self._repo.require_run(run_id).get('comparisonReasoningContractVersion', 0),
             audit_source_fields=lambda: audit_fields_enabled(self._repo.require_run(run_id)),
+            audit_target_fields=lambda: type(self._repo.require_run(run_id).get('auditSourceFieldsContractVersion')) is int
+                and self._repo.require_run(run_id)['auditSourceFieldsContractVersion']==2,
             factual_scope=lambda: scope_enabled(self._repo.require_run(run_id)))
         return checker
     
