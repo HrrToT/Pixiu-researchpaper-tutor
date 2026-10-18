@@ -1302,7 +1302,11 @@ Orient losses before formulas, distinguish conditional/averaged effects and pape
                 lambda prompt, output: llm_invoke(run_id, 'synthesize_audience', prompt,
                     {'max_tokens': output, 'temperature': 0.0}), _safe_parse_json,
                 saved_state=current.get('state', {}).get('audienceRewrite'), checkpoint=checkpoint_audience,
-                can_start=has_time_for_rewrite(current))
+                can_start=has_time_for_rewrite(current),
+                **({'contract_version':2,'requirement_context':[
+                    {key:o[key] for key in ('obligationId','question','completionCriteria','requiredSources') if key in o}
+                    for item in current.get('state',{}).get('plan',[]) for o in item.get('obligations',[])]}
+                   if current.get('audienceRewriteContractVersion')==2 else {}))
         
         if output_kind == "experiment_design":
             # Compaction must not hide required settings back in metadata.

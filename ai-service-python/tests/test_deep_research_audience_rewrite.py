@@ -48,7 +48,7 @@ def test_short_beginner_answer_is_rewritten_once_without_changing_identity_or_co
         json.loads, saved_state=states[-1]) == result
 
 
-@pytest.mark.parametrize('version', [None, True, 0, 2, '1'])
+@pytest.mark.parametrize('version', [None, True, 0, 3, '1'])
 def test_legacy_or_invalid_contract_never_adds_a_beginner_call(version):
     report,_=fixture()
     assert not eligible({'audienceRewriteContractVersion':version,'question':'给新手解释'}, report, 'direction_survey')
@@ -202,7 +202,7 @@ def test_client_cannot_disable_or_expand_server_audience_contract(tmp_path):
     try:
         response,_=facade.create({'workspaceTaskId':'t','operationKey':'new','question':'给新手解释',
             'materials':[],'audienceRewriteContractVersion':0},start_async=False)
-        assert repo.require_run(response['runId'])['audienceRewriteContractVersion']==1
+        assert repo.require_run(response['runId'])['audienceRewriteContractVersion']==2
     finally: facade.shutdown()
 
 
