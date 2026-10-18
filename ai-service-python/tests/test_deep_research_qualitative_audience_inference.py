@@ -94,3 +94,38 @@ def test_pending_source_first3_cannot_be_retargeted_to_classification4():
         rewrite_for_beginner(report,evidence,'给新手解释',invoke,json.loads,contract_version=4,
             requirement_context=REQUIREMENTS,saved_state=states[-1])
     invoke.assert_not_called()
+
+
+def test_server_classifies_pure_why_without_an_optional_model_field_and_preserves_other_kinds():
+    report,evidence=fixture();report['claims'][1]['kind']='reported';states=[]
+    invoke=Mock(return_value=response(report))
+    result=rewrite_for_beginner(report,evidence,'给新手解释',invoke,json.loads,contract_version=5,
+        requirement_context=REQUIREMENTS,checkpoint=states.append)
+    assert [c['kind'] for c in result['claims']]==['inference','reported']
+    assert states[-1]['classificationChanges']==[{'claimId':'why','from':'reported','to':'inference'}]
+    assert all(c['evidenceRefs']==old['evidenceRefs'] for c,old in zip(result['claims'],report['claims']))
+    assert 'Server classification:' in invoke.call_args.args[0] and invoke.call_count==1
+    assert not verify_claims(result['claims'],evidence)['accepted']
+
+
+@pytest.mark.parametrize('text',['一百个高斯','一百次训练','上百组实验','三维向量','20 FPS'])
+def test_server_classification_cannot_launder_spelled_or_arabic_quantities(text):
+    report,evidence=fixture()
+    result=rewrite_for_beginner(report,evidence,'给新手解释',lambda *_:response(report,text=text),json.loads,
+        contract_version=5,requirement_context=REQUIREMENTS)
+    assert result==report
+    report['claims'][0]['text']=text
+    assert inference_candidates(report,REQUIREMENTS)==set()
+
+
+def test_server_classification_cannot_retarget_an_unknown_optional_classification_request():
+    report,evidence=fixture();states=[]
+    def unknown(*_):raise OSError('unknown')
+    with pytest.raises(OSError):
+        rewrite_for_beginner(report,evidence,'给新手解释',unknown,json.loads,contract_version=4,
+            requirement_context=REQUIREMENTS,checkpoint=states.append)
+    invoke=Mock()
+    with pytest.raises(DeepResearchError):
+        rewrite_for_beginner(report,evidence,'给新手解释',invoke,json.loads,contract_version=5,
+            requirement_context=REQUIREMENTS,saved_state=states[-1])
+    invoke.assert_not_called()
