@@ -3,6 +3,17 @@ from copy import deepcopy
 from services.deep_research.reporting import render_report, conversation_summary, verification_notice
 
 
+def test_generic_context_metadata_does_not_leak_but_all_condition_values_remain():
+    claim={'claimId':'c','text':'剪枝可能损失细节。','kind':'inference',
+        'conditions':{'context':'简单不透明度剪枝时','scope':'原文中的有限场景'}}
+    payload={'claims':[claim]};before=deepcopy(payload)
+    for text in [render_report(payload),conversation_summary([claim],'complete')]:
+        assert 'context：' not in text
+        assert '简单不透明度剪枝时；scope：原文中的有限场景' in text
+        assert '剪枝可能损失细节。' in text
+    assert payload==before
+
+
 def test_verification_notice_does_not_claim_factual_checks_for_proposals_or_empty_results():
     assert verification_notice([]) == ''
     assert verification_notice([{'kind': 'proposal'}]) == '假设与实验建议尚未经过实验验证。'

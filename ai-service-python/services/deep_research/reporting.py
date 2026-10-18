@@ -59,6 +59,14 @@ def source_access_summary(claims, evidence):
     return '本回答引用：' + '、'.join(labels) + '。'
 
 
+def display_conditions(conditions):
+    """The generic context wrapper is metadata; retain every condition value."""
+    if not isinstance(conditions, dict):
+        return ''
+    return '；'.join(str(value) if name == 'context' else f'{name}：{value}'
+                    for name,value in conditions.items())
+
+
 def render_report(payload):
     claims = {claim["claimId"]: claim for claim in payload.get("claims", []) if claim.get("claimId")}
     refs = list(dict.fromkeys(ref for claim in claims.values() for ref in claim.get("evidenceRefs", [])))
@@ -93,7 +101,7 @@ def render_report(payload):
             content.append(f"- {labels.get(claim.get('kind'), '')}{text} {citations}".rstrip())
             conditions = claim.get("conditions")
             if isinstance(conditions, dict) and conditions:
-                content.append("  适用条件：" + "；".join(f"{name}：{value}" for name, value in conditions.items()))
+                content.append("  适用条件：" + display_conditions(conditions))
         if content:
             lines.extend([f"## {section['title']}", "", *content, ""])
     if not claims:
@@ -164,7 +172,7 @@ def conversation_summary(claims, outcome, *, max_chars=500, evidence=None, outpu
         item = labels.get(claim.get("kind"), "") + text
         conditions = claim.get("conditions")
         if isinstance(conditions, dict) and conditions:
-            item += "（" + "；".join(f"{key}：{value}" for key, value in conditions.items()) + "）"
+            item += "（" + display_conditions(conditions) + "）"
         if length + len(item) + 2 > max_chars:
             continue
         parts.append(item)
