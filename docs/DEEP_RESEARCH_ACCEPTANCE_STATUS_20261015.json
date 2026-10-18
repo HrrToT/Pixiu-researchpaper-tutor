@@ -45,11 +45,11 @@
       "overlap": true
     },
     "backendCurrentResearchReadingTables": {
-      "passed": 2081,
+      "passed": 2123,
       "warnings": 1,
-      "seconds": 118.32,
-      "log": "tmp/pytest-dr128-full.log",
-      "sourceCommit": "74673c96",
+      "seconds": 110.19,
+      "log": "tmp/pytest-dr131-full.log",
+      "sourceCommit": "650ad55f",
       "scope": "Research, reading, PDF tables and config."
     },
     "frontendDocumentNavigationFocused": {
@@ -1480,6 +1480,94 @@
       },
       "additionalRows": 19,
       "boundary": "Read-only final check; no restart or provider call. Old paused identities preserved; added rows belong to the one confirmed D1-v16 attempt."
+    },
+    "methodDetailsAndNeutralPlan": {
+      "date": "2026-10-18",
+      "sourceCommit": "2ee36ac2",
+      "promptVersion": "dr-v2.20261018.130",
+      "componentCommits": {
+        "methodDetails": "5eab7f45",
+        "neutralPlanning": "2ee36ac2"
+      },
+      "contracts": {
+        "sourcePrecisionContractVersion": 1,
+        "structuredOutputContractVersion": 4
+      },
+      "checks": {
+        "passed": 2104,
+        "warnings": 1,
+        "seconds": 120.48,
+        "log": "tmp/pytest-dr130-full.log"
+      },
+      "behavior": [
+        "Mechanism/input/output queries reserve at most two existing source slots for concrete operation text and necessary preceding context. Source texts/IDs/locations are never concatenated or rewritten.",
+        "Candidates require the same owned paper and pinned index version, unique source/chunk identities, literal body component/query matches and operational language. Repeated paper headers do not count as component matches.",
+        "The best semantic hit and existing context pairs stay protected. Ambiguous/missing prerequisites skip the candidate; the result stays within the existing limit.",
+        "The existing bounded 400-document index cache is reused, live scope checked again for each call. No extra model, PDF fetch or query-rewrite request is introduced.",
+        "Server-owned immutable sourcePrecision contract 1 enables the new selector only for new runs; historical unmarked retrieval is unchanged.",
+        "Native JSON contract 4 adds neutral planning instructions and distinguishes unverified plan examples from source evidence in synthesis/compaction/repair. Earlier native versions retain their exact messages.",
+        "Every trusted system/framing remains within the existing 1024-token reservation. Candidate retrieval and trusted instructions do not establish factual or answer-completeness acceptance."
+      ],
+      "realIndexProbe": "method-detail-real-index-20261018.json",
+      "runtime": "runtime-load-dr130-source-precision-20261018.json",
+      "boundary": "A live retired-case diagnostic remains separate from independent acceptance. All original first failures and historical unknowns are retained.",
+      "realDiagnostic": {
+        "case": "H1F-v2",
+        "runId": "dr_run_07e8401470ac55f3881d9abdcc3b254f",
+        "evaluationUse": "retired-case diagnostic",
+        "independent": false,
+        "status": "completed",
+        "outcome": "complete",
+        "contentAccepted": false,
+        "modelCalls": 12,
+        "settledTokens": 36382,
+        "methodOutputCorrected": true,
+        "neutralCriteriaObserved": false
+      }
+    },
+    "requestedMeasurementSelection": {
+      "date": "2026-10-18",
+      "sourceCommit": "650ad55f",
+      "promptVersion": "dr-v2.20261018.131",
+      "sourcePrecisionContractVersion": 2,
+      "checks": {
+        "passed": 2123,
+        "warnings": 1,
+        "seconds": 110.19,
+        "log": "tmp/pytest-dr131-full.log"
+      },
+      "loaded": false,
+      "behavior": [
+        "Recognize exact values with explicit units, including equivalent notation/unit names; no unit conversion or numerical rounding.",
+        "Exclude identifier suffixes, fractions, ranges and partial thousands/exponent suffixes. Paper headers do not count as measurements.",
+        "Select up to two existing slots only from the owned pinned index, preserving source text, locations and required context; ambiguous context stays excluded.",
+        "Source precision version 1 keeps its exact old indexed behavior. New version 2 adds literal measurement selection and is immutable/server-owned."
+      ],
+      "realProbe": "requested-measurement-real-index-gap-20261018.json",
+      "boundary": "Offline implementation checks passed, but the original requested duration is absent from available index text. Full PDF reading is still needed; .131 is not loaded and H4F is not repeated."
+    },
+    "runtimePostcase130": {
+      "date": "2026-10-18",
+      "loadedCodeCommit": "2ee36ac2",
+      "promptVersion": "dr-v2.20261018.130",
+      "snapshot": {
+        "active": [],
+        "paused": [
+          "dr_run_4738564f5ff35157996a35068c62ed32",
+          "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+          "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+          "dr_run_86b3f181a5475e99aacca3dbf4370567",
+          "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+          "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+          "dr_run_e3521b1781825273b384a26a5edb8cdc",
+          "dr_run_e9c9dc916bef519092fad8b929b2448f",
+          "dr_run_ed10cc3347be552288079a9a588fddf5"
+        ],
+        "calls": 3482,
+        "ledgerSha256": "5d59ff3df8f4e304c5ae91b78de169c6f89c7e989943428fd7952b76af6142ac"
+      },
+      "additionalRows": 23,
+      "boundary": "Read-only post-diagnostic check; no restart/provider call. New .131 source is not deployed."
     }
   },
   "stages": [
@@ -1780,7 +1868,13 @@
       "manifest": "DEEP_RESEARCH_INDEPENDENT_CASES_20261018.json",
       "runId": "dr_run_8b35605449c15fd98026409a338a16e5",
       "state": "First original result failed content review; retired for generic repair-progress diagnosis.",
-      "proof": "deep-research-evidence/H1F-v1-first-review-20261018.json"
+      "proof": "deep-research-evidence/H1F-v1-first-review-20261018.json",
+      "latestDiagnostic": {
+        "case": "H1F-v2",
+        "runId": "dr_run_07e8401470ac55f3881d9abdcc3b254f",
+        "contentAccepted": false,
+        "proof": "deep-research-evidence/H1F-v2-diagnostic-20261018.json"
+      }
     },
     {
       "slot": "H2",
@@ -1803,8 +1897,9 @@
       "case": "H4F",
       "manifest": "DEEP_RESEARCH_INDEPENDENT_CASES_20261018.json",
       "runId": "dr_run_ee62d7b47eac52e2aa87a981085bbe16",
-      "state": "First original result reviewed, content gate failed. Not reused for tuning.",
-      "proof": "deep-research-evidence/H4F-v1-first-review-20261018.json"
+      "state": "First result failed; retired before generic literal-measurement retrieval diagnosis. Original preserved.",
+      "proof": "deep-research-evidence/H4F-v1-first-review-20261018.json",
+      "retirementProof": "deep-research-evidence/H4F-retirement-20261018.json"
     },
     {
       "slot": "H5",
@@ -1834,20 +1929,21 @@
     "Independent Edge recovery"
   ],
   "currentProviderConstraint": "User authorized all further required validations. D1-v9/v10/v11 each executed once and settled, with raw receipts retained. Historical nine unknown identities/reservations remain untouched; no same-case retry or attempt renaming bypass.",
-  "currentDevelopmentMode": "Primary Codex only, no Qoder. Uniform further validation authorized; quota monitor disabled by user. .128 loaded; DR0-DR5/PR remain incomplete/draft.",
+  "currentDevelopmentMode": "Primary Codex only; goal active after user continuation. Uniform further validation authorized; quota monitor disabled. .130 method-detail retrieval and neutral planning loaded; DR0-DR5 content acceptance open.",
   "loadedRuntime": {
-    "commit": "74673c96",
-    "promptVersion": "dr-v2.20261018.128",
+    "commit": "2ee36ac2",
+    "promptVersion": "dr-v2.20261018.130",
     "ready": true,
-    "callsPreserved": 3440,
+    "callsPreserved": 3459,
     "pausedUnknownRuns": 9,
-    "proof": "deep-research-evidence/runtime-load-dr128-purpose-20261018.json"
+    "proof": "deep-research-evidence/runtime-load-dr130-source-precision-20261018.json"
   },
   "nextQualityWork": [
-    "Improve neutral scientific planning, retrieval of precise method details, evidence-bounded limitation drafting and compact executable-design repair; validate only after a concrete change.",
-    "Retain all first independent failures. Replace retired cases before claiming new independent acceptance; do not count diagnostic repeats as holdout passes.",
-    "Keep all nine unknown records/reservations unchanged; D2/D3 same-case submissions still need actual outcome reconciliation.",
-    "Complete development/fresh content gates and real continuation quality. PR remains draft; user-waived legacy import/full novice workflow/independent Edge recovery stay waived."
+    "Implement bounded original-PDF supplementation when explicit requested values/units are absent from indexed text. Reuse LocalTaskRetriever.load_pages hash/scope/byte/page/process limits and caches; preserve source slots/identity and propagate scope/hash errors.",
+    "Improve first-batch extraction priority for requested literal measurements and necessary rationale (since/essential/failure reasoning). Preserve v2 behavior and freeze a new priority version; confirm real saved-source first batches before paid diagnostics.",
+    "Plan neutrality remains unproven: H1F-v2 ignored system guidance and added guessed examples. Ground or normalize AI requirements without rewriting human plan edits or breaking parent-reference context.",
+    "Fix false answer completeness and requested point format; H1F-v2 described addition but omitted its reason and displayed two rather than three requested points.",
+    "Complete original DR0-DR5 content, continuation, executable-design and fresh independent gates. H1F/H4F are retired; diagnostics never count as fresh passes. Keep all nine unknown records and reservations unchanged."
   ],
   "javaReaderRuntime": {
     "sourceCommit": "070ab1a",
@@ -1870,7 +1966,7 @@
     ]
   },
   "nextIndependentCasesManifest": "DEEP_RESEARCH_INDEPENDENT_CASES_20261018.json",
-  "nextIndependentCasesStatus": "H1F-H5F executed once under .126 and scored before reuse: 0 full content passes. H3F external discovery/fulltext path passed separately. H1F is retired after motivating the generic unchanged-fact guard; other first originals remain recorded.",
+  "nextIndependentCasesStatus": "First five original results are preserved, 0/5 full content passes. H1F retired for repair/method-detail diagnosis; H4F retired before exact requested-value retrieval diagnosis. H2F/H3F/H5F not reused for tuning.",
   "priorIndependentSlots": [
     [
       {
@@ -1919,5 +2015,11 @@
         "state": "offline network/failure/budget tests available; no claim of real Provider quality"
       }
     ]
-  ]
+  ],
+  "pendingRuntime": {
+    "commit": "650ad55f",
+    "promptVersion": "dr-v2.20261018.131",
+    "loaded": false,
+    "reason": "Original-PDF measurement supplementation remains to implement before the next diagnostic."
+  }
 }

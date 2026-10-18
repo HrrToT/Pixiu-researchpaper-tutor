@@ -125,3 +125,8 @@ Python ebcf570c（`.126`），可信消息契约2；旧契约1保留原身份。
 ## 2026-10-18 修订进展与比较目的加载
 
 Python 74673c96（`.128`），原生JSON契约3/修订进展契约1；旧运行规则保留。确认全部六个新验证运行已终态后重启一次，3,440条完整账本及9个历史未知暂停身份一致；没有追加Provider请求。`deep-research-evidence/runtime-load-dr128-purpose-20261018.json`。
+
+
+## 2026-10-18 方法细节与中性规划加载
+
+Python 2ee36ac2（`.130`），来源精度契约1/原生JSON契约4；旧运行保留原规则。确认无活动研究后重启一次，3,459条完整账本与9个历史未知暂停身份一致；RAG/GROBID健康。`deep-research-evidence/runtime-load-dr130-source-precision-20261018.json`。
