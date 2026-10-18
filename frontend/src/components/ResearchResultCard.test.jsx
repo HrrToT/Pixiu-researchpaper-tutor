@@ -61,6 +61,7 @@ describe('versioned research result', () => {
       plan: { revision: 2, items: [{ itemId: 'p', question: '核对实验条件' }] } }} />);
     expect(screen.getByRole('alert')).toHaveTextContent('上次调用结果未确认');
     fireEvent.click(screen.getByRole('button', { name: '详情' }));
+    fireEvent.click(screen.getByRole('tab', { name: '计划' }));
     expect(screen.getByText('核对实验条件')).toBeInTheDocument();
   });
   it('keeps progress compact and exposes only server-authorized actions', () => {
@@ -75,6 +76,7 @@ describe('versioned research result', () => {
     render(<ResearchResultCard {...props} />);
     const trigger = screen.getByRole('button', { name: '详情' });
     fireEvent.click(trigger);
+    fireEvent.click(screen.getByRole('tab', { name: '计划' }));
     expect(screen.getByText('区分两个因素')).toBeInTheDocument();
     fireEvent.keyDown(screen.getByRole('region', { name: '研究详情' }), { key: 'Escape' });
     expect(screen.queryByRole('region', { name: '研究详情' })).not.toBeInTheDocument();
@@ -222,6 +224,7 @@ describe('plan editor in paused state', () => {
         obligations: [{ obligationId: 'o1', question: '原检索问题', requiredSources: ['paper-b'] }] }] };
     render(<ResearchResultCard {...props} result={result} onAction={onAction} />);
     fireEvent.click(screen.getByRole('button', { name: '详情' }));
+    fireEvent.click(screen.getByRole('tab', { name: '计划' }));
     fireEvent.change(screen.getByDisplayValue('原问题'), { target: { value: '核对失败条件' } });
     fireEvent.click(screen.getByRole('button', { name: '提交修改' }));
     await waitFor(() => expect(onAction).toHaveBeenCalledWith('t', 'r', 'plan', expect.objectContaining({
@@ -236,6 +239,7 @@ describe('plan editor in paused state', () => {
     const onAction = vi.fn();
     render(<ResearchResultCard {...props} result={result} onAction={onAction} />);
     fireEvent.click(screen.getByRole('button', { name: '详情' }));
+    fireEvent.click(screen.getByRole('tab', { name: '计划' }));
     expect(screen.getByDisplayValue('核对实验条件')).toBeInTheDocument();
   });
 
@@ -248,6 +252,7 @@ describe('plan editor in paused state', () => {
         requiredSources: ['paper'], completionCriteria: criteria }] }] };
     render(<ResearchResultCard {...props} result={result} onAction={onAction} />);
     fireEvent.click(screen.getByRole('button', { name: '详情' }));
+    fireEvent.click(screen.getByRole('tab', { name: '计划' }));
     fireEvent.click(screen.getByText('回答要点'));
     fireEvent.change(screen.getByLabelText('回答要点 1.1.1'), { target: { value: '给出可复现的步骤' } });
     fireEvent.change(screen.getByLabelText('说明方式 1.1.1'), { target: { value: 'procedure' } });
@@ -267,6 +272,7 @@ describe('plan editor in paused state', () => {
       plan: { revision: 3, items: [{ itemId: 'p1', question: '核对实验条件', status: 'pending' }] } };
     render(<ResearchResultCard {...props} result={result} onAction={onAction} />);
     fireEvent.click(screen.getByRole('button', { name: '详情' }));
+    fireEvent.click(screen.getByRole('tab', { name: '计划' }));
     fireEvent.click(screen.getByRole('button', { name: '提交修改' }));
     await waitFor(() => expect(onAction).toHaveBeenCalledWith('t', 'r', 'plan', expect.objectContaining({
       expectedRunRevision: 4, planRevision: 3,

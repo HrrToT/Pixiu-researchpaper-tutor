@@ -105,8 +105,11 @@ export default function ResearchResultCard({ taskId, run, result, error, onActio
       {report && onOpenReport && <button type="button" onClick={() => onOpenReport(run, result)}><FileText size={14} />{result.outcome === 'partial' ? '查看已有结果' : '打开报告'}</button>}
       {['cancel', 'resume', 'continue', 'pause'].filter(action => actions.has(action)).map(action =>
         <button type="button" key={action} ref={action === 'continue' ? followupButton : undefined} disabled={busy || !onAction} onClick={() => action === 'continue' ? setFollowup(value => !value) : act(action)}>{action === 'continue' && completeFollowup ? '继续追问' : actionLabels[action]}</button>)}
-      <button type="button" ref={button} aria-expanded={details} onClick={() => setDetails(value => !value)}>
-        {details ? <ChevronUp size={14} /> : <ChevronDown size={14} />}{terminal ? `来源与详情${result.sourceCount ? ` (${result.sourceCount})` : ''}` : '详情'}
+      <button type="button" ref={button} aria-expanded={details} onClick={() => {
+        if (!details) setTab(terminal ? 'sources' : 'events');
+        setDetails(value => !value);
+      }}>
+        {details ? <ChevronUp size={14} /> : <ChevronDown size={14} />}{terminal ? '来源与详情' : '详情'}
       </button>
     </div>
     {followup && actions.has('continue') && <form className="research-followup" onSubmit={event => {

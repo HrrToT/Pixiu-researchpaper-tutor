@@ -1,0 +1,13 @@
+{
+  "date": "2026-10-18",
+  "change": "Completed results open sources by default; active results open actual execution events. Plan remains an explicit tab. Remove fragment count from the sources/details trigger because it can be mistaken for paper count.",
+  "validation": {
+    "frontendTests": 490,
+    "testFiles": 65,
+    "typecheck": "passed",
+    "build": "passed with existing chunk-size warning",
+    "liveBrowser": "D1-v26 sources/details trigger opened the selected materials tab without any model submission",
+    "screenshot": "docs/deep-research-evidence/result-card-sources-first-20261018.jpg"
+  },
+  "boundary": "Interaction validation only. This does not upgrade the underlying partial research result or independent content acceptance."
+}
