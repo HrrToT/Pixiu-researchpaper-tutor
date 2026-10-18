@@ -45,12 +45,12 @@
       "overlap": true
     },
     "backendCurrentResearchReadingTables": {
-      "passed": 2428,
+      "passed": 2451,
       "warnings": 1,
-      "seconds": 175.88,
-      "log": "tmp/pytest-dr154-full.log",
-      "sourceCommit": "a82f2b25",
-      "scope": "Research, reading, PDF tables, config and exact acceptance-receipt reconciliation; fixture providers."
+      "seconds": 211.88,
+      "sourceCommit": "9bd9e1fa",
+      "log": "tmp/pytest-dr156-full.log",
+      "scope": "Research, reading, PDF tables and config; fixture providers."
     },
     "frontendDocumentNavigationFocused": {
       "passed": 19,
@@ -1830,6 +1830,12 @@
       },
       "sourceCommit": "27ac4beb",
       "scope": "Four existing controller/read-projection/source test classes; isolated output and memory H2."
+    },
+    "readResponsivenessFocused": {
+      "passed": 38,
+      "seconds": 5.6,
+      "log": "tmp/pytest-dr156-read-focused.log",
+      "overlapsFullSuite": true
     }
   },
   "stages": [
@@ -2222,23 +2228,22 @@
     "Full novice study workflow",
     "Independent Edge recovery"
   ],
-  "currentProviderConstraint": "All further necessary bounded validations uniformly authorized. .151 two diagnostics used 22 calls/75035 tokens, D5-v4 used 9/33473; total this checkpoint sequence 31/108508 settled tokens. Every fixed case submitted once, no new unknown. D5-v2 is a definitive pre-child idempotency failure, sealed separately and freshly rechecked; nine provider unknowns remain unchanged.",
-  "currentDevelopmentMode": "Primary Codex only; goal active, quota monitor paused. Runtime stays .153 (27ac4beb), harness a82f2b25; exact receipt recovery and one new legacy-continuation product case verified. Original DR0-DR5 quality gates incomplete.",
+  "currentProviderConstraint": "All further necessary bounded validations uniformly authorized. .151 H1F-v10/D1-v20, D5-v4 and D5-v5 used 42 settled model calls/146918 tokens. Each case submitted once. Read-performance recheck uses GET only, no model resend. All nine historical provider unknowns unchanged; cost unknown.",
+  "currentDevelopmentMode": "Primary Codex only, goal active, quota monitor paused. Python source9bd9e1fa, model prompt .155; Java27ac4beb unchanged. Read-performance fix loaded and terminal D5-v5 GET recovered. Original DR0-DR5 content gates incomplete.",
   "loadedRuntime": {
-    "commit": "27ac4beb",
-    "promptVersion": "dr-v2.20261018.153",
+    "commit": "9bd9e1fa",
+    "promptVersion": "dr-v2.20261018.155",
     "ready": true,
-    "callsPreserved": 3747,
+    "callsPreserved": 3795,
     "pausedUnknownRuns": 9,
-    "proof": "deep-research-evidence/runtime-load-dr153-action-lookup-20261018.json"
+    "proof": "deep-research-evidence/runtime-load-dr156-read-responsiveness-20261018.json"
   },
   "nextQualityWork": [
-    "Pass each obligation requiredSources and explicit source identities into source-grounded factual redraft. Current generator context omits them, so a valid generic rewrite can silently drop the source-specific part and leave a hard coverage gap.",
-    "Improve joint evidence readiness for explanations/comparisons without confusing topical relevance, allowed materials, required sources and final factual approval. Never remove the hard source guard to convert D5-v4 into a pass.",
-    "Make novice factual generation omit optional derived counts and internal aliases; preserve qualitative answer points and independently verify revisions.",
-    "Complete D1 as a concise judgement with conditions and evidence limits, not a dense cell list.",
-    "Verify the frontend fresh-continuation path with current user-edited artifact context; D5-v4 only verifies legacy continuation preservation/reuse and has an empty artifactContext.",
-    "Complete original content/experiment/fresh independent gates. Original first-five full content remains 0/5; no transport/offline/self-verdict credit."
+    "Allow beginner factual edits to consolidate redundant conditions and remove optional unsupported derived details while preserving original audit, required points, identities and independent checks. Version1 saved requests remain frozen.",
+    "Distinguish demonstrated experimental differences from conditions not yet aligned. Two sources alone do not justify unconditional incomparability; D5-v5 remains below content criteria.",
+    "Complete D1 concise judgement/limits and experimental design content, with joint evidence reasoning instead of merely topical relevance.",
+    "Accept the frontend fresh-continuation binding to current user-edited parent context; legacy D5-v5 only proves preservation and evidence reuse.",
+    "Complete fresh independent quality gates. Original first-five full content remains0/5; no self-verdict/offline/transport credit."
   ],
   "javaReaderRuntime": {
     "sourceCommit": "070ab1a",
@@ -2376,5 +2381,35 @@
     "boundary": "Definitive pre-child failed action recognized via original-byte seal plus fresh authoritative GET every admission. All other prior runs still checked. Original receipt never rewritten, no provider unknown settled. One explicit new D5 child preserves data but is partial; no content or independent credit.",
     "contentAccepted": false,
     "independentCredit": 0
+  },
+  "sourceAwareRedraftCheckpoint": {
+    "sourceCommit": "1eea6ffa",
+    "contractVersion": 2,
+    "fullOfflinePassed": 2441,
+    "fullOfflineSeconds": 206.44,
+    "actualRequestProof": "deep-research-evidence/D5-v5-production-repair-replay-20261018.json",
+    "caseProof": "deep-research-evidence/D5-v5-diagnostic-20261018.json",
+    "machineOutcome": "complete",
+    "contentAccepted": false,
+    "independentCredit": 0
+  },
+  "readResponsivenessCheckpoint": {
+    "sourceCommit": "9bd9e1fa",
+    "proof": "deep-research-evidence/read-responsiveness-live-20261018.json",
+    "modelContractChanged": false,
+    "providerCalls": 0,
+    "ledgerRows": 3795,
+    "taskCount": 91,
+    "sequentialSeconds": {
+      "health": 0.047,
+      "pythonRun": 0.172,
+      "javaRun": 0.359
+    },
+    "concurrentSeconds": {
+      "health": 0.016,
+      "pythonRun": 0.281,
+      "javaRun": 0.453
+    },
+    "boundary": "Same local completed run, not a load benchmark. Fresh scope on each read and model send; no permission cache."
   }
 }

@@ -1,5 +1,7 @@
 # Deep Research 单实例备份、恢复与回退
 
+2026-10-18读取修复已加载：Python9bd9e1fa、提示`.155`，Java27ac4beb保持。每次结果查询统一检查实时快照，不逐片段重复检查；GET慢调用移出事件循环。加载/读取复核保持3,795条账本、9个历史未知、0活动；父数据保持，无模型重发。实际耗时见[只读复核](deep-research-evidence/read-responsiveness-live-20261018.json)。
+
 2026-10-18回执恢复检查点：harness `a82f2b25`，应用仍`.153`，未额外重启。验证入口可通过独立封条及实时GET识别精确的创建前幂等失败；原回执不改，其他未确认/未知仍阻止重发。D5-v4完成后3,770条账本、0活动、9个未知身份和91任务保持，父负载及旧对象不变。D5-v4仍partial，不算内容通过；详见[回归与边界](deep-research-evidence/exact-action-reconciliation-regression-20261018.json)。
 
 2026-10-18最新检查点：Python/Java `.153`，源码`27ac4beb`。Java包为`tmp/dr153-java-target/backend-java-0.0.1-SNAPSHOT.jar`，PID161948、官方校验JDK21、本机隐藏进程；H2备份`tmp/dr153-runtime-backup-20261018/academic_db.mv.db`。加载保护曾在旧PID退出窗口中止；后续已从确认停服状态仅启动一次，禁止再次运行旧停服脚本。完整91个任务、3,747条账本及9个未知暂停身份保持。只读动作回执API已实际验证，验证CLI恢复尚未接入，不能据此直接重试未知请求。当前内容尚未验收。证据：[运行时保留](deep-research-evidence/action-receipt-java-runtime-20261018.json)、[实际GET无写入](deep-research-evidence/action-receipt-live-api-20261018.json)。
