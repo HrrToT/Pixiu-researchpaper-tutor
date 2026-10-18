@@ -188,7 +188,7 @@ def test_extra_body_cannot_replace_native_messages_before_wire_send(tmp_path):
     assert not repo.list_calls('r')
 
 
-@pytest.mark.parametrize('version', [2, 5, 6])
+@pytest.mark.parametrize('version', [2, 5, 6,7])
 def test_native_format_cannot_bypass_budget_or_unknown_receipt(tmp_path, version):
     repo = repository(tmp_path, version=version, budget={'maxTokens': 1000})
     client = Mock()
@@ -211,14 +211,14 @@ def test_native_format_cannot_bypass_budget_or_unknown_receipt(tmp_path, version
     assert repo.require_run('r')['budget']['tokens'] > 0
 
 
-@pytest.mark.parametrize('replacement', [0, True, 1, 2, 3, 4, 5, '6', None])
+@pytest.mark.parametrize('replacement', [0, True, 1, 2, 3, 4, 5,6, '6', None])
 def test_native_json_contract_is_server_owned_and_immutable(tmp_path, replacement):
     repo = DeepResearchRepository(tmp_path/'r.sqlite3'); repo.initialize()
     facade = ResearchFacade(repo, lambda **_: None, llm_client=object())
     try:
         run, _ = facade.create({'workspaceTaskId': 't', 'operationKey': 'op', 'question': '核查主张',
             'deferStart': True, 'structuredOutputContractVersion': replacement}, start_async=False)
-        assert run['structuredOutputContractVersion'] == 6
+        assert run['structuredOutputContractVersion'] == 7
         with pytest.raises(ValueError, match='Immutable'):
             repo.update_run(run['runId'], lambda r: {**r, 'structuredOutputContractVersion': replacement})
     finally:

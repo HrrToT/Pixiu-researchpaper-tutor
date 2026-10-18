@@ -51,14 +51,14 @@ def test_scope_rule_is_opt_in_and_does_not_reinterpret_old_runs():
     check.assert_not_called()
 
 
-@pytest.mark.parametrize('replacement', [None, True, '2', 0, 1, 3])
+@pytest.mark.parametrize('replacement', [None, True, '2', 0, 1, 2])
 def test_server_scope_version_is_frozen_and_applies_to_both_verification_passes(tmp_path, replacement):
     repo = DeepResearchRepository(tmp_path / 'r.sqlite3'); repo.initialize()
     facade = ResearchFacade(repo, lambda **_: None, llm_client=object())
     try:
         run, _ = facade.create({'workspaceTaskId': 't', 'operationKey': 'o', 'question': '解释方法',
             'absenceScopeContractVersion': replacement, 'deferStart': True}, start_async=False)
-        assert run['absenceScopeContractVersion'] == 2
+        assert run['absenceScopeContractVersion'] == 3
         with pytest.raises(ValueError, match='Immutable'):
             repo.update_run(run['runId'], lambda r: {**r, 'absenceScopeContractVersion': replacement})
         claim, evidence = fixture('初始帧中不存在新物体。')

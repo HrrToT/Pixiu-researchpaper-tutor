@@ -10,6 +10,10 @@ EXPLICIT_ABSENCE = re.compile(r'\b(?:do|does|did) not\b|\bnot (?:report|evaluat|
 _PAPER = re.compile(r'论文|文中|作者|原文|摘要|\b(?:paper|authors?|article|abstract)\b', re.I)
 _SCOPED = re.compile(r'当前取得|本次检索|所读片段|选定片段|所选证据|当前片段|已取得(?:的)?片段'
     r'|\b(?:selected|retrieved) (?:passages|evidence)\b', re.I)
+_CURRENT_EVIDENCE_SUBJECT = re.compile(
+    r'(?:(?:现有|当前)(?:的)?(?:证据|材料|片段)|本次(?:取得|获得|检索|选定)?(?:的)?(?:证据|材料|片段))'
+    r'(?:中)?(?:尚|仍)?\s*$'
+    r'|\b(?:current|available|obtained) (?:evidence|passages|materials?)(?:\s+still)?\s*$', re.I)
 _ALIAS = re.compile(r'(?<![A-Za-z0-9_])(?:E|P)[1-9]\d*(?![A-Za-z0-9_])')
 _RAW_ID = re.compile(r'(?<![A-Za-z0-9_])ev_[0-9a-f]{64}(?![A-Za-z0-9_])')
 _PUBLICATION_OBJECT = re.compile(r'实验|评测|评估|测试|验证|证据|结果|配置|信息|报告'
@@ -61,7 +65,7 @@ def leaks_internal_reference(claim, support):
 
 
 def absence_not_established(claim, support, *, scope_version=0):
-    reporting_scope = type(scope_version) is int and scope_version == 2
+    reporting_scope = type(scope_version) is int and scope_version in (2,3)
     source_pattern = _SOURCE_REPORTING_ABSENCE if reporting_scope else EXPLICIT_ABSENCE
     explicit = any(source_pattern.search(item.get('quote', '')) for item in support)
     if explicit:
@@ -73,7 +77,11 @@ def absence_not_established(claim, support, *, scope_version=0):
                 prefix = sentence[:missing.start()]
                 papers = list(_PAPER.finditer(prefix))
                 scopes = list(_SCOPED.finditer(prefix))
-                if type(scope_version) is int and scope_version in (1, 2):
+                if type(scope_version) is int and scope_version==3:
+                    subject=_CURRENT_EVIDENCE_SUBJECT.search(prefix)
+                    if subject:
+                        scopes.append(subject)
+                if type(scope_version) is int and scope_version in (1, 2,3):
                     # This guard concerns missing research/reporting, not the
                     # method's negative premises (e.g. an object absent from
                     # the initial frame). Those still require semantic review.
