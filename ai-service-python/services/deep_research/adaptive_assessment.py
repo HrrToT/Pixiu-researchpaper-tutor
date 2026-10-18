@@ -120,7 +120,7 @@ def _verdicts(round_record):
     return found if len(found)==len(rows) else None
 
 
-def _validate_round(saved, known):
+def _validate_round(saved, known, *, candidate_identity=False):
     rows=saved.get('pairs'); request=saved.get('request')
     if (not isinstance(rows,list) or len(rows)>20 or any(not isinstance(r,dict)
             or not isinstance(r.get('key'),str) or r.get('pairId')!=f'R{i+1}' for i,r in enumerate(rows))
@@ -129,6 +129,15 @@ def _validate_round(saved, known):
             or request.get('prompt')!=_prompt(rows) or len(request['prompt'].encode('utf8'))>24000
             or saved.get('requestDigest')!=digest(request)):
         raise DeepResearchError('invalid_assessment_state','保存的覆盖评估请求无效，不能重新发送。')
+    if candidate_identity:
+        identities = saved.get('candidateEvidenceIds')
+        if (not isinstance(identities, list)
+                or any(not isinstance(key, str) or not key or len(key)>256 for key in identities)
+                or len(identities)!=len(set(identities))
+                or saved.get('candidateEvidenceDigest')!=digest(identities)
+                or any(not isinstance(row.get('evidenceId'), str) for row in rows)
+                or not {row['evidenceId'] for row in rows} <= set(identities)):
+            raise DeepResearchError('invalid_assessment_state','保存的覆盖评估候选身份无效，不能重新发送。')
     for row in rows:
         if row['key'] in known and {k:v for k,v in row.items() if k!='pairId'}!=known[row['key']]:
             raise DeepResearchError('invalid_assessment_state','保存的覆盖评估来源与当前依据不一致。')
@@ -146,9 +155,20 @@ def _unfulfilled_pairs(pairs, proofs, obligations, required):
                                       for source in targets(row))]
 
 
+def _prioritize_new_pairs(candidates, rounds, evidence):
+    """Rank hints only; keep every authorized pair for independent judgment."""
+    prior_pool = {key for saved in rounds.values() for key in saved['candidateEvidenceIds']}
+    routed = {(row['evidenceId'], oid) for row in evidence for oid in row.get('obligationIds', [])}
+    return sorted(candidates, key=lambda row: (row['evidenceId'] in prior_pool,
+        (row['evidenceId'], row['obligationId']) not in routed))
+
+
 def assess(state,record,update,invoke,coverage_gaps):
     from services.deep_research.evidence_requirements import enabled as requirements_enabled, criteria
     requirement_mode = requirements_enabled(record)
+    version = record.get('evidenceCoverageContractVersion')
+    reuse_fulfilled = type(version) is int and version in (2, 3)
+    prioritize_new = type(version) is int and version == 3
     run_id=state['run_id']; domain=record.get('state',{}); plan=domain.get('plan',[])
     obligations={o['obligationId']:o for item in plan for o in item.get('obligations',[])}
     required=[m.get('materialId','') for m in record.get('materials',[])]
@@ -168,7 +188,7 @@ def assess(state,record,update,invoke,coverage_gaps):
     for saved in rounds.values():
         if not isinstance(saved,dict) or saved.get('status') not in {'pending','received','skipped'}:
             raise DeepResearchError('invalid_assessment_state','保存的覆盖评估状态无效。')
-        _validate_round(saved,known)
+        _validate_round(saved,known,candidate_identity=prioritize_new)
         if saved['status']=='received':
             verdicts=_verdicts(saved)
             attempted.update(r['key'] for r in saved['pairs'])
@@ -187,8 +207,10 @@ def assess(state,record,update,invoke,coverage_gaps):
         update(run_id,lambda r:{**r,'state':{**r.get('state',{}),'adaptiveAssessment':deepcopy(journal)}},expected_revision=None)
     if current is None:
         pending_pairs = (_unfulfilled_pairs(pairs, proofs, obligations, required)
-            if type(record.get('evidenceCoverageContractVersion')) is int and record['evidenceCoverageContractVersion'] == 2 else pairs)
+            if reuse_fulfilled else pairs)
         candidates=[r for r in pending_pairs if r['key'] not in attempted]
+        if prioritize_new:
+            candidates = _prioritize_new_pairs(candidates, rounds, domain.get('evidence', []))
         candidates=balanced_sample(candidates,lambda r:(r['sourceWorkId'],r['obligationId']),len(candidates))
         selected=[]; cap=_input_limit(record.get('budget',{}))
         for row in candidates:
@@ -198,11 +220,14 @@ def assess(state,record,update,invoke,coverage_gaps):
         request={'prompt':_prompt(selected),'outputTokens':OUTPUT_TOKENS}
         current={'inputDigest':identity,'status':'pending','pairs':selected,'request':request,
                  'requestDigest':digest(request)}
+        if prioritize_new:
+            pool = sorted({row['evidenceId'] for row in pairs})
+            current.update(candidateEvidenceIds=pool, candidateEvidenceDigest=digest(pool))
         if not selected or invoke is None:
             current.update(status='skipped',reason='no_unchecked_pairs' if not candidates else 'budget_or_capacity' if invoke else 'unavailable')
         rounds[round_key]=current; save()
     if current['status']=='pending':
-        _validate_round(current,known)
+        _validate_round(current,known,candidate_identity=prioritize_new)
         request=current['request']
         try:
             result=invoke(run_id,'assess_relevance',request['prompt'],{'max_tokens':OUTPUT_TOKENS,'temperature':0.0})
@@ -253,7 +278,7 @@ def assess(state,record,update,invoke,coverage_gaps):
         gaps=[{'obligationId':oid,'question':o['question'],'missingEvidence':'尚未取得可用文献','checked':False} for oid,o in obligations.items()]
     count=state.get('requery_count',0); maximum=4 if record.get('budget',{}).get('profile')=='extended' else 2
     pending_pairs = (_unfulfilled_pairs(pairs, proofs, obligations, required)
-        if type(record.get('evidenceCoverageContractVersion')) is int and record['evidenceCoverageContractVersion'] == 2 else pairs)
+        if reuse_fulfilled else pairs)
     unseen=any(r['key'] not in attempted for r in pending_pairs)
     stop=''
     if state.get('budget_exhausted'): stop='budget_exhausted'

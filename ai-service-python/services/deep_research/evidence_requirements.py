@@ -10,7 +10,7 @@ _EXAMPLE = re.compile(r'[（(]\s*(?:例如|如|e\.g\.|such as)\s*[^（）()]*[�
 
 
 def enabled(record):
-    return type(record.get('evidenceCoverageContractVersion')) is int and record['evidenceCoverageContractVersion'] in (1, 2)
+    return type(record.get('evidenceCoverageContractVersion')) is int and record['evidenceCoverageContractVersion'] in (1, 2, 3)
 
 
 def criteria(obligation):

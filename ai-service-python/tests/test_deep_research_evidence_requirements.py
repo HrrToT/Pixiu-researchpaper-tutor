@@ -222,14 +222,14 @@ def test_literal_aspects_preserve_parenthesized_lists_and_decimal_values():
         '预测什么变化（如坐标，旋转）', '怎样在1.2秒内利用前一帧表示']
 
 
-@pytest.mark.parametrize('replacement', [None, True, '2', 0, 1])
+@pytest.mark.parametrize('replacement', [None, True, '3', 0, 1, 2])
 def test_requirement_coverage_contract_is_server_owned_and_immutable(tmp_path, replacement):
     repo = DeepResearchRepository(tmp_path / 'server.sqlite3'); repo.initialize()
     facade = ResearchFacade(repo, lambda **_: None, llm_client=object())
     try:
         run, _ = facade.create({'workspaceTaskId': 't', 'operationKey': 'o', 'question': '解释输入与输出',
             'deferStart': True, 'evidenceCoverageContractVersion': replacement}, start_async=False)
-        assert run['evidenceCoverageContractVersion'] == 2
+        assert run['evidenceCoverageContractVersion'] == 3
         with pytest.raises(ValueError, match='Immutable'):
             repo.update_run(run['runId'], lambda r: {**r, 'evidenceCoverageContractVersion': replacement})
     finally: facade.shutdown()
