@@ -45,11 +45,11 @@
       "overlap": true
     },
     "backendCurrentResearchReadingTables": {
-      "passed": 2451,
+      "passed": 2475,
       "warnings": 1,
-      "seconds": 211.88,
-      "sourceCommit": "9bd9e1fa",
-      "log": "tmp/pytest-dr156-full.log",
+      "seconds": 178.1,
+      "sourceCommit": "ea10273c",
+      "log": "tmp/pytest-dr157-full.log",
       "scope": "Research, reading, PDF tables and config; fixture providers."
     },
     "frontendDocumentNavigationFocused": {
@@ -1836,6 +1836,12 @@
       "seconds": 5.6,
       "log": "tmp/pytest-dr156-read-focused.log",
       "overlapsFullSuite": true
+    },
+    "beginnerConditionsFocused": {
+      "passed": 95,
+      "seconds": 5.32,
+      "log": "tmp/pytest-dr157-beginner-focused-final.log",
+      "overlapsFullSuite": true
     }
   },
   "stages": [
@@ -2228,22 +2234,23 @@
     "Full novice study workflow",
     "Independent Edge recovery"
   ],
-  "currentProviderConstraint": "All further necessary bounded validations uniformly authorized. .151 H1F-v10/D1-v20, D5-v4 and D5-v5 used 42 settled model calls/146918 tokens. Each case submitted once. Read-performance recheck uses GET only, no model resend. All nine historical provider unknowns unchanged; cost unknown.",
-  "currentDevelopmentMode": "Primary Codex only, goal active, quota monitor paused. Python source9bd9e1fa, model prompt .155; Java27ac4beb unchanged. Read-performance fix loaded and terminal D5-v5 GET recovered. Original DR0-DR5 content gates incomplete.",
+  "currentProviderConstraint": "All further necessary bounded validations uniformly authorized. .151 H1F-v10/D1-v20, D5-v4/D5-v5 and H1F-v11 used55 settled calls/189414 tokens. Each case submitted once, no new unknown. Old nine provider unknown identities preserved, costs unknown.",
+  "currentDevelopmentMode": "Primary Codex only; goal active, quota monitor paused. Python ea10273c/.157 loaded; Java27ac4beb unchanged. H1F-v11 development content accepted, zero independent credit. Original DR0-DR5 gates remain incomplete.",
   "loadedRuntime": {
-    "commit": "9bd9e1fa",
-    "promptVersion": "dr-v2.20261018.155",
+    "commit": "ea10273c",
+    "promptVersion": "dr-v2.20261018.157",
     "ready": true,
-    "callsPreserved": 3795,
+    "callsPreservedAtLoad": 3795,
+    "callsAfterLatestCase": 3822,
     "pausedUnknownRuns": 9,
-    "proof": "deep-research-evidence/runtime-load-dr156-read-responsiveness-20261018.json"
+    "proof": "deep-research-evidence/runtime-load-dr157-beginner-conditions-20261018.json"
   },
   "nextQualityWork": [
-    "Allow beginner factual edits to consolidate redundant conditions and remove optional unsupported derived details while preserving original audit, required points, identities and independent checks. Version1 saved requests remain frozen.",
-    "Distinguish demonstrated experimental differences from conditions not yet aligned. Two sources alone do not justify unconditional incomparability; D5-v5 remains below content criteria.",
-    "Complete D1 concise judgement/limits and experimental design content, with joint evidence reasoning instead of merely topical relevance.",
-    "Accept the frontend fresh-continuation binding to current user-edited parent context; legacy D5-v5 only proves preservation and evidence reuse.",
-    "Complete fresh independent quality gates. Original first-five full content remains0/5; no self-verdict/offline/transport credit."
+    "Distinguish demonstrated experimental differences from conditions not yet aligned; D5-v5 still fails full content criteria despite two-source machine-complete output.",
+    "Complete D1 concise judgement/limits and experimental-design content, with joint source-premise reasoning and independent checks.",
+    "Verify frontend fresh-continuation binding to current user-edited parent context; legacy D5-v5 proves preservation/evidence reuse only.",
+    "Use the accepted H1F-v11 novice case as a development regression, then complete distinct fresh independent quality gates. Original first-five full content remains0/5.",
+    "Keep result-first compact UX, actual usage reporting and unknown-call recovery boundaries; do not let diagnostic controls crowd the user interface."
   ],
   "javaReaderRuntime": {
     "sourceCommit": "070ab1a",
@@ -2411,5 +2418,24 @@
       "javaRun": 0.453
     },
     "boundary": "Same local completed run, not a load benchmark. Fresh scope on each read and model send; no permission cache."
+  },
+  "beginnerConditionsCheckpoint": {
+    "sourceCommit": "ea10273c",
+    "contractVersion": 2,
+    "regressionProof": "deep-research-evidence/beginner-conditions-regression-20261018.json",
+    "legacyActualRequestProof": "deep-research-evidence/beginner-conditions-real-input-replay-20261018.json",
+    "newCaseProof": "deep-research-evidence/H1F-v11-diagnostic-20261018.json",
+    "contentAccepted": true,
+    "evaluationUse": "retired development case",
+    "independentCredit": 0,
+    "modelCalls": 13,
+    "settledTokens": 42496,
+    "answerCharacters": 182,
+    "oldObjectsAndLedgerPreserved": true,
+    "tasks": 91,
+    "callRows": 3822,
+    "activeResearch": 0,
+    "historicalUnknowns": 9,
+    "boundary": "Only this fixed retired novice case meets its frozen criteria. D5-v5 and original independent first-five outcomes are not upgraded."
   }
 }

@@ -1,5 +1,7 @@
 # Deep Research 单实例备份、恢复与回退
 
+2026-10-18最新加载：Python ea10273c / `.157`，Java27ac4beb。加载时3,795条账本及9个未知保持；H1F-v11后3,822条、0活动、91任务，全部旧对象保持。新手契约2只在新运行启用；旧待发请求和已结算请求不改写，未知继续暂停。详见[加载](deep-research-evidence/runtime-load-dr157-beginner-conditions-20261018.json)、[真实开发案例](deep-research-evidence/H1F-v11-diagnostic-20261018.json)。
+
 2026-10-18读取修复已加载：Python9bd9e1fa、提示`.155`，Java27ac4beb保持。每次结果查询统一检查实时快照，不逐片段重复检查；GET慢调用移出事件循环。加载/读取复核保持3,795条账本、9个历史未知、0活动；父数据保持，无模型重发。实际耗时见[只读复核](deep-research-evidence/read-responsiveness-live-20261018.json)。
 
 2026-10-18回执恢复检查点：harness `a82f2b25`，应用仍`.153`，未额外重启。验证入口可通过独立封条及实时GET识别精确的创建前幂等失败；原回执不改，其他未确认/未知仍阻止重发。D5-v4完成后3,770条账本、0活动、9个未知身份和91任务保持，父负载及旧对象不变。D5-v4仍partial，不算内容通过；详见[回归与边界](deep-research-evidence/exact-action-reconciliation-regression-20261018.json)。
