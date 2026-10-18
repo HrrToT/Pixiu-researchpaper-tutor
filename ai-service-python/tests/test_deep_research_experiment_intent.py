@@ -78,11 +78,37 @@ def test_experiment_policy_is_server_owned_and_frozen(tmp_path):
     try:
         r,_=facade.create({'workspaceTaskId':'t','operationKey':'o','question':'设计实验',
             'experimentIntentContractVersion':0},start_async=False)
-        assert enabled(r) and r['experimentIntentContractVersion']==1
-        for value in [True,0,None,2]:
+        assert enabled(r) and r['experimentIntentContractVersion']==2
+        for value in [True,0,None,1]:
             with pytest.raises(ValueError,match='Immutable'):
                 repo.update_run(r['runId'],lambda old:{**old,'experimentIntentContractVersion':value})
     finally:facade.shutdown()
+
+
+def test_v2_shared_definitions_are_checked_without_requiring_repeated_thresholds():
+    report,_,evidence=inputs();invoke=Mock(return_value={'content':json.dumps([
+        {'claimId':'h','status':'failed','reason':'No concrete metric anywhere.'}])})
+    checker=BudgetedSemanticChecker(invoke,'r',research_question='描述性抖动比较',experiment_intent_review=2)
+    assert checker([report['claims'][0]],evidence)[0]['status']=='failed'
+    prompt=invoke.call_args.kwargs['prompt']
+    assert 'need not be copied into every hypothesis/limits paragraph' in prompt
+    old=Mock(return_value={'content':json.dumps([
+        {'claimId':'h','status':'failed','reason':'No concrete metric anywhere.'}])})
+    BudgetedSemanticChecker(old,'r',experiment_intent_review=True)([report['claims'][0]],evidence)
+    assert 'need not be copied' not in old.call_args.kwargs['prompt']
+
+
+def test_pending_v1_experiment_cannot_be_retargeted_to_coupled_v2():
+    report,verification,evidence=inputs();states=[]
+    def unknown(_):raise OSError('unknown')
+    with pytest.raises(OSError):
+        repair_rejected(report,verification,evidence,'描述性比较',unknown,json.loads,
+            experimental_intent=True,checkpoint=states.append)
+    no_send=Mock()
+    with pytest.raises(DeepResearchError):
+        repair_rejected(report,verification,evidence,'描述性比较',no_send,json.loads,
+            experimental_intent=2,batch_state=states[-1])
+    no_send.assert_not_called()
 
 
 def test_unrelated_factorial_reference_is_only_omitted_for_an_explicit_single_toggle_request():

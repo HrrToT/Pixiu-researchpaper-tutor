@@ -45,6 +45,16 @@ def test_scheduler_keeps_all_hypotheses_and_analyses_atomic_and_each_target_once
     assert sorted(cid for group in groups for cid in group) == sorted(c['claimId'] for c in report['claims'])
 
 
+def test_new_policy_couples_metrics_with_scientific_decisions_and_keeps_initialization_pair():
+    claims=[{'claimId':role,'designRole':role} for role in
+            ('data','metrics','hypothesis','analysis','limits','groups','controls','steps')]
+    claims[-1].update(workflowContractVersion=4,executionSpec={'refs':{'controls':'controls'}})
+    assert split_repair_targets(claims)==[
+        ['data','metrics'],['hypothesis','analysis','limits'],['groups','controls','steps']]
+    assert split_repair_targets(claims,scientific_metrics=True)==[
+        ['data'],['metrics','hypothesis','analysis','limits'],['groups','controls','steps']]
+
+
 def test_limits_share_scientific_batch_without_displacing_canonical_initialization_pair():
     roles = [('data', 'data'), ('budget', 'budget'), ('h', 'hypothesis'),
              ('a', 'analysis'), ('groups', 'groups'), ('controls', 'controls'),

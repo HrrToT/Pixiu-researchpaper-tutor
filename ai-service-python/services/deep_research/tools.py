@@ -752,11 +752,13 @@ Do not require an unexecuted experiment to have results. Do not judge context cl
         from services.deep_research.synthesis import SCIENTIFIC_TERMINOLOGY
         prompt += '\n' + SCIENTIFIC_TERMINOLOGY
         question = self._research_question() if callable(self._research_question) else self._research_question
-        experiment_intent = (self._experiment_intent_review() if callable(self._experiment_intent_review)
-                             else self._experiment_intent_review) is True
+        experiment_policy = (self._experiment_intent_review() if callable(self._experiment_intent_review)
+                             else self._experiment_intent_review)
+        experiment_intent = experiment_policy is True or (type(experiment_policy) is int and experiment_policy in (1,2))
         if experiment_intent and all(c.get('kind') in {'proposal','suggestion','hypothesis'} for c in claims):
             from services.deep_research.experiment_intent import guidance as experiment_guidance
-            prompt += '\n'+experiment_guidance(question,{c.get('designRole') for c in claims})
+            prompt += '\n'+experiment_guidance(question,{c.get('designRole') for c in claims},
+                policy_version=2 if type(experiment_policy) is int and experiment_policy==2 else 1)
         if isinstance(question, str) and question.strip():
             prompt += '\nOriginal research question (user objective, not source evidence):\n' + json.dumps(question, ensure_ascii=False)
             prompt += ('\nCheck that each target fulfills its role in answering this actual objective. '

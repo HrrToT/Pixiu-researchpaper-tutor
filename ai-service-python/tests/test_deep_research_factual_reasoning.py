@@ -11,7 +11,7 @@ from services.deep_research.runtime import research_model_options
 def test_only_new_short_factual_answers_choose_reasoning(kind):
     record={'factualReasoningContractVersion':1}
     assert request_options(record,'给出判断，300字以内。',kind)=={OPTION:True}
-    for value in [None,True,False,0,4,'1']:
+    for value in [None,True,False,0,5,'1']:
         assert request_options({'factualReasoningContractVersion':value},'300字以内',kind)=={}
     for question in ['详细说明','301字以内','0字以内']:
         assert request_options(record,question,kind)=={}
@@ -79,7 +79,7 @@ def test_policy_is_server_owned_immutable_and_not_client_selected(tmp_path,repla
     try:
         p,_=facade.create({'workspaceTaskId':'t','operationKey':'k','question':'200字以内',
             'deferStart':True,'factualReasoningContractVersion':replacement},start_async=False)
-        assert p['factualReasoningContractVersion']==3
+        assert p['factualReasoningContractVersion']==4
         with pytest.raises(ValueError,match='Immutable'):
             repo.update_run(p['runId'],lambda r:{**r,'factualReasoningContractVersion':replacement})
     finally: facade.shutdown()
@@ -108,3 +108,25 @@ def test_v3_changes_only_short_factual_synthesis_effort_with_same_output_and_dir
     assert research_model_options('repair_claims',{**new,'_repair_output_limit':4096})==research_model_options('repair_claims',{**old,'_repair_output_limit':4096})
     assert HIGH_SYNTHESIS_OPTION not in new_synth
     assert request_options({'factualReasoningContractVersion':3},'200字以内','experiment_design')=={}
+
+
+def test_v4_uses_same_bounded_profile_for_a_longer_multi_paper_comparison_only():
+    record={'factualReasoningContractVersion':4,'materialSnapshot':{'materialRefs':['paperA','paperB']}}
+    flags=request_options(record,'比较输入、时间表示、训练与FPS可比性，450字以内。','paper_comparison')
+    old_short=request_options({'factualReasoningContractVersion':3},'200字以内','paper_comparison')
+    assert flags==old_short
+    assert research_model_options('synthesize',flags)['max_tokens']==8192
+    assert research_model_options('synthesize',flags)['reasoning_effort']=='high'
+    for version in (1,2,3):
+        assert request_options({**record,'factualReasoningContractVersion':version},'450字以内','paper_comparison')=={}
+    for question,kind in [('701字以内','paper_comparison'),('450字以内','claim_verification'),
+                          ('450字以内','experiment_design'),('详细比较','paper_comparison')]:
+        assert request_options(record,question,kind)=={}
+    assert request_options({'factualReasoningContractVersion':4},'450字以内','paper_comparison')=={}
+
+
+def test_legacy_profile_does_not_inspect_missing_or_malformed_material_context():
+    for version in (None,True,0,1,2,3):
+        record={'factualReasoningContractVersion':version,'materialSnapshot':None,'state':None}
+        assert request_options(record,'200字以内','paper_comparison')==request_options(
+            {'factualReasoningContractVersion':version},'200字以内','paper_comparison')

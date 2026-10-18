@@ -4,7 +4,7 @@ import re
 
 
 def enabled(record):
-    return type(record.get('experimentIntentContractVersion')) is int and record['experimentIntentContractVersion']==1
+    return type(record.get('experimentIntentContractVersion')) is int and record['experimentIntentContractVersion'] in (1,2)
 
 
 def single_toggle_request(question):
@@ -12,7 +12,7 @@ def single_toggle_request(question):
             and bool(re.search(r'关闭[^、，,；;。\n]{1,24}[与和]启用|single.factor|单因素',question,re.I)))
 
 
-def guidance(question, roles=None, *, draft=False):
+def guidance(question, roles=None, *, draft=False, policy_version=1):
     question = question if isinstance(question,str) else ''
     parts=['Judge the proposed experiment at the inference strength actually requested, while retaining source, initialization, pairing, budget and scientific-validity checks. A future hypothesis is not an already established result.']
     if roles is not None and None not in roles and not set(roles)&{'hypothesis','analysis','metrics','limits'}:
@@ -24,6 +24,8 @@ def guidance(question, roles=None, *, draft=False):
         if re.search(r'抖动|\bjitter\b|temporal (?:flicker|smoothness)',question,re.I):
             parts.append('Per-frame PSNR-score variance ALONE does not measure jitter. Specify actual temporal image/motion observations on the same view/time path, handle genuine motion and include a quality guard against blur/suppressed motion. Never invent GT at unseen interpolation times; reference-free stability is not reconstruction accuracy.')
         return '\n'.join(parts)
+    if type(policy_version) is int and policy_version == 2:
+        parts.append('Check each target against the complete linked metric, hypothesis, analysis and configuration definitions supplied here. A concrete tolerance, pose-error setting or aggregation rule defined in a linked role need not be copied into every hypothesis/limits paragraph. Fail a missing definition, contradiction or broken reference, not absence of repetition. Repair metrics and their scientific decision together.')
     if re.search(r'描述性|\bdescriptive\b',question or '',re.I):
         parts.append('The user explicitly requests DESCRIPTIVE comparison. Use the existing explore purpose, descriptive uncertainty and descriptive decision modes when appropriate. A bounded paired effect/direction under the declared scene/settings needs NO significance test, confidence interval, bootstrap or population inference. Still specify matched observations, aggregation and the paired decision rule. Do not promise acceptance of a population hypothesis, equivalence or generalization. Do not fail solely because significance is absent.')
     if re.search(r'抖动|\bjitter\b|temporal (?:flicker|smoothness)',question or '',re.I):
@@ -32,7 +34,7 @@ def guidance(question, roles=None, *, draft=False):
 
 
 def repair_prompt(*, question,length_contract,accepted,siblings,questions,targets,checks,
-                  permissions_marker,evidence_marker,shape,table_instructions):
+                  permissions_marker,evidence_marker,shape,table_instructions,policy_version=1):
     encode=lambda x:json.dumps(x,ensure_ascii=False,separators=(',',':'))
     return f'''Revise ONLY these rejected UNEXECUTED experimental targets. Correct the specific checks;
 do not return a verdict, rerun research or invent established results. Choose concrete proposed
@@ -67,4 +69,4 @@ choices/math may use evidenceRefs=[]. E aliases belong only in citation fields, 
 Never convert an unsupported existing fact into a proposed choice to evade checking. Retain
 necessary conditions once and the total answer length limit. Keep complete typed configuration
 and all accepted definitions; other unverified drafts may be repaired in later batches.
-{guidance(question,{row.get('designRole') for row in targets})}'''
+{guidance(question,{row.get('designRole') for row in targets},policy_version=policy_version)}'''

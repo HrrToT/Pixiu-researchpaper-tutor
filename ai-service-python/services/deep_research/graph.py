@@ -1225,7 +1225,7 @@ Orient losses before formulas, distinguish conditional/averaged effects and pape
                 obligations=draft_obligations,sources=source_registry,evidence_marker=evidence_marker,
                 claim_fields=claim_fields,claim_limit=claim_limit,section_templates=section_templates,
                 **({'concise':True} if type(record.get('experimentIntentContractVersion')) is int
-                   and record['experimentIntentContractVersion']==1 else {}))
+                   and record['experimentIntentContractVersion'] in (1,2) else {}))
         prompt += format_guidance(point_constraint)
         from services.deep_research.synthesis import SCIENTIFIC_TERMINOLOGY
         prompt += '\n' + SCIENTIFIC_TERMINOLOGY
@@ -1364,10 +1364,16 @@ Orient losses before formulas, distinguish conditional/averaged effects and pape
                     {'max_tokens': output, 'temperature': 0.0}), _safe_parse_json,
                 saved_state=current.get('state', {}).get('audienceRewrite'), checkpoint=checkpoint_audience,
                 can_start=has_time_for_rewrite(current),
+                **({'verification_policy':{
+                    'absence_scope_version':current.get('absenceScopeContractVersion',0),
+                    'quantity_spelling_version':current.get('quantitySpellingContractVersion',0),
+                    'feedback_version':current.get('verificationFeedbackContractVersion',0),
+                    'table_references_version':current.get('tableReferencesContractVersion',0)}}
+                   if current.get('audienceRewriteContractVersion')==7 else {}),
                 **({'contract_version':current['audienceRewriteContractVersion'],'requirement_context':[
                     {key:o[key] for key in ('obligationId','question','completionCriteria','requiredSources') if key in o}
                     for item in current.get('state',{}).get('plan',[]) for o in item.get('obligations',[])]}
-                   if current.get('audienceRewriteContractVersion') in (2,3,4,5,6) else {}))
+                   if current.get('audienceRewriteContractVersion') in (2,3,4,5,6,7) else {}))
         
         if output_kind == "experiment_design":
             # Compaction must not hide required settings back in metadata.
@@ -1527,8 +1533,9 @@ def make_verify_node(
                         **({'comparison_reasoning':True} if comparison_enabled(record) else {}),
                         **({'comparison_methodology':True} if type(record.get('comparisonReasoningContractVersion')) is int
                            and record['comparisonReasoningContractVersion']==3 else {}),
-                        **({'experimental_intent':True} if type(record.get('experimentIntentContractVersion')) is int
-                           and record['experimentIntentContractVersion']==1 else {}),
+                        **({'experimental_intent':record['experimentIntentContractVersion']}
+                           if type(record.get('experimentIntentContractVersion')) is int
+                           and record['experimentIntentContractVersion'] in (1,2) else {}),
                         **({'factual_scope':record['factualScopeContractVersion']} if scope_enabled(record) else {}),
                         **({'declared_table_refs':True} if declared_references_enabled(record) else {}),
                         **({'question_priority':True} if priority_enabled(record) else {}),

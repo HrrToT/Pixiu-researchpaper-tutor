@@ -37,14 +37,16 @@ def make_evidence(source: dict, quote: str, original: str, *, location: dict,
             "verification": {"literal": "passed", "semantic": "unchecked"}}
 
 
-def _measurement_numbers(text: str, *, word_counts=False, relative_references=False, artifact_references=False) -> set[str]:
+def _measurement_numbers(text: str, *, word_counts=False, relative_references=False, artifact_references=False,
+                         conceptual_articles=False, expanded_counts=False) -> set[str]:
     # Dimensional method labels are not measured quantities. The semantic
     # verifier still checks their identity; standalone dimensions stay checked.
     text = re.sub(r'(?<![A-Za-z0-9_])[234]D(?:-?[A-Za-z]+)?(?![A-Za-z0-9_])', '', text)
     text = re.sub(r'(?<![A-Za-z])Table\s+\d+(?![A-Za-z0-9])|表\s*\d+', '', text, flags=re.I)
     from services.deep_research.measurement_numbers import measurement_numbers
     return measurement_numbers(text, word_counts=word_counts, relative_references=relative_references,
-                               artifact_references=artifact_references)
+                               artifact_references=artifact_references, conceptual_articles=conceptual_articles,
+                               expanded_counts=expanded_counts)
 
 
 def _condition_values_text(value):
@@ -72,23 +74,21 @@ def _table_display_diagnostic(claim, support):
             '不能只写另一个方法名代替Ours等原表标签，也不能修改单元格或加入未报告的计算。'}
 
 
-def verify_claims(claims: list[dict], evidence: list[dict],
-                  semantic_check: Callable[[list[dict], list[dict]], list[dict]] | None = None,
-                  *, absence_scope_version=0, quantity_spelling_version=0, feedback_version=0,
-                  table_references_version=0) -> dict:
-    """Only publish supported claims; a model cannot override literal checks.
+def precheck_claims(claims: list[dict], evidence: list[dict], *, absence_scope_version=0,
+                    quantity_spelling_version=0, feedback_version=0, table_references_version=0) -> dict:
+    """Pure hard checks shared by publication and pre-classification edits.
 
-    A semantic checker is a separately budgeted call provided by the graph.
-    Missing/malformed/duplicate verdicts fail closed. Suggestions may contain
-    proposed numerical settings, but never acquire reported-fact status.
+    Candidates still require a separate semantic verdict; nothing is accepted
+    for publication here and no provider-capable callback is invoked.
     """
     by_id = {item["evidenceId"]: item for item in evidence}
     if len(by_id) != len(evidence):
         raise ValueError("Duplicate evidence identity")
     candidates, rejected, seen = [], [], set()
-    word_counts = type(quantity_spelling_version) is int and quantity_spelling_version in (1, 2, 3)
-    relative_references = type(quantity_spelling_version) is int and quantity_spelling_version in (2, 3)
-    artifact_references = type(quantity_spelling_version) is int and quantity_spelling_version == 3
+    word_counts = type(quantity_spelling_version) is int and quantity_spelling_version in (1, 2, 3, 4)
+    relative_references = type(quantity_spelling_version) is int and quantity_spelling_version in (2, 3, 4)
+    artifact_references = type(quantity_spelling_version) is int and quantity_spelling_version in (3, 4)
+    conceptual_articles = type(quantity_spelling_version) is int and quantity_spelling_version == 4
     concurrent_feedback = type(feedback_version) is int and feedback_version == 2
     for claim in claims:
         claim_id = claim.get("claimId")
@@ -148,10 +148,18 @@ def verify_claims(claims: list[dict], evidence: list[dict],
                     if re.fullmatch(r'arxiv:\d{4}\.\d{4,5}(?:v\d+)?', identity, re.I):
                         pattern = r'(?<![A-Za-z0-9_])' + re.escape(identity) + r'(?![A-Za-z0-9_.])'
                         claim_text = re.sub(pattern, '', claim_text, flags=re.I)
+            source_texts = [item['quote'] for item in support]
+            if conceptual_articles:
+                from services.deep_research.measurement_numbers import parameter_identifiers, without_parameter_identifiers
+                known = set().union(*(parameter_identifiers(text) for text in source_texts))
+                claim_text = without_parameter_identifiers(claim_text, known)
+                source_texts = [without_parameter_identifiers(text) for text in source_texts]
             numbers = _measurement_numbers(claim_text, word_counts=word_counts, relative_references=relative_references,
-                                          artifact_references=artifact_references)
-            original_numbers = set().union(*(_measurement_numbers(item['quote'], word_counts=word_counts,
-                relative_references=relative_references, artifact_references=artifact_references) for item in support))
+                                          artifact_references=artifact_references, conceptual_articles=conceptual_articles,
+                                          expanded_counts=conceptual_articles)
+            original_numbers = set().union(*(_measurement_numbers(text, word_counts=word_counts,
+                relative_references=relative_references, artifact_references=artifact_references,
+                conceptual_articles=conceptual_articles, expanded_counts=conceptual_articles) for text in source_texts))
             if not numbers <= original_numbers:
                 reason = reason or "numeric_mismatch"
                 unsupported_numbers = numbers - original_numbers
@@ -251,6 +259,22 @@ def verify_claims(claims: list[dict], evidence: list[dict],
             rejected.append({"claimId": claim_id, "reason": reason, **diagnostic})
         else:
             candidates.append(dict(claim))
+    return {'candidates': candidates, 'rejected': rejected}
+
+
+def verify_claims(claims: list[dict], evidence: list[dict],
+                  semantic_check: Callable[[list[dict], list[dict]], list[dict]] | None = None,
+                  *, absence_scope_version=0, quantity_spelling_version=0, feedback_version=0,
+                  table_references_version=0) -> dict:
+    """Publish only after hard checks and an independent semantic verdict.
+
+    Missing, malformed or duplicate model verdicts fail closed. A proposal or
+    source-derived explanation never becomes a reported fact by its label.
+    """
+    checked = precheck_claims(claims, evidence, absence_scope_version=absence_scope_version,
+        quantity_spelling_version=quantity_spelling_version, feedback_version=feedback_version,
+        table_references_version=table_references_version)
+    candidates, rejected = checked['candidates'], checked['rejected']
     proposals = {"suggestion", "proposal", "hypothesis"}
     # Suggestions are not established facts, but still need a logic/identity check.
     # A model must not hide a measured result or an invalid formula behind this tag.

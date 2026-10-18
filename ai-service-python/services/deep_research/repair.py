@@ -247,7 +247,8 @@ in the paper. Maintain consistency with accepted definitions and complete requir
         prompt = experiment_repair_prompt(question=question,length_contract=length_contract,
             accepted=proposal_context,siblings=sibling_context,questions=question_dictionary,targets=input_claims,
             checks=packed_checks,permissions_marker=permissions_marker,evidence_marker=evidence_marker,
-            shape=revision_shape,table_instructions=table_instructions)
+            shape=revision_shape,table_instructions=table_instructions,
+            policy_version=2 if type(experimental_intent) is int and experimental_intent==2 else 1)
     prompt += '\n' + SCIENTIFIC_TERMINOLOGY
     if source_instruction:
         prompt += source_instruction
@@ -490,7 +491,8 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
                        **({'tableReferencesContractVersion':1} if declared_table_refs else {}),
                        **({'repairResponseContractVersion':1} if strict_response else {}),
                        **({'comparisonMethodologyVersion':1} if comparison_methodology else {}),
-                       **({'experimentIntentContractVersion':1} if experimental_intent else {})})
+                       **({'experimentIntentContractVersion':2 if type(experimental_intent) is int and experimental_intent==2 else 1}
+                          if experimental_intent else {})})
 
     def prepare(ids, results=(), byte_limit=None):
         ids = set(ids)
@@ -548,7 +550,8 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
         except BudgetExhaustedError as exc:
             if exc.details.get('kind') not in {'repairPromptBytes', 'repairEvidenceBytes'}:
                 raise
-            state['batches'] = split_repair_targets(originals)
+            state['batches'] = split_repair_targets(originals,
+                scientific_metrics=type(experimental_intent) is int and experimental_intent==2)
             if len(state['batches']) == 1:
                 raise
             # Preflight EVERY batch before spending a model call. An atomic

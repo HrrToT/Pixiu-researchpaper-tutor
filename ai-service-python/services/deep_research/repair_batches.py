@@ -1,17 +1,19 @@
 """Deterministic bounded repair scheduling; no model or source access."""
 
 
-def split_repair_targets(claims):
+def split_repair_targets(claims, *, scientific_metrics=False):
     """Keep linked hypotheses and analyses together within at most three batches.
 
     Configuration is chosen first, scientific decisions and their limits second,
     execution last. Every original target occurs once; sibling drafts remain
     available as unverified context in each prepared request.
+    Policy 2 keeps metrics with the scientific decision they operationalize.
     """
     config, science, execution = [], [], []
     for claim in claims:
         role = claim.get('designRole')
-        bucket = (config if role in {'data', 'budget', 'metrics'}
+        bucket = (science if scientific_metrics and role == 'metrics'
+                  else config if role in {'data', 'budget', 'metrics'}
                   else science if role in {'hypothesis', 'analysis', 'limits'} else execution)
         bucket.append(claim['claimId'])
     groups = [bucket for bucket in (config, science, execution) if bucket]
