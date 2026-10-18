@@ -44,12 +44,12 @@
       "overlap": true
     },
     "backendCurrentResearchReadingTables": {
-      "passed": 2794,
+      "passed": 2798,
       "warnings": 1,
-      "seconds": 182.76,
-      "sourceCommit": "008a288d",
-      "log": "tmp/pytest-dr172-full.log",
-      "scope": "Research, reading, PDF tables and config; offline fixture providers. .172 tested, not separately loaded."
+      "seconds": 177.41,
+      "sourceCommit": "7186e037",
+      "log": "tmp/pytest-dr173-full.log",
+      "scope": "Research, reading, PDF tables and config; offline fixture providers."
     },
     "frontendDocumentNavigationFocused": {
       "passed": 19,
@@ -1921,7 +1921,7 @@
     {
       "id": "DR3",
       "implementation": "Adaptive gaps, incremental reuse, bounded repair, typed experimental contracts, canonical baseline/component initializers and final-answer coverage implemented; incremental exact-input relevance cache and partial-extraction assessment route",
-      "acceptance": "Offline adaptive execution/recovery and actual F1 edited-artifact follow-up workflow accepted; D1-v27 development content accepted. D5 comparative reasoning, executable experiment content and fresh independent replacements remain open. Historical unknowns are not resubmitted.",
+      "acceptance": "F1 edited-artifact follow-up, D1-v27 and narrow D5-v14 development content accepted. H2F-v2 full comparison and H5F-v2 executable/scientific design fail; exact diagnostics retained. Fresh independent gates remain open.",
       "proof": [
         "deep-research-evidence/d3-v25-20261014.json",
         "deep-research-evidence/completion-criteria-20261015.json",
@@ -1966,7 +1966,7 @@
     {
       "id": "DR4",
       "implementation": "Permissioned arXiv discovery, versioned fulltext acquisition, fixed network exit and degradation implemented; versioned durable beginner wording pass before unchanged factual verification",
-      "acceptance": "Actual H3F-v1 external discovery/versioned fulltext path verified. Full beginner content for that case remains unaccepted; no independent credit. Historical .110 unknown remains preserved.",
+      "acceptance": "H3F-v1/v2 actual discovery/versioned fulltext path verified. H3F-v2 factual verdicts are passed by model but exact audit bindings fail on PDF line-wrap/hyphen copying; no published novice-content or independent pass. Original unknown preserved.",
       "proof": [
         "deep-research-evidence/H3-v1-external-fulltext-20261013.json",
         "../ai-service-python/tests/test_deep_research_academic.py",
@@ -2305,25 +2305,27 @@
     "Full novice study workflow",
     "Independent Edge recovery"
   ],
-  "currentProviderConstraint": "All further necessary bounded validations uniformly authorized. Selected current diagnostic sequence:203 settled model calls/794081 tokens; not total historical usage. Nine historical unknowns preserved; cost unknown; no blind retry.",
-  "currentDevelopmentMode": "Primary Codex only; Goal active, quota monitor paused by user. Python6c89dad1/.171 loaded, Java27ac4beb, frontend123b0d29. D1-v27 manually accepted as a development result; D5 comparison and executable experiments remain open. OriginalDR0-DR5 incomplete, original first-five0/5 and PR draft unchanged.",
+  "currentProviderConstraint": "All further necessary bounded validations uniformly authorized. Selected current diagnostic sequence:246 settled model calls/954689 tokens; not total historical usage. Cost unknown; nine historical unknowns preserved, no blind retry.",
+  "currentDevelopmentMode": "Primary Codex only; Goal active, quota monitor paused by user. Python7186e037/.173 loaded, Java27ac4beb, frontend123b0d29. D1-v27 and narrow D5-v14 development content accepted. H2F-v2/H3F-v2/H5F-v2 content fails. OriginalDR0-DR5 incomplete, original first-five0/5 and PR draft unchanged.",
   "loadedRuntime": {
-    "commit": "6c89dad1",
-    "promptVersion": "dr-v2.20261018.171",
+    "commit": "7186e037",
+    "promptVersion": "dr-v2.20261018.173",
     "javaCommit": "27ac4beb",
     "frontendCommit": "123b0d29",
-    "callsAfterLatestCase": 4087,
+    "callsAfterLatestCase": 4179,
     "active": 0,
     "historicalPausedUnknown": 9,
     "tasks": 92,
-    "proof": "deep-research-evidence/runtime-load-dr171-audit-format-20261018.json",
-    "postCasesProof": "deep-research-evidence/runtime-postcases-dr171-20261018.json"
+    "proof": "deep-research-evidence/runtime-load-dr173-comparison-methodology-20261018.json",
+    "postCasesProof": "deep-research-evidence/runtime-postcases-dr173-regression-three-20261018.json"
   },
   "nextQualityWork": [
-    "Load confirmed-invalid repair handling, nominal condition-label recognition and neutral accepted-scope headings with the next tested version.",
-    "Distinguish arithmetic/descriptive ratios, system comparisons and isolated method effects; retain original-paper support for every empirical premise.",
-    "Validate the corrected comparison follow-up once; do not rerun the newly accepted D1 unchanged.",
-    "Complete executable experimental-plan content and new independent cases under the original full-design criteria."
+    "Use versioned typed references to unchanged visible source fields for internal audits, preserving exact original quotations and avoiding retyped PDF line-wrap/hyphen errors.",
+    "Transmit document-declared publication revision from original PDF/hash, not a guessed filename or a requirement that every excerpt repeat v4. Organize multi-paper factual targets with appropriate own-source support.",
+    "Respect an explicitly requested explore/descriptive analysis; existing schema already supports this. Keep inferential requirements for inferential tasks.",
+    "Reject score-variability-alone as a jitter measurement; require an interpretable temporal-consistency procedure with a separate quality guard and paired units.",
+    "Complete real common initialization and factor redundant fixed repair context to fit the existing24000byte cap; do not drop needed states or expand the cap.",
+    "Prepare fresh independent replacements after development quality passes. MVSplat/ODGS/4DGS exact PDFs were found in older research receipts and are not eligible fresh materials."
   ],
   "javaReaderRuntime": {
     "sourceCommit": "070ab1a",
@@ -2339,14 +2341,14 @@
     "date": "2026-10-18",
     "scope": "Original DR0-DR5 design is unchanged",
     "openItems": [
-      "D1/D2/D3/D5 real content quality and five fresh independent cases.",
-      "Generic follow-up content/reference resolution remains to be accepted beyond offline context binding.",
-      "Dependency execution now has offline and real D1-v10 routing traces, but routing is not scientific quality.",
-      "Historical unknown outcomes remain unresolved; no same-case resend or attempt renaming bypass."
+      "Full multi-paper comparison, executable experimental-plan and external novice-content quality; five fresh independent replacements.",
+      "F1 actual edited-artifact follow-up and narrow D5-v14 explanation are accepted; broader follow-up generality remains limited.",
+      "Local publication version identity, source-specific synthesis, exact internal audit binding and descriptive experimental scientific review need the fixes documented in current diagnostics.",
+      "Historical unknown outcomes remain unresolved; no same-case resend or attempt/task renaming bypass."
     ]
   },
   "nextIndependentCasesManifest": "DEEP_RESEARCH_INDEPENDENT_CASES_20261018.json",
-  "nextIndependentCasesStatus": "First five original results are preserved, 0/5 full content passes. H1F retired for repair/method-detail diagnosis; H4F retired before exact requested-value retrieval diagnosis. H2F/H3F/H5F not reused for tuning.",
+  "nextIndependentCasesStatus": "Original first-five results preserved,0/5 full content passes. H1F/H4F were already retired; H2F/H3F/H5F are now explicitly retired before further development submissions. Their v2 results fail and earn0independent credit. Fresh replacements still required.",
   "priorIndependentSlots": [
     [
       {
@@ -2685,5 +2687,33 @@
     "runtimeLoadedSeparately": false,
     "modelCalls": 0,
     "proof": "deep-research-evidence/received-invalid-repair-regression-20261018.json"
+  },
+  "comparisonMethodologyCheckpoint": {
+    "sourceCommit": "7186e037",
+    "promptVersion": "dr-v2.20261018.173",
+    "case": "D5-v14",
+    "machineOutcome": "complete",
+    "contentAccepted": true,
+    "independentCredit": 0,
+    "modelCalls": 6,
+    "settledTokens": 31817,
+    "elapsedSeconds": 117.0,
+    "proof": "deep-research-evidence/D5-v14-diagnostic-20261018.json",
+    "boundary": "Narrow incremental comparison explanation only, not a full multi-paper report or independent pass. Six model calls, no repeated acquire/read/extract; original parent unchanged."
+  },
+  "retiredRegressionThreeCheckpoint": {
+    "sourceCommit": "7186e037",
+    "promptVersion": "dr-v2.20261018.173",
+    "cases": [
+      "H2F-v2",
+      "H3F-v2",
+      "H5F-v2"
+    ],
+    "modelCalls": 37,
+    "settledTokens": 128791,
+    "contentAccepted": 0,
+    "independentCredit": 0,
+    "retirement": "deep-research-evidence/H2F-H3F-H5F-development-retirement-20261018.json",
+    "proof": "deep-research-evidence/runtime-postcases-dr173-regression-three-20261018.json"
   }
 }
