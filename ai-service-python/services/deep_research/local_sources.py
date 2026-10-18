@@ -56,6 +56,9 @@ class LocalTaskRetriever:
                             indexed = _include_metric_tables(indexed, self.index_tables[pdf_id], query, metrics, limit)
                         elif any(needs_preceding_context(row) for row in indexed):
                             indexed = include_preceding_context(indexed, self.index_context[pdf_id], owned, limit)
+                        from services.deep_research.method_details import enabled as precise_sources, include_method_details
+                        if not metrics and precise_sources(self.repo.require_run(self.run_id)):
+                            indexed = include_method_details(indexed, self.index_context[pdf_id], query, owned, limit)
                         indexed = include_requested_rows(indexed, self.index_context[pdf_id], query, owned, limit)
                     return indexed
             except (ImportError, RuntimeError, OSError):

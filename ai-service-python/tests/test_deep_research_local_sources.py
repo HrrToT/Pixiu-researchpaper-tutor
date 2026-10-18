@@ -174,6 +174,44 @@ def test_metric_retrieval_adds_owned_verified_tables_without_more_model_calls(mo
         local('FPS', 'p')
 
 
+@pytest.mark.parametrize('marked', [True, False])
+def test_component_detail_selection_uses_the_existing_index_cache_and_live_scope(monkeypatch, marked):
+    from services.tools import retrieval_tools
+    local, get, parse, validate = fixture(monkeypatch)
+    if marked:
+        local.repo.require_run.return_value['sourcePrecisionContractVersion'] = 1
+    monkeypatch.setattr('services.deep_research.local_sources.importlib.util.find_spec', lambda name: object())
+    def document(index, text, owner='p'):
+        return {'text': text, 'metadata': {'id': owner, 'chunk_index': index,
+            'index_version': 'a'*16, 'section_title': 'Method', 'page': 4}}
+    top = document(0, 'TMC method overview using a previous representation.')
+    low = document(1, 'Generic method overview.')
+    previous = document(11, 'TMC encodes previous positions.')
+    details = document(12, 'This maps TMC encoding to seven output dimensions: translation and rotation.')
+    rag = Mock()
+    rag.normalize_id.side_effect = lambda value: value
+    rag.get_documents_by_metadata.return_value = [previous, details,
+        document(12, 'Foreign TMC output dimensions and offsets.', owner='foreign')]
+    monkeypatch.setattr(retrieval_tools, 'get_rag', lambda: rag)
+    retrieve = Mock(return_value=[top,low])
+    monkeypatch.setattr(retrieval_tools, 'retrieve_fused_evidence', retrieve)
+    query = 'TMC prediction parameters'
+    found = local(query,'p',limit=3)
+    assert [r['chunkIndex'] for r in found] == ([0,11,12] if marked else [0,1])
+    assert local(query,'p',limit=3) == found
+    rag.get_documents_by_metadata.assert_called_once_with({'id':'p'},limit=400)
+    assert all(r['pdfId'] == 'p' for r in found)
+    if marked:
+        assert found[1]['text'] == previous['text'] and found[2]['text'] == details['text']
+        assert found[1]['contextForSourceId'] == found[2]['sourceId']
+    validate.return_value = False
+    with pytest.raises(DeepResearchError):
+        local(query,'p',limit=3)
+    assert retrieve.call_count == 2
+    get.assert_not_called()
+    parse.assert_not_called()
+
+
 def test_table_supplement_ignores_unrelated_metrics_and_deduplicates():
     from services.deep_research.local_sources import _include_metric_tables, _requested_metrics
     table = {'sourceId': 't', 'text': 'FPS results', 'tableData': {
