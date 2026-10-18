@@ -1,5 +1,7 @@
 # Deep Research 单实例备份、恢复与回退
 
+2026-10-18当前检查点：Python `.151` / `03d6c25e`，完整回归2,389项通过；Java `47f94b28`、前端 `c3843700`未改。加载时无活动研究，3,708条账本前后相等；两例单次诊断后3,747条、0活动、9个历史未知暂停身份保持。新契约由服务器固定，旧任务不补跑新规则。内容仍未验收，PR保持草稿。证据见[加载核对](deep-research-evidence/runtime-load-dr151-human-grounding-20261018.json)及[运行后账本](deep-research-evidence/runtime-postcases-dr151-20261018.json)。
+
 适用：当前 Java/H2 + Python/SQLite + Chroma 单实例部署。2026-10-13 已在本机完成配套恢复演练；不是多实例、生产高可用或在线热备方案。质量发布门槛仍以实施记录和固定案例为准。
 
 ## 备份边界

@@ -1,0 +1,201 @@
+{
+  "date": "2026-10-18",
+  "sourceCommit": "03d6c25e",
+  "promptVersion": "dr-v2.20261018.151",
+  "contracts": {
+    "quantitySpellingContractVersion": 3,
+    "requestGroundingContractVersion": 1,
+    "absenceScopeContractVersion": 2,
+    "namedRowIdentityContractVersion": 1
+  },
+  "copiedRealInputs": [
+    {
+      "case": "H1F-v9",
+      "runId": "dr_run_36ab877f423051079ba3a107d912f6a1",
+      "savedInputSha256": "7658846a7cd967a143f69d595ba804168d2fc452288ec414dfb219d79c4c0b62",
+      "legacyAssessmentRequestsIdentical": 2,
+      "before": [
+        {
+          "claimId": "c1",
+          "reason": "numeric_mismatch",
+          "missingReportedNumbers": [
+            "1e0"
+          ],
+          "detail": "本条引用原文未直接报告这些数值：1。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。"
+        },
+        {
+          "claimId": "c2",
+          "reason": "semantic_unresolved",
+          "detail": ""
+        }
+      ],
+      "after": [
+        {
+          "claimId": "c1",
+          "reason": "semantic_unresolved",
+          "detail": "Negative offline fixture"
+        },
+        {
+          "claimId": "c2",
+          "reason": "semantic_unresolved",
+          "detail": "Negative offline fixture"
+        }
+      ],
+      "accepted": 0,
+      "semanticFixtureCalled": true,
+      "literalHumanCriteria": [
+        {
+          "itemId": "item_1",
+          "question": "NTC预测高斯的什么变化；怎样利用前一帧表示；为什么遇到新出现的物体还需要添加高斯",
+          "obligations": [
+            {
+              "obligationId": "ob_1",
+              "question": "NTC预测高斯的什么变化",
+              "requiredSources": [
+                "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf"
+              ],
+              "searchQuery": "3DGStream NTC predicted Gaussian changes",
+              "purpose": "answer_requirement",
+              "requestExcerpt": "NTC预测高斯的什么变化",
+              "completionCriteria": [
+                {
+                  "criterionId": "human_aspect_1",
+                  "requirement": "NTC预测高斯的什么变化",
+                  "responseType": "identification"
+                }
+              ]
+            },
+            {
+              "obligationId": "ob_2",
+              "question": "怎样利用前一帧表示",
+              "requiredSources": [
+                "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf"
+              ],
+              "searchQuery": "3DGStream previous frame representation NTC",
+              "purpose": "answer_requirement",
+              "requestExcerpt": "怎样利用前一帧表示",
+              "completionCriteria": [
+                {
+                  "criterionId": "human_aspect_1",
+                  "requirement": "怎样利用前一帧表示",
+                  "responseType": "explanation"
+                }
+              ]
+            },
+            {
+              "obligationId": "ob_3",
+              "question": "为什么遇到新出现的物体还需要添加高斯",
+              "requiredSources": [
+                "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf"
+              ],
+              "searchQuery": "3DGStream adding Gaussians new objects",
+              "purpose": "answer_requirement",
+              "requestExcerpt": "为什么遇到新出现的物体还需要添加高斯",
+              "completionCriteria": [
+                {
+                  "criterionId": "human_aspect_1",
+                  "requirement": "为什么遇到新出现的物体还需要添加高斯",
+                  "responseType": "explanation"
+                }
+              ]
+            }
+          ],
+          "searchQuery": "3DGStream NTC Gaussian prediction previous frame new objects",
+          "dependencies": [],
+          "priority": 1,
+          "status": "gap"
+        }
+      ],
+      "normalizationChanges": [
+        {
+          "obligationId": "ob_1",
+          "change": "anchored_literal_human_aspects",
+          "criterionCount": 1
+        },
+        {
+          "obligationId": "ob_2",
+          "change": "anchored_literal_human_aspects",
+          "criterionCount": 1
+        },
+        {
+          "obligationId": "ob_3",
+          "change": "anchored_literal_human_aspects",
+          "criterionCount": 1
+        }
+      ],
+      "unreportedFourStillRejected": [
+        {
+          "claimId": "c1",
+          "reason": "numeric_mismatch",
+          "missingReportedNumbers": [
+            "4e0"
+          ],
+          "detail": "本条引用原文未直接报告这些数值：4。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。"
+        }
+      ]
+    },
+    {
+      "case": "D1-v19",
+      "runId": "dr_run_3e393a12f94655eba68a52f08be6048e",
+      "savedInputSha256": "b2215523bcc9469217268d4e55fb0aaede3ee7397323ecac5cd650f062070f2a",
+      "legacyAssessmentRequestsIdentical": 1,
+      "before": [
+        {
+          "claimId": "c1",
+          "reason": "ambiguous_table_series"
+        },
+        {
+          "claimId": "c2",
+          "reason": "semantic_unresolved",
+          "detail": ""
+        }
+      ],
+      "after": [
+        {
+          "claimId": "c1",
+          "reason": "ambiguous_table_series"
+        },
+        {
+          "claimId": "c2",
+          "reason": "absence_not_established",
+          "detail": "本条引用没有明确建立作者或论文缺少这些验证。把结论限定为本次引用能支持的实验范围及其不能证明的推广；不要写成作者未在其他条件验证、论文没有提供或全文不存在。引用中的其他否定句不构成这项缺席判断的依据。"
+        }
+      ],
+      "accepted": 0,
+      "semanticFixtureCalled": false,
+      "retrievedLegacyQuotesMatchingUnstarredRequest": [],
+      "newRetentionFromAlreadyReadSources": [
+        {
+          "sourceId": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-v2977684d0da4a8b6-chunk-38",
+          "rowNumber": 8,
+          "method": "3D-GS [16]",
+          "sourceRowUnchanged": true
+        }
+      ],
+      "boundary": "Old retrieved evidence may omit the unstarred baseline; no row/value is manufactured."
+    }
+  ],
+  "realProviderCalls": 0,
+  "productionWrites": 0,
+  "boundary": "Offline replay of immutable saved real inputs. A negative fixture checks that retained claims still need independent semantics. These checks do not prove model answer quality or independent acceptance.",
+  "fullOfflineRegression": {
+    "passed": 2389,
+    "warnings": 1,
+    "seconds": 185.16,
+    "log": "tmp/pytest-dr151-full.log",
+    "scope": "Research, reading, PDF tables and configuration; provider/network are offline fixtures."
+  },
+  "recordedInitialFailure": {
+    "failed": 7,
+    "passed": 2382,
+    "log": "tmp/pytest-dr150-full.log",
+    "cause": "The fixture model routes by the assessment node prefix; prepending human context hid that prefix.",
+    "fix": "Keep the node framing first and place full factored human context before Pairs. Original assertions and timeout settings retained.",
+    "affectedFocusedRegression": {
+      "passed": 46,
+      "seconds": 24.75,
+      "log": "tmp/pytest-dr151-node-compat.log",
+      "overlapsFullSuite": true
+    }
+  }
+}

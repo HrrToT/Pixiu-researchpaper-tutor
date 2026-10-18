@@ -1,0 +1,47 @@
+{
+  "date": "2026-10-18",
+  "runtimePromptVersion": "dr-v2.20261018.151",
+  "before": {
+    "active": [],
+    "calls": 3708,
+    "ledgerSha256": "0096d20e882ca42dbf4fa866a14c9bb3ed76a11288451d27161e8f0c323122bf",
+    "paused": [
+      "dr_run_4738564f5ff35157996a35068c62ed32",
+      "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+      "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+      "dr_run_86b3f181a5475e99aacca3dbf4370567",
+      "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+      "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+      "dr_run_e3521b1781825273b384a26a5edb8cdc",
+      "dr_run_e9c9dc916bef519092fad8b929b2448f",
+      "dr_run_ed10cc3347be552288079a9a588fddf5"
+    ]
+  },
+  "after": {
+    "calls": 3747,
+    "newRows": 39,
+    "newRunIds": [
+      "dr_run_8314ade8ac2f5e0a99b51a6bb5288ec4",
+      "dr_run_f8535efd45d4517d9651cfc527729776"
+    ],
+    "active": [],
+    "paused": [
+      "dr_run_4738564f5ff35157996a35068c62ed32",
+      "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+      "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+      "dr_run_86b3f181a5475e99aacca3dbf4370567",
+      "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+      "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+      "dr_run_e3521b1781825273b384a26a5edb8cdc",
+      "dr_run_e9c9dc916bef519092fad8b929b2448f",
+      "dr_run_ed10cc3347be552288079a9a588fddf5"
+    ],
+    "originalLedgerSha256": "0096d20e882ca42dbf4fa866a14c9bb3ed76a11288451d27161e8f0c323122bf"
+  },
+  "historicalLedgerUnchanged": true,
+  "pausedUnknownIdentitiesUnchanged": true,
+  "modelCalls": 22,
+  "settledTokens": 75035,
+  "cost": null,
+  "boundary": "Only two once-submitted diagnostics add 39 settled ledger rows. All previous rows and nine historical paused unknown identities preserved. Neither content case accepted."
+}

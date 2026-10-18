@@ -1,0 +1,105 @@
+{
+  "date": "2026-10-18",
+  "case": "H1F-v10",
+  "runId": "dr_run_f8535efd45d4517d9651cfc527729776",
+  "sourceCommit": "03d6c25e",
+  "promptVersion": "dr-v2.20261018.151",
+  "evaluationUse": "retired-case diagnostic",
+  "independent": false,
+  "status": "completed",
+  "outcome": "partial",
+  "contentAccepted": false,
+  "modelCalls": 12,
+  "settledTokens": 32261,
+  "elapsedSeconds": 52.043,
+  "cost": null,
+  "initialVerification": {
+    "accepted": [],
+    "rejected": [
+      {
+        "claimId": "c1",
+        "reason": "numeric_mismatch",
+        "missingReportedNumbers": [
+          "4e0"
+        ],
+        "detail": "本条引用原文未直接报告这些数值：4。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。"
+      },
+      {
+        "claimId": "c2",
+        "reason": "internal_reference_in_prose"
+      },
+      {
+        "claimId": "c3",
+        "reason": "internal_reference_in_prose"
+      }
+    ]
+  },
+  "repairChecks": {
+    "accepted": [
+      {
+        "claimId": "c3",
+        "kind": "reported",
+        "text": "遇到新出现的物体（如火焰、烟雾或从瓶中倒出的液体）时，仅靠变换无法建模，因为3D高斯是非结构化显式表示，必须添加新的3D高斯来建模这些新物体。",
+        "evidenceRefs": [
+          "ev_e7de61ef0fd681ab0977e7b9fe49a474f093c8e746ee3127ae06cf46e827401d",
+          "ev_e26356dfb0f9a52b4e8e6490ad8668c7768c577629c80adc7d8a0d09449be010"
+        ],
+        "conditions": {},
+        "detailLevel": "fulltext",
+        "obligationIds": [
+          "ob_3"
+        ],
+        "verification": "semantic_passed"
+      }
+    ],
+    "rejected": [
+      {
+        "claimId": "c1",
+        "reason": "numeric_mismatch",
+        "missingReportedNumbers": [
+          "4e0"
+        ],
+        "detail": "本条引用原文未直接报告这些数值：4。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。"
+      },
+      {
+        "claimId": "c2",
+        "reason": "semantic_unresolved",
+        "detail": "该断言声称NTC接收基于前一帧高斯位置生成的多分辨率哈希编码作为输入。证据E1和E2仅说明NTC的输入是多分辨率哈希编码，并提及线性插值和体素网格结构确保变换的局部平滑性，但未明确说明该哈希编码是基于前一帧的高斯位置生成的。因此，关于输入来源的断言缺乏直接支持。"
+      }
+    ]
+  },
+  "scores": {
+    "goalResponse": 2,
+    "evidenceSupport": 4,
+    "conditions": 4,
+    "synthesisValue": 2,
+    "executability": null,
+    "readability": 3
+  },
+  "findings": [
+    "All three generated obligations/criteria are now exact human question excerpts; no invented attribute list remains in the saved plan.",
+    "The first point still writes an unreported derived four in text and conditions. The numeric gate correctly rejects it without the previous false one-count veto.",
+    "The previous-frame method paragraph is already read but not selected for bounded extraction. The revised explanation substitutes hash encoding mechanics without adequate own citations and is independently rejected.",
+    "Only the new-object rationale is published. It retains specialist terminology and does not meet the requested three-point novice explanation. Content fails."
+  ],
+  "report": "## 判断\n\n- 遇到新出现的物体（如火焰、烟雾或从瓶中倒出的液体）时，仅靠变换无法建模，因为3D高斯是非结构化显式表示，必须添加新的3D高斯来建模这些新物体。 [1](#research-evidence-ev_e7de61ef0fd681ab0977e7b9fe49a474f093c8e746ee3127ae06cf46e827401d) [2](#research-evidence-ev_e26356dfb0f9a52b4e8e6490ad8668c7768c577629c80adc7d8a0d09449be010)\n\n<details>\n<summary>还有 2 项未完成</summary>\n\n- 怎样利用前一帧表示：最终回答尚未完整回应这一问题\n- NTC预测高斯的什么变化：最终回答尚未完整回应这一问题\n\n</details>\n\n论文事实已按所列原文核对。\n\n<details>\n<summary>原文依据</summary>\n\n**[1] 3DGStream: On-the-Fly Training of 3D Gaussians for Efficient Streaming of Photo-Realistic Free-Viewpoint Videos** · 第 5 页 · 全文片段\n\n> However, this approach falters when faced with objects not present in the initial frame, such as transient objects like flames or smoke, and new persistent objects like the liquid poured out of a bottle.\n\n**[2] 3DGStream: On-the-Fly Training of 3D Gaussians for Efficient Streaming of Photo-Realistic Free-Viewpoint Videos** · 全文片段\n\n> Since 3DG is an unstructured explicit representation, it's essential to add new 3DGs to model these emerging objects.\n\n</details>",
+  "rawFiles": [
+    {
+      "path": "tmp/dr-acceptance-receipts/H1F-v10.json",
+      "sha256": "7bc6ae24a3d99940035d200678c65b3583b590c41ec6137f1e6447f3ebd47e3e"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/H1F-v10.payload.json",
+      "sha256": "d028abc7fe06af0113f0104e1c72a7ca3a005fddfaf5ca0b0fb28c67ead372d8"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/H1F-v10.calls.json",
+      "sha256": "f064ae3b5fd7a965cc0cbe3bb0c9fd614814215bbe7c44dde4f6b275e773d637"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/H1F-v10.result.json",
+      "sha256": "54f47c6756beaad5737bac3775185bdea12457db6aca1178a5608823d5785825"
+    }
+  ],
+  "boundary": "Submitted once through canonical prior-terminal guards. All calls settled. Original first results and historical unknowns unchanged. No independent credit or overall completion."
+}
