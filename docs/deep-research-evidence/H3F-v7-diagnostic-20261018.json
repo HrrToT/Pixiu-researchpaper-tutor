@@ -1,0 +1,120 @@
+{
+  "date": "2026-10-18",
+  "case": "H3F-v7",
+  "sourceCommit": "04b8c4f1",
+  "promptVersion": "dr-v2.20261018.179",
+  "runId": "dr_run_64865d64577f558a99bbad6d1a236ef9",
+  "status": "completed",
+  "machineOutcome": "complete",
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "modelCalls": 9,
+  "settledTokens": 42118,
+  "elapsedSeconds": 191.143,
+  "cost": null,
+  "externalSearches": 1,
+  "fulltextFetches": 1,
+  "actualSynthesisFingerprintMatched": true,
+  "actualSynthesisOptions": {
+    "max_tokens": 16384,
+    "temperature": 0.2,
+    "thinking": {
+      "type": "disabled"
+    },
+    "reasoning_effort": "none",
+    "response_format": {
+      "type": "json_object"
+    }
+  },
+  "scores": {
+    "goalResponse": 3,
+    "evidenceSupport": 4,
+    "conditions": 4,
+    "synthesisValue": 3,
+    "executability": null,
+    "readability": 2
+  },
+  "findings": [
+    "External discovery and fixed-v1 fulltext acquisition succeed. Final original reported facts are independently supported, but the beginner explanation is not accepted.",
+    "New edit journal identifies nonqualitative_inference. Actual own parameter IDs contain lambda1, so the cited-symbol fix works; the rejected rewrite instead says 一个平衡参数, which the blanket Chinese-count guard misclassifies as an empirical quantity.",
+    "The whole ordinary-language edit is discarded and classification remains empty. Final original wording includes gradient/motion thresholds and unexplained rate-distortion optimization language rather than the concise beginner why explanation.",
+    "Next avoid adding a growing list of phrase exemptions: a source-derived why edit should retain the same reported numerical/source hard checks before reclassification, and still undergo independent logic/scope verification. Indefinite mathematical objects must not be treated like empirical sample counts, and actual numerical claims must not bypass validation.",
+    "One fixed development submission only; no immediate rerun, independent credit or historical score upgrade. Continue the other two scheduled cases before the next grouped correction."
+  ],
+  "editOutcome": "rejected",
+  "editReason": "nonqualitative_inference",
+  "actualIndefiniteParameterArticleCausedFallback": true,
+  "report": "本回答引用：全文片段。\n\n## 核心判断\n\n- 4DGC中，运动网格负责估计相邻帧间每个高斯的刚性运动（位置和旋转），将前一帧的高斯变换到当前帧；补偿高斯则稀疏地添加到运动估计不足的区域（如新出现物体、快速变换的大高斯），以提升细节精度。 [1](#research-evidence-ev_31687a563a5ee93e15e596ad4dce77707adf2c0b81888749496b8208a63fc79e) [2](#research-evidence-ev_b789a7c0dee48fb0fe1a51739c9b7e0c0cb86a6b14531117bf149e73f1193155) [3](#research-evidence-ev_38265021fd3795dd7c09968857a5fc08e8c4efaf5c2d17dfbeaff881675dc8cf) [4](#research-evidence-ev_4787bb285c2a91b02c8940d7a44c1fc654abb5ad3790332f75da6683dd12604e) [5](#research-evidence-ev_976d0acc219092da20d5a393b96b528a7bbba6ae850aedc1ecb1e318a26b5cd2) [6](#research-evidence-ev_4f14c62ba7dc14b7458973b6427c1e642bb90d88444099324d49a55cd3cc190d) [7](#research-evidence-ev_3d8e896c211b193f904c165b1bc5c23f0c35d79699f09136338780c78cf1f12e)\n  适用条件：运动网格用于关键帧之后的每个后续帧；补偿高斯在两类区域触发：梯度超过阈值τg的区域，或平移/旋转超过阈值τμ/τR的大高斯。\n- 训练同时考虑码率和画质，是因为4DGC在损失函数中加入码率项和失真项，通过参数λ1平衡两者，从而在训练中直接优化压缩效率与重建质量，得到紧凑且高保真的表示。 [8](#research-evidence-ev_0d56c2481a75c0ab3ca22e9768c6fc7957b42ce6722655b2180d934c811aa0f5) [9](#research-evidence-ev_b30b47a7f4d47439f7bb6d0e575d8cb82255a831f45ad33cb696d8e3f374c201)\n  适用条件：码率项估计4D高斯表示的比特率；失真项衡量重建误差；λ1控制码率与失真的权衡。\n\n论文事实已按所列原文核对。\n\n<details>\n<summary>原文依据</summary>\n\n**[1] 4DGC: Rate-Aware 4D Gaussian Compression for Efficient Streamable Free-Viewpoint Video** · 第 2 页 · 全文片段\n\n> For each subsequent frame, 4DGC uti-\n> lizes a compact multi-resolution motion grid to estimate the\n> rigid motion of each Gaussian from the previous frame to\n> the current one.\n\n**[2] 4DGC: Rate-Aware 4D Gaussian Compression for Efficient Streamable Free-Viewpoint Video** · 第 2 页 · 全文片段\n\n> Additionally, compensated Gaussians are\n> sparsely added to account for newly observed regions or ob-\n> jects, further enhancing the accuracy of the representation.\n\n**[3] 4DGC: Rate-Aware 4D Gaussian Compression for Efficient Streamable Free-Viewpoint Video** · 第 5 页 · 全文片段\n\n> Although motion estimation\n> effectively captures the dynamics of previously observed\n> objects within a scene, we found that relying solely on mo-\n> tion estimation is insufficient for achieving high-quality de-\n> tail, particularly in cases involving newly emerging objects\n> and subtle motion transformations.\n\n**[4] 4DGC: Rate-Aware 4D Gaussian Compression for Efficient Streamable Free-Viewpoint Video** · 第 5 页 · 全文片段\n\n> For the\n> first type, we apply gradient thresholding, cloning the Gaus-\n> sian primitives at locations where the gradient exceeds a\n> predefined threshold τgas∆Gg\n> t, ensuring accurate repre-\n> sentation of newly observed elements.\n\n**[5] 4DGC: Rate-Aware 4D Gaussian Compression for Efficient Streamable Free-Viewpoint Video** · 第 5 页 · 全文片段\n\n> For the second type,\n> involving larger Gaussians impacted by rapid transforma-\n> tions, we clone two additional Gaussian primitives from the\n> original Gaussian when its motion parameters exceed speci-\n> fied thresholds: τµfor translation |∆µt|andτRfor rotation\n> |∆Rt|.\n\n**[6] 4DGC: Rate-Aware 4D Gaussian Compression for Efficient Streamable Free-Viewpoint Video** · 第 6 页 · 全文片段\n\n> Leveraging the trained motion grid Mtfrom Stage 1, we\n> transform Gaussian primitives from the previous frame to\n> the current frame while preserving fixed attributes like posi-\n> tion, rotation, and scale.\n\n**[7] 4DGC: Rate-Aware 4D Gaussian Compression for Efficient Streamable Free-Viewpoint Video** · 第 6 页 · 全文片段\n\n> To enhance representation fidelity,\n> we augment these transformed Gaussians with compensated\n> Gaussians ∆Gt.\n\n**[8] 4DGC: Rate-Aware 4D Gaussian Compression for Efficient Streamable Free-Viewpoint Video** · 第 2 页 · 全文片段\n\n> Our\n> key idea is to explicitly model motion between adjacent\n> frames, estimate the bitrate of the 4D Gaussian represen-\n> tation during training, and incorporate rate and distortion\n> terms into the loss function to enable end-to-end optimiza-\n> tion.\n\n**[9] 4DGC: Rate-Aware 4D Gaussian Compression for Efficient Streamable Free-Viewpoint Video** · 第 6 页 · 全文片段\n\n> The parameter λ1balances\n> the trade-off between rate and distortion, thus controlling\n> model size and reconstruction quality.\n\n</details>",
+  "draft": {
+    "sections": [
+      {
+        "title": "核心判断",
+        "claimIds": [
+          "c1",
+          "c2"
+        ]
+      }
+    ],
+    "claims": [
+      {
+        "claimId": "c1",
+        "text": "4DGC中，运动网格负责估计相邻帧间每个高斯的刚性运动（位置和旋转），将前一帧的高斯变换到当前帧；补偿高斯则稀疏地添加到运动估计不足的区域（如新出现物体、快速变换的大高斯），以提升细节精度。",
+        "kind": "reported",
+        "evidenceRefs": [
+          "ev_31687a563a5ee93e15e596ad4dce77707adf2c0b81888749496b8208a63fc79e",
+          "ev_b789a7c0dee48fb0fe1a51739c9b7e0c0cb86a6b14531117bf149e73f1193155",
+          "ev_38265021fd3795dd7c09968857a5fc08e8c4efaf5c2d17dfbeaff881675dc8cf",
+          "ev_4787bb285c2a91b02c8940d7a44c1fc654abb5ad3790332f75da6683dd12604e",
+          "ev_976d0acc219092da20d5a393b96b528a7bbba6ae850aedc1ecb1e318a26b5cd2",
+          "ev_4f14c62ba7dc14b7458973b6427c1e642bb90d88444099324d49a55cd3cc190d",
+          "ev_3d8e896c211b193f904c165b1bc5c23f0c35d79699f09136338780c78cf1f12e"
+        ],
+        "conditions": {
+          "context": "运动网格用于关键帧之后的每个后续帧；补偿高斯在两类区域触发：梯度超过阈值τg的区域，或平移/旋转超过阈值τμ/τR的大高斯。"
+        },
+        "obligationIds": [
+          "ob_1"
+        ],
+        "detailLevel": "fulltext",
+        "tableBindings": []
+      },
+      {
+        "claimId": "c2",
+        "text": "训练同时考虑码率和画质，是因为4DGC在损失函数中加入码率项和失真项，通过参数λ1平衡两者，从而在训练中直接优化压缩效率与重建质量，得到紧凑且高保真的表示。",
+        "kind": "reported",
+        "evidenceRefs": [
+          "ev_0d56c2481a75c0ab3ca22e9768c6fc7957b42ce6722655b2180d934c811aa0f5",
+          "ev_b30b47a7f4d47439f7bb6d0e575d8cb82255a831f45ad33cb696d8e3f374c201"
+        ],
+        "conditions": {
+          "context": "码率项估计4D高斯表示的比特率；失真项衡量重建误差；λ1控制码率与失真的权衡。"
+        },
+        "obligationIds": [
+          "ob_2"
+        ],
+        "detailLevel": "fulltext",
+        "tableBindings": []
+      }
+    ]
+  },
+  "repairChecks": null,
+  "rawFiles": [
+    {
+      "path": "tmp/dr-acceptance-receipts/H3F-v7.json",
+      "sha256": "e8a4489225842d5c9dd59ffca139ca9e9e18fe7ebfca129f9be23e02baf79e7a"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/H3F-v7.payload.json",
+      "sha256": "e12b9938fd55f059ea49fac4cd6ea1fe6b8501fb8d0e038f419576e2a5dd52c0"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/H3F-v7.calls.json",
+      "sha256": "4f787c0aedbbe67670b1bca5a167424cbb6d276318127810e2ef7620b30f1400"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/H3F-v7.result.json",
+      "sha256": "a3955e5e5e644100cc23569631778213c4e28107babab3841f71e111eb67bb84"
+    }
+  ],
+  "boundary": "One fixed retired development case, no automatic retry or independent credit. Original first-five scores and historical outcomes remain unchanged."
+}
