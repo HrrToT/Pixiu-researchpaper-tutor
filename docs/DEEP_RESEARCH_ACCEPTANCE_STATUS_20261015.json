@@ -44,11 +44,11 @@
       "overlap": true
     },
     "backendCurrentResearchReadingTables": {
-      "passed": 2886,
+      "passed": 2922,
       "warnings": 1,
-      "seconds": 178.71,
-      "sourceCommit": "04b8c4f1",
-      "log": "tmp/pytest-dr179-final-full.log",
+      "seconds": 171.23,
+      "sourceCommit": "fc9916d7",
+      "log": "tmp/pytest-dr180-final-full.log",
       "scope": "Research, reading, PDF tables and config; offline fixture providers."
     },
     "frontendDocumentNavigationFocused": {
@@ -1921,7 +1921,7 @@
     {
       "id": "DR3",
       "implementation": "Adaptive gaps, incremental reuse, bounded repair, typed experimental contracts, canonical baseline/component initializers and final-answer coverage implemented; incremental exact-input relevance cache and partial-extraction assessment route",
-      "acceptance": "F1 edited-artifact follow-up, D1-v27 and narrow D5-v14 development content accepted. H2F-v2 full comparison and H5F-v2 executable/scientific design fail; exact diagnostics retained. Fresh independent gates remain open.",
+      "acceptance": "F1 edited-artifact follow-up,D1-v27 and narrowD5-v14 development content accepted. H2F-v3 full comparison and H5F-v3 executable/scientific design fail; exact diagnostics retained. Fresh independent gates remain open.",
       "proof": [
         "deep-research-evidence/d3-v25-20261014.json",
         "deep-research-evidence/completion-criteria-20261015.json",
@@ -1966,7 +1966,7 @@
     {
       "id": "DR4",
       "implementation": "Permissioned arXiv discovery, versioned fulltext acquisition, fixed network exit and degradation implemented; versioned durable beginner wording pass before unchanged factual verification",
-      "acceptance": "Actual external discovery/fulltext and final source support pass. H3F-v6 beginner edit is discarded by a source-parameter false positive, so novice content remains unaccepted; no independent credit.",
+      "acceptance": "Actual fixed external discovery/fulltext and H3F-v8 novice development explanation manually accepted at unchanged criteria. Generic survey quality and fresh independent gates are not inferred from this narrow case.",
       "proof": [
         "deep-research-evidence/H3-v1-external-fulltext-20261013.json",
         "../ai-service-python/tests/test_deep_research_academic.py",
@@ -1983,7 +1983,8 @@
         "deep-research-evidence/runtime-postcase-dr110-20261016.json",
         "deep-research-evidence/H3R-v15-unknown-20261016.json",
         "deep-research-evidence/beginner-rewrite-replay-20261016.json",
-        "deep-research-evidence/runtime-load-dr111-beginner-rewrite-20261016.json"
+        "deep-research-evidence/runtime-load-dr111-beginner-rewrite-20261016.json",
+        "deep-research-evidence/H3F-v8-diagnostic-20261018.json"
       ],
       "actualExternalPath20261018": {
         "passed": true,
@@ -2295,8 +2296,8 @@
   ],
   "retiredIndependentClaims": "H1, H1R and original H3 were used for diagnosis. Original H2/H4/H5 share the tuned Scaffold-GS/4DGS material and are replaced for unseen-material acceptance. All original definitions/results remain preserved. H4R first result failed quality; subsequent parser/coverage diagnosis retires it as well. H2R and H5R first-run reviews were recorded before diagnosis; both are now retired. Their shared Lapis material cannot be claimed unseen in future replacement acceptance. H3R was first reviewed before diagnostic reuse; its subsequent runs are development cases and cannot regain unseen-material eligibility. H1F retired after its first recorded review; original result and sealed definition remain unchanged.",
   "releaseGatesStillOpen": [
-    "Current development cases D1/D2/D3/D5 meet every applicable content dimension at least 4/5, with all key source/number/condition claims checked.",
-    "Fresh real independent content gates remain below 4/5; first results are recorded and H1F is retired for tuning. External access alone is not a novice/content pass.",
+    "All applicable development content dimensions must reach at least4/5. Preserve fixed-scope D1-v27,H3F-v8,narrowD5-v14 andF1 acceptance; full multi-paper comparison and scientifically executable experiment remain open.",
+    "Fresh real independent content gates remain open. Original first-five0/5 is immutable; allH1F-H5F are retired. External access and a development novice pass do not replace fresh independent material acceptance.",
     "Known model-call outcomes, actual usage and costs where available remain separate from retained unknown reservations.",
     "Keep PR draft and production defaults off until the actual gates are met."
   ],
@@ -2305,25 +2306,25 @@
     "Full novice study workflow",
     "Independent Edge recovery"
   ],
-  "currentProviderConstraint": "All further necessary bounded validations uniformly authorized. Selected diagnostic sequence:324 settled model calls/1276408 tokens; not global historical usage. Cost unknown; nine historical unknowns preserved, no blind retry.",
-  "currentDevelopmentMode": "Primary Codex only; Goal active, quota monitor paused by user. Python04b8c4f1/.179 loaded, Java27ac4beb, frontend123b0d29. Source ownership/revision and experimental-intent handling improve, but H3F-v7/H2F-v3/H5F-v3 all fail content acceptance. OriginalDR0-DR5 incomplete, first-five0/5 and PR draft unchanged.",
+  "currentProviderConstraint": "All further necessary bounded validations uniformly authorized. Selected diagnostic sequence:333 settled model calls/1313116 tokens; not global historical usage. Cost unknown; nine historical unknowns preserved, no blind retry.",
+  "currentDevelopmentMode": "Primary Codex only; Goal active, quota monitor paused by user. Pythonfc9916d7/.180 loaded, Java27ac4beb, frontend123b0d29. H3F-v8 fixed beginner development content accepted after manual source/goal review; no independent credit. Full multi-paper comparison and executable scientific experiment remain unaccepted. OriginalDR0-DR5 incomplete, first-five0/5 and PR draft unchanged.",
   "loadedRuntime": {
-    "commit": "04b8c4f1",
-    "promptVersion": "dr-v2.20261018.179",
+    "commit": "fc9916d7",
+    "promptVersion": "dr-v2.20261018.180",
     "javaCommit": "27ac4beb",
     "frontendCommit": "123b0d29",
-    "callsAfterLatestCase": 4360,
+    "callsAfterLatestCase": 4383,
     "active": 0,
     "historicalPausedUnknown": 9,
     "tasks": 92,
-    "proof": "deep-research-evidence/runtime-load-dr179-evidence-intent-20261018.json",
-    "postCasesProof": "deep-research-evidence/runtime-postcases-dr179-regression-three-20261018.json"
+    "proof": "deep-research-evidence/runtime-load-dr180-source-science-20261018.json",
+    "postCasesProof": "deep-research-evidence/runtime-postcases-dr180-20261018.json"
   },
   "nextQualityWork": [
-    "Preserve reported hard quantity/source checks before audience reclassification; distinguish indefinite mathematical objects from empirical counts. Keep independent logic/scope verification.",
-    "Check bounded reasoning applicability for complex multi-paper comparisons; acquire actual training premises and distinguish evidence-not-aligned from documented setting differences.",
-    "Offline-probe metrics/hypothesis/analysis coupling within three repair batches and24000bytes. Preserve all mandatory quotes/configuration; complete source-backed AST operation, dataset selection and common initialization.",
-    "Prepare fresh independent replacements after development quality passes. Candidate hash screens alone do not establish independent eligibility."
+    "Use actual implementation-level training premises to complete both-paper input/temporal/training/FPS interpretation. Preserve evidence-limited judgments rather than assert undocumented condition differences; the actual450-character comparison now qualifies for bounded reasoning4.",
+    "AST operation chunks25-27 were already acquired/read but not extracted. Prioritize source operations over introduction/results under the existing extraction cap, and scientifically review paper-attributed interventions rather than only free numeric configuration.",
+    "The own Lego/D-NeRF quotation already exists; dataAvailability chose the parent-only citation instead. Supply literal own membership candidates without auto-rebinding a verdict or changing the correct name guard. Preserve full canonical initialization and coupled scientific repair within three24KBbatches.",
+    "Keep accepted H3F-v8,D1-v27,narrowD5-v14,F1 at their fixed development scopes; do not rerun them unchanged. Freeze fresh independent replacements only after remaining development quality gates pass."
   ],
   "javaReaderRuntime": {
     "sourceCommit": "070ab1a",
@@ -2346,7 +2347,7 @@
     ]
   },
   "nextIndependentCasesManifest": "DEEP_RESEARCH_INDEPENDENT_CASES_20261018.json",
-  "nextIndependentCasesStatus": "Original first-five results preserved,0/5 full content passes. All H1F-H5F are retired development material. Latest H3F-v7/H2F-v3/H5F-v3 all fail content and earn0independent credit. Fresh replacements still required.",
+  "nextIndependentCasesStatus": "Original first-five results preserved,0/5 full content passes. All H1F-H5F are retired development material. H3F-v8 fixed novice explanation is now development-accepted with0independent credit; H2F-v3/H5F-v3 remain content failures. Fresh replacements still required.",
   "priorIndependentSlots": [
     [
       {
@@ -2805,5 +2806,19 @@
     "retention": "deep-research-evidence/runtime-postcases-dr179-regression-three-20261018.json",
     "contentAccepted": false,
     "independentCredit": 0
+  },
+  "groupedSourceScienceCheckpoint": {
+    "sourceCommit": "fc9916d7",
+    "promptVersion": "dr-v2.20261018.180",
+    "offlinePassed": 2922,
+    "legacyProviderFingerprintsMatched": 9,
+    "proof": "deep-research-evidence/grouped-source-science-regression-20261018.json",
+    "acceptedDevelopmentCase": "H3F-v8",
+    "manualContentAccepted": true,
+    "independentCredit": 0,
+    "modelCalls": 9,
+    "settledTokens": 36708,
+    "diagnostic": "deep-research-evidence/H3F-v8-diagnostic-20261018.json",
+    "experimentDiagnosis": "deep-research-evidence/experiment-operation-and-membership-diagnosis-20261018.json"
   }
 }
