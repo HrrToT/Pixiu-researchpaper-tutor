@@ -45,12 +45,12 @@
       "overlap": true
     },
     "backendCurrentResearchReadingTables": {
-      "passed": 2389,
+      "passed": 2412,
       "warnings": 1,
-      "seconds": 185.16,
-      "log": "tmp/pytest-dr151-full.log",
-      "sourceCommit": "03d6c25e",
-      "scope": "Research, reading, PDF tables and configuration."
+      "seconds": 165.35,
+      "log": "tmp/pytest-dr153-full.log",
+      "sourceCommit": "27ac4beb",
+      "scope": "Research, reading, PDF tables and configuration including new action route; fixture providers."
     },
     "frontendDocumentNavigationFocused": {
       "passed": 19,
@@ -1806,6 +1806,30 @@
       "matchingChildRuns": 0,
       "originalReceiptChanged": false,
       "boundary": "Exact forwarded payload fingerprint matches a definitive failed pre-child action. CLI legacy receipt still unconfirmed; implement read-only receipt reconciliation rather than rename/retry bypass."
+    },
+    "javaActionReadRegression": {
+      "passed": 63,
+      "failed": 0,
+      "skipped": 0,
+      "jdk": "21.0.12.1+1",
+      "targetRelease": 21,
+      "controllerTests": {
+        "passed": 58,
+        "seconds": 55.371,
+        "log": "tmp/maven-dr153-jdk21.log"
+      },
+      "readProjectionAndSourceTests": {
+        "passed": 5,
+        "seconds": 13.717,
+        "log": "tmp/maven-dr153-projection-and-source.log"
+      },
+      "package": {
+        "success": true,
+        "seconds": 9.152,
+        "log": "tmp/maven-dr153-package.log"
+      },
+      "sourceCommit": "27ac4beb",
+      "scope": "Four existing controller/read-projection/source test classes; isolated output and memory H2."
     }
   },
   "stages": [
@@ -2198,22 +2222,22 @@
     "Full novice study workflow",
     "Independent Edge recovery"
   ],
-  "currentProviderConstraint": "All further necessary bounded validations uniformly authorized. .151 H1F-v10/D1-v20 submitted once each through canonical prior-terminal guards: 22 settled model calls, 75035 tokens, no new unknown. No historical unknown or unconfirmed receipt bypass.",
-  "currentDevelopmentMode": "Primary Codex only; goal active; quota monitor remains paused. .151 loaded. Original DR0-DR5 content gates remain open; both new diagnostics partial and not accepted.",
+  "currentProviderConstraint": "All further necessary bounded validation uniformly authorized. Last model generation remains .151 H1F-v10/D1-v20: 22 calls/75035 settled tokens, neither content accepted. .152/.153 add zero Provider calls. No unknown retry or receipt/ID bypass.",
+  "currentDevelopmentMode": "Primary Codex only; goal active, quota monitor paused. Python/Java .153 loaded. Operation ranking and action GET verified; original DR0-DR5 quality gates remain incomplete.",
   "loadedRuntime": {
-    "commit": "03d6c25e",
-    "promptVersion": "dr-v2.20261018.151",
+    "commit": "27ac4beb",
+    "promptVersion": "dr-v2.20261018.153",
     "ready": true,
-    "callsPreserved": 3708,
+    "callsPreserved": 3747,
     "pausedUnknownRuns": 9,
-    "proof": "deep-research-evidence/runtime-load-dr151-human-grounding-20261018.json"
+    "proof": "deep-research-evidence/runtime-load-dr153-action-lookup-20261018.json"
   },
   "nextQualityWork": [
-    "Prioritize literal output definitions and temporal state-transfer/initialization passages for the corresponding human questions within existing extraction slots; implementation vocabulary must not displace them.",
-    "Rebuild beginner facts qualitatively without unrequested derived counts or internal evidence aliases; retain actual requested relationships and independently check every narrowed revision.",
-    "Complete D1 as a concise qualified judgement with conditions/limits, not a dense list of cells. Correct unstarred cell binding is necessary but does not establish the entire answer.",
-    "Implement read-only exact action-receipt reconciliation before another D5 submission, preserving original receipts and historical unknowns.",
-    "Complete original D1/D2/D3/D5, executable experiments, real continuation and fresh independent quality gates; original first-five result remains 0/5."
+    "Connect exact read-only action receipt reconciliation to the validation harness before a new D5 case. Preserve original bytes; pending/missing/changed/unknown identities must still block.",
+    "Validate new requested-operation extraction ordering in a product case only after improving factual repair. Source selection alone does not prove a novice answer.",
+    "Make factual generation/repair preserve supported qualitative answer points while omitting optional unreported counts and aliases; independently check every selected revision.",
+    "Complete D1 as a qualified judgement with limits, not a dense table-value list; correct baseline and cells are necessary but insufficient.",
+    "Complete original D1/D2/D3/D5, executable experiments, real continuation and fresh independent gates. Original first-five full content result remains 0/5."
   ],
   "javaReaderRuntime": {
     "sourceCommit": "070ab1a",
@@ -2307,5 +2331,16 @@
     "contentPassed": 0,
     "independentCredit": 0,
     "originalFirstFiveFullContentPassed": 0
+  },
+  "actionReceiptCheckpoint": {
+    "proof": "deep-research-evidence/operation-ranking-and-action-lookup-regression-20261018.json",
+    "apiProof": "deep-research-evidence/action-receipt-live-api-20261018.json",
+    "javaRuntimeProof": "deep-research-evidence/action-receipt-java-runtime-20261018.json",
+    "originalD5v2ReceiptUnchanged": true,
+    "acceptanceCliReconciliationImplemented": false,
+    "tasksPreserved": 91,
+    "callRowsPreserved": 3747,
+    "pausedUnknownIdentitiesPreserved": 9,
+    "newProviderCalls": 0
   }
 }

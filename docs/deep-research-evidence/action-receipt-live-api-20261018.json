@@ -1,0 +1,82 @@
+{
+  "date": "2026-10-18",
+  "sourceCommit": "27ac4beb",
+  "runtimePromptVersion": "dr-v2.20261018.153",
+  "legacyReceipt": "tmp/dr-live-cases/D5-v2.json",
+  "legacyReceiptSha256": "0c7843c20c5c414727c86445eb6ddb39f61294191a219c81251cd8192c544ba9",
+  "actionReceiptFromActualJavaPythonApi": {
+    "runId": "dr_run_56107afc748d54828af1a50e84eb5d62",
+    "taskId": "dr-live-d2-20261012",
+    "requestId": "314db178-e5ec-5983-9917-043917274b62",
+    "fingerprint": "eebd7c21bd4a209da8838916bb5cb8f0a9ca7a3fa6e8f21b9b5bb227b1b6f849",
+    "status": "failed",
+    "result": {
+      "error": {
+        "code": "idempotency_conflict",
+        "message": "Idempotency key reused with different input",
+        "details": {
+          "workspaceId": "dr-live-d2-20261012",
+          "idempotencyKey": "314db178-e5ec-5983-9917-043917274b62"
+        }
+      }
+    },
+    "matchingChildRuns": []
+  },
+  "exactForwardedPayloadFingerprintMatched": true,
+  "httpChecks": {
+    "ownedFailedReceipt": 200,
+    "foreignWorkspace": 404,
+    "missingReceipt": 404
+  },
+  "before": {
+    "python": {
+      "deep_research_runs_v2": {
+        "rows": 152,
+        "sha256": "621679b7c49612f746f9d6f4efd5a938784a7799cd10288c78efdf644a5d9fcd"
+      },
+      "deep_research_actions_v2": {
+        "rows": 179,
+        "sha256": "17f68737e53384585347063801c6112998f0de5cb8da4c3ed9e2971f56c17215"
+      },
+      "deep_research_calls_v2": {
+        "rows": 3747,
+        "sha256": "6875a4bae8cdaefe366577cf884e9a00ab952da2d8e7daedf53b75d2119ab382"
+      },
+      "deep_research_outbox_v2": {
+        "rows": 118,
+        "sha256": "e5548e0faf9e14921d64d3d68356a03bd4a65fa12d3d555650bd37ebcf459acf"
+      }
+    },
+    "javaTasks": {
+      "count": 91,
+      "sha256": "cad6c6617fe89b18fd01068c08f1a83acc8e0ad57ee469db57ece5fee5619d39"
+    }
+  },
+  "after": {
+    "python": {
+      "deep_research_runs_v2": {
+        "rows": 152,
+        "sha256": "621679b7c49612f746f9d6f4efd5a938784a7799cd10288c78efdf644a5d9fcd"
+      },
+      "deep_research_actions_v2": {
+        "rows": 179,
+        "sha256": "17f68737e53384585347063801c6112998f0de5cb8da4c3ed9e2971f56c17215"
+      },
+      "deep_research_calls_v2": {
+        "rows": 3747,
+        "sha256": "6875a4bae8cdaefe366577cf884e9a00ab952da2d8e7daedf53b75d2119ab382"
+      },
+      "deep_research_outbox_v2": {
+        "rows": 118,
+        "sha256": "e5548e0faf9e14921d64d3d68356a03bd4a65fa12d3d555650bd37ebcf459acf"
+      }
+    },
+    "javaTasks": {
+      "count": 91,
+      "sha256": "cad6c6617fe89b18fd01068c08f1a83acc8e0ad57ee469db57ece5fee5619d39"
+    }
+  },
+  "originalReceiptUnchanged": true,
+  "modelCalls": 0,
+  "boundary": "Actual GET through Java ownership and Python durable storage. No action claimed, child bound, graph resumed or database row changed. This exposes the old failed idempotency-conflict receipt; the acceptance CLI remains blocked until an explicit exact reconciliation path is implemented. This is not content acceptance, a provider-unknown settlement or permission to bypass history."
+}
