@@ -44,11 +44,11 @@
       "overlap": true
     },
     "backendCurrentResearchReadingTables": {
-      "passed": 2680,
+      "passed": 2701,
       "warnings": 1,
-      "seconds": 156.7,
-      "sourceCommit": "17f10918",
-      "log": "tmp/pytest-dr165-full.log",
+      "seconds": 167.4,
+      "sourceCommit": "4c68f300",
+      "log": "tmp/pytest-dr166-full-final.log",
       "scope": "Research, reading, PDF tables and config; fixture providers."
     },
     "frontendDocumentNavigationFocused": {
@@ -2026,11 +2026,11 @@
   "developmentCases": [
     {
       "id": "D1",
-      "runId": "dr_run_b54d68116ab6530cb0832ca02b78bde2",
-      "machine": "completed/partial",
-      "content": "Manual content fail; exact findings preserved in proof. No independent credit.",
-      "next": "Correct ablation/general baseline scope and bounded observations versus necessary conditions; complete unverified range.",
-      "proof": "deep-research-evidence/D1-v23-diagnostic-20261018.json",
+      "runId": "dr_run_d59ed5d543ca5249ba52bce06aae03c8",
+      "machine": "completed/inconclusive",
+      "content": "Manual content fail; raw responses and exact rejection evidence retained. No independent credit.",
+      "next": "Fix draftingBasis in actual JSON schema and use direct bounded repair for new short factual cases, then validate once.",
+      "proof": "deep-research-evidence/D1-v24-diagnostic-20261018.json",
       "history": [
         {
           "id": "D1",
@@ -2135,6 +2135,14 @@
             "proof": "deep-research-evidence/D1-v18-diagnostic-20261018.json"
           },
           "proof": "deep-research-evidence/D1-v19-diagnostic-20261018.json"
+        },
+        {
+          "id": "D1",
+          "runId": "dr_run_b54d68116ab6530cb0832ca02b78bde2",
+          "machine": "completed/partial",
+          "content": "Manual content fail; exact findings preserved in proof. No independent credit.",
+          "next": "Correct ablation/general baseline scope and bounded observations versus necessary conditions; complete unverified range.",
+          "proof": "deep-research-evidence/D1-v23-diagnostic-20261018.json"
         }
       ]
     },
@@ -2168,11 +2176,11 @@
     },
     {
       "id": "D5",
-      "runId": "dr_run_94ae6aa1577051b88d7587f33a093374",
+      "runId": "dr_run_1999f9a9d9285997bca0d4d456f8af7a",
       "machine": "completed/inconclusive",
-      "content": "Manual content fail; exact findings preserved in proof. No independent credit.",
-      "next": "Organize actual comparison premises before drafting; unknown alignment must not become demonstrated differences.",
-      "proof": "deep-research-evidence/D5-v9-diagnostic-20261018.json",
+      "content": "Manual content fail; raw responses and exact rejection evidence retained. No independent credit.",
+      "next": "Fix draftingBasis in actual JSON schema and use direct bounded repair for new short factual cases, then validate once.",
+      "proof": "deep-research-evidence/D5-v10-diagnostic-20261018.json",
       "history": [
         {
           "id": "D5",
@@ -2181,6 +2189,14 @@
           "functional": "Real inherited evidence reused without retrieve/read; parent edited artifact preserved",
           "content": "not accepted; measurement conditions insufficiently distinguished",
           "next": "Validate continuation content and a complete new artifact's exact live citation lookup."
+        },
+        {
+          "id": "D5",
+          "runId": "dr_run_94ae6aa1577051b88d7587f33a093374",
+          "machine": "completed/inconclusive",
+          "content": "Manual content fail; exact findings preserved in proof. No independent credit.",
+          "next": "Organize actual comparison premises before drafting; unknown alignment must not become demonstrated differences.",
+          "proof": "deep-research-evidence/D5-v9-diagnostic-20261018.json"
         }
       ]
     },
@@ -2267,19 +2283,19 @@
   "currentProviderConstraint": "All further necessary bounded validations uniformly authorized. Current .151-onward diagnostic sequence uses86 settled calls/299046tokens, including D5-v7/v8 and D1-v21 each submitted once. Nine historical unknowns and reservations unchanged; cost unknown.",
   "currentDevelopmentMode": "Primary Codex only; goal active, quota monitor paused. Python6f6a7b92/.162 loaded, Java27ac4beb and frontendc3843700 unchanged. H1F-v11 development content remains accepted; D5-v7/v8 and D1-v21 do not pass. OriginalDR0-DR5 incomplete, original first-five0/5 and PR draft unchanged.",
   "loadedRuntime": {
-    "commit": "17f10918",
-    "promptVersion": "dr-v2.20261018.165",
+    "commit": "4c68f300",
+    "promptVersion": "dr-v2.20261018.166",
     "ready": true,
-    "callsPreservedAtLoad": 3956,
-    "callsAfterLatestCase": 3979,
+    "callsPreservedAtLoad": 3979,
+    "callsAfterLatestCase": 4005,
     "pausedUnknownRuns": 9,
     "taskCount": 92,
-    "proof": "deep-research-evidence/runtime-load-dr165-short-factual-20261018.json"
+    "proof": "deep-research-evidence/runtime-load-dr166-factual-scope-20261018.json"
   },
   "nextQualityWork": [
-    "Organize factual premises and conclusion strength before drafting; require own-quote scope audit without changing old requests.",
-    "After a concrete correction, verify one fixed D1 and D5 example each; never retry unchanged or unknown calls.",
-    "Executable experiment design and new independent content gates remain open; original unknown D2/D3 calls are not blindly reissued."
+    "Fix actual generation JSON schema for private premise organization, retaining v1 request identities.",
+    "Use direct output for new short factual repairs after a stop/empty body; no automatic retry of the empty response.",
+    "Complete content, experiment and independent gates; original unknown D2/D3 calls remain unretried."
   ],
   "javaReaderRuntime": {
     "sourceCommit": "070ab1a",
@@ -2563,5 +2579,17 @@
     "settledTokens": 80231,
     "contentAccepted": 0,
     "boundary": "Actual limited reasoning enabled; no quality pass inferred."
+  },
+  "factualScopeCheckpoint": {
+    "sourceCommit": "4c68f300",
+    "contractVersion": 1,
+    "regressionProof": "deep-research-evidence/factual-scope-regression-20261018.json",
+    "replayProof": "deep-research-evidence/factual-scope-real-input-replay-20261018.json",
+    "modelCalls": 14,
+    "settledTokens": 62299,
+    "contentAccepted": 0,
+    "draftingActuallyReturned": false,
+    "liveNewScopeAuditPositiveCredit": false,
+    "boundary": "Draft schema omission and empty repair body remain. Existing comparison verifier rejected wrong claims; no new-scope positive result claimed."
   }
 }
