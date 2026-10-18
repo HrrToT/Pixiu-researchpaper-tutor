@@ -15,10 +15,10 @@
     "frontendVitest": {
       "passed": 490,
       "files": 65,
-      "seconds": 82.38,
+      "seconds": 89.51,
       "workers": 4,
-      "sourceCommit": "e6c14f57",
-      "log": "tmp/vitest-dr164-full.log"
+      "sourceCommit": "123b0d29",
+      "log": "tmp/vitest-dr170-sources-first-full.log"
     },
     "frontendIsolatedBrowser": {
       "passed": 6,
@@ -44,12 +44,12 @@
       "overlap": true
     },
     "backendCurrentResearchReadingTables": {
-      "passed": 2705,
+      "passed": 2752,
       "warnings": 1,
-      "seconds": 169.7,
-      "sourceCommit": "cf111653",
-      "log": "tmp/pytest-dr168-full.log",
-      "scope": "Research, reading, PDF tables and config; fixture providers."
+      "seconds": 159.41,
+      "sourceCommit": "279edb95",
+      "log": "tmp/pytest-dr170-full.log",
+      "scope": "Research, reading, PDF tables and config; offline fixture providers."
     },
     "frontendDocumentNavigationFocused": {
       "passed": 19,
@@ -2304,23 +2304,26 @@
     "Full novice study workflow",
     "Independent Edge recovery"
   ],
-  "currentProviderConstraint": "All further necessary bounded validations uniformly authorized. Current .151-onward diagnostic sequence uses86 settled calls/299046tokens, including D5-v7/v8 and D1-v21 each submitted once. Nine historical unknowns and reservations unchanged; cost unknown.",
-  "currentDevelopmentMode": "Primary Codex only; goal active, quota monitor paused. Python6f6a7b92/.162 loaded, Java27ac4beb and frontendc3843700 unchanged. H1F-v11 development content remains accepted; D5-v7/v8 and D1-v21 do not pass. OriginalDR0-DR5 incomplete, original first-five0/5 and PR draft unchanged.",
+  "currentProviderConstraint": "All further necessary bounded validations uniformly authorized. Selected current diagnostic checkpoint sequence:192 settled model calls/738225 tokens; not a total historical cost estimate. Nine historical unknowns preserved; cost unknown. No blind retry.",
+  "currentDevelopmentMode": "Primary Codex only; Goal active, quota monitor paused by user. Python279edb95/.170 loaded, Java27ac4beb, frontend123b0d29. D1-v26 partial and D5-v13 inconclusive are not content accepted. OriginalDR0-DR5 incomplete, original first-five0/5 and PR draft unchanged.",
   "loadedRuntime": {
-    "commit": "cf111653",
-    "promptVersion": "dr-v2.20261018.168",
-    "ready": true,
-    "callsPreservedAtLoad": 4027,
-    "callsAfterLatestCase": 4033,
-    "pausedUnknownRuns": 9,
-    "taskCount": 92,
-    "proof": "deep-research-evidence/runtime-load-dr168-short-reasoning-20261018.json"
+    "commit": "279edb95",
+    "promptVersion": "dr-v2.20261018.170",
+    "javaCommit": "27ac4beb",
+    "frontendCommit": "123b0d29",
+    "callsAfterLatestCase": 4064,
+    "active": 0,
+    "historicalPausedUnknown": 9,
+    "tasks": 92,
+    "proof": "deep-research-evidence/runtime-load-dr170-declared-table-refs-20261018.json",
+    "postCasesProof": "deep-research-evidence/runtime-postcases-dr170-20261018.json"
   },
   "nextQualityWork": [
-    "Fix current/available evidence as a direct grammatical subject without permitting author-wide absence behind a qualifier.",
-    "Native generation instruction should treat scientific question premises as unverified, lead with bounded judgement, avoid contradictory opening/limits.",
-    "Keep empty/invalid model body separate from lack of paper evidence; no automatic resend.",
-    "Complete executable design and independent content gates; old D2/D3 unknown requests remain unretried."
+    "Separate a comparison-audit enum annotation from an actual negative scientific verdict, while retaining all original support/premise checks.",
+    "Recognize nominal unknown-scope labels and nonassertive untested dimensions; still independently verify the visible claim.",
+    "Fix categorical cross-paper FPS reasoning without approving unknown conditions as demonstrated differences or arithmetic impossibility.",
+    "Distinguish received-invalid repair output from lack of paper evidence; preserve settled receipt and do not silently resend.",
+    "Complete executable experimental-plan content and new independent cases under the original full-design criteria."
   ],
   "javaReaderRuntime": {
     "sourceCommit": "070ab1a",
@@ -2643,5 +2646,24 @@
     "contentAccepted": false,
     "singleCaseOnly": true,
     "boundary": "Preparation is more correctly bounded but prose still overreaches; guard false positive is separate from semantic validity."
+  },
+  "tableReferenceAndScopeCheckpoint": {
+    "sourceCommit": "279edb95",
+    "promptVersion": "dr-v2.20261018.170",
+    "modelCalls": 19,
+    "settledTokens": 88590,
+    "contentAccepted": 0,
+    "independentCredit": 0,
+    "cases": [
+      "D1-v26",
+      "D5-v13"
+    ],
+    "proofs": [
+      "deep-research-evidence/declared-table-references-real-input-replay-20261018.json",
+      "deep-research-evidence/D1-v26-diagnostic-20261018.json",
+      "deep-research-evidence/D5-v13-diagnostic-20261018.json",
+      "deep-research-evidence/runtime-postcases-dr170-20261018.json"
+    ],
+    "boundary": "Old numeric inference tableBindings used row0 for source rows8/10. New hard gate rejects this before semantic review. Older content outcomes are not upgraded. Sources/details UI validated independently."
   }
 }

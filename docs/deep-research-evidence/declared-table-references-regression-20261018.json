@@ -1,0 +1,14 @@
+{
+  "date": "2026-10-18",
+  "sourceCommit": "279edb95",
+  "promptVersion": "dr-v2.20261018.170",
+  "fullOffline": {"passed": 2752, "warnings": 1, "seconds": 159.41, "log": "tmp/pytest-dr170-full.log"},
+  "focused": {"passed": 69, "seconds": 2.5, "log": "tmp/pytest-dr170-focused-final.log", "overlap": true},
+  "priorScopeFix": {"sourceCommit": "49c787cf", "fullPassed": 2728, "loadedSeparately": false, "proof": "current-evidence-scope-regression-20261018.json"},
+  "contracts": {"tableReferencesContractVersion": 1, "absenceScopeContractVersion": 3, "structuredOutputContractVersion": 7},
+  "actualCounterexampleProof": "declared-table-references-real-input-replay-20261018.json",
+  "scope": "New non-reported claims cannot fabricate declared original cell references. Every declared own row/group/metric/value is checked; inferred arithmetic or unexecuted target values are not forced to appear as reported cells. Original reported-measurement checks remain unchanged.",
+  "repairFeedback": "Bounded parser-established source rows, aliased in prompt; rowNumber is source ID, not selected-array index. Same sources and model/run caps.",
+  "legacyRequestsUnchanged": true,
+  "boundary": "Offline and exact old-record counterexample replay. Valid reference metadata is not semantic or full content acceptance; two live fixed cases are separately recorded."
+}
