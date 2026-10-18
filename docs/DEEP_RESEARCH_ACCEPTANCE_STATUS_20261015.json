@@ -44,11 +44,11 @@
       "overlap": true
     },
     "backendCurrentResearchReadingTables": {
-      "passed": 2827,
+      "passed": 2843,
       "warnings": 1,
-      "seconds": 171.93,
-      "sourceCommit": "6e931a51",
-      "log": "tmp/pytest-dr174-full.log",
+      "seconds": 167.36,
+      "sourceCommit": "48ec3b29",
+      "log": "tmp/pytest-dr175-full.log",
       "scope": "Research, reading, PDF tables and config; offline fixture providers."
     },
     "frontendDocumentNavigationFocused": {
@@ -2305,27 +2305,25 @@
     "Full novice study workflow",
     "Independent Edge recovery"
   ],
-  "currentProviderConstraint": "All further necessary bounded validations uniformly authorized. Selected diagnostic sequence:258 settled model calls/1006395 tokens; not global historical usage. Cost unknown; nine historical unknowns preserved, no blind retry.",
-  "currentDevelopmentMode": "Primary Codex only; Goal active, quota monitor paused by user. Python6e931a51/.174 loaded, Java27ac4beb, frontend123b0d29. D1-v27 and narrow D5-v14 development content accepted. H3F-v3 actual source-field binding and source support pass, but novice readability fails; machine complete is not content acceptance. OriginalDR0-DR5 incomplete, first-five0/5 and PR draft unchanged.",
+  "currentProviderConstraint": "All further necessary bounded validations uniformly authorized. Selected diagnostic sequence:270 settled model calls/1053538 tokens; not global historical usage. Cost unknown; nine historical unknowns preserved, no blind retry.",
+  "currentDevelopmentMode": "Primary Codex only; Goal active, quota monitor paused by user. Python48ec3b29/.175 loaded, Java27ac4beb, frontend123b0d29. D1-v27 and narrow D5-v14 development content accepted. H3F-v4 source/target binding and source support pass, but novice why explanation still fails. OriginalDR0-DR5 incomplete, first-five0/5 and PR draft unchanged.",
   "loadedRuntime": {
-    "commit": "6e931a51",
-    "promptVersion": "dr-v2.20261018.174",
+    "commit": "48ec3b29",
+    "promptVersion": "dr-v2.20261018.175",
     "javaCommit": "27ac4beb",
     "frontendCommit": "123b0d29",
-    "callsAfterLatestCase": 4203,
+    "callsAfterLatestCase": 4229,
     "active": 0,
     "historicalPausedUnknown": 9,
     "tasks": 92,
-    "proof": "deep-research-evidence/runtime-load-dr174-audit-source-fields-20261018.json",
-    "postCasesProof": "deep-research-evidence/runtime-postcases-dr174-20261018.json"
+    "proof": "deep-research-evidence/runtime-load-dr175-source-first-audience-20261018.json",
+    "postCasesProof": "deep-research-evidence/runtime-postcases-dr175-20261018.json"
   },
   "nextQualityWork": [
-    "Complete internal target-scope binding with a strict reference to unchanged target text/conditions; do not retype a paraphrased statementExcerpt.",
-    "Rebuild novice points from each original source and frozen requested requirements, omitting unverified draft prose/conditions from the generation view. Actual prior audience rewrites copied both points unchanged; no automatic retry.",
-    "Transmit original-PDF publication revision and organize per-paper factual support. H2F lacks NTC/monocular evidence in extracted pool; inspect query/selection intent, not only synthesis wording.",
-    "Investigate whether whole-question FPS context incorrectly triggers metric-table ranking for method/input subqueries; keep active intent and full user context distinct without removing scope/named-row guards.",
+    "Distinguish source-derived qualitative reasoning from author-reported facts while retaining numerical, scope and independent semantic checks. Preserve original drafts and fixed source permissions.",
+    "H2F actual eight retrieval fingerprints disprove whole-question FPS pollution. Fix method-detail intent/selection and extraction coverage, then transmit verified original-PDF revision and organize per-paper support.",
     "Respect explicitly requested explore/descriptive analysis; reject PSNR-score variability alone as jitter; complete initialization and factor fixed repair redundancy under unchanged24000byte cap.",
-    "Prepare fresh independent replacements after development quality passes. MVSplat/ODGS/4DGS were already used in old receipts and are not fresh."
+    "Prepare fresh independent replacements after development quality passes. MVSplat/ODGS/4DGS were already used and are not fresh."
   ],
   "javaReaderRuntime": {
     "sourceCommit": "070ab1a",
@@ -2729,5 +2727,18 @@
     "elapsedSeconds": 159.0,
     "independentCredit": 0,
     "proof": "deep-research-evidence/H3F-v3-diagnostic-20261018.json"
+  },
+  "sourceFirstAudienceCheckpoint": {
+    "sourceCommit": "48ec3b29",
+    "promptVersion": "dr-v2.20261018.175",
+    "case": "H3F-v4",
+    "machineOutcome": "complete",
+    "sourceSupport": "passed",
+    "contentAccepted": false,
+    "modelCalls": 12,
+    "settledTokens": 47143,
+    "elapsedSeconds": 118,
+    "independentCredit": 0,
+    "proof": "deep-research-evidence/H3F-v4-diagnostic-20261018.json"
   }
 }
