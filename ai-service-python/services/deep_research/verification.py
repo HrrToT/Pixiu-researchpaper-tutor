@@ -37,13 +37,14 @@ def make_evidence(source: dict, quote: str, original: str, *, location: dict,
             "verification": {"literal": "passed", "semantic": "unchecked"}}
 
 
-def _measurement_numbers(text: str, *, word_counts=False, relative_references=False) -> set[str]:
+def _measurement_numbers(text: str, *, word_counts=False, relative_references=False, artifact_references=False) -> set[str]:
     # Dimensional method labels are not measured quantities. The semantic
     # verifier still checks their identity; standalone dimensions stay checked.
     text = re.sub(r'(?<![A-Za-z0-9_])[234]D(?:-?[A-Za-z]+)?(?![A-Za-z0-9_])', '', text)
     text = re.sub(r'(?<![A-Za-z])Table\s+\d+(?![A-Za-z0-9])|表\s*\d+', '', text, flags=re.I)
     from services.deep_research.measurement_numbers import measurement_numbers
-    return measurement_numbers(text, word_counts=word_counts, relative_references=relative_references)
+    return measurement_numbers(text, word_counts=word_counts, relative_references=relative_references,
+                               artifact_references=artifact_references)
 
 
 def _condition_values_text(value):
@@ -84,8 +85,9 @@ def verify_claims(claims: list[dict], evidence: list[dict],
     if len(by_id) != len(evidence):
         raise ValueError("Duplicate evidence identity")
     candidates, rejected, seen = [], [], set()
-    word_counts = type(quantity_spelling_version) is int and quantity_spelling_version in (1, 2)
-    relative_references = type(quantity_spelling_version) is int and quantity_spelling_version == 2
+    word_counts = type(quantity_spelling_version) is int and quantity_spelling_version in (1, 2, 3)
+    relative_references = type(quantity_spelling_version) is int and quantity_spelling_version in (2, 3)
+    artifact_references = type(quantity_spelling_version) is int and quantity_spelling_version == 3
     concurrent_feedback = type(feedback_version) is int and feedback_version == 2
     for claim in claims:
         claim_id = claim.get("claimId")
@@ -140,9 +142,10 @@ def verify_claims(claims: list[dict], evidence: list[dict],
                     if re.fullmatch(r'arxiv:\d{4}\.\d{4,5}(?:v\d+)?', identity, re.I):
                         pattern = r'(?<![A-Za-z0-9_])' + re.escape(identity) + r'(?![A-Za-z0-9_.])'
                         claim_text = re.sub(pattern, '', claim_text, flags=re.I)
-            numbers = _measurement_numbers(claim_text, word_counts=word_counts, relative_references=relative_references)
+            numbers = _measurement_numbers(claim_text, word_counts=word_counts, relative_references=relative_references,
+                                          artifact_references=artifact_references)
             original_numbers = set().union(*(_measurement_numbers(item['quote'], word_counts=word_counts,
-                relative_references=relative_references) for item in support))
+                relative_references=relative_references, artifact_references=artifact_references) for item in support))
             if not numbers <= original_numbers:
                 reason = reason or "numeric_mismatch"
                 unsupported_numbers = numbers - original_numbers

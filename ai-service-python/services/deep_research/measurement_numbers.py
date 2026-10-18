@@ -21,7 +21,13 @@ _WORD_COUNTS = re.compile(r'(?<![A-Za-z0-9_])(?:(?P<sign>minus|negative|plus|pos
     r'samples?|trials?|runs?|scenes?|layers?|stages?|phases?|steps?|seeds?|points?|iterations?|groups?)\b', re.I)
 _CHINESE_COUNTS = re.compile(r'(?<![A-Za-z0-9_第零一二两三四五六七八九十百千万亿点.])'
     r'(?P<sign>[负正+＋\-−])?\s*(?P<word>[零一二两三四五六七八九十]{1,3})\s*'
-    r'(?:个|维|次|帧|层|组|张|条|篇|种|项)')
+    r'(?P<count_unit>个|维|次|帧|层|组|张|条|篇|种|项)')
+_ARTIFACT = re.compile(r'(?:(?:\d+|[零一二两三四五六七八九十]+)\s*维\s*)?'
+    r'(?:向量|矩阵|张量|数组|编码|表示|输出)(?!个|组|次)')
+_COLLECTIVE_DATA = re.compile(r'(?:数字|数值|分量|特征)(?!个|组|次)')
+_OUTPUT_CONTEXT = re.compile(r'(?:输出|返回|生成|产生|得到|给出|形成|映射[为成]|是|为)(?:了|成|为)?\s*$')
+_EXPLICIT_COUNT = re.compile(r'(?:只(?:能)?|仅(?:能)?|恰好|正好|总共|共|唯一|至少|至多|最多|最少|不超过|超过)'
+    r'(?:会|能够)?(?:输出|返回|生成|产生|得到|给出|形成|映射[为成]|是|为)(?:了|成|为)?\s*$')
 
 
 def _chinese_count(word):
@@ -32,7 +38,7 @@ def _chinese_count(word):
     return None
 
 
-def _count_words(text, *, relative_references=False):
+def _count_words(text, *, relative_references=False, artifact_references=False):
     for match in _WORD_COUNTS.finditer(text):
         # Do not misread the tail of an unsupported compound (twenty-three)
         # as three, or invent the number of the remaining dimensions.
@@ -45,6 +51,15 @@ def _count_words(text, *, relative_references=False):
         if (relative_references and match['word'] == '一' and not match['sign']
                 and re.search(r'[上下前后]\s*$', text[:match.start('word')])):
             continue
+        if artifact_references and match['word'] == '一' and not match['sign']:
+            prefix, suffix = text[:match.start('word')], text[match.end():].lstrip()
+            artifact = ((_ARTIFACT.match(suffix) if match['count_unit'] == '个' else
+                         _COLLECTIVE_DATA.match(suffix) if match['count_unit'] == '组' else None))
+            # In 输出一组数字/输出一个7维向量, 一 introduces the data object.
+            # Explicit cardinality, signed/Arabic counts, samples, trials,
+            # views and experimental groups remain measured quantities.
+            if artifact and _OUTPUT_CONTEXT.search(prefix) and not _EXPLICIT_COUNT.search(prefix):
+                continue
         value = _chinese_count(match['word'])
         if value is not None:
             yield -value if match['sign'] in {'负','-','−'} else value
@@ -60,7 +75,8 @@ def number_display(identity):
     return identity
 
 
-def measurement_numbers(text: str, *, word_counts=False, relative_references=False) -> set[str]:
+def measurement_numbers(text: str, *, word_counts=False, relative_references=False,
+                        artifact_references=False) -> set[str]:
     """Compare decimal/scientific/grouped/Chinese-scale forms exactly.
 
     Store a coefficient and exponent, without float rounding, Decimal context
@@ -95,6 +111,6 @@ def measurement_numbers(text: str, *, word_counts=False, relative_references=Fal
         suffix = '%' if unit in {'%', '％'} else 'x' if unit in {'x', '×', '倍'} else ''
         numbers.add(f'{coefficient}e{exponent}{suffix}')
     if word_counts is True:
-        for value in _count_words(text, relative_references=relative_references):
+        for value in _count_words(text, relative_references=relative_references, artifact_references=artifact_references):
             numbers.update(measurement_numbers(str(value)))
     return numbers
