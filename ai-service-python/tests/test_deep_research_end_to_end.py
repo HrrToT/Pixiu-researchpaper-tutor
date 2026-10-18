@@ -59,7 +59,7 @@ class FixtureModel:
         elif prompt.startswith("Verify these claims"):
             claims = json.loads(prompt.split('Claims:\n', 1)[1].split('\n\nEvidence:', 1)[0])
             content = [{"claimId": c['claimId'], "status": "passed"} for c in claims]
-        elif prompt.startswith("Revise only the targets"):
+        elif prompt.startswith(("Revise only the targets","Rebuild ONLY these rejected factual answer targets")):
             content = []  # An unsupported claim may be dropped; do not relax checks.
         elif prompt.startswith("Audit whether the FINAL ACCEPTED ANSWER"):
             obligations = json.loads(prompt.split('Research and answer obligations (including the original question): ', 1)[1].split('\nAccepted final claims:', 1)[0])
@@ -218,7 +218,7 @@ def test_absolute_provider_timeout_preserves_unknown_and_ignores_late_response(t
 @pytest.mark.parametrize('prefix,node', [
     ('Analyze this research question', 'resolve_brief'),
     ('Audit whether the FINAL ACCEPTED ANSWER', 'verify_answer_coverage'),
-    ('Revise only the targets', 'repair_claims'),
+    ('Rebuild ONLY these rejected factual answer targets', 'repair_claims'),
 ])
 def test_pause_keeps_known_inflight_response_and_resume_does_not_resend_it(tmp_path, prefix, node):
     entered, release = threading.Event(), threading.Event()

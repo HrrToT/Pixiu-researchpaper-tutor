@@ -1458,13 +1458,14 @@ def make_verify_node(
                         invoke_request=invoke_repair,
                         **({'comparison_reasoning':True} if comparison_enabled(record) else {}),
                         **({'question_priority':True} if priority_enabled(record) else {}),
-                        **({'fact_redraft':True,'source_aware_redraft':record['factRedraftContractVersion']==2,
+                        **({'fact_redraft':True,'source_aware_redraft':record['factRedraftContractVersion'] in (2,3),
+                            **({'concise_factual':True} if record['factRedraftContractVersion']==3 else {}),
                             'requirement_context':[
                             {key:o[key] for key in (('obligationId','question','completionCriteria','requiredSources')
-                                if record['factRedraftContractVersion']==2 else ('obligationId','question','completionCriteria')) if key in o}
+                                if record['factRedraftContractVersion'] in (2,3) else ('obligationId','question','completionCriteria')) if key in o}
                             for item in record.get('state',{}).get('plan',[]) for o in item.get('obligations',[])]}
                            if type(record.get('factRedraftContractVersion')) is int
-                           and record['factRedraftContractVersion'] in (1,2) else {}))
+                           and record['factRedraftContractVersion'] in (1,2,3) else {}))
                     repo_update(run_id, lambda r: {**r, 'state': {**r.get('state', {}),
                         'repairDraft': revised}}, expected_revision=None)
                 if revised:

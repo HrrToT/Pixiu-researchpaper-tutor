@@ -16,7 +16,7 @@ from services.deep_research.repair_scope import repair_evidence_scope
 def _prepare_repair(report, verification, evidence, question, *, max_prompt_bytes=24000,
                     metric_domains=None, draft_context=(), prior_revisions=(),
                     fact_redraft=False, requirement_context=(), source_aware_redraft=False,comparison_reasoning=False,
-                    question_priority=False):
+                    question_priority=False,concise_factual=False):
     rejected = {row['claimId']: row for row in verification.get('rejected', [])}
     originals = {row['claimId']: row for row in report.get('claims', []) if row.get('claimId') in rejected}
     if not originals:
@@ -294,6 +294,13 @@ in the paper. Maintain consistency with accepted definitions and complete requir
                'Do not output any accepted or sibling/context ID, even if it needs improvement. '
                'Each factual clause still requires its own allowed supplied evidenceRefs. '
                'Return only the JSON array; do not rewrite the entire experiment.')
+    compact_factual=concise_factual and fact_redraft and factual_redraft_eligible(report)
+    if compact_factual:
+        from services.deep_research.factual_redraft_prompt import render as factual_prompt
+        prompt=factual_prompt(question=question,length_contract=length_contract,requirements=active_requirements,
+            source_instruction=source_instruction,targets=input_claims,checks=packed_checks,questions=question_dictionary,
+            permissions_marker=permissions_marker,evidence_marker=evidence_marker,shape=shape,
+            table_instructions=table_instructions,terminology=SCIENTIFIC_TERMINOLOGY)
     template = prompt
     def render(selected_rows):
         visible_ids = {row['evidenceId'] for row in selected_rows}
@@ -330,10 +337,12 @@ in the paper. Maintain consistency with accepted definitions and complete requir
                                   len(render([]).encode('utf-8'))) from exc
     visible = {aliases[row['evidenceId']] for row in rows}
     allowed = {key: [ref for ref in values if ref in visible] for key, values in allowed.items()}
-    return {'prompt': prompt, 'originals': originals, 'aliases': aliases, 'allowed': allowed}
+    return {'prompt': prompt, 'originals': originals, 'aliases': aliases, 'allowed': allowed,
+            **({'presentationVersion':1,'presentationQuotes':{row['evidenceId']:row.get('quote','')+'\n'+
+                json.dumps(row.get('sourceContext',{}),ensure_ascii=False) for row in rows}} if compact_factual else {})}
 
 
-def _parse_repair_response(prepared, response, parse):
+def _parse_repair_response(prepared, response, parse, presentation_audit=None):
     originals, aliases, allowed = (prepared[key] for key in ('originals', 'aliases', 'allowed'))
     finish = getattr(response, 'finish_reason', None) if not isinstance(response, dict) else response.get('finishReason', response.get('finish_reason'))
     if finish == 'length':
@@ -390,6 +399,10 @@ def _parse_repair_response(prepared, response, parse):
             row['designRole'] = original['designRole']
         from services.deep_research.execution_materialization import materialize_execution_claim
         normalized = normalize_conditions({'claims': [dict(row)]})['claims'][0]
+        if type(prepared.get('presentationVersion')) is int and prepared['presentationVersion']==1:
+            from services.deep_research.citation_presentation import normalize as normalize_markers
+            normalized,audit=normalize_markers(normalized,aliases,prepared['presentationQuotes'])
+            if audit and presentation_audit is not None: presentation_audit.append(audit)
         valid.append(materialize_execution_claim(normalized))
     return valid
 
@@ -404,7 +417,7 @@ def factual_redraft_eligible(report):
 def repair_rejected(report, verification, evidence, question, invoke, parse, *,
                     max_prompt_bytes=24000, metric_domains=None, batch_state=None, checkpoint=None,
                     current_budget=None, invoke_request=None, fact_redraft=False, requirement_context=(),
-                    source_aware_redraft=False,comparison_reasoning=False,question_priority=False):
+                    source_aware_redraft=False,comparison_reasoning=False,question_priority=False,concise_factual=False):
     """One bounded revision round, split before dispatch when evidence cannot fit.
 
     At most three requests share full sibling design definitions. Successful
@@ -420,7 +433,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
         return []
     identity = digest({'report': report, 'verification': verification,
                        'evidence': evidence, 'question': question, 'metricDomains': metric_domains,
-                       **({'factRedraftContractVersion':2 if source_aware_redraft else 1,'requirementContext':requirement_context}
+                       **({'factRedraftContractVersion':3 if concise_factual else 2 if source_aware_redraft else 1,'requirementContext':requirement_context}
                           if fact_redraft else {}),
                        **({'comparisonReasoningContractVersion':1} if comparison_reasoning else {}),
                        **({'repairEvidencePriorityVersion':1} if question_priority else {})})
@@ -435,7 +448,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
             max_prompt_bytes=state['maxPromptBytes'] if byte_limit is None else byte_limit,
             metric_domains=metric_domains, draft_context=siblings, prior_revisions=results,
             fact_redraft=fact_redraft, requirement_context=requirement_context,source_aware_redraft=source_aware_redraft,
-            comparison_reasoning=comparison_reasoning,question_priority=question_priority)
+            comparison_reasoning=comparison_reasoning,question_priority=question_priority,concise_factual=concise_factual)
 
     state = deepcopy(batch_state) if batch_state is not None else {
         'version': 1, 'inputDigest': identity, 'maxPromptBytes': max_prompt_bytes,
@@ -516,7 +529,10 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
                 if checkpoint:
                     checkpoint(deepcopy(state))
                 break  # Keep completed drafts, then independently verify them.
-            rows = _parse_repair_response(prepared, response, parse)
+            presentation_audit=[]
+            rows = _parse_repair_response(prepared, response, parse,presentation_audit)
+            if presentation_audit:
+                state.setdefault('citationPresentationAudit',{})[key]=presentation_audit
             state['results'][key] = rows
             state.pop('pending', None)
             if checkpoint:
