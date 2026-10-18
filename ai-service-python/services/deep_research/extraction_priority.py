@@ -12,6 +12,37 @@ _CAUSAL = [r'\b(?:gradient|loss|error|objective|reward|input|signal|stimulus)\w*
            r'\b(?:result|effect|influenc|efficien|qualit|accurac|outcome|output|predict|sampl|probabil|concentrat)\w*']
 _METHOD_SECTION = re.compile(r'^\s*(?:\d+(?:\.\d+)*[.)]?\s*)?'
     r'(?:(?:method(?:s|ology)?|approach|algorithm|proposed model)\b|方法|算法|模型)', re.I)
+_OUTPUT_ASK = re.compile(r'\b(?:output|predict|return)\w*\b|输出|预测|返回', re.I)
+_OUTPUT_DEFINITION = re.compile(r'\b(?:outputs?|predicts?|returns?)\b'
+    r'|\bmaps?\s+[^.;\n]{0,100}?\s+to\b|输出|预测|映射为|返回', re.I)
+_TEMPORAL_ASK = re.compile(r'\b(?:previous|preceding|prior|last|earlier)\b[^.!?\n]{0,28}?'
+    r'\b(?:frames?|states?|steps?|timesteps?|representations?)\b|前一帧|上一帧|前帧|先前(?:的)?状态', re.I)
+_TEMPORAL_REFERENCE = re.compile(r'\b(?:previous|preceding|prior|subsequent|next|earlier)\b'
+    r'|前一帧|上一帧|下一帧|前帧|后续|先前', re.I)
+_TRANSFER = re.compile(r'\b(?:initializ\w*|transform\w*|carr\w*|pass\w*|reus\w*|'
+    r'propagat\w*|render\w*|condition\w*)\b|初始化|变换|传递|沿用|复用|渲染', re.I)
+
+
+def _requested_operation_score(text, *, output=False, temporal=False):
+    """Rank literal requested operations, never establish a factual relationship.
+
+    A benchmark can repeat the component name without defining its output or
+    state transfer. Only score co-occurring temporal references/operations in
+    bounded sentences; no source text, permission or completion verdict changes.
+    """
+    if output:
+        return int(bool(_OUTPUT_DEFINITION.search(text)))
+    if temporal:
+        references, operations = set(), set()
+        for sentence in re.split(r'[.!?。！？\n]', text):
+            if len(sentence) > 360:
+                continue
+            refs = {m.group().casefold() for m in _TEMPORAL_REFERENCE.finditer(sentence)}
+            ops = {m.group().casefold() for m in _TRANSFER.finditer(sentence)}
+            if refs and ops:
+                references.update(refs);operations.update(ops)
+        return min(2,len(references))+min(3,len(operations)) if references and operations else 0
+    return 0
 
 
 def prioritize_extraction_passages(pending, obligations, version=1):
@@ -21,8 +52,8 @@ def prioritize_extraction_passages(pending, obligations, version=1):
     Identification-only requests keep their order. Paper round-robin prevents
     one rich source from displacing the other selected papers' first passages.
     """
-    if version in (2, 3):
-        return _balance_obligations(pending, obligations, precise=version == 3)
+    if version in (2, 3, 4):
+        return _balance_obligations(pending, obligations, precise=version in (3,4), requested_operations=version==4)
     def requirement(source):
         rows = [obligations[key] for key in eligible_obligation_ids(source, obligations)]
         explain = any(any(c.get('responseType') == 'explanation' for c in row.get('completionCriteria', []))
@@ -54,12 +85,15 @@ def prioritize_extraction_passages(pending, obligations, version=1):
     return balanced_sample(ordered, lambda item: item[0]['workId'], len(ordered))
 
 
-def _balance_obligations(pending, obligations, precise=False):
+def _balance_obligations(pending, obligations, precise=False, requested_operations=False):
     """A training question must not consume the motivation question's first batch."""
     papers = list(dict.fromkeys(item[0]['workId'] for item in pending))
     queues = []
     for oid, obligation in obligations.items():
         question = obligation.get('question', '')
+        output_target = requested_operations and bool(_OUTPUT_ASK.search(question)) and any(
+            c.get('responseType')=='identification' for c in obligation.get('completionCriteria',[]))
+        temporal_target = requested_operations and bool(_TEMPORAL_ASK.search(question))
         explain = any(c.get('responseType') == 'explanation' for c in obligation.get('completionCriteria', []))
         why = bool(re.search(r'\bwhy\b|\breason|\bmotivat|为什么|为何|动机|理由|原因', question, re.I))
         terms = set(re.findall(r'[a-z]{3,}', (question + ' ' + obligation.get('searchQuery', '')).lower())) - _STOP
@@ -89,6 +123,8 @@ def _balance_obligations(pending, obligations, precise=False):
                         r'\b(?:essential|necessary|necessity|requires?)\b|不足|不能|缺少|因此|所以|必要'))
                 method = bool(causal >= 2 and _METHOD_SECTION.search(str(item[1].get('section', ''))))
                 base = (motive, method, causal, sum(term in text for term in terms), -index)
+                if requested_operations:
+                    base = (_requested_operation_score(text,output=output_target,temporal=temporal_target),*base)
                 return (len(measurements(raw) & requested),*base) if precise else base
             if eligible:
                 queues.append(sorted(eligible, key=score, reverse=True))
