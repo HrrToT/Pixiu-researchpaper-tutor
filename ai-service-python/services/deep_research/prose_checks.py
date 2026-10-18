@@ -15,6 +15,15 @@ _RAW_ID = re.compile(r'(?<![A-Za-z0-9_])ev_[0-9a-f]{64}(?![A-Za-z0-9_])')
 _PUBLICATION_OBJECT = re.compile(r'实验|评测|评估|测试|验证|证据|结果|配置|信息|报告'
     r'|\b(?:experiment|evaluation|test|evidence|result|report|configuration)s?\b', re.I)
 _REPORTING_ABSENCE = re.compile(r'未|没有|not (?:report|provide|test|evaluate)|no (?:experiment|evaluation|evidence)', re.I)
+_EXTENDED_ABSENCE = re.compile(ABSENCE.pattern +
+    r'|(?:未|没有)(?:在|对|就)[^，,。；;！？!?\n]{1,48}?(?:进行)?(?:报告|提供|测试|验证|评估|评测|测量)'
+    r'|(?:未|没有)(?:曾|能)(?:给出|报告|提供|测试|验证|评估|披露)', re.I)
+_SOURCE_REPORTING_ABSENCE = re.compile(
+    r'\b(?:do|does|did|have|has) not\s+(?:yet\s+)?(?:report|provid|give|disclos|describ|present|test|evaluat|benchmark|measur)\w*\b'
+    r'|\bno (?:experiment|evaluation|benchmark)s?\b'
+    r'|(?:未|没有)(?:曾|能)?(?:报告|提供|给出|说明|披露|测试|验证|评估|评测|测量)'
+    r'|(?:未|没有)(?:在|对|就)[^，,。；;！？!?\n]{1,48}?(?:进行)?(?:报告|提供|给出|说明|披露|测试|验证|评估|评测|测量)'
+    r'|(?:未|没有)(?:提供|给出|披露)[^，,。；;！？!?\n]{0,24}(?:实验|评测|评估|测试|验证|结果|配置|硬件|划分)', re.I)
 
 
 def _strings(value):
@@ -52,17 +61,19 @@ def leaks_internal_reference(claim, support):
 
 
 def absence_not_established(claim, support, *, scope_version=0):
-    explicit = any(EXPLICIT_ABSENCE.search(item.get('quote', '')) for item in support)
+    reporting_scope = type(scope_version) is int and scope_version == 2
+    source_pattern = _SOURCE_REPORTING_ABSENCE if reporting_scope else EXPLICIT_ABSENCE
+    explicit = any(source_pattern.search(item.get('quote', '')) for item in support)
     if explicit:
         return False  # Independent semantic verification still checks the exact subject/scope.
     factual = claim.get('kind') in {'reported', 'inference'}
     for text in claim_prose(claim):
         for sentence in re.split(r'[。！？；;.!?\n]', text):
-            for missing in ABSENCE.finditer(sentence):
+            for missing in (_EXTENDED_ABSENCE if reporting_scope else ABSENCE).finditer(sentence):
                 prefix = sentence[:missing.start()]
                 papers = list(_PAPER.finditer(prefix))
                 scopes = list(_SCOPED.finditer(prefix))
-                if type(scope_version) is int and scope_version == 1:
+                if type(scope_version) is int and scope_version in (1, 2):
                     # This guard concerns missing research/reporting, not the
                     # method's negative premises (e.g. an object absent from
                     # the initial frame). Those still require semantic review.
