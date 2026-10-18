@@ -1,5 +1,7 @@
 # Deep Research 单实例备份、恢复与回退
 
+2026-10-18最新Python6f6a7b92 / `.162`，Java27ac4beb、前端c3843700保持。加载前后3,848条账本不变，三例后3,875条、0活动、9个历史未知身份和91任务。联合/原话/事实修订仅新契约生效，旧请求/未知及旧对象不改写。D5实际语义负例被正确拒绝，D1机器complete仍人工不通过；内容质量不能从部署健康推出。详见[实际内容诊断](deep-research-evidence/D1-v21-diagnostic-20261018.json)。
+
 2026-10-18最新加载Python7b7d5e1c / `.158`，Java27ac4beb保持。加载核对3,822条账本不变，D5-v6后3,843条、0活动、9个未知身份不变，父对象保持。比较审计只作用于带新契约的新运行，旧请求/未知不改写；实际新案例在更早硬检查被拒绝，不算内容通过。详见[新案例](deep-research-evidence/D5-v6-diagnostic-20261018.json)。
 
 2026-10-18最新加载：Python ea10273c / `.157`，Java27ac4beb。加载时3,795条账本及9个未知保持；H1F-v11后3,822条、0活动、91任务，全部旧对象保持。新手契约2只在新运行启用；旧待发请求和已结算请求不改写，未知继续暂停。详见[加载](deep-research-evidence/runtime-load-dr157-beginner-conditions-20261018.json)、[真实开发案例](deep-research-evidence/H1F-v11-diagnostic-20261018.json)。

@@ -1,0 +1,107 @@
+{
+  "date": "2026-10-18",
+  "case": "D5-v7",
+  "runId": "dr_run_d996cfe0fcc8556ba22e81769c7e252b",
+  "parentRunId": "dr_run_56107afc748d54828af1a50e84eb5d62",
+  "sourceCommit": "6a45479b",
+  "promptVersion": "dr-v2.20261018.160",
+  "status": "completed",
+  "outcome": "inconclusive",
+  "contentAccepted": false,
+  "independent": false,
+  "independentCredit": 0,
+  "modelCalls": 5,
+  "settledTokens": 18428,
+  "elapsedSeconds": 18.325,
+  "cost": null,
+  "jointReadinessProductionRequestMatched": true,
+  "jointArgsDigest": "034d53c924eb950fcb36a42f59a1b47f8a9a52ef6cc0957d166572701f095c55",
+  "jointUnitCount": 1,
+  "jointSourceSpecificMembers": 2,
+  "jointPremises": 6,
+  "jointPromptBytes": 9683,
+  "actualRepairRequestFingerprintMatched": true,
+  "repairArgsDigest": "091fc320bf7ea677ec906f0e30a29f8116d874e64f69247e74c0f009c1c51bdc",
+  "repairVisibleEvidenceCount": 13,
+  "newSemanticComparisonAuditCalls": 0,
+  "runtimeAfter": {
+    "calls": 3848,
+    "newRows": 5,
+    "active": 0,
+    "paused": [
+      "dr_run_4738564f5ff35157996a35068c62ed32",
+      "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+      "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+      "dr_run_86b3f181a5475e99aacca3dbf4370567",
+      "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+      "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+      "dr_run_e3521b1781825273b384a26a5edb8cdc",
+      "dr_run_e9c9dc916bef519092fad8b929b2448f",
+      "dr_run_ed10cc3347be552288079a9a588fddf5"
+    ],
+    "oldLedgerUnchanged": true,
+    "parentPayloadUnchanged": true
+  },
+  "parentPreservation": {
+    "previousTaskObjectsUnchanged": {
+      "notes": 0,
+      "messages": 17,
+      "artifacts": 34
+    },
+    "paperIdsAndMaterialHashesUnchanged": true,
+    "inheritedSources": 30,
+    "inheritedEvidence": 52
+  },
+  "initialVerification": {
+    "accepted": [],
+    "rejected": [
+      {
+        "claimId": "c1",
+        "reason": "absence_not_established",
+        "detail": "本条引用没有明确建立作者或论文缺少这些验证。把结论限定为本次引用能支持的实验范围及其不能证明的推广；不要写成作者未在其他条件验证、论文没有提供或全文不存在。引用中的其他否定句不构成这项缺席判断的依据。"
+      }
+    ]
+  },
+  "repairVerificationChecks": {
+    "accepted": [],
+    "rejected": [
+      {
+        "claimId": "c1",
+        "reason": "internal_reference_in_prose"
+      }
+    ]
+  },
+  "rawRepair": "[\n  {\n    \"claimId\": \"c1\",\n    \"kind\": \"inference\",\n    \"text\": \"不同论文中的FPS不能直接相除，因为它们的测量条件不同：LightGaussian在其平台上重新训练基线并报告FPS（E1），而3DGS报告的是1080p分辨率下≥30 fps的实时渲染（E13）。这些证据未显示两者使用相同硬件、数据集或分辨率，因此无法建立可比性。\",\n    \"evidenceRefs\": [\"E1\", \"E13\"],\n    \"conditions\": {},\n    \"detailLevel\": \"fulltext\"\n  }\n]",
+  "report": "本次尚未形成通过核验的结论。\n\n<details>\n<summary>还有 2 项未完成</summary>\n\n- 为什么不同论文中的FPS不能直接相除：最终回答尚未完整回应这一问题\n- 为什么不同论文中的FPS不能直接相除：最终回答尚未完整回应这一问题\n\n</details>",
+  "findings": [
+    "One actual joint assessment combined six existing premises across both permitted papers, closed acquisition gaps, and used no new search/read/extract calls.",
+    "Production joint and question-priority repair requests match their recorded Provider fingerprints. Routing readiness is not final factual approval.",
+    "Initial generation still made an author-wide absence assertion and leaked P/E aliases. The absence guard rejected it before semantic verification.",
+    "Repair still asserts different settings from unestablished alignment and contains E aliases in prose. Existing guards prevent publication; no verify/verify_repair call was issued.",
+    "Do not infer content success from the lower call count. Next generation change must simplify factual redraft and normalize only unambiguous presentation markers while leaving substantive claims to unchanged independent verification.",
+    "All five calls settled, no unknown or retry. Previous ledger prefix, parent payload, old task objects/material hashes and nine historical unknown identities preserved."
+  ],
+  "rawFiles": [
+    {
+      "path": "tmp/dr-acceptance-receipts/D5-v7.json",
+      "sha256": "5956187f203220e450197819bf7db68b3e3c170d15b7986659728eabade3ece1"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/D5-v7.payload.json",
+      "sha256": "4f200d9ca52e32a173a83b7cc0f885f3df428f665f733a8fb3f848932be8e74b"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/D5-v7.calls.json",
+      "sha256": "b69ca1fe5b089e3b0e96430668f521d867b5501502cd17354ef11cf6cb484917"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/D5-v7.result.json",
+      "sha256": "fb5ece350e5a0e963060266ad26aab3a8497ecec2b2d5211523231f15a84b7e2"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/D5-v7.parent-before.json",
+      "sha256": "7f9910b8b7031eeb665803978094bcb26a897d0d19183a005aa3399472c82b45"
+    }
+  ],
+  "boundary": "Development failure. Joint acquisition now exercised live; semantic comparison audit and full answer quality remain unproven. No independent credit."
+}

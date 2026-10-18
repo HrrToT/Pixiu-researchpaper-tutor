@@ -45,11 +45,11 @@
       "overlap": true
     },
     "backendCurrentResearchReadingTables": {
-      "passed": 2507,
+      "passed": 2618,
       "warnings": 1,
-      "seconds": 161.21,
-      "sourceCommit": "7b7d5e1c",
-      "log": "tmp/pytest-dr158-full.log",
+      "seconds": 166.52,
+      "sourceCommit": "6f6a7b92",
+      "log": "tmp/pytest-dr162-full-fixed.log",
       "scope": "Research, reading, PDF tables and config; fixture providers."
     },
     "frontendDocumentNavigationFocused": {
@@ -1848,6 +1848,13 @@
       "seconds": 3.89,
       "log": "tmp/pytest-dr158-comparison-focused-fixed.log",
       "overlapsFullSuite": true
+    },
+    "jointGroundingFactualRegression": {
+      "proof": "deep-research-evidence/joint-grounding-factual-regression-20261018.json",
+      "imperativeFocused": 73,
+      "factualFocused": 115,
+      "realGraphFocused": 106,
+      "focusedOverlapFull": true
     }
   },
   "stages": [
@@ -2240,23 +2247,22 @@
     "Full novice study workflow",
     "Independent Edge recovery"
   ],
-  "currentProviderConstraint": "All further necessary bounded validations uniformly authorized. .151 H1F-v10/D1-v20, D5-v4/v5/v6 and H1F-v11 used62 settled calls/213177tokens. Each fixed case submitted once; all new outcomes settled. Nine historical unknown identities and reservations remain unchanged; cost unknown.",
-  "currentDevelopmentMode": "Primary Codex only; goal active, quota monitor paused. Python7b7d5e1c/.158 loaded, Java27ac4beb unchanged. H1F-v11 development content remains accepted; D5-v6inconclusive does not pass. OriginalDR0-DR5 incomplete, zero new independent credit.",
+  "currentProviderConstraint": "All further necessary bounded validations uniformly authorized. Current .151-onward diagnostic sequence uses86 settled calls/299046tokens, including D5-v7/v8 and D1-v21 each submitted once. Nine historical unknowns and reservations unchanged; cost unknown.",
+  "currentDevelopmentMode": "Primary Codex only; goal active, quota monitor paused. Python6f6a7b92/.162 loaded, Java27ac4beb and frontendc3843700 unchanged. H1F-v11 development content remains accepted; D5-v7/v8 and D1-v21 do not pass. OriginalDR0-DR5 incomplete, original first-five0/5 and PR draft unchanged.",
   "loadedRuntime": {
-    "commit": "7b7d5e1c",
-    "promptVersion": "dr-v2.20261018.158",
+    "commit": "6f6a7b92",
+    "promptVersion": "dr-v2.20261018.162",
     "ready": true,
-    "callsPreservedAtLoad": 3822,
-    "callsAfterLatestCase": 3843,
+    "callsPreservedAtLoad": 3848,
+    "callsAfterLatestCase": 3875,
     "pausedUnknownRuns": 9,
-    "proof": "deep-research-evidence/runtime-load-dr158-comparison-premises-20261018.json"
+    "proof": "deep-research-evidence/runtime-load-dr162-factual-20261018.json"
   },
   "nextQualityWork": [
-    "Prioritize acquired experimental-setting evidence for the actual comparison question before capped same-version repair candidate selection. D5-v6 has both condition quotations already acquired but excluded from its first12candidate additions; preserve caps/anchors/quotes.",
-    "Support joint evidence readiness for a frozen criterion across exact source/version premises. Individual quotation sufficiency, joint routing readiness and final claim approval remain separate; never turn a topical match into factual approval.",
-    "Ground imperative human requests such as checking a claim and separating conditions/limits. D1-v20 currently changes the task into identifying metric values, which crowds out judgement and consumes exploration budget.",
-    "Keep factual repair instructions focused on facts, conditional inference, own sources and human deliverables; exclude unrelated experimental-configuration scaffolding under a frozen new contract if changed.",
-    "Complete comparative content, experimental-design quality and actual frontend fresh-continuation binding to a user-edited parent, then distinct fresh independent gates. Original first-five full content remains0/5."
+    "Separate independent dimensions in a literal compound request such as reported results, applicable conditions and unverified scope. Bind each final answer dimension independently; do not infer completeness from one source-derived aggregate aspect.",
+    "Improve comparative generation so it qualifies a why-question premise before drafting prose. The actual verifier now rejects unestablished alignment presented as a demonstrated difference; do not weaken it.",
+    "Complete current frontend fresh-continuation binding to an actually user-edited parent, stale-revision pre-child rejection and old-version preservation. A distinct sealed F1P/F1C development workflow is prepared but not submitted.",
+    "Complete experimental-design content and genuinely new independent materials/quality gates after development passes. Original first-five full-content results remain0/5."
   ],
   "javaReaderRuntime": {
     "sourceCommit": "070ab1a",
@@ -2459,5 +2465,50 @@
     "activeResearch": 0,
     "historicalUnknowns": 9,
     "boundary": "The new typed comparison audit passes offline/legacy-input checks. Real D5-v6 is rejected by earlier absence/prose-ID guards, so no live semantic comparison audit was invoked and full content remains unaccepted."
+  },
+  "jointReadinessCheckpoint": {
+    "sourceCommit": "6a45479b",
+    "contractVersion": 1,
+    "realRequestProof": "deep-research-evidence/joint-readiness-real-input-replay-20261018.json",
+    "realCaseProof": "deep-research-evidence/D5-v7-diagnostic-20261018.json",
+    "productionJointUnits": 1,
+    "sourceSpecificMembers": 2,
+    "selectedPremises": 6,
+    "contentAccepted": false,
+    "independentCredit": 0,
+    "modelCalls": 5,
+    "settledTokens": 18428,
+    "boundary": "Actual joint request fingerprint matched, two-source acquisition ready without new fetching. Final generation still rejected before semantic audit; readiness is not factual approval."
+  },
+  "imperativeGroundingCheckpoint": {
+    "sourceCommit": "ad013937",
+    "contractVersion": 2,
+    "replayProof": "deep-research-evidence/imperative-grounding-real-input-replay-20261018.json",
+    "realCaseProof": "deep-research-evidence/D1-v21-diagnostic-20261018.json",
+    "literalJudgementAndLimitationPersisted": true,
+    "machineOutcome": "complete",
+    "contentAccepted": false,
+    "independentCredit": 0,
+    "modelCalls": 12,
+    "settledTokens": 44766,
+    "answerCharacters": 190,
+    "boundary": "Both requested plan purposes preserved. Final machine audit still incorrectly covers compound requirements using numerical/ablation body without explicit judgement or unverified scope."
+  },
+  "conciseFactualCheckpoint": {
+    "sourceCommit": "6f6a7b92",
+    "factRedraftContractVersion": 3,
+    "replayProof": "deep-research-evidence/concise-factual-real-input-replay-20261018.json",
+    "realCaseProof": "deep-research-evidence/D5-v8-diagnostic-20261018.json",
+    "actualRequestFingerprintMatched": true,
+    "presentationMarkersRemoved": 4,
+    "substantiveWordingUnchanged": true,
+    "semanticComparisonAuditProductionCalls": 1,
+    "actualAuditAlignment": "not_established",
+    "actualAuditSupportsClaim": false,
+    "contentAccepted": false,
+    "independentCredit": 0,
+    "modelCalls": 7,
+    "settledTokens": 22675,
+    "boundary": "Live comparison verifier correctly rejects unsupported different-conditions inference after auditable marker cleanup. This is a conservative negative case, not a positive comparison quality pass."
   }
 }
