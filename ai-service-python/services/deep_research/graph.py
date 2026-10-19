@@ -1595,13 +1595,23 @@ def make_verify_node(
                             **({'repairStatus':'response_invalid','repairResponseError':batch_state['responseError']}
                                if batch_state.get('responseError') else {}),
                             **({'repairBatchStop': batch_state['stop']} if batch_state.get('stop') else {})}}, expected_revision=None)
+                    from services.deep_research.factual_repair import enabled as compact_repair_enabled
+                    from services.deep_research.repair import factual_redraft_eligible
+                    compact_repair=compact_repair_enabled(record) and factual_redraft_eligible(repair_report)
+                    repair_input_options={}
+                    if compact_repair:
+                        from services.deep_research.repair_budget import repair_batch_output_limit
+                        target_count=sum(c.get('claimId') in {r['claimId'] for r in repair_targets.get('rejected',[])}
+                                         for c in repair_report.get('claims',[]))
+                        repair_input_options['output_tokens']=repair_batch_output_limit(target_count)
                     revised = repair_rejected(repair_report, repair_targets, evidence, effective_question(record),
                         invoke_repair, _safe_parse_json,
-                        max_prompt_bytes=repair_prompt_byte_limit(current.get('budget', {})),
+                        max_prompt_bytes=repair_prompt_byte_limit(current.get('budget', {}),**repair_input_options),
                         metric_domains=record.get('state', {}).get('metricDomains'),
                         batch_state=saved.get('repairBatchState'), checkpoint=checkpoint_repair_batches,
                         current_budget=lambda: repo_update(run_id, lambda r: r, expected_revision=None).get('budget', {}),
                         invoke_request=invoke_repair,
+                        **({'compact_source_repair':True} if compact_repair else {}),
                         **({'strict_response':True} if type(record.get('repairProgressContractVersion')) is int
                            and record['repairProgressContractVersion']==2 else {}),
                         **({'comparison_reasoning':True} if comparison_enabled(record) else {}),

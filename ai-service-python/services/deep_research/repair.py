@@ -16,7 +16,7 @@ from services.deep_research.repair_scope import repair_evidence_scope
 def _prepare_repair(report, verification, evidence, question, *, max_prompt_bytes=24000,
                     metric_domains=None, draft_context=(), prior_revisions=(),
                     fact_redraft=False, requirement_context=(), source_aware_redraft=False,comparison_reasoning=False,
-                    question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,comparison_methodology=False,experimental_intent=False):
+                    question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False):
     rejected = {row['claimId']: row for row in verification.get('rejected', [])}
     originals = {row['claimId']: row for row in report.get('claims', []) if row.get('claimId') in rejected}
     if not originals:
@@ -338,6 +338,13 @@ in the paper. Maintain consistency with accepted definitions and complete requir
     if comparison_methodology and not prospective:
         from services.deep_research.comparison_methodology import REFERENCE
         prompt+='\n'+REFERENCE
+    if compact_source_repair and compact_factual and source_aware_redraft:
+        from services.deep_research.factual_repair import render as compact_repair_prompt, compact_rows
+        rows=compact_rows(rows,context)
+        prompt=compact_repair_prompt(question=question,length_contract=length_contract,
+            requirements=active_requirements,source_context=context,targets=input_claims,
+            checks=packed_checks,questions=question_dictionary,permissions_marker=permissions_marker,
+            evidence_marker=evidence_marker,schema=revision_shape)
     template = prompt
     def render(selected_rows):
         visible_ids = {row['evidenceId'] for row in selected_rows}
@@ -467,7 +474,7 @@ def factual_redraft_eligible(report):
 def repair_rejected(report, verification, evidence, question, invoke, parse, *,
                     max_prompt_bytes=24000, metric_domains=None, batch_state=None, checkpoint=None,
                     current_budget=None, invoke_request=None, fact_redraft=False, requirement_context=(),
-                    source_aware_redraft=False,comparison_reasoning=False,question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,strict_response=False,comparison_methodology=False,experimental_intent=False):
+                    source_aware_redraft=False,comparison_reasoning=False,question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,strict_response=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False):
     """One bounded revision round, split before dispatch when evidence cannot fit.
 
     At most three requests share full sibling design definitions. Successful
@@ -490,6 +497,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
                        **({'factualScopeContractVersion':factual_scope if factual_scope in (2,3) else 1} if factual_scope else {}),
                        **({'tableReferencesContractVersion':1} if declared_table_refs else {}),
                        **({'repairResponseContractVersion':1} if strict_response else {}),
+                       **({'factualRepairContractVersion':1} if compact_source_repair else {}),
                        **({'comparisonMethodologyVersion':1} if comparison_methodology else {}),
                        **({'experimentIntentContractVersion':experimental_intent if type(experimental_intent) is int and experimental_intent in (2,3) else 1}
                           if experimental_intent else {})})
@@ -506,7 +514,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
             fact_redraft=fact_redraft, requirement_context=requirement_context,source_aware_redraft=source_aware_redraft,
             comparison_reasoning=comparison_reasoning,question_priority=question_priority,concise_factual=concise_factual,
             factual_scope=factual_scope,declared_table_refs=declared_table_refs,comparison_methodology=comparison_methodology,
-            experimental_intent=experimental_intent)
+            experimental_intent=experimental_intent,compact_source_repair=compact_source_repair)
 
     state = deepcopy(batch_state) if batch_state is not None else {
         'version': 1, 'inputDigest': identity, 'maxPromptBytes': max_prompt_bytes,
