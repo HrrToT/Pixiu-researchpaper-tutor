@@ -37,6 +37,7 @@ from services.deep_research.contracts import (
     STATUS_RUNNING,
     STATUS_WAITING_USER,
     TERMINAL_STATUSES,
+    digest,
     utc_now_iso,
 )
 
@@ -1104,14 +1105,20 @@ def make_synthesize_node(
         evidence_aliases = {}
         source_aliases = {}
         source_registry = {}
+        from services.deep_research.synthesis_evidence import enabled as premise_enabled,order_premises,result_role,fit_premises
+        premise_mode=premise_enabled(record)
+        premise_bundles=[];table_registry={};table_keys={}
         candidates = distinct_evidence_candidates(evidence)
-        if output_kind == 'paper_comparison':
+        if premise_mode:
+            candidates,premise_bundles=order_premises(candidates,brief_state.get('plan',[]))
+        elif output_kind == 'paper_comparison':
             candidates = comparison_evidence_order(candidates, paper_titles)
         elif output_kind == 'experiment_design':
             from services.deep_research.selection import proposal_evidence_order
             candidates = proposal_evidence_order(candidates, question)
-        for ev in balanced_sample(candidates,
-                lambda item: (item.get("sourceWorkId", ""), tuple(item.get("obligationIds", []))), 20):
+        selected_candidates=candidates if premise_mode else balanced_sample(candidates,
+            lambda item:(item.get('sourceWorkId',''),tuple(item.get('obligationIds',[]))),20)
+        for ev in selected_candidates:
             alias = f"E{len(evidence_aliases) + 1}"
             evidence_aliases[alias] = ev['evidenceId']
             source_id = ev.get('sourceWorkId', '')
@@ -1123,12 +1130,24 @@ def make_synthesize_node(
                     'title': source_display_title(ev.get('sourceTitle'), paper_titles.get(source_id))}
                 if ev.get('sourcePublicationIdentity'):
                     source_registry[source_aliases[source_id]]['publicationIdentity'] = ev['sourcePublicationIdentity']
+            table_fields={}
+            if ev.get('tableData') is not None:
+                if premise_mode:
+                    table_key=digest({'work':ev.get('sourceWorkId'),'version':ev.get('sourceVersionId'),
+                                      'hash':ev.get('contentHash'),'table':ev['tableData']})
+                    if table_key not in table_keys:
+                        tid=f'T{len(table_keys)+1}';table_keys[table_key]=tid
+                        table_registry[tid]={'source':source_aliases[source_id],'tableData':ev['tableData']}
+                    table_fields={'tableDataRef':table_keys[table_key]}
+                else:
+                    table_fields={'tableData':ev['tableData']}
             evidence_summaries.append({
                 "evidenceId": alias,
                 "quote": ev.get("quote", ""),
                 "source": source_aliases[source_id],
                 "sourceContext": surrounding_context(ev),
-                **({'tableData': ev['tableData']} if ev.get('tableData') is not None else {}),
+                **table_fields,
+                **({'resultRoleHintOnly':result_role(ev)} if premise_mode else {}),
                 'location': {key: value for key, value in ev.get('location', {}).items()
                              if key not in {'chunk', 'pageResolution'}},
                 **({'conditions': ev['conditions']} if ev.get('conditions') else {}),
@@ -1298,9 +1317,57 @@ Orient losses before formulas, distinguish conditional/averaged effects and pape
                 and output_kind in {'paper_comparison','claim_verification'}):
             from services.deep_research.comparison_methodology import REFERENCE
             prompt+='\n'+REFERENCE
+        table_marker=uuid4().hex
+        if premise_mode:
+            prompt+='\nShared table packets (tableDataRef resolves ONLY for its own source/evidence row):\n'+table_marker
+            prompt+='''
+For tableBindings keep the E evidenceId, never a T or P ID. Its tableDataRef
+resolves the unchanged tableData above; a reference in another row/source grants
+no permission. Role hints are acquisition hints only, not provenance approval.
+When tableDataOmitted=true, only the unchanged quote/context is supplied. Do not
+invent tableBindings or numerical rows from an omitted packet; preserve the
+qualitative premise without adding optional numerical examples.
+Address each paper in its own factual claim before cross-paper inference. Do not
+append assertions about another paper's absence to a paper-specific claim.
+For training describe the actual initial/joint stages when supplied. A generic
+joint optimizer alone does not establish whole-sequence offline fitting.
+For a main-table request, distinguish the main quantitative comparison from
+operator profiling/ablation; do not relabel a profiling FPS as a main-table result.
+The supplied rows are a selection, not the entire acquired pool. Missing a row
+from this prompt cannot establish that a paper or the acquired pool lacks a fact.
+Keep uncertainty positive and bounded: state which supplied premises support
+which conclusion and which stronger inference is not established. Never fill
+space with unsupported global absence or incidental iteration/performance values.
+'''
+        if premise_mode and output_kind in {'paper_comparison','claim_verification'}:
+            from services.deep_research.factual_template import build as factual_template
+            prompt=factual_template(record,question,output_kind,requested_limit,claim_limit,section_templates,
+                draft_obligations,source_registry,evidence_marker,table_marker,
+                drafting_schema=drafting_schema_enabled(record),point_guidance=format_guidance(point_constraint))
         template = prompt
-        prompt, evidence_summaries = fit_evidence_prompt(evidence_summaries,
-            lambda rows: template.replace(evidence_marker, json.dumps(rows, ensure_ascii=False, separators=(',', ':')), 1))
+        if premise_mode:
+            reverse_aliases={eid:alias for alias,eid in evidence_aliases.items()}
+            wire_bundles=[{**bundle,'evidenceIds':[reverse_aliases.get(eid,eid) for eid in bundle['evidenceIds']]}
+                          for bundle in premise_bundles]
+            def render_premises(rows):
+                tids={row['tableDataRef'] for row in rows if row.get('tableDataRef')}
+                return template.replace(evidence_marker,json.dumps(rows,ensure_ascii=False,separators=(',',':')),1).replace(
+                    table_marker,json.dumps({key:table_registry[key] for key in table_registry if key in tids},
+                        ensure_ascii=False,separators=(',',':')),1)
+            numerical_request=bool(re.search(r'数值|具体值|是多少|多少|核(?:查|对)|\b(?:values?|numbers?|how many|how much|verify)\b',question,re.I))
+            qualitative_comparison=bool(re.search(r'为何|为什么|可比|同条件|\b(?:why|comparab\w*|alignment)\b',question,re.I))
+            prompt,evidence_summaries,missing_bundles=fit_premises(evidence_summaries,render_premises,wire_bundles,
+                omit_optional_table_data=output_kind=='paper_comparison' and qualitative_comparison and not numerical_request)
+            repo_update(run_id,lambda r:{**r,'state':{**r.get('state',{}),'synthesisPremiseAllocation':{
+                'version':1,'candidateEvidenceIds':[e['evidenceId'] for e in selected_candidates],
+                'suppliedEvidenceIds':[evidence_aliases[row['evidenceId']] for row in evidence_summaries],
+                'missingPremiseBundles':missing_bundles,'inputBytes':len(prompt.encode('utf8')),
+                'fixedInputBytes':len(render_premises([]).encode('utf8')),
+                'tableDataOmittedEvidenceIds':[evidence_aliases[row['evidenceId']] for row in evidence_summaries if row.get('tableDataOmitted')],
+                'sharedTablePackets':len({row['tableDataRef'] for row in evidence_summaries if row.get('tableDataRef')})}}},expected_revision=None)
+        else:
+            prompt, evidence_summaries = fit_evidence_prompt(evidence_summaries,
+                lambda rows: template.replace(evidence_marker, json.dumps(rows, ensure_ascii=False, separators=(',', ':')), 1))
         if output_kind=='experiment_design' and intent_enabled(record) and evidence and not evidence_summaries:
             return {'error_code':'synthesis_evidence_capacity'}
         evidence_aliases = {row['evidenceId']: evidence_aliases[row['evidenceId']] for row in evidence_summaries}
@@ -1376,11 +1443,11 @@ Orient losses before formulas, distinguish conditional/averaged effects and pape
                     'quantity_spelling_version':current.get('quantitySpellingContractVersion',0),
                     'feedback_version':current.get('verificationFeedbackContractVersion',0),
                     'table_references_version':current.get('tableReferencesContractVersion',0)}}
-                   if current.get('audienceRewriteContractVersion')==7 else {}),
+                   if current.get('audienceRewriteContractVersion') in (7,8) else {}),
                 **({'contract_version':current['audienceRewriteContractVersion'],'requirement_context':[
                     {key:o[key] for key in ('obligationId','question','completionCriteria','requiredSources') if key in o}
                     for item in current.get('state',{}).get('plan',[]) for o in item.get('obligations',[])]}
-                   if current.get('audienceRewriteContractVersion') in (2,3,4,5,6,7) else {}))
+                   if current.get('audienceRewriteContractVersion') in (2,3,4,5,6,7,8) else {}))
         
         if output_kind == "experiment_design":
             # Compaction must not hide required settings back in metadata.

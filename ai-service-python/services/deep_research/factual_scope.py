@@ -5,12 +5,12 @@ import re
 
 def enabled(record):
     return (type(record.get('factualScopeContractVersion')) is int
-            and record['factualScopeContractVersion'] in (1,2))
+            and record['factualScopeContractVersion'] in (1,2,3))
 
 
 def drafting_schema_enabled(record):
     return (type(record.get('factualScopeContractVersion')) is int
-            and record['factualScopeContractVersion']==2)
+            and record['factualScopeContractVersion'] in (2,3))
 
 
 DRAFTING_SCHEMA={'premiseStatus':'choose established, contradicted or not_established',
@@ -41,8 +41,8 @@ short answer; omit secondary examples. Do not repeat conditions already in text.
 '''
 
 
-def audit_prompt(targets):
-    return '\nScope-strength audit for factual targets: '+json.dumps(targets,separators=(',',':'))+'''
+def audit_prompt(targets, *, complete_statement=False):
+    prompt='\nScope-strength audit for factual targets: '+json.dumps(targets,separators=(',',':'))+'''
 A passed verdict also MUST include:
 "scopeAudit":{"claimStrength":"bounded|exclusive|universal",
  "evidenceStrength":"bounded|exclusive|universal","supported":true,
@@ -61,12 +61,28 @@ support. Different citation counts or numeric matches do not establish logical s
 For unsupported scope return failed with the precise overreach; never rewrite the target
 and pass the weaker version. This audit is internal and grants no factual approval.
 '''
+    if complete_statement:
+        prompt=prompt.replace('"statementExcerpt":"exact words from target text/condition identifying its scope"',
+                              '"statementPath":["text"]')
+        prompt+='''
+For these targets bind the WHOLE assertion with "statementPath":["text"],
+not statementExcerpt or a single condition. Review every factual clause AND
+conditions, including claims about another paper, missing evidence and table
+purpose. A true first clause cannot license an unsupported later clause. A
+profiling measurement is not automatically a main-table comparison. Return
+failed if any substantive clause lacks its own actual premises.
+'''
+    return prompt
 
 
-def validate_audit(claim,verdict,evidence, *, source_field_bindings=False,target_field_bindings=False):
+def validate_audit(claim,verdict,evidence, *, source_field_bindings=False,target_field_bindings=False,
+                   complete_statement=False):
     if claim.get('kind') not in {'reported','inference'}:
         return []
     audit=verdict.get('scopeAudit')
+    if complete_statement and (not isinstance(audit,dict) or audit.get('statementPath')!=['text']
+                               or 'statementExcerpt' in audit):
+        return ['scope_complete_statement_not_bound']
     strengths={'bounded','exclusive','universal'}
     if (not isinstance(audit,dict) or not isinstance(audit.get('claimStrength'),str)
             or not isinstance(audit.get('evidenceStrength'),str)

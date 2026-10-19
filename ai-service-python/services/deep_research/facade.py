@@ -273,11 +273,12 @@ class ResearchFacade:
             "materials": materials,
             "materialSnapshot": material_snapshot,  # Immutable Java snapshot
             "contextMaterials": (material_snapshot or {}).get("contextMaterials", []) if isinstance(material_snapshot, dict) else [],
-            "promptVersion": "dr-v2.20261019.184",
+            "promptVersion": "dr-v2.20261019.185",
+            "synthesisEvidenceContractVersion": 1,
             "extractionScheduleContractVersion": 1,
             "experimentIntentContractVersion": 3,
             "tableReferencesContractVersion": 1,
-            "factualScopeContractVersion": 2,
+            "factualScopeContractVersion": 3,
             "factualReasoningContractVersion": 5,
             "continuationFormatContractVersion": 1,
             "jointEvidenceContractVersion": 1,
@@ -287,12 +288,12 @@ class ResearchFacade:
             "requestGroundingContractVersion": 3,
             "factRedraftContractVersion": 3,
             "verificationFeedbackContractVersion": 2,
-            "quantitySpellingContractVersion": 4,
+            "quantitySpellingContractVersion": 5,
             "runtimeSemanticContractVersion": 1,
             "evidenceCoverageContractVersion": 3,
             "sourcePrecisionContractVersion": 6,
             "readingPriorityContractVersion": 2,
-            "absenceScopeContractVersion": 5,
+            "absenceScopeContractVersion": 6,
             "answerFormatContractVersion": 1,
             "repairProgressContractVersion": 2,
             "reportPresentationContractVersion": 1,
@@ -308,7 +309,7 @@ class ResearchFacade:
             "planEditContractVersion": 1,
             "clarificationContractVersion": 1,
             "adaptiveResearchContractVersion": 1,
-            "audienceRewriteContractVersion": 7,
+            "audienceRewriteContractVersion": 8,
             "verificationInputContractVersion": 1,
             "workflowContractVersion": 4,
             "extractionPriorityVersion": 7,
@@ -1178,8 +1179,10 @@ class ResearchFacade:
             audit_target_fields=lambda: type(self._repo.require_run(run_id).get('auditSourceFieldsContractVersion')) is int
                 and self._repo.require_run(run_id)['auditSourceFieldsContractVersion']==2,
             factual_scope=lambda: scope_enabled(self._repo.require_run(run_id)),
+            complete_factual_scope=lambda: type(self._repo.require_run(run_id).get('factualScopeContractVersion')) is int
+                and self._repo.require_run(run_id)['factualScopeContractVersion']==3,
             qualitative_inference=lambda: type(self._repo.require_run(run_id).get('audienceRewriteContractVersion')) is int
-                and self._repo.require_run(run_id)['audienceRewriteContractVersion'] in (4,5,6,7),
+                and self._repo.require_run(run_id)['audienceRewriteContractVersion'] in (4,5,6,7,8),
             experiment_intent_review=lambda: self._repo.require_run(run_id).get('experimentIntentContractVersion',0))
         return checker
     

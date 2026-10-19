@@ -25,6 +25,9 @@ _CHINESE_COUNTS = re.compile(r'(?<![A-Za-z0-9_第零一二两三四五六七八�
 _CHINESE_EXPANDED_COUNTS = re.compile(r'(?<![A-Za-z0-9_第零一二两三四五六七八九十百千万亿点.])'
     r'(?P<sign>[负正+＋\-−])?\s*(?P<word>[零一二两三四五六七八九十百千万亿]{1,12})\s*'
     r'(?P<count_unit>个|维|次|帧|层|组|张|条|篇|种|项)')
+_CHINESE_FACTORS=re.compile(r'(?<![A-Za-z0-9_第零一二两三四五六七八九十百千万亿点.])'
+    r'(?P<sign>[负正+＋\-−])?(?P<word>[零一二两三四五六七八九十百千万亿]{1,12}'
+    r'(?:点[零一二三四五六七八九]{1,12})?)\s*倍')
 _PARAMETER_ID = re.compile(r'(?<![A-Za-z0-9_])[α-ωΑ-Ω]_?\d{1,2}(?![0-9_.%％])')
 _ARTIFACT = re.compile(r'(?:(?:\d+|[零一二两三四五六七八九十]+)\s*维\s*)?'
     r'(?:向量|矩阵|张量|数组|编码|表示|输出)(?!个|组|次)')
@@ -36,6 +39,16 @@ _CONCEPTUAL_OBJECT = re.compile(r'(?:可学习|可训练|可调节|平衡|调节
     r'(?:参数|变量|目标(?:函数)?|损失(?:函数)?|约束|公式|表达式|权重)')
 _CARDINAL_CONTEXT = re.compile(r'(?:只有|仅有|只|仅|唯一|恰好|正好|总共|共|至少|至多|最多|最少|不超过|超过)'
     r'[^，,；;。.!?！？\n]{0,12}$')
+
+
+def without_dimensional_labels(text):
+    """Chinese spatial labels parallel 2D/3D/4D, not measured cardinalities.
+
+    Keep feature/vector/output dimensions, ordinals, signs, counts and ratios.
+    The independent semantic verifier still checks the dimensional identity.
+    """
+    return re.sub(r'(?<![A-Za-z0-9_第负正+＋\-−零一二两三四五六七八九十百千万亿])'
+        r'[234二两三四]维(?=(?:的)?(?:高斯|空间|场景|几何|模型|重建|点云|辐射场))','',text)
 
 
 def without_conceptual_articles(text):
@@ -131,7 +144,8 @@ def number_display(identity):
 
 
 def measurement_numbers(text: str, *, word_counts=False, relative_references=False,
-                        artifact_references=False, conceptual_articles=False, expanded_counts=False) -> set[str]:
+                        artifact_references=False, conceptual_articles=False, expanded_counts=False,
+                        chinese_factors=False) -> set[str]:
     """Compare decimal/scientific/grouped/Chinese-scale forms exactly.
 
     Store a coefficient and exponent, without float rounding, Decimal context
@@ -145,6 +159,17 @@ def measurement_numbers(text: str, *, word_counts=False, relative_references=Fal
     if conceptual_articles is True:
         text = without_conceptual_articles(text)
     numbers = set()
+    if chinese_factors is True:
+        digits=dict(zip('零一二三四五六七八九','0123456789'))
+        for match in _CHINESE_FACTORS.finditer(text):
+            integer,separator,fraction=match['word'].partition('点')
+            value=_chinese_count(integer,expanded=True)
+            if value is None:
+                numbers.add('literal:'+match[0]);continue
+            literal=('-' if match['sign'] in {'负','-','−'} else '')+str(value)
+            if separator:
+                literal+='.'+''.join(digits[ch] for ch in fraction)
+            numbers.update(measurement_numbers(literal+'倍'))
     for match in _NUMBER.finditer(text):
         literal = match.group('number')
         parsed = _VALID_NUMBER.fullmatch(literal)

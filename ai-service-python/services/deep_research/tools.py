@@ -558,6 +558,7 @@ class BudgetedSemanticChecker:
         factual_scope=False,
         qualitative_inference=False,
         experiment_intent_review=False,
+        complete_factual_scope=False,
     ):
         self._invoke = llm_invoker
         self._run_id = run_id
@@ -569,6 +570,7 @@ class BudgetedSemanticChecker:
         self._audit_source_fields = audit_source_fields
         self._audit_target_fields = audit_target_fields
         self._factual_scope = factual_scope
+        self._complete_factual_scope=complete_factual_scope
         self._qualitative_inference = qualitative_inference
         self._experiment_intent_review = experiment_intent_review
     
@@ -990,11 +992,13 @@ The dataAvailability object is an internal audit, not new experimental results.
             if comparison_targets:
                 prompt+=comparison_audit_prompt(comparison_targets, comparison_version)
         scope_enabled=(self._factual_scope() if callable(self._factual_scope) else self._factual_scope) is True
+        complete_scope=(self._complete_factual_scope() if callable(self._complete_factual_scope)
+                        else self._complete_factual_scope) is True
         if scope_enabled:
             from services.deep_research.factual_scope import audit_prompt as scope_prompt
             targets=[c['claimId'] for c in claims if c.get('kind') in {'reported','inference'}]
             if targets:
-                prompt+=scope_prompt(targets)
+                prompt+=scope_prompt(targets,**({'complete_statement':True} if complete_scope else {}))
         field_bindings=(self._audit_source_fields() if callable(self._audit_source_fields)
                         else self._audit_source_fields) is True
         target_bindings=(self._audit_target_fields() if callable(self._audit_target_fields)
@@ -1123,7 +1127,8 @@ The dataAvailability object is an internal audit, not new experimental results.
                 if scope_enabled:
                     from services.deep_research.factual_scope import validate_audit as validate_scope
                     scope_errors=validate_scope(target,verdict,visible_evidence,
-                        source_field_bindings=field_bindings,target_field_bindings=target_bindings)
+                        source_field_bindings=field_bindings,target_field_bindings=target_bindings,
+                        **({'complete_statement':True} if complete_scope else {}))
                     if scope_errors:
                         verdict['status']='failed'
                         verdict['reason']='结论范围或必要条件尚未核实：'+', '.join(scope_errors)

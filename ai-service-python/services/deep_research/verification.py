@@ -38,15 +38,18 @@ def make_evidence(source: dict, quote: str, original: str, *, location: dict,
 
 
 def _measurement_numbers(text: str, *, word_counts=False, relative_references=False, artifact_references=False,
-                         conceptual_articles=False, expanded_counts=False) -> set[str]:
+                         conceptual_articles=False, expanded_counts=False,dimensional_labels=False) -> set[str]:
     # Dimensional method labels are not measured quantities. The semantic
     # verifier still checks their identity; standalone dimensions stay checked.
     text = re.sub(r'(?<![A-Za-z0-9_])[234]D(?:-?[A-Za-z]+)?(?![A-Za-z0-9_])', '', text)
+    if dimensional_labels:
+        from services.deep_research.measurement_numbers import without_dimensional_labels
+        text=without_dimensional_labels(text)
     text = re.sub(r'(?<![A-Za-z])Table\s+\d+(?![A-Za-z0-9])|表\s*\d+', '', text, flags=re.I)
     from services.deep_research.measurement_numbers import measurement_numbers
     return measurement_numbers(text, word_counts=word_counts, relative_references=relative_references,
                                artifact_references=artifact_references, conceptual_articles=conceptual_articles,
-                               expanded_counts=expanded_counts)
+                               expanded_counts=expanded_counts,chinese_factors=dimensional_labels)
 
 
 def _condition_values_text(value):
@@ -85,10 +88,11 @@ def precheck_claims(claims: list[dict], evidence: list[dict], *, absence_scope_v
     if len(by_id) != len(evidence):
         raise ValueError("Duplicate evidence identity")
     candidates, rejected, seen = [], [], set()
-    word_counts = type(quantity_spelling_version) is int and quantity_spelling_version in (1, 2, 3, 4)
-    relative_references = type(quantity_spelling_version) is int and quantity_spelling_version in (2, 3, 4)
-    artifact_references = type(quantity_spelling_version) is int and quantity_spelling_version in (3, 4)
-    conceptual_articles = type(quantity_spelling_version) is int and quantity_spelling_version == 4
+    word_counts = type(quantity_spelling_version) is int and quantity_spelling_version in (1, 2, 3, 4, 5)
+    relative_references = type(quantity_spelling_version) is int and quantity_spelling_version in (2, 3, 4, 5)
+    artifact_references = type(quantity_spelling_version) is int and quantity_spelling_version in (3, 4, 5)
+    conceptual_articles = type(quantity_spelling_version) is int and quantity_spelling_version in (4,5)
+    dimensional_labels=type(quantity_spelling_version) is int and quantity_spelling_version==5
     concurrent_feedback = type(feedback_version) is int and feedback_version == 2
     for claim in claims:
         claim_id = claim.get("claimId")
@@ -112,7 +116,11 @@ def precheck_claims(claims: list[dict], evidence: list[dict], *, absence_scope_v
         from services.deep_research.prose_checks import absence_not_established, leaks_internal_reference
         if absence_not_established(claim, support, scope_version=absence_scope_version):
             reason = reason or 'absence_not_established'
-        if leaks_internal_reference(claim, support):
+        if type(absence_scope_version) is int and absence_scope_version==6:
+            from services.deep_research.result_scope import purpose_not_established
+            if purpose_not_established(claim,support):
+                reason=reason or 'result_purpose_not_established'
+        if leaks_internal_reference(claim, support,table_aliases=type(absence_scope_version) is int and absence_scope_version==6):
             reason = reason or 'internal_reference_in_prose'
         declared_reference_error=None
         if kind in {'inference','proposal','suggestion','hypothesis'} and type(table_references_version) is int and table_references_version==1:
@@ -156,10 +164,11 @@ def precheck_claims(claims: list[dict], evidence: list[dict], *, absence_scope_v
                 source_texts = [without_parameter_identifiers(text) for text in source_texts]
             numbers = _measurement_numbers(claim_text, word_counts=word_counts, relative_references=relative_references,
                                           artifact_references=artifact_references, conceptual_articles=conceptual_articles,
-                                          expanded_counts=conceptual_articles)
+                                          expanded_counts=conceptual_articles,dimensional_labels=dimensional_labels)
             original_numbers = set().union(*(_measurement_numbers(text, word_counts=word_counts,
                 relative_references=relative_references, artifact_references=artifact_references,
-                conceptual_articles=conceptual_articles, expanded_counts=conceptual_articles) for text in source_texts))
+                conceptual_articles=conceptual_articles, expanded_counts=conceptual_articles,
+                dimensional_labels=dimensional_labels) for text in source_texts))
             if not numbers <= original_numbers:
                 reason = reason or "numeric_mismatch"
                 unsupported_numbers = numbers - original_numbers
@@ -239,7 +248,9 @@ def precheck_claims(claims: list[dict], evidence: list[dict], *, absence_scope_v
                         + '。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。'}
             elif reason == 'table_condition_not_displayed' and type(feedback_version) is int and feedback_version in (1, 2):
                 diagnostic = _table_display_diagnostic(claim, support)
-            elif reason == 'absence_not_established' and type(absence_scope_version) is int and absence_scope_version in (2,3,4,5):
+            elif reason == 'result_purpose_not_established':
+                diagnostic={'detail':'所引用的渲染剖析未建立主表结果的归属。区分算子剖析与主要比较；不得把剖析值改称主表值。'}
+            elif reason == 'absence_not_established' and type(absence_scope_version) is int and absence_scope_version in (2,3,4,5,6):
                 diagnostic = {'detail':'本条引用没有明确建立作者或论文缺少这些验证。'
                     '把结论限定为本次引用能支持的实验范围及其不能证明的推广；'
                     '不要写成作者未在其他条件验证、论文没有提供或全文不存在。'

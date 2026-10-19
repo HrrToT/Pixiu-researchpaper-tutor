@@ -72,9 +72,10 @@ def test_scope_policy_owned_and_immutable(tmp_path,replacement):
     try:
         p,_=facade.create({'workspaceTaskId':'t','operationKey':'k','question':'核查这个结论',
             'deferStart':True,'factualScopeContractVersion':replacement},start_async=False)
-        assert p['factualScopeContractVersion']==2
+        assert p['factualScopeContractVersion']==3
         checker=facade._build_semantic_checker(p['runId'],Mock())
         assert checker._factual_scope() is True
+        assert checker._complete_factual_scope() is True
         with pytest.raises(ValueError,match='Immutable'):
             repo.update_run(p['runId'],lambda r:{**r,'factualScopeContractVersion':replacement})
     finally: facade.shutdown()

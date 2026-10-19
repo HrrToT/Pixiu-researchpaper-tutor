@@ -49,7 +49,7 @@ class FixtureModel:
             # Both source premises and fixed-split context are available here;
             # readiness never approves bad99% or fills omitted final conditions.
             content=[{'unitId':u['unitId'],'ready':True,'evidenceIds':u['evidenceIds']} for u in units]
-        elif prompt.startswith("Synthesize"):
+        elif prompt.startswith(("Synthesize", "Answer the exact research question")):
             ids = re.findall(r'"evidenceId":\s*"(E\d+)"', prompt)
             content = {"summary": "UNVERIFIED SUMMARY MUST NEVER BE SHOWN", "claims": [
                 {"claimId": "c1", "text": "Alpha reports 95% accuracy.", "kind": "reported", "evidenceRefs": [ids[0]]},
@@ -63,8 +63,10 @@ class FixtureModel:
                 packet=json.JSONDecoder().raw_decode(prompt.split('Evidence:\n',1)[1])[0]
                 for verdict,c in zip(content,claims):
                     ref=c['evidenceRefs'][0]
+                    binding=({'statementPath':['text']} if 'For these targets bind the WHOLE assertion' in prompt
+                             else {'statementExcerpt':c['text']})
                     verdict['scopeAudit']={'claimStrength':'bounded','evidenceStrength':'bounded',
-                        'supported':True,'statementExcerpt':c['text'],
+                        'supported':True,**binding,
                         'premises':[{'evidenceId':ref,'quote':packet['evidence'][ref]['quote']}]}
         elif prompt.startswith(("Revise only the targets","Rebuild ONLY these rejected factual answer targets")):
             content = []  # An unsupported claim may be dropped; do not relax checks.
