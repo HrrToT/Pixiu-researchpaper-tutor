@@ -651,10 +651,11 @@ def make_read_node(
         available = [sources_map[sid] for sid in source_ids if sid in sources_map]
         available.sort(key=lambda source: (source["sourceId"], source.get("contentHash")) in extracted)
         read_limit = 24 if record.get("budget", {}).get("profile") == "extended" else 12
-        if type(record.get('readingPriorityContractVersion')) is int and record['readingPriorityContractVersion']==1:
+        if type(record.get('readingPriorityContractVersion')) is int and record['readingPriorityContractVersion'] in (1,2):
             from services.deep_research.reading_priority import select_read_sources
             obligations={o['obligationId']:o for item in record.get('state',{}).get('plan',[]) for o in item.get('obligations',[])}
-            selected=select_read_sources(available,obligations,read_limit,extracted=extracted)
+            selected=select_read_sources(available,obligations,read_limit,extracted=extracted,
+                **({'priority_version':7} if record['readingPriorityContractVersion']==2 else {}))
         else:
             selected = balanced_sample(available,
                 lambda source: (source.get("workId"), tuple(source.get("obligationIds", []))),read_limit)

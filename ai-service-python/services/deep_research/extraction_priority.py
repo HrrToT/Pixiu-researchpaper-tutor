@@ -52,10 +52,10 @@ def prioritize_extraction_passages(pending, obligations, version=1):
     Identification-only requests keep their order. Paper round-robin prevents
     one rich source from displacing the other selected papers' first passages.
     """
-    if version in (2, 3, 4, 5, 6):
-        return _balance_obligations(pending, obligations, precise=version in (3,4,5,6),
-                                    requested_operations=version in (4,5,6), method_intents=version in (5,6),
-                                    operational_intents=version==6)
+    if version in (2, 3, 4, 5, 6, 7):
+        return _balance_obligations(pending, obligations, precise=version in (3,4,5,6,7),
+                                    requested_operations=version in (4,5,6,7), method_intents=version in (5,6,7),
+                                    operational_intents=version in (6,7),criterion_intents=version==7)
     def requirement(source):
         rows = [obligations[key] for key in eligible_obligation_ids(source, obligations)]
         explain = any(any(c.get('responseType') == 'explanation' for c in row.get('completionCriteria', []))
@@ -88,14 +88,16 @@ def prioritize_extraction_passages(pending, obligations, version=1):
 
 
 def _balance_obligations(pending, obligations, precise=False, requested_operations=False, method_intents=False,
-                         operational_intents=False):
+                         operational_intents=False,criterion_intents=False):
     """A training question must not consume the motivation question's first batch."""
     papers = list(dict.fromkeys(item[0]['workId'] for item in pending))
     queues = []
-    for oid, obligation in obligations.items():
+    from services.deep_research.criterion_sources import criterion_targets
+    targets=criterion_targets(obligations) if criterion_intents else [(oid,o,None) for oid,o in obligations.items()]
+    for oid, obligation,forced_intent in targets:
         question = obligation.get('question', '')
         from services.deep_research.method_intent import query_intent, operation_score
-        intent = query_intent(question+' '+obligation.get('searchQuery',''),operational=operational_intents) if method_intents else None
+        intent = forced_intent or (query_intent(question+' '+obligation.get('searchQuery',''),operational=operational_intents) if method_intents else None)
         output_target = requested_operations and bool(_OUTPUT_ASK.search(question)) and any(
             c.get('responseType')=='identification' for c in obligation.get('completionCriteria',[]))
         temporal_target = requested_operations and bool(_TEMPORAL_ASK.search(question))

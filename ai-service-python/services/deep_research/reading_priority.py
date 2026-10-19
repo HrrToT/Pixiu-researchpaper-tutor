@@ -5,7 +5,7 @@ from services.deep_research.source_continuity import needs_preceding_context
 from services.deep_research.obligation_binding import eligible_obligation_ids
 
 
-def select_read_sources(sources, obligations, limit, *, extracted=()):
+def select_read_sources(sources, obligations, limit, *, extracted=(),priority_version=6):
     """Retain owned source identities and exact predecessor bundles.
 
     Storage ID order is not relevance order. Rank retrieved text by each
@@ -21,7 +21,7 @@ def select_read_sources(sources, obligations, limit, *, extracted=()):
         if eligible_obligation_ids(source,obligations):
             readable.append(source)
     pending=[(s,s.get('location',{}),s.get('text','')) for s in readable]
-    ordered=[row[0] for row in prioritize_extraction_passages(pending,obligations,6)]
+    ordered=[row[0] for row in prioritize_extraction_passages(pending,obligations,priority_version)]
     ordered.sort(key=lambda s:(s['sourceId'],s.get('contentHash')) in extracted)
     selected=[];used=set()
     for source in ordered:

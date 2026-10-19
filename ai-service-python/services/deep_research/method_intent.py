@@ -5,6 +5,27 @@ Scores select passages only; they do not prove relevance, identity or support.
 import re
 
 
+def query_intents(query):
+    """All explicit acquisition aspects, not a factual or completion verdict.
+
+    A compound request can ask for inputs AND temporal representation AND
+    training organization. The legacy single-intent route remains unchanged.
+    """
+    patterns=(
+        ('input',r'\binputs?\b|输入'),
+        ('temporal',r'\btemporal (?:representation|model\w*)|\b(?:represent\w*|model\w*)[^.!?]{0,25}\btime\b|时间(?:变化|表示|建模)'),
+        ('training',r'\b(?:online|offline|per.frame|joint\w* train\w*|training (?:organization|procedure|stages?))\b|训练(?:模式|流程|方式|次序|是)|逐帧|在线|离线'),
+        ('operation',r'\b(?:mechanism|intervention|implementation|anneal\w*|smoothing)\b|退火|平滑|实现机制|方法操作'),
+        ('data_membership',r'\b(?:dataset|subset|membership)\b|数据集|子集|场景.{0,8}(?:身份|成员|哪些)'))
+    found=[intent for intent,pattern in patterns if re.search(pattern,query,re.I)]
+    for metric in ('FPS','PSNR','SSIM','LPIPS','latency'):
+        if re.search(r'(?<![A-Za-z0-9_])'+metric+r'(?![A-Za-z0-9_])',query,re.I):
+            found.append('measurement:'+metric.lower())
+            if re.search(r'主表|\bmain (?:results? )?table\b',query,re.I):
+                found.append('comparison_result:'+metric.lower())
+    return found
+
+
 def query_intent(query, *, operational=False):
     if re.search(r'\b(?:input|inputs)\b|(?:什么|哪些|使用|采用).{0,8}输入|输入(?:数据|材料)', query, re.I):
         return 'input'
@@ -27,14 +48,25 @@ def query_intent(query, *, operational=False):
 
 def operation_score(body, section, intent, *, operational=False):
     measurement = operational and isinstance(intent,str) and intent.startswith('measurement:')
+    comparison_result = operational and isinstance(intent,str) and intent.startswith('comparison_result:')
     if (not intent or re.search(r'related work|background|concurrent works|references',section,re.I)
-            or (re.search(r'Table\s*\d',section,re.I) and not (measurement or operational and intent=='data_membership'))):
+            or (re.search(r'Table\s*\d',section,re.I) and not (measurement or comparison_result or operational and intent=='data_membership'))):
         return 0
     text = re.sub(r'(?<=[A-Za-z])-[ \t]*\r?\n[ \t]*(?=[A-Za-z])', '', body)
     method = bool(re.search(r'^(?:\d+[. ]*)?(?:Method|Approach|Proposed)', section, re.I))
     own = bool(re.search(r'\bwe\b|\bour\b|我们的|本文', text, re.I))
-    if not method and not own and not (measurement or operational and intent=='data_membership'):
+    if not method and not own and not (measurement or comparison_result or operational and intent=='data_membership'):
         return 0
+    if comparison_result:
+        metric=intent.split(':',1)[1]
+        if not re.search(r'(?<![A-Za-z_])'+re.escape(metric)+r'(?![A-Za-z_])',text,re.I):
+            return 0
+        # A literal quantitative-comparison caption is a retrieval hint.
+        # Do not assume Table1 is the main result, or certify the row/protocol.
+        caption=section+'\n'+text[:450]
+        comparison=bool(re.search(r'quantitative comparison|comparison (?:on|with)|benchmark comparison',caption,re.I))
+        diagnostic=bool(re.search(r'profil\w*|ablation|sensitivity|overhead',caption,re.I))
+        return max(0,10*comparison-12*diagnostic+own+method)
     if measurement:
         metric=intent.split(':',1)[1]
         if not re.search(r'(?<![A-Za-z_])'+re.escape(metric)+r'(?![A-Za-z_])',text,re.I):
