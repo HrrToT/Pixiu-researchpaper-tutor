@@ -44,11 +44,11 @@
       "overlap": true
     },
     "backendCurrentResearchReadingTables": {
-      "passed": 3006,
+      "passed": 3019,
       "warnings": 1,
-      "seconds": 106.17,
-      "sourceCommit": "c02c5a63",
-      "log": "tmp/pytest-dr185-final-full-native.log",
+      "seconds": 148.72,
+      "sourceCommit": "9b5f68d4",
+      "log": "tmp/pytest-dr187-full.log",
       "scope": "Research, reading, PDF tables and config; offline fixture providers."
     },
     "frontendDocumentNavigationFocused": {
@@ -1936,6 +1936,26 @@
       "repairInputCapacity": 10263,
       "proof": "deep-research-evidence/H2F-v7-diagnostic-20261019.json",
       "inputAudit": "deep-research-evidence/H2F-v7-synthesis-input-audit-20261019.json"
+    },
+    "compactFactualRepair187": {
+      "sourceCommit": "9b5f68d4",
+      "promptVersion": "dr-v2.20261019.187",
+      "legacyProviderFingerprintsMatched": 16,
+      "legacyRepairSameInputDifferentials": 2,
+      "realCase": "H2F-v8",
+      "status": "completed",
+      "machineOutcome": "partial",
+      "contentAccepted": false,
+      "independentCredit": 0,
+      "modelCalls": 15,
+      "settledTokens": 59872,
+      "elapsedSeconds": 143.518,
+      "repairActuallyExecuted": true,
+      "repairTargetCount": 4,
+      "repairBatchCount": 1,
+      "twoTargetTimeFloorLiveExercised": false,
+      "actualRepairReconstructionMatched": false,
+      "proof": "deep-research-evidence/H2F-v8-diagnostic-20261019.json"
     }
   },
   "stages": [
@@ -2388,19 +2408,19 @@
     "Full novice study workflow",
     "Independent Edge recovery"
   ],
-  "currentProviderConstraint": "All further necessary bounded validations uniformly authorized. Selected diagnostic sequence:397 settled model calls/1621351 tokens; not global historical usage. Cost unknown; nine historical unknowns preserved, no blind retry.",
-  "currentDevelopmentMode": "Primary Codex only; Goal active, quota monitor paused by user. Source/runtimec02c5a63/.185, Java27ac4beb, frontend123b0d29. H2F-v7 published correct input/time comparison; training/FPS overclaims correctly rejected, repair skipped before send because17763bytes exceeds remaining10263-byte input capacity. Compact factual repair next; retain full scientific checks and frozen budgets. OriginalDR0-DR5 incomplete, first-five0/5 and PR draft unchanged.",
+  "currentProviderConstraint": "All further necessary bounded validations uniformly authorized. Selected diagnostic sequence:412 settled model calls/1681223 tokens; not global historical usage. Cost unknown; nine historical unknowns preserved, no blind retry.",
+  "currentDevelopmentMode": "Primary Codex only; Goal active, quota monitor paused by user. Source/runtime9b5f68d4/.187, Java27ac4beb, frontend123b0d29. Repair executes, but H2F-v8 content fails: indefinite collection numeric false rejection, missing NTC side, published false primary-table attribution and unsupported cross-paper absence. Fix source-purpose/absence and article/count handling; compact experiment synthesis before new paid H5. All original gates and PR draft unchanged.",
   "loadedRuntime": {
-    "commit": "c02c5a63",
-    "promptVersion": "dr-v2.20261019.185",
+    "commit": "9b5f68d4",
+    "promptVersion": "dr-v2.20261019.187",
     "javaCommit": "27ac4beb",
     "frontendCommit": "123b0d29",
-    "callsAfterLatestCase": 4583,
+    "callsAfterLatestCase": 4631,
     "active": 0,
     "historicalPausedUnknown": 9,
     "tasks": 92,
-    "proof": "deep-research-evidence/runtime-load-dr185-synthesis-premise-20261019.json",
-    "postCasesProof": "deep-research-evidence/runtime-postcases-dr185-h2f-v7-20261019.json"
+    "proof": "deep-research-evidence/runtime-load-dr187-factual-repair-admission-20261019.json",
+    "postCasesProof": "deep-research-evidence/runtime-postcases-dr187-h2f-v8-20261019.json"
   },
   "nextQualityWork": [
     "Use actual implementation-level training premises to complete both-paper input/temporal/training/FPS interpretation. Preserve evidence-limited judgments rather than assert undocumented condition differences; the actual450-character comparison now qualifies for bounded reasoning4.",

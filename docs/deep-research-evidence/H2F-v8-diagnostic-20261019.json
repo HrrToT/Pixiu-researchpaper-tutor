@@ -1,0 +1,215 @@
+{
+  "date": "2026-10-19",
+  "case": "H2F-v8",
+  "sourceCommit": "9b5f68d4",
+  "promptVersion": "dr-v2.20261019.187",
+  "runId": "dr_run_9e2c2647510b5ec3918059fa863fb533",
+  "status": "completed",
+  "machineOutcome": "partial",
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "modelCalls": 15,
+  "settledTokens": 59872,
+  "elapsedSeconds": 143.518,
+  "cost": null,
+  "externalSearches": 0,
+  "fulltextFetches": 0,
+  "actualSynthesisFingerprintMatched": true,
+  "actualSynthesisOptions": {
+    "max_tokens": 8192,
+    "temperature": 0.2,
+    "thinking": {
+      "type": "enabled"
+    },
+    "reasoning_effort": "low",
+    "response_format": {
+      "type": "json_object"
+    }
+  },
+  "scores": {
+    "goalResponse": 2,
+    "evidenceSupport": 2,
+    "conditions": 2,
+    "synthesisValue": 2,
+    "executability": null,
+    "readability": 3
+  },
+  "findings": [
+    "Repair is actually executed once, all four targets in one batch. It is not skipped by input/time admission. All15 model calls settled59872tokens, with no external search/fetch or new unknown. This confirms execution only; this different generated path is not a controlled latency/cost comparison againstv7.",
+    "The actual synthesis supplies20 evidence items/23712bytes/zero missing bundles and includes both initial/joint-training stages plus an explicit rather-than-frame-by-frame temporal-fitting premise. Final omission is not evidence acquisition failure.",
+    "Initial hard checks reject internal aliases/absence assertions. The repair gives a source-supported input explanation, but the reported quantity guard mistakes indefinite Chinese 一组图像 for a measured count1 against source a set of images. That valid input text is omitted. Genuine exact group/sample counts must stay checked when this false rejection is fixed.",
+    "Final c2 only explains Deformable temporal deformation, losing the requested 3DGStream/NTC side. Final c3 correctly reports per-frame initialization and the other method's initial3k/joint-training stages, but does not fully explain the online versus whole-sequence classification.",
+    "Final c4 is a semantic false pass: its sole source is Deformable's point-count/FPS experiment, not evidence establishing its main benchmark. It also asserts 3DGStream's conditions are not described in provided evidence without citing that work or certifying the acquired pool. A correct no-controlled-ranking conclusion cannot license these unsupported premises. This critical published error fails content acceptance despite machinepartial.",
+    "Next fix indefinite collection wording versus real cardinalities and paper-specific result-purpose/absence support; preserve hard checks, independent review and budgets. Do not pay for an unchanged retry or upgrade this retired case to independent credit."
+  ],
+  "actualSynthesisInputBytes": 23712,
+  "actualSynthesisEvidenceCount": 20,
+  "missingPremiseBundles": 0,
+  "repairStatus": "response_received",
+  "repairTargetCount": 4,
+  "repairBatchCount": 1,
+  "smallTwoTargetTimeFloorExercised": false,
+  "boundaryNotes": "The live run has four factual targets and retains the original90s admission floor. The2-target60s boundary is offline-tested only. The successful dispatch is not proof that every future repair fits or finishes.",
+  "inputAudit": "deep-research-evidence/H2F-v8-synthesis-input-audit-20261019.json",
+  "nextFix": "Correct indefinite collection numeric handling and require source-specific support for primary-table attribution/pool absence; also compact the experiment synthesis envelope before any new paid experiment.",
+  "report": "## 比较结论\n\n- 有依据的推断：Deformable 3D Gaussians v2将3D高斯与变形场解耦，变形场以3D高斯位置和当前时间t为输入，输出位置、旋转和缩放的偏移量δx、δr、δs，从而表示时间变化。 [1](#research-evidence-ev_6eedea527444f94603173bcdab681b0ed1dc3aba84873cbc4f6a19a9eccb2322) [2](#research-evidence-ev_48631b8d24cdb007f4bb3a1a0cfd7dd02c194626d71880b8eb6a3da38dff7a86)\n- 3DGStream v4采用逐帧在线训练：在时间步0训练3D高斯，后续时间步以上一时间步的3D高斯为初始化，经过两阶段流水线。Deformable 3D Gaussians v2的训练包括初始3k次迭代仅训练3D高斯，随后联合训练3D高斯和变形场。 [3](#research-evidence-ev_29e325e167454a4f9c1a78a962a3a447163b5e5d804acd3b761ce733857152cd) [4](#research-evidence-ev_66ed9db0a929c67a7f2044d80c26750fd5878ccae70642a3c5bbe41afa784531) [5](#research-evidence-ev_ac78892b03667f013a7ab023f8ee141856e6e6b1e1d412266f3faa1d17ef5c8b) [6](#research-evidence-ev_f8c75067e064c57424ff67d9350c14f3b52062e83902d694525ac6991ff30890) [7](#research-evidence-ev_370da206fca7afd03dfea3e31dd2d4c79bd5dd9f6d8b2e5211dfdce0a4684ca0)\n- 有依据的推断：Deformable 3D Gaussians v2的主表FPS是在3090 GPU且点云数量少于250k的条件下测得的，而3DGStream v4的主表FPS条件未在提供的证据中说明，因此不能凭各自主表FPS给出同条件速度排名。 [8](#research-evidence-ev_4954c60dac32eec0145fc1e71da3fa818a9ab7f9a0fadd72de0521ff1f7568fd)\n\n<details>\n<summary>还有 1 项未完成</summary>\n\n- 它们分别使用什么输入：最终回答尚未完整回应这一问题\n\n</details>\n\n论文事实已按所列原文核对。推断限于所列证据和适用条件。\n\n<details>\n<summary>原文依据</summary>\n\n**[1] Deformable 3D Gaussians for High-Fidelity Monocular Dynamic Scene Reconstruction** · 第 4 页 · 全文片段\n\n> To model the dynamic 3D Gaussians that vary over time, we decouple the 3D Gaussians and the deformation field.\n\n**[2] Deformable 3D Gaussians for High-Fidelity Monocular Dynamic Scene Reconstruction** · 全文片段\n\n> The deformation field takes the positions of the 3D Gaussians and the current time t as inputs, outputting δx, δr, and δs.\n\n**[3] 3DGStream: On-the-Fly Training of 3D Gaussians for Efficient Streaming of Photo-Realistic Free-Viewpoint Videos** · 第 4 页 · 全文片段\n\n> 3DGStream constructs photo-realistic FVV streams from multi-view video streams on-the-fly using a per-frame training paradigm.\n\n**[4] 3DGStream: On-the-Fly Training of 3D Gaussians for Efficient Streaming of Photo-Realistic Free-Viewpoint Videos** · 全文片段\n\n> We initiate the process by training 3DGs[26]at timestep 0.\n\n**[5] 3DGStream: On-the-Fly Training of 3D Gaussians for Efficient Streaming of Photo-Realistic Free-Viewpoint Videos** · 全文片段\n\n> For subsequent timesteps, we employ the previous timestep's 3DGs as an initialization and pass them to a two-stage pipeline.\n\n**[6] Deformable 3D Gaussians for High-Fidelity Monocular Dynamic Scene Reconstruction** · 第 7 页 · 全文片段\n\n> During the initial 3k iterations, we solely trained the 3D Gaussians to attain relatively stable positions and shapes.\n\n**[7] Deformable 3D Gaussians for High-Fidelity Monocular Dynamic Scene Reconstruction** · 第 7 页 · 全文片段\n\n> Subsequently, we jointly train the 3D Gaussians and the deformation field.\n\n**[8] Deformable 3D Gaussians for High-Fidelity Monocular Dynamic Scene Reconstruction** · 第 12 页 · 全文片段\n\n> The results of the experiments demonstrate that our method is capable of real-time rendering on a 3090 GPU when the number of point clouds is less than 250k.\n\n</details>",
+  "draft": {
+    "sections": [
+      {
+        "title": "比较结论",
+        "claimIds": [
+          "c1",
+          "c2",
+          "c3",
+          "c4"
+        ]
+      }
+    ],
+    "claims": [
+      {
+        "claimId": "c1",
+        "text": "P1输入为单目动态场景图像、时间标签、校准相机位姿及稀疏点云；P2输入为多视角视频流。",
+        "kind": "reported",
+        "evidenceRefs": [
+          "ev_e28ec6485011e1fc99874afce43b3041e486be74d12db4b3de4cb80e586f79fb",
+          "ev_29e325e167454a4f9c1a78a962a3a447163b5e5d804acd3b761ce733857152cd"
+        ],
+        "conditions": {},
+        "obligationIds": [
+          "ob_1"
+        ],
+        "detailLevel": "brief",
+        "tableBindings": []
+      },
+      {
+        "claimId": "c2",
+        "text": "P1通过变形场表示时间变化，以3D高斯位置和当前时间t为输入输出偏移δx,δr,δs；P2未提供显式时间条件表示，推断为逐帧更新3D高斯参数。",
+        "kind": "inference",
+        "evidenceRefs": [
+          "ev_6eedea527444f94603173bcdab681b0ed1dc3aba84873cbc4f6a19a9eccb2322",
+          "ev_48631b8d24cdb007f4bb3a1a0cfd7dd02c194626d71880b8eb6a3da38dff7a86",
+          "ev_29e325e167454a4f9c1a78a962a3a447163b5e5d804acd3b761ce733857152cd",
+          "ev_ac78892b03667f013a7ab023f8ee141856e6e6b1e1d412266f3faa1d17ef5c8b"
+        ],
+        "conditions": {},
+        "obligationIds": [
+          "ob_2"
+        ],
+        "detailLevel": "brief",
+        "tableBindings": []
+      },
+      {
+        "claimId": "c3",
+        "text": "P1为整体离线训练：先3k迭代只训练3D高斯，随后联合训练变形场；P2为逐帧在线训练：初始帧训练后，后续每帧用上一帧初始化更新。",
+        "kind": "reported",
+        "evidenceRefs": [
+          "ev_f8c75067e064c57424ff67d9350c14f3b52062e83902d694525ac6991ff30890",
+          "ev_370da206fca7afd03dfea3e31dd2d4c79bd5dd9f6d8b2e5211dfdce0a4684ca0",
+          "ev_29e325e167454a4f9c1a78a962a3a447163b5e5d804acd3b761ce733857152cd",
+          "ev_66ed9db0a929c67a7f2044d80c26750fd5878ccae70642a3c5bbe41afa784531",
+          "ev_ac78892b03667f013a7ab023f8ee141856e6e6b1e1d412266f3faa1d17ef5c8b"
+        ],
+        "conditions": {},
+        "obligationIds": [
+          "ob_3"
+        ],
+        "detailLevel": "brief",
+        "tableBindings": []
+      },
+      {
+        "claimId": "c4",
+        "text": "无法比较FPS：P1仅报告在3090 GPU且点云少于250k时实时渲染，未提供P2的FPS报告，且未控制相同硬件、数据与指标，故不能凭各自主表FPS排名。",
+        "kind": "inference",
+        "evidenceRefs": [
+          "ev_4954c60dac32eec0145fc1e71da3fa818a9ab7f9a0fadd72de0521ff1f7568fd"
+        ],
+        "conditions": {},
+        "obligationIds": [
+          "ob_4"
+        ],
+        "detailLevel": "brief",
+        "tableBindings": []
+      }
+    ]
+  },
+  "repairChecks": {
+    "accepted": [
+      {
+        "claimId": "c2",
+        "kind": "inference",
+        "text": "Deformable 3D Gaussians v2将3D高斯与变形场解耦，变形场以3D高斯位置和当前时间t为输入，输出位置、旋转和缩放的偏移量δx、δr、δs，从而表示时间变化。",
+        "evidenceRefs": [
+          "ev_6eedea527444f94603173bcdab681b0ed1dc3aba84873cbc4f6a19a9eccb2322",
+          "ev_48631b8d24cdb007f4bb3a1a0cfd7dd02c194626d71880b8eb6a3da38dff7a86"
+        ],
+        "conditions": {},
+        "detailLevel": "fulltext",
+        "obligationIds": [
+          "ob_2"
+        ],
+        "verification": "semantic_passed"
+      },
+      {
+        "claimId": "c3",
+        "kind": "reported",
+        "text": "3DGStream v4采用逐帧在线训练：在时间步0训练3D高斯，后续时间步以上一时间步的3D高斯为初始化，经过两阶段流水线。Deformable 3D Gaussians v2的训练包括初始3k次迭代仅训练3D高斯，随后联合训练3D高斯和变形场。",
+        "evidenceRefs": [
+          "ev_29e325e167454a4f9c1a78a962a3a447163b5e5d804acd3b761ce733857152cd",
+          "ev_66ed9db0a929c67a7f2044d80c26750fd5878ccae70642a3c5bbe41afa784531",
+          "ev_ac78892b03667f013a7ab023f8ee141856e6e6b1e1d412266f3faa1d17ef5c8b",
+          "ev_f8c75067e064c57424ff67d9350c14f3b52062e83902d694525ac6991ff30890",
+          "ev_370da206fca7afd03dfea3e31dd2d4c79bd5dd9f6d8b2e5211dfdce0a4684ca0"
+        ],
+        "conditions": {},
+        "detailLevel": "fulltext",
+        "obligationIds": [
+          "ob_3"
+        ],
+        "verification": "semantic_passed"
+      },
+      {
+        "claimId": "c4",
+        "kind": "inference",
+        "text": "Deformable 3D Gaussians v2的主表FPS是在3090 GPU且点云数量少于250k的条件下测得的，而3DGStream v4的主表FPS条件未在提供的证据中说明，因此不能凭各自主表FPS给出同条件速度排名。",
+        "evidenceRefs": [
+          "ev_4954c60dac32eec0145fc1e71da3fa818a9ab7f9a0fadd72de0521ff1f7568fd"
+        ],
+        "conditions": {},
+        "detailLevel": "fulltext",
+        "obligationIds": [
+          "ob_4"
+        ],
+        "verification": "semantic_passed"
+      }
+    ],
+    "rejected": [
+      {
+        "claimId": "c1",
+        "reason": "numeric_mismatch",
+        "missingReportedNumbers": [
+          "1e0"
+        ],
+        "detail": "本条引用原文未直接报告这些数值：1。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。"
+      }
+    ]
+  },
+  "rawFiles": [
+    {
+      "path": "tmp/dr-acceptance-receipts/H2F-v8.json",
+      "sha256": "a0404d5cb5c36048c9330d15c94a9bc2e7d872799959437c157df6f45926e003"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/H2F-v8.payload.json",
+      "sha256": "cb4b5b872f36554d1801f51e451fd0f65c50ac82072d7d3f3d77864a69c0cf86"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/H2F-v8.calls.json",
+      "sha256": "3a578449362753df290ccf3e2676e76c56791e4d0c0888b3ca3a8668ed3ec5d3"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/H2F-v8.result.json",
+      "sha256": "b1d58dbd1e2ad4102794495c2bf6751dafbae4014f199d3ae190d906c3fa7e86"
+    }
+  ],
+  "boundary": "One fixed retired development case, no automatic retry or independent credit. Original first-five scores and historical outcomes remain unchanged."
+}

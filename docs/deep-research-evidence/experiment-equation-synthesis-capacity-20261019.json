@@ -1,0 +1,101 @@
+{
+  "date": "2026-10-19",
+  "sourceCase": "H5F-v4",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "fixture": "Replace the third same-passage extraction with its already proven literal equation, keeping three slots. This is a hypothetical new extraction pool, NOT an actual new Provider run.",
+  "poolEvidenceCount": 9,
+  "originalPoolEvidenceCount": 9,
+  "literalOperationActuallySupplied": false,
+  "synthesisBytes": 23795,
+  "synthesisRows": 1,
+  "allocation": {
+    "version": 1,
+    "candidateEvidenceIds": [
+      "ev_da4fe482d8beb1708acbc87f742933bac6190f54cad8838c61b77214957e0587",
+      "ev_4b9093737002b0fff515c850bb3a6472329f3d357beeece4850d73e73cfe7ab7",
+      "ev_92ac3b791e4b470fc58f7ffedaa83a13040396446acf6dcad31224f457997588",
+      "ev_ac51d846787e219dc2dad5ea3887eed549a48f2289cd5f8250fdc3bd7adfdca2",
+      "ev_586ab31e392e3447f39bf1b47784ac558d3464934e8f3b9b90c5ac0f9e06d689",
+      "ev_f937f8286bfc17c29827db6016ac5cb5cdd8cf40232648fd3c99637ef9bd8922",
+      "ev_4d607838fc748b0d0fc4dd8223bdf453639bc7a024640afc50cd0a3553080b4c",
+      "ev_a24eb03e0d567888f1ffb7f0e872f06030b1c64ee76528611051abc95180c8b8",
+      "ev_e5929c2b044ca8ff48c460f1dcad9e6b0aad533062b884927a56dc0c9a677b8b"
+    ],
+    "suppliedEvidenceIds": [
+      "ev_ac51d846787e219dc2dad5ea3887eed549a48f2289cd5f8250fdc3bd7adfdca2"
+    ],
+    "missingPremiseBundles": [
+      {
+        "obligationId": "experiment_deliverable",
+        "criterionId": "requested_scope",
+        "requirement": "回应原问题明确要求的解释、比较和原论文事实；拟议设置不能替代用户要求的原始数据。给出有边界的假设与明确分组。",
+        "source": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf",
+        "evidenceIds": [
+          "E1"
+        ]
+      },
+      {
+        "obligationId": "experiment_deliverable",
+        "criterionId": "configuration",
+        "requirement": "给出可执行的初始化、固定条件、数据选择与划分预检、训练或恢复预算；不以未知默认值代替具体选择。",
+        "source": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf",
+        "evidenceIds": [
+          "E1"
+        ]
+      },
+      {
+        "obligationId": "experiment_deliverable",
+        "criterionId": "execution_analysis",
+        "requirement": "给出操作步骤、测量口径和与用户目标一致的结果判断规则。",
+        "source": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf",
+        "evidenceIds": [
+          "E1"
+        ]
+      },
+      {
+        "obligationId": "experiment_deliverable",
+        "criterionId": "limits",
+        "requirement": "明确方案尚未执行，区分原文依据、拟议选择及结论适用边界，不承诺已有结果或保证新颖。",
+        "source": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf",
+        "evidenceIds": [
+          "E1"
+        ]
+      },
+      {
+        "obligationId": "data_availability",
+        "criterionId": "available_data",
+        "requirement": "核对拟议数据选择的现有场景或样本依据，以及已取得证据的范围。",
+        "source": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf",
+        "evidenceIds": [
+          "E1"
+        ]
+      },
+      {
+        "obligationId": "ob_1",
+        "criterionId": "human_aspect_1",
+        "requirement": "设计一个最小实验检验退火平滑训练是否缓解固定相机位姿误差下的时间插值抖动",
+        "source": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf",
+        "evidenceIds": [
+          "E1",
+          "E2"
+        ]
+      },
+      {
+        "obligationId": "ob_1",
+        "criterionId": "human_aspect_1",
+        "requirement": "设计一个最小实验检验退火平滑训练是否缓解固定相机位姿误差下的时间插值抖动",
+        "source": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf",
+        "evidenceIds": [
+          "E3",
+          "E2"
+        ]
+      }
+    ],
+    "inputBytes": 23795,
+    "fixedInputBytes": 23307,
+    "tableDataOmittedEvidenceIds": [],
+    "sharedTablePackets": 0
+  },
+  "boundary": "Controlled input-fitting fixture only. No actual new extraction/generation, semantic approval, executable experiment acceptance or independent credit. Original history unchanged."
+}
