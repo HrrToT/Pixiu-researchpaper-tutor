@@ -4,7 +4,7 @@ from unittest.mock import Mock
 import pytest
 
 from services.deep_research.contracts import DeepResearchError, BudgetExhaustedError
-from services.deep_research.factual_repair import compact_rows, enabled
+from services.deep_research.factual_repair import compact_rows, enabled,protected_seconds
 from services.deep_research.repair import _prepare_repair, repair_rejected, _parse_repair_response
 from services.deep_research.repair_budget import repair_batch_output_limit, repair_prompt_byte_limit
 from services.deep_research.verification import verify_claims
@@ -105,14 +105,28 @@ def test_output_sizing_uses_existing_reservation_not_additional_budget():
     assert budget==before and repair_prompt_byte_limit(budget)==10263
 
 
-@pytest.mark.parametrize('replacement',[None,True,False,0,'1',2])
+def test_short_factual_time_floor_preserves_old_and_complex_paths_and_absolute_budget():
+    targets=[{'claimId':'c'+str(i),'kind':'reported','text':'结论。'} for i in range(2)]
+    record={'question':'比较两篇，450字以内','factualRepairContractVersion':2,
+            'budget':{'maxWallClockSeconds':360}}
+    before=deepcopy(record)
+    assert protected_seconds(record,targets)==60
+    assert protected_seconds({**record,'factualRepairContractVersion':1},targets)==90
+    assert protected_seconds({**record,'factualRepairContractVersion':True},targets)==90
+    assert protected_seconds({**record,'question':'完整研究'},targets)==90
+    assert protected_seconds(record,[{**c,'kind':'proposal','designRole':'groups'} for c in targets])==90
+    assert protected_seconds({**record,'budget':{'maxWallClockSeconds':120}},targets)==30
+    assert record==before
+
+
+@pytest.mark.parametrize('replacement',[None,True,False,0,'1',3])
 def test_new_contract_is_strict_server_owned_and_immutable(tmp_path,replacement):
     repo=DeepResearchRepository(str(tmp_path/'r.sqlite3'));repo.initialize()
     facade=ResearchFacade(repo,lambda **_:None,llm_client=object())
     try:
         record,_=facade.create({'workspaceTaskId':'t','operationKey':'op','question':'解释','deferStart':True,
                                'factualRepairContractVersion':replacement},start_async=False)
-        assert record['factualRepairContractVersion']==1 and enabled(record)
+        assert record['factualRepairContractVersion']==2 and enabled(record)
         assert not enabled({'factualRepairContractVersion':replacement})
         with pytest.raises(ValueError,match='Immutable'):
             repo.update_run(record['runId'],lambda r:{**r,'factualRepairContractVersion':replacement})

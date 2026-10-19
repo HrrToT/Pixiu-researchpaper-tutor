@@ -5,7 +5,26 @@ from copy import deepcopy
 
 def enabled(record):
     version = record.get('factualRepairContractVersion')
-    return type(version) is int and version == 1
+    return type(version) is int and version in (1,2)
+
+
+def protected_seconds(record, targets):
+    """Advisory admission floor; absolute run/call deadlines still apply."""
+    maximum=float(record.get('budget',{}).get('maxWallClockSeconds') or 0)
+    normal=min(90.0,maximum/4)
+    if type(record.get('factualRepairContractVersion')) is not int or record['factualRepairContractVersion']!=2:
+        return normal
+    from services.deep_research.repair import factual_redraft_eligible
+    from services.deep_research.request_context import effective_question
+    from services.deep_research.answer_constraints import requested_character_limit
+    limit=requested_character_limit(effective_question(record))
+    if not (1<=len(targets)<=3 and factual_redraft_eligible({'claims':targets})
+            and type(limit) is int and 0<limit<=700):
+        return normal
+    # The short factual edit and verify_repair both return direct structured
+    # output. Keep30s fixed overhead plus15s per target for verification;
+    # all other repair/experiment paths retain the original floor.
+    return min(normal,30.0+15.0*len(targets))
 
 
 def compact_rows(rows, source_context):

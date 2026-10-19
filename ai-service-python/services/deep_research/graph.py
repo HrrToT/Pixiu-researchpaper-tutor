@@ -1561,7 +1561,10 @@ def make_verify_node(
                 started = record.get('startedAt')
                 if maximum and started:
                     elapsed = (datetime.now(UTC) - datetime.fromisoformat(started.replace('Z', '+00:00'))).total_seconds()
-                    minimum = min(90.0, maximum / 4)
+                    from services.deep_research.factual_repair import protected_seconds
+                    repair_ids={r['claimId'] for r in repair_targets.get('rejected',[])}
+                    time_targets=[c for c in repair_report.get('claims',[]) if c.get('claimId') in repair_ids]
+                    minimum = protected_seconds(record,time_targets)
                     if maximum - elapsed < minimum:
                         repo_update(run_id, lambda r: {**r, 'state': {**r.get('state', {}),
                             'repairStatus': 'skipped_time', 'repairTimeRequiredSeconds': minimum}}, expected_revision=None)
