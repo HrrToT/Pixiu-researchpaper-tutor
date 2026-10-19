@@ -1,0 +1,320 @@
+{
+  "date": "2026-10-19",
+  "sourceCase": "H2F-v6",
+  "implementationPromptVersion": "dr-v2.20261019.185",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "replays": [
+    {
+      "newPolicy": false,
+      "inputBytes": 23915,
+      "wireEvidence": 11,
+      "trainingQuotesSupplied": [],
+      "actualLegacyFingerprintMatched": true,
+      "options": {
+        "max_tokens": 8192,
+        "temperature": 0.2,
+        "thinking": {
+          "type": "enabled"
+        },
+        "reasoning_effort": "low",
+        "response_format": {
+          "type": "json_object"
+        }
+      },
+      "inputSha256": "230042cd433736256787a31c95dca51cc7ab06ce27367358df7c00c33fb1d241",
+      "allocation": null,
+      "wire": [
+        {
+          "alias": "E1",
+          "quote": "3DGStream constructs photo-realistic FVV streams from multi-view video streams on-the-fly using a per-frame training paradigm.\nWe initiate the process by training 3DGs[26]at timestep 0.\nFor subsequent timesteps, we employ the previous timestep's 3DGs as an initialization and pass them to a two-stage pipeline.",
+          "tableDataRef": null,
+          "resultRoleHintOnly": null
+        },
+        {
+          "alias": "E2",
+          "quote": "Table caption: Table 7 . 11.1. Quantitative ResultsWe provide a quantitative comparison of image quality, measured by PSNR, across all scenes in the N3DV dataset Rendering profilling on the Meet Room dataset.",
+          "tableDataRef": null,
+          "resultRoleHintOnly": null
+        },
+        {
+          "alias": "E3",
+          "quote": "Table 1 . Quantitative comparison on the N3DV dataset. The training time, required storage and PSNR are averaged over the whole 300 frames for each scene.",
+          "tableDataRef": null,
+          "resultRoleHintOnly": null
+        },
+        {
+          "alias": "E4",
+          "quote": "The input to our method is a set of images of a monocular dynamic scene, together with the time label and the corresponding camera poses calibrated by SfM[37]which also produces a sparse point cloud.",
+          "tableDataRef": null,
+          "resultRoleHintOnly": null
+        },
+        {
+          "alias": "E5",
+          "quote": "Tests were conducted on one NVIDIA RTX 3090.",
+          "tableDataRef": null,
+          "resultRoleHintOnly": null
+        },
+        {
+          "alias": "E6",
+          "quote": "Firstly (Sec.\n4.1), a Neural Transformation Cache (NTC) is trained to model the transformation for each 3DG.\nOnce the training is finished, we transform the 3DGs and carry the transformed 3DGs to the next timestep.",
+          "tableDataRef": null,
+          "resultRoleHintOnly": null
+        },
+        {
+          "alias": "E7",
+          "quote": "Table row 1: Step |  | Overhead (ms) FPS [cols=2, rows=1]\nTable row 2: Render w/o NTC [cols=2, rows=1] | 1.75 | 571\nTable row 3: + Query NTC [cols=2, rows=1] | +0.46 | \nTable row 4: + Transformation [cols=2, rows=1] | +0.02 | \nTable row 5: + SH Rotation [cols=2, rows=1] | +1.24 | \nTable row 6: Total |  | 3.47 | 288",
+          "tableDataRef": null,
+          "resultRoleHintOnly": null
+        },
+        {
+          "alias": "E8",
+          "quote": "Owing to the limitations of Dynamic3DG and ReRF, which necessitate foreground masks and are confined to scenes with fewer objects, and their minute-level per-frame training times, we select StreamRF selected as the representative for online training methods due to its adaptability and training feasibility on the N3DV and MeetRoom datasets.",
+          "tableDataRef": null,
+          "resultRoleHintOnly": null
+        },
+        {
+          "alias": "E9",
+          "quote": "To model the dynamic 3D Gaussians that vary over time, we decouple the 3D Gaussians and the deformation field.",
+          "tableDataRef": null,
+          "resultRoleHintOnly": null
+        },
+        {
+          "alias": "E10",
+          "quote": "It is observed that when the number of point clouds remains below ∼250k, our method can achieve real-time rendering at rates greater than 30 FPS.",
+          "tableDataRef": null,
+          "resultRoleHintOnly": null
+        },
+        {
+          "alias": "E11",
+          "quote": "Secondly (Sec.\n4.2), we employ an adaptive 3DG addition strategy to handle emerging objects.\nFor each FVV frame, we render views at the current timestep using both the transformed 3DGs and additional 3DGs, while the latter are not passed to the next timestep.",
+          "tableDataRef": null,
+          "resultRoleHintOnly": null
+        }
+      ]
+    },
+    {
+      "newPolicy": true,
+      "inputBytes": 23939,
+      "wireEvidence": 20,
+      "trainingQuotesSupplied": [
+        "During the initial 3k iterations, we solely trained the 3D Gaussians to attain relatively stable positions and shapes.",
+        "Subsequently, we jointly train the 3D Gaussians and the deformation field."
+      ],
+      "actualLegacyFingerprintMatched": false,
+      "options": {
+        "max_tokens": 8192,
+        "temperature": 0.2,
+        "thinking": {
+          "type": "enabled"
+        },
+        "reasoning_effort": "low",
+        "response_format": {
+          "type": "json_object"
+        }
+      },
+      "inputSha256": "c4e7d768d3968ae4d3058b474de302ab010abcc10e7c979a0e7fc52270852850",
+      "allocation": {
+        "version": 1,
+        "candidateEvidenceIds": [
+          "ev_d0583f4e0f396cc398c3ae2b84b55a2942cf264135f73417673328fd5a228610",
+          "ev_de81539c12c6c729901acb0a3988a95c6d4e4e20dcd419f57bfc22008a46493f",
+          "ev_00a076f1c39ca2ca3dd0fb55df25129823fc66e745a687add7bf1cf9e88f15f2",
+          "ev_bdb024b856972aab854c483acb7dfa600c4918cc401ccfcebcb14da2200b2d38",
+          "ev_6eedea527444f94603173bcdab681b0ed1dc3aba84873cbc4f6a19a9eccb2322",
+          "ev_48631b8d24cdb007f4bb3a1a0cfd7dd02c194626d71880b8eb6a3da38dff7a86",
+          "ev_f8c75067e064c57424ff67d9350c14f3b52062e83902d694525ac6991ff30890",
+          "ev_370da206fca7afd03dfea3e31dd2d4c79bd5dd9f6d8b2e5211dfdce0a4684ca0",
+          "ev_9b4d149dc4a13fcdedb6d8191b13c0065e1a7faa464fc1ea6c9169f9ba754122",
+          "ev_6245183dd4f8b124c1b5f5dae50ec623ddf613b33d68196dac788a5591459d7b",
+          "ev_a765745a8b89bd58a488191271c67bd2bc1e0c0f799b4259f162885b6031e6d7",
+          "ev_83cbce6b5647dc7ef89686cfbb9c3e704741dfb959c1e90b18977fc806be20a7",
+          "ev_a84319e148148fa3ed6ccb13b26c3040a13a35f4efe68908249e49987f0c0428",
+          "ev_26ff8ade007b890b8a9f3d2952389d5b7703f3c6f556f471cbc86ebcd3e6c8e0",
+          "ev_9aef30f05ae25d0b617aec3def4ed449dcaf85fcfdd4623ab803726d48377599",
+          "ev_daf1c762e9de851cfbbfa34cd1c19cd03533828fbb2428b712f31482f7cde638",
+          "ev_4e477fb8d1a78c7dc59c7f5d472888f378d38f76982076294cc0f8f502e11552",
+          "ev_03221ff0a6bdf4efa83c31acb82eac15938dca19fde77d72cac9a06b4774d1b4",
+          "ev_536c387dd86100e31328c11f25f627d50b599bd62089909369afee1e3f00dbf2",
+          "ev_acfe4f856b1680b6e07614ef0a0701d4806a36ea7eb1c6da9256762e91924674"
+        ],
+        "suppliedEvidenceIds": [
+          "ev_d0583f4e0f396cc398c3ae2b84b55a2942cf264135f73417673328fd5a228610",
+          "ev_de81539c12c6c729901acb0a3988a95c6d4e4e20dcd419f57bfc22008a46493f",
+          "ev_00a076f1c39ca2ca3dd0fb55df25129823fc66e745a687add7bf1cf9e88f15f2",
+          "ev_bdb024b856972aab854c483acb7dfa600c4918cc401ccfcebcb14da2200b2d38",
+          "ev_6eedea527444f94603173bcdab681b0ed1dc3aba84873cbc4f6a19a9eccb2322",
+          "ev_48631b8d24cdb007f4bb3a1a0cfd7dd02c194626d71880b8eb6a3da38dff7a86",
+          "ev_f8c75067e064c57424ff67d9350c14f3b52062e83902d694525ac6991ff30890",
+          "ev_370da206fca7afd03dfea3e31dd2d4c79bd5dd9f6d8b2e5211dfdce0a4684ca0",
+          "ev_9b4d149dc4a13fcdedb6d8191b13c0065e1a7faa464fc1ea6c9169f9ba754122",
+          "ev_6245183dd4f8b124c1b5f5dae50ec623ddf613b33d68196dac788a5591459d7b",
+          "ev_a765745a8b89bd58a488191271c67bd2bc1e0c0f799b4259f162885b6031e6d7",
+          "ev_83cbce6b5647dc7ef89686cfbb9c3e704741dfb959c1e90b18977fc806be20a7",
+          "ev_a84319e148148fa3ed6ccb13b26c3040a13a35f4efe68908249e49987f0c0428",
+          "ev_26ff8ade007b890b8a9f3d2952389d5b7703f3c6f556f471cbc86ebcd3e6c8e0",
+          "ev_9aef30f05ae25d0b617aec3def4ed449dcaf85fcfdd4623ab803726d48377599",
+          "ev_daf1c762e9de851cfbbfa34cd1c19cd03533828fbb2428b712f31482f7cde638",
+          "ev_4e477fb8d1a78c7dc59c7f5d472888f378d38f76982076294cc0f8f502e11552",
+          "ev_03221ff0a6bdf4efa83c31acb82eac15938dca19fde77d72cac9a06b4774d1b4",
+          "ev_536c387dd86100e31328c11f25f627d50b599bd62089909369afee1e3f00dbf2",
+          "ev_acfe4f856b1680b6e07614ef0a0701d4806a36ea7eb1c6da9256762e91924674"
+        ],
+        "missingPremiseBundles": [],
+        "inputBytes": 23939,
+        "fixedInputBytes": 13241,
+        "tableDataOmittedEvidenceIds": [],
+        "sharedTablePackets": 0
+      },
+      "wire": [
+        {
+          "alias": "E1",
+          "quote": "3DGStream constructs photo-realistic FVV streams from multi-view video streams on-the-fly using a per-frame training paradigm.\nWe initiate the process by training 3DGs[26]at timestep 0.\nFor subsequent timesteps, we employ the previous timestep's 3DGs as an initialization and pass them to a two-stage pipeline.",
+          "tableDataRef": null,
+          "resultRoleHintOnly": "unspecified"
+        },
+        {
+          "alias": "E2",
+          "quote": "Firstly (Sec.\n4.1), a Neural Transformation Cache (NTC) is trained to model the transformation for each 3DG.\nOnce the training is finished, we transform the 3DGs and carry the transformed 3DGs to the next timestep.",
+          "tableDataRef": null,
+          "resultRoleHintOnly": "unspecified"
+        },
+        {
+          "alias": "E3",
+          "quote": "Specifically, we first train the initial 3DGs on the multi-view frames at timestep 0.\nThen, for each timestep i, we use the 3DGs of previous timestep i − 1 as initialization and pass it to a two-stage pipeline.",
+          "tableDataRef": null,
+          "resultRoleHintOnly": "unspecified"
+        },
+        {
+          "alias": "E4",
+          "quote": "After the two-stage pipeline concludes, we use both the 3DGs transformed by the NTC and the additional 3DGs for rendering at the current timestep i, with only the former carrying over for initialization of the subsequent timestep.",
+          "tableDataRef": null,
+          "resultRoleHintOnly": "unspecified"
+        },
+        {
+          "alias": "E5",
+          "quote": "To model the dynamic 3D Gaussians that vary over time, we decouple the 3D Gaussians and the deformation field.",
+          "tableDataRef": null,
+          "resultRoleHintOnly": "unspecified"
+        },
+        {
+          "alias": "E6",
+          "quote": "The deformation field takes the positions of the 3D Gaussians and the current time t as inputs, outputting δx, δr, and δs.",
+          "tableDataRef": null,
+          "resultRoleHintOnly": "unspecified"
+        },
+        {
+          "alias": "E7",
+          "quote": "During the initial 3k iterations, we solely trained the 3D Gaussians to attain relatively stable positions and shapes.",
+          "tableDataRef": null,
+          "resultRoleHintOnly": "unspecified"
+        },
+        {
+          "alias": "E8",
+          "quote": "Subsequently, we jointly train the 3D Gaussians and the deformation field.",
+          "tableDataRef": null,
+          "resultRoleHintOnly": "unspecified"
+        },
+        {
+          "alias": "E9",
+          "quote": "Tests were conducted on one NVIDIA RTX 3090.",
+          "tableDataRef": null,
+          "resultRoleHintOnly": "unspecified"
+        },
+        {
+          "alias": "E10",
+          "quote": "It is observed that when the number of point clouds remains below ∼250k, our method can achieve real-time rendering at rates greater than 30 FPS.",
+          "tableDataRef": null,
+          "resultRoleHintOnly": "unspecified"
+        },
+        {
+          "alias": "E11",
+          "quote": "It is worth noting that the metrics we used are the same as those in the main text, with LPIPS using the VGG network.",
+          "tableDataRef": null,
+          "resultRoleHintOnly": "quantitative_comparison"
+        },
+        {
+          "alias": "E12",
+          "quote": "Secondly (Sec.\n4.2), we employ an adaptive 3DG addition strategy to handle emerging objects.\nFor each FVV frame, we render views at the current timestep using both the transformed 3DGs and additional 3DGs, while the latter are not passed to the next timestep.",
+          "tableDataRef": null,
+          "resultRoleHintOnly": "unspecified"
+        },
+        {
+          "alias": "E13",
+          "quote": "We transform the 3DGs based on dµ and dq.",
+          "tableDataRef": null,
+          "resultRoleHintOnly": "unspecified"
+        },
+        {
+          "alias": "E14",
+          "quote": "In Stage 1, we transform the 3DGs from the previous frame by NTC and then render with them. The parameters of the NTC is optimized by the loss between the rendered image and the ground truth.",
+          "tableDataRef": null,
+          "resultRoleHintOnly": "unspecified"
+        },
+        {
+          "alias": "E15",
+          "quote": "from scratch per-frame and dynamic reconstruction methods that necessitate offline training across the complete video sequences, our approach excels in both training speed and rendering speed, maintaining a competitive edge in image quality and model storage.",
+          "tableDataRef": null,
+          "resultRoleHintOnly": "unspecified"
+        },
+        {
+          "alias": "E16",
+          "quote": "We propose 3DGStream, a method for on-the-fly construction of photo-realistic, real-time renderable FVV on video streams, eliminating the necessity for lengthy offline training on the entire video sequences.",
+          "tableDataRef": null,
+          "resultRoleHintOnly": "unspecified"
+        },
+        {
+          "alias": "E17",
+          "quote": "We utilize NTC for modeling the transformations of 3DGs, in conjunction with an adaptive 3DG addition strategy to tackle emerging objects within dynamic scenes.",
+          "tableDataRef": null,
+          "resultRoleHintOnly": "unspecified"
+        },
+        {
+          "alias": "E18",
+          "quote": "Furthermore, to enhance the NTC's performance with minimal overhead, we utilize a shallow fully-fused MLP[38]. This maps the hash encoding to a 7-dimensional output: the first three dimensions indicate the translation of the 3DG; the remaining dimensions represent the rotation of the 3DG using quaternions.",
+          "tableDataRef": null,
+          "resultRoleHintOnly": "profiling"
+        },
+        {
+          "alias": "E19",
+          "quote": "Given multi-resolution hash encoding coupled with MLP, our NTC is formalized as:",
+          "tableDataRef": null,
+          "resultRoleHintOnly": "unspecified"
+        },
+        {
+          "alias": "E20",
+          "quote": "where µ denotes the mean of the input 3DG. We transform the 3DGs based on dµ and dq.",
+          "tableDataRef": null,
+          "resultRoleHintOnly": "unspecified"
+        }
+      ]
+    }
+  ],
+  "oldHardChecks": [
+    {
+      "claimId": "c1",
+      "reason": "numeric_mismatch",
+      "missingReportedNumbers": [
+        "3e0"
+      ],
+      "detail": "本条引用原文未直接报告这些数值：3。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。"
+    },
+    {
+      "claimId": "c2",
+      "reason": "numeric_mismatch",
+      "missingReportedNumbers": [
+        "3e0"
+      ],
+      "detail": "本条引用原文未直接报告这些数值：3。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。"
+    }
+  ],
+  "newHardChecks": [
+    {
+      "claimId": "c3",
+      "reason": "result_purpose_not_established",
+      "detail": "所引用的渲染剖析未建立主表结果的归属。区分算子剖析与主要比较；不得把剖析值改称主表值。"
+    }
+  ],
+  "repairedPoolAbsenceRejected": true,
+  "boundary": "Actual archived evidence and exact legacy synthesis request replay plus new-policy request fitting/hard checks only. No new generation, independent semantic approval, content acceptance or holdout credit. Original inputs and outcomes unchanged."
+}
