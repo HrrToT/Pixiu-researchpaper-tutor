@@ -2081,6 +2081,59 @@
       "log": "tmp/pytest-dr205-research-full.log",
       "sha256": "71e2c53649976309cc02082c38a40f75f1e64b3682165400f0f49403272c230a",
       "sourceCommit": "c57869b8"
+    },
+    "experimentRepresentationOffline": {
+      "passed": 3385,
+      "files": 197,
+      "warnings": 1,
+      "seconds": 231.55,
+      "scope": "All tests/test_deep_research*.py, not all Python/reading/config integration.",
+      "log": "tmp/pytest-dr206-research-full-native.log",
+      "sha256": "f182252d1edf9bbf190178a4a9311cfebdd78df1b42c949aa05819834176db12",
+      "sourceCommit": "a0972326"
+    },
+    "experimentRepresentationCheckpoint": {
+      "date": "2026-10-20",
+      "sourceCommit": "a0972326",
+      "promptVersion": "dr-v2.20261020.206",
+      "fullDeepResearchOffline": {
+        "passed": 3385,
+        "files": 197,
+        "warnings": 1,
+        "seconds": 231.55,
+        "scope": "All tests/test_deep_research*.py, not all Python/reading/config integration.",
+        "log": "tmp/pytest-dr206-research-full-native.log",
+        "sha256": "f182252d1edf9bbf190178a4a9311cfebdd78df1b42c949aa05819834176db12"
+      },
+      "focusedPassed": 120,
+      "focusedOverlap": true,
+      "newTests": 29,
+      "oldActualModelFingerprintsMatched": 32,
+      "implementation": "Immutable draft6/repair5 only: exact single role wrappers with exact inner fields and valid operation parameter rows/marked tables normalize without changing values. Known operation slots only; ambiguous/extra/missing/invalid forms remain invalid. Raw results, original schema/science/source checks and budgets stay intact; audits do not approve claims.",
+      "controlledReplay": "experiment-representation-e1-v6-controlled-20261020.json",
+      "runtimeProof": "runtime-load-dr206-experiment-representation-20261020.json",
+      "retentionProof": "runtime-postcases-dr206-e1-v7-20261020.json",
+      "selectedDiagnosticTotals": {
+        "settledModelCalls": 521,
+        "measuredTokens": 2140252,
+        "notGlobalHistory": true,
+        "costUnknown": true
+      },
+      "boundary": "Formatting compatibility is not scientific acceptance. No history upgrade or fresh independent credit; DR0-DR5 incomplete, Goal active, PR draft."
+    },
+    "experimentRepresentationCase": {
+      "sourceCommit": "a0972326",
+      "promptVersion": "dr-v2.20261020.206",
+      "case": "E1-v7",
+      "status": "completed",
+      "outcome": "partial",
+      "verificationSummary": {
+        "accepted": 2,
+        "rejected": 7
+      },
+      "settledModelCalls": 14,
+      "settledTokens": 61836,
+      "independentCredit": 0
     }
   },
   "stages": [
@@ -2558,12 +2611,13 @@
     "postCasesProof": "deep-research-evidence/runtime-postcases-dr197-e1-v1-20261020.json"
   },
   "nextQualityWork": [
-    "Preserve11old unknowns and exact old identities; no task/attempt bypass, silent history upgrade or reservation-as-measured-usage claim.",
-    "Version narrowly declared normalization of EXACT single same-role executionSpec wrappers and operation parameter-row/marked-table forms. E1-v6 has4role wrappers and copied compact parameter rows; preserve raw model responses and all values, reject ambiguous/extra forms, retain existing schema and science gates.",
-    "Improve canonical role scaffolding in initial experimental generation instead of repeatedly asking a model to infer role schemas from terse grammar. Do not fill scientific values automatically or drop requested roles.",
-    "Fix actual3DGS/NTC full initialization, invented pretrained assets/selectors/opaque zero-weight states, native whole-stage unequal budget, training-only eligible window selection, real intervention and measurement boundaries. Existing literal scene membership is now acquired/read/extracted/cited, not proof of downloadable assets/counts or a complete plan.",
-    "Audit independent-review reasons against prospective hypotheses, proposed splits and zero-based indexing using explicit facts/choices and actual linked definitions; do not suppress real evidence/science defects or auto-pass from missing proof.",
-    "Verify usable content and fresh independent replacements against full original DR0-DR5 design; original independent0/5 and failed/partial histories remain unchanged."
+    "Prevent internal evidence aliases in public conditions without dropping factual assertions or changing source permissions; distinguish from genuine paper symbols.",
+    "Fix prose/config camera-split contradictions and budget review arithmetic; retain genuine protocol/budget constraints.",
+    "Compact remaining repair input without removing claims/config/source/checks; later batch21519 exceeded actual remaining16580, so not all batches sent.",
+    "Fix actual complete3DGS/NTC initialization and source-grounded assets; no invented pretrained selectors or opaque zero model weights.",
+    "Generate coherent whole-stage budgets, train-only eligible scene/window choices, actual intervention parameters and executable measurements.",
+    "Audit reviewer reasons about prospective hypotheses/proposed splits/indexing against linked definitions without suppressing genuine source/science defects.",
+    "Keep11old unknowns, original request identities and historical0/5; complete full DR0-DR5 and fresh independent replacements after development content passes."
   ],
   "javaReaderRuntime": {
     "sourceCommit": "070ab1a",
@@ -3144,7 +3198,7 @@
     "independentCredit": 0,
     "proof": "deep-research-evidence/compact-experiment-envelope-regression-20261020.json"
   },
-  "currentCheckpoint": ".205c57869b8: immutable sourceContinuity1 retrieves/reads separate same-work/version/index/section/family predecessor context for leading figure/table references under unchanged5/12limits.3356DeepResearch tests/70overlapping focused/34new,29old model fingerprints+3old retrieval identities. Real E1-v6: new chunk37 acquired/read before38/extracted as own literal quote/cited by data;10reads.13settled calls/56226tokens,0new unknown, completed/inconclusive0/9. One joint23989/24000byte edit sent,2drafts restored, still failed:4same-role spec wrappers, copied compact parameter rows and real scientific/config defects. Old payloads/tasks/unknowns preserved;4881ledger,11paused. Goal active, PR draft, full development incomplete.",
+  "currentCheckpoint": ".206 a0972326: draft6/repair5 exact representation compatibility;3385research tests,32old actual model fingerprints. E1-v7 completed/partial, verification={'accepted': 2, 'rejected': 7};14settled calls/61836tokens. Historical results and full incomplete status retained.",
   "sharedModuleSourceCheckpoint": {
     "sourceCommit": "f8ae5177",
     "promptVersion": "dr-v2.20261020.199",
