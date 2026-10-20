@@ -25,12 +25,18 @@ def enabled():
 def research_model_options(node, options):
     """Apply role options BEFORE the ledger reserves tokens and fingerprints input."""
     from services.deep_research.factual_reasoning import OPTION,DIRECT_REPAIR_OPTION,HIGH_SYNTHESIS_OPTION
+    from services.deep_research.factual_review import OPTION as REVIEW_OPTION
     options = dict(options)
+    bounded_review=options.pop(REVIEW_OPTION,False)
     short_factual = options.pop(OPTION, False)
     direct_repair = options.pop(DIRECT_REPAIR_OPTION,False)
     high_synthesis = options.pop(HIGH_SYNTHESIS_OPTION,False)
-    if any(type(value) is not bool for value in (short_factual,direct_repair,high_synthesis)):
+    if any(type(value) is not bool for value in (short_factual,direct_repair,high_synthesis,bounded_review)):
         raise ValueError('Invalid server factual reasoning profile')
+    if bounded_review:
+        if node!='verify':
+            raise ValueError('Bounded factual review is only valid for initial verification')
+        return {**options,'thinking':{'type':'enabled'},'reasoning_effort':'low','max_tokens':8192}
     if short_factual and node == 'synthesize':
         # Scoped to small factual/comparison outputs, not full experiment specs.
         # The same request/round budget applies; length/unknown never auto-retry.
@@ -262,6 +268,7 @@ def initialize_runtime():
             return TrackedLLMInvoker(model.for_run(run_id), self._repo.reserve_call, self._complete_tracked_call,
                                      request_options=research_model_options,
                                      run_record_fn=self._repo.require_run,
+                                     call_history_fn=self._repo.list_calls,
                                      verification_max_input_bytes=32000)
 
         def _make_semantic_checker(self, run_id):

@@ -273,7 +273,8 @@ class ResearchFacade:
             "materials": materials,
             "materialSnapshot": material_snapshot,  # Immutable Java snapshot
             "contextMaterials": (material_snapshot or {}).get("contextMaterials", []) if isinstance(material_snapshot, dict) else [],
-            "promptVersion": "dr-v2.20261020.190",
+            "promptVersion": "dr-v2.20261020.191",
+            "factualReviewContractVersion": 1,
             "experimentDraftContractVersion": 1,
             "factualRepairContractVersion": 2,
             "synthesisEvidenceContractVersion": 1,
@@ -1100,6 +1101,7 @@ class ResearchFacade:
             reserve_call_fn=lambda **kw: self._repo.reserve_call(**kw),
             complete_call_fn=self._complete_tracked_call,
             run_record_fn=self._repo.require_run,
+            call_history_fn=self._repo.list_calls,
             verification_max_input_bytes=32000,
         )
         
@@ -1159,6 +1161,7 @@ class ResearchFacade:
             reserve_call_fn=lambda **kw: self._repo.reserve_call(**kw),
             complete_call_fn=self._complete_tracked_call,
             run_record_fn=self._repo.require_run,
+            call_history_fn=self._repo.list_calls,
             verification_max_input_bytes=32000,
         )
         
@@ -1170,6 +1173,7 @@ class ResearchFacade:
         from services.deep_research.comparison_reasoning import enabled as comparison_enabled
         from services.deep_research.audit_source_fields import enabled as audit_fields_enabled
         from services.deep_research.factual_scope import enabled as scope_enabled
+        from services.deep_research.factual_review import enabled as bounded_review_enabled
         checker = BudgetedSemanticChecker(invoker, run_id,
             metric_domains=lambda: self._repo.require_run(run_id).get('state', {}).get('metricDomains'),
             research_question=lambda: effective_question(self._repo.require_run(run_id)),
@@ -1185,6 +1189,7 @@ class ResearchFacade:
                 and self._repo.require_run(run_id)['factualScopeContractVersion'] in (3,4),
             result_attribution=lambda: type(self._repo.require_run(run_id).get('factualScopeContractVersion')) is int
                 and self._repo.require_run(run_id)['factualScopeContractVersion']==4,
+            bounded_factual_review=lambda: bounded_review_enabled(self._repo.require_run(run_id)),
             qualitative_inference=lambda: type(self._repo.require_run(run_id).get('audienceRewriteContractVersion')) is int
                 and self._repo.require_run(run_id)['audienceRewriteContractVersion'] in (4,5,6,7,8),
             experiment_intent_review=lambda: self._repo.require_run(run_id).get('experimentIntentContractVersion',0))

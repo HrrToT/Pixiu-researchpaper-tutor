@@ -315,7 +315,9 @@ def verify_claims(claims: list[dict], evidence: list[dict],
         else:
             verdict = verdicts.get(claim["claimId"], {})
             rejected.append({"claimId": claim["claimId"], "reason": "semantic_unresolved",
-                             "detail": str(verdict.get("reason", ""))[:400]})
+                             "detail": str(verdict.get("reason", ""))[:400],
+                             **({'executionState':'not_started','reviewTimeAdmission':verdict.get('reviewTimeAdmission')}
+                                if verdict.get('executionState')=='not_started' else {})})
     asset_ids = {c.get('claimId') for c in claims if requires_existing_asset(c)}
     for row in rejected:
         if row.get('claimId') in asset_ids:

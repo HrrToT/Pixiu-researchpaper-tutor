@@ -246,6 +246,7 @@ class TrackedLLMInvoker:
         request_options: Callable | None = None,
         run_record_fn: Callable | None = None,
         verification_max_input_bytes: int | None = None,
+        call_history_fn: Callable | None = None,
     ):
         self._client = llm_client
         self._reserve = reserve_call_fn
@@ -253,6 +254,7 @@ class TrackedLLMInvoker:
         self._max_input = max_input_tokens
         self._request_options = request_options
         self._run_record = run_record_fn
+        self._call_history=call_history_fn
         from services.deep_research.verification_capacity import VERIFICATION_INPUT_BYTES
         if verification_max_input_bytes is not None and (
                 type(verification_max_input_bytes) is not int
@@ -280,9 +282,15 @@ class TrackedLLMInvoker:
         use_reserve: bool = False,
     ) -> dict[str, Any]:
         from llm.provider import LLMRequest, LLMProviderError
-
+        from services.deep_research.factual_review import OPTION as REVIEW_OPTION
+        bounded_review=(extra_body or {}).get(REVIEW_OPTION,False)
+        if type(bounded_review) is not bool:
+            raise ValueError('Invalid bounded factual review option')
         if self._request_options:
             extra_body = self._request_options(node, dict(extra_body or {}))
+        elif bounded_review:
+            from services.deep_research.runtime import research_model_options
+            extra_body=research_model_options(node,dict(extra_body or {}))
         elif node == 'repair_claims' and '_repair_output_limit' in (extra_body or {}):
             from services.deep_research.repair_budget import repair_output_options
             extra_body = repair_output_options(extra_body)
@@ -300,6 +308,11 @@ class TrackedLLMInvoker:
         if structured:
             request_identity['messages'] = wire_messages
         args_digest = digest(request_identity)
+        if bounded_review and self._run_record:
+            from services.deep_research.factual_review import admission
+            decision=admission(transport_record,self._call_history(run_id) if self._call_history else [],args_digest)
+            if decision['allowed'] is not True:
+                return {'notStarted':'factual_review_time_budget','admission':decision}
         
         # Reserve a conservative UTF-8 byte bound, then settle measured usage.
         prompt_byte_length = len(prompt.encode("utf-8"))
@@ -560,6 +573,7 @@ class BudgetedSemanticChecker:
         experiment_intent_review=False,
         complete_factual_scope=False,
         result_attribution=False,
+        bounded_factual_review=False,
     ):
         self._invoke = llm_invoker
         self._run_id = run_id
@@ -573,6 +587,7 @@ class BudgetedSemanticChecker:
         self._factual_scope = factual_scope
         self._complete_factual_scope=complete_factual_scope
         self._result_attribution=result_attribution
+        self._bounded_factual_review=bounded_factual_review
         self._qualitative_inference = qualitative_inference
         self._experiment_intent_review = experiment_intent_review
     
@@ -1087,14 +1102,22 @@ The dataAvailability object is an internal audit, not new experimental results.
                      'reason': '请求容量限制导致引用证据未完整提供，不能确认该声明。'}]
         visible_evidence = restore_visible_evidence(visible_evidence, reverse_aliases)
         try:
+            bounded_review=(self._bounded_factual_review() if callable(self._bounded_factual_review)
+                            else self._bounded_factual_review) is True
+            from services.deep_research.factual_review import eligible as review_eligible,OPTION as REVIEW_OPTION
+            review_options={REVIEW_OPTION:True} if bounded_review and node=='verify' and review_eligible(claims) else {}
             result = self._invoke(
                 run_id=self._run_id,
                 node=node,
                 prompt=prompt,
-                extra_body={"max_tokens": 4000, "temperature": 0.0},
+                extra_body={"max_tokens": 4000, "temperature": 0.0,**review_options},
                 use_reserve=True,  # Use reserve pool for verification
             )
             
+            if result.get('notStarted')=='factual_review_time_budget':
+                return [{'claimId':c['claimId'],'status':'failed',
+                    'reason':'剩余时间不足以完成独立核验及最终覆盖检查，本条尚未核验。',
+                    'executionState':'not_started','reviewTimeAdmission':result['admission']} for c in claims]
             content = result.get("content", "[]")
             from services.deep_research.graph import _safe_parse_json
             parsed = _safe_parse_json(content)
