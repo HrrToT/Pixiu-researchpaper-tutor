@@ -1344,6 +1344,13 @@ space with unsupported global absence or incidental iteration/performance values
             prompt=factual_template(record,question,output_kind,requested_limit,claim_limit,section_templates,
                 draft_obligations,source_registry,evidence_marker,table_marker,
                 drafting_schema=drafting_schema_enabled(record),point_guidance=format_guidance(point_constraint))
+        from services.deep_research.experiment_template import enabled as compact_experiment_enabled,build as experiment_template
+        if premise_mode and output_kind=='experiment_design' and compact_experiment_enabled(record):
+            prompt=experiment_template(record,question=question,limit=requested_limit,
+                clarification=separate_clarification(record),gaps=[g.get('question') for g in gaps[:5]],
+                obligations=draft_obligations,sources=source_registry,evidence_marker=evidence_marker,
+                table_marker=table_marker,claim_fields=claim_fields,claim_limit=claim_limit,
+                section_templates=section_templates)
         template = prompt
         if premise_mode:
             reverse_aliases={eid:alias for alias,eid in evidence_aliases.items()}
@@ -1369,6 +1376,9 @@ space with unsupported global absence or incidental iteration/performance values
             prompt, evidence_summaries = fit_evidence_prompt(evidence_summaries,
                 lambda rows: template.replace(evidence_marker, json.dumps(rows, ensure_ascii=False, separators=(',', ':')), 1))
         if output_kind=='experiment_design' and intent_enabled(record) and evidence and not evidence_summaries:
+            return {'error_code':'synthesis_evidence_capacity'}
+        if (premise_mode and output_kind=='experiment_design' and compact_experiment_enabled(record)
+                and missing_bundles):
             return {'error_code':'synthesis_evidence_capacity'}
         evidence_aliases = {row['evidenceId']: evidence_aliases[row['evidenceId']] for row in evidence_summaries}
         from services.deep_research.factual_reasoning import request_options as factual_options
