@@ -2040,6 +2040,27 @@
       "log": "tmp/pytest-dr202-full-final.log",
       "sha256": "cfaa8b4fcc62a39815644f47a816a6da8b4d1aed9d1eb9be2b25a40071220138",
       "sourceCommit": "ebbf73ae"
+    },
+    "experimentFeedbackAndReviewOffline": {
+      "passed": 3281,
+      "files": 193,
+      "warnings": 1,
+      "seconds": 231.57,
+      "scope": "All tests/test_deep_research*.py; this is not an all-Python or reading/config-integration pass.",
+      "log": "tmp/pytest-dr203-research-full.log",
+      "sha256": "0affad7859fd9801d42db1e1d94b6f79ed4e178c8c4c518b9df0058dbae4c2b5",
+      "sourceCommit": "87907cb3"
+    },
+    "broaderPythonCollectionDr203": {
+      "status": "failed_collection",
+      "errors": 2,
+      "files": [
+        "test_code_execution_api.py",
+        "test_research_rate_limits.py"
+      ],
+      "reason": "ImportError: cannot import FastAPI from fastapi; existing stub/dependency interaction outside changed research scope.",
+      "log": "tmp/pytest-dr203-full-final.log",
+      "notClaimedPassing": true
     }
   },
   "stages": [
@@ -2502,7 +2523,7 @@
     "Full novice study workflow",
     "Independent Edge recovery"
   ],
-  "currentProviderConstraint": "All further necessary bounded validations uniformly authorized. Selected diagnostic sequence:449settled model calls/1826615measured tokens, not global history; costs unknown. Preserve11paused unknowns; reservations are not measured usage. E1-v1 is a distinct fully settled failed development case, not a new unknown or a retry of older cases.",
+  "currentProviderConstraint": "All further necessary bounded validations uniformly authorized. Selected diagnostic sequence:494settled model calls/2022190measured tokens, not global history; costs unknown. Preserve11old paused unknowns; reservations are not measured usage. Latest E1-v5 is fully settled partial, not content accepted; no hidden retry.",
   "currentDevelopmentMode": "Primary Codex only; Goal active; quota pause revoked. Source/runtimebc4d3732/.198. New experiment draft4 uses direct6144-token compact planning with a2500-byte private plan, lossless goal/source references and existing question-driven evidence ordering. Offline3194passes/23old request fingerprints; E1 controlled rows2to7, but shared-method definition and dataset-member source coverage remain incomplete. No new real model call; original E1 failure and11unknowns preserved.",
   "loadedRuntime": {
     "commit": "bc4d3732",
@@ -2517,10 +2538,11 @@
     "postCasesProof": "deep-research-evidence/runtime-postcases-dr197-e1-v1-20261020.json"
   },
   "nextQualityWork": [
-    "Preserve exact H2F-v9/H5F-v6 unknown requests; no attempt/task bypass or measured-token claim for reservations.",
-    "Expose exact validator JSON paths/expected constraints for state shapes and workflow references, and repair actual intervention/measurement/storage omissions.",
-    "Audit reviewer contract against prospective hypotheses, explicit whole-stage unmatched costs, and proposed prechecked view splits; retain genuine membership/source/configuration checks and do not auto-approve.",
-    "Supply the matching named scene-to-dataset premise in actually read evidence. Prove final experimental quality and fresh independent cases; DR0-DR5 and original independent0/5 remain incomplete."
+    "Preserve all11old unknowns and exact old request identities. No attempt/task bypass, hidden retry or measured-token claim for reservations.",
+    "Compress repeated nested configuration structure losslessly: actual E1-v5 mandatory repair24249bytes exceeds23599live capacity by650. Keep original prose/specs/checks and necessary quotes/context/table data; no raised budget or false dispatch credit.",
+    "Version narrow response-format interoperability: actual c8 science passed but exact direct {claimId,path,value} entries lacked fields wrappers and local audit rejected3slots. Controlled existing validator accepts the same values only with fields:[entry]. Preserve path/value/source-role/contract checks and old response semantics; do not upgrade E1-v5 or treat whole experiment as valid.",
+    "Actually read the matching named scene-to-dataset premise; fix real3DGS/NTC initial states, parameter-free copy representation, stage2 operation/numeric intervention, image resolution, timing/storage boundaries and paired units. Do not invent state quantities or source evidence just to satisfy schema.",
+    "Verify final executable content quality and new independent replacements against original full DR0-DR5 design. Original independent0/5 and all prior failed/partial cases remain unchanged."
   ],
   "javaReaderRuntime": {
     "sourceCommit": "070ab1a",
@@ -3101,7 +3123,7 @@
     "independentCredit": 0,
     "proof": "deep-research-evidence/compact-experiment-envelope-regression-20261020.json"
   },
-  "currentCheckpoint": ".202 bounded field edits restore full experimental claims before unchanged verification, using actual4096output reservation and lossless original-data tables.3287offline passes/24old fingerprints. Actual E1-v4 dispatched one23591byte edit request under23626capacity,14edits reconstructed9drafts and both repair reviewers ran; final0/9accepted,inconclusive.14settled calls/66644tokens, zero new unknowns. Goal active/PR draft; overall incomplete.",
+  "currentCheckpoint": ".20387907cb3: precise state/config JSONPointer feedback and prospective review distinctions; server-owned immutable repair3/review1.3281DeepResearch tests/136overlapping focused/39new;27old actual fingerprints. Actual E1-v5 completed/partial, only limits accepted,12settled calls/56648tokens,no new unknown. Edit NOT sent:24249mandatory bytes>23599live cap by650. c8 science passed but exact direct field bindings rejected by local wrapper syntax; controlled wrapper reproduction only, no production upgrade. Whole design/content/independent acceptance incomplete, goal active/PR draft.",
   "sharedModuleSourceCheckpoint": {
     "sourceCommit": "f8ae5177",
     "promptVersion": "dr-v2.20261020.199",
@@ -3155,5 +3177,29 @@
     "unknownNewCalls": 0,
     "independentCredit": 0,
     "proof": "deep-research-evidence/experimental-edit-regression-20261020.json"
+  },
+  "experimentFeedbackReviewCheckpoint": {
+    "sourceCommit": "87907cb3",
+    "promptVersion": "dr-v2.20261020.203",
+    "offlinePassed": 3281,
+    "scope": "All test_deep_research*.py",
+    "oldRequestsPreserved": 27,
+    "actualCase": {
+      "case": "E1-v5",
+      "status": "completed",
+      "outcome": "partial",
+      "acceptedRoles": [
+        "limits"
+      ],
+      "settledModelCalls": 12,
+      "settledTokens": 56648,
+      "newUnknowns": 0,
+      "contentAccepted": false,
+      "repairSent": false,
+      "repairExcessBytes": 650,
+      "independentCredit": 0,
+      "proof": "E1-v5-diagnostic-20261020.json"
+    },
+    "proof": "deep-research-evidence/experiment-feedback-review-regression-20261020.json"
   }
 }
