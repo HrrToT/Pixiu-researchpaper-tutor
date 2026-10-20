@@ -1987,6 +1987,19 @@
       "overlapWithFullSuite": true,
       "legacyFingerprintsMatched": 22,
       "proof": "deep-research-evidence/experiment-candidate-evidence-regression-20261020.json"
+    },
+    "E1v1Development": {
+      "runId": "dr_run_fcb70c713976545e940d0b5a0380374e",
+      "status": "failed",
+      "errorCode": "invalid_experiment_planning_response",
+      "settledCalls": 8,
+      "settledTokens": 30667,
+      "elapsedSeconds": 115.0,
+      "planningFinishReason": "length",
+      "fullConfigurationSent": false,
+      "contentAccepted": false,
+      "independentCredit": 0,
+      "proof": "deep-research-evidence/E1-v1-diagnostic-20261020.json"
     }
   },
   "stages": [
@@ -2364,6 +2377,16 @@
       "mode": "offline_fault_injection",
       "functional": "Real graph/ledger tests cover abrupt exit, pending unknown calls, pause/resume, late responses, budget stop and idempotent publication",
       "boundary": "No paid-model case required or implied; not a model-quality score."
+    },
+    {
+      "id": "E1-v1",
+      "split": "development",
+      "manifest": "DEEP_RESEARCH_DEVELOPMENT_CASES_20261020.json",
+      "sourceCommit": "7751bd22",
+      "promptVersion": "dr-v2.20261020.197",
+      "contentAccepted": false,
+      "independentCredit": 0,
+      "record": "deep-research-evidence/E1-v1-diagnostic-20261020.json"
     }
   ],
   "activeIndependentSlots": [
@@ -2439,25 +2462,26 @@
     "Full novice study workflow",
     "Independent Edge recovery"
   ],
-  "currentProviderConstraint": "All further necessary bounded validations uniformly authorized. Selected diagnostic sequence:441 settled calls/1795948 measured tokens, not global history; costs unknown. Preserve11paused unknowns includingH2F-v9 andH5F-v6; new78908reserved tokens are not measured usage. No blind retry/task or attempt bypass.",
-  "currentDevelopmentMode": "Primary Codex only; Goal active; quota pause revoked. Source/runtime7751bd22/.197. Experimental repairs can select bounded candidates from actually acquired/read same-snapshot or permitted pinned external fulltext; original claims remain unverified and citations are never automatic. Offline3181passes; no live validation this checkpoint. Historical11unknowns preserved; fullDR0-DR5/content/independent gates remain open.",
+  "currentProviderConstraint": "All further necessary bounded validations uniformly authorized. Selected diagnostic sequence:449settled model calls/1826615measured tokens, not global history; costs unknown. Preserve11paused unknowns; reservations are not measured usage. E1-v1 is a distinct fully settled failed development case, not a new unknown or a retry of older cases.",
+  "currentDevelopmentMode": "Primary Codex only; Goal active; quota pause revoked. Source/runtime7751bd22/.197. E1-v1 actually exercises staged planning, reaches6144output cap with partial invalid JSON, saves it and stops before full configuration/repair. Actual planning receives only2quotes due22562byte fixed configuration envelope. No content/independent acceptance; old11unknowns and all old objects preserved.",
   "loadedRuntime": {
     "commit": "7751bd22",
     "promptVersion": "dr-v2.20261020.197",
     "javaCommit": "27ac4beb",
     "frontendCommit": "123b0d29",
-    "callsAfterLatestCase": 4732,
+    "callsAfterLatestCase": 4754,
     "active": 0,
     "historicalPausedUnknown": 11,
-    "tasks": 92,
+    "tasks": 93,
     "proof": "deep-research-evidence/runtime-load-dr197-experiment-candidate-evidence-20261020.json",
-    "postCasesProof": "deep-research-evidence/runtime-postcases-dr193-h5f-v6-20261020.json"
+    "postCasesProof": "deep-research-evidence/runtime-postcases-dr197-e1-v1-20261020.json"
   },
   "nextQualityWork": [
     "Preserve exact H2F-v9/H5F-v6 unknown requests; no attempt/task bypass or measured-token claim for reservations.",
-    "Run a genuinely distinct frozen development experiment to validate staged planning, source-aware complete configuration and repair under the original18calls/100kToken/6min budget. Never rename or reissue unresolvedH2F-v9/H5F-v6 or older unknown cases.",
-    "Check each attributed method/data target own original evidence, full initialization/rendering/budgets and valid measurements. Candidate access and original-equation transport do not establish source-faithful content or execution readiness.",
-    "Preserve original independent0/5 and narrow accepted development scopes; require genuinely fresh independent replacements after development quality passes."
+    "Fix E1-v1 before any new paid run: version direct bounded scientific-plan output separately, preserve old low-thinking request identity, compact repeated goal/source metadata without losing requirements, and preserve original caps.",
+    "Improve operational-dependency coverage for explicitly named shared methods within the same read/quote slots. E1 planning got only stage2-freeze and aggregate metrics quotes; missing NTC/data-member definitions cannot be replaced by rigid alignment or assumed public scene names.",
+    "Retain exact frozen E1 question/criteria and failed receipt. No automatic retry. Any intentional post-fix validation must be a new explicit one-shot attempt of the same fully settled development case; never rename or resend older unknown cases.",
+    "Prove original method/data premises, complete initialization/rendering/budgets, valid metrics, final clarity and fresh independent replacements before declaring DR0-DR5 complete. Original independent0/5 and narrow development passes remain unchanged."
   ],
   "javaReaderRuntime": {
     "sourceCommit": "070ab1a",
