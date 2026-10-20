@@ -273,13 +273,13 @@ class ResearchFacade:
             "materials": materials,
             "materialSnapshot": material_snapshot,  # Immutable Java snapshot
             "contextMaterials": (material_snapshot or {}).get("contextMaterials", []) if isinstance(material_snapshot, dict) else [],
-            "promptVersion": "dr-v2.20261020.188",
+            "promptVersion": "dr-v2.20261020.189",
             "factualRepairContractVersion": 2,
             "synthesisEvidenceContractVersion": 1,
             "extractionScheduleContractVersion": 1,
             "experimentIntentContractVersion": 3,
             "tableReferencesContractVersion": 1,
-            "factualScopeContractVersion": 3,
+            "factualScopeContractVersion": 4,
             "factualReasoningContractVersion": 5,
             "continuationFormatContractVersion": 1,
             "jointEvidenceContractVersion": 1,
@@ -294,7 +294,7 @@ class ResearchFacade:
             "evidenceCoverageContractVersion": 3,
             "sourcePrecisionContractVersion": 6,
             "readingPriorityContractVersion": 2,
-            "absenceScopeContractVersion": 6,
+            "absenceScopeContractVersion": 7,
             "answerFormatContractVersion": 1,
             "repairProgressContractVersion": 2,
             "reportPresentationContractVersion": 1,
@@ -1181,7 +1181,9 @@ class ResearchFacade:
                 and self._repo.require_run(run_id)['auditSourceFieldsContractVersion']==2,
             factual_scope=lambda: scope_enabled(self._repo.require_run(run_id)),
             complete_factual_scope=lambda: type(self._repo.require_run(run_id).get('factualScopeContractVersion')) is int
-                and self._repo.require_run(run_id)['factualScopeContractVersion']==3,
+                and self._repo.require_run(run_id)['factualScopeContractVersion'] in (3,4),
+            result_attribution=lambda: type(self._repo.require_run(run_id).get('factualScopeContractVersion')) is int
+                and self._repo.require_run(run_id)['factualScopeContractVersion']==4,
             qualitative_inference=lambda: type(self._repo.require_run(run_id).get('audienceRewriteContractVersion')) is int
                 and self._repo.require_run(run_id)['audienceRewriteContractVersion'] in (4,5,6,7,8),
             experiment_intent_review=lambda: self._repo.require_run(run_id).get('experimentIntentContractVersion',0))

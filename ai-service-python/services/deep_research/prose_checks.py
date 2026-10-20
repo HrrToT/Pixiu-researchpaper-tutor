@@ -34,6 +34,16 @@ _POOL_ABSENCE=re.compile(
     r'|\b(?:provided|supplied|current|available|selected|retrieved) (?:evidence|passages|materials?)'
     r'[^.;!?\n]{0,50}\b(?:absent|missing|not present|does not contain|do not contain)\b'
     r'|\b(?:absent|missing|not present) in (?:the )?(?:provided|supplied|current|available) (?:evidence|passages)\b',re.I)
+_INVERTED_POOL_ABSENCE=re.compile(
+    r'(?:未|没有)(?:在|于)(?:所)?(?:提供|所给|当前|现有|所选|选定|本次(?:取得|获得|检索)?)(?:的)?'
+    r'(?:证据|材料|片段)(?:中|里)?[^，,。；;！？!?\n]{0,24}(?:说明|报告|给出|提供|提及|出现|找到|披露)'
+    r'|(?:未|没有)(?:被)?(?:提供|所给|当前|现有|所选|选定)(?:的)?(?:证据|材料|片段)'
+    r'[^，,。；;！？!?\n]{0,16}(?:说明|报告|给出|提及|覆盖)'
+    r'|\b(?:not|never) (?:described|reported|specified|mentioned|given|provided|found) '
+    r'(?:in|by) (?:the )?(?:provided|supplied|current|available|selected|retrieved) (?:evidence|passages|materials?)\b', re.I)
+_FORWARD_POOL_REPORTING_ABSENCE=re.compile(
+    r'(?:提供|所给|当前|现有|所选|选定|本次(?:取得|获得|检索)?)(?:的)?(?:证据|材料|片段)(?:中|里)?'
+    r'[^，,。；;！？!?\n]{0,36}(?:未|没有)(?:说明|报告|给出|提供|提及|披露)', re.I)
 
 
 def _strings(value):
@@ -72,13 +82,16 @@ def leaks_internal_reference(claim, support, *, table_aliases=False):
 
 
 def absence_not_established(claim, support, *, scope_version=0):
-    if type(scope_version) is int and scope_version==6 and claim.get('kind') in {'reported','inference'}:
+    if type(scope_version) is int and scope_version in (6,7) and claim.get('kind') in {'reported','inference'}:
         # A claim's selected references cannot certify what is absent from the
         # task's entire acquired pool. Positive, evidence-bounded uncertainty
         # (e.g. insufficient to establish alignment) remains available.
         if any(_POOL_ABSENCE.search(text) for text in claim_prose(claim)):
             return True
-    reporting_scope = type(scope_version) is int and scope_version in (2,3,4,5,6)
+        if scope_version==7 and any(_INVERTED_POOL_ABSENCE.search(text) or _FORWARD_POOL_REPORTING_ABSENCE.search(text)
+                                   for text in claim_prose(claim)):
+            return True
+    reporting_scope = type(scope_version) is int and scope_version in (2,3,4,5,6,7)
     source_pattern = _SOURCE_REPORTING_ABSENCE if reporting_scope else EXPLICIT_ABSENCE
     explicit = any(source_pattern.search(item.get('quote', '')) for item in support)
     if explicit:
@@ -88,23 +101,23 @@ def absence_not_established(claim, support, *, scope_version=0):
         for sentence in re.split(r'[。！？；;.!?\n]', text):
             for missing in (_EXTENDED_ABSENCE if reporting_scope else ABSENCE).finditer(sentence):
                 prefix = sentence[:missing.start()]
-                if type(scope_version) is int and scope_version in (4,5,6):
+                if type(scope_version) is int and scope_version in (4,5,6,7):
                     # Nominal headings and attributive untested dimensions under
                     # a negative epistemic modal do not assert author omission.
                     if (not prefix.strip() and re.match(r'未验证范围\s*[:：]', sentence)):
                         continue
-                    if scope_version in (5,6) and not prefix.strip() and sentence.strip()=='未验证范围':
+                    if scope_version in (5,6,7) and not prefix.strip() and sentence.strip()=='未验证范围':
                         continue
                     if (re.match(r'(?:未测试|未验证)(?:的)?(?:维度|场景|条件|范围)', sentence[missing.start():])
                             and re.search(r'(?:不能|不足以|尚不能)(?:证明|确认)[^，,；;]*$', prefix)):
                         continue
                 papers = list(_PAPER.finditer(prefix))
                 scopes = list(_SCOPED.finditer(prefix))
-                if type(scope_version) is int and scope_version in (3,4,5,6):
+                if type(scope_version) is int and scope_version in (3,4,5,6,7):
                     subject=_CURRENT_EVIDENCE_SUBJECT.search(prefix)
                     if subject:
                         scopes.append(subject)
-                if type(scope_version) is int and scope_version in (1,2,3,4,5,6):
+                if type(scope_version) is int and scope_version in (1,2,3,4,5,6,7):
                     # This guard concerns missing research/reporting, not the
                     # method's negative premises (e.g. an object absent from
                     # the initial frame). Those still require semantic review.

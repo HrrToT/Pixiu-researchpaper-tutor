@@ -5,12 +5,12 @@ import re
 
 def enabled(record):
     return (type(record.get('factualScopeContractVersion')) is int
-            and record['factualScopeContractVersion'] in (1,2,3))
+            and record['factualScopeContractVersion'] in (1,2,3,4))
 
 
 def drafting_schema_enabled(record):
     return (type(record.get('factualScopeContractVersion')) is int
-            and record['factualScopeContractVersion'] in (2,3))
+            and record['factualScopeContractVersion'] in (2,3,4))
 
 
 DRAFTING_SCHEMA={'premiseStatus':'choose established, contradicted or not_established',

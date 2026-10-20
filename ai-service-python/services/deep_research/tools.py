@@ -559,6 +559,7 @@ class BudgetedSemanticChecker:
         qualitative_inference=False,
         experiment_intent_review=False,
         complete_factual_scope=False,
+        result_attribution=False,
     ):
         self._invoke = llm_invoker
         self._run_id = run_id
@@ -571,6 +572,7 @@ class BudgetedSemanticChecker:
         self._audit_target_fields = audit_target_fields
         self._factual_scope = factual_scope
         self._complete_factual_scope=complete_factual_scope
+        self._result_attribution=result_attribution
         self._qualitative_inference = qualitative_inference
         self._experiment_intent_review = experiment_intent_review
     
@@ -999,6 +1001,13 @@ The dataAvailability object is an internal audit, not new experimental results.
             targets=[c['claimId'] for c in claims if c.get('kind') in {'reported','inference'}]
             if targets:
                 prompt+=scope_prompt(targets,**({'complete_statement':True} if complete_scope else {}))
+        attribution_enabled=(self._result_attribution() if callable(self._result_attribution)
+                             else self._result_attribution) is True
+        if attribution_enabled:
+            from services.deep_research.result_attribution import targets as result_targets, audit_prompt as result_prompt
+            required={c['claimId']: result_targets(c) for c in claims if result_targets(c)}
+            if required:
+                prompt+=result_prompt(required)
         field_bindings=(self._audit_source_fields() if callable(self._audit_source_fields)
                         else self._audit_source_fields) is True
         target_bindings=(self._audit_target_fields() if callable(self._audit_target_fields)
@@ -1132,6 +1141,13 @@ The dataAvailability object is an internal audit, not new experimental results.
                     if scope_errors:
                         verdict['status']='failed'
                         verdict['reason']='结论范围或必要条件尚未核实：'+', '.join(scope_errors)
+                        continue
+                if attribution_enabled:
+                    from services.deep_research.result_attribution import validate_audit as validate_attribution
+                    attribution_errors=validate_attribution(target,verdict,visible_evidence)
+                    if attribution_errors:
+                        verdict['status']='failed'
+                        verdict['reason']='结果与实验用途的来源归属尚未核实：'+', '.join(attribution_errors)
                         continue
                 missing = validate_design_audit(by_id[verdict['claimId']], verdict, [*claims, *proposal_context], metric_domains)
                 if missing:

@@ -119,11 +119,11 @@ def precheck_claims(claims: list[dict], evidence: list[dict], *, absence_scope_v
         from services.deep_research.prose_checks import absence_not_established, leaks_internal_reference
         if absence_not_established(claim, support, scope_version=absence_scope_version):
             reason = reason or 'absence_not_established'
-        if type(absence_scope_version) is int and absence_scope_version==6:
+        if type(absence_scope_version) is int and absence_scope_version in (6,7):
             from services.deep_research.result_scope import purpose_not_established
             if purpose_not_established(claim,support):
                 reason=reason or 'result_purpose_not_established'
-        if leaks_internal_reference(claim, support,table_aliases=type(absence_scope_version) is int and absence_scope_version==6):
+        if leaks_internal_reference(claim, support,table_aliases=type(absence_scope_version) is int and absence_scope_version in (6,7)):
             reason = reason or 'internal_reference_in_prose'
         declared_reference_error=None
         if kind in {'inference','proposal','suggestion','hypothesis'} and type(table_references_version) is int and table_references_version==1:
@@ -254,7 +254,7 @@ def precheck_claims(claims: list[dict], evidence: list[dict], *, absence_scope_v
                 diagnostic = _table_display_diagnostic(claim, support)
             elif reason == 'result_purpose_not_established':
                 diagnostic={'detail':'所引用的渲染剖析未建立主表结果的归属。区分算子剖析与主要比较；不得把剖析值改称主表值。'}
-            elif reason == 'absence_not_established' and type(absence_scope_version) is int and absence_scope_version in (2,3,4,5,6):
+            elif reason == 'absence_not_established' and type(absence_scope_version) is int and absence_scope_version in (2,3,4,5,6,7):
                 diagnostic = {'detail':'本条引用没有明确建立作者或论文缺少这些验证。'
                     '把结论限定为本次引用能支持的实验范围及其不能证明的推广；'
                     '不要写成作者未在其他条件验证、论文没有提供或全文不存在。'
