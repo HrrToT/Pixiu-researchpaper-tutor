@@ -44,13 +44,13 @@
       "overlap": true
     },
     "backendCurrentResearchReadingTables": {
-      "passed": 3181,
+      "passed": 3194,
       "warnings": 1,
-      "seconds": 166.24,
-      "log": "tmp/pytest-dr197-full.log",
-      "sha256": "d38e65870f3345a86bd7e0ae643432b7740c7cbab200bdf8db4ad77196972431",
-      "sourceCommit": "7751bd22",
-      "scope": "Full offline research/reading/tables/config suite at.197; no live content acceptance."
+      "seconds": 211.94,
+      "log": "tmp/pytest-dr198-full.log",
+      "sha256": "0cca81c2fbc657f47d2bfcfcb7adfc659e47da2e00b5770e92bf462f9a51e7c6",
+      "sourceCommit": "bc4d3732",
+      "scope": "Full offline research/reading/tables/config suite at.198; no real model/content acceptance."
     },
     "frontendDocumentNavigationFocused": {
       "passed": 19,
@@ -2000,6 +2000,14 @@
       "contentAccepted": false,
       "independentCredit": 0,
       "proof": "deep-research-evidence/E1-v1-diagnostic-20261020.json"
+    },
+    "compactExperimentEnvelope198": {
+      "sourceCommit": "bc4d3732",
+      "focusedPassed": 62,
+      "newTests": 13,
+      "overlapWithFullSuite": true,
+      "legacyFingerprintsMatched": 23,
+      "proof": "deep-research-evidence/compact-experiment-envelope-regression-20261020.json"
     }
   },
   "stages": [
@@ -2463,25 +2471,25 @@
     "Independent Edge recovery"
   ],
   "currentProviderConstraint": "All further necessary bounded validations uniformly authorized. Selected diagnostic sequence:449settled model calls/1826615measured tokens, not global history; costs unknown. Preserve11paused unknowns; reservations are not measured usage. E1-v1 is a distinct fully settled failed development case, not a new unknown or a retry of older cases.",
-  "currentDevelopmentMode": "Primary Codex only; Goal active; quota pause revoked. Source/runtime7751bd22/.197. E1-v1 actually exercises staged planning, reaches6144output cap with partial invalid JSON, saves it and stops before full configuration/repair. Actual planning receives only2quotes due22562byte fixed configuration envelope. No content/independent acceptance; old11unknowns and all old objects preserved.",
+  "currentDevelopmentMode": "Primary Codex only; Goal active; quota pause revoked. Source/runtimebc4d3732/.198. New experiment draft4 uses direct6144-token compact planning with a2500-byte private plan, lossless goal/source references and existing question-driven evidence ordering. Offline3194passes/23old request fingerprints; E1 controlled rows2to7, but shared-method definition and dataset-member source coverage remain incomplete. No new real model call; original E1 failure and11unknowns preserved.",
   "loadedRuntime": {
-    "commit": "7751bd22",
-    "promptVersion": "dr-v2.20261020.197",
+    "commit": "bc4d3732",
+    "promptVersion": "dr-v2.20261020.198",
     "javaCommit": "27ac4beb",
     "frontendCommit": "123b0d29",
     "callsAfterLatestCase": 4754,
     "active": 0,
     "historicalPausedUnknown": 11,
     "tasks": 93,
-    "proof": "deep-research-evidence/runtime-load-dr197-experiment-candidate-evidence-20261020.json",
+    "proof": "deep-research-evidence/runtime-load-dr198-compact-experiment-envelope-20261020.json",
     "postCasesProof": "deep-research-evidence/runtime-postcases-dr197-e1-v1-20261020.json"
   },
   "nextQualityWork": [
     "Preserve exact H2F-v9/H5F-v6 unknown requests; no attempt/task bypass or measured-token claim for reservations.",
-    "Fix E1-v1 before any new paid run: version direct bounded scientific-plan output separately, preserve old low-thinking request identity, compact repeated goal/source metadata without losing requirements, and preserve original caps.",
-    "Improve operational-dependency coverage for explicitly named shared methods within the same read/quote slots. E1 planning got only stage2-freeze and aggregate metrics quotes; missing NTC/data-member definitions cannot be replaced by rigid alignment or assumed public scene names.",
-    "Retain exact frozen E1 question/criteria and failed receipt. No automatic retry. Any intentional post-fix validation must be a new explicit one-shot attempt of the same fully settled development case; never rename or resend older unknown cases.",
-    "Prove original method/data premises, complete initialization/rendering/budgets, valid metrics, final clarity and fresh independent replacements before declaring DR0-DR5 complete. Original independent0/5 and narrow development passes remain unchanged."
+    "Before another paid E1 attempt, cover explicitly named shared-method definitions in the original acquisition/read slots. Archived E1 retrieved no Neural Transformation Cache definition section; reordering its existing25evidence rows cannot create that definition.",
+    "Preserve literal caption/header evidence for existing dataset members without guessing merged labels, rebinding numeric columns or claiming an unobserved scene contains new content. Archived N3DV horizontal header is merged and remains unverified.",
+    "Keep E1 frozen question/criteria and failed receipt unchanged; validate the implemented direct compact planning profile only after real source prerequisites can be supplied. No automatic retry or older-unknown bypass.",
+    "Prove source-faithful full configuration, repair quality, user-facing result clarity and fresh independent replacements; original independent0/5 and DR0-DR5 incomplete boundary remain."
   ],
   "javaReaderRuntime": {
     "sourceCommit": "070ab1a",
@@ -3050,5 +3058,16 @@
     "actualRepairContentAccepted": false,
     "independentCredit": 0,
     "proof": "deep-research-evidence/experiment-candidate-evidence-regression-20261020.json"
+  },
+  "compactExperimentEnvelopeCheckpoint": {
+    "sourceCommit": "bc4d3732",
+    "promptVersion": "dr-v2.20261020.198",
+    "offlinePassed": 3194,
+    "oldRequestsPreserved": 23,
+    "realModelCalls": 0,
+    "liveContentAccepted": false,
+    "sourceCoverageStillOpen": true,
+    "independentCredit": 0,
+    "proof": "deep-research-evidence/compact-experiment-envelope-regression-20261020.json"
   }
 }
