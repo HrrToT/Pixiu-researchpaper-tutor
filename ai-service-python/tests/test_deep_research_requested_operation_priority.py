@@ -81,14 +81,14 @@ def test_actual_extraction_node_uses_new_order_without_granting_semantic_approva
     assert repo.require_run('r')['state']['evidence']==[] and invoke.call_count==1
 
 
-@pytest.mark.parametrize('replacement',[None,True,'4',0,1,2,3,4,5,8])
+@pytest.mark.parametrize('replacement',[None,True,'4',0,1,2,3,4,5,9])
 def test_new_priority_is_server_owned_and_frozen(tmp_path,replacement):
     repo=DeepResearchRepository(tmp_path/'r.sqlite3');repo.initialize()
     facade=ResearchFacade(repo,lambda **_:None,llm_client=object())
     try:
         run,_=facade.create({'workspaceTaskId':'t','operationKey':'op','question':'Explain the mechanism',
             'extractionPriorityVersion':replacement,'deferStart':True},start_async=False)
-        assert run['extractionPriorityVersion']==7
+        assert run['extractionPriorityVersion']==8
         with pytest.raises(ValueError,match='Immutable'):
             repo.update_run(run['runId'],lambda r:{**r,'extractionPriorityVersion':replacement})
     finally:facade.shutdown()

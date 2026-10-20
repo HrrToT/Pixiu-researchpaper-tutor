@@ -652,11 +652,12 @@ def make_read_node(
         available = [sources_map[sid] for sid in source_ids if sid in sources_map]
         available.sort(key=lambda source: (source["sourceId"], source.get("contentHash")) in extracted)
         read_limit = 24 if record.get("budget", {}).get("profile") == "extended" else 12
-        if type(record.get('readingPriorityContractVersion')) is int and record['readingPriorityContractVersion'] in (1,2):
+        if type(record.get('readingPriorityContractVersion')) is int and record['readingPriorityContractVersion'] in (1,2,3):
             from services.deep_research.reading_priority import select_read_sources
             obligations={o['obligationId']:o for item in record.get('state',{}).get('plan',[]) for o in item.get('obligations',[])}
             selected=select_read_sources(available,obligations,read_limit,extracted=extracted,
-                **({'priority_version':7} if record['readingPriorityContractVersion']==2 else {}))
+                **({'priority_version':8 if record['readingPriorityContractVersion']==3 else 7}
+                   if record['readingPriorityContractVersion'] in (2,3) else {}))
         else:
             selected = balanced_sample(available,
                 lambda source: (source.get("workId"), tuple(source.get("obligationIds", []))),read_limit)
@@ -1110,7 +1111,8 @@ def make_synthesize_node(
         premise_bundles=[];table_registry={};table_keys={}
         candidates = distinct_evidence_candidates(evidence)
         if premise_mode:
-            candidates,premise_bundles=order_premises(candidates,brief_state.get('plan',[]))
+            candidates,premise_bundles=order_premises(candidates,brief_state.get('plan',[]),
+                **({'membership_intents':True} if record['synthesisEvidenceContractVersion']==2 else {}))
         elif output_kind == 'paper_comparison':
             candidates = comparison_evidence_order(candidates, paper_titles)
         elif output_kind == 'experiment_design':

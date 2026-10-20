@@ -12,7 +12,7 @@ from services.deep_research.selection import surrounding_context
 
 def enabled(record):
     version=record.get('synthesisEvidenceContractVersion')
-    return type(version) is int and version==1
+    return type(version) is int and version in (1,2)
 
 
 def result_role(row):
@@ -24,12 +24,12 @@ def result_role(row):
     return 'unspecified'
 
 
-def order_premises(evidence,plan,limit=20):
+def order_premises(evidence,plan,limit=20, *, membership_intents=False):
     obligations={o['obligationId']:o for item in plan for o in item.get('obligations',[])}
     rows=[e for e in evidence if e.get('verification',{}).get('literal')=='passed']
     works=list(dict.fromkeys(e.get('sourceWorkId') for e in rows))
     chosen=[];seen=set();bundles=[]
-    for oid,view,intent in criterion_targets(obligations):
+    for oid,view,intent in criterion_targets(obligations,membership_intents=membership_intents):
         for source in view.get('requiredSources') or works:
             own=[e for e in rows if source in {e.get('sourceWorkId'),e.get('sourceVersionId'),e.get('ownerMaterialId')}]
             def score(row):
@@ -37,6 +37,8 @@ def order_premises(evidence,plan,limit=20):
                 text=row.get('quote','')+'\n'+str(context)
                 value=operation_score(text,str(row.get('location',{}).get('section','')),intent,operational=True)
                 if intent=='operation' and row.get('extractionKind')=='literal_method_equation':
+                    value+=30
+                if membership_intents and intent=='data_membership' and row.get('extractionKind')=='literal_dataset_member_rows':
                     value+=30
                 if isinstance(intent,str) and intent.startswith('measurement:') and re.search(r'主表|\bmain (?:results? )?table\b',view['question'],re.I):
                     role=result_role(row)

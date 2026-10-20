@@ -20,7 +20,7 @@ def acquisition_questions(record,query,owned_id):
     return list(dict.fromkeys(questions))
 
 
-def criterion_targets(obligations):
+def criterion_targets(obligations, *, membership_intents=False):
     """Private ranking views; real obligation IDs and requirements stay intact."""
     targets=[]
     for oid,obligation in obligations.items():
@@ -30,7 +30,12 @@ def criterion_targets(obligations):
             question=criterion['requirement']
             view={**obligation,'question':question,'searchQuery':'','requestExcerpt':question,
                   'completionCriteria':[criterion]}
-            for intent in query_intents(question) or [None]:
+            intents=query_intents(question)
+            if membership_intents:
+                from services.deep_research.dataset_membership import requested
+                if requested(question) and 'data_membership' not in intents:
+                    intents.append('data_membership')
+            for intent in intents or [None]:
                 targets.append((oid,view,intent))
     return targets
 
