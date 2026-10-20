@@ -44,13 +44,13 @@
       "overlap": true
     },
     "backendCurrentResearchReadingTables": {
-      "passed": 3122,
+      "passed": 3142,
       "warnings": 1,
-      "seconds": 165.96,
-      "log": "tmp/pytest-dr195-full.log",
-      "sha256": "5ff2b929ef8dd4703074bf47fbaaba01182898e048e4f9ac30e05b47a8c27957",
-      "sourceCommit": "901309dc",
-      "scope": "Full offline research/reading/tables/config suite at.195; no model-quality acceptance."
+      "seconds": 189.26,
+      "log": "tmp/pytest-dr196-full.log",
+      "sha256": "92a813ee692caaf0d077600cff3aca718c98799182502dd24f9f99010eac283e",
+      "sourceCommit": "d3f454a4",
+      "scope": "Full offline research/reading/tables/config suite at.196; no live content acceptance."
     },
     "frontendDocumentNavigationFocused": {
       "passed": 19,
@@ -1971,6 +1971,14 @@
       "legacyFingerprintsMatched": 21,
       "proof": "deep-research-evidence/staged-experiment-regression-20261020.json",
       "liveContentAccepted": false
+    },
+    "sharedExperimentRepair196": {
+      "sourceCommit": "d3f454a4",
+      "focusedPassed": 48,
+      "newTests": 20,
+      "overlapWithFullSuite": true,
+      "legacyFingerprintsMatched": 22,
+      "proof": "deep-research-evidence/shared-experiment-repair-regression-20261020.json"
     }
   },
   "stages": [
@@ -2424,21 +2432,22 @@
     "Independent Edge recovery"
   ],
   "currentProviderConstraint": "All further necessary bounded validations uniformly authorized. Selected diagnostic sequence:441 settled calls/1795948 measured tokens, not global history; costs unknown. Preserve11paused unknowns includingH2F-v9 andH5F-v6; new78908reserved tokens are not measured usage. No blind retry/task or attempt bypass.",
-  "currentDevelopmentMode": "Primary Codex only, Goal active, quota pause revoked by user. Source/runtime901309dc/.195, Java27ac4beb, frontend123b0d29. New experiments separate a bounded persisted scientific plan from complete direct configuration, sharing the original round budget and independent audits. Saved v1/v2 requests and all11paused unknowns remain unchanged. No new live validation or content acceptance this checkpoint.",
+  "currentDevelopmentMode": "Primary Codex only; Goal active; quota pause revoked. Source/runtimed3f454a4/.196. New experimental repair shares role-scoped generation grammar while preserving exact sources/configs/checks and unchanged independent review. Offline3142passes; no model call. Source-less proposal repair remains open;11unknowns preserved.",
   "loadedRuntime": {
-    "commit": "901309dc",
-    "promptVersion": "dr-v2.20261020.195",
+    "commit": "d3f454a4",
+    "promptVersion": "dr-v2.20261020.196",
     "javaCommit": "27ac4beb",
     "frontendCommit": "123b0d29",
     "callsAfterLatestCase": 4732,
     "active": 0,
     "historicalPausedUnknown": 11,
     "tasks": 92,
-    "proof": "deep-research-evidence/runtime-load-dr195-staged-experiment-20261020.json",
+    "proof": "deep-research-evidence/runtime-load-dr196-shared-experiment-repair-20261020.json",
     "postCasesProof": "deep-research-evidence/runtime-postcases-dr193-h5f-v6-20261020.json"
   },
   "nextQualityWork": [
     "Preserve exact H2F-v9/H5F-v6 unknown requests; no attempt/task bypass or measured-token claim for reservations.",
+    "Introduce a separately versioned candidate-selection policy for experimental proposals, bounded by frozen task materials/required sources, fulltext literal checks and exact publication/version identity. No automatic citations, support approval, source fetch or change to old unknown requests.",
     "Validate staged scientific planning/configuration quality and latency with genuinely distinct frozen development inputs; do not rename or reissue unresolved H2F-v9/H5F-v6. Shared original18calls/100kToken/6min limits and independent source/science gates remain.",
     "Use actual dataset-member/equation quotes for each own attributed target, complete representation/pose-error/rendering and valid motion-aware observables. Existing duplicate-render removal is already implemented; address shared-contract/context capacity rather than reimplement it or exempt9bytes.",
     "Preserve original independent0/5 and accepted narrow development scopes; require genuinely fresh replacements after development quality passes."
@@ -2981,5 +2990,15 @@
     "livePositiveAcceptance": false,
     "independentCredit": 0,
     "proof": "deep-research-evidence/staged-experiment-regression-20261020.json"
+  },
+  "sharedExperimentRepairCheckpoint": {
+    "sourceCommit": "d3f454a4",
+    "promptVersion": "dr-v2.20261020.196",
+    "offlinePassed": 3142,
+    "capacityFixturePassed": true,
+    "sourceLessProposalScopeStillOpen": true,
+    "contentAccepted": false,
+    "independentCredit": 0,
+    "proof": "deep-research-evidence/shared-experiment-repair-regression-20261020.json"
   }
 }
