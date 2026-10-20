@@ -39,6 +39,28 @@ _CONCEPTUAL_OBJECT = re.compile(r'(?:可学习|可训练|可调节|平衡|调节
     r'(?:参数|变量|目标(?:函数)?|损失(?:函数)?|约束|公式|表达式|权重)')
 _CARDINAL_CONTEXT = re.compile(r'(?:只有|仅有|只|仅|唯一|恰好|正好|总共|共|至少|至多|最多|最少|不超过|超过)'
     r'[^，,；;。.!?！？\n]{0,12}$')
+_IMAGE_COLLECTION = re.compile(r'(?:(?:单目|多目|多视角|动态|静态|场景|训练|输入|校准|连续|带时间标签的)\s*){0,4}'
+    r'(?:图像|图片|照片|视频帧)(?!组)')
+_COLLECTION_INTRO = re.compile(r'(?:输入(?:为|是|包括|包含)?|使用|采用|给定|提供|接收|处理|由|以|从)\s*$')
+
+
+def without_collection_articles(text):
+    """An introduced image set is indefinite; explicit group counts stay exact.
+
+    This does not establish the contents, cameras, time coverage or cardinality
+    of a set. Those still need source-specific semantic verification.
+    """
+    # Separate the cardinal from the final 一 in 唯一 for the exact-count parser.
+    text = re.sub(r'唯一(?=一\s*组)', '唯一 ', text)
+    positions = set()
+    for match in _CHINESE_COUNTS.finditer(text):
+        prefix, suffix = text[:match.start('word')], text[match.end():].lstrip()
+        if (match['word'] == '一' and not match['sign'] and match['count_unit'] == '组'
+                and _COLLECTION_INTRO.search(prefix) and _IMAGE_COLLECTION.match(suffix)
+                and not _CARDINAL_CONTEXT.search(prefix)
+                and not re.search(r'(?:而非|而不是|不是)', suffix)):
+            positions.add(match.start('word'))
+    return ''.join(char for i, char in enumerate(text) if i not in positions)
 
 
 def without_dimensional_labels(text):
@@ -145,7 +167,7 @@ def number_display(identity):
 
 def measurement_numbers(text: str, *, word_counts=False, relative_references=False,
                         artifact_references=False, conceptual_articles=False, expanded_counts=False,
-                        chinese_factors=False) -> set[str]:
+                        chinese_factors=False, collection_articles=False) -> set[str]:
     """Compare decimal/scientific/grouped/Chinese-scale forms exactly.
 
     Store a coefficient and exponent, without float rounding, Decimal context
@@ -158,6 +180,8 @@ def measurement_numbers(text: str, *, word_counts=False, relative_references=Fal
     """
     if conceptual_articles is True:
         text = without_conceptual_articles(text)
+    if collection_articles is True:
+        text = without_collection_articles(text)
     numbers = set()
     if chinese_factors is True:
         digits=dict(zip('零一二三四五六七八九','0123456789'))
