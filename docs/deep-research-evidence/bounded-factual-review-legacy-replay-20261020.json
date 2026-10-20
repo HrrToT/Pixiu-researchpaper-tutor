@@ -1,0 +1,186 @@
+{
+  "date": "2026-10-20",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "legacyFingerprints": [
+    {
+      "case": "H3F-v3",
+      "node": "synthesize_audience",
+      "contractVersion": 2,
+      "actualProviderFingerprint": "d99b723981a3d4618f5783294150f0381141b2e9836aa32a062dccfdd98fb409",
+      "matched": true
+    },
+    {
+      "case": "H3F-v4",
+      "node": "synthesize_audience",
+      "contractVersion": 3,
+      "actualProviderFingerprint": "fb6f8a7a4897697d5163cfd0571533742d904f2d61307c983cfaa8040e66c1b0",
+      "matched": true
+    },
+    {
+      "case": "H3F-v5",
+      "node": "synthesize_audience",
+      "contractVersion": 4,
+      "actualProviderFingerprint": "ed0a15bdc3b1b3febb80ae8571d7762a559b8bda388fed0a9410f1bbce508bca",
+      "matched": true
+    },
+    {
+      "case": "H3F-v6",
+      "node": "synthesize_audience",
+      "contractVersion": 5,
+      "actualProviderFingerprint": "ee3531d2e86aa2c69c42e36fd2c7a2c8227a83149ee16f56279a398bc196d1ed",
+      "matched": true
+    },
+    {
+      "case": "H3F-v7",
+      "node": "synthesize_audience",
+      "contractVersion": 6,
+      "actualProviderFingerprint": "a1504c8e7c18a2851e320eeb90193781476843e72d42174795eaca45f29eb8af",
+      "matched": true
+    },
+    {
+      "case": "H3F-v8",
+      "node": "synthesize_audience",
+      "contractVersion": 7,
+      "actualProviderFingerprint": "5eda6ea104411cb8c3300c769ad933971c12c6c6e8271505bb093cc8cc249a15",
+      "matched": true
+    },
+    {
+      "case": "H3F-v7",
+      "node": "synthesize",
+      "actualProviderFingerprint": "5c1eefd9a5e443324430a5dbedc71ebfb27ac068bae93e1df41763def231e486",
+      "matched": true
+    },
+    {
+      "case": "H2F-v3",
+      "node": "synthesize",
+      "actualProviderFingerprint": "7ab6f2871ec4df80cb80568512e483783974a8363acf1bd2cdbfe88bbac69c54",
+      "matched": true
+    },
+    {
+      "case": "H5F-v3",
+      "node": "synthesize",
+      "actualProviderFingerprint": "0e4ee98be504511260310fd2aaad7cd2e9b42c8c616592a47b035828fcd15685",
+      "matched": true
+    },
+    {
+      "case": "H5F-v2",
+      "node": "synthesize",
+      "actualProviderFingerprint": "7e8426006027bb2d2f926f0d29c0fd5532f6dcfc230919cd847f4a4f8dcb44cc",
+      "matched": true
+    },
+    {
+      "case": "H3F-v8",
+      "node": "synthesize",
+      "actualProviderFingerprint": "26b5b75dbb8d86faff9c7891eb5308443df528ff360aac48ff26f938bb83af55",
+      "matched": true
+    },
+    {
+      "case": "H2F-v4",
+      "node": "synthesize",
+      "actualProviderFingerprint": "29555adb0c76150efb4b9af586eb0e39adf5703d8db0c15b56273a54435fb46b",
+      "matched": true
+    },
+    {
+      "case": "H5F-v4",
+      "node": "synthesize",
+      "actualProviderFingerprint": "8e474074eb6428934628d8689b38312bc018f3340208f41a0fc04b7a030a16dd",
+      "matched": true
+    },
+    {
+      "case": "H2F-v5",
+      "node": "synthesize",
+      "actualProviderFingerprint": "caf1ec6feeceb9eef6e4095aaba83b8911eb302acea6dcd3d4d58d384c8c2ec6",
+      "matched": true
+    },
+    {
+      "case": "H2F-v6",
+      "node": "synthesize",
+      "actualProviderFingerprint": "62bb39bb17ea09971933917f37ccc2741d0dea1de901c2c487338f7587db09f7",
+      "matched": true
+    },
+    {
+      "case": "H2F-v7",
+      "node": "synthesize",
+      "actualProviderFingerprint": "2037745e641395cfb70c3940cba663544938f768fd934d948998a83bfbad328e",
+      "matched": true
+    },
+    {
+      "case": "H2F-v8",
+      "node": "synthesize",
+      "actualProviderFingerprint": "7edf4a70a68b6de1b5ca7e2241041ed655ac8226973597f3e85eb67fc2143816",
+      "matched": true
+    }
+  ],
+  "audience": {
+    "case": "H3F-v7",
+    "oldOutcome": "rejected",
+    "oldReason": "nonqualitative_inference",
+    "newReplayOutcome": "applied",
+    "prechecks": [
+      {
+        "claimId": "c2",
+        "eligibleForSemanticCheck": true,
+        "rejected": []
+      }
+    ],
+    "inputBytes": 15611,
+    "outputCap": 3072
+  },
+  "comparison": {
+    "case": "H2F-v3",
+    "requestedCharacters": 450,
+    "oldOptions": {},
+    "newSynthesisOptions": {
+      "thinking": {
+        "type": "enabled"
+      },
+      "reasoning_effort": "high",
+      "max_tokens": 8192,
+      "response_format": {
+        "type": "json_object"
+      }
+    },
+    "newRepairOptions": {
+      "max_tokens": 4096,
+      "thinking": {
+        "type": "disabled"
+      },
+      "reasoning_effort": "none"
+    }
+  },
+  "experiment": {
+    "case": "H5F-v3",
+    "groups": [
+      {
+        "targetIds": [
+          "c4",
+          "c5"
+        ],
+        "inputBytes": 22181
+      },
+      {
+        "targetIds": [
+          "c1",
+          "c7",
+          "c8",
+          "c9"
+        ],
+        "inputBytes": 23132
+      },
+      {
+        "targetIds": [
+          "c2",
+          "c3",
+          "c6"
+        ],
+        "inputBytes": 21865
+      }
+    ],
+    "schedulerFixtureCalls": 3,
+    "maxInputBytes": 24000,
+    "allTargetsAndOwnQuotesPreserved": true,
+    "allSiblingDefinitionsPreserved": true
+  },
+  "boundary": "Exact archived request replay and mocked scheduler/source checks only. No real generation, semantic/scientific/novice acceptance or independent credit. Historical outcomes and pending/unknown requests unchanged."
+}
