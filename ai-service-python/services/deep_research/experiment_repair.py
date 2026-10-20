@@ -34,7 +34,7 @@ def compatible(report):
 
 def render(*,question,length_contract,accepted,siblings,questions,targets,checks,
            permissions_marker,evidence_marker,shape,table_instructions,source_instruction,
-           metric_domains,policy_version,declared_table_refs,terminology):
+           metric_domains,policy_version,declared_table_refs,terminology,concise_policy=False):
     from services.deep_research.experiment_template import grammar_for_roles
     from services.deep_research.design_drafting import design_drafting_requirements
     from services.deep_research.experiment_intent import guidance,single_toggle_request
@@ -68,7 +68,7 @@ SHARED GRAMMAR FOR WRITABLE ROLES ONLY:
 {grammar_for_roles(roles)}
 Experimental deliverables (detailRequirementRole refers to this role's definition):
 {design_drafting_requirements(metric_domains,compact=True,roles=roles,targeted=True,
-    factorial_reference=not single_toggle_request(question))}
+    factorial_reference=not single_toggle_request(question),concise_policy=concise_policy)}
 {guidance(question,roles,policy_version=policy_version)}
 Return only one COMPACT JSON array, or [] if no supported revision is possible. Schema:
 {encode(shape)}

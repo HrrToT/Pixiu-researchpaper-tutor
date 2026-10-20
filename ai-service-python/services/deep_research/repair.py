@@ -16,7 +16,7 @@ from services.deep_research.repair_scope import repair_evidence_scope
 def _prepare_repair(report, verification, evidence, question, *, max_prompt_bytes=24000,
                     metric_domains=None, draft_context=(), prior_revisions=(),
                     fact_redraft=False, requirement_context=(), source_aware_redraft=False,comparison_reasoning=False,
-                    question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False,shared_experiment_schema=False):
+                    question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False,shared_experiment_schema=False,experiment_evidence_context=None):
     rejected = {row['claimId']: row for row in verification.get('rejected', [])}
     originals = {row['claimId']: row for row in report.get('claims', []) if row.get('claimId') in rejected}
     if not originals:
@@ -26,11 +26,19 @@ def _prepare_repair(report, verification, evidence, question, *, max_prompt_byte
     evidence = sorted(evidence, key=lambda e: e.get('evidenceId') not in hinted)
     allowed = repair_evidence_scope(list(originals.values()), evidence,
         **({'question':question} if question_priority else {}))
+    if experiment_evidence_context is not None:
+        from services.deep_research.experiment_evidence import expand
+        allowed=expand(list(originals.values()),evidence,allowed,experiment_evidence_context)
     refs = {ref for values in allowed.values() for ref in values}
     selected = [e for e in evidence if e['evidenceId'] in refs]
     if question_priority:
         from services.deep_research.evidence_priority import prioritize_existing_evidence
         selected=prioritize_existing_evidence(selected,question)
+    if experiment_evidence_context is not None:
+        from services.deep_research.synthesis_evidence import order_premises
+        related={oid for c in originals.values() for oid in c.get('obligationIds',[])}
+        selected,_=order_premises(selected,[{'obligations':[o for o in experiment_evidence_context['requirements']
+            if o['obligationId'] in related]}],limit=len(selected),membership_intents=True)
     aliases = {f'E{i + 1}': e['evidenceId'] for i, e in enumerate(selected)}
     short_ids = {full: short for short, full in aliases.items()}
     original_refs = {ref for row in originals.values() for ref in row.get('evidenceRefs', [])}
@@ -62,6 +70,28 @@ def _prepare_repair(report, verification, evidence, question, *, max_prompt_byte
     if any(row.get('publicationIdentity') for row in rows):
         from services.deep_research.publication_identity import GUIDANCE as publication_guidance
         source_instruction = '\n' + publication_guidance
+    if experiment_evidence_context is not None:
+        from services.deep_research.factual_source_context import factual_source_context
+        source_catalog={s['sourceId']:s for s in experiment_evidence_context['sources']}
+        def source_metadata(item):
+            source=source_catalog.get(item.get('sourceId'),{})
+            return ({**item,'ownerMaterialId':source['ownerMaterialId']} if source and all(
+                item.get(key)==source[field] for key,field in (('sourceWorkId','workId'),
+                ('sourceVersionId','versionId'),('contentHash','contentHash'))) else item)
+        source_context,evidence_sources=factual_source_context([source_metadata(item) for item in selected],
+            experiment_evidence_context['requirements'],related)
+        from services.deep_research.experiment_evidence import factor_registry
+        source_instruction='\nOriginal source registry (metadata only, not support or citations):\n'+json.dumps(
+            factor_registry(source_context),ensure_ascii=False,separators=(',',':'))+(
+            '\nEach requirement group applies its requiredSources mapping to every listed obligationId. '
+            'P IDs identify exact work/version/access/ownership. publicationIdentity pins the publication revision, '
+            'not a scientific fact. Each factual clause still needs its OWN supplied E quotations.\n')
+        by_id={item['evidenceId']:item for item in selected}
+        for row in rows:
+            row['sourceRef']=evidence_sources[aliases[row['evidenceId']]]
+            row['contentHash']=by_id[aliases[row['evidenceId']]]['contentHash']
+        from services.deep_research.factual_repair import compact_rows
+        rows=compact_rows(rows,source_context)
     if fact_redraft and factual_redraft_eligible(report):
         # Omit rejected wording from the generation view, not audit storage.
         # Keep original citations mandatory below and full originals in the
@@ -354,7 +384,7 @@ in the paper. Maintain consistency with accepted definitions and complete requir
                 evidence_marker=evidence_marker,shape=revision_shape,table_instructions=table_instructions,
                 source_instruction=source_instruction,metric_domains=metric_domains,
                 policy_version=experimental_intent,declared_table_refs=declared_table_refs,
-                terminology=SCIENTIFIC_TERMINOLOGY)
+                terminology=SCIENTIFIC_TERMINOLOGY,concise_policy=experiment_evidence_context is not None)
     template = prompt
     def render(selected_rows):
         visible_ids = {row['evidenceId'] for row in selected_rows}
@@ -484,7 +514,7 @@ def factual_redraft_eligible(report):
 def repair_rejected(report, verification, evidence, question, invoke, parse, *,
                     max_prompt_bytes=24000, metric_domains=None, batch_state=None, checkpoint=None,
                     current_budget=None, invoke_request=None, fact_redraft=False, requirement_context=(),
-                    source_aware_redraft=False,comparison_reasoning=False,question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,strict_response=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False,shared_experiment_schema=False):
+                    source_aware_redraft=False,comparison_reasoning=False,question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,strict_response=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False,shared_experiment_schema=False,experiment_evidence_context=None):
     """One bounded revision round, split before dispatch when evidence cannot fit.
 
     At most three requests share full sibling design definitions. Successful
@@ -509,6 +539,8 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
                        **({'repairResponseContractVersion':1} if strict_response else {}),
                        **({'factualRepairContractVersion':1} if compact_source_repair else {}),
                        **({'experimentRepairContractVersion':1} if shared_experiment_schema else {}),
+                       **({'experimentEvidenceContractVersion':1,'experimentEvidenceContext':experiment_evidence_context}
+                          if experiment_evidence_context is not None else {}),
                        **({'comparisonMethodologyVersion':1} if comparison_methodology else {}),
                        **({'experimentIntentContractVersion':experimental_intent if type(experimental_intent) is int and experimental_intent in (2,3) else 1}
                           if experimental_intent else {})})
@@ -526,7 +558,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
             comparison_reasoning=comparison_reasoning,question_priority=question_priority,concise_factual=concise_factual,
             factual_scope=factual_scope,declared_table_refs=declared_table_refs,comparison_methodology=comparison_methodology,
             experimental_intent=experimental_intent,compact_source_repair=compact_source_repair,
-            shared_experiment_schema=shared_experiment_schema)
+            shared_experiment_schema=shared_experiment_schema,experiment_evidence_context=experiment_evidence_context)
 
     state = deepcopy(batch_state) if batch_state is not None else {
         'version': 1, 'inputDigest': identity, 'maxPromptBytes': max_prompt_bytes,

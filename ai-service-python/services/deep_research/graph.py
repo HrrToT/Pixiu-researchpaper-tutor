@@ -1654,6 +1654,8 @@ def make_verify_node(
                                          for c in repair_report.get('claims',[]))
                         repair_input_options['output_tokens']=repair_batch_output_limit(target_count)
                     from services.deep_research.experiment_repair import enabled as shared_experiment_repair
+                    from services.deep_research.experiment_evidence import build_context as experiment_evidence_context
+                    candidate_context=experiment_evidence_context(record)
                     revised = repair_rejected(repair_report, repair_targets, evidence, effective_question(record),
                         invoke_repair, _safe_parse_json,
                         max_prompt_bytes=repair_prompt_byte_limit(current.get('budget', {}),**repair_input_options),
@@ -1663,6 +1665,7 @@ def make_verify_node(
                         invoke_request=invoke_repair,
                         **({'compact_source_repair':True} if compact_repair else {}),
                         **({'shared_experiment_schema':True} if shared_experiment_repair(record) else {}),
+                        **({'experiment_evidence_context':candidate_context} if candidate_context is not None else {}),
                         **({'strict_response':True} if type(record.get('repairProgressContractVersion')) is int
                            and record['repairProgressContractVersion']==2 else {}),
                         **({'comparison_reasoning':True} if comparison_enabled(record) else {}),
