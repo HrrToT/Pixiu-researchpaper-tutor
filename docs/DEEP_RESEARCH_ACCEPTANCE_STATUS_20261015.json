@@ -2134,6 +2134,58 @@
       "settledModelCalls": 14,
       "settledTokens": 61836,
       "independentCredit": 0
+    },
+    "citationAttributionOffline": {
+      "passed": 3421,
+      "files": 198,
+      "warnings": 1,
+      "seconds": 209.11,
+      "scope": "All tests/test_deep_research*.py, not all Python/reading/config integration.",
+      "log": "tmp/pytest-dr207-research-full-verified.log",
+      "sha256": "34d02443b865acb09ed8d7e58148ecf94aee21d9560bc39eb6ab9c3280299d42",
+      "sourceCommit": "75af6bae"
+    },
+    "citationAttributionCheckpoint": {
+      "date": "2026-10-20",
+      "sourceCommit": "75af6bae",
+      "promptVersion": "dr-v2.20261020.207",
+      "citationPresentationContractVersion": 2,
+      "serverOwnedImmutable": true,
+      "fullDeepResearchOffline": {
+        "passed": 3421,
+        "files": 198,
+        "warnings": 1,
+        "seconds": 209.11,
+        "scope": "All tests/test_deep_research*.py, not all Python/reading/config integration.",
+        "log": "tmp/pytest-dr207-research-full-verified.log",
+        "sha256": "34d02443b865acb09ed8d7e58148ecf94aee21d9560bc39eb6ab9c3280299d42"
+      },
+      "focusedPassed": 94,
+      "focusedOverlap": true,
+      "newTests": 36,
+      "oldActualModelFingerprintsMatched": 35,
+      "newProviderCalls": 0,
+      "implementation": "Immutable presentation2: own cited E labels only; slash bracket markers and explicit attribution become readable prose with original model fields and resolved-evidence audits retained. Unknown/uncited labels, source symbols, math/code and ambiguous ratios stay unchanged. Existing1 behavior and old request identity stay unchanged. Experimental repairs now use the same cleanup before original materialization/verification.",
+      "controlledProof": "citation-attribution-e1-v7-controlled-20261020.json",
+      "retentionProof": "runtime-dr207-full-retention-20261020.json",
+      "runtimeProof": "runtime-load-dr207-citation-attribution-20261020.json",
+      "latestRealContentCase": {
+        "case": "E1-v7",
+        "promptVersion": ".206",
+        "status": "completed",
+        "outcome": "partial",
+        "acceptedRoles": 2,
+        "rejectedRoles": 7,
+        "notRerun": true,
+        "wholeExperimentAccepted": false
+      },
+      "selectedDiagnosticTotals": {
+        "settledModelCalls": 521,
+        "measuredTokens": 2140252,
+        "notGlobalHistory": true,
+        "costUnknown": true
+      },
+      "boundary": "Actual saved responses replayed under new presentation semantics only. No new paid generation, model semantic/independent approval, historical promotion or full DR0-DR5 completion. Goal active/PR draft."
     }
   },
   "stages": [
@@ -2611,13 +2663,10 @@
     "postCasesProof": "deep-research-evidence/runtime-postcases-dr197-e1-v1-20261020.json"
   },
   "nextQualityWork": [
-    "Prevent internal evidence aliases in public conditions without dropping factual assertions or changing source permissions; distinguish from genuine paper symbols.",
-    "Fix prose/config camera-split contradictions and budget review arithmetic; retain genuine protocol/budget constraints.",
-    "Compact remaining repair input without removing claims/config/source/checks; later batch21519 exceeded actual remaining16580, so not all batches sent.",
-    "Fix actual complete3DGS/NTC initialization and source-grounded assets; no invented pretrained selectors or opaque zero model weights.",
-    "Generate coherent whole-stage budgets, train-only eligible scene/window choices, actual intervention parameters and executable measurements.",
-    "Audit reviewer reasons about prospective hypotheses/proposed splits/indexing against linked definitions without suppressing genuine source/science defects.",
-    "Keep11old unknowns, original request identities and historical0/5; complete full DR0-DR5 and fresh independent replacements after development content passes."
+    "Resolve genuinely uncited claim references through source-faithful drafting/repair; never suppress them as presentation.",
+    "Fix text/config camera-split contradictions, full3DGS/NTC initialization and staged whole-package budget/model-review arithmetic.",
+    "Retain full original roles, actual learned modules, source identity and checks while fitting remaining repair input; complete storage/quality/timing definitions.",
+    "Run meaningful new content validation after substantive repair, then fresh independent cases against full DR0-DR5. Preserve old0/5 and11unknowns."
   ],
   "javaReaderRuntime": {
     "sourceCommit": "070ab1a",
@@ -3198,7 +3247,7 @@
     "independentCredit": 0,
     "proof": "deep-research-evidence/compact-experiment-envelope-regression-20261020.json"
   },
-  "currentCheckpoint": ".206 a0972326: draft6/repair5 exact representation compatibility;3385research tests,32old actual model fingerprints. E1-v7 completed/partial, verification={'accepted': 2, 'rejected': 7};14settled calls/61836tokens. Historical results and full incomplete status retained.",
+  "currentCheckpoint": ".207 75af6bae: immutable citationPresentation2 extends own source-attribution cleanup to experimental repair and slash markers;3421research tests,94focused overlap,35old actual request fingerprints. Controlled E1-v7 removes4complete leaks and partly cleansc1 while its uncited E5 remains rejected. All original text/config/refs and real defects remain.0new paid cases;latest real remains .206E1-v7partial2/9;4910ledger/11paused preserved. Full DR0-DR5 incomplete.",
   "sharedModuleSourceCheckpoint": {
     "sourceCommit": "f8ae5177",
     "promptVersion": "dr-v2.20261020.199",

@@ -1,0 +1,109 @@
+{
+  "date": "2026-10-20",
+  "case": "H5F-v6",
+  "sourceCommit": "b449bc09",
+  "runId": "dr_run_98e66f2d3d555dfa822b859963f01419",
+  "actualSynthesisFingerprintMatched": true,
+  "inputBytes": 23762,
+  "evidenceSupplied": 8,
+  "premiseAllocation": {
+    "version": 1,
+    "candidateEvidenceIds": [
+      "ev_2ad69270884aedbc9cb3dc435a4845247e5e025d12f4976fe7f67668ba4caa97",
+      "ev_2e47d98c415d02bfa4b6a6933195f66f7d12804127c71814e1eaa5eec7469d0e",
+      "ev_4b9093737002b0fff515c850bb3a6472329f3d357beeece4850d73e73cfe7ab7",
+      "ev_d5b7e7b5bea0edc9a1f7941ef30c58f08952ae6e2e1ed3edb034af0f2ffcc7ed",
+      "ev_c3b6e83df4b17b21cd7fd3592d655492af22aeb570eb01b557d0338e9cfcaf31",
+      "ev_aded98ac12364573c93f606baab45ff4098ebcacab3e67293f00d8d229448654",
+      "ev_a2307020dd6dcab8bc5fe358094347645cd2707c9e0c356c366868fe627993ba",
+      "ev_453f729525b9043f2d646fda71048311271353cb332c7949523cb0069d21549c",
+      "ev_506d7916d6e7a38185b1da0ac3b69fe7670a65d08840c439bc2f252a5c2d83e5",
+      "ev_ec9c739879dc557201cfcb3293c261108583db96db52e48fd7b36ab0ff3a97b3",
+      "ev_bf5c82a3e44a3a6d75ab95cafb02676146d6fbfc86ab59d91bca376a1ae97e54",
+      "ev_929aa7513df3fda587f608e26ace77ffd7ab251e6fcde7ec5c9d197dc1180785",
+      "ev_da4fe482d8beb1708acbc87f742933bac6190f54cad8838c61b77214957e0587",
+      "ev_53895d8a91c878a16ba5b13e6a3ee4fa1b4a5f1280629e53eee6b556d3af3263",
+      "ev_7a7f2f8c5e5aefc017e2363920c8e45e0b2160803f1ce59ac15b3460fb1e7f66",
+      "ev_fdc5aaf9e79af22ca18ba8be78769c01a9abe8a54b83995f068ea35d6222b990",
+      "ev_a765745a8b89bd58a488191271c67bd2bc1e0c0f799b4259f162885b6031e6d7",
+      "ev_6efb88014ea0f91709f41aa5ead3455b71550066cd9cd40519d7c629dc5726be",
+      "ev_4d607838fc748b0d0fc4dd8223bdf453639bc7a024640afc50cd0a3553080b4c",
+      "ev_a24eb03e0d567888f1ffb7f0e872f06030b1c64ee76528611051abc95180c8b8"
+    ],
+    "suppliedEvidenceIds": [
+      "ev_2ad69270884aedbc9cb3dc435a4845247e5e025d12f4976fe7f67668ba4caa97",
+      "ev_2e47d98c415d02bfa4b6a6933195f66f7d12804127c71814e1eaa5eec7469d0e",
+      "ev_4b9093737002b0fff515c850bb3a6472329f3d357beeece4850d73e73cfe7ab7",
+      "ev_d5b7e7b5bea0edc9a1f7941ef30c58f08952ae6e2e1ed3edb034af0f2ffcc7ed",
+      "ev_c3b6e83df4b17b21cd7fd3592d655492af22aeb570eb01b557d0338e9cfcaf31",
+      "ev_aded98ac12364573c93f606baab45ff4098ebcacab3e67293f00d8d229448654",
+      "ev_a2307020dd6dcab8bc5fe358094347645cd2707c9e0c356c366868fe627993ba",
+      "ev_453f729525b9043f2d646fda71048311271353cb332c7949523cb0069d21549c"
+    ],
+    "missingPremiseBundles": [],
+    "inputBytes": 23762,
+    "fixedInputBytes": 19263,
+    "tableDataOmittedEvidenceIds": [],
+    "sharedTablePackets": 0
+  },
+  "wire": [
+    {
+      "evidenceId": "E1",
+      "quote": "Table row 17:  | D-NeRF Dataset [cols=3, rows=1] | NeRF-DS Dataset [cols=3, rows=1] |  | HyperNeRF Dataset [cols=3, rows=1]\nTable row 18: Scene [cols=2, rows=1] | FPS Num (k) Scene FPS Num (k) Scene [cols=7, rows=1] | FPS Num (k) [cols=2, rows=1]\nTable row 19: Lego [cols=2, rows=1] | 24 | 300 | AS | 48 | 185 | Espresso [cols=2, rows=1] | 15 | 620",
+      "source": "P1",
+      "resultRoleHintOnly": "quantitative_comparison",
+      "tableDataOmitted": false
+    },
+    {
+      "evidenceId": "E2",
+      "quote": "Equation: ∆ = F θ (γ(sg(x)), γ(t) + X (i)) , X (i) = N(0, 1) • β • ∆t • (1 − i/τ ) ,(6)",
+      "source": "P1",
+      "resultRoleHintOnly": "unspecified",
+      "tableDataOmitted": false
+    },
+    {
+      "evidenceId": "E3",
+      "quote": "It can enhance the model's temporal generalization in the early stages of training, as well as prevent excessive smoothing in the later stages, thus preserving the details of objects in dynamic scenes.",
+      "source": "P1",
+      "resultRoleHintOnly": "unspecified",
+      "tableDataOmitted": false
+    },
+    {
+      "evidenceId": "E4",
+      "quote": "The deformation field takes the positions of the 3D Gaussians and the current time t as inputs, outputting δx, δr, and δs.",
+      "source": "P1",
+      "resultRoleHintOnly": "unspecified",
+      "tableDataOmitted": false
+    },
+    {
+      "evidenceId": "E5",
+      "quote": "The 3D Gaussians and deformation network are optimized jointly through the fast backward pass by tracking accumulated α values, together with the adaptive control of the Gaussian density.",
+      "source": "P1",
+      "resultRoleHintOnly": "unspecified",
+      "tableDataOmitted": false
+    },
+    {
+      "evidenceId": "E6",
+      "quote": "Experimental results show that after 30k training iterations, the shape of the 3D Gaussians stabilizes, as does the canonical space, which indirectly proves the efficacy of our design.",
+      "source": "P1",
+      "resultRoleHintOnly": "unspecified",
+      "tableDataOmitted": false
+    },
+    {
+      "evidenceId": "E7",
+      "quote": "An intuitive solution to model dynamic scenes using 3D Gaussians is to separately train 3D-GS set in each timedependent view collection and then perform interpolation between these sets as a post-processing step.",
+      "source": "P1",
+      "resultRoleHintOnly": "unspecified",
+      "tableDataOmitted": false
+    },
+    {
+      "evidenceId": "E8",
+      "quote": "While such an approach is feasible for Multi-View Stereo (MVS) captures at discrete time, it falls short for continuous monocular captures within a temporal sequence.",
+      "source": "P1",
+      "resultRoleHintOnly": "unspecified",
+      "tableDataOmitted": false
+    }
+  ],
+  "claims": null,
+  "boundary": "Exact actual synthesis request reconstruction and supplied-premise inventory; no new Provider calls or content approval."
+}
