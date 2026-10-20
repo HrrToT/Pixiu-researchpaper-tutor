@@ -75,7 +75,7 @@ def test_compact_experiment_contract_is_server_owned_and_frozen(tmp_path,replace
     try:
         payload,_=facade.create({'workspaceTaskId':'t','operationKey':'k','question':'设计实验',
             'experimentDraftContractVersion':replacement,'deferStart':True},start_async=False)
-        assert payload['experimentDraftContractVersion']==2
+        assert payload['experimentDraftContractVersion']==1
         with pytest.raises(ValueError,match='Immutable'):
             repo.update_run(payload['runId'],lambda r:{**r,'experimentDraftContractVersion':replacement})
     finally:

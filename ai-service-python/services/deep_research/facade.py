@@ -273,9 +273,13 @@ class ResearchFacade:
             "materials": materials,
             "materialSnapshot": material_snapshot,  # Immutable Java snapshot
             "contextMaterials": (material_snapshot or {}).get("contextMaterials", []) if isinstance(material_snapshot, dict) else [],
-            "promptVersion": "dr-v2.20261020.193",
+            "promptVersion": "dr-v2.20261020.194",
             "factualReviewContractVersion": 1,
-            "experimentDraftContractVersion": 2,
+            # Keep new user runs on direct drafting until bounded science
+            # planning and configuration can be separated. H5F-v6's complete
+            # low-reasoning request exceeded its180s request deadline. Saved
+            # v2 requests/unknown identities remain immutable and reproducible.
+            "experimentDraftContractVersion": 1,
             "factualRepairContractVersion": 2,
             "synthesisEvidenceContractVersion": 2,
             "extractionScheduleContractVersion": 1,
