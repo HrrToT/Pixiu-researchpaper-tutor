@@ -577,6 +577,7 @@ class BudgetedSemanticChecker:
         result_attribution=False,
         bounded_factual_review=False,
         prospective_review=False,
+        configuration_consistency=0,
     ):
         self._invoke = llm_invoker
         self._run_id = run_id
@@ -594,6 +595,7 @@ class BudgetedSemanticChecker:
         self._qualitative_inference = qualitative_inference
         self._experiment_intent_review = experiment_intent_review
         self._prospective_review = prospective_review
+        self._configuration_consistency = configuration_consistency
     
     def __call__(self, claims: list[dict], evidence: list[dict]) -> list[dict]:
         return self._check(claims, evidence, [], 'verify')
@@ -1043,6 +1045,13 @@ The dataAvailability object is an internal audit, not new experimental results.
         if prospective_review_enabled(review_version) and all(
                 c.get('kind') in {'proposal', 'suggestion', 'hypothesis'} for c in claims):
             prompt += '\n' + prospective_review_policy(review_version)
+        from services.deep_research.configuration_consistency import enabled as consistent, facts as config_facts, REVIEW as consistency_review
+        consistency_version=(self._configuration_consistency() if callable(self._configuration_consistency)
+                             else self._configuration_consistency)
+        if consistent(consistency_version) and all(c.get('kind') in {'proposal','suggestion','hypothesis'} for c in claims):
+            derived=config_facts([*wire_claims,*wire_context])
+            if derived:
+                prompt+='\n'+consistency_review+'\nDerived configuration meanings (not evidence):\n'+json.dumps(derived,ensure_ascii=False,separators=(',',':'),allow_nan=False)
         template = prompt
         source_keys = ('workId', 'versionId', 'sourceTitle')
         source_registry = {}

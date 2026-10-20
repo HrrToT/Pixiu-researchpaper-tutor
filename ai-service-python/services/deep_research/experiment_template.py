@@ -180,6 +180,10 @@ dataset/member and existing asset with its own original evidence. Proposed value
 are not author settings. Preserve the user's scope; no unsupported absence claims.
 Text explains rationale without duplicating fields rendered by the application.
 Independent review retains the full scientific and operational requirements.'''
+    from services.deep_research.configuration_consistency import enabled as consistent, GENERATION
+    if consistent(record.get('configurationConsistencyContractVersion')):
+        configuration_policy=configuration_policy.replace(
+            'Text explains rationale without duplicating fields rendered by the application.',GENERATION)
     if compact:
         configuration_policy=configuration_policy.replace('finite preparation and matched whole-group budgets',
             'finite preparation and honest whole-group budgets; match them for isolated effects')
