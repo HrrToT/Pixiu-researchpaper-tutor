@@ -1,5 +1,5 @@
 {
-  "asOf": "2026-10-20",
+  "asOf": "2026-10-21",
   "objective": "Complete DR0-DR5 in DEEP_RESEARCH_DESIGN_20261012.md without redefining success around implemented subsets.",
   "overall": "incomplete",
   "freshMaterialReadiness": "H1R2 remains unknown/unscored. H2R/H3R/H4R/H5R remain retired development cases; all new source/content results need independent replacements after development quality passes.",
@@ -2186,6 +2186,65 @@
         "costUnknown": true
       },
       "boundary": "Actual saved responses replayed under new presentation semantics only. No new paid generation, model semantic/independent approval, historical promotion or full DR0-DR5 completion. Goal active/PR draft."
+    },
+    "configurationConsistencyOffline": {
+      "passed": 3452,
+      "files": 199,
+      "warnings": 1,
+      "seconds": 229.37,
+      "scope": "All tests/test_deep_research*.py, not all Python/reading/config integration.",
+      "log": "tmp/pytest-dr208-full.log",
+      "sha256": "7ccf6ddb5af817687abebfff89abdc547eb1a2c090c09e426d868241e388a524",
+      "sourceCommit": "c266611c"
+    },
+    "configurationConsistencyCheckpoint": {
+      "date": "2026-10-21",
+      "sourceCommit": "c266611c",
+      "promptVersion": "dr-v2.20261020.208",
+      "configurationConsistencyContractVersion": 1,
+      "serverOwnedImmutable": true,
+      "fullDeepResearchOffline": {
+        "passed": 3452,
+        "files": 199,
+        "warnings": 1,
+        "seconds": 229.37,
+        "scope": "All tests/test_deep_research*.py, not all Python/reading/config integration.",
+        "log": "tmp/pytest-dr208-full.log",
+        "sha256": "7ccf6ddb5af817687abebfff89abdc547eb1a2c090c09e426d868241e388a524"
+      },
+      "focusedPassed": 61,
+      "focusedOverlap": true,
+      "newTests": 31,
+      "oldActualModelFingerprintsMatched": 38,
+      "implementation": "Generate rationale separately from exact typed choices; reviewer receives deterministic zero-based split meanings and same-unit baseline-plus-whole-group upper caps. No inferred frame multiplier, zero asset cost or invalid/nonfinite sum. Exact claims/config/evidence stay; arithmetic is not scientific approval.",
+      "controlledProof": "configuration-consistency-e1-v7-controlled-20261021.json",
+      "actualCase": {
+        "case": "E1-v8",
+        "status": "failed",
+        "outcome": "none",
+        "settledModelCalls": 8,
+        "settledTokens": 24523,
+        "verificationSummary": null,
+        "planningFailure": {
+          "reason": "complete_valid_refs_object_over_reserved_bytes",
+          "compactBytes": 2595,
+          "limit": 2500,
+          "finishReason": "stop"
+        },
+        "fullConfigurationGenerated": false,
+        "semanticReviewReached": false,
+        "independentCredit": 0
+      },
+      "planningDiagnosis": "E1-v8-planning-capacity-diagnosis-20261021.json",
+      "runtimeProof": "runtime-load-dr208-configuration-consistency-20261020.json",
+      "retentionProof": "runtime-postcases-dr208-e1-v8-20261020.json",
+      "selectedDiagnosticTotals": {
+        "settledModelCalls": 529,
+        "measuredTokens": 2164775,
+        "notGlobalHistory": true,
+        "costUnknown": true
+      },
+      "boundary": "Real E1-v8 stops before full generation:2595-byte complete private plan exceeds2500 reserved bytes. No real arithmetic-review improvement proven; do not claim replay as fresh content, retry the case, truncate content or relax budgets. Goal active/PR draft/full DR0-DR5 incomplete."
     }
   },
   "stages": [
@@ -2663,10 +2722,10 @@
     "postCasesProof": "deep-research-evidence/runtime-postcases-dr197-e1-v1-20261020.json"
   },
   "nextQualityWork": [
-    "Resolve genuinely uncited claim references through source-faithful drafting/repair; never suppress them as presentation.",
-    "Fix text/config camera-split contradictions, full3DGS/NTC initialization and staged whole-package budget/model-review arithmetic.",
-    "Retain full original roles, actual learned modules, source identity and checks while fitting remaining repair input; complete storage/quality/timing definitions.",
-    "Run meaningful new content validation after substantive repair, then fresh independent cases against full DR0-DR5. Preserve old0/5 and11unknowns."
+    "Implement versioned lossless positional encoding of the private plan with an explicit model-facing legend; prove exact roundtrip, complete source/context preservation, unchanged2500-slot/24000-total cap and immutable old pending/failed histories before any new content case.",
+    "Fix full3DGS/NTC state acquisition/initialization and phase budgets; no unsupported released-checkpoint fallback, opaque states or hidden unbudgeted fitting.",
+    "Verify actual text/config split consistency and arithmetic-aware review after a case reaches generation/verification; controlled fixtures are not proof the model corrected its behavior.",
+    "Complete all measurement/storage/timing definitions and repair capacity; keep full original roles and DR0-DR5 scope, then perform fresh independent replacements. Original0/5/11unknowns remain."
   ],
   "javaReaderRuntime": {
     "sourceCommit": "070ab1a",
@@ -3247,7 +3306,7 @@
     "independentCredit": 0,
     "proof": "deep-research-evidence/compact-experiment-envelope-regression-20261020.json"
   },
-  "currentCheckpoint": ".207 75af6bae: immutable citationPresentation2 extends own source-attribution cleanup to experimental repair and slash markers;3421research tests,94focused overlap,35old actual request fingerprints. Controlled E1-v7 removes4complete leaks and partly cleansc1 while its uncited E5 remains rejected. All original text/config/refs and real defects remain.0new paid cases;latest real remains .206E1-v7partial2/9;4910ledger/11paused preserved. Full DR0-DR5 incomplete.",
+  "currentCheckpoint": ".208 c266611c: immutable configurationConsistency1 adds rationale/config ownership and derived split/cap meanings under original checks.3452research tests/61focused overlap/31new,38old model fingerprints. E1-v8 submitted once: failed invalid_experiment_planning_response,8settled calls/24523tokens,0unknown; complete2595byte plan exceeds2500slot, no full generation/review. Direct acceptance would make24082>24000; candidate positional roundtrip2486bytes is diagnostic only, NOT implemented.4931ledger,11paused/old payloads/tasks preserved. Full DR0-DR5 incomplete.",
   "sharedModuleSourceCheckpoint": {
     "sourceCommit": "f8ae5177",
     "promptVersion": "dr-v2.20261020.199",

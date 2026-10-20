@@ -1,0 +1,53 @@
+{
+  "date": "2026-10-20",
+  "sourceCommit": "c266611c",
+  "promptVersion": "dr-v2.20261020.208",
+  "case": "E1-v8",
+  "split": "development",
+  "runId": "dr_run_8d75667d3f055beebde5d3dc12f40d59",
+  "questionUnchanged": true,
+  "frozenCaseCommit": "a023b204",
+  "status": "failed",
+  "outcome": "none",
+  "elapsedSeconds": 0,
+  "settledModelCalls": 8,
+  "settledTokens": 24523,
+  "unsettledModelCalls": 0,
+  "independentCredit": 0,
+  "verificationSummary": null,
+  "initialRepresentationAudit": [],
+  "repairRepresentationAudit": {},
+  "rejectedClaims": [],
+  "acceptedClaims": [],
+  "rawFiles": [
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v8.json",
+      "sha256": "49e08d063f3e32d9a22893fae99e37f6eefb1871d380a4e9efb3803c33c08a30"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v8.payload.json",
+      "sha256": "e2a1327245c3cf17f2654294dbaffc9bc663f0da840a7d4d41cc241578c3d938"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v8.calls.json",
+      "sha256": "fa9024e02d09c7e1b53bb18db8439a010595fdf91a5f250d721b0b4539f0f5bf"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v8.result.json",
+      "sha256": "4d785cb43275c562675c4140454c81dd8336de5c498b4919fdb681975d0db197"
+    }
+  ],
+  "boundary": "One fixed development submission, no automatic retry. Representation normalization does not approve science or upgrade historical/independent results.",
+  "contentAccepted": false,
+  "configurationConsistencyContractVersion": 1,
+  "citationPresentationContractVersion": 2,
+  "planningFailure": {
+    "reason": "complete_valid_refs_object_over_reserved_bytes",
+    "compactBytes": 2595,
+    "limit": 2500,
+    "finishReason": "stop"
+  },
+  "fullConfigurationGenerated": false,
+  "semanticReviewReached": false,
+  "wholePlanContentAcceptance": false
+}

@@ -1,0 +1,208 @@
+{
+  "date": "2026-10-20",
+  "sourceCase": "E1-v7",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "oldActualRequestFingerprintsMatched": 3,
+  "oldActualFullDraftAndRepairDraftsReproduced": true,
+  "newSynthesisRequestAndRepairPromptUnchanged": true,
+  "controlledNewCitationPresentationContract": 2,
+  "conditionsAttributionNormalized": [
+    "c1",
+    "c3",
+    "c4",
+    "c6",
+    "c9"
+  ],
+  "uncitedMixedReferenceStillRejected": [
+    "c1"
+  ],
+  "allSubstantiveClaimTextAndAllConfigsRefsKindsRolesUnchanged": true,
+  "audit": {
+    "c1": {
+      "claimId": "c1",
+      "originalText": "在N3DV数据集的flame salmon场景中，固定相同的第0帧3DGS模型、相机划分和第1阶段NTC结果，执行第2阶段自适应新增高斯（Group B）相比跳过第2阶段（Group A）会改变第2-5帧的重建质量、每帧存储和额外训练开销；本方案仅做描述性比较，不承诺改善。",
+      "originalConditions": "场景flame salmon包含新出现内容（E2/E3）；第2阶段自适应新增高斯用于处理新出现物体（E6）；第0帧模型、相机划分及第1阶段NTC结果在论文中有描述（E4/E5/E6）。",
+      "normalizedText": "在N3DV数据集的flame salmon场景中，固定相同的第0帧3DGS模型、相机划分和第1阶段NTC结果，执行第2阶段自适应新增高斯（Group B）相比跳过第2阶段（Group A）会改变第2-5帧的重建质量、每帧存储和额外训练开销；本方案仅做描述性比较，不承诺改善。",
+      "normalizedConditions": "场景flame salmon包含新出现内容；第2阶段自适应新增高斯用于处理新出现物体；第0帧模型、相机划分及第1阶段NTC结果在论文中有描述（E4/E5/E6）。",
+      "removed": [
+        {
+          "field": "conditions",
+          "marker": "（E2/E3）",
+          "offset": 21
+        },
+        {
+          "field": "conditions",
+          "marker": "（E6）",
+          "offset": 49
+        }
+      ]
+    },
+    "c2": {
+      "claimId": "c2",
+      "originalText": "两组共享相同的第0帧3DGS模型、相机划分和第1阶段NTC结果；Group A跳过第2阶段，Group B执行第2阶段自适应新增高斯，且新增高斯逐帧不传到下一帧。",
+      "originalConditions": "第2阶段自适应新增高斯步骤来自论文（E6）；逐帧新增高斯不传到下一帧是用户要求。",
+      "normalizedText": "两组共享相同的第0帧3DGS模型、相机划分和第1阶段NTC结果；Group A跳过第2阶段，Group B执行第2阶段自适应新增高斯，且新增高斯逐帧不传到下一帧。",
+      "normalizedConditions": "第2阶段自适应新增高斯步骤来自论文；逐帧新增高斯不传到下一帧是用户要求。",
+      "removed": [
+        {
+          "field": "conditions",
+          "marker": "（E6）",
+          "offset": 17
+        }
+      ]
+    },
+    "c3": {
+      "claimId": "c3",
+      "originalText": "固定条件：使用N3DV数据集flame salmon场景；第0帧模型为帧0的3DGS；相机划分采用训练视图（偶数索引）和评估视图（奇数索引）；第1阶段NTC结果由帧0-1训练得到，NTC为哈希编码+浅层MLP，输出7维（平移+四元数旋转），学习率0.002。",
+      "originalConditions": "NTC结构来自E1；N3DV flame salmon场景来自E4；NTC学习率0.002来自E5；第1阶段训练NTC来自E6。相机划分和帧0模型为拟议选择。",
+      "normalizedText": "固定条件：使用N3DV数据集flame salmon场景；第0帧模型为帧0的3DGS；相机划分采用训练视图（偶数索引）和评估视图（奇数索引）；第1阶段NTC结果由帧0-1训练得到，NTC为哈希编码+浅层MLP，输出7维（平移+四元数旋转），学习率0.002。",
+      "normalizedConditions": "NTC结构来自所引原文；N3DV flame salmon场景来自所引原文；NTC学习率0.002来自所引原文；第1阶段训练NTC来自所引原文。相机划分和帧0模型为拟议选择。",
+      "removed": [
+        {
+          "field": "conditions",
+          "marker": "E1",
+          "offset": 7,
+          "kind": "source_attribution",
+          "replacement": "所引原文",
+          "evidenceRefs": [
+            "ev_15a8e02f885a744622caa594dd331b7481bf66e9039cec2e9de762eab6c72891"
+          ]
+        },
+        {
+          "field": "conditions",
+          "marker": "E4",
+          "offset": 31,
+          "kind": "source_attribution",
+          "replacement": "所引原文",
+          "evidenceRefs": [
+            "ev_e34196d11497b3956f133f4f4f9f4670ef36ac774d1a0a60f21f50a99cbc0cd3"
+          ]
+        },
+        {
+          "field": "conditions",
+          "marker": "E5",
+          "offset": 47,
+          "kind": "source_attribution",
+          "replacement": "所引原文",
+          "evidenceRefs": [
+            "ev_6a463cd51cbc22d8117a2d3d109e1e06fe14b6ac29031dc0653db1b6f20366ad"
+          ]
+        },
+        {
+          "field": "conditions",
+          "marker": "E6",
+          "offset": 61,
+          "kind": "source_attribution",
+          "replacement": "所引原文",
+          "evidenceRefs": [
+            "ev_4bbeaea2b1a3fc2176d5010e025e0272c4f315f6a4481858bf4ef14db9594a4f"
+          ]
+        }
+      ]
+    },
+    "c4": {
+      "claimId": "c4",
+      "originalText": "数据选择：N3DV数据集flame salmon场景；帧窗口为第2-5帧（用于第2阶段评估）；相机划分采用训练视图（偶数索引）和评估视图（奇数索引），在拟合前验证非空且不相交。",
+      "originalConditions": "flame salmon场景来自E4；帧窗口和相机划分规则为拟议选择，需在训练观察中确认新出现内容。",
+      "normalizedText": "数据选择：N3DV数据集flame salmon场景；帧窗口为第2-5帧（用于第2阶段评估）；相机划分采用训练视图（偶数索引）和评估视图（奇数索引），在拟合前验证非空且不相交。",
+      "normalizedConditions": "flame salmon场景来自所引原文；帧窗口和相机划分规则为拟议选择，需在训练观察中确认新出现内容。",
+      "removed": [
+        {
+          "field": "conditions",
+          "marker": "E4",
+          "offset": 16,
+          "kind": "source_attribution",
+          "replacement": "所引原文",
+          "evidenceRefs": [
+            "ev_e34196d11497b3956f133f4f4f9f4670ef36ac774d1a0a60f21f50a99cbc0cd3"
+          ]
+        }
+      ]
+    },
+    "c6": {
+      "claimId": "c6",
+      "originalText": "执行步骤：准备数据并锁定划分；获取第0帧3DGS模型（若不可用则用固定预算训练）；初始化第1阶段NTC；训练NTC得到共享结果；复制到两组；Group A跳过第2阶段，Group B执行第2阶段自适应新增高斯（逐帧不传播）；在评估视图上渲染并记录指标。",
+      "originalConditions": "NTC结构和训练来自E1/E5/E6；第0帧模型获取方式为拟议选择。",
+      "normalizedText": "执行步骤：准备数据并锁定划分；获取第0帧3DGS模型（若不可用则用固定预算训练）；初始化第1阶段NTC；训练NTC得到共享结果；复制到两组；Group A跳过第2阶段，Group B执行第2阶段自适应新增高斯（逐帧不传播）；在评估视图上渲染并记录指标。",
+      "normalizedConditions": "NTC结构和训练来自所引原文；第0帧模型获取方式为拟议选择。",
+      "removed": [
+        {
+          "field": "conditions",
+          "marker": "E1/E5/E6",
+          "offset": 10,
+          "kind": "source_attribution",
+          "replacement": "所引原文",
+          "evidenceRefs": [
+            "ev_15a8e02f885a744622caa594dd331b7481bf66e9039cec2e9de762eab6c72891",
+            "ev_6a463cd51cbc22d8117a2d3d109e1e06fe14b6ac29031dc0653db1b6f20366ad",
+            "ev_4bbeaea2b1a3fc2176d5010e025e0272c4f315f6a4481858bf4ef14db9594a4f"
+          ]
+        }
+      ]
+    },
+    "c9": {
+      "claimId": "c9",
+      "originalText": "风险与限制：方案尚未执行，不保证改善；flame salmon场景中新出现内容的具体帧索引未在论文中明确，需通过训练观察选择窗口；第0帧3DGS模型可用性未在论文中说明，可能需要自行训练；相机划分规则为拟议选择，需验证实际数据集文件。",
+      "originalConditions": "E2/E3提及flame salmon场景的新出现物体，但未给出具体帧索引；E4仅说明使用flame salmon视频展示NTC有效性。",
+      "normalizedText": "风险与限制：方案尚未执行，不保证改善；flame salmon场景中新出现内容的具体帧索引未在论文中明确，需通过训练观察选择窗口；第0帧3DGS模型可用性未在论文中说明，可能需要自行训练；相机划分规则为拟议选择，需验证实际数据集文件。",
+      "normalizedConditions": "所引原文提及flame salmon场景的新出现物体，但未给出具体帧索引；所引原文仅说明使用flame salmon视频展示NTC有效性。",
+      "removed": [
+        {
+          "field": "conditions",
+          "marker": "E2/E3",
+          "offset": 0,
+          "kind": "source_attribution",
+          "replacement": "所引原文",
+          "evidenceRefs": [
+            "ev_925db5ee5027aed55d6fa83e9fcd88367454dbedc927a217536f139bd847f22d",
+            "ev_5a62ffa4ef91faeab47770ffeb7725d05e16220034d62947882c58e68891ba69"
+          ]
+        },
+        {
+          "field": "conditions",
+          "marker": "E4",
+          "offset": 38,
+          "kind": "source_attribution",
+          "replacement": "所引原文",
+          "evidenceRefs": [
+            "ev_e34196d11497b3956f133f4f4f9f4670ef36ac774d1a0a60f21f50a99cbc0cd3"
+          ]
+        }
+      ]
+    }
+  },
+  "repairAttributionNormalized": [
+    "c4"
+  ],
+  "repairAudit": [
+    {
+      "claimId": "c4",
+      "originalText": "数据选择：N3DV数据集flame salmon场景；帧窗口为第2-5帧（用于第2阶段评估）；相机划分采用训练视图（偶数索引）和评估视图（奇数索引），在拟合前验证非空且不相交。",
+      "originalConditions": {
+        "context": "flame salmon场景来自E4；帧窗口和相机划分规则为拟议选择，需在训练观察中确认新出现内容。"
+      },
+      "normalizedText": "数据选择：N3DV数据集flame salmon场景；帧窗口为第2-5帧（用于第2阶段评估）；相机划分采用训练视图（偶数索引）和评估视图（奇数索引），在拟合前验证非空且不相交。",
+      "normalizedConditions": {
+        "context": "flame salmon场景来自所引原文；帧窗口和相机划分规则为拟议选择，需在训练观察中确认新出现内容。"
+      },
+      "removed": [
+        {
+          "field": "conditions.context",
+          "marker": "E4",
+          "offset": 16,
+          "kind": "source_attribution",
+          "replacement": "所引原文",
+          "evidenceRefs": [
+            "ev_4c2c9b7a56816963f4fac18e5aa9451bcc45f07033637391bc3cb175000133a2"
+          ]
+        }
+      ]
+    }
+  ],
+  "repairOwnResolvedRefsUnchanged": true,
+  "repairSourceAttributionScientificallyVerified": false,
+  "unequalMatchedBudgetStillRejected": true,
+  "boundary": "Actual settled responses replayed in isolated clones. Four presentation leaks normalize; uncited labels, opposite split, invalid initialization, incomplete measurements and budget errors persist. No new model/independent approval, scientific value choice, paid call or historical promotion.",
+  "sourceCommit": "c266611c"
+}
