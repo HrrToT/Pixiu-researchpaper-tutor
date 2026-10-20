@@ -2245,6 +2245,71 @@
         "costUnknown": true
       },
       "boundary": "Real E1-v8 stops before full generation:2595-byte complete private plan exceeds2500 reserved bytes. No real arithmetic-review improvement proven; do not claim replay as fresh content, retry the case, truncate content or relax budgets. Goal active/PR draft/full DR0-DR5 incomplete."
+    },
+    "planEncodingOffline": {
+      "passed": 3488,
+      "files": 200,
+      "warnings": 1,
+      "seconds": 224.94,
+      "scope": "All tests/test_deep_research*.py, not all Python/reading/config integration.",
+      "log": "tmp/pytest-dr209-full-final.log",
+      "sha256": "f7b48cc3b8413087927dc8d479a6caf68c15b0af93f46ac1ea92e760e9663cd0",
+      "sourceCommit": "b85ccc0c"
+    },
+    "planEncodingCheckpoint": {
+      "date": "2026-10-21",
+      "sourceCommit": "b85ccc0c",
+      "promptVersion": "dr-v2.20261021.209",
+      "experimentPlanEncodingContractVersion": 1,
+      "serverOwnedImmutable": true,
+      "fullDeepResearchOffline": {
+        "passed": 3488,
+        "files": 200,
+        "warnings": 1,
+        "seconds": 224.94,
+        "scope": "All tests/test_deep_research*.py, not all Python/reading/config integration.",
+        "log": "tmp/pytest-dr209-full-final.log",
+        "sha256": "f7b48cc3b8413087927dc8d479a6caf68c15b0af93f46ac1ea92e760e9663cd0"
+      },
+      "focusedPassed": 78,
+      "focusedSeconds": 3.38,
+      "focusedOverlap": true,
+      "newTests": 36,
+      "legacyActualFingerprintsMatched": 39,
+      "implementation": "Store complete validated raw plan and response; losslessly encode fixed sourceRefs/protocol-order/unresolved tuple under original2500slot, with explicit legend under original24000generation cap. Freeze encoding/response/request/audit; reject unknown refs, altered values or metadata, oversized/truncated output, old-state upgrades and draft overflow. No new scientific value, field omission, automatic retry or approval.",
+      "controlledOversizeReplay": "plan-encoding-e1-v8-controlled-20261021.json",
+      "actualCase": {
+        "case": "E1-v9",
+        "status": "completed",
+        "outcome": "inconclusive",
+        "settledModelCalls": 14,
+        "settledTokens": 69034,
+        "verificationSummary": {
+          "accepted": 0,
+          "rejected": 9
+        },
+        "planEncodingAudit": {
+          "rawBytes": 1782,
+          "wireBytes": 1673,
+          "slotLimit": 2500,
+          "scientificApproval": false
+        },
+        "fullConfigurationGenerated": true,
+        "semanticReviewReached": true,
+        "independentCredit": 0,
+        "realOversizePlanRecoveryProven": false
+      },
+      "actualInputs": "plan-encoding-e1-v9-actual-input-20261021.json",
+      "actualCaseFingerprintsMatched": 6,
+      "retentionProof": "runtime-postcases-dr209-e1-v9-20261021.json",
+      "runtimeProof": "runtime-load-dr209-plan-encoding-20261021.json",
+      "selectedDiagnosticTotals": {
+        "settledModelCalls": 543,
+        "measuredTokens": 2233809,
+        "notGlobalHistory": true,
+        "costUnknown": true
+      },
+      "boundary": "Production tuple/legend, full generation and four reviews truly executed. Actual plan1782/1673 was below2500;2595/2486 over-limit recovery is controlled only. Real0/9 remains inconclusive: schema/science defects plus contradictory review reasons persist. Full DR0-DR5 and fresh independent acceptance incomplete, Goal active/PR draft."
     }
   },
   "stages": [
@@ -2722,10 +2787,11 @@
     "postCasesProof": "deep-research-evidence/runtime-postcases-dr197-e1-v1-20261020.json"
   },
   "nextQualityWork": [
-    "Implement versioned lossless positional encoding of the private plan with an explicit model-facing legend; prove exact roundtrip, complete source/context preservation, unchanged2500-slot/24000-total cap and immutable old pending/failed histories before any new content case.",
-    "Fix full3DGS/NTC state acquisition/initialization and phase budgets; no unsupported released-checkpoint fallback, opaque states or hidden unbudgeted fitting.",
-    "Verify actual text/config split consistency and arithmetic-aware review after a case reaches generation/verification; controlled fixtures are not proof the model corrected its behavior.",
-    "Complete all measurement/storage/timing definitions and repair capacity; keep full original roles and DR0-DR5 scope, then perform fresh independent replacements. Original0/5/11unknowns remain."
+    "Fix objective-conditioned review wording: whole-stage/resource tradeoffs may use explicit unmatched budgets; oriented differences are not directional hypotheses. Require actual linked-field evidence before claiming missing effect keys. Do not auto-pass genuine scientific defects.",
+    "Separate quoted membership/native author settings from proposed nonempty ordinal splits and chosen render resolution; remove conflicting instructions, not source checks.",
+    "Generate/repair valid typed operations and complete common3DGS+NTC initialization from actual training inputs. Align every common preparation and per-group fitting phase with finite budgets; no opaque matrices, zero/COLMAP contradiction or undeclared copy rule.",
+    "Keep every required role and original scope; fix invalid parameter dictionaries/extra split fields through precise generation contracts or strictly versioned unambiguous representation, never drop requested choices.",
+    "Complete quality/storage/training-time measurement and verify usable real content before new independent replacements. Original0/5, failed/partial histories and11unknowns remain unchanged; DR0-DR5 is still incomplete."
   ],
   "javaReaderRuntime": {
     "sourceCommit": "070ab1a",
@@ -3306,7 +3372,7 @@
     "independentCredit": 0,
     "proof": "deep-research-evidence/compact-experiment-envelope-regression-20261020.json"
   },
-  "currentCheckpoint": ".208 c266611c: immutable configurationConsistency1 adds rationale/config ownership and derived split/cap meanings under original checks.3452research tests/61focused overlap/31new,38old model fingerprints. E1-v8 submitted once: failed invalid_experiment_planning_response,8settled calls/24523tokens,0unknown; complete2595byte plan exceeds2500slot, no full generation/review. Direct acceptance would make24082>24000; candidate positional roundtrip2486bytes is diagnostic only, NOT implemented.4931ledger,11paused/old payloads/tasks preserved. Full DR0-DR5 incomplete.",
+  "currentCheckpoint": ".209 b85ccc0c: immutable planEncoding1 stores full raw plan and lossless positional wire under original2500/24000caps;3488research tests/78focused overlap/36new,39legacy fingerprints. Controlled E1-v8 raw2595→2486 with full original evidence;old failure not resent. Real E1-v9 once,114s completed/inconclusive0/9,14settled calls/69034tokens,no unknown. Raw1782→1673;full generation/four reviews actually sent,6fingerprints reproduced. Genuine init/operation/protocol defects plus whole-stage/direction/missing-key review contradictions persist.4958ledger/11paused/old payloads/tasks retained;DR0-DR5 incomplete.",
   "sharedModuleSourceCheckpoint": {
     "sourceCommit": "f8ae5177",
     "promptVersion": "dr-v2.20261020.199",
