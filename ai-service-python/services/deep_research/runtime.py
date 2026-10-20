@@ -44,6 +44,10 @@ def research_model_options(node, options):
         if node!='verify':
             raise ValueError('Bounded factual review is only valid for initial verification')
         return {**options,'thinking':{'type':'enabled'},'reasoning_effort':'low','max_tokens':8192}
+    if node=='plan_experiment':
+        from services.deep_research.experiment_planning import PLANNING_OUTPUT_TOKENS
+        return {**options,'thinking':{'type':'enabled'},'reasoning_effort':'low',
+                'max_tokens':PLANNING_OUTPUT_TOKENS,'response_format':{'type':'json_object'}}
     if short_factual and node == 'synthesize':
         # Scoped to small factual/comparison outputs, not full experiment specs.
         # The same request/round budget applies; length/unknown never auto-retry.

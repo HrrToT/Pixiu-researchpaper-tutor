@@ -26,6 +26,7 @@ __all__ = ["select_reservation_pool", "prepare_finalization_budget", "released_r
 _FINALIZATION_NODES: frozenset[str] = frozenset(
     {
         "synthesize",
+        "plan_experiment",
         "verify",
         "verify_repair",
         "verify_design_config",

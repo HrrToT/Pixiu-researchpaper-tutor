@@ -10,7 +10,7 @@ REASONING_OPTION='_experiment_design_reasoning'
 
 def enabled(record):
     return (type(record.get('experimentDraftContractVersion')) is int
-            and record['experimentDraftContractVersion'] in (1,2)
+            and record['experimentDraftContractVersion'] in (1,2,3)
             and all(type(record.get(key)) is int and record[key]==version for key,version in (
                 ('protocolContractVersion',2),('workflowContractVersion',4),
                 ('budgetContractVersion',1),('hypothesisContractVersion',1))))
@@ -96,8 +96,10 @@ Metrics and limits use concrete claim text, not an invented executionSpec schema
 
 
 def build(record, *, question, limit, clarification, gaps, obligations, sources,
-          evidence_marker, table_marker, claim_fields, claim_limit, section_templates):
+          evidence_marker, table_marker, claim_fields, claim_limit, section_templates,basis_slot=None):
     from services.deep_research.design_drafting import prospective_draft_prompt, _DRAFT_POLICY
+    from services.deep_research.experiment_planning import enabled as staged_enabled
+    staged=staged_enabled(record)
     from services.deep_research.metric_scope import metric_protocol_requirements
     from services.deep_research.experimental_reasoning import design_output_outline
     from services.deep_research.experiment_workflow import STAGES, RECORDS
@@ -125,7 +127,16 @@ with this metadata; independent review still checks the entire resulting experim
     prompt+='\n'+SCHEMA+'\nEXACT_STAGES='+packed(list(STAGES))+'\nEXACT_RECORDS='+packed(sorted(RECORDS|{'group_checkpoints'}))
     prompt+='\nREQUIRED OUTPUT OUTLINE (one claim per role):\n'+packed(design_output_outline(
         strict_budget=True,strict_hypothesis=True,strict_protocol=2,strict_workflow=4))
-    prompt+='\n'+_DRAFT_POLICY+'\n'+guidance(question,draft=True,
+    configuration_policy='''Implement ALL required roles using the supplied unverified scientific plan.
+Use concrete proposed settings, complete state definitions, named rendering operations
+and learning rates; no opaque weights/defaults. Keep split-before-fit, held-out views
+out of initialization and checkpoint selection, compatible tensor/state definitions,
+finite preparation and matched whole-group budgets. Cite each attributed operation,
+dataset/member and existing asset with its own original evidence. Proposed values
+are not author settings. Preserve the user's scope; no unsupported absence claims.
+Text explains rationale without duplicating fields rendered by the application.
+Independent review retains the full scientific and operational requirements.'''
+    prompt+='\n'+(configuration_policy if staged else _DRAFT_POLICY)+'\n'+guidance(question,draft=True,
         policy_version=record.get('experimentIntentContractVersion',3))
     prompt+='\nRequired metric protocols:\n'+packed(metric_protocol_requirements(record.get('state',{}).get('metricDomains')))
     if not single_toggle_request(question):
@@ -146,5 +157,18 @@ Shared table packets (tableDataRef resolves ONLY for its own source/evidence row
 Only supplied exact tableData permits tableBindings; bind own evidenceId, never T/P.
 Omitted packets grant no numerical cells. Context-omitted quotes grant no invented
 antecedents. The independent reviewer retains the complete scientific requirements.
+'''
+    if staged:
+        if not isinstance(basis_slot,str) or not basis_slot:
+            raise ValueError('Missing reserved experiment planning slot')
+        prompt+='''
+Unverified scientific plan (not source evidence; every final attributed claim still
+needs its OWN actual E citations):
+'''+basis_slot+'''
+Implement these proposed choices in complete mutually consistent configs, resolving
+any conflict against the human question and actual original evidence. Do not cite
+this plan, inherit its scientific approval, omit settings or weaken requested scope.
+The full scientific requirements remain in the independent review. Return only the
+final sections/claims object; do not repeat the private plan in text/conditions.
 '''
     return prompt

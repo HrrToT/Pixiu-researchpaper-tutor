@@ -12,6 +12,7 @@ import logging
 import re
 import sqlite3
 import time
+from copy import deepcopy
 from typing import Any, Callable, TypedDict
 
 from services.deep_research.request_context import effective_question, separate_clarification
@@ -1347,12 +1348,15 @@ space with unsupported global absence or incidental iteration/performance values
                 draft_obligations,source_registry,evidence_marker,table_marker,
                 drafting_schema=drafting_schema_enabled(record),point_guidance=format_guidance(point_constraint))
         from services.deep_research.experiment_template import enabled as compact_experiment_enabled,build as experiment_template
+        from services.deep_research.experiment_planning import enabled as staged_experiment,MAX_BASIS_BYTES
+        staged_mode=premise_mode and output_kind=='experiment_design' and staged_experiment(record)
+        basis_slot=(uuid4().hex+' '*(MAX_BASIS_BYTES-32)) if staged_mode else None
         if premise_mode and output_kind=='experiment_design' and compact_experiment_enabled(record):
             prompt=experiment_template(record,question=question,limit=requested_limit,
                 clarification=separate_clarification(record),gaps=[g.get('question') for g in gaps[:5]],
                 obligations=draft_obligations,sources=source_registry,evidence_marker=evidence_marker,
                 table_marker=table_marker,claim_fields=claim_fields,claim_limit=claim_limit,
-                section_templates=section_templates)
+                section_templates=section_templates,**({'basis_slot':basis_slot} if staged_mode else {}))
         template = prompt
         if premise_mode:
             reverse_aliases={eid:alias for alias,eid in evidence_aliases.items()}
@@ -1383,6 +1387,25 @@ space with unsupported global absence or incidental iteration/performance values
                 and missing_bundles):
             return {'error_code':'synthesis_evidence_capacity'}
         evidence_aliases = {row['evidenceId']: evidence_aliases[row['evidenceId']] for row in evidence_summaries}
+        if staged_mode:
+            from services.deep_research.experiment_planning import planning_prompt,prepare_plan,prepare_draft
+            def checkpoint_planning(value):
+                repo_update(run_id,lambda r:{**r,'state':{**r.get('state',{}),
+                    'experimentPlanning':value}},expected_revision=None)
+            tables_used={row['tableDataRef'] for row in evidence_summaries if row.get('tableDataRef')}
+            current=repo_update(run_id,lambda r:r,expected_revision=None)
+            plan=prepare_plan(current,prompt=planning_prompt(question=question,obligations=draft_obligations,
+                sources=source_registry,evidence=evidence_summaries,
+                tables={key:table_registry[key] for key in table_registry if key in tables_used},
+                metric_domains=brief_state.get('metricDomains')),aliases=evidence_aliases,
+                invoke=lambda node,prompt,options:llm_invoke(run_id,node,prompt,options,use_reserve=True),
+                parse=_safe_parse_json,checkpoint=checkpoint_planning)
+            if plan is None:
+                return {'error_code':'budget_exhausted'}
+            current=repo_update(run_id,lambda r:r,expected_revision=None)
+            prompt=prompt.replace(basis_slot,json.dumps(plan['basis'],ensure_ascii=False,separators=(',',':')),1)
+            if prepare_draft(current,plan,prompt=prompt,checkpoint=checkpoint_planning) is None:
+                return {'error_code':'budget_exhausted'}
         from services.deep_research.factual_reasoning import request_options as factual_options
         from services.deep_research.experiment_template import request_options as experiment_options,reasoning_enabled as experiment_reasoning
         result = llm_invoke(run_id, "synthesize", prompt,
@@ -1409,6 +1432,10 @@ space with unsupported global absence or incidental iteration/performance values
         if output_kind=='experiment_design' and experiment_reasoning(record):
             experiment_drafting_audit={'version':2,'basis':parsed.pop('designBasis',None),
                 'evidenceAliases':dict(evidence_aliases),'verification':'unchecked'}
+        elif staged_mode:
+            experiment_drafting_audit={'version':3,'basis':deepcopy(plan['basis']),
+                'evidenceAliases':dict(evidence_aliases),'verification':'unchecked',
+                'unexpectedEcho':parsed.pop('designBasis',None)}
         from services.deep_research.answer_constraints import compact_answer, resolve_evidence_aliases
         parsed = resolve_evidence_aliases(parsed, evidence_aliases)
         drafting_audit={}
