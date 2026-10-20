@@ -47,6 +47,9 @@ def query_intent(query, *, operational=False):
 
 
 def operation_score(body, section, intent, *, operational=False):
+    if operational and isinstance(intent,str) and intent.startswith('data_condition:'):
+        from services.deep_research.data_conditions import condition_score
+        return condition_score(body,section,intent.split(':',1)[1])
     measurement = operational and isinstance(intent,str) and intent.startswith('measurement:')
     comparison_result = operational and isinstance(intent,str) and intent.startswith('comparison_result:')
     if (not intent or re.search(r'related work|background|concurrent works|references',section,re.I)

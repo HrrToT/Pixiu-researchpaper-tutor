@@ -20,7 +20,7 @@ def acquisition_questions(record,query,owned_id):
     return list(dict.fromkeys(questions))
 
 
-def criterion_targets(obligations, *, membership_intents=False, module_intents=False):
+def criterion_targets(obligations, *, membership_intents=False, module_intents=False, condition_intents=False):
     """Private ranking views; real obligation IDs and requirements stay intact."""
     targets=[]
     for oid,obligation in obligations.items():
@@ -30,6 +30,9 @@ def criterion_targets(obligations, *, membership_intents=False, module_intents=F
             from services.deep_research.shared_modules import named_modules
             for name in named_modules(obligation['question']):
                 targets.append((oid,obligation,'shared_module:'+name))
+        if condition_intents:
+            from services.deep_research.data_conditions import requested_conditions
+            targets.extend((oid,obligation,'data_condition:'+name) for name in requested_conditions(obligation['question']))
         for criterion in criteria[:4]:
             question=criterion['requirement']
             view={**obligation,'question':question,'searchQuery':'','requestExcerpt':question,
@@ -44,20 +47,21 @@ def criterion_targets(obligations, *, membership_intents=False, module_intents=F
     return targets
 
 
-def include_indexed_criteria(indexed,candidates,questions,owned_id,limit, *, modules=()):
+def include_indexed_criteria(indexed,candidates,questions,owned_id,limit, *, modules=(), conditions=()):
     from services.deep_research.method_details import include_method_details
     selected=list(indexed[:limit]);protected=set()
     for name in modules[:2]:
         selected=include_method_details(selected,candidates,name+' input output',owned_id,limit,
             preserve_targets=protected)
-    intents=list(dict.fromkeys(i for q in questions for i in query_intents(q)))[:8]
+    intents=['data_condition:'+name for name in conditions[:2]]
+    intents+=list(dict.fromkeys(i for q in questions for i in query_intents(q)))[:8]
     for intent in intents:
         selected=include_method_details(selected,candidates,'',owned_id,limit,
             semantic_intent=True,operational_intent=True,intent_override=intent,preserve_targets=protected)
     return selected
 
 
-def include_pdf_criteria(indexed,candidates,questions,owned_id,content_hash,limit, *, modules=()):
+def include_pdf_criteria(indexed,candidates,questions,owned_id,content_hash,limit, *, modules=(), conditions=()):
     """PDF fallback keeps the same snapshot/hash, source IDs and whole snippets."""
     selected=list(indexed[:limit])
     owned=[r for r in candidates if r.get('pdfId')==owned_id and r.get('contentHash')==content_hash
@@ -66,6 +70,7 @@ def include_pdf_criteria(indexed,candidates,questions,owned_id,content_hash,limi
         return selected
     protected={selected[0]['sourceId']}
     targets=[('shared_module:'+name) for name in modules[:2]]
+    targets+=['data_condition:'+name for name in conditions[:2]]
     targets+=list(dict.fromkeys(i for q in questions for i in query_intents(q)))[:8]
     for intent in targets:
         def score(row):
@@ -104,3 +109,18 @@ def acquisition_modules(record,query,owned_id):
                 continue
             result.extend(name for name in named_modules(question) if name in human and name not in result)
     return result[:2]
+
+
+def acquisition_conditions(record,query,owned_id):
+    from services.deep_research.data_conditions import requested_conditions
+    human=requested_conditions(record.get('question',''))
+    found=[]
+    for item in record.get('state',{}).get('plan',[]):
+        for o in item.get('obligations',[]):
+            if o.get('requiredSources') and owned_id not in o['requiredSources']:
+                continue
+            question=o.get('question','')
+            if not (query==o.get('searchQuery') or query==question or len(question)>=10 and question in query):
+                continue
+            found.extend(name for name in requested_conditions(question) if name in human and name not in found)
+    return found[:2]

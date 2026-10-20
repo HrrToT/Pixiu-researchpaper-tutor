@@ -66,14 +66,14 @@ def test_new_graph_read_order_is_gated_and_existing_sources_are_not_overwritten(
     assert old!=new
 
 
-@pytest.mark.parametrize('replacement',[None,0,True,'1',5])
+@pytest.mark.parametrize('replacement',[None,0,True,'1',6])
 def test_reading_policy_is_server_owned_and_immutable_even_for_bool_one(tmp_path,replacement):
     repo=DeepResearchRepository(tmp_path/'r.sqlite3');repo.initialize()
     facade=ResearchFacade(repo,lambda **_:None,llm_client=object())
     try:
         run,_=facade.create({'workspaceTaskId':'t','operationKey':'o','question':'比较论文',
             'readingPriorityContractVersion':replacement,'deferStart':True},start_async=False)
-        assert run['readingPriorityContractVersion']==4
+        assert run['readingPriorityContractVersion']==5
         with pytest.raises(ValueError,match='Immutable'):
             repo.update_run(run['runId'],lambda r:{**r,'readingPriorityContractVersion':replacement})
     finally:facade.shutdown()

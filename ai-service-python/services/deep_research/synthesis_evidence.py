@@ -12,7 +12,7 @@ from services.deep_research.selection import surrounding_context
 
 def enabled(record):
     version=record.get('synthesisEvidenceContractVersion')
-    return type(version) is int and version in (1,2,3)
+    return type(version) is int and version in (1,2,3,4)
 
 
 def result_role(row):
@@ -24,12 +24,13 @@ def result_role(row):
     return 'unspecified'
 
 
-def order_premises(evidence,plan,limit=20, *, membership_intents=False,module_intents=False):
+def order_premises(evidence,plan,limit=20, *, membership_intents=False,module_intents=False,condition_intents=False):
     obligations={o['obligationId']:o for item in plan for o in item.get('obligations',[])}
     rows=[e for e in evidence if e.get('verification',{}).get('literal')=='passed']
     works=list(dict.fromkeys(e.get('sourceWorkId') for e in rows))
     chosen=[];seen=set();bundles=[]
-    for oid,view,intent in criterion_targets(obligations,membership_intents=membership_intents,module_intents=module_intents):
+    for oid,view,intent in criterion_targets(obligations,membership_intents=membership_intents,module_intents=module_intents,
+                                           condition_intents=condition_intents):
         for source in view.get('requiredSources') or works:
             own=[e for e in rows if source in {e.get('sourceWorkId'),e.get('sourceVersionId'),e.get('ownerMaterialId')}]
             def score(row):
@@ -55,7 +56,8 @@ def order_premises(evidence,plan,limit=20, *, membership_intents=False,module_in
                 continue
             lead=ranked[0];bundle=[lead]
             measurement=isinstance(intent,str) and intent.startswith('measurement:')
-            if (intent in {'operation','training','temporal'} or measurement) and lead.get('sourceId'):
+            if (intent in {'operation','training','temporal'} or measurement
+                    or condition_intents and isinstance(intent,str) and intent.startswith('data_condition:')) and lead.get('sourceId'):
                 sibling=next((e for e in ranked[1:] if e.get('sourceId')==lead['sourceId']
                               and e['quote']!=lead['quote'] and (score(e)[0]>0 or measurement and re.search(
                                   r'\b(?:GPU|NVIDIA|RTX|resolution|hardware|timing)\b|硬件|分辨率',e['quote'],re.I))),None)

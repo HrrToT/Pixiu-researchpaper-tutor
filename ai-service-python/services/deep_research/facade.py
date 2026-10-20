@@ -273,7 +273,7 @@ class ResearchFacade:
             "materials": materials,
             "materialSnapshot": material_snapshot,  # Immutable Java snapshot
             "contextMaterials": (material_snapshot or {}).get("contextMaterials", []) if isinstance(material_snapshot, dict) else [],
-            "promptVersion": "dr-v2.20261020.199",
+            "promptVersion": "dr-v2.20261020.200",
             "factualReviewContractVersion": 1,
             # New experiments separate a small persisted scientific plan from
             # direct complete configuration, under the same aggregate budget.
@@ -282,7 +282,7 @@ class ResearchFacade:
             "experimentRepairContractVersion": 1,
             "experimentEvidenceContractVersion": 1,
             "factualRepairContractVersion": 2,
-            "synthesisEvidenceContractVersion": 3,
+            "synthesisEvidenceContractVersion": 4,
             "extractionScheduleContractVersion": 1,
             "experimentIntentContractVersion": 3,
             "tableReferencesContractVersion": 1,
@@ -299,8 +299,8 @@ class ResearchFacade:
             "quantitySpellingContractVersion": 6,
             "runtimeSemanticContractVersion": 1,
             "evidenceCoverageContractVersion": 3,
-            "sourcePrecisionContractVersion": 7,
-            "readingPriorityContractVersion": 4,
+            "sourcePrecisionContractVersion": 8,
+            "readingPriorityContractVersion": 5,
             "absenceScopeContractVersion": 7,
             "answerFormatContractVersion": 1,
             "repairProgressContractVersion": 2,
@@ -320,7 +320,7 @@ class ResearchFacade:
             "audienceRewriteContractVersion": 8,
             "verificationInputContractVersion": 1,
             "workflowContractVersion": 4,
-            "extractionPriorityVersion": 9,
+            "extractionPriorityVersion": 10,
             "planCompletionContractVersion": 1,
             "budgetContractVersion": 1,
             "hypothesisContractVersion": 1,

@@ -7,7 +7,7 @@ from services.deep_research.source_continuity import needs_preceding_context
 
 def enabled(record):
     return (type(record.get('sourcePrecisionContractVersion')) is int
-            and record['sourcePrecisionContractVersion'] in {1, 2, 3, 4, 5, 6, 7})
+            and record['sourcePrecisionContractVersion'] in {1, 2, 3, 4, 5, 6, 7, 8})
 
 
 def _body(row):
