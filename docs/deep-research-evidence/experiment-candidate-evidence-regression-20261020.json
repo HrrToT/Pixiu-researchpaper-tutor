@@ -1,0 +1,119 @@
+{
+  "date": "2026-10-20",
+  "sourceCommit": "7751bd22",
+  "promptVersion": "dr-v2.20261020.197",
+  "fullOffline": {
+    "passed": 3181,
+    "warnings": 1,
+    "seconds": 166.24,
+    "log": "tmp/pytest-dr197-full.log",
+    "sha256": "d38e65870f3345a86bd7e0ae643432b7740c7cbab200bdf8db4ad77196972431",
+    "sourceCommit": "7751bd22"
+  },
+  "focused": {
+    "newTests": 39,
+    "seconds": 0.86,
+    "combinedWithOldScopeAndRepair": 86,
+    "combinedBeforeTwoFinalAdditionalTests": true,
+    "overlapWithFull": true
+  },
+  "providerCalls": 0,
+  "serverOwnedImmutableContract": "experimentEvidenceContractVersion=1",
+  "candidateBoundaries": [
+    "unique evidence/source/obligation identities",
+    "actually acquired AND read fulltext, literal passed",
+    "same sourceId/workId/versionId/contentHash and publication metadata",
+    "local snapshot owner/content hash or permitted pinned arXiv fulltext",
+    "frozen required sources; explicit revision wins over broad arXiv work ID",
+    "own visible E candidates only; no automatic refs or support",
+    "original refs retained, at most12 additions per target by default",
+    "live scope validation, input/output/round budgets and independent review unchanged"
+  ],
+  "privateMetadataCompaction": "Group exactly identical requirement mappings; retain every original source/revision/owner and unavailable-source identity. Factor only exactly duplicated row metadata; bounded quotes/context remain.",
+  "controlledInputProof": "experiment-candidate-evidence-input-20261020.json",
+  "controlledInputs": [
+    {
+      "targetIds": [
+        "c4",
+        "c5"
+      ],
+      "inputBytes": 19240,
+      "oldSourceRows": 1,
+      "newSourceRows": 10,
+      "equationActuallySupplied": true,
+      "newSourceEvidenceIds": [
+        "ev_43a0adcfe58ed12d1ad4d1e24f6a60a5ddbde1d2214a5bf5ee67500bdb78e589",
+        "ev_2e47d98c415d02bfa4b6a6933195f66f7d12804127c71814e1eaa5eec7469d0e",
+        "ev_b7a0d780af322d9c03e00669930be0d1124ab22c0b72ecbfc6fac879eaa4200f",
+        "ev_f8c75067e064c57424ff67d9350c14f3b52062e83902d694525ac6991ff30890",
+        "ev_4b9093737002b0fff515c850bb3a6472329f3d357beeece4850d73e73cfe7ab7",
+        "ev_b1430a5466d46c8cfe4ce507906424ae0228f96cb201a4da95e3b89f57847bc1",
+        "ev_b6b69df923282b961afcdb6a2524daa666ca1997936bcbda1bdf5e744cb9048a",
+        "ev_89dd90fa4d33a5fce96166248529fb85860d2c51c941b9aad82000888643390e",
+        "ev_53895d8a91c878a16ba5b13e6a3ee4fa1b4a5f1280629e53eee6b556d3af3263",
+        "ev_7a7f2f8c5e5aefc017e2363920c8e45e0b2160803f1ce59ac15b3460fb1e7f66"
+      ],
+      "ownVisibleCandidateCounts": {
+        "c4": 10,
+        "c5": 9
+      },
+      "sourceRegistryPresent": true
+    },
+    {
+      "targetIds": [
+        "c1",
+        "c7",
+        "c8",
+        "c9"
+      ],
+      "inputBytes": 18978,
+      "oldSourceRows": 0,
+      "newSourceRows": 2,
+      "equationActuallySupplied": true,
+      "newSourceEvidenceIds": [
+        "ev_2e47d98c415d02bfa4b6a6933195f66f7d12804127c71814e1eaa5eec7469d0e",
+        "ev_43a0adcfe58ed12d1ad4d1e24f6a60a5ddbde1d2214a5bf5ee67500bdb78e589"
+      ],
+      "ownVisibleCandidateCounts": {
+        "c1": 2,
+        "c7": 2,
+        "c8": 2,
+        "c9": 2
+      },
+      "sourceRegistryPresent": true
+    },
+    {
+      "targetIds": [
+        "c2",
+        "c3",
+        "c6"
+      ],
+      "inputBytes": 19063,
+      "oldSourceRows": 0,
+      "newSourceRows": 4,
+      "equationActuallySupplied": true,
+      "newSourceEvidenceIds": [
+        "ev_2e47d98c415d02bfa4b6a6933195f66f7d12804127c71814e1eaa5eec7469d0e",
+        "ev_43a0adcfe58ed12d1ad4d1e24f6a60a5ddbde1d2214a5bf5ee67500bdb78e589",
+        "ev_f8c75067e064c57424ff67d9350c14f3b52062e83902d694525ac6991ff30890",
+        "ev_4b9093737002b0fff515c850bb3a6472329f3d357beeece4850d73e73cfe7ab7"
+      ],
+      "ownVisibleCandidateCounts": {
+        "c2": 4,
+        "c3": 4,
+        "c6": 4
+      },
+      "sourceRegistryPresent": true
+    }
+  ],
+  "legacyFingerprintsMatched": 22,
+  "legacyProofs": [
+    "experiment-candidate-evidence-legacy-replay-20261020.json",
+    "experiment-candidate-evidence-h2f-v9-replay-20261020.json",
+    "experiment-candidate-evidence-h5f-v6-replay-20261020.json"
+  ],
+  "runtimeProof": "runtime-load-dr197-experiment-candidate-evidence-20261020.json",
+  "ledgerRowsUnchanged": 4732,
+  "pausedUnknownPreserved": 11,
+  "boundary": "Source-selection/input/identity/restore/role/capacity checks and runtime loading only. No new actual read, paper-member evidence, model response, live latency/content pass, independent credit or unknown settlement. Historical outputs are unchanged."
+}
