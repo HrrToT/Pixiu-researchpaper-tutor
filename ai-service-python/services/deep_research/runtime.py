@@ -26,13 +26,20 @@ def research_model_options(node, options):
     """Apply role options BEFORE the ledger reserves tokens and fingerprints input."""
     from services.deep_research.factual_reasoning import OPTION,DIRECT_REPAIR_OPTION,HIGH_SYNTHESIS_OPTION
     from services.deep_research.factual_review import OPTION as REVIEW_OPTION
+    from services.deep_research.experiment_template import REASONING_OPTION as EXPERIMENT_OPTION
     options = dict(options)
+    experiment_reasoning=options.pop(EXPERIMENT_OPTION,False)
     bounded_review=options.pop(REVIEW_OPTION,False)
     short_factual = options.pop(OPTION, False)
     direct_repair = options.pop(DIRECT_REPAIR_OPTION,False)
     high_synthesis = options.pop(HIGH_SYNTHESIS_OPTION,False)
-    if any(type(value) is not bool for value in (short_factual,direct_repair,high_synthesis,bounded_review)):
+    if any(type(value) is not bool for value in (short_factual,direct_repair,high_synthesis,bounded_review,experiment_reasoning)):
         raise ValueError('Invalid server factual reasoning profile')
+    if experiment_reasoning:
+        if node!='synthesize' or short_factual or bounded_review:
+            raise ValueError('Invalid experiment synthesis reasoning profile')
+        return {**options,'thinking':{'type':'enabled'},'reasoning_effort':'low',
+                'max_tokens':16384,'response_format':{'type':'json_object'}}
     if bounded_review:
         if node!='verify':
             raise ValueError('Bounded factual review is only valid for initial verification')

@@ -68,14 +68,14 @@ def test_old_or_incompatible_schema_never_uses_new_experiment_generation_view(fi
     assert 'Shared executionSpec grammar.' not in invoke.call_args.args[2]
 
 
-@pytest.mark.parametrize('replacement',[None,True,'1',0,2])
+@pytest.mark.parametrize('replacement',[None,True,'1',0,3])
 def test_compact_experiment_contract_is_server_owned_and_frozen(tmp_path,replacement):
     repo=DeepResearchRepository(tmp_path/'r.sqlite3');repo.initialize()
     facade=ResearchFacade(repo,lambda **_:None,llm_client=object())
     try:
         payload,_=facade.create({'workspaceTaskId':'t','operationKey':'k','question':'设计实验',
             'experimentDraftContractVersion':replacement,'deferStart':True},start_async=False)
-        assert payload['experimentDraftContractVersion']==1
+        assert payload['experimentDraftContractVersion']==2
         with pytest.raises(ValueError,match='Immutable'):
             repo.update_run(payload['runId'],lambda r:{**r,'experimentDraftContractVersion':replacement})
     finally:

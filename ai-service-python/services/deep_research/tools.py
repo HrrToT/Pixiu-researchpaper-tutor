@@ -283,12 +283,14 @@ class TrackedLLMInvoker:
     ) -> dict[str, Any]:
         from llm.provider import LLMRequest, LLMProviderError
         from services.deep_research.factual_review import OPTION as REVIEW_OPTION
+        from services.deep_research.experiment_template import REASONING_OPTION as EXPERIMENT_OPTION
         bounded_review=(extra_body or {}).get(REVIEW_OPTION,False)
-        if type(bounded_review) is not bool:
+        experiment_reasoning=(extra_body or {}).get(EXPERIMENT_OPTION,False)
+        if type(bounded_review) is not bool or type(experiment_reasoning) is not bool:
             raise ValueError('Invalid bounded factual review option')
         if self._request_options:
             extra_body = self._request_options(node, dict(extra_body or {}))
-        elif bounded_review:
+        elif bounded_review or experiment_reasoning:
             from services.deep_research.runtime import research_model_options
             extra_body=research_model_options(node,dict(extra_body or {}))
         elif node == 'repair_claims' and '_repair_output_limit' in (extra_body or {}):

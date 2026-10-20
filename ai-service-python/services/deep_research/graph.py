@@ -1384,8 +1384,10 @@ space with unsupported global absence or incidental iteration/performance values
             return {'error_code':'synthesis_evidence_capacity'}
         evidence_aliases = {row['evidenceId']: evidence_aliases[row['evidenceId']] for row in evidence_summaries}
         from services.deep_research.factual_reasoning import request_options as factual_options
+        from services.deep_research.experiment_template import request_options as experiment_options,reasoning_enabled as experiment_reasoning
         result = llm_invoke(run_id, "synthesize", prompt,
-            {"max_tokens": 4000, "temperature": 0.2, **factual_options(record,question,output_kind)}, use_reserve=True)
+            {"max_tokens": 4000, "temperature": 0.2, **factual_options(record,question,output_kind),
+             **experiment_options(record,output_kind)}, use_reserve=True)
         finish = (result.get('finishReason', result.get('finish_reason')) if isinstance(result, dict)
                   else getattr(result, 'finish_reason', None))
         if finish == 'length':
@@ -1403,6 +1405,10 @@ space with unsupported global absence or incidental iteration/performance values
         parsed, container_kind = normalize_synthesis_container(parsed)
         if not isinstance(parsed, dict) or not isinstance(parsed.get("claims"), list):
             return {"error_code": "invalid_synthesis_response"}
+        experiment_drafting_audit=None
+        if output_kind=='experiment_design' and experiment_reasoning(record):
+            experiment_drafting_audit={'version':2,'basis':parsed.pop('designBasis',None),
+                'evidenceAliases':dict(evidence_aliases),'verification':'unchecked'}
         from services.deep_research.answer_constraints import compact_answer, resolve_evidence_aliases
         parsed = resolve_evidence_aliases(parsed, evidence_aliases)
         drafting_audit={}
@@ -1486,6 +1492,7 @@ space with unsupported global absence or incidental iteration/performance values
                     "reportVersionId": report_version_id,
                     "reportBody": parsed,
                     "synthesisContainer": container_kind,
+                    **({'experimentDraftingAudit':experiment_drafting_audit} if experiment_drafting_audit is not None else {}),
                     **({'factualDraftingAudit':drafting_audit,
                         'synthesisPresentationAudit':synthesis_presentation_audit} if scope_enabled(record) else {}),
                 },

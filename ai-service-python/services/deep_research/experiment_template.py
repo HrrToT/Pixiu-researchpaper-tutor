@@ -5,13 +5,23 @@ permissions, role requirements and budgets remain unchanged.
 """
 import json
 
+REASONING_OPTION='_experiment_design_reasoning'
+
 
 def enabled(record):
     return (type(record.get('experimentDraftContractVersion')) is int
-            and record['experimentDraftContractVersion']==1
+            and record['experimentDraftContractVersion'] in (1,2)
             and all(type(record.get(key)) is int and record[key]==version for key,version in (
                 ('protocolContractVersion',2),('workflowContractVersion',4),
                 ('budgetContractVersion',1),('hypothesisContractVersion',1))))
+
+
+def reasoning_enabled(record):
+    return enabled(record) and record['experimentDraftContractVersion']==2
+
+
+def request_options(record,output_kind):
+    return {REASONING_OPTION:True} if output_kind=='experiment_design' and reasoning_enabled(record) else {}
 
 
 SCHEMA='''Shared executionSpec grammar. Alternatives use OR; emit one exact variant,
@@ -97,6 +107,21 @@ def build(record, *, question, limit, clarification, gaps, obligations, sources,
     prompt=prospective_draft_prompt(question=question,limit=limit,clarification=clarification,
         gaps=gaps,obligations=obligations,sources=sources,evidence_marker=evidence_marker,
         claim_fields=claim_fields,claim_limit=claim_limit,section_templates=section_templates,concise=True)
+    if reasoning_enabled(record):
+        prompt=prompt.replace('Return ONLY {"sections":[],"claims":[]}.',
+            'Return ONLY {"designBasis":{},"sections":[],"claims":[]}.')
+        prompt+='''
+Fill private designBasis BEFORE claims: {sourceFacts:[{topic,evidenceRefs:[own E IDs],scope}],
+protocol:{intervention,data,state,poseError,measurement,pairingBudget},unresolved:[]}.
+Use concise concrete choices: exact operation/insertion point, evidenced data members,
+complete representation/architecture states, numeric pose-error injection, motion-aware
+observable/reference and quality guard, paired finite preparation/group budgets.
+Separate source facts from proposed calibration. Then put each necessary original
+citation in the relevant claim's OWN evidenceRefs and implement every choice in its
+actual config/text. A basis reference never grants another claim source permission.
+This is UNVERIFIED planning, not evidence or output prose. Do not replace any role
+with this metadata; independent review still checks the entire resulting experiment.
+'''
     prompt+='\n'+SCHEMA+'\nEXACT_STAGES='+packed(list(STAGES))+'\nEXACT_RECORDS='+packed(sorted(RECORDS|{'group_checkpoints'}))
     prompt+='\nREQUIRED OUTPUT OUTLINE (one claim per role):\n'+packed(design_output_outline(
         strict_budget=True,strict_hypothesis=True,strict_protocol=2,strict_workflow=4))
