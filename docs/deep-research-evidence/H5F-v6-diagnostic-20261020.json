@@ -1,0 +1,79 @@
+{
+  "date": "2026-10-20",
+  "case": "H5F-v6",
+  "sourceCommit": "b449bc09",
+  "promptVersion": "dr-v2.20261020.193",
+  "runId": "dr_run_98e66f2d3d555dfa822b859963f01419",
+  "status": "paused",
+  "errorCode": "unresolved_unknown",
+  "contentAccepted": false,
+  "scores": null,
+  "independentCredit": 0,
+  "attemptedModelCalls": 8,
+  "settledModelCalls": 7,
+  "settledTokens": 21247,
+  "unknownCalls": [
+    {
+      "callId": "735475784a94792ec2a1ec2e257222c9",
+      "node": "synthesize",
+      "reservedTokensNotMeasuredUsage": 41170,
+      "reservedAt": "2026-10-20T07:55:13Z",
+      "completedAt": "2026-10-20T07:58:13Z",
+      "error": {
+        "message": "DeepSeek request failed.",
+        "type": "provider_error",
+        "status_code": null,
+        "failureKind": "deadline_exceeded"
+      }
+    }
+  ],
+  "budgetTokensIncludingUnknownReservation": 62417,
+  "elapsedSeconds": 221.0,
+  "externalSearches": 0,
+  "fulltextFetches": 0,
+  "beforeLedgerRows": 4709,
+  "after": {
+    "calls": 4732,
+    "active": [],
+    "paused": [
+      "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+      "dr_run_ed10cc3347be552288079a9a588fddf5",
+      "dr_run_86b3f181a5475e99aacca3dbf4370567",
+      "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+      "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+      "dr_run_e3521b1781825273b384a26a5edb8cdc",
+      "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+      "dr_run_e9c9dc916bef519092fad8b929b2448f",
+      "dr_run_4738564f5ff35157996a35068c62ed32",
+      "dr_run_a8bd62f9ae3d52ff806f537065f55b2d",
+      "dr_run_98e66f2d3d555dfa822b859963f01419"
+    ]
+  },
+  "oldLedgerAllPayloadsAndTaskEntitiesPreserved": true,
+  "findings": [
+    "Eight actual source rows/23762bytes include the complete AST equation and newly preserved dataset-header/member span. Member read/extract/allocation path actually executes, but the synthesis response is unknown.",
+    "Seven model calls settle21247tokens. The single synthesize call reserved07:55:13Z and timed out07:58:13Z at its180s request deadline, before the6min round. Its41170token reservation is not measured usage.",
+    "No generated designBasis, claims or final report is available; this is unscored and not content acceptance. Do not infer a reasoning-token count, provider cause or eventual bill from the timeout.",
+    "Preserve this exact case/call identity; do not repeat via another attempt/task. New runs are returned to direct shared-grammar generation pending a bounded split between scientific planning and full configuration. Whole18calls/100kToken/6min budget and independent audits stay unchanged.",
+    "Original member-column layout was inspected in the same-hash physicalPDFpage12; numeric columns remain programmatically unverified and no prior result is upgraded."
+  ],
+  "rawFiles": [
+    {
+      "path": "tmp/dr-acceptance-receipts/H5F-v6.json",
+      "sha256": "09e8516f25c3087c46ed9bc751fe91f872dfc734a1d6dff61024986b5f37c342"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/H5F-v6.payload.json",
+      "sha256": "4be9a42c5b6102da5b6afa7775b8e7ad7b040b25c4fe029f3117171da8c00397"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/H5F-v6.calls.json",
+      "sha256": "063433155e270667fa03d299bffd72063144f6c9def166575a27784600d6c10b"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/H5F-v6.result.json",
+      "sha256": "d13a4f9b549bc37d118ff27b08f405f523bd2041983875da148c57a78c130ae4"
+    }
+  ],
+  "boundary": "One submission only. Preserve new unknown reservation and ten old paused unknown runs; no retry or historical outcome upgrade. Token reservations are not measured usage."
+}

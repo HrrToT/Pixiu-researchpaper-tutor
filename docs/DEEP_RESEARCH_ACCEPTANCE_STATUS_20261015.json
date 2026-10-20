@@ -44,12 +44,12 @@
       "overlap": true
     },
     "backendCurrentResearchReadingTables": {
-      "passed": 3077,
+      "passed": 3089,
       "warnings": 1,
-      "seconds": 164.78,
-      "sourceCommit": "ba3669a1",
-      "log": "tmp/pytest-dr191-full.log",
-      "scope": "Research, reading, PDF tables and config; offline fixture providers."
+      "seconds": 173.73,
+      "sourceCommit": "b449bc09",
+      "log": "tmp/pytest-dr193-full.log",
+      "scope": "Full offline research/reading/tables/config suite at.193, before default-restoration-only.194."
     },
     "frontendDocumentNavigationFocused": {
       "passed": 19,
@@ -1956,6 +1956,12 @@
       "twoTargetTimeFloorLiveExercised": false,
       "actualRepairReconstructionMatched": false,
       "proof": "deep-research-evidence/H2F-v8-diagnostic-20261019.json"
+    },
+    "directExperimentDefault194": {
+      "sourceCommit": "eb72fa8a",
+      "focusedPassed": 23,
+      "seconds": 2.74,
+      "scope": "Shared grammar, saved reasoned-request behavior and dataset-member chain; no new full-suite claim."
     }
   },
   "stages": [
@@ -2408,25 +2414,25 @@
     "Full novice study workflow",
     "Independent Edge recovery"
   ],
-  "currentProviderConstraint": "All further necessary bounded validations uniformly authorized. Selected diagnostic sequence:434 settled calls/1774701 measured tokens, not global history; cost unknown. Preserve10paused unknowns includingH2F-v9;37738unknown reserved tokens are not measured usage. No blind same-case retry.",
-  "currentDevelopmentMode": "Primary Codex only; Goal active and quota monitor paused by user. Source/runtimeba3669a1/.191, Java27ac4beb, frontend123b0d29. Quantity/source-purpose guards and experiment grammar are offline-tested; actualH5equation reaches synthesis but content still fails. H2F-v9 is unknown at6min; new bounded factual review/time admission is offline-only. Preserve all original gates and draftPR.",
+  "currentProviderConstraint": "All further necessary bounded validations uniformly authorized. Selected diagnostic sequence:441 settled calls/1795948 measured tokens, not global history; costs unknown. Preserve11paused unknowns includingH2F-v9 andH5F-v6; new78908reserved tokens are not measured usage. No blind retry/task or attempt bypass.",
+  "currentDevelopmentMode": "Primary Codex only, Goal active, quota monitor paused by user. Source/runtimeeb72fa8a/.194, Java27ac4beb, frontend123b0d29. New default direct experiment drafting retains improved member evidence; saved v2 requests remain reproducible. H5F-v6 member/equation input transport succeeds but synthesize is unknown at180s. Content and fresh independent gates remain incomplete.",
   "loadedRuntime": {
-    "commit": "ba3669a1",
-    "promptVersion": "dr-v2.20261020.191",
+    "commit": "eb72fa8a",
+    "promptVersion": "dr-v2.20261020.194",
     "javaCommit": "27ac4beb",
     "frontendCommit": "123b0d29",
-    "callsAfterLatestCase": 4709,
+    "callsAfterLatestCase": 4732,
     "active": 0,
-    "historicalPausedUnknown": 10,
+    "historicalPausedUnknown": 11,
     "tasks": 92,
-    "proof": "deep-research-evidence/runtime-load-dr191-bounded-review-20261020.json",
-    "postCasesProof": "deep-research-evidence/runtime-postcases-dr191-h5f-v5-20261020.json"
+    "proof": "deep-research-evidence/runtime-load-dr194-direct-default-restored-20261020.json",
+    "postCasesProof": "deep-research-evidence/runtime-postcases-dr193-h5f-v6-20261020.json"
   },
   "nextQualityWork": [
-    "Do not resend or bypass the unresolved H2F-v9 verify request. Preserve exact receipt/call ID and distinguish37738reservation from measured usage.",
-    "H5actual equation now reaches synthesis. Fix joint drafting own-source attribution and exact dataset member selection, complete representation/pose-error/rendering configuration and valid motion-aware temporal measurement.",
-    "Repair projection may remove only exact renderer-generated duplicates, preserving every canonical spec, original prose, source quote and mandatory rejection; correct reviewer overreach on proposed budget/fixed-budget validation.",
-    "Bounded initial factual review has50focused/3077full checks and20oldrequest fingerprints, no new live positive content/latency proof. All original independent gates and accepted narrow development scopes remain unchanged."
+    "Preserve exact H2F-v9/H5F-v6 unknown requests; no attempt/task bypass or measured-token claim for reservations.",
+    "Separate bounded scientific planning from complete experiment configuration under the same18calls/100kToken/6min budget. Low-effort complete generation timed out at180s; direct default is restored but not content-accepted.",
+    "Use actual dataset-member/equation quotes for each own attributed target, complete representation/pose-error/rendering and valid motion-aware observables. Existing duplicate-render removal is already implemented; address shared-contract/context capacity rather than reimplement it or exempt9bytes.",
+    "Preserve original independent0/5 and accepted narrow development scopes; require genuinely fresh replacements after development quality passes."
   ],
   "javaReaderRuntime": {
     "sourceCommit": "070ab1a",
@@ -2945,6 +2951,17 @@
       "proof": "deep-research-evidence/H5F-v5-diagnostic-20261020.json"
     },
     "independentCredit": 0,
-    "newFactualReviewLivePositiveAcceptance": false
+    "newFactualReviewLivePositiveAcceptance": false,
+    "H5Fv6": {
+      "status": "paused",
+      "errorCode": "unresolved_unknown",
+      "settledCalls": 7,
+      "settledTokens": 21247,
+      "unknownCallId": "735475784a94792ec2a1ec2e257222c9",
+      "unknownReservedTokens": 41170,
+      "literalMemberAndEquationActuallySupplied": true,
+      "contentAccepted": false,
+      "proof": "deep-research-evidence/H5F-v6-diagnostic-20261020.json"
+    }
   }
 }
