@@ -1,0 +1,52 @@
+{
+  "date": "2026-10-20",
+  "sourceCommit": "f8ae5177",
+  "promptVersion": "dr-v2.20261020.199",
+  "fullOffline": {
+    "passed": 3217,
+    "warnings": 1,
+    "seconds": 189.84,
+    "log": "tmp/pytest-dr199-full.log",
+    "sha256": "ca3eb6a7c9792d73299c20308e24dfbacf2b752c7b9a8274402571378cc8172c"
+  },
+  "focusedPassed": 112,
+  "focusedSeconds": 8.3,
+  "newTests": 23,
+  "focusedOverlap": true,
+  "oldActualRequestFingerprintsMatched": 23,
+  "providerCalls": 0,
+  "contracts": {
+    "sourcePrecision": 7,
+    "readingPriority": 4,
+    "extractionPriority": 9,
+    "synthesisEvidence": 3
+  },
+  "boundsUnchanged": {
+    "indexedContextRows": 400,
+    "retrievedPerQuery": 5,
+    "readSources": 12,
+    "evidenceItemsPerPassage": 3,
+    "inputBytes": 24000,
+    "runModelCalls": 18,
+    "runTokens": 100000,
+    "runSeconds": 360
+  },
+  "sharedModules": "Up to two literal acronyms in explicitly fixed/shared human clauses, intersected with matching source-bound obligations for acquisition. Exact owned index version/chunk identity and unchanged passages; ranking is not support approval. Reading and premise allocation reserve the definition.",
+  "captionHeaders": "New extraction profile saves one complete adjacent dataset caption and horizontal Method/Model header. No reconstruction of merged names, column bindings, numeric cells or scene eligibility; literal passed, semantic unchecked.",
+  "proofs": {
+    "archivedFixture": "shared-module-source-archived-input-20261020.json",
+    "currentOwnedIndex": "shared-module-source-current-index-20261020.json",
+    "controlledPlanner": "shared-module-source-planner-input-20261020.json",
+    "runtime": "runtime-load-dr199-shared-module-source-20261020.json"
+  },
+  "currentIndexDefinitionExists": true,
+  "controlledDefinitionReachesPlanner": true,
+  "E1OriginalFailureNotUpgraded": true,
+  "liveContentAccepted": false,
+  "independentCredit": 0,
+  "remaining": [
+    "Verify literal scene identity and new-content eligibility without guessing merged labels.",
+    "Only after prerequisites, intentionally validate the frozen E1 question once under the new profile; no automatic retry or unknown bypass.",
+    "Prove actual full configuration and repair quality; fresh independent cases and DR0-DR5 remain incomplete."
+  ]
+}

@@ -2008,6 +2008,14 @@
       "overlapWithFullSuite": true,
       "legacyFingerprintsMatched": 23,
       "proof": "deep-research-evidence/compact-experiment-envelope-regression-20261020.json"
+    },
+    "sharedModuleSourceOffline": {
+      "passed": 3217,
+      "warnings": 1,
+      "seconds": 189.84,
+      "log": "tmp/pytest-dr199-full.log",
+      "sha256": "ca3eb6a7c9792d73299c20308e24dfbacf2b752c7b9a8274402571378cc8172c",
+      "sourceCommit": "f8ae5177"
     }
   },
   "stages": [
@@ -2486,10 +2494,9 @@
   },
   "nextQualityWork": [
     "Preserve exact H2F-v9/H5F-v6 unknown requests; no attempt/task bypass or measured-token claim for reservations.",
-    "Before another paid E1 attempt, cover explicitly named shared-method definitions in the original acquisition/read slots. Archived E1 retrieved no Neural Transformation Cache definition section; reordering its existing25evidence rows cannot create that definition.",
-    "Preserve literal caption/header evidence for existing dataset members without guessing merged labels, rebinding numeric columns or claiming an unobserved scene contains new content. Archived N3DV horizontal header is merged and remains unverified.",
-    "Keep E1 frozen question/criteria and failed receipt unchanged; validate the implemented direct compact planning profile only after real source prerequisites can be supplied. No automatic retry or older-unknown bypass.",
-    "Prove source-faithful full configuration, repair quality, user-facing result clarity and fresh independent replacements; original independent0/5 and DR0-DR5 incomplete boundary remain."
+    "Verify literal scene identity and new-content eligibility without guessing merged labels.",
+    "Only after prerequisites, intentionally validate the frozen E1 question once under the new profile; no automatic retry or unknown bypass.",
+    "Prove actual full configuration and repair quality; fresh independent cases and DR0-DR5 remain incomplete."
   ],
   "javaReaderRuntime": {
     "sourceCommit": "070ab1a",
@@ -3069,5 +3076,18 @@
     "sourceCoverageStillOpen": true,
     "independentCredit": 0,
     "proof": "deep-research-evidence/compact-experiment-envelope-regression-20261020.json"
+  },
+  "currentCheckpoint": ".199 implements versioned shared-module definition selection and literal horizontal caption/header retention. 3217 offline passes, 23 old request fingerprints, zero new model calls. Read-only current index proves NTC definition exists; controlled input supplies it within original limits. Scene identity/new-content eligibility and live E1 content remain open. Overall incomplete; Goal active, PR draft.",
+  "sharedModuleSourceCheckpoint": {
+    "sourceCommit": "f8ae5177",
+    "promptVersion": "dr-v2.20261020.199",
+    "offlinePassed": 3217,
+    "oldRequestsPreserved": 23,
+    "providerCalls": 0,
+    "liveContentAccepted": false,
+    "currentIndexDefinitionExists": true,
+    "sceneEligibilityStillOpen": true,
+    "independentCredit": 0,
+    "proof": "deep-research-evidence/shared-module-source-regression-20261020.json"
   }
 }
