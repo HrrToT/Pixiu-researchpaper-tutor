@@ -91,6 +91,12 @@ class LocalTaskRetriever:
                         row_question = human_row_question(row_record) if symbolic_rows else query
                         indexed = include_requested_rows(indexed, self.index_context[pdf_id], row_question, owned, limit,
                                                          symbol_identity=symbolic_rows)
+                        from services.deep_research.source_continuity import enabled as continuity_enabled
+                        if not metrics and continuity_enabled(precision_record):
+                            # Apply after criterion/method/row selection so the
+                            # context is not displaced by a later selector.
+                            indexed = include_preceding_context(indexed, self.index_context[pdf_id], owned, limit,
+                                illustrative=True)
                     if limit > 1 and type(precision) is int and precision in (3,4,5,6,7,8):
                         indexed_for_pdf = indexed
                     else:

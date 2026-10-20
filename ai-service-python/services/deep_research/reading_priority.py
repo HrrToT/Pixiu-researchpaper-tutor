@@ -5,7 +5,7 @@ from services.deep_research.source_continuity import needs_preceding_context
 from services.deep_research.obligation_binding import eligible_obligation_ids
 
 
-def select_read_sources(sources, obligations, limit, *, extracted=(),priority_version=6):
+def select_read_sources(sources, obligations, limit, *, extracted=(),priority_version=6,illustrative_context=False):
     """Retain owned source identities and exact predecessor bundles.
 
     Storage ID order is not relevance order. Rank retrieved text by each
@@ -29,7 +29,7 @@ def select_read_sources(sources, obligations, limit, *, extracted=(),priority_ve
             continue
         bundle=[]
         identity=re.fullmatch(r'(.+-v[0-9a-f]{16}-chunk-)(\d+)',source['sourceId'])
-        if identity and int(identity[2])>0 and needs_preceding_context(source):
+        if identity and int(identity[2])>0 and needs_preceding_context(source,illustrative=illustrative_context):
             prior_id=identity[1]+str(int(identity[2])-1)
             predecessors=[s for s in readable if s['sourceId']==prior_id
                 and s.get('workId')==source.get('workId') and s.get('versionId')==source.get('versionId')
@@ -37,6 +37,13 @@ def select_read_sources(sources, obligations, limit, *, extracted=(),priority_ve
                 and s.get('location',{}).get('section')==source.get('location',{}).get('section')
                 and isinstance(source.get('location',{}).get('section'),str)
                 and source['location']['section'].strip()]
+            if illustrative_context is True:
+                predecessors=[s for s in predecessors
+                    if source.get('accessLevel') == s.get('accessLevel') == 'fulltext'
+                    and type(source.get('location',{}).get('chunk')) is int
+                    and source['location']['chunk'] == int(identity[2])
+                    and type(s.get('location',{}).get('chunk')) is int
+                    and s['location']['chunk'] == int(identity[2])-1]
             if len(predecessors)==1 and prior_id not in used:
                 bundle.append(predecessors[0])
         bundle.append(source)
