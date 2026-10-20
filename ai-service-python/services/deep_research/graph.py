@@ -1405,6 +1405,7 @@ space with unsupported global absence or incidental iteration/performance values
         evidence_aliases = {row['evidenceId']: evidence_aliases[row['evidenceId']] for row in evidence_summaries}
         if staged_mode:
             from services.deep_research.experiment_planning import planning_prompt,prepare_plan,prepare_draft
+            from services.deep_research.experiment_plan_encoding import enabled as plan_encoding,wire_text
             def checkpoint_planning(value):
                 repo_update(run_id,lambda r:{**r,'state':{**r.get('state',{}),
                     'experimentPlanning':value}},expected_revision=None)
@@ -1415,13 +1416,15 @@ space with unsupported global absence or incidental iteration/performance values
                 tables={key:table_registry[key] for key in table_registry if key in tables_used},
                 metric_domains=brief_state.get('metricDomains'),
                 **({'compact':True} if record['experimentDraftContractVersion'] in (4,5,6) else {}),
-                **({'lean':True} if record['experimentDraftContractVersion'] in (5,6) else {})),aliases=evidence_aliases,
+                **({'lean':True} if record['experimentDraftContractVersion'] in (5,6) else {}),
+                **({'positional':True} if plan_encoding(record) else {})),aliases=evidence_aliases,
                 invoke=lambda node,prompt,options:llm_invoke(run_id,node,prompt,options,use_reserve=True),
                 parse=_safe_parse_json,checkpoint=checkpoint_planning)
             if plan is None:
                 return {'error_code':'budget_exhausted'}
             current=repo_update(run_id,lambda r:r,expected_revision=None)
-            prompt=prompt.replace(basis_slot,json.dumps(plan['basis'],ensure_ascii=False,separators=(',',':')),1)
+            prompt=prompt.replace(basis_slot,wire_text(plan['basis']) if plan_encoding(record)
+                else json.dumps(plan['basis'],ensure_ascii=False,separators=(',',':')),1)
             if prepare_draft(current,plan,prompt=prompt,checkpoint=checkpoint_planning) is None:
                 return {'error_code':'budget_exhausted'}
         from services.deep_research.factual_reasoning import request_options as factual_options

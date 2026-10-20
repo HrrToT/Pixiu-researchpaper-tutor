@@ -212,10 +212,12 @@ antecedents. The independent reviewer retains the complete scientific requiremen
     if staged:
         if not isinstance(basis_slot,str) or not basis_slot:
             raise ValueError('Missing reserved experiment planning slot')
-        prompt+='''
+        from services.deep_research.experiment_plan_encoding import enabled as plan_encoding, LEGEND
+        intro=('\n'+LEGEND+'\n' if plan_encoding(record) else '''
 Unverified scientific plan (not source evidence; every final attributed claim still
 needs its OWN actual E citations):
-'''+basis_slot+'''
+''')
+        prompt+=intro+basis_slot+'''
 Implement these proposed choices in complete mutually consistent configs, resolving
 any conflict against the human question and actual original evidence. Do not cite
 this plan, inherit its scientific approval, omit settings or weaken requested scope.
