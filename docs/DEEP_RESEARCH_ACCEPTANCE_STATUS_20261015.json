@@ -44,12 +44,13 @@
       "overlap": true
     },
     "backendCurrentResearchReadingTables": {
-      "passed": 3089,
+      "passed": 3122,
       "warnings": 1,
-      "seconds": 173.73,
-      "sourceCommit": "b449bc09",
-      "log": "tmp/pytest-dr193-full.log",
-      "scope": "Full offline research/reading/tables/config suite at.193, before default-restoration-only.194."
+      "seconds": 165.96,
+      "log": "tmp/pytest-dr195-full.log",
+      "sha256": "5ff2b929ef8dd4703074bf47fbaaba01182898e048e4f9ac30e05b47a8c27957",
+      "sourceCommit": "901309dc",
+      "scope": "Full offline research/reading/tables/config suite at.195; no model-quality acceptance."
     },
     "frontendDocumentNavigationFocused": {
       "passed": 19,
@@ -1962,6 +1963,14 @@
       "focusedPassed": 23,
       "seconds": 2.74,
       "scope": "Shared grammar, saved reasoned-request behavior and dataset-member chain; no new full-suite claim."
+    },
+    "stagedExperiment195": {
+      "sourceCommit": "901309dc",
+      "newFocusedPassed": 33,
+      "overlapWithFullSuite": true,
+      "legacyFingerprintsMatched": 21,
+      "proof": "deep-research-evidence/staged-experiment-regression-20261020.json",
+      "liveContentAccepted": false
     }
   },
   "stages": [
@@ -2415,22 +2424,22 @@
     "Independent Edge recovery"
   ],
   "currentProviderConstraint": "All further necessary bounded validations uniformly authorized. Selected diagnostic sequence:441 settled calls/1795948 measured tokens, not global history; costs unknown. Preserve11paused unknowns includingH2F-v9 andH5F-v6; new78908reserved tokens are not measured usage. No blind retry/task or attempt bypass.",
-  "currentDevelopmentMode": "Primary Codex only, Goal active, quota monitor paused by user. Source/runtimeeb72fa8a/.194, Java27ac4beb, frontend123b0d29. New default direct experiment drafting retains improved member evidence; saved v2 requests remain reproducible. H5F-v6 member/equation input transport succeeds but synthesize is unknown at180s. Content and fresh independent gates remain incomplete.",
+  "currentDevelopmentMode": "Primary Codex only, Goal active, quota pause revoked by user. Source/runtime901309dc/.195, Java27ac4beb, frontend123b0d29. New experiments separate a bounded persisted scientific plan from complete direct configuration, sharing the original round budget and independent audits. Saved v1/v2 requests and all11paused unknowns remain unchanged. No new live validation or content acceptance this checkpoint.",
   "loadedRuntime": {
-    "commit": "eb72fa8a",
-    "promptVersion": "dr-v2.20261020.194",
+    "commit": "901309dc",
+    "promptVersion": "dr-v2.20261020.195",
     "javaCommit": "27ac4beb",
     "frontendCommit": "123b0d29",
     "callsAfterLatestCase": 4732,
     "active": 0,
     "historicalPausedUnknown": 11,
     "tasks": 92,
-    "proof": "deep-research-evidence/runtime-load-dr194-direct-default-restored-20261020.json",
+    "proof": "deep-research-evidence/runtime-load-dr195-staged-experiment-20261020.json",
     "postCasesProof": "deep-research-evidence/runtime-postcases-dr193-h5f-v6-20261020.json"
   },
   "nextQualityWork": [
     "Preserve exact H2F-v9/H5F-v6 unknown requests; no attempt/task bypass or measured-token claim for reservations.",
-    "Separate bounded scientific planning from complete experiment configuration under the same18calls/100kToken/6min budget. Low-effort complete generation timed out at180s; direct default is restored but not content-accepted.",
+    "Validate staged scientific planning/configuration quality and latency with genuinely distinct frozen development inputs; do not rename or reissue unresolved H2F-v9/H5F-v6. Shared original18calls/100kToken/6min limits and independent source/science gates remain.",
     "Use actual dataset-member/equation quotes for each own attributed target, complete representation/pose-error/rendering and valid motion-aware observables. Existing duplicate-render removal is already implemented; address shared-contract/context capacity rather than reimplement it or exempt9bytes.",
     "Preserve original independent0/5 and accepted narrow development scopes; require genuinely fresh replacements after development quality passes."
   ],
@@ -2963,5 +2972,14 @@
       "contentAccepted": false,
       "proof": "deep-research-evidence/H5F-v6-diagnostic-20261020.json"
     }
+  },
+  "stagedExperimentCheckpoint": {
+    "sourceCommit": "901309dc",
+    "promptVersion": "dr-v2.20261020.195",
+    "implemented": true,
+    "offlinePassed": 3122,
+    "livePositiveAcceptance": false,
+    "independentCredit": 0,
+    "proof": "deep-research-evidence/staged-experiment-regression-20261020.json"
   }
 }
