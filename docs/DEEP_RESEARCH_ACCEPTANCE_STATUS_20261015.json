@@ -2032,6 +2032,14 @@
       "log": "tmp/pytest-dr201-full.log",
       "sha256": "80a57eb86dca085f7a469002bab355efaa331d49162226292d5daf4366b9c0c7",
       "sourceCommit": "0de41ea7"
+    },
+    "experimentalEditsOffline": {
+      "passed": 3287,
+      "warnings": 1,
+      "seconds": 191.66,
+      "log": "tmp/pytest-dr202-full-final.log",
+      "sha256": "cfaa8b4fcc62a39815644f47a816a6da8b4d1aed9d1eb9be2b25a40071220138",
+      "sourceCommit": "ebbf73ae"
     }
   },
   "stages": [
@@ -2510,9 +2518,9 @@
   },
   "nextQualityWork": [
     "Preserve exact H2F-v9/H5F-v6 unknown requests; no attempt/task bypass or measured-token claim for reservations.",
-    "Losslessly remove duplicated derived configuration/metadata from actual repair envelope25192bytes to fit actual19967byte capacity while preserving raw prose, full specs, source evidence, scope and rejection reasons.",
-    "Fix full initialization/per-frame Stage1 transfer, actual addition policy, renderer/measurement/storage boundaries and honest unmatched stage budget. Audit prospective-hypothesis review separately; do not waive genuine failures.",
-    "Complete actual configuration/repair content quality and fresh independent replacements; DR0-DR5 and original independent0/5 remain unchanged."
+    "Expose exact validator JSON paths/expected constraints for state shapes and workflow references, and repair actual intervention/measurement/storage omissions.",
+    "Audit reviewer contract against prospective hypotheses, explicit whole-stage unmatched costs, and proposed prechecked view splits; retain genuine membership/source/configuration checks and do not auto-approve.",
+    "Supply the matching named scene-to-dataset premise in actually read evidence. Prove final experimental quality and fresh independent cases; DR0-DR5 and original independent0/5 remain incomplete."
   ],
   "javaReaderRuntime": {
     "sourceCommit": "070ab1a",
@@ -3093,7 +3101,7 @@
     "independentCredit": 0,
     "proof": "deep-research-evidence/compact-experiment-envelope-regression-20261020.json"
   },
-  "currentCheckpoint": ".201 preserves literal same-read-source definition antecedents atomically and replaces duplicate private fact prose with six protocol decisions/sourceRefs under the same2500byte cap.3261offline passes/24old fingerprints. Actual E1-v3 plan1779bytes ready, full draft returned, but0/9design roles accepted; outcome inconclusive. Repair not sent:25192byte envelope exceeds19967capacity.11settled calls/47446tokens, zero new unknowns. Goal active/PR draft; overall incomplete.",
+  "currentCheckpoint": ".202 bounded field edits restore full experimental claims before unchanged verification, using actual4096output reservation and lossless original-data tables.3287offline passes/24old fingerprints. Actual E1-v4 dispatched one23591byte edit request under23626capacity,14edits reconstructed9drafts and both repair reviewers ran; final0/9accepted,inconclusive.14settled calls/66644tokens, zero new unknowns. Goal active/PR draft; overall incomplete.",
   "sharedModuleSourceCheckpoint": {
     "sourceCommit": "f8ae5177",
     "promptVersion": "dr-v2.20261020.199",
@@ -3133,5 +3141,19 @@
     "unknownNewCalls": 0,
     "independentCredit": 0,
     "proof": "deep-research-evidence/definition-context-regression-20261020.json"
+  },
+  "experimentalEditsCheckpoint": {
+    "sourceCommit": "ebbf73ae",
+    "promptVersion": "dr-v2.20261020.202",
+    "offlinePassed": 3287,
+    "oldRequestsPreserved": 24,
+    "actualCase": "E1-v4",
+    "liveContentAccepted": false,
+    "actualEditDispatchAndReconstruction": true,
+    "settledModelCalls": 14,
+    "settledTokens": 66644,
+    "unknownNewCalls": 0,
+    "independentCredit": 0,
+    "proof": "deep-research-evidence/experimental-edit-regression-20261020.json"
   }
 }
