@@ -2016,6 +2016,14 @@
       "log": "tmp/pytest-dr199-full.log",
       "sha256": "ca3eb6a7c9792d73299c20308e24dfbacf2b752c7b9a8274402571378cc8172c",
       "sourceCommit": "f8ae5177"
+    },
+    "dataConditionSourceOffline": {
+      "passed": 3236,
+      "warnings": 1,
+      "seconds": 189.44,
+      "log": "tmp/pytest-dr200-full.log",
+      "sha256": "440dc7959ea1db57abb7d4adaf593eea313a7d8a028ae2b5dba9210cffe595e3",
+      "sourceCommit": "dc3b9365"
     }
   },
   "stages": [
@@ -2494,9 +2502,9 @@
   },
   "nextQualityWork": [
     "Preserve exact H2F-v9/H5F-v6 unknown requests; no attempt/task bypass or measured-token claim for reservations.",
-    "Verify literal scene identity and new-content eligibility without guessing merged labels.",
-    "Only after prerequisites, intentionally validate the frozen E1 question once under the new profile; no automatic retry or unknown bypass.",
-    "Prove actual full configuration and repair quality; fresh independent cases and DR0-DR5 remain incomplete."
+    "Preserve same-source anaphoric module-definition bundles through real premise scoring/fitting; do not require repeated acronyms or promote profiling as a definition.",
+    "Redesign bounded private planning for complete proposals, separate frame windows from held-out camera splits, and require training-only emergence eligibility checks. Do not merely increase the byte cap or accept the saved unreviewed plan.",
+    "Actual full-configuration/repair quality and fresh independent cases remain unproven; original independent0/5 unchanged."
   ],
   "javaReaderRuntime": {
     "sourceCommit": "070ab1a",
@@ -3077,7 +3085,7 @@
     "independentCredit": 0,
     "proof": "deep-research-evidence/compact-experiment-envelope-regression-20261020.json"
   },
-  "currentCheckpoint": ".199 implements versioned shared-module definition selection and literal horizontal caption/header retention. 3217 offline passes, 23 old request fingerprints, zero new model calls. Read-only current index proves NTC definition exists; controlled input supplies it within original limits. Scene identity/new-content eligibility and live E1 content remain open. Overall incomplete; Goal active, PR draft.",
+  "currentCheckpoint": ".200 implements source-bound named data applicability evidence. 3236 offline passes/23 old request fingerprints. One actual E1-v2 failed: complete3232byte private plan exceeds2500byte cap; named flame-salmon/emergence evidence now supplied, but actual anaphoric NTC definition was read/extracted then displaced by profiling. Eight settled calls/24837tokens, zero new unknowns. No full configuration or independent pass. Goal active/PR draft; overall incomplete.",
   "sharedModuleSourceCheckpoint": {
     "sourceCommit": "f8ae5177",
     "promptVersion": "dr-v2.20261020.199",
@@ -3089,5 +3097,18 @@
     "sceneEligibilityStillOpen": true,
     "independentCredit": 0,
     "proof": "deep-research-evidence/shared-module-source-regression-20261020.json"
+  },
+  "dataConditionSourceCheckpoint": {
+    "sourceCommit": "dc3b9365",
+    "promptVersion": "dr-v2.20261020.200",
+    "offlinePassed": 3236,
+    "oldRequestsPreserved": 23,
+    "actualCase": "E1-v2",
+    "liveContentAccepted": false,
+    "settledModelCalls": 8,
+    "settledTokens": 24837,
+    "unknownNewCalls": 0,
+    "independentCredit": 0,
+    "proof": "deep-research-evidence/data-condition-source-regression-20261020.json"
   }
 }

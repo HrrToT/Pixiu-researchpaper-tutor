@@ -1,0 +1,31 @@
+{
+  "date": "2026-10-20",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "conditions": [
+    "emergence"
+  ],
+  "controlledRetrievalChunks": [
+    3,
+    17,
+    21,
+    30,
+    38
+  ],
+  "readCap": 12,
+  "readCount": 12,
+  "controlledPlanningBytes": 14207,
+  "controlledConfigurationBytes": 21862,
+  "suppliedRows": 6,
+  "definitionAndNamedConditionActuallyInControlledPrompt": true,
+  "verifiedPdfSha256": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98",
+  "manualPdfCheck": {
+    "pages": [
+      7,
+      8,
+      10
+    ],
+    "finding": "Physical page8 names flame salmon in the Stage2 ablation and states the base model without Stage2 fails to capture emerging objects. Physical page10 Table9 provides complete scene labels; malformed index table labels must not be reconstructed from their positions."
+  },
+  "boundary": "Read-only actual owned-index text and manual source-page check, followed by CONTROLLED copied-pool selection and mocked planning. Not a production E1 acquisition/extraction, model result, numerical table mapping, protocol execution or independent acceptance. No old failed/unknown state upgrades."
+}

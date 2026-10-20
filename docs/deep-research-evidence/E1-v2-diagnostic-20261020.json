@@ -1,0 +1,75 @@
+{
+  "date": "2026-10-20",
+  "case": "E1-v2",
+  "split": "development",
+  "sourceCommit": "dc3b9365",
+  "promptVersion": "dr-v2.20261020.200",
+  "runId": "dr_run_26a7c571c1c856eead1f2cbbaed5cd39",
+  "status": "failed",
+  "errorCode": "invalid_experiment_planning_response",
+  "frozenCaseCommit": "a023b204",
+  "questionAndCriteriaUnchanged": true,
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "settledModelCalls": 8,
+  "settledTokens": 24837,
+  "unknownNewCalls": 0,
+  "elapsedSeconds": 0,
+  "planning": {
+    "actualFingerprintMatched": true,
+    "finishReason": "stop",
+    "actualOptions": {
+      "max_tokens": 6144,
+      "temperature": 0.0,
+      "thinking": {
+        "type": "disabled"
+      },
+      "reasoning_effort": "none",
+      "response_format": {
+        "type": "json_object"
+      }
+    },
+    "compactResponseBytes": 3232,
+    "maxPrivateBytes": 2500,
+    "structureAndReferencesValidAt4000": true,
+    "inputBytes": 14137,
+    "suppliedEvidenceRows": 7,
+    "fullConfigurationSent": false,
+    "measuredInputTokens": 3427,
+    "measuredOutputTokens": 874
+  },
+  "actualSourceProgress": {
+    "namedSceneAndEmergenceReachedPlanning": true,
+    "NTCDefinitionReadAndExtracted": true,
+    "NTCDefinitionQuoteReachedPlanning": false,
+    "definitionSourceId": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-21",
+    "definitionQuote": "This maps the hash encoding to a 7-dimensional output: the first three dimensions indicate the translation of the 3DG; the remaining dimensions represent the rotation of the 3DG using quaternions.",
+    "evidencePoolRows": 20
+  },
+  "findings": [
+    "The direct planner returned a complete JSON object with allowed E references, but3232compact UTF8bytes exceed the frozen2500byte contract. Response is saved and rejected, no full configuration or automatic retry.",
+    "The actual data ablation paragraph now reaches planning and identifies flame salmon with emerging objects. This is a source-input improvement, not a successful experimental design.",
+    "NTC architecture was actually read and extracted as an anaphoric This maps sentence. The literal acronym-only module scorer gives that quote zero; incidental profiling with NTC/rotation can outrank it. Whole-passage controlled fixtures did not expose this failure.",
+    "The private unreviewed protocol also confuses holding out frames with held-out camera views and chooses a window as covering emergence without a training-only eligibility precheck. These must not be silently accepted by raising the byte cap.",
+    "Next development: preserve same-source antecedent/definition bundles through the actual evidence fitter; redesign bounded private planning to keep requirements and proper spatial/temporal split semantics. Preserve original response and all11unknowns."
+  ],
+  "rawFiles": [
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v2.json",
+      "sha256": "e802e4764ae236b194933e6a661fb23a97fee392a80c25e775a5a25df681a182"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v2.payload.json",
+      "sha256": "e3bb921b606610b9f10a8f2382693539140ad9749bc2118ee2089142195fd6f6"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v2.calls.json",
+      "sha256": "7efe0eac224438289752eef3319a6e531997945161fecab6321e1e07efc784c3"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v2.result.json",
+      "sha256": "d4d6d522811a0b5b729f1495a8b453e9b13464394392274ae42d009e1a3b1fd1"
+    }
+  ],
+  "boundary": "One purposeful post-fix submission after settled E1-v1; no automatic retry, no unknown bypass, no historical pass upgrade. A structurally valid private plan is not a scientific pass. No paid request was sent during diagnostics."
+}
