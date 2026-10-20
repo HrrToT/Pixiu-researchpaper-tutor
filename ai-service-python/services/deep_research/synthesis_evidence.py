@@ -12,7 +12,7 @@ from services.deep_research.selection import surrounding_context
 
 def enabled(record):
     version=record.get('synthesisEvidenceContractVersion')
-    return type(version) is int and version in (1,2)
+    return type(version) is int and version in (1,2,3)
 
 
 def result_role(row):
@@ -24,18 +24,21 @@ def result_role(row):
     return 'unspecified'
 
 
-def order_premises(evidence,plan,limit=20, *, membership_intents=False):
+def order_premises(evidence,plan,limit=20, *, membership_intents=False,module_intents=False):
     obligations={o['obligationId']:o for item in plan for o in item.get('obligations',[])}
     rows=[e for e in evidence if e.get('verification',{}).get('literal')=='passed']
     works=list(dict.fromkeys(e.get('sourceWorkId') for e in rows))
     chosen=[];seen=set();bundles=[]
-    for oid,view,intent in criterion_targets(obligations,membership_intents=membership_intents):
+    for oid,view,intent in criterion_targets(obligations,membership_intents=membership_intents,module_intents=module_intents):
         for source in view.get('requiredSources') or works:
             own=[e for e in rows if source in {e.get('sourceWorkId'),e.get('sourceVersionId'),e.get('ownerMaterialId')}]
             def score(row):
                 context=surrounding_context(row)
                 text=row.get('quote','')+'\n'+str(context)
                 value=operation_score(text,str(row.get('location',{}).get('section','')),intent,operational=True)
+                if module_intents and isinstance(intent,str) and intent.startswith('shared_module:'):
+                    from services.deep_research.shared_modules import definition_score
+                    value=definition_score(row.get('quote',''),intent.split(':',1)[1])*30
                 if intent=='operation' and row.get('extractionKind')=='literal_method_equation':
                     value+=30
                 if membership_intents and intent=='data_membership' and row.get('extractionKind')=='literal_dataset_member_rows':
@@ -59,7 +62,7 @@ def order_premises(evidence,plan,limit=20, *, membership_intents=False):
                 if sibling:
                     bundle.append(sibling)
             ids=[e['evidenceId'] for e in bundle]
-            bundles.append({'obligationId':oid,'criterionId':view['completionCriteria'][0].get('criterionId','whole_obligation'),
+            bundles.append({'obligationId':oid,'criterionId':(view.get('completionCriteria') or [{}])[0].get('criterionId','whole_obligation'),
                             'requirement':view['question'],'source':source,'evidenceIds':ids})
             for row in bundle:
                 if row['evidenceId'] not in seen:

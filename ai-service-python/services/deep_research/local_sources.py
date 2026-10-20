@@ -69,16 +69,18 @@ class LocalTaskRetriever:
                             indexed = include_preceding_context(indexed, self.index_context[pdf_id], owned, limit)
                         from services.deep_research.method_details import enabled as precise_sources, include_method_details
                         precision_record=self.repo.require_run(self.run_id)
-                        if not metrics and type(precision_record.get('sourcePrecisionContractVersion')) is int and precision_record['sourcePrecisionContractVersion']==6:
-                            from services.deep_research.criterion_sources import acquisition_questions,include_indexed_criteria
+                        if not metrics and type(precision_record.get('sourcePrecisionContractVersion')) is int and precision_record['sourcePrecisionContractVersion'] in (6,7):
+                            from services.deep_research.criterion_sources import acquisition_questions,include_indexed_criteria,acquisition_modules
                             questions=acquisition_questions(precision_record,query,owned)
-                            indexed=include_indexed_criteria(indexed,self.index_context[pdf_id],questions,owned,limit)
+                            indexed=include_indexed_criteria(indexed,self.index_context[pdf_id],questions,owned,limit,
+                                **({'modules':acquisition_modules(precision_record,query,owned)}
+                                   if precision_record['sourcePrecisionContractVersion']==7 else {}))
                         elif not metrics and precise_sources(precision_record):
                             indexed = include_method_details(indexed, self.index_context[pdf_id], query, owned, limit,
                                 semantic_intent=self.repo.require_run(self.run_id).get('sourcePrecisionContractVersion') in (4,5),
                                 **({'operational_intent':True} if self.repo.require_run(self.run_id).get('sourcePrecisionContractVersion')==5 else {}))
                         precision = self.repo.require_run(self.run_id).get('sourcePrecisionContractVersion')
-                        if type(precision) is int and precision in (2, 3, 4, 5, 6):
+                        if type(precision) is int and precision in (2, 3, 4, 5, 6, 7):
                             from services.deep_research.requested_measurements import include_requested_measurements
                             indexed = include_requested_measurements(indexed, self.index_context[pdf_id], query, owned, limit)
                         from services.deep_research.requested_table_rows import enabled as named_identity, human_row_question
@@ -87,7 +89,7 @@ class LocalTaskRetriever:
                         row_question = human_row_question(row_record) if symbolic_rows else query
                         indexed = include_requested_rows(indexed, self.index_context[pdf_id], row_question, owned, limit,
                                                          symbol_identity=symbolic_rows)
-                    if limit > 1 and type(precision) is int and precision in (3,4,5,6):
+                    if limit > 1 and type(precision) is int and precision in (3,4,5,6,7):
                         indexed_for_pdf = indexed
                     else:
                         return self._stamp_identity(indexed, pdf_id)
@@ -103,22 +105,23 @@ class LocalTaskRetriever:
         ranked = sorted(zip(scores, passages), key=lambda value: -value[0])
         found = [value for score, value in ranked[:min(max(int(limit), 0), 5)] if score > 0]
         precision = self.repo.require_run(self.run_id).get('sourcePrecisionContractVersion')
-        if type(precision) is int and precision in (3,4,5,6):
+        if type(precision) is int and precision in (3,4,5,6,7):
             from services.deep_research.requested_measurements import include_pdf_measurements
             if not self.validate(self.run_id,pdf_id):
                 raise DeepResearchError('scope_revoked','论文范围已变更')
             passages = [{**row,'versionId':material.get('versionId') or material['contentHash']} for row in passages]
             found = include_pdf_measurements(found,passages,query,pdf_id,material['contentHash'],min(limit,5))
-        if type(precision) is int and precision==6:
-            from services.deep_research.criterion_sources import acquisition_questions,include_pdf_criteria
+        if type(precision) is int and precision in (6,7):
+            from services.deep_research.criterion_sources import acquisition_questions,include_pdf_criteria,acquisition_modules
             questions=acquisition_questions(self.repo.require_run(self.run_id),query,pdf_id)
-            found=include_pdf_criteria(found,passages,questions,pdf_id,material['contentHash'],min(limit,5))
+            found=include_pdf_criteria(found,passages,questions,pdf_id,material['contentHash'],min(limit,5),
+                **({'modules':acquisition_modules(self.repo.require_run(self.run_id),query,pdf_id)} if precision==7 else {}))
         return self._stamp_identity(found, pdf_id)
 
 
     def _stamp_identity(self, rows, pdf_id):
         record = self.repo.require_run(self.run_id)
-        if not rows or type(record.get('sourcePrecisionContractVersion')) is not int or record['sourcePrecisionContractVersion'] not in (4,5,6):
+        if not rows or type(record.get('sourcePrecisionContractVersion')) is not int or record['sourcePrecisionContractVersion'] not in (4,5,6,7):
             return rows
         if not self.validate(self.run_id,pdf_id):
             raise DeepResearchError('scope_revoked','论文范围已变更')

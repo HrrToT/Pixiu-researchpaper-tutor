@@ -10,7 +10,7 @@ def test_new_priority_is_server_owned_and_all_saved_priority_versions_are_frozen
     try:
         run,_=facade.create({'workspaceTaskId':'t','operationKey':'op','question':'解释机制',
             'extractionPriorityVersion':replacement,'deferStart':True},start_async=False)
-        assert run['extractionPriorityVersion']==8
+        assert run['extractionPriorityVersion']==9
         with pytest.raises(ValueError,match='Immutable'):
             repo.update_run(run['runId'],lambda r:{**r,'extractionPriorityVersion':replacement})
         for version in (1,2,3,4,5,6):
