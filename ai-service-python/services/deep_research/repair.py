@@ -16,7 +16,7 @@ from services.deep_research.repair_scope import repair_evidence_scope
 def _prepare_repair(report, verification, evidence, question, *, max_prompt_bytes=24000,
                     metric_domains=None, draft_context=(), prior_revisions=(),
                     fact_redraft=False, requirement_context=(), source_aware_redraft=False,comparison_reasoning=False,
-                    question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False):
+                    question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False,shared_experiment_schema=False):
     rejected = {row['claimId']: row for row in verification.get('rejected', [])}
     originals = {row['claimId']: row for row in report.get('claims', []) if row.get('claimId') in rejected}
     if not originals:
@@ -345,6 +345,16 @@ in the paper. Maintain consistency with accepted definitions and complete requir
             requirements=active_requirements,source_context=context,targets=input_claims,
             checks=packed_checks,questions=question_dictionary,permissions_marker=permissions_marker,
             evidence_marker=evidence_marker,schema=revision_shape)
+    if shared_experiment_schema and prospective:
+        from services.deep_research.experiment_repair import compatible,render as experiment_prompt
+        if compatible(report):
+            prompt=experiment_prompt(question=question,length_contract=length_contract,
+                accepted=proposal_context,siblings=sibling_context,questions=question_dictionary,
+                targets=input_claims,checks=packed_checks,permissions_marker=permissions_marker,
+                evidence_marker=evidence_marker,shape=revision_shape,table_instructions=table_instructions,
+                source_instruction=source_instruction,metric_domains=metric_domains,
+                policy_version=experimental_intent,declared_table_refs=declared_table_refs,
+                terminology=SCIENTIFIC_TERMINOLOGY)
     template = prompt
     def render(selected_rows):
         visible_ids = {row['evidenceId'] for row in selected_rows}
@@ -474,7 +484,7 @@ def factual_redraft_eligible(report):
 def repair_rejected(report, verification, evidence, question, invoke, parse, *,
                     max_prompt_bytes=24000, metric_domains=None, batch_state=None, checkpoint=None,
                     current_budget=None, invoke_request=None, fact_redraft=False, requirement_context=(),
-                    source_aware_redraft=False,comparison_reasoning=False,question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,strict_response=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False):
+                    source_aware_redraft=False,comparison_reasoning=False,question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,strict_response=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False,shared_experiment_schema=False):
     """One bounded revision round, split before dispatch when evidence cannot fit.
 
     At most three requests share full sibling design definitions. Successful
@@ -498,6 +508,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
                        **({'tableReferencesContractVersion':1} if declared_table_refs else {}),
                        **({'repairResponseContractVersion':1} if strict_response else {}),
                        **({'factualRepairContractVersion':1} if compact_source_repair else {}),
+                       **({'experimentRepairContractVersion':1} if shared_experiment_schema else {}),
                        **({'comparisonMethodologyVersion':1} if comparison_methodology else {}),
                        **({'experimentIntentContractVersion':experimental_intent if type(experimental_intent) is int and experimental_intent in (2,3) else 1}
                           if experimental_intent else {})})
@@ -514,7 +525,8 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
             fact_redraft=fact_redraft, requirement_context=requirement_context,source_aware_redraft=source_aware_redraft,
             comparison_reasoning=comparison_reasoning,question_priority=question_priority,concise_factual=concise_factual,
             factual_scope=factual_scope,declared_table_refs=declared_table_refs,comparison_methodology=comparison_methodology,
-            experimental_intent=experimental_intent,compact_source_repair=compact_source_repair)
+            experimental_intent=experimental_intent,compact_source_repair=compact_source_repair,
+            shared_experiment_schema=shared_experiment_schema)
 
     state = deepcopy(batch_state) if batch_state is not None else {
         'version': 1, 'inputDigest': identity, 'maxPromptBytes': max_prompt_bytes,

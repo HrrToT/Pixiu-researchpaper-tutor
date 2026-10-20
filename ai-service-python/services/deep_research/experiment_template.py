@@ -95,6 +95,33 @@ Metrics and limits use concrete claim text, not an invented executionSpec schema
 '''
 
 
+def grammar_for_roles(roles):
+    """Project the shared grammar to writable repair roles, including helpers.
+
+    Keep SCHEMA byte-for-byte stable for saved generation requests. This view
+    changes instructions only; original/sibling configs and validators are kept.
+    """
+    roles=set(roles)
+    anchors=['operation=','split=','seed=','Each role\'s executionSpec','groups=',
+             'data=','analysis=','controls=','budget=','hypothesis=','steps=',
+             'Metrics and limits use']
+    positions=[SCHEMA.index(anchor) for anchor in anchors]+[len(SCHEMA)]
+    chunks={key:SCHEMA[positions[i]:positions[i+1]] for i,key in enumerate(anchors)}
+    result=SCHEMA[:positions[0]]
+    if roles & {'groups','controls','steps'}:result+=chunks['operation=']
+    if roles & {'data','steps'}:result+=chunks['split=']
+    if 'steps' in roles:result+=chunks['seed=']
+    result+=chunks['Each role\'s executionSpec']
+    for role in ('groups','data','analysis','controls','budget','hypothesis','steps'):
+        if role in roles:result+=chunks[role+'=']
+    if roles & {'metrics','limits'}:result+=chunks['Metrics and limits use']
+    if 'steps' in roles:
+        from services.deep_research.experiment_workflow import STAGES,RECORDS
+        result+='\nEXACT_STAGES='+json.dumps(list(STAGES),separators=(',',':'))
+        result+='\nEXACT_RECORDS='+json.dumps(sorted(RECORDS|{'group_checkpoints'}),separators=(',',':'))
+    return result
+
+
 def build(record, *, question, limit, clarification, gaps, obligations, sources,
           evidence_marker, table_marker, claim_fields, claim_limit, section_templates,basis_slot=None):
     from services.deep_research.design_drafting import prospective_draft_prompt, _DRAFT_POLICY

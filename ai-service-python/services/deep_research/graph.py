@@ -1653,6 +1653,7 @@ def make_verify_node(
                         target_count=sum(c.get('claimId') in {r['claimId'] for r in repair_targets.get('rejected',[])}
                                          for c in repair_report.get('claims',[]))
                         repair_input_options['output_tokens']=repair_batch_output_limit(target_count)
+                    from services.deep_research.experiment_repair import enabled as shared_experiment_repair
                     revised = repair_rejected(repair_report, repair_targets, evidence, effective_question(record),
                         invoke_repair, _safe_parse_json,
                         max_prompt_bytes=repair_prompt_byte_limit(current.get('budget', {}),**repair_input_options),
@@ -1661,6 +1662,7 @@ def make_verify_node(
                         current_budget=lambda: repo_update(run_id, lambda r: r, expected_revision=None).get('budget', {}),
                         invoke_request=invoke_repair,
                         **({'compact_source_repair':True} if compact_repair else {}),
+                        **({'shared_experiment_schema':True} if shared_experiment_repair(record) else {}),
                         **({'strict_response':True} if type(record.get('repairProgressContractVersion')) is int
                            and record['repairProgressContractVersion']==2 else {}),
                         **({'comparison_reasoning':True} if comparison_enabled(record) else {}),
