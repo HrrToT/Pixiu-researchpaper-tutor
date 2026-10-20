@@ -49,22 +49,44 @@ def _literal_shape(value, dtype, depth=0):
     return None
 
 
-def state_definition_errors(states, inputs):
+STATE_EXPECTATIONS = {
+    'states.required': 'List of 1..128 explicit states.',
+    'states.definition': 'Exact keys name,dtype,shape,initializer; unique nonblank name and nonblank dtype.',
+    'states.shape': 'At most 16 dimensions: positive integer (not bool) or exact {inputIndex,axis}; inputIndex names an existing declared input and axis is a nonnegative integer. Scalar shape is [].',
+    'states.initializer': 'Object with one supported mode: constant,uniform,normal,operation.',
+    'states.constant': 'Exact keys mode,value; finite scalar or nonempty rectangular literal array, compatible with dtype.',
+    'states.constant_shape': 'Literal array broadcasts to declared shape: no extra axes and each trailing literal dimension is 1 or equals the declared dimension.',
+    'states.distribution': 'Exact keys mode,seed,rng and low,high for uniform OR mean,std for normal.',
+    'states.rng': 'Nonblank RNG implementation name; record its version when executed.',
+    'states.distribution_parameters': 'Finite numeric parameters; uniform low<high, normal std>0; bool is not a number.',
+    'states.seed': 'Exact {mode:data_seed} or {mode:fixed,value:nonnegative integer}; bool is not an integer.',
+    'states.operation_inputs': 'Exact keys mode,inputIndices,rule; inputIndices are unique indices of existing declared inputs (possibly []).',
+    'states.operation_rule': 'Operation {action,parameters} with nonblank action and nonempty valid parameters defining the actual transformation.',
+    'states.initializer_mode': 'One supported mode: constant,uniform,normal,operation.',
+}
+
+
+def state_definition_issues(states, inputs, *, path='/stateDefinitions'):
+    """Same validation with exact JSON Pointers; no suggested scientific values."""
     if not isinstance(states, list) or not 1 <= len(states) <= 128:
-        return ['states.required']
+        return [{'path': path, 'code': 'states.required'}]
     input_count = len(inputs) if isinstance(inputs, list) else 0
-    errors, names = [], set()
-    for state in states:
+    issues, names = [], set()
+    for state_index, state in enumerate(states):
+        base = f'{path}/{state_index}'
+        def fail(code, suffix=''):
+            issues.append({'path': base + suffix, 'code': code})
         if (not isinstance(state, dict) or set(state) != {'name', 'dtype', 'shape', 'initializer'}
                 or not isinstance(state.get('name'), str) or not state['name'].strip()
                 or state['name'] in names or not isinstance(state.get('dtype'), str) or not state['dtype'].strip()):
-            errors.append('states.definition')
+            fail('states.definition')
             continue
         names.add(state['name'])
         shape = state['shape']
         shape_valid = isinstance(shape, list) and len(shape) <= 16
+        shape_suffix = '/shape'
         if shape_valid:
-            for dimension in shape:
+            for dimension_index, dimension in enumerate(shape):
                 if type(dimension) is int and dimension > 0:
                     continue
                 if (isinstance(dimension, dict) and set(dimension) == {'inputIndex', 'axis'}
@@ -72,54 +94,60 @@ def state_definition_errors(states, inputs):
                         and type(dimension['axis']) is int and dimension['axis'] >= 0):
                     continue
                 shape_valid = False
+                shape_suffix += f'/{dimension_index}'
                 break
         if not shape_valid:
-            errors.append('states.shape')
+            fail('states.shape', shape_suffix)
         initializer = state['initializer']
         if not isinstance(initializer, dict):
-            errors.append('states.initializer')
+            fail('states.initializer', '/initializer')
             continue
         mode = initializer.get('mode')
         if mode == 'constant':
             literal = _literal_shape(initializer.get('value'), state['dtype'])
             if set(initializer) != {'mode', 'value'} or literal is None:
-                errors.append('states.constant')
+                fail('states.constant', '/initializer')
             elif shape_valid and (len(literal) > len(shape) or any(
                     n != 1 and type(d) is int and n != d
                     for n, d in zip(reversed(literal), reversed(shape)))):
-                errors.append('states.constant_shape')
+                fail('states.constant_shape', '/initializer/value')
         elif mode in ('uniform', 'normal'):
             fields = {'mode', 'seed', 'rng', *({'low', 'high'} if mode == 'uniform' else {'mean', 'std'})}
             if set(initializer) != fields:
-                errors.append('states.distribution')
+                fail('states.distribution', '/initializer')
             if not isinstance(initializer.get('rng'), str) or not initializer['rng'].strip():
-                errors.append('states.rng')
+                fail('states.rng', '/initializer/rng')
             first, second = (initializer.get('low'), initializer.get('high')) if mode == 'uniform' else (
                 initializer.get('mean'), initializer.get('std'))
             if not _number(first) or not _number(second) or (first >= second if mode == 'uniform' else second <= 0):
-                errors.append('states.distribution_parameters')
+                fail('states.distribution_parameters', '/initializer')
             seed = initializer.get('seed')
             if not isinstance(seed, dict) or not (
                     seed == {'mode': 'data_seed'}
                     or (set(seed) == {'mode', 'value'} and seed.get('mode') == 'fixed'
                         and type(seed.get('value')) is int and seed['value'] >= 0)):
-                errors.append('states.seed')
+                fail('states.seed', '/initializer/seed')
         elif mode == 'operation':
             indices = initializer.get('inputIndices')
             if (set(initializer) != {'mode', 'inputIndices', 'rule'} or not isinstance(indices, list)
                     or any(not _index(index, input_count) for index in indices)
                     or len(indices) != len(set(indices))):
-                errors.append('states.operation_inputs')
+                fail('states.operation_inputs', '/initializer/inputIndices')
             rule = initializer.get('rule')
             try:
                 rule_errors = validate_operation(rule, 'states.rule')
             except (TypeError, ValueError):
                 rule_errors = ['states.rule']
             if rule_errors or (isinstance(rule, dict) and rule.get('parameters') == []):
-                errors.append('states.operation_rule')
+                fail('states.operation_rule', '/initializer/rule')
         else:
-            errors.append('states.initializer_mode')
-    return list(dict.fromkeys(errors))
+            fail('states.initializer_mode', '/initializer/mode')
+    return issues
+
+
+def state_definition_errors(states, inputs):
+    # Keep existing error codes/order and validation semantics for saved runs.
+    return list(dict.fromkeys(issue['code'] for issue in state_definition_issues(states, inputs)))
 
 
 def state_definitions_text(states):

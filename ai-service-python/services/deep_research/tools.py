@@ -576,6 +576,7 @@ class BudgetedSemanticChecker:
         complete_factual_scope=False,
         result_attribution=False,
         bounded_factual_review=False,
+        prospective_review=False,
     ):
         self._invoke = llm_invoker
         self._run_id = run_id
@@ -592,6 +593,7 @@ class BudgetedSemanticChecker:
         self._bounded_factual_review=bounded_factual_review
         self._qualitative_inference = qualitative_inference
         self._experiment_intent_review = experiment_intent_review
+        self._prospective_review = prospective_review
     
     def __call__(self, claims: list[dict], evidence: list[dict]) -> list[dict]:
         return self._check(claims, evidence, [], 'verify')
@@ -1036,6 +1038,11 @@ The dataAvailability object is an internal audit, not new experimental results.
         if target_bindings and scope_enabled and has_factual_targets:
             from services.deep_research.audit_source_fields import TARGET_GUIDANCE
             prompt+='\n'+TARGET_GUIDANCE
+        from services.deep_research.prospective_review import enabled as prospective_review_enabled, POLICY as prospective_review_policy
+        review_version = self._prospective_review() if callable(self._prospective_review) else self._prospective_review
+        if prospective_review_enabled(review_version) and all(
+                c.get('kind') in {'proposal', 'suggestion', 'hypothesis'} for c in claims):
+            prompt += '\n' + prospective_review_policy
         template = prompt
         source_keys = ('workId', 'versionId', 'sourceTitle')
         source_registry = {}
