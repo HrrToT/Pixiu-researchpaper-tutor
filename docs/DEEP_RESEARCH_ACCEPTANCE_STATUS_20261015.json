@@ -2061,6 +2061,16 @@
       "reason": "ImportError: cannot import FastAPI from fastapi; existing stub/dependency interaction outside changed research scope.",
       "log": "tmp/pytest-dr203-full-final.log",
       "notClaimedPassing": true
+    },
+    "nestedExperimentAndAuditOffline": {
+      "passed": 3322,
+      "files": 195,
+      "warnings": 1,
+      "seconds": 226.93,
+      "scope": "All tests/test_deep_research*.py; not an all-Python or reading/config integration pass.",
+      "log": "tmp/pytest-dr204-research-full.log",
+      "sha256": "594e1639fd7858c0252839b4ddd43d0f09ca6f597f0b8783b5042a27a0af12b9",
+      "sourceCommit": "f78f6bee"
     }
   },
   "stages": [
@@ -2538,11 +2548,11 @@
     "postCasesProof": "deep-research-evidence/runtime-postcases-dr197-e1-v1-20261020.json"
   },
   "nextQualityWork": [
-    "Preserve all11old unknowns and exact old request identities. No attempt/task bypass, hidden retry or measured-token claim for reservations.",
-    "Compress repeated nested configuration structure losslessly: actual E1-v5 mandatory repair24249bytes exceeds23599live capacity by650. Keep original prose/specs/checks and necessary quotes/context/table data; no raised budget or false dispatch credit.",
-    "Version narrow response-format interoperability: actual c8 science passed but exact direct {claimId,path,value} entries lacked fields wrappers and local audit rejected3slots. Controlled existing validator accepts the same values only with fields:[entry]. Preserve path/value/source-role/contract checks and old response semantics; do not upgrade E1-v5 or treat whole experiment as valid.",
-    "Actually read the matching named scene-to-dataset premise; fix real3DGS/NTC initial states, parameter-free copy representation, stage2 operation/numeric intervention, image resolution, timing/storage boundaries and paired units. Do not invent state quantities or source evidence just to satisfy schema.",
-    "Verify final executable content quality and new independent replacements against original full DR0-DR5 design. Original independent0/5 and all prior failed/partial cases remain unchanged."
+    "Preserve11old unknowns, all old identities and E1-v5 partial history; no task/attempt bypass or reservation-as-usage claim.",
+    "Acquire and actually read the matching scene-to-dataset premise with bounded same-work/version/index/section predecessor context; metadata/name candidates cannot substitute for quoted membership evidence.",
+    "Fix complete3DGS/NTC initialization and parameter-free copy representation, real stage2 creation/optimization and explicit rendering, storage/timing units/boundaries. Keep scientifically invalid states rejected even when their JSON schema is valid.",
+    "Validate new repair4 on fresh corrected content: all initial E1-v5 batch preflights now fit, but subsequent dispatch remains conditional on actual remaining budget and model output. Do not claim three paid repairs or whole-content acceptance from static preflight/mock responses.",
+    "Verify usable final research results and fresh independent replacements against the original full DR0-DR5 design; original independent0/5 unchanged. Present failed/partial results concisely rather than treating limits alone as a usable experiment."
   ],
   "javaReaderRuntime": {
     "sourceCommit": "070ab1a",
@@ -3123,7 +3133,7 @@
     "independentCredit": 0,
     "proof": "deep-research-evidence/compact-experiment-envelope-regression-20261020.json"
   },
-  "currentCheckpoint": ".20387907cb3: precise state/config JSONPointer feedback and prospective review distinctions; server-owned immutable repair3/review1.3281DeepResearch tests/136overlapping focused/39new;27old actual fingerprints. Actual E1-v5 completed/partial, only limits accepted,12settled calls/56648tokens,no new unknown. Edit NOT sent:24249mandatory bytes>23599live cap by650. c8 science passed but exact direct field bindings rejected by local wrapper syntax; controlled wrapper reproduction only, no production upgrade. Whole design/content/independent acceptance incomplete, goal active/PR draft.",
+  "currentCheckpoint": ".204f78f6bee: new repair4 losslessly packs nested config arrays; review2 accepts exact direct field bindings through unchanged validators.3322DeepResearch tests/126overlapping focused/41new;29old actual fingerprints. E1-v5 old preflight24249>23599 reproduced; controlled new3batch inputs23570/23557/23481 all fit that initial cap, originals/required evidence preserved. Static preflight is not paid dispatch or a promise all later calls fit. Archived review replay admits exact c8 binding and linked c1, still rejects6real defects; old production results not upgraded.0new model calls/unknowns,4855ledger unchanged,11old paused preserved. Goal active/PR draft, full development incomplete.",
   "sharedModuleSourceCheckpoint": {
     "sourceCommit": "f8ae5177",
     "promptVersion": "dr-v2.20261020.199",
@@ -3201,5 +3211,16 @@
       "proof": "E1-v5-diagnostic-20261020.json"
     },
     "proof": "deep-research-evidence/experiment-feedback-review-regression-20261020.json"
+  },
+  "nestedExperimentAuditCheckpoint": {
+    "sourceCommit": "f78f6bee",
+    "promptVersion": "dr-v2.20261020.204",
+    "offlinePassed": 3322,
+    "scope": "All test_deep_research*.py",
+    "oldRequestsPreserved": 29,
+    "newModelCalls": 0,
+    "liveContentAccepted": false,
+    "independentCredit": 0,
+    "proof": "deep-research-evidence/nested-experiment-audit-regression-20261020.json"
   }
 }
