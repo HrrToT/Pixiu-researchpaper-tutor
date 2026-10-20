@@ -16,11 +16,15 @@ from services.deep_research.repair_scope import repair_evidence_scope
 def _prepare_repair(report, verification, evidence, question, *, max_prompt_bytes=24000,
                     metric_domains=None, draft_context=(), prior_revisions=(),
                     fact_redraft=False, requirement_context=(), source_aware_redraft=False,comparison_reasoning=False,
-                    question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False,shared_experiment_schema=False,experiment_evidence_context=None):
+                    question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False,shared_experiment_schema=False,experiment_evidence_context=None,experimental_edits=False):
     rejected = {row['claimId']: row for row in verification.get('rejected', [])}
     originals = {row['claimId']: row for row in report.get('claims', []) if row.get('claimId') in rejected}
     if not originals:
         return []
+    if experimental_edits:
+        from services.deep_research.experiment_edits import can_edit
+        if not shared_experiment_schema or not can_edit(report):
+            raise ValueError('Experimental edits require existing compatible complete role objects')
     hinted = {ref for row in rejected.values() for ref in row.get('missingEvidenceRefs', [])
               if isinstance(ref, str)}
     evidence = sorted(evidence, key=lambda e: e.get('evidenceId') not in hinted)
@@ -377,6 +381,8 @@ in the paper. Maintain consistency with accepted definitions and complete requir
             evidence_marker=evidence_marker,schema=revision_shape)
     if shared_experiment_schema and prospective:
         from services.deep_research.experiment_repair import compatible,render as experiment_prompt
+        if experimental_edits:
+            from services.deep_research.experiment_edit_prompt import render as experiment_prompt
         if compatible(report):
             prompt=experiment_prompt(question=question,length_contract=length_contract,
                 accepted=proposal_context,siblings=sibling_context,questions=question_dictionary,
@@ -386,13 +392,16 @@ in the paper. Maintain consistency with accepted definitions and complete requir
                 policy_version=experimental_intent,declared_table_refs=declared_table_refs,
                 terminology=SCIENTIFIC_TERMINOLOGY,concise_policy=experiment_evidence_context is not None)
     template = prompt
+    from services.deep_research.experiment_edits import columnar
     def render(selected_rows):
         visible_ids = {row['evidenceId'] for row in selected_rows}
         permissions = {key: [short_ids[ref] for ref in values
                             if ref in short_ids and short_ids[ref] in visible_ids]
                        for key, values in allowed.items()}
         return template.replace(permissions_marker, json.dumps(permissions, ensure_ascii=False, separators=(',', ':')), 1).replace(
-            evidence_marker, json.dumps(selected_rows, ensure_ascii=False, separators=(',', ':')), 1)
+            evidence_marker, json.dumps(
+                columnar(selected_rows)
+                if experimental_edits else selected_rows,ensure_ascii=False,separators=(',',':')),1)
     if max_prompt_bytes <= 0:
         raise BudgetExhaustedError('repairPromptBytes', max_prompt_bytes, 1)
     # Allocate required full quotes AND context first. Optional candidate
@@ -422,6 +431,7 @@ in the paper. Maintain consistency with accepted definitions and complete requir
     visible = {aliases[row['evidenceId']] for row in rows}
     allowed = {key: [ref for ref in values if ref in visible] for key, values in allowed.items()}
     return {'prompt': prompt, 'originals': originals, 'aliases': aliases, 'allowed': allowed,
+            **({'editFormatVersion':1} if experimental_edits else {}),
             **({'presentationVersion':1,'presentationQuotes':{row['evidenceId']:row.get('quote','')+'\n'+
                 json.dumps(row.get('sourceContext',{}),ensure_ascii=False) for row in rows}} if compact_factual else {})}
 
@@ -446,6 +456,9 @@ def _parse_repair_response(prepared, response, parse, presentation_audit=None,dr
             raise DeepResearchError('invalid_repair_response', '修订结果未能解析；已保留此前核实的内容。',
                                     {'responseState': 'received_invalid'})
         return []
+    if type(prepared.get('editFormatVersion')) is int and prepared['editFormatVersion']==1:
+        from services.deep_research.experiment_edits import expand
+        revised=expand(prepared,revised)
     revised = resolve_evidence_aliases({'claims': revised}, aliases)['claims']
     valid, seen = [], set()
     for row in revised:
@@ -514,7 +527,7 @@ def factual_redraft_eligible(report):
 def repair_rejected(report, verification, evidence, question, invoke, parse, *,
                     max_prompt_bytes=24000, metric_domains=None, batch_state=None, checkpoint=None,
                     current_budget=None, invoke_request=None, fact_redraft=False, requirement_context=(),
-                    source_aware_redraft=False,comparison_reasoning=False,question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,strict_response=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False,shared_experiment_schema=False,experiment_evidence_context=None):
+                    source_aware_redraft=False,comparison_reasoning=False,question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,strict_response=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False,shared_experiment_schema=False,experiment_evidence_context=None,experimental_edits=False):
     """One bounded revision round, split before dispatch when evidence cannot fit.
 
     At most three requests share full sibling design definitions. Successful
@@ -538,7 +551,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
                        **({'tableReferencesContractVersion':1} if declared_table_refs else {}),
                        **({'repairResponseContractVersion':1} if strict_response else {}),
                        **({'factualRepairContractVersion':1} if compact_source_repair else {}),
-                       **({'experimentRepairContractVersion':1} if shared_experiment_schema else {}),
+                       **({'experimentRepairContractVersion':2 if experimental_edits else 1} if shared_experiment_schema else {}),
                        **({'experimentEvidenceContractVersion':1,'experimentEvidenceContext':experiment_evidence_context}
                           if experiment_evidence_context is not None else {}),
                        **({'comparisonMethodologyVersion':1} if comparison_methodology else {}),
@@ -558,7 +571,8 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
             comparison_reasoning=comparison_reasoning,question_priority=question_priority,concise_factual=concise_factual,
             factual_scope=factual_scope,declared_table_refs=declared_table_refs,comparison_methodology=comparison_methodology,
             experimental_intent=experimental_intent,compact_source_repair=compact_source_repair,
-            shared_experiment_schema=shared_experiment_schema,experiment_evidence_context=experiment_evidence_context)
+            shared_experiment_schema=shared_experiment_schema,experiment_evidence_context=experiment_evidence_context,
+            **({'experimental_edits':True} if experimental_edits else {}))
 
     state = deepcopy(batch_state) if batch_state is not None else {
         'version': 1, 'inputDigest': identity, 'maxPromptBytes': max_prompt_bytes,
@@ -623,7 +637,8 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
             try:
                 if 'pending' not in state:
                     from services.deep_research.repair_budget import repair_batch_output_limit, repair_prompt_byte_limit
-                    output = repair_batch_output_limit(len(group)) if invoke_request else 8192
+                    from services.deep_research.experiment_edits import OUTPUT_TOKENS
+                    output = OUTPUT_TOKENS if experimental_edits else repair_batch_output_limit(len(group)) if invoke_request else 8192
                     cap = min(state['maxPromptBytes'], repair_prompt_byte_limit(current_budget(), output)) \
                           if current_budget else state['maxPromptBytes']
                     prepared = prepare(group, revised, cap)
