@@ -24,7 +24,7 @@ SPLIT_GUIDANCE=('For multiview temporal data, frame indices choose a time window
 
 def enabled(record):
     from services.deep_research.experiment_template import enabled as template_enabled
-    return template_enabled(record) and record['experimentDraftContractVersion'] in (3,4,5)
+    return template_enabled(record) and record['experimentDraftContractVersion'] in (3,4,5,6)
 
 
 def basis_limit(record):
@@ -169,7 +169,7 @@ def prepare_plan(record,*,prompt,aliases,invoke,parse,checkpoint):
                 or saved.get('evidenceAliases')!=aliases):
             raise DeepResearchError('invalid_experiment_planning_state','保存的实验规划与原输入不一致，不能重新发送。')
         if saved.get('status')=='ready':
-            if (not validate_basis(saved.get('basis'),aliases,max_bytes=basis_limit(record),lean=record.get('experimentDraftContractVersion')==5)
+            if (not validate_basis(saved.get('basis'),aliases,max_bytes=basis_limit(record),lean=record.get('experimentDraftContractVersion') in (5,6))
                     or digest(saved.get('response'))!=saved.get('responseDigest')
                     or not isinstance(saved.get('response'),dict)
                     or parsed_basis(saved['response'],parse)!=saved['basis']):
@@ -197,7 +197,7 @@ def prepare_plan(record,*,prompt,aliases,invoke,parse,checkpoint):
         raise DeepResearchError('invalid_experiment_planning_state','保存的实验规划响应已改变，不能重新发送。')
     basis=parsed_basis(response,parse)
     if (not isinstance(response,dict) or response.get('finishReason',response.get('finish_reason'))=='length'
-            or not validate_basis(basis,aliases,max_bytes=basis_limit(record),lean=record.get('experimentDraftContractVersion')==5)):
+            or not validate_basis(basis,aliases,max_bytes=basis_limit(record),lean=record.get('experimentDraftContractVersion') in (5,6))):
         saved['status']='invalid_response';checkpoint(saved)
         raise DeepResearchError('invalid_experiment_planning_response','实验科学规划未完整返回或引用无效，原响应已保留。')
     saved.update(status='ready',basis=basis);checkpoint(saved)

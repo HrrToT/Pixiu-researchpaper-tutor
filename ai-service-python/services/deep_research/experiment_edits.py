@@ -77,7 +77,7 @@ def _apply(row,edit):
     else:raise ValueError('Pointer parent is scalar')
 
 
-def expand(prepared,response):
+def expand(prepared,response,representation_audit=None):
     """Invalid rows yield no revision. Permissions/roles are still checked later.
 
     The model never edits storage or verified claims. Each target expands from
@@ -101,5 +101,10 @@ def expand(prepared,response):
                 _apply(base,edit)
         except (ValueError,KeyError,IndexError,TypeError,OverflowError):
             continue
+        if type(prepared.get('representationContractVersion')) is int and prepared['representationContractVersion']==1:
+            from services.deep_research.experiment_representation import normalize_claims
+            [base],changes=normalize_claims([base])
+            if representation_audit is not None:
+                representation_audit.extend(changes)
         result.append(base)
     return result

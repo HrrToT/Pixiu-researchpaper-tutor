@@ -49,4 +49,6 @@ E/P/Q keys stay out of published prose.
     if k['declared_table_refs']:
         from services.deep_research.table_bindings import REFERENCE_GUIDANCE
         text+='\n'+REFERENCE_GUIDANCE
+    if k.get('parameter_rows') is True:
+        text+='\nOperation parameters may use objects, exact [name,type,value] rows or marked @ tables; the server restores only these forms, retaining all values and checks.'
     return text

@@ -173,7 +173,7 @@ def test_elapsed_admission_includes_clock_time_and_does_not_depend_only_on_stale
     assert 129<remaining_seconds(value)<131
 
 
-@pytest.mark.parametrize('version',[None,True,'3',0,1,2,6])
+@pytest.mark.parametrize('version',[None,True,'3',0,1,2,7])
 def test_old_versions_keep_existing_request_path(version):
     value=current();value['experimentDraftContractVersion']=version
     assert not enabled(value)

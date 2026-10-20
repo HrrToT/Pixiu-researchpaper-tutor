@@ -10,7 +10,7 @@ REASONING_OPTION='_experiment_design_reasoning'
 
 def enabled(record):
     return (type(record.get('experimentDraftContractVersion')) is int
-            and record['experimentDraftContractVersion'] in (1,2,3,4,5)
+            and record['experimentDraftContractVersion'] in (1,2,3,4,5,6)
             and all(type(record.get(key)) is int and record[key]==version for key,version in (
                 ('protocolContractVersion',2),('workflowContractVersion',4),
                 ('budgetContractVersion',1),('hypothesisContractVersion',1))))
@@ -140,7 +140,7 @@ def build(record, *, question, limit, clarification, gaps, obligations, sources,
         gaps=gaps,obligations=obligations,sources=sources,evidence_marker=evidence_marker,
         claim_fields=claim_fields,claim_limit=claim_limit,section_templates=section_templates,concise=True)
     if compact:prompt+='\n'+REFERENCE_RULE
-    if record['experimentDraftContractVersion']==5:
+    if record['experimentDraftContractVersion'] in (5,6):
         from services.deep_research.experiment_planning import SPLIT_GUIDANCE
         prompt+='\n'+SPLIT_GUIDANCE
     if reasoning_enabled(record):
@@ -158,7 +158,17 @@ actual config/text. A basis reference never grants another claim source permissi
 This is UNVERIFIED planning, not evidence or output prose. Do not replace any role
 with this metadata; independent review still checks the entire resulting experiment.
 '''
-    prompt+='\n'+SCHEMA+'\nEXACT_STAGES='+packed(list(STAGES))+'\nEXACT_RECORDS='+packed(sorted(RECORDS|{'group_checkpoints'}))
+    schema=SCHEMA
+    if record['experimentDraftContractVersion']==6:
+        from services.deep_research.experiment_representation import GUIDANCE
+        # Replace redundant framing, rather than consuming source capacity.
+        # SCHEMA remains byte-stable for all saved versions1..5.
+        prefix=schema[:schema.index('operation=')]
+        schema=('Shared executionSpec grammar. Choose one OR variant.\n'
+            'str:nonblank; number:finite/nonbool; integer:nonbool. Unique lists: no duplicates.\n'
+            'Exact keys; server versions on enclosing claims only.\n'+GUIDANCE+'\n'+schema[len(prefix):].replace(
+                "Each role's executionSpec is directly the object below, never wrapped in the role name:\n",'',1))
+    prompt+='\n'+schema+'\nEXACT_STAGES='+packed(list(STAGES))+'\nEXACT_RECORDS='+packed(sorted(RECORDS|{'group_checkpoints'}))
     prompt+='\nREQUIRED OUTPUT OUTLINE (one claim per role):\n'+packed(design_output_outline(
         strict_budget=True,strict_hypothesis=True,strict_protocol=2,strict_workflow=4))
     configuration_policy='''Implement ALL required roles using the supplied unverified scientific plan.

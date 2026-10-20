@@ -1414,8 +1414,8 @@ space with unsupported global absence or incidental iteration/performance values
                 sources=source_registry,evidence=evidence_summaries,
                 tables={key:table_registry[key] for key in table_registry if key in tables_used},
                 metric_domains=brief_state.get('metricDomains'),
-                **({'compact':True} if record['experimentDraftContractVersion'] in (4,5) else {}),
-                **({'lean':True} if record['experimentDraftContractVersion']==5 else {})),aliases=evidence_aliases,
+                **({'compact':True} if record['experimentDraftContractVersion'] in (4,5,6) else {}),
+                **({'lean':True} if record['experimentDraftContractVersion'] in (5,6) else {})),aliases=evidence_aliases,
                 invoke=lambda node,prompt,options:llm_invoke(run_id,node,prompt,options,use_reserve=True),
                 parse=_safe_parse_json,checkpoint=checkpoint_planning)
             if plan is None:
@@ -1447,6 +1447,7 @@ space with unsupported global absence or incidental iteration/performance values
         if not isinstance(parsed, dict) or not isinstance(parsed.get("claims"), list):
             return {"error_code": "invalid_synthesis_response"}
         experiment_drafting_audit=None
+        experiment_representation_audit=[]
         if output_kind=='experiment_design' and experiment_reasoning(record):
             experiment_drafting_audit={'version':2,'basis':parsed.pop('designBasis',None),
                 'evidenceAliases':dict(evidence_aliases),'verification':'unchecked'}
@@ -1480,6 +1481,11 @@ space with unsupported global absence or incidental iteration/performance values
             parsed = stamp_protocol_contract(parsed, enabled=strict_protocol)
             from services.deep_research.experiment_workflow import stamp_workflow_contract
             parsed = stamp_workflow_contract(parsed, enabled=strict_workflow)
+            if compact_experiment_enabled(record) and record['experimentDraftContractVersion']==6:
+                from services.deep_research.experiment_representation import normalize_claims
+                parsed['claims'],changes=normalize_claims([{**c,'designContractVersion':2}
+                    if isinstance(c,dict) else c for c in parsed['claims']])
+                experiment_representation_audit.extend({'phase':'synthesis',**change} for change in changes)
             parsed['claims'] = [materialize_execution_claim({**claim, 'designContractVersion': 2})
                                 if isinstance(claim, dict) else claim for claim in parsed['claims']]
         parsed = compact_answer(parsed, question,
@@ -1518,6 +1524,11 @@ space with unsupported global absence or incidental iteration/performance values
             parsed = stamp_hypothesis_contract(parsed, enabled=strict_hypothesis)
             parsed = stamp_protocol_contract(parsed, enabled=strict_protocol)
             parsed = stamp_workflow_contract(parsed, enabled=strict_workflow)
+            if compact_experiment_enabled(record) and record['experimentDraftContractVersion']==6:
+                from services.deep_research.experiment_representation import normalize_claims
+                parsed['claims'],changes=normalize_claims([{**c,'designContractVersion':2}
+                    if isinstance(c,dict) else c for c in parsed['claims']])
+                experiment_representation_audit.extend({'phase':'post_compaction',**change} for change in changes)
             parsed['claims'] = [materialize_execution_claim({**claim, 'designContractVersion': 2})
                                 if isinstance(claim, dict) else claim for claim in parsed['claims']]
             from services.deep_research.answer_constraints import answer_character_count
@@ -1538,6 +1549,7 @@ space with unsupported global absence or incidental iteration/performance values
                     "reportBody": parsed,
                     "synthesisContainer": container_kind,
                     **({'experimentDraftingAudit':experiment_drafting_audit} if experiment_drafting_audit is not None else {}),
+                    **({'experimentRepresentationAudit':experiment_representation_audit} if experiment_representation_audit else {}),
                     **({'factualDraftingAudit':drafting_audit,
                         'synthesisPresentationAudit':synthesis_presentation_audit} if scope_enabled(record) else {}),
                 },
@@ -1668,7 +1680,7 @@ def make_verify_node(
                     from services.deep_research.experiment_repair import enabled as shared_experiment_repair
                     from services.deep_research.experiment_edits import can_edit,OUTPUT_TOKENS as EDIT_OUTPUT_TOKENS
                     edit_repair=(shared_experiment_repair(record)
-                        and record['experimentRepairContractVersion'] in (2,3,4) and can_edit(repair_report))
+                        and record['experimentRepairContractVersion'] in (2,3,4,5) and can_edit(repair_report))
                     repair_input_options={}
                     if compact_repair:
                         from services.deep_research.repair_budget import repair_batch_output_limit
@@ -1689,8 +1701,9 @@ def make_verify_node(
                         **({'compact_source_repair':True} if compact_repair else {}),
                         **({'shared_experiment_schema':True} if shared_experiment_repair(record) else {}),
                         **({'experimental_edits':True} if edit_repair else {}),
-                        **({'experimental_diagnostics':True} if edit_repair and record['experimentRepairContractVersion'] in (3,4) else {}),
-                        **({'experimental_nested_tables':True} if edit_repair and record['experimentRepairContractVersion']==4 else {}),
+                        **({'experimental_diagnostics':True} if edit_repair and record['experimentRepairContractVersion'] in (3,4,5) else {}),
+                        **({'experimental_nested_tables':True} if edit_repair and record['experimentRepairContractVersion'] in (4,5) else {}),
+                        **({'experimental_representation':True} if edit_repair and record['experimentRepairContractVersion']==5 else {}),
                         **({'experiment_evidence_context':candidate_context} if candidate_context is not None else {}),
                         **({'strict_response':True} if type(record.get('repairProgressContractVersion')) is int
                            and record['repairProgressContractVersion']==2 else {}),
