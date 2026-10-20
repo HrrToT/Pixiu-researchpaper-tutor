@@ -1,0 +1,81 @@
+{
+  "date": "2026-10-20",
+  "sourceCommit": "c57869b8",
+  "promptVersion": "dr-v2.20261020.205",
+  "sourceContinuityContractVersion": 1,
+  "serverOwnedImmutable": true,
+  "fullDeepResearchOffline": {
+    "passed": 3356,
+    "files": 196,
+    "warnings": 1,
+    "seconds": 222.17,
+    "scope": "All tests/test_deep_research*.py; not an all-Python or reading/config integration pass.",
+    "log": "tmp/pytest-dr205-research-full.log",
+    "sha256": "71e2c53649976309cc02082c38a40f75f1e64b3682165400f0f49403272c230a"
+  },
+  "focusedPassed": 70,
+  "focusedSeconds": 5.24,
+  "focusedWarnings": 1,
+  "focusedOverlap": true,
+  "newTests": 34,
+  "oldActualModelFingerprintsMatched": 29,
+  "oldActualRetrievalQueryIdentitiesMatched": 3,
+  "implementation": "Only new immutable continuity1 runs add at most one separate owned adjacent index chunk for leading figure/table references, after other retrieval selectors; preserve best hit/anchor, exact owner/version/index/section/family and original5-result/12-read limits. Reading bundles exact owned fulltext neighbors before the anchor. Old runs keep legacy behavior.",
+  "controlledReplayProof": "illustrative-context-actual-input-20261020.json",
+  "controlledAndActualNewContextHashMatch": true,
+  "actualCase": {
+    "case": "E1-v6",
+    "status": "completed",
+    "outcome": "inconclusive",
+    "acceptedRoles": 0,
+    "rejectedRoles": 9,
+    "settledModelCalls": 13,
+    "settledTokens": 56226,
+    "newUnknowns": 0,
+    "independentCredit": 0,
+    "contentAccepted": false,
+    "contextActuallyAcquiredReadExtractedAndCited": true,
+    "readCount": 10,
+    "actualRepair": {
+      "sent": true,
+      "fingerprintMatched": true,
+      "inputBytes": 23989,
+      "inputCap": 24000,
+      "outputCap": 4096,
+      "targets": [
+        [
+          "c1",
+          "c2",
+          "c3",
+          "c4",
+          "c5",
+          "c6",
+          "c7",
+          "c8",
+          "c9"
+        ]
+      ],
+      "reconstructedDrafts": 2,
+      "draftsMatchSavedResult": true,
+      "scientificallyAccepted": 0
+    },
+    "proof": "E1-v6-diagnostic-20261020.json"
+  },
+  "runtimeProof": "runtime-load-dr205-illustrative-context-20261020.json",
+  "retentionProof": "runtime-postcases-dr205-e1-v6-20261020.json",
+  "selectedDiagnosticTotals": {
+    "settledModelCalls": 507,
+    "measuredTokens": 2078416,
+    "notGlobalHistory": true,
+    "costUnknown": true
+  },
+  "remaining": [
+    "Preserve11old unknowns and exact old identities; no task/attempt bypass, silent history upgrade or reservation-as-measured-usage claim.",
+    "Version narrowly declared normalization of EXACT single same-role executionSpec wrappers and operation parameter-row/marked-table forms. E1-v6 has4role wrappers and copied compact parameter rows; preserve raw model responses and all values, reject ambiguous/extra forms, retain existing schema and science gates.",
+    "Improve canonical role scaffolding in initial experimental generation instead of repeatedly asking a model to infer role schemas from terse grammar. Do not fill scientific values automatically or drop requested roles.",
+    "Fix actual3DGS/NTC full initialization, invented pretrained assets/selectors/opaque zero-weight states, native whole-stage unequal budget, training-only eligible window selection, real intervention and measurement boundaries. Existing literal scene membership is now acquired/read/extracted/cited, not proof of downloadable assets/counts or a complete plan.",
+    "Audit independent-review reasons against prospective hypotheses, proposed splits and zero-based indexing using explicit facts/choices and actual linked definitions; do not suppress real evidence/science defects or auto-pass from missing proof.",
+    "Verify usable content and fresh independent replacements against full original DR0-DR5 design; original independent0/5 and failed/partial histories remain unchanged."
+  ],
+  "boundary": "Real context acquisition/read/extraction/citation and one in-budget repair request verified; content remains0/9 and inconclusive. Missing scientific details, output-role wrappers/compact rows and review calibration remain. No automatic repeat, history upgrade or fresh independent acceptance. Goal active/PR draft; DR0-DR5 incomplete."
+}

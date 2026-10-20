@@ -2071,6 +2071,16 @@
       "log": "tmp/pytest-dr204-research-full.log",
       "sha256": "594e1639fd7858c0252839b4ddd43d0f09ca6f597f0b8783b5042a27a0af12b9",
       "sourceCommit": "f78f6bee"
+    },
+    "illustrativeContextOffline": {
+      "passed": 3356,
+      "files": 196,
+      "warnings": 1,
+      "seconds": 222.17,
+      "scope": "All tests/test_deep_research*.py; not an all-Python or reading/config integration pass.",
+      "log": "tmp/pytest-dr205-research-full.log",
+      "sha256": "71e2c53649976309cc02082c38a40f75f1e64b3682165400f0f49403272c230a",
+      "sourceCommit": "c57869b8"
     }
   },
   "stages": [
@@ -2533,7 +2543,7 @@
     "Full novice study workflow",
     "Independent Edge recovery"
   ],
-  "currentProviderConstraint": "All further necessary bounded validations uniformly authorized. Selected diagnostic sequence:494settled model calls/2022190measured tokens, not global history; costs unknown. Preserve11old paused unknowns; reservations are not measured usage. Latest E1-v5 is fully settled partial, not content accepted; no hidden retry.",
+  "currentProviderConstraint": "All further necessary bounded validations uniformly authorized. Selected diagnostic sequence:507settled model calls/2078416measured tokens, not global history; costs unknown. Preserve11old paused unknowns; reservations are not measured usage. Latest E1-v6 fully settled/inconclusive,0/9accepted; no automatic retry.",
   "currentDevelopmentMode": "Primary Codex only; Goal active; quota pause revoked. Source/runtimebc4d3732/.198. New experiment draft4 uses direct6144-token compact planning with a2500-byte private plan, lossless goal/source references and existing question-driven evidence ordering. Offline3194passes/23old request fingerprints; E1 controlled rows2to7, but shared-method definition and dataset-member source coverage remain incomplete. No new real model call; original E1 failure and11unknowns preserved.",
   "loadedRuntime": {
     "commit": "bc4d3732",
@@ -2548,11 +2558,12 @@
     "postCasesProof": "deep-research-evidence/runtime-postcases-dr197-e1-v1-20261020.json"
   },
   "nextQualityWork": [
-    "Preserve11old unknowns, all old identities and E1-v5 partial history; no task/attempt bypass or reservation-as-usage claim.",
-    "Acquire and actually read the matching scene-to-dataset premise with bounded same-work/version/index/section predecessor context; metadata/name candidates cannot substitute for quoted membership evidence.",
-    "Fix complete3DGS/NTC initialization and parameter-free copy representation, real stage2 creation/optimization and explicit rendering, storage/timing units/boundaries. Keep scientifically invalid states rejected even when their JSON schema is valid.",
-    "Validate new repair4 on fresh corrected content: all initial E1-v5 batch preflights now fit, but subsequent dispatch remains conditional on actual remaining budget and model output. Do not claim three paid repairs or whole-content acceptance from static preflight/mock responses.",
-    "Verify usable final research results and fresh independent replacements against the original full DR0-DR5 design; original independent0/5 unchanged. Present failed/partial results concisely rather than treating limits alone as a usable experiment."
+    "Preserve11old unknowns and exact old identities; no task/attempt bypass, silent history upgrade or reservation-as-measured-usage claim.",
+    "Version narrowly declared normalization of EXACT single same-role executionSpec wrappers and operation parameter-row/marked-table forms. E1-v6 has4role wrappers and copied compact parameter rows; preserve raw model responses and all values, reject ambiguous/extra forms, retain existing schema and science gates.",
+    "Improve canonical role scaffolding in initial experimental generation instead of repeatedly asking a model to infer role schemas from terse grammar. Do not fill scientific values automatically or drop requested roles.",
+    "Fix actual3DGS/NTC full initialization, invented pretrained assets/selectors/opaque zero-weight states, native whole-stage unequal budget, training-only eligible window selection, real intervention and measurement boundaries. Existing literal scene membership is now acquired/read/extracted/cited, not proof of downloadable assets/counts or a complete plan.",
+    "Audit independent-review reasons against prospective hypotheses, proposed splits and zero-based indexing using explicit facts/choices and actual linked definitions; do not suppress real evidence/science defects or auto-pass from missing proof.",
+    "Verify usable content and fresh independent replacements against full original DR0-DR5 design; original independent0/5 and failed/partial histories remain unchanged."
   ],
   "javaReaderRuntime": {
     "sourceCommit": "070ab1a",
@@ -3133,7 +3144,7 @@
     "independentCredit": 0,
     "proof": "deep-research-evidence/compact-experiment-envelope-regression-20261020.json"
   },
-  "currentCheckpoint": ".204f78f6bee: new repair4 losslessly packs nested config arrays; review2 accepts exact direct field bindings through unchanged validators.3322DeepResearch tests/126overlapping focused/41new;29old actual fingerprints. E1-v5 old preflight24249>23599 reproduced; controlled new3batch inputs23570/23557/23481 all fit that initial cap, originals/required evidence preserved. Static preflight is not paid dispatch or a promise all later calls fit. Archived review replay admits exact c8 binding and linked c1, still rejects6real defects; old production results not upgraded.0new model calls/unknowns,4855ledger unchanged,11old paused preserved. Goal active/PR draft, full development incomplete.",
+  "currentCheckpoint": ".205c57869b8: immutable sourceContinuity1 retrieves/reads separate same-work/version/index/section/family predecessor context for leading figure/table references under unchanged5/12limits.3356DeepResearch tests/70overlapping focused/34new,29old model fingerprints+3old retrieval identities. Real E1-v6: new chunk37 acquired/read before38/extracted as own literal quote/cited by data;10reads.13settled calls/56226tokens,0new unknown, completed/inconclusive0/9. One joint23989/24000byte edit sent,2drafts restored, still failed:4same-role spec wrappers, copied compact parameter rows and real scientific/config defects. Old payloads/tasks/unknowns preserved;4881ledger,11paused. Goal active, PR draft, full development incomplete.",
   "sharedModuleSourceCheckpoint": {
     "sourceCommit": "f8ae5177",
     "promptVersion": "dr-v2.20261020.199",
@@ -3222,5 +3233,52 @@
     "liveContentAccepted": false,
     "independentCredit": 0,
     "proof": "deep-research-evidence/nested-experiment-audit-regression-20261020.json"
+  },
+  "illustrativeContextCheckpoint": {
+    "sourceCommit": "c57869b8",
+    "promptVersion": "dr-v2.20261020.205",
+    "offlinePassed": 3356,
+    "oldModelRequestsPreserved": 29,
+    "oldRetrievalIdentitiesPreserved": 3,
+    "actualContextChainVerified": true,
+    "actualCase": {
+      "case": "E1-v6",
+      "status": "completed",
+      "outcome": "inconclusive",
+      "acceptedRoles": 0,
+      "rejectedRoles": 9,
+      "settledModelCalls": 13,
+      "settledTokens": 56226,
+      "newUnknowns": 0,
+      "independentCredit": 0,
+      "contentAccepted": false,
+      "contextActuallyAcquiredReadExtractedAndCited": true,
+      "readCount": 10,
+      "actualRepair": {
+        "sent": true,
+        "fingerprintMatched": true,
+        "inputBytes": 23989,
+        "inputCap": 24000,
+        "outputCap": 4096,
+        "targets": [
+          [
+            "c1",
+            "c2",
+            "c3",
+            "c4",
+            "c5",
+            "c6",
+            "c7",
+            "c8",
+            "c9"
+          ]
+        ],
+        "reconstructedDrafts": 2,
+        "draftsMatchSavedResult": true,
+        "scientificallyAccepted": 0
+      },
+      "proof": "E1-v6-diagnostic-20261020.json"
+    },
+    "proof": "deep-research-evidence/illustrative-context-regression-20261020.json"
   }
 }
