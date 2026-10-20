@@ -16,13 +16,15 @@ from services.deep_research.repair_scope import repair_evidence_scope
 def _prepare_repair(report, verification, evidence, question, *, max_prompt_bytes=24000,
                     metric_domains=None, draft_context=(), prior_revisions=(),
                     fact_redraft=False, requirement_context=(), source_aware_redraft=False,comparison_reasoning=False,
-                    question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False,shared_experiment_schema=False,experiment_evidence_context=None,experimental_edits=False,experimental_diagnostics=False):
+                    question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False,shared_experiment_schema=False,experiment_evidence_context=None,experimental_edits=False,experimental_diagnostics=False,experimental_nested_tables=False):
     rejected = {row['claimId']: row for row in verification.get('rejected', [])}
     originals = {row['claimId']: row for row in report.get('claims', []) if row.get('claimId') in rejected}
     if not originals:
         return []
     if experimental_diagnostics and (not experimental_edits or not experimental_intent):
         raise ValueError('Experimental diagnostics require prospective field edits')
+    if experimental_nested_tables and not experimental_diagnostics:
+        raise ValueError('Nested experimental tables require diagnostic field edits')
     if experimental_edits:
         from services.deep_research.experiment_edits import can_edit
         if not shared_experiment_schema or not can_edit(report):
@@ -391,6 +393,8 @@ in the paper. Maintain consistency with accepted definitions and complete requir
             from services.deep_research.experiment_diagnostics import feedback
             feedback_options['diagnostics'] = feedback(list(originals.values()), [
                 c for c in report.get('claims', []) if c.get('claimId') not in originals])
+        if experimental_nested_tables:
+            from services.deep_research.experiment_nested_prompt import render as experiment_prompt
         if compatible(report):
             prompt=experiment_prompt(question=question,length_contract=length_contract,
                 accepted=proposal_context,siblings=sibling_context,questions=question_dictionary,
@@ -441,6 +445,7 @@ in the paper. Maintain consistency with accepted definitions and complete requir
     return {'prompt': prompt, 'originals': originals, 'aliases': aliases, 'allowed': allowed,
             **({'editFormatVersion':1} if experimental_edits else {}),
             **({'diagnosticVersion':1,'schemaFeedback':feedback_options['diagnostics']} if experimental_diagnostics else {}),
+            **({'nestedTablesVersion':1} if experimental_nested_tables else {}),
             **({'presentationVersion':1,'presentationQuotes':{row['evidenceId']:row.get('quote','')+'\n'+
                 json.dumps(row.get('sourceContext',{}),ensure_ascii=False) for row in rows}} if compact_factual else {})}
 
@@ -536,7 +541,7 @@ def factual_redraft_eligible(report):
 def repair_rejected(report, verification, evidence, question, invoke, parse, *,
                     max_prompt_bytes=24000, metric_domains=None, batch_state=None, checkpoint=None,
                     current_budget=None, invoke_request=None, fact_redraft=False, requirement_context=(),
-                    source_aware_redraft=False,comparison_reasoning=False,question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,strict_response=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False,shared_experiment_schema=False,experiment_evidence_context=None,experimental_edits=False,experimental_diagnostics=False):
+                    source_aware_redraft=False,comparison_reasoning=False,question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,strict_response=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False,shared_experiment_schema=False,experiment_evidence_context=None,experimental_edits=False,experimental_diagnostics=False,experimental_nested_tables=False):
     """One bounded revision round, split before dispatch when evidence cannot fit.
 
     At most three requests share full sibling design definitions. Successful
@@ -552,6 +557,8 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
         return []
     if experimental_diagnostics and (not experimental_edits or not experimental_intent):
         raise ValueError('Experimental diagnostics require prospective field edits')
+    if experimental_nested_tables and not experimental_diagnostics:
+        raise ValueError('Nested experimental tables require diagnostic field edits')
     identity = digest({'report': report, 'verification': verification,
                        'evidence': evidence, 'question': question, 'metricDomains': metric_domains,
                        **({'factRedraftContractVersion':3 if concise_factual else 2 if source_aware_redraft else 1,'requirementContext':requirement_context}
@@ -562,7 +569,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
                        **({'tableReferencesContractVersion':1} if declared_table_refs else {}),
                        **({'repairResponseContractVersion':1} if strict_response else {}),
                        **({'factualRepairContractVersion':1} if compact_source_repair else {}),
-                       **({'experimentRepairContractVersion':3 if experimental_diagnostics else 2 if experimental_edits else 1} if shared_experiment_schema else {}),
+                       **({'experimentRepairContractVersion':4 if experimental_nested_tables else 3 if experimental_diagnostics else 2 if experimental_edits else 1} if shared_experiment_schema else {}),
                        **({'experimentEvidenceContractVersion':1,'experimentEvidenceContext':experiment_evidence_context}
                           if experiment_evidence_context is not None else {}),
                        **({'comparisonMethodologyVersion':1} if comparison_methodology else {}),
@@ -584,7 +591,8 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
             experimental_intent=experimental_intent,compact_source_repair=compact_source_repair,
             shared_experiment_schema=shared_experiment_schema,experiment_evidence_context=experiment_evidence_context,
             **({'experimental_edits':True} if experimental_edits else {}),
-            **({'experimental_diagnostics':True} if experimental_diagnostics else {}))
+            **({'experimental_diagnostics':True} if experimental_diagnostics else {}),
+            **({'experimental_nested_tables':True} if experimental_nested_tables else {}))
 
     state = deepcopy(batch_state) if batch_state is not None else {
         'version': 1, 'inputDigest': identity, 'maxPromptBytes': max_prompt_bytes,

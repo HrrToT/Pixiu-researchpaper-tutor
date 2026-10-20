@@ -30,7 +30,7 @@ def design_slots_for_claim(claim, metric_domains=None):
     return slots
 
 
-def validate_design_audit(claim, verdict, context, metric_domains=None):
+def validate_design_audit(claim, verdict, context, metric_domains=None, *, direct_fields=False):
     role = claim.get("designRole") if isinstance(claim, dict) else None
     if not isinstance(role, str):
         return []
@@ -47,7 +47,12 @@ def validate_design_audit(claim, verdict, context, metric_domains=None):
 
     failed = []
     for slot in slots:
-        if not _slot_supported(audit.get(slot), claim, context, slot):
+        entry = audit.get(slot)
+        # Contract 2 accepts only the exact, unambiguous single-field shape.
+        # Reuse ALL existing value/path/role/version and recovery-slot checks.
+        if direct_fields is True and isinstance(entry, dict) and set(entry) == {'claimId', 'path', 'value'}:
+            entry = {'fields': [entry]}
+        if not _slot_supported(entry, claim, context, slot):
             failed.append(slot)
     return failed
 

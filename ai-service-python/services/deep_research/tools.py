@@ -1038,11 +1038,11 @@ The dataAvailability object is an internal audit, not new experimental results.
         if target_bindings and scope_enabled and has_factual_targets:
             from services.deep_research.audit_source_fields import TARGET_GUIDANCE
             prompt+='\n'+TARGET_GUIDANCE
-        from services.deep_research.prospective_review import enabled as prospective_review_enabled, POLICY as prospective_review_policy
+        from services.deep_research.prospective_review import enabled as prospective_review_enabled, policy as prospective_review_policy
         review_version = self._prospective_review() if callable(self._prospective_review) else self._prospective_review
         if prospective_review_enabled(review_version) and all(
                 c.get('kind') in {'proposal', 'suggestion', 'hypothesis'} for c in claims):
-            prompt += '\n' + prospective_review_policy
+            prompt += '\n' + prospective_review_policy(review_version)
         template = prompt
         source_keys = ('workId', 'versionId', 'sourceTitle')
         source_registry = {}
@@ -1181,7 +1181,8 @@ The dataAvailability object is an internal audit, not new experimental results.
                         verdict['status']='failed'
                         verdict['reason']='结果与实验用途的来源归属尚未核实：'+', '.join(attribution_errors)
                         continue
-                missing = validate_design_audit(by_id[verdict['claimId']], verdict, [*claims, *proposal_context], metric_domains)
+                missing = validate_design_audit(by_id[verdict['claimId']], verdict, [*claims, *proposal_context], metric_domains,
+                    **({'direct_fields':True} if type(review_version) is int and review_version == 2 else {}))
                 if missing:
                     verdict['status'] = 'failed'
                     verdict['reason'] = '实验方案缺少可核对的具体配置：' + ', '.join(missing)
