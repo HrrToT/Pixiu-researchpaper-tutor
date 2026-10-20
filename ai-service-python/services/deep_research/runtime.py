@@ -27,14 +27,18 @@ def research_model_options(node, options):
     from services.deep_research.factual_reasoning import OPTION,DIRECT_REPAIR_OPTION,HIGH_SYNTHESIS_OPTION
     from services.deep_research.factual_review import OPTION as REVIEW_OPTION
     from services.deep_research.experiment_template import REASONING_OPTION as EXPERIMENT_OPTION
+    from services.deep_research.experiment_envelope import DIRECT_PLAN_OPTION
     options = dict(options)
     experiment_reasoning=options.pop(EXPERIMENT_OPTION,False)
+    direct_plan=options.pop(DIRECT_PLAN_OPTION,False)
     bounded_review=options.pop(REVIEW_OPTION,False)
     short_factual = options.pop(OPTION, False)
     direct_repair = options.pop(DIRECT_REPAIR_OPTION,False)
     high_synthesis = options.pop(HIGH_SYNTHESIS_OPTION,False)
-    if any(type(value) is not bool for value in (short_factual,direct_repair,high_synthesis,bounded_review,experiment_reasoning)):
+    if any(type(value) is not bool for value in (short_factual,direct_repair,high_synthesis,bounded_review,experiment_reasoning,direct_plan)):
         raise ValueError('Invalid server factual reasoning profile')
+    if direct_plan and (node!='plan_experiment' or any((short_factual,direct_repair,high_synthesis,bounded_review,experiment_reasoning))):
+        raise ValueError('Invalid direct experiment planning profile')
     if experiment_reasoning:
         if node!='synthesize' or short_factual or bounded_review:
             raise ValueError('Invalid experiment synthesis reasoning profile')
@@ -46,7 +50,8 @@ def research_model_options(node, options):
         return {**options,'thinking':{'type':'enabled'},'reasoning_effort':'low','max_tokens':8192}
     if node=='plan_experiment':
         from services.deep_research.experiment_planning import PLANNING_OUTPUT_TOKENS
-        return {**options,'thinking':{'type':'enabled'},'reasoning_effort':'low',
+        direct=direct_plan or (options.get('thinking')=={'type':'disabled'} and options.get('reasoning_effort')=='none')
+        return {**options,'thinking':{'type':'disabled' if direct else 'enabled'},'reasoning_effort':'none' if direct else 'low',
                 'max_tokens':PLANNING_OUTPUT_TOKENS,'response_format':{'type':'json_object'}}
     if short_factual and node == 'synthesize':
         # Scoped to small factual/comparison outputs, not full experiment specs.

@@ -1112,6 +1112,10 @@ def make_synthesize_node(
         premise_bundles=[];table_registry={};table_keys={}
         candidates = distinct_evidence_candidates(evidence)
         if premise_mode:
+            from services.deep_research.experiment_envelope import enabled as compact_experiment_envelope
+            if output_kind=='experiment_design' and compact_experiment_envelope(record):
+                from services.deep_research.selection import proposal_evidence_order
+                candidates=proposal_evidence_order(candidates,question)
             candidates,premise_bundles=order_premises(candidates,brief_state.get('plan',[]),
                 **({'membership_intents':True} if record['synthesisEvidenceContractVersion']==2 else {}))
         elif output_kind == 'paper_comparison':
@@ -1348,9 +1352,9 @@ space with unsupported global absence or incidental iteration/performance values
                 draft_obligations,source_registry,evidence_marker,table_marker,
                 drafting_schema=drafting_schema_enabled(record),point_guidance=format_guidance(point_constraint))
         from services.deep_research.experiment_template import enabled as compact_experiment_enabled,build as experiment_template
-        from services.deep_research.experiment_planning import enabled as staged_experiment,MAX_BASIS_BYTES
+        from services.deep_research.experiment_planning import enabled as staged_experiment,basis_limit
         staged_mode=premise_mode and output_kind=='experiment_design' and staged_experiment(record)
-        basis_slot=(uuid4().hex+' '*(MAX_BASIS_BYTES-32)) if staged_mode else None
+        basis_slot=(uuid4().hex+' '*(basis_limit(record)-32)) if staged_mode else None
         if premise_mode and output_kind=='experiment_design' and compact_experiment_enabled(record):
             prompt=experiment_template(record,question=question,limit=requested_limit,
                 clarification=separate_clarification(record),gaps=[g.get('question') for g in gaps[:5]],
@@ -1397,7 +1401,8 @@ space with unsupported global absence or incidental iteration/performance values
             plan=prepare_plan(current,prompt=planning_prompt(question=question,obligations=draft_obligations,
                 sources=source_registry,evidence=evidence_summaries,
                 tables={key:table_registry[key] for key in table_registry if key in tables_used},
-                metric_domains=brief_state.get('metricDomains')),aliases=evidence_aliases,
+                metric_domains=brief_state.get('metricDomains'),
+                **({'compact':True} if record['experimentDraftContractVersion']==4 else {})),aliases=evidence_aliases,
                 invoke=lambda node,prompt,options:llm_invoke(run_id,node,prompt,options,use_reserve=True),
                 parse=_safe_parse_json,checkpoint=checkpoint_planning)
             if plan is None:
@@ -1433,7 +1438,7 @@ space with unsupported global absence or incidental iteration/performance values
             experiment_drafting_audit={'version':2,'basis':parsed.pop('designBasis',None),
                 'evidenceAliases':dict(evidence_aliases),'verification':'unchecked'}
         elif staged_mode:
-            experiment_drafting_audit={'version':3,'basis':deepcopy(plan['basis']),
+            experiment_drafting_audit={'version':record['experimentDraftContractVersion'],'basis':deepcopy(plan['basis']),
                 'evidenceAliases':dict(evidence_aliases),'verification':'unchecked',
                 'unexpectedEcho':parsed.pop('designBasis',None)}
         from services.deep_research.answer_constraints import compact_answer, resolve_evidence_aliases

@@ -16,7 +16,12 @@ PROTOCOL_KEYS={'intervention','data','state','poseError','measurement','pairingB
 
 def enabled(record):
     from services.deep_research.experiment_template import enabled as template_enabled
-    return template_enabled(record) and record['experimentDraftContractVersion']==3
+    return template_enabled(record) and record['experimentDraftContractVersion'] in (3,4)
+
+
+def basis_limit(record):
+    from services.deep_research.experiment_envelope import enabled as compact_enabled,BASIS_BYTES
+    return BASIS_BYTES if compact_enabled(record) else MAX_BASIS_BYTES
 
 
 def remaining_seconds(record,now=None):
@@ -28,7 +33,7 @@ def remaining_seconds(record,now=None):
     return max(0,float(budget.get('maxWallClockSeconds',360))-max(0,elapsed))
 
 
-def validate_basis(value,allowed):
+def validate_basis(value,allowed,*,max_bytes=MAX_BASIS_BYTES):
     """Structure/citation permissions only; never a scientific approval."""
     if not isinstance(value,dict) or set(value)!={'sourceFacts','protocol','unresolved'}:
         return False
@@ -49,16 +54,18 @@ def validate_basis(value,allowed):
                 or len(refs)!=len(set(refs))):
             return False
     try:
-        return len(json.dumps(value,ensure_ascii=False,separators=(',',':'),allow_nan=False).encode())<=MAX_BASIS_BYTES
+        return len(json.dumps(value,ensure_ascii=False,separators=(',',':'),allow_nan=False).encode())<=max_bytes
     except (ValueError,TypeError):
         return False
 
 
-def planning_prompt(*,question,obligations,sources,evidence,tables,metric_domains):
+def planning_prompt(*,question,obligations,sources,evidence,tables,metric_domains,compact=False):
     from services.deep_research.design_drafting import _DRAFT_POLICY,_DRAFT_STATISTICS
     from services.deep_research.experiment_intent import guidance,single_toggle_request
     from services.deep_research.metric_scope import metric_protocol_requirements
     packed=lambda value:json.dumps(value,ensure_ascii=False,separators=(',',':'))
+    from services.deep_research.experiment_envelope import compact_obligations,REFERENCE_RULE,two_arm_request,BASIS_BYTES
+    if compact:obligations=compact_obligations(obligations,question,sources)
     prompt='''Plan the scientific logic of an UNEXECUTED experiment, before typing its full configuration.
 Do not emit executionSpec arrays or a final report. Return exactly:
 {"sourceFacts":[{"topic":"actual source fact","evidenceRefs":["own supplied E ID"],"scope":"bounded fact"}],
@@ -78,13 +85,23 @@ No fact/source permission is granted by this plan; every final attributed claim 
 its OWN original evidenceRefs. Questions/metadata/other model plans are not source evidence.
 Do not claim results, novelty, validation or that authors omitted unselected facts.
 '''
+    if compact:
+        prompt=prompt.replace('fit4000UTF-8',f'fit{BASIS_BYTES}UTF-8')
+        prompt+='''
+Keep this a short scientific blueprint: at most6source facts, short protocol choices;
+detailed state arrays and complete configurations belong in the NEXT request. Preserve
+the actual required learned modules and operations. Never substitute a convenient rigid
+transform, different loss or guessed member for an unsupported method/data fact; record
+that exact gap in unresolved instead. A compound stage/package can add optimization:
+record its finite unmatched cost honestly, without claiming an isolated parameter effect.
+'''+REFERENCE_RULE+'\n'
     prompt+='\nHuman question:\n'+question+'\nFrozen requirements:\n'+packed(obligations)
     prompt+='\nSource registry (metadata only):\n'+packed(sources)
     prompt+='\nExact original evidence with unchanged permissions:\n'+packed(evidence)
     prompt+='\nShared table packets (own tableDataRef only):\n'+packed(tables)
     prompt+='\n'+_DRAFT_POLICY+'\n'+guidance(question,draft=True,policy_version=3)
     prompt+='\nMetric protocols:\n'+packed(metric_protocol_requirements(metric_domains))
-    if not single_toggle_request(question):
+    if not (two_arm_request(question) if compact else single_toggle_request(question)):
         prompt+='\n'+_DRAFT_STATISTICS
     return prompt
 
@@ -105,7 +122,9 @@ def prepare_plan(record,*,prompt,aliases,invoke,parse,checkpoint):
     """Return a received plan or None for known pre-send budget refusal."""
     if len(prompt.encode())>24000:
         raise DeepResearchError('experiment_planning_input_capacity','实验科学规划输入超过原有容量，尚未发送。')
-    request=request_identity(record,'plan_experiment',prompt,{'max_tokens':PLANNING_OUTPUT_TOKENS,'temperature':0.0})
+    from services.deep_research.experiment_envelope import enabled as compact_enabled,DIRECT_PLAN_OPTION
+    request=request_identity(record,'plan_experiment',prompt,{'max_tokens':PLANNING_OUTPUT_TOKENS,'temperature':0.0,
+        **({DIRECT_PLAN_OPTION:True} if compact_enabled(record) else {})})
     identity=digest({'version':1,'request':request,'evidenceAliases':aliases})
     saved=deepcopy(record.get('state',{}).get('experimentPlanning'))
     if saved is not None:
@@ -114,7 +133,7 @@ def prepare_plan(record,*,prompt,aliases,invoke,parse,checkpoint):
                 or saved.get('evidenceAliases')!=aliases):
             raise DeepResearchError('invalid_experiment_planning_state','保存的实验规划与原输入不一致，不能重新发送。')
         if saved.get('status')=='ready':
-            if (not validate_basis(saved.get('basis'),aliases)
+            if (not validate_basis(saved.get('basis'),aliases,max_bytes=basis_limit(record))
                     or digest(saved.get('response'))!=saved.get('responseDigest')
                     or not isinstance(saved.get('response'),dict)
                     or parsed_basis(saved['response'],parse)!=saved['basis']):
@@ -142,7 +161,7 @@ def prepare_plan(record,*,prompt,aliases,invoke,parse,checkpoint):
         raise DeepResearchError('invalid_experiment_planning_state','保存的实验规划响应已改变，不能重新发送。')
     basis=parsed_basis(response,parse)
     if (not isinstance(response,dict) or response.get('finishReason',response.get('finish_reason'))=='length'
-            or not validate_basis(basis,aliases)):
+            or not validate_basis(basis,aliases,max_bytes=basis_limit(record))):
         saved['status']='invalid_response';checkpoint(saved)
         raise DeepResearchError('invalid_experiment_planning_response','实验科学规划未完整返回或引用无效，原响应已保留。')
     saved.update(status='ready',basis=basis);checkpoint(saved)

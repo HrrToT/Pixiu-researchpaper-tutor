@@ -10,7 +10,7 @@ REASONING_OPTION='_experiment_design_reasoning'
 
 def enabled(record):
     return (type(record.get('experimentDraftContractVersion')) is int
-            and record['experimentDraftContractVersion'] in (1,2,3)
+            and record['experimentDraftContractVersion'] in (1,2,3,4)
             and all(type(record.get(key)) is int and record[key]==version for key,version in (
                 ('protocolContractVersion',2),('workflowContractVersion',4),
                 ('budgetContractVersion',1),('hypothesisContractVersion',1))))
@@ -127,6 +127,9 @@ def build(record, *, question, limit, clarification, gaps, obligations, sources,
     from services.deep_research.design_drafting import prospective_draft_prompt, _DRAFT_POLICY
     from services.deep_research.experiment_planning import enabled as staged_enabled
     staged=staged_enabled(record)
+    from services.deep_research.experiment_envelope import enabled as compact_enabled,compact_obligations,REFERENCE_RULE,two_arm_request
+    compact=compact_enabled(record)
+    if compact:obligations=compact_obligations(obligations,question,sources)
     from services.deep_research.metric_scope import metric_protocol_requirements
     from services.deep_research.experimental_reasoning import design_output_outline
     from services.deep_research.experiment_workflow import STAGES, RECORDS
@@ -136,6 +139,7 @@ def build(record, *, question, limit, clarification, gaps, obligations, sources,
     prompt=prospective_draft_prompt(question=question,limit=limit,clarification=clarification,
         gaps=gaps,obligations=obligations,sources=sources,evidence_marker=evidence_marker,
         claim_fields=claim_fields,claim_limit=claim_limit,section_templates=section_templates,concise=True)
+    if compact:prompt+='\n'+REFERENCE_RULE
     if reasoning_enabled(record):
         prompt=prompt.replace('Return ONLY {"sections":[],"claims":[]}.',
             'Return ONLY {"designBasis":{},"sections":[],"claims":[]}.')
@@ -163,10 +167,13 @@ dataset/member and existing asset with its own original evidence. Proposed value
 are not author settings. Preserve the user's scope; no unsupported absence claims.
 Text explains rationale without duplicating fields rendered by the application.
 Independent review retains the full scientific and operational requirements.'''
+    if compact:
+        configuration_policy=configuration_policy.replace('finite preparation and matched whole-group budgets',
+            'finite preparation and honest whole-group budgets; match them for isolated effects')
     prompt+='\n'+(configuration_policy if staged else _DRAFT_POLICY)+'\n'+guidance(question,draft=True,
         policy_version=record.get('experimentIntentContractVersion',3))
     prompt+='\nRequired metric protocols:\n'+packed(metric_protocol_requirements(record.get('state',{}).get('metricDomains')))
-    if not single_toggle_request(question):
+    if not (two_arm_request(question) if compact else single_toggle_request(question)):
         prompt+='\n'+_DRAFT_STATISTICS
     prompt+='''
 Paper-attributed interventions must preserve the actual supplied defining equation,
