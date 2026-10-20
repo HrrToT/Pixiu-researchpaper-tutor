@@ -12,11 +12,19 @@ from services.deep_research.contracts import DeepResearchError, digest
 MAX_BASIS_BYTES=4000
 PLANNING_OUTPUT_TOKENS=6144
 PROTOCOL_KEYS={'intervention','data','state','poseError','measurement','pairingBudget'}
+SPLIT_GUIDANCE=('For multiview temporal data, frame indices choose a time window; camera/view IDs choose '
+    'training vs held-out evaluation views. Holding out every fifth FRAME does not create a held-out CAMERA. '
+    'Declare these axes separately and validate nonempty/disjoint camera sets. Choose a window with the '
+    'requested phenomenon using training observations only, before fitting or comparison; a scene name '
+    'does not prove that every chosen frame contains the phenomenon. Predeclare the training-only selection '
+    'rule and reject/record an ineligible window without using final evaluation views or scores. '
+    'Within-frame optimization iterations/epochs are not video-frame intervals; preserve the actual '
+    'method schedule and shared-state transfer. Proposed changes must be explicit and retain the requested technique.')
 
 
 def enabled(record):
     from services.deep_research.experiment_template import enabled as template_enabled
-    return template_enabled(record) and record['experimentDraftContractVersion'] in (3,4)
+    return template_enabled(record) and record['experimentDraftContractVersion'] in (3,4,5)
 
 
 def basis_limit(record):
@@ -33,11 +41,12 @@ def remaining_seconds(record,now=None):
     return max(0,float(budget.get('maxWallClockSeconds',360))-max(0,elapsed))
 
 
-def validate_basis(value,allowed,*,max_bytes=MAX_BASIS_BYTES):
+def validate_basis(value,allowed,*,max_bytes=MAX_BASIS_BYTES,lean=False):
     """Structure/citation permissions only; never a scientific approval."""
-    if not isinstance(value,dict) or set(value)!={'sourceFacts','protocol','unresolved'}:
+    expected={'sourceRefs','protocol','unresolved'} if lean else {'sourceFacts','protocol','unresolved'}
+    if not isinstance(value,dict) or set(value)!=expected:
         return False
-    facts,protocol,unresolved=value['sourceFacts'],value['protocol'],value['unresolved']
+    facts,protocol,unresolved=value.get('sourceFacts',[]),value['protocol'],value['unresolved']
     if not isinstance(facts,list) or len(facts)>12 or not isinstance(protocol,dict) or set(protocol)!=PROTOCOL_KEYS:
         return False
     if any(not isinstance(v,str) or not v.strip() for v in protocol.values()):
@@ -45,6 +54,11 @@ def validate_basis(value,allowed,*,max_bytes=MAX_BASIS_BYTES):
     if (not isinstance(unresolved,list) or len(unresolved)>8
             or any(not isinstance(v,str) or not v.strip() for v in unresolved)):
         return False
+    if lean:
+        refs=value['sourceRefs']
+        if (not isinstance(refs,list) or len(refs)>20 or any(not isinstance(ref,str) or ref not in allowed for ref in refs)
+                or len(refs)!=len(set(refs))):
+            return False
     for fact in facts:
         if (not isinstance(fact,dict) or set(fact)!={'topic','evidenceRefs','scope'}
                 or any(not isinstance(fact[k],str) or not fact[k].strip() for k in ('topic','scope'))):
@@ -59,7 +73,7 @@ def validate_basis(value,allowed,*,max_bytes=MAX_BASIS_BYTES):
         return False
 
 
-def planning_prompt(*,question,obligations,sources,evidence,tables,metric_domains,compact=False):
+def planning_prompt(*,question,obligations,sources,evidence,tables,metric_domains,compact=False,lean=False):
     from services.deep_research.design_drafting import _DRAFT_POLICY,_DRAFT_STATISTICS
     from services.deep_research.experiment_intent import guidance,single_toggle_request
     from services.deep_research.metric_scope import metric_protocol_requirements
@@ -85,7 +99,29 @@ No fact/source permission is granted by this plan; every final attributed claim 
 its OWN original evidenceRefs. Questions/metadata/other model plans are not source evidence.
 Do not claim results, novelty, validation or that authors omitted unselected facts.
 '''
-    if compact:
+    if lean:
+        prompt='''Plan the scientific logic of an UNEXECUTED experiment before its full configuration.
+Return exactly {"sourceRefs":["own supplied E IDs used for these decisions"],
+"protocol":{"intervention":"actual operation and control/treatment difference",
+"data":"evidenced member, temporal window and separate held-out units, training-only eligibility rule",
+"state":"actual shared module/representation and reproducible common-state initialization",
+"poseError":"requested perturbation or explicitly not applicable",
+"measurement":"paired observables, references and aggregation",
+"pairingBudget":"finite shared preparation, honest whole-group cost and bounded decision"},
+"unresolved":["specific remaining evidence gap"]}.
+The ENTIRE compact JSON must fit2500UTF-8 bytes. Use concise English and approximately200bytes
+per protocol field. State decisions once. Do NOT repeat source quotations or paper-fact summaries:
+the NEXT full-configuration request receives the SAME original evidence and source permissions.
+sourceRefs is only an index into supplied evidence, not a factual claim or verification.
+Keep all six protocol decisions concrete and mutually consistent; detailed state arrays and complete
+executionSpec definitions belong in the next request. Mark proposed values as unexecuted choices.
+Preserve the actual required learned modules and operations; do not substitute a convenient rigid
+transform or guess a dataset member. Put exact remaining gaps in unresolved. A whole-stage/package
+comparison may add optimization: record finite unmatched cost, not an isolated parameter effect.
+No fact/source permission is granted by this plan. Every final attributed claim still requires
+its OWN original E refs. Do not claim results, novelty, validation or global absence of source facts.
+'''+SPLIT_GUIDANCE+'\n'+REFERENCE_RULE+'\n'
+    elif compact:
         prompt=prompt.replace('fit4000UTF-8',f'fit{BASIS_BYTES}UTF-8')
         prompt+='''
 Keep this a short scientific blueprint: at most6source facts, short protocol choices;
@@ -133,7 +169,7 @@ def prepare_plan(record,*,prompt,aliases,invoke,parse,checkpoint):
                 or saved.get('evidenceAliases')!=aliases):
             raise DeepResearchError('invalid_experiment_planning_state','保存的实验规划与原输入不一致，不能重新发送。')
         if saved.get('status')=='ready':
-            if (not validate_basis(saved.get('basis'),aliases,max_bytes=basis_limit(record))
+            if (not validate_basis(saved.get('basis'),aliases,max_bytes=basis_limit(record),lean=record.get('experimentDraftContractVersion')==5)
                     or digest(saved.get('response'))!=saved.get('responseDigest')
                     or not isinstance(saved.get('response'),dict)
                     or parsed_basis(saved['response'],parse)!=saved['basis']):
@@ -161,7 +197,7 @@ def prepare_plan(record,*,prompt,aliases,invoke,parse,checkpoint):
         raise DeepResearchError('invalid_experiment_planning_state','保存的实验规划响应已改变，不能重新发送。')
     basis=parsed_basis(response,parse)
     if (not isinstance(response,dict) or response.get('finishReason',response.get('finish_reason'))=='length'
-            or not validate_basis(basis,aliases,max_bytes=basis_limit(record))):
+            or not validate_basis(basis,aliases,max_bytes=basis_limit(record),lean=record.get('experimentDraftContractVersion')==5)):
         saved['status']='invalid_response';checkpoint(saved)
         raise DeepResearchError('invalid_experiment_planning_response','实验科学规划未完整返回或引用无效，原响应已保留。')
     saved.update(status='ready',basis=basis);checkpoint(saved)

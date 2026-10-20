@@ -12,7 +12,7 @@ REFERENCE_RULE=('Frozen question/requestExcerpt values with humanQuestionPrefixC
 
 def enabled(record):
     from services.deep_research.experiment_template import enabled as template_enabled
-    return template_enabled(record) and record['experimentDraftContractVersion']==4
+    return template_enabled(record) and record['experimentDraftContractVersion'] in (4,5)
 
 
 def compact_obligations(obligations,question,sources):

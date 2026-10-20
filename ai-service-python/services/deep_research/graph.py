@@ -1117,9 +1117,11 @@ def make_synthesize_node(
                 from services.deep_research.selection import proposal_evidence_order
                 candidates=proposal_evidence_order(candidates,question)
             candidates,premise_bundles=order_premises(candidates,brief_state.get('plan',[]),
-                **({'membership_intents':True} if record['synthesisEvidenceContractVersion'] in (2,3,4) else {}),
-                **({'module_intents':True} if record['synthesisEvidenceContractVersion'] in (3,4) else {}),
-                **({'condition_intents':True} if record['synthesisEvidenceContractVersion']==4 else {}))
+                **({'membership_intents':True} if record['synthesisEvidenceContractVersion'] in (2,3,4,5) else {}),
+                **({'module_intents':True} if record['synthesisEvidenceContractVersion'] in (3,4,5) else {}),
+                **({'condition_intents':True} if record['synthesisEvidenceContractVersion'] in (4,5) else {}),
+                **({'definition_context':True,'read_sources':brief_state.get('readResults',[])}
+                   if record['synthesisEvidenceContractVersion']==5 else {}))
         elif output_kind == 'paper_comparison':
             candidates = comparison_evidence_order(candidates, paper_titles)
         elif output_kind == 'experiment_design':
@@ -1366,7 +1368,10 @@ space with unsupported global absence or incidental iteration/performance values
         template = prompt
         if premise_mode:
             reverse_aliases={eid:alias for alias,eid in evidence_aliases.items()}
-            wire_bundles=[{**bundle,'evidenceIds':[reverse_aliases.get(eid,eid) for eid in bundle['evidenceIds']]}
+            wire_bundles=[{**bundle,'evidenceIds':[reverse_aliases.get(eid,eid) for eid in bundle['evidenceIds']],
+                          **({'requiredContextByEvidenceId':{reverse_aliases.get(eid,eid):context
+                              for eid,context in bundle['requiredContextByEvidenceId'].items()}}
+                             if bundle.get('requiredContextByEvidenceId') else {})}
                           for bundle in premise_bundles]
             def render_premises(rows):
                 tids={row['tableDataRef'] for row in rows if row.get('tableDataRef')}
@@ -1376,7 +1381,10 @@ space with unsupported global absence or incidental iteration/performance values
             numerical_request=bool(re.search(r'数值|具体值|是多少|多少|核(?:查|对)|\b(?:values?|numbers?|how many|how much|verify)\b',question,re.I))
             qualitative_comparison=bool(re.search(r'为何|为什么|可比|同条件|\b(?:why|comparab\w*|alignment)\b',question,re.I))
             prompt,evidence_summaries,missing_bundles=fit_premises(evidence_summaries,render_premises,wire_bundles,
-                omit_optional_table_data=output_kind=='paper_comparison' and qualitative_comparison and not numerical_request)
+                omit_optional_table_data=output_kind=='paper_comparison' and qualitative_comparison and not numerical_request,
+                **({'required_contexts':{eid:context for b in wire_bundles
+                       for eid,context in b.get('requiredContextByEvidenceId',{}).items()}}
+                   if record['synthesisEvidenceContractVersion']==5 else {}))
             repo_update(run_id,lambda r:{**r,'state':{**r.get('state',{}),'synthesisPremiseAllocation':{
                 'version':1,'candidateEvidenceIds':[e['evidenceId'] for e in selected_candidates],
                 'suppliedEvidenceIds':[evidence_aliases[row['evidenceId']] for row in evidence_summaries],
@@ -1404,7 +1412,8 @@ space with unsupported global absence or incidental iteration/performance values
                 sources=source_registry,evidence=evidence_summaries,
                 tables={key:table_registry[key] for key in table_registry if key in tables_used},
                 metric_domains=brief_state.get('metricDomains'),
-                **({'compact':True} if record['experimentDraftContractVersion']==4 else {})),aliases=evidence_aliases,
+                **({'compact':True} if record['experimentDraftContractVersion'] in (4,5) else {}),
+                **({'lean':True} if record['experimentDraftContractVersion']==5 else {})),aliases=evidence_aliases,
                 invoke=lambda node,prompt,options:llm_invoke(run_id,node,prompt,options,use_reserve=True),
                 parse=_safe_parse_json,checkpoint=checkpoint_planning)
             if plan is None:

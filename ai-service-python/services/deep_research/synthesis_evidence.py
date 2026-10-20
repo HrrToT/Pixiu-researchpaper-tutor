@@ -12,7 +12,7 @@ from services.deep_research.selection import surrounding_context
 
 def enabled(record):
     version=record.get('synthesisEvidenceContractVersion')
-    return type(version) is int and version in (1,2,3,4)
+    return type(version) is int and version in (1,2,3,4,5)
 
 
 def result_role(row):
@@ -24,7 +24,8 @@ def result_role(row):
     return 'unspecified'
 
 
-def order_premises(evidence,plan,limit=20, *, membership_intents=False,module_intents=False,condition_intents=False):
+def order_premises(evidence,plan,limit=20, *, membership_intents=False,module_intents=False,condition_intents=False,
+                   definition_context=False,read_sources=()):
     obligations={o['obligationId']:o for item in plan for o in item.get('obligations',[])}
     rows=[e for e in evidence if e.get('verification',{}).get('literal')=='passed']
     works=list(dict.fromkeys(e.get('sourceWorkId') for e in rows))
@@ -39,7 +40,11 @@ def order_premises(evidence,plan,limit=20, *, membership_intents=False,module_in
                 value=operation_score(text,str(row.get('location',{}).get('section','')),intent,operational=True)
                 if module_intents and isinstance(intent,str) and intent.startswith('shared_module:'):
                     from services.deep_research.shared_modules import definition_score
-                    value=definition_score(row.get('quote',''),intent.split(':',1)[1])*30
+                    if definition_context:
+                        from services.deep_research.shared_modules import definition_premise
+                        value=definition_premise(row,intent.split(':',1)[1],read_sources)[0]*30
+                    else:
+                        value=definition_score(row.get('quote',''),intent.split(':',1)[1])*30
                 if intent=='operation' and row.get('extractionKind')=='literal_method_equation':
                     value+=30
                 if membership_intents and intent=='data_membership' and row.get('extractionKind')=='literal_dataset_member_rows':
@@ -64,8 +69,15 @@ def order_premises(evidence,plan,limit=20, *, membership_intents=False,module_in
                 if sibling:
                     bundle.append(sibling)
             ids=[e['evidenceId'] for e in bundle]
+            contexts={}
+            if definition_context and isinstance(intent,str) and intent.startswith('shared_module:'):
+                from services.deep_research.shared_modules import definition_premise
+                for e in bundle:
+                    _,context=definition_premise(e,intent.split(':',1)[1],read_sources)
+                    if context:contexts[e['evidenceId']]=context
             bundles.append({'obligationId':oid,'criterionId':(view.get('completionCriteria') or [{}])[0].get('criterionId','whole_obligation'),
-                            'requirement':view['question'],'source':source,'evidenceIds':ids})
+                            'requirement':view['question'],'source':source,'evidenceIds':ids,
+                            **({'requiredContextByEvidenceId':contexts} if contexts else {})})
             for row in bundle:
                 if row['evidenceId'] not in seen:
                     chosen.append(row);seen.add(row['evidenceId'])
@@ -73,14 +85,19 @@ def order_premises(evidence,plan,limit=20, *, membership_intents=False,module_in
     return chosen[:limit],bundles
 
 
-def fit_premises(rows,render,bundles,max_bytes=24000, *, omit_optional_table_data=False):
+def fit_premises(rows,render,bundles,max_bytes=24000, *, omit_optional_table_data=False,required_contexts=None):
     """Keep whole premise bundles before optional rows/context; no quote clipping."""
     if len(render([]).encode('utf8'))>max_bytes:
         raise ValueError('prompt_fixed_content_too_large')
     compact=[]
+    required_contexts=required_contexts or {}
     for row in rows:
         item=deepcopy(row)
-        if item.get('sourceContext'):
+        if row['evidenceId'] in required_contexts:
+            item['sourceContext']=deepcopy(required_contexts[row['evidenceId']])
+            item['sourceContextRequired']=True
+            item.pop('contextOmitted',None)
+        elif item.get('sourceContext'):
             item['sourceContext']={};item['contextOmitted']=True
         compact.append(item)
     by_id={row['evidenceId']:row for row in compact};selected=[];seen=set();missing=[]
@@ -107,6 +124,8 @@ def fit_premises(rows,render,bundles,max_bytes=24000, *, omit_optional_table_dat
             selected.append(row);seen.add(row['evidenceId'])
     originals={row['evidenceId']:row for row in rows}
     for i,row in enumerate(selected):
+        if row['evidenceId'] in required_contexts:
+            continue
         restored=[*selected];restored[i]=deepcopy(row)
         if originals[row['evidenceId']].get('sourceContext'):
             restored[i]['sourceContext']=originals[row['evidenceId']]['sourceContext']

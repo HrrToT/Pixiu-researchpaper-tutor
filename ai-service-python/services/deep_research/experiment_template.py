@@ -10,7 +10,7 @@ REASONING_OPTION='_experiment_design_reasoning'
 
 def enabled(record):
     return (type(record.get('experimentDraftContractVersion')) is int
-            and record['experimentDraftContractVersion'] in (1,2,3,4)
+            and record['experimentDraftContractVersion'] in (1,2,3,4,5)
             and all(type(record.get(key)) is int and record[key]==version for key,version in (
                 ('protocolContractVersion',2),('workflowContractVersion',4),
                 ('budgetContractVersion',1),('hypothesisContractVersion',1))))
@@ -140,6 +140,9 @@ def build(record, *, question, limit, clarification, gaps, obligations, sources,
         gaps=gaps,obligations=obligations,sources=sources,evidence_marker=evidence_marker,
         claim_fields=claim_fields,claim_limit=claim_limit,section_templates=section_templates,concise=True)
     if compact:prompt+='\n'+REFERENCE_RULE
+    if record['experimentDraftContractVersion']==5:
+        from services.deep_research.experiment_planning import SPLIT_GUIDANCE
+        prompt+='\n'+SPLIT_GUIDANCE
     if reasoning_enabled(record):
         prompt=prompt.replace('Return ONLY {"sections":[],"claims":[]}.',
             'Return ONLY {"designBasis":{},"sections":[],"claims":[]}.')
