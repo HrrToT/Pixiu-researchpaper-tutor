@@ -2310,6 +2310,99 @@
         "costUnknown": true
       },
       "boundary": "Production tuple/legend, full generation and four reviews truly executed. Actual plan1782/1673 was below2500;2595/2486 over-limit recovery is controlled only. Real0/9 remains inconclusive: schema/science defects plus contradictory review reasons persist. Full DR0-DR5 and fresh independent acceptance incomplete, Goal active/PR draft."
+    },
+    "methodContextCheckpoint": {
+      "date": "2026-10-21",
+      "sourceCommit": "9cd5cea2",
+      "promptVersion": "dr-v2.20261021.211",
+      "sourceContinuityContractVersion": 2,
+      "experimentReviewContractVersion": 3,
+      "serverOwnedImmutable": true,
+      "fullDeepResearchOffline": {
+        "passed": 3539,
+        "warnings": 1,
+        "seconds": 255.2,
+        "files": 202,
+        "scope": "All test_deep_research*.py, not all Python/reading/config integration.",
+        "log": "tmp/pytest-dr211-full-native.log",
+        "sha256": "8b1784a1be840b577eb30ad0c302d8f70bb01b677a52023485d6ac242f2daec4"
+      },
+      "focusedPassed": 77,
+      "focusedOverlap": true,
+      "newTestsSinceDr209": 51,
+      "legacyActualFingerprintsMatched": 45,
+      "legacyReplayScripts": [
+        "replay-dr210-legacy.py",
+        "replay-dr210-verification.py",
+        "replay-dr210-h5unknown.py",
+        "replay-dr210-e1-v1.py",
+        "replay-dr210-e1-v2.py",
+        "probe-dr210-legacy-actual-feedback.py",
+        "probe-dr210-legacy-review-calibration.py",
+        "probe-dr210-legacy-e1-audit.py",
+        "probe-dr210-e1-representation.py",
+        "probe-dr210-e1-attribution-final.py",
+        "probe-dr210-e1-config.py",
+        "probe-dr210-e1-v8-plan-final.py",
+        "probe-dr210-e1-v9-actual.py"
+      ],
+      "reviewSourceCommit": "2f27a68b",
+      "reviewInterimOffline": {
+        "passed": 3513,
+        "files": 201,
+        "seconds": 242.87,
+        "log": "tmp/pytest-dr210-full.log"
+      },
+      "controlledMethodContext": "method-context-e1-v9-controlled-20261021.json",
+      "controlledReview": "review-alignment-e1-v9-controlled-20261021.json",
+      "nonPassingInvocations": [
+        {
+          "log": "tmp/pytest-dr211-full.log",
+          "status": "collection_failed",
+          "reason": "Existing FastAPI imports in code_execution_api and research_rate_limits; broad suite not passed."
+        },
+        {
+          "log": "tmp/pytest-dr211-full-scoped.log",
+          "status": "interrupted",
+          "reason": "Stopped only verified pytest PIDs after prolonged restricted-environment run; no passing credit."
+        },
+        {
+          "log": "tmp/pytest-dr211-focused-b.log",
+          "status": "fixture_error",
+          "reason": "Sandbox temp-numbered-directory creation; rerun with fresh explicit basetemp passed."
+        }
+      ],
+      "boundary": "Offline and archived/controlled request replay only. No model quality or independent acceptance credit. Old results and unknown calls not upgraded or retried.",
+      "actualCase": {
+        "case": "E1-v10",
+        "status": "completed",
+        "outcome": "inconclusive",
+        "elapsedSeconds": 119.06,
+        "verificationSummary": {
+          "accepted": 0,
+          "rejected": 9
+        },
+        "settledModelCalls": 13,
+        "settledTokens": 58589,
+        "unsettledModelCalls": 0,
+        "independentCredit": 0
+      },
+      "newCaseActualFingerprintsMatched": 5,
+      "actualInputs": "method-context-e1-v10-actual-input-20261021.json",
+      "actualAllocation": "method-context-e1-v10-allocation-20261021.json",
+      "retentionProof": "runtime-postcases-dr211-e1-v10-20261021.json",
+      "runtimeProof": "runtime-load-dr211-method-context-20261021.json",
+      "selectedDiagnosticTotals": {
+        "settledModelCalls": 556,
+        "measuredTokens": 2292398,
+        "notGlobalHistory": true,
+        "costUnknown": true
+      },
+      "remaining": [
+        "Preserve necessary operational premise bundles through synthesis allocation, not only retrieval/read.",
+        "Make repair response coverage explicit for all assigned targets while preserving hard/scientific checks.",
+        "Repair method-grounded state, legal configuration and complete measurement; content and independent acceptance remain pending."
+      ]
     }
   },
   "stages": [
@@ -3372,7 +3465,7 @@
     "independentCredit": 0,
     "proof": "deep-research-evidence/compact-experiment-envelope-regression-20261020.json"
   },
-  "currentCheckpoint": ".209 b85ccc0c: immutable planEncoding1 stores full raw plan and lossless positional wire under original2500/24000caps;3488research tests/78focused overlap/36new,39legacy fingerprints. Controlled E1-v8 raw2595→2486 with full original evidence;old failure not resent. Real E1-v9 once,114s completed/inconclusive0/9,14settled calls/69034tokens,no unknown. Raw1782→1673;full generation/four reviews actually sent,6fingerprints reproduced. Genuine init/operation/protocol defects plus whole-stage/direction/missing-key review contradictions persist.4958ledger/11paused/old payloads/tasks retained;DR0-DR5 incomplete.",
+  "currentCheckpoint": ".211 9cd5cea2: bounded owned method predecessors and objective-conditioned review3;3539 research tests/202files,77focused overlap,45old fingerprints. Real E1-v10 once119s completed/inconclusive0/9,13settled calls58589tokens,5actual request fingerprints. Chunks28/29 acquired/read and4literal rows extracted, but all4 omitted from final6-row synthesis allocation with no missing bundle;9repair targets only2revised. Method delivery, legal state/protocol and review camera-count contradiction remain.4985ledger/11paused/old payloads/tasks retained;DR0-DR5 incomplete;Goal active.",
   "sharedModuleSourceCheckpoint": {
     "sourceCommit": "f8ae5177",
     "promptVersion": "dr-v2.20261020.199",

@@ -1,0 +1,106 @@
+{
+  "date": "2026-10-21",
+  "sourceCommit": "9cd5cea2",
+  "promptVersion": "dr-v2.20261021.211",
+  "case": "E1-v10",
+  "split": "development",
+  "runId": "dr_run_3e648a5789585b099f82af7003aa840a",
+  "questionUnchanged": true,
+  "frozenCaseCommit": "a023b204",
+  "status": "completed",
+  "outcome": "inconclusive",
+  "elapsedSeconds": 119.06,
+  "settledModelCalls": 13,
+  "settledTokens": 58589,
+  "unsettledModelCalls": 0,
+  "independentCredit": 0,
+  "verificationSummary": {
+    "accepted": 0,
+    "rejected": 9
+  },
+  "planEncodingAudit": {
+    "rawBytes": 2349,
+    "wireBytes": 2240,
+    "slotLimit": 2500,
+    "scientificApproval": false
+  },
+  "initialRepresentationAudit": [],
+  "repairRepresentationAudit": {},
+  "rejectedClaims": [
+    {
+      "claimId": "c5",
+      "reason": "incomplete_budget_spec",
+      "detail": "recovery: matched 模式要求所有组的预算值相等",
+      "revisionRejection": {
+        "claimId": "c5",
+        "reason": "semantic_unresolved",
+        "detail": "预算配置不完整：缺少共享准备阶段的具体预算数值，且总预算计算与声明的30帧×500迭代不一致。"
+      }
+    },
+    {
+      "claimId": "c6",
+      "reason": "incomplete_experiment_workflow",
+      "detail": "workflow.component, workflow.states.shape, workflow.states.constant",
+      "revisionRejection": {
+        "claimId": "c6",
+        "reason": "incomplete_experiment_workflow",
+        "detail": "workflow.component, workflow.states.shape, workflow.states.constant"
+      }
+    },
+    {
+      "claimId": "c1",
+      "reason": "semantic_unresolved",
+      "detail": "假设声明与链接的分析目标不一致：c1 声称仅进行描述性比较，但 c8 的分析方案包含配对自助法置信区间，这超出了纯描述性比较的范围；此外，c1 未明确说明配对观测的聚合方式，且未提供与 c8 中 effectKeys 完全匹配的指标定义。"
+    },
+    {
+      "claimId": "c2",
+      "reason": "semantic_unresolved",
+      "detail": "干预水平不完整：处理组仅指定了新增策略和传播标志，但未给出新增高斯的数量阈值、位置初始化方式、优化迭代次数等具体数值参数；控制组跳过第2阶段，但未明确是否保留第1阶段NTC结果作为基线。"
+    },
+    {
+      "claimId": "c3",
+      "reason": "semantic_unresolved",
+      "detail": "渲染设置不完整：仅指定了渲染器类型、分辨率和球谐阶数，但未给出渲染时的相机内参、背景颜色、是否使用训练视图等必要参数；优化器设置中缺少优化迭代次数、学习率衰减策略等关键超参数；初始化引用 c6 但未提供 c6 的具体内容，无法验证其完整性。"
+    },
+    {
+      "claimId": "c4",
+      "reason": "semantic_unresolved",
+      "detail": "数据可用性未证实：证据仅提及flame salmon场景，未提供N3DV数据集中该场景的相机数量或可用性；无法验证每3个相机ID取1个的划分规则是否可行。"
+    },
+    {
+      "claimId": "c7",
+      "reason": "semantic_unresolved",
+      "detail": "速度测量协议不完整：未指定设备、分辨率、预热程序、同步方法和计时区域；存储测量未明确包含的文件或模型表示及会计边界。"
+    },
+    {
+      "claimId": "c8",
+      "reason": "semantic_unresolved",
+      "detail": "分析方案与用户要求的描述性比较不符：用户明确要求仅进行描述性比较，但 c8 包含配对自助法置信区间，这属于推断性统计；此外，未指定配对观测的聚合方式（如逐帧配对后如何汇总），且未提供决策边界的明确数值。"
+    },
+    {
+      "claimId": "c9",
+      "reason": "semantic_unresolved",
+      "detail": "限制声明未提供具体的失效条件或混杂因素，仅泛泛提及单场景和固定窗口，未说明如果窗口内未出现新内容时如何处理，也未明确相机划分和帧窗口选择的具体验证方法。"
+    }
+  ],
+  "acceptedClaims": [],
+  "rawFiles": [
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v10.json",
+      "sha256": "11e6e91eb5d0e91cf4df15642615d360c4a051f1240c99d97f8da5e7ab6a10b0"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v10.payload.json",
+      "sha256": "e6badaffc78ec4fb99e2152cf38cdcd96cafa10523a11e1ade1176804e732651"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v10.calls.json",
+      "sha256": "0f20a605bef4c1328a980e30befb9b9e1d9c9710abc4ced0a3926ac23589e0aa"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v10.result.json",
+      "sha256": "d40ea96cf739584e48b5b264da54381ec5d845d9c995fdb408b17ce239caad47"
+    }
+  ],
+  "boundary": "One fixed development submission, no automatic retry. Representation normalization does not approve science or upgrade historical/independent results."
+}
