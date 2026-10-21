@@ -8,9 +8,13 @@ LEGEND='Unverified tuple=[sourceRefs,[intervention,data,state,poseError,measurem
 
 def enabled(record):
     return (type(record.get('experimentPlanEncodingContractVersion')) is int
-        and record['experimentPlanEncodingContractVersion']==1
+        and record['experimentPlanEncodingContractVersion'] in (1,2)
         and type(record.get('experimentDraftContractVersion')) is int
         and record['experimentDraftContractVersion'] in (5,6))
+
+
+def flexible(record):
+    return enabled(record) and record['experimentPlanEncodingContractVersion']==2
 
 
 def encode(basis):

@@ -1373,7 +1373,9 @@ space with unsupported global absence or incidental iteration/performance values
         compact_evidence_wire=(premise_mode and output_kind=='experiment_design'
             and record.get('synthesisEvidenceContractVersion')==6)
         if compact_evidence_wire:
-            from services.deep_research.evidence_wire import LEGEND as evidence_wire_legend
+            from services.deep_research.evidence_wire import LEGEND,SHORT_LEGEND
+            from services.deep_research.experiment_plan_encoding import flexible as flexible_plan
+            evidence_wire_legend=SHORT_LEGEND if flexible_plan(record) else LEGEND
             prompt+='\n'+evidence_wire_legend
         template = prompt
         if premise_mode:

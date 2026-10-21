@@ -5,6 +5,9 @@ LEGEND=('Evidence summaries use {layouts:[field-name arrays],rows:[[layoutIndex,
     'Indices are zero-based. Zip the indicated layout with values to reconstruct each exact '
     'evidence object, including nested contexts and permissions. Absent keys stay absent; '
     'no scientific value or source permission is added by this encoding.')
+SHORT_LEGEND=('Evidence {layouts:[keys],rows:[[i,values]]}: i is a zero-based layout index. '
+    'Zip keys/values to recover exact rows, contexts and permissions. Missing keys stay absent; '
+    'encoding grants no scientific approval.')
 
 
 def encode(rows):
