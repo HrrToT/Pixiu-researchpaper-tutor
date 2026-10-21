@@ -2477,6 +2477,93 @@
         "notGlobalHistory": true,
         "costUnknown": true
       }
+    },
+    "planCapacityCheckpoint": {
+      "date": "2026-10-21",
+      "sourceCommit": "15c71b39",
+      "promptVersion": "dr-v2.20261021.214",
+      "experimentPlanEncodingContractVersion": 2,
+      "serverOwnedImmutable": true,
+      "fullDeepResearchOffline": {
+        "passed": 3631,
+        "warnings": 1,
+        "seconds": 256.1,
+        "files": 206,
+        "scope": "All test_deep_research*.py; not all Python/reading/config integration.",
+        "log": "tmp/pytest-dr214-full.log",
+        "sha256": "a39a4c65a2646740b6a8ae02feb8b66593916fe7af95b078b16c32d1e44a104d"
+      },
+      "focusedPassed": 117,
+      "focusedSeconds": 4.21,
+      "focusedOverlap": true,
+      "newTests": 27,
+      "legacyActualFingerprintsMatched": 52,
+      "legacyScripts": [
+        "replay-dr210-legacy.py",
+        "replay-dr210-verification.py",
+        "replay-dr210-h5unknown.py",
+        "replay-dr210-e1-v1.py",
+        "replay-dr210-e1-v2.py",
+        "probe-dr210-legacy-actual-feedback.py",
+        "probe-dr210-legacy-review-calibration.py",
+        "probe-dr210-legacy-e1-audit.py",
+        "probe-dr210-e1-representation.py",
+        "probe-dr210-e1-attribution-final.py",
+        "probe-dr210-e1-config.py",
+        "probe-dr210-e1-v8-plan-final.py",
+        "probe-dr210-e1-v9-actual.py",
+        "probe-dr211-e1-v10-actual.py",
+        "probe-dr213-e1-coverage.py",
+        "probe-dr213-e1-v11-actual.py"
+      ],
+      "preferredPlanningSlot": 2500,
+      "unchangedRawPlanSafetyLimit": 4000,
+      "unchangedGenerationCap": 24000,
+      "controlledReplay": "plan-capacity-e1-v11-controlled-20261021.json",
+      "implementation": "Admit complete raw<=4000 plans beyond preferred2500 only before the unchanged actual24KB body guard; store exact raw/tuple/digests, distinguish structurally valid output-capacity refusal from malformed/foreign/truncated responses, freeze known draft-capacity refusals to prevent changed resends. Shorten only the lossless evidence decoding legend. Legacy failed/unknown identities and checks remain unchanged.",
+      "boundary": "Offline and archived controlled replay, no new provider/content/independent acceptance. The complete archived plan may still contain scientific errors; full source/state/protocol review remains necessary.",
+      "actualCase": {
+        "case": "E1-v12",
+        "status": "completed",
+        "outcome": "inconclusive",
+        "elapsedSeconds": 132.505,
+        "verificationSummary": {
+          "accepted": 0,
+          "rejected": 9
+        },
+        "settledModelCalls": 14,
+        "settledTokens": 62209,
+        "unsettledModelCalls": 0,
+        "independentCredit": 0,
+        "planEncodingAudit": {
+          "rawBytes": 2058,
+          "wireBytes": 1949,
+          "preferredSlotBytes": 2500,
+          "rawLimitBytes": 4000,
+          "fitsPreferredSlot": true,
+          "scientificApproval": false
+        }
+      },
+      "actualCaseFingerprintsMatched": 7,
+      "actualInputs": "plan-capacity-e1-v12-actual-input-20261021.json",
+      "actualRepairInput": "plan-capacity-e1-v12-repair-input-20261021.json",
+      "realAllTargetCoverageProven": true,
+      "realOverPreferredSlotRecoveryProven": false,
+      "qualityDiagnosis": "E1-v12-quality-diagnosis-20261021.json",
+      "retentionProof": "runtime-postcases-dr214-e1-v12-20261021.json",
+      "runtimeProof": "runtime-load-dr214-plan-capacity-20261021.json",
+      "selectedDiagnosticTotals": {
+        "settledModelCalls": 578,
+        "measuredTokens": 2379875,
+        "notGlobalHistory": true,
+        "costUnknown": true
+      },
+      "remaining": [
+        "Normalize only already-owned explicit source attributions/ranges with mathematical-symbol protection and audit; do not strip uncited markers.",
+        "Check review visibility of full unverified linked definitions and native numeric fields before treating a missing-field complaint as established.",
+        "Align all generation/review budget instructions with the actual whole-stage objective and repair prose/config contradictions.",
+        "Complete method-grounded state, temporal ordering, measurement and independent DR0-DR5 acceptance."
+      ]
     }
   },
   "stages": [
@@ -3539,7 +3626,7 @@
     "independentCredit": 0,
     "proof": "deep-research-evidence/compact-experiment-envelope-regression-20261020.json"
   },
-  "currentCheckpoint": ".213 a507a3b6: method dependency/required-context allocation and explicit all-target repair dispositions;3604research tests/205files,91/96focused overlap,65new,50legacy+one archived repair fingerprint. E1-v10 controlled full envelope23987/24000 preserves three method contexts;new repair preflights all9targets in3batches under23593, no provider. Real E1-v11 once52s failed private-plan capacity,8settled calls25268tokens,no unknown;all3method contexts truly reached15106-byte planning request and response uses their rules. Valid raw2859/lossless2750 exceeds2500slot;direct substitution24080>24000. No report/review/real repair/content acceptance.5008ledger/11paused/old payloads/tasks retained;DR0-DR5 incomplete;Goal active.",
+  "currentCheckpoint": ".214 15c71b39: immutable planEncoding2 admits complete raw<=4000 plans beyond preferred2500 only under unchanged full24KB body cap;3631research tests/206files,117focused overlap,27new,52legacy fingerprints. Controlled archived E1-v11 raw2859/wire2750 reaches full23966-byte frozen body with all7evidence/3method contexts;no provider/history upgrade. Real E1-v12 once132s completed/inconclusive0/9,14settled calls62209tokens,7actual request fingerprints. All9repair targets truly submitted/expanded;quality still fails. Real raw2058/wire1949 is under2500, not paid overslot-recovery proof. Bound range/bare source markers leak; controls numeric values unchanged despite missing-value review; budget prose remains matched vs unmatched config.5036ledger/11paused/old payloads/tasks retained;DR0-DR5 incomplete;Goal active.",
   "sharedModuleSourceCheckpoint": {
     "sourceCommit": "f8ae5177",
     "promptVersion": "dr-v2.20261020.199",
