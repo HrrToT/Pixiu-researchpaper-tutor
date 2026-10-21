@@ -655,12 +655,13 @@ def make_read_node(
         read_limit = 24 if record.get("budget", {}).get("profile") == "extended" else 12
         if type(record.get('readingPriorityContractVersion')) is int and record['readingPriorityContractVersion'] in (1,2,3,4,5):
             from services.deep_research.reading_priority import select_read_sources
-            from services.deep_research.source_continuity import enabled as continuity_enabled
+            from services.deep_research.source_continuity import enabled as continuity_enabled,method_enabled
             obligations={o['obligationId']:o for item in record.get('state',{}).get('plan',[]) for o in item.get('obligations',[])}
             selected=select_read_sources(available,obligations,read_limit,extracted=extracted,
                 **({'priority_version':{2:7,3:8,4:9,5:10}[record['readingPriorityContractVersion']]}
                    if record['readingPriorityContractVersion'] in (2,3,4,5) else {}),
-                **({'illustrative_context':True} if continuity_enabled(record) else {}))
+                **({'illustrative_context':True} if continuity_enabled(record) else {}),
+                **({'method_context':True} if method_enabled(record) else {}))
         else:
             selected = balanced_sample(available,
                 lambda source: (source.get("workId"), tuple(source.get("obligationIds", []))),read_limit)

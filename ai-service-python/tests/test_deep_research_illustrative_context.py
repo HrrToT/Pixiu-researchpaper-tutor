@@ -132,7 +132,7 @@ def test_local_retrieval_applies_new_context_after_other_selectors_and_keeps_cac
     assert retrieve.call_count == 2
 
 
-@pytest.mark.parametrize('replacement', [None, True, '1', 0, 2])
+@pytest.mark.parametrize('replacement', [None, True, '1', 0, 3])
 def test_continuity_contract_is_server_owned_immutable_and_strict(tmp_path, replacement):
     from services.deep_research.facade import ResearchFacade
     from services.deep_research.repository import DeepResearchRepository
@@ -141,7 +141,7 @@ def test_continuity_contract_is_server_owned_immutable_and_strict(tmp_path, repl
     try:
         value, _ = facade.create({'workspaceTaskId': 't', 'operationKey': 'k', 'question': 'Read a paper',
             'sourceContinuityContractVersion': replacement, 'deferStart': True}, start_async=False)
-        assert value['sourceContinuityContractVersion'] == 1 and enabled(value)
+        assert value['sourceContinuityContractVersion'] == 2 and enabled(value)
         with pytest.raises(ValueError, match='Immutable'):
             repo.update_run(value['runId'], lambda r: {**r, 'sourceContinuityContractVersion': replacement})
     finally:
