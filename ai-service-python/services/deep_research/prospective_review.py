@@ -22,11 +22,12 @@ initialization, intervention and measurement failures.'''
 
 
 def enabled(value):
-    return type(value) is int and value in (1, 2)
+    return type(value) is int and value in (1, 2, 3)
 
 
 def policy(value):
-    return POLICY + ('' if value == 1 else '''
+    from services.deep_research.review_alignment import enabled, POLICY as aligned_policy
+    return (aligned_policy if enabled(value) else POLICY) + ('' if value == 1 else '''
 Typed audit contract 2: a slot may also be one exact {claimId,path,value} field binding,
 equivalent to {fields:[that binding]}. The same existing path/value/role/contract checks
 apply, including recovery for per_group_steps. This format is not scientific approval.''')

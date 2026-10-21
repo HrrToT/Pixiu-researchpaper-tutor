@@ -664,6 +664,7 @@ class BudgetedSemanticChecker:
         byte_limit = (self._invoke.prompt_byte_limit(self._run_id, node)
                       if isinstance(self._invoke, TrackedLLMInvoker) else 24000)
         config_mode=node in {'verify_design_config','verify_repair_design_config'}
+        review_version = self._prospective_review() if callable(self._prospective_review) else self._prospective_review
         if config_mode:
             from services.deep_research.verification_context import configuration_context
             proposal_context=configuration_context(claims,proposal_context)
@@ -930,6 +931,8 @@ The dataAvailability object is an internal audit, not new experimental results.
         if any(c.get("kind") in {"proposal", "suggestion", "hypothesis"} for c in claims):
             from services.deep_research.experimental_reasoning import design_requirements
             from services.deep_research.design_review_policy import REVIEW_DESIGN_POLICY, REVIEW_FACTORIAL_REFERENCE
+            from services.deep_research.review_alignment import enabled as aligned_review,DESIGN_POLICY as aligned_design,factorial_reference
+            design_policy=aligned_design if aligned_review(review_version) else REVIEW_DESIGN_POLICY
             if config_mode:
                 prompt += '\nCheck that the target configurations are executable and mutually consistent. ' \
                           'Check parameter syntax, explicit intervention levels, split/seed rules, budgets ' \
@@ -941,7 +944,7 @@ The dataAvailability object is an internal audit, not new experimental results.
                           'Reject incompatible sampling units, insufficient independent replication, invalid ' \
                           'metric signs and decision rules. Explain a failure concisely; no full derivation ' \
                           'is needed in the returned reason. Shared context is not itself verified by this call.\n' \
-                          + REVIEW_FACTORIAL_REFERENCE
+                          + factorial_reference(review_version)
                 if any(c.get('designRole') in {'controls', 'steps'} for c in claims):
                     prompt += ('\nFor initialization/rendering targets, enumerate the states required by the '
                         'chosen representation and check that EACH has a defined count/shape and initial '
@@ -956,7 +959,7 @@ The dataAvailability object is an internal audit, not new experimental results.
                           'requirement below. A role label, heading or vague promise is not fulfillment. Fail the ' \
                           'specific claim if its budget, split, procedure or decision criterion is unspecified. ' \
                           'Use the other target claims for shared definitions but not as factual evidence.\n' + design_requirements(
-                              metric_domains, roles={c.get('designRole') for c in claims}, policy=REVIEW_DESIGN_POLICY)
+                              metric_domains, roles={c.get('designRole') for c in claims}, policy=design_policy)
                 from services.deep_research.design_audit import design_slots_for_claim
                 required_slots = {c['designRole']: slots for c in claims if c.get('designRole')
                                   and (slots := design_slots_for_claim(c, metric_domains)) is not None}
@@ -1041,7 +1044,6 @@ The dataAvailability object is an internal audit, not new experimental results.
             from services.deep_research.audit_source_fields import TARGET_GUIDANCE
             prompt+='\n'+TARGET_GUIDANCE
         from services.deep_research.prospective_review import enabled as prospective_review_enabled, policy as prospective_review_policy
-        review_version = self._prospective_review() if callable(self._prospective_review) else self._prospective_review
         if prospective_review_enabled(review_version) and all(
                 c.get('kind') in {'proposal', 'suggestion', 'hypothesis'} for c in claims):
             prompt += '\n' + prospective_review_policy(review_version)
@@ -1052,6 +1054,11 @@ The dataAvailability object is an internal audit, not new experimental results.
             derived=config_facts([*wire_claims,*wire_context])
             if derived:
                 prompt+='\n'+consistency_review+'\nDerived configuration meanings (not evidence):\n'+json.dumps(derived,ensure_ascii=False,separators=(',',':'),allow_nan=False)
+        from services.deep_research.review_alignment import enabled as aligned_review,declaration_links
+        if aligned_review(review_version) and all(c.get('kind') in {'proposal','suggestion','hypothesis'} for c in claims):
+            links=declaration_links([*wire_claims,*wire_context])
+            if links:
+                prompt+='\nDeclared key presence (not scientific approval):\n'+json.dumps(links,ensure_ascii=False,separators=(',',':'))
         template = prompt
         source_keys = ('workId', 'versionId', 'sourceTitle')
         source_registry = {}
@@ -1191,7 +1198,7 @@ The dataAvailability object is an internal audit, not new experimental results.
                         verdict['reason']='结果与实验用途的来源归属尚未核实：'+', '.join(attribution_errors)
                         continue
                 missing = validate_design_audit(by_id[verdict['claimId']], verdict, [*claims, *proposal_context], metric_domains,
-                    **({'direct_fields':True} if type(review_version) is int and review_version == 2 else {}))
+                    **({'direct_fields':True} if type(review_version) is int and review_version in (2,3) else {}))
                 if missing:
                     verdict['status'] = 'failed'
                     verdict['reason'] = '实验方案缺少可核对的具体配置：' + ', '.join(missing)

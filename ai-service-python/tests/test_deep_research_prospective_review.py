@@ -35,7 +35,7 @@ def test_each_review_partition_receives_calibration_without_discarding_the_actua
     assert report == before and all(r['status'] == 'failed' for r in result)
 
 
-@pytest.mark.parametrize('version', [False, None, True, 0, '1', 3])
+@pytest.mark.parametrize('version', [False, None, True, 0, '1', 4])
 def test_nonmatching_and_legacy_versions_keep_the_exact_old_prompt(version):
     report, _, _ = inputs()
     baseline, _ = requests_for(report['claims'], version=False)
@@ -63,7 +63,7 @@ def test_new_policy_does_not_turn_failed_scientific_verdict_into_a_pass():
     assert POLICY in calls[0]['prompt']
 
 
-@pytest.mark.parametrize('replacement', [None, True, '1', 0, 3])
+@pytest.mark.parametrize('replacement', [None, True, '1', 0, 4])
 def test_review_contract_is_server_owned_and_immutable(tmp_path, replacement):
     from services.deep_research.facade import ResearchFacade
     from services.deep_research.repository import DeepResearchRepository
@@ -72,7 +72,7 @@ def test_review_contract_is_server_owned_and_immutable(tmp_path, replacement):
     try:
         value, _ = facade.create({'workspaceTaskId': 't', 'operationKey': 'k', 'question': 'Design experiment',
             'experimentReviewContractVersion': replacement, 'deferStart': True}, start_async=False)
-        assert value['experimentReviewContractVersion'] == 2 and enabled(value['experimentReviewContractVersion'])
+        assert value['experimentReviewContractVersion'] == 3 and enabled(value['experimentReviewContractVersion'])
         with pytest.raises(ValueError, match='Immutable'):
             repo.update_run(value['runId'], lambda r: {**r, 'experimentReviewContractVersion': replacement})
     finally:
