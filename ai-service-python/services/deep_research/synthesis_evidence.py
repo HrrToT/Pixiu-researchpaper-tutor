@@ -12,7 +12,7 @@ from services.deep_research.selection import surrounding_context
 
 def enabled(record):
     version=record.get('synthesisEvidenceContractVersion')
-    return type(version) is int and version in (1,2,3,4,5)
+    return type(version) is int and version in (1,2,3,4,5,6)
 
 
 def result_role(row):
@@ -25,7 +25,7 @@ def result_role(row):
 
 
 def order_premises(evidence,plan,limit=20, *, membership_intents=False,module_intents=False,condition_intents=False,
-                   definition_context=False,read_sources=()):
+                   definition_context=False,read_sources=(),operational_context=False):
     obligations={o['obligationId']:o for item in plan for o in item.get('obligations',[])}
     rows=[e for e in evidence if e.get('verification',{}).get('literal')=='passed']
     works=list(dict.fromkeys(e.get('sourceWorkId') for e in rows))
@@ -34,10 +34,12 @@ def order_premises(evidence,plan,limit=20, *, membership_intents=False,module_in
                                            condition_intents=condition_intents):
         for source in view.get('requiredSources') or works:
             own=[e for e in rows if source in {e.get('sourceWorkId'),e.get('sourceVersionId'),e.get('ownerMaterialId')}]
+            from services.deep_research.operational_premises import requested_operation
+            active_intent=('operation' if operational_context and intent is None and requested_operation(view) else intent)
             def score(row):
                 context=surrounding_context(row)
                 text=row.get('quote','')+'\n'+str(context)
-                value=operation_score(text,str(row.get('location',{}).get('section','')),intent,operational=True)
+                value=operation_score(text,str(row.get('location',{}).get('section','')),active_intent,operational=True)
                 if module_intents and isinstance(intent,str) and intent.startswith('shared_module:'):
                     from services.deep_research.shared_modules import definition_score
                     if definition_context:
@@ -60,8 +62,13 @@ def order_premises(evidence,plan,limit=20, *, membership_intents=False,module_in
             if not ranked:
                 continue
             lead=ranked[0];bundle=[lead]
+            method_contexts={};used_method_bundle=False
+            if operational_context and active_intent=='operation':
+                from services.deep_research.operational_premises import operational_bundle
+                method_bundle,method_contexts=operational_bundle(rows,read_sources,oid,source)
+                if method_bundle:bundle=method_bundle;used_method_bundle=True
             measurement=isinstance(intent,str) and intent.startswith('measurement:')
-            if (intent in {'operation','training','temporal'} or measurement
+            if not used_method_bundle and (intent in {'operation','training','temporal'} or measurement
                     or condition_intents and isinstance(intent,str) and intent.startswith('data_condition:')) and lead.get('sourceId'):
                 sibling=next((e for e in ranked[1:] if e.get('sourceId')==lead['sourceId']
                               and e['quote']!=lead['quote'] and (score(e)[0]>0 or measurement and re.search(
@@ -69,7 +76,7 @@ def order_premises(evidence,plan,limit=20, *, membership_intents=False,module_in
                 if sibling:
                     bundle.append(sibling)
             ids=[e['evidenceId'] for e in bundle]
-            contexts={}
+            contexts=dict(method_contexts)
             if definition_context and isinstance(intent,str) and intent.startswith('shared_module:'):
                 from services.deep_research.shared_modules import definition_premise
                 for e in bundle:

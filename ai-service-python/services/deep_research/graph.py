@@ -1120,11 +1120,13 @@ def make_synthesize_node(
                 from services.deep_research.selection import proposal_evidence_order
                 candidates=proposal_evidence_order(candidates,question)
             candidates,premise_bundles=order_premises(candidates,brief_state.get('plan',[]),
-                **({'membership_intents':True} if record['synthesisEvidenceContractVersion'] in (2,3,4,5) else {}),
-                **({'module_intents':True} if record['synthesisEvidenceContractVersion'] in (3,4,5) else {}),
-                **({'condition_intents':True} if record['synthesisEvidenceContractVersion'] in (4,5) else {}),
+                **({'membership_intents':True} if record['synthesisEvidenceContractVersion'] in (2,3,4,5,6) else {}),
+                **({'module_intents':True} if record['synthesisEvidenceContractVersion'] in (3,4,5,6) else {}),
+                **({'condition_intents':True} if record['synthesisEvidenceContractVersion'] in (4,5,6) else {}),
                 **({'definition_context':True,'read_sources':brief_state.get('readResults',[])}
-                   if record['synthesisEvidenceContractVersion']==5 else {}))
+                   if record['synthesisEvidenceContractVersion'] in (5,6) else {}),
+                **({'operational_context':True}
+                   if record['synthesisEvidenceContractVersion']==6 and output_kind=='experiment_design' else {}))
         elif output_kind == 'paper_comparison':
             candidates = comparison_evidence_order(candidates, paper_titles)
         elif output_kind == 'experiment_design':
@@ -1368,6 +1370,11 @@ space with unsupported global absence or incidental iteration/performance values
                 obligations=draft_obligations,sources=source_registry,evidence_marker=evidence_marker,
                 table_marker=table_marker,claim_fields=claim_fields,claim_limit=claim_limit,
                 section_templates=section_templates,**({'basis_slot':basis_slot} if staged_mode else {}))
+        compact_evidence_wire=(premise_mode and output_kind=='experiment_design'
+            and record.get('synthesisEvidenceContractVersion')==6)
+        if compact_evidence_wire:
+            from services.deep_research.evidence_wire import LEGEND as evidence_wire_legend
+            prompt+='\n'+evidence_wire_legend
         template = prompt
         if premise_mode:
             reverse_aliases={eid:alias for alias,eid in evidence_aliases.items()}
@@ -1378,7 +1385,12 @@ space with unsupported global absence or incidental iteration/performance values
                           for bundle in premise_bundles]
             def render_premises(rows):
                 tids={row['tableDataRef'] for row in rows if row.get('tableDataRef')}
-                return template.replace(evidence_marker,json.dumps(rows,ensure_ascii=False,separators=(',',':')),1).replace(
+                packet=rows
+                if compact_evidence_wire:
+                    from services.deep_research.evidence_wire import encode,decode
+                    packet=encode(rows)
+                    if decode(packet)!=rows:raise ValueError('evidence_wire_mismatch')
+                return template.replace(evidence_marker,json.dumps(packet,ensure_ascii=False,separators=(',',':')),1).replace(
                     table_marker,json.dumps({key:table_registry[key] for key in table_registry if key in tids},
                         ensure_ascii=False,separators=(',',':')),1)
             numerical_request=bool(re.search(r'数值|具体值|是多少|多少|核(?:查|对)|\b(?:values?|numbers?|how many|how much|verify)\b',question,re.I))
@@ -1387,7 +1399,7 @@ space with unsupported global absence or incidental iteration/performance values
                 omit_optional_table_data=output_kind=='paper_comparison' and qualitative_comparison and not numerical_request,
                 **({'required_contexts':{eid:context for b in wire_bundles
                        for eid,context in b.get('requiredContextByEvidenceId',{}).items()}}
-                   if record['synthesisEvidenceContractVersion']==5 else {}))
+                   if record['synthesisEvidenceContractVersion'] in (5,6) else {}))
             repo_update(run_id,lambda r:{**r,'state':{**r.get('state',{}),'synthesisPremiseAllocation':{
                 'version':1,'candidateEvidenceIds':[e['evidenceId'] for e in selected_candidates],
                 'suppliedEvidenceIds':[evidence_aliases[row['evidenceId']] for row in evidence_summaries],

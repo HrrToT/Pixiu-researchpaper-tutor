@@ -170,14 +170,14 @@ def test_new_beginner_rewrite_uses_dimensional_policy_without_claiming_scientifi
     assert result['claims'][0].get('verification')!='semantic_passed'
 
 
-@pytest.mark.parametrize('replacement',[None,True,0,'1',6])
+@pytest.mark.parametrize('replacement',[None,True,0,'1',7])
 def test_new_synthesis_contract_is_server_owned_and_cannot_retarget_saved_requests(tmp_path,replacement):
     repo=DeepResearchRepository(str(tmp_path/'r.sqlite3'));repo.initialize()
     facade=ResearchFacade(repo,lambda **_:None,llm_client=object())
     try:
         record,_=facade.create({'workspaceTaskId':'t','operationKey':'op','question':'比较',
             'deferStart':True,'synthesisEvidenceContractVersion':replacement},start_async=False)
-        assert record['synthesisEvidenceContractVersion']==5
+        assert record['synthesisEvidenceContractVersion']==6
         with pytest.raises(ValueError,match='Immutable'):
             repo.update_run(record['runId'],lambda r:{**r,'synthesisEvidenceContractVersion':replacement})
     finally:facade.shutdown()

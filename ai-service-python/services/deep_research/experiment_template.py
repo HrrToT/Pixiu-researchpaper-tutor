@@ -129,7 +129,12 @@ def build(record, *, question, limit, clarification, gaps, obligations, sources,
     staged=staged_enabled(record)
     from services.deep_research.experiment_envelope import enabled as compact_enabled,compact_obligations,REFERENCE_RULE,two_arm_request
     compact=compact_enabled(record)
-    if compact:obligations=compact_obligations(obligations,question,sources)
+    gap_references=record.get('synthesisEvidenceContractVersion')==6 and type(record.get('synthesisEvidenceContractVersion')) is int
+    if gap_references:
+        from services.deep_research.experiment_envelope import compact_gap_references
+        gaps=compact_gap_references(gaps,question,obligations)
+    if compact:obligations=compact_obligations(obligations,question,sources,
+        **({'short_prefixes':True} if gap_references else {}))
     from services.deep_research.metric_scope import metric_protocol_requirements
     from services.deep_research.experimental_reasoning import design_output_outline
     from services.deep_research.experiment_workflow import STAGES, RECORDS
@@ -140,6 +145,9 @@ def build(record, *, question, limit, clarification, gaps, obligations, sources,
         gaps=gaps,obligations=obligations,sources=sources,evidence_marker=evidence_marker,
         claim_fields=claim_fields,claim_limit=claim_limit,section_templates=section_templates,concise=True)
     if compact:prompt+='\n'+REFERENCE_RULE
+    if gap_references:
+        from services.deep_research.experiment_envelope import GAP_REFERENCE_RULE
+        prompt+='\n'+GAP_REFERENCE_RULE
     if record['experimentDraftContractVersion'] in (5,6):
         from services.deep_research.experiment_planning import SPLIT_GUIDANCE
         prompt+='\n'+SPLIT_GUIDANCE

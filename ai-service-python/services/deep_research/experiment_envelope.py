@@ -8,6 +8,22 @@ REFERENCE_RULE=('Frozen question/requestExcerpt values with humanQuestionPrefixC
     'Unicode characters of the Human question above, not a new requirement. A requiredSources value '
     '{sourceRef:P} means the exact registry[P].workId. Expand these references when interpreting the '
     'unchanged requirements; they grant no source or factual support.')
+GAP_REFERENCE_RULE=('Gap {humanQuestionPrefixChars:N} means Question[:N] in Unicode characters. '
+    '{requirementQuestionRef:ID} means that unique frozen obligation question after prefix expansion. '
+    'Reconstruct exact gaps; references are not evidence.')
+
+
+def compact_gap_references(gaps,question,obligations):
+    result=[]
+    for gap in gaps:
+        if isinstance(gap,str) and len(gap)>=64 and isinstance(question,str) and question.startswith(gap):
+            result.append({'humanQuestionPrefixChars':len(gap)});continue
+        matches=[r.get('obligationId') for r in obligations if isinstance(r,dict)
+            and isinstance(gap,str) and r.get('question')==gap and isinstance(r.get('obligationId'),str)]
+        if len(matches)==1 and len(gap.encode('utf8'))>len(matches[0].encode('utf8'))+45:
+            result.append({'requirementQuestionRef':matches[0]})
+        else:result.append(deepcopy(gap))
+    return result
 
 
 def enabled(record):
@@ -15,12 +31,13 @@ def enabled(record):
     return template_enabled(record) and record['experimentDraftContractVersion'] in (4,5,6)
 
 
-def compact_obligations(obligations,question,sources):
+def compact_obligations(obligations,question,sources,*,short_prefixes=False):
     result=deepcopy(obligations)
     for row in result:
         for key in ('question','requestExcerpt'):
             value=row.get(key)
-            if isinstance(value,str) and len(value)>=64 and str(question).startswith(value):
+            if (isinstance(value,str) and str(question).startswith(value)
+                    and (len(value)>=64 or short_prefixes and len(value.encode('utf8'))>40)):
                 row[key]={'humanQuestionPrefixChars':len(value)}
         if isinstance(row.get('requiredSources'),list):
             refs=[]
