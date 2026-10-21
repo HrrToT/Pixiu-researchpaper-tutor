@@ -2403,6 +2403,80 @@
         "Make repair response coverage explicit for all assigned targets while preserving hard/scientific checks.",
         "Repair method-grounded state, legal configuration and complete measurement; content and independent acceptance remain pending."
       ]
+    },
+    "premiseDeliveryCheckpoint": {
+      "date": "2026-10-21",
+      "sourceCommit": "a507a3b6",
+      "promptVersion": "dr-v2.20261021.213",
+      "premiseSourceCommit": "1acc250e",
+      "synthesisEvidenceContractVersion": 6,
+      "experimentRepairContractVersion": 6,
+      "serverOwnedImmutable": true,
+      "fullDeepResearchOffline": {
+        "passed": 3604,
+        "warnings": 1,
+        "seconds": 214.38,
+        "files": 205,
+        "scope": "All test_deep_research*.py; not all Python/reading/config integration.",
+        "log": "tmp/pytest-dr213-full-final.log",
+        "sha256": "d160440f4d02f41e58231f5da4c4fd958654b2f233d61e9b3d9fb5dcc916d7cf"
+      },
+      "focused": {
+        "premisePassed": 91,
+        "premiseSeconds": 5.26,
+        "coveragePassed": 96,
+        "coverageSeconds": 3.42,
+        "overlap": true
+      },
+      "newTestsSinceDr211": 65,
+      "legacyActualFingerprintsMatched": 50,
+      "additionalArchivedRepairFingerprintMatched": 1,
+      "legacyScripts": [
+        "replay-dr210-legacy.py",
+        "replay-dr210-verification.py",
+        "replay-dr210-h5unknown.py",
+        "replay-dr210-e1-v1.py",
+        "replay-dr210-e1-v2.py",
+        "probe-dr210-legacy-actual-feedback.py",
+        "probe-dr210-legacy-review-calibration.py",
+        "probe-dr210-legacy-e1-audit.py",
+        "probe-dr210-e1-representation.py",
+        "probe-dr210-e1-attribution-final.py",
+        "probe-dr210-e1-config.py",
+        "probe-dr210-e1-v8-plan-final.py",
+        "probe-dr210-e1-v9-actual.py",
+        "probe-dr211-e1-v10-actual.py"
+      ],
+      "controlledPremiseDelivery": "premise-delivery-e1-v10-controlled-20261021.json",
+      "controlledRepairCoverage": "repair-coverage-e1-v10-controlled-20261021.json",
+      "remaining": [
+        "Coordinate complete private planning with final generation capacity while preserving required method context, full raw response, original24KB and whole-run budgets.",
+        "Classify valid but oversized planning separately from malformed/source-invalid output.",
+        "After delivery works, independently check actual Stage1/Stage2 temporal ordering, shared full states, finite budgets and complete measurement."
+      ],
+      "boundary": "Final complete offline scope passed after preserving the full edit grammar. Intermediate full3604/220.81s is historical. Archived/controlled replays have zero provider calls and no content or independent acceptance credit.",
+      "actualCase": {
+        "case": "E1-v11",
+        "status": "failed",
+        "outcome": "none",
+        "elapsedSeconds": 0,
+        "verificationSummary": null,
+        "settledModelCalls": 8,
+        "settledTokens": 25268,
+        "unsettledModelCalls": 0,
+        "independentCredit": 0
+      },
+      "actualCaseFingerprintsMatched": 1,
+      "actualInputs": "premise-delivery-e1-v11-actual-input-20261021.json",
+      "capacityDiagnosis": "E1-v11-planning-capacity-20261021.json",
+      "retentionProof": "runtime-postcases-dr213-e1-v11-20261021.json",
+      "runtimeProof": "runtime-load-dr213-premise-delivery-20261021.json",
+      "selectedDiagnosticTotals": {
+        "settledModelCalls": 564,
+        "measuredTokens": 2317666,
+        "notGlobalHistory": true,
+        "costUnknown": true
+      }
     }
   },
   "stages": [
@@ -3465,7 +3539,7 @@
     "independentCredit": 0,
     "proof": "deep-research-evidence/compact-experiment-envelope-regression-20261020.json"
   },
-  "currentCheckpoint": ".211 9cd5cea2: bounded owned method predecessors and objective-conditioned review3;3539 research tests/202files,77focused overlap,45old fingerprints. Real E1-v10 once119s completed/inconclusive0/9,13settled calls58589tokens,5actual request fingerprints. Chunks28/29 acquired/read and4literal rows extracted, but all4 omitted from final6-row synthesis allocation with no missing bundle;9repair targets only2revised. Method delivery, legal state/protocol and review camera-count contradiction remain.4985ledger/11paused/old payloads/tasks retained;DR0-DR5 incomplete;Goal active.",
+  "currentCheckpoint": ".213 a507a3b6: method dependency/required-context allocation and explicit all-target repair dispositions;3604research tests/205files,91/96focused overlap,65new,50legacy+one archived repair fingerprint. E1-v10 controlled full envelope23987/24000 preserves three method contexts;new repair preflights all9targets in3batches under23593, no provider. Real E1-v11 once52s failed private-plan capacity,8settled calls25268tokens,no unknown;all3method contexts truly reached15106-byte planning request and response uses their rules. Valid raw2859/lossless2750 exceeds2500slot;direct substitution24080>24000. No report/review/real repair/content acceptance.5008ledger/11paused/old payloads/tasks retained;DR0-DR5 incomplete;Goal active.",
   "sharedModuleSourceCheckpoint": {
     "sourceCommit": "f8ae5177",
     "promptVersion": "dr-v2.20261020.199",

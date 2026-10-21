@@ -1,0 +1,114 @@
+{
+  "date": "2026-10-21",
+  "sourceCase": "E1-v10",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "oldActualRepairFingerprintMatched": true,
+  "oldInputBytes": 23526,
+  "originalInputCap": 23593,
+  "outputCapUnchanged": 4096,
+  "newWholeBatchCapacityError": {
+    "kind": "repairEvidenceBytes",
+    "limit": 23593,
+    "used": 23985
+  },
+  "boundedBatches": [
+    [
+      "c4",
+      "c5"
+    ],
+    [
+      "c1",
+      "c7",
+      "c8",
+      "c9"
+    ],
+    [
+      "c2",
+      "c3",
+      "c6"
+    ]
+  ],
+  "preflights": [
+    {
+      "targetIds": [
+        "c4",
+        "c5"
+      ],
+      "inputBytes": 23541,
+      "allRequiredQuotesContextsAndOriginalsPreserved": true
+    },
+    {
+      "targetIds": [
+        "c1",
+        "c7",
+        "c8",
+        "c9"
+      ],
+      "inputBytes": 23507,
+      "allRequiredQuotesContextsAndOriginalsPreserved": true
+    },
+    {
+      "targetIds": [
+        "c2",
+        "c3",
+        "c6"
+      ],
+      "inputBytes": 23323,
+      "allRequiredQuotesContextsAndOriginalsPreserved": true
+    },
+    {
+      "targetIds": [
+        "c4",
+        "c5"
+      ],
+      "inputBytes": 23541,
+      "allRequiredQuotesContextsAndOriginalsPreserved": true
+    }
+  ],
+  "frozenRequest": {
+    "inputBytes": 23541,
+    "outputTokens": 4096
+  },
+  "allOriginalTargetsAndRequiredContextsPreserved": true,
+  "archivedDraftsAndVerdictsUnchanged": true,
+  "responseCoverageAudit": {
+    "version": 1,
+    "expectedTargetIds": [
+      "c1",
+      "c2",
+      "c3",
+      "c4",
+      "c5",
+      "c6",
+      "c7",
+      "c8",
+      "c9"
+    ],
+    "submittedEditIds": [
+      "c5",
+      "c6"
+    ],
+    "unresolvedTargets": [],
+    "missingTargetIds": [
+      "c1",
+      "c2",
+      "c3",
+      "c4",
+      "c7",
+      "c8",
+      "c9"
+    ],
+    "invalidTargetIds": [],
+    "unexpectedTargetIds": [],
+    "malformedEntries": 0,
+    "responseCoverageComplete": false,
+    "scientificApproval": false,
+    "expandedRevisionIds": [
+      "c5",
+      "c6"
+    ],
+    "unusableEditTargetIds": []
+  },
+  "boundary": "Old repair fingerprint and drafts exactly reproduced. New full envelope correctly exceeds the original allowance, so all nine targets preflight in three bounded batches before the first provider-capable dispatch, stopped in memory. Archived reply still yields only the same two drafts and now exposes seven missing IDs. No new provider call, retry, changed verdict or proof of real complete repair."
+}
