@@ -1698,7 +1698,7 @@ def make_verify_node(
                     from services.deep_research.experiment_repair import enabled as shared_experiment_repair
                     from services.deep_research.experiment_edits import can_edit,OUTPUT_TOKENS as EDIT_OUTPUT_TOKENS
                     edit_repair=(shared_experiment_repair(record)
-                        and record['experimentRepairContractVersion'] in (2,3,4,5) and can_edit(repair_report))
+                        and record['experimentRepairContractVersion'] in (2,3,4,5,6) and can_edit(repair_report))
                     repair_input_options={}
                     if compact_repair:
                         from services.deep_research.repair_budget import repair_batch_output_limit
@@ -1719,9 +1719,10 @@ def make_verify_node(
                         **({'compact_source_repair':True} if compact_repair else {}),
                         **({'shared_experiment_schema':True} if shared_experiment_repair(record) else {}),
                         **({'experimental_edits':True} if edit_repair else {}),
-                        **({'experimental_diagnostics':True} if edit_repair and record['experimentRepairContractVersion'] in (3,4,5) else {}),
-                        **({'experimental_nested_tables':True} if edit_repair and record['experimentRepairContractVersion'] in (4,5) else {}),
-                        **({'experimental_representation':True} if edit_repair and record['experimentRepairContractVersion']==5 else {}),
+                        **({'experimental_diagnostics':True} if edit_repair and record['experimentRepairContractVersion'] in (3,4,5,6) else {}),
+                        **({'experimental_nested_tables':True} if edit_repair and record['experimentRepairContractVersion'] in (4,5,6) else {}),
+                        **({'experimental_representation':True} if edit_repair and record['experimentRepairContractVersion'] in (5,6) else {}),
+                        **({'experimental_coverage':True} if edit_repair and record['experimentRepairContractVersion']==6 else {}),
                         **({'citation_presentation_version':2} if type(record.get('citationPresentationContractVersion')) is int
                            and record['citationPresentationContractVersion']==2 else {}),
                         **({'experiment_evidence_context':candidate_context} if candidate_context is not None else {}),

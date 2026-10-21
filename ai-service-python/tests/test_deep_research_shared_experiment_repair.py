@@ -144,7 +144,7 @@ def test_pending_request_cannot_switch_generation_contract_or_resend_completed_b
     invoke.assert_not_called();assert original==saved[-1]
 
 
-@pytest.mark.parametrize('replacement',[None,True,'1',0,6])
+@pytest.mark.parametrize('replacement',[None,True,'1',0,7])
 def test_repair_generation_contract_is_server_owned_and_immutable(tmp_path,replacement):
     from services.deep_research.facade import ResearchFacade
     from services.deep_research.repository import DeepResearchRepository
@@ -153,7 +153,7 @@ def test_repair_generation_contract_is_server_owned_and_immutable(tmp_path,repla
     try:
         value,_=facade.create({'workspaceTaskId':'t','operationKey':'k','question':'Design experiment',
             'experimentRepairContractVersion':replacement,'deferStart':True},start_async=False)
-        assert value['experimentRepairContractVersion']==5
+        assert value['experimentRepairContractVersion']==6
         with pytest.raises(ValueError,match='Immutable'):
             repo.update_run(value['runId'],lambda r:{**r,'experimentRepairContractVersion':replacement})
     finally:facade.shutdown()

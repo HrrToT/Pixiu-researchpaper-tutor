@@ -9,7 +9,7 @@ import json
 
 def enabled(record):
     return (type(record.get('experimentRepairContractVersion')) is int
-            and record['experimentRepairContractVersion'] in (1,2,3,4,5)
+            and record['experimentRepairContractVersion'] in (1,2,3,4,5,6)
             and record.get('state',{}).get('outputKind')=='experiment_design'
             and all(type(record.get(key)) is int and record[key]==value for key,value in (
                 ('protocolContractVersion',2),('workflowContractVersion',4),

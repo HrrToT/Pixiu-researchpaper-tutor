@@ -16,7 +16,7 @@ from services.deep_research.repair_scope import repair_evidence_scope
 def _prepare_repair(report, verification, evidence, question, *, max_prompt_bytes=24000,
                     metric_domains=None, draft_context=(), prior_revisions=(),
                     fact_redraft=False, requirement_context=(), source_aware_redraft=False,comparison_reasoning=False,
-                    question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False,shared_experiment_schema=False,experiment_evidence_context=None,experimental_edits=False,experimental_diagnostics=False,experimental_nested_tables=False,experimental_representation=False,citation_presentation_version=0):
+                    question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False,shared_experiment_schema=False,experiment_evidence_context=None,experimental_edits=False,experimental_diagnostics=False,experimental_nested_tables=False,experimental_representation=False,experimental_coverage=False,citation_presentation_version=0):
     if type(citation_presentation_version) is not int or citation_presentation_version not in (0,2):
         raise ValueError('Unsupported citation presentation contract')
     rejected = {row['claimId']: row for row in verification.get('rejected', [])}
@@ -29,6 +29,8 @@ def _prepare_repair(report, verification, evidence, question, *, max_prompt_byte
         raise ValueError('Nested experimental tables require diagnostic field edits')
     if experimental_representation and not experimental_nested_tables:
         raise ValueError('Experimental representation requires nested field edits')
+    if experimental_coverage and not experimental_representation:
+        raise ValueError('Experimental coverage requires representation-aware edits')
     if experimental_edits:
         from services.deep_research.experiment_edits import can_edit
         if not shared_experiment_schema or not can_edit(report):
@@ -409,6 +411,9 @@ in the paper. Maintain consistency with accepted definitions and complete requir
                 source_instruction=source_instruction,metric_domains=metric_domains,
                 policy_version=experimental_intent,declared_table_refs=declared_table_refs,
                 terminology=SCIENTIFIC_TERMINOLOGY,concise_policy=experiment_evidence_context is not None,**feedback_options)
+    if experimental_coverage:
+        from services.deep_research.repair_coverage import add_contract
+        prompt=add_contract(prompt,originals)
     template = prompt
     from services.deep_research.experiment_edits import columnar
     def render(selected_rows):
@@ -453,14 +458,19 @@ in the paper. Maintain consistency with accepted definitions and complete requir
             **({'diagnosticVersion':1,'schemaFeedback':feedback_options['diagnostics']} if experimental_diagnostics else {}),
             **({'nestedTablesVersion':1} if experimental_nested_tables else {}),
             **({'representationContractVersion':1} if experimental_representation else {}),
+            **({'coverageContractVersion':1} if experimental_coverage else {}),
             **({'presentationVersion':2 if citation_presentation_version==2 else 1,'presentationQuotes':{row['evidenceId']:row.get('quote','')+'\n'+
                 json.dumps(row.get('sourceContext',{}),ensure_ascii=False) for row in rows}} if compact_factual or citation_presentation_version==2 else {})}
 
 
-def _parse_repair_response(prepared, response, parse, presentation_audit=None,drafting_audit=None, *, strict_response=False,representation_audit=None):
+def _parse_repair_response(prepared, response, parse, presentation_audit=None,drafting_audit=None, *, strict_response=False,representation_audit=None,coverage_audit=None):
     originals, aliases, allowed = (prepared[key] for key in ('originals', 'aliases', 'allowed'))
     finish = getattr(response, 'finish_reason', None) if not isinstance(response, dict) else response.get('finishReason', response.get('finish_reason'))
     if finish == 'length':
+        if type(prepared.get('coverageContractVersion')) is int and prepared['coverageContractVersion']==1 and coverage_audit is not None:
+            from services.deep_research.repair_coverage import partition
+            _,audit=partition(originals,[]);audit.update(responseState='received_truncated',expandedRevisionIds=[])
+            coverage_audit.append(audit)
         return []
     content = response.content if hasattr(response, 'content') else response.get('content', '')
     try:
@@ -477,6 +487,10 @@ def _parse_repair_response(prepared, response, parse, presentation_audit=None,dr
             raise DeepResearchError('invalid_repair_response', '修订结果未能解析；已保留此前核实的内容。',
                                     {'responseState': 'received_invalid'})
         return []
+    coverage=None
+    if type(prepared.get('coverageContractVersion')) is int and prepared['coverageContractVersion']==1:
+        from services.deep_research.repair_coverage import partition
+        revised,coverage=partition(originals,revised)
     if type(prepared.get('editFormatVersion')) is int and prepared['editFormatVersion']==1:
         from services.deep_research.experiment_edits import expand
         revised=expand(prepared,revised,representation_audit)
@@ -536,6 +550,10 @@ def _parse_repair_response(prepared, response, parse, presentation_audit=None,dr
                 **({'version':2} if prepared['presentationVersion']==2 else {}))
             if audit and presentation_audit is not None: presentation_audit.append(audit)
         valid.append(materialize_execution_claim(normalized))
+    if coverage is not None and coverage_audit is not None:
+        coverage['expandedRevisionIds']=[r['claimId'] for r in valid]
+        coverage['unusableEditTargetIds']=[cid for cid in coverage['submittedEditIds'] if cid not in coverage['expandedRevisionIds']]
+        coverage_audit.append(coverage)
     return valid
 
 
@@ -549,7 +567,7 @@ def factual_redraft_eligible(report):
 def repair_rejected(report, verification, evidence, question, invoke, parse, *,
                     max_prompt_bytes=24000, metric_domains=None, batch_state=None, checkpoint=None,
                     current_budget=None, invoke_request=None, fact_redraft=False, requirement_context=(),
-                    source_aware_redraft=False,comparison_reasoning=False,question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,strict_response=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False,shared_experiment_schema=False,experiment_evidence_context=None,experimental_edits=False,experimental_diagnostics=False,experimental_nested_tables=False,experimental_representation=False,citation_presentation_version=0):
+                    source_aware_redraft=False,comparison_reasoning=False,question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,strict_response=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False,shared_experiment_schema=False,experiment_evidence_context=None,experimental_edits=False,experimental_diagnostics=False,experimental_nested_tables=False,experimental_representation=False,experimental_coverage=False,citation_presentation_version=0):
     """One bounded revision round, split before dispatch when evidence cannot fit.
 
     At most three requests share full sibling design definitions. Successful
@@ -563,6 +581,8 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
     originals = [c for c in report.get('claims', []) if c.get('claimId') in targets]
     if not originals:
         return []
+    if experimental_coverage and not experimental_representation:
+        raise ValueError('Experimental coverage requires representation-aware edits')
     if experimental_diagnostics and (not experimental_edits or not experimental_intent):
         raise ValueError('Experimental diagnostics require prospective field edits')
     if experimental_nested_tables and not experimental_diagnostics:
@@ -582,7 +602,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
                        **({'tableReferencesContractVersion':1} if declared_table_refs else {}),
                        **({'repairResponseContractVersion':1} if strict_response else {}),
                        **({'factualRepairContractVersion':1} if compact_source_repair else {}),
-                       **({'experimentRepairContractVersion':5 if experimental_representation else 4 if experimental_nested_tables else 3 if experimental_diagnostics else 2 if experimental_edits else 1} if shared_experiment_schema else {}),
+                       **({'experimentRepairContractVersion':6 if experimental_coverage else 5 if experimental_representation else 4 if experimental_nested_tables else 3 if experimental_diagnostics else 2 if experimental_edits else 1} if shared_experiment_schema else {}),
                        **({'experimentEvidenceContractVersion':1,'experimentEvidenceContext':experiment_evidence_context}
                           if experiment_evidence_context is not None else {}),
                        **({'comparisonMethodologyVersion':1} if comparison_methodology else {}),
@@ -607,6 +627,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
             **({'experimental_diagnostics':True} if experimental_diagnostics else {}),
             **({'experimental_nested_tables':True} if experimental_nested_tables else {}),
             **({'experimental_representation':True} if experimental_representation else {}),
+            **({'experimental_coverage':True} if experimental_coverage else {}),
             **({'citation_presentation_version':2} if citation_presentation_version==2 else {}))
 
     state = deepcopy(batch_state) if batch_state is not None else {
@@ -693,10 +714,12 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
             presentation_audit=[]
             drafting_audit=[] if factual_scope else None
             representation_audit=[] if experimental_representation else None
+            coverage_audit=[] if experimental_coverage else None
             try:
                 rows = _parse_repair_response(prepared, response, parse,presentation_audit,drafting_audit,
                                               strict_response=strict_response,
-                                              **({'representation_audit':representation_audit} if experimental_representation else {}))
+                                              **({'representation_audit':representation_audit} if experimental_representation else {}),
+                                              **({'coverage_audit':coverage_audit} if experimental_coverage else {}))
             except DeepResearchError as exc:
                 if (exc.code!='invalid_repair_response' or exc.details.get('responseState')!='received_invalid'):
                     raise
@@ -712,6 +735,8 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
                 break
             if drafting_audit:
                 state.setdefault('factualDraftingAudit',{})[key]=drafting_audit
+            if coverage_audit:
+                state.setdefault('responseCoverageAudit',{})[key]=coverage_audit[0]
             if presentation_audit:
                 state.setdefault('citationPresentationAudit',{})[key]=presentation_audit
             if representation_audit:
