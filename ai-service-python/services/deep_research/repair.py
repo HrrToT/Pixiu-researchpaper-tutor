@@ -17,7 +17,7 @@ def _prepare_repair(report, verification, evidence, question, *, max_prompt_byte
                     metric_domains=None, draft_context=(), prior_revisions=(),
                     fact_redraft=False, requirement_context=(), source_aware_redraft=False,comparison_reasoning=False,
                     question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False,shared_experiment_schema=False,experiment_evidence_context=None,experimental_edits=False,experimental_diagnostics=False,experimental_nested_tables=False,experimental_representation=False,experimental_coverage=False,citation_presentation_version=0):
-    if type(citation_presentation_version) is not int or citation_presentation_version not in (0,2):
+    if type(citation_presentation_version) is not int or citation_presentation_version not in (0,2,3):
         raise ValueError('Unsupported citation presentation contract')
     rejected = {row['claimId']: row for row in verification.get('rejected', [])}
     originals = {row['claimId']: row for row in report.get('claims', []) if row.get('claimId') in rejected}
@@ -459,8 +459,8 @@ in the paper. Maintain consistency with accepted definitions and complete requir
             **({'nestedTablesVersion':1} if experimental_nested_tables else {}),
             **({'representationContractVersion':1} if experimental_representation else {}),
             **({'coverageContractVersion':1} if experimental_coverage else {}),
-            **({'presentationVersion':2 if citation_presentation_version==2 else 1,'presentationQuotes':{row['evidenceId']:row.get('quote','')+'\n'+
-                json.dumps(row.get('sourceContext',{}),ensure_ascii=False) for row in rows}} if compact_factual or citation_presentation_version==2 else {})}
+            **({'presentationVersion':citation_presentation_version if citation_presentation_version in (2,3) else 1,'presentationQuotes':{row['evidenceId']:row.get('quote','')+'\n'+
+                json.dumps(row.get('sourceContext',{}),ensure_ascii=False) for row in rows}} if compact_factual or citation_presentation_version in (2,3) else {})}
 
 
 def _parse_repair_response(prepared, response, parse, presentation_audit=None,drafting_audit=None, *, strict_response=False,representation_audit=None,coverage_audit=None):
@@ -544,10 +544,10 @@ def _parse_repair_response(prepared, response, parse, presentation_audit=None,dr
             row['designRole'] = original['designRole']
         from services.deep_research.execution_materialization import materialize_execution_claim
         normalized = normalize_conditions({'claims': [dict(row)]})['claims'][0]
-        if type(prepared.get('presentationVersion')) is int and prepared['presentationVersion'] in (1,2):
+        if type(prepared.get('presentationVersion')) is int and prepared['presentationVersion'] in (1,2,3):
             from services.deep_research.citation_presentation import normalize as normalize_markers
             normalized,audit=normalize_markers(normalized,aliases,prepared['presentationQuotes'],
-                **({'version':2} if prepared['presentationVersion']==2 else {}))
+                **({'version':prepared['presentationVersion']} if prepared['presentationVersion'] in (2,3) else {}))
             if audit and presentation_audit is not None: presentation_audit.append(audit)
         valid.append(materialize_execution_claim(normalized))
     if coverage is not None and coverage_audit is not None:
@@ -589,11 +589,11 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
         raise ValueError('Nested experimental tables require diagnostic field edits')
     if experimental_representation and not experimental_nested_tables:
         raise ValueError('Experimental representation requires nested field edits')
-    if type(citation_presentation_version) is not int or citation_presentation_version not in (0,2):
+    if type(citation_presentation_version) is not int or citation_presentation_version not in (0,2,3):
         raise ValueError('Unsupported citation presentation contract')
     identity = digest({'report': report, 'verification': verification,
                        'evidence': evidence, 'question': question, 'metricDomains': metric_domains,
-                       **({'citationPresentationContractVersion':2} if citation_presentation_version==2 else {}),
+                       **({'citationPresentationContractVersion':citation_presentation_version} if citation_presentation_version in (2,3) else {}),
                        **({'factRedraftContractVersion':3 if concise_factual else 2 if source_aware_redraft else 1,'requirementContext':requirement_context}
                           if fact_redraft else {}),
                        **({'comparisonReasoningContractVersion':1} if comparison_reasoning else {}),
@@ -628,7 +628,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
             **({'experimental_nested_tables':True} if experimental_nested_tables else {}),
             **({'experimental_representation':True} if experimental_representation else {}),
             **({'experimental_coverage':True} if experimental_coverage else {}),
-            **({'citation_presentation_version':2} if citation_presentation_version==2 else {}))
+            **({'citation_presentation_version':citation_presentation_version} if citation_presentation_version in (2,3) else {}))
 
     state = deepcopy(batch_state) if batch_state is not None else {
         'version': 1, 'inputDigest': identity, 'maxPromptBytes': max_prompt_bytes,

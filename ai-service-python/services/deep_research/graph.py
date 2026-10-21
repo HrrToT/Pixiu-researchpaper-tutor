@@ -1486,8 +1486,8 @@ space with unsupported global absence or incidental iteration/performance values
                     drafting_audit[claim.get('claimId','')]=claim.pop('draftingBasis')
                 if isinstance(claim,dict):
                     normalized,audit=normalize_markers(claim,evidence_aliases,quotation_by_alias,
-                        **({'version':2} if type(record.get('citationPresentationContractVersion')) is int
-                           and record['citationPresentationContractVersion']==2 else {}))
+                        **({'version':record['citationPresentationContractVersion']} if type(record.get('citationPresentationContractVersion')) is int
+                           and record['citationPresentationContractVersion'] in (2,3) else {}))
                     parsed['claims'][index]=normalized
                     if audit:
                         synthesis_presentation_audit[claim.get('claimId','')]=audit
@@ -1725,8 +1725,8 @@ def make_verify_node(
                         **({'experimental_nested_tables':True} if edit_repair and record['experimentRepairContractVersion'] in (4,5,6) else {}),
                         **({'experimental_representation':True} if edit_repair and record['experimentRepairContractVersion'] in (5,6) else {}),
                         **({'experimental_coverage':True} if edit_repair and record['experimentRepairContractVersion']==6 else {}),
-                        **({'citation_presentation_version':2} if type(record.get('citationPresentationContractVersion')) is int
-                           and record['citationPresentationContractVersion']==2 else {}),
+                        **({'citation_presentation_version':record['citationPresentationContractVersion']} if type(record.get('citationPresentationContractVersion')) is int
+                           and record['citationPresentationContractVersion'] in (2,3) else {}),
                         **({'experiment_evidence_context':candidate_context} if candidate_context is not None else {}),
                         **({'strict_response':True} if type(record.get('repairProgressContractVersion')) is int
                            and record['repairProgressContractVersion']==2 else {}),
