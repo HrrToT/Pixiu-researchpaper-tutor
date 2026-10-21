@@ -74,7 +74,7 @@ def validate_basis(value,allowed,*,max_bytes=MAX_BASIS_BYTES,lean=False):
         return False
 
 
-def planning_prompt(*,question,obligations,sources,evidence,tables,metric_domains,compact=False,lean=False,positional=False):
+def planning_prompt(*,question,obligations,sources,evidence,tables,metric_domains,compact=False,lean=False,positional=False,configuration_consistency_version=0):
     from services.deep_research.design_drafting import _DRAFT_POLICY,_DRAFT_STATISTICS
     from services.deep_research.experiment_intent import guidance,single_toggle_request
     from services.deep_research.metric_scope import metric_protocol_requirements
@@ -144,6 +144,8 @@ record its finite unmatched cost honestly, without claiming an isolated paramete
     prompt+='\nMetric protocols:\n'+packed(metric_protocol_requirements(metric_domains))
     if not (two_arm_request(question) if compact else single_toggle_request(question)):
         prompt+='\n'+_DRAFT_STATISTICS
+    from services.deep_research.configuration_consistency import modern,PLANNING2
+    if modern(configuration_consistency_version):prompt+='\n'+PLANNING2
     return prompt
 
 

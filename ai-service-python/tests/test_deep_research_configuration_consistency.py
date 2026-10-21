@@ -96,13 +96,13 @@ def test_reviewer_receives_exact_derived_fields_and_all_original_claims_without_
     assert new[0]['extra_body']==old[0]['extra_body'] and len(new[0]['prompt'].encode())<=24000
 
 
-@pytest.mark.parametrize('version',[None,True,False,'1',0,2])
+@pytest.mark.parametrize('version',[None,True,False,'1',0,3])
 def test_missing_wrong_type_and_other_versions_keep_legacy_request_exact(version):
     old,_=invoke_for(0);new,_=invoke_for(version)
     assert old==new and not enabled(version)
 
 
-@pytest.mark.parametrize('replacement',[None,True,'1',0,2])
+@pytest.mark.parametrize('replacement',[None,True,'1',0,1])
 def test_consistency_contract_is_server_owned_and_immutable(tmp_path,replacement):
     from services.deep_research.facade import ResearchFacade
     from services.deep_research.repository import DeepResearchRepository
@@ -111,7 +111,7 @@ def test_consistency_contract_is_server_owned_and_immutable(tmp_path,replacement
     try:
         value,_=facade.create({'workspaceTaskId':'t','operationKey':'k','question':'Propose an experiment',
             'configurationConsistencyContractVersion':replacement,'deferStart':True},start_async=False)
-        assert value['configurationConsistencyContractVersion']==1
+        assert value['configurationConsistencyContractVersion']==2
         with pytest.raises(ValueError,match='Immutable'):
             repo.update_run(value['runId'],lambda r:{**r,'configurationConsistencyContractVersion':replacement})
     finally:facade.shutdown()

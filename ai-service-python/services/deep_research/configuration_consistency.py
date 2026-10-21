@@ -11,6 +11,54 @@ GENERATION = ('Text explains rationale/source boundaries; put exact split, state
     'in executionSpec only: the app renders them. Any prose setting MUST agree with its config. '
     'Account for every actual training phase, not one cap silently reused for omitted phases.')
 
+GENERATION2 = ('Explain rationale/source boundaries; exact settings live in executionSpec and are rendered. '
+    'Keep ALL text/conditions consistent when changing fields. Distinguish shared reference-model '
+    'preparation from later learned-field fitting: fitting a field does not create its reference model. '
+    'Define all representation/network states, compatible shapes/initial values and actual inputs, '
+    'not one opaque parameter vector. Account for every fitting phase within finite caps; declare '
+    'per-frame versus whole-window cost and temporal index mapping. Match whole-group training '
+    'for isolated effects; a whole-stage cost tradeoff may use honest unmatched budgets, without '
+    'claiming isolated parameter causality. Proposed choices need compatible implementation, not author attribution.')
+
+PLANNING2 = ('Separate reference-model preparation, learned-field fitting and intervention in actual temporal '
+    'order; one does not initialize the others. Plan complete representation/network states and available '
+    'inputs, each fitting phase within finite caps, and per-frame versus whole-window costs. Preserve '
+    'the source frame convention; proposed index mapping is not a source fact.')
+
+
+def generation(version):
+    return GENERATION2 if modern(version) else GENERATION
+
+
+def align_grammar(text, version):
+    """Correct instructions only; retain the original grammar for old requests."""
+    if not modern(version):return text
+    return text.replace('Unmatched confounds budgets.',
+        'Unmatched cannot isolate parameter effects; whole-stage cost tradeoffs may use it with honest cost scope.').replace(
+        'Scalar shape is []; constants broadcast compatibly;',
+        'State initializer operation.rule requires NONEMPTY valid parameters describing its transformation, including copying. '
+        'This differs from parameter-free creation/group actions. Scalar shape is []; constants broadcast compatibly;')
+
+
+def align_repair(text, version):
+    if not modern(version):return text
+    old='''Propose finite compatible settings; never invent author facts/values or change the requested
+technique to fit schema. Unsupported forms stay open. Define ALL states/initial values and
+available inputs; no opaque weights/fake asset. Frame windows differ from held-out cameras;
+eligibility uses training observations only. Whole-stage unmatched cost cannot isolate
+parameter effects. Keep hypotheses future, pairing/aggregation executable and scope honest.'''
+    new='''Keep method and future hypotheses.
+Fix prose/conditions WITH configs. Match whole-group budgets for isolated effects;
+whole-stage tradeoffs may use finite unmatched cost, not isolated causality.
+Separate reference-model creation/field fitting; define ALL states/inputs/phases/caps.
+State initializer operation.rule needs NONEMPTY parameters, even copying; creation
+may be parameter-free. No opaque weights/fake assets. Training-only eligibility,
+pairing/aggregation and bounded scope remain.'''
+    # Original claims/context have already been serialized here. Only replace
+    # this multiline system paragraph; single grammar phrases can occur inside
+    # user/model content and must never be rewritten in a rendered request.
+    return text.replace(old,new)
+
 REVIEW = '''Derived configuration meanings below are calculations from proposed fields, NOT evidence
 or approval. Compare ALL prose/conditions with these exact choices; reversed train/evaluation
 assignments fail. Counts/availability remain unproven. Budget sums are upper caps only when the
@@ -24,7 +72,11 @@ source, initialization, intervention and measurement failures. No automatic verd
 
 
 def enabled(value):
-    return type(value) is int and value == 1
+    return type(value) is int and value in (1,2)
+
+
+def modern(value):
+    return type(value) is int and value == 2
 
 
 def facts(claims):

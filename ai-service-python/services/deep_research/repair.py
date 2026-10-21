@@ -16,7 +16,9 @@ from services.deep_research.repair_scope import repair_evidence_scope
 def _prepare_repair(report, verification, evidence, question, *, max_prompt_bytes=24000,
                     metric_domains=None, draft_context=(), prior_revisions=(),
                     fact_redraft=False, requirement_context=(), source_aware_redraft=False,comparison_reasoning=False,
-                    question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False,shared_experiment_schema=False,experiment_evidence_context=None,experimental_edits=False,experimental_diagnostics=False,experimental_nested_tables=False,experimental_representation=False,experimental_coverage=False,citation_presentation_version=0):
+                    question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False,shared_experiment_schema=False,experiment_evidence_context=None,experimental_edits=False,experimental_diagnostics=False,experimental_nested_tables=False,experimental_representation=False,experimental_coverage=False,citation_presentation_version=0,configuration_consistency_version=0):
+    if type(configuration_consistency_version) is not int or configuration_consistency_version not in (0,2):
+        raise ValueError('Unsupported configuration consistency contract')
     if type(citation_presentation_version) is not int or citation_presentation_version not in (0,2,3):
         raise ValueError('Unsupported citation presentation contract')
     rejected = {row['claimId']: row for row in verification.get('rejected', [])}
@@ -401,6 +403,7 @@ in the paper. Maintain consistency with accepted definitions and complete requir
                 c for c in report.get('claims', []) if c.get('claimId') not in originals])
         if experimental_nested_tables:
             from services.deep_research.experiment_nested_prompt import render as experiment_prompt
+            if configuration_consistency_version==2:feedback_options['configuration_consistency_version']=2
         if experimental_representation:
             feedback_options['parameter_rows']=True
         if compatible(report):
@@ -567,7 +570,7 @@ def factual_redraft_eligible(report):
 def repair_rejected(report, verification, evidence, question, invoke, parse, *,
                     max_prompt_bytes=24000, metric_domains=None, batch_state=None, checkpoint=None,
                     current_budget=None, invoke_request=None, fact_redraft=False, requirement_context=(),
-                    source_aware_redraft=False,comparison_reasoning=False,question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,strict_response=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False,shared_experiment_schema=False,experiment_evidence_context=None,experimental_edits=False,experimental_diagnostics=False,experimental_nested_tables=False,experimental_representation=False,experimental_coverage=False,citation_presentation_version=0):
+                    source_aware_redraft=False,comparison_reasoning=False,question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,strict_response=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False,shared_experiment_schema=False,experiment_evidence_context=None,experimental_edits=False,experimental_diagnostics=False,experimental_nested_tables=False,experimental_representation=False,experimental_coverage=False,citation_presentation_version=0,configuration_consistency_version=0):
     """One bounded revision round, split before dispatch when evidence cannot fit.
 
     At most three requests share full sibling design definitions. Successful
@@ -589,11 +592,14 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
         raise ValueError('Nested experimental tables require diagnostic field edits')
     if experimental_representation and not experimental_nested_tables:
         raise ValueError('Experimental representation requires nested field edits')
+    if type(configuration_consistency_version) is not int or configuration_consistency_version not in (0,2):
+        raise ValueError('Unsupported configuration consistency contract')
     if type(citation_presentation_version) is not int or citation_presentation_version not in (0,2,3):
         raise ValueError('Unsupported citation presentation contract')
     identity = digest({'report': report, 'verification': verification,
                        'evidence': evidence, 'question': question, 'metricDomains': metric_domains,
                        **({'citationPresentationContractVersion':citation_presentation_version} if citation_presentation_version in (2,3) else {}),
+                       **({'configurationConsistencyContractVersion':2} if configuration_consistency_version==2 else {}),
                        **({'factRedraftContractVersion':3 if concise_factual else 2 if source_aware_redraft else 1,'requirementContext':requirement_context}
                           if fact_redraft else {}),
                        **({'comparisonReasoningContractVersion':1} if comparison_reasoning else {}),
@@ -628,7 +634,8 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
             **({'experimental_nested_tables':True} if experimental_nested_tables else {}),
             **({'experimental_representation':True} if experimental_representation else {}),
             **({'experimental_coverage':True} if experimental_coverage else {}),
-            **({'citation_presentation_version':citation_presentation_version} if citation_presentation_version in (2,3) else {}))
+            **({'citation_presentation_version':citation_presentation_version} if citation_presentation_version in (2,3) else {}),
+            **({'configuration_consistency_version':2} if configuration_consistency_version==2 else {}))
 
     state = deepcopy(batch_state) if batch_state is not None else {
         'version': 1, 'inputDigest': identity, 'maxPromptBytes': max_prompt_bytes,

@@ -176,6 +176,8 @@ with this metadata; independent review still checks the entire resulting experim
             'str:nonblank; number:finite/nonbool; integer:nonbool. Unique lists: no duplicates.\n'
             'Exact keys; server versions on enclosing claims only.\n'+GUIDANCE+'\n'+schema[len(prefix):].replace(
                 "Each role's executionSpec is directly the object below, never wrapped in the role name:\n",'',1))
+    from services.deep_research.configuration_consistency import align_grammar
+    schema=align_grammar(schema,record.get('configurationConsistencyContractVersion'))
     prompt+='\n'+schema+'\nEXACT_STAGES='+packed(list(STAGES))+'\nEXACT_RECORDS='+packed(sorted(RECORDS|{'group_checkpoints'}))
     prompt+='\nREQUIRED OUTPUT OUTLINE (one claim per role):\n'+packed(design_output_outline(
         strict_budget=True,strict_hypothesis=True,strict_protocol=2,strict_workflow=4))
@@ -188,10 +190,14 @@ dataset/member and existing asset with its own original evidence. Proposed value
 are not author settings. Preserve the user's scope; no unsupported absence claims.
 Text explains rationale without duplicating fields rendered by the application.
 Independent review retains the full scientific and operational requirements.'''
-    from services.deep_research.configuration_consistency import enabled as consistent, GENERATION
-    if consistent(record.get('configurationConsistencyContractVersion')):
+    from services.deep_research.configuration_consistency import enabled as consistent, modern, generation
+    if modern(record.get('configurationConsistencyContractVersion')):
+        # Replace repeated framing rather than displacing required source context.
+        # Exact role grammar, source rules and independent review remain below.
+        configuration_policy=generation(record['configurationConsistencyContractVersion'])
+    elif consistent(record.get('configurationConsistencyContractVersion')):
         configuration_policy=configuration_policy.replace(
-            'Text explains rationale without duplicating fields rendered by the application.',GENERATION)
+            'Text explains rationale without duplicating fields rendered by the application.',generation(record.get('configurationConsistencyContractVersion')))
     if compact:
         configuration_policy=configuration_policy.replace('finite preparation and matched whole-group budgets',
             'finite preparation and honest whole-group budgets; match them for isolated effects')

@@ -1432,7 +1432,8 @@ space with unsupported global absence or incidental iteration/performance values
                 metric_domains=brief_state.get('metricDomains'),
                 **({'compact':True} if record['experimentDraftContractVersion'] in (4,5,6) else {}),
                 **({'lean':True} if record['experimentDraftContractVersion'] in (5,6) else {}),
-                **({'positional':True} if plan_encoding(record) else {})),aliases=evidence_aliases,
+                **({'positional':True} if plan_encoding(record) else {}),
+                configuration_consistency_version=record.get('configurationConsistencyContractVersion',0)),aliases=evidence_aliases,
                 invoke=lambda node,prompt,options:llm_invoke(run_id,node,prompt,options,use_reserve=True),
                 parse=_safe_parse_json,checkpoint=checkpoint_planning)
             if plan is None:
@@ -1725,6 +1726,8 @@ def make_verify_node(
                         **({'experimental_nested_tables':True} if edit_repair and record['experimentRepairContractVersion'] in (4,5,6) else {}),
                         **({'experimental_representation':True} if edit_repair and record['experimentRepairContractVersion'] in (5,6) else {}),
                         **({'experimental_coverage':True} if edit_repair and record['experimentRepairContractVersion']==6 else {}),
+                        **({'configuration_consistency_version':2} if type(record.get('configurationConsistencyContractVersion')) is int
+                           and record['configurationConsistencyContractVersion']==2 else {}),
                         **({'citation_presentation_version':record['citationPresentationContractVersion']} if type(record.get('citationPresentationContractVersion')) is int
                            and record['citationPresentationContractVersion'] in (2,3) else {}),
                         **({'experiment_evidence_context':candidate_context} if candidate_context is not None else {}),

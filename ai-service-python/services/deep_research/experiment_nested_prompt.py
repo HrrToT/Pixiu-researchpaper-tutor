@@ -2,6 +2,10 @@
 import json
 from services.deep_research.experiment_edits import columnar
 from services.deep_research.nested_tables import claim_views
+from services.deep_research.configuration_consistency import align_repair
+
+
+DRAFTING_POLICY = 'Propose finite compatible settings; never invent author facts/values or change the requested\ntechnique to fit schema. Unsupported forms stay open. Define ALL states/initial values and\navailable inputs; no opaque weights/fake asset. Frame windows differ from held-out cameras;\neligibility uses training observations only. Whole-stage unmatched cost cannot isolate\nparameter effects. Keep hypotheses future, pairing/aggregation executable and scope honest.'
 
 
 def render(**k):
@@ -36,11 +40,7 @@ Return ONLY [{"claimId":"writable ID","edits":[{"op":"replace|add|remove","path"
 Pointers: ~0=tilde, ~1=slash; zero-based arrays, add /- appends. Edit ORIGINALS in order;
 omissions preserve values. Align text AND conditions with configs. Server restores/renders
 complete claims and independently rechecks; no acceptance/budget exception.
-Propose finite compatible settings; never invent author facts/values or change the requested
-technique to fit schema. Unsupported forms stay open. Define ALL states/initial values and
-available inputs; no opaque weights/fake asset. Frame windows differ from held-out cameras;
-eligibility uses training observations only. Whole-stage unmatched cost cannot isolate
-parameter effects. Keep hypotheses future, pairing/aggregation executable and scope honest.
+'''+align_repair(DRAFTING_POLICY,k.get('configuration_consistency_version',0))+'''
 Facts/conditions need OWN allowed E quotes for operations/dataset/members/counts/assets;
 metadata/siblings are not support. Proposed choices/math need none. Missing text proves
 no global absence; abstracts support abstract facts. Measured tables need own-source cells.
