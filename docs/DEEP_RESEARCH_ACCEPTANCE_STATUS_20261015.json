@@ -2793,6 +2793,120 @@
         "After a real plan returns, preserve its complete values and all mandatory premises under the actual24KB body guard; missing capacity cannot count as content acceptance.",
         "Source-faithful common initialization, temporal order, budget consistency, executable measurement and fresh independent DR0-DR5 acceptance remain unproven."
       ]
+    },
+    "encodedAllocationCheckpoint": {
+      "date": "2026-10-22",
+      "sourceCommit": "4dcb2c7f",
+      "promptVersion": "dr-v2.20261022.218",
+      "outlineEncodingContractVersion": 2,
+      "fullOffline": {
+        "passed": 3738,
+        "warnings": 1,
+        "seconds": 169.37,
+        "files": 210,
+        "log": "tmp/pytest-dr218-full.log",
+        "sha256": "ebd6bbf6c979b4a0c358ecdc244408c8e7dc9aa6a53842cea405516c45cf5b27"
+      },
+      "focusedPassed": 78,
+      "focusedSeconds": 3.59,
+      "focusedOverlap": true,
+      "newTests": 21,
+      "legacyActualFingerprintsMatched": 60,
+      "offlineProviderCalls": 0,
+      "independentCredit": 0,
+      "deployedSeparately": false,
+      "boundary": "Encoded-size fitting implemented and offline tested. Still uses the planning placeholder before the actual plan. No new real model/content/independent acceptance. Followed by actual-plan reallocation work under a new contract."
+    },
+    "generationEnvelopeCheckpoint": {
+      "date": "2026-10-22",
+      "sourceCommit": "3f2e73b9",
+      "promptVersion": "dr-v2.20261022.219",
+      "generationEnvelopeContractVersion": 1,
+      "fullOffline": {
+        "passed": 3758,
+        "warnings": 1,
+        "seconds": 130.24,
+        "files": 211,
+        "log": "tmp/pytest-dr219-full.log",
+        "sha256": "f8e5f69c868e35887151be84af065a153ae2f7ce462f540b5a8201d5f23204bf"
+      },
+      "focusedPassed": 71,
+      "focusedSeconds": 4.35,
+      "focusedOverlap": true,
+      "newTests": 20,
+      "legacyActualFingerprintsMatched": 60,
+      "offlineProviderCalls": 0,
+      "independentCredit": 0,
+      "controlledReplay": "generation-envelope-actual-plan-controlled-20261022.json",
+      "implementation": "Compact repeated generation framing without dropping frozen inputs/role grammar. After the actual complete plan, atomically retain every original mandatory bundle and every unverified-plan source reference; refit only within planning-visible evidence, record actual wire size and retain complete required overflow for unchanged final24KB refusal. No source/plan/scientific approval or old request upgrade.",
+      "boundary": "Complete offline regression and DEVELOPMENT fixture capacity stress only; no new real content or independent acceptance.",
+      "actualCase": {
+        "case": "E1-v15",
+        "status": "failed",
+        "errorCode": "experiment_drafting_input_capacity",
+        "inputBytes": 24091,
+        "maxInputBytes": 24000,
+        "settledModelCalls": 8,
+        "measuredTokens": 25859,
+        "observedElapsedSeconds": 47,
+        "bodySent": false,
+        "independentCredit": 0
+      }
+    },
+    "experimentInputCapacityCheckpoint": {
+      "date": "2026-10-22",
+      "sourceCommit": "55f771a3",
+      "promptVersion": "dr-v2.20261022.220",
+      "experimentInputContractVersion": 1,
+      "fullOffline": {
+        "passed": 3787,
+        "warnings": 1,
+        "seconds": 212.65,
+        "files": 212,
+        "log": "tmp/pytest-dr220-full-final.log",
+        "sha256": "89956a4754a19295c25b5b395170912b18b96a12c6d348bfd8b2d9f24b4f86c8"
+      },
+      "focusedPassed": 70,
+      "focusedSeconds": 3.79,
+      "focusedOverlap": true,
+      "newTests": 29,
+      "legacyActualFingerprintsMatched": 60,
+      "legacyReplayScriptCount": 19,
+      "offlineProviderCalls": 0,
+      "independentCredit": 0,
+      "controlledReplay": "experiment-capacity-e1-v15-controlled-20261022.json",
+      "implementation": "Immutable experiment input v1: only modern experiment planning/body may use32000 bytes, complete accepted plan reserves4000 before evidence selection, transport enforces configured server ceiling and atomic full-input/output budget. Total18calls/100k/360sec and other node/old-run windows unchanged.",
+      "boundary": "Offline admission and request-identity checks, not actual content or independent acceptance. Initial focused failures were test-fixture construction errors fixed before final runs; first full run stopped before results after replay exposed missing compatibility field in historical capture subclass.",
+      "actualCase": {
+        "case": "E1-v16",
+        "status": "completed",
+        "outcome": "inconclusive",
+        "observedElapsedSeconds": 113.0,
+        "settledModelCalls": 13,
+        "settledTokens": 67858,
+        "verificationSummary": {
+          "accepted": 0,
+          "rejected": 9
+        },
+        "unsettledModelCalls": 0,
+        "bodyInputBytes": 30070,
+        "repairStatus": "skipped_budget",
+        "repairAdmission": {
+          "kind": "repairEvidenceBytes",
+          "limit": 16580,
+          "used": 19568
+        }
+      },
+      "actualInputProof": "experiment-capacity-e1-v16-actual-input-20261022.json",
+      "reviewInputProof": "experiment-capacity-e1-v16-review-diagnosis-20261022.json",
+      "qualityDiagnosis": "E1-v16-quality-diagnosis-20261022.json",
+      "retentionProof": "runtime-postcases-dr220-e1-v16-20261022.json",
+      "selectedDiagnosticTotals": {
+        "settledModelCalls": 615,
+        "measuredTokens": 2521055,
+        "notGlobalHistory": true,
+        "costUnknown": true
+      }
     }
   },
   "stages": [
@@ -3855,7 +3969,7 @@
     "independentCredit": 0,
     "proof": "deep-research-evidence/compact-experiment-envelope-regression-20261020.json"
   },
-  "currentCheckpoint": ".217 b0b60778: immutable outlineEncoding1 performs audited lossless system-outline encoding AFTER allocation/full plan; old failed/unknown identities protected.3717research tests/209files,70focused overlap,30new,60legacy fingerprints. Implemented controlled E1-v13 retains all7evidence/full plan and freezes23917-byte body, stops before send; old24186-byte failure unchanged. Real E1-v14 once30s failed pre-encoding evidence capacity before planning/body/encoder/review:7settled calls21320tokens,no newunknown. Required scene quote exists but fitter excludes E7; all7raw24114/encoded23845 with2500placeholder measured. Encoded-size fitting is NOT implemented; actual returned-plan capacity/content unproven.5080ledger/11paused/old tasks/payloads retained;DR0-DR5 incomplete;independent0/5;Goal active.",
+  "currentCheckpoint": ".220 /55f771a3: immutable experimentInput1 grants only new modern experiment planning/body32000bytes; reserve4000 for complete accepted plan before selecting sources.3787research tests/212files,70focused overlap,29new,60legacy fingerprints. Controlled E1-v15 original24091 refusal now retains20quotes/required contexts/fullplan30576; actual E1-v16 planner24164/body30070 submitted once,113s completed/inconclusive0/9,13settled calls67858tokens,no new unknown. Three review targets c2/c6/c8 not dispatched due fixed review/evidence capacity; one hypothesis modelpass fails linked-analysis gate. Repair skipped at16580-byte remaining admission vs19568 required. Genuine opaque states/budget mismatch/measurement problems coexist with false missing-config/data objections.5129ledger/11oldpaused/alloldpayloads/4tasks preserved. Full DR0-DR5 and fresh independent replacements remain incomplete; original0/5 unchanged;Goalactive;PRdraft.",
   "sharedModuleSourceCheckpoint": {
     "sourceCommit": "f8ae5177",
     "promptVersion": "dr-v2.20261020.199",
