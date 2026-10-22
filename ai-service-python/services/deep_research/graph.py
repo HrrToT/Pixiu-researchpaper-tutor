@@ -1397,8 +1397,13 @@ space with unsupported global absence or incidental iteration/performance values
                         ensure_ascii=False,separators=(',',':')),1)
             numerical_request=bool(re.search(r'数值|具体值|是多少|多少|核(?:查|对)|\b(?:values?|numbers?|how many|how much|verify)\b',question,re.I))
             qualitative_comparison=bool(re.search(r'为何|为什么|可比|同条件|\b(?:why|comparab\w*|alignment)\b',question,re.I))
+            from services.deep_research.experiment_outline_encoding import allocation_enabled,encode as encode_outline
+            encoded_allocation=staged_mode and allocation_enabled(record)
+            def wire_size(value):
+                return len(encode_outline(record,value)[0].encode('utf8'))
             prompt,evidence_summaries,missing_bundles=fit_premises(evidence_summaries,render_premises,wire_bundles,
                 omit_optional_table_data=output_kind=='paper_comparison' and qualitative_comparison and not numerical_request,
+                **({'prompt_byte_size':wire_size} if encoded_allocation else {}),
                 **({'required_contexts':{eid:context for b in wire_bundles
                        for eid,context in b.get('requiredContextByEvidenceId',{}).items()}}
                    if record['synthesisEvidenceContractVersion'] in (5,6) else {}))
@@ -1407,6 +1412,9 @@ space with unsupported global absence or incidental iteration/performance values
                 'suppliedEvidenceIds':[evidence_aliases[row['evidenceId']] for row in evidence_summaries],
                 'missingPremiseBundles':missing_bundles,'inputBytes':len(prompt.encode('utf8')),
                 'fixedInputBytes':len(render_premises([]).encode('utf8')),
+                **({'sizingContractVersion':2,'encodedInputBytes':wire_size(prompt),
+                    'fixedEncodedInputBytes':wire_size(render_premises([])),
+                    'planningSlotReservedBytes':basis_limit(record)} if encoded_allocation else {}),
                 'tableDataOmittedEvidenceIds':[evidence_aliases[row['evidenceId']] for row in evidence_summaries if row.get('tableDataOmitted')],
                 'sharedTablePackets':len({row['tableDataRef'] for row in evidence_summaries if row.get('tableDataRef')})}}},expected_revision=None)
         else:

@@ -194,7 +194,7 @@ def prepare_plan(record,*,prompt,aliases,invoke,parse,checkpoint):
     outlined=outline_encoding(record)
     identity=digest({'version':1,'request':request,'evidenceAliases':aliases,
         **({'basisEncodingVersion':encoding_version} if encoding else {}),
-        **({'outlineEncodingVersion':1} if outlined else {})})
+        **({'outlineEncodingVersion':record['experimentOutlineEncodingContractVersion']} if outlined else {})})
     saved=deepcopy(record.get('state',{}).get('experimentPlanning'))
     if saved is not None:
         if (not isinstance(saved,dict) or type(saved.get('version')) is not int or saved['version']!=1

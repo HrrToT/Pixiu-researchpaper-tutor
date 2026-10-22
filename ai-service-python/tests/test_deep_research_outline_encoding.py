@@ -35,7 +35,7 @@ def test_all_roles_types_order_and_surrounding_question_source_plan_values_round
     validate(record(),new,audit)
 
 
-@pytest.mark.parametrize('version',[None,False,True,0,'1',2,3])
+@pytest.mark.parametrize('version',[None,False,True,0,'1',3,4])
 def test_legacy_unknown_and_wrong_type_versions_keep_exact_request(version):
     r=record();r['experimentOutlineEncodingContractVersion']=version
     original=prompt();assert not enabled(r) and encode(r,original)==(original,None)
@@ -122,7 +122,7 @@ def test_graph_encodes_after_fitting_preserving_the_selected_evidence_and_plan()
     assert new[0]['state']['experimentPlanning']['outlineEncodingAudit']['originalPromptDigest']==digest(old[1][1].args[2])
 
 
-@pytest.mark.parametrize('replacement',[None,True,'1',0,2])
+@pytest.mark.parametrize('replacement',[None,True,'1',0,1])
 def test_outline_contract_is_server_owned_and_immutable(tmp_path,replacement):
     from services.deep_research.facade import ResearchFacade
     from services.deep_research.repository import DeepResearchRepository
@@ -131,7 +131,7 @@ def test_outline_contract_is_server_owned_and_immutable(tmp_path,replacement):
     try:
         value,_=facade.create({'workspaceTaskId':'t','operationKey':'k','question':'Propose an experiment',
             'experimentOutlineEncodingContractVersion':replacement,'deferStart':True},start_async=False)
-        assert value['experimentOutlineEncodingContractVersion']==1
+        assert value['experimentOutlineEncodingContractVersion']==2
         with pytest.raises(ValueError,match='Immutable'):
             repo.update_run(value['runId'],lambda r:{**r,'experimentOutlineEncodingContractVersion':replacement})
     finally:facade.shutdown()

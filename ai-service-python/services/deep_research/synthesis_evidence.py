@@ -92,9 +92,13 @@ def order_premises(evidence,plan,limit=20, *, membership_intents=False,module_in
     return chosen[:limit],bundles
 
 
-def fit_premises(rows,render,bundles,max_bytes=24000, *, omit_optional_table_data=False,required_contexts=None):
+def fit_premises(rows,render,bundles,max_bytes=24000, *, omit_optional_table_data=False,required_contexts=None,prompt_byte_size=None):
     """Keep whole premise bundles before optional rows/context; no quote clipping."""
-    if len(render([]).encode('utf8'))>max_bytes:
+    def size(value):
+        measured=prompt_byte_size(value) if prompt_byte_size is not None else len(value.encode('utf8'))
+        if type(measured) is not int or measured<0:raise ValueError('invalid_prompt_byte_size')
+        return measured
+    if size(render([]))>max_bytes:
         raise ValueError('prompt_fixed_content_too_large')
     compact=[]
     required_contexts=required_contexts or {}
@@ -113,7 +117,7 @@ def fit_premises(rows,render,bundles,max_bytes=24000, *, omit_optional_table_dat
         if any(eid not in by_id for eid in ids):
             missing.append(bundle);continue
         additions=[by_id[eid] for eid in ids if eid not in seen]
-        if len(selected)+len(additions)<=20 and len(render([*selected,*additions]).encode('utf8'))<=max_bytes:
+        if len(selected)+len(additions)<=20 and size(render([*selected,*additions]))<=max_bytes:
             selected.extend(additions);seen.update(ids)
         else:
             trial=deepcopy([*selected,*additions])
@@ -122,12 +126,12 @@ def fit_premises(rows,render,bundles,max_bytes=24000, *, omit_optional_table_dat
                     if row.get('tableDataRef'):
                         row.pop('tableDataRef');row['tableDataOmitted']=True
             if (omit_optional_table_data and len(trial)<=20
-                    and len(render(trial).encode('utf8'))<=max_bytes):
+                    and size(render(trial))<=max_bytes):
                 selected=trial;seen.update(ids)
             else:
                 missing.append(bundle)
     for row in compact:
-        if row['evidenceId'] not in seen and len(selected)<20 and len(render([*selected,row]).encode('utf8'))<=max_bytes:
+        if row['evidenceId'] not in seen and len(selected)<20 and size(render([*selected,row]))<=max_bytes:
             selected.append(row);seen.add(row['evidenceId'])
     originals={row['evidenceId']:row for row in rows}
     for i,row in enumerate(selected):
@@ -137,6 +141,6 @@ def fit_premises(rows,render,bundles,max_bytes=24000, *, omit_optional_table_dat
         if originals[row['evidenceId']].get('sourceContext'):
             restored[i]['sourceContext']=originals[row['evidenceId']]['sourceContext']
             restored[i].pop('contextOmitted',None)
-        if len(render(restored).encode('utf8'))<=max_bytes:
+        if size(render(restored))<=max_bytes:
             selected=restored
     return render(selected),selected,missing

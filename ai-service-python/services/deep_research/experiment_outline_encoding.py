@@ -15,11 +15,15 @@ LEGEND='Outline table: columns name row values; merge each final extra-fields ob
 
 def enabled(record):
     return (type(record.get('experimentOutlineEncodingContractVersion')) is int
-        and record['experimentOutlineEncodingContractVersion']==1
+        and record['experimentOutlineEncodingContractVersion'] in (1,2)
         and type(record.get('experimentDraftContractVersion')) is int
         and record['experimentDraftContractVersion']==6
         and type(record.get('configurationConsistencyContractVersion')) is int
         and record['configurationConsistencyContractVersion']==2)
+
+
+def allocation_enabled(record):
+    return enabled(record) and record['experimentOutlineEncodingContractVersion']==2
 
 
 def _packed(value):
@@ -45,7 +49,7 @@ def encode(record,prompt):
     head,found,tail=prompt.rpartition(needle)
     if not found:raise _error()
     encoded=head+MARKER+LEGEND+_packed(packet)+suffix+tail
-    audit={'version':1,'originalOutline':outline,'encodedOutline':packet,
+    audit={'version':record['experimentOutlineEncodingContractVersion'],'originalOutline':outline,'encodedOutline':packet,
         'originalInputBytes':len(prompt.encode('utf8')),'encodedInputBytes':len(encoded.encode('utf8')),
         'originalPromptDigest':digest(prompt),'encodedPromptDigest':digest(encoded),'scientificApproval':False}
     validate(record,encoded,audit)
@@ -59,7 +63,7 @@ def validate(record,prompt,audit):
         return
     if (not isinstance(audit,dict) or set(audit)!={'version','originalOutline','encodedOutline',
             'originalInputBytes','encodedInputBytes','originalPromptDigest','encodedPromptDigest','scientificApproval'}
-            or type(audit['version']) is not int or audit['version']!=1
+            or type(audit['version']) is not int or audit['version']!=record['experimentOutlineEncodingContractVersion']
             or audit['scientificApproval'] is not False
             or type(audit['originalInputBytes']) is not int or type(audit['encodedInputBytes']) is not int):
         raise _error()
