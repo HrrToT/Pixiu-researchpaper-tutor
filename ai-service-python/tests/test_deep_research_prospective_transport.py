@@ -9,7 +9,7 @@ from services.deep_research.contracts import DeepResearchError,digest
 from services.deep_research.experiment_planning import request_identity
 from services.deep_research.runtime import ScopedModelClient,research_model_options
 from services.deep_research.structured_output import (
-    messages,messages_for_record,PROSPECTIVE_POLICY,enabled,normalize,
+    messages,messages_for_record,PROSPECTIVE_POLICY,PROSPECTIVE_JSON_POLICY,enabled,normalize,
 )
 from services.deep_research.tools import TrackedLLMInvoker
 from test_deep_research_structured_output import repository
@@ -54,8 +54,9 @@ def test_server_resolved_experiment_kind_reaches_generation_and_source_bytes_are
 
 
 @pytest.mark.parametrize('node',['synthesize','plan_experiment','verify_design_science','verify_design_config','repair_claims'])
-def test_reserved_identity_native_http_wire_and_runtime_scope_policy_agree(tmp_path,monkeypatch,node):
-    repo=repository(tmp_path,version=8)
+@pytest.mark.parametrize('version',[8,9])
+def test_reserved_identity_native_http_wire_and_runtime_scope_policy_agree(tmp_path,monkeypatch,node,version):
+    repo=repository(tmp_path,version=version)
     repo.update_run('r',lambda r:{**r,'state':{**r.get('state',{}),'outputKind':'experiment_design'}})
     raw='{"claims":[]}' if node in {'synthesize','plan_experiment'} else '{"items":[]}'
     response=Mock(status_code=200)
@@ -72,18 +73,19 @@ def test_reserved_identity_native_http_wire_and_runtime_scope_policy_agree(tmp_p
     frozen=request_identity(repo.require_run('r'),node,prompt,options)
     result=invoke('r',node,prompt,options,use_reserve=True)
     assert len(sent)==1 and sent[0]['messages']==frozen['messages']
-    assert PROSPECTIVE_POLICY in sent[0]['messages'][0]['content']
+    assert (PROSPECTIVE_POLICY if version==8 else PROSPECTIVE_JSON_POLICY) in sent[0]['messages'][0]['content']
     assert repo.list_calls('r')[0]['argsDigest']==digest(frozen)
     assert repo.require_run('r')['budget']['tokens']==7
     assert invoke('r',node,prompt,options,use_reserve=True)==result and len(sent)==1
 
 
-def test_pending_old_scientific_plan_cannot_switch_to_the_new_system_policy():
-    record=experiment_record();record['structuredOutputContractVersion']=7
+@pytest.mark.parametrize('old,new',[(7,8),(8,9)])
+def test_pending_old_scientific_plan_cannot_switch_to_the_new_system_policy(old,new):
+    record=experiment_record();record['structuredOutputContractVersion']=old
     store=Store(record);invoke=Mock(side_effect=OSError('unknown result'))
     with pytest.raises(OSError):plan(store,invoke)
     frozen=deepcopy(store.value['state']['experimentPlanning'])
-    store.value['structuredOutputContractVersion']=8;invoke.reset_mock()
+    store.value['structuredOutputContractVersion']=new;invoke.reset_mock()
     with pytest.raises(DeepResearchError,match='原输入'):plan(store,invoke)
     invoke.assert_not_called();assert store.value['state']['experimentPlanning']==frozen
 
@@ -93,10 +95,10 @@ def test_v8_does_not_salvage_truncated_or_wrong_wrapped_judgements():
         result=normalize('verify_design_science',{'content':raw,'finishReason':finish})
         assert result['content']=='null' and result['rawContent']==raw
     assert enabled({'structuredOutputContractVersion':8})
-    for value in [True,'8',9,None]:assert not enabled({'structuredOutputContractVersion':value})
+    for value in [True,'8',10,None]:assert not enabled({'structuredOutputContractVersion':value})
 
 
-@pytest.mark.parametrize('replacement',[None,True,7,'8',9])
+@pytest.mark.parametrize('replacement',[None,True,7,8,'9',10])
 def test_native_policy_version_is_server_owned_and_immutable(tmp_path,replacement):
     from services.deep_research.facade import ResearchFacade
     from services.deep_research.repository import DeepResearchRepository
@@ -105,7 +107,7 @@ def test_native_policy_version_is_server_owned_and_immutable(tmp_path,replacemen
     try:
         r,_=facade.create({'workspaceTaskId':'t','operationKey':'k','question':'Propose an experiment',
             'structuredOutputContractVersion':replacement,'deferStart':True},start_async=False)
-        assert r['structuredOutputContractVersion']==8
+        assert r['structuredOutputContractVersion']==9
         with pytest.raises(ValueError,match='Immutable'):
             repo.update_run(r['runId'],lambda value:{**value,'structuredOutputContractVersion':replacement})
     finally:facade.shutdown()
