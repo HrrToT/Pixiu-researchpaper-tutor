@@ -1762,9 +1762,9 @@ def make_verify_node(
                         **({'scheduling_version':record['experimentRepairPriorityContractVersion']} if edit_repair
                            and type(record.get('experimentRepairPriorityContractVersion')) is int
                            and record['experimentRepairPriorityContractVersion'] in (1,2) else {}),
-                        **({'repair_evidence_packet_version':1} if edit_repair
+                        **({'repair_evidence_packet_version':record['experimentRepairInputContractVersion']} if edit_repair
                            and type(record.get('experimentRepairInputContractVersion')) is int
-                           and record['experimentRepairInputContractVersion']==1
+                           and record['experimentRepairInputContractVersion'] in (1,2)
                            and type(record.get('structuredOutputContractVersion')) is int
                            and record['structuredOutputContractVersion'] in (8,9) else {}),
                         **({'configuration_consistency_version':2} if type(record.get('configurationConsistencyContractVersion')) is int

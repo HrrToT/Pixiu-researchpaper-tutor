@@ -7,7 +7,7 @@ import json
 
 
 def enabled(version, review_version, claims):
-    return (type(version) is int and version in (1,2,3,4,5)
+    return (type(version) is int and version in (1,2,3,4,5,6)
             and type(review_version) is int and review_version == 3
             and bool(claims) and all(c.get('kind') in {'proposal','suggestion','hypothesis'}
                 and type(c.get('designContractVersion')) is int and c['designContractVersion'] == 2
@@ -125,6 +125,8 @@ never invent an asset. This audits source text, not a tested download.'''
 
 
 def build(*,claims_text,context,question,evidence_marker,metric_domains,config_mode,version=1):
+    from services.deep_research import review_instructions as brief
+    compact=type(version) is int and version==6
     from services.deep_research.review_alignment import factorial_reference,declaration_links
     from services.deep_research.experimental_reasoning import DESIGN_ROLES
     from services.deep_research.design_audit import design_slots_for_claim,audit_field_roots
@@ -136,15 +138,15 @@ def build(*,claims_text,context,question,evidence_marker,metric_domains,config_m
     claims=json.loads(claims_text);all_claims=[*claims,*context];roles={c.get('designRole') for c in claims}
     parts=['Independently verify an UNEXECUTED experimental design.',
         'Review mode: '+('operational configuration' if config_mode else 'scientific validity'),
-        COMMON,SCIENTIFIC_TERMINOLOGY,
+        brief.COMMON if compact else COMMON,SCIENTIFIC_TERMINOLOGY,
         'Original research question (objective, not evidence):\n'+packed(question),
         'Claims:\n'+claims_text,
         'Other proposed statements, for consistency only (not evidence and not verdict targets):\n'+packed(context),
         'Evidence:\n'+evidence_marker]
-    if any(c.get('protocolContractVersion')==2 for c in all_claims):parts.append(PROTOCOL)
-    if any(c.get('workflowContractVersion') in (1,2,3,4) for c in all_claims):parts.append(WORKFLOW)
-    if any(c.get('budgetContractVersion')==1 for c in all_claims):parts.append(BUDGET)
-    if any(c.get('hypothesisContractVersion')==1 for c in all_claims):parts.append(HYPOTHESIS)
+    if any(c.get('protocolContractVersion')==2 for c in all_claims):parts.append(brief.PROTOCOL if compact else PROTOCOL)
+    if any(c.get('workflowContractVersion') in (1,2,3,4) for c in all_claims):parts.append(brief.WORKFLOW if compact else WORKFLOW)
+    if any(c.get('budgetContractVersion')==1 for c in all_claims):parts.append(brief.BUDGET if compact else BUDGET)
+    if any(c.get('hypothesisContractVersion')==1 for c in all_claims):parts.append(brief.HYPOTHESIS if compact else HYPOTHESIS)
     # Do not impose a factorial reference on an explicitly single-toggle task.
     # Missing/contradictory factors retain the reference rather than guessing.
     from services.deep_research.experiment_envelope import two_arm_request
@@ -162,42 +164,42 @@ def build(*,claims_text,context,question,evidence_marker,metric_domains,config_m
     if slots:
         roots=audit_field_roots(dict.fromkeys(s for row in slots.values() for s in row),
             workflow_v4=any(c.get('workflowContractVersion')==4 for c in all_claims))
-        audit=AUDIT
-        if version in (3,4,5):
+        audit=brief.AUDIT if compact else AUDIT
+        if version in (3,4,5,6):
             audit=audit.replace('Return ONLY a JSON array: one',
                 'Return ONLY {"items":[...]}: exactly one')
         parts += [audit,'Allowed slot roots (under executionSpec, source role required):\n'+packed(roots)]
     else:
         parts.append('Return ONLY {"items":[...]}: exactly one {claimId,status:passed|failed,reason,designAudit:{}} per target.'
-            if version in (3,4,5) else 'Return ONLY a JSON array, one {claimId,status:passed|failed,reason,designAudit:{}} per target.')
+            if version in (3,4,5,6) else 'Return ONLY a JSON array, one {claimId,status:passed|failed,reason,designAudit:{}} per target.')
     data=any(c.get('designRole')=='data' for c in claims)
     asset=any(requires_existing_asset(c) for c in claims)
     if data:parts.append(DATA)
     if asset:parts.append(ASSET)
     skeleton=[{'claimId':c['claimId'],'status':'failed','reason':'',
-        **({'findings':[]} if type(version) is int and version==5 else {}),
+        **({'findings':[]} if type(version) is int and version in (5,6) else {}),
         'designAudit':{slot:None for slot in slots.get(c.get('designRole'),())},
         **({'dataAvailability':None} if c.get('designRole')=='data' else {}),
         **({'assetAvailability':None} if requires_existing_asset(c) else {})} for c in claims]
-    if version in (3,4,5):
+    if version in (3,4,5,6):
         parts.append('Exact response skeleton (fill EVERY target, including failures; even one target stays inside items):\n'
             +packed({'items':skeleton}))
     else:parts.append('Exact per-target response skeleton:\n'+packed(skeleton))
     derived=facts(all_claims)
-    if derived:parts += [DERIVED,'Derived configuration meanings (not evidence):\n'+packed(derived)]
+    if derived:parts += [brief.DERIVED if compact else DERIVED,'Derived configuration meanings (not evidence):\n'+packed(derived)]
     links=declaration_links(all_claims)
     if links:parts.append('Declared key presence (not scientific approval):\n'+packed(links))
-    if type(version) is int and version in (2,3,4,5):
-        parts.append('Rejected context policy: reviewContextState is a server rejection record, NOT approval. '
+    if type(version) is int and version in (2,3,4,5,6):
+        parts.append(brief.REJECTED if compact else 'Rejected context policy: reviewContextState is a server rejection record, NOT approval. '
             'Read the exact supplied text/configuration and checks to distinguish an absent field from an '
             'invalid or rejected definition. Context is never a verdict target or factual evidence. '
             'Do not assume its acquisition, source membership, state or measurement is valid; name the '
             'actual incompatible/missing field. A target depending on an unresolved definition is not '
             'an executable approved experiment. Only independent checks and dependency gates may approve it.')
-    if type(version) is int and version in (4,5):
+    if type(version) is int and version in (4,5,6):
         from services.deep_research.experiment_execution_guidance import data_declarations,REVIEW
-        parts += [REVIEW,'Exact data declarations (not evidence or approval):\n'+packed(data_declarations(all_claims))]
-    if type(version) is int and version==5:
+        parts += [brief.DECLARATIONS if compact else REVIEW,'Exact data declarations (not evidence or approval):\n'+packed(data_declarations(all_claims))]
+    if type(version) is int and version in (5,6):
         from services.deep_research.rejection_audit import POLICY
-        parts.append(POLICY)
+        parts.append(brief.FAILURES if compact else POLICY)
     return '\n\n'.join(parts)

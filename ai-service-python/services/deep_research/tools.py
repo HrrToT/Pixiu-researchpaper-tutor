@@ -660,7 +660,7 @@ class BudgetedSemanticChecker:
         verdicts = list(premise_failures)
         envelope=self._prospective_envelope() if callable(self._prospective_envelope) else self._prospective_envelope
         context_states={}
-        if type(envelope) is int and envelope in (2,3,4,5):
+        if type(envelope) is int and envelope in (2,3,4,5,6):
             context_states={c['claimId']:c['reviewContextState'] for c in accepted_context
                 if 'reviewContextState' in c}
             context_states.update({row['claimId']:{'status':'rejected','phase':'source_prerequisite',

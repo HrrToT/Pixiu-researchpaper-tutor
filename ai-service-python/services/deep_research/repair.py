@@ -17,8 +17,9 @@ def _prepare_repair(report, verification, evidence, question, *, max_prompt_byte
                     metric_domains=None, draft_context=(), prior_revisions=(),
                     fact_redraft=False, requirement_context=(), source_aware_redraft=False,comparison_reasoning=False,
                     question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False,shared_experiment_schema=False,experiment_evidence_context=None,experimental_edits=False,experimental_diagnostics=False,experimental_nested_tables=False,experimental_representation=False,experimental_coverage=False,citation_presentation_version=0,configuration_consistency_version=0,repair_evidence_packet_version=0):
-    if (type(repair_evidence_packet_version) is not int or repair_evidence_packet_version not in (0,1)
-            or repair_evidence_packet_version==1 and not (experimental_nested_tables and experimental_edits
+    if (type(repair_evidence_packet_version) is not int or repair_evidence_packet_version not in (0,1,2)
+            or repair_evidence_packet_version==2 and not experimental_coverage
+            or repair_evidence_packet_version in (1,2) and not (experimental_nested_tables and experimental_edits
                 and shared_experiment_schema and experimental_intent)):
         raise ValueError('Unsupported experimental repair input contract')
     if type(configuration_consistency_version) is not int or configuration_consistency_version not in (0,2):
@@ -29,7 +30,7 @@ def _prepare_repair(report, verification, evidence, question, *, max_prompt_byte
     originals = {row['claimId']: row for row in report.get('claims', []) if row.get('claimId') in rejected}
     if not originals:
         return []
-    if repair_evidence_packet_version==1 and any(c.get('kind') not in {'proposal','suggestion','hypothesis'}
+    if repair_evidence_packet_version in (1,2) and any(c.get('kind') not in {'proposal','suggestion','hypothesis'}
             for c in originals.values()):raise ValueError('Experimental repair input requires prospective targets')
     if experimental_diagnostics and (not experimental_edits or not experimental_intent):
         raise ValueError('Experimental diagnostics require prospective field edits')
@@ -412,8 +413,10 @@ in the paper. Maintain consistency with accepted definitions and complete requir
             if configuration_consistency_version==2:feedback_options['configuration_consistency_version']=2
         if experimental_representation:
             feedback_options['parameter_rows']=True
-        if repair_evidence_packet_version==1:
+        if repair_evidence_packet_version in (1,2):
             from services.deep_research.experiment_repair_input import render as experiment_prompt
+            if repair_evidence_packet_version==2:
+                from services.deep_research.experiment_repair_input_brief import render as experiment_prompt
         if compatible(report):
             prompt=experiment_prompt(question=question,length_contract=length_contract,
                 accepted=proposal_context,siblings=sibling_context,questions=question_dictionary,
@@ -424,7 +427,8 @@ in the paper. Maintain consistency with accepted definitions and complete requir
                 terminology=SCIENTIFIC_TERMINOLOGY,concise_policy=experiment_evidence_context is not None,**feedback_options)
     if experimental_coverage:
         from services.deep_research.repair_coverage import add_contract
-        prompt=add_contract(prompt,originals,**({'version':2} if repair_evidence_packet_version==1 else {}))
+        prompt=add_contract(prompt,originals,**({'version':3 if repair_evidence_packet_version==2 else 2}
+            if repair_evidence_packet_version in (1,2) else {}))
     template = prompt
     from services.deep_research.experiment_edits import columnar
     def render(selected_rows):
@@ -434,7 +438,7 @@ in the paper. Maintain consistency with accepted definitions and complete requir
                        for key, values in allowed.items()}
         wire=columnar(selected_rows) if experimental_edits else selected_rows
         legend=''
-        if repair_evidence_packet_version==1:
+        if repair_evidence_packet_version in (1,2):
             from services.deep_research.repair_evidence_packet import encode
             wire,legend=encode(selected_rows)
         return template.replace(permissions_marker, json.dumps(permissions, ensure_ascii=False, separators=(',', ':')), 1).replace(
@@ -468,7 +472,7 @@ in the paper. Maintain consistency with accepted definitions and complete requir
     visible = {aliases[row['evidenceId']] for row in rows}
     allowed = {key: [ref for ref in values if ref in visible] for key, values in allowed.items()}
     return {'prompt': prompt, 'originals': originals, 'aliases': aliases, 'allowed': allowed,
-            **({'repairEvidencePacketVersion':1} if repair_evidence_packet_version==1 else {}),
+            **({'repairEvidencePacketVersion':repair_evidence_packet_version} if repair_evidence_packet_version in (1,2) else {}),
             **({'editFormatVersion':1} if experimental_edits else {}),
             **({'diagnosticVersion':1,'schemaFeedback':feedback_options['diagnostics']} if experimental_diagnostics else {}),
             **({'nestedTablesVersion':1} if experimental_nested_tables else {}),
@@ -602,8 +606,10 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
     originals = [c for c in report.get('claims', []) if c.get('claimId') in targets]
     if not originals:
         return []
-    if type(repair_evidence_packet_version) is not int or repair_evidence_packet_version not in (0,1):
+    if type(repair_evidence_packet_version) is not int or repair_evidence_packet_version not in (0,1,2):
         raise ValueError('Unsupported experimental repair input contract')
+    if repair_evidence_packet_version==2 and not experimental_coverage:
+        raise ValueError('Repair input2 requires response coverage')
     if experimental_coverage and not experimental_representation:
         raise ValueError('Experimental coverage requires representation-aware edits')
     if experimental_diagnostics and (not experimental_edits or not experimental_intent):
@@ -618,7 +624,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
         raise ValueError('Unsupported citation presentation contract')
     identity = digest({'report': report, 'verification': verification,
                        **({'experimentRepairPriorityContractVersion':scheduling_version} if scheduling_version in (1,2) else {}),
-                       **({'experimentRepairInputContractVersion':1} if repair_evidence_packet_version==1 else {}),
+                       **({'experimentRepairInputContractVersion':repair_evidence_packet_version} if repair_evidence_packet_version in (1,2) else {}),
                        'evidence': evidence, 'question': question, 'metricDomains': metric_domains,
                        **({'citationPresentationContractVersion':citation_presentation_version} if citation_presentation_version in (2,3) else {}),
                        **({'configurationConsistencyContractVersion':2} if configuration_consistency_version==2 else {}),

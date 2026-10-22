@@ -24,7 +24,7 @@ neither that a rejection is scientifically correct nor that another target may p
 
 
 def enabled(version):
-    return type(version) is int and version==5
+    return type(version) is int and version in (5,6)
 
 
 def _lookup(row,path):

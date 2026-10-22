@@ -10,8 +10,14 @@ def add_contract(prompt,originals,*,version=1):
         # Keep the complete original edit grammar, writable paths and value
         # rule. Coverage must not erase the schema it asks the model to follow.
         item=match[1][1:-1]
-        if type(version) is int and version==2:
-            return ('Return ONLY exactly one item per writable ID '+json.dumps(ids,separators=(',',':'))+
+        if type(version) is int and version==3:
+            return ('Return ONLY {"items":[...]}: one item per ID '+json.dumps(ids,separators=(',',':'))+
+                ', no duplicate/extra/omitted IDs. Each item: '+item+
+                ' OR {"claimId":"ID","unresolved":"specific reason, <=600characters"}. '
+                'Fix ALL checks or explain unresolved, never approval. Syntax hints do not replace the target list.')
+        if type(version) is int and version in (2,3):
+            header='Return ONLY {"items":[...]} with exactly one item per writable ID ' if version==3 else 'Return ONLY exactly one item per writable ID '
+            return (header+json.dumps(ids,separators=(',',':'))+
                 ' (no omitted/duplicate/extra IDs): '+item+
                 ' OR {"claimId":"ID","unresolved":"specific reason, at most600characters"}. '
                 'Feedback is partial syntax, not the target list. Edits must fix ALL checks; otherwise '
@@ -21,7 +27,14 @@ def add_contract(prompt,originals,*,version=1):
             'Each item is exactly '+item+' OR {"claimId":"ID","unresolved":"specific reason, at most600characters"}. '
             'Nonempty edits must address ALL checks on that target. If a safe complete repair is not possible, '
             'explain the remaining gap; unresolved is not a revision or approval. No omitted/duplicate/extra IDs.')
-    result,count=re.subn(r'^Return ONLY (\[\{.*\}\])\.$',replacement,prompt,count=1,flags=re.M)
+    pattern=r'^Return ONLY (\[\{.*\}\])\.$'
+    if type(version) is int and version==3:
+        # The generated response schema follows the literal question/data.
+        # Never rewrite a schema-looking line supplied inside that question.
+        matches=list(re.finditer(pattern,prompt,flags=re.M))
+        if not matches:raise ValueError('Missing experimental edit response contract')
+        match=matches[-1];result=prompt[:match.start()]+replacement(match)+prompt[match.end():];count=1
+    else:result,count=re.subn(pattern,replacement,prompt,count=1,flags=re.M)
     if count!=1:raise ValueError('Missing experimental edit response contract')
     return result
 
