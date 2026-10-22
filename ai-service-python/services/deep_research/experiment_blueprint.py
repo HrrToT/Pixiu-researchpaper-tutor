@@ -5,7 +5,7 @@ from copy import deepcopy
 
 def enabled(record):
     return (type(record.get('experimentPlanEncodingContractVersion')) is int
-        and record['experimentPlanEncodingContractVersion'] in (3,4,5)
+        and record['experimentPlanEncodingContractVersion'] in (3,4,5,6)
         and type(record.get('experimentDraftContractVersion')) is int
         and record['experimentDraftContractVersion']==6)
 

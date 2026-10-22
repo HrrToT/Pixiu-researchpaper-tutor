@@ -47,18 +47,24 @@ PRIVATE_STATE_LIST_POLICY=PRIVATE_BLUEPRINT_POLICY.replace(
     'measurement is a string; trainables is a unique state-name list.',1)+(
     ' Private steps means optimizer updates, never frames.')
 
+PRIVATE_SHARED_POLICY=PRIVATE_STATE_LIST_POLICY.replace(
+    'PRIVATE UNVERIFIED execution blueprint, not a public answer or verdict.',
+    'PRIVATE UNVERIFIED blueprint, not a verdict.',1).replace(
+    'Keep compact JSON<=4000 UTF-8 bytes;',
+    'Compact raw JSON<=8192 UTF-8 bytes; prefer4000;',1)
+
 
 def enabled(record):
     return (isinstance(record, dict) and type(record.get('structuredOutputContractVersion')) is int
-            and record['structuredOutputContractVersion'] in {1, 2, 3, 4, 5, 6,7,8,9,10,11})
+            and record['structuredOutputContractVersion'] in {1, 2, 3, 4, 5, 6,7,8,9,10,11,12})
 
 
 def messages(node, prompt, version=2, *, prospective=False):
     # Version10 changes ONLY private experiment planning. All public drafting,
     # repair, review and other node messages remain byte-identical to version9.
-    if type(version) is int and version in (10,11):
+    if type(version) is int and version in (10,11,12):
         if node!='plan_experiment':return messages(node,prompt,9,prospective=prospective)
-        policy=PRIVATE_STATE_LIST_POLICY if version==11 else PRIVATE_BLUEPRINT_POLICY
+        policy=PRIVATE_SHARED_POLICY if version==12 else PRIVATE_STATE_LIST_POLICY if version==11 else PRIVATE_BLUEPRINT_POLICY
         if len(policy.encode('utf8'))+128>1024:
             raise ValueError('Private blueprint system message exceeds reserved framing')
         return [{'role':'system','content':policy},{'role':'user','content':prompt}]

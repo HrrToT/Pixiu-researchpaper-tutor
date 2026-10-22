@@ -8,20 +8,23 @@ LEGEND='Unverified tuple=[sourceRefs,[intervention,data,state,poseError,measurem
 
 def enabled(record):
     return (type(record.get('experimentPlanEncodingContractVersion')) is int
-        and record['experimentPlanEncodingContractVersion'] in (1,2,3,4,5)
+        and record['experimentPlanEncodingContractVersion'] in (1,2,3,4,5,6)
         and type(record.get('experimentDraftContractVersion')) is int
         and record['experimentDraftContractVersion'] in (5,6)
-        and (record['experimentPlanEncodingContractVersion'] not in (3,4,5) or record['experimentDraftContractVersion']==6))
+        and (record['experimentPlanEncodingContractVersion'] not in (3,4,5,6) or record['experimentDraftContractVersion']==6))
 
 
 def flexible(record):
-    return enabled(record) and record['experimentPlanEncodingContractVersion'] in (2,3,4,5)
+    return enabled(record) and record['experimentPlanEncodingContractVersion'] in (2,3,4,5,6)
 
 
 def encode(basis,*,version=1):
     if (not isinstance(basis,dict) or set(basis)!={'sourceRefs','protocol','unresolved'}
             or not isinstance(basis['protocol'],dict) or set(basis['protocol'])!=set(ORDER)):
         raise ValueError('Invalid private plan object')
+    if type(version) is int and version==6:
+        from services.deep_research.blueprint_wire import pack
+        wire=pack(basis);_check(wire,version=version);return wire
     if type(version) is int and version in (4,5):
         from services.deep_research.experiment_blueprint import columns
         basis=columns(basis)
@@ -31,14 +34,21 @@ def encode(basis,*,version=1):
 
 
 def _check(wire,*,version=1):
-    if type(version) is not int or version not in (1,2,3,4,5):
+    if type(version) is not int or version not in (1,2,3,4,5,6):
         raise ValueError('Invalid private plan encoding version')
     if (not isinstance(wire,list) or len(wire)!=3 or not all(isinstance(x,list) for x in wire)
             or len(wire[0])>20 or len(wire[1])!=len(ORDER) or len(wire[2])>8
             or any(not isinstance(x,str) or not x.strip() for group in (wire[0],wire[2]) for x in group)
             or len(wire[0])!=len(set(wire[0]))):
         raise ValueError('Invalid private plan tuple')
-    if version in (3,4,5):
+    if version==6:
+        from services.deep_research.blueprint_wire import unpack
+        from services.deep_research.experiment_blueprint import valid_state,valid_budget
+        p=unpack(wire)['protocol']
+        if (any(not isinstance(p[k],str) or not p[k].strip() for k in ('intervention','data','poseError','measurement'))
+                or not valid_state(p['state']) or not valid_budget(p['pairingBudget'],state_lists=True)):
+            raise ValueError('Invalid shared private blueprint')
+    elif version in (3,4,5):
         from services.deep_research.experiment_blueprint import valid_state,valid_budget
         values=wire[1]
         if version in (4,5):
@@ -54,6 +64,9 @@ def _check(wire,*,version=1):
 
 def decode(wire,*,version=1):
     _check(wire,version=version)
+    if version==6:
+        from services.deep_research.blueprint_wire import unpack
+        return unpack(wire)
     b={'sourceRefs':deepcopy(wire[0]),'protocol':dict(zip(ORDER,deepcopy(wire[1]))),
         'unresolved':deepcopy(wire[2])}
     if version in (4,5):
