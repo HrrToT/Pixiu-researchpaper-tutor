@@ -1,0 +1,24 @@
+{
+  "date": "2026-10-22",
+  "sourceCommit": "9f539cfe",
+  "sourceHashes": {
+    "facade.py": "338f2a816294880c4e3b6bca9f95605f15b5f687fbc536165862811df93351af",
+    "graph.py": "47dc8055a7b50870d142dbbc46449e6876cee98db71f2e2437847650c31c7981",
+    "tools.py": "e97c7ad9aef033880d862916aa174cedbcd5a639d6bac06ccd3475161a101f93",
+    "repository.py": "28ed4744efb8e07ad04b01156ff0e97fd899347cab1103b8d91abdb2681b503a",
+    "experiment_planning.py": "00487c3e716ae8a3b09077ffdd4e9fd5c25465a1d504100956d92c785a7b0712",
+    "experiment_template.py": "7fc4e99125def5175c727fa4d09d9323f1b3466f52a0642d387ace0585a54261",
+    "experiment_review_envelope.py": "413b632de21a9caadb68316131b9e2616ad792bbc26bb85cbd96dfa1936507ce",
+    "rejected_design_context.py": "cc22abc7c3df6121a360ebb36f3f75786efc46e4172709cd0fad051107590ccf",
+    "experiment_execution_guidance.py": "2b7eb884b3ac1bbe7c0452ab81a231ed33095ced531d241d5c65eca5c7321b2e"
+  },
+  "actualCreatedRun": {
+    "runId": "dr_run_25ba0bc7623154b7accdd9ac7c983828",
+    "promptVersion": "dr-v2.20261022.227",
+    "experimentReviewEnvelopeContractVersion": 4,
+    "experimentExecutionGuidanceContractVersion": 1
+  },
+  "preRestartLedgerRows": 5260,
+  "preRestartActive": 0,
+  "modelRequestsByThisProbe": 0
+}

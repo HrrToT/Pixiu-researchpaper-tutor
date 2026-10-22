@@ -3173,6 +3173,52 @@
         "cost": null
       },
       "independentCredit": 0
+    },
+    "executionDecisionsCheckpoint": {
+      "sourceCommit": "9f539cfe",
+      "promptVersion": "dr-v2.20261022.227",
+      "fullOfflinePassed": 3985,
+      "files": 219,
+      "seconds": 244.23,
+      "warnings": 1,
+      "newTests": 25,
+      "focusedPassed": 98,
+      "focusedOverlap": true,
+      "legacyScripts": 28,
+      "legacyPhysicalFingerprints": 84,
+      "case": "E1-v22",
+      "status": "completed",
+      "outcome": "inconclusive",
+      "accepted": 0,
+      "total": 9,
+      "secondsObserved": 137,
+      "settledModelCalls": 13,
+      "settledTokens": 67436,
+      "newUnknowns": 0,
+      "repair": {
+        "sentGroups": 1,
+        "sentIds": [
+          "c4",
+          "c5"
+        ],
+        "inputBytes": 23878,
+        "outputCap": 4096,
+        "responseCoverageComplete": true,
+        "acceptedRevisions": 0,
+        "unsentGroups": 2,
+        "stopKind": "repairPromptBytes",
+        "allowedRemainingBytes": 16382,
+        "requiredBytes": 21683
+      },
+      "diagnosisCorrection": "execution-decisions-diagnostic-correction-20261022.json",
+      "qualityProof": "E1-v22-quality-diagnosis-20261022.json",
+      "selectedDiagnosticTotal": {
+        "calls": 686,
+        "measuredTokens": 2860396,
+        "globalHistory": false,
+        "cost": null
+      },
+      "independentCredit": 0
     }
   },
   "stages": [
@@ -3635,26 +3681,27 @@
     "Full novice study workflow",
     "Independent Edge recovery"
   ],
-  "currentProviderConstraint": "All further necessary bounded validations uniformly authorized. Selected diagnostic total673settled model calls/2792960measured tokens, not global history; costs unknown. Latest E1-v21 fully settled/inconclusive0/9; preserve11oldpaused unknowns, no automatic retries.",
+  "currentProviderConstraint": "All further necessary bounded validations uniformly authorized. Selected diagnostic total686settled calls/2860396measured tokens, not global history; costs unknown. Latest E1-v22 fully settled/inconclusive0/9; preserve11oldpaused unknowns, no automatic retries.",
   "currentDevelopmentMode": "Primary Codex only; Goal active; quota pause revoked. Source/runtimebc4d3732/.198. New experiment draft4 uses direct6144-token compact planning with a2500-byte private plan, lossless goal/source references and existing question-driven evidence ordering. Offline3194passes/23old request fingerprints; E1 controlled rows2to7, but shared-method definition and dataset-member source coverage remain incomplete. No new real model call; original E1 failure and11unknowns preserved.",
   "loadedRuntime": {
-    "commit": "09782ac7",
-    "promptVersion": "dr-v2.20261022.226",
+    "commit": "9f539cfe",
+    "promptVersion": "dr-v2.20261022.227",
     "javaCommit": "27ac4beb",
     "frontendValidationCommit": "123b0d29",
     "frontendValidationIsHistorical": true,
-    "callsAfterLatestCase": 5260,
+    "callsAfterLatestCase": 5289,
     "active": 0,
     "historicalPausedUnknown": 11,
-    "proof": "deep-research-evidence/runtime-load-dr226-review-shape-20261022.json",
-    "postCasesProof": "deep-research-evidence/runtime-postcases-dr226-e1-v21-20261022.json"
+    "proof": "deep-research-evidence/runtime-load-dr227-execution-decisions-20261022.json",
+    "postCasesProof": "deep-research-evidence/runtime-postcases-dr227-e1-v22-20261022.json"
   },
   "nextQualityWork": [
-    "Generate complete actual Gaussian/network states and explicit acquisition/initialization inputs; avoid opaque aggregate arrays and internally contradictory initialization.",
-    "Define first-frame and per-frame fitting phases with separate finite budgets and complete typed quality/storage/training-time protocols.",
-    "Compare exact existing fields/values before declaring absence: E1-v21 c4 seeds[0] was supplied; preserve independent source and compatibility checks, no automatic approval.",
-    "Plan full review and grouped repair against actual remaining total budget. Preserve mandatory quotations and all required configurations; do not expand budgets or drop scope.",
-    "After real development content quality passes, run fresh independent replacements. Original0/5 and historical failures/unknowns remain unchanged."
+    "Bind review failures to actual supplied fields and text/conditions. E1-v22 c7 aggregation/timing conditions were supplied; no duplicate prose or invented metrics schema requirement. Preserve actual scientific incompatibility checks.",
+    "Generate valid initialization inputs/dimensions and complete model/network states; prioritize prerequisite hard failures before dependent interpretation.",
+    "Give first-frame and per-frame fitting separate finite caps within exact existing schema and concrete prose. Preserve original requested whole-stage scope.",
+    "Align wall-clock vs GPU timing, serialized files/precision and byte-storage analysis; metrics use concrete prose/conditions.",
+    "Constrain repairs to valid schema paths and prioritize dependency blockers under actual remaining budget. No total-budget expansion, scientific auto-pass or legacy upgrade.",
+    "After real content quality passes, run fresh independent replacements. Original0/5 and historical unknown/failed results remain unchanged."
   ],
   "javaReaderRuntime": {
     "sourceCommit": "070ab1a",
@@ -4235,7 +4282,7 @@
     "independentCredit": 0,
     "proof": "deep-research-evidence/compact-experiment-envelope-regression-20261020.json"
   },
-  "currentCheckpoint": ".226/09782ac7: native numeric9 plus review envelope3 align items output/skeleton and preserve rejected context.3960 tests/218 files,80 historical physical request identities. E1-v20 valid draft JSON but invalid single review object; E1-v21 completed inconclusive0/9,4correct items reviews,14settledcalls68538tokens,143s. Repair not sent: required19115>remaining17634 bytes. Actual c4 seeds[0] contradicted missing-seed review; genuine opaque states, incomplete per-phase budgets and typed measurement remain.5260ledger,0active,11oldunknowns,oldpayloads/4taskprefixes preserved. DR0-DR5 incomplete,original independent0/5,Goalactive,PRdraft.",
+  "currentCheckpoint": ".227/9f539cfe: immutable execution guidance1 and review envelope4 expose exact seed/split values and ask concrete phases/states/measurement.3985tests/219files,84legacy fingerprints. Metrics use prose/conditions; prior demand for metrics.executionSpec corrected separately. E1-v22 completed/inconclusive0/9 in137s,13settledcalls67436tokens. Seed recognized; concrete metric conditions present but falsely called absent. Actual c4/c5 repair23878bytes/4096output returned complete edits, both rejected. Other groups stopped21683>remaining16382bytes. Invalid fresh inputIndex=-1 and missing first-frame cap persist.5289ledger/0active/11oldunknowns/alloldpayloads/4taskprefixes preserved. DR0-DR5 incomplete;original independent0/5;Goalactive;PRdraft.",
   "sharedModuleSourceCheckpoint": {
     "sourceCommit": "f8ae5177",
     "promptVersion": "dr-v2.20261020.199",
