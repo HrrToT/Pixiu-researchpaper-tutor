@@ -2716,6 +2716,83 @@
         "Actual new generation/review/repair content remains untested; source-grounded shared model/field initialization, temporal order, budget prose and measurements still need validation.",
         "DR0-DR5 complete independent replacement acceptance remains outstanding; original independent0/5 unchanged."
       ]
+    },
+    "outlineEncodingCheckpoint": {
+      "date": "2026-10-22",
+      "sourceCommit": "b0b60778",
+      "promptVersion": "dr-v2.20261022.217",
+      "experimentOutlineEncodingContractVersion": 1,
+      "serverOwnedImmutable": true,
+      "fullDeepResearchOffline": {
+        "passed": 3717,
+        "warnings": 1,
+        "seconds": 176.78,
+        "files": 209,
+        "scope": "All test_deep_research*.py; not all Python, reading or frontend integration.",
+        "log": "tmp/pytest-dr217-full.log",
+        "sha256": "d4d475c73889e4dad43e002c66dbed76baf9bb8180ebc0e6dadaae560f1e9ed9"
+      },
+      "focusedPassed": 70,
+      "focusedSeconds": 2.7,
+      "focusedOverlap": true,
+      "newTests": 30,
+      "legacyActualFingerprintsMatched": 60,
+      "legacyScripts": [
+        "replay-dr210-legacy.py",
+        "replay-dr210-verification.py",
+        "replay-dr210-h5unknown.py",
+        "replay-dr210-e1-v1.py",
+        "replay-dr210-e1-v2.py",
+        "probe-dr210-legacy-actual-feedback.py",
+        "probe-dr210-legacy-review-calibration.py",
+        "probe-dr210-legacy-e1-audit.py",
+        "probe-dr210-e1-representation.py",
+        "probe-dr210-e1-attribution-final.py",
+        "probe-dr210-e1-config.py",
+        "probe-dr210-e1-v8-plan-final.py",
+        "probe-dr210-e1-v9-actual.py",
+        "probe-dr211-e1-v10-actual.py",
+        "probe-dr213-e1-coverage.py",
+        "probe-dr213-e1-v11-actual.py",
+        "probe-dr214-e1-v12-actual.py",
+        "probe-dr214-e1-v12-repair.py",
+        "probe-dr216-e1-v13-capacity.py"
+      ],
+      "offlineProviderCalls": 0,
+      "productionWrites": 0,
+      "independentCredit": 0,
+      "implementation": "After selecting complete evidence and filling the exact plan, losslessly encode only the system output outline as a typed table. Save original/encoded outline, exact prompt digests/byte sizes; roundtrip before dispatch. Bind planning identity to the new immutable contract, prohibit old failed/unknown upgrades, preserve source/plan/scientific checks and actual24KB limit.",
+      "controlledReplay": "outline-encoding-e1-v13-controlled-20261022.json",
+      "boundary": "Full offline regression and implemented controlled archived-response replay, not a new content judgment or independent acceptance. DR0-DR5 remains incomplete.",
+      "actualCase": {
+        "case": "E1-v14",
+        "status": "failed",
+        "outcome": "none",
+        "errorCode": "synthesis_evidence_capacity",
+        "elapsedSeconds": 0,
+        "settledModelCalls": 7,
+        "settledTokens": 21320,
+        "unsettledModelCalls": 0,
+        "independentCredit": 0,
+        "planningSubmitted": false,
+        "contentGenerationSubmitted": false,
+        "newOutlineEncodingActuallyExecuted": false,
+        "contentQualityValidated": false
+      },
+      "actualAllocationDiagnosis": "outline-encoding-e1-v14-allocation-20261022.json",
+      "runtimeProof": "runtime-load-dr217-outline-encoding-20261022.json",
+      "retentionProof": "runtime-postcases-dr217-e1-v14-20261022.json",
+      "selectedDiagnosticTotals": {
+        "settledModelCalls": 594,
+        "measuredTokens": 2427338,
+        "notGlobalHistory": true,
+        "costUnknown": true
+      },
+      "remaining": [
+        "The pre-encoding fitter still measures raw outline bytes. Versioned encoded-size measurement is needed before selection; measured candidate includes all7required rows at23845 with a2500-byte planning placeholder, NOT an actual plan.",
+        "After a real plan returns, preserve its complete values and all mandatory premises under the actual24KB body guard; missing capacity cannot count as content acceptance.",
+        "Source-faithful common initialization, temporal order, budget consistency, executable measurement and fresh independent DR0-DR5 acceptance remain unproven."
+      ]
     }
   },
   "stages": [
@@ -3778,7 +3855,7 @@
     "independentCredit": 0,
     "proof": "deep-research-evidence/compact-experiment-envelope-regression-20261020.json"
   },
-  "currentCheckpoint": ".216 fc29776f: immutable configurationConsistency2 aligns generation/repair with whole-stage versus isolated costs, existing state-rule requirements, complete reference-model/field phases and prose/config consistency. Only system constants transform; quoted questions/original claims preserved.3687research tests/208files,71focused overlap,13new,59legacy fingerprints. Controlled generation23325/repair23875 preserves all original evidence/permissions. Real E1-v13 once44s failed drafting-input-capacity: raw2959/wire2850 plan ->24186>24000;9settled calls26143tokens,no newunknown,no body/review/content proof. Actual planning fingerprint and refused body digest reconstructed. Post-fit outline encoding23917 is measured candidate only, not implemented.5059ledger/11paused/old tasks/payloads retained;DR0-DR5 incomplete;original independent0/5.",
+  "currentCheckpoint": ".217 b0b60778: immutable outlineEncoding1 performs audited lossless system-outline encoding AFTER allocation/full plan; old failed/unknown identities protected.3717research tests/209files,70focused overlap,30new,60legacy fingerprints. Implemented controlled E1-v13 retains all7evidence/full plan and freezes23917-byte body, stops before send; old24186-byte failure unchanged. Real E1-v14 once30s failed pre-encoding evidence capacity before planning/body/encoder/review:7settled calls21320tokens,no newunknown. Required scene quote exists but fitter excludes E7; all7raw24114/encoded23845 with2500placeholder measured. Encoded-size fitting is NOT implemented; actual returned-plan capacity/content unproven.5080ledger/11paused/old tasks/payloads retained;DR0-DR5 incomplete;independent0/5;Goal active.",
   "sharedModuleSourceCheckpoint": {
     "sourceCommit": "f8ae5177",
     "promptVersion": "dr-v2.20261020.199",
