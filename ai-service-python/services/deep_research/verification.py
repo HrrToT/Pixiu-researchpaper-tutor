@@ -317,7 +317,10 @@ def verify_claims(claims: list[dict], evidence: list[dict],
             rejected.append({"claimId": claim["claimId"], "reason": "semantic_unresolved",
                              "detail": str(verdict.get("reason", ""))[:400],
                              **({'executionState':'not_started','reviewTimeAdmission':verdict.get('reviewTimeAdmission')}
-                                if verdict.get('executionState')=='not_started' else {})})
+                                if verdict.get('executionState')=='not_started' else {}),
+                             **({'reviewInputCapacity':verdict['reviewInputCapacity']}
+                                if verdict.get('executionState')=='not_started'
+                                and isinstance(verdict.get('reviewInputCapacity'),dict) else {})})
     asset_ids = {c.get('claimId') for c in claims if requires_existing_asset(c)}
     for row in rejected:
         if row.get('claimId') in asset_ids:

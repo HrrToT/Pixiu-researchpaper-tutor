@@ -588,6 +588,7 @@ class BudgetedSemanticChecker:
         bounded_factual_review=False,
         prospective_review=False,
         configuration_consistency=0,
+        prospective_envelope=0,
     ):
         self._invoke = llm_invoker
         self._run_id = run_id
@@ -606,6 +607,7 @@ class BudgetedSemanticChecker:
         self._experiment_intent_review = experiment_intent_review
         self._prospective_review = prospective_review
         self._configuration_consistency = configuration_consistency
+        self._prospective_envelope = prospective_envelope
     
     def __call__(self, claims: list[dict], evidence: list[dict]) -> list[dict]:
         return self._check(claims, evidence, [], 'verify')
@@ -1069,6 +1071,13 @@ The dataAvailability object is an internal audit, not new experimental results.
             links=declaration_links([*wire_claims,*wire_context])
             if links:
                 prompt+='\nDeclared key presence (not scientific approval):\n'+json.dumps(links,ensure_ascii=False,separators=(',',':'))
+        from services.deep_research.experiment_review_envelope import enabled as review_envelope,build as build_review
+        envelope_version=(self._prospective_envelope() if callable(self._prospective_envelope)
+                          else self._prospective_envelope)
+        full_review_inputs=review_envelope(envelope_version,review_version,claims)
+        if full_review_inputs:
+            prompt=build_review(claims_text=claims_text,context=wire_context,question=question,
+                evidence_marker=evidence_text,metric_domains=metric_domains,config_mode=config_mode)
         template = prompt
         source_keys = ('workId', 'versionId', 'sourceTitle')
         source_registry = {}
@@ -1115,6 +1124,18 @@ The dataAvailability object is an internal audit, not new experimental results.
             return verdicts
 
         try:
+            if full_review_inputs:
+                # The original surrounding context resolves method subjects.
+                # Split complete targets BEFORE optional-context stripping.
+                rows=[{"evidenceId": key, **value} for key,value in evidence_map.items()]
+                full_prompt=render_evidence(rows)
+                if len(full_prompt.encode('utf8'))>byte_limit:
+                    if len(claims)>1:
+                        return split_before_dispatch()
+                    return [{'claimId':claims[0]['claimId'],'status':'failed',
+                        'reason':'完整核验输入超出容量，本条尚未核验，不能据此判断论文证据不足。',
+                        'executionState':'not_started','reviewInputCapacity':{
+                            'inputBytes':len(full_prompt.encode('utf8')),'maxInputBytes':byte_limit}}]
             prompt, visible_evidence = fit_evidence_prompt(
                 [{"evidenceId": key, **value} for key, value in evidence_map.items()], render_evidence,
                 max_bytes=byte_limit)
