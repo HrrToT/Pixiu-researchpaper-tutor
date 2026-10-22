@@ -1,10 +1,11 @@
 """Private execution decisions, never source evidence or scientific approval."""
 import math
+from copy import deepcopy
 
 
 def enabled(record):
     return (type(record.get('experimentPlanEncodingContractVersion')) is int
-        and record['experimentPlanEncodingContractVersion']==3
+        and record['experimentPlanEncodingContractVersion'] in (3,4)
         and type(record.get('experimentDraftContractVersion')) is int
         and record['experimentDraftContractVersion']==6)
 
@@ -107,3 +108,64 @@ remain exact gaps; do not invent a member/asset, omit a required module or weake
 LEGEND = ('Unverified tuple3=[sourceRefs,[intervention,data,state,poseError,measurement,pairingBudget],unresolved]; '
     'state blocks explicitly list tensor/table layouts, initialization and forward/transfer rules; '
     'pairingBudget phases explicitly list scope/unit/cap/trainables. NOT evidence or approval:')
+
+STATE_COLUMNS=('name','dtype','shape','initializer')
+PHASE_COLUMNS=('name','appliesTo','scope','unit','cap','trainables','stop')
+
+
+def _rows(value,columns,*,expand):
+    if not isinstance(value,list):raise ValueError('Invalid blueprint rows')
+    result=[]
+    for row in value:
+        if expand:
+            if not isinstance(row,list) or len(row)!=len(columns):raise ValueError('Invalid blueprint row width')
+            result.append(dict(zip(columns,deepcopy(row))))
+        else:
+            if not isinstance(row,dict) or set(row)!=set(columns):raise ValueError('Invalid blueprint columns')
+            result.append([deepcopy(row[k]) for k in columns])
+    return result
+
+
+def columns(basis,*,expand=False):
+    """Change declared record representation only; no aliases, values or omissions inferred."""
+    if (not isinstance(basis,dict) or set(basis)!={'sourceRefs','protocol','unresolved'}
+            or not isinstance(basis['protocol'],dict)
+            or set(basis['protocol'])!={'intervention','data','state','poseError','measurement','pairingBudget'}):
+        raise ValueError('Invalid blueprint object')
+    b=deepcopy(basis);p=b['protocol'];state=p['state'];budget=p['pairingBudget']
+    if (not isinstance(state,dict) or set(state)!={'inputs','blocks','transfer'}
+            or not isinstance(state['blocks'],list) or not isinstance(budget,dict)
+            or set(budget)!={'phases','accounting'}):raise ValueError('Invalid blueprint fields')
+    for block in state['blocks']:
+        if not isinstance(block,dict) or set(block)!={'name','states','forward'}:raise ValueError('Invalid blueprint block')
+        block['states']=_rows(block['states'],STATE_COLUMNS,expand=expand)
+    budget['phases']=_rows(budget['phases'],PHASE_COLUMNS,expand=expand)
+    return b
+
+
+PLANNING_ROWS=PLANNING.replace(
+    '{"name":"actual tensor/table name","dtype":"concrete dtype","shape":["explicit dimensions or declared input-dependent rules"],\n'
+    '"initializer":"actual values/distribution/RNG/seed or explicit input transform"}',
+    '["actual tensor/table name","concrete dtype",["explicit dimensions or declared input-dependent rules"],'
+    '"actual initializer/RNG/seed or explicit input transform"]',1).replace(
+    '{"name":"unique fitting phase","appliesTo":["shared OR binary group IDs"],\n'
+    '"scope":"per-reference/per-frame/per-window, with finite repetition count/rule",\n'
+    '"unit":"optimizer_steps|epochs|wall_seconds","cap":0,"trainables":"actual fitted states",\n'
+    '"stop":"concrete stop rule; no final evaluation selection"}',
+    '["unique fitting phase",["shared OR binary group IDs"],"finite repetition and temporal scope",'
+    '"optimizer_steps|epochs|wall_seconds",0,"actual fitted states","concrete stopping rule"]',1)+'''
+Use EXACT fixed rows: states=[name,dtype,shape,initializer] (4 columns);
+phases=[name,appliesTo,scope,unit,cap,trainables,stop] (7 columns). No object rows.
+sourceRefs may contain ONLY supplied E aliases; NEVER P/T/Q metadata IDs.
+appliesTo uses ["shared"] for shared preparation, or actual binary group IDs
+(single toggle: control="0", treatment="1"); never the labels "control"/"treatment".
+measurement is ONE concise string, not a metric object. unresolved is TOP-LEVEL,
+alongside sourceRefs and protocol, never inside protocol. Copy exact field nesting.
+Stay <=4000 UTF-8 bytes including ALL rows: eliminate repeated narration of paper
+facts/actions already defined, not required states, phases, inputs, choices or gaps.
+'''
+
+LEGEND_ROWS=('Unverified tuple4=[sourceRefs,[intervention,data,state,poseError,measurement,pairingBudget],unresolved]; '
+    'state.blocks[].states columns=[name,dtype,shape,initializer]; '
+    'pairingBudget.phases columns=[name,appliesTo,scope,unit,cap,trainables,stop]. '
+    'Expand exact rows, no inferred values. NOT evidence or approval:')

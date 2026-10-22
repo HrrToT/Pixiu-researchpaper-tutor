@@ -231,8 +231,10 @@ antecedents. The independent reviewer retains the complete scientific requiremen
         if not isinstance(basis_slot,str) or not basis_slot:
             raise ValueError('Missing reserved experiment planning slot')
         from services.deep_research.experiment_plan_encoding import enabled as plan_encoding, LEGEND
-        if plan_encoding(record) and record['experimentPlanEncodingContractVersion']==3:
+        if plan_encoding(record) and record['experimentPlanEncodingContractVersion'] in (3,4):
             from services.deep_research.experiment_blueprint import LEGEND
+            if record['experimentPlanEncodingContractVersion']==4:
+                from services.deep_research.experiment_blueprint import LEGEND_ROWS as LEGEND
         intro=('\n'+LEGEND+'\n' if plan_encoding(record) else '''
 Unverified scientific plan (not source evidence; every final attributed claim still
 needs its OWN actual E citations):

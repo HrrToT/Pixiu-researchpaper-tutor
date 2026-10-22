@@ -80,7 +80,7 @@ def validate_basis(value,allowed,*,max_bytes=MAX_BASIS_BYTES,lean=False,blueprin
         return False
 
 
-def planning_prompt(*,question,obligations,sources,evidence,tables,metric_domains,compact=False,lean=False,positional=False,configuration_consistency_version=0,input_contract_version=0,execution_guidance_version=0,blueprint=False):
+def planning_prompt(*,question,obligations,sources,evidence,tables,metric_domains,compact=False,lean=False,positional=False,configuration_consistency_version=0,input_contract_version=0,execution_guidance_version=0,blueprint=False,blueprint_rows=False):
     from services.deep_research.design_drafting import _DRAFT_POLICY,_DRAFT_STATISTICS
     from services.deep_research.experiment_intent import guidance,single_toggle_request
     from services.deep_research.metric_scope import metric_protocol_requirements
@@ -149,7 +149,11 @@ record its finite unmatched cost honestly, without claiming an isolated paramete
         if not (compact is True and lean is True and positional is True):
             raise ValueError('Execution blueprint requires staged compact planning')
         from services.deep_research.experiment_blueprint import PLANNING
+        if blueprint_rows is True:
+            from services.deep_research.experiment_blueprint import PLANNING_ROWS as PLANNING
         prompt=PLANNING+SPLIT_GUIDANCE+'\n'+REFERENCE_RULE+'\n'
+    elif blueprint_rows is True:
+        raise ValueError('Blueprint rows require structured planning')
     prompt+='\nHuman question:\n'+question+'\nFrozen requirements:\n'+packed(obligations)
     prompt+='\nSource registry (metadata only):\n'+packed(sources)
     prompt+='\nExact original evidence with unchanged permissions:\n'+packed(evidence)
@@ -182,8 +186,13 @@ def valid_plan_basis(record,value,aliases):
     from services.deep_research.experiment_plan_encoding import enabled as plan_encoding,wire_text,flexible
     if plan_encoding(record):
         from services.deep_research.experiment_blueprint import enabled as blueprint_enabled
-        if not validate_basis(value,aliases,max_bytes=MAX_BASIS_BYTES,lean=True,blueprint=blueprint_enabled(record)):return False
-        try:return len(wire_text(value,version=record['experimentPlanEncodingContractVersion']).encode('utf8'))<=(MAX_BASIS_BYTES if flexible(record) else basis_limit(record))
+        version=record['experimentPlanEncodingContractVersion']
+        if not validate_basis(value,aliases,max_bytes=None if version==4 else MAX_BASIS_BYTES,lean=True,blueprint=blueprint_enabled(record)):return False
+        try:
+            if version==4:
+                from services.deep_research.experiment_blueprint import columns
+                if len(json.dumps(columns(value),ensure_ascii=False,separators=(',',':'),allow_nan=False).encode('utf8'))>MAX_BASIS_BYTES:return False
+            return len(wire_text(value,version=version).encode('utf8'))<=(MAX_BASIS_BYTES if flexible(record) else basis_limit(record))
         except (TypeError,ValueError,OverflowError):return False
     return validate_basis(value,aliases,max_bytes=basis_limit(record),lean=record.get('experimentDraftContractVersion') in (5,6))
 
@@ -191,9 +200,13 @@ def valid_plan_basis(record,value,aliases):
 def basis_encoding_audit(record,basis):
     from services.deep_research.experiment_plan_encoding import wire_text,flexible
     raw=len(json.dumps(basis,ensure_ascii=False,separators=(',',':')).encode('utf8'))
+    canonical=raw
+    if record['experimentPlanEncodingContractVersion']==4:
+        from services.deep_research.experiment_blueprint import columns
+        raw=len(json.dumps(columns(basis),ensure_ascii=False,separators=(',',':'),allow_nan=False).encode('utf8'))
     wire=len(wire_text(basis,version=record['experimentPlanEncodingContractVersion']).encode('utf8'))
     if flexible(record):
-        return {'rawBytes':raw,'wireBytes':wire,'preferredSlotBytes':basis_limit(record),
+        return {'rawBytes':raw,'wireBytes':wire,**({'canonicalBytes':canonical} if record['experimentPlanEncodingContractVersion']==4 else {}),'preferredSlotBytes':basis_limit(record),
             'rawLimitBytes':MAX_BASIS_BYTES,'fitsPreferredSlot':wire<=basis_limit(record),'scientificApproval':False}
     return {'rawBytes':raw,'wireBytes':wire,'slotLimit':basis_limit(record),'scientificApproval':False}
 
@@ -230,7 +243,7 @@ def prepare_plan(record,*,prompt,aliases,invoke,parse,checkpoint):
             if (not valid_plan_basis(record,saved.get('basis'),aliases)
                     or digest(saved.get('response'))!=saved.get('responseDigest')
                     or not isinstance(saved.get('response'),dict)
-                    or parsed_basis(saved['response'],parse)!=saved['basis']):
+                    or parsed_basis(saved['response'],parse,record)!=saved['basis']):
                 raise DeepResearchError('invalid_experiment_planning_state','保存的实验规划记录无效，不能重新发送。')
             if encoding and (type(saved.get('basisEncodingVersion')) is not int or saved['basisEncodingVersion']!=encoding_version
                     or saved.get('encodedBasis')!=encode(saved['basis'],version=encoding_version)
@@ -242,7 +255,7 @@ def prepare_plan(record,*,prompt,aliases,invoke,parse,checkpoint):
             raise DeepResearchError('invalid_experiment_planning_response','实验规划已返回但未形成完整结构，原响应已保留。')
         if saved.get('status')=='output_capacity':
             if (not flexible(record) or digest(saved.get('response'))!=saved.get('responseDigest')
-                    or parsed_basis(saved.get('response'),parse)!=saved.get('basis')
+                    or parsed_basis(saved.get('response'),parse,record)!=saved.get('basis')
                     or not validate_basis(saved.get('basis'),aliases,max_bytes=None,lean=True,blueprint=blueprint)
                     or valid_plan_basis(record,saved.get('basis'),aliases)
                     or digest(saved.get('basisEncodingAudit'))!=digest(basis_encoding_audit(record,saved['basis']))):
@@ -267,7 +280,7 @@ def prepare_plan(record,*,prompt,aliases,invoke,parse,checkpoint):
     response=saved.get('response')
     if digest(response)!=saved.get('responseDigest'):
         raise DeepResearchError('invalid_experiment_planning_state','保存的实验规划响应已改变，不能重新发送。')
-    basis=parsed_basis(response,parse)
+    basis=parsed_basis(response,parse,record)
     if (flexible(record) and isinstance(response,dict)
             and response.get('finishReason',response.get('finish_reason'))!='length'
             and validate_basis(basis,aliases,max_bytes=None,lean=True,blueprint=blueprint)
@@ -286,9 +299,14 @@ def prepare_plan(record,*,prompt,aliases,invoke,parse,checkpoint):
     return saved
 
 
-def parsed_basis(response,parse):
+def parsed_basis(response,parse,record=None):
     try:
-        return parse(response.get('content','')) if isinstance(response,dict) else None
+        value=parse(response.get('content','')) if isinstance(response,dict) else None
+        if (record is not None and type(record.get('experimentPlanEncodingContractVersion')) is int
+                and record['experimentPlanEncodingContractVersion']==4):
+            from services.deep_research.experiment_blueprint import columns
+            value=columns(value,expand=True)
+        return value
     except (ValueError,TypeError,RecursionError):
         return None
 
