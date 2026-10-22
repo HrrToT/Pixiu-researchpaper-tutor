@@ -3430,6 +3430,16 @@
       "settledTokens": 76338,
       "independentCredit": 0,
       "evidence": "docs/deep-research-evidence/E1-v30-quality-diagnosis-20261022.json"
+    },
+    "repairGrammarCandidate": {
+      "sourceCommit": "cf5846ad",
+      "enabled": false,
+      "passed": 4205,
+      "defaultRetainedFocusedPassed": 75,
+      "legacyReplayScripts": 38,
+      "inputAdmissionPassed": false,
+      "providerCalls": 0,
+      "evidence": "docs/deep-research-evidence/repair-grammar-admission-20261022.json"
     }
   },
   "stages": [
