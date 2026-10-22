@@ -218,7 +218,7 @@ def test_native_json_contract_is_server_owned_and_immutable(tmp_path, replacemen
     try:
         run, _ = facade.create({'workspaceTaskId': 't', 'operationKey': 'op', 'question': '核查主张',
             'deferStart': True, 'structuredOutputContractVersion': replacement}, start_async=False)
-        assert run['structuredOutputContractVersion'] == 9
+        assert run['structuredOutputContractVersion'] == 10
         with pytest.raises(ValueError, match='Immutable'):
             repo.update_run(run['runId'], lambda r: {**r, 'structuredOutputContractVersion': replacement})
     finally:

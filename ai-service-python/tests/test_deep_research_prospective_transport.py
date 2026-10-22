@@ -95,10 +95,10 @@ def test_v8_does_not_salvage_truncated_or_wrong_wrapped_judgements():
         result=normalize('verify_design_science',{'content':raw,'finishReason':finish})
         assert result['content']=='null' and result['rawContent']==raw
     assert enabled({'structuredOutputContractVersion':8})
-    for value in [True,'8',10,None]:assert not enabled({'structuredOutputContractVersion':value})
+    for value in [True,'8',11,None]:assert not enabled({'structuredOutputContractVersion':value})
 
 
-@pytest.mark.parametrize('replacement',[None,True,7,8,'9',10])
+@pytest.mark.parametrize('replacement',[None,True,7,8,'9',11])
 def test_native_policy_version_is_server_owned_and_immutable(tmp_path,replacement):
     from services.deep_research.facade import ResearchFacade
     from services.deep_research.repository import DeepResearchRepository
@@ -107,7 +107,7 @@ def test_native_policy_version_is_server_owned_and_immutable(tmp_path,replacemen
     try:
         r,_=facade.create({'workspaceTaskId':'t','operationKey':'k','question':'Propose an experiment',
             'structuredOutputContractVersion':replacement,'deferStart':True},start_async=False)
-        assert r['structuredOutputContractVersion']==9
+        assert r['structuredOutputContractVersion']==10
         with pytest.raises(ValueError,match='Immutable'):
             repo.update_run(r['runId'],lambda value:{**value,'structuredOutputContractVersion':replacement})
     finally:facade.shutdown()
