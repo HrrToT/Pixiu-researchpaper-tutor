@@ -3079,6 +3079,52 @@
       "repairCapacityDiagnosis": "rejected-context-e1-v18-repair-capacity-20261022.json",
       "runtimeLoadProof": "runtime-load-dr223-rejected-context-20261022.json",
       "postLoadProof": "runtime-postload-dr223-rejected-context-20261022.json"
+    },
+    "experimentRepairInputCheckpoint": {
+      "date": "2026-10-22",
+      "sourceCommit": "d299a05d",
+      "promptVersion": "dr-v2.20261022.224",
+      "experimentRepairInputContractVersion": 1,
+      "requiresNativeSystemPolicy": 8,
+      "fullOffline": {
+        "passed": 3908,
+        "warnings": 1,
+        "seconds": 224.35,
+        "files": 216,
+        "log": "tmp/pytest-dr224-full.log",
+        "sha256": "ebb0adc374a4bd33f0559c647dec152a0e35a2eb8a4a23c36114ce44414345c1"
+      },
+      "focusedPassed": 106,
+      "focusedSeconds": 7.09,
+      "focusedOverlap": true,
+      "newTests": 33,
+      "legacyReplayScriptCount": 25,
+      "legacyActualFingerprintsMatched": 77,
+      "offlineProviderCalls": 0,
+      "productionWrites": 0,
+      "independentCredit": 0,
+      "controlledReplay": "repair-input-e1-v18-controlled-20261022.json",
+      "implementation": "Server-owned immutable repair input1 under native8 shares ONLY existing same-source/hash/chunk containment contexts, never joins. Exact literal quotations/windows/metadata and original claims/conditions/checks/permissions restored. Concise user envelope relies on frozen system prospective rules; same edit/coverage parsers,24KB input,4096 output and whole-run budget. Old pending input identities cannot switch encoding or resend.",
+      "boundary": "Full Deep Research offline regression and archived-input three-group callback capture only. Initial integrity probe incorrectly expected optional omitted contexts to equal full-reference contexts; final comparison requires exact mandatory rows and permits only the existing explicitly marked optional-context omissions. No new scientific approval or independent credit.",
+      "actualCase": {
+        "case": "E1-v19",
+        "status": "failed",
+        "outcome": "none",
+        "observedElapsedSeconds": 91.0,
+        "settledModelCalls": 9,
+        "settledTokens": 38761,
+        "unsettledModelCalls": 0,
+        "verificationSummary": null
+      },
+      "actualFormatDiagnosis": "E1-v19-format-diagnosis-20261022.json",
+      "runtimeLoadProof": "runtime-load-dr224-repair-input-20261022.json",
+      "retentionProof": "runtime-postcases-dr224-e1-v19-20261022.json",
+      "selectedDiagnosticTotals": {
+        "settledModelCalls": 649,
+        "measuredTokens": 2678489,
+        "notGlobalHistory": true,
+        "costUnknown": true
+      }
     }
   },
   "stages": [
@@ -4141,7 +4187,7 @@
     "independentCredit": 0,
     "proof": "deep-research-evidence/compact-experiment-envelope-regression-20261020.json"
   },
-  "currentCheckpoint": ".223 /8e6eb16a: immutable experimentReviewEnvelope2 retains rejected original definitions/config/checks as unverified context in initial and revision review; unchanged failed siblings stay visible, revised IDs replace originals. Hard rejection, own-source permissions and dependency/publication gates unchanged.3875tests/215files,15new;84focused overlap;25legacy replay scripts77physical fingerprints. Counterfactual archived E1-v18 capture sendsall4hardrejected definitions to config/science18789/31773bytes; original target quotes/bounded contexts retained, no provider/scientific judgement. Original E1-v18 inconclusive0/9 unchanged, latest paid case; no added diagnosticcalls. DR0-DR5 incomplete;original independent0/5;Goalactive;PRdraft. Pythonloaded;6sourcefiles/212oldpayloads/5184ledger/11paused/4taskgroups preserved;frontend200.",
+  "currentCheckpoint": ".224 /d299a05d: immutable experimentRepairInput1 under native8 shares only existing same-source/hash/chunk containment contexts, no joining. Concise user envelope relies on frozen system rules. Required quotes/windows/metadata and full originals/conditions/checks/permissions preserved; same parsers/24KB/4096output/runbudgets.3908tests/216files,33new;106focused overlap;77legacy physical fingerprints. Archived E1-v18 three groups23804/23948/23932fit and reach offlinecallback, no scientificjudgement. Real E1-v19 once91s failed invalid_synthesis_response before semantic/repair:9settledcalls38761tokens,no newunknown; raw completedJSON has unquoted2^19 at numericvalue/shape. Strict parser retained raw and rejected, no eval/salvage.2actual planner/body fingerprints23758/30162 reconstructed.5207ledger/11oldpaused/oldpayloads/4taskprefixes preserved. Next constrain producer numeric literals, then fresh content test; live repair/content acceptance unproven. DR0-DR5 incomplete;original independent0/5;Goalactive;PRdraft.",
   "sharedModuleSourceCheckpoint": {
     "sourceCommit": "f8ae5177",
     "promptVersion": "dr-v2.20261020.199",
