@@ -3417,6 +3417,19 @@
       "legacyScripts": 36,
       "realCase": "E1-v29",
       "contentAccepted": false
+    },
+    "initializationReview237": {
+      "sourceCommit": "31cc5f0d",
+      "passed": 4200,
+      "files": 229,
+      "legacyReplayScripts": 38,
+      "case": "E1-v30",
+      "accepted": 0,
+      "rejected": 9,
+      "settledModelCalls": 14,
+      "settledTokens": 76338,
+      "independentCredit": 0,
+      "evidence": "docs/deep-research-evidence/E1-v30-quality-diagnosis-20261022.json"
     }
   },
   "stages": [
