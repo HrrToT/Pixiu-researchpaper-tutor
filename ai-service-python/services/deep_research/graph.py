@@ -1634,10 +1634,11 @@ def make_verify_node(
         claims = report_body.get("claims", [])
         
         # Semantic check uses reserve pool (wrapped to pass use_reserve flag)
-        def budgeted_semantic(claims_to_check: list, evidence_list: list) -> list:
+        def budgeted_semantic(claims_to_check: list, evidence_list: list, *, proposal_context=()) -> list:
             if semantic_check_fn is None:
                 return []
-            return semantic_check_fn(claims_to_check, evidence_list)
+            return semantic_check_fn(claims_to_check,evidence_list,
+                **({'proposal_context':proposal_context} if proposal_context else {}))
         
         from services.deep_research.final_coverage import audit_final_answer
         from services.deep_research.request_dimensions import enabled as dimensions_enabled
@@ -1784,11 +1785,20 @@ def make_verify_node(
                     repo_update(run_id, lambda r: {**r, 'state': {**r.get('state', {}),
                         'repairDraft': revised}}, expected_revision=None)
                 if revised:
-                    def revised_semantic(targets, sources):
+                    def revised_semantic(targets, sources, *, proposal_context=()):
+                        from services.deep_research.rejected_design_context import enabled, rejected_context
+                        context=list(proposal_context)
+                        if enabled(record.get('experimentReviewEnvelopeContractVersion')):
+                            # New revisions replace old drafts by identity. Unchanged failed
+                            # siblings remain visible but retain their rejection checks.
+                            context+=rejected_context(repair_report.get('claims',[]),
+                                verification_result.get('rejected',[]),
+                                exclude=[c['claimId'] for c in revised],phase='initial_verification')
                         check = getattr(semantic_check_fn, 'check_revisions', None)
                         if check:
-                            return check(targets, sources, repair_targets.get('accepted', []))
-                        return budgeted_semantic(targets, sources)
+                            return check(targets,sources,repair_targets.get('accepted',[]),
+                                **({'proposal_context':context} if context else {}))
+                        return budgeted_semantic(targets,sources,proposal_context=context)
                     merged = saved.get('repairVerification')
                     if merged is None:
                         from services.deep_research.repair_progress import enabled as progress_required, partition_revisions

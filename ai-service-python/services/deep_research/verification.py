@@ -280,7 +280,7 @@ def precheck_claims(claims: list[dict], evidence: list[dict], *, absence_scope_v
 def verify_claims(claims: list[dict], evidence: list[dict],
                   semantic_check: Callable[[list[dict], list[dict]], list[dict]] | None = None,
                   *, absence_scope_version=0, quantity_spelling_version=0, feedback_version=0,
-                  table_references_version=0) -> dict:
+                  table_references_version=0, review_context_version=0) -> dict:
     """Publish only after hard checks and an independent semantic verdict.
 
     Missing, malformed or duplicate model verdicts fail closed. A proposal or
@@ -296,7 +296,10 @@ def verify_claims(claims: list[dict], evidence: list[dict],
     needs_check = candidates
     verdicts: dict[Any, dict] = {}
     if needs_check and semantic_check:
-        raw = semantic_check(needs_check, evidence)
+        from services.deep_research.rejected_design_context import enabled, rejected_context
+        context=(rejected_context(claims,rejected,exclude=[c['claimId'] for c in candidates])
+                 if enabled(review_context_version) else [])
+        raw = semantic_check(needs_check,evidence,**({'proposal_context':context} if context else {}))
         if isinstance(raw, list):
             for verdict in raw:
                 if not isinstance(verdict, dict):

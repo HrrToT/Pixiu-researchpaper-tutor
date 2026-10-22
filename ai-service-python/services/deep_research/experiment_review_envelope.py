@@ -7,7 +7,7 @@ import json
 
 
 def enabled(version, review_version, claims):
-    return (type(version) is int and version == 1
+    return (type(version) is int and version in (1,2)
             and type(review_version) is int and review_version == 3
             and bool(claims) and all(c.get('kind') in {'proposal','suggestion','hypothesis'}
                 and type(c.get('designContractVersion')) is int and c['designContractVersion'] == 2
@@ -124,7 +124,7 @@ cannot be combined into weights availability. Propose finite baseline training w
 never invent an asset. This audits source text, not a tested download.'''
 
 
-def build(*,claims_text,context,question,evidence_marker,metric_domains,config_mode):
+def build(*,claims_text,context,question,evidence_marker,metric_domains,config_mode,version=1):
     from services.deep_research.review_alignment import factorial_reference,declaration_links
     from services.deep_research.experimental_reasoning import DESIGN_ROLES
     from services.deep_research.design_audit import design_slots_for_claim,audit_field_roots
@@ -177,4 +177,11 @@ def build(*,claims_text,context,question,evidence_marker,metric_domains,config_m
     if derived:parts += [DERIVED,'Derived configuration meanings (not evidence):\n'+packed(derived)]
     links=declaration_links(all_claims)
     if links:parts.append('Declared key presence (not scientific approval):\n'+packed(links))
+    if type(version) is int and version==2:
+        parts.append('Rejected context policy: reviewContextState is a server rejection record, NOT approval. '
+            'Read the exact supplied text/configuration and checks to distinguish an absent field from an '
+            'invalid or rejected definition. Context is never a verdict target or factual evidence. '
+            'Do not assume its acquisition, source membership, state or measurement is valid; name the '
+            'actual incompatible/missing field. A target depending on an unresolved definition is not '
+            'an executable approved experiment. Only independent checks and dependency gates may approve it.')
     return '\n\n'.join(parts)

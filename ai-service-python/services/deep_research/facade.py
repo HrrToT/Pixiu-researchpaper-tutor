@@ -273,7 +273,7 @@ class ResearchFacade:
             "materials": materials,
             "materialSnapshot": material_snapshot,  # Immutable Java snapshot
             "contextMaterials": (material_snapshot or {}).get("contextMaterials", []) if isinstance(material_snapshot, dict) else [],
-            "promptVersion": "dr-v2.20261022.222",
+            "promptVersion": "dr-v2.20261022.223",
             "factualReviewContractVersion": 1,
             "citationPresentationContractVersion": 3,
             "configurationConsistencyContractVersion": 2,
@@ -281,7 +281,7 @@ class ResearchFacade:
             "experimentOutlineEncodingContractVersion": 2,
             "experimentGenerationEnvelopeContractVersion": 1,
             "experimentInputContractVersion": 1,
-            "experimentReviewEnvelopeContractVersion": 1,
+            "experimentReviewEnvelopeContractVersion": 2,
             # New experiments separate a small persisted scientific plan from
             # direct complete configuration, under the same aggregate budget.
             # Saved v1/v2 requests and unknown identities remain unchanged.
@@ -1270,9 +1270,11 @@ class ResearchFacade:
         spelling = record.get('quantitySpellingContractVersion', 0)
         feedback = record.get('verificationFeedbackContractVersion', 0)
         table_references = record.get('tableReferencesContractVersion',0)
+        context_version=record.get('experimentReviewEnvelopeContractVersion',0)
         return lambda claims, evidence, semantic=None: verify_claims(
             claims, evidence, semantic, absence_scope_version=version, quantity_spelling_version=spelling,
-            feedback_version=feedback,table_references_version=table_references)
+            feedback_version=feedback,table_references_version=table_references,
+            review_context_version=context_version)
     
     def _get_validate_plan(self) -> Callable[[list], list]:
         from services.deep_research.coverage import validate_plan

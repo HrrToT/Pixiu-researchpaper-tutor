@@ -609,13 +609,13 @@ class BudgetedSemanticChecker:
         self._configuration_consistency = configuration_consistency
         self._prospective_envelope = prospective_envelope
     
-    def __call__(self, claims: list[dict], evidence: list[dict]) -> list[dict]:
-        return self._check(claims, evidence, [], 'verify')
+    def __call__(self, claims: list[dict], evidence: list[dict], *, proposal_context=()) -> list[dict]:
+        return self._check(claims,evidence,list(proposal_context),'verify')
 
-    def check_revisions(self, claims, evidence, accepted_context):
+    def check_revisions(self, claims, evidence, accepted_context, *, proposal_context=()):
         """Retain design definitions without rechecking or promoting context facts."""
         targets = {c['claimId'] for c in claims}
-        context = [c for c in accepted_context if c.get('claimId') not in targets
+        context = [c for c in [*accepted_context,*proposal_context] if c.get('claimId') not in targets
                    and c.get('kind') in {'proposal', 'suggestion', 'hypothesis'}]
         return self._check(claims, evidence, context, 'verify_repair')
 
@@ -658,6 +658,13 @@ class BudgetedSemanticChecker:
         size = 1 if isolated else max(3, (len(facts) + fact_slots - 1) // fact_slots)
         batches = proposal_batches + [(facts[i:i + size], node) for i in range(0, len(facts), size)]
         verdicts = list(premise_failures)
+        envelope=self._prospective_envelope() if callable(self._prospective_envelope) else self._prospective_envelope
+        context_states={}
+        if type(envelope) is int and envelope==2:
+            context_states={c['claimId']:c['reviewContextState'] for c in accepted_context
+                if 'reviewContextState' in c}
+            context_states.update({row['claimId']:{'status':'rejected','phase':'source_prerequisite',
+                'checks':[row]} for row in premise_failures})
         for batch, batch_node in batches:
             targets = {c['claimId'] for c in batch}
             context = [{'claimId': c.get('claimId'), 'text': c.get('text'), 'kind': c.get('kind'),
@@ -667,6 +674,8 @@ class BudgetedSemanticChecker:
                         'hypothesisContractVersion': c.get('hypothesisContractVersion')}
                         | {'protocolContractVersion':c.get('protocolContractVersion')}
                         | {'workflowContractVersion':c.get('workflowContractVersion')}
+                        | ({'reviewContextState':context_states[c['claimId']]}
+                           if c['claimId'] in context_states else {})
                        for c in [*accepted_context, *proposals] if c['claimId'] not in targets]
             verdicts.extend(self._check_batch(batch, evidence, context, node=batch_node))
         by_id = {v['claimId']: v for v in verdicts}
@@ -1077,7 +1086,8 @@ The dataAvailability object is an internal audit, not new experimental results.
         full_review_inputs=review_envelope(envelope_version,review_version,claims)
         if full_review_inputs:
             prompt=build_review(claims_text=claims_text,context=wire_context,question=question,
-                evidence_marker=evidence_text,metric_domains=metric_domains,config_mode=config_mode)
+                evidence_marker=evidence_text,metric_domains=metric_domains,config_mode=config_mode,
+                version=envelope_version)
         template = prompt
         source_keys = ('workId', 'versionId', 'sourceTitle')
         source_registry = {}
