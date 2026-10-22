@@ -155,12 +155,12 @@ record its finite unmatched cost honestly, without claiming an isolated paramete
 def request_identity(record,node,prompt,options):
     """Freeze the same role options/framing that the tracked invoker reserves."""
     from services.deep_research.runtime import research_model_options
-    from services.deep_research.structured_output import enabled as native_json,messages
+    from services.deep_research.structured_output import enabled as native_json,messages_for_record
     options=research_model_options(node,options)
     identity={'prompt':prompt,'extra':options}
     if native_json(record):
         options={**options,'response_format':{'type':'json_object'}};identity['extra']=options
-        identity['messages']=messages(node,prompt,record['structuredOutputContractVersion'])
+        identity['messages']=messages_for_record(record,node,prompt)
     return identity
 
 
