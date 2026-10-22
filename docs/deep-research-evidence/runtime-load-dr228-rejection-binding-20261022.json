@@ -1,0 +1,25 @@
+{
+  "date": "2026-10-22",
+  "sourceCommit": "00987455",
+  "sourceHashes": {
+    "facade.py": "6cc0a59a4a5b719010f5da648520146ed6c773bb4daf170d5174e0f6f0dc348e",
+    "graph.py": "fbcf761e69f4a89caef28f56936fbd1d11fd4f3fbbafa4c90751dcfda5e3f6b5",
+    "tools.py": "7e4973aacbb77fce395c096d3f80f1def2d46d63cd36de011945b6606d419910",
+    "repository.py": "4d149420500314ee2ec3c2b9e1fa157333ea7953f40172d783a93ded1e70089f",
+    "verification.py": "28aecc5f98d3e131fa20d139a4cb1d5c99e7db45071460c1e11ff639d0124147",
+    "repair.py": "1d3715f3035698236ed116a86bb338ee1d1e13ea04f14f6e8c7c88257d6b5dce",
+    "repair_batches.py": "6b1ea14f8547d573c0e4af48e7b7ffd84f73dc99b74109cd7675d1616d6c111d",
+    "rejection_audit.py": "6abbed6ab2f06f170b3a9f98a2afff91dd41d56d0bb367184ba7b04708f1435d",
+    "experiment_review_envelope.py": "85e8b50de4ba8a201a62d0a81d835aec14fda87eb421ba499a4c163a49167459",
+    "rejected_design_context.py": "ae1834f69697c952499b21eefe4957c22500fc8b2fc9e4eb2ab596dad6ca4c64"
+  },
+  "actualCreatedRun": {
+    "runId": "dr_run_31532932b2b85247b53c9602d7e3c07e",
+    "promptVersion": "dr-v2.20261022.228",
+    "experimentReviewEnvelopeContractVersion": 5,
+    "experimentRepairPriorityContractVersion": 1
+  },
+  "preRestartLedgerRows": 5289,
+  "preRestartActive": 0,
+  "modelRequestsByThisProbe": 0
+}

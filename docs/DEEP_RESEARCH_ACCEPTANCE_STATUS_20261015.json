@@ -3219,6 +3219,54 @@
         "cost": null
       },
       "independentCredit": 0
+    },
+    "rejectionBindingPriorityCheckpoint": {
+      "sourceCommit": "43a1d2de",
+      "promptVersion": "dr-v2.20261022.229",
+      "priorCodeCommit": "00987455",
+      "fullOfflinePassed": 4022,
+      "files": 221,
+      "seconds": 233.34,
+      "warnings": 1,
+      "newTestsAcrossTurn": 37,
+      "legacyScripts": 31,
+      "legacyPhysicalFingerprints": 92,
+      "latestRealCase": {
+        "id": "E1-v23",
+        "sourceCommit": "00987455",
+        "promptVersion": "dr-v2.20261022.228",
+        "priorityVersion": 1,
+        "status": "completed",
+        "outcome": "inconclusive",
+        "accepted": 0,
+        "total": 9,
+        "seconds": 144,
+        "settledCalls": 13,
+        "settledTokens": 69378,
+        "invalidFeedbackIds": [
+          "c1",
+          "c7",
+          "c8",
+          "c9"
+        ],
+        "exactBoundIds": [
+          "c3",
+          "c4",
+          "c5"
+        ],
+        "capacityUnreviewedId": "c2",
+        "submittedRepairCalls": 0,
+        "repairRequiredBytes": 26306,
+        "availableBytes": 17280
+      },
+      "priority2Validation": "Offline/controlled only. Adds c2 deferral; remaining required24779>24000 preflight,0callbacks. No added model run.",
+      "selectedDiagnosticTotal": {
+        "calls": 699,
+        "measuredTokens": 2929774,
+        "globalHistory": false,
+        "cost": null
+      },
+      "independentCredit": 0
     }
   },
   "stages": [
@@ -3681,27 +3729,29 @@
     "Full novice study workflow",
     "Independent Edge recovery"
   ],
-  "currentProviderConstraint": "All further necessary bounded validations uniformly authorized. Selected diagnostic total686settled calls/2860396measured tokens, not global history; costs unknown. Latest E1-v22 fully settled/inconclusive0/9; preserve11oldpaused unknowns, no automatic retries.",
+  "currentProviderConstraint": "All further necessary bounded validations uniformly authorized. Selected diagnostic total699settled calls/2929774measured tokens, not global history; costs unknown. Latest real E1-v23 .228 fully settled/inconclusive0/9. Priority2 .229 offline only; no automatic retries. Preserve11oldpaused unknowns.",
   "currentDevelopmentMode": "Primary Codex only; Goal active; quota pause revoked. Source/runtimebc4d3732/.198. New experiment draft4 uses direct6144-token compact planning with a2500-byte private plan, lossless goal/source references and existing question-driven evidence ordering. Offline3194passes/23old request fingerprints; E1 controlled rows2to7, but shared-method definition and dataset-member source coverage remain incomplete. No new real model call; original E1 failure and11unknowns preserved.",
   "loadedRuntime": {
-    "commit": "9f539cfe",
-    "promptVersion": "dr-v2.20261022.227",
+    "commit": "43a1d2de",
+    "promptVersion": "dr-v2.20261022.229",
     "javaCommit": "27ac4beb",
     "frontendValidationCommit": "123b0d29",
     "frontendValidationIsHistorical": true,
-    "callsAfterLatestCase": 5289,
+    "callsAfterLatestCase": 5317,
     "active": 0,
     "historicalPausedUnknown": 11,
-    "proof": "deep-research-evidence/runtime-load-dr227-execution-decisions-20261022.json",
-    "postCasesProof": "deep-research-evidence/runtime-postcases-dr227-e1-v22-20261022.json"
+    "proof": "deep-research-evidence/runtime-load-dr229-unreviewed-deferral-20261022.json",
+    "postCasesProof": "deep-research-evidence/runtime-postcases-dr228-e1-v23-20261022.json",
+    "lastRealModelRunCommit": "00987455",
+    "lastRealModelRunPromptVersion": "dr-v2.20261022.228",
+    "lastLoadValidationScope": "Idle restart/source hashes/health/full prior data equality; no new model case for priority2."
   },
   "nextQualityWork": [
-    "Bind review failures to actual supplied fields and text/conditions. E1-v22 c7 aggregation/timing conditions were supplied; no duplicate prose or invented metrics schema requirement. Preserve actual scientific incompatibility checks.",
-    "Generate valid initialization inputs/dimensions and complete model/network states; prioritize prerequisite hard failures before dependent interpretation.",
-    "Give first-frame and per-frame fitting separate finite caps within exact existing schema and concrete prose. Preserve original requested whole-stage scope.",
-    "Align wall-clock vs GPU timing, serialized files/precision and byte-storage analysis; metrics use concrete prose/conditions.",
-    "Constrain repairs to valid schema paths and prioritize dependency blockers under actual remaining budget. No total-budget expansion, scientific auto-pass or legacy upgrade.",
-    "After real content quality passes, run fresh independent replacements. Original0/5 and historical unknown/failed results remain unchanged."
+    "Reduce repeated complete review/repair input while preserving original states/configs/checks and mandatory quotations; E1-v23 c2 unreviewed34467>32000, priority2 repair24779>24000.",
+    "Calibrate scientific negative judgements about proposed settings vs attributed paper facts; exact field binding alone is insufficient.",
+    "Generate complete coherent reference and learned-network state initialization, with finite caps for all preparation and per-frame phases.",
+    "Retain unreviewed definitions as context and explicit gaps; repair known structural blockers without inventing fixes for execution failures.",
+    "Validate usable real development content under original budgets before untouched independent replacements. Original0/5, failed histories and11unknowns remain unchanged."
   ],
   "javaReaderRuntime": {
     "sourceCommit": "070ab1a",
@@ -4282,7 +4332,7 @@
     "independentCredit": 0,
     "proof": "deep-research-evidence/compact-experiment-envelope-regression-20261020.json"
   },
-  "currentCheckpoint": ".227/9f539cfe: immutable execution guidance1 and review envelope4 expose exact seed/split values and ask concrete phases/states/measurement.3985tests/219files,84legacy fingerprints. Metrics use prose/conditions; prior demand for metrics.executionSpec corrected separately. E1-v22 completed/inconclusive0/9 in137s,13settledcalls67436tokens. Seed recognized; concrete metric conditions present but falsely called absent. Actual c4/c5 repair23878bytes/4096output returned complete edits, both rejected. Other groups stopped21683>remaining16382bytes. Invalid fresh inputIndex=-1 and missing first-frame cap persist.5289ledger/0active/11oldunknowns/alloldpayloads/4taskprefixes preserved. DR0-DR5 incomplete;original independent0/5;Goalactive;PRdraft.",
+  "currentCheckpoint": ".229/43a1d2de: rejection envelope5 binds exact negative findings; invalid feedback stays unreviewed. Priority2 defers invalid or not-started review targets while retaining original definitions, and ranks hard structural groups first.4022tests/221files;92legacy actual request fingerprints. Latest real E1-v23 used .228/priority1:144s completed inconclusive0/9,13settledcalls69378tokens,4invalid feedback rows. c2 single review34467>32000. Repair not sent26306>normal allowance17280 at actual4096output. Bound reasons still wrongly demand author evidence for proposed values. Priority2 offline only, required24779>24000.5317ledger/0active/11oldunknowns/alloldpayloads/4taskgroups preserved. DR0-DR5 incomplete;original independent0/5;Goalactive;PRdraft.",
   "sharedModuleSourceCheckpoint": {
     "sourceCommit": "f8ae5177",
     "promptVersion": "dr-v2.20261020.199",

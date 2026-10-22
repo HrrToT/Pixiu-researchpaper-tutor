@@ -1,0 +1,29 @@
+{
+  "date": "2026-10-22",
+  "case": "E1-v23",
+  "schedulingVersion": 2,
+  "expectedDeferredUnreviewedIds": [
+    "c1",
+    "c2",
+    "c7",
+    "c8",
+    "c9"
+  ],
+  "eligibleIds": [
+    "c3",
+    "c4",
+    "c5",
+    "c6"
+  ],
+  "callbacks": [],
+  "preflightFailure": {
+    "kind": "repairEvidenceBytes",
+    "limit": 24000,
+    "used": 24779
+  },
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "independentCredit": 0,
+  "boundary": "Controlled24KB preflight only. Original real run used policy1 and remains unchanged. No remaining-budget claim or scientific pass.",
+  "sourceCommit": "43a1d2de"
+}

@@ -1,0 +1,23 @@
+{
+  "date": "2026-10-22",
+  "sourceCommit": "43a1d2de",
+  "promptVersion": "dr-v2.20261022.229",
+  "fullOffline": {
+    "passed": 4022,
+    "files": 221,
+    "warnings": 1,
+    "seconds": 233.34,
+    "log": "tmp/pytest-dr229-full.log",
+    "sha256": "1ca71d602b0f3f923457101346d9ede91e8d7bd55f34259f25d25722c4cb719a"
+  },
+  "focusedPassed": 50,
+  "focusedOverlap": true,
+  "newTestsSinceDr228": 5,
+  "newTestsAcrossTurn": 37,
+  "legacyScripts": 31,
+  "legacyPhysicalFingerprintsMatched": 92,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "independentCredit": 0,
+  "boundary": "Priority2 additionally defers capacity-unreviewed/received-invalid rows. It keeps original definitions and all gaps, cannot approve them, and cannot upgrade unknown priority1 requests. No new paid case for priority2."
+}
