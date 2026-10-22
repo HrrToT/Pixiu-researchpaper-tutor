@@ -208,6 +208,8 @@ Independent review retains the full scientific and operational requirements.'''
     prompt+='\nRequired metric protocols:\n'+packed(metric_protocol_requirements(record.get('state',{}).get('metricDomains')))
     if not (two_arm_request(question) if compact else single_toggle_request(question)):
         prompt+='\n'+_DRAFT_STATISTICS
+    from services.deep_research.experiment_execution_guidance import enabled as execution_guidance,DRAFTING
+    if execution_guidance(record):prompt+='\n'+DRAFTING
     prompt+='''
 Paper-attributed interventions must preserve the actual supplied defining equation,
 operands, schedule and insertion point. A generic regularizer/weight is not a

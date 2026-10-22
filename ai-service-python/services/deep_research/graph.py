@@ -1446,6 +1446,7 @@ space with unsupported global absence or incidental iteration/performance values
                 **({'lean':True} if record['experimentDraftContractVersion'] in (5,6) else {}),
                 **({'positional':True} if plan_encoding(record) else {}),
                 configuration_consistency_version=record.get('configurationConsistencyContractVersion',0),
+                execution_guidance_version=record.get('experimentExecutionGuidanceContractVersion',0),
                 **({'input_contract_version':1} if experiment_capacity_enabled(record) else {})),aliases=evidence_aliases,
                 invoke=lambda node,prompt,options:llm_invoke(run_id,node,prompt,options,use_reserve=True),
                 parse=_safe_parse_json,checkpoint=checkpoint_planning)
