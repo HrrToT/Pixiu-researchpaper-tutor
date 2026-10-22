@@ -1441,7 +1441,10 @@ space with unsupported global absence or incidental iteration/performance values
             current=repo_update(run_id,lambda r:r,expected_revision=None)
             prompt=prompt.replace(basis_slot,wire_text(plan['basis']) if plan_encoding(record)
                 else json.dumps(plan['basis'],ensure_ascii=False,separators=(',',':')),1)
-            if prepare_draft(current,plan,prompt=prompt,checkpoint=checkpoint_planning) is None:
+            from services.deep_research.experiment_outline_encoding import encode as encode_outline
+            prompt,outline_audit=encode_outline(record,prompt)
+            if prepare_draft(current,plan,prompt=prompt,checkpoint=checkpoint_planning,
+                    **({'outline_encoding_audit':outline_audit} if outline_audit is not None else {})) is None:
                 return {'error_code':'budget_exhausted'}
         from services.deep_research.factual_reasoning import request_options as factual_options
         from services.deep_research.experiment_template import request_options as experiment_options,reasoning_enabled as experiment_reasoning

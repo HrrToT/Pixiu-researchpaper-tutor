@@ -190,8 +190,11 @@ def prepare_plan(record,*,prompt,aliases,invoke,parse,checkpoint):
     from services.deep_research.experiment_plan_encoding import enabled as plan_encoding,encode,wire_text,flexible
     encoding=plan_encoding(record)
     encoding_version=record['experimentPlanEncodingContractVersion'] if encoding else 0
+    from services.deep_research.experiment_outline_encoding import enabled as outline_encoding
+    outlined=outline_encoding(record)
     identity=digest({'version':1,'request':request,'evidenceAliases':aliases,
-        **({'basisEncodingVersion':encoding_version} if encoding else {})})
+        **({'basisEncodingVersion':encoding_version} if encoding else {}),
+        **({'outlineEncodingVersion':1} if outlined else {})})
     saved=deepcopy(record.get('state',{}).get('experimentPlanning'))
     if saved is not None:
         if (not isinstance(saved,dict) or type(saved.get('version')) is not int or saved['version']!=1
@@ -265,13 +268,20 @@ def parsed_basis(response,parse):
         return None
 
 
-def prepare_draft(record,plan,*,prompt,checkpoint):
+def prepare_draft(record,plan,*,prompt,checkpoint,outline_encoding_audit=None):
     """Freeze the direct body request; resume through the ordinary ledger guard.
 
     Admission applies only to a new request. An already prepared request must
     reach the ledger even when late, to reuse a settled result or reject unknown.
     """
     from services.deep_research.experiment_plan_encoding import enabled as plan_encoding,flexible
+    from services.deep_research.experiment_outline_encoding import enabled as outline_encoding,validate
+    validate(record,prompt,outline_encoding_audit)
+    if outline_encoding(record):
+        if (plan.get('outlineEncodingAudit') is not None
+                and plan['outlineEncodingAudit']!=outline_encoding_audit):
+            raise DeepResearchError('invalid_experiment_outline_state','保存的实验输出目录已经改变，不能重新发送。')
+        plan={**plan,'outlineEncodingAudit':deepcopy(outline_encoding_audit)}
     capacity_request=request_identity(record,'synthesize',prompt,{'max_tokens':4000,'temperature':0.2}) if flexible(record) else None
     if flexible(record) and plan.get('draftStatus')=='not_started_capacity':
         if plan.get('draftCapacity',{}).get('requestDigest')!=digest(capacity_request):
