@@ -3267,6 +3267,48 @@
         "cost": null
       },
       "independentCredit": 0
+    },
+    "briefReviewRepairCheckpoint": {
+      "sourceCommit": "57b6efcf",
+      "promptVersion": "dr-v2.20261022.230",
+      "fullOfflinePassed": 4043,
+      "files": 222,
+      "warnings": 1,
+      "seconds": 3008.13,
+      "newTests": 21,
+      "focusedPassed": 138,
+      "legacyPhysicalFingerprints": 92,
+      "latestRealCase": {
+        "id": "E1-v24",
+        "status": "completed",
+        "outcome": "inconclusive",
+        "accepted": 0,
+        "total": 9,
+        "seconds": 138,
+        "settledCalls": 13,
+        "settledTokens": 71802,
+        "invalidFeedbackIds": [
+          "c1",
+          "c7",
+          "c9"
+        ],
+        "exactBoundIds": [
+          "c3",
+          "c4",
+          "c5",
+          "c8"
+        ],
+        "repairSent": false,
+        "repairRequiredBytes": 22251,
+        "repairAvailableBytes": 16128
+      },
+      "selectedDiagnosticTotal": {
+        "calls": 712,
+        "measuredTokens": 3001576,
+        "globalHistory": false,
+        "cost": null
+      },
+      "independentCredit": 0
     }
   },
   "stages": [
@@ -3729,29 +3771,29 @@
     "Full novice study workflow",
     "Independent Edge recovery"
   ],
-  "currentProviderConstraint": "All further necessary bounded validations uniformly authorized. Selected diagnostic total699settled calls/2929774measured tokens, not global history; costs unknown. Latest real E1-v23 .228 fully settled/inconclusive0/9. Priority2 .229 offline only; no automatic retries. Preserve11oldpaused unknowns.",
-  "currentDevelopmentMode": "Primary Codex only; Goal active; quota pause revoked. Source/runtimebc4d3732/.198. New experiment draft4 uses direct6144-token compact planning with a2500-byte private plan, lossless goal/source references and existing question-driven evidence ordering. Offline3194passes/23old request fingerprints; E1 controlled rows2to7, but shared-method definition and dataset-member source coverage remain incomplete. No new real model call; original E1 failure and11unknowns preserved.",
+  "currentProviderConstraint": "All necessary bounded validations authorized. E1-v24 submitted once,13settled/71802tokens,0newunknowns. Selected totals712calls/3001576tokens,not global history,cost unknown. Preserve11oldpaused unknowns; no automatic retries.",
+  "currentDevelopmentMode": "Primary Codex only; Goal active; quota pause revoked. Runtime .230/57b6efcf. Brief trusted instructions preserve data/gates; real E1-v24 failed content. Source .231 presentation correction under offline test, not deployed/real-validated.",
   "loadedRuntime": {
-    "commit": "43a1d2de",
-    "promptVersion": "dr-v2.20261022.229",
+    "commit": "57b6efcf",
+    "promptVersion": "dr-v2.20261022.230",
     "javaCommit": "27ac4beb",
     "frontendValidationCommit": "123b0d29",
     "frontendValidationIsHistorical": true,
-    "callsAfterLatestCase": 5317,
+    "callsAfterLatestCase": 5344,
     "active": 0,
     "historicalPausedUnknown": 11,
-    "proof": "deep-research-evidence/runtime-load-dr229-unreviewed-deferral-20261022.json",
-    "postCasesProof": "deep-research-evidence/runtime-postcases-dr228-e1-v23-20261022.json",
-    "lastRealModelRunCommit": "00987455",
-    "lastRealModelRunPromptVersion": "dr-v2.20261022.228",
-    "lastLoadValidationScope": "Idle restart/source hashes/health/full prior data equality; no new model case for priority2."
+    "proof": "deep-research-evidence/runtime-load-dr230-brief-input-20261022.json",
+    "postCasesProof": "deep-research-evidence/runtime-postcases-dr230-e1-v24-20261022.json",
+    "lastRealModelRunCommit": "57b6efcf",
+    "lastRealModelRunPromptVersion": "dr-v2.20261022.230",
+    "lastLoadValidationScope": "Idle restart,10source hashes and actual run flags; all prior data/4taskgroups preserved after one E1-v24 submission."
   },
   "nextQualityWork": [
-    "Reduce repeated complete review/repair input while preserving original states/configs/checks and mandatory quotations; E1-v23 c2 unreviewed34467>32000, priority2 repair24779>24000.",
-    "Calibrate scientific negative judgements about proposed settings vs attributed paper facts; exact field binding alone is insufficient.",
-    "Generate complete coherent reference and learned-network state initialization, with finite caps for all preparation and per-frame phases.",
-    "Retain unreviewed definitions as context and explicit gaps; repair known structural blockers without inventing fixes for execution failures.",
-    "Validate usable real development content under original budgets before untouched independent replacements. Original0/5, failed histories and11unknowns remain unchanged."
+    "Complete layered/network initialization, scene-coordinate consistency and per-phase budget/unit accounting; an opaque tensor is not a full model.",
+    "Distinguish proposed compatible settings from attributed facts; contradictory absence reasons grant no pass.",
+    "Complete owned-operation-citation presentation checks; preserve uncited ranges/symbols; no scientific approval.",
+    "Fit complete mandatory repair input within remaining ordinary tokens, without borrowing finalization reserve or raising total limits.",
+    "Obtain usable real development results before untouched independent replacements; preserve failed history and11unknowns."
   ],
   "javaReaderRuntime": {
     "sourceCommit": "070ab1a",
@@ -4332,7 +4374,7 @@
     "independentCredit": 0,
     "proof": "deep-research-evidence/compact-experiment-envelope-regression-20261020.json"
   },
-  "currentCheckpoint": ".229/43a1d2de: rejection envelope5 binds exact negative findings; invalid feedback stays unreviewed. Priority2 defers invalid or not-started review targets while retaining original definitions, and ranks hard structural groups first.4022tests/221files;92legacy actual request fingerprints. Latest real E1-v23 used .228/priority1:144s completed inconclusive0/9,13settledcalls69378tokens,4invalid feedback rows. c2 single review34467>32000. Repair not sent26306>normal allowance17280 at actual4096output. Bound reasons still wrongly demand author evidence for proposed values. Priority2 offline only, required24779>24000.5317ledger/0active/11oldunknowns/alloldpayloads/4taskgroups preserved. DR0-DR5 incomplete;original independent0/5;Goalactive;PRdraft.",
+  "currentCheckpoint": ".230/57b6efcf:4043tests/222files;92legacy fingerprints. Archived c2review31856<=32000; controlled repairs23962/23963<=24000,not remaining-budget proof. E1-v24:138s completed/inconclusive0/9,13settled/71802tokens;4review inputs fit with complete evidence;3invalid feedback rows,4bound but unreliable reasons. Repair22251>16128 at4096output,not sent.5344ledger/0active/11oldunknowns/alloldpayloads/4tasks preserved. DR0-DR5 incomplete,independent0/5,Goalactive,PRdraft.",
   "sharedModuleSourceCheckpoint": {
     "sourceCommit": "f8ae5177",
     "promptVersion": "dr-v2.20261020.199",
