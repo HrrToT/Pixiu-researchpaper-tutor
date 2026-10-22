@@ -1,0 +1,284 @@
+{
+  "date": "2026-10-22",
+  "sourceCommit": "17498220",
+  "promptVersion": "dr-v2.20261022.222",
+  "case": "E1-v18",
+  "split": "development",
+  "runId": "dr_run_a86e988c0c365481b763c806e7ec090f",
+  "questionUnchanged": true,
+  "frozenCaseCommit": "a023b204",
+  "status": "completed",
+  "outcome": "inconclusive",
+  "reportedPayloadElapsedSeconds": 100.1,
+  "observedElapsedSeconds": 100.0,
+  "settledModelCalls": 11,
+  "settledTokens": 46211,
+  "unsettledModelCalls": 0,
+  "independentCredit": 0,
+  "verificationSummary": {
+    "accepted": 0,
+    "rejected": 9
+  },
+  "generationAllocation": {
+    "version": 1,
+    "planningEvidenceAliases": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9",
+      "E10",
+      "E11",
+      "E12",
+      "E13",
+      "E14",
+      "E15",
+      "E16",
+      "E17",
+      "E18",
+      "E19",
+      "E20"
+    ],
+    "suppliedEvidenceAliases": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9",
+      "E11",
+      "E12",
+      "E14",
+      "E15",
+      "E16",
+      "E17",
+      "E10",
+      "E13",
+      "E18",
+      "E19",
+      "E20"
+    ],
+    "requiredEvidenceAliases": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9",
+      "E11",
+      "E12",
+      "E14",
+      "E15",
+      "E16",
+      "E17"
+    ],
+    "unverifiedPlanReferences": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9",
+      "E11",
+      "E12",
+      "E14",
+      "E15",
+      "E16",
+      "E17"
+    ],
+    "missingPremiseBundles": [],
+    "rawInputBytes": 31014,
+    "encodedInputBytes": 30745,
+    "maxInputBytes": 32000,
+    "planBasisDigest": "6164dd2784adef0ecf9203a9a1a1b29df06d1f1d51d8590863ebd4ff48f58070",
+    "planReferencesAreEvidenceApproval": false,
+    "planningEvidenceIds": [
+      "ev_15a8e02f885a744622caa594dd331b7481bf66e9039cec2e9de762eab6c72891",
+      "ev_925db5ee5027aed55d6fa83e9fcd88367454dbedc927a217536f139bd847f22d",
+      "ev_5a62ffa4ef91faeab47770ffeb7725d05e16220034d62947882c58e68891ba69",
+      "ev_3006efb65ff33d4d129cae301b78f856b3944f4b066063a9ad5175bdf2f067a9",
+      "ev_516057b8a32881c40f1384de19b86128197089068316214ce7a984ebb4f252a4",
+      "ev_3bb0c9cc00e48e9c9c70869ecd33daf4221b424752681999cb07ad21d6c5ef11",
+      "ev_e34196d11497b3956f133f4f4f9f4670ef36ac774d1a0a60f21f50a99cbc0cd3",
+      "ev_f51816e595f8373d3a4ec3dd73ea8147f5eb4a359e0f6b53a04cb89e24cfb73b",
+      "ev_bdb024b856972aab854c483acb7dfa600c4918cc401ccfcebcb14da2200b2d38",
+      "ev_91ae56d02e870fb6f5606d07e05702a3c902807655d5b3056399026b0d9d7575",
+      "ev_cd0fb52a8f6322f1840a2c415f4ffe76ebd603aa54c4f8b78c84c3bcf5b89c9c",
+      "ev_9428cc150698bc1ebd5f7d4d32f2e8efa1022c319d442c3801b44c2d74cf4bca",
+      "ev_d14e8e4b8877af9a8841c24d6b93402b4203ddf7ab4f5ca16550a4b3274397ce",
+      "ev_939c67466e206bfa472828de022768b53d746d0c3d8cad4119803f209bdc3bba",
+      "ev_74bdde823cd60a4a094c7073a39236119dace8368d04374996bdd861d9005224",
+      "ev_7bc80f920225d80b13a00826e85aed3717788f2b49a3ff9a656c8309f097bc20",
+      "ev_cdfd48dfbddf41cd8040b67674c7a83e4046f6400cb3ba7cec77d287399252dd",
+      "ev_ed3f594d3d93660e693304c329a1853c445e83554bb0be9238611c5393aecf71",
+      "ev_3eeef2b8019fec8d13487f0051474a7bc3c56bb25e1ad075ed0f5f89c2acaae7",
+      "ev_b651921ec4cd8019a1109feafda8cc6efd6055bc313c4d7ca6714aeedb5b3055"
+    ],
+    "suppliedEvidenceIds": [
+      "ev_15a8e02f885a744622caa594dd331b7481bf66e9039cec2e9de762eab6c72891",
+      "ev_925db5ee5027aed55d6fa83e9fcd88367454dbedc927a217536f139bd847f22d",
+      "ev_5a62ffa4ef91faeab47770ffeb7725d05e16220034d62947882c58e68891ba69",
+      "ev_3006efb65ff33d4d129cae301b78f856b3944f4b066063a9ad5175bdf2f067a9",
+      "ev_516057b8a32881c40f1384de19b86128197089068316214ce7a984ebb4f252a4",
+      "ev_3bb0c9cc00e48e9c9c70869ecd33daf4221b424752681999cb07ad21d6c5ef11",
+      "ev_e34196d11497b3956f133f4f4f9f4670ef36ac774d1a0a60f21f50a99cbc0cd3",
+      "ev_f51816e595f8373d3a4ec3dd73ea8147f5eb4a359e0f6b53a04cb89e24cfb73b",
+      "ev_bdb024b856972aab854c483acb7dfa600c4918cc401ccfcebcb14da2200b2d38",
+      "ev_cd0fb52a8f6322f1840a2c415f4ffe76ebd603aa54c4f8b78c84c3bcf5b89c9c",
+      "ev_9428cc150698bc1ebd5f7d4d32f2e8efa1022c319d442c3801b44c2d74cf4bca",
+      "ev_939c67466e206bfa472828de022768b53d746d0c3d8cad4119803f209bdc3bba",
+      "ev_74bdde823cd60a4a094c7073a39236119dace8368d04374996bdd861d9005224",
+      "ev_7bc80f920225d80b13a00826e85aed3717788f2b49a3ff9a656c8309f097bc20",
+      "ev_cdfd48dfbddf41cd8040b67674c7a83e4046f6400cb3ba7cec77d287399252dd",
+      "ev_91ae56d02e870fb6f5606d07e05702a3c902807655d5b3056399026b0d9d7575",
+      "ev_d14e8e4b8877af9a8841c24d6b93402b4203ddf7ab4f5ca16550a4b3274397ce",
+      "ev_ed3f594d3d93660e693304c329a1853c445e83554bb0be9238611c5393aecf71",
+      "ev_3eeef2b8019fec8d13487f0051474a7bc3c56bb25e1ad075ed0f5f89c2acaae7",
+      "ev_b651921ec4cd8019a1109feafda8cc6efd6055bc313c4d7ca6714aeedb5b3055"
+    ]
+  },
+  "repairStatus": "skipped_budget",
+  "repairAdmission": {
+    "kind": "repairEvidenceBytes",
+    "limit": 24000,
+    "used": 25870
+  },
+  "planEncodingAudit": {
+    "rawBytes": 3094,
+    "wireBytes": 2985,
+    "preferredSlotBytes": 2500,
+    "rawLimitBytes": 4000,
+    "fitsPreferredSlot": false,
+    "scientificApproval": false
+  },
+  "initialRepresentationAudit": [
+    {
+      "phase": "synthesis",
+      "claimId": "c2",
+      "designRole": "groups",
+      "path": "/executionSpec",
+      "kind": "single_role_wrapper",
+      "role": "groups"
+    },
+    {
+      "phase": "synthesis",
+      "claimId": "c3",
+      "designRole": "data",
+      "path": "/executionSpec",
+      "kind": "single_role_wrapper",
+      "role": "data"
+    },
+    {
+      "phase": "synthesis",
+      "claimId": "c4",
+      "designRole": "controls",
+      "path": "/executionSpec",
+      "kind": "single_role_wrapper",
+      "role": "controls"
+    },
+    {
+      "phase": "synthesis",
+      "claimId": "c5",
+      "designRole": "budget",
+      "path": "/executionSpec",
+      "kind": "single_role_wrapper",
+      "role": "budget"
+    },
+    {
+      "phase": "synthesis",
+      "claimId": "c6",
+      "designRole": "steps",
+      "path": "/executionSpec",
+      "kind": "single_role_wrapper",
+      "role": "steps"
+    },
+    {
+      "phase": "synthesis",
+      "claimId": "c8",
+      "designRole": "analysis",
+      "path": "/executionSpec",
+      "kind": "single_role_wrapper",
+      "role": "analysis"
+    }
+  ],
+  "repairRepresentationAudit": {},
+  "rejectedClaims": [
+    {
+      "claimId": "c3",
+      "reason": "internal_reference_in_prose"
+    },
+    {
+      "claimId": "c4",
+      "reason": "absence_not_established",
+      "detail": "本条引用没有明确建立作者或论文缺少这些验证。把结论限定为本次引用能支持的实验范围及其不能证明的推广；不要写成作者未在其他条件验证、论文没有提供或全文不存在。引用中的其他否定句不构成这项缺席判断的依据。"
+    },
+    {
+      "claimId": "c5",
+      "reason": "absence_not_established",
+      "detail": "本条引用没有明确建立作者或论文缺少这些验证。把结论限定为本次引用能支持的实验范围及其不能证明的推广；不要写成作者未在其他条件验证、论文没有提供或全文不存在。引用中的其他否定句不构成这项缺席判断的依据。"
+    },
+    {
+      "claimId": "c6",
+      "reason": "incomplete_experiment_workflow",
+      "detail": "workflow.states.shape"
+    },
+    {
+      "claimId": "c1",
+      "reason": "semantic_unresolved",
+      "detail": "假设未通过：缺少可执行的具体帧窗口选择、共同初始化与完整状态、有限预算、测量与配对判读的明确绑定；假设声明未绑定到具体分析ID和效应键；未提供可检验的假设陈述。"
+    },
+    {
+      "claimId": "c2",
+      "reason": "semantic_unresolved",
+      "detail": "组构建未通过：未指定第0帧模型、相机划分、第1阶段NTC结果的具体来源和版本；未指定第2阶段的具体优化器、学习率、训练轮数等超参数；未指定帧窗口和评估视图；未指定存储测量格式。"
+    },
+    {
+      "claimId": "c7",
+      "reason": "semantic_unresolved",
+      "detail": "指标定义和测量协议为拟议选择，但未提供可执行的完整配置。质量指标缺少具体评估视图选择、图像分辨率、PSNR/SSIM计算实现细节；存储测量未明确参数编码格式、字节计数边界；训练开销测量未指定同步方法、计时区域精确边界、预热与重复的具体执行方式。"
+    },
+    {
+      "claimId": "c8",
+      "reason": "semantic_unresolved",
+      "detail": "分析未通过：效应定义未绑定到具体测量协议；不确定性模式未指定具体统计量；决策规则未绑定到具体阈值和存储基线。"
+    },
+    {
+      "claimId": "c9",
+      "reason": "semantic_unresolved",
+      "detail": "限制未通过：未明确列出所有混杂因素和失效条件；未说明实验无法建立的内容。"
+    }
+  ],
+  "acceptedClaims": [],
+  "rawFiles": [
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v18.json",
+      "sha256": "60cd33293fe9d653cf0a3ea6eec56a45cb7e1f8e949701b4025db24582f1596b"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v18.payload.json",
+      "sha256": "3ea2991db4bc36ebfb0455f830fabe572528bf8bba5e1e34959b992024d97336"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v18.calls.json",
+      "sha256": "947d3a8b740abd316a5083907ae31de71be5bf6ffc091f1e95e57d16b576bab2"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v18.result.json",
+      "sha256": "0c8f9bf38dd7f77c1dd3623cd8bc885d8684e09ce58b3222e800e15cf48ac3c2"
+    }
+  ],
+  "boundary": "One fixed development submission, no automatic retry. Representation normalization does not approve science or upgrade historical/independent results."
+}

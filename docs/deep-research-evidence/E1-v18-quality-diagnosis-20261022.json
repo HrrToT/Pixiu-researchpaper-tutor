@@ -1,0 +1,41 @@
+{
+  "date": "2026-10-22",
+  "sourceCommit": "17498220",
+  "sourceCase": "E1-v18",
+  "independentCredit": 0,
+  "accepted": 0,
+  "rejected": 9,
+  "actualRequests": {
+    "planningBytes": 23875,
+    "bodyBytes": 30745,
+    "configReviewBytes": 7847,
+    "scienceReviewBytes": 20831,
+    "physicalFingerprintsMatched": 4,
+    "originalMethodContextsRetained": 3
+  },
+  "actualDraftDefects": [
+    "c3 conditions leak internal evidence aliases E12/E16. c4/c5 assert that the paper supplies no exact iteration settings without establishing paper-wide absence; these are source-attributed absence clauses, not merely proposed choices.",
+    "c6 uses invalid zero-sized state shapes, omits a complete initial3DGS acquisition/state and omits required Gaussian/network states; acquisition prose still proposes pretrained or trained alternatives without a complete shared definition.",
+    "c7 contains narrative metrics but no complete typed measurement protocol; rendering/timing/storage formats and boundaries remain incomplete.",
+    "c5 declares a training baseline cap but describes the cap as Stage1NTC; initial3DGS and other fitting phases are not completely budgeted.",
+    "c3 asserts Frame0-to1 has emerging content while the private plan explicitly lists this as unresolved, although a training-view precheck is proposed."
+  ],
+  "reviewFindings": [
+    "No raw verdict in this single development case demands paper proof that authors used proposed hyperparameters; this is an observation, not a measured general improvement.",
+    "Hard-rejected c3/c4/c5/c6 are absent from both semantic request contexts. Actual config targetc7 only sees c2context; science targets c1/c2/c8/c9 only see c7context. Therefore neither call can assess the whole declared experiment.",
+    "c1 raw reason incorrectly says a testable hypothesis/analysis link/effect keys are absent; they are present in target executionSpec. This is a reviewer misreading, not grounds to approve remaining incomplete dependencies.",
+    "c2/c7/c8 contain genuine measurement/state gaps mixed with missing shared definitions; fail closed without claiming every raw reason is correct."
+  ],
+  "repairStatus": "skipped_budget",
+  "repairAdmission": {
+    "kind": "repairEvidenceBytes",
+    "limit": 24000,
+    "used": 25870
+  },
+  "next": [
+    "Use offline actual-input calibration to retain hard-rejected definitions as explicitly unverified context without allowing them as evidence or approval; preserve versions and old fingerprints.",
+    "Improve complete scientific state/acquisition, fit-phase budget and typed measurement generation; prevent unsupported absence and leaked internal references.",
+    "Fit repair evidence by bounded target/reference groups instead of refusing all25870bytes against24KB, while preserving each target own sources and whole-run budget."
+  ],
+  "boundary": "Manual diagnosis after exact4physical-request reconstructions. One case, no automatic retry. No historical result upgraded; original independent0/5 unchanged."
+}
