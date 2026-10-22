@@ -16,6 +16,9 @@ _REFERENCE3=re.compile(r'(?<![A-Za-z0-9_])(?P<prefix>(?:论文|原文|(?i:the pa
     r'(?P<marker>'+_REF_PART3+r'(?:\s*[,，、/]\s*'+_REF_PART3+r')*)(?![A-Za-z0-9_])')
 _ACTION_BEFORE3=re.compile(r'按\s*$')
 _ACTION_AFTER3=re.compile(r'\s*(?:执行|实施|进行|开展)')
+_ACTION_AFTER4=re.compile(r'\s*(?:执行|实施|进行|开展|初始化|优化|训练|更新|构建|恢复)')
+_PAREN_ACTION4=re.compile(r'[（(]\s*按\s*$')
+_PAREN_END4=re.compile(r'\s*[）)]')
 _AFTER3=re.compile(r'\s*(?:(?:仅|只|还|也)?(?:提供|明确)|'
     r'定义.{0,16}(?:操作|方法|步骤|机制)|为(?:论文|原文).{0,16}(?:操作|方法|步骤|机制)|用于(?:展示|说明|阐明))')
 _SINGLE_AFTER3=re.compile(r'\s*为(?=[^，,；;。\n]{0,60}(?:场景|数据集|帧.{0,8}窗口|来源|片段))')
@@ -32,15 +35,18 @@ def normalize(claim,aliases,quotes,*,version=1):
     Version2 additionally accepts slash-separated markers and explicit source
     attribution. Version3 handles already-owned explicit paper/range references
     and the hypothesis's human-readable statement; other config is untouched.
-    Ambiguous arithmetic stays unchanged. This grants no references.
+    Version4 also recognizes explicit initialization/training attributions and
+    parenthesized "(按E1-E3)" citations. Ambiguous arithmetic stays unchanged.
+    This grants no references.
     The caller saves the original response and this separate presentation audit.
     """
     before=deepcopy(claim);result=deepcopy(claim)
     own={alias for alias,full in aliases.items() if full in claim.get('evidenceRefs',[]) and alias in quotes}
     protected_symbols={alias for alias in own if any(re.search(r'(?<![A-Za-z0-9_])'+re.escape(alias)+r'(?![A-Za-z0-9_])',
         quotes[key]) for key in own)}
-    extended=type(version) is int and version in (2,3)
-    modern=type(version) is int and version==3
+    extended=type(version) is int and version in (2,3,4)
+    modern=type(version) is int and version in (3,4)
+    operational=type(version) is int and version==4
     removed=[]
     def text(value,path):
         protected=[(m.start(),m.end()) for m in _PROTECTED.finditer(value)]
@@ -95,7 +101,9 @@ def normalize(claim,aliases,quotes,*,version=1):
                     or _MATH_AFTER3.match(right)
                     or not (match['prefix'] or _BEFORE.search(left) or _AFTER.match(right) or _AFTER3.match(right)
                         or len(labels)==1 and _SINGLE_AFTER3.match(right)
-                        or _ACTION_BEFORE3.search(left) and _ACTION_AFTER3.match(right))):
+                        or _ACTION_BEFORE3.search(left) and (
+                            (_ACTION_AFTER4 if operational else _ACTION_AFTER3).match(right)
+                            or operational and _PAREN_ACTION4.search(left) and _PAREN_END4.match(right)))):
                 return match.group()
             replacement='所引原文' if re.search(r'[\u4e00-\u9fff]',match.group()+left[-12:]+right[:12]) else 'the cited passage'
             removed.append({'field':path,'marker':match.group(),'offset':match.start(),

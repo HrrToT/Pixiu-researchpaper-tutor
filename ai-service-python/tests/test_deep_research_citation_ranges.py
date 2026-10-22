@@ -85,7 +85,7 @@ def test_nested_conditions_and_only_hypothesis_statement_are_normalized_with_ful
     assert new['executionSpec']==c['executionSpec']
 
 
-@pytest.mark.parametrize('version',[None,True,False,0,'3',1,2,4])
+@pytest.mark.parametrize('version',[None,True,False,0,'3',1,2,5])
 def test_old_and_unknown_versions_do_not_receive_new_source_range_rules(version):
     c=claim('按论文E4-E6执行。');assert normalize(c,ALIASES,QUOTES,version=version)==(c,None)
 
