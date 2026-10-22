@@ -3339,6 +3339,74 @@
         "initialFocused": "96passed,1failed,6temp errors: missed parser version guard and sandbox temp root. Guard corrected; final focused103passed in4s. No scientific gates removed."
       },
       "boundary": "Only explicit already-owned operation citations change display, with originals audited. Uncited ranges/math/real symbols/config/evidence stay unchanged. Scientific content and independent acceptance are not inferred from tests."
+    },
+    "executionBlueprintCheckpoint": {
+      "sourceCommit": "2813e909",
+      "promptVersion": "dr-v2.20261022.232",
+      "fullOfflinePassed": 4111,
+      "files": 224,
+      "newTests": 44,
+      "focusedPassed": 148,
+      "seconds": 223.16,
+      "legacyFingerprints": 96,
+      "realCase": "E1-v25",
+      "status": "failed",
+      "errorCode": "invalid_experiment_planning_response",
+      "elapsedSeconds": 58,
+      "settledCalls": 9,
+      "settledTokens": 29663,
+      "finalReportGenerated": false,
+      "rawCompactBytes": 5403,
+      "originalCap": 4000,
+      "independentCredit": 0
+    },
+    "blueprintColumnsCheckpoint": {
+      "sourceCommit": "138f0f75",
+      "promptVersion": "dr-v2.20261022.233",
+      "fullOfflinePassed": 4128,
+      "files": 225,
+      "newTests": 17,
+      "focusedPassed": 144,
+      "seconds": 205.02,
+      "legacyFingerprints": 97,
+      "realCase": "E1-v26",
+      "status": "failed",
+      "errorCode": "invalid_experiment_planning_response",
+      "elapsedSeconds": 59,
+      "settledCalls": 8,
+      "settledTokens": 29407,
+      "finalReportGenerated": false,
+      "rawCompactBytes": 5036,
+      "originalCap": 4000,
+      "independentCredit": 0
+    },
+    "privateBlueprintTransportCheckpoint": {
+      "date": "2026-10-22",
+      "sourceCommit": "9587f6bb",
+      "promptVersion": "dr-v2.20261022.234",
+      "structuredOutputContractVersion": 10,
+      "fullOffline": {
+        "passed": 4133,
+        "files": 226,
+        "warnings": 1,
+        "seconds": 191.27,
+        "log": "tmp/pytest-dr234-complete-native.log",
+        "sha256": "ab87621fdbaae5565a410388790d6842fb0e55a0faec1d108c6d71383a3ccf5d"
+      },
+      "newTests": 5,
+      "newTestsAcrossTurn": 66,
+      "focusedPassed": 159,
+      "focusedOverlap": true,
+      "legacyScripts": 34,
+      "legacyPhysicalFingerprintsMatched": 98,
+      "privateSystemBytes": 844,
+      "existingFramingReservation": 1024,
+      "allNonPrivateMessagesExactlyVersion9": true,
+      "providerCalls": 0,
+      "productionWritesByTests": 0,
+      "independentCredit": 0,
+      "newPrivateTransportRealValidated": false,
+      "boundary": "Private planning uses its own concise-English schema policy. Public drafting/repair/review messages remain byte-identical to9; raw source data/quote permissions,cap and scientific checks unchanged. No new paid case after this fix."
     }
   },
   "stages": [
@@ -3801,29 +3869,29 @@
     "Full novice study workflow",
     "Independent Edge recovery"
   ],
-  "currentProviderConstraint": "All necessary bounded validations authorized. E1-v24 submitted once,13settled/71802tokens,0newunknowns. Selected totals712calls/3001576tokens,not global history,cost unknown. Preserve11oldpaused unknowns; no automatic retries.",
-  "currentDevelopmentMode": "Primary Codex only; Goal active; quota pause revoked. Source/runtime82bff64c/.231 with citation presentation4. Full4067offline tests and96legacy request fingerprints passed. Latest real content remains E1-v24/.230 inconclusive0/9; no added paid run.",
+  "currentProviderConstraint": "All necessary bounded validations authorized. This turn E1-v25/.232 and E1-v26/.233 submitted once each,17settled calls/59070tokens,0newunknowns. Selected cumulative729calls/3060646tokens,not global history,cost unknown. Preserve11oldpaused unknowns; no automatic retries. No new paid case after.234.",
+  "currentDevelopmentMode": "Primary Codex only; Goal active; quota pause revoked. Source/runtime9587f6bb/.234. Structured state/phase blueprint4 with lossless rows and private-only native transport10; all public node messages remain exact9. Offline4133passed,98historical request fingerprints. Real usable experiment content remains unproven.",
   "loadedRuntime": {
-    "commit": "82bff64c",
-    "promptVersion": "dr-v2.20261022.231",
+    "commit": "9587f6bb",
+    "promptVersion": "dr-v2.20261022.234",
     "javaCommit": "27ac4beb",
     "frontendValidationCommit": "123b0d29",
     "frontendValidationIsHistorical": true,
-    "callsAfterLatestCase": 5344,
+    "callsAfterLatestCase": 5391,
     "active": 0,
     "historicalPausedUnknown": 11,
-    "proof": "deep-research-evidence/runtime-load-dr231-operation-citations-20261022.json",
-    "postCasesProof": "deep-research-evidence/runtime-postcases-dr230-e1-v24-20261022.json",
-    "lastRealModelRunCommit": "57b6efcf",
-    "lastRealModelRunPromptVersion": "dr-v2.20261022.230",
-    "lastLoadValidationScope": "Idle restart,4source hashes,health,exact5344ledger/all prior payloads/4whole task snapshots; no new model run."
+    "proof": "deep-research-evidence/runtime-load-dr234-private-blueprint-20261022.json",
+    "postCasesProof": "deep-research-evidence/runtime-postcases-dr233-e1-v26-20261022.json",
+    "lastRealModelRunCommit": "138f0f75",
+    "lastRealModelRunPromptVersion": "dr-v2.20261022.233",
+    "lastLoadValidationScope": "Idle restart,7source hashes,health,5391ledger/all prior payloads/4whole task snapshots equal. No paid run for new private transport10."
   },
   "nextQualityWork": [
-    "Complete layered/network initialization, scene-coordinate consistency and per-phase budget/unit accounting; an opaque tensor is not a full model.",
-    "Distinguish proposed compatible settings from attributed facts; contradictory absence reasons grant no pass.",
-    "Keep source references in each claim actual evidenceRefs; do not generate prose ranges containing uncited sources. Presentation4 only normalizes already-owned citations.",
-    "Fit complete mandatory repair input within remaining ordinary tokens, without borrowing finalization reserve or raising total limits.",
-    "Obtain usable real development results before untouched independent replacements; preserve failed history and11unknowns."
+    "Real-validate the private-only schema/language policy once before any broad reruns; enforce exact E aliases,field types and original4KB rather than silently repairing them.",
+    "Generate a complete reference and all learned/shared/frozen module states and compatible interfaces; listed phase names and schema-valid arrays are not a full executable model.",
+    "Retain separate per-phase finite scopes/units/trainables and honest preparation/group accounting in final public Budget1 prose/config.",
+    "Calibrate scientific review of proposed settings vs source facts and avoid contradictory absence judgements; exact binding is not scientific truth.",
+    "After usable development content, validate comparison,follow-up,external paths and untouched independent replacements against full DR0-DR5; preserve failed history and11unknowns."
   ],
   "javaReaderRuntime": {
     "sourceCommit": "070ab1a",
@@ -4404,7 +4472,7 @@
     "independentCredit": 0,
     "proof": "deep-research-evidence/compact-experiment-envelope-regression-20261020.json"
   },
-  "currentCheckpoint": ".231/82bff64c:4067offline tests/223files/24new,103focused overlapping;32legacy scripts96physical fingerprints plus2archived generation requests. Owned operation attribution normalized in text/conditions with originals audited; uncited ranges still fail and all configs/citation permissions unchanged. Actual E1-v24 controlled replay repairs c6display only, c2stilluncited. Runtime healthy and5344ledger/alloldpayloads/4whole tasks preserved,0active/11oldunknowns. Latest real .230 case0/9 with initialization/budget and reviewer-validity defects; repair22251>16128not sent. DR0-DR5 incomplete,independent0/5,Goalactive,PRdraft.",
+  "currentCheckpoint": ".234/9587f6bb:4133offline tests/226files;66new across three source changes;34legacy scripts98physical fingerprints. Explicit state/phase decisions and lossless rows preserve source data and original4KB/32KB/whole-run budgets. Private plan system separated from public Chinese verdict policy;844bytes inside1024framing. Latest E1-v25/.232 failed58s9settled29663tokens, E1-v26/.233 failed59s8settled29407tokens, both invalid private planning/no body. v26root/rows correct, but bare3reference,wrong trainables type,5036>4000 and missingNTC states remain; no old result upgraded.5391ledger/0active/11oldunknowns/alloldpayloads/4tasks preserved. New.234not real-validated. DR0-DR5 incomplete,independent0/5,Goalactive,PRdraft.",
   "sharedModuleSourceCheckpoint": {
     "sourceCommit": "f8ae5177",
     "promptVersion": "dr-v2.20261020.199",

@@ -1,0 +1,67 @@
+{
+  "date": "2026-10-22",
+  "case": "E1-v26",
+  "sourceCommit": "138f0f75",
+  "status": "failed",
+  "errorCode": "invalid_experiment_planning_response",
+  "finalReportGenerated": false,
+  "rawCompactBytes": 5036,
+  "planCapBytes": 4000,
+  "sourceRefs": [
+    "E1",
+    "E2",
+    "3",
+    "E4",
+    "E5",
+    "E6",
+    "E7",
+    "E8",
+    "E9",
+    "E10",
+    "E11",
+    "E12",
+    "E13",
+    "E14",
+    "E15",
+    "E16",
+    "E17",
+    "E18",
+    "E19",
+    "E20"
+  ],
+  "unknownReference": "3",
+  "phaseTrainablesTypes": [
+    "list",
+    "list"
+  ],
+  "observedBlocks": [
+    "3D Gaussians (transformed by NTC)",
+    "Additional 3DGs (Stage 2)"
+  ],
+  "formatObservations": [
+    "Root nesting and state/phase rows conform to the new representation.",
+    "sourceRefs includes bare3, not supplied E alias; no automatic correction.",
+    "trainables is an array rather than required string.",
+    "Chinese narration exceeds4000bytes.",
+    "Shared NTC field-fitting phase is listed but its learned states are absent."
+  ],
+  "transportDiagnosis": {
+    "oldSystemContainsPublicChineseReasonsRule": true,
+    "privatePlannerRequestsConciseEnglish": true,
+    "newPrivateSystemBytes": 844,
+    "reservedFramingBytes": 1024,
+    "originalUserInputExactlyUnchanged": true,
+    "nonPrivateMessagesExactlyVersion9": true,
+    "scientificApproval": false,
+    "boundary": "Instruction inconsistency identified; not proven as the sole cause of output failure. New transport effect is not real-validated."
+  },
+  "settledModels": {
+    "deepseek-v4-flash": 6,
+    "deepseek-v4-pro": 2
+  },
+  "automaticRetry": false,
+  "providerCallsByDiagnosis": 0,
+  "productionWrites": 0,
+  "independentCredit": 0,
+  "boundary": "Failed private planning remains failed/unscored. No full experiment or independent scientific acceptance."
+}
