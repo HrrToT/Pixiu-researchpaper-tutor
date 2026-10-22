@@ -3125,6 +3125,54 @@
         "notGlobalHistory": true,
         "costUnknown": true
       }
+    },
+    "numericJsonAndReviewShapeCheckpoint": {
+      "sourceCommit": "09782ac7",
+      "promptVersion": "dr-v2.20261022.226",
+      "priorNumericCommit": "a7a9a52d",
+      "fullOfflinePassed": 3960,
+      "files": 218,
+      "seconds": 230.37,
+      "warnings": 1,
+      "newTestsAcrossBothChanges": 52,
+      "legacyFingerprints": 80,
+      "realCases": [
+        {
+          "case": "E1-v20",
+          "status": "failed",
+          "error": "invalid_verification_response",
+          "seconds": 104,
+          "calls": 10,
+          "tokens": 45933
+        },
+        {
+          "case": "E1-v21",
+          "status": "completed",
+          "outcome": "inconclusive",
+          "accepted": 0,
+          "total": 9,
+          "seconds": 143,
+          "calls": 14,
+          "tokens": 68538,
+          "reviewItemsResponses": 4,
+          "repairStatus": "skipped_budget",
+          "repairInputBytes": 19115,
+          "availableInputBytes": 17634
+        }
+      ],
+      "proofs": [
+        "numeric-json-policy-regression-20261022.json",
+        "review-response-shape-regression-20261022.json",
+        "E1-v21-quality-diagnosis-20261022.json",
+        "runtime-postcases-dr226-e1-v21-20261022.json"
+      ],
+      "selectedDiagnosticTotal": {
+        "settledModelCalls": 673,
+        "measuredTokens": 2792960,
+        "globalHistory": false,
+        "cost": null
+      },
+      "independentCredit": 0
     }
   },
   "stages": [
@@ -3587,26 +3635,26 @@
     "Full novice study workflow",
     "Independent Edge recovery"
   ],
-  "currentProviderConstraint": "All further necessary bounded validations uniformly authorized. Selected diagnostic sequence:507settled model calls/2078416measured tokens, not global history; costs unknown. Preserve11old paused unknowns; reservations are not measured usage. Latest E1-v6 fully settled/inconclusive,0/9accepted; no automatic retry.",
+  "currentProviderConstraint": "All further necessary bounded validations uniformly authorized. Selected diagnostic total673settled model calls/2792960measured tokens, not global history; costs unknown. Latest E1-v21 fully settled/inconclusive0/9; preserve11oldpaused unknowns, no automatic retries.",
   "currentDevelopmentMode": "Primary Codex only; Goal active; quota pause revoked. Source/runtimebc4d3732/.198. New experiment draft4 uses direct6144-token compact planning with a2500-byte private plan, lossless goal/source references and existing question-driven evidence ordering. Offline3194passes/23old request fingerprints; E1 controlled rows2to7, but shared-method definition and dataset-member source coverage remain incomplete. No new real model call; original E1 failure and11unknowns preserved.",
   "loadedRuntime": {
-    "commit": "bc4d3732",
-    "promptVersion": "dr-v2.20261020.198",
+    "commit": "09782ac7",
+    "promptVersion": "dr-v2.20261022.226",
     "javaCommit": "27ac4beb",
-    "frontendCommit": "123b0d29",
-    "callsAfterLatestCase": 4754,
+    "frontendValidationCommit": "123b0d29",
+    "frontendValidationIsHistorical": true,
+    "callsAfterLatestCase": 5260,
     "active": 0,
     "historicalPausedUnknown": 11,
-    "tasks": 93,
-    "proof": "deep-research-evidence/runtime-load-dr198-compact-experiment-envelope-20261020.json",
-    "postCasesProof": "deep-research-evidence/runtime-postcases-dr197-e1-v1-20261020.json"
+    "proof": "deep-research-evidence/runtime-load-dr226-review-shape-20261022.json",
+    "postCasesProof": "deep-research-evidence/runtime-postcases-dr226-e1-v21-20261022.json"
   },
   "nextQualityWork": [
-    "Fix objective-conditioned review wording: whole-stage/resource tradeoffs may use explicit unmatched budgets; oriented differences are not directional hypotheses. Require actual linked-field evidence before claiming missing effect keys. Do not auto-pass genuine scientific defects.",
-    "Separate quoted membership/native author settings from proposed nonempty ordinal splits and chosen render resolution; remove conflicting instructions, not source checks.",
-    "Generate/repair valid typed operations and complete common3DGS+NTC initialization from actual training inputs. Align every common preparation and per-group fitting phase with finite budgets; no opaque matrices, zero/COLMAP contradiction or undeclared copy rule.",
-    "Keep every required role and original scope; fix invalid parameter dictionaries/extra split fields through precise generation contracts or strictly versioned unambiguous representation, never drop requested choices.",
-    "Complete quality/storage/training-time measurement and verify usable real content before new independent replacements. Original0/5, failed/partial histories and11unknowns remain unchanged; DR0-DR5 is still incomplete."
+    "Generate complete actual Gaussian/network states and explicit acquisition/initialization inputs; avoid opaque aggregate arrays and internally contradictory initialization.",
+    "Define first-frame and per-frame fitting phases with separate finite budgets and complete typed quality/storage/training-time protocols.",
+    "Compare exact existing fields/values before declaring absence: E1-v21 c4 seeds[0] was supplied; preserve independent source and compatibility checks, no automatic approval.",
+    "Plan full review and grouped repair against actual remaining total budget. Preserve mandatory quotations and all required configurations; do not expand budgets or drop scope.",
+    "After real development content quality passes, run fresh independent replacements. Original0/5 and historical failures/unknowns remain unchanged."
   ],
   "javaReaderRuntime": {
     "sourceCommit": "070ab1a",
@@ -4187,7 +4235,7 @@
     "independentCredit": 0,
     "proof": "deep-research-evidence/compact-experiment-envelope-regression-20261020.json"
   },
-  "currentCheckpoint": ".224 /d299a05d: immutable experimentRepairInput1 under native8 shares only existing same-source/hash/chunk containment contexts, no joining. Concise user envelope relies on frozen system rules. Required quotes/windows/metadata and full originals/conditions/checks/permissions preserved; same parsers/24KB/4096output/runbudgets.3908tests/216files,33new;106focused overlap;77legacy physical fingerprints. Archived E1-v18 three groups23804/23948/23932fit and reach offlinecallback, no scientificjudgement. Real E1-v19 once91s failed invalid_synthesis_response before semantic/repair:9settledcalls38761tokens,no newunknown; raw completedJSON has unquoted2^19 at numericvalue/shape. Strict parser retained raw and rejected, no eval/salvage.2actual planner/body fingerprints23758/30162 reconstructed.5207ledger/11oldpaused/oldpayloads/4taskprefixes preserved. Next constrain producer numeric literals, then fresh content test; live repair/content acceptance unproven. DR0-DR5 incomplete;original independent0/5;Goalactive;PRdraft.",
+  "currentCheckpoint": ".226/09782ac7: native numeric9 plus review envelope3 align items output/skeleton and preserve rejected context.3960 tests/218 files,80 historical physical request identities. E1-v20 valid draft JSON but invalid single review object; E1-v21 completed inconclusive0/9,4correct items reviews,14settledcalls68538tokens,143s. Repair not sent: required19115>remaining17634 bytes. Actual c4 seeds[0] contradicted missing-seed review; genuine opaque states, incomplete per-phase budgets and typed measurement remain.5260ledger,0active,11oldunknowns,oldpayloads/4taskprefixes preserved. DR0-DR5 incomplete,original independent0/5,Goalactive,PRdraft.",
   "sharedModuleSourceCheckpoint": {
     "sourceCommit": "f8ae5177",
     "promptVersion": "dr-v2.20261020.199",
