@@ -26,7 +26,7 @@ def pair():
     return bad,good
 
 
-@pytest.mark.parametrize('version',[None,True,False,0,1,8,'2'])
+@pytest.mark.parametrize('version',[None,True,False,0,1,9,'2'])
 def test_legacy_versions_keep_exact_two_argument_callback_and_no_rejected_context(version):
     bad,good=pair();seen=[]
     def check(rows,evidence):seen.append(deepcopy(rows));return []

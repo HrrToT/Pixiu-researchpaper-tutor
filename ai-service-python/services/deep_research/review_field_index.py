@@ -44,3 +44,19 @@ before claiming a phase absent. Exact keys do not prove coverage or compatibilit
 state/inputs, method, data, measurement, pairing and inference; no automatic passes or dependence
 on a rejected sibling. Each rejection names its actual conflicting value and applicable rule,
 not a hypothetical extra key, a duplicate definition or a future result.'''
+
+
+PROSPECTIVE_POLICY = '''Classify the exact clause BEFORE judging support:
+1. Paper facts, method operations, dataset membership, original values and released assets
+need OWN source evidence. A proposal label never licenses inventing or replacing these facts.
+2. A hypothesis predicts an UNOBSERVED contrast. Judge falsifiability, relevant source-based
+motivation, pairing, measurement and inference; do NOT require papers to have already observed
+the predicted PSNR/SSIM gain. Directional predictions are allowed; fabricated observations,
+guaranteed gains and unsupported factual premises are not. Read kind, role AND conditions.
+3. Explicit proposed seeds/rates/thresholds/budgets need concrete compatible choices, not proof
+authors used those numbers. Reject a real incompatibility or disguised original-value claim;
+"not reported in E" alone does not reject a proposed setting.
+Review the supplied objective, not a stronger task. Before any missing/incomplete finding,
+read linked text/conditions/config; name what remains absent or invalid despite those values.
+Never report warmup/repeats/units missing when supplied. Do not demand duplicate definitions.
+''' + POLICY[POLICY.index('The field index is structural only.'):]

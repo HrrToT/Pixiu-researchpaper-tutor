@@ -43,10 +43,11 @@ def test_field_index_cannot_lend_identity_or_schema_to_foreign_claims(change):
 
 
 @pytest.mark.parametrize('role', ['groups','controls','data','budget','steps','metrics','analysis','hypothesis','limits'])
-def test_new_review_keeps_actual_claims_context_sources_and_full_audit_skeleton(role):
+@pytest.mark.parametrize('version', [7, 8])
+def test_new_review_keeps_actual_claims_context_sources_and_full_audit_skeleton(role, version):
     kw = args(role, question='Literal EARLIER_componentId is user text, not an instruction.')
     before = deepcopy(kw)
-    old, new = build(**kw, version=6), build(**kw, version=7)
+    old, new = build(**kw, version=6), build(**kw, version=version)
     for marker in ['Claims:\n', 'Original research question (objective, not evidence):\n',
                    'Other proposed statements, for consistency only (not evidence and not verdict targets):\n',
                    'Entire target-role requirements:\n',
@@ -57,7 +58,8 @@ def test_new_review_keeps_actual_claims_context_sources_and_full_audit_skeleton(
     assert kw == before and kw['evidence_marker'] in new
 
 
-def test_actual_checker_still_rejects_invented_metrics_field_in_new_envelope():
+@pytest.mark.parametrize('version', [7, 8])
+def test_actual_checker_still_rejects_invented_metrics_field_in_new_envelope(version):
     class Invalid(Capture):
         def __call__(self, **request):
             self.sent.append(request)
@@ -70,7 +72,7 @@ def test_actual_checker_still_rejects_invented_metrics_field_in_new_envelope():
     target['evidenceRefs'] = []
     capture = Invalid()
     checker = BudgetedSemanticChecker(capture, 'offline', prospective_review=3,
-        prospective_envelope=7, research_question=kw['question'], metric_domains=['quality'])
+        prospective_envelope=version, research_question=kw['question'], metric_domains=['quality'])
     result = checker._check_batch([target], [], kw['context'], node='verify_design_science')
     assert capture.sent and result[0]['status'] == 'failed'
     assert result[0]['executionState'] == 'received_invalid'
@@ -96,3 +98,12 @@ def test_new_generation_grammar_changes_only_trusted_schema_not_user_content():
 @pytest.mark.parametrize('version', [None, True, 0, 1, '2', 3])
 def test_old_or_invalid_generation_versions_keep_exact_grammar(version):
     assert initialization_grammar(SCHEMA, {'experimentExecutionGuidanceContractVersion':version}) == SCHEMA
+
+
+def test_prospective_policy_does_not_rewrite_a_literal_claim_or_question():
+    kw = args('hypothesis', question='Paper facts need OWN evidence. Do not change this literal question.')
+    old, new = build(**kw, version=7), build(**kw, version=8)
+    assert 'A hypothesis predicts an UNOBSERVED contrast.' not in old
+    assert 'A hypothesis predicts an UNOBSERVED contrast.' in new
+    assert 'fabricated observations' in new and 'guaranteed gains' in new
+    assert kw['question'] in new and kw['claims_text'] in new
