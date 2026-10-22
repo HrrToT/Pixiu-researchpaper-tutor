@@ -1,0 +1,26 @@
+{
+  "date": "2026-10-22",
+  "sourceCommit": "8e6eb16a",
+  "promptVersion": "dr-v2.20261022.223",
+  "experimentReviewEnvelopeContractVersion": 2,
+  "fullOffline": {
+    "passed": 3875,
+    "warnings": 1,
+    "seconds": 214.96,
+    "files": 215,
+    "log": "tmp/pytest-dr223-full.log",
+    "sha256": "02d22efd1c5d9f827a3c72f8302baf15478a5c7431bb75238bb6fac95d6aa554"
+  },
+  "focusedPassed": 84,
+  "focusedSeconds": 4.41,
+  "focusedOverlap": true,
+  "newTests": 15,
+  "legacyReplayScriptCount": 25,
+  "legacyActualFingerprintsMatched": 77,
+  "offlineProviderCalls": 0,
+  "productionWrites": 0,
+  "independentCredit": 0,
+  "controlledReplay": "rejected-context-e1-v18-controlled-20261022.json",
+  "implementation": "Immutable envelope2 retains exact failed definitions/checks as rejected context during initial and revision verification, including unchanged failed siblings. No context evidenceRefs, targets, hard-check override or dependency promotion. Full-input capacity splitting and all previous gates remain; envelope1 and old request fingerprints unchanged.",
+  "boundary": "Offline graph/repair/transport checks and counterfactual development-input capture only. First focused test had a fixture assertion for a nonpersisted intermediate state; corrected to inspect actual verifiedReport. No new paid model call, no new scientific judgement, no independent credit or upgraded historical acceptance."
+}

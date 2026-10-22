@@ -3050,6 +3050,35 @@
         "notGlobalHistory": true,
         "costUnknown": true
       }
+    },
+    "rejectedDesignContextCheckpoint": {
+      "date": "2026-10-22",
+      "sourceCommit": "8e6eb16a",
+      "promptVersion": "dr-v2.20261022.223",
+      "experimentReviewEnvelopeContractVersion": 2,
+      "fullOffline": {
+        "passed": 3875,
+        "warnings": 1,
+        "seconds": 214.96,
+        "files": 215,
+        "log": "tmp/pytest-dr223-full.log",
+        "sha256": "02d22efd1c5d9f827a3c72f8302baf15478a5c7431bb75238bb6fac95d6aa554"
+      },
+      "focusedPassed": 84,
+      "focusedSeconds": 4.41,
+      "focusedOverlap": true,
+      "newTests": 15,
+      "legacyReplayScriptCount": 25,
+      "legacyActualFingerprintsMatched": 77,
+      "offlineProviderCalls": 0,
+      "productionWrites": 0,
+      "independentCredit": 0,
+      "controlledReplay": "rejected-context-e1-v18-controlled-20261022.json",
+      "implementation": "Immutable envelope2 retains exact failed definitions/checks as rejected context during initial and revision verification, including unchanged failed siblings. No context evidenceRefs, targets, hard-check override or dependency promotion. Full-input capacity splitting and all previous gates remain; envelope1 and old request fingerprints unchanged.",
+      "boundary": "Offline graph/repair/transport checks and counterfactual development-input capture only. First focused test had a fixture assertion for a nonpersisted intermediate state; corrected to inspect actual verifiedReport. No new paid model call, no new scientific judgement, no independent credit or upgraded historical acceptance.",
+      "repairCapacityDiagnosis": "rejected-context-e1-v18-repair-capacity-20261022.json",
+      "runtimeLoadProof": "runtime-load-dr223-rejected-context-20261022.json",
+      "postLoadProof": "runtime-postload-dr223-rejected-context-20261022.json"
     }
   },
   "stages": [
@@ -4112,7 +4141,7 @@
     "independentCredit": 0,
     "proof": "deep-research-evidence/compact-experiment-envelope-regression-20261020.json"
   },
-  "currentCheckpoint": ".222 /17498220: native transport8 freezes prospective experiment rules in reservation/planner/actual HTTP; v1-v7 and nonexperiment inputs unchanged.3860tests/214files,38new,143focused overlapping,73legacy physical fingerprints. Real E1-v18 once100s completed/inconclusive0/9:11settled calls46211tokens,no newunknown.4actual fingerprints reconstructed; planner23875/body30745 retain3methodcontexts; review7847/20831 retains available sources but hard-rejected c3/c4/c5/c6 absent as shared context. Genuine unsupported absence/internal aliases/invalid states/incomplete measurement remain; c1 reviewer also falsely calls present statement/link absent. Repair skipped25870>24000evidencebytes.5184ledger/11oldpaused/oldpayloads/4taskprefixes preserved. UI navigation icon94b14c80 verified2layouttests/typecheck and live screenshot. DR0-DR5 incomplete;original independent0/5;Goalactive;PRdraft.",
+  "currentCheckpoint": ".223 /8e6eb16a: immutable experimentReviewEnvelope2 retains rejected original definitions/config/checks as unverified context in initial and revision review; unchanged failed siblings stay visible, revised IDs replace originals. Hard rejection, own-source permissions and dependency/publication gates unchanged.3875tests/215files,15new;84focused overlap;25legacy replay scripts77physical fingerprints. Counterfactual archived E1-v18 capture sendsall4hardrejected definitions to config/science18789/31773bytes; original target quotes/bounded contexts retained, no provider/scientific judgement. Original E1-v18 inconclusive0/9 unchanged, latest paid case; no added diagnosticcalls. DR0-DR5 incomplete;original independent0/5;Goalactive;PRdraft. Pythonloaded;6sourcefiles/212oldpayloads/5184ledger/11paused/4taskgroups preserved;frontend200.",
   "sharedModuleSourceCheckpoint": {
     "sourceCommit": "f8ae5177",
     "promptVersion": "dr-v2.20261020.199",
