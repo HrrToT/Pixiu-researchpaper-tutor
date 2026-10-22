@@ -4,7 +4,7 @@ from copy import deepcopy
 
 
 def enabled(version):
-    return type(version) is int and version == 2
+    return type(version) is int and version in (2,3)
 
 
 def rejected_context(claims, rejections, *, exclude=(), phase='precheck'):

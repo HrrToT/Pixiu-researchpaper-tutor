@@ -19,7 +19,7 @@ def args(role='steps',question='Compare two groups with and without one stage.')
         question=question,evidence_marker='EXACT_EVIDENCE_SLOT',metric_domains=['quality','storage'],config_mode=False)
 
 
-@pytest.mark.parametrize('version',[None,True,False,0,3,'1'])
+@pytest.mark.parametrize('version',[None,True,False,0,4,'1'])
 def test_exact_server_version_only(version):
     assert not enabled(version,3,inputs()[0]['claims'])
 
@@ -173,10 +173,10 @@ def test_wrong_typed_envelope_versions_leave_the_exact_legacy_request_unchanged(
         BudgetedSemanticChecker(invoke,'offline',prospective_review=3,prospective_envelope=version)([claim],inputs()[2])
         return sent
     baseline=run(0)
-    for version in (None,True,False,3,'1'):assert run(version)==baseline
+    for version in (None,True,False,4,'1'):assert run(version)==baseline
 
 
-@pytest.mark.parametrize('replacement',[None,True,0,1,'2'])
+@pytest.mark.parametrize('replacement',[None,True,0,1,2,'3'])
 def test_new_prompt_contract_is_server_owned_immutable(tmp_path,replacement):
     from services.deep_research.facade import ResearchFacade
     from services.deep_research.repository import DeepResearchRepository
@@ -185,7 +185,7 @@ def test_new_prompt_contract_is_server_owned_immutable(tmp_path,replacement):
     try:
         record,_=facade.create({'workspaceTaskId':'t','operationKey':'k','question':'Propose an experiment',
             'experimentReviewEnvelopeContractVersion':replacement,'deferStart':True},start_async=False)
-        assert record['experimentReviewEnvelopeContractVersion']==2
+        assert record['experimentReviewEnvelopeContractVersion']==3
         with pytest.raises(ValueError,match='Immutable'):
             repo.update_run(record['runId'],lambda r:{**r,'experimentReviewEnvelopeContractVersion':replacement})
     finally:facade.shutdown()

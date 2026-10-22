@@ -7,7 +7,7 @@ import json
 
 
 def enabled(version, review_version, claims):
-    return (type(version) is int and version in (1,2)
+    return (type(version) is int and version in (1,2,3)
             and type(review_version) is int and review_version == 3
             and bool(claims) and all(c.get('kind') in {'proposal','suggestion','hypothesis'}
                 and type(c.get('designContractVersion')) is int and c['designContractVersion'] == 2
@@ -162,8 +162,14 @@ def build(*,claims_text,context,question,evidence_marker,metric_domains,config_m
     if slots:
         roots=audit_field_roots(dict.fromkeys(s for row in slots.values() for s in row),
             workflow_v4=any(c.get('workflowContractVersion')==4 for c in all_claims))
-        parts += [AUDIT,'Allowed slot roots (under executionSpec, source role required):\n'+packed(roots)]
-    else:parts.append('Return ONLY a JSON array, one {claimId,status:passed|failed,reason,designAudit:{}} per target.')
+        audit=AUDIT
+        if version==3:
+            audit=audit.replace('Return ONLY a JSON array: one',
+                'Return ONLY {"items":[...]}: exactly one')
+        parts += [audit,'Allowed slot roots (under executionSpec, source role required):\n'+packed(roots)]
+    else:
+        parts.append('Return ONLY {"items":[...]}: exactly one {claimId,status:passed|failed,reason,designAudit:{}} per target.'
+            if version==3 else 'Return ONLY a JSON array, one {claimId,status:passed|failed,reason,designAudit:{}} per target.')
     data=any(c.get('designRole')=='data' for c in claims)
     asset=any(requires_existing_asset(c) for c in claims)
     if data:parts.append(DATA)
@@ -172,12 +178,15 @@ def build(*,claims_text,context,question,evidence_marker,metric_domains,config_m
         'designAudit':{slot:None for slot in slots.get(c.get('designRole'),())},
         **({'dataAvailability':None} if c.get('designRole')=='data' else {}),
         **({'assetAvailability':None} if requires_existing_asset(c) else {})} for c in claims]
-    parts.append('Exact per-target response skeleton:\n'+packed(skeleton))
+    if version==3:
+        parts.append('Exact response skeleton (fill EVERY target, including failures; even one target stays inside items):\n'
+            +packed({'items':skeleton}))
+    else:parts.append('Exact per-target response skeleton:\n'+packed(skeleton))
     derived=facts(all_claims)
     if derived:parts += [DERIVED,'Derived configuration meanings (not evidence):\n'+packed(derived)]
     links=declaration_links(all_claims)
     if links:parts.append('Declared key presence (not scientific approval):\n'+packed(links))
-    if type(version) is int and version==2:
+    if type(version) is int and version in (2,3):
         parts.append('Rejected context policy: reviewContextState is a server rejection record, NOT approval. '
             'Read the exact supplied text/configuration and checks to distinguish an absent field from an '
             'invalid or rejected definition. Context is never a verdict target or factual evidence. '

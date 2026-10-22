@@ -26,7 +26,7 @@ def pair():
     return bad,good
 
 
-@pytest.mark.parametrize('version',[None,True,False,0,1,3,'2'])
+@pytest.mark.parametrize('version',[None,True,False,0,1,4,'2'])
 def test_legacy_versions_keep_exact_two_argument_callback_and_no_rejected_context(version):
     bad,good=pair();seen=[]
     def check(rows,evidence):seen.append(deepcopy(rows));return []
@@ -35,12 +35,13 @@ def test_legacy_versions_keep_exact_two_argument_callback_and_no_rejected_contex
     assert not enabled(version)
 
 
-def test_original_failed_definition_checks_and_status_survive_without_promotion():
+@pytest.mark.parametrize('version',[2,3])
+def test_original_failed_definition_checks_and_status_survive_without_promotion(version):
     bad,good=pair();before=deepcopy([bad,good]);seen=[]
     def check(rows,evidence,*,proposal_context):
         seen.extend(deepcopy(proposal_context))
         return [{'claimId':c['claimId'],'status':'passed'} for c in [*rows,*proposal_context]]
-    result=verify_claims([bad,good],[],check,review_context_version=2)
+    result=verify_claims([bad,good],[],check,review_context_version=version)
     assert [c['claimId'] for c in result['accepted']]==['limits']
     assert result['rejected'][0]['claimId']==bad['claimId']
     assert len(seen)==1 and seen[0]['executionSpec']==bad['executionSpec']
@@ -75,13 +76,14 @@ def test_rejected_dependency_cannot_survive_as_an_approved_workflow():
     assert not any(c['designRole'] in {'steps','controls'} for c in result['accepted'])
 
 
-def test_rejected_context_cannot_donate_factual_evidence_or_a_verdict_target():
+@pytest.mark.parametrize('version',[2,3])
+def test_rejected_context_cannot_donate_factual_evidence_or_a_verdict_target(version):
     claim,own=target_with_source('target','own',30)
     bad,other=target_with_source('rejected','other',30)
     bad['designRole']='data'
     bad['reviewContextState']={'status':'rejected','phase':'precheck','checks':[{'reason':'invalid_split'}]}
     capture=Capture()
-    checker=BudgetedSemanticChecker(capture,'offline',prospective_review=3,prospective_envelope=2)
+    checker=BudgetedSemanticChecker(capture,'offline',prospective_review=3,prospective_envelope=version)
     checker([claim],[own,other],proposal_context=[bad])
     assert len(capture.sent)==1
     prompt=capture.sent[0]['prompt']
@@ -94,10 +96,11 @@ def test_rejected_context_cannot_donate_factual_evidence_or_a_verdict_target():
     assert other['quote'] not in prompt and 'Rejected context policy:' in prompt
 
 
-def test_capacity_splits_preserve_rejected_state_and_full_original_definitions():
+@pytest.mark.parametrize('version',[2,3])
+def test_capacity_splits_preserve_rejected_state_and_full_original_definitions(version):
     a,ea=target_with_source('a','one',2000);b,eb=target_with_source('b','two',2000)
     failed=pair()[0];failed['reviewContextState']={'status':'rejected','phase':'precheck','checks':[{'reason':'missing_state'}]}
-    def checker(capture):return BudgetedSemanticChecker(capture,'offline',prospective_review=3,prospective_envelope=2)
+    def checker(capture):return BudgetedSemanticChecker(capture,'offline',prospective_review=3,prospective_envelope=version)
     full=Capture();checker(full)._check_batch([a,b],[ea,eb],[failed],node='verify_design_science')
     capture=Capture(len(full.sent[0]['prompt'].encode())-1000)
     checker(capture)._check_batch([a,b],[ea,eb],[failed],node='verify_design_science')
