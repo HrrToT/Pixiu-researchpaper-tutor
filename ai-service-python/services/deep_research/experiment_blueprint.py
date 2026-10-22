@@ -5,7 +5,7 @@ from copy import deepcopy
 
 def enabled(record):
     return (type(record.get('experimentPlanEncodingContractVersion')) is int
-        and record['experimentPlanEncodingContractVersion'] in (3,4)
+        and record['experimentPlanEncodingContractVersion'] in (3,4,5)
         and type(record.get('experimentDraftContractVersion')) is int
         and record['experimentDraftContractVersion']==6)
 
@@ -39,7 +39,7 @@ def valid_state(value):
     return _unique(value['blocks'],'name')
 
 
-def valid_budget(value):
+def valid_budget(value,*,state_lists=False):
     if (not isinstance(value,dict) or set(value)!={'phases','accounting'}
             or not _text(value['accounting']) or not isinstance(value['phases'],list)
             or not 1<=len(value['phases'])<=16):
@@ -47,8 +47,9 @@ def valid_budget(value):
     for phase in value['phases']:
         if (not isinstance(phase,dict)
                 or set(phase)!={'name','appliesTo','scope','unit','cap','trainables','stop'}
-                or any(not _text(phase[k]) for k in ('name','scope','trainables','stop'))
-                or phase['unit'] not in ('optimizer_steps','epochs','wall_seconds')
+                or any(not _text(phase[k]) for k in ('name','scope','stop'))
+                or phase['unit'] not in (('optimizer_steps','steps','epochs','wall_seconds')
+                    if state_lists else ('optimizer_steps','epochs','wall_seconds'))
                 or type(phase['cap']) not in (int,float) or phase['cap']<0):
             return False
         try:
@@ -56,6 +57,13 @@ def valid_budget(value):
         except OverflowError:
             return False
         if phase['unit']!='wall_seconds' and type(phase['cap']) is not int:
+            return False
+        states=phase['trainables']
+        if state_lists:
+            if (not isinstance(states,list) or len(states)>128 or any(not _text(x) for x in states)
+                    or len(set(states))!=len(states) or phase['cap']>0 and not states):
+                return False
+        elif not _text(states):
             return False
         groups=phase['appliesTo']
         if (not isinstance(groups,list) or not groups or any(not _text(g) for g in groups)
@@ -169,3 +177,18 @@ LEGEND_ROWS=('Unverified tuple4=[sourceRefs,[intervention,data,state,poseError,m
     'state.blocks[].states columns=[name,dtype,shape,initializer]; '
     'pairingBudget.phases columns=[name,appliesTo,scope,unit,cap,trainables,stop]. '
     'Expand exact rows, no inferred values. NOT evidence or approval:')
+
+PLANNING_STATE_LISTS=PLANNING_ROWS.replace('0,"actual fitted states","concrete stopping rule"',
+    '0,["actual fitted state names"],"concrete stopping rule"',1).replace(
+    'measurement is ONE concise string, not a metric object.',
+    'measurement is ONE concise string; trainables is a unique list of state names. '
+    'Positive fitting caps need nonempty trainables; a skipped phase may use [].',1)+'''
+Phase unit steps is an exact private alias of optimizer_steps (optimizer updates),
+NEVER video frames; frames/repetitions belong in scope. The public Budget1 schema
+still uses optimizer_steps, epochs or wall_seconds only. Keep all raw choices;
+state-name lists are declarations, not proof that the states exist or are supported.
+'''
+
+LEGEND_STATE_LISTS=LEGEND_ROWS.replace('tuple4=','tuple5=',1)+(
+    ' trainables is a state-name list; private steps=optimizer_steps, never video frames. '
+    'Public Budget1 still requires canonical units; no chosen cap or state is approved.')

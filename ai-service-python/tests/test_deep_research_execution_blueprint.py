@@ -183,7 +183,7 @@ def test_real_graph_preserves_original_evidence_and_full_unverified_blueprint_ac
     assert not any(c.get('verification') for c in s.value['state']['reportBody']['claims'])
 
 
-@pytest.mark.parametrize('version',[None,True,'3',0,1,2,5])
+@pytest.mark.parametrize('version',[None,True,'3',0,1,2,6])
 def test_blueprint_profile_is_exactly_versioned_and_cannot_be_selected_by_other_flags(version):
     r=record();r['experimentPlanEncodingContractVersion']=version
     assert not enabled(r)

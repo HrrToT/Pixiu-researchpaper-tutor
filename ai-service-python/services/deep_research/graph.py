@@ -1445,8 +1445,9 @@ space with unsupported global absence or incidental iteration/performance values
                 **({'compact':True} if record['experimentDraftContractVersion'] in (4,5,6) else {}),
                 **({'lean':True} if record['experimentDraftContractVersion'] in (5,6) else {}),
                 **({'positional':True} if plan_encoding(record) else {}),
-                **({'blueprint':True} if plan_encoding(record) and record['experimentPlanEncodingContractVersion'] in (3,4) else {}),
-                **({'blueprint_rows':True} if plan_encoding(record) and record['experimentPlanEncodingContractVersion']==4 else {}),
+                **({'blueprint':True} if plan_encoding(record) and record['experimentPlanEncodingContractVersion'] in (3,4,5) else {}),
+                **({'blueprint_rows':True} if plan_encoding(record) and record['experimentPlanEncodingContractVersion'] in (4,5) else {}),
+                **({'state_lists':True} if plan_encoding(record) and record['experimentPlanEncodingContractVersion']==5 else {}),
                 configuration_consistency_version=record.get('configurationConsistencyContractVersion',0),
                 execution_guidance_version=record.get('experimentExecutionGuidanceContractVersion',0),
                 **({'input_contract_version':1} if experiment_capacity_enabled(record) else {})),aliases=evidence_aliases,
@@ -1768,7 +1769,7 @@ def make_verify_node(
                            and type(record.get('experimentRepairInputContractVersion')) is int
                            and record['experimentRepairInputContractVersion'] in (1,2)
                            and type(record.get('structuredOutputContractVersion')) is int
-                           and record['structuredOutputContractVersion'] in (8,9,10) else {}),
+                           and record['structuredOutputContractVersion'] in (8,9,10,11) else {}),
                         **({'configuration_consistency_version':2} if type(record.get('configurationConsistencyContractVersion')) is int
                            and record['configurationConsistencyContractVersion']==2 else {}),
                         **({'citation_presentation_version':record['citationPresentationContractVersion']} if type(record.get('citationPresentationContractVersion')) is int
