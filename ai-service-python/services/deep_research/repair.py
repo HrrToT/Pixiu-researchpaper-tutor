@@ -592,11 +592,12 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
     from services.deep_research.contracts import digest, DeepResearchError
     from services.deep_research.repair_batches import split_repair_targets
 
-    if (type(scheduling_version) is not int or scheduling_version not in (0,1)
-            or scheduling_version==1 and not (shared_experiment_schema and experimental_edits)):
+    if (type(scheduling_version) is not int or scheduling_version not in (0,1,2)
+            or scheduling_version in (1,2) and not (shared_experiment_schema and experimental_edits)):
         raise ValueError('Unsupported experimental repair priority contract')
-    deferred={row['claimId'] for row in verification.get('rejected',[]) if scheduling_version==1
-        and isinstance(row.get('rejectionAudit'),dict) and row['rejectionAudit'].get('bindingState')=='invalid'}
+    deferred={row['claimId'] for row in verification.get('rejected',[]) if scheduling_version in (1,2)
+        and (isinstance(row.get('rejectionAudit'),dict) and row['rejectionAudit'].get('bindingState')=='invalid'
+             or scheduling_version==2 and row.get('executionState') in ('not_started','received_invalid'))}
     targets = {row['claimId'] for row in verification.get('rejected', [])}-deferred
     originals = [c for c in report.get('claims', []) if c.get('claimId') in targets]
     if not originals:
@@ -616,7 +617,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
     if type(citation_presentation_version) is not int or citation_presentation_version not in (0,2,3):
         raise ValueError('Unsupported citation presentation contract')
     identity = digest({'report': report, 'verification': verification,
-                       **({'experimentRepairPriorityContractVersion':1} if scheduling_version==1 else {}),
+                       **({'experimentRepairPriorityContractVersion':scheduling_version} if scheduling_version in (1,2) else {}),
                        **({'experimentRepairInputContractVersion':1} if repair_evidence_packet_version==1 else {}),
                        'evidence': evidence, 'question': question, 'metricDomains': metric_domains,
                        **({'citationPresentationContractVersion':citation_presentation_version} if citation_presentation_version in (2,3) else {}),
@@ -640,8 +641,9 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
         ids = set(ids)
         prior = {row['claimId']: row for row in results}
         siblings = [prior.get(c['claimId'], c) for c in originals if c['claimId'] not in ids]
-        if scheduling_version==1:
-            siblings += [{**deepcopy(c),'reviewContextState':{'status':'unreviewed','phase':'invalid_rejection_binding'}}
+        if scheduling_version in (1,2):
+            siblings += [{**deepcopy(c),'reviewContextState':{'status':'unreviewed',
+                'phase':'invalid_rejection_binding' if scheduling_version==1 else 'unverified_review'}}
                 for c in report.get('claims',[]) if c.get('claimId') in deferred]
         subset = {'accepted': verification.get('accepted', []),
                   'rejected': [row for row in verification.get('rejected', []) if row['claimId'] in ids]}
@@ -665,7 +667,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
     state = deepcopy(batch_state) if batch_state is not None else {
         'version': 1, 'inputDigest': identity, 'maxPromptBytes': max_prompt_bytes,
         'batches': [[c['claimId'] for c in originals]], 'results': {}}
-    if scheduling_version==1 and batch_state is None:state['deferredReviewIds']=sorted(deferred)
+    if scheduling_version in (1,2) and batch_state is None:state['deferredReviewIds']=sorted(deferred)
     if (type(state.get('version')) is not int or state['version'] != 1 or state.get('inputDigest') != identity
             or type(state.get('maxPromptBytes')) is not int or not 0 <= state['maxPromptBytes'] <= 24000
             or not isinstance(state.get('batches'), list) or not 1 <= len(state['batches']) <= 3
@@ -707,7 +709,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
                 raise
             state['batches'] = split_repair_targets(originals,
                 scientific_metrics=type(experimental_intent) is int and experimental_intent in (2,3),
-                **({'structural_priority':True,'rejections':verification.get('rejected',[])} if scheduling_version==1 else {}))
+                **({'structural_priority':True,'rejections':verification.get('rejected',[])} if scheduling_version in (1,2) else {}))
             if len(state['batches']) == 1:
                 raise
             # Preflight EVERY batch before spending a model call. An atomic

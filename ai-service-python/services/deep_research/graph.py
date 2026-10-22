@@ -1759,9 +1759,9 @@ def make_verify_node(
                         **({'experimental_nested_tables':True} if edit_repair and record['experimentRepairContractVersion'] in (4,5,6) else {}),
                         **({'experimental_representation':True} if edit_repair and record['experimentRepairContractVersion'] in (5,6) else {}),
                         **({'experimental_coverage':True} if edit_repair and record['experimentRepairContractVersion']==6 else {}),
-                        **({'scheduling_version':1} if edit_repair
+                        **({'scheduling_version':record['experimentRepairPriorityContractVersion']} if edit_repair
                            and type(record.get('experimentRepairPriorityContractVersion')) is int
-                           and record['experimentRepairPriorityContractVersion']==1 else {}),
+                           and record['experimentRepairPriorityContractVersion'] in (1,2) else {}),
                         **({'repair_evidence_packet_version':1} if edit_repair
                            and type(record.get('experimentRepairInputContractVersion')) is int
                            and record['experimentRepairInputContractVersion']==1
