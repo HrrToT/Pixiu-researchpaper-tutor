@@ -16,7 +16,11 @@ from services.deep_research.repair_scope import repair_evidence_scope
 def _prepare_repair(report, verification, evidence, question, *, max_prompt_bytes=24000,
                     metric_domains=None, draft_context=(), prior_revisions=(),
                     fact_redraft=False, requirement_context=(), source_aware_redraft=False,comparison_reasoning=False,
-                    question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False,shared_experiment_schema=False,experiment_evidence_context=None,experimental_edits=False,experimental_diagnostics=False,experimental_nested_tables=False,experimental_representation=False,experimental_coverage=False,citation_presentation_version=0,configuration_consistency_version=0):
+                    question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False,shared_experiment_schema=False,experiment_evidence_context=None,experimental_edits=False,experimental_diagnostics=False,experimental_nested_tables=False,experimental_representation=False,experimental_coverage=False,citation_presentation_version=0,configuration_consistency_version=0,repair_evidence_packet_version=0):
+    if (type(repair_evidence_packet_version) is not int or repair_evidence_packet_version not in (0,1)
+            or repair_evidence_packet_version==1 and not (experimental_nested_tables and experimental_edits
+                and shared_experiment_schema and experimental_intent)):
+        raise ValueError('Unsupported experimental repair input contract')
     if type(configuration_consistency_version) is not int or configuration_consistency_version not in (0,2):
         raise ValueError('Unsupported configuration consistency contract')
     if type(citation_presentation_version) is not int or citation_presentation_version not in (0,2,3):
@@ -25,6 +29,8 @@ def _prepare_repair(report, verification, evidence, question, *, max_prompt_byte
     originals = {row['claimId']: row for row in report.get('claims', []) if row.get('claimId') in rejected}
     if not originals:
         return []
+    if repair_evidence_packet_version==1 and any(c.get('kind') not in {'proposal','suggestion','hypothesis'}
+            for c in originals.values()):raise ValueError('Experimental repair input requires prospective targets')
     if experimental_diagnostics and (not experimental_edits or not experimental_intent):
         raise ValueError('Experimental diagnostics require prospective field edits')
     if experimental_nested_tables and not experimental_diagnostics:
@@ -406,6 +412,8 @@ in the paper. Maintain consistency with accepted definitions and complete requir
             if configuration_consistency_version==2:feedback_options['configuration_consistency_version']=2
         if experimental_representation:
             feedback_options['parameter_rows']=True
+        if repair_evidence_packet_version==1:
+            from services.deep_research.experiment_repair_input import render as experiment_prompt
         if compatible(report):
             prompt=experiment_prompt(question=question,length_contract=length_contract,
                 accepted=proposal_context,siblings=sibling_context,questions=question_dictionary,
@@ -416,7 +424,7 @@ in the paper. Maintain consistency with accepted definitions and complete requir
                 terminology=SCIENTIFIC_TERMINOLOGY,concise_policy=experiment_evidence_context is not None,**feedback_options)
     if experimental_coverage:
         from services.deep_research.repair_coverage import add_contract
-        prompt=add_contract(prompt,originals)
+        prompt=add_contract(prompt,originals,**({'version':2} if repair_evidence_packet_version==1 else {}))
     template = prompt
     from services.deep_research.experiment_edits import columnar
     def render(selected_rows):
@@ -424,10 +432,13 @@ in the paper. Maintain consistency with accepted definitions and complete requir
         permissions = {key: [short_ids[ref] for ref in values
                             if ref in short_ids and short_ids[ref] in visible_ids]
                        for key, values in allowed.items()}
+        wire=columnar(selected_rows) if experimental_edits else selected_rows
+        legend=''
+        if repair_evidence_packet_version==1:
+            from services.deep_research.repair_evidence_packet import encode
+            wire,legend=encode(selected_rows)
         return template.replace(permissions_marker, json.dumps(permissions, ensure_ascii=False, separators=(',', ':')), 1).replace(
-            evidence_marker, json.dumps(
-                columnar(selected_rows)
-                if experimental_edits else selected_rows,ensure_ascii=False,separators=(',',':')),1)
+            evidence_marker,json.dumps(wire,ensure_ascii=False,separators=(',',':'))+('\n'+legend if legend else ''),1)
     if max_prompt_bytes <= 0:
         raise BudgetExhaustedError('repairPromptBytes', max_prompt_bytes, 1)
     # Allocate required full quotes AND context first. Optional candidate
@@ -457,6 +468,7 @@ in the paper. Maintain consistency with accepted definitions and complete requir
     visible = {aliases[row['evidenceId']] for row in rows}
     allowed = {key: [ref for ref in values if ref in visible] for key, values in allowed.items()}
     return {'prompt': prompt, 'originals': originals, 'aliases': aliases, 'allowed': allowed,
+            **({'repairEvidencePacketVersion':1} if repair_evidence_packet_version==1 else {}),
             **({'editFormatVersion':1} if experimental_edits else {}),
             **({'diagnosticVersion':1,'schemaFeedback':feedback_options['diagnostics']} if experimental_diagnostics else {}),
             **({'nestedTablesVersion':1} if experimental_nested_tables else {}),
@@ -570,7 +582,7 @@ def factual_redraft_eligible(report):
 def repair_rejected(report, verification, evidence, question, invoke, parse, *,
                     max_prompt_bytes=24000, metric_domains=None, batch_state=None, checkpoint=None,
                     current_budget=None, invoke_request=None, fact_redraft=False, requirement_context=(),
-                    source_aware_redraft=False,comparison_reasoning=False,question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,strict_response=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False,shared_experiment_schema=False,experiment_evidence_context=None,experimental_edits=False,experimental_diagnostics=False,experimental_nested_tables=False,experimental_representation=False,experimental_coverage=False,citation_presentation_version=0,configuration_consistency_version=0):
+                    source_aware_redraft=False,comparison_reasoning=False,question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,strict_response=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False,shared_experiment_schema=False,experiment_evidence_context=None,experimental_edits=False,experimental_diagnostics=False,experimental_nested_tables=False,experimental_representation=False,experimental_coverage=False,citation_presentation_version=0,configuration_consistency_version=0,repair_evidence_packet_version=0):
     """One bounded revision round, split before dispatch when evidence cannot fit.
 
     At most three requests share full sibling design definitions. Successful
@@ -584,6 +596,8 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
     originals = [c for c in report.get('claims', []) if c.get('claimId') in targets]
     if not originals:
         return []
+    if type(repair_evidence_packet_version) is not int or repair_evidence_packet_version not in (0,1):
+        raise ValueError('Unsupported experimental repair input contract')
     if experimental_coverage and not experimental_representation:
         raise ValueError('Experimental coverage requires representation-aware edits')
     if experimental_diagnostics and (not experimental_edits or not experimental_intent):
@@ -597,6 +611,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
     if type(citation_presentation_version) is not int or citation_presentation_version not in (0,2,3):
         raise ValueError('Unsupported citation presentation contract')
     identity = digest({'report': report, 'verification': verification,
+                       **({'experimentRepairInputContractVersion':1} if repair_evidence_packet_version==1 else {}),
                        'evidence': evidence, 'question': question, 'metricDomains': metric_domains,
                        **({'citationPresentationContractVersion':citation_presentation_version} if citation_presentation_version in (2,3) else {}),
                        **({'configurationConsistencyContractVersion':2} if configuration_consistency_version==2 else {}),
@@ -629,6 +644,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
             factual_scope=factual_scope,declared_table_refs=declared_table_refs,comparison_methodology=comparison_methodology,
             experimental_intent=experimental_intent,compact_source_repair=compact_source_repair,
             shared_experiment_schema=shared_experiment_schema,experiment_evidence_context=experiment_evidence_context,
+            repair_evidence_packet_version=repair_evidence_packet_version,
             **({'experimental_edits':True} if experimental_edits else {}),
             **({'experimental_diagnostics':True} if experimental_diagnostics else {}),
             **({'experimental_nested_tables':True} if experimental_nested_tables else {}),

@@ -4,12 +4,18 @@ import json
 import re
 
 
-def add_contract(prompt,originals):
+def add_contract(prompt,originals,*,version=1):
     ids=list(originals)
     def replacement(match):
         # Keep the complete original edit grammar, writable paths and value
         # rule. Coverage must not erase the schema it asks the model to follow.
         item=match[1][1:-1]
+        if type(version) is int and version==2:
+            return ('Return ONLY exactly one item per writable ID '+json.dumps(ids,separators=(',',':'))+
+                ' (no omitted/duplicate/extra IDs): '+item+
+                ' OR {"claimId":"ID","unresolved":"specific reason, at most600characters"}. '
+                'Feedback is partial syntax, not the target list. Edits must fix ALL checks; otherwise '
+                'explain unresolved, which is not a revision or approval.')
         return ('Return ONLY one JSON array item for EACH writable ID '+json.dumps(ids,separators=(',',':'))+
             '. Schema-feedback targets are additional syntax hints, NOT the full target list. '
             'Each item is exactly '+item+' OR {"claimId":"ID","unresolved":"specific reason, at most600characters"}. '

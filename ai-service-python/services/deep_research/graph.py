@@ -1758,6 +1758,11 @@ def make_verify_node(
                         **({'experimental_nested_tables':True} if edit_repair and record['experimentRepairContractVersion'] in (4,5,6) else {}),
                         **({'experimental_representation':True} if edit_repair and record['experimentRepairContractVersion'] in (5,6) else {}),
                         **({'experimental_coverage':True} if edit_repair and record['experimentRepairContractVersion']==6 else {}),
+                        **({'repair_evidence_packet_version':1} if edit_repair
+                           and type(record.get('experimentRepairInputContractVersion')) is int
+                           and record['experimentRepairInputContractVersion']==1
+                           and type(record.get('structuredOutputContractVersion')) is int
+                           and record['structuredOutputContractVersion']==8 else {}),
                         **({'configuration_consistency_version':2} if type(record.get('configurationConsistencyContractVersion')) is int
                            and record['configurationConsistencyContractVersion']==2 else {}),
                         **({'citation_presentation_version':record['citationPresentationContractVersion']} if type(record.get('citationPresentationContractVersion')) is int
