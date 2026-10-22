@@ -26,7 +26,7 @@ def pair():
     return bad,good
 
 
-@pytest.mark.parametrize('version',[None,True,False,0,1,5,'2'])
+@pytest.mark.parametrize('version',[None,True,False,0,1,6,'2'])
 def test_legacy_versions_keep_exact_two_argument_callback_and_no_rejected_context(version):
     bad,good=pair();seen=[]
     def check(rows,evidence):seen.append(deepcopy(rows));return []
@@ -35,7 +35,7 @@ def test_legacy_versions_keep_exact_two_argument_callback_and_no_rejected_contex
     assert not enabled(version)
 
 
-@pytest.mark.parametrize('version',[2,3,4])
+@pytest.mark.parametrize('version',[2,3,4,5])
 def test_original_failed_definition_checks_and_status_survive_without_promotion(version):
     bad,good=pair();before=deepcopy([bad,good]);seen=[]
     def check(rows,evidence,*,proposal_context):
@@ -76,7 +76,7 @@ def test_rejected_dependency_cannot_survive_as_an_approved_workflow():
     assert not any(c['designRole'] in {'steps','controls'} for c in result['accepted'])
 
 
-@pytest.mark.parametrize('version',[2,3,4])
+@pytest.mark.parametrize('version',[2,3,4,5])
 def test_rejected_context_cannot_donate_factual_evidence_or_a_verdict_target(version):
     claim,own=target_with_source('target','own',30)
     bad,other=target_with_source('rejected','other',30)
@@ -96,7 +96,7 @@ def test_rejected_context_cannot_donate_factual_evidence_or_a_verdict_target(ver
     assert other['quote'] not in prompt and 'Rejected context policy:' in prompt
 
 
-@pytest.mark.parametrize('version',[2,3,4])
+@pytest.mark.parametrize('version',[2,3,4,5])
 def test_capacity_splits_preserve_rejected_state_and_full_original_definitions(version):
     a,ea=target_with_source('a','one',2000);b,eb=target_with_source('b','two',2000)
     failed=pair()[0];failed['reviewContextState']={'status':'rejected','phase':'precheck','checks':[{'reason':'missing_state'}]}
