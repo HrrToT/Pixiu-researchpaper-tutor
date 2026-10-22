@@ -1,0 +1,245 @@
+{
+  "date": "2026-10-22",
+  "sourceCommit": "a27f1cc7",
+  "promptVersion": "dr-v2.20261022.221",
+  "case": "E1-v17",
+  "split": "development",
+  "runId": "dr_run_72bd53e9799b5ddf9d87543e9c43263e",
+  "questionUnchanged": true,
+  "frozenCaseCommit": "a023b204",
+  "status": "completed",
+  "outcome": "inconclusive",
+  "reportedPayloadElapsedSeconds": 123.275,
+  "observedElapsedSeconds": 123.0,
+  "settledModelCalls": 14,
+  "settledTokens": 72462,
+  "unsettledModelCalls": 0,
+  "independentCredit": 0,
+  "verificationSummary": {
+    "accepted": 0,
+    "rejected": 9
+  },
+  "generationAllocation": {
+    "version": 1,
+    "planningEvidenceAliases": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9",
+      "E10",
+      "E11",
+      "E12",
+      "E13",
+      "E14",
+      "E15",
+      "E16",
+      "E17",
+      "E18",
+      "E19",
+      "E20"
+    ],
+    "suppliedEvidenceAliases": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E9",
+      "E10",
+      "E11",
+      "E12",
+      "E14",
+      "E15",
+      "E16",
+      "E17",
+      "E8",
+      "E13",
+      "E18",
+      "E19",
+      "E20"
+    ],
+    "requiredEvidenceAliases": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E9",
+      "E10",
+      "E11",
+      "E12",
+      "E14",
+      "E15",
+      "E16",
+      "E17"
+    ],
+    "unverifiedPlanReferences": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E9",
+      "E10",
+      "E11",
+      "E12",
+      "E14",
+      "E15",
+      "E16",
+      "E17"
+    ],
+    "missingPremiseBundles": [],
+    "rawInputBytes": 31089,
+    "encodedInputBytes": 30820,
+    "maxInputBytes": 32000,
+    "planBasisDigest": "8eddb2b16899fffd895d639f17beb81e19a2a5a20936d21dd4cef2e1ed6198fd",
+    "planReferencesAreEvidenceApproval": false,
+    "planningEvidenceIds": [
+      "ev_15a8e02f885a744622caa594dd331b7481bf66e9039cec2e9de762eab6c72891",
+      "ev_b5fc43ccb470fb223883348ab5e595a488ba6332bb419e48ad7eac4ba452c8af",
+      "ev_5a62ffa4ef91faeab47770ffeb7725d05e16220034d62947882c58e68891ba69",
+      "ev_eea706cbd96a822dae9adf0cdc055c4e86d4f30b38582a4af6ff41a671a74c1f",
+      "ev_516057b8a32881c40f1384de19b86128197089068316214ce7a984ebb4f252a4",
+      "ev_6558c554163d2cf4124a655864c29ba4e00a1996de9a7f509dc09e67eef09830",
+      "ev_e34196d11497b3956f133f4f4f9f4670ef36ac774d1a0a60f21f50a99cbc0cd3",
+      "ev_43750add3fc24d2bdccf84533bbbdd5049528a078613e3561ea8ebfc17c5186a",
+      "ev_4bbeaea2b1a3fc2176d5010e025e0272c4f315f6a4481858bf4ef14db9594a4f",
+      "ev_bdb024b856972aab854c483acb7dfa600c4918cc401ccfcebcb14da2200b2d38",
+      "ev_cd0fb52a8f6322f1840a2c415f4ffe76ebd603aa54c4f8b78c84c3bcf5b89c9c",
+      "ev_9428cc150698bc1ebd5f7d4d32f2e8efa1022c319d442c3801b44c2d74cf4bca",
+      "ev_d14e8e4b8877af9a8841c24d6b93402b4203ddf7ab4f5ca16550a4b3274397ce",
+      "ev_7b5762b01417548fb7db404dae7bfbe7d0b3b1b2d96e575f6bf355c6878939b6",
+      "ev_b91669725dc1efb17fe3dbea1172b547c4611cddd51dfc0fa73a6688571207c0",
+      "ev_e170758337c27ad6170e1fa6a17452fc4c94fe6f45d288316af34c321da687de",
+      "ev_e7943b9c3dc9222268585187471b66293d178a702b3834bb256ccdf46fba44fc",
+      "ev_901d7875ec12ac5ddfda3a74cbffee85f8d1f0be175bdc83725c6c81378f9ae2",
+      "ev_cc4de8f0af3f27a5f3fdd315b939aa91c127d2b8ca4511163e556d08bacf86a6",
+      "ev_a8d5afa003275f0f4ed93e46b6e8cd41eef07a6654d48937996b478fa4bf2373"
+    ],
+    "suppliedEvidenceIds": [
+      "ev_15a8e02f885a744622caa594dd331b7481bf66e9039cec2e9de762eab6c72891",
+      "ev_b5fc43ccb470fb223883348ab5e595a488ba6332bb419e48ad7eac4ba452c8af",
+      "ev_5a62ffa4ef91faeab47770ffeb7725d05e16220034d62947882c58e68891ba69",
+      "ev_eea706cbd96a822dae9adf0cdc055c4e86d4f30b38582a4af6ff41a671a74c1f",
+      "ev_516057b8a32881c40f1384de19b86128197089068316214ce7a984ebb4f252a4",
+      "ev_6558c554163d2cf4124a655864c29ba4e00a1996de9a7f509dc09e67eef09830",
+      "ev_e34196d11497b3956f133f4f4f9f4670ef36ac774d1a0a60f21f50a99cbc0cd3",
+      "ev_4bbeaea2b1a3fc2176d5010e025e0272c4f315f6a4481858bf4ef14db9594a4f",
+      "ev_bdb024b856972aab854c483acb7dfa600c4918cc401ccfcebcb14da2200b2d38",
+      "ev_cd0fb52a8f6322f1840a2c415f4ffe76ebd603aa54c4f8b78c84c3bcf5b89c9c",
+      "ev_9428cc150698bc1ebd5f7d4d32f2e8efa1022c319d442c3801b44c2d74cf4bca",
+      "ev_7b5762b01417548fb7db404dae7bfbe7d0b3b1b2d96e575f6bf355c6878939b6",
+      "ev_b91669725dc1efb17fe3dbea1172b547c4611cddd51dfc0fa73a6688571207c0",
+      "ev_e170758337c27ad6170e1fa6a17452fc4c94fe6f45d288316af34c321da687de",
+      "ev_e7943b9c3dc9222268585187471b66293d178a702b3834bb256ccdf46fba44fc",
+      "ev_43750add3fc24d2bdccf84533bbbdd5049528a078613e3561ea8ebfc17c5186a",
+      "ev_d14e8e4b8877af9a8841c24d6b93402b4203ddf7ab4f5ca16550a4b3274397ce",
+      "ev_901d7875ec12ac5ddfda3a74cbffee85f8d1f0be175bdc83725c6c81378f9ae2",
+      "ev_cc4de8f0af3f27a5f3fdd315b939aa91c127d2b8ca4511163e556d08bacf86a6",
+      "ev_a8d5afa003275f0f4ed93e46b6e8cd41eef07a6654d48937996b478fa4bf2373"
+    ]
+  },
+  "repairStatus": "skipped_budget",
+  "repairAdmission": {
+    "kind": "repairPromptBytes",
+    "limit": 10437,
+    "used": 19251
+  },
+  "planEncodingAudit": {
+    "rawBytes": 2991,
+    "wireBytes": 2882,
+    "preferredSlotBytes": 2500,
+    "rawLimitBytes": 4000,
+    "fitsPreferredSlot": false,
+    "scientificApproval": false
+  },
+  "initialRepresentationAudit": [
+    {
+      "phase": "synthesis",
+      "claimId": "c3",
+      "designRole": "data",
+      "path": "/executionSpec",
+      "kind": "single_role_wrapper",
+      "role": "data"
+    }
+  ],
+  "repairRepresentationAudit": {},
+  "rejectedClaims": [
+    {
+      "claimId": "c5",
+      "reason": "incomplete_budget_spec",
+      "detail": "recovery: matched 模式要求所有组的预算值相等"
+    },
+    {
+      "claimId": "c1",
+      "reason": "semantic_unresolved",
+      "detail": "Hypothesis c1 fails scientific validity. The hypothesis is prospective and descriptive, but the proposed design lacks executable specificity and factual grounding. Key issues: (1) The frame window (frames 1-30) is not supported by evidence; E5 only states 'entire flame salmon video excluding Frame 0' without a specific count or endpoint. (2) The camera split into even/odd indices is not evidenced;"
+    },
+    {
+      "claimId": "c2",
+      "reason": "semantic_unresolved",
+      "detail": "干预水平未完全绑定：Group B 的优化迭代次数（50）未在证据中给出，且未提供可执行的优化器/学习率设置；Group A 跳过第2阶段的操作未明确渲染时是否包含新增高斯（应仅使用变换后3DGs，但需绑定渲染设置）。"
+    },
+    {
+      "claimId": "c3",
+      "reason": "semantic_unresolved",
+      "detail": "Data target fails: scenes membership for 'flame salmon' is supported by E4/E5, but split rule 'even_camera_indices' and 'odd_camera_indices' lacks executable definition (no camera IDs or counts provided), seeds [0] lacks purpose, and independentUnit 'frame' is not explicitly bound to evidence."
+    },
+    {
+      "claimId": "c4",
+      "reason": "semantic_unresolved",
+      "detail": "配对初始化未完全绑定：第0帧模型加载的迭代15000和稠密化结束5000有证据支持，但第1阶段NTC的优化器设置（学习率0.001）未在证据中给出，且渲染设置（分辨率、设备）未绑定具体值；其他干预未明确禁用。"
+    },
+    {
+      "claimId": "c6",
+      "reason": "semantic_unresolved",
+      "detail": "Multiple required slots are not fully bound or contain invalid choices. baseline_acquisition lacks a finite training/stopping budget for the initial 3DGs and relies on an ungrounded pretrained checkpoint; group_pairing lacks explicit per-frame pairing and complete component initialization; saved_artifacts omits required raw measurements and recovery budgets; data_isolation lacks explicit split-bef"
+    },
+    {
+      "claimId": "c7",
+      "reason": "semantic_unresolved",
+      "detail": "Metrics target fails: quality protocol lacks explicit aggregation level binding (PSNR per frame then average over qualified frames is proposed but not bound to evidence), speed protocol missing device, resolution, warmup, synchronization, repetitions; storage protocol missing file list and accounting boundaries."
+    },
+    {
+      "claimId": "c8",
+      "reason": "semantic_unresolved",
+      "detail": "The analysis proposal lacks source-bound evidence for its effects, uncertainty, and decision rule. The effects are defined as paired differences (PSNR, storage, overhead) but no evidence from the source documents supports these specific metrics or their computation. The uncertainty mode is descriptive with mean and range, but no source evidence is provided to bind this choice. The decision rule is"
+    },
+    {
+      "claimId": "c9",
+      "reason": "semantic_unresolved",
+      "detail": "The limits proposal lacks source-bound evidence for its stated limitations. The claim mentions that camera indices and total view counts are not given in evidence, but this is a statement about absence rather than a source-bound fact. The claim also states that NTC architecture and optimizer settings need to be defined, but no source evidence is provided to support this limitation. All slots requi"
+    }
+  ],
+  "acceptedClaims": [],
+  "rawFiles": [
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v17.json",
+      "sha256": "4dcd9a69a4323e2cbf76750a25f92c9809a95dd13a58cd8eb4a5a766431a56d0"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v17.payload.json",
+      "sha256": "7cd73193eb80cc322d9959a5138c12c8e872429e1a560249a18afc5ac9d854de"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v17.calls.json",
+      "sha256": "268ecd978f40d0879a4be79b9d40f11642af9af7ab9aa23fb1f3eb932ad1f3c7"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v17.result.json",
+      "sha256": "5110b9157107edf03e2afb6c4ea9b81875ead337d3c40c6a82a49c105d5cee3b"
+    }
+  ],
+  "boundary": "One fixed development submission, no automatic retry. Representation normalization does not approve science or upgrade historical/independent results."
+}

@@ -2907,6 +2907,62 @@
         "notGlobalHistory": true,
         "costUnknown": true
       }
+    },
+    "prospectiveReviewEnvelopeCheckpoint": {
+      "date": "2026-10-22",
+      "sourceCommit": "a27f1cc7",
+      "promptVersion": "dr-v2.20261022.221",
+      "experimentReviewEnvelopeContractVersion": 1,
+      "fullOffline": {
+        "passed": 3822,
+        "warnings": 1,
+        "seconds": 218.35,
+        "files": 213,
+        "log": "tmp/pytest-dr221-full.log",
+        "sha256": "76f9555bf3e023efe219a00580025e769fff093054bd346a4a0a3dfdc9413f1f"
+      },
+      "focusedPassed": 89,
+      "focusedSeconds": 4.46,
+      "additionalFinalNewFilePassed": 35,
+      "additionalFinalNewFileSeconds": 2.37,
+      "focusedOverlap": true,
+      "newTests": 35,
+      "legacyActualFingerprintsMatched": 66,
+      "legacyReplayScriptCount": 21,
+      "offlineProviderCalls": 0,
+      "independentCredit": 0,
+      "controlledReplay": "review-envelope-e1-v16-controlled-20261022.json",
+      "implementation": "Immutable server-owned prospective review envelope1: one canonical shared policy, complete original targets/conditions/typed context and own source permissions; split full requests before context stripping, mark single-target overflow as not_started and retain capacity metadata. Same validators, role options, whole-run budgets,32KB review window and old request identities.",
+      "boundary": "Full Deep Research offline suite and archived DEVELOPMENT-input controlled callback only. Initial3focused failures were test-fixture assertions/quotation metadata, corrected before final runs. No original result upgraded, no fresh content/independent acceptance.",
+      "actualCase": {
+        "case": "E1-v17",
+        "status": "completed",
+        "outcome": "inconclusive",
+        "observedElapsedSeconds": 123.0,
+        "settledModelCalls": 14,
+        "settledTokens": 72462,
+        "unsettledModelCalls": 0,
+        "verificationSummary": {
+          "accepted": 0,
+          "rejected": 9
+        },
+        "repairStatus": "skipped_budget",
+        "repairAdmission": {
+          "kind": "repairPromptBytes",
+          "limit": 10437,
+          "used": 19251
+        }
+      },
+      "actualInputProof": "review-envelope-e1-v17-actual-input-20261022.json",
+      "reviewProof": "review-envelope-e1-v17-review-diagnosis-20261022.json",
+      "qualityDiagnosis": "E1-v17-quality-diagnosis-20261022.json",
+      "retentionProof": "runtime-postcases-dr221-e1-v17-20261022.json",
+      "selectedDiagnosticTotals": {
+        "settledModelCalls": 629,
+        "measuredTokens": 2593517,
+        "notGlobalHistory": true,
+        "costUnknown": true
+      }
     }
   },
   "stages": [
@@ -3969,7 +4025,7 @@
     "independentCredit": 0,
     "proof": "deep-research-evidence/compact-experiment-envelope-regression-20261020.json"
   },
-  "currentCheckpoint": ".220 /55f771a3: immutable experimentInput1 grants only new modern experiment planning/body32000bytes; reserve4000 for complete accepted plan before selecting sources.3787research tests/212files,70focused overlap,29new,60legacy fingerprints. Controlled E1-v15 original24091 refusal now retains20quotes/required contexts/fullplan30576; actual E1-v16 planner24164/body30070 submitted once,113s completed/inconclusive0/9,13settled calls67858tokens,no new unknown. Three review targets c2/c6/c8 not dispatched due fixed review/evidence capacity; one hypothesis modelpass fails linked-analysis gate. Repair skipped at16580-byte remaining admission vs19568 required. Genuine opaque states/budget mismatch/measurement problems coexist with false missing-config/data objections.5129ledger/11oldpaused/alloldpayloads/4tasks preserved. Full DR0-DR5 and fresh independent replacements remain incomplete; original0/5 unchanged;Goalactive;PRdraft.",
+  "currentCheckpoint": ".221 /a27f1cc7: immutable experimentReviewEnvelope1 centralizes prospective review rules/role requirements/audits and preserves complete original target/typed context/own quotes and bounded source context. Split before context stripping; single overflow is not_started with capacity metadata.3822tests/213files,35new,66historical physical fingerprints. E1-v16 controlled callback reachesall8eligible targets with complete contexts, no new model judgement. Real E1-v17 once123s completed/inconclusive0/9:14settled calls72462tokens,no newunknown. Budget c5hard-rejected unequal matched0/50; allother8actually reached5semantic calls with every quote/context retained. Actual planner/body24217/30820, review22044..28951;7physical fingerprints reconstructed. Reviewer still confuses proposed choices with source-attributed facts, alongside genuine placeholder state/asset/split/budget/measurement failures. Repair skipped10437<19251input admission.5158ledger/11oldpaused/oldrunpayloads/4taskprefixes preserved;DR0-DR5 incomplete;fresh independent replacements outstanding;original0/5;Goalactive;PRdraft.",
   "sharedModuleSourceCheckpoint": {
     "sourceCommit": "f8ae5177",
     "promptVersion": "dr-v2.20261020.199",
