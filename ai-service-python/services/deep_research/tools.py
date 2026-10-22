@@ -247,6 +247,7 @@ class TrackedLLMInvoker:
         run_record_fn: Callable | None = None,
         verification_max_input_bytes: int | None = None,
         call_history_fn: Callable | None = None,
+        experiment_max_input_bytes: int | None = None,
     ):
         self._client = llm_client
         self._reserve = reserve_call_fn
@@ -262,11 +263,20 @@ class TrackedLLMInvoker:
             raise ValueError('Invalid server verification input limit')
         self._verification_max_input = (max_input_tokens if verification_max_input_bytes is None
                                         else verification_max_input_bytes)
+        from services.deep_research.experiment_capacity import EXPERIMENT_INPUT_BYTES
+        if experiment_max_input_bytes is not None and (
+                type(experiment_max_input_bytes) is not int
+                or not 1 <= experiment_max_input_bytes <= EXPERIMENT_INPUT_BYTES):
+            raise ValueError('Invalid server experiment input limit')
+        self._experiment_max_input = (max_input_tokens if experiment_max_input_bytes is None
+                                      else experiment_max_input_bytes)
 
     def prompt_byte_limit(self, run_id: str, node: str) -> int:
         from services.deep_research.verification_capacity import verification_input_limit
         record = self._run_record(run_id) if self._run_record else None
-        return verification_input_limit(record, node, self._max_input, self._verification_max_input)
+        from services.deep_research.experiment_capacity import transport_limit
+        legacy = verification_input_limit(record, node, self._max_input, self._verification_max_input)
+        return transport_limit(record, node, legacy, getattr(self, '_experiment_max_input', self._max_input))
 
     def uses_verification_input_contract(self, run_id: str, node: str) -> bool:
         from services.deep_research.verification_capacity import has_verification_input_contract

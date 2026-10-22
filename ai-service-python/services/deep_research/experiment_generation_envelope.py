@@ -36,7 +36,7 @@ Write concise Chinese rationale/conditions once; typed settings are rendered. Ke
 consistent and explicit evidence gaps bounded. Full role grammar and scientific rules follow.'''
 
 
-def refit(record,rows,render,bundles,plan,*,required_contexts=None,max_bytes=24000):
+def refit(record,rows,render,bundles,plan,*,required_contexts=None,max_bytes=None):
     """Reallocate only within evidence actually supplied to the planning request.
 
     Required source bundles AND every unverified-plan reference remain atomic.
@@ -45,6 +45,8 @@ def refit(record,rows,render,bundles,plan,*,required_contexts=None,max_bytes=240
     capacity guard, never the conveniently smaller incomplete selection.
     """
     if not enabled(record):raise DeepResearchError('invalid_experiment_generation_state','实验生成契约不匹配。')
+    from services.deep_research.experiment_capacity import input_limit
+    max_bytes=input_limit(record) if max_bytes is None else min(max_bytes,input_limit(record))
     by_id={r['evidenceId']:r for r in rows}
     refs=plan['basis']['sourceRefs']
     needed={eid for bundle in bundles for eid in bundle['evidenceIds']}|set(refs)

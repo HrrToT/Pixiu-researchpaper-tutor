@@ -74,7 +74,7 @@ def validate_basis(value,allowed,*,max_bytes=MAX_BASIS_BYTES,lean=False):
         return False
 
 
-def planning_prompt(*,question,obligations,sources,evidence,tables,metric_domains,compact=False,lean=False,positional=False,configuration_consistency_version=0):
+def planning_prompt(*,question,obligations,sources,evidence,tables,metric_domains,compact=False,lean=False,positional=False,configuration_consistency_version=0,input_contract_version=0):
     from services.deep_research.design_drafting import _DRAFT_POLICY,_DRAFT_STATISTICS
     from services.deep_research.experiment_intent import guidance,single_toggle_request
     from services.deep_research.metric_scope import metric_protocol_requirements
@@ -136,6 +136,9 @@ record its finite unmatched cost honestly, without claiming an isolated paramete
         prompt=prompt.replace('The ENTIRE compact JSON must fit2500UTF-8 bytes. Use concise English and approximately200bytes',
             'Aim below2500UTF-8 bytes for the complete object. Use concise English and approximately200bytes')
         prompt+='\nAll values are sent losslessly in a2500-byte tuple; stay concise. Do not omit any decision or gap.\n'
+        if type(input_contract_version) is int and input_contract_version==1:
+            prompt=prompt.replace('All values are sent losslessly in a2500-byte tuple;',
+                'The complete raw JSON and its lossless tuple must each fit4000 UTF-8 bytes;')
     prompt+='\nHuman question:\n'+question+'\nFrozen requirements:\n'+packed(obligations)
     prompt+='\nSource registry (metadata only):\n'+packed(sources)
     prompt+='\nExact original evidence with unchanged permissions:\n'+packed(evidence)
@@ -182,7 +185,8 @@ def basis_encoding_audit(record,basis):
 
 def prepare_plan(record,*,prompt,aliases,invoke,parse,checkpoint):
     """Return a received plan or None for known pre-send budget refusal."""
-    if len(prompt.encode())>24000:
+    from services.deep_research.experiment_capacity import input_limit,enabled as capacity_enabled
+    if len(prompt.encode())>input_limit(record):
         raise DeepResearchError('experiment_planning_input_capacity','实验科学规划输入超过原有容量，尚未发送。')
     from services.deep_research.experiment_envelope import enabled as compact_enabled,DIRECT_PLAN_OPTION
     request=request_identity(record,'plan_experiment',prompt,{'max_tokens':PLANNING_OUTPUT_TOKENS,'temperature':0.0,
@@ -196,7 +200,8 @@ def prepare_plan(record,*,prompt,aliases,invoke,parse,checkpoint):
     identity=digest({'version':1,'request':request,'evidenceAliases':aliases,
         **({'basisEncodingVersion':encoding_version} if encoding else {}),
         **({'outlineEncodingVersion':record['experimentOutlineEncodingContractVersion']} if outlined else {}),
-        **({'generationEnvelopeVersion':1} if generation_envelope(record) else {})})
+        **({'generationEnvelopeVersion':1} if generation_envelope(record) else {}),
+        **({'experimentInputVersion':1} if capacity_enabled(record) else {})})
     saved=deepcopy(record.get('state',{}).get('experimentPlanning'))
     if saved is not None:
         if (not isinstance(saved,dict) or type(saved.get('version')) is not int or saved['version']!=1
@@ -232,7 +237,8 @@ def prepare_plan(record,*,prompt,aliases,invoke,parse,checkpoint):
             raise DeepResearchError('invalid_experiment_planning_state','保存的实验规划状态无效，不能重新发送。')
     else:
         saved={'version':1,'inputDigest':identity,'request':request,'evidenceAliases':deepcopy(aliases),
-               'verification':'unchecked','status':'pending',**({'basisEncodingVersion':encoding_version} if encoding else {})}
+               'verification':'unchecked','status':'pending',**({'basisEncodingVersion':encoding_version} if encoding else {}),
+               **({'experimentInputVersion':1} if capacity_enabled(record) else {})}
         if remaining_seconds(record)<150:
             saved['status']='not_started_budget';checkpoint(saved);return None
         checkpoint(saved)
@@ -278,6 +284,10 @@ def prepare_draft(record,plan,*,prompt,checkpoint,outline_encoding_audit=None):
     """
     from services.deep_research.experiment_plan_encoding import enabled as plan_encoding,flexible
     from services.deep_research.experiment_outline_encoding import enabled as outline_encoding,validate
+    from services.deep_research.experiment_capacity import input_limit,enabled as capacity_enabled
+    if ((capacity_enabled(record) and type(plan.get('experimentInputVersion')) is not int)
+            or plan.get('experimentInputVersion',0)!=(1 if capacity_enabled(record) else 0)):
+        raise DeepResearchError('invalid_experiment_planning_state','保存的实验输入窗口已改变，不能重新发送。')
     validate(record,prompt,outline_encoding_audit)
     if outline_encoding(record):
         if (plan.get('outlineEncodingAudit') is not None
@@ -289,10 +299,10 @@ def prepare_draft(record,plan,*,prompt,checkpoint,outline_encoding_audit=None):
         if plan.get('draftCapacity',{}).get('requestDigest')!=digest(capacity_request):
             raise DeepResearchError('invalid_experiment_planning_state','保存的配置容量请求已改变，不能重新发送。')
         raise DeepResearchError('experiment_drafting_input_capacity','实验配置输入超过原有容量，尚未发送。')
-    if plan_encoding(record) and len(prompt.encode('utf8'))>24000:
+    if plan_encoding(record) and len(prompt.encode('utf8'))>input_limit(record):
         if flexible(record):
             checkpoint({**plan,'draftStatus':'not_started_capacity','draftCapacity':{
-                'inputBytes':len(prompt.encode('utf8')),'maxInputBytes':24000,
+                'inputBytes':len(prompt.encode('utf8')),'maxInputBytes':input_limit(record),
                 'requestDigest':digest(capacity_request),'scientificApproval':False}})
         raise DeepResearchError('experiment_drafting_input_capacity','实验配置输入超过原有容量，尚未发送。')
     request=request_identity(record,'synthesize',prompt,{'max_tokens':4000,'temperature':0.2})

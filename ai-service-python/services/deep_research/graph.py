@@ -1363,7 +1363,8 @@ space with unsupported global absence or incidental iteration/performance values
         from services.deep_research.experiment_template import enabled as compact_experiment_enabled,build as experiment_template
         from services.deep_research.experiment_planning import enabled as staged_experiment,basis_limit
         staged_mode=premise_mode and output_kind=='experiment_design' and staged_experiment(record)
-        basis_slot=(uuid4().hex+' '*(basis_limit(record)-32)) if staged_mode else None
+        from services.deep_research.experiment_capacity import input_limit as experiment_input_limit,reserved_basis_bytes,enabled as experiment_capacity_enabled
+        basis_slot=(uuid4().hex+' '*(reserved_basis_bytes(record)-32)) if staged_mode else None
         if premise_mode and output_kind=='experiment_design' and compact_experiment_enabled(record):
             prompt=experiment_template(record,question=question,limit=requested_limit,
                 clarification=separate_clarification(record),gaps=[g.get('question') for g in gaps[:5]],
@@ -1402,6 +1403,7 @@ space with unsupported global absence or incidental iteration/performance values
             def wire_size(value):
                 return len(encode_outline(record,value)[0].encode('utf8'))
             prompt,evidence_summaries,missing_bundles=fit_premises(evidence_summaries,render_premises,wire_bundles,
+                **({'max_bytes':experiment_input_limit(record)} if staged_mode else {}),
                 omit_optional_table_data=output_kind=='paper_comparison' and qualitative_comparison and not numerical_request,
                 **({'prompt_byte_size':wire_size} if encoded_allocation else {}),
                 **({'required_contexts':{eid:context for b in wire_bundles
@@ -1414,7 +1416,9 @@ space with unsupported global absence or incidental iteration/performance values
                 'fixedInputBytes':len(render_premises([]).encode('utf8')),
                 **({'sizingContractVersion':2,'encodedInputBytes':wire_size(prompt),
                     'fixedEncodedInputBytes':wire_size(render_premises([])),
-                    'planningSlotReservedBytes':basis_limit(record)} if encoded_allocation else {}),
+                    'planningSlotReservedBytes':reserved_basis_bytes(record)} if encoded_allocation else {}),
+                **({'inputContractVersion':1,'maxInputBytes':experiment_input_limit(record)}
+                   if staged_mode and experiment_capacity_enabled(record) else {}),
                 'tableDataOmittedEvidenceIds':[evidence_aliases[row['evidenceId']] for row in evidence_summaries if row.get('tableDataOmitted')],
                 'sharedTablePackets':len({row['tableDataRef'] for row in evidence_summaries if row.get('tableDataRef')})}}},expected_revision=None)
         else:
@@ -1441,7 +1445,8 @@ space with unsupported global absence or incidental iteration/performance values
                 **({'compact':True} if record['experimentDraftContractVersion'] in (4,5,6) else {}),
                 **({'lean':True} if record['experimentDraftContractVersion'] in (5,6) else {}),
                 **({'positional':True} if plan_encoding(record) else {}),
-                configuration_consistency_version=record.get('configurationConsistencyContractVersion',0)),aliases=evidence_aliases,
+                configuration_consistency_version=record.get('configurationConsistencyContractVersion',0),
+                **({'input_contract_version':1} if experiment_capacity_enabled(record) else {})),aliases=evidence_aliases,
                 invoke=lambda node,prompt,options:llm_invoke(run_id,node,prompt,options,use_reserve=True),
                 parse=_safe_parse_json,checkpoint=checkpoint_planning)
             if plan is None:

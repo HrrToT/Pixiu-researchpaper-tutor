@@ -273,13 +273,14 @@ class ResearchFacade:
             "materials": materials,
             "materialSnapshot": material_snapshot,  # Immutable Java snapshot
             "contextMaterials": (material_snapshot or {}).get("contextMaterials", []) if isinstance(material_snapshot, dict) else [],
-            "promptVersion": "dr-v2.20261022.219",
+            "promptVersion": "dr-v2.20261022.220",
             "factualReviewContractVersion": 1,
             "citationPresentationContractVersion": 3,
             "configurationConsistencyContractVersion": 2,
             "experimentPlanEncodingContractVersion": 2,
             "experimentOutlineEncodingContractVersion": 2,
             "experimentGenerationEnvelopeContractVersion": 1,
+            "experimentInputContractVersion": 1,
             # New experiments separate a small persisted scientific plan from
             # direct complete configuration, under the same aggregate budget.
             # Saved v1/v2 requests and unknown identities remain unchanged.
@@ -1115,6 +1116,7 @@ class ResearchFacade:
             run_record_fn=self._repo.require_run,
             call_history_fn=self._repo.list_calls,
             verification_max_input_bytes=32000,
+            experiment_max_input_bytes=32000,
         )
         
         # Return invoker directly - nodes call with (run_id, node_name, prompt, extra_body, use_reserve)
