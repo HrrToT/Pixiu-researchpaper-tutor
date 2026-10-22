@@ -192,9 +192,11 @@ def prepare_plan(record,*,prompt,aliases,invoke,parse,checkpoint):
     encoding_version=record['experimentPlanEncodingContractVersion'] if encoding else 0
     from services.deep_research.experiment_outline_encoding import enabled as outline_encoding
     outlined=outline_encoding(record)
+    from services.deep_research.experiment_generation_envelope import enabled as generation_envelope
     identity=digest({'version':1,'request':request,'evidenceAliases':aliases,
         **({'basisEncodingVersion':encoding_version} if encoding else {}),
-        **({'outlineEncodingVersion':record['experimentOutlineEncodingContractVersion']} if outlined else {})})
+        **({'outlineEncodingVersion':record['experimentOutlineEncodingContractVersion']} if outlined else {}),
+        **({'generationEnvelopeVersion':1} if generation_envelope(record) else {})})
     saved=deepcopy(record.get('state',{}).get('experimentPlanning'))
     if saved is not None:
         if (not isinstance(saved,dict) or type(saved.get('version')) is not int or saved['version']!=1

@@ -1447,8 +1447,23 @@ space with unsupported global absence or incidental iteration/performance values
             if plan is None:
                 return {'error_code':'budget_exhausted'}
             current=repo_update(run_id,lambda r:r,expected_revision=None)
-            prompt=prompt.replace(basis_slot,wire_text(plan['basis']) if plan_encoding(record)
-                else json.dumps(plan['basis'],ensure_ascii=False,separators=(',',':')),1)
+            actual_basis=(wire_text(plan['basis']) if plan_encoding(record)
+                else json.dumps(plan['basis'],ensure_ascii=False,separators=(',',':')))
+            from services.deep_research.experiment_generation_envelope import enabled as generation_envelope,refit
+            if generation_envelope(record):
+                planning_rows=deepcopy(evidence_summaries)
+                prompt,evidence_summaries,generation_audit=refit(record,planning_rows,
+                    lambda rows:render_premises(rows).replace(basis_slot,actual_basis,1),wire_bundles,plan,
+                    required_contexts={eid:context for b in wire_bundles
+                        for eid,context in b.get('requiredContextByEvidenceId',{}).items()})
+                generation_audit.update(
+                    planningEvidenceIds=[evidence_aliases[r['evidenceId']] for r in planning_rows],
+                    suppliedEvidenceIds=[evidence_aliases[r['evidenceId']] for r in evidence_summaries])
+                repo_update(run_id,lambda r:{**r,'state':{**r.get('state',{}),
+                    'generationPremiseAllocation':generation_audit}},expected_revision=None)
+                evidence_aliases={row['evidenceId']:evidence_aliases[row['evidenceId']] for row in evidence_summaries}
+            else:
+                prompt=prompt.replace(basis_slot,actual_basis,1)
             from services.deep_research.experiment_outline_encoding import encode as encode_outline
             prompt,outline_audit=encode_outline(record,prompt)
             if prepare_draft(current,plan,prompt=prompt,checkpoint=checkpoint_planning,

@@ -141,6 +141,8 @@ def build(record, *, question, limit, clarification, gaps, obligations, sources,
     from services.deep_research.experiment_intent import guidance,single_toggle_request
     from services.deep_research.design_drafting import _DRAFT_STATISTICS
     packed=lambda value:json.dumps(value,ensure_ascii=False,separators=(',',':'))
+    from services.deep_research.experiment_generation_envelope import enabled as generation_envelope,draft_prompt
+    if generation_envelope(record):prospective_draft_prompt=draft_prompt
     prompt=prospective_draft_prompt(question=question,limit=limit,clarification=clarification,
         gaps=gaps,obligations=obligations,sources=sources,evidence_marker=evidence_marker,
         claim_fields=claim_fields,claim_limit=claim_limit,section_templates=section_templates,concise=True)
