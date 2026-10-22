@@ -41,7 +41,7 @@ def remaining_seconds(record,now=None):
     return max(0,float(budget.get('maxWallClockSeconds',360))-max(0,elapsed))
 
 
-def validate_basis(value,allowed,*,max_bytes=MAX_BASIS_BYTES,lean=False):
+def validate_basis(value,allowed,*,max_bytes=MAX_BASIS_BYTES,lean=False,blueprint=False):
     """Structure/citation permissions only; never a scientific approval."""
     expected={'sourceRefs','protocol','unresolved'} if lean else {'sourceFacts','protocol','unresolved'}
     if not isinstance(value,dict) or set(value)!=expected:
@@ -49,7 +49,13 @@ def validate_basis(value,allowed,*,max_bytes=MAX_BASIS_BYTES,lean=False):
     facts,protocol,unresolved=value.get('sourceFacts',[]),value['protocol'],value['unresolved']
     if not isinstance(facts,list) or len(facts)>12 or not isinstance(protocol,dict) or set(protocol)!=PROTOCOL_KEYS:
         return False
-    if any(not isinstance(v,str) or not v.strip() for v in protocol.values()):
+    if blueprint is True:
+        from services.deep_research.experiment_blueprint import valid_state,valid_budget
+        if (not lean or any(not isinstance(protocol[k],str) or not protocol[k].strip()
+                for k in PROTOCOL_KEYS-{'state','pairingBudget'})
+                or not valid_state(protocol['state']) or not valid_budget(protocol['pairingBudget'])):
+            return False
+    elif any(not isinstance(v,str) or not v.strip() for v in protocol.values()):
         return False
     if (not isinstance(unresolved,list) or len(unresolved)>8
             or any(not isinstance(v,str) or not v.strip() for v in unresolved)):
@@ -74,7 +80,7 @@ def validate_basis(value,allowed,*,max_bytes=MAX_BASIS_BYTES,lean=False):
         return False
 
 
-def planning_prompt(*,question,obligations,sources,evidence,tables,metric_domains,compact=False,lean=False,positional=False,configuration_consistency_version=0,input_contract_version=0,execution_guidance_version=0):
+def planning_prompt(*,question,obligations,sources,evidence,tables,metric_domains,compact=False,lean=False,positional=False,configuration_consistency_version=0,input_contract_version=0,execution_guidance_version=0,blueprint=False):
     from services.deep_research.design_drafting import _DRAFT_POLICY,_DRAFT_STATISTICS
     from services.deep_research.experiment_intent import guidance,single_toggle_request
     from services.deep_research.metric_scope import metric_protocol_requirements
@@ -139,6 +145,11 @@ record its finite unmatched cost honestly, without claiming an isolated paramete
         if type(input_contract_version) is int and input_contract_version==1:
             prompt=prompt.replace('All values are sent losslessly in a2500-byte tuple;',
                 'The complete raw JSON and its lossless tuple must each fit4000 UTF-8 bytes;')
+    if blueprint is True:
+        if not (compact is True and lean is True and positional is True):
+            raise ValueError('Execution blueprint requires staged compact planning')
+        from services.deep_research.experiment_blueprint import PLANNING
+        prompt=PLANNING+SPLIT_GUIDANCE+'\n'+REFERENCE_RULE+'\n'
     prompt+='\nHuman question:\n'+question+'\nFrozen requirements:\n'+packed(obligations)
     prompt+='\nSource registry (metadata only):\n'+packed(sources)
     prompt+='\nExact original evidence with unchanged permissions:\n'+packed(evidence)
@@ -170,8 +181,9 @@ def request_identity(record,node,prompt,options):
 def valid_plan_basis(record,value,aliases):
     from services.deep_research.experiment_plan_encoding import enabled as plan_encoding,wire_text,flexible
     if plan_encoding(record):
-        if not validate_basis(value,aliases,max_bytes=MAX_BASIS_BYTES,lean=True):return False
-        try:return len(wire_text(value).encode('utf8'))<=(MAX_BASIS_BYTES if flexible(record) else basis_limit(record))
+        from services.deep_research.experiment_blueprint import enabled as blueprint_enabled
+        if not validate_basis(value,aliases,max_bytes=MAX_BASIS_BYTES,lean=True,blueprint=blueprint_enabled(record)):return False
+        try:return len(wire_text(value,version=record['experimentPlanEncodingContractVersion']).encode('utf8'))<=(MAX_BASIS_BYTES if flexible(record) else basis_limit(record))
         except (TypeError,ValueError,OverflowError):return False
     return validate_basis(value,aliases,max_bytes=basis_limit(record),lean=record.get('experimentDraftContractVersion') in (5,6))
 
@@ -179,7 +191,7 @@ def valid_plan_basis(record,value,aliases):
 def basis_encoding_audit(record,basis):
     from services.deep_research.experiment_plan_encoding import wire_text,flexible
     raw=len(json.dumps(basis,ensure_ascii=False,separators=(',',':')).encode('utf8'))
-    wire=len(wire_text(basis).encode('utf8'))
+    wire=len(wire_text(basis,version=record['experimentPlanEncodingContractVersion']).encode('utf8'))
     if flexible(record):
         return {'rawBytes':raw,'wireBytes':wire,'preferredSlotBytes':basis_limit(record),
             'rawLimitBytes':MAX_BASIS_BYTES,'fitsPreferredSlot':wire<=basis_limit(record),'scientificApproval':False}
@@ -197,6 +209,8 @@ def prepare_plan(record,*,prompt,aliases,invoke,parse,checkpoint):
     from services.deep_research.experiment_plan_encoding import enabled as plan_encoding,encode,wire_text,flexible
     encoding=plan_encoding(record)
     encoding_version=record['experimentPlanEncodingContractVersion'] if encoding else 0
+    from services.deep_research.experiment_blueprint import enabled as blueprint_enabled
+    blueprint=blueprint_enabled(record)
     from services.deep_research.experiment_outline_encoding import enabled as outline_encoding
     outlined=outline_encoding(record)
     from services.deep_research.experiment_generation_envelope import enabled as generation_envelope
@@ -219,7 +233,7 @@ def prepare_plan(record,*,prompt,aliases,invoke,parse,checkpoint):
                     or parsed_basis(saved['response'],parse)!=saved['basis']):
                 raise DeepResearchError('invalid_experiment_planning_state','保存的实验规划记录无效，不能重新发送。')
             if encoding and (type(saved.get('basisEncodingVersion')) is not int or saved['basisEncodingVersion']!=encoding_version
-                    or saved.get('encodedBasis')!=encode(saved['basis'])
+                    or saved.get('encodedBasis')!=encode(saved['basis'],version=encoding_version)
                     or saved.get('encodedBasisDigest')!=digest(saved['encodedBasis'])
                     or digest(saved.get('basisEncodingAudit'))!=digest(basis_encoding_audit(record,saved['basis']))):
                 raise DeepResearchError('invalid_experiment_planning_state','保存的规划编码已改变，不能重新发送。')
@@ -229,7 +243,7 @@ def prepare_plan(record,*,prompt,aliases,invoke,parse,checkpoint):
         if saved.get('status')=='output_capacity':
             if (not flexible(record) or digest(saved.get('response'))!=saved.get('responseDigest')
                     or parsed_basis(saved.get('response'),parse)!=saved.get('basis')
-                    or not validate_basis(saved.get('basis'),aliases,max_bytes=None,lean=True)
+                    or not validate_basis(saved.get('basis'),aliases,max_bytes=None,lean=True,blueprint=blueprint)
                     or valid_plan_basis(record,saved.get('basis'),aliases)
                     or digest(saved.get('basisEncodingAudit'))!=digest(basis_encoding_audit(record,saved['basis']))):
                 raise DeepResearchError('invalid_experiment_planning_state','保存的规划容量记录已改变，不能重新发送。')
@@ -256,7 +270,7 @@ def prepare_plan(record,*,prompt,aliases,invoke,parse,checkpoint):
     basis=parsed_basis(response,parse)
     if (flexible(record) and isinstance(response,dict)
             and response.get('finishReason',response.get('finish_reason'))!='length'
-            and validate_basis(basis,aliases,max_bytes=None,lean=True)
+            and validate_basis(basis,aliases,max_bytes=None,lean=True,blueprint=blueprint)
             and not valid_plan_basis(record,basis,aliases)):
         saved.update(status='output_capacity',basis=basis,basisEncodingAudit=basis_encoding_audit(record,basis))
         checkpoint(saved)
@@ -266,7 +280,7 @@ def prepare_plan(record,*,prompt,aliases,invoke,parse,checkpoint):
         saved['status']='invalid_response';checkpoint(saved)
         raise DeepResearchError('invalid_experiment_planning_response','实验科学规划未完整返回或引用无效，原响应已保留。')
     if encoding:
-        saved.update(encodedBasis=encode(basis),encodedBasisDigest=digest(encode(basis)),
+        saved.update(encodedBasis=encode(basis,version=encoding_version),encodedBasisDigest=digest(encode(basis,version=encoding_version)),
             basisEncodingAudit=basis_encoding_audit(record,basis))
     saved.update(status='ready',basis=basis);checkpoint(saved)
     return saved

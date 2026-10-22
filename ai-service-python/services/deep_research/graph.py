@@ -1445,6 +1445,7 @@ space with unsupported global absence or incidental iteration/performance values
                 **({'compact':True} if record['experimentDraftContractVersion'] in (4,5,6) else {}),
                 **({'lean':True} if record['experimentDraftContractVersion'] in (5,6) else {}),
                 **({'positional':True} if plan_encoding(record) else {}),
+                **({'blueprint':True} if plan_encoding(record) and record['experimentPlanEncodingContractVersion']==3 else {}),
                 configuration_consistency_version=record.get('configurationConsistencyContractVersion',0),
                 execution_guidance_version=record.get('experimentExecutionGuidanceContractVersion',0),
                 **({'input_contract_version':1} if experiment_capacity_enabled(record) else {})),aliases=evidence_aliases,
@@ -1453,7 +1454,7 @@ space with unsupported global absence or incidental iteration/performance values
             if plan is None:
                 return {'error_code':'budget_exhausted'}
             current=repo_update(run_id,lambda r:r,expected_revision=None)
-            actual_basis=(wire_text(plan['basis']) if plan_encoding(record)
+            actual_basis=(wire_text(plan['basis'],version=record['experimentPlanEncodingContractVersion']) if plan_encoding(record)
                 else json.dumps(plan['basis'],ensure_ascii=False,separators=(',',':')))
             from services.deep_research.experiment_generation_envelope import enabled as generation_envelope,refit
             if generation_envelope(record):

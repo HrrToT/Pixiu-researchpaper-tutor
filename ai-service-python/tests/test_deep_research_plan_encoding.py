@@ -126,7 +126,7 @@ def test_unknown_pending_cannot_switch_encoding_or_repair_its_metadata_to_resend
     invoke.assert_not_called()
 
 
-@pytest.mark.parametrize('replacement',[None,True,'1',0,3])
+@pytest.mark.parametrize('replacement',[None,True,'1',0,4])
 def test_wire_contract_is_server_owned_immutable_and_type_strict(tmp_path,replacement):
     from services.deep_research.facade import ResearchFacade
     from services.deep_research.repository import DeepResearchRepository
@@ -135,7 +135,7 @@ def test_wire_contract_is_server_owned_immutable_and_type_strict(tmp_path,replac
     try:
         value,_=facade.create({'workspaceTaskId':'t','operationKey':'k','question':'Design an experiment',
             'experimentPlanEncodingContractVersion':replacement,'deferStart':True},start_async=False)
-        assert value['experimentPlanEncodingContractVersion']==2 and enabled(value)
+        assert value['experimentPlanEncodingContractVersion']==3 and enabled(value)
         with pytest.raises(ValueError,match='Immutable'):
             repo.update_run(value['runId'],lambda r:{**r,'experimentPlanEncodingContractVersion':replacement})
     finally:facade.shutdown()
