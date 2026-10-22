@@ -1,0 +1,27 @@
+{
+  "date": "2026-10-22",
+  "sourceCommit": "82bff64c",
+  "promptVersion": "dr-v2.20261022.231",
+  "citationPresentationContractVersion": 4,
+  "sourceHashes": {
+    "citation_presentation.py": "a2aba737d29f007f58b693df352b9e29697621b0b08355ad9d7cd3271c23c30b",
+    "facade.py": "49262d14edef1dd8707317fea035f534e30dd65f135bdd489601d305252e79fb",
+    "graph.py": "1d7c69a419c36ff06595e0cc83eb8470229305adb8da5330f72a0296944ab728",
+    "repair.py": "c2211e401bbae2846f20d50aca2142b1ac17e8b75378c0691ee9c2e4f0df0187"
+  },
+  "idleBeforeRestart": true,
+  "ledgerRows": 5344,
+  "active": 0,
+  "pausedUnknowns": 11,
+  "allPriorRunPayloadsAndLedgerExactlyPreserved": true,
+  "wholeTaskSnapshotsExactlyPreserved": 4,
+  "health": {
+    "rag": "ok",
+    "grobid": "ok"
+  },
+  "frontendHttpStatus": 200,
+  "providerCalls": 0,
+  "productionModelRunsCreated": 0,
+  "independentCredit": 0,
+  "boundary": "Idle restart,exact source hashes,health and data retention. No new model run was created; this does not validate generated scientific content or rendered browser UI."
+}

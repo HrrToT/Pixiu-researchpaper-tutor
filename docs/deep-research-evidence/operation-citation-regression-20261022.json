@@ -1,0 +1,30 @@
+{
+  "date": "2026-10-22",
+  "sourceCommit": "82bff64c",
+  "promptVersion": "dr-v2.20261022.231",
+  "fullOffline": {
+    "files": 223,
+    "passed": 4067,
+    "warnings": 1,
+    "seconds": 203.89,
+    "log": "tmp/pytest-dr231-complete-native.log",
+    "sha256": "4aa500df60247174a87aee695183a0a07d884ec0952de8d6b40deb6ed0b0f4b3"
+  },
+  "newTests": 24,
+  "focusedPassed": 103,
+  "focusedOverlap": true,
+  "legacyScripts": 32,
+  "legacyPhysicalFingerprintsMatched": 96,
+  "additionalArchivedGenerationFingerprintsMatched": 2,
+  "providerCalls": 0,
+  "productionWritesByTests": 0,
+  "independentCredit": 0,
+  "environmentDiagnosis": {
+    "restrictedRun": "Intentionally stopped after isolated reproduction: asyncio proactor self-pipe stuck in socket._fallback_socketpair accept. Not a completed suite.",
+    "isolatedNativeRoute": "1passed in1.12s",
+    "stackLog": "tmp/pytest-dr231-route-sandbox.log",
+    "broadCollectionAttempt": "Initial all-tests collection hit unrelated FastAPI stubs in2non-research modules. That attempt is not a passing suite; final run explicitly selected all223test_deep_research files.",
+    "initialFocused": "96passed,1failed,6temp errors: missed parser version guard and sandbox temp root. Guard corrected; final focused103passed in4s. No scientific gates removed."
+  },
+  "boundary": "Only explicit already-owned operation citations change display, with originals audited. Uncited ranges/math/real symbols/config/evidence stay unchanged. Scientific content and independent acceptance are not inferred from tests."
+}
