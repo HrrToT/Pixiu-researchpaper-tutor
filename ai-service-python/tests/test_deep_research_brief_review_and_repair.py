@@ -29,7 +29,7 @@ def test_brief_review_preserves_every_structured_input_and_response_slot(role):
     if role=='data':assert DATA in new
 
 
-@pytest.mark.parametrize('version',[1,2])
+@pytest.mark.parametrize('version',[1,2,3])
 def test_repair_has_exact_originals_checks_contexts_permissions_and_quotes(version):
     report,checks,evidence=inputs();kw=kwargs();kw['repair_evidence_packet_version']=version
     p=_prepare_repair(report,checks,evidence,'Same unexecuted experiment.',**kw)
@@ -62,7 +62,7 @@ def test_source_registry_rewording_preserves_literal_data_and_unknown_policy():
         assert source_instruction(value)==value
 
 
-@pytest.mark.parametrize('old,new',[(1,2),(2,1)])
+@pytest.mark.parametrize('old,new',[(1,2),(2,1),(2,3),(3,2)])
 def test_unknown_repair_input_cannot_switch_trusted_instruction_version(old,new):
     report,checks,evidence=inputs();states=[];invoke=Mock(side_effect=OSError('unknown'))
     kw={**kwargs(),'repair_evidence_packet_version':old}
@@ -82,3 +82,19 @@ def test_brief_negative_audit_still_rejects_false_absence_without_calling_it_a_p
                 'findings':[{'kind':'missing_field','claimId':c['claimId'],'path':['executionSpec','seeds'],'reason':'missing'}]}])}
     capture=Wire();v=BudgetedSemanticChecker(capture,'offline',prospective_review=3,prospective_envelope=6)._check_batch([c],[],[],node='verify_design_config')
     assert v[0]['status']=='failed' and v[0]['executionState']=='received_invalid' and len(capture.sent)==1
+
+
+def test_current_repair_carries_writable_grammar_without_rewriting_user_or_evidence():
+    report,checks,evidence=inputs()
+    before=deepcopy((report,checks,evidence))
+    question='Literal EARLIER_componentId and inputIndex; preserve this question.'
+    old=_prepare_repair(report,checks,evidence,question,**{**kwargs(),'repair_evidence_packet_version':2})
+    new=_prepare_repair(report,checks,evidence,question,**{**kwargs(),'repair_evidence_packet_version':3})
+    assert 'Writable role grammar' not in old['prompt']
+    assert 'Writable role grammar' in new['prompt']
+    assert question in new['prompt']
+    assert 'inputIndex indexes THIS inputs list' in new['prompt']
+    assert 'baselineInitialization creates ALL states BEFORE fitting' in new['prompt']
+    assert 'state:training_data|baseline|EARLIER_componentId' not in new['prompt']
+    assert 'shape:[positive integer' in new['prompt']
+    assert (report,checks,evidence)==before

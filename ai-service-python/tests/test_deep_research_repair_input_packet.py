@@ -130,13 +130,13 @@ def test_unresolved_dispositions_remain_rejections_and_completed_batches_are_not
     no_send.assert_not_called()
 
 
-@pytest.mark.parametrize('value',[None,True,'1',3])
+@pytest.mark.parametrize('value',[None,True,'1',4])
 def test_unsupported_input_contract_cannot_fall_back_or_dispatch(value):
     report,checks,evidence=inputs();args=kwargs();args['repair_evidence_packet_version']=value
     with pytest.raises(ValueError):_prepare_repair(report,checks,evidence,'Fixture.',**args)
 
 
-@pytest.mark.parametrize('replacement',[None,True,'2',0,1,3])
+@pytest.mark.parametrize('replacement',[None,True,'2',0,1,3,4])
 def test_input_contract_is_server_owned_and_immutable(tmp_path,replacement):
     from services.deep_research.facade import ResearchFacade
     from services.deep_research.repository import DeepResearchRepository
