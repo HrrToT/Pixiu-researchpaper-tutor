@@ -1,0 +1,62 @@
+{
+  "date": "2026-10-22",
+  "case": "E1-v28",
+  "runId": "dr_run_abb83e1b9f0355279371a1a017eaa044",
+  "sourceCommit": "8760db13",
+  "status": "failed",
+  "errorCode": "experiment_planning_output_capacity",
+  "bodyGenerated": false,
+  "scientificallyAccepted": false,
+  "independentCredit": 0,
+  "capacity": {
+    "rawBytes": 4536,
+    "wireBytes": 4427,
+    "canonicalBytes": 5271,
+    "preferredSlotBytes": 2500,
+    "rawLimitBytes": 4000,
+    "fitsPreferredSlot": false,
+    "scientificApproval": false
+  },
+  "findings": [
+    {
+      "path": "protocol.state.blocks[0].states[1][2]",
+      "actual": [
+        "64",
+        "T*F"
+      ],
+      "issue": "First MLP affine input width T*F uses table capacity rather than declared per-point multiresolution lookup output. Levels and concatenated feature width are unspecified."
+    },
+    {
+      "path": "protocol.pairingBudget.phases[0]",
+      "actual": [
+        "reference_prep",
+        [
+          "shared"
+        ],
+        "frame 0 only",
+        "optimizer_steps",
+        1000,
+        [
+          "hash_encoding_table",
+          "ntc_affine0_weight",
+          "ntc_affine0_bias",
+          "ntc_affine1_weight",
+          "ntc_affine1_bias"
+        ],
+        "fixed step cap"
+      ],
+      "issue": "Frame0 reference preparation only fits NTC parameters; does not acquire or fit the initial Gaussian representation."
+    },
+    {
+      "path": "protocol.pairingBudget.accounting",
+      "actual": "Shared preparation: 1000 steps frame 0 + 100 steps/frame x 30 frames = 4000 optimizer steps. Treatment group: additional 50 steps/frame x 30 frames = 1500 optimizer steps. Control group: 0 Stage 2 steps. Whole-group effort matched by identical shared preparation; isolated effect is Stage 2 addition only.",
+      "issue": "Claims matched whole-group effort/isolated addition effect despite treatment-only additional optimization. Frozen question asks whole Stage2 tradeoff, not pure addition causality."
+    },
+    {
+      "path": "protocol.state.blocks[2].states[2][3]",
+      "actual": "80% of selected 3DG scale (E6)",
+      "issue": "Initial additional scale is stated as80%; supplied E5 describes inheriting selected scale, while E6 applies80% to subsequent splitting. These distinct operations are conflated."
+    }
+  ],
+  "boundary": "Manual review of saved private plan. Structural validity and later lossless capacity replay do not fix these content defects or upgrade the failed historical run."
+}

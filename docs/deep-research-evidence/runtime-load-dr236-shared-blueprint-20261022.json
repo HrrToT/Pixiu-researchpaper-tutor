@@ -1,0 +1,40 @@
+{
+  "date": "2026-10-22",
+  "sourceCommit": "44c04d71",
+  "promptVersion": "dr-v2.20261022.236",
+  "experimentPlanEncodingContractVersion": 6,
+  "structuredOutputContractVersion": 12,
+  "sourceHashes": {
+    "blueprint_wire.py": "8307b1e649bd406f7d0429ee124d7f4f1273b6bd4cee378bbe8203e00800fcc3",
+    "experiment_blueprint.py": "3942fa4015b78f1e3b4651ee7c064f5426b1d9e4b508de7b34b5f0dee6da077e",
+    "experiment_plan_encoding.py": "af0a58c16b50e8793e27df55019c28df03f80b8be9347838ad2e61af091fd1cf",
+    "experiment_planning.py": "ebe098e9add1d7175f4208848e7985743d57cbd6e0c92ce2509f8f0b5936a09e",
+    "experiment_template.py": "91a6594eced7283d413a4e9092923bd55e4e2cb01e0b8b98c330909cce8e9fb9",
+    "structured_output.py": "c38014de6f5a739105e2068b626fe0500bcc8e9d29c9d5dd9934b91e2f3a8d36",
+    "facade.py": "477c351e94a8c402da56b83ff0ee3d05f00ec6fc6b576835ec71ec05408f5296",
+    "graph.py": "eb5a958db1c8003514f4fcd2bd60f75ef86754103c0c1ebfce3c92de2e14e5f2"
+  },
+  "idleBeforeRestart": true,
+  "ledgerRows": 5436,
+  "active": 0,
+  "pausedUnknowns": 11,
+  "allPriorRunPayloadsAndLedgerExactlyPreserved": true,
+  "wholeTaskSnapshotsExactlyPreserved": 4,
+  "health": {
+    "rag": "ok",
+    "grobid": "ok"
+  },
+  "frontendHttpStatus": 200,
+  "providerCalls": 0,
+  "productionModelRunsCreated": 0,
+  "independentCredit": 0,
+  "boundary": "Idle restart,exact source hashes,health and data retention. No new model run was created; this does not validate generated scientific content or rendered browser UI.",
+  "subsequentCreatedRun": {
+    "case": "E1-v29",
+    "runId": "dr_run_03b9a8b880ce5238a3a10cb526218d07",
+    "promptVersion": "dr-v2.20261022.236",
+    "experimentPlanEncodingContractVersion": 6,
+    "structuredOutputContractVersion": 12,
+    "contentAccepted": false
+  }
+}
