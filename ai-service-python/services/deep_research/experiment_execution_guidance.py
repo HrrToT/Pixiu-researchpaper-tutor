@@ -4,7 +4,25 @@ from copy import deepcopy
 
 
 def enabled(record):
-    return type(record.get('experimentExecutionGuidanceContractVersion')) is int and record['experimentExecutionGuidanceContractVersion']==1
+    return type(record.get('experimentExecutionGuidanceContractVersion')) is int and record['experimentExecutionGuidanceContractVersion'] in (1,2)
+
+
+def initialization_grammar(schema, record):
+    """Change trusted grammar only, never serialized user/model values."""
+    if (type(record.get('experimentExecutionGuidanceContractVersion')) is not int
+            or record['experimentExecutionGuidanceContractVersion'] != 2):
+        return schema
+    return schema.replace(
+        'input={state:training_data|baseline|EARLIER_componentId,selector:actual existing state str}.',
+        'input={state:str,selector:str}. state=training_data, baseline, or an actual preceding '
+        'componentId; selector=existing tensor/selection.').replace(
+        'the named RNG per state/seed. Fresh inputs:[] cannot use inputIndex/reference; derive\n'
+        'declares actual inputs/axes.',
+        'the named RNG per state/seed. fresh inputs:[] needs literal shapes; input-dependent '
+        'shapes/copies use derive. inputIndex indexes THIS inputs list.').replace(
+        'Train requires baselineInitialization before fitting, with training_data inputs only;',
+        'baselineInitialization creates ALL states BEFORE fitting; never from a future trained model. '
+        'Train baseline inputs:training_data only;')
 
 
 PLANNING = '''Execution decisions: choose compatible UNEXECUTED settings now; absent author defaults

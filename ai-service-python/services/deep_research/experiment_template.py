@@ -180,6 +180,8 @@ with this metadata; independent review still checks the entire resulting experim
                 "Each role's executionSpec is directly the object below, never wrapped in the role name:\n",'',1))
     from services.deep_research.configuration_consistency import align_grammar
     schema=align_grammar(schema,record.get('configurationConsistencyContractVersion'))
+    from services.deep_research.experiment_execution_guidance import initialization_grammar
+    schema=initialization_grammar(schema,record)
     prompt+='\n'+schema+'\nEXACT_STAGES='+packed(list(STAGES))+'\nEXACT_RECORDS='+packed(sorted(RECORDS|{'group_checkpoints'}))
     prompt+='\nREQUIRED OUTPUT OUTLINE (one claim per role):\n'+packed(design_output_outline(
         strict_budget=True,strict_hypothesis=True,strict_protocol=2,strict_workflow=4))

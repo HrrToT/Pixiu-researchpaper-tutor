@@ -321,7 +321,7 @@ def verify_claims(claims: list[dict], evidence: list[dict],
                              "detail": str(verdict.get("reason", ""))[:400],
                              **({'rejectionAudit':verdict['rejectionAudit'],
                                  **({'executionState':'received_invalid'} if verdict.get('executionState')=='received_invalid' else {})}
-                                if type(review_context_version) is int and review_context_version in (5,6)
+                                if type(review_context_version) is int and review_context_version in (5,6,7)
                                 and isinstance(verdict.get('rejectionAudit'),dict) else {}),
                              **({'executionState':'not_started','reviewTimeAdmission':verdict.get('reviewTimeAdmission')}
                                 if verdict.get('executionState')=='not_started' else {}),

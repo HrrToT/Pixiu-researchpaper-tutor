@@ -52,7 +52,7 @@ def test_review_keeps_old_request_and_complete_values_but_adds_exact_presence_po
     assert kw==before and 'without an executionSpec grammar' in new
 
 
-@pytest.mark.parametrize('version',[None,True,False,0,'1',2])
+@pytest.mark.parametrize('version',[None,True,False,0,'1',3])
 def test_other_version_values_do_not_change_planning_messages(version):
     kw=dict(question='Exact task α',obligations=[],sources={},evidence=[],tables={},metric_domains=['quality'])
     assert planning_prompt(**kw,execution_guidance_version=version)==planning_prompt(**kw)
@@ -70,7 +70,7 @@ def test_graph_uses_execution_decisions_in_both_actual_requests_without_inventin
     assert store.value['state']['reportBody']['claims']  # Existing parsing, no seed/state injection.
 
 
-@pytest.mark.parametrize('replacement',[None,True,'1',0,2])
+@pytest.mark.parametrize('replacement',[None,True,'1',0,1,3])
 def test_execution_guidance_is_server_owned_and_strictly_immutable(tmp_path,replacement):
     from services.deep_research.facade import ResearchFacade
     from services.deep_research.repository import DeepResearchRepository
@@ -79,7 +79,7 @@ def test_execution_guidance_is_server_owned_and_strictly_immutable(tmp_path,repl
     try:
         row,_=facade.create({'workspaceTaskId':'t','operationKey':'k','question':'Experiment',
             'deferStart':True,'experimentExecutionGuidanceContractVersion':replacement},start_async=False)
-        assert row['experimentExecutionGuidanceContractVersion']==1
+        assert row['experimentExecutionGuidanceContractVersion']==2
         with pytest.raises(ValueError,match='Immutable'):
             repo.update_run(row['runId'],lambda r:{**r,'experimentExecutionGuidanceContractVersion':replacement})
     finally:facade.shutdown()
