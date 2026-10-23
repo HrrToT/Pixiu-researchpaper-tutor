@@ -1,5 +1,5 @@
 {
-  "asOf": "2026-10-22",
+  "asOf": "2026-10-23",
   "objective": "Complete DR0-DR5 in DEEP_RESEARCH_DESIGN_20261012.md without redefining success around implemented subsets.",
   "overall": "incomplete",
   "freshMaterialReadiness": "H1R2 remains unknown/unscored. H2R/H3R/H4R/H5R remain retired development cases; all new source/content results need independent replacements after development quality passes.",
@@ -3454,6 +3454,23 @@
       "settledTokens": 28224,
       "reviewReached": false,
       "independentCredit": 0
+    },
+    "requestSizedBlueprint": {
+      "sourceCommit": "1902b5ae",
+      "promptVersion": "dr-v2.20261022.241",
+      "offlinePassed": 4224,
+      "legacyScriptsPassed": 38,
+      "runtimeLoaded": true,
+      "health": "ok",
+      "case": "E1-v32",
+      "status": "failed",
+      "errorCode": "invalid_experiment_planning_response",
+      "reason": "Raw provider output contains non-JSON arithmetic 2^16 in a shape",
+      "settledModelCalls": 8,
+      "settledTokens": 29232,
+      "unsettledModelCalls": 0,
+      "independentCredit": 0,
+      "next": "Specify strict literal JSON numeric shapes for new private planning requests; preserve historical request identities."
     }
   },
   "stages": [
