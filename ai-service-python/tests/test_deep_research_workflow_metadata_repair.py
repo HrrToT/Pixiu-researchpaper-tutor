@@ -209,6 +209,43 @@ def test_graph_uses_revision_once_and_requires_complete_initial_state_before_pub
     assert [call.args[1] for call in invoke.call_args_list].count(NODE) == 1
 
 
+def test_revision_and_original_error_journal_resume_across_python_hash_seeds_without_calls(tmp_path):
+    import os
+    import subprocess
+    import sys
+    from pathlib import Path
+    code = '''import sys,json
+from pathlib import Path
+from copy import deepcopy
+sys.path[:0]=['ai-service-python','ai-service-python/tests']
+from test_deep_research_workflow_metadata_repair import setup_repair,response
+from test_deep_research_workflow_lifecycle_units import fixtures
+from services.deep_research.workflow_metadata_rows import encode
+from services.deep_research.contracts import digest
+_,meta,inits=fixtures();bad=deepcopy(meta);a,b=bad['components'][0]['appliesTo'][:2]
+for p in bad['phases']:
+ if p['kind']=='evaluate':p['groups']=[a]
+p=deepcopy(next(p for p in bad['phases'] if p['kind']=='fit'))
+p.update(phaseId='late_fit_probe',groups=[a],after=[],reads=[],updates=[],outputs=[])
+bad['phases'].insert(-1,p)
+r,_,invoke,run=setup_repair([response(encode(bad)),response(encode(meta)),*[response(v) for v in inits]])
+path=Path(sys.argv[1])
+if path.exists():
+ r.update(json.loads(path.read_text(encoding='utf8')))
+ invoke.side_effect=AssertionError('Resume must not send any new request')
+result=run()
+if not path.exists():path.write_text(json.dumps(r),encoding='utf8')
+print(json.dumps({'requestDigest':digest(result['metadataRepair']['request']),'calls':invoke.call_count}))
+'''
+    root = Path(__file__).resolve().parents[2]; path = tmp_path/'record.json'; results = []
+    for seed in ('1', '2'):
+        run = subprocess.run([sys.executable, '-X', 'utf8', '-c', code, str(path)], cwd=root,
+            env={**os.environ, 'PYTHONHASHSEED': seed}, capture_output=True, text=True, encoding='utf8', check=True)
+        results.append(json.loads(run.stdout))
+    assert results[0]['requestDigest'] == results[1]['requestDigest']
+    assert results[0]['calls'] == 5 and results[1]['calls'] == 0
+
+
 @pytest.mark.parametrize('replacement', [None, True, 2])
 def test_marker_is_immutable_and_legacy_records_cannot_be_opted_in(tmp_path, replacement):
     from services.deep_research.repository import DeepResearchRepository

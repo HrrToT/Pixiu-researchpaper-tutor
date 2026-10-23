@@ -229,6 +229,7 @@ def prepare_units(record, *, prompt, aliases, invoke, parse, checkpoint):
                 problems = ['unit.output_truncated']
         except (TypeError, ValueError, RecursionError, OverflowError):
             value, problems = None, ['unit.json']
+        if repair_mode:problems = sorted(problems)
         if unit['status'] in ('ready', 'invalid_response'):
             if (unit.get('valueDigest') != digest(value) or digest(unit.get('value')) != digest(value)
                     or unit.get('errors') != problems or (unit['status'] == 'ready') != (not problems)):

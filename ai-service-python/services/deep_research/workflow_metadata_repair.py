@@ -55,8 +55,18 @@ def prompt_for(source_data, wire, field_feedback):
                                 'invalidMetadata': wire, 'fieldFeedback': field_feedback})
 
 
-def prepare(record, *, source_data, failed, aliases, existing, invoke, checkpoint):
+def stable_feedback(metadata, aliases):
     from services.deep_research.workflow_metadata_feedback import feedback
+    value = feedback(metadata, aliases)
+    # DAG checks iterate group sets. Canonicalize ONLY this new request's
+    # diagnostic ordering, retaining every issue/value and semantic phase order.
+    value['codes'] = sorted(value['codes'])
+    value['issues'] = sorted(value['issues'], key=lambda item: json.dumps(
+        item, ensure_ascii=False, sort_keys=True, separators=(',', ':'), allow_nan=False))
+    return value
+
+
+def prepare(record, *, source_data, failed, aliases, existing, invoke, checkpoint):
     from services.deep_research.workflow_metadata_rows import decode
     from services.deep_research.workflow_units import unit_errors, META
     from services.deep_research.execution_workflow_blueprint import MAX_INPUT, MAX_VALUE, packed
@@ -65,9 +75,9 @@ def prepare(record, *, source_data, failed, aliases, existing, invoke, checkpoin
     wire = original_wire(failed)
     if not enabled(record) or wire is None:
         raise DeepResearchError('invalid_workflow_unit_response', '原元信息不满足有界修订条件。')
-    field_feedback = feedback(failed['value'], aliases)
+    field_feedback = stable_feedback(failed['value'], aliases)
     parent = {'requestDigest': digest(failed['request']), 'responseDigest': failed['responseDigest'],
-              'valueDigest': failed['valueDigest'], 'errors': deepcopy(failed['errors'])}
+              'valueDigest': failed['valueDigest'], 'errors': sorted(failed['errors'])}
     request = request_identity(record, NODE, prompt_for(source_data, wire, field_feedback), {'temperature': 0.0})
     identity = digest({'parent': parent, 'request': request, 'aliases': aliases})
     size = len(request['prompt'].encode('utf8')) + overhead_bytes(record, NODE)
@@ -112,6 +122,7 @@ def prepare(record, *, source_data, failed, aliases, existing, invoke, checkpoin
     if response.get('finishReason', response.get('finish_reason')) != 'stop':
         problems = ['unit.output_truncated' if response.get('finishReason', response.get('finish_reason')) == 'length'
                     else 'unit.output_status']
+    problems = sorted(problems)
     if saved['status'] in ('ready', 'invalid_response'):
         if (saved.get('valueDigest') != digest(value) or digest(saved.get('value')) != digest(value)
                 or saved.get('errors') != problems or (saved['status'] == 'ready') != (not problems)):

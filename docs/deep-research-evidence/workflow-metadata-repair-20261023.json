@@ -15,22 +15,18 @@
   "caseSeconds": 360,
   "focusedRegression": {
     "files": 9,
-    "passed": 212,
-    "seconds": 24.78
+    "passed": 213,
+    "seconds": 32.03
   },
   "actualSavedInput": {
     "case": "E1-v52",
-    "originalEligible": true,
     "allOriginalSourceValuesPreserved": true,
     "allInvalidMetadataValuesPreserved": true,
-    "allFeedbackValuesPreserved": true,
-    "rawRequestWithSchemaBytes": 35006,
+    "allFeedbackEntriesPreserved": true,
+    "diagnosticOrderingCanonical": true,
     "sharedRequestWithSchemaBytes": 31811,
     "maxInputBytes": 32000,
-    "requestDigest": "fe968f85fdc3cae2fa99ce20a977d303fa1a372db7cbb6848dee9f7cbea6bed7",
-    "schemaName": "workflow_metadata_rows_v1",
-    "outputTokens": 2048,
-    "reasoning": "none",
+    "requestDigest": "3ec94631de1fb12ba1a5f0896673d4b1fa059e6bf389e7576640145cff6c847f",
     "providerCalls": 0,
     "productionWrites": 0,
     "revisedScientificValues": false
@@ -80,15 +76,16 @@
     "allPassed": true,
     "providerCalls": 0,
     "productionWrites": 0,
-    "outputsRedirected": true
+    "outputsRedirected": true,
+    "sourceCommit": "0d875568"
   },
   "fullRegression": {
-    "status": "not_started"
+    "status": "not_started_after_identity_fix"
   },
   "sourceHashes": {
     "services/deep_research/shared_strings.py": "6da42b7b3e4333f2b3750d8d0c354f02ea5fbe4eebe939e6b401e28fc35bb7bf",
-    "services/deep_research/workflow_metadata_repair.py": "e52f922ab5ecc454ef194545ebb160b8aba44fcf1c6127347fb49c3d2138fad6",
-    "services/deep_research/workflow_units.py": "5d380bb82ca97c3442d72381a6e6387e31214931e6bc8815a01949cfc408ee13",
+    "services/deep_research/workflow_metadata_repair.py": "407454817ca7ad0bf4f51877e413c94583bc821eaf3ce5a55eea8fc492ca3f1b",
+    "services/deep_research/workflow_units.py": "2c998a5d1631ef2b26574bcea48f4678b5cbc66730bbada85d08731103ac989a",
     "services/deep_research/workflow_transport.py": "63c53e3d3850f7aa01994a986550ddee98bc41571777602de0441c3736529a01",
     "services/deep_research/planning_transport.py": "489b719e076ac33d6c53142865740d89e72d113054b0089ea640a0ab5086da84",
     "services/deep_research/runtime.py": "cd5ec11f07a722a385d533045ea58f34a50747665ae2eb4df73020f9a1a61abc",
@@ -96,11 +93,36 @@
     "services/deep_research/finalization_pool.py": "8bd3a13fc902ea58c9b8eff0f124e66d592640fbb3a897898bb463e1d14c52d1",
     "services/deep_research/repository.py": "82b4a8ec0126ce74d29a40565b2895780fc1d806b9987983cbc1744cbd4f7933",
     "tests/test_deep_research_shared_strings.py": "196e68dc420b5a3b8523db4aa8a519069e1c6eb484ae87cc1d6507db6a3c5ea1",
-    "tests/test_deep_research_workflow_metadata_repair.py": "03506bbfecf9d332c1ce0223abfc71a9291e67d2e538ceffe661561f04414f36"
+    "tests/test_deep_research_workflow_metadata_repair.py": "6c3a5880778dd6383a07a109dc53a46d4a09a5f6142d9a6d66a71d1077e66622"
   },
   "providerCalls": 0,
   "productionWrites": 0,
   "scientificApproval": false,
   "independentCredit": 0,
-  "boundary": "Default-off candidate. Mock HTTP, graph, resume, budget and exact input proofs do not establish real provider output quality; initialization and independent science checks remain mandatory."
+  "boundary": "Default-off candidate. Mock HTTP, graph, resume, budget and exact input proofs do not establish real provider output quality; initialization and independent science checks remain mandatory.",
+  "fullRegressionAttempts": [
+    {
+      "sourceCommit": "0d875568dcaa2467b967de2b2d6c4dba42737304",
+      "files": 253,
+      "exitCode": 4294967295,
+      "sourceStable": true,
+      "elapsedSeconds": 147.0,
+      "logSha256": "a12bb241837502d8daa372cfb92f53bced14d9fde8eef7ae4e13b61f303cdd1b",
+      "providerCalls": 0,
+      "productionWrites": 0,
+      "status": "cancelled_for_request_identity_fix",
+      "passed": false,
+      "log": "tmp/pytest-metadata-repair-full-20261023.log"
+    }
+  ],
+  "crossProcessRecovery": {
+    "hashSeeds": [
+      "1",
+      "2"
+    ],
+    "firstExecutionCalls": 5,
+    "resumeCalls": 0,
+    "requestDigestUnchanged": true,
+    "originalErrorJournalStable": true
+  }
 }
