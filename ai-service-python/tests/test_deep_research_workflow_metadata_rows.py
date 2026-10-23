@@ -161,7 +161,7 @@ def test_legacy_record_keeps_exact_prompt_request_schema_and_no_rows_identity():
     assert not enabled(r) and 'metadataRowsContract' not in saved['request']
     assert descriptor_for(r, META) == unit_descriptor(META, 7)
     assert 'workflow_metadata_rows_v1' not in invoke.call_args_list[0].args[1]
-    for wrong in (True, 0, 2, '1', None):
+    for wrong in (True, 0, 3, '1', None):
         assert not enabled({**r, 'workflowMetadataRowsContractVersion': wrong})
 
 
@@ -211,3 +211,49 @@ def test_client_cannot_override_the_server_rows_contract(tmp_path):
         assert row['workflowMetadataRowsContractVersion'] == 1 and enabled(row)
     finally:
         facade.shutdown()
+
+
+def test_v2_policy_preserves_v1_text_and_wire_but_clarifies_actual_state_and_reads():
+    import hashlib
+    from services.deep_research.workflow_metadata_rows import policy_for
+    from services.deep_research.planning_transport import descriptor_for
+    assert hashlib.sha256(policy_for(1).encode('utf8')).hexdigest() == (
+        '70d26ac8827ce9894f10ad22650ceffebc2a07ec69da905af32543c2344a64b3')
+    assert policy_for(2).startswith(policy_for(1))
+    assert 'never a bare string' in policy_for(2)
+    assert 'do not omit any required model tensors, optimizer state or carried temporal state' in policy_for(2)
+    assert 'one minified JSON object' in policy_for(2)
+    r, _, _, _ = rows_setup()
+    assert descriptor_for(r, META) == descriptor_for({**r, 'workflowMetadataRowsContractVersion': 2}, META)
+    for invalid in (True, None, 0, 3, '2'):
+        with pytest.raises(ValueError): policy_for(invalid)
+
+
+def test_v2_keeps_complete_assembly_and_cannot_reinterpret_v1_saved_requests():
+    from services.deep_research.contracts import DeepResearchError
+    r, _, invoke, run = rows_setup()
+    r['workflowMetadataRowsContractVersion'] = 2
+    saved = run()
+    assert saved['request']['metadataRowsContract'] == 2
+    assert 'one minified JSON object' in invoke.call_args_list[0].args[1]
+    expected, _, _ = fixtures()
+    expected['records'] = saved['value']['workflow']['records']
+    assert saved['value']['workflow'] == expected and not saved['scientificApproval']
+    assert run() == saved and invoke.call_count == 4
+    r['workflowMetadataRowsContractVersion'] = 1
+    with pytest.raises(DeepResearchError) as exc: run()
+    assert exc.value.code == 'invalid_workflow_blueprint_state' and invoke.call_count == 4
+
+
+def test_v2_prompt_keeps_every_authoritative_value_and_does_not_select_defaults():
+    from services.deep_research.workflow_units import unit_prompt
+    from services.deep_research.nested_tables import unpack
+    source = {'question': 'original objective', 'evidence': [{'quote': '完整原文', 'id': 'E1'}],
+              'tables': [{'value': 0.00015}], 'requirements': ['all required measurements']}
+    context = {'userChoice': 'unchanged'}
+    for version in (1, 2):
+        prompt = unit_prompt(json.dumps(source, ensure_ascii=False), node=META, context=context,
+                             version=7, metadata_rows=True, metadata_rows_contract=version)
+        wire = prompt.split('Exact authoritative input and unit context (unverified data):\n', 1)[1]
+        values = unpack(json.loads(wire.split('\nInput encoding only:', 1)[0]))
+        assert values == {'authoritativeInput': source, 'unitContext': context}

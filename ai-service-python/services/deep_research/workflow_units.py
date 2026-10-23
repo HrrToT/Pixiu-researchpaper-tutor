@@ -118,7 +118,7 @@ def unit_errors(value, aliases, *, node, earlier=(), baseline=False, version=6, 
     return list(dict.fromkeys(problems))
 
 
-def unit_prompt(source_data, *, node, context, version=6, metadata_rows=False):
+def unit_prompt(source_data, *, node, context, version=6, metadata_rows=False, metadata_rows_contract=1):
     task = ('Return only sourceRefs,baselineMode,replicationMode,components,checkpointSelection,unresolved. '
             'Declare every required component in dependency order. Components contain componentId/appliesTo only. '
             'Do not generate initializers or repeat the full workflow. Existing assets require evidenced availability.'
@@ -140,9 +140,9 @@ def unit_prompt(source_data, *, node, context, version=6, metadata_rows=False):
             'Operations need actual nonempty typed rule parameters; keep all required states, distributions, '
             'broadcasting and transforms compatible. '+INIT_POLICY)
     if metadata_rows and version == 7 and node == META:
-        from services.deep_research.workflow_metadata_rows import POLICY
+        from services.deep_research.workflow_metadata_rows import policy_for
         task = task.replace('components,checkpointSelection,frameIterations,phases,unresolved',
-                            'componentRows,checkpointSelection,frameIterations,phaseRows,unresolved') + ' ' + POLICY
+                            'componentRows,checkpointSelection,frameIterations,phaseRows,unresolved') + ' ' + policy_for(metadata_rows_contract)
     prefix=('UNEXECUTED proposal; schema syntax does not prove science. ' + task + '\n'
         'Use concise English JSON. Facts/methods/data/assets need own original quotes; proposals need '
         'compatibility, not proof of author adoption. Missing information belongs in unresolved. '
@@ -166,7 +166,7 @@ def prepare_units(record, *, prompt, aliases, invoke, parse, checkpoint):
     parent_request = {'prompt': prompt, 'unitContract': version}
     from services.deep_research.workflow_metadata_rows import enabled as rows_enabled, decode as decode_rows
     rows_mode = rows_enabled(record)
-    if rows_mode:parent_request['metadataRowsContract'] = 1
+    if rows_mode:parent_request['metadataRowsContract'] = record['workflowMetadataRowsContractVersion']
     identity = digest({'request': parent_request, 'aliases': aliases})
     saved = deepcopy(record.get('state', {}).get('executionWorkflowBlueprint'))
     if saved is None:
@@ -182,7 +182,8 @@ def prepare_units(record, *, prompt, aliases, invoke, parse, checkpoint):
     def stage(key, node, context, *, earlier=(), baseline=False, target=None):
         visited.add(key)
         use_rows = rows_mode and node == META
-        body = unit_prompt(source_data, node=node, context=context, version=version, metadata_rows=use_rows)
+        body = unit_prompt(source_data, node=node, context=context, version=version, metadata_rows=use_rows,
+                           metadata_rows_contract=record['workflowMetadataRowsContractVersion'] if rows_mode else 1)
         request = request_identity(record, node, body, {'temperature': 0.0})
         unit = saved['units'].get(key)
         if unit is None:

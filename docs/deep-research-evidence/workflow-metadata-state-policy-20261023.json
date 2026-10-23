@@ -1,0 +1,44 @@
+{
+  "workflowMetadataRowsContractVersion": 2,
+  "defaultAllocatedVersion": 1,
+  "defaultEnabled": false,
+  "runtimeLoaded": false,
+  "scientificApproval": false,
+  "focusedRegression": {
+    "files": 9,
+    "passed": 186,
+    "seconds": 24.0
+  },
+  "fullRegression": {
+    "status": "not_started"
+  },
+  "actualSavedInput": {
+    "case": "E1-v51",
+    "oldV1PromptReconstructedExactly": true,
+    "allSourceValuesUnchanged": true,
+    "oldInputWithSchemaBytes": 25798,
+    "newInputWithSchemaBytes": 27613,
+    "maxInputBytes": 32000,
+    "sameOutputGrammar": true,
+    "providerCalls": 0,
+    "productionWrites": 0,
+    "scientificApproval": false,
+    "partialResponseRepaired": false
+  },
+  "changes": [
+    "Separate actually initialized persistent state from phase operations without omitting required state.",
+    "Require exact read-row shapes and minified JSON.",
+    "Do not infer checkpoint availability from a paper mentioning training."
+  ],
+  "oldV1PolicySha256": "70d26ac8827ce9894f10ad22650ceffebc2a07ec69da905af32543c2344a64b3",
+  "oldV1PromptExactlyRetained": true,
+  "schemaAndAllOutputCapsUnchanged": true,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "sourceHashes": {
+    "services/deep_research/workflow_metadata_rows.py": "469abbec9718a677f4fda85f1264e3f86e28e1ff4104156172e772d42bf5f626",
+    "services/deep_research/workflow_units.py": "1f10fdb625f24219a5f30a568e43c9b28f53e98a1b4d88d246cbd6bb7c14e882",
+    "tests/test_deep_research_workflow_metadata_rows.py": "bbb635f590cdc20607389143d676e735547508f38b928ef177adff81362459fd"
+  },
+  "boundary": "Candidate version 2 is not allocated by .261. Related tests and unchanged-input proof do not establish real model output or scientific acceptance."
+}

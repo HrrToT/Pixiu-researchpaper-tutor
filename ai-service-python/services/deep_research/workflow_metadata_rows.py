@@ -18,7 +18,7 @@ COMMON = ('sourceRefs', 'baselineMode', 'replicationMode', 'checkpointSelection'
 
 def enabled(record):
     return (type(record.get('workflowMetadataRowsContractVersion')) is int
-            and record['workflowMetadataRowsContractVersion'] == 1
+            and record['workflowMetadataRowsContractVersion'] in (1, 2)
             and type(record.get('workflowContractVersion')) is int
             and record['workflowContractVersion'] == 5
             and type(record.get('executionWorkflowContractVersion')) is int
@@ -154,3 +154,35 @@ POLICY = (
     'Initializer dependencies between components belong to initializer inputs and component order. '
     'Rows are only an encoding, not approval or permission to omit required scientific values.'
 )
+
+
+def policy_for(version):
+    """Keep v1 requests frozen; v2 clarifies semantics, not the wire values."""
+    if type(version) is not int or version not in (1, 2):
+        raise ValueError('Unsupported metadata rows policy')
+    if version == 1:
+        return POLICY
+    return POLICY + (
+        ' Emit one minified JSON object with no indentation or decorative whitespace. '
+        'A component is actual persistent model/data state that needs a complete initializer later, '
+        'not a list of software routines. Put stateless renderers, metric computations, optimizers, '
+        'spawning procedures and recorders in phase actions, not componentRows. '
+        'If an operation has actual persistent learned/nonlearned state, retain that state as a component; '
+        'do not omit any required model tensors, optimizer state or carried temporal state. '
+        'Fixed images, camera partitions and other existing inputs are training_data selectors '
+        'unless they truly require a separate initialized state. '
+        'Every reads entry MUST be an array [state,selector] or [phaseId,outputId,selector], '
+        'never a bare string; even a singleton read retains its enclosing list of rows. '
+        'An evaluated arm is not an execution sharing mode: give both arms distinct IDs, '
+        'and use the sharing field to say whether a phase runs once or once per arm. '
+        'Keep all necessary operations, outputs and dependencies. Co-locate compatible read-only '
+        'measurements in one phase action only when all their selected inputs, outputs, parameters '
+        'and ordering remain explicit; never remove a required measurement to fit the cap. '
+        'Use exact concise selectors and actions rather than explanatory paragraphs. '
+        'baselineMode existing requires an actually available complete checkpoint in the supplied '
+        'materials, not merely a paper reporting that its authors trained a model. If training is '
+        'chosen, its complete baseline initializer is selected in the next unit. Record unavailable '
+        'assets as unresolved rather than inventing a checkpoint or silently assuming access. '
+        'Use unresolved for actual missing decisions or evidence; do not repeat the same gap '
+        'in multiple fields or claim that a chosen configuration was verified.'
+    )
