@@ -13,7 +13,7 @@ ROLES = ('data', 'budget', 'controls', 'groups')
 def enabled(record):
     return (isinstance(record, dict)
             and type(record.get('executionWorkflowContractVersion')) is int
-            and record['executionWorkflowContractVersion'] in (1, 2)
+            and record['executionWorkflowContractVersion'] in (1, 2, 3)
             and record.get('workflowContractVersion') == 4
             and record.get('experimentDraftContractVersion') == 6
             and (record.get('state', {}).get('outputKind') or record.get('outputKind')) == 'experiment_design')
@@ -57,7 +57,7 @@ def prompt_for(*, question, basis, sources, evidence, tables, obligations, versi
         raise ValueError('Private workflow grammar no longer matches Workflow4')
     grammar = WORKFLOW_CONTRACT_V4.replace(refs_line, '{\n', 1).replace(
         'refs match accepted siblings and modes.', 'Public IDs are bound later; modes must agree.', 1)
-    if type(version) is not int or version not in (1, 2):
+    if type(version) is not int or version not in (1, 2, 3):
         raise ValueError('Unsupported private workflow version')
     if version == 2:
         grammar = grammar.replace(
@@ -81,6 +81,19 @@ The same frame-0 model means the same state within the pair, NOT proof of an ava
 checkpoint. If no usable asset is evidenced, specify how to train the common baseline
 from available training data. If that cannot be specified faithfully, record the gap
 in unresolved instead of claiming an existing asset or successful precheck.
+'''
+    if version == 3:
+        grammar = '''The response schema defines syntax; do not add wrappers or narrative fields.
+Initialization is BEFORE fitting: a training procedure is not an initializer. Use the
+actual baseline frame's training inputs, separately from later evaluation windows.
+An input axis means the selected state's actual dimension, not a convenient count:
+images/views are not Gaussian points. Define selected point-state inputs explicitly.
+State order follows declared inputs; no future component or undeclared gradient.
+fresh has no inputs; derive needs available inputs. Existing baseline needs an evidenced
+usable asset and null initialization; train needs a complete pre-fit initialization.
+Use actual paired group IDs. Lock splits before fitting; evaluation never tunes or
+initializes. Check distribution bounds, broadcasting, referenced axes and selectors.
+Missing assets or initial-state knowledge belong in unresolved, not invented values.
 '''
     return ('''Propose ONE complete UNEXECUTED initialization/workflow for the human objective.
 Return exactly {"sourceRefs":["supplied E IDs"],"workflow":{Workflow4 fields EXCEPT refs},"unresolved":[]}.
@@ -120,8 +133,10 @@ def prepare(record, *, prompt, aliases, invoke, parse, checkpoint):
     else:
         saved = {'version': version, 'inputDigest': identity, 'request': request,
                  'aliases': deepcopy(aliases), 'status': 'pending', 'scientificApproval': False}
-        if len(prompt.encode('utf8')) > MAX_INPUT:
-            saved.update(status='not_started_capacity', inputBytes=len(prompt.encode('utf8')), maxInputBytes=MAX_INPUT)
+        from services.deep_research.planning_transport import overhead_bytes
+        input_bytes = len(prompt.encode('utf8')) + (overhead_bytes(record, 'plan_workflow') if version == 3 else 0)
+        if input_bytes > MAX_INPUT:
+            saved.update(status='not_started_capacity', inputBytes=input_bytes, maxInputBytes=MAX_INPUT)
         elif remaining_seconds(record) < 180:
             saved['status'] = 'not_started_budget'
         checkpoint(deepcopy(saved))
@@ -130,7 +145,8 @@ def prepare(record, *, prompt, aliases, invoke, parse, checkpoint):
     if saved['status'] == 'not_started_budget':
         return None
     if saved['status'] == 'pending':
-        response = invoke('plan_workflow', request['prompt'], request['extra'])
+        from services.deep_research.planning_transport import dispatch_options
+        response = invoke('plan_workflow', request['prompt'], dispatch_options(record, 'plan_workflow', request['extra']))
         saved.update(status='response_received', response=deepcopy(response), responseDigest=digest(response))
         checkpoint(deepcopy(saved))
     if saved['status'] not in ('response_received', 'ready', 'invalid_response'):

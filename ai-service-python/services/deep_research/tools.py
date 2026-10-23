@@ -342,9 +342,11 @@ class TrackedLLMInvoker:
         # Reject overlarge input BEFORE reserve - enforce UTF-8 byte size limit
         # Reject instead of silently clipping evidence or under-reserving it.
         max_byte_length = self.prompt_byte_limit(run_id, node)
-        if prompt_byte_length > max_byte_length:
+        from services.deep_research.workflow_transport import enabled as workflow_schema
+        admission_bytes = prompt_byte_length + (overhead_bytes(transport_record,node) if workflow_schema(transport_record,node) else 0)
+        if admission_bytes > max_byte_length:
             raise ValueError(
-                f"Prompt too large: {prompt_byte_length} bytes (~{estimated_input} tokens) "
+                f"Prompt too large: {admission_bytes} bytes (~{estimated_input} tokens) "
                 f"exceeds max {max_byte_length} bytes"
             )
         

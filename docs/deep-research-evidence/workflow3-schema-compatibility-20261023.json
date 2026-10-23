@@ -1,0 +1,17 @@
+{
+  "syntheticOnly": true,
+  "paperContentSent": false,
+  "automaticRetries": 0,
+  "productionWrites": 0,
+  "validPrivateShape": true,
+  "settledCalls": 1,
+  "usage": {
+    "total_tokens": 2668,
+    "input_tokens": 2373,
+    "output_tokens": 295
+  },
+  "reportedModel": "deepseek-v4-pro",
+  "fullResponseReceipt": "tmp/deepseek-workflow-schema-v3/result.json",
+  "productionContractEnabled": false,
+  "boundary": "Provider accepted the complete schema and returned a structurally valid synthetic workflow. This does not prove scientific quality or general schema enforcement."
+}

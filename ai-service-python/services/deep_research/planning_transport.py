@@ -4,6 +4,9 @@ from llm.responses_transport import API_KEY
 
 
 def enabled(record,node):
+    from services.deep_research.workflow_transport import enabled as workflow_enabled
+    if workflow_enabled(record, node):
+        return True
     return (node=='plan_experiment' and isinstance(record,dict)
         and type(record.get('structuredOutputContractVersion')) is int
         and record['structuredOutputContractVersion'] in (14,15))
@@ -30,13 +33,18 @@ def descriptor():
     return {'type':'json_schema','name':'private_experiment_columns_v1','schema':schema}
 
 
+def descriptor_for(record, node):
+    from services.deep_research.workflow_transport import enabled as workflow_enabled, descriptor as workflow_descriptor
+    return workflow_descriptor() if workflow_enabled(record, node) else descriptor()
+
+
 def options_for_record(record,node,options):
     """Own transport selection; caller/source options cannot inject an adapter."""
     if API_KEY in options:raise ValueError('Transport selection is server-owned')
     if not enabled(record,node):return {**options,'response_format':{'type':'json_object'}}
     allowed={'response_format','thinking','reasoning_effort','max_tokens','temperature','timeout_seconds'}
     if set(options)-allowed:raise ValueError('Unsupported private planning options')
-    return {**options,API_KEY:'responses','response_format':descriptor()}
+    return {**options,API_KEY:'responses','response_format':descriptor_for(record,node)}
 
 
 def validate_options(record,node,options):
@@ -53,5 +61,5 @@ def dispatch_options(record,node,options):
 
 def overhead_bytes(record,node):
     if not enabled(record,node):return 0
-    return len(json.dumps({API_KEY:'responses','response_format':descriptor()},
+    return len(json.dumps({API_KEY:'responses','response_format':descriptor_for(record,node)},
         ensure_ascii=False,separators=(',',':'),allow_nan=False).encode('utf8'))

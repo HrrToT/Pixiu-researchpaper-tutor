@@ -102,7 +102,7 @@ def test_public_generation_cannot_override_or_ambiguously_bind_the_saved_workflo
     with pytest.raises(DeepResearchError): bind(report, saved)
 
 
-@pytest.mark.parametrize('value', [None, True, '1', 0, 3])
+@pytest.mark.parametrize('value', [None, True, '1', 0, 4])
 def test_feature_flag_requires_exact_server_version(value):
     r = record(); r['executionWorkflowContractVersion'] = value
     assert not enabled(r)
