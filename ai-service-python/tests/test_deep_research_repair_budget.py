@@ -26,6 +26,60 @@ def test_runtime_output_cap_matches_budget_planning():
     assert repair_prompt_byte_limit({'maxTokens': 100000}) == 24000
 
 
+def test_repair4_window_uses_only_remaining_normal_pool():
+    budget = {'maxTokens': 100000, 'reserveTokens': 50000,
+              'tokens': 49708, 'normalTokens': 14438}
+    assert repair_prompt_byte_limit(budget, 4096) == 24000
+    assert repair_prompt_byte_limit(budget, 4096, input_bytes=32000) == 30442
+    assert repair_prompt_byte_limit({**budget, 'tokens': 99000}, 4096, input_bytes=32000) == 0
+    assert repair_prompt_byte_limit({}, input_bytes=32001) == 0
+    assert budget['normalTokens'] == 14438
+
+
+def test_repair4_transport_requires_frozen_experiment_profile_and_keeps_other_nodes():
+    from services.deep_research.tools import TrackedLLMInvoker
+    from services.deep_research.repair_budget import experiment_repair_window
+    record = {'outputKind': 'experiment_design', 'state': {'outputKind': 'experiment_design'},
+              'experimentRepairContractVersion': 6, 'experimentRepairInputContractVersion': 4,
+              'protocolContractVersion': 2, 'workflowContractVersion': 4,
+              'budgetContractVersion': 1, 'hypothesisContractVersion': 1,
+              'structuredOutputContractVersion': 15}
+    invoke = TrackedLLMInvoker(None, None, None, run_record_fn=lambda _: record,
+                              experiment_max_input_bytes=32000)
+    assert experiment_repair_window(record)
+    assert invoke.prompt_byte_limit('r', 'repair_claims') == 32000
+    assert invoke.prompt_byte_limit('r', 'extract') == 24000
+    for version in (None, True, '4', 0, 1, 2, 3, 5):
+        record['experimentRepairInputContractVersion'] = version
+        assert not experiment_repair_window(record)
+        assert invoke.prompt_byte_limit('r', 'repair_claims') == 24000
+
+
+def test_large_repair_reserves_full_utf8_and_never_dispatches_after_budget_rejection():
+    from unittest.mock import Mock
+    from llm.provider import LLMResult, LLMUsage
+    from services.deep_research.contracts import BudgetExhaustedError
+    from services.deep_research.tools import TrackedLLMInvoker
+    record = {'state': {'outputKind': 'experiment_design'},
+              'experimentRepairContractVersion': 6, 'experimentRepairInputContractVersion': 4,
+              'protocolContractVersion': 2, 'workflowContractVersion': 4,
+              'budgetContractVersion': 1, 'hypothesisContractVersion': 1,
+              'structuredOutputContractVersion': 15}
+    client = Mock()
+    client.invoke.return_value = LLMResult('fixture', 'fixture', '[]', LLMUsage(8, 2, 10), 'stop')
+    reserve = Mock(return_value=({'callId': 'c', 'reservationToken': 't'}, False))
+    invoke = TrackedLLMInvoker(client, reserve, Mock(), run_record_fn=lambda _: record,
+                              experiment_max_input_bytes=32000)
+    prompt = '字' * 9000
+    invoke('r', 'repair_claims', prompt, {'_repair_output_limit': 4096})
+    assert reserve.call_args.kwargs['budget_delta'] == {'modelCalls': 1, 'tokens': 27000 + 4096 + 1024}
+    assert client.invoke.call_count == 1
+    reserve.side_effect = BudgetExhaustedError('tokens', 100001, 100000)
+    with pytest.raises(BudgetExhaustedError):
+        invoke('r', 'repair_claims', prompt, {'_repair_output_limit': 4096})
+    assert client.invoke.call_count == 1
+
+
 def test_observed_third_batch_can_allocate_smaller_output_without_borrowing_reserve():
     from services.deep_research.repair_budget import repair_batch_output_limit
     budget = {'maxTokens': 100000, 'reserveTokens': 50000, 'tokens': 42915, 'normalTokens': 20027}

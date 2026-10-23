@@ -22,18 +22,20 @@ def repair_exploration_headroom(normal_pool, allocation_version=0):
                max(0, normal_pool) * 2 // 3)
 
 
-def repair_prompt_byte_limit(budget, output_tokens=REPAIR_OUTPUT_TOKENS):
+def repair_prompt_byte_limit(budget, output_tokens=REPAIR_OUTPUT_TOKENS, *, input_bytes=REPAIR_INPUT_BYTES):
+    if type(input_bytes) is not int or input_bytes not in (24000, 32000):
+        return 0
     if type(output_tokens) is not int or not 1 <= output_tokens <= REPAIR_OUTPUT_TOKENS:
         return 0
     if not budget or 'maxTokens' not in budget:
-        return REPAIR_INPUT_BYTES
+        return input_bytes
     keys = ('maxTokens', 'reserveTokens', 'tokens', 'normalTokens')
     values = [budget.get(key, 0) for key in keys]
     if any(type(value) is not int or value < 0 for value in values):
         return 0
     maximum, reserve, total_used, normal_used = values
     remaining = min(maximum - total_used, maximum - reserve - normal_used)
-    return max(0, min(REPAIR_INPUT_BYTES, remaining - output_tokens - FRAMING_TOKENS))
+    return max(0, min(input_bytes, remaining - output_tokens - FRAMING_TOKENS))
 
 
 def repair_batch_output_limit(target_count):
@@ -47,3 +49,14 @@ def repair_output_options(options):
     if type(maximum) is not int or not 1 <= maximum <= REPAIR_OUTPUT_TOKENS:
         raise ValueError('Invalid server repair output limit')
     return {**result, 'max_tokens': maximum}
+
+
+def experiment_repair_window(record):
+    """Only the frozen, fully specified experimental repair4 may use 32KB."""
+    from services.deep_research.experiment_repair import enabled
+    return (isinstance(record, dict) and enabled(record)
+            and type(record.get('experimentRepairInputContractVersion')) is int
+            and record['experimentRepairInputContractVersion'] == 4
+            and record.get('experimentRepairContractVersion') == 6
+            and type(record.get('structuredOutputContractVersion')) is int
+            and record['structuredOutputContractVersion'] in (8,9,10,11,12,13,14,15))

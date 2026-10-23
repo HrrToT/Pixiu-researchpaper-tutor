@@ -276,6 +276,9 @@ class TrackedLLMInvoker:
         record = self._run_record(run_id) if self._run_record else None
         from services.deep_research.experiment_capacity import transport_limit
         legacy = verification_input_limit(record, node, self._max_input, self._verification_max_input)
+        from services.deep_research.repair_budget import experiment_repair_window
+        if node == 'repair_claims' and experiment_repair_window(record):
+            return min(getattr(self, '_experiment_max_input', self._max_input), 32000)
         return transport_limit(record, node, legacy, getattr(self, '_experiment_max_input', self._max_input))
 
     def uses_verification_input_contract(self, run_id: str, node: str) -> bool:
