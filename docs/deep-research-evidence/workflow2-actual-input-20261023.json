@@ -9,7 +9,7 @@
   "newPromptSha256": "487ecc3a02d133b8046e6d281c5ead3628b83e2665132ceaef45e4cda0e3409d",
   "boundary": "Offline grammar and capacity verification only; does not establish a better model response or scientific validity.",
   "profile": ".254",
-  "runtimeLoaded": false,
+  "runtimeLoaded": true,
   "focusedTestsPassed": 66,
   "legacyReplay": {
     "scripts": [
@@ -59,14 +59,27 @@
     "outputsRedirected": true
   },
   "fullRegression": {
-    "status": "running",
-    "log": "tmp/pytest-dr254-full.log",
-    "sessionId": 5824
+    "status": "passed",
+    "log": "tmp/pytest-dr254-native-full.log",
+    "supersededRun": {
+      "log": "tmp/pytest-dr254-full.log",
+      "sessionId": 5824,
+      "status": "terminated_environment_block",
+      "pytestExitCode": 4294967295,
+      "diagnosis": "Minimal asyncio.sleep(0) hung in socket._fallback_socketpair accept inside sandbox; same command succeeded natively. Only verified pytest PID 56208 under parent 5612 was stopped. Shared services untouched."
+    },
+    "exitCode": 0,
+    "files": 241,
+    "passed": 4420,
+    "warnings": 1,
+    "seconds": 284.04,
+    "logSha256": "001822743e37989248df028e1684fb7582ca89456727bf294fcb710ca4325408"
   },
   "sourceHashes": {
     "services/deep_research/execution_workflow_blueprint.py": "5f9b324434accbe2c68ef05c7f812684ee2242c49b9da50facc81d88ee3f3b33",
     "services/deep_research/graph.py": "b9f4e1469b1b5dddd916fc51a2bbc00381ce827c29159304834824e911e63010",
     "services/deep_research/facade.py": "2cfdfd260643305ed24ae981e498b633addf472d7d65b7ae5a085e3e83493671",
     "tests/test_deep_research_execution_workflow_blueprint.py": "d136abeb1a27871324a622f876015f004467ebcab3ecfbe101818ef51cc2439e"
-  }
+  },
+  "runtimeEvidence": "runtime-load-dr254-workflow-20261023.json"
 }
