@@ -3621,6 +3621,28 @@
       "regressionProof": "deep-research-evidence/review-batching-regression-20261023.json",
       "providerCalls": 0,
       "independentCredit": 0
+    },
+    "repair5Combined": {
+      "promptVersion": "dr-v2.20261023.252",
+      "loaded": true,
+      "fullPassed": 4383,
+      "files": 240,
+      "seconds": 291.58,
+      "focusedPassed": 77,
+      "legacyScriptsPassed": 38,
+      "case": "E1-v42",
+      "modelCalls": 10,
+      "settledTokens": 61210,
+      "accepted": 0,
+      "rejected": 9,
+      "repairCalls": 1,
+      "retainedDrafts": 3,
+      "regressionProof": "deep-research-evidence/repair5-regression-20261023.json",
+      "realCase": "deep-research-evidence/E1-v42-diagnostic-20261023.json",
+      "qualityProof": "deep-research-evidence/E1-v42-quality-diagnosis-20261023.json",
+      "repairTransportProof": "deep-research-evidence/E1-v42-repair-transport-20261023.json",
+      "reviewTransportProof": "deep-research-evidence/E1-v42-review-transport-20261023.json",
+      "boundary": "Real transport verified,not scientific quality;packet4 also admits on this new input;do not infer causal gains from different generated cases."
     }
   },
   "stages": [
@@ -4083,29 +4105,28 @@
     "Full novice study workflow",
     "Independent Edge recovery"
   ],
-  "currentProviderConstraint": "E1-v41 settled11calls64188tokens; no new unknowns,11historical paused unknowns remain. Complex planning/generation/review already use Pro. No automatic retries; uniform bounded validation authorization retained.",
-  "currentDevelopmentMode": "Primary Codex only; Goal active; quota pause revoked. Local .251 bounded exact review batching passed offline; not loaded or paid-tested. Runtime .250 remains unchanged. No Qoder/new agents.",
+  "currentProviderConstraint": "E1-v42 one fixed submission10settled61210tokens,no new unknowns. Complex planning,generation,review and repair already use Pro. Eleven historical paused unknowns retained;uniform bounded verification authorization unchanged.",
+  "currentDevelopmentMode": "Primary Codex only;Goal active;quota pause revoked. Source/runtime08908def/.252;repair input5 and complete review batching1. No Qoder/new agents. No automatic model retry.",
   "loadedRuntime": {
-    "commit": "35b77316",
-    "promptVersion": "dr-v2.20261023.250",
+    "commit": "08908def",
+    "promptVersion": "dr-v2.20261023.252",
     "javaCommit": "27ac4beb",
     "frontendValidationCommit": "123b0d29",
     "frontendValidationIsHistorical": true,
-    "callsAfterLatestCase": 5782,
+    "callsAfterLatestCase": 5815,
     "active": 0,
     "historicalPausedUnknown": 11,
-    "proof": "deep-research-evidence/runtime-load-dr250-repair4-20261023.json",
-    "postCasesProof": "deep-research-evidence/runtime-postcases-dr250-e1-v41-20261023.json",
-    "lastRealModelRunCommit": "35b77316",
-    "lastRealModelRunPromptVersion": "dr-v2.20261023.250",
-    "lastLoadValidationScope": "34source hashes,5748ledger/4tasks preserved before case;E1-v41 11settled64188tokens,0newunknown,0/9accepted. Four actual review fingerprints and source/context retained;postcase5782ledger."
+    "proof": "deep-research-evidence/runtime-load-dr252-repair5-20261023.json",
+    "postCasesProof": "deep-research-evidence/runtime-postcases-dr252-e1-v42-20261023.json",
+    "lastRealModelRunCommit": "08908def",
+    "lastRealModelRunPromptVersion": "dr-v2.20261023.252",
+    "lastLoadValidationScope": "37source hashes,5782ledger/4tasks preserved before case;after5815ledger/0active/11oldunknown. Two actual initial review fingerprints and actual repair request/input identity match;0/9accepted."
   },
   "nextQualityWork": [
-    "Combine complete review batching with profitable exact original-field references for repair inputs; keep full audit in storage and all actionable findings/evidence. Prove actual ordinary-pool admission before paid rerun; standalone reference prototype remains insufficient.",
-    "Separate proposed hypotheses/settings from observed paper facts in acquisition and review; retain source-grounding requirements for factual clauses.",
-    "Repair concrete workflow/state initialization,whole-group cost matching,metric aggregation and inference scope. Do not substitute opaque model states or unsupported numeric claims.",
-    "Use ordinary remaining budget for repairs; preserve complete evidence,old request identity and protected review reserve.",
-    "After development quality passes,finish all remaining DR0-DR5 requirements and fresh independent cases."
+    "Create and prevalidate a typed executable initialization/workflow blueprint used consistently by public generation;fix fresh/derive/input/asset contradictions without supplying invented defaults.",
+    "Measure rejected-context audit duplication before revising review transport;retain every actionable defect,source context and raw audit;do not pay for known oversized review inputs.",
+    "Correct legal missing-field catalogues for prose-only metric roles,and prospective versus observed factual judgement.",
+    "Keep all original DR0-DR5 requirements and fresh independent gates;no budget increase or automatic retry."
   ],
   "javaReaderRuntime": {
     "sourceCommit": "070ab1a",
@@ -4686,7 +4707,7 @@
     "independentCredit": 0,
     "proof": "deep-research-evidence/compact-experiment-envelope-regression-20261020.json"
   },
-  "currentCheckpoint": "Local .251 review-batch planning:4365offline/239files,17new integration,38legacy; E1-v41 offline4->3complete review requests,110147->83939bytes,no content credit. Not loaded; live35b77316/.250 remains last real E1-v41 0/9. FullDR0-DR5 incomplete,independent0/5.",
+  "currentCheckpoint": ".252/08908def loaded;4383offline/240files,77focused,38legacy,37hashes. E1-v42 completed/inconclusive140s,10settled61210tokens,0unknown,0/9accepted. One real repair5 call30388bytes,3drafts retained;later batch23735>20720 stopped;postrepair singleton reviews38911/38974>32000 not started.5815ledger/0active/11oldunknown. DR0-DR5 incomplete,independent0/5.",
   "sharedModuleSourceCheckpoint": {
     "sourceCommit": "f8ae5177",
     "promptVersion": "dr-v2.20261020.199",
