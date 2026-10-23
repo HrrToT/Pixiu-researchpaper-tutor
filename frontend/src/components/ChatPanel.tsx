@@ -523,6 +523,7 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
       {(composerContext !== undefined ? composerContext : contextLabel) && <div className="reader-chat-context chat-composer-context">{composerContext !== undefined ? composerContext : contextLabel}</div>}
       {copyError && <p className="reader-chat-draft-error" role="alert">{copyError}</p>}
       {(draftError || sendError) && <p className="reader-chat-draft-error" role="alert">{draftError || sendError}</p>}
+      <div className="workbench-composer-footer">
       {enableSkills && <div className="chat-composer-tools">
         <WorkbenchPopover label="对话材料" className="chat-material-selector" align="left" trigger={<><FileText size={14} /><span>{selectedMentions.length ? `指定材料 · ${selectedMentions.length}篇` : `全部材料 · ${materials.length}篇`}</span><ChevronDown size={12} /></>}>
           {(close: (restore?: boolean) => void) => <>
@@ -615,7 +616,17 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
           <button type="button" aria-label={`移除材料 ${materialLabel(label)}`} onClick={() => setInputValue(withMaterialReferences(visibleInput, selectedMentions.filter(reference => reference !== label)))}><X size={12} /></button>
         </span>)}
       </div>}
-      {messages.length > 0 && !isLoading && !visibleInput.trim() && starterPrompts.length > 0 && <details className="chat-next-steps"><summary>下一步</summary><div>{starterPrompts.map(prompt => <button key={prompt.label} type="button" onClick={() => { if (prompt.onSelect) prompt.onSelect(); else { setInputValue(withMaterialReferences(prompt.text, selectedMentions)); textareaRef.current?.focus(); } }}>{prompt.label}</button>)}</div></details>}
+      {messages.length > 0 && !isLoading && !visibleInput.trim() && starterPrompts.length > 0 && <WorkbenchPopover label="下一步" className="chat-next-steps" align="left" trigger={<><span>下一步</span><ChevronDown size={12} /></>}>
+        {(close: (restore?: boolean) => void) => <>{starterPrompts.map(prompt => <button key={prompt.label} type="button" onClick={() => { close(false); if (prompt.onSelect) prompt.onSelect(); else { setInputValue(withMaterialReferences(prompt.text, selectedMentions)); textareaRef.current?.focus(); } }}>{prompt.label}</button>)}</>}
+      </WorkbenchPopover>}
+      <div className="workbench-composer-send">
+        {isLoading && onAbortChat && <button type="button" onClick={onAbortChat} className="chat-composer-stop" title="停止生成" aria-label="停止生成"><X size={16} />停止</button>}
+        <button type="button" onClick={handleSend} disabled={!visibleInput.trim() || isLoading || submitting} className="reader-chat-send" aria-label={sendLabel} title={sendLabel}>
+          {sendLabel !== '发送消息' && <span>{sendLabel}</span>}
+          <Send size={18} />
+        </button>
+      </div>
+      </div>
       {pendingMention && (
         <div ref={suggestionsRef} className="chat-composer-menu theme-panel theme-border mx-4 max-h-48 overflow-auto rounded-lg border p-1" role="group" aria-label="选择任务材料">
           {materialSuggestions.map(material => <button key={material.id} type="button"
@@ -636,13 +647,6 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
           ))}
         </div>
       )}
-      <div className="workbench-composer-send">
-        {isLoading && onAbortChat && <button type="button" onClick={onAbortChat} className="chat-composer-stop" title="停止生成" aria-label="停止生成"><X size={16} />停止</button>}
-        <button type="button" onClick={handleSend} disabled={!visibleInput.trim() || isLoading || submitting} className="reader-chat-send" aria-label={sendLabel} title={sendLabel}>
-          {sendLabel !== '发送消息' && <span>{sendLabel}</span>}
-          <Send size={18} />
-        </button>
-      </div>
       </ComposerSurface>
     </div>
   );

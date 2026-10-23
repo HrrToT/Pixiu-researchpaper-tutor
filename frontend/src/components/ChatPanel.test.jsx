@@ -71,9 +71,12 @@ describe('ChatPanel', () => {
   it('keeps next steps folded and preserves an existing question instead of overwriting it', () => {
     const select = vi.fn();
     renderChat({ messages: [{ role: 'ai', content: '现有回答' }], starterPrompts: [{ label: '下一步行动', text: '', onSelect: select }] });
-    expect(screen.getByText('下一步').closest('details')).not.toHaveAttribute('open');
+    expect(screen.getByRole('button', { name: '下一步', exact: true })).toHaveAttribute('aria-expanded', 'false');
+    expect(screen.queryByRole('button', { name: '下一步行动' })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: '下一步', exact: true }));
     fireEvent.click(screen.getByRole('button', { name: '下一步行动' }));
     expect(select).toHaveBeenCalledTimes(1);
+    expect(screen.queryByRole('dialog', { name: '下一步' })).not.toBeInTheDocument();
     fireEvent.change(screen.getByLabelText('输入问题'), { target: { value: '我自己的问题' } });
     expect(screen.queryByText('下一步')).not.toBeInTheDocument();
     expect(screen.getByLabelText('输入问题')).toHaveValue('我自己的问题');
