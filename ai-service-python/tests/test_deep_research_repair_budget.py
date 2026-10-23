@@ -49,7 +49,7 @@ def test_repair4_transport_requires_frozen_experiment_profile_and_keeps_other_no
     assert experiment_repair_window(record)
     assert invoke.prompt_byte_limit('r', 'repair_claims') == 32000
     assert invoke.prompt_byte_limit('r', 'extract') == 24000
-    for version in (None, True, '4', 0, 1, 2, 3, 5):
+    for version in (None, True, '4', 0, 1, 2, 3, 6):
         record['experimentRepairInputContractVersion'] = version
         assert not experiment_repair_window(record)
         assert invoke.prompt_byte_limit('r', 'repair_claims') == 24000

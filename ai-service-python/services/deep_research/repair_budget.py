@@ -52,11 +52,11 @@ def repair_output_options(options):
 
 
 def experiment_repair_window(record):
-    """Only the frozen, fully specified experimental repair4 may use 32KB."""
+    """Only the frozen, fully specified experimental repair4/5 may use 32KB."""
     from services.deep_research.experiment_repair import enabled
     return (isinstance(record, dict) and enabled(record)
             and type(record.get('experimentRepairInputContractVersion')) is int
-            and record['experimentRepairInputContractVersion'] == 4
+            and record['experimentRepairInputContractVersion'] in (4,5)
             and record.get('experimentRepairContractVersion') == 6
             and type(record.get('structuredOutputContractVersion')) is int
             and record['structuredOutputContractVersion'] in (8,9,10,11,12,13,14,15))
