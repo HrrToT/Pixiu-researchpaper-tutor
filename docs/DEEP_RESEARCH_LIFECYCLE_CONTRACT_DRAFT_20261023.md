@@ -1,6 +1,6 @@
 # Workflow5 生命周期契约草案
 
-状态：设计待实现，不改变已冻结的 Workflow1—4，不授予任何科学验收通过。
+状态：生命周期/数据流检查、精确预算累计与展示事件模板已实现；完整 Workflow5 接入、生成和展示集成待完成。默认入口未启用，不改变已冻结的 Workflow1—4，不授予科学验收通过。
 
 ## 已确认的问题与范围
 
@@ -23,7 +23,7 @@ Workflow5 保留 Workflow4 的字段，增加 `frameIterations` 和 `phases`。�
 lifecycle = {scope:per_repeat|per_frame, createAfter:[phaseId], disposeAfter:phaseId|null}
 phase = {phaseId,scope:per_repeat|per_frame,kind:fit|setup|evaluate|record,
          groups:[actual group ID],sharing:shared|per_group,after:[earlier phaseId],
-         reads:[input],outputs:[unique outputId],action:operation,budget:phaseBudget|null}
+         reads:[input],updates:[baseline|componentId],outputs:[unique outputId],action:operation,budget:phaseBudget|null}
 input = {state:baseline|training_data|earlier componentId,selector}
      OR {phaseId,outputId,selector}
 phaseBudget = {unit:optimizer_steps|epochs|wall_seconds,perExecution:nonnegative finite number}
@@ -32,6 +32,8 @@ phaseBudget = {unit:optimizer_steps|epochs|wall_seconds,perExecution:nonnegative
 初始化的 `inputs` 使用同一输入联合类型。维度仍为正整数或显式 `inputIndex/axis`，每个必需状态仍提供实际初值或操作规则，不允许符号维度、空规则或用训练过程冒充初值。
 
 `shared` 表示同一次阶段结果供列出的组共用；`per_group` 表示各组分别执行。阶段结果只能被所属组或其子集读取，不能把只在处理组产生的结果泄漏给控制组。
+
+`reads` 声明读取的当前状态或明确阶段输出，`updates` 声明允许更新的模型状态；训练数据不可改写，最终评估和记录阶段不得更新模型。声明仍须由独立语义审核核对实际操作，不能仅凭字段合法认定没有数据泄漏。
 
 `per_frame` 组件必须在同帧的明确阶段后销毁，不可携带到下一帧；`per_repeat` 组件只创建一次，可在循环中更新，或在重复结束时销毁。若要对两组固定同一个第1阶段结果，应显式表达共享阶段与后续分支。
 
