@@ -3553,6 +3553,19 @@
       "actualReviewFingerprints": 4,
       "proof": "deep-research-evidence/planning-shape15-regression-20261023.json",
       "scientificApproval": false
+    },
+    "reviewFieldRefs10": {
+      "files": 236,
+      "passed": 4314,
+      "seconds": 254.91,
+      "focusedPassed": 89,
+      "legacyScripts": 38,
+      "actualOldReviewFingerprints": 4,
+      "actualNewReviewFingerprints": 4,
+      "actualNewRawReferences": 15,
+      "invalidPresenceVerdicts": 2,
+      "scientificApproval": false,
+      "proof": "deep-research-evidence/review-fieldrefs-regression-20261023.json"
     }
   },
   "stages": [
@@ -4015,28 +4028,29 @@
     "Full novice study workflow",
     "Independent Edge recovery"
   ],
-  "currentProviderConstraint": "All necessary bounded validations authorized. E1-v27/.234,E1-v28/.235,E1-v29/.236 each submitted once;30settled calls/129711tokens,0newunknowns. Selected cumulative759calls/3190357tokens,not global history,cost unknown. Preserve11oldpaused unknowns; no automatic retries.",
-  "currentDevelopmentMode": "Primary Codex only;Goal active;quota pause revoked. Source/runtime0683aaf1/.246. Generation3/review9/native15;old interfaces immutable. No Qoder or new agents.",
+  "currentProviderConstraint": "All necessary bounded validations authorized. Latest E1-v38 submitted once,13settled calls/69290tokens,0newunknown,no automatic retry. Preserve11oldpaused unknowns. Historical global usage/cost not recomputed.",
+  "currentDevelopmentMode": "Primary Codex only;Goal active;quota pause revoked. Source/runtime08883d8a/.247. Generation3/review10/native15;old interfaces immutable. No Qoder or new agents.",
   "loadedRuntime": {
-    "commit": "0683aaf1",
-    "promptVersion": "dr-v2.20261023.246",
+    "commit": "08883d8a",
+    "promptVersion": "dr-v2.20261023.247",
     "javaCommit": "27ac4beb",
     "frontendValidationCommit": "123b0d29",
     "frontendValidationIsHistorical": true,
-    "callsAfterLatestCase": 5659,
+    "callsAfterLatestCase": 5684,
     "active": 0,
     "historicalPausedUnknown": 11,
-    "proof": "deep-research-evidence/runtime-load-dr246-planning-shape-20261023.json",
-    "postCasesProof": "deep-research-evidence/runtime-postcases-dr246-e1-v37-20261023.json",
-    "lastRealModelRunCommit": "0683aaf1",
-    "lastRealModelRunPromptVersion": "dr-v2.20261023.246",
-    "lastLoadValidationScope": "25source hashes,health,5631ledger/4tasks preserved;case37 13settled70504tokens,0unknowns,0/9accepted. Four actual review requests reconstructed exactly;source/context preserved."
+    "proof": "deep-research-evidence/runtime-load-dr247-review-fieldrefs-20261023.json",
+    "postCasesProof": "deep-research-evidence/runtime-postcases-dr247-e1-v38-20261023.json",
+    "lastRealModelRunCommit": "08883d8a",
+    "lastRealModelRunPromptVersion": "dr-v2.20261023.247",
+    "lastLoadValidationScope": "26source hashes,health,5659ledger/4tasks preserved;E1-v38 13settled69290tokens,0unknown,0/9accepted. Four actual review fingerprints reconstructed;source/context preserved."
   },
   "nextQualityWork": [
-    "Preserve complete real Gaussian/hash/MLP states through public configuration generation;reject opaque scalar placeholders without treating the private plan as scientific truth.",
-    "Correct review feedback transport and proposed-setting/source-fact separation, retaining raw invalid verdicts and exact bindings.",
-    "Fit complete bounded repairs with dependencies in remaining budget;do not truncate evidence or silently raise fixed case limits.",
-    "After development quality passes,complete remaining DR0-DR5 comparison,follow-up,external paths and fresh independent cases."
+    "Implement source-passage evidence with exact source/version/hash and table/scope/incremental identity guards;offline feasibility only,not enabled. Avoid redundant model transcription without claiming evidence relevance or approval.",
+    "Preserve complete real Gaussian/hash/MLP state and compatible initialization in public generation;no opaque aggregates,assets/placeholders or matched unequal budgets.",
+    "Correct prospective/source judgement and concrete field reading in independent review;retain raw mistakes rather than automatic passes.",
+    "Fit full dependency-aware repairs under original normal/reserve/round limits;do not truncate required evidence or increase fixed-case budgets.",
+    "After development content quality passes,complete all remaining DR0-DR5 paths and fresh independent cases."
   ],
   "javaReaderRuntime": {
     "sourceCommit": "070ab1a",
@@ -4617,7 +4631,7 @@
     "independentCredit": 0,
     "proof": "deep-research-evidence/compact-experiment-envelope-regression-20261020.json"
   },
-  "currentCheckpoint": ".246/0683aaf1:4291offline/235files,38legacy,25loaded source hashes. Audited reversible shape normalization only new native15/columns7. E1-v37 completed/inconclusive134s,13settled70504tokens,0/9accepted;5invalid review bindings,repair20214>15423not sent. FullDR0-DR5 incomplete,independent0/5.",
+  "currentCheckpoint": ".247/08883d8a:4314offline/236files,89focused,38legacy,26loaded hashes. New review10 exact field references;real E1-v38 all15codes recognized,two presence errors rejected.112s13settled69290tokens,0/9accepted,repair31357>17023not sent.5684ledger/0active/11oldunknown. FullDR0-DR5 incomplete,independent0/5.",
   "sharedModuleSourceCheckpoint": {
     "sourceCommit": "f8ae5177",
     "promptVersion": "dr-v2.20261020.199",
