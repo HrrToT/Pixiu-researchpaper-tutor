@@ -135,7 +135,7 @@ def test_graph_persists_actual_plan_allocation_and_exact_frozen_body():
     assert actual['encodedInputBytes']==len(saved['draftRequest']['prompt'].encode())<=24000
 
 
-@pytest.mark.parametrize('replacement',[None,True,'1',0,1,3])
+@pytest.mark.parametrize('replacement',[None,True,'1',0,1,2,4])
 def test_generation_envelope_is_server_owned_and_immutable(tmp_path,replacement):
     from services.deep_research.facade import ResearchFacade
     from services.deep_research.repository import DeepResearchRepository
@@ -144,7 +144,7 @@ def test_generation_envelope_is_server_owned_and_immutable(tmp_path,replacement)
     try:
         value,_=facade.create({'workspaceTaskId':'t','operationKey':'k','question':'Propose an experiment',
             'experimentGenerationEnvelopeContractVersion':replacement,'deferStart':True},start_async=False)
-        assert value['experimentGenerationEnvelopeContractVersion']==2
+        assert value['experimentGenerationEnvelopeContractVersion']==3
         with pytest.raises(ValueError,match='Immutable'):
             repo.update_run(value['runId'],lambda r:{**r,'experimentGenerationEnvelopeContractVersion':replacement})
     finally:facade.shutdown()

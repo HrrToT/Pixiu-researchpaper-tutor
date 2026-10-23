@@ -58,7 +58,7 @@ def test_new_review_keeps_actual_claims_context_sources_and_full_audit_skeleton(
     assert kw == before and kw['evidence_marker'] in new
 
 
-@pytest.mark.parametrize('version', [7, 8])
+@pytest.mark.parametrize('version', [7, 8, 9])
 def test_actual_checker_still_rejects_invented_metrics_field_in_new_envelope(version):
     class Invalid(Capture):
         def __call__(self, **request):

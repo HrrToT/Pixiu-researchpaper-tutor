@@ -43,8 +43,10 @@ def test_compact_generation_requires_complete_compatible_profile(key,value):
     assert not enabled(record)
 
 
-def test_complete_large_plan_and_exact_source_quote_fit_without_extra_model_calls():
+@pytest.mark.parametrize('generation_version',[2,3])
+def test_complete_large_plan_and_exact_source_quote_fit_without_extra_model_calls(generation_version):
     record=current()
+    record['experimentGenerationEnvelopeContractVersion']=generation_version
     quote=record['state']['evidence'][0]['quote']
     store=Store(record)
     invoke=Mock(side_effect=[response(columns(larger())),response({'sections':[],'claims':[]})])
@@ -56,6 +58,7 @@ def test_complete_large_plan_and_exact_source_quote_fit_without_extra_model_call
     assert json.dumps(quote,ensure_ascii=False)[1:-1] in body
     assert store.value['state']['experimentPlanning']['basis']==larger()
     assert not store.value['state']['generationPremiseAllocation']['missingPremiseBundles']
+    assert ('Group IDs are binary STRINGS' in body)==(generation_version==3)
 
 
 def test_unknown_legacy_plan_cannot_be_resent_with_new_generation_policy():
@@ -79,3 +82,14 @@ def test_instruction_like_source_text_is_never_rewritten_by_compaction():
     make_synthesize_node(invoke,store.update)({'run_id':'r'})
     body=invoke.call_args_list[1].args[2]
     assert json.dumps(GENERATION2,ensure_ascii=False)[1:-1] in body
+
+
+def test_unknown_version2_plan_cannot_change_to_version3_even_for_same_prompt():
+    store=Store(current());invoke=Mock(side_effect=OSError('unknown'))
+    with pytest.raises(OSError):prepare(store,invoke)
+    frozen=deepcopy(store.value['state']['experimentPlanning'])
+    store.value['experimentGenerationEnvelopeContractVersion']=3
+    invoke.reset_mock()
+    with pytest.raises(DeepResearchError):prepare(store,invoke)
+    invoke.assert_not_called()
+    assert store.value['state']['experimentPlanning']==frozen

@@ -41,7 +41,7 @@ def _error():
 def _suffix(record):
     from services.deep_research.experiment_generation_envelope import enabled as generation_enabled
     if (generation_enabled(record) and type(record.get('experimentGenerationEnvelopeContractVersion')) is int
-            and record['experimentGenerationEnvelopeContractVersion']==2):
+            and record['experimentGenerationEnvelopeContractVersion'] in (2,3)):
         from services.deep_research.compact_generation_rules import CONFIGURATION
         return '\n'+CONFIGURATION
     return '\n'+generation(record['configurationConsistencyContractVersion'])

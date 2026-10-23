@@ -143,7 +143,7 @@ def build(record, *, question, limit, clarification, gaps, obligations, sources,
     packed=lambda value:json.dumps(value,ensure_ascii=False,separators=(',',':'))
     from services.deep_research.experiment_generation_envelope import enabled as generation_envelope,draft_prompt
     from services.deep_research import compact_generation_rules as concise_rules
-    short_rules=generation_envelope(record) and record['experimentGenerationEnvelopeContractVersion']==2
+    short_rules=generation_envelope(record) and record['experimentGenerationEnvelopeContractVersion'] in (2,3)
     if generation_envelope(record):prospective_draft_prompt=draft_prompt
     prompt=prospective_draft_prompt(question=question,limit=limit,clarification=clarification,
         gaps=gaps,obligations=obligations,sources=sources,evidence_marker=evidence_marker,
@@ -185,6 +185,8 @@ with this metadata; independent review still checks the entire resulting experim
     from services.deep_research.experiment_execution_guidance import initialization_grammar
     schema=initialization_grammar(schema,record)
     if short_rules:schema=concise_rules.schema(schema)
+    if short_rules and record['experimentGenerationEnvelopeContractVersion']==3:
+        schema+='\n'+concise_rules.STRICT_VALUES
     prompt+='\n'+schema+'\nEXACT_STAGES='+packed(list(STAGES))+'\nEXACT_RECORDS='+packed(sorted(RECORDS|{'group_checkpoints'}))
     prompt+='\nREQUIRED OUTPUT OUTLINE (one claim per role):\n'+packed(design_output_outline(
         strict_budget=True,strict_hypothesis=True,strict_protocol=2,strict_workflow=4))

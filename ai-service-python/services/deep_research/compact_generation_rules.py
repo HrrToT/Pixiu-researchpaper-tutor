@@ -49,6 +49,20 @@ evidence. The private plan grants no citations/approval. Preserve settings/scope
 sections/claims, without repeating the plan in prose. Independent review remains complete.
 '''
 
+STRICT_VALUES = '''
+Before returning, check actual JSON values against these types, not just field names:
+Group IDs are binary STRINGS of the factor-count width; component.appliesTo uses those exact
+strings, never numbers (one factor: ["0","1"], not [0,1]). State shape entries are positive
+integers or {inputIndex,axis}, NEVER symbolic strings such as "N". Input-dependent dimensions
+require derive with actual declared inputs/selectors and their axes; fresh inputs:[] needs
+literal dimensions. Do not guess N, invent an asset, use future trained weights or replace a
+real initialization by all-zero placeholders. Initialization defines states before fitting.
+For budget.recovery.mode=matched ALL group amounts must be identical. An explicitly descriptive
+whole-stage cost tradeoff may instead choose unmatched with an honest note; it cannot isolate
+parameter causality. Baseline preparation and later recovery are separate amounts: cover every
+phase once in its actual temporal scope, without charging shared baseline twice.
+'''
+
 
 def schema(text):
     """Shorten trusted prose, preserving every typed production/alternative."""

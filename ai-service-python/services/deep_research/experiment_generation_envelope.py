@@ -9,7 +9,7 @@ from services.deep_research.synthesis_evidence import fit_premises
 
 def enabled(record):
     common=(type(record.get('experimentGenerationEnvelopeContractVersion')) is int
-        and record['experimentGenerationEnvelopeContractVersion'] in (1,2)
+        and record['experimentGenerationEnvelopeContractVersion'] in (1,2,3)
         and all(type(record.get(key)) is int and record[key]==version for key,version in (
         ('experimentDraftContractVersion',6),
         ('configurationConsistencyContractVersion',2),('experimentOutlineEncodingContractVersion',2))))

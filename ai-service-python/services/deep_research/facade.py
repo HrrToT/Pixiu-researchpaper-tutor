@@ -273,15 +273,15 @@ class ResearchFacade:
             "materials": materials,
             "materialSnapshot": material_snapshot,  # Immutable Java snapshot
             "contextMaterials": (material_snapshot or {}).get("contextMaterials", []) if isinstance(material_snapshot, dict) else [],
-            "promptVersion": "dr-v2.20261023.243",
+            "promptVersion": "dr-v2.20261023.244",
             "factualReviewContractVersion": 1,
             "citationPresentationContractVersion": 4,
             "configurationConsistencyContractVersion": 2,
             "experimentPlanEncodingContractVersion": 7,
             "experimentOutlineEncodingContractVersion": 2,
-            "experimentGenerationEnvelopeContractVersion": 2,
+            "experimentGenerationEnvelopeContractVersion": 3,
             "experimentInputContractVersion": 1,
-            "experimentReviewEnvelopeContractVersion": 8,
+            "experimentReviewEnvelopeContractVersion": 9,
             "experimentRepairPriorityContractVersion": 2,
             "experimentExecutionGuidanceContractVersion": 2,
             # New experiments separate a small persisted scientific plan from

@@ -258,7 +258,8 @@ def prepare_plan(record,*,prompt,aliases,invoke,parse,checkpoint):
     identity=digest({'version':1,'request':request,'evidenceAliases':aliases,
         **({'basisEncodingVersion':encoding_version} if encoding else {}),
         **({'outlineEncodingVersion':record['experimentOutlineEncodingContractVersion']} if outlined else {}),
-        **({'generationEnvelopeVersion':1} if generation_envelope(record) else {}),
+        **({'generationEnvelopeVersion':3 if record['experimentGenerationEnvelopeContractVersion']==3 else 1}
+           if generation_envelope(record) else {}),
         **({'experimentInputVersion':1} if capacity_enabled(record) else {})})
     saved=deepcopy(record.get('state',{}).get('experimentPlanning'))
     if saved is not None:
