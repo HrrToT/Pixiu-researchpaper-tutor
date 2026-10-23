@@ -115,15 +115,15 @@ def test_timeline_change_invalidates_completion_digest():
     assert completion_contract_digest(plan,rows)!=before
 
 
-def test_new_contract_cannot_be_enabled_by_request_payload(tmp_path):
+def test_request_payload_cannot_override_server_lifecycle_contract(tmp_path):
     from services.deep_research.repository import DeepResearchRepository
     from services.deep_research.facade import ResearchFacade
     repo=DeepResearchRepository(tmp_path/'r.sqlite3');repo.initialize()
     facade=ResearchFacade(repo,lambda **_:None,llm_client=object())
     try:
         row,_=facade.create({'workspaceTaskId':'t','operationKey':'fixture','question':'Design',
-            'workflowContractVersion':5,'executionWorkflowContractVersion':7},start_async=False)
-        assert row['workflowContractVersion']==4 and row['executionWorkflowContractVersion']==5
+            'workflowContractVersion':3,'executionWorkflowContractVersion':6},start_async=False)
+        assert row['workflowContractVersion']==5 and row['executionWorkflowContractVersion']==7
     finally:facade.shutdown()
 
 

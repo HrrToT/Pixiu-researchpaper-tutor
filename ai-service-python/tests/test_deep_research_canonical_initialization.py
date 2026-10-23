@@ -167,6 +167,6 @@ def test_create_cannot_opt_out_of_server_canonical_initialization_contracts(tmp_
             'question': 'Design an experiment.', 'materials': [], 'workflowContractVersion': 1,
             'protocolContractVersion': 1}, start_async=False)
         saved = repo.require_run(response['runId'])
-        assert created and saved['workflowContractVersion'] == 4 and saved['protocolContractVersion'] == 2
+        assert created and saved['workflowContractVersion'] == 5 and saved['protocolContractVersion'] == 2
     finally:
         facade.shutdown()

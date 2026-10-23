@@ -1,0 +1,29 @@
+{
+  "promptVersion": "dr-v2.20261023.258",
+  "workflowContractVersion": 5,
+  "executionWorkflowContractVersion": 7,
+  "profileRegression": {
+    "files": 6,
+    "passed": 121,
+    "seconds": 22.78
+  },
+  "baseFullRegression": {
+    "sourceCommit": "4dcaa506",
+    "files": 246,
+    "passed": 4547,
+    "seconds": 817.06,
+    "sourceStable": true
+  },
+  "sourceHashes": {
+    "ai-service-python/services/deep_research/facade.py": "038301e4f8700c6557f600d1ab3056e0164c0346e8de52bfa5ebd5f835ca6f1c",
+    "ai-service-python/tests/test_deep_research_workflow_lifecycle_profile.py": "047fa45b42250dbe2c8bd6d4a682f215fc0596bfe5822343c6051aa03ccf4feb",
+    "ai-service-python/tests/test_deep_research_canonical_initialization.py": "35cca3af38903c13c87d879d79f728db68a1c2acf92ba1a96ad0162c5d57b0c3",
+    "ai-service-python/tests/test_deep_research_execution_workflow_blueprint.py": "975a8cf38a5a469b15436aafeb4198a898a8e15a93f026332114ca442b01c131",
+    "ai-service-python/tests/test_deep_research_workflow5_contract.py": "fa9e3dd36198c6fde8d558393bd122a9baffab20c81f65ff7c2737643881c85e"
+  },
+  "oldRunsMigrated": false,
+  "clientOverridesAccepted": false,
+  "serviceRestarted": false,
+  "providerCalls": 0,
+  "boundary": "New-run source activation only; runtime loading and real scientific content remain pending. Full regression belongs to the pre-activation implementation; profile changes separately verified."
+}
