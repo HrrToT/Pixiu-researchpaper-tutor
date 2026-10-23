@@ -8,7 +8,7 @@ STAGES = ('prepare_data', 'acquire_baseline', 'initialize_components', 'pair_gro
           'apply_interventions', 'recover', 'evaluate', 'record')
 RECORDS = {'baseline_identity', 'split_manifest', 'seed_manifest', 'component_states',
            'group_configs', 'recovery_budgets', 'evaluation_outputs', 'raw_measurements'}
-WORKFLOW_VERSIONS = (1, 2, 3, 4)
+WORKFLOW_VERSIONS = (1, 2, 3, 4, 5)
 RECORD_LABELS = {'baseline_identity': '基线身份', 'split_manifest': '数据划分清单',
     'seed_manifest': '随机种子清单', 'component_states': '新组件初始状态',
     'group_configs': '各组配置', 'recovery_budgets': '各组训练预算',
@@ -93,6 +93,36 @@ warm starts. Controls initialization references this steps ID, never another che
 source. Keep original prose consistent. All values are prospective, not measured results.
 ''' + STATE_CONTRACT
 
+WORKFLOW_CONTRACT_V5 = '''Workflow5 is an UNEXECUTED phase/lifetime proposal, not approval.
+Keep Workflow4 refs/order/modes/baselineInitialization/checkpointSelection and nine records.
+Add frameIterations (positive integer if per-frame phases exist, otherwise zero), phases.
+Each component keeps its complete Workflow4 initialization and adds
+lifecycle:{scope:per_repeat|per_frame,createAfter:[phaseId],disposeAfter:phaseId|null}.
+The initialization is a recipe; allocate its instance at this declared boundary, not all upfront.
+Each phase exactly {phaseId,scope,kind:fit|setup|evaluate|record,groups:[actual IDs],
+sharing:shared|per_group,after:[earlier phaseId],reads:[input],updates:[baseline|componentId],
+outputs:[unique outputId],action:operation,budget:null|{unit,perExecution}}.
+An input is {state:baseline|training_data|earlier componentId,selector} OR
+{phaseId,outputId,selector}. Phase-output inputs are allowed only after their production;
+baseline initialization precedes this timeline and uses training_data only.
+Per-frame phases are contiguous. Per-repeat resources are prepared before entering the
+frame loop; same-boundary recipes within a scope follow component order. Per-frame
+components must be disposed in that frame after all direct uses, including recording
+when recording consumes that state. Preserved outputs may outlive the component.
+Never read a future instance/output, use a disposed state, leak a treatment-only state
+to control, or update training_data. Final evaluation/record phases cannot update models.
+shared runs once and supplies identical outputs to its declared groups; per_group runs
+separately. All final evaluations follow fitting for their group; records consume actual
+evaluation outputs (possibly through explicit copies), not merely occur later.
+Only fit phases have budgets; units optimizer_steps|epochs require nonbool integer caps,
+wall_seconds allows finite numbers; caps are nonnegative. Whole recovery group budget
+per repeat equals the sum of each applicable fit cap times frameIterations for per_frame
+or 1 for per_repeat. Shared work is attributed to each comparison group, not falsely
+counted as separate physical execution. Preserve unmatched-budget interpretation.
+Baseline training/acquisition is completed before this timeline and uses its own budget.
+All source facts/assets still need evidence; initial values need scientific compatibility.
+''' + STATE_CONTRACT
+
 
 def workflow_version(value):
     return value if type(value) is int and value in WORKFLOW_VERSIONS else 0
@@ -100,7 +130,7 @@ def workflow_version(value):
 
 def workflow_contract(version):
     return {1: WORKFLOW_CONTRACT, 2: WORKFLOW_CONTRACT_V2, 3: WORKFLOW_CONTRACT_V3,
-            4: WORKFLOW_CONTRACT_V4}[version]
+            4: WORKFLOW_CONTRACT_V4, 5: WORKFLOW_CONTRACT_V5}[version]
 
 
 def _strings(value):
@@ -124,6 +154,8 @@ def workflow_errors(spec, version=1):
     errors = []
     expected_fields = {'refs', 'order', 'baselineMode', 'replicationMode', 'componentInitializations',
                        'checkpointSelection', 'records'} | ({'baselineInitialization'} if version >= 4 else set())
+    if version == 5:
+        expected_fields |= {'frameIterations', 'phases'}
     if set(spec) != expected_fields:
         errors.append('workflow.fields')
     refs = spec.get('refs')
@@ -158,6 +190,8 @@ def workflow_errors(spec, version=1):
                 fields |= {'inputs', 'initializationMode'}
             if version >= 4:
                 fields.add('stateDefinitions')
+            if version == 5:
+                fields.add('lifecycle')
             if (not isinstance(component, dict) or set(component) != fields
                     or not isinstance(component.get('componentId'), str) or not component['componentId'].strip()
                     or component['componentId'] in ids
@@ -203,6 +237,11 @@ def workflow_errors(spec, version=1):
     required_records = RECORDS | ({'group_checkpoints'} if version >= 2 else set())
     if not _strings(records) or not required_records <= set(records):
         errors.append('workflow.records')
+    elif version == 5 and len(records) != len(required_records):
+        errors.append('workflow.records')
+    if version == 5:
+        from services.deep_research.workflow_lifecycle import lifecycle_errors
+        errors.extend(lifecycle_errors(spec))
     return list(dict.fromkeys(errors))
 
 
@@ -220,6 +259,13 @@ def _creation_input_errors(component, earlier, version, *, baseline=False):
             and isinstance(p.get('value'), str) and p['value'].strip() for p in parameters)):
         errors.append('workflow.creation.fresh_layout_required')
     for item in inputs:
+        if (version == 5 and not baseline and isinstance(item, dict)
+                and set(item) == {'phaseId', 'outputId', 'selector'}
+                and all(isinstance(v, str) and v.strip() for v in item.values())):
+            identity = ('phase', item['phaseId'], item['outputId'], item['selector'])
+            if identity in seen: errors.append('workflow.creation.duplicate_input')
+            seen.add(identity)
+            continue  # Full phase/output/group/lifetime checks run in lifecycle_errors.
         if (not isinstance(item, dict) or set(item) != {'state', 'selector'}
                 or not all(isinstance(v, str) and v.strip() for v in item.values())):
             errors.append('workflow.creation.input')
@@ -255,6 +301,9 @@ def workflow_text(claim):
     if not version or workflow_errors(claim.get('executionSpec'), version):
         return ''
     spec = claim['executionSpec']
+    if version == 5:
+        from services.deep_research.workflow_lifecycle_text import lifecycle_text
+        return lifecycle_text(spec)
     lines = ['拟议执行流程（尚未执行）：',
         '1. 先枚举数据、完成预检并锁定训练与最终评估划分；最终评估集不参与任何拟合。']
     if spec['checkpointSelection']['mode'] == 'validation_split':
@@ -357,6 +406,9 @@ def enforce_workflow_consistency(verification, required=False):
                     errors.append('workflow.baseline_mode_conflict')
                 if spec['replicationMode'] != data.get('replication', {}).get('mode'):
                     errors.append('workflow.replication_mode_conflict')
+                if version == 5:
+                    from services.deep_research.workflow_lifecycle import lifecycle_budget_errors
+                    errors.extend(lifecycle_budget_errors(spec, budget))
                 groups = budget.get('recovery', {}).get('groups', {})
                 if any(group not in groups for c in spec['componentInitializations'] for group in c['appliesTo']):
                     errors.append('workflow.unknown_initialization_group')

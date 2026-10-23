@@ -27,6 +27,8 @@ def design_slots_for_claim(claim, metric_domains=None):
     slots = required_design_slots(metric_domains).get(role)
     if role == 'steps' and workflow_version(claim.get('workflowContractVersion')):
         slots = (*slots, 'data_isolation', 'component_creation', 'seed_pairing', 'checkpoint_selection')
+        if claim['workflowContractVersion'] == 5:
+            slots = (*slots, 'timeline_dependencies', 'state_lifetime', 'stage_group_accounting', 'evaluation_readonly')
     return slots
 
 
@@ -60,6 +62,8 @@ def validate_design_audit(claim, verdict, context, metric_domains=None, *, direc
 def _slot_supported(entry, claim, context, slot=None):
     if not isinstance(entry, dict):
         return False
+    if slot in _TIMELINE_WHOLE_ROOTS and not ({'fields','ref'} & entry.keys()):
+        return False
     if 'ref' in entry:
         reference = entry['ref']
         if set(entry) != {'ref'} or not isinstance(reference, dict) or set(reference) != {'claimId', 'path'}:
@@ -88,6 +92,11 @@ def _slot_supported(entry, claim, context, slot=None):
                 and isinstance(field.get('path'), list)
                 and field['path'][:2] == ['executionSpec', 'recovery'] for field in fields):
             return False
+        if slot in _TIMELINE_WHOLE_ROOTS:
+            for root in _TIMELINE_WHOLE_ROOTS[slot]:
+                if not any(isinstance(field, dict) and field.get('claimId') == claim.get('claimId')
+                           and field.get('path') == ['executionSpec', root] for field in fields):
+                    return False
         return all(_field_supported(field, claim, context, slot) for field in fields)
     if 'quotes' in entry:
         # Non-contiguous choices retain their own source identities. Never
@@ -128,6 +137,17 @@ _FIELD_ROOTS = {
     'component_creation': ('steps', {'baselineInitialization', 'componentInitializations'}),
     'seed_pairing': ('steps', {'replicationMode', 'refs'}),
     'checkpoint_selection': ('steps', {'checkpointSelection'}),
+    'timeline_dependencies': ('steps', {'phases','componentInitializations'}),
+    'state_lifetime': ('steps', {'componentInitializations'}),
+    'stage_group_accounting': ('steps', {'phases','frameIterations'}),
+    'evaluation_readonly': ('steps', {'phases'}),
+}
+
+_TIMELINE_WHOLE_ROOTS = {
+    'timeline_dependencies': ('phases','componentInitializations'),
+    'state_lifetime': ('componentInitializations',),
+    'stage_group_accounting': ('phases','frameIterations'),
+    'evaluation_readonly': ('phases',),
 }
 
 
@@ -179,7 +199,10 @@ def _field_supported(field, claim, context, slot):
             value = value[key]
         else:
             return False
-    if value is None or value == '' or value == [] or value == {}:
+    declared_no_components = (reference.get('workflowContractVersion') == 5
+        and slot in {'component_creation','group_pairing',*_TIMELINE_WHOLE_ROOTS}
+        and path == ['executionSpec','componentInitializations'] and type(value) is list and value == [])
+    if not declared_no_components and (value is None or value == '' or value == [] or value == {}):
         return False
     try:
         return json.dumps(value, sort_keys=True, allow_nan=False) == json.dumps(

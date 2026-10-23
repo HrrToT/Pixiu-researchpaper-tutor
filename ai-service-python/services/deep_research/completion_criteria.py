@@ -99,7 +99,7 @@ def completion_contract_digest(plan, claims):
         if type(claim.get('protocolContractVersion')) is int and claim['protocolContractVersion'] == 2:
             row['protocolContractVersion'] = 2
             row['protocolExecutionSpec'] = claim.get('executionSpec')
-        if type(claim.get('workflowContractVersion')) is int and claim['workflowContractVersion'] in (1, 2, 3, 4):
+        if type(claim.get('workflowContractVersion')) is int and claim['workflowContractVersion'] in (1, 2, 3, 4, 5):
             if claim['workflowContractVersion'] >= 2:
                 row['workflowContractVersion'] = claim['workflowContractVersion']
             row['workflowExecutionSpec'] = claim.get('executionSpec')

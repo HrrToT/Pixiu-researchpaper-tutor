@@ -11,8 +11,8 @@ def enforce_design_consistency(verification, evidence=(), protocol_required=Fals
     # Canonical controls/workflow references are mutual. If either loses a
     # dependency in a later gate, repeat removal-only gates to remove orphans.
     # No gate may promote a rejected/unverified statement.
-    coupled = (protocol_required == 2 or workflow_required == 4 or any(
-        c.get('protocolContractVersion') == 2 or c.get('workflowContractVersion') == 4
+    coupled = (protocol_required == 2 or workflow_required in (4, 5) or any(
+        c.get('protocolContractVersion') == 2 or c.get('workflowContractVersion') in (4, 5)
         for c in verification.get('accepted', [])))
     for _ in range(len(verification.get('accepted', [])) + 1 if coupled else 1):
         checked = enforce_workflow_consistency(enforce_hypothesis_consistency(enforce_budget_consistency(

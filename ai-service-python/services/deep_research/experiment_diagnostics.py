@@ -15,6 +15,17 @@ RULES = {
     'workflow.replication_mode_conflict': 'replicationMode must equal the referenced data replication.mode. Reusing one checkpoint is not independent baseline retraining.',
 }
 
+# New-version feedback must not change frozen Workflow 4 request text.
+V5_RULES = {
+    'workflow5.fields': 'Workflow 5 exact keys: refs,order,baselineMode,replicationMode,baselineInitialization,componentInitializations,checkpointSelection,records,frameIterations,phases. Preserve actual full initial-state definitions and explicit component lifecycles.',
+    'controls.workflow5_link': 'Reference the supplied workflow-5 steps ID whose refs.controls points back to this control. A link is not approval of that workflow.',
+}
+TIMELINE_RULE = ('Validate the declared Workflow 5 phase timeline and component lifecycle at the indicated original JSON Pointer. '
+    'Inputs must exist before use, cover the consuming groups, and remain alive through state reads and updates. '
+    'Per-frame components are created and disposed within the frame; evaluate and record are read-only and records depend on evaluation outputs. '
+    'Whole-group recovery totals include every declared frame and agree exactly with the linked budget. '
+    'Choose and repair the actual intended operations and parameters; do not invent missing scientific values or switch to an available checkpoint to bypass initialization.')
+
 
 def feedback(claims, context=()):
     """JSON Pointers are relative to each original claim, not its rendered text."""
@@ -34,14 +45,25 @@ def feedback(claims, context=()):
         issues = []
         def add(path, code):
             issues.append([path, code]); used.add(code)
-        if role == 'steps' and claim.get('workflowContractVersion') == 4 and isinstance(spec, dict):
-            errors = workflow_errors(spec, 4)
+        if role == 'steps' and claim.get('workflowContractVersion') in (4, 5) and isinstance(spec, dict):
+            version = claim['workflowContractVersion']
+            errors = workflow_errors(spec, version)
             for code, path in (
                     ('workflow.fields', '/executionSpec'),
                     ('workflow.baseline_existing_creation', '/executionSpec/baselineInitialization'),
                     ('workflow.baseline_initialization', '/executionSpec/baselineInitialization')):
                 if code in errors:
-                    add(path, code)
+                    add(path, 'workflow5.fields' if version == 5 and code == 'workflow.fields' else code)
+            if version == 5:
+                from services.deep_research.workflow_lifecycle import lifecycle_issues, lifecycle_budget_errors
+                timeline = lifecycle_issues(spec)
+                for issue in timeline:
+                    add('/executionSpec' + issue['path'], issue['code'])
+                refs = spec.get('refs')
+                sibling = lookup(refs.get('budget')) if isinstance(refs, dict) else None
+                if not timeline and isinstance(sibling, dict) and sibling.get('designRole') == 'budget':
+                    for code in lifecycle_budget_errors(spec, sibling.get('executionSpec')):
+                        add('/executionSpec', code)
             refs = spec.get('refs')
             if isinstance(refs, dict):
                 for field, role_name, section in [('baselineMode', 'budget', 'baseline'),
@@ -70,11 +92,12 @@ def feedback(claims, context=()):
             elif not errors:
                 target = lookup(spec.get('initialization', {}).get('workflowClaimId'))
                 if (not isinstance(target, dict) or target.get('designRole') != 'steps'
-                        or target.get('workflowContractVersion') != 4
+                        or target.get('workflowContractVersion') not in (4, 5)
                         or not isinstance(target.get('executionSpec'), dict)
                         or not isinstance(target['executionSpec'].get('refs'), dict)
                         or target['executionSpec']['refs'].get('controls') != claim['claimId']):
-                    add('/executionSpec/initialization/workflowClaimId', 'controls.workflow_link')
+                    add('/executionSpec/initialization/workflowClaimId', 'controls.workflow5_link'
+                        if isinstance(target, dict) and target.get('workflowContractVersion') == 5 else 'controls.workflow_link')
         elif role == 'groups' and isinstance(spec, dict):
             if validate_group_spec(spec) and (set(spec) != {'factors'} or not isinstance(spec.get('factors'), list)):
                 add('/executionSpec', 'groups.fields')
@@ -83,4 +106,5 @@ def feedback(claims, context=()):
                 add('/executionSpec/recovery', 'budget.matched')
         if issues:
             targets[claim['claimId']] = issues
-    return {'rules': {code: RULES[code] for code in sorted(used)}, 'targets': targets}
+    return {'rules': {code: TIMELINE_RULE if code.startswith('timeline.') else
+        V5_RULES[code] if code in V5_RULES else RULES[code] for code in sorted(used)}, 'targets': targets}

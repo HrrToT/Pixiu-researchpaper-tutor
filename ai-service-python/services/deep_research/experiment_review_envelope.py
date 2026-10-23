@@ -145,6 +145,14 @@ def build(*,claims_text,context,question,evidence_marker,metric_domains,config_m
         'Evidence:\n'+evidence_marker]
     if any(c.get('protocolContractVersion')==2 for c in all_claims):parts.append(brief.PROTOCOL if compact else PROTOCOL)
     if any(c.get('workflowContractVersion') in (1,2,3,4) for c in all_claims):parts.append(brief.WORKFLOW if compact else WORKFLOW)
+    if any(c.get('workflowContractVersion')==5 for c in all_claims):
+        from services.deep_research.experiment_workflow import WORKFLOW_CONTRACT_V5
+        parts.append(WORKFLOW_CONTRACT_V5)
+        parts.append('Workflow5 audit slots require complete own-claim roots: timeline_dependencies=phases+'
+            'componentInitializations; state_lifetime=componentInitializations; stage_group_accounting=phases+'
+            'frameIterations; evaluation_readonly=phases. Use exact fields, not fragments or prose quotes. '
+            'Structural binding is not a scientific pass. Check every initialization, phase action, read/write '
+            'target, output, group, cap and lifetime against the objective and original evidence.')
     if any(c.get('budgetContractVersion')==1 for c in all_claims):parts.append(brief.BUDGET if compact else BUDGET)
     if any(c.get('hypothesisContractVersion')==1 for c in all_claims):parts.append(brief.HYPOTHESIS if compact else HYPOTHESIS)
     # Do not impose a factorial reference on an explicitly single-toggle task.
@@ -163,7 +171,7 @@ def build(*,claims_text,context,question,evidence_marker,metric_domains,config_m
         and (value:=design_slots_for_claim(c,metric_domains)) is not None}
     if slots:
         roots=audit_field_roots(dict.fromkeys(s for row in slots.values() for s in row),
-            workflow_v4=any(c.get('workflowContractVersion')==4 for c in all_claims))
+            workflow_v4=any(c.get('workflowContractVersion') in (4,5) for c in all_claims))
         audit=brief.AUDIT if compact else AUDIT
         if version in (3,4,5,6,7,8,9,10):
             audit=audit.replace('Return ONLY a JSON array: one',

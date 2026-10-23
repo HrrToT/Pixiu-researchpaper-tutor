@@ -179,8 +179,8 @@ def enforce_protocol_consistency(verification, required=False):
             from services.deep_research.experiment_workflow import workflow_errors
             target = indexed.get(claim['executionSpec']['initialization']['workflowClaimId'])
             if (not isinstance(target, dict) or target.get('designRole') != 'steps'
-                    or type(target.get('workflowContractVersion')) is not int or target['workflowContractVersion'] != 4
-                    or workflow_errors(target.get('executionSpec'), 4)
+                    or type(target.get('workflowContractVersion')) is not int or target['workflowContractVersion'] not in (4, 5)
+                    or workflow_errors(target.get('executionSpec'), target['workflowContractVersion'])
                     or target['executionSpec']['refs']['controls'] != claim['claimId']):
                 errors.append('initialization.unverified_workflow')
         if errors:
