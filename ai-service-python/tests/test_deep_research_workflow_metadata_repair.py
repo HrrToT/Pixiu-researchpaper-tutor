@@ -170,15 +170,15 @@ def test_received_revision_is_saved_before_checks_and_replayed_without_another_s
     assert result == fixtures()[1] and invoke.call_count == 1
 
 
-def test_client_cannot_enable_the_gated_candidate(tmp_path):
+def test_client_cannot_override_the_server_revision_contract(tmp_path):
     from services.deep_research.facade import ResearchFacade
     from services.deep_research.repository import DeepResearchRepository
     repo = DeepResearchRepository(tmp_path/'api.sqlite3'); repo.initialize()
     facade = ResearchFacade(repo, lambda **_: None, llm_client=object())
     try:
         row, _ = facade.create({'workspaceTaskId': 't', 'operationKey': 'fixture', 'question': 'Design',
-            'workflowMetadataRepairContractVersion': 1, 'deferStart': True}, start_async=False)
-        assert 'workflowMetadataRepairContractVersion' not in row and not enabled(row)
+            'workflowMetadataRepairContractVersion': 999, 'deferStart': True}, start_async=False)
+        assert row['workflowMetadataRepairContractVersion'] == 1 and enabled(row)
     finally: facade.shutdown()
 
 
