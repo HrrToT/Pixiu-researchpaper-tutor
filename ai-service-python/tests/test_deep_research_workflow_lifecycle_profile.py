@@ -13,8 +13,9 @@ def test_new_profile_is_consistent_and_does_not_rewrite_legacy_run(tmp_path):
     try:
         first,_=facade.create({'workspaceTaskId':'t','operationKey':'first','question':'Design an experiment',
             'deferStart':True},start_async=False)
-        assert first['promptVersion']=='dr-v2.20261023.260'
+        assert first['promptVersion']=='dr-v2.20261023.261'
         assert first['scientificOutlineContractVersion']==1
+        assert first['workflowMetadataRowsContractVersion']==1
         assert (first['workflowContractVersion'],first['executionWorkflowContractVersion'])==(5,7)
         probe=deepcopy(first);probe['state']['outputKind']='experiment_design'
         assert enabled(probe) and draft_enabled(probe) and repair_enabled(probe)
@@ -22,6 +23,7 @@ def test_new_profile_is_consistent_and_does_not_rewrite_legacy_run(tmp_path):
             promptVersion='dr-v2.20261023.257',workflowContractVersion=4,executionWorkflowContractVersion=6)
         old.pop('experimentPlanningReasoningContractVersion')
         old.pop('scientificOutlineContractVersion')
+        old.pop('workflowMetadataRowsContractVersion')
         repo.create_run(old);before=repo.require_run('legacy')
         facade.create({'workspaceTaskId':'t','operationKey':'second','question':'Design an experiment',
             'deferStart':True},start_async=False)

@@ -196,3 +196,18 @@ def test_contract_marker_is_immutable_and_cannot_opt_old_records_in(tmp_path, re
     repo.create_run(old)
     with pytest.raises(ValueError, match='Immutable'):
         repo.update_run('old', lambda x: {**x, 'workflowMetadataRowsContractVersion': 1})
+
+
+def test_client_cannot_override_the_server_rows_contract(tmp_path):
+    from services.deep_research.facade import ResearchFacade
+    from services.deep_research.repository import DeepResearchRepository
+    from services.deep_research.workflow_metadata_rows import enabled
+    repo = DeepResearchRepository(tmp_path/'api.sqlite3'); repo.initialize()
+    facade = ResearchFacade(repo, lambda **_: None, llm_client=object())
+    try:
+        row, _ = facade.create({'workspaceTaskId': 't', 'operationKey': 'fixture',
+            'question': 'Design', 'workflowMetadataRowsContractVersion': 2,
+            'deferStart': True}, start_async=False)
+        assert row['workflowMetadataRowsContractVersion'] == 1 and enabled(row)
+    finally:
+        facade.shutdown()
