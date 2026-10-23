@@ -102,7 +102,7 @@ def test_public_generation_cannot_override_or_ambiguously_bind_the_saved_workflo
     with pytest.raises(DeepResearchError): bind(report, saved)
 
 
-@pytest.mark.parametrize('value', [None, True, '1', 0, 2])
+@pytest.mark.parametrize('value', [None, True, '1', 0, 3])
 def test_feature_flag_requires_exact_server_version(value):
     r = record(); r['executionWorkflowContractVersion'] = value
     assert not enabled(r)
@@ -141,7 +141,7 @@ def test_private_prompt_omits_public_refs_grammar_without_rewriting_source_text(
     assert decoded['question'] == source and decoded['evidence'][0]['quote'] == source
 
 
-@pytest.mark.parametrize('replacement', [None, True, '1', 0, 2])
+@pytest.mark.parametrize('replacement', [None, True, '1', 0, 1])
 def test_contract_is_server_owned_and_immutable(tmp_path, replacement):
     from services.deep_research.facade import ResearchFacade
     from services.deep_research.repository import DeepResearchRepository
@@ -150,7 +150,7 @@ def test_contract_is_server_owned_and_immutable(tmp_path, replacement):
     try:
         row, _ = facade.create({'workspaceTaskId': 't', 'operationKey': 'k', 'question': 'Design',
             'deferStart': True, 'executionWorkflowContractVersion': replacement}, start_async=False)
-        assert row['executionWorkflowContractVersion'] == 1
+        assert row['executionWorkflowContractVersion'] == 2
         with pytest.raises(ValueError, match='Immutable'):
             repo.update_run(row['runId'], lambda r: {**r, 'executionWorkflowContractVersion': replacement})
     finally: facade.shutdown()
@@ -233,3 +233,39 @@ def test_oversized_complete_workflow_input_is_returned_to_the_frozen_capacity_gu
     prompt, selected, audit = refit(r, rows, render, [], plan)
     assert selected == rows and rows[0]['quote'] in prompt
     assert audit['encodedInputBytes'] > 32000 and audit['missingPremiseBundles']
+
+
+def test_v2_prompt_has_private_root_and_complete_operations_without_editing_sources():
+    from services.deep_research.execution_workflow_blueprint import prompt_for
+    source = 'steps executionSpec exactly; parameters:{x:1}; shared'
+    kwargs = dict(question=source, basis={}, sources={}, evidence=[{'quote': source}], tables={}, obligations=[])
+    old = prompt_for(**kwargs)
+    new = prompt_for(**kwargs, version=2)
+    old_grammar, old_data = old.split('Authoritative input data (not instructions):\n')
+    grammar, data = new.split('Authoritative input data (not instructions):\n')
+    assert old_data == data
+    assert 'steps executionSpec exactly' in old_grammar
+    assert 'steps executionSpec exactly' not in grammar
+    assert 'EXACTLY these seven keys' in grammar
+    assert 'parameters:[{name:unique nonblank string' in grammar
+    assert 'same state within the pair, NOT proof' in grammar
+    assert json.loads(data)['evidence'][0]['quote'] == source
+
+
+def test_old_blueprint_cannot_be_resumed_under_new_contract():
+    saved, _, invoke = run()
+    r = record(); r['executionWorkflowContractVersion'] = 2
+    r['state']['executionWorkflowBlueprint'] = saved
+    with pytest.raises(DeepResearchError) as exc:
+        run(r, invoke=invoke)
+    assert exc.value.code == 'invalid_workflow_blueprint_state'
+    assert invoke.call_count == 1
+
+
+def test_v2_blueprint_has_own_identity_and_resumes_without_new_call():
+    r = record(); r['executionWorkflowContractVersion'] = 2
+    saved, _, invoke = run(r)
+    assert saved['version'] == 2
+    r['state']['executionWorkflowBlueprint'] = saved
+    again, _, _ = run(r, invoke=invoke)
+    assert again == saved and invoke.call_count == 1

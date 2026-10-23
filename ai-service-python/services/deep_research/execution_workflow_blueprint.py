@@ -13,7 +13,7 @@ ROLES = ('data', 'budget', 'controls', 'groups')
 def enabled(record):
     return (isinstance(record, dict)
             and type(record.get('executionWorkflowContractVersion')) is int
-            and record['executionWorkflowContractVersion'] == 1
+            and record['executionWorkflowContractVersion'] in (1, 2)
             and record.get('workflowContractVersion') == 4
             and record.get('experimentDraftContractVersion') == 6
             and (record.get('state', {}).get('outputKind') or record.get('outputKind')) == 'experiment_design')
@@ -48,7 +48,7 @@ def errors(value, aliases):
     return result
 
 
-def prompt_for(*, question, basis, sources, evidence, tables, obligations):
+def prompt_for(*, question, basis, sources, evidence, tables, obligations, version=1):
     from services.deep_research.experiment_workflow import WORKFLOW_CONTRACT_V4
     # Adapt only a server-owned grammar constant. User/source text is packed
     # separately and is never searched or rewritten.
@@ -57,6 +57,31 @@ def prompt_for(*, question, basis, sources, evidence, tables, obligations):
         raise ValueError('Private workflow grammar no longer matches Workflow4')
     grammar = WORKFLOW_CONTRACT_V4.replace(refs_line, '{\n', 1).replace(
         'refs match accepted siblings and modes.', 'Public IDs are bound later; modes must agree.', 1)
+    if type(version) is not int or version not in (1, 2):
+        raise ValueError('Unsupported private workflow version')
+    if version == 2:
+        grammar = grammar.replace(
+            'Workflow contract 4 (server assigned): steps executionSpec exactly',
+            'The value of the root workflow field has EXACTLY these seven keys:', 1).replace(
+            'Controls initialization references this steps ID, never another checkpoint\nsource.',
+            'Public claim references are assigned later.', 1)
+        grammar += '''
+Return only sourceRefs, workflow, unresolved. workflow is the seven-key object above,
+NOT {steps:{executionSpec:...}}. Stage names occur ONLY as strings in order, never
+as extra objects or narrative fields. No duplicate state inventory or prose step listing.
+Every operation is {action:nonblank string,parameters:[{name:unique nonblank string,
+type:number|choice,value:finite number for number OR nonblank string for choice}]}.
+parameters is a LIST, never a name-to-value object. Creation may use [] when the
+stateDefinitions specify it fully; initializer operation rules need nonempty parameters.
+Dimension strings such as N or K are not valid shape entries. For input-dependent
+counts, declare a real available selected input and use {inputIndex,axis}; do not
+replace an unknown dimension by a guessed integer to pass validation.
+appliesTo lists actual paired group IDs, never a placeholder such as shared.
+The same frame-0 model means the same state within the pair, NOT proof of an available
+checkpoint. If no usable asset is evidenced, specify how to train the common baseline
+from available training data. If that cannot be specified faithfully, record the gap
+in unresolved instead of claiming an existing asset or successful precheck.
+'''
     return ('''Propose ONE complete UNEXECUTED initialization/workflow for the human objective.
 Return exactly {"sourceRefs":["supplied E IDs"],"workflow":{Workflow4 fields EXCEPT refs},"unresolved":[]}.
 Use plain JSON objects, not row tables or placeholders. Entire response <=8192 UTF-8 bytes.
@@ -83,16 +108,17 @@ def prepare(record, *, prompt, aliases, invoke, parse, checkpoint):
         raise ValueError('Typed workflow contract is not enabled')
     request = request_identity(record, 'plan_workflow', prompt,
                                {'max_tokens': OUTPUT_TOKENS, 'temperature': 0.0})
-    identity = digest({'version': 1, 'request': request, 'aliases': aliases})
+    version = record['executionWorkflowContractVersion']
+    identity = digest({'version': version, 'request': request, 'aliases': aliases})
     saved = deepcopy(record.get('state', {}).get('executionWorkflowBlueprint'))
     if saved is not None:
-        if (not isinstance(saved, dict) or saved.get('version') != 1
+        if (not isinstance(saved, dict) or saved.get('version') != version
                 or type(saved.get('version')) is not int or saved.get('inputDigest') != identity
                 or saved.get('request') != request or saved.get('aliases') != aliases
                 or saved.get('scientificApproval') is not False):
             raise DeepResearchError('invalid_workflow_blueprint_state', '保存的执行蓝图与输入不一致，不能重新发送。')
     else:
-        saved = {'version': 1, 'inputDigest': identity, 'request': request,
+        saved = {'version': version, 'inputDigest': identity, 'request': request,
                  'aliases': deepcopy(aliases), 'status': 'pending', 'scientificApproval': False}
         if len(prompt.encode('utf8')) > MAX_INPUT:
             saved.update(status='not_started_capacity', inputBytes=len(prompt.encode('utf8')), maxInputBytes=MAX_INPUT)

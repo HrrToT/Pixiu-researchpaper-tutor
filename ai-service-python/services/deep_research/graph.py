@@ -1469,7 +1469,7 @@ space with unsupported global absence or incidental iteration/performance values
                     prompt=workflow_prompt(question=question, basis=plan['basis'], sources=source_registry,
                         evidence=evidence_summaries,
                         tables={key:table_registry[key] for key in table_registry if key in tables_used},
-                        obligations=draft_obligations), aliases=evidence_aliases,
+                        obligations=draft_obligations, version=record['executionWorkflowContractVersion']), aliases=evidence_aliases,
                     invoke=lambda node,prompt,options:llm_invoke(run_id,node,prompt,options,use_reserve=True),
                     parse=_safe_parse_json, checkpoint=checkpoint_workflow)
                 if workflow_plan is None:
