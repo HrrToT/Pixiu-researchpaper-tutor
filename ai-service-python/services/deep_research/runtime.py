@@ -51,6 +51,12 @@ def research_model_options(node, options):
     if node == 'plan_workflow':
         return {**options, 'thinking': {'type':'disabled'}, 'reasoning_effort':'none',
                 'max_tokens':6144, 'response_format':{'type':'json_object'}, 'timeout_seconds':120}
+    if node in ('plan_workflow_meta', 'plan_workflow_init'):
+        initialize = node == 'plan_workflow_init'
+        return {**options, 'thinking': {'type':'enabled' if initialize else 'disabled'},
+                'reasoning_effort':'low' if initialize else 'none',
+                'max_tokens':6144 if initialize else 2048, 'response_format':{'type':'json_object'},
+                'timeout_seconds':90 if initialize else 45}
     if node=='plan_experiment':
         from services.deep_research.experiment_planning import PLANNING_OUTPUT_TOKENS
         direct=direct_plan or (options.get('thinking')=={'type':'disabled'} and options.get('reasoning_effort')=='none')

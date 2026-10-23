@@ -28,6 +28,8 @@ _FINALIZATION_NODES: frozenset[str] = frozenset(
         "synthesize",
         "plan_experiment",
         "plan_workflow",
+        "plan_workflow_meta",
+        "plan_workflow_init",
         "verify",
         "verify_repair",
         "verify_design_config",
