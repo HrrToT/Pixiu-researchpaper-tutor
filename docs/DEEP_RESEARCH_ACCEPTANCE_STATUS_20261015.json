@@ -3566,6 +3566,43 @@
       "invalidPresenceVerdicts": 2,
       "scientificApproval": false,
       "proof": "deep-research-evidence/review-fieldrefs-regression-20261023.json"
+    },
+    "sourcePassage3": {
+      "offlinePassed": 4332,
+      "files": 237,
+      "seconds": 367.82,
+      "focusedPassed": 30,
+      "legacyScriptsPassed": 38,
+      "proof": "deep-research-evidence/source-passages-canonical-regression-20261023.json",
+      "realCase": "deep-research-evidence/E1-v40-diagnostic-20261023.json",
+      "quality": "deep-research-evidence/E1-v40-quality-diagnosis-20261023.json",
+      "reviewTransport": "deep-research-evidence/E1-v40-review-transport-20261023.json",
+      "boundary": "Literal extraction, incremental identity and review transport pass; no scientific or independent acceptance."
+    },
+    "repair4Candidate": {
+      "promptVersion": "dr-v2.20261023.250",
+      "loaded": true,
+      "legacyScriptsPassed": 38,
+      "focusedPacketBudgetPassed": 67,
+      "reservationChecksPassed": 29,
+      "fullRegression": {
+        "passed": 4348,
+        "files": 238,
+        "seconds": 309.93
+      },
+      "admissionProof": "deep-research-evidence/repair4-e1-v40-admission-20261023.json",
+      "providerCalls": 11,
+      "independentCredit": 0,
+      "regressionProof": "deep-research-evidence/repair4-regression-20261023.json",
+      "case": "E1-v41",
+      "settledTokens": 64188,
+      "accepted": 0,
+      "rejected": 9,
+      "proof": "deep-research-evidence/E1-v41-diagnostic-20261023.json",
+      "qualityProof": "deep-research-evidence/E1-v41-quality-diagnosis-20261023.json",
+      "capacityProof": "deep-research-evidence/E1-v41-repair-capacity-diagnosis-20261023.json",
+      "reviewProof": "deep-research-evidence/E1-v41-review-transport-20261023.json",
+      "boundary": "Engine/legacy transport passed;real repair not sent due ordinary capacity;scientific content and independent acceptance not passed."
     }
   },
   "stages": [
@@ -4028,29 +4065,29 @@
     "Full novice study workflow",
     "Independent Edge recovery"
   ],
-  "currentProviderConstraint": "All necessary bounded validations authorized. Latest E1-v38 submitted once,13settled calls/69290tokens,0newunknown,no automatic retry. Preserve11oldpaused unknowns. Historical global usage/cost not recomputed.",
-  "currentDevelopmentMode": "Primary Codex only;Goal active;quota pause revoked. Source/runtime08883d8a/.247. Generation3/review10/native15;old interfaces immutable. No Qoder or new agents.",
+  "currentProviderConstraint": "E1-v41 settled11calls64188tokens; no new unknowns,11historical paused unknowns remain. Complex planning/generation/review already use Pro. No automatic retries; uniform bounded validation authorization retained.",
+  "currentDevelopmentMode": "Primary Codex only; Goal active; quota pause revoked. Source/runtime35b77316/.250. Repair4 full role grammar,lossless check dictionary and32KB per-request ceiling; same18calls/100kTokens/360s and normal/reserve pools. No Qoder/new agents.",
   "loadedRuntime": {
-    "commit": "08883d8a",
-    "promptVersion": "dr-v2.20261023.247",
+    "commit": "35b77316",
+    "promptVersion": "dr-v2.20261023.250",
     "javaCommit": "27ac4beb",
     "frontendValidationCommit": "123b0d29",
     "frontendValidationIsHistorical": true,
-    "callsAfterLatestCase": 5684,
+    "callsAfterLatestCase": 5782,
     "active": 0,
     "historicalPausedUnknown": 11,
-    "proof": "deep-research-evidence/runtime-load-dr247-review-fieldrefs-20261023.json",
-    "postCasesProof": "deep-research-evidence/runtime-postcases-dr247-e1-v38-20261023.json",
-    "lastRealModelRunCommit": "08883d8a",
-    "lastRealModelRunPromptVersion": "dr-v2.20261023.247",
-    "lastLoadValidationScope": "26source hashes,health,5659ledger/4tasks preserved;E1-v38 13settled69290tokens,0unknown,0/9accepted. Four actual review fingerprints reconstructed;source/context preserved."
+    "proof": "deep-research-evidence/runtime-load-dr250-repair4-20261023.json",
+    "postCasesProof": "deep-research-evidence/runtime-postcases-dr250-e1-v41-20261023.json",
+    "lastRealModelRunCommit": "35b77316",
+    "lastRealModelRunPromptVersion": "dr-v2.20261023.250",
+    "lastLoadValidationScope": "34source hashes,5748ledger/4tasks preserved before case;E1-v41 11settled64188tokens,0newunknown,0/9accepted. Four actual review fingerprints and source/context retained;postcase5782ledger."
   },
   "nextQualityWork": [
-    "Implement source-passage evidence with exact source/version/hash and table/scope/incremental identity guards;offline feasibility only,not enabled. Avoid redundant model transcription without claiming evidence relevance or approval.",
-    "Preserve complete real Gaussian/hash/MLP state and compatible initialization in public generation;no opaque aggregates,assets/placeholders or matched unequal budgets.",
-    "Correct prospective/source judgement and concrete field reading in independent review;retain raw mistakes rather than automatic passes.",
-    "Fit full dependency-aware repairs under original normal/reserve/round limits;do not truncate required evidence or increase fixed-case budgets.",
-    "After development content quality passes,complete all remaining DR0-DR5 paths and fresh independent cases."
+    "Factor repeated rejectionAudit raw/context values via exact original-field references while keeping persisted original audits and complete source context; measure all atomic batch inputs under actual ordinary pool before further real runs.",
+    "Separate proposed hypotheses/settings from observed paper facts in acquisition and review; retain source-grounding requirements for factual clauses.",
+    "Repair concrete workflow/state initialization,whole-group cost matching,metric aggregation and inference scope. Do not substitute opaque model states or unsupported numeric claims.",
+    "Use ordinary remaining budget for repairs; preserve complete evidence,old request identity and protected review reserve.",
+    "After development quality passes,finish all remaining DR0-DR5 requirements and fresh independent cases."
   ],
   "javaReaderRuntime": {
     "sourceCommit": "070ab1a",
@@ -4631,7 +4668,7 @@
     "independentCredit": 0,
     "proof": "deep-research-evidence/compact-experiment-envelope-regression-20261020.json"
   },
-  "currentCheckpoint": ".247/08883d8a:4314offline/236files,89focused,38legacy,26loaded hashes. New review10 exact field references;real E1-v38 all15codes recognized,two presence errors rejected.112s13settled69290tokens,0/9accepted,repair31357>17023not sent.5684ledger/0active/11oldunknown. FullDR0-DR5 incomplete,independent0/5.",
+  "currentCheckpoint": ".250/35b77316 loaded;4348offline/238files,67focused,29reservation/dictionary checks,38legacy.34loaded hashes. E1-v41 completed/inconclusive,11settled64188tokens/130s,0newunknown,0/9accepted.45literal entries/16chunks;no extract model or repair model call. Required repair32265>23067ordinary input.5782ledger,0active,11oldunknown. DR0-DR5 incomplete,independent0/5.",
   "sharedModuleSourceCheckpoint": {
     "sourceCommit": "f8ae5177",
     "promptVersion": "dr-v2.20261020.199",
