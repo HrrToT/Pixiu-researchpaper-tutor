@@ -122,6 +122,19 @@ def test_deferred_metadata_edges_do_not_grant_complete_workflow_approval():
     assert not saved['assembly']['scientificApproval']
 
 
+def test_component_consumed_only_by_later_initialization_is_not_rejected_early():
+    _,meta,inits=fixtures()
+    bridge=deepcopy(meta['components'][1]);bridge['componentId']='bridge'
+    meta['components'].insert(1,bridge)
+    bridge_init=deepcopy(inits[2])
+    inits[2]['initialization']['inputs']=[{'state':'bridge','selector':'selected intermediate state'}]
+    r,_,invoke,run=setup([meta,inits[0],inits[1],bridge_init,inits[2]])
+    saved=run()
+    assert saved['status']=='ready' and invoke.call_count==5
+    assert [c['componentId'] for c in saved['value']['workflow']['componentInitializations']]==['ntc','bridge','added']
+    assert not saved['scientificApproval']
+
+
 def test_assembled_capacity_is_distinct_from_per_unit_response_cap():
     w,_,_=fixtures();w['phases'][0]['action']['action']='x'*8200
     value={'sourceRefs':[],'workflow':w,'unresolved':[]}

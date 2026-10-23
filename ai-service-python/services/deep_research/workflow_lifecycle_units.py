@@ -69,7 +69,8 @@ def initialization_errors(meta, target, initialization, earlier):
     index=next(i for i,c in enumerate(meta['components']) if c['componentId']==target['componentId'])
     prefix=f'/componentInitializations/{index}/'
     issues=lifecycle_issues(timeline_spec(meta,earlier=earlier,target=target,initialization=initialization))
-    return [i['code'] for i in issues if i['path'].startswith(prefix) or i['code']=='timeline.cycle']
+    return [i['code'] for i in issues if i['code']!='timeline.component.unused'
+        and (i['path'].startswith(prefix) or i['code']=='timeline.cycle')]
 
 
 META_POLICY=('Return sourceRefs,baselineMode,replicationMode,components,checkpointSelection,frameIterations,phases,unresolved. '
