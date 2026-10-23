@@ -216,7 +216,7 @@ def assess(state,record,update,invoke,coverage_gaps):
             attempted.update(r['key'] for r in saved['pairs'])
             if verdicts is not None: proofs.update(verdicts)
     round_key=str(state.get('requery_count',0))
-    if type(record.get('adaptiveExtractionContractVersion')) is int and record['adaptiveExtractionContractVersion'] in (1,2):
+    if type(record.get('adaptiveExtractionContractVersion')) is int and record['adaptiveExtractionContractVersion'] in (1,2,3):
         # Local extraction batches can add evidence without a new search round.
         # Freeze each distinct input; repeated checkpoints reuse the same key.
         round_key = 'batch:' + digest({'requery': round_key, 'evidence': evidence_digest,

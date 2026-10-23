@@ -15,7 +15,7 @@ from test_deep_research_adaptive_extraction import activate
 
 def fixture(tmp_path, reads=None):
     repo, old = setup(tmp_path)
-    repo = activate(repo, adaptiveExtractionContractVersion=2)
+    repo = activate(repo, adaptiveExtractionContractVersion=3)
     repo.update_run('r', lambda r:{**r,'state':{**r['state'],'evidence':[]}})
     if reads is not None:
         repo.update_run('r', lambda r:{**r,'state':{**r['state'],'readResults':reads}})
@@ -113,6 +113,39 @@ def test_resume_reuses_exact_rows_and_detects_journal_or_source_tampering(tmp_pa
         repo.update_run('r',lambda r:{**r,'state':modified})
         with pytest.raises(DeepResearchError,match='已改变'):node(repo,invoke)({'run_id':'r'})
     invoke.assert_not_called()
+
+
+def test_runtime_page_location_factory_can_normalize_and_resume_without_relocating(tmp_path):
+    from services.deep_research.located_evidence import located_evidence_factory
+    repo,invoke,reads=fixture(tmp_path)
+    repo.update_run('r',lambda r:{**r,'materials':[{'materialId':s['workId']} for s in reads]})
+    class Local:
+        calls=0
+        def load_pages(self,work):
+            self.calls+=1
+            if self.calls>3:pytest.fail('Saved evidence must not be relocated on resume')
+            return None,[]
+    local=Local();factory=located_evidence_factory(repo,'r',local)
+    run=make_batched_extract_node(invoke,factory,lambda *_:True,repo.update_run)
+    run({'run_id':'r'});before=deepcopy(repo.require_run('r')['state'])
+    assert all(e['location']['pageResolution']=='unresolved' and 'page' not in e['location'] for e in before['evidence'])
+    assert all('page' in entry['input']['location'] for entry in before['sourcePassageExtraction']['entries'].values())
+    run({'run_id':'r'})
+    assert repo.require_run('r')['state']==before and local.calls==3
+    invoke.assert_not_called()
+
+
+def test_old_failed_page_normalization_contract_is_not_reinterpreted(tmp_path):
+    from services.deep_research.located_evidence import located_evidence_factory
+    repo,reads=setup(tmp_path);repo=activate(repo,adaptiveExtractionContractVersion=2)
+    repo.update_run('r',lambda r:{**r,'materials':[{'materialId':s['workId']} for s in reads]})
+    class Local:
+        def load_pages(self,_):return None,[]
+    factory=located_evidence_factory(repo,'r',Local());invoke=Mock()
+    run=make_batched_extract_node(invoke,factory,lambda *_:True,repo.update_run)
+    run({'run_id':'r'});old=deepcopy(repo.require_run('r')['state'])
+    with pytest.raises(DeepResearchError,match='非页码身份'):run({'run_id':'r'})
+    assert repo.require_run('r')['state']==old
 
 
 def test_required_source_and_metadata_access_do_not_acquire_permission(tmp_path):

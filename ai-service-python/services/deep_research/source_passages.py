@@ -16,7 +16,7 @@ OWNED = ('evidenceId','sourceWorkId','sourceVersionId','contentHash','accessLeve
 
 def enabled(record):
     return (type(record.get('adaptiveExtractionContractVersion')) is int
-        and record['adaptiveExtractionContractVersion'] == 2)
+        and record['adaptiveExtractionContractVersion'] in (2,3))
 
 
 def _byte_spans(text, limit):
@@ -66,6 +66,8 @@ def projection(evidence):
 
 def extract(record, make_evidence, validate, update):
     run_id = record['runId']; state = record.get('state', {})
+    canonical = record['adaptiveExtractionContractVersion'] == 3
+    input_version = 2 if canonical else 1
     sources = state.get('readResults', [])
     obligations = {o['obligationId']:o for p in state.get('plan', []) for o in p['obligations']}
     old_evidence = state.get('evidence', [])
@@ -79,7 +81,7 @@ def extract(record, make_evidence, validate, update):
                 or not isinstance(entry['input'],dict)
                 or set(entry['input']) != {'version','sourceId','workId','versionId','contentHash','accessLevel',
                     'location','originalTextDigest','quote','obligations'}
-                or type(entry['input']['version']) is not int or entry['input']['version'] != 1
+                or type(entry['input']['version']) is not int or entry['input']['version'] != input_version
                 or key != digest(entry['input']) or entry['evidenceId'] not in by_id
                 or entry['evidenceDigest'] != digest(projection(by_id[entry['evidenceId']]))):
             raise DeepResearchError('invalid_source_passage_state','保存的原文证据或输入摘要已改变，不能继续提取。')
@@ -87,9 +89,19 @@ def extract(record, make_evidence, validate, update):
         if (old.get('verification',{}).get('literal') != 'passed'
                 or any(frozen[a] != old.get(b) for a,b in (('sourceId','sourceId'),('workId','sourceWorkId'),
                     ('versionId','sourceVersionId'),('contentHash','contentHash'),('accessLevel','accessLevel'),
-                    ('location','location'),('quote','quote')))
+                    ('quote','quote')))
                 or frozen['originalTextDigest'] != digest(old.get('sourceContext'))):
             raise DeepResearchError('invalid_source_passage_state','保存的原文证据与来源身份不一致。')
+        if canonical:
+            from services.deep_research.quote_pages import resolve_quote_location
+            # The factory may resolve/remove positional hints. Other locator
+            # fields, including original passage offsets, must remain exact.
+            same_location = (resolve_quote_location('',[],frozen['location'])
+                == resolve_quote_location('',[],old.get('location')))
+        else:
+            same_location = frozen['location'] == old.get('location')
+        if not same_location:
+            raise DeepResearchError('invalid_source_passage_state','原始片段与规范定位的非页码身份不一致。')
     batch_scope = callable(getattr(type(validate), 'validate_materials', None))
     if batch_scope and not validate.validate_materials(run_id, list(dict.fromkeys(s['workId'] for s in sources))):
         raise DeepResearchError('scope_revoked','材料范围核对未通过，尚未提取原文证据。')
@@ -122,11 +134,15 @@ def extract(record, make_evidence, validate, update):
                 if units > MAX_UNITS:
                     raise DeepResearchError('source_passage_capacity','本次读取的原文片段超过保存上限，原始资料保留，尚未完成提取。')
                 loc = {**location, 'sourcePassageStart':start, 'sourcePassageEnd':end}
-                frozen = {'version':1,'sourceId':source['sourceId'], **identity,
+                frozen = {'version':input_version,'sourceId':source['sourceId'], **identity,
                     'location':loc,'originalTextDigest':digest(text),'quote':quote,
                     'obligations':[{k:obligations[oid][k] for k in ('obligationId','question','requiredSources','completionCriteria')
                         if k in obligations[oid]} for oid in eligible]}
                 key = digest(frozen)
+                if canonical and key in journal['entries']:
+                    old = by_id[journal['entries'][key]['evidenceId']]
+                    old['obligationIds'] = list(dict.fromkeys([*old.get('obligationIds',[]), *eligible]))
+                    continue
                 ev = make_evidence(source=identity, quote=quote, original=text, location=loc,
                     obligation_ids=eligible, conditions={})
                 ev.update(sourceId=source['sourceId'],sourceKind=source.get('sourceKind','local'),
