@@ -15,5 +15,13 @@
     "plan_workflow_meta": 2853,
     "plan_workflow_init": 3736
   },
-  "boundary": "Engineering fixture checks only. No new provider request, no scientific approval, and no default activation. Full regression is pending; the lifetime representation gap must be resolved before release."
+  "boundary": "Engineering fixture and full regression checks only. No new provider request, scientific approval, or default activation. The lifecycle representation gap must be resolved before release.",
+  "fullRegression": {
+    "sourceCommit": "d20c6080",
+    "files": 243,
+    "passed": 4462,
+    "warnings": 1,
+    "seconds": 328.35,
+    "logSha256": "d5e4a7380edc9f0edf279cf3b7dec23155f906c9dc4ea8b2569f83e9fb2920fa"
+  }
 }
