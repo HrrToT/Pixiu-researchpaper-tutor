@@ -1,3 +1,5 @@
+import { useCitationFocus } from './useCitationFocus';
+import './CitationFocus.css';
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { Worker, Viewer, SpecialZoomLevel, type PluginFunctions } from '@react-pdf-viewer/core';
 import { highlightPlugin, type RenderHighlightTargetProps, type RenderHighlightsProps } from '@react-pdf-viewer/highlight';
@@ -599,6 +601,7 @@ interface PdfViewerProps {
   onPageTextExtracted?: (payload: PageTextExtractedPayload) => void;
   targetPageIndex?: number | null;
   targetPageJumpToken?: number;
+  citationFocusToken?: number;
   focusedSourceAnchorId?: string | null;
   focusedSourceAnchorToken?: number;
   theme?: string;
@@ -620,6 +623,7 @@ const PdfViewer: React.FC<PdfViewerProps> = ({
   onPageTextExtracted,
   targetPageIndex = null,
   targetPageJumpToken = 0,
+  citationFocusToken = 0,
   focusedSourceAnchorId = null,
   focusedSourceAnchorToken = 0,
   theme = 'light',
@@ -651,6 +655,8 @@ const PdfViewer: React.FC<PdfViewerProps> = ({
   const [displayScale, setDisplayScale] = useState(() => Number(savedPosition?.scale) > 0 ? Number(savedPosition.scale) : 1);
   const [pageTextState, setPageTextState] = useState<'loading' | 'ready' | 'empty' | 'error'>('loading');
   const clearPdfLoading = useCallback(() => setIsPdfLoading(false), []);
+  const citationFocus = useCitationFocus(readerRef, citationFocusToken, !isPdfLoading, active, positionKey);
+  const citationAreas = highlights.find(item => item.sourceAnchorId === focusedSourceAnchorId)?.highlightAreas || [];
   const [selectionNoteError, setSelectionNoteError] = useState('');
   const savingSelectionNote = useRef(false);
 
@@ -762,7 +768,7 @@ const PdfViewer: React.FC<PdfViewerProps> = ({
   }, [highlights, onHighlightsChange]);
 
   useEffect(() => {
-    if (!active || !focusedSourceAnchorId) {
+    if (!active || !focusedSourceAnchorId || citationFocusToken) {
       return;
     }
 
@@ -772,7 +778,7 @@ const PdfViewer: React.FC<PdfViewerProps> = ({
     if (targetHighlight) {
       setActiveHighlightId(targetHighlight.id);
     }
-  }, [focusedSourceAnchorId, focusedSourceAnchorToken, highlights, active]);
+  }, [focusedSourceAnchorId, focusedSourceAnchorToken, highlights, active, citationFocusToken]);
 
   // Responsive layout: detect narrow screens (< 1024px) and notify parent
   useEffect(() => {
@@ -1126,6 +1132,15 @@ const PdfViewer: React.FC<PdfViewerProps> = ({
     },
     renderHighlights: (props: RenderHighlightsProps) => (
       <div>
+        {citationFocus && (citationAreas.length > 0
+          ? citationAreas.filter(area => area.pageIndex === props.pageIndex).map((area, index) => (
+            <div key={`citation-${citationFocus.token}-${index}`} data-citation-focus-region data-leaving={citationFocus.leaving}
+              className="pdf-citation-focus" style={props.getCssProperties(area, props.rotation)} />
+          ))
+          : props.pageIndex === targetPageIndex && <div key={`citation-${citationFocus.token}`} data-citation-focus-region
+              data-leaving={citationFocus.leaving} className="pdf-citation-focus pdf-citation-focus-page" style={{ inset: 0 }}>
+              <span className="pdf-citation-focus-label">引用位于第 {props.pageIndex + 1} 页 · 页级定位</span>
+            </div>)}
         {highlights.map((highlightEntity: PdfViewerHighlight) => (
           <React.Fragment key={highlightEntity.id}>
             {highlightEntity.highlightAreas

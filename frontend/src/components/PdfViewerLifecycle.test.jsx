@@ -22,6 +22,22 @@ beforeEach(() => { state.mounts = 0; state.jump.mockReset(); state.zoom.mockRese
 const viewport = { width: 600, height: 800 };
 const textContent = text => ({ items: [{ str: text, transform: [1, 0, 0, 12, 20, 700], width: 100, height: 12 }], styles: {} });
 
+it('marks a citation page honestly and uses saved areas only when the anchor matches', async () => {
+  state.cachedDoc = {numPages:2,getPage:async()=>({getViewport:()=>viewport,getTextContent:async()=>textContent('body')})};
+  const props = {fileUrl:'A.pdf',pdfId:'A',targetPageIndex:0,targetPageJumpToken:1,citationFocusToken:1};
+  const view = render(<PdfViewer {...props} />);
+  await waitFor(()=>expect(screen.getByText('引用位于第 1 页 · 页级定位')).toBeInTheDocument());
+  view.rerender(<PdfViewer {...props} active={false} />);
+  expect(screen.queryByText('引用位于第 1 页 · 页级定位')).toBeNull();
+  view.unmount();
+  const precise = render(<PdfViewer {...props} focusedSourceAnchorId="anchor-1" initialHighlights={[{
+    id:1,sourceAnchorId:'anchor-1',text:'body',position:{pageIndex:0},chatHistory:[],
+    highlightAreas:[{pageIndex:0,left:10,top:10,width:20,height:3}],
+  }]} />);
+  await waitFor(()=>expect(precise.container.querySelectorAll('[data-citation-focus-region]')).toHaveLength(1));
+  expect(screen.queryByText(/页级定位/)).toBeNull();
+});
+
 it('accepts a cached document loading before the parent passive effects', async () => {
   state.cachedDoc = {numPages:19,getPage:async()=>({getViewport:()=>viewport,getTextContent:async()=>textContent('cached page')})};
   const pageChange = vi.fn();

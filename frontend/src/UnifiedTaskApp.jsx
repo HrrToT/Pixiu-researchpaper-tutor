@@ -957,7 +957,7 @@ export default function UnifiedTaskApp() {
     if (targetPaperId !== activeTask.focusedPaperId) await openPaper(targetPaperId);
     if (activeTaskIdRef.current !== activeTaskId) return false;
     setReturnContent(sourceReturn);
-    if (Number.isInteger(index) && index >= 0) setJump({ taskId: activeTaskId, pdfId: targetPaperId, pageIndex: index, token: Date.now(), anchorId: source.sourceAnchorId || source.sectionId || null });
+    if (Number.isInteger(index) && index >= 0) setJump({ taskId: activeTaskId, pdfId: targetPaperId, pageIndex: index, token: Date.now(), anchorId: source.sourceAnchorId || source.sectionId || null, citation: true });
     patchLayout({ reader: true });
     return true;
   };
@@ -1354,6 +1354,7 @@ export default function UnifiedTaskApp() {
                 const note = selectionNote(payload, paperView.id, makeId());
                 await updateTask(activeTaskId, task => ({ notes: [...task.notes, note] }));
               }}
+              citationFocusToken={jump.citation && jump.pdfId === paperView.id && jump.taskId === activeTaskId ? jump.token : 0}
               targetPageIndex={jump.pdfId === paperView.id && jump.taskId === activeTaskId ? jump.pageIndex : initialPaperPage} targetPageJumpToken={jump.pdfId === paperView.id && jump.taskId === activeTaskId ? jump.token : 0} focusedSourceAnchorId={jump.pdfId === paperView.id && jump.taskId === activeTaskId ? jump.anchorId : null} focusedSourceAnchorToken={jump.pdfId === paperView.id && jump.taskId === activeTaskId ? jump.token : 0} /></div>
             {displayedTranslationMode !== 'original' && <div className="unified-translation"><TranslationPanel pdfId={paperView.id} fileUrl={paperView.url} pdfFileName={getPaperTitle(papers, paperView.id)} currentPage={page.pageIndex}
               pageData={currentTranslationPage?.status === 'translating' ? { ...currentTranslationPage, status: 'loading' } : currentTranslationPage}
