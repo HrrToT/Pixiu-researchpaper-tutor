@@ -8,9 +8,15 @@ from services.deep_research.synthesis_evidence import fit_premises
 
 
 def enabled(record):
-    return all(type(record.get(key)) is int and record[key]==version for key,version in (
-        ('experimentGenerationEnvelopeContractVersion',1),('experimentDraftContractVersion',6),
-        ('configurationConsistencyContractVersion',2),('experimentOutlineEncodingContractVersion',2)))
+    common=(type(record.get('experimentGenerationEnvelopeContractVersion')) is int
+        and record['experimentGenerationEnvelopeContractVersion'] in (1,2)
+        and all(type(record.get(key)) is int and record[key]==version for key,version in (
+        ('experimentDraftContractVersion',6),
+        ('configurationConsistencyContractVersion',2),('experimentOutlineEncodingContractVersion',2))))
+    return common and (record['experimentGenerationEnvelopeContractVersion']==1 or all(
+        type(record.get(key)) is int and record[key]==value for key,value in (
+            ('experimentExecutionGuidanceContractVersion',2),('experimentPlanEncodingContractVersion',7),
+            ('structuredOutputContractVersion',13))))
 
 
 def draft_prompt(*,question,limit,clarification,gaps,obligations,sources,evidence_marker,

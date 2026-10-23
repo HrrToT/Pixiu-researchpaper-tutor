@@ -38,11 +38,20 @@ def _error():
     return DeepResearchError('invalid_experiment_outline_state','实验输出目录与原始系统结构不一致，不能发送。')
 
 
+def _suffix(record):
+    from services.deep_research.experiment_generation_envelope import enabled as generation_enabled
+    if (generation_enabled(record) and type(record.get('experimentGenerationEnvelopeContractVersion')) is int
+            and record['experimentGenerationEnvelopeContractVersion']==2):
+        from services.deep_research.compact_generation_rules import CONFIGURATION
+        return '\n'+CONFIGURATION
+    return '\n'+generation(record['configurationConsistencyContractVersion'])
+
+
 def encode(record,prompt):
     if not enabled(record):return prompt,None
     outline=_outline();packet=columnar(outline)
     if restore_columns(packet)!=outline:raise _error()
-    suffix='\n'+generation(record['configurationConsistencyContractVersion'])
+    suffix=_suffix(record)
     needle=MARKER+_packed(outline)+suffix
     # The actual system paragraph follows the human question. Source/plan data
     # are JSON strings; their escaped line breaks cannot replace this boundary.
@@ -74,7 +83,7 @@ def validate(record,prompt,audit):
         raise _error()
     if not canonical:raise _error()
     if restore_columns(audit['encodedOutline'])!=expected:raise _error()
-    suffix='\n'+generation(record['configurationConsistencyContractVersion'])
+    suffix=_suffix(record)
     head,found,tail=prompt.rpartition(MARKER+LEGEND+_packed(packet)+suffix)
     if not found:raise _error()
     original=head+MARKER+_packed(expected)+suffix+tail

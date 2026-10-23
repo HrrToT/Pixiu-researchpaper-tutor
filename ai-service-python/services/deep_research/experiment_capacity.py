@@ -22,6 +22,10 @@ def input_limit(record):
 
 def reserved_basis_bytes(record):
     from services.deep_research.experiment_planning import MAX_BASIS_BYTES, basis_limit
+    if (enabled(record) and type(record.get('experimentGenerationEnvelopeContractVersion')) is int
+            and record['experimentGenerationEnvelopeContractVersion']==2):
+        from services.deep_research.experiment_planning import wire_basis_limit
+        return wire_basis_limit(record)
     return MAX_BASIS_BYTES if enabled(record) else basis_limit(record)
 
 

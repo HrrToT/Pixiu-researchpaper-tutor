@@ -142,17 +142,19 @@ def build(record, *, question, limit, clarification, gaps, obligations, sources,
     from services.deep_research.design_drafting import _DRAFT_STATISTICS
     packed=lambda value:json.dumps(value,ensure_ascii=False,separators=(',',':'))
     from services.deep_research.experiment_generation_envelope import enabled as generation_envelope,draft_prompt
+    from services.deep_research import compact_generation_rules as concise_rules
+    short_rules=generation_envelope(record) and record['experimentGenerationEnvelopeContractVersion']==2
     if generation_envelope(record):prospective_draft_prompt=draft_prompt
     prompt=prospective_draft_prompt(question=question,limit=limit,clarification=clarification,
         gaps=gaps,obligations=obligations,sources=sources,evidence_marker=evidence_marker,
         claim_fields=claim_fields,claim_limit=claim_limit,section_templates=section_templates,concise=True)
-    if compact:prompt+='\n'+REFERENCE_RULE
+    if compact:prompt+='\n'+(concise_rules.REFERENCE if short_rules else REFERENCE_RULE)
     if gap_references:
         from services.deep_research.experiment_envelope import GAP_REFERENCE_RULE
-        prompt+='\n'+GAP_REFERENCE_RULE
+        prompt+='\n'+(concise_rules.GAPS if short_rules else GAP_REFERENCE_RULE)
     if record['experimentDraftContractVersion'] in (5,6):
         from services.deep_research.experiment_planning import SPLIT_GUIDANCE
-        prompt+='\n'+SPLIT_GUIDANCE
+        prompt+='\n'+(concise_rules.SPLITS if short_rules else SPLIT_GUIDANCE)
     if reasoning_enabled(record):
         prompt=prompt.replace('Return ONLY {"sections":[],"claims":[]}.',
             'Return ONLY {"designBasis":{},"sections":[],"claims":[]}.')
@@ -182,6 +184,7 @@ with this metadata; independent review still checks the entire resulting experim
     schema=align_grammar(schema,record.get('configurationConsistencyContractVersion'))
     from services.deep_research.experiment_execution_guidance import initialization_grammar
     schema=initialization_grammar(schema,record)
+    if short_rules:schema=concise_rules.schema(schema)
     prompt+='\n'+schema+'\nEXACT_STAGES='+packed(list(STAGES))+'\nEXACT_RECORDS='+packed(sorted(RECORDS|{'group_checkpoints'}))
     prompt+='\nREQUIRED OUTPUT OUTLINE (one claim per role):\n'+packed(design_output_outline(
         strict_budget=True,strict_hypothesis=True,strict_protocol=2,strict_workflow=4))
@@ -198,7 +201,7 @@ Independent review retains the full scientific and operational requirements.'''
     if modern(record.get('configurationConsistencyContractVersion')):
         # Replace repeated framing rather than displacing required source context.
         # Exact role grammar, source rules and independent review remain below.
-        configuration_policy=generation(record['configurationConsistencyContractVersion'])
+        configuration_policy=concise_rules.CONFIGURATION if short_rules else generation(record['configurationConsistencyContractVersion'])
     elif consistent(record.get('configurationConsistencyContractVersion')):
         configuration_policy=configuration_policy.replace(
             'Text explains rationale without duplicating fields rendered by the application.',generation(record.get('configurationConsistencyContractVersion')))
@@ -211,8 +214,10 @@ Independent review retains the full scientific and operational requirements.'''
     if not (two_arm_request(question) if compact else single_toggle_request(question)):
         prompt+='\n'+_DRAFT_STATISTICS
     from services.deep_research.experiment_execution_guidance import enabled as execution_guidance,DRAFTING
-    if execution_guidance(record):prompt+='\n'+DRAFTING
-    prompt+='''
+    if execution_guidance(record):prompt+='\n'+(concise_rules.DRAFTING if short_rules else DRAFTING)
+    if short_rules:
+        prompt+=concise_rules.SOURCE_RULES+table_marker+concise_rules.TABLE_RULES
+    else:prompt+='''
 Paper-attributed interventions must preserve the actual supplied defining equation,
 operands, schedule and insertion point. A generic regularizer/weight is not a
 faithful replacement. Cite the operative premises in every role reusing the method.
@@ -247,11 +252,11 @@ antecedents. The independent reviewer retains the complete scientific requiremen
 Unverified scientific plan (not source evidence; every final attributed claim still
 needs its OWN actual E citations):
 ''')
-        prompt+=intro+basis_slot+'''
+        prompt+=intro+basis_slot+(concise_rules.PLAN_RULES if short_rules else '''
 Implement these proposed choices in complete mutually consistent configs, resolving
 any conflict against the human question and actual original evidence. Do not cite
 this plan, inherit its scientific approval, omit settings or weaken requested scope.
 The full scientific requirements remain in the independent review. Return only the
 final sections/claims object; do not repeat the private plan in text/conditions.
-'''
+''')
     return prompt
