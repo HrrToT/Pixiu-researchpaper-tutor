@@ -3485,6 +3485,27 @@
       "settledModelCalls": 8,
       "settledTokens": 30132,
       "independentCredit": 0
+    },
+    "fullPlanReservation": {
+      "sourceCommit": "c546dac6",
+      "fullSuitePassed": 4239,
+      "legacyScriptsPassed": 38,
+      "runtimeLoaded": true,
+      "case": "E1-v34",
+      "status": "completed",
+      "outcome": "inconclusive",
+      "accepted": 0,
+      "rejected": 9,
+      "inputBytes": 28135,
+      "settledModelCalls": 13,
+      "settledTokens": 67837,
+      "unsettledModelCalls": 0,
+      "actualInitialReviewFingerprintsMatched": 2,
+      "repairStop": {
+        "requiredBytes": 22615,
+        "limitBytes": 17018
+      },
+      "independentCredit": 0
     }
   },
   "stages": [
@@ -3950,19 +3971,19 @@
   "currentProviderConstraint": "All necessary bounded validations authorized. E1-v27/.234,E1-v28/.235,E1-v29/.236 each submitted once;30settled calls/129711tokens,0newunknowns. Selected cumulative759calls/3190357tokens,not global history,cost unknown. Preserve11oldpaused unknowns; no automatic retries.",
   "currentDevelopmentMode": "Primary Codex only;Goal active;quota pause revoked. Source/runtime44c04d71/.236. Lossless shared private blueprint6/native12;raw response8KB,actual wire4KB,request32KB,whole-run18calls/100k/360s.4175offline passed. E1-v29 enters body but0/9accepted.",
   "loadedRuntime": {
-    "commit": "44ffeb5a",
-    "promptVersion": "dr-v2.20261023.242",
+    "commit": "c546dac6",
+    "promptVersion": "dr-v2.20261023.243",
     "javaCommit": "27ac4beb",
     "frontendValidationCommit": "123b0d29",
     "frontendValidationIsHistorical": true,
-    "callsAfterLatestCase": 5558,
+    "callsAfterLatestCase": 5585,
     "active": 0,
     "historicalPausedUnknown": 11,
-    "proof": "deep-research-evidence/runtime-load-dr242-literal-json-20261023.json",
-    "postCasesProof": "deep-research-evidence/runtime-postcases-dr242-e1-v33-20261023.json",
-    "lastRealModelRunCommit": "44ffeb5a",
-    "lastRealModelRunPromptVersion": "dr-v2.20261023.242",
-    "lastLoadValidationScope": "Idle reload:15 source hashes,health,5537 ledger/all prior payloads/4task snapshots preserved. E1-v33 is in progress; content acceptance pending."
+    "proof": "deep-research-evidence/runtime-load-dr243-full-plan-reservation-20261023.json",
+    "postCasesProof": "deep-research-evidence/runtime-postcases-dr243-e1-v34-20261023.json",
+    "lastRealModelRunCommit": "c546dac6",
+    "lastRealModelRunPromptVersion": "dr-v2.20261023.243",
+    "lastLoadValidationScope": "Idle reload:19source hashes,health,5558ledger/all prior payloads/4tasks preserved. E1-v34 real body28135bytes; content0/9,13settled67837tokens,no unknown/retry."
   },
   "nextQualityWork": [
     "Fix concrete initialization state/input and earlier-component references, preserving complete Gaussian/hash/network states instead of narrative placeholders.",
@@ -4550,7 +4571,7 @@
     "independentCredit": 0,
     "proof": "deep-research-evidence/compact-experiment-envelope-regression-20261020.json"
   },
-  "currentCheckpoint": ".242/44ffeb5a:4231 offline passed; E1-v33 failed full drafting capacity35052>32000,8 settled30132 tokens,no unknown/no retry. Valid private JSON, no body/review. Full DR0-DR5 incomplete,independent0/5.",
+  "currentCheckpoint": ".243/c546dac6:4239offline/232files,38legacy scripts. E1-v34 completed/inconclusive128s,0/9accepted,13settled67837tokens. Body28135bytes passed capacity. Generation budget/state types and review classification/schema remain invalid; repair batch2 needs22615>17018available.5585ledger/0active/11oldunknowns preserved. FullDR0-DR5 incomplete,independent0/5.",
   "sharedModuleSourceCheckpoint": {
     "sourceCommit": "f8ae5177",
     "promptVersion": "dr-v2.20261020.199",
