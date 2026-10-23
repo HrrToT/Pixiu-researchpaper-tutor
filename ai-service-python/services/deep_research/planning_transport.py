@@ -49,6 +49,9 @@ def options_for_record(record,node,options):
     if set(options)-allowed:raise ValueError('Unsupported private planning options')
     from services.deep_research.workflow_transport import reasoning_options
     options=reasoning_options(record,node,options)
+    if (node=='plan_experiment' and type(record.get('experimentPlanningReasoningContractVersion')) is int
+            and record['experimentPlanningReasoningContractVersion']==1):
+        options={**options,'thinking':{'type':'enabled'},'reasoning_effort':'low'}
     return {**options,API_KEY:'responses','response_format':descriptor_for(record,node)}
 
 
