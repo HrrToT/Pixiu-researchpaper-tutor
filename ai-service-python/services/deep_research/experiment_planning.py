@@ -256,7 +256,10 @@ def prepare_plan(record,*,prompt,aliases,invoke,parse,checkpoint):
     from services.deep_research.experiment_outline_encoding import enabled as outline_encoding
     outlined=outline_encoding(record)
     from services.deep_research.experiment_generation_envelope import enabled as generation_envelope
+    from services.deep_research.planning_shape import enabled as shape_enabled,audit as shape_audit
+    shape_version=1 if shape_enabled(record) else 0
     identity=digest({'version':1,'request':request,'evidenceAliases':aliases,
+        **({'responseShapeVersion':shape_version} if shape_version else {}),
         **({'basisEncodingVersion':encoding_version} if encoding else {}),
         **({'outlineEncodingVersion':record['experimentOutlineEncodingContractVersion']} if outlined else {}),
         **({'generationEnvelopeVersion':3 if record['experimentGenerationEnvelopeContractVersion']==3 else 1}
@@ -270,6 +273,8 @@ def prepare_plan(record,*,prompt,aliases,invoke,parse,checkpoint):
                 or encoding and (type(saved.get('basisEncodingVersion')) is not int or saved['basisEncodingVersion']!=encoding_version)):
             raise DeepResearchError('invalid_experiment_planning_state','保存的实验规划与原输入不一致，不能重新发送。')
         if saved.get('status')=='ready':
+            if shape_version and saved.get('responseShapeAudit')!=shape_audit(saved.get('response'),parse,record):
+                raise DeepResearchError('invalid_experiment_planning_state','保存的规划结构记录已改变，不能重新发送。')
             if (not valid_plan_basis(record,saved.get('basis'),aliases)
                     or digest(saved.get('response'))!=saved.get('responseDigest')
                     or not isinstance(saved.get('response'),dict)
@@ -284,6 +289,8 @@ def prepare_plan(record,*,prompt,aliases,invoke,parse,checkpoint):
         if saved.get('status')=='invalid_response':
             raise DeepResearchError('invalid_experiment_planning_response','实验规划已返回但未形成完整结构，原响应已保留。')
         if saved.get('status')=='output_capacity':
+            if shape_version and saved.get('responseShapeAudit')!=shape_audit(saved.get('response'),parse,record):
+                raise DeepResearchError('invalid_experiment_planning_state','保存的规划结构记录已改变，不能重新发送。')
             if (not flexible(record) or digest(saved.get('response'))!=saved.get('responseDigest')
                     or parsed_basis(saved.get('response'),parse,record)!=saved.get('basis')
                     or not validate_basis(saved.get('basis'),aliases,max_bytes=None,lean=True,blueprint=blueprint,state_lists=encoding_version in (5,6,7))
@@ -307,10 +314,14 @@ def prepare_plan(record,*,prompt,aliases,invoke,parse,checkpoint):
         response=invoke('plan_experiment',request['prompt'],dispatch_options(record,'plan_experiment',request['extra']))
         # Exceptions/unknowns propagate with the prepared request still pending;
         # the ordinary ledger blocks another physical send for that identity.
-        saved.update(status='response_received',response=deepcopy(response),responseDigest=digest(response));checkpoint(saved)
+        saved.update(status='response_received',response=deepcopy(response),responseDigest=digest(response))
+        if shape_version:saved['responseShapeAudit']=shape_audit(response,parse,record)
+        checkpoint(saved)
     response=saved.get('response')
     if digest(response)!=saved.get('responseDigest'):
         raise DeepResearchError('invalid_experiment_planning_state','保存的实验规划响应已改变，不能重新发送。')
+    if shape_version and saved.get('responseShapeAudit')!=shape_audit(response,parse,record):
+        raise DeepResearchError('invalid_experiment_planning_state','保存的规划结构记录已改变，不能重新发送。')
     basis=parsed_basis(response,parse,record)
     if (flexible(record) and isinstance(response,dict)
             and response.get('finishReason',response.get('finish_reason'))!='length'
@@ -332,7 +343,8 @@ def prepare_plan(record,*,prompt,aliases,invoke,parse,checkpoint):
 
 def parsed_basis(response,parse,record=None):
     try:
-        value=parse(response.get('content','')) if isinstance(response,dict) else None
+        from services.deep_research.planning_shape import response_value
+        value,_=response_value(response,parse,record)
         if (record is not None and type(record.get('experimentPlanEncodingContractVersion')) is int
                 and record['experimentPlanEncodingContractVersion'] in (4,5,6,7)):
             from services.deep_research.experiment_blueprint import columns

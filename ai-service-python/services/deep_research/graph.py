@@ -1771,7 +1771,7 @@ def make_verify_node(
                            and type(record.get('experimentRepairInputContractVersion')) is int
                            and record['experimentRepairInputContractVersion'] in (1,2,3)
                            and type(record.get('structuredOutputContractVersion')) is int
-                           and record['structuredOutputContractVersion'] in (8,9,10,11,12,13,14) else {}),
+                           and record['structuredOutputContractVersion'] in (8,9,10,11,12,13,14,15) else {}),
                         **({'configuration_consistency_version':2} if type(record.get('configurationConsistencyContractVersion')) is int
                            and record['configurationConsistencyContractVersion']==2 else {}),
                         **({'citation_presentation_version':record['citationPresentationContractVersion']} if type(record.get('citationPresentationContractVersion')) is int

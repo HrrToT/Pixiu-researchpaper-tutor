@@ -6,7 +6,7 @@ from llm.responses_transport import API_KEY
 def enabled(record,node):
     return (node=='plan_experiment' and isinstance(record,dict)
         and type(record.get('structuredOutputContractVersion')) is int
-        and record['structuredOutputContractVersion']==14)
+        and record['structuredOutputContractVersion'] in (14,15))
 
 
 def descriptor():

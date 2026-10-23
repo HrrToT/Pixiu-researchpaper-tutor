@@ -18,7 +18,7 @@ def enabled(record):
             ('experimentExecutionGuidanceContractVersion',2),('experimentPlanEncodingContractVersion',7)))
         and type(record.get('structuredOutputContractVersion')) is int
         and (record['structuredOutputContractVersion']==13 or
-             record['experimentGenerationEnvelopeContractVersion']==3 and record['structuredOutputContractVersion']==14)))
+             record['experimentGenerationEnvelopeContractVersion']==3 and record['structuredOutputContractVersion'] in (14,15))))
 
 
 def draft_prompt(*,question,limit,clarification,gaps,obligations,sources,evidence_marker,
