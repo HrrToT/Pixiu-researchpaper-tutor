@@ -206,9 +206,9 @@ def test_client_cannot_override_the_server_rows_contract(tmp_path):
     facade = ResearchFacade(repo, lambda **_: None, llm_client=object())
     try:
         row, _ = facade.create({'workspaceTaskId': 't', 'operationKey': 'fixture',
-            'question': 'Design', 'workflowMetadataRowsContractVersion': 2,
+            'question': 'Design', 'workflowMetadataRowsContractVersion': 999,
             'deferStart': True}, start_async=False)
-        assert row['workflowMetadataRowsContractVersion'] == 1 and enabled(row)
+        assert row['workflowMetadataRowsContractVersion'] == 2 and enabled(row)
     finally:
         facade.shutdown()
 
