@@ -80,7 +80,11 @@
     "sourceCommit": "0d875568"
   },
   "fullRegression": {
-    "status": "not_started_after_identity_fix"
+    "status": "running",
+    "sourceCommit": "c015ffc9",
+    "files": 253,
+    "log": "tmp/pytest-metadata-repair-stable-full-20261023.log",
+    "receipt": "tmp/metadata-repair-stable-full-receipt-20261023.json"
   },
   "sourceHashes": {
     "services/deep_research/shared_strings.py": "6da42b7b3e4333f2b3750d8d0c354f02ea5fbe4eebe939e6b401e28fc35bb7bf",
