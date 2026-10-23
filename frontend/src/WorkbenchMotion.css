@@ -1,0 +1,20 @@
+/* Motion follows user actions or observed state changes, never elapsed progress. */
+@keyframes workbench-reveal { from { opacity:0; transform:translateY(3px); } to { opacity:1; transform:none; } }
+@keyframes workbench-emphasis { 0%,35% { background-color:var(--accent-soft); box-shadow:inset 0 0 0 1px var(--accent); } 100% { background-color:transparent; box-shadow:inset 0 0 0 1px transparent; } }
+@keyframes workbench-state { from { opacity:.45; } to { opacity:1; } }
+.unified-app .workbench-popover-panel,
+.unified-app .source-list-excerpt,
+.unified-app .reader-chat-citations[open] > :not(summary),
+.unified-app .research-followup,
+.unified-app .research-result-details { animation:workbench-reveal 160ms ease-out; }
+.unified-app [data-motion-cue=true] { animation:workbench-emphasis 1800ms ease-out; border-radius:6px; }
+.unified-app [data-state-cue=true] { animation:workbench-state 180ms ease-out; }
+.unified-app .unified-learning-detail-status { transition:color 180ms ease-out, background-color 180ms ease-out; }
+.unified-app .reader-chat-action > [role=status] { color:var(--success); animation:workbench-emphasis 1800ms ease-out; border-radius:4px; }
+/* Animate discrete layout changes only, never divider drag or PDF page geometry. */
+.unified-main[data-layout-cue=true] > :is(.unified-task-nav,.unified-reader,.unified-chat) { animation:workbench-state 200ms ease-out; }
+.unified-main[data-drawer-open=true] > .unified-task-nav { animation:workbench-reveal 180ms ease-out; }
+@media(prefers-reduced-motion:reduce) {
+  .unified-app *, .unified-app *::before, .unified-app *::after { animation:none !important; transition:none !important; scroll-behavior:auto !important; }
+  .unified-app [data-motion-cue=true] { background:var(--accent-soft); }
+}

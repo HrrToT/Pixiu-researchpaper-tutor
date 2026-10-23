@@ -1,3 +1,5 @@
+import { useTransitionCue } from './components/useTransitionCue';
+import './WorkbenchMotion.css';
 import React, { useCallback, useEffect, useEffectEvent, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import TaskSwitcher from './components/TaskSwitcher';
 import WorkbenchPopover from './components/WorkbenchPopover';
@@ -657,6 +659,12 @@ export default function UnifiedTaskApp() {
     const source = activeTask?.messages[index];
     if (activeTaskId && source) await updateTask(activeTaskId, task => ({ messages: task.messages.filter(message => source.id ? message.id !== source.id : message !== source) }));
   };
+  const [savedFeedback, setSavedFeedback] = useState(null);
+  useEffect(() => {
+    if (!savedFeedback) return;
+    const timer = setTimeout(() => setSavedFeedback(null), 1800);
+    return () => clearTimeout(timer);
+  }, [savedFeedback]);
   const saveMessage = async (index, asArtifact = true) => {
     const taskId = activeTaskId;
     const source = activeTask?.messages[index];
@@ -688,6 +696,7 @@ export default function UnifiedTaskApp() {
         messages: task.messages.map((message, position) => position === currentIndex ? { ...message, id: messageId, artifactId: saved.id } : message),
       };
     });
+    if (activeTaskIdRef.current === taskId) setSavedFeedback({ taskId, id: saved.id, token: Date.now() });
     return saved.id;
   };
   const createNote = async () => {
@@ -1094,6 +1103,11 @@ export default function UnifiedTaskApp() {
   const pendingOperations = Object.values(learning.operations.records).filter(record => record.taskId === activeTaskId && !record.retriedBy
     && ['queued', 'running', 'unknown', 'awaiting_submission', 'cancelling'].includes(record.status));
   const currentLearning = activeTask?.activeActivity;
+  const learningCue = useTransitionCue(`${activeTaskId}:${currentLearning?.activityId}`, JSON.stringify([
+    currentLearning?.status, currentLearning?.concepts?.map(item => [item.id, item.status, item.question]), learning.completionSuggested,
+  ]));
+  const recordCue = useTransitionCue(activeTaskId, JSON.stringify(savedLearningActivities.map(item => [item.activityId || item.id, item.status])));
+  const layoutCue = useTransitionCue(activeTaskId, JSON.stringify([layout.navigation, layout.reader, layout.chat, compactPane]));
   const learningPaperIds = currentLearning?.snapshot?.paperIds || currentLearning?.paperIds || (currentLearning?.pdfId ? [currentLearning.pdfId] : []);
   let submittingLearningAnswer = currentLearning?.status === 'active' && learning.inputMode === 'answer'
     && !resolveConversationIntent(composerDraft).skill && critiqueSelection?.taskId !== activeTaskId;
@@ -1106,7 +1120,7 @@ export default function UnifiedTaskApp() {
     } catch { submittingLearningAnswer = false; }
   }
   const learningQuestionMessage = currentLearning?.status === 'active' && timeline.findLast(message => message.role !== 'user' && message.context?.activityId === currentLearning.activityId);
-  const learningActions = currentLearning?.status === 'active' && <div className="unified-learning-question-actions" role="group" aria-label="学习问题操作">
+  const learningActions = currentLearning?.status === 'active' && <div className="unified-learning-question-actions" data-motion-cue={learningCue} role="group" aria-label="学习问题操作">
     {!learning.completionSuggested && <button type="button" disabled={learning.busyTasks[activeTaskId]} onClick={() => { learning.setInputMode('answer'); locateLearning(currentLearning); }}>回答这道题</button>}
     <WorkbenchPopover label="学习帮助">{close => <>{[['hint', '给我提示'], ['remediate', '补充基础'], ['retry', '重新回答'], ['skip', '跳过本题'], ['pause', '暂停学习'], ['finish', '结束学习']].map(([action, label]) => <button type="button" key={action} disabled={learning.busyTasks[activeTaskId]} onClick={() => { learning.act(activeTask, action); close(); }}>{label}</button>)}</>}</WorkbenchPopover>
     {learning.completionSuggested && <button type="button" disabled={learning.busyTasks[activeTaskId]} onClick={() => learning.act(activeTask, 'finish')}>完成本轮学习</button>}
@@ -1135,7 +1149,7 @@ export default function UnifiedTaskApp() {
         onAction={research.action} onJumpToSource={jumpToSource} onOpenReport={openReport} onAddSource={handleAddSource} />}
       {record && record.status !== 'succeeded' && !record.retriedBy && !run && <OperationRecord record={record} showQuestion={false} {...operationControls} />}
       {learningQuestionMessage && message.orderIndex === learningQuestionMessage.orderIndex && learningActions}
-      {history && <button type="button" className="unified-record-entry" onClick={() => openLearningRecord(history)}>{history.mode === 'quiz' ? '自测' : '精读'}{history.status === 'paused' ? '已暂停' : '已结束'} · 查看记录</button>}
+      {history && <button type="button" className="unified-record-entry" data-motion-cue={recordCue && history.status === 'finished' && (history.activityId || history.id) === (currentLearning?.activityId || currentLearning?.id || savedLearningActivities.at(-1)?.activityId || savedLearningActivities.at(-1)?.id)} onClick={() => openLearningRecord(history)}>{history.mode === 'quiz' ? '自测' : '精读'}{history.status === 'paused' ? '已暂停' : '已结束'} · 查看记录</button>}
     </>;
   };
   const currentActivityBar = activityEntries.length > 0 ? <div className="unified-current-activity" aria-label="当前活动">
@@ -1218,7 +1232,7 @@ export default function UnifiedTaskApp() {
       <button type="button" ref={compactReaderButton} aria-pressed={compactPane === 'reader'} onClick={() => { setCompactPane('reader'); setCompactNavigation(false); }}>阅读</button>
       <button type="button" aria-pressed={compactPane === 'chat'} onClick={() => { setCompactPane('chat'); setCompactNavigation(false); }}>对话</button>
     </div>}
-    <main className="unified-main" data-compact-pane={compactPane} data-navigation-drawer={viewLayout.drawer ? 'true' : undefined} data-drawer-open={drawerOpen ? 'true' : undefined} onKeyDown={event => {
+    <main className="unified-main" data-layout-cue={layoutCue} data-compact-pane={compactPane} data-navigation-drawer={viewLayout.drawer ? 'true' : undefined} data-drawer-open={drawerOpen ? 'true' : undefined} onKeyDown={event => {
       if (event.key === 'Escape' && drawerOpen) { event.preventDefault(); closeNavigation(); }
       if (event.key === 'Tab' && drawerOpen) {
         const items = [...(navigationRef.current?.querySelectorAll('button:not(:disabled), input:not(:disabled), select:not(:disabled), summary, [tabindex="0"]') || [])].filter(node => node.getClientRects().length);
@@ -1229,7 +1243,7 @@ export default function UnifiedTaskApp() {
       {drawerOpen && <button type="button" tabIndex={-1} className="unified-navigation-backdrop" aria-label="关闭任务导航" onClick={() => closeNavigation()} />}
       <div id="unified-navigation" ref={navigationRef} role={drawerOpen ? 'dialog' : undefined} aria-modal={drawerOpen ? true : undefined} aria-label={drawerOpen ? '任务与材料' : undefined}
         className={`unified-task-nav ${compact && !drawerOpen ? 'unified-compact-hidden' : ''}`} style={{ width: viewLayout.navigation ? viewLayout.navWidth : 48 }}>
-        <TaskNavigation tasks={tasks} activeTask={activeTask} papers={papers} collapsed={!viewLayout.navigation && !drawerOpen} onToggle={() => {
+        <TaskNavigation savedFeedback={savedFeedback?.taskId === activeTaskId ? savedFeedback : null} tasks={tasks} activeTask={activeTask} papers={papers} collapsed={!viewLayout.navigation && !drawerOpen} onToggle={() => {
           if (viewLayout.drawer) { if (drawerOpen) closeNavigation(); else setCompactNavigation(true); }
           else patchLayout({ navigation: !layout.navigation });
         }}
@@ -1380,7 +1394,7 @@ export default function UnifiedTaskApp() {
         patchLayout({ readerPercent });
       }} />}
       <section className={`unified-chat ${!layout.chat ? 'unified-desktop-hidden' : ''}`} inert={drawerOpen ? true : undefined} style={{ flexBasis: layout.reader ? `${100 - viewLayout.readerPercent}%` : '100%' }} aria-label="任务对话">
-        {activeTask ? <ChatPanel key={activeTaskId} conversationId={activeTaskId}
+        {activeTask ? <ChatPanel transitioningMessageId={learningCue ? learningQuestionMessage?.id : null} key={activeTaskId} conversationId={activeTaskId}
           showHeader onCollapse={() => patchLayout({ chat: false, reader: true, mode: 'reader' })}
           starterPrompts={currentLearning?.status === 'active' ? [
             { label: learning.completionSuggested ? '完成本轮学习' : '回到学习问题', text: '', onSelect: () => learning.completionSuggested ? learning.act(activeTask, 'finish') : locateLearning(currentLearning) },

@@ -51,6 +51,7 @@ interface EvidenceRef {
 }
 
 interface ChatPanelProps {
+  transitioningMessageId?: string | number | null;
   messages?: ChatMessage[];
   onSendMessage: (text: string) => void | boolean | Promise<void | boolean>;
   onDraftChange?: (text: string) => void;
@@ -141,6 +142,7 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
   onDraftChange,
   onDeleteMessage,
   onSaveToNote,
+  transitioningMessageId,
   onCaptureArtifact,
   onOpenArtifact,
   onFollowupIssue,
@@ -476,7 +478,7 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
           }
 
           return (
-            <article key={message.id ?? index} id={`chat-message-${encodeURIComponent(messageId(message, index))}`} data-message-id={messageId(message, index)} data-message-index={index}
+            <article data-state-cue={transitioningMessageId != null && transitioningMessageId === message.id} key={message.id ?? index} id={`chat-message-${encodeURIComponent(messageId(message, index))}`} data-message-id={messageId(message, index)} data-message-index={index}
               ref={node => { if (node) messageElements.current.set(index, node); else messageElements.current.delete(index); }} className={`reader-chat-answer group ${isSystem ? 'reader-chat-answer-system' : ''} ${highlightedMessage === messageId(message, index) ? 'chat-message-highlight' : ''}`}>
               {isSystem && <div className="reader-chat-answer-head">系统提示</div>}
               {message.artifactIsCurrent === false && <p className="chat-history-version">此回答对应旧版本。<button type="button" onClick={() => onOpenArtifact?.(message.artifactId!)}>查看当前成果</button></p>}

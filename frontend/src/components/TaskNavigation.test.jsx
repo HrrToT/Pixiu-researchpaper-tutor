@@ -10,6 +10,19 @@ const props = () => ({ tasks: [{ id: 'a', title: '任务 A' }, { id: 'b', title:
   onAddPaper: vi.fn(), onRemovePaper: vi.fn(), onOpenArtifact: vi.fn() });
 beforeEach(() => localStorage.clear());
 
+it('marks only the saved destination without opening or scrolling to it', () => {
+  const handlers = props();
+  const task = { ...handlers.activeTask, notes: [{ id: 'n', title: '已保存想法', text: '正文' }] };
+  const view = render(<TaskNavigation {...handlers} activeTask={task} />);
+  const destination = screen.getByRole('button', { name: /已保存想法 · 笔记/ });
+  expect(destination).toHaveAttribute('data-motion-cue', 'false');
+  view.rerender(<TaskNavigation {...handlers} activeTask={task} savedFeedback={{ id: 'n', token: 1 }} />);
+  expect(destination).toHaveAttribute('data-motion-cue', 'true');
+  expect(handlers.onOpenArtifact).not.toHaveBeenCalled();
+  view.rerender(<TaskNavigation {...handlers} activeTask={task} savedFeedback={null} />);
+  expect(destination).toHaveAttribute('data-motion-cue', 'false');
+});
+
 it('finds source metadata and explicitly opens other task documents without adding materials', () => {
   const handlers = props();
   const onOpenTaskDocument = vi.fn();
