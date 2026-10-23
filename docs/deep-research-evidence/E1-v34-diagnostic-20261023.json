@@ -1,0 +1,592 @@
+{
+  "date": "2026-10-23",
+  "sourceCommit": "c546dac6",
+  "promptVersion": "dr-v2.20261023.243",
+  "case": "E1-v34",
+  "split": "development",
+  "runId": "dr_run_f75f18d342ec5a5186a6b90535c18287",
+  "questionUnchanged": true,
+  "frozenCaseCommit": "a023b204",
+  "status": "completed",
+  "outcome": "inconclusive",
+  "reportedPayloadElapsedSeconds": 128.766,
+  "observedElapsedSeconds": 128.0,
+  "settledModelCalls": 13,
+  "settledTokens": 67837,
+  "unsettledModelCalls": 0,
+  "independentCredit": 0,
+  "verificationSummary": {
+    "accepted": 0,
+    "rejected": 9
+  },
+  "generationAllocation": {
+    "version": 1,
+    "planningEvidenceAliases": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9",
+      "E10",
+      "E11",
+      "E12",
+      "E13",
+      "E14",
+      "E15"
+    ],
+    "suppliedEvidenceAliases": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9",
+      "E10",
+      "E11",
+      "E12",
+      "E13",
+      "E14",
+      "E15"
+    ],
+    "requiredEvidenceAliases": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9",
+      "E10",
+      "E11",
+      "E12",
+      "E13",
+      "E14",
+      "E15"
+    ],
+    "unverifiedPlanReferences": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9",
+      "E10",
+      "E11",
+      "E12",
+      "E13",
+      "E14",
+      "E15"
+    ],
+    "missingPremiseBundles": [],
+    "rawInputBytes": 28404,
+    "encodedInputBytes": 28135,
+    "maxInputBytes": 32000,
+    "planBasisDigest": "9017c6949c668a395f35c056580849b410626e396e952d502e6efaf8a764fbc2",
+    "planReferencesAreEvidenceApproval": false,
+    "planningEvidenceIds": [
+      "ev_15a8e02f885a744622caa594dd331b7481bf66e9039cec2e9de762eab6c72891",
+      "ev_925db5ee5027aed55d6fa83e9fcd88367454dbedc927a217536f139bd847f22d",
+      "ev_5a62ffa4ef91faeab47770ffeb7725d05e16220034d62947882c58e68891ba69",
+      "ev_eea706cbd96a822dae9adf0cdc055c4e86d4f30b38582a4af6ff41a671a74c1f",
+      "ev_516057b8a32881c40f1384de19b86128197089068316214ce7a984ebb4f252a4",
+      "ev_6558c554163d2cf4124a655864c29ba4e00a1996de9a7f509dc09e67eef09830",
+      "ev_e34196d11497b3956f133f4f4f9f4670ef36ac774d1a0a60f21f50a99cbc0cd3",
+      "ev_43750add3fc24d2bdccf84533bbbdd5049528a078613e3561ea8ebfc17c5186a",
+      "ev_bdb024b856972aab854c483acb7dfa600c4918cc401ccfcebcb14da2200b2d38",
+      "ev_c073455c8c6bb6dc6c50ee74ccd0da213d8a87289fec8335679c8599525c22dc",
+      "ev_2cd2328efdce0105f4e91503de6db95c27f11533b11626dd4a027f7e29f80578",
+      "ev_9428cc150698bc1ebd5f7d4d32f2e8efa1022c319d442c3801b44c2d74cf4bca",
+      "ev_d14e8e4b8877af9a8841c24d6b93402b4203ddf7ab4f5ca16550a4b3274397ce",
+      "ev_e170758337c27ad6170e1fa6a17452fc4c94fe6f45d288316af34c321da687de",
+      "ev_738dab09c571f347db7f784894e5d1145c5a484dfeddd463475f82a9b7ba1d31"
+    ],
+    "suppliedEvidenceIds": [
+      "ev_15a8e02f885a744622caa594dd331b7481bf66e9039cec2e9de762eab6c72891",
+      "ev_925db5ee5027aed55d6fa83e9fcd88367454dbedc927a217536f139bd847f22d",
+      "ev_5a62ffa4ef91faeab47770ffeb7725d05e16220034d62947882c58e68891ba69",
+      "ev_eea706cbd96a822dae9adf0cdc055c4e86d4f30b38582a4af6ff41a671a74c1f",
+      "ev_516057b8a32881c40f1384de19b86128197089068316214ce7a984ebb4f252a4",
+      "ev_6558c554163d2cf4124a655864c29ba4e00a1996de9a7f509dc09e67eef09830",
+      "ev_e34196d11497b3956f133f4f4f9f4670ef36ac774d1a0a60f21f50a99cbc0cd3",
+      "ev_43750add3fc24d2bdccf84533bbbdd5049528a078613e3561ea8ebfc17c5186a",
+      "ev_bdb024b856972aab854c483acb7dfa600c4918cc401ccfcebcb14da2200b2d38",
+      "ev_c073455c8c6bb6dc6c50ee74ccd0da213d8a87289fec8335679c8599525c22dc",
+      "ev_2cd2328efdce0105f4e91503de6db95c27f11533b11626dd4a027f7e29f80578",
+      "ev_9428cc150698bc1ebd5f7d4d32f2e8efa1022c319d442c3801b44c2d74cf4bca",
+      "ev_d14e8e4b8877af9a8841c24d6b93402b4203ddf7ab4f5ca16550a4b3274397ce",
+      "ev_e170758337c27ad6170e1fa6a17452fc4c94fe6f45d288316af34c321da687de",
+      "ev_738dab09c571f347db7f784894e5d1145c5a484dfeddd463475f82a9b7ba1d31"
+    ]
+  },
+  "repairStatus": "response_received",
+  "repairAdmission": null,
+  "planEncodingAudit": {
+    "rawBytes": 4832,
+    "wireBytes": 4412,
+    "canonicalBytes": 5322,
+    "preferredSlotBytes": 2500,
+    "rawLimitBytes": 8192,
+    "wireLimitBytes": 8192,
+    "fitsPreferredSlot": false,
+    "scientificApproval": false
+  },
+  "initialRepresentationAudit": [],
+  "repairRepresentationAudit": {},
+  "rejectedClaims": [
+    {
+      "claimId": "c5",
+      "reason": "incomplete_budget_spec",
+      "detail": "recovery: matched 模式要求所有组的预算值相等",
+      "revisionRejection": {
+        "claimId": "c5",
+        "reason": "semantic_unresolved",
+        "detail": "核验拒绝项没有绑定到实际输入，尚未形成可用判断；保留原始响应。",
+        "rejectionAudit": {
+          "version": 1,
+          "bindingState": "invalid",
+          "errors": [
+            "finding.2.not_an_absent_schema_field"
+          ],
+          "originalReason": "预算方案未覆盖所有实际训练阶段：第1阶段NTC训练与第2阶段3D高斯优化均需明确步数上限，但当前仅提供共享第1阶段300步与组1第2阶段100步，未说明组0是否执行第2阶段或替代步骤，且未提供第1阶段NTC训练的具体步数上限。",
+          "originalFindings": [
+            {
+              "kind": "incomplete",
+              "claimId": "c5",
+              "path": [
+                "executionSpec",
+                "recovery",
+                "groups",
+                "0"
+              ],
+              "reason": "组0的恢复预算仅标注为300步，未明确该300步是否包含第2阶段训练或仅为第1阶段共享训练，导致组0的总训练步数无法确定。",
+              "value": 300
+            },
+            {
+              "kind": "incomplete",
+              "claimId": "c5",
+              "path": [
+                "executionSpec",
+                "recovery",
+                "groups",
+                "1"
+              ],
+              "reason": "组1的恢复预算标注为400步，但未明确其中300步为共享第1阶段训练、100步为第2阶段训练，且未说明第2阶段训练的具体步数上限是否固定为100步。",
+              "value": 400
+            },
+            {
+              "kind": "missing_field",
+              "claimId": "c5",
+              "path": [
+                "executionSpec",
+                "baseline"
+              ],
+              "reason": "基线训练阶段未提供具体步数上限，仅说明共享第1阶段训练300步，但未明确该300步是否为基线训练的全部步数。"
+            }
+          ]
+        },
+        "executionState": "received_invalid"
+      }
+    },
+    {
+      "claimId": "c6",
+      "reason": "incomplete_experiment_workflow",
+      "detail": "workflow.states.shape, workflow.component.appliesTo"
+    },
+    {
+      "claimId": "c1",
+      "reason": "semantic_unresolved",
+      "detail": "假设声称执行第2阶段会提高PSNR和SSIM，但证据E2、E3、E4仅表明完整模型能重建新出现对象，未提供与跳过第2阶段的定量比较，无法支持方向性预测。；效应量定义不完整：仅列出差异键，未指定具体计算方式（如PSNR差异的单位、聚合方式），无法形成可检验的假设。",
+      "rejectionAudit": {
+        "version": 1,
+        "bindingState": "verified",
+        "findings": [
+          {
+            "kind": "unsupported",
+            "claimId": "c1",
+            "path": [
+              "executionSpec",
+              "statement"
+            ],
+            "reason": "假设声称执行第2阶段会提高PSNR和SSIM，但证据E2、E3、E4仅表明完整模型能重建新出现对象，未提供与跳过第2阶段的定量比较，无法支持方向性预测。",
+            "value": "在N3DV数据集flame salmon场景的Frame 0→1窗口上，与跳过第2阶段相比，执行第2阶段自适应新增高斯会提高Frame 1的重建质量（PSNR和SSIM），但会增加每帧存储和额外训练开销。"
+          },
+          {
+            "kind": "incomplete",
+            "claimId": "c1",
+            "path": [
+              "executionSpec",
+              "effectKeys"
+            ],
+            "reason": "效应量定义不完整：仅列出差异键，未指定具体计算方式（如PSNR差异的单位、聚合方式），无法形成可检验的假设。",
+            "value": [
+              "psnr_diff",
+              "ssim_diff",
+              "storage_diff",
+              "time_diff"
+            ]
+          }
+        ],
+        "scientificRejectionVerified": false
+      }
+    },
+    {
+      "claimId": "c2",
+      "reason": "semantic_unresolved",
+      "detail": "第2阶段执行参数（梯度阈值0.00015、不透明度阈值0.01等）未在证据中提供，且未说明这些参数的具体来源或兼容性。；组0跳过第2阶段的具体操作未定义：是直接使用第1阶段结果，还是执行其他替代步骤？",
+      "rejectionAudit": {
+        "version": 1,
+        "bindingState": "verified",
+        "findings": [
+          {
+            "kind": "unsupported",
+            "claimId": "c2",
+            "path": [
+              "executionSpec",
+              "factors",
+              0,
+              "treatment",
+              "parameters"
+            ],
+            "reason": "第2阶段执行参数（梯度阈值0.00015、不透明度阈值0.01等）未在证据中提供，且未说明这些参数的具体来源或兼容性。",
+            "value": [
+              {
+                "name": "gradient_threshold",
+                "type": "number",
+                "value": 0.00015
+              },
+              {
+                "name": "opacity_threshold",
+                "type": "number",
+                "value": 0.01
+              },
+              {
+                "name": "spawn_scale_factor",
+                "type": "number",
+                "value": 0.8
+              },
+              {
+                "name": "initial_opacity",
+                "type": "number",
+                "value": 0.1
+              }
+            ]
+          },
+          {
+            "kind": "incomplete",
+            "claimId": "c2",
+            "path": [
+              "executionSpec",
+              "factors",
+              0,
+              "control",
+              "action"
+            ],
+            "reason": "组0跳过第2阶段的具体操作未定义：是直接使用第1阶段结果，还是执行其他替代步骤？",
+            "value": "skip_stage2"
+          }
+        ],
+        "scientificRejectionVerified": false
+      }
+    },
+    {
+      "claimId": "c3",
+      "reason": "semantic_unresolved",
+      "detail": "引用的工作流c6已被拒绝，无法提供完整的初始化定义。；渲染设置（图像宽度1352、高度1014、渲染器diff-gaussian-rasterization）未在证据中提供，且未说明其来源或兼容性。；优化器设置（学习率0.001、0.0005，损失函数L1+SSIM）未在证据中提供，且未说明其来源或兼容性。",
+      "rejectionAudit": {
+        "version": 1,
+        "bindingState": "verified",
+        "findings": [
+          {
+            "kind": "incomplete",
+            "claimId": "c3",
+            "path": [
+              "executionSpec",
+              "initialization",
+              "workflowClaimId"
+            ],
+            "reason": "引用的工作流c6已被拒绝，无法提供完整的初始化定义。",
+            "value": "c6"
+          },
+          {
+            "kind": "unsupported",
+            "claimId": "c3",
+            "path": [
+              "executionSpec",
+              "rendering",
+              "parameters"
+            ],
+            "reason": "渲染设置（图像宽度1352、高度1014、渲染器diff-gaussian-rasterization）未在证据中提供，且未说明其来源或兼容性。",
+            "value": [
+              {
+                "name": "image_width",
+                "type": "number",
+                "value": 1352
+              },
+              {
+                "name": "image_height",
+                "type": "number",
+                "value": 1014
+              },
+              {
+                "name": "renderer",
+                "type": "choice",
+                "value": "diff-gaussian-rasterization"
+              }
+            ]
+          },
+          {
+            "kind": "unsupported",
+            "claimId": "c3",
+            "path": [
+              "executionSpec",
+              "optimizer",
+              "parameters"
+            ],
+            "reason": "优化器设置（学习率0.001、0.0005，损失函数L1+SSIM）未在证据中提供，且未说明其来源或兼容性。",
+            "value": [
+              {
+                "name": "learning_rate_ntc",
+                "type": "number",
+                "value": 0.001
+              },
+              {
+                "name": "learning_rate_3dg",
+                "type": "number",
+                "value": 0.0005
+              },
+              {
+                "name": "loss_function",
+                "type": "choice",
+                "value": "L1+SSIM"
+              }
+            ]
+          }
+        ],
+        "scientificRejectionVerified": false
+      }
+    },
+    {
+      "claimId": "c4",
+      "reason": "semantic_unresolved",
+      "detail": "核验拒绝项没有绑定到实际输入，尚未形成可用判断；保留原始响应。",
+      "rejectionAudit": {
+        "version": 1,
+        "bindingState": "invalid",
+        "errors": [
+          "finding.0.not_an_absent_schema_field",
+          "finding.1.not_an_absent_schema_field",
+          "finding.2.not_an_absent_schema_field",
+          "finding.3.not_an_absent_schema_field"
+        ],
+        "originalReason": "数据方案不完整：场景列表、划分规则、种子和独立单元均未提供可执行的具体值；且证据不支持所声称的N3DV flame salmon场景的可用性。",
+        "originalFindings": [
+          {
+            "kind": "missing_field",
+            "claimId": "c4",
+            "path": [
+              "executionSpec",
+              "scenes"
+            ],
+            "reason": "场景列表缺失：executionSpec.scenes 未提供，无法确定具体场景。"
+          },
+          {
+            "kind": "missing_field",
+            "claimId": "c4",
+            "path": [
+              "executionSpec",
+              "split"
+            ],
+            "reason": "划分规则缺失：executionSpec.split 未提供，无法确定训练/评估视图划分。"
+          },
+          {
+            "kind": "missing_field",
+            "claimId": "c4",
+            "path": [
+              "executionSpec",
+              "seeds"
+            ],
+            "reason": "种子缺失：executionSpec.seeds 未提供，无法复现随机划分。"
+          },
+          {
+            "kind": "missing_field",
+            "claimId": "c4",
+            "path": [
+              "executionSpec",
+              "independentUnit"
+            ],
+            "reason": "独立单元缺失：executionSpec.independentUnit 未提供，无法确定采样单元。"
+          },
+          {
+            "kind": "unsupported",
+            "claimId": "c4",
+            "path": [
+              "executionSpec",
+              "scenes",
+              "names"
+            ],
+            "reason": "场景名称 'flame salmon' 未在证据 E1 或 E2 的原文中作为数据集成员出现，无法确认其可用性。",
+            "value": [
+              "flame salmon"
+            ]
+          }
+        ]
+      },
+      "executionState": "received_invalid"
+    },
+    {
+      "claimId": "c7",
+      "reason": "semantic_unresolved",
+      "detail": "核验拒绝项没有绑定到实际输入，尚未形成可用判断；保留原始响应。",
+      "rejectionAudit": {
+        "version": 1,
+        "bindingState": "invalid",
+        "errors": [
+          "finding.0.fields",
+          "finding.1.fields",
+          "finding.2.fields"
+        ],
+        "originalReason": "指标方案不完整：质量指标缺少聚合级别和方向说明；速度指标缺少设备、分辨率、预热、同步、计时区域和重复次数；存储指标缺少包含文件和单位。",
+        "originalFindings": [
+          {
+            "kind": "missing_field",
+            "claimId": "c7",
+            "path": [
+              "conditions",
+              "context"
+            ],
+            "reason": "PSNR 和 SSIM 的聚合级别未明确：仅说明“先按视图平均再跨视图平均”，但未指定图像级聚合方式（如每张图像计算后平均，还是直接计算平均图像指标）。",
+            "value": "PSNR和SSIM在Frame 1评估视图上计算，先按视图平均再跨视图平均。"
+          },
+          {
+            "kind": "missing_field",
+            "claimId": "c7",
+            "path": [
+              "conditions",
+              "context"
+            ],
+            "reason": "速度指标缺少设备、分辨率、预热、同步、计时区域和重复次数：仅提及“NVIDIA A100 40GB，分辨率1352x1014，预热1次迭代，CUDA事件同步，仅计时优化器步骤，重复3次取中位数”，但未明确设备型号、分辨率是否与渲染一致、预热具体内容、同步方法、计时区域边界和重复次数是否足够。",
+            "value": "时间测量在NVIDIA A100 40GB上，分辨率1352x1014，预热1次迭代，CUDA事件同步，仅计时优化器步骤，重复3次取中位数。"
+          },
+          {
+            "kind": "missing_field",
+            "claimId": "c7",
+            "path": [
+              "conditions",
+              "context"
+            ],
+            "reason": "存储指标缺少包含文件和单位：仅说明“存储包括所有3D高斯参数和NTC MLP权重及哈希表，以float32和int32存储，无压缩”，但未明确具体文件列表、存储边界和单位（如字节、KB、MB）。",
+            "value": "存储包括所有3D高斯参数和NTC MLP权重及哈希表，以float32和int32存储，无压缩。"
+          }
+        ]
+      },
+      "executionState": "received_invalid"
+    },
+    {
+      "claimId": "c8",
+      "reason": "semantic_unresolved",
+      "detail": "效应量定义不完整：仅给出差异表达式，未指定具体计算方式（如PSNR差异的单位、聚合方式）。；描述性统计量（均值、中位数、范围）未指定具体计算方式（如跨视图聚合方式）。；决策规则仅基于差异方向和幅度，未提供明确阈值或判断标准。",
+      "rejectionAudit": {
+        "version": 1,
+        "bindingState": "verified",
+        "findings": [
+          {
+            "kind": "incomplete",
+            "claimId": "c8",
+            "path": [
+              "executionSpec",
+              "effects"
+            ],
+            "reason": "效应量定义不完整：仅给出差异表达式，未指定具体计算方式（如PSNR差异的单位、聚合方式）。",
+            "value": {
+              "psnr_diff": "group1_psnr - group0_psnr",
+              "ssim_diff": "group1_ssim - group0_ssim",
+              "storage_diff": "group1_storage_bytes - group0_storage_bytes",
+              "time_diff": "group1_stage2_time_seconds - group0_stage2_time_seconds"
+            }
+          },
+          {
+            "kind": "incomplete",
+            "claimId": "c8",
+            "path": [
+              "executionSpec",
+              "uncertainty",
+              "boundary"
+            ],
+            "reason": "描述性统计量（均值、中位数、范围）未指定具体计算方式（如跨视图聚合方式）。",
+            "value": "报告原始差异和描述性统计量（均值、中位数、范围）"
+          },
+          {
+            "kind": "incomplete",
+            "claimId": "c8",
+            "path": [
+              "executionSpec",
+              "decision",
+              "boundary"
+            ],
+            "reason": "决策规则仅基于差异方向和幅度，未提供明确阈值或判断标准。",
+            "value": "根据差异方向和幅度进行描述性判断"
+          }
+        ],
+        "scientificRejectionVerified": false
+      }
+    },
+    {
+      "claimId": "c9",
+      "reason": "semantic_unresolved",
+      "detail": "核验拒绝项没有绑定到实际输入，尚未形成可用判断；保留原始响应。",
+      "rejectionAudit": {
+        "version": 1,
+        "bindingState": "invalid",
+        "errors": [
+          "finding.0.value_mismatch"
+        ],
+        "originalReason": "限制声明中提到的视图数量、初始3DGS来源和超参数需在执行时确认，但未提供具体确认规则或标准，无法确保可执行性。",
+        "originalFindings": [
+          {
+            "kind": "incomplete",
+            "claimId": "c9",
+            "path": [
+              "conditions",
+              "context"
+            ],
+            "reason": "未提供视图数量、初始3DGS来源和超参数的具体确认规则或标准。",
+            "value": "方案尚未执行；视图数量、初始3DGS来源和超参数需在执行时确认。"
+          }
+        ]
+      },
+      "executionState": "received_invalid"
+    }
+  ],
+  "acceptedClaims": [],
+  "rawFiles": [
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v34.json",
+      "sha256": "bef24bc86460bb4d442272f94f1fb1290bad15f60ad7e005f5f990fec00d232a"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v34.payload.json",
+      "sha256": "39015aca1b1983265c5efba4ff390850b18b05ac2ec2581e9bcd09618119e09c"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v34.calls.json",
+      "sha256": "a06032af61a191b7cbc2683e3cc48d45fa0068cd79f107cb94fc0590b1663113"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v34.result.json",
+      "sha256": "3b5cd5d5895de6b69290a82abc5c13e78eea681758dc141177bcc114354a2e7a"
+    }
+  ],
+  "boundary": "One fixed development submission, no automatic retry. Representation normalization does not approve science or upgrade historical/independent results."
+}

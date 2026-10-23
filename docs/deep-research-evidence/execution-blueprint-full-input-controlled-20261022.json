@@ -1,0 +1,19 @@
+{
+  "date": "2026-10-22",
+  "sourceCase": "E1-v24",
+  "newPlanningInputBytes": 25180,
+  "oldPlanningInputBytes": 23869,
+  "originalEvidenceSourceTableRequirementObjectsIdentical": true,
+  "humanQuestionIdentical": true,
+  "planningInputCap": 32000,
+  "oldDraftInputBytes": 30275,
+  "full4KBPlanPlaceholderDraftBytes": 31807,
+  "draftInputCap": 32000,
+  "allArchivedSourceEvidenceDataUnchanged": true,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "independentCredit": 0,
+  "scientificApproval": false,
+  "boundary": "Complete archived input reconstruction and non-sendable4KB placeholder byte check only. No new plan was generated; no original result is upgraded; no capacity increase or evidence removal.",
+  "sourceCommit": "2813e909"
+}

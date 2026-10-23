@@ -1,0 +1,35 @@
+{
+  "date": "2026-10-22",
+  "sourceCase": "E1-v17",
+  "sourceCommit": "a27f1cc7",
+  "independentCredit": 0,
+  "accepted": 0,
+  "rejected": 9,
+  "allEightSemanticTargetsActuallySent": true,
+  "hardRejectedBudget": "matched with unequal0/50 amounts",
+  "actualDraftDefects": [
+    "c3 explicit split contains category labels even_camera_indices/odd_camera_indices instead of actual item IDs or an executable rule schema.",
+    "c5 matched0/50 is deterministically invalid; shared/frame/window phases and costs are incomplete.",
+    "c6 baselineMode=train but creation=load_pretrained_3dgs with no available asset; baseline/additional states use opaque[1]constant0 placeholders; NTC state/init is absent.",
+    "c7 timing setup and complete storage accounting remain incomplete."
+  ],
+  "reviewMisclassification": [
+    "c1 rejects proposed frame window/camera split for lack of author evidence rather than just assessing their concrete executable definition and eligibility.",
+    "c2/c4 demand paper support for proposed50iterations/lr0.001; proposed choices still require compatible actual definitions but not authors using those values.",
+    "c8 demands source evidence for proposed paired effects/descriptive uncertainty/decision; those require scientific logic and concrete configuration, not attribution to authors.",
+    "c3 correctly identifies placeholder explicit splits, but its demand to evidence independentUnit and original camera counts mixes unexecuted choices with factual availability.",
+    "c7/c9 contain mixed reasons; these are not blanket scientific passes or valid grounds to relax source/measurement checks."
+  ],
+  "repairStatus": "skipped_budget",
+  "repairAdmission": {
+    "kind": "repairPromptBytes",
+    "limit": 10437,
+    "used": 19251
+  },
+  "next": [
+    "Calibrate fact-versus-proposal classification and actual shared-field use in reviewer/model routing; inspect actual native system and role options before changing them.",
+    "Improve scientific planning and complete draft generation: compatible state definitions, honest asset acquisition, actual split rules, whole-window cost and complete measurements.",
+    "Reduce duplicated generation/repair packaging while retaining evidence and independent review; keep frozen case budgets and old request identities."
+  ],
+  "boundary": "Manual diagnosis of archived original draft/raw verdicts after exact physical-input reconstruction. No original scientific verdict upgraded; independent acceptance remains0/5."
+}

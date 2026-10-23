@@ -1,0 +1,176 @@
+{
+  "date": "2026-10-19",
+  "case": "H2F-v4",
+  "sourceCommit": "e2133482",
+  "promptVersion": "dr-v2.20261019.181",
+  "runId": "dr_run_56ad13d2fa30517b8770e28d9e1e54af",
+  "status": "completed",
+  "machineOutcome": "partial",
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "modelCalls": 12,
+  "settledTokens": 70276,
+  "elapsedSeconds": 250.638,
+  "cost": null,
+  "externalSearches": 0,
+  "fulltextFetches": 0,
+  "actualSynthesisFingerprintMatched": true,
+  "actualSynthesisOptions": {
+    "max_tokens": 8192,
+    "temperature": 0.2,
+    "thinking": {
+      "type": "enabled"
+    },
+    "reasoning_effort": "high",
+    "response_format": {
+      "type": "json_object"
+    }
+  },
+  "scores": {
+    "goalResponse": 1,
+    "evidenceSupport": 4,
+    "conditions": 4,
+    "synthesisValue": 1,
+    "executability": null,
+    "readability": 3
+  },
+  "findings": [
+    "The final answer supports only the two papers' input difference. Three other frozen requirements remain unresolved; this is not an accepted full comparison.",
+    "Actual readResults contain the 3DGStream NTC passage and Deformable implementation/training passage. Only B15/A17/B16 were model-extracted before exploration stopped. The sole joint-readiness request assessed inputs only, not all requirements.",
+    "The initial draft incorrectly describes 3DGStream as having no explicit deformation field and overinfers offline training from joint optimization. Deformable B16 is its own method, and its 30000-step stabilization statement is literal evidence, not a static-baseline fabrication.",
+    "Independent checks correctly reject unsupported negative source claims and training interpretations. Three received repairs add FPS or source-absence assertions outside their own target; none receives final repair verification before the budget stop.",
+    "The exploration guard protects 33216 normal-pool tokens in addition to the 50000 finalization reserve. After 8577 settled pre-synthesis tokens this leaves only 8207 tokens for a complete next reservation, causing early extraction stop under conservative full-envelope accounting. Do not interpret assessmentStatus=checked as every requested criterion checked.",
+    "One fixed retired development submission; original scores and independent first-five 0/5 remain unchanged."
+  ],
+  "readOperativeSourcesButNotExtracted": true,
+  "allRequestedCriteriaAssessed": false,
+  "nextFix": "Rebalance advisory exploration/repair headroom without raising total limits; prioritize a per-requirement/source acquisition frontier before repeated readiness checks. Preserve independent factual and final coverage review.",
+  "report": "## 比较结论\n\n- 3DGStream v4输入多视角视频流；Deformable 3D Gaussians v2输入单目动态图像、时间标签和SfM相机位姿及稀疏点云。 [1](#research-evidence-ev_e28ec6485011e1fc99874afce43b3041e486be74d12db4b3de4cb80e586f79fb) [2](#research-evidence-ev_29e325e167454a4f9c1a78a962a3a447163b5e5d804acd3b761ce733857152cd)\n\n<details>\n<summary>还有 3 项未完成</summary>\n\n- 怎样表示时间变化：回答完整性尚未核验\n- 3DGStream v4和Deformable 3D Gaussians v2的训练模式分别是逐帧在线还是整体离线？：回答完整性尚未核验\n- 为何不能凭各自主表FPS给出同条件速度排名：联合前提尚未就绪：为何不能凭各自主表FPS给出同条件速度排名\n\n</details>\n\n论文事实已按所列原文核对。\n\n<details>\n<summary>原文依据</summary>\n\n**[1] Deformable 3D Gaussians for High-Fidelity Monocular Dynamic Scene Reconstruction** · 全文片段\n\n> The input to our method is a set of images of a monocular dynamic scene, together with the time label and the corresponding camera poses calibrated by SfM[37]which also produces a sparse point cloud.\n\n**[2] 3DGStream: On-the-Fly Training of 3D Gaussians for Efficient Streaming of Photo-Realistic Free-Viewpoint Videos** · 第 4 页 · 全文片段\n\n> 3DGStream constructs photo-realistic FVV streams from multi-view video streams on-the-fly using a per-frame training paradigm.\n\n</details>",
+  "draft": {
+    "sections": [
+      {
+        "title": "比较结论",
+        "claimIds": [
+          "c1",
+          "c2",
+          "c3"
+        ]
+      },
+      {
+        "title": "差异原因",
+        "claimIds": [
+          "c4"
+        ]
+      }
+    ],
+    "claims": [
+      {
+        "claimId": "c1",
+        "text": "3DGStream v4输入多视角视频流；Deformable 3D Gaussians v2输入单目动态图像、时间标签和SfM相机位姿及稀疏点云。",
+        "kind": "reported",
+        "evidenceRefs": [
+          "ev_e28ec6485011e1fc99874afce43b3041e486be74d12db4b3de4cb80e586f79fb",
+          "ev_29e325e167454a4f9c1a78a962a3a447163b5e5d804acd3b761ce733857152cd"
+        ],
+        "conditions": {},
+        "obligationIds": [
+          "ob_1"
+        ],
+        "detailLevel": "fulltext",
+        "tableBindings": []
+      },
+      {
+        "claimId": "c2",
+        "text": "Deformable 3D Gaussians v2用变形场表示时间变化：输入高斯位置和当前时间t，输出δx,δr,δs；3DGStream v4无显式变形场，时间变化由逐帧训练、以上一帧3D高斯初始化实现。",
+        "kind": "inference",
+        "evidenceRefs": [
+          "ev_6eedea527444f94603173bcdab681b0ed1dc3aba84873cbc4f6a19a9eccb2322",
+          "ev_d5b7e7b5bea0edc9a1f7941ef30c58f08952ae6e2e1ed3edb034af0f2ffcc7ed",
+          "ev_48631b8d24cdb007f4bb3a1a0cfd7dd02c194626d71880b8eb6a3da38dff7a86",
+          "ev_29e325e167454a4f9c1a78a962a3a447163b5e5d804acd3b761ce733857152cd",
+          "ev_66ed9db0a929c67a7f2044d80c26750fd5878ccae70642a3c5bbe41afa784531",
+          "ev_ac78892b03667f013a7ab023f8ee141856e6e6b1e1d412266f3faa1d17ef5c8b"
+        ],
+        "conditions": {},
+        "obligationIds": [
+          "ob_2"
+        ],
+        "detailLevel": "fulltext",
+        "tableBindings": []
+      },
+      {
+        "claimId": "c3",
+        "text": "3DGStream v4为逐帧在线训练；Deformable 3D Gaussians v2为整体离线，联合优化3D高斯与变形网络，约30k迭代稳定。",
+        "kind": "inference",
+        "evidenceRefs": [
+          "ev_29e325e167454a4f9c1a78a962a3a447163b5e5d804acd3b761ce733857152cd",
+          "ev_66ed9db0a929c67a7f2044d80c26750fd5878ccae70642a3c5bbe41afa784531",
+          "ev_ac78892b03667f013a7ab023f8ee141856e6e6b1e1d412266f3faa1d17ef5c8b",
+          "ev_c3b6e83df4b17b21cd7fd3592d655492af22aeb570eb01b557d0338e9cfcaf31",
+          "ev_aded98ac12364573c93f606baab45ff4098ebcacab3e67293f00d8d229448654"
+        ],
+        "conditions": {},
+        "obligationIds": [
+          "ob_3"
+        ],
+        "detailLevel": "fulltext",
+        "tableBindings": []
+      },
+      {
+        "claimId": "c4",
+        "text": "不能凭各自主表FPS给出同条件速度排名：证据未提供双方主表FPS的硬件、分辨率、场景和计时协议对齐；未知对齐不等于相同或不同，且训练模式与输入不同，无法判定同条件。",
+        "kind": "inference",
+        "evidenceRefs": [
+          "ev_e28ec6485011e1fc99874afce43b3041e486be74d12db4b3de4cb80e586f79fb",
+          "ev_29e325e167454a4f9c1a78a962a3a447163b5e5d804acd3b761ce733857152cd",
+          "ev_c3b6e83df4b17b21cd7fd3592d655492af22aeb570eb01b557d0338e9cfcaf31",
+          "ev_aded98ac12364573c93f606baab45ff4098ebcacab3e67293f00d8d229448654"
+        ],
+        "conditions": {},
+        "obligationIds": [
+          "ob_4"
+        ],
+        "detailLevel": "fulltext",
+        "tableBindings": []
+      }
+    ]
+  },
+  "repairChecks": {
+    "accepted": [],
+    "rejected": [
+      {
+        "claimId": "c2",
+        "reason": "absence_not_established",
+        "detail": "本条引用没有明确建立作者或论文缺少这些验证。把结论限定为本次引用能支持的实验范围及其不能证明的推广；不要写成作者未在其他条件验证、论文没有提供或全文不存在。引用中的其他否定句不构成这项缺席判断的依据。"
+      },
+      {
+        "claimId": "c3",
+        "reason": "absence_not_established",
+        "detail": "本条引用没有明确建立作者或论文缺少这些验证。把结论限定为本次引用能支持的实验范围及其不能证明的推广；不要写成作者未在其他条件验证、论文没有提供或全文不存在。引用中的其他否定句不构成这项缺席判断的依据。"
+      }
+    ]
+  },
+  "rawFiles": [
+    {
+      "path": "tmp/dr-acceptance-receipts/H2F-v4.json",
+      "sha256": "f1a1a0c5271f8a4c9fae64a89c9bd63bfa80444fd941d58f2d927a7806cac9c7"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/H2F-v4.payload.json",
+      "sha256": "2a8af962d220f27c74c8e05f82d1d658869ad6c18df16c9956f4d627ca2c4b71"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/H2F-v4.calls.json",
+      "sha256": "b0cb9c82f0efec04ac46505195cf85048501415e2cb016bba1e698ca6f2a7e8d"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/H2F-v4.result.json",
+      "sha256": "aa5b13406cd085a0159751da307d9ddee056ee4ed8a5472b7290c11c66a853a9"
+    }
+  ],
+  "boundary": "One fixed retired development case, no automatic retry or independent credit. Original first-five scores and historical outcomes remain unchanged.",
+  "diagnosticCorrection": {
+    "date": "2026-10-19",
+    "reason": "Headroom is min(24000+8192+1024, 50000*2//3)=33216, not33333. Pre-synthesis remaining exploration envelope is8207. Raw outputs, hashes and scores unchanged."
+  }
+}

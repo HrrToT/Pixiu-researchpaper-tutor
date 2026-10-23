@@ -1,0 +1,30 @@
+{
+  "case": "E1-v49",
+  "sourceCommit": "51789721",
+  "promptVersion": "dr-v2.20261023.259",
+  "runId": "dr_run_192f831dc9f2590bae7eaabc205145dd",
+  "status": "failed",
+  "errorCode": "invalid_experiment_planning_response",
+  "requestDigest": "608b7e3f2d7b7bf05c17d9baa7340df818d6f031d5e08742b88a113f22dcbae3",
+  "trackedRequestDigestMatches": true,
+  "planningStatus": "invalid_response",
+  "thinking": {
+    "type": "enabled"
+  },
+  "effort": "low",
+  "finishReason": "length",
+  "usage": {
+    "total_tokens": 12720,
+    "input_tokens": 6576,
+    "output_tokens": 6144
+  },
+  "rawBodyBytes": 0,
+  "rawBodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "responseDigest": "30d844678c40d17ed99f8380f578d3f2ccc9db92ee47d36ee3bb4f58fcd66fe2",
+  "workflowUnitsReached": false,
+  "actualPromptEqualsE1v48": false,
+  "providerRetries": 0,
+  "scientificApproval": false,
+  "independentCredit": 0,
+  "boundary": "One low-reasoning development case exhausted its unchanged output cap without a body. Fresh extraction changed the actual input; this is not a controlled causal comparison. No syntax repair, budget increase or hidden retry."
+}

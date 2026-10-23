@@ -1,0 +1,47 @@
+{
+  "date": "2026-10-22",
+  "case": "E1-v23",
+  "originalSingleTargetBytes": 34467,
+  "briefSingleTargetBytes": 31856,
+  "originalTargetsContextEvidenceAndSkeletonUnchanged": true,
+  "productionCheckerCallbacks": [
+    {
+      "node": "verify_design_config",
+      "ids": [
+        "c3",
+        "c5",
+        "c7"
+      ],
+      "bytes": 26007
+    },
+    {
+      "node": "verify_design_science",
+      "ids": [
+        "c1"
+      ],
+      "bytes": 25659
+    },
+    {
+      "node": "verify_design_science",
+      "ids": [
+        "c2"
+      ],
+      "bytes": 31856
+    },
+    {
+      "node": "verify_design_science",
+      "ids": [
+        "c4",
+        "c8",
+        "c9"
+      ],
+      "bytes": 29846
+    }
+  ],
+  "formerlyUnreviewedC2ReachedCallback": true,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "independentCredit": 0,
+  "boundary": "Complete input preservation and actual checker callback capture only. Responses deliberately fail; no scientific approval or old result upgrade. The100KB diagnostic ceiling was used solely to capture old unsent c2 input, never production.",
+  "sourceCommit": "57b6efcf"
+}

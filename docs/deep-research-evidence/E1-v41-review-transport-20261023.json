@@ -1,0 +1,153 @@
+{
+  "date": "2026-10-23",
+  "sourceCase": "E1-v41",
+  "sourceCommit": "35b77316",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "independentCredit": 0,
+  "fixtureCallbacks": 4,
+  "requests": [
+    {
+      "actualFingerprintMatched": true,
+      "callId": "978c177036fba3a923358ca41bde8307",
+      "node": "verify_design_config",
+      "targetIds": [
+        "c4",
+        "c5",
+        "c7"
+      ],
+      "inputBytes": 27827,
+      "actualEnvelopeVersion": 10,
+      "contextIds": [
+        "c6",
+        "c2",
+        "c3"
+      ]
+    },
+    {
+      "actualFingerprintMatched": true,
+      "callId": "4412265980323d3257997da9affc039b",
+      "node": "verify_design_science",
+      "targetIds": [
+        "c1",
+        "c2"
+      ],
+      "inputBytes": 28240,
+      "actualEnvelopeVersion": 10,
+      "contextIds": [
+        "c6",
+        "c4",
+        "c5",
+        "c7",
+        "c3",
+        "c8",
+        "c9"
+      ]
+    },
+    {
+      "actualFingerprintMatched": true,
+      "callId": "ce6d3817d7757add522caf6b7df4eda9",
+      "node": "verify_design_science",
+      "targetIds": [
+        "c3"
+      ],
+      "inputBytes": 26633,
+      "actualEnvelopeVersion": 10,
+      "contextIds": [
+        "c6",
+        "c4",
+        "c5",
+        "c7",
+        "c1",
+        "c2",
+        "c8",
+        "c9"
+      ]
+    },
+    {
+      "actualFingerprintMatched": true,
+      "callId": "ca9d12097c5d0a7397aac66671f15800",
+      "node": "verify_design_science",
+      "targetIds": [
+        "c8",
+        "c9"
+      ],
+      "inputBytes": 27447,
+      "actualEnvelopeVersion": 10,
+      "contextIds": [
+        "c6",
+        "c4",
+        "c5",
+        "c7",
+        "c1",
+        "c2",
+        "c3"
+      ]
+    }
+  ],
+  "allocationAttempts": [
+    {
+      "targetIds": [
+        "c4",
+        "c5",
+        "c7"
+      ],
+      "fullInputBytes": 27827,
+      "fixedInputBytes": 20885,
+      "maxInputBytes": 32000,
+      "referencedRows": 6,
+      "selectedRows": 6,
+      "selectedInputBytes": 27827,
+      "allRefsRetained": true,
+      "allContextsRetained": true
+    },
+    {
+      "targetIds": [
+        "c1",
+        "c2"
+      ],
+      "fullInputBytes": 28240,
+      "fixedInputBytes": 21864,
+      "maxInputBytes": 32000,
+      "referencedRows": 5,
+      "selectedRows": 5,
+      "selectedInputBytes": 28240,
+      "allRefsRetained": true,
+      "allContextsRetained": true
+    },
+    {
+      "targetIds": [
+        "c3"
+      ],
+      "fullInputBytes": 26633,
+      "fixedInputBytes": 22037,
+      "maxInputBytes": 32000,
+      "referencedRows": 4,
+      "selectedRows": 4,
+      "selectedInputBytes": 26633,
+      "allRefsRetained": true,
+      "allContextsRetained": true
+    },
+    {
+      "targetIds": [
+        "c8",
+        "c9"
+      ],
+      "fullInputBytes": 27447,
+      "fixedInputBytes": 22396,
+      "maxInputBytes": 32000,
+      "referencedRows": 4,
+      "selectedRows": 4,
+      "selectedInputBytes": 27447,
+      "allRefsRetained": true,
+      "allContextsRetained": true
+    }
+  ],
+  "repairStatus": "skipped_budget",
+  "repairLimit": {
+    "kind": "repairPromptBytes",
+    "limit": 23067,
+    "used": 32265
+  },
+  "boundary": "Exact envelope10 request reconstruction with archived failed verdict fixtures. No new model judgement, approval or change to the archived run. All source/context rows retained; full inputs within32KB."
+}

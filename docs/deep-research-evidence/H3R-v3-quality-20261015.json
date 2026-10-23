@@ -1,0 +1,54 @@
+{
+  "date": "2026-10-15",
+  "case": "H3R-v3",
+  "runId": "dr_run_255bbc03aa215e978efacb35f64ecdac",
+  "promptVersion": "dr-v2.20261015.76",
+  "machineStatus": "completed",
+  "machineOutcome": "partial",
+  "contentAccepted": false,
+  "reviewer": "Primary Codex; source/content review, not an independent human study",
+  "eligibility": "Retired development case; no independent holdout credit",
+  "budget": {
+    "maxModelCalls": 18,
+    "maxTokens": 100000,
+    "maxWallClockSeconds": 360,
+    "reserveModelCalls": 5,
+    "reserveTokens": 50000,
+    "maxExternalSearches": 6,
+    "maxFulltextFetches": 6,
+    "modelCalls": 4,
+    "tokens": 19870,
+    "normalTokens": 6830,
+    "elapsedSeconds": 173.823,
+    "externalSearches": 1,
+    "fulltextFetches": 1,
+    "reservedModelCalls": 4,
+    "exhausted": "",
+    "profile": "standard"
+  },
+  "modelCalls": 8,
+  "reportBody": "本回答引用：全文片段。\n\n## 核心判断\n\n- 训练时，pixelSplat在近远平面间把深度离散成多个桶，输出每个桶存在表面的离散概率分布，由该分布参数化地表示高斯可能存在的深度位置，从而端到端训练整个模型。 [1](#research-evidence-ev_979bc4a941c61d0a9071e6859481500635b251277259a6864a79ef3bc647d819)\n\n<details>\n<summary>还有 2 项未完成</summary>\n\n- pixelSplat中深度概率分布放置高斯的动机是什么？即为什么用概率分布而不是直接预测单一深度值来放置高斯？：最终回答尚未完整回应这一问题\n- pixelSplat的深度概率分布采样方案在训练中如何运作？包括采样操作与训练信号的关系。：最终回答尚未完整回应这一问题\n\n</details>\n\n论文事实已按所列原文核对。\n\n<details>\n<summary>原文依据</summary>\n\n**[1] pixelSplat: 3D Gaussian Splats from Image Pairs for Scalable Generalizable 3D Reconstruction** · 第 5 页 · 全文片段\n\n> Proposed: predicting a probability density of µ. Rather\n> than predicting the depth dof a Gaussian, we predict the\n> probability distribution of the likelihood that a Gaussian\n> exists at a depth dalong the ray u. We implement this as\n> a discrete probability density over a set of depth buckets.\n\n</details>",
+  "acceptedRoles": [
+    null
+  ],
+  "findings": [
+    "External v4 fulltext is actually acquired; method page 5 is selected and a literal depth-bucket quotation is published.",
+    "Initial motivation invents monocular uncertainty/multiple surfaces as author-stated causes without the cited support; rejected.",
+    "Repair narrows the training claim to depth buckets, omitting the opacity/probability gradient coupling required by the frozen question.",
+    "Only one literal quotation survives extraction; source excerpts with PDF line-wrap hyphens were not recovered by the old strict matcher.",
+    "The final report is honestly marked partial and retains two open requirements. It is not an accepted novice explanation.",
+    "Live UI shows the v4 arXiv source link and physical page 5, but this citation modal still offers only the external source page, not the required controlled in-app fulltext reader."
+  ],
+  "scoresOutOfFive": {
+    "goal": 2,
+    "evidence": 3,
+    "conditions": 3,
+    "synthesis": 2,
+    "executability": null,
+    "readability": 2
+  },
+  "rawPayloadSha256": "e87b42241c6a566fd96f6164211d945f7a2e16bf0e1260eebb39887fa36da10c",
+  "rawLedgerSha256": "4bb630a188b50afcf378b0be5dbdb95be0a848282e2de3e5de53168409c0c1c3",
+  "rawArchive": "tmp/dr-acceptance-receipts/H3R-v3.payload.json",
+  "boundary": "Single submitted attempt; no retry. Machine outcome and transport success do not establish answer quality."
+}

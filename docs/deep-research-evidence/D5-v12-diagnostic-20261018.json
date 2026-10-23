@@ -1,0 +1,180 @@
+{
+  "date": "2026-10-18",
+  "case": "D5-v12",
+  "runId": "dr_run_73291abc6c2a535ea3a2f68d2bacea44",
+  "sourceCommit": "cf111653",
+  "promptVersion": "dr-v2.20261018.168",
+  "status": "completed",
+  "machineOutcome": "inconclusive",
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "modelCalls": 6,
+  "settledTokens": 32696,
+  "elapsedSeconds": 120.962,
+  "cost": null,
+  "actualSynthesisFingerprintMatched": true,
+  "actualSynthesisOptions": {
+    "max_tokens": 8192,
+    "temperature": 0.2,
+    "thinking": {
+      "type": "enabled"
+    },
+    "reasoning_effort": "high",
+    "response_format": {
+      "type": "json_object"
+    }
+  },
+  "findings": [
+    "Actual synthesis request fingerprint matches high effort with the same 8192 output cap; no other model case was run under this version.",
+    "Private preparation now explicitly labels alignment not established, but visible prose still asserts inconsistent protocols and causal contamination. Independent verification rejects it.",
+    "Direct repair includes a scoped knowledge limit, but its first sentence still uses possible differences as the established reason. Content does not pass.",
+    "The repair is also blocked by absence_not_established for 现有证据未提供, which explicitly describes currently available evidence rather than author-wide absence. Manual diagnosis identifies a missing direct-subject scope spelling in the hard guard.",
+    "Next work must separate this guard false positive from the still-unsupported opening inference. Do not turn a hard-guard fix into semantic approval or rerun other cases unchanged."
+  ],
+  "scores": {
+    "goalResponse": 1,
+    "evidenceSupport": 4,
+    "conditions": 2,
+    "synthesisValue": 2,
+    "executability": null,
+    "readability": 3
+  },
+  "privateDraftingAudit": {
+    "c1": {
+      "premiseStatus": "not_established",
+      "observations": [
+        {
+          "evidenceId": "E1",
+          "quote": "Table row 10: Ours | 237 | 45MB | 27.13 | 0.806 | 0.237 | 357 | 25MB | 23.44 | 0.832 | 0.202"
+        },
+        {
+          "evidenceId": "E10",
+          "quote": "Results marked with dagger † have been directly adopted from the original paper, all others were obtained in our own experiments."
+        }
+      ],
+      "scopeDecision": "bounded_inference",
+      "unresolved": "未提供两论文相同硬件/分辨率设置，不能推断普适不可比；仅说明当前证据下直接相除缺少有效前提。"
+    }
+  },
+  "privateRepairDraftingAudit": {
+    "0": [
+      {
+        "claimId": "c1",
+        "basis": {
+          "premiseStatus": "not_established",
+          "observations": [
+            {
+              "evidenceId": "E1",
+              "quote": "We re-train 3D-GS, Compressed 3D-GS, Compact 3D-GS using their original code and 3D-GS configurations on our platform, to perform a fair comparison."
+            },
+            {
+              "evidenceId": "E6",
+              "quote": "Results marked with dagger † have been directly adopted from the original paper, all others were obtained in our own experiments."
+            }
+          ],
+          "scopeDecision": "bounded_inference",
+          "unresolved": "两篇论文在硬件、分辨率、实现或测量协议上的具体异同未提供，无法确定条件是否不同。"
+        }
+      }
+    ]
+  },
+  "draft": {
+    "sections": [
+      {
+        "title": "差异原因",
+        "claimIds": [
+          "c1"
+        ]
+      }
+    ],
+    "claims": [
+      {
+        "claimId": "c1",
+        "text": "FPS是条件相关测量值。LightGaussian表1的Ours在Mip-NeRF 360与Tanks&Temples上FPS分别为237和357，说明场景改变即变；3DGS论文注明部分结果直接采用原论文、部分自测，协议不一致。未证明两论文处于同一设置，直接相除会混入不同条件，不能解释方法差异。",
+        "kind": "inference",
+        "evidenceRefs": [
+          "ev_ffe2afc10303963ace5068705474a2c111bd99e53c60afe414460f77471fc747",
+          "ev_968d0018e986202e87c75f29e0e96759dc070a82e1c1754eb14e67aa7b344596"
+        ],
+        "conditions": {},
+        "obligationIds": [
+          "ob_1"
+        ],
+        "detailLevel": "fulltext",
+        "tableBindings": [
+          {
+            "evidenceId": "ev_ffe2afc10303963ace5068705474a2c111bd99e53c60afe414460f77471fc747",
+            "rowNumber": 10,
+            "groupIndex": 0,
+            "metric": "FPS",
+            "value": "237"
+          },
+          {
+            "evidenceId": "ev_ffe2afc10303963ace5068705474a2c111bd99e53c60afe414460f77471fc747",
+            "rowNumber": 10,
+            "groupIndex": 1,
+            "metric": "FPS",
+            "value": "357"
+          }
+        ]
+      }
+    ]
+  },
+  "repairDraft": [
+    {
+      "claimId": "c1",
+      "kind": "inference",
+      "text": "不同论文的FPS不能直接相除，因为测量条件可能不同：LightGaussian在自身平台重训基线以公平比较，而3DGS表内部分结果直接采用原论文、部分自测。但现有证据未提供两篇论文在硬件、分辨率、实现或测量协议上的具体异同，因此只能说明未建立可比性，不能断定条件必然不同或无法解释方法差异。",
+      "evidenceRefs": [
+        "ev_8fd3f847d043bbae423552d837a23f0207800e59770d35852b585f53e37f432a",
+        "ev_968d0018e986202e87c75f29e0e96759dc070a82e1c1754eb14e67aa7b344596"
+      ],
+      "tableBindings": [],
+      "conditions": {},
+      "detailLevel": "fulltext",
+      "obligationIds": [
+        "ob_1"
+      ]
+    }
+  ],
+  "initialVerification": {
+    "accepted": [],
+    "rejected": [
+      {
+        "claimId": "c1",
+        "reason": "semantic_unresolved",
+        "detail": "断言主题是跨论文FPS直接相除会混入不同条件、不能解释方法差异；E1仅支持LightGaussian自身Ours在Mip-NeRF 360（FPS=237）与Tanks&Temples（FPS=357）上随场景变化，E2仅支持3DGS表内部分结果直接采用原论文、部分自测。E1/E2未提供两篇论文在硬件、分辨率、实现或测量协议上的同/不同，因此未证明同设置只能推出“未建立可比性”，不能推出“会混入不同条件”或绝对的“不能解释方法差异”。"
+      }
+    ]
+  },
+  "repairChecks": {
+    "accepted": [],
+    "rejected": [
+      {
+        "claimId": "c1",
+        "reason": "absence_not_established",
+        "detail": "本条引用没有明确建立作者或论文缺少这些验证。把结论限定为本次引用能支持的实验范围及其不能证明的推广；不要写成作者未在其他条件验证、论文没有提供或全文不存在。引用中的其他否定句不构成这项缺席判断的依据。"
+      }
+    ]
+  },
+  "report": "本次尚未形成通过核验的结论。\n\n<details>\n<summary>还有 1 项未完成</summary>\n\n- 为什么不同论文中的FPS不能直接相除：最终回答尚未完整回应这一问题\n\n</details>",
+  "rawFiles": [
+    {
+      "path": "tmp/dr-acceptance-receipts/D5-v12.json",
+      "sha256": "dfdef6039f2a92899500879adf8d7a0cb2b77bff6464540e6a6d536c0712ae58"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/D5-v12.payload.json",
+      "sha256": "778925bfbaac4cdcaac84c4df4582a31c82040615093875093f62898e31ca588"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/D5-v12.calls.json",
+      "sha256": "535aded83533ffd1de62ec5ff11488e5cc198c4cb971bae11e75caf9d43eda84"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/D5-v12.result.json",
+      "sha256": "d1497f409cdfc6e51cfe7a9ec7ca66210ddee262273df07ed0bc6b215a1ebca6"
+    }
+  ],
+  "boundary": "One explicit submission after a concrete generation-profile change, all calls settled. Failed content is not retried unchanged or upgraded. No independent credit."
+}

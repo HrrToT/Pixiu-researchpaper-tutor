@@ -1,0 +1,15 @@
+{
+  "date": "2026-10-23",
+  "sourceCommit": "c546dac6",
+  "fullSuitePassed": 4239,
+  "testFiles": 232,
+  "seconds": 243.73,
+  "warnings": 1,
+  "focusedPassed": 86,
+  "additionalModuleCheckPassed": 7,
+  "focusedAndModuleOverlap": true,
+  "legacyScriptsPassed": 38,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "boundary": "Offline correctness and historical compatibility; not real semantic content acceptance."
+}

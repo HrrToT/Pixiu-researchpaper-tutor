@@ -1,0 +1,41 @@
+{
+  "date": "2026-10-22",
+  "sourceCases": [
+    "E1-v14 evidence",
+    "E1-v13 unverified archived plan"
+  ],
+  "generationEnvelopeContractVersion": 1,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "independentCredit": 0,
+  "actualArchivedPlanWireBytes": 2850,
+  "encodedSizingOnlyRefusalBytes": 24195,
+  "completeGenerationBytes": 23952,
+  "unchangedCap": 24000,
+  "planningEvidenceIds": [
+    "ev_15a8e02f885a744622caa594dd331b7481bf66e9039cec2e9de762eab6c72891",
+    "ev_b5fc43ccb470fb223883348ab5e595a488ba6332bb419e48ad7eac4ba452c8af",
+    "ev_25085c34ecb1e1cc14b31cfe80f080213556158c202772dce0f52810206e745c",
+    "ev_3006efb65ff33d4d129cae301b78f856b3944f4b066063a9ad5175bdf2f067a9",
+    "ev_516057b8a32881c40f1384de19b86128197089068316214ce7a984ebb4f252a4",
+    "ev_3bb0c9cc00e48e9c9c70869ecd33daf4221b424752681999cb07ad21d6c5ef11",
+    "ev_e34196d11497b3956f133f4f4f9f4670ef36ac774d1a0a60f21f50a99cbc0cd3",
+    "ev_9428cc150698bc1ebd5f7d4d32f2e8efa1022c319d442c3801b44c2d74cf4bca"
+  ],
+  "suppliedEvidenceIds": [
+    "ev_15a8e02f885a744622caa594dd331b7481bf66e9039cec2e9de762eab6c72891",
+    "ev_b5fc43ccb470fb223883348ab5e595a488ba6332bb419e48ad7eac4ba452c8af",
+    "ev_25085c34ecb1e1cc14b31cfe80f080213556158c202772dce0f52810206e745c",
+    "ev_3006efb65ff33d4d129cae301b78f856b3944f4b066063a9ad5175bdf2f067a9",
+    "ev_516057b8a32881c40f1384de19b86128197089068316214ce7a984ebb4f252a4",
+    "ev_3bb0c9cc00e48e9c9c70869ecd33daf4221b424752681999cb07ad21d6c5ef11",
+    "ev_e34196d11497b3956f133f4f4f9f4670ef36ac774d1a0a60f21f50a99cbc0cd3"
+  ],
+  "allFrozenPremisesAndUnverifiedPlanRefsRetained": true,
+  "exactCompletePlanUnchanged": true,
+  "exactQuotesPermissionsAndAllThreeMethodContextsRetained": true,
+  "newRequestFrozen": true,
+  "stoppedBeforeBodyProvider": true,
+  "originalPayloadUnchanged": true,
+  "boundary": "Capacity stress replay using two archived DEVELOPMENT fixtures of the same frozen question/material. Not a fresh planner/body/reviewer response or approval that the archived plan is scientifically valid. No old run/result changed."
+}

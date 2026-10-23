@@ -1,0 +1,36 @@
+{
+  "date": "2026-10-15",
+  "case": "H5R-v8",
+  "runId": "dr_run_3bd02f76f6485899bdd7f0abd24275aa",
+  "promptVersion": "dr-v2.20261015.80",
+  "status": "failed",
+  "outcome": "none",
+  "contentAccepted": false,
+  "eligibility": "Retired development case; no independent holdout credit",
+  "reviewer": "Primary Codex reviewing original source excerpts, draft, final output and raw verifier responses; not an independent human study",
+  "modelCalls": 11,
+  "settledTokens": 53048,
+  "cost": null,
+  "findings": [
+    "The draft chooses finite proposed baseline training (30000 optimizer steps) and matched 30000-step enhancement training; it no longer assumes a released author checkpoint.",
+    "Controls still defer optimizer/rate, enhancement initialization, resolution and renderer settings instead of giving executable choices.",
+    "The initial data choice uses official train/test labels as if they were concrete view identifiers. Its own source does not establish the selected scene and actual split; the independent verifier rejects it.",
+    "The received repair-verifier response has finishReason=stop but malformed JSON with a missing closing object brace. The original run fails invalid_verification_response, with all 11 calls known and settled.",
+    "The .81 copied-state replay preserves the seven initial checked claims as partial and excludes both unchecked revisions, with zero new model calls. The historical failed run remains unchanged.",
+    "Finite budgets are progress, not proof of an executable or accepted experimental protocol."
+  ],
+  "scoresOutOfFive": {
+    "goal": 1,
+    "evidence": 3,
+    "conditions": 2,
+    "synthesis": 2,
+    "executability": 2,
+    "readability": 2
+  },
+  "report": "",
+  "reviewedArtifact": "Draft and verifier responses; no published report",
+  "rawPayloadSha256": "b46a67a5be9f3b4cc9b9354635ab31d09d59264ec6c2f21ad9f239efab47851c",
+  "rawLedgerSha256": "7801bab11ee06ff1c120e298e91ff1ec0eb8c13a0e99e9c66598e83606e25e01",
+  "rawArchive": "tmp/dr-acceptance-receipts/H5R-v8.payload.json",
+  "boundary": "One explicit submission, no retry. Known settled responses are distinct from old unknown reservations. Machine complete does not replace content review."
+}

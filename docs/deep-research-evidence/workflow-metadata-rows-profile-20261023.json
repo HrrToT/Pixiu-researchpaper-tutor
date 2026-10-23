@@ -1,0 +1,30 @@
+{
+  "promptVersion": "dr-v2.20261023.261",
+  "workflowMetadataRowsContractVersion": 1,
+  "scientificOutlineContractVersion": 1,
+  "workflowContractVersion": 5,
+  "executionWorkflowContractVersion": 7,
+  "profileRegression": {
+    "files": 9,
+    "passed": 183,
+    "seconds": 26.66
+  },
+  "baseFullRegression": {
+    "sourceCommit": "cb27e2a0",
+    "files": 250,
+    "passed": 4628,
+    "seconds": 413.41,
+    "sourceStable": true
+  },
+  "sourceHashes": {
+    "services/deep_research/facade.py": "6ecd107e42c22a83457872433120286cd843dc8f4c4fc537c0dbf280fb144442",
+    "tests/test_deep_research_workflow_lifecycle_profile.py": "4aaaedad01f0351f5f79ec63ff56da489f9ce3de902c4546122d6f7183cf1a8a",
+    "tests/test_deep_research_workflow_metadata_rows.py": "d9d5db49ae4a49dabc3b67b68786656f3498c26f3487eb3865fdb960619c9640"
+  },
+  "oldRunsMigrated": false,
+  "clientOverridesAccepted": false,
+  "runtimeLoaded": false,
+  "providerCalls": 0,
+  "scientificApproval": false,
+  "boundary": "New-run activation and associated tests. Prior full regression is separate; runtime loading and real model output remain to verify."
+}

@@ -1,0 +1,197 @@
+{
+  "date": "2026-10-18",
+  "case": "H3F-v3",
+  "runId": "dr_run_76df6b7085e75e229e1032e2a0e01afb",
+  "sourceCommit": "6e931a51",
+  "promptVersion": "dr-v2.20261018.174",
+  "status": "completed",
+  "machineOutcome": "complete",
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "modelCalls": 12,
+  "settledTokens": 51706,
+  "elapsedSeconds": 159.314,
+  "cost": null,
+  "actualSynthesisFingerprintMatched": true,
+  "actualSynthesisOptions": {
+    "max_tokens": 16384,
+    "temperature": 0.2,
+    "thinking": {
+      "type": "disabled"
+    },
+    "reasoning_effort": "none",
+    "response_format": {
+      "type": "json_object"
+    }
+  },
+  "findings": [
+    "Actual external discovery and fixed-v1 fulltext acquisition both occur once; report accurately labels fulltext passages, without using local task papers.",
+    "Both initial factual verifications and the one repair verification actually return typed source paths. Original raw quotes, including PDF hyphens/line breaks, remain unchanged; source/scientific checks still run. The revised final facts are supported.",
+    "The initial first claim is rejected for scope_statement_not_bound: the model also retyped the target-scope excerpt inaccurately. One bounded repair changes wording and passes; the final second claim and its own source-bound conditions pass without repair.",
+    "Machine outcome is complete but manual novice-content acceptance fails. Why-training explanation relies on low-entropy feature distribution, differentiable quantization and implicit entropy model without ordinary meaning; the requested beginner cannot follow the causal/bitrate tradeoff from those labels alone.",
+    "Actual synthesize_audience returned text and conditions byte-for-byte equal to both original draft points. Transport/identity preservation succeeded, but no plain-language improvement occurred. Next rewrite should rebuild requested points from own original sources instead of copying unverified draft prose.",
+    "Internal target-scope binding should likewise support a strict reference to the unchanged visible target text/condition, not a retyped paraphrase. Keep all source/semantic/scope-strength checks and the existing budget.",
+    "No content or independent acceptance credit. Original first-five0/5 and retired eligibility remain unchanged; no unchanged retry or unknown resend."
+  ],
+  "scores": {
+    "goalResponse": 3,
+    "evidenceSupport": 4,
+    "conditions": 4,
+    "synthesisValue": 3,
+    "executability": null,
+    "readability": 2
+  },
+  "audienceRewriteUnchanged": true,
+  "actualSourceFieldBindings": true,
+  "draft": {
+    "sections": [
+      {
+        "title": "核心判断",
+        "claimIds": [
+          "c1",
+          "c2"
+        ]
+      }
+    ],
+    "claims": [
+      {
+        "claimId": "c1",
+        "text": "4DGC中，运动网格负责估计相邻帧间每个高斯的刚性运动（位置和旋转），补偿高斯则稀疏地添加在运动估计不足的区域（如新出现物体或快速变换），以提升细节。",
+        "kind": "reported",
+        "evidenceRefs": [
+          "ev_31687a563a5ee93e15e596ad4dce77707adf2c0b81888749496b8208a63fc79e",
+          "ev_38265021fd3795dd7c09968857a5fc08e8c4efaf5c2d17dfbeaff881675dc8cf",
+          "ev_b789a7c0dee48fb0fe1a51739c9b7e0c0cb86a6b14531117bf149e73f1193155",
+          "ev_4787bb285c2a91b02c8940d7a44c1fc654abb5ad3790332f75da6683dd12604e",
+          "ev_976d0acc219092da20d5a393b96b528a7bbba6ae850aedc1ecb1e318a26b5cd2"
+        ],
+        "conditions": {
+          "context": "适用于每个后续帧；补偿针对新出现物体、显著梯度变化区域或运动参数超阈值的大高斯。"
+        },
+        "obligationIds": [
+          "ob_1"
+        ],
+        "detailLevel": "fulltext",
+        "tableBindings": []
+      },
+      {
+        "claimId": "c2",
+        "text": "训练同时考虑码率和画质，是因为在损失函数中加入码率估计项，可引导网络学习低熵特征分布，从而在保持视觉质量的同时减少压缩后的数据量。",
+        "kind": "reported",
+        "evidenceRefs": [
+          "ev_0d56c2481a75c0ab3ca22e9768c6fc7957b42ce6722655b2180d934c811aa0f5",
+          "ev_3d71031258675eb6abb715b81d7a359c4e884746681de30cd349245375e26d40",
+          "ev_553fc9d003218cb2bf1d3ad5cc8cc2fbc47a19253da702f02b15fd40f722fc52",
+          "ev_c3baec5797ca9db0daddc90c996b8ba09ab605e71a38e009333f29e27edf3fa5"
+        ],
+        "conditions": {
+          "context": "训练分两阶段，每阶段由率失真权衡引导；码率估计通过可微量化和隐式熵模型实现。"
+        },
+        "obligationIds": [
+          "ob_2"
+        ],
+        "detailLevel": "fulltext",
+        "tableBindings": []
+      }
+    ]
+  },
+  "repairDraft": [
+    {
+      "claimId": "c1",
+      "kind": "reported",
+      "text": "运动网格估计相邻帧间每个高斯的刚性运动，补偿高斯在运动估计不足的区域稀疏添加，以提升细节。",
+      "evidenceRefs": [
+        "ev_31687a563a5ee93e15e596ad4dce77707adf2c0b81888749496b8208a63fc79e",
+        "ev_38265021fd3795dd7c09968857a5fc08e8c4efaf5c2d17dfbeaff881675dc8cf",
+        "ev_b789a7c0dee48fb0fe1a51739c9b7e0c0cb86a6b14531117bf149e73f1193155",
+        "ev_4787bb285c2a91b02c8940d7a44c1fc654abb5ad3790332f75da6683dd12604e",
+        "ev_976d0acc219092da20d5a393b96b528a7bbba6ae850aedc1ecb1e318a26b5cd2"
+      ],
+      "conditions": {
+        "context": "运动网格用于每个后续帧；补偿高斯针对新出现物体或细微运动等区域。"
+      },
+      "detailLevel": "fulltext",
+      "tableBindings": [],
+      "obligationIds": [
+        "ob_1"
+      ]
+    }
+  ],
+  "initialVerification": {
+    "accepted": [
+      {
+        "claimId": "c2",
+        "text": "训练同时考虑码率和画质，是因为在损失函数中加入码率估计项，可引导网络学习低熵特征分布，从而在保持视觉质量的同时减少压缩后的数据量。",
+        "kind": "reported",
+        "evidenceRefs": [
+          "ev_0d56c2481a75c0ab3ca22e9768c6fc7957b42ce6722655b2180d934c811aa0f5",
+          "ev_3d71031258675eb6abb715b81d7a359c4e884746681de30cd349245375e26d40",
+          "ev_553fc9d003218cb2bf1d3ad5cc8cc2fbc47a19253da702f02b15fd40f722fc52",
+          "ev_c3baec5797ca9db0daddc90c996b8ba09ab605e71a38e009333f29e27edf3fa5"
+        ],
+        "conditions": {
+          "context": "训练分两阶段，每阶段由率失真权衡引导；码率估计通过可微量化和隐式熵模型实现。"
+        },
+        "obligationIds": [
+          "ob_2"
+        ],
+        "detailLevel": "fulltext",
+        "tableBindings": [],
+        "verification": "semantic_passed"
+      }
+    ],
+    "rejected": [
+      {
+        "claimId": "c1",
+        "reason": "semantic_unresolved",
+        "detail": "结论范围或必要条件尚未核实：scope_statement_not_bound"
+      }
+    ]
+  },
+  "repairChecks": {
+    "accepted": [
+      {
+        "claimId": "c1",
+        "kind": "reported",
+        "text": "运动网格估计相邻帧间每个高斯的刚性运动，补偿高斯在运动估计不足的区域稀疏添加，以提升细节。",
+        "evidenceRefs": [
+          "ev_31687a563a5ee93e15e596ad4dce77707adf2c0b81888749496b8208a63fc79e",
+          "ev_38265021fd3795dd7c09968857a5fc08e8c4efaf5c2d17dfbeaff881675dc8cf",
+          "ev_b789a7c0dee48fb0fe1a51739c9b7e0c0cb86a6b14531117bf149e73f1193155",
+          "ev_4787bb285c2a91b02c8940d7a44c1fc654abb5ad3790332f75da6683dd12604e",
+          "ev_976d0acc219092da20d5a393b96b528a7bbba6ae850aedc1ecb1e318a26b5cd2"
+        ],
+        "conditions": {
+          "context": "运动网格用于每个后续帧；补偿高斯针对新出现物体或细微运动等区域。"
+        },
+        "detailLevel": "fulltext",
+        "tableBindings": [],
+        "obligationIds": [
+          "ob_1"
+        ],
+        "verification": "semantic_passed"
+      }
+    ],
+    "rejected": []
+  },
+  "report": "本回答引用：全文片段。\n\n## 核心判断\n\n- 运动网格估计相邻帧间每个高斯的刚性运动，补偿高斯在运动估计不足的区域稀疏添加，以提升细节。 [5](#research-evidence-ev_31687a563a5ee93e15e596ad4dce77707adf2c0b81888749496b8208a63fc79e) [6](#research-evidence-ev_38265021fd3795dd7c09968857a5fc08e8c4efaf5c2d17dfbeaff881675dc8cf) [7](#research-evidence-ev_b789a7c0dee48fb0fe1a51739c9b7e0c0cb86a6b14531117bf149e73f1193155) [8](#research-evidence-ev_4787bb285c2a91b02c8940d7a44c1fc654abb5ad3790332f75da6683dd12604e) [9](#research-evidence-ev_976d0acc219092da20d5a393b96b528a7bbba6ae850aedc1ecb1e318a26b5cd2)\n  适用条件：运动网格用于每个后续帧；补偿高斯针对新出现物体或细微运动等区域。\n- 训练同时考虑码率和画质，是因为在损失函数中加入码率估计项，可引导网络学习低熵特征分布，从而在保持视觉质量的同时减少压缩后的数据量。 [1](#research-evidence-ev_0d56c2481a75c0ab3ca22e9768c6fc7957b42ce6722655b2180d934c811aa0f5) [2](#research-evidence-ev_3d71031258675eb6abb715b81d7a359c4e884746681de30cd349245375e26d40) [3](#research-evidence-ev_553fc9d003218cb2bf1d3ad5cc8cc2fbc47a19253da702f02b15fd40f722fc52) [4](#research-evidence-ev_c3baec5797ca9db0daddc90c996b8ba09ab605e71a38e009333f29e27edf3fa5)\n  适用条件：训练分两阶段，每阶段由率失真权衡引导；码率估计通过可微量化和隐式熵模型实现。\n\n论文事实已按所列原文核对。\n\n<details>\n<summary>原文依据</summary>\n\n**[1] 4DGC: Rate-Aware 4D Gaussian Compression for Efficient Streamable Free-Viewpoint Video** · 第 2 页 · 全文片段\n\n> Our\n> key idea is to explicitly model motion between adjacent\n> frames, estimate the bitrate of the 4D Gaussian represen-\n> tation during training, and incorporate rate and distortion\n> terms into the loss function to enable end-to-end optimiza-\n> tion.\n\n**[2] 4DGC: Rate-Aware 4D Gaussian Compression for Efficient Streamable Free-Viewpoint Video** · 第 5 页 · 全文片段\n\n> Eachstage is guided by a rate-distortion trade-off, ensuring a\n> low-entropy 4D Gaussian representation and substantially\n> improving RD performance.\n\n**[3] 4DGC: Rate-Aware 4D Gaussian Compression for Efficient Streamable Free-Viewpoint Video** · 第 5 页 · 全文片段\n\n> Incorporating this rate estimation into the loss function en-\n> ables the network to learn feature distributions with in-\n> herently lower entropy.\n\n**[4] 4DGC: Rate-Aware 4D Gaussian Compression for Efficient Streamable Free-Viewpoint Video** · 第 5 页 · 全文片段\n\n> The first stage focuses on op-\n> timizing the motion grid alongside its associated entropy\n> model, while the second stage refines the compensated\n> Gaussians with their corresponding entropy model.\n\n**[5] 4DGC: Rate-Aware 4D Gaussian Compression for Efficient Streamable Free-Viewpoint Video** · 第 2 页 · 全文片段\n\n> For each subsequent frame, 4DGC uti-\n> lizes a compact multi-resolution motion grid to estimate the\n> rigid motion of each Gaussian from the previous frame to\n> the current one.\n\n**[6] 4DGC: Rate-Aware 4D Gaussian Compression for Efficient Streamable Free-Viewpoint Video** · 第 5 页 · 全文片段\n\n> Although motion estimation\n> effectively captures the dynamics of previously observed\n> objects within a scene, we found that relying solely on mo-\n> tion estimation is insufficient for achieving high-quality de-\n> tail, particularly in cases involving newly emerging objects\n> and subtle motion transformations.\n\n**[7] 4DGC: Rate-Aware 4D Gaussian Compression for Efficient Streamable Free-Viewpoint Video** · 第 2 页 · 全文片段\n\n> Additionally, compensated Gaussians are\n> sparsely added to account for newly observed regions or ob-\n> jects, further enhancing the accuracy of the representation.\n\n**[8] 4DGC: Rate-Aware 4D Gaussian Compression for Efficient Streamable Free-Viewpoint Video** · 第 5 页 · 全文片段\n\n> For the\n> first type, we apply gradient thresholding, cloning the Gaus-\n> sian primitives at locations where the gradient exceeds a\n> predefined threshold τgas∆Gg\n> t, ensuring accurate repre-\n> sentation of newly observed elements.\n\n**[9] 4DGC: Rate-Aware 4D Gaussian Compression for Efficient Streamable Free-Viewpoint Video** · 第 5 页 · 全文片段\n\n> For the second type,\n> involving larger Gaussians impacted by rapid transforma-\n> tions, we clone two additional Gaussian primitives from the\n> original Gaussian when its motion parameters exceed speci-\n> fied thresholds: τµfor translation |∆µt|andτRfor rotation\n> |∆Rt|.\n\n</details>",
+  "rawFiles": [
+    {
+      "path": "tmp/dr-acceptance-receipts/H3F-v3.json",
+      "sha256": "41caa215716e97802993d5f814595a4b63c7d82217b42ba31043fdc15c0ecd7f"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/H3F-v3.payload.json",
+      "sha256": "7f97fc154c163a9aa24d95819d9eedad450d51fa7a1404161e0e060ba6ee3e6d"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/H3F-v3.calls.json",
+      "sha256": "cc0eb9032c0c7094949a18c2979da8522c4a364cdd3c2e79c92f499c3e358ce8"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/H3F-v3.result.json",
+      "sha256": "21212f279fe388dfaa340ecd6113d4d3ce5c462380812e9098f8295a00964b0d"
+    }
+  ],
+  "boundary": "One explicit submission after a concrete generation-profile change, all calls settled. Failed content is not retried unchanged or upgraded. No independent credit."
+}

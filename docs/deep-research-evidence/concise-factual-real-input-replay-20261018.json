@@ -1,0 +1,40 @@
+{
+  "date": "2026-10-18",
+  "inputCase": "D5-v7",
+  "inputRunId": "dr_run_d996cfe0fcc8556ba22e81769c7e252b",
+  "oldRequestFingerprintMatched": true,
+  "oldArgsDigest": "091fc320bf7ea677ec906f0e30a29f8116d874e64f69247e74c0f009c1c51bdc",
+  "oldPromptBytes": 23963,
+  "newPromptBytes": 23800,
+  "oldVisibleEvidence": 13,
+  "newVisibleEvidence": 14,
+  "allOriginalReferencesAndContextRemainMandatory": true,
+  "maxPromptBytesUnchanged": 24000,
+  "rawResponsePresentationAudit": [
+    {
+      "claimId": "c1",
+      "originalText": "不同论文中的FPS不能直接相除，因为它们的测量条件不同：LightGaussian在其平台上重新训练基线并报告FPS（E1），而3DGS报告的是1080p分辨率下≥30 fps的实时渲染（E13）。这些证据未显示两者使用相同硬件、数据集或分辨率，因此无法建立可比性。",
+      "originalConditions": {},
+      "normalizedText": "不同论文中的FPS不能直接相除，因为它们的测量条件不同：LightGaussian在其平台上重新训练基线并报告FPS，而3DGS报告的是1080p分辨率下≥30 fps的实时渲染。这些证据未显示两者使用相同硬件、数据集或分辨率，因此无法建立可比性。",
+      "normalizedConditions": {},
+      "removed": [
+        {
+          "field": "text",
+          "marker": "（E1）",
+          "offset": 58
+        },
+        {
+          "field": "text",
+          "marker": "（E13）",
+          "offset": 93
+        }
+      ]
+    }
+  ],
+  "substantiveDifferentConditionsWordingUnchanged": true,
+  "negativeFixtureDoesNotApproveClaim": true,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "originalRecordUnchanged": true,
+  "boundary": "Exact old production request replay and copied new request/old raw response parsing. No new generation or factual approval; real model semantic comparison still requires live validation."
+}

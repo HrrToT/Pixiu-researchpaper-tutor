@@ -1,0 +1,140 @@
+{
+  "date": "2026-10-22",
+  "sourceCommit": "3f2e73b9",
+  "promptVersion": "dr-v2.20261022.219",
+  "case": "E1-v15",
+  "split": "development",
+  "runId": "dr_run_4146f9330c6b5e05b1da598a3ade9c7d",
+  "questionUnchanged": true,
+  "frozenCaseCommit": "a023b204",
+  "status": "failed",
+  "outcome": "none",
+  "settledModelCalls": 8,
+  "settledTokens": 25859,
+  "unsettledModelCalls": 0,
+  "independentCredit": 0,
+  "verificationSummary": null,
+  "planEncodingAudit": {
+    "rawBytes": 2769,
+    "wireBytes": 2660,
+    "preferredSlotBytes": 2500,
+    "rawLimitBytes": 4000,
+    "fitsPreferredSlot": false,
+    "scientificApproval": false
+  },
+  "initialRepresentationAudit": [],
+  "repairRepresentationAudit": {},
+  "rejectedClaims": [],
+  "acceptedClaims": [],
+  "rawFiles": [
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v15.json",
+      "sha256": "b746fb4dbcc3f3b6af57ed1feca2eed3ad8c178e89cbb99f0b80dfd1d2b947e2"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v15.payload.json",
+      "sha256": "b465308a257d801dc348405d86f5dd63d5622cdfcb613c328189b498e10094f0"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v15.calls.json",
+      "sha256": "caa1e3b7b38b8d33b60aa305a249c12f05a6cdb312342c3d3cce4dc8d5a9a40a"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v15.result.json",
+      "sha256": "3fc8679dd086b9e8e2334a1d21f5045a5ab7e39858e023207559aefababf6f43"
+    }
+  ],
+  "boundary": "One fixed development submission, no automatic retry. Representation normalization does not approve science or upgrade historical/independent results.",
+  "reportedPayloadElapsedSeconds": 0,
+  "observedElapsedSeconds": 47.0,
+  "draftCapacity": {
+    "inputBytes": 24091,
+    "maxInputBytes": 24000,
+    "requestDigest": "a08d0284e5cf150f64aa46f329dacabe123761b4dcca9b7dddb43b81b00abbde",
+    "scientificApproval": false
+  },
+  "generationAllocation": {
+    "version": 1,
+    "planningEvidenceAliases": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8"
+    ],
+    "suppliedEvidenceAliases": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8"
+    ],
+    "requiredEvidenceAliases": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8"
+    ],
+    "unverifiedPlanReferences": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8"
+    ],
+    "missingPremiseBundles": [
+      {
+        "obligationId": "complete_unverified_generation_inputs",
+        "evidenceIds": [
+          "E1",
+          "E2",
+          "E3",
+          "E4",
+          "E5",
+          "E6",
+          "E7",
+          "E8"
+        ]
+      }
+    ],
+    "rawInputBytes": 24360,
+    "encodedInputBytes": 24091,
+    "maxInputBytes": 24000,
+    "planBasisDigest": "78e5565bd838ee512a62066fc775182717d291cc4a97026a08ecbe9051bdc014",
+    "planReferencesAreEvidenceApproval": false,
+    "planningEvidenceIds": [
+      "ev_15a8e02f885a744622caa594dd331b7481bf66e9039cec2e9de762eab6c72891",
+      "ev_925db5ee5027aed55d6fa83e9fcd88367454dbedc927a217536f139bd847f22d",
+      "ev_5a62ffa4ef91faeab47770ffeb7725d05e16220034d62947882c58e68891ba69",
+      "ev_eea706cbd96a822dae9adf0cdc055c4e86d4f30b38582a4af6ff41a671a74c1f",
+      "ev_516057b8a32881c40f1384de19b86128197089068316214ce7a984ebb4f252a4",
+      "ev_f9ae8788d0caeec846e3e3519035a9d0d539e42b044269ce89b1cd872a925c0f",
+      "ev_e34196d11497b3956f133f4f4f9f4670ef36ac774d1a0a60f21f50a99cbc0cd3",
+      "ev_4bbeaea2b1a3fc2176d5010e025e0272c4f315f6a4481858bf4ef14db9594a4f"
+    ],
+    "suppliedEvidenceIds": [
+      "ev_15a8e02f885a744622caa594dd331b7481bf66e9039cec2e9de762eab6c72891",
+      "ev_925db5ee5027aed55d6fa83e9fcd88367454dbedc927a217536f139bd847f22d",
+      "ev_5a62ffa4ef91faeab47770ffeb7725d05e16220034d62947882c58e68891ba69",
+      "ev_eea706cbd96a822dae9adf0cdc055c4e86d4f30b38582a4af6ff41a671a74c1f",
+      "ev_516057b8a32881c40f1384de19b86128197089068316214ce7a984ebb4f252a4",
+      "ev_f9ae8788d0caeec846e3e3519035a9d0d539e42b044269ce89b1cd872a925c0f",
+      "ev_e34196d11497b3956f133f4f4f9f4670ef36ac774d1a0a60f21f50a99cbc0cd3",
+      "ev_4bbeaea2b1a3fc2176d5010e025e0272c4f315f6a4481858bf4ef14db9594a4f"
+    ]
+  },
+  "bodyModelSent": false
+}

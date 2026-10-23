@@ -1,0 +1,45 @@
+{
+  "date": "2026-10-18",
+  "sourceCommit": "e28e7474",
+  "promptVersion": "dr-v2.20261018.137",
+  "actualRunId": "dr_run_7a166ca064b95ce6b06aab958999ccf7",
+  "actualVerificationRequests": 1,
+  "actualVerifiedClaimIds": [
+    "c2",
+    "c3"
+  ],
+  "baseFactoryReadOnlyProbe": {
+    "runId": "dr_run_7a166ca064b95ce6b06aab958999ccf7",
+    "savedMarker": 1,
+    "factoryCallback": true,
+    "capturedTargetBatches": [
+      [
+        "c2"
+      ],
+      [
+        "c3"
+      ]
+    ],
+    "files": {
+      "services.deep_research.facade": {
+        "path": "/app/services/deep_research/facade.py",
+        "sha256": "e9892f929d8c06c1264cb5a7873465bbe98a28606c3d1ec2d5158153a0d7256b"
+      },
+      "services.deep_research.tools": {
+        "path": "/app/services/deep_research/tools.py",
+        "sha256": "b5eb36062d7bb7222728fe1f1a9681927cd59241c706c5337c25eace67796c1c"
+      }
+    },
+    "modelCalls": 0,
+    "productionRowsChanged": 0,
+    "localSourceHashes": {
+      "facade": "e9892f929d8c06c1264cb5a7873465bbe98a28606c3d1ec2d5158153a0d7256b",
+      "tools": "b5eb36062d7bb7222728fe1f1a9681927cd59241c706c5337c25eace67796c1c"
+    }
+  },
+  "cause": "RuntimeFacade._make_semantic_checker in runtime.py constructs BudgetedSemanticChecker without the base factory isolation callback; its default is batched.",
+  "correctionCommit": "f55df4ca",
+  "newRuntimeContractVersion": 1,
+  "correction": "Both factories share one policy builder. Only new marked production runs use per-fact isolation; historical production batches and request identities are preserved.",
+  "boundary": "This records a real production wiring gap. The base-only fixture was insufficient evidence for the live path. .138 runtime tests use initialize_runtime, the scoped client and tracked ledger with a local provider fixture; no new real model run yet."
+}

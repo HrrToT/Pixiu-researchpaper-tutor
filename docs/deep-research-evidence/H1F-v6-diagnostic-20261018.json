@@ -1,0 +1,112 @@
+{
+  "date": "2026-10-18",
+  "case": "H1F-v6",
+  "runId": "dr_run_838687fc88c25b888537961f934dffe2",
+  "sourceCommit": "4a2da0e7",
+  "promptVersion": "dr-v2.20261018.140",
+  "evaluationUse": "retired-case diagnostic",
+  "independent": false,
+  "status": "completed",
+  "outcome": "inconclusive",
+  "contentAccepted": false,
+  "modelCalls": 11,
+  "settledTokens": 32774,
+  "elapsedSeconds": 62.869,
+  "cost": null,
+  "acquisitionCriteriaCovered": true,
+  "actualSemanticBatchClaimIds": [
+    [
+      "c2"
+    ]
+  ],
+  "isolationBoundary": "Only c2 reached semantic checking. c1 and c3 failed deterministic checks, so this run alone does not prove multiple eligible targets were separately dispatched.",
+  "initialVerification": {
+    "accepted": [],
+    "rejected": [
+      {
+        "claimId": "c1",
+        "reason": "numeric_mismatch",
+        "missingReportedNumbers": [
+          "4e0"
+        ],
+        "detail": "本条引用原文未直接报告这些数值：4。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。"
+      },
+      {
+        "claimId": "c3",
+        "reason": "numeric_mismatch",
+        "missingReportedNumbers": [
+          "1e0"
+        ],
+        "detail": "本条引用原文未直接报告这些数值：1。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。"
+      },
+      {
+        "claimId": "c2",
+        "reason": "semantic_unresolved",
+        "detail": "该句断言“把前一帧每个3D高斯的位置输入多分辨率哈希编码”。证据E4仅说明用前一时刻3DGs作为初始化、NTC建模3DGs变换，未明确编码输入是前一帧每个高斯的位置；E1只描述哈希编码经MLP输出7维平移和旋转，也未给出输入细节。其他分句（输出平移旋转、局部平滑/多分辨率、动态区域由哈希碰撞梯度驱动）有对应证据，但关键输入条件未被直接支持，因此整条不通过。"
+      }
+    ]
+  },
+  "repairChecks": {
+    "accepted": [],
+    "rejected": [
+      {
+        "claimId": "c1",
+        "reason": "numeric_mismatch",
+        "missingReportedNumbers": [
+          "4e0"
+        ],
+        "detail": "本条引用原文未直接报告这些数值：4。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。"
+      },
+      {
+        "claimId": "c3",
+        "reason": "numeric_mismatch",
+        "missingReportedNumbers": [
+          "1e0"
+        ],
+        "detail": "本条引用原文未直接报告这些数值：1。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。"
+      },
+      {
+        "claimId": "c2",
+        "reason": "unchanged_semantic_rejection",
+        "detail": "该句断言“把前一帧每个3D高斯的位置输入多分辨率哈希编码”。证据E4仅说明用前一时刻3DGs作为初始化、NTC建模3DGs变换，未明确编码输入是前一帧每个高斯的位置；E1只描述哈希编码经MLP输出7维平移和旋转，也未给出输入细节。其他分句（输出平移旋转、局部平滑/多分辨率、动态区域由哈希碰撞梯度驱动）有对应证据，但关键输入条件未被直接支持，因此整条不通过。",
+        "originalReason": "semantic_unresolved",
+        "progressDetail": "论断内容和引用依据未变，保留原核验拒绝结果。"
+      }
+    ]
+  },
+  "scores": {
+    "goalResponse": 1,
+    "evidenceSupport": null,
+    "conditions": null,
+    "synthesisValue": 1,
+    "executability": null,
+    "readability": 2
+  },
+  "findings": [
+    "Priority changes worked in actual acquisition: output, previous-frame initialization and new-object requirements each have supporting original passages.",
+    "The output claim still computed four quaternion dimensions absent as a directly written value. The precise new numeric rejection reached repair but was ignored.",
+    "The new small-count parser incorrectly treated the relative Chinese reference 下一帧 as a reported quantity one; this false rejection removed an otherwise useful new-object point.",
+    "The c2 semantic verifier correctly rejected an uncited precise encoder-input premise. Repair copied all three rejected drafts unchanged; the progress guard preserved the semantic rejection.",
+    "No unsupported conclusion published. Safe inconclusive output does not fulfill the question and is not content acceptance."
+  ],
+  "report": "本次尚未形成通过核验的结论。\n\n<details>\n<summary>还有 2 项未完成</summary>\n\n- NTC预测高斯的哪些变化，以及这些变化如何利用前一帧的高斯表示作为输入或条件？：最终回答尚未完整回应这一问题\n- 为什么在遇到新出现的物体时需要添加新的高斯，而不是仅依靠NTC预测现有高斯的变化？：最终回答尚未完整回应这一问题\n\n</details>",
+  "rawFiles": [
+    {
+      "path": "tmp/dr-acceptance-receipts/H1F-v6.json",
+      "sha256": "273329414317e5c44441dfaaf2e4810bb179ed48691e820a3e94baf4750a855c"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/H1F-v6.payload.json",
+      "sha256": "5387a2c6edb61e38db70cf902fc70d2d43950bb253d8fcae15880f02ebbc8912"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/H1F-v6.calls.json",
+      "sha256": "bc713faf556742c379bfa19d62805e288f9b8e64ebe80102877a0c9d2f15de4e"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/H1F-v6.result.json",
+      "sha256": "4f15f04758f17c067b412805b93542003335c58ec12082c5deb9f5c8d0f89c69"
+    }
+  ],
+  "boundary": "One submission; original budget and question; no unknown retries or independent credit. Original results and citations remain unchanged."
+}

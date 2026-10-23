@@ -1,0 +1,24 @@
+{
+  "date": "2026-10-22",
+  "sourceCommit": "2813e909",
+  "promptVersion": "dr-v2.20261022.232",
+  "experimentPlanEncodingContractVersion": 3,
+  "fullOffline": {
+    "passed": 4111,
+    "files": 224,
+    "warnings": 1,
+    "seconds": 223.16,
+    "log": "tmp/pytest-dr232-complete-native.log",
+    "sha256": "176a079eca25cc4dabca3c70fb591c6a66f0f5f0e26cfd61b44c11c31edb4d3b"
+  },
+  "newTests": 44,
+  "focusedPassed": 148,
+  "focusedOverlap": true,
+  "legacyScripts": 32,
+  "legacyActualRequestFingerprintsMatched": 96,
+  "providerCalls": 0,
+  "productionWritesByTests": 0,
+  "independentCredit": 0,
+  "initialTestCorrection": "The first focused test incorrectly assumed a pending plan must not invoke its ledger adapter. Correct same-identity recovery reaches the ledger; the production TrackedLLMInvoker test now proves unknown reservation prevents a second physical provider send. Final148passed.",
+  "boundary": "Private state/phase blueprint structurally checked and preserved losslessly; no chosen defaults, source permissions or scientific approval injected. Original4KB/32KB and18calls/100kTokens/360s limits unchanged; old identities remain exact."
+}

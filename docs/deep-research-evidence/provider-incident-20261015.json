@@ -1,0 +1,17 @@
+{
+  "date": "2026-10-15",
+  "observedDuring": "2026-10-15 01:28 UTC development session",
+  "generationPolicy": "Stop additional generation tests while the routine-model path is affected; do not retry either unknown request or silently reroute it to another model.",
+  "authenticatedReadOnlyProbe": {"host": "api.deepseek.com", "path": "/models", "status": 200, "configuredResearchModel": "deepseek-v4-pro", "configuredRoutineModel": "deepseek-v4-flash", "listedModels": ["deepseek-flash", "deepseek-v4-pro"], "credentialsPrinted": false, "paperContentSent": false},
+  "officialSources": [
+    {"url": "https://status.deepseek.com/incidents/7116348214287", "title": "DeepSeek Web/API Partially Unavailable", "statusObserved": "Investigating / Partial Outage", "affectedComponent": "DeepSeek V4.1 Flash API", "reportedStartUtc": "2026-10-15 00:11"},
+    {"url": "https://api-docs.deepseek.com/zh-cn/", "finding": "Canonical Flash name is deepseek-flash; legacy deepseek-v4-flash remains accepted and routes to current Flash. Missing the legacy alias from /models does not establish that it is invalid."}
+  ],
+  "inferenceBoundary": "The reported Flash outage is consistent with both routine-node timeouts, but cannot establish the individual request execution or billing outcome. Successful /models authentication does not prove that generation is healthy or that account balance is sufficient.",
+  "unknownRuns": [
+    {"caseId": "D8-v3", "runId": "dr_run_7c32c52acf4a5091b893d9bc99826ada", "status": "paused", "reservedTokens": 4256},
+    {"caseId": "D3-v26", "runId": "dr_run_e3521b1781825273b384a26a5edb8cdc", "status": "paused", "reservedTokens": 4449}
+  ],
+  "actualUsageAndCost": "Unknown for both requests; reservations are not measured usage or confirmed charges.",
+  "maintenance": "New configuration defaults/examples now use canonical deepseek-flash. Existing explicit settings are preserved. No claim that renaming fixes this outage."
+}

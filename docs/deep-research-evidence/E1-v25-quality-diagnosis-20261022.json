@@ -1,0 +1,40 @@
+{
+  "date": "2026-10-22",
+  "case": "E1-v25",
+  "sourceCommit": "2813e909",
+  "status": "failed",
+  "errorCode": "invalid_experiment_planning_response",
+  "outcome": "none",
+  "finalReportGenerated": false,
+  "independentCredit": 0,
+  "settledModels": {
+    "deepseek-flash": 7,
+    "deepseek-v4-pro": 2
+  },
+  "plannerFinishReason": "stop",
+  "rawCompactBytes": 5403,
+  "unchangedPlanLimit": 4000,
+  "observedInventory": {
+    "blocks": 3,
+    "states": 15,
+    "phases": 3,
+    "scientificApproval": false
+  },
+  "invalidShapeAndPermissions": [
+    "sourceRefs contains P1 metadata,not supplied E aliases",
+    "unresolved nested inside protocol instead of top-level",
+    "measurement object instead of string",
+    "appliesTo uses treatment instead of binary group ID",
+    "raw object exceeds4000bytes"
+  ],
+  "existingContentCautions": [
+    "Hash table shape omits how16levels are indexed; no scientific approval of declared hash/MLP interface.",
+    "Reference positions initialize from an already trained frame0 reconstruction rather than defining its actual acquisition; N0 unresolved.",
+    "Proposed values are described as placeholders and some gaps assert paper-wide absence. Full source review was never reached."
+  ],
+  "rawResponseSha256": "df3d7330f4a1bea37bdc3a84473400cbbc83196a6f0aedb8632ec262ae3cc121",
+  "automaticRetry": false,
+  "newProviderCallsByThisDiagnosis": 0,
+  "productionWrites": 0,
+  "boundary": "Private planning observation only. Inventory detail is not a usable experiment or scientific acceptance; failure remains unchanged."
+}

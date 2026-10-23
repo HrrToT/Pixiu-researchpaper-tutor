@@ -1,0 +1,504 @@
+{
+  "date": "2026-10-19",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "ordering": [
+    {
+      "case": "H2F-v3",
+      "oldFirstPassages": [
+        {
+          "sourceId": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf-v3040e30052bd930d-chunk-15",
+          "workId": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf",
+          "location": {
+            "page": 3,
+            "chunk": 15,
+            "section": "Method"
+          },
+          "textSha256": "2eb9bea0536c8e57bb1f79110172d5b0404a23a3115fd7f519f8a263cb0670b1"
+        },
+        {
+          "sourceId": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-17",
+          "workId": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf",
+          "location": {
+            "page": 4,
+            "chunk": 17,
+            "section": "Method"
+          },
+          "textSha256": "82f42af29502931b78e47712a88d1b452e6654c63bd35d9056934790c2fcf39a"
+        },
+        {
+          "sourceId": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf-v3040e30052bd930d-chunk-16",
+          "workId": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf",
+          "location": {
+            "page": 3,
+            "chunk": 16,
+            "section": "Method"
+          },
+          "textSha256": "00f4e7a2db9a5213383198db1f0afaf5db95aec1b609ba88fcf1fa7ae41abcec"
+        },
+        {
+          "sourceId": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-10",
+          "workId": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf",
+          "location": {
+            "page": 2,
+            "chunk": 10,
+            "section": "Free-Viewpoint Videos of Dynamic Scenes"
+          },
+          "textSha256": "c83fa05caf867dd2b01c9cde4c31987ef250ab8456bb425a7f73325603ae97e4"
+        },
+        {
+          "sourceId": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf-v3040e30052bd930d-chunk-9",
+          "workId": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf",
+          "location": {
+            "page": 2,
+            "chunk": 9,
+            "section": "Neural Rendering for Dynamic Scenes"
+          },
+          "textSha256": "01ba3b5bad3ecf747d06f447f7fbd40b5ba48e7a3e82b565d543f6db1257d86f"
+        },
+        {
+          "sourceId": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-12",
+          "workId": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf",
+          "location": {
+            "page": 3,
+            "chunk": 12,
+            "section": "Concurrent Works"
+          },
+          "textSha256": "3af299d931d0d095f63589fe977fb7fd1b4674c11b28b8839f0a46c461822554"
+        }
+      ],
+      "newFirstPassages": [
+        {
+          "sourceId": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf-v3040e30052bd930d-chunk-15",
+          "workId": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf",
+          "location": {
+            "page": 3,
+            "chunk": 15,
+            "section": "Method"
+          },
+          "textSha256": "2eb9bea0536c8e57bb1f79110172d5b0404a23a3115fd7f519f8a263cb0670b1"
+        },
+        {
+          "sourceId": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-17",
+          "workId": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf",
+          "location": {
+            "page": 4,
+            "chunk": 17,
+            "section": "Method"
+          },
+          "textSha256": "82f42af29502931b78e47712a88d1b452e6654c63bd35d9056934790c2fcf39a"
+        },
+        {
+          "sourceId": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf-v3040e30052bd930d-chunk-16",
+          "workId": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf",
+          "location": {
+            "page": 3,
+            "chunk": 16,
+            "section": "Method"
+          },
+          "textSha256": "00f4e7a2db9a5213383198db1f0afaf5db95aec1b609ba88fcf1fa7ae41abcec"
+        },
+        {
+          "sourceId": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-23",
+          "workId": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf",
+          "location": {
+            "page": 4,
+            "chunk": 23,
+            "section": "Neural Transformation Cache"
+          },
+          "textSha256": "d5dbbab1a282cbad15be82fc573a2b71b17dbe649bae5fbc8b0d4bd016d3eb6f"
+        },
+        {
+          "sourceId": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf-v3040e30052bd930d-chunk-30",
+          "workId": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf",
+          "location": {
+            "page": 7,
+            "chunk": 30,
+            "section": "Implementation Details"
+          },
+          "textSha256": "e5750bcf14402af47ab76dd100619e3f97988fabc0622e424cabf5f2a7b54cd3"
+        },
+        {
+          "sourceId": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-34",
+          "workId": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf",
+          "location": {
+            "page": 7,
+            "chunk": 34,
+            "section": "Comparisons"
+          },
+          "textSha256": "99ccb51ab8342755a496353a1a2fe528e86412e9bc10fb132d4055d368fee1bd"
+        }
+      ],
+      "selectedForReading": [
+        {
+          "sourceId": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf-v3040e30052bd930d-chunk-15",
+          "location": {
+            "page": 3,
+            "chunk": 15,
+            "section": "Method"
+          }
+        },
+        {
+          "sourceId": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-17",
+          "location": {
+            "page": 4,
+            "chunk": 17,
+            "section": "Method"
+          }
+        },
+        {
+          "sourceId": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf-v3040e30052bd930d-chunk-16",
+          "location": {
+            "page": 3,
+            "chunk": 16,
+            "section": "Method"
+          }
+        },
+        {
+          "sourceId": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-22",
+          "location": {
+            "page": 4,
+            "chunk": 22,
+            "section": "Neural Transformation Cache"
+          }
+        },
+        {
+          "sourceId": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-23",
+          "location": {
+            "page": 4,
+            "chunk": 23,
+            "section": "Neural Transformation Cache"
+          }
+        },
+        {
+          "sourceId": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf-v3040e30052bd930d-chunk-30",
+          "location": {
+            "page": 7,
+            "chunk": 30,
+            "section": "Implementation Details"
+          }
+        },
+        {
+          "sourceId": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-34",
+          "location": {
+            "page": 7,
+            "chunk": 34,
+            "section": "Comparisons"
+          }
+        },
+        {
+          "sourceId": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf-v3040e30052bd930d-chunk-34",
+          "location": {
+            "page": 7,
+            "chunk": 34,
+            "section": "Results and Comparisons"
+          }
+        },
+        {
+          "sourceId": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-52",
+          "location": {
+            "page": 6,
+            "chunk": 52,
+            "section": "Table 1 . Quantitative comparison on the N3DV dataset. The training time, required storage and PSNR are averaged over the whole 300 frames for each scene.",
+            "table": "tab_3",
+            "tableColumnMappingUnverified": true
+          }
+        },
+        {
+          "sourceId": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf-v3040e30052bd930d-chunk-21",
+          "location": {
+            "page": 4,
+            "chunk": 21,
+            "section": "Deformable 3D Gaussians"
+          }
+        },
+        {
+          "sourceId": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf-v3040e30052bd930d-chunk-22",
+          "location": {
+            "page": 4,
+            "chunk": 22,
+            "section": "Deformable 3D Gaussians"
+          }
+        },
+        {
+          "sourceId": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-2",
+          "location": {
+            "page": 1,
+            "chunk": 2,
+            "section": "Introduction"
+          }
+        }
+      ],
+      "newReadExecuted": false
+    },
+    {
+      "case": "H5F-v3",
+      "oldFirstPassages": [
+        {
+          "sourceId": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf-v3040e30052bd930d-chunk-4",
+          "workId": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf",
+          "location": {
+            "page": 1,
+            "chunk": 4,
+            "section": "Introduction"
+          },
+          "textSha256": "c9317274368a173e424192e1b2895cb5cea3399628320cf5a039a0a02d0fcca6"
+        },
+        {
+          "sourceId": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf-v3040e30052bd930d-chunk-32",
+          "workId": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf",
+          "location": {
+            "page": 7,
+            "chunk": 32,
+            "section": "Results and Comparisons"
+          },
+          "textSha256": "8fcd8d66865faae4dd4fe18a428023c7c15fd4dc3ed4eba03a7013fd6f04a58d"
+        },
+        {
+          "sourceId": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf-v3040e30052bd930d-chunk-5",
+          "workId": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf",
+          "location": {
+            "page": 1,
+            "chunk": 5,
+            "section": "Introduction"
+          },
+          "textSha256": "8254705b704ee3bc355f4040df082f2577299da4048b2f5ba8b1ce01ae32a14d"
+        },
+        {
+          "sourceId": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf-v3040e30052bd930d-chunk-37",
+          "workId": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf",
+          "location": {
+            "page": 8,
+            "chunk": 37,
+            "section": "Conclusions"
+          },
+          "textSha256": "6997ea5a0e91674e8c46975b7b6649da9abf242d1a54f2b368d5f5198fdc1f12"
+        },
+        {
+          "sourceId": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf-v3040e30052bd930d-chunk-23",
+          "workId": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf",
+          "location": {
+            "page": 4,
+            "chunk": 23,
+            "section": "Deformable 3D Gaussians"
+          },
+          "textSha256": "49a20e5bad79cbb3bb015721cb74cfe1f2789a4d3ab37079405497c1685331ab"
+        },
+        {
+          "sourceId": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf-v3040e30052bd930d-chunk-25",
+          "workId": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf",
+          "location": {
+            "page": 5,
+            "chunk": 25,
+            "section": "Annealing Smooth Training"
+          },
+          "textSha256": "4426781923c14f2f25c3350420ecb67aee4a637159fba9259d3833c678122234"
+        }
+      ],
+      "newFirstPassages": [
+        {
+          "sourceId": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf-v3040e30052bd930d-chunk-27",
+          "workId": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf",
+          "location": {
+            "page": 5,
+            "chunk": 27,
+            "section": "Annealing Smooth Training"
+          },
+          "textSha256": "daf7c34324053c46290b6d00492d8ecadaa7d2ea7e9731291fb0590c8213ac8b"
+        },
+        {
+          "sourceId": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf-v3040e30052bd930d-chunk-23",
+          "workId": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf",
+          "location": {
+            "page": 4,
+            "chunk": 23,
+            "section": "Deformable 3D Gaussians"
+          },
+          "textSha256": "49a20e5bad79cbb3bb015721cb74cfe1f2789a4d3ab37079405497c1685331ab"
+        },
+        {
+          "sourceId": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf-v3040e30052bd930d-chunk-4",
+          "workId": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf",
+          "location": {
+            "page": 1,
+            "chunk": 4,
+            "section": "Introduction"
+          },
+          "textSha256": "c9317274368a173e424192e1b2895cb5cea3399628320cf5a039a0a02d0fcca6"
+        },
+        {
+          "sourceId": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf-v3040e30052bd930d-chunk-42",
+          "workId": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf",
+          "location": {
+            "page": 11,
+            "chunk": 42,
+            "section": "C.1. Per-Scene Results on the NeRF-DS Dataset"
+          },
+          "textSha256": "6c1e2cf36037ee71942fc7f72f0d64eec0cc8431ede30ce81eaff28d6048b3b1"
+        },
+        {
+          "sourceId": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf-v3040e30052bd930d-chunk-26",
+          "workId": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf",
+          "location": {
+            "page": 5,
+            "chunk": 26,
+            "section": "Annealing Smooth Training"
+          },
+          "textSha256": "06e536d31976e147ff42439b19c79cca6f7800f96ce60639c49748fa500165aa"
+        },
+        {
+          "sourceId": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf-v3040e30052bd930d-chunk-32",
+          "workId": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf",
+          "location": {
+            "page": 7,
+            "chunk": 32,
+            "section": "Results and Comparisons"
+          },
+          "textSha256": "8fcd8d66865faae4dd4fe18a428023c7c15fd4dc3ed4eba03a7013fd6f04a58d"
+        }
+      ],
+      "selectedForReading": [
+        {
+          "sourceId": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf-v3040e30052bd930d-chunk-26",
+          "location": {
+            "page": 5,
+            "chunk": 26,
+            "section": "Annealing Smooth Training"
+          }
+        },
+        {
+          "sourceId": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf-v3040e30052bd930d-chunk-27",
+          "location": {
+            "page": 5,
+            "chunk": 27,
+            "section": "Annealing Smooth Training"
+          }
+        },
+        {
+          "sourceId": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf-v3040e30052bd930d-chunk-23",
+          "location": {
+            "page": 4,
+            "chunk": 23,
+            "section": "Deformable 3D Gaussians"
+          }
+        },
+        {
+          "sourceId": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf-v3040e30052bd930d-chunk-4",
+          "location": {
+            "page": 1,
+            "chunk": 4,
+            "section": "Introduction"
+          }
+        },
+        {
+          "sourceId": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf-v3040e30052bd930d-chunk-42",
+          "location": {
+            "page": 11,
+            "chunk": 42,
+            "section": "C.1. Per-Scene Results on the NeRF-DS Dataset"
+          }
+        },
+        {
+          "sourceId": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf-v3040e30052bd930d-chunk-32",
+          "location": {
+            "page": 7,
+            "chunk": 32,
+            "section": "Results and Comparisons"
+          }
+        },
+        {
+          "sourceId": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf-v3040e30052bd930d-chunk-37",
+          "location": {
+            "page": 8,
+            "chunk": 37,
+            "section": "Conclusions"
+          }
+        },
+        {
+          "sourceId": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf-v3040e30052bd930d-chunk-52",
+          "location": {
+            "page": 8,
+            "chunk": 52,
+            "section": "Table 2 . Metrics on NeRF-DS dataset. We computed the mean of the metrics across all seven scenes. Cells are highlighted as follows: best , second best , and third best . For individual metrics about each scene, please refer to the supplementary material.",
+            "table": "tab_1",
+            "tableColumnMappingUnverified": true
+          }
+        },
+        {
+          "sourceId": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf-v3040e30052bd930d-chunk-9",
+          "location": {
+            "page": 2,
+            "chunk": 9,
+            "section": "Neural Rendering for Dynamic Scenes"
+          }
+        },
+        {
+          "sourceId": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf-v3040e30052bd930d-chunk-25",
+          "location": {
+            "page": 5,
+            "chunk": 25,
+            "section": "Annealing Smooth Training"
+          }
+        },
+        {
+          "sourceId": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf-v3040e30052bd930d-chunk-5",
+          "location": {
+            "page": 1,
+            "chunk": 5,
+            "section": "Introduction"
+          }
+        },
+        {
+          "sourceId": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf-v3040e30052bd930d-chunk-21",
+          "location": {
+            "page": 4,
+            "chunk": 21,
+            "section": "Deformable 3D Gaussians"
+          }
+        }
+      ],
+      "newReadExecuted": false
+    }
+  ],
+  "archivedExperimentalVerification": {
+    "calls": [
+      {
+        "node": "verify_design_config",
+        "inputBytes": 28180,
+        "targets": [
+          "c4",
+          "c5",
+          "c7"
+        ],
+        "literalCandidates": {
+          "c4": [
+            {
+              "evidenceId": "E2",
+              "nameBindings": [
+                {
+                  "selectedName": "Lego",
+                  "sourceLabel": "Lego"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "node": "verify_design_science",
+        "inputBytes": 28557,
+        "targets": [
+          "c1",
+          "c3",
+          "c6",
+          "c8",
+          "c9"
+        ],
+        "literalCandidates": {}
+      }
+    ],
+    "maxInputBytes": 32000,
+    "methodWithNoOwnPremiseFailedWithoutProvider": true
+  },
+  "boundary": "Actual archived retrieved/read passages/claims/evidence, deterministic new read selection using retrieved text and mocked failed verdicts only. No new read or extraction executed. Original text/IDs/permissions and all context retained. No semantic/scientific acceptance or independent credit; historical outcomes unchanged."
+}

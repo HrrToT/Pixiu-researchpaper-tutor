@@ -1,0 +1,22 @@
+{
+  "date": "2026-10-23",
+  "promptVersion": "dr-v2.20261023.249",
+  "adaptiveExtractionContractVersion": 3,
+  "files": 237,
+  "passed": 4332,
+  "warnings": 1,
+  "seconds": 367.82,
+  "focusedPassed": 30,
+  "legacyScripts": 38,
+  "actualFactoryTwoWaveFixture": {
+    "initialEvidence": 34,
+    "laterEvidence": 50,
+    "resumeExtraFactoryReads": 0
+  },
+  "exactPhysicalPageFactoryFixturePassed": true,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "scientificApproval": false,
+  "log": "tmp/pytest-dr249-full.log",
+  "boundary": "Offline factory,incremental/resume,source/text/locator integrity and legacy failure checks; no new provider-backed result or content acceptance."
+}

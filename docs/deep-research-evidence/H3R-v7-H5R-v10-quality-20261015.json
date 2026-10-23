@@ -1,0 +1,98 @@
+{
+  "date": "2026-10-15",
+  "runs": [
+    {
+      "case": "H3R-v7",
+      "runId": "dr_run_de544117b01c52dbad483d9f2e6665fe",
+      "status": "completed",
+      "outcome": "partial",
+      "errorCode": "",
+      "budget": {
+        "profile": "standard",
+        "modelCalls": 8,
+        "maxModelCalls": 18,
+        "tokens": 32385,
+        "maxTokens": 100000,
+        "externalSearches": 1,
+        "fulltextFetches": 1,
+        "elapsedSeconds": 186.0,
+        "cost": null
+      },
+      "receipt": "tmp/dr-acceptance-receipts/H3R-v7.json",
+      "raw": "tmp/dr-acceptance-receipts/H3R-v7.payload.json",
+      "independentHoldoutEligible": false,
+      "sourceCommit": "17b7624",
+      "promptVersion": "dr-v2.20261015.87",
+      "materialSnapshot": {
+        "materialRefs": [],
+        "focusPaperIds": [],
+        "sourcePolicy": {
+          "mode": "academic_external"
+        },
+        "materialVersions": [],
+        "contextMaterials": [],
+        "snapshotHash": "58642f263c93559052b8f95954431b85c0bfbb46e79ac93b5751b1cdcdcee4e7"
+      },
+      "review": {
+        "accepted": false,
+        "opacityDirection": "corrected to 不透明度 in published text",
+        "publishedMechanism": "Still calls sampling differentiable without explicitly separating the discrete index and coupled opacity/probability path.",
+        "repair": "Saved revision explains the discrete step and opacity coupling more clearly, but was not published.",
+        "repairVerification": {
+          "finishReason": "length",
+          "returnedContent": "empty",
+          "outputTokens": 8192,
+          "state": "verification_invalid_response"
+        },
+        "scores": {
+          "目标回应": 3,
+          "证据支持": 3,
+          "条件完整": 3,
+          "综合价值": 3,
+          "可执行性": null,
+          "可读性": 4
+        },
+        "scoreBoundary": "Human source/content review of the actual published partial answer; execution is not applicable."
+      }
+    },
+    {
+      "case": "H5R-v10",
+      "runId": "dr_run_2acdbd323067596b883f0b82517800d6",
+      "status": "failed",
+      "outcome": "none",
+      "errorCode": "budget_exhausted",
+      "budget": {
+        "profile": "standard",
+        "modelCalls": 4,
+        "maxModelCalls": 18,
+        "tokens": 14669,
+        "maxTokens": 100000,
+        "externalSearches": 0,
+        "fulltextFetches": 0,
+        "elapsedSeconds": 55.0,
+        "cost": null
+      },
+      "receipt": "tmp/dr-acceptance-receipts/H5R-v10.json",
+      "raw": "tmp/dr-acceptance-receipts/H5R-v10.payload.json",
+      "independentHoldoutEligible": false,
+      "sourceCommit": "17b7624",
+      "promptVersion": "dr-v2.20261015.87",
+      "review": {
+        "accepted": false,
+        "publishedAnswer": false,
+        "failure": "Draft exists; verifier fixed input exceeds 24KB before any verifier model request.",
+        "draftIssues": [
+          "Optimizing opacity is incorrectly glossed as monotonically lowering transparency.",
+          "New enhancement initialization is not concretely specified by a proposed checkpoint filename.",
+          "Claims that the paper does not provide view counts/splits overstate what the acquired passages establish."
+        ],
+        "qualityScores": null,
+        "scoreBoundary": "No published answer; draft observations are not an accepted final result."
+      }
+    }
+  ],
+  "knownSettledModelCalls": 12,
+  "knownSettledTokens": 47054,
+  "cost": null,
+  "boundary": "Each submitted once and now terminal; old records untouched. Development cases have no independent holdout credit."
+}

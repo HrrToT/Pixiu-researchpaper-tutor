@@ -1,0 +1,136 @@
+{
+  "date": "2026-10-18",
+  "case": "H3F-v4",
+  "sourceCommit": "48ec3b29",
+  "promptVersion": "dr-v2.20261018.175",
+  "runId": "dr_run_104965babc505756bb7e7bdbcbfbe9a3",
+  "status": "completed",
+  "machineOutcome": "complete",
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "modelCalls": 12,
+  "settledTokens": 47143,
+  "elapsedSeconds": 118.941,
+  "cost": null,
+  "externalSearches": 1,
+  "fulltextFetches": 1,
+  "actualSynthesisFingerprintMatched": true,
+  "actualSynthesisOptions": {
+    "max_tokens": 16384,
+    "temperature": 0.2,
+    "thinking": {
+      "type": "disabled"
+    },
+    "reasoning_effort": "none",
+    "response_format": {
+      "type": "json_object"
+    }
+  },
+  "scores": {
+    "goalResponse": 3,
+    "evidenceSupport": 4,
+    "conditions": 4,
+    "synthesisValue": 3,
+    "executability": null,
+    "readability": 3
+  },
+  "findings": [
+    "Actual audience policy3 rebuilds from each own original source and frozen human point, omitting old draft prose/conditions. Text changes; first-point chronology and position/rotation explanation improve.",
+    "New target/source field audit bindings work; no target-scope copying failure occurs. Literal excerpts still work when exactly bound. Original paper text is unchanged.",
+    "The rebuilt why point adds an understandable single-objective tradeoff but retains original reported kind as required. Independent verification rejects the unquoted causal clauses, and one bounded repair narrows them to the directly reported loss/λ1 balance.",
+    "Final facts are supported, but why becomes a generic simultaneous-control statement with an unexplained loss-function/parameter term. Novice readability and explanation remain below the frozen4threshold despite machine complete.",
+    "Next work must distinguish supported qualitative source-derived reasoning from author-reported facts without bypassing numerical guards or expanding sources. Do not simply pass the rejected reported causal guarantee.",
+    "One actual discovery and fixed-v1 fulltext acquisition, twelve settled model calls. No independent credit or historical score upgrade."
+  ],
+  "audienceRewriteActuallyChangedText": true,
+  "actualTargetAndSourceFieldBindings": true,
+  "report": "本回答引用：全文片段。\n\n## 核心判断\n\n- 4DGC先用第一帧训练出初始高斯。对后续帧，用一个紧凑的多分辨率运动网格估计每个高斯从前一帧到当前帧的刚性运动，从而变换高斯位置和旋转，减少帧间冗余。但仅靠运动估计不够，尤其对新出现物体或细微运动，所以稀疏地添加补偿高斯来增强这些区域的表示精度。 [1](#research-evidence-ev_31687a563a5ee93e15e596ad4dce77707adf2c0b81888749496b8208a63fc79e) [2](#research-evidence-ev_38265021fd3795dd7c09968857a5fc08e8c4efaf5c2d17dfbeaff881675dc8cf) [3](#research-evidence-ev_b789a7c0dee48fb0fe1a51739c9b7e0c0cb86a6b14531117bf149e73f1193155) [4](#research-evidence-ev_4787bb285c2a91b02c8940d7a44c1fc654abb5ad3790332f75da6683dd12604e) [5](#research-evidence-ev_976d0acc219092da20d5a393b96b528a7bbba6ae850aedc1ecb1e318a26b5cd2) [6](#research-evidence-ev_4f14c62ba7dc14b7458973b6427c1e642bb90d88444099324d49a55cd3cc190d) [7](#research-evidence-ev_3d8e896c211b193f904c165b1bc5c23f0c35d79699f09136338780c78cf1f12e)\n- 训练时把码率和失真都放进损失函数，用参数λ1平衡二者，从而同时控制模型大小和重建质量。 [8](#research-evidence-ev_0d56c2481a75c0ab3ca22e9768c6fc7957b42ce6722655b2180d934c811aa0f5) [9](#research-evidence-ev_b30b47a7f4d47439f7bb6d0e575d8cb82255a831f45ad33cb696d8e3f374c201)\n\n论文事实已按所列原文核对。\n\n<details>\n<summary>原文依据</summary>\n\n**[1] 4DGC: Rate-Aware 4D Gaussian Compression for Efficient Streamable Free-Viewpoint Video** · 第 2 页 · 全文片段\n\n> For each subsequent frame, 4DGC uti-\n> lizes a compact multi-resolution motion grid to estimate the\n> rigid motion of each Gaussian from the previous frame to\n> the current one.\n\n**[2] 4DGC: Rate-Aware 4D Gaussian Compression for Efficient Streamable Free-Viewpoint Video** · 第 5 页 · 全文片段\n\n> Although motion estimation\n> effectively captures the dynamics of previously observed\n> objects within a scene, we found that relying solely on mo-\n> tion estimation is insufficient for achieving high-quality de-\n> tail, particularly in cases involving newly emerging objects\n> and subtle motion transformations.\n\n**[3] 4DGC: Rate-Aware 4D Gaussian Compression for Efficient Streamable Free-Viewpoint Video** · 第 2 页 · 全文片段\n\n> Additionally, compensated Gaussians are\n> sparsely added to account for newly observed regions or ob-\n> jects, further enhancing the accuracy of the representation.\n\n**[4] 4DGC: Rate-Aware 4D Gaussian Compression for Efficient Streamable Free-Viewpoint Video** · 第 5 页 · 全文片段\n\n> For the\n> first type, we apply gradient thresholding, cloning the Gaus-\n> sian primitives at locations where the gradient exceeds a\n> predefined threshold τgas∆Gg\n> t, ensuring accurate repre-\n> sentation of newly observed elements.\n\n**[5] 4DGC: Rate-Aware 4D Gaussian Compression for Efficient Streamable Free-Viewpoint Video** · 第 5 页 · 全文片段\n\n> For the second type,\n> involving larger Gaussians impacted by rapid transforma-\n> tions, we clone two additional Gaussian primitives from the\n> original Gaussian when its motion parameters exceed speci-\n> fied thresholds: τµfor translation |∆µt|andτRfor rotation\n> |∆Rt|.\n\n**[6] 4DGC: Rate-Aware 4D Gaussian Compression for Efficient Streamable Free-Viewpoint Video** · 第 6 页 · 全文片段\n\n> Leveraging the trained motion grid Mtfrom Stage 1, we\n> transform Gaussian primitives from the previous frame to\n> the current frame while preserving fixed attributes like posi-\n> tion, rotation, and scale.\n\n**[7] 4DGC: Rate-Aware 4D Gaussian Compression for Efficient Streamable Free-Viewpoint Video** · 第 6 页 · 全文片段\n\n> To enhance representation fidelity,\n> we augment these transformed Gaussians with compensated\n> Gaussians ∆Gt.\n\n**[8] 4DGC: Rate-Aware 4D Gaussian Compression for Efficient Streamable Free-Viewpoint Video** · 第 2 页 · 全文片段\n\n> Our\n> key idea is to explicitly model motion between adjacent\n> frames, estimate the bitrate of the 4D Gaussian represen-\n> tation during training, and incorporate rate and distortion\n> terms into the loss function to enable end-to-end optimiza-\n> tion.\n\n**[9] 4DGC: Rate-Aware 4D Gaussian Compression for Efficient Streamable Free-Viewpoint Video** · 第 6 页 · 全文片段\n\n> The parameter λ1balances\n> the trade-off between rate and distortion, thus controlling\n> model size and reconstruction quality.\n\n</details>",
+  "draft": {
+    "sections": [
+      {
+        "title": "核心判断",
+        "claimIds": [
+          "c1",
+          "c2"
+        ]
+      }
+    ],
+    "claims": [
+      {
+        "claimId": "c1",
+        "text": "4DGC先用第一帧训练出初始高斯。对后续帧，用一个紧凑的多分辨率运动网格估计每个高斯从前一帧到当前帧的刚性运动，从而变换高斯位置和旋转，减少帧间冗余。但仅靠运动估计不够，尤其对新出现物体或细微运动，所以稀疏地添加补偿高斯来增强这些区域的表示精度。",
+        "kind": "reported",
+        "evidenceRefs": [
+          "ev_31687a563a5ee93e15e596ad4dce77707adf2c0b81888749496b8208a63fc79e",
+          "ev_38265021fd3795dd7c09968857a5fc08e8c4efaf5c2d17dfbeaff881675dc8cf",
+          "ev_b789a7c0dee48fb0fe1a51739c9b7e0c0cb86a6b14531117bf149e73f1193155",
+          "ev_4787bb285c2a91b02c8940d7a44c1fc654abb5ad3790332f75da6683dd12604e",
+          "ev_976d0acc219092da20d5a393b96b528a7bbba6ae850aedc1ecb1e318a26b5cd2",
+          "ev_4f14c62ba7dc14b7458973b6427c1e642bb90d88444099324d49a55cd3cc190d",
+          "ev_3d8e896c211b193f904c165b1bc5c23f0c35d79699f09136338780c78cf1f12e"
+        ],
+        "conditions": {},
+        "obligationIds": [
+          "ob_1"
+        ],
+        "detailLevel": "fulltext",
+        "tableBindings": []
+      },
+      {
+        "claimId": "c2",
+        "text": "训练时把码率和失真都放进损失函数，因为只追求画质会忽略存储大小，只追求压缩会损失细节。参数λ1平衡码率和失真，控制模型大小和重建质量，实现端到端优化。",
+        "kind": "reported",
+        "evidenceRefs": [
+          "ev_0d56c2481a75c0ab3ca22e9768c6fc7957b42ce6722655b2180d934c811aa0f5",
+          "ev_b30b47a7f4d47439f7bb6d0e575d8cb82255a831f45ad33cb696d8e3f374c201"
+        ],
+        "conditions": {},
+        "obligationIds": [
+          "ob_2"
+        ],
+        "detailLevel": "fulltext",
+        "tableBindings": []
+      }
+    ]
+  },
+  "repairChecks": {
+    "accepted": [
+      {
+        "claimId": "c2",
+        "kind": "reported",
+        "text": "训练时把码率和失真都放进损失函数，用参数λ1平衡二者，从而同时控制模型大小和重建质量。",
+        "evidenceRefs": [
+          "ev_0d56c2481a75c0ab3ca22e9768c6fc7957b42ce6722655b2180d934c811aa0f5",
+          "ev_b30b47a7f4d47439f7bb6d0e575d8cb82255a831f45ad33cb696d8e3f374c201"
+        ],
+        "conditions": {},
+        "detailLevel": "fulltext",
+        "tableBindings": [],
+        "obligationIds": [
+          "ob_2"
+        ],
+        "verification": "semantic_passed"
+      }
+    ],
+    "rejected": []
+  },
+  "rawFiles": [
+    {
+      "path": "tmp/dr-acceptance-receipts/H3F-v4.json",
+      "sha256": "37853366517097e62279d2a5f1d24b18a7dcdf85e2d8654e14121faea41be3c5"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/H3F-v4.payload.json",
+      "sha256": "3cfa17e329873239d052b6d80bd6f859392a2150f1521af973b585a5c9021dec"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/H3F-v4.calls.json",
+      "sha256": "fa96592c8496f8069e50ddf080d8e07cec4b383f82cbebe683125b7e7fc34e10"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/H3F-v4.result.json",
+      "sha256": "95040ab0627974eb8b092a54de2863788f91a591e448eb02077dede9d98f264b"
+    }
+  ],
+  "boundary": "One fixed retired development case, no automatic retry or independent credit. Original first-five scores and historical outcomes remain unchanged."
+}

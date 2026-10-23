@@ -1,0 +1,178 @@
+{
+  "date": "2026-10-20",
+  "sourceCommit": "87907cb3",
+  "promptVersion": "dr-v2.20261020.203",
+  "case": "E1-v5",
+  "split": "development",
+  "runId": "dr_run_4ef5f5a0fa4a5f569588e97642db204c",
+  "frozenCaseCommit": "a023b204",
+  "questionAndCriteriaUnchanged": true,
+  "caseDigest": "bd1d0ce86c956a1f44f427a1d7b2cd108b1f5ce84f4a2b5c4218ae6591b5650d",
+  "status": "completed",
+  "outcome": "partial",
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "settledModelCalls": 12,
+  "settledTokens": 56648,
+  "newUnknowns": 0,
+  "elapsedSeconds": 107.821,
+  "serverContracts": {
+    "experimentRepair": 3,
+    "experimentReview": 1
+  },
+  "acceptedRoles": [
+    "limits"
+  ],
+  "rejectedClaims": [
+    {
+      "claimId": "c5",
+      "reason": "incomplete_budget_spec",
+      "detail": "recovery: matched 模式要求所有组的预算值相等"
+    },
+    {
+      "claimId": "c6",
+      "reason": "incomplete_experiment_workflow",
+      "detail": "workflow.states.operation_rule"
+    },
+    {
+      "claimId": "c2",
+      "reason": "semantic_unresolved",
+      "detail": "干预水平不完整：treatment 中缺少 split_prune_interval 参数值（仅列出名称，未给出数值），且未指定新增高斯的初始化方式（如位置、尺度、旋转、不透明度、球谐系数的初始值或生成规则），无法复现执行。"
+    },
+    {
+      "claimId": "c3",
+      "reason": "semantic_unresolved",
+      "detail": "共同初始化不完整：仅指定了 NTC 的训练超参数，但未定义 3DGs 的初始状态（位置、尺度、旋转、不透明度、球谐系数的数量、形状和初始值/分布），也未说明如何从第0帧训练视图获取这些初始值；渲染设置中缺少具体分辨率数值（仅写 'dataset_native'，未给出实际尺寸）。"
+    },
+    {
+      "claimId": "c4",
+      "reason": "semantic_unresolved",
+      "detail": "数据可用性未证实：证据E1/E2仅提及flame salmon场景的消融研究，未明确N3DV数据集包含该场景或提供场景列表；E3仅说明N3DV数据集指标平均，未列出场景。因此无法确认所选场景属于N3DV数据集。"
+    },
+    {
+      "claimId": "c7",
+      "reason": "semantic_unresolved",
+      "detail": "存储指标未指定包含的文件或模型表示及记账边界；训练时间指标未明确分辨率的具体数值（仅写“数据集原生”），且未说明预热帧的具体处理方式。"
+    },
+    {
+      "claimId": "c8",
+      "reason": "semantic_unresolved",
+      "detail": "实验方案缺少可核对的具体配置：effects, uncertainty, decision_rule"
+    },
+    {
+      "claimId": "c1",
+      "reason": "inconsistent_hypothesis_analysis",
+      "detail": "analysis_claim"
+    }
+  ],
+  "actualRepair": {
+    "sent": false,
+    "status": "skipped_budget",
+    "limit": {
+      "kind": "repairEvidenceBytes",
+      "limit": 23599,
+      "used": 24249
+    },
+    "excessBytes": 650,
+    "boundary": "All required originals/configurations/evidence and computed feedback did not fit the actual remaining allowance; no edit call or hidden retry."
+  },
+  "observedScienceVerdicts": [
+    {
+      "claimId": "c1",
+      "status": "passed",
+      "reason": "假设明确、可执行且与描述性探索目标一致；链接的分析（c8）定义了配对差值、描述性不确定性和决策规则；PSNR、存储和时间的方向与指标定义（c7）一致；未承诺显著性检验或改善。"
+    },
+    {
+      "claimId": "c2",
+      "status": "failed",
+      "reason": "干预水平不完整：treatment 中缺少 split_prune_interval 参数值（仅列出名称，未给出数值），且未指定新增高斯的初始化方式（如位置、尺度、旋转、不透明度、球谐系数的初始值或生成规则），无法复现执行。"
+    },
+    {
+      "claimId": "c3",
+      "status": "failed",
+      "reason": "共同初始化不完整：仅指定了 NTC 的训练超参数，但未定义 3DGs 的初始状态（位置、尺度、旋转、不透明度、球谐系数的数量、形状和初始值/分布），也未说明如何从第0帧训练视图获取这些初始值；渲染设置中缺少具体分辨率数值（仅写 'dataset_native'，未给出实际尺寸）。"
+    },
+    {
+      "claimId": "c8",
+      "status": "passed",
+      "reason": "分析方案明确：对每个指标计算配对差值（B组 - A组），报告均值和范围，使用描述性边界，不进行显著性检验；决策为描述性比较，与假设 c1 的探索目的和用户要求一致。"
+    },
+    {
+      "claimId": "c9",
+      "status": "passed",
+      "reason": "限制声明准确反映了方案未执行、不保证改善、帧窗口内容未验证、设置为拟议选择以及单场景描述性范围，符合要求。"
+    }
+  ],
+  "analysisAuditFormatDiagnostic": {
+    "actualModelPassed": true,
+    "actualDirectFieldBindings": {
+      "effects": {
+        "claimId": "c8",
+        "path": [
+          "executionSpec",
+          "effects"
+        ],
+        "value": {
+          "psnr_diff": "B_psnr - A_psnr",
+          "storage_diff": "B_storage - A_storage",
+          "time_diff": "B_time - A_time"
+        }
+      },
+      "uncertainty": {
+        "claimId": "c8",
+        "path": [
+          "executionSpec",
+          "uncertainty"
+        ],
+        "value": {
+          "mode": "descriptive",
+          "boundary": "report mean and range of paired differences"
+        }
+      },
+      "decision_rule": {
+        "claimId": "c8",
+        "path": [
+          "executionSpec",
+          "decision"
+        ],
+        "value": {
+          "mode": "descriptive",
+          "boundary": "compare mean differences qualitatively"
+        }
+      }
+    },
+    "actualLocalRejectedSlots": [
+      "effects",
+      "uncertainty",
+      "decision_rule"
+    ],
+    "controlledSingleFieldsWrapperRejectedSlots": [],
+    "productionChanged": false,
+    "boundary": "Same exact values and existing validator, only a fields:[entry] wrapper in a local copy. This identifies a response-format interoperability issue, not scientific acceptance of the full experiment; no stored verdict was upgraded."
+  },
+  "findings": [
+    "Only limits published. This is not a usable executable experiment or a content pass.",
+    "New prospective review actually runs: model passes the prospective hypothesis and descriptive analysis; source membership, intervention, initialization and measurement defects still fail. Single case, not proof all false positives are fixed.",
+    "Analysis then fails local audit because model emitted exact {claimId,path,value} entries without fields wrapper. Linked hypothesis correctly loses its accepted analysis dependency. Next fix must preserve exact path/value/role checks and version old response semantics.",
+    "Mandatory repair misses the live capacity by650bytes. Next compress repeated nested configuration structure losslessly, keep required evidence/checks and unchanged budget; do not relabel a preflight as an executed edit.",
+    "Scene-to-dataset support, full3DGS/NTC initialization, real stage2 operations, timing/storage and units still require actual content fixes. Original independent0/5 unchanged."
+  ],
+  "rawFiles": [
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v5.json",
+      "sha256": "40e925f5114b22c894d19278ff21fe6fc5e24376e66c8f9b30fbaf09b2e35adb"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v5.payload.json",
+      "sha256": "194d1c8275102df15d01ed18477bcd3db568149f68664e7287500f9505739260"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v5.calls.json",
+      "sha256": "bbaabe821ee859cb5b27c94ec23dde2610ecf8b5b790d1e85a4c8fe29a3bb2b1"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v5.result.json",
+      "sha256": "5d144acc181585445432c402725b469792455b7ad61925dc35befc422ac3bfbd"
+    }
+  ]
+}

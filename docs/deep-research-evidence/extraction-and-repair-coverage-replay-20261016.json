@@ -1,0 +1,56 @@
+{
+  "date": "2026-10-16",
+  "promptVersion": "dr-v2.20261016.105",
+  "inputs": {
+    "H5R-v16": "c50266fe9c9adf8f721e84cdce42e708855d82179ba173f8d5a568575778f92a",
+    "H3R-v12": "372e00e81c97a8c4a55e88fe651870bd63f92a08ee0d36f0a2c7b4c22f18666f"
+  },
+  "repair": {
+    "previousRequiredInputBytes": 24397,
+    "currentPromptBytes": 22892,
+    "counterfactualVersionThreePromptBytes": 23199,
+    "targets": [
+      "c4",
+      "c6"
+    ],
+    "mandatoryQuotesAndContextsKept": true,
+    "independentScientificPolicyUnchanged": true
+  },
+  "freshCreation": {
+    "counterfactualNewVersionRejectsSavedIncompleteLayout": true,
+    "legacyVersionTwoUnchanged": true,
+    "reason": "workflow.creation.fresh_layout_required"
+  },
+  "extraction": {
+    "firstBatch": [
+      {
+        "page": 8,
+        "offset": 2007,
+        "passageId": "X1"
+      },
+      {
+        "page": 5,
+        "offset": 2050,
+        "passageId": "X2"
+      },
+      {
+        "page": 2,
+        "offset": 4192,
+        "passageId": "X3"
+      }
+    ],
+    "motivationAndTrainingPresent": true,
+    "threePerPassageNotPdf": true,
+    "emptyFixtureExtractsNoClaim": true
+  },
+  "realModelCalls": 0,
+  "networkRequests": 0,
+  "boundary": "Offline input and rejection proof only; no scientific/content pass and no historical run mutation.",
+  "sourceCommit": "ef9f080",
+  "tests": {
+    "passed": 1668,
+    "warnings": 1,
+    "seconds": 56.39,
+    "log": "tmp/pytest-dr105-full-final.log"
+  }
+}

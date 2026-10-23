@@ -1,0 +1,46 @@
+{
+  "date": "2026-10-20",
+  "sourceCommit": "d3f454a4",
+  "promptVersion": "dr-v2.20261020.196",
+  "fullOffline": {
+    "passed": 3142,
+    "warnings": 1,
+    "seconds": 189.26,
+    "log": "tmp/pytest-dr196-full.log",
+    "sha256": "92a813ee692caaf0d077600cff3aca718c98799182502dd24f9f99010eac283e",
+    "sourceCommit": "d3f454a4"
+  },
+  "focusedPassed": 48,
+  "newTests": 20,
+  "focusedOverlap": true,
+  "providerCalls": 0,
+  "serverOwnedImmutableContract": "experimentRepairContractVersion=1",
+  "legacyRequestFingerprintsMatched": 22,
+  "legacyProofs": [
+    "shared-experiment-repair-legacy-replay-20261020.json",
+    "shared-experiment-repair-h2f-v9-replay-20261020.json",
+    "shared-experiment-repair-h5f-v6-replay-20261020.json"
+  ],
+  "capacityProof": "shared-experiment-repair-capacity-20261020.json",
+  "oldInputSizes": [
+    19261,
+    20756,
+    20564
+  ],
+  "newInputSizes": [
+    14719,
+    17775,
+    16645
+  ],
+  "unchangedCaseInputCap": 19252,
+  "absoluteInputCap": 24000,
+  "maximumBatches": 3,
+  "exactSourceChecksConfigsAndPermissionsPreserved": true,
+  "independentReviewUnchanged": true,
+  "runtimeProof": "runtime-load-dr196-shared-experiment-repair-20261020.json",
+  "ledgerRows": 4732,
+  "unknownPausedPreserved": 11,
+  "newlyDiagnosedOpenIssue": "Original proposal/hypothesis roles without evidenceRefs cannot add acquired same-task source candidates under the legacy factual-only expansion rule. Two archived repair batches therefore still contain zero evidence rows. Capacity is fixed, but source-faithful repair is not yet proven or fully enabled.",
+  "nextSourceScopeBoundary": "Introduce a separately versioned candidate-selection policy for experimental proposals, bounded by frozen task materials/required sources, fulltext literal checks and exact publication/version identity. No automatic citations, support approval, source fetch or change to old unknown requests.",
+  "boundary": "Offline capacity, preservation, identity/role/restore checks and runtime load only. No new model call, scientific/content acceptance, independent-case credit, provider latency improvement or unknown settlement."
+}

@@ -1,0 +1,607 @@
+{
+  "date": "2026-10-22",
+  "sourceCommit": "44c04d71",
+  "promptVersion": "dr-v2.20261022.236",
+  "case": "E1-v29",
+  "split": "development",
+  "runId": "dr_run_03b9a8b880ce5238a3a10cb526218d07",
+  "questionUnchanged": true,
+  "frozenCaseCommit": "a023b204",
+  "status": "completed",
+  "outcome": "inconclusive",
+  "reportedPayloadElapsedSeconds": 145.024,
+  "observedElapsedSeconds": 145.0,
+  "settledModelCalls": 14,
+  "settledTokens": 72143,
+  "unsettledModelCalls": 0,
+  "independentCredit": 0,
+  "verificationSummary": {
+    "accepted": 0,
+    "rejected": 9
+  },
+  "generationAllocation": {
+    "version": 1,
+    "planningEvidenceAliases": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9",
+      "E10",
+      "E11",
+      "E12",
+      "E13",
+      "E14",
+      "E15"
+    ],
+    "suppliedEvidenceAliases": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9",
+      "E10",
+      "E11",
+      "E12",
+      "E13",
+      "E14",
+      "E15"
+    ],
+    "requiredEvidenceAliases": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9",
+      "E10",
+      "E11",
+      "E12",
+      "E13",
+      "E14",
+      "E15"
+    ],
+    "unverifiedPlanReferences": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9",
+      "E10",
+      "E11",
+      "E12",
+      "E13",
+      "E14",
+      "E15"
+    ],
+    "missingPremiseBundles": [],
+    "rawInputBytes": 32046,
+    "encodedInputBytes": 31777,
+    "maxInputBytes": 32000,
+    "planBasisDigest": "945bf4ffac056c69678a6272da7c49b1900c9b467510f735d7bb53a822dba584",
+    "planReferencesAreEvidenceApproval": false,
+    "planningEvidenceIds": [
+      "ev_15a8e02f885a744622caa594dd331b7481bf66e9039cec2e9de762eab6c72891",
+      "ev_925db5ee5027aed55d6fa83e9fcd88367454dbedc927a217536f139bd847f22d",
+      "ev_5a62ffa4ef91faeab47770ffeb7725d05e16220034d62947882c58e68891ba69",
+      "ev_e34196d11497b3956f133f4f4f9f4670ef36ac774d1a0a60f21f50a99cbc0cd3",
+      "ev_cd0fb52a8f6322f1840a2c415f4ffe76ebd603aa54c4f8b78c84c3bcf5b89c9c",
+      "ev_9428cc150698bc1ebd5f7d4d32f2e8efa1022c319d442c3801b44c2d74cf4bca",
+      "ev_4bbeaea2b1a3fc2176d5010e025e0272c4f315f6a4481858bf4ef14db9594a4f",
+      "ev_bdb024b856972aab854c483acb7dfa600c4918cc401ccfcebcb14da2200b2d38",
+      "ev_111c8b85f4bdb617ec51de3b89943253b60530df4cd0756a2f990508c777d316",
+      "ev_4e477fb8d1a78c7dc59c7f5d472888f378d38f76982076294cc0f8f502e11552",
+      "ev_227270cfa29c740848cfa00c69aaeb240e0556eb361e4f545efcf7e60cf7862a",
+      "ev_daf1c762e9de851cfbbfa34cd1c19cd03533828fbb2428b712f31482f7cde638",
+      "ev_addd7356fe5ce898b68a96e98301c57395890714788c4f86b675ad26181ac3f0",
+      "ev_de81539c12c6c729901acb0a3988a95c6d4e4e20dcd419f57bfc22008a46493f",
+      "ev_83cbce6b5647dc7ef89686cfbb9c3e704741dfb959c1e90b18977fc806be20a7"
+    ],
+    "suppliedEvidenceIds": [
+      "ev_15a8e02f885a744622caa594dd331b7481bf66e9039cec2e9de762eab6c72891",
+      "ev_925db5ee5027aed55d6fa83e9fcd88367454dbedc927a217536f139bd847f22d",
+      "ev_5a62ffa4ef91faeab47770ffeb7725d05e16220034d62947882c58e68891ba69",
+      "ev_e34196d11497b3956f133f4f4f9f4670ef36ac774d1a0a60f21f50a99cbc0cd3",
+      "ev_cd0fb52a8f6322f1840a2c415f4ffe76ebd603aa54c4f8b78c84c3bcf5b89c9c",
+      "ev_9428cc150698bc1ebd5f7d4d32f2e8efa1022c319d442c3801b44c2d74cf4bca",
+      "ev_4bbeaea2b1a3fc2176d5010e025e0272c4f315f6a4481858bf4ef14db9594a4f",
+      "ev_bdb024b856972aab854c483acb7dfa600c4918cc401ccfcebcb14da2200b2d38",
+      "ev_111c8b85f4bdb617ec51de3b89943253b60530df4cd0756a2f990508c777d316",
+      "ev_4e477fb8d1a78c7dc59c7f5d472888f378d38f76982076294cc0f8f502e11552",
+      "ev_227270cfa29c740848cfa00c69aaeb240e0556eb361e4f545efcf7e60cf7862a",
+      "ev_daf1c762e9de851cfbbfa34cd1c19cd03533828fbb2428b712f31482f7cde638",
+      "ev_addd7356fe5ce898b68a96e98301c57395890714788c4f86b675ad26181ac3f0",
+      "ev_de81539c12c6c729901acb0a3988a95c6d4e4e20dcd419f57bfc22008a46493f",
+      "ev_83cbce6b5647dc7ef89686cfbb9c3e704741dfb959c1e90b18977fc806be20a7"
+    ]
+  },
+  "repairStatus": "skipped_budget",
+  "repairAdmission": {
+    "kind": "repairEvidenceBytes",
+    "limit": 15601,
+    "used": 16905
+  },
+  "planEncodingAudit": {
+    "rawBytes": 4351,
+    "wireBytes": 3847,
+    "canonicalBytes": 5086,
+    "preferredSlotBytes": 2500,
+    "rawLimitBytes": 8192,
+    "wireLimitBytes": 4000,
+    "fitsPreferredSlot": false,
+    "scientificApproval": false
+  },
+  "initialRepresentationAudit": [
+    {
+      "phase": "synthesis",
+      "claimId": "c1",
+      "designRole": "hypothesis",
+      "path": "/executionSpec",
+      "kind": "single_role_wrapper",
+      "role": "hypothesis"
+    },
+    {
+      "phase": "synthesis",
+      "claimId": "c2",
+      "designRole": "groups",
+      "path": "/executionSpec",
+      "kind": "single_role_wrapper",
+      "role": "groups"
+    },
+    {
+      "phase": "synthesis",
+      "claimId": "c3",
+      "designRole": "data",
+      "path": "/executionSpec",
+      "kind": "single_role_wrapper",
+      "role": "data"
+    },
+    {
+      "phase": "synthesis",
+      "claimId": "c4",
+      "designRole": "budget",
+      "path": "/executionSpec",
+      "kind": "single_role_wrapper",
+      "role": "budget"
+    },
+    {
+      "phase": "synthesis",
+      "claimId": "c5",
+      "designRole": "controls",
+      "path": "/executionSpec",
+      "kind": "single_role_wrapper",
+      "role": "controls"
+    },
+    {
+      "phase": "synthesis",
+      "claimId": "c6",
+      "designRole": "steps",
+      "path": "/executionSpec",
+      "kind": "single_role_wrapper",
+      "role": "steps"
+    },
+    {
+      "phase": "synthesis",
+      "claimId": "c8",
+      "designRole": "analysis",
+      "path": "/executionSpec",
+      "kind": "single_role_wrapper",
+      "role": "analysis"
+    }
+  ],
+  "repairRepresentationAudit": {},
+  "rejectedClaims": [
+    {
+      "claimId": "c3",
+      "reason": "internal_reference_in_prose"
+    },
+    {
+      "claimId": "c6",
+      "reason": "incomplete_experiment_workflow",
+      "detail": "workflow.states.shape, workflow.creation.unavailable_input, workflow.states.operation_rule"
+    },
+    {
+      "claimId": "c1",
+      "reason": "semantic_unresolved",
+      "detail": "效应键列表未定义具体计算方式，仅引用c8，但c8未提供可执行的描述性统计实现。；c8分析方案未通过审核，无法作为假设的可执行分析基础。；假设声明依赖c3数据方案，但c3被拒绝，导致数据范围不可执行。",
+      "rejectionAudit": {
+        "version": 1,
+        "bindingState": "verified",
+        "findings": [
+          {
+            "kind": "incomplete",
+            "claimId": "c1",
+            "path": [
+              "executionSpec",
+              "effectKeys"
+            ],
+            "reason": "效应键列表未定义具体计算方式，仅引用c8，但c8未提供可执行的描述性统计实现。",
+            "value": [
+              "psnr_diff",
+              "ssim_diff",
+              "storage_diff",
+              "steps_diff",
+              "time_diff"
+            ]
+          },
+          {
+            "kind": "incompatible",
+            "claimId": "c1",
+            "path": [
+              "executionSpec",
+              "analysisClaimId"
+            ],
+            "reason": "c8分析方案未通过审核，无法作为假设的可执行分析基础。",
+            "value": "c8"
+          },
+          {
+            "kind": "incompatible",
+            "claimId": "c1",
+            "path": [
+              "executionSpec",
+              "statement"
+            ],
+            "reason": "假设声明依赖c3数据方案，但c3被拒绝，导致数据范围不可执行。",
+            "value": "在N3DV flame salmon场景帧1-30上，固定第0帧模型、相机划分和第1阶段NTC结果，执行第2阶段自适应新增高斯（处理组）与跳过第2阶段（对照组）相比，重建质量、每帧存储和额外训练开销存在差异，但方向不确定。"
+          }
+        ],
+        "scientificRejectionVerified": false
+      }
+    },
+    {
+      "claimId": "c2",
+      "reason": "semantic_unresolved",
+      "detail": "核验拒绝项没有绑定到实际输入，尚未形成可用判断；保留原始响应。",
+      "rejectionAudit": {
+        "version": 1,
+        "bindingState": "invalid",
+        "errors": [
+          "finding.0.not_an_absent_schema_field",
+          "finding.1.not_an_absent_schema_field",
+          "finding.2.not_an_absent_schema_field",
+          "finding.3.not_an_absent_schema_field"
+        ],
+        "originalReason": "处理组参数（spawn_threshold、split_interval、prune_interval、optimizer_steps）未在证据中提供具体值或算法引用，且对照组跳过第2阶段的操作未定义。",
+        "originalFindings": [
+          {
+            "kind": "missing_field",
+            "claimId": "c2",
+            "path": [
+              "executionSpec",
+              "factors",
+              0,
+              "treatment",
+              "parameters",
+              0,
+              "value"
+            ],
+            "reason": "spawn_threshold的值0.0005未在证据中提供，属于拟议值，但未提供来源或兼容性验证。"
+          },
+          {
+            "kind": "missing_field",
+            "claimId": "c2",
+            "path": [
+              "executionSpec",
+              "factors",
+              0,
+              "treatment",
+              "parameters",
+              1,
+              "value"
+            ],
+            "reason": "split_interval的值10未在证据中提供，属于拟议值，但未提供来源或兼容性验证。"
+          },
+          {
+            "kind": "missing_field",
+            "claimId": "c2",
+            "path": [
+              "executionSpec",
+              "factors",
+              0,
+              "treatment",
+              "parameters",
+              2,
+              "value"
+            ],
+            "reason": "prune_interval的值10未在证据中提供，属于拟议值，但未提供来源或兼容性验证。"
+          },
+          {
+            "kind": "missing_field",
+            "claimId": "c2",
+            "path": [
+              "executionSpec",
+              "factors",
+              0,
+              "treatment",
+              "parameters",
+              3,
+              "value"
+            ],
+            "reason": "optimizer_steps的值50未在证据中提供，属于拟议值，但未提供来源或兼容性验证。"
+          },
+          {
+            "kind": "incomplete",
+            "claimId": "c2",
+            "path": [
+              "executionSpec",
+              "factors",
+              0,
+              "control",
+              "action"
+            ],
+            "reason": "对照组跳过第2阶段的操作未定义具体实现，无法确保与处理组共享相同初始化。",
+            "value": "skip_stage2"
+          }
+        ]
+      },
+      "executionState": "received_invalid"
+    },
+    {
+      "claimId": "c4",
+      "reason": "semantic_unresolved",
+      "detail": "恢复预算仅覆盖第2阶段处理组的额外训练步数，未覆盖第1阶段NTC每帧训练100步的预算，也未覆盖第0帧模型训练1000步的预算。预算方案必须覆盖所有拟合阶段。；第0帧模型训练1000优化器步的预算未在提供的证据中找到支持。证据E4仅说明在时间步0训练3D高斯，未指定步数。；恢复预算未明确第1阶段NTC每帧训练100步的预算，也未明确第2阶段处理组每帧额外50步的预算是否包含第1阶段训练。预算方案必须明确每个阶段的步数上限。",
+      "rejectionAudit": {
+        "version": 1,
+        "bindingState": "verified",
+        "findings": [
+          {
+            "kind": "incomplete",
+            "claimId": "c4",
+            "path": [
+              "executionSpec",
+              "recovery"
+            ],
+            "reason": "恢复预算仅覆盖第2阶段处理组的额外训练步数，未覆盖第1阶段NTC每帧训练100步的预算，也未覆盖第0帧模型训练1000步的预算。预算方案必须覆盖所有拟合阶段。",
+            "value": {
+              "mode": "unmatched",
+              "unit": "optimizer_steps",
+              "groups": {
+                "0": 0,
+                "1": 50
+              },
+              "note": "对照组跳过第2阶段，步数为0；处理组每帧额外50步。整体阶段成本比较允许不匹配预算。"
+            }
+          },
+          {
+            "kind": "unsupported",
+            "claimId": "c4",
+            "path": [
+              "executionSpec",
+              "baseline"
+            ],
+            "reason": "第0帧模型训练1000优化器步的预算未在提供的证据中找到支持。证据E4仅说明在时间步0训练3D高斯，未指定步数。",
+            "value": {
+              "mode": "train",
+              "unit": "optimizer_steps",
+              "maxBudget": 1000,
+              "stoppingRule": "stop after 1000 steps"
+            }
+          },
+          {
+            "kind": "incomplete",
+            "claimId": "c4",
+            "path": [
+              "executionSpec",
+              "recovery"
+            ],
+            "reason": "恢复预算未明确第1阶段NTC每帧训练100步的预算，也未明确第2阶段处理组每帧额外50步的预算是否包含第1阶段训练。预算方案必须明确每个阶段的步数上限。",
+            "value": {
+              "mode": "unmatched",
+              "unit": "optimizer_steps",
+              "groups": {
+                "0": 0,
+                "1": 50
+              },
+              "note": "对照组跳过第2阶段，步数为0；处理组每帧额外50步。整体阶段成本比较允许不匹配预算。"
+            }
+          }
+        ],
+        "scientificRejectionVerified": false
+      }
+    },
+    {
+      "claimId": "c5",
+      "reason": "semantic_unresolved",
+      "detail": "核验拒绝项没有绑定到实际输入，尚未形成可用判断；保留原始响应。",
+      "rejectionAudit": {
+        "version": 1,
+        "bindingState": "invalid",
+        "errors": [
+          "finding.0.missing_binding",
+          "finding.1.not_an_absent_schema_field",
+          "finding.2.not_an_absent_schema_field",
+          "finding.3.not_an_absent_schema_field"
+        ],
+        "originalReason": "控制组设计不完整：初始化工作流引用被拒绝的c6，渲染设置缺少具体相机划分和分辨率来源，优化器设置未指定学习率调度，其他干预未明确禁用量化/占用/压缩。",
+        "originalFindings": [
+          {
+            "kind": "incomplete",
+            "claimId": "c6",
+            "path": [
+              "executionSpec",
+              "initialization",
+              "workflowClaimId"
+            ],
+            "reason": "引用的初始化工作流c6已被拒绝（incomplete_experiment_workflow），其状态定义和创建规则不完整，无法作为可执行的初始化来源。",
+            "value": "c6"
+          },
+          {
+            "kind": "missing_field",
+            "claimId": "c5",
+            "path": [
+              "executionSpec",
+              "rendering",
+              "parameters",
+              2,
+              "value"
+            ],
+            "reason": "渲染设置中相机划分仅声明为'evaluation'，但未提供具体的相机ID列表或划分规则，无法确定评估相机集合。"
+          },
+          {
+            "kind": "missing_field",
+            "claimId": "c5",
+            "path": [
+              "executionSpec",
+              "optimizer",
+              "parameters",
+              4
+            ],
+            "reason": "优化器设置缺少学习率调度或衰减规则，无法确定整个训练过程中的学习率变化。"
+          },
+          {
+            "kind": "missing_field",
+            "claimId": "c5",
+            "path": [
+              "executionSpec",
+              "otherInterventions"
+            ],
+            "reason": "其他干预未明确禁用量化、占用和压缩等可能影响存储和速度的干预，无法保证两组在这些方面一致。"
+          }
+        ]
+      },
+      "executionState": "received_invalid"
+    },
+    {
+      "claimId": "c7",
+      "reason": "semantic_unresolved",
+      "detail": "核验拒绝项没有绑定到实际输入，尚未形成可用判断；保留原始响应。",
+      "rejectionAudit": {
+        "version": 1,
+        "bindingState": "invalid",
+        "errors": [
+          "finding.0.missing_binding",
+          "finding.1.missing_binding",
+          "finding.2.missing_binding"
+        ],
+        "originalReason": "指标方案不完整：质量指标未指定聚合级别，速度指标未指定预热帧数，存储指标未指定序列化格式。",
+        "originalFindings": [
+          {
+            "kind": "incomplete",
+            "claimId": "c7",
+            "path": [
+              "executionSpec",
+              "quality"
+            ],
+            "reason": "质量指标PSNR和SSIM未指定聚合级别（例如逐帧平均、逐像素平均等）。",
+            "value": "PSNR（越高越好）和SSIM（越高越好）在评估相机上逐帧计算后取平均"
+          },
+          {
+            "kind": "incomplete",
+            "claimId": "c7",
+            "path": [
+              "executionSpec",
+              "speed"
+            ],
+            "reason": "速度指标未指定预热帧数，仅说明预热2帧，但未明确预热帧是否包含在计时内。",
+            "value": "速度为第2阶段每帧墙钟秒数（RTX 3090，640x360，预热2帧，CUDA同步，3次重复）"
+          },
+          {
+            "kind": "incomplete",
+            "claimId": "c7",
+            "path": [
+              "executionSpec",
+              "storage"
+            ],
+            "reason": "存储指标未指定序列化格式（例如二进制格式、JSON等），也未明确是否包含元数据。",
+            "value": "存储为每帧NTC权重+新增高斯（处理组）或仅NTC权重（对照组）的序列化字节数"
+          }
+        ]
+      },
+      "executionState": "received_invalid"
+    },
+    {
+      "claimId": "c8",
+      "reason": "semantic_unresolved",
+      "detail": "核验拒绝项没有绑定到实际输入，尚未形成可用判断；保留原始响应。",
+      "rejectionAudit": {
+        "version": 1,
+        "bindingState": "invalid",
+        "errors": [
+          "finding.0.not_an_absent_schema_field",
+          "finding.1.not_an_absent_schema_field"
+        ],
+        "originalReason": "分析方案缺少对配对差异的明确聚合方式（如逐帧差异的均值/中位数/范围），且未指定评估相机上的逐帧计算与配对差异计算之间的具体关系，导致无法执行描述性统计。",
+        "originalFindings": [
+          {
+            "kind": "missing_field",
+            "claimId": "c8",
+            "path": [
+              "executionSpec",
+              "effects",
+              "psnr_diff"
+            ],
+            "reason": "未定义PSNR差异的具体计算方式，例如是否在评估相机上逐帧计算PSNR后再取平均，还是先取平均再计算差异。"
+          },
+          {
+            "kind": "missing_field",
+            "claimId": "c8",
+            "path": [
+              "executionSpec",
+              "uncertainty",
+              "aggregation"
+            ],
+            "reason": "未指定描述性统计的聚合方式，例如是否对配对差异进行逐帧计算后取均值、中位数、最小值和最大值。"
+          }
+        ]
+      },
+      "executionState": "received_invalid"
+    },
+    {
+      "claimId": "c9",
+      "reason": "semantic_unresolved",
+      "detail": "未具体说明相机ID和文件名缺失如何影响实验执行，也未列出所有拟议设置（如第2阶段生成阈值、分裂/剪枝计划、优化器超参数）的验证方法。",
+      "rejectionAudit": {
+        "version": 1,
+        "bindingState": "verified",
+        "findings": [
+          {
+            "kind": "incomplete",
+            "claimId": "c9",
+            "path": [
+              "conditions",
+              "context"
+            ],
+            "value": "所有拟议设置需在实现时验证兼容性。结论仅适用于所选场景和帧窗口，不推广到其他场景或数据集。不承诺改善或新颖性。",
+            "reason": "未具体说明相机ID和文件名缺失如何影响实验执行，也未列出所有拟议设置（如第2阶段生成阈值、分裂/剪枝计划、优化器超参数）的验证方法。"
+          }
+        ],
+        "scientificRejectionVerified": false
+      }
+    }
+  ],
+  "acceptedClaims": [],
+  "rawFiles": [
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v29.json",
+      "sha256": "5d169f18f199ebdb7a1e7a64af55527c32ccfba96eebfe86193ab1140089fe24"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v29.payload.json",
+      "sha256": "a016509c60edfee40aad384b5fe5ba25d0f04bda95bc34db2fd19aa0e41aad22"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v29.calls.json",
+      "sha256": "5d82bbea77c40bad56280b7660e70eb222ef2c50ccc9d3555b0fe4a882cbd367"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v29.result.json",
+      "sha256": "c21c1e25b611c249eee13409313ec6ccc9ab38797d1cd184200b500d315ed546"
+    }
+  ],
+  "boundary": "One fixed development submission, no automatic retry. Representation normalization does not approve science or upgrade historical/independent results."
+}

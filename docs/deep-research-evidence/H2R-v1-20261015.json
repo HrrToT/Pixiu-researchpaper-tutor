@@ -1,0 +1,65 @@
+{
+  "date": "2026-10-15",
+  "caseId": "H2R",
+  "attempt": 1,
+  "runId": "dr_run_3978892825bc5ddcb8b55d079157ff9f",
+  "promptVersion": "dr-v2.20261015.69",
+  "machineStatus": "completed",
+  "machineOutcome": "partial",
+  "qualityAccepted": false,
+  "reviewer": "Primary Codex; saved final report and original PDF source review, not model self-scoring.",
+  "budget": {
+    "profile": "standard",
+    "modelCalls": 10,
+    "maxModelCalls": 18,
+    "tokens": 50892,
+    "maxTokens": 100000,
+    "externalSearches": 0,
+    "fulltextFetches": 0,
+    "elapsedSeconds": 293.0,
+    "cost": null
+  },
+  "costBoundary": "Settled provider tokens; monetary cost not supplied.",
+  "rawResultPath": "tmp/dr-acceptance-receipts/H2R-v1.result.json",
+  "rawSha256": "3030fbb311ff0fd715bb8ef821ef3afa4f808cc2788f246ffe644c1d49640c4f",
+  "rawPayloadPath": "tmp/dr-acceptance-receipts/H2R-v1.payload.json",
+  "rawCallsPath": "tmp/dr-acceptance-receipts/H2R-v1.calls.json",
+  "independence": "First execution reviewed against frozen criteria before diagnostic reuse. No H2-specific engine tuning preceded this run.",
+  "scores": {
+    "目标回应": 2,
+    "证据支持": 4,
+    "条件完整": 3,
+    "综合价值": 2,
+    "可执行性": null,
+    "可读性": 3
+  },
+  "criteria": [
+    {
+      "requirement": "Actual passages and separate citations for both papers",
+      "met": true
+    },
+    {
+      "requirement": "CAT context/hyperprior, correlations, entropy coding and rate-distortion objective",
+      "met": "partial"
+    },
+    {
+      "requirement": "Lapis cumulative layers, progressive optimization and old-layer opacity",
+      "met": "partial"
+    },
+    {
+      "requirement": "Explain why encoded size alone cannot rank adaptive streaming experience",
+      "met": false
+    },
+    {
+      "requirement": "No unsupported ranking or inference of absence",
+      "met": true
+    }
+  ],
+  "findings": [
+    "The answer cites both papers but mainly presents two separate contribution summaries.",
+    "The requested comparability judgment is absent; the rate-distortion objective and layer/opacity/quality-switch relation are insufficiently developed.",
+    "All three requested research questions remain visibly incomplete. The report correctly stays partial.",
+    "CAT citations display a hash filename instead of a readable title. This is a metadata usability defect.",
+    "Original CAT page 6 and Lapis page 4 were visually checked against the frozen criteria; the first result is not accepted."
+  ]
+}

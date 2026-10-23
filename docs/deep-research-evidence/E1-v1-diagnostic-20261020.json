@@ -1,0 +1,69 @@
+{
+  "date": "2026-10-20",
+  "case": "E1-v1",
+  "split": "development",
+  "sourceCommit": "7751bd22",
+  "promptVersion": "dr-v2.20261020.197",
+  "frozenCaseCommit": "a023b204",
+  "runId": "dr_run_fcb70c713976545e940d0b5a0380374e",
+  "status": "failed",
+  "errorCode": "invalid_experiment_planning_response",
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "settledModelCalls": 8,
+  "settledTokens": 30667,
+  "unknownNewCalls": 0,
+  "elapsedSeconds": 0,
+  "planning": {
+    "actualFingerprintMatched": true,
+    "inputBytes": 12080,
+    "suppliedEvidenceRows": 2,
+    "actualOptions": {
+      "max_tokens": 6144,
+      "temperature": 0.0,
+      "thinking": {
+        "type": "enabled"
+      },
+      "reasoning_effort": "low",
+      "response_format": {
+        "type": "json_object"
+      }
+    },
+    "finishReason": "length",
+    "measuredInputTokens": 2848,
+    "measuredOutputTokens": 6144,
+    "rawContentBytes": 2536,
+    "elapsedSeconds": 81,
+    "fullConfigurationSent": false
+  },
+  "findings": [
+    "The new scientific planning node actually executes, but its6144output cap is reached with partial JSON. The response is saved and rejected; no full-configuration request or repair is sent.",
+    "Partial private draft invents a coffee_martini scene without supplied member evidence and replaces the required NTC with Umeyama rigid camera-center alignment. These are failures, never an accepted or published design.",
+    "The actual planner receives only2body quotations: fixed transformed Gaussians in stage2 and aggregate N3DV measurement scope. Retrieved/read pipeline obtains25evidence rows, but final-body fixed envelope22562bytes leaves only2quotes; zero missing bundles does not prove the actual method/data premises are adequate.",
+    "Old11unknown requests are unchanged. This new case is a fully settled failed development validation, not a new unknown, independent credit or a retry of older cases.",
+    "Next fix separates direct compact plan output from optional provider thinking under a new immutable contract, and losslessly compacts repeated goal metadata to preserve actual method/data premises. Do not enlarge the round budget or simply repeat the truncated request."
+  ],
+  "providerDocs": [
+    "https://api-docs.deepseek.com/guides/thinking_mode/",
+    "https://api-docs.deepseek.com/api/create-chat-completion/"
+  ],
+  "rawFiles": [
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v1.json",
+      "sha256": "eb03400d2002a3cbafb9bb7cfd674499efbd7cf6ee27740e2f0e3a40083c5bd5"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v1.payload.json",
+      "sha256": "7e87217b097cbed3b63a24dfa580e57e4221fa07ec96cda4e0a39e854e390259"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v1.calls.json",
+      "sha256": "fe17076d7dd618026081f06a60e9b8610aebe256e6564b0fdf534b8758a6d2f2"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v1.result.json",
+      "sha256": "5f0899f3567e6ddb50168b58d68a38dd3860316a70ff4a152642ece192a0345a"
+    }
+  ],
+  "boundary": "One submission only; all eight responses settled, no automatic retry. Truncated private planning text is not source evidence, a scientific pass or a published answer. Actual reasoning-token count was not recorded, so do not invent it or infer cost."
+}

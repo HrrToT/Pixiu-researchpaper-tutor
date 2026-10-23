@@ -1,0 +1,68 @@
+{
+  "date": "2026-10-20",
+  "sourceCase": "E1-v5",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "oldActualReviewFingerprintsMatched": 2,
+  "requests": [
+    {
+      "node": "verify_design_config",
+      "oldCallId": "07c041748c01f19952ba43d3f46a70ee",
+      "oldActualFingerprintMatched": true,
+      "oldInputBytes": 27336,
+      "newInputBytes": 27601,
+      "sameActualTargetsContextsEvidenceAndOptions": true
+    },
+    {
+      "node": "verify_design_science",
+      "oldCallId": "1c0dbf5c66b476ad44335433c4b3cb1d",
+      "oldActualFingerprintMatched": true,
+      "oldInputBytes": 31679,
+      "newInputBytes": 31944,
+      "sameActualTargetsContextsEvidenceAndOptions": true
+    }
+  ],
+  "controlledReviewContractVersion": 2,
+  "oldAcceptedIds": [
+    "c9"
+  ],
+  "controlledNewAcceptedIds": [
+    "c1",
+    "c8",
+    "c9"
+  ],
+  "controlledNewRejected": [
+    {
+      "claimId": "c5",
+      "reason": "incomplete_budget_spec",
+      "detail": "recovery: matched 模式要求所有组的预算值相等"
+    },
+    {
+      "claimId": "c6",
+      "reason": "incomplete_experiment_workflow",
+      "detail": "workflow.states.operation_rule"
+    },
+    {
+      "claimId": "c2",
+      "reason": "semantic_unresolved",
+      "detail": "干预水平不完整：treatment 中缺少 split_prune_interval 参数值（仅列出名称，未给出数值），且未指定新增高斯的初始化方式（如位置、尺度、旋转、不透明度、球谐系数的初始值或生成规则），无法复现执行。"
+    },
+    {
+      "claimId": "c3",
+      "reason": "semantic_unresolved",
+      "detail": "共同初始化不完整：仅指定了 NTC 的训练超参数，但未定义 3DGs 的初始状态（位置、尺度、旋转、不透明度、球谐系数的数量、形状和初始值/分布），也未说明如何从第0帧训练视图获取这些初始值；渲染设置中缺少具体分辨率数值（仅写 'dataset_native'，未给出实际尺寸）。"
+    },
+    {
+      "claimId": "c4",
+      "reason": "semantic_unresolved",
+      "detail": "数据可用性未证实：证据E1/E2仅提及flame salmon场景的消融研究，未明确N3DV数据集包含该场景或提供场景列表；E3仅说明N3DV数据集指标平均，未列出场景。因此无法确认所选场景属于N3DV数据集。"
+    },
+    {
+      "claimId": "c7",
+      "reason": "semantic_unresolved",
+      "detail": "存储指标未指定包含的文件或模型表示及记账边界；训练时间指标未明确分辨率的具体数值（仅写“数据集原生”），且未说明预热帧的具体处理方式。"
+    }
+  ],
+  "boundary": "Replay uses archived actual model responses, not a fresh model verdict. Under saved contract1 actual old prompts/results remain unchanged. Controlled contract2 normalizes only exact single typed field bindings through unchanged existing path/value/role/contract checks; analysis/hypothesis linkage can pass, but six real experiment defects still fail. No production/history upgrade, new independent credit or whole-experiment acceptance.",
+  "sourceCommit": "c266611c"
+}

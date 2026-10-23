@@ -1,0 +1,104 @@
+{
+  "date": "2026-10-18",
+  "sourceCommit": "959011ea",
+  "promptVersion": "dr-v2.20261018.144",
+  "focused": {
+    "passed": 103,
+    "seconds": 21.53,
+    "log": "tmp/pytest-dr144-conditions-final.log",
+    "overlapsFullSuite": true
+  },
+  "copiedReplays": [
+    {
+      "case": "D1-v17",
+      "originalRunId": "dr_run_c58d9062ee155997ad5e6d27420b668e",
+      "oldRejection": [
+        {
+          "claimId": "c1",
+          "reason": "table_condition_not_displayed"
+        }
+      ],
+      "newFeedback": [
+        {
+          "claimId": "c1",
+          "reason": "table_condition_not_displayed",
+          "requiredTableDisplay": [
+            {
+              "group": "Mip-NeRF 360 Datasets",
+              "method": "3D-GS [16]"
+            },
+            {
+              "group": "Tank and Temple Datasets",
+              "method": "3D-GS [16]"
+            },
+            {
+              "group": "Mip-NeRF 360 Datasets",
+              "method": "Ours"
+            },
+            {
+              "group": "Tank and Temple Datasets",
+              "method": "Ours"
+            }
+          ],
+          "detail": "保留表格数值时，同条正文或条件必须显示原表的数据组和方法身份。请核对requiredTableDisplay；保留星号、变体及分组层级，末尾参考文献序号可省略。不能只写另一个方法名代替Ours等原表标签，也不能修改单元格或加入未报告的计算。"
+        }
+      ],
+      "manualCopyChange": "Added Ours and exact 3D-GS label",
+      "copiedAdjustmentPassedToIndependentSemantics": [
+        "c1"
+      ],
+      "copiedSemanticVerdict": [
+        {
+          "claimId": "c1",
+          "reason": "semantic_unresolved",
+          "detail": "Deliberate negative fixture, not a quality score."
+        }
+      ]
+    },
+    {
+      "case": "H1F-v7",
+      "originalRunId": "dr_run_fbc8c625e6205431bc8bfe4d48cc9a02",
+      "oldRejection": [
+        {
+          "claimId": "c1",
+          "reason": "numeric_mismatch",
+          "missingReportedNumbers": [
+            "4e0"
+          ],
+          "detail": "本条引用原文未直接报告这些数值：4。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。"
+        }
+      ],
+      "newFeedback": [
+        {
+          "claimId": "c1",
+          "reason": "numeric_mismatch",
+          "missingReportedNumbers": [
+            "4e0"
+          ],
+          "detail": "本条引用原文未直接报告这些数值：4。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。"
+        }
+      ],
+      "manualCopyChange": "Removed unsupported condition text",
+      "copiedAdjustmentPassedToIndependentSemantics": [
+        "c1"
+      ],
+      "copiedSemanticVerdict": [
+        {
+          "claimId": "c1",
+          "reason": "semantic_unresolved",
+          "detail": "Deliberate negative fixture, not a quality score."
+        }
+      ]
+    }
+  ],
+  "repairSystemBytes": 882,
+  "realProviderCalls": 0,
+  "productionRowsChanged": 0,
+  "boundary": "Saved real-input deterministic feedback replay, with manually adjusted copied claims and deliberately negative semantic fixture. Demonstrates actionable feedback and removal of specific hard vetoes; no assertion of model willingness, scientific approval, independent credit or overall completion. Native versions 1-5 and legacy feedback shapes preserved.",
+  "full": {
+    "passed": 2313,
+    "warnings": 1,
+    "seconds": 184.61,
+    "log": "tmp/pytest-dr144-full.log"
+  }
+}

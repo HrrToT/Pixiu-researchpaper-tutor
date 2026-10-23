@@ -1,0 +1,57 @@
+{
+  "date": "2026-10-18",
+  "case": "H3F-v1",
+  "slot": "H3",
+  "runId": "dr_run_70fee9d21d7b56a2b8a3d76177ed8f38",
+  "sourceCommit": "ebcf570c",
+  "promptVersion": "dr-v2.20261018.126",
+  "caseDefinitionHash": "cd0db4fbf039660ad54b3d9c747121e04bbc7f39800e3478d785ff59f1cafb41",
+  "question": "联网查找并阅读公开arXiv:2503.18421v1，只研究4DGC中运动网格和补偿高斯怎样分工，以及为什么训练要同时考虑码率和画质。写明实际读到的是摘要还是全文，用初学者能懂的话解释，350字以内；不借用本地任务论文，不作跨论文数字排名。",
+  "materialHashes": {},
+  "status": "completed",
+  "outcome": "complete",
+  "contentAccepted": false,
+  "firstIndependentAttempt": true,
+  "retiredForTuning": false,
+  "modelCalls": 11,
+  "settledTokens": 30506,
+  "elapsedSeconds": 34.754,
+  "externalSearches": 1,
+  "fulltextFetches": 1,
+  "cost": null,
+  "report": "本回答引用：全文片段。\n\n## 核心判断\n\n- 4DGC中，运动网格负责估计相邻帧间每个高斯的刚性运动，补偿高斯则稀疏地补充新出现区域或物体，两者配合利用帧间相似性减少时间冗余。 [1](#research-evidence-ev_a266db6c5235b643d31936801bbcefac127afc1bb500da4f021b47c2d1bec3c2) [2](#research-evidence-ev_31687a563a5ee93e15e596ad4dce77707adf2c0b81888749496b8208a63fc79e) [3](#research-evidence-ev_b789a7c0dee48fb0fe1a51739c9b7e0c0cb86a6b14531117bf149e73f1193155)\n- 训练同时考虑码率和画质，是因为单独处理表示与压缩会忽略运动信息和率失真权衡，导致性能下降和模型冗余；联合优化使运动网格和补偿高斯的分布特性被纳入，从而获得低熵表示。 [4](#research-evidence-ev_228635f5fbdca82a991e087578177bf85df190bd1e440735c39272d0b8b96f1a) [5](#research-evidence-ev_021a1266194b55cf8c1bde31c56b755bf2a31f13b1e24a8f42d77c2e5c5570ec) [6](#research-evidence-ev_0d56c2481a75c0ab3ca22e9768c6fc7957b42ce6722655b2180d934c811aa0f5) [7](#research-evidence-ev_3d71031258675eb6abb715b81d7a359c4e884746681de30cd349245375e26d40)\n\n论文事实已按所列原文核对。\n\n<details>\n<summary>原文依据</summary>\n\n**[1] 4DGC: Rate-Aware 4D Gaussian Compression for Efficient Streamable Free-Viewpoint Video** · 第 1 页 · 全文片段\n\n> Specifically, 4DGC introduces a motion-aware dynamic\n> Gaussian representation that utilizes a compact motion grid\n> combined with sparse compensated Gaussians to exploit\n> inter-frame similarities.\n\n**[2] 4DGC: Rate-Aware 4D Gaussian Compression for Efficient Streamable Free-Viewpoint Video** · 第 2 页 · 全文片段\n\n> For each subsequent frame, 4DGC uti-\n> lizes a compact multi-resolution motion grid to estimate the\n> rigid motion of each Gaussian from the previous frame to\n> the current one.\n\n**[3] 4DGC: Rate-Aware 4D Gaussian Compression for Efficient Streamable Free-Viewpoint Video** · 第 2 页 · 全文片段\n\n> Additionally, compensated Gaussians are\n> sparsely added to account for newly observed regions or ob-\n> jects, further enhancing the accuracy of the representation.\n\n**[4] 4DGC: Rate-Aware 4D Gaussian Compression for Efficient Streamable Free-Viewpoint Video** · 第 1 页 · 全文片段\n\n> Existing methods typically handle\n> dynamic 3DGS representation and compression separately,\n> neglecting motion information and the rate-distortion (RD)\n> trade-off during training, leading to performance degra-\n> dation and increased model redundancy.\n\n**[5] 4DGC: Rate-Aware 4D Gaussian Compression for Efficient Streamable Free-Viewpoint Video** · 第 8 页 · 全文片段\n\n> Moreover, The variant lacking joint optimization disregards\n> the distribution characteristics of both the motion grid and\n> compensated Gaussians, limiting the encoder’s ability to\n> achieve low entropy.\n\n**[6] 4DGC: Rate-Aware 4D Gaussian Compression for Efficient Streamable Free-Viewpoint Video** · 第 2 页 · 全文片段\n\n> Our\n> key idea is to explicitly model motion between adjacent\n> frames, estimate the bitrate of the 4D Gaussian represen-\n> tation during training, and incorporate rate and distortion\n> terms into the loss function to enable end-to-end optimiza-\n> tion.\n\n**[7] 4DGC: Rate-Aware 4D Gaussian Compression for Efficient Streamable Free-Viewpoint Video** · 第 5 页 · 全文片段\n\n> Eachstage is guided by a rate-distortion trade-off, ensuring a\n> low-entropy 4D Gaussian representation and substantially\n> improving RD performance.\n\n</details>",
+  "findings": [
+    "The tool ledger proves one actual external discovery and one public fulltext acquisition for arxiv:2503.18421v1; no local materials were selected.",
+    "The source roles and joint bitrate/distortion training are supported by the cited original passages and the inspected paper.",
+    "The answer ends at rigid motion, rate-distortion tradeoff, joint optimization, distribution characteristics and low entropy without explaining storage/transfer versus quality in ordinary actions.",
+    "Machine complete and successful external access do not meet the requested novice explanation threshold. The content pass remains false."
+  ],
+  "scores": {
+    "goalResponse": 3,
+    "evidenceSupport": 4,
+    "conditions": 4,
+    "synthesisValue": 4,
+    "executability": null,
+    "readability": 3
+  },
+  "rawFiles": [
+    {
+      "path": "tmp\\dr-acceptance-receipts\\H3F-v1.json",
+      "sha256": "196ae683a3ca64ea1f90ba956ff5b7ad3d4f4d33fc685f56fa01ff039e6e6546"
+    },
+    {
+      "path": "tmp\\dr-acceptance-receipts\\H3F-v1.payload.json",
+      "sha256": "0f0a777b3ba0e1f229d0131e82dfcdc92a31a55b45d6ae5af5d9b426c507373d"
+    },
+    {
+      "path": "tmp\\dr-acceptance-receipts\\H3F-v1.calls.json",
+      "sha256": "72517324c937d00ba947d9c0bcc0741636a29dc9d5d346404fcd1f4524569e7d"
+    },
+    {
+      "path": "tmp\\dr-acceptance-receipts\\H3F-v1.result.json",
+      "sha256": "a8d866b55b7f6581e23e3c0534462bf63b8bcdb6924e2c3f48477a6d7bd8de64"
+    }
+  ],
+  "boundary": "First results scored against the sealed requirements; no failed result was overwritten or counted as a quality pass.",
+  "externalPathAccepted": true
+}

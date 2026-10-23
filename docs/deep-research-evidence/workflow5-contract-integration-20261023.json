@@ -1,0 +1,49 @@
+{
+  "status": "complete_contract_validation_and_rendering_not_enabled",
+  "workflowContractVersion": 5,
+  "defaultEnabled": false,
+  "focusedRegression": {
+    "files": 4,
+    "passed": 110,
+    "seconds": 6.25
+  },
+  "fullRegression": {
+    "files": 245,
+    "passed": 4528,
+    "warnings": 1,
+    "seconds": 340.45,
+    "logSha256": "b3ded2b7921430d35f543822ce85db69da81400731cbaa185ba5df232b80efb4"
+  },
+  "legacyReplay": {
+    "scripts": 38,
+    "allPassed": true,
+    "providerCalls": 0,
+    "productionWrites": 0,
+    "summarySha256": "c24aac88519763e9e9abf6637010d872e1341033afd25227c4b7bd52c673f076"
+  },
+  "sourceHashes": {
+    "services/deep_research/completion_criteria.py": "de36b08afa40d0a0c9696489f0530c53e0b0f79a15aca760b08b853343e9cc28",
+    "services/deep_research/design_audit.py": "f808a426b998c1c880e10c845a7ddd1a7ec3d8fdc588a30f2271c6034158ada6",
+    "services/deep_research/design_consistency.py": "4c56561aeecc0821ad61872460655a4b7089c22c61ac1e4dab0f88a29b77c5ff",
+    "services/deep_research/experiment_diagnostics.py": "15878a33881fb9009eeff7fa6575b5c52c14546011608977a08c9532bd824733",
+    "services/deep_research/experiment_protocol.py": "95725d6da74a3b304f2182f8bd60391e23eca648dc0cbdc2ff20b0b78dfa5bfa",
+    "services/deep_research/experiment_review_envelope.py": "520038dc7082f86f0410ff1103219cc9827c2f8f075e35aebd7a4caf30edabca",
+    "services/deep_research/experiment_workflow.py": "bf8e4983a762dca260df1fced96f864de45dfc7038015c4992cf294aa0fa5c34",
+    "services/deep_research/workflow_lifecycle.py": "5505a5a790b26be673701e08b9aaf79a4418babc052d58c1214bfc1183e8b907",
+    "services/deep_research/workflow_lifecycle_text.py": "4e28af8ac83c5a9f4bf5e5e2eed6a56708eb26447961304d74a51577d9d58292",
+    "tests/test_deep_research_workflow5_contract.py": "b1108b59af0302da1fa9c190e1b22a35fbea9b3933a50ce9335c5d1d49bf6566"
+  },
+  "checks": [
+    "complete initialization values and phase-output inputs",
+    "lifecycle dependency and disposal guards",
+    "whole-group budgets and linked controls",
+    "timeline rendering with escaped original values",
+    "complete own-field audit bindings",
+    "completion digest invalidation",
+    "actionable original-field diagnostics"
+  ],
+  "providerCalls": 0,
+  "serviceRestarts": 0,
+  "frontendChanges": 0,
+  "boundary": "Offline contract integration only. Versioned generation and provider-backed scientific acceptance remain pending; DR0-DR5 and independent acceptance are incomplete."
+}

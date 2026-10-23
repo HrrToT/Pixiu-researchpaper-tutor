@@ -1,0 +1,23 @@
+{
+  "date": "2026-10-15",
+  "caseId": "D8-v1",
+  "split": "development",
+  "derivedFrom": "H1R",
+  "runId": "dr_run_e20e57c9efef5260b320368a99163172",
+  "promptVersion": "dr-v2.20261015.64",
+  "submissionCount": 1,
+  "automaticResubmissions": 0,
+  "machineResult": {"status": "completed", "outcome": "complete", "successfulSettledModelCalls": 11, "actualTokensFromSettledResponses": 39978, "elapsedSeconds": 122.298, "cost": null},
+  "otherLedgerOperations": {"read_source": 14, "retrieve": 4},
+  "providerAvailability": "All eleven model ledger entries succeeded and settled; no balance error in this run. No balance amount was queried.",
+  "primaryAgentReview": {
+    "qualityAccepted": false,
+    "improvements": ["Camera input definition now acquired and cited", "Depth estimation and Gaussian center unprojection chain preserved", "Photometric supervision separated into a distinct answer claim"],
+    "remainingIssues": ["Listing camera inputs does not explain their role in cross-view alignment", "Plane sweeping and unprojection remain unexplained jargon for the requested novice explanation", "The source-to-coordinate transformation is named rather than explained", "Machine answer coverage accepted a mechanistic question without sufficient causal explanation"],
+    "scope": "Primary coding-agent content review, not a human usability study or independent holdout acceptance."
+  },
+  "offlineTests": {"scope": "tests/test_deep_research*.py", "passed": 1149, "warnings": 2, "seconds": 193.86},
+  "rawAuthoritativeRecord": "tmp/dr-acceptance-receipts/D8-v1.authoritative.json",
+  "nextWork": ["Make mechanism coverage distinguish named inputs and steps from an explanation of their roles", "Require concise novice-oriented explanation where requested, using acquired evidence", "Continue fresh independent holdout acceptance after development quality stabilizes"],
+  "acceptance": "Retrieval repair verified; machine complete is not final quality acceptance. DR0-DR5 remains incomplete."
+}

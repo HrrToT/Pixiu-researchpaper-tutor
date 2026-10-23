@@ -1,0 +1,21 @@
+{
+  "date": "2026-10-18",
+  "sourceCommit": "34a465b5",
+  "contracts": {
+    "repairProgressContractVersion": 1
+  },
+  "checks": {
+    "passed": 2071,
+    "warnings": 1,
+    "seconds": 116.55,
+    "log": "tmp/pytest-dr127-full.log"
+  },
+  "behavior": [
+    "An unchanged reported/inference fact with the same source set retains its original semantic rejection. Citation order, whitespace and binding order do not create a new basis.",
+    "Changed wording/conditions/citations/table binding still requires all normal verification. This gate does not grant acceptance.",
+    "Prospective designs retain shared-context checking. Old unmarked runs retain their historical behavior.",
+    "Graph replay/reopen does not call the verifier again for withheld unchanged facts; budget/unknown/scope guards stay in effect."
+  ],
+  "actualSavedDraftReplay": "repair-progress-real-draft-replay-20261018.json",
+  "boundary": "The saved real H1F draft replay retains two rejected facts with zero model calls. It does not change its original failed acceptance or prove new live answer quality."
+}

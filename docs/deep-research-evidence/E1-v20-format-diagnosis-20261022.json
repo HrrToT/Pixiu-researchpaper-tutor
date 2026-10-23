@@ -1,0 +1,73 @@
+{
+  "date": "2026-10-22",
+  "sourceCommit": "a7a9a52d",
+  "case": "E1-v20",
+  "runId": "dr_run_79062deb0d4b5e41a99d26c34488e6ef",
+  "status": "failed",
+  "errorCode": "invalid_verification_response",
+  "independentCredit": 0,
+  "providerCallsDuringReplay": 0,
+  "productionWritesDuringReplay": 0,
+  "draftJsonValid": true,
+  "enteredConfigurationReview": true,
+  "enteredRepair": false,
+  "reviewOutputShape": "single target object instead of items list",
+  "strictParserRejected": true,
+  "rawReviewSha256": "5c5c77daf2b61af4f057604b347192e03b78b7939874ef5c403c2ef37ecdc015",
+  "exactRequestFingerprintsMatched": 3,
+  "planningAndDraft": [
+    {
+      "node": "plan_experiment",
+      "inputBytes": 24094,
+      "actualFingerprintMatched": true
+    },
+    {
+      "node": "synthesize",
+      "inputBytes": 31033,
+      "actualFingerprintMatched": true
+    }
+  ],
+  "configurationReview": {
+    "date": "2026-10-22",
+    "case": "E1-v20",
+    "providerCalls": 0,
+    "productionWrites": 0,
+    "actualRequestFingerprintsMatched": 1,
+    "requests": [
+      {
+        "callId": "635af283389ff46b0f41779aef7d705f",
+        "node": "verify_design_config",
+        "targetIds": [
+          "c4"
+        ],
+        "inputBytes": 24601,
+        "actualFingerprintMatched": true,
+        "contextIds": [
+          "c5",
+          "c6",
+          "c7",
+          "c2",
+          "c3"
+        ]
+      }
+    ],
+    "allocationAttempts": [
+      {
+        "targetIds": [
+          "c4"
+        ],
+        "fullInputBytes": 24601,
+        "fixedInputBytes": 19893,
+        "maxInputBytes": 32000,
+        "referencedRows": 4,
+        "selectedRows": 4,
+        "selectedInputBytes": 24601,
+        "allRefsRetained": true,
+        "allContextsRetained": true
+      }
+    ],
+    "strictParserError": "invalid_verification_response"
+  },
+  "inputConflict": "Native system requests items object; envelope v2 asks for bare JSON array and provides array skeleton. Single target response was neither. New envelope v3 aligns the producer instructions; original response remains failed.",
+  "boundary": "Format delivery evidence only; no accepted experiment or content-quality pass. No automatic retry or transformation of original response."
+}

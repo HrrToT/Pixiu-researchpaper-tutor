@@ -1,0 +1,101 @@
+{
+  "date": "2026-10-16",
+  "promptVersion": "dr-v2.20261016.109",
+  "sourcePayloadSha256": "6d3f6299e83a2624e912f3ad5df750d532ea25827bc901af5e5a4a98ea62fa0a",
+  "historicalVersionThreeStillReadable": true,
+  "counterfactualNewContractsRejectSavedIncompletePlan": {
+    "c1": {
+      "claimId": "c1",
+      "reason": "incomplete_experiment_protocol",
+      "detail": "initialization.workflow_reference"
+    },
+    "d1": {
+      "claimId": "d1",
+      "reason": "absence_not_established"
+    },
+    "s1": {
+      "claimId": "s1",
+      "reason": "incomplete_experiment_workflow",
+      "detail": "workflow.fields, workflow.baseline_initialization, workflow.component"
+    }
+  },
+  "repair": {
+    "combinedPreflightLimit": {
+      "kind": "repairEvidenceBytes",
+      "limit": 24000,
+      "used": 24768
+    },
+    "requests": [
+      {
+        "promptBytes": 19136,
+        "targets": [
+          "d1"
+        ],
+        "allOriginalTargetQuotesAndContextsKept": true
+      },
+      {
+        "promptBytes": 21843,
+        "targets": [
+          "c1",
+          "s1"
+        ],
+        "allOriginalTargetQuotesAndContextsKept": true
+      }
+    ],
+    "targets": [
+      "c1",
+      "d1",
+      "s1"
+    ],
+    "allOriginalTargetCitationsPermitted": true,
+    "acceptedContext": [],
+    "emptyFixtureProducedNoRevision": true,
+    "boundary": "Other draft roles remain explicitly unverified context. No scientific pass invented."
+  },
+  "synthesis": {
+    "promptBytes": 23967,
+    "visibleEvidence": 4,
+    "hotdogAndOpacityQuotesKept": true,
+    "emptyFixtureGeneratedNoClaim": true
+  },
+  "render": {
+    "fixtureOnly": true,
+    "foldedInitializers": 2,
+    "file": "tmp/dr109-workflow-render.json",
+    "actualReactRenderer": true,
+    "defaultClosed": true,
+    "allCheckedValuesPresent": true,
+    "html": "tmp/dr109-workflow-render.html",
+    "boundary": "Static React rendering of a proposed fixture, not an interactive user study or a scientific pass."
+  },
+  "modelCalls": 0,
+  "providerNetworkRequests": 0,
+  "boundary": "Offline structural/capacity/rendering proof only. New initial values and renderer scientific quality still need real review. No original run mutation or independent holdout credit.",
+  "sourceCommit": "174787b",
+  "tests": {
+    "passed": 1770,
+    "warnings": 1,
+    "seconds": 63.34,
+    "sourceCommit": "174787b",
+    "log": "tmp/pytest-dr109-full-final.log"
+  },
+  "versions": {
+    "workflow": 4,
+    "protocol": 2
+  },
+  "guards": [
+    "server-controlled synthesis/repair versions",
+    "complete baseline state before training",
+    "per-state literal/distribution/operation initializers and explicit RNG",
+    "known input indices and broadcast-compatible literal shapes",
+    "one canonical initialization reference",
+    "orphan removal after later dependency rejection",
+    "hidden reference/state changes invalidate completion",
+    "legacy schemas and renderings unchanged"
+  ],
+  "frontendSmoke": {
+    "command": "node src/components/MarkdownContent.test.js",
+    "passed": true,
+    "boundary": "Existing math/table/folded-render smoke plus actual static React rendering. No frontend source change or user-study credit."
+  }
+}

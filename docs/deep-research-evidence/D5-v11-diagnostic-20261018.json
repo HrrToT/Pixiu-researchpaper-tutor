@@ -1,0 +1,145 @@
+{
+  "date": "2026-10-18",
+  "case": "D5-v11",
+  "runId": "dr_run_86cc8e8177955a40ab9d98351fc61004",
+  "sourceCommit": "469bbaae",
+  "promptVersion": "dr-v2.20261018.167",
+  "status": "completed",
+  "machineOutcome": "inconclusive",
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "modelCalls": 6,
+  "settledTokens": 26493,
+  "privateDraftingReturned": true,
+  "elapsedSeconds": 58.675,
+  "cost": null,
+  "actualSynthesisFingerprintMatched": true,
+  "actualSynthesisOptions": {
+    "max_tokens": 8192,
+    "temperature": 0.2,
+    "thinking": {
+      "type": "enabled"
+    },
+    "reasoning_effort": "low",
+    "response_format": {
+      "type": "json_object"
+    }
+  },
+  "findings": [
+    "Actual synthesis returns the declared private preparation; it incorrectly labels the assumed premise established despite unknown protocol details.",
+    "Independent checking rejects the unsupported different-platform/data-subset conclusion.",
+    "Direct repair returns a nonempty body but omits private preparation and asserts unprovided conditions. The absence guard rejects it.",
+    "Generation schema and direct-output wiring are demonstrated, but conclusion quality fails and remains inconclusive."
+  ],
+  "scores": {
+    "goalResponse": 1,
+    "evidenceSupport": 4,
+    "conditions": 2,
+    "synthesisValue": 2,
+    "executability": null,
+    "readability": 3
+  },
+  "privateDraftingAudit": {
+    "claim1": {
+      "premiseStatus": "established",
+      "observations": [
+        {
+          "evidenceId": "E7",
+          "quote": "We re-train 3D-GS, Compressed 3D-GS, Compact 3D-GS using their original code and 3D-GS configurations on our platform, to perform a fair comparison."
+        },
+        {
+          "evidenceId": "E10",
+          "quote": "Results marked with dagger † have been directly adopted from the original paper, all others were obtained in our own experiments."
+        }
+      ],
+      "scopeDecision": "reported_case",
+      "unresolved": "具体硬件参数与场景子集未在选中证据中给出，无法量化差异。"
+    }
+  },
+  "privateRepairDraftingAudit": null,
+  "actualPassedScopeAudits": [],
+  "draft": {
+    "sections": [
+      {
+        "title": "差异原因",
+        "claimIds": [
+          "claim1"
+        ]
+      }
+    ],
+    "claims": [
+      {
+        "claimId": "claim1",
+        "text": "FPS受硬件、场景和渲染条件影响；两论文的实验平台或数据子集不同，且LightGaussian重新训练基线、3DGS部分结果沿用原文，因此原始FPS不能直接相除。",
+        "kind": "inference",
+        "evidenceRefs": [
+          "ev_8fd3f847d043bbae423552d837a23f0207800e59770d35852b585f53e37f432a",
+          "ev_968d0018e986202e87c75f29e0e96759dc070a82e1c1754eb14e67aa7b344596"
+        ],
+        "conditions": {},
+        "obligationIds": [
+          "ob_1"
+        ],
+        "detailLevel": "fulltext",
+        "tableBindings": []
+      }
+    ]
+  },
+  "repairDraft": [
+    {
+      "claimId": "claim1",
+      "kind": "inference",
+      "text": "不同论文的FPS不能直接相除，因为测量条件未对齐：LightGaussian在其平台上重新训练基线以公平比较，而3DGS论文部分结果直接沿用原文，未提供统一硬件或场景。",
+      "evidenceRefs": [
+        "ev_8fd3f847d043bbae423552d837a23f0207800e59770d35852b585f53e37f432a",
+        "ev_968d0018e986202e87c75f29e0e96759dc070a82e1c1754eb14e67aa7b344596"
+      ],
+      "conditions": {},
+      "detailLevel": "fulltext",
+      "tableBindings": [],
+      "obligationIds": [
+        "ob_1"
+      ]
+    }
+  ],
+  "initialVerification": {
+    "accepted": [],
+    "rejected": [
+      {
+        "claimId": "claim1",
+        "reason": "semantic_unresolved",
+        "detail": "E1确实支持LightGaussian重新训练基线；E2确实支持3DGS论文有部分结果直接沿用原文。但证据未直接支持“FPS受硬件、场景和渲染条件影响”这一前提，也未确立两论文实验平台或数据子集不同：E1只说明在其平台上重新训练以公平比较，E2只说明在三个数据集上有些结果采用原文，未对平台或数据子集作出明确对比。因此结论“原始FPS不能直接相除”建立在未证实的前提上。"
+      }
+    ]
+  },
+  "repairChecks": {
+    "accepted": [],
+    "rejected": [
+      {
+        "claimId": "claim1",
+        "reason": "absence_not_established",
+        "detail": "本条引用没有明确建立作者或论文缺少这些验证。把结论限定为本次引用能支持的实验范围及其不能证明的推广；不要写成作者未在其他条件验证、论文没有提供或全文不存在。引用中的其他否定句不构成这项缺席判断的依据。"
+      }
+    ]
+  },
+  "report": "本次尚未形成通过核验的结论。\n\n<details>\n<summary>还有 1 项未完成</summary>\n\n- 为什么不同论文中的FPS不能直接相除：最终回答尚未完整回应这一问题\n\n</details>",
+  "rawFiles": [
+    {
+      "path": "tmp/dr-acceptance-receipts/D5-v11.json",
+      "sha256": "0eed69fbfb5348f9bba621285f4d86fea1d93d02202a77ca4053078d4f7a84f4"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/D5-v11.payload.json",
+      "sha256": "00d0d4c21c362a0b295645cdee8188a5446c02d713fe952e1b72c7c2292fa279"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/D5-v11.calls.json",
+      "sha256": "48350cf9a8ee9363f9962df18e6ab6b0a3456c0b844d7321769eb00be292b59c"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/D5-v11.result.json",
+      "sha256": "c3548002037faa40ba2b72bf904189ccbddb743cf579794dbb3178732a2071d9"
+    }
+  ],
+  "boundary": "One explicit submission after a concrete generation-profile change, all calls settled. Failed content is not retried unchanged or upgraded. No independent credit."
+}

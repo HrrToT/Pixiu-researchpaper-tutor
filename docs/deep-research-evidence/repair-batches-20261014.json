@@ -1,0 +1,73 @@
+{
+  "date": "2026-10-14",
+  "baseCommit": "1baef19",
+  "promptVersion": "dr-v2.20261014.60",
+  "change": "One bounded repair round may split before dispatch into at most three independently budgeted requests. Required original citations and coverage-hinted sources retain their quotes and existing bounded context before optional candidates are fitted.",
+  "invariants": [
+    "No increase to 24KB per-request limit, call/token pools, wall clock or verification reserve.",
+    "Preflight every planned batch before any model send. An atomic hypothesis/analysis batch cannot split to bypass a capacity failure.",
+    "True accepted definitions and unverified sibling drafts are labelled separately. Sibling content is not factual evidence or a newly approved result.",
+    "Each target can be revised only in its assigned batch, retaining original kind, role, obligation IDs and permitted source versions. Local evidence aliases restore separately per batch.",
+    "Persist input digest, ordered targets, original request limit and each completed batch draft. Reopening skips completed batches; the tracked ledger blocks unknown pending calls.",
+    "Actual budgets are still atomically checked before each send. Budget or later request-capacity exhaustion retains completed drafts for independent verification.",
+    "All accumulated revisions pass the existing independent verifier and consistency gates together before publication.",
+    "Only exact repeated role requirements are factored; all common scientific requirements remain. Output schemas cover writable target roles; sibling definitions remain intact."
+  ],
+  "offlineReplay": {
+    "caseId": "D3-v23",
+    "runId": "dr_run_6de5b270b1dd5f89800e229f00fb91b0",
+    "sourceAccess": "read-only SQLite",
+    "providerRequests": 0,
+    "batches": [
+      {
+        "targetIds": [
+          "design_completion_data",
+          "design_completion_budget"
+        ],
+        "promptBytes": 23972,
+        "visibleEvidence": 5,
+        "contextOmitted": 0
+      },
+      {
+        "targetIds": [
+          "c1",
+          "c6",
+          "c7"
+        ],
+        "promptBytes": 17274,
+        "visibleEvidence": 0,
+        "contextOmitted": 0
+      },
+      {
+        "targetIds": [
+          "c3",
+          "c4",
+          "c8"
+        ],
+        "promptBytes": 17508,
+        "visibleEvidence": 1,
+        "contextOmitted": 0
+      }
+    ],
+    "boundary": "Purely prospective hypothesis/analysis targets had no factual citations or additional source permission. This capture used empty simulated revisions: new model drafts may enlarge later sibling context and are re-admitted before dispatch. No generated-content quality is established by this replay."
+  },
+  "validation": {
+    "targetedPassed": 73,
+    "targetedSeconds": 25.25,
+    "capacityAndRecoveryTargeted": {
+      "passed": 80,
+      "seconds": 24.86
+    },
+    "fullRegression": {
+      "passed": 1175,
+      "warnings": 2,
+      "seconds": 205.86
+    }
+  },
+  "limitations": [
+    "Some inputs can still exceed capacity as an indivisible target; they stop before sending.",
+    "Available budget or time may permit fewer than three requests; the round does not guarantee a complete repair.",
+    "Real model output and final DR0-DR5 acceptance remain unverified for this version."
+  ],
+  "implementationCommit": "e7a5db4"
+}

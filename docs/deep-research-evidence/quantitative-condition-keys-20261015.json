@@ -1,0 +1,15 @@
+{
+  "date": "2026-10-15",
+  "sourceCommit": "9649320",
+  "promptVersion": "dr-v2.20261015.79",
+  "guard": "Pure numeric condition labels do not become measurements. Other keys and every nested value remain numerically checked; quantities cannot be hidden in a condition key.",
+  "fullRegression": {
+    "passed": 1301,
+    "warnings": 1,
+    "seconds": 47.82,
+    "scope": "test_deep_research*.py, test_reading_*.py, test_pdf_table_columns.py, test_config.py"
+  },
+  "realGenerationOnFinalVersion": false,
+  "runtimeProof": "runtime-load-dr79-20261015.json",
+  "boundary": "Offline regression and safe runtime loading only; content quality remains incomplete."
+}

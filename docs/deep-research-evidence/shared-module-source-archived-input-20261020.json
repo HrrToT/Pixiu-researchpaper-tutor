@@ -1,0 +1,42 @@
+{
+  "date": "2026-10-20",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "fixtureSources": [
+    "E1-v1 archived acquisition",
+    "H1F-v11 archived acquisition"
+  ],
+  "definitionSourceId": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-21",
+  "definitionQuote": "Paper: 3DGStream: On-the-Fly Training of 3D Gaussians for Efficient Streaming of Photo-Realistic Free-Viewpoint Videos\n\nSection: Neural Transformation Cache\n\nContent:\nThe multi-resolution hash encoding addresses all our requirements for the NTC: • Compactness: Hashing effectively reduces the storage space needed for encoding the whole scene.\n• Efficiency: Hash table lookup operates in O(1), and is highly compatible with modern GPUs.\n• Adaptivity: Hash collisions occur in hash tables at finer resolutions, allowing regions with larger gradients-representing dynamic regions in our context-to drive the optimization. • Priors: The combination of linear interpolation and the voxel-grid structure ensures the local smoothness of transformations. Additionally, the multi-resolution approach adeptly merges global and local information. Furthermore, to enhance the NTC's performance with minimal overhead, we utilize a shallow fully-fused MLP[38]. This maps the hash encoding to a 7-dimensional output: the first three dimensions indicate the translation of the 3DG; the remaining dimensions represent the rotation of the 3DG using quaternions. Given multi-resolution hash encoding coupled with MLP, our NTC is formalized as:",
+  "originalE1DefinitionAbsent": true,
+  "retrievalCap": 5,
+  "controlledSelected": 5,
+  "controlledRetrievalIds": [
+    "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-17",
+    "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-21",
+    "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-3",
+    "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-30",
+    "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-31"
+  ],
+  "readCap": 12,
+  "controlledReadIds": [
+    "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-21",
+    "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-30",
+    "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-17",
+    "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-3",
+    "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-31",
+    "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-57",
+    "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-33",
+    "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-34",
+    "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-42",
+    "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-58",
+    "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-5",
+    "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-54"
+  ],
+  "literalCaptionHeader": "Table caption: Table 5 . Quantitative comparison of PSNR values across all scenes in the N3DV dataset, with the metric for each scene calculated as the average over 300 frames. † Obtained in our own experiments with the official codes.\nTable row 1: Method | Coffee Martini Spinach Beef Salmon Steak Steak Cook Cut Flame Flame Sear Mean [cols=5, rows=1]",
+  "originalArchiveHashes": {
+    "E1-v1": "7e87217b097cbed3b63a24dfa580e57e4221fa07ec96cda4e0a39e854e390259",
+    "H1F-v11": "c70b5533dcbd64c9b342e1acf7058f63e3ee6c5df59204088ca4e7fb585b8eb8"
+  },
+  "boundary": "Controlled archived-source fixture only: the definition is borrowed from a prior different question to exercise selection, not newly acquired/read by E1 or production. No source/case acceptance upgrade; merged header names, member identities and emerging-content eligibility remain unverified. No provider call, retry, new attempt or production write."
+}

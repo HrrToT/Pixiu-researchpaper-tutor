@@ -1,0 +1,51 @@
+{
+  "date": "2026-10-20",
+  "sourceCommit": "bc4d3732",
+  "promptVersion": "dr-v2.20261020.198",
+  "fullOffline": {
+    "passed": 3194,
+    "warnings": 1,
+    "seconds": 211.94,
+    "log": "tmp/pytest-dr198-full.log",
+    "sha256": "0cca81c2fbc657f47d2bfcfcb7adfc659e47da2e00b5770e92bf462f9a51e7c6",
+    "sourceCommit": "bc4d3732"
+  },
+  "focusedPassed": 62,
+  "focusedSeconds": 3.73,
+  "newTests": 13,
+  "focusedOverlap": true,
+  "providerCalls": 0,
+  "newDefaultExperimentDraftContract": 4,
+  "planning": {
+    "thinking": "disabled",
+    "reasoningEffort": "none",
+    "outputTokensUnchanged": 6144,
+    "maxPrivateUtf8Bytes": 2500,
+    "oldVersion3PrivateBytes": 4000,
+    "invalidOrUnknownAutoRetry": false
+  },
+  "configurationOutputTokensUnchanged": 16384,
+  "inputCompaction": "Exact human-question prefixes use lossless code-point references; unique same-registry work IDs use sourceRef. Unavailable/ambiguous source identities and every unique criterion remain unchanged. Explicit two-arm package requests do not receive unrelated four-arm statistics.",
+  "legacyRequestFingerprintsMatched": 23,
+  "oldE1InvalidPlanningStillNotResent": true,
+  "legacyProofs": [
+    "compact-experiment-envelope-legacy-replay-20261020.json",
+    "compact-experiment-envelope-h2f-v9-replay-20261020.json",
+    "compact-experiment-envelope-h5f-v6-replay-20261020.json"
+  ],
+  "controlledInputProof": "compact-experiment-envelope-input-20261020.json",
+  "controlledSourceRowsBefore": 2,
+  "controlledSourceRowsAfter": 7,
+  "preparedFixedBytesBefore": 22562,
+  "controlledFixedBytesAfter": 19233,
+  "unresolvedSourceCoverage": {
+    "NTCDefinitionSectionAmongActualE1RetrievedSources": [],
+    "exactMergedDatasetHeader": "Table row 1: Method | Coffee Martini Spinach Beef Salmon Steak Steak Cook Cut Flame Flame Sear Mean [cols=5, rows=1]",
+    "columnMappingUnverified": true,
+    "boundary": "These are observations of this archived retrieval/parser output only, not paper-wide absence or approval/reconstruction of individual merged scene names. More input rows are not source-adequacy or executable-content acceptance."
+  },
+  "runtimeProof": "runtime-load-dr198-compact-experiment-envelope-20261020.json",
+  "ledgerRowsUnchanged": 4754,
+  "unknownPausedPreserved": 11,
+  "boundary": "Offline profile/compaction/permission/resume tests, controlled unchanged-source input replay and runtime load only. No new model response, paper reading, latency improvement, E1 repair/content acceptance, independent credit or unknown settlement."
+}

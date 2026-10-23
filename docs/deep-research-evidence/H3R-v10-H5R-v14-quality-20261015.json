@@ -1,0 +1,88 @@
+{
+  "date": "2026-10-15",
+  "cases": [
+    {
+      "case": "H3R-v10",
+      "runId": "dr_run_2ddb9d2231385b4bbbbb7e9f938cbcdf",
+      "promptVersion": "dr-v2.20261015.94",
+      "status": "completed",
+      "outcome": "partial",
+      "budget": {
+        "profile": "standard",
+        "modelCalls": 6,
+        "maxModelCalls": 18,
+        "tokens": 23903,
+        "maxTokens": 100000,
+        "externalSearches": 1,
+        "fulltextFetches": 1,
+        "elapsedSeconds": 169.0,
+        "cost": null
+      },
+      "errorCode": "",
+      "contentAccepted": false,
+      "independentHoldoutEligible": false,
+      "raw": "tmp/dr-acceptance-receipts/H3R-v10.payload.json",
+      "calls": "tmp/dr-acceptance-receipts/H3R-v10.calls.json",
+      "review": {
+        "status": "not_accepted",
+        "finalCoverage": "invalid_response",
+        "findings": [
+          "Accepted training prose still blurs the discrete bucket index and differentiable probability/opacity path.",
+          "Motivation presents depth uncertainty as a reported reason without establishing its precise evidence basis.",
+          "Access aspects bind empty scientific conditions instead of the app-rendered access label."
+        ],
+        "cache": {
+          "hit": true,
+          "networkRequests": 0,
+          "acquisitionLedgerElapsedSeconds": 1
+        },
+        "extraction": {
+          "readPassages": 12,
+          "processedPassages": 3,
+          "finding": "The complete gradient-detail continuation was not in the first bounded extraction batch."
+        },
+        "jsonOutput": "The real synthesis returned a valid report object; this establishes transport/shape, not scientific quality."
+      }
+    },
+    {
+      "case": "H5R-v14",
+      "runId": "dr_run_06b9702502185a38b3ecb5b6700056a4",
+      "promptVersion": "dr-v2.20261015.94",
+      "status": "completed",
+      "outcome": "partial",
+      "budget": {
+        "profile": "standard",
+        "modelCalls": 10,
+        "maxModelCalls": 18,
+        "tokens": 56797,
+        "maxTokens": 100000,
+        "externalSearches": 0,
+        "fulltextFetches": 0,
+        "elapsedSeconds": 136.0,
+        "cost": null
+      },
+      "errorCode": "",
+      "contentAccepted": false,
+      "independentHoldoutEligible": false,
+      "raw": "tmp/dr-acceptance-receipts/H5R-v14.payload.json",
+      "calls": "tmp/dr-acceptance-receipts/H5R-v14.calls.json",
+      "review": {
+        "status": "not_accepted",
+        "finalCoverage": "invalid_response",
+        "finishReason": "length",
+        "outputTokens": 3500,
+        "findings": [
+          "All nine roles were machine-accepted, but copying the base does not create the enhancement component.",
+          "Controls fix one training seed while data requests retrained-per-seed replicas without an aligned rule.",
+          "Load/copy steps conflict with a train-baseline budget and do not isolate held-out views before fitting.",
+          "Descriptive decision refers to exceeding measurement noise without defining that quantity or threshold."
+        ],
+        "repair": "Actual revision and configuration recheck returned successfully; this is not executable-design acceptance."
+      }
+    }
+  ],
+  "newModelCalls": 16,
+  "settledTokens": 80700,
+  "cost": null,
+  "boundary": "Each submitted once, known terminal, retired development only. No automatic retry or independent acceptance credit."
+}

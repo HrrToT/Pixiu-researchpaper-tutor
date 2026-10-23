@@ -1,0 +1,15 @@
+{
+  "date": "2026-10-18",
+  "case": "D1-v27",
+  "pdfSha256": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634",
+  "physicalPdfPages": 19,
+  "qualitativeClaim": {
+    "claimId": "c1",
+    "physicalPage": 8,
+    "exactWhitespaceNormalizedQuotePresent": true,
+    "quoteSha256": "40c795428b961e33fc394a49554e08575e11464c8c70f19113f0c13a6b3018b2"
+  },
+  "mainTableOriginalCheck": "docs/deep-research-evidence/lightgaussian-table1-physical-check-20261018.json",
+  "providerCalls": 0,
+  "boundary": "Direct local original-PDF text check, no model verification or visual image assessment. Main-table physical-page6/values are checked in the linked same-PDF evidence."
+}

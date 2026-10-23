@@ -1,0 +1,105 @@
+{
+  "date": "2026-10-18",
+  "case": "H2F-v2",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "queries": [
+    {
+      "obligationId": "ob_1",
+      "question": "它们分别使用什么输入",
+      "actualQuery": "3DGStream input data Deformable 3D Gaussians input data",
+      "actualFingerprintsMatched": [
+        {
+          "pdfId": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf",
+          "argsDigest": "f0dd64840acfa24fd8178fb89d50e6b2d451f94ede7ede4369044dfea3e8b8b0"
+        },
+        {
+          "pdfId": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf",
+          "argsDigest": "29feb56b03948294be172d6f23c882f24a7656209a60bbc7054d49c5c8d046dc"
+        }
+      ],
+      "mentionsFPS": false
+    },
+    {
+      "obligationId": "ob_2",
+      "question": "怎样表示时间变化",
+      "actualQuery": "3DGStream temporal representation Deformable 3D Gaussians temporal representation",
+      "actualFingerprintsMatched": [
+        {
+          "pdfId": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf",
+          "argsDigest": "53bf4b4c9f8e6f1c3c2810fe3525880988576bd2f83bd6f240d08589acb50d8f"
+        },
+        {
+          "pdfId": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf",
+          "argsDigest": "b68790006df500b813aa6eeb31d424fdccb01ee490abf8bb3c1e9205c873bb77"
+        }
+      ],
+      "mentionsFPS": false
+    },
+    {
+      "obligationId": "ob_3",
+      "question": "3DGStream v4和Deformable 3D Gaussians v2的训练模式分别是逐帧在线还是整体离线？",
+      "actualQuery": "3DGStream online training Deformable 3D Gaussians offline training",
+      "actualFingerprintsMatched": [
+        {
+          "pdfId": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf",
+          "argsDigest": "1df44801fcb0dcf1d7bd65521752e6016465dde5c7f648547effbb8d49e8697c"
+        },
+        {
+          "pdfId": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf",
+          "argsDigest": "6abfdf5379f7592250b50b257f3030c8c056b49d3ca4d1179e5e9709c9890859"
+        }
+      ],
+      "mentionsFPS": false
+    },
+    {
+      "obligationId": "ob_4",
+      "question": "为何不能凭各自主表FPS给出同条件速度排名",
+      "actualQuery": "3DGStream FPS evaluation conditions Deformable 3D Gaussians FPS evaluation conditions",
+      "actualFingerprintsMatched": [
+        {
+          "pdfId": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf",
+          "argsDigest": "3890e36fe5d61939b2cdce71ff807c0f75437ad6e97f95ad649a03781aefaef4"
+        },
+        {
+          "pdfId": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf",
+          "argsDigest": "70bda5919cb8ce9dc8dad22dc67b4d90f31ca89fdbe3dbc2cd76dd150a5d01fc"
+        }
+      ],
+      "mentionsFPS": true
+    }
+  ],
+  "retrievedSources": 21,
+  "extractedEvidence": 12,
+  "retrievedNtcSources": [
+    {
+      "sourceId": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-32",
+      "location": {
+        "page": 6,
+        "chunk": 32,
+        "section": "Implementation"
+      }
+    },
+    {
+      "sourceId": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-43",
+      "location": {
+        "page": 9,
+        "chunk": 43,
+        "section": "Implementation Details"
+      }
+    },
+    {
+      "sourceId": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-5",
+      "location": {
+        "page": 1,
+        "chunk": 5,
+        "section": "Introduction"
+      }
+    }
+  ],
+  "extractedNtcEvidence": 0,
+  "disconfirmedHypothesis": "The full user FPS context was NOT appended to every retrieval. All eight actual query fingerprints match the per-obligation queries; only the fourth query mentions FPS. Do not implement a blanket full-context-removal fix based on that hypothesis.",
+  "actualDiagnosis": "Each source query mixes both paper names. The method-detail helper does not activate on generic temporal representation alone, and its literal overlap threshold favors other-paper/common terms over an unnamed operation. Three NTC mentions are retrieved in Introduction/Implementation, but no NTC operation is extracted; full multi-paper input/method coverage remains missing.",
+  "next": "Inspect source-specific intent, owned method/outline selection and extraction coverage before changing synthesis. Preserve ownership/version guards, original text, source quotas and evidence checks; do not special-case an NTC answer.",
+  "boundary": "Diagnosis from saved actual queries/source/evidence and current code. No claim that an unexecuted ranking change improves content."
+}

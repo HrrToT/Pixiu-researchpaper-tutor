@@ -1,0 +1,56 @@
+{
+  "date": "2026-10-18",
+  "case": "H1F-v2",
+  "runId": "dr_run_07e8401470ac55f3881d9abdcc3b254f",
+  "sourceCommit": "2ee36ac2",
+  "promptVersion": "dr-v2.20261018.130",
+  "evaluationUse": "retired-case diagnostic",
+  "independent": false,
+  "status": "completed",
+  "outcome": "complete",
+  "contentAccepted": false,
+  "modelCalls": 12,
+  "settledTokens": 36382,
+  "elapsedSeconds": 95.61,
+  "cost": null,
+  "report": "## 判断\n\n- NTC预测每个高斯的位置移动（前三个数）和旋转（后四个数，用四元数表示），不预测大小、透明度或颜色。它把前一帧的高斯当作起点，用多分辨率哈希编码和浅层网络算出这7个变化量，再应用到前一帧高斯上得到当前帧高斯。 [1](#research-evidence-ev_53a20733d81449e6cca09191ffa6cd19d5f909f9adbe1b417e097e42e9772c27) [2](#research-evidence-ev_4bbeaea2b1a3fc2176d5010e025e0272c4f315f6a4481858bf4ef14db9594a4f)\n- 遇到新出现的物体时，3DGStream在第二阶段采用自适应添加策略，在新物体附近生成这一帧专用的额外高斯，并与NTC变换后的高斯一起渲染当前帧。 [2](#research-evidence-ev_4bbeaea2b1a3fc2176d5010e025e0272c4f315f6a4481858bf4ef14db9594a4f) [3](#research-evidence-ev_bdb024b856972aab854c483acb7dfa600c4918cc401ccfcebcb14da2200b2d38)\n\n论文事实已按所列原文核对。\n\n<details>\n<summary>原文依据</summary>\n\n**[1] 3DGStream: On-the-Fly Training of 3D Gaussians for Efficient Streaming of Photo-Realistic Free-Viewpoint Videos** · 第 5 页 · 全文片段\n\n> This maps the hash encoding to a 7-dimensional output: the first three dimensions indicate the translation of the 3DG; the remaining dimensions represent the rotation of the 3DG using quaternions.\n\n**[2] 3DGStream: On-the-Fly Training of 3D Gaussians for Efficient Streaming of Photo-Realistic Free-Viewpoint Videos** · 全文片段\n\n> Then, for each timestep i, we use the 3DGs of previous timestep i − 1 as initialization and pass it to a two-stage pipeline.(1)In Stage 1, we train a Neural Transformation Cache (NTC) to model the transformations of 3DGs.(2)Then in the Stage 2, we use an adaptive 3DG addition strategy to handle emerging objects by spawning frame-specific additional 3DGs near these objects and optimize them along with periodic splitting and pruning.\n\n**[3] 3DGStream: On-the-Fly Training of 3D Gaussians for Efficient Streaming of Photo-Realistic Free-Viewpoint Videos** · 第 2 页 · 全文片段\n\n> After the two-stage pipeline concludes, we use both the 3DGs transformed by the NTC and the additional 3DGs for rendering at the current timestep i, with only the former carrying over for initialization of the subsequent timestep.\n\n</details>",
+  "findings": [
+    "New literal method evidence was actually retrieved/extracted/cited. The output now correctly describes translation and rotation rather than adding scale as an NTC prediction.",
+    "The requested three-point novice answer is displayed as two points. The addition point describes what is done, but omits why transformations alone are insufficient.",
+    "The machine still reported complete. Manual goal-response and novice readability gates remain below threshold.",
+    "Despite trusted neutral-planning instructions, the plan still added guessed attribute examples absent from the user question. Instructions alone did not prove neutral planning.",
+    "Existing v2 extraction ordering put method overview/output/intro in the first three passages; the detailed rationale passage remained outside that batch. Relevance closure is not explanation completeness.",
+    "Only this one diagnostic was submitted; no unknown/retry/budget enlargement. Its success on a method detail cannot add an independent pass."
+  ],
+  "scores": {
+    "goalResponse": 3,
+    "evidenceSupport": 4,
+    "conditions": 4,
+    "synthesisValue": 3,
+    "executability": null,
+    "readability": 3
+  },
+  "methodOutputCorrected": true,
+  "neutralCriteriaObserved": false,
+  "requestedPointCount": 3,
+  "displayedPointCount": 2,
+  "rawFiles": [
+    {
+      "path": "tmp\\dr-acceptance-receipts\\H1F-v2.json",
+      "sha256": "6f1b932d6c349da3e0f45bca5d9372fa8573c0dbf0836de7ef0e154d624d9d40"
+    },
+    {
+      "path": "tmp\\dr-acceptance-receipts\\H1F-v2.payload.json",
+      "sha256": "ddf4b7c76ca394728860a8ad0b35e04ce1b17bd21ab91b339beb08aa2a2332c3"
+    },
+    {
+      "path": "tmp\\dr-acceptance-receipts\\H1F-v2.calls.json",
+      "sha256": "dc17f4974ea26af6f9e8fc50cf2dc054b9d4021f40446b048e856233ce63c2b9"
+    },
+    {
+      "path": "tmp\\dr-acceptance-receipts\\H1F-v2.result.json",
+      "sha256": "6dc94076a841fea5b38e4a5bef6da5663beff259b55c71c2ef6f2b4aaa85c8b7"
+    }
+  ],
+  "boundary": "Original H1F-v1 definition and failed first review are untouched. No independent/content pass is claimed."
+}

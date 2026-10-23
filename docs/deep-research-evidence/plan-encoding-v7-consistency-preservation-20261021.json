@@ -1,0 +1,87 @@
+{
+  "date": "2026-10-20",
+  "sourceCase": "E1-v7",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "oldActualFingerprintsMatched": 5,
+  "controlledNewConsistencyContract": 1,
+  "requests": [
+    {
+      "node": "verify_design_config",
+      "oldActualFingerprintMatched": true,
+      "oldInputBytes": 15281,
+      "newInputBytes": 15281,
+      "originalClaimsContextEvidenceOptionsIntact": true,
+      "derived": []
+    },
+    {
+      "node": "verify_design_science",
+      "oldActualFingerprintMatched": true,
+      "oldInputBytes": 21614,
+      "newInputBytes": 21614,
+      "originalClaimsContextEvidenceOptionsIntact": true,
+      "derived": []
+    },
+    {
+      "node": "verify_repair_design_config",
+      "oldActualFingerprintMatched": true,
+      "oldInputBytes": 14775,
+      "newInputBytes": 16039,
+      "originalClaimsContextEvidenceOptionsIntact": true,
+      "derived": [
+        {
+          "claimId": "c5",
+          "role": "budget",
+          "fromPaths": [
+            [
+              "executionSpec",
+              "baseline"
+            ],
+            [
+              "executionSpec",
+              "recovery"
+            ]
+          ],
+          "baselineMode": "train",
+          "recoveryUnit": "optimizer_steps",
+          "baselineUnit": "optimizer_steps",
+          "perGroupUpperCaps": {
+            "0": {
+              "sum": [
+                1000,
+                0
+              ],
+              "upperCap": 1000
+            },
+            "1": {
+              "sum": [
+                1000,
+                2000
+              ],
+              "upperCap": 3000
+            }
+          }
+        }
+      ]
+    },
+    {
+      "node": "plan_experiment",
+      "oldActualFingerprintMatched": true,
+      "oldInputBytes": 13762,
+      "newInputBytes": 13762,
+      "originalEvidenceAndAliasesUnchanged": true
+    },
+    {
+      "node": "synthesize",
+      "oldActualFingerprintMatched": true,
+      "oldInputBytes": 23540,
+      "newInputBytes": 23726,
+      "originalEvidenceAndAliasesUnchanged": true
+    }
+  ],
+  "oldResponsesAndResultsReproduced": true,
+  "newSavedResponsesDoNotGainApproval": true,
+  "boundary": "The reviewer receives exact proposed cap arithmetic, not a new scientific verdict. Original claims/config/context/quotes/options and old failed judgments remain. Generation changes only rationale/config-ownership guidance, without deleting any original evidence. No paid/new independent/content credit or historical upgrade.",
+  "sourceCommit": "b85ccc0c",
+  "verifiedAsOf": "2026-10-21"
+}

@@ -1,0 +1,19 @@
+{
+  "date": "2026-10-22",
+  "sourceCommit": "a7a9a52d",
+  "sourceHashes": {
+    "facade.py": "d16743c80f0e220329959080258a7d24c649e0e7f11e64e305c9072aaad68f86",
+    "structured_output.py": "de5de0a671b73d8428aff0a63aa9376f509e0a9aa5d6c7516d9ab5fbd388b853",
+    "graph.py": "f0ed6668a5290cb0e3c163e67e1d59cda09d99873d32f179c1e64a7aa30824cc"
+  },
+  "actualCreatedRun": {
+    "runId": "dr_run_79062deb0d4b5e41a99d26c34488e6ef",
+    "promptVersion": "dr-v2.20261022.225",
+    "structuredOutputContractVersion": 9,
+    "experimentRepairInputContractVersion": 1
+  },
+  "preRestartLedgerRows": 5207,
+  "preRestartActive": 0,
+  "initialPreflight": "health GET connection closed during warmup; no receipt and no POST; first submission after ready",
+  "modelRequestsByThisProbe": 0
+}

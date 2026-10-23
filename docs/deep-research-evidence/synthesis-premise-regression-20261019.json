@@ -1,0 +1,47 @@
+{
+  "date": "2026-10-19",
+  "sourceCommit": "c02c5a63",
+  "promptVersion": "dr-v2.20261019.185",
+  "fullOffline": {
+    "passed": 3006,
+    "warnings": 1,
+    "seconds": 106.17,
+    "log": "tmp/pytest-dr185-final-full-native.log",
+    "sha256": "779ba2d5ecb9e784a6f7d0594b7bfeeab3befeab5f0f144d033001209eda8e75"
+  },
+  "focused": {
+    "passed": 209,
+    "seconds": 4.71,
+    "log": "tmp/pytest-dr185-focused-v7.log",
+    "overlapsFull": true
+  },
+  "endToEndFocused": {
+    "passed": 33,
+    "seconds": 12.34,
+    "log": "tmp/pytest-dr185-e2e-fix.log",
+    "overlapsFull": true
+  },
+  "serverFrozenContracts": {
+    "synthesisEvidenceContractVersion": 1,
+    "factualScopeContractVersion": 3,
+    "quantitySpellingContractVersion": 5,
+    "absenceScopeContractVersion": 6,
+    "audienceRewriteContractVersion": 8
+  },
+  "bounds": {
+    "synthesisEvidenceRows": 20,
+    "synthesisInputBytes": 24000,
+    "standardModelCalls": 18,
+    "standardTokens": 100000,
+    "standardSeconds": 360
+  },
+  "legacyProviderFingerprintsMatched": 15,
+  "providerCalls": 0,
+  "retainedDiagnostics": [
+    "First full run:2999 passed/7 failed; shared fixture model recognized only legacy synthesis prefix and old scope excerpt schema. Added current prompt and whole-text binding support; kept original wrong-number, cancellation, unknown, call-count and outbox assertions.",
+    "Chinese factor regression exposed a missing parser branch. New5 checks literal Chinese cardinal/decimal factors against the same original multiplicative unit; real counts/dimensions/signs stay checked.",
+    "Mocked real-input replay proves original H2F-v6 request fingerprint and new2-training-premise allocation inside24KB. This is not generation or scientific acceptance.",
+    "A non-native full invocation stopped at the offline asyncio route test; authoritative process was explicitly stopped after the same native test passed1/0.69s. Its incomplete log is retained, not counted as a pass. Final full suite uses the established native environment and diagnostic traceback timeout."
+  ],
+  "boundary": "Offline fixtures and exact archived request replay only. No current content acceptance or independent credit. No legacy outcome, Provider identity or unknown request rewritten."
+}

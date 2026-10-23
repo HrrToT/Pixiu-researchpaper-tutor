@@ -1,0 +1,15 @@
+{
+  "date": "2026-10-18",
+  "sourceCommit": "48ec3b29",
+  "promptVersion": "dr-v2.20261018.175",
+  "offline": {"passed": 2843, "warnings": 1, "seconds": 167.36, "log": "tmp/pytest-dr175-full.log"},
+  "focused": {"passed": 113, "seconds": 4.86, "overlapWithFullSuite": true},
+  "changes": [
+    "Audience policy3 rebuilds each frozen requested point from its own original cited sources. Unverified draft text/conditions are omitted from the generation view but kept in the durable journal.",
+    "Kinds, IDs, original citations, table identities and retained-cell subset rules remain fixed. Same3072output cap, same24000input cap and one rewrite only, followed by unchanged independent verification/coverage.",
+    "Audit-field policy2 adds strict references to actual target text/string conditions instead of retyped statementExcerpt. Target assertions are not paper evidence. Missing/mixed/foreign paths and unsupported scope still reject.",
+    "New proposal checks do not receive irrelevant factual field-copying guidance. Legacy policy1 prompts remain unchanged; old pending audience2 requests cannot be retargeted to3."
+  ],
+  "recordedReplay": "docs/deep-research-evidence/source-first-audience-real-input-replay-20261018.json",
+  "boundary": "Five archived actual Provider fingerprints match old policy. New fixtures validate source/target binding and request structure, not real novice readability or independent acceptance."
+}

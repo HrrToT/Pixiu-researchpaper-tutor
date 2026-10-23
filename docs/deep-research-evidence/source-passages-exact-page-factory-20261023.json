@@ -1,0 +1,21 @@
+{
+  "date": "2026-10-23",
+  "adaptiveExtractionContractVersion": 3,
+  "factory": "located_evidence_factory",
+  "indexedPages": [
+    2,
+    3,
+    4
+  ],
+  "fixturePhysicalPages": [
+    17,
+    18,
+    19
+  ],
+  "exactPhysicalResolutionPreserved": true,
+  "resumeNoRelocation": true,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "scientificApproval": false,
+  "boundary": "Real factory with deterministic fixture page texts and local repository. No actual PDF locator/production scope/content approval."
+}

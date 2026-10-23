@@ -1,0 +1,27 @@
+{
+  "date": "2026-10-23",
+  "sourceCase": "E1-v32",
+  "providerRawBytes": 6200,
+  "normalization": {
+    "version": 1,
+    "requestedFormat": "json_object",
+    "expectedShape": "object",
+    "receivedShape": "invalid_json"
+  },
+  "parseFailure": {
+    "line": 23,
+    "column": 41,
+    "message": "Expecting ',' delimiter",
+    "offendingExpressionPresent": true
+  },
+  "newPrivatePolicyBytes": 892,
+  "reservedFramingBytes": 1024,
+  "framingAllowance": 128,
+  "oldPrivatePolicyBytes": 866,
+  "userPromptChanged": false,
+  "oldVersionsRewritten": false,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "scientificApproval": false,
+  "boundary": "Diagnostic and new prompt framing only; no evaluation or recovery of malformed provider output and no new content acceptance."
+}

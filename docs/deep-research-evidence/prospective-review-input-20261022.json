@@ -1,0 +1,116 @@
+{
+  "date": "2026-10-22",
+  "sourceCase": "E1-v30",
+  "sourceCommit": "8a87a2ff",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "independentCredit": 0,
+  "fixtureCallbacks": 3,
+  "requests": [
+    {
+      "callId": "12b07df63c515e1ac9737c8a7db1dd6d",
+      "node": "verify_design_config",
+      "targetIds": [
+        "c7"
+      ],
+      "inputBytes": 21658,
+      "controlledNewEnvelope": true,
+      "contextIds": [
+        "c3",
+        "c4",
+        "c6",
+        "c2",
+        "c5"
+      ]
+    },
+    {
+      "callId": "d9cbe1e10e3499fe8b9f65c4b44776c2",
+      "node": "verify_design_science",
+      "targetIds": [
+        "c1",
+        "c2"
+      ],
+      "inputBytes": 30020,
+      "controlledNewEnvelope": true,
+      "contextIds": [
+        "c3",
+        "c4",
+        "c6",
+        "c7",
+        "c5",
+        "c8",
+        "c9"
+      ]
+    },
+    {
+      "callId": "7550eeae8a1e11eb7f3616277e720cd5",
+      "node": "verify_design_science",
+      "targetIds": [
+        "c5",
+        "c8",
+        "c9"
+      ],
+      "inputBytes": 27496,
+      "controlledNewEnvelope": true,
+      "contextIds": [
+        "c3",
+        "c4",
+        "c6",
+        "c7",
+        "c1",
+        "c2"
+      ]
+    }
+  ],
+  "allocationAttempts": [
+    {
+      "targetIds": [
+        "c7"
+      ],
+      "fullInputBytes": 21658,
+      "fixedInputBytes": 19439,
+      "maxInputBytes": 32000,
+      "referencedRows": 1,
+      "selectedRows": 1,
+      "selectedInputBytes": 21658,
+      "allRefsRetained": true,
+      "allContextsRetained": true
+    },
+    {
+      "targetIds": [
+        "c1",
+        "c2"
+      ],
+      "fullInputBytes": 30020,
+      "fixedInputBytes": 22654,
+      "maxInputBytes": 32000,
+      "referencedRows": 6,
+      "selectedRows": 6,
+      "selectedInputBytes": 30020,
+      "allRefsRetained": true,
+      "allContextsRetained": true
+    },
+    {
+      "targetIds": [
+        "c5",
+        "c8",
+        "c9"
+      ],
+      "fullInputBytes": 27496,
+      "fixedInputBytes": 23997,
+      "maxInputBytes": 32000,
+      "referencedRows": 3,
+      "selectedRows": 3,
+      "selectedInputBytes": 27496,
+      "allRefsRetained": true,
+      "allContextsRetained": true
+    }
+  ],
+  "repairStatus": "response_received",
+  "repairLimit": {
+    "kind": "modelCalls",
+    "limit": 18,
+    "used": 9
+  },
+  "boundary": "Controlled envelope8 input construction with archived failed verdict fixtures. No new model judgement, approval or change to the archived run. All source/context rows retained; full inputs within32KB."
+}

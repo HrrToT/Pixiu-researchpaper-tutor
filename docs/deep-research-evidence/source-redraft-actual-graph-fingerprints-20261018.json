@@ -1,0 +1,24 @@
+{
+  "date": "2026-10-18",
+  "sourceCommit": "77e16747",
+  "promptVersion": "dr-v2.20261018.146",
+  "actualGraphRecords": [
+    {
+      "case": "H1F-v9",
+      "runId": "dr_run_36ab877f423051079ba3a107d912f6a1",
+      "actualRepairInputDigest": "deded34f34f3aaf81f0cc06bf8bba5bd17ffbf75336684b771c00f093256ccf5",
+      "matchesFrozenRedraftContext": true,
+      "differsFromLegacyDigest": true
+    },
+    {
+      "case": "D1-v19",
+      "runId": "dr_run_3e393a12f94655eba68a52f08be6048e",
+      "actualRepairInputDigest": "951dd8a85dd4aef51e024861c16c639a3e101f7bef337a66c96841f82d81998c",
+      "matchesFrozenRedraftContext": true,
+      "differsFromLegacyDigest": true
+    }
+  ],
+  "realProviderCallsForThisProbe": 0,
+  "productionRowsChanged": 0,
+  "boundary": "Read-only recomputation of actual saved graph input fingerprints. Confirms new redraft mode and requested requirements were used in the production graph, not merely stored as unused metadata. Response quality is separately scored and remains incomplete."
+}

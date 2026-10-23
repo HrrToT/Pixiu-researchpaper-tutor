@@ -1,0 +1,21 @@
+{
+  "date": "2026-10-18",
+  "sourceCommit": "d8388387",
+  "promptVersion": "dr-v2.20261018.121",
+  "checks": {
+    "passed": 2004,
+    "warnings": 1,
+    "seconds": 108.37,
+    "log": "tmp/pytest-dr121-full.log"
+  },
+  "behavior": [
+    "One extraction batch returns to coverage assessment; adequate evidence advances dependencies before unnecessary further extraction.",
+    "When coverage is missing, unreviewed already-read passages run before targeted search and do not consume a requery round.",
+    "Whole pending passages are removed from an oversized batch; literal evidence is not clipped to fit and the repair reserve is not borrowed.",
+    "Each batch-specific assessment input is frozen under its evidence/review identity, while exact confirmed pairs reuse prior verdicts.",
+    "Empty, invalid and truncated responses remain reviewed and cannot be automatically resent after repository reconstruction.",
+    "The immutable contract applies only to new runs. Graph step allowance accommodates batch/frontier routing without changing any call/token/time limit."
+  ],
+  "runtime": "runtime-load-dr121-batches-20261018.json",
+  "boundary": "Compiled graph and SQLite routing with fixed model fixtures. D1-v10 proved dependent dispatch but did not pass content review."
+}

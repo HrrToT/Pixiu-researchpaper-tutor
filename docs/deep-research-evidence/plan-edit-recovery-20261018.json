@@ -1,0 +1,59 @@
+{
+  "date": "2026-10-18",
+  "backendSourceCommit": "b43687f1",
+  "promptVersion": "dr-v2.20261018.118",
+  "commits": {
+    "javaPlanRevision": "444562d4",
+    "planEditValidation": "de571866",
+    "exactDiscovery": "5db49414",
+    "editedPlanResume": "b43687f1"
+  },
+  "checks": {
+    "python": {
+      "passed": 1950,
+      "warnings": 1,
+      "seconds": 74.46,
+      "scope": "All deep research, reading, PDF table and config tests.",
+      "log": "tmp/pytest-dr118-full.log"
+    },
+    "java": {
+      "passed": 55,
+      "sourceCommit": "444562d4",
+      "isolatedDatabase": "in-memory H2",
+      "log": "tmp/dr116-java-checks-agent.log"
+    },
+    "focusedExactDiscovery": {
+      "passed": 70,
+      "seconds": 7.75,
+      "overlapWithFull": true
+    },
+    "compiledPlanResume": {
+      "passed": 10,
+      "seconds": 2.59,
+      "overlapWithFull": true
+    }
+  },
+  "verifiedBehavior": [
+    "Java forwards both expectedRunRevision and planRevision; Python rejects stale, missing or malformed plan versions on new runs.",
+    "A human plan edit does not mutate its incoming payload, widen source policy/budget, or dispatch any model/tool call.",
+    "Pinned modern and legacy arXiv identities use exact id_list requests, preserve explicit versions and reject unrelated responses.",
+    "Identical actual discovery requests reuse the same settled ledger entry across changed reading questions and repository recreation.",
+    "Old pre-verification checkpoint with an old draft is rebased at the plan boundary; saved literal evidence is assessed against new questions first.",
+    "Four compiled-graph scenarios cover checkpoint present/missing and relevant/irrelevant evidence; targeted retrieval occurs only when needed.",
+    "Superseded draft, repair and coverage outputs remain archived; old verification is not applied to the new plan.",
+    "Edited targets enter synthesis/final question context; existing format requirements, source permission and total budgets remain fixed.",
+    "Server-owned immutable contracts preserve unmarked historical run routes and request identities."
+  ],
+  "runtime": {
+    "java": "java-plan-version-runtime-20261018.json",
+    "python": "runtime-load-dr118-20261018.json"
+  },
+  "modelCallsDuringThisWork": 0,
+  "boundary": "Fixed model/transport fixtures validate routing, replay and safeguards. No scientific content or real-provider quality credit. Tests stop at new synthesis input.",
+  "stillOpen": [
+    "Real D1/D2/D3/D5 quality gates and five fresh independent cases.",
+    "Actual dependency-driven within-run execution and exact dependency evidence traces have not been established.",
+    "Generic incremental references such as second point need authoritative parent/current-user-artifact context binding.",
+    "Existing unknown calls remain unresolved and cannot be blindly retried or bypassed by renaming an attempt."
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "date": "2026-10-22",
+  "case": "E1-v21",
+  "requests": [
+    {
+      "node": "verify_design_config",
+      "targets": [
+        "c4",
+        "c5",
+        "c7"
+      ],
+      "inputBytes": 29150,
+      "fullInputsUnchanged": true
+    },
+    {
+      "node": "verify_design_science",
+      "targets": [
+        "c1"
+      ],
+      "inputBytes": 29696,
+      "fullInputsUnchanged": true
+    },
+    {
+      "node": "verify_design_science",
+      "targets": [
+        "c6"
+      ],
+      "inputBytes": 28927,
+      "fullInputsUnchanged": true
+    },
+    {
+      "node": "verify_design_science",
+      "targets": [
+        "c8",
+        "c9"
+      ],
+      "inputBytes": 22482,
+      "fullInputsUnchanged": true
+    }
+  ],
+  "oldResponsesReplayed": 4,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "seedPresenceExact": true,
+  "originalContentResultUnchanged": true,
+  "independentCredit": 0,
+  "boundary": "Controlled envelope4 input and old-response replay only. Exact declared values do not approve any target. No historical or new scientific pass.",
+  "sourceCommit": "9f539cfe"
+}

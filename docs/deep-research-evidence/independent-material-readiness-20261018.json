@@ -1,0 +1,54 @@
+{
+  "date": "2026-10-18",
+  "manifest": "DEEP_RESEARCH_INDEPENDENT_CASES_20261018.json",
+  "definitionCommit": "c92ac734",
+  "caseDefinitionHashes": {
+    "H1F": "3d00cf3fe8b60e78a124e451fba1636924e60f9fef4d2f63954915ea48d8fa4e",
+    "H2F": "9e6517491d3b392229e071ebd55ee89ba8378e805b5c77a11c5e771201b14fcb",
+    "H3F": "cd0db4fbf039660ad54b3d9c747121e04bbc7f39800e3478d785ff59f1cafb41",
+    "H4F": "0ed2c929eee278e7b43f72732e1beec5deab30a4de0475ebcb92d009b5da4807",
+    "H5F": "def690cfcfcf8577adbcb8988441089494140027cd00918c30265a877211eaec"
+  },
+  "prepared": {
+    "stream": {
+      "sha256": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98",
+      "pdfId": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf",
+      "processingStatus": "ready",
+      "readingReady": true,
+      "questionReady": true,
+      "ragChunkCount": 61,
+      "aiAnalysisStatus": "not_requested"
+    },
+    "deform": {
+      "sha256": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854",
+      "pdfId": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf",
+      "processingStatus": "ready",
+      "readingReady": true,
+      "questionReady": true,
+      "ragChunkCount": 65,
+      "aiAnalysisStatus": "not_requested"
+    }
+  },
+  "generationRequests": 0,
+  "localContextTaskId": "dr-fresh-holdout-materials-20261018",
+  "externalOnlyCase": {
+    "case": "H3F",
+    "materialIds": [],
+    "sourcePolicy": "academic_external",
+    "codecUploadedByPreparation": false
+  },
+  "sourcePagesVisuallyInspected": {
+    "stream": [
+      5,
+      6
+    ],
+    "deform": [
+      5
+    ],
+    "codec": [
+      4,
+      5
+    ]
+  },
+  "boundary": "Only local PDF parsing/indexing; no research-model case executed by preparation. External-only paper is not supplied through this local material task."
+}

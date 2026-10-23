@@ -1,0 +1,75 @@
+{
+  "date": "2026-10-19",
+  "case": "H2F-v5",
+  "sourceCommit": "fab469c6",
+  "promptVersion": "dr-v2.20261019.182",
+  "runId": "dr_run_53144bc2d3565019884bfa89794b1483",
+  "status": "failed",
+  "machineOutcome": "none",
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "modelCalls": 10,
+  "settledTokens": 36967,
+  "elapsedSeconds": 141.0,
+  "cost": null,
+  "externalSearches": 0,
+  "fulltextFetches": 0,
+  "actualSynthesisFingerprintMatched": true,
+  "actualSynthesisOptions": {
+    "max_tokens": 8192,
+    "temperature": 0.2,
+    "thinking": {
+      "type": "enabled"
+    },
+    "reasoning_effort": "high",
+    "response_format": {
+      "type": "json_object"
+    }
+  },
+  "scores": {
+    "goalResponse": null,
+    "evidenceSupport": null,
+    "conditions": null,
+    "synthesisValue": null,
+    "executability": null,
+    "readability": null
+  },
+  "findings": [
+    "Acquisition advanced from three previously reviewed passages to fifteen, producing thirty-six exact evidence items and retaining NTC, temporal-field and FPS measurement premises. Four extraction calls precede the single paid joint-readiness check; two additional extraction calls follow a bounded requery.",
+    "Synthesis uses the actual frozen version4 high-thinking profile with8192 output tokens. The known successful Provider response has finishReason=length and incomplete raw JSON; the engine correctly fails invalid_synthesis_response instead of publishing a partial object.",
+    "No independent claim or final-answer verification occurs because a complete draft was not produced. Content is unaccepted and unscored; improved acquisition is not a comparison pass.",
+    "All ten model calls succeeded and settled,36967 tokens,141 seconds. No automatic retry or new unknown. Next adjust the bounded short-comparison generation profile; do not widen the overall budget or silently reinterpret this failed result as content success.",
+    "The new machine plan groups several human dimensions into compound obligation questions. Ranking by whole obligation instead of its frozen individual completion criteria can still omit the specific training implementation passage; inspect this independently of the known generation truncation."
+  ],
+  "reviewedPassages": 15,
+  "evidenceCount": 36,
+  "generationFailure": {
+    "code": "invalid_synthesis_response",
+    "finishReason": "length",
+    "outputTokens": 8192
+  },
+  "independentVerificationPerformed": false,
+  "nextFix": "Use bounded low reasoning for extended short comparisons, retaining the same8192 output cap, exact evidence and independent checks.",
+  "report": null,
+  "draft": null,
+  "repairChecks": null,
+  "rawFiles": [
+    {
+      "path": "tmp/dr-acceptance-receipts/H2F-v5.json",
+      "sha256": "3da372f47b9feec572949ebce7e7a02eae47161680fa5c99776eb183b1912614"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/H2F-v5.payload.json",
+      "sha256": "3277bbfeb80ab95266516aaabb94595a0fd073016dc7ca471ab4b7b49cabe0b9"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/H2F-v5.calls.json",
+      "sha256": "b4f60d0ff305b5ab3260a335405678380e8331e93cbeb8ebbad55a6835910112"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/H2F-v5.result.json",
+      "sha256": "cc5968a174d13f8555899826cf04b856f4531dbe97783770fe65135ddf563d63"
+    }
+  ],
+  "boundary": "One fixed retired development case, no automatic retry or independent credit. Original first-five scores and historical outcomes remain unchanged."
+}

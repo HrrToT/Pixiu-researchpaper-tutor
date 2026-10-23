@@ -1,0 +1,35 @@
+{
+  "date": "2026-10-19",
+  "sourceCommit": "46686ac4",
+  "promptVersion": "dr-v2.20261019.186",
+  "fullOffline": {
+    "passed": 3018,
+    "warnings": 1,
+    "seconds": 97.69,
+    "log": "tmp/pytest-dr186-full.log",
+    "sha256": "8648a5bc14699ed17eb8ff1ca01b0db525a4e2bd40acce589cc3a0bd39c2229b"
+  },
+  "focused": {
+    "passed": 97,
+    "seconds": 4.16,
+    "log": "tmp/pytest-dr186-focus.log",
+    "overlapsFull": true
+  },
+  "serverFrozenContracts": {
+    "factualRepairContractVersion": 1
+  },
+  "bounds": {
+    "maxInputBytes": 24000,
+    "maxOutputTokens": 8192,
+    "standardModelCalls": 18,
+    "standardTokens": 100000,
+    "standardSeconds": 360
+  },
+  "legacyProviderFingerprintsMatched": 16,
+  "legacySameInputRepairDifferentials": 2,
+  "providerCalls": 0,
+  "retainedDiagnostics": [
+    "The historical H2F-v6 repair request was not exactly reconstructed from terminal state. This is not counted as a Provider fingerprint; two exact old-source/current-old-policy same-input preparation differentials are separately proven."
+  ],
+  "boundary": "Offline fixtures, archived inputs and mocked repair only. No new generation, current content approval or independent credit. Legacy unknown requests and historical outcomes are not modified."
+}

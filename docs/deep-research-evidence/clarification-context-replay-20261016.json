@@ -1,0 +1,120 @@
+{
+  "date": "2026-10-16",
+  "providerCalls": 0,
+  "networkCalls": 0,
+  "newContract": {
+    "status": "failed",
+    "errorCode": "invalid_plan_response",
+    "clarificationContractVersion": 1,
+    "history": [
+      {
+        "question": "你希望先看质量还是速度？",
+        "answer": "只看画质，给初学者解释，200字以内。"
+      },
+      {
+        "question": "核查作者报告还是复现实验？",
+        "answer": "只看作者报告。"
+      }
+    ],
+    "effectiveCharacterLimit": 200,
+    "metricDomains": [
+      "quality"
+    ],
+    "constraints": [
+      "200字以内",
+      "只看作者报告"
+    ],
+    "materials": [
+      {
+        "materialId": "p"
+      }
+    ],
+    "sourcePolicy": {
+      "mode": "task_only"
+    },
+    "budgetLimits": {
+      "maxModelCalls": 18,
+      "maxTokens": 100000,
+      "maxWallClockSeconds": 360
+    },
+    "fixtureCalls": [
+      {
+        "node": "resolve_brief",
+        "status": "succeeded",
+        "settled": 1
+      },
+      {
+        "node": "resolve_brief",
+        "status": "succeeded",
+        "settled": 1
+      },
+      {
+        "node": "resolve_brief",
+        "status": "succeeded",
+        "settled": 1
+      },
+      {
+        "node": "plan",
+        "status": "succeeded",
+        "settled": 1
+      }
+    ],
+    "fixtureTokens": 80
+  },
+  "legacy": {
+    "status": "failed",
+    "errorCode": "invalid_plan_response",
+    "clarificationContractVersion": null,
+    "history": [],
+    "effectiveCharacterLimit": 300,
+    "metricDomains": [
+      "quality",
+      "speed",
+      "storage"
+    ],
+    "constraints": "",
+    "materials": [
+      {
+        "materialId": "p"
+      }
+    ],
+    "sourcePolicy": null,
+    "budgetLimits": {
+      "maxModelCalls": 18,
+      "maxTokens": 100000,
+      "maxWallClockSeconds": 360
+    },
+    "fixtureCalls": [
+      {
+        "node": "resolve_brief",
+        "status": "succeeded",
+        "settled": 1
+      },
+      {
+        "node": "plan",
+        "status": "succeeded",
+        "settled": 1
+      }
+    ],
+    "fixtureTokens": 40
+  },
+  "validated": [
+    "Restart before answering durable interrupt",
+    "Two human answers retained in order",
+    "Duplicate clarify action returns stored receipt without dispatch",
+    "Brief refresh updates requested quality scope",
+    "Both answers reach planning",
+    "Original materials/source policy/total budget unchanged despite injected payload",
+    "Legacy interrupt resumes directly to planning"
+  ],
+  "boundary": "Synthetic goal/material p and fixed fixture provider only. Real graph, facade actions, ledger and SQLite checkpoints. Plan intentionally stops before retrieval/publication. No quality score, no real model claim, no production research or unknown mutation.",
+  "sourceCommit": "338b89e",
+  "tests": {
+    "passed": 1895,
+    "warnings": 1,
+    "seconds": 69.84,
+    "sourceCommit": "338b89e",
+    "log": "tmp/pytest-dr114-full-first.log",
+    "scope": "Research, reading, PDF tables and config; no frontend or Java changes."
+  }
+}
