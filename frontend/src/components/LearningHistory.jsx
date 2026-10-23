@@ -96,13 +96,17 @@ export function LearningRecordContent({ activity, papers = [] }) {
   const concepts = activity.concepts || [];
   const turns = activity.turns || [];
   return <article className="unified-learning-detail" aria-label="学习记录详情">
-    <p className="theme-text-secondary">{activity.mode === 'quiz' ? '自测' : '精读'} · {statusLabel(activity)}</p>
-    {activity.status === 'finished' && <p className="theme-text-muted text-sm">本次学习已结束；各题核验情况以保留记录为准。</p>}
-    <p className="theme-text-secondary">{paper?.title || paper?.filename || '论文'}</p>
-    {activity.goal && <MarkdownContent>{activity.goal}</MarkdownContent>}
+    <header className="learning-record-heading">
+      <p className="learning-record-state">{activity.mode === 'quiz' ? '自测' : '精读'} · {statusLabel(activity)}</p>
+      <h1>{paper?.title || paper?.filename || '论文'}</h1>
+      {activity.status === 'finished' && <p className="learning-record-notice">本次学习已结束；各题核验情况以保留记录为准。</p>}
+      {activity.goal && <div className="learning-record-goal"><h2>本次学习目标</h2><MarkdownContent>{activity.goal}</MarkdownContent></div>}
+    </header>
     {concepts.map((concept, index) => <section key={concept.id || index}>
-      <h3>问题{concepts.length > 1 ? ` ${index + 1}` : ''}</h3><MarkdownContent>{concept.question || concept.label}</MarkdownContent>
-      <p className="unified-learning-detail-status">{{ demonstrated: '已核验', skipped: '已跳过', pending: '未核验' }[concept.status] || '未核验'}</p>
+      <div className="learning-question-heading"><h3>问题{concepts.length > 1 ? ` ${index + 1}` : ''}</h3>
+        <span className="unified-learning-detail-status" data-status={concept.status}>{{ demonstrated: '已核验', skipped: '已跳过', pending: '未核验' }[concept.status] || '未核验'}</span>
+      </div>
+      <MarkdownContent>{concept.question || concept.label}</MarkdownContent>
       {turns.filter(turn => concept.id && turn.conceptId === concept.id).map((turn, turnIndex) => <LearningTurn key={turnIndex} turn={turn} />)}
     </section>)}
     {turns.filter(turn => !concepts.some(concept => concept.id && concept.id === turn.conceptId)).map((turn, index) => <LearningTurn key={index} turn={turn} />)}

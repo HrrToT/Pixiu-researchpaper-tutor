@@ -173,3 +173,35 @@ html[data-theme=dark] .unified-app {
 .workbench-composer-footer .workbench-popover-trigger { display:flex; align-items:center; gap:5px; min-height:34px; padding:4px 6px; white-space:nowrap; }
 .chat-next-steps .workbench-popover-panel { width:280px; }
 .unified-execution-reason { color: var(--text-secondary); font-size: 12px; }
+
+/* Retained learning records share the document reading column. */
+.unified-learning-detail { max-width:760px; margin:0 auto; font-size:15px; line-height:1.75; }
+.unified-document:has(> .unified-learning-detail) > .unified-document-toolbar { max-width:760px; margin:0 auto 20px; }
+.learning-record-heading { padding-bottom:20px; border-bottom:1px solid var(--border-subtle); }
+.learning-record-state { display:inline-block; margin:0 0 10px; padding:3px 9px; border-radius:6px; background:var(--panel-muted); color:var(--text-secondary); font-size:12px; }
+.learning-record-heading h1 { margin:0; font-size:21px; line-height:1.45; font-weight:600; overflow-wrap:anywhere; }
+.learning-record-notice { margin:10px 0 0; font-size:13px; color:var(--text-secondary); }
+.learning-record-goal { margin-top:18px; padding:12px 14px; border-left:3px solid var(--accent); background:var(--panel-muted); border-radius:0 6px 6px 0; }
+.learning-record-goal h2 { margin:0 0 6px; font-size:12px; font-weight:600; color:var(--text-secondary); }
+.learning-record-goal .markdown-content > :first-child { margin-top:0; }
+.learning-record-goal .markdown-content > :last-child { margin-bottom:0; }
+.unified-learning-detail > section { margin-top:24px; }
+.learning-question-heading { display:flex; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:8px; }
+.unified-learning-detail .learning-question-heading h3 { margin:0; font-size:16px; }
+.unified-learning-detail-status { display:inline-block; padding:2px 8px; border:1px solid var(--border-subtle); border-radius:5px; font-size:12px; line-height:1.5; color:var(--text-secondary); background:var(--panel-muted); }
+.unified-learning-detail-status[data-status=demonstrated] { color:var(--success); }
+.unified-learning-detail .unified-learning-record-turn { margin-top:18px; }
+.unified-learning-detail .unified-learning-record-turn h3 { margin-top:18px; font-size:13px; color:var(--text-secondary); }
+/* A stable action row and readable excerpt for each evidence item. */
+.unified-document > .reader-chat-citations { max-width:760px; margin:20px auto 0; }
+.unified-app .reader-chat-citations > summary { padding:8px 0; font-size:12px; color:var(--text-secondary); }
+.unified-app .source-list { margin-top:8px; }
+.unified-app .source-list-item { padding:6px 0; }
+.unified-app .source-list-item + .source-list-item { margin-top:0; border-top:1px solid var(--border-subtle); }
+.source-list-number { display:none; }
+.unified-app .source-list-number { display:inline-flex; align-items:center; justify-content:center; width:22px; flex:none; font-size:12px; color:var(--text-muted); font-variant-numeric:tabular-nums; }
+.unified-app .source-list-actions { gap:4px 8px; }
+.unified-app .source-list-actions :is(.source-link-chip,.source-list-toggle) { display:inline-flex; align-items:center; gap:5px; min-height:32px; padding:5px 8px; border:0; border-radius:6px; background:transparent; color:var(--text-secondary); font-size:12px; line-height:1.5; font-weight:500; }
+.unified-app .source-list-actions :is(.source-link-chip,.source-list-toggle):hover { background:var(--accent-soft); color:var(--accent); }
+.unified-app .source-list-excerpt { margin:6px 0 4px 30px; padding:12px; border-radius:6px; font-size:13px; line-height:1.75; overflow-wrap:anywhere; }
+@media(pointer:coarse) { .unified-app .source-list-actions :is(.source-link-chip,.source-list-toggle) { min-height:44px; } }
