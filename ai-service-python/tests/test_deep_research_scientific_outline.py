@@ -106,7 +106,7 @@ def test_original_sources_and_question_are_unmodified_in_prompt():
     assert data['question']==source and data['evidence']==[{'quote':source}] and data['requirements']==[source]
 
 
-def test_client_cannot_enable_the_unreleased_outline_contract(tmp_path):
+def test_client_cannot_override_the_server_outline_contract(tmp_path):
     from services.deep_research.facade import ResearchFacade
     from services.deep_research.repository import DeepResearchRepository
     from services.deep_research.scientific_outline import enabled
@@ -114,8 +114,8 @@ def test_client_cannot_enable_the_unreleased_outline_contract(tmp_path):
     facade=ResearchFacade(repo,lambda **_:None,llm_client=object())
     try:
         row,_=facade.create({'workspaceTaskId':'t','operationKey':'fixture','question':'Design',
-            'scientificOutlineContractVersion':1,'deferStart':True},start_async=False)
-        assert 'scientificOutlineContractVersion' not in row and not enabled(row)
+            'scientificOutlineContractVersion':2,'deferStart':True},start_async=False)
+        assert row['scientificOutlineContractVersion']==1 and enabled(row)
     finally:facade.shutdown()
 
 
