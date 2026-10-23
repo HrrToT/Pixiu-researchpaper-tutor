@@ -61,7 +61,8 @@ def descriptor(node, version=6):
             'schema': schema}
 
 
-def unit_errors(value, aliases, *, node, earlier=(), baseline=False, version=6, metadata=None, target=None):
+def unit_errors(value, aliases, *, node, earlier=(), baseline=False, version=6, metadata=None, target=None,
+                metadata_rows=False):
     fields = ({'sourceRefs', 'baselineMode', 'replicationMode', 'components', 'checkpointSelection', 'unresolved'}
               if node == META else {'sourceRefs', 'initialization', 'unresolved'})
     if version == 7 and node == META:fields |= {'frameIterations','phases'}
@@ -110,11 +111,14 @@ def unit_errors(value, aliases, *, node, earlier=(), baseline=False, version=6, 
             if version==7 and not problems:
                 from services.deep_research.workflow_lifecycle_units import initialization_errors
                 problems += initialization_errors(metadata,target,init,earlier)
-    if len(packed(value).encode('utf8')) > MAX_VALUE: problems.append('unit.output_capacity')
+    # Compact metadata has an 8KB wire cap and a separate bounded expansion.
+    # All other unit grammars retain their original 8KB parsed-value cap.
+    cap = MAX_INPUT if metadata_rows and version == 7 and node == META else MAX_VALUE
+    if len(packed(value).encode('utf8')) > cap: problems.append('unit.output_capacity')
     return list(dict.fromkeys(problems))
 
 
-def unit_prompt(source_data, *, node, context, version=6):
+def unit_prompt(source_data, *, node, context, version=6, metadata_rows=False):
     task = ('Return only sourceRefs,baselineMode,replicationMode,components,checkpointSelection,unresolved. '
             'Declare every required component in dependency order. Components contain componentId/appliesTo only. '
             'Do not generate initializers or repeat the full workflow. Existing assets require evidenced availability.'
@@ -135,6 +139,10 @@ def unit_prompt(source_data, *, node, context, version=6):
             'Dimensions are integers or explicit inputIndex/axis objects, never symbols. '
             'Operations need actual nonempty typed rule parameters; keep all required states, distributions, '
             'broadcasting and transforms compatible. '+INIT_POLICY)
+    if metadata_rows and version == 7 and node == META:
+        from services.deep_research.workflow_metadata_rows import POLICY
+        task = task.replace('components,checkpointSelection,frameIterations,phases,unresolved',
+                            'componentRows,checkpointSelection,frameIterations,phaseRows,unresolved') + ' ' + POLICY
     prefix=('UNEXECUTED proposal; schema syntax does not prove science. ' + task + '\n'
         'Use concise English JSON. Facts/methods/data/assets need own original quotes; proposals need '
         'compatibility, not proof of author adoption. Missing information belongs in unresolved. '
@@ -156,6 +164,9 @@ def prepare_units(record, *, prompt, aliases, invoke, parse, checkpoint):
     version=record['executionWorkflowContractVersion']
     if type(version) is not int or version not in (6,7):raise ValueError('Unsupported workflow unit version')
     parent_request = {'prompt': prompt, 'unitContract': version}
+    from services.deep_research.workflow_metadata_rows import enabled as rows_enabled, decode as decode_rows
+    rows_mode = rows_enabled(record)
+    if rows_mode:parent_request['metadataRowsContract'] = 1
     identity = digest({'request': parent_request, 'aliases': aliases})
     saved = deepcopy(record.get('state', {}).get('executionWorkflowBlueprint'))
     if saved is None:
@@ -170,7 +181,8 @@ def prepare_units(record, *, prompt, aliases, invoke, parse, checkpoint):
     visited = set()
     def stage(key, node, context, *, earlier=(), baseline=False, target=None):
         visited.add(key)
-        body = unit_prompt(source_data, node=node, context=context, version=version)
+        use_rows = rows_mode and node == META
+        body = unit_prompt(source_data, node=node, context=context, version=version, metadata_rows=use_rows)
         request = request_identity(record, node, body, {'temperature': 0.0})
         unit = saved['units'].get(key)
         if unit is None:
@@ -200,8 +212,13 @@ def prepare_units(record, *, prompt, aliases, invoke, parse, checkpoint):
             raise DeepResearchError('invalid_workflow_blueprint_state', '工作流单元原始响应或状态已改变。')
         try:
             value = parse(unit['response'].get('content', ''))
+            wire = deepcopy(value) if use_rows else None
+            if use_rows:value = decode_rows(value)
             problems = unit_errors(value, aliases, node=node, earlier=earlier, baseline=baseline,
-                version=version,metadata=context.get('metadata'),target=target)
+                version=version,metadata=context.get('metadata'),target=target,metadata_rows=use_rows)
+            if use_rows and (len(unit['response'].get('content', '').encode('utf8')) > MAX_VALUE
+                             or len(packed(wire).encode('utf8')) > MAX_VALUE):
+                problems.append('unit.output_capacity')
             if unit['response'].get('finishReason', unit['response'].get('finish_reason')) == 'length':
                 problems = ['unit.output_truncated']
         except (TypeError, ValueError, RecursionError, OverflowError):

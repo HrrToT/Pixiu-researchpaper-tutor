@@ -1,0 +1,38 @@
+# 生命周期元信息无损行表示
+
+状态：门控候选，未默认启用，未加载到服务，未进行真实模型验证。它处理 E1-v50 元信息输出在 2,048 Token 上限截断的问题；离线编解码通过不能证明模型输出质量或完整研究验收通过。
+
+只有运行记录同时包含整数 `workflowMetadataRowsContractVersion=1`、`workflowContractVersion=5` 和 `executionWorkflowContractVersion=7` 时，元信息节点才使用 `workflow_metadata_rows_v1`。初始化节点和最终工作流语义保持不变。当前服务端不为新运行分配该标记。仓储禁止修改标记或为旧运行补入标记。
+
+## 传输与还原
+
+保持 `sourceRefs`、`baselineMode`、`replicationMode`、`checkpointSelection`、`unresolved` 和 `frameIterations`。其余字段按固定列表示：
+
+| 字段 | 固定列 |
+| --- | --- |
+| componentRows | componentId、appliesTo、lifecycle |
+| lifecycle | scope、createAfter、disposeAfter |
+| phaseRows | phaseId、scope、kind、groups、sharing、after、reads、updates、outputs、action、budget |
+| reads 的状态引用 | state、selector |
+| reads 的阶段输出引用 | phaseId、outputId、selector |
+| action | action、parameters |
+| parameters 每行 | name、type、value |
+
+schema 从原版本 7 定义复制派生，保留原枚举、数量限制及取值约束。checkpointSelection、budget 等对象不改写。列的顺序和行长度固定；未知字段、缺列、多列、非 JSON 容器及非有限浮点数被拒绝，不填默认值、不补闭合 JSON、不纠正模型选择。
+
+解码只恢复字段名，保留值、顺序、类型、Unicode、null 和所有引用。完整对象继续通过已有生命周期语义检查及全量组装检查。不存在把组件 ID 自动替换成阶段 ID 的修复。提示明确：`baseline` 是完整基线预处理状态的保留句柄；组件之间的初始化依赖放在初始化输入和组件顺序中；`createAfter`、`disposeAfter` 引用阶段 ID。单独的可变基线副本仍可由模型选择，但必须在后续单元完整声明初始化。
+
+## 容量、身份与恢复
+
+输出仍限 2,048 Token；原始元信息响应与其规范化行表示均限 8,192 UTF-8 字节。解码后对象有独立 32,000 字节上限，全量组装也受原版本 7 的 32,000 字节上限约束。提示加 schema 仍限 32,000 字节，整轮仍限 18 次调用、100,000 Token、360 秒。容量拒绝不得通过删减研究要求、证据或状态来规避。
+
+开启标记的父请求身份包含 `metadataRowsContract=1`。保存原始请求、schema、原始响应及摘要，解码值也保存独立摘要；恢复时重新解码并核对。无效响应、输入超限、未知调用继续沿用原持久化和不重复发送规则。旧运行没有新字段，保持原父请求、提示、schema 与检查上限。
+
+## 已取得的离线证据
+
+- 初版 99 项关联检查通过，随后新增容量边界测试并进入固定源码全套回归；完整结果在独立证据文件中登记。
+- 38 组历史请求重放通过，无模型请求，无生产数据写入。
+- E1-v50 的旧元信息提示可由冻结父请求完全重建；新请求的问题、计划、要求、来源、证据和表格逐值不变。新提示加 schema 为 25,614 字节，旧请求为 25,411 字节。新增列说明增加少量输入，不减少输入内容。
+- 完整工程夹具中，规范化完整对象 8,961 字节，行表示 5,107 字节，双向还原一致。它验证容量与值保留边界，不代表真实模型在 2,048 Token 内必然生成。
+
+不修复或重新解释 E1-v50 已截断的原响应。它继续是失败案例。新表示必须经过运行时加载、固定案例真实调用、完整状态组装和独立科学审核，才能判断是否解决实际问题。DR0—DR5 未完成，独立验收仍为 0/5。

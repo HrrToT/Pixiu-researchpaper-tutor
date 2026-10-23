@@ -1,0 +1,112 @@
+{
+  "workflowMetadataRowsContractVersion": 1,
+  "defaultEnabled": false,
+  "runtimeLoaded": false,
+  "scientificApproval": false,
+  "independentAcceptancePassed": 0,
+  "independentAcceptanceTotal": 5,
+  "limits": {
+    "outputTokens": 2048,
+    "rawAndCanonicalWireBytes": 8192,
+    "expandedMetadataBytes": 32000,
+    "inputWithSchemaBytes": 32000,
+    "caseCalls": 18,
+    "caseTokens": 100000,
+    "caseSeconds": 360
+  },
+  "focusedRegression": {
+    "files": 4,
+    "passed": 99,
+    "seconds": 17.02,
+    "additionalCapacityBoundaryTest": "included in pending full regression"
+  },
+  "fullRegression": {
+    "status": "running",
+    "log": "tmp/pytest-metadata-rows-full-20261023.log"
+  },
+  "legacyReplay": {
+    "scripts": [
+      "replay-dr210-legacy.py",
+      "replay-dr210-verification.py",
+      "replay-dr210-h5unknown.py",
+      "replay-dr210-e1-v1.py",
+      "replay-dr210-e1-v2.py",
+      "probe-dr210-legacy-actual-feedback.py",
+      "probe-dr210-legacy-review-calibration.py",
+      "probe-dr210-legacy-e1-audit.py",
+      "probe-dr210-e1-representation.py",
+      "probe-dr210-e1-attribution-final.py",
+      "probe-dr210-e1-config.py",
+      "probe-dr210-e1-v8-plan-final.py",
+      "probe-dr210-e1-v9-actual.py",
+      "probe-dr211-e1-v10-actual.py",
+      "probe-dr213-e1-coverage.py",
+      "probe-dr213-e1-v11-actual.py",
+      "probe-dr214-e1-v12-actual.py",
+      "probe-dr214-e1-v12-repair.py",
+      "probe-dr216-e1-v13-capacity.py",
+      "probe-dr220-e1-v16-actual.py",
+      "probe-dr220-e1-v16-reviews.py",
+      "probe-dr221-e1-v17-actual.py",
+      "probe-dr221-e1-v17-reviews.py",
+      "probe-dr222-e1-v18-actual.py",
+      "probe-dr222-e1-v18-reviews.py",
+      "record-dr224-format-diagnosis.py",
+      "probe-dr225-e1-v20-review.py",
+      "probe-dr226-e1-v21-reviews.py",
+      "probe-dr227-e1-v22-reviews.py",
+      "probe-dr228-e1-v22-repair-history.py",
+      "probe-dr228-e1-v23-reviews.py",
+      "probe-dr230-e1-v24-reviews.py",
+      "probe-dr233-e1-v25-planning.py",
+      "probe-dr234-e1-v26-planning.py",
+      "probe-dr235-e1-v27-planning.py",
+      "probe-dr236-e1-v28-planning.py",
+      "probe-dr236-e1-v29-planning.py",
+      "probe-dr237-e1-v29-reviews.py"
+    ],
+    "scriptCount": 38,
+    "allPassed": true,
+    "providerCalls": 0,
+    "productionWrites": 0,
+    "outputsRedirected": true
+  },
+  "actualSavedInput": {
+    "case": "E1-v50",
+    "oldRequestReconstructedExactly": true,
+    "allSourceValuesUnchanged": true,
+    "sourceKeys": [
+      "question",
+      "unverifiedScientificPlan",
+      "requirements",
+      "sources",
+      "evidence",
+      "tables"
+    ],
+    "oldPromptBytes": 20246,
+    "newPromptBytes": 21139,
+    "oldInputWithSchemaBytes": 25411,
+    "newInputWithSchemaBytes": 25614,
+    "maxInputBytes": 32000,
+    "newSchema": "workflow_metadata_rows_v1",
+    "providerCalls": 0,
+    "productionWrites": 0,
+    "repairedPartialResponse": false,
+    "scientificApproval": false
+  },
+  "completeEngineeringFixture": {
+    "expandedBytes": 8961,
+    "wireBytes": 5107,
+    "lossless": true,
+    "scientificApproval": false
+  },
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "sourceHashes": {
+    "ai-service-python/services/deep_research/workflow_metadata_rows.py": "57320b356bad2203450e8e676dbd6c6b1861525f8d5630ad14f3b2c370822d64",
+    "ai-service-python/services/deep_research/workflow_units.py": "e3b809f538d4ffe094941fe5eaa74582acacf7ac8e35c1113478d25e2570be9b",
+    "ai-service-python/services/deep_research/planning_transport.py": "e407bf5757ff4a155710ab47cef683c80034c0f95c25ae886bc0bf008480b3ed",
+    "ai-service-python/services/deep_research/repository.py": "5009478aa3ba28a3933ac6a44979f65209dd5038b57709f443cb22e2f3c1074d",
+    "ai-service-python/tests/test_deep_research_workflow_metadata_rows.py": "ac19dbe7c4a36ccf9347781873ef6b4487b56c6d7103e07fd5b4a2f8fe7421cd"
+  }
+}
