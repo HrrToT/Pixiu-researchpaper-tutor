@@ -4,6 +4,8 @@ from llm.responses_transport import API_KEY
 
 
 def enabled(record,node):
+    from services.deep_research.scientific_outline import enabled as outline_enabled,NODE
+    if node==NODE and outline_enabled(record):return True
     from services.deep_research.workflow_transport import enabled as workflow_enabled
     if workflow_enabled(record, node):
         return True
@@ -34,6 +36,8 @@ def descriptor():
 
 
 def descriptor_for(record, node):
+    from services.deep_research.scientific_outline import enabled as outline_enabled,NODE,descriptor as outline_descriptor
+    if node==NODE and outline_enabled(record):return outline_descriptor()
     from services.deep_research.workflow_transport import enabled as workflow_enabled, descriptor as workflow_descriptor
     if workflow_enabled(record, node) and record['executionWorkflowContractVersion'] in (6,7):
         from services.deep_research.workflow_units import descriptor as unit_descriptor

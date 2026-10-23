@@ -48,6 +48,9 @@ def research_model_options(node, options):
         if node!='verify':
             raise ValueError('Bounded factual review is only valid for initial verification')
         return {**options,'thinking':{'type':'enabled'},'reasoning_effort':'low','max_tokens':8192}
+    if node == 'plan_experiment_outline':
+        return {**options,'thinking':{'type':'disabled'},'reasoning_effort':'none','max_tokens':2048,
+            'response_format':{'type':'json_object'},'timeout_seconds':60}
     if node == 'plan_workflow':
         return {**options, 'thinking': {'type':'disabled'}, 'reasoning_effort':'none',
                 'max_tokens':6144, 'response_format':{'type':'json_object'}, 'timeout_seconds':120}

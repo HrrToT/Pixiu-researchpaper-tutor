@@ -261,6 +261,8 @@ antecedents. The independent reviewer retains the complete scientific requiremen
                         from services.deep_research.blueprint_wire import LEGEND
                         if record['experimentPlanEncodingContractVersion']==7:
                             from services.deep_research.blueprint_wire import REQUEST_LEGEND as LEGEND
+        from services.deep_research.scientific_outline import enabled as outline_enabled,LEGEND as OUTLINE_LEGEND
+        if outline_enabled(record):LEGEND=OUTLINE_LEGEND
         intro=('\n'+LEGEND+'\n' if plan_encoding(record) else '''
 Unverified scientific plan (not source evidence; every final attributed claim still
 needs its OWN actual E citations):

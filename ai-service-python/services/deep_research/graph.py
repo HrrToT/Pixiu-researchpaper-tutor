@@ -1435,6 +1435,9 @@ space with unsupported global absence or incidental iteration/performance values
         if staged_mode:
             from services.deep_research.experiment_planning import planning_prompt,prepare_plan,prepare_draft
             from services.deep_research.experiment_plan_encoding import enabled as plan_encoding,wire_text
+            from services.deep_research.scientific_outline import enabled as decision_outline
+            if decision_outline(record):
+                from services.deep_research.scientific_outline import prompt_for as planning_prompt,prepare_plan
             def checkpoint_planning(value):
                 repo_update(run_id,lambda r:{**r,'state':{**r.get('state',{}),
                     'experimentPlanning':value}},expected_revision=None)
@@ -1476,7 +1479,8 @@ space with unsupported global absence or incidental iteration/performance values
                     return {'error_code': 'budget_exhausted'}
                 workflow_instruction = workflow_directive(workflow_plan)
                 current=repo_update(run_id,lambda r:r,expected_revision=None)
-            actual_basis=(wire_text(plan['basis'],version=record['experimentPlanEncodingContractVersion']) if plan_encoding(record)
+            actual_basis=(wire_text(plan['basis'],version=record['experimentPlanEncodingContractVersion'])
+                if plan_encoding(record) and not decision_outline(record)
                 else json.dumps(plan['basis'],ensure_ascii=False,separators=(',',':')))
             from services.deep_research.experiment_generation_envelope import enabled as generation_envelope,refit
             if generation_envelope(record):

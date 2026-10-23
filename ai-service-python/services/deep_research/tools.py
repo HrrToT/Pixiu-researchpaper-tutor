@@ -277,6 +277,10 @@ class TrackedLLMInvoker:
         from services.deep_research.experiment_capacity import transport_limit
         legacy = verification_input_limit(record, node, self._max_input, self._verification_max_input)
         from services.deep_research.execution_workflow_blueprint import enabled as workflow_blueprint
+        from services.deep_research.scientific_outline import enabled as outline_enabled,NODE
+        if node==NODE and outline_enabled(record):
+            from services.deep_research.planning_transport import overhead_bytes
+            return max(0,min(getattr(self,'_experiment_max_input',self._max_input),32000)-overhead_bytes(record,node))
         if node in ('plan_workflow', 'plan_workflow_meta', 'plan_workflow_init') and workflow_blueprint(record):
             return min(getattr(self, '_experiment_max_input', self._max_input), 32000)
         from services.deep_research.repair_budget import experiment_repair_window
