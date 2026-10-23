@@ -80,7 +80,9 @@ def validate_basis(value,allowed,*,max_bytes=MAX_BASIS_BYTES,lean=False,blueprin
         return False
 
 
-def planning_prompt(*,question,obligations,sources,evidence,tables,metric_domains,compact=False,lean=False,positional=False,configuration_consistency_version=0,input_contract_version=0,execution_guidance_version=0,blueprint=False,blueprint_rows=False,state_lists=False,shared_blueprint=False):
+def planning_prompt(*,question,obligations,sources,evidence,tables,metric_domains,compact=False,lean=False,positional=False,configuration_consistency_version=0,input_contract_version=0,execution_guidance_version=0,blueprint=False,blueprint_rows=False,state_lists=False,shared_blueprint=False,request_sized_blueprint=False):
+    if request_sized_blueprint is True and shared_blueprint is not True:
+        raise ValueError('Request-sized blueprint requires shared encoding')
     if shared_blueprint is True and not (blueprint is True and blueprint_rows is True and state_lists is True):
         raise ValueError('Shared blueprint requires the complete structured row profile')
     from services.deep_research.design_drafting import _DRAFT_POLICY,_DRAFT_STATISTICS
@@ -157,6 +159,8 @@ record its finite unmatched cost honestly, without claiming an isolated paramete
                 from services.deep_research.experiment_blueprint import PLANNING_STATE_LISTS as PLANNING
                 if shared_blueprint is True:
                     from services.deep_research.blueprint_wire import PLANNING
+                    if request_sized_blueprint is True:
+                        PLANNING=PLANNING.replace('a<=4000-byte tuple','a tuple bounded by the complete request')
             elif shared_blueprint is True:
                 raise ValueError('Shared blueprint requires trainable-state lists')
         elif state_lists is True:
@@ -193,10 +197,16 @@ def request_identity(record,node,prompt,options):
 
 
 def raw_basis_limit(record):
-    if type(record.get('experimentPlanEncodingContractVersion')) is int and record['experimentPlanEncodingContractVersion']==6:
+    if type(record.get('experimentPlanEncodingContractVersion')) is int and record['experimentPlanEncodingContractVersion'] in (6,7):
         from services.deep_research.blueprint_wire import RAW_RESPONSE_BYTES
         return RAW_RESPONSE_BYTES
     return MAX_BASIS_BYTES
+
+
+def wire_basis_limit(record):
+    # New plans use the already bounded raw ceiling; prepare_draft still enforces
+    # the complete request and the ledger enforces the unchanged run budget.
+    return 8192 if type(record.get('experimentPlanEncodingContractVersion')) is int and record['experimentPlanEncodingContractVersion']==7 else MAX_BASIS_BYTES
 
 
 def valid_plan_basis(record,value,aliases):
@@ -204,12 +214,12 @@ def valid_plan_basis(record,value,aliases):
     if plan_encoding(record):
         from services.deep_research.experiment_blueprint import enabled as blueprint_enabled
         version=record['experimentPlanEncodingContractVersion']
-        if not validate_basis(value,aliases,max_bytes=None if version in (4,5,6) else MAX_BASIS_BYTES,lean=True,blueprint=blueprint_enabled(record),state_lists=version in (5,6)):return False
+        if not validate_basis(value,aliases,max_bytes=None if version in (4,5,6,7) else MAX_BASIS_BYTES,lean=True,blueprint=blueprint_enabled(record),state_lists=version in (5,6,7)):return False
         try:
-            if version in (4,5,6):
+            if version in (4,5,6,7):
                 from services.deep_research.experiment_blueprint import columns
                 if len(json.dumps(columns(value),ensure_ascii=False,separators=(',',':'),allow_nan=False).encode('utf8'))>raw_basis_limit(record):return False
-            return len(wire_text(value,version=version).encode('utf8'))<=(MAX_BASIS_BYTES if flexible(record) else basis_limit(record))
+            return len(wire_text(value,version=version).encode('utf8'))<=(wire_basis_limit(record) if flexible(record) else basis_limit(record))
         except (TypeError,ValueError,OverflowError):return False
     return validate_basis(value,aliases,max_bytes=basis_limit(record),lean=record.get('experimentDraftContractVersion') in (5,6))
 
@@ -218,13 +228,13 @@ def basis_encoding_audit(record,basis):
     from services.deep_research.experiment_plan_encoding import wire_text,flexible
     raw=len(json.dumps(basis,ensure_ascii=False,separators=(',',':')).encode('utf8'))
     canonical=raw
-    if record['experimentPlanEncodingContractVersion'] in (4,5,6):
+    if record['experimentPlanEncodingContractVersion'] in (4,5,6,7):
         from services.deep_research.experiment_blueprint import columns
         raw=len(json.dumps(columns(basis),ensure_ascii=False,separators=(',',':'),allow_nan=False).encode('utf8'))
     wire=len(wire_text(basis,version=record['experimentPlanEncodingContractVersion']).encode('utf8'))
     if flexible(record):
-        return {'rawBytes':raw,'wireBytes':wire,**({'canonicalBytes':canonical} if record['experimentPlanEncodingContractVersion'] in (4,5,6) else {}),'preferredSlotBytes':basis_limit(record),
-            'rawLimitBytes':raw_basis_limit(record),**({'wireLimitBytes':MAX_BASIS_BYTES} if record['experimentPlanEncodingContractVersion']==6 else {}),
+        return {'rawBytes':raw,'wireBytes':wire,**({'canonicalBytes':canonical} if record['experimentPlanEncodingContractVersion'] in (4,5,6,7) else {}),'preferredSlotBytes':basis_limit(record),
+            'rawLimitBytes':raw_basis_limit(record),**({'wireLimitBytes':wire_basis_limit(record)} if record['experimentPlanEncodingContractVersion'] in (6,7) else {}),
             'fitsPreferredSlot':wire<=basis_limit(record),'scientificApproval':False}
     return {'rawBytes':raw,'wireBytes':wire,'slotLimit':basis_limit(record),'scientificApproval':False}
 
@@ -274,7 +284,7 @@ def prepare_plan(record,*,prompt,aliases,invoke,parse,checkpoint):
         if saved.get('status')=='output_capacity':
             if (not flexible(record) or digest(saved.get('response'))!=saved.get('responseDigest')
                     or parsed_basis(saved.get('response'),parse,record)!=saved.get('basis')
-                    or not validate_basis(saved.get('basis'),aliases,max_bytes=None,lean=True,blueprint=blueprint,state_lists=encoding_version in (5,6))
+                    or not validate_basis(saved.get('basis'),aliases,max_bytes=None,lean=True,blueprint=blueprint,state_lists=encoding_version in (5,6,7))
                     or valid_plan_basis(record,saved.get('basis'),aliases)
                     or digest(saved.get('basisEncodingAudit'))!=digest(basis_encoding_audit(record,saved['basis']))):
                 raise DeepResearchError('invalid_experiment_planning_state','保存的规划容量记录已改变，不能重新发送。')
@@ -301,7 +311,7 @@ def prepare_plan(record,*,prompt,aliases,invoke,parse,checkpoint):
     basis=parsed_basis(response,parse,record)
     if (flexible(record) and isinstance(response,dict)
             and response.get('finishReason',response.get('finish_reason'))!='length'
-            and validate_basis(basis,aliases,max_bytes=None,lean=True,blueprint=blueprint,state_lists=encoding_version in (5,6))
+            and validate_basis(basis,aliases,max_bytes=None,lean=True,blueprint=blueprint,state_lists=encoding_version in (5,6,7))
             and not valid_plan_basis(record,basis,aliases)):
         saved.update(status='output_capacity',basis=basis,basisEncodingAudit=basis_encoding_audit(record,basis))
         checkpoint(saved)
@@ -321,7 +331,7 @@ def parsed_basis(response,parse,record=None):
     try:
         value=parse(response.get('content','')) if isinstance(response,dict) else None
         if (record is not None and type(record.get('experimentPlanEncodingContractVersion')) is int
-                and record['experimentPlanEncodingContractVersion'] in (4,5,6)):
+                and record['experimentPlanEncodingContractVersion'] in (4,5,6,7)):
             from services.deep_research.experiment_blueprint import columns
             value=columns(value,expand=True)
         return value

@@ -748,3 +748,12 @@ Provider 接口与角色分离。查询改写、资料初筛和常规提取使�
 - [Open Deep Research 仓库](https://github.com/langchain-ai/open_deep_research)及[主管与研究节点实现](https://github.com/langchain-ai/open_deep_research/blob/main/src/open_deep_research/deep_researcher.py)。
 - [DeerFlow 仓库](https://github.com/bytedance/deer-flow)。
 - 本仓库：`FRONTEND_PRODUCT_DESIGN_20261011.md`、`CRITICAL_READING_DESIGN_20261011.md`、`FEATURE_DEMO_20261010.md`、`EXTERNAL_ACADEMIC_SEARCH_PLAN.md`、`P6_WEB_SEARCH_SECURITY_PLAN.md`。
+
+
+### 2026-10-22 实验规划容量补充（编码版本 7）
+
+实验规划保留完整初始化状态、训练参数和来源引用。新运行的规划编码版本 7 取消旧版本固定 4,000 字节的内部传输分配限制，使用 8,192 字节的规划原稿及传输上限，并在合并来源证据、输出结构和要求后，以完整请求 32,000 字节作为最终准入条件。不能通过截断规划、遗漏必需证据或缩小用户问题来满足容量。
+
+版本 1—6 的请求和容量规则保持原样；已经失败或结果未知的历史请求不能按新版本重新解释或自动重发。整轮 18 次调用、100,000 Token、360 秒预算不因此扩大。规划是待验证方案，容量准入不代表事实正确或科学验收通过。
+
+验证边界：E1-v31 原始失败请求可精确重建；离线新版本回放的完整生成输入为 31,966 字节，19 条证据及原文保留。该回放未调用提供商，不能代替真实生成及审阅质量验收。

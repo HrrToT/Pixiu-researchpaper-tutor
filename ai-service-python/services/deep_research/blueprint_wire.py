@@ -83,3 +83,8 @@ LEGEND=('UNVERIFIED tuple6=[refs,[intervention,data,[inputs,dtype,blocks,transfe
     'Trainables integers index UNIQUE flattened block/state names, zero-based; strings are literal. '
     'Expand exact values, infer no states. steps=optimizer_steps, not video frames. '
     'Public Budget1 uses canonical units. NOT evidence/approval:')
+
+REQUEST_LEGEND=('UNVERIFIED [refs,[intervention,data,[inputs,dtype,B,transfer],pose,measurement,[P,accounting]],gaps]. '
+    'B=[name,S,forward]; S=[name,shape,initializer] (dtype=null: [name,dtype,shape,initializer]); '
+    'P=[name,appliesTo,scope,unit,cap,trainables,stop]. '
+    'Trainable integers=unique flattened state indices (0-based); strings literal. steps=optimizer_steps.')
