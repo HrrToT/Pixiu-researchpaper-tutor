@@ -191,7 +191,8 @@ def request_identity(record,node,prompt,options):
     options=research_model_options(node,options)
     identity={'prompt':prompt,'extra':options}
     if native_json(record):
-        options={**options,'response_format':{'type':'json_object'}};identity['extra']=options
+        from services.deep_research.planning_transport import options_for_record
+        options=options_for_record(record,node,options);identity['extra']=options
         identity['messages']=messages_for_record(record,node,prompt)
     return identity
 
@@ -241,8 +242,8 @@ def basis_encoding_audit(record,basis):
 
 def prepare_plan(record,*,prompt,aliases,invoke,parse,checkpoint):
     """Return a received plan or None for known pre-send budget refusal."""
-    from services.deep_research.experiment_capacity import input_limit,enabled as capacity_enabled
-    if len(prompt.encode())>input_limit(record):
+    from services.deep_research.experiment_capacity import node_input_limit,enabled as capacity_enabled
+    if len(prompt.encode())>node_input_limit(record,'plan_experiment'):
         raise DeepResearchError('experiment_planning_input_capacity','实验科学规划输入超过原有容量，尚未发送。')
     from services.deep_research.experiment_envelope import enabled as compact_enabled,DIRECT_PLAN_OPTION
     request=request_identity(record,'plan_experiment',prompt,{'max_tokens':PLANNING_OUTPUT_TOKENS,'temperature':0.0,
@@ -302,7 +303,8 @@ def prepare_plan(record,*,prompt,aliases,invoke,parse,checkpoint):
             saved['status']='not_started_budget';checkpoint(saved);return None
         checkpoint(saved)
     if saved['status']=='pending':
-        response=invoke('plan_experiment',request['prompt'],request['extra'])
+        from services.deep_research.planning_transport import dispatch_options
+        response=invoke('plan_experiment',request['prompt'],dispatch_options(record,'plan_experiment',request['extra']))
         # Exceptions/unknowns propagate with the prepared request still pending;
         # the ordinary ledger blocks another physical send for that identity.
         saved.update(status='response_received',response=deepcopy(response),responseDigest=digest(response));checkpoint(saved)

@@ -314,7 +314,8 @@ class TrackedLLMInvoker:
         if structured:
             if 'messages' in (extra_body or {}):
                 raise DeepResearchError('invalid_model_options', '研究模型调用选项无效，尚未发送。')
-            extra_body = {**(extra_body or {}), 'response_format': {'type': 'json_object'}}
+            from services.deep_research.planning_transport import options_for_record
+            extra_body = options_for_record(transport_record,node,extra_body or {})
         # Full actual request digest, including native transport instructions.
         request_identity = {"prompt": prompt, "extra": extra_body or {}}
         if structured:
@@ -328,7 +329,8 @@ class TrackedLLMInvoker:
         
         # Reserve a conservative UTF-8 byte bound, then settle measured usage.
         prompt_byte_length = len(prompt.encode("utf-8"))
-        estimated_input = prompt_byte_length + 1024  # Bound the fixed system message and framing too.
+        from services.deep_research.planning_transport import overhead_bytes
+        estimated_input = prompt_byte_length + 1024 + overhead_bytes(transport_record,node)
         max_output = (extra_body or {}).get("max_tokens", 2000)
         
         # Reject overlarge input BEFORE reserve - enforce UTF-8 byte size limit

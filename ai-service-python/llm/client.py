@@ -152,6 +152,19 @@ class DeepSeekLLM:
             payload.update(request.extra_body)
         # Local transport control must never become a provider JSON parameter.
         payload.pop("timeout_seconds", None)
+        from llm.responses_transport import API_KEY, payload as responses_payload
+        responses_mode=API_KEY in (request.extra_body or {})
+        endpoint='/chat/completions'
+        schema_overhead=0
+        if responses_mode:
+            if request.stop:raise ValueError('Responses schema requests do not support stop overrides')
+            transport_options=dict(request.extra_body)
+            if self.thinking_type:transport_options.setdefault('thinking',{'type':self.thinking_type})
+            if self.reasoning_effort:transport_options.setdefault('reasoning_effort',self.reasoning_effort)
+            payload=responses_payload(resolved_messages,transport_options,model=self.model,temperature=self.temperature)
+            endpoint='/responses'
+            schema_overhead=len(json.dumps({API_KEY:'responses','response_format':transport_options['response_format']},
+                ensure_ascii=False,separators=(',',':'),allow_nan=False).encode('utf8'))
 
         timeout = self.timeout_seconds if self.timeout_seconds is not None else float(settings.deepseek_timeout_seconds)
         if request.timeout_seconds is not None:
@@ -161,6 +174,7 @@ class DeepSeekLLM:
             timeout = min(timeout, request_timeout)
         input_size = sum(len(str(item.get("content") or "")) for item in resolved_messages)
         estimated_input_tokens = sum(estimate_tokens(item.get("content") or "") for item in resolved_messages)
+        estimated_input_tokens += schema_overhead
         with trace_step(
             "llm_call",
             input_size=input_size,
@@ -171,7 +185,7 @@ class DeepSeekLLM:
             try:
                 from llm.deadline import call_with_deadline
                 response = call_with_deadline(lambda: requests.post(
-                    f"{self.base_url}/chat/completions",
+                    f"{self.base_url}{endpoint}",
                     headers={
                         "Authorization": f"Bearer {api_key}",
                         "Content-Type": "application/json",
@@ -217,6 +231,9 @@ class DeepSeekLLM:
 
             try:
                 data = response.json()
+                if responses_mode:
+                    from llm.responses_transport import chat_view
+                    data=chat_view(data)
                 content = data["choices"][0]["message"]["content"]
             except (ValueError, KeyError, IndexError, TypeError) as error:
                 raise LLMProviderError(

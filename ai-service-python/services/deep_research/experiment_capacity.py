@@ -20,6 +20,11 @@ def input_limit(record):
     return EXPERIMENT_INPUT_BYTES if enabled(record) else 24000
 
 
+def node_input_limit(record,node):
+    from services.deep_research.planning_transport import overhead_bytes
+    return max(0,input_limit(record)-overhead_bytes(record,node))
+
+
 def reserved_basis_bytes(record):
     from services.deep_research.experiment_planning import MAX_BASIS_BYTES, basis_limit
     if (enabled(record) and type(record.get('experimentGenerationEnvelopeContractVersion')) is int
@@ -30,6 +35,7 @@ def reserved_basis_bytes(record):
 
 
 def transport_limit(record, node, legacy_limit, configured_limit):
+    from services.deep_research.planning_transport import overhead_bytes
     if enabled(record) and node in NODES:
-        return min(configured_limit, EXPERIMENT_INPUT_BYTES)
-    return legacy_limit
+        return max(0,min(configured_limit, EXPERIMENT_INPUT_BYTES)-overhead_bytes(record,node))
+    return max(0,legacy_limit-overhead_bytes(record,node))

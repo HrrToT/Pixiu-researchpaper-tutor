@@ -68,15 +68,15 @@ PRIVATE_LITERAL_POLICY = (
 
 def enabled(record):
     return (isinstance(record, dict) and type(record.get('structuredOutputContractVersion')) is int
-            and record['structuredOutputContractVersion'] in {1, 2, 3, 4, 5, 6,7,8,9,10,11,12,13})
+            and record['structuredOutputContractVersion'] in {1, 2, 3, 4, 5, 6,7,8,9,10,11,12,13,14})
 
 
 def messages(node, prompt, version=2, *, prospective=False):
     # Version10 changes ONLY private experiment planning. All public drafting,
     # repair, review and other node messages remain byte-identical to version9.
-    if type(version) is int and version in (10,11,12,13):
+    if type(version) is int and version in (10,11,12,13,14):
         if node!='plan_experiment':return messages(node,prompt,9,prospective=prospective)
-        policy=PRIVATE_LITERAL_POLICY if version==13 else PRIVATE_SHARED_POLICY if version==12 else PRIVATE_STATE_LIST_POLICY if version==11 else PRIVATE_BLUEPRINT_POLICY
+        policy=PRIVATE_LITERAL_POLICY if version in (13,14) else PRIVATE_SHARED_POLICY if version==12 else PRIVATE_STATE_LIST_POLICY if version==11 else PRIVATE_BLUEPRINT_POLICY
         if len(policy.encode('utf8'))+128>1024:
             raise ValueError('Private blueprint system message exceeds reserved framing')
         return [{'role':'system','content':policy},{'role':'user','content':prompt}]
@@ -162,6 +162,10 @@ def normalize(node, response):
     raw = response.get('content', '')
     output = {**response, 'rawContent': raw, 'structuredOutput': {'version': 1,
               'requestedFormat': 'json_object', 'expectedShape': 'items' if node in ARRAY_NODES else 'object'}}
+    if response.get('finishReason')=='responses_failed':
+        output['content']='null'
+        output['structuredOutput']['receivedShape']='provider_failed'
+        return output
     if response.get('finishReason') == 'length':
         output['content'] = 'null'
         output['structuredOutput']['receivedShape'] = 'truncated'

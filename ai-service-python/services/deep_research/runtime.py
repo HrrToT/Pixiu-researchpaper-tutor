@@ -223,8 +223,9 @@ class ScopedModelClient:
                     # the reserved/fingerprinted request is the exact wire input.
                     # Never replace its shape policy or trust caller messages.
                     messages = messages_for_record(record,self.node,request.prompt)
+                    from services.deep_research.planning_transport import validate_options
                     if (request.messages != messages or 'messages' in (request.extra_body or {})
-                            or (request.extra_body or {}).get('response_format') != {'type': 'json_object'}):
+                            or not validate_options(record,self.node,request.extra_body or {})):
                         raise DeepResearchError('invalid_model_options', '研究模型调用选项无效，尚未发送。')
                 factory = parent.get_routine_client if self.node in {"resolve_brief", "extract", "assess_relevance"} and parent.get_routine_client else parent.get_client
                 # Respect the role policy already fingerprinted and reserved by the invoker.
