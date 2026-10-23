@@ -122,7 +122,7 @@ def test_extraction_contract_is_immutable_and_server_owned(tmp_path, replacement
     try:
         run, _ = facade.create({'workspaceTaskId': 't', 'operationKey': 'op', 'question': '解释方法',
             'deferStart': True, 'adaptiveExtractionContractVersion': replacement}, start_async=False)
-        assert run['adaptiveExtractionContractVersion'] == 1
+        assert run['adaptiveExtractionContractVersion'] == 2
         with pytest.raises(ValueError, match='Immutable'):
             repo.update_run(run['runId'], lambda r: {**r, 'adaptiveExtractionContractVersion': replacement})
     finally:

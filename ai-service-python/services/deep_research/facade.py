@@ -273,7 +273,7 @@ class ResearchFacade:
             "materials": materials,
             "materialSnapshot": material_snapshot,  # Immutable Java snapshot
             "contextMaterials": (material_snapshot or {}).get("contextMaterials", []) if isinstance(material_snapshot, dict) else [],
-            "promptVersion": "dr-v2.20261023.247",
+            "promptVersion": "dr-v2.20261023.248",
             "factualReviewContractVersion": 1,
             "citationPresentationContractVersion": 4,
             "configurationConsistencyContractVersion": 2,
@@ -321,7 +321,7 @@ class ResearchFacade:
             "structuredOutputContractVersion": 15,
             "claimIsolationContractVersion": 1,
             "dependencyContractVersion": 1,
-            "adaptiveExtractionContractVersion": 1,
+            "adaptiveExtractionContractVersion": 2,
             "continuationContextContractVersion": 1,
             "continuationContext": continuation_context,
             "planResumeContractVersion": 1,
@@ -997,7 +997,7 @@ class ResearchFacade:
             
             # Execute with thread_id for checkpoint isolation
             config = {"configurable": {"thread_id": run_id}}
-            if record.get('adaptiveExtractionContractVersion') == 1:
+            if type(record.get('adaptiveExtractionContractVersion')) is int and record['adaptiveExtractionContractVersion'] in (1,2):
                 # Frontier/batch routing adds graph steps, not model allowance.
                 # Every dispatched call still obeys the original run budget.
                 config['recursion_limit'] = 128

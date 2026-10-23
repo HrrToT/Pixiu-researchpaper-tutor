@@ -79,6 +79,9 @@ def make_batched_extract_node(invoke, make_evidence, validate, update, *, batch_
     def node(state):
         run_id = state["run_id"]
         record = update(run_id, lambda r: {**r, "stage": "extract"}, expected_revision=None)
+        from services.deep_research.source_passages import enabled as direct_passages, extract as extract_passages
+        if direct_passages(record):
+            return extract_passages(record, make_evidence, validate, update)
         domain = record.get("state", {})
         from services.deep_research.adaptive_assessment import enabled, passage_review_key
         incremental = enabled(record)

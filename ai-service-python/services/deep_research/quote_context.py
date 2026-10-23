@@ -95,7 +95,14 @@ def quote_context(evidence, window=_DEFAULT_WINDOW):
         return {}
     if not quote:
         return {}
-    start = source.find(quote)
+    start = evidence.get('sourceQuoteStart', source.find(quote))
+    if type(start) is not int or start < 0 or source[start:start+len(quote)] != quote:
+        return {}
+    lower = evidence.get('sourceContextStart', 0)
+    if type(lower) is not int or not 0 <= lower <= start:
+        return {}
+    source = source[lower:]
+    start -= lower
     if start == -1:
         return {}
     end = start + len(quote)
