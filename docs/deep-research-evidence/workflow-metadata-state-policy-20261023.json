@@ -10,7 +10,10 @@
     "seconds": 24.0
   },
   "fullRegression": {
-    "status": "not_started"
+    "status": "running",
+    "sourceCommit": "8a6b2a68",
+    "log": "tmp/pytest-metadata-state-policy-full-20261023.log",
+    "receipt": "tmp/metadata-state-policy-full-receipt-20261023.json"
   },
   "actualSavedInput": {
     "case": "E1-v51",
