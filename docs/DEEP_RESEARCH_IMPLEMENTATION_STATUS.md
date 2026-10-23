@@ -1,3 +1,5 @@
+2026-10-23 .259真实E1-v49：单次149秒失败invalid_experiment_planning_response，6次模型调用全部结算27373Token，无新增未知或重试，旧数据保留。实际plan_experiment冻结请求与账本一致，低推理且6144上限；该调用输入6576/输出6144，finishReason=length、原始正文0字节，仍未到生命周期单元或公开正文。新提取输入与E1-v48不同，不能作严格因果质量比较；本次没有证明低推理解决问题。下一步将前置规划限制为概念/决策层，完整数值初值仍由已实现的生命周期单元选择并接受整体审核，保留最终完整方案及原整轮预算。DR0—DR5未完成，独立验收0/5。
+
 2026-10-23 .259加载完成：51789721已空闲重启一次，相关源码哈希逐项一致，RAG/GROBID健康、前端HTTP200。5997条旧账本、全部旧运行及四组任务快照完全保留，11个旧未知暂停记录未重发。加载本身没有模型调用；E1-v49另行单次提交，结果待核验，不计科学内容通过。DR0—DR5未完成、独立验收0/5。证据：docs/deep-research-evidence/runtime-load-dr259-workflow-20261023.json。
 
 2026-10-23 .259候选：新增不可变、服务端创建的experimentPlanningReasoningContractVersion=1，仅将plan_experiment设为低档推理。E1-v48实际请求可逐字重建，候选仅thinking/reasoning_effort不同；原提示、schema、14份证据、6144含推理输出上限及18调用/100kToken/360秒整轮预算保持。旧运行不迁移，非法JSON继续拒绝，未知不重发。57项专项及200项规划/运行时/恢复/预算关联回归通过（23.41/43.01秒）。尚未加载或真实复测，不声称改善JSON或科学内容。DR0—DR5未完成、独立验收0/5。证据：docs/deep-research-evidence/planning-reasoning-input-20261023.json。
