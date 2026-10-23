@@ -36,7 +36,16 @@
     "services/deep_research/scientific_outline.py": "86f084c5c1cd74b623b948cc6948b9d28f8a55afa2a79a4722a71cd62794c003",
     "tests/test_deep_research_scientific_outline.py": "f823d7eac3a65f1430f40f638c360a24e2cd41e085be76b8d1beced85795ec2b"
   },
-  "fullRegression": "running_fixed_source_tmp/pytest-scientific-outline-full-20261023.log",
+  "fullRegression": {
+    "sourceCommit": "8bab562cd866d20a2ca40fd4f67d6c74b5b4c6dc",
+    "files": 249,
+    "passed": 4595,
+    "warnings": 1,
+    "seconds": 478.76,
+    "sourceStable": true,
+    "logSha256": "6c41b0028e49c2e630d0250568bd6ee581ec2fe3b8799e7c344820eb6b6c697f",
+    "receiptSha256": "527b485218274774fb55c996782bf63b4f4c74afdd8562bb01f25cec6e564b48"
+  },
   "providerCalls": 0,
   "serviceRestarts": 0,
   "boundary": "Gated implementation. Complete final initialization, lifecycle, budget, sources and independent checks remain required. No new provider-backed content or DR0-DR5 acceptance credit.",
