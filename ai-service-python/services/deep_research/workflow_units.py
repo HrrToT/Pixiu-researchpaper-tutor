@@ -167,6 +167,9 @@ def prepare_units(record, *, prompt, aliases, invoke, parse, checkpoint):
     from services.deep_research.workflow_metadata_rows import enabled as rows_enabled, decode as decode_rows
     rows_mode = rows_enabled(record)
     if rows_mode:parent_request['metadataRowsContract'] = record['workflowMetadataRowsContractVersion']
+    from services.deep_research.workflow_metadata_repair import enabled as repair_enabled, original_wire, prepare as prepare_repair
+    repair_mode = repair_enabled(record)
+    if repair_mode:parent_request['metadataRepairContract'] = 1
     identity = digest({'request': parent_request, 'aliases': aliases})
     saved = deepcopy(record.get('state', {}).get('executionWorkflowBlueprint'))
     if saved is None:
@@ -178,6 +181,8 @@ def prepare_units(record, *, prompt, aliases, invoke, parse, checkpoint):
             or saved.get('aliases') != aliases or saved.get('scientificApproval') is not False
             or saved.get('status') not in ('pending', 'ready') or not isinstance(saved.get('units'), dict)):
         raise DeepResearchError('invalid_workflow_blueprint_state', '分段工作流记录与原始输入不一致。')
+    if 'metadataRepair' in saved and not repair_mode:
+        raise DeepResearchError('invalid_workflow_blueprint_state', '旧工作流不得包含新版元信息修订。')
     visited = set()
     def stage(key, node, context, *, earlier=(), baseline=False, target=None):
         visited.add(key)
@@ -233,8 +238,17 @@ def prepare_units(record, *, prompt, aliases, invoke, parse, checkpoint):
                         valueDigest=digest(value), errors=problems)
             checkpoint(deepcopy(saved))
         if problems:
+            if repair_mode and node == META and original_wire(unit) is not None:
+                if 'metadataRepair' not in saved and (saved['status'] == 'ready' or len(saved['units']) > 1):
+                    raise DeepResearchError('invalid_workflow_blueprint_state', '已使用的元信息修订记录缺失。')
+                def save_repair(value):
+                    saved['metadataRepair'] = deepcopy(value); checkpoint(deepcopy(saved))
+                return prepare_repair(record, source_data=source_data, failed=unit, aliases=aliases,
+                    existing=saved.get('metadataRepair'), invoke=invoke, checkpoint=save_repair)
             raise DeepResearchError('invalid_workflow_unit_response', '工作流单元未通过检查，原响应已保留。',
                                     details={'unit': key, 'errors': problems})
+        if node == META and 'metadataRepair' in saved:
+            raise DeepResearchError('invalid_workflow_blueprint_state', '合格原元信息不得混入修订记录。')
         return value
     meta = stage('metadata', META, {})
     if meta is None: return None

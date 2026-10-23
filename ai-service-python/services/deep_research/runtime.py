@@ -54,7 +54,7 @@ def research_model_options(node, options):
     if node == 'plan_workflow':
         return {**options, 'thinking': {'type':'disabled'}, 'reasoning_effort':'none',
                 'max_tokens':6144, 'response_format':{'type':'json_object'}, 'timeout_seconds':120}
-    if node in ('plan_workflow_meta', 'plan_workflow_init'):
+    if node in ('plan_workflow_meta', 'plan_workflow_init', 'repair_workflow_meta'):
         initialize = node == 'plan_workflow_init'
         return {**options, 'thinking': {'type':'enabled' if initialize else 'disabled'},
                 'reasoning_effort':'low' if initialize else 'none',

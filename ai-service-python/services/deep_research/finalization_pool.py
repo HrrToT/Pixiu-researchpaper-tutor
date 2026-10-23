@@ -30,6 +30,7 @@ _FINALIZATION_NODES: frozenset[str] = frozenset(
         "plan_experiment_outline",
         "plan_workflow",
         "plan_workflow_meta",
+        "repair_workflow_meta",
         "plan_workflow_init",
         "verify",
         "verify_repair",

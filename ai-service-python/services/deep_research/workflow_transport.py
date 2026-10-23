@@ -3,6 +3,9 @@ from services.deep_research.experiment_workflow import STAGES
 
 
 def enabled(record, node):
+    if node == 'repair_workflow_meta':
+        from services.deep_research.workflow_metadata_repair import enabled as repair_enabled
+        return repair_enabled(record)
     if (isinstance(record, dict) and type(record.get('executionWorkflowContractVersion')) is int
             and record['executionWorkflowContractVersion'] in (6,7)):
         return node in ('plan_workflow_meta', 'plan_workflow_init')

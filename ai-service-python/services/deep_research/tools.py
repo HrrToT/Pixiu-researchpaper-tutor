@@ -281,7 +281,7 @@ class TrackedLLMInvoker:
         if node==NODE and outline_enabled(record):
             from services.deep_research.planning_transport import overhead_bytes
             return max(0,min(getattr(self,'_experiment_max_input',self._max_input),32000)-overhead_bytes(record,node))
-        if node in ('plan_workflow', 'plan_workflow_meta', 'plan_workflow_init') and workflow_blueprint(record):
+        if node in ('plan_workflow', 'plan_workflow_meta', 'plan_workflow_init', 'repair_workflow_meta') and workflow_blueprint(record):
             return min(getattr(self, '_experiment_max_input', self._max_input), 32000)
         from services.deep_research.repair_budget import experiment_repair_window
         if node == 'repair_claims' and experiment_repair_window(record):

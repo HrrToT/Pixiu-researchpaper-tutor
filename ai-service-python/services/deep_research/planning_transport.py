@@ -36,6 +36,10 @@ def descriptor():
 
 
 def descriptor_for(record, node):
+    from services.deep_research.workflow_metadata_repair import enabled as repair_enabled, NODE as REPAIR_META
+    if node == REPAIR_META and repair_enabled(record):
+        from services.deep_research.workflow_metadata_rows import descriptor as rows_descriptor
+        return rows_descriptor()
     from services.deep_research.scientific_outline import enabled as outline_enabled,NODE,descriptor as outline_descriptor
     if node==NODE and outline_enabled(record):return outline_descriptor()
     from services.deep_research.workflow_transport import enabled as workflow_enabled, descriptor as workflow_descriptor
