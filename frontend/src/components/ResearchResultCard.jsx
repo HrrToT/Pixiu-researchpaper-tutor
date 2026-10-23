@@ -1,3 +1,4 @@
+import { useTransitionCue } from './useTransitionCue';
 import React, { useEffect, useRef, useState } from 'react';
 import { ChevronDown, ChevronUp, ExternalLink, FileText, Plus, X } from 'lucide-react';
 
@@ -12,6 +13,8 @@ const accessLabels = { fulltext: '全文片段', full_text: '全文片段', abst
 /** Version 2 execution details are optional; the answer remains the primary content. */
 export default function ResearchResultCard({ taskId, run, result, error, onAction, onRefresh, onOpenReport, onJumpToSource, onAddSource }) {
   const runId = run.researchId || run.runId || result.runId;
+  const statusCue = useTransitionCue(`${taskId}:${runId}`, `${result.status}:${result.outcome || ''}`);
+  const activityCue = useTransitionCue(`${taskId}:${runId}`, typeof result.activity === 'string' ? result.activity : result.activity?.label);
   const [details, setDetails] = useState(false);
   const [tab, setTab] = useState('plan');
   const [busy, setBusy] = useState(false);
@@ -88,8 +91,8 @@ export default function ResearchResultCard({ taskId, run, result, error, onActio
     finally { setAddSourceBusy(''); }
   };
   return <article className="conversation-research-card research-result-card" aria-label="研究结果">
-    <div className="research-result-heading"><strong>{title}</strong><span role="status" aria-live="polite">{status}</span></div>
-    {!terminal && activity && !clarificationSaved && !resumeDeferred && <p className="theme-text-muted text-sm">{activity}</p>}
+    <div className="research-result-heading"><strong>{title}</strong><span data-state-cue={statusCue} role="status" aria-live="polite">{status}</span></div>
+    {!terminal && activity && !clarificationSaved && !resumeDeferred && <p data-state-cue={activityCue} className="theme-text-muted text-sm">{activity}</p>}
     {resumeDeferred && <p className="theme-text-muted text-sm">{resumeDeferred.reason === 'execution_busy'
       ? '上一步正在结束，稍后可继续。' : '当前研究较多，稍后可继续。'}</p>}
     {result.summary && <p className="research-result-summary">{result.summary}</p>}
@@ -102,7 +105,7 @@ export default function ResearchResultCard({ taskId, run, result, error, onActio
       <button type="submit" disabled={busy || !clarification.trim() || !actions.has('clarify')}>继续</button>
     </form>}
     <div className="research-result-actions">
-      {report && onOpenReport && <button type="button" onClick={() => onOpenReport(run, result)}><FileText size={14} />{result.outcome === 'partial' ? '查看已有结果' : '打开报告'}</button>}
+      {report && onOpenReport && <button data-motion-cue={statusCue && result.status === 'completed' && ['complete', 'partial'].includes(result.outcome)} type="button" onClick={() => onOpenReport(run, result)}><FileText size={14} />{result.outcome === 'partial' ? '查看已有结果' : '打开报告'}</button>}
       {['cancel', 'resume', 'continue', 'pause'].filter(action => actions.has(action)).map(action =>
         <button type="button" key={action} ref={action === 'continue' ? followupButton : undefined} disabled={busy || !onAction} onClick={() => action === 'continue' ? setFollowup(value => !value) : act(action)}>{action === 'continue' && completeFollowup ? '继续追问' : actionLabels[action]}</button>)}
       <button type="button" ref={button} aria-expanded={details} onClick={() => {

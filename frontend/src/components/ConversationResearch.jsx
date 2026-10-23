@@ -1,9 +1,11 @@
+import { useTransitionCue } from './useTransitionCue';
 import React, { useState } from 'react';
 import { getResearchStatusMeta } from './deepResearchPanelModel';
 import { researchTitle } from './conversationProcessingModel';
 import ResearchResultCard from './ResearchResultCard';
 
 export function ResearchCard({ taskId, run, result, error, onRefresh, onAction, onOpenReport, onJumpToSource, onAddSource, compactTitle, inline = true }) {
+  const statusCue = useTransitionCue(`${taskId}:${run.researchId}`, result?.status);
   const [actionError, setActionError] = useState('');
   const [busy, setBusy] = useState(false);
   const [reviews, setReviews] = useState({});
@@ -21,14 +23,14 @@ export function ResearchCard({ taskId, run, result, error, onRefresh, onAction, 
   const failure = actionError || error?.action || error?.poll;
   const errorDetail = failure && <details><summary>研究状态需确认</summary><p role="alert">{failure}</p>
     {onRefresh && <button type="button" disabled={busy} onClick={() => onRefresh(taskId, run.researchId)}>查询研究状态</button>}</details>;
-  if (!result) return <article className="conversation-research-card"><span role="status">{failure ? '暂时无法读取研究' : '正在读取研究'}：{title}</span>{errorDetail}</article>;
-  if (result.status === 'succeeded') return <article className="conversation-research-card">
+  if (!result) return <article className="conversation-research-card" data-state-cue={statusCue}><span role="status">{failure ? '暂时无法读取研究' : '正在读取研究'}：{title}</span>{errorDetail}</article>;
+  if (result.status === 'succeeded') return <article className="conversation-research-card" data-state-cue={statusCue}>
     <strong>{title}</strong> · <span>已保存</span>
-    <button type="button" disabled={!onOpenReport} onClick={() => onOpenReport?.(run, result)}>打开研究报告</button>
+    <button data-motion-cue={statusCue && result.status === 'succeeded'} type="button" disabled={!onOpenReport} onClick={() => onOpenReport?.(run, result)}>打开研究报告</button>
   </article>;
   const plan = (result.plan || []).map((item) => typeof item === 'string' ? item : item.question || item.subQuestion || '').filter(Boolean);
   const risks = result.reviewRisks || [];
-  return <article className="conversation-research-card">
+  return <article className="conversation-research-card" data-state-cue={statusCue}>
     <div><strong>{inline ? title : run.question || title}</strong> · <span>{getResearchStatusMeta(result.status).label}</span></div>
     {result.status === 'awaiting_plan_review' && <>
       <label>研究问题<textarea aria-label="研究问题列表" value={planDraft ?? plan.join('\n')} onChange={(event) => {
@@ -38,7 +40,7 @@ export function ResearchCard({ taskId, run, result, error, onRefresh, onAction, 
     </>}
     {result.status === 'awaiting_final_review' && <>
       <p>报告已生成，核对后可保存为成果。</p>
-      <button type="button" disabled={!onOpenReport} onClick={() => onOpenReport?.(run, result)}>打开研究报告</button>
+      <button data-motion-cue={statusCue && result.status === 'succeeded'} type="button" disabled={!onOpenReport} onClick={() => onOpenReport?.(run, result)}>打开研究报告</button>
       {risks.map((risk) => <label key={risk.riskId} className="research-risk">{risk.label}：{risk.detail}
         <select aria-label={`核对：${risk.detail}`} value={reviews[risk.riskId] || ''} onChange={(event) => setReviews((value) => ({ ...value, [risk.riskId]: event.target.value }))}>
           <option value="">选择核对结果</option><option value="reviewed">已核对</option><option value="needs_follow_up">仍需后续研究</option>

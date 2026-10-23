@@ -9,6 +9,20 @@ const props = { taskId: 't', run: { researchId: 'r' }, result: {
 } };
 
 describe('versioned research result', () => {
+  it('emphasizes a newly available report but never treats failed or cancelled runs as success', () => {
+    const open = vi.fn();
+    const completed = { ...props.result, status: 'completed', outcome: 'complete', reportVersionId: 'v1' };
+    const view = render(<ResearchResultCard {...props} result={completed} onOpenReport={open} />);
+    expect(screen.getByRole('button', { name: '打开报告' })).toHaveAttribute('data-motion-cue', 'false');
+    view.rerender(<ResearchResultCard {...props} onOpenReport={open} />);
+    view.rerender(<ResearchResultCard {...props} result={completed} onOpenReport={open} />);
+    expect(screen.getByRole('button', { name: '打开报告' })).toHaveAttribute('data-motion-cue', 'true');
+    for (const status of ['failed', 'cancelled']) {
+      view.rerender(<ResearchResultCard {...props} result={{ ...completed, status, outcome: 'partial' }} onOpenReport={open} />);
+      expect(screen.getByRole('button', { name: '查看已有结果' })).toHaveAttribute('data-motion-cue', 'false');
+    }
+    expect(open).not.toHaveBeenCalled();
+  });
   it('keeps unanswered clarification as an input form', () => {
     render(<ResearchResultCard {...props} result={{ ...props.result, status: 'waiting_user',
       allowedActions: ['clarify', 'cancel'], clarification: { question: '先核查哪一项？' } }} onAction={vi.fn()} />);
