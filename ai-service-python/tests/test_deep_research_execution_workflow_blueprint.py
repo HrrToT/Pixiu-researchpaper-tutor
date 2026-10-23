@@ -108,13 +108,14 @@ def test_feature_flag_requires_exact_server_version(value):
     assert not enabled(r)
 
 
-def test_graph_reuses_checked_workflow_in_public_draft_with_no_second_configuration():
+@pytest.mark.parametrize('workflow_version', [1, 2, 3])
+def test_graph_reuses_checked_workflow_in_public_draft_with_no_second_configuration(workflow_version):
     from services.deep_research.graph import make_synthesize_node
     from test_deep_research_experiment_capacity import current
     from test_deep_research_experiment_planning import Store, response
     from test_deep_research_lean_planning import lean_basis
     store = Store(current())
-    store.value['executionWorkflowContractVersion'] = 1
+    store.value['executionWorkflowContractVersion'] = workflow_version
     blueprint = value(); blueprint['sourceRefs'] = []
     public = {'sections': [], 'claims': claims()}
     public['claims'][-1].pop('executionSpec')
@@ -141,7 +142,7 @@ def test_private_prompt_omits_public_refs_grammar_without_rewriting_source_text(
     assert decoded['question'] == source and decoded['evidence'][0]['quote'] == source
 
 
-@pytest.mark.parametrize('replacement', [None, True, '1', 0, 1])
+@pytest.mark.parametrize('replacement', [None, True, '1', 0, 1, 2])
 def test_contract_is_server_owned_and_immutable(tmp_path, replacement):
     from services.deep_research.facade import ResearchFacade
     from services.deep_research.repository import DeepResearchRepository
@@ -150,7 +151,7 @@ def test_contract_is_server_owned_and_immutable(tmp_path, replacement):
     try:
         row, _ = facade.create({'workspaceTaskId': 't', 'operationKey': 'k', 'question': 'Design',
             'deferStart': True, 'executionWorkflowContractVersion': replacement}, start_async=False)
-        assert row['executionWorkflowContractVersion'] == 2
+        assert row['executionWorkflowContractVersion'] == 3
         with pytest.raises(ValueError, match='Immutable'):
             repo.update_run(row['runId'], lambda r: {**r, 'executionWorkflowContractVersion': replacement})
     finally: facade.shutdown()

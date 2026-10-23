@@ -13,5 +13,22 @@
   "reportedModel": "deepseek-v4-pro",
   "fullResponseReceipt": "tmp/deepseek-workflow-schema-v3/result.json",
   "productionContractEnabled": false,
-  "boundary": "Provider accepted the complete schema and returned a structurally valid synthetic workflow. This does not prove scientific quality or general schema enforcement."
+  "boundary": "Provider accepted the complete schema and returned a structurally valid synthetic workflow. This does not prove scientific quality or general schema enforcement.",
+  "fullRegression": {
+    "sourceCommit": "b97f048e",
+    "files": 242,
+    "passed": 4430,
+    "warnings": 1,
+    "seconds": 450.6,
+    "log": "tmp/pytest-workflow3-full.log",
+    "logSha256": "c55517855e0f6d0dfcef7c8f9a140c46bf6277c1690cea183b7d131e1e5d3a1f",
+    "boundary": "Schema implementation with default contract 2; activation changed only facade default and version."
+  },
+  "activation": {
+    "profile": ".255",
+    "contract": 3,
+    "focusedTestsPassed": 64,
+    "seconds": 10.15,
+    "runtimeLoaded": false
+  }
 }
