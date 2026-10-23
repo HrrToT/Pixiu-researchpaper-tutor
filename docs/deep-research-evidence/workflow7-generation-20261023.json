@@ -48,7 +48,16 @@
     "evidenceItems": 14,
     "authoritativeInputSha256": "63512a71cc393b6b3a133803fc3a0ad73708c752d351eab9c1366135cfba5359"
   },
-  "fullRegression": "running_fixed_source_tmp/pytest-workflow7-fixed-final-20261023.log",
+  "fullRegression": {
+    "sourceCommit": "4dcaa506e203b8903688623ad8969dd5a860c9e6",
+    "files": 246,
+    "passed": 4547,
+    "warnings": 1,
+    "seconds": 817.06,
+    "sourceStable": true,
+    "logSha256": "bec16354deedd4db6c0c48b2ef2630c048299c7e2a91ce67722584633072f95f",
+    "receiptSha256": "3d8dfd41a8d84388b2c4f33add9dbe6e29f0a2b286da5f6bc3c7b8c6fe38c6c3"
+  },
   "supersededRegression": "earlier full run deliberately stopped after lossless-input repair; not acceptance evidence",
   "providerCalls": 0,
   "productionWrites": 0,
@@ -57,5 +66,12 @@
   "postCandidateFixes": [
     "Defer initializer-only component usage until complete assembly",
     "Use target creation boundary rather than baseline frame for late initialization"
-  ]
+  ],
+  "legacyReplay": {
+    "scripts": 38,
+    "allPassed": true,
+    "providerCalls": 0,
+    "productionWrites": 0,
+    "summarySha256": "c24aac88519763e9e9abf6637010d872e1341033afd25227c4b7bd52c673f076"
+  }
 }
