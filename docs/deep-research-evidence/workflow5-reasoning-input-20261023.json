@@ -28,5 +28,6 @@
     "seconds": 322.39,
     "logSha256": "fc1fdbfed400b7a9f686e64069304f7811c846406c4998dd6f091c77b9601e1a"
   },
-  "runtimeLoaded": false
+  "runtimeLoaded": true,
+  "runtimeEvidence": "runtime-load-dr257-workflow-20261023.json"
 }
