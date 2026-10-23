@@ -1,0 +1,22 @@
+{
+  "date": "2026-10-23",
+  "sourceCommit": "1902b5ae",
+  "runtimeLoaded": false,
+  "newProviderCalls": 0,
+  "engineFailure": "Docker Desktop fails initializing Unix socket listeners with Windows error 1920",
+  "observedPaths": [
+    "Docker/run/dockerInference",
+    "docker-secrets-engine/engine.sock"
+  ],
+  "recoveryActions": [
+    "Verified runtime directory entries without reading file contents",
+    "Renamed socket runtime directories to retained before-dr241 backups",
+    "Created empty runtime directories",
+    "Requested normal Docker Desktop start and stop"
+  ],
+  "volumesModified": false,
+  "settingsModified": false,
+  "secretsRead": false,
+  "scientificApproval": false,
+  "boundary": "Startup recovery remains unverified. No successful application health or new real model case."
+}
