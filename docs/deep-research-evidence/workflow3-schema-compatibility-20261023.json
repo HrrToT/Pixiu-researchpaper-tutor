@@ -29,6 +29,7 @@
     "contract": 3,
     "focusedTestsPassed": 64,
     "seconds": 10.15,
-    "runtimeLoaded": false
+    "runtimeLoaded": true,
+    "runtimeEvidence": "runtime-load-dr255-workflow-20261023.json"
   }
 }
