@@ -662,7 +662,7 @@ class BudgetedSemanticChecker:
         verdicts = list(premise_failures)
         envelope=self._prospective_envelope() if callable(self._prospective_envelope) else self._prospective_envelope
         context_states={}
-        if type(envelope) is int and envelope in (2,3,4,5,6,7,8,9):
+        if type(envelope) is int and envelope in (2,3,4,5,6,7,8,9,10):
             context_states={c['claimId']:c['reviewContextState'] for c in accepted_context
                 if 'reviewContextState' in c}
             context_states.update({row['claimId']:{'status':'rejected','phase':'source_prerequisite',
@@ -1209,6 +1209,8 @@ The dataAvailability object is an internal audit, not new experimental results.
             by_id = {c['claimId']: c for c in claims}
             from services.deep_research.rejection_audit import enabled as rejection_binding,bind as bind_rejection
             if full_review_inputs and rejection_binding(envelope_version):
+                if envelope_version==10:
+                    from services.deep_research.review_field_refs import bind_refs as bind_rejection
                 parsed=[bind_rejection(v,[*json.loads(claims_text),*wire_context]) for v in parsed]
             visible_ids = {row["evidenceId"] for row in visible_evidence}
             for verdict in parsed:
