@@ -44,6 +44,8 @@ def options_for_record(record,node,options):
     if not enabled(record,node):return {**options,'response_format':{'type':'json_object'}}
     allowed={'response_format','thinking','reasoning_effort','max_tokens','temperature','timeout_seconds'}
     if set(options)-allowed:raise ValueError('Unsupported private planning options')
+    from services.deep_research.workflow_transport import reasoning_options
+    options=reasoning_options(record,node,options)
     return {**options,API_KEY:'responses','response_format':descriptor_for(record,node)}
 
 

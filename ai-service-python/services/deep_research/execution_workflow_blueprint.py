@@ -13,7 +13,7 @@ ROLES = ('data', 'budget', 'controls', 'groups')
 def enabled(record):
     return (isinstance(record, dict)
             and type(record.get('executionWorkflowContractVersion')) is int
-            and record['executionWorkflowContractVersion'] in (1, 2, 3, 4)
+            and record['executionWorkflowContractVersion'] in (1, 2, 3, 4, 5)
             and record.get('workflowContractVersion') == 4
             and record.get('experimentDraftContractVersion') == 6
             and (record.get('state', {}).get('outputKind') or record.get('outputKind')) == 'experiment_design')
@@ -40,7 +40,7 @@ def errors(value, aliases, *, version=1):
     # Role handles exist only for structural validation. Public refs are bound
     # to actual unique claim IDs; no configuration or source value is filled.
     result = workflow_errors({**workflow, 'refs': {role: 'role_' + role for role in ROLES}}, version=4)
-    if version == 4:
+    if version >= 4:
         from services.deep_research.workflow_transport import descriptor
         required_records = descriptor(4)['schema']['properties']['workflow']['properties']['records']['items']['enum']
         actual_records = workflow.get('records')
@@ -65,7 +65,7 @@ def prompt_for(*, question, basis, sources, evidence, tables, obligations, versi
         raise ValueError('Private workflow grammar no longer matches Workflow4')
     grammar = WORKFLOW_CONTRACT_V4.replace(refs_line, '{\n', 1).replace(
         'refs match accepted siblings and modes.', 'Public IDs are bound later; modes must agree.', 1)
-    if type(version) is not int or version not in (1, 2, 3, 4):
+    if type(version) is not int or version not in (1, 2, 3, 4, 5):
         raise ValueError('Unsupported private workflow version')
     if version == 2:
         grammar = grammar.replace(
@@ -90,7 +90,7 @@ checkpoint. If no usable asset is evidenced, specify how to train the common bas
 from available training data. If that cannot be specified faithfully, record the gap
 in unresolved instead of claiming an existing asset or successful precheck.
 '''
-    if version in (3, 4):
+    if version in (3, 4, 5):
         grammar = '''The response schema defines syntax; do not add wrappers or narrative fields.
 Initialization is BEFORE fitting: a training procedure is not an initializer. Use the
 actual baseline frame's training inputs, separately from later evaluation windows.

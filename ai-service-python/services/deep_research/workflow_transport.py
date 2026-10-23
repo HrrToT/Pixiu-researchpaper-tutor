@@ -5,12 +5,15 @@ from services.deep_research.experiment_workflow import STAGES
 def enabled(record, node):
     return (node == 'plan_workflow' and isinstance(record, dict)
             and type(record.get('executionWorkflowContractVersion')) is int
-            and record['executionWorkflowContractVersion'] in (3, 4))
+            and record['executionWorkflowContractVersion'] in (3, 4, 5))
 
 
 def descriptor(version=3):
-    if type(version) is not int or version not in (3, 4):
+    if type(version) is not int or version not in (3, 4, 5):
         raise ValueError('Unsupported workflow schema version')
+    # Contract 5 changes model reasoning only; preserve the exact schema 4 wire.
+    if version == 5:
+        version = 4
     def obj(properties):
         return dict(type='object', properties=properties, required=list(properties), additionalProperties=False)
     def arr(items, **limits):
@@ -69,3 +72,10 @@ def descriptor(version=3):
                   'workflow': workflow, 'unresolved': arr(text, maxItems=8)})
     schema['$defs'] = defs
     return {'type': 'json_schema', 'name': 'private_workflow_v' + str(version), 'schema': schema}
+
+
+def reasoning_options(record, node, options):
+    """Apply a frozen role policy before request identity and reservation."""
+    if enabled(record, node) and record['executionWorkflowContractVersion'] == 5:
+        return {**options, 'thinking': {'type': 'enabled'}, 'reasoning_effort': 'low'}
+    return options

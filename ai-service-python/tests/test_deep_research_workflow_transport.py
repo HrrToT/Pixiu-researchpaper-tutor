@@ -32,7 +32,7 @@ def test_schema_references_resolve_and_operation_rules_require_parameters():
     assert schema['properties']['workflow']['additionalProperties'] is False
 
 
-@pytest.mark.parametrize('version', [None, True, '3', 1, 2, 5])
+@pytest.mark.parametrize('version', [None, True, '3', 1, 2, 6])
 def test_schema_transport_does_not_change_old_workflow_versions(version):
     r = current(); r['executionWorkflowContractVersion'] = version
     assert not enabled(r, 'plan_workflow')
@@ -59,7 +59,7 @@ def test_schema_prompt_keeps_exact_source_data_and_separates_fitting_from_initia
     assert 'a training procedure is not an initializer' in new
 
 
-@pytest.mark.parametrize('version', [3, 4])
+@pytest.mark.parametrize('version', [3, 4, 5])
 def test_workflow_frozen_identity_matches_real_http_schema_and_resumes(tmp_path, monkeypatch, version):
     from services.deep_research.repository import DeepResearchRepository
     from services.deep_research.tools import TrackedLLMInvoker
@@ -87,6 +87,8 @@ def test_workflow_frozen_identity_matches_real_http_schema_and_resumes(tmp_path,
     assert repo.list_calls('r')[0]['argsDigest'] == digest(result['request'])
     assert post.call_args.args[0].endswith('/responses')
     assert post.call_args.kwargs['json']['text']['format'] == descriptor(version)
+    assert post.call_args.kwargs['json']['reasoning']['effort'] == ('low' if version == 5 else 'none')
+    assert post.call_args.kwargs['json']['max_output_tokens'] == 6144
     assert reserve.call_args.kwargs['budget_delta']['tokens'] == len('exact source')+1024+overhead_bytes(r,'plan_workflow')+6144
     assert run() == result and post.call_count == 1
 
@@ -121,3 +123,21 @@ def test_v4_record_order_is_irrelevant_but_missing_or_repeated_categories_fail()
     for broken in (records[:-1], records[:-1]+[records[0]]):
         v['workflow']['records'] = broken
         assert 'blueprint.records' in errors(v, {'E1':'owned'}, version=4)
+
+
+def test_v5_reasoning_is_server_owned_and_preserves_schema_budget_and_prior_modes():
+    from services.deep_research.runtime import research_model_options
+    from services.deep_research.planning_transport import validate_options
+    assert descriptor(5) == descriptor(4)
+    options = research_model_options('plan_workflow', {})
+    assert options['thinking'] == {'type':'disabled'}
+    for version in (3, 4, 5):
+        r = current(); r['executionWorkflowContractVersion'] = version
+        actual = options_for_record(r, 'plan_workflow', options)
+        assert actual['thinking'] == {'type':'enabled' if version == 5 else 'disabled'}
+        assert actual['max_tokens'] == 6144 and actual['timeout_seconds'] == 120
+        assert validate_options(r, 'plan_workflow', actual)
+        if version == 5:
+            altered = deepcopy(actual); altered['thinking'] = {'type':'disabled'}
+            assert not validate_options(r, 'plan_workflow', altered)
+            assert overhead_bytes(r, 'plan_workflow') == overhead_bytes({**r,'executionWorkflowContractVersion':4}, 'plan_workflow')
