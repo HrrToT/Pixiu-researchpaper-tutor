@@ -128,7 +128,13 @@ def unit_prompt(source_data, *, node, context, version=6):
             'All required states, distributions, broadcasting and transforms must be compatible; no placeholder zeros.')
     if version==7:
         from services.deep_research.workflow_lifecycle_units import META_POLICY, INIT_POLICY
-        task=META_POLICY if node==META else task+' '+INIT_POLICY
+        task=META_POLICY if node==META else (
+            'Return only sourceRefs,initialization,unresolved for the ONE target below. '
+            'Initialization has initializationMode,inputs,creation,stateDefinitions. '
+            'Do not generate other components or public claims. A fitting procedure is not an initializer. '
+            'Dimensions are integers or explicit inputIndex/axis objects, never symbols. '
+            'Operations need actual nonempty typed rule parameters; keep all required states, distributions, '
+            'broadcasting and transforms compatible. '+INIT_POLICY)
     prefix=('UNEXECUTED proposal; schema syntax does not prove science. ' + task + '\n'
         'Use concise English JSON. Facts/methods/data/assets need own original quotes; proposals need '
         'compatibility, not proof of author adoption. Missing information belongs in unresolved. '

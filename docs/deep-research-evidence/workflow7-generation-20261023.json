@@ -4,8 +4,8 @@
   "defaultEnabled": false,
   "focusedRegression": {
     "files": 4,
-    "passed": 79,
-    "seconds": 11.97
+    "passed": 80,
+    "seconds": 15.17
   },
   "frozen6SchemasAndPromptsEqual": true,
   "frozenSourceCommit": "64f2828d",
@@ -20,9 +20,9 @@
     "ai-service-python/services/deep_research/review_field_refs.py": "5cd53e0ecddd3b8aa481ad0d590c93ebacb69e585892d455015a25afdf390ea4",
     "ai-service-python/services/deep_research/tools.py": "69501db8d8ab500e499e9b858787417f07fbdcb1bdc63de65f61348f1e054ffe",
     "ai-service-python/services/deep_research/workflow_transport.py": "6a9082c49e8265700b08249983aed15568a4d9b9ddf54a6d529ca2395888117c",
-    "ai-service-python/services/deep_research/workflow_units.py": "ff2f629529234f2fa4f299882fd6f61dba3b3e1c51055003a5133ad777afd982",
-    "ai-service-python/services/deep_research/workflow_lifecycle_units.py": "3da61b34e89316054a251b3a3a0f9f964d86aab9d28c2c416706564aa7a8e725",
-    "ai-service-python/tests/test_deep_research_workflow_lifecycle_units.py": "ef37bfeaefab7eb689d81e8d49235721f0a123eee79c4cb04b288bd386987cfa"
+    "ai-service-python/services/deep_research/workflow_units.py": "179a77809ae16d246d30afc6527251515e6386123d9cc8ed70f9c6fa89aed889",
+    "ai-service-python/services/deep_research/workflow_lifecycle_units.py": "40d67b0ebcc0b5625af5e1b05a5deacaa8fb2c867ca4c06771bfc38a107596fd",
+    "ai-service-python/tests/test_deep_research_workflow_lifecycle_units.py": "3c67c4c83dee20e523c4b6e39ca2f3b7b50923c0867bfc033b72dc3f288951c9"
   },
   "capacity": {
     "sourceBytes": 22637,
@@ -34,22 +34,28 @@
       },
       {
         "node": "plan_workflow_init",
-        "bytes": 30265,
+        "bytes": 30039,
         "losslessRoundtrip": true
       },
       {
         "node": "plan_workflow_init",
-        "bytes": 31272,
+        "bytes": 31046,
         "losslessRoundtrip": true
       }
     ],
     "providerCalls": 0,
-    "boundary": "Saved real source input with abstract workflow fixtures; actual generated contexts remain separately guarded."
+    "boundary": "Saved real source input with abstract workflow fixtures; actual generated contexts remain separately guarded.",
+    "evidenceItems": 14,
+    "authoritativeInputSha256": "63512a71cc393b6b3a133803fc3a0ad73708c752d351eab9c1366135cfba5359"
   },
-  "fullRegression": "running_final_source_in_tmp/pytest-workflow7-generation-final-20261023.log",
+  "fullRegression": "running_fixed_source_tmp/pytest-workflow7-fixed-final-20261023.log",
   "supersededRegression": "earlier full run deliberately stopped after lossless-input repair; not acceptance evidence",
   "providerCalls": 0,
   "productionWrites": 0,
   "serviceRestarts": 0,
-  "boundary": "Versioned generation candidate. Offline fixtures do not prove provider-backed scientific content or DR0-DR5 completion."
+  "boundary": "Versioned generation candidate. Offline fixtures do not prove provider-backed scientific content or DR0-DR5 completion.",
+  "postCandidateFixes": [
+    "Defer initializer-only component usage until complete assembly",
+    "Use target creation boundary rather than baseline frame for late initialization"
+  ]
 }

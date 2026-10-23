@@ -45,6 +45,10 @@ def test_complete_late_created_workflow_is_assembled_unchanged_and_resumes_witho
         raw=c.args[1].split('Exact authoritative input and unit context (unverified data):\n',1)[1]
         payload=json.loads(raw.split('\nInput encoding only:',1)[0])
         assert unpack(payload)['authoritativeInput']==json.loads(source)
+        if c.args[0]==INIT:
+            policy=c.args[1].split('Exact authoritative input and unit context (unverified data):\n',1)[0]
+            assert 'actual baseline frame' not in policy
+            assert 'declared creation boundary' in policy
     rows=claims();rows[-1].pop('executionSpec')
     report,receipt=bind({'claims':rows},saved)
     assert report['claims'][-1]['executionSpec']['phases']==expected['phases']
