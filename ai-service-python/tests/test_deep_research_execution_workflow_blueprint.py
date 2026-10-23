@@ -102,13 +102,13 @@ def test_public_generation_cannot_override_or_ambiguously_bind_the_saved_workflo
     with pytest.raises(DeepResearchError): bind(report, saved)
 
 
-@pytest.mark.parametrize('value', [None, True, '1', 0, 4])
+@pytest.mark.parametrize('value', [None, True, '1', 0, 5])
 def test_feature_flag_requires_exact_server_version(value):
     r = record(); r['executionWorkflowContractVersion'] = value
     assert not enabled(r)
 
 
-@pytest.mark.parametrize('workflow_version', [1, 2, 3])
+@pytest.mark.parametrize('workflow_version', [1, 2, 3, 4])
 def test_graph_reuses_checked_workflow_in_public_draft_with_no_second_configuration(workflow_version):
     from services.deep_research.graph import make_synthesize_node
     from test_deep_research_experiment_capacity import current
@@ -142,7 +142,7 @@ def test_private_prompt_omits_public_refs_grammar_without_rewriting_source_text(
     assert decoded['question'] == source and decoded['evidence'][0]['quote'] == source
 
 
-@pytest.mark.parametrize('replacement', [None, True, '1', 0, 1, 2])
+@pytest.mark.parametrize('replacement', [None, True, '1', 0, 1, 2, 3])
 def test_contract_is_server_owned_and_immutable(tmp_path, replacement):
     from services.deep_research.facade import ResearchFacade
     from services.deep_research.repository import DeepResearchRepository
@@ -151,7 +151,7 @@ def test_contract_is_server_owned_and_immutable(tmp_path, replacement):
     try:
         row, _ = facade.create({'workspaceTaskId': 't', 'operationKey': 'k', 'question': 'Design',
             'deferStart': True, 'executionWorkflowContractVersion': replacement}, start_async=False)
-        assert row['executionWorkflowContractVersion'] == 3
+        assert row['executionWorkflowContractVersion'] == 4
         with pytest.raises(ValueError, match='Immutable'):
             repo.update_run(row['runId'], lambda r: {**r, 'executionWorkflowContractVersion': replacement})
     finally: facade.shutdown()

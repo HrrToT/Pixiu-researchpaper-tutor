@@ -35,7 +35,7 @@ def descriptor():
 
 def descriptor_for(record, node):
     from services.deep_research.workflow_transport import enabled as workflow_enabled, descriptor as workflow_descriptor
-    return workflow_descriptor() if workflow_enabled(record, node) else descriptor()
+    return workflow_descriptor(record['executionWorkflowContractVersion']) if workflow_enabled(record, node) else descriptor()
 
 
 def options_for_record(record,node,options):

@@ -13,7 +13,7 @@ ROLES = ('data', 'budget', 'controls', 'groups')
 def enabled(record):
     return (isinstance(record, dict)
             and type(record.get('executionWorkflowContractVersion')) is int
-            and record['executionWorkflowContractVersion'] in (1, 2, 3)
+            and record['executionWorkflowContractVersion'] in (1, 2, 3, 4)
             and record.get('workflowContractVersion') == 4
             and record.get('experimentDraftContractVersion') == 6
             and (record.get('state', {}).get('outputKind') or record.get('outputKind')) == 'experiment_design')
@@ -23,7 +23,7 @@ def packed(value):
     return json.dumps(value, ensure_ascii=False, separators=(',', ':'), allow_nan=False)
 
 
-def errors(value, aliases):
+def errors(value, aliases, *, version=1):
     from services.deep_research.experiment_workflow import workflow_errors
     if not isinstance(value, dict) or set(value) != {'sourceRefs', 'workflow', 'unresolved'}:
         return ['blueprint.fields']
@@ -40,6 +40,14 @@ def errors(value, aliases):
     # Role handles exist only for structural validation. Public refs are bound
     # to actual unique claim IDs; no configuration or source value is filled.
     result = workflow_errors({**workflow, 'refs': {role: 'role_' + role for role in ROLES}}, version=4)
+    if version == 4:
+        from services.deep_research.workflow_transport import descriptor
+        required_records = descriptor(4)['schema']['properties']['workflow']['properties']['records']['items']['enum']
+        actual_records = workflow.get('records')
+        if (not isinstance(actual_records, list) or len(actual_records) != 9
+                or not all(isinstance(item, str) for item in actual_records)
+                or set(actual_records) != set(required_records)):
+            result.append('blueprint.records')
     try:
         if len(packed(value).encode('utf8')) > MAX_VALUE:
             result.append('blueprint.output_capacity')
@@ -57,7 +65,7 @@ def prompt_for(*, question, basis, sources, evidence, tables, obligations, versi
         raise ValueError('Private workflow grammar no longer matches Workflow4')
     grammar = WORKFLOW_CONTRACT_V4.replace(refs_line, '{\n', 1).replace(
         'refs match accepted siblings and modes.', 'Public IDs are bound later; modes must agree.', 1)
-    if type(version) is not int or version not in (1, 2, 3):
+    if type(version) is not int or version not in (1, 2, 3, 4):
         raise ValueError('Unsupported private workflow version')
     if version == 2:
         grammar = grammar.replace(
@@ -82,7 +90,7 @@ checkpoint. If no usable asset is evidenced, specify how to train the common bas
 from available training data. If that cannot be specified faithfully, record the gap
 in unresolved instead of claiming an existing asset or successful precheck.
 '''
-    if version == 3:
+    if version in (3, 4):
         grammar = '''The response schema defines syntax; do not add wrappers or narrative fields.
 Initialization is BEFORE fitting: a training procedure is not an initializer. Use the
 actual baseline frame's training inputs, separately from later evaluation windows.
@@ -134,7 +142,7 @@ def prepare(record, *, prompt, aliases, invoke, parse, checkpoint):
         saved = {'version': version, 'inputDigest': identity, 'request': request,
                  'aliases': deepcopy(aliases), 'status': 'pending', 'scientificApproval': False}
         from services.deep_research.planning_transport import overhead_bytes
-        input_bytes = len(prompt.encode('utf8')) + (overhead_bytes(record, 'plan_workflow') if version == 3 else 0)
+        input_bytes = len(prompt.encode('utf8')) + (overhead_bytes(record, 'plan_workflow') if version >= 3 else 0)
         if input_bytes > MAX_INPUT:
             saved.update(status='not_started_capacity', inputBytes=input_bytes, maxInputBytes=MAX_INPUT)
         elif remaining_seconds(record) < 180:
@@ -156,7 +164,7 @@ def prepare(record, *, prompt, aliases, invoke, parse, checkpoint):
     response = saved['response']
     try:
         value = parse(response.get('content', ''))
-        problems = errors(value, aliases)
+        problems = errors(value, aliases, version=version)
         if response.get('finishReason', response.get('finish_reason')) == 'length':
             problems = ['blueprint.output_truncated']
     except (TypeError, ValueError, RecursionError, OverflowError):

@@ -5,10 +5,12 @@ from services.deep_research.experiment_workflow import STAGES
 def enabled(record, node):
     return (node == 'plan_workflow' and isinstance(record, dict)
             and type(record.get('executionWorkflowContractVersion')) is int
-            and record['executionWorkflowContractVersion'] == 3)
+            and record['executionWorkflowContractVersion'] in (3, 4))
 
 
-def descriptor():
+def descriptor(version=3):
+    if type(version) is not int or version not in (3, 4):
+        raise ValueError('Unsupported workflow schema version')
     def obj(properties):
         return dict(type='object', properties=properties, required=list(properties), additionalProperties=False)
     def arr(items, **limits):
@@ -58,7 +60,12 @@ def descriptor():
             obj({'mode': enum('train_loss'), 'rule': ref('rule')}),
             obj({'mode': enum('validation_split'), 'split': ref('split'), 'rule': ref('rule')})]},
         'records': arr(text, minItems=1, uniqueItems=True)})
+    if version == 4:
+        workflow['properties']['records'] = arr({'enum': [
+            'baseline_identity', 'split_manifest', 'seed_manifest', 'component_states',
+            'group_configs', 'recovery_budgets', 'evaluation_outputs', 'raw_measurements',
+            'group_checkpoints']}, minItems=9, maxItems=9, uniqueItems=True)
     schema = obj({'sourceRefs': arr(text, maxItems=20, uniqueItems=True),
                   'workflow': workflow, 'unresolved': arr(text, maxItems=8)})
     schema['$defs'] = defs
-    return {'type': 'json_schema', 'name': 'private_workflow_v3', 'schema': schema}
+    return {'type': 'json_schema', 'name': 'private_workflow_v' + str(version), 'schema': schema}
