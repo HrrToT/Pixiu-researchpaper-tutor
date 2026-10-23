@@ -10,7 +10,8 @@ from services.deep_research.experiment_execution_guidance import initialization_
 
 def render(**kwargs):
     roles = {claim['designRole'] for claim in kwargs['targets']}
-    grammar = initialization_grammar(grammar_for_roles(roles),
+    grammar = initialization_grammar(grammar_for_roles(roles,
+        workflow_version=5 if any(c.get('workflowContractVersion')==5 for c in kwargs['targets']) else 4),
         {'experimentExecutionGuidanceContractVersion': 2})
     return (brief(**kwargs) + '\nWritable role grammar (replacement objects must be complete):\n'
         + grammar)

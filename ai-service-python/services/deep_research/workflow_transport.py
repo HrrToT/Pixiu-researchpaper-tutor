@@ -4,7 +4,7 @@ from services.deep_research.experiment_workflow import STAGES
 
 def enabled(record, node):
     if (isinstance(record, dict) and type(record.get('executionWorkflowContractVersion')) is int
-            and record['executionWorkflowContractVersion'] == 6):
+            and record['executionWorkflowContractVersion'] in (6,7)):
         return node in ('plan_workflow_meta', 'plan_workflow_init')
     return (node == 'plan_workflow' and isinstance(record, dict)
             and type(record.get('executionWorkflowContractVersion')) is int
@@ -81,7 +81,7 @@ def reasoning_options(record, node, options):
     """Apply a frozen role policy before request identity and reservation."""
     if enabled(record, node) and record['executionWorkflowContractVersion'] == 5:
         return {**options, 'thinking': {'type': 'enabled'}, 'reasoning_effort': 'low'}
-    if enabled(record, node) and record['executionWorkflowContractVersion'] == 6:
+    if enabled(record, node) and record['executionWorkflowContractVersion'] in (6,7):
         return {**options, 'thinking': {'type': 'enabled' if node == 'plan_workflow_init' else 'disabled'},
                 'reasoning_effort': 'low' if node == 'plan_workflow_init' else 'none'}
     return options

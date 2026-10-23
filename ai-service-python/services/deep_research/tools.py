@@ -865,6 +865,9 @@ Do not require an unexecuted experiment to have results. Do not judge context cl
         if any(c.get('protocolContractVersion')==2 for c in [*claims,*proposal_context]):
             from services.deep_research.experiment_protocol import PROTOCOL_REVIEW_POLICY_V2
             prompt += '\n' + PROTOCOL_REVIEW_POLICY_V2
+        if any(c.get('workflowContractVersion')==5 for c in [*claims,*proposal_context]):
+            from services.deep_research.experiment_workflow import WORKFLOW_CONTRACT_V5
+            prompt+='\n'+WORKFLOW_CONTRACT_V5
         if any(c.get('workflowContractVersion') in (1, 2, 3, 4) for c in [*claims, *proposal_context]):
             versions = sorted({c['workflowContractVersion'] for c in [*claims, *proposal_context]
                 if type(c.get('workflowContractVersion')) is int and c['workflowContractVersion'] in (1, 2, 3, 4)})
@@ -1007,7 +1010,7 @@ The dataAvailability object is an internal audit, not new experimental results.
                            'Every segment must match its source and together cover the whole slot. No mixed forms.')
                 from services.deep_research.design_audit import audit_field_roots
                 roots = audit_field_roots(dict.fromkeys(slot for slots in required_slots.values() for slot in slots),
-                    workflow_v4=any(c.get('workflowContractVersion') == 4 for c in [*claims, *proposal_context]))
+                    workflow_v4=any(c.get('workflowContractVersion') in (4,5) for c in [*claims, *proposal_context]))
                 controls_contract = ('a supported protocol contract' if any(c.get('protocolContractVersion') == 2
                     for c in [*claims, *proposal_context]) else 'protocol contract 1')
                 audit_prompt += ('\nTyped choices use {"ref":{"claimId":"target/context ID",'

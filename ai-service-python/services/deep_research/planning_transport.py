@@ -35,9 +35,9 @@ def descriptor():
 
 def descriptor_for(record, node):
     from services.deep_research.workflow_transport import enabled as workflow_enabled, descriptor as workflow_descriptor
-    if workflow_enabled(record, node) and record['executionWorkflowContractVersion'] == 6:
+    if workflow_enabled(record, node) and record['executionWorkflowContractVersion'] in (6,7):
         from services.deep_research.workflow_units import descriptor as unit_descriptor
-        return unit_descriptor(node)
+        return unit_descriptor(node,version=record['executionWorkflowContractVersion'])
     return workflow_descriptor(record['executionWorkflowContractVersion']) if workflow_enabled(record, node) else descriptor()
 
 

@@ -1,7 +1,7 @@
 """Index actual review fields, without interpreting their scientific meaning."""
 from collections import Counter
 
-from services.deep_research.rejection_audit import ROOTS
+from services.deep_research.rejection_audit import ROOTS, roots_for_claim
 
 
 def field_index(claims):
@@ -23,7 +23,7 @@ def field_index(claims):
             'claimId': claim['claimId'], 'role': role,
             'present': [key for key in ('text', 'conditions', 'executionSpec') if key in claim],
             'specKeys': sorted(spec) if isinstance(spec, dict) else None,
-            'missingSpecKeys': sorted(ROOTS[role] - set(spec))
+            'missingSpecKeys': sorted(roots_for_claim(claim) - set(spec))
                 if role in ROOTS and isinstance(spec, dict) else None,
             'proseOnlyRole': role in ('metrics', 'limits'),
         })

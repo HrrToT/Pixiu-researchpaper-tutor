@@ -11,6 +11,14 @@ ROOTS = {
     'steps': {'refs','order','baselineMode','replicationMode','baselineInitialization',
         'componentInitializations','checkpointSelection','records'},
 }
+
+
+def roots_for_claim(claim):
+    roots=ROOTS.get(claim.get('designRole'),set())
+    if claim.get('designRole')=='steps' and type(claim.get('workflowContractVersion')) is int and claim['workflowContractVersion']==5:
+        return roots | {'phases','frameIterations'}
+    return roots
+
 POLICY = '''Negative feedback must be auditable too. For status:failed add findings:1..6 items,
 each exactly {kind:missing_field|incomplete|incompatible|unsupported,claimId:target or supplied
 context ID,path:[keys/zero-based indices],reason:concise Chinese,value:EXACT supplied value}.
@@ -64,7 +72,7 @@ def validate(verdict,context):
             role=row.get('designRole')
             allowed=path==['text'] or (isinstance(role,str) and role in ROOTS and
                 (path==['executionSpec'] or len(path)==2 and path[0]=='executionSpec'
-                 and isinstance(path[1],str) and path[1] in ROOTS[row['designRole']]))
+                 and isinstance(path[1],str) and path[1] in roots_for_claim(row)))
             if exists or not allowed:errors.append(prefix+'.not_an_absent_schema_field')
         elif not exists:errors.append(prefix+'.missing_binding')
         else:

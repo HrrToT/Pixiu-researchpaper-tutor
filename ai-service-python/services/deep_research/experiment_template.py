@@ -12,8 +12,11 @@ def enabled(record):
     return (type(record.get('experimentDraftContractVersion')) is int
             and record['experimentDraftContractVersion'] in (1,2,3,4,5,6)
             and all(type(record.get(key)) is int and record[key]==version for key,version in (
-                ('protocolContractVersion',2),('workflowContractVersion',4),
-                ('budgetContractVersion',1),('hypothesisContractVersion',1))))
+                ('protocolContractVersion',2),
+                ('budgetContractVersion',1),('hypothesisContractVersion',1)))
+            and type(record.get('workflowContractVersion')) is int
+            and (record['workflowContractVersion']==4 or record['workflowContractVersion']==5
+                 and record.get('executionWorkflowContractVersion')==7))
 
 
 def reasoning_enabled(record):
@@ -95,7 +98,7 @@ Metrics and limits use concrete claim text, not an invented executionSpec schema
 '''
 
 
-def grammar_for_roles(roles):
+def grammar_for_roles(roles, *, workflow_version=4):
     """Project the shared grammar to writable repair roles, including helpers.
 
     Keep SCHEMA byte-for-byte stable for saved generation requests. This view
@@ -110,10 +113,14 @@ def grammar_for_roles(roles):
     result=SCHEMA[:positions[0]]
     if roles & {'groups','controls','steps'}:result+=chunks['operation=']
     if roles & {'data','steps'}:result+=chunks['split=']
-    if 'steps' in roles:result+=chunks['seed=']
+    if 'steps' in roles and workflow_version!=5:result+=chunks['seed=']
     result+=chunks['Each role\'s executionSpec']
     for role in ('groups','data','analysis','controls','budget','hypothesis','steps'):
-        if role in roles:result+=chunks[role+'=']
+        if role in roles:
+            if role=='steps' and workflow_version==5:
+                from services.deep_research.experiment_workflow import WORKFLOW_CONTRACT_V5
+                result+=WORKFLOW_CONTRACT_V5
+            else:result+=chunks[role+'=']
     if roles & {'metrics','limits'}:result+=chunks['Metrics and limits use']
     if 'steps' in roles:
         from services.deep_research.experiment_workflow import STAGES,RECORDS
@@ -193,7 +200,7 @@ with this metadata; independent review still checks the entire resulting experim
         schema=public_grammar(schema)
     prompt+='\n'+schema+'\nEXACT_STAGES='+packed(list(STAGES))+'\nEXACT_RECORDS='+packed(sorted(RECORDS|{'group_checkpoints'}))
     prompt+='\nREQUIRED OUTPUT OUTLINE (one claim per role):\n'+packed(design_output_outline(
-        strict_budget=True,strict_hypothesis=True,strict_protocol=2,strict_workflow=4))
+        strict_budget=True,strict_hypothesis=True,strict_protocol=2,strict_workflow=record['workflowContractVersion']))
     configuration_policy='''Implement ALL required roles using the supplied unverified scientific plan.
 Use concrete proposed settings, complete state definitions, named rendering operations
 and learning rates; no opaque weights/defaults. Keep split-before-fit, held-out views

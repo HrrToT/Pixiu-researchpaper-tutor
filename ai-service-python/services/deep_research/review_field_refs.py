@@ -2,7 +2,7 @@
 from copy import deepcopy
 
 from services.deep_research.contracts import digest
-from services.deep_research.rejection_audit import ROOTS, bind
+from services.deep_research.rejection_audit import ROOTS, bind, roots_for_claim
 from services.deep_research.review_field_index import field_index
 
 POLICY = '''Failed verdicts need 1..6 findings, each EXACTLY
@@ -30,7 +30,7 @@ def catalogue(context):
             refs['executionSpec'] = {'path': ['executionSpec'], 'present': 'executionSpec' in claim}
             spec = claim.get('executionSpec')
             if isinstance(spec, dict):
-                for key in sorted(set(spec) | ROOTS[role]):
+                for key in sorted(set(spec) | roots_for_claim(claim)):
                     code = 'executionSpec/' + key.replace('~', '~0').replace('/', '~1')
                     refs[code] = {'path': ['executionSpec', key], 'present': key in spec}
         result[cid] = refs
