@@ -3525,6 +3525,24 @@
         "planningAdapterImplemented": false
       },
       "independentCredit": 0
+    },
+    "schemaBoundPlanning": {
+      "sourceCommit": "42100c8e",
+      "fullSuitePassed": 4265,
+      "sharedLLMChecksPassed": 49,
+      "legacyScriptsPassed": 38,
+      "runtimeLoaded": true,
+      "case": "E1-v36",
+      "status": "failed",
+      "errorCode": "invalid_experiment_planning_response",
+      "responseJSONValid": true,
+      "schemaMismatch": "pairingBudget at top-level instead of protocol",
+      "settledModelCalls": 8,
+      "settledTokens": 28566,
+      "unsettledModelCalls": 0,
+      "scientificContentValidated": false,
+      "losslessNestingPrototypeOnly": true,
+      "independentCredit": 0
     }
   },
   "stages": [
@@ -3990,19 +4008,19 @@
   "currentProviderConstraint": "All necessary bounded validations authorized. E1-v27/.234,E1-v28/.235,E1-v29/.236 each submitted once;30settled calls/129711tokens,0newunknowns. Selected cumulative759calls/3190357tokens,not global history,cost unknown. Preserve11oldpaused unknowns; no automatic retries.",
   "currentDevelopmentMode": "Primary Codex only;Goal active;quota pause revoked. Source/runtime44c04d71/.236. Lossless shared private blueprint6/native12;raw response8KB,actual wire4KB,request32KB,whole-run18calls/100k/360s.4175offline passed. E1-v29 enters body but0/9accepted.",
   "loadedRuntime": {
-    "commit": "5c443462",
-    "promptVersion": "dr-v2.20261023.244",
+    "commit": "42100c8e",
+    "promptVersion": "dr-v2.20261023.245",
     "javaCommit": "27ac4beb",
     "frontendValidationCommit": "123b0d29",
     "frontendValidationIsHistorical": true,
-    "callsAfterLatestCase": 5608,
+    "callsAfterLatestCase": 5631,
     "active": 0,
     "historicalPausedUnknown": 11,
-    "proof": "deep-research-evidence/runtime-load-dr244-role-review-20261023.json",
-    "postCasesProof": "deep-research-evidence/runtime-postcases-dr244-e1-v35-20261023.json",
-    "lastRealModelRunCommit": "5c443462",
-    "lastRealModelRunPromptVersion": "dr-v2.20261023.244",
-    "lastLoadValidationScope": "20source hashes,health,5585ledger/4tasks preserved; case E1-v35 invalid raw JSON,8settled27727tokens,no unknown/retry."
+    "proof": "deep-research-evidence/runtime-load-dr245-schema-transport-20261023.json",
+    "postCasesProof": "deep-research-evidence/runtime-postcases-dr245-e1-v36-20261023.json",
+    "lastRealModelRunCommit": "42100c8e",
+    "lastRealModelRunPromptVersion": "dr-v2.20261023.245",
+    "lastLoadValidationScope": "24source hashes,health,5608ledger/4tasks preserved. E1-v36 valid JSON but misplaced pairingBudget;8settled28566tokens,no unknown/retry."
   },
   "nextQualityWork": [
     "Fix concrete initialization state/input and earlier-component references, preserving complete Gaussian/hash/network states instead of narrative placeholders.",
@@ -4590,7 +4608,7 @@
     "independentCredit": 0,
     "proof": "deep-research-evidence/compact-experiment-envelope-regression-20261020.json"
   },
-  "currentCheckpoint": ".244/5c443462:4250offline/233files,38legacy,3extra fingerprints. E1-v35 failed invalid JSON2^16 before new generation/review,8settled27727tokens. Responses JSON Schema benign compatibility1settled93tokens; no planning adapter yet.5608production ledger/0active/11oldunknowns. DR0-DR5 incomplete,independent0/5.",
+  "currentCheckpoint": ".245/42100c8e:4265offline/234files,49sharedLLM,38legacy. Responses private schema wired and accounted. E1-v36 failed structural nesting,8settled28566tokens; lawful JSON, no body/review. Reversible nesting prototype only, not adopted.5631production ledger/0active/11oldunknowns. FullDR0-DR5 incomplete,independent0/5.",
   "sharedModuleSourceCheckpoint": {
     "sourceCommit": "f8ae5177",
     "promptVersion": "dr-v2.20261020.199",
