@@ -1,0 +1,16 @@
+{
+  "date": "2026-10-23",
+  "case": "E1-v32",
+  "sourceCommit": "1902b5ae",
+  "actualPlanningFingerprintMatched": true,
+  "actualPlanningInputBytes": 26000,
+  "actualRawResponseBytes": 6200,
+  "newColumnPlanningInputBytes": 26000,
+  "maxInputBytes": 32000,
+  "originalQuestionEvidenceSourceTablesRequirementsIdentical": true,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "independentCredit": 0,
+  "scientificApproval": false,
+  "boundary": "Actual plan7/native12 request reconstructed exactly. Original invalid provider response retained, never evaluated or repaired. Compatibility only, no content acceptance."
+}

@@ -79,7 +79,7 @@ def test_reserved_identity_native_http_wire_and_runtime_scope_policy_agree(tmp_p
     assert invoke('r',node,prompt,options,use_reserve=True)==result and len(sent)==1
 
 
-@pytest.mark.parametrize('old,new',[(7,8),(8,9)])
+@pytest.mark.parametrize('old,new',[(7,8),(8,9),(12,13)])
 def test_pending_old_scientific_plan_cannot_switch_to_the_new_system_policy(old,new):
     record=experiment_record();record['structuredOutputContractVersion']=old
     store=Store(record);invoke=Mock(side_effect=OSError('unknown result'))
@@ -95,10 +95,10 @@ def test_v8_does_not_salvage_truncated_or_wrong_wrapped_judgements():
         result=normalize('verify_design_science',{'content':raw,'finishReason':finish})
         assert result['content']=='null' and result['rawContent']==raw
     assert enabled({'structuredOutputContractVersion':8})
-    for value in [True,'8',13,None]:assert not enabled({'structuredOutputContractVersion':value})
+    for value in [True,'8',14,None]:assert not enabled({'structuredOutputContractVersion':value})
 
 
-@pytest.mark.parametrize('replacement',[None,True,7,8,'9',13])
+@pytest.mark.parametrize('replacement',[None,True,7,8,'9',12,14])
 def test_native_policy_version_is_server_owned_and_immutable(tmp_path,replacement):
     from services.deep_research.facade import ResearchFacade
     from services.deep_research.repository import DeepResearchRepository
@@ -107,7 +107,7 @@ def test_native_policy_version_is_server_owned_and_immutable(tmp_path,replacemen
     try:
         r,_=facade.create({'workspaceTaskId':'t','operationKey':'k','question':'Propose an experiment',
             'structuredOutputContractVersion':replacement,'deferStart':True},start_async=False)
-        assert r['structuredOutputContractVersion']==12
+        assert r['structuredOutputContractVersion']==13
         with pytest.raises(ValueError,match='Immutable'):
             repo.update_run(r['runId'],lambda value:{**value,'structuredOutputContractVersion':replacement})
     finally:facade.shutdown()
