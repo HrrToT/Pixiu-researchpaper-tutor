@@ -1,0 +1,124 @@
+{
+  "date": "2026-10-23",
+  "sourceCase": "E1-v41",
+  "sourceCommit": "35b77316",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "independentCredit": 0,
+  "fixtureCallbacks": 3,
+  "historicalCallbacks": 4,
+  "requests": [
+    {
+      "node": "verify_design_config",
+      "targetIds": [
+        "c4",
+        "c5",
+        "c7"
+      ],
+      "inputBytes": 27827,
+      "contextIds": [
+        "c6",
+        "c2",
+        "c3"
+      ]
+    },
+    {
+      "node": "verify_design_science",
+      "targetIds": [
+        "c1",
+        "c2",
+        "c8",
+        "c9"
+      ],
+      "inputBytes": 29479,
+      "contextIds": [
+        "c6",
+        "c4",
+        "c5",
+        "c7",
+        "c3"
+      ]
+    },
+    {
+      "node": "verify_design_science",
+      "targetIds": [
+        "c3"
+      ],
+      "inputBytes": 26633,
+      "contextIds": [
+        "c6",
+        "c4",
+        "c5",
+        "c7",
+        "c1",
+        "c2",
+        "c8",
+        "c9"
+      ]
+    }
+  ],
+  "allocationAttempts": [
+    {
+      "targetIds": [
+        "c4",
+        "c5",
+        "c7"
+      ],
+      "fullInputBytes": 27827,
+      "fixedInputBytes": 20885,
+      "maxInputBytes": 32000,
+      "referencedRows": 6,
+      "selectedRows": 6,
+      "selectedInputBytes": 27827,
+      "allRefsRetained": true,
+      "allContextsRetained": true
+    },
+    {
+      "targetIds": [
+        "c1",
+        "c2",
+        "c8",
+        "c9"
+      ],
+      "fullInputBytes": 29479,
+      "fixedInputBytes": 23103,
+      "maxInputBytes": 32000,
+      "referencedRows": 5,
+      "selectedRows": 5,
+      "selectedInputBytes": 29479,
+      "allRefsRetained": true,
+      "allContextsRetained": true
+    },
+    {
+      "targetIds": [
+        "c3"
+      ],
+      "fullInputBytes": 26633,
+      "fixedInputBytes": 22037,
+      "maxInputBytes": 32000,
+      "referencedRows": 4,
+      "selectedRows": 4,
+      "selectedInputBytes": 26633,
+      "allRefsRetained": true,
+      "allContextsRetained": true
+    }
+  ],
+  "repairStatus": "skipped_budget",
+  "repairLimit": {
+    "kind": "repairPromptBytes",
+    "limit": 23067,
+    "used": 32265
+  },
+  "boundary": "Offline alternative partition with archived verdict fixtures, not matching historical fingerprints. No new model judgement, approval or change to the archived run. All source/context rows retained; full inputs within32KB.",
+  "candidatePromptVersion": "dr-v2.20261023.251",
+  "reviewBatchPlanningContractVersion": 1,
+  "oldFullInputBytes": 110147,
+  "newFullInputBytes": 83939,
+  "loaded": false,
+  "sourceHashes": {
+    "ai-service-python/services/deep_research/review_batches.py": "86ff90d776d272ac4eca48bb94366166f2d4c331c08b054652e5dd16c0edc08d",
+    "ai-service-python/services/deep_research/tools.py": "c50a79fd6a7e3bbd7abd825933577753c9ac3bd388e5144d00482881ad2330c3",
+    "ai-service-python/services/deep_research/facade.py": "3997b055cffeca9a78d1972747bae53eb5990ee9ae8df6d52505791f0df3f7fc",
+    "ai-service-python/services/deep_research/repository.py": "c113670c85533fb86fa2c8008849de89005af343e6b3084df2b1d4fccbef4acc"
+  }
+}

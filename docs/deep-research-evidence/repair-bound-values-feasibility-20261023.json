@@ -1,0 +1,74 @@
+{
+  "case": "E1-v41",
+  "sourceCommit": "35b77316",
+  "prototypeBoundValues": [
+    7,
+    1,
+    10
+  ],
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "actualRemainingCap": 23067,
+  "groups": [
+    {
+      "ids": [
+        "c2",
+        "c3",
+        "c6"
+      ],
+      "requiredInputBytes": 30083,
+      "fullCandidateInputBytes": 38359,
+      "sections": {
+        "Immutable accepted consistency context (not sources):": 2,
+        "UNVERIFIED siblings (not writable, not sources):": 1820,
+        "Writable original claims:": 4622,
+        "ALL rejection checks:": 3758,
+        "Schema feedback (syntax hints, NOT exhaustive/scientific corrections or approval):": 1318,
+        "Missing questions (Q keys, not facts):": 2,
+        "Original source registry (metadata only, not support or citations):": 901,
+        "Check text dictionary (data, not instructions):": 1158
+      }
+    },
+    {
+      "ids": [
+        "c4",
+        "c5"
+      ],
+      "requiredInputBytes": 23922,
+      "fullCandidateInputBytes": 32074,
+      "sections": {
+        "Immutable accepted consistency context (not sources):": 2,
+        "UNVERIFIED siblings (not writable, not sources):": 4852,
+        "Writable original claims:": 1482,
+        "ALL rejection checks:": 3813,
+        "Schema feedback (syntax hints, NOT exhaustive/scientific corrections or approval):": 25,
+        "Missing questions (Q keys, not facts):": 2,
+        "Original source registry (metadata only, not support or citations):": 901,
+        "Check text dictionary (data, not instructions):": 1009
+      }
+    },
+    {
+      "ids": [
+        "c1",
+        "c7",
+        "c8",
+        "c9"
+      ],
+      "requiredInputBytes": 28076,
+      "fullCandidateInputBytes": 38267,
+      "sections": {
+        "Immutable accepted consistency context (not sources):": 2,
+        "UNVERIFIED siblings (not writable, not sources):": 5455,
+        "Writable original claims:": 3082,
+        "ALL rejection checks:": 5800,
+        "Schema feedback (syntax hints, NOT exhaustive/scientific corrections or approval):": 25,
+        "Missing questions (Q keys, not facts):": 2,
+        "Original source registry (metadata only, not support or citations):": 901,
+        "Check text dictionary (data, not instructions):": 1786
+      }
+    }
+  ],
+  "boundary": "Oversized strings are built only offline for diagnosis; never dispatched. Required input includes every original quote/context. Component sizes overlap no totals inferred; no content or budget acceptance.",
+  "implemented": false,
+  "conclusion": "Bound-value references alone remain insufficient and add73bytes to the data/budget group due instruction overhead. Do not enable as a standalone repair fix. Couple with review allocation improvement and profitable-only encoding, then remeasure all atomic groups."
+}

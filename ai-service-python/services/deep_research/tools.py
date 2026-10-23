@@ -594,6 +594,7 @@ class BudgetedSemanticChecker:
         prospective_review=False,
         configuration_consistency=0,
         prospective_envelope=0,
+        review_batch_planning=0,
     ):
         self._invoke = llm_invoker
         self._run_id = run_id
@@ -613,6 +614,7 @@ class BudgetedSemanticChecker:
         self._prospective_review = prospective_review
         self._configuration_consistency = configuration_consistency
         self._prospective_envelope = prospective_envelope
+        self._review_batch_planning = review_batch_planning
     
     def __call__(self, claims: list[dict], evidence: list[dict], *, proposal_context=()) -> list[dict]:
         return self._check(claims,evidence,list(proposal_context),'verify')
@@ -686,7 +688,7 @@ class BudgetedSemanticChecker:
         by_id = {v['claimId']: v for v in verdicts}
         return [by_id[c['claimId']] for c in claims]
 
-    def _check_batch(self, claims: list[dict], evidence: list[dict], proposal_context: list[dict], *, node='verify') -> list[dict]:
+    def _check_batch(self, claims: list[dict], evidence: list[dict], proposal_context: list[dict], *, node='verify', _preview=False, _planned=False) -> list[dict]:
         byte_limit = (self._invoke.prompt_byte_limit(self._run_id, node)
                       if isinstance(self._invoke, TrackedLLMInvoker) else 24000)
         config_mode=node in {'verify_design_config','verify_repair_design_config'}
@@ -1125,7 +1127,27 @@ The dataAvailability object is an internal audit, not new experimental results.
             return template.replace(evidence_text, json.dumps(
                 view, ensure_ascii=False, separators=(',', ':')), 1)
 
+        def context_for(batch):
+            selected = {c['claimId'] for c in batch}
+            return [*proposal_context, *[{
+                key: c[key] for key in ('claimId', 'text', 'kind', 'conditions',
+                    'designRole', 'executionSpec', 'designContractVersion', 'budgetContractVersion',
+                    'hypothesisContractVersion', 'protocolContractVersion', 'workflowContractVersion') if key in c
+            } for c in claims if c['claimId'] not in selected
+                and c.get('kind') in {'proposal', 'suggestion', 'hypothesis'}]]
+
         def split_before_dispatch():
+            policy = self._review_batch_planning() if callable(self._review_batch_planning) else self._review_batch_planning
+            if (not _planned and full_review_inputs and type(policy) is int and policy == 1
+                    and all(c.get('kind') in {'proposal', 'suggestion', 'hypothesis'} for c in claims)):
+                from services.deep_research.review_batches import plan
+                groups = plan(claims, lambda batch: self._check_batch(batch, evidence, context_for(batch),
+                    node=node, _preview=True))
+                if groups is not None:
+                    verdicts = []
+                    for batch in groups:
+                        verdicts.extend(self._check_batch(batch, evidence, context_for(batch), node=node, _planned=True))
+                    return verdicts
             midpoint = len(claims) // 2
             verdicts = []
             for batch, siblings in ((claims[:midpoint], claims[midpoint:]),
@@ -1137,6 +1159,12 @@ The dataAvailability object is an internal audit, not new experimental results.
                 } for c in siblings if c.get('kind') in {'proposal', 'suggestion', 'hypothesis'}]]
                 verdicts.extend(self._check_batch(batch, evidence, context, node=node))
             return verdicts
+
+        if _preview:
+            if not full_review_inputs:
+                raise ValueError('Preview requires complete review inputs')
+            full_prompt = render_evidence([{"evidenceId": key, **value} for key, value in evidence_map.items()])
+            return {'inputBytes': len(full_prompt.encode('utf8')), 'maxInputBytes': byte_limit}
 
         try:
             if full_review_inputs:

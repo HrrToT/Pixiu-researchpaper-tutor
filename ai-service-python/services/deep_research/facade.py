@@ -273,7 +273,7 @@ class ResearchFacade:
             "materials": materials,
             "materialSnapshot": material_snapshot,  # Immutable Java snapshot
             "contextMaterials": (material_snapshot or {}).get("contextMaterials", []) if isinstance(material_snapshot, dict) else [],
-            "promptVersion": "dr-v2.20261023.250",
+            "promptVersion": "dr-v2.20261023.251",
             "factualReviewContractVersion": 1,
             "citationPresentationContractVersion": 4,
             "configurationConsistencyContractVersion": 2,
@@ -282,6 +282,7 @@ class ResearchFacade:
             "experimentGenerationEnvelopeContractVersion": 3,
             "experimentInputContractVersion": 1,
             "experimentReviewEnvelopeContractVersion": 10,
+            "reviewBatchPlanningContractVersion": 1,
             "experimentRepairPriorityContractVersion": 2,
             "experimentExecutionGuidanceContractVersion": 2,
             # New experiments separate a small persisted scientific plan from
@@ -1213,7 +1214,8 @@ class ResearchFacade:
             experiment_intent_review=lambda: self._repo.require_run(run_id).get('experimentIntentContractVersion',0),
             prospective_review=lambda: self._repo.require_run(run_id).get('experimentReviewContractVersion',0),
             configuration_consistency=lambda: self._repo.require_run(run_id).get('configurationConsistencyContractVersion',0),
-            prospective_envelope=lambda: self._repo.require_run(run_id).get('experimentReviewEnvelopeContractVersion',0))
+            prospective_envelope=lambda: self._repo.require_run(run_id).get('experimentReviewEnvelopeContractVersion',0),
+            review_batch_planning=lambda: self._repo.require_run(run_id).get('reviewBatchPlanningContractVersion',0))
         return checker
     
     def _default_scope_validator(self) -> Callable[[str, str], bool]:
