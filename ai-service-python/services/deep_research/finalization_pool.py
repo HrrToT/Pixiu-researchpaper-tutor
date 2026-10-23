@@ -27,6 +27,7 @@ _FINALIZATION_NODES: frozenset[str] = frozenset(
     {
         "synthesize",
         "plan_experiment",
+        "plan_workflow",
         "verify",
         "verify_repair",
         "verify_design_config",

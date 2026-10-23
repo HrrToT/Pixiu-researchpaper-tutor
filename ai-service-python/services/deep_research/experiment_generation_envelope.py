@@ -44,7 +44,7 @@ Write concise Chinese rationale/conditions once; typed settings are rendered. Ke
 consistent and explicit evidence gaps bounded. Full role grammar and scientific rules follow.'''
 
 
-def refit(record,rows,render,bundles,plan,*,required_contexts=None,max_bytes=None):
+def refit(record,rows,render,bundles,plan,*,required_contexts=None,max_bytes=None,extra_required=()):
     """Reallocate only within evidence actually supplied to the planning request.
 
     Required source bundles AND every unverified-plan reference remain atomic.
@@ -57,14 +57,23 @@ def refit(record,rows,render,bundles,plan,*,required_contexts=None,max_bytes=Non
     max_bytes=input_limit(record) if max_bytes is None else min(max_bytes,input_limit(record))
     by_id={r['evidenceId']:r for r in rows}
     refs=plan['basis']['sourceRefs']
-    needed={eid for bundle in bundles for eid in bundle['evidenceIds']}|set(refs)
+    needed={eid for bundle in bundles for eid in bundle['evidenceIds']}|set(refs)|set(extra_required)
     if len(by_id)!=len(rows) or not needed<=by_id.keys():
         raise DeepResearchError('invalid_experiment_generation_state','生成所需原文不在原规划材料中，不能发送。')
     required=[row['evidenceId'] for row in rows if row['evidenceId'] in needed]
     atomic=[{'obligationId':'complete_unverified_generation_inputs','evidenceIds':required}]
     measure=lambda value:len(encode(record,value)[0].encode('utf8'))
-    prompt,selected,missing=fit_premises(rows,render,atomic,max_bytes=max_bytes,
-        required_contexts=required_contexts,prompt_byte_size=measure)
+    try:
+        prompt,selected,missing=fit_premises(rows,render,atomic,max_bytes=max_bytes,
+            required_contexts=required_contexts,prompt_byte_size=measure)
+    except ValueError as exc:
+        from services.deep_research.execution_workflow_blueprint import enabled as bound_workflow
+        if str(exc) != 'prompt_fixed_content_too_large' or not bound_workflow(record):
+            raise
+        selected=[deepcopy(row) for row in rows if row['evidenceId'] in needed]
+        prompt=render(selected)
+        missing=[{'obligationId':'complete_unverified_generation_inputs',
+                  'reason':'complete_workflow_input_capacity','evidenceIds':required}]
     if missing:
         # Preserve the full failed input and let prepare_draft freeze/refuse it.
         selected=[deepcopy(row) for row in rows if row['evidenceId'] in needed]

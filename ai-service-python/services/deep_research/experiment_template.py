@@ -170,6 +170,7 @@ actual config/text. A basis reference never grants another claim source permissi
 This is UNVERIFIED planning, not evidence or output prose. Do not replace any role
 with this metadata; independent review still checks the entire resulting experiment.
 '''
+    from services.deep_research.execution_workflow_blueprint import enabled as bound_workflow
     schema=SCHEMA
     if record['experimentDraftContractVersion']==6:
         from services.deep_research.experiment_representation import GUIDANCE
@@ -187,6 +188,9 @@ with this metadata; independent review still checks the entire resulting experim
     if short_rules:schema=concise_rules.schema(schema)
     if short_rules and record['experimentGenerationEnvelopeContractVersion']==3:
         schema+='\n'+concise_rules.STRICT_VALUES
+    if bound_workflow(record):
+        from services.deep_research.execution_workflow_blueprint import public_grammar
+        schema=public_grammar(schema)
     prompt+='\n'+schema+'\nEXACT_STAGES='+packed(list(STAGES))+'\nEXACT_RECORDS='+packed(sorted(RECORDS|{'group_checkpoints'}))
     prompt+='\nREQUIRED OUTPUT OUTLINE (one claim per role):\n'+packed(design_output_outline(
         strict_budget=True,strict_hypothesis=True,strict_protocol=2,strict_workflow=4))

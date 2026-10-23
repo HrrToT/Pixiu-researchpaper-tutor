@@ -1430,6 +1430,8 @@ space with unsupported global absence or incidental iteration/performance values
                 and missing_bundles):
             return {'error_code':'synthesis_evidence_capacity'}
         evidence_aliases = {row['evidenceId']: evidence_aliases[row['evidenceId']] for row in evidence_summaries}
+        workflow_plan = None
+        workflow_instruction = ''
         if staged_mode:
             from services.deep_research.experiment_planning import planning_prompt,prepare_plan,prepare_draft
             from services.deep_research.experiment_plan_encoding import enabled as plan_encoding,wire_text
@@ -1458,13 +1460,30 @@ space with unsupported global absence or incidental iteration/performance values
             if plan is None:
                 return {'error_code':'budget_exhausted'}
             current=repo_update(run_id,lambda r:r,expected_revision=None)
+            from services.deep_research.execution_workflow_blueprint import enabled as typed_workflow, prepare as prepare_workflow, prompt_for as workflow_prompt, instruction as workflow_directive
+            if typed_workflow(record):
+                def checkpoint_workflow(value):
+                    repo_update(run_id, lambda r: {**r, 'state': {**r.get('state', {}),
+                        'executionWorkflowBlueprint': value}}, expected_revision=None)
+                workflow_plan = prepare_workflow(current,
+                    prompt=workflow_prompt(question=question, basis=plan['basis'], sources=source_registry,
+                        evidence=evidence_summaries,
+                        tables={key:table_registry[key] for key in table_registry if key in tables_used},
+                        obligations=draft_obligations), aliases=evidence_aliases,
+                    invoke=lambda node,prompt,options:llm_invoke(run_id,node,prompt,options,use_reserve=True),
+                    parse=_safe_parse_json, checkpoint=checkpoint_workflow)
+                if workflow_plan is None:
+                    return {'error_code': 'budget_exhausted'}
+                workflow_instruction = workflow_directive(workflow_plan)
+                current=repo_update(run_id,lambda r:r,expected_revision=None)
             actual_basis=(wire_text(plan['basis'],version=record['experimentPlanEncodingContractVersion']) if plan_encoding(record)
                 else json.dumps(plan['basis'],ensure_ascii=False,separators=(',',':')))
             from services.deep_research.experiment_generation_envelope import enabled as generation_envelope,refit
             if generation_envelope(record):
                 planning_rows=deepcopy(evidence_summaries)
                 prompt,evidence_summaries,generation_audit=refit(record,planning_rows,
-                    lambda rows:render_premises(rows).replace(basis_slot,actual_basis,1),wire_bundles,plan,
+                    lambda rows:render_premises(rows).replace(basis_slot,actual_basis,1)+workflow_instruction,wire_bundles,plan,
+                    **({'extra_required':workflow_plan['value']['sourceRefs']} if workflow_plan else {}),
                     required_contexts={eid:context for b in wire_bundles
                         for eid,context in b.get('requiredContextByEvidenceId',{}).items()})
                 generation_audit.update(
@@ -1474,7 +1493,7 @@ space with unsupported global absence or incidental iteration/performance values
                     'generationPremiseAllocation':generation_audit}},expected_revision=None)
                 evidence_aliases={row['evidenceId']:evidence_aliases[row['evidenceId']] for row in evidence_summaries}
             else:
-                prompt=prompt.replace(basis_slot,actual_basis,1)
+                prompt=prompt.replace(basis_slot,actual_basis,1)+workflow_instruction
             from services.deep_research.experiment_outline_encoding import encode as encode_outline
             prompt,outline_audit=encode_outline(record,prompt)
             if prepare_draft(current,plan,prompt=prompt,checkpoint=checkpoint_planning,
@@ -1544,6 +1563,11 @@ space with unsupported global absence or incidental iteration/performance values
                 parsed['claims'],changes=normalize_claims([{**c,'designContractVersion':2}
                     if isinstance(c,dict) else c for c in parsed['claims']])
                 experiment_representation_audit.extend({'phase':'synthesis',**change} for change in changes)
+            if workflow_plan is not None:
+                from services.deep_research.execution_workflow_blueprint import bind as bind_workflow
+                parsed, workflow_binding = bind_workflow(parsed, workflow_plan)
+                repo_update(run_id, lambda r: {**r, 'state': {**r.get('state', {}),
+                    'executionWorkflowBinding': workflow_binding}}, expected_revision=None)
             parsed['claims'] = [materialize_execution_claim({**claim, 'designContractVersion': 2})
                                 if isinstance(claim, dict) else claim for claim in parsed['claims']]
         parsed = compact_answer(parsed, question,

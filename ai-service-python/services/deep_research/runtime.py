@@ -48,6 +48,9 @@ def research_model_options(node, options):
         if node!='verify':
             raise ValueError('Bounded factual review is only valid for initial verification')
         return {**options,'thinking':{'type':'enabled'},'reasoning_effort':'low','max_tokens':8192}
+    if node == 'plan_workflow':
+        return {**options, 'thinking': {'type':'disabled'}, 'reasoning_effort':'none',
+                'max_tokens':6144, 'response_format':{'type':'json_object'}, 'timeout_seconds':120}
     if node=='plan_experiment':
         from services.deep_research.experiment_planning import PLANNING_OUTPUT_TOKENS
         direct=direct_plan or (options.get('thinking')=={'type':'disabled'} and options.get('reasoning_effort')=='none')
