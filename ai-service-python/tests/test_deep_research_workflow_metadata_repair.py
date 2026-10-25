@@ -333,7 +333,7 @@ def test_marker_is_immutable_and_legacy_records_cannot_be_opted_in(tmp_path, rep
         repo.update_run('old', lambda row: {**row, 'workflowMetadataRepairContractVersion': 1})
 
 
-@pytest.mark.parametrize('revision_version', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14])
+@pytest.mark.parametrize('revision_version', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15])
 @pytest.mark.parametrize('scenario', ['success', 'unknown', 'budget', 'token_budget'])
 def test_physical_request_identity_unknown_deduplication_and_existing_whole_budget(tmp_path, monkeypatch, scenario, revision_version):
     import requests
@@ -379,6 +379,12 @@ def test_physical_request_identity_unknown_deduplication_and_existing_whole_budg
         from services.deep_research.workflow_metadata_single_group import descriptor as reply_descriptor
         reply_encode = lambda _: scalar_authored()
         failed = failed_scalar_unit()
+    if revision_version == 15:
+        from test_deep_research_workflow_metadata_single_group_integration import failed_scalar_unit
+        from test_deep_research_workflow_metadata_scope_end_integration import scope_authored
+        from services.deep_research.workflow_metadata_scope_end import descriptor as reply_descriptor
+        reply_encode = lambda _: scope_authored()
+        failed = failed_scalar_unit()
     post = Mock(side_effect=requests.ReadTimeout('fixture unknown')) if scenario == 'unknown' else Mock(
         return_value=http_response(json.dumps(reply_encode(fixtures()[1]))))
     monkeypatch.setattr('llm.client.requests.post', post)
@@ -404,8 +410,8 @@ def test_physical_request_identity_unknown_deduplication_and_existing_whole_budg
     assert digest(saved['request']) == call['argsDigest']
     from services.deep_research.planning_transport import overhead_bytes
     expected_reserved = (len(saved['request']['prompt'].encode('utf8')) + 1024
-        + overhead_bytes(r, NODE) + (6144 if revision_version == 10 else 3072 if revision_version in (4, 5, 6, 7, 8, 9, 11, 12, 13, 14) else 2048))
+        + overhead_bytes(r, NODE) + (6144 if revision_version == 10 else 3072 if revision_version in (4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15) else 2048))
     assert call['reservedTokens'] == expected_reserved
     wire = post.call_args.kwargs['json']
-    assert wire['text']['format'] == reply_descriptor() and wire['max_output_tokens'] == (6144 if revision_version == 10 else 3072 if revision_version in (4, 5, 6, 7, 8, 9, 11, 12, 13, 14) else 2048)
+    assert wire['text']['format'] == reply_descriptor() and wire['max_output_tokens'] == (6144 if revision_version == 10 else 3072 if revision_version in (4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15) else 2048)
     assert wire['reasoning']['effort'] == ('low' if revision_version == 10 else 'none')
