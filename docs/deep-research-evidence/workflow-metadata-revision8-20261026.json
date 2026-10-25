@@ -127,11 +127,19 @@
     "providerCalls": 0
   },
   "fullRegressionAfterGuidance": {
-    "status": "running",
+    "status": "passed",
     "sourceCommit": "cb170b2574c2ebf6841a4cc775c64f13708eebee",
     "files": 260,
     "fixtureDrive": "C:",
     "log": "tmp/pytest-metadata-revision8-full-guidance-20261026.log",
-    "receipt": "tmp/metadata-revision8-full-guidance-receipt-20261026.json"
+    "receipt": "tmp/metadata-revision8-full-guidance-receipt-20261026.json",
+    "passed": 4799,
+    "warnings": 1,
+    "exitCode": 0,
+    "sourceStable": true,
+    "elapsedSeconds": 460.53,
+    "logSha256": "609d9191c4d28d9281dcc0755dc36abccbbe7914cba03dd2c77f6bc899b947d9",
+    "providerCalls": 0,
+    "productionWrites": 0
   }
 }
