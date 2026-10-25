@@ -1,0 +1,147 @@
+{
+  "date": "2026-10-25",
+  "candidateVersion": 7,
+  "defaultVersion": 6,
+  "runtimePromptVersion": "dr-v2.20261025.268",
+  "associatedRegression": {
+    "files": 17,
+    "passed": 320,
+    "seconds": 36.84,
+    "log": "tmp/pytest-metadata-revision7-associated-20261025.log"
+  },
+  "actualInputAndLegacyReplay": {
+    "candidateVersion": 7,
+    "actualInputReplay": [
+      {
+        "input": "original",
+        "inputWithSchemaBytes": 30940,
+        "allSourceAndInvalidValuesPreserved": true,
+        "budgetIssues": [
+          {
+            "code": "timeline.phase.budget",
+            "path": "/phaseRows/2/10",
+            "actual": null,
+            "actualPresent": true,
+            "expected": "fit needs {unit:optimizer_steps|epochs|wall_seconds,perExecution:finite >=0}; steps/epochs need an integer, not bool. Select kind from real computation; do not bypass fitting caps."
+          },
+          {
+            "code": "timeline.phase.budget",
+            "path": "/phaseRows/4/10",
+            "actual": null,
+            "actualPresent": true,
+            "expected": "fit needs {unit:optimizer_steps|epochs|wall_seconds,perExecution:finite >=0}; steps/epochs need an integer, not bool. Select kind from real computation; do not bypass fitting caps."
+          }
+        ],
+        "beforeCreationIssues": []
+      },
+      {
+        "input": "revision",
+        "inputWithSchemaBytes": 31222,
+        "allSourceAndInvalidValuesPreserved": true,
+        "budgetIssues": [
+          {
+            "code": "timeline.phase.budget",
+            "path": "/phaseRows/2/10",
+            "actual": null,
+            "actualPresent": true,
+            "expected": "fit needs {unit:optimizer_steps|epochs|wall_seconds,perExecution:finite >=0}; steps/epochs need an integer, not bool. Select kind from real computation; do not bypass fitting caps."
+          },
+          {
+            "code": "timeline.phase.budget",
+            "path": "/phaseRows/4/10",
+            "actual": null,
+            "actualPresent": true,
+            "expected": "fit needs {unit:optimizer_steps|epochs|wall_seconds,perExecution:finite >=0}; steps/epochs need an integer, not bool. Select kind from real computation; do not bypass fitting caps."
+          }
+        ],
+        "beforeCreationIssues": [
+          {
+            "code": "wire.lifecycle.before_creation",
+            "path": "/phaseRows/2/7/0",
+            "actual": "arm_b_additional",
+            "componentId": "arm_b_additional",
+            "createAfter": [
+              "arm_b_spawn",
+              "arm_b_optimize",
+              "arm_b_quantity_control"
+            ],
+            "expected": "initialize the instance before this read/update; createAfter is after the named phase, not before it"
+          },
+          {
+            "code": "wire.lifecycle.before_creation",
+            "path": "/phaseRows/3/7/0",
+            "actual": "arm_b_additional",
+            "componentId": "arm_b_additional",
+            "createAfter": [
+              "arm_b_spawn",
+              "arm_b_optimize",
+              "arm_b_quantity_control"
+            ],
+            "expected": "initialize the instance before this read/update; createAfter is after the named phase, not before it"
+          },
+          {
+            "code": "wire.lifecycle.before_creation",
+            "path": "/phaseRows/4/7/0",
+            "actual": "arm_b_additional",
+            "componentId": "arm_b_additional",
+            "createAfter": [
+              "arm_b_spawn",
+              "arm_b_optimize",
+              "arm_b_quantity_control"
+            ],
+            "expected": "initialize the instance before this read/update; createAfter is after the named phase, not before it"
+          }
+        ]
+      }
+    ],
+    "legacyResume": [
+      {
+        "case": "E1-v57",
+        "revisionVersion": 5,
+        "sameFailure": true,
+        "calls": 0,
+        "writes": 0,
+        "metadataRequestDigest": "914709d1d189e76913362699014c0a730af82089e39b8ac5743a17b8f9badbf7",
+        "repairRequestDigest": "2ee5b5af94de30999398f06038ac26be5cf9bb8b58c5988dc46c806eff3d35d4"
+      },
+      {
+        "case": "E1-v58",
+        "revisionVersion": 6,
+        "sameFailure": true,
+        "calls": 0,
+        "writes": 0,
+        "metadataRequestDigest": "10fa4ec2bcdb8530ede0d1832c6e3fe2414559b31d248fff4e8ce54138ffbdb0",
+        "repairRequestDigest": "a17522ec618fa5d4603082efefc4273b491f5ed409a9871efdfedf23f4a266d0"
+      }
+    ],
+    "inputByteCap": 32000,
+    "providerCalls": 0,
+    "productionWrites": 0,
+    "chosenBudgets": 0,
+    "reclassifiedPhases": 0,
+    "scientificApproval": false
+  },
+  "rawResponseByteCap": 16384,
+  "semanticContentByteCap": 8192,
+  "metadataOutputTokens": 3072,
+  "wholeRunLimits": {
+    "calls": 18,
+    "tokens": 100000,
+    "wallSeconds": 360
+  },
+  "fullRegression": {
+    "status": "not_started"
+  },
+  "sourceHashes": {
+    "services/deep_research/workflow_metadata_semantics.py": "2cb6ee53c9fa957c8863189b91f944f6b3198fb076432c056aa0ea0acb2cdbdf",
+    "services/deep_research/workflow_metadata_repair.py": "d4cf456c00eaf13c3bdd02bd2064bf1cc02dcf3020d15c1f57ab151a079c330c",
+    "services/deep_research/workflow_units.py": "055d4e5a002d2ef2b637d186b009ededac3d27130d70bd8cde8300d3f89fcd63",
+    "services/deep_research/planning_transport.py": "16275bd587fd6546f8dba5ebcf72239b60222ac35319e42246bd63bb4bc124e6",
+    "tests/test_deep_research_workflow_metadata_semantics.py": "ee51f877ed0823a4d4fc7c285c58330e89a6cd677707c3f97bd3453be8caef1d",
+    "tests/test_deep_research_workflow_metadata_repair.py": "92ad845f394654029469171df6aa2b4e75b52dd83de349f0bfe03eaaab8e350e"
+  },
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "scientificApproval": false,
+  "boundary": "Candidate only. Canonical metadata diagnostics are mapped to original wire coordinates; independent declared use-before-creation diagnostics do not fill budgets, change kinds, or choose initialization. No historical result or scientific acceptance upgraded."
+}
