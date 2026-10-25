@@ -1,0 +1,154 @@
+{
+  "date": "2026-10-26",
+  "candidateVersion": 14,
+  "status": "integrated_not_default",
+  "defaultVersion": 13,
+  "runtimePromptVersion": "dr-v2.20261026.275",
+  "associatedRegression": {
+    "files": 25,
+    "testFiles": [
+      "test_deep_research_display_metadata.py",
+      "test_deep_research_workflow_lifecycle.py",
+      "test_deep_research_workflow_lifecycle_profile.py",
+      "test_deep_research_workflow_lifecycle_units.py",
+      "test_deep_research_workflow_metadata_actions.py",
+      "test_deep_research_workflow_metadata_feedback.py",
+      "test_deep_research_workflow_metadata_input.py",
+      "test_deep_research_workflow_metadata_objects.py",
+      "test_deep_research_workflow_metadata_observations.py",
+      "test_deep_research_workflow_metadata_ordered.py",
+      "test_deep_research_workflow_metadata_ordered_integration.py",
+      "test_deep_research_workflow_metadata_output.py",
+      "test_deep_research_workflow_metadata_reasoning.py",
+      "test_deep_research_workflow_metadata_repair.py",
+      "test_deep_research_workflow_metadata_revision3.py",
+      "test_deep_research_workflow_metadata_revision5.py",
+      "test_deep_research_workflow_metadata_rows.py",
+      "test_deep_research_workflow_metadata_semantics.py",
+      "test_deep_research_workflow_metadata_single_group.py",
+      "test_deep_research_workflow_metadata_single_group_integration.py",
+      "test_deep_research_workflow_metadata_steps.py",
+      "test_deep_research_workflow_metadata_steps_integration.py",
+      "test_deep_research_workflow_metadata_wire_feedback.py",
+      "test_deep_research_workflow_transport.py",
+      "test_deep_research_workflow_units.py"
+    ],
+    "exitCode": 0,
+    "sourceStable": true,
+    "sourceHashes": {
+      "services\\deep_research\\facade.py": "96cb8722e808ceed4b8ddde2c4913404cfce24b5d055ea87a558e8f3674ad3ac",
+      "tests\\test_deep_research_display_metadata.py": "d41d6919c159f4b1336eb86c9b31252497e424451c8e4d3c5bf7f46e5d86e4b8",
+      "tests\\test_deep_research_workflow_lifecycle.py": "40f96259420233d678f36e1ad99eacfb56e7ddcad202bc8526a048d17df88a4a",
+      "tests\\test_deep_research_workflow_lifecycle_profile.py": "4bb3d067c9319ce2eb12d5f9cc5968c60d7490237684018076f6ff81f6285058",
+      "tests\\test_deep_research_workflow_lifecycle_units.py": "3c67c4c83dee20e523c4b6e39ca2f3b7b50923c0867bfc033b72dc3f288951c9",
+      "tests\\test_deep_research_workflow_metadata_actions.py": "bd720af7e974dea63ac43db9303d20450fa31ecac9855b756e9879439bc53063",
+      "tests\\test_deep_research_workflow_metadata_feedback.py": "5e841089863e8e0c5bca3b395898c83c62c5d1cc8046a5f3baa9e690d53d0510",
+      "tests\\test_deep_research_workflow_metadata_input.py": "7584aff84f311834493ac788b5eabbc757539e2e1e3065ea6e16d2d7bc3af44f",
+      "tests\\test_deep_research_workflow_metadata_objects.py": "2612b712d245479b5e4cf5cc5fbf7214498a8c79773a939aa438a5a0f6d92805",
+      "tests\\test_deep_research_workflow_metadata_observations.py": "baec79e11e99b075e9b554582585d06af31abf9e642aa09e7d670095cc5b2e85",
+      "tests\\test_deep_research_workflow_metadata_ordered.py": "35c13069a25f325299b39a6832dd7fb205d866481ea348c8c0891ce0b924d83b",
+      "tests\\test_deep_research_workflow_metadata_ordered_integration.py": "c8e271825f9d56448b3c90f670b6a194fe871a45d66bb1485978390f4eb1be57",
+      "tests\\test_deep_research_workflow_metadata_output.py": "e1aa56ea96d045c399f9b4b3d65ee5f24535d9f89dc70bcd96995b2c98220b5f",
+      "tests\\test_deep_research_workflow_metadata_reasoning.py": "883a7cd8f0c50f2a58589bba61f521e02fa6e3060ab844fb34d62d0ff3554da7",
+      "tests\\test_deep_research_workflow_metadata_repair.py": "ecc574725f26c5e5079a4d544aa3bb46a4493d3de4bdbb731b551379f19c228e",
+      "tests\\test_deep_research_workflow_metadata_revision3.py": "c3ca7ee4e02c8956630cf1386b09aea3fb31626472f290a2c7d8e13455a6887e",
+      "tests\\test_deep_research_workflow_metadata_revision5.py": "35c4621a0d8fddaa31fbf9c6504aa655d0d37c8462f924a7206d12703279464d",
+      "tests\\test_deep_research_workflow_metadata_rows.py": "22cf2812f1acb67bb89c3215d75fbf4b5020b29e1588494dbaa0e29e79b3fa31",
+      "tests\\test_deep_research_workflow_metadata_semantics.py": "ee51f877ed0823a4d4fc7c285c58330e89a6cd677707c3f97bd3453be8caef1d",
+      "tests\\test_deep_research_workflow_metadata_single_group.py": "bec6e1953f0304cedc13d5fce8a3da5268f2058b5e6f868c0390c3417ed736c7",
+      "tests\\test_deep_research_workflow_metadata_single_group_integration.py": "04279f6a01957673f4a73c4800aabb3d57cd1b3cd8de71e1c5377394aad01aa8",
+      "tests\\test_deep_research_workflow_metadata_steps.py": "9122400d9253ebd813db7a2ec8e77bc7d851a4e82be3fa15fbcbd66fd98a6b7a",
+      "tests\\test_deep_research_workflow_metadata_steps_integration.py": "554640796cbb0a45a4f451cf5473aec6693026a1fcff667b6ebd30ea1b3ff083",
+      "tests\\test_deep_research_workflow_metadata_wire_feedback.py": "4d663bebb1a07f9ddc016990d6d2aac9eee624022b939e81bbc52ce692d0c7f9",
+      "tests\\test_deep_research_workflow_transport.py": "30b8b772d69ca8e486c9c74f8a19ba3ff6132b0d2aecc5d12d0a8b2b9d8c595c",
+      "tests\\test_deep_research_workflow_units.py": "90d763a8c56cdad2fc171a9053e1e6739e6ae7e7ba95d88606829f249a7ef454"
+    },
+    "elapsedSeconds": 61.92,
+    "logSha256": "7d054d231cf384abc42d9d39f9f8763e907b3c8828b11d4876c06298ca7221cb",
+    "fixtureRoot": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\pixiu-metadata-revision14-associated-20261026",
+    "providerCalls": 0,
+    "passed": 448,
+    "pytestSeconds": 57.37
+  },
+  "preflight": {
+    "candidateVersion": 14,
+    "sourceInput": "E1-v65 authoritative source only",
+    "engineeringWire": "explicit separate scalar fixture, not historical conversion",
+    "legacyResume": [
+      {
+        "case": "E1-v58",
+        "error": "invalid_workflow_unit_response",
+        "calls": 0,
+        "writes": 0
+      },
+      {
+        "case": "E1-v59",
+        "error": "invalid_workflow_unit_response",
+        "calls": 0,
+        "writes": 0
+      },
+      {
+        "case": "E1-v60",
+        "error": "workflow_blueprint_input_capacity",
+        "calls": 0,
+        "writes": 0
+      },
+      {
+        "case": "E1-v61",
+        "error": "invalid_workflow_unit_response",
+        "calls": 0,
+        "writes": 0
+      },
+      {
+        "case": "E1-v62",
+        "error": "invalid_workflow_unit_response",
+        "calls": 0,
+        "writes": 0
+      },
+      {
+        "case": "E1-v63",
+        "error": "invalid_workflow_unit_response",
+        "calls": 0,
+        "writes": 0
+      },
+      {
+        "case": "E1-v64",
+        "error": "invalid_workflow_unit_response",
+        "calls": 0,
+        "writes": 0
+      },
+      {
+        "case": "E1-v65",
+        "error": "invalid_workflow_unit_response",
+        "calls": 0,
+        "writes": 0
+      }
+    ],
+    "fullAssembly": "ready",
+    "inputSizes": [
+      {
+        "node": "plan_workflow_meta",
+        "completeBytes": 26420
+      },
+      {
+        "node": "plan_workflow_init",
+        "completeBytes": 26764
+      },
+      {
+        "node": "plan_workflow_init",
+        "completeBytes": 27271
+      },
+      {
+        "node": "plan_workflow_init",
+        "completeBytes": 27787
+      }
+    ],
+    "providerCalls": 0,
+    "productionWrites": 0,
+    "scientificApproval": false
+  },
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "independentAcceptance": "0/5",
+  "boundary": "Explicit separate engineering wire with actual source input; no historical proposal upgraded or scientifically approved. Full regression and real content still pending."
+}
