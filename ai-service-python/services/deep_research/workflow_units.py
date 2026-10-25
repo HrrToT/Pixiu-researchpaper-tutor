@@ -176,6 +176,11 @@ def prepare_units(record, *, prompt, aliases, invoke, parse, checkpoint):
     from services.deep_research.workflow_metadata_repair import enabled as repair_enabled, original_wire, prepare as prepare_repair
     repair_mode = repair_enabled(record)
     if repair_mode:parent_request['metadataRepairContract'] = record['workflowMetadataRepairContractVersion']
+    from services.deep_research.workflow_initialization_repair import (
+        enabled as initialization_repair_enabled, original_value as original_initialization,
+        prepare as repair_initialization)
+    initialization_repair_mode = initialization_repair_enabled(record)
+    if initialization_repair_mode: parent_request['initializationRepairContract'] = 1
     identity = digest({'request': parent_request, 'aliases': aliases})
     saved = deepcopy(record.get('state', {}).get('executionWorkflowBlueprint'))
     if saved is None:
@@ -189,6 +194,9 @@ def prepare_units(record, *, prompt, aliases, invoke, parse, checkpoint):
         raise DeepResearchError('invalid_workflow_blueprint_state', '分段工作流记录与原始输入不一致。')
     if 'metadataRepair' in saved and not repair_mode:
         raise DeepResearchError('invalid_workflow_blueprint_state', '旧工作流不得包含新版元信息修订。')
+    if 'initializationRepair' in saved and (not initialization_repair_mode
+            or not isinstance(saved['initializationRepair'], dict)):
+        raise DeepResearchError('invalid_workflow_blueprint_state', '初始化修正记录不属于当前契约。')
     visited = set()
     def stage(key, node, context, *, earlier=(), baseline=False, target=None):
         visited.add(key)
@@ -311,6 +319,18 @@ def prepare_units(record, *, prompt, aliases, invoke, parse, checkpoint):
                         valueDigest=digest(value), errors=problems)
             checkpoint(deepcopy(saved))
         if problems:
+            if node == INIT and initialization_repair_mode and original_initialization(unit) is not None:
+                later_exists = (key == 'baseline' and any(k.startswith('component:') for k in saved['units']))
+                if key.startswith('component:'):
+                    later_exists = any('component:'+str(i) in saved['units']
+                                       for i in range(int(key.split(':')[1])+1, 8))
+                if 'initializationRepair' not in saved and (saved['status'] == 'ready' or later_exists):
+                    raise DeepResearchError('invalid_workflow_blueprint_state', '已使用的初始化修正记录缺失。')
+                def save_initialization_repair(value):
+                    saved['initializationRepair'] = deepcopy(value); checkpoint(deepcopy(saved))
+                return repair_initialization(record, key=key, source_data=source_data, context=context,
+                    failed=unit, aliases=aliases, earlier=earlier, baseline=baseline, target=target,
+                    existing=saved.get('initializationRepair'), invoke=invoke, checkpoint=save_initialization_repair)
             if repair_mode and node == META and original_wire(unit, version=record['workflowMetadataRepairContractVersion']) is not None:
                 if 'metadataRepair' not in saved and (saved['status'] == 'ready' or len(saved['units']) > 1):
                     raise DeepResearchError('invalid_workflow_blueprint_state', '已使用的元信息修订记录缺失。')
@@ -322,6 +342,8 @@ def prepare_units(record, *, prompt, aliases, invoke, parse, checkpoint):
                                     details={'unit': key, 'errors': problems})
         if node == META and 'metadataRepair' in saved:
             raise DeepResearchError('invalid_workflow_blueprint_state', '合格原元信息不得混入修订记录。')
+        if node == INIT and saved.get('initializationRepair', {}).get('unitKey') == key:
+            raise DeepResearchError('invalid_workflow_blueprint_state', '合格原初始化不得混入修正记录。')
         return value
     meta = stage('metadata', META, {})
     if meta is None: return None
@@ -329,6 +351,8 @@ def prepare_units(record, *, prompt, aliases, invoke, parse, checkpoint):
         'component:' + str(i) for i in range(len(meta['components']))}
     if not set(saved['units']) <= expected:
         raise DeepResearchError('invalid_workflow_blueprint_state', '工作流包含计划之外的单元。')
+    if 'initializationRepair' in saved and saved['initializationRepair'].get('unitKey') not in expected - {'metadata'}:
+        raise DeepResearchError('invalid_workflow_blueprint_state', '初始化修正单元不属于当前计划。')
     results = [meta]; baseline = None; components = []
     if meta['baselineMode'] == 'train':
         unit = stage('baseline', INIT, {'target': 'baseline', 'metadata': meta, 'earlier': []}, baseline=True)
