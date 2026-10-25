@@ -90,7 +90,12 @@
     "wallSeconds": 360
   },
   "fullRegression": {
-    "status": "not_started"
+    "status": "running",
+    "sourceCommit": "c4175018f249fa1be43ab8321fd366d6a3e215e8",
+    "files": 260,
+    "fixtureDrive": "C:",
+    "log": "tmp/pytest-metadata-revision8-full-20261026.log",
+    "receipt": "tmp/metadata-revision8-full-receipt-20261026.json"
   },
   "sourceHashes": {
     "services/deep_research/workflow_metadata_objects.py": "e51a76196e460ee812bfd1b27e1e6840a85309e96228665fbafe351360f15aad",
