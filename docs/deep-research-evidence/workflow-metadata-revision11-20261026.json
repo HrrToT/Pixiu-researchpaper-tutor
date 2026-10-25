@@ -148,5 +148,13 @@
   "providerCalls": 0,
   "productionWrites": 0,
   "scientificApproval": false,
-  "boundary": "Candidate integration only. Unknown complete boundary leaves receive explicit one-shot model feedback, never guessed boundaries. Compiled values must also fit original 8KB content cap. Native payload/reservation and old-history checks pass offline; full regression and model/scientific quality are pending."
+  "boundary": "Candidate integration only. Unknown complete boundary leaves receive explicit one-shot model feedback, never guessed boundaries. Compiled values must also fit original 8KB content cap. Native payload/reservation and old-history checks pass offline; full regression and model/scientific quality are pending.",
+  "fullRegression": {
+    "status": "running",
+    "sourceCommit": "4d0d5938419c37ee9cfd7f8ce33f6ebf0a53f4d9",
+    "files": 264,
+    "fixtureDrive": "C:",
+    "log": "tmp/pytest-metadata-revision11-full-20261026.log",
+    "receipt": "tmp/metadata-revision11-full-receipt-20261026.json"
+  }
 }
