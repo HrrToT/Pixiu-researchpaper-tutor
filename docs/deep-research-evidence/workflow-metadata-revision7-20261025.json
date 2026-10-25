@@ -178,5 +178,15 @@
     },
     "sourceChanged": false,
     "boundary": "The isolated retest does not substitute for a clean full regression; original failed full run remains failed."
+  },
+  "fullRegressionRetest": {
+    "status": "running",
+    "sourceCommit": "eff6dfd71c67037b1dabb6b5ab9a363581555006",
+    "codeBaselineCommit": "947baa1f",
+    "files": 259,
+    "sourceHashesMatchOriginalFailedRun": true,
+    "fixtureDrive": "C:",
+    "log": "tmp/pytest-metadata-revision7-full-retest-20261026.log",
+    "receipt": "tmp/metadata-revision7-full-retest-receipt-20261026.json"
   }
 }
