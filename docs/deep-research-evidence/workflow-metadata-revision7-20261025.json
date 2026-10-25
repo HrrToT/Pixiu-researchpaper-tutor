@@ -130,11 +130,20 @@
     "wallSeconds": 360
   },
   "fullRegression": {
-    "status": "running",
+    "status": "failed_environment",
     "sourceCommit": "947baa1fd31eabcae532f311da95eb91c4ae01f2",
     "files": 259,
     "log": "tmp/pytest-metadata-revision7-full-20261025.log",
-    "receipt": "tmp/metadata-revision7-full-receipt-20261025.json"
+    "receipt": "tmp/metadata-revision7-full-receipt-20261025.json",
+    "passed": 4779,
+    "failed": 1,
+    "warnings": 1,
+    "testSeconds": 304.89,
+    "elapsedSeconds": 309.23,
+    "sourceStable": true,
+    "logSha256": "f87a0f99183d798ced590e41a30a8977465887bad4b4d9caee07e9790c12f77a",
+    "failure": "sqlite3.OperationalError: database or disk is full",
+    "failedTest": "test_deep_research_prospective_transport.py::test_native_policy_version_is_server_owned_and_immutable[None]"
   },
   "sourceHashes": {
     "services/deep_research/workflow_metadata_semantics.py": "2cb6ee53c9fa957c8863189b91f944f6b3198fb076432c056aa0ea0acb2cdbdf",
@@ -147,5 +156,27 @@
   "providerCalls": 0,
   "productionWrites": 0,
   "scientificApproval": false,
-  "boundary": "Candidate only. Canonical metadata diagnostics are mapped to original wire coordinates; independent declared use-before-creation diagnostics do not fill budgets, change kinds, or choose initialization. No historical result or scientific acceptance upgraded."
+  "boundary": "Candidate only. Canonical metadata diagnostics are mapped to original wire coordinates; independent declared use-before-creation diagnostics do not fill budgets, change kinds, or choose initialization. No historical result or scientific acceptance upgraded.",
+  "environmentRecovery": {
+    "date": "2026-10-26",
+    "driveDFreeBeforeBytes": 129105920,
+    "driveDFreeAfterBytes": 498495488,
+    "onlyPassingCompletedFixtureDirectoriesRemoved": [
+      "tmp/pytest-metadata-revision2-full-20261025",
+      "tmp/pytest-metadata-revision3-full-20261025",
+      "tmp/pytest-metadata-revision4-full-20261025",
+      "tmp/pytest-metadata-revision5-full-20261025",
+      "tmp/pytest-metadata-revision6-full-20261025"
+    ],
+    "logsReceiptsModelWireAndProductionDatabasesPreserved": true,
+    "originalFailedFixturePreserved": true,
+    "failedCaseRetest": {
+      "passed": 1,
+      "seconds": 1.86,
+      "fixtureDrive": "C:",
+      "log": "tmp/pytest-metadata-revision7-disk-retest-20261026.log"
+    },
+    "sourceChanged": false,
+    "boundary": "The isolated retest does not substitute for a clean full regression; original failed full run remains failed."
+  }
 }
