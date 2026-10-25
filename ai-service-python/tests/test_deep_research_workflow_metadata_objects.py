@@ -44,17 +44,18 @@ def test_bad_lifecycle_scalar_is_retained_and_explained_at_named_field():
     assert meta==before and not feedback['scientificApproval']
 
 
-def test_new_generation_and_revision_prompts_have_only_named_output_instructions_and_resume():
+@pytest.mark.parametrize('revision_version', [8, 9])
+def test_new_generation_and_revision_prompts_have_only_named_output_instructions_and_resume(revision_version):
     _,meta,inits=fixtures();bad=invalid_metadata()
     r,_,invoke,run=setup_repair([response(bad),response(meta),*map(response,inits)])
-    r['workflowMetadataRepairContractVersion']=8
+    r['workflowMetadataRepairContractVersion']=revision_version
     result=run();request=result['units']['metadata']['request']
     prefix=request['prompt'].split('Exact authoritative input and unit context',1)[0]
     assert NAME in prefix and 'phaseRows columns:' not in prefix
     assert 'Each read is [state,selector]' not in prefix and 'workflow_metadata_rows_v1' not in prefix
     assert request['extra']['response_format']['name']==NAME
     assert result['units']['metadata']['value']==bad
-    assert result['metadataRepair']['status']=='ready' and result['metadataRepair']['version']==8
+    assert result['metadataRepair']['status']=='ready' and result['metadataRepair']['version']==revision_version
     calls=invoke.call_count
     assert run()==result and invoke.call_count==calls and not result['scientificApproval']
 
