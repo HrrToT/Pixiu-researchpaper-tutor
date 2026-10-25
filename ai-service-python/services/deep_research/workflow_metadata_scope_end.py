@@ -9,6 +9,16 @@ import json
 from services.deep_research import workflow_metadata_single_group as scalar
 
 NAME = 'typed_scope_release_steps_v1'
+COUNT_POLICY = (
+    'frameIterations is the number of frames that execute the per_frame step block, per repeat and arm. '
+    'It is a nonboolean integer: positive if ANY step has scope per_frame, exactly zero if NONE do. '
+    'Choose the actual processed frame window and its count consistently; baseline-only preparation '
+    'does not count as a processed frame. This is not optimizer updates, epochs, the number of steps, '
+    'a future measured value or a placeholder zero. Each fit budget.perExecution is the optimization '
+    'amount for ONE execution; a per_frame fit runs frameIterations times, a per_repeat fit once. '
+    'Do not multiply frameIterations by the number of steps or arms; later group budgets must account '
+    'for these declared executions. Never guess a frame count from missing data.\n'
+)
 POLICY = scalar.POLICY.replace(scalar.NAME, NAME).replace(
     'disposeAfter (step index or null):',
     'disposeAfter (step index, null, or "scope_end"):').replace(
@@ -54,7 +64,7 @@ def complete_scaffolding(value):
 def decode(value): return scalar.decode(expanded(value)[0])
 
 
-def field_feedback(value, aliases):
+def field_feedback(value, aliases, *, frame_count_rules=False):
     lowered, bounds = expanded(value)
     result = scalar.field_feedback(lowered, aliases)
     for issue in result['issues']:
@@ -63,22 +73,32 @@ def field_feedback(value, aliases):
             issue['actual'] = deepcopy(value['components'][int(parts[2])]['lifecycle']['disposeAfter'])
             issue.pop('actualInInvalidMetadata', None)
     result['explicitScopeEndReleases'] = bounds
+    if frame_count_rules:
+        indices = [i for i, step in enumerate(value['steps']) if step['scope'] == 'per_frame']
+        for issue in result['issues']:
+            if issue['code'] == 'timeline.frameIterations':
+                issue.update(expected=COUNT_POLICY.strip(), perFrameStepIndices=indices,
+                             requiredRelation='frameIterations > 0' if indices else 'frameIterations == 0')
     return result
 
 
-def generation_prompt(source_data, context):
+def generation_prompt(source_data, context, *, frame_count_rules=False):
     from services.deep_research.workflow_metadata_input import input_text
-    return POLICY + input_text({'authoritativeInput': json.loads(source_data), 'unitContext': context})
+    return POLICY + (COUNT_POLICY if frame_count_rules else '') + input_text({
+        'authoritativeInput': json.loads(source_data), 'unitContext': context})
 
 
-def revision_prompt(source_data, value, feedback):
+def revision_prompt(source_data, value, feedback, *, frame_count_rules=False):
     from services.deep_research.workflow_metadata_input import input_text
-    return POLICY + 'Revise invalidMetadata using ALL authoritative input and fieldFeedback.\n' + input_text({
+    return POLICY + (COUNT_POLICY if frame_count_rules else '') + 'Revise invalidMetadata using ALL authoritative input and fieldFeedback.\n' + input_text({
         'authoritativeInput': json.loads(source_data), 'invalidMetadata': value, 'fieldFeedback': feedback})
 
 
-def descriptor():
+def descriptor(*, frame_count_rules=False):
     result = scalar.descriptor(); result['name'] = NAME
     release = result['schema']['$defs']['lifecycle']['properties']['disposeAfter']
     release['anyOf'].append({'const': 'scope_end'})
+    if frame_count_rules:
+        result['name'] = 'typed_scope_release_steps_v2'
+        result['schema']['properties']['frameIterations']['description'] = COUNT_POLICY.strip()
     return result
