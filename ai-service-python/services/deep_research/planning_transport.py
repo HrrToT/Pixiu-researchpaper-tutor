@@ -61,7 +61,7 @@ def options_for_record(record,node,options):
     options=reasoning_options(record,node,options)
     from services.deep_research.workflow_metadata_repair import enabled as metadata_revision_enabled
     if (node in ('plan_workflow_meta', 'repair_workflow_meta') and metadata_revision_enabled(record)
-            and record['workflowMetadataRepairContractVersion'] == 4):
+            and record['workflowMetadataRepairContractVersion'] in (4, 5)):
         # Fixed before request fingerprinting and atomic input/output reservation.
         # Raw 8KB and whole-run limits remain independent admission checks.
         options={**options,'max_tokens':3072}
