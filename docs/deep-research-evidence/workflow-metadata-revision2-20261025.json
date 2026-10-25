@@ -1,0 +1,52 @@
+{
+  "workflowMetadataRepairContractVersion": 2,
+  "defaultAllocatedVersion": 1,
+  "defaultEnabled": false,
+  "runtimeLoadVerified": false,
+  "eligibleOriginal": "stop, complete finite JSON, unique keys, exact known outer columns; invalid leaves remain unchanged for the model",
+  "strictDecodingOfRevisedOutputRequired": true,
+  "version1PolicyExactlyPreserved": true,
+  "version1SavedOfflineRequestDigestExactlyPreserved": "3ec94631de1fb12ba1a5f0896673d4b1fa059e6bf389e7576640145cff6c847f",
+  "focusedRegression": {
+    "files": 10,
+    "passed": 234,
+    "seconds": 30.59
+  },
+  "wireDiagnosticFoundation": {
+    "files": 3,
+    "passed": 52,
+    "seconds": 28.49
+  },
+  "actualSavedInput": {
+    "case": "E1-v53",
+    "revisionVersion1Eligible": false,
+    "revisionVersion2Eligible": true,
+    "allOriginalInputsPreserved": true,
+    "allInvalidWireValuesPreserved": true,
+    "allFeedbackEntriesPreserved": true,
+    "inputWithSchemaBytes": 27865,
+    "maxInputBytes": 32000,
+    "requestDigest": "4c45d1db0bb652fd7ead95f49c223e70861de10b9de8f8da2c1d9918b4a2b292",
+    "providerCalls": 0,
+    "productionWrites": 0,
+    "programmaticallyFilledSelectors": 0,
+    "scientificApproval": false
+  },
+  "fullRegression": {
+    "status": "not_started"
+  },
+  "sourceHashes": {
+    "services/deep_research/workflow_metadata_wire_feedback.py": "a60fe646875067e80535af0a49dda866d1f87ec33ed0f966c174e649d3ac3bd0",
+    "services/deep_research/workflow_metadata_repair.py": "89186cddc6033258880014bbbb6385f494eedf0d8dbdbadb0f9b38902c5f3ce1",
+    "services/deep_research/workflow_units.py": "60fa77b769499db5868c8451193c8d0827a4e42029e6a1870ef1d53c89f01306",
+    "tests/test_deep_research_workflow_metadata_wire_feedback.py": "4d663bebb1a07f9ddc016990d6d2aac9eee624022b939e81bbc52ce692d0c7f9",
+    "tests/test_deep_research_workflow_metadata_repair.py": "cc951b17d8347a44f2a6dd4e11b645cc7efda6b33cac8b6c698e49f809747532"
+  },
+  "maxRevisions": 1,
+  "schemaAndBudgetCapsUnchanged": true,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "scientificApproval": false,
+  "independentCredit": 0,
+  "boundary": "Version2 candidate only. Complete bad leaves may be sent to the model; no selector or scientific value is filled by code. Version1 stored runs remain unchanged. Real correction quality is unverified."
+}

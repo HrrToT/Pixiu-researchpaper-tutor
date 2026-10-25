@@ -28,6 +28,14 @@ def failed_unit():
                                                               version=7, metadata_rows=True)}
 
 
+def failed_wire_unit():
+    wire = encode(fixtures()[1]); wire['phaseRows'][0][6] = ['baseline']
+    raw = response(wire)
+    return {'request': {'prompt': 'original', 'extra': {}}, 'response': raw,
+            'responseDigest': digest(raw), 'value': None, 'valueDigest': digest(None),
+            'status': 'invalid_response', 'errors': ['unit.json']}
+
+
 def setup_repair(outputs=None):
     r, prompt, invoke, run = setup()
     r.update(workflowMetadataRowsContractVersion=2, workflowMetadataRepairContractVersion=1)
@@ -48,6 +56,72 @@ def test_one_separate_revision_preserves_failed_unit_and_complete_assembly_and_r
     assert [v.args[0] for v in invoke.call_args_list].count(NODE) == 1 and invoke.call_count == 5
     assert run() == saved and invoke.call_count == 5 and not saved['scientificApproval']
     assert saved['metadataRepair']['parent']['valueDigest'] == saved['units']['metadata']['valueDigest']
+
+
+def test_version2_repairs_complete_bad_leaf_wire_without_constructing_an_original_value():
+    _, meta, inits = fixtures(); bad = failed_wire_unit()['response']
+    r, _, invoke, run = setup_repair([bad, response(encode(meta)), *[response(v) for v in inits]])
+    r['workflowMetadataRepairContractVersion'] = 2
+    saved = run()
+    assert saved['units']['metadata']['value'] is None
+    assert saved['units']['metadata']['errors'] == ['unit.json']
+    assert saved['metadataRepair']['version'] == 2 and saved['metadataRepair']['status'] == 'ready'
+    assert saved['request']['metadataRepairContract'] == 2
+    assert run() == saved and invoke.call_count == 5 and not saved['scientificApproval']
+    r['workflowMetadataRepairContractVersion'] = 1
+    with pytest.raises(DeepResearchError) as exc: run()
+    assert exc.value.code == 'invalid_workflow_blueprint_state' and invoke.call_count == 5
+
+
+@pytest.mark.parametrize('change', ['truncated', 'json_prefix', 'row_arity', 'extra_root'])
+def test_version2_still_refuses_truncated_or_ambiguous_originals(change):
+    unit = failed_wire_unit()
+    if change == 'truncated': unit['response']['finishReason'] = 'length'
+    elif change == 'json_prefix': unit['response']['content'] = '{'
+    else:
+        wire = json.loads(unit['response']['content'])
+        if change == 'row_arity': wire['phaseRows'][0].pop()
+        else: wire['unrecognized'] = 'not dropped'
+        unit['response']['content'] = json.dumps(wire)
+    unit['responseDigest'] = digest(unit['response'])
+    assert original_wire(unit, version=2) is None
+
+
+def test_version1_complete_wire_gate_stays_frozen_for_bad_leaf_values():
+    unit = failed_wire_unit()
+    assert original_wire(unit, version=1) is None
+    assert original_wire(unit, version=2) == json.loads(unit['response']['content'])
+
+
+@pytest.mark.parametrize('where', ['root', 'nested'])
+def test_version2_rejects_duplicate_keys_without_silently_selecting_one(where):
+    unit = failed_wire_unit(); raw = unit['response']['content']
+    if where == 'root': changed = '{"baselineMode":"existing",' + raw[1:]
+    else: changed = raw.replace('"checkpointSelection": {"mode": "fixed_budget"}',
+                                '"checkpointSelection": {"mode":"existing","mode":"fixed_budget"}')
+    assert changed != raw
+    unit['response']['content'] = changed; unit['responseDigest'] = digest(unit['response'])
+    assert original_wire(unit, version=2) is None
+
+
+def test_version2_revision_response_with_duplicate_keys_stays_invalid_and_is_not_resent():
+    good = json.dumps(encode(fixtures()[1]))
+    revised = {'content': '{"baselineMode":"existing",' + good[1:], 'finishReason': 'stop'}
+    r, _, invoke, run = setup_repair([failed_wire_unit()['response'], revised])
+    r['workflowMetadataRepairContractVersion'] = 2
+    for _ in range(2):
+        with pytest.raises(DeepResearchError): run()
+    assert invoke.call_count == 2
+    assert r['state']['executionWorkflowBlueprint']['metadataRepair']['errors'] == ['unit.json']
+
+
+def test_version2_does_not_accept_an_ambiguous_original_just_because_its_last_value_validates():
+    good = json.dumps(encode(fixtures()[1]))
+    ambiguous = {'content': '{"baselineMode":"existing",' + good[1:], 'finishReason': 'stop'}
+    r, _, invoke, run = setup_repair([ambiguous]); r['workflowMetadataRepairContractVersion'] = 2
+    with pytest.raises(DeepResearchError) as exc: run()
+    assert exc.value.code == 'invalid_workflow_unit_response' and invoke.call_count == 1
+    assert 'metadataRepair' not in r['state']['executionWorkflowBlueprint']
 
 
 @pytest.mark.parametrize('change', ['length', 'malformed', 'failed_status', 'capacity'])
@@ -259,8 +333,9 @@ def test_marker_is_immutable_and_legacy_records_cannot_be_opted_in(tmp_path, rep
         repo.update_run('old', lambda row: {**row, 'workflowMetadataRepairContractVersion': 1})
 
 
+@pytest.mark.parametrize('revision_version', [1, 2])
 @pytest.mark.parametrize('scenario', ['success', 'unknown', 'budget'])
-def test_physical_request_identity_unknown_deduplication_and_existing_whole_budget(tmp_path, monkeypatch, scenario):
+def test_physical_request_identity_unknown_deduplication_and_existing_whole_budget(tmp_path, monkeypatch, scenario, revision_version):
     import requests
     from services.deep_research.repository import DeepResearchRepository
     from services.deep_research.runtime import ScopedModelClient, research_model_options
@@ -271,7 +346,7 @@ def test_physical_request_identity_unknown_deduplication_and_existing_whole_budg
     from test_deep_research_scientific_outline import record
     from test_deep_research_schema_transport import response as http_response
     r = record(); r.update(runId='r', taskId='t', workflowMetadataRowsContractVersion=2,
-                           workflowMetadataRepairContractVersion=1)
+                           workflowMetadataRepairContractVersion=revision_version)
     if scenario == 'budget': r['budget'].update(modelCalls=13, reservedModelCalls=5)
     repo = DeepResearchRepository(tmp_path/'wire.sqlite3'); repo.initialize(); repo.create_run(r); repo.begin_execution('r')
     post = Mock(side_effect=requests.ReadTimeout('fixture unknown')) if scenario == 'unknown' else Mock(
@@ -283,7 +358,7 @@ def test_physical_request_identity_unknown_deduplication_and_existing_whole_budg
     def checkpoint(v): repo.update_run('r', lambda row: {**row, 'state': {**row['state'], 'repairFixture': v}})
     def run():
         row = repo.require_run('r')
-        return prepare(row, source_data='{}', failed=failed_unit(), aliases={'E1': 'owned'},
+        return prepare(row, source_data='{}', failed=failed_unit() if revision_version == 1 else failed_wire_unit(), aliases={'E1': 'owned'},
             existing=row['state'].get('repairFixture'),
             invoke=lambda n, p, o: invoke('r', n, p, o, use_reserve=True), checkpoint=checkpoint)
     if scenario == 'budget':

@@ -169,7 +169,7 @@ def prepare_units(record, *, prompt, aliases, invoke, parse, checkpoint):
     if rows_mode:parent_request['metadataRowsContract'] = record['workflowMetadataRowsContractVersion']
     from services.deep_research.workflow_metadata_repair import enabled as repair_enabled, original_wire, prepare as prepare_repair
     repair_mode = repair_enabled(record)
-    if repair_mode:parent_request['metadataRepairContract'] = 1
+    if repair_mode:parent_request['metadataRepairContract'] = record['workflowMetadataRepairContractVersion']
     identity = digest({'request': parent_request, 'aliases': aliases})
     saved = deepcopy(record.get('state', {}).get('executionWorkflowBlueprint'))
     if saved is None:
@@ -217,13 +217,19 @@ def prepare_units(record, *, prompt, aliases, invoke, parse, checkpoint):
                 or digest(unit.get('response')) != unit.get('responseDigest')):
             raise DeepResearchError('invalid_workflow_blueprint_state', '工作流单元原始响应或状态已改变。')
         try:
-            value = parse(unit['response'].get('content', ''))
+            strict_wire = repair_mode and node == META and record['workflowMetadataRepairContractVersion'] == 2
+            if strict_wire:
+                from services.deep_research.workflow_metadata_repair import load_wire
+                value = load_wire(unit['response'].get('rawContent', unit['response'].get('content', '')), version=2)
+            else:value = parse(unit['response'].get('content', ''))
             wire = deepcopy(value) if use_rows else None
             if use_rows:value = decode_rows(value)
             problems = unit_errors(value, aliases, node=node, earlier=earlier, baseline=baseline,
                 version=version,metadata=context.get('metadata'),target=target,metadata_rows=use_rows)
             if use_rows and (len(unit['response'].get('content', '').encode('utf8')) > MAX_VALUE
                              or len(packed(wire).encode('utf8')) > MAX_VALUE):
+                problems.append('unit.output_capacity')
+            if strict_wire and len(unit['response'].get('rawContent', unit['response'].get('content', '')).encode('utf8')) > MAX_VALUE:
                 problems.append('unit.output_capacity')
             if unit['response'].get('finishReason', unit['response'].get('finish_reason')) == 'length':
                 problems = ['unit.output_truncated']
@@ -239,7 +245,7 @@ def prepare_units(record, *, prompt, aliases, invoke, parse, checkpoint):
                         valueDigest=digest(value), errors=problems)
             checkpoint(deepcopy(saved))
         if problems:
-            if repair_mode and node == META and original_wire(unit) is not None:
+            if repair_mode and node == META and original_wire(unit, version=record['workflowMetadataRepairContractVersion']) is not None:
                 if 'metadataRepair' not in saved and (saved['status'] == 'ready' or len(saved['units']) > 1):
                     raise DeepResearchError('invalid_workflow_blueprint_state', '已使用的元信息修订记录缺失。')
                 def save_repair(value):
