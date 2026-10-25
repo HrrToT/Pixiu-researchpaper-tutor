@@ -42,8 +42,11 @@ def _unique_object(pairs):
 
 
 def load_wire(raw, version=1):
-    if type(version) is not int or version not in (1, 2): raise ValueError('Unsupported metadata revision version')
-    return json.loads(raw, object_pairs_hook=_unique_object) if version == 2 else json.loads(raw)
+    if type(version) is not int or version not in (1, 2, 3): raise ValueError('Unsupported metadata revision version')
+    if version == 3:
+        from services.deep_research.workflow_metadata_revision3 import json_body
+        raw = json_body(raw)
+    return json.loads(raw, object_pairs_hook=_unique_object) if version >= 2 else json.loads(raw)
 
 
 def enabled(record):
@@ -51,7 +54,7 @@ def enabled(record):
     return (isinstance(record, dict) and rows_enabled(record)
             and record['workflowMetadataRowsContractVersion'] == 2
             and type(record.get('workflowMetadataRepairContractVersion')) is int
-            and record['workflowMetadataRepairContractVersion'] in (1, 2))
+            and record['workflowMetadataRepairContractVersion'] in (1, 2, 3))
 
 
 def original_wire(unit, version=1):
@@ -59,7 +62,7 @@ def original_wire(unit, version=1):
     from services.deep_research.workflow_metadata_rows import decode
     from services.deep_research.execution_workflow_blueprint import MAX_VALUE, packed
     response = unit.get('response', {})
-    if (type(version) is not int or version not in (1, 2)
+    if (type(version) is not int or version not in (1, 2, 3)
             or unit.get('status') != 'invalid_response'
             or digest(response) != unit.get('responseDigest')
             or response.get('finishReason', response.get('finish_reason')) != 'stop'
@@ -88,8 +91,13 @@ def original_wire(unit, version=1):
 
 def prompt_for(source_data, wire, field_feedback, version=1):
     from services.deep_research.shared_strings import input_text
-    if type(version) is not int or version not in (1, 2): raise ValueError('Unsupported metadata revision policy')
-    return (POLICY if version == 1 else WIRE_POLICY) + input_text({'authoritativeInput': json.loads(source_data),
+    if type(version) is not int or version not in (1, 2, 3): raise ValueError('Unsupported metadata revision policy')
+    policy = POLICY if version == 1 else WIRE_POLICY
+    if version == 3:
+        policy += ('Return JSON only, no Markdown fences. Each operation parameter name must be unique; '
+                   'multiple measurements need distinct explicit names and values, never repeated metric keys. '
+                   'All operation choices must remain compatible with evidence and the question.\n')
+    return policy + input_text({'authoritativeInput': json.loads(source_data),
                                 'invalidMetadata': wire, 'fieldFeedback': field_feedback})
 
 
@@ -117,7 +125,10 @@ def prepare(record, *, source_data, failed, aliases, existing, invoke, checkpoin
     if version == 1: field_feedback = stable_feedback(failed['value'], aliases)
     else:
         from services.deep_research.workflow_metadata_wire_feedback import feedback as wire_feedback
-        field_feedback = {**wire_feedback(wire), 'codes': sorted(failed['errors'])}
+        if version == 3:
+            from services.deep_research.workflow_metadata_revision3 import operation_feedback
+            field_feedback = {**operation_feedback(wire), 'codes': sorted(failed['errors'])}
+        else: field_feedback = {**wire_feedback(wire), 'codes': sorted(failed['errors'])}
     parent = {'requestDigest': digest(failed['request']), 'responseDigest': failed['responseDigest'],
               'valueDigest': failed['valueDigest'], 'errors': sorted(failed['errors'])}
     request = request_identity(record, NODE, prompt_for(source_data, wire, field_feedback, version=version), {'temperature': 0.0})

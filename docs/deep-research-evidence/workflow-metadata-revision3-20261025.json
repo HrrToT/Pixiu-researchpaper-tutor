@@ -1,0 +1,128 @@
+{
+  "date": "2026-10-25",
+  "candidateVersion": 3,
+  "defaultVersion": 2,
+  "runtimePromptVersion": "dr-v2.20261025.264",
+  "associatedRegression": {
+    "files": 11,
+    "passed": 199,
+    "seconds": 25.44,
+    "log": "tmp/pytest-metadata-revision3-associated-20261025.log"
+  },
+  "actualInputReplay": {
+    "case": "E1-v54",
+    "newRevisionCandidate": 3,
+    "allAuthoritativeInputPreserved": true,
+    "allOriginalWireValuesPreserved": true,
+    "inputWithSchemaBytes": 28359,
+    "maxInputBytes": 32000,
+    "operationIssues": [
+      {
+        "code": "wire.parameter.duplicate_name",
+        "path": "/phaseRows/4/9/1/1/0",
+        "expected": "unique parameter name within this operation",
+        "actual": "metric"
+      },
+      {
+        "code": "wire.parameter.duplicate_name",
+        "path": "/phaseRows/4/9/1/2/0",
+        "expected": "unique parameter name within this operation",
+        "actual": "metric"
+      },
+      {
+        "code": "wire.parameter.duplicate_name",
+        "path": "/phaseRows/8/9/1/1/0",
+        "expected": "unique parameter name within this operation",
+        "actual": "metric"
+      },
+      {
+        "code": "wire.parameter.duplicate_name",
+        "path": "/phaseRows/8/9/1/2/0",
+        "expected": "unique parameter name within this operation",
+        "actual": "metric"
+      },
+      {
+        "code": "wire.operation.invalid",
+        "path": "/phaseRows/4/9",
+        "expected": "valid operation with uniquely named typed parameters",
+        "actual": [
+          "record_metrics",
+          [
+            [
+              "metric",
+              "choice",
+              "psnr"
+            ],
+            [
+              "metric",
+              "choice",
+              "additional_3dg_count"
+            ],
+            [
+              "metric",
+              "choice",
+              "stage2_time_seconds"
+            ]
+          ]
+        ],
+        "errors": [
+          "operation: 参数名重复 'metric'",
+          "operation: 参数名重复 'metric'"
+        ]
+      },
+      {
+        "code": "wire.operation.invalid",
+        "path": "/phaseRows/8/9",
+        "expected": "valid operation with uniquely named typed parameters",
+        "actual": [
+          "record_metrics",
+          [
+            [
+              "metric",
+              "choice",
+              "psnr"
+            ],
+            [
+              "metric",
+              "choice",
+              "additional_3dg_count"
+            ],
+            [
+              "metric",
+              "choice",
+              "stage2_time_seconds"
+            ]
+          ]
+        ],
+        "errors": [
+          "operation: 参数名重复 'metric'",
+          "operation: 参数名重复 'metric'"
+        ]
+      }
+    ],
+    "inputDigest": "b0a6d89763aac439fed79e84ddf45f58850735a61bbf03bded9702c3fdc6589d",
+    "providerCalls": 0,
+    "productionWrites": 0,
+    "scientificApproval": false
+  },
+  "legacyRequestReplay": {
+    "case": "E1-v54",
+    "revisionVersion": 2,
+    "exactPromptAndRequestDigestPreserved": true,
+    "requestDigest": "5c6621f156cad09a6cde62b75297852f8dabb4b5f0c1a1c2726af5b28379b6fa"
+  },
+  "sourceHashes": {
+    "services/deep_research/workflow_metadata_revision3.py": "aee9e2f7c135f6c2b61934c2d7f97264b6f9404aed7b92e348bb96c5fc152963",
+    "services/deep_research/workflow_metadata_repair.py": "9560b8a59760eb8c4f190f5eeece176142bb065968a98a6a4b87e56dac253dbd",
+    "services/deep_research/workflow_units.py": "fbdd00f2cea521a6395b8f7edd92751326cc15a6f0d0d933fcdc89a1874659f1",
+    "tests/test_deep_research_workflow_metadata_revision3.py": "c3ca7ee4e02c8956630cf1386b09aea3fb31626472f290a2c7d8e13455a6887e",
+    "tests/test_deep_research_workflow_metadata_repair.py": "bb2ecc13b264994b88a27687851c52e7d94fda571777247f45a21fb047098b1b"
+  },
+  "fullRegression": {
+    "status": "not_started"
+  },
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "scientificApproval": false,
+  "boundary": "Candidate only. Exact outer framing is not a semantic repair or scientific approval. Old contract1/2 requests and failed records remain unchanged; actual model correction still requires validation."
+}

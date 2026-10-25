@@ -333,7 +333,7 @@ def test_marker_is_immutable_and_legacy_records_cannot_be_opted_in(tmp_path, rep
         repo.update_run('old', lambda row: {**row, 'workflowMetadataRepairContractVersion': 1})
 
 
-@pytest.mark.parametrize('revision_version', [1, 2])
+@pytest.mark.parametrize('revision_version', [1, 2, 3])
 @pytest.mark.parametrize('scenario', ['success', 'unknown', 'budget'])
 def test_physical_request_identity_unknown_deduplication_and_existing_whole_budget(tmp_path, monkeypatch, scenario, revision_version):
     import requests
