@@ -130,7 +130,11 @@
     "wallSeconds": 360
   },
   "fullRegression": {
-    "status": "not_started"
+    "status": "running",
+    "sourceCommit": "947baa1fd31eabcae532f311da95eb91c4ae01f2",
+    "files": 259,
+    "log": "tmp/pytest-metadata-revision7-full-20261025.log",
+    "receipt": "tmp/metadata-revision7-full-receipt-20261025.json"
   },
   "sourceHashes": {
     "services/deep_research/workflow_metadata_semantics.py": "2cb6ee53c9fa957c8863189b91f944f6b3198fb076432c056aa0ea0acb2cdbdf",
