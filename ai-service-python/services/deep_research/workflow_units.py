@@ -203,9 +203,11 @@ def prepare_units(record, *, prompt, aliases, invoke, parse, checkpoint):
         use_rows = rows_mode and node == META
         named_metadata = repair_mode and node == META and record['workflowMetadataRepairContractVersion'] in (8, 9, 10)
         ordered_metadata = repair_mode and node == META and record['workflowMetadataRepairContractVersion'] in (11, 12)
-        step_metadata = repair_mode and node == META and record['workflowMetadataRepairContractVersion'] in (13, 14, 15, 16, 17, 18)
+        step_metadata = repair_mode and node == META and record['workflowMetadataRepairContractVersion'] in (13, 14, 15, 16, 17, 18, 19)
         if step_metadata:
-            if record['workflowMetadataRepairContractVersion'] == 18:
+            if record['workflowMetadataRepairContractVersion'] == 19:
+                from services.deep_research.workflow_metadata_scope_position import generation_prompt
+            elif record['workflowMetadataRepairContractVersion'] == 18:
                 from services.deep_research.workflow_metadata_scope_start import generation_prompt
             elif record['workflowMetadataRepairContractVersion'] == 17:
                 from functools import partial
@@ -269,7 +271,7 @@ def prepare_units(record, *, prompt, aliases, invoke, parse, checkpoint):
                 or digest(unit.get('response')) != unit.get('responseDigest')):
             raise DeepResearchError('invalid_workflow_blueprint_state', '工作流单元原始响应或状态已改变。')
         try:
-            strict_wire = repair_mode and node == META and record['workflowMetadataRepairContractVersion'] in (2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18)
+            strict_wire = repair_mode and node == META and record['workflowMetadataRepairContractVersion'] in (2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19)
             if strict_wire:
                 from services.deep_research.workflow_metadata_repair import load_wire
                 value = load_wire(unit['response'].get('rawContent', unit['response'].get('content', '')), version=record['workflowMetadataRepairContractVersion'])
@@ -277,7 +279,9 @@ def prepare_units(record, *, prompt, aliases, invoke, parse, checkpoint):
             wire = deepcopy(value) if use_rows else None
             if use_rows:
                 if step_metadata:
-                    if record['workflowMetadataRepairContractVersion'] == 18:
+                    if record['workflowMetadataRepairContractVersion'] == 19:
+                        from services.deep_research.workflow_metadata_scope_position import decode as decode_steps
+                    elif record['workflowMetadataRepairContractVersion'] == 18:
                         from services.deep_research.workflow_metadata_scope_start import decode as decode_steps
                     elif record['workflowMetadataRepairContractVersion'] in (15, 16, 17):
                         from services.deep_research.workflow_metadata_scope_end import decode as decode_steps
@@ -298,7 +302,7 @@ def prepare_units(record, *, prompt, aliases, invoke, parse, checkpoint):
                 else:value = decode_rows(value)
             problems = unit_errors(value, aliases, node=node, earlier=earlier, baseline=baseline,
                 version=version,metadata=context.get('metadata'),target=target,metadata_rows=use_rows)
-            formatting_capacity = strict_wire and record['workflowMetadataRepairContractVersion'] in (5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18)
+            formatting_capacity = strict_wire and record['workflowMetadataRepairContractVersion'] in (5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19)
             if use_rows and ((not formatting_capacity and len(unit['response'].get('content', '').encode('utf8')) > MAX_VALUE)
                              or len(packed(wire).encode('utf8')) > MAX_VALUE
                              or (ordered_metadata or step_metadata) and len(packed(value).encode('utf8')) > MAX_VALUE):
@@ -310,7 +314,7 @@ def prepare_units(record, *, prompt, aliases, invoke, parse, checkpoint):
                 problems = ['unit.output_truncated']
         except (TypeError, ValueError, RecursionError, OverflowError):
             value, problems = None, ['unit.json']
-        if (repair_mode and record['workflowMetadataRepairContractVersion'] in (4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18)
+        if (repair_mode and record['workflowMetadataRepairContractVersion'] in (4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19)
                 and unit['response'].get('finishReason', unit['response'].get('finish_reason')) == 'length'):
             problems = ['unit.output_truncated']
         if repair_mode:problems = sorted(problems)
