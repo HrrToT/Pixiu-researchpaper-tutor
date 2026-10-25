@@ -112,5 +112,13 @@
   },
   "providerCalls": 0,
   "scientificApproval": false,
-  "boundary": "Candidate only. Lossless input field sharing and explicit creation guidance; old requests frozen, no automatic state allocation or timeline correction. Full regression and real scientific content remain unverified."
+  "boundary": "Candidate only. Lossless input field sharing and explicit creation guidance; old requests frozen, no automatic state allocation or timeline correction. Full regression and real scientific content remain unverified.",
+  "fullRegression": {
+    "status": "running",
+    "sourceCommit": "e8f12fb699d9e07360480c5c19e0b7d121ec66d5",
+    "files": 261,
+    "fixtureDrive": "C:",
+    "log": "tmp/pytest-metadata-revision9-full-20261026.log",
+    "receipt": "tmp/metadata-revision9-full-receipt-20261026.json"
+  }
 }
