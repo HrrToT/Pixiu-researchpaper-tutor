@@ -169,11 +169,18 @@
   "scientificApproval": false,
   "boundary": "Candidate only. Original lifecycle/scientific guards unchanged; new native record branch prevents expressing shared cross-arm raw records and incompatible group identifiers. Analysis is preserved, not removed. Full regression and real scientific quality pending.",
   "fullRegression": {
-    "status": "running",
+    "status": "passed",
     "sourceCommit": "373f9e4f50d9c5e2d7633e6f9e482ee1302e6721",
     "files": 265,
     "fixtureDrive": "C:",
     "log": "tmp/pytest-metadata-revision12-full-20261026.log",
-    "receipt": "tmp/metadata-revision12-full-receipt-20261026.json"
+    "receipt": "tmp/metadata-revision12-full-receipt-20261026.json",
+    "passed": 4876,
+    "pytestSeconds": 374.85,
+    "elapsedSeconds": 380.09,
+    "exitCode": 0,
+    "sourceStable": true,
+    "warnings": 1,
+    "logSha256": "1266d218187ca4cdef03cfbd25f201f82e59e5888885d5dd49aef560edd72f77"
   }
 }
