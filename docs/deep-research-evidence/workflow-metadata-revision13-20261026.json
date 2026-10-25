@@ -1,0 +1,180 @@
+{
+  "date": "2026-10-26",
+  "contractVersion": 13,
+  "status": "candidate_integrated_not_activated",
+  "defaultContractVersion": 12,
+  "runtimePromptVersion": "dr-v2.20261026.274",
+  "associatedReceipt": {
+    "files": 23,
+    "testFiles": [
+      "test_deep_research_display_metadata.py",
+      "test_deep_research_workflow_lifecycle.py",
+      "test_deep_research_workflow_lifecycle_profile.py",
+      "test_deep_research_workflow_lifecycle_units.py",
+      "test_deep_research_workflow_metadata_actions.py",
+      "test_deep_research_workflow_metadata_feedback.py",
+      "test_deep_research_workflow_metadata_input.py",
+      "test_deep_research_workflow_metadata_objects.py",
+      "test_deep_research_workflow_metadata_observations.py",
+      "test_deep_research_workflow_metadata_ordered.py",
+      "test_deep_research_workflow_metadata_ordered_integration.py",
+      "test_deep_research_workflow_metadata_output.py",
+      "test_deep_research_workflow_metadata_reasoning.py",
+      "test_deep_research_workflow_metadata_repair.py",
+      "test_deep_research_workflow_metadata_revision3.py",
+      "test_deep_research_workflow_metadata_revision5.py",
+      "test_deep_research_workflow_metadata_rows.py",
+      "test_deep_research_workflow_metadata_semantics.py",
+      "test_deep_research_workflow_metadata_steps.py",
+      "test_deep_research_workflow_metadata_steps_integration.py",
+      "test_deep_research_workflow_metadata_wire_feedback.py",
+      "test_deep_research_workflow_transport.py",
+      "test_deep_research_workflow_units.py"
+    ],
+    "exitCode": 0,
+    "sourceStable": true,
+    "sourceHashes": {
+      "services\\deep_research\\facade.py": "c8ebf481e66062f7a056d386fd0ce373f808be8f4ec5d7f85377da528751c6d9",
+      "tests\\test_deep_research_display_metadata.py": "d41d6919c159f4b1336eb86c9b31252497e424451c8e4d3c5bf7f46e5d86e4b8",
+      "tests\\test_deep_research_workflow_lifecycle.py": "40f96259420233d678f36e1ad99eacfb56e7ddcad202bc8526a048d17df88a4a",
+      "tests\\test_deep_research_workflow_lifecycle_profile.py": "e24e8922e1245b1628b0174099d90478e2749145b2938241e878a8bb97f54cc5",
+      "tests\\test_deep_research_workflow_lifecycle_units.py": "3c67c4c83dee20e523c4b6e39ca2f3b7b50923c0867bfc033b72dc3f288951c9",
+      "tests\\test_deep_research_workflow_metadata_actions.py": "bd720af7e974dea63ac43db9303d20450fa31ecac9855b756e9879439bc53063",
+      "tests\\test_deep_research_workflow_metadata_feedback.py": "5e841089863e8e0c5bca3b395898c83c62c5d1cc8046a5f3baa9e690d53d0510",
+      "tests\\test_deep_research_workflow_metadata_input.py": "7584aff84f311834493ac788b5eabbc757539e2e1e3065ea6e16d2d7bc3af44f",
+      "tests\\test_deep_research_workflow_metadata_objects.py": "2612b712d245479b5e4cf5cc5fbf7214498a8c79773a939aa438a5a0f6d92805",
+      "tests\\test_deep_research_workflow_metadata_observations.py": "baec79e11e99b075e9b554582585d06af31abf9e642aa09e7d670095cc5b2e85",
+      "tests\\test_deep_research_workflow_metadata_ordered.py": "35c13069a25f325299b39a6832dd7fb205d866481ea348c8c0891ce0b924d83b",
+      "tests\\test_deep_research_workflow_metadata_ordered_integration.py": "c8e271825f9d56448b3c90f670b6a194fe871a45d66bb1485978390f4eb1be57",
+      "tests\\test_deep_research_workflow_metadata_output.py": "e1aa56ea96d045c399f9b4b3d65ee5f24535d9f89dc70bcd96995b2c98220b5f",
+      "tests\\test_deep_research_workflow_metadata_reasoning.py": "883a7cd8f0c50f2a58589bba61f521e02fa6e3060ab844fb34d62d0ff3554da7",
+      "tests\\test_deep_research_workflow_metadata_repair.py": "9c835fd7787fafaee58040b881a1418146e8b943712ef470c9757ed2912a9eb9",
+      "tests\\test_deep_research_workflow_metadata_revision3.py": "c3ca7ee4e02c8956630cf1386b09aea3fb31626472f290a2c7d8e13455a6887e",
+      "tests\\test_deep_research_workflow_metadata_revision5.py": "35c4621a0d8fddaa31fbf9c6504aa655d0d37c8462f924a7206d12703279464d",
+      "tests\\test_deep_research_workflow_metadata_rows.py": "22cf2812f1acb67bb89c3215d75fbf4b5020b29e1588494dbaa0e29e79b3fa31",
+      "tests\\test_deep_research_workflow_metadata_semantics.py": "ee51f877ed0823a4d4fc7c285c58330e89a6cd677707c3f97bd3453be8caef1d",
+      "tests\\test_deep_research_workflow_metadata_steps.py": "9122400d9253ebd813db7a2ec8e77bc7d851a4e82be3fa15fbcbd66fd98a6b7a",
+      "tests\\test_deep_research_workflow_metadata_steps_integration.py": "554640796cbb0a45a4f451cf5473aec6693026a1fcff667b6ebd30ea1b3ff083",
+      "tests\\test_deep_research_workflow_metadata_wire_feedback.py": "4d663bebb1a07f9ddc016990d6d2aac9eee624022b939e81bbc52ce692d0c7f9",
+      "tests\\test_deep_research_workflow_transport.py": "30b8b772d69ca8e486c9c74f8a19ba3ff6132b0d2aecc5d12d0a8b2b9d8c595c",
+      "tests\\test_deep_research_workflow_units.py": "90d763a8c56cdad2fc171a9053e1e6739e6ae7e7ba95d88606829f249a7ef454"
+    },
+    "elapsedSeconds": 57.94,
+    "logSha256": "016c356519739e9b536925fe1a073e58f90f415c01c09fa98c4fe4efcd8bfe4a",
+    "fixtureRoot": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\pixiu-metadata-revision13-associated-20261026",
+    "providerCalls": 0
+  },
+  "inputAndLegacyReplay": {
+    "candidateVersion": 13,
+    "sourceAssessmentCase": "E1-v64 authoritative input only",
+    "representationFixture": "explicit engineering invalid step index; not a conversion or repair of the historical ambiguous proposal",
+    "completeInputBytes": {
+      "generation": 26660,
+      "revisionWithExplicitEngineeringInvalidWire": 28832
+    },
+    "capBytes": 32000,
+    "allAuthoritativeSourceAndEngineeringWireValuesPreserved": true,
+    "providerCalls": 0,
+    "productionWrites": 0,
+    "scientificApproval": false,
+    "legacyResume": [
+      {
+        "case": "E1-v58",
+        "version": 6,
+        "sameFailure": true,
+        "calls": 0,
+        "writes": 0,
+        "requestDigest": "10fa4ec2bcdb8530ede0d1832c6e3fe2414559b31d248fff4e8ce54138ffbdb0",
+        "repairRequestDigest": "a17522ec618fa5d4603082efefc4273b491f5ed409a9871efdfedf23f4a266d0"
+      },
+      {
+        "case": "E1-v59",
+        "version": 7,
+        "sameFailure": true,
+        "calls": 0,
+        "writes": 0,
+        "requestDigest": "e5c388df745b6169a85dea95df8014733101449de93e9946afcd23da647f4469",
+        "repairRequestDigest": "cf3d8845b4706dbe9766753f61f0496f0db2c6c9ed9b4d651fef95ec96affa3c"
+      },
+      {
+        "case": "E1-v60",
+        "version": 8,
+        "sameFailure": true,
+        "calls": 0,
+        "writes": 0,
+        "requestDigest": "b3d6614251de81ded394d8d2451634c258b69444bee06800f581f1c516947eea",
+        "repairRequestDigest": "2bc49aa22f6811d8fb28fcea23c9b22e5f8ef9f50a6b0122d1df8cb66fa267d6"
+      },
+      {
+        "case": "E1-v61",
+        "version": 9,
+        "sameFailure": true,
+        "calls": 0,
+        "writes": 0,
+        "requestDigest": "2ea1732696c92069c833b75e0f63b4950a318e054a86585f0cc78677f9ad8a17",
+        "repairRequestDigest": "716fe2498ac46bed619a84431a5a4639f842c3268cd55d8b829111929b24fd5e"
+      },
+      {
+        "case": "E1-v62",
+        "version": 10,
+        "sameFailure": true,
+        "calls": 0,
+        "writes": 0,
+        "requestDigest": "e2bfdfdf826c546e296e7fedf5b2f02f7c87e28d6474761fd1a48c473d992091",
+        "repairRequestDigest": null
+      },
+      {
+        "case": "E1-v63",
+        "version": 11,
+        "sameFailure": true,
+        "calls": 0,
+        "writes": 0,
+        "requestDigest": "ce357a4e45e31bad8d7c28c433d9c1cd1f65c3455fb77630a18673c20af235f4",
+        "repairRequestDigest": "4800132a001e5013fb7de403bd7b4c21dee70ae2cec6790839c969a3b54cff99"
+      },
+      {
+        "case": "E1-v64",
+        "version": 12,
+        "sameFailure": true,
+        "calls": 0,
+        "writes": 0,
+        "requestDigest": "70b5ed9db122661a0e57eff697292b249a1d46e94416f34a812d4524db0a8c9a",
+        "repairRequestDigest": "30190f6f859c1a4d460a0effc1ab6b1348ca26060c9cf13b1d66c284d3377931"
+      }
+    ],
+    "fullEngineeringAssemblyWithActualSourceInput": {
+      "status": "ready",
+      "completeInputSizes": [
+        {
+          "node": "plan_workflow_meta",
+          "completeBytes": 26660
+        },
+        {
+          "node": "plan_workflow_init",
+          "completeBytes": 26983
+        },
+        {
+          "node": "plan_workflow_init",
+          "completeBytes": 27490
+        },
+        {
+          "node": "plan_workflow_init",
+          "completeBytes": 28006
+        }
+      ],
+      "providerCalls": 0,
+      "productionWrites": 0,
+      "boundary": "Separate in-memory engineering wire/initializers with actual source data; no historical record is changed or scientifically approved."
+    }
+  },
+  "sourceHashes": {
+    "planning_transport.py": "359f722e52c7d2e1f2f671e1e4c6befa8d56c624c5a3d39e71f32870d3dca195",
+    "workflow_metadata_repair.py": "a86d676e861085e3712bd78642ac16696243cec31699c29d2c011a0eaca8b06c",
+    "workflow_metadata_steps.py": "8fd68a26a007852c9db35358a28a593e29a34f0a7c4f912c3693f5a90106b3d9",
+    "workflow_units.py": "fbca8f63cc75a762ce96ed2d5fa042e85cbfe51c4f161e967e772a9f2eaf302c"
+  },
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "independentAcceptance": "0/5",
+  "boundary": "Engineering typed-step assembly with actual sources is not a historical proposal conversion or scientific approval. Full regression and new real provider validation remain pending."
+}
