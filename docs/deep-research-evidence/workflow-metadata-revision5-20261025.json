@@ -45,11 +45,17 @@
     "wallSeconds": 360
   },
   "fullRegression": {
-    "status": "running",
+    "status": "passed",
     "sourceCommit": "d5d7abe13239bb10de2c5da41801c1b613c7f7e7",
     "files": 257,
     "log": "tmp/pytest-metadata-revision5-full-20261025.log",
-    "receipt": "tmp/metadata-revision5-full-receipt-20261025.json"
+    "receipt": "tmp/metadata-revision5-full-receipt-20261025.json",
+    "passed": 4754,
+    "warnings": 1,
+    "testSeconds": 348.98,
+    "elapsedSeconds": 351.89,
+    "sourceStable": true,
+    "logSha256": "d75c751d25510004b9f596a186a4ad48322ed5c1def622e78e4c12cbea1ff8eb"
   },
   "sourceHashes": {
     "services/deep_research/planning_transport.py": "d7355fdf64541c9c6b2d98a4cb62bd3ec721bc611116507dba16178db669c5c3",
