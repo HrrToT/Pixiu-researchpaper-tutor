@@ -44,7 +44,7 @@ def test_bad_lifecycle_scalar_is_retained_and_explained_at_named_field():
     assert meta==before and not feedback['scientificApproval']
 
 
-@pytest.mark.parametrize('revision_version', [8, 9])
+@pytest.mark.parametrize('revision_version', [8, 9, 10])
 def test_new_generation_and_revision_prompts_have_only_named_output_instructions_and_resume(revision_version):
     _,meta,inits=fixtures();bad=invalid_metadata()
     r,_,invoke,run=setup_repair([response(bad),response(meta),*map(response,inits)])

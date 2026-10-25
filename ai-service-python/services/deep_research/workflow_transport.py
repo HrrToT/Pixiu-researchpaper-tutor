@@ -82,6 +82,11 @@ def descriptor(version=3):
 
 def reasoning_options(record, node, options):
     """Apply a frozen role policy before request identity and reservation."""
+    if node in ('plan_workflow_meta', 'repair_workflow_meta'):
+        from services.deep_research.workflow_metadata_repair import enabled as revision_enabled
+        if revision_enabled(record) and record['workflowMetadataRepairContractVersion'] == 10:
+            return {**options, 'thinking': {'type': 'enabled'}, 'reasoning_effort': 'low',
+                    'max_tokens': 6144, 'timeout_seconds': 90}
     if enabled(record, node) and record['executionWorkflowContractVersion'] == 5:
         return {**options, 'thinking': {'type': 'enabled'}, 'reasoning_effort': 'low'}
     if enabled(record, node) and record['executionWorkflowContractVersion'] in (6,7):
