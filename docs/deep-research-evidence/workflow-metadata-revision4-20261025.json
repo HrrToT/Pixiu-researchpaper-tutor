@@ -52,11 +52,17 @@
     "tests/test_deep_research_workflow_metadata_repair.py": "97f2410b0192068f138eae051255a06ef575474c2a29e78a22632c31c9fcef4c"
   },
   "fullRegression": {
-    "status": "running",
+    "status": "passed",
     "sourceCommit": "7126c11d05e8c31fdce869a83f219428d3d62235",
     "files": 256,
     "log": "tmp/pytest-metadata-revision4-full-20261025.log",
-    "receipt": "tmp/metadata-revision4-full-receipt-20261025.json"
+    "receipt": "tmp/metadata-revision4-full-receipt-20261025.json",
+    "passed": 4744,
+    "warnings": 1,
+    "testSeconds": 457.87,
+    "elapsedSeconds": 463.81,
+    "sourceStable": true,
+    "logSha256": "b095afae23746f606f371e0936c1112dd7e68d623be430409d5e4fc0133afa64"
   },
   "providerCalls": 0,
   "productionWrites": 0,
