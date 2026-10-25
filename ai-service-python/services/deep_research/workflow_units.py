@@ -118,7 +118,7 @@ def unit_errors(value, aliases, *, node, earlier=(), baseline=False, version=6, 
     return list(dict.fromkeys(problems))
 
 
-def unit_prompt(source_data, *, node, context, version=6, metadata_rows=False, metadata_rows_contract=1):
+def unit_prompt(source_data, *, node, context, version=6, metadata_rows=False, metadata_rows_contract=1, metadata_action_objects=False):
     task = ('Return only sourceRefs,baselineMode,replicationMode,components,checkpointSelection,unresolved. '
             'Declare every required component in dependency order. Components contain componentId/appliesTo only. '
             'Do not generate initializers or repeat the full workflow. Existing assets require evidenced availability.'
@@ -143,6 +143,12 @@ def unit_prompt(source_data, *, node, context, version=6, metadata_rows=False, m
         from services.deep_research.workflow_metadata_rows import policy_for
         task = task.replace('components,checkpointSelection,frameIterations,phases,unresolved',
                             'componentRows,checkpointSelection,frameIterations,phaseRows,unresolved') + ' ' + policy_for(metadata_rows_contract)
+    if metadata_action_objects:
+        from services.deep_research.workflow_metadata_actions import NAME, POLICY as ACTION_POLICY
+        task = task.replace('workflow_metadata_rows_v1', NAME).replace(
+            'Each action is [action,[[name,type,value],...]].',
+            'Each action is an object {action,parameters}; parameters are {name,type,value} objects.')
+        task += ' ' + ACTION_POLICY
     prefix=('UNEXECUTED proposal; schema syntax does not prove science. ' + task + '\n'
         'Use concise English JSON. Facts/methods/data/assets need own original quotes; proposals need '
         'compatibility, not proof of author adoption. Missing information belongs in unresolved. '
@@ -188,8 +194,9 @@ def prepare_units(record, *, prompt, aliases, invoke, parse, checkpoint):
         visited.add(key)
         use_rows = rows_mode and node == META
         body = unit_prompt(source_data, node=node, context=context, version=version, metadata_rows=use_rows,
-                           metadata_rows_contract=record['workflowMetadataRowsContractVersion'] if rows_mode else 1)
-        if repair_mode and node == META and record['workflowMetadataRepairContractVersion'] == 5:
+                           metadata_rows_contract=record['workflowMetadataRowsContractVersion'] if rows_mode else 1,
+                           metadata_action_objects=repair_mode and node == META and record['workflowMetadataRepairContractVersion'] == 6)
+        if repair_mode and node == META and record['workflowMetadataRepairContractVersion'] in (5, 6):
             from services.deep_research.workflow_metadata_revision5 import POLICY as CAPACITY_POLICY
             body = CAPACITY_POLICY + body
         request = request_identity(record, node, body, {'temperature': 0.0})
@@ -220,16 +227,20 @@ def prepare_units(record, *, prompt, aliases, invoke, parse, checkpoint):
                 or digest(unit.get('response')) != unit.get('responseDigest')):
             raise DeepResearchError('invalid_workflow_blueprint_state', '工作流单元原始响应或状态已改变。')
         try:
-            strict_wire = repair_mode and node == META and record['workflowMetadataRepairContractVersion'] in (2, 3, 4, 5)
+            strict_wire = repair_mode and node == META and record['workflowMetadataRepairContractVersion'] in (2, 3, 4, 5, 6)
             if strict_wire:
                 from services.deep_research.workflow_metadata_repair import load_wire
                 value = load_wire(unit['response'].get('rawContent', unit['response'].get('content', '')), version=record['workflowMetadataRepairContractVersion'])
             else:value = parse(unit['response'].get('content', ''))
             wire = deepcopy(value) if use_rows else None
-            if use_rows:value = decode_rows(value)
+            if use_rows:
+                if repair_mode and record['workflowMetadataRepairContractVersion'] == 6:
+                    from services.deep_research.workflow_metadata_actions import decode as decode_action_rows
+                    value = decode_action_rows(value)
+                else:value = decode_rows(value)
             problems = unit_errors(value, aliases, node=node, earlier=earlier, baseline=baseline,
                 version=version,metadata=context.get('metadata'),target=target,metadata_rows=use_rows)
-            formatting_capacity = strict_wire and record['workflowMetadataRepairContractVersion'] == 5
+            formatting_capacity = strict_wire and record['workflowMetadataRepairContractVersion'] in (5, 6)
             if use_rows and ((not formatting_capacity and len(unit['response'].get('content', '').encode('utf8')) > MAX_VALUE)
                              or len(packed(wire).encode('utf8')) > MAX_VALUE):
                 problems.append('unit.output_capacity')
@@ -240,7 +251,7 @@ def prepare_units(record, *, prompt, aliases, invoke, parse, checkpoint):
                 problems = ['unit.output_truncated']
         except (TypeError, ValueError, RecursionError, OverflowError):
             value, problems = None, ['unit.json']
-        if (repair_mode and record['workflowMetadataRepairContractVersion'] in (4, 5)
+        if (repair_mode and record['workflowMetadataRepairContractVersion'] in (4, 5, 6)
                 and unit['response'].get('finishReason', unit['response'].get('finish_reason')) == 'length'):
             problems = ['unit.output_truncated']
         if repair_mode:problems = sorted(problems)

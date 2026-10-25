@@ -42,8 +42,8 @@ def _unique_object(pairs):
 
 
 def load_wire(raw, version=1):
-    if type(version) is not int or version not in (1, 2, 3, 4, 5): raise ValueError('Unsupported metadata revision version')
-    if version in (3, 4, 5):
+    if type(version) is not int or version not in (1, 2, 3, 4, 5, 6): raise ValueError('Unsupported metadata revision version')
+    if version in (3, 4, 5, 6):
         from services.deep_research.workflow_metadata_revision3 import json_body
         raw = json_body(raw)
     return json.loads(raw, object_pairs_hook=_unique_object) if version >= 2 else json.loads(raw)
@@ -54,15 +54,17 @@ def enabled(record):
     return (isinstance(record, dict) and rows_enabled(record)
             and record['workflowMetadataRowsContractVersion'] == 2
             and type(record.get('workflowMetadataRepairContractVersion')) is int
-            and record['workflowMetadataRepairContractVersion'] in (1, 2, 3, 4, 5))
+            and record['workflowMetadataRepairContractVersion'] in (1, 2, 3, 4, 5, 6))
 
 
 def original_wire(unit, version=1):
     """Only complete, in-cap, exactly decoded proposals qualify for revision."""
     from services.deep_research.workflow_metadata_rows import decode
     from services.deep_research.execution_workflow_blueprint import MAX_VALUE, packed
+    if version == 6:
+        from services.deep_research.workflow_metadata_actions import decode
     response = unit.get('response', {})
-    if (type(version) is not int or version not in (1, 2, 3, 4, 5)
+    if (type(version) is not int or version not in (1, 2, 3, 4, 5, 6)
             or unit.get('status') != 'invalid_response'
             or digest(response) != unit.get('responseDigest')
             or response.get('finishReason', response.get('finish_reason')) != 'stop'
@@ -72,7 +74,7 @@ def original_wire(unit, version=1):
     try:
         wire = load_wire(raw, version=version)
         from services.deep_research.workflow_metadata_revision5 import over_capacity
-        too_large = over_capacity(raw, wire) if version == 5 else (
+        too_large = over_capacity(raw, wire) if version in (5, 6) else (
             len(raw.encode('utf8')) > MAX_VALUE or len(packed(wire).encode('utf8')) > MAX_VALUE)
         if (too_large or digest(unit.get('value')) != unit.get('valueDigest')):
             return None
@@ -93,15 +95,18 @@ def original_wire(unit, version=1):
 
 def prompt_for(source_data, wire, field_feedback, version=1):
     from services.deep_research.shared_strings import input_text
-    if type(version) is not int or version not in (1, 2, 3, 4, 5): raise ValueError('Unsupported metadata revision policy')
+    if type(version) is not int or version not in (1, 2, 3, 4, 5, 6): raise ValueError('Unsupported metadata revision policy')
     policy = POLICY if version == 1 else WIRE_POLICY
-    if version in (3, 4, 5):
+    if version in (3, 4, 5, 6):
         policy += ('Return JSON only, no Markdown fences. Each operation parameter name must be unique; '
                    'multiple measurements need distinct explicit names and values, never repeated metric keys. '
                    'All operation choices must remain compatible with evidence and the question.\n')
-    if version == 5:
+    if version in (5, 6):
         from services.deep_research.workflow_metadata_revision5 import POLICY as CAPACITY_POLICY
         policy += CAPACITY_POLICY
+    if version == 6:
+        from services.deep_research.workflow_metadata_actions import POLICY as ACTION_POLICY
+        policy += ACTION_POLICY
     return policy + input_text({'authoritativeInput': json.loads(source_data),
                                 'invalidMetadata': wire, 'fieldFeedback': field_feedback})
 
@@ -124,16 +129,20 @@ def prepare(record, *, source_data, failed, aliases, existing, invoke, checkpoin
     from services.deep_research.experiment_planning import request_identity, remaining_seconds
     from services.deep_research.planning_transport import overhead_bytes, dispatch_options
     version = record.get('workflowMetadataRepairContractVersion')
+    if version == 6:
+        from services.deep_research.workflow_metadata_actions import decode
     wire = original_wire(failed, version=version)
     if not enabled(record) or wire is None:
         raise DeepResearchError('invalid_workflow_unit_response', '原元信息不满足有界修订条件。')
     if version == 1: field_feedback = stable_feedback(failed['value'], aliases)
     else:
         from services.deep_research.workflow_metadata_wire_feedback import feedback as wire_feedback
-        if version in (3, 4, 5):
+        if version in (3, 4, 5, 6):
             from services.deep_research.workflow_metadata_revision3 import operation_feedback
-            if version == 5:
+            if version in (5, 6):
                 from services.deep_research.workflow_metadata_revision5 import field_feedback as operation_feedback
+            if version == 6:
+                from services.deep_research.workflow_metadata_actions import field_feedback as operation_feedback
             field_feedback = {**operation_feedback(wire), 'codes': sorted(failed['errors'])}
         else: field_feedback = {**wire_feedback(wire), 'codes': sorted(failed['errors'])}
     parent = {'requestDigest': digest(failed['request']), 'responseDigest': failed['responseDigest'],
@@ -177,7 +186,7 @@ def prepare(record, *, source_data, failed, aliases, existing, invoke, checkpoin
         value = decode(revised_wire)
         problems = unit_errors(value, aliases, node=META, version=7, metadata_rows=True)
         from services.deep_research.workflow_metadata_revision5 import over_capacity
-        too_large = over_capacity(raw, revised_wire) if version == 5 else (
+        too_large = over_capacity(raw, revised_wire) if version in (5, 6) else (
             len(raw.encode('utf8')) > MAX_VALUE or len(packed(revised_wire).encode('utf8')) > MAX_VALUE)
         if too_large: problems.append('unit.output_capacity')
     except (TypeError, ValueError, RecursionError, OverflowError):
