@@ -150,11 +150,18 @@
   "scientificApproval": false,
   "boundary": "Candidate integration only. Unknown complete boundary leaves receive explicit one-shot model feedback, never guessed boundaries. Compiled values must also fit original 8KB content cap. Native payload/reservation and old-history checks pass offline; full regression and model/scientific quality are pending.",
   "fullRegression": {
-    "status": "running",
+    "status": "passed",
     "sourceCommit": "4d0d5938419c37ee9cfd7f8ce33f6ebf0a53f4d9",
     "files": 264,
     "fixtureDrive": "C:",
     "log": "tmp/pytest-metadata-revision11-full-20261026.log",
-    "receipt": "tmp/metadata-revision11-full-receipt-20261026.json"
+    "receipt": "tmp/metadata-revision11-full-receipt-20261026.json",
+    "passed": 4857,
+    "pytestSeconds": 367.14,
+    "elapsedSeconds": 372.2,
+    "exitCode": 0,
+    "sourceStable": true,
+    "warnings": 1,
+    "logSha256": "042cb65b2b36480df369f45f6fb862b7719c45fd18947e515b707cb1fe7c30d0"
   }
 }
