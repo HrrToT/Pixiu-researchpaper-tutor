@@ -14,6 +14,19 @@ from test_deep_research_workflow_metadata_repair import setup_repair, response
 from test_deep_research_workflow_metadata_ordered_integration import input_value
 
 
+@pytest.mark.parametrize('injected', [None, True, 999])
+def test_new_repair_marker_is_server_owned(tmp_path, injected):
+    from services.deep_research.facade import ResearchFacade
+    repo = DeepResearchRepository(tmp_path/'profile.sqlite3'); repo.initialize()
+    facade = ResearchFacade(repo, lambda **_: None, llm_client=object())
+    try:
+        row, _ = facade.create({'workspaceTaskId': 't', 'operationKey': 'new', 'question': 'Design',
+                                'deferStart': True, repair.MARKER: injected}, start_async=False)
+        assert type(row[repair.MARKER]) is int and row[repair.MARKER] == 1
+        assert repair.enabled(row)
+    finally: facade.shutdown()
+
+
 def invalid(value):
     value = deepcopy(value); init = value['initialization']
     init.update(initializationMode='derive', inputs=[])
