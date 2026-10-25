@@ -56,11 +56,18 @@
     "wallSeconds": 360
   },
   "fullRegression": {
-    "status": "running",
+    "status": "passed",
     "sourceCommit": "8ffcdaaab0df856ac24909267b3a03c838aa803a",
     "files": 258,
     "log": "tmp/pytest-metadata-revision6-full-20261025.log",
-    "receipt": "tmp/metadata-revision6-full-receipt-20261025.json"
+    "receipt": "tmp/metadata-revision6-full-receipt-20261025.json",
+    "passed": 4768,
+    "warnings": 1,
+    "testSeconds": 29102.48,
+    "elapsedSeconds": 29107.3,
+    "sourceStable": true,
+    "logSha256": "0357d3031b079be89638d3d1c8daf92712a221f4969b23495c85e27e48ad91f5",
+    "timingBoundary": "Long actual observation gap occurred; elapsed time is not a normal execution-performance measurement."
   },
   "sourceHashes": {
     "services/deep_research/workflow_metadata_actions.py": "9334f5ca771aa402b262f1745c09095d9f0e139e5d562684f994fa3a2051f1e4",
