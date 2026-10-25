@@ -59,6 +59,12 @@ def options_for_record(record,node,options):
     if set(options)-allowed:raise ValueError('Unsupported private planning options')
     from services.deep_research.workflow_transport import reasoning_options
     options=reasoning_options(record,node,options)
+    from services.deep_research.workflow_metadata_repair import enabled as metadata_revision_enabled
+    if (node in ('plan_workflow_meta', 'repair_workflow_meta') and metadata_revision_enabled(record)
+            and record['workflowMetadataRepairContractVersion'] == 4):
+        # Fixed before request fingerprinting and atomic input/output reservation.
+        # Raw 8KB and whole-run limits remain independent admission checks.
+        options={**options,'max_tokens':3072}
     if (node=='plan_experiment' and type(record.get('experimentPlanningReasoningContractVersion')) is int
             and record['experimentPlanningReasoningContractVersion']==1):
         options={**options,'thinking':{'type':'enabled'},'reasoning_effort':'low'}

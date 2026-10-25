@@ -217,7 +217,7 @@ def prepare_units(record, *, prompt, aliases, invoke, parse, checkpoint):
                 or digest(unit.get('response')) != unit.get('responseDigest')):
             raise DeepResearchError('invalid_workflow_blueprint_state', '工作流单元原始响应或状态已改变。')
         try:
-            strict_wire = repair_mode and node == META and record['workflowMetadataRepairContractVersion'] in (2, 3)
+            strict_wire = repair_mode and node == META and record['workflowMetadataRepairContractVersion'] in (2, 3, 4)
             if strict_wire:
                 from services.deep_research.workflow_metadata_repair import load_wire
                 value = load_wire(unit['response'].get('rawContent', unit['response'].get('content', '')), version=record['workflowMetadataRepairContractVersion'])
@@ -235,6 +235,9 @@ def prepare_units(record, *, prompt, aliases, invoke, parse, checkpoint):
                 problems = ['unit.output_truncated']
         except (TypeError, ValueError, RecursionError, OverflowError):
             value, problems = None, ['unit.json']
+        if (repair_mode and record['workflowMetadataRepairContractVersion'] == 4
+                and unit['response'].get('finishReason', unit['response'].get('finish_reason')) == 'length'):
+            problems = ['unit.output_truncated']
         if repair_mode:problems = sorted(problems)
         if unit['status'] in ('ready', 'invalid_response'):
             if (unit.get('valueDigest') != digest(value) or digest(unit.get('value')) != digest(value)

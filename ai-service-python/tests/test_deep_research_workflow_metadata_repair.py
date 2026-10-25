@@ -333,8 +333,8 @@ def test_marker_is_immutable_and_legacy_records_cannot_be_opted_in(tmp_path, rep
         repo.update_run('old', lambda row: {**row, 'workflowMetadataRepairContractVersion': 1})
 
 
-@pytest.mark.parametrize('revision_version', [1, 2, 3])
-@pytest.mark.parametrize('scenario', ['success', 'unknown', 'budget'])
+@pytest.mark.parametrize('revision_version', [1, 2, 3, 4])
+@pytest.mark.parametrize('scenario', ['success', 'unknown', 'budget', 'token_budget'])
 def test_physical_request_identity_unknown_deduplication_and_existing_whole_budget(tmp_path, monkeypatch, scenario, revision_version):
     import requests
     from services.deep_research.repository import DeepResearchRepository
@@ -348,6 +348,7 @@ def test_physical_request_identity_unknown_deduplication_and_existing_whole_budg
     r = record(); r.update(runId='r', taskId='t', workflowMetadataRowsContractVersion=2,
                            workflowMetadataRepairContractVersion=revision_version)
     if scenario == 'budget': r['budget'].update(modelCalls=13, reservedModelCalls=5)
+    if scenario == 'token_budget': r['budget']['maxTokens'] = 1
     repo = DeepResearchRepository(tmp_path/'wire.sqlite3'); repo.initialize(); repo.create_run(r); repo.begin_execution('r')
     post = Mock(side_effect=requests.ReadTimeout('fixture unknown')) if scenario == 'unknown' else Mock(
         return_value=http_response(json.dumps(encode(fixtures()[1]))))
@@ -361,7 +362,7 @@ def test_physical_request_identity_unknown_deduplication_and_existing_whole_budg
         return prepare(row, source_data='{}', failed=failed_unit() if revision_version == 1 else failed_wire_unit(), aliases={'E1': 'owned'},
             existing=row['state'].get('repairFixture'),
             invoke=lambda n, p, o: invoke('r', n, p, o, use_reserve=True), checkpoint=checkpoint)
-    if scenario == 'budget':
+    if scenario in ('budget', 'token_budget'):
         assert run() is None and run() is None
         post.assert_not_called(); return
     if scenario == 'unknown':
@@ -372,6 +373,10 @@ def test_physical_request_identity_unknown_deduplication_and_existing_whole_budg
     assert post.call_count == 1
     saved = repo.require_run('r')['state']['repairFixture']; call = repo.list_calls('r')[0]
     assert digest(saved['request']) == call['argsDigest']
+    from services.deep_research.planning_transport import overhead_bytes
+    expected_reserved = (len(saved['request']['prompt'].encode('utf8')) + 1024
+        + overhead_bytes(r, NODE) + (3072 if revision_version == 4 else 2048))
+    assert call['reservedTokens'] == expected_reserved
     wire = post.call_args.kwargs['json']
-    assert wire['text']['format'] == descriptor() and wire['max_output_tokens'] == 2048
+    assert wire['text']['format'] == descriptor() and wire['max_output_tokens'] == (3072 if revision_version == 4 else 2048)
     assert wire['reasoning']['effort'] == 'none'
