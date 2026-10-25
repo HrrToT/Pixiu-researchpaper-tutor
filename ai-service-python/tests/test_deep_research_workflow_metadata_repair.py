@@ -333,7 +333,7 @@ def test_marker_is_immutable_and_legacy_records_cannot_be_opted_in(tmp_path, rep
         repo.update_run('old', lambda row: {**row, 'workflowMetadataRepairContractVersion': 1})
 
 
-@pytest.mark.parametrize('revision_version', [1, 2, 3, 4, 5, 6, 7])
+@pytest.mark.parametrize('revision_version', [1, 2, 3, 4, 5, 6, 7, 8])
 @pytest.mark.parametrize('scenario', ['success', 'unknown', 'budget', 'token_budget'])
 def test_physical_request_identity_unknown_deduplication_and_existing_whole_budget(tmp_path, monkeypatch, scenario, revision_version):
     import requests
@@ -353,6 +353,13 @@ def test_physical_request_identity_unknown_deduplication_and_existing_whole_budg
     from services.deep_research.workflow_metadata_actions import encode as action_encode, descriptor as action_descriptor
     reply_encode = action_encode if revision_version in (6, 7) else encode
     reply_descriptor = action_descriptor if revision_version in (6, 7) else descriptor
+    if revision_version == 8:
+        from services.deep_research.workflow_metadata_objects import encode as reply_encode, descriptor as reply_descriptor
+    failed = failed_unit() if revision_version == 1 else failed_wire_unit()
+    if revision_version == 8:
+        meta = invalid_metadata(); raw = response(meta)
+        failed.update(response=raw,responseDigest=digest(raw),value=meta,valueDigest=digest(meta),
+            errors=unit_errors(meta, {'E1':'owned'}, node=META, version=7, metadata_rows=True))
     post = Mock(side_effect=requests.ReadTimeout('fixture unknown')) if scenario == 'unknown' else Mock(
         return_value=http_response(json.dumps(reply_encode(fixtures()[1]))))
     monkeypatch.setattr('llm.client.requests.post', post)
@@ -362,7 +369,7 @@ def test_physical_request_identity_unknown_deduplication_and_existing_whole_budg
     def checkpoint(v): repo.update_run('r', lambda row: {**row, 'state': {**row['state'], 'repairFixture': v}})
     def run():
         row = repo.require_run('r')
-        return prepare(row, source_data='{}', failed=failed_unit() if revision_version == 1 else failed_wire_unit(), aliases={'E1': 'owned'},
+        return prepare(row, source_data='{}', failed=failed, aliases={'E1': 'owned'},
             existing=row['state'].get('repairFixture'),
             invoke=lambda n, p, o: invoke('r', n, p, o, use_reserve=True), checkpoint=checkpoint)
     if scenario in ('budget', 'token_budget'):
@@ -378,8 +385,8 @@ def test_physical_request_identity_unknown_deduplication_and_existing_whole_budg
     assert digest(saved['request']) == call['argsDigest']
     from services.deep_research.planning_transport import overhead_bytes
     expected_reserved = (len(saved['request']['prompt'].encode('utf8')) + 1024
-        + overhead_bytes(r, NODE) + (3072 if revision_version in (4, 5, 6, 7) else 2048))
+        + overhead_bytes(r, NODE) + (3072 if revision_version in (4, 5, 6, 7, 8) else 2048))
     assert call['reservedTokens'] == expected_reserved
     wire = post.call_args.kwargs['json']
-    assert wire['text']['format'] == reply_descriptor() and wire['max_output_tokens'] == (3072 if revision_version in (4, 5, 6, 7) else 2048)
+    assert wire['text']['format'] == reply_descriptor() and wire['max_output_tokens'] == (3072 if revision_version in (4, 5, 6, 7, 8) else 2048)
     assert wire['reasoning']['effort'] == 'none'
