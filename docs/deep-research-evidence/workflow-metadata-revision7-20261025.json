@@ -180,13 +180,20 @@
     "boundary": "The isolated retest does not substitute for a clean full regression; original failed full run remains failed."
   },
   "fullRegressionRetest": {
-    "status": "running",
+    "status": "passed",
     "sourceCommit": "eff6dfd71c67037b1dabb6b5ab9a363581555006",
     "codeBaselineCommit": "947baa1f",
     "files": 259,
     "sourceHashesMatchOriginalFailedRun": true,
     "fixtureDrive": "C:",
     "log": "tmp/pytest-metadata-revision7-full-retest-20261026.log",
-    "receipt": "tmp/metadata-revision7-full-retest-receipt-20261026.json"
+    "receipt": "tmp/metadata-revision7-full-retest-receipt-20261026.json",
+    "passed": 4780,
+    "warnings": 1,
+    "testSeconds": 359.06,
+    "elapsedSeconds": 363.97,
+    "sourceStable": true,
+    "fixtureRoot": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\pixiu-dr7-full-retest-20261026",
+    "logSha256": "93c49b36cb0edd8424789cd273272a795a44c1de2147e179b17e96cb2d32b475"
   }
 }
