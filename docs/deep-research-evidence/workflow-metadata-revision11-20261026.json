@@ -1,0 +1,152 @@
+{
+  "date": "2026-10-26",
+  "candidateVersion": 11,
+  "defaultVersion": 10,
+  "runtimePromptVersion": "dr-v2.20261026.272",
+  "metadataSchema": "ordered_workflow_metadata_v1",
+  "representation": "explicit phase array order and authored createBefore; deterministic lowering, original semantic/scientific checks retained",
+  "associatedRegression": {
+    "files": 20,
+    "testFiles": [
+      "test_deep_research_display_metadata.py",
+      "test_deep_research_workflow_lifecycle.py",
+      "test_deep_research_workflow_lifecycle_profile.py",
+      "test_deep_research_workflow_lifecycle_units.py",
+      "test_deep_research_workflow_metadata_actions.py",
+      "test_deep_research_workflow_metadata_feedback.py",
+      "test_deep_research_workflow_metadata_input.py",
+      "test_deep_research_workflow_metadata_objects.py",
+      "test_deep_research_workflow_metadata_ordered.py",
+      "test_deep_research_workflow_metadata_ordered_integration.py",
+      "test_deep_research_workflow_metadata_output.py",
+      "test_deep_research_workflow_metadata_reasoning.py",
+      "test_deep_research_workflow_metadata_repair.py",
+      "test_deep_research_workflow_metadata_revision3.py",
+      "test_deep_research_workflow_metadata_revision5.py",
+      "test_deep_research_workflow_metadata_rows.py",
+      "test_deep_research_workflow_metadata_semantics.py",
+      "test_deep_research_workflow_metadata_wire_feedback.py",
+      "test_deep_research_workflow_transport.py",
+      "test_deep_research_workflow_units.py"
+    ],
+    "exitCode": 0,
+    "sourceStable": true,
+    "sourceHashes": {
+      "services\\deep_research\\facade.py": "97818ecd8e111c5c79a9d33cc0588f2ff3c0e178f53c26e61c13e677754b1122",
+      "tests\\test_deep_research_display_metadata.py": "d41d6919c159f4b1336eb86c9b31252497e424451c8e4d3c5bf7f46e5d86e4b8",
+      "tests\\test_deep_research_workflow_lifecycle.py": "40f96259420233d678f36e1ad99eacfb56e7ddcad202bc8526a048d17df88a4a",
+      "tests\\test_deep_research_workflow_lifecycle_profile.py": "c0d22aed9f14ec3565d6d551a26d1d2b011c436d6bd65fe56b00116392395861",
+      "tests\\test_deep_research_workflow_lifecycle_units.py": "3c67c4c83dee20e523c4b6e39ca2f3b7b50923c0867bfc033b72dc3f288951c9",
+      "tests\\test_deep_research_workflow_metadata_actions.py": "bd720af7e974dea63ac43db9303d20450fa31ecac9855b756e9879439bc53063",
+      "tests\\test_deep_research_workflow_metadata_feedback.py": "5e841089863e8e0c5bca3b395898c83c62c5d1cc8046a5f3baa9e690d53d0510",
+      "tests\\test_deep_research_workflow_metadata_input.py": "7584aff84f311834493ac788b5eabbc757539e2e1e3065ea6e16d2d7bc3af44f",
+      "tests\\test_deep_research_workflow_metadata_objects.py": "2612b712d245479b5e4cf5cc5fbf7214498a8c79773a939aa438a5a0f6d92805",
+      "tests\\test_deep_research_workflow_metadata_ordered.py": "35c13069a25f325299b39a6832dd7fb205d866481ea348c8c0891ce0b924d83b",
+      "tests\\test_deep_research_workflow_metadata_ordered_integration.py": "c8e271825f9d56448b3c90f670b6a194fe871a45d66bb1485978390f4eb1be57",
+      "tests\\test_deep_research_workflow_metadata_output.py": "e1aa56ea96d045c399f9b4b3d65ee5f24535d9f89dc70bcd96995b2c98220b5f",
+      "tests\\test_deep_research_workflow_metadata_reasoning.py": "883a7cd8f0c50f2a58589bba61f521e02fa6e3060ab844fb34d62d0ff3554da7",
+      "tests\\test_deep_research_workflow_metadata_repair.py": "e0e11d388992254ebd9bcc9844946701a351af1c6583550601e4cc09ac424697",
+      "tests\\test_deep_research_workflow_metadata_revision3.py": "c3ca7ee4e02c8956630cf1386b09aea3fb31626472f290a2c7d8e13455a6887e",
+      "tests\\test_deep_research_workflow_metadata_revision5.py": "35c4621a0d8fddaa31fbf9c6504aa655d0d37c8462f924a7206d12703279464d",
+      "tests\\test_deep_research_workflow_metadata_rows.py": "22cf2812f1acb67bb89c3215d75fbf4b5020b29e1588494dbaa0e29e79b3fa31",
+      "tests\\test_deep_research_workflow_metadata_semantics.py": "ee51f877ed0823a4d4fc7c285c58330e89a6cd677707c3f97bd3453be8caef1d",
+      "tests\\test_deep_research_workflow_metadata_wire_feedback.py": "4d663bebb1a07f9ddc016990d6d2aac9eee624022b939e81bbc52ce692d0c7f9",
+      "tests\\test_deep_research_workflow_transport.py": "30b8b772d69ca8e486c9c74f8a19ba3ff6132b0d2aecc5d12d0a8b2b9d8c595c",
+      "tests\\test_deep_research_workflow_units.py": "90d763a8c56cdad2fc171a9053e1e6739e6ae7e7ba95d88606829f249a7ef454"
+    },
+    "elapsedSeconds": 51.53,
+    "logSha256": "add2cb1f09a9c4d1adaf81c86f383935ae9f0855d2e998da3eb94c55f5c8d5e6",
+    "fixtureRoot": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\pixiu-metadata-revision11-associated-20261026",
+    "providerCalls": 0,
+    "passed": 381,
+    "pytestSeconds": 48.25,
+    "log": "tmp/pytest-metadata-revision11-associated-20261026.log",
+    "sourceStableScope": "facade and selected tests; full candidate source hash stability is a separate pending full-regression gate"
+  },
+  "actualInputAndLegacyReplay": {
+    "candidateVersion": 11,
+    "legacyResume": [
+      {
+        "case": "E1-v58",
+        "version": 6,
+        "sameFailure": true,
+        "calls": 0,
+        "writes": 0,
+        "requestDigest": "10fa4ec2bcdb8530ede0d1832c6e3fe2414559b31d248fff4e8ce54138ffbdb0"
+      },
+      {
+        "case": "E1-v59",
+        "version": 7,
+        "sameFailure": true,
+        "calls": 0,
+        "writes": 0,
+        "requestDigest": "e5c388df745b6169a85dea95df8014733101449de93e9946afcd23da647f4469"
+      },
+      {
+        "case": "E1-v60",
+        "version": 8,
+        "sameFailure": true,
+        "calls": 0,
+        "writes": 0,
+        "requestDigest": "b3d6614251de81ded394d8d2451634c258b69444bee06800f581f1c516947eea"
+      },
+      {
+        "case": "E1-v61",
+        "version": 9,
+        "sameFailure": true,
+        "calls": 0,
+        "writes": 0,
+        "requestDigest": "2ea1732696c92069c833b75e0f63b4950a318e054a86585f0cc78677f9ad8a17"
+      },
+      {
+        "case": "E1-v62",
+        "version": 10,
+        "sameFailure": true,
+        "calls": 0,
+        "writes": 0,
+        "requestDigest": "e2bfdfdf826c546e296e7fedf5b2f02f7c87e28d6474761fd1a48c473d992091"
+      }
+    ],
+    "prospectiveAssessment": {
+      "oldCase": "E1-v61",
+      "newInputBytes": 29308,
+      "maxInputBytes": 32000,
+      "originalSemanticFailuresPreserved": true,
+      "groupDiagnostics": 1,
+      "notAHistoricalUpgrade": true,
+      "allAuthoritativeSourceInputAndNewWireValuesPreserved": true
+    },
+    "providerCalls": 0,
+    "productionWrites": 0,
+    "scientificApproval": false
+  },
+  "sourceHashesAtRecord": {
+    "services/deep_research/workflow_metadata_ordered.py": "b9029836fbaec08f664a5200f6e4cbc4583825fdeb64b5fc18e5bf10160624c5",
+    "services/deep_research/workflow_metadata_repair.py": "d83c667f5de1a4f939c69eb419d968c14209321aa8b7154f9de98318e1f52514",
+    "services/deep_research/workflow_units.py": "c951d3e9bcbd574a16ac7a98ed80ddc293c378c49b3f074d69837298244b7cb7",
+    "services/deep_research/planning_transport.py": "79bf0331621c23e2939f3f9cd0c4d35939e71139d236176cc5e34ca8c3c3de66",
+    "tests/test_deep_research_workflow_metadata_ordered.py": "35c13069a25f325299b39a6832dd7fb205d866481ea348c8c0891ce0b924d83b",
+    "tests/test_deep_research_workflow_metadata_ordered_integration.py": "c8e271825f9d56448b3c90f670b6a194fe871a45d66bb1485978390f4eb1be57",
+    "tests/test_deep_research_workflow_metadata_repair.py": "e0e11d388992254ebd9bcc9844946701a351af1c6583550601e4cc09ac424697"
+  },
+  "metadataRole": {
+    "thinking": "disabled",
+    "reasoningEffort": "none",
+    "outputTokens": 3072,
+    "timeoutSeconds": 45
+  },
+  "capacity": {
+    "inputBytes": 32000,
+    "rawResponseBytes": 16384,
+    "wireAndCanonicalContentBytesEach": 8192
+  },
+  "wholeRunLimits": {
+    "calls": 18,
+    "tokens": 100000,
+    "wallSeconds": 360
+  },
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "scientificApproval": false,
+  "boundary": "Candidate integration only. Unknown complete boundary leaves receive explicit one-shot model feedback, never guessed boundaries. Compiled values must also fit original 8KB content cap. Native payload/reservation and old-history checks pass offline; full regression and model/scientific quality are pending."
+}
