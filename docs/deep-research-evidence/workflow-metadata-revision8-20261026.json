@@ -125,5 +125,13 @@
     "checkpointAvailabilityAndStateMeasurementRulesExplicitlyRetained": true,
     "associatedChecksAfterAudit": 339,
     "providerCalls": 0
+  },
+  "fullRegressionAfterGuidance": {
+    "status": "running",
+    "sourceCommit": "cb170b2574c2ebf6841a4cc775c64f13708eebee",
+    "files": 260,
+    "fixtureDrive": "C:",
+    "log": "tmp/pytest-metadata-revision8-full-guidance-20261026.log",
+    "receipt": "tmp/metadata-revision8-full-guidance-receipt-20261026.json"
   }
 }
