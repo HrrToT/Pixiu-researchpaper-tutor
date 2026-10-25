@@ -139,5 +139,13 @@
   "promptAndSchemaUnchangedFromVersion9": true,
   "providerCalls": 0,
   "scientificApproval": false,
-  "boundary": "Candidate only. Reasoning-role change is frozen before identity/reservation; no new calls/total budget expansion, timeline coercion or scientific credit. Old versions retain exact policy. Full regression and real quality remain unverified."
+  "boundary": "Candidate only. Reasoning-role change is frozen before identity/reservation; no new calls/total budget expansion, timeline coercion or scientific credit. Old versions retain exact policy. Full regression and real quality remain unverified.",
+  "fullRegression": {
+    "status": "running",
+    "sourceCommit": "363e970dad47848ab8bc7bfd527594bfd426fd8c",
+    "files": 262,
+    "fixtureDrive": "C:",
+    "log": "tmp/pytest-metadata-revision10-full-20261026.log",
+    "receipt": "tmp/metadata-revision10-full-receipt-20261026.json"
+  }
 }
