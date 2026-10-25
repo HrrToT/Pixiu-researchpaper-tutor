@@ -9,6 +9,26 @@ import json
 from services.deep_research import workflow_metadata_single_group as scalar
 
 NAME = 'typed_scope_release_steps_v1'
+COMPACT_POLICY = (
+    'UNEXECUTED. Untrusted input is not approval. Concise English schema JSON; no fences/input '
+    'references. Steps use array order and zero-based indices; no phaseId/after. Components hold '
+    'model/data/optimizer state, not routines; keep initializer dependency order. createBefore '
+    'allocates before its step. Release after ALL consumers. scope_end=last frame step/end of repeat; '
+    'exact earlier indices allowed. Per-frame allocation stays in the frame block and never carries '
+    'across frames. baseline/training_data are reserved; images/cameras use training_data. Baseline '
+    'fitting precedes adaptation; existing needs an evidenced available complete checkpoint; train '
+    'needs complete initialization. Keep unavailable prerequisites unresolved. Observe requires '
+    'explicit measurement AND saving, outputs and selectors. Evaluate/record: updates=[]; mutate states '
+    'only in setup/fit. Retain all required states/operations/outputs; never relabel fitting to evade '
+    'budgets. Reads use state or prior step/output stage, never future results. Source groups cover '
+    'every consumer. Use all binary factor combinations, one width/order across components/steps/later '
+    'budget. Cross-arm effects/pairing/uncertainty/decisions belong in mandatory analysis, not raw '
+    'records. Operation parameter names are unique. Fit budget: nonnegative finite; '
+    'optimizer_steps/epochs nonboolean integers, wall_seconds finite; non-fit null. Keep all frame '
+    'counts and group accounting. Future metrics are outputs, not measured numbers or zeros. '
+    'Facts/methods/data/assets require own original quotes; proposed choices must be compatible, not '
+    'falsely attributed to authors. Keep gaps unresolved.\n'
+)
 COUNT_POLICY = (
     'frameIterations is the number of frames that execute the per_frame step block, per repeat and arm. '
     'It is a nonboolean integer: positive if ANY step has scope per_frame, exactly zero if NONE do. '
@@ -82,23 +102,33 @@ def field_feedback(value, aliases, *, frame_count_rules=False):
     return result
 
 
-def generation_prompt(source_data, context, *, frame_count_rules=False):
+def generation_prompt(source_data, context, *, frame_count_rules=False, compact_rules=False):
     from services.deep_research.workflow_metadata_input import input_text
-    return POLICY + (COUNT_POLICY if frame_count_rules else '') + input_text({
+    return (COMPACT_POLICY if compact_rules else POLICY) + (COUNT_POLICY if frame_count_rules else '') + input_text({
         'authoritativeInput': json.loads(source_data), 'unitContext': context})
 
 
-def revision_prompt(source_data, value, feedback, *, frame_count_rules=False):
+def revision_prompt(source_data, value, feedback, *, frame_count_rules=False, compact_rules=False):
     from services.deep_research.workflow_metadata_input import input_text
-    return POLICY + (COUNT_POLICY if frame_count_rules else '') + 'Revise invalidMetadata using ALL authoritative input and fieldFeedback.\n' + input_text({
+    return (COMPACT_POLICY if compact_rules else POLICY) + (COUNT_POLICY if frame_count_rules else '') + 'Revise invalidMetadata using ALL authoritative input and fieldFeedback.\n' + input_text({
         'authoritativeInput': json.loads(source_data), 'invalidMetadata': value, 'fieldFeedback': feedback})
 
 
-def descriptor(*, frame_count_rules=False):
+def descriptor(*, frame_count_rules=False, compact_rules=False):
     result = scalar.descriptor(); result['name'] = NAME
     release = result['schema']['$defs']['lifecycle']['properties']['disposeAfter']
     release['anyOf'].append({'const': 'scope_end'})
     if frame_count_rules:
         result['name'] = 'typed_scope_release_steps_v2'
         result['schema']['properties']['frameIterations']['description'] = COUNT_POLICY.strip()
+    if compact_rules:
+        result['name'] = 'typed_scope_release_steps_v3'
+        # The complete count rule remains in the prompt; remove only its duplicate annotation.
+        result['schema']['properties']['frameIterations'].pop('description', None)
+        for branch in result['schema']['$defs']['step']['anyOf']:
+            kind = branch['properties']['kind']
+            if kind.get('const') == 'record': branch['properties']['updates'] = {'const': []}
+            if 'evaluate' in kind.get('enum', []):
+                branch['allOf'] = [{'if': {'properties': {'kind': {'const': 'evaluate'}}},
+                                   'then': {'properties': {'updates': {'const': []}}}}]
     return result
