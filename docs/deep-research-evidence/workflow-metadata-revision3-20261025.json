@@ -119,7 +119,11 @@
     "tests/test_deep_research_workflow_metadata_repair.py": "bb2ecc13b264994b88a27687851c52e7d94fda571777247f45a21fb047098b1b"
   },
   "fullRegression": {
-    "status": "not_started"
+    "status": "running",
+    "sourceCommit": "4c3efe75ab31899492cb478a5ec9e3b74d2b91d0",
+    "files": 255,
+    "log": "tmp/pytest-metadata-revision3-full-20261025.log",
+    "receipt": "tmp/metadata-revision3-full-receipt-20261025.json"
   },
   "providerCalls": 0,
   "productionWrites": 0,
