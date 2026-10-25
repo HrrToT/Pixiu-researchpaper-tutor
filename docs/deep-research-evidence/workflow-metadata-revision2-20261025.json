@@ -33,7 +33,11 @@
     "scientificApproval": false
   },
   "fullRegression": {
-    "status": "not_started"
+    "status": "running",
+    "sourceCommit": "1de7f5f6",
+    "files": 254,
+    "log": "tmp/pytest-metadata-revision2-full-20261025.log",
+    "receipt": "tmp/metadata-revision2-full-receipt-20261025.json"
   },
   "sourceHashes": {
     "services/deep_research/workflow_metadata_wire_feedback.py": "a60fe646875067e80535af0a49dda866d1f87ec33ed0f966c174e649d3ac3bd0",
