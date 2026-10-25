@@ -7,9 +7,9 @@
   "associatedRegression": {
     "files": 18,
     "passed": 339,
-    "seconds": 41.2,
+    "seconds": 40.65,
     "fixtureDrive": "C:",
-    "log": "tmp/pytest-metadata-revision8-associated-final-20261026.log"
+    "log": "tmp/pytest-metadata-revision8-guidance-20261026.log"
   },
   "actualRepresentationAndInputReplay": {
     "candidateVersion": 8,
@@ -18,7 +18,7 @@
     "outputSchema": "workflow_metadata_objects_v1",
     "allExistingCanonicalValuesPreserved": true,
     "allAuthoritativeSourceInputPreserved": true,
-    "inputWithSchemaBytes": 30607,
+    "inputWithSchemaBytes": 31158,
     "inputByteCap": 32000,
     "lifecycleIssues": [
       {
@@ -79,7 +79,13 @@
     "productionWrites": 0,
     "automaticallyWrappedArrays": 0,
     "scientificApproval": false,
-    "boundary": "Read-only representation/input assessment using an existing canonical value. No inference from undecodable original rows, historical upgrade, or accepted scientific result."
+    "boundary": "Read-only representation/input assessment using an existing canonical value. No inference from undecodable original rows, historical upgrade, or accepted scientific result.",
+    "semanticGuidanceExplicit": [
+      "evidenced available complete checkpoint",
+      "persistent state versus stateless routine",
+      "distinct arms versus execution sharing",
+      "complete combined measurement inputs/outputs/parameters/ordering"
+    ]
   },
   "rawResponseByteCap": 16384,
   "canonicalContentByteCap": 8192,
@@ -90,15 +96,20 @@
     "wallSeconds": 360
   },
   "fullRegression": {
-    "status": "running",
+    "status": "cancelled_for_semantic_guidance_audit",
     "sourceCommit": "c4175018f249fa1be43ab8321fd366d6a3e215e8",
     "files": 260,
     "fixtureDrive": "C:",
     "log": "tmp/pytest-metadata-revision8-full-20261026.log",
-    "receipt": "tmp/metadata-revision8-full-receipt-20261026.json"
+    "receipt": "tmp/metadata-revision8-full-receipt-20261026.json",
+    "exitCode": 4294967295,
+    "sourceStable": true,
+    "elapsedSeconds": 205.48,
+    "logSha256": "94e22943d374c54d47050954285fa1742804117435538f7857417b3edffdb2e2",
+    "boundary": "Stopped the isolated pytest child before editing source, after identifying semantic guidance that must be explicitly retained in the new named prompt. Not a pass. Original log/receipt retained."
   },
   "sourceHashes": {
-    "services/deep_research/workflow_metadata_objects.py": "e51a76196e460ee812bfd1b27e1e6840a85309e96228665fbafe351360f15aad",
+    "services/deep_research/workflow_metadata_objects.py": "e5c24503d1193ee8ddf374cf14a19feca0994db69be6fa406f2b6062f50f3bf4",
     "services/deep_research/workflow_metadata_repair.py": "80b51bc79265c60ceab507ea549b662c6988ff452e305a02b7fd5ec366cd90ad",
     "services/deep_research/workflow_units.py": "0220972c666aa18f5ed08c46d4319044e6d2dbc6b946f87f462e448eb4d5d881",
     "services/deep_research/planning_transport.py": "bc2a65efe04fe60a030a0c7646fbea50061dc25251d12cac08f9501386051a75",
@@ -108,5 +119,11 @@
   "providerCalls": 0,
   "productionWrites": 0,
   "scientificApproval": false,
-  "boundary": "Candidate only. Direct named canonical output keeps every value and existing semantic checks; malformed leaves remain invalid and are never wrapped or inferred. Old row grammars/requests and failures remain frozen. Representation/input fit does not prove actual generation or scientific quality."
+  "boundary": "Candidate only. Direct named canonical output keeps every value and existing semantic checks; malformed leaves remain invalid and are never wrapped or inferred. Old row grammars/requests and failures remain frozen. Representation/input fit does not prove actual generation or scientific quality.",
+  "guidanceAudit": {
+    "originalFullRunCancelledBeforeEdits": true,
+    "checkpointAvailabilityAndStateMeasurementRulesExplicitlyRetained": true,
+    "associatedChecksAfterAudit": 339,
+    "providerCalls": 0
+  }
 }
