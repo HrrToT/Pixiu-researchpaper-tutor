@@ -1,0 +1,102 @@
+{
+  "date": "2026-10-26",
+  "case": "E1-v70",
+  "runId": "dr_run_3ca7101fcf5c5ec48b1328d3a147b11f",
+  "promptVersion": "dr-v2.20261026.280",
+  "status": "failed",
+  "workflowMetadataRepairContractVersion": 17,
+  "workflowInitializationOutputContractVersion": 1,
+  "metadata": {
+    "status": "ready",
+    "errors": [],
+    "finishReason": "stop",
+    "revisionUsed": false
+  },
+  "initialization": {
+    "status": "invalid_response",
+    "errors": [
+      "workflow.creation.input_mode_conflict"
+    ],
+    "finishReason": "stop",
+    "rawBytes": 1616,
+    "usage": {
+      "total_tokens": 8016,
+      "input_tokens": 7596,
+      "output_tokens": 420
+    },
+    "options": {
+      "temperature": 0.0,
+      "thinking": {
+        "type": "disabled"
+      },
+      "reasoning_effort": "none",
+      "max_tokens": 6144,
+      "timeout_seconds": 90,
+      "_deepseek_api": "responses"
+    },
+    "schemaName": "workflow_unit_init_v7",
+    "value": {
+      "sourceRefs": [
+        "E1",
+        "E2",
+        "E3",
+        "E5",
+        "E6",
+        "E7",
+        "E8",
+        "E9",
+        "E10",
+        "E11",
+        "E12",
+        "E13",
+        "E14"
+      ],
+      "initialization": {
+        "initializationMode": "derive",
+        "inputs": [],
+        "creation": {
+          "action": "load_frame0_checkpoint",
+          "parameters": [
+            {
+              "name": "scene",
+              "type": "choice",
+              "value": "flame_salmon"
+            },
+            {
+              "name": "iteration",
+              "type": "choice",
+              "value": "15000"
+            }
+          ]
+        },
+        "stateDefinitions": [
+          {
+            "name": "frame0_3dgs",
+            "dtype": "float32",
+            "shape": [
+              {
+                "inputIndex": 0,
+                "axis": 0
+              }
+            ],
+            "initializer": {
+              "mode": "constant",
+              "value": "frame0_3dgs_checkpoint_values"
+            }
+          }
+        ]
+      },
+      "unresolved": [
+        "Exact frame indices in flame salmon where emerging content appears are not quoted in the provided evidence.",
+        "Whether the N3DV flame salmon scene has a standard train/test camera split is not stated in the provided evidence.",
+        "The exact number of additional 3DGs spawned per frame in Arm B is not available from the provided evidence.",
+        "The exact Stage 2 training time per frame on the planned hardware is not available from the provided evidence.",
+        "The exact frame-0 model checkpoint path or iteration for flame salmon is not quoted in the provided evidence.",
+        "The exact tensor shape and parameter layout of the frame-0 3DGs checkpoint are not specified in the provided evidence."
+      ]
+    }
+  },
+  "providerCalls": 8,
+  "scientificCredit": 0,
+  "boundary": "One fixed submission; metadata passed directly and initialization completed without truncation, but derive with no inputs/shape referencing input0 is invalid. No repair, public plan or scientific approval. This does not prove universal output reliability."
+}
