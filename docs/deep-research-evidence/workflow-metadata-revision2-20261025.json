@@ -33,11 +33,20 @@
     "scientificApproval": false
   },
   "fullRegression": {
-    "status": "running",
+    "status": "passed",
     "sourceCommit": "1de7f5f6",
     "files": 254,
     "log": "tmp/pytest-metadata-revision2-full-20261025.log",
-    "receipt": "tmp/metadata-revision2-full-receipt-20261025.json"
+    "receipt": "tmp/metadata-revision2-full-receipt-20261025.json",
+    "passed": 4708,
+    "warnings": 1,
+    "testSeconds": 361.22,
+    "elapsedSeconds": 366.28,
+    "exitCode": 0,
+    "sourceStable": true,
+    "logSha256": "44a43de49057e0c5a126d2527a8ae066dcb95af3fa789f2c1696ed4d0783b7eb",
+    "providerCalls": 0,
+    "productionWrites": 0
   },
   "sourceHashes": {
     "services/deep_research/workflow_metadata_wire_feedback.py": "a60fe646875067e80535af0a49dda866d1f87ec33ed0f966c174e649d3ac3bd0",
