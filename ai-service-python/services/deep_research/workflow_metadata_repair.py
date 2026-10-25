@@ -42,8 +42,8 @@ def _unique_object(pairs):
 
 
 def load_wire(raw, version=1):
-    if type(version) is not int or version not in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17): raise ValueError('Unsupported metadata revision version')
-    if version in (3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17):
+    if type(version) is not int or version not in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18): raise ValueError('Unsupported metadata revision version')
+    if version in (3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18):
         from services.deep_research.workflow_metadata_revision3 import json_body
         raw = json_body(raw)
     return json.loads(raw, object_pairs_hook=_unique_object) if version >= 2 else json.loads(raw)
@@ -54,7 +54,7 @@ def enabled(record):
     return (isinstance(record, dict) and rows_enabled(record)
             and record['workflowMetadataRowsContractVersion'] == 2
             and type(record.get('workflowMetadataRepairContractVersion')) is int
-            and record['workflowMetadataRepairContractVersion'] in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17))
+            and record['workflowMetadataRepairContractVersion'] in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18))
 
 
 def original_wire(unit, version=1):
@@ -69,6 +69,8 @@ def original_wire(unit, version=1):
         from functools import partial
         from services.deep_research.workflow_metadata_ordered import decode as ordered_decode
         decode = partial(ordered_decode, version=2 if version == 12 else 1)
+    if version == 18:
+        from services.deep_research.workflow_metadata_scope_start import decode
     if version in (15, 16, 17):
         from services.deep_research.workflow_metadata_scope_end import decode
     if version == 14:
@@ -76,7 +78,7 @@ def original_wire(unit, version=1):
     if version == 13:
         from services.deep_research.workflow_metadata_steps import decode
     response = unit.get('response', {})
-    if (type(version) is not int or version not in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17)
+    if (type(version) is not int or version not in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18)
             or unit.get('status') != 'invalid_response'
             or digest(response) != unit.get('responseDigest')
             or response.get('finishReason', response.get('finish_reason')) != 'stop'
@@ -86,7 +88,7 @@ def original_wire(unit, version=1):
     try:
         wire = load_wire(raw, version=version)
         from services.deep_research.workflow_metadata_revision5 import over_capacity
-        too_large = over_capacity(raw, wire) if version in (5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17) else (
+        too_large = over_capacity(raw, wire) if version in (5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18) else (
             len(raw.encode('utf8')) > MAX_VALUE or len(packed(wire).encode('utf8')) > MAX_VALUE)
         if (too_large or digest(unit.get('value')) != unit.get('valueDigest')):
             return None
@@ -98,6 +100,8 @@ def original_wire(unit, version=1):
                 from services.deep_research.workflow_metadata_objects import complete_scaffolding
             if version in (11, 12):
                 from services.deep_research.workflow_metadata_ordered import complete_scaffolding
+            if version == 18:
+                from services.deep_research.workflow_metadata_scope_start import complete_scaffolding
             if version in (15, 16, 17):
                 from services.deep_research.workflow_metadata_scope_end import complete_scaffolding
             if version == 14:
@@ -117,7 +121,10 @@ def original_wire(unit, version=1):
 
 def prompt_for(source_data, wire, field_feedback, version=1):
     from services.deep_research.shared_strings import input_text
-    if type(version) is not int or version not in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17): raise ValueError('Unsupported metadata revision policy')
+    if type(version) is not int or version not in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18): raise ValueError('Unsupported metadata revision policy')
+    if version == 18:
+        from services.deep_research.workflow_metadata_scope_start import revision_prompt
+        return revision_prompt(source_data, wire, field_feedback)
     if version == 17:
         from services.deep_research.workflow_metadata_scope_end import revision_prompt
         return revision_prompt(source_data, wire, field_feedback, frame_count_rules=True, compact_rules=True)
@@ -145,11 +152,11 @@ def prompt_for(source_data, wire, field_feedback, version=1):
         return POLICY + SEMANTIC_POLICY + OBJECT_POLICY + INPUT_POLICY + input_text({
             'authoritativeInput': json.loads(source_data), 'invalidMetadata': wire, 'fieldFeedback': field_feedback})
     policy = POLICY if version == 1 else WIRE_POLICY
-    if version in (3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17):
+    if version in (3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18):
         policy += ('Return JSON only, no Markdown fences. Each operation parameter name must be unique; '
                    'multiple measurements need distinct explicit names and values, never repeated metric keys. '
                    'All operation choices must remain compatible with evidence and the question.\n')
-    if version in (5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17):
+    if version in (5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18):
         from services.deep_research.workflow_metadata_revision5 import POLICY as CAPACITY_POLICY
         policy += CAPACITY_POLICY
     if version in (6, 7, 8, 9, 10):
@@ -188,6 +195,8 @@ def prepare(record, *, source_data, failed, aliases, existing, invoke, checkpoin
         from functools import partial
         from services.deep_research.workflow_metadata_ordered import decode as ordered_decode
         decode = partial(ordered_decode, version=2 if version == 12 else 1)
+    if version == 18:
+        from services.deep_research.workflow_metadata_scope_start import decode
     if version in (15, 16, 17):
         from services.deep_research.workflow_metadata_scope_end import decode
     if version == 14:
@@ -198,6 +207,9 @@ def prepare(record, *, source_data, failed, aliases, existing, invoke, checkpoin
     if not enabled(record) or wire is None:
         raise DeepResearchError('invalid_workflow_unit_response', '原元信息不满足有界修订条件。')
     if version == 1: field_feedback = stable_feedback(failed['value'], aliases)
+    elif version == 18:
+        from services.deep_research.workflow_metadata_scope_start import field_feedback as scope_feedback
+        field_feedback = {**scope_feedback(wire, aliases), 'codes': sorted(failed['errors'])}
     elif version in (16, 17):
         from services.deep_research.workflow_metadata_scope_end import field_feedback as scope_feedback
         field_feedback = {**scope_feedback(wire, aliases, frame_count_rules=True), 'codes': sorted(failed['errors'])}
@@ -218,9 +230,9 @@ def prepare(record, *, source_data, failed, aliases, existing, invoke, checkpoin
         field_feedback = {**object_feedback(wire, aliases), 'codes': sorted(failed['errors'])}
     else:
         from services.deep_research.workflow_metadata_wire_feedback import feedback as wire_feedback
-        if version in (3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17):
+        if version in (3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18):
             from services.deep_research.workflow_metadata_revision3 import operation_feedback
-            if version in (5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17):
+            if version in (5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18):
                 from services.deep_research.workflow_metadata_revision5 import field_feedback as operation_feedback
             if version in (6, 7):
                 from services.deep_research.workflow_metadata_actions import field_feedback as operation_feedback
@@ -270,9 +282,9 @@ def prepare(record, *, source_data, failed, aliases, existing, invoke, checkpoin
         value = decode(revised_wire)
         problems = unit_errors(value, aliases, node=META, version=7, metadata_rows=True)
         from services.deep_research.workflow_metadata_revision5 import over_capacity
-        too_large = over_capacity(raw, revised_wire) if version in (5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17) else (
+        too_large = over_capacity(raw, revised_wire) if version in (5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18) else (
             len(raw.encode('utf8')) > MAX_VALUE or len(packed(revised_wire).encode('utf8')) > MAX_VALUE)
-        if version in (11, 12, 13, 14, 15, 16, 17): too_large = too_large or len(packed(value).encode('utf8')) > MAX_VALUE
+        if version in (11, 12, 13, 14, 15, 16, 17, 18): too_large = too_large or len(packed(value).encode('utf8')) > MAX_VALUE
         if too_large: problems.append('unit.output_capacity')
     except (TypeError, ValueError, RecursionError, OverflowError):
         problems = ['unit.json']; value = None

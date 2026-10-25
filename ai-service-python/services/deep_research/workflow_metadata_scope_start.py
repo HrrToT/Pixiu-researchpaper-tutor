@@ -10,12 +10,10 @@ import json
 from services.deep_research import workflow_metadata_scope_end as release
 
 NAME = 'typed_scope_boundaries_steps_v1'
-POLICY = release.COMPACT_POLICY + (
-    'createBefore may be "scope_start": allocate before the first step of the '
-    'component\'s declared scope (repeat entrance or first per_frame step). This does not choose '
-    'the scope or provide missing dependencies. Use an exact later step index '
-    'when initialization needs earlier step outputs. A missing frame block has '
-    'no frame entrance.\n'
+POLICY = release.COMPACT_POLICY.replace(
+    'createBefore allocates before its step.',
+    'createBefore:index before step or scope_start at repeat/frame entrance; '
+    'later index for dependent init.'
 )
 
 
