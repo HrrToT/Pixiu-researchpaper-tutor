@@ -1,0 +1,82 @@
+{
+  "date": "2026-10-25",
+  "case": "E1-v58",
+  "runId": "dr_run_a9f95a20c5625bc8a0687af41928d426",
+  "promptVersion": "dr-v2.20261025.268",
+  "status": "failed",
+  "errorCode": "invalid_workflow_unit_response",
+  "workflowMetadataRepairContractVersion": 6,
+  "metadata": {
+    "original": {
+      "status": "invalid_response",
+      "errors": [
+        "timeline.phase.budget"
+      ],
+      "finishReason": "stop",
+      "usage": {
+        "total_tokens": 10004,
+        "input_tokens": 7530,
+        "output_tokens": 2474
+      },
+      "rawBytes": 9637,
+      "decodedMetadataPresent": true,
+      "allActionsAreNamedObjects": true,
+      "fitPhasesMissingBudget": [
+        {
+          "path": "/phaseRows/2/10",
+          "phaseId": "arm_b_spawn",
+          "kind": "fit",
+          "actual": null
+        },
+        {
+          "path": "/phaseRows/4/10",
+          "phaseId": "arm_b_quantity_control",
+          "kind": "fit",
+          "actual": null
+        }
+      ],
+      "responseDigest": "5ac152454f03d7f31897e710fb1cf5926d42e370e69aa69fe0941bc261a10cc5",
+      "requestDigest": "10fa4ec2bcdb8530ede0d1832c6e3fe2414559b31d248fff4e8ce54138ffbdb0",
+      "rawSha256": "aab7438afbacb75d8e6408d48af519a23f77d46b9d0891267027d4cf3c6321df"
+    },
+    "revision": {
+      "status": "invalid_response",
+      "errors": [
+        "timeline.phase.budget"
+      ],
+      "finishReason": "stop",
+      "usage": {
+        "total_tokens": 10930,
+        "input_tokens": 8439,
+        "output_tokens": 2491
+      },
+      "rawBytes": 9700,
+      "decodedMetadataPresent": true,
+      "allActionsAreNamedObjects": true,
+      "fitPhasesMissingBudget": [
+        {
+          "path": "/phaseRows/2/10",
+          "phaseId": "arm_b_spawn",
+          "kind": "fit",
+          "actual": null
+        },
+        {
+          "path": "/phaseRows/4/10",
+          "phaseId": "arm_b_quantity_control",
+          "kind": "fit",
+          "actual": null
+        }
+      ],
+      "responseDigest": "3f78bbffad9c1004c31efc0e53d087efe748b9f8ff487fc4f14d0c0be24f7d15",
+      "requestDigest": "a17522ec618fa5d4603082efefc4273b491f5ed409a9871efdfedf23f4a266d0",
+      "rawSha256": "0e03eddb1cc3341e196691b2ca1737e65883819fb5e3a5607658a7d2e24653e8"
+    }
+  },
+  "repairInvokedExactlyOnce": true,
+  "initializersInvoked": false,
+  "providerCallsForDiagnosis": 0,
+  "productionWritesForDiagnosis": 0,
+  "scientificApproval": false,
+  "independentCredit": 0,
+  "boundary": "Named operation objects decoded successfully, but both original and revision retain fit stages with null budget. No relabeling to setup or invented cap; no initialization/content approval."
+}
