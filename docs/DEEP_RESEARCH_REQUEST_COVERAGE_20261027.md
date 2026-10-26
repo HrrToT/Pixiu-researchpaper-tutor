@@ -21,3 +21,7 @@ D1-v40 最后一份旧审核响应按新协议明确拒绝，没有将其 partia
 最终固定源码的 44 文件、724 项关联回归通过（pytest 55.86 秒，外部 60.015 秒），全部研究模块及选中测试的前后哈希一致。定向检查与之重叠，不相加。收据为 `deep-research-evidence/request-coverage-regression-20261027.json`。
 
 本轮不追加真实验证。D1-v40 与完整 DR0—DR5、内容质量及独立验收状态保持未通过。
+
+## 加载
+
+源码提交 `c9b87e2c`。两次空闲快照一致后重启原 Python 容器一次，修复模块哈希一致，RAG/GROBID 健康、前端 HTTP 200。7,461 条账本、全部旧运行 payload 和五组任务快照精确保留，完整向量索引含嵌入的哈希仍为 `9196054db7ac32450eb86fc91cfb12de27c732469e4cf629bf06857a3490788d`。0 活跃、12 个旧未知暂停保留，没有新生产研究或模型请求。加载证据为 `deep-research-evidence/runtime-load-request-coverage-20261027.json`。
