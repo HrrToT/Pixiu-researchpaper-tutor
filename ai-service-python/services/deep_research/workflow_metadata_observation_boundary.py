@@ -76,6 +76,37 @@ def qualified_field_feedback(value, aliases):
     return result
 
 
+def complete_field_feedback(value, aliases):
+    """Include independently invalid envelope leaves before timeline diagnostics."""
+    result = qualified_field_feedback(value, aliases)
+    issues = []
+    def add(code, path, actual, expected):
+        issues.append({'code': code, 'path': path, 'actual': deepcopy(actual), 'expected': expected})
+    refs = value.get('sourceRefs')
+    allowed = sorted(aliases)
+    if not isinstance(refs, list) or len(refs) > 20:
+        add('unit.sourceRefs', '/sourceRefs', refs, 'at most20 distinct evidence aliases from allowedSourceRefs; not paper IDs')
+    if isinstance(refs, list):
+        for index, ref in enumerate(refs):
+            if not isinstance(ref, str) or ref not in aliases or ref in refs[:index]:
+                add('unit.sourceRefs', f'/sourceRefs/{index}', ref, 'one distinct evidence alias from allowedSourceRefs; not a paper ID')
+    if any(issue['code']=='unit.sourceRefs' for issue in issues):
+        result['allowedSourceRefs'] = allowed
+    gaps = value.get('unresolved')
+    if not isinstance(gaps, list) or len(gaps) > 8:
+        add('unit.unresolved', '/unresolved', gaps, 'at most8 explicit nonempty gap strings')
+    if isinstance(gaps, list):
+        for index, gap in enumerate(gaps):
+            if not isinstance(gap, str) or not gap.strip():
+                add('unit.unresolved', f'/unresolved/{index}', gap, 'nonempty gap string; never fabricate a resolution')
+    for field, choices in (('baselineMode', ['train','existing']),
+                           ('replicationMode', ['retrained_per_seed','fixed_checkpoint'])):
+        if value.get(field) not in choices:
+            add('unit.'+field, '/'+field, value.get(field), choices)
+    result['issues'] = issues + result['issues']
+    return result
+
+
 COMPACT_POLICY = POLICY.replace(
     'Complete concise English JSON.',
     'Return ONE complete minified English JSON object: no indentation, line breaks, '
@@ -112,3 +143,16 @@ def qualified_generation_prompt(source_data, context):
 
 def qualified_revision_prompt(source_data, value, feedback):
     return revision_prompt(source_data, value, feedback, qualified=True)
+
+
+SOURCE_POLICY = ('sourceRefs selects supported evidence aliases from allowedSourceRefs, '
+                 'never paper IDs. This list is syntax permission, not evidence of support; '
+                 'do not select aliases automatically.\n')
+
+
+def complete_generation_prompt(source_data, context):
+    return SOURCE_POLICY + qualified_generation_prompt(source_data, context)
+
+
+def complete_revision_prompt(source_data, value, feedback):
+    return SOURCE_POLICY + qualified_revision_prompt(source_data, value, feedback)

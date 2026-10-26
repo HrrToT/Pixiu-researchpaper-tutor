@@ -72,7 +72,7 @@ def test_new_prompt_and_feedback_are_versioned_but_schema_and_decoding_remain_id
     assert input_value(boundary.generation_prompt(data,{}))['authoritativeInput']==json.loads(data)
 
 
-@pytest.mark.parametrize('version', [28, 29, 30])
+@pytest.mark.parametrize('version', [28, 29, 30, 31])
 def test_new_versions_use_new_descriptor_and_one_durable_revision(version):
     good = authored(); bad = deepcopy(good)
     bad['steps'][2]['reads'] = [{'stepIndex':0,'outputId':'missing','selector':'all'}]
@@ -90,7 +90,7 @@ def test_new_versions_use_new_descriptor_and_one_durable_revision(version):
     assert run()==saved and invoke.call_count==5
 
 
-@pytest.mark.parametrize('version', [28, 29, 30])
+@pytest.mark.parametrize('version', [28, 29, 30, 31])
 def test_new_versions_do_not_repeat_an_unsuccessful_revision(version):
     bad=authored();bad['steps'][2]['reads']=[{'stepIndex':0,'outputId':'missing','selector':'all'}]
     record, _, invoke, run=setup_repair([response(bad),response(bad)])
@@ -116,7 +116,7 @@ def test_compact_prompt_is_only_for_new_version_and_preserves_input_and_schema()
     assert input_value(boundary.compact_generation_prompt(data,{}))==input_value(boundary.generation_prompt(data,{}))
 
 
-@pytest.mark.parametrize('version', [28, 29, 30])
+@pytest.mark.parametrize('version', [28, 29, 30, 31])
 def test_truncated_response_cannot_enter_repair_or_be_retried(version):
     truncated=response(authored());truncated['finishReason']='length'
     record, _, invoke, run=setup_repair([truncated])
@@ -169,3 +169,56 @@ def test_result_block_feedback_does_not_remove_cross_arm_checks():
     value=authored();value['steps'][2]['reads']=[{'stepIndex':1,'outputId':'rendered','selector':'all'}]
     feedback=boundary.qualified_field_feedback(value,{'E1':'owned'})
     assert any(i['code']=='timeline.input.group_leak' for i in feedback['issues'])
+
+
+@pytest.mark.parametrize('refs', [['P1'],['E1','E1'],[['E1']], 'E1', ['E1']*21])
+def test_source_reference_feedback_preserves_bad_value_and_does_not_choose_evidence(refs):
+    value=authored();value['sourceRefs']=refs;before=deepcopy(value)
+    old=boundary.qualified_field_feedback(value, {'E1':'owned','E2':'other'})
+    result=boundary.complete_field_feedback(value, {'E1':'owned','E2':'other'})
+    assert not any(i['code']=='unit.sourceRefs' for i in old['issues'])
+    assert any(i['code']=='unit.sourceRefs' and i['path'].startswith('/sourceRefs') for i in result['issues'])
+    assert result['allowedSourceRefs']==['E1','E2']
+    assert value==before and not result['scientificApproval']
+
+
+@pytest.mark.parametrize('gaps', [None,[''],['unresolved']*9])
+def test_gap_envelope_error_has_its_own_path_without_fabricated_resolution(gaps):
+    value=authored();value['unresolved']=gaps;before=deepcopy(value)
+    result=boundary.complete_field_feedback(value, {'E1':'owned'})
+    assert any(i['code']=='unit.unresolved' and i['path'].startswith('/unresolved') for i in result['issues'])
+    assert value==before
+
+
+@pytest.mark.parametrize('field', ['baselineMode','replicationMode'])
+def test_invalid_mode_has_exact_path_and_choices_but_no_automatic_replacement(field):
+    value=authored();value[field]='unknown_mode';before=deepcopy(value)
+    result=boundary.complete_field_feedback(value, {'E1':'owned'})
+    issue=next(i for i in result['issues'] if i['path']=='/'+field)
+    assert issue['actual']=='unknown_mode' and isinstance(issue['expected'],list)
+    assert value==before
+
+
+def test_evidence_alias_context_and_multiple_errors_are_in_one_durable_revision():
+    good=authored();bad=deepcopy(good);bad['sourceRefs']=['P1']
+    bad['steps'][0]['updates']=['not_a_declared_state']
+    record, _, invoke, run=setup_repair([response(bad),response(good),*map(response,explicit_initializers())])
+    record.update(workflowMetadataRepairContractVersion=31,workflowInitializationOutputContractVersion=1)
+    saved=run();fix=saved['metadataRepair'];data=input_value(fix['request']['prompt'])
+    generation=input_value(saved['units']['metadata']['request']['prompt'])
+    assert generation['unitContext']['allowedSourceRefs']==['E1']
+    assert data['invalidMetadata']==bad
+    assert data['fieldFeedback']['allowedSourceRefs']==['E1']
+    assert any(i['path']=='/sourceRefs/0' and i['actual']=='P1' for i in data['fieldFeedback']['issues'])
+    assert any(i['code']=='metadata.update.unknown' for i in data['fieldFeedback']['issues'])
+    assert saved['status']==fix['status']=='ready'
+    assert run()==saved and invoke.call_count==5
+
+
+def test_valid_source_alias_is_not_a_support_or_scientific_approval():
+    value=authored();result=boundary.complete_field_feedback(value, {'E1':'owned'})
+    assert 'allowedSourceRefs' not in result and not result['scientificApproval']
+    data=json.dumps({'sources':'unaltered'})
+    prompt=prompt_for(data,value,result,version=31)
+    assert 'syntax permission, not evidence of support' in prompt
+    assert input_value(prompt)==input_value(prompt_for(data,value,result,version=30))
