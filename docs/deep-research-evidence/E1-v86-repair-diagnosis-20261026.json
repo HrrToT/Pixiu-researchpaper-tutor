@@ -1,0 +1,115 @@
+{
+  "case": "E1-v86",
+  "runId": "dr_run_69e37e21b7d658daba24326e78478223",
+  "promptVersion": "dr-v2.20261026.297",
+  "status": "failed",
+  "elapsedSeconds": 94,
+  "settledModelCalls": 8,
+  "settledTokens": 41226,
+  "unsettledCalls": 0,
+  "metadataErrors": [
+    "unit.json"
+  ],
+  "repairStatus": "invalid_response",
+  "repairErrors": [
+    "unit.json"
+  ],
+  "repairInputBytes": 30021,
+  "repairOptions": {
+    "thinking": {
+      "type": "disabled"
+    },
+    "reasoning_effort": "none",
+    "max_tokens": 6144
+  },
+  "feedback": {
+    "issues": [
+      {
+        "code": "steps.record_coverage",
+        "path": "/steps/3/recording/inputs",
+        "actual": [
+          {
+            "outputId": "rendered_image",
+            "selector": "all"
+          }
+        ],
+        "expected": "Choose the actual producing operation for each result. Measurement precedes recording: step.outputs must not include a result only computed by recording. Select every measurement output in recording.inputs with an authored selector; declare recording results in recording.outputs. Preserve all needed computations and results; do not blindly add an input or delete a metric. No automatic repair.",
+        "actualPresent": true,
+        "producerBoundary": {
+          "measurementOutputsPath": "/steps/3/outputs",
+          "measurementOutputs": [
+            "rendered_image",
+            "psnr"
+          ],
+          "recordingOutputs": [
+            "psnr"
+          ],
+          "unselectedMeasurementOutputs": [
+            "psnr"
+          ],
+          "undeclaredInputOutputs": []
+        }
+      },
+      {
+        "code": "steps.record_coverage",
+        "path": "/steps/4/recording/inputs",
+        "actual": [
+          {
+            "outputId": "rendered_image",
+            "selector": "all"
+          }
+        ],
+        "expected": "Choose the actual producing operation for each result. Measurement precedes recording: step.outputs must not include a result only computed by recording. Select every measurement output in recording.inputs with an authored selector; declare recording results in recording.outputs. Preserve all needed computations and results; do not blindly add an input or delete a metric. No automatic repair.",
+        "actualPresent": true,
+        "producerBoundary": {
+          "measurementOutputsPath": "/steps/4/outputs",
+          "measurementOutputs": [
+            "rendered_image",
+            "psnr"
+          ],
+          "recordingOutputs": [
+            "psnr"
+          ],
+          "unselectedMeasurementOutputs": [
+            "psnr"
+          ],
+          "undeclaredInputOutputs": []
+        }
+      }
+    ],
+    "scientificApproval": false,
+    "authoredValuesPreserved": true,
+    "explicitScopeEndReleases": [
+      {
+        "componentIndex": 0,
+        "componentId": "frame0_3dgs",
+        "scope": "per_repeat",
+        "disposeAfter": null
+      },
+      {
+        "componentIndex": 1,
+        "componentId": "stage1_ntc",
+        "scope": "per_frame",
+        "disposeAfter": 6
+      },
+      {
+        "componentIndex": 2,
+        "componentId": "transformed_3dgs",
+        "scope": "per_frame",
+        "disposeAfter": 6
+      },
+      {
+        "componentIndex": 3,
+        "componentId": "additional_3dgs",
+        "scope": "per_frame",
+        "disposeAfter": 6
+      }
+    ]
+  },
+  "repairRawIdentical": true,
+  "initializationStarted": false,
+  "payloadSha256": "c043e9baa217386be59fe2fbc23c896f3b8e6792c9d87103e909e1c834b04590",
+  "scientificApproval": false,
+  "independentCredit": 0,
+  "boundary": "Full correction was admitted and sent, but repeats the original observation-output coverage errors unchanged. This supports investigating the repair configuration; it does not prove a thinking-mode change will solve the problem."
+}
