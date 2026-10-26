@@ -153,6 +153,8 @@ def messages(node, prompt, version=2, *, prospective=False):
 
 def messages_for_record(record, node, prompt):
     """Use the same frozen run policy for reservation, planning and actual wire."""
+    from services.deep_research.workflow_metadata_baseline_boundary import enabled as boundary_enabled, messages as boundary_messages
+    if boundary_enabled(record, node): return boundary_messages(prompt)
     from services.deep_research.scientific_outline import enabled as outline_enabled,NODE
     if node==NODE and outline_enabled(record):
         return [{'role':'system','content':

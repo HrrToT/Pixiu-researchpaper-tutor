@@ -109,7 +109,8 @@ def test_transport_role_limits_legacy_schema_and_prompt_data_are_preserved():
 
 
 @pytest.mark.parametrize('scenario', ['success', 'unknown', 'budget'])
-def test_physical_wire_budget_and_unknown_guard(tmp_path, monkeypatch, scenario):
+@pytest.mark.parametrize('revision_version', [22, 26])
+def test_physical_wire_budget_and_unknown_guard(tmp_path, monkeypatch, scenario, revision_version):
     import requests
     from llm.client import DeepSeekLLM
     from llm.provider import LLMProviderError
@@ -122,7 +123,7 @@ def test_physical_wire_budget_and_unknown_guard(tmp_path, monkeypatch, scenario)
     from test_deep_research_schema_transport import response as http_response
     good = wire_value(); bad = deepcopy(good); bad['steps'][2]['group'] = '1'
     r, _, _, run = setup_repair([response(bad), response(bad)])
-    r['workflowMetadataRepairContractVersion'] = 22
+    r['workflowMetadataRepairContractVersion'] = revision_version
     with pytest.raises(DeepResearchError): run()
     blueprint = r['state']['executionWorkflowBlueprint']
     data = input_value(blueprint['metadataRepair']['request']['prompt'])
@@ -151,7 +152,11 @@ def test_physical_wire_budget_and_unknown_guard(tmp_path, monkeypatch, scenario)
         assert correct() == correct() == compact.decode(good)
     assert post.call_count == 1
     body = post.call_args.kwargs['json']
-    assert body['text']['format'] == compact.descriptor()
+    assert body['text']['format'] == descriptor_for(r, 'repair_workflow_meta')
+    if revision_version == 26:
+        from services.deep_research.workflow_metadata_baseline_boundary import SYSTEM_POLICY
+        assert body['input'][0] == {'role': 'system', 'content': SYSTEM_POLICY}
+        assert body['input'][1] == {'role': 'user', 'content': store['value']['request']['prompt']}
     assert body['max_output_tokens'] == 3072 and body['reasoning']['effort'] == 'none'
     assert repo.list_calls('r')[0]['reservedTokens'] == (
         len(store['value']['request']['prompt'].encode()) + 1024 + overhead_bytes(r, 'repair_workflow_meta') + 3072)
