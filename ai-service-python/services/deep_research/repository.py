@@ -812,6 +812,18 @@ class DeepResearchRepository:
             ).fetchall()
         return [_row_to_call_from_row(row) for row in rows]
 
+    def unconfirmed_call_ids(self, run_id: str) -> list[str]:
+        """Read confirmation state without loading model inputs or response bodies."""
+        normalized = str(run_id or '').strip()
+        if not normalized:
+            return []
+        with closing(sqlite3.connect(self.db_path, timeout=30)) as conn:
+            rows = conn.execute(
+                'SELECT call_id FROM deep_research_calls_v2 WHERE run_id=? AND status IN (?,?) ORDER BY rowid',
+                (normalized, CALL_STATUS_PENDING, CALL_STATUS_UNKNOWN),
+            ).fetchall()
+        return [row[0] for row in rows]
+
     # ── recovery ──────────────────────────────────────────────────────────────
 
     def recover(self, *, reason: str = "interrupted") -> list[str]:

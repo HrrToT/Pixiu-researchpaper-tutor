@@ -235,6 +235,10 @@ class ResearchFacade:
             parent = self._repo.require_run(parent_id)
             if parent.get("taskId") != workspace_task_id or parent.get("status") not in TERMINAL_STATUSES:
                 raise DeepResearchError("invalid_parent", "只能从本任务已结束的研究继续")
+            unconfirmed = _unconfirmed_call_ids(self._repo, parent_id)
+            if unconfirmed or parent.get('errorCode') == 'unresolved_unknown':
+                from services.deep_research.contracts import UnresolvedUnknownError
+                raise UnresolvedUnknownError(parent_id, unconfirmed)
             from services.deep_research.continuation import reusable_local_source
             current_materials = {m['materialId']: m for m in materials}
             parent_materials = {m['materialId']: m for m in parent.get('materials', [])}
@@ -385,6 +389,9 @@ class ResearchFacade:
         state = record.get("state", {})
         budget = record.get("budget", {})
         visible_sources = self.get_sources(run_id)
+        unconfirmed = (record.get('status') not in (STATUS_RUNNING, STATUS_STOPPING)
+                       and bool(_unconfirmed_call_ids(self._repo, run_id)))
+        unknown = unconfirmed or record.get('errorCode') == 'unresolved_unknown'
         
         return {
             "contractVersion": record.get("contractVersion", CONTRACT_VERSION),
@@ -397,8 +404,8 @@ class ResearchFacade:
             "executionEpoch": record.get("executionEpoch", 0),
             "status": record.get("status", STATUS_QUEUED),
             "outcome": record.get("outcome", OUTCOME_NONE),
-            "errorCode": record.get("errorCode", ""),
-            "error": {
+            "errorCode": 'unresolved_unknown' if unknown else record.get("errorCode", ""),
+            "error": '上次请求结果尚未确认，不会自动重发；已取得的资料仍保留。' if unknown else {
                 "invalid_plan_response": "研究计划未能完整生成，本次已停止。可重新发起研究；这会产生新的模型调用。",
                 "invalid_brief_response": "研究目标未能正确解析，本次已停止。请简化问题后重新研究。",
                 "invalid_synthesis_response": "报告未能完整生成，本次已停止；已取得的资料仍保留。可补查继续，这会产生新的模型调用。",
@@ -409,7 +416,7 @@ class ResearchFacade:
                 "claim_verification": "主张核查", "experiment_design": "实验方案", "research_entry": "研究切入点"}
                 .get(state.get("outputKind", record.get("outputKind")), "学术研究"),
             "outputKind": state.get("outputKind", record.get("outputKind")),
-            "activity": _build_activity_summary(record),
+            "activity": None if unknown else _build_activity_summary(record),
             "summary": (record.get("result") or {}).get("summary", ""),
             # Expose full report body for Java/UI consumption
             "report": {
@@ -433,7 +440,7 @@ class ResearchFacade:
             "sources": visible_sources,
             "events": self.get_events(run_id),
             "sourceCount": len(visible_sources),
-            "allowedActions": _compute_allowed_actions(record),
+            "allowedActions": _compute_allowed_actions(record, unconfirmed=unconfirmed),
             "budget": {
                 "profile": budget.get("profile", "standard"),
                 "modelCalls": budget.get("modelCalls", 0) + budget.get("reservedModelCalls", 0),
@@ -1303,7 +1310,7 @@ def _build_activity_summary(record: dict[str, Any]) -> dict[str, Any] | None:
     status = record.get("status", "")
     stage = record.get("stage", "")
     
-    if status in TERMINAL_STATUSES:
+    if status not in (STATUS_QUEUED, STATUS_RUNNING, STATUS_STOPPING):
         return None
     
     if not stage:
@@ -1327,10 +1334,18 @@ def _build_activity_summary(record: dict[str, Any]) -> dict[str, Any] | None:
     }
 
 
-def _compute_allowed_actions(record: dict[str, Any]) -> list[str]:
+def _unconfirmed_call_ids(repository, run_id):
+    return repository.unconfirmed_call_ids(run_id)
+
+
+def _compute_allowed_actions(record: dict[str, Any], *, unconfirmed=False) -> list[str]:
     """Compute allowed actions based on current state."""
     status = record.get("status", "")
     outcome = record.get("outcome", OUTCOME_NONE)
+    if unconfirmed or record.get('errorCode') == 'unresolved_unknown':
+        if status == STATUS_COMPLETED:
+            return ['open_report', 'view_sources']
+        return [] if status in TERMINAL_STATUSES else ['cancel']
     
     actions = []
     
@@ -1344,7 +1359,7 @@ def _compute_allowed_actions(record: dict[str, Any]) -> list[str]:
                     and isinstance(state.get('clarification'), str) and state['clarification'].strip())
         actions.extend(["resume", "cancel"] if answered else ["clarify", "cancel"])
     elif status == STATUS_PAUSED:
-        actions.extend(["cancel"] if record.get("errorCode") == "unresolved_unknown" else ["resume", "cancel", "plan"])
+        actions.extend(["resume", "cancel", "plan"])
     elif status == STATUS_COMPLETED:
         # A complete report can still be the parent of a NEW explicit question.
         # This projection never regenerates the parent or issues a model call.
