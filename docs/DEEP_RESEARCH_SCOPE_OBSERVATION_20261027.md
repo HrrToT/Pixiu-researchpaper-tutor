@@ -15,3 +15,7 @@ subject、attribute、value 原样保留，仅把声明明确限定为存在一�
 ## 离线检查
 
 最终 58 文件、970 项关联回归通过（pytest 333.98 秒；外部 337.313 秒），运行前后源码及测试哈希一致，外部模型调用为 0。覆盖新投影、语义失败仍阻断、旧子判定不能绑定新子 ID、服务策略不可修改，以及事实／范围／完整性／修订／预算／旧未知请求兼容。此前 62 项定向检查与本轮重叠，不相加。收据为 `deep-research-evidence/scope-observation-regression-20261027.json`。
+
+## 加载
+
+源码提交 `49da607d`，测试收据中的所有源码和测试哈希在提交后再次核对一致。空闲快照后重启原 Python 容器一次加载 `.312`，源码哈希一致、RAG/GROBID 健康、前端 HTTP 200；7,387 条账本、全部旧研究 payload 和四组任务快照精确保留，0 活跃、12 个旧未知暂停。没有为加载新增模型调用或生产研究。证据为 `deep-research-evidence/runtime-load-scope-observation-20261027.json`。
