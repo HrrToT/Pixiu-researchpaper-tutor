@@ -19,3 +19,7 @@ D1-v39 的修订已生成范围表达式，但 `repair_rejected` 仍逐条按字
 最终固定源码的 36 文件、566 项关联回归通过（pytest 50.61 秒；外部 54.344 秒），运行前后全部研究模块及选中测试哈希一致。定向检查与之重叠，不相加。最终收据为 `deep-research-evidence/repair-compaction-regression-final-v3-20261027.json`；中间失败收据和日志单独保留，不冒充最终通过。
 
 本轮没有新增真实模型调用；D1-v39 仍为 inconclusive，表格方法与重训基线身份的生成质量尚未通过。完整 DR0—DR5 及独立验收仍未完成，不能用修订路径和离线测试代替内容验收。
+
+## 加载
+
+源码提交 `088a3e28`。两次空闲快照一致后重启原 Python 容器一次，修复模块哈希与工作树一致，RAG/GROBID 健康，前端 HTTP 200。7,436 条账本和全部旧运行 payload 精确保留，五组任务快照不变，完整索引含向量哈希仍为 `9196054db7ac32450eb86fc91cfb12de27c732469e4cf629bf06857a3490788d`。0 活跃、12 个旧未知暂停保持。没有新建生产研究或追加模型请求。加载证据为 `deep-research-evidence/runtime-load-repair-compaction-20261027.json`。

@@ -1,0 +1,29 @@
+{
+  "sourceCommit": "088a3e280f4813b144fa4db9288e2c483a3e457d",
+  "promptVersion": "dr-v2.20261027.313",
+  "repairCompactionContractVersion": 1,
+  "sourceHashes": {
+    "services/deep_research/repair_compaction.py": "cf8b67c2aa22c2b3a44e85653c1c7d04b823aefa703901338a607a21185ebbf2",
+    "services/deep_research/scope_compaction.py": "ede16f2c7dbd021d72f434b06776c330615b2d68cc60aa90f0571d3a0d1d005d",
+    "services/deep_research/scope_expression_review.py": "e1ca77ccee7918915c93e4e109ddc6172a86b527d86fbebd64aa15615438c87e",
+    "services/deep_research/repair.py": "3115dd0bba6438f247c5b877060a5698485ddd1af73d186e84e949fa9a2a70bf",
+    "services/deep_research/graph.py": "561fae4e0dc4af9028451ee622f76d92036eee1479c6615235b20c5c2f0a6a30",
+    "services/deep_research/facade.py": "a7ec3e1579e4a2086252be5347ed16a3edb262cb13af3c3bb3162d89e3151cb7",
+    "services/deep_research/repository.py": "5b0fa0452a1c42fe971a2de05eb67c5fab236b429275f6de528cf8fa1e3e2cbd"
+  },
+  "oldLedgerAndRunPayloadsExactlyPreserved": true,
+  "ledgerRows": 7436,
+  "pausedUnknowns": 12,
+  "active": 0,
+  "protectedWorkspaces": 5,
+  "completeProductionIndexSha256": "9196054db7ac32450eb86fc91cfb12de27c732469e4cf629bf06857a3490788d",
+  "indexExactlyPreserved": true,
+  "health": {
+    "rag": "ok",
+    "grobid": "ok"
+  },
+  "frontendHttpStatus": 200,
+  "restarts": 1,
+  "providerCalls": 0,
+  "independentCredit": 0
+}
