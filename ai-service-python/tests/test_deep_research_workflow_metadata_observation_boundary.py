@@ -72,7 +72,7 @@ def test_new_prompt_and_feedback_are_versioned_but_schema_and_decoding_remain_id
     assert input_value(boundary.generation_prompt(data,{}))['authoritativeInput']==json.loads(data)
 
 
-@pytest.mark.parametrize('version', [28, 29, 30, 31])
+@pytest.mark.parametrize('version', [28, 29, 30, 31, 32])
 def test_new_versions_use_new_descriptor_and_one_durable_revision(version):
     good = authored(); bad = deepcopy(good)
     bad['steps'][2]['reads'] = [{'stepIndex':0,'outputId':'missing','selector':'all'}]
@@ -82,7 +82,7 @@ def test_new_versions_use_new_descriptor_and_one_durable_revision(version):
     saved=run()
     assert saved['status']==saved['metadataRepair']['status']=='ready'
     assert saved['metadataRepair']['version']==version
-    assert 'TWO ordered operations' in saved['metadataRepair']['request']['prompt']
+    assert ('Steps acquire per-arm raw observations' if version==32 else 'TWO ordered operations') in saved['metadataRepair']['request']['prompt']
     if version == 30:
         issue=input_value(saved['metadataRepair']['request']['prompt'])['fieldFeedback']['issues'][0]
         assert issue['declaredProducer']['stepIndex']==0
@@ -90,7 +90,7 @@ def test_new_versions_use_new_descriptor_and_one_durable_revision(version):
     assert run()==saved and invoke.call_count==5
 
 
-@pytest.mark.parametrize('version', [28, 29, 30, 31])
+@pytest.mark.parametrize('version', [28, 29, 30, 31, 32])
 def test_new_versions_do_not_repeat_an_unsuccessful_revision(version):
     bad=authored();bad['steps'][2]['reads']=[{'stepIndex':0,'outputId':'missing','selector':'all'}]
     record, _, invoke, run=setup_repair([response(bad),response(bad)])
@@ -116,7 +116,7 @@ def test_compact_prompt_is_only_for_new_version_and_preserves_input_and_schema()
     assert input_value(boundary.compact_generation_prompt(data,{}))==input_value(boundary.generation_prompt(data,{}))
 
 
-@pytest.mark.parametrize('version', [28, 29, 30, 31])
+@pytest.mark.parametrize('version', [28, 29, 30, 31, 32])
 def test_truncated_response_cannot_enter_repair_or_be_retried(version):
     truncated=response(authored());truncated['finishReason']='length'
     record, _, invoke, run=setup_repair([truncated])
@@ -199,11 +199,12 @@ def test_invalid_mode_has_exact_path_and_choices_but_no_automatic_replacement(fi
     assert value==before
 
 
-def test_evidence_alias_context_and_multiple_errors_are_in_one_durable_revision():
+@pytest.mark.parametrize('version', [31,32])
+def test_evidence_alias_context_and_multiple_errors_are_in_one_durable_revision(version):
     good=authored();bad=deepcopy(good);bad['sourceRefs']=['P1']
     bad['steps'][0]['updates']=['not_a_declared_state']
     record, _, invoke, run=setup_repair([response(bad),response(good),*map(response,explicit_initializers())])
-    record.update(workflowMetadataRepairContractVersion=31,workflowInitializationOutputContractVersion=1)
+    record.update(workflowMetadataRepairContractVersion=version,workflowInitializationOutputContractVersion=1)
     saved=run();fix=saved['metadataRepair'];data=input_value(fix['request']['prompt'])
     generation=input_value(saved['units']['metadata']['request']['prompt'])
     assert generation['unitContext']['allowedSourceRefs']==['E1']
@@ -222,3 +223,17 @@ def test_valid_source_alias_is_not_a_support_or_scientific_approval():
     prompt=prompt_for(data,value,result,version=31)
     assert 'syntax permission, not evidence of support' in prompt
     assert input_value(prompt)==input_value(prompt_for(data,value,result,version=30))
+
+
+def test_concise_instructions_preserve_full_data_and_prior_prompt_and_analysis_boundary():
+    value=authored();data=json.dumps({'quoted':'every source word\nsecond line','plan':value})
+    feedback=boundary.complete_field_feedback(value,{'E1':'owned'})
+    old=prompt_for(data,value,feedback,version=31)
+    new=prompt_for(data,value,feedback,version=32)
+    assert old==boundary.complete_revision_prompt(data,value,feedback)
+    assert input_value(new)==input_value(old)
+    assert len(new.encode())<len(old.encode())
+    assert 'later analysis claims' in new and 'not a cross-arm or post-frame evaluate/record step' in new
+    assert 'supplied quotes' in new and 'Keep unknowns' in new
+    context={'allowedSourceRefs':['E1']}
+    assert input_value(boundary.concise_generation_prompt(data,context))==input_value(boundary.complete_generation_prompt(data,context))

@@ -109,7 +109,7 @@ def test_transport_role_limits_legacy_schema_and_prompt_data_are_preserved():
 
 
 @pytest.mark.parametrize('scenario', ['success', 'unknown', 'budget'])
-@pytest.mark.parametrize('revision_version', [22, 26, 27, 28, 29, 30, 31])
+@pytest.mark.parametrize('revision_version', [22, 26, 27, 28, 29, 30, 31, 32])
 def test_physical_wire_budget_and_unknown_guard(tmp_path, monkeypatch, scenario, revision_version):
     import requests
     from llm.client import DeepSeekLLM
@@ -122,7 +122,7 @@ def test_physical_wire_budget_and_unknown_guard(tmp_path, monkeypatch, scenario,
     from services.deep_research.workflow_metadata_repair import prepare
     from test_deep_research_schema_transport import response as http_response
     good = wire_value(); decoder = compact.decode
-    if revision_version in (27, 28, 29, 30, 31):
+    if revision_version in (27, 28, 29, 30, 31, 32):
         from test_deep_research_workflow_metadata_result_refs import authored
         from services.deep_research.workflow_metadata_result_refs import decode
         good = authored(); decoder = decode
@@ -158,11 +158,11 @@ def test_physical_wire_budget_and_unknown_guard(tmp_path, monkeypatch, scenario,
     assert post.call_count == 1
     body = post.call_args.kwargs['json']
     assert body['text']['format'] == descriptor_for(r, 'repair_workflow_meta')
-    if revision_version in (26, 27, 28, 29, 30, 31):
+    if revision_version in (26, 27, 28, 29, 30, 31, 32):
         from services.deep_research.workflow_metadata_baseline_boundary import SYSTEM_POLICY
         assert body['input'][0] == {'role': 'system', 'content': SYSTEM_POLICY}
         assert body['input'][1] == {'role': 'user', 'content': store['value']['request']['prompt']}
-    output_limit = 6144 if revision_version in (29, 30, 31) else 3072
+    output_limit = 6144 if revision_version in (29, 30, 31, 32) else 3072
     assert body['max_output_tokens'] == output_limit and body['reasoning']['effort'] == 'none'
     assert repo.list_calls('r')[0]['reservedTokens'] == (
         len(store['value']['request']['prompt'].encode()) + 1024 + overhead_bytes(r, 'repair_workflow_meta') + output_limit)

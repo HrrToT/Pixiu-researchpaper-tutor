@@ -17,7 +17,7 @@ SYSTEM_POLICY = (
 def enabled(record, node):
     return (node in NODES and isinstance(record, dict)
             and type(record.get('workflowMetadataRepairContractVersion')) is int
-            and record['workflowMetadataRepairContractVersion'] in (26, 27, 28, 29, 30, 31)
+            and record['workflowMetadataRepairContractVersion'] in (26, 27, 28, 29, 30, 31, 32)
             and type(record.get('executionWorkflowContractVersion')) is int
             and record['executionWorkflowContractVersion'] == 7
             and type(record.get('workflowMetadataRowsContractVersion')) is int
