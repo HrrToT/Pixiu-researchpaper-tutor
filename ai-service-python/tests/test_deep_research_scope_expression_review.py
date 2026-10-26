@@ -115,7 +115,11 @@ def test_alias_restoration_is_explicit_and_never_rewrites_quote_strings_or_legac
 def test_policy_is_server_owned_immutable_and_facade_only_supplies_matching_new_context(tmp_path,replacement):
     from services.deep_research.facade import ResearchFacade
     from services.deep_research.repository import DeepResearchRepository
-    row,expression,record,evidence=fixture()
+    from test_deep_research_quantified_scope import quantified
+    raw=quantified();row,audit=materialize(raw,2)
+    from services.deep_research.scope_expression import review_expression
+    expression=review_expression(raw['scopeExpression'],2)
+    record={'state':{'synthesisScopeExpressionAudit':[audit]}}
     repo=DeepResearchRepository(tmp_path/'r.sqlite3');repo.initialize();facade=ResearchFacade(repo,lambda **_:None,llm_client=object())
     try:
         run,_=facade.create({'workspaceTaskId':'t','operationKey':'op','question':'核查','deferStart':True,

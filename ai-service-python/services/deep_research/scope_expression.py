@@ -4,7 +4,7 @@ from copy import deepcopy
 
 def enabled(record):
     return (type(record.get('scopeExpressionContractVersion')) is int
-            and record['scopeExpressionContractVersion'] == 1)
+            and record['scopeExpressionContractVersion'] in (1, 2))
 
 
 SCHEMA = {'observedSettings':[{'subject':'actual method/experiment',
@@ -30,7 +30,47 @@ The compiled text still receives ordinary factual, scope and whole-answer review
 '''
 
 
-def materialize(claim):
+QUANTIFIED_GUIDANCE = GUIDANCE.replace(
+    '"notEstablished":["positive stronger proposition not established by these quotations"]',
+    '"notEstablished":[{"quantifier":"all or exists","domain":"explicit set of settings or datasets",'
+    '"subject":"actual method","comparator":"actual comparison baseline",'
+    '"predicate":"positive result, including metric and tolerance where applicable"}]') + '''
+Every notEstablished item must be an object with exactly those five fields.
+Choose all (every member) or exists (at least one member) explicitly; do not choose
+a universal merely to make the boundary pass. State the actual comparison domain,
+subject, comparator and positive predicate. Do not put negation or an assertion
+that authors omitted experiments in these fields. A schema does not prove that
+the domain or predicate is meaningful: the semantic reviewer still checks both.
+'''
+
+
+def guidance(version=1):
+    return QUANTIFIED_GUIDANCE if version == 2 else GUIDANCE
+
+
+def boundary_text(value):
+    if not isinstance(value, dict) or set(value) != {'quantifier','domain','subject','comparator','predicate'}:
+        raise ValueError('Explicit quantified boundary fields required')
+    if value['quantifier'] not in ('all','exists'):
+        raise ValueError('Explicit all or exists quantifier required')
+    for name in ('domain','subject','comparator','predicate'):
+        if not isinstance(value[name],str) or not value[name].strip():
+            raise ValueError('Explicit domain, subject, comparator and predicate required')
+    quantifier = '所有情形' if value['quantifier'] == 'all' else '至少一种情形'
+    return ('在范围「'+value['domain']+'」内的'+quantifier+'中，'+value['subject']
+            +'相对于'+value['comparator']+'，'+value['predicate'])
+
+
+def review_expression(expression, version=1):
+    result = deepcopy(expression)
+    if version == 2:
+        result['notEstablished'] = [boundary_text(p) for p in result['notEstablished']]
+    return result
+
+
+def materialize(claim, version=1):
+    if type(version) is not int or version not in (1,2):
+        raise ValueError('Unsupported scope expression version')
     result = deepcopy(claim)
     expression = result.pop('scopeExpression', None)
     if expression is None: return result, None
@@ -53,7 +93,9 @@ def materialize(claim):
         observations.append(text(setting['subject'])+'，'+text(setting['attribute'])+'='+text(setting['value']))
     statements = []
     if observations: statements.append('所引来源报告的评估设置包括：'+'；'.join(observations)+'。')
-    if boundaries: statements.append('这些引用不足以证明：'+'；'.join(text(p) for p in boundaries)+'。')
+    if boundaries:
+        rendered = [boundary_text(p) if version == 2 else text(p) for p in boundaries]
+        statements.append('这些引用不足以证明：'+'；'.join(rendered)+'。')
     result['text'] = ''.join(statements)
     return result, {'claimId':result.get('claimId'),'expression':deepcopy(expression),
                     'renderedText':result['text'],'verification':'unchecked'}

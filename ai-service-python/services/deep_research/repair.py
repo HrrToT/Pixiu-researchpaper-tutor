@@ -439,8 +439,8 @@ in the paper. Maintain consistency with accepted definitions and complete requir
         prompt=add_contract(prompt,originals,**({'version':3 if repair_evidence_packet_version in (2,3,4,5) else 2}
             if repair_evidence_packet_version in (1,2,3,4,5) else {}))
     if scope_expression:
-        from services.deep_research.scope_expression import GUIDANCE as scope_guidance
-        prompt += '\n' + scope_guidance
+        from services.deep_research.scope_expression import guidance as scope_guidance
+        prompt += '\n' + scope_guidance(2 if type(scope_expression) is int and scope_expression == 2 else 1)
     if answer_intents is not None:
         from services.deep_research.answer_point_intent import repair_guidance
         prompt += repair_guidance(answer_intents, originals)
@@ -487,7 +487,7 @@ in the paper. Maintain consistency with accepted definitions and complete requir
     visible = {aliases[row['evidenceId']] for row in rows}
     allowed = {key: [ref for ref in values if ref in visible] for key, values in allowed.items()}
     return {'prompt': prompt, 'originals': originals, 'aliases': aliases, 'allowed': allowed,
-            **({'scopeExpressionContractVersion':1} if scope_expression else {}),
+            **({'scopeExpressionContractVersion':2 if type(scope_expression) is int and scope_expression == 2 else 1} if scope_expression else {}),
             **({'repairEvidencePacketVersion':repair_evidence_packet_version} if repair_evidence_packet_version in (1,2,3,4,5) else {}),
             **({'editFormatVersion':1} if experimental_edits else {}),
             **({'diagnosticVersion':1,'schemaFeedback':feedback_options['diagnostics']} if experimental_diagnostics else {}),
@@ -542,9 +542,9 @@ def _parse_repair_response(prepared, response, parse, presentation_audit=None,dr
         new_refs = row.get('evidenceRefs', [])
         if not isinstance(new_refs, list) or any(ref not in allowed.get(key, []) for ref in new_refs):
             continue
-        if type(prepared.get('scopeExpressionContractVersion')) is int and prepared['scopeExpressionContractVersion'] == 1:
+        if type(prepared.get('scopeExpressionContractVersion')) is int and prepared['scopeExpressionContractVersion'] in (1,2):
             from services.deep_research.scope_expression import materialize as materialize_scope
-            try: row, audit = materialize_scope(row)
+            try: row, audit = materialize_scope(row, prepared['scopeExpressionContractVersion'])
             except ValueError:
                 if scope_audit is not None: scope_audit.append({'claimId':key,'error':'invalid_scope_expression'})
                 continue
@@ -646,7 +646,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
     if type(citation_presentation_version) is not int or citation_presentation_version not in (0,2,3,4):
         raise ValueError('Unsupported citation presentation contract')
     identity = digest({'report': report, 'verification': verification,
-                       **({'scopeExpressionContractVersion':1} if scope_expression else {}),
+                       **({'scopeExpressionContractVersion':2 if type(scope_expression) is int and scope_expression == 2 else 1} if scope_expression else {}),
                        **({'answerPointIntentContractVersion':1,'answerIntents':answer_intents} if answer_intents is not None else {}),
                        **({'experimentRepairPriorityContractVersion':scheduling_version} if scheduling_version in (1,2) else {}),
                        **({'experimentRepairInputContractVersion':repair_evidence_packet_version} if repair_evidence_packet_version in (1,2,3,4,5) else {}),
@@ -683,7 +683,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
             metric_domains=metric_domains, draft_context=siblings, prior_revisions=results,
             fact_redraft=fact_redraft, requirement_context=requirement_context,source_aware_redraft=source_aware_redraft,
             **({'answer_intents':answer_intents} if answer_intents is not None else {}),
-            **({'scope_expression':True} if scope_expression else {}),
+            **({'scope_expression':scope_expression} if scope_expression else {}),
             comparison_reasoning=comparison_reasoning,question_priority=question_priority,concise_factual=concise_factual,
             factual_scope=factual_scope,declared_table_refs=declared_table_refs,comparison_methodology=comparison_methodology,
             experimental_intent=experimental_intent,compact_source_repair=compact_source_repair,

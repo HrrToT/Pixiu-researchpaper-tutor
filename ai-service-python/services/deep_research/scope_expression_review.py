@@ -3,7 +3,7 @@ from copy import deepcopy
 import json
 import re
 
-from services.deep_research.scope_expression import materialize
+from services.deep_research.scope_expression import materialize, review_expression
 
 
 def enabled(record):
@@ -29,13 +29,13 @@ def context_for_record(record, claims):
             if (not isinstance(entry,dict) or entry.get('claimId') != claim.get('claimId')
                     or entry.get('renderedText') != claim.get('text') or 'expression' not in entry): continue
             try:
-                rebuilt, _ = materialize({**claim,'text':'','scopeExpression':entry['expression']})
+                rebuilt, _ = materialize({**claim,'text':'','scopeExpression':entry['expression']}, record.get('scopeExpressionContractVersion',1))
             except (TypeError,ValueError): continue
             if rebuilt['text'] != claim.get('text'): continue
             key = json.dumps(entry['expression'],ensure_ascii=False,sort_keys=True)
             candidates[key] = entry['expression']
         if len(candidates)==1:
-            result[claim['claimId']] = deepcopy(next(iter(candidates.values())))
+            result[claim['claimId']] = review_expression(next(iter(candidates.values())), record.get('scopeExpressionContractVersion',1))
     return result
 
 

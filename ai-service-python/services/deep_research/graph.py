@@ -1364,9 +1364,9 @@ space with unsupported global absence or incidental iteration/performance values
         from services.deep_research.answer_point_intent import enabled as point_intent_enabled, GUIDANCE as point_intent_guidance
         if point_intent_enabled(record) and output_kind != 'experiment_design':
             prompt += '\n' + point_intent_guidance
-        from services.deep_research.scope_expression import enabled as scope_expression_enabled, GUIDANCE as scope_expression_guidance
+        from services.deep_research.scope_expression import enabled as scope_expression_enabled, guidance as scope_expression_guidance
         if scope_expression_enabled(record) and output_kind != 'experiment_design':
-            prompt += '\n' + scope_expression_guidance
+            prompt += '\n' + scope_expression_guidance(record['scopeExpressionContractVersion'])
         from services.deep_research.experiment_planning import enabled as staged_experiment,basis_limit
         staged_mode=premise_mode and output_kind=='experiment_design' and staged_experiment(record)
         from services.deep_research.experiment_capacity import input_limit as experiment_input_limit,reserved_basis_bytes,enabled as experiment_capacity_enabled
@@ -1548,7 +1548,7 @@ space with unsupported global absence or incidental iteration/performance values
             try:
                 for index, claim in enumerate(parsed['claims']):
                     if not isinstance(claim,dict): continue
-                    parsed['claims'][index], audit = materialize_scope(claim)
+                    parsed['claims'][index], audit = materialize_scope(claim, record['scopeExpressionContractVersion'])
                     if audit: scope_expression_audit.append(audit)
             except ValueError:
                 return {'error_code':'invalid_synthesis_response'}
@@ -1842,7 +1842,7 @@ def make_verify_node(
                             record.get('state',{}).get('factualDraftingAudit',{}),repair_report.get('claims',[]))}
                            if point_intent_enabled(record)
                            and saved.get('outputKind')!='experiment_design' else {}),
-                        **({'scope_expression':True} if scope_expression_enabled(record)
+                        **({'scope_expression':record['scopeExpressionContractVersion']} if scope_expression_enabled(record)
                            and saved.get('outputKind')!='experiment_design' else {}),
                         **({'declared_table_refs':True} if declared_references_enabled(record) else {}),
                         **({'question_priority':True} if priority_enabled(record) else {}),
