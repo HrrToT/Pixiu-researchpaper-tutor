@@ -41,7 +41,7 @@ def descriptor_for(record, node, initialization_target='component'):
         return init_descriptor(initialization_target)
     from services.deep_research.workflow_metadata_repair import enabled as repair_enabled, NODE as REPAIR_META
     if (node in ('plan_workflow_meta', REPAIR_META) and repair_enabled(record)
-            and record['workflowMetadataRepairContractVersion'] == 22):
+            and record['workflowMetadataRepairContractVersion'] in (22, 23)):
         from services.deep_research.workflow_metadata_compact_transport import descriptor as compact_descriptor
         return compact_descriptor()
     if (node in ('plan_workflow_meta', REPAIR_META) and repair_enabled(record)
@@ -121,7 +121,7 @@ def options_for_record(record,node,options):
     options=reasoning_options(record,node,options)
     from services.deep_research.workflow_metadata_repair import enabled as metadata_revision_enabled
     if (node in ('plan_workflow_meta', 'repair_workflow_meta') and metadata_revision_enabled(record)
-            and record['workflowMetadataRepairContractVersion'] in (4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22)):
+            and record['workflowMetadataRepairContractVersion'] in (4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23)):
         # Fixed before request fingerprinting and atomic input/output reservation.
         # Raw 8KB and whole-run limits remain independent admission checks.
         options={**options,'max_tokens':6144 if record['workflowMetadataRepairContractVersion']==10 else 3072}
