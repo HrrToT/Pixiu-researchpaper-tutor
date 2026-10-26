@@ -41,7 +41,7 @@ short answer; omit secondary examples. Do not repeat conditions already in text.
 '''
 
 
-def audit_prompt(targets, *, complete_statement=False):
+def audit_prompt(targets, *, complete_statement=False, single_decision=False):
     prompt='\nScope-strength audit for factual targets: '+json.dumps(targets,separators=(',',':'))+'''
 A passed verdict also MUST include:
 "scopeAudit":{"claimStrength":"bounded|exclusive|universal",
@@ -72,6 +72,14 @@ purpose. A true first clause cannot license an unsupported later clause. A
 profiling measurement is not automatically a main-table comparison. Return
 failed if any substantive clause lacks its own actual premises.
 '''
+    if single_decision:
+        prompt=prompt.replace('A passed verdict also MUST include:',
+                              'Every response MUST include the complete whole-claim audit:')
+        prompt=prompt.replace('"supported":true,','"supported":true or false,')
+        prompt=prompt.replace('For unsupported scope return failed with the precise overreach;',
+                              'For unsupported scope set scopeAudit.supported=false with the precise overreach;')
+        prompt=prompt.replace('Return\nfailed if any substantive clause lacks its own actual premises.',
+                              'Set scopeAudit.supported=false if any substantive clause lacks its own actual premises.')
     return prompt
 
 

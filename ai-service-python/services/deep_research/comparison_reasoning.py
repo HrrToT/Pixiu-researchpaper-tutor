@@ -54,7 +54,7 @@ def audit_scope(claim,evidence):
     return None
 
 
-def audit_prompt(targets, version=1):
+def audit_prompt(targets, version=1, *, single_decision=False):
     prompt = '\n'+GUIDANCE+'''
 For the following comparative targets, a passed verdict MUST also include comparisonAudit.
 Target scopes (metadata, not evidence): '''+json.dumps(targets,separators=(',',':'))+'''
@@ -84,6 +84,8 @@ do not invent an audit or cite irrelevant quotations to satisfy the schema.
     if type(version) is int and version == 3:
         from services.deep_research.comparison_methodology import REFERENCE
         prompt+='\n'+REFERENCE
+    if single_decision:
+        prompt=prompt.replace('return status=failed','set scopeAudit.supported=false')
     return prompt
 
 

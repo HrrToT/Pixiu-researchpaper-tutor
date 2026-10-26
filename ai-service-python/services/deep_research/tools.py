@@ -606,6 +606,7 @@ class BudgetedSemanticChecker:
         review_batch_planning=0,
         scope_expression_context=None,
         partitioned_scope_review=False,
+        single_factual_decision=False,
     ):
         self._invoke = llm_invoker
         self._run_id = run_id
@@ -619,6 +620,7 @@ class BudgetedSemanticChecker:
         self._factual_scope = factual_scope
         self._scope_expression_context = scope_expression_context
         self._partitioned_scope_review = partitioned_scope_review
+        self._single_factual_decision = single_factual_decision
         self._complete_factual_scope=complete_factual_scope
         self._result_attribution=result_attribution
         self._bounded_factual_review=bounded_factual_review
@@ -810,6 +812,20 @@ An interaction formula must define whether larger values mean better quality or 
 one sign interpretation for PSNR/SSIM and LPIPS together. Non-significance does not prove no effect.
 Truncating coefficients is a proposed intervention, not automatically the paper's distillation procedure.
 Do not accept vague connections. A partly supported claim must fail until its wording is narrowed."""
+
+        decision_policy=self._single_factual_decision
+        decision_policy=(decision_policy() if callable(decision_policy) else decision_policy) is True
+        single_decision=False
+        if decision_policy:
+            from services.deep_research.factual_decision import eligible, prompt as decision_prompt
+            scope_policy=self._factual_scope() if callable(self._factual_scope) else self._factual_scope
+            complete_policy=self._complete_factual_scope() if callable(self._complete_factual_scope) else self._complete_factual_scope
+            # Legacy composite expressions keep their original independent
+            # decision protocol; new partitioned observations have no context.
+            expressions=self._scope_expression_context(claims) if callable(self._scope_expression_context) else {}
+            single_decision=eligible(decision_policy,claims,scope_policy,complete_policy) and not expressions
+            if single_decision:
+                prompt=decision_prompt(claims_text,evidence_text)
 
         if all(c.get('kind') in {'proposal', 'suggestion', 'hypothesis'} for c in claims):
             # Do not inherit factual-entailment instructions for unexecuted choices.
@@ -1074,7 +1090,8 @@ The dataAvailability object is an internal audit, not new experimental results.
             from services.deep_research.comparison_reasoning import audit_scope,audit_prompt as comparison_audit_prompt
             comparison_targets={c['claimId']:audit_scope(c,evidence) for c in claims if audit_scope(c,evidence)}
             if comparison_targets:
-                prompt+=comparison_audit_prompt(comparison_targets, comparison_version)
+                prompt+=comparison_audit_prompt(comparison_targets, comparison_version,
+                    **({'single_decision':True} if single_decision else {}))
         scope_enabled=(self._factual_scope() if callable(self._factual_scope) else self._factual_scope) is True
         complete_scope=(self._complete_factual_scope() if callable(self._complete_factual_scope)
                         else self._complete_factual_scope) is True
@@ -1082,7 +1099,8 @@ The dataAvailability object is an internal audit, not new experimental results.
             from services.deep_research.factual_scope import audit_prompt as scope_prompt
             targets=[c['claimId'] for c in claims if c.get('kind') in {'reported','inference'}]
             if targets:
-                prompt+=scope_prompt(targets,**({'complete_statement':True} if complete_scope else {}))
+                prompt+=scope_prompt(targets,**({'complete_statement':True} if complete_scope else {}),
+                    **({'single_decision':True} if single_decision else {}))
         expression_context = (self._scope_expression_context(claims)
                               if callable(self._scope_expression_context) else {})
         if expression_context:
@@ -1255,6 +1273,9 @@ The dataAvailability object is an internal audit, not new experimental results.
             content = result.get("content", "[]")
             from services.deep_research.graph import _safe_parse_json
             parsed = _safe_parse_json(content)
+            if single_decision:
+                from services.deep_research.factual_decision import decode
+                parsed=decode(parsed)
             
             expected = {claim['claimId'] for claim in claims}
             if (result.get('finishReason') == 'length' or not isinstance(parsed, list)
