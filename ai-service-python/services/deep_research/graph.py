@@ -1361,6 +1361,9 @@ space with unsupported global absence or incidental iteration/performance values
                 draft_obligations,source_registry,evidence_marker,table_marker,
                 drafting_schema=drafting_schema_enabled(record),point_guidance=format_guidance(point_constraint))
         from services.deep_research.experiment_template import enabled as compact_experiment_enabled,build as experiment_template
+        from services.deep_research.answer_point_intent import enabled as point_intent_enabled, GUIDANCE as point_intent_guidance
+        if point_intent_enabled(record) and output_kind != 'experiment_design':
+            prompt += '\n' + point_intent_guidance
         from services.deep_research.experiment_planning import enabled as staged_experiment,basis_limit
         staged_mode=premise_mode and output_kind=='experiment_design' and staged_experiment(record)
         from services.deep_research.experiment_capacity import input_limit as experiment_input_limit,reserved_basis_bytes,enabled as experiment_capacity_enabled
@@ -1716,6 +1719,7 @@ def make_verify_node(
                 "initialVerification": verification_result, 'initialAnswerCoverage': answer_coverage,
                 'repairTargets': repair_targets, 'repairReport': repair_report}}, expected_revision=None)
             from services.deep_research.repair import repair_rejected
+            from services.deep_research.answer_point_intent import enabled as point_intent_enabled, from_drafting_audit
             from services.deep_research.contracts import BudgetExhaustedError, DeepResearchError
             def invoke_repair(prompt, output_limit=None):
                 # Admit the rewrite and its independent verification as a pair.
@@ -1818,6 +1822,10 @@ def make_verify_node(
                            if type(record.get('experimentIntentContractVersion')) is int
                            and record['experimentIntentContractVersion'] in (1,2,3) else {}),
                         **({'factual_scope':record['factualScopeContractVersion']} if scope_enabled(record) else {}),
+                        **({'answer_intents':from_drafting_audit(
+                            record.get('state',{}).get('factualDraftingAudit',{}),repair_report.get('claims',[]))}
+                           if point_intent_enabled(record)
+                           and saved.get('outputKind')!='experiment_design' else {}),
                         **({'declared_table_refs':True} if declared_references_enabled(record) else {}),
                         **({'question_priority':True} if priority_enabled(record) else {}),
                         **({'fact_redraft':True,'source_aware_redraft':record['factRedraftContractVersion'] in (2,3),
