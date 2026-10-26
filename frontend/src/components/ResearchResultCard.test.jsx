@@ -64,6 +64,32 @@ describe('versioned research result', () => {
     expect(screen.queryByRole('button', { name: '继续研究' })).not.toBeInTheDocument();
     expect(screen.getByRole('status')).toHaveTextContent('研究已暂停');
   });
+  it('explains an actual unknown result and refreshes status without issuing an action', () => {
+    const action=vi.fn(), refresh=vi.fn();
+    render(<ResearchResultCard {...props} result={{...props.result,status:'paused',errorCode:'unresolved_unknown',
+      error:'provider_error',activity:{label:'综合结论'},allowedActions:['cancel']}} onAction={action} onRefresh={refresh} />);
+    expect(screen.getByRole('status')).toHaveTextContent('请求结果待确认');
+    expect(screen.queryByText('综合结论')).not.toBeInTheDocument();
+    expect(screen.getByRole('alert')).toHaveTextContent('不会自动重发');
+    expect(screen.queryByText('provider_error')).not.toBeInTheDocument();
+    expect(screen.queryByRole('button',{name:'继续研究'})).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button',{name:'查询状态'}));
+    expect(refresh).toHaveBeenCalledWith('t','r');expect(action).not.toHaveBeenCalled();
+  });
+  it.each(['paused','cancelled'])('never offers paid continuation from %s with an unknown call even with stale actions', status => {
+    render(<ResearchResultCard {...props} result={{...props.result,status,errorCode:'unresolved_unknown',
+      allowedActions:['resume','continue','plan','cancel'],resumeDeferred:{reason:'execution_capacity'}}} onAction={vi.fn()} />);
+    expect(screen.getByRole('status')).toHaveTextContent(status==='cancelled'?'研究已停止，结果待确认':'请求结果待确认');
+    expect(screen.queryByRole('button',{name:'继续研究'})).not.toBeInTheDocument();
+    expect(screen.queryByRole('button',{name:'补查缺口'})).not.toBeInTheDocument();
+    expect(screen.queryByText('当前研究较多，稍后可继续。')).not.toBeInTheDocument();
+  });
+  it('does not show the last activity as live progress after a normal pause', () => {
+    render(<ResearchResultCard {...props} result={{...props.result,status:'paused',allowedActions:['resume','cancel']}} />);
+    expect(screen.getByRole('status')).toHaveTextContent('研究已暂停');
+    expect(screen.queryByText('核对消融实验')).not.toBeInTheDocument();
+    expect(screen.getByRole('button',{name:'继续研究'})).toBeInTheDocument();
+  });
   it('does not repeat a long user request as the card heading', () => {
     render(<ResearchResultCard {...props} result={{ ...props.result, title: '研究质量并明确说明所有适用条件。'.repeat(8), outputKind: 'claim_verification' }} />);
     expect(screen.getByText('主张核查')).toBeInTheDocument();
@@ -73,7 +99,7 @@ describe('versioned research result', () => {
     render(<ResearchResultCard {...props} result={{ ...props.result, status: 'paused',
       error: { code: 'unknown_call', message: '上次调用结果未确认' },
       plan: { revision: 2, items: [{ itemId: 'p', question: '核对实验条件' }] } }} />);
-    expect(screen.getByRole('alert')).toHaveTextContent('上次调用结果未确认');
+    expect(screen.getByRole('alert')).toHaveTextContent('上次请求结果尚未确认，不会自动重发');
     fireEvent.click(screen.getByRole('button', { name: '详情' }));
     fireEvent.click(screen.getByRole('tab', { name: '计划' }));
     expect(screen.getByText('核对实验条件')).toBeInTheDocument();
