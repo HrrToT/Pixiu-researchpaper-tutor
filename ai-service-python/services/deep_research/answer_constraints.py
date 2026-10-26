@@ -76,10 +76,25 @@ def _core_claims(claims, limit, output_kind, evidence):
     return selected or claims[:3]
 
 
-def compact_answer(report, question, invoke, parse, *, output_kind='', evidence=(), preserve_claims=False):
+def compact_answer(report, question, invoke, parse, *, output_kind='', evidence=(), preserve_claims=False,
+                   presentation_version=0):
     report = normalize_conditions(report)
     limit = requested_character_limit(question)
-    if not limit or answer_character_count(report) <= limit:
+    if not report.get('claims'):
+        return report
+    modern = type(presentation_version) is int and presentation_version == 2
+    def count(candidate):
+        if not modern:
+            return answer_character_count(candidate)
+        from services.deep_research.reporting import build_sections, publication_notices, visible_answer_character_count
+        claims = candidate.get('claims', [])
+        visible_notice, _ = publication_notices(claims, presentation_version=2)
+        proposed = candidate.get('sections')
+        return visible_answer_character_count({'presentationVersion': 2, 'characterLimit': limit,
+            'outputKind': output_kind, 'claims': claims, 'evidence': evidence, 'limitations': visible_notice,
+            'sections': build_sections(claims, output_kind, proposed if isinstance(proposed,list) else None,
+                                       presentation_version=2)})
+    if not limit or count(report) <= limit:
         return report
     # Reduce the rewrite's scope, not its evidence: original references and kinds
     # are restored by code and the rewritten claims are verified afterwards.
@@ -88,9 +103,16 @@ def compact_answer(report, question, invoke, parse, *, output_kind='', evidence=
     inputs = [{**{key: c.get(key, {} if key == 'conditions' else '')
                    for key in ('claimId', 'text', 'conditions')},
                'requiredTableContext': bound_table_context(c, evidence)} for c in core]
-    target = max(15, int(limit * .7 / max(1, len(core))))
+    content_limit = limit
+    if modern:
+        # Only a layout preview is blanked; source/claim inputs sent to the
+        # rewrite remain intact, and the final rewrite is still reverified.
+        overhead = count({**report, 'claims': [{**c, 'text': '', 'conditions': {}} for c in core]})
+        overhead += len('适用条件：') * sum(bool(c.get('conditions')) for c in core)
+        content_limit = max(1, limit - overhead)
+    target = max(1 if modern else 15, int(content_limit * .7 / max(1, len(core))))
     prompt = f'''用中文压缩以下核心回答。用户问题：{question}
-总共最多{limit}字，每条text与conditions合计尽量不超过{target}字。
+总共最多{content_limit}字，每条text与conditions合计尽量不超过{target}字。
 只返回JSON：{{"claims":[{{"claimId":"原ID","text":"短结论","conditions":{{}}}}]}}。
 不要返回引用、kind、章节或额外声明，系统保留原始身份并重新核验。
 保留论断必需的实验条件、方法标签和限定词；删去旁支数字和背景。
@@ -132,4 +154,4 @@ requiredTableContext给出原引用单元格的身份：若保留该数值，必
         return None
     if 'sections' not in compact and 'sections' in report:
         compact['sections'] = report['sections']
-    return compact if answer_character_count(compact) <= limit else None
+    return compact if count(compact) <= limit else None

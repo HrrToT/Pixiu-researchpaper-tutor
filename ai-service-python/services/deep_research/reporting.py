@@ -1,5 +1,6 @@
 """Organize accepted claims; never render unverified model section prose."""
 import json
+import re
 from services.deep_research.synthesis import OUTPUT_KIND_SECTIONS, resolve_output_kind
 
 
@@ -31,7 +32,7 @@ def build_sections(claims, output_kind, proposed_sections=None, *, presentation_
     if remaining:
         sections.append({"title": templates[0], "claimIds": remaining})
     sections.sort(key=lambda section: templates.index(section["title"]))
-    if (type(presentation_version) is int and presentation_version==1
+    if (type(presentation_version) is int and presentation_version in (1, 2)
             and resolve_output_kind(output_kind)=='claim_verification'):
         # These IDs contain independently accepted claims, including revisions
         # whose content changed after the model's original section assignment.
@@ -74,7 +75,7 @@ def display_conditions(conditions):
                     for name,value in conditions.items())
 
 
-def render_report(payload):
+def render_report(payload, *, _counting=False):
     claims = {claim["claimId"]: claim for claim in payload.get("claims", []) if claim.get("claimId")}
     refs = list(dict.fromkeys(ref for claim in claims.values() for ref in claim.get("evidenceRefs", [])))
     ref_numbers = {ref: index + 1 for index, ref in enumerate(refs)}
@@ -82,7 +83,11 @@ def render_report(payload):
     access_summary = source_access_summary(list(claims.values()), list(sources.values()))
     lines, rendered = ([access_summary, ''] if access_summary else []), set()
     sections = payload.get("sections") or build_sections(list(claims.values()), payload.get("outputKind", "direction_survey"))
+    compact = (type(payload.get('presentationVersion')) is int and payload['presentationVersion'] == 2)
+    limited = compact and type(payload.get('characterLimit')) is int and payload['characterLimit'] > 0
     labels = {"inference": "有依据的推断：", "hypothesis": "待验证假设：", "suggestion": "实验建议：", "proposal": "实验建议："}
+    if compact:
+        labels['inference'] = '推断：'
     for section in sections:
         content = []
         analysis_protocols = set()
@@ -92,6 +97,8 @@ def render_report(payload):
                 continue
             rendered.add(key)
             citations = " ".join(f"[{ref_numbers[ref]}](#research-evidence-{ref})" for ref in claim.get("evidenceRefs", []) if ref in ref_numbers)
+            if _counting:
+                citations = ' '.join(str(ref_numbers[ref]) for ref in claim.get('evidenceRefs', []) if ref in ref_numbers)
             text = claim['text']
             if claim.get('designRole') == 'analysis':
                 from services.deep_research.execution_materialization import verification_claim_view
@@ -105,18 +112,22 @@ def render_report(payload):
                         analysis_protocols.add(protocol_key)
             # Only repeated deterministic protocol suffixes are hidden. Keep
             # every original sentence, condition and source on its own claim.
-            content.append(f"- {labels.get(claim.get('kind'), '')}{text} {citations}".rstrip())
+            content.append(f"{'' if _counting else '- '}{labels.get(claim.get('kind'), '')}{text} {citations}".rstrip())
             conditions = claim.get("conditions")
             if isinstance(conditions, dict) and conditions:
                 content.append("  适用条件：" + display_conditions(conditions))
         if content:
-            lines.extend([f"## {section['title']}", "", *content, ""])
+            redundant_heading = (limited and len(sections) == 1
+                                 and section['title'] in ('判断', '核心判断', '比较结论'))
+            if not redundant_heading:
+                lines.extend([f"{'' if _counting else '## '}{section['title']}", ''])
+            lines.extend([*content, ''])
     if not claims:
         empty = ("尚未形成通过核验的实验方案。" if payload.get('outputKind') == 'experiment_design'
                  else "本次尚未形成通过核验的结论。")
         lines.extend([empty, ""])
     gaps = _display_gaps(payload.get("gaps", []))
-    if gaps:
+    if gaps and not _counting:
         lines.extend(["<details>", f"<summary>还有 {len(gaps)} 项未完成</summary>", ""])
         for gap in gaps:
             question = gap if isinstance(gap, str) else gap.get("question", "")
@@ -125,7 +136,7 @@ def render_report(payload):
                 lines.append(f"- {question}" + (f"：{reason}" if reason else ""))
         lines.extend(["", "</details>", ""])
     notes = payload.get('researchNotes')
-    if isinstance(notes, list) and notes:
+    if isinstance(notes, list) and notes and not _counting:
         lines.extend(['<details>', '<summary>查证范围说明</summary>', ''])
         for note in notes:
             if isinstance(note, dict) and isinstance(note.get('question'), str) and note['question']:
@@ -133,7 +144,7 @@ def render_report(payload):
         lines.extend(['', '</details>', ''])
     if payload.get("limitations"):
         lines.extend([payload["limitations"], ""])
-    if refs:
+    if refs and not _counting:
         lines.extend(["<details>", "<summary>原文依据</summary>", ""])
         for ref in refs:
             evidence = sources.get(ref, {})
@@ -144,8 +155,29 @@ def render_report(payload):
             lines.append(f"**[{ref_numbers[ref]}] {title}**" + (f" · 第 {page} 页" if page else "") + access)
             if evidence.get("quote"):
                 lines.extend(["", "> " + evidence["quote"].replace("\n", "\n> "), ""])
+        if compact and payload.get('verificationNotice'):
+            lines.extend([payload['verificationNotice'], ''])
         lines.extend(["</details>", ""])
+    elif compact and payload.get('verificationNotice') and not _counting:
+        lines.extend(['<details>', '<summary>核查说明</summary>', '', payload['verificationNotice'], '', '</details>'])
     return "\n".join(lines).strip()
+
+
+def visible_answer_character_count(payload):
+    """Count direct answer text, excluding server disclosures and decoration.
+
+    Claim-authored Markdown/LaTeX is counted conservatively as written; it
+    cannot introduce fake disclosure markup to evade the budget.
+    """
+    return len(re.sub(r'\s+', '', render_report(payload, _counting=True)))
+
+
+def publication_notices(claims, *, presentation_version=0):
+    if type(presentation_version) is not int or presentation_version != 2:
+        return verification_notice(claims), ''
+    visible = verification_notice([c for c in claims if c.get('kind') in {'hypothesis','proposal','suggestion'}])
+    folded = verification_notice([c for c in claims if c.get('kind') in {'reported','inference'}])
+    return visible, folded
 
 
 def verification_notice(claims):
@@ -161,10 +193,12 @@ def verification_notice(claims):
     return ''.join(parts)
 
 
-def conversation_summary(claims, outcome, *, max_chars=500, evidence=None, output_kind=None):
+def conversation_summary(claims, outcome, *, max_chars=500, evidence=None, output_kind=None, presentation_version=0):
     """Keep whole claims and their epistemic labels; never cut a number or condition."""
     labels = {"inference": "有依据的推断：", "hypothesis": "待验证假设：",
               "suggestion": "实验建议：", "proposal": "实验建议："}
+    if type(presentation_version) is int and presentation_version == 2:
+        labels['inference'] = '推断：'
     boundary = {"partial": "当前结果尚不完整，已核实的内容已保存。",
                 "inconclusive": "本次尚未形成通过核验的结论。"}.get(outcome, "")
     if outcome == 'inconclusive' and output_kind == 'experiment_design':

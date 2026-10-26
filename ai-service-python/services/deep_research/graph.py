@@ -1578,7 +1578,8 @@ space with unsupported global absence or incidental iteration/performance values
             lambda prompt: llm_invoke(run_id, "synthesize_compact", prompt,
                 {"max_tokens": 2000, "temperature": 0.0}), _safe_parse_json,
             output_kind=output_kind, evidence=evidence,
-            preserve_claims=bool(point_constraint and point_constraint['mode'] == 'exact'))
+            preserve_claims=bool(point_constraint and point_constraint['mode'] == 'exact'),
+            presentation_version=record.get('reportPresentationContractVersion',0))
         if parsed is None:
             return {"error_code": "invalid_synthesis_response"}
 
@@ -1979,11 +1980,24 @@ def make_publish_node(
                 *audit.get('gaps', [])]
         
         factual_claims = [claim for claim in accepted_claims if claim.get("kind") in {"reported", "inference"}]
-        from services.deep_research.reporting import build_sections, conversation_summary, verification_notice
+        from services.deep_research.reporting import build_sections, conversation_summary, publication_notices
+        presentation_version = record.get('reportPresentationContractVersion',0)
         sections = build_sections(accepted_claims, output_kind, verified_report.get("sections"),
-            presentation_version=record.get('reportPresentationContractVersion',0))
+            presentation_version=presentation_version)
+        visible_notice, folded_notice = publication_notices(accepted_claims, presentation_version=presentation_version)
+        repair_notice = ('补充核验未完成；已保留此前核实的内容。'
+                         if brief_state.get('repairStatus') == 'verification_invalid_response' else
+                         '修订结果未能解析；已保留此前核实的内容。'
+                         if brief_state.get('repairStatus') == 'response_invalid' else '')
+        display_fields = {}
+        if type(presentation_version) is int and presentation_version == 2:
+            from services.deep_research.answer_constraints import requested_character_limit
+            display_fields = {'presentationVersion':2, 'characterLimit':requested_character_limit(effective_question(record)),
+                              'verificationNotice':folded_notice}
+        display_payload = {**display_fields, 'outputKind':output_kind, 'claims':accepted_claims, 'sections':sections,
+                           'evidence':record.get('state',{}).get('evidence',[]), 'limitations':visible_notice+repair_notice}
         from services.deep_research.answer_format import publication_format_gaps
-        gaps.extend(publication_format_gaps(record, accepted_claims, sections))
+        gaps.extend(publication_format_gaps(record, accepted_claims, sections, display_payload=display_payload))
         if output_kind == "experiment_design":
             from services.deep_research.synthesis import OUTPUT_KIND_SECTIONS
             from services.deep_research.experimental_reasoning import DESIGN_ROLE_LABELS, missing_design_roles
@@ -2007,20 +2021,18 @@ def make_publish_node(
         
         # Build safe summary from accepted claims only
         safe_summary = conversation_summary(accepted_claims, outcome,
-            evidence=record.get('state', {}).get('evidence', []), output_kind=output_kind)
+            evidence=record.get('state', {}).get('evidence', []), output_kind=output_kind,
+            presentation_version=presentation_version)
         
         publication_payload = {
+            **display_fields,
             "reportVersionId": report_version_id,
             "outputKind": output_kind,
             "summary": safe_summary,
             "sections": sections,
             "claims": accepted_claims,
             "evidence": evidence if (evidence := record.get("state", {}).get("evidence", [])) else [],
-            "limitations": verification_notice(accepted_claims) + (
-                '补充核验未完成；已保留此前核实的内容。'
-                if brief_state.get('repairStatus') == 'verification_invalid_response' else
-                '修订结果未能解析；已保留此前核实的内容。'
-                if brief_state.get('repairStatus') == 'response_invalid' else ''),
+            "limitations": visible_notice + repair_notice,
             "gaps": gaps,
             "researchNotes": research_notes,
             "outcome": outcome,

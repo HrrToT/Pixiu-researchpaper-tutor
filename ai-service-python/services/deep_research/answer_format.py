@@ -64,7 +64,7 @@ def guidance(constraint):
             'Do not pad or invent facts to meet the count. Unsupported points remain explicit gaps.')
 
 
-def publication_format_gaps(record, claims, sections):
+def publication_format_gaps(record, claims, sections, *, display_payload=None):
     if not enabled(record):
         return []
     question = effective_question(record)
@@ -86,10 +86,20 @@ def publication_format_gaps(record, claims, sections):
                 'missingEvidence': '单个回答点中还包含额外列表或标题，尚未满足分点要求。',
                 'stage': 'answer_format', 'wholeQuestion': True})
     limit = requested_character_limit(question)
-    actual = answer_character_count({'claims': visible})
+    modern = type(record.get('reportPresentationContractVersion')) is int and record['reportPresentationContractVersion']==2
+    if limit and modern and not isinstance(display_payload,dict):
+        gaps.append({'question':'核对最终显示字数','missingEvidence':'最终显示内容尚未形成，不能确认字数要求。',
+                     'stage':'answer_format','wholeQuestion':True,'expectedCharacterLimit':limit})
+        return gaps
+    if modern and isinstance(display_payload,dict):
+        from services.deep_research.reporting import visible_answer_character_count
+        actual = visible_answer_character_count(display_payload)
+    else:
+        actual = answer_character_count({'claims': visible})
     if limit and actual > limit:
         gaps.append({'question': f'将正文控制在{limit}字以内',
-            'missingEvidence': f'当前正文和适用条件合计{actual}字，尚未满足字数要求。',
+            'missingEvidence': (f'当前可见正文（含标题、引用标号和必要说明）合计{actual}字，尚未满足字数要求。'
+                                if modern else f'当前正文和适用条件合计{actual}字，尚未满足字数要求。'),
             'stage': 'answer_format', 'wholeQuestion': True,
             'expectedCharacterLimit': limit, 'actualCharacterCount': actual})
     return gaps

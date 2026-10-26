@@ -23,7 +23,7 @@ def test_accepted_revision_keeps_words_conditions_and_sources_under_neutral_scop
     assert before==(claims,proposed)
 
 
-@pytest.mark.parametrize('version',[0,True,'1',None,2])
+@pytest.mark.parametrize('version',[0,True,'1',None,3])
 def test_unversioned_presentation_is_unchanged(version):
     assert build_sections([{'claimId':'c'}],'claim_verification',
         [{'title':'未解决事项','claimIds':['c']}],presentation_version=version)[0]['title']=='未解决事项'
@@ -50,8 +50,8 @@ def test_client_cannot_disable_presentation_or_mutate_its_type(tmp_path):
     try:
         run,_=facade.create({'workspaceTaskId':'t','operationKey':'op','question':'核对',
             'reportPresentationContractVersion':0,'deferStart':True},start_async=False)
-        assert run['reportPresentationContractVersion']==1
-        for value in [0,True,'1',None]:
+        assert run['reportPresentationContractVersion']==2
+        for value in [0,1,True,'2',None]:
             with pytest.raises(ValueError,match='Immutable'):
                 repo.update_run(run['runId'],lambda r:{**r,'reportPresentationContractVersion':value})
     finally:
