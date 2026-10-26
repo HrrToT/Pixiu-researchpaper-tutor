@@ -140,6 +140,9 @@ class LocalTaskRetriever:
             raise DeepResearchError('scope_revoked','论文范围已变更')
         material=next((m for m in record.get('materials',[]) if m.get('materialId')==pdf_id),{})
         result=include_scope_evidence(rows,candidates,record,query,pdf_id,limit,content_hash=material.get('contentHash'))
+        from services.deep_research.table_identity_context import enabled as identity_context_enabled, include_context
+        if identity_context_enabled(record):
+            result=include_context(result,candidates,pdf_id,limit)
         if not self.validate(self.run_id,pdf_id):
             raise DeepResearchError('scope_revoked','论文范围已变更')
         return result

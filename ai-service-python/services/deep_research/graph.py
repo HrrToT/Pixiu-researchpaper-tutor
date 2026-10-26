@@ -1743,6 +1743,7 @@ def make_verify_node(
             from services.deep_research.repair import repair_rejected
             from services.deep_research.answer_point_intent import enabled as point_intent_enabled, from_drafting_audit
             from services.deep_research.scope_expression import enabled as scope_expression_enabled
+            from services.deep_research.table_identity_context import enabled as table_identity_enabled
             from services.deep_research.repair_compaction import enabled as repair_compaction_enabled, compact_repairs
             from services.deep_research.contracts import BudgetExhaustedError, DeepResearchError
             def invoke_repair(prompt, output_limit=None):
@@ -1818,6 +1819,7 @@ def make_verify_node(
                         current_budget=lambda: repo_update(run_id, lambda r: r, expected_revision=None).get('budget', {}),
                         invoke_request=invoke_repair,
                         **({'defer_length_filter':True} if repair_compaction_enabled(record) else {}),
+                        **({'table_identity_context':True} if table_identity_enabled(record) else {}),
                         **({'compact_source_repair':True} if compact_repair else {}),
                         **({'shared_experiment_schema':True} if shared_experiment_repair(record) else {}),
                         **({'experimental_edits':True} if edit_repair else {}),

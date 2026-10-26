@@ -13,7 +13,7 @@ def test_new_profile_is_consistent_and_does_not_rewrite_legacy_run(tmp_path):
     try:
         first,_=facade.create({'workspaceTaskId':'t','operationKey':'first','question':'Design an experiment',
             'deferStart':True},start_async=False)
-        assert first['promptVersion']=='dr-v2.20261027.313'
+        assert first['promptVersion']=='dr-v2.20261027.314'
         assert first['scientificOutlineContractVersion']==1
         assert first['workflowMetadataRowsContractVersion']==2
         assert first['workflowMetadataRepairContractVersion']==34
@@ -34,6 +34,7 @@ def test_new_profile_is_consistent_and_does_not_rewrite_legacy_run(tmp_path):
         old.pop('scopeExpressionContractVersion')
         old.pop('scopeCompactionContractVersion')
         old.pop('repairCompactionContractVersion')
+        old.pop('tableIdentityContextContractVersion')
         old.pop('coverageDiagnosticsContractVersion')
         old.pop('scopeObservationContractVersion')
         old.pop('scopeExpressionReviewContractVersion')
