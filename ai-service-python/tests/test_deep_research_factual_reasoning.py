@@ -11,7 +11,7 @@ from services.deep_research.runtime import research_model_options
 def test_only_new_short_factual_answers_choose_reasoning(kind):
     record={'factualReasoningContractVersion':1}
     assert request_options(record,'给出判断，300字以内。',kind)=={OPTION:True}
-    for value in [None,True,False,0,6,'1']:
+    for value in [None,True,False,0,7,'1']:
         assert request_options({'factualReasoningContractVersion':value},'300字以内',kind)=={}
     for question in ['详细说明','301字以内','0字以内']:
         assert request_options(record,question,kind)=={}
@@ -79,7 +79,7 @@ def test_policy_is_server_owned_immutable_and_not_client_selected(tmp_path,repla
     try:
         p,_=facade.create({'workspaceTaskId':'t','operationKey':'k','question':'200字以内',
             'deferStart':True,'factualReasoningContractVersion':replacement},start_async=False)
-        assert p['factualReasoningContractVersion']==5
+        assert p['factualReasoningContractVersion']==6
         with pytest.raises(ValueError,match='Immutable'):
             repo.update_run(p['runId'],lambda r:{**r,'factualReasoningContractVersion':replacement})
     finally: facade.shutdown()
@@ -160,5 +160,55 @@ def test_v5_actual_node_still_stops_known_truncation_once_without_fallback():
     invoke=Mock(return_value={'content':'{}','finishReason':'length'})
     assert make_synthesize_node(invoke,update)({'run_id':'r'})=={'error_code':'invalid_synthesis_response'}
     assert invoke.call_count==1
+    options=research_model_options('synthesize',invoke.call_args.args[3])
+    assert options['reasoning_effort']=='low' and options['max_tokens']==8192
+
+
+@pytest.mark.parametrize('kind',['claim_verification','paper_comparison'])
+def test_v6_only_changes_eligible_short_synthesis_effort_with_identical_output_and_repair_caps(kind):
+    old=request_options({'factualReasoningContractVersion':5},'300字以内',kind)
+    new=request_options({'factualReasoningContractVersion':6},'300字以内',kind)
+    before=research_model_options('synthesize',old);after=research_model_options('synthesize',new)
+    assert after=={**before,'reasoning_effort':'low'} and after['max_tokens']==8192
+    assert research_model_options('repair_claims',{**new,'_repair_output_limit':4096})==research_model_options(
+        'repair_claims',{**old,'_repair_output_limit':4096})
+    assert research_model_options('verify',new)==research_model_options('verify',old)
+    for question,output in [('详细解释',kind),('301字以内','claim_verification'),
+        ('200字以内','direction_survey'),('200字以内','experiment_design')]:
+        assert request_options({'factualReasoningContractVersion':6},question,output)=={}
+
+
+def test_v6_extended_comparison_keeps_the_existing_low_profile():
+    record={'materialSnapshot':{'materialRefs':['a','b']}}
+    assert request_options({**record,'factualReasoningContractVersion':6},'700字以内','paper_comparison')==request_options(
+        {**record,'factualReasoningContractVersion':5},'700字以内','paper_comparison')
+
+
+def test_v6_reserves_same_tokens_but_fingerprints_a_distinct_request():
+    from llm.provider import LLMResult,LLMUsage
+    from services.deep_research.tools import TrackedLLMInvoker
+    provider=Mock();provider.invoke.return_value=LLMResult(content='{}',provider='fixture',model='fixture',usage=LLMUsage(8,2,10))
+    reserve=Mock(return_value=({'callId':'c','reservationToken':'r'},False));complete=Mock()
+    tracked=TrackedLLMInvoker(provider,reserve,complete,request_options=research_model_options)
+    old=request_options({'factualReasoningContractVersion':5},'300字以内','claim_verification')
+    new=request_options({'factualReasoningContractVersion':6},'300字以内','claim_verification')
+    tracked('r','synthesize','fixed full prompt',old,use_reserve=True)
+    fingerprint=reserve.call_args.kwargs['args_digest'];budget=reserve.call_args.kwargs['budget_delta']
+    tracked('r','synthesize','fixed full prompt',new,use_reserve=True)
+    assert reserve.call_args.kwargs['args_digest']!=fingerprint
+    assert reserve.call_args.kwargs['budget_delta']==budget
+    assert provider.invoke.call_args.args[0].extra_body['reasoning_effort']=='low'
+
+
+def test_v6_actual_node_rejects_partial_json_once_without_repair_or_fallback():
+    from services.deep_research.graph import make_synthesize_node
+    record={'factualReasoningContractVersion':6,'scopeExpressionContractVersion':1,
+        'question':'条件和范围，300字以内','state':{'outputKind':'claim_verification','evidence':[]}}
+    def update(_id,mutate,**kwargs):
+        nonlocal record
+        record=mutate(deepcopy(record));return deepcopy(record)
+    invoke=Mock(return_value={'content':'null','rawContent':'{"claims":[{"scopeExpression":', 'finishReason':'length'})
+    assert make_synthesize_node(invoke,update)({'run_id':'r'})=={'error_code':'invalid_synthesis_response'}
+    assert invoke.call_count==1 and 'reportBody' not in record['state']
     options=research_model_options('synthesize',invoke.call_args.args[3])
     assert options['reasoning_effort']=='low' and options['max_tokens']==8192
