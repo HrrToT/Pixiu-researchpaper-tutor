@@ -109,7 +109,7 @@ def test_transport_role_limits_legacy_schema_and_prompt_data_are_preserved():
 
 
 @pytest.mark.parametrize('scenario', ['success', 'unknown', 'budget'])
-@pytest.mark.parametrize('revision_version', [22, 26])
+@pytest.mark.parametrize('revision_version', [22, 26, 27])
 def test_physical_wire_budget_and_unknown_guard(tmp_path, monkeypatch, scenario, revision_version):
     import requests
     from llm.client import DeepSeekLLM
@@ -121,7 +121,12 @@ def test_physical_wire_budget_and_unknown_guard(tmp_path, monkeypatch, scenario,
     from services.deep_research.planning_transport import overhead_bytes
     from services.deep_research.workflow_metadata_repair import prepare
     from test_deep_research_schema_transport import response as http_response
-    good = wire_value(); bad = deepcopy(good); bad['steps'][2]['group'] = '1'
+    good = wire_value(); decoder = compact.decode
+    if revision_version == 27:
+        from test_deep_research_workflow_metadata_result_refs import authored
+        from services.deep_research.workflow_metadata_result_refs import decode
+        good = authored(); decoder = decode
+    bad = deepcopy(good); bad['steps'][2]['group'] = '1'
     r, _, _, run = setup_repair([response(bad), response(bad)])
     r['workflowMetadataRepairContractVersion'] = revision_version
     with pytest.raises(DeepResearchError): run()
@@ -149,11 +154,11 @@ def test_physical_wire_budget_and_unknown_guard(tmp_path, monkeypatch, scenario,
         assert correct() is None and correct() is None
         post.assert_not_called(); return
     else:
-        assert correct() == correct() == compact.decode(good)
+        assert correct() == correct() == decoder(good)
     assert post.call_count == 1
     body = post.call_args.kwargs['json']
     assert body['text']['format'] == descriptor_for(r, 'repair_workflow_meta')
-    if revision_version == 26:
+    if revision_version in (26, 27):
         from services.deep_research.workflow_metadata_baseline_boundary import SYSTEM_POLICY
         assert body['input'][0] == {'role': 'system', 'content': SYSTEM_POLICY}
         assert body['input'][1] == {'role': 'user', 'content': store['value']['request']['prompt']}
