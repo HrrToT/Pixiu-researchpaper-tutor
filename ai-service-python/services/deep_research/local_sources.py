@@ -102,13 +102,14 @@ class LocalTaskRetriever:
                     if limit > 1 and type(precision) is int and precision in (3,4,5,6,7,8):
                         indexed_for_pdf = indexed
                     else:
-                        return self._stamp_identity(indexed, pdf_id)
+                        return self._stamp_identity(self._scope_evidence(indexed,self.index_context.get(pdf_id,[]),query,pdf_id,limit), pdf_id)
             except (ImportError, RuntimeError, OSError):
                 pass
         if indexed_for_pdf is not None:
             # Keep optional PDF read failures outside the index-backend
             # fallback catch; a programming error must not trigger a second GET.
-            return self._stamp_identity(self._supplement_pdf_measurements(indexed_for_pdf, query, pdf_id, limit), pdf_id)
+            indexed=self._supplement_pdf_measurements(indexed_for_pdf, query, pdf_id, limit)
+            return self._stamp_identity(self._scope_evidence(indexed,self.index_context.get(pdf_id,[]),query,pdf_id,limit), pdf_id)
         material, pages = self.load_pages(pdf_id)
         passages = self._pdf_passages(pdf_id, material, pages)
         scores = _bm25(query, [value['text'] for value in passages])
@@ -127,7 +128,21 @@ class LocalTaskRetriever:
             found=include_pdf_criteria(found,passages,questions,pdf_id,material['contentHash'],min(limit,5),
                 **({'modules':acquisition_modules(self.repo.require_run(self.run_id),query,pdf_id)} if precision in (7,8) else {}),
                 **({'conditions':acquisition_conditions(self.repo.require_run(self.run_id),query,pdf_id)} if precision==8 else {}))
-        return self._stamp_identity(found, pdf_id)
+        return self._stamp_identity(self._scope_evidence(found,passages,query,pdf_id,limit), pdf_id)
+
+
+    def _scope_evidence(self,rows,candidates,query,pdf_id,limit):
+        from services.deep_research.scope_evidence import enabled,include_scope_evidence
+        record=self.repo.require_run(self.run_id)
+        if not enabled(record):
+            return rows
+        if not self.validate(self.run_id,pdf_id):
+            raise DeepResearchError('scope_revoked','论文范围已变更')
+        material=next((m for m in record.get('materials',[]) if m.get('materialId')==pdf_id),{})
+        result=include_scope_evidence(rows,candidates,record,query,pdf_id,limit,content_hash=material.get('contentHash'))
+        if not self.validate(self.run_id,pdf_id):
+            raise DeepResearchError('scope_revoked','论文范围已变更')
+        return result
 
 
     def _stamp_identity(self, rows, pdf_id):
