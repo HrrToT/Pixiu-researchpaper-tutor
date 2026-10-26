@@ -52,14 +52,28 @@ def field_feedback(value, aliases):
     return result
 
 
-def generation_prompt(source_data, context):
-    from services.deep_research.workflow_metadata_input import input_text
-    from services.deep_research.workflow_metadata_fit_budget import COUNT_POLICY
-    return POLICY + COUNT_POLICY + input_text({'authoritativeInput': json.loads(source_data), 'unitContext': context})
+COMPACT_POLICY = POLICY.replace(
+    'Complete concise English JSON.',
+    'Return ONE complete minified English JSON object: no indentation, line breaks, '
+    'fences or commentary. Preserve all required fields, operations, results and evidence.')
 
 
-def revision_prompt(source_data, value, feedback):
+def generation_prompt(source_data, context, *, compact=False):
     from services.deep_research.workflow_metadata_input import input_text
     from services.deep_research.workflow_metadata_fit_budget import COUNT_POLICY
-    return POLICY + COUNT_POLICY + 'Revise invalidMetadata using ALL authoritative input and fieldFeedback.\n' + input_text({
+    return (COMPACT_POLICY if compact else POLICY) + COUNT_POLICY + input_text({'authoritativeInput': json.loads(source_data), 'unitContext': context})
+
+
+def revision_prompt(source_data, value, feedback, *, compact=False):
+    from services.deep_research.workflow_metadata_input import input_text
+    from services.deep_research.workflow_metadata_fit_budget import COUNT_POLICY
+    return (COMPACT_POLICY if compact else POLICY) + COUNT_POLICY + 'Revise invalidMetadata using ALL authoritative input and fieldFeedback.\n' + input_text({
         'authoritativeInput': json.loads(source_data), 'invalidMetadata': value, 'fieldFeedback': feedback})
+
+
+def compact_generation_prompt(source_data, context):
+    return generation_prompt(source_data, context, compact=True)
+
+
+def compact_revision_prompt(source_data, value, feedback):
+    return revision_prompt(source_data, value, feedback, compact=True)

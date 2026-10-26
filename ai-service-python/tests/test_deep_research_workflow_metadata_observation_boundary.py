@@ -72,24 +72,48 @@ def test_new_prompt_and_feedback_are_versioned_but_schema_and_decoding_remain_id
     assert input_value(boundary.generation_prompt(data,{}))['authoritativeInput']==json.loads(data)
 
 
-def test_version28_uses_new_descriptor_and_one_durable_revision():
+@pytest.mark.parametrize('version', [28, 29])
+def test_new_versions_use_new_descriptor_and_one_durable_revision(version):
     good = authored(); bad = deepcopy(good)
     bad['steps'][2]['reads'] = [{'stepIndex':0,'outputId':'missing','selector':'all'}]
     record, _, invoke, run = setup_repair([response(bad),response(good),*map(response,explicit_initializers())])
-    record.update(workflowMetadataRepairContractVersion=28,workflowInitializationOutputContractVersion=1)
+    record.update(workflowMetadataRepairContractVersion=version,workflowInitializationOutputContractVersion=1)
     assert descriptor_for(record, 'plan_workflow_meta')['name']=='metadata_observation_boundary_v1'
     saved=run()
     assert saved['status']==saved['metadataRepair']['status']=='ready'
-    assert saved['metadataRepair']['version']==28
+    assert saved['metadataRepair']['version']==version
     assert 'TWO ordered operations' in saved['metadataRepair']['request']['prompt']
     assert saved['units']['metadata']['response']==response(bad)
     assert run()==saved and invoke.call_count==5
 
 
-def test_version28_does_not_repeat_an_unsuccessful_revision():
+@pytest.mark.parametrize('version', [28, 29])
+def test_new_versions_do_not_repeat_an_unsuccessful_revision(version):
     bad=authored();bad['steps'][2]['reads']=[{'stepIndex':0,'outputId':'missing','selector':'all'}]
     record, _, invoke, run=setup_repair([response(bad),response(bad)])
-    record.update(workflowMetadataRepairContractVersion=28,workflowInitializationOutputContractVersion=1)
+    record.update(workflowMetadataRepairContractVersion=version,workflowInitializationOutputContractVersion=1)
     for _ in range(2):
         with pytest.raises(DeepResearchError):run()
     assert invoke.call_count==2
+
+
+def test_compact_prompt_is_only_for_new_version_and_preserves_input_and_schema():
+    data=json.dumps({'evidence':'source line\nnext line','value':'minified is quoted data'})
+    value=authored();feedback=boundary.field_feedback(value, {'E1':'owned'})
+    old=prompt_for(data,value,feedback,version=28)
+    new=prompt_for(data,value,feedback,version=29)
+    assert old==boundary.revision_prompt(data,value,feedback)
+    assert 'ONE complete minified' in new and new!=old
+    assert input_value(old)==input_value(new)
+    assert input_value(boundary.compact_generation_prompt(data,{}))==input_value(boundary.generation_prompt(data,{}))
+
+
+@pytest.mark.parametrize('version', [28, 29])
+def test_truncated_response_cannot_enter_repair_or_be_retried(version):
+    truncated=response(authored());truncated['finishReason']='length'
+    record, _, invoke, run=setup_repair([truncated])
+    record.update(workflowMetadataRepairContractVersion=version,workflowInitializationOutputContractVersion=1)
+    for _ in range(2):
+        with pytest.raises(DeepResearchError):run()
+    assert invoke.call_count==1
+    assert 'metadataRepair' not in record['state']['executionWorkflowBlueprint']
