@@ -77,7 +77,7 @@ def _core_claims(claims, limit, output_kind, evidence):
 
 
 def compact_answer(report, question, invoke, parse, *, output_kind='', evidence=(), preserve_claims=False,
-                   presentation_version=0):
+                   presentation_version=0, fixed_claim_ids=()):
     report = normalize_conditions(report)
     limit = requested_character_limit(question)
     if not report.get('claims'):
@@ -99,10 +99,16 @@ def compact_answer(report, question, invoke, parse, *, output_kind='', evidence=
     # Reduce the rewrite's scope, not its evidence: original references and kinds
     # are restored by code and the rewritten claims are verified afterwards.
     core = report['claims'] if preserve_claims else _core_claims(report['claims'], limit, output_kind, evidence)
+    fixed_ids = set(fixed_claim_ids)
+    if fixed_ids:
+        selected_ids = {c.get('claimId') for c in core} | fixed_ids
+        core = [c for c in report['claims'] if c.get('claimId') in selected_ids]
+    fixed = [c for c in core if c.get('claimId') in fixed_ids]
+    editable = [c for c in core if c.get('claimId') not in fixed_ids]
     from services.deep_research.table_bindings import bound_table_context
     inputs = [{**{key: c.get(key, {} if key == 'conditions' else '')
                    for key in ('claimId', 'text', 'conditions')},
-               'requiredTableContext': bound_table_context(c, evidence)} for c in core]
+               'requiredTableContext': bound_table_context(c, evidence)} for c in editable]
     content_limit = limit
     if modern:
         # Only a layout preview is blanked; source/claim inputs sent to the
@@ -110,7 +116,11 @@ def compact_answer(report, question, invoke, parse, *, output_kind='', evidence=
         overhead = count({**report, 'claims': [{**c, 'text': '', 'conditions': {}} for c in core]})
         overhead += len('适用条件：') * sum(bool(c.get('conditions')) for c in core)
         content_limit = max(1, limit - overhead)
-    target = max(1 if modern else 15, int(content_limit * .7 / max(1, len(core))))
+    if fixed:
+        content_limit -= answer_character_count({'claims':fixed})
+        if content_limit <= 0 or not editable:
+            return None  # Preserve the operator and report the limit honestly.
+    target = max(1 if modern else 15, int(content_limit * .7 / max(1, len(editable))))
     prompt = f'''用中文压缩以下核心回答。用户问题：{question}
 总共最多{content_limit}字，每条text与conditions合计尽量不超过{target}字。
 只返回JSON：{{"claims":[{{"claimId":"原ID","text":"短结论","conditions":{{}}}}]}}。
@@ -124,6 +134,10 @@ requiredTableContext给出原引用单元格的身份：若保留该数值，必
 不要把因果机制缩成方法名或“梯度能流动”。只保留原回答已有的机制与限定条件。
 {'必须保留每个输入ID，只缩短措辞，不合并或删除回答点。' if preserve_claims else '必须保留每个输入ID：它们分别代表各论文结论和跨论文可比性。' if output_kind == 'paper_comparison' else 'You MAY DROP 次要声明，但保留直接回答问题的判断。'}
 输入：{json.dumps(inputs, ensure_ascii=False)}'''
+    if fixed:
+        prompt = prompt.replace('\n输入：', '\n固定范围说明（只读，已从可用字数扣除，不得返回或改写其ID）：'
+            + json.dumps([{k:c.get(k) for k in ('claimId','text','conditions')} for c in fixed],ensure_ascii=False)
+            + '\n输入：',1)
     result = invoke(prompt)
     finish = (result.get('finishReason', result.get('finish_reason')) if isinstance(result, dict)
               else getattr(result, 'finish_reason', None))
@@ -133,7 +147,7 @@ requiredTableContext给出原引用单元格的身份：若保留该数值，必
     if not isinstance(compact, dict) or not isinstance(compact.get('claims'), list) or not compact['claims']:
         return None
     compact = normalize_conditions(compact)
-    original = {c.get('claimId'): c for c in core if isinstance(c, dict)}
+    original = {c.get('claimId'): c for c in editable if isinstance(c, dict)}
     seen = set()
     for claim in compact['claims']:
         if not isinstance(claim, dict) or claim.get('claimId') not in original or claim.get('claimId') in seen:
@@ -152,6 +166,10 @@ requiredTableContext给出原引用单元格的身份：若保留该数值，必
         claim.update(merged)
     if (preserve_claims or output_kind == 'paper_comparison') and seen != set(original):
         return None
+    if fixed:
+        revised = {c['claimId']:c for c in compact['claims']}
+        compact['claims'] = [c if c.get('claimId') in fixed_ids else revised[c['claimId']]
+                             for c in core if c.get('claimId') in fixed_ids or c.get('claimId') in revised]
     if 'sections' not in compact and 'sections' in report:
         compact['sections'] = report['sections']
     return compact if count(compact) <= limit else None

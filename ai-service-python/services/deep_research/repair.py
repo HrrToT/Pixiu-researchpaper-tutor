@@ -16,7 +16,7 @@ from services.deep_research.repair_scope import repair_evidence_scope
 def _prepare_repair(report, verification, evidence, question, *, max_prompt_bytes=24000,
                     metric_domains=None, draft_context=(), prior_revisions=(),
                     fact_redraft=False, requirement_context=(), source_aware_redraft=False,comparison_reasoning=False,
-                    question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False,shared_experiment_schema=False,experiment_evidence_context=None,experimental_edits=False,experimental_diagnostics=False,experimental_nested_tables=False,experimental_representation=False,experimental_coverage=False,citation_presentation_version=0,configuration_consistency_version=0,repair_evidence_packet_version=0,answer_intents=None):
+                    question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False,shared_experiment_schema=False,experiment_evidence_context=None,experimental_edits=False,experimental_diagnostics=False,experimental_nested_tables=False,experimental_representation=False,experimental_coverage=False,citation_presentation_version=0,configuration_consistency_version=0,repair_evidence_packet_version=0,answer_intents=None,scope_expression=False):
     if (type(repair_evidence_packet_version) is not int or repair_evidence_packet_version not in (0,1,2,3,4,5)
             or repair_evidence_packet_version in (2,3,4,5) and not experimental_coverage
             or repair_evidence_packet_version in (1,2,3,4,5) and not (experimental_nested_tables and experimental_edits
@@ -167,6 +167,7 @@ def _prepare_repair(report, verification, evidence, question, *, max_prompt_byte
                         ref['evidenceId']=short_ids.get(ref['evidenceId'],ref['evidenceId'])
     revision_shape = {'claimId': 'original ID', 'kind': 'original kind', 'text': 'revised wording',
                       'evidenceRefs': ['E1'], 'conditions': {}, 'detailLevel': 'fulltext'}
+    if scope_expression: revision_shape['scopeExpression'] = None
     if factual_scope in (2,3,4) and fact_redraft and factual_redraft_eligible(report):
         from services.deep_research.factual_scope import DRAFTING_SCHEMA
         revision_shape={'draftingBasis':DRAFTING_SCHEMA,**revision_shape}
@@ -375,6 +376,8 @@ in the paper. Maintain consistency with accepted definitions and complete requir
                'Do not output any accepted or sibling/context ID, even if it needs improvement. '
                'Each factual clause still requires its own allowed supplied evidenceRefs. '
                'Return only the JSON array; do not rewrite the entire experiment.')
+    if scope_expression:
+        for target in shape: target['scopeExpression'] = None
     compact_factual=concise_factual and fact_redraft and factual_redraft_eligible(report)
     if compact_factual:
         from services.deep_research.factual_redraft_prompt import render as factual_prompt
@@ -435,6 +438,9 @@ in the paper. Maintain consistency with accepted definitions and complete requir
         from services.deep_research.repair_coverage import add_contract
         prompt=add_contract(prompt,originals,**({'version':3 if repair_evidence_packet_version in (2,3,4,5) else 2}
             if repair_evidence_packet_version in (1,2,3,4,5) else {}))
+    if scope_expression:
+        from services.deep_research.scope_expression import GUIDANCE as scope_guidance
+        prompt += '\n' + scope_guidance
     if answer_intents is not None:
         from services.deep_research.answer_point_intent import repair_guidance
         prompt += repair_guidance(answer_intents, originals)
@@ -481,6 +487,7 @@ in the paper. Maintain consistency with accepted definitions and complete requir
     visible = {aliases[row['evidenceId']] for row in rows}
     allowed = {key: [ref for ref in values if ref in visible] for key, values in allowed.items()}
     return {'prompt': prompt, 'originals': originals, 'aliases': aliases, 'allowed': allowed,
+            **({'scopeExpressionContractVersion':1} if scope_expression else {}),
             **({'repairEvidencePacketVersion':repair_evidence_packet_version} if repair_evidence_packet_version in (1,2,3,4,5) else {}),
             **({'editFormatVersion':1} if experimental_edits else {}),
             **({'diagnosticVersion':1,'schemaFeedback':feedback_options['diagnostics']} if experimental_diagnostics else {}),
@@ -491,7 +498,7 @@ in the paper. Maintain consistency with accepted definitions and complete requir
                 json.dumps(row.get('sourceContext',{}),ensure_ascii=False) for row in rows}} if compact_factual or citation_presentation_version in (2,3,4) else {})}
 
 
-def _parse_repair_response(prepared, response, parse, presentation_audit=None,drafting_audit=None, *, strict_response=False,representation_audit=None,coverage_audit=None):
+def _parse_repair_response(prepared, response, parse, presentation_audit=None,drafting_audit=None, *, strict_response=False,representation_audit=None,coverage_audit=None,scope_audit=None):
     originals, aliases, allowed = (prepared[key] for key in ('originals', 'aliases', 'allowed'))
     finish = getattr(response, 'finish_reason', None) if not isinstance(response, dict) else response.get('finishReason', response.get('finish_reason'))
     if finish == 'length':
@@ -535,6 +542,13 @@ def _parse_repair_response(prepared, response, parse, presentation_audit=None,dr
         new_refs = row.get('evidenceRefs', [])
         if not isinstance(new_refs, list) or any(ref not in allowed.get(key, []) for ref in new_refs):
             continue
+        if type(prepared.get('scopeExpressionContractVersion')) is int and prepared['scopeExpressionContractVersion'] == 1:
+            from services.deep_research.scope_expression import materialize as materialize_scope
+            try: row, audit = materialize_scope(row)
+            except ValueError:
+                if scope_audit is not None: scope_audit.append({'claimId':key,'error':'invalid_scope_expression'})
+                continue
+            if audit and scope_audit is not None: scope_audit.append(audit)
         if original.get('designContractVersion') == 2:
             row['designContractVersion'] = 2
         if 'budgetContractVersion' in original:
@@ -595,7 +609,7 @@ def factual_redraft_eligible(report):
 def repair_rejected(report, verification, evidence, question, invoke, parse, *,
                     max_prompt_bytes=24000, metric_domains=None, batch_state=None, checkpoint=None,
                     current_budget=None, invoke_request=None, fact_redraft=False, requirement_context=(),
-                    source_aware_redraft=False,comparison_reasoning=False,question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,strict_response=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False,shared_experiment_schema=False,experiment_evidence_context=None,experimental_edits=False,experimental_diagnostics=False,experimental_nested_tables=False,experimental_representation=False,experimental_coverage=False,citation_presentation_version=0,configuration_consistency_version=0,repair_evidence_packet_version=0,scheduling_version=0,answer_intents=None):
+                    source_aware_redraft=False,comparison_reasoning=False,question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,strict_response=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False,shared_experiment_schema=False,experiment_evidence_context=None,experimental_edits=False,experimental_diagnostics=False,experimental_nested_tables=False,experimental_representation=False,experimental_coverage=False,citation_presentation_version=0,configuration_consistency_version=0,repair_evidence_packet_version=0,scheduling_version=0,answer_intents=None,scope_expression=False):
     """One bounded revision round, split before dispatch when evidence cannot fit.
 
     At most three requests share full sibling design definitions. Successful
@@ -632,6 +646,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
     if type(citation_presentation_version) is not int or citation_presentation_version not in (0,2,3,4):
         raise ValueError('Unsupported citation presentation contract')
     identity = digest({'report': report, 'verification': verification,
+                       **({'scopeExpressionContractVersion':1} if scope_expression else {}),
                        **({'answerPointIntentContractVersion':1,'answerIntents':answer_intents} if answer_intents is not None else {}),
                        **({'experimentRepairPriorityContractVersion':scheduling_version} if scheduling_version in (1,2) else {}),
                        **({'experimentRepairInputContractVersion':repair_evidence_packet_version} if repair_evidence_packet_version in (1,2,3,4,5) else {}),
@@ -668,6 +683,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
             metric_domains=metric_domains, draft_context=siblings, prior_revisions=results,
             fact_redraft=fact_redraft, requirement_context=requirement_context,source_aware_redraft=source_aware_redraft,
             **({'answer_intents':answer_intents} if answer_intents is not None else {}),
+            **({'scope_expression':True} if scope_expression else {}),
             comparison_reasoning=comparison_reasoning,question_priority=question_priority,concise_factual=concise_factual,
             factual_scope=factual_scope,declared_table_refs=declared_table_refs,comparison_methodology=comparison_methodology,
             experimental_intent=experimental_intent,compact_source_repair=compact_source_repair,
@@ -767,10 +783,12 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
             presentation_audit=[]
             drafting_audit=[] if factual_scope else None
             representation_audit=[] if experimental_representation else None
+            scope_audit=[] if scope_expression else None
             coverage_audit=[] if experimental_coverage else None
             try:
                 rows = _parse_repair_response(prepared, response, parse,presentation_audit,drafting_audit,
                                               strict_response=strict_response,
+                                              **({'scope_audit':scope_audit} if scope_expression else {}),
                                               **({'representation_audit':representation_audit} if experimental_representation else {}),
                                               **({'coverage_audit':coverage_audit} if experimental_coverage else {}))
             except DeepResearchError as exc:
@@ -786,6 +804,8 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
                 if checkpoint:
                     checkpoint(deepcopy(state))
                 break
+            if scope_audit:
+                state.setdefault('scopeExpressionAudit',{})[key]=scope_audit
             if drafting_audit:
                 state.setdefault('factualDraftingAudit',{})[key]=drafting_audit
             if coverage_audit:

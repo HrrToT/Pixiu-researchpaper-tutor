@@ -1364,6 +1364,9 @@ space with unsupported global absence or incidental iteration/performance values
         from services.deep_research.answer_point_intent import enabled as point_intent_enabled, GUIDANCE as point_intent_guidance
         if point_intent_enabled(record) and output_kind != 'experiment_design':
             prompt += '\n' + point_intent_guidance
+        from services.deep_research.scope_expression import enabled as scope_expression_enabled, GUIDANCE as scope_expression_guidance
+        if scope_expression_enabled(record) and output_kind != 'experiment_design':
+            prompt += '\n' + scope_expression_guidance
         from services.deep_research.experiment_planning import enabled as staged_experiment,basis_limit
         staged_mode=premise_mode and output_kind=='experiment_design' and staged_experiment(record)
         from services.deep_research.experiment_capacity import input_limit as experiment_input_limit,reserved_basis_bytes,enabled as experiment_capacity_enabled
@@ -1539,6 +1542,16 @@ space with unsupported global absence or incidental iteration/performance values
                 'unexpectedEcho':parsed.pop('designBasis',None)}
         from services.deep_research.answer_constraints import compact_answer, resolve_evidence_aliases
         parsed = resolve_evidence_aliases(parsed, evidence_aliases)
+        scope_expression_audit = []
+        if scope_expression_enabled(record) and output_kind != 'experiment_design':
+            from services.deep_research.scope_expression import materialize as materialize_scope
+            try:
+                for index, claim in enumerate(parsed['claims']):
+                    if not isinstance(claim,dict): continue
+                    parsed['claims'][index], audit = materialize_scope(claim)
+                    if audit: scope_expression_audit.append(audit)
+            except ValueError:
+                return {'error_code':'invalid_synthesis_response'}
         drafting_audit={}
         synthesis_presentation_audit={}
         if scope_enabled(record):
@@ -1582,7 +1595,8 @@ space with unsupported global absence or incidental iteration/performance values
                 {"max_tokens": 2000, "temperature": 0.0}), _safe_parse_json,
             output_kind=output_kind, evidence=evidence,
             preserve_claims=bool(point_constraint and point_constraint['mode'] == 'exact'),
-            presentation_version=record.get('reportPresentationContractVersion',0))
+            presentation_version=record.get('reportPresentationContractVersion',0),
+            **({'fixed_claim_ids':[a['claimId'] for a in scope_expression_audit]} if scope_expression_audit else {}))
         if parsed is None:
             return {"error_code": "invalid_synthesis_response"}
 
@@ -1640,6 +1654,7 @@ space with unsupported global absence or incidental iteration/performance values
                     "synthesisContainer": container_kind,
                     **({'experimentDraftingAudit':experiment_drafting_audit} if experiment_drafting_audit is not None else {}),
                     **({'experimentRepresentationAudit':experiment_representation_audit} if experiment_representation_audit else {}),
+                    **({'synthesisScopeExpressionAudit':scope_expression_audit} if scope_expression_enabled(record) and output_kind!='experiment_design' else {}),
                     **({'factualDraftingAudit':drafting_audit,
                         'synthesisPresentationAudit':synthesis_presentation_audit} if scope_enabled(record) else {}),
                 },
@@ -1720,6 +1735,7 @@ def make_verify_node(
                 'repairTargets': repair_targets, 'repairReport': repair_report}}, expected_revision=None)
             from services.deep_research.repair import repair_rejected
             from services.deep_research.answer_point_intent import enabled as point_intent_enabled, from_drafting_audit
+            from services.deep_research.scope_expression import enabled as scope_expression_enabled
             from services.deep_research.contracts import BudgetExhaustedError, DeepResearchError
             def invoke_repair(prompt, output_limit=None):
                 # Admit the rewrite and its independent verification as a pair.
@@ -1825,6 +1841,8 @@ def make_verify_node(
                         **({'answer_intents':from_drafting_audit(
                             record.get('state',{}).get('factualDraftingAudit',{}),repair_report.get('claims',[]))}
                            if point_intent_enabled(record)
+                           and saved.get('outputKind')!='experiment_design' else {}),
+                        **({'scope_expression':True} if scope_expression_enabled(record)
                            and saved.get('outputKind')!='experiment_design' else {}),
                         **({'declared_table_refs':True} if declared_references_enabled(record) else {}),
                         **({'question_priority':True} if priority_enabled(record) else {}),
