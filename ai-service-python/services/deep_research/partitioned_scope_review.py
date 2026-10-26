@@ -12,12 +12,21 @@ def enabled(record):
             and record['scopeExpressionReviewContractVersion'] == 2)
 
 
-def observation_claims(claim, expression):
+def assertions_enabled(record):
+    return (type(record.get('scopeObservationContractVersion')) is int
+            and record['scopeObservationContractVersion'] == 1)
+
+
+def observation_claims(claim, expression, *, assertions=False):
     """Literal projections of the authored settings, never inferred facts."""
-    namespace = hashlib.sha256(json.dumps([claim['claimId'], expression],
+    identity = [claim['claimId'], expression]
+    if assertions: identity.append('observed-setting-assertion-v1')
+    namespace = hashlib.sha256(json.dumps(identity,
         ensure_ascii=False, sort_keys=True).encode()).hexdigest()
     return [{**deepcopy(claim), 'claimId':f'scope-observation-{namespace}-{index}',
-             'kind':'reported', 'text':setting['subject']+'，'+setting['attribute']+'='+setting['value'],
+             'kind':'reported', 'text':('所引来源报告，在对'+setting['subject']+'的一项评估中，'
+                +setting['attribute']+'为'+setting['value']+'。') if assertions else
+                setting['subject']+'，'+setting['attribute']+'='+setting['value'],
              'conditions':{}}
             for index, setting in enumerate(expression['observedSettings'])]
 
@@ -29,13 +38,16 @@ def review(checker, claim, expression, evidence, node):
     the ordinary semantic/scope/attribution checks; epistemic operators receive
     a separate entailment task. No failed whole-claim verdict is upgraded.
     """
-    observations = observation_claims(claim, expression)
+    policy = checker._scope_observation_assertions
+    assertions = (policy() if callable(policy) else policy) is True
+    observations = observation_claims(claim, expression, assertions=assertions)
     checked = checker._check(observations, evidence, [], node) if observations else []
     expected = [c['claimId'] for c in observations]
     if ([c.get('claimId') for c in checked] != expected
             or any(c.get('status') not in ('passed','failed') for c in checked)):
         raise DeepResearchError('invalid_verification_response','观察条件核查未完整返回。')
-    audit = {'version':2, 'observedSettings':checked, 'notEstablished':[]}
+    audit = {'version':2, 'observedSettings':checked, 'notEstablished':[],
+             **({'observationContractVersion':1} if assertions else {})}
     failed = [c for c in checked if c['status'] != 'passed']
     if failed:
         return {'claimId':claim['claimId'], 'status':'failed',

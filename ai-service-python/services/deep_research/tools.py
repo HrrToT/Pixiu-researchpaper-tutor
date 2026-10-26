@@ -607,6 +607,7 @@ class BudgetedSemanticChecker:
         scope_expression_context=None,
         partitioned_scope_review=False,
         single_factual_decision=False,
+        scope_observation_assertions=False,
     ):
         self._invoke = llm_invoker
         self._run_id = run_id
@@ -621,6 +622,7 @@ class BudgetedSemanticChecker:
         self._scope_expression_context = scope_expression_context
         self._partitioned_scope_review = partitioned_scope_review
         self._single_factual_decision = single_factual_decision
+        self._scope_observation_assertions = scope_observation_assertions
         self._complete_factual_scope=complete_factual_scope
         self._result_attribution=result_attribution
         self._bounded_factual_review=bounded_factual_review
