@@ -1,0 +1,75 @@
+{
+  "case": "D1-v40",
+  "runId": "dr_run_eaf2768447e55aab8fda154515219a4d",
+  "sourceCommit": "e4f27c77",
+  "promptVersion": "dr-v2.20261027.314",
+  "status": "completed",
+  "outcome": "partial",
+  "elapsedSeconds": 124.221,
+  "totalModelCalls": 13,
+  "settledTokens": 54744,
+  "allModelCallsSettled": true,
+  "nodes": [
+    "resolve_brief",
+    "plan",
+    "assess_relevance",
+    "assess_relevance",
+    "synthesize",
+    "verify",
+    "verify",
+    "verify",
+    "verify_answer_coverage",
+    "repair_claims",
+    "verify_repair",
+    "verify_repair",
+    "verify_answer_coverage"
+  ],
+  "acceptedClaimCount": 2,
+  "acceptedText": [
+    "LightGaussian作者报告：在Mip-NeRF 360数据集上，压缩后模型SSIM仅下降0.007，视觉质量与原始3DGS相当。",
+    "所引来源报告的评估设置包括：LightGaussian，数据集=Mip-NeRF 360。这些引用不足以证明：在范围「所有数据集或场景」内的所有情形中，LightGaussian相对于原始3DGS，压缩后图像质量接近原始3DGS（SSIM下降仅0.007）。"
+  ],
+  "acceptedTableBindings": [
+    [],
+    []
+  ],
+  "noteSourceIds": [
+    "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vb6fb16ee9617e59c-chunk-29"
+  ],
+  "initialRejectionReasons": [
+    "semantic_unresolved"
+  ],
+  "repairRejectionReasons": [],
+  "repairCompactionStatus": "completed",
+  "scopeCompactionModelInvoked": false,
+  "coverageStatus": "invalid_response",
+  "coverageDiagnosticErrors": [
+    "answer_scope"
+  ],
+  "preservation": {
+    "oldLedgerUnchanged": true,
+    "allOldRunsUnchanged": true,
+    "newRows": 25,
+    "ledgerRows": 7461,
+    "onlyThisRunCreatedCalls": true,
+    "active": [],
+    "oldPausedRetained": true,
+    "paused": [
+      "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+      "dr_run_ed10cc3347be552288079a9a588fddf5",
+      "dr_run_86b3f181a5475e99aacca3dbf4370567",
+      "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+      "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+      "dr_run_e3521b1781825273b384a26a5edb8cdc",
+      "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+      "dr_run_e9c9dc916bef519092fad8b929b2448f",
+      "dr_run_4738564f5ff35157996a35068c62ed32",
+      "dr_run_a8bd62f9ae3d52ff806f537065f55b2d",
+      "dr_run_98e66f2d3d555dfa822b859963f01419",
+      "dr_run_8be639c866c35ea092c735a04781b647"
+    ]
+  },
+  "automaticRetry": false,
+  "contentAcceptance": false,
+  "independentCredit": 0
+}
