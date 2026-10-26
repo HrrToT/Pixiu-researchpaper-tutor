@@ -36,7 +36,7 @@ def coverage_prompt_byte_limit(budget, output_tokens=3500):
     return max(0, min(24000, remaining - output_tokens - 1024))
 
 
-def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, *, budget=None,literal_dimensions=False):
+def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, *, budget=None,literal_dimensions=False,diagnostics=False):
     from services.deep_research.answer_coverage import answer_coverage_gaps
     from services.deep_research.selection import balanced_sample, surrounding_context
 
@@ -60,10 +60,14 @@ def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, 
     invalid_criteria = []
     nonblocking = []
     budget_limit = None
+    diagnostic_errors, gap_details = [], {}
     if claims and plan and invoke:
         cited = {ref for claim in claims for ref in claim.get('evidenceRefs', [])}
         selected = balanced_sample(sorted(evidence, key=lambda e: e.get('evidenceId') not in cited),
             lambda e: (e.get('sourceWorkId'), tuple(e.get('obligationIds', []))), 20)
+        if diagnostics:
+            selected = ([e for e in evidence if e.get('evidenceId') in cited]
+                        + [e for e in selected if e.get('evidenceId') not in cited])
         from uuid import uuid4
         from services.deep_research.prompt_budget import fit_evidence_prompt
         from services.deep_research.verification_aliases import (
@@ -121,6 +125,9 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
         if literal_dimensions:
             from services.deep_research.request_dimensions import FINAL_DIMENSION_POLICY
             prompt+='\n'+FINAL_DIMENSION_POLICY
+        if diagnostics:
+            from services.deep_research.coverage_diagnostics import GUIDANCE
+            prompt += '\n' + GUIDANCE
         template = prompt
         try:
             output_tokens = coverage_output_tokens(audit_plan, claims)
@@ -129,7 +136,12 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
             fixed_bytes = len(render([]).encode('utf-8'))
             if limit <= 0 or fixed_bytes > limit:
                 raise BudgetExhaustedError('coveragePromptBytes', limit, fixed_bytes)
-            prompt, rows = fit_evidence_prompt(rows, render, max_bytes=limit)
+            if diagnostics:
+                from services.deep_research.coverage_diagnostics import fit_complete_context
+                prompt, rows = fit_complete_context(rows,render,limit,
+                    {ref for c in wire_claims for ref in c.get('evidenceRefs',[])})
+            else:
+                prompt, rows = fit_evidence_prompt(rows, render, max_bytes=limit)
             result = invoke(run_id, 'verify_answer_coverage', prompt,
                             {'max_tokens': output_tokens, 'temperature': 0.0}, use_reserve=True)
             content = result.get('content', '') if isinstance(result, dict) else getattr(result, 'content', '')
@@ -168,6 +180,15 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
                     verdicts = [{**v, 'status': 'partial'} if isinstance(v, dict)
                         and v.get('obligationId') in invalid_aspects else v for v in verdicts]
                     status = 'invalid_response'
+                if diagnostics:
+                    from services.deep_research.coverage_diagnostics import validate
+                    diagnostic_errors, gap_details = validate(verdicts,
+                        [o['obligationId'] for p in audit_plan for o in p.get('obligations',[])])
+                    if diagnostic_errors: status = 'invalid_response'
+        except ValueError as exc:
+            if not diagnostics or str(exc) != 'coverage_required_evidence_missing_or_ambiguous': raise
+            status = 'invalid_response'
+            diagnostic_errors = [str(exc)]
         except BudgetExhaustedError as exc:
             # Publish only supported text with an explicit coverage gap. Never
             # promote budget exhaustion to a complete answer or add a retry.
@@ -202,6 +223,8 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
         if gap.get('obligationId') in criterion_gaps:
             gap['missingAspects'] = list(dict.fromkeys([
                 *gap.get('missingAspects', []), *criterion_gaps[gap['obligationId']]]))
+        if gap.get('obligationId') in gap_details:
+            gap['gapDetail'] = gap_details[gap['obligationId']]
         if status in {'budget_exhausted', 'invalid_response'}:
             gap['missingEvidence'] = '回答完整性尚未核验'
             gap['auditStatus'] = status
@@ -215,7 +238,8 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
             'wholeQuestionId': identity, 'nonblockingResearch': nonblocking,
             'criterionGaps': criterion_gaps,
             'invalidCriterionObligations': invalid_criteria,
-            'budgetLimit': budget_limit}
+            'budgetLimit': budget_limit,
+            **({'diagnosticErrors':diagnostic_errors} if diagnostics else {})}
 
 
 def remaining_retrieval_gaps(gaps, audit, claims, evidence, *, plan=None, question=""):

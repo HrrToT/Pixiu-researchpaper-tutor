@@ -91,6 +91,10 @@ def prepare_coverage_repair(report, verification, audit):
         details = gap.get('missingAspects')
         questions = [question, *[value for value in details if isinstance(value, str) and value.strip()]] \
             if isinstance(details, list) else [question]
+        if audit.get('status') == 'checked' and audit.get('diagnosticErrors') == [] and gap.get('gapDetail'):
+            import json
+            questions.append('未核实的完整性诊断（仅供定位，须核对原问题与证据）：'
+                + json.dumps(gap['gapDetail'],ensure_ascii=False,sort_keys=True))
         gap_targets = set()
 
         for cid in bindings_by_obligation.get(obligation_id, []):
