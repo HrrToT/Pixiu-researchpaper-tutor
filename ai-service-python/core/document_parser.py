@@ -249,7 +249,10 @@ def _extract_table_sections(body):
         coords = _collect_element_coords(owner)
         page = min((coord['pageIndex'] for coord in coords), default=None)
         table_id = owner.get('xml:id') or owner.get('id') or f'table-{index + 1}'
-        section = {'id': f'table-{table_id}', 'section': f'{title} {description}'.strip(),
+        # The caption is source content, not a heading shared by every chunk.
+        # A long GROBID figDesc can include subsequent prose; repeating it in
+        # Section makes detached rows appear to contain evidence they lack.
+        section = {'id': f'table-{table_id}', 'section': title or f'Table {index + 1}',
                    'content': '\n'.join(lines), 'evidenceKind': 'table', 'tableId': table_id,
                    'tableColumnMappingUnverified': spans or not rows, 'tableRows': rows,
                    'tablePrefix': '\n'.join(lines[:2] if rows else lines)}

@@ -46,6 +46,31 @@ def test_caption_only_table_and_bare_table_are_preserved(tmp_path):
     assert 'excluded header' not in '\n'.join(s['content'] for s in sections)
 
 
+def test_long_caption_is_searchable_content_not_repeated_as_section_evidence(tmp_path):
+    caption = 'Original caption: ratio 66%, SSIM 0.926. ' + 'Subsequent source prose. ' * 85
+    sections = parse(tmp_path, '<figure type="table" xml:id="long"><head>Table 6</head>'
+                     f'<figDesc>{caption}</figDesc><table><row><cell>Method</cell>'
+                     '<cell>SSIM</cell></row><row><cell>Baseline</cell><cell>0.927</cell>'
+                     '</row></table></figure>')
+    assert sections[0]['section'] == 'Table 6'
+    assert caption.strip() in sections[0]['content']
+    chunks = chunk_sections(sections)
+    assert len(chunks) > 1
+    assert all(c['section'] == 'Table 6' for c in chunks)
+    assert any('66%' in c['text'] and '0.926' in c['text'] for c in chunks)
+    row_chunks = [c for c in chunks if 'Baseline' in c['text']]
+    assert row_chunks and all('66%' not in c['section'] for c in row_chunks)
+    assert all(c['tableColumnMappingUnverified'] for c in chunks)
+
+
+def test_empty_table_head_keeps_caption_and_rows_indexable(tmp_path):
+    from core.smart_chunker import normalize_section_titles
+    sections = parse(tmp_path, '<figure type="table"><head></head><figDesc>Caption</figDesc>'
+                     '<table><row><cell>Original value</cell></row></table></figure>')
+    assert sections[0]['section'] == 'Table 1'
+    assert 'Original value' in chunk_sections(normalize_section_titles(sections))[0]['text']
+
+
 def test_table_chunks_repeat_original_first_row_and_do_not_mix_rows_from_other_tables():
     prefix = 'Table caption: Table 1\nTable row 1: Method | FPS | Size'
     rows = [f'Table row {i + 2}: method-{i} | {i} | ' + 'original value ' * 10 for i in range(12)]
