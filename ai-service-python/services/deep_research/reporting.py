@@ -39,10 +39,18 @@ def build_sections(claims, output_kind, proposed_sections=None, *, presentation_
         # Actual unfinished obligations are rendered separately from payload.gaps.
         sections=[{**section,'title':'依据与范围'} if section['title']=='未解决事项' else section
                   for section in sections]
+    if type(presentation_version) is int and presentation_version == 2:
+        # Revisions can return claims to the fallback section. Keep all claims
+        # under a single heading without rewriting their words or old reports.
+        merged = {}
+        for section in sections:
+            group = merged.setdefault(section['title'], {'title':section['title'], 'claimIds':[]})
+            group['claimIds'].extend(key for key in section['claimIds'] if key not in group['claimIds'])
+        sections = list(merged.values())
     return sections
 
 
-def _display_gaps(gaps):
+def _display_gaps(gaps, *, presentation_version=0):
     """Keep the full audit in storage, show each unfinished obligation once."""
     specific = [g for g in gaps if not isinstance(g, dict) or not g.get('wholeQuestion')]
     selected = {}
@@ -50,7 +58,24 @@ def _display_gaps(gaps):
         key = (gap.get('obligationId') or gap.get('question')) if isinstance(gap, dict) else gap
         if key and (key not in selected or isinstance(gap, dict) and gap.get('stage') == 'answer'):
             selected[key] = gap
-    return list(selected.values())
+    rows = list(selected.values())
+    if type(presentation_version) is not int or presentation_version != 2:
+        return rows
+    merged = {}
+    for index, gap in enumerate(rows):
+        if not isinstance(gap, dict) or not isinstance(gap.get('question'), str) or not gap['question'].strip():
+            merged[('unmerged', index)] = gap
+            continue
+        # Repeated retrieval obligations can refer to the same human question.
+        # Coalesce only equal displayed questions/reasons, retaining distinct
+        # reasons and the union of missing aspects; the full audit stays stored.
+        key = (gap['question'], gap.get('missingEvidence', ''))
+        if key not in merged:
+            merged[key] = {**gap, 'missingAspects':list(gap.get('missingAspects') or [])}
+        else:
+            aspects = merged[key]['missingAspects']
+            aspects.extend(a for a in gap.get('missingAspects', []) if a not in aspects)
+    return list(merged.values())
 
 
 def source_access_summary(claims, evidence):
@@ -126,13 +151,17 @@ def render_report(payload, *, _counting=False):
         empty = ("尚未形成通过核验的实验方案。" if payload.get('outputKind') == 'experiment_design'
                  else "本次尚未形成通过核验的结论。")
         lines.extend([empty, ""])
-    gaps = _display_gaps(payload.get("gaps", []))
+    gaps = _display_gaps(payload.get("gaps", []), presentation_version=payload.get('presentationVersion',0))
     if gaps and not _counting:
         lines.extend(["<details>", f"<summary>还有 {len(gaps)} 项未完成</summary>", ""])
         for gap in gaps:
             question = gap if isinstance(gap, str) else gap.get("question", "")
             if question:
                 reason = gap.get("missingEvidence", "") if isinstance(gap, dict) else ""
+                if compact and isinstance(gap, dict):
+                    aspects = [a for a in gap.get('missingAspects', []) if isinstance(a,str) and a.strip()]
+                    if aspects:
+                        reason += ('；' if reason else '') + '缺少：' + '、'.join(dict.fromkeys(aspects))
                 lines.append(f"- {question}" + (f"：{reason}" if reason else ""))
         lines.extend(["", "</details>", ""])
     notes = payload.get('researchNotes')

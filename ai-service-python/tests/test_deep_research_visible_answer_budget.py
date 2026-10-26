@@ -99,3 +99,30 @@ def test_publication_preserves_overlong_verified_claim_and_marks_partial_without
     assert any(g.get('stage')=='answer_format' for g in result['payload']['gaps'])
     assert '甲'*45 in result['report_text'] and result['payload']['presentationVersion']==2
     assert '推断限于所列证据' not in result['report_text'].split('<details>',1)[0]
+
+
+def test_repaired_and_fallback_claims_share_one_heading_without_rewriting_or_loss():
+    claims=[{'claimId':'a','text':'已核实的作者报告。'},{'claimId':'b','text':'范围仍有限。'}]
+    proposed=[{'title':'判断','claimIds':['a']},{'title':'模型自造标题','claimIds':['b']}]
+    before=deepcopy((claims,proposed))
+    sections=build_sections(claims,'claim_verification',proposed,presentation_version=2)
+    assert sections==[{'title':'判断','claimIds':['a','b']}]
+    for version in (0,1):
+        assert len(build_sections(claims,'claim_verification',proposed,presentation_version=version))==2
+    body=render_report({'presentationVersion':2,'characterLimit':300,'claims':claims,'sections':sections})
+    assert '## 判断' not in body and all(c['text'] in body for c in claims)
+    assert (claims,proposed)==before
+
+
+def test_duplicate_retrieval_gaps_display_once_with_all_missing_aspects_and_distinct_reasons():
+    gaps=[{'obligationId':'o1','question':'说明范围','missingEvidence':'尚未完整回应','stage':'answer','missingAspects':['成立条件']},
+        {'obligationId':'o2','question':'说明范围','missingEvidence':'尚未完整回应','stage':'answer','missingAspects':['未验证范围']},
+        {'obligationId':'o3','question':'说明范围','missingEvidence':'原文取得失败','stage':'source'},
+        {'obligationId':'scope','question':'整个问题','wholeQuestion':True}]
+    value={'presentationVersion':2,'claims':[],'gaps':gaps};before=deepcopy(value)
+    body=render_report(value)
+    assert '<summary>还有 2 项未完成</summary>' in body
+    assert body.count('- 说明范围')==2 and '缺少：成立条件、未验证范围' in body
+    assert '原文取得失败' in body and value==before
+    value['presentationVersion']=1
+    assert '<summary>还有 3 项未完成</summary>' in render_report(value)
