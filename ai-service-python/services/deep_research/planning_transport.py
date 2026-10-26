@@ -35,7 +35,10 @@ def descriptor():
     return {'type':'json_schema','name':'private_experiment_columns_v1','schema':schema}
 
 
-def descriptor_for(record, node):
+def descriptor_for(record, node, initialization_target='component'):
+    from services.deep_research.workflow_initialization_wire import enabled as init_enabled, descriptor as init_descriptor
+    if node == 'plan_workflow_init' and init_enabled(record):
+        return init_descriptor(initialization_target)
     from services.deep_research.workflow_metadata_repair import enabled as repair_enabled, NODE as REPAIR_META
     if (node in ('plan_workflow_meta', REPAIR_META) and repair_enabled(record)
             and record['workflowMetadataRepairContractVersion'] == 21):
@@ -104,6 +107,11 @@ def options_for_record(record,node,options):
     if API_KEY in options:raise ValueError('Transport selection is server-owned')
     if not enabled(record,node):return {**options,'response_format':{'type':'json_object'}}
     allowed={'response_format','thinking','reasoning_effort','max_tokens','temperature','timeout_seconds'}
+    from services.deep_research.workflow_initialization_wire import enabled as init_enabled, TARGET_OPTION
+    if node == 'plan_workflow_init' and init_enabled(record):
+        allowed.add(TARGET_OPTION)
+        if options.get(TARGET_OPTION) not in ('baseline', 'component'):
+            raise ValueError('Initialization target must be bound before fingerprinting')
     if set(options)-allowed:raise ValueError('Unsupported private planning options')
     from services.deep_research.workflow_transport import reasoning_options
     options=reasoning_options(record,node,options)
@@ -116,7 +124,8 @@ def options_for_record(record,node,options):
     if (node=='plan_experiment' and type(record.get('experimentPlanningReasoningContractVersion')) is int
             and record['experimentPlanningReasoningContractVersion']==1):
         options={**options,'thinking':{'type':'enabled'},'reasoning_effort':'low'}
-    return {**options,API_KEY:'responses','response_format':descriptor_for(record,node)}
+    return {**options,API_KEY:'responses','response_format':descriptor_for(
+        record,node,options.get(TARGET_OPTION, 'component'))}
 
 
 def validate_options(record,node,options):

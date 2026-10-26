@@ -180,7 +180,9 @@ def prepare_units(record, *, prompt, aliases, invoke, parse, checkpoint):
         enabled as initialization_repair_enabled, original_value as original_initialization,
         prepare as repair_initialization)
     initialization_repair_mode = initialization_repair_enabled(record)
-    if initialization_repair_mode: parent_request['initializationRepairContract'] = 1
+    initialization_version = record.get('workflowInitializationRepairContractVersion', 1)
+    from services.deep_research.workflow_initialization_wire import enabled as init_wire_enabled
+    if initialization_repair_mode: parent_request['initializationRepairContract'] = initialization_version
     identity = digest({'request': parent_request, 'aliases': aliases})
     saved = deepcopy(record.get('state', {}).get('executionWorkflowBlueprint'))
     if saved is None:
@@ -247,7 +249,14 @@ def prepare_units(record, *, prompt, aliases, invoke, parse, checkpoint):
             if record['workflowMetadataRepairContractVersion'] in (9, 10):
                 from services.deep_research.workflow_metadata_input import POLICY as INPUT_POLICY
                 body = INPUT_POLICY + body
-        request = request_identity(record, node, body, {'temperature': 0.0})
+        options = {'temperature': 0.0}
+        use_init_wire = node == INIT and init_wire_enabled(record)
+        if use_init_wire:
+            from services.deep_research.workflow_initialization_wire import bind_prompt, TARGET_OPTION
+            bound_target = 'baseline' if baseline else 'component'
+            body = bind_prompt(body, bound_target)
+            options[TARGET_OPTION] = bound_target
+        request = request_identity(record, node, body, options)
         unit = saved['units'].get(key)
         if unit is None:
             if saved['status'] == 'ready':
@@ -276,7 +285,10 @@ def prepare_units(record, *, prompt, aliases, invoke, parse, checkpoint):
             raise DeepResearchError('invalid_workflow_blueprint_state', '工作流单元原始响应或状态已改变。')
         try:
             strict_wire = repair_mode and node == META and record['workflowMetadataRepairContractVersion'] in (2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21)
-            if strict_wire:
+            if use_init_wire:
+                from services.deep_research.workflow_initialization_wire import parse as parse_initialization
+                value = parse_initialization(unit['response'].get('rawContent', unit['response'].get('content', '')))
+            elif strict_wire:
                 from services.deep_research.workflow_metadata_repair import load_wire
                 value = load_wire(unit['response'].get('rawContent', unit['response'].get('content', '')), version=record['workflowMetadataRepairContractVersion'])
             else:value = parse(unit['response'].get('content', ''))
@@ -308,6 +320,9 @@ def prepare_units(record, *, prompt, aliases, invoke, parse, checkpoint):
                 else:value = decode_rows(value)
             problems = unit_errors(value, aliases, node=node, earlier=earlier, baseline=baseline,
                 version=version,metadata=context.get('metadata'),target=target,metadata_rows=use_rows)
+            if use_init_wire and (len(unit['response'].get('rawContent', unit['response'].get('content', '')).encode('utf8')) > MAX_VALUE
+                                  or len(packed(value).encode('utf8')) > MAX_VALUE):
+                problems.append('unit.output_capacity')
             formatting_capacity = strict_wire and record['workflowMetadataRepairContractVersion'] in (5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21)
             if use_rows and ((not formatting_capacity and len(unit['response'].get('content', '').encode('utf8')) > MAX_VALUE)
                              or len(packed(wire).encode('utf8')) > MAX_VALUE
@@ -320,6 +335,9 @@ def prepare_units(record, *, prompt, aliases, invoke, parse, checkpoint):
                 problems = ['unit.output_truncated']
         except (TypeError, ValueError, RecursionError, OverflowError):
             value, problems = None, ['unit.json']
+        if use_init_wire:
+            finish = unit['response'].get('finishReason', unit['response'].get('finish_reason'))
+            if finish != 'stop': problems = ['unit.output_truncated' if finish == 'length' else 'unit.output_status']
         if (repair_mode and record['workflowMetadataRepairContractVersion'] in (4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21)
                 and unit['response'].get('finishReason', unit['response'].get('finish_reason')) == 'length'):
             problems = ['unit.output_truncated']
@@ -333,7 +351,7 @@ def prepare_units(record, *, prompt, aliases, invoke, parse, checkpoint):
                         valueDigest=digest(value), errors=problems)
             checkpoint(deepcopy(saved))
         if problems:
-            if node == INIT and initialization_repair_mode and original_initialization(unit) is not None:
+            if node == INIT and initialization_repair_mode and original_initialization(unit, version=initialization_version) is not None:
                 later_exists = (key == 'baseline' and any(k.startswith('component:') for k in saved['units']))
                 if key.startswith('component:'):
                     later_exists = any('component:'+str(i) in saved['units']

@@ -8,16 +8,17 @@ MARKER = 'workflowInitializationRepairContractVersion'
 
 
 def enabled(record):
-    return (isinstance(record, dict) and type(record.get(MARKER)) is int and record[MARKER] == 1
+    return (isinstance(record, dict) and type(record.get(MARKER)) is int and record[MARKER] in (1, 2)
             and type(record.get('executionWorkflowContractVersion')) is int
             and record['executionWorkflowContractVersion'] == 7
             and type(record.get('workflowInitializationOutputContractVersion')) is int
             and record['workflowInitializationOutputContractVersion'] == 1)
 
 
-def original_value(unit):
+def original_value(unit, version=1):
     from services.deep_research.workflow_metadata_repair import load_wire
     from services.deep_research.execution_workflow_blueprint import MAX_VALUE, packed
+    if type(version) is not int or version not in (1, 2): return None
     if not isinstance(unit, dict) or not isinstance(unit.get('response'), dict): return None
     try:
         response = unit['response']; raw = response.get('rawContent', response.get('content', ''))
@@ -26,7 +27,10 @@ def original_value(unit):
                 or response.get('finishReason', response.get('finish_reason')) != 'stop'
                 or any(x in unit['errors'] for x in ('unit.output_capacity', 'unit.output_truncated', 'unit.output_status'))
                 or len(raw.encode('utf8')) > MAX_VALUE): return None
-        value = load_wire(raw, version=2)
+        if version == 2:
+            from services.deep_research.workflow_initialization_wire import parse
+            value = parse(raw)
+        else: value = load_wire(raw, version=2)
         if (not isinstance(value, dict) or set(value) != {'sourceRefs', 'initialization', 'unresolved'}
                 or digest(value) != unit['valueDigest'] or digest(unit['value']) != digest(value)
                 or len(packed(value).encode('utf8')) > MAX_VALUE): return None
@@ -64,7 +68,8 @@ def prepare(record, *, key, source_data, context, failed, aliases, earlier, base
     from services.deep_research.planning_transport import overhead_bytes, dispatch_options
     from services.deep_research.workflow_metadata_repair import load_wire
     from services.deep_research.workflow_metadata_input import input_text
-    value = original_value(failed)
+    version = record.get(MARKER, 1)
+    value = original_value(failed, version=version)
     if not enabled(record) or value is None:
         raise DeepResearchError('invalid_workflow_unit_response', '初始化原响应不满足有界修正条件。')
     if existing is not None and not isinstance(existing, dict):
@@ -77,24 +82,34 @@ def prepare(record, *, key, source_data, context, failed, aliases, earlier, base
         raise DeepResearchError('invalid_workflow_blueprint_state', '初始化原检查记录已改变。')
     prefix = unit_prompt(source_data, node=INIT, context=context, version=7).split(
         'Exact authoritative input and unit context (unverified data):\n', 1)[0]
+    invalid_value = value
+    diagnostics = feedback(value, failed['errors'])
+    options = {'temperature': 0.0}
+    if version == 2:
+        from services.deep_research.workflow_initialization_wire import bind_prompt, field_feedback, TARGET_OPTION
+        bound_target = 'baseline' if baseline else 'component'
+        prefix = bind_prompt(prefix, bound_target)
+        invalid_value = load_wire(failed['response'].get('rawContent', failed['response'].get('content', '')), version=3)
+        diagnostics = field_feedback(value, failed['errors'], target=bound_target)
+        options[TARGET_OPTION] = bound_target
     body = prefix + ('Correct this ONE initialization using ALL supplied input and diagnostics. '
                      'Keep required state, source evidence and unresolved prerequisites. '
                      'Never replace missing tensors with symbolic constant strings or invent available assets.\n') + input_text({
         'authoritativeInput': json.loads(source_data), 'unitContext': context,
-        'invalidInitialization': value, 'fieldFeedback': feedback(value, failed['errors'])})
-    request = request_identity(record, INIT, body, {'temperature': 0.0})
+        'invalidInitialization': invalid_value, 'fieldFeedback': diagnostics})
+    request = request_identity(record, INIT, body, options)
     parent = {'requestDigest': digest(failed['request']), 'responseDigest': failed['responseDigest'],
               'valueDigest': failed['valueDigest'], 'errors': sorted(failed['errors'])}
     identity = digest({'unitKey': key, 'parent': parent, 'request': request, 'aliases': aliases})
     size = len(body.encode('utf8')) + overhead_bytes(record, INIT)
     saved = deepcopy(existing)
     if saved is None:
-        saved = {'version': 1, 'unitKey': key, 'parent': parent, 'request': request, 'inputDigest': identity,
+        saved = {'version': version, 'unitKey': key, 'parent': parent, 'request': request, 'inputDigest': identity,
                  'status': 'pending', 'scientificApproval': False}
         if size > MAX_INPUT: saved.update(status='not_started_capacity', inputBytes=size, maxInputBytes=MAX_INPUT)
         elif remaining_seconds(record) < 10: saved['status'] = 'not_started_budget'
         checkpoint(deepcopy(saved))
-    elif (type(saved.get('version')) is not int or saved['version'] != 1
+    elif (type(saved.get('version')) is not int or saved['version'] != version
           or saved.get('inputDigest') != identity or saved.get('parent') != parent
           or saved.get('request') != request or saved.get('scientificApproval') is not False
           or saved.get('status') not in ('pending', 'response_received', 'ready', 'invalid_response',
@@ -118,7 +133,11 @@ def prepare(record, *, key, source_data, context, failed, aliases, earlier, base
         raise DeepResearchError('invalid_workflow_blueprint_state', '初始化修正响应已改变。')
     response = saved['response']; revised = None
     try:
-        raw = response.get('rawContent', response.get('content', '')); revised = load_wire(raw, version=2)
+        raw = response.get('rawContent', response.get('content', ''))
+        if version == 2:
+            from services.deep_research.workflow_initialization_wire import parse
+            revised = parse(raw)
+        else: revised = load_wire(raw, version=2)
         problems = unit_errors(revised, aliases, node=INIT, earlier=earlier, baseline=baseline,
                                version=7, metadata=context.get('metadata'), target=target)
         if len(raw.encode('utf8')) > MAX_VALUE or len(packed(revised).encode('utf8')) > MAX_VALUE:

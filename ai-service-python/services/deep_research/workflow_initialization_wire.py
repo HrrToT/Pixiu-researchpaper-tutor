@@ -6,6 +6,42 @@ The decoder restores ordered arrays, never inventing an input or rule parameter.
 from copy import deepcopy
 import json
 
+TARGET_OPTION = '_workflow_init_target'
+
+
+def enabled(record):
+    return (isinstance(record, dict)
+            and type(record.get('workflowInitializationRepairContractVersion')) is int
+            and record['workflowInitializationRepairContractVersion'] == 2
+            and type(record.get('executionWorkflowContractVersion')) is int
+            and record['executionWorkflowContractVersion'] == 7
+            and type(record.get('workflowInitializationOutputContractVersion')) is int
+            and record['workflowInitializationOutputContractVersion'] == 1)
+
+
+def policy(target):
+    if target not in ('baseline', 'component'):
+        raise ValueError('Unknown initialization target')
+    boundary = ('This baseline exists BEFORE every timeline step: only training_data is available; '
+                'training/fitting is a later operation, never an initial value. ' if target == 'baseline' else
+                'This component exists at its declared creation boundary: use only states and phase outputs already available there. ')
+    return (boundary + 'WIRE V2: derive requires input (first) and additionalInputs (ordered remaining list); '
+            'inputIndex 0 refers to input, subsequent indices to additionalInputs. '
+            'Fresh uses inputs:[] only. An operation initializer rule requires action, parameter '
+            '(explicit typed first item), additionalParameters (ordered remaining list). '
+            'Do not emit legacy inputs for derive or parameters inside an initializer rule. '
+            'Creation actions still use their original parameters list. Never invent assets, shapes or default values.\n')
+
+
+def bind_prompt(body, target):
+    # Rewrite only the trusted instruction prefix, never authoritative material.
+    delimiter = 'Exact authoritative input and unit context (unverified data):\n'
+    prefix, separator, data = body.partition(delimiter)
+    prefix = prefix.replace(
+        'Initialization has initializationMode,inputs,creation,stateDefinitions. ',
+        'Initialization uses the target-bound WIRE V2 layout below. ')
+    return policy(target) + prefix + separator + data
+
 
 def descriptor(target):
     from services.deep_research.workflow_units import descriptor as unit_descriptor, INIT

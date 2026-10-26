@@ -169,7 +169,8 @@ def test_legacy_or_corrupted_repair_slot_cannot_change_original_execution():
 
 
 @pytest.mark.parametrize('scenario', ['success', 'unknown', 'budget'])
-def test_physical_request_budget_and_unknown_guard(tmp_path, monkeypatch, scenario):
+@pytest.mark.parametrize('version', [1, 2])
+def test_physical_request_budget_and_unknown_guard(tmp_path, monkeypatch, scenario, version):
     from llm.client import DeepSeekLLM
     from llm.provider import LLMProviderError
     from services.deep_research.runtime import ScopedModelClient, research_model_options
@@ -177,10 +178,24 @@ def test_physical_request_budget_and_unknown_guard(tmp_path, monkeypatch, scenar
     from services.deep_research.planning_transport import overhead_bytes
     from test_deep_research_schema_transport import response as http_response
     r, failed, context = failed_unit(); r.update(runId='r', taskId='t')
+    correction = explicit_initializers()[0]
+    if version == 2:
+        from test_deep_research_workflow_initialization_wire import to_wire
+        r[repair.MARKER] = 2
+        failed = deepcopy(failed)
+        # Preserve the invalid shape reference with an authored first input.
+        failed['value']['initialization']['inputs'] = [{'state': 'training_data', 'selector': 'all'}]
+        failed['value']['initialization']['stateDefinitions'][0]['shape'] = [{'inputIndex': 2, 'axis': 0}]
+        from services.deep_research.workflow_units import unit_errors, INIT
+        failed['errors'] = sorted(unit_errors(failed['value'], {'E1': 'owned'}, node=INIT,
+            baseline=True, version=7, metadata=context['metadata']))
+        failed['valueDigest'] = digest(failed['value'])
+        failed['response'] = response(to_wire(failed['value'])); failed['responseDigest'] = digest(failed['response'])
+        correction = to_wire(correction)
     if scenario == 'budget': r['budget']['maxTokens'] = 1
     repo = DeepResearchRepository(tmp_path/'wire.sqlite3'); repo.initialize(); repo.create_run(r); repo.begin_execution('r')
     post = Mock(side_effect=requests.ReadTimeout('fixture')) if scenario == 'unknown' else Mock(
-        return_value=http_response(json.dumps(explicit_initializers()[0])))
+        return_value=http_response(json.dumps(correction)))
     monkeypatch.setattr('llm.client.requests.post', post)
     scoped = ScopedModelClient(repo, lambda *a: True, lambda: DeepSeekLLM(api_key='fixture', base_url='https://fixture.invalid')).for_run('r')
     invoker = TrackedLLMInvoker(scoped, repo.reserve_call, repo.complete_call,
@@ -200,5 +215,6 @@ def test_physical_request_budget_and_unknown_guard(tmp_path, monkeypatch, scenar
     assert post.call_count == 1
     wire = post.call_args.kwargs['json']
     assert wire['reasoning']['effort'] == 'none' and wire['max_output_tokens'] == 6144
-    assert wire['text']['format']['name'] == 'workflow_unit_init_v7'
+    assert wire['text']['format']['name'] == ('workflow_unit_init_v7' if version == 1 else 'workflow_init_v2_baseline')
+    assert '_workflow_init_target' not in wire
     assert repo.list_calls('r')[0]['reservedTokens'] == len(store['value']['request']['prompt'].encode()) + 1024 + overhead_bytes(r,'plan_workflow_init') + 6144

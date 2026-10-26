@@ -5,7 +5,7 @@ API_KEY = '_deepseek_api'
 
 def payload(messages, options, *, model, temperature):
     allowed={API_KEY,'response_format','thinking','reasoning_effort','max_tokens',
-        'temperature','timeout_seconds'}
+        'temperature','timeout_seconds','_workflow_init_target'}
     if set(options)-allowed or options.get(API_KEY)!='responses':
         raise ValueError('Invalid Responses transport options')
     fmt=options.get('response_format')
@@ -13,6 +13,10 @@ def payload(messages, options, *, model, temperature):
             or fmt['type']!='json_schema' or not isinstance(fmt['name'],str)
             or not fmt['name'] or not isinstance(fmt['schema'],dict)):
         raise ValueError('Invalid Responses schema format')
+    if '_workflow_init_target' in options:
+        target = options['_workflow_init_target']
+        if target not in ('baseline', 'component') or fmt['name'] != 'workflow_init_v2_' + target:
+            raise ValueError('Invalid initialization target binding')
     cap=options.get('max_tokens')
     if type(cap) is not int or cap<=0:raise ValueError('Invalid Responses output cap')
     thinking=options.get('thinking')
