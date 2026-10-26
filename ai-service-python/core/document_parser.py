@@ -362,4 +362,16 @@ def parse_tei_xml(tei_path, pdf_path=None):
     if pdf_path:
         from core.pdf_table_columns import attach_verified_table_columns
         sections = attach_verified_table_columns(sections, pdf_path)
+        # Preserve TEI equations as explicitly labelled supplements, without
+        # inheriting a multi-page section's first-page coordinate as their page.
+        formulas = []
+        for section in sections:
+            if section.get('evidenceKind') == 'table': continue
+            for index,line in enumerate(section.get('content','').splitlines()):
+                if line.startswith('Equation:'):
+                    formulas.append({'id':f"{section.get('id','section')}-formula-{index}",
+                        'section':section['section'],'content':line,'evidenceKind':'formula',
+                        'textSource':'grobid_formula'})
+        from core.pdf_source_sections import build_pdf_source_sections
+        sections = build_pdf_source_sections([*sections,*formulas],pdf_path)
     return sections

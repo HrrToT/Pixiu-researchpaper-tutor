@@ -248,7 +248,8 @@ def chunk_sections(sections):
                 chunk["pageIndex"] = page_index
             if page is not None:
                 chunk["page"] = page
-            for field in ('evidenceKind', 'tableId', 'tableColumnMappingUnverified'):
+            for field in ('evidenceKind', 'tableId', 'tableColumnMappingUnverified',
+                          'bodyExtractionVersion','textSource'):
                 if field in sec:
                     chunk[field] = sec[field]
             if fragmented_table:

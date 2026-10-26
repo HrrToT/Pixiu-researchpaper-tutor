@@ -163,11 +163,9 @@ class LiteratureRAG:
         """ New method: Accept already parsed sections to save time """
         metadata = dict(literature_metadata or {})
         metadata["file_name"] = os.path.basename(file_path)
-        # GROBID 的 TEI 章节才是主索引源：它带真实章节标题、公式（Equation: ...）与表格文本，
-        # 并且从 coords 推出了 pageIndex/page，引文锚点并不依赖分页文本。
-        # 旧实现无条件用 PyPDF2 逐页文本覆盖 TEI，导致索引里 64% 的片段标题退化成 "Page N"，
-        # 章节语义与公式全部丢失；同时那句 Front Matter 过滤写在覆盖之后，形同虚设。
-        # 现在只在 TEI 没解析出任何正文时才回退到分页文本。
+        # Parsed PDF sections carry complete page-bound body, printed TEI
+        # heading hints and separate structured tables/equations. Do not
+        # regress to either incomplete TEI prose or unlabelled Page-N blobs.
         indexable_sections = normalize_section_titles(sections)
         if not indexable_sections and os.path.isfile(file_path):
             _logger.warning(
@@ -235,6 +233,8 @@ class LiteratureRAG:
                 "page_index": chunk.get("pageIndex") if chunk.get("pageIndex") is not None else chunk.get("page_index"),
                 "page": chunk.get("page"),
                 "evidence_kind": chunk.get("evidenceKind"),
+                "body_extraction_version":chunk.get('bodyExtractionVersion'),
+                "text_source":chunk.get('textSource'),
                 "table_id": chunk.get("tableId"),
                 "table_column_mapping_unverified": chunk.get("tableColumnMappingUnverified"),
                 "table_verified_data": json.dumps(chunk['tableVerifiedData'], ensure_ascii=False, separators=(',', ':'))
