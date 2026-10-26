@@ -604,6 +604,7 @@ class BudgetedSemanticChecker:
         configuration_consistency=0,
         prospective_envelope=0,
         review_batch_planning=0,
+        scope_expression_context=None,
     ):
         self._invoke = llm_invoker
         self._run_id = run_id
@@ -615,6 +616,7 @@ class BudgetedSemanticChecker:
         self._audit_source_fields = audit_source_fields
         self._audit_target_fields = audit_target_fields
         self._factual_scope = factual_scope
+        self._scope_expression_context = scope_expression_context
         self._complete_factual_scope=complete_factual_scope
         self._result_attribution=result_attribution
         self._bounded_factual_review=bounded_factual_review
@@ -1065,6 +1067,11 @@ The dataAvailability object is an internal audit, not new experimental results.
             targets=[c['claimId'] for c in claims if c.get('kind') in {'reported','inference'}]
             if targets:
                 prompt+=scope_prompt(targets,**({'complete_statement':True} if complete_scope else {}))
+        expression_context = (self._scope_expression_context(claims)
+                              if callable(self._scope_expression_context) else {})
+        if expression_context:
+            from services.deep_research.scope_expression_review import guidance as expression_guidance
+            prompt += expression_guidance(expression_context)
         attribution_enabled=(self._result_attribution() if callable(self._result_attribution)
                              else self._result_attribution) is True
         if attribution_enabled:
@@ -1243,7 +1250,8 @@ The dataAvailability object is an internal audit, not new experimental results.
                                         '声明核验未完整返回；不能据此判断材料不足。',
                                         {'responseState': 'received_invalid'})
             from services.deep_research.design_audit import validate_design_audit
-            parsed = [restore_verdict_evidence(v, reverse_aliases) for v in parsed]
+            parsed = [restore_verdict_evidence(v, reverse_aliases,
+                **({'scope_expression':True} if expression_context else {})) for v in parsed]
             if comparison_enabled:
                 from services.deep_research.comparison_reasoning import normalize_audit_scope
                 target_by_id = {c['claimId']: c for c in claims}
@@ -1287,6 +1295,13 @@ The dataAvailability object is an internal audit, not new experimental results.
                     if attribution_errors:
                         verdict['status']='failed'
                         verdict['reason']='结果与实验用途的来源归属尚未核实：'+', '.join(attribution_errors)
+                        continue
+                if target.get('claimId') in expression_context:
+                    from services.deep_research.scope_expression_review import validate as validate_expression
+                    expression_errors=validate_expression(target,expression_context[target['claimId']],verdict,visible_evidence)
+                    if expression_errors:
+                        verdict['status']='failed'
+                        verdict['reason']='评估设置或证据推导关系尚未核实：'+', '.join(expression_errors)
                         continue
                 missing = validate_design_audit(by_id[verdict['claimId']], verdict, [*claims, *proposal_context], metric_domains,
                     **({'direct_fields':True} if type(review_version) is int and review_version in (2,3) else {}))
