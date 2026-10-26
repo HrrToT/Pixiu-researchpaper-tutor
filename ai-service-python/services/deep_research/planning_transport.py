@@ -36,6 +36,11 @@ def descriptor():
 
 
 def descriptor_for(record, node, initialization_target='component'):
+    from services.deep_research.workflow_metadata_repair import enabled as repair_enabled, NODE as REPAIR_META
+    if (node in ('plan_workflow_meta', REPAIR_META) and repair_enabled(record)
+            and record['workflowMetadataRepairContractVersion'] == 34):
+        from services.deep_research.workflow_metadata_symbols import descriptor as symbolic_descriptor
+        return symbolic_descriptor()
     from services.deep_research.workflow_initialization_wire import enabled as init_enabled, descriptor as init_descriptor
     if node == 'plan_workflow_init' and init_enabled(record):
         return init_descriptor(initialization_target)
