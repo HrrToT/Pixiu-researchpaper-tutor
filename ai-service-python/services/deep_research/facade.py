@@ -277,7 +277,7 @@ class ResearchFacade:
             "materials": materials,
             "materialSnapshot": material_snapshot,  # Immutable Java snapshot
             "contextMaterials": (material_snapshot or {}).get("contextMaterials", []) if isinstance(material_snapshot, dict) else [],
-            "promptVersion": "dr-v2.20261026.305",
+            "promptVersion": "dr-v2.20261027.306",
             "factualReviewContractVersion": 1,
             "citationPresentationContractVersion": 4,
             "configurationConsistencyContractVersion": 2,
@@ -312,7 +312,7 @@ class ResearchFacade:
             "factualScopeContractVersion": 4,
             "answerPointIntentContractVersion": 1,
             "scopeExpressionContractVersion": 1,
-            "scopeExpressionReviewContractVersion": 1,
+            "scopeExpressionReviewContractVersion": 2,
             "factualReasoningContractVersion": 6,
             "continuationFormatContractVersion": 1,
             "jointEvidenceContractVersion": 1,
@@ -1211,6 +1211,7 @@ class ResearchFacade:
         from services.deep_research.factual_scope import enabled as scope_enabled
         from services.deep_research.factual_review import enabled as bounded_review_enabled
         from services.deep_research.scope_expression_review import context_for_record
+        from services.deep_research.partitioned_scope_review import enabled as partitioned_scope_enabled
         checker = BudgetedSemanticChecker(invoker, run_id,
             metric_domains=lambda: self._repo.require_run(run_id).get('state', {}).get('metricDomains'),
             research_question=lambda: effective_question(self._repo.require_run(run_id)),
@@ -1223,6 +1224,7 @@ class ResearchFacade:
                 and self._repo.require_run(run_id)['auditSourceFieldsContractVersion']==2,
             factual_scope=lambda: scope_enabled(self._repo.require_run(run_id)),
             scope_expression_context=lambda targets: context_for_record(self._repo.require_run(run_id),targets),
+            partitioned_scope_review=lambda: partitioned_scope_enabled(self._repo.require_run(run_id)),
             complete_factual_scope=lambda: type(self._repo.require_run(run_id).get('factualScopeContractVersion')) is int
                 and self._repo.require_run(run_id)['factualScopeContractVersion'] in (3,4),
             result_attribution=lambda: type(self._repo.require_run(run_id).get('factualScopeContractVersion')) is int

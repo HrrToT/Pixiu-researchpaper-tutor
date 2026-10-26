@@ -605,6 +605,7 @@ class BudgetedSemanticChecker:
         prospective_envelope=0,
         review_batch_planning=0,
         scope_expression_context=None,
+        partitioned_scope_review=False,
     ):
         self._invoke = llm_invoker
         self._run_id = run_id
@@ -617,6 +618,7 @@ class BudgetedSemanticChecker:
         self._audit_target_fields = audit_target_fields
         self._factual_scope = factual_scope
         self._scope_expression_context = scope_expression_context
+        self._partitioned_scope_review = partitioned_scope_review
         self._complete_factual_scope=complete_factual_scope
         self._result_attribution=result_attribution
         self._bounded_factual_review=bounded_factual_review
@@ -646,6 +648,14 @@ class BudgetedSemanticChecker:
         # remain subject to the tracked invoker's existing call/token budget.
         proposals = [c for c in claims if c.get('kind') in {'proposal', 'suggestion', 'hypothesis'}]
         facts = [c for c in claims if c.get('kind') not in {'proposal', 'suggestion', 'hypothesis'}]
+        partitioned = self._partitioned_scope_review
+        partitioned = (partitioned() if callable(partitioned) else partitioned) is True
+        expression_targets = []
+        if partitioned and callable(self._scope_expression_context):
+            expressions = self._scope_expression_context(facts)
+            expression_targets = [(c,expressions[c['claimId']])
+                                  for c in facts if c['claimId'] in expressions]
+            facts = [c for c in facts if c['claimId'] not in expressions]
         policy = self._experiment_intent_review() if callable(self._experiment_intent_review) else self._experiment_intent_review
         scientific_methods = type(policy) is int and policy == 3
         premise_failures = []
@@ -696,6 +706,12 @@ class BudgetedSemanticChecker:
                            if c['claimId'] in context_states else {})
                        for c in [*accepted_context, *proposals] if c['claimId'] not in targets]
             verdicts.extend(self._check_batch(batch, evidence, context, node=batch_node))
+        # Preserve the ordinary answer's review opportunity before spending
+        # additional calls on decomposed settings and epistemic operators.
+        if expression_targets:
+            from services.deep_research.partitioned_scope_review import review
+            verdicts.extend(review(self,c,expression,evidence,node)
+                            for c,expression in expression_targets)
         by_id = {v['claimId']: v for v in verdicts}
         return [by_id[c['claimId']] for c in claims]
 

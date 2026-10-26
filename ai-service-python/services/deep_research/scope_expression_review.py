@@ -8,7 +8,7 @@ from services.deep_research.scope_expression import materialize
 
 def enabled(record):
     return (type(record.get('scopeExpressionReviewContractVersion')) is int
-            and record['scopeExpressionReviewContractVersion'] == 1)
+            and record['scopeExpressionReviewContractVersion'] in (1,2))
 
 
 def context_for_record(record, claims):
