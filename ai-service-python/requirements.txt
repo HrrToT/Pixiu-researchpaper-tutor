@@ -8,6 +8,7 @@ langgraph-checkpoint-sqlite==3.1.1
 starlette>=0.36
 
 # Testing
+jsonschema==4.26.0
 pytest>=8.0
 pytest-timeout>=2.0
 ruff>=0.8
