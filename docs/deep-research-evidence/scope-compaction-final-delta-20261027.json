@@ -1,0 +1,27 @@
+{
+  "exitCode": 0,
+  "testFileCount": 4,
+  "elapsedSeconds": 29.641,
+  "hashesStable": true,
+  "hashes": {
+    "services/deep_research/tools.py": "c27b57f0ce263c62fed530527b4175c370baeaf30b04d630370f990cd28f6c97",
+    "services/deep_research/facade.py": "8f15bad9ffaadafba8eb59f29ca784b8d7487c17dc6ab70965de6160caaa0043",
+    "services/deep_research/scope_expression_review.py": "08422561374b8190440ad07497f01864ab5b16e5f80e33fd78d895f1b62c16a2",
+    "services/deep_research/partitioned_scope_review.py": "afdffd7ffe411d20f7cb274fa27379893483c9c25124a33264efd9ae70b84c1c",
+    "services/deep_research/factual_decision.py": "61bebbe4b207251d5474034f7f3407ac4b5e690f1f8c58cd316dc98e43cdf9c1",
+    "services/deep_research/factual_scope.py": "5587db2d629026fe86e377a4fbb9dd93b6377b7bfb3d91218bae35061d8f7e94",
+    "services/deep_research/comparison_reasoning.py": "430b2ec63d1593ad2a81efa5502a23a67b26af706670c1b78a4320c33a7d9d0d",
+    "services/deep_research/repository.py": "f4e09496b6171c94464ad4e2e08dbd39ad3456de999102eff7e54d16e508a372",
+    "services/deep_research/graph.py": "c986d2914711150f69708d3bacb6fb1466a20e5e9689f1be20870b3a5304f9d6",
+    "services/deep_research/repair.py": "2d029f7aae912d75c33b95f4a506433940b4c1f9f32440d4eb2568ea95d5bb95",
+    "services/deep_research/scope_expression.py": "711c1db7ce1a43cd2b58a4a575c1f3a8672e6cd17dc3c6b166a84389ecdfb35f",
+    "services/deep_research/scope_compaction.py": "ad72d2a98c7bcbf0f55d9898cd883d90de049113ec9e635e568c93edba9ac99c",
+    "services/deep_research/answer_constraints.py": "0b8c32dbc782b4b7a007f5f8f41a949e7109d147a86d739da94baed9a614385f",
+    "tests/test_deep_research_scope_compaction.py": "b275e2c62c6ed4be8e113d70e231bcc7fe2416a2dc0ea5f408708c9dd35dc701",
+    "tests/test_deep_research_scope_expression.py": "4adaf3107f96e1f2b3ba4a21a9579abedc1bc85f6de7fe122d633d0c7ddca869",
+    "tests/test_deep_research_quantified_scope.py": "904e800c066e17a9f2b91a105ef0b70069e99dea0f0e25364f971dd3bc478b82",
+    "tests/test_deep_research_workflow_lifecycle_profile.py": "89c790a5ff5204f214f709ab64d8d960b7bfa31d3f40dfd0661539bc01fd5a29"
+  },
+  "summary": "....................................................................     [100%]\n68 passed in 27.09s\n",
+  "providerCalls": 0
+}

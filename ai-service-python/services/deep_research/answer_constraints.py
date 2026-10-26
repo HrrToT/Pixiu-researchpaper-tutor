@@ -76,6 +76,20 @@ def _core_claims(claims, limit, output_kind, evidence):
     return selected or claims[:3]
 
 
+def visible_count(candidate, limit, output_kind='', evidence=(), presentation_version=0):
+    """Use the publication layout's character measure before publishing."""
+    if type(presentation_version) is not int or presentation_version != 2:
+        return answer_character_count(candidate)
+    from services.deep_research.reporting import build_sections, publication_notices, visible_answer_character_count
+    claims = candidate.get('claims', [])
+    visible_notice, _ = publication_notices(claims, presentation_version=2)
+    proposed = candidate.get('sections')
+    return visible_answer_character_count({'presentationVersion': 2, 'characterLimit': limit,
+        'outputKind': output_kind, 'claims': claims, 'evidence': evidence, 'limitations': visible_notice,
+        'sections': build_sections(claims, output_kind, proposed if isinstance(proposed,list) else None,
+                                   presentation_version=2)})
+
+
 def compact_answer(report, question, invoke, parse, *, output_kind='', evidence=(), preserve_claims=False,
                    presentation_version=0, fixed_claim_ids=()):
     report = normalize_conditions(report)
@@ -84,16 +98,7 @@ def compact_answer(report, question, invoke, parse, *, output_kind='', evidence=
         return report
     modern = type(presentation_version) is int and presentation_version == 2
     def count(candidate):
-        if not modern:
-            return answer_character_count(candidate)
-        from services.deep_research.reporting import build_sections, publication_notices, visible_answer_character_count
-        claims = candidate.get('claims', [])
-        visible_notice, _ = publication_notices(claims, presentation_version=2)
-        proposed = candidate.get('sections')
-        return visible_answer_character_count({'presentationVersion': 2, 'characterLimit': limit,
-            'outputKind': output_kind, 'claims': claims, 'evidence': evidence, 'limitations': visible_notice,
-            'sections': build_sections(claims, output_kind, proposed if isinstance(proposed,list) else None,
-                                       presentation_version=2)})
+        return visible_count(candidate, limit, output_kind, evidence, presentation_version)
     if not limit or count(report) <= limit:
         return report
     # Reduce the rewrite's scope, not its evidence: original references and kinds

@@ -1590,13 +1590,19 @@ space with unsupported global absence or incidental iteration/performance values
                     'executionWorkflowBinding': workflow_binding}}, expected_revision=None)
             parsed['claims'] = [materialize_execution_claim({**claim, 'designContractVersion': 2})
                                 if isinstance(claim, dict) else claim for claim in parsed['claims']]
-        parsed = compact_answer(parsed, question,
-            lambda prompt: llm_invoke(run_id, "synthesize_compact", prompt,
-                {"max_tokens": 2000, "temperature": 0.0}), _safe_parse_json,
-            output_kind=output_kind, evidence=evidence,
-            preserve_claims=bool(point_constraint and point_constraint['mode'] == 'exact'),
-            presentation_version=record.get('reportPresentationContractVersion',0),
-            **({'fixed_claim_ids':[a['claimId'] for a in scope_expression_audit]} if scope_expression_audit else {}))
+        from services.deep_research.scope_compaction import enabled as scope_compaction_enabled, compact as compact_scope
+        compact_invoke = lambda prompt: llm_invoke(run_id, "synthesize_compact", prompt,
+                {"max_tokens": 2000, "temperature": 0.0})
+        if scope_expression_audit and scope_compaction_enabled(record):
+            parsed, scope_expression_audit = compact_scope(parsed, scope_expression_audit, question,
+                compact_invoke, _safe_parse_json, output_kind=output_kind, evidence=evidence,
+                presentation_version=record.get('reportPresentationContractVersion',0))
+        else:
+            parsed = compact_answer(parsed, question, compact_invoke, _safe_parse_json,
+                output_kind=output_kind, evidence=evidence,
+                preserve_claims=bool(point_constraint and point_constraint['mode'] == 'exact'),
+                presentation_version=record.get('reportPresentationContractVersion',0),
+                **({'fixed_claim_ids':[a['claimId'] for a in scope_expression_audit]} if scope_expression_audit else {}))
         if parsed is None:
             return {"error_code": "invalid_synthesis_response"}
 
