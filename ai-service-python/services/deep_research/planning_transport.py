@@ -41,7 +41,7 @@ def descriptor_for(record, node, initialization_target='component'):
         return init_descriptor(initialization_target)
     from services.deep_research.workflow_metadata_repair import enabled as repair_enabled, NODE as REPAIR_META
     if (node in ('plan_workflow_meta', REPAIR_META) and repair_enabled(record)
-            and record['workflowMetadataRepairContractVersion'] in (28, 29)):
+            and record['workflowMetadataRepairContractVersion'] in (28, 29, 30)):
         from services.deep_research.workflow_metadata_observation_boundary import descriptor as observation_descriptor
         return observation_descriptor()
     if (node in ('plan_workflow_meta', REPAIR_META) and repair_enabled(record)
@@ -49,7 +49,7 @@ def descriptor_for(record, node, initialization_target='component'):
         from services.deep_research.workflow_metadata_result_refs import descriptor as result_descriptor
         return result_descriptor()
     if (node in ('plan_workflow_meta', REPAIR_META) and repair_enabled(record)
-            and record['workflowMetadataRepairContractVersion'] in (25, 26, 27, 28, 29)):
+            and record['workflowMetadataRepairContractVersion'] in (25, 26, 27, 28, 29, 30)):
         from services.deep_research.workflow_metadata_first_use import descriptor as first_use_descriptor
         return first_use_descriptor()
     if (node in ('plan_workflow_meta', REPAIR_META) and repair_enabled(record)
@@ -57,7 +57,7 @@ def descriptor_for(record, node, initialization_target='component'):
         from services.deep_research.workflow_metadata_bounded_schema import descriptor as bounded_descriptor
         return bounded_descriptor()
     if (node in ('plan_workflow_meta', REPAIR_META) and repair_enabled(record)
-            and record['workflowMetadataRepairContractVersion'] in (22, 23, 24, 25, 26, 27, 28, 29)):
+            and record['workflowMetadataRepairContractVersion'] in (22, 23, 24, 25, 26, 27, 28, 29, 30)):
         from services.deep_research.workflow_metadata_compact_transport import descriptor as compact_descriptor
         return compact_descriptor()
     if (node in ('plan_workflow_meta', REPAIR_META) and repair_enabled(record)
@@ -137,10 +137,10 @@ def options_for_record(record,node,options):
     options=reasoning_options(record,node,options)
     from services.deep_research.workflow_metadata_repair import enabled as metadata_revision_enabled
     if (node in ('plan_workflow_meta', 'repair_workflow_meta') and metadata_revision_enabled(record)
-            and record['workflowMetadataRepairContractVersion'] in (4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29)):
+            and record['workflowMetadataRepairContractVersion'] in (4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30)):
         # Fixed before request fingerprinting and atomic input/output reservation.
         # Raw 8KB and whole-run limits remain independent admission checks.
-        options={**options,'max_tokens':6144 if record['workflowMetadataRepairContractVersion'] in (10, 29) else 3072}
+        options={**options,'max_tokens':6144 if record['workflowMetadataRepairContractVersion'] in (10, 29, 30) else 3072}
     if (node=='plan_experiment' and type(record.get('experimentPlanningReasoningContractVersion')) is int
             and record['experimentPlanningReasoningContractVersion']==1):
         options={**options,'thinking':{'type':'enabled'},'reasoning_effort':'low'}
