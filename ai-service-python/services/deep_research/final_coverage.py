@@ -36,7 +36,7 @@ def coverage_prompt_byte_limit(budget, output_tokens=3500):
     return max(0, min(24000, remaining - output_tokens - 1024))
 
 
-def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, *, budget=None,literal_dimensions=False,diagnostics=False):
+def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, *, budget=None,literal_dimensions=False,diagnostics=False,request_contract=False):
     from services.deep_research.answer_coverage import answer_coverage_gaps
     from services.deep_research.selection import balanced_sample, surrounding_context
 
@@ -128,6 +128,12 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
         if diagnostics:
             from services.deep_research.coverage_diagnostics import GUIDANCE
             prompt += '\n' + GUIDANCE
+        if request_contract:
+            from services.deep_research.request_coverage import contract, prompt as request_prompt
+            fixed_requirements=contract(audit_plan,question)
+            prompt=request_prompt(question,fixed_requirements,wire_claims,display_metadata,evidence_marker,FINAL_COVERAGE_POLICY)
+            if literal_dimensions:
+                prompt+='\n'+FINAL_DIMENSION_POLICY
         template = prompt
         try:
             output_tokens = coverage_output_tokens(audit_plan, claims)
@@ -148,6 +154,9 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
             finish = result.get('finishReason', result.get('finish_reason')) if isinstance(result, dict) else getattr(result, 'finish_reason', None)
             try:
                 verdicts = parse(content) if finish != 'length' else None
+                if request_contract:
+                    from services.deep_research.request_coverage import normalize
+                    verdicts=normalize(verdicts,fixed_requirements)
             except (ValueError, TypeError):
                 verdicts = None
             status = 'checked' if isinstance(verdicts, list) else 'invalid_response'
@@ -175,7 +184,8 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
                 from services.deep_research.coverage_aspects import invalid_coverage_aspects
                 invalid_aspects = invalid_coverage_aspects(verdicts, claims, rows,
                     [question, *[o.get('question', '') for p in audit_plan for o in p.get('obligations', [])]],
-                    request_only_obligations=[identity] if identity else [], display_metadata=display_metadata)
+                    request_only_obligations=([o['obligationId'] for o in fixed_requirements]
+                        if request_contract else [identity] if identity else []), display_metadata=display_metadata)
                 if invalid_aspects:
                     verdicts = [{**v, 'status': 'partial'} if isinstance(v, dict)
                         and v.get('obligationId') in invalid_aspects else v for v in verdicts]
@@ -235,6 +245,7 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
             'completionContractDigest': completion_contract_digest(plan, claims),
             'displayMetadataDigest': display_metadata_digest(claims, evidence),
             'gaps': gaps, 'invalidAspectObligations': invalid_aspects,
+            **({'requestCoverageContractVersion':1} if request_contract else {}),
             'wholeQuestionId': identity, 'nonblockingResearch': nonblocking,
             'criterionGaps': criterion_gaps,
             'invalidCriterionObligations': invalid_criteria,

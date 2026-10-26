@@ -1700,6 +1700,7 @@ def make_verify_node(
                 **({'proposal_context':proposal_context} if proposal_context else {}))
         
         from services.deep_research.final_coverage import audit_final_answer
+        from services.deep_research.request_coverage import enabled as request_coverage_enabled
         from services.deep_research.request_dimensions import enabled as dimensions_enabled
         from services.deep_research.comparison_reasoning import enabled as comparison_enabled
         from services.deep_research.factual_scope import enabled as scope_enabled
@@ -1722,6 +1723,7 @@ def make_verify_node(
             answer_coverage = audit_final_answer(run_id, effective_question(record),
                 saved.get('plan', []), verification_result.get('accepted', []),
                 evidence, llm_invoke, _safe_parse_json, budget=current.get('budget'),
+                **({'request_contract':True} if request_coverage_enabled(record) else {}),
                 **({'diagnostics':True} if type(record.get('coverageDiagnosticsContractVersion')) is int and record['coverageDiagnosticsContractVersion']==1 else {}),
                 **({'literal_dimensions':True} if dimensions_enabled(record) else {}))
             if saved.get('outputKind') == 'experiment_design':
@@ -1926,7 +1928,8 @@ def make_verify_node(
                         answer_coverage = audit_final_answer(run_id, effective_question(record),
                             record.get('state', {}).get('plan', []), merged.get('accepted', []),
                             evidence, llm_invoke, _safe_parse_json, budget=current.get('budget'),
-                            **({'diagnostics':True} if type(record.get('coverageDiagnosticsContractVersion')) is int and record['coverageDiagnosticsContractVersion']==1 else {}),
+                            **({'request_contract':True} if request_coverage_enabled(record) else {}),
+                **({'diagnostics':True} if type(record.get('coverageDiagnosticsContractVersion')) is int and record['coverageDiagnosticsContractVersion']==1 else {}),
                             **({'literal_dimensions':True} if dimensions_enabled(record) else {}))
                     verification_result = merged
             except BudgetExhaustedError as exc:

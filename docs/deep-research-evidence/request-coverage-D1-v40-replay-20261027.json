@@ -1,0 +1,16 @@
+{
+  "sourceCase": "D1-v40",
+  "oldCoverageResponseRejectedByNewWire": true,
+  "fixedObligations": 4,
+  "fixedChecks": 4,
+  "allRequiredTextsExactlyFromFrozenCriteriaOrQuestion": true,
+  "simulatedVerdict": "partial",
+  "diagnosticErrors": [],
+  "allBoundClaimFieldsResolved": true,
+  "originalPayloadSha256": "7179c94ad8def39dc52a3b92b1663185d40ed040af3779047fa33a3578451524",
+  "originalPayloadUnchanged": true,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "contentApproval": false,
+  "boundary": "Only contract projection and saved-input assembly; simulated decisions remain partial and are not scientific acceptance."
+}

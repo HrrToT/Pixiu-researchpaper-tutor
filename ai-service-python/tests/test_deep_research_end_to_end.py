@@ -75,6 +75,13 @@ class FixtureModel:
                     verdict['reason']='The fixture source explicitly reports this value.'
         elif prompt.startswith(("Revise only the targets","Rebuild ONLY these rejected factual answer targets")):
             content = []  # An unsupported claim may be dropped; do not relax checks.
+        elif prompt.startswith('Audit the FINAL ACCEPTED ANSWER against the FIXED REQUEST CHECKLIST'):
+            required=json.JSONDecoder().raw_decode(prompt.split('Fixed checks (requirements, never paper facts): ',1)[1])[0]
+            content=[{'obligationId':o['obligationId'],'checks':[
+                {'checkId':c['checkId'],'status':'partial',
+                 'bindings':[{'claimId':'c1','field':'text'}],
+                 'reason':'The fixture reports numerical results but omits requested evaluation conditions.'}
+                for c in o['checks']]} for o in required]
         elif prompt.startswith("Audit whether the FINAL ACCEPTED ANSWER"):
             obligations = json.loads(prompt.split('Research and answer obligations (including the original question): ', 1)[1].split('\nAccepted final claims:', 1)[0])
             # Fixture claims retain numerical results but omit the requested
@@ -231,7 +238,7 @@ def test_absolute_provider_timeout_preserves_unknown_and_ignores_late_response(t
 
 @pytest.mark.parametrize('prefix,node', [
     ('Analyze this research question', 'resolve_brief'),
-    ('Audit whether the FINAL ACCEPTED ANSWER', 'verify_answer_coverage'),
+    ('Audit the FINAL ACCEPTED ANSWER against the FIXED REQUEST CHECKLIST', 'verify_answer_coverage'),
     ('Rebuild ONLY these rejected factual answer targets', 'repair_claims'),
 ])
 def test_pause_keeps_known_inflight_response_and_resume_does_not_resend_it(tmp_path, prefix, node):
