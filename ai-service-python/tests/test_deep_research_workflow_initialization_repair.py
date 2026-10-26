@@ -22,7 +22,7 @@ def test_new_repair_marker_is_server_owned(tmp_path, injected):
     try:
         row, _ = facade.create({'workspaceTaskId': 't', 'operationKey': 'new', 'question': 'Design',
                                 'deferStart': True, repair.MARKER: injected}, start_async=False)
-        assert type(row[repair.MARKER]) is int and row[repair.MARKER] == 1
+        assert type(row[repair.MARKER]) is int and row[repair.MARKER] == 2
         assert repair.enabled(row)
     finally: facade.shutdown()
 

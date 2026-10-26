@@ -13,12 +13,12 @@ def test_new_profile_is_consistent_and_does_not_rewrite_legacy_run(tmp_path):
     try:
         first,_=facade.create({'workspaceTaskId':'t','operationKey':'first','question':'Design an experiment',
             'deferStart':True},start_async=False)
-        assert first['promptVersion']=='dr-v2.20261026.285'
+        assert first['promptVersion']=='dr-v2.20261026.286'
         assert first['scientificOutlineContractVersion']==1
         assert first['workflowMetadataRowsContractVersion']==2
         assert first['workflowMetadataRepairContractVersion']==21
         assert first['workflowInitializationOutputContractVersion']==1
-        assert first['workflowInitializationRepairContractVersion']==1
+        assert first['workflowInitializationRepairContractVersion']==2
         assert (first['workflowContractVersion'],first['executionWorkflowContractVersion'])==(5,7)
         probe=deepcopy(first);probe['state']['outputKind']='experiment_design'
         assert enabled(probe) and draft_enabled(probe) and repair_enabled(probe)
