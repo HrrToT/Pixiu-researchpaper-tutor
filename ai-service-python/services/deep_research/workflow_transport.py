@@ -90,6 +90,11 @@ def reasoning_options(record, node, options):
         return {**options, 'thinking': {'type': 'disabled'}, 'reasoning_effort': 'none'}
     if node in ('plan_workflow_meta', 'repair_workflow_meta'):
         from services.deep_research.workflow_metadata_repair import enabled as revision_enabled
+        if (node == 'repair_workflow_meta' and revision_enabled(record)
+                and record['workflowMetadataRepairContractVersion'] == 33):
+            # Includes reasoning and visible output; reserved before the only repair.
+            return {**options, 'thinking': {'type': 'enabled'}, 'reasoning_effort': 'low',
+                    'max_tokens': 16384, 'timeout_seconds': 90}
         if revision_enabled(record) and record['workflowMetadataRepairContractVersion'] == 10:
             return {**options, 'thinking': {'type': 'enabled'}, 'reasoning_effort': 'low',
                     'max_tokens': 6144, 'timeout_seconds': 90}
