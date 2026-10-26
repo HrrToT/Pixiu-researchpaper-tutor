@@ -252,7 +252,7 @@ def test_client_cannot_override_the_server_revision_contract(tmp_path):
     try:
         row, _ = facade.create({'workspaceTaskId': 't', 'operationKey': 'fixture', 'question': 'Design',
             'workflowMetadataRepairContractVersion': 999, 'deferStart': True}, start_async=False)
-        assert row['workflowMetadataRepairContractVersion'] == 23 and enabled(row)
+        assert row['workflowMetadataRepairContractVersion'] == 24 and enabled(row)
     finally: facade.shutdown()
 
 
