@@ -1,0 +1,88 @@
+{
+  "date": "2026-10-26",
+  "sourceCommit": "ed3d127a",
+  "promptVersion": "dr-v2.20261026.301",
+  "metadataVersion": 34,
+  "offlineTests": {
+    "passed": 823,
+    "files": 52,
+    "elapsedSeconds": 120.72,
+    "sourceAndTestsStable": true,
+    "exitCode": 0
+  },
+  "diagnosis": {
+    "sourceReceiptSha256": "918be46dadc1a6b6129065e53acd6c515ea00217dd98b3ed0650f5bb63b44ae3",
+    "scope": "Read-only old failure structure diagnosis; not converted, repaired, resumed or scientifically accepted",
+    "providerCalls": 0,
+    "productionWrites": 0,
+    "rows": [
+      {
+        "node": "plan_workflow_meta",
+        "steps": 7,
+        "indexedResultReads": 0,
+        "duplicatedProducerIndexFieldsRemovedByNewSyntax": 0,
+        "observations": [
+          {
+            "stepIndex": 3,
+            "measurementOutputCount": 2,
+            "explicitRecordInputCount": 1,
+            "missingDeclaredOutputs": 1
+          },
+          {
+            "stepIndex": 4,
+            "measurementOutputCount": 2,
+            "explicitRecordInputCount": 1,
+            "missingDeclaredOutputs": 1
+          },
+          {
+            "stepIndex": 5,
+            "measurementOutputCount": 1,
+            "explicitRecordInputCount": 1,
+            "missingDeclaredOutputs": 0
+          },
+          {
+            "stepIndex": 6,
+            "measurementOutputCount": 1,
+            "explicitRecordInputCount": 1,
+            "missingDeclaredOutputs": 0
+          }
+        ]
+      },
+      {
+        "node": "repair_workflow_meta",
+        "steps": 7,
+        "indexedResultReads": 0,
+        "duplicatedProducerIndexFieldsRemovedByNewSyntax": 0,
+        "observations": [
+          {
+            "stepIndex": 3,
+            "measurementOutputCount": 2,
+            "explicitRecordInputCount": 1,
+            "missingDeclaredOutputs": 1
+          },
+          {
+            "stepIndex": 4,
+            "measurementOutputCount": 2,
+            "explicitRecordInputCount": 1,
+            "missingDeclaredOutputs": 1
+          },
+          {
+            "stepIndex": 5,
+            "measurementOutputCount": 1,
+            "explicitRecordInputCount": 1,
+            "missingDeclaredOutputs": 0
+          },
+          {
+            "stepIndex": 6,
+            "measurementOutputCount": 1,
+            "explicitRecordInputCount": 1,
+            "missingDeclaredOutputs": 0
+          }
+        ]
+      }
+    ]
+  },
+  "providerCalls": 0,
+  "productionModelRunsCreated": 0,
+  "boundary": "Compiler/schema/one-revision persistence and associated offline regression. No real provider generation or scientific/independent acceptance. E1-v87 unknown remains untouched."
+}
