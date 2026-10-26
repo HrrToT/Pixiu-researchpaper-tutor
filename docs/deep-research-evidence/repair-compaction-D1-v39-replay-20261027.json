@@ -1,0 +1,24 @@
+{
+  "sourceCase": "D1-v39",
+  "oldCandidateVisibleCharacters": 452,
+  "newCandidateVisibleCharacters": 222,
+  "keptClaimIds": [
+    "c1",
+    "c2"
+  ],
+  "mockInvocation": [
+    {
+      "bytes": 4883,
+      "sha256": "a4909f1495e30cbef71a820b0eb54d2069a5b3a4f82e2f591fc0171c1f61683e"
+    }
+  ],
+  "allCitationKindObligationAndTableBindingsPreserved": true,
+  "newScopeAstBoundToNewText": true,
+  "allNewTextStillUnverified": true,
+  "originalPayloadSha256": "dbd600a52fd17ffc893a1800178d04610c1a1170620d49263bc3b128923cfa4e",
+  "originalPayloadUnchanged": true,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "scientificApproval": false,
+  "boundary": "Hand-authored mock wording exercises actual saved candidates and assembly only; no provider or scientific quality acceptance."
+}

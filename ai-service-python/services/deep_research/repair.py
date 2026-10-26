@@ -609,7 +609,7 @@ def factual_redraft_eligible(report):
 def repair_rejected(report, verification, evidence, question, invoke, parse, *,
                     max_prompt_bytes=24000, metric_domains=None, batch_state=None, checkpoint=None,
                     current_budget=None, invoke_request=None, fact_redraft=False, requirement_context=(),
-                    source_aware_redraft=False,comparison_reasoning=False,question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,strict_response=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False,shared_experiment_schema=False,experiment_evidence_context=None,experimental_edits=False,experimental_diagnostics=False,experimental_nested_tables=False,experimental_representation=False,experimental_coverage=False,citation_presentation_version=0,configuration_consistency_version=0,repair_evidence_packet_version=0,scheduling_version=0,answer_intents=None,scope_expression=False):
+                    source_aware_redraft=False,comparison_reasoning=False,question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,strict_response=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False,shared_experiment_schema=False,experiment_evidence_context=None,experimental_edits=False,experimental_diagnostics=False,experimental_nested_tables=False,experimental_representation=False,experimental_coverage=False,citation_presentation_version=0,configuration_consistency_version=0,repair_evidence_packet_version=0,scheduling_version=0,answer_intents=None,scope_expression=False,defer_length_filter=False):
     """One bounded revision round, split before dispatch when evidence cannot fit.
 
     At most three requests share full sibling design definitions. Successful
@@ -618,6 +618,9 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
     """
     from services.deep_research.contracts import digest, DeepResearchError
     from services.deep_research.repair_batches import split_repair_targets
+
+    if type(defer_length_filter) is not bool:
+        raise ValueError('Invalid deferred repair length policy')
 
     if (type(scheduling_version) is not int or scheduling_version not in (0,1,2)
             or scheduling_version in (1,2) and not (shared_experiment_schema and experimental_edits)):
@@ -646,6 +649,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
     if type(citation_presentation_version) is not int or citation_presentation_version not in (0,2,3,4):
         raise ValueError('Unsupported citation presentation contract')
     identity = digest({'report': report, 'verification': verification,
+                       **({'deferLengthFilterVersion':1} if defer_length_filter else {}),
                        **({'scopeExpressionContractVersion':2 if type(scope_expression) is int and scope_expression == 2 else 1} if scope_expression else {}),
                        **({'answerPointIntentContractVersion':1,'answerIntents':answer_intents} if answer_intents is not None else {}),
                        **({'experimentRepairPriorityContractVersion':scheduling_version} if scheduling_version in (1,2) else {}),
@@ -821,6 +825,8 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
             if checkpoint:
                 checkpoint(deepcopy(state))
         revised.extend(deepcopy(rows))
+    if defer_length_filter:
+        return revised  # The caller must compact and reverify before publication.
     limit = requested_character_limit(question)
     if not limit:
         return revised

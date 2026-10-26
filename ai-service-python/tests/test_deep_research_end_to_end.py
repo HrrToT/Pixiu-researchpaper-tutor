@@ -56,7 +56,8 @@ class FixtureModel:
                 {"claimId": "c2", "text": "Beta reports 90% accuracy.", "kind": "reported", "evidenceRefs": [ids[1]]},
                 {"claimId": "bad", "text": "Beta reports 99% accuracy.", "kind": "reported", "evidenceRefs": [ids[1]]}],
                 "proposals": ["UNCHECKED PROPOSAL MUST NEVER BE SHOWN"], "gaps": []}
-        elif prompt.startswith("Verify these claims"):
+        elif prompt.startswith(("Verify these claims", "Check the complete factual assertions")):
+            single_decision = prompt.startswith("Check the complete factual assertions")
             claims = json.loads(prompt.split('Claims:\n', 1)[1].split('\n\nEvidence:', 1)[0])
             content = [{"claimId": c['claimId'], "status": "passed"} for c in claims]
             if 'Scope-strength audit' in prompt:
@@ -68,6 +69,10 @@ class FixtureModel:
                     verdict['scopeAudit']={'claimStrength':'bounded','evidenceStrength':'bounded',
                         'supported':True,**binding,
                         'premises':[{'evidenceId':ref,'quote':packet['evidence'][ref]['quote']}]}
+            if single_decision:
+                for verdict in content:
+                    verdict.pop('status')
+                    verdict['reason']='The fixture source explicitly reports this value.'
         elif prompt.startswith(("Revise only the targets","Rebuild ONLY these rejected factual answer targets")):
             content = []  # An unsupported claim may be dropped; do not relax checks.
         elif prompt.startswith("Audit whether the FINAL ACCEPTED ANSWER"):
@@ -149,7 +154,7 @@ def test_real_graph_publishes_only_verified_body_and_reopens_without_generation(
 def test_truncated_verification_fails_without_publishing_evidence_insufficiency(tmp_path):
     class TruncatedVerifier(FixtureModel):
         def invoke(self, request):
-            if request.prompt.startswith('Verify these claims'):
+            if request.prompt.startswith(('Verify these claims','Check the complete factual assertions')):
                 self.requests.append(request)
                 return LLMResult('fixture', 'fixture-v1', '', LLMUsage(120, 8192, 8312),
                                  finish_reason='length')
@@ -173,7 +178,7 @@ def test_truncated_verification_fails_without_publishing_evidence_insufficiency(
         assert saved['state']['evidence'] and saved['state']['reportBody']
         calls = [c for c in repo.list_calls(rid) if c['node'] == 'verify']
         assert len(calls) == 1 and calls[0]['status'] == 'succeeded'
-        assert sum(r.prompt.startswith('Verify these claims') for r in model.requests) == 1
+        assert sum(r.prompt.startswith(('Verify these claims','Check the complete factual assertions')) for r in model.requests) == 1
     finally:
         facade.shutdown()
 
@@ -193,7 +198,7 @@ def test_absolute_provider_timeout_preserves_unknown_and_ignores_late_response(t
 
     class TimedVerifier(FixtureModel):
         def invoke(self, request):
-            if request.prompt.startswith('Verify these claims'):
+            if request.prompt.startswith(('Verify these claims','Check the complete factual assertions')):
                 self.requests.append(request)
                 return DeepSeekLLM(api_key='fixture', base_url='https://example.invalid').invoke(
                     replace(request, timeout_seconds=0.03))

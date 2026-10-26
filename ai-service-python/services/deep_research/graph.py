@@ -1743,6 +1743,7 @@ def make_verify_node(
             from services.deep_research.repair import repair_rejected
             from services.deep_research.answer_point_intent import enabled as point_intent_enabled, from_drafting_audit
             from services.deep_research.scope_expression import enabled as scope_expression_enabled
+            from services.deep_research.repair_compaction import enabled as repair_compaction_enabled, compact_repairs
             from services.deep_research.contracts import BudgetExhaustedError, DeepResearchError
             def invoke_repair(prompt, output_limit=None):
                 # Admit the rewrite and its independent verification as a pair.
@@ -1816,6 +1817,7 @@ def make_verify_node(
                         batch_state=saved.get('repairBatchState'), checkpoint=checkpoint_repair_batches,
                         current_budget=lambda: repo_update(run_id, lambda r: r, expected_revision=None).get('budget', {}),
                         invoke_request=invoke_repair,
+                        **({'defer_length_filter':True} if repair_compaction_enabled(record) else {}),
                         **({'compact_source_repair':True} if compact_repair else {}),
                         **({'shared_experiment_schema':True} if shared_experiment_repair(record) else {}),
                         **({'experimental_edits':True} if edit_repair else {}),
@@ -1861,6 +1863,30 @@ def make_verify_node(
                             for item in record.get('state',{}).get('plan',[]) for o in item.get('obligations',[])]}
                            if type(record.get('factRedraftContractVersion')) is int
                            and record['factRedraftContractVersion'] in (1,2,3) else {}))
+                    if repair_compaction_enabled(record):
+                        current = repo_update(run_id, lambda r: r, expected_revision=None)
+                        def checkpoint_compaction(value):
+                            repo_update(run_id, lambda r: {**r, 'state': {**r.get('state', {}),
+                                'repairCompaction': value}}, expected_revision=None)
+                        def invoke_compaction(prompt):
+                            # Same normal pool, tracked request identity and absolute
+                            # deadline. Reserve enough time to check the new wording.
+                            from datetime import datetime, UTC
+                            from services.deep_research.factual_repair import protected_seconds
+                            maximum = float(record.get('budget',{}).get('maxWallClockSeconds') or 0)
+                            if maximum and record.get('startedAt'):
+                                elapsed = (datetime.now(UTC)-datetime.fromisoformat(record['startedAt'].replace('Z','+00:00'))).total_seconds()
+                                minimum = protected_seconds(record,revised)
+                                if maximum-elapsed < minimum:
+                                    raise BudgetExhaustedError('repairTimeSeconds',maximum-minimum,elapsed)
+                            if len(prompt.encode('utf8')) > 32000:
+                                raise BudgetExhaustedError('repairCompactionPromptBytes',32000,len(prompt.encode('utf8')))
+                            return llm_invoke(run_id,'synthesize_compact',prompt,{'max_tokens':2000,'temperature':0.0})
+                        revised = compact_repairs(repair_report,revised,repair_targets.get('accepted',[]),
+                            current.get('state',{}).get('repairBatchState'),effective_question(record),
+                            invoke_compaction,_safe_parse_json,evidence=evidence,output_kind=saved.get('outputKind',''),
+                            presentation_version=record.get('reportPresentationContractVersion',0),
+                            saved=current.get('state',{}).get('repairCompaction'),checkpoint=checkpoint_compaction)
                     repo_update(run_id, lambda r: {**r, 'state': {**r.get('state', {}),
                         'repairDraft': revised}}, expected_revision=None)
                 if revised:

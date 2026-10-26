@@ -22,6 +22,11 @@ def context_for_record(record, claims):
     if isinstance(batches,dict):
         for rows in batches.values():
             if isinstance(rows,list): entries.extend(rows)
+    compacted = state.get('repairCompaction',{})
+    if (type(record.get('repairCompactionContractVersion')) is int
+            and record['repairCompactionContractVersion']==1
+            and isinstance(compacted,dict) and compacted.get('status')=='completed'):
+        entries.extend(compacted.get('scopeExpressionAudit',[]))
     result = {}
     for claim in claims:
         candidates = {}

@@ -13,7 +13,8 @@ def enabled(record):
             and record['scopeExpressionContractVersion'] == 2)
 
 
-def compact(report, audits, question, invoke, parse, *, output_kind='', evidence=(), presentation_version=0):
+def compact(report, audits, question, invoke, parse, *, output_kind='', evidence=(), presentation_version=0,
+            fixed_claims=()):
     """Return revised report and matching unchecked ASTs, or reject atomically.
 
     All existing points, kinds, citations, obligations and table bindings remain.
@@ -32,6 +33,11 @@ def compact(report, audits, question, invoke, parse, *, output_kind='', evidence
         return None, audits
     original = {c['claimId']:c for c in source['claims']}
     if len(original) != len(source['claims']): return None, audits
+    fixed = deepcopy(list(fixed_claims))
+    if (any(not isinstance(c,dict) or not isinstance(c.get('claimId'),str)
+            or not isinstance(c.get('text'),str) or c['claimId'] in original for c in fixed)
+            or len({c['claimId'] for c in fixed}) != len(fixed)):
+        return None, audits
     expressions = {}
     for audit in audits:
         key = audit.get('claimId')
@@ -45,7 +51,7 @@ def compact(report, audits, question, invoke, parse, *, output_kind='', evidence
         expressions[key] = deepcopy(audit['expression'])
     limit = requested_character_limit(question)
     def count(value):
-        return visible_count(value,limit,output_kind,evidence,presentation_version)
+        return visible_count({**value,'claims':[*fixed,*value['claims']]},limit,output_kind,evidence,presentation_version)
     if not limit or count(source) <= limit: return source, deepcopy(audits)
     overhead = count({**source,'claims':[{**c,'text':'','conditions':{}} for c in source['claims']]})
     available = limit - overhead
@@ -78,6 +84,8 @@ The service compiles each observation as subject，attribute=value under
 These prefixes, punctuation and all field strings consume the shared allowance.
 No old evidence verdict is retained: all new wording will be independently checked.
 ''' + guidance(2) + '\nInput:\n' + json.dumps(inputs,ensure_ascii=False,separators=(',',':'))
+    if fixed:
+        prompt += '\nAlready accepted points are fixed outside this request; their full text and layout are included in overhead. Never return or rewrite them.\n'
     response = invoke(prompt)
     if response.get('finishReason',response.get('finish_reason')) == 'length': return None, audits
     value = parse(response.get('content',''))
