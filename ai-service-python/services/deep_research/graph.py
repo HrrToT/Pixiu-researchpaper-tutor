@@ -314,6 +314,8 @@ Return a JSON ARRAY of plan items, NOT an object with items field."""
             prompt += 'choose the appropriate responseType; include completionCriteria on EVERY obligation):\n'
             prompt += json.dumps(shape, ensure_ascii=False, separators=(',', ':'))
             prompt += '\nReturn only the complete JSON array, with no Markdown fences or extra commentary.'
+        from services.deep_research.request_semantics import enabled as semantics_enabled, PLAN_GUIDANCE
+        if semantics_enabled(record):prompt+='\n'+PLAN_GUIDANCE
         result = llm_invoke(run_id, "plan", prompt, {"max_tokens": 5000, "temperature": 0.1})
         
         # Handle LLMResult dataclass - extract content attribute
@@ -408,6 +410,13 @@ Return a JSON ARRAY of plan items, NOT an object with items field."""
                 validated=validate_plan(ensure_experiment_deliverable(validated,question,required_default or candidates))
             validate_completion_criteria(validated, required=record.get('planCompletionContractVersion') == 1)
         
+        semantics_changes=[]
+        if semantics_enabled(record):
+            from services.deep_research.request_semantics import normalize_access_requirements
+            validated,semantics_changes=normalize_access_requirements(validated,question)
+            validated=validate_plan(validated)
+            validate_completion_criteria(validated,required=criteria_required)
+
         plan_ids = [item["itemId"] for item in validated]
         from services.deep_research.continuation import rebind_inherited_state
         inherited = bool(brief_state.get('inheritedEvidence'))
@@ -418,6 +427,7 @@ Return a JSON ARRAY of plan items, NOT an object with items field."""
                 **(rebind_inherited_state(r.get('state') or {}, validated)
                    if inherited else {**(r.get("state") or {}), "plan": validated}),
                 'planIdNormalization': identity_changes,
+                **({'planRequestSemanticsNormalization':semantics_changes} if semantics_enabled(record) else {}),
                 **({'planRequirementNormalization': requirement_changes} if requirements_enabled(record) else {}),
                 'planFormatValidation': {'status': 'validated', 'requiresCompletionCriteria': criteria_required}}},
             expected_revision=None,
@@ -1392,6 +1402,8 @@ space with unsupported global absence or incidental iteration/performance values
         from services.deep_research.access_disclosure import enabled as access_disclosure_enabled, GUIDANCE as access_disclosure_guidance
         if access_disclosure_enabled(record):
             prompt+='\n'+access_disclosure_guidance
+        from services.deep_research.request_semantics import enabled as semantics_enabled, DRAFT_GUIDANCE
+        if semantics_enabled(record):prompt+='\n'+DRAFT_GUIDANCE
         template = prompt
         if premise_mode:
             reverse_aliases={eid:alias for alias,eid in evidence_aliases.items()}
@@ -1869,6 +1881,7 @@ def make_verify_node(
                             if claim_check_enabled(record) and record['claimCheckContractVersion'] in (5,6,7,8,9) else {}),
                         **({'compact_source_repair':True} if compact_repair else {}),
                         **({'ordinary_advice':True} if advice_repair else {}),
+                        **({'request_semantics':True} if type(record.get('requestSemanticsContractVersion')) is int and record['requestSemanticsContractVersion']==1 else {}),
                         **({'task_sources':True} if type(record.get('reportPresentationContractVersion')) is int and record['reportPresentationContractVersion']==4 else {}),
                         **({'shared_experiment_schema':True} if shared_experiment_repair(record) else {}),
                         **({'experimental_edits':True} if edit_repair else {}),
