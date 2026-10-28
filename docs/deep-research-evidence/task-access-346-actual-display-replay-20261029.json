@@ -1,0 +1,30 @@
+{
+  "sourceCase": "S1G-v5",
+  "payloadSha256": "a2bbd0c23920fdc1a04adcd73ffe13bcaa9c2e8691c0cc12fdd0513a8ec4fb71",
+  "oldDisplayMetadata": {},
+  "newDisplayMetadata": {
+    "sourceAccessSummary": "本回答引用：全文片段。",
+    "taskSourceAccessContractVersion": 1,
+    "sourceAccessRecords": {
+      "ev_ddc954bffa5ceef4559e4278f2dc820d252b658d80c8e83fb65f3f300740ef49": "fulltext",
+      "ev_a338259d46d124ea7f2a011130fa7bf4e3da6bc823049df2cf0d15b1a793e240": "fulltext",
+      "ev_68801d18533cd7182b698cba746ecff15805968ba6fdfaeb99fde2f29d62afd7": "fulltext",
+      "ev_42616b2c3de5e56cefee88bd6a500de8417a5fa9bfce7977f165c9d1c27394fb": "fulltext"
+    }
+  },
+  "actualFrozenAccessRequirements": {
+    "ob_4": {
+      "overall": true,
+      "criteria": [
+        "requirement_1"
+      ]
+    }
+  },
+  "newRenderedBody": "本回答引用：全文片段。\n\n## 推荐阅读顺序\n\n- 建议阅读顺序：先读摘要了解整体流程，再读方法部分中关于高斯剪枝与恢复、SH蒸馏、向量量化的具体描述，最后读实验部分中的消融研究以理解各环节的影响。 [1](#research-evidence-ev_ddc954bffa5ceef4559e4278f2dc820d252b658d80c8e83fb65f3f300740ef49) [2](#research-evidence-ev_a338259d46d124ea7f2a011130fa7bf4e3da6bc823049df2cf0d15b1a793e240) [3](#research-evidence-ev_68801d18533cd7182b698cba746ecff15805968ba6fdfaeb99fde2f29d62afd7) [4](#research-evidence-ev_42616b2c3de5e56cefee88bd6a500de8417a5fa9bfce7977f165c9d1c27394fb)\n\n",
+  "visibleCharacterCount": 94,
+  "originalClaimsAndEvidenceUnchanged": true,
+  "providerCalls": 0,
+  "productionPublish": false,
+  "scientificApproval": false,
+  "independentCredit": 0
+}
