@@ -9,3 +9,13 @@
 离线以已结算生成原文经过真实 make_synthesize_node 回放，在精简发送前截获：实际长度 435 被传入，低强度推理和原 8,192 输出上限生效，无模型调用或生产写入。证据为 `deep-research-evidence/compaction-320-actual-replay-20261028.json`。它只证明请求配置与规则传递，不证明精简或内容质量已成功。
 
 扩大到运行配置、结构化输出与预算后，首次回归暴露两个旧隔离夹具仍使用早期 status 格式。夹具改为当前唯一判定协议，并明确返回不支持虚构事实，只验证来源隔离；生产审核门槛未修改。75 项针对性检查通过。固定最终源码的 54 文件、945 项关联回归通过，pytest 130.39 秒、外部 135.11 秒，源码及测试哈希前后一致，无模型调用。最终证据为 `deep-research-evidence/compaction-320-final-regression-20261028.json`。
+
+源码 `a43ab340` 已通过空闲快照流程重启原 Python 容器一次加载。RAG/GROBID 健康、前端 HTTP 200，7,465 条账本、全部旧研究 payload、五组任务和完整索引/嵌入哈希精确保持；0 活跃、13 暂停保持，加载无模型调用。证据为 `deep-research-evidence/runtime-load-compaction-320-20261028.json`。
+
+## 一次保存初稿的真实阶段验证
+
+初稿只读回放 `.319` 的已完整结算生成结果，没有再次调用生成。一次低强度推理精简将 435 字符变为 276，两个要点、引用与未核验范围 AST 保留。之后进入正常独立核查，首条主表定性比较通过；第二条边界审核返回 not_entailed/explicit，但自身前提同时包含 evidenceId、path 和 quote，违反当前绑定的二选一格式，被原校验拒绝为 scope_expression_premises_not_bound。没有静默丢字段或将旧失败改判。
+
+完整阶段共 7 次调用，全部成功结算，39,611 Token，费用未知，无重试；完整性审核 checked、4 个缺口，最终 1 条接受、1 条拒绝。生产账本及 payload 精确保持。精简阶段在此输入上成功，不等于整份研究内容通过，独立验收不增加。原始请求与隔离账本位于本地 `tmp/component-compaction-320-20261028/receipt`；精简证据为 `deep-research-evidence/compaction-320-real-stage-20261028.json`。
+
+下一步先离线核对重复绑定的严格一致性处理：只有路径与引文指向同一真实来源字段且逐字一致时才讨论新策略；跨字段、跨来源、冲突与缺身份继续拒绝。不能通过单纯忽略 quote 或 path 来批准本次失败结果。
