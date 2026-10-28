@@ -63,7 +63,7 @@ def bound_table_context(claim, evidence):
 
 def declared_references_enabled(record):
     return (type(record.get('tableReferencesContractVersion')) is int
-            and record['tableReferencesContractVersion']==1)
+            and record['tableReferencesContractVersion'] in (1,2))
 
 
 REFERENCE_GUIDANCE=('For every tableBindings entry, rowNumber is the explicit source row ID '
@@ -107,8 +107,9 @@ def available_reference_rows(claim,evidence):
     return rows
 
 
-def validate_table_bindings(claim, evidence):
+def validate_table_bindings(claim, evidence, *, translated_metrics=False):
     """Return a rejection reason; semantic checking still follows this gate."""
+    if type(translated_metrics) is not bool:raise ValueError('Invalid metric translation policy')
     text = str(claim.get('text', ''))
     conditions = claim.get('conditions') or {}
     if isinstance(conditions, dict):
@@ -167,7 +168,7 @@ def validate_table_bindings(claim, evidence):
                                   for label in (part, dataset_label(part)))
                               for part in dataset.split(' / '))
         if (not dataset_visible or not _method_visible(row[1], text)
-                or any(_key(label) not in _key(text) for label in (metric, value))):
+                or not _metric_visible(metric,text,translated_metrics) or _key(value) not in _key(text)):
             return 'table_condition_not_displayed'
         match = re.fullmatch(rf'({_VALUE})([A-Za-z]*)', value)
         if match:
@@ -179,3 +180,11 @@ def validate_table_bindings(claim, evidence):
     if not (metric_mentions | unit_mentions) <= supported:
         return 'unbound_table_measurement'
     return None
+
+
+def _metric_visible(metric,text,translated):
+    # Only literal column-name translations. No method/dataset aliases, unit
+    # conversions, inferred synonyms or semantic approval are supplied here.
+    if _key(metric) in _key(text):return True
+    labels={'size':('大小',),'mem':('内存',)} if translated else {}
+    return any(label in text for label in labels.get(metric.casefold(),()))

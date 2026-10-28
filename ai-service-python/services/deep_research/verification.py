@@ -126,7 +126,7 @@ def precheck_claims(claims: list[dict], evidence: list[dict], *, absence_scope_v
         if leaks_internal_reference(claim, support,table_aliases=type(absence_scope_version) is int and absence_scope_version in (6,7)):
             reason = reason or 'internal_reference_in_prose'
         declared_reference_error=None
-        if kind in {'inference','proposal','suggestion','hypothesis'} and type(table_references_version) is int and table_references_version==1:
+        if kind in {'inference','proposal','suggestion','hypothesis'} and type(table_references_version) is int and table_references_version in (1,2):
             from services.deep_research.table_bindings import validate_declared_references
             declared_reference_error=validate_declared_references(claim,support)
             reason=reason or declared_reference_error
@@ -180,10 +180,10 @@ def precheck_claims(claims: list[dict], evidence: list[dict], *, absence_scope_v
             if concurrent_feedback:
                 # A fixed numeric error must not hide the next known failure
                 # from the one bounded revision. Legacy short-circuit stays.
-                binding_reason = validate_table_bindings(claim, support)
+                binding_reason = validate_table_bindings(claim, support,**({'translated_metrics':True} if type(table_references_version) is int and table_references_version==2 else {}))
                 reason = reason or binding_reason
             else:
-                reason = reason or validate_table_bindings(claim, support)
+                reason = reason or validate_table_bindings(claim, support,**({'translated_metrics':True} if type(table_references_version) is int and table_references_version==2 else {}))
         if (claim.get('designRole') is not None or
                 (claim.get('designContractVersion') == 2 and kind in {'proposal', 'suggestion', 'hypothesis'})):
             from services.deep_research.experimental_reasoning import DESIGN_ROLES

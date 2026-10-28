@@ -1,0 +1,30 @@
+{
+  "sourcePayloadSha256": "151e64381387241786e9ce85b8ec5a39e3a31c0d9dcb1e43269f5bf35e40cbd0",
+  "sourcePromptVersion": "dr-v2.20261029.326",
+  "sourceClaimId": "c1",
+  "sourceText": "论文表1显示LightGaussian（Ours）在Mip-NeRF 360数据集上图像质量指标与原始3D-GS接近：PSNR 27.13对27.21，SSIM 0.806对0.815，LPIPS 0.237对0.214，大小45MB对734MB。",
+  "oldLocalRejection": [
+    {
+      "claimId": "c1",
+      "reason": "table_condition_not_displayed",
+      "requiredTableDisplay": [
+        {
+          "group": "Mip-NeRF 360 Datasets",
+          "method": "Ours"
+        },
+        {
+          "group": "Mip-NeRF 360 Datasets",
+          "method": "3D-GS [16]"
+        }
+      ],
+      "detail": "保留表格数值时，同条正文或条件必须显示原表的数据组和方法身份。请核对requiredTableDisplay；保留星号、变体及分组层级，末尾参考文献序号可省略。不能只写另一个方法名代替Ours等原表标签，也不能修改单元格或加入未报告的计算。"
+    }
+  ],
+  "newLocalRejections": [],
+  "newStillNeedsIndependentSemanticCheck": true,
+  "unresolvedSemanticAccepted": false,
+  "evidenceCellsRewritten": false,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "independentCredit": 0
+}
