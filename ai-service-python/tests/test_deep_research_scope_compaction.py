@@ -98,28 +98,51 @@ def test_malformed_model_or_audit_input_is_rejected_before_calling(mutation):
     invoke.assert_not_called()
 
 
-def test_actual_synthesis_stores_compacted_scope_and_checks_the_actual_new_text():
+@pytest.mark.parametrize('reasoning_version',[6,7])
+def test_actual_synthesis_stores_compacted_scope_and_checks_the_actual_new_text(reasoning_version):
     from services.deep_research.graph import make_synthesize_node
     report,audits,response=packet()
     initial=deepcopy(report)
     initial['claims'][1].update(text='',scopeExpression=audits[0]['expression'])
     record={'question':'只写两点，300字以内','scopeExpressionContractVersion':2,
+        'factualReasoningContractVersion':reasoning_version,
         'scopeCompactionContractVersion':1,'scopeExpressionReviewContractVersion':2,
         'reportPresentationContractVersion':2,
         'state':{'outputKind':'claim_verification','evidence':[]}}
     def update(_id,mutate,**kw):
         nonlocal record
         record=mutate(deepcopy(record));return deepcopy(record)
-    calls=[]
+    calls=[];compactions=[]
     def invoke(_id,node,prompt,options,**kwargs):
         calls.append(node)
+        if node=='synthesize_compact':compactions.append((prompt,options))
         return {'content':json.dumps(initial if node=='synthesize' else response)}
     result=make_synthesize_node(invoke,update)({'run_id':'r'})
     assert 'error_code' not in result and calls==['synthesize','synthesize_compact']
+    from services.deep_research.runtime import research_model_options
+    assert ('Current complete rendered length:' in compactions[0][0]) is (reasoning_version==7)
+    assert research_model_options('synthesize_compact',compactions[0][1])['reasoning_effort']==('low' if reasoning_version==7 else 'none')
     state=record['state'];claims=state['reportBody']['claims']
     assert state['synthesisScopeExpressionAudit'][0]['expression']==response['claims'][1]['scopeExpression']
     assert context_for_record(record,claims)['c']['notEstablished'][0] in claims[1]['text']
     assert visible_count(state['reportBody'],300,presentation_version=2)<=300
+
+
+def test_measured_compaction_keeps_all_points_and_independent_unchecked_audits():
+    report,audits,response=packet();prompts=[]
+    def invoke(prompt):prompts.append(prompt);return {'content':json.dumps(response)}
+    out,new=compact(report,audits,'300字以内',invoke,json.loads,presentation_version=2,measured_guidance=True)
+    assert out and visible_count(out,300,presentation_version=2)<=300
+    assert 'Current complete rendered length:' in prompts[0]
+    assert [c['claimId'] for c in out['claims']]==[c['claimId'] for c in report['claims']]
+    assert all(a['verification']=='unchecked' for a in new)
+    # Copying the overlong source still fails once; no truncation or retry.
+    unchanged={'claims':[{'claimId':c['claimId'],'text':'' if c['claimId']=='c' else c['text'],
+        'conditions':{} if c['claimId']=='c' else c.get('conditions',{}),
+        'scopeExpression':audits[0]['expression'] if c['claimId']=='c' else None} for c in report['claims']]}
+    frozen=Mock(return_value={'content':json.dumps(unchanged)})
+    assert compact(report,audits,'300字以内',frozen,json.loads,presentation_version=2,measured_guidance=True)[0] is None
+    frozen.assert_called_once()
 
 
 @pytest.mark.parametrize('replacement',[None,0,True,'1',2])

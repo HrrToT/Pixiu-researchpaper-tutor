@@ -15,6 +15,15 @@ def production_factory(tmp_path, monkeypatch):
         def invoke(self, request):
             targets = json.JSONDecoder().raw_decode(request.prompt.split('Claims:\n', 1)[1])[0]
             captured.append((targets, request.prompt))
+            if request.prompt.startswith('Check the complete factual assertions'):
+                # This fixture tests routing, not whether fictional findings are
+                # scientifically supported. Follow the current single-decision
+                # envelope and explicitly decline support rather than fabricate it.
+                return LLMResult('fixture','fixture',json.dumps({'items':[
+                    {'claimId':c['claimId'],'reason':'Routing fixture; scientific support is not asserted.',
+                     'scopeAudit':{'claimStrength':'bounded','evidenceStrength':'bounded','supported':False,
+                         'statementPath':['text'],'premises':[{'evidenceId':c['evidenceRefs'][0],'path':['quote']}]}}
+                    for c in targets]}),LLMUsage(1,1,2),'stop')
             return LLMResult('fixture', 'fixture', json.dumps({'items': [
                 {'claimId': c['claimId'], 'status': 'passed'} for c in targets]}), LLMUsage(1, 1, 2), 'stop')
     monkeypatch.setattr(runtime, '_runtime', None)
@@ -52,6 +61,7 @@ def test_real_runtime_factory_respects_new_isolation_and_preserves_historical_ba
     assert [v['claimId'] for v in result] == ['a', 'b', 'c']
     assert len(captured) == (1 if legacy else 3)
     if not legacy:
+        assert all(v['status']=='failed' for v in result)
         for targets, prompt in captured:
             assert len(targets) == 1
             key = targets[0]['claimId']

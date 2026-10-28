@@ -24,7 +24,7 @@ def enabled():
 
 def research_model_options(node, options):
     """Apply role options BEFORE the ledger reserves tokens and fingerprints input."""
-    from services.deep_research.factual_reasoning import OPTION,DIRECT_REPAIR_OPTION,HIGH_SYNTHESIS_OPTION
+    from services.deep_research.factual_reasoning import OPTION,DIRECT_REPAIR_OPTION,HIGH_SYNTHESIS_OPTION,COMPACTION_OPTION
     from services.deep_research.factual_review import OPTION as REVIEW_OPTION
     from services.deep_research.experiment_template import REASONING_OPTION as EXPERIMENT_OPTION
     from services.deep_research.experiment_envelope import DIRECT_PLAN_OPTION
@@ -35,6 +35,10 @@ def research_model_options(node, options):
     short_factual = options.pop(OPTION, False)
     direct_repair = options.pop(DIRECT_REPAIR_OPTION,False)
     high_synthesis = options.pop(HIGH_SYNTHESIS_OPTION,False)
+    compact_reasoning = options.pop(COMPACTION_OPTION,False)
+    if type(compact_reasoning) is not bool or compact_reasoning and (node!='synthesize_compact'
+            or any((short_factual,direct_repair,high_synthesis,bounded_review,experiment_reasoning,direct_plan))):
+        raise ValueError('Invalid short factual compaction profile')
     if any(type(value) is not bool for value in (short_factual,direct_repair,high_synthesis,bounded_review,experiment_reasoning,direct_plan)):
         raise ValueError('Invalid server factual reasoning profile')
     if direct_plan and (node!='plan_experiment' or any((short_factual,direct_repair,high_synthesis,bounded_review,experiment_reasoning))):
@@ -106,7 +110,8 @@ def research_model_options(node, options):
     if node == 'synthesize_compact':
         # A bounded wording edit must leave time for independent verification
         # and any allowed repair. Do not spend its allowance on hidden reasoning.
-        return {**options, 'thinking': {'type': 'disabled'}, 'reasoning_effort': 'none', 'max_tokens': 8192}
+        return {**options, 'thinking': {'type': 'enabled' if compact_reasoning else 'disabled'},
+                'reasoning_effort': 'low' if compact_reasoning else 'none', 'max_tokens': 8192}
     if node == 'synthesize_audience':
         from services.deep_research.audience_rewrite import OUTPUT_TOKENS
         return {**options, 'thinking': {'type': 'disabled'}, 'reasoning_effort': 'none',

@@ -1594,12 +1594,15 @@ space with unsupported global absence or incidental iteration/performance values
             parsed['claims'] = [materialize_execution_claim({**claim, 'designContractVersion': 2})
                                 if isinstance(claim, dict) else claim for claim in parsed['claims']]
         from services.deep_research.scope_compaction import enabled as scope_compaction_enabled, compact as compact_scope
+        from services.deep_research.factual_reasoning import compaction_options
+        compact_options=compaction_options(record,question,output_kind)
         compact_invoke = lambda prompt: llm_invoke(run_id, "synthesize_compact", prompt,
-                {"max_tokens": 2000, "temperature": 0.0})
+                {"max_tokens": 2000, "temperature": 0.0,**compact_options})
         if scope_expression_audit and scope_compaction_enabled(record):
             parsed, scope_expression_audit = compact_scope(parsed, scope_expression_audit, question,
                 compact_invoke, _safe_parse_json, output_kind=output_kind, evidence=evidence,
-                presentation_version=record.get('reportPresentationContractVersion',0))
+                presentation_version=record.get('reportPresentationContractVersion',0),
+                **({'measured_guidance':True} if compact_options else {}))
         else:
             parsed = compact_answer(parsed, question, compact_invoke, _safe_parse_json,
                 output_kind=output_kind, evidence=evidence,

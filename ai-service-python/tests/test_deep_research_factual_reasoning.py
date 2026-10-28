@@ -11,7 +11,7 @@ from services.deep_research.runtime import research_model_options
 def test_only_new_short_factual_answers_choose_reasoning(kind):
     record={'factualReasoningContractVersion':1}
     assert request_options(record,'给出判断，300字以内。',kind)=={OPTION:True}
-    for value in [None,True,False,0,7,'1']:
+    for value in [None,True,False,0,8,'1']:
         assert request_options({'factualReasoningContractVersion':value},'300字以内',kind)=={}
     for question in ['详细说明','301字以内','0字以内']:
         assert request_options(record,question,kind)=={}
@@ -79,7 +79,7 @@ def test_policy_is_server_owned_immutable_and_not_client_selected(tmp_path,repla
     try:
         p,_=facade.create({'workspaceTaskId':'t','operationKey':'k','question':'200字以内',
             'deferStart':True,'factualReasoningContractVersion':replacement},start_async=False)
-        assert p['factualReasoningContractVersion']==6
+        assert p['factualReasoningContractVersion']==7
         with pytest.raises(ValueError,match='Immutable'):
             repo.update_run(p['runId'],lambda r:{**r,'factualReasoningContractVersion':replacement})
     finally: facade.shutdown()
@@ -212,3 +212,43 @@ def test_v6_actual_node_rejects_partial_json_once_without_repair_or_fallback():
     assert invoke.call_count==1 and 'reportBody' not in record['state']
     options=research_model_options('synthesize',invoke.call_args.args[3])
     assert options['reasoning_effort']=='low' and options['max_tokens']==8192
+
+
+def test_v7_only_changes_eligible_initial_compaction_profile_with_same_output_cap():
+    from services.deep_research.factual_reasoning import compaction_options,COMPACTION_OPTION
+    for version in (None,True,'7',6):
+        assert compaction_options({'factualReasoningContractVersion':version},'300字以内','claim_verification')=={}
+    record={'factualReasoningContractVersion':7}
+    assert compaction_options(record,'301字以内','claim_verification')=={}
+    assert compaction_options(record,'300字以内','experiment_design')=={}
+    flags=compaction_options(record,'300字以内','claim_verification')
+    assert flags=={COMPACTION_OPTION:True}
+    before=research_model_options('synthesize_compact',{})
+    after=research_model_options('synthesize_compact',flags)
+    assert after=={**before,'thinking':{'type':'enabled'},'reasoning_effort':'low'}
+    assert after['max_tokens']==8192 and COMPACTION_OPTION not in after
+    assert request_options(record,'300字以内','claim_verification')==request_options(
+        {'factualReasoningContractVersion':6},'300字以内','claim_verification')
+
+
+@pytest.mark.parametrize('node,flags',[
+    ('synthesize',True),('verify',True),('repair_claims',True),
+    ('synthesize_compact',1),('synthesize_compact','true'),('synthesize_compact',None)])
+def test_compaction_reasoning_cannot_leak_to_other_nodes_or_accept_non_boolean(node,flags):
+    from services.deep_research.factual_reasoning import COMPACTION_OPTION
+    with pytest.raises(ValueError):research_model_options(node,{COMPACTION_OPTION:flags})
+
+
+def test_compaction_profile_is_reserved_before_send_and_does_not_expand_budget():
+    from llm.provider import LLMResult,LLMUsage
+    from services.deep_research.tools import TrackedLLMInvoker
+    from services.deep_research.factual_reasoning import COMPACTION_OPTION
+    provider=Mock();provider.invoke.return_value=LLMResult(content='{}',provider='fixture',model='fixture',usage=LLMUsage(8,2,10))
+    reserve=Mock(return_value=({'callId':'c','reservationToken':'r'},False))
+    tracked=TrackedLLMInvoker(provider,reserve,Mock(),request_options=research_model_options)
+    tracked('r','synthesize_compact','complete prompt',{})
+    old_digest=reserve.call_args.kwargs['args_digest'];old_budget=reserve.call_args.kwargs['budget_delta']
+    tracked('r','synthesize_compact','complete prompt',{COMPACTION_OPTION:True})
+    assert reserve.call_args.kwargs['args_digest']!=old_digest
+    assert reserve.call_args.kwargs['budget_delta']==old_budget
+    assert provider.invoke.call_args.args[0].extra_body['thinking']=={'type':'enabled'}
