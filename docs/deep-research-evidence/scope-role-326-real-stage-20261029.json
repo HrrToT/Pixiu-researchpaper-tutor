@@ -1,0 +1,134 @@
+{
+  "sourceCommit": "19899e534cf4fc749d5fdd238dade5ac7bf47a27",
+  "promptVersion": "dr-v2.20261029.326",
+  "scope": "new generation, compaction and verification from previously acquired settled public material; no fresh retrieval",
+  "providerCalls": 5,
+  "totalTokens": 27570,
+  "allCallsSettled": true,
+  "retry": false,
+  "unknownCalls": 0,
+  "accepted": 0,
+  "rejected": [
+    {
+      "claimId": "c1",
+      "reason": "table_condition_not_displayed",
+      "requiredTableDisplay": [
+        {
+          "group": "Mip-NeRF 360 Datasets",
+          "method": "Ours"
+        },
+        {
+          "group": "Mip-NeRF 360 Datasets",
+          "method": "3D-GS [16]"
+        }
+      ],
+      "detail": "保留表格数值时，同条正文或条件必须显示原表的数据组和方法身份。请核对requiredTableDisplay；保留星号、变体及分组层级，末尾参考文献序号可省略。不能只写另一个方法名代替Ours等原表标签，也不能修改单元格或加入未报告的计算。",
+      "revisionRejection": {
+        "claimId": "c1",
+        "reason": "table_condition_not_displayed",
+        "requiredTableDisplay": [
+          {
+            "group": "Mip-NeRF 360 Datasets",
+            "method": "Ours"
+          },
+          {
+            "group": "Mip-NeRF 360 Datasets",
+            "method": "3D-GS [16]"
+          },
+          {
+            "group": "Tank and Temple Datasets",
+            "method": "Ours"
+          },
+          {
+            "group": "Tank and Temple Datasets",
+            "method": "3D-GS [16]"
+          }
+        ],
+        "detail": "保留表格数值时，同条正文或条件必须显示原表的数据组和方法身份。请核对requiredTableDisplay；保留星号、变体及分组层级，末尾参考文献序号可省略。不能只写另一个方法名代替Ours等原表标签，也不能修改单元格或加入未报告的计算。"
+      }
+    },
+    {
+      "claimId": "c2",
+      "reason": "semantic_unresolved",
+      "detail": "E1 提到了 MipNeRF360 数据集和 comparable visual quality，但未提及 Tank and Temple 数据集，也未明确限定指标范围，因此 c2 中关于数据集和指标限定的断言未获完整证据支持。",
+      "revisionRejection": {
+        "claimId": "c2",
+        "reason": "semantic_unresolved",
+        "detail": "观察条件尚未通过事实核查：证据引文未提及MipNeRF360 dataset，仅在后文上下文片段中出现该数据集名称，且该片段未明确与LightGaussian评估绑定，因此无法支持该断言。"
+      }
+    }
+  ],
+  "repairScopeAudit": {
+    "0": [
+      {
+        "claimId": "c2",
+        "expression": {
+          "observedSettings": [
+            {
+              "subject": "LightGaussian",
+              "attribute": "evaluated setting name",
+              "value": "MipNeRF360 dataset"
+            }
+          ],
+          "notEstablished": [
+            {
+              "quantifier": "all",
+              "domain": "all scenes and all metrics",
+              "subject": "LightGaussian",
+              "comparator": "3D-GS",
+              "predicate": "comparable visual quality"
+            }
+          ]
+        },
+        "renderedText": "已报告设置：LightGaussian（evaluated setting name：MipNeRF360 dataset）。尚不能据此确认LightGaussian相对3D-GS的“comparable visual quality”在all scenes and all metrics中普遍成立。",
+        "verification": "unchecked"
+      }
+    ]
+  },
+  "coverageStatus": "not_checked",
+  "generatedClaims": [
+    {
+      "claimId": "c1",
+      "kind": "reported",
+      "text": "论文表1显示LightGaussian（Ours）在Mip-NeRF 360数据集上图像质量指标与原始3D-GS接近：PSNR 27.13对27.21，SSIM 0.806对0.815，LPIPS 0.237对0.214，大小45MB对734MB。"
+    },
+    {
+      "claimId": "c2",
+      "kind": "inference",
+      "text": "该接近程度限于论文报告的数据集（Mip-NeRF 360、Tank and Temple）与上述指标；作者仅定性称“comparable visual quality”，现有引用未证明在所有场景或所有指标上完全等同。"
+    }
+  ],
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "preservation": {
+    "before": {
+      "ledgerRows": 7465,
+      "ledgerSha256": "9138a4c5c9e9397c9dce6b78007d07dc1c2f7955dd637bef1d794f0c50b97bbc",
+      "payloadSha256": "a4559eea0b66b511bed93f21a1cba7e6a39068464469aacbcd30fde6895797ad"
+    },
+    "after": {
+      "ledgerRows": 7465,
+      "ledgerSha256": "9138a4c5c9e9397c9dce6b78007d07dc1c2f7955dd637bef1d794f0c50b97bbc",
+      "payloadSha256": "a4559eea0b66b511bed93f21a1cba7e6a39068464469aacbcd30fde6895797ad"
+    },
+    "exactProductionPreservation": true,
+    "providerSubmissions": 5,
+    "productionPublish": false,
+    "fullWorkflowReplay": false,
+    "independentCredit": 0
+  },
+  "rawReceipts": "tmp\\component-scope-role-326-20261029\\receipt",
+  "receiptHashes": {
+    "calls.json": "26c72c729314d14002684d8ff94d29114f07335136e3293c893054d69560d2f5",
+    "generation-result.json": "913babfc57522a3047abb43534ea8ac21e41401a0c1fe05cba6cc6ba035ddeb1",
+    "payload.json": "151e64381387241786e9ce85b8ec5a39e3a31c0d9dcb1e43269f5bf35e40cbd0",
+    "preservation.json": "7f8158190ea3d4568db131e214297d8d3647792e590a1cd438d27a6e2234829a",
+    "progress.json": "5b768e26751d01c1785d91a55b1f2a82d11d3cf99bb18cdc8f557c6d09f301c3",
+    "request-1.json": "5ece88a7c61e764bfeca1472337eb27ff7b39305e9659ed9bc25a12464ae752b",
+    "request-2.json": "9782e360f658ec4b4157568cb2d9bf2cae1d027d829f33f1efc1633a68075ce6",
+    "request-3.json": "37e8dce520fd67ea5f96f94a9ab33d8da89380479107ffec30f7723f1ca0d182",
+    "request-4.json": "33cd1fbcb835294a78d7301c75ffc9566d3424ddd6bdc3d025be74cc67093e11",
+    "request-5.json": "6ffd51fd9442fb61bf6dea2c64dda85dac60bd5527ff35229fceb14ff4614f57",
+    "result.json": "7043154decf76df0dc4339a2a42ccb7ed1b335ee469f8ed18fc91f1a92ad8ddc"
+  }
+}
