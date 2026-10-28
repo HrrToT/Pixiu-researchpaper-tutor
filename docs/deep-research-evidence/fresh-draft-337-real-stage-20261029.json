@@ -1,0 +1,58 @@
+{
+  "sourceCommit": "76cdef85",
+  "promptVersion": "dr-v2.20261029.337",
+  "answerFormatContractVersion": 3,
+  "freshGeneration": true,
+  "freshRetrieval": false,
+  "fromSettledCase": "D1-v40",
+  "providerCalls": 13,
+  "tokens": 68011,
+  "elapsedSeconds": 190.403,
+  "allSettled": true,
+  "unknownCalls": 0,
+  "automaticRetries": 0,
+  "initialRenderedCharacters": 288,
+  "initialGenerationSucceeded": true,
+  "repairJointCompactionUsed": true,
+  "acceptedClaims": 1,
+  "rejectedClaims": [
+    {
+      "claimId": "c1",
+      "reason": "semantic_unresolved",
+      "detail": "数值与E1表中Ours和3D-GS*行一致，但证据未标注3D-GS*为“重训练”版本，且“质量接近但略有下降”的推断仅基于指标数值、未在文中明确；整句未完全支持。",
+      "revisionRejection": {
+        "claimId": "c1",
+        "reason": "absence_not_established",
+        "detail": "本条引用没有明确建立作者或论文缺少这些验证。把结论限定为本次引用能支持的实验范围及其不能证明的推广；不要写成作者未在其他条件验证、论文没有提供或全文不存在。引用中的其他否定句不构成这项缺席判断的依据。"
+      }
+    }
+  ],
+  "coverageStatus": "checked",
+  "gaps": 4,
+  "fullContentAcceptance": false,
+  "independentCredit": 0,
+  "productionPublish": false,
+  "productionExactlyPreserved": true,
+  "rawReceiptDirectory": "D:\\aiproj\\ai_project\\tmp\\component-fresh-draft-337-20261029\\receipt",
+  "rawSha256": {
+    "calls.json": "0f8e9d4b05f4e2a041e740b7fa2a089442a37c32485691a5755ecbafd46ce329",
+    "generation-result.json": "913babfc57522a3047abb43534ea8ac21e41401a0c1fe05cba6cc6ba035ddeb1",
+    "payload.json": "394c2287be8fca154d6ab503823b439ecfd2db5804bfab08d9568c392a93148e",
+    "preservation.json": "464c620d90dd5184a5e8b6cd114a609f2525eec919f6ad0ce87dc45236a425eb",
+    "progress.json": "03fbe117608b0125378a6ae626592ff42bb46b5fc49c1b976b9ea62d24683e8b",
+    "request-1.json": "09a9111abbae126dfbf5f3685bd05a1e75a7a6c17b206a18f691f7a58df47e23",
+    "request-10.json": "5b2dd9e5f3db966b9ac6bc88df29bb193fe52e2b2994645558bdc6b4f37b4a10",
+    "request-11.json": "42e5b5b317206d9b4ceb6ff1f0d431762d5dd194533ee13ebfbc4eec36f7bd6d",
+    "request-12.json": "c30caf68d6879e876c15bf0ee8e317cd1c9fa688c3a9393385748dd27ee49e99",
+    "request-13.json": "93d218c21fbd33000b7de208838415a008a9f5dc8df18f97dbbb42ad0f04edac",
+    "request-2.json": "8044a9a152b54520f2f1f0c511eaa0dbe3103dbee0999bdc0780d0964cb4a3d8",
+    "request-3.json": "4f9bf0f071118d784d4b7f51e5decaab450e85ec1367edc58355ea19510601cb",
+    "request-4.json": "fa967a61719c14bf90b7013ff84fd73ffb932c6cc4cc89c47a7cfd11ba0108b1",
+    "request-5.json": "e822ddc96ccf823f37d110a7bfc27494f571d5f9b046d731c9e03020f2694cf1",
+    "request-6.json": "653a247401293d42fbc09465a632aacb62e80f4cab7c78e33af03386ca8df1a1",
+    "request-7.json": "5645d0bd0d2493bbbeb5152db8f213e77c4e8e3ad5c1d68f4836f4c9e1021d00",
+    "request-8.json": "a6a0850465e5a63ba217ab077ce51cfabdf7d9325cdf91f722b4c113476874e2",
+    "request-9.json": "56eac9e169f884779a91db08d3d306813feb7c2553ceb405665bf0ca1e56b344",
+    "result.json": "51c46cfd1fe558d7a30bd11f85305dc79a36a0e63e413b1719727344efb73e12"
+  }
+}
