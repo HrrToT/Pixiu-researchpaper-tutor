@@ -165,8 +165,9 @@ def messages_for_record(record, node, prompt):
             'lifecycle units, then independently checked; this outline grants no scientific approval.'},
             {'role':'user','content':prompt}]
     kind=record.get('state',{}).get('outputKind') or record.get('outputKind')
-    return messages(node,prompt,record['structuredOutputContractVersion'],
-        prospective=kind=='experiment_design')
+    from services.deep_research.draft_system_policy import apply as draft_policy
+    return draft_policy(record,node,messages(node,prompt,record['structuredOutputContractVersion'],
+        prospective=kind=='experiment_design'),prospective=kind=='experiment_design')
 
 
 def normalize(node, response):
