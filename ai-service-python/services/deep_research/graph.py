@@ -1701,6 +1701,7 @@ def make_verify_node(
         
         from services.deep_research.final_coverage import audit_final_answer
         from services.deep_research.request_coverage import enabled as request_coverage_enabled
+        from services.deep_research.claim_check import enabled as claim_check_enabled
         from services.deep_research.request_dimensions import enabled as dimensions_enabled
         from services.deep_research.comparison_reasoning import enabled as comparison_enabled
         from services.deep_research.factual_scope import enabled as scope_enabled
@@ -1724,6 +1725,7 @@ def make_verify_node(
                 saved.get('plan', []), verification_result.get('accepted', []),
                 evidence, llm_invoke, _safe_parse_json, budget=current.get('budget'),
                 **({'request_contract':record['requestCoverageContractVersion']} if request_coverage_enabled(record) else {}),
+                **({'claim_check':True} if claim_check_enabled(record) else {}),
                 **({'diagnostics':True} if type(record.get('coverageDiagnosticsContractVersion')) is int and record['coverageDiagnosticsContractVersion']==1 else {}),
                 **({'literal_dimensions':True} if dimensions_enabled(record) else {}))
             if saved.get('outputKind') == 'experiment_design':
@@ -1822,6 +1824,7 @@ def make_verify_node(
                         invoke_request=invoke_repair,
                         **({'defer_length_filter':True} if repair_compaction_enabled(record) else {}),
                         **({'table_identity_context':True} if table_identity_enabled(record) else {}),
+                        **({'claim_check':True} if claim_check_enabled(record) else {}),
                         **({'compact_source_repair':True} if compact_repair else {}),
                         **({'shared_experiment_schema':True} if shared_experiment_repair(record) else {}),
                         **({'experimental_edits':True} if edit_repair else {}),
@@ -1929,7 +1932,8 @@ def make_verify_node(
                             record.get('state', {}).get('plan', []), merged.get('accepted', []),
                             evidence, llm_invoke, _safe_parse_json, budget=current.get('budget'),
                             **({'request_contract':record['requestCoverageContractVersion']} if request_coverage_enabled(record) else {}),
-                **({'diagnostics':True} if type(record.get('coverageDiagnosticsContractVersion')) is int and record['coverageDiagnosticsContractVersion']==1 else {}),
+                            **({'claim_check':True} if claim_check_enabled(record) else {}),
+                            **({'diagnostics':True} if type(record.get('coverageDiagnosticsContractVersion')) is int and record['coverageDiagnosticsContractVersion']==1 else {}),
                             **({'literal_dimensions':True} if dimensions_enabled(record) else {}))
                     verification_result = merged
             except BudgetExhaustedError as exc:

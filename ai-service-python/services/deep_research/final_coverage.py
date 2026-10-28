@@ -36,7 +36,7 @@ def coverage_prompt_byte_limit(budget, output_tokens=3500):
     return max(0, min(24000, remaining - output_tokens - 1024))
 
 
-def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, *, budget=None,literal_dimensions=False,diagnostics=False,request_contract=False):
+def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, *, budget=None,literal_dimensions=False,diagnostics=False,request_contract=False,claim_check=False):
     from services.deep_research.answer_coverage import answer_coverage_gaps
     from services.deep_research.selection import balanced_sample, surrounding_context
 
@@ -135,6 +135,9 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
             prompt=request_prompt(question,fixed_requirements,wire_claims,display_metadata,evidence_marker,FINAL_COVERAGE_POLICY)
             if literal_dimensions:
                 prompt+='\n'+FINAL_DIMENSION_POLICY
+        if claim_check:
+            from services.deep_research.claim_check import AUDIT_GUIDANCE
+            prompt+='\n'+AUDIT_GUIDANCE
         template = prompt
         try:
             output_tokens = coverage_output_tokens(audit_plan, claims)

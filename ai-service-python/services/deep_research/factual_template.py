@@ -74,6 +74,9 @@ With contextOmitted do not guess missing antecedents. All output still passes in
     from services.deep_research.table_identity_context import enabled as table_identity_enabled, GUIDANCE as TABLE_IDENTITY_GUIDANCE
     if table_identity_enabled(record):
         prompt+='\n'+TABLE_IDENTITY_GUIDANCE
+    from services.deep_research.claim_check import enabled as claim_check_enabled, GUIDANCE as CLAIM_CHECK_GUIDANCE
+    if claim_check_enabled(record):
+        prompt+='\n'+CLAIM_CHECK_GUIDANCE
     if any(source.get('publicationIdentity') for source in sources.values()):
         from services.deep_research.publication_identity import GUIDANCE as PUBLICATION_GUIDANCE
         prompt+='\n'+PUBLICATION_GUIDANCE
