@@ -605,6 +605,7 @@ class BudgetedSemanticChecker:
         prospective_envelope=0,
         review_batch_planning=0,
         scope_expression_context=None,
+        boundary_quantity_grounding=False,
         partitioned_scope_review=False,
         single_factual_decision=False,
         scope_observation_assertions=False,
@@ -621,6 +622,7 @@ class BudgetedSemanticChecker:
         self._audit_target_fields = audit_target_fields
         self._factual_scope = factual_scope
         self._scope_expression_context = scope_expression_context
+        self._boundary_quantity_grounding = boundary_quantity_grounding
         self._partitioned_scope_review = partitioned_scope_review
         self._single_factual_decision = single_factual_decision
         self._scope_observation_assertions = scope_observation_assertions
@@ -654,6 +656,15 @@ class BudgetedSemanticChecker:
         # remain subject to the tracked invoker's existing call/token budget.
         proposals = [c for c in claims if c.get('kind') in {'proposal', 'suggestion', 'hypothesis'}]
         facts = [c for c in claims if c.get('kind') not in {'proposal', 'suggestion', 'hypothesis'}]
+        quantity_policy=self._boundary_quantity_grounding
+        quantity_policy=(quantity_policy() if callable(quantity_policy) else quantity_policy) is True
+        quantity_failures=[]
+        if quantity_policy and callable(self._scope_expression_context):
+            from services.deep_research.boundary_quantities import failures
+            question=self._research_question() if callable(self._research_question) else self._research_question
+            quantity_failures=failures(facts,self._scope_expression_context(facts),evidence,question)
+            blocked={v['claimId'] for v in quantity_failures}
+            facts=[c for c in facts if c['claimId'] not in blocked]
         partitioned = self._partitioned_scope_review
         partitioned = (partitioned() if callable(partitioned) else partitioned) is True
         expression_targets = []
@@ -691,7 +702,7 @@ class BudgetedSemanticChecker:
                     else self._isolate_factual_claims) is True
         size = 1 if isolated else max(3, (len(facts) + fact_slots - 1) // fact_slots)
         batches = proposal_batches + [(facts[i:i + size], node) for i in range(0, len(facts), size)]
-        verdicts = list(premise_failures)
+        verdicts = [*quantity_failures,*premise_failures]
         envelope=self._prospective_envelope() if callable(self._prospective_envelope) else self._prospective_envelope
         context_states={}
         if type(envelope) is int and envelope in (2,3,4,5,6,7,8,9,10):

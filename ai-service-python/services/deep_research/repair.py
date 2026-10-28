@@ -445,7 +445,7 @@ in the paper. Maintain consistency with accepted definitions and complete requir
             if repair_evidence_packet_version in (1,2,3,4,5) else {}))
     if scope_expression:
         from services.deep_research.scope_expression import guidance as scope_guidance
-        prompt += '\n' + scope_guidance(scope_expression if type(scope_expression) is int and scope_expression in (2,3) else 1)
+        prompt += '\n' + scope_guidance(scope_expression if type(scope_expression) is int and scope_expression in (2,3,4) else 1)
     if answer_intents is not None:
         from services.deep_research.answer_point_intent import repair_guidance
         prompt += repair_guidance(answer_intents, originals,**({'clarify_shared_sources':True} if type(claim_check) is int and claim_check in (8,9) else {}))
@@ -547,7 +547,7 @@ If a supported revision is not possible, omit that target rather than bypass sco
             **({'requiredScopeIds':list(required_scope_ids)} if required_scope_ids else {}),
             **({'reportedInferenceRepairIds':inference_ids} if inference_ids else {}),
             **({'reportedInferenceRepairReasons':inference_reasons} if inference_reasons else {}),
-            **({'scopeExpressionContractVersion':scope_expression if type(scope_expression) is int and scope_expression in (2,3) else 1} if scope_expression else {}),
+            **({'scopeExpressionContractVersion':scope_expression if type(scope_expression) is int and scope_expression in (2,3,4) else 1} if scope_expression else {}),
             **({'repairEvidencePacketVersion':repair_evidence_packet_version} if repair_evidence_packet_version in (1,2,3,4,5) else {}),
             **({'editFormatVersion':1} if experimental_edits else {}),
             **({'diagnosticVersion':1,'schemaFeedback':feedback_options['diagnostics']} if experimental_diagnostics else {}),
@@ -612,7 +612,7 @@ def _parse_repair_response(prepared, response, parse, presentation_audit=None,dr
         if key in prepared.get('requiredScopeIds',[]) and not isinstance(row.get('scopeExpression'),dict):
             if scope_audit is not None:scope_audit.append({'claimId':key,'error':'scope_role_downgrade'})
             continue
-        if type(prepared.get('scopeExpressionContractVersion')) is int and prepared['scopeExpressionContractVersion'] in (1,2,3):
+        if type(prepared.get('scopeExpressionContractVersion')) is int and prepared['scopeExpressionContractVersion'] in (1,2,3,4):
             from services.deep_research.scope_expression import materialize as materialize_scope
             try: row, audit = materialize_scope(row, prepared['scopeExpressionContractVersion'])
             except ValueError:
@@ -729,7 +729,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
                        **({'claimCheckContractVersion':claim_check if type(claim_check) is int and claim_check in (4,5,6,7,8,9) else 1} if claim_check else {}),
                        **({'tableIdentityContextContractVersion':1} if table_identity_context else {}),
                        **({'deferLengthFilterVersion':1} if defer_length_filter else {}),
-                       **({'scopeExpressionContractVersion':scope_expression if type(scope_expression) is int and scope_expression in (2,3) else 1} if scope_expression else {}),
+                       **({'scopeExpressionContractVersion':scope_expression if type(scope_expression) is int and scope_expression in (2,3,4) else 1} if scope_expression else {}),
                        **({'answerPointIntentContractVersion':1,'answerIntents':answer_intents} if answer_intents is not None else {}),
                        **({'experimentRepairPriorityContractVersion':scheduling_version} if scheduling_version in (1,2) else {}),
                        **({'experimentRepairInputContractVersion':repair_evidence_packet_version} if repair_evidence_packet_version in (1,2,3,4,5) else {}),
@@ -932,5 +932,5 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
 def _validate_scope_ids(ids,report,scope_expression):
     if (type(ids) not in (tuple,list) or any(not isinstance(key,str) or not key for key in ids)
             or len(set(ids))!=len(ids) or not set(ids)<={c.get('claimId') for c in report.get('claims',[])}
-            or ids and not (type(scope_expression) is int and scope_expression in (1,2,3))):
+            or ids and not (type(scope_expression) is int and scope_expression in (1,2,3,4))):
         raise ValueError('Invalid required scope repair identities')

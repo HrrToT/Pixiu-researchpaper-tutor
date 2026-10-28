@@ -10,7 +10,7 @@ def enabled(record):
     return (type(record.get('scopeCompactionContractVersion')) is int
             and record['scopeCompactionContractVersion'] == 1
             and type(record.get('scopeExpressionContractVersion')) is int
-            and record['scopeExpressionContractVersion'] in (2,3))
+            and record['scopeExpressionContractVersion'] in (2,3,4))
 
 
 def compact(report, audits, question, invoke, parse, *, output_kind='', evidence=(), presentation_version=0,
@@ -25,7 +25,7 @@ def compact(report, audits, question, invoke, parse, *, output_kind='', evidence
     if type(measured_guidance) is not bool:raise ValueError('Invalid compaction measurement policy')
     if type(fixed_scope_first) is not bool or invoke_fixed is not None and not callable(invoke_fixed):
         raise ValueError('Invalid fixed scope compaction policy')
-    if type(expression_version) is not int or expression_version not in (2,3):
+    if type(expression_version) is not int or expression_version not in (2,3,4):
         raise ValueError('Invalid compaction expression version')
     if (not isinstance(report,dict) or not isinstance(report.get('claims'),list)
             or not isinstance(audits,list)
@@ -113,7 +113,7 @@ The service compiles each observation as subject，attribute=value under
 These prefixes, punctuation and all field strings consume the shared allowance.
 No old evidence verdict is retained: all new wording will be independently checked.
 ''' + guidance(expression_version)
-    if expression_version==3:
+    if expression_version in (3,4):
         prompt=prompt.replace('''The service compiles each observation as subject，attribute=value under
 所引来源报告的评估设置包括： and each boundary as
 这些引用不足以证明：在范围「domain」内的所有情形中/至少一种情形中，subject相对于comparator，predicate。''',

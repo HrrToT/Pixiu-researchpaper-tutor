@@ -65,12 +65,13 @@ def test_new_display_does_not_repair_conflicting_prose_or_guess_quantification(c
     assert raw==before
 
 
-def test_generation_and_joint_compaction_keep_new_text_and_unchecked_context():
+@pytest.mark.parametrize('version',[3,4])
+def test_generation_and_joint_compaction_keep_new_text_and_unchecked_context(version):
     from services.deep_research.graph import make_synthesize_node
     from test_deep_research_scope_compaction import packet
     report,audits,response=packet();initial=deepcopy(report)
     initial['claims'][1].update(text='',scopeExpression=audits[0]['expression'])
-    record={'question':'两点，300字以内','scopeExpressionContractVersion':3,'scopeCompactionContractVersion':1,
+    record={'question':'两点，300字以内','scopeExpressionContractVersion':version,'scopeCompactionContractVersion':1,
         'scopeExpressionReviewContractVersion':3,'reportPresentationContractVersion':2,
         'factualReasoningContractVersion':7,'state':{'outputKind':'claim_verification','evidence':[]}}
     def update(rid,fn,**kw):
@@ -87,15 +88,16 @@ def test_generation_and_joint_compaction_keep_new_text_and_unchecked_context():
     assert 'The service groups observations' in prompts[1][1]
 
 
-def test_new_repair_renders_v3_and_cannot_reuse_v2_request_identity():
+@pytest.mark.parametrize('version',[3,4])
+def test_new_repair_renders_v3_and_cannot_reuse_v2_request_identity(version):
     from test_deep_research_factual_redraft import inputs
     c,e,checks,requirements=inputs();c['kind']='inference';raw=quantified();raw['evidenceRefs']=['E1']
     states=[];invoke=Mock(return_value={'content':json.dumps([raw])})
     kwargs={'fact_redraft':True,'source_aware_redraft':True,'concise_factual':True,
-        'requirement_context':requirements,'scope_expression':3}
+        'requirement_context':requirements,'scope_expression':version}
     out=repair_rejected({'claims':[c]},checks,[e],'解释范围',invoke,json.loads,checkpoint=states.append,**kwargs)
     assert out and out[0]['text'].startswith('已报告设置：')
-    assert guidance(3) in invoke.call_args.args[0]
+    assert guidance(version) in invoke.call_args.args[0]
     assert states[-1]['scopeExpressionAudit']['0'][0]['verification']=='unchecked'
     saved=deepcopy(states[-1]);invoke.reset_mock()
     assert repair_rejected({'claims':[c]},checks,[e],'解释范围',invoke,json.loads,batch_state=saved,**kwargs)==out
@@ -105,18 +107,19 @@ def test_new_repair_renders_v3_and_cannot_reuse_v2_request_identity():
     invoke.assert_not_called()
 
 
-def test_repair_compaction_uses_new_renderer_and_freezes_its_cache_identity():
+@pytest.mark.parametrize('version',[3,4])
+def test_repair_compaction_uses_new_renderer_and_freezes_its_cache_identity(version):
     from test_deep_research_scope_compaction import packet
     report,audits,response=packet()
     raw={**report['claims'][1],'text':'','scopeExpression':audits[0]['expression']}
-    report['claims'][1],audit=materialize(raw,3);states=[]
+    report['claims'][1],audit=materialize(raw,version);states=[]
     invoke=Mock(return_value={'content':json.dumps(response)})
     args=(report,report['claims'],[],{'scopeExpressionAudit':{'0':[audit]}},'300字以内',invoke,json.loads)
-    revised=compact_repairs(*args,presentation_version=2,expression_version=3,checkpoint=states.append)
+    revised=compact_repairs(*args,presentation_version=2,expression_version=version,checkpoint=states.append)
     assert revised and revised[1]['text'].startswith('已报告设置：')
     assert states[-1]['scopeExpressionAudit'][0]['verification']=='unchecked'
     saved=deepcopy(states[-1]);invoke.reset_mock()
-    assert compact_repairs(*args,presentation_version=2,expression_version=3,saved=saved)==revised
+    assert compact_repairs(*args,presentation_version=2,expression_version=version,saved=saved)==revised
     invoke.assert_not_called()
     with pytest.raises(DeepResearchError):compact_repairs(*args,presentation_version=2,saved=saved)
     invoke.assert_not_called()

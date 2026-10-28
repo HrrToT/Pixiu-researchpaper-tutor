@@ -1603,7 +1603,7 @@ space with unsupported global absence or incidental iteration/performance values
             parsed, scope_expression_audit = compact_scope(parsed, scope_expression_audit, question,
                 compact_invoke, _safe_parse_json, output_kind=output_kind, evidence=evidence,
                 presentation_version=record.get('reportPresentationContractVersion',0),
-                **({'expression_version':3} if record.get('scopeExpressionContractVersion')==3 else {}),
+                **({'expression_version':record['scopeExpressionContractVersion']} if record.get('scopeExpressionContractVersion') in (3,4) else {}),
                 **({'fixed_scope_first':True,'invoke_fixed':direct_compact_invoke} if fixed_scope_compaction(record,question,output_kind) else {}),
                 **({'explicit_edit_scope':True} if explicit_compaction_scope(record,question,output_kind) else {}),
                 **({'measured_guidance':True} if compact_options else {}))
@@ -1913,7 +1913,7 @@ def make_verify_node(
                             invoke_compaction,_safe_parse_json,evidence=evidence,output_kind=saved.get('outputKind',''),
                             presentation_version=record.get('reportPresentationContractVersion',0),
                             saved=current.get('state',{}).get('repairCompaction'),checkpoint=checkpoint_compaction,
-                            **({'expression_version':3} if record.get('scopeExpressionContractVersion')==3 else {}),
+                            **({'expression_version':record['scopeExpressionContractVersion']} if record.get('scopeExpressionContractVersion') in (3,4) else {}),
                             **({'fixed_scope_first':True,'invoke_fixed':lambda prompt:invoke_compaction(prompt,direct=True)}
                                 if fixed_scope_compaction(record,effective_question(record),saved.get('outputKind','')) else {}),
                             **({'explicit_edit_scope':True} if explicit_compaction_scope(record,effective_question(record),saved.get('outputKind','')) else {}))
