@@ -1,0 +1,20 @@
+{
+  "sourceCase": "S1G-v5",
+  "sourcePayloadSha256": "a2bbd0c23920fdc1a04adcd73ffe13bcaa9c2e8691c0cc12fdd0513a8ec4fb71",
+  "actualEvidenceKinds": [
+    "task_paper"
+  ],
+  "actualAccessLevels": [
+    "fulltext"
+  ],
+  "actualTaskPaperDisplayMetadata": {},
+  "offlineComparisonOnlyKindChanged": {
+    "sourceAccessSummary": "本回答引用：全文片段。"
+  },
+  "diagnosis": "Task paper sources do not enter existing access-summary/coverage display path; arxiv sources do.",
+  "comparisonNotProduction": true,
+  "providerCalls": 0,
+  "sourceOrClaimMutation": false,
+  "doesNotProveEntirePaperRead": true,
+  "scientificApproval": false
+}
