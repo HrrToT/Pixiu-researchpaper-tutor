@@ -440,7 +440,7 @@ in the paper. Maintain consistency with accepted definitions and complete requir
             if repair_evidence_packet_version in (1,2,3,4,5) else {}))
     if scope_expression:
         from services.deep_research.scope_expression import guidance as scope_guidance
-        prompt += '\n' + scope_guidance(2 if type(scope_expression) is int and scope_expression == 2 else 1)
+        prompt += '\n' + scope_guidance(scope_expression if type(scope_expression) is int and scope_expression in (2,3) else 1)
     if answer_intents is not None:
         from services.deep_research.answer_point_intent import repair_guidance
         prompt += repair_guidance(answer_intents, originals)
@@ -493,7 +493,7 @@ in the paper. Maintain consistency with accepted definitions and complete requir
     visible = {aliases[row['evidenceId']] for row in rows}
     allowed = {key: [ref for ref in values if ref in visible] for key, values in allowed.items()}
     return {'prompt': prompt, 'originals': originals, 'aliases': aliases, 'allowed': allowed,
-            **({'scopeExpressionContractVersion':2 if type(scope_expression) is int and scope_expression == 2 else 1} if scope_expression else {}),
+            **({'scopeExpressionContractVersion':scope_expression if type(scope_expression) is int and scope_expression in (2,3) else 1} if scope_expression else {}),
             **({'repairEvidencePacketVersion':repair_evidence_packet_version} if repair_evidence_packet_version in (1,2,3,4,5) else {}),
             **({'editFormatVersion':1} if experimental_edits else {}),
             **({'diagnosticVersion':1,'schemaFeedback':feedback_options['diagnostics']} if experimental_diagnostics else {}),
@@ -548,7 +548,7 @@ def _parse_repair_response(prepared, response, parse, presentation_audit=None,dr
         new_refs = row.get('evidenceRefs', [])
         if not isinstance(new_refs, list) or any(ref not in allowed.get(key, []) for ref in new_refs):
             continue
-        if type(prepared.get('scopeExpressionContractVersion')) is int and prepared['scopeExpressionContractVersion'] in (1,2):
+        if type(prepared.get('scopeExpressionContractVersion')) is int and prepared['scopeExpressionContractVersion'] in (1,2,3):
             from services.deep_research.scope_expression import materialize as materialize_scope
             try: row, audit = materialize_scope(row, prepared['scopeExpressionContractVersion'])
             except ValueError:
@@ -662,7 +662,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
                        **({'claimCheckContractVersion':1} if claim_check else {}),
                        **({'tableIdentityContextContractVersion':1} if table_identity_context else {}),
                        **({'deferLengthFilterVersion':1} if defer_length_filter else {}),
-                       **({'scopeExpressionContractVersion':2 if type(scope_expression) is int and scope_expression == 2 else 1} if scope_expression else {}),
+                       **({'scopeExpressionContractVersion':scope_expression if type(scope_expression) is int and scope_expression in (2,3) else 1} if scope_expression else {}),
                        **({'answerPointIntentContractVersion':1,'answerIntents':answer_intents} if answer_intents is not None else {}),
                        **({'experimentRepairPriorityContractVersion':scheduling_version} if scheduling_version in (1,2) else {}),
                        **({'experimentRepairInputContractVersion':repair_evidence_packet_version} if repair_evidence_packet_version in (1,2,3,4,5) else {}),

@@ -116,9 +116,9 @@ def test_policy_is_server_owned_immutable_and_facade_only_supplies_matching_new_
     from services.deep_research.facade import ResearchFacade
     from services.deep_research.repository import DeepResearchRepository
     from test_deep_research_quantified_scope import quantified
-    raw=quantified();row,audit=materialize(raw,2)
+    raw=quantified();row,audit=materialize(raw,3)
     from services.deep_research.scope_expression import review_expression
-    expression=review_expression(raw['scopeExpression'],2)
+    expression=review_expression(raw['scopeExpression'],3)
     record={'state':{'synthesisScopeExpressionAudit':[audit]}}
     repo=DeepResearchRepository(tmp_path/'r.sqlite3');repo.initialize();facade=ResearchFacade(repo,lambda **_:None,llm_client=object())
     try:
@@ -130,6 +130,7 @@ def test_policy_is_server_owned_immutable_and_facade_only_supplies_matching_new_
         run=repo.update_run(run['runId'],lambda r:{**r,'state':record['state']})
         checker=facade._build_semantic_checker(run['runId'],Mock())
         assert checker._scope_expression_context([row])=={'c':expression}
+        assert checker._scope_expression_context([materialize(raw,2)[0]])=={}
         old=deepcopy(run);old.update(runId='old',idempotencyKey='old');old.pop('scopeExpressionReviewContractVersion')
         repo.create_run(old);before=repo.require_run('old')
         assert facade._build_semantic_checker('old',Mock())._scope_expression_context([row])=={}

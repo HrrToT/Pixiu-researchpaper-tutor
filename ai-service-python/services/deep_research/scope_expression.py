@@ -4,7 +4,7 @@ from copy import deepcopy
 
 def enabled(record):
     return (type(record.get('scopeExpressionContractVersion')) is int
-            and record['scopeExpressionContractVersion'] in (1, 2))
+            and record['scopeExpressionContractVersion'] in (1, 2, 3))
 
 
 SCHEMA = {'observedSettings':[{'subject':'actual method/experiment',
@@ -45,6 +45,13 @@ the domain or predicate is meaningful: the semantic reviewer still checks both.
 
 
 def guidance(version=1):
+    if version==3:
+        return QUANTIFIED_GUIDANCE+'''
+The display uses 已报告设置 for observations, grouping identical subjects without
+changing their attributes/values. Boundaries use 尚不能据此确认, with 普遍成立
+for all and 存在…情形 for exists. These are evidence limits, not negative results.
+The full rendered text still counts toward the human character limit.
+'''
     return QUANTIFIED_GUIDANCE if version == 2 else GUIDANCE
 
 
@@ -63,13 +70,13 @@ def boundary_text(value):
 
 def review_expression(expression, version=1):
     result = deepcopy(expression)
-    if version == 2:
+    if version in (2,3):
         result['notEstablished'] = [boundary_text(p) for p in result['notEstablished']]
     return result
 
 
 def materialize(claim, version=1):
-    if type(version) is not int or version not in (1,2):
+    if type(version) is not int or version not in (1,2,3):
         raise ValueError('Unsupported scope expression version')
     result = deepcopy(claim)
     expression = result.pop('scopeExpression', None)
@@ -92,10 +99,24 @@ def materialize(claim, version=1):
             raise ValueError('Invalid observed setting fields')
         observations.append(text(setting['subject'])+'，'+text(setting['attribute'])+'='+text(setting['value']))
     statements = []
-    if observations: statements.append('所引来源报告的评估设置包括：'+'；'.join(observations)+'。')
+    if observations:
+        if version==3:
+            if all(s['subject']==settings[0]['subject'] for s in settings):
+                body=settings[0]['subject']+'（'+'；'.join(s['attribute']+'：'+s['value'] for s in settings)+'）'
+            else:body='；'.join(s['subject']+'（'+s['attribute']+'：'+s['value']+'）' for s in settings)
+            statements.append('已报告设置：'+body+'。')
+        else:statements.append('所引来源报告的评估设置包括：'+'；'.join(observations)+'。')
     if boundaries:
-        rendered = [boundary_text(p) if version == 2 else text(p) for p in boundaries]
-        statements.append('这些引用不足以证明：'+'；'.join(rendered)+'。')
+        rendered = [boundary_text(p) if version in (2,3) else text(p) for p in boundaries]
+        if version==3:
+            for p in boundaries:
+                if p['quantifier']=='all':
+                    statements.append('尚不能据此确认'+p['subject']+'相对'+p['comparator']+'的“'+p['predicate']
+                        +'”在'+p['domain']+'中普遍成立。')
+                else:
+                    statements.append('尚不能据此确认在'+p['domain']+'中存在'+p['subject']+'相对'+p['comparator']
+                        +'“'+p['predicate']+'”的情形。')
+        else:statements.append('这些引用不足以证明：'+'；'.join(rendered)+'。')
     result['text'] = ''.join(statements)
     return result, {'claimId':result.get('claimId'),'expression':deepcopy(expression),
                     'renderedText':result['text'],'verification':'unchecked'}

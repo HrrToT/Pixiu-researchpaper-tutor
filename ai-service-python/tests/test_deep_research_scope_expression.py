@@ -137,7 +137,7 @@ def test_repair_renders_exact_authored_expression_then_reuses_without_resending_
     assert invoke.call_count==1
 
 
-@pytest.mark.parametrize('replacement',[None,0,True,'1',1,3])
+@pytest.mark.parametrize('replacement',[None,0,True,'1',1,2,4])
 def test_policy_is_server_owned_immutable_and_not_added_to_old_runs(tmp_path,replacement):
     from services.deep_research.facade import ResearchFacade
     from services.deep_research.repository import DeepResearchRepository
@@ -145,7 +145,7 @@ def test_policy_is_server_owned_immutable_and_not_added_to_old_runs(tmp_path,rep
     try:
         r,_=facade.create({'workspaceTaskId':'t','operationKey':'op','question':'核查','deferStart':True,
                          'scopeExpressionContractVersion':replacement},start_async=False)
-        assert enabled(r) and r['scopeExpressionContractVersion']==2
+        assert enabled(r) and r['scopeExpressionContractVersion']==3
         with pytest.raises(ValueError,match='Immutable'):
             repo.update_run(r['runId'],lambda v:{**v,'scopeExpressionContractVersion':replacement})
         old=deepcopy(r);old.update(runId='legacy',idempotencyKey='legacy');old.pop('scopeExpressionContractVersion')

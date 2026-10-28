@@ -1602,6 +1602,7 @@ space with unsupported global absence or incidental iteration/performance values
             parsed, scope_expression_audit = compact_scope(parsed, scope_expression_audit, question,
                 compact_invoke, _safe_parse_json, output_kind=output_kind, evidence=evidence,
                 presentation_version=record.get('reportPresentationContractVersion',0),
+                **({'expression_version':3} if record.get('scopeExpressionContractVersion')==3 else {}),
                 **({'measured_guidance':True} if compact_options else {}))
         else:
             parsed = compact_answer(parsed, question, compact_invoke, _safe_parse_json,
@@ -1899,7 +1900,8 @@ def make_verify_node(
                             current.get('state',{}).get('repairBatchState'),effective_question(record),
                             invoke_compaction,_safe_parse_json,evidence=evidence,output_kind=saved.get('outputKind',''),
                             presentation_version=record.get('reportPresentationContractVersion',0),
-                            saved=current.get('state',{}).get('repairCompaction'),checkpoint=checkpoint_compaction)
+                            saved=current.get('state',{}).get('repairCompaction'),checkpoint=checkpoint_compaction,
+                            **({'expression_version':3} if record.get('scopeExpressionContractVersion')==3 else {}))
                     repo_update(run_id, lambda r: {**r, 'state': {**r.get('state', {}),
                         'repairDraft': revised}}, expected_revision=None)
                 if revised:

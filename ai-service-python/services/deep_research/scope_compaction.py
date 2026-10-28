@@ -10,11 +10,11 @@ def enabled(record):
     return (type(record.get('scopeCompactionContractVersion')) is int
             and record['scopeCompactionContractVersion'] == 1
             and type(record.get('scopeExpressionContractVersion')) is int
-            and record['scopeExpressionContractVersion'] == 2)
+            and record['scopeExpressionContractVersion'] in (2,3))
 
 
 def compact(report, audits, question, invoke, parse, *, output_kind='', evidence=(), presentation_version=0,
-            fixed_claims=(),measured_guidance=False):
+            fixed_claims=(),measured_guidance=False,expression_version=2):
     """Return revised report and matching unchecked ASTs, or reject atomically.
 
     All existing points, kinds, citations, obligations and table bindings remain.
@@ -22,6 +22,8 @@ def compact(report, audits, question, invoke, parse, *, output_kind='', evidence
     Semantics are not certified here: the normal verifier checks the new wording.
     """
     if type(measured_guidance) is not bool:raise ValueError('Invalid compaction measurement policy')
+    if type(expression_version) is not int or expression_version not in (2,3):
+        raise ValueError('Invalid compaction expression version')
     if (not isinstance(report,dict) or not isinstance(report.get('claims'),list)
             or not isinstance(audits,list)
             or any(not isinstance(c,dict) or not isinstance(c.get('claimId'),str)
@@ -45,7 +47,7 @@ def compact(report, audits, question, invoke, parse, *, output_kind='', evidence
         if key not in original or key in expressions: return None, audits
         try:
             rebuilt, _ = materialize({**original[key], 'text':'',
-                                      'scopeExpression':audit.get('expression')}, 2)
+                                      'scopeExpression':audit.get('expression')}, expression_version)
         except (ValueError, TypeError): return None, audits
         if rebuilt != original[key] or audit.get('renderedText') != rebuilt['text']:
             return None, audits
@@ -84,7 +86,14 @@ The service compiles each observation as subject，attribute=value under
 这些引用不足以证明：在范围「domain」内的所有情形中/至少一种情形中，subject相对于comparator，predicate。
 These prefixes, punctuation and all field strings consume the shared allowance.
 No old evidence verdict is retained: all new wording will be independently checked.
-''' + guidance(2)
+''' + guidance(expression_version)
+    if expression_version==3:
+        prompt=prompt.replace('''The service compiles each observation as subject，attribute=value under
+所引来源报告的评估设置包括： and each boundary as
+这些引用不足以证明：在范围「domain」内的所有情形中/至少一种情形中，subject相对于comparator，predicate。''',
+'''The service groups observations with the same subject as 已报告设置：subject（attribute：value；…）。
+All boundaries render as 尚不能据此确认subject相对comparator的“predicate”在domain中普遍成立。
+Existential boundaries render as 尚不能据此确认在domain中存在subject相对comparator“predicate”的情形。''')
     if measured_guidance:
         prompt+='\nCurrent complete rendered length: '+str(count(source))+'''. Rewrite substantially;
 copying the input unchanged cannot fit. Character counts include Latin letters,
@@ -120,7 +129,7 @@ checked against the original sources. No approval is inherited from this edit.
                 return None, audits
         if not isinstance(row['text'],str) or not isinstance(row['conditions'],dict): return None, audits
         try:
-            claim,audit = materialize({**original[key],**row},2)
+            claim,audit = materialize({**original[key],**row},expression_version)
         except (ValueError,TypeError): return None, audits
         if not claim['text'].strip(): return None, audits
         revised.append(claim)
