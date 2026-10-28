@@ -7,3 +7,7 @@
 新版本还允许仅有 semantic_unresolved／answer_incomplete 的普通 reported 目标修订为有条件 inference，补齐先前只能在回答缺漏时更改错误类型的限制。实际正文须改变、私有意图须 bounded_inference，并保留真实触发原因的 unchecked 审计；原文、数值或单元格硬错误不能借此转换类型。旧6／7的准入保持。新推断始终重新核查，不因标签正确而获批准。
 
 66项共享来源及相关定向检查、28项类型定向检查通过（存在重叠不相加）。最终固定源码65文件1119项关联回归通过，pytest102.22秒、外部106.5秒，哈希稳定、0模型调用。实际输入离线回放前3个核查请求保持；同一实际入参按旧7生成的修订请求逐字等于保存的 `.329` 请求，新8候选权限仍由原候选池约束。输入拟合可能改变可选条目可见性，不能把旧请求可见子集误当全部许可池；必要E3/E5引文和上下文逐字保持，新输入仍在24KB上限内。此为夹具回放，没有新模型质量批准。证据：deep-research-evidence/shared-guidance-330-actual-input-replay-20261029.json、shared-guidance-330-confirmed-regression-20261029.json。
+
+`.330` 从3e5f7fa1加载，原生产账本、旧payload、五任务和完整索引保持。真实核查修订6调用全部成功结算，共30469 Token，无未知、重试或生产发布。仍1接受、1拒绝、4完整性缺口，不能计为内容通过。c1虽然变成有条件推断，又追加“未验证其他场景或指标”被absence_not_established拒绝；c2仍使用原相关工作片段建立数据集条件，独立复核拒绝。
+
+后续检查发现事实重写只从生成视图隐藏了错误正文/条件，旧evidenceRefs与整串tableBindings仍作为Rejected target identities输入。它们是旧模型的选择，不是被冻结的事实要求，可能继续诱导沿用旧来源及完整数字清单。应在新版本重写视图隐藏这些旧选择，保留完整prepared.originals、原候选白名单和全部必要引用原文，并重新检查模型新选的引用与单元格，不自动补来源。证据：deep-research-evidence/shared-guidance-330-real-stage-20261029.json。
