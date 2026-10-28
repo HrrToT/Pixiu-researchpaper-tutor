@@ -9,3 +9,13 @@
 85 项针对性测试通过，覆盖当前工厂配置、实际分步审核及别名恢复、旧行为、原始对象不变、反例和语义失败不能被绑定覆盖。以已结算 `.320` 响应及其实际来源回放：旧校验仍返回原错误；新校验的绑定错误为空；改为虚构引文仍拒绝，改为 entailed 仍拒绝。无模型调用或生产写入，原 payload 哈希保持；该回放仅检查边界协议，不升级旧结果或授予内容验收。证据为 `deep-research-evidence/consistent-premises-321-actual-replay-20261028.json`。
 
 固定源码的 55 文件、979 项关联回归通过，pytest 135.93 秒、外部 141.218 秒，源码及测试哈希前后一致，无模型调用。覆盖运行工厂、预算、隔离、旧提示、修订、完整性和来源权限。证据为 `deep-research-evidence/consistent-premises-321-regression-20261028.json`。
+
+源码 `c238f0b3` 已按空闲快照流程重启原 Python 容器一次加载。RAG/GROBID 健康，前端 HTTP 200；7,465 条账本、全部旧研究 payload、五组任务和完整索引/嵌入哈希精确保持，0 活跃、13 暂停保持，无模型调用。加载证据为 `deep-research-evidence/runtime-load-consistent-premises-321-20261028.json`。
+
+一次保存答案的核查阶段执行 6 次调用，全部成功结算，共 31,551 Token；2 条接受、0 条拒绝，完整性 checked、4 个缺口，修订返回空数组。没有新生成／检索／发布，生产记录精确保持。原始调用保存在本地 `tmp/component-consistent-premises-321-20261028/receipt`，精简证据为 `deep-research-evidence/consistent-premises-321-real-stage-20261028.json`。不计内容或独立验收。
+
+## 隔离检查点的验证限制与修正
+
+检查修订输入发现本次隔离脚本没有复制生产生成阶段已有的 factualDraftingAudit，导致其修订要点意图为空。该阶段确实验证了新来源绑定，但不能据此评价完整生产修订链路。生成元数据是未核验意图，科学通过状态则必须清除，两者不能一起丢弃。
+
+新增仅用于离线 QA 的 `scripts/research_component_checkpoint.py`，保留生成来源、范围 AST 与要点意图，排除旧验证、修订和发布状态，并移除声明上的 verification 标记；无应用导入接口或生产迁移。真实保存检查点回放中，修订意图从 0 项恢复为 2 项，公开答案和原引用保持，无模型调用或生产写入。65 项相关测试通过，包括无歧义身份、来源深拷贝和不能继承旧通过状态。原失败记录不升级。
