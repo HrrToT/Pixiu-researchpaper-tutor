@@ -1095,7 +1095,7 @@ def make_synthesize_node(
         requested_limit = requested_character_limit(question)
         from services.deep_research.synthesis import OUTPUT_KIND_SECTIONS
         section_templates = OUTPUT_KIND_SECTIONS.get(output_kind, OUTPUT_KIND_SECTIONS["direction_survey"])
-        from services.deep_research.short_factual_layout import enabled as short_layout_enabled,valid_access_labels
+        from services.deep_research.short_factual_layout import enabled as short_layout_enabled,joint_compaction,valid_access_labels
         compact_layout=short_layout_enabled(record,output_kind,requested_limit)
         claim_limit = (12 if output_kind == 'experiment_design' else 5 if output_kind == 'paper_comparison'
                        else 2 if requested_limit and requested_limit <= 300 else 3 if requested_limit else 12)
@@ -1608,6 +1608,7 @@ space with unsupported global absence or incidental iteration/performance values
                 compact_invoke, _safe_parse_json, output_kind=output_kind, evidence=evidence,
                 presentation_version=record.get('reportPresentationContractVersion',0),
                 **({'compact_layout':True} if compact_layout else {}),
+                **({'joint_layout':True} if joint_compaction(record,output_kind,requested_limit) else {}),
                 **({'expression_version':record['scopeExpressionContractVersion']} if record.get('scopeExpressionContractVersion') in (3,4) else {}),
                 **({'fixed_scope_first':True,'invoke_fixed':direct_compact_invoke} if fixed_scope_compaction(record,question,output_kind) else {}),
                 **({'explicit_edit_scope':True} if explicit_compaction_scope(record,question,output_kind) else {}),
@@ -1699,7 +1700,7 @@ def make_verify_node(
 ) -> Callable[[GraphState], dict]:
     """Verify claims against evidence with literal and semantic checks. Semantic uses reserve."""
     
-    from services.deep_research.short_factual_layout import enabled as short_layout_enabled
+    from services.deep_research.short_factual_layout import enabled as short_layout_enabled,joint_compaction
     from services.deep_research.answer_constraints import requested_character_limit
 
     def node(state: GraphState) -> dict:
@@ -1923,6 +1924,7 @@ def make_verify_node(
                             invoke_compaction,_safe_parse_json,evidence=evidence,output_kind=saved.get('outputKind',''),
                             presentation_version=record.get('reportPresentationContractVersion',0),
                             **({'compact_layout':True} if short_layout_enabled(record,saved.get('outputKind'),requested_character_limit(effective_question(record))) else {}),
+                            **({'joint_layout':True} if joint_compaction(record,saved.get('outputKind'),requested_character_limit(effective_question(record))) else {}),
                             saved=current.get('state',{}).get('repairCompaction'),checkpoint=checkpoint_compaction,
                             **({'expression_version':record['scopeExpressionContractVersion']} if record.get('scopeExpressionContractVersion') in (3,4) else {}),
                             **({'fixed_scope_first':True,'invoke_fixed':lambda prompt:invoke_compaction(prompt,direct=True)}

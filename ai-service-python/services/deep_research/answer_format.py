@@ -51,7 +51,7 @@ def requested_points(question):
 
 
 def enabled(record):
-    return type(record.get('answerFormatContractVersion')) is int and record['answerFormatContractVersion'] in (1,2)
+    return type(record.get('answerFormatContractVersion')) is int and record['answerFormatContractVersion'] in (1,2,3)
 
 
 def guidance(constraint):

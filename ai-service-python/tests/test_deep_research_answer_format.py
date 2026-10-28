@@ -123,14 +123,14 @@ def test_synthesis_does_not_force_two_claims_against_three_point_short_request()
     assert 'exactly 3 distinct answer points' in captured[0]
 
 
-@pytest.mark.parametrize('replacement', [None, True, '1', 0, 3])
+@pytest.mark.parametrize('replacement', [None, True, '1', 0, 2, 4])
 def test_format_contract_cannot_be_selected_by_client_or_changed_after_creation(tmp_path, replacement):
     repo = DeepResearchRepository(tmp_path / 'r.sqlite3'); repo.initialize()
     facade = ResearchFacade(repo, lambda **_: None, llm_client=object())
     try:
         run, _ = facade.create({'workspaceTaskId': 't', 'operationKey': 'o', 'question': '只写三点',
             'answerFormatContractVersion': replacement, 'deferStart': True}, start_async=False)
-        assert run['answerFormatContractVersion'] == 2
+        assert run['answerFormatContractVersion'] == 3
         with pytest.raises(ValueError, match='Immutable'):
             repo.update_run(run['runId'], lambda r: {**r, 'answerFormatContractVersion': replacement})
     finally:

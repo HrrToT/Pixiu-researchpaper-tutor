@@ -2,7 +2,7 @@
 
 def enabled(record,kind,limit):
     return (type(record.get('answerFormatContractVersion')) is int
-        and record['answerFormatContractVersion']==2 and kind=='claim_verification'
+        and record['answerFormatContractVersion'] in (2,3) and kind=='claim_verification'
         and type(limit) is int and 0<limit<=300)
 
 
@@ -30,3 +30,7 @@ GUIDANCE=PROSE_GUIDANCE+ACCESS_GUIDANCE
 def valid_access_labels(claims):
     return isinstance(claims,list) and all(isinstance(c,dict)
         and isinstance(c.get('detailLevel'),str) and c['detailLevel'] in {'fulltext','abstract'} for c in claims)
+
+
+def joint_compaction(record,kind,limit):
+    return enabled(record,kind,limit) and record['answerFormatContractVersion']==3

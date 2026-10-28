@@ -9,7 +9,7 @@ from services.deep_research.answer_constraints import compact_answer
 
 def test_policy_requires_frozen_new_version_short_human_limit_and_factual_check():
     assert enabled({'answerFormatContractVersion':2},'claim_verification',300)
-    for v in (None,True,False,0,1,'2',3):assert not enabled({'answerFormatContractVersion':v},'claim_verification',300)
+    for v in (None,True,False,0,1,'2',4):assert not enabled({'answerFormatContractVersion':v},'claim_verification',300)
     for kind,limit in [('experiment_design',300),('paper_comparison',300),('claim_verification',None),('claim_verification',301),('claim_verification',True)]:
         assert not enabled({'answerFormatContractVersion':2},kind,limit)
 
@@ -91,3 +91,67 @@ def test_short_compactor_cannot_overwrite_scientific_or_access_metadata(extra):
     c={'claimId':'c','text':'已有判断。'*40,'kind':'inference','conditions':{},'detailLevel':'fulltext','evidenceRefs':['e']}
     invoke=Mock(return_value={'content':json.dumps({'claims':[{'claimId':'c','text':'已有判断。','conditions':{},**extra}]})})
     assert compact_answer({'claims':[c]},'100字以内',invoke,json.loads,compact_layout=True) is None
+
+
+@pytest.mark.parametrize('joint',[False,True])
+def test_joint_short_layout_allocates_one_shared_budget_without_retry(joint):
+    from services.deep_research.scope_compaction import compact
+    from services.deep_research.scope_expression import materialize
+    from test_deep_research_scope_compaction import packet
+    report,audits,response=packet();raw={**report['claims'][1],'text':'','scopeExpression':audits[0]['expression']}
+    report['claims'][1],audits[0]=materialize(raw,4);sent=[]
+    def invoke(p):
+        sent.append(p)
+        return {'content':json.dumps(response if joint else {'claims':[{'claimId':'f','text':'作者报告质量略降。','conditions':{}}]})}
+    revised,new_audits=compact(report,audits,'两点，300字以内',invoke,json.loads,expression_version=4,fixed_scope_first=True,explicit_edit_scope=True,compact_layout=True,joint_layout=joint)
+    assert revised is not None and len(sent)==1
+    if joint:
+        assert [c['claimId'] for c in json.JSONDecoder().raw_decode(sent[0].split('Input:\n',1)[1])[0]]==['f','c']
+        assert PROSE_GUIDANCE in sent[0]
+    else:assert 'readonlyContext' in sent[0] and '返回 ID 的有序列表必须恰好是 ["f"]' in sent[0]
+    assert all(a['verification']=='unchecked' for a in new_audits)
+
+
+def test_joint_layout_policy_is_separate_from_prior_short_layout():
+    from services.deep_research.short_factual_layout import joint_compaction
+    assert enabled({'answerFormatContractVersion':3},'claim_verification',300)
+    assert joint_compaction({'answerFormatContractVersion':3},'claim_verification',300)
+    assert not joint_compaction({'answerFormatContractVersion':2},'claim_verification',300)
+
+
+def test_joint_repair_compaction_cache_cannot_reuse_the_fixed_scope_policy():
+    from services.deep_research.repair_compaction import compact_repairs
+    from services.deep_research.scope_expression import materialize
+    from services.deep_research.contracts import DeepResearchError
+    from test_deep_research_scope_compaction import packet
+    report,audits,response=packet();raw={**report['claims'][1],'text':'','scopeExpression':audits[0]['expression']}
+    report['claims'][1],audit=materialize(raw,4)
+    states=[];invoke=Mock(return_value={'content':json.dumps(response)})
+    args=(report,report['claims'],[],{'scopeExpressionAudit':{'0':[audit]}},'两点，300字以内',invoke,json.loads)
+    kw={'expression_version':4,'fixed_scope_first':True,'compact_layout':True,'joint_layout':True}
+    result=compact_repairs(*args,checkpoint=states.append,**kw)
+    assert result and invoke.call_count==1
+    saved=deepcopy(states[-1]);invoke.reset_mock()
+    assert compact_repairs(*args,saved=saved,**kw)==result
+    invoke.assert_not_called()
+    with pytest.raises(DeepResearchError):compact_repairs(*args,saved=saved,**{**kw,'joint_layout':False})
+    invoke.assert_not_called()
+
+
+def test_generation_routes_new_short_scope_through_one_joint_compaction():
+    from services.deep_research.graph import make_synthesize_node
+    from test_deep_research_scope_compaction import packet
+    report,audits,response=packet();initial=deepcopy(report)
+    for c in initial['claims']:c['detailLevel']='fulltext';c['scopeExpression']=None
+    initial['claims'][1].update(text='',scopeExpression=audits[0]['expression'])
+    r={'question':'两点，300字以内','answerFormatContractVersion':3,'scopeExpressionContractVersion':4,'scopeCompactionContractVersion':1,'scopeExpressionReviewContractVersion':3,'reportPresentationContractVersion':2,'factualReasoningContractVersion':9,'state':{'outputKind':'claim_verification','evidence':[]}}
+    sent=[]
+    def update(rid,fn,**kw):
+        nonlocal r
+        r=fn(deepcopy(r));return deepcopy(r)
+    def invoke(rid,node,prompt,options,**kw):
+        sent.append((node,prompt));return {'content':json.dumps(initial if node=='synthesize' else response)}
+    result=make_synthesize_node(invoke,update)({'run_id':'r'})
+    assert 'error_code' not in result and [n for n,_ in sent]==['synthesize','synthesize_compact']
+    assert 'Input:\n' in sent[1][1] and len(r['state']['reportBody']['claims'])==2
+    assert r['state']['synthesisScopeExpressionAudit'][0]['verification']=='unchecked'
