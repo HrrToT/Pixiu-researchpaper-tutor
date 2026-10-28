@@ -121,7 +121,51 @@ def test_auxiliary_research_exemption_keeps_existing_whole_question_and_binding_
         'requestExcerpt':QUESTION,'bindings':[]}}],required) is None
 
 
-@pytest.mark.parametrize('replacement',[None,0,True,'1',2])
+def test_original_question_dimensions_are_not_lost_when_the_plan_anchors_only_its_first_sentence():
+    question='核查压缩质量这一说法。区分作者报告的结果、成立条件和未验证范围。300字以内。'
+    plan=deepcopy(PLAN)
+    plan.append({'obligations':[{'obligationId':'whole','question':question}]})
+    before=deepcopy(plan)
+    old=contract(plan,question,whole_question_id='whole')
+    new=contract(plan,question,whole_question_id='whole',literal_request_dimensions=True)
+    assert len(old[-1]['checks'])==1
+    assert [c['requirement'] for c in new[-1]['checks']]==[question,'作者报告的结果','成立条件','未验证范围']
+    assert new[0]==old[0] and plan==before
+    # The full question always remains, so other clauses/constraints are not lost.
+    assert new[-1]['checks'][0]['requirement']==question
+
+
+def test_model_or_parent_text_and_scientific_entity_lists_cannot_invent_dimensions():
+    from services.deep_research.request_context import ResearchQuestion
+    generated='区分结果、条件和范围'
+    for question in (ResearchQuestion(generated,['只解释第二点']),
+                     ResearchQuestion(generated,['简短解释'],point_layers=['简短解释']),
+                     '区分PSNR和SSIM','区分“结果、条件和范围”这个例子与真实问题'):
+        required=contract([{'obligations':[{'obligationId':'whole','question':str(question)}]}],question,
+            whole_question_id='whole',literal_request_dimensions=True)
+        assert len(required[0]['checks'])==1
+
+
+def test_version_two_original_dimension_gaps_reach_repair_alongside_plan_gaps():
+    from services.deep_research.coverage_repair import prepare_coverage_repair
+    question='核查质量。区分作者报告的结果、成立条件和未验证范围。'
+    plan=deepcopy(PLAN);plan[0]['obligations'][0]['question']='核查质量这一说法'
+    def invoke(*args,**kwargs):
+        fixed=json.JSONDecoder().raw_decode(args[2].split('Fixed checks (requirements, never paper facts): ',1)[1])[0]
+        raw=response(fixed)
+        raw[0]['checks'][0].update(status='partial')
+        raw[-1]['checks'][-2].update(status='partial')  # Actual applicability conditions.
+        return {'content':json.dumps(raw)}
+    audit=audit_final_answer('r',question,plan,CLAIMS,EVIDENCE,invoke,json.loads,diagnostics=True,request_contract=2)
+    assert audit['status']=='checked' and audit['requestCoverageContractVersion']==2
+    repaired=prepare_coverage_repair({'claims':CLAIMS},{'accepted':CLAIMS,'rejected':[]},audit)
+    assert '成立条件' in json.dumps(repaired,ensure_ascii=False)
+    legacy=deepcopy(audit);legacy['requestCoverageContractVersion']=1
+    legacy_repair=prepare_coverage_repair({'claims':CLAIMS},{'accepted':CLAIMS,'rejected':[]},legacy)
+    assert '成立条件' not in json.dumps(legacy_repair,ensure_ascii=False)
+
+
+@pytest.mark.parametrize('replacement',[None,0,True,'1',3])
 def test_new_policy_is_server_owned_immutable_and_old_runs_remain_disabled(tmp_path,replacement):
     from services.deep_research.facade import ResearchFacade
     from services.deep_research.repository import DeepResearchRepository

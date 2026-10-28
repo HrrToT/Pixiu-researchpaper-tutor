@@ -130,7 +130,8 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
             prompt += '\n' + GUIDANCE
         if request_contract:
             from services.deep_research.request_coverage import contract, prompt as request_prompt
-            fixed_requirements=contract(audit_plan,question)
+            fixed_requirements=contract(audit_plan,question,whole_question_id=identity,
+                literal_request_dimensions=type(request_contract) is int and request_contract==2)
             prompt=request_prompt(question,fixed_requirements,wire_claims,display_metadata,evidence_marker,FINAL_COVERAGE_POLICY)
             if literal_dimensions:
                 prompt+='\n'+FINAL_DIMENSION_POLICY
@@ -245,7 +246,7 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
             'completionContractDigest': completion_contract_digest(plan, claims),
             'displayMetadataDigest': display_metadata_digest(claims, evidence),
             'gaps': gaps, 'invalidAspectObligations': invalid_aspects,
-            **({'requestCoverageContractVersion':1} if request_contract else {}),
+            **({'requestCoverageContractVersion':2 if type(request_contract) is int and request_contract==2 else 1} if request_contract else {}),
             'wholeQuestionId': identity, 'nonblockingResearch': nonblocking,
             'criterionGaps': criterion_gaps,
             'invalidCriterionObligations': invalid_criteria,

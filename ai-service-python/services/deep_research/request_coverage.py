@@ -5,12 +5,12 @@ import json
 
 def enabled(record):
     return (type(record.get('requestCoverageContractVersion')) is int
-            and record['requestCoverageContractVersion']==1
+            and record['requestCoverageContractVersion'] in (1,2)
             and record.get('state',{}).get('outputKind') in
             ('claim_verification','paper_comparison','direction_survey','research_entry'))
 
 
-def contract(plan,question):
+def contract(plan,question,*,whole_question_id=None,literal_request_dimensions=False):
     result=[]
     for item in plan:
         for o in item.get('obligations',[]):
@@ -18,6 +18,20 @@ def contract(plan,question):
                      'criterionId':c['criterionId'],'responseType':c['responseType']}
                     for c in o.get('completionCriteria',[])]
             if not checks:checks=[{'checkId':'request','requirement':o.get('question') or question}]
+            if literal_request_dimensions and o['obligationId']==whole_question_id:
+                from services.deep_research.evidence_requirements import _request_parts
+                from services.deep_research.request_dimensions import split_dimensions
+                from services.deep_research.request_context import ResearchQuestion
+                layers=(getattr(question,'point_instruction_layers',question.instruction_layers)
+                        if isinstance(question,ResearchQuestion) else (question,))
+                # Only the latest explicit human wording can add literal checks;
+                # model clarification questions and parent artifact prose cannot.
+                literal=layers[0] if layers else ''
+                dimensions=[d for part in _request_parts(literal) for d in (split_dimensions(part) or [])]
+                # Keep the full original question regardless of whether literal
+                # dimensions can be safely separated. Never replace its scope.
+                if 0<len(dimensions)<=4:
+                    checks.extend({'checkId':'literal_dimension_'+str(i+1),**d} for i,d in enumerate(dimensions))
             result.append({'obligationId':o['obligationId'],'question':o.get('question') or question,
                            'purpose':o.get('purpose','answer_requirement'),'checks':checks})
     return result
