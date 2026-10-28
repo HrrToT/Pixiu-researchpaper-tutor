@@ -11,3 +11,5 @@
 离线通过实际 make_synthesize_node 截获发送前请求：23,911 UTF-8 字节，仍在 24,000 字节窗口内，保留主表两片段及重训表注，missingPremiseBundles 为空，没有模型调用或生产写入。证据为 `deep-research-evidence/claim-inference-319-replay-20261028.json`。回放证明提示与材料到达，不证明新模型内容成功。`.319` 没有新增真实内容验证，独立验收不增加。
 
 固定源码的 45 文件、746 项关联回归通过，pytest 120.08 秒、外部 125.328 秒，源码及测试哈希前后一致，无模型调用。新增检查同时证明旧策略仍保留原提示，且新指令不会让错误的 reported 差值越过独立数值核查。证据为 `deep-research-evidence/claim-check-319-regression-20261028.json`。
+
+源码 `e43cd6da` 已按空闲快照流程重启原 Python 容器一次加载 `.319`。源码模块哈希一致，RAG/GROBID 健康，前端 HTTP 200；7,465 条账本、全部旧运行 payload、五组任务及完整索引/嵌入哈希精确保持，0 活跃、13 暂停保持。加载无新增模型请求。证据为 `deep-research-evidence/runtime-load-claim-check-319-20261028.json`。完整 DR0—DR5 和内容／独立验收仍未完成。
