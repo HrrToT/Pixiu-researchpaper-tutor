@@ -1332,7 +1332,7 @@ Orient losses before formulas, distinguish conditional/averaged effects and pape
         if declared_references_enabled(record):
             prompt+='\n'+REFERENCE_GUIDANCE
         if (type(record.get('comparisonReasoningContractVersion')) is int
-                and record['comparisonReasoningContractVersion']==3
+                and record['comparisonReasoningContractVersion'] in (3,4)
                 and output_kind in {'paper_comparison','claim_verification'}):
             from services.deep_research.comparison_methodology import REFERENCE
             prompt+='\n'+REFERENCE
@@ -1865,7 +1865,7 @@ def make_verify_node(
                            and record['repairProgressContractVersion']==2 else {}),
                         **({'comparison_reasoning':True} if comparison_enabled(record) else {}),
                         **({'comparison_methodology':True} if type(record.get('comparisonReasoningContractVersion')) is int
-                           and record['comparisonReasoningContractVersion']==3 else {}),
+                           and record['comparisonReasoningContractVersion'] in (3,4) else {}),
                         **({'experimental_intent':record['experimentIntentContractVersion']}
                            if type(record.get('experimentIntentContractVersion')) is int
                            and record['experimentIntentContractVersion'] in (1,2,3) else {}),

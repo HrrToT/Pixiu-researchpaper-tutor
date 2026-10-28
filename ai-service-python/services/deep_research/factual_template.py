@@ -65,7 +65,7 @@ With contextOmitted do not guess missing antecedents. All output still passes in
     from services.deep_research.comparison_reasoning import enabled as compare_enabled,GUIDANCE
     if compare_enabled(record):
         prompt+='\n'+GUIDANCE
-    if record.get('comparisonReasoningContractVersion')==3:
+    if record.get('comparisonReasoningContractVersion') in (3,4):
         from services.deep_research.comparison_methodology import REFERENCE
         prompt+='\n'+REFERENCE
     from services.deep_research.table_bindings import declared_references_enabled,REFERENCE_GUIDANCE

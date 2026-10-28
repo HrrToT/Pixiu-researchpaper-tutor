@@ -1124,7 +1124,8 @@ The dataAvailability object is an internal audit, not new experimental results.
         has_factual_targets=any(c.get('kind') in {'reported','inference'} for c in claims)
         if field_bindings and (scope_enabled or comparison_enabled) and (has_factual_targets or not target_bindings):
             from services.deep_research.audit_source_fields import GUIDANCE as source_field_guidance
-            prompt+='\n'+source_field_guidance
+            prompt+='\n'+(source_field_guidance.replace('comparisonAudit.differences','comparisonAudit.conditionDifferences')
+                if type(comparison_version) is int and comparison_version==4 else source_field_guidance)
         if target_bindings and scope_enabled and has_factual_targets:
             from services.deep_research.audit_source_fields import TARGET_GUIDANCE
             prompt+='\n'+TARGET_GUIDANCE
@@ -1316,7 +1317,7 @@ The dataAvailability object is an internal audit, not new experimental results.
                 if comparison_enabled:
                     from services.deep_research.comparison_reasoning import validate_audit
                     comparison_errors=validate_audit(target,verdict,visible_evidence,
-                        source_field_bindings=field_bindings)
+                        source_field_bindings=field_bindings,version=comparison_version)
                     if comparison_errors:
                         verdict['status']='failed'
                         verdict['reason']='比较条件或推断前提尚未核实：'+', '.join(comparison_errors)

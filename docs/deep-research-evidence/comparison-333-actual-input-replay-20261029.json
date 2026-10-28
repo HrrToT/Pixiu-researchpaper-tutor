@@ -1,0 +1,11 @@
+{
+  "providerCalls": 0,
+  "claimsAndEvidenceUnchanged": true,
+  "providerOptionsUnchanged": true,
+  "oldPromptBytes": 15842,
+  "newPromptBytes": 16974,
+  "maxInputBytes": 32000,
+  "newConditionSchemaPresent": true,
+  "fullContentAcceptance": false,
+  "independentCredit": 0
+}

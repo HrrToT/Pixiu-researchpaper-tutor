@@ -64,10 +64,11 @@ def restore_verdict_evidence(verdict, reverse, *, scope_expression=False):
     audit=restored.get('comparisonAudit')
     if isinstance(audit,dict):
         rows=list(audit.get('premises',[])) if isinstance(audit.get('premises'),list) else []
-        differences=audit.get('differences')
-        for pair in differences if isinstance(differences,list) else []:
-            if isinstance(pair,dict):
-                rows.extend([pair.get('left'),pair.get('right')])
+        for field in ('differences','conditionDifferences'):
+            differences=audit.get(field)
+            for pair in differences if isinstance(differences,list) else []:
+                if isinstance(pair,dict):
+                    rows.extend([pair.get('left'),pair.get('right')])
         for row in rows:
             if isinstance(row,dict) and isinstance(row.get('evidenceId'),str):
                 row['evidenceId']=reverse.get(row['evidenceId'],row['evidenceId'])
