@@ -280,7 +280,7 @@ class ResearchFacade:
             "materials": materials,
             "materialSnapshot": material_snapshot,  # Immutable Java snapshot
             "contextMaterials": (material_snapshot or {}).get("contextMaterials", []) if isinstance(material_snapshot, dict) else [],
-            "promptVersion": "dr-v2.20261029.341",
+            "promptVersion": "dr-v2.20261029.342",
             "factualReviewContractVersion": 1,
             "citationPresentationContractVersion": 4,
             "configurationConsistencyContractVersion": 2,
@@ -343,7 +343,8 @@ class ResearchFacade:
             "absenceScopeContractVersion": 7,
             "answerFormatContractVersion": 3,
             "repairProgressContractVersion": 2,
-            "reportPresentationContractVersion": 2,
+            "reportPresentationContractVersion": 3,
+            "recommendationReviewContractVersion": 1,
             "auditSourceFieldsContractVersion": 2,
             "structuredOutputContractVersion": 15,
             "draftSystemContractVersion": 1,
@@ -1227,7 +1228,9 @@ class ResearchFacade:
         from services.deep_research.scope_expression_review import context_for_record
         from services.deep_research.partitioned_scope_review import enabled as partitioned_scope_enabled, assertions_enabled,consistent_premises_enabled
         from services.deep_research.factual_decision import enabled as factual_decision_enabled
+        from services.deep_research.general_advice import enabled as general_advice_enabled
         checker = BudgetedSemanticChecker(invoker, run_id,
+            general_advice_review=lambda: general_advice_enabled(self._repo.require_run(run_id)),
             metric_domains=lambda: self._repo.require_run(run_id).get('state', {}).get('metricDomains'),
             research_question=lambda: effective_question(self._repo.require_run(run_id)),
             isolate_factual_claims=(lambda: self._repo.require_run(run_id).get('claimIsolationContractVersion') == 1)

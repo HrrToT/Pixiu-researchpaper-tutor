@@ -3,7 +3,8 @@ import json
 
 ARRAY_NODES = frozenset({'plan', 'extract', 'assess_relevance', 'repair_claims',
     'verify', 'verify_repair', 'verify_design_science', 'verify_design_config',
-    'verify_repair_design_science', 'verify_repair_design_config', 'verify_answer_coverage'})
+    'verify_repair_design_science', 'verify_repair_design_config', 'verify_answer_coverage',
+    'verify_advice','verify_repair_advice'})
 
 DESIGN_REVIEW_NODES = frozenset({'verify_design_science','verify_design_config',
     'verify_repair_design_science','verify_repair_design_config'})

@@ -78,16 +78,16 @@ def _core_claims(claims, limit, output_kind, evidence):
 
 def visible_count(candidate, limit, output_kind='', evidence=(), presentation_version=0):
     """Use the publication layout's character measure before publishing."""
-    if type(presentation_version) is not int or presentation_version != 2:
+    if type(presentation_version) is not int or presentation_version not in (2,3):
         return answer_character_count(candidate)
     from services.deep_research.reporting import build_sections, publication_notices, visible_answer_character_count
     claims = candidate.get('claims', [])
-    visible_notice, _ = publication_notices(claims, presentation_version=2)
+    visible_notice, _ = publication_notices(claims, presentation_version=presentation_version,output_kind=output_kind)
     proposed = candidate.get('sections')
-    return visible_answer_character_count({'presentationVersion': 2, 'characterLimit': limit,
+    return visible_answer_character_count({'presentationVersion': presentation_version, 'characterLimit': limit,
         'outputKind': output_kind, 'claims': claims, 'evidence': evidence, 'limitations': visible_notice,
         'sections': build_sections(claims, output_kind, proposed if isinstance(proposed,list) else None,
-                                   presentation_version=2)})
+                                   presentation_version=presentation_version)})
 
 
 def compact_answer(report, question, invoke, parse, *, output_kind='', evidence=(), preserve_claims=False,
@@ -98,7 +98,7 @@ def compact_answer(report, question, invoke, parse, *, output_kind='', evidence=
     limit = requested_character_limit(question)
     if not report.get('claims'):
         return report
-    modern = type(presentation_version) is int and presentation_version == 2
+    modern = type(presentation_version) is int and presentation_version in (2,3)
     def count(candidate):
         return visible_count(candidate, limit, output_kind, evidence, presentation_version)
     if not limit or count(report) <= limit:

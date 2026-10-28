@@ -32,14 +32,14 @@ def build_sections(claims, output_kind, proposed_sections=None, *, presentation_
     if remaining:
         sections.append({"title": templates[0], "claimIds": remaining})
     sections.sort(key=lambda section: templates.index(section["title"]))
-    if (type(presentation_version) is int and presentation_version in (1, 2)
+    if (type(presentation_version) is int and presentation_version in (1, 2, 3)
             and resolve_output_kind(output_kind)=='claim_verification'):
         # These IDs contain independently accepted claims, including revisions
         # whose content changed after the model's original section assignment.
         # Actual unfinished obligations are rendered separately from payload.gaps.
         sections=[{**section,'title':'依据与范围'} if section['title']=='未解决事项' else section
                   for section in sections]
-    if type(presentation_version) is int and presentation_version == 2:
+    if type(presentation_version) is int and presentation_version in (2,3):
         # Revisions can return claims to the fallback section. Keep all claims
         # under a single heading without rewriting their words or old reports.
         merged = {}
@@ -59,7 +59,7 @@ def _display_gaps(gaps, *, presentation_version=0):
         if key and (key not in selected or isinstance(gap, dict) and gap.get('stage') == 'answer'):
             selected[key] = gap
     rows = list(selected.values())
-    if type(presentation_version) is not int or presentation_version != 2:
+    if type(presentation_version) is not int or presentation_version not in (2,3):
         return rows
     merged = {}
     for index, gap in enumerate(rows):
@@ -100,6 +100,14 @@ def display_conditions(conditions):
                     for name,value in conditions.items())
 
 
+def _claim_label(claim,labels,version,output_kind):
+    if type(version) is int and version==3 and output_kind!='experiment_design':
+        from services.deep_research.general_advice import eligible
+        if eligible(claim):
+            return '' if re.match(r'^(?:建议|推荐)',str(claim.get('text',''))) else '建议：'
+    return labels.get(claim.get('kind'),'')
+
+
 def render_report(payload, *, _counting=False):
     claims = {claim["claimId"]: claim for claim in payload.get("claims", []) if claim.get("claimId")}
     refs = list(dict.fromkeys(ref for claim in claims.values() for ref in claim.get("evidenceRefs", [])))
@@ -108,7 +116,7 @@ def render_report(payload, *, _counting=False):
     access_summary = source_access_summary(list(claims.values()), list(sources.values()))
     lines, rendered = ([access_summary, ''] if access_summary else []), set()
     sections = payload.get("sections") or build_sections(list(claims.values()), payload.get("outputKind", "direction_survey"))
-    compact = (type(payload.get('presentationVersion')) is int and payload['presentationVersion'] == 2)
+    compact = (type(payload.get('presentationVersion')) is int and payload['presentationVersion'] in (2,3))
     limited = compact and type(payload.get('characterLimit')) is int and payload['characterLimit'] > 0
     labels = {"inference": "有依据的推断：", "hypothesis": "待验证假设：", "suggestion": "实验建议：", "proposal": "实验建议："}
     if compact:
@@ -137,7 +145,8 @@ def render_report(payload, *, _counting=False):
                         analysis_protocols.add(protocol_key)
             # Only repeated deterministic protocol suffixes are hidden. Keep
             # every original sentence, condition and source on its own claim.
-            content.append(f"{'' if _counting else '- '}{labels.get(claim.get('kind'), '')}{text} {citations}".rstrip())
+            label=_claim_label(claim,labels,payload.get('presentationVersion'),payload.get('outputKind'))
+            content.append(f"{'' if _counting else '- '}{label}{text} {citations}".rstrip())
             conditions = claim.get("conditions")
             if isinstance(conditions, dict) and conditions:
                 content.append("  适用条件：" + display_conditions(conditions))
@@ -201,10 +210,12 @@ def visible_answer_character_count(payload):
     return len(re.sub(r'\s+', '', render_report(payload, _counting=True)))
 
 
-def publication_notices(claims, *, presentation_version=0):
-    if type(presentation_version) is not int or presentation_version != 2:
+def publication_notices(claims, *, presentation_version=0,output_kind=None):
+    if type(presentation_version) is not int or presentation_version not in (2,3):
         return verification_notice(claims), ''
-    visible = verification_notice([c for c in claims if c.get('kind') in {'hypothesis','proposal','suggestion'}])
+    from services.deep_research.general_advice import eligible
+    visible = verification_notice([c for c in claims if c.get('kind') in {'hypothesis','proposal','suggestion'}
+        and not (presentation_version==3 and output_kind!='experiment_design' and eligible(c))])
     folded = verification_notice([c for c in claims if c.get('kind') in {'reported','inference'}])
     return visible, folded
 
@@ -226,7 +237,7 @@ def conversation_summary(claims, outcome, *, max_chars=500, evidence=None, outpu
     """Keep whole claims and their epistemic labels; never cut a number or condition."""
     labels = {"inference": "有依据的推断：", "hypothesis": "待验证假设：",
               "suggestion": "实验建议：", "proposal": "实验建议："}
-    if type(presentation_version) is int and presentation_version == 2:
+    if type(presentation_version) is int and presentation_version in (2,3):
         labels['inference'] = '推断：'
     boundary = {"partial": "当前结果尚不完整，已核实的内容已保存。",
                 "inconclusive": "本次尚未形成通过核验的结论。"}.get(outcome, "")
@@ -239,7 +250,7 @@ def conversation_summary(claims, outcome, *, max_chars=500, evidence=None, outpu
         text = str(claim.get("text", "")).strip()
         if not text:
             continue
-        item = labels.get(claim.get("kind"), "") + text
+        item = _claim_label(claim,labels,presentation_version,output_kind) + text
         conditions = claim.get("conditions")
         if isinstance(conditions, dict) and conditions:
             item += "（" + display_conditions(conditions) + "）"

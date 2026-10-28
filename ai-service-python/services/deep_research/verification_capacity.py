@@ -10,6 +10,7 @@ VERIFICATION_INPUT_BYTES = 32000
 VERIFICATION_NODES = frozenset({
     'verify', 'verify_repair', 'verify_design_config', 'verify_design_science',
     'verify_repair_design_config', 'verify_repair_design_science',
+    'verify_advice','verify_repair_advice',
 })
 
 

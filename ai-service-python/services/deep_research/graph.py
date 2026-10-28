@@ -2099,15 +2099,16 @@ def make_publish_node(
         presentation_version = record.get('reportPresentationContractVersion',0)
         sections = build_sections(accepted_claims, output_kind, verified_report.get("sections"),
             presentation_version=presentation_version)
-        visible_notice, folded_notice = publication_notices(accepted_claims, presentation_version=presentation_version)
+        visible_notice, folded_notice = publication_notices(accepted_claims, presentation_version=presentation_version,
+            **({'output_kind':output_kind} if presentation_version==3 else {}))
         repair_notice = ('补充核验未完成；已保留此前核实的内容。'
                          if brief_state.get('repairStatus') == 'verification_invalid_response' else
                          '修订结果未能解析；已保留此前核实的内容。'
                          if brief_state.get('repairStatus') == 'response_invalid' else '')
         display_fields = {}
-        if type(presentation_version) is int and presentation_version == 2:
+        if type(presentation_version) is int and presentation_version in (2,3):
             from services.deep_research.answer_constraints import requested_character_limit
-            display_fields = {'presentationVersion':2, 'characterLimit':requested_character_limit(effective_question(record)),
+            display_fields = {'presentationVersion':presentation_version, 'characterLimit':requested_character_limit(effective_question(record)),
                               'verificationNotice':folded_notice}
         display_payload = {**display_fields, 'outputKind':output_kind, 'claims':accepted_claims, 'sections':sections,
                            'evidence':record.get('state',{}).get('evidence',[]), 'limitations':visible_notice+repair_notice}

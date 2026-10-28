@@ -94,6 +94,8 @@ def research_model_options(node, options):
         # Concrete protocol audit: reserve space for the verdict/quoted choices,
         # not an unbounded derivation. Scientific checks remain independent below.
         return {**options, 'thinking': {'type': 'disabled'}, 'reasoning_effort': 'none', 'max_tokens': 6000}
+    if node in {'verify_advice','verify_repair_advice'}:
+        return {**options, 'thinking': {'type':'disabled'}, 'reasoning_effort':'none', 'max_tokens':4000}
     if node in {'verify_design_science', 'verify_repair_design_science'}:
         # Both high and low hidden-reasoning modes exhausted their output caps
         # before returning verdicts in D3. Supply the same protocol/reference,

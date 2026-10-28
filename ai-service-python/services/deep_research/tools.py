@@ -610,11 +610,13 @@ class BudgetedSemanticChecker:
         single_factual_decision=False,
         scope_observation_assertions=False,
         consistent_scope_premises=False,
+        general_advice_review=False,
     ):
         self._invoke = llm_invoker
         self._run_id = run_id
         self._metric_domains = metric_domains
         self._research_question = research_question
+        self._general_advice_review = general_advice_review
         self._isolate_factual_claims = isolate_factual_claims
         self._comparison_reasoning = comparison_reasoning
         self._comparison_audit_version = comparison_audit_version
@@ -655,6 +657,11 @@ class BudgetedSemanticChecker:
         # Capacity splits happen before dispatch and
         # remain subject to the tracked invoker's existing call/token budget.
         proposals = [c for c in claims if c.get('kind') in {'proposal', 'suggestion', 'hypothesis'}]
+        from services.deep_research.general_advice import eligible as advice_eligible
+        advice_policy=self._general_advice_review
+        advice_policy=(advice_policy() if callable(advice_policy) else advice_policy) is True
+        advice=[c for c in proposals if advice_policy and advice_eligible(c)]
+        proposals=[c for c in proposals if c not in advice]
         facts = [c for c in claims if c.get('kind') not in {'proposal', 'suggestion', 'hypothesis'}]
         quantity_policy=self._boundary_quantity_grounding
         quantity_policy=(quantity_policy() if callable(quantity_policy) else quantity_policy) is True
@@ -693,7 +700,8 @@ class BudgetedSemanticChecker:
         science = [c for c in proposals if c not in config and c['claimId'] not in failed_ids]
         science_node = 'verify_design_science' if node == 'verify' else 'verify_repair_design_science'
         config_node='verify_design_config' if node=='verify' else 'verify_repair_design_config'
-        proposal_batches = ([(config, config_node)] if config else []) + ([(science, science_node)] if science else [])
+        advice_node='verify_advice' if node=='verify' else 'verify_repair_advice'
+        proposal_batches = ([(config, config_node)] if config else []) + ([(science, science_node)] if science else []) + ([(advice,advice_node)] if advice else [])
         fact_slots = max(1, 3 - len(proposal_batches))
         # Legacy answers keep their original batch. New isolated factual
         # checks never receive another target's citations; all requests still
@@ -733,6 +741,8 @@ class BudgetedSemanticChecker:
         return [by_id[c['claimId']] for c in claims]
 
     def _check_batch(self, claims: list[dict], evidence: list[dict], proposal_context: list[dict], *, node='verify', _preview=False, _planned=False) -> list[dict]:
+        from services.deep_research.general_advice import NODES as ADVICE_NODES
+        advice_mode=node in ADVICE_NODES
         byte_limit = (self._invoke.prompt_byte_limit(self._run_id, node)
                       if isinstance(self._invoke, TrackedLLMInvoker) else 24000)
         config_mode=node in {'verify_design_config','verify_repair_design_config'}
@@ -1159,11 +1169,14 @@ The dataAvailability object is an internal audit, not new experimental results.
         from services.deep_research.experiment_review_envelope import enabled as review_envelope,build as build_review
         envelope_version=(self._prospective_envelope() if callable(self._prospective_envelope)
                           else self._prospective_envelope)
-        full_review_inputs=review_envelope(envelope_version,review_version,claims)
-        if full_review_inputs:
+        full_review_inputs=advice_mode or review_envelope(envelope_version,review_version,claims)
+        if full_review_inputs and not advice_mode:
             prompt=build_review(claims_text=claims_text,context=wire_context,question=question,
                 evidence_marker=evidence_text,metric_domains=metric_domains,config_mode=config_mode,
                 version=envelope_version)
+        if advice_mode:
+            from services.deep_research.general_advice import prompt as advice_prompt
+            prompt=advice_prompt(claims_text,question,evidence_text)
         template = prompt
         source_keys = ('workId', 'versionId', 'sourceTitle')
         source_registry = {}
@@ -1304,6 +1317,7 @@ The dataAvailability object is an internal audit, not new experimental results.
                                         {'responseState': 'received_invalid'})
             from services.deep_research.design_audit import validate_design_audit
             parsed = [restore_verdict_evidence(v, reverse_aliases,
+                **({'advice':True} if advice_mode else {}),
                 **({'scope_expression':True} if expression_context else {})) for v in parsed]
             if comparison_enabled:
                 from services.deep_research.comparison_reasoning import normalize_audit_scope
@@ -1312,7 +1326,7 @@ The dataAvailability object is an internal audit, not new experimental results.
                           version=comparison_version) for v in parsed]
             by_id = {c['claimId']: c for c in claims}
             from services.deep_research.rejection_audit import enabled as rejection_binding,bind as bind_rejection
-            if full_review_inputs and rejection_binding(envelope_version):
+            if full_review_inputs and not advice_mode and rejection_binding(envelope_version):
                 if envelope_version==10:
                     from services.deep_research.review_field_refs import bind_refs as bind_rejection
                 parsed=[bind_rejection(v,[*json.loads(claims_text),*wire_context]) for v in parsed]
@@ -1321,6 +1335,13 @@ The dataAvailability object is an internal audit, not new experimental results.
                 if verdict['status'] != 'passed':
                     continue
                 target = by_id[verdict['claimId']]
+                if advice_mode:
+                    from services.deep_research.general_advice import validate as validate_advice
+                    errors=validate_advice(target,verdict,visible_evidence)
+                    if errors:
+                        verdict['status']='failed'
+                        verdict['reason']='普通建议的用途或自身来源尚未核实：'+', '.join(errors)
+                    continue
                 if set(target.get('evidenceRefs', [])) - visible_ids:
                     verdict['status'] = 'failed'
                     verdict['reason'] = '请求容量限制导致引用证据未完整提供，不能确认该声明。'

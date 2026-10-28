@@ -34,7 +34,12 @@ def test_historical_transport_bytes_are_frozen_including_experimental_v8():
         '0e2b810351fe69030510329a110a5cedb5a3d4f7b80c2853114bd25dec189007',
         'beeeb62cf7d83e0eb6b4f9521bb7efde130716a8db326ce910a9fa9a40a53a32',
     ]
-    nodes=sorted(ARRAY_NODES|{'resolve_brief','plan_experiment','synthesize','synthesize_compact','synthesize_audience'})
+    # Freeze the original .224 node manifest as well as its byte checksums.
+    # Newly introduced nodes never belonged to those historical requests.
+    nodes=sorted({'plan','extract','assess_relevance','repair_claims','verify','verify_repair',
+        'verify_design_science','verify_design_config','verify_repair_design_science',
+        'verify_repair_design_config','verify_answer_coverage','resolve_brief','plan_experiment',
+        'synthesize','synthesize_compact','synthesize_audience'})
     for version,checksum in enumerate(expected,1):
         data=[messages(n,'Literal α evidence',version,prospective=p) for n in nodes for p in (False,True)]
         raw=json.dumps(data,ensure_ascii=False,separators=(',',':')).encode()

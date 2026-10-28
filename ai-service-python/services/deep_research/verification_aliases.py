@@ -34,8 +34,13 @@ def restore_visible_evidence(rows, reverse):
     return restored
 
 
-def restore_verdict_evidence(verdict, reverse, *, scope_expression=False):
+def restore_verdict_evidence(verdict, reverse, *, scope_expression=False,advice=False):
     restored = deepcopy(verdict)
+    if advice:
+        audit=restored.get('adviceAudit')
+        for row in audit.get('premises',[]) if isinstance(audit,dict) and isinstance(audit.get('premises'),list) else []:
+            if isinstance(row,dict) and isinstance(row.get('evidenceId'),str):
+                row['evidenceId']=reverse.get(row['evidenceId'],row['evidenceId'])
     if scope_expression:
         expression=restored.get('scopeExpressionAudit')
         for key in ('observedSettings','notEstablished'):
