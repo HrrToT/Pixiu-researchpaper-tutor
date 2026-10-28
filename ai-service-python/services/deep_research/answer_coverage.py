@@ -125,9 +125,9 @@ def answer_coverage_gaps(plan, claims, verdicts, *, display_metadata=None):
         matching = []
         if isinstance(obligation_id, str):
             matching = verdicts_by_obligation.get(obligation_id, [])
-        from services.deep_research.access_disclosure import access_bindings_supported
+        from services.deep_research.joint_answer_bindings import bindings_supported
         closed = len(matching) == 1 and (_verdict_closes_obligation(matching[0], known_claims)
-            or matching[0].get('status')==_COVERED and access_bindings_supported(
+            or matching[0].get('status')==_COVERED and bindings_supported(
                 matching[0].get('bindings'),known_claims,display_metadata,obligation.get('question')))
         if not closed:
             gaps.append(

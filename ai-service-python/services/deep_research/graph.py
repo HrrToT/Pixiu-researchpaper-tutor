@@ -315,7 +315,11 @@ Return a JSON ARRAY of plan items, NOT an object with items field."""
             prompt += json.dumps(shape, ensure_ascii=False, separators=(',', ':'))
             prompt += '\nReturn only the complete JSON array, with no Markdown fences or extra commentary.'
         from services.deep_research.request_semantics import enabled as semantics_enabled, PLAN_GUIDANCE
-        if semantics_enabled(record):prompt+='\n'+PLAN_GUIDANCE
+        if semantics_enabled(record):
+            prompt+='\n'+PLAN_GUIDANCE
+            if record['requestSemanticsContractVersion']==2:
+                from services.deep_research.request_semantics import PLAN_GUIDANCE_V2
+                prompt+='\n'+PLAN_GUIDANCE_V2
         result = llm_invoke(run_id, "plan", prompt, {"max_tokens": 5000, "temperature": 0.1})
         
         # Handle LLMResult dataclass - extract content attribute
@@ -413,7 +417,7 @@ Return a JSON ARRAY of plan items, NOT an object with items field."""
         semantics_changes=[]
         if semantics_enabled(record):
             from services.deep_research.request_semantics import normalize_access_requirements
-            validated,semantics_changes=normalize_access_requirements(validated,question)
+            validated,semantics_changes=normalize_access_requirements(validated,question, **({"version":2} if record["requestSemanticsContractVersion"]==2 else {}))
             validated=validate_plan(validated)
             validate_completion_criteria(validated,required=criteria_required)
 
@@ -1775,6 +1779,7 @@ def make_verify_node(
                 **({'request_contract':record['requestCoverageContractVersion']} if request_coverage_enabled(record) else {}),
                 **({'claim_check':True} if claim_check_enabled(record) else {}),
                 **({'task_sources':True} if type(record.get('reportPresentationContractVersion')) is int and record['reportPresentationContractVersion']==4 else {}),
+                **({'request_semantics':2} if type(record.get('requestSemanticsContractVersion')) is int and record['requestSemanticsContractVersion']==2 else {}),
                 **({'diagnostics':True} if type(record.get('coverageDiagnosticsContractVersion')) is int and record['coverageDiagnosticsContractVersion']==1 else {}),
                 **({'literal_dimensions':True} if dimensions_enabled(record) else {}))
             if saved.get('outputKind') == 'experiment_design':
@@ -1881,7 +1886,7 @@ def make_verify_node(
                             if claim_check_enabled(record) and record['claimCheckContractVersion'] in (5,6,7,8,9) else {}),
                         **({'compact_source_repair':True} if compact_repair else {}),
                         **({'ordinary_advice':True} if advice_repair else {}),
-                        **({'request_semantics':True} if type(record.get('requestSemanticsContractVersion')) is int and record['requestSemanticsContractVersion']==1 else {}),
+                        **({'request_semantics':record['requestSemanticsContractVersion'] if record['requestSemanticsContractVersion']==2 else True} if type(record.get('requestSemanticsContractVersion')) is int and record['requestSemanticsContractVersion'] in (1,2) else {}),
                         **({'task_sources':True} if type(record.get('reportPresentationContractVersion')) is int and record['reportPresentationContractVersion']==4 else {}),
                         **({'shared_experiment_schema':True} if shared_experiment_repair(record) else {}),
                         **({'experimental_edits':True} if edit_repair else {}),
@@ -2001,6 +2006,7 @@ def make_verify_node(
                             **({'request_contract':record['requestCoverageContractVersion']} if request_coverage_enabled(record) else {}),
                             **({'claim_check':True} if claim_check_enabled(record) else {}),
                             **({'task_sources':True} if type(record.get('reportPresentationContractVersion')) is int and record['reportPresentationContractVersion']==4 else {}),
+                            **({'request_semantics':2} if type(record.get('requestSemanticsContractVersion')) is int and record['requestSemanticsContractVersion']==2 else {}),
                             **({'diagnostics':True} if type(record.get('coverageDiagnosticsContractVersion')) is int and record['coverageDiagnosticsContractVersion']==1 else {}),
                             **({'literal_dimensions':True} if dimensions_enabled(record) else {}))
                     verification_result = merged
@@ -2097,11 +2103,12 @@ def make_publish_node(
         from services.deep_research.completion_criteria import revalidate_completion_audit
         from services.deep_research.display_metadata import answer_display_metadata
         audit = revalidate_completion_audit(brief_state.get('plan', []), accepted_claims, audit,
-            **({'display_metadata':answer_display_metadata(accepted_claims,brief_state.get('evidence',[]),task_sources=True)}
+            **({'display_metadata':answer_display_metadata(accepted_claims,brief_state.get('evidence',[]),task_sources=True, **({'request_semantics':2} if type(record.get('requestSemanticsContractVersion')) is int and record['requestSemanticsContractVersion']==2 else {}))}
                if type(record.get('reportPresentationContractVersion')) is int and record['reportPresentationContractVersion']==4 else {}))
         from services.deep_research.display_metadata import revalidate_display_metadata
         audit = revalidate_display_metadata(audit, accepted_claims, brief_state.get('evidence', []),
-            **({'task_sources':True} if type(record.get('reportPresentationContractVersion')) is int and record['reportPresentationContractVersion']==4 else {}))
+            **({'task_sources':True} if type(record.get('reportPresentationContractVersion')) is int and record['reportPresentationContractVersion']==4 else {}),
+            **({'request_semantics':2} if type(record.get('requestSemanticsContractVersion')) is int and record['requestSemanticsContractVersion']==2 else {}))
         if audit != verified_report.get('answerCoverage', {}):
             verified_report = {**verified_report, 'answerCoverage': audit}
             repo_update(run_id, lambda r: {**r, 'state': {**r.get('state', {}),

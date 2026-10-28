@@ -32,12 +32,19 @@ def access_bindings_supported(bindings,known,metadata,requirement):
     return True
 
 
-def access_requirements(plan):
-    return {o['obligationId']:{'overall':True,'criteria':{
+def access_requirements(plan,*,joint=False):
+    result={o['obligationId']:{'overall':True,'criteria':{
         c['criterionId'] for c in o.get('completionCriteria',[])
         if c.get('responseType')=='identification' and access_only(c.get('requirement'))}}
         for item in plan for o in item.get('obligations',[])
         if access_only(o.get('question'))}
+    if joint:
+        from services.deep_research.joint_answer_bindings import access_instruction
+        for item in plan:
+            for o in item.get('obligations',[]):
+                if o['obligationId'] not in result and access_instruction(o.get('question','')):
+                    result[o['obligationId']]={'overall':True,'criteria':set()}
+    return result
 
 
 COVERAGE_GUIDANCE='''For a frozen obligation asking ONLY to identify fulltext/abstract

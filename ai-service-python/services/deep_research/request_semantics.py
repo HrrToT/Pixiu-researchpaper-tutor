@@ -5,10 +5,11 @@ import re
 
 def enabled(record):
     return (type(record.get('requestSemanticsContractVersion')) is int
-        and record['requestSemanticsContractVersion']==1)
+        and record['requestSemanticsContractVersion'] in (1,2))
 
 
-def normalize_access_requirements(plan,question):
+def normalize_access_requirements(plan,question,*,version=1):
+    if type(version) is not int or version not in (1,2):raise ValueError('Invalid request semantics policy')
     from services.deep_research.access_disclosure import access_only
     from services.deep_research.evidence_requirements import _outside_examples
     layers=getattr(question,'instruction_layers',(str(question),))
@@ -26,6 +27,8 @@ def normalize_access_requirements(plan,question):
             description=criteria[0].get('requirement','')
             if not isinstance(description,str):continue
             access_description=re.sub(r'用户|助手|模型|系统|\bAI\b','',description).replace('标注','标明')
+            if version==2:
+                access_description=re.sub(r'[，,；;]?(?:并|且)?(?:指出|说明)(?:该|此)?信息在(?:材料|原文|文中)中?的(?:体现|位置|依据)[。.]?$','',access_description)
             if not access_only(access_description):continue
             grounded=False
             for layer in layers:
@@ -58,3 +61,5 @@ the paper's section order alone does not prove an author recommendation. Never c
 the user read a paper. Server acquisition labels describe only actual cited excerpts.
 Translate minimal/small accuracy loss as 精度损失较小 or 尽量减少精度损失 when supported,
 not 最小/最低/所有方法中最优 without an actual comparative minimum in own evidence.'''
+
+PLAN_GUIDANCE_V2='Access identification needs the actual acquisition label, not an invented requirement to find a statement about the application reading the paper inside that paper. Do not add a proof-location criterion unless the human explicitly requested it.'

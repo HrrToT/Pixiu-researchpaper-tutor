@@ -4,20 +4,22 @@ import json
 import re
 
 
-def answer_display_metadata(claims, evidence, *, task_sources=False):
+def answer_display_metadata(claims, evidence, *, task_sources=False,request_semantics=0):
     if type(task_sources) is not bool:raise ValueError('Invalid task source disclosure policy')
     from services.deep_research.reporting import source_access_summary
     summary = source_access_summary(claims, evidence, **({"task_sources":True} if task_sources else {}))
+    if type(request_semantics) is not int or request_semantics not in (0,2):raise ValueError('Invalid display semantics policy')
+    semantic_metadata={'requestSemanticsContractVersion':2} if request_semantics==2 else {}
     refs={ref for c in claims for ref in c.get('evidenceRefs',[])}
-    return ({'sourceAccessSummary':summary, **({'taskSourceAccessContractVersion':1,
-        'sourceAccessRecords':{e['evidenceId']:e.get('accessLevel') for e in evidence if e.get('evidenceId') in refs}} if task_sources else {})} if summary else {})
+    return ({**semantic_metadata,'sourceAccessSummary':summary, **({'taskSourceAccessContractVersion':1,
+        'sourceAccessRecords':{e['evidenceId']:e.get('accessLevel') for e in evidence if e.get('evidenceId') in refs}} if task_sources else {})} if summary else semantic_metadata)
 
 
-def display_metadata_digest(claims, evidence, *, task_sources=False):
+def display_metadata_digest(claims, evidence, *, task_sources=False,request_semantics=0):
     refs = {ref for claim in claims for ref in claim.get('evidenceRefs', [])}
     rows = [{key: row.get(key) for key in ('evidenceId', 'sourceKind', 'accessLevel')}
             for row in evidence if row.get('evidenceId') in refs]
-    value = [answer_display_metadata(claims, evidence, **({"task_sources":True} if task_sources else {})), sorted(rows, key=lambda row: str(row['evidenceId']))]
+    value = [answer_display_metadata(claims, evidence, **({"task_sources":True} if task_sources else {}), **({"request_semantics":2} if request_semantics==2 else {})), sorted(rows, key=lambda row: str(row['evidenceId']))]
     return hashlib.sha256(json.dumps(value, sort_keys=True, ensure_ascii=False).encode()).hexdigest()
 
 
@@ -55,10 +57,12 @@ def request_access_aspect(aspect):
             and requests_access_level(aspect.get('requirement')))
 
 
-def revalidate_display_metadata(audit, claims, evidence, *, task_sources=False):
+def revalidate_display_metadata(audit, claims, evidence, *, task_sources=False,request_semantics=0):
     """A resumed publication cannot inherit access checks for different labels."""
     previous = audit.get('displayMetadataDigest')
-    if previous is None or previous == display_metadata_digest(claims, evidence, **({"task_sources":True} if task_sources else {})):
+    if previous is None and request_semantics!=2:
+        return audit
+    if previous == display_metadata_digest(claims, evidence, **({"task_sources":True} if task_sources else {}), **({"request_semantics":2} if request_semantics==2 else {})):
         return audit
     identity = audit.get('wholeQuestionId') or 'answer_source_access'
     gap = {'obligationId': identity, 'stage': 'answer', 'wholeQuestion': True,

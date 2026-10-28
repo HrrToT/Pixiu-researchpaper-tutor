@@ -86,7 +86,7 @@ def test_repair_guidance_keeps_original_kind_permissions_and_cache_isolation():
     invoke.assert_not_called()
 
 
-@pytest.mark.parametrize('replacement',[None,True,0,2,'1'])
+@pytest.mark.parametrize('replacement',[None,True,0,1,3,'2'])
 def test_semantics_contract_is_server_owned_and_immutable(tmp_path,replacement):
     from services.deep_research.repository import DeepResearchRepository
     from services.deep_research.facade import ResearchFacade
@@ -95,7 +95,7 @@ def test_semantics_contract_is_server_owned_and_immutable(tmp_path,replacement):
     try:
         run,_=facade.create({'workspaceTaskId':'t','operationKey':'op','question':EXCERPT,
             'requestSemanticsContractVersion':replacement,'deferStart':True},start_async=False)
-        assert run['requestSemanticsContractVersion']==1
+        assert run['requestSemanticsContractVersion']==2
         with pytest.raises(ValueError,match='Immutable'):
             repo.update_run(run['runId'],lambda r:{**r,'requestSemanticsContractVersion':replacement})
     finally:facade.shutdown()

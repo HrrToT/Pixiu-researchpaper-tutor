@@ -83,6 +83,13 @@ def invalid_coverage_aspects(verdicts, claims, evidence_rows, questions, *, requ
                         and all(evidence.get(ref) is not None
                             and evidence[ref].get('accessLevel') in ('fulltext', 'abstract', 'user_note')
                             for ref in known[b['claimId']]['evidenceRefs']) for b in bindings))
+                from services.deep_research.joint_answer_bindings import enabled as joint_enabled,bindings_supported
+                if joint_enabled(display_metadata) and any(isinstance(b,dict) and b.get('field')!='sourceAccessSummary' for b in bindings):
+                    supported=(verdict.get('obligationId') in request_only_obligations
+                        and isinstance(excerpt,str) and len(excerpt.strip())>=8
+                        and any(excerpt in q for q in questions if isinstance(q,str))
+                        and bindings_supported(bindings,known,display_metadata,excerpt))
+                    metadata_only=False
                 valid = valid and supported
                 continue
             metadata_only = False

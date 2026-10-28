@@ -17,7 +17,7 @@ def _prepare_repair(report, verification, evidence, question, *, max_prompt_byte
                     metric_domains=None, draft_context=(), prior_revisions=(),
                     fact_redraft=False, requirement_context=(), source_aware_redraft=False,comparison_reasoning=False,
                     question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False,shared_experiment_schema=False,experiment_evidence_context=None,experimental_edits=False,experimental_diagnostics=False,experimental_nested_tables=False,experimental_representation=False,experimental_coverage=False,citation_presentation_version=0,configuration_consistency_version=0,repair_evidence_packet_version=0,answer_intents=None,scope_expression=False,table_identity_context=False,claim_check=False,required_scope_ids=(),compact_layout=False,ordinary_advice=False,task_sources=False,request_semantics=False):
-    if type(request_semantics) is not bool:raise ValueError('Invalid request semantics policy')
+    if not (type(request_semantics) is bool or type(request_semantics) is int and request_semantics==2):raise ValueError('Invalid request semantics policy')
     if type(task_sources) is not bool:raise ValueError('Invalid task source disclosure policy')
     if type(ordinary_advice) is not bool:raise ValueError('Invalid ordinary advice repair policy')
     from services.deep_research.general_advice import repair_eligible
@@ -729,7 +729,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
     from services.deep_research.contracts import digest, DeepResearchError
     from services.deep_research.repair_batches import split_repair_targets
 
-    if type(request_semantics) is not bool:raise ValueError('Invalid request semantics policy')
+    if not (type(request_semantics) is bool or type(request_semantics) is int and request_semantics==2):raise ValueError('Invalid request semantics policy')
     if type(task_sources) is not bool:raise ValueError('Invalid task source disclosure policy')
     if type(ordinary_advice) is not bool:raise ValueError('Invalid ordinary advice repair policy')
     if ordinary_advice:
@@ -791,7 +791,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
                        **({'tableReferencesContractVersion':4 if type(declared_table_refs) is int and declared_table_refs==4 else 1} if declared_table_refs else {}),
                        **({'recommendationRepairContractVersion':1} if ordinary_advice else {}),
                        **({'reportPresentationContractVersion':4} if task_sources else {}),
-                       **({'requestSemanticsContractVersion':1} if request_semantics else {}),
+                       **({'requestSemanticsContractVersion':2 if type(request_semantics) is int and request_semantics==2 else 1} if request_semantics else {}),
                        **({'repairResponseContractVersion':1} if strict_response else {}),
                        **({'factualRepairContractVersion':1} if compact_source_repair else {}),
                        **({'experimentRepairContractVersion':6 if experimental_coverage else 5 if experimental_representation else 4 if experimental_nested_tables else 3 if experimental_diagnostics else 2 if experimental_edits else 1} if shared_experiment_schema else {}),
@@ -817,7 +817,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
             compact_layout=compact_layout,fact_redraft=fact_redraft, requirement_context=requirement_context,source_aware_redraft=source_aware_redraft,
             **({'ordinary_advice':True} if ordinary_advice else {}),
             **({'task_sources':True} if task_sources else {}),
-            **({'request_semantics':True} if request_semantics else {}),
+            **({'request_semantics':request_semantics} if request_semantics else {}),
             **({'answer_intents':answer_intents} if answer_intents is not None else {}),
             **({'scope_expression':scope_expression} if scope_expression else {}),
             **({'required_scope_ids':[key for key in required_scope_ids if key in ids]} if required_scope_ids else {}),

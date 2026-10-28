@@ -19,11 +19,16 @@ def _numeric_identifiers(text):
         r'(?<![A-Za-z0-9_.])[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][-+]?\d+)?(?![\d.])', text)}
 
 
-def _identification_objects_present(criterion, obligation, bindings):
+def _identification_objects_present(criterion, obligation, bindings, *, format_limits=False):
     if criterion['responseType'] != 'identification':
         return True
-    requested = _numeric_identifiers(str(obligation.get('requestExcerpt') or obligation.get('question') or ''))
-    objects = requested & _numeric_identifiers(criterion['requirement'])
+    requested_text=str(obligation.get('requestExcerpt') or obligation.get('question') or '')
+    requirement=criterion['requirement']
+    if format_limits:
+        from services.deep_research.joint_answer_bindings import without_character_limits
+        requested_text=without_character_limits(requested_text);requirement=without_character_limits(requirement)
+    requested = _numeric_identifiers(requested_text)
+    objects = requested & _numeric_identifiers(requirement)
     displayed = _numeric_identifiers(' '.join(str(b.get('excerpt', '')) for b in bindings))
     return objects <= displayed
 
@@ -81,7 +86,7 @@ def completion_criteria_gaps(plan, claims, verdicts, *, display_metadata=None):
                 if (unknown or len(found) != 1 or found[0].get('status') != 'covered'
                         or found[0].get('responseType') != criterion['responseType']
                         or not _criterion_bindings(found[0].get('bindings'),known,criterion,obligation,display_metadata)
-                        or not _identification_objects_present(criterion, obligation, found[0]['bindings'])):
+                        or not _identification_objects_present(criterion, obligation, found[0]['bindings'],format_limits=isinstance(display_metadata,dict) and type(display_metadata.get('requestSemanticsContractVersion')) is int and display_metadata['requestSemanticsContractVersion']==2)):
                     missing.append(criterion['requirement'])
             if missing:
                 result[identity] = missing
