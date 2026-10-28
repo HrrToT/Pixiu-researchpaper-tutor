@@ -9,12 +9,17 @@ from services.deep_research.scope_expression_review import validate
 
 def enabled(record):
     return (type(record.get('scopeExpressionReviewContractVersion')) is int
-            and record['scopeExpressionReviewContractVersion'] == 2)
+            and record['scopeExpressionReviewContractVersion'] in (2,3))
 
 
 def assertions_enabled(record):
     return (type(record.get('scopeObservationContractVersion')) is int
             and record['scopeObservationContractVersion'] == 1)
+
+
+def consistent_premises_enabled(record):
+    return (type(record.get('scopeExpressionReviewContractVersion')) is int
+            and record['scopeExpressionReviewContractVersion']==3)
 
 
 def observation_claims(claim, expression, *, assertions=False):
@@ -68,6 +73,8 @@ def review(checker, claim, expression, evidence, node):
     if {reverse.get(e['evidenceId'],e['evidenceId']) for e in own} != set(claim['evidenceRefs']):
         return {'claimId':claim['claimId'],'status':'failed','reason':'推广命题的自身引用未完整提供。',
                 'partitionedScopeAudit':audit}
+    policy=checker._consistent_scope_premises
+    consistent_premises=(policy() if callable(policy) else policy) is True
     prompt='''Review evidence ENTAILMENT, not whether the paper performed an experiment.
 Each target is intended as a positive proposition P under the explicit authored operator
 "THESE CITATIONS DO NOT ESTABLISH P". Decide whether the supplied passages and
@@ -94,6 +101,8 @@ Never splice discontinuous excerpts. Every proposition requires its own premises
 The service decides acceptance; return your actual relation even if it rejects the boundary.
 Targets:
 '''+json.dumps(expression['notEstablished'],ensure_ascii=False,separators=(',',':'))+'\nEvidence:\n'+json.dumps(own,ensure_ascii=False,separators=(',',':'))
+    if consistent_premises:
+        prompt+='\nPrefer one source binding form per premise. If both path and quote are returned, the quote must be a contiguous excerpt of that exact visible field of the same evidenceId; both are checked. Extra fields, conflicting text and cross-field matches fail.\n'
     from services.deep_research.tools import TrackedLLMInvoker
     limit = checker._invoke.prompt_byte_limit(checker._run_id,node) if isinstance(checker._invoke,TrackedLLMInvoker) else 24000
     if len(prompt.encode()) > limit:
@@ -118,7 +127,8 @@ Targets:
     # Only the exact positive proposition with explicit scope and own premises
     # can establish non-entailment. Entailed/ambiguous/unknown results fail.
     errors=validate(claim,{'observedSettings':[], 'notEstablished':expression['notEstablished']},restored,
-                    [{**e,'sourceContext':surrounding_context(e)} for e in evidence])
+                    [{**e,'sourceContext':surrounding_context(e)} for e in evidence],
+                    consistent_premises=consistent_premises)
     return {'claimId':claim['claimId'],'status':'failed' if errors else 'passed',
             'reason':'推广命题尚未核实：'+', '.join(errors) if errors else '观察条件与证据推导边界已分别核查。',
             'partitionedScopeAudit':audit}

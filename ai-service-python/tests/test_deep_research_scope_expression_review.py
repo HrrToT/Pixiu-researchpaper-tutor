@@ -111,7 +111,7 @@ def test_alias_restoration_is_explicit_and_never_rewrites_quote_strings_or_legac
     assert v==before
 
 
-@pytest.mark.parametrize('replacement',[None,0,True,'1',1,3])
+@pytest.mark.parametrize('replacement',[None,0,True,'1',1,2,4])
 def test_policy_is_server_owned_immutable_and_facade_only_supplies_matching_new_context(tmp_path,replacement):
     from services.deep_research.facade import ResearchFacade
     from services.deep_research.repository import DeepResearchRepository
@@ -124,7 +124,7 @@ def test_policy_is_server_owned_immutable_and_facade_only_supplies_matching_new_
     try:
         run,_=facade.create({'workspaceTaskId':'t','operationKey':'op','question':'核查','deferStart':True,
             'scopeExpressionReviewContractVersion':replacement},start_async=False)
-        assert run['scopeExpressionReviewContractVersion']==2
+        assert run['scopeExpressionReviewContractVersion']==3
         with pytest.raises(ValueError,match='Immutable'):
             repo.update_run(run['runId'],lambda r:{**r,'scopeExpressionReviewContractVersion':replacement})
         run=repo.update_run(run['runId'],lambda r:{**r,'state':record['state']})

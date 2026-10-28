@@ -28,7 +28,7 @@ def boundary_row(proposition):
             'premises':[{'evidenceId':'E1','path':['quote']}]}
 
 
-def checker_for(claim,expression,record,evidence,*,modify=None,fact_failure=False,flags=True):
+def checker_for(claim,expression,record,evidence,*,modify=None,fact_failure=False,flags=True,consistent=False):
     calls=[]
     def invoke(**kw):
         calls.append(kw)
@@ -43,6 +43,7 @@ def checker_for(claim,expression,record,evidence,*,modify=None,fact_failure=Fals
                      'supported':True,'statementPath':['text'],'premises':[{'evidenceId':'E1','path':['quote']}]}}
         return {'content':json.dumps([verdict]),'finishReason':'stop'}
     checker=BudgetedSemanticChecker(invoke,'r',partitioned_scope_review=True,
+        consistent_scope_premises=consistent,
         scope_expression_context=lambda targets:context_for_record(record,targets),
         factual_scope=flags,complete_factual_scope=flags,audit_source_fields=flags,audit_target_fields=flags,
         isolate_factual_claims=True)

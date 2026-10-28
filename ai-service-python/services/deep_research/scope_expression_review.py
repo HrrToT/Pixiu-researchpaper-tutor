@@ -8,7 +8,7 @@ from services.deep_research.scope_expression import materialize, review_expressi
 
 def enabled(record):
     return (type(record.get('scopeExpressionReviewContractVersion')) is int
-            and record['scopeExpressionReviewContractVersion'] in (1,2))
+            and record['scopeExpressionReviewContractVersion'] in (1,2,3))
 
 
 def context_for_record(record, claims):
@@ -79,14 +79,19 @@ Unverified scope expressions by actual target claimId:
 ''' + json.dumps(context,ensure_ascii=False,separators=(',',':')) + '\n'
 
 
-def _bound(premises, own):
+def _bound(premises, own, *, consistent_premises=False):
     if not isinstance(premises,list) or not 1 <= len(premises) <= 20: return False
     from services.deep_research.audit_source_fields import resolve
     normalize=lambda s:re.sub(r'\s+',' ',s).strip()
     for row in premises:
         if not isinstance(row,dict): return False
         if 'path' in row:
-            if resolve(row,own) is None: return False
+            if consistent_premises and set(row)=={'evidenceId','path','quote'}:
+                resolved=resolve({k:row[k] for k in ('evidenceId','path')},own)
+                quote=row['quote']
+                if (resolved is None or not isinstance(quote,str) or not quote.strip()
+                        or normalize(quote) not in normalize(resolved[1])):return False
+            elif resolve(row,own) is None: return False
         else:
             if set(row)!={'evidenceId','quote'}: return False
             item=own.get(row.get('evidenceId')) if isinstance(row.get('evidenceId'),str) else None
@@ -98,7 +103,8 @@ def _bound(premises, own):
     return True
 
 
-def validate(claim, expression, verdict, evidence):
+def validate(claim, expression, verdict, evidence, *, consistent_premises=False):
+    if type(consistent_premises) is not bool:raise ValueError('Invalid consistent scope premise policy')
     audit=verdict.get('scopeExpressionAudit')
     if not isinstance(audit,dict) or set(audit)!={'observedSettings','notEstablished'}:
         return ['scope_expression_audit_missing']
@@ -118,5 +124,6 @@ def validate(claim, expression, verdict, evidence):
                         or row.get('authorOmission') is not False or not isinstance(row.get('reason'),str)
                         or not row['reason'].strip()):
                     return ['scope_boundary_entailment_unresolved']
-            if not _bound(row.get('premises'),own): return ['scope_expression_premises_not_bound']
+            if not _bound(row.get('premises'),own,consistent_premises=consistent_premises):
+                return ['scope_expression_premises_not_bound']
     return []
