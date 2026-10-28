@@ -1,0 +1,40 @@
+"""Separate a checked prose-list length from empirical source quantities.
+
+Only the displayed list count is handled here. The identity, completeness and
+scientific meaning of every listed item still require semantic verification.
+"""
+import re
+
+_LABEL = re.compile(
+    r'(?<![A-Za-z0-9第负正+＋\-−零一二两三四五六七八九十百千万亿])'
+    r'(?P<number>十二|十一|[二两三四五六七八九十]|1[0-2]|[2-9])'
+    r'(?:个|项)(?:主要|关键|核心)?(?:环节|方面|部分|要点)'
+    r'(?:分别(?:改变|是|为|包括)?|如下|包括)?[：:]')
+_EXACT = re.compile(r'只有|仅|唯一|恰好|正好|总共|共|至少|至多|最多|最少|不超过|超过|固定|必须|负|正|[+＋\-−]|至|到|约')
+_VALUES = dict(zip('二两三四五六七八九十', (2,2,3,4,5,6,7,8,9,10)))
+
+
+def without_enumeration_labels(text):
+    """Ignore a matching list label, never a measured count or explicit total.
+
+    Require a colon and exactly N nonempty semicolon-separated items in one
+    sentence. Missing items, nested lists and exact/exclusive quantifiers stay
+    in the quantity gate. No original citation or published text is rewritten.
+    """
+    spans=[]
+    for match in _LABEL.finditer(text):
+        prefix=re.split(r'[。！？\n；;]',text[:match.start()])[-1]
+        if _EXACT.search(prefix):
+            continue
+        body=re.split(r'[。！？\n]',text[match.end():],maxsplit=1)[0]
+        # Conservative: don't treat nested punctuation as sibling items.
+        if any(c in body for c in '()（）[]【】{}'):
+            continue
+        items=re.split(r'[；;]',body)
+        word=match['number']
+        count=int(word) if word.isdigit() else {'十一':11,'十二':12}.get(word,_VALUES.get(word))
+        if (len(items)!=count or any(not item.strip() for item in items)
+                or any(re.search(r'例如|比如|等(?:等)?\s*$|\.\.\.|…',item) for item in items)):
+            continue
+        spans.append(match.span('number'))
+    return ''.join(c for i,c in enumerate(text) if not any(a<=i<b for a,b in spans))
