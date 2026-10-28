@@ -18,7 +18,7 @@ def _unique(rows, key):
     return result
 
 
-def resolve_coverage_references(verdicts, claims, evidence_rows, *, display_metadata=None):
+def resolve_coverage_references(verdicts, claims, evidence_rows, *, display_metadata=None, access_requirements=None):
     known = _unique(claims, 'claimId')
     evidence = _unique(evidence_rows, 'evidenceId')
     resolved = deepcopy(verdicts)
@@ -49,10 +49,13 @@ def resolve_coverage_references(verdicts, claims, evidence_rows, *, display_meta
     for verdict in resolved:
         if not isinstance(verdict, dict):
             continue
-        bind(verdict.get('bindings'))
+        permitted=((access_requirements or {}).get(verdict['obligationId'],{})
+                   if isinstance(verdict.get('obligationId'),str) else {})
+        bind(verdict.get('bindings'),metadata_aspect=bool(permitted.get('overall')))
         for criterion in verdict.get('criteria', []) if isinstance(verdict.get('criteria'), list) else []:
             if isinstance(criterion, dict):
-                bind(criterion.get('bindings'))
+                bind(criterion.get('bindings'),metadata_aspect=isinstance(criterion.get('criterionId'),str)
+                     and criterion['criterionId'] in permitted.get('criteria',set()))
         aspects = verdict.get('aspects')
         for aspect in aspects if isinstance(aspects, list) else []:
             if not isinstance(aspect, dict):

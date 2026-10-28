@@ -32,14 +32,14 @@ def build_sections(claims, output_kind, proposed_sections=None, *, presentation_
     if remaining:
         sections.append({"title": templates[0], "claimIds": remaining})
     sections.sort(key=lambda section: templates.index(section["title"]))
-    if (type(presentation_version) is int and presentation_version in (1, 2, 3)
+    if (type(presentation_version) is int and presentation_version in (1, 2, 3, 4)
             and resolve_output_kind(output_kind)=='claim_verification'):
         # These IDs contain independently accepted claims, including revisions
         # whose content changed after the model's original section assignment.
         # Actual unfinished obligations are rendered separately from payload.gaps.
         sections=[{**section,'title':'依据与范围'} if section['title']=='未解决事项' else section
                   for section in sections]
-    if type(presentation_version) is int and presentation_version in (2,3):
+    if type(presentation_version) is int and presentation_version in (2,3,4):
         # Revisions can return claims to the fallback section. Keep all claims
         # under a single heading without rewriting their words or old reports.
         merged = {}
@@ -59,7 +59,7 @@ def _display_gaps(gaps, *, presentation_version=0):
         if key and (key not in selected or isinstance(gap, dict) and gap.get('stage') == 'answer'):
             selected[key] = gap
     rows = list(selected.values())
-    if type(presentation_version) is not int or presentation_version not in (2,3):
+    if type(presentation_version) is not int or presentation_version not in (2,3,4):
         return rows
     merged = {}
     for index, gap in enumerate(rows):
@@ -78,11 +78,12 @@ def _display_gaps(gaps, *, presentation_version=0):
     return list(merged.values())
 
 
-def source_access_summary(claims, evidence):
-    """Describe cited external evidence, never imply the entire paper was read."""
+def source_access_summary(claims, evidence, *, task_sources=False):
+    """Describe cited sources, never imply the entire paper was read."""
+    if type(task_sources) is not bool:raise ValueError('Invalid task source disclosure policy')
     refs = {ref for claim in claims for ref in claim.get('evidenceRefs', [])}
     cited = [item for item in evidence if item.get('evidenceId') in refs]
-    if not any(item.get('sourceKind') == 'arxiv' for item in cited):
+    if not any(item.get('sourceKind') in ({'arxiv','task_paper'} if task_sources else {'arxiv'}) for item in cited):
         return ''
     levels = {item.get('accessLevel') for item in cited}
     labels = [label for level, label in [('fulltext', '全文片段'), ('abstract', '摘要'),
@@ -101,7 +102,7 @@ def display_conditions(conditions):
 
 
 def _claim_label(claim,labels,version,output_kind):
-    if type(version) is int and version==3 and output_kind!='experiment_design':
+    if type(version) is int and version in (3,4) and output_kind!='experiment_design':
         from services.deep_research.general_advice import eligible
         if eligible(claim):
             return '' if re.match(r'^(?:建议|推荐)',str(claim.get('text',''))) else '建议：'
@@ -113,10 +114,10 @@ def render_report(payload, *, _counting=False):
     refs = list(dict.fromkeys(ref for claim in claims.values() for ref in claim.get("evidenceRefs", [])))
     ref_numbers = {ref: index + 1 for index, ref in enumerate(refs)}
     sources = {e["evidenceId"]: e for e in payload.get("evidence", []) if e.get("evidenceId")}
-    access_summary = source_access_summary(list(claims.values()), list(sources.values()))
+    access_summary = source_access_summary(list(claims.values()), list(sources.values()), task_sources=type(payload.get('presentationVersion')) is int and payload['presentationVersion']==4)
     lines, rendered = ([access_summary, ''] if access_summary else []), set()
     sections = payload.get("sections") or build_sections(list(claims.values()), payload.get("outputKind", "direction_survey"))
-    compact = (type(payload.get('presentationVersion')) is int and payload['presentationVersion'] in (2,3))
+    compact = (type(payload.get('presentationVersion')) is int and payload['presentationVersion'] in (2,3,4))
     limited = compact and type(payload.get('characterLimit')) is int and payload['characterLimit'] > 0
     labels = {"inference": "有依据的推断：", "hypothesis": "待验证假设：", "suggestion": "实验建议：", "proposal": "实验建议："}
     if compact:
@@ -211,11 +212,11 @@ def visible_answer_character_count(payload):
 
 
 def publication_notices(claims, *, presentation_version=0,output_kind=None):
-    if type(presentation_version) is not int or presentation_version not in (2,3):
+    if type(presentation_version) is not int or presentation_version not in (2,3,4):
         return verification_notice(claims), ''
     from services.deep_research.general_advice import eligible
     visible = verification_notice([c for c in claims if c.get('kind') in {'hypothesis','proposal','suggestion'}
-        and not (presentation_version==3 and output_kind!='experiment_design' and eligible(c))])
+        and not (presentation_version in (3,4) and output_kind!='experiment_design' and eligible(c))])
     folded = verification_notice([c for c in claims if c.get('kind') in {'reported','inference'}])
     return visible, folded
 
@@ -237,13 +238,13 @@ def conversation_summary(claims, outcome, *, max_chars=500, evidence=None, outpu
     """Keep whole claims and their epistemic labels; never cut a number or condition."""
     labels = {"inference": "有依据的推断：", "hypothesis": "待验证假设：",
               "suggestion": "实验建议：", "proposal": "实验建议："}
-    if type(presentation_version) is int and presentation_version in (2,3):
+    if type(presentation_version) is int and presentation_version in (2,3,4):
         labels['inference'] = '推断：'
     boundary = {"partial": "当前结果尚不完整，已核实的内容已保存。",
                 "inconclusive": "本次尚未形成通过核验的结论。"}.get(outcome, "")
     if outcome == 'inconclusive' and output_kind == 'experiment_design':
         boundary = '尚未形成通过核验的实验方案。'
-    access = source_access_summary(claims, evidence or [])
+    access = source_access_summary(claims, evidence or [], task_sources=type(presentation_version) is int and presentation_version==4)
     parts = [access] if access else []
     length = len(boundary) + len(access) + (2 if access else 0)
     for claim in claims:

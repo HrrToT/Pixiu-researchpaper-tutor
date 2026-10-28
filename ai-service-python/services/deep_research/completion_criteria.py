@@ -51,7 +51,7 @@ def validate_completion_criteria(plan, *, required=False):
     return plan
 
 
-def completion_criteria_gaps(plan, claims, verdicts):
+def completion_criteria_gaps(plan, claims, verdicts, *, display_metadata=None):
     """Missing, duplicate, downgraded or unbound criterion verdicts stay open.
 
     Only covered obligations are examined here: ordinary partial/missing
@@ -80,7 +80,7 @@ def completion_criteria_gaps(plan, claims, verdicts):
                          and row.get('criterionId') == criterion['criterionId']]
                 if (unknown or len(found) != 1 or found[0].get('status') != 'covered'
                         or found[0].get('responseType') != criterion['responseType']
-                        or not _bindings_supported(found[0].get('bindings'), known)
+                        or not _criterion_bindings(found[0].get('bindings'),known,criterion,obligation,display_metadata)
                         or not _identification_objects_present(criterion, obligation, found[0]['bindings'])):
                     missing.append(criterion['requirement'])
             if missing:
@@ -107,7 +107,7 @@ def completion_contract_digest(plan, claims):
         separators=(',', ':'), allow_nan=False).encode()).hexdigest()
 
 
-def invalid_criterion_reviews(plan, claims, verdicts):
+def invalid_criterion_reviews(plan, claims, verdicts, *, display_metadata=None):
     """Separate an unreadable audit from a genuine reviewed content gap."""
     known = _known_claims_by_id(claims)
     invalid = []
@@ -133,18 +133,18 @@ def invalid_criterion_reviews(plan, claims, verdicts):
                 if (row.get('responseType') != criterion['responseType']
                         or not isinstance(status, str) or status not in {'covered', 'partial', 'missing'}
                         or not isinstance(bindings, list)
-                        or (status == 'covered' or bindings) and not _bindings_supported(bindings, known)):
+                        or (status == 'covered' or bindings) and not _criterion_bindings(bindings,known,criterion,obligation,display_metadata)):
                     valid = False
             if not valid:
                 invalid.append(identity)
     return invalid
 
 
-def revalidate_completion_audit(plan, claims, audit):
+def revalidate_completion_audit(plan, claims, audit, *, display_metadata=None):
     current = completion_contract_digest(plan, claims)
     if current is None:
         return audit
-    missing = completion_criteria_gaps(plan, claims, audit.get('verdicts', []))
+    missing = completion_criteria_gaps(plan, claims, audit.get('verdicts', []), **({'display_metadata':display_metadata} if display_metadata else {}))
     if current == audit.get('completionContractDigest') and not missing:
         return audit
     # Changed requirements/answer cannot inherit a successful older semantic
@@ -177,3 +177,10 @@ Keep separate requested transformations as separate criteria. A supervision
 yes/no question may use identification plus a requested limitation. Proposed
 experiments use procedure for reproducible operations and explanation for
 decision logic. Preserve brevity and do not invent extra user requirements.'''
+
+
+def _criterion_bindings(bindings,known,criterion,obligation,metadata):
+    if _bindings_supported(bindings,known):return True
+    from services.deep_research.access_disclosure import access_only,access_bindings_supported
+    return (criterion.get('responseType')=='identification' and access_only(obligation.get('question'))
+        and access_bindings_supported(bindings,known,metadata,criterion.get('requirement')))

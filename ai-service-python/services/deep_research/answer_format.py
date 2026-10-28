@@ -86,7 +86,7 @@ def publication_format_gaps(record, claims, sections, *, display_payload=None):
                 'missingEvidence': '单个回答点中还包含额外列表或标题，尚未满足分点要求。',
                 'stage': 'answer_format', 'wholeQuestion': True})
     limit = requested_character_limit(question)
-    modern = type(record.get('reportPresentationContractVersion')) is int and record['reportPresentationContractVersion'] in (2,3)
+    modern = type(record.get('reportPresentationContractVersion')) is int and record['reportPresentationContractVersion'] in (2,3,4)
     if limit and modern and not isinstance(display_payload,dict):
         gaps.append({'question':'核对最终显示字数','missingEvidence':'最终显示内容尚未形成，不能确认字数要求。',
                      'stage':'answer_format','wholeQuestion':True,'expectedCharacterLimit':limit})

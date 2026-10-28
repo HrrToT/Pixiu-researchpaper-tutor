@@ -100,7 +100,7 @@ def _plan_obligations(plan):
     return obligations
 
 
-def answer_coverage_gaps(plan, claims, verdicts):
+def answer_coverage_gaps(plan, claims, verdicts, *, display_metadata=None):
     """Return the obligation gaps left by the final answer.
 
     ``plan`` holds validated items with ``obligations``; ``claims`` are the
@@ -125,7 +125,10 @@ def answer_coverage_gaps(plan, claims, verdicts):
         matching = []
         if isinstance(obligation_id, str):
             matching = verdicts_by_obligation.get(obligation_id, [])
-        closed = len(matching) == 1 and _verdict_closes_obligation(matching[0], known_claims)
+        from services.deep_research.access_disclosure import access_bindings_supported
+        closed = len(matching) == 1 and (_verdict_closes_obligation(matching[0], known_claims)
+            or matching[0].get('status')==_COVERED and access_bindings_supported(
+                matching[0].get('bindings'),known_claims,display_metadata,obligation.get('question')))
         if not closed:
             gaps.append(
                 {

@@ -1389,6 +1389,9 @@ space with unsupported global absence or incidental iteration/performance values
             from services.deep_research.experiment_plan_encoding import flexible as flexible_plan
             evidence_wire_legend=SHORT_LEGEND if flexible_plan(record) else LEGEND
             prompt+='\n'+evidence_wire_legend
+        from services.deep_research.access_disclosure import enabled as access_disclosure_enabled, GUIDANCE as access_disclosure_guidance
+        if access_disclosure_enabled(record):
+            prompt+='\n'+access_disclosure_guidance
         template = prompt
         if premise_mode:
             reverse_aliases={eid:alias for alias,eid in evidence_aliases.items()}
@@ -1759,6 +1762,7 @@ def make_verify_node(
                 evidence, llm_invoke, _safe_parse_json, budget=current.get('budget'),
                 **({'request_contract':record['requestCoverageContractVersion']} if request_coverage_enabled(record) else {}),
                 **({'claim_check':True} if claim_check_enabled(record) else {}),
+                **({'task_sources':True} if type(record.get('reportPresentationContractVersion')) is int and record['reportPresentationContractVersion']==4 else {}),
                 **({'diagnostics':True} if type(record.get('coverageDiagnosticsContractVersion')) is int and record['coverageDiagnosticsContractVersion']==1 else {}),
                 **({'literal_dimensions':True} if dimensions_enabled(record) else {}))
             if saved.get('outputKind') == 'experiment_design':
@@ -1865,6 +1869,7 @@ def make_verify_node(
                             if claim_check_enabled(record) and record['claimCheckContractVersion'] in (5,6,7,8,9) else {}),
                         **({'compact_source_repair':True} if compact_repair else {}),
                         **({'ordinary_advice':True} if advice_repair else {}),
+                        **({'task_sources':True} if type(record.get('reportPresentationContractVersion')) is int and record['reportPresentationContractVersion']==4 else {}),
                         **({'shared_experiment_schema':True} if shared_experiment_repair(record) else {}),
                         **({'experimental_edits':True} if edit_repair else {}),
                         **({'experimental_diagnostics':True} if edit_repair and record['experimentRepairContractVersion'] in (3,4,5,6) else {}),
@@ -1982,6 +1987,7 @@ def make_verify_node(
                             evidence, llm_invoke, _safe_parse_json, budget=current.get('budget'),
                             **({'request_contract':record['requestCoverageContractVersion']} if request_coverage_enabled(record) else {}),
                             **({'claim_check':True} if claim_check_enabled(record) else {}),
+                            **({'task_sources':True} if type(record.get('reportPresentationContractVersion')) is int and record['reportPresentationContractVersion']==4 else {}),
                             **({'diagnostics':True} if type(record.get('coverageDiagnosticsContractVersion')) is int and record['coverageDiagnosticsContractVersion']==1 else {}),
                             **({'literal_dimensions':True} if dimensions_enabled(record) else {}))
                     verification_result = merged
@@ -2076,9 +2082,13 @@ def make_publish_node(
         from services.deep_research.final_coverage import remaining_retrieval_gaps
         audit = verified_report.get('answerCoverage', {})
         from services.deep_research.completion_criteria import revalidate_completion_audit
-        audit = revalidate_completion_audit(brief_state.get('plan', []), accepted_claims, audit)
+        from services.deep_research.display_metadata import answer_display_metadata
+        audit = revalidate_completion_audit(brief_state.get('plan', []), accepted_claims, audit,
+            **({'display_metadata':answer_display_metadata(accepted_claims,brief_state.get('evidence',[]),task_sources=True)}
+               if type(record.get('reportPresentationContractVersion')) is int and record['reportPresentationContractVersion']==4 else {}))
         from services.deep_research.display_metadata import revalidate_display_metadata
-        audit = revalidate_display_metadata(audit, accepted_claims, brief_state.get('evidence', []))
+        audit = revalidate_display_metadata(audit, accepted_claims, brief_state.get('evidence', []),
+            **({'task_sources':True} if type(record.get('reportPresentationContractVersion')) is int and record['reportPresentationContractVersion']==4 else {}))
         if audit != verified_report.get('answerCoverage', {}):
             verified_report = {**verified_report, 'answerCoverage': audit}
             repo_update(run_id, lambda r: {**r, 'state': {**r.get('state', {}),
@@ -2103,13 +2113,13 @@ def make_publish_node(
         sections = build_sections(accepted_claims, output_kind, verified_report.get("sections"),
             presentation_version=presentation_version)
         visible_notice, folded_notice = publication_notices(accepted_claims, presentation_version=presentation_version,
-            **({'output_kind':output_kind} if presentation_version==3 else {}))
+            **({'output_kind':output_kind} if presentation_version in (3,4) else {}))
         repair_notice = ('补充核验未完成；已保留此前核实的内容。'
                          if brief_state.get('repairStatus') == 'verification_invalid_response' else
                          '修订结果未能解析；已保留此前核实的内容。'
                          if brief_state.get('repairStatus') == 'response_invalid' else '')
         display_fields = {}
-        if type(presentation_version) is int and presentation_version in (2,3):
+        if type(presentation_version) is int and presentation_version in (2,3,4):
             from services.deep_research.answer_constraints import requested_character_limit
             display_fields = {'presentationVersion':presentation_version, 'characterLimit':requested_character_limit(effective_question(record)),
                               'verificationNotice':folded_notice}

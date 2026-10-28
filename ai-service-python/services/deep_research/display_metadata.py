@@ -4,17 +4,20 @@ import json
 import re
 
 
-def answer_display_metadata(claims, evidence):
+def answer_display_metadata(claims, evidence, *, task_sources=False):
+    if type(task_sources) is not bool:raise ValueError('Invalid task source disclosure policy')
     from services.deep_research.reporting import source_access_summary
-    summary = source_access_summary(claims, evidence)
-    return {'sourceAccessSummary': summary} if summary else {}
+    summary = source_access_summary(claims, evidence, **({"task_sources":True} if task_sources else {}))
+    refs={ref for c in claims for ref in c.get('evidenceRefs',[])}
+    return ({'sourceAccessSummary':summary, **({'taskSourceAccessContractVersion':1,
+        'sourceAccessRecords':{e['evidenceId']:e.get('accessLevel') for e in evidence if e.get('evidenceId') in refs}} if task_sources else {})} if summary else {})
 
 
-def display_metadata_digest(claims, evidence):
+def display_metadata_digest(claims, evidence, *, task_sources=False):
     refs = {ref for claim in claims for ref in claim.get('evidenceRefs', [])}
     rows = [{key: row.get(key) for key in ('evidenceId', 'sourceKind', 'accessLevel')}
             for row in evidence if row.get('evidenceId') in refs]
-    value = [answer_display_metadata(claims, evidence), sorted(rows, key=lambda row: str(row['evidenceId']))]
+    value = [answer_display_metadata(claims, evidence, **({"task_sources":True} if task_sources else {})), sorted(rows, key=lambda row: str(row['evidenceId']))]
     return hashlib.sha256(json.dumps(value, sort_keys=True, ensure_ascii=False).encode()).hexdigest()
 
 
@@ -52,10 +55,10 @@ def request_access_aspect(aspect):
             and requests_access_level(aspect.get('requirement')))
 
 
-def revalidate_display_metadata(audit, claims, evidence):
+def revalidate_display_metadata(audit, claims, evidence, *, task_sources=False):
     """A resumed publication cannot inherit access checks for different labels."""
     previous = audit.get('displayMetadataDigest')
-    if previous is None or previous == display_metadata_digest(claims, evidence):
+    if previous is None or previous == display_metadata_digest(claims, evidence, **({"task_sources":True} if task_sources else {})):
         return audit
     identity = audit.get('wholeQuestionId') or 'answer_source_access'
     gap = {'obligationId': identity, 'stage': 'answer', 'wholeQuestion': True,

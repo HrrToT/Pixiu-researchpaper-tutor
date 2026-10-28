@@ -36,7 +36,8 @@ def coverage_prompt_byte_limit(budget, output_tokens=3500):
     return max(0, min(24000, remaining - output_tokens - 1024))
 
 
-def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, *, budget=None,literal_dimensions=False,diagnostics=False,request_contract=False,claim_check=False):
+def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, *, budget=None,literal_dimensions=False,diagnostics=False,request_contract=False,claim_check=False,task_sources=False):
+    if type(task_sources) is not bool:raise ValueError('Invalid task source disclosure policy')
     from services.deep_research.answer_coverage import answer_coverage_gaps
     from services.deep_research.selection import balanced_sample, surrounding_context
 
@@ -45,7 +46,8 @@ def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, 
     from services.deep_research.obligation_purpose import normalize_obligation_purposes, nonblocking_research_obligations
     audit_plan = normalize_obligation_purposes(plan, question)
     from services.deep_research.display_metadata import answer_display_metadata, display_metadata_digest
-    display_metadata = answer_display_metadata(claims, evidence)
+    from services.deep_research.access_disclosure import access_requirements
+    display_metadata = answer_display_metadata(claims, evidence, **({"task_sources":True} if task_sources else {}))
     identity = None
     if plan and question:
         known = {o['obligationId'] for p in plan for o in p.get('obligations', [])}
@@ -141,6 +143,10 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
         if type(request_contract) is int and request_contract==3:
             from services.deep_research.request_coverage import focus_answer
             prompt=focus_answer(prompt,question,fixed_requirements,wire_claims,display_metadata)
+        if task_sources:
+            from services.deep_research.access_disclosure import COVERAGE_GUIDANCE
+            prompt=prompt.replace('Overall/criterion/scientific\nbindings still require text/conditions.','Scientific or mixed bindings still require text/conditions.')
+            prompt+='\n'+COVERAGE_GUIDANCE
         template = prompt
         try:
             output_tokens = coverage_output_tokens(audit_plan, claims)
@@ -171,15 +177,15 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
                 verdicts = restore_coverage_evidence(verdicts, reverse_aliases)
                 rows = restore_visible_evidence(rows, reverse_aliases)
                 from services.deep_research.coverage_references import resolve_coverage_references
-                verdicts = resolve_coverage_references(verdicts, claims, rows, display_metadata=display_metadata)
+                verdicts = resolve_coverage_references(verdicts, claims, rows, display_metadata=display_metadata, **({"access_requirements":access_requirements(audit_plan)} if task_sources else {}))
                 from services.deep_research.completion_criteria import completion_criteria_gaps, invalid_criterion_reviews
-                invalid_criteria = invalid_criterion_reviews(audit_plan, claims, verdicts)
+                invalid_criteria = invalid_criterion_reviews(audit_plan, claims, verdicts, **({"display_metadata":display_metadata} if task_sources else {}))
                 if invalid_criteria:
                     status = 'invalid_response'
                 from services.deep_research.experiment_deliverable import enforce_experiment_coverage
                 verdicts = enforce_experiment_coverage(audit_plan, question, claims, verdicts,
                                                        whole_question_id=identity)
-                criterion_gaps = completion_criteria_gaps(audit_plan, claims, verdicts)
+                criterion_gaps = completion_criteria_gaps(audit_plan, claims, verdicts, **({"display_metadata":display_metadata} if task_sources else {}))
                 verdicts = [{**v, 'status': 'partial'} if isinstance(v, dict)
                     and v.get('obligationId') in criterion_gaps else v for v in verdicts]
                 # Explicitly reported missing subrequirements override an
@@ -217,7 +223,7 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
     excluded = {row['obligationId'] for row in nonblocking}
     effective_plan = [{**item, 'obligations': [o for o in item.get('obligations', [])
                       if o.get('obligationId') not in excluded]} for item in audit_plan]
-    gaps = answer_coverage_gaps(effective_plan, claims, verdicts)
+    gaps = answer_coverage_gaps(effective_plan, claims, verdicts, **({"display_metadata":display_metadata} if task_sources else {}))
     for gap in gaps:
         matching = [v for v in verdicts if isinstance(v, dict)
                     and v.get('obligationId') == gap.get('obligationId')] if isinstance(verdicts, list) else []
@@ -250,7 +256,7 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
     from services.deep_research.completion_criteria import completion_contract_digest
     return {'status': status, 'verdicts': verdicts if isinstance(verdicts, list) else [],
             'completionContractDigest': completion_contract_digest(plan, claims),
-            'displayMetadataDigest': display_metadata_digest(claims, evidence),
+            'displayMetadataDigest': display_metadata_digest(claims, evidence, **({"task_sources":True} if task_sources else {})),
             'gaps': gaps, 'invalidAspectObligations': invalid_aspects,
             **({'requestCoverageContractVersion':request_contract if type(request_contract) is int and request_contract in (2,3) else 1} if request_contract else {}),
             'wholeQuestionId': identity, 'nonblockingResearch': nonblocking,
