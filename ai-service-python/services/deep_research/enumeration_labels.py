@@ -28,7 +28,29 @@ def _balanced_items(body):
     return None if stack else [*items,body[start:]]
 
 
-def without_enumeration_labels(text,*,balanced_parentheses=False):
+def _numbered_items(body,count):
+    """Recognize a complete 1..N sequence only at sibling item starts."""
+    parts=re.split(r'[;；]',body)
+    if len(parts)!=count:return None
+    marker=re.compile(r'\s*(?:(?P<open>[（(])(?P<wrapped>\d{1,2})[）)]|(?P<bare>\d{1,2})[）)])')
+    matches=[marker.match(part) for part in parts]
+    if not any(matches):return body,[]
+    if not all(matches):return None
+    cleaned=[];spans=[];offset=0;style=None
+    for number,(part,match) in enumerate(zip(parts,matches),1):
+        if int(match['wrapped'] or match['bare'])!=number:return None
+        token=match.group().strip()
+        if match['open'] and not token.endswith({'(' : ')','（':'）'}[match['open']]):return None
+        current=re.sub(r'\d+','#',token)
+        if style is not None and style!=current:return None
+        style=current
+        cleaned.append(part[match.end():])
+        spans.append((offset+match.start(),offset+match.end()))
+        offset+=len(part)+1
+    return '；'.join(cleaned),spans
+
+
+def without_enumeration_labels(text,*,balanced_parentheses=False,numbered_items=False):
     """Ignore a matching list label, never a measured count or explicit total.
 
     Require a colon and exactly N nonempty semicolon-separated items in one
@@ -41,6 +63,13 @@ def without_enumeration_labels(text,*,balanced_parentheses=False):
         if _EXACT.search(prefix):
             continue
         body=re.split(r'[。！？\n]',text[match.end():],maxsplit=1)[0]
+        word=match['number']
+        count=int(word) if word.isdigit() else {'十一':11,'十二':12}.get(word,_VALUES.get(word))
+        markers=[]
+        if numbered_items:
+            parsed=_numbered_items(body,count)
+            if parsed is None:continue
+            body,markers=parsed
         # Conservative: don't treat nested punctuation as sibling items.
         if balanced_parentheses:
             items=_balanced_items(body)
@@ -49,10 +78,9 @@ def without_enumeration_labels(text,*,balanced_parentheses=False):
             if any(c in body for c in '()（）[]【】{}'):
                 continue
             items=re.split(r'[；;]',body)
-        word=match['number']
-        count=int(word) if word.isdigit() else {'十一':11,'十二':12}.get(word,_VALUES.get(word))
         if (len(items)!=count or any(not item.strip() for item in items)
                 or any(re.search(r'例如|比如|等(?:等)?\s*$|\.\.\.|…',item) for item in items)):
             continue
         spans.append(match.span('number'))
+        spans.extend((match.end()+a,match.end()+b) for a,b in markers)
     return ''.join(c for i,c in enumerate(text) if not any(a<=i<b for a,b in spans))

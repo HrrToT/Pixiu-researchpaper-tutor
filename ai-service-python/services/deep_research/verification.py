@@ -48,7 +48,7 @@ def _measurement_numbers(text: str, *, word_counts=False, relative_references=Fa
         text=without_dimensional_labels(text)
     if enumeration_labels:
         from services.deep_research.enumeration_labels import without_enumeration_labels
-        text=without_enumeration_labels(text,balanced_parentheses=type(enumeration_labels) is int and enumeration_labels==8)
+        text=without_enumeration_labels(text,balanced_parentheses=type(enumeration_labels) is int and enumeration_labels in (8,9),numbered_items=type(enumeration_labels) is int and enumeration_labels==9)
     text = re.sub(r'(?<![A-Za-z])Table\s+\d+(?![A-Za-z0-9])|表\s*\d+', '', text, flags=re.I)
     from services.deep_research.measurement_numbers import measurement_numbers
     return measurement_numbers(text, word_counts=word_counts, relative_references=relative_references,
@@ -93,13 +93,13 @@ def precheck_claims(claims: list[dict], evidence: list[dict], *, absence_scope_v
     if len(by_id) != len(evidence):
         raise ValueError("Duplicate evidence identity")
     candidates, rejected, seen = [], [], set()
-    word_counts = type(quantity_spelling_version) is int and quantity_spelling_version in (1, 2, 3, 4, 5, 6, 7, 8)
-    relative_references = type(quantity_spelling_version) is int and quantity_spelling_version in (2, 3, 4, 5, 6, 7, 8)
-    artifact_references = type(quantity_spelling_version) is int and quantity_spelling_version in (3, 4, 5, 6, 7, 8)
-    conceptual_articles = type(quantity_spelling_version) is int and quantity_spelling_version in (4,5,6,7,8)
-    dimensional_labels=type(quantity_spelling_version) is int and quantity_spelling_version in (5,6,7,8)
-    collection_articles=type(quantity_spelling_version) is int and quantity_spelling_version in (6,7,8)
-    enumeration_labels=quantity_spelling_version if type(quantity_spelling_version) is int and quantity_spelling_version in (7,8) else False
+    word_counts = type(quantity_spelling_version) is int and quantity_spelling_version in (1, 2, 3, 4, 5, 6, 7, 8, 9)
+    relative_references = type(quantity_spelling_version) is int and quantity_spelling_version in (2, 3, 4, 5, 6, 7, 8, 9)
+    artifact_references = type(quantity_spelling_version) is int and quantity_spelling_version in (3, 4, 5, 6, 7, 8, 9)
+    conceptual_articles = type(quantity_spelling_version) is int and quantity_spelling_version in (4,5,6,7,8,9)
+    dimensional_labels=type(quantity_spelling_version) is int and quantity_spelling_version in (5,6,7,8,9)
+    collection_articles=type(quantity_spelling_version) is int and quantity_spelling_version in (6,7,8,9)
+    enumeration_labels=quantity_spelling_version if type(quantity_spelling_version) is int and quantity_spelling_version in (7,8,9) else False
     concurrent_feedback = type(feedback_version) is int and feedback_version == 2
     for claim in claims:
         claim_id = claim.get("claimId")
