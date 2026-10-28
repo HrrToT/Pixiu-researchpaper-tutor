@@ -11,7 +11,7 @@ from services.deep_research.graph import make_verify_node
 from services.deep_research.repair import repair_rejected
 
 
-@pytest.mark.parametrize('value',[None,True,False,0,6,'1'])
+@pytest.mark.parametrize('value',[None,True,False,0,7,'1'])
 def test_policy_requires_strict_version_and_claim_check_output(value):
     assert not enabled({'claimCheckContractVersion':value,'state':{'outputKind':'claim_verification'}})
     assert not enabled({'claimCheckContractVersion':1,'state':{'outputKind':'paper_comparison'}})
@@ -106,7 +106,7 @@ def test_repair_resume_identity_includes_quality_policy_without_reapproving_cont
     invoke.assert_not_called()
 
 
-@pytest.mark.parametrize('active',[True,False,4,5])
+@pytest.mark.parametrize('active',[True,False,4,5,6])
 def test_initial_audit_repair_and_second_audit_receive_same_frozen_policy(active,monkeypatch):
     from test_deep_research_request_dimensions import plan
     c={'claimId':'c','kind':'inference','text':'old','evidenceRefs':['e']}
@@ -130,10 +130,10 @@ def test_initial_audit_repair_and_second_audit_receive_same_frozen_policy(active
     assert all(kw.get('claim_check',False) is bool(active) for kw in audits)
     assert all(kw.get('claim_check',False)==active for kw in repairs)
     if type(active) is int:assert type(repairs[0]['claim_check']) is int
-    if active==5:assert repairs[0]['required_scope_ids']==[]
+    if active in (5,6):assert repairs[0]['required_scope_ids']==[]
 
 
-@pytest.mark.parametrize('replacement',[None,True,0,'1',6])
+@pytest.mark.parametrize('replacement',[None,True,0,'1',7])
 def test_new_policy_is_server_owned_immutable_and_absent_from_legacy(tmp_path,replacement):
     from services.deep_research.facade import ResearchFacade
     from services.deep_research.repository import DeepResearchRepository
@@ -142,7 +142,7 @@ def test_new_policy_is_server_owned_immutable_and_absent_from_legacy(tmp_path,re
     try:
         run,_=facade.create({'workspaceTaskId':'t','operationKey':'op','question':'核查','deferStart':True,
             'claimCheckContractVersion':replacement},start_async=False)
-        assert type(run['claimCheckContractVersion']) is int and run['claimCheckContractVersion']==5
+        assert type(run['claimCheckContractVersion']) is int and run['claimCheckContractVersion']==6
         with pytest.raises(ValueError,match='Immutable'):
             repo.update_run(run['runId'],lambda r:{**r,'claimCheckContractVersion':replacement})
         legacy=deepcopy(run);legacy.update(runId='legacy',idempotencyKey='legacy');legacy.pop('claimCheckContractVersion')
@@ -181,7 +181,7 @@ def test_new_repair_policy_cannot_reuse_legacy_batch_response():
     invoke.assert_not_called()
 
 
-@pytest.mark.parametrize('value',[1,2,3,6,'4',None])
+@pytest.mark.parametrize('value',[1,2,3,7,'4',None])
 def test_bad_repair_policy_cannot_silently_select_new_guidance(value):
     c={'claimId':'c','kind':'reported','text':'old','evidenceRefs':['e']};invoke=Mock()
     with pytest.raises(ValueError,match='Invalid claim check policy'):

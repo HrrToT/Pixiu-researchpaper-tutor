@@ -3,7 +3,7 @@
 
 def enabled(record):
     return (type(record.get('claimCheckContractVersion')) is int
-            and record['claimCheckContractVersion'] in (1,2,3,4,5)
+            and record['claimCheckContractVersion'] in (1,2,3,4,5,6)
             and record.get('state',{}).get('outputKind')=='claim_verification')
 
 
@@ -109,3 +109,19 @@ absence claims in ordinary text or conditions. Never strengthen an epistemic
 boundary into a negative finding. Respect requested point/word limits. Every
 premise needs its own permitted citations and independent checks.
 '''
+
+
+def inference_repair_ids(report,verification,policy):
+    """Classify permitted edits, never evidence support or scientific approval."""
+    if type(policy) is not int or policy!=6:return []
+    rejected={r.get('claimId'):r for r in verification.get('rejected',[]) if isinstance(r,dict)}
+    result=[]
+    for claim in report.get('claims',[]):
+        rejection=rejected.get(claim.get('claimId'),{})
+        extra=rejection.get('additionalChecks')
+        checks=[rejection,*[r for r in extra if isinstance(r,dict)]] if isinstance(extra,list) else [rejection]
+        if (claim.get('kind')=='reported' and not claim.get('executionSpec') and not claim.get('designRole')
+                and claim.get('designContractVersion') is None
+                and any(r.get('reason')=='answer_incomplete' for r in checks)):
+            result.append(claim['claimId'])
+    return result

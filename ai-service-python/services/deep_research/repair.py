@@ -450,7 +450,20 @@ in the paper. Maintain consistency with accepted definitions and complete requir
         prompt += '\n'+TABLE_IDENTITY_GUIDANCE
     if claim_check:
         from services.deep_research.claim_check import GUIDANCE as CLAIM_CHECK_GUIDANCE, ASSESSMENT_GUIDANCE
-        prompt += '\n'+(ASSESSMENT_GUIDANCE if type(claim_check) is int and claim_check in (4,5) else CLAIM_CHECK_GUIDANCE)
+        prompt += '\n'+(ASSESSMENT_GUIDANCE if type(claim_check) is int and claim_check in (4,5,6) else CLAIM_CHECK_GUIDANCE)
+    from services.deep_research.claim_check import inference_repair_ids
+    inference_ids=inference_repair_ids(report,verification,claim_check)
+    if inference_ids:
+        prompt=prompt.replace('same claimId/kind','same claimId; keep kind except the permitted transition below')
+        prompt+='\nReported-to-inference edit IDs: '+json.dumps(inference_ids,ensure_ascii=False)+'''
+For these IDs only, when filling answer_incomplete with YOUR evidence-grounded
+judgement, you may change kind from reported to inference. Keep claimId, source
+permissions and obligations. Change the actual wording, not just the kind tag.
+Declare draftingBasis.scopeDecision="bounded_inference"; this is unverified intent.
+Other kinds/targets stay unchanged. Keep exact cited input cells for any derived
+comparison; no new factual premise is authorized. The revised inference is checked
+independently; this permission does not establish evidence support.
+'''
     if required_scope_ids:
         prompt+='\nRequired scope-role claim IDs: '+json.dumps(list(required_scope_ids),ensure_ascii=False)+'''
 Each listed target must return a non-null scopeExpression, text="" and conditions={}.
@@ -501,6 +514,7 @@ If a supported revision is not possible, omit that target rather than bypass sco
     allowed = {key: [ref for ref in values if ref in visible] for key, values in allowed.items()}
     return {'prompt': prompt, 'originals': originals, 'aliases': aliases, 'allowed': allowed,
             **({'requiredScopeIds':list(required_scope_ids)} if required_scope_ids else {}),
+            **({'reportedInferenceRepairIds':inference_ids} if inference_ids else {}),
             **({'scopeExpressionContractVersion':scope_expression if type(scope_expression) is int and scope_expression in (2,3) else 1} if scope_expression else {}),
             **({'repairEvidencePacketVersion':repair_evidence_packet_version} if repair_evidence_packet_version in (1,2,3,4,5) else {}),
             **({'editFormatVersion':1} if experimental_edits else {}),
@@ -550,7 +564,14 @@ def _parse_repair_response(prepared, response, parse, presentation_audit=None,dr
             continue
         key = row.get('claimId')
         original = originals.get(key)
-        if not original or key in seen or row.get('kind') != original.get('kind'):
+        if not original or key in seen:
+            continue
+        transition=(key in prepared.get('reportedInferenceRepairIds',[]) and original.get('kind')=='reported'
+            and row.get('kind')=='inference' and isinstance(row.get('draftingBasis'),dict)
+            and row['draftingBasis'].get('scopeDecision')=='bounded_inference'
+            and isinstance(row.get('text'),str) and bool(row['text'].strip())
+            and ' '.join(row['text'].split())!=' '.join(original.get('text','').split()))
+        if row.get('kind')!=original.get('kind') and not transition:
             continue
         seen.add(key)
         new_refs = row.get('evidenceRefs', [])
@@ -596,7 +617,8 @@ def _parse_repair_response(prepared, response, parse, presentation_audit=None,dr
         if not isinstance(row.get('text'), str) or not row['text'].strip():
             continue
         if drafting_audit is not None and 'draftingBasis' in row:
-            drafting_audit.append({'claimId':key,'basis':row.pop('draftingBasis')})
+            drafting_audit.append({'claimId':key,'basis':row.pop('draftingBasis'),
+                **({'kindTransition':{'from':'reported','to':'inference','reason':'answer_incomplete','verification':'unchecked'}} if transition else {})})
         if original.get('designRole'):
             if row.get('designRole', original['designRole']) != original['designRole']:
                 continue
@@ -639,7 +661,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
     _validate_scope_ids(required_scope_ids,report,scope_expression)
     if type(defer_length_filter) is not bool:
         raise ValueError('Invalid deferred repair length policy')
-    if type(claim_check) is not bool and not (type(claim_check) is int and claim_check in (4,5)):
+    if type(claim_check) is not bool and not (type(claim_check) is int and claim_check in (4,5,6)):
         raise ValueError('Invalid claim check policy')
     if type(table_identity_context) is not bool:
         raise ValueError('Invalid table identity context policy')
@@ -672,7 +694,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
         raise ValueError('Unsupported citation presentation contract')
     identity = digest({'report': report, 'verification': verification,
                        **({'requiredScopeIds':list(required_scope_ids)} if required_scope_ids else {}),
-                       **({'claimCheckContractVersion':claim_check if type(claim_check) is int and claim_check in (4,5) else 1} if claim_check else {}),
+                       **({'claimCheckContractVersion':claim_check if type(claim_check) is int and claim_check in (4,5,6) else 1} if claim_check else {}),
                        **({'tableIdentityContextContractVersion':1} if table_identity_context else {}),
                        **({'deferLengthFilterVersion':1} if defer_length_filter else {}),
                        **({'scopeExpressionContractVersion':scope_expression if type(scope_expression) is int and scope_expression in (2,3) else 1} if scope_expression else {}),
@@ -813,7 +835,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
                     checkpoint(deepcopy(state))
                 break  # Keep completed drafts, then independently verify them.
             presentation_audit=[]
-            drafting_audit=[] if factual_scope else None
+            drafting_audit=[] if factual_scope or type(claim_check) is int and claim_check==6 else None
             representation_audit=[] if experimental_representation else None
             scope_audit=[] if scope_expression else None
             coverage_audit=[] if experimental_coverage else None
