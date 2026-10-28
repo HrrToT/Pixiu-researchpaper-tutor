@@ -11,7 +11,7 @@ from services.deep_research.graph import make_verify_node
 from services.deep_research.repair import repair_rejected
 
 
-@pytest.mark.parametrize('value',[None,True,False,0,3,'1'])
+@pytest.mark.parametrize('value',[None,True,False,0,4,'1'])
 def test_policy_requires_strict_version_and_claim_check_output(value):
     assert not enabled({'claimCheckContractVersion':value,'state':{'outputKind':'claim_verification'}})
     assert not enabled({'claimCheckContractVersion':1,'state':{'outputKind':'paper_comparison'}})
@@ -56,6 +56,26 @@ def test_no_table_or_unknown_identity_preserves_original_selection():
     assert prioritize_results(rows,bundles,'核查')==(rows,bundles)
     rows[0].update(tableData={'rows':[]},verification={'literal':'passed'})
     assert prioritize_results(rows,bundles,'核查')==(rows,bundles)
+
+
+def test_inference_policy_removes_blanket_difference_ban_only_for_new_claim_checks():
+    from services.deep_research.claim_check import INFERENCE_GUIDANCE
+    args=('核查质量','claim_verification',300,2,[],[],{},'EVIDENCE','TABLES')
+    record={'state':{'outputKind':'claim_verification'}}
+    for version in (None,1,2):
+        old=build({**record,'claimCheckContractVersion':version},*args)
+        assert 'No unknown values, inferred differences,' in old
+        assert INFERENCE_GUIDANCE not in old
+    current=build({**record,'claimCheckContractVersion':3},*args)
+    assert 'No unknown values, inferred differences,' not in current
+    assert 'Do not present inferred differences as directly reported values.' in current
+    assert INFERENCE_GUIDANCE in current
+    # Guidance is not a numerical waiver: a fabricated reported difference must
+    # still fail ordinary verification independently of any prompt policy.
+    from services.deep_research.verification import verify_claims
+    result=verify_claims([{'claimId':'c','kind':'reported','text':'差值为0.3。','evidenceRefs':['e']}],
+        [{'evidenceId':'e','quote':'Values are 27.13 and 27.21.','accessLevel':'fulltext'}])
+    assert not result['accepted']
 
 
 def test_audit_guidance_cannot_promote_invalid_response_or_modify_claims():
@@ -110,7 +130,7 @@ def test_initial_audit_repair_and_second_audit_receive_same_frozen_policy(active
     assert all(kw.get('claim_check',False) is active for kw in audits+repairs)
 
 
-@pytest.mark.parametrize('replacement',[None,True,0,'1',3])
+@pytest.mark.parametrize('replacement',[None,True,0,'1',4])
 def test_new_policy_is_server_owned_immutable_and_absent_from_legacy(tmp_path,replacement):
     from services.deep_research.facade import ResearchFacade
     from services.deep_research.repository import DeepResearchRepository
@@ -119,7 +139,7 @@ def test_new_policy_is_server_owned_immutable_and_absent_from_legacy(tmp_path,re
     try:
         run,_=facade.create({'workspaceTaskId':'t','operationKey':'op','question':'核查','deferStart':True,
             'claimCheckContractVersion':replacement},start_async=False)
-        assert type(run['claimCheckContractVersion']) is int and run['claimCheckContractVersion']==2
+        assert type(run['claimCheckContractVersion']) is int and run['claimCheckContractVersion']==3
         with pytest.raises(ValueError,match='Immutable'):
             repo.update_run(run['runId'],lambda r:{**r,'claimCheckContractVersion':replacement})
         legacy=deepcopy(run);legacy.update(runId='legacy',idempotencyKey='legacy');legacy.pop('claimCheckContractVersion')

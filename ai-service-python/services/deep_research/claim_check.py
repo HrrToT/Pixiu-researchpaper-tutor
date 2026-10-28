@@ -3,7 +3,7 @@
 
 def enabled(record):
     return (type(record.get('claimCheckContractVersion')) is int
-            and record['claimCheckContractVersion'] in (1,2)
+            and record['claimCheckContractVersion'] in (1,2,3)
             and record.get('state',{}).get('outputKind')=='claim_verification')
 
 
@@ -73,4 +73,16 @@ particular metric, number, extra experiment or exhaustive table that the questio
 does not need. Do not approve the paper's conclusion merely because the author
 reported it. A properly bounded inability to verify from the acquired material
 can satisfy a genuine uncertainty question; it is not a paper-absence assertion.
+'''
+
+
+INFERENCE_GUIDANCE='''
+For a claim check, a point that combines reported observations with YOUR derived
+comparison or qualified judgement has kind=inference, even if it begins with
+"the authors report". Cite the exact reported input cells in tableBindings;
+do not bind a computed difference to a cell as if the authors reported it.
+Prefer a concise qualitative judgement when arithmetic is not needed. A numeric
+difference alone does not establish perceptual equivalence or a user tolerance.
+Retain the comparison's actual metric, dataset and baseline conditions. Do not
+drop the requested assessment merely to produce a safe list of reported values.
 '''
