@@ -11,3 +11,9 @@
 证据：deep-research-evidence/boundary-quantity-335-confirmed-actual-replay-20261029.json。它是本地拒绝守卫证明，不是新生成质量或独立内容验收通过。
 
 最终补齐必需范围角色的版本4入口，并把生成精简、修订精简和缓存恢复实际路径参数化为3/4。74文件1254项关联回归通过（pytest112.41秒、外部116.687秒），源码哈希稳定，0模型调用。此前1250项结果属于补齐入口前源码，不替代本次结果。证据：deep-research-evidence/boundary-quantity-335-final-confirmed-regression-20261029.json。
+
+ed7d867f已推送并加载.335。无活跃研究时重启一次；7465生产账本、全部旧payload、五任务和完整索引保持，13历史暂停未恢复；RAG/GROBID健康、前端HTTP200。证据：deep-research-evidence/runtime-load-boundary-quantity-335-20261029.json。
+
+本版新生成组件2调用/15513 Token/69.522秒全部结算，0未知/自动重试/生产发布。初稿没有自定0.3dB或其他数字容差，但生成后精简仍352字，超出editable292及用户300字限制，节点返回invalid_synthesis_response，未走到事实核查和覆盖；不能记生成质量通过。原始初稿、精简回复、失败与生产保持证明全部留档。证据：deep-research-evidence/fresh-draft-335-real-stage-20261029.json。
+
+实际正文两条均重复判断/支持证据/反对证据/适用条件/未解决事项等标签。原模板列出这五类可选章节，并不要求每条使用五标签，因此不能认定服务端明确要求该重复格式；但短回答模板的表达仍有歧义，模型复制标签和旁支数值而未达到硬长度。这与数量来源守卫是不同问题。下一步改进短回答生成布局和精简输入，不截断有效正文、不放宽字数、不自动重试本例；还需处理草稿中的论文缺席断言和detailLevel非法值，不能只消除标签就称内容完成。
