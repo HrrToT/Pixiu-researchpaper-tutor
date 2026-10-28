@@ -7,3 +7,7 @@
 指导另明确范围表达式字段会编译为公开正文，说明用中文，原方法／数据集／指标名保留。共享材料与独立核查、范围角色、受控类型转换和原长度预算保持。重写视图清理的是旧模型选择，不是删去必要原文，也不扩大材料边界。
 
 9项重写与共享来源定向测试通过；最初夹具未启用实际紧凑事实重写分支，补齐source_aware/concise/factual_scope路径后通过。最终固定源码66文件1123项关联回归通过，pytest109.65秒、外部114.266秒，哈希稳定，0模型调用。实际入参按旧8构造的修订请求逐字等于保存请求；新目标只有身份、类型与义务，必要E3/E5完整引文和上下文不变，输入仍在原24KB内。候选权限仍受原池约束，旧记录不变。回放使用已结算核查及空修订夹具，不是科学内容批准。证据：deep-research-evidence/clean-view-331-actual-input-replay-20261029.json、clean-view-331-final-regression-20261029.json。
+
+`.331` 从94d94540加载，生产账本、旧payload、五任务及完整索引保持。真实核查修订4调用全部结算，共23189 Token，无未知／重试／生产发布；0接受、2拒绝，修订精简无有效结果，内容未通过。重写仍选择原E3片段。随后检查实际wire messages发现高优先级system仍明确要求“Use each target own original citations; preserve relationships and exact IDs/kinds.”，与用户层新引用选择／类型修订规则冲突；此前只回放用户prompt，没有同步检查该系统约束。这不能归因于模型不遵守新规则，需先修正服务端消息层一致性。证据：deep-research-evidence/clean-view-331-real-stage-20261029.json。
+
+当前`.331`固定源码全部318个Deep Research测试文件5688项通过（pytest446.58秒、外部452.843秒），哈希稳定、0模型调用。它没有覆盖上述高低层消息一致性，不能以全量绿灯代替该缺项。证据：deep-research-evidence/research-331-broad-regression-20261029.json。

@@ -1,0 +1,58 @@
+{
+  "sourceCommit": "94d94540bf1c416d8da6a4c11d3381a10a81b533",
+  "promptVersion": "dr-v2.20261029.331",
+  "providerCalls": 4,
+  "totalTokens": 23189,
+  "allCallsSettled": true,
+  "unknownCalls": 0,
+  "retry": false,
+  "accepted": 0,
+  "rejected": [
+    {
+      "claimId": "c1",
+      "reason": "semantic_unresolved",
+      "detail": "数值与表格一致，但'图像质量指标与原始3D-GS接近'的断言未完全支持：大小45MB对734MB并不接近，且大小不属于图像质量指标，冒号列举混入了非质量指标；此外，LPIPS从0.214增至0.237虽幅度不大，但证据未提供'接近'的阈值或作者表述，故不能视为完全支持。"
+    },
+    {
+      "claimId": "c2",
+      "reason": "semantic_unresolved",
+      "detail": "E1仅提及MipNeRF360数据集和FPS增速，未提及Tank and Temple或任何具体图像质量指标，因此声称“限于（Mip-NeRF 360、Tank and Temple）与上述指标”的精确范围缺乏证据。虽然“仅定性称comparable visual quality”以及无法证明完全等同的推断合理，但整条主张包含未支持的数据集与指标，故不支持。"
+    }
+  ],
+  "repairCompactionStatus": "invalid",
+  "conflictingSystemClause": "Use each target own original citations; preserve relationships and exact IDs/kinds.",
+  "actualSystemContainsConflictingClause": true,
+  "actualUserMessageEqualsLoggedPrompt": true,
+  "sourceAssignmentStillE3": true,
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "preservation": {
+    "before": {
+      "ledgerRows": 7465,
+      "ledgerSha256": "9138a4c5c9e9397c9dce6b78007d07dc1c2f7955dd637bef1d794f0c50b97bbc",
+      "payloadSha256": "a4559eea0b66b511bed93f21a1cba7e6a39068464469aacbcd30fde6895797ad"
+    },
+    "after": {
+      "ledgerRows": 7465,
+      "ledgerSha256": "9138a4c5c9e9397c9dce6b78007d07dc1c2f7955dd637bef1d794f0c50b97bbc",
+      "payloadSha256": "a4559eea0b66b511bed93f21a1cba7e6a39068464469aacbcd30fde6895797ad"
+    },
+    "exactProductionPreservation": true,
+    "providerSubmissions": 4,
+    "productionPublish": false,
+    "fullWorkflowReplay": false,
+    "independentCredit": 0
+  },
+  "rawReceipts": "tmp\\component-clean-view-331-20261029\\receipt",
+  "receiptHashes": {
+    "calls.json": "18b7ec596d8632c8dea77696d9bec97e9355adfafda3ac5f34862ae31dae9932",
+    "payload.json": "64b0683a4eb9045640ff6a67277307dca8f11e552034d6d76e569d00b57ea68a",
+    "preservation.json": "e4020959709d9e175f8e9b867b3ca9486503f673a8a37daf6c2785fc947c621e",
+    "progress.json": "2ba2da9c2357082b7ba4277d19e3a82c3e9a2f0ba2c75d215ff368dd61d0a26a",
+    "request-1.json": "379603ac1ebeca59b200da83effab019d824a74079e51008f9c25045aff1f108",
+    "request-2.json": "6b152652bca3094b778758a9589ab1a07cf66516b61f09549fa2f958be41aba3",
+    "request-3.json": "af2e60d6e2a1625a6f67f92e7b449073d46e8fb271afef8d0580fe2975ad433b",
+    "request-4.json": "8ef13933aac4045d4df7ca1c7bd9f578fadc1b3bff762fdbe6f6ea2cff6d5d8e",
+    "result.json": "7043154decf76df0dc4339a2a42ccb7ed1b335ee469f8ed18fc91f1a92ad8ddc"
+  }
+}
