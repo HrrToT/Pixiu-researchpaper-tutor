@@ -3,7 +3,7 @@
 
 def enabled(record):
     return (type(record.get('claimCheckContractVersion')) is int
-            and record['claimCheckContractVersion'] in (1,2,3,4,5,6)
+            and record['claimCheckContractVersion'] in (1,2,3,4,5,6,7)
             and record.get('state',{}).get('outputKind')=='claim_verification')
 
 
@@ -113,7 +113,7 @@ premise needs its own permitted citations and independent checks.
 
 def inference_repair_ids(report,verification,policy):
     """Classify permitted edits, never evidence support or scientific approval."""
-    if type(policy) is not int or policy!=6:return []
+    if type(policy) is not int or policy not in (6,7):return []
     rejected={r.get('claimId'):r for r in verification.get('rejected',[]) if isinstance(r,dict)}
     result=[]
     for claim in report.get('claims',[]):

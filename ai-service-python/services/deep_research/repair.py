@@ -450,7 +450,7 @@ in the paper. Maintain consistency with accepted definitions and complete requir
         prompt += '\n'+TABLE_IDENTITY_GUIDANCE
     if claim_check:
         from services.deep_research.claim_check import GUIDANCE as CLAIM_CHECK_GUIDANCE, ASSESSMENT_GUIDANCE
-        prompt += '\n'+(ASSESSMENT_GUIDANCE if type(claim_check) is int and claim_check in (4,5,6) else CLAIM_CHECK_GUIDANCE)
+        prompt += '\n'+(ASSESSMENT_GUIDANCE if type(claim_check) is int and claim_check in (4,5,6,7) else CLAIM_CHECK_GUIDANCE)
     from services.deep_research.claim_check import inference_repair_ids
     inference_ids=inference_repair_ids(report,verification,claim_check)
     if inference_ids:
@@ -470,6 +470,11 @@ Each listed target must return a non-null scopeExpression, text="" and condition
 Revise its authored fields using permitted evidence; never downgrade it to free prose.
 If a supported revision is not possible, omit that target rather than bypass scope review.
 '''
+    condition_marker=None
+    if type(claim_check) is int and claim_check==7:
+        from services.deep_research.condition_source_index import GUIDANCE as CONDITION_GUIDANCE
+        condition_marker='__CONDITION_SOURCES_'+uuid4().hex+'__'
+        prompt+='\n'+CONDITION_GUIDANCE+'\nCondition source index (navigation only):\n'+condition_marker
     template = prompt
     from services.deep_research.experiment_edits import columnar
     def render(selected_rows):
@@ -482,8 +487,13 @@ If a supported revision is not possible, omit that target rather than bypass sco
         if repair_evidence_packet_version in (1,2,3,4,5):
             from services.deep_research.repair_evidence_packet import encode
             wire,legend=encode(selected_rows)
-        return template.replace(permissions_marker, json.dumps(permissions, ensure_ascii=False, separators=(',', ':')), 1).replace(
+        result=template.replace(permissions_marker, json.dumps(permissions, ensure_ascii=False, separators=(',', ':')), 1).replace(
             evidence_marker,json.dumps(wire,ensure_ascii=False,separators=(',',':'))+('\n'+legend if legend else ''),1)
+        if condition_marker:
+            from services.deep_research.condition_source_index import build as condition_index
+            literal_ids={short_ids[e['evidenceId']] for e in selected if e.get('verification',{}).get('literal')=='passed'}
+            result=result.replace(condition_marker,json.dumps(condition_index(selected_rows,permissions,literal_ids=literal_ids),ensure_ascii=False,separators=(',',':')),1)
+        return result
     if max_prompt_bytes <= 0:
         raise BudgetExhaustedError('repairPromptBytes', max_prompt_bytes, 1)
     # Allocate required full quotes AND context first. Optional candidate
@@ -661,7 +671,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
     _validate_scope_ids(required_scope_ids,report,scope_expression)
     if type(defer_length_filter) is not bool:
         raise ValueError('Invalid deferred repair length policy')
-    if type(claim_check) is not bool and not (type(claim_check) is int and claim_check in (4,5,6)):
+    if type(claim_check) is not bool and not (type(claim_check) is int and claim_check in (4,5,6,7)):
         raise ValueError('Invalid claim check policy')
     if type(table_identity_context) is not bool:
         raise ValueError('Invalid table identity context policy')
@@ -694,7 +704,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
         raise ValueError('Unsupported citation presentation contract')
     identity = digest({'report': report, 'verification': verification,
                        **({'requiredScopeIds':list(required_scope_ids)} if required_scope_ids else {}),
-                       **({'claimCheckContractVersion':claim_check if type(claim_check) is int and claim_check in (4,5,6) else 1} if claim_check else {}),
+                       **({'claimCheckContractVersion':claim_check if type(claim_check) is int and claim_check in (4,5,6,7) else 1} if claim_check else {}),
                        **({'tableIdentityContextContractVersion':1} if table_identity_context else {}),
                        **({'deferLengthFilterVersion':1} if defer_length_filter else {}),
                        **({'scopeExpressionContractVersion':scope_expression if type(scope_expression) is int and scope_expression in (2,3) else 1} if scope_expression else {}),
@@ -835,7 +845,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
                     checkpoint(deepcopy(state))
                 break  # Keep completed drafts, then independently verify them.
             presentation_audit=[]
-            drafting_audit=[] if factual_scope or type(claim_check) is int and claim_check==6 else None
+            drafting_audit=[] if factual_scope or type(claim_check) is int and claim_check in (6,7) else None
             representation_audit=[] if experimental_representation else None
             scope_audit=[] if scope_expression else None
             coverage_audit=[] if experimental_coverage else None
