@@ -63,13 +63,26 @@ def bound_table_context(claim, evidence):
 
 def declared_references_enabled(record):
     return (type(record.get('tableReferencesContractVersion')) is int
-            and record['tableReferencesContractVersion'] in (1,2,3))
+            and record['tableReferencesContractVersion'] in (1,2,3,4))
 
 
 REFERENCE_GUIDANCE=('For every tableBindings entry, rowNumber is the explicit source row ID '
     'in the supplied tableData/quotation, NOT a zero-based position among selected rows. '
     'Only groupIndex is zero-based. Copy exact source cells regardless of claim kind; '
     'derived values are reasoning, not invented source-cell references.')
+
+
+def reference_guidance(version):
+    if type(version) is not int or version != 4:
+        return REFERENCE_GUIDANCE
+    return ('For tableBindings, copy the explicit source rowNumber (not selected-row position); '
+        'groupIndex is zero-based. metric is an EXACT member of tableData.groups[groupIndex][1], '
+        'including when tableDataRef resolves that packet. A quotation can print PSNR↑ while '
+        'the packet metric is PSNR: bind PSNR, not PSNR↑. Direction arrows remain in source '
+        'prose and must inform interpretation; do not append, remove or reverse them in the '
+        'declared packet key. If the actual packet key includes an arrow, copy it exactly. '
+        'Without a visible packet/key do not guess a binding. Copy exact source values '
+        'regardless of claim kind; derived quantities are reasoning, never source cells.')
 
 
 def validate_declared_references(claim,evidence):

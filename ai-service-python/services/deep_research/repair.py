@@ -181,7 +181,9 @@ def _prepare_repair(report, verification, evidence, question, *, max_prompt_byte
         row.get('tableBindings') for row in originals.values())
     if has_tables:
         revision_shape['tableBindings'] = [{'evidenceId': 'E1', 'rowNumber': 'actual integer',
-            'groupIndex': 'actual zero-based integer', 'metric': 'exact header', 'value': 'exact string'}]
+            'groupIndex': 'actual zero-based integer', 'metric':
+                'exact member of tableData.groups[groupIndex][1]' if type(declared_table_refs) is int and declared_table_refs==4 else 'exact header',
+            'value': 'exact string'}]
     if any(row.get('designContractVersion') == 2 for row in originals.values()):
         revision_shape.update(designRole='canonical role for proposals/hypotheses; omit for facts',
                               executionSpec='complete role-specific object for groups/data/analysis and versioned controls/budget/hypothesis; omit for other roles')
@@ -394,9 +396,9 @@ in the paper. Maintain consistency with accepted definitions and complete requir
         if factual_scope:
             from services.deep_research.factual_scope import DRAFT_GUIDANCE
             prompt+='\n'+DRAFT_GUIDANCE
-    if declared_table_refs:
-        from services.deep_research.table_bindings import REFERENCE_GUIDANCE
-        prompt+='\n'+REFERENCE_GUIDANCE
+    if declared_table_refs and not (type(declared_table_refs) is int and declared_table_refs==4):
+        from services.deep_research.table_bindings import reference_guidance
+        prompt+='\n'+reference_guidance(declared_table_refs)
     if comparison_methodology and not prospective:
         from services.deep_research.comparison_methodology import REFERENCE
         prompt+='\n'+REFERENCE
@@ -440,6 +442,11 @@ in the paper. Maintain consistency with accepted definitions and complete requir
                 source_instruction=source_instruction,metric_domains=metric_domains,
                 policy_version=experimental_intent,declared_table_refs=declared_table_refs,
                 terminology=SCIENTIFIC_TERMINOLOGY,concise_policy=experiment_evidence_context is not None,**feedback_options)
+    # Schema renderers above can replace the entire prompt. Keep the current
+    # packet-key contract after the final renderer, inside the byte fitter.
+    if type(declared_table_refs) is int and declared_table_refs==4:
+        from services.deep_research.table_bindings import reference_guidance
+        prompt+='\n'+reference_guidance(4)
     if compact_layout:
         from services.deep_research.short_factual_layout import GUIDANCE
         prompt+='\n'+GUIDANCE
@@ -755,7 +762,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
                        **({'comparisonReasoningContractVersion':1} if comparison_reasoning else {}),
                        **({'repairEvidencePriorityVersion':1} if question_priority else {}),
                        **({'factualScopeContractVersion':factual_scope if factual_scope in (2,3,4) else 1} if factual_scope else {}),
-                       **({'tableReferencesContractVersion':1} if declared_table_refs else {}),
+                       **({'tableReferencesContractVersion':4 if type(declared_table_refs) is int and declared_table_refs==4 else 1} if declared_table_refs else {}),
                        **({'repairResponseContractVersion':1} if strict_response else {}),
                        **({'factualRepairContractVersion':1} if compact_source_repair else {}),
                        **({'experimentRepairContractVersion':6 if experimental_coverage else 5 if experimental_representation else 4 if experimental_nested_tables else 3 if experimental_diagnostics else 2 if experimental_edits else 1} if shared_experiment_schema else {}),

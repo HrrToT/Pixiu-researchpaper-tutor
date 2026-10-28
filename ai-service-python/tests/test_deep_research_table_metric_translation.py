@@ -37,7 +37,7 @@ def test_translation_does_not_waive_measurement_or_identity_errors(mode):
 
 def test_undeclared_translation_policy_cannot_enable_aliases():
     ev,c=fixture();c['text']=c['text'].replace('Mem','内存')
-    for version in (None,True,'2',0,1,4):
+    for version in (None,True,'2',0,1,5):
         assert precheck_claims([c],[ev],table_references_version=version)['rejected']
     assert not precheck_claims([c],[ev],table_references_version=3)['rejected']
     for bad in (None,1,'true'):

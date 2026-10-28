@@ -66,7 +66,7 @@ def test_unexecuted_choices_cannot_fabricate_declared_original_cell_references(k
  check.assert_called_once()
 
 
-@pytest.mark.parametrize('replacement',[None,True,False,0,4,'1'])
+@pytest.mark.parametrize('replacement',[None,True,False,0,5,'1'])
 def test_server_policy_is_owned_frozen_and_wired_for_both_passes(tmp_path,replacement):
  from services.deep_research.facade import ResearchFacade
  from services.deep_research.repository import DeepResearchRepository
@@ -75,7 +75,7 @@ def test_server_policy_is_owned_frozen_and_wired_for_both_passes(tmp_path,replac
  try:
   p,_=facade.create({'workspaceTaskId':'t','operationKey':'k','question':'核对表格',
    'deferStart':True,'tableReferencesContractVersion':replacement},start_async=False)
-  assert p['tableReferencesContractVersion']==3
+  assert p['tableReferencesContractVersion']==4
   with pytest.raises(ValueError,match='Immutable'):
    repo.update_run(p['runId'],lambda r:{**r,'tableReferencesContractVersion':replacement})
   ev,c=fixture();c['kind']='inference';c['tableBindings'][0]['rowNumber']=0;checker=Mock()

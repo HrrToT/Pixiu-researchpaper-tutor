@@ -1330,9 +1330,9 @@ Orient losses before formulas, distinguish conditional/averaged effects and pape
             prompt+='\n'+DRAFT_GUIDANCE
             if drafting_schema_enabled(record):
                 prompt+='\nRequired draftingBasis object on EACH output claim (metadata, not evidence):\n'+json.dumps(DRAFTING_SCHEMA,ensure_ascii=False,separators=(',',':'))
-        from services.deep_research.table_bindings import declared_references_enabled,REFERENCE_GUIDANCE
+        from services.deep_research.table_bindings import declared_references_enabled,reference_guidance
         if declared_references_enabled(record):
-            prompt+='\n'+REFERENCE_GUIDANCE
+            prompt+='\n'+reference_guidance(record.get('tableReferencesContractVersion'))
         if (type(record.get('comparisonReasoningContractVersion')) is int
                 and record['comparisonReasoningContractVersion'] in (3,4)
                 and output_kind in {'paper_comparison','claim_verification'}):
@@ -1897,7 +1897,7 @@ def make_verify_node(
                            and saved.get('outputKind')!='experiment_design' else {}),
                         **({'scope_expression':record['scopeExpressionContractVersion']} if scope_expression_enabled(record)
                            and saved.get('outputKind')!='experiment_design' else {}),
-                        **({'declared_table_refs':True} if declared_references_enabled(record) else {}),
+                        **({'declared_table_refs':4 if record.get('tableReferencesContractVersion')==4 else True} if declared_references_enabled(record) else {}),
                         **({'question_priority':True} if priority_enabled(record) else {}),
                         **({'fact_redraft':True,'source_aware_redraft':record['factRedraftContractVersion'] in (2,3),
                             **({'concise_factual':True} if record['factRedraftContractVersion']==3 else {}),

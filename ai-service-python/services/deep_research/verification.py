@@ -126,7 +126,7 @@ def precheck_claims(claims: list[dict], evidence: list[dict], *, absence_scope_v
         if leaks_internal_reference(claim, support,table_aliases=type(absence_scope_version) is int and absence_scope_version in (6,7)):
             reason = reason or 'internal_reference_in_prose'
         declared_reference_error=None
-        if kind in {'inference','proposal','suggestion','hypothesis'} and type(table_references_version) is int and table_references_version in (1,2,3):
+        if kind in {'inference','proposal','suggestion','hypothesis'} and type(table_references_version) is int and table_references_version in (1,2,3,4):
             from services.deep_research.table_bindings import validate_declared_references
             declared_reference_error=validate_declared_references(claim,support)
             reason=reason or declared_reference_error
@@ -178,9 +178,9 @@ def precheck_claims(claims: list[dict], evidence: list[dict], *, absence_scope_v
                 unsupported_numbers = numbers - original_numbers
             from services.deep_research.table_bindings import validate_table_bindings
             table_options = {}
-            if type(table_references_version) is int and table_references_version in (2,3):
+            if type(table_references_version) is int and table_references_version in (2,3,4):
                 table_options['translated_metrics'] = True
-                if table_references_version == 3:
+                if table_references_version in (3,4):
                     table_options['dataset_joiners'] = True
             if concurrent_feedback:
                 # A fixed numeric error must not hide the next known failure
