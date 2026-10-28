@@ -91,7 +91,8 @@ def visible_count(candidate, limit, output_kind='', evidence=(), presentation_ve
 
 
 def compact_answer(report, question, invoke, parse, *, output_kind='', evidence=(), preserve_claims=False,
-                   presentation_version=0, fixed_claim_ids=()):
+                   presentation_version=0, fixed_claim_ids=(), explicit_edit_scope=False):
+    if type(explicit_edit_scope) is not bool:raise ValueError('Invalid explicit edit scope policy')
     report = normalize_conditions(report)
     limit = requested_character_limit(question)
     if not report.get('claims'):
@@ -143,6 +144,24 @@ requiredTableContext给出原引用单元格的身份：若保留该数值，必
         prompt = prompt.replace('\n输入：', '\n固定范围说明（只读，已从可用字数扣除，不得返回或改写其ID）：'
             + json.dumps([{k:c.get(k) for k in ('claimId','text','conditions')} for c in fixed],ensure_ascii=False)
             + '\n输入：',1)
+    if explicit_edit_scope:
+        # Only editable rows carry identities. Read-only context cannot be
+        # mistaken for additional response rows; code rejoins it unchanged.
+        prompt = f'''你是正文编辑器。只精简下方 editableClaims，不重新回答用户的完整问题。
+用户问题仅作为判断含义的背景：{question}
+可编辑部分的 text 与 conditions 合计硬上限为 {content_limit} 字（标点、英文、数字均计入），
+建议每条不超过 {target} 字。保留所有可编辑条目的实际判断与必要条件；不能合并、删除或增加条目。
+只返回 JSON：{{"claims":[{{"claimId":"editableClaims中的原ID","text":"精简正文","conditions":{{}}}}]}}。
+返回 ID 的有序列表必须恰好是 {json.dumps([c['claimId'] for c in editable],ensure_ascii=False)}。
+readonlyContext 已由系统保留且从字数额度扣除；绝不能输出它。系统随后按原顺序拼回全部条目。
+只精简措辞，不新增或强化事实、因果或适用范围。保留原有结论的限定程度。
+requiredTableContext 是可追溯的数值依据，不是必须逐项抄写的清单。
+可以省去旁支数值示例；若保留某个数值，须同时保留其方法、数据集/组别、指标及精确值身份。
+保留回答中的比较判断和必要实验条件，不能用数值清单替代判断，也不能新编判断标准。
+面向新手时保留原有机制解释。条件写在 text，conditions 保持为空，避免重复。
+只返回上述三个字段，不输出说明、引用、kind、表格上下文或新声明。
+readonlyContext：{json.dumps([{'text':c.get('text',''),'conditions':c.get('conditions',{})} for c in fixed],ensure_ascii=False)}
+editableClaims：{json.dumps(inputs,ensure_ascii=False)}'''
     result = invoke(prompt)
     finish = (result.get('finishReason', result.get('finish_reason')) if isinstance(result, dict)
               else getattr(result, 'finish_reason', None))

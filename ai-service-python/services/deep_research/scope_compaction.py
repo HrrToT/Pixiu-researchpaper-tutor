@@ -14,13 +14,14 @@ def enabled(record):
 
 
 def compact(report, audits, question, invoke, parse, *, output_kind='', evidence=(), presentation_version=0,
-            fixed_claims=(),measured_guidance=False,expression_version=2,fixed_scope_first=False,invoke_fixed=None):
+            fixed_claims=(),measured_guidance=False,expression_version=2,fixed_scope_first=False,invoke_fixed=None,explicit_edit_scope=False):
     """Return revised report and matching unchecked ASTs, or reject atomically.
 
     All existing points, kinds, citations, obligations and table bindings remain.
     Wording of ordinary facts and scope fields shares one rendered-length budget.
     Semantics are not certified here: the normal verifier checks the new wording.
     """
+    if type(explicit_edit_scope) is not bool:raise ValueError('Invalid explicit edit scope policy')
     if type(measured_guidance) is not bool:raise ValueError('Invalid compaction measurement policy')
     if type(fixed_scope_first) is not bool or invoke_fixed is not None and not callable(invoke_fixed):
         raise ValueError('Invalid fixed scope compaction policy')
@@ -75,7 +76,7 @@ def compact(report, audits, question, invoke, parse, *, output_kind='', evidence
             full={**source,'claims':[*fixed,*source['claims']]}
             edited=compact_answer(full,question,invoke_fixed or invoke,parse_edit,output_kind=output_kind,
                 evidence=evidence,preserve_claims=True,presentation_version=presentation_version,
-                fixed_claim_ids=[*expressions,*[c['claimId'] for c in fixed]])
+                fixed_claim_ids=[*expressions,*[c['claimId'] for c in fixed]],explicit_edit_scope=explicit_edit_scope)
             if edited is None:return None,audits
             result={**source,'claims':[c for c in edited['claims'] if c['claimId'] in original]}
             if (any(not isinstance(c.get('text'),str) or not c['text'].strip() for c in result['claims'])

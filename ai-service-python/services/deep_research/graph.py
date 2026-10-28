@@ -1594,7 +1594,7 @@ space with unsupported global absence or incidental iteration/performance values
             parsed['claims'] = [materialize_execution_claim({**claim, 'designContractVersion': 2})
                                 if isinstance(claim, dict) else claim for claim in parsed['claims']]
         from services.deep_research.scope_compaction import enabled as scope_compaction_enabled, compact as compact_scope
-        from services.deep_research.factual_reasoning import compaction_options,fixed_scope_compaction
+        from services.deep_research.factual_reasoning import compaction_options,fixed_scope_compaction,explicit_compaction_scope
         compact_options=compaction_options(record,question,output_kind)
         compact_invoke = lambda prompt: llm_invoke(run_id, "synthesize_compact", prompt,
                 {"max_tokens": 2000, "temperature": 0.0,**compact_options})
@@ -1605,6 +1605,7 @@ space with unsupported global absence or incidental iteration/performance values
                 presentation_version=record.get('reportPresentationContractVersion',0),
                 **({'expression_version':3} if record.get('scopeExpressionContractVersion')==3 else {}),
                 **({'fixed_scope_first':True,'invoke_fixed':direct_compact_invoke} if fixed_scope_compaction(record,question,output_kind) else {}),
+                **({'explicit_edit_scope':True} if explicit_compaction_scope(record,question,output_kind) else {}),
                 **({'measured_guidance':True} if compact_options else {}))
         else:
             parsed = compact_answer(parsed, question,
@@ -1612,7 +1613,8 @@ space with unsupported global absence or incidental iteration/performance values
                 output_kind=output_kind, evidence=evidence,
                 preserve_claims=bool(point_constraint and point_constraint['mode'] == 'exact'),
                 presentation_version=record.get('reportPresentationContractVersion',0),
-                **({'fixed_claim_ids':[a['claimId'] for a in scope_expression_audit]} if scope_expression_audit else {}))
+                **({'fixed_claim_ids':[a['claimId'] for a in scope_expression_audit]} if scope_expression_audit else {}),
+                **({'explicit_edit_scope':True} if explicit_compaction_scope(record,question,output_kind) else {}))
         if parsed is None:
             return {"error_code": "invalid_synthesis_response"}
 
@@ -1711,7 +1713,7 @@ def make_verify_node(
         
         from services.deep_research.final_coverage import audit_final_answer
         from services.deep_research.request_coverage import enabled as request_coverage_enabled
-        from services.deep_research.factual_reasoning import fixed_scope_compaction
+        from services.deep_research.factual_reasoning import fixed_scope_compaction,explicit_compaction_scope
         from services.deep_research.claim_check import enabled as claim_check_enabled
         from services.deep_research.request_dimensions import enabled as dimensions_enabled
         from services.deep_research.comparison_reasoning import enabled as comparison_enabled
@@ -1899,7 +1901,7 @@ def make_verify_node(
                                     raise BudgetExhaustedError('repairTimeSeconds',maximum-minimum,elapsed)
                             if len(prompt.encode('utf8')) > 32000:
                                 raise BudgetExhaustedError('repairCompactionPromptBytes',32000,len(prompt.encode('utf8')))
-                            from services.deep_research.factual_reasoning import compaction_options,fixed_scope_compaction
+                            from services.deep_research.factual_reasoning import compaction_options,fixed_scope_compaction,explicit_compaction_scope
                             options=(compaction_options(record,effective_question(record),saved.get('outputKind',''))
                                 if not direct and fixed_scope_compaction(record,effective_question(record),saved.get('outputKind','')) else {})
                             return llm_invoke(run_id,'synthesize_compact',prompt,{'max_tokens':2000,'temperature':0.0,**options})
@@ -1910,7 +1912,8 @@ def make_verify_node(
                             saved=current.get('state',{}).get('repairCompaction'),checkpoint=checkpoint_compaction,
                             **({'expression_version':3} if record.get('scopeExpressionContractVersion')==3 else {}),
                             **({'fixed_scope_first':True,'invoke_fixed':lambda prompt:invoke_compaction(prompt,direct=True)}
-                                if fixed_scope_compaction(record,effective_question(record),saved.get('outputKind','')) else {}))
+                                if fixed_scope_compaction(record,effective_question(record),saved.get('outputKind','')) else {}),
+                            **({'explicit_edit_scope':True} if explicit_compaction_scope(record,effective_question(record),saved.get('outputKind','')) else {}))
                     repo_update(run_id, lambda r: {**r, 'state': {**r.get('state', {}),
                         'repairDraft': revised}}, expected_revision=None)
                 if revised:

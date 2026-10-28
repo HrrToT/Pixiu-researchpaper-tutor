@@ -33,7 +33,7 @@ def test_only_ordinary_prose_is_sent_for_edit_and_scope_sources_stay_exact():
 
 def test_new_strategy_is_limited_to_eligible_new_short_factual_outputs():
     from services.deep_research.factual_reasoning import fixed_scope_compaction
-    for version in (None,True,'8',7,9):
+    for version in (None,True,'8',7,10):
         assert not fixed_scope_compaction({'factualReasoningContractVersion':version},'300字以内','claim_verification')
     assert fixed_scope_compaction({'factualReasoningContractVersion':8},'300字以内','claim_verification')
     assert not fixed_scope_compaction({'factualReasoningContractVersion':8},'301字以内','claim_verification')
@@ -84,13 +84,14 @@ def test_external_accepted_content_is_readonly_and_consumes_the_same_shared_limi
     assert [c['claimId'] for c in json.loads(direct.call_args.args[0].rsplit('输入：',1)[1])]==['f']
 
 
-def test_actual_generation_routes_one_direct_edit_and_keeps_scope_audit_unchecked():
+@pytest.mark.parametrize('version',[8,9])
+def test_actual_generation_routes_one_direct_edit_and_keeps_scope_audit_unchecked(version):
     from services.deep_research.graph import make_synthesize_node
     from services.deep_research.runtime import research_model_options
     report,audits,response=fixture();draft=deepcopy(report)
     draft['claims'][1].update(text='',scopeExpression=audits[0]['expression'])
     record={'question':'两点，300字以内','scopeExpressionContractVersion':3,'scopeCompactionContractVersion':1,
-        'scopeExpressionReviewContractVersion':3,'reportPresentationContractVersion':2,'factualReasoningContractVersion':8,
+        'scopeExpressionReviewContractVersion':3,'reportPresentationContractVersion':2,'factualReasoningContractVersion':version,
         'state':{'outputKind':'claim_verification','evidence':[]}}
     def update(rid,fn,**kw):
         nonlocal record
@@ -103,6 +104,7 @@ def test_actual_generation_routes_one_direct_edit_and_keeps_scope_audit_unchecke
     assert research_model_options('synthesize_compact',requests[1][2])['reasoning_effort']=='none'
     assert record['state']['reportBody']['claims'][1]==report['claims'][1]
     assert record['state']['synthesisScopeExpressionAudit'][0]['verification']=='unchecked'
+    assert ('editableClaims：' in requests[1][1])==(version==9)
 
 
 def test_repair_batch_identity_and_resume_include_fixed_scope_strategy():
@@ -116,3 +118,40 @@ def test_repair_batch_identity_and_resume_include_fixed_scope_strategy():
     direct.assert_not_called()
     with pytest.raises(DeepResearchError):compact_repairs(*args,saved=states[-1],expression_version=3,presentation_version=2)
     joint.assert_not_called()
+
+
+def test_explicit_scope_prompt_hides_readonly_ids_and_preserves_all_points():
+    report,audits,response=fixture();direct=Mock(return_value={'content':json.dumps(response)})
+    out,new=compact(report,audits,'300字以内',Mock(),json.loads,presentation_version=2,expression_version=3,
+        fixed_scope_first=True,invoke_fixed=direct,explicit_edit_scope=True)
+    assert out and [c['claimId'] for c in out['claims']]==['f','c']
+    assert out['claims'][1]==report['claims'][1]
+    prompt=direct.call_args.args[0]
+    readonly=json.loads(prompt.split('readonlyContext：',1)[1].split('\neditableClaims：',1)[0])
+    editable=json.loads(prompt.split('editableClaims：',1)[1])
+    assert all(set(c)=={'text','conditions'} for c in readonly)
+    assert [c['claimId'] for c in editable]==['f']
+    assert '不是必须逐项抄写的清单' in prompt and '不能用数值清单替代判断' in prompt
+    direct.assert_called_once()
+
+
+def test_explicit_prompt_is_new_profile_only_and_generation_options_are_unchanged():
+    from services.deep_research.factual_reasoning import explicit_compaction_scope,request_options,compaction_options
+    for version in (None,True,'9',7,8,10):
+        assert not explicit_compaction_scope({'factualReasoningContractVersion':version},'300字以内','claim_verification')
+    assert explicit_compaction_scope({'factualReasoningContractVersion':9},'300字以内','claim_verification')
+    assert not explicit_compaction_scope({'factualReasoningContractVersion':9},'301字以内','claim_verification')
+    for fn in (request_options,compaction_options):
+        assert fn({'factualReasoningContractVersion':8},'300字以内','claim_verification')==fn({'factualReasoningContractVersion':9},'300字以内','claim_verification')
+
+
+def test_repair_resume_cannot_reinterpret_the_old_prompt_as_explicit_scope():
+    report,audits,response=fixture();states=[];direct=Mock(return_value={'content':json.dumps(response)})
+    args=(report,report['claims'],[],{'scopeExpressionAudit':{'0':audits}},'300字以内',Mock(),json.loads)
+    kw={'expression_version':3,'presentation_version':2,'fixed_scope_first':True,'invoke_fixed':direct}
+    out=compact_repairs(*args,checkpoint=states.append,explicit_edit_scope=True,**kw)
+    assert out and states[-1]['status']=='completed'
+    direct.reset_mock()
+    assert compact_repairs(*args,saved=states[-1],explicit_edit_scope=True,**kw)==out
+    with pytest.raises(DeepResearchError):compact_repairs(*args,saved=states[-1],**kw)
+    direct.assert_not_called()

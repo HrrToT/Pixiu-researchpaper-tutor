@@ -13,7 +13,7 @@ def enabled(record):
 
 def compact_repairs(report, revised, accepted, batch_state, question, invoke, parse, *,
                     evidence=(), output_kind='', presentation_version=0, saved=None, checkpoint=None,expression_version=2,
-                    fixed_scope_first=False,invoke_fixed=None):
+                    fixed_scope_first=False,invoke_fixed=None,explicit_edit_scope=False):
     packet = {**deepcopy(report),'claims':deepcopy(revised)}
     ids = {c['claimId'] for c in revised}
     audits = []
@@ -21,10 +21,12 @@ def compact_repairs(report, revised, accepted, batch_state, question, invoke, pa
         audits.extend(deepcopy(a) for a in rows if a.get('claimId') in ids)
     if type(expression_version) is not int or expression_version not in (2,3):
         raise ValueError('Invalid repair compaction expression version')
+    if type(explicit_edit_scope) is not bool:raise ValueError('Invalid explicit repair scope policy')
     if type(fixed_scope_first) is not bool:raise ValueError('Invalid fixed scope repair policy')
     identity = digest({'report':packet,'accepted':accepted,'audits':audits,'question':question,
                        **({'scopeExpressionContractVersion':3} if expression_version==3 else {}),
                        **({'fixedScopeCompactionVersion':1} if fixed_scope_first else {}),
+                       **({'explicitEditScopeVersion':1} if explicit_edit_scope else {}),
                        'evidence':evidence,'outputKind':output_kind,'presentationVersion':presentation_version})
     if saved is not None:
         if not isinstance(saved,dict) or saved.get('inputDigest') != identity:
@@ -40,7 +42,8 @@ def compact_repairs(report, revised, accepted, batch_state, question, invoke, pa
     result,new_audits = compact(packet,audits,question,invoke,parse,evidence=evidence,
         output_kind=output_kind,presentation_version=presentation_version,fixed_claims=accepted,
         **({'expression_version':3} if expression_version==3 else {}),
-        **({'fixed_scope_first':True,'invoke_fixed':invoke_fixed} if fixed_scope_first else {}))
+        **({'fixed_scope_first':True,'invoke_fixed':invoke_fixed} if fixed_scope_first else {}),
+        explicit_edit_scope=explicit_edit_scope)
     state.update(status='completed' if result is not None else 'invalid',
                  claims=result['claims'] if result is not None else [],
                  scopeExpressionAudit=new_audits if result is not None else [])
