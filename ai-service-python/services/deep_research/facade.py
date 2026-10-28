@@ -52,15 +52,18 @@ from services.deep_research.contracts import (
 logger = logging.getLogger(__name__)
 
 
+def _confirmed_payment_rejection(calls):
+    latest=calls[-1] if calls else {}
+    error=latest.get('error') or {}
+    return (latest.get('tool')=='llm_invoke' and latest.get('status')=='failed'
+            and error.get('type')=='provider_error' and error.get('status_code')==402)
+
+
 def _execution_failure_message(calls, unknown):
     if unknown:
         return "上一次请求的结果尚未确认，研究已暂停，系统不会自动重发。"
-    failed_model_calls = [c for c in calls
-                          if c.get('tool') == 'llm_invoke' and c.get('status') == 'failed']
-    if failed_model_calls:
-        error = failed_model_calls[-1].get('error') or {}
-        if error.get('type') == 'provider_error' and error.get('status_code') == 402:
-            return "模型服务拒绝了请求（HTTP 402）。请检查模型账户额度与计费状态，确认可用后再发起研究。"
+    if _confirmed_payment_rejection(calls):
+        return "模型服务拒绝了请求（HTTP 402）。请检查模型账户额度与计费状态，确认可用后再发起研究。"
     return "本次研究未能完成，请查看已保存的结果或稍后补查。"
 
 
@@ -1109,7 +1112,8 @@ class ResearchFacade:
                 return {
                     **record,
                     "status": STATUS_PAUSED if unknown else STATUS_FAILED,
-                    "errorCode": "unresolved_unknown" if unknown else getattr(exc, "code", "execution_failed"),
+                    "errorCode": "unresolved_unknown" if unknown else 'provider_payment_rejected'
+                        if _confirmed_payment_rejection(calls) else getattr(exc, "code", "execution_failed"),
                     "error": {"message": _execution_failure_message(calls, unknown)},
                     "finishedAt": utc_now_iso(),
                 }

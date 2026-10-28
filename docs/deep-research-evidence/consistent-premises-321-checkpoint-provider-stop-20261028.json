@@ -1,0 +1,57 @@
+{
+  "scope": "isolated verification with complete generation checkpoint",
+  "promptVersion": "dr-v2.20261028.321",
+  "providerSubmissions": 4,
+  "successfulCalls": 3,
+  "knownFailedCalls": 1,
+  "failureHttpStatus": 402,
+  "unknownCalls": 0,
+  "settledSuccessfulTokens": 16337,
+  "failedCallUsage": null,
+  "retry": false,
+  "terminalIsolatedStatus": "failed",
+  "terminalErrorCode": "provider_payment_rejected",
+  "generationIntentEntries": 2,
+  "reachedRepair": false,
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "productionPublish": false,
+  "preservation": {
+    "before": {
+      "ledgerRows": 7465,
+      "ledgerSha256": "9138a4c5c9e9397c9dce6b78007d07dc1c2f7955dd637bef1d794f0c50b97bbc",
+      "payloadSha256": "a4559eea0b66b511bed93f21a1cba7e6a39068464469aacbcd30fde6895797ad"
+    },
+    "after": {
+      "ledgerRows": 7465,
+      "ledgerSha256": "9138a4c5c9e9397c9dce6b78007d07dc1c2f7955dd637bef1d794f0c50b97bbc",
+      "payloadSha256": "a4559eea0b66b511bed93f21a1cba7e6a39068464469aacbcd30fde6895797ad"
+    },
+    "exactProductionPreservation": true,
+    "providerSubmissions": 4,
+    "productionPublish": false,
+    "fullWorkflowReplay": false,
+    "independentCredit": 0
+  },
+  "rawReceipts": "tmp\\component-consistent-premises-321-complete-checkpoint-20261028\\receipt",
+  "receiptSha256": {
+    "calls.json": "1c835e179b13b27455e95557c43e9acff95e5110b549527137193ac50037b57f",
+    "failure.json": "6390a7fe9469b1a233626ef6dfc16b891ffacbc96739d77f150e40d818b1ca23",
+    "payload.json": "e90e05fb08a07cb620033105daa53e8b9e17919c30fe24c1c2e5f87dabcb875d",
+    "preservation.json": "e4020959709d9e175f8e9b867b3ca9486503f673a8a37daf6c2785fc947c621e",
+    "progress.json": "2ba2da9c2357082b7ba4277d19e3a82c3e9a2f0ba2c75d215ff368dd61d0a26a",
+    "request-1.json": "c1c608baae6bacdc3ddc78f0744ef640891f5b8562d2381c44bf671cb63ed8ad",
+    "request-2.json": "399fdd17ff13c353ec0da02e904c412c5dbb8856f2b9cdc2577ac5cf192406c5",
+    "request-3.json": "078753549d390408054fc7ff520178bd7207cdf66525e286861033de44383538",
+    "request-4.json": "0bd05ae0d1a89e9ad6bef27dd411f6d3f28ffd34e93e5c5b3ef2ff507b7ec111",
+    "terminal-payload.json": "72fd0d08de614251650ed000a021e33514f757aa1f18ff080fac55d0acca0383"
+  },
+  "billingDiagnosis": {
+    "officialHost": "api.deepseek.com",
+    "readOnlyBalanceHttpStatus": 200,
+    "isAvailable": false,
+    "privateBalanceAmountOmitted": true,
+    "balanceInferenceCalls": 0
+  },
+  "officialErrorReference": "https://api-docs.deepseek.com/quick_start/error_codes/"
+}
