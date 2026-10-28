@@ -11,7 +11,7 @@ from services.deep_research.graph import make_verify_node
 from services.deep_research.repair import repair_rejected
 
 
-@pytest.mark.parametrize('value',[None,True,False,0,4,'1'])
+@pytest.mark.parametrize('value',[None,True,False,0,5,'1'])
 def test_policy_requires_strict_version_and_claim_check_output(value):
     assert not enabled({'claimCheckContractVersion':value,'state':{'outputKind':'claim_verification'}})
     assert not enabled({'claimCheckContractVersion':1,'state':{'outputKind':'paper_comparison'}})
@@ -106,13 +106,13 @@ def test_repair_resume_identity_includes_quality_policy_without_reapproving_cont
     invoke.assert_not_called()
 
 
-@pytest.mark.parametrize('active',[True,False])
+@pytest.mark.parametrize('active',[True,False,4])
 def test_initial_audit_repair_and_second_audit_receive_same_frozen_policy(active,monkeypatch):
     from test_deep_research_request_dimensions import plan
     c={'claimId':'c','kind':'inference','text':'old','evidenceRefs':['e']}
     record={'question':'核查质量','state':{'outputKind':'claim_verification',
         'reportBody':{'claims':[c]},'evidence':[],'plan':plan('核查质量')}}
-    if active:record['claimCheckContractVersion']=1
+    if active:record['claimCheckContractVersion']=4 if type(active) is int else 1
     def update(run,change,**kwargs):
         nonlocal record
         record=change(deepcopy(record));return deepcopy(record)
@@ -127,10 +127,12 @@ def test_initial_audit_repair_and_second_audit_receive_same_frozen_policy(active
         {'accepted':[{**c,'text':'revised'}],'rejected':[]}])
     make_verify_node(verify,None,update,llm_invoke=lambda *a,**kw:{'content':'[]'})({'run_id':'r'})
     assert len(audits)==2 and len(repairs)==1 and verify.call_count==2
-    assert all(kw.get('claim_check',False) is active for kw in audits+repairs)
+    assert all(kw.get('claim_check',False) is bool(active) for kw in audits)
+    assert all(kw.get('claim_check',False)==active for kw in repairs)
+    if active==4:assert type(repairs[0]['claim_check']) is int
 
 
-@pytest.mark.parametrize('replacement',[None,True,0,'1',4])
+@pytest.mark.parametrize('replacement',[None,True,0,'1',5])
 def test_new_policy_is_server_owned_immutable_and_absent_from_legacy(tmp_path,replacement):
     from services.deep_research.facade import ResearchFacade
     from services.deep_research.repository import DeepResearchRepository
@@ -139,7 +141,7 @@ def test_new_policy_is_server_owned_immutable_and_absent_from_legacy(tmp_path,re
     try:
         run,_=facade.create({'workspaceTaskId':'t','operationKey':'op','question':'核查','deferStart':True,
             'claimCheckContractVersion':replacement},start_async=False)
-        assert type(run['claimCheckContractVersion']) is int and run['claimCheckContractVersion']==3
+        assert type(run['claimCheckContractVersion']) is int and run['claimCheckContractVersion']==4
         with pytest.raises(ValueError,match='Immutable'):
             repo.update_run(run['runId'],lambda r:{**r,'claimCheckContractVersion':replacement})
         legacy=deepcopy(run);legacy.update(runId='legacy',idempotencyKey='legacy');legacy.pop('claimCheckContractVersion')
@@ -147,3 +149,41 @@ def test_new_policy_is_server_owned_immutable_and_absent_from_legacy(tmp_path,re
         facade.create({'workspaceTaskId':'t','operationKey':'next','question':'继续','deferStart':True},start_async=False)
         assert repo.require_run('legacy')==before
     finally:facade.shutdown()
+
+
+def test_new_assessment_policy_is_shared_by_generation_and_repair_without_changing_evidence():
+    from services.deep_research.claim_check import ASSESSMENT_GUIDANCE,INFERENCE_GUIDANCE
+    from test_deep_research_compact_source_repair import prepare
+    args=('核查质量','claim_verification',300,2,[],[],{},'EVIDENCE','TABLES')
+    record={'claimCheckContractVersion':4,'state':{'outputKind':'claim_verification'}}
+    current=build(record,*args);old=build({**record,'claimCheckContractVersion':3},*args)
+    repaired=prepare(claim_check=4);legacy=prepare(claim_check=True)
+    assert ASSESSMENT_GUIDANCE in current and ASSESSMENT_GUIDANCE in repaired['prompt']
+    assert GUIDANCE not in current and GUIDANCE not in repaired['prompt']
+    assert ASSESSMENT_GUIDANCE not in old and ASSESSMENT_GUIDANCE not in legacy['prompt']
+    assert INFERENCE_GUIDANCE in old
+    assert repaired['allowed']==legacy['allowed'] and repaired['originals']==legacy['originals']
+    assert 'not "X was not tested"' in ASSESSMENT_GUIDANCE
+
+
+def test_new_repair_policy_cannot_reuse_legacy_batch_response():
+    from services.deep_research.contracts import DeepResearchError
+    c={'claimId':'c','kind':'reported','text':'old','evidenceRefs':['e']}
+    report={'claims':[c]};verification={'accepted':[],'rejected':[{'claimId':'c'}]}
+    evidence=[{'evidenceId':'e','quote':'provided observation'}]
+    invoke=Mock(return_value={'content':'[]'});states=[]
+    args=(report,verification,evidence,'核查质量，300字以内',invoke,json.loads)
+    result=repair_rejected(*args,claim_check=4,checkpoint=states.append)
+    saved=deepcopy(states[-1]);invoke.reset_mock()
+    assert repair_rejected(*args,claim_check=4,batch_state=saved)==result
+    with pytest.raises(DeepResearchError):repair_rejected(*args,claim_check=True,batch_state=saved)
+    invoke.assert_not_called()
+
+
+@pytest.mark.parametrize('value',[1,2,3,5,'4',None])
+def test_bad_repair_policy_cannot_silently_select_new_guidance(value):
+    c={'claimId':'c','kind':'reported','text':'old','evidenceRefs':['e']};invoke=Mock()
+    with pytest.raises(ValueError,match='Invalid claim check policy'):
+        repair_rejected({'claims':[c]},{'accepted':[],'rejected':[{'claimId':'c'}]},[],
+            '核查',invoke,json.loads,claim_check=value)
+    invoke.assert_not_called()

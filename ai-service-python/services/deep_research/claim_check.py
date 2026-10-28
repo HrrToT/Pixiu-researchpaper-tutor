@@ -3,7 +3,7 @@
 
 def enabled(record):
     return (type(record.get('claimCheckContractVersion')) is int
-            and record['claimCheckContractVersion'] in (1,2,3)
+            and record['claimCheckContractVersion'] in (1,2,3,4)
             and record.get('state',{}).get('outputKind')=='claim_verification')
 
 
@@ -85,4 +85,27 @@ Prefer a concise qualitative judgement when arithmetic is not needed. A numeric
 difference alone does not establish perceptual equivalence or a user tolerance.
 Retain the comparison's actual metric, dataset and baseline conditions. Do not
 drop the requested assessment merely to produce a safe list of reported values.
+'''
+
+
+ASSESSMENT_GUIDANCE = '''
+Give YOUR qualified verdict on the precise claim, then the minimum supporting or
+supplied observation and its actual conditions. State what those
+observations support, weaken or leave undecidable; repeating the author claim
+plus a universal disclaimer is not a verdict. Do not invent a threshold or demand
+all metrics/experiments. One informative comparison can suffice. Retain actual
+baseline variants, dataset/group and metric meaning; similar is not identical.
+A derived comparison/judgement has kind=inference, even with "authors report".
+Bind exact reported input cells, never a calculated difference as a reported cell.
+Prefer concise qualitative assessment; do not substitute a complete value list.
+Frame uncertainty about the ACQUIRED CITATIONS: "these cited results do not
+establish X under Y", not "X was not tested" or "the paper did not validate Y".
+Only an explicit allowed passage can establish absence of an experiment. A
+private unresolved label or earlier draft is not evidence for such absence.
+If only summaries were acquired, say those materials cannot independently check
+the claim; do not conclude the paper lacks experiments. Use scopeExpression for
+an authored scope boundary when that contract applies; do not hide stronger
+absence claims in ordinary text or conditions. Never strengthen an epistemic
+boundary into a negative finding. Respect requested point/word limits. Every
+premise needs its own permitted citations and independent checks.
 '''
