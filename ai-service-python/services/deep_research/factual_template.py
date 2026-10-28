@@ -5,6 +5,9 @@ from copy import deepcopy
 
 def build(record,question,kind,limit,claim_limit,sections,obligations,sources,evidence_marker,table_marker,
           *, drafting_schema=False,point_guidance=''):
+    from services.deep_research.short_factual_layout import enabled as short_enabled,GUIDANCE as short_guidance
+    short=short_enabled(record,kind,limit)
+    if short:sections=['核查结论','依据与范围']
     encode=lambda value:json.dumps(value,ensure_ascii=False,separators=(',',':'))
     obligations=deepcopy(obligations)
     for obligation in obligations:
@@ -87,4 +90,4 @@ With contextOmitted do not guess missing antecedents. All output still passes in
     if any(source.get('publicationIdentity') for source in sources.values()):
         from services.deep_research.publication_identity import GUIDANCE as PUBLICATION_GUIDANCE
         prompt+='\n'+PUBLICATION_GUIDANCE
-    return prompt+'\n'+point_guidance
+    return prompt+'\n'+point_guidance+('\n'+short_guidance if short else '')

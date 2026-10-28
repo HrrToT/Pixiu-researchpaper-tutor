@@ -16,7 +16,8 @@ from services.deep_research.repair_scope import repair_evidence_scope
 def _prepare_repair(report, verification, evidence, question, *, max_prompt_bytes=24000,
                     metric_domains=None, draft_context=(), prior_revisions=(),
                     fact_redraft=False, requirement_context=(), source_aware_redraft=False,comparison_reasoning=False,
-                    question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False,shared_experiment_schema=False,experiment_evidence_context=None,experimental_edits=False,experimental_diagnostics=False,experimental_nested_tables=False,experimental_representation=False,experimental_coverage=False,citation_presentation_version=0,configuration_consistency_version=0,repair_evidence_packet_version=0,answer_intents=None,scope_expression=False,table_identity_context=False,claim_check=False,required_scope_ids=()):
+                    question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False,shared_experiment_schema=False,experiment_evidence_context=None,experimental_edits=False,experimental_diagnostics=False,experimental_nested_tables=False,experimental_representation=False,experimental_coverage=False,citation_presentation_version=0,configuration_consistency_version=0,repair_evidence_packet_version=0,answer_intents=None,scope_expression=False,table_identity_context=False,claim_check=False,required_scope_ids=(),compact_layout=False):
+    if type(compact_layout) is not bool:raise ValueError('Invalid factual compact layout policy')
     _validate_scope_ids(required_scope_ids,report,scope_expression)
     if (type(repair_evidence_packet_version) is not int or repair_evidence_packet_version not in (0,1,2,3,4,5)
             or repair_evidence_packet_version in (2,3,4,5) and not experimental_coverage
@@ -439,6 +440,9 @@ in the paper. Maintain consistency with accepted definitions and complete requir
                 source_instruction=source_instruction,metric_domains=metric_domains,
                 policy_version=experimental_intent,declared_table_refs=declared_table_refs,
                 terminology=SCIENTIFIC_TERMINOLOGY,concise_policy=experiment_evidence_context is not None,**feedback_options)
+    if compact_layout:
+        from services.deep_research.short_factual_layout import GUIDANCE
+        prompt+='\n'+GUIDANCE
     if experimental_coverage:
         from services.deep_research.repair_coverage import add_contract
         prompt=add_contract(prompt,originals,**({'version':3 if repair_evidence_packet_version in (2,3,4,5) else 2}
@@ -543,7 +547,7 @@ If a supported revision is not possible, omit that target rather than bypass sco
                                   len(render([]).encode('utf-8'))) from exc
     visible = {aliases[row['evidenceId']] for row in rows}
     allowed = {key: [ref for ref in values if ref in visible] for key, values in allowed.items()}
-    return {'prompt': prompt, 'originals': originals, 'aliases': aliases, 'allowed': allowed,
+    return {**({'compactLayoutVersion':1} if compact_layout else {}),'prompt': prompt, 'originals': originals, 'aliases': aliases, 'allowed': allowed,
             **({'requiredScopeIds':list(required_scope_ids)} if required_scope_ids else {}),
             **({'reportedInferenceRepairIds':inference_ids} if inference_ids else {}),
             **({'reportedInferenceRepairReasons':inference_reasons} if inference_reasons else {}),
@@ -594,6 +598,9 @@ def _parse_repair_response(prepared, response, parse, presentation_audit=None,dr
     for row in revised:
         if not isinstance(row, dict):
             continue
+        if prepared.get('compactLayoutVersion')==1:
+            from services.deep_research.short_factual_layout import valid_access_labels
+            if not valid_access_labels([row]):continue
         key = row.get('claimId')
         original = originals.get(key)
         if not original or key in seen:
@@ -680,7 +687,7 @@ def factual_redraft_eligible(report):
 def repair_rejected(report, verification, evidence, question, invoke, parse, *,
                     max_prompt_bytes=24000, metric_domains=None, batch_state=None, checkpoint=None,
                     current_budget=None, invoke_request=None, fact_redraft=False, requirement_context=(),
-                    source_aware_redraft=False,comparison_reasoning=False,question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,strict_response=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False,shared_experiment_schema=False,experiment_evidence_context=None,experimental_edits=False,experimental_diagnostics=False,experimental_nested_tables=False,experimental_representation=False,experimental_coverage=False,citation_presentation_version=0,configuration_consistency_version=0,repair_evidence_packet_version=0,scheduling_version=0,answer_intents=None,scope_expression=False,defer_length_filter=False,table_identity_context=False,claim_check=False,required_scope_ids=()):
+                    source_aware_redraft=False,comparison_reasoning=False,question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,strict_response=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False,shared_experiment_schema=False,experiment_evidence_context=None,experimental_edits=False,experimental_diagnostics=False,experimental_nested_tables=False,experimental_representation=False,experimental_coverage=False,citation_presentation_version=0,configuration_consistency_version=0,repair_evidence_packet_version=0,scheduling_version=0,answer_intents=None,scope_expression=False,defer_length_filter=False,table_identity_context=False,claim_check=False,required_scope_ids=(),compact_layout=False):
     """One bounded revision round, split before dispatch when evidence cannot fit.
 
     At most three requests share full sibling design definitions. Successful
@@ -690,6 +697,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
     from services.deep_research.contracts import digest, DeepResearchError
     from services.deep_research.repair_batches import split_repair_targets
 
+    if type(compact_layout) is not bool:raise ValueError('Invalid factual compact layout policy')
     _validate_scope_ids(required_scope_ids,report,scope_expression)
     if type(defer_length_filter) is not bool:
         raise ValueError('Invalid deferred repair length policy')
@@ -724,7 +732,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
         raise ValueError('Unsupported configuration consistency contract')
     if type(citation_presentation_version) is not int or citation_presentation_version not in (0,2,3,4):
         raise ValueError('Unsupported citation presentation contract')
-    identity = digest({'report': report, 'verification': verification,
+    identity = digest({**({'compactLayoutVersion':1} if compact_layout else {}),'report': report, 'verification': verification,
                        **({'requiredScopeIds':list(required_scope_ids)} if required_scope_ids else {}),
                        **({'claimCheckContractVersion':claim_check if type(claim_check) is int and claim_check in (4,5,6,7,8,9) else 1} if claim_check else {}),
                        **({'tableIdentityContextContractVersion':1} if table_identity_context else {}),
@@ -764,7 +772,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
         return _prepare_repair(report, subset, evidence, question,
             max_prompt_bytes=state['maxPromptBytes'] if byte_limit is None else byte_limit,
             metric_domains=metric_domains, draft_context=siblings, prior_revisions=results,
-            fact_redraft=fact_redraft, requirement_context=requirement_context,source_aware_redraft=source_aware_redraft,
+            compact_layout=compact_layout,fact_redraft=fact_redraft, requirement_context=requirement_context,source_aware_redraft=source_aware_redraft,
             **({'answer_intents':answer_intents} if answer_intents is not None else {}),
             **({'scope_expression':scope_expression} if scope_expression else {}),
             **({'required_scope_ids':[key for key in required_scope_ids if key in ids]} if required_scope_ids else {}),

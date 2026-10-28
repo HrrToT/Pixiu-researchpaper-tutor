@@ -1,0 +1,14 @@
+{
+  "providerCalls": 0,
+  "archivedRawReplyReplayed": true,
+  "invalidSummaryAccessRejected": true,
+  "compactionDispatches": 0,
+  "newLayoutInActualGenerationRequest": true,
+  "mandatoryOriginalAndOursTableRowsPresent": true,
+  "storedEvidenceUnchanged": true,
+  "originalFrozenCriteriaUnchanged": true,
+  "newPromptBytes": 23796,
+  "noOriginalResponseRewritten": true,
+  "contentAcceptance": false,
+  "independentCredit": 0
+}

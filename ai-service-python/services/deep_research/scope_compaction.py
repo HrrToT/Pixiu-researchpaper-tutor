@@ -14,13 +14,14 @@ def enabled(record):
 
 
 def compact(report, audits, question, invoke, parse, *, output_kind='', evidence=(), presentation_version=0,
-            fixed_claims=(),measured_guidance=False,expression_version=2,fixed_scope_first=False,invoke_fixed=None,explicit_edit_scope=False):
+            fixed_claims=(),measured_guidance=False,expression_version=2,fixed_scope_first=False,invoke_fixed=None,explicit_edit_scope=False,compact_layout=False):
     """Return revised report and matching unchecked ASTs, or reject atomically.
 
     All existing points, kinds, citations, obligations and table bindings remain.
     Wording of ordinary facts and scope fields shares one rendered-length budget.
     Semantics are not certified here: the normal verifier checks the new wording.
     """
+    if type(compact_layout) is not bool:raise ValueError('Invalid compact layout policy')
     if type(explicit_edit_scope) is not bool:raise ValueError('Invalid explicit edit scope policy')
     if type(measured_guidance) is not bool:raise ValueError('Invalid compaction measurement policy')
     if type(fixed_scope_first) is not bool or invoke_fixed is not None and not callable(invoke_fixed):
@@ -76,7 +77,7 @@ def compact(report, audits, question, invoke, parse, *, output_kind='', evidence
             full={**source,'claims':[*fixed,*source['claims']]}
             edited=compact_answer(full,question,invoke_fixed or invoke,parse_edit,output_kind=output_kind,
                 evidence=evidence,preserve_claims=True,presentation_version=presentation_version,
-                fixed_claim_ids=[*expressions,*[c['claimId'] for c in fixed]],explicit_edit_scope=explicit_edit_scope)
+                fixed_claim_ids=[*expressions,*[c['claimId'] for c in fixed]],explicit_edit_scope=explicit_edit_scope,compact_layout=compact_layout)
             if edited is None:return None,audits
             result={**source,'claims':[c for c in edited['claims'] if c['claimId'] in original]}
             if (any(not isinstance(c.get('text'),str) or not c['text'].strip() for c in result['claims'])
@@ -120,6 +121,9 @@ No old evidence verdict is retained: all new wording will be independently check
 '''The service groups observations with the same subject as 已报告设置：subject（attribute：value；…）。
 All boundaries render as 尚不能据此确认subject相对comparator的“predicate”在domain中普遍成立。
 Existential boundaries render as 尚不能据此确认在domain中存在subject相对comparator“predicate”的情形。''')
+    if compact_layout:
+        from services.deep_research.short_factual_layout import PROSE_GUIDANCE as GUIDANCE
+        prompt+='\n'+GUIDANCE
     if measured_guidance:
         prompt+='\nCurrent complete rendered length: '+str(count(source))+'''. Rewrite substantially;
 copying the input unchanged cannot fit. Character counts include Latin letters,
