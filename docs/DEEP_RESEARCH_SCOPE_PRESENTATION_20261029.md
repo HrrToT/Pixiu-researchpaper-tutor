@@ -9,3 +9,5 @@
 另通过真实 make_synthesize_node 截获发送前请求，原 24,000 UTF-8 字节上限内完整保留两条主表证据和重训表注，没有裁剪必要来源、增加预算或调用模型。证据为 `deep-research-evidence/scope-presentation-322-generation-input-20261028.json`。
 
 固定最终源码的 58 文件、1,002 项关联回归通过，pytest 113.00 秒、外部 117.469 秒，源码和测试哈希前后一致，无模型调用。首次回归的 7 项失败来自旧夹具把版本 2 文字当成新建运行的版本 3 文字；改为版本 3 夹具，并增加“新运行不能匹配旧文字”的断言，生产精确匹配规则未放宽。最终证据为 `deep-research-evidence/scope-presentation-322-final-regression-20261028.json`。
+
+源码 `25961a09` 已按空闲快照流程重启原 Python 容器一次加载 `.322`，模块哈希一致，RAG/GROBID 健康，前端 HTTP 200；7,465 条账本、全部旧研究 payload、五组任务及完整索引/嵌入哈希精确保持，0 活跃、13 暂停保持，加载无模型调用。证据为 `deep-research-evidence/runtime-load-scope-presentation-322-20261028.json`。
