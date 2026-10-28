@@ -9,3 +9,9 @@
 实际输入离线回放的前三个核查请求逐字匹配保存输入，新修订只开放 c1，23998 UTF-8 字节，在原24000上限内，原表第8/10行均存在；没有模型调用、生产变更或内容批准。回放使用旧已结算核查回复及空修订夹具，仅证明路由、容量、身份和必要表格行保持。证据：deep-research-evidence/inference-kind-328-actual-input-replay-20261029.json。
 
 最终固定源码的63文件、1097项关联回归通过，pytest99.63秒、外部103.765秒，源码和测试哈希前后一致，无模型调用。证据：deep-research-evidence/inference-kind-328-final-regression-20261029.json。
+
+`.328` 已从9442d95d加载，原7,465条账本、全部旧payload、五个任务和完整索引保持；0活跃、13旧暂停，RAG/GROBID正常、前端200。真实核查与修订阶段7次调用全部成功结算，32,587 Token，无未知/重试，也未发布生产。
+
+模型确实将c1由reported修订为inference，保留原身份和同源主表输入；类型转换审计为unchecked，修订经过正常精简及独立verify_repair。该推断因对“画质接近”的笼统评估仍不足以被所引指标严格支撑而拒绝，c2因数据集条件引用到未支持该条件的相关工作上下文而拒绝。原已核查c1保持，最终仍1条接受、1条拒绝、4个完整性缺口。新类型路径实际走通，但内容未通过，不能把正确的类型表达视为研究结论成立。证据：deep-research-evidence/inference-kind-328-real-stage-20261029.json。
+
+扩大检查到全部315个Deep Research测试文件，固定最终源码的5662项全部通过（pytest494.15秒、外部499.75秒），源码与测试哈希稳定，无模型调用。与前述1097项重叠，不相加。证据：deep-research-evidence/research-328-broad-regression-20261029.json。

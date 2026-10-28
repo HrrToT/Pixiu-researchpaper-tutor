@@ -1,0 +1,129 @@
+{
+  "sourceCommit": "9442d95dba85eedb0418490be15d9736666a929d",
+  "promptVersion": "dr-v2.20261029.328",
+  "scope": "new independent checks and revision of settled saved 326 draft; no new generation or retrieval",
+  "providerCalls": 7,
+  "totalTokens": 32587,
+  "allCallsSettled": true,
+  "unknownCalls": 0,
+  "retry": false,
+  "acceptedByMachine": [
+    {
+      "claimId": "c1",
+      "kind": "reported",
+      "text": "论文表1显示LightGaussian（Ours）在Mip-NeRF 360数据集上图像质量指标与原始3D-GS接近：PSNR 27.13对27.21，SSIM 0.806对0.815，LPIPS 0.237对0.214，大小45MB对734MB。"
+    }
+  ],
+  "rejectedByMachine": [
+    {
+      "claimId": "c2",
+      "reason": "semantic_unresolved",
+      "detail": "E1 only mentions MipNeRF360 dataset and qualitative 'comparable visual quality', but does not mention Tank and Temple or specific metrics; thus the assertion limiting comparability to both datasets and metrics lacks support.",
+      "revisionRejection": {
+        "claimId": "c2",
+        "reason": "semantic_unresolved",
+        "detail": "观察条件尚未通过事实核查：证据引文未提及MipNeRF360数据集，仅在后文上下文中出现，且该上下文描述的是Scaffold-GS实验，而非LightGaussian评估。"
+      }
+    }
+  ],
+  "repairDraft": [
+    {
+      "claimId": "c1",
+      "kind": "inference",
+      "text": "在表1的Mip-NeRF 360和Tank and Temple数据集上，LightGaussian的PSNR、SSIM、LPIPS与3D-GS接近，表明压缩后图像质量接近原始3DGS。"
+    },
+    {
+      "claimId": "c2",
+      "kind": "inference",
+      "text": "已报告设置：LightGaussian（数据集：MipNeRF360）。尚不能据此确认LightGaussian相对原始3DGS的“压缩后图像质量接近原始3DGS”在所有数据集和所有指标中普遍成立。"
+    }
+  ],
+  "repairTypeAudit": {
+    "0": [
+      {
+        "claimId": "c1",
+        "basis": {
+          "premiseStatus": "established",
+          "observations": [
+            {
+              "evidenceId": "E5",
+              "quote": "Table row 8: 3D-GS [16] | 134 | 734MB | 27.21 | 0.815 | 0.214 | 154 | 411MB | 23.14 | 0.841 | 0.183\nTable row 10: Ours | 237 | 45MB | 27.13 | 0.806 | 0.237 | 357 | 25MB | 23.44 | 0.832 | 0.202"
+            }
+          ],
+          "scopeDecision": "bounded_inference",
+          "unresolved": "E5仅提供表1中Mip-NeRF 360和Tank and Temple两个数据集的定量指标，未提供其他场景或指标的证据。"
+        },
+        "kindTransition": {
+          "from": "reported",
+          "to": "inference",
+          "reason": "answer_incomplete",
+          "verification": "unchecked"
+        }
+      },
+      {
+        "claimId": "c2",
+        "basis": {
+          "premiseStatus": "established",
+          "observations": [
+            {
+              "evidenceId": "E3",
+              "quote": "and LightGaussian exhibit comparable visual quality, even in challenging scenes with thin structures,\nshowing that LightGaussian effectively removes redundancy while preserving reconstruction fidelity."
+            }
+          ],
+          "scopeDecision": "bounded_inference",
+          "unresolved": "E3仅提及MipNeRF360数据集上的定性比较，未提供Tank and Temple数据集或具体指标的定量证据。"
+        }
+      }
+    ]
+  },
+  "repairVerificationChecks": {
+    "accepted": [],
+    "rejected": [
+      {
+        "claimId": "c1",
+        "reason": "semantic_unresolved",
+        "detail": "数值接近但LPIPS在Mip-NeRF 360上差距较大（0.237 vs 0.214），且未提供统计检验或误差范围，无法严格支持“接近”的推断。"
+      },
+      {
+        "claimId": "c2",
+        "reason": "semantic_unresolved",
+        "detail": "观察条件尚未通过事实核查：证据引文未提及MipNeRF360数据集，仅在后文上下文中出现，且该上下文描述的是Scaffold-GS实验，而非LightGaussian评估。"
+      }
+    ]
+  },
+  "coverageGaps": 4,
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "preservation": {
+    "before": {
+      "ledgerRows": 7465,
+      "ledgerSha256": "9138a4c5c9e9397c9dce6b78007d07dc1c2f7955dd637bef1d794f0c50b97bbc",
+      "payloadSha256": "a4559eea0b66b511bed93f21a1cba7e6a39068464469aacbcd30fde6895797ad"
+    },
+    "after": {
+      "ledgerRows": 7465,
+      "ledgerSha256": "9138a4c5c9e9397c9dce6b78007d07dc1c2f7955dd637bef1d794f0c50b97bbc",
+      "payloadSha256": "a4559eea0b66b511bed93f21a1cba7e6a39068464469aacbcd30fde6895797ad"
+    },
+    "exactProductionPreservation": true,
+    "providerSubmissions": 7,
+    "productionPublish": false,
+    "fullWorkflowReplay": false,
+    "independentCredit": 0
+  },
+  "rawReceipts": "tmp\\component-inference-kind-328-20261029\\receipt",
+  "receiptHashes": {
+    "calls.json": "38e778b0d1757396e8a10afb95f99646b54bc38d578779c8a0ed68c9f36f4b29",
+    "payload.json": "63137c02d51b2edd929e7e8de511e96af6ac10fa5bf25ba409c3ba1d425ffc30",
+    "preservation.json": "2de5d7515ec2821ca11bf3fc5bfeec2fb294e65e86cd97df5f28f6a7a1aced57",
+    "progress.json": "2f6c186d962732fd4f8d38e86b4dd6e3a5d697797971d0899d242d39683a3497",
+    "request-1.json": "376ba43b290ec5d98f83c5e91ba1c33177d19b3656836c2aca129854dfa1b3de",
+    "request-2.json": "b4ebdf2569be42c5854b0ed5323c3350e044f17df4884742038a674571a5dd62",
+    "request-3.json": "e75c147e8981010d581a92a2c1fa8f46abd2acaa73cf85c5bce923f39a411962",
+    "request-4.json": "9fde4dd22d314d1d6d45e9d3205b0c641c39b8011e79db1fb10a37e73611a6fd",
+    "request-5.json": "70b1614771e4fe8fc85a0f92f2b3e622bafcda343f001ca799469ec603be9043",
+    "request-6.json": "a5775186a25dbb76e5f5b45eccc4a9039734df982bf57f7ba5d8eb4bcb5249c4",
+    "request-7.json": "cd43eaacfc3e7931a4b8e116ac9a86871659f65455d1652f1972ae29804a5356",
+    "result.json": "19fd1bd17b321c175f14f25d81011037727739a4da35d44832a3b7ea44b842ee"
+  }
+}
