@@ -1,0 +1,29 @@
+{
+  "date": "2026-10-28",
+  "dockerEngineVersion": "29.1.3",
+  "runtimeOnlyDirectoriesPreserved": [
+    "Docker/run.stale-20261028",
+    "Docker/run.stale-20261028-second",
+    "docker-secrets-engine.stale-20261028"
+  ],
+  "settingsChanged": false,
+  "volumesRecreated": false,
+  "pythonStoreColdBackup": "tmp/runtime-recovery-20261028/python-store",
+  "javaDbColdBackupSha256": "07F1E89CDD12FD50A302957CBD0629BABB713AE558F8A46EC1CDE545174463B4",
+  "index": {
+    "collection": "literature_collection_v4_e5_small",
+    "rowCount": 981,
+    "sha256": "9196054db7ac32450eb86fc91cfb12de27c732469e4cf629bf06857a3490788d"
+  },
+  "health": {
+    "rag": "ok",
+    "grobid": "ok"
+  },
+  "frontendHttpStatus": 200,
+  "javaWorkspaceHttpStatus": 200,
+  "productionLedgerRows": 7465,
+  "oldRunsAndLedgerBeforeD1v41Preserved": true,
+  "D1v41SafelyPaused": true,
+  "modelCallsResent": 0,
+  "protectedWorkspacesExactlyPreserved": 4
+}
