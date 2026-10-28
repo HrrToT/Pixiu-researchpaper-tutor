@@ -11,7 +11,7 @@ from services.deep_research.graph import make_verify_node
 from services.deep_research.repair import repair_rejected
 
 
-@pytest.mark.parametrize('value',[None,True,False,0,2,'1'])
+@pytest.mark.parametrize('value',[None,True,False,0,3,'1'])
 def test_policy_requires_strict_version_and_claim_check_output(value):
     assert not enabled({'claimCheckContractVersion':value,'state':{'outputKind':'claim_verification'}})
     assert not enabled({'claimCheckContractVersion':1,'state':{'outputKind':'paper_comparison'}})
@@ -29,6 +29,33 @@ def test_generation_and_compact_repair_preserve_guidance_without_changing_eviden
     old=prepare();new=prepare(claim_check=True)
     assert GUIDANCE not in old['prompt'] and GUIDANCE in new['prompt']
     assert old['originals']==new['originals'] and old['allowed']==new['allowed']
+
+
+def test_result_packet_keeps_sibling_rows_and_available_provenance_without_foreign_attachment():
+    from services.deep_research.claim_check import prioritize_results
+    def row(key,quote,table=False,**changes):
+        return {'evidenceId':key,'quote':quote,'sourceWorkId':'p','sourceVersionId':'v',
+            'obligationIds':['o'],'verification':{'literal':'passed','semantic':'unchecked'},
+            'location':{'table':'tab_a'} if table else {},**({'tableData':{'rows':[]}} if table else {}),**changes}
+    rows=[row('intro','Summary repeats the author claim.'),row('base','Baseline 3D-GS values',True),
+        row('ours','Ours values',True),row('note','For fair comparison, the baseline was re-trained.'),
+        row('foreign','re-trained baseline',sourceWorkId='other'),
+        row('version','re-trained baseline',sourceVersionId='other'),
+        row('unchecked','re-trained baseline',verification={'literal':'failed'}),
+        row('other_table','Additional results',True,location={'table':'tab_b'})]
+    before=deepcopy(rows);ordered,bundles=prioritize_results(rows,[],'核查与3DGS比较')
+    assert [r['evidenceId'] for r in ordered[:3]]==['base','ours','note']
+    assert bundles[0]['evidenceIds']==['base','ours','note'] and rows==before
+    assert all(r['verification'].get('semantic')!='passed' for r in ordered)
+    assert set(r['evidenceId'] for r in rows)==set(r['evidenceId'] for r in ordered)
+
+
+def test_no_table_or_unknown_identity_preserves_original_selection():
+    from services.deep_research.claim_check import prioritize_results
+    rows=[{'evidenceId':'e','quote':'Only summary is available.'}];bundles=[{'evidenceIds':['e']}]
+    assert prioritize_results(rows,bundles,'核查')==(rows,bundles)
+    rows[0].update(tableData={'rows':[]},verification={'literal':'passed'})
+    assert prioritize_results(rows,bundles,'核查')==(rows,bundles)
 
 
 def test_audit_guidance_cannot_promote_invalid_response_or_modify_claims():
@@ -83,7 +110,7 @@ def test_initial_audit_repair_and_second_audit_receive_same_frozen_policy(active
     assert all(kw.get('claim_check',False) is active for kw in audits+repairs)
 
 
-@pytest.mark.parametrize('replacement',[None,True,0,'1',2])
+@pytest.mark.parametrize('replacement',[None,True,0,'1',3])
 def test_new_policy_is_server_owned_immutable_and_absent_from_legacy(tmp_path,replacement):
     from services.deep_research.facade import ResearchFacade
     from services.deep_research.repository import DeepResearchRepository
@@ -92,7 +119,7 @@ def test_new_policy_is_server_owned_immutable_and_absent_from_legacy(tmp_path,re
     try:
         run,_=facade.create({'workspaceTaskId':'t','operationKey':'op','question':'核查','deferStart':True,
             'claimCheckContractVersion':replacement},start_async=False)
-        assert type(run['claimCheckContractVersion']) is int and run['claimCheckContractVersion']==1
+        assert type(run['claimCheckContractVersion']) is int and run['claimCheckContractVersion']==2
         with pytest.raises(ValueError,match='Immutable'):
             repo.update_run(run['runId'],lambda r:{**r,'claimCheckContractVersion':replacement})
         legacy=deepcopy(run);legacy.update(runId='legacy',idempotencyKey='legacy');legacy.pop('claimCheckContractVersion')

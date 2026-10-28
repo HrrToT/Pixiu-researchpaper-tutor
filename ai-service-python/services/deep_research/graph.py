@@ -1132,6 +1132,9 @@ def make_synthesize_node(
         elif output_kind == 'experiment_design':
             from services.deep_research.selection import proposal_evidence_order
             candidates = proposal_evidence_order(candidates, question)
+        from services.deep_research.claim_check import enabled as claim_check_enabled,prioritize_results
+        if premise_mode and claim_check_enabled(record) and record['claimCheckContractVersion']==2:
+            candidates,premise_bundles=prioritize_results(candidates,premise_bundles,question)
         selected_candidates=candidates if premise_mode else balanced_sample(candidates,
             lambda item:(item.get('sourceWorkId',''),tuple(item.get('obligationIds',[]))),20)
         for ev in selected_candidates:

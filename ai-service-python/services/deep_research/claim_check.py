@@ -3,8 +3,40 @@
 
 def enabled(record):
     return (type(record.get('claimCheckContractVersion')) is int
-            and record['claimCheckContractVersion']==1
+            and record['claimCheckContractVersion'] in (1,2)
             and record.get('state',{}).get('outputKind')=='claim_verification')
+
+
+def prioritize_results(rows, bundles, question):
+    """Reserve a result packet and its available provenance before summaries.
+
+    Selection is not a factual link or a relevance verdict. Every selected item
+    keeps its own exact quote, ownership, version and independent checks.
+    """
+    import re
+    def tokens(text):
+        return set(re.findall(r'[a-z0-9]{3,}',re.sub(r'[-_]+','',text.lower())))
+    targets=tokens(question)
+    tables=[r for r in rows if r.get('tableData') and r.get('sourceWorkId') and r.get('sourceVersionId')
+        and r.get('verification',{}).get('literal')=='passed']
+    if not tables:return rows,bundles
+    # Prefer literal overlap with the requested comparator, then stable source
+    # order. No metric, paper name, table number or expected value is prescribed.
+    table=max(tables,key=lambda r:len(targets & tokens(r.get('quote',''))))
+    owner=(table.get('sourceWorkId'),table.get('sourceVersionId'))
+    notes=[r for r in rows if not r.get('tableData')
+        and r.get('verification',{}).get('literal')=='passed'
+        and (r.get('sourceWorkId'),r.get('sourceVersionId'))==owner
+        and re.search(r're[- ]?train|fair (?:metric|comparison)|original code|baseline.{0,30}(?:config|platform)|重训|重新训练',r.get('quote',''),re.I)]
+    table_id=table.get('location',{}).get('table')
+    fragments=[r for r in tables if table_id and r.get('location',{}).get('table')==table_id
+        and (r.get('sourceWorkId'),r.get('sourceVersionId'))==owner]
+    packet=[*(fragments or [table]),*notes[:1]]
+    ids=[r['evidenceId'] for r in packet]
+    priority={'obligationId':next(iter(table.get('obligationIds',[])),'claim_check'),
+        'criterionId':'underlying_result_packet','requirement':question,
+        'source':owner[0],'evidenceIds':ids}
+    return packet+[r for r in rows if r['evidenceId'] not in ids],[priority,*bundles]
 
 
 GUIDANCE='''
