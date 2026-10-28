@@ -12,12 +12,13 @@ def sample(text='流程三个主要环节分别改变：剪枝减少数量；蒸
 
 
 @pytest.mark.parametrize('label',['三个主要环节分别改变','3个主要环节分别改变','三项要点','三个关键方面如下'])
-def test_complete_prose_list_reaches_semantic_check_not_automatic_acceptance(label):
+@pytest.mark.parametrize('version',[7,8])
+def test_complete_prose_list_reaches_semantic_check_not_automatic_acceptance(label,version):
     ev,c=sample(label+'：剪枝减少数量；蒸馏压缩特征；量化降低精度。');before=deepcopy((ev,c))
     assert precheck_claims([c],[ev],quantity_spelling_version=6)['rejected'][0]['reason']=='numeric_mismatch'
-    assert not precheck_claims([c],[ev],quantity_spelling_version=7)['rejected']
+    assert not precheck_claims([c],[ev],quantity_spelling_version=version)['rejected']
     semantic=Mock(return_value=[{'claimId':'c','status':'unresolved','reason':'list content still needs checking'}])
-    assert not verify_claims([c],[ev],semantic,quantity_spelling_version=7)['accepted']
+    assert not verify_claims([c],[ev],semantic,quantity_spelling_version=version)['accepted']
     semantic.assert_called_once();assert (ev,c)==before
 
 
@@ -32,10 +33,11 @@ def test_complete_prose_list_reaches_semantic_check_not_automatic_acceptance(lab
     '三个阶段：甲；乙；丙。','三维特征：甲；乙；丙。',
     '论文三个层：甲；乙；丙。','三个要点分别改变了表示。',
 ])
-def test_nonlist_mismatched_empirical_and_exact_counts_remain_checked(text):
+@pytest.mark.parametrize('version',[7,8])
+def test_nonlist_mismatched_empirical_and_exact_counts_remain_checked(text,version):
     assert without_enumeration_labels(text)==text
     ev,c=sample(text)
-    assert precheck_claims([c],[ev],quantity_spelling_version=7)['rejected'][0]['reason']=='numeric_mismatch'
+    assert precheck_claims([c],[ev],quantity_spelling_version=version)['rejected'][0]['reason']=='numeric_mismatch'
 
 
 def test_measured_number_inside_an_editorial_list_is_not_removed():
@@ -45,8 +47,21 @@ def test_measured_number_inside_an_editorial_list_is_not_removed():
 
 def test_undeclared_or_noninteger_policy_cannot_enable_exemption():
     ev,c=sample()
-    for version in (None,True,'7',0,1,2,3,4,5,6,8):
+    for version in (None,True,'7',0,1,2,3,4,5,6,9):
         # Version0 does not parse Chinese word counts; only assert unchanged
         # spelling behavior for policies that do, with Arabic label for all.
         c['text']=c['text'].replace('三个','3个')
         assert precheck_claims([c],[ev],quantity_spelling_version=version)['rejected']
+
+
+@pytest.mark.parametrize('parenthetical',['（VQ）','(VQ)','（位置、尺度、旋转）','[特征]'])
+def test_balanced_explanatory_brackets_only_in_version8(parenthetical):
+    ev,c=sample('三个主要环节分别改变：剪枝减少数量；蒸馏压缩特征；量化'+parenthetical+'降低精度。')
+    assert precheck_claims([c],[ev],quantity_spelling_version=7)['rejected']
+    assert not precheck_claims([c],[ev],quantity_spelling_version=8)['rejected']
+
+
+@pytest.mark.parametrize('body',['甲（说明；补充）；乙；丙','甲（说明）；乙；丙）','甲（说明；乙；丙','甲（说明）；乙','甲（说明）；乙；丙；丁','甲（3%）；乙；丙'])
+def test_nested_malformed_mismatched_or_measured_brackets_still_fail(body):
+    ev,c=sample('三个要点：'+body+'。')
+    assert precheck_claims([c],[ev],quantity_spelling_version=8)['rejected']

@@ -14,7 +14,21 @@ _EXACT = re.compile(r'只有|仅|唯一|恰好|正好|总共|共|至少|至多|�
 _VALUES = dict(zip('二两三四五六七八九十', (2,2,3,4,5,6,7,8,9,10)))
 
 
-def without_enumeration_labels(text):
+def _balanced_items(body):
+    pairs={'(':')','（':'）','[':']','【':'】','{':'}'}
+    stack=[];items=[];start=0
+    for i,char in enumerate(body):
+        if char in pairs:
+            stack.append(pairs[char])
+        elif char in pairs.values():
+            if not stack or stack.pop()!=char:return None
+        elif char in ';；':
+            if stack:return None  # Nested lists remain ambiguous.
+            items.append(body[start:i]);start=i+1
+    return None if stack else [*items,body[start:]]
+
+
+def without_enumeration_labels(text,*,balanced_parentheses=False):
     """Ignore a matching list label, never a measured count or explicit total.
 
     Require a colon and exactly N nonempty semicolon-separated items in one
@@ -28,9 +42,13 @@ def without_enumeration_labels(text):
             continue
         body=re.split(r'[。！？\n]',text[match.end():],maxsplit=1)[0]
         # Conservative: don't treat nested punctuation as sibling items.
-        if any(c in body for c in '()（）[]【】{}'):
-            continue
-        items=re.split(r'[；;]',body)
+        if balanced_parentheses:
+            items=_balanced_items(body)
+            if items is None:continue
+        else:
+            if any(c in body for c in '()（）[]【】{}'):
+                continue
+            items=re.split(r'[；;]',body)
         word=match['number']
         count=int(word) if word.isdigit() else {'十一':11,'十二':12}.get(word,_VALUES.get(word))
         if (len(items)!=count or any(not item.strip() for item in items)
