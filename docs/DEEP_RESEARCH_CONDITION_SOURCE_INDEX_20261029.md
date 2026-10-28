@@ -9,3 +9,7 @@
 初版索引因源材料全部带列映射未验证标记而为空，离线回放明确暴露该问题。现版保留候选并携带 columnMappingUnverified=true，不能当作几何或事实通过；没有修改原表格事实检查规则。最终固定源码64文件1108项关联回归通过（pytest98.12秒、外部101.875秒），0模型调用。首轮夹具直接比较转义前的换行引文，已改为核对JSON中的原文字符串；该夹具修正没有改动来源内容。
 
 实际输入回放的前三个核查请求逐字匹配保存输入，新修订请求23995字节，在原24000上限内。必要来源E3/E5的引文、上下文及元数据逐字不变；原拟合器为容纳索引省去可选E1上下文（contextOmitted=true）及可选E9条目，均不属于原条目的必要引用，权限随可见材料同步缩小。索引显示c2可查看E4/E5，E5含原始基线与Ours行及两个数据组，不会自动将该候选写为引用。没有新增模型调用／生产变更／内容批准。证据：deep-research-evidence/condition-index-329-actual-input-replay-20261029.json、condition-index-329-confirmed-regression-20261029.json。
+
+`.329` 从b0ce6fe5加载，原账本、旧payload、五个任务及完整索引保持。一次真实核查修订4次调用全部结算，共20783 Token，无未知、重试和生产发布；0接受、2拒绝，修订后共享长度精简无有效结果，内容仍未通过。导航虽已列出c2可用主表E5，修订仍沿用E3相关上下文。
+
+进一步核对发现旧 answer_point_intent.repair_guidance 同时要求保留各点意图，并禁止“move another point's citations to satisfy it”。该表述与当前每条目标的候选白名单允许同源材料共享存在冲突。应明确允许分别引用本条白名单中的同一材料，同时禁止借用另一条已通过的结论或把其引用视为本条支持；不能自动补引用。证据：deep-research-evidence/condition-index-329-real-stage-20261029.json。
