@@ -11,7 +11,7 @@ from services.deep_research.runtime import research_model_options
 def test_only_new_short_factual_answers_choose_reasoning(kind):
     record={'factualReasoningContractVersion':1}
     assert request_options(record,'给出判断，300字以内。',kind)=={OPTION:True}
-    for value in [None,True,False,0,8,'1']:
+    for value in [None,True,False,0,9,'1']:
         assert request_options({'factualReasoningContractVersion':value},'300字以内',kind)=={}
     for question in ['详细说明','301字以内','0字以内']:
         assert request_options(record,question,kind)=={}
@@ -79,7 +79,7 @@ def test_policy_is_server_owned_immutable_and_not_client_selected(tmp_path,repla
     try:
         p,_=facade.create({'workspaceTaskId':'t','operationKey':'k','question':'200字以内',
             'deferStart':True,'factualReasoningContractVersion':replacement},start_async=False)
-        assert p['factualReasoningContractVersion']==7
+        assert p['factualReasoningContractVersion']==8
         with pytest.raises(ValueError,match='Immutable'):
             repo.update_run(p['runId'],lambda r:{**r,'factualReasoningContractVersion':replacement})
     finally: facade.shutdown()

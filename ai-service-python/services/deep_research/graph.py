@@ -1594,18 +1594,21 @@ space with unsupported global absence or incidental iteration/performance values
             parsed['claims'] = [materialize_execution_claim({**claim, 'designContractVersion': 2})
                                 if isinstance(claim, dict) else claim for claim in parsed['claims']]
         from services.deep_research.scope_compaction import enabled as scope_compaction_enabled, compact as compact_scope
-        from services.deep_research.factual_reasoning import compaction_options
+        from services.deep_research.factual_reasoning import compaction_options,fixed_scope_compaction
         compact_options=compaction_options(record,question,output_kind)
         compact_invoke = lambda prompt: llm_invoke(run_id, "synthesize_compact", prompt,
                 {"max_tokens": 2000, "temperature": 0.0,**compact_options})
+        direct_compact_invoke=lambda prompt:llm_invoke(run_id,'synthesize_compact',prompt,{'max_tokens':2000,'temperature':0.0})
         if scope_expression_audit and scope_compaction_enabled(record):
             parsed, scope_expression_audit = compact_scope(parsed, scope_expression_audit, question,
                 compact_invoke, _safe_parse_json, output_kind=output_kind, evidence=evidence,
                 presentation_version=record.get('reportPresentationContractVersion',0),
                 **({'expression_version':3} if record.get('scopeExpressionContractVersion')==3 else {}),
+                **({'fixed_scope_first':True,'invoke_fixed':direct_compact_invoke} if fixed_scope_compaction(record,question,output_kind) else {}),
                 **({'measured_guidance':True} if compact_options else {}))
         else:
-            parsed = compact_answer(parsed, question, compact_invoke, _safe_parse_json,
+            parsed = compact_answer(parsed, question,
+                direct_compact_invoke if fixed_scope_compaction(record,question,output_kind) else compact_invoke, _safe_parse_json,
                 output_kind=output_kind, evidence=evidence,
                 preserve_claims=bool(point_constraint and point_constraint['mode'] == 'exact'),
                 presentation_version=record.get('reportPresentationContractVersion',0),
@@ -1708,6 +1711,7 @@ def make_verify_node(
         
         from services.deep_research.final_coverage import audit_final_answer
         from services.deep_research.request_coverage import enabled as request_coverage_enabled
+        from services.deep_research.factual_reasoning import fixed_scope_compaction
         from services.deep_research.claim_check import enabled as claim_check_enabled
         from services.deep_research.request_dimensions import enabled as dimensions_enabled
         from services.deep_research.comparison_reasoning import enabled as comparison_enabled
@@ -1882,7 +1886,7 @@ def make_verify_node(
                         def checkpoint_compaction(value):
                             repo_update(run_id, lambda r: {**r, 'state': {**r.get('state', {}),
                                 'repairCompaction': value}}, expected_revision=None)
-                        def invoke_compaction(prompt):
+                        def invoke_compaction(prompt,*,direct=False):
                             # Same normal pool, tracked request identity and absolute
                             # deadline. Reserve enough time to check the new wording.
                             from datetime import datetime, UTC
@@ -1895,13 +1899,18 @@ def make_verify_node(
                                     raise BudgetExhaustedError('repairTimeSeconds',maximum-minimum,elapsed)
                             if len(prompt.encode('utf8')) > 32000:
                                 raise BudgetExhaustedError('repairCompactionPromptBytes',32000,len(prompt.encode('utf8')))
-                            return llm_invoke(run_id,'synthesize_compact',prompt,{'max_tokens':2000,'temperature':0.0})
+                            from services.deep_research.factual_reasoning import compaction_options,fixed_scope_compaction
+                            options=(compaction_options(record,effective_question(record),saved.get('outputKind',''))
+                                if not direct and fixed_scope_compaction(record,effective_question(record),saved.get('outputKind','')) else {})
+                            return llm_invoke(run_id,'synthesize_compact',prompt,{'max_tokens':2000,'temperature':0.0,**options})
                         revised = compact_repairs(repair_report,revised,repair_targets.get('accepted',[]),
                             current.get('state',{}).get('repairBatchState'),effective_question(record),
                             invoke_compaction,_safe_parse_json,evidence=evidence,output_kind=saved.get('outputKind',''),
                             presentation_version=record.get('reportPresentationContractVersion',0),
                             saved=current.get('state',{}).get('repairCompaction'),checkpoint=checkpoint_compaction,
-                            **({'expression_version':3} if record.get('scopeExpressionContractVersion')==3 else {}))
+                            **({'expression_version':3} if record.get('scopeExpressionContractVersion')==3 else {}),
+                            **({'fixed_scope_first':True,'invoke_fixed':lambda prompt:invoke_compaction(prompt,direct=True)}
+                                if fixed_scope_compaction(record,effective_question(record),saved.get('outputKind','')) else {}))
                     repo_update(run_id, lambda r: {**r, 'state': {**r.get('state', {}),
                         'repairDraft': revised}}, expected_revision=None)
                 if revised:

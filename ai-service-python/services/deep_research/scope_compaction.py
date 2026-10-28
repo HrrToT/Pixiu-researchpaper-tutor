@@ -14,7 +14,7 @@ def enabled(record):
 
 
 def compact(report, audits, question, invoke, parse, *, output_kind='', evidence=(), presentation_version=0,
-            fixed_claims=(),measured_guidance=False,expression_version=2):
+            fixed_claims=(),measured_guidance=False,expression_version=2,fixed_scope_first=False,invoke_fixed=None):
     """Return revised report and matching unchecked ASTs, or reject atomically.
 
     All existing points, kinds, citations, obligations and table bindings remain.
@@ -22,6 +22,8 @@ def compact(report, audits, question, invoke, parse, *, output_kind='', evidence
     Semantics are not certified here: the normal verifier checks the new wording.
     """
     if type(measured_guidance) is not bool:raise ValueError('Invalid compaction measurement policy')
+    if type(fixed_scope_first) is not bool or invoke_fixed is not None and not callable(invoke_fixed):
+        raise ValueError('Invalid fixed scope compaction policy')
     if type(expression_version) is not int or expression_version not in (2,3):
         raise ValueError('Invalid compaction expression version')
     if (not isinstance(report,dict) or not isinstance(report.get('claims'),list)
@@ -56,6 +58,29 @@ def compact(report, audits, question, invoke, parse, *, output_kind='', evidence
     def count(value):
         return visible_count({**value,'claims':[*fixed,*value['claims']]},limit,output_kind,evidence,presentation_version)
     if not limit or count(source) <= limit: return source, deepcopy(audits)
+    if fixed_scope_first and len(expressions)<len(original):
+        preview={**source,'claims':[c if c['claimId'] in expressions else {**c,'text':'','conditions':{}}
+            for c in source['claims']]}
+        if count(preview)+len(original)-len(expressions)<=limit:
+            from services.deep_research.answer_constraints import compact_answer
+            def parse_edit(raw):
+                value=parse(raw)
+                if (not isinstance(value,dict) or set(value)!={'claims'} or not isinstance(value['claims'],list)
+                        or any(not isinstance(c,dict) or set(c)!={'claimId','text','conditions'}
+                            or not isinstance(c['claimId'],str) or not c['claimId'].strip()
+                            or not isinstance(c['text'],str) or not isinstance(c['conditions'],dict)
+                            for c in value['claims'])):
+                    return None
+                return value
+            full={**source,'claims':[*fixed,*source['claims']]}
+            edited=compact_answer(full,question,invoke_fixed or invoke,parse_edit,output_kind=output_kind,
+                evidence=evidence,preserve_claims=True,presentation_version=presentation_version,
+                fixed_claim_ids=[*expressions,*[c['claimId'] for c in fixed]])
+            if edited is None:return None,audits
+            result={**source,'claims':[c for c in edited['claims'] if c['claimId'] in original]}
+            if (any(not isinstance(c.get('text'),str) or not c['text'].strip() for c in result['claims'])
+                    or count(result)>limit):return None,audits
+            return result,[{**deepcopy(a),'verification':'unchecked'} for a in audits]
     overhead = count({**source,'claims':[{**c,'text':'','conditions':{}} for c in source['claims']]})
     available = limit - overhead
     if available <= 0: return None, audits
