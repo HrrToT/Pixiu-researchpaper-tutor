@@ -4,7 +4,7 @@ import re
 
 def enabled(record):
     return (type(record.get('tableIdentityContextContractVersion')) is int
-            and record['tableIdentityContextContractVersion']==1)
+            and record['tableIdentityContextContractVersion'] in (1,2))
 
 
 GUIDANCE = '''
@@ -69,3 +69,10 @@ def include_context(rows,candidates,pdf_id,limit):
         if not removable:return rows
         result.pop(removable[-1])
     return result+additions
+
+
+def guidance(version=1):
+    if type(version) is int and version==2:
+        from services.deep_research.table_note_index import GUIDANCE as note_guidance
+        return note_guidance
+    return GUIDANCE

@@ -1397,6 +1397,11 @@ space with unsupported global absence or incidental iteration/performance values
                               for eid,context in bundle['requiredContextByEvidenceId'].items()}}
                              if bundle.get('requiredContextByEvidenceId') else {})}
                           for bundle in premise_bundles]
+            note_navigation=(type(record.get('tableIdentityContextContractVersion')) is int
+                and record['tableIdentityContextContractVersion']==2 and output_kind in {'claim_verification','paper_comparison'})
+            note_originals={e['evidenceId']:e for e in selected_candidates} if note_navigation else {}
+            note_owners={alias:(note_originals[eid].get('sourceWorkId'),note_originals[eid].get('sourceVersionId')) for alias,eid in evidence_aliases.items()} if note_navigation else {}
+            note_literal_ids={alias for alias,eid in evidence_aliases.items() if note_originals[eid].get('verification',{}).get('literal')=='passed'} if note_navigation else set()
             def render_premises(rows):
                 tids={row['tableDataRef'] for row in rows if row.get('tableDataRef')}
                 packet=rows
@@ -1404,9 +1409,14 @@ space with unsupported global absence or incidental iteration/performance values
                     from services.deep_research.evidence_wire import encode,decode
                     packet=encode(rows)
                     if decode(packet)!=rows:raise ValueError('evidence_wire_mismatch')
-                return template.replace(evidence_marker,json.dumps(packet,ensure_ascii=False,separators=(',',':')),1).replace(
+                rendered=template.replace(evidence_marker,json.dumps(packet,ensure_ascii=False,separators=(',',':')),1).replace(
                     table_marker,json.dumps({key:table_registry[key] for key in table_registry if key in tids},
                         ensure_ascii=False,separators=(',',':')),1)
+                if note_navigation:
+                    from services.deep_research.table_note_index import build as note_index
+                    full_rows=[{**r,**({'tableData':table_registry[r['tableDataRef']]['tableData']} if r.get('tableDataRef') in table_registry and not r.get('tableDataOmitted') else {})} for r in rows]
+                    rendered+='\nTable-note candidates (unverified navigation):\n'+json.dumps(note_index(full_rows,note_owners,literal_ids=note_literal_ids),ensure_ascii=False,separators=(',',':'))
+                return rendered
             numerical_request=bool(re.search(r'数值|具体值|是多少|多少|核(?:查|对)|\b(?:values?|numbers?|how many|how much|verify)\b',question,re.I))
             qualitative_comparison=bool(re.search(r'为何|为什么|可比|同条件|\b(?:why|comparab\w*|alignment)\b',question,re.I))
             from services.deep_research.experiment_outline_encoding import allocation_enabled,encode as encode_outline
@@ -1846,7 +1856,7 @@ def make_verify_node(
                         current_budget=lambda: repo_update(run_id, lambda r: r, expected_revision=None).get('budget', {}),
                         invoke_request=invoke_repair,
                         **({'defer_length_filter':True} if repair_compaction_enabled(record) else {}),
-                        **({'table_identity_context':True} if table_identity_enabled(record) else {}),
+                        **({'table_identity_context':2 if record.get('tableIdentityContextContractVersion')==2 and saved.get('outputKind')!='experiment_design' else True} if table_identity_enabled(record) else {}),
                         **({'claim_check':record['claimCheckContractVersion'] if record['claimCheckContractVersion'] in (4,5,6,7,8,9) else True} if claim_check_enabled(record) else {}),
                         **({'required_scope_ids':[a['claimId'] for a in saved.get('synthesisScopeExpressionAudit',[])
                             if isinstance(a,dict) and isinstance(a.get('expression'),dict) and a.get('claimId') in {c.get('claimId') for c in repair_report.get('claims',[])}]}

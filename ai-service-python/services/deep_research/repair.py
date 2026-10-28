@@ -454,8 +454,8 @@ in the paper. Maintain consistency with accepted definitions and complete requir
         from services.deep_research.answer_point_intent import repair_guidance
         prompt += repair_guidance(answer_intents, originals,**({'clarify_shared_sources':True} if type(claim_check) is int and claim_check in (8,9) else {}))
     if table_identity_context:
-        from services.deep_research.table_identity_context import GUIDANCE as TABLE_IDENTITY_GUIDANCE
-        prompt += '\n'+TABLE_IDENTITY_GUIDANCE
+        from services.deep_research.table_identity_context import guidance as table_identity_guidance
+        prompt += '\n'+table_identity_guidance(2 if type(table_identity_context) is int and table_identity_context==2 else 1)
     if claim_check:
         from services.deep_research.claim_check import GUIDANCE as CLAIM_CHECK_GUIDANCE, ASSESSMENT_GUIDANCE
         prompt += '\n'+(ASSESSMENT_GUIDANCE if type(claim_check) is int and claim_check in (4,5,6,7,8,9) else CLAIM_CHECK_GUIDANCE)
@@ -500,6 +500,7 @@ If a supported revision is not possible, omit that target rather than bypass sco
         from services.deep_research.condition_source_index import GUIDANCE as CONDITION_GUIDANCE
         condition_marker='__CONDITION_SOURCES_'+uuid4().hex+'__'
         prompt+='\n'+CONDITION_GUIDANCE+'\nCondition source index (navigation only):\n'+condition_marker
+    note_navigation=type(table_identity_context) is int and table_identity_context==2 and factual_redraft_eligible(report)
     template = prompt
     from services.deep_research.experiment_edits import columnar
     def render(selected_rows):
@@ -518,6 +519,11 @@ If a supported revision is not possible, omit that target rather than bypass sco
             from services.deep_research.condition_source_index import build as condition_index
             literal_ids={short_ids[e['evidenceId']] for e in selected if e.get('verification',{}).get('literal')=='passed'}
             result=result.replace(condition_marker,json.dumps(condition_index(selected_rows,permissions,literal_ids=literal_ids),ensure_ascii=False,separators=(',',':')),1)
+        if note_navigation:
+            from services.deep_research.table_note_index import build as note_index
+            owners={short_ids[e['evidenceId']]:(e.get('sourceWorkId'),e.get('sourceVersionId')) for e in selected}
+            literal_ids={short_ids[e['evidenceId']] for e in selected if e.get('verification',{}).get('literal')=='passed'}
+            result+='\nTable-note candidates (unverified navigation):\n'+json.dumps(note_index(selected_rows,owners,literal_ids=literal_ids,permissions=permissions),ensure_ascii=False,separators=(',',':'))
         return result
     if max_prompt_bytes <= 0:
         raise BudgetExhaustedError('repairPromptBytes', max_prompt_bytes, 1)
@@ -703,7 +709,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
         raise ValueError('Invalid deferred repair length policy')
     if type(claim_check) is not bool and not (type(claim_check) is int and claim_check in (4,5,6,7,8,9)):
         raise ValueError('Invalid claim check policy')
-    if type(table_identity_context) is not bool:
+    if type(table_identity_context) is not bool and not (type(table_identity_context) is int and table_identity_context==2):
         raise ValueError('Invalid table identity context policy')
 
     if (type(scheduling_version) is not int or scheduling_version not in (0,1,2)
@@ -735,7 +741,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
     identity = digest({**({'compactLayoutVersion':1} if compact_layout else {}),'report': report, 'verification': verification,
                        **({'requiredScopeIds':list(required_scope_ids)} if required_scope_ids else {}),
                        **({'claimCheckContractVersion':claim_check if type(claim_check) is int and claim_check in (4,5,6,7,8,9) else 1} if claim_check else {}),
-                       **({'tableIdentityContextContractVersion':1} if table_identity_context else {}),
+                       **({'tableIdentityContextContractVersion':2 if type(table_identity_context) is int and table_identity_context==2 else 1} if table_identity_context else {}),
                        **({'deferLengthFilterVersion':1} if defer_length_filter else {}),
                        **({'scopeExpressionContractVersion':scope_expression if type(scope_expression) is int and scope_expression in (2,3,4) else 1} if scope_expression else {}),
                        **({'answerPointIntentContractVersion':1,'answerIntents':answer_intents} if answer_intents is not None else {}),
@@ -776,7 +782,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
             **({'answer_intents':answer_intents} if answer_intents is not None else {}),
             **({'scope_expression':scope_expression} if scope_expression else {}),
             **({'required_scope_ids':[key for key in required_scope_ids if key in ids]} if required_scope_ids else {}),
-            **({'table_identity_context':True} if table_identity_context else {}),
+            **({'table_identity_context':table_identity_context} if table_identity_context else {}),
             **({'claim_check':claim_check} if claim_check else {}),
             comparison_reasoning=comparison_reasoning,question_priority=question_priority,concise_factual=concise_factual,
             factual_scope=factual_scope,declared_table_refs=declared_table_refs,comparison_methodology=comparison_methodology,

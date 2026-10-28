@@ -82,7 +82,7 @@ def test_generation_and_compact_repair_both_keep_method_identity_guidance():
     assert GUIDANCE not in prepare()['prompt']
 
 
-@pytest.mark.parametrize('replacement',[None,True,0,'1',2])
+@pytest.mark.parametrize('replacement',[None,True,0,'1',1,3])
 def test_identity_policy_is_frozen_server_owned_and_absent_from_old_runs(tmp_path,replacement):
     from services.deep_research.facade import ResearchFacade
     from services.deep_research.repository import DeepResearchRepository
@@ -91,7 +91,7 @@ def test_identity_policy_is_frozen_server_owned_and_absent_from_old_runs(tmp_pat
     try:
         run,_=facade.create({'workspaceTaskId':'t','operationKey':'op','question':'核查','deferStart':True,
             'tableIdentityContextContractVersion':replacement},start_async=False)
-        assert enabled(run)
+        assert enabled(run) and run['tableIdentityContextContractVersion']==2
         with pytest.raises(ValueError,match='Immutable'):
             repo.update_run(run['runId'],lambda r:{**r,'tableIdentityContextContractVersion':replacement})
         legacy=deepcopy(run);legacy.update(runId='legacy',idempotencyKey='legacy');legacy.pop('tableIdentityContextContractVersion')
