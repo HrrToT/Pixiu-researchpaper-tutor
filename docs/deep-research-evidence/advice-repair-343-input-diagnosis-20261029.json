@@ -1,0 +1,25 @@
+{
+  "sourceCase": "S1G-v4",
+  "sourcePayloadSha256": "5e8a157c367deb6e6f1813a0d1913cf7fd3f1cc17593a5da2d3ac800b38ea909",
+  "actualVerifyGraphRepairPreparationReplayed": true,
+  "replayedVerificationAndCoverageAreArchivedFixtures": true,
+  "nodes": [
+    "verify_answer_coverage",
+    "repair_claims"
+  ],
+  "currentRepairTargetKinds": {
+    "c1": "reported",
+    "c2": "proposal"
+  },
+  "experimentSettingsInstructionPresentForReadingAdvice": true,
+  "compactFactualRepairNotSelected": true,
+  "rejectedTextWithInternalAliasesRetainedInGenerationView": true,
+  "promptBytes": 23943,
+  "maxInputBytes": 24000,
+  "providerCalls": 0,
+  "mockRepairResult": "[]",
+  "causalityBoundary": "Confirms actual prompt-path mismatch, not sole cause of the provider repeating its draft. No advice/fact is approved.",
+  "productionPublish": false,
+  "scientificApproval": false,
+  "independentCredit": 0
+}
