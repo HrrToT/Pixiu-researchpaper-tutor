@@ -7,3 +7,5 @@
 这只解决显示语言差异，不批准论文结论。实际保存的 c1 原文和证据不变时，旧本地检查拒绝、新本地检查通过；语义夹具返回 unresolved 时，新版本仍拒绝。错误数值、错误单元格、错误方法、缺星号、错数据集、缺聚合层级和无关列名均继续拒绝。67 项定向测试通过，实际回复回放无模型调用与生产写入，证据：deep-research-evidence/metric-translation-327-actual-replay-20261029.json。
 
 最终固定源码的 62 文件、1,078 项关联回归通过（pytest 90.59 秒、外部 94.75 秒），全部源码及测试哈希前后稳定，无模型调用。证据：deep-research-evidence/metric-translation-327-final-regression-20261029.json。
+
+`.327` 已从 821d6f97 加载，7,465 条账本、全部旧 payload、五个任务和完整索引摘要保持；0 活跃、13 旧暂停，RAG/GROBID 正常、前端 200。加载证据：deep-research-evidence/runtime-load-metric-translation-327-20261029.json。本版本尚无新增真实模型质量结果，不能把原 .326 失败案例升级为通过。
