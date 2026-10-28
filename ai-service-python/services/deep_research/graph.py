@@ -1133,7 +1133,7 @@ def make_synthesize_node(
             from services.deep_research.selection import proposal_evidence_order
             candidates = proposal_evidence_order(candidates, question)
         from services.deep_research.claim_check import enabled as claim_check_enabled,prioritize_results
-        if premise_mode and claim_check_enabled(record) and record['claimCheckContractVersion'] in (2,3,4,5,6,7,8):
+        if premise_mode and claim_check_enabled(record) and record['claimCheckContractVersion'] in (2,3,4,5,6,7,8,9):
             candidates,premise_bundles=prioritize_results(candidates,premise_bundles,question)
         selected_candidates=candidates if premise_mode else balanced_sample(candidates,
             lambda item:(item.get('sourceWorkId',''),tuple(item.get('obligationIds',[]))),20)
@@ -1837,10 +1837,10 @@ def make_verify_node(
                         invoke_request=invoke_repair,
                         **({'defer_length_filter':True} if repair_compaction_enabled(record) else {}),
                         **({'table_identity_context':True} if table_identity_enabled(record) else {}),
-                        **({'claim_check':record['claimCheckContractVersion'] if record['claimCheckContractVersion'] in (4,5,6,7,8) else True} if claim_check_enabled(record) else {}),
+                        **({'claim_check':record['claimCheckContractVersion'] if record['claimCheckContractVersion'] in (4,5,6,7,8,9) else True} if claim_check_enabled(record) else {}),
                         **({'required_scope_ids':[a['claimId'] for a in saved.get('synthesisScopeExpressionAudit',[])
                             if isinstance(a,dict) and isinstance(a.get('expression'),dict) and a.get('claimId') in {c.get('claimId') for c in repair_report.get('claims',[])}]}
-                            if claim_check_enabled(record) and record['claimCheckContractVersion'] in (5,6,7,8) else {}),
+                            if claim_check_enabled(record) and record['claimCheckContractVersion'] in (5,6,7,8,9) else {}),
                         **({'compact_source_repair':True} if compact_repair else {}),
                         **({'shared_experiment_schema':True} if shared_experiment_repair(record) else {}),
                         **({'experimental_edits':True} if edit_repair else {}),
