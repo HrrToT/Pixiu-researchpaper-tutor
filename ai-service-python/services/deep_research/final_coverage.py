@@ -131,13 +131,16 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
         if request_contract:
             from services.deep_research.request_coverage import contract, prompt as request_prompt
             fixed_requirements=contract(audit_plan,question,whole_question_id=identity,
-                literal_request_dimensions=type(request_contract) is int and request_contract==2)
+                literal_request_dimensions=type(request_contract) is int and request_contract in (2,3))
             prompt=request_prompt(question,fixed_requirements,wire_claims,display_metadata,evidence_marker,FINAL_COVERAGE_POLICY)
             if literal_dimensions:
                 prompt+='\n'+FINAL_DIMENSION_POLICY
         if claim_check:
             from services.deep_research.claim_check import AUDIT_GUIDANCE
             prompt+='\n'+AUDIT_GUIDANCE
+        if type(request_contract) is int and request_contract==3:
+            from services.deep_research.request_coverage import focus_answer
+            prompt=focus_answer(prompt,question,fixed_requirements,wire_claims,display_metadata)
         template = prompt
         try:
             output_tokens = coverage_output_tokens(audit_plan, claims)
@@ -249,7 +252,7 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
             'completionContractDigest': completion_contract_digest(plan, claims),
             'displayMetadataDigest': display_metadata_digest(claims, evidence),
             'gaps': gaps, 'invalidAspectObligations': invalid_aspects,
-            **({'requestCoverageContractVersion':2 if type(request_contract) is int and request_contract==2 else 1} if request_contract else {}),
+            **({'requestCoverageContractVersion':request_contract if type(request_contract) is int and request_contract in (2,3) else 1} if request_contract else {}),
             'wholeQuestionId': identity, 'nonblockingResearch': nonblocking,
             'criterionGaps': criterion_gaps,
             'invalidCriterionObligations': invalid_criteria,

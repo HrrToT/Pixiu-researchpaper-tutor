@@ -165,7 +165,7 @@ def test_version_two_original_dimension_gaps_reach_repair_alongside_plan_gaps():
     assert '成立条件' not in json.dumps(legacy_repair,ensure_ascii=False)
 
 
-@pytest.mark.parametrize('replacement',[None,0,True,'1',3])
+@pytest.mark.parametrize('replacement',[None,0,True,'1',4])
 def test_new_policy_is_server_owned_immutable_and_old_runs_remain_disabled(tmp_path,replacement):
     from services.deep_research.facade import ResearchFacade
     from services.deep_research.repository import DeepResearchRepository
@@ -174,6 +174,7 @@ def test_new_policy_is_server_owned_immutable_and_old_runs_remain_disabled(tmp_p
         run,_=facade.create({'workspaceTaskId':'t','operationKey':'op','question':QUESTION,'deferStart':True,
             'requestCoverageContractVersion':replacement},start_async=False)
         run['state']['outputKind']='claim_verification';assert enabled(run)
+        assert run['requestCoverageContractVersion']==3
         with pytest.raises(ValueError,match='Immutable'):
             repo.update_run(run['runId'],lambda r:{**r,'requestCoverageContractVersion':replacement})
         run.pop('requestCoverageContractVersion');assert not enabled(run)

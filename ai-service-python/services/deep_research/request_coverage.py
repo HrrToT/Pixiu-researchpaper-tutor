@@ -5,7 +5,7 @@ import json
 
 def enabled(record):
     return (type(record.get('requestCoverageContractVersion')) is int
-            and record['requestCoverageContractVersion'] in (1,2)
+            and record['requestCoverageContractVersion'] in (1,2,3)
             and record.get('state',{}).get('outputKind') in
             ('claim_verification','paper_comparison','direction_survey','research_entry'))
 
@@ -119,3 +119,31 @@ def normalize(value,requirements):
                 'reason':'此缺口由固定检查项的未满足状态汇总；模型说明不作为新增要求或论文事实。'}
         out.append(result)
     return out
+
+
+DECISION_FOCUS = """
+Decide coverage from the actual accepted answer below, read jointly across its points.
+An explicit supported/partly supported/not supported/cannot establish assessment is a
+judgement; do not demand an additional synonymous verdict label after it. Its reasoning
+and relevant conditions still have to answer the fixed check. Words like 'supports' alone
+are not sufficient if the assessed proposition or evidence-bounded explanation is absent.
+For an unverified-scope request, identify which stronger inference the answer bounds and
+whether that limit is relevant; do not require an exhaustive inventory of possible settings.
+Partial/missing needs a concrete unanswered part of THAT fixed requirement. Do not contradict
+an explicit answer sentence by saying it is absent, or add an experiment, threshold or
+extra detail just because it occurs in the source. Brevity does not waive necessary content.
+These rules grant no factual approval and no automatic coverage from keywords or IDs.
+"""
+
+
+def focus_answer(prompt_text, question, requirements, claims, metadata):
+    """Move exact decision inputs after evidence and policies, without truncation."""
+    heading = 'Audit the FINAL ACCEPTED ANSWER against the FIXED REQUEST CHECKLIST.\n'
+    payload = (f'Question: {question}\n'
+        + 'Fixed checks (requirements, never paper facts): '+json.dumps(requirements,ensure_ascii=False,separators=(',',':'))+'\n'
+        + 'Accepted final claims: '+json.dumps(claims,ensure_ascii=False,separators=(',',':'))+'\n'
+        + 'Server-rendered answer metadata: '+json.dumps(metadata,ensure_ascii=False,separators=(',',':'))+'\n')
+    prefix=heading+payload
+    if not prompt_text.startswith(prefix):
+        raise ValueError('Coverage decision inputs do not match their serialized prefix')
+    return heading+prompt_text[len(prefix):]+DECISION_FOCUS+'\nDecision inputs (fixed request and complete accepted answer):\n'+payload
