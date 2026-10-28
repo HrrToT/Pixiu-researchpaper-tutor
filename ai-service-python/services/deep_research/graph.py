@@ -1830,7 +1830,9 @@ def make_verify_node(
                             **({'repairBatchStop': batch_state['stop']} if batch_state.get('stop') else {})}}, expected_revision=None)
                     from services.deep_research.factual_repair import enabled as compact_repair_enabled
                     from services.deep_research.repair import factual_redraft_eligible
-                    compact_repair=compact_repair_enabled(record) and factual_redraft_eligible(repair_report)
+                    from services.deep_research.general_advice import repair_enabled as advice_repair_enabled,repair_eligible as advice_repair_eligible
+                    advice_repair=advice_repair_enabled(record) and advice_repair_eligible(repair_report)
+                    compact_repair=compact_repair_enabled(record) and (factual_redraft_eligible(repair_report) or advice_repair)
                     from services.deep_research.experiment_repair import enabled as shared_experiment_repair
                     from services.deep_research.experiment_edits import can_edit,OUTPUT_TOKENS as EDIT_OUTPUT_TOKENS
                     edit_repair=(shared_experiment_repair(record)
@@ -1862,6 +1864,7 @@ def make_verify_node(
                             if isinstance(a,dict) and isinstance(a.get('expression'),dict) and a.get('claimId') in {c.get('claimId') for c in repair_report.get('claims',[])}]}
                             if claim_check_enabled(record) and record['claimCheckContractVersion'] in (5,6,7,8,9) else {}),
                         **({'compact_source_repair':True} if compact_repair else {}),
+                        **({'ordinary_advice':True} if advice_repair else {}),
                         **({'shared_experiment_schema':True} if shared_experiment_repair(record) else {}),
                         **({'experimental_edits':True} if edit_repair else {}),
                         **({'experimental_diagnostics':True} if edit_repair and record['experimentRepairContractVersion'] in (3,4,5,6) else {}),

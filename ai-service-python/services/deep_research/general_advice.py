@@ -19,6 +19,35 @@ def enabled(record):
             {'direction_survey','paper_comparison','claim_verification','research_entry'})
 
 
+def repair_enabled(record):
+    return (enabled(record) and type(record.get('recommendationRepairContractVersion')) is int
+        and record['recommendationRepairContractVersion']==1)
+
+
+def repair_eligible(report):
+    from services.deep_research.repair import factual_redraft_eligible
+    claims=report.get('claims',[])
+    return bool(claims) and any(eligible(c) for c in claims) and all(
+        eligible(c) or factual_redraft_eligible({'claims':[c]}) for c in claims)
+
+
+REPAIR_GUIDANCE='''
+Ordinary recommendation targets keep their original proposal/suggestion kind.
+Rebuild their reading/navigation advice for the actual user goal, not an experiment.
+Do not add seeds, splits, interventions, training budgets or experimental guarantees.
+Check each embedded paper fact using its OWN permitted original sources; a recommended
+reading order is your advice, never an order the authors necessarily prescribed.
+Resolve abstract/fulltext and section identities from the actual source metadata and
+context. State the actual access level when requested. Reading an abstract first does
+not mean only an abstract was acquired. Do not call a method/intro excerpt an abstract.
+Internal E/P/Q labels belong only in machine reference fields, never published prose.
+Feedback can quote FORMER aliases. Use current own original passages to rebuild the
+whole target; do not copy rejected text, merely remove its labels or approve the remainder.
+Keep IDs, kinds, source permissions, requested scope and shared length limit. Every
+revision still requires normal factual, advice-purpose, scope and coverage checks.
+'''
+
+
 def prompt(claims_text, question, evidence_marker):
     return f'''Review the actual targets as NONEXPERIMENTAL recommendations.
 Question (goal, never evidence): {json.dumps(question,ensure_ascii=False)}

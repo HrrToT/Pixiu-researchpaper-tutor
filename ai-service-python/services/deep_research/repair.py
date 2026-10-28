@@ -16,7 +16,13 @@ from services.deep_research.repair_scope import repair_evidence_scope
 def _prepare_repair(report, verification, evidence, question, *, max_prompt_bytes=24000,
                     metric_domains=None, draft_context=(), prior_revisions=(),
                     fact_redraft=False, requirement_context=(), source_aware_redraft=False,comparison_reasoning=False,
-                    question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False,shared_experiment_schema=False,experiment_evidence_context=None,experimental_edits=False,experimental_diagnostics=False,experimental_nested_tables=False,experimental_representation=False,experimental_coverage=False,citation_presentation_version=0,configuration_consistency_version=0,repair_evidence_packet_version=0,answer_intents=None,scope_expression=False,table_identity_context=False,claim_check=False,required_scope_ids=(),compact_layout=False):
+                    question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False,shared_experiment_schema=False,experiment_evidence_context=None,experimental_edits=False,experimental_diagnostics=False,experimental_nested_tables=False,experimental_representation=False,experimental_coverage=False,citation_presentation_version=0,configuration_consistency_version=0,repair_evidence_packet_version=0,answer_intents=None,scope_expression=False,table_identity_context=False,claim_check=False,required_scope_ids=(),compact_layout=False,ordinary_advice=False):
+    if type(ordinary_advice) is not bool:raise ValueError('Invalid ordinary advice repair policy')
+    from services.deep_research.general_advice import repair_eligible
+    if ordinary_advice and not repair_eligible(report):raise ValueError('Advice repair cannot rewrite experimental claims')
+    if ordinary_advice and not (fact_redraft and source_aware_redraft and concise_factual and compact_source_repair):
+        raise ValueError('Advice repair requires source-aware clean redrafting')
+    redraft_eligible=factual_redraft_eligible(report) or ordinary_advice
     if type(compact_layout) is not bool:raise ValueError('Invalid factual compact layout policy')
     _validate_scope_ids(required_scope_ids,report,scope_expression)
     if (type(repair_evidence_packet_version) is not int or repair_evidence_packet_version not in (0,1,2,3,4,5)
@@ -117,7 +123,7 @@ def _prepare_repair(report, verification, evidence, question, *, max_prompt_byte
             row['contentHash']=by_id[aliases[row['evidenceId']]]['contentHash']
         from services.deep_research.factual_repair import compact_rows
         rows=compact_rows(rows,source_context)
-    if fact_redraft and factual_redraft_eligible(report):
+    if fact_redraft and redraft_eligible:
         # Omit rejected wording from the generation view, not audit storage.
         # Keep original citations mandatory below and full originals in the
         # prepared record for parsing, scope and unchanged-rejection checks.
@@ -174,7 +180,7 @@ def _prepare_repair(report, verification, evidence, question, *, max_prompt_byte
     revision_shape = {'claimId': 'original ID', 'kind': 'original kind', 'text': 'revised wording',
                       'evidenceRefs': ['E1'], 'conditions': {}, 'detailLevel': 'fulltext'}
     if scope_expression: revision_shape['scopeExpression'] = None
-    if factual_scope in (2,3,4) and fact_redraft and factual_redraft_eligible(report):
+    if factual_scope in (2,3,4) and fact_redraft and redraft_eligible:
         from services.deep_research.factual_scope import DRAFTING_SCHEMA
         revision_shape={'draftingBasis':DRAFTING_SCHEMA,**revision_shape}
     has_tables = any(row.get('tableData') for row in rows) or any(
@@ -303,7 +309,7 @@ For existing proposals, choose concrete seed/split/level/budget/confidence setti
 not paper-attributed values or promises to preregister later. Correct formulas and label
 hypotheses/proposals. Source facts still require evidence; proposed choices need not occur
 in the paper. Maintain consistency with accepted definitions and complete required details.'''
-    prospective = experimental_intent and all(row.get('kind') in {'proposal','suggestion','hypothesis'} for row in originals.values())
+    prospective = not ordinary_advice and experimental_intent and all(row.get('kind') in {'proposal','suggestion','hypothesis'} for row in originals.values())
     if prospective:
         from services.deep_research.experiment_intent import repair_prompt as experiment_repair_prompt
         prompt = experiment_repair_prompt(question=question,length_contract=length_contract,
@@ -371,7 +377,7 @@ in the paper. Maintain consistency with accepted definitions and complete requir
         prompt += '\n' + HYPOTHESIS_SPEC_CONTRACT
         prompt += '\nRepair linked hypothesis/analysis targets jointly, keeping their IDs and exact effect keys. ' \
                   'Select a purpose and compatible method that fulfill the user request, not a weaker substitute.'
-    shape = [{**({'draftingBasis':DRAFTING_SCHEMA} if factual_scope in (2,3,4) and fact_redraft and factual_redraft_eligible(report) else {}),
+    shape = [{**({'draftingBasis':DRAFTING_SCHEMA} if factual_scope in (2,3,4) and fact_redraft and redraft_eligible else {}),
               'claimId': row['claimId'], 'kind': row['kind'],
               **({'designRole': row['designRole']} if row.get('designRole') else {}),
               'text': '', 'evidenceRefs': [], **({'tableBindings': []} if has_tables else {})}
@@ -386,7 +392,7 @@ in the paper. Maintain consistency with accepted definitions and complete requir
                'Return only the JSON array; do not rewrite the entire experiment.')
     if scope_expression:
         for target in shape: target['scopeExpression'] = None
-    compact_factual=concise_factual and fact_redraft and factual_redraft_eligible(report)
+    compact_factual=concise_factual and fact_redraft and redraft_eligible
     if compact_factual:
         from services.deep_research.factual_redraft_prompt import render as factual_prompt
         prompt=factual_prompt(question=question,length_contract=length_contract,requirements=active_requirements,
@@ -447,6 +453,11 @@ in the paper. Maintain consistency with accepted definitions and complete requir
     if type(declared_table_refs) is int and declared_table_refs==4:
         from services.deep_research.table_bindings import reference_guidance
         prompt+='\n'+reference_guidance(4)
+    if ordinary_advice:
+        from services.deep_research.general_advice import REPAIR_GUIDANCE
+        prompt=prompt.replace('Rebuild ONLY these rejected factual answer targets',
+            'Rebuild ONLY these rejected answer targets (paper facts and ordinary recommendations)')
+        prompt+='\n'+REPAIR_GUIDANCE
     if compact_layout:
         from services.deep_research.short_factual_layout import GUIDANCE
         prompt+='\n'+GUIDANCE
@@ -466,7 +477,7 @@ in the paper. Maintain consistency with accepted definitions and complete requir
     if claim_check:
         from services.deep_research.claim_check import GUIDANCE as CLAIM_CHECK_GUIDANCE, ASSESSMENT_GUIDANCE
         prompt += '\n'+(ASSESSMENT_GUIDANCE if type(claim_check) is int and claim_check in (4,5,6,7,8,9) else CLAIM_CHECK_GUIDANCE)
-    if type(claim_check) is int and claim_check==9 and fact_redraft and factual_redraft_eligible(report):
+    if type(claim_check) is int and claim_check==9 and fact_redraft and redraft_eligible:
         prompt+='''\nOld citations, cell bindings, access labels and verification tags are hidden draft choices, not frozen
 requirements. Rebuild them from THIS target's allowed original quotations. Bind only
 measurements retained in the revised text; choose a minimal informative observation.
@@ -700,7 +711,7 @@ def factual_redraft_eligible(report):
 def repair_rejected(report, verification, evidence, question, invoke, parse, *,
                     max_prompt_bytes=24000, metric_domains=None, batch_state=None, checkpoint=None,
                     current_budget=None, invoke_request=None, fact_redraft=False, requirement_context=(),
-                    source_aware_redraft=False,comparison_reasoning=False,question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,strict_response=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False,shared_experiment_schema=False,experiment_evidence_context=None,experimental_edits=False,experimental_diagnostics=False,experimental_nested_tables=False,experimental_representation=False,experimental_coverage=False,citation_presentation_version=0,configuration_consistency_version=0,repair_evidence_packet_version=0,scheduling_version=0,answer_intents=None,scope_expression=False,defer_length_filter=False,table_identity_context=False,claim_check=False,required_scope_ids=(),compact_layout=False):
+                    source_aware_redraft=False,comparison_reasoning=False,question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,strict_response=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False,shared_experiment_schema=False,experiment_evidence_context=None,experimental_edits=False,experimental_diagnostics=False,experimental_nested_tables=False,experimental_representation=False,experimental_coverage=False,citation_presentation_version=0,configuration_consistency_version=0,repair_evidence_packet_version=0,scheduling_version=0,answer_intents=None,scope_expression=False,defer_length_filter=False,table_identity_context=False,claim_check=False,required_scope_ids=(),compact_layout=False,ordinary_advice=False):
     """One bounded revision round, split before dispatch when evidence cannot fit.
 
     At most three requests share full sibling design definitions. Successful
@@ -710,6 +721,11 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
     from services.deep_research.contracts import digest, DeepResearchError
     from services.deep_research.repair_batches import split_repair_targets
 
+    if type(ordinary_advice) is not bool:raise ValueError('Invalid ordinary advice repair policy')
+    if ordinary_advice:
+        from services.deep_research.general_advice import repair_eligible
+        if not repair_eligible(report) or not (fact_redraft and source_aware_redraft and concise_factual and compact_source_repair):
+            raise ValueError('Advice repair requires eligible source-aware clean redrafting')
     if type(compact_layout) is not bool:raise ValueError('Invalid factual compact layout policy')
     _validate_scope_ids(required_scope_ids,report,scope_expression)
     if type(defer_length_filter) is not bool:
@@ -763,6 +779,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
                        **({'repairEvidencePriorityVersion':1} if question_priority else {}),
                        **({'factualScopeContractVersion':factual_scope if factual_scope in (2,3,4) else 1} if factual_scope else {}),
                        **({'tableReferencesContractVersion':4 if type(declared_table_refs) is int and declared_table_refs==4 else 1} if declared_table_refs else {}),
+                       **({'recommendationRepairContractVersion':1} if ordinary_advice else {}),
                        **({'repairResponseContractVersion':1} if strict_response else {}),
                        **({'factualRepairContractVersion':1} if compact_source_repair else {}),
                        **({'experimentRepairContractVersion':6 if experimental_coverage else 5 if experimental_representation else 4 if experimental_nested_tables else 3 if experimental_diagnostics else 2 if experimental_edits else 1} if shared_experiment_schema else {}),
@@ -786,6 +803,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
             max_prompt_bytes=state['maxPromptBytes'] if byte_limit is None else byte_limit,
             metric_domains=metric_domains, draft_context=siblings, prior_revisions=results,
             compact_layout=compact_layout,fact_redraft=fact_redraft, requirement_context=requirement_context,source_aware_redraft=source_aware_redraft,
+            **({'ordinary_advice':True} if ordinary_advice else {}),
             **({'answer_intents':answer_intents} if answer_intents is not None else {}),
             **({'scope_expression':scope_expression} if scope_expression else {}),
             **({'required_scope_ids':[key for key in required_scope_ids if key in ids]} if required_scope_ids else {}),
