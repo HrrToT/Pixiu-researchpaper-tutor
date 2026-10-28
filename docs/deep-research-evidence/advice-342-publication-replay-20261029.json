@@ -1,0 +1,15 @@
+{
+  "sourcePayloadSha256": "1ea4d1e7d7a719e75373390ad6989411302edac49fa6fa7548fce5100239a61c",
+  "actualPublishGraphReplayed": true,
+  "oldBodyByteIdentical": true,
+  "allVerifiedClaimsAndEvidenceUnchanged": true,
+  "newBody": "## 核心判断\n\n- LightGaussian压缩流程三个主要环节分别改变：高斯剪枝与恢复减少高斯数量N；SH蒸馏将高阶球谐系数转移到低阶，降低特征维度F；向量量化基于全局显著性降低位宽。 [1](#research-evidence-ev_0c96f872441e619c0d5950e7fb48333436d5b6b4e5be0f603e282dbd81b5200b) [2](#research-evidence-ev_c702d9140425f4efe9cf89c40e0b5a9ca61817b0fc683cadbf5e89814d066346) [3](#research-evidence-ev_68801d18533cd7182b698cba746ecff15805968ba6fdfaeb99fde2f29d62afd7)\n\n## 推荐阅读顺序\n\n- 建议阅读顺序：先读高斯剪枝与恢复（减少数量），再读SH蒸馏（压缩特征），最后读向量量化（降低位宽）。实际读到的是论文全文。 [4](#research-evidence-ev_0e3dd18e63edf8e206378d8808c11ccad81ad5615f903057a6ce8f4328d4a13d) [1](#research-evidence-ev_0c96f872441e619c0d5950e7fb48333436d5b6b4e5be0f603e282dbd81b5200b) [2](#research-evidence-ev_c702d9140425f4efe9cf89c40e0b5a9ca61817b0fc683cadbf5e89814d066346) [3](#research-evidence-ev_68801d18533cd7182b698cba746ecff15805968ba6fdfaeb99fde2f29d62afd7)\n\n",
+  "newSummary": "LightGaussian压缩流程三个主要环节分别改变：高斯剪枝与恢复减少高斯数量N；SH蒸馏将高阶球谐系数转移到低阶，降低特征维度F；向量量化基于全局显著性降低位宽。\n\n建议阅读顺序：先读高斯剪枝与恢复（减少数量），再读SH蒸馏（压缩特征），最后读向量量化（降低位宽）。实际读到的是论文全文。",
+  "newVisibleCharacterCount": 162,
+  "maxCharacters": 300,
+  "experimentLabelAndNoticeRemovedFromReadingAdvice": true,
+  "providerCalls": 0,
+  "productionPublish": false,
+  "scientificApproval": false,
+  "independentCredit": 0
+}
