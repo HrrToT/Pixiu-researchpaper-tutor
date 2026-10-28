@@ -63,7 +63,7 @@ def bound_table_context(claim, evidence):
 
 def declared_references_enabled(record):
     return (type(record.get('tableReferencesContractVersion')) is int
-            and record['tableReferencesContractVersion'] in (1,2))
+            and record['tableReferencesContractVersion'] in (1,2,3))
 
 
 REFERENCE_GUIDANCE=('For every tableBindings entry, rowNumber is the explicit source row ID '
@@ -107,9 +107,18 @@ def available_reference_rows(claim,evidence):
     return rows
 
 
-def validate_table_bindings(claim, evidence, *, translated_metrics=False):
+def _dataset_key(text, joiners):
+    # Only typographic spelling of a conjunction between Latin name tokens.
+    # Never remove a split, hierarchy level, number or method variant.
+    if joiners:
+        text = re.sub(r'(?<=[A-Za-z0-9])\s*&\s*(?=[A-Za-z0-9])', ' and ', text)
+    return _key(text)
+
+
+def validate_table_bindings(claim, evidence, *, translated_metrics=False, dataset_joiners=False):
     """Return a rejection reason; semantic checking still follows this gate."""
     if type(translated_metrics) is not bool:raise ValueError('Invalid metric translation policy')
+    if type(dataset_joiners) is not bool:raise ValueError('Invalid dataset joiner policy')
     text = str(claim.get('text', ''))
     conditions = claim.get('conditions') or {}
     if isinstance(conditions, dict):
@@ -164,7 +173,8 @@ def validate_table_bindings(claim, evidence, *, translated_metrics=False):
             return 'table_cell_mismatch'
         # Hierarchical headers require every level (e.g. cohort and aggregate)
         # to be displayed, without forcing the parser's separator into prose.
-        dataset_visible = all(any(re.search(r'(?<![a-z0-9])' + re.escape(_key(label)) + r'(?![a-z0-9])', _key(text))
+        right_boundary = r'(?![a-z0-9_+\-])' if dataset_joiners else r'(?![a-z0-9])'
+        dataset_visible = all(any(re.search(r'(?<![a-z0-9])' + re.escape(_dataset_key(label, dataset_joiners)) + right_boundary, _dataset_key(text, dataset_joiners))
                                   for label in (part, dataset_label(part)))
                               for part in dataset.split(' / '))
         if (not dataset_visible or not _method_visible(row[1], text)
