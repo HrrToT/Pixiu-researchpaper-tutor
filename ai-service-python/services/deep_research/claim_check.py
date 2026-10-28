@@ -3,7 +3,7 @@
 
 def enabled(record):
     return (type(record.get('claimCheckContractVersion')) is int
-            and record['claimCheckContractVersion'] in (1,2,3,4)
+            and record['claimCheckContractVersion'] in (1,2,3,4,5)
             and record.get('state',{}).get('outputKind')=='claim_verification')
 
 

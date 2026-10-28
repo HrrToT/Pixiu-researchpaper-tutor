@@ -40,7 +40,7 @@ Bind every factual clause to its own supplied E citations; P and T keys cannot b
 Copy reported quantities from exact quoted/verified data; derived quantities are inferences.
 Table quantities require tableBindings:[{{"evidenceId":"E1","rowNumber":1,"groupIndex":0,"metric":"exact header","value":"exact string"}}].
 Keep actual row numbers, zero-based group indices, dataset/method variants and protocols together.
-{('No unknown values, ungrounded universal/exclusive guarantees or paper-wide absence from selected excerpts. Do not present inferred differences as directly reported values.' if type(record.get('claimCheckContractVersion')) is int and record['claimCheckContractVersion'] in (3,4) else 'No unknown values, inferred differences, universal/exclusive guarantees or paper-wide absence from selected excerpts.')}
+{('No unknown values, ungrounded universal/exclusive guarantees or paper-wide absence from selected excerpts. Do not present inferred differences as directly reported values.' if type(record.get('claimCheckContractVersion')) is int and record['claimCheckContractVersion'] in (3,4,5) else 'No unknown values, inferred differences, universal/exclusive guarantees or paper-wide absence from selected excerpts.')}
 Answer each requested aspect or bound the precise stronger inference that the supplied premises do not establish.
 Put the result first; explain technical terms when needed. Omit incidental numerical examples to respect the limit.
 For comparison, give a source-specific factual claim per paper before a separate cross-paper judgment.
@@ -76,7 +76,7 @@ With contextOmitted do not guess missing antecedents. All output still passes in
         prompt+='\n'+TABLE_IDENTITY_GUIDANCE
     from services.deep_research.claim_check import enabled as claim_check_enabled, GUIDANCE as CLAIM_CHECK_GUIDANCE
     if claim_check_enabled(record):
-        if record['claimCheckContractVersion']==4:
+        if record['claimCheckContractVersion'] in (4,5):
             from services.deep_research.claim_check import ASSESSMENT_GUIDANCE
             prompt+='\n'+ASSESSMENT_GUIDANCE
         else:
