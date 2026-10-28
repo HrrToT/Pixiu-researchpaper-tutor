@@ -75,3 +75,22 @@ def test_new_type_policy_has_distinct_cache_and_resumes_without_resending():
     assert repair_rejected(*args,claim_check=6,batch_state=saved)==out
     with pytest.raises(DeepResearchError):repair_rejected(*args,claim_check=5,batch_state=saved)
     invoke.assert_not_called()
+
+
+def test_new_policy_can_correct_semantically_unresolved_report_without_inventing_support():
+    report,checks,ev,p,row=packet();checks['rejected'][0]['reason']='semantic_unresolved'
+    new=_prepare_repair(report,checks,ev,'核查该结论',claim_check=8);old=_prepare_repair(report,checks,ev,'核查该结论',claim_check=7)
+    assert new['reportedInferenceRepairIds']==['c'] and 'reportedInferenceRepairIds' not in old
+    audit=[];out=_parse_repair_response(new,{'content':json.dumps([row])},json.loads,drafting_audit=audit)
+    assert out[0]['kind']=='inference' and audit[0]['kindTransition']['reason']=='semantic_unresolved'
+    checker=Mock(return_value=[{'claimId':'c','status':'failed','reason':'no approval supplied'}])
+    assert not verify_claims(out,ev,checker)['accepted']
+    assert 'semantic_unresolved with YOUR' in new['prompt']
+
+
+@pytest.mark.parametrize('reason',['numeric_mismatch','unverified_quotation','table_cell_mismatch'])
+def test_new_policy_does_not_type_away_a_hard_source_or_numeric_failure(reason):
+    report,checks,ev,p,row=packet();checks['rejected'][0]={'claimId':'c','reason':reason,
+        'additionalChecks':[{'reason':'answer_incomplete'}]}
+    assert inference_repair_ids(report,checks,8)==[]
+    assert inference_repair_ids(report,checks,7)==['c']  # Legacy policy preserved.

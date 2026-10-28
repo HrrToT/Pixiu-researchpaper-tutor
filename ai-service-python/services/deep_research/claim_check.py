@@ -3,7 +3,7 @@
 
 def enabled(record):
     return (type(record.get('claimCheckContractVersion')) is int
-            and record['claimCheckContractVersion'] in (1,2,3,4,5,6,7)
+            and record['claimCheckContractVersion'] in (1,2,3,4,5,6,7,8)
             and record.get('state',{}).get('outputKind')=='claim_verification')
 
 
@@ -113,7 +113,7 @@ premise needs its own permitted citations and independent checks.
 
 def inference_repair_ids(report,verification,policy):
     """Classify permitted edits, never evidence support or scientific approval."""
-    if type(policy) is not int or policy not in (6,7):return []
+    if type(policy) is not int or policy not in (6,7,8):return []
     rejected={r.get('claimId'):r for r in verification.get('rejected',[]) if isinstance(r,dict)}
     result=[]
     for claim in report.get('claims',[]):
@@ -122,6 +122,7 @@ def inference_repair_ids(report,verification,policy):
         checks=[rejection,*[r for r in extra if isinstance(r,dict)]] if isinstance(extra,list) else [rejection]
         if (claim.get('kind')=='reported' and not claim.get('executionSpec') and not claim.get('designRole')
                 and claim.get('designContractVersion') is None
-                and any(r.get('reason')=='answer_incomplete' for r in checks)):
+                and ((any(r.get('reason')=='answer_incomplete' for r in checks) if policy in (6,7) else
+                      bool(checks) and all(r.get('reason') in {'answer_incomplete','semantic_unresolved'} for r in checks)))):
             result.append(claim['claimId'])
     return result
