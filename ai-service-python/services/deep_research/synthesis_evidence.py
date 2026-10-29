@@ -25,7 +25,7 @@ def result_role(row):
 
 
 def order_premises(evidence,plan,limit=20, *, membership_intents=False,module_intents=False,condition_intents=False,
-                   definition_context=False,read_sources=(),operational_context=False):
+                   definition_context=False,read_sources=(),operational_context=False,mechanism_overview=False):
     obligations={o['obligationId']:o for item in plan for o in item.get('obligations',[])}
     rows=[e for e in evidence if e.get('verification',{}).get('literal')=='passed']
     works=list(dict.fromkeys(e.get('sourceWorkId') for e in rows))
@@ -40,6 +40,9 @@ def order_premises(evidence,plan,limit=20, *, membership_intents=False,module_in
                 context=surrounding_context(row)
                 text=row.get('quote','')+'\n'+str(context)
                 value=operation_score(text,str(row.get('location',{}).get('section','')),active_intent,operational=True)
+                if mechanism_overview and active_intent is None:
+                    from services.deep_research.mechanism_sources import overview_score
+                    value+=overview_score(row.get('quote',''),row.get('location',{}).get('section',''))
                 if module_intents and isinstance(intent,str) and intent.startswith('shared_module:'):
                     from services.deep_research.shared_modules import definition_score
                     if definition_context:
@@ -88,7 +91,11 @@ def order_premises(evidence,plan,limit=20, *, membership_intents=False,module_in
             for row in bundle:
                 if row['evidenceId'] not in seen:
                     chosen.append(row);seen.add(row['evidenceId'])
-    chosen.extend(row for row in rows if row['evidenceId'] not in seen)
+    remainder=[row for row in rows if row['evidenceId'] not in seen]
+    if mechanism_overview:
+        from services.deep_research.mechanism_sources import overview_score
+        remainder.sort(key=lambda row:-overview_score(row.get('quote',''),row.get('location',{}).get('section','')))
+    chosen.extend(remainder)
     return chosen[:limit],bundles
 
 

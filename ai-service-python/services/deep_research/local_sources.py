@@ -61,7 +61,8 @@ class LocalTaskRetriever:
                             normalized = normalize_evidence_items(raw, source_type='current_paper',
                                 pdf_id=owned, max_text_chars=2000)
                             self.index_context[pdf_id] = [_indexed_source(row) for row in normalized]
-                        metrics = _requested_metrics(query)
+                        from services.deep_research.mechanism_sources import for_query as qualitative_query
+                        metrics = set() if qualitative_query(self.repo.require_run(self.run_id),query,pdf_id) else _requested_metrics(query)
                         if metrics:
                             self.index_tables[pdf_id] = [row for row in self.index_context[pdf_id] if row.get('tableData')]
                             indexed = _include_metric_tables(indexed, self.index_tables[pdf_id], query, metrics, limit)
@@ -135,7 +136,8 @@ class LocalTaskRetriever:
         from services.deep_research.scope_evidence import enabled,include_scope_evidence
         record=self.repo.require_run(self.run_id)
         if not enabled(record):
-            return rows
+            from services.deep_research.mechanism_sources import prefer_sources
+            return prefer_sources(rows,candidates,record,query,pdf_id,limit)
         if not self.validate(self.run_id,pdf_id):
             raise DeepResearchError('scope_revoked','论文范围已变更')
         material=next((m for m in record.get('materials',[]) if m.get('materialId')==pdf_id),{})
@@ -145,7 +147,8 @@ class LocalTaskRetriever:
             result=include_context(result,candidates,pdf_id,limit)
         if not self.validate(self.run_id,pdf_id):
             raise DeepResearchError('scope_revoked','论文范围已变更')
-        return result
+        from services.deep_research.mechanism_sources import prefer_sources
+        return prefer_sources(result,candidates,record,query,pdf_id,limit)
 
 
     def _stamp_identity(self, rows, pdf_id):

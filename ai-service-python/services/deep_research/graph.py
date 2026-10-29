@@ -1137,6 +1137,7 @@ def make_synthesize_node(
         source_aliases = {}
         source_registry = {}
         from services.deep_research.synthesis_evidence import enabled as premise_enabled,order_premises,result_role,fit_premises
+        from services.deep_research.mechanism_sources import enabled as mechanism_premises
         premise_mode=premise_enabled(record)
         premise_bundles=[];table_registry={};table_keys={}
         candidates = distinct_evidence_candidates(evidence)
@@ -1152,7 +1153,8 @@ def make_synthesize_node(
                 **({'definition_context':True,'read_sources':brief_state.get('readResults',[])}
                    if record['synthesisEvidenceContractVersion'] in (5,6) else {}),
                 **({'operational_context':True}
-                   if record['synthesisEvidenceContractVersion']==6 and output_kind=='experiment_design' else {}))
+                   if record['synthesisEvidenceContractVersion']==6 and output_kind=='experiment_design' else {}),
+                **({'mechanism_overview':True} if mechanism_premises(record) else {}))
         elif output_kind == 'paper_comparison':
             candidates = comparison_evidence_order(candidates, paper_titles)
         elif output_kind == 'experiment_design':
