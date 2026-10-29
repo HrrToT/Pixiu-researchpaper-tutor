@@ -13,8 +13,8 @@ def enabled(record):
 
 
 def assertions_enabled(record):
-    return (type(record.get('scopeObservationContractVersion')) is int
-            and record['scopeObservationContractVersion'] == 1)
+    version=record.get('scopeObservationContractVersion')
+    return (2 if version==2 else True) if type(version) is int and version in (1,2) else False
 
 
 def consistent_premises_enabled(record):
@@ -22,14 +22,15 @@ def consistent_premises_enabled(record):
             and record['scopeExpressionReviewContractVersion']==3)
 
 
-def observation_claims(claim, expression, *, assertions=False):
+def observation_claims(claim, expression, *, assertions=False, literal=False):
     """Literal projections of the authored settings, never inferred facts."""
     identity = [claim['claimId'], expression]
+    if literal: identity.append('literal-setting-assertion-v2')
     if assertions: identity.append('observed-setting-assertion-v1')
     namespace = hashlib.sha256(json.dumps(identity,
         ensure_ascii=False, sort_keys=True).encode()).hexdigest()
     return [{**deepcopy(claim), 'claimId':f'scope-observation-{namespace}-{index}',
-             'kind':'reported', 'text':('所引来源报告，在对'+setting['subject']+'的一项评估中，'
+             'kind':'reported', 'text':('所引来源描述：'+setting['subject']+'，'+setting['attribute']+'为'+setting['value']+'。') if literal else ('所引来源报告，在对'+setting['subject']+'的一项评估中，'
                 +setting['attribute']+'为'+setting['value']+'。') if assertions else
                 setting['subject']+'，'+setting['attribute']+'='+setting['value'],
              'conditions':{}}
@@ -44,15 +45,17 @@ def review(checker, claim, expression, evidence, node):
     a separate entailment task. No failed whole-claim verdict is upgraded.
     """
     policy = checker._scope_observation_assertions
-    assertions = (policy() if callable(policy) else policy) is True
-    observations = observation_claims(claim, expression, assertions=assertions)
+    policy = policy() if callable(policy) else policy
+    literal = type(policy) is int and policy==2
+    assertions = policy is True or literal
+    observations = observation_claims(claim, expression, assertions=assertions,literal=literal)
     checked = checker._check(observations, evidence, [], node) if observations else []
     expected = [c['claimId'] for c in observations]
     if ([c.get('claimId') for c in checked] != expected
             or any(c.get('status') not in ('passed','failed') for c in checked)):
         raise DeepResearchError('invalid_verification_response','观察条件核查未完整返回。')
     audit = {'version':2, 'observedSettings':checked, 'notEstablished':[],
-             **({'observationContractVersion':1} if assertions else {})}
+             **({'observationContractVersion':2 if literal else 1} if assertions else {})}
     failed = [c for c in checked if c['status'] != 'passed']
     if failed:
         return {'claimId':claim['claimId'], 'status':'failed',

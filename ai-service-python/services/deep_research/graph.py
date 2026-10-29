@@ -426,7 +426,7 @@ Return a JSON ARRAY of plan items, NOT an object with items field."""
         from services.deep_research.access_request_projection import enabled as access_projection_enabled,project as project_access
         access_projection=[]
         if access_projection_enabled(record):
-            validated,access_projection=project_access(validated,question)
+            validated,access_projection=project_access(validated,question, **({'citation_access':True} if record['accessRequestProjectionContractVersion']==2 else {}))
             validated=validate_plan(validated)
             validate_completion_criteria(validated,required=criteria_required)
 

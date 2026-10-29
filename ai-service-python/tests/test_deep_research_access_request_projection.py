@@ -64,7 +64,7 @@ def test_projection_runs_in_plan_graph_only_for_new_contract(version):
     invoke.assert_called_once()
 
 
-@pytest.mark.parametrize('replacement',[None,True,0,2,'1'])
+@pytest.mark.parametrize('replacement',[None,True,0,3,'1'])
 def test_projection_contract_is_server_owned_and_immutable(tmp_path,replacement):
     from services.deep_research.repository import DeepResearchRepository
     from services.deep_research.facade import ResearchFacade
@@ -72,7 +72,31 @@ def test_projection_contract_is_server_owned_and_immutable(tmp_path,replacement)
     try:
         run,_=facade.create({'workspaceTaskId':'t','operationKey':'op','question':EXCERPT,'deferStart':True,
             'accessRequestProjectionContractVersion':replacement},start_async=False)
-        assert run['accessRequestProjectionContractVersion']==1
+        assert run['accessRequestProjectionContractVersion']==2
         with pytest.raises(ValueError,match='Immutable'):
             repo.update_run(run['runId'],lambda r:{**r,'accessRequestProjectionContractVersion':replacement})
     finally:facade.shutdown()
+
+
+def test_citation_access_contract_keeps_original_excerpt_and_legacy_wire():
+    excerpt='标明本次实际引用的是全文片段还是摘要'
+    raw=plan('说明所引用内容来自论文全文的哪个部分。')
+    obligation=raw[0]['obligations'][0]
+    obligation['requestExcerpt']=excerpt
+    obligation['question']='本次实际引用的是全文片段还是摘要？'
+    before=deepcopy(raw)
+    assert project(raw,excerpt)==(raw,[])
+    result,audit=project(raw,excerpt,citation_access=True)
+    output=result[0]['obligations'][0]
+    assert output['question']==output['completionCriteria'][0]['requirement']==excerpt.replace('引用','依据')
+    assert output['requestExcerpt']==excerpt and raw==before
+    assert audit[0]['requestExcerpt']==excerpt
+    from services.deep_research.access_disclosure import access_requirements
+    assert access_requirements(result)=={'a':{'overall':True,'criteria':{'access'}}}
+
+
+@pytest.mark.parametrize('extra',['并说明具体位置','并解释实验结果','并比较机制','并给出判断依据'])
+def test_citation_access_cannot_erase_actual_additional_requests(extra):
+    excerpt='标明本次实际引用的是全文片段还是摘要'+extra
+    raw=plan(excerpt);raw[0]['obligations'][0]['requestExcerpt']=excerpt
+    assert project(raw,excerpt,citation_access=True)==(raw,[])

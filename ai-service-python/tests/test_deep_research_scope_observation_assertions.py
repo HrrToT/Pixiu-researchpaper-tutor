@@ -60,7 +60,7 @@ def test_old_child_verdict_identity_cannot_approve_the_new_assertion():
     assert invoke.call_count==1
 
 
-@pytest.mark.parametrize('replacement',[None,0,True,'1',2])
+@pytest.mark.parametrize('replacement',[None,0,True,'1',3])
 def test_server_policy_is_immutable_and_checker_does_not_migrate_old_run(tmp_path,replacement):
     from services.deep_research.facade import ResearchFacade
     from services.deep_research.repository import DeepResearchRepository
@@ -69,8 +69,8 @@ def test_server_policy_is_immutable_and_checker_does_not_migrate_old_run(tmp_pat
     try:
         run,_=facade.create({'workspaceTaskId':'t','operationKey':'first','question':'核查',
             'deferStart':True,'scopeObservationContractVersion':replacement},start_async=False)
-        assert run['scopeObservationContractVersion']==1
-        assert facade._build_semantic_checker(run['runId'],Mock())._scope_observation_assertions() is True
+        assert run['scopeObservationContractVersion']==2
+        assert facade._build_semantic_checker(run['runId'],Mock())._scope_observation_assertions()==2
         with pytest.raises(ValueError,match='Immutable'):
             repo.update_run(run['runId'],lambda r:{**r,'scopeObservationContractVersion':replacement})
         old=deepcopy(run);old.update(runId='old',idempotencyKey='old');old.pop('scopeObservationContractVersion')
@@ -79,3 +79,33 @@ def test_server_policy_is_immutable_and_checker_does_not_migrate_old_run(tmp_pat
         facade.create({'workspaceTaskId':'t','operationKey':'next','question':'核查','deferStart':True},start_async=False)
         assert repo.require_run('old')==before
     finally:facade.shutdown()
+
+
+def test_literal_observation_does_not_invent_evaluation_or_remove_authored_context():
+    claim,expr,record=packet()
+    expr['observedSettings']=[{'subject':'CAT-3DGS v2','attribute':'减少冗余的环节',
+        'value':'内容自适应三平面编码锚点属性、超先验框架、空间自回归熵编码'}]
+    before=deepcopy((claim,expr))
+    child=observation_claims(claim,expr,assertions=True,literal=True)[0]
+    assert child['text']=='所引来源描述：CAT-3DGS v2，减少冗余的环节为内容自适应三平面编码锚点属性、超先验框架、空间自回归熵编码。'
+    assert '评估' not in child['text'] and (claim,expr)==before
+    assert child['evidenceRefs']==claim['evidenceRefs']
+    assert child['claimId']!=observation_claims(claim,expr,assertions=True)[0]['claimId']
+    expr['observedSettings'][0]['attribute']='在数据集X评估中的速度'
+    assert '在数据集X评估中的速度' in observation_claims(claim,expr,literal=True)[0]['text']
+
+
+@pytest.mark.parametrize('supported',[False,True])
+def test_literal_contract_is_used_by_real_checker_and_does_not_override_verdict(supported):
+    claim,expr,record=packet()
+    child=observation_claims(claim,expr,assertions=True,literal=True)[0]
+    invoke=Mock(return_value={'content':json.dumps([{'claimId':child['claimId'],
+        'status':'passed' if supported else 'failed','reason':'Independent factual verdict'}])})
+    checker=BudgetedSemanticChecker(invoke,'r',partitioned_scope_review=True,
+        scope_observation_assertions=lambda:2,
+        scope_expression_context=lambda targets:context_for_record(record,targets))
+    result=checker([claim],[{'evidenceId':'own','quote':'Original method description'}])[0]
+    assert result['status']==('passed' if supported else 'failed')
+    assert result['partitionedScopeAudit']['observationContractVersion']==2
+    assert child['text'] in invoke.call_args.kwargs['prompt']
+    assert '一项评估中' not in invoke.call_args.kwargs['prompt'] and invoke.call_count==1
