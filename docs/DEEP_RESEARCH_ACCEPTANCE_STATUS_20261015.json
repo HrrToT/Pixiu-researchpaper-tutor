@@ -3675,6 +3675,13 @@
       "overlap": true,
       "providerCalls": 0,
       "proof": "deep-research-evidence/literal-359-confirmed-associated-regression-20261029.json"
+    },
+    "direct361AssociatedRegression": {
+      "files": 119,
+      "passed": 2224,
+      "overlap": true,
+      "providerCalls": 0,
+      "proof": "deep-research-evidence/direct-361-confirmed-associated-regression-20261029.json"
     }
   },
   "stages": [
@@ -4740,21 +4747,20 @@
     "proof": "deep-research-evidence/compact-experiment-envelope-regression-20261020.json"
   },
   "currentCheckpoint": {
-    "sourceCommit": "ade4094f",
-    "promptVersion": "dr-v2.20261029.359",
+    "sourceCommit": "ae7a255a",
+    "promptVersion": "dr-v2.20261029.361",
     "loaded": true,
     "component": "multipaper mechanism comparison full workflow",
-    "componentOutcome": "failed_preverification_length",
-    "productionPublished": false,
+    "componentOutcome": "partial_with_coverage_binding_and_required_content_gaps",
     "fullWorkflowProved": false,
     "independentCredit": 0,
-    "ledgerRows": 7796,
+    "ledgerRows": 7862,
     "activeProductionRuns": 0,
     "historicalPausedRuns": 13,
     "proof": "deep-research-evidence/multipaper-mechanisms-progress-20261029.json",
     "offlineAssociatedFiles": 119,
-    "offlineAssociatedPassed": 2220,
-    "remaining": "Full visible layout budget and comparison quality; numeric comparison/external/recovery-publication acceptance and independent replacements; DR0-DR5 incomplete."
+    "offlineAssociatedPassed": 2224,
+    "remaining": "Fix missing-field coverage bindings without accepting fabricated fields; preserve shared sourceAccessSummary semantics; improve evidence-to-answer completeness for required spatial/channel context. Full DR0-DR5 numeric comparison/external/recovery-publication audit and independent replacements remain."
   },
   "sharedModuleSourceCheckpoint": {
     "sourceCommit": "f8ae5177",
@@ -4937,5 +4943,22 @@
     "historicalPausedRuns": 13,
     "proof": "deep-research-evidence/draft-editor-356-production-component-20261029.json",
     "remaining": "Current fixed-case quality, multi-paper/external/recovery-publication acceptance and fresh independent replacements; full goal not complete."
+  },
+  "previousMultipaper359Checkpoint": {
+    "sourceCommit": "ade4094f",
+    "promptVersion": "dr-v2.20261029.359",
+    "loaded": true,
+    "component": "multipaper mechanism comparison full workflow",
+    "componentOutcome": "failed_preverification_length",
+    "productionPublished": false,
+    "fullWorkflowProved": false,
+    "independentCredit": 0,
+    "ledgerRows": 7796,
+    "activeProductionRuns": 0,
+    "historicalPausedRuns": 13,
+    "proof": "deep-research-evidence/multipaper-mechanisms-progress-20261029.json",
+    "offlineAssociatedFiles": 119,
+    "offlineAssociatedPassed": 2220,
+    "remaining": "Full visible layout budget and comparison quality; numeric comparison/external/recovery-publication acceptance and independent replacements; DR0-DR5 incomplete."
   }
 }
