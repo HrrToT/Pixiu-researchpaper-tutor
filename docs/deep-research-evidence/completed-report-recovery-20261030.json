@@ -1,0 +1,69 @@
+{
+  "promptVersion": "dr-v2.20261029.362",
+  "restarts": 1,
+  "providerCalls": 0,
+  "completeOldLedgerAndRunPayloadsPreserved": true,
+  "ledgerRows": 7889,
+  "historicalPausedRuns": 13,
+  "activeRuns": 0,
+  "allEightWorkspacesExactlyPreserved": true,
+  "indexSha256": "9196054db7ac32450eb86fc91cfb12de27c732469e4cf629bf06857a3490788d",
+  "deliveryTables": {
+    "tables": {
+      "deep_research_outbox_v2": {
+        "rows": 205,
+        "sha256": "033830492a948d0d6463b3bd856ff442fb91f5877e9775e9b5a37c14d93ca3be"
+      },
+      "deep_research_publications_v2": {
+        "rows": 205,
+        "sha256": "f439ad7d4d27093111b20e6f8aafddc89f0686c714ed3c01020a235c794056c5"
+      },
+      "deep_research_actions_v2": {
+        "rows": 350,
+        "sha256": "29e1b1e267f66c104b7e731a377590afe8d720c0eb2ccd8dbc69f45949c0400e"
+      }
+    },
+    "pendingPublications": 0,
+    "targetEvents": [
+      {
+        "seq": 205,
+        "published": true,
+        "reportVersionId": "report_dr_run_bc4ce0da9efe5c3f90cd883f6a12b03a_v1"
+      }
+    ]
+  },
+  "stableTerminalReads": [
+    {
+      "ids": [
+        "v2-research:dr_run_bc4ce0da9efe5c3f90cd883f6a12b03a:latest:artifact",
+        "v2-research:dr_run_bc4ce0da9efe5c3f90cd883f6a12b03a:report_dr_run_bc4ce0da9efe5c3f90cd883f6a12b03a_v1:artifact"
+      ],
+      "sha256": "010f23ef5315f3527ea7a188ee07014f9be5c5f8e3b7df6de7648fb73d457a41",
+      "reportVersionId": "report_dr_run_bc4ce0da9efe5c3f90cd883f6a12b03a_v1"
+    },
+    {
+      "ids": [
+        "v2-research:dr_run_bc4ce0da9efe5c3f90cd883f6a12b03a:latest:artifact",
+        "v2-research:dr_run_bc4ce0da9efe5c3f90cd883f6a12b03a:report_dr_run_bc4ce0da9efe5c3f90cd883f6a12b03a_v1:artifact"
+      ],
+      "sha256": "010f23ef5315f3527ea7a188ee07014f9be5c5f8e3b7df6de7648fb73d457a41",
+      "reportVersionId": "report_dr_run_bc4ce0da9efe5c3f90cd883f6a12b03a_v1"
+    }
+  ],
+  "health": {
+    "status": "ok",
+    "checks": {
+      "grobid": {
+        "status": "ok",
+        "message": "GROBID is reachable."
+      },
+      "rag": {
+        "status": "ok",
+        "message": "RAG backend is ready."
+      }
+    },
+    "uptime_seconds": 31.2
+  },
+  "boundary": "Idle Python-service restart with completed report retrieval; not active cancellation/crash, Java process restart, Edge or whole-system disaster recovery.",
+  "publicationStatusDiagnosis": "Run publication.published is initial persisted snapshot; outbox published=1 is downstream delivery acknowledgment. No historical payload migration."
+}

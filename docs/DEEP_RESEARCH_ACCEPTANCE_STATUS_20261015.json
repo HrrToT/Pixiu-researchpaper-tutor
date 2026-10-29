@@ -1,5 +1,5 @@
 {
-  "asOf": "2026-10-29",
+  "asOf": "2026-10-30",
   "objective": "Complete DR0-DR5 in DEEP_RESEARCH_DESIGN_20261012.md without redefining success around implemented subsets.",
   "overall": "incomplete",
   "freshMaterialReadiness": "Independent content acceptance remains 0. Retired cases remain development-only; historical unknowns are not reissued. Fresh replacements and full DR0-DR5 release audit remain pending.",
@@ -3689,6 +3689,19 @@
       "overlap": true,
       "providerCalls": 0,
       "proof": "deep-research-evidence/catalog-362-confirmed-associated-regression-20261029.json"
+    },
+    "completedReportRecovery20261030": {
+      "proof": "deep-research-evidence/completed-report-recovery-20261030.json",
+      "scope": "Idle Python service restart and repeated completed-report reads",
+      "ledgerRowsPreserved": 7889,
+      "workspacesPreserved": 8,
+      "outboxAcknowledgmentPreserved": true,
+      "providerCalls": 0,
+      "notProved": [
+        "active cancellation/crash",
+        "Java process restart",
+        "whole-system disaster recovery"
+      ]
     }
   },
   "stages": [
@@ -4771,7 +4784,7 @@
     "javaArtifactStored": true,
     "terminalReadsCreatedNoDuplicateArtifacts": true,
     "pythonPublicationFlag": false,
-    "publicationBoundary": "Java report version/latest artifacts observed stable. Python published flag is false despite publication identity/time; full publication recovery consistency remains to audit.",
+    "publicationBoundary": "Resolved delivery diagnosis: persisted run flag is initial snapshot, outbox seq205 published=1 is downstream acknowledgment. Idle Python restart preserved all delivery tables and stored Java report; active crash/Java restart remain separate.",
     "remaining": "External provider path, numeric comparison, experiment/insufficiency/continuation current cases, recovery/publication audit and fresh independent replacements. Do not infer global DR0-DR5 completion."
   },
   "sharedModuleSourceCheckpoint": {

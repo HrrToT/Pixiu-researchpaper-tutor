@@ -66,3 +66,11 @@ M1G-v6原始输入经真实综合节点离线回放：旧分配23980字节未含
 Java任务中已存版本成果与latest指针。连续两次终态GET均取回同一reportVersionId及相同两种角色的artifact IDs，7889行账本摘要完全一致，无新增调用或重复成果。Python publication.published仍为false但有publicationId/time；不能凭Java取回就声明跨服务全部发布标志与重启恢复一致，此项进入DR5后续审计。
 
 当前0活跃/13历史暂停，旧失败和未知记录不升级。下一步转入真实外部获取路径，以及当前数值比较、实验/不足/追问、恢复发布与独立替换集的完整设计边界验收。完整DR0—DR5继续active。
+
+## 2026-10-30：发布确认诊断及空闲重启验证
+
+已读代码及实际outbox核对：run.publication.published是commit_publication创建的初始快照；acknowledge_outbox只确认outbox行。M1G-v7的seq205已published=1，与Java中保存成果一致。此前状态差异不构成未送达证据，不迁移历史payload或伪造新ACK。
+
+在0活跃、所有publication事件均已确认后，真实重启Python容器一次。7889行调用账本、全部旧payload、205条outbox、205条publication、350条action、8个任务和完整索引摘要均完全相同；重启后连续两次取回的版本成果及latest指针ID与内容摘要一致，无新增模型调用或重复成果。只证明已完成成果的空闲Python服务重启恢复，不替代活跃取消/崩溃、Java重启或整机备份验证，也不追加用户已省略的Edge流程。
+
+后续X1G外部正文读取案例已冻结为单独问题，空任务/external_only，不使用任务论文。目标外部全文缓存预检为空，必须保存真实元数据与全文网络调用、v2身份和实际访问级别。案例是已知论文开发验证，独立积分不增加。
