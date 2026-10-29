@@ -91,7 +91,8 @@ def visible_count(candidate, limit, output_kind='', evidence=(), presentation_ve
 
 
 def compact_answer(report, question, invoke, parse, *, output_kind='', evidence=(), preserve_claims=False,
-                   presentation_version=0, fixed_claim_ids=(), explicit_edit_scope=False, compact_layout=False,preserve_answers=False,measured_edit_budget=False,lean_edit=False,focused_edit=False):
+                   presentation_version=0, fixed_claim_ids=(), explicit_edit_scope=False, compact_layout=False,preserve_answers=False,measured_edit_budget=False,lean_edit=False,focused_edit=False,draft_merge=False,merge_audit=None):
+    if type(draft_merge) is not bool or merge_audit is not None and not isinstance(merge_audit,dict):raise ValueError('Invalid draft merge policy')
     if type(focused_edit) is not bool:raise ValueError('Invalid focused editing policy')
     if type(lean_edit) is not bool:raise ValueError('Invalid lean editing policy')
     if type(measured_edit_budget) is not bool:raise ValueError('Invalid measured editing policy')
@@ -111,6 +112,10 @@ def compact_answer(report, question, invoke, parse, *, output_kind='', evidence=
         return visible_count(candidate, limit, output_kind, evidence, presentation_version)
     if not limit or count(report) <= limit:
         return report
+    if draft_merge and not fixed_claim_ids and output_kind!='experiment_design':
+        from services.deep_research.draft_merge import consolidate
+        return consolidate(report,question,invoke,parse,output_kind=output_kind,evidence=evidence,
+            presentation_version=presentation_version,limit=limit,audit=merge_audit if merge_audit is not None else {})
     # Reduce the rewrite's scope, not its evidence: original references and kinds
     # are restored by code and the rewritten claims are verified afterwards.
     core = report['claims'] if preserve_claims else _core_claims(report['claims'], limit, output_kind, evidence)

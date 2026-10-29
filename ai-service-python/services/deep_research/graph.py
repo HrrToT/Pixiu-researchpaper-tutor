@@ -1644,6 +1644,7 @@ space with unsupported global absence or incidental iteration/performance values
         compact_invoke = lambda prompt: llm_invoke(run_id, "synthesize_compact", prompt,
                 {"max_tokens": 2000, "temperature": 0.0,**compact_options})
         direct_compact_invoke=lambda prompt:llm_invoke(run_id,'synthesize_compact',prompt,{'max_tokens':2000,'temperature':0.0})
+        draft_merge_audit={}
         if scope_expression_audit and scope_compaction_enabled(record):
             parsed, scope_expression_audit = compact_scope(parsed, scope_expression_audit, question,
                 compact_invoke, _safe_parse_json, output_kind=output_kind, evidence=evidence,
@@ -1663,10 +1664,13 @@ space with unsupported global absence or incidental iteration/performance values
                 **({'measured_edit_budget':True} if type(record.get('compactionEditorContractVersion')) is int and record['compactionEditorContractVersion']==2 else {}),
                 **({'lean_edit':True} if type(record.get('compactionEditorContractVersion')) is int and record['compactionEditorContractVersion'] in (3,4) else {}),
                 **({'focused_edit':True} if type(record.get('compactionEditorContractVersion')) is int and record['compactionEditorContractVersion']==4 else {}),
+                **({'draft_merge':True,'merge_audit':draft_merge_audit} if type(record.get('compactionEditorContractVersion')) is int and record['compactionEditorContractVersion']==5 else {}),
                 presentation_version=record.get('reportPresentationContractVersion',0),
                 **({'compact_layout':True} if compact_layout else {}),
                 **({'fixed_claim_ids':[a['claimId'] for a in scope_expression_audit]} if scope_expression_audit else {}),
                 **({'explicit_edit_scope':True} if explicit_compaction_scope(record,question,output_kind) else {}))
+        if draft_merge_audit:
+            repo_update(run_id,lambda r:{**r,'state':{**r.get('state',{}),'synthesisDraftMergeAudit':draft_merge_audit}},expected_revision=None)
         if parsed is None:
             return {"error_code": "invalid_synthesis_response"}
 
