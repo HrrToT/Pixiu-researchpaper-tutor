@@ -1,0 +1,25 @@
+{
+  "case": "X4G-v2",
+  "newProviderCalls": 0,
+  "falseNegativeReproduction": {
+    "requestedText": "第5节中深度畸变和法线一致性两个约束分别在约束什么",
+    "frozenCriterion": {
+      "criterionId": "human_aspect_1",
+      "requirement": "第5节中深度畸变和法线一致性两个约束分别在约束什么",
+      "responseType": "identification"
+    },
+    "bindingText": "深度畸变约束惩罚沿同一视线多个高斯盘交点的深度差异，使权重集中，减少半透明盘分散导致的深度不一致。法线一致性约束使每个盘的法线与从深度图梯度估计的表面法线对齐，让盘局部贴合实际表面。",
+    "numbersTreatedAsIdentificationObjects": [
+      "5"
+    ],
+    "presentCheck": false,
+    "diagnosis": "Section5 is a source locator here, not a requested numerical answer object. Existing identity gate demands that 5 appear in the answer."
+  },
+  "coverageBindingProtocolFailure": {
+    "claimId": "c1",
+    "field": "sourceAccessSummary",
+    "reason": "Original question asks original-body explanation, not a separate explicit access-label disclosure; current resolver rejects the extra metadata binding."
+  },
+  "alreadyReturnedScientificText": "Two supported explanation paragraphs remain published as partial; no current state or old verdict is rewritten.",
+  "nextChange": "Distinguish locative section numbers from explicitly requested numeric identities and show per-scope permitted binding fields. Preserve failures for actual number identification, fabricated fields, source ownership and scientific support."
+}
