@@ -12,6 +12,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.ResourceAccessException;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -26,6 +27,21 @@ public final class GatewayHelper {
 
     public static String encode(String value) {
         return URLEncoder.encode(String.valueOf(value), StandardCharsets.UTF_8).replace("+", "%20");
+    }
+
+    /** Only cached source exports may carry a PDF-sized Base64 JSON value. */
+    public static ResponseEntity<Map<String, Object>> forwardSourceExport(
+            RestTemplate restTemplate, String pythonServiceUrl, String path) {
+        URI uri = UriComponentsBuilder.fromUriString(pythonServiceUrl + path).build(true).toUri();
+        try {
+            return restTemplate.execute(uri, HttpMethod.GET, null, response ->
+                    ResponseEntity.status(response.getStatusCode()).body(normalizeBody(
+                            ResearchSourceExportJson.read(response.getBody(), response.getHeaders().getContentLength()))));
+        } catch (HttpStatusCodeException error) {
+            return ResponseEntity.status(error.getStatusCode()).body(parsePythonErrorBody(error));
+        } catch (RestClientException error) {
+            return ResponseEntity.status(502).body(Map.of("status", "error", "message", "来源文件读取失败或超过服务上限"));
+        }
     }
 
     @SuppressWarnings("unchecked")

@@ -64,8 +64,8 @@ public class ResearchService {
     }
 
     public ResponseEntity<Map<String, Object>> exportV2Source(String runId, String sourceId) {
-        return GatewayHelper.forward(restTemplate, PYTHON_SERVICE_URL, HttpMethod.GET,
-                "/research-tasks/" + GatewayHelper.encode(runId) + "/sources/" + GatewayHelper.encode(sourceId) + "/export", null);
+        return GatewayHelper.forwardSourceExport(restTemplate, PYTHON_SERVICE_URL,
+                "/research-tasks/" + GatewayHelper.encode(runId) + "/sources/" + GatewayHelper.encode(sourceId) + "/export");
     }
 
     public ResponseEntity<Map<String, Object>> createV2ResearchTask(Map<String, Object> request) {

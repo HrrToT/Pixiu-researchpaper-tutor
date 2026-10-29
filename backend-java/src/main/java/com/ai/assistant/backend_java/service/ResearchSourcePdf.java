@@ -10,7 +10,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 /** Validate cached bytes; downloading and the configured limit belong to Python. */
 public final class ResearchSourcePdf {
-    private static final int ABSOLUTE_MAX_BYTES = 64 * 1024 * 1024;
+    static final int ABSOLUTE_MAX_BYTES = 64 * 1024 * 1024;
     private ResearchSourcePdf() { }
 
     public static byte[] decode(Map<?, ?> source) {
