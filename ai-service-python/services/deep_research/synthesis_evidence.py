@@ -25,11 +25,26 @@ def result_role(row):
 
 
 def order_premises(evidence,plan,limit=20, *, membership_intents=False,module_intents=False,condition_intents=False,
-                   definition_context=False,read_sources=(),operational_context=False,mechanism_overview=False,mechanism_components=False):
+                   definition_context=False,read_sources=(),operational_context=False,mechanism_overview=False,mechanism_components=False,section_targets=()):
     obligations={o['obligationId']:o for item in plan for o in item.get('obligations',[])}
     rows=[e for e in evidence if e.get('verification',{}).get('literal')=='passed']
     works=list(dict.fromkeys(e.get('sourceWorkId') for e in rows))
     chosen=[];seen=set();bundles=[]
+    section_groups={};section_owners={o['obligationId']:i for i,item in enumerate(plan) for o in item.get('obligations',[])}
+    if section_targets:
+        from services.deep_research.section_premises import bundle as section_bundle,requested as requested_sections
+        for oid,obligation in obligations.items():
+            targets=[x for x in requested_sections(obligation.get('question','')+'。'+obligation.get('requestExcerpt','')) if x in section_targets]
+            if not targets:continue
+            for source in obligation.get('requiredSources') or works:
+                group=section_bundle(rows,read_sources,source,targets)
+                if not group:continue
+                key=(section_owners[oid],source)
+                if key not in section_groups:section_groups[key]=group
+                elif section_groups[key]!=group:section_groups[key]=None
+                bundles.append({'obligationId':oid,'criterionId':'requested_section','requirement':obligation['question'],'source':source,'evidenceIds':[e['evidenceId'] for e in group]})
+                for row in group:
+                    if row['evidenceId'] not in seen:chosen.append(row);seen.add(row['evidenceId'])
     for oid,view,intent in criterion_targets(obligations,membership_intents=membership_intents,module_intents=module_intents,
                                            condition_intents=condition_intents):
         for source in view.get('requiredSources') or works:
@@ -66,7 +81,11 @@ def order_premises(evidence,plan,limit=20, *, membership_intents=False,module_in
                 continue
             lead=ranked[0];bundle=[lead]
             method_contexts={};used_method_bundle=False
-            if mechanism_components and active_intent is None and not re.search(r'\bpipeline\b|整体流程|总体方法',lead.get('quote',''),re.I):
+            focused=section_groups.get((section_owners[oid],source))
+            if focused and (any(b['obligationId']==oid and b['criterionId']=='requested_section' for b in bundles)
+                    or active_intent is None and not requested_sections(view['question']) and re.search(r'这种|该(?:机制|设计|方法)|上述|\bthis (?:mechanism|design|method)\b',view['question'],re.I)):
+                bundle=focused;used_method_bundle=True
+            if not used_method_bundle and mechanism_components and active_intent is None and not re.search(r'\bpipeline\b|整体流程|总体方法',lead.get('quote',''),re.I):
                 from services.deep_research.mechanism_sources import component_bundle
                 components=component_bundle(rows,read_sources,source)
                 if components:bundle=components;used_method_bundle=True

@@ -18,7 +18,7 @@ def qualitative(question):
 def enabled(record):
     from services.deep_research.request_context import effective_question
     return (type(record.get('mechanismEvidenceContractVersion')) is int
-        and record['mechanismEvidenceContractVersion'] in (1,2)
+        and record['mechanismEvidenceContractVersion'] in (1,2,3)
         and record.get('state',{}).get('outputKind') in {'direction_survey','claim_verification','paper_comparison'}
         and qualitative(effective_question(record)))
 

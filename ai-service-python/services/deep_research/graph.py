@@ -1138,6 +1138,7 @@ def make_synthesize_node(
         source_registry = {}
         from services.deep_research.synthesis_evidence import enabled as premise_enabled,order_premises,result_role,fit_premises
         from services.deep_research.mechanism_sources import enabled as mechanism_premises
+        from services.deep_research.section_premises import requested as requested_sections
         premise_mode=premise_enabled(record)
         premise_bundles=[];table_registry={};table_keys={}
         candidates = distinct_evidence_candidates(evidence)
@@ -1155,7 +1156,8 @@ def make_synthesize_node(
                 **({'operational_context':True}
                    if record['synthesisEvidenceContractVersion']==6 and output_kind=='experiment_design' else {}),
                 **({'mechanism_overview':True} if mechanism_premises(record) else {}),
-                **({'mechanism_components':True} if mechanism_premises(record) and record['mechanismEvidenceContractVersion']==2 else {}))
+                **({'mechanism_components':True} if mechanism_premises(record) and record['mechanismEvidenceContractVersion'] in (2,3) else {}),
+                **({'section_targets':requested_sections(question)} if mechanism_premises(record) and record['mechanismEvidenceContractVersion']==3 else {}))
         elif output_kind == 'paper_comparison':
             candidates = comparison_evidence_order(candidates, paper_titles)
         elif output_kind == 'experiment_design':
@@ -1409,12 +1411,15 @@ space with unsupported global absence or incidental iteration/performance values
                 obligations=draft_obligations,sources=source_registry,evidence_marker=evidence_marker,
                 table_marker=table_marker,claim_fields=claim_fields,claim_limit=claim_limit,
                 section_templates=section_templates,**({'basis_slot':basis_slot} if staged_mode else {}))
-        compact_evidence_wire=(premise_mode and output_kind=='experiment_design'
+        section_focused=(mechanism_premises(record) and record.get('mechanismEvidenceContractVersion')==3
+            and bool(requested_sections(question)))
+        compact_evidence_wire=(premise_mode and ((output_kind=='experiment_design'
             and record.get('synthesisEvidenceContractVersion')==6)
+            or section_focused))
         if compact_evidence_wire:
             from services.deep_research.evidence_wire import LEGEND,SHORT_LEGEND
             from services.deep_research.experiment_plan_encoding import flexible as flexible_plan
-            evidence_wire_legend=SHORT_LEGEND if flexible_plan(record) else LEGEND
+            evidence_wire_legend=SHORT_LEGEND if section_focused or flexible_plan(record) else LEGEND
             prompt+='\n'+evidence_wire_legend
         from services.deep_research.access_disclosure import enabled as access_disclosure_enabled, GUIDANCE as access_disclosure_guidance
         if access_disclosure_enabled(record):
@@ -1425,11 +1430,14 @@ space with unsupported global absence or incidental iteration/performance values
         if preserve_answer_scope(record):prompt+='\n'+preservation_guidance
         if (type(record.get('compactionEditorContractVersion')) is int
                 and record['compactionEditorContractVersion'] in (7,8) and output_kind!='experiment_design'):
-            prompt+='\nThe section names above are an allowed vocabulary, NOT a checklist of deliverables. '\
-                'Use only sections needed by the human question and frozen answer_requirement criteria. '\
-                'Do not add method-selection advice, experiments, rankings or a reading plan merely to populate a template. '\
-                'When advice is actually requested, preserve it and its necessary conditions. '\
-                'Explain required scientific relationships without expanding the requested scope.\n'
+            if section_focused:
+                prompt+='\nTemplate sections are optional. Answer every human-requested point and necessary condition; do not add unrequested method selection, experiments, rankings or reading plans to fill a template.\n'
+            else:
+                prompt+='\nThe section names above are an allowed vocabulary, NOT a checklist of deliverables. '\
+                    'Use only sections needed by the human question and frozen answer_requirement criteria. '\
+                    'Do not add method-selection advice, experiments, rankings or a reading plan merely to populate a template. '\
+                    'When advice is actually requested, preserve it and its necessary conditions. '\
+                    'Explain required scientific relationships without expanding the requested scope.\n'
         template = prompt
         if premise_mode:
             reverse_aliases={eid:alias for alias,eid in evidence_aliases.items()}
