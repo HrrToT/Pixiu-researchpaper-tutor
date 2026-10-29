@@ -1,0 +1,48 @@
+{
+  "component": "three-point-compaction-and-verification",
+  "sourceCase": "S1G-v8",
+  "sourceCommit": "2c750ef9",
+  "executionExitCode": 1,
+  "failure": "one compaction did not meet existing scope/length contract; no retry",
+  "providerCalls": 1,
+  "allCallsSettled": true,
+  "tokens": 1188,
+  "retainedIds": [
+    "c1",
+    "c2",
+    "c3"
+  ],
+  "textCopiedUnchanged": true,
+  "reconstructedVisibleCharacters": 326,
+  "characterLimit": 300,
+  "postEditVerificationRan": false,
+  "preservation": {
+    "before": {
+      "ledgerRows": 7650,
+      "ledgerSha256": "e61ce114eab66f7704624649e1088b8d059f363f11b600defdfe7dc61a96dcb9",
+      "payloadSha256": "8a1657628cf252230de6edf15ef1bb033654ed5ecf6535882caf717d52d455f3"
+    },
+    "after": {
+      "ledgerRows": 7650,
+      "ledgerSha256": "e61ce114eab66f7704624649e1088b8d059f363f11b600defdfe7dc61a96dcb9",
+      "payloadSha256": "8a1657628cf252230de6edf15ef1bb033654ed5ecf6535882caf717d52d455f3"
+    },
+    "exactProductionPreservation": true,
+    "providerSubmissions": 1,
+    "productionPublish": false,
+    "fullWorkflowReplay": false,
+    "independentCredit": 0,
+    "elapsedSeconds": 6.897
+  },
+  "productionPublish": false,
+  "scientificApproval": false,
+  "independentCredit": 0,
+  "receiptHashes": {
+    "calls.json": "f901b55d5e0c88ca2292d45f5498aa8b594d401ba9cd575ee68c5c6fe3cd8432",
+    "failure.json": "97e15f2bbbe149aafc9c515c744d1a24a7353438abec6e255ddad6ae809a31e9",
+    "payload.json": "9a3ca936070140c3f20c30d2ebd26aa31c176ff53289937007234e13eeb513ef",
+    "preservation.json": "a3bed60979cb2a55e1086f06a7fd7e37dedbedc757b120f799f92b8ff7ea9465",
+    "progress.json": "2b77ca1436c21e61f9ed468030fd6a37aed95b86f7b2c3b91e1e630e7dde4764",
+    "request-1.json": "4c9b159bd8eed6d756792e6fffecfe5d16ceb3b7fa4f6ff5d135120799b346fe"
+  }
+}
