@@ -1,8 +1,8 @@
 {
-  "asOf": "2026-10-23",
+  "asOf": "2026-10-29",
   "objective": "Complete DR0-DR5 in DEEP_RESEARCH_DESIGN_20261012.md without redefining success around implemented subsets.",
   "overall": "incomplete",
-  "freshMaterialReadiness": "H1R2 remains unknown/unscored. H2R/H3R/H4R/H5R remain retired development cases; all new source/content results need independent replacements after development quality passes.",
+  "freshMaterialReadiness": "Independent content acceptance remains 0. Retired cases remain development-only; historical unknowns are not reissued. Fresh replacements and full DR0-DR5 release audit remain pending.",
   "evidenceRule": "Machine completion, offline fixtures, real transport, source support, content quality and independent-case eligibility are separate. Historical results are not silently upgraded to current passes.",
   "latestVerification": {
     "backendResearchModelReadingIntegration": {
@@ -3643,6 +3643,31 @@
       "repairTransportProof": "deep-research-evidence/E1-v42-repair-transport-20261023.json",
       "reviewTransportProof": "deep-research-evidence/E1-v42-review-transport-20261023.json",
       "boundary": "Real transport verified,not scientific quality;packet4 also admits on this new input;do not infer causal gains from different generated cases."
+    },
+    "draftConsolidation20261029": {
+      "fullOfflineBaseline": {
+        "sourceCommit": "efb1bf44",
+        "files": 337,
+        "passed": 6123,
+        "proof": "deep-research-evidence/draft-merge-355-global-associated-regression-20261029.json"
+      },
+      "currentAssociatedOffline": {
+        "sourceCommit": "7aa97982",
+        "files": 107,
+        "passed": 2034,
+        "proof": "deep-research-evidence/draft-editor-356-confirmed-associated-regression-20261029.json"
+      },
+      "currentComponent": {
+        "calls": 5,
+        "tokens": 21310,
+        "seconds": 86.556,
+        "accepted": 2,
+        "rejected": 0,
+        "coverageGaps": 0,
+        "finalCharacters": 170,
+        "independentCredit": 0
+      },
+      "scope": "Test sets overlap; do not add counts or label the older full baseline as a full run of the final profile wiring."
     }
   },
   "stages": [
@@ -4707,7 +4732,21 @@
     "independentCredit": 0,
     "proof": "deep-research-evidence/compact-experiment-envelope-regression-20261020.json"
   },
-  "currentCheckpoint": ".252/08908def loaded;4383offline/240files,77focused,38legacy,37hashes. E1-v42 completed/inconclusive140s,10settled61210tokens,0unknown,0/9accepted. One real repair5 call30388bytes,3drafts retained;later batch23735>20720 stopped;postrepair singleton reviews38911/38974>32000 not started.5815ledger/0active/11oldunknown. DR0-DR5 incomplete,independent0/5.",
+  "currentCheckpoint": {
+    "sourceCommit": "7aa97982",
+    "promptVersion": "dr-v2.20261029.356",
+    "loaded": true,
+    "component": "draft consolidation and independent verification",
+    "componentOutcome": "passed_known_development_case",
+    "productionPublished": false,
+    "fullWorkflowProved": false,
+    "independentCredit": 0,
+    "ledgerRows": 7682,
+    "activeProductionRuns": 0,
+    "historicalPausedRuns": 13,
+    "proof": "deep-research-evidence/draft-editor-356-production-component-20261029.json",
+    "remaining": "Current fixed-case quality, multi-paper/external/recovery-publication acceptance and fresh independent replacements; full goal not complete."
+  },
   "sharedModuleSourceCheckpoint": {
     "sourceCommit": "f8ae5177",
     "promptVersion": "dr-v2.20261020.199",
