@@ -1422,6 +1422,13 @@ space with unsupported global absence or incidental iteration/performance values
         if semantics_enabled(record):prompt+='\n'+DRAFT_GUIDANCE
         from services.deep_research.answer_preservation import enabled as preserve_answer_scope, GUIDANCE as preservation_guidance
         if preserve_answer_scope(record):prompt+='\n'+preservation_guidance
+        if (type(record.get('compactionEditorContractVersion')) is int
+                and record['compactionEditorContractVersion']==7 and output_kind!='experiment_design'):
+            prompt+='\nThe section names above are an allowed vocabulary, NOT a checklist of deliverables. '\
+                'Use only sections needed by the human question and frozen answer_requirement criteria. '\
+                'Do not add method-selection advice, experiments, rankings or a reading plan merely to populate a template. '\
+                'When advice is actually requested, preserve it and its necessary conditions. '\
+                'Explain required scientific relationships without expanding the requested scope.\n'
         template = prompt
         if premise_mode:
             reverse_aliases={eid:alias for alias,eid in evidence_aliases.items()}
@@ -1669,7 +1676,8 @@ space with unsupported global absence or incidental iteration/performance values
                 **({'measured_edit_budget':True} if type(record.get('compactionEditorContractVersion')) is int and record['compactionEditorContractVersion']==2 else {}),
                 **({'lean_edit':True} if type(record.get('compactionEditorContractVersion')) is int and record['compactionEditorContractVersion'] in (3,4) else {}),
                 **({'focused_edit':True} if type(record.get('compactionEditorContractVersion')) is int and record['compactionEditorContractVersion']==4 else {}),
-                **({'draft_merge':True,'merge_audit':draft_merge_audit} if type(record.get('compactionEditorContractVersion')) is int and record['compactionEditorContractVersion'] in (5,6) else {}),
+                **({'measured_merge':True} if type(record.get('compactionEditorContractVersion')) is int and record['compactionEditorContractVersion']==7 else {}),
+                **({'draft_merge':True,'merge_audit':draft_merge_audit} if type(record.get('compactionEditorContractVersion')) is int and record['compactionEditorContractVersion'] in (5,6,7) else {}),
                 presentation_version=record.get('reportPresentationContractVersion',0),
                 **({'compact_layout':True} if compact_layout else {}),
                 **({'fixed_claim_ids':[a['claimId'] for a in scope_expression_audit]} if scope_expression_audit else {}),
