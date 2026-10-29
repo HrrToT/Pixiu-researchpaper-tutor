@@ -94,7 +94,8 @@ public class TaskResearchService {
         }
         Map<String, Object> result = tasks.addResearchSource(taskId, runId, sourceId, input, (Map<String, Object>) source);
         // Start ordinary PDF parsing after the task transaction has committed; never run AI analysis here.
-        if (materialProcessing != null && "fulltext".equals(source.get("accessLevel"))) {
+        if (materialProcessing != null && "fulltext".equals(source.get("accessLevel"))
+                && !Boolean.TRUE.equals(result.get("sourceAlreadyAdded"))) {
             materialProcessing.request(String.valueOf(result.get("paperId")), false);
         }
         return result;

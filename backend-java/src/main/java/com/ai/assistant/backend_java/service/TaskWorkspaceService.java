@@ -64,7 +64,7 @@ public class TaskWorkspaceService {
             if (!runId.equals(previous.get("runId")) || !sourceId.equals(previous.get("sourceId"))) {
                 throw new ResponseStatusException(HttpStatus.CONFLICT, "该请求 ID 已用于另一个来源");
             }
-            return Map.of("status", "success", "workspace", task, "paperId", previous.get("paperId"));
+            return Map.of("status", "success", "workspace", task, "paperId", previous.get("paperId"), "sourceAlreadyAdded", true);
         }
         requireRevision(input.get("expectedTaskRevision"), entity.getRevision());
         if (researchPapers == null) throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "论文存储不可用");
@@ -81,6 +81,7 @@ public class TaskWorkspaceService {
             paper.setFileName(source.get("title") instanceof String title && !title.isBlank() ? title : arxivId);
             paper.setPdfBytes(pdf);
             paper.setProcessingStatus(pdf == null ? "metadata" : "pending");
+            paper.setAiAnalysisStatus("not_requested");
             Map<String, Object> analysis = new LinkedHashMap<>();
             analysis.put("status", "success"); analysis.put("pdfId", paperId); analysis.put("title", paper.getFileName());
             analysis.put("externalSource", source.entrySet().stream().filter(entry -> !"pdfBase64".equals(entry.getKey()))
@@ -95,7 +96,7 @@ public class TaskWorkspaceService {
         receipts.put(requestId, Map.of("runId", runId, "sourceId", sourceId, "paperId", paperId));
         task.put("researchSourceReceipts", receipts);
         setContent(entity, task, taskId);
-        return Map.of("status", "success", "workspace", toResponse(repository.saveAndFlush(entity)), "paperId", paperId);
+        return Map.of("status", "success", "workspace", toResponse(repository.saveAndFlush(entity)), "paperId", paperId, "sourceAlreadyAdded", false);
     }
 
     @Transactional
