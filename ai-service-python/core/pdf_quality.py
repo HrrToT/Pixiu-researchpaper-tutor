@@ -30,12 +30,13 @@ def get_grobid_client():
 
     if _grobid_client is None:
         from grobid_client.grobid_client import GrobidClient
+        from core.config import settings
 
         _grobid_client = GrobidClient(
             grobid_server=os.environ.get("GROBID_SERVER_URL", "http://grobid:8070"),
             queue_size=1,
             sleep_time=1,
-            timeout=60,
+            timeout=settings.grobid_timeout_seconds,
         )
 
     return _grobid_client

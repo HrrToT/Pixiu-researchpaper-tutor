@@ -152,3 +152,29 @@ class PdfParseDiagnosticsTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+@pytest.mark.parametrize('seconds',[1,120,300])
+def test_grobid_timeout_is_bounded_server_configuration(monkeypatch,seconds):
+    from core import pdf_quality
+    from core.config import Settings
+    from types import SimpleNamespace
+    import sys
+    monkeypatch.setenv('GROBID_TIMEOUT_SECONDS',str(seconds))
+    settings=Settings(_env_file=None)
+    client=Mock()
+    monkeypatch.setitem(sys.modules,'grobid_client.grobid_client',SimpleNamespace(GrobidClient=client))
+    monkeypatch.setattr('core.config.settings',settings)
+    monkeypatch.setattr(pdf_quality,'_grobid_client',None)
+    first=pdf_quality.get_grobid_client()
+    assert pdf_quality.get_grobid_client() is first
+    client.assert_called_once()
+    assert client.call_args.kwargs['timeout']==seconds
+
+
+@pytest.mark.parametrize('seconds',[0,301])
+def test_grobid_timeout_rejects_unbounded_values(seconds):
+    from core.config import Settings
+    from pydantic import ValidationError
+    with pytest.raises(ValidationError):
+        Settings(_env_file=None,grobid_timeout_seconds=seconds)

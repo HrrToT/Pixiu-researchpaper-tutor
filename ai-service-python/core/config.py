@@ -45,6 +45,8 @@ class Settings(BaseSettings):
     # 沿用主模型，只改采样温度，分析质量不受影响。
     deepseek_structured_temperature: float = 0.0
 
+    grobid_timeout_seconds: int = Field(default=120, ge=1, le=300)
+
     # ── Logging ────────────────────────────────────────────────────────
     pixiu_log_level: str = "INFO"
     pixiu_log_json: bool = False
