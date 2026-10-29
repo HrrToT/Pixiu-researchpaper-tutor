@@ -417,7 +417,9 @@ Return a JSON ARRAY of plan items, NOT an object with items field."""
         semantics_changes=[]
         if semantics_enabled(record):
             from services.deep_research.request_semantics import normalize_access_requirements
-            validated,semantics_changes=normalize_access_requirements(validated,question, **({"version":2} if record["requestSemanticsContractVersion"]==2 else {}))
+            from services.deep_research.answer_preservation import enabled as preserve_answer_scope
+            validated,semantics_changes=normalize_access_requirements(validated,question,
+                **({'version':3} if preserve_answer_scope(record) else {'version':2} if record['requestSemanticsContractVersion']==2 else {}))
             validated=validate_plan(validated)
             validate_completion_criteria(validated,required=criteria_required)
 
@@ -1408,6 +1410,8 @@ space with unsupported global absence or incidental iteration/performance values
             prompt+='\n'+access_disclosure_guidance
         from services.deep_research.request_semantics import enabled as semantics_enabled, DRAFT_GUIDANCE
         if semantics_enabled(record):prompt+='\n'+DRAFT_GUIDANCE
+        from services.deep_research.answer_preservation import enabled as preserve_answer_scope, GUIDANCE as preservation_guidance
+        if preserve_answer_scope(record):prompt+='\n'+preservation_guidance
         template = prompt
         if premise_mode:
             reverse_aliases={eid:alias for alias,eid in evidence_aliases.items()}
@@ -1647,6 +1651,7 @@ space with unsupported global absence or incidental iteration/performance values
                 direct_compact_invoke if fixed_scope_compaction(record,question,output_kind) else compact_invoke, _safe_parse_json,
                 output_kind=output_kind, evidence=evidence,
                 preserve_claims=bool(point_constraint and point_constraint['mode'] == 'exact'),
+                **({'preserve_answers':True} if preserve_answer_scope(record) else {}),
                 presentation_version=record.get('reportPresentationContractVersion',0),
                 **({'compact_layout':True} if compact_layout else {}),
                 **({'fixed_claim_ids':[a['claimId'] for a in scope_expression_audit]} if scope_expression_audit else {}),
@@ -1886,6 +1891,7 @@ def make_verify_node(
                             if claim_check_enabled(record) and record['claimCheckContractVersion'] in (5,6,7,8,9) else {}),
                         **({'compact_source_repair':True} if compact_repair else {}),
                         **({'ordinary_advice':True} if advice_repair else {}),
+                        **({'preserve_answers':True} if type(record.get('answerPreservationContractVersion')) is int and record['answerPreservationContractVersion']==1 else {}),
                         **({'request_semantics':record['requestSemanticsContractVersion'] if record['requestSemanticsContractVersion']==2 else True} if type(record.get('requestSemanticsContractVersion')) is int and record['requestSemanticsContractVersion'] in (1,2) else {}),
                         **({'task_sources':True} if type(record.get('reportPresentationContractVersion')) is int and record['reportPresentationContractVersion']==4 else {}),
                         **({'shared_experiment_schema':True} if shared_experiment_repair(record) else {}),

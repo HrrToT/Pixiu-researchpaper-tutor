@@ -9,7 +9,7 @@ def enabled(record):
 
 
 def normalize_access_requirements(plan,question,*,version=1):
-    if type(version) is not int or version not in (1,2):raise ValueError('Invalid request semantics policy')
+    if type(version) is not int or version not in (1,2,3):raise ValueError('Invalid request semantics policy')
     from services.deep_research.access_disclosure import access_only
     from services.deep_research.evidence_requirements import _outside_examples
     layers=getattr(question,'instruction_layers',(str(question),))
@@ -29,6 +29,11 @@ def normalize_access_requirements(plan,question,*,version=1):
             access_description=re.sub(r'用户|助手|模型|系统|\bAI\b','',description).replace('标注','标明')
             if version==2:
                 access_description=re.sub(r'[，,；;]?(?:并|且)?(?:指出|说明)(?:该|此)?信息在(?:材料|原文|文中)中?的(?:体现|位置|依据)[。.]?$','',access_description)
+            if version==3:
+                # Provenance-only wording is not a request for mechanisms,
+                # results, numbers or comparisons. Unknown/scientific tokens
+                # remain and keep the conservative access-only guard closed.
+                access_description=re.sub(r'给出|指出|信息|该|此|其中|原文|中|在|体现|位置|文本|证明|标识|理由','',access_description)
             if not access_only(access_description):continue
             grounded=False
             for layer in layers:

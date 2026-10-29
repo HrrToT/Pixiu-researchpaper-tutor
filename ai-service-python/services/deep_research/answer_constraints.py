@@ -91,7 +91,11 @@ def visible_count(candidate, limit, output_kind='', evidence=(), presentation_ve
 
 
 def compact_answer(report, question, invoke, parse, *, output_kind='', evidence=(), preserve_claims=False,
-                   presentation_version=0, fixed_claim_ids=(), explicit_edit_scope=False, compact_layout=False):
+                   presentation_version=0, fixed_claim_ids=(), explicit_edit_scope=False, compact_layout=False,preserve_answers=False):
+    if type(preserve_answers) is not bool:raise ValueError('Invalid answer preservation policy')
+    if preserve_answers:
+        preserve_claims=True
+        explicit_edit_scope=True
     if type(explicit_edit_scope) is not bool:raise ValueError('Invalid explicit edit scope policy')
     if type(compact_layout) is not bool:raise ValueError('Invalid compact layout policy')
     report = normalize_conditions(report)
@@ -166,6 +170,9 @@ editableClaims：{json.dumps(inputs,ensure_ascii=False)}'''
     if compact_layout:
         from services.deep_research.short_factual_layout import PROSE_GUIDANCE as GUIDANCE
         prompt+='\n'+GUIDANCE+'\n原稿当前可见长度：'+str(count(report))+'。必须在现有硬上限内实质精简，不能只换同义词。'
+    if preserve_answers:
+        from services.deep_research.answer_preservation import GUIDANCE
+        prompt+='\n'+GUIDANCE
     result = invoke(prompt)
     finish = (result.get('finishReason', result.get('finish_reason')) if isinstance(result, dict)
               else getattr(result, 'finish_reason', None))
@@ -174,7 +181,8 @@ editableClaims：{json.dumps(inputs,ensure_ascii=False)}'''
     compact = parse(result.get('content', '') if isinstance(result, dict) else result.content)
     if not isinstance(compact, dict) or not isinstance(compact.get('claims'), list) or not compact['claims']:
         return None
-    if compact_layout and (set(compact)!={'claims'} or any(not isinstance(c,dict)
+    if preserve_answers and any(not isinstance(c,dict) or not isinstance(c.get('text'),str) or not c['text'].strip() for c in compact['claims']):return None
+    if (compact_layout or preserve_answers) and (set(compact)!={'claims'} or any(not isinstance(c,dict)
             or set(c)!={'claimId','text','conditions'} or not isinstance(c.get('text'),str)
             or not isinstance(c.get('conditions'),dict) for c in compact['claims'])):
         return None
@@ -196,6 +204,7 @@ editableClaims：{json.dumps(inputs,ensure_ascii=False)}'''
             return None
         claim.clear()
         claim.update(merged)
+    if preserve_answers and [c['claimId'] for c in compact['claims']] != [c['claimId'] for c in editable]:return None
     if (preserve_claims or output_kind == 'paper_comparison') and seen != set(original):
         return None
     if fixed:

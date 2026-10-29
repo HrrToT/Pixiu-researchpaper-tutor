@@ -16,7 +16,8 @@ from services.deep_research.repair_scope import repair_evidence_scope
 def _prepare_repair(report, verification, evidence, question, *, max_prompt_bytes=24000,
                     metric_domains=None, draft_context=(), prior_revisions=(),
                     fact_redraft=False, requirement_context=(), source_aware_redraft=False,comparison_reasoning=False,
-                    question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False,shared_experiment_schema=False,experiment_evidence_context=None,experimental_edits=False,experimental_diagnostics=False,experimental_nested_tables=False,experimental_representation=False,experimental_coverage=False,citation_presentation_version=0,configuration_consistency_version=0,repair_evidence_packet_version=0,answer_intents=None,scope_expression=False,table_identity_context=False,claim_check=False,required_scope_ids=(),compact_layout=False,ordinary_advice=False,task_sources=False,request_semantics=False):
+                    question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False,shared_experiment_schema=False,experiment_evidence_context=None,experimental_edits=False,experimental_diagnostics=False,experimental_nested_tables=False,experimental_representation=False,experimental_coverage=False,citation_presentation_version=0,configuration_consistency_version=0,repair_evidence_packet_version=0,answer_intents=None,scope_expression=False,table_identity_context=False,claim_check=False,required_scope_ids=(),compact_layout=False,ordinary_advice=False,task_sources=False,request_semantics=False,preserve_answers=False):
+    if type(preserve_answers) is not bool:raise ValueError('Invalid answer preservation policy')
     if not (type(request_semantics) is bool or type(request_semantics) is int and request_semantics==2):raise ValueError('Invalid request semantics policy')
     if type(task_sources) is not bool:raise ValueError('Invalid task source disclosure policy')
     if type(ordinary_advice) is not bool:raise ValueError('Invalid ordinary advice repair policy')
@@ -455,6 +456,9 @@ in the paper. Maintain consistency with accepted definitions and complete requir
     if type(declared_table_refs) is int and declared_table_refs==4:
         from services.deep_research.table_bindings import reference_guidance
         prompt+='\n'+reference_guidance(4)
+    if preserve_answers:
+        from services.deep_research.answer_preservation import GUIDANCE
+        prompt+='\n'+GUIDANCE
     if request_semantics:
         from services.deep_research.request_semantics import DRAFT_GUIDANCE
         prompt+='\n'+DRAFT_GUIDANCE+'\nRepair preserves original kind: if an original reported target cannot be supported as an author fact, leave it unresolved rather than inventing an author recommendation or changing kind.'
@@ -719,7 +723,7 @@ def factual_redraft_eligible(report):
 def repair_rejected(report, verification, evidence, question, invoke, parse, *,
                     max_prompt_bytes=24000, metric_domains=None, batch_state=None, checkpoint=None,
                     current_budget=None, invoke_request=None, fact_redraft=False, requirement_context=(),
-                    source_aware_redraft=False,comparison_reasoning=False,question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,strict_response=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False,shared_experiment_schema=False,experiment_evidence_context=None,experimental_edits=False,experimental_diagnostics=False,experimental_nested_tables=False,experimental_representation=False,experimental_coverage=False,citation_presentation_version=0,configuration_consistency_version=0,repair_evidence_packet_version=0,scheduling_version=0,answer_intents=None,scope_expression=False,defer_length_filter=False,table_identity_context=False,claim_check=False,required_scope_ids=(),compact_layout=False,ordinary_advice=False,task_sources=False,request_semantics=False):
+                    source_aware_redraft=False,comparison_reasoning=False,question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,strict_response=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False,shared_experiment_schema=False,experiment_evidence_context=None,experimental_edits=False,experimental_diagnostics=False,experimental_nested_tables=False,experimental_representation=False,experimental_coverage=False,citation_presentation_version=0,configuration_consistency_version=0,repair_evidence_packet_version=0,scheduling_version=0,answer_intents=None,scope_expression=False,defer_length_filter=False,table_identity_context=False,claim_check=False,required_scope_ids=(),compact_layout=False,ordinary_advice=False,task_sources=False,request_semantics=False,preserve_answers=False):
     """One bounded revision round, split before dispatch when evidence cannot fit.
 
     At most three requests share full sibling design definitions. Successful
@@ -729,6 +733,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
     from services.deep_research.contracts import digest, DeepResearchError
     from services.deep_research.repair_batches import split_repair_targets
 
+    if type(preserve_answers) is not bool:raise ValueError('Invalid answer preservation policy')
     if not (type(request_semantics) is bool or type(request_semantics) is int and request_semantics==2):raise ValueError('Invalid request semantics policy')
     if type(task_sources) is not bool:raise ValueError('Invalid task source disclosure policy')
     if type(ordinary_advice) is not bool:raise ValueError('Invalid ordinary advice repair policy')
@@ -791,6 +796,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
                        **({'tableReferencesContractVersion':4 if type(declared_table_refs) is int and declared_table_refs==4 else 1} if declared_table_refs else {}),
                        **({'recommendationRepairContractVersion':1} if ordinary_advice else {}),
                        **({'reportPresentationContractVersion':4} if task_sources else {}),
+                       **({'answerPreservationContractVersion':1} if preserve_answers else {}),
                        **({'requestSemanticsContractVersion':2 if type(request_semantics) is int and request_semantics==2 else 1} if request_semantics else {}),
                        **({'repairResponseContractVersion':1} if strict_response else {}),
                        **({'factualRepairContractVersion':1} if compact_source_repair else {}),
@@ -818,6 +824,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
             **({'ordinary_advice':True} if ordinary_advice else {}),
             **({'task_sources':True} if task_sources else {}),
             **({'request_semantics':request_semantics} if request_semantics else {}),
+            **({'preserve_answers':True} if preserve_answers else {}),
             **({'answer_intents':answer_intents} if answer_intents is not None else {}),
             **({'scope_expression':scope_expression} if scope_expression else {}),
             **({'required_scope_ids':[key for key in required_scope_ids if key in ids]} if required_scope_ids else {}),
