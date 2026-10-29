@@ -1644,6 +1644,9 @@ space with unsupported global absence or incidental iteration/performance values
         compact_invoke = lambda prompt: llm_invoke(run_id, "synthesize_compact", prompt,
                 {"max_tokens": 2000, "temperature": 0.0,**compact_options})
         direct_compact_invoke=lambda prompt:llm_invoke(run_id,'synthesize_compact',prompt,{'max_tokens':2000,'temperature':0.0})
+        from services.deep_research.compaction_editor import request_options as editor_request_options
+        editor_options=editor_request_options(record,output_kind)
+        draft_compact_invoke=lambda prompt:llm_invoke(run_id,'synthesize_compact',prompt,{'max_tokens':2000,'temperature':0.0,**editor_options})
         draft_merge_audit={}
         if scope_expression_audit and scope_compaction_enabled(record):
             parsed, scope_expression_audit = compact_scope(parsed, scope_expression_audit, question,
@@ -1657,14 +1660,14 @@ space with unsupported global absence or incidental iteration/performance values
                 **({'measured_guidance':True} if compact_options else {}))
         else:
             parsed = compact_answer(parsed, question,
-                direct_compact_invoke if fixed_scope_compaction(record,question,output_kind) else compact_invoke, _safe_parse_json,
+                draft_compact_invoke if editor_options else direct_compact_invoke if fixed_scope_compaction(record,question,output_kind) else compact_invoke, _safe_parse_json,
                 output_kind=output_kind, evidence=evidence,
                 preserve_claims=bool(point_constraint and point_constraint['mode'] == 'exact'),
                 **({'preserve_answers':True} if preserve_answer_scope(record) else {}),
                 **({'measured_edit_budget':True} if type(record.get('compactionEditorContractVersion')) is int and record['compactionEditorContractVersion']==2 else {}),
                 **({'lean_edit':True} if type(record.get('compactionEditorContractVersion')) is int and record['compactionEditorContractVersion'] in (3,4) else {}),
                 **({'focused_edit':True} if type(record.get('compactionEditorContractVersion')) is int and record['compactionEditorContractVersion']==4 else {}),
-                **({'draft_merge':True,'merge_audit':draft_merge_audit} if type(record.get('compactionEditorContractVersion')) is int and record['compactionEditorContractVersion']==5 else {}),
+                **({'draft_merge':True,'merge_audit':draft_merge_audit} if type(record.get('compactionEditorContractVersion')) is int and record['compactionEditorContractVersion'] in (5,6) else {}),
                 presentation_version=record.get('reportPresentationContractVersion',0),
                 **({'compact_layout':True} if compact_layout else {}),
                 **({'fixed_claim_ids':[a['claimId'] for a in scope_expression_audit]} if scope_expression_audit else {}),

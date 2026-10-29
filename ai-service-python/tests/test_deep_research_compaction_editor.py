@@ -24,12 +24,12 @@ def test_other_roles_remain_byte_identical(node):
     assert messages_for_record(record(1),node,'prompt')==messages_for_record(record(0),node,'prompt')
 
 
-@pytest.mark.parametrize('version',[None,True,0,6,'1'])
+@pytest.mark.parametrize('version',[None,True,0,7,'1'])
 def test_noninteger_or_unknown_editor_flag_cannot_select_role(version):
     assert messages_for_record(record(version),'synthesize_compact','p')==messages_for_record(record(0),'synthesize_compact','p')
 
 
-@pytest.mark.parametrize('replacement',[None,True,0,6,'1'])
+@pytest.mark.parametrize('replacement',[None,True,0,7,'1'])
 def test_editor_contract_is_server_owned_and_immutable(tmp_path,replacement):
     from services.deep_research.repository import DeepResearchRepository
     from services.deep_research.facade import ResearchFacade
@@ -37,7 +37,7 @@ def test_editor_contract_is_server_owned_and_immutable(tmp_path,replacement):
     try:
         run,_=facade.create({'workspaceTaskId':'t','operationKey':'op','question':'说明方法','deferStart':True,
             'compactionEditorContractVersion':replacement},start_async=False)
-        assert run['compactionEditorContractVersion']==5
+        assert run['compactionEditorContractVersion']==6
         with pytest.raises(ValueError,match='Immutable'):
             repo.update_run(run['runId'],lambda r:{**r,'compactionEditorContractVersion':replacement})
     finally:facade.shutdown()

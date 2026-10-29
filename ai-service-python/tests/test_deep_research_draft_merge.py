@@ -90,9 +90,10 @@ def test_new_role_supports_requested_scope_schema_and_preserves_all_old_roles():
     assert 'scopeExpression' in SCHEMA_SYSTEM and len(SCHEMA_SYSTEM.encode())+128<=1024
 
 
-def test_actual_synthesis_node_persists_merge_provenance_before_verification():
+@pytest.mark.parametrize('version',[5,6])
+def test_actual_synthesis_node_persists_merge_provenance_before_verification(version):
     from services.deep_research.graph import make_synthesize_node
-    record={'compactionEditorContractVersion':5,'answerPreservationContractVersion':1,
+    record={'compactionEditorContractVersion':version,'answerPreservationContractVersion':1,
         'reportPresentationContractVersion':4,'question':'说明机制与阅读顺序，300字以内',
         'state':{'outputKind':'direction_survey','evidence':[]}}
     requests=[]
@@ -101,8 +102,32 @@ def test_actual_synthesis_node_persists_merge_provenance_before_verification():
         record=mutate(deepcopy(record));return deepcopy(record)
     def invoke(_id,node,prompt,*args,**kw):
         requests.append(node)
+        if node=='synthesize_compact':
+            from services.deep_research.runtime import research_model_options
+            resolved=research_model_options(node,args[0])
+            assert resolved['thinking']=={'type':'enabled' if version==6 else 'disabled'}
+            assert resolved['max_tokens']==8192
         return {'content':json.dumps(draft() if node=='synthesize' else response())}
     result=make_synthesize_node(invoke,update)({'run_id':'r'})
     assert result=={'report_version_id':'report_r_v1'} and requests==['synthesize','synthesize_compact']
     assert record['state']['synthesisDraftMergeAudit']['groups'][0]['sourceClaimIds']==['a','b']
     assert [c['claimId'] for c in record['state']['reportBody']['claims']]==['a','c']
+
+
+@pytest.mark.parametrize('version',[None,True,0,1,2,3,4,5,7,'6'])
+def test_calibrated_editor_profile_cannot_affect_legacy_or_unknown_versions(version):
+    from services.deep_research.compaction_editor import request_options
+    assert request_options({'compactionEditorContractVersion':version},'direction_survey')=={}
+
+
+def test_calibrated_profile_keeps_caps_and_excludes_experimental_schema_paths():
+    from services.deep_research.compaction_editor import request_options,SCHEMA_SYSTEM
+    from services.deep_research.runtime import research_model_options
+    from services.deep_research.structured_output import messages_for_record
+    record={'compactionEditorContractVersion':6,'structuredOutputContractVersion':15}
+    for kind in ('direction_survey','claim_verification','paper_comparison'):
+        old=research_model_options('synthesize_compact',{})
+        new=research_model_options('synthesize_compact',request_options(record,kind))
+        assert new=={**old,'thinking':{'type':'enabled'},'reasoning_effort':'low'}
+    for kind in ('experiment_design','unknown',None):assert request_options(record,kind)=={}
+    assert messages_for_record(record,'synthesize_compact','scopeExpression schema')[0]['content']==SCHEMA_SYSTEM
