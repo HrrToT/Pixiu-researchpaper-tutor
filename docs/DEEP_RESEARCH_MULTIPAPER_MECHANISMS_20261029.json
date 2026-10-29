@@ -1,0 +1,81 @@
+{
+  "version": 1,
+  "frozenAt": "2026-10-29",
+  "design": "DEEP_RESEARCH_DESIGN_20261012.md#19",
+  "budgetProfile": "standard",
+  "materials": {
+    "light": {
+      "path": "D:/3DGS/paper/LightGaussian/2311.17245v6.pdf",
+      "sha256": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634"
+    },
+    "cat": {
+      "path": "D:/3DGS/paper/CAT-3DGS/2503.00357v2.pdf",
+      "sha256": "6cff256c171332b72324f87ae7229c391cdc8ade63850f288d11289bda4699d5"
+    }
+  },
+  "review": {
+    "dimensions": [
+      "目标回应",
+      "证据支持",
+      "条件完整",
+      "综合价值",
+      "可读性"
+    ],
+    "minimumApplicableScore": 4,
+    "hardFailures": [
+      "仅一篇原文却宣称双篇比较",
+      "把CAT的机制归给LightGaussian或反之",
+      "把共同目标当成机制相同",
+      "跨条件性能排名",
+      "来源身份或预算越界"
+    ],
+    "rawReceiptDirectory": "tmp/dr-acceptance-receipts",
+    "independence": "Known development papers. New pair and question, not an attempt/resume of D2/H2F or an independent holdout. No old unknown submission is reissued.",
+    "sourceAnchors": [
+      {
+        "material": "light",
+        "page": 3,
+        "finding": "Prune/recovery, SH distillation, vector quantization; Figure2 and Methods."
+      },
+      {
+        "material": "cat",
+        "page": 1,
+        "finding": "ScaffoldGS, multi-scale oriented triplanes for spatial autoregression/hyperprior and channel-wise autoregression."
+      },
+      {
+        "material": "cat",
+        "page": 3,
+        "finding": "Contributions also include view-frequency-aware masking; avoid a false compression-vs-pruning dichotomy."
+      }
+    ]
+  },
+  "cases": [
+    {
+      "id": "M1G",
+      "split": "development",
+      "materials": [
+        "light",
+        "cat"
+      ],
+      "kind": "paper_comparison",
+      "policy": "task_only",
+      "question": "仅依据任务中的LightGaussian v6与CAT-3DGS v2，面向新手比较两者减少存储的主要机制。只研究一个问题：它们分别在哪些环节减少冗余，为什么不能把“都在压缩”理解为机制相同？分别引用两篇原文，说明共同目标和核心差别，400字以内。不要比较性能数值、排名或设计实验；标明本次实际引用的是全文片段还是摘要。",
+      "required": [
+        "两篇独立原文与各自引用",
+        "LightGaussian剪枝恢复/SH蒸馏/矢量量化的不同作用",
+        "CAT的triplane空间上下文/超先验及通道自回归用于率失真编码",
+        "共同目标不等于相同机制，不能排除CAT同样进行量化或masking",
+        "文字及引用身份符合400字及材料范围"
+      ],
+      "forbidden": [
+        "Light只有剪枝或CAT只做熵编码且不筛选/量化的绝对二分",
+        "把HAC机制/性能直接归CAT",
+        "拼接跨论文性能排名",
+        "未执行实验冒充结果"
+      ]
+    }
+  ],
+  "caseDefinitionHashes": {
+    "M1G": "52a07e7014b2c87a9998315df77d5f1908479b2f6b6011db342c3c785d20a8ed"
+  }
+}
