@@ -1,0 +1,18 @@
+{
+  "sourceCommit": "612c324ea689255a4c18b3d8ea17eee54b0c9f01",
+  "pythonPromptVersion": "dr-v2.20261030.364",
+  "javaPid": 46284,
+  "jarSha256": "3ac7559375c93118fd6a006112e1c2d2db29b1b954bc996d5ded964c3b3c90b0",
+  "h2BackupSha256": "3e4e4127abe7cdd98fcf4a23fa659e7a10c485c29f1a66eedaee986f1d05ee0e",
+  "h2BackupPath": "D:\\aiproj\\ai_project\\tmp\\source-processing-365-java-backup\\academic_db.mv.db",
+  "ledgerRows": 7992,
+  "allOldRunPayloadsAndLedgerExactlyPreserved": true,
+  "elevenWorkspacesExactlyPreserved": true,
+  "indexExactlyPreserved": true,
+  "indexSha256": "9196054db7ac32450eb86fc91cfb12de27c732469e4cf629bf06857a3490788d",
+  "activeRuns": 0,
+  "historicalPausedRuns": 13,
+  "providerCalls": 0,
+  "restarts": 1,
+  "boundary": "Java restart and data preservation only; source-add functionality verified separately."
+}
