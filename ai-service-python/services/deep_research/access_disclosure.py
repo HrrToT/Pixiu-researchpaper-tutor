@@ -32,7 +32,7 @@ def access_bindings_supported(bindings,known,metadata,requirement):
     return True
 
 
-def access_requirements(plan,*,joint=False):
+def access_requirements(plan,*,joint=False,citation_access=False):
     result={o['obligationId']:{'overall':True,'criteria':{
         c['criterionId'] for c in o.get('completionCriteria',[])
         if c.get('responseType')=='identification' and access_only(c.get('requirement'))}}
@@ -42,7 +42,7 @@ def access_requirements(plan,*,joint=False):
         from services.deep_research.joint_answer_bindings import access_instruction
         for item in plan:
             for o in item.get('obligations',[]):
-                if o['obligationId'] not in result and access_instruction(o.get('question','')):
+                if o['obligationId'] not in result and access_instruction(o.get('question',''),citation_access=citation_access):
                     result[o['obligationId']]={'overall':True,'criteria':set()}
     return result
 

@@ -4,7 +4,7 @@ from copy import deepcopy
 
 def enabled(record):
     return (type(record.get('coverageDiagnosticsContractVersion')) is int
-            and record['coverageDiagnosticsContractVersion'] == 1)
+            and record['coverageDiagnosticsContractVersion'] in (1,2))
 
 
 GUIDANCE = '''

@@ -25,7 +25,7 @@ def test_explicit_numeric_requests_keep_measurement_routing(q):assert not qualit
 
 
 def test_only_new_matching_source_bound_plan_can_enable_routing():
-    for version in (None,True,0,2,'1'):assert not for_query(record(version=version),'storage compression mechanism','p')
+    for version in (None,True,0,3,'1'):assert not for_query(record(version=version),'storage compression mechanism','p')
     assert for_query(record(),'storage compression mechanism','p')
     assert not for_query(record(),'unrelated query','p')
     assert not for_query(record(),'storage compression mechanism','foreign')
@@ -84,7 +84,7 @@ def test_contribution_summary_complements_method_introduction_without_using_resu
     assert overview_score(contribution['text'],'Results')==0
 
 
-@pytest.mark.parametrize('replacement',[None,True,0,2,'1'])
+@pytest.mark.parametrize('replacement',[None,True,0,3,'1'])
 def test_mechanism_intent_contract_is_server_owned_and_immutable(tmp_path,replacement):
     from services.deep_research.repository import DeepResearchRepository
     from services.deep_research.facade import ResearchFacade
@@ -92,7 +92,7 @@ def test_mechanism_intent_contract_is_server_owned_and_immutable(tmp_path,replac
     try:
         run,_=facade.create({'workspaceTaskId':'t','operationKey':'op','question':'解释机制','deferStart':True,
             'mechanismEvidenceContractVersion':replacement},start_async=False)
-        assert run['mechanismEvidenceContractVersion']==1
+        assert run['mechanismEvidenceContractVersion']==2
         with pytest.raises(ValueError,match='Immutable'):
             repo.update_run(run['runId'],lambda r:{**r,'mechanismEvidenceContractVersion':replacement})
     finally:facade.shutdown()

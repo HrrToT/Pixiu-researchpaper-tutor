@@ -139,7 +139,7 @@ def test_large_cited_quote_is_not_silently_dropped_to_obtain_a_diagnostic():
     invoke.assert_not_called()
 
 
-@pytest.mark.parametrize('marker',[None,1])
+@pytest.mark.parametrize('marker',[None,1,2])
 def test_real_verify_node_passes_only_the_server_policy_to_coverage(monkeypatch,marker):
     from services.deep_research.graph import make_verify_node
     record={'question':QUESTION,'state':{'plan':PLAN,'reportBody':{'claims':CLAIMS},
@@ -151,11 +151,12 @@ def test_real_verify_node_passes_only_the_server_policy_to_coverage(monkeypatch,
     capture=Mock(return_value={'status':'checked','gaps':[]})
     monkeypatch.setattr('services.deep_research.final_coverage.audit_final_answer',capture)
     make_verify_node(lambda *a:{'accepted':CLAIMS,'rejected':[]},None,update,Mock())({'run_id':'r'})
+    assert capture.call_args.kwargs.get('binding_catalog')==(True if marker==2 else None)
     assert capture.call_count==1
-    assert capture.call_args.kwargs.get('diagnostics')==(True if marker==1 else None)
+    assert capture.call_args.kwargs.get('diagnostics')==(True if marker in (1,2) else None)
 
 
-@pytest.mark.parametrize('replacement',[None,0,True,'1',2])
+@pytest.mark.parametrize('replacement',[None,0,True,'1',3])
 def test_policy_is_server_owned_immutable_and_never_migrates_old_runs(tmp_path,replacement):
     from services.deep_research.facade import ResearchFacade
     from services.deep_research.repository import DeepResearchRepository

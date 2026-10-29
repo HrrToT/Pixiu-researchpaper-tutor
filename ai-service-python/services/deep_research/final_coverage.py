@@ -36,7 +36,8 @@ def coverage_prompt_byte_limit(budget, output_tokens=3500):
     return max(0, min(24000, remaining - output_tokens - 1024))
 
 
-def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, *, budget=None,literal_dimensions=False,diagnostics=False,request_contract=False,claim_check=False,task_sources=False,request_semantics=0):
+def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, *, budget=None,literal_dimensions=False,diagnostics=False,request_contract=False,claim_check=False,task_sources=False,request_semantics=0,binding_catalog=False):
+    if type(binding_catalog) is not bool:raise ValueError('Invalid binding catalog policy')
     if type(request_semantics) is not int or request_semantics not in (0,2):raise ValueError('Invalid coverage semantics policy')
     if type(task_sources) is not bool:raise ValueError('Invalid task source disclosure policy')
     from services.deep_research.answer_coverage import answer_coverage_gaps
@@ -49,6 +50,7 @@ def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, 
     from services.deep_research.display_metadata import answer_display_metadata, display_metadata_digest
     from services.deep_research.access_disclosure import access_requirements
     display_metadata = answer_display_metadata(claims, evidence, **({"task_sources":True} if task_sources else {}), **({"request_semantics":2} if request_semantics==2 else {}))
+    if binding_catalog:display_metadata={**display_metadata,'answerBindingCatalogVersion':1}
     identity = None
     if plan and question:
         known = {o['obligationId'] for p in plan for o in p.get('obligations', [])}
@@ -151,6 +153,9 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
         if request_semantics==2:
             from services.deep_research.joint_answer_bindings import GUIDANCE
             prompt+='\n'+GUIDANCE
+        if binding_catalog:
+            from services.deep_research.coverage_binding_catalog import build,GUIDANCE as binding_guidance
+            prompt+='\n'+binding_guidance+'\nAvailable answer bindings: '+json.dumps(build(claims,display_metadata),ensure_ascii=False,separators=(',',':'))
         template = prompt
         try:
             output_tokens = coverage_output_tokens(audit_plan, claims)
@@ -181,7 +186,7 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
                 verdicts = restore_coverage_evidence(verdicts, reverse_aliases)
                 rows = restore_visible_evidence(rows, reverse_aliases)
                 from services.deep_research.coverage_references import resolve_coverage_references
-                verdicts = resolve_coverage_references(verdicts, claims, rows, display_metadata=display_metadata, **({"access_requirements":access_requirements(audit_plan, **({"joint":True} if request_semantics==2 else {}))} if task_sources else {}))
+                verdicts = resolve_coverage_references(verdicts, claims, rows, display_metadata=display_metadata, **({"access_requirements":access_requirements(audit_plan, **({"joint":True} if request_semantics==2 else {}), **({"citation_access":True} if binding_catalog else {}))} if task_sources else {}))
                 from services.deep_research.completion_criteria import completion_criteria_gaps, invalid_criterion_reviews
                 invalid_criteria = invalid_criterion_reviews(audit_plan, claims, verdicts, **({"display_metadata":display_metadata} if task_sources else {}))
                 if invalid_criteria:

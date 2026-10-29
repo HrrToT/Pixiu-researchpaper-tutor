@@ -18,7 +18,7 @@ def qualitative(question):
 def enabled(record):
     from services.deep_research.request_context import effective_question
     return (type(record.get('mechanismEvidenceContractVersion')) is int
-        and record['mechanismEvidenceContractVersion']==1
+        and record['mechanismEvidenceContractVersion'] in (1,2)
         and record.get('state',{}).get('outputKind') in {'direction_survey','claim_verification','paper_comparison'}
         and qualitative(effective_question(record)))
 
@@ -59,3 +59,47 @@ def prefer_sources(indexed,candidates,record,query,owned_id,limit):
     for r in [*primary,*selected]:
         if r['sourceId'] not in seen:chosen.append(r);seen.add(r['sourceId'])
     return chosen[:limit]
+
+
+def component_bundle(rows, read_sources, work):
+    """Keep a visible authored component list intact across literal passage units.
+
+    Units remain separate original evidence. No new quote, identity or support
+    verdict is created; the existing input fitter must admit the whole bundle.
+    """
+    bundles=[]
+    counts=Counter(s.get('sourceId') for s in read_sources)
+    for source in read_sources:
+        sid=source.get('sourceId');text=source.get('text')
+        if (not sid or counts[sid]!=1 or source.get('workId')!=work
+                or source.get('ownerMaterialId')!=work or not source.get('versionId')
+                or source.get('accessLevel')!='fulltext' or not isinstance(text,str)):
+            continue
+        section=source.get('location',{}).get('section','')
+        if re.search(r'related work|background|references|ablation|appendix|experiment|result',section,re.I):
+            continue
+        marker=re.search(r'\b(?:our contributions? (?:include|are)|to sum up.{0,30}contributions?)\b|本文的?贡献(?:包括|如下)',text,re.I)
+        if not marker:continue
+        suffix=text[marker.start():]
+        heading=re.search(r'\n\s*(?:\d+\.?\s+[A-Z]|Related Work\b|Experiments\b)',suffix)
+        end=marker.start()+heading.start() if heading else len(text)
+        block=text[marker.start():end]
+        if len(block)>1800 or len(re.findall(r'•|(?:^|\n)\s*[-*]',block))<2:continue
+        units=[]
+        for row in rows:
+            location=row.get('location',{});start=location.get('sourcePassageStart');stop=location.get('sourcePassageEnd')
+            if (row.get('sourceId')!=sid or row.get('sourceWorkId')!=work
+                    or row.get('ownerMaterialId')!=work or row.get('sourceVersionId')!=source['versionId']
+                    or row.get('verification',{}).get('literal')!='passed'
+                    or type(start) is not int or type(stop) is not int
+                    or not 0<=start<stop<=len(text) or text[start:stop]!=row.get('quote')):
+                continue
+            if stop>marker.start() and start<end:units.append(row)
+        units.sort(key=lambda r:r['location']['sourcePassageStart'])
+        if (not units or len(units)>3 or len({r['evidenceId'] for r in units})!=len(units)
+                or units[0]['location']['sourcePassageStart']>marker.start()
+                or units[-1]['location']['sourcePassageEnd']<end
+                or any(a['location']['sourcePassageEnd']!=b['location']['sourcePassageStart'] for a,b in zip(units,units[1:]))):
+            continue
+        bundles.append(units)
+    return min(bundles,key=lambda b:(len(b),sum(len(r['quote']) for r in b))) if bundles else []

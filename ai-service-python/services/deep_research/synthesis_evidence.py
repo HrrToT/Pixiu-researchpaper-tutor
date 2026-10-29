@@ -25,7 +25,7 @@ def result_role(row):
 
 
 def order_premises(evidence,plan,limit=20, *, membership_intents=False,module_intents=False,condition_intents=False,
-                   definition_context=False,read_sources=(),operational_context=False,mechanism_overview=False):
+                   definition_context=False,read_sources=(),operational_context=False,mechanism_overview=False,mechanism_components=False):
     obligations={o['obligationId']:o for item in plan for o in item.get('obligations',[])}
     rows=[e for e in evidence if e.get('verification',{}).get('literal')=='passed']
     works=list(dict.fromkeys(e.get('sourceWorkId') for e in rows))
@@ -66,6 +66,10 @@ def order_premises(evidence,plan,limit=20, *, membership_intents=False,module_in
                 continue
             lead=ranked[0];bundle=[lead]
             method_contexts={};used_method_bundle=False
+            if mechanism_components and active_intent is None and not re.search(r'\bpipeline\b|整体流程|总体方法',lead.get('quote',''),re.I):
+                from services.deep_research.mechanism_sources import component_bundle
+                components=component_bundle(rows,read_sources,source)
+                if components:bundle=components;used_method_bundle=True
             if operational_context and active_intent=='operation':
                 from services.deep_research.operational_premises import operational_bundle
                 method_bundle,method_contexts=operational_bundle(rows,read_sources,oid,source)

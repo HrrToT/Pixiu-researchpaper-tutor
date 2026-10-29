@@ -7,13 +7,14 @@ def enabled(metadata):
         and metadata['requestSemanticsContractVersion']==2)
 
 
-def access_instruction(question):
+def access_instruction(question, *, citation_access=False):
     from services.deep_research.access_disclosure import access_only
     from services.deep_research.evidence_requirements import _outside_examples
     layers=getattr(question,'instruction_layers',(str(question),))
     for layer in layers:
         for part in re.split(r'[。！？；，,\n]',_outside_examples(layer)):
-            if len(part.strip())>=8 and access_only(part.strip()):return part.strip()
+            canonical=part.strip().replace('引用','依据') if citation_access else part.strip()
+            if len(part.strip())>=8 and access_only(canonical):return canonical
     return None
 
 
@@ -22,7 +23,7 @@ def bindings_supported(bindings,known,metadata,requirement):
     from services.deep_research.access_disclosure import access_bindings_supported
     if _bindings_supported(bindings,known):return True
     if access_bindings_supported(bindings,known,metadata,requirement):return True
-    access=access_instruction(requirement) if enabled(metadata) else None
+    access=access_instruction(requirement,citation_access=type(metadata.get('answerBindingCatalogVersion')) is int and metadata['answerBindingCatalogVersion']==1) if enabled(metadata) else None
     if not access or not isinstance(bindings,list):return False
     labels=[b for b in bindings if isinstance(b,dict) and b.get('field')=='sourceAccessSummary']
     prose=[b for b in bindings if b not in labels]

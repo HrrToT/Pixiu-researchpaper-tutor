@@ -1154,7 +1154,8 @@ def make_synthesize_node(
                    if record['synthesisEvidenceContractVersion'] in (5,6) else {}),
                 **({'operational_context':True}
                    if record['synthesisEvidenceContractVersion']==6 and output_kind=='experiment_design' else {}),
-                **({'mechanism_overview':True} if mechanism_premises(record) else {}))
+                **({'mechanism_overview':True} if mechanism_premises(record) else {}),
+                **({'mechanism_components':True} if mechanism_premises(record) and record['mechanismEvidenceContractVersion']==2 else {}))
         elif output_kind == 'paper_comparison':
             candidates = comparison_evidence_order(candidates, paper_titles)
         elif output_kind == 'experiment_design':
@@ -1813,7 +1814,8 @@ def make_verify_node(
                 **({'claim_check':True} if claim_check_enabled(record) else {}),
                 **({'task_sources':True} if type(record.get('reportPresentationContractVersion')) is int and record['reportPresentationContractVersion']==4 else {}),
                 **({'request_semantics':2} if type(record.get('requestSemanticsContractVersion')) is int and record['requestSemanticsContractVersion']==2 else {}),
-                **({'diagnostics':True} if type(record.get('coverageDiagnosticsContractVersion')) is int and record['coverageDiagnosticsContractVersion']==1 else {}),
+                **({'binding_catalog':True} if type(record.get('coverageDiagnosticsContractVersion')) is int and record['coverageDiagnosticsContractVersion']==2 else {}),
+                **({'diagnostics':True} if type(record.get('coverageDiagnosticsContractVersion')) is int and record['coverageDiagnosticsContractVersion'] in (1,2) else {}),
                 **({'literal_dimensions':True} if dimensions_enabled(record) else {}))
             if saved.get('outputKind') == 'experiment_design':
                 from services.deep_research.design_completion import prepare_design_completion
@@ -2041,7 +2043,8 @@ def make_verify_node(
                             **({'claim_check':True} if claim_check_enabled(record) else {}),
                             **({'task_sources':True} if type(record.get('reportPresentationContractVersion')) is int and record['reportPresentationContractVersion']==4 else {}),
                             **({'request_semantics':2} if type(record.get('requestSemanticsContractVersion')) is int and record['requestSemanticsContractVersion']==2 else {}),
-                            **({'diagnostics':True} if type(record.get('coverageDiagnosticsContractVersion')) is int and record['coverageDiagnosticsContractVersion']==1 else {}),
+                            **({'binding_catalog':True} if type(record.get('coverageDiagnosticsContractVersion')) is int and record['coverageDiagnosticsContractVersion']==2 else {}),
+                            **({'diagnostics':True} if type(record.get('coverageDiagnosticsContractVersion')) is int and record['coverageDiagnosticsContractVersion'] in (1,2) else {}),
                             **({'literal_dimensions':True} if dimensions_enabled(record) else {}))
                     verification_result = merged
             except BudgetExhaustedError as exc:
