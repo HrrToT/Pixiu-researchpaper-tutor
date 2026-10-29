@@ -1,0 +1,21 @@
+{
+  "sourceCommit": "f4c9fc0efc8028436adb27fc5e11b4ce5b65415f",
+  "pythonPromptVersion": "dr-v2.20261030.363",
+  "javaPid": 35824,
+  "jarSha256": "b1c2a0b860d9ee34178281c77ee71b9714b1f524a7c9d809a7b1a1e0168dcfbb",
+  "h2BackupSha256": "23a9beedbff04c114b1e0361a1275baae76611fe735d715d7038ce6834d03b8d",
+  "h2BackupPath": "D:\\aiproj\\ai_project\\tmp\\source-export-364-java-backup\\academic_db.mv.db",
+  "ledgerRows": 7940,
+  "allOldRunPayloadsAndLedgerExactlyPreserved": true,
+  "nineWorkspacesExactlyPreserved": true,
+  "indexExactlyPreserved": true,
+  "indexSha256": "9196054db7ac32450eb86fc91cfb12de27c732469e4cf629bf06857a3490788d",
+  "activeRuns": 0,
+  "historicalPausedRuns": 13,
+  "providerCalls": 0,
+  "restarts": 1,
+  "launcherObservationPending": false,
+  "sameStartedJavaObservedHealthy": true,
+  "boundary": "Java restart and data preservation only; source-add functionality verified separately.",
+  "launcherWorkerCleanup": "Stopped only verified dedicated Python loader worker after separate snapshot checks; Java35824 remained healthy, task revision19 observed after source add."
+}

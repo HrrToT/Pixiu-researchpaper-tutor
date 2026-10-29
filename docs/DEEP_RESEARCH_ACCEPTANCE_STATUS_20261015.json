@@ -3712,6 +3712,18 @@
       "externalSearches": 1,
       "fulltextFetches": 1,
       "independentCredit": 0
+    },
+    "section363AssociatedRegression": {
+      "files": 122,
+      "passed": 2255,
+      "overlap": true,
+      "providerCalls": 0,
+      "proof": "deep-research-evidence/section-363-confirmed-associated-regression-20261030.json"
+    },
+    "sourceExport364Java": {
+      "passed": 161,
+      "overlapWithFocused5": true,
+      "proof": "deep-research-evidence/source-export-364-java-regression-20261030.json"
     }
   },
   "stages": [
@@ -4777,20 +4789,24 @@
     "proof": "deep-research-evidence/compact-experiment-envelope-regression-20261020.json"
   },
   "currentCheckpoint": {
-    "sourceCommit": "3dc63272",
-    "promptVersion": "dr-v2.20261029.362",
+    "sourceCommit": "f4c9fc0e",
+    "pythonSourceCommit": "e58d6abe",
+    "promptVersion": "dr-v2.20261030.363",
     "loaded": true,
-    "component": "external-only targeted mechanism research",
-    "componentOutcome": "transport_passed_content_inconclusive",
+    "component": "requested-section external-cache research and cached PDF source addition",
+    "componentOutcome": "known_cached_external_content_and_source_add_passed",
+    "freshDownloadThisAttempt": false,
     "fullDR0DR5Proved": false,
     "independentCredit": 0,
-    "ledgerRows": 7915,
+    "ledgerRows": 7940,
     "activeProductionRuns": 0,
     "historicalPausedRuns": 13,
-    "proof": "deep-research-evidence/external-x1g-v1-validation-20261030.json",
-    "offlineAssociatedFiles": 121,
-    "offlineAssociatedPassed": 2240,
-    "remaining": "Prioritize the human-requested section and preserve continuous operational rule/condition premises across acquired page passages inside the existing candidate/input limits. Do not relax absence or semantic support checks. Current numerical/experiment/insufficiency/continuation cases, remaining recovery gates and independent replacements remain."
+    "proof": "deep-research-evidence/external-x1g-v2-content-review-20261030.json",
+    "sourceAddProof": "deep-research-evidence/external-x1g-v2-add-source-20261030.json",
+    "offlineAssociatedFiles": 122,
+    "offlineAssociatedPassed": 2255,
+    "javaFullTests": 161,
+    "remaining": "Single-attempt fresh external acceptance and independent replacements; current numeric comparison, experiment, insufficiency and continuation cases; remaining recovery/product release audit. New-paper indexing not proved by same-SHA source addition."
   },
   "sharedModuleSourceCheckpoint": {
     "sourceCommit": "f8ae5177",
@@ -5027,5 +5043,21 @@
     "pythonPublicationFlag": false,
     "publicationBoundary": "Resolved delivery diagnosis: persisted run flag is initial snapshot, outbox seq205 published=1 is downstream acknowledgment. Idle Python restart preserved all delivery tables and stored Java report; active crash/Java restart remain separate.",
     "remaining": "External provider path, numeric comparison, experiment/insufficiency/continuation current cases, recovery/publication audit and fresh independent replacements. Do not infer global DR0-DR5 completion."
+  },
+  "previousExternal362Checkpoint": {
+    "sourceCommit": "3dc63272",
+    "promptVersion": "dr-v2.20261029.362",
+    "loaded": true,
+    "component": "external-only targeted mechanism research",
+    "componentOutcome": "transport_passed_content_inconclusive",
+    "fullDR0DR5Proved": false,
+    "independentCredit": 0,
+    "ledgerRows": 7915,
+    "activeProductionRuns": 0,
+    "historicalPausedRuns": 13,
+    "proof": "deep-research-evidence/external-x1g-v1-validation-20261030.json",
+    "offlineAssociatedFiles": 121,
+    "offlineAssociatedPassed": 2240,
+    "remaining": "Prioritize the human-requested section and preserve continuous operational rule/condition premises across acquired page passages inside the existing candidate/input limits. Do not relax absence or semantic support checks. Current numerical/experiment/insufficiency/continuation cases, remaining recovery gates and independent replacements remain."
   }
 }
