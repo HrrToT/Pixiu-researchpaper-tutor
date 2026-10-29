@@ -1,0 +1,133 @@
+{
+  "case": "X1G-v1",
+  "runId": "dr_run_dec69b728fd75ec5a13396824a8ede89",
+  "promptVersion": "dr-v2.20261029.362",
+  "status": "completed",
+  "outcome": "inconclusive",
+  "transportAcceptance": "passed_real_external_discovery_and_fresh_fulltext",
+  "contentAcceptance": "failed_no_verified_answer",
+  "independentCredit": 0,
+  "sourcePolicy": {
+    "mode": "external_only"
+  },
+  "initialTaskMaterials": [],
+  "discoveryVersions": [
+    "arxiv:2503.00357v2"
+  ],
+  "fulltext": {
+    "workId": "arxiv:2503.00357",
+    "versionId": "arxiv:2503.00357v2",
+    "arxivId": "2503.00357v2",
+    "accessLevel": "fulltext",
+    "contentHash": "6cff256c171332b72324f87ae7229c391cdc8ade63850f288d11289bda4699d5",
+    "cacheHit": false,
+    "cacheStatus": "stored",
+    "networkRequests": 1,
+    "retrievedAt": 1793290017.7571301,
+    "accessedAt": 1793290017.839887
+  },
+  "modelCalls": 11,
+  "tokens": 38354,
+  "elapsedSeconds": 194,
+  "externalSearches": 1,
+  "fulltextFetches": 1,
+  "verifiedClaims": 0,
+  "coverageStatus": "not_checked",
+  "failedClaimReasons": [
+    {
+      "claimId": "c1",
+      "reason": "absence_not_established",
+      "detail": "本条引用没有明确建立作者或论文缺少这些验证。把结论限定为本次引用能支持的实验范围及其不能证明的推广；不要写成作者未在其他条件验证、论文没有提供或全文不存在。引用中的其他否定句不构成这项缺席判断的依据。"
+    },
+    {
+      "claimId": "c2",
+      "reason": "semantic_unresolved",
+      "detail": "推断缺乏证据：所引片段仅描述视角频率感知掩码会跳过对渲染质量贡献小的基元，未说明训练与测试视角分布关系，也未定义频率；因此无法支持该机制暗含训练分布可代表测试分布的推断。"
+    }
+  ],
+  "allocation": {
+    "version": 1,
+    "candidateEvidenceIds": [
+      "ev_4672389630c4aab70844df0ec63b20ccb35d7f6cb38530744e580b22b9bdd2e3",
+      "ev_0d763731a70c6c5191a0ce1a3a5fb95548d2a94932291ab5b93ddb1beab402b0",
+      "ev_ae52676889580ab962e37d8dca5d991349bc8c2b0696b6eb6211fa8f96395762",
+      "ev_4c3c222163fa20831724b93eb302bf7f6c45100d2b0114f5ee021785e870de56",
+      "ev_57dff7d854d707a8ee59742a0d3f7b7f271d34ebaa9a018edf9691fb1fe27a61",
+      "ev_932c68a9d6f8f69a00f324e0a58bd9b8d073719407bd91a53e6a59a5d260e4f7",
+      "ev_a087bb65bdc47cf04a769421193e882a7af23faaeb5ebe29e68718d3eeca722d",
+      "ev_48740cb201158fee2ec12dca13c2f4ba63bce168949270d56c40c03aecedd0e6",
+      "ev_d1adf1857a44b123858ce48889f7f7dbc7e7e12cd6ac9584a51a45ed0bb6bc2f",
+      "ev_0b32a15c6150fa2fdd60c90cdf1b06117e087870d66e4321c4a8edb5d2341fe2",
+      "ev_c4dd52e90aa848b0d67292e264e9d15c9680d767e30b7e2915d42cb12992f2ba",
+      "ev_18994d7b52bb81994920d26c9e9b4df459e7efdee956d6a5409a829d4eb865f4",
+      "ev_efe69bc1d01a9ded5f7a0fd0f4eabb43844b643ec3ef58218a91c8a2a1f779fa",
+      "ev_0698ee329f80d669a05bcf01ed3db433227c428567d85a6ff3e55d6fad6bc7ec",
+      "ev_22c7d579bbc71831f59cb91372248ec7ce0fd9ad7299b6218f9dcac69ba80e95",
+      "ev_da91586b5514646e15e042cbf39b246eec7aae128ca51edaf5d177376a8b1bdf",
+      "ev_b867d53a5a5aaadb632b4228de2f97b8c91bc6e7fefba06385ec850c72c2ad20",
+      "ev_96c9048298a107726f7f67b1008d6dd9e01d2da97bd03b9187091d03430059af",
+      "ev_5b5fee8ff53a78d601c98d4a46f7dcc951caf911614308b8ea934e3a5f207c10",
+      "ev_1828c010969ab27e492d3009aacfc1360bcbba8647b255bcdb4743121d597bb9"
+    ],
+    "suppliedEvidenceIds": [
+      "ev_4672389630c4aab70844df0ec63b20ccb35d7f6cb38530744e580b22b9bdd2e3",
+      "ev_0d763731a70c6c5191a0ce1a3a5fb95548d2a94932291ab5b93ddb1beab402b0",
+      "ev_ae52676889580ab962e37d8dca5d991349bc8c2b0696b6eb6211fa8f96395762",
+      "ev_4c3c222163fa20831724b93eb302bf7f6c45100d2b0114f5ee021785e870de56"
+    ],
+    "missingPremiseBundles": [],
+    "inputBytes": 23942,
+    "fixedInputBytes": 21142,
+    "tableDataOmittedEvidenceIds": [],
+    "sharedTablePackets": 0
+  },
+  "acquiredButOmittedRulePremises": [
+    {
+      "evidenceId": "ev_d920d07cc8e465d2ed7d71796ae2d9e8b758fa8f05a586eca41a6aa34a097f05",
+      "sourceId": "src_6a7ee2aaaa15dcdc692389fd5aa704b78a706eb0e3cb8a547c4a83d7177c147d",
+      "location": {
+        "page": 7,
+        "offset": 2032,
+        "sourcePassageStart": 0,
+        "sourcePassageEnd": 424
+      },
+      "excerpt": "As\nsuch, we attach to each Gaussian primitive a weight pn,kthat reflects its relative frequency of being\nused in rendering these training views. We adopt pn,kin our masking function:\nMn,k= 1(sigmoid (mn,k)·pn,k> ϵ). (9)\nWith the same ϵapplied to every Gaussian primitive, a higher pn,krequires sigmoid (mn,k)to\napproach zero more closely in order to skip the corresponding Gaussian primitive, making the task\nmore difficult."
+    },
+    {
+      "evidenceId": "ev_5875bb43407ad9a981091f32c9a4507fc6f0f35ea1514ca19caf18dccf1aa8ad",
+      "sourceId": "src_6a7ee2aaaa15dcdc692389fd5aa704b78a706eb0e3cb8a547c4a83d7177c147d",
+      "location": {
+        "page": 7,
+        "offset": 2032,
+        "sourcePassageStart": 424,
+        "sourcePassageEnd": 827
+      },
+      "excerpt": " As a result, more Gaussian primitives that are critical to rendering the training views\nare retained. For this scheme to work well, the basic premise is that the distribution of training views\nshould be similar to that of test views. We argue that this is true to some extent because when their\ndistributions differ significantly, there is little guarantee of the rendering quality in those test views."
+    }
+  ],
+  "preservation": {
+    "oldLedgerUnchanged": true,
+    "allOldRunsUnchanged": true,
+    "newRows": 26,
+    "ledgerRows": 7915,
+    "onlyThisRunCreatedCalls": true,
+    "active": [],
+    "oldPausedRetained": true,
+    "paused": [
+      "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+      "dr_run_ed10cc3347be552288079a9a588fddf5",
+      "dr_run_86b3f181a5475e99aacca3dbf4370567",
+      "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+      "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+      "dr_run_e3521b1781825273b384a26a5edb8cdc",
+      "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+      "dr_run_e9c9dc916bef519092fad8b929b2448f",
+      "dr_run_4738564f5ff35157996a35068c62ed32",
+      "dr_run_a8bd62f9ae3d52ff806f537065f55b2d",
+      "dr_run_98e66f2d3d555dfa822b859963f01419",
+      "dr_run_8be639c866c35ea092c735a04781b647",
+      "dr_run_1c0c2e6510165086962408b8e3cf698b"
+    ]
+  },
+  "next": "Prioritize the human-requested section and preserve continuous operational rule/condition premises across acquired page passages inside the existing candidate/input limits. Do not relax absence or semantic support checks."
+}

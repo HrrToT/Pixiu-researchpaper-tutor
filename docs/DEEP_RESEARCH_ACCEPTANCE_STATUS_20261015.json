@@ -3702,6 +3702,16 @@
         "Java process restart",
         "whole-system disaster recovery"
       ]
+    },
+    "externalX1Gv1": {
+      "proof": "deep-research-evidence/external-x1g-v1-validation-20261030.json",
+      "transport": "passed fresh discovery and PDF download",
+      "content": "failed no verified conclusion",
+      "modelCalls": 11,
+      "tokens": 38354,
+      "externalSearches": 1,
+      "fulltextFetches": 1,
+      "independentCredit": 0
     }
   },
   "stages": [
@@ -4770,22 +4780,17 @@
     "sourceCommit": "3dc63272",
     "promptVersion": "dr-v2.20261029.362",
     "loaded": true,
-    "component": "multipaper mechanism comparison full workflow",
-    "componentOutcome": "passed_known_development_case",
-    "caseWorkflowProved": true,
+    "component": "external-only targeted mechanism research",
+    "componentOutcome": "transport_passed_content_inconclusive",
     "fullDR0DR5Proved": false,
     "independentCredit": 0,
-    "ledgerRows": 7889,
+    "ledgerRows": 7915,
     "activeProductionRuns": 0,
     "historicalPausedRuns": 13,
-    "proof": "deep-research-evidence/multipaper-m1g-v7-content-review-20261029.json",
+    "proof": "deep-research-evidence/external-x1g-v1-validation-20261030.json",
     "offlineAssociatedFiles": 121,
     "offlineAssociatedPassed": 2240,
-    "javaArtifactStored": true,
-    "terminalReadsCreatedNoDuplicateArtifacts": true,
-    "pythonPublicationFlag": false,
-    "publicationBoundary": "Resolved delivery diagnosis: persisted run flag is initial snapshot, outbox seq205 published=1 is downstream acknowledgment. Idle Python restart preserved all delivery tables and stored Java report; active crash/Java restart remain separate.",
-    "remaining": "External provider path, numeric comparison, experiment/insufficiency/continuation current cases, recovery/publication audit and fresh independent replacements. Do not infer global DR0-DR5 completion."
+    "remaining": "Prioritize the human-requested section and preserve continuous operational rule/condition premises across acquired page passages inside the existing candidate/input limits. Do not relax absence or semantic support checks. Current numerical/experiment/insufficiency/continuation cases, remaining recovery gates and independent replacements remain."
   },
   "sharedModuleSourceCheckpoint": {
     "sourceCommit": "f8ae5177",
@@ -5001,5 +5006,26 @@
     "offlineAssociatedFiles": 119,
     "offlineAssociatedPassed": 2224,
     "remaining": "Fix missing-field coverage bindings without accepting fabricated fields; preserve shared sourceAccessSummary semantics; improve evidence-to-answer completeness for required spatial/channel context. Full DR0-DR5 numeric comparison/external/recovery-publication audit and independent replacements remain."
+  },
+  "previousMultipaper362Checkpoint": {
+    "sourceCommit": "3dc63272",
+    "promptVersion": "dr-v2.20261029.362",
+    "loaded": true,
+    "component": "multipaper mechanism comparison full workflow",
+    "componentOutcome": "passed_known_development_case",
+    "caseWorkflowProved": true,
+    "fullDR0DR5Proved": false,
+    "independentCredit": 0,
+    "ledgerRows": 7889,
+    "activeProductionRuns": 0,
+    "historicalPausedRuns": 13,
+    "proof": "deep-research-evidence/multipaper-m1g-v7-content-review-20261029.json",
+    "offlineAssociatedFiles": 121,
+    "offlineAssociatedPassed": 2240,
+    "javaArtifactStored": true,
+    "terminalReadsCreatedNoDuplicateArtifacts": true,
+    "pythonPublicationFlag": false,
+    "publicationBoundary": "Resolved delivery diagnosis: persisted run flag is initial snapshot, outbox seq205 published=1 is downstream acknowledgment. Idle Python restart preserved all delivery tables and stored Java report; active crash/Java restart remain separate.",
+    "remaining": "External provider path, numeric comparison, experiment/insufficiency/continuation current cases, recovery/publication audit and fresh independent replacements. Do not infer global DR0-DR5 completion."
   }
 }
