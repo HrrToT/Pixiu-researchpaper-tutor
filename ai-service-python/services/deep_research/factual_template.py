@@ -71,6 +71,12 @@ With contextOmitted do not guess missing antecedents. All output still passes in
     from services.deep_research.comparison_reasoning import enabled as compare_enabled,GUIDANCE
     from services.deep_research.section_premises import explanation_only
     explanation=explanation_only(record)
+    if explanation and record.get('sectionPremisesContractVersion')==2:
+        from services.deep_research.section_premises import equivalent_requirements
+        groups=equivalent_requirements(obligations)
+        if groups:
+            prompt+='\nEquivalent requested requirement IDs: '+encode(groups)+'. Repeated IDs are retrieval paths, not extra deliverables. Answer their shared question once, assigning all matching obligationIds. Cite evidence for EVERY factual clause in that claim; never duplicate a multi-part answer under separate IDs with only partial citations. Split distinct assertions when their support differs; each keeps all its own supporting E IDs. No group transfers support or approves facts.\n'
+
     if compare_enabled(record) and not explanation:
         prompt+='\n'+GUIDANCE
     if record.get('comparisonReasoningContractVersion') in (3,4) and not explanation:

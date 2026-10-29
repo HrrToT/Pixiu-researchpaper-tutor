@@ -63,14 +63,17 @@ def without_collection_articles(text):
     return ''.join(char for i, char in enumerate(text) if i not in positions)
 
 
-def without_dimensional_labels(text):
+def without_dimensional_labels(text, *, surface_labels=False):
     """Chinese spatial labels parallel 2D/3D/4D, not measured cardinalities.
 
     Keep feature/vector/output dimensions, ordinals, signs, counts and ratios.
     The independent semantic verifier still checks the dimensional identity.
     """
+    nouns='高斯|空间|场景|几何|模型|重建|点云|辐射场'
+    if surface_labels is True:
+        nouns+='|椭圆盘|圆盘|盘片|盘'
     return re.sub(r'(?<![A-Za-z0-9_第负正+＋\-−零一二两三四五六七八九十百千万亿])'
-        r'[234二两三四]维(?=(?:的)?(?:高斯|空间|场景|几何|模型|重建|点云|辐射场))','',text)
+        r'[234二两三四]维(?=(?:的)?(?:'+nouns+'))','',text)
 
 
 def without_conceptual_articles(text):

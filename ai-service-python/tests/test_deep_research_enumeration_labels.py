@@ -47,7 +47,7 @@ def test_measured_number_inside_an_editorial_list_is_not_removed():
 
 def test_undeclared_or_noninteger_policy_cannot_enable_exemption():
     ev,c=sample()
-    for version in (None,True,'7',0,1,2,3,4,5,6,10):
+    for version in (None,True,'7',0,1,2,3,4,5,6,11):
         # Version0 does not parse Chinese word counts; only assert unchanged
         # spelling behavior for policies that do, with Arabic label for all.
         c['text']=c['text'].replace('三个','3个')

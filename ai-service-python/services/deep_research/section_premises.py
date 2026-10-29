@@ -31,7 +31,7 @@ def priority_enabled(record):
     """
     from services.deep_research.request_context import effective_question
     return (type(record.get('sectionPremisesContractVersion')) is int
-            and record['sectionPremisesContractVersion']==1
+            and record['sectionPremisesContractVersion'] in (1,2)
             and record.get('state',{}).get('outputKind') in
                 {'direction_survey','claim_verification','paper_comparison'}
             and bool(requested(effective_question(record))))
@@ -104,3 +104,18 @@ def bundle(rows,read_sources,work,sections):
                     or any(a[1]>b[0] or text[a[1]:b[0]].strip() for a,b in zip(intervals,intervals[1:]))):continue
             candidates.append([x[2] for x in intervals])
     return min(candidates,key=lambda group:(len(group),sum(len(r['quote']) for r in group))) if candidates else []
+
+
+def equivalent_requirements(obligations):
+    """Exact repeated drafting requirements, never merged facts or citations."""
+    import json
+    groups={}
+    for o in obligations:
+        if (o.get('purpose')!='answer_requirement' or not isinstance(o.get('question'),str)
+                or not o['question'].strip() or not o.get('completionCriteria')
+                or not isinstance(o.get('obligationId'),str)):
+            continue
+        key=json.dumps({k:o.get(k) for k in ('question','purpose','requiredSources','requestExcerpt','completionCriteria')},
+                       ensure_ascii=False,sort_keys=True,separators=(',',':'))
+        groups.setdefault(key,[]).append(o['obligationId'])
+    return [ids for ids in groups.values() if len(ids)>1 and len(ids)==len(set(ids))]

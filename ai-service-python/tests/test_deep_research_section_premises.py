@@ -125,7 +125,7 @@ def test_explanation_guidance_does_not_hide_requested_check_or_comparison(suffix
     assert not explanation_only({**r,'state':{'outputKind':'paper_comparison'}})
 
 
-@pytest.mark.parametrize('replacement',[None,True,0,2,'1'])
+@pytest.mark.parametrize('replacement',[None,True,0,3,'1'])
 def test_section_priority_contract_is_server_owned_and_immutable(tmp_path,replacement):
     from services.deep_research.repository import DeepResearchRepository
     from services.deep_research.facade import ResearchFacade
@@ -134,7 +134,7 @@ def test_section_priority_contract_is_server_owned_and_immutable(tmp_path,replac
     try:
         run,_=facade.create({'workspaceTaskId':'t','operationKey':'op','question':'解释第5节',
             'sectionPremisesContractVersion':replacement},start_async=False)
-        assert run['sectionPremisesContractVersion']==1
+        assert run['sectionPremisesContractVersion']==2
         with pytest.raises(ValueError,match='Immutable'):
             repo.update_run(run['runId'],lambda r:{**r,'sectionPremisesContractVersion':replacement})
     finally:facade.shutdown()
@@ -154,3 +154,18 @@ def test_section_explanation_drafting_omits_unrequested_verdict_but_keeps_checks
     assert 'No unknown values' in new and 'tableBindings' in new
     assert 'Every claim has these exact fields' in new
     assert GUIDANCE in render({**r,'question':'解释第5节，并比较效果'})
+
+
+@pytest.mark.parametrize('difference',[None,'source','criteria','purpose','question'])
+def test_equivalent_requirements_group_only_exact_same_requested_content(difference):
+    from services.deep_research.section_premises import equivalent_requirements
+    a={'obligationId':'one','purpose':'answer_requirement','question':'解释两个约束',
+       'requestExcerpt':'解释两个约束','requiredSources':['p'],
+       'completionCriteria':[{'criterionId':'c','requirement':'解释两个约束'}]}
+    b={**deepcopy(a),'obligationId':'two','searchQuery':'alternate retrieval phrase'}
+    if difference=='source':b['requiredSources']=['q']
+    if difference=='criteria':b['completionCriteria'][0]['requirement']='解释不同条件'
+    if difference=='purpose':b['purpose']='supporting_research'
+    if difference=='question':b['question']='另一个问题'
+    before=deepcopy([a,b]);assert equivalent_requirements([a,b])==([['one','two']] if difference is None else [])
+    assert [a,b]==before
