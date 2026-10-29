@@ -4798,7 +4798,7 @@
     "freshDownloadThisAttempt": false,
     "fullDR0DR5Proved": false,
     "independentCredit": 0,
-    "ledgerRows": 7940,
+    "ledgerRows": 7956,
     "activeProductionRuns": 0,
     "historicalPausedRuns": 13,
     "proof": "deep-research-evidence/external-x1g-v2-content-review-20261030.json",
@@ -4806,7 +4806,16 @@
     "offlineAssociatedFiles": 122,
     "offlineAssociatedPassed": 2255,
     "javaFullTests": 161,
-    "remaining": "Single-attempt fresh external acceptance and independent replacements; current numeric comparison, experiment, insufficiency and continuation cases; remaining recovery/product release audit. New-paper indexing not proved by same-SHA source addition."
+    "remaining": "Single-attempt fresh external acceptance and independent replacements; current numeric comparison, experiment, insufficiency and continuation cases; remaining recovery/product release audit. New-paper indexing not proved by same-SHA source addition.",
+    "latestFreshExternalAttempt": {
+      "case": "X3H-v1",
+      "accepted": false,
+      "outcome": "partial",
+      "reason": "Pinned v1 PDF exceeds configured 32 MiB external download limit; abstract-only fallback, not fresh fulltext acceptance.",
+      "modelCalls": 13,
+      "tokens": 38509,
+      "proof": "deep-research-evidence/external-x3h-v1-validation-20261030.json"
+    }
   },
   "sharedModuleSourceCheckpoint": {
     "sourceCommit": "f8ae5177",
