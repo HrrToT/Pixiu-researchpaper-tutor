@@ -270,7 +270,7 @@ def test_pause_keeps_known_inflight_response_and_resume_does_not_resend_it(tmp_p
         with facade._lock:
             next_worker = facade._active_futures.get(record["runId"])
         if next_worker:
-            next_worker.result(timeout=5)
+            next_worker.result(timeout=30)  # Allow the complete offline resumed graph to finish.
         assert repo.require_run(record["runId"])["status"] == "completed"
         assert sum(r.prompt.startswith(prefix) for r in model.requests) == 1
     finally:

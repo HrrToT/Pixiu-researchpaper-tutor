@@ -1660,6 +1660,7 @@ space with unsupported global absence or incidental iteration/performance values
                 output_kind=output_kind, evidence=evidence,
                 preserve_claims=bool(point_constraint and point_constraint['mode'] == 'exact'),
                 **({'preserve_answers':True} if preserve_answer_scope(record) else {}),
+                **({'measured_edit_budget':True} if type(record.get('compactionEditorContractVersion')) is int and record['compactionEditorContractVersion']==2 else {}),
                 presentation_version=record.get('reportPresentationContractVersion',0),
                 **({'compact_layout':True} if compact_layout else {}),
                 **({'fixed_claim_ids':[a['claimId'] for a in scope_expression_audit]} if scope_expression_audit else {}),
