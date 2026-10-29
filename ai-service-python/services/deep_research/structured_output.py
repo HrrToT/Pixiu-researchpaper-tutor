@@ -154,6 +154,9 @@ def messages(node, prompt, version=2, *, prospective=False):
 
 def messages_for_record(record, node, prompt):
     """Use the same frozen run policy for reservation, planning and actual wire."""
+    from services.deep_research.compaction_editor import enabled as editor_enabled,messages as editor_messages
+    if editor_enabled(record,node) and enabled(record) and record['structuredOutputContractVersion']>=2:
+        return editor_messages(prompt)
     from services.deep_research.workflow_metadata_baseline_boundary import enabled as boundary_enabled, messages as boundary_messages
     if boundary_enabled(record, node): return boundary_messages(prompt)
     from services.deep_research.scientific_outline import enabled as outline_enabled,NODE
