@@ -91,10 +91,12 @@ def visible_count(candidate, limit, output_kind='', evidence=(), presentation_ve
 
 
 def compact_answer(report, question, invoke, parse, *, output_kind='', evidence=(), preserve_claims=False,
-                   presentation_version=0, fixed_claim_ids=(), explicit_edit_scope=False, compact_layout=False,preserve_answers=False,measured_edit_budget=False,lean_edit=False):
+                   presentation_version=0, fixed_claim_ids=(), explicit_edit_scope=False, compact_layout=False,preserve_answers=False,measured_edit_budget=False,lean_edit=False,focused_edit=False):
+    if type(focused_edit) is not bool:raise ValueError('Invalid focused editing policy')
     if type(lean_edit) is not bool:raise ValueError('Invalid lean editing policy')
     if type(measured_edit_budget) is not bool:raise ValueError('Invalid measured editing policy')
     if type(preserve_answers) is not bool:raise ValueError('Invalid answer preservation policy')
+    if focused_edit:preserve_answers=True
     if preserve_answers:
         preserve_claims=True
         explicit_edit_scope=True
@@ -119,9 +121,6 @@ def compact_answer(report, question, invoke, parse, *, output_kind='', evidence=
     fixed = [c for c in core if c.get('claimId') in fixed_ids]
     editable = [c for c in core if c.get('claimId') not in fixed_ids]
     from services.deep_research.table_bindings import bound_table_context
-    inputs = [{**{key: c.get(key, {} if key == 'conditions' else '')
-                   for key in ('claimId', 'text', 'conditions')},
-               'requiredTableContext': bound_table_context(c, evidence)} for c in editable]
     content_limit = limit
     if modern:
         # Only a layout preview is blanked; source/claim inputs sent to the
@@ -129,10 +128,18 @@ def compact_answer(report, question, invoke, parse, *, output_kind='', evidence=
         overhead = count({**report, 'claims': [{**c, 'text': '', 'conditions': {}} for c in core]})
         overhead += len('适用条件：') * sum(bool(c.get('conditions')) for c in core)
         content_limit = max(1, limit - overhead)
+    if focused_edit:
+        from services.deep_research.compaction_editor import focused_fixed_ids
+        fixed_ids=focused_fixed_ids(core,content_limit,fixed_ids)
+        fixed=[c for c in core if c.get('claimId') in fixed_ids]
+        editable=[c for c in core if c.get('claimId') not in fixed_ids]
     if fixed:
         content_limit -= answer_character_count({'claims':fixed})
         if content_limit <= 0 or not editable:
             return None  # Preserve the operator and report the limit honestly.
+    inputs = [{**{key: c.get(key, {} if key == 'conditions' else '')
+                   for key in ('claimId', 'text', 'conditions')},
+               'requiredTableContext': bound_table_context(c, evidence)} for c in editable]
     target = max(1 if modern else 15, int(content_limit * .7 / max(1, len(editable))))
     prompt = f'''用中文压缩以下核心回答。用户问题：{question}
 总共最多{content_limit}字，每条text与conditions合计尽量不超过{target}字。

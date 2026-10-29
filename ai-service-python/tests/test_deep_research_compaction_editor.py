@@ -24,12 +24,12 @@ def test_other_roles_remain_byte_identical(node):
     assert messages_for_record(record(1),node,'prompt')==messages_for_record(record(0),node,'prompt')
 
 
-@pytest.mark.parametrize('version',[None,True,0,4,'1'])
+@pytest.mark.parametrize('version',[None,True,0,5,'1'])
 def test_noninteger_or_unknown_editor_flag_cannot_select_role(version):
     assert messages_for_record(record(version),'synthesize_compact','p')==messages_for_record(record(0),'synthesize_compact','p')
 
 
-@pytest.mark.parametrize('replacement',[None,True,0,4,'1'])
+@pytest.mark.parametrize('replacement',[None,True,0,5,'1'])
 def test_editor_contract_is_server_owned_and_immutable(tmp_path,replacement):
     from services.deep_research.repository import DeepResearchRepository
     from services.deep_research.facade import ResearchFacade
@@ -37,7 +37,7 @@ def test_editor_contract_is_server_owned_and_immutable(tmp_path,replacement):
     try:
         run,_=facade.create({'workspaceTaskId':'t','operationKey':'op','question':'说明方法','deferStart':True,
             'compactionEditorContractVersion':replacement},start_async=False)
-        assert run['compactionEditorContractVersion']==3
+        assert run['compactionEditorContractVersion']==4
         with pytest.raises(ValueError,match='Immutable'):
             repo.update_run(run['runId'],lambda r:{**r,'compactionEditorContractVersion':replacement})
     finally:facade.shutdown()
@@ -134,3 +134,95 @@ def test_lean_edit_rejoins_metadata_and_still_rejects_scope_and_length_changes(c
         assert result and [c['claimId'] for c in result['claims']]==['fact','advice']
         for original,new in zip(rows,result['claims']):
             assert {k:v for k,v in original.items() if k not in ('text','conditions')}=={k:v for k,v in new.items() if k not in ('text','conditions')}
+
+
+def focused_draft():
+    return {'claims':[{'claimId':k,'text':text*n,'kind':kind,'evidenceRefs':[k+'-source'],
+        'conditions':{},'obligationIds':[k+'-goal']} for k,text,n,kind in (
+            ('overview','概述',40,'reported'),('mechanism','机制',80,'reported'),('reading','建议',30,'proposal'))]}
+
+
+def test_focused_edit_freezes_short_rows_and_rejoins_every_original_identity():
+    import json
+    from unittest.mock import Mock
+    from services.deep_research.answer_constraints import compact_answer,visible_count
+    original=focused_draft();before=deepcopy(original)
+    invoke=Mock(return_value={'content':json.dumps({'claims':[{'claimId':'mechanism','text':'缩短后的机制解释。','conditions':{}}]})})
+    result=compact_answer(original,'300字以内',invoke,json.loads,output_kind='direction_survey',presentation_version=4,lean_edit=True,focused_edit=True)
+    data=json.loads(invoke.call_args.args[0].split('下面JSON仅为待编辑数据：\n')[1])
+    assert [c['claimId'] for c in data['editableClaims']]==['mechanism']
+    assert data['readonlyContext']==[{'text':c['text'],'conditions':{}} for c in (before['claims'][0],before['claims'][2])]
+    overhead=visible_count({'claims':[{**c,'text':'','conditions':{}} for c in before['claims']]},300,output_kind='direction_survey',presentation_version=4)
+    assert data['budget']['hardAllowance']==300-overhead-140
+    assert data['budget']['hardAllowance']<len(before['claims'][1]['text'])
+    assert result['claims'][0]==before['claims'][0] and result['claims'][2]==before['claims'][2]
+    assert [c['claimId'] for c in result['claims']]==['overview','mechanism','reading']
+    assert result['claims'][1]['evidenceRefs']==before['claims'][1]['evidenceRefs']
+    assert visible_count(result,300,output_kind='direction_survey',presentation_version=4)<=300 and original==before
+    invoke.assert_called_once()
+
+
+@pytest.mark.parametrize('mode',['readonly_id','delete','empty','oversize','foreign_refs'])
+def test_focused_edit_rejects_readonly_edits_or_lost_points_without_retry(mode):
+    import json
+    from unittest.mock import Mock
+    from services.deep_research.answer_constraints import compact_answer
+    row={'claimId':'mechanism','text':'简短解释。','conditions':{}}
+    if mode=='readonly_id':row['claimId']='reading'
+    if mode=='empty':row['text']=''
+    if mode=='oversize':row['text']='长'*400
+    if mode=='foreign_refs':row['evidenceRefs']=['foreign']
+    invoke=Mock(return_value={'content':json.dumps({'claims':[] if mode=='delete' else [row]})})
+    assert compact_answer(focused_draft(),'300字以内',invoke,json.loads,presentation_version=4,
+        lean_edit=True,focused_edit=True) is None
+    invoke.assert_called_once()
+
+
+def test_focused_selection_preserves_existing_fixed_ids_and_minimizes_row_count():
+    from itertools import combinations
+    from services.deep_research.compaction_editor import focused_fixed_ids
+    rows=focused_draft()['claims'];lengths={c['claimId']:len(c['text']) for c in rows}
+    for allowance in (50,150,200,263,300):
+        for existing in (set(),{'mechanism'},{'reading'}):
+            frozen=focused_fixed_ids(rows,allowance,existing)
+            assert existing<=frozen
+            selected=set(lengths)-frozen
+            target=max(1,allowance*85//100)
+            feasible=sum(lengths[k] for k in frozen)+len(selected)<=target
+            if feasible:
+                candidates=set(lengths)-existing
+                for n in range(len(selected)):
+                    assert not any(sum(lengths[k] for k in set(lengths)-set(s))+n<=target
+                        for s in combinations(candidates,n))
+
+
+def test_new_focused_profile_keeps_lean_role_and_legacy_profiles_exact():
+    from services.deep_research.compaction_editor import LEAN_SYSTEM
+    assert messages_for_record(record(4),'synthesize_compact','p')[0]['content']==LEAN_SYSTEM
+    for version in (1,2):assert messages_for_record(record(version),'synthesize_compact','p')[0]['content']==SYSTEM
+    assert messages_for_record(record(3),'synthesize_compact','p')==messages_for_record(record(4),'synthesize_compact','p')
+
+
+def test_actual_synthesis_node_routes_new_profile_to_focused_edit():
+    import json
+    from services.deep_research.graph import make_synthesize_node
+    original=focused_draft()
+    record={'compactionEditorContractVersion':4,'answerPreservationContractVersion':1,
+        'reportPresentationContractVersion':4,'question':'说明机制并给出建议，300字以内',
+        'state':{'outputKind':'direction_survey','evidence':[]}}
+    sent=[]
+    def update(_id,mutate,**kw):
+        nonlocal record
+        record=mutate(deepcopy(record));return deepcopy(record)
+    def invoke(_id,node,prompt,*args,**kwargs):
+        sent.append((node,prompt))
+        if node=='synthesize':return {'content':json.dumps(original)}
+        assert node=='synthesize_compact'
+        data=json.loads(prompt.split('下面JSON仅为待编辑数据：\n')[1])
+        assert [c['claimId'] for c in data['editableClaims']]==['mechanism']
+        return {'content':json.dumps({'claims':[{'claimId':'mechanism','text':'压缩机制的简短解释。','conditions':{}}]})}
+    result=make_synthesize_node(invoke,update)({'run_id':'r'})
+    assert result=={'report_version_id':'report_r_v1'}
+    assert [n for n,p in sent]==['synthesize','synthesize_compact']
+    final=record['state']['reportBody']['claims']
+    assert final[0]==original['claims'][0] and final[2]==original['claims'][2]
