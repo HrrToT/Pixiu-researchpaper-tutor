@@ -49,15 +49,39 @@ def spans(text, limit=MAX_PASSAGE_BYTES):
         start = end
 
 
-def body_start(source, location, text):
+def body_start(source, location, text, *, owned_title=None):
     prefix = f"Paper: {source.get('title')}\n\nSection: {location.get('section')}\n\nContent:\n"
     if text.startswith(prefix): return len(prefix)
+    if owned_title is not None:
+        owned_prefix=f"Paper: {owned_title}\n\nSection: {location.get('section')}\n\nContent:\n"
+        if text.startswith(owned_prefix):return len(owned_prefix)
     match = WRAPPER.match(text)
     if match:
-        if (match['title'] != source.get('title') or match['section'] != location.get('section')):
+        if (match['title'] != source.get('title') and (owned_title is None or match['title'] != owned_title)
+                or match['section'] != location.get('section')):
             raise DeepResearchError('invalid_source_passage','读取片段的正文包装与来源信息不一致，未提取证据。')
         return match.end()
     return 0
+
+
+
+def owned_wrapper_title(record,source):
+    """An exact snapshot-bound material ID, never a fuzzy display-title alias.
+
+    Indexed passage hashes differ from original PDF hashes. Bind the wrapper to
+    the immutable material snapshot/version, not to the passage's contentHash.
+    """
+    if (type(record.get('sourceWrapperIdentityContractVersion')) is not int
+        or record['sourceWrapperIdentityContractVersion']!=1 or source.get('sourceKind')!='task_paper'):
+        return None
+    work=source.get('workId')
+    if not isinstance(work,str) or not work or source.get('ownerMaterialId')!=work:return None
+    material=next((m for m in record.get('materials',[]) if m.get('materialId')==work),None)
+    if not material or material.get('workId',work)!=work:return None
+    sha=material.get('contentHash')
+    if not isinstance(sha,str) or not re.fullmatch(r'[a-f0-9]{64}',sha):return None
+    if work!=sha+'.pdf' or source.get('versionId')!=(material.get('versionId') or sha):return None
+    return work
 
 
 def projection(evidence):
@@ -116,7 +140,7 @@ def extract(record, make_evidence, validate, update):
             text = page.get('text', '')
             if not isinstance(text,str): raise DeepResearchError('invalid_source_passage','读取正文不是文本，未提取证据。')
             location = {**source.get('location', {}), **{k:v for k,v in page.items() if k != 'text'}}
-            offset = body_start(source, location, text)
+            offset = body_start(source, location, text, owned_title=owned_wrapper_title(record,source))
             body = text[offset:]
             ranges = list(spans(body))
             packet = visible_table_packet(source.get('tableData'), body)
