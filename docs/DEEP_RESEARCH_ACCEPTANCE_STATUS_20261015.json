@@ -3668,6 +3668,13 @@
         "independentCredit": 0
       },
       "scope": "Test sets overlap; do not add counts or label the older full baseline as a full run of the final profile wiring."
+    },
+    "literal359AssociatedRegression": {
+      "files": 119,
+      "passed": 2220,
+      "overlap": true,
+      "providerCalls": 0,
+      "proof": "deep-research-evidence/literal-359-confirmed-associated-regression-20261029.json"
     }
   },
   "stages": [
@@ -4733,19 +4740,21 @@
     "proof": "deep-research-evidence/compact-experiment-envelope-regression-20261020.json"
   },
   "currentCheckpoint": {
-    "sourceCommit": "7aa97982",
-    "promptVersion": "dr-v2.20261029.356",
+    "sourceCommit": "ade4094f",
+    "promptVersion": "dr-v2.20261029.359",
     "loaded": true,
-    "component": "draft consolidation and independent verification",
-    "componentOutcome": "passed_known_development_case",
+    "component": "multipaper mechanism comparison full workflow",
+    "componentOutcome": "failed_preverification_length",
     "productionPublished": false,
     "fullWorkflowProved": false,
     "independentCredit": 0,
-    "ledgerRows": 7682,
+    "ledgerRows": 7796,
     "activeProductionRuns": 0,
     "historicalPausedRuns": 13,
-    "proof": "deep-research-evidence/draft-editor-356-production-component-20261029.json",
-    "remaining": "Current fixed-case quality, multi-paper/external/recovery-publication acceptance and fresh independent replacements; full goal not complete."
+    "proof": "deep-research-evidence/multipaper-mechanisms-progress-20261029.json",
+    "offlineAssociatedFiles": 119,
+    "offlineAssociatedPassed": 2220,
+    "remaining": "Full visible layout budget and comparison quality; numeric comparison/external/recovery-publication acceptance and independent replacements; DR0-DR5 incomplete."
   },
   "sharedModuleSourceCheckpoint": {
     "sourceCommit": "f8ae5177",
@@ -4913,5 +4922,20 @@
       "lastLoadValidationScope": "Idle reload:15 source hashes,health,5537 ledger/all prior payloads/4task snapshots preserved. E1-v33 is in progress; content acceptance pending."
     },
     "currentCheckpoint": ".236/44c04d71:4175offline/228files,18new shared-wire tests;167focused overlap;36legacy scripts pass. E1-v27 failed private schema,E1-v28 failed capacity. E1-v29 completed/inconclusive145s,14settled72143tokens,0/9accepted;plan4351raw/3847wire,body31777bytes. Invalid initial state/input references and reviewer false requirements remain. Repair16905required>15601available,not sent.5464ledger/0active/11oldunknowns,oldpayloads/ledgerprefix/4tasks preserved. DR0-DR5 incomplete,independent0/5,PRdraft."
+  },
+  "previousDraftComponentCheckpoint": {
+    "sourceCommit": "7aa97982",
+    "promptVersion": "dr-v2.20261029.356",
+    "loaded": true,
+    "component": "draft consolidation and independent verification",
+    "componentOutcome": "passed_known_development_case",
+    "productionPublished": false,
+    "fullWorkflowProved": false,
+    "independentCredit": 0,
+    "ledgerRows": 7682,
+    "activeProductionRuns": 0,
+    "historicalPausedRuns": 13,
+    "proof": "deep-research-evidence/draft-editor-356-production-component-20261029.json",
+    "remaining": "Current fixed-case quality, multi-paper/external/recovery-publication acceptance and fresh independent replacements; full goal not complete."
   }
 }
