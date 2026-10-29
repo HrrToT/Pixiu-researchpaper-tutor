@@ -90,7 +90,7 @@ def test_new_role_supports_requested_scope_schema_and_preserves_all_old_roles():
     assert 'scopeExpression' in SCHEMA_SYSTEM and len(SCHEMA_SYSTEM.encode())+128<=1024
 
 
-@pytest.mark.parametrize('version',[5,6,7])
+@pytest.mark.parametrize('version',[5,6,7,8])
 def test_actual_synthesis_node_persists_merge_provenance_before_verification(version):
     from services.deep_research.graph import make_synthesize_node
     record={'compactionEditorContractVersion':version,'answerPreservationContractVersion':1,
@@ -103,7 +103,7 @@ def test_actual_synthesis_node_persists_merge_provenance_before_verification(ver
     def invoke(_id,node,prompt,*args,**kw):
         requests.append(node)
         if node=='synthesize':
-            assert ('NOT a checklist of deliverables' in prompt)==(version==7)
+            assert ('NOT a checklist of deliverables' in prompt)==(version in (7,8))
         if node=='synthesize_compact':
             from services.deep_research.runtime import research_model_options
             resolved=research_model_options(node,args[0])
@@ -155,3 +155,15 @@ def test_measured_merge_exposes_actual_reduction_without_changing_acceptance_or_
             assert data['editBudget']['minimumReductionToTarget']>0
         else:assert 'editBudget' not in data and 'presentationOverhead' not in data
     assert len(requests)==2
+
+
+def test_direct_editing_profile_keeps_schema_and_cap_without_changing_older_profiles():
+    from services.deep_research.compaction_editor import request_options,SCHEMA_SYSTEM
+    from services.deep_research.runtime import research_model_options
+    from services.deep_research.structured_output import messages_for_record
+    for version in (6,7,8):
+        run={'compactionEditorContractVersion':version,'structuredOutputContractVersion':15}
+        options=research_model_options('synthesize_compact',request_options(run,'paper_comparison'))
+        assert options['thinking']=={'type':'disabled' if version==8 else 'enabled'}
+        assert options['max_tokens']==8192
+        assert messages_for_record(run,'synthesize_compact','p')[0]['content']==SCHEMA_SYSTEM
