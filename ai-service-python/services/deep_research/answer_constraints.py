@@ -91,7 +91,8 @@ def visible_count(candidate, limit, output_kind='', evidence=(), presentation_ve
 
 
 def compact_answer(report, question, invoke, parse, *, output_kind='', evidence=(), preserve_claims=False,
-                   presentation_version=0, fixed_claim_ids=(), explicit_edit_scope=False, compact_layout=False,preserve_answers=False,measured_edit_budget=False):
+                   presentation_version=0, fixed_claim_ids=(), explicit_edit_scope=False, compact_layout=False,preserve_answers=False,measured_edit_budget=False,lean_edit=False):
+    if type(lean_edit) is not bool:raise ValueError('Invalid lean editing policy')
     if type(measured_edit_budget) is not bool:raise ValueError('Invalid measured editing policy')
     if type(preserve_answers) is not bool:raise ValueError('Invalid answer preservation policy')
     if preserve_answers:
@@ -177,6 +178,9 @@ editableClaims：{json.dumps(inputs,ensure_ascii=False)}'''
     if measured_edit_budget:
         from services.deep_research.compaction_editor import budget_guidance
         prompt+=budget_guidance(inputs,content_limit)
+    if lean_edit:
+        from services.deep_research.compaction_editor import lean_prompt
+        prompt=lean_prompt(inputs,content_limit,question,fixed)
     result = invoke(prompt)
     finish = (result.get('finishReason', result.get('finish_reason')) if isinstance(result, dict)
               else getattr(result, 'finish_reason', None))
