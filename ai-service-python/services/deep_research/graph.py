@@ -1138,7 +1138,7 @@ def make_synthesize_node(
         source_registry = {}
         from services.deep_research.synthesis_evidence import enabled as premise_enabled,order_premises,result_role,fit_premises
         from services.deep_research.mechanism_sources import enabled as mechanism_premises
-        from services.deep_research.section_premises import requested as requested_sections
+        from services.deep_research.section_premises import requested as requested_sections, priority_enabled as section_priority
         premise_mode=premise_enabled(record)
         premise_bundles=[];table_registry={};table_keys={}
         candidates = distinct_evidence_candidates(evidence)
@@ -1157,7 +1157,7 @@ def make_synthesize_node(
                    if record['synthesisEvidenceContractVersion']==6 and output_kind=='experiment_design' else {}),
                 **({'mechanism_overview':True} if mechanism_premises(record) else {}),
                 **({'mechanism_components':True} if mechanism_premises(record) and record['mechanismEvidenceContractVersion'] in (2,3) else {}),
-                **({'section_targets':requested_sections(question)} if mechanism_premises(record) and record['mechanismEvidenceContractVersion']==3 else {}))
+                **({'section_targets':requested_sections(question)} if (section_priority(record) or mechanism_premises(record) and record['mechanismEvidenceContractVersion']==3) else {}))
         elif output_kind == 'paper_comparison':
             candidates = comparison_evidence_order(candidates, paper_titles)
         elif output_kind == 'experiment_design':
@@ -1411,8 +1411,8 @@ space with unsupported global absence or incidental iteration/performance values
                 obligations=draft_obligations,sources=source_registry,evidence_marker=evidence_marker,
                 table_marker=table_marker,claim_fields=claim_fields,claim_limit=claim_limit,
                 section_templates=section_templates,**({'basis_slot':basis_slot} if staged_mode else {}))
-        section_focused=(mechanism_premises(record) and record.get('mechanismEvidenceContractVersion')==3
-            and bool(requested_sections(question)))
+        section_focused=(section_priority(record) or (mechanism_premises(record)
+            and record.get('mechanismEvidenceContractVersion')==3 and bool(requested_sections(question))))
         compact_evidence_wire=(premise_mode and ((output_kind=='experiment_design'
             and record.get('synthesisEvidenceContractVersion')==6)
             or section_focused))

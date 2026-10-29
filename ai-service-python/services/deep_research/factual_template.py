@@ -69,9 +69,11 @@ With contextOmitted do not guess missing antecedents. All output still passes in
     if drafting_schema:
         prompt+='\nRequired draftingBasis on each claim (private unverified planning, not evidence):\n'+encode(DRAFTING_SCHEMA)
     from services.deep_research.comparison_reasoning import enabled as compare_enabled,GUIDANCE
-    if compare_enabled(record):
+    from services.deep_research.section_premises import explanation_only
+    explanation=explanation_only(record)
+    if compare_enabled(record) and not explanation:
         prompt+='\n'+GUIDANCE
-    if record.get('comparisonReasoningContractVersion') in (3,4):
+    if record.get('comparisonReasoningContractVersion') in (3,4) and not explanation:
         from services.deep_research.comparison_methodology import REFERENCE
         prompt+='\n'+REFERENCE
     from services.deep_research.table_bindings import declared_references_enabled,reference_guidance
@@ -81,7 +83,7 @@ With contextOmitted do not guess missing antecedents. All output still passes in
     if table_identity_enabled(record):
         prompt+='\n'+table_identity_guidance(record.get('tableIdentityContextContractVersion',1))
     from services.deep_research.claim_check import enabled as claim_check_enabled, GUIDANCE as CLAIM_CHECK_GUIDANCE
-    if claim_check_enabled(record):
+    if claim_check_enabled(record) and not explanation:
         if record['claimCheckContractVersion'] in (4,5,6,7,8,9):
             from services.deep_research.claim_check import ASSESSMENT_GUIDANCE
             prompt+='\n'+ASSESSMENT_GUIDANCE

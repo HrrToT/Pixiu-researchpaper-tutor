@@ -86,3 +86,71 @@ def test_referential_context_never_overrides_another_explicit_section_or_plan_it
         _,bundles=order_premises([lead,*rows],plan,read_sources=sources,mechanism_overview=True,section_targets=['4.5'])
         target=next(b for b in bundles if b['obligationId']=='second')
         assert target['evidenceIds']==['overview']
+
+
+@pytest.mark.parametrize('question',[
+    '解释第5节中两个约束分别约束什么',
+    'What does Section 5 constrain?',
+    '第4.1节中的2D为何能表示三维场景',
+])
+def test_explicit_section_priority_does_not_require_mechanism_keywords(question):
+    from services.deep_research.section_premises import priority_enabled
+    record={'sectionPremisesContractVersion':1,'question':question,
+            'state':{'outputKind':'claim_verification'}}
+    assert priority_enabled(record)
+    assert not priority_enabled({k:v for k,v in record.items() if k!='sectionPremisesContractVersion'})
+    assert not priority_enabled({**record,'sectionPremisesContractVersion':True})
+    assert not priority_enabled({**record,'state':{'outputKind':'experiment_design'}})
+
+
+def test_section_priority_uses_human_scope_and_does_not_enable_negated_or_quoted_sections():
+    from services.deep_research.section_premises import priority_enabled
+    r={'sectionPremisesContractVersion':1,'state':{'outputKind':'claim_verification'}}
+    for question in ['不要读第5节。解释整篇论文。','引文：“第5节”','读取arXiv:2403.17888v3']:
+        assert not priority_enabled({**r,'question':question})
+
+
+@pytest.mark.parametrize('suffix,expected',[
+    ('，不做性能排名或实验设计。',True),
+    ('，但要比较与旧方法的优劣。',False),
+    ('，并核查作者的结论。',False),
+    ('，给出具体数值。',False),
+    ('，不要比较，但要验证更好。',False),
+])
+def test_explanation_guidance_does_not_hide_requested_check_or_comparison(suffix,expected):
+    from services.deep_research.section_premises import explanation_only
+    r={'sectionPremisesContractVersion':1,'question':'解释第5节两个约束分别约束什么'+suffix,
+       'state':{'outputKind':'claim_verification'}}
+    assert explanation_only(r) is expected
+    assert not explanation_only({**r,'state':{'outputKind':'paper_comparison'}})
+
+
+@pytest.mark.parametrize('replacement',[None,True,0,2,'1'])
+def test_section_priority_contract_is_server_owned_and_immutable(tmp_path,replacement):
+    from services.deep_research.repository import DeepResearchRepository
+    from services.deep_research.facade import ResearchFacade
+    repo=DeepResearchRepository(tmp_path/'r.sqlite3');repo.initialize()
+    facade=ResearchFacade(repo,lambda **_:None,llm_client=object())
+    try:
+        run,_=facade.create({'workspaceTaskId':'t','operationKey':'op','question':'解释第5节',
+            'sectionPremisesContractVersion':replacement},start_async=False)
+        assert run['sectionPremisesContractVersion']==1
+        with pytest.raises(ValueError,match='Immutable'):
+            repo.update_run(run['runId'],lambda r:{**r,'sectionPremisesContractVersion':replacement})
+    finally:facade.shutdown()
+
+
+def test_section_explanation_drafting_omits_unrequested_verdict_but_keeps_checks_and_schema():
+    from services.deep_research.factual_template import build
+    from services.deep_research.comparison_reasoning import GUIDANCE
+    r={'sectionPremisesContractVersion':1,'comparisonReasoningContractVersion':4,
+       'claimCheckContractVersion':9,'question':'解释第5节的两个约束',
+       'state':{'outputKind':'claim_verification'}}
+    def render(record):
+        return build(record,record['question'],'claim_verification',350,4,[],[],{},'EVIDENCE','TABLES')
+    new=render(r);old=render({**r,'sectionPremisesContractVersion':0})
+    assert GUIDANCE in old and GUIDANCE not in new
+    assert 'Bind every factual clause to its own supplied E citations' in new
+    assert 'No unknown values' in new and 'tableBindings' in new
+    assert 'Every claim has these exact fields' in new
+    assert GUIDANCE in render({**r,'question':'解释第5节，并比较效果'})
