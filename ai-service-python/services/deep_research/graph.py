@@ -423,6 +423,13 @@ Return a JSON ARRAY of plan items, NOT an object with items field."""
             validated=validate_plan(validated)
             validate_completion_criteria(validated,required=criteria_required)
 
+        from services.deep_research.access_request_projection import enabled as access_projection_enabled,project as project_access
+        access_projection=[]
+        if access_projection_enabled(record):
+            validated,access_projection=project_access(validated,question)
+            validated=validate_plan(validated)
+            validate_completion_criteria(validated,required=criteria_required)
+
         plan_ids = [item["itemId"] for item in validated]
         from services.deep_research.continuation import rebind_inherited_state
         inherited = bool(brief_state.get('inheritedEvidence'))
@@ -433,6 +440,7 @@ Return a JSON ARRAY of plan items, NOT an object with items field."""
                 **(rebind_inherited_state(r.get('state') or {}, validated)
                    if inherited else {**(r.get("state") or {}), "plan": validated}),
                 'planIdNormalization': identity_changes,
+                **({'planAccessRequestProjection':access_projection} if access_projection_enabled(record) else {}),
                 **({'planRequestSemanticsNormalization':semantics_changes} if semantics_enabled(record) else {}),
                 **({'planRequirementNormalization': requirement_changes} if requirements_enabled(record) else {}),
                 'planFormatValidation': {'status': 'validated', 'requiresCompletionCriteria': criteria_required}}},
