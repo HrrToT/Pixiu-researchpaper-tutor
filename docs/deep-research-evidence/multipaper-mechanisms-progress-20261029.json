@@ -285,11 +285,52 @@
         ]
       },
       "independentCredit": 0
+    },
+    {
+      "attempt": 7,
+      "runId": "dr_run_bc4ce0da9efe5c3f90cd883f6a12b03a",
+      "promptVersion": "dr-v2.20261029.362",
+      "status": "completed",
+      "outcome": "complete",
+      "settledModelCalls": 9,
+      "tokens": 41456,
+      "elapsedSeconds": 208,
+      "visibleCharacters": 311,
+      "semanticAccepted": 3,
+      "semanticRejected": 0,
+      "coverageStatus": "checked",
+      "coverageGapCount": 0,
+      "contentAcceptance": "passed_known_development_case",
+      "preservation": {
+        "oldLedgerUnchanged": true,
+        "allOldRunsUnchanged": true,
+        "newRows": 27,
+        "ledgerRows": 7889,
+        "onlyThisRunCreatedCalls": true,
+        "active": [],
+        "oldPausedRetained": true,
+        "paused": [
+          "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+          "dr_run_ed10cc3347be552288079a9a588fddf5",
+          "dr_run_86b3f181a5475e99aacca3dbf4370567",
+          "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+          "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+          "dr_run_e3521b1781825273b384a26a5edb8cdc",
+          "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+          "dr_run_e9c9dc916bef519092fad8b929b2448f",
+          "dr_run_4738564f5ff35157996a35068c62ed32",
+          "dr_run_a8bd62f9ae3d52ff806f537065f55b2d",
+          "dr_run_98e66f2d3d555dfa822b859963f01419",
+          "dr_run_8be639c866c35ea092c735a04781b647",
+          "dr_run_1c0c2e6510165086962408b8e3cf698b"
+        ]
+      },
+      "independentCredit": 0
     }
   ],
-  "currentAttempt": 6,
-  "currentStatus": "partial",
+  "currentAttempt": 7,
+  "currentStatus": "complete",
   "independentCredit": 0,
-  "quality": "incomplete",
-  "next": "Fix missing-field coverage bindings without accepting fabricated fields; preserve shared sourceAccessSummary semantics; improve evidence-to-answer completeness for required spatial/channel context."
+  "quality": "passed_known_development_case",
+  "next": "External provider path, numeric comparison, experiment/insufficiency/continuation current cases, recovery/publication audit and fresh independent replacements. Do not infer global DR0-DR5 completion."
 }

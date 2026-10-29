@@ -3682,6 +3682,13 @@
       "overlap": true,
       "providerCalls": 0,
       "proof": "deep-research-evidence/direct-361-confirmed-associated-regression-20261029.json"
+    },
+    "catalog362AssociatedRegression": {
+      "files": 121,
+      "passed": 2240,
+      "overlap": true,
+      "providerCalls": 0,
+      "proof": "deep-research-evidence/catalog-362-confirmed-associated-regression-20261029.json"
     }
   },
   "stages": [
@@ -4747,20 +4754,25 @@
     "proof": "deep-research-evidence/compact-experiment-envelope-regression-20261020.json"
   },
   "currentCheckpoint": {
-    "sourceCommit": "ae7a255a",
-    "promptVersion": "dr-v2.20261029.361",
+    "sourceCommit": "3dc63272",
+    "promptVersion": "dr-v2.20261029.362",
     "loaded": true,
     "component": "multipaper mechanism comparison full workflow",
-    "componentOutcome": "partial_with_coverage_binding_and_required_content_gaps",
-    "fullWorkflowProved": false,
+    "componentOutcome": "passed_known_development_case",
+    "caseWorkflowProved": true,
+    "fullDR0DR5Proved": false,
     "independentCredit": 0,
-    "ledgerRows": 7862,
+    "ledgerRows": 7889,
     "activeProductionRuns": 0,
     "historicalPausedRuns": 13,
-    "proof": "deep-research-evidence/multipaper-mechanisms-progress-20261029.json",
-    "offlineAssociatedFiles": 119,
-    "offlineAssociatedPassed": 2224,
-    "remaining": "Fix missing-field coverage bindings without accepting fabricated fields; preserve shared sourceAccessSummary semantics; improve evidence-to-answer completeness for required spatial/channel context. Full DR0-DR5 numeric comparison/external/recovery-publication audit and independent replacements remain."
+    "proof": "deep-research-evidence/multipaper-m1g-v7-content-review-20261029.json",
+    "offlineAssociatedFiles": 121,
+    "offlineAssociatedPassed": 2240,
+    "javaArtifactStored": true,
+    "terminalReadsCreatedNoDuplicateArtifacts": true,
+    "pythonPublicationFlag": false,
+    "publicationBoundary": "Java report version/latest artifacts observed stable. Python published flag is false despite publication identity/time; full publication recovery consistency remains to audit.",
+    "remaining": "External provider path, numeric comparison, experiment/insufficiency/continuation current cases, recovery/publication audit and fresh independent replacements. Do not infer global DR0-DR5 completion."
   },
   "sharedModuleSourceCheckpoint": {
     "sourceCommit": "f8ae5177",
@@ -4960,5 +4972,21 @@
     "offlineAssociatedFiles": 119,
     "offlineAssociatedPassed": 2220,
     "remaining": "Full visible layout budget and comparison quality; numeric comparison/external/recovery-publication acceptance and independent replacements; DR0-DR5 incomplete."
+  },
+  "previousMultipaper361Checkpoint": {
+    "sourceCommit": "ae7a255a",
+    "promptVersion": "dr-v2.20261029.361",
+    "loaded": true,
+    "component": "multipaper mechanism comparison full workflow",
+    "componentOutcome": "partial_with_coverage_binding_and_required_content_gaps",
+    "fullWorkflowProved": false,
+    "independentCredit": 0,
+    "ledgerRows": 7862,
+    "activeProductionRuns": 0,
+    "historicalPausedRuns": 13,
+    "proof": "deep-research-evidence/multipaper-mechanisms-progress-20261029.json",
+    "offlineAssociatedFiles": 119,
+    "offlineAssociatedPassed": 2224,
+    "remaining": "Fix missing-field coverage bindings without accepting fabricated fields; preserve shared sourceAccessSummary semantics; improve evidence-to-answer completeness for required spatial/channel context. Full DR0-DR5 numeric comparison/external/recovery-publication audit and independent replacements remain."
   }
 }
