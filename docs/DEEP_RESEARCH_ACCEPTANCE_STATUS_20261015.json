@@ -4789,84 +4789,185 @@
     "proof": "deep-research-evidence/compact-experiment-envelope-regression-20261020.json"
   },
   "currentCheckpoint": {
-    "sourceCommit": "b82c5318",
+    "sourceCommit": "905ac84e",
     "javaSourceCommit": "612c324e",
-    "promptVersion": "dr-v2.20261030.371",
-    "component": "beginner rewrite complementary point responsibilities and exact-collapse guard",
-    "componentOutcome": "distinct_contributions_observed_but_no_verified_answer_numeric_label_and_scientific_scope_gaps",
-    "audienceRewriteContractVersion": 9,
+    "promptVersion": "dr-v2.20261030.373",
+    "component": "point-scoped factual repair plus Chinese surface labels",
+    "componentOutcome": "partial; whole-question fallback unnecessarily rewrites covered points, producing detected contradiction",
     "runtimeLoadedVerified": true,
-    "runtimeProof": "deep-research-evidence/runtime-load-audience-371-20261030.json",
+    "runtimeProof": "deep-research-evidence/runtime-load-repair-373-20261030.json",
     "fullDR0DR5Proved": false,
     "independentCredit": 0,
-    "lastCapturedLedgerRows": 8210,
+    "lastCapturedLedgerRows": 8235,
     "lastCapturedActiveProductionRuns": 0,
     "historicalPausedRunsAtCapture": 13,
     "lastConfirmedIndexDocuments": 1102,
     "lastConfirmedIndexSha256": "1e91bfa73ba4a374a6cea68be25639c269fac493d5eda61162448bf500ff6118",
-    "offlineAssociatedFiles": 153,
-    "offlineAssociatedPassed": 2875,
-    "offlineAssociatedSeconds": 263.73,
-    "offlineProof": "deep-research-evidence/audience-371-associated-regression-20261030.json",
+    "offlineVerification": {
+      "preStructuredCorrectionRegression": {
+        "files": 156,
+        "passed": 2934,
+        "seconds": 440.85,
+        "sourceFrozen": true,
+        "providerCalls": 0,
+        "proof": "deep-research-evidence/repair-373-associated-regression-20261030.json"
+      },
+      "postStructuredCorrectionFocused": {
+        "files": 8,
+        "passed": 133,
+        "seconds": 20.51,
+        "providerCalls": 0,
+        "proof": "deep-research-evidence/repair-373-structured-focused-20261030.json"
+      },
+      "finalActualInputReplay": "deep-research-evidence/repair-373-confirmed-input-replay-20261030.json"
+    },
     "lastLocalDevelopmentCase": {
-      "promptVersion": "dr-v2.20261030.371",
-      "sourceCommit": "b82c5318",
-      "audienceRewriteContractVersion": 9,
-      "case": "X4L-v6",
-      "runId": "dr_run_53a21097e4015ac384b44d5836c9b628",
+      "promptVersion": "dr-v2.20261030.373",
+      "sourceCommit": "905ac84e",
+      "case": "X4L-v7",
+      "runId": "dr_run_5e7ca2dd5b6f59bebe9d971173721293",
       "status": "completed",
-      "machineOutcome": "inconclusive",
-      "modelCalls": 9,
-      "tokens": 38020,
-      "elapsedSeconds": 95.748,
-      "repairRequests": 2,
-      "acceptedClaims": [],
-      "initialRejections": [
+      "machineOutcome": "partial",
+      "modelCalls": 12,
+      "tokens": 55420,
+      "elapsedSeconds": 116.997,
+      "initialRejected": [
         {
           "claimId": "c1",
           "reason": "numeric_mismatch",
           "missingReportedNumbers": [
-            "2e0"
+            "1e0"
           ],
-          "detail": "本条引用原文未直接报告这些数值：2。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。"
+          "detail": "本条引用原文未直接报告这些数值：1。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。"
+        }
+      ],
+      "initialCoverage": [
+        {
+          "obligationId": "ob_1",
+          "status": "missing"
         },
         {
-          "claimId": "c3",
+          "obligationId": "ob_2",
+          "status": "covered"
+        },
+        {
+          "obligationId": "ob_3",
+          "status": "covered"
+        },
+        {
+          "obligationId": "answer_scope",
+          "status": "partial"
+        }
+      ],
+      "repairTargets": [
+        {
+          "claimId": "c1",
           "reason": "numeric_mismatch",
           "missingReportedNumbers": [
-            "2e0"
+            "1e0"
           ],
-          "detail": "本条引用原文未直接报告这些数值：2。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。"
+          "detail": "本条引用原文未直接报告这些数值：1。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。",
+          "missingQuestions": [
+            "解释这里的“2D”为什么仍能表示三维场景"
+          ]
         },
         {
           "claimId": "c2",
-          "reason": "semantic_unresolved",
-          "detail": "深度畸变约束确实通过最小化加权深度差来集中不透明度权重并缓解噪声重建，但证据仅指出权重沿射线集中，未明确其集中在第一个可见表面附近；且“半透明高斯片分散”作为噪声原因的表述在证据中未直接出现，因此整体断言不完全支持。"
+          "reason": "answer_incomplete",
+          "missingQuestions": [
+            "仅依据任务中已加入的 2D Gaussian Splatting for Geometrically Accurate Radiance Fields（arXiv:2403.17888v3）原文，不用外部搜索。面向了解3DGS概念的新手，解释这里的“2D”为什么仍能表示三维场景，以及第5节中深度畸变和法线一致性两个约束分别在约束什么。限350字，依据实际取得的正文区分两种作用，不做性能排名或实验设计。"
+          ]
+        },
+        {
+          "claimId": "c3",
+          "reason": "answer_incomplete",
+          "missingQuestions": [
+            "仅依据任务中已加入的 2D Gaussian Splatting for Geometrically Accurate Radiance Fields（arXiv:2403.17888v3）原文，不用外部搜索。面向了解3DGS概念的新手，解释这里的“2D”为什么仍能表示三维场景，以及第5节中深度畸变和法线一致性两个约束分别在约束什么。限350字，依据实际取得的正文区分两种作用，不做性能排名或实验设计。"
+          ]
         }
       ],
-      "audienceEditOutcome": "applied",
-      "audienceEditedTexts": [
-        "这里的“2D”指每个高斯基元是二维表面片（椭圆盘），但它们在三维空间中定位，并沿视线投影到图像平面，通过体积混合累积颜色，因此能表示三维场景。",
-        "深度畸变约束通过最小化沿射线各交点深度差的加权和，使不透明度权重集中在第一个可见表面附近，减少半透明高斯片分散导致的噪声重建。",
-        "法线一致性约束通过将每个二维高斯片的法线与由深度图梯度估计的表面法线对齐，使二维片局部贴合实际物体表面。"
+      "answerCoherence": {
+        "contractVersion": 1,
+        "status": "checked",
+        "answerDigest": "1631cae3d6720e908a406b6b4acc92fd7223ea95943b101ca6a3d1be963d79d6",
+        "coherent": false,
+        "issues": [
+          {
+            "kind": "contradiction",
+            "bindings": [
+              {
+                "claimId": "c2",
+                "field": "text"
+              },
+              {
+                "claimId": "c3",
+                "field": "text"
+              }
+            ],
+            "reason": "c2声称法线一致性约束的具体作用未明确说明，但c3随后解释了其作用，两者矛盾。"
+          }
+        ]
+      },
+      "acceptedClaims": [
+        {
+          "claimId": "c2",
+          "kind": "inference",
+          "text": "第5节引入深度畸变和法线一致性两个正则项。深度畸变约束通过最小化沿光线的高斯交点深度距离来集中权重分布，从而减少半透明高斯散布导致的噪声重建。法线一致性约束的具体作用在提供的引文中未明确说明，无法确认其约束对象。",
+          "evidenceRefs": [
+            "ev_32cc51aa72a9cb4d3aeb9096d0c8e8acfb4d6587204940326f58d293e1519513",
+            "ev_8358ddef8f9f16f3f70fb2e1220c0fc11c02cd4d3d9d858fe544e7878720ecba"
+          ],
+          "conditions": {},
+          "detailLevel": "fulltext",
+          "obligationIds": [
+            "ob_2",
+            "ob_3"
+          ],
+          "verification": "semantic_passed"
+        },
+        {
+          "claimId": "c3",
+          "text": "法线一致性约束通过将每个2D高斯的法线与深度图梯度估计的表面法线对齐，使2D高斯局部贴合实际物体表面。",
+          "kind": "reported",
+          "evidenceRefs": [
+            "ev_35c8ed39d0274f9039b8135b856ddc9eb615e8efdb77ba2b31c83e44bcbad734",
+            "ev_2130887bcc4166954e487bcfe46cf9ff20581ac3276237d82163a05f6b3a0f76",
+            "ev_cf67573e4730737b48f20cf7907871805caef2aade2ed2546e3641dc3dbf02cb"
+          ],
+          "conditions": {},
+          "obligationIds": [
+            "ob_2",
+            "ob_3"
+          ],
+          "detailLevel": "concise",
+          "tableBindings": [],
+          "verification": "semantic_passed"
+        }
       ],
       "manualReview": {
         "contentAccepted": false,
         "independentCredit": 0,
-        "publication": "No verified conclusion published; inconclusive is appropriate for empty accepted claims.",
-        "positiveObservation": "Actual beginner rewrite keeps 2D representation, depth constraint, normal constraint as three different complementary points; no copied whole-question paragraph.",
+        "scores": {
+          "targetResponse": 2,
+          "evidenceSupport": 2,
+          "conditions": 3,
+          "synthesis": 1,
+          "readability": 2
+        },
+        "reason": "2D representation was omitted after 一组 was treated as reported measurement1. Repaired depth point adds a source-limited absence assertion for normal consistency, while another accepted point explains normal consistency. Coherence audit detects contradiction and blocks complete, but partial publication still exposes contradictory prose.",
+        "positiveObservation": "No dimensional-label2 numeric mismatch; normal definition accepted; prior first-visible-surface localization absent; all calls settled within original budget.",
+        "targetSelectionDiagnosis": "Initial c2/c3 and their specific goals are covered. Whole-question gap caused by missing c1 nevertheless selects both accepted points for answer_incomplete repair. This unnecessary rewrite introduces the contradictory absence claim.",
         "remaining": [
-          "Chinese spatial labels 二维表面片 and 二维片 trigger false numeric requirements for2 under quantity contract10.",
-          "Depth draft/edited wording adds first visible surface localization not established by its own original distortion-loss definition.",
-          "One repaired depth target expands into a normal-consistency answer unsupported by its own sources. Shared goal IDs alone do not preserve a point contribution."
-        ],
-        "boundary": "No claim that duplicate guard or hint rules guarantee scientific fidelity or semantic uniqueness."
+          "Preserve accepted points whose specific goals are covered when a different rejected point explains a specific gap; retain final whole-question audit.",
+          "Do not publish known incoherent accepted prose as partial conclusions.",
+          "Distinguish indefinite collection introduction 一组 from measured group counts without waiving empirical quantities."
+        ]
       },
       "preservation": {
         "oldLedgerUnchanged": true,
         "allOldRunsUnchanged": true,
-        "newRows": 22,
-        "ledgerRows": 8210,
+        "newRows": 25,
+        "ledgerRows": 8235,
         "onlyThisRunCreatedCalls": true,
         "active": [],
         "oldPausedRetained": true,
@@ -4893,48 +4994,14 @@
         "count": 1102,
         "sha256": "1e91bfa73ba4a374a6cea68be25639c269fac493d5eda61162448bf500ff6118"
       },
-      "payloadSha256": "3b97ddde3b4496f6c4676a5935d6eb77b2879f0d6b25511bf1cad2c0bd2316e0"
+      "payloadSha256": "bc53afa25076cb7b7a83d5247255f06a4746a82adc441c9029797716c5217959"
     },
-    "externalRouteDiagnosis": {
-      "windowsOriginalQuery": "HTTP200",
-      "containerDirectQuery": "ReadTimeout",
-      "containerExplicitHostProxyProbe": "HTTP200, arxiv2403.17888v3",
-      "persistentConfigurationChanged": false,
-      "modelCalls": 0,
-      "externalWorkflowAccepted": false,
-      "proofs": [
-        "deep-research-evidence/arxiv-query-route-diagnosis-20261030.json",
-        "deep-research-evidence/arxiv-container-proxy-probe-20261030.json"
-      ]
-    },
-    "remaining": "Correct false quantity requirements on Chinese surface-dimensional labels without weakening empirical counts; preserve point contribution during repair and remove unsupported surface localization. Configure a durable explicit external route and verify external workflow, then finish independent cases and full DR0-DR5 release audit.",
-    "nextCandidate": {
-      "promptVersion": "dr-v2.20261030.373",
-      "quantitySpellingContractVersion": 11,
-      "audienceRewriteContractVersion": 9,
-      "factualRepairGoalContractVersion": 2,
-      "component": "repair exact point responsibility with structured scope fallback; omit table-only guidance only with no tables/bindings",
-      "runtimeLoadedVerified": false,
-      "contentAccepted": false,
-      "independentCredit": 0,
-      "preStructuredCorrectionRegression": {
-        "files": 156,
-        "passed": 2934,
-        "seconds": 440.85,
-        "sourceFrozen": true,
-        "providerCalls": 0,
-        "proof": "deep-research-evidence/repair-373-associated-regression-20261030.json"
-      },
-      "postStructuredCorrectionFocused": {
-        "files": 8,
-        "passed": 133,
-        "seconds": 20.51,
-        "providerCalls": 0,
-        "proof": "deep-research-evidence/repair-373-structured-focused-20261030.json"
-      },
-      "finalActualInputReplay": "deep-research-evidence/repair-373-confirmed-input-replay-20261030.json",
-      "boundary": "Candidate not loaded. Earlier full associated snapshot and final targeted check are not summed or relabeled as a current full-suite run."
-    }
+    "externalRouteBoundary": "Public requests proxy probe passed, but actual academic transport is pinned_https_get and deliberately ignores ambient proxies. A dedicated optional proxy tunnel must retain pinned public target IP, TLS original-host verification, byte limits and redirect rejection; runtime configuration is not yet changed.",
+    "remaining": "Fix coverage-repair target selection, incoherent publication and indefinite collection count; then test original content scope and external path. Independent cases and full DR0-DR5 release audit remain pending.",
+    "quantitySpellingContractVersion": 11,
+    "audienceRewriteContractVersion": 9,
+    "factualRepairGoalContractVersion": 2,
+    "answerCoherenceContractVersion": 1
   },
   "sharedModuleSourceCheckpoint": {
     "sourceCommit": "f8ae5177",
@@ -5835,6 +5902,154 @@
         "seconds": 3.255,
         "modelCalls": 0,
         "boundary": "Exact query endpoint remains unhealthy from project container; no claim of external runtime completion."
+      }
+    },
+    {
+      "sourceCommit": "b82c5318",
+      "javaSourceCommit": "612c324e",
+      "promptVersion": "dr-v2.20261030.371",
+      "component": "beginner rewrite complementary point responsibilities and exact-collapse guard",
+      "componentOutcome": "distinct_contributions_observed_but_no_verified_answer_numeric_label_and_scientific_scope_gaps",
+      "audienceRewriteContractVersion": 9,
+      "runtimeLoadedVerified": true,
+      "runtimeProof": "deep-research-evidence/runtime-load-audience-371-20261030.json",
+      "fullDR0DR5Proved": false,
+      "independentCredit": 0,
+      "lastCapturedLedgerRows": 8210,
+      "lastCapturedActiveProductionRuns": 0,
+      "historicalPausedRunsAtCapture": 13,
+      "lastConfirmedIndexDocuments": 1102,
+      "lastConfirmedIndexSha256": "1e91bfa73ba4a374a6cea68be25639c269fac493d5eda61162448bf500ff6118",
+      "offlineAssociatedFiles": 153,
+      "offlineAssociatedPassed": 2875,
+      "offlineAssociatedSeconds": 263.73,
+      "offlineProof": "deep-research-evidence/audience-371-associated-regression-20261030.json",
+      "lastLocalDevelopmentCase": {
+        "promptVersion": "dr-v2.20261030.371",
+        "sourceCommit": "b82c5318",
+        "audienceRewriteContractVersion": 9,
+        "case": "X4L-v6",
+        "runId": "dr_run_53a21097e4015ac384b44d5836c9b628",
+        "status": "completed",
+        "machineOutcome": "inconclusive",
+        "modelCalls": 9,
+        "tokens": 38020,
+        "elapsedSeconds": 95.748,
+        "repairRequests": 2,
+        "acceptedClaims": [],
+        "initialRejections": [
+          {
+            "claimId": "c1",
+            "reason": "numeric_mismatch",
+            "missingReportedNumbers": [
+              "2e0"
+            ],
+            "detail": "本条引用原文未直接报告这些数值：2。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。"
+          },
+          {
+            "claimId": "c3",
+            "reason": "numeric_mismatch",
+            "missingReportedNumbers": [
+              "2e0"
+            ],
+            "detail": "本条引用原文未直接报告这些数值：2。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。"
+          },
+          {
+            "claimId": "c2",
+            "reason": "semantic_unresolved",
+            "detail": "深度畸变约束确实通过最小化加权深度差来集中不透明度权重并缓解噪声重建，但证据仅指出权重沿射线集中，未明确其集中在第一个可见表面附近；且“半透明高斯片分散”作为噪声原因的表述在证据中未直接出现，因此整体断言不完全支持。"
+          }
+        ],
+        "audienceEditOutcome": "applied",
+        "audienceEditedTexts": [
+          "这里的“2D”指每个高斯基元是二维表面片（椭圆盘），但它们在三维空间中定位，并沿视线投影到图像平面，通过体积混合累积颜色，因此能表示三维场景。",
+          "深度畸变约束通过最小化沿射线各交点深度差的加权和，使不透明度权重集中在第一个可见表面附近，减少半透明高斯片分散导致的噪声重建。",
+          "法线一致性约束通过将每个二维高斯片的法线与由深度图梯度估计的表面法线对齐，使二维片局部贴合实际物体表面。"
+        ],
+        "manualReview": {
+          "contentAccepted": false,
+          "independentCredit": 0,
+          "publication": "No verified conclusion published; inconclusive is appropriate for empty accepted claims.",
+          "positiveObservation": "Actual beginner rewrite keeps 2D representation, depth constraint, normal constraint as three different complementary points; no copied whole-question paragraph.",
+          "remaining": [
+            "Chinese spatial labels 二维表面片 and 二维片 trigger false numeric requirements for2 under quantity contract10.",
+            "Depth draft/edited wording adds first visible surface localization not established by its own original distortion-loss definition.",
+            "One repaired depth target expands into a normal-consistency answer unsupported by its own sources. Shared goal IDs alone do not preserve a point contribution."
+          ],
+          "boundary": "No claim that duplicate guard or hint rules guarantee scientific fidelity or semantic uniqueness."
+        },
+        "preservation": {
+          "oldLedgerUnchanged": true,
+          "allOldRunsUnchanged": true,
+          "newRows": 22,
+          "ledgerRows": 8210,
+          "onlyThisRunCreatedCalls": true,
+          "active": [],
+          "oldPausedRetained": true,
+          "paused": [
+            "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+            "dr_run_ed10cc3347be552288079a9a588fddf5",
+            "dr_run_86b3f181a5475e99aacca3dbf4370567",
+            "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+            "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+            "dr_run_e3521b1781825273b384a26a5edb8cdc",
+            "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+            "dr_run_e9c9dc916bef519092fad8b929b2448f",
+            "dr_run_4738564f5ff35157996a35068c62ed32",
+            "dr_run_a8bd62f9ae3d52ff806f537065f55b2d",
+            "dr_run_98e66f2d3d555dfa822b859963f01419",
+            "dr_run_8be639c866c35ea092c735a04781b647",
+            "dr_run_1c0c2e6510165086962408b8e3cf698b"
+          ]
+        },
+        "protectedTasksExact": 12,
+        "repeatedTerminalGetExact": true,
+        "index": {
+          "collection": "literature_collection_v4_e5_small",
+          "count": 1102,
+          "sha256": "1e91bfa73ba4a374a6cea68be25639c269fac493d5eda61162448bf500ff6118"
+        },
+        "payloadSha256": "3b97ddde3b4496f6c4676a5935d6eb77b2879f0d6b25511bf1cad2c0bd2316e0"
+      },
+      "externalRouteDiagnosis": {
+        "windowsOriginalQuery": "HTTP200",
+        "containerDirectQuery": "ReadTimeout",
+        "containerExplicitHostProxyProbe": "HTTP200, arxiv2403.17888v3",
+        "persistentConfigurationChanged": false,
+        "modelCalls": 0,
+        "externalWorkflowAccepted": false,
+        "proofs": [
+          "deep-research-evidence/arxiv-query-route-diagnosis-20261030.json",
+          "deep-research-evidence/arxiv-container-proxy-probe-20261030.json"
+        ]
+      },
+      "remaining": "Correct false quantity requirements on Chinese surface-dimensional labels without weakening empirical counts; preserve point contribution during repair and remove unsupported surface localization. Configure a durable explicit external route and verify external workflow, then finish independent cases and full DR0-DR5 release audit.",
+      "nextCandidate": {
+        "promptVersion": "dr-v2.20261030.373",
+        "quantitySpellingContractVersion": 11,
+        "audienceRewriteContractVersion": 9,
+        "factualRepairGoalContractVersion": 2,
+        "component": "repair exact point responsibility with structured scope fallback; omit table-only guidance only with no tables/bindings",
+        "runtimeLoadedVerified": false,
+        "contentAccepted": false,
+        "independentCredit": 0,
+        "preStructuredCorrectionRegression": {
+          "files": 156,
+          "passed": 2934,
+          "seconds": 440.85,
+          "sourceFrozen": true,
+          "providerCalls": 0,
+          "proof": "deep-research-evidence/repair-373-associated-regression-20261030.json"
+        },
+        "postStructuredCorrectionFocused": {
+          "files": 8,
+          "passed": 133,
+          "seconds": 20.51,
+          "providerCalls": 0,
+          "proof": "deep-research-evidence/repair-373-structured-focused-20261030.json"
+        },
+        "finalActualInputReplay": "deep-research-evidence/repair-373-confirmed-input-replay-20261030.json",
+        "boundary": "Candidate not loaded. Earlier full associated snapshot and final targeted check are not summed or relabeled as a current full-suite run."
       }
     }
   ]
