@@ -1,0 +1,19 @@
+{
+  "runId": "dr_run_3c11e6ca89555b71a886d18ea4c42e0f",
+  "case": "X4L-v1",
+  "promptVersion": "dr-v2.20261030.366",
+  "status": "completed",
+  "outcome": "partial",
+  "modelCalls": 14,
+  "tokens": 52355,
+  "elapsedSeconds": 131.781,
+  "externalSearches": 0,
+  "fulltextFetches": 0,
+  "coverageStatus": "checked",
+  "coverageDiagnosticErrors": [],
+  "gapCount": 3,
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "finding": "Normal-consistency mechanism missing in answer. Provided indexed training chunk stops before its detailed definition; original stored same-version neighboring chunks contain that definition. Chapter locator no longer produces false missing-number reason. Scope metadata field invalid-binding failure did not recur. Local path not a replacement for external research acceptance.",
+  "nextChange": "Scope-checked bounded same-section indexed successor retrieval, preserving exact source identities and original retrieval limit; no loosened semantic check."
+}
