@@ -5,7 +5,7 @@ OPTION='_bounded_factual_review'
 
 
 def enabled(record):
-    if type(record.get('factualReviewContractVersion')) is not int or record['factualReviewContractVersion']!=1:
+    if type(record.get('factualReviewContractVersion')) is not int or record['factualReviewContractVersion'] not in (1,2):
         return False
     from services.deep_research.answer_constraints import requested_character_limit
     from services.deep_research.request_context import effective_question

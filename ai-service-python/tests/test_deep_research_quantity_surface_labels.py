@@ -48,7 +48,7 @@ def test_new_quantity_contract_remains_server_owned_and_immutable(tmp_path,repla
  repo=DeepResearchRepository(tmp_path/'r.sqlite3');repo.initialize();facade=ResearchFacade(repo,lambda **_:None,llm_client=object())
  try:
   run,_=facade.create({'workspaceTaskId':'t','operationKey':'op','question':'解释二维盘','quantitySpellingContractVersion':replacement},start_async=False)
-  assert run['quantitySpellingContractVersion']==12
+  assert run['quantitySpellingContractVersion']==13
   with pytest.raises(ValueError,match='Immutable'):
    repo.update_run(run['runId'],lambda r:{**r,'quantitySpellingContractVersion':replacement})
  finally:facade.shutdown()

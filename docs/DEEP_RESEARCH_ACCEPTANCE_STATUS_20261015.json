@@ -4945,7 +4945,26 @@
       "externalResearchWorkflowAccepted": false
     },
     "externalRouteBoundary": "Public requests proxy probe passed, but actual academic transport is pinned_https_get and deliberately ignores ambient proxies. A dedicated optional proxy tunnel must retain pinned public target IP, TLS original-host verification, byte limits and redirect rejection; runtime configuration is not yet changed.",
-    "remaining": "Generalize spatial labels and fix unsupported mechanism localization; integrate optional pinned proxy transport without enabling it by default, validate external workflow, then independent cases and full DR0-DR5 release audit."
+    "remaining": "Generalize spatial labels and fix unsupported mechanism localization; integrate optional pinned proxy transport without enabling it by default, validate external workflow, then independent cases and full DR0-DR5 release audit.",
+    "nextCandidate": {
+      "promptVersion": "dr-v2.20261030.375",
+      "factualReviewContractVersion": 2,
+      "quantitySpellingContractVersion": 13,
+      "runtimeLoaded": false,
+      "offlineAssociatedRegression": {
+        "files": 161,
+        "passed": 2992,
+        "seconds": 331.99,
+        "sourceFrozen": true,
+        "providerCalls": 0,
+        "proof": "deep-research-evidence/mechanism-375-associated-regression-20261030.json"
+      },
+      "savedInputReplay": "deep-research-evidence/mechanism-375-saved-input-replay-20261030.json",
+      "realComponent": "deep-research-evidence/mechanism-375-provider-component-20261030.json",
+      "contentAccepted": false,
+      "independentCredit": 0,
+      "remaining": "Actual-surface ambiguity still passes reviewer. Full new workflow not yet run; external route and full release remain pending."
+    }
   },
   "sharedModuleSourceCheckpoint": {
     "sourceCommit": "f8ae5177",

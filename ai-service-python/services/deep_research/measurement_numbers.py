@@ -46,6 +46,28 @@ _GEOMETRIC_COLLECTION_INTRO = re.compile(r'(?:表示|建模|坍缩|近似|分解
 _GEOMETRIC_COLLECTION = re.compile(r'(?:(?:有方向的|有朝向的|带朝向的|定向的|平面|二维|三维|2D|3D)\s*){0,5}'
     r'(?:高斯(?:圆盘|椭圆盘|盘|面片|基元|点)?|椭圆盘|圆盘|盘片|面片|表面片|基元)'
     r'(?!特征|向量|矩阵|张量|数组|编码|输出|通道|参数)',re.I)
+_SPATIAL_DIMENSION_TAG = re.compile(r'(?<![A-Za-z0-9_第负正+＋\-−±∓/／零一二两三四五六七八九十百千万亿])'
+                                  r'[234二两三四]维')
+_DIMENSION_VALUE_NOUN = re.compile(r'(?:的\s*)?(?:度|向量|特征|矩阵|张量|数组|编码|输出|输入|通道|分量|参数|自由度|'
+                                 r'嵌入|潜变量|embedding\b|vector\b|tensor\b|feature\b|channel\b|latent\b)',re.I)
+_DIMENSION_VALUE_PREFIX = re.compile(r'(?:向量|特征|矩阵|张量|数组|编码|输出|输入|通道|分量|参数|自由度|嵌入|潜变量|'
+                                   r'embedding|vector|tensor|feature|channel|latent)'
+                                   r'[^，,；;。.!?！？\n]{0,20}(?:(?:降|压缩|压|映射|投影|降维)[为至到成]|维数[为是]?|维度[为是]?|为|是)\s*$',re.I)
+
+
+def _spatial_dimension_tags(text):
+    """Low-dimensional labels have the same lexical role as English 2D/3D/4D.
+
+    Explicit feature/vector/output dimension contexts stay numeric. Other
+    object names are not enumerated here; their spatial identity still needs
+    independent semantic source support. This does not approve any claim.
+    """
+    def replace(match):
+        before,after=text[:match.start()],text[match.end():].lstrip()
+        if _DIMENSION_VALUE_NOUN.match(after) or _DIMENSION_VALUE_PREFIX.search(before) or _CARDINAL_CONTEXT.search(before):
+            return match[0]
+        return ''
+    return _SPATIAL_DIMENSION_TAG.sub(replace,text)
 
 
 def without_collection_articles(text, *, geometric=False):
@@ -74,6 +96,7 @@ def without_dimensional_labels(text, *, surface_labels=False):
     Keep feature/vector/output dimensions, ordinals, signs, counts and ratios.
     The independent semantic verifier still checks the dimensional identity.
     """
+    if type(surface_labels) is int and surface_labels==3:return _spatial_dimension_tags(text)
     nouns='高斯|空间|场景|几何|模型|重建|点云|辐射场'
     if surface_labels is True:
         nouns+='|椭圆盘|圆盘|盘片|盘'

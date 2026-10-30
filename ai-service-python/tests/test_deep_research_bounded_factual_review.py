@@ -103,7 +103,7 @@ def test_refusal_does_not_discard_prior_independently_verified_claims():
     assert result['rejected'][0]['claimId']=='c2' and result['rejected'][0]['executionState']=='not_started'
 
 
-@pytest.mark.parametrize('replacement',[None,True,'1',0,2])
+@pytest.mark.parametrize('replacement',[None,True,'1',0,3])
 def test_server_profile_is_frozen_and_never_applies_to_long_answers_or_experiments(tmp_path,replacement):
     from services.deep_research.facade import ResearchFacade
     from services.deep_research.repository import DeepResearchRepository
@@ -112,7 +112,7 @@ def test_server_profile_is_frozen_and_never_applies_to_long_answers_or_experimen
     try:
         p,_=facade.create({'workspaceTaskId':'t','operationKey':'k','question':'比较，450字以内。',
             'deferStart':True,'factualReviewContractVersion':replacement},start_async=False)
-        assert p['factualReviewContractVersion']==1
+        assert p['factualReviewContractVersion']==2
         with pytest.raises(ValueError,match='Immutable'):
             repo.update_run(p['runId'],lambda r:{**r,'factualReviewContractVersion':replacement})
     finally:facade.shutdown()

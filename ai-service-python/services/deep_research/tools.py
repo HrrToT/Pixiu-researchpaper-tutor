@@ -612,6 +612,7 @@ class BudgetedSemanticChecker:
         consistent_scope_premises=False,
         general_advice_review=False,
         scope_source_paths=False,
+        mechanism_grounding=False,
     ):
         self._invoke = llm_invoker
         self._run_id = run_id
@@ -624,6 +625,7 @@ class BudgetedSemanticChecker:
         self._audit_source_fields = audit_source_fields
         self._audit_target_fields = audit_target_fields
         self._scope_source_paths = scope_source_paths
+        self._mechanism_grounding = mechanism_grounding
         self._factual_scope = factual_scope
         self._scope_expression_context = scope_expression_context
         self._boundary_quantity_grounding = boundary_quantity_grounding
@@ -877,6 +879,11 @@ Return only a JSON array, one verdict per target:
 Missing configuration, contradictory choices and invalid parameter syntax fail.
 Do not require an unexecuted experiment to have results. Do not judge context claims as targets.'''
 
+        mechanism_review = (self._mechanism_grounding() if callable(self._mechanism_grounding)
+                            else self._mechanism_grounding) is True
+        if mechanism_review:
+            from services.deep_research.mechanism_grounding import GUIDANCE as mechanism_guidance
+            prompt += '\n'+mechanism_guidance
         inference_review = (self._qualitative_inference() if callable(self._qualitative_inference)
                             else self._qualitative_inference) is True
         if inference_review and any(c.get('kind') == 'inference' for c in claims):
