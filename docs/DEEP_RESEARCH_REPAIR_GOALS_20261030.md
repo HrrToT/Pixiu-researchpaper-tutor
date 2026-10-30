@@ -73,3 +73,13 @@ X4L-v5仅提交一次，11次模型调用、49,246 Token、177.694秒，无外�
 并行核对另一项未完成边界：从原项目容器对`https://export.arxiv.org/api/query`执行一次公开`id:2403.17888`查询，无缓存、无重试、无模型调用，3.255秒ReadTimeout。此前根路径可访问不能证明此查询API正常；本轮不计外部发现/正文验收，也不因超时自动重复模型研究。证据 `deep-research-evidence/arxiv-query-transport-20261030.json`。
 
 .371最终153文件、2,875项关联离线检查通过（263.73秒），源码和测试哈希冻结，0模型调用，一项既有PyPDF2弃用警告。该范围包含上述147项，不相加。证据 `deep-research-evidence/audience-371-associated-regression-20261030.json`。尚不代表运行加载或新模型回答质量通过。
+
+## .371实际运行
+
+提交b82c5318已加载，原8,188条账本、12任务、原全文索引与嵌入一致，活动运行0、历史暂停13，服务健康。证据 `deep-research-evidence/runtime-load-audience-371-20261030.json`。
+
+X4L-v6只提交一次，9次模型调用、38,020 Token、95.748秒，inconclusive。新手改写实际应用，三条解释仍分别讲表示、深度约束、法线约束，没有旧例的同文整段扩张；这只是一例职责保留观察，不证明普遍科学质量。最终无通过核验的主张，不记内容通过、独立验收仍为0。
+
+新的具体缺口：数值契约10把“二维表面片”“二维片”当作需要论文报告数值2的测量；深度条目的“第一个可见表面附近”仍无自身引用直接支持；一个修订深度目标又扩到自身没有原文依据的法线解释。不能移除数量检查或给这条科学断言豁免，需要区分空间标签与经验数量，并继续约束修订的具体职责。原记录与旧账本保持，当前8,210条账本、12任务及索引核对一致。证据 `deep-research-evidence/audience-371-x4l-v6-content-review-20261030.json`。
+
+网络诊断补充：同一公开查询Windows原端点HTTP200、容器直接查询ReadTimeout；Windows当前有效代理存在，容器没有有效代理。仅对一次诊断请求显式使用已有主机代理后，容器HTTP200并返回arXiv2403.17888v3。未持久修改代理、未改应用路由、未新增模型调用，不能据此记联网研究通过。该会话路由不能硬编码为产品默认配置。证据 `deep-research-evidence/arxiv-query-route-diagnosis-20261030.json`、`deep-research-evidence/arxiv-container-proxy-probe-20261030.json`。

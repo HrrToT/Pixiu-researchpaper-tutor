@@ -4789,117 +4789,84 @@
     "proof": "deep-research-evidence/compact-experiment-envelope-regression-20261020.json"
   },
   "currentCheckpoint": {
-    "sourceCommit": "7b43aa5c",
+    "sourceCommit": "b82c5318",
     "javaSourceCommit": "612c324e",
-    "promptVersion": "dr-v2.20261030.370",
-    "component": "bounded goal-instruction compaction",
-    "componentOutcome": "repair_dispatch_restored_machine_complete_human_unsupported_consequence",
+    "promptVersion": "dr-v2.20261030.371",
+    "component": "beginner rewrite complementary point responsibilities and exact-collapse guard",
+    "componentOutcome": "distinct_contributions_observed_but_no_verified_answer_numeric_label_and_scientific_scope_gaps",
+    "audienceRewriteContractVersion": 9,
     "runtimeLoadedVerified": true,
-    "runtimeProof": "deep-research-evidence/runtime-load-goal-370-20261030.json",
+    "runtimeProof": "deep-research-evidence/runtime-load-audience-371-20261030.json",
     "fullDR0DR5Proved": false,
     "independentCredit": 0,
-    "lastCapturedLedgerRows": 8188,
+    "lastCapturedLedgerRows": 8210,
     "lastCapturedActiveProductionRuns": 0,
     "historicalPausedRunsAtCapture": 13,
     "lastConfirmedIndexDocuments": 1102,
     "lastConfirmedIndexSha256": "1e91bfa73ba4a374a6cea68be25639c269fac493d5eda61162448bf500ff6118",
-    "offlineRegression": {
-      "files": 148,
-      "passed": 2759,
-      "failed": 1,
-      "failure": "stale expected .369 prompt version",
-      "seconds": 265.52,
-      "proof": "deep-research-evidence/goal-370-associated-regression-20261030.json",
-      "correctedVersionTestPassed": 1,
-      "correctedVersionTestSeconds": 1.6,
-      "broaderSuiteRerun": false,
-      "correctionNote": "Updated only the expected version; initial correction had a test indentation error, fixed before successful rerun. No business assertions weakened."
-    },
+    "offlineAssociatedFiles": 153,
+    "offlineAssociatedPassed": 2875,
+    "offlineAssociatedSeconds": 263.73,
+    "offlineProof": "deep-research-evidence/audience-371-associated-regression-20261030.json",
     "lastLocalDevelopmentCase": {
-      "promptVersion": "dr-v2.20261030.370",
-      "sourceCommit": "7b43aa5c",
-      "case": "X4L-v5",
-      "runId": "dr_run_b8fd0315731a5e23ac736c04618631f6",
+      "promptVersion": "dr-v2.20261030.371",
+      "sourceCommit": "b82c5318",
+      "audienceRewriteContractVersion": 9,
+      "case": "X4L-v6",
+      "runId": "dr_run_53a21097e4015ac384b44d5836c9b628",
       "status": "completed",
-      "machineOutcome": "complete",
-      "modelCalls": 11,
-      "tokens": 49246,
-      "elapsedSeconds": 177.694,
-      "repairStatus": "response_received",
-      "repairDispatchedOnce": true,
-      "answerCoherence": {
-        "contractVersion": 1,
-        "status": "checked",
-        "answerDigest": "574a23a71f7316aa13ed7d9d3f22c943c9f85bb689256cb3377e593fda56acd8",
-        "coherent": true,
-        "issues": []
-      },
-      "coverageGaps": 0,
-      "acceptedClaims": [
+      "machineOutcome": "inconclusive",
+      "modelCalls": 9,
+      "tokens": 38020,
+      "elapsedSeconds": 95.748,
+      "repairRequests": 2,
+      "acceptedClaims": [],
+      "initialRejections": [
         {
           "claimId": "c1",
-          "text": "这里的“2D”指每个基元是平面椭圆盘，但每个盘在三维空间中有位置和朝向，多个盘沿视线叠加，因此能表示三维场景。",
-          "kind": "inference",
-          "evidenceRefs": [
-            "ev_6d914bd0be93cca0f7e42ea9bebdd6f8b10197c6e54b2b5a1d3b4250ba948df7",
-            "ev_e4def10779cfba93e4f1a4e651e47836dbceb9949957299c2a80c9994d5c5fd9",
-            "ev_a1f1965d0a688532a30ef28acdcac383f29348d2744efca61bc816ef9c807f91"
+          "reason": "numeric_mismatch",
+          "missingReportedNumbers": [
+            "2e0"
           ],
-          "conditions": {},
-          "obligationIds": [
-            "ob_1"
-          ],
-          "detailLevel": "concise",
-          "tableBindings": [],
-          "verification": "semantic_passed"
+          "detail": "本条引用原文未直接报告这些数值：2。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。"
         },
         {
           "claimId": "c3",
-          "text": "深度畸变约束沿每条光线的多个交点深度，使它们集中，减少半透明浮点；法线一致性约束每个2D splat的法线与从深度图梯度估计的表面法线对齐，使splat贴合实际表面。",
-          "kind": "reported",
-          "evidenceRefs": [
-            "ev_35c8ed39d0274f9039b8135b856ddc9eb615e8efdb77ba2b31c83e44bcbad734",
-            "ev_2130887bcc4166954e487bcfe46cf9ff20581ac3276237d82163a05f6b3a0f76",
-            "ev_cf67573e4730737b48f20cf7907871805caef2aade2ed2546e3641dc3dbf02cb"
+          "reason": "numeric_mismatch",
+          "missingReportedNumbers": [
+            "2e0"
           ],
-          "conditions": {},
-          "obligationIds": [
-            "ob_2",
-            "ob_3"
-          ],
-          "detailLevel": "concise",
-          "tableBindings": [],
-          "verification": "semantic_passed"
+          "detail": "本条引用原文未直接报告这些数值：2。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。"
+        },
+        {
+          "claimId": "c2",
+          "reason": "semantic_unresolved",
+          "detail": "深度畸变约束确实通过最小化加权深度差来集中不透明度权重并缓解噪声重建，但证据仅指出权重沿射线集中，未明确其集中在第一个可见表面附近；且“半透明高斯片分散”作为噪声原因的表述在证据中未直接出现，因此整体断言不完全支持。"
         }
+      ],
+      "audienceEditOutcome": "applied",
+      "audienceEditedTexts": [
+        "这里的“2D”指每个高斯基元是二维表面片（椭圆盘），但它们在三维空间中定位，并沿视线投影到图像平面，通过体积混合累积颜色，因此能表示三维场景。",
+        "深度畸变约束通过最小化沿射线各交点深度差的加权和，使不透明度权重集中在第一个可见表面附近，减少半透明高斯片分散导致的噪声重建。",
+        "法线一致性约束通过将每个二维高斯片的法线与由深度图梯度估计的表面法线对齐，使二维片局部贴合实际物体表面。"
       ],
       "manualReview": {
         "contentAccepted": false,
         "independentCredit": 0,
-        "scores": {
-          "targetResponse": 4,
-          "evidenceSupport": 3,
-          "conditions": 4,
-          "synthesis": 3,
-          "readability": 3
-        },
-        "reason": "Both requested constraints are explained, but c3 reports reduction of semi-transparent floating points without direct support in its own supplied quotes/context. Depth concentration does not by itself establish removing or reducing primitive counts. The Chinese 浮点 and unexplained splat are also poor novice wording.",
-        "supportedParts": [
-          "oriented planar Gaussian primitives positioned in 3D space",
-          "ray intersection depth concentration",
-          "splat normals aligned with surface normals estimated from rendered depth gradients"
+        "publication": "No verified conclusion published; inconclusive is appropriate for empty accepted claims.",
+        "positiveObservation": "Actual beginner rewrite keeps 2D representation, depth constraint, normal constraint as three different complementary points; no copied whole-question paragraph.",
+        "remaining": [
+          "Chinese spatial labels 二维表面片 and 二维片 trigger false numeric requirements for2 under quantity contract10.",
+          "Depth draft/edited wording adds first visible surface localization not established by its own original distortion-loss definition.",
+          "One repaired depth target expands into a normal-consistency answer unsupported by its own sources. Shared goal IDs alone do not preserve a point contribution."
         ],
-        "unsupportedClause": {
-          "claimId": "c3",
-          "text": "减少半透明浮点",
-          "kind": "reported"
-        },
-        "acceptanceRule": "All applicable dimensions must reach4. Machine complete and coherence true do not grant content acceptance."
+        "boundary": "No claim that duplicate guard or hint rules guarantee scientific fidelity or semantic uniqueness."
       },
       "preservation": {
         "oldLedgerUnchanged": true,
         "allOldRunsUnchanged": true,
-        "newRows": 24,
-        "ledgerRows": 8188,
+        "newRows": 22,
+        "ledgerRows": 8210,
         "onlyThisRunCreatedCalls": true,
         "active": [],
         "oldPausedRetained": true,
@@ -4926,40 +4893,21 @@
         "count": 1102,
         "sha256": "1e91bfa73ba4a374a6cea68be25639c269fac493d5eda61162448bf500ff6118"
       },
-      "payloadSha256": "549d30ca5955ee3fc7c66255af51931ec2aeb3d07e24414867aaeaa0e0d81c65"
+      "payloadSha256": "3b97ddde3b4496f6c4676a5935d6eb77b2879f0d6b25511bf1cad2c0bd2316e0"
     },
-    "remaining": "Resolve unsupported consequence added/surviving beginner rewriting and semantic review; local development is not independent acceptance. External path, comparison, experiments, insufficiency, continuation, independent holdouts and DR0-DR5 release audit remain pending.",
-    "nextCandidate": {
-      "promptVersion": "dr-v2.20261030.371",
-      "audienceRewriteContractVersion": 9,
-      "component": "preserve complementary point responsibilities during beginner rewrite; reject exact collapse of distinct points",
-      "focusedPassed": 147,
-      "focusedSeconds": 11.46,
-      "actualReplay": "deep-research-evidence/audience-371-actual-replay-20261030.json",
-      "oldRequestExact": true,
-      "ownSourcePacketUnchanged": true,
-      "oldPendingCannotSwitchPolicy": true,
-      "runtimeLoadedVerified": false,
-      "contentAccepted": false,
-      "independentCredit": 0,
-      "associatedRegression": {
-        "files": 153,
-        "passed": 2875,
-        "seconds": 263.73,
-        "sourceFrozen": true,
-        "providerCalls": 0,
-        "proof": "deep-research-evidence/audience-371-associated-regression-20261030.json"
-      }
-    },
-    "externalTransportDiagnostic": {
-      "proof": "deep-research-evidence/arxiv-query-transport-20261030.json",
-      "attempts": 1,
-      "query": "id:2403.17888",
-      "errorType": "ReadTimeout",
-      "seconds": 3.255,
+    "externalRouteDiagnosis": {
+      "windowsOriginalQuery": "HTTP200",
+      "containerDirectQuery": "ReadTimeout",
+      "containerExplicitHostProxyProbe": "HTTP200, arxiv2403.17888v3",
+      "persistentConfigurationChanged": false,
       "modelCalls": 0,
-      "boundary": "Exact query endpoint remains unhealthy from project container; no claim of external runtime completion."
-    }
+      "externalWorkflowAccepted": false,
+      "proofs": [
+        "deep-research-evidence/arxiv-query-route-diagnosis-20261030.json",
+        "deep-research-evidence/arxiv-container-proxy-probe-20261030.json"
+      ]
+    },
+    "remaining": "Correct false quantity requirements on Chinese surface-dimensional labels without weakening empirical counts; preserve point contribution during repair and remove unsupported surface localization. Configure a durable explicit external route and verify external workflow, then finish independent cases and full DR0-DR5 release audit."
   },
   "sharedModuleSourceCheckpoint": {
     "sourceCommit": "f8ae5177",
@@ -5688,6 +5636,179 @@
         "contentAccepted": false
       },
       "remaining": "Validate candidate loading and bounded model quality; external search/body runtime, numeric comparison, experiments, insufficiency, continuation, independent cases and full DR0-DR5 release/recovery audit remain pending."
+    },
+    {
+      "sourceCommit": "7b43aa5c",
+      "javaSourceCommit": "612c324e",
+      "promptVersion": "dr-v2.20261030.370",
+      "component": "bounded goal-instruction compaction",
+      "componentOutcome": "repair_dispatch_restored_machine_complete_human_unsupported_consequence",
+      "runtimeLoadedVerified": true,
+      "runtimeProof": "deep-research-evidence/runtime-load-goal-370-20261030.json",
+      "fullDR0DR5Proved": false,
+      "independentCredit": 0,
+      "lastCapturedLedgerRows": 8188,
+      "lastCapturedActiveProductionRuns": 0,
+      "historicalPausedRunsAtCapture": 13,
+      "lastConfirmedIndexDocuments": 1102,
+      "lastConfirmedIndexSha256": "1e91bfa73ba4a374a6cea68be25639c269fac493d5eda61162448bf500ff6118",
+      "offlineRegression": {
+        "files": 148,
+        "passed": 2759,
+        "failed": 1,
+        "failure": "stale expected .369 prompt version",
+        "seconds": 265.52,
+        "proof": "deep-research-evidence/goal-370-associated-regression-20261030.json",
+        "correctedVersionTestPassed": 1,
+        "correctedVersionTestSeconds": 1.6,
+        "broaderSuiteRerun": false,
+        "correctionNote": "Updated only the expected version; initial correction had a test indentation error, fixed before successful rerun. No business assertions weakened."
+      },
+      "lastLocalDevelopmentCase": {
+        "promptVersion": "dr-v2.20261030.370",
+        "sourceCommit": "7b43aa5c",
+        "case": "X4L-v5",
+        "runId": "dr_run_b8fd0315731a5e23ac736c04618631f6",
+        "status": "completed",
+        "machineOutcome": "complete",
+        "modelCalls": 11,
+        "tokens": 49246,
+        "elapsedSeconds": 177.694,
+        "repairStatus": "response_received",
+        "repairDispatchedOnce": true,
+        "answerCoherence": {
+          "contractVersion": 1,
+          "status": "checked",
+          "answerDigest": "574a23a71f7316aa13ed7d9d3f22c943c9f85bb689256cb3377e593fda56acd8",
+          "coherent": true,
+          "issues": []
+        },
+        "coverageGaps": 0,
+        "acceptedClaims": [
+          {
+            "claimId": "c1",
+            "text": "这里的“2D”指每个基元是平面椭圆盘，但每个盘在三维空间中有位置和朝向，多个盘沿视线叠加，因此能表示三维场景。",
+            "kind": "inference",
+            "evidenceRefs": [
+              "ev_6d914bd0be93cca0f7e42ea9bebdd6f8b10197c6e54b2b5a1d3b4250ba948df7",
+              "ev_e4def10779cfba93e4f1a4e651e47836dbceb9949957299c2a80c9994d5c5fd9",
+              "ev_a1f1965d0a688532a30ef28acdcac383f29348d2744efca61bc816ef9c807f91"
+            ],
+            "conditions": {},
+            "obligationIds": [
+              "ob_1"
+            ],
+            "detailLevel": "concise",
+            "tableBindings": [],
+            "verification": "semantic_passed"
+          },
+          {
+            "claimId": "c3",
+            "text": "深度畸变约束沿每条光线的多个交点深度，使它们集中，减少半透明浮点；法线一致性约束每个2D splat的法线与从深度图梯度估计的表面法线对齐，使splat贴合实际表面。",
+            "kind": "reported",
+            "evidenceRefs": [
+              "ev_35c8ed39d0274f9039b8135b856ddc9eb615e8efdb77ba2b31c83e44bcbad734",
+              "ev_2130887bcc4166954e487bcfe46cf9ff20581ac3276237d82163a05f6b3a0f76",
+              "ev_cf67573e4730737b48f20cf7907871805caef2aade2ed2546e3641dc3dbf02cb"
+            ],
+            "conditions": {},
+            "obligationIds": [
+              "ob_2",
+              "ob_3"
+            ],
+            "detailLevel": "concise",
+            "tableBindings": [],
+            "verification": "semantic_passed"
+          }
+        ],
+        "manualReview": {
+          "contentAccepted": false,
+          "independentCredit": 0,
+          "scores": {
+            "targetResponse": 4,
+            "evidenceSupport": 3,
+            "conditions": 4,
+            "synthesis": 3,
+            "readability": 3
+          },
+          "reason": "Both requested constraints are explained, but c3 reports reduction of semi-transparent floating points without direct support in its own supplied quotes/context. Depth concentration does not by itself establish removing or reducing primitive counts. The Chinese 浮点 and unexplained splat are also poor novice wording.",
+          "supportedParts": [
+            "oriented planar Gaussian primitives positioned in 3D space",
+            "ray intersection depth concentration",
+            "splat normals aligned with surface normals estimated from rendered depth gradients"
+          ],
+          "unsupportedClause": {
+            "claimId": "c3",
+            "text": "减少半透明浮点",
+            "kind": "reported"
+          },
+          "acceptanceRule": "All applicable dimensions must reach4. Machine complete and coherence true do not grant content acceptance."
+        },
+        "preservation": {
+          "oldLedgerUnchanged": true,
+          "allOldRunsUnchanged": true,
+          "newRows": 24,
+          "ledgerRows": 8188,
+          "onlyThisRunCreatedCalls": true,
+          "active": [],
+          "oldPausedRetained": true,
+          "paused": [
+            "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+            "dr_run_ed10cc3347be552288079a9a588fddf5",
+            "dr_run_86b3f181a5475e99aacca3dbf4370567",
+            "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+            "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+            "dr_run_e3521b1781825273b384a26a5edb8cdc",
+            "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+            "dr_run_e9c9dc916bef519092fad8b929b2448f",
+            "dr_run_4738564f5ff35157996a35068c62ed32",
+            "dr_run_a8bd62f9ae3d52ff806f537065f55b2d",
+            "dr_run_98e66f2d3d555dfa822b859963f01419",
+            "dr_run_8be639c866c35ea092c735a04781b647",
+            "dr_run_1c0c2e6510165086962408b8e3cf698b"
+          ]
+        },
+        "protectedTasksExact": 12,
+        "repeatedTerminalGetExact": true,
+        "index": {
+          "collection": "literature_collection_v4_e5_small",
+          "count": 1102,
+          "sha256": "1e91bfa73ba4a374a6cea68be25639c269fac493d5eda61162448bf500ff6118"
+        },
+        "payloadSha256": "549d30ca5955ee3fc7c66255af51931ec2aeb3d07e24414867aaeaa0e0d81c65"
+      },
+      "remaining": "Resolve unsupported consequence added/surviving beginner rewriting and semantic review; local development is not independent acceptance. External path, comparison, experiments, insufficiency, continuation, independent holdouts and DR0-DR5 release audit remain pending.",
+      "nextCandidate": {
+        "promptVersion": "dr-v2.20261030.371",
+        "audienceRewriteContractVersion": 9,
+        "component": "preserve complementary point responsibilities during beginner rewrite; reject exact collapse of distinct points",
+        "focusedPassed": 147,
+        "focusedSeconds": 11.46,
+        "actualReplay": "deep-research-evidence/audience-371-actual-replay-20261030.json",
+        "oldRequestExact": true,
+        "ownSourcePacketUnchanged": true,
+        "oldPendingCannotSwitchPolicy": true,
+        "runtimeLoadedVerified": false,
+        "contentAccepted": false,
+        "independentCredit": 0,
+        "associatedRegression": {
+          "files": 153,
+          "passed": 2875,
+          "seconds": 263.73,
+          "sourceFrozen": true,
+          "providerCalls": 0,
+          "proof": "deep-research-evidence/audience-371-associated-regression-20261030.json"
+        }
+      },
+      "externalTransportDiagnostic": {
+        "proof": "deep-research-evidence/arxiv-query-transport-20261030.json",
+        "attempts": 1,
+        "query": "id:2403.17888",
+        "errorType": "ReadTimeout",
+        "seconds": 3.255,
+        "modelCalls": 0,
+        "boundary": "Exact query endpoint remains unhealthy from project container; no claim of external runtime completion."
+      }
     }
   ]
 }

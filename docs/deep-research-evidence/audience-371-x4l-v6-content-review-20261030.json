@@ -1,0 +1,87 @@
+{
+  "promptVersion": "dr-v2.20261030.371",
+  "sourceCommit": "b82c5318",
+  "audienceRewriteContractVersion": 9,
+  "case": "X4L-v6",
+  "runId": "dr_run_53a21097e4015ac384b44d5836c9b628",
+  "status": "completed",
+  "machineOutcome": "inconclusive",
+  "modelCalls": 9,
+  "tokens": 38020,
+  "elapsedSeconds": 95.748,
+  "repairRequests": 2,
+  "acceptedClaims": [],
+  "initialRejections": [
+    {
+      "claimId": "c1",
+      "reason": "numeric_mismatch",
+      "missingReportedNumbers": [
+        "2e0"
+      ],
+      "detail": "本条引用原文未直接报告这些数值：2。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。"
+    },
+    {
+      "claimId": "c3",
+      "reason": "numeric_mismatch",
+      "missingReportedNumbers": [
+        "2e0"
+      ],
+      "detail": "本条引用原文未直接报告这些数值：2。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。"
+    },
+    {
+      "claimId": "c2",
+      "reason": "semantic_unresolved",
+      "detail": "深度畸变约束确实通过最小化加权深度差来集中不透明度权重并缓解噪声重建，但证据仅指出权重沿射线集中，未明确其集中在第一个可见表面附近；且“半透明高斯片分散”作为噪声原因的表述在证据中未直接出现，因此整体断言不完全支持。"
+    }
+  ],
+  "audienceEditOutcome": "applied",
+  "audienceEditedTexts": [
+    "这里的“2D”指每个高斯基元是二维表面片（椭圆盘），但它们在三维空间中定位，并沿视线投影到图像平面，通过体积混合累积颜色，因此能表示三维场景。",
+    "深度畸变约束通过最小化沿射线各交点深度差的加权和，使不透明度权重集中在第一个可见表面附近，减少半透明高斯片分散导致的噪声重建。",
+    "法线一致性约束通过将每个二维高斯片的法线与由深度图梯度估计的表面法线对齐，使二维片局部贴合实际物体表面。"
+  ],
+  "manualReview": {
+    "contentAccepted": false,
+    "independentCredit": 0,
+    "publication": "No verified conclusion published; inconclusive is appropriate for empty accepted claims.",
+    "positiveObservation": "Actual beginner rewrite keeps 2D representation, depth constraint, normal constraint as three different complementary points; no copied whole-question paragraph.",
+    "remaining": [
+      "Chinese spatial labels 二维表面片 and 二维片 trigger false numeric requirements for2 under quantity contract10.",
+      "Depth draft/edited wording adds first visible surface localization not established by its own original distortion-loss definition.",
+      "One repaired depth target expands into a normal-consistency answer unsupported by its own sources. Shared goal IDs alone do not preserve a point contribution."
+    ],
+    "boundary": "No claim that duplicate guard or hint rules guarantee scientific fidelity or semantic uniqueness."
+  },
+  "preservation": {
+    "oldLedgerUnchanged": true,
+    "allOldRunsUnchanged": true,
+    "newRows": 22,
+    "ledgerRows": 8210,
+    "onlyThisRunCreatedCalls": true,
+    "active": [],
+    "oldPausedRetained": true,
+    "paused": [
+      "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+      "dr_run_ed10cc3347be552288079a9a588fddf5",
+      "dr_run_86b3f181a5475e99aacca3dbf4370567",
+      "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+      "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+      "dr_run_e3521b1781825273b384a26a5edb8cdc",
+      "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+      "dr_run_e9c9dc916bef519092fad8b929b2448f",
+      "dr_run_4738564f5ff35157996a35068c62ed32",
+      "dr_run_a8bd62f9ae3d52ff806f537065f55b2d",
+      "dr_run_98e66f2d3d555dfa822b859963f01419",
+      "dr_run_8be639c866c35ea092c735a04781b647",
+      "dr_run_1c0c2e6510165086962408b8e3cf698b"
+    ]
+  },
+  "protectedTasksExact": 12,
+  "repeatedTerminalGetExact": true,
+  "index": {
+    "collection": "literature_collection_v4_e5_small",
+    "count": 1102,
+    "sha256": "1e91bfa73ba4a374a6cea68be25639c269fac493d5eda61162448bf500ff6118"
+  },
+  "payloadSha256": "3b97ddde3b4496f6c4676a5935d6eb77b2879f0d6b25511bf1cad2c0bd2316e0"
+}

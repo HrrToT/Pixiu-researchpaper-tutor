@@ -1,0 +1,13 @@
+{
+  "seconds": 1.355,
+  "httpStatus": 200,
+  "bytes": 2970,
+  "entryIds": [
+    "http://arxiv.org/abs/2403.17888v3"
+  ],
+  "attempts": 1,
+  "modelCalls": 0,
+  "productionWrites": 0,
+  "persistentProxyConfigurationChanged": false,
+  "boundary": "One explicit public-query route probe through the existing host proxy; no key, no application requests rerouted, no fallback enabled."
+}
