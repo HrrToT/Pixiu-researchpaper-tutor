@@ -5001,7 +5001,38 @@
     "quantitySpellingContractVersion": 11,
     "audienceRewriteContractVersion": 9,
     "factualRepairGoalContractVersion": 2,
-    "answerCoherenceContractVersion": 1
+    "answerCoherenceContractVersion": 1,
+    "nextCandidate": {
+      "promptVersion": "dr-v2.20261030.374",
+      "factualRepairGoalContractVersion": 3,
+      "answerCoherenceContractVersion": 2,
+      "quantitySpellingContractVersion": 12,
+      "component": "specific-gap repair scheduling, full-answer coherence release gate, definitional geometry-set articles",
+      "associatedRegression": {
+        "files": 159,
+        "passed": 2962,
+        "seconds": 559.36,
+        "sourceFrozen": true,
+        "providerCalls": 0,
+        "proof": "deep-research-evidence/coherence-374-associated-regression-20261030.json"
+      },
+      "actualSavedReplay": "deep-research-evidence/coherence-374-confirmed-replay-20261030.json",
+      "runtimeLoadedVerified": false,
+      "contentAccepted": false,
+      "independentCredit": 0
+    },
+    "externalProxyComponent": {
+      "stage": "standalone, not integrated or configured",
+      "unitPassed": 16,
+      "unitSeconds": 4.53,
+      "liveProbe": "deep-research-evidence/academic-proxy-pinned-component-20261030.json",
+      "httpStatus": 200,
+      "publicTargetIpPinned": true,
+      "originalHostTlsVerified": true,
+      "modelCalls": 0,
+      "productionWrites": 0,
+      "externalResearchWorkflowAccepted": false
+    }
   },
   "sharedModuleSourceCheckpoint": {
     "sourceCommit": "f8ae5177",

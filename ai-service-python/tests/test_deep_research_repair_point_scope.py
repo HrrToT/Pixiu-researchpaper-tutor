@@ -35,22 +35,23 @@ def test_table_rules_remain_when_original_target_has_any_table_binding():
     assert 'tableBindings' in new['prompt']
 
 
-@pytest.mark.parametrize('value',[None,0,1,3,'2',2.0])
+@pytest.mark.parametrize('value',[None,0,1,4,'2',2.0])
 def test_only_explicit_point_scope_version_is_accepted(value):
     with pytest.raises(ValueError):policy_version(value)
 
 
-def test_old_pending_bound_goal_request_cannot_switch_to_point_scope_and_resend():
+@pytest.mark.parametrize('previous_policy',[True,2])
+def test_old_pending_bound_goal_request_cannot_switch_to_point_scope_and_resend(previous_policy):
     c,e,checks,requirements=inputs();states=[]
     class Stop(Exception):pass
     def invoke(_):raise Stop()
     with pytest.raises(Stop):
         repair_rejected({'claims':[c]},checks,[e],'Explain',invoke,json.loads,
-            target_goals=True,checkpoint=lambda s:states.append(deepcopy(s)),**options(requirements))
+            target_goals=previous_policy,checkpoint=lambda s:states.append(deepcopy(s)),**options(requirements))
     send=Mock()
     with pytest.raises(DeepResearchError,match='原始输入'):
         repair_rejected({'claims':[c]},checks,[e],'Explain',send,json.loads,
-            target_goals=2,batch_state=states[-1],**options(requirements))
+            target_goals=3,batch_state=states[-1],**options(requirements))
     send.assert_not_called()
 
 

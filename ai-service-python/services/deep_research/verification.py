@@ -39,7 +39,8 @@ def make_evidence(source: dict, quote: str, original: str, *, location: dict,
 
 def _measurement_numbers(text: str, *, word_counts=False, relative_references=False, artifact_references=False,
                          conceptual_articles=False, expanded_counts=False,dimensional_labels=False,
-                         collection_articles=False,enumeration_labels=False,surface_dimensional_labels=False) -> set[str]:
+                         collection_articles=False,enumeration_labels=False,surface_dimensional_labels=False,
+                         geometric_collection_articles=False) -> set[str]:
     # Dimensional method labels are not measured quantities. The semantic
     # verifier still checks their identity; standalone dimensions stay checked.
     text = re.sub(r'(?<![A-Za-z0-9_])[234]D(?:-?[A-Za-z]+)?(?![A-Za-z0-9_])', '', text)
@@ -54,7 +55,8 @@ def _measurement_numbers(text: str, *, word_counts=False, relative_references=Fa
     return measurement_numbers(text, word_counts=word_counts, relative_references=relative_references,
                                artifact_references=artifact_references, conceptual_articles=conceptual_articles,
                                expanded_counts=expanded_counts,chinese_factors=dimensional_labels,
-                               collection_articles=collection_articles)
+                               collection_articles=collection_articles,
+                               **({'geometric_collection_articles':True} if geometric_collection_articles else {}))
 
 
 def _condition_values_text(value):
@@ -93,14 +95,14 @@ def precheck_claims(claims: list[dict], evidence: list[dict], *, absence_scope_v
     if len(by_id) != len(evidence):
         raise ValueError("Duplicate evidence identity")
     candidates, rejected, seen = [], [], set()
-    word_counts = type(quantity_spelling_version) is int and quantity_spelling_version in (1, 2, 3, 4, 5, 6, 7, 8, 9,10,11)
-    relative_references = type(quantity_spelling_version) is int and quantity_spelling_version in (2, 3, 4, 5, 6, 7, 8, 9,10,11)
-    artifact_references = type(quantity_spelling_version) is int and quantity_spelling_version in (3, 4, 5, 6, 7, 8, 9,10,11)
-    conceptual_articles = type(quantity_spelling_version) is int and quantity_spelling_version in (4,5,6,7,8,9,10,11)
-    dimensional_labels=type(quantity_spelling_version) is int and quantity_spelling_version in (5,6,7,8,9,10,11)
-    collection_articles=type(quantity_spelling_version) is int and quantity_spelling_version in (6,7,8,9,10,11)
-    enumeration_labels=(9 if quantity_spelling_version in (10,11) else quantity_spelling_version) if type(quantity_spelling_version) is int and quantity_spelling_version in (7,8,9,10,11) else False
-    surface_labels=(2 if quantity_spelling_version==11 else quantity_spelling_version==10) if type(quantity_spelling_version) is int else False
+    word_counts = type(quantity_spelling_version) is int and quantity_spelling_version in (1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12)
+    relative_references = type(quantity_spelling_version) is int and quantity_spelling_version in (2, 3, 4, 5, 6, 7, 8, 9,10,11,12)
+    artifact_references = type(quantity_spelling_version) is int and quantity_spelling_version in (3, 4, 5, 6, 7, 8, 9,10,11,12)
+    conceptual_articles = type(quantity_spelling_version) is int and quantity_spelling_version in (4,5,6,7,8,9,10,11,12)
+    dimensional_labels=type(quantity_spelling_version) is int and quantity_spelling_version in (5,6,7,8,9,10,11,12)
+    collection_articles=type(quantity_spelling_version) is int and quantity_spelling_version in (6,7,8,9,10,11,12)
+    enumeration_labels=(9 if quantity_spelling_version in (10,11,12) else quantity_spelling_version) if type(quantity_spelling_version) is int and quantity_spelling_version in (7,8,9,10,11,12) else False
+    surface_labels=(2 if quantity_spelling_version in (11,12) else quantity_spelling_version==10) if type(quantity_spelling_version) is int else False
     concurrent_feedback = type(feedback_version) is int and feedback_version == 2
     for claim in claims:
         claim_id = claim.get("claimId")
@@ -174,12 +176,14 @@ def precheck_claims(claims: list[dict], evidence: list[dict], *, absence_scope_v
                                           artifact_references=artifact_references, conceptual_articles=conceptual_articles,
                                           expanded_counts=conceptual_articles,dimensional_labels=dimensional_labels,
                                           collection_articles=collection_articles,enumeration_labels=enumeration_labels,
-                                          surface_dimensional_labels=surface_labels)
+                                          surface_dimensional_labels=surface_labels,
+                                          **({'geometric_collection_articles':True} if quantity_spelling_version==12 else {}))
             original_numbers = set().union(*(_measurement_numbers(text, word_counts=word_counts,
                 relative_references=relative_references, artifact_references=artifact_references,
                 conceptual_articles=conceptual_articles, expanded_counts=conceptual_articles,
                 dimensional_labels=dimensional_labels,collection_articles=collection_articles,
-                enumeration_labels=enumeration_labels,surface_dimensional_labels=surface_labels) for text in source_texts))
+                enumeration_labels=enumeration_labels,surface_dimensional_labels=surface_labels,
+                **({'geometric_collection_articles':True} if quantity_spelling_version==12 else {})) for text in source_texts))
             if not numbers <= original_numbers:
                 reason = reason or "numeric_mismatch"
                 unsupported_numbers = numbers - original_numbers

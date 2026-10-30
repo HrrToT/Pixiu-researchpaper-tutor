@@ -46,7 +46,7 @@ def render(*, question, length_contract, requirements, source_context, targets,
            checks, questions, permissions_marker, evidence_marker, schema, target_goals=False, target_hints=None):
     from services.deep_research.repair_goals import policy_version
     goal_version=policy_version(target_goals)
-    if target_hints is not None and goal_version!=2:raise ValueError('Point hints require repair goal contract2')
+    if target_hints is not None and goal_version not in (2,3):raise ValueError('Point hints require repair goal contract2')
     encode = lambda value: json.dumps(value, ensure_ascii=False, separators=(',', ':'))
     length_contract=length_contract.replace(
         '\nFill only the missing part. Do not repeat an accepted mechanism in a motivation repair.\n','\n')
@@ -57,7 +57,7 @@ def render(*, question, length_contract, requirements, source_context, targets,
     if target_goals:
         from services.deep_research.repair_goals import bind,GUIDANCE
         goal_guidance='\n'+GUIDANCE+'\nFrozen goal IDs by target: '+encode(bind(targets,requirements))+'\n'
-        if goal_version==2:
+        if goal_version in (2,3):
             from services.deep_research.repair_goals import POINT_GUIDANCE
             if (not isinstance(target_hints,dict) or set(target_hints)!={t['claimId'] for t in targets}
                     or any(not isinstance(v,str) or not v.strip() for v in target_hints.values())):

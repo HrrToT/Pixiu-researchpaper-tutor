@@ -81,3 +81,13 @@ def revalidate(audit, question, claims):
     if not valid and result.get('status')=='checked':
         result['status']='invalid_response'  # Missing audit metadata is not a reason to rewrite verified facts.
     return result
+
+
+def publication_release(audit, question, claims):
+    """Whole-answer release only; retain scientific verdicts and raw drafts."""
+    checked=revalidate(audit,question,claims)['answerCoherence']
+    released=checked.get('status')=='checked' and checked.get('coherent') is True
+    return {'contractVersion':2,'answerDigest':identity(question,claims),
+            'status':'released' if released else 'held',
+            'heldClaimIds':[] if released else [c['claimId'] for c in claims],
+            'reason':None if released else 'inconsistent_answer' if checked.get('status')=='checked' else 'coherence_unconfirmed'}

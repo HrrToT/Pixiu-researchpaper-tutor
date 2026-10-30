@@ -23,13 +23,14 @@ def _rejected_row_id(row):
     return _claim_id(row)
 
 
-def prepare_coverage_repair(report, verification, audit):
+def prepare_coverage_repair(report, verification, audit, *, prioritize_specific=False):
     """Withhold accepted claims needed to close audit gaps.
 
     Returns a new verification-shaped dict whose ``accepted`` list drops the
     targeted claims and whose ``rejected`` list is the union of the original
     rejections plus one coverage row per targeted claim.
     """
+    if type(prioritize_specific) is not bool:raise ValueError('Invalid coverage repair scheduling policy')
     report = report or {}
     verification = verification or {}
     audit = audit or {}
@@ -59,6 +60,11 @@ def prepare_coverage_repair(report, verification, audit):
         active_gaps = [gap for gap in gaps if not gap.get("wholeQuestion", False)]
     else:
         active_gaps = list(gaps)
+    scoped = prioritize_specific and audit.get('status')=='checked' and audit.get('requestCoverageContractVersion') in (2,3)
+    if scoped:
+        # Schedule concrete missing requirements first. The original whole-
+        # question audit/gaps stay unchanged and run again after repair.
+        active_gaps.sort(key=lambda gap:bool(gap.get('wholeQuestion')))
 
     bindings_by_obligation = {}
     for verdict in verdicts:
@@ -127,6 +133,12 @@ def prepare_coverage_repair(report, verification, audit):
             # Conservative fallback: an unmapped specific requirement withholds
             # every accepted claim already present in the report.
             gap_targets = set(accepted_report_ids)
+
+        if scoped and gap.get('wholeQuestion') and targets:
+            # A known specific failure already has repair targets. A broad
+            # answer_scope gap must not drag unrelated covered facts into a
+            # rewrite just because its verdict binds the rest of the answer.
+            gap_targets = set(targets)
 
         for cid in gap_targets:
             bucket = targets.setdefault(cid, [])

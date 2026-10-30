@@ -100,14 +100,14 @@ def test_readable_rejection_details_do_not_round_convert_or_expand_large_values(
     assert number_display('literal:bad') == 'literal:bad'
 
 
-@pytest.mark.parametrize('replacement', [None, True, '3', 0, 1, 2, 8, 12])
+@pytest.mark.parametrize('replacement', [None, True, '3', 0, 1, 2, 8, 13])
 def test_spelling_policy_is_server_owned_frozen_and_used_by_facade(tmp_path, replacement):
     repo = DeepResearchRepository(tmp_path / 'r.sqlite3'); repo.initialize()
     facade = ResearchFacade(repo, lambda **_: None, llm_client=object())
     try:
         run, _ = facade.create({'workspaceTaskId': 't', 'operationKey': 'o', 'question': '解释三个分量',
             'deferStart': True, 'quantitySpellingContractVersion': replacement}, start_async=False)
-        assert run['quantitySpellingContractVersion'] == 11
+        assert run['quantitySpellingContractVersion'] == 12
         with pytest.raises(ValueError, match='Immutable'):
             repo.update_run(run['runId'], lambda r: {**r, 'quantitySpellingContractVersion': replacement})
         c, ev = setup('前3个输出表示平移。')

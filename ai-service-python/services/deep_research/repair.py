@@ -20,7 +20,7 @@ def _prepare_repair(report, verification, evidence, question, *, max_prompt_byte
     if type(preserve_answers) is not bool:raise ValueError('Invalid answer preservation policy')
     from services.deep_research.repair_goals import policy_version
     goal_version=policy_version(target_goals)
-    if goal_version==2 and not (fact_redraft and source_aware_redraft and concise_factual
+    if goal_version in (2,3) and not (fact_redraft and source_aware_redraft and concise_factual
             and compact_source_repair and factual_redraft_eligible(report)):
         raise ValueError('Point-scoped repair requires compact factual redrafting')
     if not (type(request_semantics) is bool or type(request_semantics) is int and request_semantics==2):raise ValueError('Invalid request semantics policy')
@@ -425,7 +425,7 @@ in the paper. Maintain consistency with accepted definitions and complete requir
             checks=packed_checks,questions=question_dictionary,permissions_marker=permissions_marker,
             evidence_marker=evidence_marker,schema=revision_shape,
             **({'target_goals':target_goals} if target_goals else {}),
-            **({'target_hints':point_hints(originals.values())} if goal_version==2 else {}))
+            **({'target_hints':point_hints(originals.values())} if goal_version in (2,3) else {}))
     if shared_experiment_schema and prospective:
         from services.deep_research.experiment_repair import compatible,render as experiment_prompt
         feedback_options = {}
@@ -461,7 +461,7 @@ in the paper. Maintain consistency with accepted definitions and complete requir
                 terminology=SCIENTIFIC_TERMINOLOGY,concise_policy=experiment_evidence_context is not None,**feedback_options)
     # Schema renderers above can replace the entire prompt. Keep the current
     # packet-key contract after the final renderer, inside the byte fitter.
-    if type(declared_table_refs) is int and declared_table_refs==4 and not (goal_version==2 and not has_tables):
+    if type(declared_table_refs) is int and declared_table_refs==4 and not (goal_version in (2,3) and not has_tables):
         from services.deep_research.table_bindings import reference_guidance
         prompt+='\n'+reference_guidance(4)
     if preserve_answers:
@@ -491,7 +491,7 @@ in the paper. Maintain consistency with accepted definitions and complete requir
     if answer_intents is not None:
         from services.deep_research.answer_point_intent import repair_guidance
         prompt += repair_guidance(answer_intents, originals,**({'clarify_shared_sources':True} if type(claim_check) is int and claim_check in (8,9) else {}))
-    if table_identity_context and not (goal_version==2 and not has_tables):
+    if table_identity_context and not (goal_version in (2,3) and not has_tables):
         from services.deep_research.table_identity_context import guidance as table_identity_guidance
         prompt += '\n'+table_identity_guidance(2 if type(table_identity_context) is int and table_identity_context==2 else 1)
     if claim_check:
@@ -538,7 +538,7 @@ If a supported revision is not possible, omit that target rather than bypass sco
         from services.deep_research.condition_source_index import GUIDANCE as CONDITION_GUIDANCE
         condition_marker='__CONDITION_SOURCES_'+uuid4().hex+'__'
         prompt+='\n'+CONDITION_GUIDANCE+'\nCondition source index (navigation only):\n'+condition_marker
-    note_navigation=type(table_identity_context) is int and table_identity_context==2 and factual_redraft_eligible(report) and not (goal_version==2 and not has_tables)
+    note_navigation=type(table_identity_context) is int and table_identity_context==2 and factual_redraft_eligible(report) and not (goal_version in (2,3) and not has_tables)
     template = prompt
     from services.deep_research.experiment_edits import columnar
     def render(selected_rows):
@@ -569,7 +569,7 @@ If a supported revision is not possible, omit that target rather than bypass sco
     # passages may not displace a required source's context during fitting.
     required = {ref for claim in originals.values()
                 for ref in (claim.get('evidenceRefs', []) if claim.get('text', '').strip() or
-                    goal_version==2 and isinstance(claim.get('scopeExpression'),dict) and claim['scopeExpression'] else [])
+                    goal_version in (2,3) and isinstance(claim.get('scopeExpression'),dict) and claim['scopeExpression'] else [])
                 if ref in short_ids}
     # Coverage hints are candidates, not citations the original assertion used.
     # Keep them first among optional rows without forcing every broad hint into
@@ -745,7 +745,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
     if type(preserve_answers) is not bool:raise ValueError('Invalid answer preservation policy')
     from services.deep_research.repair_goals import policy_version
     goal_version=policy_version(target_goals)
-    if goal_version==2 and not (fact_redraft and source_aware_redraft and concise_factual
+    if goal_version in (2,3) and not (fact_redraft and source_aware_redraft and concise_factual
             and compact_source_repair and factual_redraft_eligible(report)):
         raise ValueError('Point-scoped repair requires compact factual redrafting')
     if not (type(request_semantics) is bool or type(request_semantics) is int and request_semantics==2):raise ValueError('Invalid request semantics policy')

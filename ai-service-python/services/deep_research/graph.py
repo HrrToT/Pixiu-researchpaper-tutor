@@ -1826,7 +1826,7 @@ def make_verify_node(
                 **({'binding_catalog':True} if type(record.get('coverageDiagnosticsContractVersion')) is int and record['coverageDiagnosticsContractVersion'] in (2,3) else {}),
                   **({'scoped_catalog':True} if type(record.get('coverageDiagnosticsContractVersion')) is int and record['coverageDiagnosticsContractVersion']==3 else {}),
                   **({'identification_locators':True} if type(record.get('identificationLocatorContractVersion')) is int and record['identificationLocatorContractVersion']==1 else {}),
-                  **({'coherence':True} if type(record.get('answerCoherenceContractVersion')) is int and record['answerCoherenceContractVersion']==1 else {}),
+                  **({'coherence':True} if type(record.get('answerCoherenceContractVersion')) is int and record['answerCoherenceContractVersion'] in (1,2) else {}),
                 **({'diagnostics':True} if type(record.get('coverageDiagnosticsContractVersion')) is int and record['coverageDiagnosticsContractVersion'] in (1,2,3) else {}),
                 **({'literal_dimensions':True} if dimensions_enabled(record) else {}))
             if saved.get('outputKind') == 'experiment_design':
@@ -1834,7 +1834,9 @@ def make_verify_node(
                 repair_report, verification_result = prepare_design_completion(
                     report_body, verification_result, evidence, saved.get('plan', []))
             repair_targets = prepare_coverage_repair(repair_report, verification_result,
-                answer_coverage if answer_coverage.get('status') == 'checked' else {'gaps': []})
+                answer_coverage if answer_coverage.get('status') == 'checked' else {'gaps': []},
+                **({'prioritize_specific':True} if type(record.get('factualRepairGoalContractVersion')) is int
+                   and record['factualRepairGoalContractVersion']==3 else {}))
         if saved.get('repairCompleted') and saved.get('verifiedReport'):
             return {'claim_ids': [c['claimId'] for c in saved['verifiedReport'].get('verifiedClaims', [])]}
 
@@ -1932,9 +1934,9 @@ def make_verify_node(
                             if isinstance(a,dict) and isinstance(a.get('expression'),dict) and a.get('claimId') in {c.get('claimId') for c in repair_report.get('claims',[])}]}
                             if claim_check_enabled(record) and record['claimCheckContractVersion'] in (5,6,7,8,9) else {}),
                         **({'compact_source_repair':True} if compact_repair else {}),
-                        **({'target_goals':2 if record['factualRepairGoalContractVersion']==2 else True} if compact_repair and factual_redraft_eligible(repair_report)
+                        **({'target_goals':record['factualRepairGoalContractVersion'] if record['factualRepairGoalContractVersion'] in (2,3) else True} if compact_repair and factual_redraft_eligible(repair_report)
                             and type(record.get('factualRepairGoalContractVersion')) is int
-                            and record['factualRepairGoalContractVersion'] in (1,2) else {}),
+                            and record['factualRepairGoalContractVersion'] in (1,2,3) else {}),
                         **({'ordinary_advice':True} if advice_repair else {}),
                         **({'preserve_answers':True} if type(record.get('answerPreservationContractVersion')) is int and record['answerPreservationContractVersion']==1 else {}),
                         **({'request_semantics':record['requestSemanticsContractVersion'] if record['requestSemanticsContractVersion']==2 else True} if type(record.get('requestSemanticsContractVersion')) is int and record['requestSemanticsContractVersion'] in (1,2) else {}),
@@ -2061,7 +2063,7 @@ def make_verify_node(
                             **({'binding_catalog':True} if type(record.get('coverageDiagnosticsContractVersion')) is int and record['coverageDiagnosticsContractVersion'] in (2,3) else {}),
                   **({'scoped_catalog':True} if type(record.get('coverageDiagnosticsContractVersion')) is int and record['coverageDiagnosticsContractVersion']==3 else {}),
                   **({'identification_locators':True} if type(record.get('identificationLocatorContractVersion')) is int and record['identificationLocatorContractVersion']==1 else {}),
-                  **({'coherence':True} if type(record.get('answerCoherenceContractVersion')) is int and record['answerCoherenceContractVersion']==1 else {}),
+                  **({'coherence':True} if type(record.get('answerCoherenceContractVersion')) is int and record['answerCoherenceContractVersion'] in (1,2) else {}),
                             **({'diagnostics':True} if type(record.get('coverageDiagnosticsContractVersion')) is int and record['coverageDiagnosticsContractVersion'] in (1,2,3) else {}),
                             **({'literal_dimensions':True} if dimensions_enabled(record) else {}))
                     verification_result = merged
@@ -2165,13 +2167,26 @@ def make_publish_node(
             identification_locators=type(record.get('identificationLocatorContractVersion')) is int and record['identificationLocatorContractVersion']==1,
             **({'task_sources':True} if type(record.get('reportPresentationContractVersion')) is int and record['reportPresentationContractVersion']==4 else {}),
             **({'request_semantics':2} if type(record.get('requestSemanticsContractVersion')) is int and record['requestSemanticsContractVersion']==2 else {}))
-        if type(record.get('answerCoherenceContractVersion')) is int and record['answerCoherenceContractVersion']==1:
+        if type(record.get('answerCoherenceContractVersion')) is int and record['answerCoherenceContractVersion'] in (1,2):
             from services.deep_research.answer_coherence import revalidate
             audit=revalidate(audit,effective_question(record),accepted_claims)
-        if audit != verified_report.get('answerCoverage', {}):
+        coherence_release=None
+        coherence_notice=''
+        if type(record.get('answerCoherenceContractVersion')) is int and record['answerCoherenceContractVersion']==2 and accepted_claims:
+            from services.deep_research.answer_coherence import publication_release
+            coherence_release=publication_release(audit,effective_question(record),accepted_claims)
+            if coherence_release['status']=='held':
+                # A joint audit covers this exact full answer, not an arbitrary
+                # subset. Hold it intact rather than choose which conflicting
+                # statement is true or publish a newly unaudited combination.
+                accepted_claims=[]
+                coherence_notice=('回答仍有未解决的不一致，暂未发布结论。' if coherence_release['reason']=='inconsistent_answer'
+                                  else '回答的一致性尚未确认，暂未发布结论。')
+        if audit != verified_report.get('answerCoverage', {}) or (coherence_release is not None and coherence_release!=brief_state.get('publicationCoherence')):
             verified_report = {**verified_report, 'answerCoverage': audit}
             repo_update(run_id, lambda r: {**r, 'state': {**r.get('state', {}),
-                        'verifiedReport': verified_report}}, expected_revision=None)
+                        'verifiedReport': verified_report,
+                        **({'publicationCoherence':coherence_release} if coherence_release is not None else {})}}, expected_revision=None)
         from services.deep_research.obligation_purpose import nonblocking_research_obligations
         research_notes = nonblocking_research_obligations(brief_state.get('plan', []),
             effective_question(record), accepted_claims, audit.get('verdicts'),
@@ -2196,7 +2211,7 @@ def make_publish_node(
         repair_notice = ('补充核验未完成；已保留此前核实的内容。'
                          if brief_state.get('repairStatus') == 'verification_invalid_response' else
                          '修订结果未能解析；已保留此前核实的内容。'
-                         if brief_state.get('repairStatus') == 'response_invalid' else '')
+                         if brief_state.get('repairStatus') == 'response_invalid' else '')+coherence_notice
         display_fields = {}
         if type(presentation_version) is int and presentation_version in (2,3,4):
             from services.deep_research.answer_constraints import requested_character_limit
