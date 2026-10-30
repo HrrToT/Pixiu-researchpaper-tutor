@@ -53,7 +53,7 @@ def test_invalid_next_chunk_cannot_bridge_to_a_later_one(change):
 def test_ambiguous_successor_and_old_or_non_explanation_runs_keep_old_selection():
     selected, candidates = sample()
     assert include_section_context(selected, candidates + [candidates[1]], record(), 'p', 3) == selected
-    for marker in [None, False, True, 0, 2]:
+    for marker in [None, False, True, 0, 3]:
         r = record();r['localSectionContextContractVersion'] = marker
         assert include_section_context(selected, candidates, r, 'p', 3) == selected
     for question in ['解释方法。', '不要解释第5节。', '比较第5节中的性能。']:
@@ -89,8 +89,8 @@ def test_new_activation_is_server_owned_and_immutable(tmp_path):
     try:
         r, _ = facade.create({'workspaceTaskId': 't', 'operationKey': 'one', 'question': 'Explain',
             'deferStart': True, 'localSectionContextContractVersion': 0}, start_async=False)
-        assert r['localSectionContextContractVersion'] == 1
-        for value in [None, True, 0, 2]:
+        assert r['localSectionContextContractVersion'] == 2
+        for value in [None, True, 0, 3]:
             with pytest.raises(ValueError, match='Immutable run field'):
                 repo.update_run(r['runId'], lambda x: {**x, 'localSectionContextContractVersion': value})
     finally:

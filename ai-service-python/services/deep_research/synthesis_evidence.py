@@ -25,7 +25,7 @@ def result_role(row):
 
 
 def order_premises(evidence,plan,limit=20, *, membership_intents=False,module_intents=False,condition_intents=False,
-                   definition_context=False,read_sources=(),operational_context=False,mechanism_overview=False,mechanism_components=False,section_targets=()):
+                   definition_context=False,read_sources=(),operational_context=False,mechanism_overview=False,mechanism_components=False,section_targets=(),indexed_sections=False):
     obligations={o['obligationId']:o for item in plan for o in item.get('obligations',[])}
     rows=[e for e in evidence if e.get('verification',{}).get('literal')=='passed']
     works=list(dict.fromkeys(e.get('sourceWorkId') for e in rows))
@@ -38,6 +38,9 @@ def order_premises(evidence,plan,limit=20, *, membership_intents=False,module_in
             if not targets:continue
             for source in obligation.get('requiredSources') or works:
                 group=section_bundle(rows,read_sources,source,targets)
+                if not group and indexed_sections:
+                    from services.deep_research.indexed_section_premises import bundle as indexed_bundle
+                    group=indexed_bundle(rows,read_sources,source,targets)
                 if not group:continue
                 key=(section_owners[oid],source)
                 if key not in section_groups:section_groups[key]=group

@@ -6,7 +6,7 @@ from services.deep_research.source_continuity import _exact_indexed, _body
 
 def include_section_context(rows, candidates, record, owner, limit):
     selected = list(rows[:limit])
-    if type(record.get('localSectionContextContractVersion')) is not int or record['localSectionContextContractVersion'] != 1:
+    if type(record.get('localSectionContextContractVersion')) is not int or record['localSectionContextContractVersion'] not in (1, 2):
         return selected
     from services.deep_research.section_premises import requested, explanation_only
     from services.deep_research.request_context import effective_question

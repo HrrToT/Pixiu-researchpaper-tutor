@@ -22,7 +22,7 @@ own schemas remain unchanged. The paper quotations themselves must remain unchan
 
 def enabled(record):
     return (type(record.get('auditSourceFieldsContractVersion')) is int
-            and record['auditSourceFieldsContractVersion'] in (1,2))
+            and record['auditSourceFieldsContractVersion'] in (1,2,3))
 
 
 TARGET_GUIDANCE='''For scopeAudit's target binding, prefer "statementPath":["text"] instead

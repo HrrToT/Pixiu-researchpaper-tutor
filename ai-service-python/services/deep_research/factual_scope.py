@@ -41,7 +41,7 @@ short answer; omit secondary examples. Do not repeat conditions already in text.
 '''
 
 
-def audit_prompt(targets, *, complete_statement=False, single_decision=False):
+def audit_prompt(targets, *, complete_statement=False, single_decision=False, source_paths=False):
     prompt='\nScope-strength audit for factual targets: '+json.dumps(targets,separators=(',',':'))+'''
 A passed verdict also MUST include:
 "scopeAudit":{"claimStrength":"bounded|exclusive|universal",
@@ -80,11 +80,20 @@ failed if any substantive clause lacks its own actual premises.
                               'For unsupported scope set scopeAudit.supported=false with the precise overreach;')
         prompt=prompt.replace('Return\nfailed if any substantive clause lacks its own actual premises.',
                               'Set scopeAudit.supported=false if any substantive clause lacks its own actual premises.')
+    if source_paths:
+        prompt=prompt.replace('"premises":[{"evidenceId":"own E ID","quote":"exact original quote/context excerpt"}]',
+                              '"premises":[{"evidenceId":"own E ID","path":["quote"]}]')
+        prompt+='''
+For scopeAudit.premises use ONLY unchanged source-field paths, not retyped quote
+strings. Choose ["quote"] or an actually supplied sourceContext field supporting
+the complete assertion. No ellipsis, paraphrase, word repair or source substitution
+is permitted. The path binds original visible text; it does not establish support.
+'''
     return prompt
 
 
 def validate_audit(claim,verdict,evidence, *, source_field_bindings=False,target_field_bindings=False,
-                   complete_statement=False):
+                   complete_statement=False, source_paths=False):
     if claim.get('kind') not in {'reported','inference'}:
         return []
     audit=verdict.get('scopeAudit')
@@ -117,6 +126,8 @@ def validate_audit(claim,verdict,evidence, *, source_field_bindings=False,target
         return ['scope_premises_not_bound']
     normalize=lambda value:re.sub(r'\s+',' ',value).strip()
     for row in rows:
+        if source_paths and (not source_field_bindings or not isinstance(row,dict) or 'path' not in row):
+            return ['scope_premises_not_bound']
         if source_field_bindings and isinstance(row,dict) and 'path' in row:
             from services.deep_research.audit_source_fields import resolve
             if resolve(row,own) is None:

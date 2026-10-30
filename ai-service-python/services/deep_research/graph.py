@@ -1157,7 +1157,8 @@ def make_synthesize_node(
                    if record['synthesisEvidenceContractVersion']==6 and output_kind=='experiment_design' else {}),
                 **({'mechanism_overview':True} if mechanism_premises(record) else {}),
                 **({'mechanism_components':True} if mechanism_premises(record) and record['mechanismEvidenceContractVersion'] in (2,3) else {}),
-                **({'section_targets':requested_sections(question)} if (section_priority(record) or mechanism_premises(record) and record['mechanismEvidenceContractVersion']==3) else {}))
+                **({'section_targets':requested_sections(question)} if (section_priority(record) or mechanism_premises(record) and record['mechanismEvidenceContractVersion']==3) else {}),
+                **({'indexed_sections':True} if type(record.get('localSectionContextContractVersion')) is int and record['localSectionContextContractVersion']==2 else {}))
         elif output_kind == 'paper_comparison':
             candidates = comparison_evidence_order(candidates, paper_titles)
         elif output_kind == 'experiment_design':

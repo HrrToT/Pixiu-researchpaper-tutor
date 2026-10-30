@@ -68,7 +68,9 @@ class FixtureModel:
                              else {'statementExcerpt':c['text']})
                     verdict['scopeAudit']={'claimStrength':'bounded','evidenceStrength':'bounded',
                         'supported':True,**binding,
-                        'premises':[{'evidenceId':ref,'quote':packet['evidence'][ref]['quote']}]}
+                        'premises':[{'evidenceId':ref,**({'path':['quote']}
+                            if 'use ONLY unchanged source-field paths' in prompt
+                            else {'quote':packet['evidence'][ref]['quote']})}]}
             if single_decision:
                 for verdict in content:
                     verdict.pop('status')

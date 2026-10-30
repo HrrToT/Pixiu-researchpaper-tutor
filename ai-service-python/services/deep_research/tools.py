@@ -611,6 +611,7 @@ class BudgetedSemanticChecker:
         scope_observation_assertions=False,
         consistent_scope_premises=False,
         general_advice_review=False,
+        scope_source_paths=False,
     ):
         self._invoke = llm_invoker
         self._run_id = run_id
@@ -622,6 +623,7 @@ class BudgetedSemanticChecker:
         self._comparison_audit_version = comparison_audit_version
         self._audit_source_fields = audit_source_fields
         self._audit_target_fields = audit_target_fields
+        self._scope_source_paths = scope_source_paths
         self._factual_scope = factual_scope
         self._scope_expression_context = scope_expression_context
         self._boundary_quantity_grounding = boundary_quantity_grounding
@@ -1120,12 +1122,15 @@ The dataAvailability object is an internal audit, not new experimental results.
         scope_enabled=(self._factual_scope() if callable(self._factual_scope) else self._factual_scope) is True
         complete_scope=(self._complete_factual_scope() if callable(self._complete_factual_scope)
                         else self._complete_factual_scope) is True
+        scope_source_paths=(self._scope_source_paths() if callable(self._scope_source_paths)
+                            else self._scope_source_paths) is True
         if scope_enabled:
             from services.deep_research.factual_scope import audit_prompt as scope_prompt
             targets=[c['claimId'] for c in claims if c.get('kind') in {'reported','inference'}]
             if targets:
                 prompt+=scope_prompt(targets,**({'complete_statement':True} if complete_scope else {}),
-                    **({'single_decision':True} if single_decision else {}))
+                    **({'single_decision':True} if single_decision else {}),
+                    **({'source_paths':True} if scope_source_paths else {}))
         expression_context = (self._scope_expression_context(claims)
                               if callable(self._scope_expression_context) else {})
         if expression_context:
@@ -1145,6 +1150,10 @@ The dataAvailability object is an internal audit, not new experimental results.
         has_factual_targets=any(c.get('kind') in {'reported','inference'} for c in claims)
         if field_bindings and (scope_enabled or comparison_enabled) and (has_factual_targets or not target_bindings):
             from services.deep_research.audit_source_fields import GUIDANCE as source_field_guidance
+            if scope_source_paths:
+                source_field_guidance=source_field_guidance.replace(
+                    'Use only one representation per premise: evidenceId+path OR evidenceId+quote, never both.',
+                    'For scopeAudit premises require evidenceId+path only; comparisonAudit may use path OR quote, never both.')
             prompt+='\n'+(source_field_guidance.replace('comparisonAudit.differences','comparisonAudit.conditionDifferences')
                 if type(comparison_version) is int and comparison_version==4 else source_field_guidance)
         if target_bindings and scope_enabled and has_factual_targets:
@@ -1358,7 +1367,8 @@ The dataAvailability object is an internal audit, not new experimental results.
                     from services.deep_research.factual_scope import validate_audit as validate_scope
                     scope_errors=validate_scope(target,verdict,visible_evidence,
                         source_field_bindings=field_bindings,target_field_bindings=target_bindings,
-                        **({'complete_statement':True} if complete_scope else {}))
+                        **({'complete_statement':True} if complete_scope else {}),
+                        **({'source_paths':True} if scope_source_paths else {}))
                     if scope_errors:
                         verdict['status']='failed'
                         verdict['reason']='结论范围或必要条件尚未核实：'+', '.join(scope_errors)
