@@ -1,0 +1,50 @@
+{
+  "date": "2026-10-18",
+  "case": "D1-v13",
+  "runId": "dr_run_734b565c889a57c8ab98084954a4d918",
+  "sourceCommit": "1bf96858",
+  "promptVersion": "dr-v2.20261018.124",
+  "question": "只依据LightGaussian，核查压缩后图像质量接近原始3DGS这一说法。区分作者报告的结果、成立条件和未验证范围。只写最关键的两点，300字以内。",
+  "status": "failed",
+  "outcome": "none",
+  "contentAccepted": false,
+  "modelCalls": 2,
+  "settledTokens": 2541,
+  "elapsedSeconds": 0,
+  "cost": null,
+  "report": null,
+  "initialVerification": null,
+  "modelOutputs": [
+    {
+      "node": "resolve_brief",
+      "structuredOutput": null
+    },
+    {
+      "node": "plan",
+      "structuredOutput": null
+    }
+  ],
+  "findings": [
+    "The confirmed planning response was syntactically invalid JSON: quotation marks inside its question were unescaped. No content/evidence evaluation was reached.",
+    "No automatic retry or ledger rewriting. Native JSON transport was added afterward; this failed original remains failed."
+  ],
+  "rawFiles": [
+    {
+      "path": "tmp\\dr-acceptance-receipts\\D1-v13.json",
+      "sha256": "0a939df477e6682f866f26ef1f4dcf60807a42bab6e02018b3a9ca142a59c15d"
+    },
+    {
+      "path": "tmp\\dr-acceptance-receipts\\D1-v13.payload.json",
+      "sha256": "0b7c98fa66648b89683711fd0a7ec3b2b7a9b5d25ca246339b0b8e09ec5c885a"
+    },
+    {
+      "path": "tmp\\dr-acceptance-receipts\\D1-v13.calls.json",
+      "sha256": "31a6974494c283122c5b003ba5715ce0a46d65ba8d31729480920cadcf9b1344"
+    },
+    {
+      "path": "tmp\\dr-acceptance-receipts\\D1-v13.result.json",
+      "sha256": "0ea02b998af5826a0a74ff7974a1d6c45aaeac1dc8b0ed3e26679b71d88c688d"
+    }
+  ],
+  "boundary": "Transport syntax and confirmed settlement are separate from factual content acceptance. Original results are preserved."
+}

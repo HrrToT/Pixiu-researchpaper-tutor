@@ -1,0 +1,53 @@
+{
+  "date": "2026-10-26",
+  "status": "unactivated_typed_step_prototype",
+  "runtimePromptVersion": "dr-v2.20261026.274",
+  "motivatingCase": "E1-v64",
+  "representation": {
+    "identity": "zero-based step positions plus declared outputStage; no authored phaseId",
+    "primitiveOperations": [
+      "setup",
+      "fit",
+      "evaluate",
+      "record"
+    ],
+    "observation": "authored measurement action/outputs plus explicit recording inputs/action/outputs",
+    "lowering": "unique compiler IDs and explicit measurement->record wiring only; no selected method/selector/budget/group is supplied",
+    "lifetime": "authored before-step and after-whole-step indices; no coercion or movement",
+    "scopePreserved": "low-level non-atomic schedules remain available; observe is an additional typed operator"
+  },
+  "schemaBytes": {
+    "typedSteps": 7011,
+    "priorObservations": 5992
+  },
+  "validation": {
+    "files": 4,
+    "passed": 106,
+    "seconds": 8.16,
+    "log": "tmp/pytest-step-ir-prototype-assembly-20261026.log",
+    "logSha256": "4fd919dbc7040bed29aa03edd28735e4a9ff4227eee9ba99ef2d206632b2965e",
+    "fullAssemblyWithExplicitFixtureInitializersAndPublicBinding": true,
+    "resumeWithoutAdditionalCalls": true,
+    "scientificApproval": false,
+    "preservedGuards": [
+      "future_output",
+      "group_leak",
+      "after_disposal",
+      "fit_budget",
+      "evaluation_missing",
+      "frame_creation_boundary",
+      "phase_count_limit"
+    ],
+    "missingSelectorsActionsAndOutputsNeverFilled": true
+  },
+  "sourceHashesAtRecord": {
+    "ai-service-python/services/deep_research/workflow_metadata_steps.py": "498c80093d41183944918d830288316a20882ce73692c7ca1d56e0dbece0f311",
+    "ai-service-python/tests/test_deep_research_workflow_metadata_steps.py": "9122400d9253ebd813db7a2ec8e77bc7d851a4e82be3fa15fbcbd66fd98a6b7a"
+  },
+  "runtimeActivated": false,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "historicalRunsMigrated": false,
+  "independentCredit": 0,
+  "nextGate": "Versioned generation/revision schema and prompt, raw-step feedback mapping, 32KB complete-input preflight, wire/canonical 8KB guards, physical HTTP/atomic budget/unknown tests and legacy receipt replay before runtime activation. Prototype does not prove provider generation or science."
+}

@@ -1,0 +1,128 @@
+{
+  "date": "2026-10-18",
+  "case": "D5-v9",
+  "runId": "dr_run_94ae6aa1577051b88d7587f33a093374",
+  "sourceCommit": "17f10918",
+  "promptVersion": "dr-v2.20261018.165",
+  "status": "completed",
+  "machineOutcome": "inconclusive",
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "modelCalls": 6,
+  "settledTokens": 25642,
+  "elapsedSeconds": 45.57,
+  "cost": null,
+  "actualSynthesisFingerprintMatched": true,
+  "actualSynthesisOptions": {
+    "max_tokens": 8192,
+    "temperature": 0.2,
+    "thinking": {
+      "type": "enabled"
+    },
+    "reasoning_effort": "low",
+    "response_format": {
+      "type": "json_object"
+    }
+  },
+  "findings": [
+    "Bounded low-reasoning synthesis and repair both retain the unsupported premise that measurement conditions differ.",
+    "Initial internal E markers are rejected. Revised inference is actually rejected by independent comparison checking, not published.",
+    "No valid conclusion; inconclusive is conservative. More reasoning alone did not produce a valid comparison."
+  ],
+  "scores": {
+    "goalResponse": 1,
+    "evidenceSupport": 4,
+    "conditions": 2,
+    "synthesisValue": 2,
+    "executability": null,
+    "readability": 3
+  },
+  "draft": {
+    "sections": [
+      {
+        "title": "差异原因",
+        "claimIds": [
+          "c1"
+        ]
+      }
+    ],
+    "claims": [
+      {
+        "claimId": "c1",
+        "text": "不同论文的FPS不能直接相除：LightGaussian在自身平台重新训练基线以保证公平（E7），而原始3DGS表格混合了直接采用与原论文自测结果（E10），两者硬件、分辨率、数据协议未对齐，FPS受这些条件影响，因此无统一基准，直接相除会混杂条件差异而非方法相对速度。",
+        "kind": "inference",
+        "evidenceRefs": [
+          "ev_8fd3f847d043bbae423552d837a23f0207800e59770d35852b585f53e37f432a",
+          "ev_968d0018e986202e87c75f29e0e96759dc070a82e1c1754eb14e67aa7b344596"
+        ],
+        "conditions": {
+          "context": "限于选定证据范围；实验平台与协议差异是直接相除无效的原因。"
+        },
+        "obligationIds": [
+          "ob_1"
+        ],
+        "detailLevel": "fulltext",
+        "tableBindings": []
+      }
+    ]
+  },
+  "repairDraft": [
+    {
+      "claimId": "c1",
+      "kind": "inference",
+      "text": "不同论文中的FPS不能直接相除，因为各论文的测量条件不同：LightGaussian论文为公平比较在其平台上重新训练了3D-GS等基线，而3DGS论文表1混合了直接采用的结果和自身实验的结果，且仅在同一A6000 GPU和相同超参数下报告FPS。硬件、代码、配置、数据集等差异使FPS值不可比，直接相除会得到无意义的比率。",
+      "evidenceRefs": [
+        "ev_8fd3f847d043bbae423552d837a23f0207800e59770d35852b585f53e37f432a",
+        "ev_83a4fc371775e3a78ad5bb5a109d927ccc1dfc61100ae5c7dc6e1da600a67798",
+        "ev_968d0018e986202e87c75f29e0e96759dc070a82e1c1754eb14e67aa7b344596",
+        "ev_f6d38c2c62e12bad129129ce8cb67c6fa2763f09ac1ebf75ca2998b615a7c395",
+        "ev_7fa0ef07e954d2d0f4074b9206ed6ae6e332bec7817c80c8e47a4f9d040dfc59"
+      ],
+      "conditions": {},
+      "detailLevel": "fulltext",
+      "tableBindings": [],
+      "obligationIds": [
+        "ob_1"
+      ]
+    }
+  ],
+  "initialVerification": {
+    "accepted": [],
+    "rejected": [
+      {
+        "claimId": "c1",
+        "reason": "internal_reference_in_prose"
+      }
+    ]
+  },
+  "repairChecks": {
+    "accepted": [],
+    "rejected": [
+      {
+        "claimId": "c1",
+        "reason": "semantic_unresolved",
+        "detail": "The claim asserts that FPS values from different papers cannot be directly divided because measurement conditions differ, citing LightGaussian re-training baselines and 3DGS mixing adopted and own results on an A6000 GPU. Evidence E1/E3 show LightGaussian re-trained baselines for fair comparison, and E2/E4 show 3DGS Table 1 mixes adopted and own results, with E5 stating same hyperparameters and A6"
+      }
+    ]
+  },
+  "report": "本次尚未形成通过核验的结论。\n\n<details>\n<summary>还有 1 项未完成</summary>\n\n- 为什么不同论文中的FPS不能直接相除：最终回答尚未完整回应这一问题\n\n</details>",
+  "rawFiles": [
+    {
+      "path": "tmp/dr-acceptance-receipts/D5-v9.json",
+      "sha256": "26fd46c1b61bbf75f4e1d5088a5b8393b80c9205e5a32c39a1f8c76a4b5c2b3b"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/D5-v9.payload.json",
+      "sha256": "e326f1e58f80e4e495674d52be5cd867d0f5e917b2f8acf5bcc2b4ff2f79b3e8"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/D5-v9.calls.json",
+      "sha256": "50283dd20679659a67dee3fb002e60a5bcff059da93aade64e42ad6be2fb0be7"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/D5-v9.result.json",
+      "sha256": "b843ea9cd6555b1e18b14901638eb450bec389ec289242392da16090edca2889"
+    }
+  ],
+  "boundary": "One explicit submission after a concrete generation-profile change, all calls settled. Failed content is not retried unchanged or upgraded. No independent credit."
+}

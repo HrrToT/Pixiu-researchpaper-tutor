@@ -1,0 +1,21 @@
+{
+  "date": "2026-10-19",
+  "baseCommit": "b942bd06",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "cases": [
+    {
+      "case": "H2F-v4",
+      "extractionPriorityVersion": 6,
+      "sameInputPromptOptionsOutputAndReviewJournal": true,
+      "promptSha256": "caf0f4da1fd278ac7289d818870f36392055f5729b3b30757d0c3170110bf37a"
+    },
+    {
+      "case": "H5F-v4",
+      "extractionPriorityVersion": 6,
+      "sameInputPromptOptionsOutputAndReviewJournal": true,
+      "promptSha256": "82d7a13868248bc0611518aab03da451235ef5590aacf2c14c69974fd04e982e"
+    }
+  ],
+  "boundary": "Differential old/new extraction on identical archived terminal read pools, not a reconstruction of first historical Provider inputs. Separate fourteen historical synthesis/audience fingerprints remain proven. Earlier first-request reconstruction did not match because terminal pools differ; no inference of historical request equivalence from that failed reconstruction."
+}

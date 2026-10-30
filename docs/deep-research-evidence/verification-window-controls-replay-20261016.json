@@ -1,0 +1,82 @@
+{
+  "date": "2026-10-16",
+  "promptVersion": "dr-v2.20261016.108",
+  "sourceCase": "H5R-v17 saved unpublished controls and all sibling definitions",
+  "sourcePayloadSha256": "6d3f6299e83a2624e912f3ad5df750d532ea25827bc901af5e5a4a98ea62fa0a",
+  "results": [
+    {
+      "version": null,
+      "requests": [],
+      "verdicts": [],
+      "error": {
+        "code": "budget_exhausted",
+        "details": {
+          "kind": "verificationPromptBytes",
+          "limit": 24000,
+          "used": 25483
+        }
+      },
+      "ledgerReservations": [],
+      "settledFixtureTokens": 0
+    },
+    {
+      "version": 1,
+      "requests": [
+        {
+          "promptBytes": 25207,
+          "targets": [
+            "c1"
+          ],
+          "fixedPromptBytes": 23203,
+          "removedSharedGeneratedDisplayBytes": 3478,
+          "allNineDefinitionsKept": true,
+          "allTypedValuesKept": true,
+          "allTargetQuotesAndContextsKept": true,
+          "outputReservation": 6000
+        }
+      ],
+      "verdicts": [
+        {
+          "claimId": "c1",
+          "status": "failed",
+          "reason": "Offline fixture does not approve scientific validity."
+        }
+      ],
+      "error": null,
+      "ledgerReservations": [
+        32231
+      ],
+      "settledFixtureTokens": 600
+    }
+  ],
+  "modelCalls": 0,
+  "providerNetworkRequests": 0,
+  "boundary": "Counterfactual new-contract offline replay in isolated SQLite. Stable 32KB verification-only window; same total/call/time/unknown guards. Failed fixture is not content approval. Original .105 run and ledger are unchanged.",
+  "sourceCommit": "4a56599",
+  "tests": {
+    "passed": 1719,
+    "warnings": 1,
+    "seconds": 57.57,
+    "sourceCommit": "4a56599",
+    "log": "tmp/pytest-dr108-full-final.log"
+  },
+  "focusedTests": {
+    "passed": 74,
+    "seconds": 5.45,
+    "overlapWithFullSuite": true
+  },
+  "initialFocusedFailures": [
+    "A test supplied dict sourceContext rather than the actual raw-string schema; corrected the fixture while retaining full context assertions.",
+    "Python bool True compared equal to integer 1; immutable input-contract updates now compare types as well as values."
+  ],
+  "guards": [
+    "server-owned immutable strict-integer version",
+    "legacy 24KB wire form unchanged",
+    "only explicit verification nodes can use 32KB",
+    "full byte/framing/output reservation before send",
+    "total budget refusal rolls back without sending",
+    "settled request reused after remaining budget shrinks",
+    "unknown identical/new requests stay blocked",
+    "exact generated suffix only, changed prose retained"
+  ]
+}

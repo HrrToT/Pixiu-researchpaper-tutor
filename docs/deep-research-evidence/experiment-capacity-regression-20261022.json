@@ -1,0 +1,25 @@
+{
+  "date": "2026-10-22",
+  "sourceCommit": "55f771a3",
+  "promptVersion": "dr-v2.20261022.220",
+  "experimentInputContractVersion": 1,
+  "fullOffline": {
+    "passed": 3787,
+    "warnings": 1,
+    "seconds": 212.65,
+    "files": 212,
+    "log": "tmp/pytest-dr220-full-final.log",
+    "sha256": "89956a4754a19295c25b5b395170912b18b96a12c6d348bfd8b2d9f24b4f86c8"
+  },
+  "focusedPassed": 70,
+  "focusedSeconds": 3.79,
+  "focusedOverlap": true,
+  "newTests": 29,
+  "legacyActualFingerprintsMatched": 60,
+  "legacyReplayScriptCount": 19,
+  "offlineProviderCalls": 0,
+  "independentCredit": 0,
+  "controlledReplay": "experiment-capacity-e1-v15-controlled-20261022.json",
+  "implementation": "Immutable experiment input v1: only modern experiment planning/body may use32000 bytes, complete accepted plan reserves4000 before evidence selection, transport enforces configured server ceiling and atomic full-input/output budget. Total18calls/100k/360sec and other node/old-run windows unchanged.",
+  "boundary": "Offline admission and request-identity checks, not actual content or independent acceptance. Initial focused failures were test-fixture construction errors fixed before final runs; first full run stopped before results after replay exposed missing compatibility field in historical capture subclass."
+}

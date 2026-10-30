@@ -1,0 +1,82 @@
+{
+  "date": "2026-10-18",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "legacyAudienceRequests": [
+    {
+      "case": "H1F-v11",
+      "oldActualProviderFingerprint": "f313afcf059c7fbf78e7af56c17d48f43ffc21d2730a4afe4eb3f81ee916e8c9",
+      "oldFingerprintMatched": true,
+      "oldInputBytes": 11299,
+      "newInputBytes": 10676,
+      "draftProseAndConditionsOmitted": true,
+      "sameTargetKindsAndSourcePermissions": true,
+      "outputCapUnchanged": 3072
+    },
+    {
+      "case": "H3F-v3",
+      "oldActualProviderFingerprint": "d99b723981a3d4618f5783294150f0381141b2e9836aa32a062dccfdd98fb409",
+      "oldFingerprintMatched": true,
+      "oldInputBytes": 14667,
+      "newInputBytes": 14015,
+      "draftProseAndConditionsOmitted": true,
+      "sameTargetKindsAndSourcePermissions": true,
+      "outputCapUnchanged": 3072
+    }
+  ],
+  "legacyVerificationRequests": [
+    {
+      "node": "verify",
+      "claimId": "c1",
+      "oldActualFingerprint": "4e0288f8dd578d031076e82515e2210875cc27abc170d31d6448f8cd8160aafe",
+      "oldFingerprintMatched": true,
+      "oldBindingStatus": "failed",
+      "newTargetFieldFixtureStatus": "passed"
+    },
+    {
+      "node": "verify",
+      "claimId": "c2",
+      "oldActualFingerprint": "a9530077773a1ae87ebceaa398a5d745d7608dec4066f69916df3e33733c1896",
+      "oldFingerprintMatched": true,
+      "oldBindingStatus": "passed",
+      "newTargetFieldFixtureStatus": "passed"
+    },
+    {
+      "node": "verify_repair",
+      "claimId": "c1",
+      "oldActualFingerprint": "7130d60aa5f362bb6647e3924ed2ae4e3eeb0bf646272263e31201d81575ca26",
+      "oldFingerprintMatched": true,
+      "oldBindingStatus": "passed",
+      "newTargetFieldFixtureStatus": "passed"
+    }
+  ],
+  "boundary": "Five exact actual legacy Provider fingerprints match. New audience views omit unverified draft prose and keep own sources/IDs/kinds/caps. Copied target-field verdicts test binding only, not new scientific or novice acceptance. Original reports, source text and actual raw responses remain unchanged; no old outcome is upgraded. Sixth actual audience3 request also matches. Only qualitative why target c2 is eligible; c1 is not. New classification is not semantic approval. Seventh actual policy4 request also matches. Replaying old wording only tests server classification; its unsupported necessity is NOT approved. Eighth actual policy5 request matches. Source-established symbol no longer rejects the bounded edit; replayed explanation still needs new independent semantic and novice review.",
+  "legacySourceFirst3ActualRequest": {
+    "case": "H3F-v4",
+    "oldFingerprintMatched": true,
+    "actualProviderFingerprint": "fb6f8a7a4897697d5163cfd0571533742d904f2d61307c983cfaa8040e66c1b0",
+    "newAllowedInferenceTargets": [
+      "c2"
+    ],
+    "newInputBytes": 15260,
+    "newOutputCap": 3072
+  },
+  "legacyOptional4ActualRequest": {
+    "case": "H3F-v5",
+    "oldFingerprintMatched": true,
+    "actualProviderFingerprint": "ed0a15bdc3b1b3febb80ae8571d7762a559b8bda388fed0a9410f1bbce508bca",
+    "newServerClassifiedTarget": "c2",
+    "newInputBytes": 15381,
+    "newOutputCap": 3072,
+    "oldUnsupportedNecessityStillNeedsIndependentRejection": true
+  },
+  "legacyServer5ActualRequest": {
+    "case": "H3F-v6",
+    "oldFingerprintMatched": true,
+    "actualProviderFingerprint": "ee3531d2e86aa2c69c42e36fd2c7a2c8227a83149ee16f56279a398bc196d1ed",
+    "newEditOutcome": "applied",
+    "sourceEstablishedParameterRetained": true,
+    "newInputBytes": 19258,
+    "newOutputCap": 3072
+  }
+}

@@ -1,0 +1,97 @@
+{
+  "caseId": "S1G-v10",
+  "runId": "dr_run_6be58f836d0f5d51a96a0c75874152eb",
+  "promptVersion": "dr-v2.20261029.350",
+  "status": "completed",
+  "outcome": "complete",
+  "modelCalls": 13,
+  "tokens": 45695,
+  "elapsedSeconds": 89.033,
+  "allCallsSettled": true,
+  "noRetry": true,
+  "verifiedClaims": [
+    {
+      "claimId": "c2",
+      "kind": "proposal",
+      "text": "建议按以下顺序阅读：先读高斯剪枝与恢复，理解如何减少高斯数量；再读SH蒸馏，理解如何消除冗余球谐系数并保留光照信息；最后读矢量量化，理解如何降低存储比特宽度。",
+      "evidenceRefs": [
+        "ev_dc73e27d98f65ae82681705ad0bcd0f675724d67d8e180eff73563766e7e03bd"
+      ],
+      "conditions": {},
+      "detailLevel": "fulltext",
+      "obligationIds": [
+        "ob_2"
+      ],
+      "verification": "proposal"
+    },
+    {
+      "claimId": "c1",
+      "kind": "reported",
+      "text": "压缩流程三个主要环节分别改变：高斯剪枝与恢复减少高斯数量；SH蒸馏消除冗余球谐系数并保留关键光照信息；矢量量化以更低比特宽度存储高斯。",
+      "evidenceRefs": [
+        "ev_dc73e27d98f65ae82681705ad0bcd0f675724d67d8e180eff73563766e7e03bd"
+      ],
+      "conditions": {},
+      "detailLevel": "fulltext",
+      "obligationIds": [
+        "ob_1"
+      ],
+      "verification": "semantic_passed"
+    }
+  ],
+  "initialRejected": [
+    {
+      "claimId": "c1",
+      "reason": "semantic_unresolved",
+      "detail": "证据仅说明高斯剪枝与恢复减少高斯数量、SH蒸馏消除冗余SH并保留关键光照信息、矢量量化以更低比特宽度存储，但未支持 “减少高斯数量以降低冗余” 中的目的推断以及 “将球谐系数转移到更低阶” 的具体机制。"
+    }
+  ],
+  "repairRejected": [],
+  "coverageGaps": 0,
+  "publishedBody": "本回答引用：全文片段。\n\n## 核心判断\n\n- 压缩流程三个主要环节分别改变：高斯剪枝与恢复减少高斯数量；SH蒸馏消除冗余球谐系数并保留关键光照信息；矢量量化以更低比特宽度存储高斯。 [1](#research-evidence-ev_dc73e27d98f65ae82681705ad0bcd0f675724d67d8e180eff73563766e7e03bd)\n\n## 推荐阅读顺序\n\n- 建议按以下顺序阅读：先读高斯剪枝与恢复，理解如何减少高斯数量；再读SH蒸馏，理解如何消除冗余球谐系数并保留光照信息；最后读矢量量化，理解如何降低存储比特宽度。 [1](#research-evidence-ev_dc73e27d98f65ae82681705ad0bcd0f675724d67d8e180eff73563766e7e03bd)\n\n",
+  "publishedCounts": {
+    "artifacts": 2,
+    "messages": 1
+  },
+  "repeatTerminalGetExactlyUnchanged": true,
+  "oldResultsAndMessagesUnchanged": true,
+  "fiveOtherProtectedTasksUnchanged": true,
+  "indexExactlyPreserved": true,
+  "completeProductionIndexSha256": "9196054db7ac32450eb86fc91cfb12de27c732469e4cf629bf06857a3490788d",
+  "preservation": {
+    "oldLedgerUnchanged": true,
+    "allOldRunsUnchanged": true,
+    "newRows": 32,
+    "ledgerRows": 7682,
+    "onlyThisRunCreatedCalls": true,
+    "active": [],
+    "oldPausedRetained": true,
+    "paused": [
+      "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+      "dr_run_ed10cc3347be552288079a9a588fddf5",
+      "dr_run_86b3f181a5475e99aacca3dbf4370567",
+      "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+      "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+      "dr_run_e3521b1781825273b384a26a5edb8cdc",
+      "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+      "dr_run_e9c9dc916bef519092fad8b929b2448f",
+      "dr_run_4738564f5ff35157996a35068c62ed32",
+      "dr_run_a8bd62f9ae3d52ff806f537065f55b2d",
+      "dr_run_98e66f2d3d555dfa822b859963f01419",
+      "dr_run_8be639c866c35ea092c735a04781b647",
+      "dr_run_1c0c2e6510165086962408b8e3cf698b"
+    ]
+  },
+  "remainingDefect": "No remaining gap in this single known-paper development run; separate all-point compaction component still fails length and is not accepted.",
+  "contentAcceptance": true,
+  "acceptanceScope": "single known-paper development case only",
+  "sourceReviewActor": "assistant source-grounded review, not human participant",
+  "scores": {
+    "targetResponse": 4,
+    "evidenceSupport": 4,
+    "conditions": 4,
+    "synthesisValue": 4,
+    "readability": 4
+  },
+  "independentCredit": 0
+}

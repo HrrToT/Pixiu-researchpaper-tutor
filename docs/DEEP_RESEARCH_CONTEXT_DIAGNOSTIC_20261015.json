@@ -1,0 +1,79 @@
+{
+  "version": 1,
+  "frozenAt": "2026-10-15",
+  "budgetProfile": "standard",
+  "materials": {
+    "mvsplat": {
+      "path": "D:/3DGS/paper/MVSplat/2403.14627v2.pdf",
+      "sha256": "d1becb5361d7d8aa6f2e47d1e9e257031120b4207834f5effca049a8df7e4bb9",
+      "arxiv": "2403.14627v2"
+    }
+  },
+  "cases": [
+    {
+      "id": "D8",
+      "split": "development",
+      "replaces": "H1",
+      "materials": [
+        "mvsplat"
+      ],
+      "kind": "claim_verification",
+      "policy": "task_only",
+      "question": "只依据MVSplat v2，给初学者解释图像和相机信息怎样经过跨视图匹配、深度估计得到高斯中心，并说明是否需要真实深度标签。300字以内。",
+      "required": [
+        "相机参数参与跨视图特征对齐及深度反投影",
+        "候选深度上的特征匹配构成代价体",
+        "经深度估计得到高斯中心",
+        "仅光度/渲染监督不等于真实深度标签监督"
+      ],
+      "forbidden": [
+        "声称输入不需要相机信息",
+        "把光度监督写成真实深度标签监督",
+        "声称任何新场景都能获得无误差几何",
+        "无依据加入跨论文速度排名"
+      ],
+      "anchors": [
+        {
+          "material": "mvsplat",
+          "page": 1,
+          "label": "Abstract: photometric supervision"
+        },
+        {
+          "material": "mvsplat",
+          "page": 5,
+          "label": "Section 3: cameras and depth unprojection"
+        },
+        {
+          "material": "mvsplat",
+          "page": 6,
+          "label": "Section 3.1: plane sweep, correlations and depth estimation"
+        }
+      ],
+      "derivedFrom": "H1R",
+      "purpose": "Check bounded predecessor retrieval and answer completeness; never independent acceptance"
+    }
+  ],
+  "review": {
+    "dimensions": [
+      "目标回应",
+      "证据支持",
+      "条件完整",
+      "综合价值",
+      "可执行性",
+      "可读性"
+    ],
+    "minimumApplicableScore": 4,
+    "hardFailures": [
+      "伪造来源",
+      "严重事实错误",
+      "关键数值或条件错绑",
+      "把建议当已验证结果",
+      "越权或超预算",
+      "部分支持却按通过发布"
+    ],
+    "holdoutRule": "首次运行前冻结全部输入与判据；任何调参使用必须退出留出集，不覆盖原始失败记录。"
+  },
+  "caseDefinitionHashes": {
+    "D8": "ead3eb93d72a719f77d96b7020b8f56484b0d269e373a1a00deed6d6ea1aaad6"
+  }
+}

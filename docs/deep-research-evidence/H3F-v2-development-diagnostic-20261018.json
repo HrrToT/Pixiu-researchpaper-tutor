@@ -1,0 +1,60 @@
+{
+  "date": "2026-10-18",
+  "case": "H3F-v2",
+  "sourceCommit": "7186e037",
+  "promptVersion": "dr-v2.20261018.173",
+  "runId": "dr_run_61712fa31a97506d8237e47dfd611249",
+  "status": "completed",
+  "machineOutcome": "inconclusive",
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "modelCalls": 11,
+  "settledTokens": 34805,
+  "elapsedSeconds": 103.631,
+  "externalSearches": 1,
+  "fulltextFetches": 1,
+  "cost": null,
+  "findings": [
+    "The external path actually performs one discovery and one fulltext acquisition for the frozen arXiv v1, under external-only material scope; content remains inconclusive.",
+    "All initial and repaired factual verdicts actually say passed, but scopeAudit.premises retype line-wrapped PDF words without their raw hyphens, and sometimes a hyphen exists without a line break in the extracted source. Exact source-binding checks reject these quotations.",
+    "Do not remove arbitrary hyphens or weaken case/value/quotation identity. Prefer versioned typed references to unchanged, actually visible source fields for internal audits, followed by the same independent semantic judgement.",
+    "No accepted report content. Actual transport/fulltext success and apparently supported drafts do not count as novice explanation or independent acceptance."
+  ],
+  "report": "本次尚未形成通过核验的结论。\n\n<details>\n<summary>还有 2 项未完成</summary>\n\n- 只研究4DGC中运动网格和补偿高斯怎样分工：最终回答尚未完整回应这一问题\n- 为什么训练要同时考虑码率和画质：最终回答尚未完整回应这一问题\n\n</details>",
+  "initialVerification": {
+    "accepted": [],
+    "rejected": [
+      {
+        "claimId": "c1",
+        "reason": "semantic_unresolved",
+        "detail": "结论范围或必要条件尚未核实：scope_premises_not_bound"
+      },
+      {
+        "claimId": "c2",
+        "reason": "semantic_unresolved",
+        "detail": "结论范围或必要条件尚未核实：scope_premises_not_bound"
+      }
+    ]
+  },
+  "repairStatus": "response_received",
+  "repairLimit": null,
+  "rawFiles": [
+    {
+      "path": "tmp/dr-acceptance-receipts/H3F-v2.json",
+      "sha256": "271da1ca3101520ad22f620eadd192d646de8ab85e8137c05846f07460f334f7"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/H3F-v2.payload.json",
+      "sha256": "fa20367b1536b0a42110ef2aa0599f09f761cee9db8ef0f1bfea1a237f5cc66f"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/H3F-v2.calls.json",
+      "sha256": "30493cda9412cd59eb68231773a82a2874f4bd1b2af6c26c75a792e378f55546"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/H3F-v2.result.json",
+      "sha256": "f6bcc4adc11a360506dd6adc22cc2e91fa0c3fb836d3c766e469b01f3422d722"
+    }
+  ],
+  "boundary": "Retired before this further development submission. Original frozen input, first review and first-five0/5 remain unchanged. One submission, all calls settled, no automatic retry. No independent credit."
+}

@@ -1,0 +1,56 @@
+{
+  "before": {
+    "ledgerRows": 7836,
+    "ledgerSha256": "5859fafc1d170e33fac2b81e99ac5358f8fd9f84d65d02becfe1ff1c98a4bf15",
+    "payloadSha256": "25b771223dc33f9e78fe57f97fa7fa2ae243ce44ef19cc418564d2afacd5a0f4"
+  },
+  "after": {
+    "ledgerRows": 7836,
+    "ledgerSha256": "5859fafc1d170e33fac2b81e99ac5358f8fd9f84d65d02becfe1ff1c98a4bf15",
+    "payloadSha256": "25b771223dc33f9e78fe57f97fa7fa2ae243ce44ef19cc418564d2afacd5a0f4"
+  },
+  "exactProductionPreservation": true,
+  "providerSubmissions": 1,
+  "elapsedSeconds": 8.667,
+  "productionPublish": false,
+  "fullWorkflow": false,
+  "independentCredit": 0,
+  "editingPassed": true,
+  "factVerification": "not_performed",
+  "profile": "direct editing calibration before production activation",
+  "usage": {
+    "total_tokens": 1438,
+    "input_tokens": 1163,
+    "output_tokens": 275
+  },
+  "finishReason": "stop",
+  "status": "succeeded",
+  "settled": true,
+  "audit": {
+    "version": 1,
+    "originalDigest": "67605564503fa345025f4021bcd87b7b65eca97fe75d9c4a1ba268ff3d20bac4",
+    "groups": [
+      {
+        "claimId": "c1",
+        "sourceClaimIds": [
+          "c1",
+          "c2"
+        ]
+      },
+      {
+        "claimId": "c3",
+        "sourceClaimIds": [
+          "c3",
+          "c4",
+          "c5"
+        ]
+      }
+    ],
+    "candidateDigest": "190485d94067bf8607695f80272d4c235a3e86536658ebeb8e60ce86143bf26d",
+    "visibleCharacters": 375,
+    "characterLimit": 400,
+    "status": "edited_unverified",
+    "verification": "unchecked"
+  },
+  "next": "Switch only new ordinary editor tasks after regression; full workflow and factual verification remain unproven."
+}

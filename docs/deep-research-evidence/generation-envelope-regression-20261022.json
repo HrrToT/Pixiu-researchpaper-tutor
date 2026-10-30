@@ -1,0 +1,24 @@
+{
+  "date": "2026-10-22",
+  "sourceCommit": "3f2e73b9",
+  "promptVersion": "dr-v2.20261022.219",
+  "generationEnvelopeContractVersion": 1,
+  "fullOffline": {
+    "passed": 3758,
+    "warnings": 1,
+    "seconds": 130.24,
+    "files": 211,
+    "log": "tmp/pytest-dr219-full.log",
+    "sha256": "f8e5f69c868e35887151be84af065a153ae2f7ce462f540b5a8201d5f23204bf"
+  },
+  "focusedPassed": 71,
+  "focusedSeconds": 4.35,
+  "focusedOverlap": true,
+  "newTests": 20,
+  "legacyActualFingerprintsMatched": 60,
+  "offlineProviderCalls": 0,
+  "independentCredit": 0,
+  "controlledReplay": "generation-envelope-actual-plan-controlled-20261022.json",
+  "implementation": "Compact repeated generation framing without dropping frozen inputs/role grammar. After the actual complete plan, atomically retain every original mandatory bundle and every unverified-plan source reference; refit only within planning-visible evidence, record actual wire size and retain complete required overflow for unchanged final24KB refusal. No source/plan/scientific approval or old request upgrade.",
+  "boundary": "Complete offline regression and DEVELOPMENT fixture capacity stress only; no new real content or independent acceptance."
+}

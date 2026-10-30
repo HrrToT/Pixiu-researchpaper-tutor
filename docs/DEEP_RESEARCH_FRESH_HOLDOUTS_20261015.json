@@ -1,0 +1,255 @@
+{
+  "version": 1,
+  "frozenAt": "2026-10-15",
+  "design": "DEEP_RESEARCH_DESIGN_20261012.md#19",
+  "budgetProfile": "standard",
+  "executionStatus": "frozen_not_executed",
+  "materials": {
+    "odgs": {
+      "path": "D:\\3DGS\\paper\\ODGS\\2410.20686v1.pdf",
+      "sha256": "f89e33b85bfd3b970815638646ace8c73bbfc915493315517129e57432ad0adc",
+      "pageCount": 19,
+      "title": "ODGS: 3D Scene Reconstruction from Omnidirectional Images with 3D Gaussian Splatting"
+    },
+    "cat": {
+      "path": "D:\\3DGS\\paper\\CAT-3DGS\\2503.00357v2.pdf",
+      "sha256": "6cff256c171332b72324f87ae7229c391cdc8ade63850f288d11289bda4699d5",
+      "pageCount": 23,
+      "title": "CAT-3DGS: A Context-Adaptive Triplane Approach to Rate-Distortion-Optimized 3DGS Compression"
+    },
+    "dlapis": {
+      "path": "D:\\3DGS\\paper\\DlapisGS\\2408.14823v2.pdf",
+      "sha256": "e9895f20dbad6b11d95974f66319dbfef68ffe3235592e5d158822f3b43c3b1e",
+      "pageCount": 16,
+      "title": "LapisGS: Layered Progressive 3D Gaussian Splatting for Adaptive Streaming"
+    },
+    "pfgs": {
+      "path": "D:\\3DGS\\paper\\PFGS-360\\2603.23324v2.pdf",
+      "sha256": "abc53af939c9938ea19fe5877c3a04765c97e41b1bac51122975d91ee535de88",
+      "pageCount": 10,
+      "title": "Pose-Free Omnidirectional Gaussian Splatting for 360-Degree Videos with Consistent Depth Priors"
+    }
+  },
+  "review": {
+    "dimensions": [
+      "目标回应",
+      "证据支持",
+      "条件完整",
+      "综合价值",
+      "可执行性",
+      "可读性"
+    ],
+    "minimumApplicableScore": 4,
+    "hardFailures": [
+      "伪造来源",
+      "严重事实错误",
+      "关键数值或条件错绑",
+      "把建议当已验证结果",
+      "越权或超预算",
+      "部分支持却按通过发布"
+    ],
+    "holdoutRule": "首次运行前冻结全部输入与判据；任何调参使用必须退出留出集，不覆盖原始失败记录。"
+  },
+  "cases": [
+    {
+      "id": "H1R2",
+      "replaces": "H1R",
+      "split": "holdout",
+      "materials": [
+        "odgs"
+      ],
+      "kind": "claim_verification",
+      "policy": "task_only",
+      "question": "只依据ODGS v1，给初学者解释每个高斯的切平面怎样选择，以及切平面上的高斯怎样映射到全景图。说明局部近似的适用边界，不要求公式推导。300字以内。",
+      "required": [
+        "切平面在高斯中心方向对应的单位球面位置相切，局部相机朝向该中心",
+        "先局部透视投影，再按全景/等距柱状映射调整并缩放到像素空间",
+        "解释随纬度变化的水平伸缩，不能只列变换名称",
+        "区分局部仿射近似与任意大小高斯均精确；原文用split维持较小高斯"
+      ],
+      "forbidden": [
+        "声称全景图就是普通单平面透视图",
+        "声称所有高斯投影全局精确且无需局部近似",
+        "把NeRF或其他方法的速度当ODGS实测"
+      ],
+      "anchors": [
+        {
+          "material": "odgs",
+          "page": 4,
+          "label": "Section 3.2: spherical/ERP and local affine approximation",
+          "pageConvention": "physical_pdf_1_based"
+        },
+        {
+          "material": "odgs",
+          "page": 5,
+          "label": "Figure 1 and covariance assumption, horizontal stretching",
+          "pageConvention": "physical_pdf_1_based"
+        }
+      ]
+    },
+    {
+      "id": "H2R",
+      "replaces": "H2",
+      "split": "holdout",
+      "materials": [
+        "cat",
+        "dlapis"
+      ],
+      "kind": "paper_comparison",
+      "policy": "task_only",
+      "question": "只依据CAT-3DGS v2与LapisGS v2，比较它们怎样服务3DGS的存储与传输：一个怎样组织率失真编码，另一个怎样支持渐进分层和质量切换？说明为什么不能仅凭两篇报告的模型大小就判定谁的自适应流体验更好。450字以内。",
+      "required": [
+        "双方均有实际取得原文及独立引用",
+        "CAT-3DGS的triplane上下文/超先验及空间、通道相关性用于熵编码与率失真目标",
+        "LapisGS的累计基础/增强层、逐层优化及旧层透明度调整支持渐进表示",
+        "区分编码大小与带宽适应、质量切换等不同评估目标，未核实条件不得写成已确认差异",
+        "不作跨论文同条件排名或从未检出推断能力不存在"
+      ],
+      "forbidden": [
+        "只引用一篇却称完成双方比较",
+        "将HAC的贡献或结果归给CAT-3DGS",
+        "把模型文件大小直接等同在线带宽或用户体验",
+        "因未读到测试就宣称某方法不支持流式传输"
+      ],
+      "anchors": [
+        {
+          "material": "cat",
+          "page": 1,
+          "label": "Abstract and Figure 1",
+          "pageConvention": "physical_pdf_1_based"
+        },
+        {
+          "material": "cat",
+          "page": 6,
+          "label": "Triplane hyperprior and spatial coding",
+          "pageConvention": "physical_pdf_1_based"
+        },
+        {
+          "material": "cat",
+          "page": 7,
+          "label": "Channel coding and rate-distortion objective",
+          "pageConvention": "physical_pdf_1_based"
+        },
+        {
+          "material": "dlapis",
+          "page": 3,
+          "label": "Layered overview",
+          "pageConvention": "physical_pdf_1_based"
+        },
+        {
+          "material": "dlapis",
+          "page": 4,
+          "label": "Cumulative representation and old-layer opacity optimization",
+          "pageConvention": "physical_pdf_1_based"
+        }
+      ]
+    },
+    {
+      "id": "H4R",
+      "replaces": "H4",
+      "split": "holdout",
+      "materials": [
+        "pfgs"
+      ],
+      "kind": "claim_verification",
+      "policy": "task_only",
+      "question": "PFGS360 v2表1中Ours的35.77和30.81 PSNR是否相互矛盾？核对对应子集、聚合列和指标后判断，不计算跨子集百分比，不把位姿误差当画质。250字以内。",
+      "required": [
+        "35.77对应OB3D-Egocentric的mean PSNR，30.81对应OB3D-NonEgocentric的mean PSNR",
+        "两者均为Table 1的Ours行、不同轨迹子集下的新视角合成质量",
+        "不同测试语境的数值不同不构成自相矛盾",
+        "与同页Table 2的RPE/ATE位姿指标区别"
+      ],
+      "forbidden": [
+        "错绑indoor/outdoor/mean列",
+        "把LPIPS或位姿误差当PSNR",
+        "从这两个数字推出跨子集百分比提升",
+        "声称所有轨迹或新场景都有同等画质"
+      ],
+      "anchors": [
+        {
+          "material": "pfgs",
+          "page": 5,
+          "label": "Table 1 group/metric headers and Ours row; Table 2 distinct task",
+          "pageConvention": "physical_pdf_1_based"
+        },
+        {
+          "material": "pfgs",
+          "page": 6,
+          "label": "Evaluation context for trajectory subsets",
+          "pageConvention": "physical_pdf_1_based"
+        }
+      ]
+    },
+    {
+      "id": "H5R",
+      "replaces": "H5",
+      "split": "holdout",
+      "materials": [
+        "dlapis"
+      ],
+      "kind": "experiment_design",
+      "policy": "task_only",
+      "question": "基于LapisGS v2，在论文展示的hotdog场景中设计一个最小实验，检验训练同一个增强层时继续优化旧层透明度是否有助于画质。只做两组单因素、单场景描述性比较，给出固定条件、预算、指标和执行步骤，标明未执行，不声称已有结果或保证新颖。",
+      "required": [
+        "原文支持增强层训练时旧层除透明度外其他参数保持固定；hotdog场景可回查",
+        "两组从同一基线与同一增强层初始化出发，仅改变旧层透明度是否优化",
+        "明确有限基线/增强层训练预算、固定划分、分辨率、种子及其他优化规则",
+        "明确occupancy/compaction等策略匹配或同时关闭，不能把它们的变化混成纯透明度效应",
+        "给出可执行步骤和方向明确的质量指标、按相同视图汇总的配对差值",
+        "单场景只作描述性结论，不声称跨场景总体显著性、普遍提升或实验已执行"
+      ],
+      "forbidden": [
+        "改成无关四组或多因素实验",
+        "一组多训练却声称等预算",
+        "从单场景邻近视图bootstrap声称跨场景总体置信区间",
+        "把拟议数值归为论文已经实测的设置",
+        "保证新颖性或已有结果"
+      ],
+      "anchors": [
+        {
+          "material": "dlapis",
+          "page": 3,
+          "label": "Training overview, opacity and occupancy",
+          "pageConvention": "physical_pdf_1_based"
+        },
+        {
+          "material": "dlapis",
+          "page": 4,
+          "label": "Figure 4 hotdog and multi-level selective optimization",
+          "pageConvention": "physical_pdf_1_based"
+        }
+      ]
+    }
+  ],
+  "independence": "At definition freeze, only original PDFs had been read/rendered to establish criteria; no uploads, research-model requests or paper-specific engine changes had occurred. Candidate names/hashes had no hits in the checked engine source, development evidence and acceptance receipt paths before preparation. Subsequent parse-only readiness is recorded separately. This is engine-development holdout independence, not a claim about model pretraining.",
+  "retirements": [
+    {
+      "case": "H1R",
+      "reason": "First execution was used for engine diagnosis; original definition and failure retained."
+    },
+    {
+      "case": "H2",
+      "reason": "Its Scaffold-GS and 4DGS materials already entered H1/D7/H3 development diagnosis; replace instead of claiming unseen-material acceptance."
+    },
+    {
+      "case": "H4",
+      "reason": "Its 4DGS material already entered external retrieval/selection diagnosis; original numeric question remains frozen but receives no independent credit here."
+    },
+    {
+      "case": "H5",
+      "reason": "Its Scaffold-GS view-conditioning material already entered H1/D7 diagnosis; original question remains frozen but receives no independent credit here."
+    }
+  ],
+  "unchangedHoldoutSlots": {
+    "H3R": "DEEP_RESEARCH_HOLDOUT_REPLACEMENTS.json",
+    "H6": "DEEP_RESEARCH_ACCEPTANCE_CASES_20261012.json"
+  },
+  "preparationBoundary": "Paper contents must not become engine-specific rules. After any diagnostic use, retire that case and retain its first result. This preparation does not count as execution or quality acceptance.",
+  "caseDefinitionHashes": {
+    "H1R2": "00ee3b1018a2a48bddc68490d426aea3a5e7fdabfade3e53caa846342db5501d",
+    "H2R": "81a1bf86daf359a902b0056ab06c69b0d817d2ebc4b0c49c8fee4974f5a12c55",
+    "H4R": "a17a50cbb3819799158107563ff45ac1b2ac8705797cc6046daa0053e505eec3",
+    "H5R": "3b90ad45f3fe0232b42e00a54b25e3e2d42bb51de18cb27d9c08bdcfce74c35b"
+  }
+}

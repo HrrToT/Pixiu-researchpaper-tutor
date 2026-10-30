@@ -1,0 +1,20 @@
+{
+  "promptVersion": "dr-v2.20261030.371",
+  "audienceRewriteContractVersion": 9,
+  "case": "X4L-v5",
+  "payloadSha256": "549d30ca5955ee3fc7c66255af51931ec2aeb3d07e24414867aaeaa0e0d81c65",
+  "legacyRequestExact": true,
+  "sourcePacketExact": true,
+  "perTargetCitationsUnchanged": true,
+  "pointHintsMatchUnverifiedOriginals": true,
+  "oldBytes": 19606,
+  "newBytes": 21120,
+  "cap": 24000,
+  "actualOldResponseRejectedByNewEditGuard": "collapsed_distinct_points",
+  "oldMergeBehaviorPreserved": true,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "boundary": "Actual saved input/response replay only; no semantic acceptance or new generation. Hints are not source evidence. Rejected edit returns original draft to existing independent checks."
+}

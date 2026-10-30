@@ -1,0 +1,130 @@
+{
+  "case": "X1G-v2",
+  "runId": "dr_run_b2074d4fd2f95ec68b76e591afe38817",
+  "pythonPromptVersion": "dr-v2.20261030.363",
+  "machineOutcome": "complete",
+  "contentAcceptance": "passed_known_cached_external_development_case",
+  "freshDownloadCriterionThisAttempt": false,
+  "originalFreshDownloadProof": "external-x1g-v1-validation-20261030.json",
+  "independentCredit": 0,
+  "modelCalls": 10,
+  "tokens": 35138,
+  "elapsedSeconds": 86,
+  "visibleCharacters": 165,
+  "characterLimit": 300,
+  "semanticAccepted": 2,
+  "semanticRejected": 0,
+  "coverageStatus": "checked",
+  "coverageGapCount": 0,
+  "initialNumericRejections": [
+    {
+      "claimId": "c1",
+      "reason": "numeric_mismatch",
+      "missingReportedNumbers": [
+        "0e0",
+        "45e-1"
+      ],
+      "detail": "本条引用原文未直接报告这些数值：0、4.5。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。"
+    },
+    {
+      "claimId": "c2",
+      "reason": "numeric_mismatch",
+      "missingReportedNumbers": [
+        "45e-1"
+      ],
+      "detail": "本条引用原文未直接报告这些数值：4.5。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。"
+    }
+  ],
+  "oneBoundedRepairUsed": true,
+  "finalSourceReview": {
+    "pdfSha256": "6cff256c171332b72324f87ae7229c391cdc8ade63850f288d11289bda4699d5",
+    "physicalPage": 7,
+    "section": "4.5",
+    "frequencyWeightAndMaskRule": "supported by original rule and Equation9",
+    "higherWeightMakesRemovalHarder": "supported; not reversed",
+    "similarTrainTestViewDistributionPremise": "explicitly stated by authors",
+    "noUnconditionalGuaranteeUnderDistributionShift": "preserved",
+    "sourceAccess": "actual fulltext excerpts from externally acquired PDF cache"
+  },
+  "scores": {
+    "targetResponse": 5,
+    "evidenceSupport": 5,
+    "conditionScope": 5,
+    "synthesisValue": 4,
+    "readability": 4
+  },
+  "notApplicable": {
+    "experimentExecutability": "No experiment requested"
+  },
+  "fulltext": {
+    "versionId": "arxiv:2503.00357v2",
+    "contentHash": "6cff256c171332b72324f87ae7229c391cdc8ade63850f288d11289bda4699d5",
+    "cacheHit": true,
+    "cacheStatus": "hit",
+    "networkRequests": 0,
+    "retrievedAt": 1793290017.7571301,
+    "accessedAt": 1793291603.0301788
+  },
+  "allocation": {
+    "version": 1,
+    "candidateEvidenceIds": [
+      "ev_48740cb201158fee2ec12dca13c2f4ba63bce168949270d56c40c03aecedd0e6",
+      "ev_d1adf1857a44b123858ce48889f7f7dbc7e7e12cd6ac9584a51a45ed0bb6bc2f",
+      "ev_0b32a15c6150fa2fdd60c90cdf1b06117e087870d66e4321c4a8edb5d2341fe2",
+      "ev_d920d07cc8e465d2ed7d71796ae2d9e8b758fa8f05a586eca41a6aa34a097f05",
+      "ev_5875bb43407ad9a981091f32c9a4507fc6f0f35ea1514ca19caf18dccf1aa8ad",
+      "ev_4c3c222163fa20831724b93eb302bf7f6c45100d2b0114f5ee021785e870de56",
+      "ev_57dff7d854d707a8ee59742a0d3f7b7f271d34ebaa9a018edf9691fb1fe27a61",
+      "ev_932c68a9d6f8f69a00f324e0a58bd9b8d073719407bd91a53e6a59a5d260e4f7",
+      "ev_a087bb65bdc47cf04a769421193e882a7af23faaeb5ebe29e68718d3eeca722d",
+      "ev_c4dd52e90aa848b0d67292e264e9d15c9680d767e30b7e2915d42cb12992f2ba",
+      "ev_18994d7b52bb81994920d26c9e9b4df459e7efdee956d6a5409a829d4eb865f4",
+      "ev_efe69bc1d01a9ded5f7a0fd0f4eabb43844b643ec3ef58218a91c8a2a1f779fa",
+      "ev_0698ee329f80d669a05bcf01ed3db433227c428567d85a6ff3e55d6fad6bc7ec",
+      "ev_22c7d579bbc71831f59cb91372248ec7ce0fd9ad7299b6218f9dcac69ba80e95",
+      "ev_da91586b5514646e15e042cbf39b246eec7aae128ca51edaf5d177376a8b1bdf",
+      "ev_4672389630c4aab70844df0ec63b20ccb35d7f6cb38530744e580b22b9bdd2e3",
+      "ev_0d763731a70c6c5191a0ce1a3a5fb95548d2a94932291ab5b93ddb1beab402b0",
+      "ev_ae52676889580ab962e37d8dca5d991349bc8c2b0696b6eb6211fa8f96395762",
+      "ev_b867d53a5a5aaadb632b4228de2f97b8c91bc6e7fefba06385ec850c72c2ad20",
+      "ev_96c9048298a107726f7f67b1008d6dd9e01d2da97bd03b9187091d03430059af"
+    ],
+    "suppliedEvidenceIds": [
+      "ev_48740cb201158fee2ec12dca13c2f4ba63bce168949270d56c40c03aecedd0e6",
+      "ev_d1adf1857a44b123858ce48889f7f7dbc7e7e12cd6ac9584a51a45ed0bb6bc2f",
+      "ev_0b32a15c6150fa2fdd60c90cdf1b06117e087870d66e4321c4a8edb5d2341fe2",
+      "ev_d920d07cc8e465d2ed7d71796ae2d9e8b758fa8f05a586eca41a6aa34a097f05",
+      "ev_5875bb43407ad9a981091f32c9a4507fc6f0f35ea1514ca19caf18dccf1aa8ad"
+    ],
+    "missingPremiseBundles": [],
+    "inputBytes": 23995,
+    "fixedInputBytes": 21128,
+    "tableDataOmittedEvidenceIds": [],
+    "sharedTablePackets": 0
+  },
+  "preservation": {
+    "oldLedgerUnchanged": true,
+    "allOldRunsUnchanged": true,
+    "newRows": 25,
+    "ledgerRows": 7940,
+    "onlyThisRunCreatedCalls": true,
+    "active": [],
+    "oldPausedRetained": true,
+    "paused": [
+      "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+      "dr_run_ed10cc3347be552288079a9a588fddf5",
+      "dr_run_86b3f181a5475e99aacca3dbf4370567",
+      "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+      "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+      "dr_run_e3521b1781825273b384a26a5edb8cdc",
+      "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+      "dr_run_e9c9dc916bef519092fad8b929b2448f",
+      "dr_run_4738564f5ff35157996a35068c62ed32",
+      "dr_run_a8bd62f9ae3d52ff806f537065f55b2d",
+      "dr_run_98e66f2d3d555dfa822b859963f01419",
+      "dr_run_8be639c866c35ea092c735a04781b647",
+      "dr_run_1c0c2e6510165086962408b8e3cf698b"
+    ]
+  },
+  "boundary": "Content passed on a real external cache workflow after one bounded repair. Do not claim a fresh download in this attempt, independent acceptance, new-paper indexing quality or full DR0-DR5 completion."
+}

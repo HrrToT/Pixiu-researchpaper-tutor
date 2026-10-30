@@ -1,0 +1,33 @@
+{
+  "date": "2026-10-22",
+  "sourceCommit": "44c04d71",
+  "promptVersion": "dr-v2.20261022.236",
+  "experimentPlanEncodingContractVersion": 6,
+  "structuredOutputContractVersion": 12,
+  "fullOffline": {
+    "scope": "All test_deep_research*.py",
+    "passed": 4175,
+    "files": 228,
+    "warnings": 1,
+    "seconds": 224.99,
+    "log": "tmp/pytest-dr236-complete-native.log",
+    "sha256": "522d2ccd1c7a1f8931bc865d38f301d1570fceca18d348a0bdd505355ae64451"
+  },
+  "newTests": 18,
+  "focusedPassed": 167,
+  "focusedOverlap": true,
+  "legacyScripts": 36,
+  "legacyAllPassed": true,
+  "legacySummarySha256": "812e79c2e2ad5f6eef3dae12ca6ac446509200f921d12696beebcff092dbf204",
+  "privateSystemBytes": 866,
+  "rawResponseCapBytes": 8192,
+  "actualWireCapBytes": 4000,
+  "fullRequestCapBytes": 32000,
+  "plannerOutputTokensUnchanged": 6144,
+  "providerCalls": 0,
+  "productionWritesByTests": 0,
+  "scientificApproval": false,
+  "independentCredit": 0,
+  "initialFocusedFixtureCorrection": "Overflow fixture was only3135bytes; corrected with literal measurement text to exceed old4000byte cap. No production rule changed to satisfy it. Final167passed.",
+  "boundary": "Lossless sharing only for exactly repeated dtype and unique state names. Unknown/ambiguous names stay literal. Legacy versions retain their raw4KB limits and request identities. Structural/capacity tests do not approve scientific content."
+}

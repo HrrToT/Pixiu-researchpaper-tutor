@@ -1,0 +1,268 @@
+{
+  "version": 1,
+  "frozenAt": "2026-10-18",
+  "design": "DEEP_RESEARCH_DESIGN_20261012.md#19",
+  "budgetProfile": "standard",
+  "executionStatus": "frozen_not_executed",
+  "materials": {
+    "stream": {
+      "path": "D:/3DGS/paper/3DGStream/2403.01444v4.pdf",
+      "title": "3DGStream",
+      "sha256": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98"
+    },
+    "deform": {
+      "path": "D:/3DGS/paper/deformable 3dGS/2309.13101v2.pdf",
+      "title": "Deformable 3D Gaussians",
+      "sha256": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854"
+    },
+    "codec": {
+      "path": "D:/3DGS/paper/4DGC/2503.18421v1.pdf",
+      "title": "4DGC",
+      "sha256": "4e32378ffb98f3213fe51d7c4571cb832163036cbfc364d7d26183fdd76eaf25"
+    }
+  },
+  "review": {
+    "dimensions": [
+      "目标回应",
+      "证据支持",
+      "条件完整",
+      "综合价值",
+      "可执行性",
+      "可读性"
+    ],
+    "minimumApplicableScore": 4,
+    "hardFailures": [
+      "伪造来源",
+      "严重事实错误",
+      "关键数值或条件错绑",
+      "把建议当已验证结果",
+      "越权或超预算",
+      "部分支持却按通过发布"
+    ],
+    "holdoutRule": "首跑前冻结输入及标准。先记录全部首跑与人工审查，诊断调参前将失败题退出留出集，不覆盖原始结果。"
+  },
+  "independence": "These three exact PDFs/questions have not been used for research-engine tuning or model execution. Full-text PDF reading is only for frozen review criteria; no paper-specific engine rule is introduced. Exact names/IDs had no hits in engine source, research evidence or canonical/legacy acceptance receipts during the preparation scan. This is engine-development independence, not model-pretraining independence.",
+  "unknownBoundary": "These are distinct questions and paper inputs, not retries or renamed attempts of H1R2, D2/D3 or other unknown runs. All historical unknown identities and reservations remain unchanged. These results do not retroactively settle any unknown request or pass old frozen development questions.",
+  "cases": [
+    {
+      "id": "H1F",
+      "slot": "H1",
+      "split": "holdout",
+      "materials": [
+        "stream"
+      ],
+      "kind": "claim_verification",
+      "policy": "task_only",
+      "question": "只依据3DGStream v4，用初学者能懂的话解释：NTC预测高斯的什么变化，怎样利用前一帧表示，为什么遇到新出现的物体还需要添加高斯？只写三点，350字以内，不泛化为所有动态场景都能无损重建。",
+      "required": [
+        "NTC预测平移和旋转，不能把所有高斯属性都说成NTC输出",
+        "利用前帧高斯的变换表示，区分每帧训练与渲染",
+        "已有高斯不足以表示新出现内容，追加高斯承担新内容",
+        "通俗因果解释且不保证所有动态场景无损"
+      ],
+      "forbidden": [
+        "把NTC说成每帧重新训练所有高斯属性",
+        "将200FPS等同实时重建新输入帧",
+        "保证任意物体出现都无误差"
+      ],
+      "anchors": [
+        {
+          "material": "stream",
+          "page": 3,
+          "label": "Figure 2 two-stage pipeline",
+          "pageConvention": "physical_pdf_1_based"
+        },
+        {
+          "material": "stream",
+          "page": 5,
+          "label": "NTC transformations",
+          "pageConvention": "physical_pdf_1_based"
+        },
+        {
+          "material": "stream",
+          "page": 6,
+          "label": "Additional Gaussians",
+          "pageConvention": "physical_pdf_1_based"
+        }
+      ]
+    },
+    {
+      "id": "H2F",
+      "slot": "H2",
+      "split": "holdout",
+      "materials": [
+        "stream",
+        "deform"
+      ],
+      "kind": "paper_comparison",
+      "policy": "task_only",
+      "question": "比较3DGStream v4与Deformable 3D Gaussians v2对动态场景的处理：它们分别使用什么输入，怎样表示时间变化，训练是逐帧在线还是整体离线？只依据这两篇，指出为何不能凭各自主表FPS给出同条件速度排名，450字以内。",
+      "required": [
+        "两篇相关原文实际取得",
+        "3DGStream使用已知姿态多视图视频、逐帧训练NTC及新增高斯",
+        "Deformable使用带时间和相机姿态的单目动态场景图像，canonical高斯与时空形变联合训练",
+        "形变输出包含位置、旋转及尺度偏移，不能与NTC平移旋转混同",
+        "初始建模/离线训练与逐帧在线阶段正确区分，未知条件不冒充已知差异",
+        "跨论文FPS不是同条件控制实验，不计算跨条件提升率"
+      ],
+      "forbidden": [
+        "仅引用一篇却声称比较完成",
+        "声称单目方法无需相机姿态",
+        "把渲染速度当训练速度",
+        "凭两个FPS直接排名或计算加速比"
+      ],
+      "anchors": [
+        {
+          "material": "stream",
+          "page": 4,
+          "label": "Online paradigm and input",
+          "pageConvention": "physical_pdf_1_based"
+        },
+        {
+          "material": "stream",
+          "page": 5,
+          "label": "NTC",
+          "pageConvention": "physical_pdf_1_based"
+        },
+        {
+          "material": "deform",
+          "page": 3,
+          "label": "Overview input",
+          "pageConvention": "physical_pdf_1_based"
+        },
+        {
+          "material": "deform",
+          "page": 4,
+          "label": "Canonical Gaussians and deformation",
+          "pageConvention": "physical_pdf_1_based"
+        }
+      ]
+    },
+    {
+      "id": "H3F",
+      "slot": "H3",
+      "split": "holdout",
+      "materials": [],
+      "kind": "direction_survey",
+      "policy": "academic_external",
+      "question": "联网查找并阅读公开arXiv:2503.18421v1，只研究4DGC中运动网格和补偿高斯怎样分工，以及为什么训练要同时考虑码率和画质。写明实际读到的是摘要还是全文，用初学者能懂的话解释，350字以内；不借用本地任务论文，不作跨论文数字排名。",
+      "required": [
+        "真实外部发现固定v1，实际获取和解析全文或明确失败范围",
+        "motion grid负责前帧高斯运动，compensated Gaussians补充新内容/运动不能充分表示的部分",
+        "码率与失真共同优化，避免只追求重建误差而忽略传输存储",
+        "区分实际已读访问级别，不用本地文件冒充外部获取",
+        "通俗解释，不把可能取舍说成保证画质无损"
+      ],
+      "forbidden": [
+        "错误版本冒充v1",
+        "仅摘要却声称细读全文",
+        "本地PDF冒充外部获取",
+        "编造性能数字"
+      ],
+      "anchors": [
+        {
+          "material": "codec",
+          "page": 3,
+          "label": "Figure 2 two-stage RD training",
+          "pageConvention": "physical_pdf_1_based"
+        },
+        {
+          "material": "codec",
+          "page": 4,
+          "label": "Motion and compensated Gaussians",
+          "pageConvention": "physical_pdf_1_based"
+        },
+        {
+          "material": "codec",
+          "page": 5,
+          "label": "Compression and RD",
+          "pageConvention": "physical_pdf_1_based"
+        }
+      ]
+    },
+    {
+      "id": "H4F",
+      "slot": "H4",
+      "split": "holdout",
+      "materials": [
+        "stream"
+      ],
+      "kind": "claim_verification",
+      "policy": "task_only",
+      "question": "3DGStream v4摘要中的每帧重建约12秒与200FPS是否矛盾？只依据本篇区分两个数字对应的操作、单位和适用范围，并说明能否据此断言从新采集输入到显示始终实时。250字以内。",
+      "required": [
+        "12秒对应每帧重建/训练，200FPS对应渲染",
+        "秒/输入视频帧与渲染图像帧/秒不是同一个操作的互逆值",
+        "两个数字不直接构成矛盾",
+        "不能凭渲染FPS保证采集到显示端到端实时或所有设备性能"
+      ],
+      "forbidden": [
+        "把12秒改成渲染时延",
+        "把200FPS说成每秒训练200个新时刻",
+        "直接相除得到所谓矛盾倍数",
+        "用摘要推断全链路实时保证"
+      ],
+      "anchors": [
+        {
+          "material": "stream",
+          "page": 1,
+          "label": "Abstract reconstruction and rendering",
+          "pageConvention": "physical_pdf_1_based"
+        }
+      ]
+    },
+    {
+      "id": "H5F",
+      "slot": "H5",
+      "split": "holdout",
+      "materials": [
+        "deform"
+      ],
+      "kind": "experiment_design",
+      "policy": "task_only",
+      "question": "基于Deformable 3D Gaussians v2，设计一个最小实验检验退火平滑训练是否缓解固定相机位姿误差下的时间插值抖动。只提一个假设、同一场景两组：关闭退火平滑与启用论文所述退火平滑；给出共同初始化、固定条件、明确有限预算、指标、可执行步骤与配对判断。只作单场景描述性比较，方案尚未执行，不保证新颖或普遍有效。",
+      "required": [
+        "论文AST通过随迭代衰减的时间编码噪声处理插值平滑，不能写成自动校正相机位姿",
+        "同一输入与固定姿态误差，两组只改变AST，完整共同初始化可复现",
+        "固定时间/视图划分、相机、渲染、表示、优化与密度控制策略，有限共同准备及各组训练预算",
+        "质量和时间连续性指标有定义及方向，不能以更平滑掩盖严重画质下降",
+        "步骤包含训练、同轨迹插值渲染、相同样本配对差值与结论限制",
+        "单场景描述性、未执行，不把拟议误差、种子或阈值归为作者报告"
+      ],
+      "forbidden": [
+        "两组改变时间编码阶数等多个因素仍声称单因素",
+        "宣称AST修正了输入相机姿态",
+        "假设不存在的已训练资产或省略新组件初值",
+        "无限或不等预算",
+        "声称总体显著性、普适提升或实验已完成"
+      ],
+      "anchors": [
+        {
+          "material": "deform",
+          "page": 4,
+          "label": "Canonical representation and rasterization",
+          "pageConvention": "physical_pdf_1_based"
+        },
+        {
+          "material": "deform",
+          "page": 5,
+          "label": "AST equation 6",
+          "pageConvention": "physical_pdf_1_based"
+        },
+        {
+          "material": "deform",
+          "page": 7,
+          "label": "Figure 4 ablation",
+          "pageConvention": "physical_pdf_1_based"
+        }
+      ]
+    }
+  ],
+  "caseDefinitionHashes": {
+    "H1F": "3d00cf3fe8b60e78a124e451fba1636924e60f9fef4d2f63954915ea48d8fa4e",
+    "H2F": "9e6517491d3b392229e071ebd55ee89ba8378e805b5c77a11c5e771201b14fcb",
+    "H3F": "cd0db4fbf039660ad54b3d9c747121e04bbc7f39800e3478d785ff59f1cafb41",
+    "H4F": "0ed2c929eee278e7b43f72732e1beec5deab30a4de0475ebcb92d009b5da4807",
+    "H5F": "def690cfcfcf8577adbcb8988441089494140027cd00918c30265a877211eaec"
+  }
+}

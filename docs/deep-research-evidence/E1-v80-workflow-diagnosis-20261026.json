@@ -1,0 +1,70 @@
+{
+  "case": "E1-v80",
+  "promptVersion": "dr-v2.20261026.291",
+  "metadataContract": 26,
+  "systemRoleMatches": true,
+  "systemPolicySha256": "d12d8bbd7a0401263f06bd6640d40cd9455b6fa7ce8109f04852bccfec3b6de3",
+  "generationErrors": [
+    "unit.json"
+  ],
+  "repairErrors": [
+    "unit.json"
+  ],
+  "originalIssues": [
+    {
+      "code": "steps.output_stage",
+      "path": "/steps/6/reads/0/outputStage",
+      "actual": "measurement",
+      "expected": "operation for a primitive; measurement/record for observe",
+      "actualPresent": true
+    },
+    {
+      "code": "steps.output_stage",
+      "path": "/steps/6/reads/1/outputStage",
+      "actual": "measurement",
+      "expected": "operation for a primitive; measurement/record for observe",
+      "actualPresent": true
+    },
+    {
+      "code": "steps.output_stage",
+      "path": "/steps/6/reads/2/outputStage",
+      "actual": "measurement",
+      "expected": "operation for a primitive; measurement/record for observe",
+      "actualPresent": true
+    }
+  ],
+  "repairIssues": [
+    {
+      "code": "steps.output_stage",
+      "path": "/steps/6/reads/0/outputStage",
+      "actual": "measurement",
+      "expected": "operation for a primitive; measurement/record for observe",
+      "actualPresent": true
+    },
+    {
+      "code": "steps.output_stage",
+      "path": "/steps/6/reads/1/outputStage",
+      "actual": "measurement",
+      "expected": "operation for a primitive; measurement/record for observe",
+      "actualPresent": true
+    },
+    {
+      "code": "steps.output_stage",
+      "path": "/steps/6/reads/2/outputStage",
+      "actual": "measurement",
+      "expected": "operation for a primitive; measurement/record for observe",
+      "actualPresent": true
+    }
+  ],
+  "rawMetadataChangedByRepair": true,
+  "trainingActionStillSetup": {
+    "action": "train_frame0_3dgs",
+    "kind": "setup",
+    "budget": null
+  },
+  "initializationStarted": false,
+  "independentCredit": 0,
+  "scientificApproval": false,
+  "rawPayloadSha256": "bda577122294d630cc599da63e706a92715dd81f424fe51724308464233d8f10",
+  "boundary": "Role framing reached the request; observed output still violates stage references and baseline training semantics. No content approval."
+}

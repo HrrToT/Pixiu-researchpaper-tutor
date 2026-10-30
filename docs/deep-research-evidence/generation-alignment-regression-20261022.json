@@ -1,0 +1,89 @@
+{
+  "date": "2026-10-22",
+  "sourceCommit": "fc29776f",
+  "promptVersion": "dr-v2.20261022.216",
+  "configurationConsistencyContractVersion": 2,
+  "serverOwnedImmutable": true,
+  "fullDeepResearchOffline": {
+    "passed": 3687,
+    "warnings": 1,
+    "seconds": 172.85,
+    "files": 208,
+    "scope": "All test_deep_research*.py; not all Python, reading or frontend integration.",
+    "log": "tmp/pytest-dr216-release.log",
+    "sha256": "fcfd1217eadf946709bee960de30e956c7b0d64bb82e31ef8d4eea9eb477306e"
+  },
+  "focusedPassed": 71,
+  "focusedSeconds": 3.16,
+  "focusedOverlap": true,
+  "newTests": 13,
+  "legacyActualFingerprintsMatched": 59,
+  "legacyScripts": [
+    "replay-dr210-legacy.py",
+    "replay-dr210-verification.py",
+    "replay-dr210-h5unknown.py",
+    "replay-dr210-e1-v1.py",
+    "replay-dr210-e1-v2.py",
+    "probe-dr210-legacy-actual-feedback.py",
+    "probe-dr210-legacy-review-calibration.py",
+    "probe-dr210-legacy-e1-audit.py",
+    "probe-dr210-e1-representation.py",
+    "probe-dr210-e1-attribution-final.py",
+    "probe-dr210-e1-config.py",
+    "probe-dr210-e1-v8-plan-final.py",
+    "probe-dr210-e1-v9-actual.py",
+    "probe-dr211-e1-v10-actual.py",
+    "probe-dr213-e1-coverage.py",
+    "probe-dr213-e1-v11-actual.py",
+    "probe-dr214-e1-v12-actual.py",
+    "probe-dr214-e1-v12-repair.py"
+  ],
+  "productionWrites": 0,
+  "independentCredit": 0,
+  "implementation": "Replace redundant generation framing with jointly consistent reference-model/field/temporal/cost guidance. State operation rules explicitly require nonempty valid parameters as the existing validator already does; creation may be parameter-free. Condition matched budgets on isolated effects, allow finite honest whole-stage costs. Align repair narrative/config instructions without changing the exact grammar, scientific checks, source permissions, budgets or saved request identities.",
+  "controlledReplay": "generation-alignment-e1-v12-controlled-20261022.json",
+  "boundary": "Instruction/preflight validation only. Archived response still contains scientific defects. No fresh content or independent acceptance follows offline success; DR0-DR5 remains incomplete.",
+  "offlineProviderCalls": 0,
+  "actualCase": {
+    "case": "E1-v13",
+    "status": "failed",
+    "outcome": "none",
+    "errorCode": "experiment_drafting_input_capacity",
+    "elapsedSeconds": 0,
+    "settledModelCalls": 9,
+    "settledTokens": 26143,
+    "unsettledModelCalls": 0,
+    "independentCredit": 0,
+    "planEncodingAudit": {
+      "rawBytes": 2959,
+      "wireBytes": 2850,
+      "preferredSlotBytes": 2500,
+      "rawLimitBytes": 4000,
+      "fitsPreferredSlot": false,
+      "scientificApproval": false
+    },
+    "draftCapacity": {
+      "inputBytes": 24186,
+      "maxInputBytes": 24000,
+      "requestDigest": "504467fbc3cef95f0ac55e574394182ba21900d0a1b75233626966a159c3d4fe",
+      "scientificApproval": false
+    },
+    "contentGenerationSubmitted": false,
+    "contentQualityValidated": false
+  },
+  "actualCasePlanningFingerprintsMatched": 1,
+  "actualCapacityDiagnosis": "generation-alignment-e1-v13-capacity-20261022.json",
+  "runtimeProof": "runtime-load-dr216-generation-alignment-20261022.json",
+  "retentionProof": "runtime-postcases-dr216-e1-v13-20261022.json",
+  "selectedDiagnosticTotals": {
+    "settledModelCalls": 587,
+    "measuredTokens": 2406018,
+    "notGlobalHistory": true,
+    "costUnknown": true
+  },
+  "remaining": [
+    "Versioned post-fit outline encoding is a measured candidate23917bytes, NOT implemented or sent; keep old capacity refusal immutable.",
+    "Actual new generation/review/repair content remains untested; source-grounded shared model/field initialization, temporal order, budget prose and measurements still need validation.",
+    "DR0-DR5 complete independent replacement acceptance remains outstanding; original independent0/5 unchanged."
+  ]
+}

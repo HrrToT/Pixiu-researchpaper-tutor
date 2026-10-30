@@ -1,0 +1,47 @@
+{
+  "originalCase": "X4L-v1",
+  "candidateVersion": "dr-v2.20261030.367",
+  "retrievalReplays": [
+    {
+      "originalChunks": [
+        34,
+        50,
+        94,
+        51,
+        92
+      ],
+      "newChunks": [
+        34,
+        35,
+        36,
+        50,
+        94
+      ],
+      "literalIdentityPreserved": true,
+      "sourceLimit": 5
+    },
+    {
+      "originalChunks": [
+        94,
+        34,
+        50,
+        51,
+        92
+      ],
+      "newChunks": [
+        94,
+        34,
+        35,
+        36,
+        50
+      ],
+      "literalIdentityPreserved": true,
+      "sourceLimit": 5
+    }
+  ],
+  "providerCalls": 0,
+  "productionIndexWrites": 0,
+  "oldResultChanged": false,
+  "contentAcceptance": false,
+  "boundary": "Only literal source selection replay; no regenerated or scientifically approved answer."
+}

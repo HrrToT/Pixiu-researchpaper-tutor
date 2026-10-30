@@ -1,0 +1,75 @@
+{
+  "sourceCommit": "316604fca9fe28c1d34ffe959f7406e0d136b977",
+  "promptVersion": "dr-v2.20261029.325",
+  "providerCalls": 8,
+  "statuses": [
+    "succeeded",
+    "succeeded",
+    "succeeded",
+    "succeeded",
+    "succeeded",
+    "succeeded",
+    "succeeded",
+    "succeeded"
+  ],
+  "totalTokens": 45879,
+  "retry": false,
+  "unknownCalls": 0,
+  "scope": "isolated new verification and repair of settled saved draft; no generation or retrieval",
+  "acceptedByMachine": 1,
+  "rejectedByMachine": 1,
+  "answerCoverageGaps": 4,
+  "repairLocalRejections": [
+    {
+      "claimId": "c1",
+      "reason": "absence_not_established",
+      "detail": "本条引用没有明确建立作者或论文缺少这些验证。把结论限定为本次引用能支持的实验范围及其不能证明的推广；不要写成作者未在其他条件验证、论文没有提供或全文不存在。引用中的其他否定句不构成这项缺席判断的依据。"
+    }
+  ],
+  "repairDraft": [
+    {
+      "claimId": "c1",
+      "text": "在Mip-NeRF 360和Tank and Temple数据集上，LightGaussian与原始3D-GS的PSNR、SSIM、LPIPS数值接近，表明压缩后图像质量接近原始3DGS，但该结论仅基于这两个数据集的定量指标，未验证其他场景或感知质量。"
+    },
+    {
+      "claimId": "c2",
+      "text": "作者报告的结果：在Mip-NeRF 360和Tank and Temple数据集上，LightGaussian与原始3D-GS的PSNR、SSIM、LPIPS数值接近。成立条件：该结论基于这两个数据集的定量指标。未验证范围：其他场景或感知质量。"
+    }
+  ],
+  "manualFinding": "Original scoped c2 returned scopeExpression=null; ordinary prose bypassed structured scope review and retained ambiguous absence wording. Machine acceptance does not prove safe scientific scope.",
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "preservation": {
+    "before": {
+      "ledgerRows": 7465,
+      "ledgerSha256": "9138a4c5c9e9397c9dce6b78007d07dc1c2f7955dd637bef1d794f0c50b97bbc",
+      "payloadSha256": "a4559eea0b66b511bed93f21a1cba7e6a39068464469aacbcd30fde6895797ad"
+    },
+    "after": {
+      "ledgerRows": 7465,
+      "ledgerSha256": "9138a4c5c9e9397c9dce6b78007d07dc1c2f7955dd637bef1d794f0c50b97bbc",
+      "payloadSha256": "a4559eea0b66b511bed93f21a1cba7e6a39068464469aacbcd30fde6895797ad"
+    },
+    "exactProductionPreservation": true,
+    "providerSubmissions": 8,
+    "productionPublish": false,
+    "fullWorkflowReplay": false,
+    "independentCredit": 0
+  },
+  "rawReceipts": "tmp\\component-assessment-325-20261029\\receipt",
+  "receiptHashes": {
+    "calls.json": "9d632a91b906bbf7a4327461f07375fd222394d236ba8bc8e08c9195d36f2834",
+    "payload.json": "08561d9a10b2879270dc91af7a5f2ba25768da41e39cb9d906fdd0ffdcc58a7b",
+    "preservation.json": "0752b1b18292fcdd0bb39a72eb10988a21d5079a71a8882bc1fb5a64bcbdc604",
+    "progress.json": "e37dc86546d43b2d17a1e7f79458f0d12d683011cb7ea36ad483d6778601893e",
+    "request-1.json": "a0b6c46dc986fc8cac47aa7686ca041df43259f957a9208eae8faeb5be8e37ac",
+    "request-2.json": "a9faf8dc9a12e545c8664fab34f43e1344b7540d903c6282b20654935e70fc7e",
+    "request-3.json": "3aedf9b92f65ee6e4e1799dfc94363222dcf999fb4f998bd47fec0d9b5f7bf8a",
+    "request-4.json": "5443e3ad1dd8ad62ca02fcdb53fa1e0ce8a787554bb1b89ad5a82cb1c81dd0ea",
+    "request-5.json": "f30954197814a1f428026c0cecb67e2298a7f8599e047f25fd880fe10b368e75",
+    "request-6.json": "48475f75c25c0accdaaa2ad93c76b72db9d2f3b377f0c482819cfdffe704721c",
+    "request-7.json": "09607c4cd53960b3d427aaebd07085af4328faabd49f6c9c18e5bacef20cd0ac",
+    "request-8.json": "4693f7bf1b769a841aeff363cb4573a1d91666884bcff6da8aca897978f13f4b",
+    "result.json": "51c46cfd1fe558d7a30bd11f85305dc79a36a0e63e413b1719727344efb73e12"
+  }
+}

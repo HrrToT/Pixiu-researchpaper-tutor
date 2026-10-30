@@ -1,0 +1,137 @@
+"""Validate the audit trail for individual answer requirements, not semantics."""
+from services.deep_research.answer_coverage import _bindings_supported, _known_claims_by_id
+
+
+def invalid_coverage_aspects(verdicts, claims, evidence_rows, questions, *, request_only_obligations=(), display_metadata=None):
+    """A covered verdict requires explicit, grounded, individually covered aspects.
+
+    This cannot prove that the model found every essential aspect. It prevents
+    a bare overall verdict, invented source text or missing subcheck from
+    silently becoming a completed answer.
+    """
+    known = _known_claims_by_id(claims)
+    evidence = {}
+    for row in evidence_rows:
+        if not isinstance(row, dict):
+            continue
+        eid = row.get('evidenceId')
+        if not isinstance(eid, str) or not eid:
+            continue
+        evidence[eid] = row if eid not in evidence else None
+    invalid = []
+    for verdict in verdicts:
+        if not isinstance(verdict, dict) or verdict.get('status') != 'covered':
+            continue
+        aspects = verdict.get('aspects')
+        valid = isinstance(aspects, list) and bool(aspects)
+        seen = set()
+        source_based = False
+        metadata_only = bool(aspects)
+        for aspect in aspects if isinstance(aspects, list) else []:
+            if not isinstance(aspect, dict):
+                valid = False
+                continue
+            identity = aspect.get('aspectId')
+            if not isinstance(identity, str) or not identity or identity in seen:
+                valid = False
+            else:
+                seen.add(identity)
+            if not isinstance(aspect.get('requirement'), str) or not aspect['requirement'].strip():
+                valid = False
+            if aspect.get('status') != 'covered':
+                valid = False
+            basis = aspect.get('basis')
+            if not isinstance(basis, dict) or 'referenceError' in basis:
+                valid = False
+                metadata_only = False
+                continue
+            if basis.get('kind') == 'source_metadata':
+                from services.deep_research.display_metadata import display_binding_supported, requests_access_level
+                row = evidence.get(basis.get('evidenceId')) if isinstance(basis.get('evidenceId'), str) else None
+                request_excerpt = basis.get('requestExcerpt')
+                supported = (row is not None and basis.get('field') == 'accessLevel'
+                    and basis.get('value') in ('fulltext', 'abstract', 'user_note')
+                    and row.get('accessLevel') == basis.get('value')
+                    and isinstance(request_excerpt, str) and len(request_excerpt.strip()) >= 8
+                    and requests_access_level(request_excerpt)
+                    and any(request_excerpt in q for q in questions if isinstance(q, str)))
+                # Metadata belongs to evidence cited by the bound answer, not an
+                # unrelated downloaded paper. Mixed content still needs prose.
+                bindings = aspect.get('bindings')
+                supported = supported and isinstance(bindings, list) and bool(bindings) and all(
+                    isinstance(b, dict) and isinstance(b.get('claimId'), str)
+                    and isinstance(known.get(b['claimId']), dict)
+                    and basis.get('evidenceId') in known[b['claimId']].get('evidenceRefs', [])
+                    and (_bindings_supported([b], known) or display_binding_supported(b, known, display_metadata))
+                    for b in bindings)
+                valid = valid and supported
+                continue
+            from services.deep_research.display_metadata import display_binding_supported, request_access_aspect
+            if request_access_aspect(aspect) and any(
+                    isinstance(b, dict) and b.get('field') == 'sourceAccessSummary'
+                    for b in (aspect.get('bindings') if isinstance(aspect.get('bindings'), list) else [])):
+                # The whole-question review can bind the actual aggregate label
+                # directly to an explicit access request. Scientific criteria
+                # and paper-specific acquisition aspects still use typed bases.
+                bindings = aspect['bindings']
+                excerpt = basis.get('excerpt')
+                supported = (verdict.get('obligationId') in request_only_obligations
+                    and isinstance(excerpt, str) and len(excerpt.strip()) >= 8
+                    and any(excerpt in q for q in questions if isinstance(q, str))
+                    and bool(bindings) and all(display_binding_supported(b, known, display_metadata)
+                        and bool(known[b['claimId']].get('evidenceRefs'))
+                        and all(evidence.get(ref) is not None
+                            and evidence[ref].get('accessLevel') in ('fulltext', 'abstract', 'user_note')
+                            for ref in known[b['claimId']]['evidenceRefs']) for b in bindings))
+                from services.deep_research.joint_answer_bindings import enabled as joint_enabled,bindings_supported
+                if joint_enabled(display_metadata) and any(isinstance(b,dict) and b.get('field')!='sourceAccessSummary' for b in bindings):
+                    supported=(verdict.get('obligationId') in request_only_obligations
+                        and isinstance(excerpt,str) and len(excerpt.strip())>=8
+                        and any(excerpt in q for q in questions if isinstance(q,str))
+                        and bindings_supported(bindings,known,display_metadata,excerpt))
+                    metadata_only=False
+                valid = valid and supported
+                continue
+            metadata_only = False
+            if not _bindings_supported(aspect.get('bindings'), known):
+                valid = False
+            excerpt = basis.get('excerpt')
+            if not isinstance(excerpt, str) or not excerpt.strip():
+                valid = False
+                continue
+            if basis.get('kind') == 'request':
+                valid = valid and any(excerpt in q for q in questions if isinstance(q, str))
+            elif basis.get('kind') == 'source':
+                eid = basis.get('evidenceId')
+                row = evidence.get(eid) if isinstance(eid, str) else None
+                if not row or len(excerpt.strip()) < 8:
+                    valid = False
+                    continue
+                context = row.get('sourceContext') or {}
+                text = context.get('before', '') + row.get('quote', '') + context.get('after', '')
+                bindings = aspect.get('bindings')
+                bound_facts = [known[b['claimId']] for b in bindings
+                    if isinstance(b, dict) and isinstance(b.get('claimId'), str)
+                    and isinstance(known.get(b['claimId']), dict)
+                    and known[b['claimId']].get('kind') in {'reported', 'inference'}] \
+                    if isinstance(bindings, list) else []
+                # A real quote from an uncited paper/version cannot ground an
+                # accepted factual answer that cites something else. Several
+                # claims may jointly answer an aspect; at least one factual
+                # binding must actually cite this precise evidence identity.
+                linked = any(eid in c.get('evidenceRefs', []) for c in bound_facts)
+                valid = valid and excerpt in text and (not bound_facts or linked)
+                source_based = source_based or (excerpt in text and linked)
+            else:
+                valid = False
+        bindings = verdict.get('bindings')
+        factual = any(isinstance(b, dict) and isinstance(b.get('claimId'), str)
+            and isinstance(known.get(b['claimId']), dict)
+            and known[b['claimId']].get('kind') in {'reported', 'inference'}
+            for b in bindings) if isinstance(bindings, list) else False
+        if (evidence_rows and factual and not source_based and not metadata_only
+                and verdict.get('obligationId') not in request_only_obligations):
+            valid = False
+        if not valid:
+            invalid.append(verdict.get('obligationId'))
+    return invalid

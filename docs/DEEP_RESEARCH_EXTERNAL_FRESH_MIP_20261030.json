@@ -1,0 +1,63 @@
+{
+  "version": 1,
+  "frozenAt": "2026-10-30",
+  "budgetProfile": "standard",
+  "materials": {},
+  "review": {
+    "dimensions": [
+      "目标回应",
+      "证据支持",
+      "条件完整",
+      "综合价值",
+      "可读性"
+    ],
+    "minimumApplicableScore": 4,
+    "independence": "Fresh paper/question, no prior manifest or payload matches; retire if used for tuning.",
+    "sourceAnchors": [
+      {
+        "paper": "arxiv:2311.16493v1",
+        "reference": "https://arxiv.org/abs/2311.16493v1",
+        "expected": "3D smoothing constrains Gaussian sizes by maximal input-view sampling frequency; 2D Mip filter approximates pixel box integration instead of dilation; distinct roles for sampling changes, not general proof for arbitrary unseen scenes."
+      }
+    ],
+    "hardFailures": [
+      "摘要或本地文本冒充全文",
+      "版本不是v1",
+      "混淆3D平滑和2D像素积分",
+      "虚构数值排名",
+      "超出18调用/100000Token/360秒"
+    ],
+    "transportChecks": [
+      "no_existing_external_cache",
+      "new_paper_not_in_index",
+      "fresh_fulltext_network",
+      "idempotent_add_and_first_indexing"
+    ]
+  },
+  "cases": [
+    {
+      "id": "X3H",
+      "split": "holdout",
+      "materials": [],
+      "kind": "claim_verification",
+      "policy": "external_only",
+      "question": "请联网读取 Mip-Splatting: Alias-free 3D Gaussian Splatting（arXiv:2311.16493v1）原文。面向了解3DGS概念的新手，解释改变焦距或相机距离为什么会出现采样伪影，以及3D平滑滤波和2D Mip滤波分别解决什么问题。限350字，区分两种滤波各自的作用，标明实际取得的是正文还是摘要，不做性能排名或实验设计。",
+      "required": [
+        "真实获取v1全文并按访问级别引用",
+        "采样率改变导致伪影的动机",
+        "3D平滑按输入视角最大采样频率约束高斯尺寸",
+        "2D Mip近似像素盒滤波，替代膨胀",
+        "350字内新手可读"
+      ],
+      "forbidden": [
+        "把两种滤波说成同一个操作",
+        "摘要冒充正文",
+        "虚构性能排名",
+        "无边界泛化保证"
+      ]
+    }
+  ],
+  "caseDefinitionHashes": {
+    "X3H": "7adfc2a6b3ea735e717f275aa6870fdeea516fdc5c30c711d89637f5222de7aa"
+  }
+}

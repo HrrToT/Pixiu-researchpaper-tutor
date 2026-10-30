@@ -1,0 +1,395 @@
+{
+  "date": "2026-10-18",
+  "case": "D1-v21",
+  "runId": "dr_run_fec491a6694558cfbaf7f9194066e7bc",
+  "sourceCommit": "6f6a7b92",
+  "promptVersion": "dr-v2.20261018.162",
+  "status": "completed",
+  "machineOutcome": "complete",
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "modelCalls": 12,
+  "settledTokens": 44766,
+  "elapsedSeconds": 60.832,
+  "answerCharacters": 190,
+  "cost": null,
+  "actualLiteralGroundedCriteria": [
+    {
+      "criterionId": "human_aspect_1",
+      "requirement": "核查压缩后图像质量接近原始3DGS这一说法",
+      "responseType": "explanation"
+    },
+    {
+      "criterionId": "human_aspect_1",
+      "requirement": "区分作者报告的结果、成立条件和未验证范围",
+      "responseType": "limitation"
+    }
+  ],
+  "verifiedClaims": [
+    {
+      "claimId": "c1",
+      "kind": "reported",
+      "text": "在Mip-NeRF 360数据集上，Ours的PSNR为27.13，3D-GS为27.21；在Tank and Temple数据集上，Ours的PSNR为23.44，3D-GS为23.14。",
+      "evidenceRefs": [
+        "ev_ffe2afc10303963ace5068705474a2c111bd99e53c60afe414460f77471fc747",
+        "ev_ab9685875c28c1ea14d0b937d46acbe69e99bdfb53a13d0b0c5c698de8fcb2fd"
+      ],
+      "tableBindings": [
+        {
+          "evidenceId": "ev_ffe2afc10303963ace5068705474a2c111bd99e53c60afe414460f77471fc747",
+          "rowNumber": 10,
+          "groupIndex": 0,
+          "metric": "PSNR",
+          "value": "27.13"
+        },
+        {
+          "evidenceId": "ev_ab9685875c28c1ea14d0b937d46acbe69e99bdfb53a13d0b0c5c698de8fcb2fd",
+          "rowNumber": 8,
+          "groupIndex": 0,
+          "metric": "PSNR",
+          "value": "27.21"
+        },
+        {
+          "evidenceId": "ev_ffe2afc10303963ace5068705474a2c111bd99e53c60afe414460f77471fc747",
+          "rowNumber": 10,
+          "groupIndex": 1,
+          "metric": "PSNR",
+          "value": "23.44"
+        },
+        {
+          "evidenceId": "ev_ab9685875c28c1ea14d0b937d46acbe69e99bdfb53a13d0b0c5c698de8fcb2fd",
+          "rowNumber": 8,
+          "groupIndex": 1,
+          "metric": "PSNR",
+          "value": "23.14"
+        }
+      ],
+      "conditions": {},
+      "detailLevel": "fulltext",
+      "obligationIds": [
+        "ob_1"
+      ],
+      "verification": "semantic_passed"
+    },
+    {
+      "claimId": "c2",
+      "kind": "reported",
+      "text": "在66%剪枝且SH降至2阶的条件下，SSIM从0.927微降至0.926，接近原始质量；但剪枝达70%或VQ接近65%时质量明显下降。",
+      "evidenceRefs": [
+        "ev_7f7bfdc77abba589cde39fc5eb483fe9c7a9352e618f9cdcecd7de5d34324fa8",
+        "ev_24a46c13644c093ccf30e6ede5325dc2f03b21b7504676b0db3524c51cb5c726"
+      ],
+      "tableBindings": [],
+      "conditions": {
+        "pruningRatio": "66%",
+        "SHDegree": 2
+      },
+      "detailLevel": "fulltext",
+      "obligationIds": [
+        "ob_2"
+      ],
+      "verification": "semantic_passed"
+    }
+  ],
+  "machineAnswerCoverage": {
+    "status": "checked",
+    "verdicts": [
+      {
+        "obligationId": "ob_1",
+        "status": "covered",
+        "bindings": [
+          {
+            "claimId": "c1",
+            "field": "text",
+            "excerpt": "在Mip-NeRF 360数据集上，Ours的PSNR为27.13，3D-GS为27.21；在Tank and Temple数据集上，Ours的PSNR为23.44，3D-GS为23.14。"
+          }
+        ],
+        "criteria": [
+          {
+            "criterionId": "human_aspect_1",
+            "responseType": "explanation",
+            "status": "covered",
+            "bindings": [
+              {
+                "claimId": "c1",
+                "field": "text",
+                "excerpt": "在Mip-NeRF 360数据集上，Ours的PSNR为27.13，3D-GS为27.21；在Tank and Temple数据集上，Ours的PSNR为23.44，3D-GS为23.14。"
+              }
+            ]
+          }
+        ],
+        "aspects": [
+          {
+            "aspectId": "a1",
+            "requirement": "核查压缩后图像质量接近原始3DGS这一说法",
+            "basis": {
+              "kind": "source",
+              "evidenceId": "ev_ffe2afc10303963ace5068705474a2c111bd99e53c60afe414460f77471fc747",
+              "field": "quote",
+              "excerpt": "Table row 10: Ours | 237 | 45MB | 27.13 | 0.806 | 0.237 | 357 | 25MB | 23.44 | 0.832 | 0.202"
+            },
+            "status": "covered",
+            "bindings": [
+              {
+                "claimId": "c1",
+                "field": "text",
+                "excerpt": "在Mip-NeRF 360数据集上，Ours的PSNR为27.13，3D-GS为27.21；在Tank and Temple数据集上，Ours的PSNR为23.44，3D-GS为23.14。"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "obligationId": "ob_2",
+        "status": "covered",
+        "bindings": [
+          {
+            "claimId": "c2",
+            "field": "text",
+            "excerpt": "在66%剪枝且SH降至2阶的条件下，SSIM从0.927微降至0.926，接近原始质量；但剪枝达70%或VQ接近65%时质量明显下降。"
+          }
+        ],
+        "criteria": [
+          {
+            "criterionId": "human_aspect_1",
+            "responseType": "limitation",
+            "status": "covered",
+            "bindings": [
+              {
+                "claimId": "c2",
+                "field": "text",
+                "excerpt": "在66%剪枝且SH降至2阶的条件下，SSIM从0.927微降至0.926，接近原始质量；但剪枝达70%或VQ接近65%时质量明显下降。"
+              }
+            ]
+          }
+        ],
+        "aspects": [
+          {
+            "aspectId": "a2",
+            "requirement": "区分作者报告的结果、成立条件和未验证范围",
+            "basis": {
+              "kind": "source",
+              "evidenceId": "ev_7f7bfdc77abba589cde39fc5eb483fe9c7a9352e618f9cdcecd7de5d34324fa8",
+              "field": "quote",
+              "excerpt": "With a Gaussian pruning ratio of 66% and SH reduced to 2 degrees, LightGaussian nearly maintains rendering quality (SSIM drops slightly from 0.927 to 0.926)."
+            },
+            "status": "covered",
+            "bindings": [
+              {
+                "claimId": "c2",
+                "field": "text",
+                "excerpt": "在66%剪枝且SH降至2阶的条件下，SSIM从0.927微降至0.926，接近原始质量；但剪枝达70%或VQ接近65%时质量明显下降。"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "obligationId": "answer_scope",
+        "status": "covered",
+        "bindings": [
+          {
+            "claimId": "c1",
+            "field": "text",
+            "excerpt": "在Mip-NeRF 360数据集上，Ours的PSNR为27.13，3D-GS为27.21；在Tank and Temple数据集上，Ours的PSNR为23.44，3D-GS为23.14。"
+          },
+          {
+            "claimId": "c2",
+            "field": "text",
+            "excerpt": "在66%剪枝且SH降至2阶的条件下，SSIM从0.927微降至0.926，接近原始质量；但剪枝达70%或VQ接近65%时质量明显下降。"
+          }
+        ],
+        "criteria": [],
+        "aspects": [
+          {
+            "aspectId": "a3",
+            "requirement": "只依据LightGaussian，核查压缩后图像质量接近原始3DGS这一说法。区分作者报告的结果、成立条件和未验证范围。只写最关键的两点，300字以内。",
+            "basis": {
+              "kind": "request",
+              "excerpt": "只依据LightGaussian，核查压缩后图像质量接近原始3DGS这一说法。区分作者报告的结果、成立条件和未验证范围。只写最关键的两点，300字以内。"
+            },
+            "status": "covered",
+            "bindings": [
+              {
+                "claimId": "c1",
+                "field": "text",
+                "excerpt": "在Mip-NeRF 360数据集上，Ours的PSNR为27.13，3D-GS为27.21；在Tank and Temple数据集上，Ours的PSNR为23.44，3D-GS为23.14。"
+              },
+              {
+                "claimId": "c2",
+                "field": "text",
+                "excerpt": "在66%剪枝且SH降至2阶的条件下，SSIM从0.927微降至0.926，接近原始质量；但剪枝达70%或VQ接近65%时质量明显下降。"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "completionContractDigest": "1c14791ce67c41e5141a10831db490275a9865a0574b64c8fa7cde433f7a5681",
+    "displayMetadataDigest": "a1e73d5c24c915127907a0eaa176e7ec0ba43d1c3d6f418c1438a40d0b591ca9",
+    "gaps": [],
+    "invalidAspectObligations": [],
+    "wholeQuestionId": "answer_scope",
+    "nonblockingResearch": [],
+    "criterionGaps": {},
+    "invalidCriterionObligations": [],
+    "budgetLimit": null
+  },
+  "reviewer": "Primary Codex inspection of saved final body and cited premises; not a participant rating.",
+  "scores": {
+    "goalResponse": 3,
+    "evidenceSupport": 4,
+    "conditions": 2,
+    "synthesisValue": 2,
+    "executability": null,
+    "readability": 3
+  },
+  "findings": [
+    "Both real plan items now retain the exact human judgement and limitation requests rather than metric-list identification; both were acquired under unchanged budgets.",
+    "Four main-table PSNR values are bound to their exact Ours and unstarred3D-GS rows and groups; no wrong percentage or all-metrics-down claim is published.",
+    "The final first point remains a numerical series without a clear qualified verdict. The second reports compression ablation numbers but does not separate those experimental conditions from main-table comparison conditions or address unverified scope.",
+    "Machine final coverage falsely marks the compound results/conditions/unverified-range criterion complete using only the ablation statement. The visible body does not fulfill the full human request, so machine complete is NOT content acceptance.",
+    "Next planning/completeness fix should preserve independently requested dimensions inside a compound imperative and require each own final answer binding, rather than a single source-derived aggregate aspect. Do not reject by mere missing keywords or count successful API calls as quality.",
+    "All20newrowssettled once. Old3855ledgerprefix, all old run payloads, task objects and nine historical unknown identities preserved."
+  ],
+  "initialVerification": {
+    "accepted": [],
+    "rejected": [
+      {
+        "claimId": "c1",
+        "reason": "table_condition_not_displayed",
+        "requiredTableDisplay": [
+          {
+            "group": "Mip-NeRF 360 Datasets",
+            "method": "Ours"
+          },
+          {
+            "group": "Mip-NeRF 360 Datasets",
+            "method": "3D-GS [16]"
+          },
+          {
+            "group": "Tank and Temple Datasets",
+            "method": "Ours"
+          },
+          {
+            "group": "Tank and Temple Datasets",
+            "method": "3D-GS [16]"
+          }
+        ],
+        "detail": "保留表格数值时，同条正文或条件必须显示原表的数据组和方法身份。请核对requiredTableDisplay；保留星号、变体及分组层级，末尾参考文献序号可省略。不能只写另一个方法名代替Ours等原表标签，也不能修改单元格或加入未报告的计算。"
+      },
+      {
+        "claimId": "c2",
+        "reason": "semantic_unresolved",
+        "detail": "断言将接近性限定为“仅在”66%剪枝且2阶SH等特定条件下成立；证据E1仅报告在该条件下SSIM从0.927微降至0.926，E2报告70%剪枝或VQ接近65%时质量下降，但均未声称这些是唯一或穷尽的条件，故“仅在”这一排他性表述未被直接支持。"
+      }
+    ]
+  },
+  "repairVerificationChecks": {
+    "accepted": [
+      {
+        "claimId": "c1",
+        "kind": "reported",
+        "text": "在Mip-NeRF 360数据集上，Ours的PSNR为27.13，3D-GS为27.21；在Tank and Temple数据集上，Ours的PSNR为23.44，3D-GS为23.14。",
+        "evidenceRefs": [
+          "ev_ffe2afc10303963ace5068705474a2c111bd99e53c60afe414460f77471fc747",
+          "ev_ab9685875c28c1ea14d0b937d46acbe69e99bdfb53a13d0b0c5c698de8fcb2fd"
+        ],
+        "tableBindings": [
+          {
+            "evidenceId": "ev_ffe2afc10303963ace5068705474a2c111bd99e53c60afe414460f77471fc747",
+            "rowNumber": 10,
+            "groupIndex": 0,
+            "metric": "PSNR",
+            "value": "27.13"
+          },
+          {
+            "evidenceId": "ev_ab9685875c28c1ea14d0b937d46acbe69e99bdfb53a13d0b0c5c698de8fcb2fd",
+            "rowNumber": 8,
+            "groupIndex": 0,
+            "metric": "PSNR",
+            "value": "27.21"
+          },
+          {
+            "evidenceId": "ev_ffe2afc10303963ace5068705474a2c111bd99e53c60afe414460f77471fc747",
+            "rowNumber": 10,
+            "groupIndex": 1,
+            "metric": "PSNR",
+            "value": "23.44"
+          },
+          {
+            "evidenceId": "ev_ab9685875c28c1ea14d0b937d46acbe69e99bdfb53a13d0b0c5c698de8fcb2fd",
+            "rowNumber": 8,
+            "groupIndex": 1,
+            "metric": "PSNR",
+            "value": "23.14"
+          }
+        ],
+        "conditions": {},
+        "detailLevel": "fulltext",
+        "obligationIds": [
+          "ob_1"
+        ],
+        "verification": "semantic_passed"
+      },
+      {
+        "claimId": "c2",
+        "kind": "reported",
+        "text": "在66%剪枝且SH降至2阶的条件下，SSIM从0.927微降至0.926，接近原始质量；但剪枝达70%或VQ接近65%时质量明显下降。",
+        "evidenceRefs": [
+          "ev_7f7bfdc77abba589cde39fc5eb483fe9c7a9352e618f9cdcecd7de5d34324fa8",
+          "ev_24a46c13644c093ccf30e6ede5325dc2f03b21b7504676b0db3524c51cb5c726"
+        ],
+        "tableBindings": [],
+        "conditions": {
+          "pruningRatio": "66%",
+          "SHDegree": 2
+        },
+        "detailLevel": "fulltext",
+        "obligationIds": [
+          "ob_2"
+        ],
+        "verification": "semantic_passed"
+      }
+    ],
+    "rejected": []
+  },
+  "oldDataPreservation": {
+    "calls": 3875,
+    "newRows": 20,
+    "oldLedgerUnchanged": true,
+    "allOldRunPayloadsUnchanged": true,
+    "active": 0,
+    "historicalUnknowns": 9,
+    "previousTaskObjectsUnchanged": {
+      "notes": 0,
+      "messages": 17,
+      "artifacts": 34
+    },
+    "paperIdsUnchanged": true
+  },
+  "report": "## 判断\n\n- 在Mip-NeRF 360数据集上，Ours的PSNR为27.13，3D-GS为27.21；在Tank and Temple数据集上，Ours的PSNR为23.44，3D-GS为23.14。 [1](#research-evidence-ev_ffe2afc10303963ace5068705474a2c111bd99e53c60afe414460f77471fc747) [2](#research-evidence-ev_ab9685875c28c1ea14d0b937d46acbe69e99bdfb53a13d0b0c5c698de8fcb2fd)\n\n## 适用条件\n\n- 在66%剪枝且SH降至2阶的条件下，SSIM从0.927微降至0.926，接近原始质量；但剪枝达70%或VQ接近65%时质量明显下降。 [3](#research-evidence-ev_7f7bfdc77abba589cde39fc5eb483fe9c7a9352e618f9cdcecd7de5d34324fa8) [4](#research-evidence-ev_24a46c13644c093ccf30e6ede5325dc2f03b21b7504676b0db3524c51cb5c726)\n  适用条件：pruningRatio：66%；SHDegree：2\n\n论文事实已按所列原文核对。\n\n<details>\n<summary>原文依据</summary>\n\n**[1] LightGaussian: Unbounded 3D Gaussian Compression with 15x Reduction and 200+ FPS** · 第 6 页 · 全文片段\n\n> Table row 10: Ours | 237 | 45MB | 27.13 | 0.806 | 0.237 | 357 | 25MB | 23.44 | 0.832 | 0.202\n\n**[2] LightGaussian: Unbounded 3D Gaussian Compression with 15x Reduction and 200+ FPS** · 第 6 页 · 全文片段\n\n> Table row 8: 3D-GS [16] | 134 | 734MB | 27.21 | 0.815 | 0.214 | 154 | 411MB | 23.14 | 0.841 | 0.183\n\n**[3] LightGaussian: Unbounded 3D Gaussian Compression with 15x Reduction and 200+ FPS** · 第 9 页 · 全文片段\n\n> With a Gaussian pruning ratio of 66% and SH reduced to 2 degrees, LightGaussian nearly maintains rendering quality (SSIM drops slightly from 0.927 to 0.926).\n\n**[4] LightGaussian: Unbounded 3D Gaussian Compression with 15x Reduction and 200+ FPS** · 全文片段\n\n> As depicted in Fig6, we note a marked decline in rendering quality when the pruning ratio reaches 70%, with a more rapid deterioration as the VQ ratio approaches 65%.\n\n</details>",
+  "rawFiles": [
+    {
+      "path": "tmp/dr-acceptance-receipts/D1-v21.json",
+      "sha256": "b76cb82acd64e75d76046d5bd36e55d95ac1a4a6402af95c0fd271d7ab5f41e8"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/D1-v21.payload.json",
+      "sha256": "bf35e270644fa1f674efd9eed577469e85fd5d94f93bc1bed7f0e0a56978ee51"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/D1-v21.calls.json",
+      "sha256": "98dde0aa0c1a6b7f3a52f1fd46b9ef1dbc65659d5567b4fc8c2d1fd47750c145"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/D1-v21.result.json",
+      "sha256": "271e03c25e63503608943cf0a071322cccaddad91dd8dd1109d5e21bb753a3ed"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/D1-v21.before.json",
+      "sha256": "ac6b8275108d42d1331d9e6ae7ca69ff333ae0049a779482e1a4ad4a682500f5"
+    }
+  ],
+  "boundary": "Development content failure despite machine complete. Literal planning and independent factual rejection/repair executed; final completeness judgement remains too weak. No independent or overall completion credit."
+}

@@ -1,0 +1,29 @@
+{
+  "date": "2026-10-15",
+  "caseId": "D8-v2",
+  "split": "development",
+  "runId": "dr_run_e3cbd2e5e17f5b6e9f5c1dd878e4c068",
+  "promptVersion": "dr-v2.20261015.65",
+  "planCompletionContractVersion": 1,
+  "submissionCount": 1,
+  "automaticResubmissions": 0,
+  "machineResult": {"status": "completed", "outcome": "partial", "successfulSettledModelCalls": 10, "actualTokensFromSettledResponses": 35808, "elapsedSeconds": 102.519, "answerCharactersIncludingConditions": 280, "cost": null},
+  "contractObservation": {
+    "predeclaredCriteria": 4,
+    "finalCriterionVerdicts": 0,
+    "sourceAndAspectVerdicts": "The model returned legacy aspects and overall covered decisions, but omitted the required criteria arrays in both coverage responses.",
+    "programResult": "The four unaudited criteria kept both obligations open; omitted fields were never inferred as passing.",
+    "rootCause": "The prose requested criteria, while the final JSON response example still contained only the old aspects schema.",
+    "limitation": "The partial outcome here is a protocol guard, not evidence that the semantic reviewer correctly rejected insufficient novice explanations."
+  },
+  "primaryAgentReview": {
+    "qualityAccepted": false,
+    "supportedFacts": ["Per-view cost volumes", "Inverse-depth candidate sampling", "Camera projection matrices warp features between views", "Dot-product matching supported by the acquired surrounding text", "Depth unprojection gives Gaussian centers", "Photometric supervision without ground-truth depth labels"],
+    "remainingIssues": ["Inverse depth, feature dot product and unprojection remain mostly unexplained terms for a novice", "The depth-to-coordinate step is named rather than made intuitive", "Text and conditions repeat some material, reducing space for the explanation"],
+    "scope": "Primary coding-agent review against acquired source text, not a human study or independent holdout acceptance."
+  },
+  "repair": "One bounded content revision ran under .65, but missing audit fields are not proof that correct content needs rewriting. .66 separates an invalid review from a reviewed content gap.",
+  "rawAuthoritativeRecord": "tmp/dr-acceptance-receipts/D8-v2.authoritative.json",
+  "nextWork": ["Align final JSON example and exact criterion identity map", "Report missing review fields as completeness not checked and do not trigger paid content rewrite for that alone", "Validate corrected protocol before further quality acceptance"],
+  "acceptance": "Failed development quality check; no independent holdout credit. Original response preserved."
+}

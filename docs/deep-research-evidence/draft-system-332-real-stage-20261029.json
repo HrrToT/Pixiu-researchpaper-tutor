@@ -1,0 +1,82 @@
+{
+  "sourceCommit": "9698e7c8",
+  "promptVersion": "dr-v2.20261029.332",
+  "draftSystemContractVersion": 1,
+  "component": "isolated saved draft independent check and repair",
+  "freshGeneration": false,
+  "freshRetrieval": false,
+  "provider": "deepseek",
+  "model": "deepseek-v4-pro",
+  "providerCalls": 7,
+  "tokens": 32676,
+  "allSettled": true,
+  "unknownCalls": 0,
+  "automaticRetries": 0,
+  "acceptedClaims": 1,
+  "rejectedClaims": [
+    {
+      "claimId": "c1",
+      "reason": "semantic_unresolved",
+      "detail": "比较条件或推断前提尚未核实：unknown_alignment_is_not_difference",
+      "revisionRejection": {
+        "claimId": "c1",
+        "reason": "absence_not_established",
+        "detail": "本条引用没有明确建立作者或论文缺少这些验证。把结论限定为本次引用能支持的实验范围及其不能证明的推广；不要写成作者未在其他条件验证、论文没有提供或全文不存在。引用中的其他否定句不构成这项缺席判断的依据。"
+      }
+    }
+  ],
+  "coverageStatus": "checked",
+  "gaps": 4,
+  "correctedScopeClaim": {
+    "claimId": "c2",
+    "kind": "inference",
+    "text": "已报告设置：LightGaussian（数据集：Mip-NeRF 360 Datasets；数据集：Tank and Temple Datasets）。尚不能据此确认LightGaussian相对原始3DGS的“图像质量接近”在所有场景和所有指标中普遍成立。",
+    "evidenceRefs": [
+      "ev_74a1bac54693e4ae4612f54763a4a84db1a1c907cc4706a86d4c8cc69922d6b8"
+    ],
+    "conditions": {},
+    "detailLevel": "fulltext",
+    "tableBindings": [
+      {
+        "evidenceId": "ev_74a1bac54693e4ae4612f54763a4a84db1a1c907cc4706a86d4c8cc69922d6b8",
+        "rowNumber": 10,
+        "groupIndex": 0,
+        "metric": "PSNR",
+        "value": "27.13"
+      },
+      {
+        "evidenceId": "ev_74a1bac54693e4ae4612f54763a4a84db1a1c907cc4706a86d4c8cc69922d6b8",
+        "rowNumber": 10,
+        "groupIndex": 1,
+        "metric": "PSNR",
+        "value": "23.44"
+      }
+    ],
+    "obligationIds": [
+      "ob_1",
+      "ob_2",
+      "ob_3"
+    ],
+    "verification": "semantic_passed"
+  },
+  "actualRepairSystemPolicyConfirmed": true,
+  "fullContentAcceptance": false,
+  "independentCredit": 0,
+  "productionPublish": false,
+  "productionExactlyPreserved": true,
+  "rawReceiptDirectory": "D:\\aiproj\\ai_project\\tmp\\component-draft-system-332-20261029\\receipt",
+  "rawSha256": {
+    "calls.json": "9db72e5a6ca17d31f18283a9039a6110b4bc9df2a2450b9d81ff2427046a3062",
+    "payload.json": "5470bb1709260f884a255886282b437003c179dda2e73a385514d7febeb315c4",
+    "preservation.json": "2de5d7515ec2821ca11bf3fc5bfeec2fb294e65e86cd97df5f28f6a7a1aced57",
+    "progress.json": "2f6c186d962732fd4f8d38e86b4dd6e3a5d697797971d0899d242d39683a3497",
+    "request-1.json": "498f04f485e8a902ce44c0a1cb1ff4e8e4d8eb02760548acac6370a2b5565e86",
+    "request-2.json": "b8b9a5ad753bd121b86491d38eedbbe964f41bdcf45ce19b54e8dc471f28d295",
+    "request-3.json": "baa80388cd05b144d01bbc984299bcbe1c6438603898e3c8ef79f2c961385646",
+    "request-4.json": "543ae88f7481831780d7ac16fce75e116e6917b1ad1bf8be4542ba63e90a5f5d",
+    "request-5.json": "fef06f4a6f286acc7df8c24ab023304b20b9a7d46241680b99a3d0247134e0e0",
+    "request-6.json": "3f55a488acd0817a33b4f424ba73821e309c33d59d8ecb8c8ea53499cb48d559",
+    "request-7.json": "74f91ba5015b9ed84f64583ff9c280812a2375d0eb13b5ad8451cab45972ec95",
+    "result.json": "51c46cfd1fe558d7a30bd11f85305dc79a36a0e63e413b1719727344efb73e12"
+  }
+}

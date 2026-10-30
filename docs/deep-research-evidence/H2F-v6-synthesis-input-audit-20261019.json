@@ -1,0 +1,114 @@
+{
+  "date": "2026-10-19",
+  "case": "H2F-v6",
+  "sourceCommit": "3b69f81e",
+  "actualSynthesisFingerprintMatched": true,
+  "actualSynthesisOptions": {
+    "max_tokens": 8192,
+    "temperature": 0.2,
+    "thinking": {
+      "type": "enabled"
+    },
+    "reasoning_effort": "low",
+    "response_format": {
+      "type": "json_object"
+    }
+  },
+  "inputBytes": 23915,
+  "poolEvidence": 34,
+  "includedEvidence": [
+    {
+      "alias": "E1",
+      "sourceIds": [
+        "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-17"
+      ],
+      "quote": "3DGStream constructs photo-realistic FVV streams from multi-view video streams on-the-fly using a per-frame training paradigm.\nWe initiate the process by training 3DGs[26]at timestep 0.\nFor subsequent timesteps, we employ the previous timestep's 3DGs as an initialization and pass them to a two-stage pipeline.",
+      "contextOmitted": true
+    },
+    {
+      "alias": "E2",
+      "sourceIds": [
+        "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-58"
+      ],
+      "quote": "Table caption: Table 7 . 11.1. Quantitative ResultsWe provide a quantitative comparison of image quality, measured by PSNR, across all scenes in the N3DV dataset Rendering profilling on the Meet Room dataset.",
+      "contextOmitted": true
+    },
+    {
+      "alias": "E3",
+      "sourceIds": [
+        "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-52"
+      ],
+      "quote": "Table 1 . Quantitative comparison on the N3DV dataset. The training time, required storage and PSNR are averaged over the whole 300 frames for each scene.",
+      "contextOmitted": true
+    },
+    {
+      "alias": "E4",
+      "sourceIds": [
+        "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf-v3040e30052bd930d-chunk-15"
+      ],
+      "quote": "The input to our method is a set of images of a monocular dynamic scene, together with the time label and the corresponding camera poses calibrated by SfM[37]which also produces a sparse point cloud.",
+      "contextOmitted": true
+    },
+    {
+      "alias": "E5",
+      "sourceIds": [
+        "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf-v3040e30052bd930d-chunk-44"
+      ],
+      "quote": "Tests were conducted on one NVIDIA RTX 3090.",
+      "contextOmitted": true
+    },
+    {
+      "alias": "E6",
+      "sourceIds": [
+        "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-17"
+      ],
+      "quote": "Firstly (Sec.\n4.1), a Neural Transformation Cache (NTC) is trained to model the transformation for each 3DG.\nOnce the training is finished, we transform the 3DGs and carry the transformed 3DGs to the next timestep.",
+      "contextOmitted": true
+    },
+    {
+      "alias": "E7",
+      "sourceIds": [
+        "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-58"
+      ],
+      "quote": "Table row 1: Step |  | Overhead (ms) FPS [cols=2, rows=1]\nTable row 2: Render w/o NTC [cols=2, rows=1] | 1.75 | 571\nTable row 3: + Query NTC [cols=2, rows=1] | +0.46 | \nTable row 4: + Transformation [cols=2, rows=1] | +0.02 | \nTable row 5: + SH Rotation [cols=2, rows=1] | +1.24 | \nTable row 6: Total |  | 3.47 | 288",
+      "contextOmitted": true
+    },
+    {
+      "alias": "E8",
+      "sourceIds": [
+        "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-34"
+      ],
+      "quote": "Owing to the limitations of Dynamic3DG and ReRF, which necessitate foreground masks and are confined to scenes with fewer objects, and their minute-level per-frame training times, we select StreamRF selected as the representative for online training methods due to its adaptability and training feasibility on the N3DV and MeetRoom datasets.",
+      "contextOmitted": true
+    },
+    {
+      "alias": "E9",
+      "sourceIds": [
+        "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf-v3040e30052bd930d-chunk-15"
+      ],
+      "quote": "To model the dynamic 3D Gaussians that vary over time, we decouple the 3D Gaussians and the deformation field.",
+      "contextOmitted": true
+    },
+    {
+      "alias": "E10",
+      "sourceIds": [
+        "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf-v3040e30052bd930d-chunk-44"
+      ],
+      "quote": "It is observed that when the number of point clouds remains below ∼250k, our method can achieve real-time rendering at rates greater than 30 FPS.",
+      "contextOmitted": true
+    },
+    {
+      "alias": "E11",
+      "sourceIds": [
+        "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-17"
+      ],
+      "quote": "Secondly (Sec.\n4.2), we employ an adaptive 3DG addition strategy to handle emerging objects.\nFor each FVV frame, we render views at the current timestep using both the transformed 3DGs and additional 3DGs, while the latter are not passed to the next timestep.",
+      "contextOmitted": true
+    }
+  ],
+  "trainingInPool": 3,
+  "trainingQuotesActuallySupplied": [],
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "boundary": "Reconstructed exact settled synthesis request. Input inclusion is not semantic acceptance. Full raw failed/partial result remains unchanged."
+}

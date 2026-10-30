@@ -1,0 +1,34 @@
+{
+  "date": "2026-10-14",
+  "caseId": "D3-v25",
+  "runId": "dr_run_077846a76ab351ae8a31c2b635aff273",
+  "promptVersion": "dr-v2.20261014.62",
+  "submissionCount": 1,
+  "automaticResubmissions": 0,
+  "machineResult": {"status": "completed", "outcome": "complete", "successfulModelCalls": 11, "actualTokensFromSettledResponses": 60640, "elapsedSeconds": 152.766, "cost": null},
+  "budget": {"normalTokens": 23983, "reserveTokensUsed": 36657, "totalTokensLimit": 100000, "normalPoolLimit": 50000, "reservePoolLimit": 50000, "totalCallsLimit": 18, "wallClockLimitSeconds": 360},
+  "repair": {
+    "plannedBatches": [["c9", "c10", "design_completion_limits"]],
+    "completedBatches": 1,
+    "stop": null,
+    "pendingRequestRemaining": false,
+    "outOfBatchPromotion": false,
+    "remainingRejection": "c10 remains invalid_design_role; a separate valid prospective limits slot is published.",
+    "boundary": "This run exercised one repair batch. It does not establish real-provider success for a later third batch; that remains covered only by offline capacity/recovery probes."
+  },
+  "primaryAgentReview": {
+    "qualityAccepted": false,
+    "positive": ["All four factorial groups present", "Explicit zero recovery matched across all groups", "Bounded baseline training and concrete data split/seeds", "Nine-scene availability supported by an exact acquired quote", "Correct metric loss directions and conditional/main/interaction formulas", "Non-significance not presented as independence or equivalence", "Prospective choices not presented as executed experimental results"],
+    "remainingIssues": [
+      "The report says intervention order was not controlled. It should prescribe an order or justify why order does not affect the selected operations, rather than leave an operational choice unresolved.",
+      "The pruning operation gives a significance exponent and removal ratio, but does not explain the score computation and ranking protocol sufficiently for a novice to carry out the plan.",
+      "Original SH degree, rendering-resolution rule, baseline initialization/configuration and saved artifacts need clearer operational references.",
+      "Multiple training seeds are declared while uncertainty clusters scenes; seed aggregation and preserving paired groups during resampling should be explicit.",
+      "Two analysis claims repeat the same typed effects, bootstrap configuration and decision rule; this reduces readability."
+    ],
+    "scope": "Primary coding agent review, not a human participant study or external scientific validation. No claim that the proposed experiment has been executed."
+  },
+  "rawAuthoritativeRecord": "tmp/dr-acceptance-receipts/D3-v25.authoritative.json",
+  "nextWork": ["Clarify intervention construction and order without paper-specific success rules", "Strengthen concrete control/step review", "Remove duplicate protocol rendering while preserving source and claim identities", "Continue independent holdout acceptance after development quality stabilizes"],
+  "acceptance": "Machine coverage completed; primary quality review still fails. DR0-DR5 remains incomplete and the PR stays draft."
+}

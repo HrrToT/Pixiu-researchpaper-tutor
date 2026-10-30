@@ -1,0 +1,50 @@
+{
+  "sourcePromptVersion": "dr-v2.20261028.322",
+  "newPromptVersion": "dr-v2.20261029.323",
+  "realFailure": {
+    "providerCalls": 2,
+    "allCallsSucceeded": true,
+    "totalTokens": 23416,
+    "compactionFinishReason": "length",
+    "contentAccepted": false,
+    "preservation": {
+      "before": {
+        "ledgerRows": 7465,
+        "ledgerSha256": "9138a4c5c9e9397c9dce6b78007d07dc1c2f7955dd637bef1d794f0c50b97bbc",
+        "payloadSha256": "a4559eea0b66b511bed93f21a1cba7e6a39068464469aacbcd30fde6895797ad"
+      },
+      "after": {
+        "ledgerRows": 7465,
+        "ledgerSha256": "9138a4c5c9e9397c9dce6b78007d07dc1c2f7955dd637bef1d794f0c50b97bbc",
+        "payloadSha256": "a4559eea0b66b511bed93f21a1cba7e6a39068464469aacbcd30fde6895797ad"
+      },
+      "exactProductionPreservation": true,
+      "providerSubmissions": 2,
+      "productionPublish": false,
+      "fullWorkflowReplay": false,
+      "independentCredit": 0
+    }
+  },
+  "offlineReplay": {
+    "providerCalls": 0,
+    "productionWrites": 0,
+    "generationPromptIdenticalToSavedSource": true,
+    "editableClaimIds": [
+      "c1"
+    ],
+    "scopeIsReadonly": true,
+    "transportOptions": {
+      "max_tokens": 8192,
+      "temperature": 0.0,
+      "thinking": {
+        "type": "disabled"
+      },
+      "reasoning_effort": "none"
+    },
+    "newPromptBytes": 3217,
+    "oldPromptBytes": 6726,
+    "promptSha256": "c96e44cf6bb9a3c2fde4245a9f32ac0d0b1bc2897af28040ef0982d7c8b367d0"
+  },
+  "independentCredit": 0,
+  "rawReceipts": "tmp\\component-scope-presentation-322-20261028\\receipt"
+}

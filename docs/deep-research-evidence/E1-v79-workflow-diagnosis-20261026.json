@@ -1,0 +1,61 @@
+{
+  "case": "E1-v79",
+  "promptVersion": "dr-v2.20261026.290",
+  "metadataContract": 25,
+  "generationErrors": [
+    "timeline.phase.nonfit_budget"
+  ],
+  "repairErrors": [
+    "timeline.phase.nonfit_budget"
+  ],
+  "repairStatus": "invalid_response",
+  "repairInputBytes": 31179,
+  "canonicalMetadataUnchangedByRepair": false,
+  "authoredAllocationModes": [
+    {
+      "componentId": "frame0_3dgs",
+      "mode": "before_first_use"
+    },
+    {
+      "componentId": "camera_split",
+      "mode": "before_first_use"
+    },
+    {
+      "componentId": "stage1_ntc_result",
+      "mode": "before_first_use"
+    },
+    {
+      "componentId": "transformed_3dgs",
+      "mode": "before_first_use"
+    },
+    {
+      "componentId": "stage2_additions",
+      "mode": "before_first_use"
+    }
+  ],
+  "frameObservationSteps": [
+    4,
+    5,
+    6,
+    7
+  ],
+  "feedbackIssues": [
+    {
+      "code": "timeline.phase.nonfit_budget",
+      "path": "/steps/0/budget",
+      "actualPresent": true,
+      "expected": "null for non-fit; never relabel actual fitting to avoid its cap",
+      "expandedStage": "operation",
+      "actual": {
+        "unit": "optimizer_steps",
+        "perExecution": 15000
+      }
+    }
+  ],
+  "initializationStarted": false,
+  "previousLifetimeAndScopeCodesAbsentInThisGeneration": true,
+  "rawPayloadSha256": "4752c90ad63d1cfc70bce03c7db0ae6e7b88c040947e0c1421efcaed6f52cc25",
+  "independentCredit": 0,
+  "scientificApproval": false,
+  "boundary": "Real use of explicit allocation mode, not scientific success. Setup with training budget remains rejected."
+}

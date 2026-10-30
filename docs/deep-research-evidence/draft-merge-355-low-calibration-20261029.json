@@ -1,0 +1,136 @@
+{
+  "sourceCommit": "efb1bf44",
+  "component": "existing-low-editor-profile-calibration",
+  "isProductionDefault": false,
+  "providerCalls": 7,
+  "allCallsSettled": true,
+  "tokens": 32924,
+  "callNodes": [
+    "synthesize_compact",
+    "verify",
+    "verify_answer_coverage",
+    "repair_claims",
+    "verify_repair_advice",
+    "verify_repair",
+    "verify_answer_coverage"
+  ],
+  "editorTokens": 2088,
+  "editorOutputCap": 8192,
+  "mergeGroups": [
+    {
+      "claimId": "c1",
+      "sourceClaimIds": [
+        "c1",
+        "c2"
+      ]
+    },
+    {
+      "claimId": "c3",
+      "sourceClaimIds": [
+        "c3"
+      ]
+    }
+  ],
+  "postMergeCharacters": 208,
+  "finalCharacters": 197,
+  "characterLimit": 300,
+  "accepted": 2,
+  "rejected": 0,
+  "coverageStatus": "checked",
+  "coverageGaps": 0,
+  "postEditVerificationRan": true,
+  "repairRan": true,
+  "reviewBoundary": "Assistant checked factual anchors against exact PDF; not a new human learning trial or independent holdout. Isolated component, not full workflow/publication proof.",
+  "paperSha256": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634",
+  "sourceChecks": [
+    {
+      "page": 3,
+      "anchor": "Gaussian Prune and Recovery",
+      "found": true
+    },
+    {
+      "page": 3,
+      "anchor": "lower bit-width",
+      "found": true
+    },
+    {
+      "page": 15,
+      "anchor": "Global Significance Score",
+      "found": true
+    },
+    {
+      "page": 15,
+      "anchor": "3-degree to 2-degree",
+      "found": true
+    },
+    {
+      "page": 15,
+      "anchor": "Teacher render",
+      "found": true
+    },
+    {
+      "page": 15,
+      "anchor": "Student render",
+      "found": true
+    }
+  ],
+  "finalClaims": [
+    {
+      "claimId": "c1",
+      "kind": "reported",
+      "text": "基于LightGaussian全文，压缩流程三个主要环节：1）高斯剪枝与恢复，通过全局显著性分数剪除贡献小的高斯并微调恢复，减少高斯数量；2）SH蒸馏，用教师模型渲染伪视图训练学生模型，将球谐系数从3阶降至2阶；3）向量量化，以更低比特宽度存储属性压缩模型。",
+      "evidenceRefs": [
+        "ev_dc73e27d98f65ae82681705ad0bcd0f675724d67d8e180eff73563766e7e03bd",
+        "ev_86994145a215296611d1166ee452117faf62798b8375946111afcd3ee39d2e62",
+        "ev_a338259d46d124ea7f2a011130fa7bf4e3da6bc823049df2cf0d15b1a793e240"
+      ]
+    },
+    {
+      "claimId": "c3",
+      "kind": "proposal",
+      "text": "建议阅读顺序：先读方法概述了解三个环节的整体作用，再读算法伪代码理解具体操作，最后读摘要把握论文目标。",
+      "evidenceRefs": [
+        "ev_dc73e27d98f65ae82681705ad0bcd0f675724d67d8e180eff73563766e7e03bd",
+        "ev_86994145a215296611d1166ee452117faf62798b8375946111afcd3ee39d2e62",
+        "ev_a338259d46d124ea7f2a011130fa7bf4e3da6bc823049df2cf0d15b1a793e240"
+      ]
+    }
+  ],
+  "retry": false,
+  "productionPublish": false,
+  "independentCredit": 0,
+  "preservation": {
+    "before": {
+      "ledgerRows": 7682,
+      "ledgerSha256": "ccb948abe79ec858755dbc7df0b93af4853a611bd6d9247a6088ddf63bf9826f",
+      "payloadSha256": "115afaf955e35880b01e8f30243f35cad57aa65ebf5601f700898b5d0d81f002"
+    },
+    "after": {
+      "ledgerRows": 7682,
+      "ledgerSha256": "ccb948abe79ec858755dbc7df0b93af4853a611bd6d9247a6088ddf63bf9826f",
+      "payloadSha256": "115afaf955e35880b01e8f30243f35cad57aa65ebf5601f700898b5d0d81f002"
+    },
+    "exactProductionPreservation": true,
+    "providerSubmissions": 7,
+    "productionPublish": false,
+    "fullWorkflowReplay": false,
+    "independentCredit": 0,
+    "elapsedSeconds": 95.93
+  },
+  "receiptHashes": {
+    "calls.json": "3179b6946d4066217b9c2e602a1f4c449d0c659d3e78aa98c76d2e3d15d14608",
+    "compaction-result.json": "90eae5cd13bc82567ab7d8b88c6b37f984a224897f9fedbd2291db0f9f4a002b",
+    "draft-merge-audit.json": "58b25f0bfef8a8cbd1d27da19a002c9aa677127def7998a93d5a593cc66dd716",
+    "payload.json": "3d804d1edc3b77e9e30d494fe654c638b04f23de40cab196de5691e5c10d97b9",
+    "preservation.json": "8be6638acb7f154a3bd17884b427d2474d99ec812abcc39a91bfc14622da5c99",
+    "progress.json": "2f6c186d962732fd4f8d38e86b4dd6e3a5d697797971d0899d242d39683a3497",
+    "request-1.json": "c6f2bb0b4792d9062037bb02ca9ad1cb7513d7ee216670024aae372b44d512f0",
+    "request-2.json": "a976c5ddb6f5190fbfed1ba7f49c143fb1e414d086da67cfa4231ce33a0cb2ad",
+    "request-3.json": "a2d5a1ef630a9801b7c95f439396cef97dd1950d0a1a87c26c7add9c2e42d261",
+    "request-4.json": "25a797b059cd63f02e11e09ee10555dbf53d260c74b71abd05262378a4f7916a",
+    "request-5.json": "ac74adb18dd3a0ad5aca9ded21ed2c0b009adc65672fcbf7f2fd82cd65729b9c",
+    "request-6.json": "d3a0021152fad812290cad34509362edb2710b4a35eaf6e9e5b13d57cb00abc0",
+    "request-7.json": "411e615df8c5595781043988a9e42c6ff72e379d9b98cc0d955025ced5dfbcbb",
+    "result.json": "48b9786904de26dcfc141ff905823e85541bdced336fddc2dd5c08afab0f8b75"
+  }
+}

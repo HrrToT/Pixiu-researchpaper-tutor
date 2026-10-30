@@ -1,0 +1,23 @@
+{
+  "date": "2026-10-18",
+  "inputCase": "D5-v6",
+  "runId": "dr_run_c1ce6540894a5803b3a86c4b831bb620",
+  "legacyRepairRequestFingerprintMatched": true,
+  "legacyArgsDigest": "2e565ca6c87444111a1493d86b8bd3c698d1f475133519f29c7e73dea1fd92ca",
+  "oldPromptBytes": 23791,
+  "newPromptBytes": 23878,
+  "oldVisibleCandidateCount": 9,
+  "newVisibleCandidateCount": 9,
+  "requiredOriginalRefsPreserved": 3,
+  "sameSourceVersionAnchorsOnly": true,
+  "maxAdditionsUnchanged": 12,
+  "availableConditionQuotesNowIncluded": [
+    "ev_7fa0ef07e954d2d0f4074b9206ed6ae6e332bec7817c80c8e47a4f9d040dfc59",
+    "ev_a3e857e64f13331e936571250b2f45f3043067a769a8e4a229ed74864c97e01e"
+  ],
+  "fullOriginalConditionQuotesPreserved": true,
+  "originalAuditAndSourcesUnchanged": true,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "boundary": "Copied actual repair input preparation. Previously omitted setting evidence is visible within unchanged caps and anchors; no generated answer, factual approval or independent credit."
+}

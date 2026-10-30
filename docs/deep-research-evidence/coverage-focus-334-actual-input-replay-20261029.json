@@ -1,0 +1,14 @@
+{
+  "providerCalls": 0,
+  "allClaimsRequirementsMetadataEvidenceUnchanged": true,
+  "providerOptionsUnchanged": true,
+  "promptBytes": 16952,
+  "maxInputBytes": 24000,
+  "rawOldPartialReplayedWithoutUpgrade": true,
+  "contentAcceptance": false,
+  "mockAdapterInvocations": 1,
+  "oldPartialPreserved": true,
+  "actualVisibleEvidenceRows": 6,
+  "controlledAuditSnapshot": true,
+  "productionExactlyPreserved": true
+}

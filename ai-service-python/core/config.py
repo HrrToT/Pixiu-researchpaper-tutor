@@ -9,6 +9,7 @@ Usage::
 from __future__ import annotations
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic import Field
 
 
 class Settings(BaseSettings):
@@ -28,9 +29,12 @@ class Settings(BaseSettings):
     deepseek_thinking_type: str = "enabled"
     deepseek_reasoning_effort: str = "high"
     deepseek_timeout_seconds: int = 120
+    deep_research_request_timeout_seconds: int = Field(default=180, ge=1, le=360)
+    deep_research_max_pdf_bytes: int = Field(default=32 * 1024 * 1024, ge=1024 * 1024, le=64 * 1024 * 1024)
+    deep_research_http_proxy: str = ""
     pixiu_llm_fixture_path: str = ""
 
-    deepseek_translation_model: str = "deepseek-v4-flash"
+    deepseek_translation_model: str = "deepseek-flash"
     deepseek_translation_temperature: float = 0.1
     deepseek_translation_thinking_type: str | None = None
     deepseek_translation_reasoning_effort: str | None = None
@@ -41,6 +45,8 @@ class Settings(BaseSettings):
     # 改写一变，下游每一个 prompt 都跟着变，LLM 缓存因此完全失效。模型与思考强度
     # 沿用主模型，只改采样温度，分析质量不受影响。
     deepseek_structured_temperature: float = 0.0
+
+    grobid_timeout_seconds: int = Field(default=120, ge=1, le=300)
 
     # ── Logging ────────────────────────────────────────────────────────
     pixiu_log_level: str = "INFO"
@@ -92,6 +98,7 @@ class Settings(BaseSettings):
     # ── Rate limiter (15-3) ────────────────────────────────────────────
     pixiu_rate_limit_enabled: bool = True
     pixiu_rate_limit_global_rpm: int = 60
+    pixiu_rate_limit_status_rpm: int = 240
     pixiu_rate_limit_agent_rpm: int = 10
     pixiu_rate_limit_chat_rpm: int = 30
     pixiu_rate_limit_translate_rpm: int = 10

@@ -1,0 +1,58 @@
+{
+  "date": "2026-10-15",
+  "case": "H5R-v5",
+  "runId": "dr_run_cdb9dfb4b4e056869c93503c52882223",
+  "promptVersion": "dr-v2.20261015.73",
+  "machineStatus": "completed",
+  "machineOutcome": "partial",
+  "contentAccepted": false,
+  "reviewer": "Primary Codex; source/content review, not an independent human study",
+  "eligibility": "Retired development case; no independent holdout credit",
+  "budget": {
+    "maxModelCalls": 18,
+    "maxTokens": 100000,
+    "maxWallClockSeconds": 360,
+    "reserveModelCalls": 5,
+    "reserveTokens": 50000,
+    "maxExternalSearches": 6,
+    "maxFulltextFetches": 6,
+    "modelCalls": 8,
+    "tokens": 60045,
+    "normalTokens": 25650,
+    "elapsedSeconds": 146.879,
+    "externalSearches": 0,
+    "fulltextFetches": 0,
+    "reservedModelCalls": 5,
+    "exhausted": "",
+    "profile": "standard"
+  },
+  "modelCalls": 13,
+  "reportBody": "## 假设\n\n- 待验证假设：假设：在LapisGS v2的hotdog场景中，训练同一个增强层时继续优化旧层透明度（而非冻结旧层透明度）会改变画质指标，但本实验仅做描述性比较，不检验显著性、不声称等价或新颖。\n\n拟议假设与判断范围（尚未验证）\n\n假设陈述：\"在hotdog场景训练同一个增强层时，继续优化旧层透明度与冻结旧层透明度相比，画质指标（PSNR、SSIM、LPIPS）的配对差异不为零。\"\n\n关注效应：\n  - \"psnr_diff\"\n  - \"ssim_diff\"\n  - \"lpips_diff\"\n\n本假设用于探索：报告估计值和可提供的不确定性说明，但不做显著性或等价性判定。 [1](#research-evidence-ev_fd65514c9d534ca9ca30f55eb9eb6295060557c828ea9c60d0308673b7abc3aa)\n  适用条件：context：hotdog场景来自合成Blender数据集；E1仅报告LapisGS相对Freeze方法的百分比差异，未描述旧层透明度是否冻结的机制，因此本假设是拟议实验的探索性陈述，不引用论文机制作为已验证事实。\n\n## 分组表\n\n- 实验建议：两组单因素设计：组0（对照）冻结旧层透明度，组1（处理）继续优化旧层透明度；两组都训练同一个增强层，其他条件相同。\n\n拟议分组（尚未执行）：\n- 因素：\"旧层透明度优化\"\n  - 对照组操作：\"冻结旧层透明度参数，不计算其梯度\"\n    - 参数：未设置\n  - 实验组操作：\"继续优化旧层透明度参数，计算其梯度并更新\"\n    - 参数：未设置\n  适用条件：context：拟议操作，非论文已有设置；论文未明确说明增强层训练时旧层透明度的优化状态。\n\n## 指标\n\n- 实验建议：指标：PSNR（越高越好）、SSIM（越高越好）、LPIPS（越低越好）；每个指标在评估视图上取平均，分别报告，不合并为单一分数。 [1](#research-evidence-ev_fd65514c9d534ca9ca30f55eb9eb6295060557c828ea9c60d0308673b7abc3aa)\n  适用条件：context：E1报告了SSIM和LPIPS的百分比差异，未报告PSNR；PSNR是拟议补充指标。\n\n## 结果解释\n\n- 实验建议：分析：对每个指标计算组1减组0的配对差异（PSNR和SSIM用组1减组0，LPIPS用组0减组1，使正值表示画质改善）；仅报告描述性点差异，不做显著性检验或置信区间。\n\n拟议配置（尚未执行）：\n\n效应定义：\n\n- psnr_diff：PSNR组1 - PSNR组0\n- ssim_diff：SSIM组1 - SSIM组0\n- lpips_diff：LPIPS组0 - LPIPS组1\n\n不确定性：描述性分析，边界为仅报告点差异，不推断总体\n\n判定逻辑：描述性判断，边界为仅报告点差异，不推断总体\n  适用条件：context：拟议分析；单场景无独立重复，不能外推到其他场景或总体。\n\n## 风险\n\n- 实验建议：风险与限制：单场景、单检查点、固定种子，结果不能推广到其他场景或随机种子；未执行，不声称已有结果；若论文实际机制与拟议冻结/优化操作不同，结论不适用于原论文设置。 [1](#research-evidence-ev_fd65514c9d534ca9ca30f55eb9eb6295060557c828ea9c60d0308673b7abc3aa)\n  适用条件：context：E1未描述旧层透明度优化机制，因此无法核对拟议操作是否与论文一致。\n\n<details>\n<summary>还有 8 项未完成</summary>\n\n- 拟议实验可使用哪些现有数据集或论文子集？核对实际场景/样本名称或数量、训练与评估划分；沿用其他论文子集时回查该来源，不以整个数据集替代子集。：最终回答尚未完整回应这一问题\n- LapisGS v2论文中，训练增强层时旧层（基础层）的透明度参数是否继续参与优化？其具体机制和条件是什么？：最终回答尚未完整回应这一问题\n- LapisGS v2论文中hotdog场景的实验设置是什么？包括数据集来源、训练配置和评估指标。：最终回答尚未完整回应这一问题\n- 补齐实验方案：固定条件：尚未形成经过检查的方案内容\n- 补齐实验方案：执行步骤：尚未形成经过检查的方案内容\n- 补齐实验方案：数据划分与重复试验：这项方案要求尚未通过完整性和逻辑核验\n- 补齐实验方案：训练与恢复预算：这项方案要求尚未通过完整性和逻辑核验\n- 补齐实验方案：执行步骤与记录：这项方案要求尚未通过完整性和逻辑核验\n\n</details>\n\n假设与实验建议尚未经过实验验证。\n\n<details>\n<summary>原文依据</summary>\n\n**[1] LapisGS: Layered Progressive 3D Gaussian Splatting for Adaptive Streaming** · 全文片段\n\n> Table caption: Table 6 . Per-scene size and quality difference in percentage of LapisGS on synthetic Blender dataset [18] at different quality levels, compared to the Freeze method.SSIM ↑ ∆ LPIPS ↓ ∆ Size ↓ ∆ SSIM ↑ ∆ LPIPS ↓ ∆ Size ↓ ∆ SSIM ↑ ∆ LPIPS ↓ ∆ Size ↓\n> Table row 1: Scene ∆ Lego 0.21% [cols=2, rows=1] | L 1 -16.43% | -113.78% | 0.65% | L 2 -40.72% | -121.51% | 1.19% | L 3 43.6% | -232.51%\n> Table row 2: Hotdog | 0.25% | -7.87% | -128.50% | 0.31% | -9.39% | -62.31% | 0.18% | 8.85% | -87.35%\n\n</details>",
+  "acceptedRoles": [
+    "hypothesis",
+    "groups",
+    "metrics",
+    "analysis",
+    "limits"
+  ],
+  "findings": [
+    "The acquired evidence contains the authors' explicit prior-parameter/opacity training rule, but only the scene table reaches synthesis under the instruction budget.",
+    "Published conditions incorrectly say the paper did not specify that mechanism, despite the acquired explicit evidence; not accepted as source-bounded reasoning.",
+    "Data audit fails exact capitalization Hotdog/hotdog; no fabricated case-insensitive membership is approved.",
+    "Budget audit cites legitimate baseline and group fields but the baseline field is outside the old per-group audit allowlist.",
+    "Controls omit the other-intervention policy, steps do not become executable, and only hypothesis/groups/metrics/analysis/limits publish.",
+    "No result or novelty claim, but the requested two-group executable design is still incomplete."
+  ],
+  "scoresOutOfFive": {
+    "goal": 2,
+    "evidence": 2,
+    "conditions": 2,
+    "synthesis": 2,
+    "executability": 1,
+    "readability": 1
+  },
+  "rawPayloadSha256": "a0c9a685502e6988f730eac8a99fadf16ba31d5fb1f09260c770ba38426cdbae",
+  "rawLedgerSha256": "83a8ffcba6a057bf5967d29181eea282fb3d7b715289e02c15f93e786a5ad097",
+  "rawArchive": "tmp/dr-acceptance-receipts/H5R-v5.payload.json",
+  "boundary": "Single submitted attempt; no retry. Machine outcome and transport success do not establish answer quality."
+}

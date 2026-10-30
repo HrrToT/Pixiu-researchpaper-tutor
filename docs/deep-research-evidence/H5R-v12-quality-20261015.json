@@ -1,0 +1,68 @@
+{
+  "case": "H5R-v12",
+  "runId": "dr_run_e37cbc96e1da564f91a2460e59acf4c9",
+  "status": "completed",
+  "outcome": "partial",
+  "budget": {
+    "profile": "standard",
+    "modelCalls": 7,
+    "maxModelCalls": 18,
+    "tokens": 35315,
+    "maxTokens": 100000,
+    "externalSearches": 0,
+    "fulltextFetches": 0,
+    "elapsedSeconds": 94.0,
+    "cost": null
+  },
+  "errorCode": "",
+  "raw": "tmp/dr-acceptance-receipts/H5R-v12.payload.json",
+  "calls": "tmp/dr-acceptance-receipts/H5R-v12.calls.json",
+  "independentHoldoutEligible": false,
+  "contentAccepted": false,
+  "sourceCommit": "abacf17",
+  "promptVersion": "dr-v2.20261015.90",
+  "review": {
+    "status": "not_accepted",
+    "finalCoverage": "checked; real final completeness response returned, no coverage capacity stop.",
+    "acceptedRoles": [
+      "hypothesis",
+      "groups",
+      "data",
+      "budget",
+      "steps",
+      "metrics",
+      "analysis",
+      "limits"
+    ],
+    "rejected": [
+      {
+        "claimId": "c_controls",
+        "reason": "incomplete_experiment_protocol",
+        "detail": "otherInterventions: 操作必须是对象"
+      }
+    ],
+    "repair": {
+      "status": "skipped_budget",
+      "limit": {
+        "kind": "repairEvidenceBytes",
+        "limit": 24000,
+        "used": 25900
+      }
+    },
+    "humanFindings": [
+      "Fixed controls remain unpublished because otherInterventions is not an operation object.",
+      "Steps still fit the baseline before determining held-out views and do not concretely create/pair the new enhancement state.",
+      "The final audit still asks for unrequested author benchmark settings rather than accepting the proposed experimental scope.",
+      "The statement that the paper provides no view counts/split overstates what the acquired passages establish."
+    ],
+    "scores": {
+      "目标回应": 3,
+      "证据支持": 3,
+      "条件完整": 2,
+      "综合价值": 3,
+      "可执行性": 2,
+      "可读性": 3
+    },
+    "boundary": "No scientific/content acceptance and no independent holdout credit. A correct hard rejection and a completed audit are functional evidence only."
+  }
+}

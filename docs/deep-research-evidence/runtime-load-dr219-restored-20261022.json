@@ -1,0 +1,52 @@
+{
+  "date": "2026-10-22",
+  "sourceCommit": "3f2e73b9",
+  "promptVersion": "dr-v2.20261022.219",
+  "loadMode": "start_existing_runtime_after_Docker_recovery",
+  "health": {
+    "status": "ok",
+    "checks": {
+      "grobid": {
+        "status": "ok",
+        "message": "GROBID is reachable."
+      },
+      "rag": {
+        "status": "ok",
+        "message": "RAG backend is ready."
+      }
+    },
+    "uptime_seconds": 199.5
+  },
+  "beforeCalls": 5080,
+  "afterCalls": 5080,
+  "fullLedgerHashPreserved": true,
+  "allOldRunPayloadHashesPreserved": true,
+  "oldTaskGroupsPreserved": 4,
+  "taskFieldsChecked": [
+    "notes",
+    "messages",
+    "artifacts",
+    "paperIds",
+    "focusedPaperId",
+    "title"
+  ],
+  "active": 0,
+  "pausedUnknowns": 11,
+  "providerCalls": 0,
+  "runtimeSourceFileHashesMatch": {
+    "facade.py": "f3c471f1942d5cff2c17aca0c70514b11444feafc690c80b353236b144c9b420",
+    "graph.py": "87e193f08afedcda1f94b369c6429046a225831e23c8a9b6f24865611dbce41e",
+    "experiment_generation_envelope.py": "9b865dd7e2292732c9fcbdc34242796cfee3238ef3e2a6c40cf73064f66ad55f",
+    "experiment_outline_encoding.py": "eccfa149691b9934d5667a20c011d77511389922f3fbd0446b12f301780c501b",
+    "synthesis_evidence.py": "6479b6e29a06f5905e1b9b3f01e08dc39859c592779c7eb64ab94b9e0ad60262"
+  },
+  "recovery": {
+    "oldFailure": "Docker runtime socket reparse files inaccessible; inference and secrets endpoints",
+    "runtimeDirectoriesBackedUpTogether": true,
+    "zeroByteEndpointsBackedUp": 3,
+    "dataVolumesDeletedOrRecreated": false,
+    "researchStoreCopiedReadOnlyBeforeStart": true,
+    "javaH2BackedUpBeforeStart": true
+  },
+  "boundary": "Existing data/containers restored; no model validation during startup. New model/content/independent acceptance still required."
+}

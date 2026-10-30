@@ -1,0 +1,43 @@
+{
+  "caseId": "S1G-v1",
+  "payloadSha256": "469765597c7c1989e453581311433fbb8e5c50261ec450732efcd2b3323c02b6",
+  "oldPrecheck": {
+    "candidates": [],
+    "rejected": [
+      {
+        "claimId": "c1",
+        "reason": "numeric_mismatch",
+        "missingReportedNumbers": [
+          "3e0"
+        ],
+        "detail": "本条引用原文未直接报告这些数值：3。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。"
+      }
+    ]
+  },
+  "newPrecheck": {
+    "candidates": [
+      {
+        "claimId": "c1",
+        "text": "LightGaussian压缩流程三个主要环节分别改变：高斯剪枝与恢复减少高斯数量N；SH蒸馏压缩球谐系数维度F；向量量化降低属性精度并微调。",
+        "kind": "reported",
+        "evidenceRefs": [
+          "ev_0c96f872441e619c0d5950e7fb48333436d5b6b4e5be0f603e282dbd81b5200b",
+          "ev_c702d9140425f4efe9cf89c40e0b5a9ca61817b0fc683cadbf5e89814d066346"
+        ],
+        "conditions": {},
+        "obligationIds": [
+          "ob_1"
+        ],
+        "detailLevel": "fulltext",
+        "tableBindings": []
+      }
+    ],
+    "rejected": []
+  },
+  "semanticCheckerReached": true,
+  "unresolvedStillRejected": true,
+  "originalClaimsAndEvidenceUnchanged": true,
+  "providerCalls": 0,
+  "scientificApproval": false,
+  "independentCredit": 0
+}

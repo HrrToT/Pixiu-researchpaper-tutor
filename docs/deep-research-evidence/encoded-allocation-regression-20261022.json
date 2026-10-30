@@ -1,0 +1,23 @@
+{
+  "date": "2026-10-22",
+  "sourceCommit": "4dcb2c7f",
+  "promptVersion": "dr-v2.20261022.218",
+  "outlineEncodingContractVersion": 2,
+  "fullOffline": {
+    "passed": 3738,
+    "warnings": 1,
+    "seconds": 169.37,
+    "files": 210,
+    "log": "tmp/pytest-dr218-full.log",
+    "sha256": "ebd6bbf6c979b4a0c358ecdc244408c8e7dc9aa6a53842cea405516c45cf5b27"
+  },
+  "focusedPassed": 78,
+  "focusedSeconds": 3.59,
+  "focusedOverlap": true,
+  "newTests": 21,
+  "legacyActualFingerprintsMatched": 60,
+  "offlineProviderCalls": 0,
+  "independentCredit": 0,
+  "deployedSeparately": false,
+  "boundary": "Encoded-size fitting implemented and offline tested. Still uses the planning placeholder before the actual plan. No new real model/content/independent acceptance. Followed by actual-plan reallocation work under a new contract."
+}

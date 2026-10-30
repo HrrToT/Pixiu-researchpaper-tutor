@@ -1,0 +1,29 @@
+{
+  "date": "2026-10-15",
+  "incident": "Docker Desktop and the local Java/Vite processes had exited. Container regression observation handle disappeared; interrupted tests were not counted as passed.",
+  "dockerRootCause": "Logs identified inaccessible zero-byte runtime reparse endpoints for Inference and Secrets Engine; a failed startup recreated an earlier endpoint, requiring the confirmed runtime endpoints to be backed up together before starting.",
+  "endpointBackups": [
+    "C:/Users/Lenovo/AppData/Local/Docker/run/dockerInference.codex-backup-20261015",
+    "C:/Users/Lenovo/AppData/Local/Docker/run/dockerInference.codex-backup-20261015b",
+    "C:/Users/Lenovo/AppData/Local/docker-secrets-engine/engine.sock.codex-backup-20261015",
+    "C:/Users/Lenovo/AppData/Local/Docker/run/userAnalyticsOtlpHttp.sock.codex-backup-20261015"
+  ],
+  "preserved": ["Images", "Volumes", "Research SQLite", "Business H2", "Chroma index", "Existing Docker settings"],
+  "settingsCheck": {"EnableDockerAI": false, "EnableInference": false, "modified": false},
+  "containerCorrection": "Docker auto-started legacy ai_service_python on port8000. Its configured v2 database did not exist, and no active research was found before stopping it. Restored grobid_service and academic-dr-runtime with the original academic_dr_runtime_20261012 volume. Other projects were not changed.",
+  "verified": {
+    "dockerEngine": "29.1.3",
+    "researchActiveBeforeNewTest": 0,
+    "researchPausedPreserved": 4,
+    "D8v2Preserved": "completed/partial",
+    "javaPid": 8360,
+    "javaPort": 8081,
+    "javaDatabase": "backend-java/target/stage0-data/academic_db.mv.db",
+    "frontendPid": 33780,
+    "frontendPort": 5173,
+    "pythonHealth": "ok",
+    "ragHealth": "ok",
+    "grobidHealth": "ok"
+  },
+  "newTestSubmission": "The first D8-v3 command failed at Java GET before workspace writes or receipt creation. After services recovered, one model-capable submission was confirmed with run dr_run_7c32c52acf4a5091b893d9bc99826ada. Existing paid cases were not resent."
+}

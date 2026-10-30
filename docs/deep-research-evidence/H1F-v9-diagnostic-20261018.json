@@ -1,0 +1,134 @@
+{
+  "date": "2026-10-18",
+  "case": "H1F-v9",
+  "runId": "dr_run_36ab877f423051079ba3a107d912f6a1",
+  "sourceCommit": "77e16747",
+  "promptVersion": "dr-v2.20261018.146",
+  "evaluationUse": "retired-case diagnostic",
+  "independent": false,
+  "status": "completed",
+  "outcome": "partial",
+  "contentAccepted": false,
+  "modelCalls": 14,
+  "settledTokens": 44759,
+  "elapsedSeconds": 84.646,
+  "cost": null,
+  "actualSemanticBatches": [
+    {
+      "node": "verify",
+      "claimIds": [
+        "c2"
+      ]
+    },
+    {
+      "node": "verify",
+      "claimIds": [
+        "c3"
+      ]
+    },
+    {
+      "node": "verify_repair",
+      "claimIds": [
+        "c2"
+      ]
+    }
+  ],
+  "initialVerification": {
+    "accepted": [
+      {
+        "claimId": "c3",
+        "text": "遇到新出现的物体需要添加高斯，因为只靠移动和旋转无法表示第一帧里没有的物体（如火焰、倒出的液体），必须新增高斯来建模。",
+        "kind": "reported",
+        "evidenceRefs": [
+          "ev_e7de61ef0fd681ab0977e7b9fe49a474f093c8e746ee3127ae06cf46e827401d",
+          "ev_e26356dfb0f9a52b4e8e6490ad8668c7768c577629c80adc7d8a0d09449be010"
+        ],
+        "conditions": {},
+        "obligationIds": [
+          "ob_3"
+        ],
+        "detailLevel": "fulltext",
+        "tableBindings": [],
+        "verification": "semantic_passed"
+      }
+    ],
+    "rejected": [
+      {
+        "claimId": "c1",
+        "reason": "numeric_mismatch",
+        "missingReportedNumbers": [
+          "4e0"
+        ],
+        "detail": "本条引用原文未直接报告这些数值：4。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。"
+      },
+      {
+        "claimId": "c2",
+        "reason": "semantic_unresolved",
+        "detail": "断言的主语是“上一帧高斯/NTC输出”，证据的主语是“上一帧3DGs/NTC变换后的3DGs”。证据支持把上一帧3DGs作为初始化、NTC建模变换、变换后3DGs用于当前帧渲染并传给下一帧；但证据只说“transformations/transformed by the NTC”，没有明确NTC输出的是“移动和旋转后的高斯”，因此该具体变化类型未被直接支持。"
+      }
+    ]
+  },
+  "repairChecks": {
+    "accepted": [
+      {
+        "claimId": "c2",
+        "kind": "reported",
+        "text": "利用前一帧表示时，把上一帧的高斯作为初始状态，NTC学习这些高斯的变换；变换后的高斯用于当前帧渲染，并作为下一帧的初始化。",
+        "evidenceRefs": [
+          "ev_f51816e595f8373d3a4ec3dd73ea8147f5eb4a359e0f6b53a04cb89e24cfb73b",
+          "ev_bdb024b856972aab854c483acb7dfa600c4918cc401ccfcebcb14da2200b2d38"
+        ],
+        "conditions": {},
+        "detailLevel": "fulltext",
+        "obligationIds": [
+          "ob_2"
+        ],
+        "verification": "semantic_passed"
+      }
+    ],
+    "rejected": [
+      {
+        "claimId": "c1",
+        "reason": "numeric_mismatch",
+        "missingReportedNumbers": [
+          "1e0",
+          "4e0"
+        ],
+        "detail": "本条引用原文未直接报告这些数值：1、4。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。"
+      }
+    ]
+  },
+  "scores": {
+    "goalResponse": 3,
+    "evidenceSupport": 4,
+    "conditions": 4,
+    "synthesisValue": 3,
+    "executability": null,
+    "readability": 4
+  },
+  "findings": [
+    "Source-grounded redraft repairs the previous-frame relationship: original initialization and transformed-state carry-over now have their own correct citations and pass independent checking.",
+    "The output point still derives four rotation dimensions and is rejected; the phrase 一个7维向量 additionally triggers a false quantity-one veto. No unsupported number is published.",
+    "Two useful points survive, but the required output-definition point and exact three-point result remain missing. Not full content acceptance."
+  ],
+  "report": "## 判断\n\n- 利用前一帧表示时，把上一帧的高斯作为初始状态，NTC学习这些高斯的变换；变换后的高斯用于当前帧渲染，并作为下一帧的初始化。 [3](#research-evidence-ev_f51816e595f8373d3a4ec3dd73ea8147f5eb4a359e0f6b53a04cb89e24cfb73b) [4](#research-evidence-ev_bdb024b856972aab854c483acb7dfa600c4918cc401ccfcebcb14da2200b2d38)\n- 遇到新出现的物体需要添加高斯，因为只靠移动和旋转无法表示第一帧里没有的物体（如火焰、倒出的液体），必须新增高斯来建模。 [1](#research-evidence-ev_e7de61ef0fd681ab0977e7b9fe49a474f093c8e746ee3127ae06cf46e827401d) [2](#research-evidence-ev_e26356dfb0f9a52b4e8e6490ad8668c7768c577629c80adc7d8a0d09449be010)\n\n<details>\n<summary>还有 1 项未完成</summary>\n\n- NTC预测高斯的什么变化？：最终回答尚未完整回应这一问题\n\n</details>\n\n论文事实已按所列原文核对。\n\n<details>\n<summary>原文依据</summary>\n\n**[1] 3DGStream: On-the-Fly Training of 3D Gaussians for Efficient Streaming of Photo-Realistic Free-Viewpoint Videos** · 第 5 页 · 全文片段\n\n> However, this approach falters when faced with objects not present in the initial frame, such as transient objects like flames or smoke, and new persistent objects like the liquid poured out of a bottle.\n\n**[2] 3DGStream: On-the-Fly Training of 3D Gaussians for Efficient Streaming of Photo-Realistic Free-Viewpoint Videos** · 全文片段\n\n> Since 3DG is an unstructured explicit representation, it's essential to add new 3DGs to model these emerging objects.\n\n**[3] 3DGStream: On-the-Fly Training of 3D Gaussians for Efficient Streaming of Photo-Realistic Free-Viewpoint Videos** · 全文片段\n\n> Then, for each timestep i, we use the 3DGs of previous timestep i − 1 as initialization and pass it to a two-stage pipeline.(1)In Stage 1, we train a Neural Transformation Cache (NTC) to model the transformations of 3DGs.\n\n**[4] 3DGStream: On-the-Fly Training of 3D Gaussians for Efficient Streaming of Photo-Realistic Free-Viewpoint Videos** · 第 2 页 · 全文片段\n\n> After the two-stage pipeline concludes, we use both the 3DGs transformed by the NTC and the additional 3DGs for rendering at the current timestep i, with only the former carrying over for initialization of the subsequent timestep.\n\n</details>",
+  "rawFiles": [
+    {
+      "path": "tmp/dr-acceptance-receipts/H1F-v9.json",
+      "sha256": "d0eed8c01a43f4cfab34653521020dc250d78fb6934befb44614f7ce06983cdb"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/H1F-v9.payload.json",
+      "sha256": "7658846a7cd967a143f69d595ba804168d2fc452288ec414dfb219d79c4c0b62"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/H1F-v9.calls.json",
+      "sha256": "0fc5b47d0f83bd040c383bf08bfde25ee69e031c127f9faa09bdbadecac114af"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/H1F-v9.result.json",
+      "sha256": "beefa291136124142d2d8205ca1b3214d64f6464d19e247ad687924be8a6f463"
+    }
+  ],
+  "boundary": "Submitted once, unchanged question/materials/budget, all rows settled. No historical unknown retry, first-result overwrite or independent credit. Safe partial result is not goal completion."
+}

@@ -1,0 +1,42 @@
+{
+  "case": "E1-v44",
+  "sourceCommit": "eb7a0fb2",
+  "inputBytes": 27419,
+  "valueBytes": 4821,
+  "errors": [
+    "workflow.states.operation_rule"
+  ],
+  "stateIssues": [
+    {
+      "path": "/workflow/componentInitializations/1/stateDefinitions/2/initializer/rule",
+      "code": "states.operation_rule"
+    },
+    {
+      "path": "/workflow/componentInitializations/1/stateDefinitions/4/initializer/rule",
+      "code": "states.operation_rule"
+    }
+  ],
+  "rawResponsePreserved": true,
+  "publicSynthesisReached": false,
+  "scientificConcerns": [
+    {
+      "path": "/workflow/baselineInitialization/inputs/0/selector",
+      "finding": "Frames 1..30 are selected as input while creation claims a frame-0 baseline; frame-0 training input is not specified."
+    },
+    {
+      "path": "/workflow/baselineInitialization/stateDefinitions",
+      "finding": "train_3dgs_frame0 is used as an initializer for each state, leaving initialization before baseline fitting circular and unexplained."
+    },
+    {
+      "path": "/workflow/baselineInitialization/stateDefinitions/0/shape/0",
+      "finding": "Axis 0 of selected training views is used as Gaussian count without defining a point-state input."
+    },
+    {
+      "path": "/workflow/componentInitializations/1",
+      "finding": "Stage-2 selected states, gradient availability, and selected count versus complete baseline count need source and semantic validation."
+    }
+  ],
+  "nextAction": "Address initial-state versus fitting semantics and actual selected-input definitions; do not add arbitrary parameters or relax validators solely to pass.",
+  "providerCallsAddedByDiagnosis": 0,
+  "independentCredit": 0
+}

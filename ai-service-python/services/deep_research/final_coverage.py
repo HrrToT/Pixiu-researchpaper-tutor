@@ -1,0 +1,334 @@
+"""A bounded final-answer audit, distinct from retrieval and factual verification."""
+import json
+
+from services.deep_research.contracts import BudgetExhaustedError
+
+
+def coverage_output_tokens(plan, claims):
+    """Allow a bounded structured audit to grow with the frozen answer contract.
+
+    This is capacity planning, never a completion verdict. Small audits keep
+    their old allowance; long ones do not share a fixed 3500-token response.
+    """
+    obligations = [o for p in plan for o in p.get('obligations', [])]
+    criteria = sum(len(o.get('completionCriteria', [])) for o in obligations)
+    return min(8192, max(3500, 512 + 450 * len(obligations) + 240 * criteria + 120 * len(claims)))
+
+
+def coverage_prompt_byte_limit(budget, output_tokens=3500):
+    """Fit to currently available finalization capacity; admission stays atomic."""
+    if not budget or 'maxTokens' not in budget:
+        return 24000
+    from services.deep_research.finalization_pool import prepare_finalization_budget, released_reserve_tokens
+    budget = prepare_finalization_budget(budget, {'modelCalls': 1}, True, 'verify_answer_coverage')
+    keys = ('maxTokens', 'tokens', 'reserveTokens', 'normalTokens',
+            'maxModelCalls', 'modelCalls', 'reserveModelCalls', 'reservedModelCalls')
+    if any(type(budget.get(k, 0)) is not int or budget.get(k, 0) < 0 for k in keys):
+        return 0
+    maximum, used, reserve, normal, calls, ordinary, reserved, final = [budget.get(k, 0) for k in keys]
+    if reserve > maximum or reserved > calls or ordinary + final >= calls:
+        return 0
+    remaining = maximum - used
+    if final >= reserved:
+        if ordinary >= calls - reserved:
+            return 0
+        remaining = min(remaining, maximum - reserve - normal + released_reserve_tokens(budget))
+    return max(0, min(24000, remaining - output_tokens - 1024))
+
+
+def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, *, budget=None,literal_dimensions=False,diagnostics=False,request_contract=False,claim_check=False,task_sources=False,request_semantics=0,binding_catalog=False,scoped_catalog=False,identification_locators=False,coherence=False):
+    if type(coherence) is not bool:raise ValueError('Invalid answer coherence policy')
+    if type(binding_catalog) is not bool:raise ValueError('Invalid binding catalog policy')
+    if type(scoped_catalog) is not bool or scoped_catalog and not (binding_catalog and request_contract):raise ValueError('Invalid scoped catalog policy')
+    if type(identification_locators) is not bool:raise ValueError('Invalid identification locator policy')
+    if type(request_semantics) is not int or request_semantics not in (0,2):raise ValueError('Invalid coverage semantics policy')
+    if type(task_sources) is not bool:raise ValueError('Invalid task source disclosure policy')
+    from services.deep_research.answer_coverage import answer_coverage_gaps
+    from services.deep_research.selection import balanced_sample, surrounding_context
+
+    # A plan can itself omit part of the request. Audit the original question as
+    # well as each planned obligation, without changing the stored research plan.
+    from services.deep_research.obligation_purpose import normalize_obligation_purposes, nonblocking_research_obligations
+    audit_plan = normalize_obligation_purposes(plan, question)
+    from services.deep_research.display_metadata import answer_display_metadata, display_metadata_digest
+    from services.deep_research.access_disclosure import access_requirements
+    display_metadata = answer_display_metadata(claims, evidence, **({"task_sources":True} if task_sources else {}), **({"request_semantics":2} if request_semantics==2 else {}),identification_locators=identification_locators)
+    if binding_catalog:display_metadata={**display_metadata,'answerBindingCatalogVersion':1}
+    identity = None
+    if plan and question:
+        known = {o['obligationId'] for p in plan for o in p.get('obligations', [])}
+        identity = 'answer_scope'
+        while identity in known:
+            identity += '_'
+        audit_plan.append({'obligations': [{'obligationId': identity, 'question': question}]})
+    verdicts = []
+    status = 'not_checked'
+    invalid_aspects = []
+    criterion_gaps = {}
+    invalid_criteria = []
+    nonblocking = []
+    budget_limit = None
+    diagnostic_errors, gap_details = [], {}
+    coherence_result=None
+    if claims and plan and invoke:
+        cited = {ref for claim in claims for ref in claim.get('evidenceRefs', [])}
+        selected = balanced_sample(sorted(evidence, key=lambda e: e.get('evidenceId') not in cited),
+            lambda e: (e.get('sourceWorkId'), tuple(e.get('obligationIds', []))), 20)
+        if diagnostics:
+            selected = ([e for e in evidence if e.get('evidenceId') in cited]
+                        + [e for e in selected if e.get('evidenceId') not in cited])
+        from uuid import uuid4
+        from services.deep_research.prompt_budget import fit_evidence_prompt
+        from services.deep_research.verification_aliases import (
+            encode_verification_inputs, restore_visible_evidence, restore_coverage_evidence)
+        # The audit can inspect uncited passages for omitted conditions; these
+        # aliases shorten identities without changing any claim's citations.
+        wire_claims, selected, reverse_aliases = encode_verification_inputs(
+            [*claims, {'evidenceRefs': [e['evidenceId'] for e in selected]}], selected)
+        wire_claims = wire_claims[:-1]
+        evidence_marker = uuid4().hex
+        rows = [{
+            'evidenceId': e['evidenceId'], 'quote': e.get('quote', ''),
+            'sourceContext': surrounding_context(e), 'source': e.get('sourceWorkId'),
+            'conditions': e.get('conditions', {}),
+            'accessLevel': e.get('accessLevel'),
+        } for e in selected]
+        from services.deep_research.execution_materialization import verification_claim_view
+        # Remove only the exact generated suffix, retaining original prose,
+        # conditions and all typed values. The audit still sees the full answer;
+        # duplicated display text is reproducible from executionSpec.
+        wire_claims = [verification_claim_view(c) for c in wire_claims]
+        wire_obligations = []
+        for item in audit_plan:
+            for obligation in item.get('obligations', []):
+                # Queries guide acquisition, not final-answer requirements.
+                # Exact repeated user text is referenced, never abbreviated.
+                row = {key: value for key, value in obligation.items() if key != 'searchQuery'}
+                for field in ('question', 'requestExcerpt'):
+                    if row.get(field) == question:
+                        row[field + 'Ref'] = 'userQuestion'
+                        del row[field]
+                wire_obligations.append(row)
+        from services.deep_research.coverage_policy import FINAL_COVERAGE_POLICY
+        prompt = f'''Audit whether the FINAL ACCEPTED ANSWER fully answers the user's question.
+Question: {question}
+Research and answer obligations (including the original question): {json.dumps(wire_obligations, ensure_ascii=False, separators=(',', ':'))}
+Accepted final claims: {json.dumps(wire_claims, ensure_ascii=False, sort_keys=True, separators=(',', ':'))}
+Server-rendered answer metadata: {json.dumps(display_metadata, ensure_ascii=False, separators=(',', ':'))}
+Available evidence for detecting omitted conditions: {evidence_marker}
+
+{FINAL_COVERAGE_POLICY}
+In input obligations, questionRef/requestExcerptRef="userQuestion" resolves to the
+EXACT full Question above. Return literal excerpts, never the reference label.
+Return only a JSON array, exactly one entry for each of these obligationIds,
+including the original-question scope: {json.dumps([o['obligationId'] for p in audit_plan for o in p.get('obligations', [])])}'''
+        criterion_shape = {o['obligationId']: [
+            {'criterionId': c['criterionId'], 'responseType': c['responseType'],
+             'status': 'covered|partial|missing', 'bindings': []} for c in o['completionCriteria']]
+            for item in audit_plan for o in item.get('obligations', []) if o.get('completionCriteria')}
+        if criterion_shape:
+            prompt += '\nReturn BOTH aspects and criteria. Copy the following fixed criterion identities into each corresponding obligation object. '
+            prompt += 'Replace each status with one actual verdict and supply only valid answer bindings; do not omit or rename criterionIds. '
+            prompt += 'Obligations absent from this map do not require criteria.\nRequired criterion fields by obligation: '
+            prompt += json.dumps(criterion_shape, ensure_ascii=False, separators=(',', ':'))
+        if literal_dimensions:
+            from services.deep_research.request_dimensions import FINAL_DIMENSION_POLICY
+            prompt+='\n'+FINAL_DIMENSION_POLICY
+        if diagnostics:
+            from services.deep_research.coverage_diagnostics import GUIDANCE
+            prompt += '\n' + GUIDANCE
+        if request_contract:
+            from services.deep_research.request_coverage import contract, prompt as request_prompt
+            fixed_requirements=contract(audit_plan,question,whole_question_id=identity,
+                literal_request_dimensions=type(request_contract) is int and request_contract in (2,3))
+            prompt=request_prompt(question,fixed_requirements,wire_claims,display_metadata,evidence_marker,FINAL_COVERAGE_POLICY)
+            if literal_dimensions:
+                prompt+='\n'+FINAL_DIMENSION_POLICY
+        if claim_check:
+            from services.deep_research.claim_check import AUDIT_GUIDANCE
+            prompt+='\n'+AUDIT_GUIDANCE
+        if type(request_contract) is int and request_contract==3:
+            from services.deep_research.request_coverage import focus_answer
+            prompt=focus_answer(prompt,question,fixed_requirements,wire_claims,display_metadata)
+        if task_sources:
+            from services.deep_research.access_disclosure import COVERAGE_GUIDANCE
+            prompt=prompt.replace('Overall/criterion/scientific\nbindings still require text/conditions.','Scientific or mixed bindings still require text/conditions.')
+            prompt+='\n'+COVERAGE_GUIDANCE
+        if request_semantics==2:
+            from services.deep_research.joint_answer_bindings import GUIDANCE
+            prompt+='\n'+GUIDANCE
+        if binding_catalog:
+            from services.deep_research.coverage_binding_catalog import build,GUIDANCE as binding_guidance
+            if scoped_catalog:
+                from services.deep_research.coverage_binding_catalog import build_scoped,SCOPED_GUIDANCE
+                permissions=access_requirements(audit_plan,joint=request_semantics==2,citation_access=True) if task_sources else {}
+                prompt+='\n'+binding_guidance+'\n'+SCOPED_GUIDANCE+'\nAvailable answer bindings by check: '+json.dumps(build_scoped(claims,display_metadata,fixed_requirements,permissions),ensure_ascii=False,separators=(',',':'))
+            else:
+                prompt+='\n'+binding_guidance+'\nAvailable answer bindings: '+json.dumps(build(claims,display_metadata),ensure_ascii=False,separators=(',',':'))
+        if coherence:
+            from services.deep_research.answer_coherence import GUIDANCE
+            prompt+='\n'+GUIDANCE
+        template = prompt
+        try:
+            output_tokens = coverage_output_tokens(audit_plan, claims)
+            limit = coverage_prompt_byte_limit(budget, output_tokens)
+            render = lambda selected_rows: template.replace(evidence_marker, json.dumps(selected_rows, ensure_ascii=False, separators=(',', ':')), 1)
+            fixed_bytes = len(render([]).encode('utf-8'))
+            if limit <= 0 or fixed_bytes > limit:
+                raise BudgetExhaustedError('coveragePromptBytes', limit, fixed_bytes)
+            if diagnostics:
+                from services.deep_research.coverage_diagnostics import fit_complete_context
+                prompt, rows = fit_complete_context(rows,render,limit,
+                    {ref for c in wire_claims for ref in c.get('evidenceRefs',[])})
+            else:
+                prompt, rows = fit_evidence_prompt(rows, render, max_bytes=limit)
+            result = invoke(run_id, 'verify_answer_coverage', prompt,
+                            {'max_tokens': output_tokens, 'temperature': 0.0}, use_reserve=True)
+            content = result.get('content', '') if isinstance(result, dict) else getattr(result, 'content', '')
+            finish = result.get('finishReason', result.get('finish_reason')) if isinstance(result, dict) else getattr(result, 'finish_reason', None)
+            try:
+                verdicts = parse(content) if finish != 'length' else None
+                if coherence:
+                    from services.deep_research.answer_coherence import extract
+                    verdicts,coherence_result=extract(verdicts,question,claims)
+                if request_contract:
+                    from services.deep_research.request_coverage import normalize
+                    verdicts=normalize(verdicts,fixed_requirements)
+            except (ValueError, TypeError):
+                verdicts = None
+            status = 'checked' if isinstance(verdicts, list) else 'invalid_response'
+            if isinstance(verdicts, list):
+                verdicts = restore_coverage_evidence(verdicts, reverse_aliases)
+                rows = restore_visible_evidence(rows, reverse_aliases)
+                from services.deep_research.coverage_references import resolve_coverage_references
+                verdicts = resolve_coverage_references(verdicts, claims, rows, display_metadata=display_metadata, **({"access_requirements":access_requirements(audit_plan, **({"joint":True} if request_semantics==2 else {}), **({"citation_access":True} if binding_catalog else {}))} if task_sources else {}))
+                from services.deep_research.completion_criteria import completion_criteria_gaps, invalid_criterion_reviews
+                invalid_criteria = invalid_criterion_reviews(audit_plan, claims, verdicts, **({"display_metadata":display_metadata} if task_sources else {}))
+                if invalid_criteria:
+                    status = 'invalid_response'
+                from services.deep_research.experiment_deliverable import enforce_experiment_coverage
+                verdicts = enforce_experiment_coverage(audit_plan, question, claims, verdicts,
+                                                       whole_question_id=identity)
+                criterion_gaps = completion_criteria_gaps(audit_plan, claims, verdicts, **({"display_metadata":display_metadata} if task_sources else {}))
+                verdicts = [{**v, 'status': 'partial'} if isinstance(v, dict)
+                    and v.get('obligationId') in criterion_gaps else v for v in verdicts]
+                # Explicitly reported missing subrequirements override an
+                # inconsistent overall "covered", and remain repairable gaps.
+                verdicts = [{**v, 'status': 'partial'} if isinstance(v, dict)
+                    and v.get('status') == 'covered' and isinstance(v.get('aspects'), list)
+                    and any(isinstance(a, dict) and a.get('status') in {'partial', 'missing'}
+                            for a in v['aspects']) else v for v in verdicts]
+                from services.deep_research.coverage_aspects import invalid_coverage_aspects
+                invalid_aspects = invalid_coverage_aspects(verdicts, claims, rows,
+                    [question, *[o.get('question', '') for p in audit_plan for o in p.get('obligations', [])]],
+                    request_only_obligations=([o['obligationId'] for o in fixed_requirements]
+                        if request_contract else [identity] if identity else []), display_metadata=display_metadata)
+                if invalid_aspects:
+                    verdicts = [{**v, 'status': 'partial'} if isinstance(v, dict)
+                        and v.get('obligationId') in invalid_aspects else v for v in verdicts]
+                    status = 'invalid_response'
+                if diagnostics:
+                    from services.deep_research.coverage_diagnostics import validate
+                    diagnostic_errors, gap_details = validate(verdicts,
+                        [o['obligationId'] for p in audit_plan for o in p.get('obligations',[])])
+                    if diagnostic_errors: status = 'invalid_response'
+        except ValueError as exc:
+            if not diagnostics or str(exc) != 'coverage_required_evidence_missing_or_ambiguous': raise
+            status = 'invalid_response'
+            diagnostic_errors = [str(exc)]
+        except BudgetExhaustedError as exc:
+            # Publish only supported text with an explicit coverage gap. Never
+            # promote budget exhaustion to a complete answer or add a retry.
+            status = 'budget_exhausted'
+            budget_limit = exc.details
+    if status == 'checked' and identity:
+        nonblocking = nonblocking_research_obligations(plan, question, claims, verdicts,
+                                                     identity, invalid_aspects)
+    excluded = {row['obligationId'] for row in nonblocking}
+    effective_plan = [{**item, 'obligations': [o for o in item.get('obligations', [])
+                      if o.get('obligationId') not in excluded]} for item in audit_plan]
+    gaps = answer_coverage_gaps(effective_plan, claims, verdicts, **({"display_metadata":display_metadata} if task_sources else {}))
+    for gap in gaps:
+        matching = [v for v in verdicts if isinstance(v, dict)
+                    and v.get('obligationId') == gap.get('obligationId')] if isinstance(verdicts, list) else []
+        if len(matching) == 1 and isinstance(matching[0].get('aspects'), list):
+            gap['missingAspects'] = list(dict.fromkeys(a['requirement'].strip()
+                for a in matching[0]['aspects'] if isinstance(a, dict)
+                and a.get('status') in {'partial', 'missing'}
+                and isinstance(a.get('requirement'), str) and a['requirement'].strip()))
+            gap['aspectEvidenceRefs'] = list(dict.fromkeys(a['basis']['evidenceId']
+                for a in matching[0]['aspects'] if isinstance(a, dict)
+                and a.get('status') in {'partial', 'missing'}
+                and isinstance(a.get('basis'), dict) and a['basis'].get('kind') == 'source'
+                and isinstance(a['basis'].get('evidenceId'), str)))
+        if len(matching) == 1 and isinstance(matching[0].get('missingDesignRoles'), list):
+            from services.deep_research.experimental_reasoning import DESIGN_ROLE_LABELS
+            gap['missingDesignRoles'] = matching[0]['missingDesignRoles']
+            gap['missingAspects'] = list(dict.fromkeys([
+                *gap.get('missingAspects', []), *['缺少已核实的' + DESIGN_ROLE_LABELS[role]
+                    for role in gap['missingDesignRoles'] if role in DESIGN_ROLE_LABELS]]))
+        if gap.get('obligationId') in criterion_gaps:
+            gap['missingAspects'] = list(dict.fromkeys([
+                *gap.get('missingAspects', []), *criterion_gaps[gap['obligationId']]]))
+        if gap.get('obligationId') in gap_details:
+            gap['gapDetail'] = gap_details[gap['obligationId']]
+        if status in {'budget_exhausted', 'invalid_response'}:
+            gap['missingEvidence'] = '回答完整性尚未核验'
+            gap['auditStatus'] = status
+        if identity and gap.get('obligationId') == identity:
+            gap['wholeQuestion'] = True
+    from services.deep_research.completion_criteria import completion_contract_digest
+    audit={'status': status, 'verdicts': verdicts if isinstance(verdicts, list) else [],
+            'completionContractDigest': completion_contract_digest(plan, claims),
+            'displayMetadataDigest': display_metadata_digest(claims, evidence, **({"task_sources":True} if task_sources else {}), **({"request_semantics":2} if request_semantics==2 else {}),identification_locators=identification_locators),
+            'gaps': gaps, 'invalidAspectObligations': invalid_aspects,
+            **({'requestCoverageContractVersion':request_contract if type(request_contract) is int and request_contract in (2,3) else 1} if request_contract else {}),
+            'wholeQuestionId': identity, 'nonblockingResearch': nonblocking,
+            'criterionGaps': criterion_gaps,
+            'invalidCriterionObligations': invalid_criteria,
+            'budgetLimit': budget_limit,
+            **({'diagnosticErrors':diagnostic_errors} if diagnostics else {})}
+    if coherence:
+        from services.deep_research.answer_coherence import revalidate
+        if coherence_result is not None:audit['answerCoherence']=coherence_result
+        audit=revalidate(audit,question,claims)
+    return audit
+
+
+def remaining_retrieval_gaps(gaps, audit, claims, evidence, *, plan=None, question=""):
+    """Return source gaps that still block the actual answer.
+
+    Required research keeps the source-specific closure rule: a bounded factual
+    answer may close it, never another paper's answer or an unchecked proposal.
+    Separately audited unnecessary support questions are nonblocking, not solved;
+    callers retain the untouched original gap list in the run's research history.
+    """
+    if audit.get('status') != 'checked':
+        return list(gaps)
+    # Revalidate against current accepted claims; a stored exemption list alone
+    # is never enough, and the original source gaps remain in run history.
+    from services.deep_research.obligation_purpose import nonblocking_research_obligations
+    optional = nonblocking_research_obligations(plan, question, claims,
+        audit.get('verdicts'), audit.get('wholeQuestionId'), audit.get('invalidAspectObligations', []))
+    optional_ids = {row['obligationId'] for row in optional}
+    gaps = [gap for gap in gaps if not isinstance(gap, dict) or gap.get('obligationId') not in optional_ids]
+    missing = {g.get('obligationId') for g in audit.get('gaps', [])}
+    from services.deep_research.answer_coverage import answer_coverage_gaps
+    check_plan = [{'obligations': [g for g in gaps if isinstance(g, dict) and g.get('obligationId')]}]
+    missing.update(g.get('obligationId') for g in answer_coverage_gaps(check_plan, claims, audit.get('verdicts')))
+    accepted = {c.get('claimId'): c for c in claims
+                if c.get('verification') == 'semantic_passed' and c.get('kind') in {'reported', 'inference'}}
+    origins = {e.get('evidenceId'): e.get('sourceWorkId') for e in evidence
+               if e.get('verification', {}).get('literal') == 'passed'}
+    covered = {}
+    for verdict in audit.get('verdicts', []):
+        oid = verdict.get('obligationId')
+        if verdict.get('status') != 'covered' or oid in missing:
+            continue
+        works = set()
+        for binding in verdict.get('bindings', []):
+            claim = accepted.get(binding.get('claimId'), {})
+            works.update(origins[ref] for ref in claim.get('evidenceRefs', []) if origins.get(ref))
+        covered[oid] = works
+    return [gap for gap in gaps if not isinstance(gap, dict)
+            or gap.get('sourceWorkId') not in covered.get(gap.get('obligationId'), set())]

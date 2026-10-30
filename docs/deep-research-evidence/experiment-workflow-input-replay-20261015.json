@@ -1,0 +1,64 @@
+{
+  "date": "2026-10-15",
+  "promptVersion": "dr-v2.20261015.100",
+  "case": "H5R-v14",
+  "runId": "dr_run_06b9702502185a38b3ecb5b6700056a4",
+  "inputSha256": "4c2d1bc8c5248821f8e80fa28044cc6e2e4c94629049545e820ea96fb7b289ec",
+  "draftPromptBytes": 23816,
+  "availableEvidence": 8,
+  "visibleEvidence": 5,
+  "exactSceneEvidenceVisible": true,
+  "savedInputHasOpacityMechanismQuote": false,
+  "emptyOfflineResponsePromotesNoClaim": true,
+  "legacyClaimsUnchangedWithoutOptIn": true,
+  "newExtractionOrderSelectsMethodInFirstBatch": true,
+  "newFirstBatchLocations": [
+    {
+      "page": 3,
+      "chunk": 15,
+      "section": "Methodology"
+    },
+    {
+      "page": 7,
+      "chunk": 41,
+      "section": "Dataset"
+    },
+    {
+      "page": 1,
+      "chunk": 4,
+      "section": "Introduction"
+    }
+  ],
+  "missingTypedWorkflowRejectedForNewContract": [
+    {
+      "claimId": "c6",
+      "reason": "inconsistent_experiment_workflow",
+      "detail": "invalid_workflow_contract"
+    }
+  ],
+  "modelCalls": 0,
+  "networkRequests": 0,
+  "boundary": "Offline input-capacity and new-contract rejection only, not generated experimental quality. Historical saved input contains table/data quotes but no opacity-mechanism quote; this replay cannot establish that method evidence is available. Historical run, claims and evidence are unchanged. The model stub returns no claims.",
+  "sourceCommit": "64e3e8f",
+  "workflowSourceCommit": "42d4a86",
+  "tests": {
+    "passed": 1599,
+    "warnings": 1,
+    "seconds": 56.04,
+    "sourceCommit": "64e3e8f",
+    "log": "tmp/pytest-dr100-full.log"
+  },
+  "workflowFullTests": {
+    "passed": 1597,
+    "warnings": 1,
+    "seconds": 56.01,
+    "log": "tmp/pytest-dr99-full.log"
+  },
+  "initialFailure": {
+    "passed": 1594,
+    "failed": 3,
+    "log": "tmp/pytest-dr99-full-initial-failure.log",
+    "finding": "Dynamic audit slot lookup included None for hypothesis/limits roles; filtering roles without slots restored existing checks. No assertion weakened."
+  },
+  "realMechanismExtractionCase": "H5R-v15"
+}

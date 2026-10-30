@@ -1,0 +1,60 @@
+{
+  "sourceCommit": "9e5c7194cb9bda5146feac18a4d7edb1b8826f87",
+  "promptVersion": "dr-v2.20261029.323",
+  "scope": "isolated saved-generation compaction; no generation, retrieval or production publish",
+  "providerCalls": 1,
+  "callStatus": "succeeded",
+  "finishReason": "stop",
+  "totalTokens": 1382,
+  "transportThinking": {
+    "type": "disabled"
+  },
+  "expectedEditableIds": [
+    "c1"
+  ],
+  "readonlyIds": [
+    "c2"
+  ],
+  "returnedIds": [
+    "c1",
+    "c2"
+  ],
+  "returnedTextCharacters": {
+    "c1": 187,
+    "c2": 148
+  },
+  "readonlyEchoUnchanged": true,
+  "result": "invalid_synthesis_response",
+  "contentAccepted": false,
+  "retry": false,
+  "enteredVerification": false,
+  "independentCredit": 0,
+  "preservation": {
+    "before": {
+      "ledgerRows": 7465,
+      "ledgerSha256": "9138a4c5c9e9397c9dce6b78007d07dc1c2f7955dd637bef1d794f0c50b97bbc",
+      "payloadSha256": "a4559eea0b66b511bed93f21a1cba7e6a39068464469aacbcd30fde6895797ad"
+    },
+    "after": {
+      "ledgerRows": 7465,
+      "ledgerSha256": "9138a4c5c9e9397c9dce6b78007d07dc1c2f7955dd637bef1d794f0c50b97bbc",
+      "payloadSha256": "a4559eea0b66b511bed93f21a1cba7e6a39068464469aacbcd30fde6895797ad"
+    },
+    "exactProductionPreservation": true,
+    "providerSubmissions": 1,
+    "productionPublish": false,
+    "fullWorkflowReplay": false,
+    "independentCredit": 0
+  },
+  "rawReceipts": "tmp\\component-fixed-scope-323-20261029\\receipt",
+  "receiptHashes": {
+    "calls.json": "0c4cf12f7a899302b201df9d35aa596a971aa286ffa71c1804fbf08ccf92467b",
+    "failure.json": "73cfaa22082602c0262c6a031227e73e4f7712d3bbc053d5090c20a581549baa",
+    "generation-result.json": "9b6d45b0cbbad805a7f3abbd2e0bc0618f7c723aa51c95330662fbf8917b74b2",
+    "payload.json": "81703bdac2be63bf22eb352850fe801343a973b6483e636cb8cfbe7056286f86",
+    "preservation.json": "79c22501b2cdd659addd347f9bcfdf3d1389b88d998ca49741fe3efc0bbfea7d",
+    "progress.json": "2b77ca1436c21e61f9ed468030fd6a37aed95b86f7b2c3b91e1e630e7dde4764",
+    "request-1.json": "abe12be218349c4bfb0049e75a592043c36106eda99f4652336e7b44c6f9e760",
+    "terminal-payload.json": "cc6ffb3cd47eb965f6fefa325fe43ddea3d23a177fcb66b35523e8e3f704b56f"
+  }
+}

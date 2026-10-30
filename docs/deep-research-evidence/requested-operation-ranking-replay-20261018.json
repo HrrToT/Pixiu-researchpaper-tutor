@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-18",
+  "inputCase": "H1F-v10",
+  "inputRunId": "dr_run_f8535efd45d4517d9651cfc527729776",
+  "savedInputSha256": "d028abc7fe06af0113f0104e1c72a7ca3a005fddfaf5ca0b0fb28c67ead372d8",
+  "oldPriorityVersion": 3,
+  "newPriorityVersion": 4,
+  "previousFirstBatchChunks": [
+    "32",
+    "21",
+    "26"
+  ],
+  "newFirstBatchChunks": [
+    "21",
+    "3",
+    "26"
+  ],
+  "newFirstBatchRoles": [
+    "literal output definition",
+    "previous-state initialization and transfer",
+    "new-content rationale"
+  ],
+  "allPassagesPreserved": 8,
+  "rawSourceIdentityTextAndLocationsUnchanged": true,
+  "realProviderCalls": 0,
+  "productionWrites": 0,
+  "boundary": "Copied real-input ranking replay only. No paper-specific names or expected attributes in production rules. Existing batch size, material permissions, byte limit and budget remain. Selecting a paragraph does not prove extraction, independent semantic support or final answer quality."
+}

@@ -1,0 +1,163 @@
+{
+  "date": "2026-10-22",
+  "sourceCase": "E1-v13",
+  "outlineEncodingContractVersion": 1,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "originalPlanningFingerprintMatched": true,
+  "originalFailedStateUnchanged": true,
+  "manualOldFailureUpgradeBlockedBeforeDispatch": true,
+  "originalFullInputBytes": 24186,
+  "controlledEncodedFullInputBytes": 23917,
+  "unchangedCap": 24000,
+  "exactFullPromptRoundTrip": true,
+  "allSevenOriginalEvidenceIdsRetained": true,
+  "originalBasisValuesRetained": true,
+  "sameEvidenceAllocationBeforeEncoding": true,
+  "newCompleteRequestFrozen": true,
+  "stoppedBeforeProvider": true,
+  "audit": {
+    "version": 1,
+    "originalOutline": [
+      {
+        "designRole": "hypothesis",
+        "section": "假设",
+        "kind": "hypothesis",
+        "requiresExecutionSpec": true
+      },
+      {
+        "designRole": "groups",
+        "section": "分组表",
+        "kind": "proposal",
+        "requiresExecutionSpec": true
+      },
+      {
+        "designRole": "controls",
+        "section": "固定条件",
+        "kind": "proposal",
+        "requiresExecutionSpec": true
+      },
+      {
+        "designRole": "data",
+        "section": "固定条件",
+        "kind": "proposal",
+        "requiresExecutionSpec": true
+      },
+      {
+        "designRole": "budget",
+        "section": "固定条件",
+        "kind": "proposal",
+        "requiresExecutionSpec": true
+      },
+      {
+        "designRole": "steps",
+        "section": "执行步骤",
+        "kind": "proposal",
+        "requiresExecutionSpec": true
+      },
+      {
+        "designRole": "metrics",
+        "section": "指标",
+        "kind": "proposal",
+        "requiresExecutionSpec": false
+      },
+      {
+        "designRole": "analysis",
+        "section": "结果解释",
+        "kind": "proposal",
+        "requiresExecutionSpec": true
+      },
+      {
+        "designRole": "limits",
+        "section": "风险",
+        "kind": "proposal",
+        "requiresExecutionSpec": false
+      }
+    ],
+    "encodedOutline": {
+      "columns": [
+        "designRole",
+        "section",
+        "kind",
+        "requiresExecutionSpec"
+      ],
+      "rows": [
+        [
+          "hypothesis",
+          "假设",
+          "hypothesis",
+          true,
+          {}
+        ],
+        [
+          "groups",
+          "分组表",
+          "proposal",
+          true,
+          {}
+        ],
+        [
+          "controls",
+          "固定条件",
+          "proposal",
+          true,
+          {}
+        ],
+        [
+          "data",
+          "固定条件",
+          "proposal",
+          true,
+          {}
+        ],
+        [
+          "budget",
+          "固定条件",
+          "proposal",
+          true,
+          {}
+        ],
+        [
+          "steps",
+          "执行步骤",
+          "proposal",
+          true,
+          {}
+        ],
+        [
+          "metrics",
+          "指标",
+          "proposal",
+          false,
+          {}
+        ],
+        [
+          "analysis",
+          "结果解释",
+          "proposal",
+          true,
+          {}
+        ],
+        [
+          "limits",
+          "风险",
+          "proposal",
+          false,
+          {}
+        ]
+      ]
+    },
+    "originalInputBytes": 24186,
+    "encodedInputBytes": 23917,
+    "originalPromptDigest": "3d175248282cf742df6e1e74cc32f87bee7873ec22907db1034831ce7c932149",
+    "encodedPromptDigest": "9d954845c1f55f651c8851bb992867966ca451428e1d4deec70f9e8d10e4d031",
+    "scientificApproval": false
+  },
+  "independentCredit": 0,
+  "sourceFileSha256": {
+    "experiment_outline_encoding.py": "3b2987de751c0a94f1d34eadaff977c44b6c58f17f861e277f9ad4235c40bfea",
+    "experiment_planning.py": "e2de9f7726eb82c80d30d7ae2d9ea6f6840abb6377d09c5c42fa418e8ab9eae3",
+    "graph.py": "9dd86ae1763cd9b85bb2cff776e269c5154301e733691f9b0ef571b3184dae6b"
+  },
+  "boundary": "Implemented new-contract controlled replay of archived response, stopped before body dispatch. No new content judgment or old-result upgrade; original plan may contain scientific errors."
+}

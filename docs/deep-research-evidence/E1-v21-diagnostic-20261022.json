@@ -1,0 +1,301 @@
+{
+  "date": "2026-10-22",
+  "sourceCommit": "09782ac7",
+  "promptVersion": "dr-v2.20261022.226",
+  "case": "E1-v21",
+  "split": "development",
+  "runId": "dr_run_ae36ec3ceb02577c8dc9e8e1bc541d63",
+  "questionUnchanged": true,
+  "frozenCaseCommit": "a023b204",
+  "status": "completed",
+  "outcome": "inconclusive",
+  "reportedPayloadElapsedSeconds": 143.345,
+  "observedElapsedSeconds": 143.0,
+  "settledModelCalls": 14,
+  "settledTokens": 68538,
+  "unsettledModelCalls": 0,
+  "independentCredit": 0,
+  "verificationSummary": {
+    "accepted": 0,
+    "rejected": 9
+  },
+  "generationAllocation": {
+    "version": 1,
+    "planningEvidenceAliases": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9",
+      "E10",
+      "E11",
+      "E12",
+      "E13",
+      "E14",
+      "E15",
+      "E16",
+      "E17",
+      "E18",
+      "E19",
+      "E20"
+    ],
+    "suppliedEvidenceAliases": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9",
+      "E10",
+      "E11",
+      "E12",
+      "E13",
+      "E14",
+      "E15",
+      "E16",
+      "E17",
+      "E18",
+      "E19",
+      "E20"
+    ],
+    "requiredEvidenceAliases": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9",
+      "E10",
+      "E11",
+      "E12",
+      "E13",
+      "E14",
+      "E15",
+      "E16",
+      "E17",
+      "E18",
+      "E19",
+      "E20"
+    ],
+    "unverifiedPlanReferences": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9",
+      "E10",
+      "E11",
+      "E12",
+      "E13",
+      "E14",
+      "E15",
+      "E16",
+      "E17",
+      "E18",
+      "E19",
+      "E20"
+    ],
+    "missingPremiseBundles": [],
+    "rawInputBytes": 30763,
+    "encodedInputBytes": 30494,
+    "maxInputBytes": 32000,
+    "planBasisDigest": "806b0d69c3904e4aab7fd8c98e080e55f8ed66ef28e6aa0df02f582084e0d5cb",
+    "planReferencesAreEvidenceApproval": false,
+    "planningEvidenceIds": [
+      "ev_15a8e02f885a744622caa594dd331b7481bf66e9039cec2e9de762eab6c72891",
+      "ev_925db5ee5027aed55d6fa83e9fcd88367454dbedc927a217536f139bd847f22d",
+      "ev_5a62ffa4ef91faeab47770ffeb7725d05e16220034d62947882c58e68891ba69",
+      "ev_eea706cbd96a822dae9adf0cdc055c4e86d4f30b38582a4af6ff41a671a74c1f",
+      "ev_516057b8a32881c40f1384de19b86128197089068316214ce7a984ebb4f252a4",
+      "ev_f9ae8788d0caeec846e3e3519035a9d0d539e42b044269ce89b1cd872a925c0f",
+      "ev_e34196d11497b3956f133f4f4f9f4670ef36ac774d1a0a60f21f50a99cbc0cd3",
+      "ev_4bbeaea2b1a3fc2176d5010e025e0272c4f315f6a4481858bf4ef14db9594a4f",
+      "ev_bdb024b856972aab854c483acb7dfa600c4918cc401ccfcebcb14da2200b2d38",
+      "ev_de81539c12c6c729901acb0a3988a95c6d4e4e20dcd419f57bfc22008a46493f",
+      "ev_cd0fb52a8f6322f1840a2c415f4ffe76ebd603aa54c4f8b78c84c3bcf5b89c9c",
+      "ev_9428cc150698bc1ebd5f7d4d32f2e8efa1022c319d442c3801b44c2d74cf4bca",
+      "ev_3ca7ba9b8b6f76f5c254c7d72f6106fb0ee2e334a67324978bcc9b37ef473049",
+      "ev_e170758337c27ad6170e1fa6a17452fc4c94fe6f45d288316af34c321da687de",
+      "ev_e7943b9c3dc9222268585187471b66293d178a702b3834bb256ccdf46fba44fc",
+      "ev_a283d83a5c59038a2f00fb444e3a7157f921279d5c25b76c0e5c6b579ffb3660",
+      "ev_7bc80f920225d80b13a00826e85aed3717788f2b49a3ff9a656c8309f097bc20",
+      "ev_111c8b85f4bdb617ec51de3b89943253b60530df4cd0756a2f990508c777d316",
+      "ev_addd7356fe5ce898b68a96e98301c57395890714788c4f86b675ad26181ac3f0",
+      "ev_83cbce6b5647dc7ef89686cfbb9c3e704741dfb959c1e90b18977fc806be20a7"
+    ],
+    "suppliedEvidenceIds": [
+      "ev_15a8e02f885a744622caa594dd331b7481bf66e9039cec2e9de762eab6c72891",
+      "ev_925db5ee5027aed55d6fa83e9fcd88367454dbedc927a217536f139bd847f22d",
+      "ev_5a62ffa4ef91faeab47770ffeb7725d05e16220034d62947882c58e68891ba69",
+      "ev_eea706cbd96a822dae9adf0cdc055c4e86d4f30b38582a4af6ff41a671a74c1f",
+      "ev_516057b8a32881c40f1384de19b86128197089068316214ce7a984ebb4f252a4",
+      "ev_f9ae8788d0caeec846e3e3519035a9d0d539e42b044269ce89b1cd872a925c0f",
+      "ev_e34196d11497b3956f133f4f4f9f4670ef36ac774d1a0a60f21f50a99cbc0cd3",
+      "ev_4bbeaea2b1a3fc2176d5010e025e0272c4f315f6a4481858bf4ef14db9594a4f",
+      "ev_bdb024b856972aab854c483acb7dfa600c4918cc401ccfcebcb14da2200b2d38",
+      "ev_de81539c12c6c729901acb0a3988a95c6d4e4e20dcd419f57bfc22008a46493f",
+      "ev_cd0fb52a8f6322f1840a2c415f4ffe76ebd603aa54c4f8b78c84c3bcf5b89c9c",
+      "ev_9428cc150698bc1ebd5f7d4d32f2e8efa1022c319d442c3801b44c2d74cf4bca",
+      "ev_3ca7ba9b8b6f76f5c254c7d72f6106fb0ee2e334a67324978bcc9b37ef473049",
+      "ev_e170758337c27ad6170e1fa6a17452fc4c94fe6f45d288316af34c321da687de",
+      "ev_e7943b9c3dc9222268585187471b66293d178a702b3834bb256ccdf46fba44fc",
+      "ev_a283d83a5c59038a2f00fb444e3a7157f921279d5c25b76c0e5c6b579ffb3660",
+      "ev_7bc80f920225d80b13a00826e85aed3717788f2b49a3ff9a656c8309f097bc20",
+      "ev_111c8b85f4bdb617ec51de3b89943253b60530df4cd0756a2f990508c777d316",
+      "ev_addd7356fe5ce898b68a96e98301c57395890714788c4f86b675ad26181ac3f0",
+      "ev_83cbce6b5647dc7ef89686cfbb9c3e704741dfb959c1e90b18977fc806be20a7"
+    ]
+  },
+  "repairStatus": "skipped_budget",
+  "repairAdmission": {
+    "kind": "repairEvidenceBytes",
+    "limit": 17634,
+    "used": 19115
+  },
+  "planEncodingAudit": {
+    "rawBytes": 2615,
+    "wireBytes": 2506,
+    "preferredSlotBytes": 2500,
+    "rawLimitBytes": 4000,
+    "fitsPreferredSlot": false,
+    "scientificApproval": false
+  },
+  "initialRepresentationAudit": [
+    {
+      "phase": "synthesis",
+      "claimId": "c1",
+      "designRole": "hypothesis",
+      "path": "/executionSpec",
+      "kind": "single_role_wrapper",
+      "role": "hypothesis"
+    },
+    {
+      "phase": "synthesis",
+      "claimId": "c2",
+      "designRole": "groups",
+      "path": "/executionSpec",
+      "kind": "single_role_wrapper",
+      "role": "groups"
+    },
+    {
+      "phase": "synthesis",
+      "claimId": "c3",
+      "designRole": "controls",
+      "path": "/executionSpec",
+      "kind": "single_role_wrapper",
+      "role": "controls"
+    },
+    {
+      "phase": "synthesis",
+      "claimId": "c4",
+      "designRole": "data",
+      "path": "/executionSpec",
+      "kind": "single_role_wrapper",
+      "role": "data"
+    },
+    {
+      "phase": "synthesis",
+      "claimId": "c5",
+      "designRole": "budget",
+      "path": "/executionSpec",
+      "kind": "single_role_wrapper",
+      "role": "budget"
+    },
+    {
+      "phase": "synthesis",
+      "claimId": "c6",
+      "designRole": "steps",
+      "path": "/executionSpec",
+      "kind": "single_role_wrapper",
+      "role": "steps"
+    },
+    {
+      "phase": "synthesis",
+      "claimId": "c8",
+      "designRole": "analysis",
+      "path": "/executionSpec",
+      "kind": "single_role_wrapper",
+      "role": "analysis"
+    }
+  ],
+  "repairRepresentationAudit": {},
+  "rejectedClaims": [
+    {
+      "claimId": "c2",
+      "reason": "internal_reference_in_prose"
+    },
+    {
+      "claimId": "c3",
+      "reason": "internal_reference_in_prose"
+    },
+    {
+      "claimId": "c1",
+      "reason": "semantic_unresolved",
+      "detail": "假设依赖的多个提案存在未解决的不兼容或缺失定义，导致实验不可执行。具体问题包括：1) c2 的组定义中，组B执行第2阶段时引用了未在证据中提供的超参数（如梯度阈值、不透明度阈值等），且这些参数被标记为拟议值，但未给出可执行的完整配置；2) c3 的共同初始化中，第0帧3DGs训练和第1阶段NTC训练的具体超参数（学习率、优化器、哈希表分辨率等）未在证据中提供，且c3被拒绝（internal_reference_in_prose），其引用的c6工作流定义不完整：c6中第0帧3DGs的stateDefinitions形状为[100000,59]，但未说明59维的具体含义，且初始化方式为常数0，与训练第0帧3DGs的创建动作矛盾；c6中NTC的stateDefinitions形状为[1000000]，但未定义哈希编码和MLP的具体结构，无法确定实际参数数量；3) c4 的数据选择中，帧窗口选择依"
+    },
+    {
+      "claimId": "c4",
+      "reason": "semantic_unresolved",
+      "detail": "数据选择未通过：场景成员资格证据不足，相机划分未提供实际相机索引或总数，帧窗口选择规则未绑定到具体帧ID，种子值未提供。"
+    },
+    {
+      "claimId": "c5",
+      "reason": "semantic_unresolved",
+      "detail": "预算未通过：基线训练上限200 epoch未绑定到具体配置，恢复阶段组B的100 epoch未绑定到具体配置，且未覆盖所有拟合阶段。"
+    },
+    {
+      "claimId": "c6",
+      "reason": "semantic_unresolved",
+      "detail": "步骤定义存在多个不可执行或未验证的槽位：基线获取的初始化状态定义不完整（frame0_3dgs 形状 [100000,59] 但未说明 59 维含义、初始值全零且无训练输入/损失/渲染器绑定）；组件初始化中 NTC 状态形状 [1000000] 与哈希表大小 1048576 不一致，且未定义 MLP 权重形状；checkpointSelection 为 fixed_budget 但未指定预算上限或选择规则；records 中缺少实际哈希/版本标识；组配对依赖 c2/c3 但 c2/c3 已被拒绝且未提供可执行定义；数据隔离未验证相机划分与帧窗口的实际容量；种子配对未绑定具体种子用途。"
+    },
+    {
+      "claimId": "c7",
+      "reason": "semantic_unresolved",
+      "detail": "指标未通过：质量指标未指定聚合级别，速度指标未提供设备、分辨率、预热、同步和重复次数，存储指标未列出包含的文件或模型表示。"
+    },
+    {
+      "claimId": "c8",
+      "reason": "semantic_unresolved",
+      "detail": "分析方案未完整绑定效应量定义：effects 槽位缺少对 quality_diff、storage_diff、time_diff 的完整可执行定义，仅给出公式字符串，未指定计算所需的输入数据来源、聚合方式、单位及配对单位；uncertainty 槽位仅声明描述性统计量，未明确这些统计量如何跨帧聚合（例如均值/标准差是在帧级别还是视图级别计算），也未说明缺失值处理；decision 槽位仅声明描述性边界，未定义如何根据统计量得出结论或报告格式。"
+    },
+    {
+      "claimId": "c9",
+      "reason": "semantic_unresolved",
+      "detail": "限制声明未提供可验证的失效条件或具体限制范围：仅泛泛提及相机索引和帧窗口长度需验证、NTC超参数可能影响共享状态、非匹配预算不能隔离因果效应，但未明确这些条件如何影响结论的有效性，也未说明在何种情况下方案会失效或需要调整。"
+    }
+  ],
+  "acceptedClaims": [],
+  "rawFiles": [
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v21.json",
+      "sha256": "1b53fb4cb8e499f0ad89b815c0238be51c3439ef35846f166d3ddf8ca936c52b"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v21.payload.json",
+      "sha256": "36f06726993719b0f950fb0ffd28337217b1317f3077c10c0b148a6093b1ed2c"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v21.calls.json",
+      "sha256": "1d309a4ebf5ad84060e39586896130b0b88a17fc0665507b164656f6a0299158"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v21.result.json",
+      "sha256": "7e8b5d955f1c6db5ac29f9e6e4903dbb942d4eb7f14594706e38f745d9e25f03"
+    }
+  ],
+  "boundary": "One fixed development submission, no automatic retry. Representation normalization does not approve science or upgrade historical/independent results."
+}

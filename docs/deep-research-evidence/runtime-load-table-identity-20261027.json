@@ -1,0 +1,33 @@
+{
+  "sourceCommit": "e4f27c775ff77223aaffdba119c931d70e7bceeb",
+  "promptVersion": "dr-v2.20261027.314",
+  "repairCompactionContractVersion": 1,
+  "tableIdentityContextContractVersion": 1,
+  "sourceHashes": {
+    "services/deep_research/repair_compaction.py": "cf8b67c2aa22c2b3a44e85653c1c7d04b823aefa703901338a607a21185ebbf2",
+    "services/deep_research/scope_compaction.py": "ede16f2c7dbd021d72f434b06776c330615b2d68cc60aa90f0571d3a0d1d005d",
+    "services/deep_research/table_identity_context.py": "2217530eb2bfa694174979864017ac89b21517cb1d52ef5cf40f5b80945741ef",
+    "services/deep_research/factual_template.py": "611620cfd79390b0b4a2e3816ce947b74dbfcc9267edc45b9a7d4331091c1c51",
+    "services/deep_research/local_sources.py": "c19d802cddff9522ca28c6fad57ac2882c0bac21d5ac522939524b09012fd579",
+    "services/deep_research/scope_expression_review.py": "e1ca77ccee7918915c93e4e109ddc6172a86b527d86fbebd64aa15615438c87e",
+    "services/deep_research/repair.py": "a5376ebaf035f82455b1b2946b5c709734cf7791e0dfccf8195a363748c499b3",
+    "services/deep_research/graph.py": "1173e954d59f546b8c1566dcf14e842921205e6536a316225b0bb99ab14f83fa",
+    "services/deep_research/facade.py": "b83caca4a3543f9ff12378081e49b0c591c1eee6886bd309388a7c478058b8ac",
+    "services/deep_research/repository.py": "e9d9e891bd38237198dcf8ffe3726ca510d410cce036ba3b51a0ba230e04df0f"
+  },
+  "oldLedgerAndRunPayloadsExactlyPreserved": true,
+  "ledgerRows": 7436,
+  "pausedUnknowns": 12,
+  "active": 0,
+  "protectedWorkspaces": 5,
+  "completeProductionIndexSha256": "9196054db7ac32450eb86fc91cfb12de27c732469e4cf629bf06857a3490788d",
+  "indexExactlyPreserved": true,
+  "health": {
+    "rag": "ok",
+    "grobid": "ok"
+  },
+  "frontendHttpStatus": 200,
+  "restarts": 1,
+  "providerCalls": 0,
+  "independentCredit": 0
+}

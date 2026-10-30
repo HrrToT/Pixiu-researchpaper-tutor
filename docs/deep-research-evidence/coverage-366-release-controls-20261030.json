@@ -1,0 +1,23 @@
+{
+  "sourceCommit": "39e147c3",
+  "passed": 111,
+  "seconds": 35.64,
+  "providerCalls": 0,
+  "log": "D:\\aiproj\\ai_project\\tmp\\dr366-release-controls-confirmed.log",
+  "logSha256": "ee7d4f0a271173fa7420434773be68e96d61a28302f9eef122880febc51c657c",
+  "scope": [
+    "core",
+    "control_protocol",
+    "backup",
+    "external_failures",
+    "budget_contract",
+    "graph"
+  ],
+  "firstSandboxRun": {
+    "passed": 95,
+    "failed": 4,
+    "errors": 28,
+    "cause": "temp directory SQLite/open and cleanup permission errors; retained separately"
+  },
+  "boundary": "Offline fixtures, not production/runtime or content acceptance"
+}

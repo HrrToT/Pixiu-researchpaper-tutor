@@ -1,0 +1,14 @@
+{
+  "date": "2026-10-22",
+  "sourceCommit": "138f0f75",
+  "newPlanningOnE1v25Bytes": 25990,
+  "oldActualPlanningBytes": 25433,
+  "allOriginalPlanningQuestionSourceEvidenceTablesRequirementsPreserved": true,
+  "E1v24Full4KBPlaceholderDraftBytes": 31828,
+  "maxInputBytes": 32000,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "independentCredit": 0,
+  "scientificApproval": false,
+  "boundary": "Frozen complete historical inputs with changed trusted framing and non-sendable4KB placeholder. This does not demonstrate a new generated plan/body or scientific content."
+}

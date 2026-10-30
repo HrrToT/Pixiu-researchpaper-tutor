@@ -1,0 +1,65 @@
+{
+  "sourceCase": "M1G-v6",
+  "sourcePayloadSha256": "1dfe614937383f9cd06f8ae8fbfbf6a9d22d07bff32b20256be169311bbcf99c",
+  "realSynthesisNodeReplay": true,
+  "results": [
+    {
+      "mechanismEvidenceContractVersion": 1,
+      "inputBytes": 23980,
+      "fixedInputBytes": 21609,
+      "suppliedEvidenceIds": [
+        "ev_5dba851a8b16bc3ad3b1ad2d17c6c7a393bf8e1ff58e4d8337356eaae259cb1e",
+        "ev_60e6aac35905b41999b847fec7220ca405b3c3d24ae878b1e4bcda865b4cdba9",
+        "ev_a1e8e78329a46872881206fb78ded47dca437c8197e685a2b4111d3df9cd9fd7",
+        "ev_dc73e27d98f65ae82681705ad0bcd0f675724d67d8e180eff73563766e7e03bd"
+      ],
+      "completeComponentList": false,
+      "channelContextPresent": false,
+      "missingBundles": []
+    },
+    {
+      "mechanismEvidenceContractVersion": 2,
+      "inputBytes": 23982,
+      "fixedInputBytes": 21609,
+      "suppliedEvidenceIds": [
+        "ev_5dba851a8b16bc3ad3b1ad2d17c6c7a393bf8e1ff58e4d8337356eaae259cb1e",
+        "ev_a1e8e78329a46872881206fb78ded47dca437c8197e685a2b4111d3df9cd9fd7",
+        "ev_b8629eee588016621b511b963246d127def1d3f677588e93a48e3d43daaf48e9",
+        "ev_dc73e27d98f65ae82681705ad0bcd0f675724d67d8e180eff73563766e7e03bd"
+      ],
+      "completeComponentList": true,
+      "channelContextPresent": true,
+      "missingBundles": []
+    }
+  ],
+  "retainedUnits": [
+    {
+      "evidenceId": "ev_a1e8e78329a46872881206fb78ded47dca437c8197e685a2b4111d3df9cd9fd7",
+      "sourceId": "6cff256c171332b72324f87ae7229c391cdc8ade63850f288d11289bda4699d5.pdf-v722bf931ba84e9ee-chunk-0",
+      "location": {
+        "chunk": 0,
+        "section": "unknown",
+        "sourcePassageStart": 104,
+        "sourcePassageEnd": 481,
+        "pageResolution": "unresolved"
+      }
+    },
+    {
+      "evidenceId": "ev_b8629eee588016621b511b963246d127def1d3f677588e93a48e3d43daaf48e9",
+      "sourceId": "6cff256c171332b72324f87ae7229c391cdc8ade63850f288d11289bda4699d5.pdf-v722bf931ba84e9ee-chunk-0",
+      "location": {
+        "chunk": 0,
+        "section": "unknown",
+        "sourcePassageStart": 481,
+        "sourcePassageEnd": 848,
+        "page": 3,
+        "pageIndex": 2,
+        "pageResolution": "exact"
+      }
+    }
+  ],
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "independentCredit": 0,
+  "boundary": "Evidence input completeness, not generated answer completeness or factual acceptance."
+}

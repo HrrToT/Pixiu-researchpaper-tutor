@@ -1,0 +1,83 @@
+{
+  "date": "2026-10-18",
+  "case": "D1-v10",
+  "runId": "dr_run_3b188e5186845ca4a80bba578b50424b",
+  "sourceCommit": "d8388387",
+  "promptVersion": "dr-v2.20261018.121",
+  "question": "只依据LightGaussian，核查压缩后图像质量接近原始3DGS这一说法。区分作者报告的结果、成立条件和未验证范围。只写最关键的两点，300字以内。",
+  "status": "completed",
+  "outcome": "inconclusive",
+  "contentAccepted": false,
+  "modelCalls": 9,
+  "settledTokens": 28911,
+  "elapsedSeconds": 33.74,
+  "cost": null,
+  "report": "本次尚未形成通过核验的结论。\n\n<details>\n<summary>还有 2 项未完成</summary>\n\n- 作者是否明确说明了质量接近结论的适用条件、局限或未验证的场景？：最终回答尚未完整回应这一问题\n- 作者报告了哪些定量指标（如PSNR、SSIM、LPIPS）来支持压缩后图像质量接近原始3DGS的说法？：最终回答尚未完整回应这一问题\n\n</details>",
+  "dependencyExecution": {
+    "version": 1,
+    "planRevision": 0,
+    "wave": 1,
+    "active": [
+      "item_2"
+    ],
+    "settled": [
+      "item_1",
+      "item_2"
+    ],
+    "satisfied": [
+      "item_1"
+    ],
+    "requeryCount": 0,
+    "pending": null,
+    "lastTransition": {
+      "id": "daf728594fc52bcf0bbb8bc7845d2f67336392957d60de3f3278862dce72dc8c",
+      "active": [
+        "item_2"
+      ],
+      "fromWave": 0
+    }
+  },
+  "findings": [
+    "Real execution advanced from the first saved coverage frontier to the dependent conditions question; downstream retrieval was actually dispatched.",
+    "A normal method label followed by a space and metric was rejected because the method-boundary check removed all text whitespace. This was a checker false rejection, not proof the claim was scientifically correct.",
+    "The draft also mixed the retrained-baseline description with an unstarred baseline row, and asserted paper-wide absence. Those source-scope issues must still be independently checked after the hard checker fix.",
+    "No claim passed final verification; the final report remains inconclusive. The original response is preserved and never upgraded to a content pass.",
+    "No automatic retry or larger budget; all 18 recorded tools settled successfully, including nine model calls."
+  ],
+  "sourceReview": {
+    "path": "D:/3DGS/paper/LightGaussian/2311.17245v6.pdf",
+    "sha256": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634",
+    "pagesVisuallyInspected": [
+      6,
+      8
+    ],
+    "notes": "Table 1 distinguishes 3D-GS from retrained 3D-GS*. Its caption identifies the A6000 rerun; Mip-NeRF360 results and Tank and Temple results must remain separate."
+  },
+  "rawFiles": [
+    {
+      "path": "tmp\\dr-acceptance-receipts\\D1-v10.json",
+      "sha256": "4a3a2e86f746d1ced60867f23ed4e537fde9ae517001de0e1a9792ed1d058bdb"
+    },
+    {
+      "path": "tmp\\dr-acceptance-receipts\\D1-v10.payload.json",
+      "sha256": "9d6e35c93f48d72cb34af6f17440abcf5c4c7a3d79c09490087a790dcf7148f3"
+    },
+    {
+      "path": "tmp\\dr-acceptance-receipts\\D1-v10.calls.json",
+      "sha256": "959cc24dcf0502cc3f1aa3b1f959bd1639f0044d09091f37a810b2695f6ac600"
+    },
+    {
+      "path": "tmp\\dr-acceptance-receipts\\D1-v10.result.json",
+      "sha256": "bc63eaef5d2bf62a84159984438768053534ec2f0a3fbbedc60508352a292d02"
+    }
+  ],
+  "scores": {
+    "goalResponse": 1,
+    "evidenceSupport": null,
+    "conditions": null,
+    "synthesisValue": 1,
+    "executability": null,
+    "readability": 3
+  },
+  "scoreBoundary": "No substantive accepted answer; unavailable dimensions are not passes."
+}

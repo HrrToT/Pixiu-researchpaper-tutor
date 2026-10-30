@@ -1,0 +1,77 @@
+{
+  "executionWorkflowContractVersion": 7,
+  "workflowContractVersion": 5,
+  "defaultEnabled": false,
+  "focusedRegression": {
+    "files": 4,
+    "passed": 80,
+    "seconds": 15.17
+  },
+  "frozen6SchemasAndPromptsEqual": true,
+  "frozenSourceCommit": "64f2828d",
+  "sourceHashes": {
+    "ai-service-python/services/deep_research/execution_workflow_blueprint.py": "57b909328001ce4754e6e77d53d065b3786ee66408e225d1457b0771b7a4b560",
+    "ai-service-python/services/deep_research/experiment_repair.py": "b7910a8cf62db63803220dc0524b702cebc46febc77220829cd2652c2ce880b1",
+    "ai-service-python/services/deep_research/experiment_repair_input_grammar.py": "7ef2b019c2fb6417dceda2f5a7d7f0efcbe7df1304eb4c4ae2dc3cc38785f0e4",
+    "ai-service-python/services/deep_research/experiment_template.py": "a4d89d8f58235a9f0182fff9d6a0a80a41fd42e89ccbabb9b55f253be1fa5e53",
+    "ai-service-python/services/deep_research/planning_transport.py": "56c733f96a4962b37597eeda4719c53a5117abf9515b2a521b736ad4fdd85d38",
+    "ai-service-python/services/deep_research/rejection_audit.py": "6230f7383b5b4367d1e6ca785d969094a6ff43e4a52efd11b7b2c68d1768055b",
+    "ai-service-python/services/deep_research/review_field_index.py": "258bb995fd0c688c0f6be0b29e300711ab228b320096e952c356c19c947ec31e",
+    "ai-service-python/services/deep_research/review_field_refs.py": "5cd53e0ecddd3b8aa481ad0d590c93ebacb69e585892d455015a25afdf390ea4",
+    "ai-service-python/services/deep_research/tools.py": "69501db8d8ab500e499e9b858787417f07fbdcb1bdc63de65f61348f1e054ffe",
+    "ai-service-python/services/deep_research/workflow_transport.py": "6a9082c49e8265700b08249983aed15568a4d9b9ddf54a6d529ca2395888117c",
+    "ai-service-python/services/deep_research/workflow_units.py": "179a77809ae16d246d30afc6527251515e6386123d9cc8ed70f9c6fa89aed889",
+    "ai-service-python/services/deep_research/workflow_lifecycle_units.py": "40d67b0ebcc0b5625af5e1b05a5deacaa8fb2c867ca4c06771bfc38a107596fd",
+    "ai-service-python/tests/test_deep_research_workflow_lifecycle_units.py": "3c67c4c83dee20e523c4b6e39ca2f3b7b50923c0867bfc033b72dc3f288951c9"
+  },
+  "capacity": {
+    "sourceBytes": 22637,
+    "units": [
+      {
+        "node": "plan_workflow_meta",
+        "bytes": 28465,
+        "losslessRoundtrip": true
+      },
+      {
+        "node": "plan_workflow_init",
+        "bytes": 30039,
+        "losslessRoundtrip": true
+      },
+      {
+        "node": "plan_workflow_init",
+        "bytes": 31046,
+        "losslessRoundtrip": true
+      }
+    ],
+    "providerCalls": 0,
+    "boundary": "Saved real source input with abstract workflow fixtures; actual generated contexts remain separately guarded.",
+    "evidenceItems": 14,
+    "authoritativeInputSha256": "63512a71cc393b6b3a133803fc3a0ad73708c752d351eab9c1366135cfba5359"
+  },
+  "fullRegression": {
+    "sourceCommit": "4dcaa506e203b8903688623ad8969dd5a860c9e6",
+    "files": 246,
+    "passed": 4547,
+    "warnings": 1,
+    "seconds": 817.06,
+    "sourceStable": true,
+    "logSha256": "bec16354deedd4db6c0c48b2ef2630c048299c7e2a91ce67722584633072f95f",
+    "receiptSha256": "3d8dfd41a8d84388b2c4f33add9dbe6e29f0a2b286da5f6bc3c7b8c6fe38c6c3"
+  },
+  "supersededRegression": "earlier full run deliberately stopped after lossless-input repair; not acceptance evidence",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "serviceRestarts": 0,
+  "boundary": "Versioned generation candidate. Offline fixtures do not prove provider-backed scientific content or DR0-DR5 completion.",
+  "postCandidateFixes": [
+    "Defer initializer-only component usage until complete assembly",
+    "Use target creation boundary rather than baseline frame for late initialization"
+  ],
+  "legacyReplay": {
+    "scripts": 38,
+    "allPassed": true,
+    "providerCalls": 0,
+    "productionWrites": 0,
+    "summarySha256": "c24aac88519763e9e9abf6637010d872e1341033afd25227c4b7bd52c673f076"
+  }
+}

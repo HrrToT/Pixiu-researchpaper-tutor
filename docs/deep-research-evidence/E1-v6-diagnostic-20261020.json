@@ -1,0 +1,171 @@
+{
+  "date": "2026-10-20",
+  "sourceCommit": "c57869b8",
+  "promptVersion": "dr-v2.20261020.205",
+  "sourceContinuityContractVersion": 1,
+  "case": "E1-v6",
+  "split": "development",
+  "runId": "dr_run_61999a4705905265ae02d8ad5666144d",
+  "frozenCaseCommit": "a023b204",
+  "caseDigest": "bd1d0ce86c956a1f44f427a1d7b2cd108b1f5ce84f4a2b5c4218ae6591b5650d",
+  "questionAndCriteriaUnchanged": true,
+  "status": "completed",
+  "outcome": "inconclusive",
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "settledModelCalls": 13,
+  "settledTokens": 56226,
+  "newUnknowns": 0,
+  "elapsedSeconds": 88.934,
+  "actualContextChain": {
+    "sourceId": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-37",
+    "workId": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf",
+    "versionId": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98",
+    "contentHash": "d171cdee84d6cc63c044d9959079ee5759cfe50b5bbf952649e204ff8b45baea",
+    "materialContentHash": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98",
+    "location": {
+      "page": 8,
+      "chunk": 37,
+      "section": "Evaluations"
+    },
+    "readCount": 10,
+    "priorReadBeforeAnchor": true,
+    "quote": "We utilize distinct approaches to model the transformations of 3DGs from the first to the second frame within the flame salmon video of the N3DV dataset to show the effectiveness of NTC.",
+    "evidenceId": "ev_e34196d11497b3956f133f4f4f9f4670ef36ac774d1a0a60f21f50a99cbc0cd3",
+    "literalVerified": true,
+    "citedByDataClaim": true,
+    "notScientificAcceptance": true
+  },
+  "actualRepair": {
+    "sent": true,
+    "fingerprintMatched": true,
+    "inputBytes": 23989,
+    "inputCap": 24000,
+    "outputCap": 4096,
+    "targets": [
+      [
+        "c1",
+        "c2",
+        "c3",
+        "c4",
+        "c5",
+        "c6",
+        "c7",
+        "c8",
+        "c9"
+      ]
+    ],
+    "reconstructedDrafts": 2,
+    "draftsMatchSavedResult": true,
+    "scientificallyAccepted": 0
+  },
+  "observedRoleObjectWrappers": {
+    "c2": "groups",
+    "c3": "controls",
+    "c5": "budget",
+    "c6": "steps"
+  },
+  "observedCompactParameterRows": {
+    "claimId": "c2",
+    "rows": [
+      [
+        "max_additional_gaussians",
+        "number",
+        1000
+      ],
+      [
+        "addition_threshold",
+        "number",
+        0.01
+      ]
+    ],
+    "oldGroupSchemaErrors": [
+      "factors[0].treatment 参数[0]: 参数必须是对象",
+      "factors[0].treatment 参数[1]: 参数必须是对象"
+    ],
+    "controlledExactNameTypeValueObjectsGroupSchemaErrors": [],
+    "productionChanged": false,
+    "boundary": "Controlled shape diagnosis only; no scientific judgment, source attribution, operator choice or historical verdict was changed."
+  },
+  "finalRejectedClaims": [
+    {
+      "claimId": "c2",
+      "reason": "incomplete_execution_spec",
+      "detail": "spec: 缺少键 'factors', spec: 存在多余键 'groups', spec.factors 必须是列表",
+      "revisionRejection": {
+        "claimId": "c2",
+        "reason": "incomplete_execution_spec",
+        "detail": "factors[0].treatment 参数[0]: 参数必须是对象, factors[0].treatment 参数[1]: 参数必须是对象"
+      }
+    },
+    {
+      "claimId": "c3",
+      "reason": "incomplete_experiment_protocol",
+      "detail": "controls.fields"
+    },
+    {
+      "claimId": "c5",
+      "reason": "incomplete_budget_spec",
+      "detail": "spec: 缺少键 'baseline', spec: 缺少键 'recovery', spec: 存在多余键 'budget'"
+    },
+    {
+      "claimId": "c6",
+      "reason": "incomplete_experiment_workflow",
+      "detail": "workflow.fields, workflow.refs, workflow.order, workflow.baselineMode, workflow.replicationMode, workflow.baseline_initialization, workflow.componentInitializations, workflow.checkpointSelection, workflow.records",
+      "revisionRejection": {
+        "claimId": "c6",
+        "reason": "semantic_unresolved",
+        "detail": "步骤顺序固定但缺少具体数值：未指定恢复预算的具体值（仅引用c5，但c5未提供数值），未指定评估的留出相机视角数量或选择规则，未指定记录输出的具体格式或内容。此外，baselineInitialization中stage0_3dg_params的shape [100000,59] 和ntc_mlp_weights的shape [128,7] 未在论文或上下文中定义，且初始化值为常数0.0，未说明如何从预训练模型加载实际参数。componentInitializations中ntc_weights的初始化方式为derive，但输入选择器'flame_salmon_frame0_to_frame1'未在上下文中定义，无法执行。"
+      }
+    },
+    {
+      "claimId": "c1",
+      "reason": "semantic_unresolved",
+      "detail": "假设声称执行第2阶段会提高PSNR/SSIM，但证据E1/E2仅表明跳过第2阶段无法捕捉新出现对象，未提供PSNR/SSIM数值或方向性证据；且假设未明确配对观察、聚合规则或与c8分析中描述性差值的一致性，无法验证。"
+    },
+    {
+      "claimId": "c4",
+      "reason": "semantic_unresolved",
+      "detail": "数据可用性未证实：证据E1和E2仅提及flame salmon场景，但未提供该场景在N3DV数据集中的确切可用性、视图数量或任何已发布资产；同时，帧窗口第0帧到第1帧与E2中'first to second frame'的表述不一致，且相机划分规则（每5个相机索引留出1个）未指定具体索引或确保训练/评估非空。"
+    },
+    {
+      "claimId": "c7",
+      "reason": "semantic_unresolved",
+      "detail": "速度测量协议不完整：未指定分辨率、预热程序细节、同步方法、计时区域和重复次数；存储测量边界仅提及'当前帧3DG参数字节数'，但未明确包含哪些文件或模型表示，且未说明单位换算或排除项。"
+    },
+    {
+      "claimId": "c8",
+      "reason": "semantic_unresolved",
+      "detail": "分析提案未指定配对观察（如按相机视图配对）、聚合规则（如窗口平均）或决策规则的具体边界；仅给出差值公式和描述性模式，缺乏可执行性。"
+    },
+    {
+      "claimId": "c9",
+      "reason": "semantic_unresolved",
+      "detail": "限制声明未明确失效条件或具体混杂因素，仅泛泛提及不保证改善和单场景限制，未说明实验无法建立的内容（如因果推断或推广性）。"
+    }
+  ],
+  "remaining": [
+    "Source acquisition/read/extraction/citation is proven, but no complete experimental plan. Distinguish actual membership evidence from download/count availability and proposed splits; do not fabricate missing author assets.",
+    "Prevent/handle exact single same-role object wrappers without dropping other fields or changing values, then retain full original structural/scientific checks.",
+    "Version narrowly declared operation parameter rows/marked tables before verification; model copied compact rows into an ordinary parameters field. Existing exact type/value and source checks must still apply.",
+    "Fix full3DGS/NTC initialization, invented pretraining selectors/zero weights, finite whole-stage budget, training-only eligible window, real intervention and measurements. Audit review of future hypotheses and proposed indexing separately without accepting real defects."
+  ],
+  "rawFiles": [
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v6.json",
+      "sha256": "c4112912318ee366715ad5f190c62762c27b0294a466be41dda416752727dc2a"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v6.payload.json",
+      "sha256": "65b0d75240ea20e9c0085b19f2083329f3d1fb32d83c64ff72f02842d9c04fb6"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v6.calls.json",
+      "sha256": "02204a1e33a2bd90f6720562ec3bf8811d374a46a5599f4107a8eab3784aad0e"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v6.result.json",
+      "sha256": "6c0602505a0a3067a72d21eb4a8b707737789015f3c72905c43d4ce3e3b80546"
+    }
+  ]
+}

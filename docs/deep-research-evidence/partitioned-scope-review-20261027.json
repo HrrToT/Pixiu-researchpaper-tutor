@@ -1,0 +1,105 @@
+{
+  "date": "2026-10-27",
+  "sourceCommit": "905604b13282dcb2012e2569eeeafe02bcfc1970",
+  "scopeExpressionReviewContractVersion": 2,
+  "tests": {
+    "exitCode": 0,
+    "testFileCount": 40,
+    "elapsedSeconds": 283.344,
+    "hashesStable": true,
+    "hashes": {
+      "services/deep_research/tools.py": "95d0752a70b5f2afeb54df3166cea12809e2d6835e679f54d349276fbff1cf0d",
+      "services/deep_research/facade.py": "93bc0f240a552b668cda50ee026fb2d88a1480351b3215931e8fb7c9742e3b40",
+      "services/deep_research/scope_expression_review.py": "4e902223bd95b2527718df3082f89b60f151121774b7b193856f682a2402f395",
+      "services/deep_research/partitioned_scope_review.py": "afdffd7ffe411d20f7cb274fa27379893483c9c25124a33264efd9ae70b84c1c",
+      "tests/test_deep_research_absence_scope.py": "7b6211cdd39a75a1ded2ca0045de16306ceef95ea7abf0d27095fc9e4741e587",
+      "tests/test_deep_research_audit_format_scope.py": "e0256ff9dc073e1cbe0930e3b92bf3c7789734eb9ae86b35c97b5441070bf1e1",
+      "tests/test_deep_research_bounded_factual_review.py": "bbb4d7a208c217b25cae11aa15d5d8e5056cd33d3ab88373115df9514d13bfa9",
+      "tests/test_deep_research_budget_contract.py": "2e35b157aa7c8e7ad66405f5485eddaba0a753fe5300a83261c330aaa77f6538",
+      "tests/test_deep_research_budget_spec.py": "c413c6cc0ec22cdebc34166cb3d65d9ec76380ebfbb394c9c4ab08790b9d769b",
+      "tests/test_deep_research_comparison_reasoning.py": "cc6fc08853ad542a9c8fe0f8889762e879e19b98e7c2f6181366260c395440b3",
+      "tests/test_deep_research_concise_factual_redraft.py": "d022a13987300801c37d65a476d37e9ce5f113db6ee4711aa7c30544524fc6bf",
+      "tests/test_deep_research_current_evidence_scope.py": "0557b063843a232b6d706841ed5e5b77149758963972ecf1f00ad691ffd447a2",
+      "tests/test_deep_research_factual_reasoning.py": "2d39ea8b3264985d2bebd3fa776a6be68dbbb9e5d2b75d237f0aaf74a79abca6",
+      "tests/test_deep_research_factual_redraft.py": "d125939212719dbe617d794f3ef63d6c01fb77c06a4716fe8f24f8f86f3a3229",
+      "tests/test_deep_research_factual_scope.py": "c2cb3c27d057a7fbb0df3fda13b42c6a1ade8377b67fc641a40340061b849e61",
+      "tests/test_deep_research_metric_scope.py": "19017eef00aee62ee3b58464a0138de4cc8860f876fa3a27bbcd511994de539a",
+      "tests/test_deep_research_partitioned_scope_review.py": "6f75ea2cdab37f72da9b65ddaa1f15ce94de8f28a033de22c49d2922eac27474",
+      "tests/test_deep_research_prompt_budget.py": "03c9f4b0a9f1f507b1b00e58ed4a2224018fe201bba39d1b1c2db345bcc57904",
+      "tests/test_deep_research_prompt_budget_integration.py": "14d46ec794941a67194c1b57fe58dd759279cb341fdaad2476cc4ee98aacffca",
+      "tests/test_deep_research_repair_budget.py": "915a4f005ece4682fb6c87f1160e07798daaf9d32c4e957aa8f9eb6509068918",
+      "tests/test_deep_research_repair_scope.py": "b87ab73352d5ffae9cbb722c005a0123d40e99f767944efa7da2218664918b5b",
+      "tests/test_deep_research_repair_verification_failure.py": "084c4f24b2066c3b4d67a8c8de9d8b83c93ecec20ca1e2d7fc59a53c2709e551",
+      "tests/test_deep_research_reporting_absence_scope.py": "22ceb42ca51ba2bfaa7e671787824a587cf84df1ad8d192d307026bf5ca34f35",
+      "tests/test_deep_research_review_response_shape.py": "eafe5d37b56941ed27152fb81f813bff10484951c706a505b4f61710060c5c38",
+      "tests/test_deep_research_revision_scope.py": "fabfa58e2e9ada81d0f479c22b10347da124151f1ff195105291ca6c2fc287e7",
+      "tests/test_deep_research_scope_expression.py": "fc2756baabba1627ec97329ab9098bedc4a8620947ade32697c94010f7dd2836",
+      "tests/test_deep_research_scope_expression_review.py": "29d9f12764e31d951bddb076ef50234ebfa6957b63e6ddd63f12c22df2f671f0",
+      "tests/test_deep_research_unknown_recovery.py": "8c051bf0b55304d11b7ebd578ac68137f94bfd6c91d7e48056fd2fde8532e33a",
+      "tests/test_deep_research_verification.py": "c563cfcf6d349ebba6a3fcb5776b4cd5cc0185dae29c97c1bc90e17181ca8f00",
+      "tests/test_deep_research_verification_aliases.py": "d262b063b81d77c19ed0d2e45b449ba9d5085715f68471b8028a11dcfd213d82",
+      "tests/test_deep_research_verification_capacity.py": "1513e94e2154de0011298b923ca4e2356b1e152d4036f9e7c1db889e94cfb183",
+      "tests/test_deep_research_verification_context.py": "8a824323c4ba72cd2be9d02cedfb568019917e3dc3cae990698ba44d5281c031",
+      "tests/test_deep_research_verification_window.py": "f1ccccec7c970b0b02f0fca10937d362e431a312b32d12d2cfca36d3d7f4aeb6",
+      "tests/test_deep_research_visible_answer_budget.py": "84dfe35a1ef93767bf4c29fa7253f61df539ca4eb0675b864bb25f544a189eed",
+      "tests/test_deep_research_workflow_fit_budget.py": "18092a9b4070bb8b7150fc2a348f802daca2d84e8a0f52e22300c97530ffcc54",
+      "tests/test_deep_research_workflow_fit_budget_integration.py": "40fc4cbf5f1706a71cb7561bfc4f370f5cb77ec0a74b0df229d982de72e7eec6",
+      "tests/test_deep_research_workflow_lifecycle_profile.py": "d8aa3b12f25e6670ad0aefcc5dd386c228fbc1e4d2201ca12bcccdf8aa6dffea",
+      "tests/test_deep_research_workflow_metadata_bounded_schema.py": "fbb1366aaaa45368e1de25f73417809ed2ca1e25c3c9f38b75a7cd873baaf45a",
+      "tests/test_deep_research_workflow_metadata_scope_end.py": "082336ca7dac11d7bafe0ef11f05dd748a70a32ddf24ec6763ed73a744ddb581",
+      "tests/test_deep_research_workflow_metadata_scope_end_integration.py": "8c7df23f7015d58ba179fe3fa68ab497ec6eaedaef2846740fa5f49d3b1b6e50",
+      "tests/test_deep_research_workflow_metadata_scope_start.py": "8e42507404f786c6b7e3f70763d5ea483636e035086555855837d385ee03e8d6",
+      "tests/test_deep_research_workflow_scope_position.py": "039fcbf9e1b574c99dffe30d9bf73837b139be4d4c619eb8950055bf674d556e",
+      "tests/test_deep_research_workflow_scope_position_integration.py": "36232791c93febe5b93e6871fb9f1ff512290b0ed3be1b88d536ee5d6709b4f4",
+      "tests/test_deep_research_workflow_scope_start_integration.py": "8d6645da4b6ece8b7281ac83e0dd30ce8b9091c3ecea32d61ee75a620bc2ec79"
+    },
+    "summary": "........................................................................ [ 11%]\n........................................................................ [ 22%]\n........................................................................ [ 33%]\n........................................................................ [ 44%]\n........................................................................ [ 55%]\n........................................................................ [ 66%]\n........................................................................ [ 77%]\n........................................................................ [ 88%]\n........................................................................ [ 99%]\n......                                                                   [100%]\n654 passed in 279.74s (0:04:39)\n",
+    "providerCalls": 0
+  },
+  "capacity": {
+    "run": "D1-v33 read-only copy",
+    "results": [
+      {
+        "phase": "initial",
+        "observationRequests": [
+          {
+            "inputBytes": 13211,
+            "maxInputBytes": 32000
+          },
+          {
+            "inputBytes": 13205,
+            "maxInputBytes": 32000
+          }
+        ],
+        "boundaryInputBytes": 8106,
+        "boundaryMaxInputBytes": 32000,
+        "allOwnQuotesUnchanged": true,
+        "ownEvidenceCount": 3
+      },
+      {
+        "phase": "repair",
+        "observationRequests": [
+          {
+            "inputBytes": 11508,
+            "maxInputBytes": 32000
+          },
+          {
+            "inputBytes": 11531,
+            "maxInputBytes": 32000
+          }
+        ],
+        "boundaryInputBytes": 5880,
+        "boundaryMaxInputBytes": 32000,
+        "allOwnQuotesUnchanged": true,
+        "ownEvidenceCount": 2
+      }
+    ],
+    "providerCalls": 0,
+    "reservations": 0,
+    "productionWrites": 0,
+    "contentApproval": false
+  },
+  "providerAcceptance": false,
+  "independentCredit": 0,
+  "boundary": "Final frozen-source offline behavior and request capacity only. No new paid case, no upgrade of D1-v33, no overall completion."
+}

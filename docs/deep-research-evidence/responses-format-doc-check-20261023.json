@@ -1,0 +1,20 @@
+{
+  "checkedAt": "2026-10-23",
+  "sources": [
+    "https://api-docs.deepseek.com/api/create-response/",
+    "https://api-docs.deepseek.com/guides/responses_api/"
+  ],
+  "documentedOutputFormat": {
+    "type": "json_schema",
+    "fields": [
+      "name",
+      "schema"
+    ]
+  },
+  "strictFieldDocumentedInResponsesFormat": false,
+  "unsupportedStrictParameterAdded": false,
+  "localInterpretation": "Keep the documented Responses format. A truncated reply is not an accepted schema-conforming response; preserve raw text and reject it locally. Absence of a strict field in these pages is not proof that every provider implementation rejects it.",
+  "providerCalls": 0,
+  "sourceChanges": 0,
+  "scientificApproval": false
+}

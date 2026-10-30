@@ -1,0 +1,133 @@
+{
+  "date": "2026-10-26",
+  "case": "E1-v75",
+  "runId": "dr_run_3682c252416351a898daa90c9798ce09",
+  "promptVersion": "dr-v2.20261026.285",
+  "metadataStatus": "ready",
+  "metadataRepairUsed": false,
+  "evaluations": [
+    {
+      "index": 4,
+      "kind": "evaluate",
+      "group": "0",
+      "groups": null,
+      "reads": [
+        {
+          "state": "stage1_ntc",
+          "selector": "all"
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "kind": "evaluate",
+      "group": "1",
+      "groups": null,
+      "reads": [
+        {
+          "state": "stage1_ntc",
+          "selector": "all"
+        },
+        {
+          "state": "stage2_additions",
+          "selector": "all"
+        }
+      ]
+    }
+  ],
+  "baselineStatus": "invalid_response",
+  "baselineErrors": [
+    "workflow.creation.input",
+    "workflow.states.operation_rule"
+  ],
+  "baselineValue": {
+    "sourceRefs": [
+      "E1",
+      "E2",
+      "E3",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E10",
+      "E11",
+      "E12",
+      "E14"
+    ],
+    "initialization": {
+      "initializationMode": "derive",
+      "inputs": [
+        {
+          "phaseId": "step_0_operation",
+          "outputId": "frame0_3dgs",
+          "selector": "all"
+        }
+      ],
+      "creation": {
+        "action": "train_frame0_3dgs",
+        "parameters": []
+      },
+      "stateDefinitions": [
+        {
+          "name": "frame0_3dgs",
+          "dtype": "float32",
+          "shape": [
+            {
+              "inputIndex": 0,
+              "axis": 0
+            }
+          ],
+          "initializer": {
+            "mode": "operation",
+            "inputIndices": [
+              0
+            ],
+            "rule": {
+              "action": "train_frame0_3dgs",
+              "parameters": []
+            }
+          }
+        }
+      ]
+    },
+    "unresolved": [
+      "Exact flame salmon frame count, resolution, and camera split from the N3DV dataset are not quoted in the provided evidence; verify the actual subset membership and held-out view availability before execution.",
+      "The paper's Stage 2 iteration count is not quoted; 150 iterations is a proposed compatible setting, not an author-confirmed Stage 2 budget.",
+      "The paper's held-out evaluation protocol for flame salmon is not quoted; the fixed held-out view rule is a proposed choice.",
+      "The paper's reported PSNR values for flame salmon are not quoted; no observed result is assumed.",
+      "The exact number of additional 3DGs spawned by the paper's strategy on flame salmon is not quoted; storage overhead must be measured, not assumed."
+    ]
+  },
+  "initializationRepair": {
+    "version": 1,
+    "unitKey": "baseline",
+    "status": "invalid_response",
+    "errors": [
+      "unit.json"
+    ],
+    "rawResponseSha256": "463b06ff2756362f8eb96a9328e37777460357303f6685a0e4004e430b4d2e0f",
+    "actualFeedback": {
+      "codes": [
+        "workflow.creation.input",
+        "workflow.states.operation_rule"
+      ],
+      "issues": [],
+      "scientificApproval": false
+    }
+  },
+  "schemaAudit": {
+    "genericSchemaAllowsThisPhaseInput": true,
+    "originalValueSatisfiesFullSchema": false,
+    "ruleParametersMinimum": 1
+  },
+  "posthocCompleteFenceNormalization": {
+    "equalsOriginalCanonicalValue": true,
+    "semanticErrorsStillPresent": [
+      "workflow.creation.input",
+      "workflow.states.operation_rule"
+    ],
+    "historicalResultUpgraded": false
+  },
+  "scientificApproval": false,
+  "independentCredit": 0
+}

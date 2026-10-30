@@ -1,0 +1,64 @@
+{
+  "date": "2026-10-22",
+  "case": "E1-v14",
+  "sourceCommit": "b0b60778",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "originalAllocationReconstructed": true,
+  "actualErrorCode": "synthesis_evidence_capacity",
+  "allocation": {
+    "originalBytes": 23717,
+    "originalMissing": [
+      {
+        "obligationId": "data_availability",
+        "criterionId": "available_data",
+        "requirement": "核对拟议数据选择的现有场景或样本依据，以及已取得证据的范围。",
+        "source": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf",
+        "evidenceIds": [
+          "E7"
+        ]
+      }
+    ],
+    "originalSelectedAliases": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6"
+    ],
+    "candidateEncodedFittingBytes": 23845,
+    "candidateMissing": [],
+    "candidateSelectedAliases": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7"
+    ],
+    "requiredAliases": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7"
+    ],
+    "allRequiredRawBytes": 24114,
+    "allRequiredEncodedBytes": 23845,
+    "requiredContexts": [
+      "E4",
+      "E5",
+      "E6"
+    ]
+  },
+  "originalPayloadUnchanged": true,
+  "candidateImplemented": false,
+  "independentCredit": 0,
+  "boundary": "Read-only diagnosis. The current body encoder runs after this fitter, so no planning/body/review was actually sent in E1-v14. Encoded-form fitting is only measured here; all mandatory method/data bundles remain required. It does not prove a scientific result or permit resending the old failed run. The fitting measurement uses the original2500-byte planning placeholder, not an actual returned plan; it cannot prove that a later full body will fit.",
+  "planningSlotReservedBytes": 2500,
+  "candidateFittingIncludesActualPlan": false
+}

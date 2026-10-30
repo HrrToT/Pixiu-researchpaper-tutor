@@ -1,0 +1,102 @@
+{
+  "case": "E1-v81",
+  "runId": "dr_run_df448a31bdca518d9f7bddf4ce5abd3c",
+  "promptVersion": "dr-v2.20261026.292",
+  "status": "failed",
+  "settledModelCalls": 8,
+  "settledTokens": 40481,
+  "elapsedSeconds": 84,
+  "unsettledCalls": 0,
+  "metadata": {
+    "original": {
+      "issues": [
+        {
+          "code": "steps.record_coverage",
+          "path": "/steps/3/recording/inputs",
+          "actual": [
+            {
+              "outputId": "rendered_images_arm_a",
+              "selector": "rgb"
+            }
+          ],
+          "expected": "persist all declared observation outputs; never synthesize missing selectors",
+          "actualPresent": true
+        },
+        {
+          "code": "steps.record_coverage",
+          "path": "/steps/4/recording/inputs",
+          "actual": [
+            {
+              "outputId": "rendered_images_arm_b",
+              "selector": "rgb"
+            }
+          ],
+          "expected": "persist all declared observation outputs; never synthesize missing selectors",
+          "actualPresent": true
+        }
+      ],
+      "firstStep": {
+        "kind": "setup",
+        "action": {
+          "action": "load_frame0_checkpoint",
+          "parameters": [
+            {
+              "name": "checkpoint_source",
+              "type": "choice",
+              "value": "n3dv_flame_salmon_iteration_15000"
+            }
+          ]
+        },
+        "budget": null
+      },
+      "rawDigest": "89b23fb9257f42e3f68751c5f702cb95d45aa7ca6ac226d3d901d16f62dca505"
+    },
+    "repair": {
+      "issues": [
+        {
+          "code": "steps.record_coverage",
+          "path": "/steps/3/recording/inputs",
+          "actual": [
+            {
+              "outputId": "rendered_images_arm_a",
+              "selector": "rgb"
+            }
+          ],
+          "expected": "persist all declared observation outputs; never synthesize missing selectors",
+          "actualPresent": true
+        },
+        {
+          "code": "steps.record_coverage",
+          "path": "/steps/4/recording/inputs",
+          "actual": [
+            {
+              "outputId": "rendered_images_arm_b",
+              "selector": "rgb"
+            }
+          ],
+          "expected": "persist all declared observation outputs; never synthesize missing selectors",
+          "actualPresent": true
+        }
+      ],
+      "firstStep": {
+        "kind": "setup",
+        "action": {
+          "action": "load_frame0_checkpoint",
+          "parameters": [
+            {
+              "name": "checkpoint_source",
+              "type": "choice",
+              "value": "n3dv_flame_salmon_iteration_15000"
+            }
+          ]
+        },
+        "budget": null
+      },
+      "rawDigest": "ec7321b18b79dfe669ff92f4f40dfb0498986a6c858ee66ce95fbc0fe5802431"
+    }
+  },
+  "payloadSha256": "ca9de2c9fa1e783160b54cbe8dcccac59292a8228bcb0ea7010178be00e353f4",
+  "scientificApproval": false,
+  "independentCredit": 0,
+  "boundary": "Reference-stage errors no longer observed in this run. Observation coverage fails before initialization; load checkpoint choice and baseline semantics have not been scientifically validated."
+}

@@ -1,0 +1,63 @@
+{
+  "date": "2026-10-18",
+  "case": "D1-v16",
+  "runId": "dr_run_a68c2257f81051589f9841bd8b23374d",
+  "sourceCommit": "74673c96",
+  "promptVersion": "dr-v2.20261018.128",
+  "question": "只依据LightGaussian，核查压缩后图像质量接近原始3DGS这一说法。区分作者报告的结果、成立条件和未验证范围。只写最关键的两点，300字以内。",
+  "status": "completed",
+  "outcome": "partial",
+  "contentAccepted": false,
+  "modelCalls": 9,
+  "settledTokens": 37294,
+  "elapsedSeconds": 37.903,
+  "cost": null,
+  "report": "## 判断\n\n- 作者报告在Mip-NeRF 360数据集上，LightGaussian（Ours）的PSNR为27.13，原始3D-GS为27.21；SSIM为0.806对0.815；LPIPS为0.237对0.214。 [1](#research-evidence-ev_ab9685875c28c1ea14d0b937d46acbe69e99bdfb53a13d0b0c5c698de8fcb2fd) [2](#research-evidence-ev_ffe2afc10303963ace5068705474a2c111bd99e53c60afe414460f77471fc747)\n\n<details>\n<summary>还有 1 项未完成</summary>\n\n- 作者在哪些数据集、场景或实验设置下报告了图像质量结果？这些结果是否适用于其他条件？：最终回答尚未完整回应这一问题\n\n</details>\n\n论文事实已按所列原文核对。\n\n<details>\n<summary>原文依据</summary>\n\n**[1] LightGaussian: Unbounded 3D Gaussian Compression with 15x Reduction and 200+ FPS** · 第 6 页 · 全文片段\n\n> Table row 8: 3D-GS [16] | 134 | 734MB | 27.21 | 0.815 | 0.214 | 154 | 411MB | 23.14 | 0.841 | 0.183\n\n**[2] LightGaussian: Unbounded 3D Gaussian Compression with 15x Reduction and 200+ FPS** · 第 6 页 · 全文片段\n\n> Table row 10: Ours | 237 | 45MB | 27.13 | 0.806 | 0.237 | 357 | 25MB | 23.44 | 0.832 | 0.202\n\n</details>",
+  "initialVerification": {
+    "accepted": [],
+    "rejected": [
+      {
+        "claimId": "c1",
+        "reason": "numeric_mismatch"
+      },
+      {
+        "claimId": "c2",
+        "reason": "absence_not_established"
+      }
+    ]
+  },
+  "findings": [
+    "The bounded repair now preserves both LightGaussian and original 3D-GS in the same Mip-NeRF 360 table group.",
+    "PSNR 27.13 vs 27.21, SSIM 0.806 vs 0.815 and LPIPS 0.237 vs 0.214 match the visually inspected original unstarred baseline and Ours rows.",
+    "The conditions repair still asserted that other datasets or compression rates were not tested. The cited passages do not establish paper-wide absence, so rejection is appropriate.",
+    "The result correctly remains partial with one explicit scope gap; it cannot satisfy the requested two-point answer or full content acceptance.",
+    "All nine model requests settled, no unknown/retry, no budget enlargement; raw output and the unsuccessful conditions repair remain recorded."
+  ],
+  "scores": {
+    "goalResponse": 3,
+    "evidenceSupport": 4,
+    "conditions": 2,
+    "synthesisValue": 3,
+    "executability": null,
+    "readability": 4
+  },
+  "rawFiles": [
+    {
+      "path": "tmp\\dr-acceptance-receipts\\D1-v16.json",
+      "sha256": "711917a81d94835ea7c3c5a53a636d9dd8c0c05f80b44f5d16828fb41a10a2d7"
+    },
+    {
+      "path": "tmp\\dr-acceptance-receipts\\D1-v16.payload.json",
+      "sha256": "f81c6d2b1b449dfc20d7c20d3c1edad4a273e0b4ae81405842cbb9a7c2671823"
+    },
+    {
+      "path": "tmp\\dr-acceptance-receipts\\D1-v16.calls.json",
+      "sha256": "1c98bb08ed9fca2d59532c9d3cc485dd6628c4c45f799e248eb428d07178bf7b"
+    },
+    {
+      "path": "tmp\\dr-acceptance-receipts\\D1-v16.result.json",
+      "sha256": "bae5c2beb13ff50861ce841b0690285052fcc1ad56641289fd85debd6b570cd4"
+    }
+  ],
+  "boundary": "A concrete comparison-purpose improvement, not a final quality pass. No output is rewritten to make it appear accepted."
+}

@@ -1,0 +1,64 @@
+{
+  "date": "2026-10-20",
+  "sourceCase": "H2F-v8",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "inputClaimUnchanged": {
+    "claimId": "c1",
+    "kind": "reported",
+    "text": "Deformable 3D Gaussians v2的输入是一组单目动态场景图像，附带时间标签和由SfM标定的相机位姿，SfM同时生成稀疏点云。3DGStream v4从多视角视频流构建照片级真实自由视点视频流。",
+    "evidenceRefs": [
+      "ev_e28ec6485011e1fc99874afce43b3041e486be74d12db4b3de4cb80e586f79fb",
+      "ev_29e325e167454a4f9c1a78a962a3a447163b5e5d804acd3b761ce733857152cd"
+    ],
+    "conditions": {},
+    "detailLevel": "fulltext",
+    "obligationIds": [
+      "ob_1"
+    ]
+  },
+  "oldRejection": [
+    {
+      "claimId": "c1",
+      "reason": "numeric_mismatch",
+      "missingReportedNumbers": [
+        "1e0"
+      ],
+      "detail": "本条引用原文未直接报告这些数值：1。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。"
+    }
+  ],
+  "newHardCheckEligible": true,
+  "independentSemanticVerificationStillRequired": true,
+  "oldPublishedFalsePass": {
+    "claimId": "c4",
+    "kind": "inference",
+    "text": "Deformable 3D Gaussians v2的主表FPS是在3090 GPU且点云数量少于250k的条件下测得的，而3DGStream v4的主表FPS条件未在提供的证据中说明，因此不能凭各自主表FPS给出同条件速度排名。",
+    "evidenceRefs": [
+      "ev_4954c60dac32eec0145fc1e71da3fa818a9ab7f9a0fadd72de0521ff1f7568fd"
+    ],
+    "conditions": {},
+    "detailLevel": "fulltext",
+    "obligationIds": [
+      "ob_4"
+    ]
+  },
+  "newAbsenceRejection": [
+    {
+      "claimId": "c4",
+      "reason": "absence_not_established",
+      "detail": "本条引用没有明确建立作者或论文缺少这些验证。把结论限定为本次引用能支持的实验范围及其不能证明的推广；不要写成作者未在其他条件验证、论文没有提供或全文不存在。引用中的其他否定句不构成这项缺席判断的依据。"
+    }
+  ],
+  "positiveAttributionTargets": [
+    {
+      "statementPath": [
+        "text"
+      ],
+      "statementExcerpt": "Deformable 3D Gaussians v2的主表FPS是在3090 GPU且点云数量少于250k的条件下测得的"
+    }
+  ],
+  "originalCaptionContextRoleRejection": [
+    "result_purpose_not_established"
+  ],
+  "boundary": "Offline replay of unchanged actual received claims/evidence only; no historical outcome upgrade, new generation, semantic approval or independent credit."
+}

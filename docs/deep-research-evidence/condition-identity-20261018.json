@@ -1,0 +1,29 @@
+{
+  "date": "2026-10-18",
+  "sourceCommit": "92598500",
+  "promptVersion": "dr-v2.20261018.123",
+  "checks": {
+    "passed": 2016,
+    "warnings": 1,
+    "seconds": 105.79,
+    "log": "tmp/pytest-dr123-full-final.log",
+    "sourceCommit": "92598500"
+  },
+  "runtime": "runtime-load-dr123-condition-identity-20261018.json",
+  "behavior": [
+    "Recognized A/H/V/RTX/GTX device IDs accompanied by hardware context must occur in that exact claim cited literal quote or bounded original context.",
+    "Another claim citation or a model-extracted condition cannot supply the device. RTX variants remain distinct; a literal match still needs independent semantic review.",
+    "Prospective device choices remain proposals rather than falsely requiring a paper measurement.",
+    "Planning requests minimum answer requirements without exhaustive extra scene-count/metric narration for short questions.",
+    "Repair preserves method variants and must cite the actual supporting condition passage or remove/narrow the condition.",
+    "Final coverage policy distinguishes an uncited source revealing a gap from a covered answer binding. Instructions are compacted without clipping original quotes or claims."
+  ],
+  "initialRegression": {
+    "log": "tmp/pytest-dr123-full.log",
+    "passed": 2013,
+    "failed": 3,
+    "finding": "Added redundant audit map/instructions broke prompt-reader fixtures and displaced a complete quote in the long-input capacity case.",
+    "resolution": "Removed the duplicate map; condensed the existing policy. Original assertions and byte/call/token limits are unchanged. Targeted capacity/identity 30 passed, then complete suite passed."
+  },
+  "boundary": "Hard literal identity is a necessary check, never proof of hardware comparison fairness or semantic truth. No real .123 content score at deployment."
+}

@@ -1,0 +1,62 @@
+{
+  "version": 1,
+  "frozenAt": "2026-10-29",
+  "budgetProfile": "standard",
+  "review": {
+    "rawReceiptDirectory": "tmp/dr-live-cases",
+    "dimensions": [
+      "目标回应",
+      "证据支持",
+      "条件完整",
+      "综合价值",
+      "可读性"
+    ],
+    "minimumApplicableScore": 4,
+    "hardFailures": [
+      "伪造来源",
+      "严重事实错误",
+      "关键内容错绑",
+      "把建议当结果",
+      "越权超预算"
+    ],
+    "independentCredit": 0,
+    "singleSubmission": true,
+    "automaticRetry": false
+  },
+  "materials": {
+    "light": {
+      "path": "D:\\3DGS\\paper\\LightGaussian\\2311.17245v6.pdf",
+      "sha256": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634"
+    }
+  },
+  "cases": [
+    {
+      "id": "S1G",
+      "split": "development",
+      "materials": [
+        "light"
+      ],
+      "kind": "direction_survey",
+      "policy": "task_only",
+      "question": "仅依据任务中的LightGaussian全文，面向第一次读这篇论文的人，用不超过300字说明压缩流程三个主要环节分别改变了什么，给出理解它们的阅读顺序。不要推断所有场景都无损，也不要设计或声称执行了新实验。标明实际读到的是全文还是摘要。",
+      "required": [
+        "真实任务材料检索、全文读取和原文引用",
+        "剪枝及恢复、SH蒸馏、向量量化的不同作用",
+        "不把直接截断当作完整SH蒸馏",
+        "具体可用的阅读顺序",
+        "全文/摘要访问身份准确",
+        "实际成果发布及重复GET后不重复成果"
+      ],
+      "forbidden": [
+        "用摘要冒充全文",
+        "仅找到摘要便声称正文没有相关内容",
+        "保证无损或所有场景适用",
+        "执行或杜撰训练结果"
+      ],
+      "boundary": "New mechanism/reading-order development request. Does not resume or repeat unknown quality claim/comparison/experimental cases. Known paper, zero independent holdout credit."
+    }
+  ],
+  "caseDefinitionHashes": {
+    "S1G": "12b20f54f4585c2b3a646be516e623435e706efba9e06db9de2fec6073b32923"
+  }
+}

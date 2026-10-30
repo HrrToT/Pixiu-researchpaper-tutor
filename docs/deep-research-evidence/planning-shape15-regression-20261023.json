@@ -1,0 +1,19 @@
+{
+  "date": "2026-10-23",
+  "promptVersion": "dr-v2.20261023.246",
+  "nativeContractVersion": 15,
+  "files": 235,
+  "passed": 4291,
+  "warnings": 1,
+  "seconds": 287.35,
+  "fullSuiteLog": "tmp/pytest-dr246-full.log",
+  "legacyReplayScripts": 38,
+  "legacyReplayAllPassed": true,
+  "actualE1v36HistoricalFingerprintMatched": true,
+  "actualE1v36FailurePreserved": true,
+  "newVersionPhysicalTransportMockPassed": true,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "scientificApproval": false,
+  "boundary": "Offline structure,source/row/budget rejection,immutable preparation identity,raw retention,resume audit checks and historical compatibility. No real new scientific case or independent acceptance credit."
+}

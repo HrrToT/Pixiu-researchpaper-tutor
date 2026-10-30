@@ -1,0 +1,72 @@
+{
+  "date": "2026-10-25",
+  "candidateVersion": 5,
+  "defaultVersion": 4,
+  "runtimePromptVersion": "dr-v2.20261025.266",
+  "associatedRegression": {
+    "files": 14,
+    "passed": 245,
+    "seconds": 32.64,
+    "log": "tmp/pytest-metadata-revision5-associated-20261025.log"
+  },
+  "actualInputReplay": {
+    "case": "E1-v56",
+    "candidateVersion": 5,
+    "originalRawBytes": 8347,
+    "semanticContentBytes": 4188,
+    "rawByteCap": 16384,
+    "semanticByteCap": 8192,
+    "formattingCapacityExceeded": false,
+    "allAuthoritativeInputPreserved": true,
+    "allInvalidWireValuesPreserved": true,
+    "inputWithSchemaBytes": 28562,
+    "inputByteCap": 32000,
+    "reservedNameIssues": [
+      {
+        "code": "wire.component.reserved_name",
+        "path": "/componentRows/0/0",
+        "actual": "baseline",
+        "expected": "nonreserved component ID; baseline/training_data are input handles, not components"
+      }
+    ],
+    "legacyV4RequestDigest": "3402e460b49295bad2dff25f129a2cb58a98a725b642f402de64cf8ef2363f38",
+    "legacyV4RequestPreserved": true,
+    "providerCalls": 0,
+    "productionWrites": 0,
+    "scientificApproval": false,
+    "boundary": "Read-only candidate input/feedback replay. The original v4 capacity failure remains unchanged; candidate feedback is not semantic repair or scientific approval."
+  },
+  "rawResponseByteCap": 16384,
+  "semanticContentByteCap": 8192,
+  "metadataOutputTokens": 3072,
+  "wholeRunLimits": {
+    "calls": 18,
+    "tokens": 100000,
+    "wallSeconds": 360
+  },
+  "fullRegression": {
+    "status": "passed",
+    "sourceCommit": "d5d7abe13239bb10de2c5da41801c1b613c7f7e7",
+    "files": 257,
+    "log": "tmp/pytest-metadata-revision5-full-20261025.log",
+    "receipt": "tmp/metadata-revision5-full-receipt-20261025.json",
+    "passed": 4754,
+    "warnings": 1,
+    "testSeconds": 348.98,
+    "elapsedSeconds": 351.89,
+    "sourceStable": true,
+    "logSha256": "d75c751d25510004b9f596a186a4ad48322ed5c1def622e78e4c12cbea1ff8eb"
+  },
+  "sourceHashes": {
+    "services/deep_research/planning_transport.py": "d7355fdf64541c9c6b2d98a4cb62bd3ec721bc611116507dba16178db669c5c3",
+    "services/deep_research/workflow_metadata_repair.py": "aa3fc4fc71da83a6e4d44dd330e4f37161c8ebe3e0ebd8176e3e905e0cbcf2ab",
+    "services/deep_research/workflow_units.py": "83f915d40da30a85aad2cdd90c66516bf42f4674bdf9c34cab67df3756ba52be",
+    "services/deep_research/workflow_metadata_revision5.py": "3bce14f7aa7faa3c936d03dcff1550cfaa0b8f598831a8d69d0538ca0da14d9b",
+    "tests/test_deep_research_workflow_metadata_revision5.py": "35c4621a0d8fddaa31fbf9c6504aa655d0d37c8462f924a7206d12703279464d",
+    "tests/test_deep_research_workflow_metadata_repair.py": "246dee572c3172c1c38efff207c15bad1630315f320a62697c86b5873c1af571"
+  },
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "scientificApproval": false,
+  "boundary": "Candidate only. Original raw storage grows only for v5, parsed content cap remains8KB, all fields/values retained. Invalid reserved component ID remains invalid and is explained to the model; no automatic rename, deletion, or historical pass."
+}

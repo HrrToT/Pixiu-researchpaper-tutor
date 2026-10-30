@@ -1,0 +1,72 @@
+{
+  "date": "2026-10-18",
+  "cases": [
+    {
+      "case": "D1-v25",
+      "legacySynthesisFingerprint": "52c73ce8be804f0ba39a34701a56c650c0526908c21151bf7b1c0ea46d2e4887",
+      "legacyRepairFingerprint": "a6e42e7ec2a995d59deeb5d3b196372f60533ad8a89e49725e7109f52575f6b6",
+      "legacyProviderFingerprintsMatched": true,
+      "exactPromptEvidenceAndSchemasUnchanged": true,
+      "oldSynthesisOptions": {
+        "max_tokens": 8192,
+        "temperature": 0.2,
+        "thinking": {
+          "type": "enabled"
+        },
+        "reasoning_effort": "low",
+        "response_format": {
+          "type": "json_object"
+        }
+      },
+      "newSynthesisOptions": {
+        "max_tokens": 8192,
+        "temperature": 0.2,
+        "thinking": {
+          "type": "enabled"
+        },
+        "reasoning_effort": "high",
+        "response_format": {
+          "type": "json_object"
+        }
+      },
+      "synthesisOutputCapUnchanged": 8192,
+      "directRepairRequestUnchanged": true,
+      "runBudgetUnchanged": true
+    },
+    {
+      "case": "D5-v11",
+      "legacySynthesisFingerprint": "ea473bbe04b68ddfe4e1191449b947152c4f4cd849e4789504cc83163b189071",
+      "legacyRepairFingerprint": "b148766feb04064314c08d5dba5968c038dcaba2d7a186696b4cc8cb57679ff9",
+      "legacyProviderFingerprintsMatched": true,
+      "exactPromptEvidenceAndSchemasUnchanged": true,
+      "oldSynthesisOptions": {
+        "max_tokens": 8192,
+        "temperature": 0.2,
+        "thinking": {
+          "type": "enabled"
+        },
+        "reasoning_effort": "low",
+        "response_format": {
+          "type": "json_object"
+        }
+      },
+      "newSynthesisOptions": {
+        "max_tokens": 8192,
+        "temperature": 0.2,
+        "thinking": {
+          "type": "enabled"
+        },
+        "reasoning_effort": "high",
+        "response_format": {
+          "type": "json_object"
+        }
+      },
+      "synthesisOutputCapUnchanged": 8192,
+      "directRepairRequestUnchanged": true,
+      "runBudgetUnchanged": true
+    }
+  ],
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "boundary": "Four exact old actual Provider fingerprints matched. Copied new record changes synthesis effort only; evidence, JSON, output caps, direct repair and round budgets stay unchanged. No semantic or content pass inferred."
+}

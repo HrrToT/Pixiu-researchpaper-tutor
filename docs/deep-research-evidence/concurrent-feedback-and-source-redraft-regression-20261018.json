@@ -1,0 +1,105 @@
+{
+  "date": "2026-10-18",
+  "sourceCommit": "77e16747",
+  "promptVersion": "dr-v2.20261018.146",
+  "contracts": {
+    "factRedraftContractVersion": 1,
+    "verificationFeedbackContractVersion": 2
+  },
+  "focused": {
+    "passed": 89,
+    "seconds": 11.51,
+    "log": "tmp/pytest-dr146-redraft.log",
+    "overlapsFullSuite": true
+  },
+  "copiedRealInputReplays": [
+    {
+      "case": "H1F-v8",
+      "originalRunId": "dr_run_f7aaffb1d6ad5665aced40aa199c1ce8",
+      "promptBytes": 18647,
+      "mandatoryQuotesPreserved": 2,
+      "originalAuditRetained": true,
+      "rejectedProseOmitted": true,
+      "firstRepairFeedback": [
+        {
+          "claimId": "c1",
+          "reason": "numeric_mismatch",
+          "missingReportedNumbers": [
+            "4e0"
+          ],
+          "detail": "本条引用原文未直接报告这些数值：4。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。"
+        },
+        {
+          "claimId": "c2",
+          "reason": "semantic_unresolved",
+          "detail": "证据E2支持将上一帧3D高斯作为初始化并经过NTC建模变换，证据E1支持NTC用浅层MLP将hash encoding映射为平移和四元数旋转；但E1/E2均未明确说明该hash encoding的输入是“每个高斯的位置特征”。该子句属于推断，未被证据直接支持，因此整体声明不能通过。",
+          "missingQuestions": [
+            "在3DGStream v4中，NTC预测高斯的哪些变化？如何利用前一帧的高斯表示来预测这些变化？",
+            "NTC预测高斯的哪些变化（平移和旋转）",
+            "如何利用前一帧的高斯表示来预测这些变化（使用前一帧的高斯作为初始化，通过NTC变换）"
+          ],
+          "missingEvidenceRefs": [
+            "ev_15a8e02f885a744622caa594dd331b7481bf66e9039cec2e9de762eab6c72891",
+            "ev_f51816e595f8373d3a4ec3dd73ea8147f5eb4a359e0f6b53a04cb89e24cfb73b"
+          ]
+        }
+      ]
+    },
+    {
+      "case": "D1-v18",
+      "originalRunId": "dr_run_41da9df239bb5992bd07489949471741",
+      "promptBytes": 23857,
+      "mandatoryQuotesPreserved": 2,
+      "originalAuditRetained": true,
+      "rejectedProseOmitted": true,
+      "firstRepairFeedback": [
+        {
+          "claimId": "c1",
+          "reason": "numeric_mismatch",
+          "missingReportedNumbers": [
+            "3e-1",
+            "8e-2"
+          ],
+          "detail": "本条引用原文未直接报告这些数值：0.3、0.08。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。",
+          "additionalChecks": [
+            {
+              "reason": "table_condition_not_displayed",
+              "requiredTableDisplay": [
+                {
+                  "group": "Mip-NeRF 360 Datasets",
+                  "method": "Ours"
+                },
+                {
+                  "group": "Mip-NeRF 360 Datasets",
+                  "method": "3D-GS [16]"
+                },
+                {
+                  "group": "Tank and Temple Datasets",
+                  "method": "Ours"
+                },
+                {
+                  "group": "Tank and Temple Datasets",
+                  "method": "3D-GS [16]"
+                }
+              ],
+              "detail": "保留表格数值时，同条正文或条件必须显示原表的数据组和方法身份。请核对requiredTableDisplay；保留星号、变体及分组层级，末尾参考文献序号可省略。不能只写另一个方法名代替Ours等原表标签，也不能修改单元格或加入未报告的计算。"
+            }
+          ]
+        },
+        {
+          "claimId": "c2",
+          "reason": "absence_not_established"
+        }
+      ]
+    }
+  ],
+  "realProviderCalls": 0,
+  "productionRowsChanged": 0,
+  "boundary": "Saved real-input prompt replay only; fixture returns no revisions. Full mandatory quotes and original audit targets retained. New graph routing, frozen-context identity and unknown non-reissue have offline tests. No claim of model response quality, independent acceptance or overall completion.",
+  "full": {
+    "passed": 2329,
+    "warnings": 1,
+    "seconds": 186.67,
+    "log": "tmp/pytest-dr146-full.log"
+  }
+}

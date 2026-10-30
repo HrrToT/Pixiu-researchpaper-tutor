@@ -1,0 +1,13 @@
+{
+  "case": "H5R-v19",
+  "sourcePayloadSha256": "82e09544b090f14f37e91439f2195e1018f9d3060de02ffb7119ab54229b5685",
+  "claims": 9,
+  "checks": 9,
+  "expandedBytes": 4496,
+  "sharedBytes": 1125,
+  "sharedCatalogs": 1,
+  "roundTripIdentityEnforcedByProductionBuilder": true,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "boundary": "Exact check-specific permissions are shared as identical input lists; no scientific verdict or budget change."
+}

@@ -1,0 +1,30 @@
+{
+  "date": "2026-10-22",
+  "sourceCommit": "8760db13",
+  "promptVersion": "dr-v2.20261022.235",
+  "experimentPlanEncodingContractVersion": 5,
+  "structuredOutputContractVersion": 11,
+  "fullOffline": {
+    "passed": 4157,
+    "files": 227,
+    "warnings": 1,
+    "seconds": 186.81,
+    "log": "tmp/pytest-dr235-complete-native.log",
+    "sha256": "ee0f99b208406997b0812c2482d88423ee8495aa1f9cda4436d34896d1d683c7"
+  },
+  "newTests": 24,
+  "focusedPassed": 126,
+  "focusedOverlap": true,
+  "legacyScripts": 35,
+  "legacyActualFingerprintsMatched": 99,
+  "privateSystemBytes": 882,
+  "reservedFramingTokens": 1024,
+  "rawPlanAndWireCapBytes": 4000,
+  "positiveCapRequiresNonemptyUniqueStateNameList": true,
+  "publicBudget1StillRejectsPrivateStepAlias": true,
+  "allNonPrivateMessagesExactlyVersion9": true,
+  "providerCalls": 0,
+  "productionWritesByTests": 0,
+  "independentCredit": 0,
+  "boundary": "Private fitting steps label is defined as optimizer updates and preserved literally, not a time conversion or video-frame count. Named trainables are declarations, not proof of existence/support. Public grammar,source permissions,actual budgets and scientific checks unchanged."
+}

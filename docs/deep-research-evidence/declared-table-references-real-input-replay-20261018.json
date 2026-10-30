@@ -1,0 +1,102 @@
+{
+  "date": "2026-10-18",
+  "inputCase": "D1-v25",
+  "runId": "dr_run_84c196c5f79150afa8f300bc4ebe16a0",
+  "legacyActualSynthesisFingerprintMatched": true,
+  "legacyArgsDigest": "52c73ce8be804f0ba39a34701a56c650c0526908c21151bf7b1c0ea46d2e4887",
+  "legacyAcceptedClaimWithRecordedPassedVerdict": true,
+  "actualDeclaredRowIds": [
+    0
+  ],
+  "parserEstablishedOwnRows": {
+    "ev_ab9685875c28c1ea14d0b937d46acbe69e99bdfb53a13d0b0c5c698de8fcb2fd": [
+      8
+    ],
+    "ev_ffe2afc10303963ace5068705474a2c111bd99e53c60afe414460f77471fc747": [
+      10
+    ]
+  },
+  "newPolicyRejectsBeforeSemantics": true,
+  "newRejection": [
+    {
+      "claimId": "c1",
+      "reason": "unverified_table_cell",
+      "availableTableReferences": [
+        {
+          "evidenceId": "ev_ab9685875c28c1ea14d0b937d46acbe69e99bdfb53a13d0b0c5c698de8fcb2fd",
+          "rows": [
+            {
+              "rowNumber": 8,
+              "method": "3D-GS [16]"
+            }
+          ],
+          "groups": [
+            {
+              "groupIndex": 0,
+              "label": "Mip-NeRF 360 Datasets",
+              "metrics": [
+                "FPS",
+                "Size",
+                "PSNR",
+                "SSIM",
+                "LPIPS"
+              ]
+            },
+            {
+              "groupIndex": 1,
+              "label": "Tank and Temple Datasets",
+              "metrics": [
+                "FPS",
+                "Size",
+                "PSNR",
+                "SSIM",
+                "LPIPS"
+              ]
+            }
+          ]
+        },
+        {
+          "evidenceId": "ev_ffe2afc10303963ace5068705474a2c111bd99e53c60afe414460f77471fc747",
+          "rows": [
+            {
+              "rowNumber": 10,
+              "method": "Ours"
+            }
+          ],
+          "groups": [
+            {
+              "groupIndex": 0,
+              "label": "Mip-NeRF 360 Datasets",
+              "metrics": [
+                "FPS",
+                "Size",
+                "PSNR",
+                "SSIM",
+                "LPIPS"
+              ]
+            },
+            {
+              "groupIndex": 1,
+              "label": "Tank and Temple Datasets",
+              "metrics": [
+                "FPS",
+                "Size",
+                "PSNR",
+                "SSIM",
+                "LPIPS"
+              ]
+            }
+          ]
+        }
+      ],
+      "detail": "tableBindings必须指向本条自身原文的真实单元格；rowNumber是源行号，不是所选行的数组下标。推算值不能伪装为原表单元格。"
+    }
+  ],
+  "copiedCorrectedSourceRowsReachNegativeSemantics": true,
+  "newGenerationSourceRowGuidancePresent": true,
+  "modelOptionsAndWholeBudgetUnchanged": true,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "originalUnchanged": true,
+  "boundary": "Reuses one recorded actual passed semantic verdict to expose the old missing hard check. Copied new policy rejects wrong row0 and a negative offline semantic fixture still rejects the corrected-reference copy. No new model, no positive content claim and no retrospective change to the old partial outcome."
+}

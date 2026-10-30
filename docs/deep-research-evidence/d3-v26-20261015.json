@@ -1,0 +1,21 @@
+{
+  "date": "2026-10-15",
+  "caseId": "D3-v26",
+  "split": "development",
+  "runId": "dr_run_e3521b1781825273b384a26a5edb8cdc",
+  "promptVersion": "dr-v2.20261015.66",
+  "submissionCount": 1,
+  "automaticResubmissions": 0,
+  "status": "paused",
+  "outcome": "none",
+  "errorCode": "unresolved_unknown",
+  "lastNode": "resolve_brief",
+  "reservedModelCalls": 1,
+  "reservedTokens": 4449,
+  "actualTokens": null,
+  "cost": null,
+  "qualityResult": "Not evaluated: the run never reached planning, evidence extraction or experiment synthesis. It cannot validate the operation-order, scoring, rendering or paired-seed fixes.",
+  "rawAuthoritativeRecord": "tmp/dr-acceptance-receipts/D3-v26.authoritative.json",
+  "providerDiagnosis": "See provider-incident-20261015.json. A distinct problem also timed out at the Flash-routed first node. Official service degradation and a valid read-only auth probe were observed; neither reconciles this unknown request.",
+  "nextWork": "Preserve the paused run and retained reservation, do not resend it; continue offline implementation and independent-case preparation."
+}

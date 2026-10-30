@@ -1,0 +1,27 @@
+{
+  "date": "2026-10-15",
+  "promptVersion": "dr-v2.20261015.63",
+  "changes": [
+    "Within a report section, identical analysis executionSpec plus exact application-generated suffix is rendered once. Original prose, separate claim identity, conditions and citations are preserved.",
+    "Different configurations remain visible even if their rendered assumptions happen to look identical. Altered suffixes and original trailing sentences are not stripped.",
+    "An inconclusive experiment now says no verified experimental plan has been formed, rather than automatically blaming insufficient source evidence.",
+    "Shared synthesis/repair/review requirements call for reproducible operations or exact algorithm references, prescribed order or justified commutation, concrete control settings and explicit seed aggregation. A proposed null hypothesis is distinguished from a claim of proven additivity."
+  ],
+  "offlineReplay": {
+    "caseId": "D3-v25",
+    "runId": "dr_run_077846a76ab351ae8a31c2b635aff273",
+    "input": "Actual immutable deep_research_publications_v2 payload read from SQLite",
+    "providerRequests": 0,
+    "originalCharacters": 4639,
+    "projectedCharacters": 4342,
+    "reduction": 297,
+    "analysisProtocolsBefore": 2,
+    "analysisProtocolsAfter": 1,
+    "riskAndUnexecutedBoundaryRetained": true,
+    "historicalRecordRewritten": false,
+    "measurementCorrection": "An initial simplified payload probe omitted publication fields and measured 613 characters; that value is discarded. Actual publication comparison removes only the repeated generated protocol."
+  },
+  "capacityReplay": {"caseId": "D3-v24 third batch", "providerRequests": 0, "promptBytes": 22596, "currentInputLimit": 22805},
+  "validation": {"targetedPassed": 40, "targetedSeconds": 15.09, "fullRegression": {"passed": 1189, "warnings": 2, "seconds": 189.96}},
+  "limitations": ["Free-prose overlap is retained; no semantic summarization or hidden alteration of original claims.", "Stronger scientific guidance is not proof of real model adherence.", "Rendering improvements do not establish experimental correctness or complete DR0-DR5 acceptance."]
+}

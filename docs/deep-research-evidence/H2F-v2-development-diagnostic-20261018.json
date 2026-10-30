@@ -1,0 +1,65 @@
+{
+  "date": "2026-10-18",
+  "case": "H2F-v2",
+  "sourceCommit": "7186e037",
+  "promptVersion": "dr-v2.20261018.173",
+  "runId": "dr_run_e019504d89fb5c76bbfeff5bb3933e4d",
+  "status": "completed",
+  "machineOutcome": "partial",
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "modelCalls": 16,
+  "settledTokens": 57740,
+  "elapsedSeconds": 136.392,
+  "externalSearches": 0,
+  "fulltextFetches": 0,
+  "cost": null,
+  "findings": [
+    "Multi-paper development content fails: source-specific required input/temporal/training dimensions are not jointly answered; a compound statement cites only one paper for facts about both.",
+    "One semantic rejection demands v4 in the quoted prose although the source is the selected frozen v4 PDF. Local content-hash version identity is not presented as a human-readable publication revision to the checker.",
+    "Repair follows this bad feedback with 3DGStream（无版本号v4）and says the other selected paper is absent from given evidence, despite the run containing sources for both. These cannot be accepted as truthful corpus/identity statements.",
+    "The final completeness guard conservatively returns partial, but two misleading source-absence/identity statements still reach the report. Need document identity transmission, per-paper drafting and correct global-source-availability boundaries."
+  ],
+  "report": "## 比较结论\n\n- 3DGStream（无版本号v4）在时间步0使用多视角帧训练初始3D高斯，随后在线训练视频流；Deformable 3D Gaussians v2未在给定证据中出现，无法确定其输入与训练模式。 [1](#research-evidence-ev_40888ca63f9a88058beee40905d2a823def2aa81c65b751f9ad6fc2a1d58e4ce) [2](#research-evidence-ev_bc028d7429920573c74f0e2d39f33955c0563fac13fbffc5198414bdcbac5e79) [3](#research-evidence-ev_8aabc0c87ee4e37a3dd61244365a12ceef879226ab41cd7a6c562fa481d5c03d)\n- Deformable 3D Gaussians v2 用变形 MLP 表示时间变化：输入时间 t 和规范 3D 高斯中心位置 x，输出偏移量 δx、δr、δs，将规范高斯变换到变形空间。3DGStream v4 的时间变化表示在给定证据中未出现，无法比较。 [4](#research-evidence-ev_f937f8286bfc17c29827db6016ac5cb5cdd8cf40232648fd3c99637ef9bd8922) [5](#research-evidence-ev_d5b7e7b5bea0edc9a1f7941ef30c58f08952ae6e2e1ed3edb034af0f2ffcc7ed) [6](#research-evidence-ev_3f464b62f0f2e703fee46b0a69ded16f025ea0e9575981024872efe091e1d28b)\n\n<details>\n<summary>还有 4 项未完成</summary>\n\n- 它们分别使用什么输入：最终回答尚未完整回应这一问题\n- 怎样表示时间变化：最终回答尚未完整回应这一问题\n- 3DGStream v4和Deformable 3D Gaussians v2的训练模式分别是逐帧在线还是整体离线？：最终回答尚未完整回应这一问题\n- 为何不能凭各自主表FPS给出同条件速度排名：最终回答尚未完整回应这一问题\n\n</details>\n\n论文事实已按所列原文核对。\n\n<details>\n<summary>原文依据</summary>\n\n**[1] 3DGStream: On-the-Fly Training of 3D Gaussians for Efficient Streaming of Photo-Realistic Free-Viewpoint Videos** · 第 2 页 · 全文片段\n\n> Specifically, we first train the initial 3DGs on the multi-view frames at timestep 0.\n\n**[2] 3DGStream: On-the-Fly Training of 3D Gaussians for Efficient Streaming of Photo-Realistic Free-Viewpoint Videos** · 第 1 页 · 全文片段\n\n> Nonetheless, the vast majority of NeRF-like FVV construction methods encountered two primary limitations: (1) they typically necessitate complete video sequences for time-consuming offline training, meaning they can replay dynamic scenes but are unable to stream them, and (2) they generally fail to achieve real-time rendering, thereby hindering practical applications.\n\n**[3] 3DGStream: On-the-Fly Training of 3D Gaussians for Efficient Streaming of Photo-Realistic Free-Viewpoint Videos** · 全文片段\n\n> □ denotes training from scratch per frame, △ represents offline training on complete video sequences, and ⃝ signifies online training on video streams.\n\n**[4] Deformable 3D Gaussians for High-Fidelity Monocular Dynamic Scene Reconstruction** · 全文片段\n\n> Given time t and center position x of 3D Gaussians as inputs, the deformation MLP produces offsets, which subsequently transform the canonical 3D Gaussians to the deformed space:\n\n**[5] Deformable 3D Gaussians for High-Fidelity Monocular Dynamic Scene Reconstruction** · 全文片段\n\n> The deformation field takes the positions of the 3D Gaussians and the current time t as inputs, outputting δx, δr, and δs.\n\n**[6] Deformable 3D Gaussians for High-Fidelity Monocular Dynamic Scene Reconstruction** · 第 4 页 · 全文片段\n\n> To model the dynamic 3D Gaussians that vary over time, we decouple the 3D Gaussians and the deformation field.\n\n</details>",
+  "initialVerification": {
+    "accepted": [],
+    "rejected": [
+      {
+        "claimId": "c1",
+        "reason": "semantic_unresolved",
+        "detail": "该声明包含两个子断言。第一个子断言的主语被写为“3DGStream v4”，但证据中方法名仅为3DGStream，未出现版本号v4；E3仅说明“we first train the initial 3DGs on the multi-view frames at timestep 0”，支持时间步0的多视角帧初始训练，并未直接证明输入为“多视角视频流”及“逐帧在线更新”。第二个子断言的主语“Deformable 3D Gaussians v2”在证据中完全未出现；E1概括的是“vast majority of NeRF-like FVV construction methods”需要完整视频序列离线训练，不能等同于Deformable 3D Gaussians v2，且未提及其输入为单目视频帧。E2只是图例说明，不能把离线/在线符号对应到特定方法。因此总体声明不能被证据充分支持。"
+      },
+      {
+        "claimId": "c2",
+        "reason": "semantic_unresolved",
+        "detail": "声明为并列整体，其第一分句断言“3DGStream v4通过在线更新3D高斯参数表示时间变化”，但证据E1-E5全部来自P1（Deformable 3D Gaussians），未出现任何3DGStream v4或在线更新3D高斯参数的内容，无法支持该分句。第二分句“Deformable 3D Gaussians用变形MLP，输入时间t和位置x，输出偏移量变换规范3D高斯”确由E1/E2/E3/E5支持（如E1：time t and center position x as inputs, MLP produces offsets, transform canonical 3D Gaussians）。但整体声明包含无证据的第一分句，因此不通过。"
+      },
+      {
+        "claimId": "c4",
+        "reason": "semantic_unresolved",
+        "detail": "该推论要求证明“两篇论文的数据集、硬件和实验设置可能不同”以及不能凭各自主表FPS给出同条件速度排名。但E1/E2仅来自P1，提到NeRF类FVV方法的限制和符号说明，没有提供P2的数据集、硬件或实验设置，也没有涉及两篇主表FPS的同条件比较；E3仅支持P2未采用静态NeRF网格/平面结构加速渲染。未知数据集/硬件/设置不能作为“不同”的证据，因此前提不完整，结论不能由所引证据推出。"
+      }
+    ]
+  },
+  "repairStatus": "response_received",
+  "repairLimit": null,
+  "rawFiles": [
+    {
+      "path": "tmp/dr-acceptance-receipts/H2F-v2.json",
+      "sha256": "b5dafdc7e329b7b18d37994b6377b048d057494e7ba1c2fec149419c1de5300e"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/H2F-v2.payload.json",
+      "sha256": "b7937db665be7cf7f29ac825ee3a748a3f22dc864eacf69e640c3eb4cbd5daf0"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/H2F-v2.calls.json",
+      "sha256": "fae2ff13869c988b6b88d5cb3a10e3711dc596483c68da3b07cae36100ae8a8f"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/H2F-v2.result.json",
+      "sha256": "388678c223e17ea575466f9cbdab23e8baf0dd796bbe7f9f42e75e0e9bd6225c"
+    }
+  ],
+  "boundary": "Retired before this further development submission. Original frozen input, first review and first-five0/5 remain unchanged. One submission, all calls settled, no automatic retry. No independent credit."
+}

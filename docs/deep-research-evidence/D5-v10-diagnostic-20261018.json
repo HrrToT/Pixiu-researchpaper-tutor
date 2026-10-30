@@ -1,0 +1,126 @@
+{
+  "date": "2026-10-18",
+  "case": "D5-v10",
+  "runId": "dr_run_1999f9a9d9285997bca0d4d456f8af7a",
+  "sourceCommit": "4c68f300",
+  "promptVersion": "dr-v2.20261018.166",
+  "status": "completed",
+  "machineOutcome": "inconclusive",
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "modelCalls": 7,
+  "settledTokens": 32021,
+  "privateDraftingReturned": false,
+  "elapsedSeconds": 88.649,
+  "cost": null,
+  "actualSynthesisFingerprintMatched": true,
+  "actualSynthesisOptions": {
+    "max_tokens": 8192,
+    "temperature": 0.2,
+    "thinking": {
+      "type": "enabled"
+    },
+    "reasoning_effort": "low",
+    "response_format": {
+      "type": "json_object"
+    }
+  },
+  "findings": [
+    "Initial and repaired prose still convert unknown alignment into established different conditions.",
+    "Independent initial and repair comparison checking reject both actual outputs, so no incorrect conclusion is published.",
+    "Private drafting metadata is absent from the actual model response. The new scope audit cannot be credited as a positive or stronger-scope rejection because both semantic verdicts already failed.",
+    "All seven calls settle; inconclusive is conservative, not a content pass."
+  ],
+  "scores": {
+    "goalResponse": 1,
+    "evidenceSupport": 4,
+    "conditions": 2,
+    "synthesisValue": 2,
+    "executability": null,
+    "readability": 3
+  },
+  "draft": {
+    "sections": [
+      {
+        "title": "差异原因",
+        "claimIds": [
+          "c1"
+        ]
+      }
+    ],
+    "claims": [
+      {
+        "claimId": "c1",
+        "text": "不同论文的FPS不能直接相除，因为FPS受硬件、分辨率、数据集等测量条件影响。LightGaussian在其平台重新训练3D-GS等基线以实现公平比较，而3DGS论文的FPS值部分采用原论文星标结果、部分自测，两者未在统一受控条件测得，直接相除无法代表真实加速倍数。",
+        "kind": "inference",
+        "evidenceRefs": [
+          "ev_8fd3f847d043bbae423552d837a23f0207800e59770d35852b585f53e37f432a",
+          "ev_968d0018e986202e87c75f29e0e96759dc070a82e1c1754eb14e67aa7b344596"
+        ],
+        "conditions": {},
+        "obligationIds": [
+          "ob_1"
+        ],
+        "detailLevel": "fulltext",
+        "tableBindings": []
+      }
+    ]
+  },
+  "repairDraft": [
+    {
+      "claimId": "c1",
+      "kind": "inference",
+      "text": "因为两篇论文的FPS来自不同实验条件：LightGaussian在其自有平台上重新训练基线，而原始3DGS汇报于A6000 GPU。硬件与软件平台未对齐时，FPS只反映各自环境下的表现，直接相除会混淆条件差异与算法差异。",
+      "evidenceRefs": [
+        "ev_8fd3f847d043bbae423552d837a23f0207800e59770d35852b585f53e37f432a",
+        "ev_7fa0ef07e954d2d0f4074b9206ed6ae6e332bec7817c80c8e47a4f9d040dfc59"
+      ],
+      "conditions": {},
+      "detailLevel": "fulltext",
+      "tableBindings": [],
+      "obligationIds": [
+        "ob_1"
+      ]
+    }
+  ],
+  "initialVerification": {
+    "accepted": [],
+    "rejected": [
+      {
+        "claimId": "c1",
+        "reason": "semantic_unresolved",
+        "detail": "E1 only states LightGaussian re-trained 3D-GS etc. on its own platform for fair comparison, without mentioning hardware/resolution/dataset or comparing with 3DGS paper's FPS conditions. E2 shows a table caption saying dagger-marked results are adopted from original papers and others are own experiments, but the supplied table rows do not show that the FPS values specifically were partly adopted an"
+      }
+    ]
+  },
+  "repairChecks": {
+    "accepted": [],
+    "rejected": [
+      {
+        "claimId": "c1",
+        "reason": "semantic_unresolved",
+        "detail": "The claim asserts that FPS from LightGaussian and original 3DGS come from different experimental conditions, specifically different hardware/software platforms, making direct division invalid. E1 shows LightGaussian re-trained baselines on its own platform for fair comparison, but does not state the hardware used. E2 states original 3DGS results are on A6000 GPU. However, E1 does not specify Light"
+      }
+    ]
+  },
+  "report": "本次尚未形成通过核验的结论。\n\n<details>\n<summary>还有 1 项未完成</summary>\n\n- 为什么不同论文中的FPS不能直接相除：最终回答尚未完整回应这一问题\n\n</details>",
+  "rawFiles": [
+    {
+      "path": "tmp/dr-acceptance-receipts/D5-v10.json",
+      "sha256": "7b488fb5c1cb1398c6fdbb9f6d60eb91ff0eef8add96cd16e9e1666d3d2b5e6f"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/D5-v10.payload.json",
+      "sha256": "d410589299c79bc2c283a2f41739d50a42143023503837045a26e8ffc10375a4"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/D5-v10.calls.json",
+      "sha256": "dce1d24e29d99934e3131c5c19294d07ddf26510e02523dcae401385a29453e1"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/D5-v10.result.json",
+      "sha256": "33d66fde6ec21d2ae67fbaf061ccda29dc6138c06cf6233bccc1539f0d9ab841"
+    }
+  ],
+  "boundary": "One explicit submission after a concrete generation-profile change, all calls settled. Failed content is not retried unchanged or upgraded. No independent credit."
+}

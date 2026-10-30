@@ -1,0 +1,21 @@
+{
+  "date": "2026-10-19",
+  "sourceCommit": "b942bd06",
+  "promptVersion": "dr-v2.20261019.183",
+  "fullOffline": {
+    "passed": 2968,
+    "warnings": 1,
+    "seconds": 182.27,
+    "log": "tmp/pytest-dr183-full.log",
+    "sha256": "5674f996650998561c713bba1228f50cdbb471820c14e3b0136984b5e7f7452e"
+  },
+  "legacyProviderFingerprintsMatched": 14,
+  "providerCalls": 0,
+  "change": "Only301-700 character multi-source comparisons use low rather than high reasoning, same8192 output cap. <=300-character factual profiles and all old frozen requests are unchanged.",
+  "failureRules": "Known truncation fails exactly once; no automatic fallback, retry or publication. Exact evidence and independent checks remain.",
+  "runtime": "Source committed; not loaded or real-validated. Runtime remainsfab469c6/.182 until criterion-level acquisition is fixed.",
+  "retainedDiagnostics": [
+    "Initial focused runner had a nonexistent factual_drafting filename and ran zero tests. Corrected118-test run precedes final narrowing to301-700 characters, so it is historical; final full suite covers current code."
+  ],
+  "boundary": "Offline configuration/request tests only; no content pass or independent credit."
+}

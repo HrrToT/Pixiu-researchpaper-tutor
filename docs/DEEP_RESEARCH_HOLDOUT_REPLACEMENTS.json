@@ -1,0 +1,128 @@
+{
+  "version": 1,
+  "frozenAt": "2026-10-14",
+  "design": "DEEP_RESEARCH_DESIGN_20261012.md#19",
+  "budgetProfile": "standard",
+  "replaces": {
+    "H1": "H1R",
+    "H3": "H3R"
+  },
+  "executionStatus": "frozen_not_executed",
+  "independence": "The two papers and questions have not been used to tune the research engine. Original PDF pages and author TeX were read only to define review criteria. If used for debugging after execution, retire the case and freeze another replacement.",
+  "review": {
+    "dimensions": [
+      "目标回应",
+      "证据支持",
+      "条件完整",
+      "综合价值",
+      "可执行性",
+      "可读性"
+    ],
+    "minimumApplicableScore": 4,
+    "hardFailures": [
+      "伪造来源",
+      "严重事实错误",
+      "关键数值或条件错绑",
+      "把建议当已验证结果",
+      "越权或超预算",
+      "部分支持却按通过发布"
+    ],
+    "holdoutRule": "首次运行前冻结全部输入与判据；任何调参使用必须退出留出集，不覆盖原始失败记录。"
+  },
+  "materials": {
+    "mvsplat": {
+      "path": "D:/3DGS/paper/MVSplat/2403.14627v2.pdf",
+      "sha256": "d1becb5361d7d8aa6f2e47d1e9e257031120b4207834f5effca049a8df7e4bb9",
+      "arxiv": "2403.14627v2"
+    },
+    "pixelsplat": {
+      "path": "D:/3DGS/paper/PixelSplat/2312.12337v4.pdf",
+      "sha256": "606933b1f086ad92b5863b1b8d21a8af565bfb02b71ac47fb8c8f850d987f5b5",
+      "arxiv": "2312.12337v4"
+    }
+  },
+  "cases": [
+    {
+      "id": "H1R",
+      "split": "holdout",
+      "replaces": "H1",
+      "materials": [
+        "mvsplat"
+      ],
+      "kind": "claim_verification",
+      "policy": "task_only",
+      "question": "只依据MVSplat v2，给初学者解释图像和相机信息怎样经过跨视图匹配、深度估计得到高斯中心，并说明是否需要真实深度标签。300字以内。",
+      "required": [
+        "相机参数参与跨视图特征对齐及深度反投影",
+        "候选深度上的特征匹配构成代价体",
+        "经深度估计得到高斯中心",
+        "仅光度/渲染监督不等于真实深度标签监督"
+      ],
+      "forbidden": [
+        "声称输入不需要相机信息",
+        "把光度监督写成真实深度标签监督",
+        "声称任何新场景都能获得无误差几何",
+        "无依据加入跨论文速度排名"
+      ],
+      "anchors": [
+        {
+          "material": "mvsplat",
+          "page": 1,
+          "label": "Abstract: photometric supervision"
+        },
+        {
+          "material": "mvsplat",
+          "page": 5,
+          "label": "Section 3: cameras and depth unprojection"
+        },
+        {
+          "material": "mvsplat",
+          "page": 6,
+          "label": "Section 3.1: plane sweep, correlations and depth estimation"
+        }
+      ]
+    },
+    {
+      "id": "H3R",
+      "split": "holdout",
+      "replaces": "H3",
+      "materials": [],
+      "kind": "direction_survey",
+      "policy": "academic_external",
+      "question": "查找并阅读公开arXiv:2312.12337v4，只研究pixelSplat为什么用深度概率分布放置高斯，以及这个采样方案怎样训练。写明实际取得的是摘要还是全文，用初学者能懂的话解释，不借用任务本地论文。300字以内。",
+      "required": [
+        "真实外部发现并固定v4版本",
+        "实际全文获取和解析，或明确未取得全文及其限制",
+        "概率分布及采样用于定位高斯中心",
+        "全文可用时解释原文的不透明度与所采样深度桶概率绑定及梯度反馈路径",
+        "区分原文主张和对梯度性质的额外推断"
+      ],
+      "forbidden": [
+        "本地文件冒充外部获取",
+        "摘要冒充已读全文",
+        "其他版本冒充v4",
+        "声称离散采样索引本身普通可微",
+        "无依据保证无偏梯度或任何场景均达到全局最优"
+      ],
+      "reviewMaterials": [
+        "pixelsplat"
+      ],
+      "anchors": [
+        {
+          "material": "pixelsplat",
+          "page": 2,
+          "label": "Overview: density/probability coupling"
+        },
+        {
+          "material": "pixelsplat",
+          "page": 5,
+          "label": "Depth buckets, sampling and opacity-gradient mechanism"
+        }
+      ]
+    }
+  ],
+  "caseDefinitionHashes": {
+    "H1R": "bea4f2ba905585b9be64ff3f85f12c115758457ad830a571137f7d8341ac254c",
+    "H3R": "e31c428c98bd222513eeb690da6beb142b77406290e531944a89fdaf5e8f6c2a"
+  }
+}

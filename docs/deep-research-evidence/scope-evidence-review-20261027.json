@@ -1,0 +1,35 @@
+{
+  "date": "2026-10-27",
+  "sourceCommit": "0e811ca8d572d99796464b0f518e4ebe26096776",
+  "scopeEvidenceContractVersion": 1,
+  "tests": {
+    "exitCode": 0,
+    "testFileCount": 13,
+    "elapsedSeconds": 86.765,
+    "hashesStable": true,
+    "hashes": {
+      "services/deep_research/scope_evidence.py": "86d26315851ff0a76d905d36917edcbb7044eec28c9d2ae1d90df32f0d337f55",
+      "services/deep_research/local_sources.py": "34ab3db9fd6ec47bed276d352a920d947201d295f9e8cdc1ecebc315b101ca1b",
+      "services/deep_research/facade.py": "51c00c2a99259e06835561720d45129466678d76abe68ee9117b6dc28ad18e65",
+      "services/deep_research/repository.py": "20eb86ce43c295375df9eb7a74c2cc4d1ba8a038f5586ef746fa9c7d7863c511",
+      "tests/test_deep_research_scope_evidence.py": "2d925f8bead00caf57d01172295d0758c7c5b14fc2dcdd47c6e57457e3e82a43",
+      "tests/test_deep_research_local_sources.py": "d2b0f867a9b7478e0d59f25da1fc7225b0ea2d1e975b8c47c9a386f441e83251",
+      "tests/test_deep_research_criterion_sources.py": "5a54089d73d521cc98199c82f78ff400c31dce7fa101ee7b7c6d0273ac2ef773",
+      "tests/test_deep_research_method_details.py": "0dde432d8811a3a258aa725f45e524b5a59fd9882ecba393b26c2ec65bad301a",
+      "tests/test_deep_research_source_continuity.py": "5fdc9794432d9cc4351add2ce4a33b74d16a2a59c6b592e11f0494c6c554c6f9",
+      "tests/test_deep_research_requested_measurements.py": "e584bb39cdd3d01c68815d973893d9aaf548e0d05f9732ffd897358f65f26d1c",
+      "tests/test_deep_research_requested_table_rows.py": "dd0c1bc668506bae04d99cbcde62dc5c50d9fa47d56314e0dd1116329bbcc884",
+      "tests/test_deep_research_data_conditions.py": "de476bd30da7e1702c3eb4fd13627c1f0c165831ec268cda32a87c4bd59ac7b9",
+      "tests/test_deep_research_named_source_rows.py": "daaa6f353fc6439d9009c026610d2e04ec694a5f14dd8e80f1a210030f060169",
+      "tests/test_deep_research_scope_expression_review.py": "29d9f12764e31d951bddb076ef50234ebfa6957b63e6ddd63f12c22df2f671f0",
+      "tests/test_deep_research_workflow_lifecycle_profile.py": "9b4d3d74f14d095476580ce000eae6c982b3e00022578b52b31e2aac8a32353a",
+      "tests/test_deep_research_retrieval_jobs.py": "e5b12b8b97ab1fbb7bf145b60d4d12b60004352a47a861128284b6d70fa20cae",
+      "tests/test_deep_research_source_identity_and_method_intent.py": "e160aba186dddc831db667dd9bcc66f97ba332afe4ffab4faac70a27679b7d21"
+    },
+    "summary": "........................................................................ [ 42%]\n........................................................................ [ 85%]\n.........................                                                [100%]\n=============================== warnings summary ===============================\ntests/test_deep_research_scope_evidence.py::test_real_local_adapter_retains_late_condition_passage_even_for_metric_queries\n  /usr/local/lib/python3.11/site-packages/starlette/formparsers.py:12: PendingDeprecationWarning: Please use `import python_multipart` instead.\n    import multipart\n\ntests/test_deep_research_scope_evidence.py::test_real_local_adapter_retains_late_condition_passage_even_for_metric_queries\n  /usr/local/lib/python3.11/site-packages/PyPDF2/__init__.py:21: DeprecationWarning: PyPDF2 is deprecated. Please move to the pypdf library instead.\n    warnings.warn(\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n169 passed, 2 warnings in 83.72s (0:01:23)\n",
+    "realProviderCases": 0
+  },
+  "realProviderCases": 0,
+  "independentCredit": 0,
+  "boundary": "Condition passage selection under the existing source limit. Relevance and scientific correctness still require independent checks. Cached candidate count was not truncated; that earlier hypothesis was withdrawn."
+}

@@ -1,0 +1,17 @@
+{
+  "date": "2026-10-22",
+  "case": "E1-v20",
+  "scope": "Controlled new-envelope input only; original failed raw response replay remains rejected. No scientific approval.",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "inputBytes": 24687,
+  "oldInputBytes": 24601,
+  "targetIds": [
+    "c4"
+  ],
+  "targetsContextEvidenceUnchanged": true,
+  "completeResponseSkeletonWrappedOnly": true,
+  "strictOldInvalidResponseRejected": true,
+  "independentCredit": 0,
+  "sourceCommit": "09782ac7"
+}

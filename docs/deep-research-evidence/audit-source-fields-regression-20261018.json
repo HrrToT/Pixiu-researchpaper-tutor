@@ -1,0 +1,15 @@
+{
+  "date": "2026-10-18",
+  "sourceCommit": "6e931a51",
+  "promptVersion": "dr-v2.20261018.174",
+  "offline": {"passed": 2827, "warnings": 1, "seconds": 171.93, "log": "tmp/pytest-dr174-full.log"},
+  "focused": {"passed": 107, "seconds": 3.93, "overlapWithFullSuite": true},
+  "changes": [
+    "New server-owned immutable auditSourceFields policy1 permits typed references only to the same own source quote or actually visible sourceContext string/before/after fields.",
+    "No retyping or normalization of source words. Literal quotation mode retains its exact checks; malformed, mixed, foreign, hidden-metadata or nonexistent paths fail closed.",
+    "Comparison difference values still must literally occur in the resolved source field; source/version coverage and bounded-versus-universal scope checks are unchanged.",
+    "References are internal audit bindings, not independent factual approval. All original numeric/table/quote permissions and independent semantic judgements remain required; no extra call or budget expansion."
+  ],
+  "recordedReplay": "docs/deep-research-evidence/audit-source-fields-real-input-replay-20261018.json",
+  "boundary": "Four old actual verification request fingerprints match unchanged legacy policy. Typed-field fixtures test structural binding only; no historical inconclusive result or independent score is upgraded. Fresh real content validation remains required."
+}

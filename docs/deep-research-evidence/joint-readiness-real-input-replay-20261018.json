@@ -1,0 +1,39 @@
+{
+  "date": "2026-10-18",
+  "inputCase": "D5-v6",
+  "runId": "dr_run_c1ce6540894a5803b3a86c4b831bb620",
+  "legacyAssessmentRequestsFingerprintMatched": [
+    {
+      "argsDigest": "b99befb0fe613edd637d1ca6957482e815e74de6bb4084da4dab9cc6a143ae4d",
+      "promptBytes": 11140,
+      "pairCount": 6
+    },
+    {
+      "argsDigest": "e80975ffda11cc3529ac3ee561d63f811ea77025391d8ef30633197ffc4987d0",
+      "promptBytes": 4549,
+      "pairCount": 2
+    }
+  ],
+  "newJointUnitCount": 1,
+  "newSelectedEvidenceCount": 6,
+  "newPromptBytes": 9683,
+  "completeAvailableSettingQuotesIncluded": [
+    "ev_8fd3f847d043bbae423552d837a23f0207800e59770d35852b585f53e37f432a",
+    "ev_83a4fc371775e3a78ad5bb5a109d927ccc1dfc61100ae5c7dc6e1da600a67798",
+    "ev_7fa0ef07e954d2d0f4074b9206ed6ae6e332bec7817c80c8e47a4f9d040dfc59"
+  ],
+  "laterExtractedConditionNotPretendedAvailableAtFirstAssessment": [
+    "ev_a3e857e64f13331e936571250b2f45f3043067a769a8e4a229ed74864c97e01e"
+  ],
+  "sameCriterionSourceSpecificObligationsGrouped": true,
+  "negativeFixtureKeepsBothSourceGaps": true,
+  "outputCapUnchanged": true,
+  "maxEvidenceUnchanged": 20,
+  "originalInputUnchanged": true,
+  "firstAssessmentBudgetPrefixCalls": 2,
+  "firstAssessmentMeasuredPrefixTokens": 3041,
+  "totalBudgetLimitsUnchanged": true,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "boundary": "Exact legacy production request replay plus copied real-source joint request preparation with a deliberately negative fixture. No generated answer or factual/content/independent approval."
+}

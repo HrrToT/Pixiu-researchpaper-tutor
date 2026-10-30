@@ -1,0 +1,25 @@
+{
+  "date": "2026-10-22",
+  "sourceCommit": "09782ac7",
+  "promptVersion": "dr-v2.20261022.226",
+  "experimentReviewEnvelopeContractVersion": 3,
+  "fullOffline": {
+    "passed": 3960,
+    "warnings": 1,
+    "seconds": 230.37,
+    "files": 218,
+    "log": "tmp/pytest-dr226-full-final.log",
+    "sha256": "ddc9303adb417e929f9254a0fa6dfcc6c9774d05ca96d051905c0f40884f5dee"
+  },
+  "focusedPassed": 73,
+  "focusedOverlap": true,
+  "newTests": 23,
+  "legacyReplayScriptCount": 27,
+  "legacyActualFingerprintsMatched": 80,
+  "controlled": "review-response-shape-controlled-20261022.json",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "independentCredit": 0,
+  "boundary": "Producer output instructions/skeleton only. Original v1/v2 byte identity and scientific parsing/target completeness/uniqueness checks remain unchanged. Controlled old response remains invalid; no semantic approval.",
+  "validationCorrection": "Controlled archived input initially exposed missing reviewContextState projection in v3. Fixed version guard and added end-to-end context/split regression; interrupted earlier full test process and reran final full suite on corrected source."
+}

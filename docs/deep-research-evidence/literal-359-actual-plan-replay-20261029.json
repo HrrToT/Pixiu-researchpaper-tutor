@@ -1,0 +1,48 @@
+{
+  "case": "M1G-v3",
+  "runId": "dr_run_61cb5fa93768513986f96e3a43fd5c19",
+  "originalPayloadSha256": "5a79071b6743e54c5acb429c1c4aa5e4ea6120e2bff71428575cc7ecf1b0a4e6",
+  "planChanges": [
+    {
+      "obligationId": "ob_4",
+      "requestExcerpt": "标明本次实际引用的是全文片段还是摘要。",
+      "before": {
+        "question": "本次实际引用的是全文片段还是摘要？",
+        "completionCriteria": [
+          {
+            "criterionId": "requirement_1",
+            "requirement": "说明所引用内容来自论文全文的哪个部分。",
+            "responseType": "identification"
+          }
+        ]
+      },
+      "after": {
+        "question": "标明本次实际依据的是全文片段还是摘要。",
+        "completionCriteria": [
+          {
+            "criterionId": "requirement_1",
+            "requirement": "标明本次实际依据的是全文片段还是摘要。",
+            "responseType": "identification"
+          }
+        ]
+      },
+      "basis": "human_access_instruction"
+    }
+  ],
+  "unchangedScientificObligations": 3,
+  "newAccessBindingRequirements": {
+    "ob_4": {
+      "overall": true,
+      "criteria": [
+        "requirement_1"
+      ]
+    }
+  },
+  "legacyObservation": "所引来源报告，在对CAT-3DGS v2的一项评估中，减少冗余的环节为内容自适应三平面编码锚点属性、超先验框架、空间自回归熵编码。",
+  "literalObservation": "所引来源描述：CAT-3DGS v2，减少冗余的环节为内容自适应三平面编码锚点属性、超先验框架、空间自回归熵编码。",
+  "observationSource": "repair wording reproduced from saved diagnostic; not a provider verdict",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "legacyPlanUnchanged": true,
+  "independentCredit": 0
+}

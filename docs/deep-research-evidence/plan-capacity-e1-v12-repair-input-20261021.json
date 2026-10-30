@@ -1,0 +1,59 @@
+{
+  "date": "2026-10-21",
+  "case": "E1-v12",
+  "sourceCommit": "15c71b39",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "actualRepairFingerprintMatched": true,
+  "actualInputBytes": 23838,
+  "inputCap": 23892,
+  "outputCap": 4096,
+  "coverageContractActuallySent": true,
+  "exactAllNineDraftsReconstructed": true,
+  "coverageAuditMatchesActualCheckpoint": true,
+  "actualCoverage": {
+    "version": 1,
+    "expectedTargetIds": [
+      "c1",
+      "c2",
+      "c3",
+      "c4",
+      "c5",
+      "c6",
+      "c7",
+      "c8",
+      "c9"
+    ],
+    "submittedEditIds": [
+      "c1",
+      "c2",
+      "c3",
+      "c4",
+      "c5",
+      "c6",
+      "c7",
+      "c8",
+      "c9"
+    ],
+    "unresolvedTargets": [],
+    "missingTargetIds": [],
+    "invalidTargetIds": [],
+    "unexpectedTargetIds": [],
+    "malformedEntries": 0,
+    "responseCoverageComplete": true,
+    "scientificApproval": false,
+    "expandedRevisionIds": [
+      "c1",
+      "c2",
+      "c3",
+      "c4",
+      "c5",
+      "c6",
+      "c7",
+      "c8",
+      "c9"
+    ],
+    "unusableEditTargetIds": []
+  },
+  "boundary": "Physical settled request and exact returned drafts/checkpoint reproduced, not another provider call or scientific acceptance. All nine drafts remain rejected by the actual downstream checks."
+}

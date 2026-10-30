@@ -1,0 +1,36 @@
+{
+  "date": "2026-10-26",
+  "case": "E1-v62",
+  "runId": "dr_run_2d7d21c3d2cc5a8ab6fd5ab13aa9d4c5",
+  "promptVersion": "dr-v2.20261026.272",
+  "status": "failed",
+  "errorCode": "invalid_workflow_unit_response",
+  "metadata": {
+    "errors": [
+      "unit.output_truncated"
+    ],
+    "requestDigest": "e2bfdfdf826c546e296e7fedf5b2f02f7c87e28d6474761fd1a48c473d992091",
+    "role": {
+      "thinking": {
+        "type": "enabled"
+      },
+      "reasoning_effort": "low",
+      "max_tokens": 6144,
+      "timeout_seconds": 90
+    },
+    "finishReason": "length",
+    "usage": {
+      "total_tokens": 13656,
+      "input_tokens": 7512,
+      "output_tokens": 6144
+    },
+    "bodyBytes": 0
+  },
+  "uniqueRevisionSent": false,
+  "settledCalls": 7,
+  "settledTokens": 35173,
+  "elapsedSeconds": 117,
+  "scientificApproval": false,
+  "independentCredit": 0,
+  "boundary": "Low reasoning consumed full 6144 output with zero message body. Truncation refused; no revision/retry or new unknown. Stop incremental prompt/cap growth; assess a simpler explicit ordered planning representation preserving all scientific and lifecycle checks."
+}

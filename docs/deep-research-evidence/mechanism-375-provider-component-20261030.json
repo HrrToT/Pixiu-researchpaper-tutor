@@ -1,0 +1,123 @@
+{
+  "promptVersion": "dr-v2.20261030.375",
+  "factualReviewContractVersion": 2,
+  "cases": [
+    {
+      "directory": "tmp\\component-mechanism375-20261030\\receipt",
+      "verdicts": [
+        {
+          "claimId": "c2",
+          "reason": "证据E4给出深度畸变损失公式为加权深度差之和，E3说明该损失用于集中权重分布，E1-E2说明噪声表面源于多基元散布且方法旨在缓解该问题，因此所有子句均得到原文支持。",
+          "scopeAudit": {
+            "claimStrength": "bounded",
+            "evidenceStrength": "bounded",
+            "supported": true,
+            "statementPath": [
+              "text"
+            ],
+            "premises": [
+              {
+                "evidenceId": "ev_32cc51aa72a9cb4d3aeb9096d0c8e8acfb4d6587204940326f58d293e1519513",
+                "path": [
+                  "quote"
+                ]
+              },
+              {
+                "evidenceId": "ev_8d9e7b7a4dcb490331bce72f0c7e495a5928602df5d77224de46d82545073d88",
+                "path": [
+                  "quote"
+                ]
+              },
+              {
+                "evidenceId": "ev_c95f2e040e47f358ac28b8ab23898c8ac279a4c0af0666973157747fc06d22d2",
+                "path": [
+                  "quote"
+                ]
+              },
+              {
+                "evidenceId": "ev_8358ddef8f9f16f3f70fb2e1220c0fc11c02cd4d3d9d858fe544e7878720ecba",
+                "path": [
+                  "quote"
+                ]
+              }
+            ]
+          },
+          "status": "passed"
+        },
+        {
+          "claimId": "relative-depth-control",
+          "reason": "E4提供公式 L_d = Σ ω_i ω_j |z_i - z_j| 及文字说明，惩罚同一射线上交点深度的加权差异，并明确该损失通过最小化射线-平面交点距离来集中权重分布，完整支持断言。",
+          "scopeAudit": {
+            "claimStrength": "bounded",
+            "evidenceStrength": "bounded",
+            "supported": true,
+            "statementPath": [
+              "text"
+            ],
+            "premises": [
+              {
+                "evidenceId": "ev_8358ddef8f9f16f3f70fb2e1220c0fc11c02cd4d3d9d858fe544e7878720ecba",
+                "path": [
+                  "quote"
+                ]
+              }
+            ]
+          },
+          "status": "passed"
+        }
+      ],
+      "calls": 2,
+      "tokens": 9475,
+      "productionLedgerRows": 8255,
+      "productionPreserved": true,
+      "artifactHashes": {
+        "calls.json": "44b86c3d50518fbcaebd13283e991ab2c1a71a18be8a477851059713ed0ccdff",
+        "payload.json": "896c0223acc0d18d80d8293f1269cdf2ab76480e2a06316ef0ff8aaca6227cb7",
+        "preservation.json": "b13a23adb63a8ff04e4ad177b4e29bf4e51467689aaab149e40bedecc717a6b9",
+        "request-1.json": "4eae10506679f42d73a86618bea604e75b8071e46137fb919a5ac1e1e9f737cb",
+        "request-2.json": "a5e347574f2ce315cb12e5035b494b8b39ac60bb53869388d91f61d1c9126a8f",
+        "response-1.json": "06e92a97e5cc77a7d42afcbb5d146c69f9b6c8254cf1897911239a2e86fb16f9",
+        "response-2.json": "c0a521ce018f1b892c51914914bc178b53902e3c8deb6fda4c13f7ca1464860e",
+        "result.json": "8f87262b53b35aa6c8738d7752e5677ce98761893b5d6cfe1db1b381d86e38ae",
+        "targets.json": "d798448690c0ab8597e2834ab35d8752fca6f092c27fd16f849e4d6626aa09b0"
+      }
+    },
+    {
+      "directory": "tmp\\component-mechanism375-negative-20261030\\receipt",
+      "verdicts": [
+        {
+          "claimId": "relative-depth-control",
+          "reason": "深度畸变损失仅最小化交点深度之间的绝对差（见E4），并未将交点深度与传感器实测真值深度相减，也未使用真实表面位置作为监督。",
+          "scopeAudit": {
+            "claimStrength": "bounded",
+            "evidenceStrength": "bounded",
+            "supported": false,
+            "statementPath": [
+              "text"
+            ],
+            "premises": []
+          },
+          "status": "failed"
+        }
+      ],
+      "calls": 1,
+      "tokens": 3936,
+      "productionLedgerRows": 8255,
+      "productionPreserved": true,
+      "artifactHashes": {
+        "calls.json": "d3317b038eadf09e66b824f7cf2e87fcfff0cf0755fc6d4b913bc0d5aae92687",
+        "payload.json": "3356d768ed7ac604d1309699180cb9ecc18a9fe2870a984df4ae64486c8ee10f",
+        "preservation.json": "b13a23adb63a8ff04e4ad177b4e29bf4e51467689aaab149e40bedecc717a6b9",
+        "request-1.json": "9452da5d0f4f0a96b070c74fd8c8baaf946a103030b43c066416ab3057f9fd7b",
+        "response-1.json": "50cfd4b3cef5a2fca983a3a135c36339338ecb695ca405172888051bd26b25b0",
+        "result.json": "c2af0747b93f17691c30e3b383fe90f82e076bf569c4117bcc3a92719e8894eb",
+        "targets.json": "2fed16234b590dde4309553caf273c9a121f42c8eecd2bee35fb65c42a534bd5"
+      }
+    }
+  ],
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "productionWrites": 0,
+  "retry": false,
+  "assessment": "Faithful relative-depth explanation passed and explicit invented sensor-ground-truth supervision failed. Original ambiguous actual-surface localization also passed: stricter prose attribution is NOT proved fixed. Do not infer full workflow quality or acceptance from this component."
+}

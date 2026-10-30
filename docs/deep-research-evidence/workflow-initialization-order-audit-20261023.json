@@ -1,0 +1,14 @@
+{
+  "case": "E1",
+  "question": "基于3DGStream v4，设计一个最小实验评估第2阶段自适应新增高斯步骤带来的重建质量、每帧存储和额外训练开销。只选论文中一个有新出现内容的场景，固定相同第0帧模型、相机划分及第1阶段NTC结果，两组分别跳过或执行第2阶段；逐帧新增高斯不传到下一帧。只提出一个可检验假设，给出具体数据及帧窗口选择、共同初始化与完整状态、有限预算、测量与配对判读。比较整个第2阶段的增量取舍，不把新增参数与额外优化分别归因；单场景描述性方案，尚未执行，不保证改善。",
+  "fixtureBeforeErrors": [],
+  "explicitLifecycleRejectedErrors": [
+    "workflow.component"
+  ],
+  "rendererOrdering": "每次重复先创建所需新组件，再配对复制到各组",
+  "finding": "Workflow4 has no typed timing/lifetime field for creation after a per-frame training phase and disposal after evaluation/recording. Its renderer places component creation before intervention. This is a contract representation gap, not proof a particular initialization is scientifically valid.",
+  "nextAction": "Add a versioned schedule/lifetime representation, retain all initialization values and budgets, and validate dependencies before enabling decomposed generation.",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "independentCredit": 0
+}

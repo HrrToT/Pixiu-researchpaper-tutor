@@ -1,0 +1,71 @@
+{
+  "date": "2026-10-26",
+  "case": "E1-v59",
+  "runId": "dr_run_dbbcdc57e540548db1ce8e41d39cf1a3",
+  "promptVersion": "dr-v2.20261026.269",
+  "status": "failed",
+  "errorCode": "invalid_workflow_unit_response",
+  "workflowMetadataRepairContractVersion": 7,
+  "metadata": {
+    "original": {
+      "status": "invalid_response",
+      "errors": [
+        "unit.json"
+      ],
+      "finishReason": "stop",
+      "usage": {
+        "total_tokens": 8839,
+        "input_tokens": 7588,
+        "output_tokens": 1251
+      },
+      "rawBytes": 4055,
+      "responseDigest": "ce4bae45f9a0bffb5d61b5770caec77fa9378be31cdf6e714128beeae7e52067",
+      "requestDigest": "e5c388df745b6169a85dea95df8014733101449de93e9946afcd23da647f4469",
+      "rawSha256": "c97155cdaa65644694eb16981954cf8390b67f42f122c9a7799a193c98ceb6d1",
+      "decodedValuePresent": false
+    },
+    "revision": {
+      "status": "invalid_response",
+      "errors": [
+        "timeline.component.lifecycle"
+      ],
+      "finishReason": "stop",
+      "usage": {
+        "total_tokens": 9913,
+        "input_tokens": 8187,
+        "output_tokens": 1726
+      },
+      "rawBytes": 6850,
+      "responseDigest": "a7fe3736d1b5040778b20f52c56d3e8b3668e42d2d2d3f24935a9660fb536562",
+      "requestDigest": "cf3d8845b4706dbe9766753f61f0496f0db2c6c9ed9b4d651fef95ec96affa3c",
+      "rawSha256": "5128dd9026016dea23546c3ab35dfe9e8ee872cb5dc2194500086c057093d8a9",
+      "decodedValuePresent": true,
+      "canonicalObjectBytes": 4874,
+      "lifecycleCreationTypes": [
+        {
+          "componentId": "frame0_model",
+          "createAfter": "init_frame0",
+          "isArray": false
+        },
+        {
+          "componentId": "ntc_result",
+          "createAfter": "fit_stage1",
+          "isArray": false
+        },
+        {
+          "componentId": "stage2_additions",
+          "createAfter": "fit_stage2",
+          "isArray": false
+        }
+      ],
+      "allFitBudgetsPresent": true
+    }
+  },
+  "repairInvokedExactlyOnce": true,
+  "initializersInvoked": false,
+  "providerCallsForDiagnosis": 0,
+  "productionWritesForDiagnosis": 0,
+  "scientificApproval": false,
+  "independentCredit": 0,
+  "boundary": "Revision has explicit fit budgets but lifecycle createAfter values remain scalar strings. No automatic wrapping, lifecycle choice, or historical approval. Canonical-object byte count is diagnosis for a possible future grammar, not a new accepted result."
+}

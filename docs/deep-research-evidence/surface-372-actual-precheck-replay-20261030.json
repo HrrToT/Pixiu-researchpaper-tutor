@@ -1,0 +1,35 @@
+{
+  "promptVersion": "dr-v2.20261030.372",
+  "quantitySpellingContractVersion": 11,
+  "case": "X4L-v6",
+  "payloadSha256": "3b97ddde3b4496f6c4676a5935d6eb77b2879f0d6b25511bf1cad2c0bd2316e0",
+  "oldRejections": [
+    {
+      "claimId": "c1",
+      "reason": "numeric_mismatch",
+      "missingReportedNumbers": [
+        "2e0"
+      ],
+      "detail": "本条引用原文未直接报告这些数值：2。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。"
+    },
+    {
+      "claimId": "c3",
+      "reason": "numeric_mismatch",
+      "missingReportedNumbers": [
+        "2e0"
+      ],
+      "detail": "本条引用原文未直接报告这些数值：2。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。"
+    }
+  ],
+  "newPrecheckCandidateIds": [
+    "c1",
+    "c2",
+    "c3"
+  ],
+  "allOriginalClaimsAndEvidenceUnchanged": true,
+  "controlledUnresolvedStillUnaccepted": true,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "contentAccepted": false,
+  "boundary": "Numeric gate replay only. Original unsupported first-visible-surface localization and actual semantic rejections are not waived. Does not rejudge or overwrite the old run."
+}

@@ -1,0 +1,89 @@
+{
+  "sourceCommit": "3e5f7fa1e6b6b8afedc824539bceebeafd09e353",
+  "promptVersion": "dr-v2.20261029.330",
+  "scope": "new checks and repair of settled saved draft; no generation or retrieval",
+  "providerCalls": 6,
+  "totalTokens": 30469,
+  "allCallsSettled": true,
+  "unknownCalls": 0,
+  "retry": false,
+  "accepted": 1,
+  "rejected": [
+    {
+      "claimId": "c2",
+      "reason": "semantic_unresolved",
+      "detail": "E1仅提及MipNeRF360数据集和定性比较，未提及Tank and Temple或具体指标，因此不能支持对“论文报告的数据集（Mip-NeRF 360、Tank and Temple）与上述指标”的限定。",
+      "revisionRejection": {
+        "claimId": "c2",
+        "reason": "semantic_unresolved",
+        "detail": "观察条件尚未通过事实核查：证据引文未提及数据集名称，仅在后文上下文（after字段）中出现“Experiments on the MipNeRF360 dataset”，但该上下文属于另一段关于Scaffold-GS泛化实验的叙述，并非针对LightGaussian与3D-GS定性比较的评估，因此无法支持该比较所用数据集为MipNeRF360。"
+      }
+    }
+  ],
+  "repairDraft": [
+    {
+      "claimId": "c1",
+      "kind": "inference",
+      "text": "在Mip-NeRF 360和Tank and Temple数据集上，LightGaussian与原始3D-GS的PSNR、SSIM、LPIPS数值接近但互有高低。这些定量结果支持“压缩后图像质量接近原始3DGS”的说法，但仅限于所报告的两个数据集和上述指标，未验证其他场景或指标。",
+      "evidenceRefs": [
+        "ev_74a1bac54693e4ae4612f54763a4a84db1a1c907cc4706a86d4c8cc69922d6b8"
+      ]
+    },
+    {
+      "claimId": "c2",
+      "kind": "inference",
+      "text": "已报告设置：LightGaussian与原始3D-GS的定性比较（数据集：MipNeRF360）。尚不能据此确认LightGaussian相对原始3D-GS的“图像质量接近”在所有场景和所有指标中普遍成立。",
+      "evidenceRefs": [
+        "ev_744684d72b81ee16c27ec2c8bc71d51b55975544050f779a25ac80952e4c7a2a"
+      ]
+    }
+  ],
+  "repairChecks": {
+    "accepted": [],
+    "rejected": [
+      {
+        "claimId": "c1",
+        "reason": "absence_not_established",
+        "detail": "本条引用没有明确建立作者或论文缺少这些验证。把结论限定为本次引用能支持的实验范围及其不能证明的推广；不要写成作者未在其他条件验证、论文没有提供或全文不存在。引用中的其他否定句不构成这项缺席判断的依据。"
+      },
+      {
+        "claimId": "c2",
+        "reason": "semantic_unresolved",
+        "detail": "观察条件尚未通过事实核查：证据引文未提及数据集名称，仅在后文上下文（after字段）中出现“Experiments on the MipNeRF360 dataset”，但该上下文属于另一段关于Scaffold-GS泛化实验的叙述，并非针对LightGaussian与3D-GS定性比较的评估，因此无法支持该比较所用数据集为MipNeRF360。"
+      }
+    ]
+  },
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "preservation": {
+    "before": {
+      "ledgerRows": 7465,
+      "ledgerSha256": "9138a4c5c9e9397c9dce6b78007d07dc1c2f7955dd637bef1d794f0c50b97bbc",
+      "payloadSha256": "a4559eea0b66b511bed93f21a1cba7e6a39068464469aacbcd30fde6895797ad"
+    },
+    "after": {
+      "ledgerRows": 7465,
+      "ledgerSha256": "9138a4c5c9e9397c9dce6b78007d07dc1c2f7955dd637bef1d794f0c50b97bbc",
+      "payloadSha256": "a4559eea0b66b511bed93f21a1cba7e6a39068464469aacbcd30fde6895797ad"
+    },
+    "exactProductionPreservation": true,
+    "providerSubmissions": 6,
+    "productionPublish": false,
+    "fullWorkflowReplay": false,
+    "independentCredit": 0
+  },
+  "rawReceipts": "tmp\\component-shared-guidance-330-20261029\\receipt",
+  "receiptHashes": {
+    "calls.json": "d3fd61a32055529ea52bf6a9739b37b3551866df2e06ea189bae733993338def",
+    "payload.json": "d32176ec9b679db271a6752b1b4349d18272ddccf8b2211cbb4d1eb411d62321",
+    "preservation.json": "98e87342fc3cf31bf5ec47aee657297a3b846c0a515895088aa6ede69f03cf49",
+    "progress.json": "7a469f483ca37466f171da7dae9363312fa7c36329ff16b4949cc052ec234d41",
+    "request-1.json": "9490f92af8f9e94038d284122f9ccb5c2e0246ab98e30c4eef8c2f85d782d830",
+    "request-2.json": "60fe56cfa54b5b9bd7d878d2e758b40cfbd2c05bb45fe8566fc5ae3e179ab377",
+    "request-3.json": "c13cad249bf1a015b79dc0341b718edc0287ceca95d5d758e1af182eb601e20b",
+    "request-4.json": "369b5a4098ef804661506b55a09fd19ad553b3d60f86e397efccb095e47477bf",
+    "request-5.json": "38fda02bcb376025120552091cac1f287396b3e7506ed5dd192b61f6b91baec5",
+    "request-6.json": "13e98f7e2db84c339ad9ce986b131530882b15df691721aacea7687cb9521e0d",
+    "result.json": "19fd1bd17b321c175f14f25d81011037727739a4da35d44832a3b7ea44b842ee"
+  }
+}

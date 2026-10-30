@@ -1,0 +1,75 @@
+{
+  "sourceCommit": "47e41484",
+  "promptVersion": "dr-v2.20261029.338",
+  "tableIdentityContextContractVersion": 2,
+  "freshGeneration": true,
+  "freshRetrieval": false,
+  "fromSettledCase": "D1-v40",
+  "providerCalls": 10,
+  "tokens": 55245,
+  "elapsedSeconds": 130.316,
+  "allSettled": true,
+  "unknownCalls": 0,
+  "automaticRetries": 0,
+  "actualGenerationNoteNavigationPresent": true,
+  "generatedRetrainingStatementCitesTableAndNote": true,
+  "initialRenderedCharacters": 241,
+  "finalRenderedCharacters": 229,
+  "acceptedClaims": 2,
+  "rejectedClaims": 0,
+  "coverageStatus": "checked",
+  "gaps": 4,
+  "initialRejections": [
+    {
+      "claimId": "c1",
+      "reason": "table_condition_not_displayed",
+      "requiredTableDisplay": [
+        {
+          "group": "Mip-NeRF 360 Datasets",
+          "method": "3D-GS [16]"
+        },
+        {
+          "group": "Tank and Temple Datasets",
+          "method": "3D-GS [16]"
+        },
+        {
+          "group": "Mip-NeRF 360 Datasets",
+          "method": "Ours"
+        },
+        {
+          "group": "Tank and Temple Datasets",
+          "method": "Ours"
+        }
+      ],
+      "detail": "保留表格数值时，同条正文或条件必须显示原表的数据组和方法身份。请核对requiredTableDisplay；保留星号、变体及分组层级，末尾参考文献序号可省略。不能只写另一个方法名代替Ours等原表标签，也不能修改单元格或加入未报告的计算。"
+    }
+  ],
+  "qualityCautions": [
+    "Final answer still reports author results without explicit own qualified claim-check judgement.",
+    "Some coverage reasons say dataset scope is absent although the final scope point names both datasets; do not upgrade all checks from that contradiction.",
+    "Initial possible-different-provenance wording is not treated as established mismatch; final revision removes it."
+  ],
+  "fullContentAcceptance": false,
+  "independentCredit": 0,
+  "productionPublish": false,
+  "productionExactlyPreserved": true,
+  "rawReceiptDirectory": "D:\\aiproj\\ai_project\\tmp\\component-fresh-draft-338-20261029\\receipt",
+  "rawSha256": {
+    "calls.json": "3791cd84fc4d8722464516edd10a3dbaffcda6e933ca411b7c30ebe4a1b1abf0",
+    "generation-result.json": "913babfc57522a3047abb43534ea8ac21e41401a0c1fe05cba6cc6ba035ddeb1",
+    "payload.json": "09ff8d5006c450bb62b122edf14f74f9f71523445d6b198673b35eabbed8aea5",
+    "preservation.json": "bfe15fd1d1eed5007165e9fc11ecb02ff0775010b2667162c364d0c79afa9cc0",
+    "progress.json": "2fb7667acfb49ff177dcb445e1dd724554f95e70485b0e8f3c02e83fa216a5c8",
+    "request-1.json": "5762c521bdd8499c4ab94e44adc3769fd84febb08ae7509825d7ea645e59465a",
+    "request-10.json": "7c1a2d7eea774fc922f288c28ab7d8b0b587a77f0955923edc9f7b12a15bbe2e",
+    "request-2.json": "5580ec9a50740c34f2f0e18642ae0539f5c19f85054c36d0817646177b86a49a",
+    "request-3.json": "d1a1d25666b5766aebf8be8abb28f23f77c2b5756e75da0daf5d3d29dd5bc0bc",
+    "request-4.json": "5701a290e85ecf011c9747b46f35a5f46a10b71e67a92d5057e2a86370de59e3",
+    "request-5.json": "abe12d1a72295faef57664749de6899068c69e1492735c7e8cd55b7cc3a9ac04",
+    "request-6.json": "6e614ae2ddbace68c543b17f9cbf13f1335605f0517418a64f4bc2a610214cef",
+    "request-7.json": "dc9c32b99acb2665d6190ea5be963c8b880a8e0b0c439b58a3f061d6ee8e56c0",
+    "request-8.json": "316375c2afb5bbe39466b03e86caabf187bf544d60348ecb1ccc3b41ecffd35b",
+    "request-9.json": "67a7ed7327128dbd6c84167738b5ee7c9991ad758d2e93efabd8821da1950cde",
+    "result.json": "e767e63953e4fb7f0ba9a49d16c626df4f4d6b775047d76a973e3c4c2a822100"
+  }
+}

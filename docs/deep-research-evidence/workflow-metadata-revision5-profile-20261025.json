@@ -1,0 +1,38 @@
+{
+  "date": "2026-10-25",
+  "promptVersion": "dr-v2.20261025.267",
+  "workflowMetadataRepairContractVersion": 5,
+  "workflowMetadataRowsContractVersion": 2,
+  "metadataOutputTokenCap": 3072,
+  "rawResponseByteCap": 16384,
+  "semanticContentByteCap": 8192,
+  "wholeRunLimits": {
+    "calls": 18,
+    "tokens": 100000,
+    "wallSeconds": 360
+  },
+  "profileRegression": {
+    "files": 14,
+    "passed": 245,
+    "seconds": 30.21,
+    "log": "tmp/pytest-dr267-profile-20261025.log"
+  },
+  "baseFullRegression": {
+    "sourceCommit": "d5d7abe1",
+    "files": 257,
+    "passed": 4754,
+    "seconds": 348.98,
+    "sourceStable": true
+  },
+  "sourceHashes": {
+    "services/deep_research/facade.py": "f52c0aa87f1c74d43ca75854ad07d5478af7e2b91705e8a30124b7b842365f60",
+    "tests/test_deep_research_workflow_lifecycle_profile.py": "00aa9a5a9ae0157b086c4bfe518905583ec04e7757b4f31a0c40a88cc8980ca6",
+    "tests/test_deep_research_workflow_metadata_repair.py": "8f78dc7ed1833afb5b13f4dd8af651833259ba871393ed559b59249207076683"
+  },
+  "oldRunsMigrated": false,
+  "clientOverridesAccepted": false,
+  "runtimeLoaded": false,
+  "providerCalls": 0,
+  "scientificApproval": false,
+  "boundary": "New-run activation; baseline full regression and current profile checks are separate. Runtime load and actual scientific quality still need proof."
+}

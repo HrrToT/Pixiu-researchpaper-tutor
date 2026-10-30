@@ -1,0 +1,66 @@
+{
+  "case": "E1-v83",
+  "runId": "dr_run_9795813addc651eea3da0b6e857d4b9d",
+  "promptVersion": "dr-v2.20261026.294",
+  "status": "failed",
+  "elapsedSeconds": 93,
+  "settledModelCalls": 8,
+  "settledTokens": 42179,
+  "unsettledCalls": 0,
+  "actualOutputLimit": 6144,
+  "finishReason": "stop",
+  "usage": {
+    "total_tokens": 10083,
+    "input_tokens": 7885,
+    "output_tokens": 2198
+  },
+  "rawBytes": 8293,
+  "rawLines": 399,
+  "rawSha256": "5392e8ad757027ad6e2d82b6918294c37e11a114dc4aee1c8e8714ea44b0b415",
+  "issues": [
+    {
+      "code": "result_ref.output",
+      "path": "/steps/7/reads/0/outputId",
+      "actual": "held_out_psnr",
+      "declaredOutputs": [
+        "held_out_image"
+      ],
+      "expected": "one exact output ID from the selected producer block; never invent or switch blocks"
+    },
+    {
+      "code": "result_ref.output",
+      "path": "/steps/7/reads/1/outputId",
+      "actual": "held_out_psnr",
+      "declaredOutputs": [
+        "held_out_image"
+      ],
+      "expected": "one exact output ID from the selected producer block; never invent or switch blocks"
+    },
+    {
+      "code": "result_ref.output",
+      "path": "/steps/7/reads/2/outputId",
+      "actual": "additional_3dg_count_record",
+      "declaredOutputs": [
+        "additional_3dg_count"
+      ],
+      "expected": "one exact output ID from the selected producer block; never invent or switch blocks"
+    },
+    {
+      "code": "result_ref.output",
+      "path": "/steps/7/reads/3/outputId",
+      "actual": "stage2_wall_time_record",
+      "declaredOutputs": [
+        "stage2_wall_time"
+      ],
+      "expected": "one exact output ID from the selected producer block; never invent or switch blocks"
+    }
+  ],
+  "repairRawIdentical": true,
+  "repairErrors": [
+    "unit.json"
+  ],
+  "initializationStarted": false,
+  "scientificApproval": false,
+  "independentCredit": 0,
+  "boundary": "Complete response, not a scientific pass. Raw response still spans399 lines; actual2198 outputTokens are below the old3072 cap, so this case does not prove minification compliance or that the larger limit caused completion. Saved outputs referenced with measurement-output field; one repair unchanged. No automatic field conversion."
+}

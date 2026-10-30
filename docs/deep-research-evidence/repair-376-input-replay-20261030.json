@@ -1,0 +1,44 @@
+{
+  "promptVersion": "dr-v2.20261030.376",
+  "sourceCase": "X4L-v9",
+  "payloadSha256": "788f89b085b0116f95f74c2929c0a6e964132f7b604bcc3e4ba650e9fe245957",
+  "replay": {
+    "3": {
+      "bytes": 23878,
+      "originals": [
+        "c2"
+      ],
+      "permissions": {
+        "c2": [
+          "ev_c95f2e040e47f358ac28b8ab23898c8ac279a4c0af0666973157747fc06d22d2",
+          "ev_8358ddef8f9f16f3f70fb2e1220c0fc11c02cd4d3d9d858fe544e7878720ecba",
+          "ev_35c8ed39d0274f9039b8135b856ddc9eb615e8efdb77ba2b31c83e44bcbad734",
+          "ev_32cc51aa72a9cb4d3aeb9096d0c8e8acfb4d6587204940326f58d293e1519513",
+          "ev_b4b13367ae684873907d4ff029b39d92c38ec390356af31e7ab6db4ee07eaa7a"
+        ]
+      },
+      "removalContractVersion": null
+    },
+    "4": {
+      "bytes": 23958,
+      "originals": [
+        "c2"
+      ],
+      "permissions": {
+        "c2": [
+          "ev_c95f2e040e47f358ac28b8ab23898c8ac279a4c0af0666973157747fc06d22d2",
+          "ev_8358ddef8f9f16f3f70fb2e1220c0fc11c02cd4d3d9d858fe544e7878720ecba",
+          "ev_35c8ed39d0274f9039b8135b856ddc9eb615e8efdb77ba2b31c83e44bcbad734",
+          "ev_32cc51aa72a9cb4d3aeb9096d0c8e8acfb4d6587204940326f58d293e1519513",
+          "ev_b4b13367ae684873907d4ff029b39d92c38ec390356af31e7ab6db4ee07eaa7a"
+        ]
+      },
+      "removalContractVersion": 1
+    }
+  },
+  "originalInputPreserved": true,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "contentAccepted": false,
+  "independentCredit": 0
+}

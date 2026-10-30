@@ -1,0 +1,17 @@
+{
+  "date": "2026-10-18",
+  "sourceCommit": "17f10918",
+  "policyCommit": "97d53a18",
+  "promptVersion": "dr-v2.20261018.165",
+  "factualReasoningContractVersion": 1,
+  "fullOffline": {"passed": 2680, "warnings": 1, "seconds": 156.7, "log": "tmp/pytest-dr165-full.log"},
+  "focused": {"passed": 40, "seconds": 2.32, "overlap": true, "log": "tmp/pytest-dr165-focused-fixed.log"},
+  "initialFocusedFailure": "One new fixture used a callable Mock rather than its Provider.invoke interface; corrected without weakening reservation, fingerprint or reuse assertions.",
+  "scope": "Only new <=300-character claim_verification/paper_comparison outputs. Experiment and legacy role profiles unchanged.",
+  "synthesisOutputTokens": {"old": 16384, "new": 8192},
+  "repairOutputCapsUnchanged": true,
+  "wholeRunBudgetUnchanged": true,
+  "legacyActualRequests": "factual-reasoning-real-input-replay-20261018.json",
+  "conditionPresentation": "Generic context label hidden, every condition value retained; raw records untouched.",
+  "boundary": "Offline replay and regression only. Real model content acceptance is recorded separately. Unknown/truncated requests never automatically retried."
+}
