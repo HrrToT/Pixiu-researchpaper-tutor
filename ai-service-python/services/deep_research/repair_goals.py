@@ -2,15 +2,11 @@
 from copy import deepcopy
 
 
-GUIDANCE = '''The global human question supplies shared context, tone and length limits.
-Each rejected target answers ONLY its bound frozen goals below, not the whole
-question. Repair supporting premises needed for those goals; do not append answers
-or evidence-availability statements about another target's goals. Several targets
-may share a goal and contribute different supported parts; no target must retell
-all other parts. A missing citation is not a request to add an absence assertion.
-If its own goal cannot be answered with permitted evidence, omit that target and
-leave a gap rather than answering other goals. Do not relabel IDs to expand scope.
-These goal bindings constrain the task, not factual support or source permissions.
+GUIDANCE = '''Global question sets shared context/tone/length.
+Each rejected target answers ONLY its bound frozen goals below, with needed premises.
+No other-goal answers or absence claims. Shared goals allow complementary parts.
+A missing citation proves no absence. Omit unsupported targets; keep IDs.
+Bindings grant no factual support or source permission.
 '''
 
 

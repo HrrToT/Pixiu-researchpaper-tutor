@@ -4789,80 +4789,129 @@
     "proof": "deep-research-evidence/compact-experiment-envelope-regression-20261020.json"
   },
   "currentCheckpoint": {
-    "sourceCommit": "3fddb76c",
+    "sourceCommit": "bbad0266",
     "javaSourceCommit": "612c324e",
-    "promptVersion": "dr-v2.20261030.368",
-    "component": "local section premise allocation and strict scope-audit source paths",
-    "componentOutcome": "mechanical_complete_human_answer_coherence_failed",
+    "promptVersion": "dr-v2.20261030.369",
+    "component": "frozen factual repair goal binding and combined-answer coherence gate",
+    "componentOutcome": "local_case_partial_missing_two_constraints_repair_input_over_budget",
     "runtimeLoadedVerified": true,
-    "runtimeProof": "deep-research-evidence/runtime-load-section-368-20261030.json",
-    "localSectionContextContractVersion": 2,
-    "auditSourceFieldsContractVersion": 3,
+    "runtimeProof": "deep-research-evidence/runtime-load-answer-369-20261030.json",
+    "factualRepairGoalContractVersion": 1,
+    "answerCoherenceContractVersion": 1,
     "fullDR0DR5Proved": false,
     "independentCredit": 0,
-    "lastCapturedLedgerRows": 8143,
+    "lastCapturedLedgerRows": 8164,
     "lastCapturedActiveProductionRuns": 0,
     "historicalPausedRunsAtCapture": 13,
     "lastConfirmedIndexDocuments": 1102,
     "lastConfirmedIndexSha256": "1e91bfa73ba4a374a6cea68be25639c269fac493d5eda61162448bf500ff6118",
-    "offlineAssociatedFiles": 145,
-    "offlineAssociatedPassed": 2721,
-    "offlineAssociatedSeconds": 320.96,
-    "offlineProof": "deep-research-evidence/section-368-confirmed-associated-regression-20261030.json",
+    "offlineAssociatedFiles": 148,
+    "offlineAssociatedPassed": 2760,
+    "offlineAssociatedSeconds": 256.19,
+    "offlineProof": "deep-research-evidence/answer-369-confirmed-associated-regression-20261030.json",
     "lastLocalDevelopmentCase": {
-      "sourceCommit": "3fddb76c",
-      "promptVersion": "dr-v2.20261030.368",
-      "case": "X4L-v3",
-      "runId": "dr_run_c589c6d824da50d5b21de0a43f87618a",
+      "promptVersion": "dr-v2.20261030.369",
+      "sourceCommit": "bbad0266",
+      "case": "X4L-v4",
+      "runId": "dr_run_bf946260276a5f39a0a2942716ab30ad",
       "status": "completed",
-      "machineOutcome": "complete",
-      "coverageStatus": "checked",
-      "gapCount": 0,
-      "modelCalls": 14,
-      "tokens": 58257,
-      "elapsedSeconds": 138.465,
-      "externalSearches": 0,
-      "fulltextFetches": 0,
-      "acceptedClaims": 2,
-      "contentAccepted": false,
-      "independentCredit": 0,
-      "manualReview": {
-        "scientificSupport": [
-          {
-            "claimId": "c1",
-            "judgment": "partial",
-            "reason": "2D and depth explanation have support, but its statement that provided evidence does not state normal-consistency object is misleading in the combined answer, where c3 cites that precise definition."
-          },
-          {
-            "claimId": "c3",
-            "judgment": "supported",
-            "reason": "The cited literal unit states splat-normal alignment with the surface normal estimated from depth-map gradients."
-          }
-        ],
-        "scores": {
-          "targetResponse": 4,
-          "evidenceSupport": 3,
-          "conditions": 4,
-          "synthesis": 3,
-          "readability": 2
-        },
-        "acceptanceRule": "All applicable dimensions must reach4; machine completion alone cannot grant human acceptance.",
-        "reason": "Whole-answer incoherence: a source-limited absence statement survives alongside a subsequent affirmative explanation. Repeated mechanism prose also obscures the answer."
+      "machineOutcome": "partial",
+      "modelCalls": 9,
+      "tokens": 42402,
+      "elapsedSeconds": 228.818,
+      "answerCoherence": {
+        "contractVersion": 1,
+        "status": "checked",
+        "answerDigest": "6c4f2b740021af8e77aeb4656bfd5a0c7e70a01c5546d070a8f4a7834ac137e2",
+        "coherent": true,
+        "issues": []
       },
-      "ledgerRows": 8143,
+      "coverageGaps": 2,
+      "acceptedClaims": [
+        {
+          "claimId": "c1",
+          "text": "这里的“2D”指每个基元是二维的椭圆盘，但许多这样的盘放在三维空间中，通过朝向和位置排列，就能拼出三维场景的表面。渲染时，光线与这些盘求交，得到正确的深度和视角一致性，所以二维基元仍能表示三维场景。",
+          "kind": "reported",
+          "evidenceRefs": [
+            "ev_f580f957d245818427832337512def14fad37c1adb4212595347250a67597847",
+            "ev_96e7d1d5264ec8b49bd7a3dcea93ccf4c4b1e62d06159091cb145bf8cb04b97f",
+            "ev_1306ca99578e5bc45b6848d4e0836e6e4663218fe63d09fd405f78bf15a2254a"
+          ],
+          "conditions": {},
+          "obligationIds": [
+            "ob_1"
+          ],
+          "detailLevel": "brief",
+          "tableBindings": [],
+          "verification": "semantic_passed"
+        }
+      ],
+      "repairStatus": "skipped_budget",
+      "manualReview": {
+        "contentAccepted": false,
+        "independentCredit": 0,
+        "scores": {
+          "targetResponse": 1,
+          "evidenceSupport": 3,
+          "conditions": 3,
+          "synthesis": 1,
+          "readability": 3
+        },
+        "reason": "Only 2D primitive / 3D scene explanation survives; both requested training constraints are absent. Correct-depth phrasing is stronger than an unconditional geometry guarantee warrants. Machine partial is appropriate; coherence true does not prove completeness.",
+        "remainingTopics": [
+          "depth distortion minimizes blending-weighted pairwise ray intersection depth dispersion",
+          "normal consistency aligns splat normals with rendered-depth-derived surface normals"
+        ],
+        "repairFailure": {
+          "kind": "repairEvidenceBytes",
+          "limit": 24000,
+          "used": 24319
+        },
+        "allDimensionsNeedAtLeast": 4
+      },
+      "preservation": {
+        "oldLedgerUnchanged": true,
+        "allOldRunsUnchanged": true,
+        "newRows": 21,
+        "ledgerRows": 8164,
+        "onlyThisRunCreatedCalls": true,
+        "active": [],
+        "oldPausedRetained": true,
+        "paused": [
+          "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+          "dr_run_ed10cc3347be552288079a9a588fddf5",
+          "dr_run_86b3f181a5475e99aacca3dbf4370567",
+          "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+          "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+          "dr_run_e3521b1781825273b384a26a5edb8cdc",
+          "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+          "dr_run_e9c9dc916bef519092fad8b929b2448f",
+          "dr_run_4738564f5ff35157996a35068c62ed32",
+          "dr_run_a8bd62f9ae3d52ff806f537065f55b2d",
+          "dr_run_98e66f2d3d555dfa822b859963f01419",
+          "dr_run_8be639c866c35ea092c735a04781b647",
+          "dr_run_1c0c2e6510165086962408b8e3cf698b"
+        ]
+      },
       "protectedTasksExact": 12,
       "repeatedTerminalGetExact": true,
-      "oldPayloadsAndLedgerExact": true,
-      "active": 0,
-      "historicalPaused": 13,
       "index": {
         "collection": "literature_collection_v4_e5_small",
         "count": 1102,
         "sha256": "1e91bfa73ba4a374a6cea68be25639c269fac493d5eda61162448bf500ff6118"
       },
-      "nextDiagnosis": "Inspect why repair of an ob1-only 2D representation claim expands into the whole question and adds an absence statement. Preserve per-claim scope and review combined-answer consistency; do not weaken scientific checks."
+      "payloadSha256": "d75ef32775ccfafb8568d195a192d413cdb089672a91c4c080ac2239868f92be"
     },
-    "remaining": "Fix repair goal scope and combined-answer coherence; machine complete does not satisfy manual quality. External path timeout, numeric comparison, experiments, insufficiency, continuation, fresh independent cases and full release/recovery audit remain pending."
+    "nextCandidate": {
+      "promptVersion": "dr-v2.20261030.370",
+      "change": "condense goal instructions without changing permissions, quote/context retention, or 24KB cap",
+      "offlineReplay": "deep-research-evidence/goal-370-actual-repair-replay-20261030.json",
+      "focusedPassed": 33,
+      "focusedSeconds": 9.99,
+      "runtimeLoadedVerified": false,
+      "contentAccepted": false
+    },
+    "remaining": "Validate candidate loading and bounded model quality; external search/body runtime, numeric comparison, experiments, insufficiency, continuation, independent cases and full DR0-DR5 release/recovery audit remain pending."
   },
   "sharedModuleSourceCheckpoint": {
     "sourceCommit": "f8ae5177",
@@ -5389,5 +5438,83 @@
       "nextDiagnosis": "Inspect evidence allocation and compound-claim binding after local indexed section retrieval. Do not loosen support checks or upgrade old cases."
     },
     "remaining": "Inspect allocation of acquired local section evidence and compound-claim support. External API read timeout remains separately unverified. Numeric comparison, experiments, insufficiency, continuation, fresh independent cases and full recovery/product release audit remain pending."
-  }
+  },
+  "checkpointHistory": [
+    {
+      "sourceCommit": "3fddb76c",
+      "javaSourceCommit": "612c324e",
+      "promptVersion": "dr-v2.20261030.368",
+      "component": "local section premise allocation and strict scope-audit source paths",
+      "componentOutcome": "mechanical_complete_human_answer_coherence_failed",
+      "runtimeLoadedVerified": true,
+      "runtimeProof": "deep-research-evidence/runtime-load-section-368-20261030.json",
+      "localSectionContextContractVersion": 2,
+      "auditSourceFieldsContractVersion": 3,
+      "fullDR0DR5Proved": false,
+      "independentCredit": 0,
+      "lastCapturedLedgerRows": 8143,
+      "lastCapturedActiveProductionRuns": 0,
+      "historicalPausedRunsAtCapture": 13,
+      "lastConfirmedIndexDocuments": 1102,
+      "lastConfirmedIndexSha256": "1e91bfa73ba4a374a6cea68be25639c269fac493d5eda61162448bf500ff6118",
+      "offlineAssociatedFiles": 145,
+      "offlineAssociatedPassed": 2721,
+      "offlineAssociatedSeconds": 320.96,
+      "offlineProof": "deep-research-evidence/section-368-confirmed-associated-regression-20261030.json",
+      "lastLocalDevelopmentCase": {
+        "sourceCommit": "3fddb76c",
+        "promptVersion": "dr-v2.20261030.368",
+        "case": "X4L-v3",
+        "runId": "dr_run_c589c6d824da50d5b21de0a43f87618a",
+        "status": "completed",
+        "machineOutcome": "complete",
+        "coverageStatus": "checked",
+        "gapCount": 0,
+        "modelCalls": 14,
+        "tokens": 58257,
+        "elapsedSeconds": 138.465,
+        "externalSearches": 0,
+        "fulltextFetches": 0,
+        "acceptedClaims": 2,
+        "contentAccepted": false,
+        "independentCredit": 0,
+        "manualReview": {
+          "scientificSupport": [
+            {
+              "claimId": "c1",
+              "judgment": "partial",
+              "reason": "2D and depth explanation have support, but its statement that provided evidence does not state normal-consistency object is misleading in the combined answer, where c3 cites that precise definition."
+            },
+            {
+              "claimId": "c3",
+              "judgment": "supported",
+              "reason": "The cited literal unit states splat-normal alignment with the surface normal estimated from depth-map gradients."
+            }
+          ],
+          "scores": {
+            "targetResponse": 4,
+            "evidenceSupport": 3,
+            "conditions": 4,
+            "synthesis": 3,
+            "readability": 2
+          },
+          "acceptanceRule": "All applicable dimensions must reach4; machine completion alone cannot grant human acceptance.",
+          "reason": "Whole-answer incoherence: a source-limited absence statement survives alongside a subsequent affirmative explanation. Repeated mechanism prose also obscures the answer."
+        },
+        "ledgerRows": 8143,
+        "protectedTasksExact": 12,
+        "repeatedTerminalGetExact": true,
+        "oldPayloadsAndLedgerExact": true,
+        "active": 0,
+        "historicalPaused": 13,
+        "index": {
+          "collection": "literature_collection_v4_e5_small",
+          "count": 1102,
+          "sha256": "1e91bfa73ba4a374a6cea68be25639c269fac493d5eda61162448bf500ff6118"
+        },
+        "nextDiagnosis": "Inspect why repair of an ob1-only 2D representation claim expands into the whole question and adds an absence statement. Preserve per-claim scope and review combined-answer consistency; do not weaken scientific checks."
+      },
+      "remaining": "Fix repair goal scope and combined-answer coherence; machine complete does not satisfy manual quality. External path timeout, numeric comparison, experiments, insufficiency, continuation, fresh independent cases and full release/recovery audit remain pending."
+    }
+  ]
 }
