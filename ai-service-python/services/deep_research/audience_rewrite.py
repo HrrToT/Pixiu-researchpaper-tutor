@@ -39,7 +39,7 @@ def eligible(record, report, output_kind):
             requested = True
             break
     return (type(record.get('audienceRewriteContractVersion')) is int
-            and record['audienceRewriteContractVersion'] in (1,2,3,4,5,6,7,8)
+            and record['audienceRewriteContractVersion'] in (1,2,3,4,5,6,7,8,9)
             and output_kind in {'direction_survey', 'claim_verification', 'paper_comparison'}
             and isinstance(record.get('question'), str)
             and requested
@@ -96,7 +96,7 @@ def inference_candidates(report, requirement_context, *, contract_version=1):
                and isinstance(item.get('obligationId'), str)
                and _WHY.search(str(item.get('question', '')))}
     return {c['claimId'] for c in report['claims'] if c.get('kind') == 'reported'
-            and _qualitative(c, original=True, conceptual_articles=contract_version in (7,8),dimensional_labels=contract_version==8)
+            and _qualitative(c, original=True, conceptual_articles=contract_version in (7,8,9),dimensional_labels=contract_version in (8,9))
             and isinstance(c.get('obligationIds'), list)
             and any(isinstance(key, str) and key in why_ids for key in c['obligationIds'])}
 
@@ -180,7 +180,7 @@ Original cited sources: {json.dumps(source_rows, ensure_ascii=False, separators=
 Return ONLY {{"claims":[{{"claimId":"same ID","text":"rewritten Chinese explanation"}}]}}.
 Exactly one row per input ID, no other fields, no sections, citations or verdicts.
 '''
-    if contract_version in (2,3,4,5,6,7,8):
+    if contract_version in (2,3,4,5,6,7,8,9):
         inputs=[]
         for claim in claims:
             bindings=claim.get('tableBindings', [])
@@ -222,7 +222,7 @@ unrequested values and their bindings may be omitted together. Preserve method/g
 value relationships for retained values; never create a new binding or swap row identities.
 For a claim without originalTableBindings, do not return retainedTableBindingIndexes.
 '''
-        if contract_version in (3,4,5,6,7,8):
+        if contract_version in (3,4,5,6,7,8,9):
             targets=[]
             for row in inputs:
                 obligation_ids=row.get('obligationIds',[])
@@ -232,6 +232,10 @@ For a claim without originalTableBindings, do not return retainedTableBindingInd
                 targets.append({**{key:value for key,value in row.items() if key not in {'draftPoint','draftConditions'}},
                     'requestedPoints':[item for item in requirement_context
                         if not requested or item.get('obligationId') in requested]})
+            if contract_version==9:
+                from services.deep_research.audience_point_scope import hints
+                point_hints=hints(claims)
+                targets=[{**target,'unverifiedPointHint':point_hints[target['claimId']]} for target in targets]
             prompt=f'''Rebuild these requested points for a beginner from EACH target's own original sources.
 Question: {question}
 Total ALL text+conditions character limit: {limit or 'concise, no explicit maximum'}.
@@ -262,6 +266,11 @@ unrequested values and their bindings may be omitted together, never replaced or
 Without originalTableBindings, omit retainedTableBindingIndexes. Source table context and
 bindings identify existing cells, not a license to publish an unsupported interpretation.
 '''
+            if contract_version==9:
+                from services.deep_research.audience_point_scope import GUIDANCE as point_guidance
+                prompt=prompt.replace('Unverified draft prose and draft conditions are OMITTED to avoid copying their jargon or\nunsupported wording. Original drafts remain in the journal, not as facts to repeat.',
+                    'Draft conditions are omitted. Original drafts remain in the journal; the private point hints below are not facts to repeat.')
+                prompt+='\n'+point_guidance
         if contract_version == 4:
             allowed = sorted(inference_candidates(report, requirement_context, contract_version=contract_version))
             prompt += f'''\nClassification exception for these server-selected why targets ONLY: {json.dumps(allowed)}.
@@ -273,7 +282,7 @@ omit kind. All other targets omit kind. Explain storage/rate as data size and di
 when these terms are necessary. Describe an objective's competing criteria without promising outcomes.
 {QUALITATIVE_INFERENCE_REVIEW}
 '''
-        if contract_version in (5,6,7,8):
+        if contract_version in (5,6,7,8,9):
             allowed = sorted(inference_candidates(report, requirement_context, contract_version=contract_version))
             prompt += f'''\nServer classification: these purely qualitative why targets will be labeled
 source-derived INFERENCE, not a verbatim author report: {json.dumps(allowed)}.
@@ -286,7 +295,7 @@ what the method tries to optimize, not what its experiments universally prove. O
 parameters, counts and formulas. These qualitative targets cannot acquire measured quantities.
 {QUALITATIVE_INFERENCE_REVIEW}
 '''
-        if contract_version in (6,7,8):
+        if contract_version in (6,7,8,9):
             prompt += ('\nAn exact mathematical parameter identifier established in the target\'s own original '
                        'quote is a symbol, not a measured value. Omit optional symbols for readability; '
                        'do not invent a parameter or assign it an uncited numeric value.\n')
@@ -316,7 +325,7 @@ def _merge(report, content, parse, question, *, contract_version=1, allowed_infe
             return reject('invalid_target')
         original=originals[row['claimId']]
         keys={'claimId','text'} if contract_version==1 else {'claimId','text','conditions'}
-        if contract_version in (2,3,4,5,6,7,8) and original.get('tableBindings'):
+        if contract_version in (2,3,4,5,6,7,8,9) and original.get('tableBindings'):
             keys.add('retainedTableBindingIndexes')
         if contract_version == 4 and 'kind' in row:
             if (row['kind'] != 'inference' or row['claimId'] not in allowed_inference_ids
@@ -329,7 +338,7 @@ def _merge(report, content, parse, question, *, contract_version=1, allowed_infe
         if (contract_version == 6 and row['claimId'] in allowed_inference_ids
                 and not _qualitative(row, parameter_ids=(source_parameter_ids or {}).get(row['claimId'], set()))):
             return reject('nonqualitative_inference')
-        if set(row)!=keys or (contract_version in (2,3,4,5,6,7,8) and not isinstance(row['conditions'],dict)):
+        if set(row)!=keys or (contract_version in (2,3,4,5,6,7,8,9) and not isinstance(row['conditions'],dict)):
             return reject('invalid_schema')
         if 'retainedTableBindingIndexes' in keys:
             indexes=row['retainedTableBindingIndexes']
@@ -337,7 +346,7 @@ def _merge(report, content, parse, question, *, contract_version=1, allowed_infe
             if (not isinstance(indexes,list) or any(type(i) is not int or i<0 or i>=len(bindings) for i in indexes)
                     or len(set(indexes))!=len(indexes)):
                 return reject('invalid_table_subset')
-        if contract_version in (7,8) and row['claimId'] in allowed_inference_ids:
+        if contract_version in (7,8,9) and row['claimId'] in allowed_inference_ids:
             from services.deep_research.verification import precheck_claims
             shadow = {**original, 'text': row['text'], 'conditions': deepcopy(row['conditions'])}
             checked = precheck_claims([shadow], evidence, **verification_policy)
@@ -349,15 +358,18 @@ def _merge(report, content, parse, question, *, contract_version=1, allowed_infe
         patches[row['claimId']] = row
     if set(patches) != set(originals):
         return reject('missing_targets')
+    if contract_version==9:
+        from services.deep_research.audience_point_scope import collapsed_distinct_points
+        if collapsed_distinct_points(originals,patches):return reject('collapsed_distinct_points')
     merged = deepcopy(report)
     for claim in merged['claims']:
         patch=patches[claim['claimId']]
         claim['text'] = patch['text']
-        if contract_version in (2,3,4,5,6,7,8):
+        if contract_version in (2,3,4,5,6,7,8,9):
             claim['conditions']=deepcopy(patch['conditions'])
             if contract_version == 4 and 'kind' in patch:
                 claim['kind'] = patch['kind']
-            if contract_version in (5,6,7,8) and claim['claimId'] in allowed_inference_ids:
+            if contract_version in (5,6,7,8,9) and claim['claimId'] in allowed_inference_ids:
                 claim['kind'] = 'inference'
             if claim.get('tableBindings'):
                 claim['tableBindings']=[deepcopy(claim['tableBindings'][i])
@@ -373,27 +385,27 @@ def rewrite_for_beginner(report, evidence, question, invoke, parse, *, saved_sta
     A rejected/too-long edit leaves the original draft for normal verification.
     It is never a license to publish either version without checking its facts.
     """
-    if type(contract_version) is not int or contract_version not in (1,2,3,4,5,6,7,8):
+    if type(contract_version) is not int or contract_version not in (1,2,3,4,5,6,7,8,9):
         raise DeepResearchError('invalid_audience_rewrite_state','新手改写契约版本无效。')
     identity_inputs={'report': report, 'evidence': evidence, 'question': question}
-    if contract_version in (7,8):
+    if contract_version in (7,8,9):
         verification_policy = deepcopy(verification_policy) if verification_policy is not None else {
-            'absence_scope_version':6 if contract_version==8 else 5, 'quantity_spelling_version':5 if contract_version==8 else 4,
+            'absence_scope_version':6 if contract_version in (8,9) else 5, 'quantity_spelling_version':5 if contract_version in (8,9) else 4,
             'feedback_version':2, 'table_references_version':1}
         if (not isinstance(verification_policy, dict) or set(verification_policy) != {
                 'absence_scope_version','quantity_spelling_version','feedback_version','table_references_version'}
                 or any(type(v) is not int or v < 0 for v in verification_policy.values())):
             raise DeepResearchError('invalid_audience_rewrite_state', '新手改写事实检查契约无效。')
         identity_inputs['verificationPolicy'] = verification_policy
-    if contract_version in (2,3,4,5,6,7,8):
+    if contract_version in (2,3,4,5,6,7,8,9):
         identity_inputs.update(contractVersion=contract_version,requirementContext=requirement_context)
     identity = digest(identity_inputs)
     state = deepcopy(saved_state) if saved_state is not None else None
     if state is not None:
         if (not isinstance(state, dict) or type(state.get('version')) is not int or state['version'] != contract_version
                 or state.get('inputDigest') != identity
-                or (contract_version in (2,3,4,5,6,7,8) and state.get('originalReport')!=report)
-                or (contract_version in (7,8) and state.get('verificationPolicy') != verification_policy)
+                or (contract_version in (2,3,4,5,6,7,8,9) and state.get('originalReport')!=report)
+                or (contract_version in (7,8,9) and state.get('verificationPolicy') != verification_policy)
                 or state.get('status') not in {'pending', 'received', 'skipped'}):
             raise DeepResearchError('invalid_audience_rewrite_state', '保存的新手改写请求与原始输入不一致，不能重新发送。')
     else:
@@ -401,9 +413,9 @@ def rewrite_for_beginner(report, evidence, question, invoke, parse, *, saved_sta
                                    requirement_context=requirement_context)
         state = {'version': contract_version, 'inputDigest': identity, 'status': 'pending',
                  'request': request, 'requestDigest': digest(request)}
-        if contract_version in (7,8):
+        if contract_version in (7,8,9):
             state['verificationPolicy'] = deepcopy(verification_policy)
-        if contract_version in (2,3,4,5,6,7,8):
+        if contract_version in (2,3,4,5,6,7,8,9):
             state['originalReport']=deepcopy(report)
         if reason:
             state.update(status='skipped', reason=reason)
@@ -434,30 +446,30 @@ def rewrite_for_beginner(report, evidence, question, invoke, parse, *, saved_sta
         if checkpoint:
             checkpoint(deepcopy(state))  # Raw response, including invalid edits.
     if state.get('finishReason') == 'length' or not isinstance(state.get('content'), str):
-        if contract_version in (6,7,8):
+        if contract_version in (6,7,8,9):
             state.update(editOutcome='rejected', editReason='truncated_or_missing_content')
             if checkpoint:
                 checkpoint(deepcopy(state))
         return deepcopy(report)
-    allowed = inference_candidates(report, requirement_context, contract_version=contract_version) if contract_version in (4,5,6,7,8) else ()
+    allowed = inference_candidates(report, requirement_context, contract_version=contract_version) if contract_version in (4,5,6,7,8,9) else ()
     reasons=[];hard_checks=[]
     edited = _merge(report, state['content'], parse, question,contract_version=contract_version,
                     allowed_inference_ids=allowed,
                     source_parameter_ids=_source_parameter_ids(report,evidence) if contract_version==6 else None,
-                    rejection=reasons.append if contract_version in (6,7,8) else None,
+                    rejection=reasons.append if contract_version in (6,7,8,9) else None,
                     evidence=evidence,verification_policy=verification_policy,hard_checks=hard_checks)
     result = edited or deepcopy(report)
-    if contract_version in (4,5,6,7,8):
+    if contract_version in (4,5,6,7,8,9):
         changes = [{'claimId': new['claimId'], 'from': old['kind'], 'to': new['kind']}
                    for old, new in zip(report['claims'], result['claims']) if old['kind'] != new['kind']]
-        if contract_version in (6,7,8):
+        if contract_version in (6,7,8,9):
             state.update(editOutcome='applied' if edited is not None else 'rejected',
                          editReason='' if edited is not None else reasons[0] if reasons else 'invalid_edit')
-        if state.get('classificationChanges') != changes or contract_version in (6,7,8):
+        if state.get('classificationChanges') != changes or contract_version in (6,7,8,9):
             state['classificationChanges'] = changes
             if checkpoint:
                 checkpoint(deepcopy(state))
-        if contract_version in (7,8):
+        if contract_version in (7,8,9):
             state['classificationPrechecks'] = hard_checks
             if checkpoint:
                 checkpoint(deepcopy(state))

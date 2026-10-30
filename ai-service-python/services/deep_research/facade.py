@@ -280,7 +280,7 @@ class ResearchFacade:
             "materials": materials,
             "materialSnapshot": material_snapshot,  # Immutable Java snapshot
             "contextMaterials": (material_snapshot or {}).get("contextMaterials", []) if isinstance(material_snapshot, dict) else [],
-            "promptVersion": "dr-v2.20261030.370",
+            "promptVersion": "dr-v2.20261030.371",
             "factualReviewContractVersion": 1,
             "citationPresentationContractVersion": 4,
             "configurationConsistencyContractVersion": 2,
@@ -370,7 +370,7 @@ class ResearchFacade:
             "planEditContractVersion": 1,
             "clarificationContractVersion": 1,
             "adaptiveResearchContractVersion": 1,
-            "audienceRewriteContractVersion": 8,
+            "audienceRewriteContractVersion": 9,
             "verificationInputContractVersion": 1,
             "workflowContractVersion": 5,
             "extractionPriorityVersion": 10,
@@ -1268,7 +1268,7 @@ class ResearchFacade:
                 and self._repo.require_run(run_id)['factualScopeContractVersion']==4,
             bounded_factual_review=lambda: bounded_review_enabled(self._repo.require_run(run_id)),
             qualitative_inference=lambda: type(self._repo.require_run(run_id).get('audienceRewriteContractVersion')) is int
-                and self._repo.require_run(run_id)['audienceRewriteContractVersion'] in (4,5,6,7,8),
+                and self._repo.require_run(run_id)['audienceRewriteContractVersion'] in (4,5,6,7,8,9),
             experiment_intent_review=lambda: self._repo.require_run(run_id).get('experimentIntentContractVersion',0),
             prospective_review=lambda: self._repo.require_run(run_id).get('experimentReviewContractVersion',0),
             configuration_consistency=lambda: self._repo.require_run(run_id).get('configurationConsistencyContractVersion',0),

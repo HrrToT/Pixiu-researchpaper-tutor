@@ -4928,7 +4928,38 @@
       },
       "payloadSha256": "549d30ca5955ee3fc7c66255af51931ec2aeb3d07e24414867aaeaa0e0d81c65"
     },
-    "remaining": "Resolve unsupported consequence added/surviving beginner rewriting and semantic review; local development is not independent acceptance. External path, comparison, experiments, insufficiency, continuation, independent holdouts and DR0-DR5 release audit remain pending."
+    "remaining": "Resolve unsupported consequence added/surviving beginner rewriting and semantic review; local development is not independent acceptance. External path, comparison, experiments, insufficiency, continuation, independent holdouts and DR0-DR5 release audit remain pending.",
+    "nextCandidate": {
+      "promptVersion": "dr-v2.20261030.371",
+      "audienceRewriteContractVersion": 9,
+      "component": "preserve complementary point responsibilities during beginner rewrite; reject exact collapse of distinct points",
+      "focusedPassed": 147,
+      "focusedSeconds": 11.46,
+      "actualReplay": "deep-research-evidence/audience-371-actual-replay-20261030.json",
+      "oldRequestExact": true,
+      "ownSourcePacketUnchanged": true,
+      "oldPendingCannotSwitchPolicy": true,
+      "runtimeLoadedVerified": false,
+      "contentAccepted": false,
+      "independentCredit": 0,
+      "associatedRegression": {
+        "files": 153,
+        "passed": 2875,
+        "seconds": 263.73,
+        "sourceFrozen": true,
+        "providerCalls": 0,
+        "proof": "deep-research-evidence/audience-371-associated-regression-20261030.json"
+      }
+    },
+    "externalTransportDiagnostic": {
+      "proof": "deep-research-evidence/arxiv-query-transport-20261030.json",
+      "attempts": 1,
+      "query": "id:2403.17888",
+      "errorType": "ReadTimeout",
+      "seconds": 3.255,
+      "modelCalls": 0,
+      "boundary": "Exact query endpoint remains unhealthy from project container; no claim of external runtime completion."
+    }
   },
   "sharedModuleSourceCheckpoint": {
     "sourceCommit": "f8ae5177",
