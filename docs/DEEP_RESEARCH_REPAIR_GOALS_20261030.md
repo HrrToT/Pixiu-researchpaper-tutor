@@ -173,3 +173,11 @@ eb04adf5已提交并推送，原Python容器重启一次后加载，健康与全
 深度说明中的“从而让二维高斯圆盘贴近真实表面”被事实核验拒绝。修订的draftingBasis明确写出该效果未直接得到支持，却仍生成“从而可能让……贴近真实表面”，仅改kind为inference并加“可能”，再核验仍拒绝。缺口在修订的语义操作：应删除无支持的因果/定位尾句，保留已支持的加权深度差与权重集中关系；模态词不能补足因果依据。不放松审核、不硬编码论文答案、不重复当前运行。
 
 最终8,281账本、活动0、原13暂停保持；12任务、索引/嵌入、原账本前缀及所有旧运行payload保持，重复终态GET一致。完整问题仍缺深度解释，内容不接受、独立积分0。证据：`deep-research-evidence/runtime-load-mechanism-375-20261030.json`、`deep-research-evidence/mechanism-375-x4l-v9-content-review-20261030.json`。隔离组件与实际运行的结果分别记录，不能把后者正确拒绝归纳为前者旧句已改判。
+
+## 正式学术出口接入当前系统代理
+
+用户明确选择“用当前系统代理”。只读核对Windows系统HTTP代理为127.0.0.1:12450，容器对应host.docker.internal:12450。新增deep_research_http_proxy服务端配置，默认空值保持直连，实际客户端不读取环境HTTP(S)_PROXY作隐式回退；本机配置仅写入被忽略的ai-service-python/.env中的该项，不提交本机地址或其他环境配置。无认证HTTP代理校验在构造客户端时完成；自定义transport与proxy_url不能同时指定。
+
+正式AcademicAcquisition工厂将配置传递到AcademicSourceClient，沿用pinned_https_get的来源/路径白名单、全部解析地址公开性、固定目标IP、原域名TLS/Host校验、重定向拒绝、响应限额和一次请求规则。模型出口不受此代理设置影响。
+
+76项初步检查通过；最终9文件133项关联检查通过（33.78秒），源码冻结，0模型调用，范围重叠不相加。实际通过正式工厂创建客户端，关闭缓存后各发送一次元数据和全文请求：元数据1.82秒；全文下载及解析55.206秒，13页62,436字符，SHA256=f3091d687bef0e79ac774743e31678c3deed91c35df7d2b75ae392de5ff8f0c7，与原论文版本一致。生产8,281账本及全部payload保持。证据：`deep-research-evidence/academic-proxy-integrated-regression-20261030.json`、`deep-research-evidence/academic-proxy-integrated-client-20261030.json`。这是正式客户端出口验证，尚非研究规划到报告的外部全链路验收；本节记录时待应用进程重启加载。

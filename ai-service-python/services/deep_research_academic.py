@@ -28,7 +28,7 @@ def public_addresses(host):
     return addresses
 
 
-def pinned_https_get(host, path, max_bytes, *, resolver=public_addresses, timeout=20):
+def pinned_https_get(host, path, max_bytes, *, resolver=public_addresses, timeout=20, proxy_url=""):
     """解析后固定连接 IP，TLS 仍验证原主机；拒绝全部重定向。"""
     if not ((host == 'export.arxiv.org' and path.startswith('/api/query?'))
             or (host == 'arxiv.org' and path.startswith('/pdf/'))):
@@ -36,10 +36,17 @@ def pinned_https_get(host, path, max_bytes, *, resolver=public_addresses, timeou
     addresses = resolver(host)
     if not addresses or any(not ipaddress.ip_address(address).is_global for address in addresses):
         raise AcademicAccessError('学术来源地址不可访问')
-    connection = http.client.HTTPSConnection(host, timeout=timeout, context=ssl.create_default_context())
-    # HTTPSConnection.connect retains the original host for SNI/certificate checks.
-    connection._create_connection = lambda _address, timeout=timeout, source_address=None: socket.create_connection(
-        (addresses[0], 443), timeout=timeout, source_address=source_address)
+    if proxy_url:
+        from services.academic_proxy_transport import proxy_https_connection, AcademicProxyError
+        try:
+            connection = proxy_https_connection(proxy_url, host, addresses[0], timeout=timeout)
+        except AcademicProxyError as cause:
+            raise AcademicAccessError('学术代理配置无效') from cause
+    else:
+        connection = http.client.HTTPSConnection(host, timeout=timeout, context=ssl.create_default_context())
+        # HTTPSConnection.connect retains the original host for SNI/certificate checks.
+        connection._create_connection = lambda _address, timeout=timeout, source_address=None: socket.create_connection(
+            (addresses[0], 443), timeout=timeout, source_address=source_address)
     try:
         connection.request('GET', path, headers={'User-Agent': 'PixiuDeepResearch/2.0', 'Accept-Encoding': 'identity'})
         response = connection.getresponse()
@@ -82,8 +89,18 @@ class AcademicPolicy:
 
 class AcademicSourceClient:
     """账本调用 discover/fetch_fulltext；本适配器不递归，不调用模型。"""
-    def __init__(self, policy: AcademicPolicy, transport=pinned_https_get, *, cache_dir=None):
+    def __init__(self, policy: AcademicPolicy, transport=pinned_https_get, *, cache_dir=None, proxy_url=""):
         self.policy = policy
+        if proxy_url:
+            from functools import partial
+            from services.academic_proxy_transport import proxy_endpoint, AcademicProxyError
+            if transport is not pinned_https_get:
+                raise AcademicAccessError('自定义学术出口不能同时指定代理')
+            try:
+                proxy_endpoint(proxy_url)
+            except AcademicProxyError as cause:
+                raise AcademicAccessError('学术代理配置无效') from cause
+            transport = partial(pinned_https_get, proxy_url=proxy_url)
         self.transport = transport
         self.cache_dir = Path(cache_dir) if cache_dir else None
 

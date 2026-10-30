@@ -31,6 +31,7 @@ class Settings(BaseSettings):
     deepseek_timeout_seconds: int = 120
     deep_research_request_timeout_seconds: int = Field(default=180, ge=1, le=360)
     deep_research_max_pdf_bytes: int = Field(default=32 * 1024 * 1024, ge=1024 * 1024, le=64 * 1024 * 1024)
+    deep_research_http_proxy: str = ""
     pixiu_llm_fixture_path: str = ""
 
     deepseek_translation_model: str = "deepseek-flash"

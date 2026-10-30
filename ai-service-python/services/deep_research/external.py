@@ -33,6 +33,7 @@ class AcademicAcquisition:
         return AcademicSourceClient(AcademicPolicy(enabled=flags["externalAcademic"],
             mode=record["sourcePolicy"]["mode"], allow_fulltext=flags["fulltext"],
             max_pdf_bytes=settings.deep_research_max_pdf_bytes),
+            proxy_url=settings.deep_research_http_proxy,
             cache_dir=os.environ.get("DEEP_RESEARCH_SOURCE_DIR", "data/deep_research_sources"))
 
     def __call__(self, run_id, targets):
