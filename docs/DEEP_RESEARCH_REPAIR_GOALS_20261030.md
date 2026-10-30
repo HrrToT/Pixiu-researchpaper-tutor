@@ -183,3 +183,15 @@ eb04adf5已提交并推送，原Python容器重启一次后加载，健康与全
 76项初步检查通过；最终9文件133项关联检查通过（33.78秒），源码冻结，0模型调用，范围重叠不相加。实际通过正式工厂创建客户端，关闭缓存后各发送一次元数据和全文请求：元数据1.82秒；全文下载及解析55.206秒，13页62,436字符，SHA256=f3091d687bef0e79ac774743e31678c3deed91c35df7d2b75ae392de5ff8f0c7，与原论文版本一致。生产8,281账本及全部payload保持。证据：`deep-research-evidence/academic-proxy-integrated-regression-20261030.json`、`deep-research-evidence/academic-proxy-integrated-client-20261030.json`。这是正式客户端出口验证，尚非研究规划到报告的外部全链路验收；本节记录时待应用进程重启加载。
 
 随后2048c417已提交推送，原Python容器重启一次加载。RAG/GROBID健康、全部研究模块及配置/正式出口/代理模块摘要一致，正式工厂确认已读取本机代理。8,281原账本与全部payload、12任务、1,102索引及嵌入保持，活动0、历史13暂停保持，0模型调用。证据：`deep-research-evidence/runtime-load-proxy-integrated-20261030.json`。Docker/WSL未重启，本地.env不提交；后续仍处理事实修订缺口及外部整轮内容验收。
+
+## .376候选：删除声明一致性，尚未生成合格修订
+
+新运行factualRepairGoalContractVersion=4，修订生成要求私有discardedDraftSpans，列出原稿中被移除的无依据短语；解析验证各短语确实来自原稿、无重复且不再出现在新正文中，元数据剥离后才进入独立事实核验。该字段仅是编辑一致性，不建立科学支持；有依据的reported→inference路径保留。旧契约3请求和pending身份不改，未知请求不升级重发。具体缺口优先调度同样适用于4。
+
+38项初步定向检查通过。最终162文件3,003项关联回归通过（382.60秒），源码冻结，0模型调用，一项既有PyPDF2弃用警告，各范围不重复累计。真实X4L-v9输入回放：旧3为23,878字节、新4为23,963字节，同样保留5条证据权限、原始引文和目标内容，未扩大24KB限额。早期较长提示曾挤掉可选证据，已合并重复说明；最终以confirmed-input-replay为准，早期输入回放另留档。
+
+真实隔离组件只提交1次，5,825 Token，已结算，无重试，未继续调用语义审核。模型在discardedDraftSpans中声明移除“从而让二维高斯圆盘贴近真实表面”，却把该片段原样留在正文，只把kind改为inference。实际首先被既有的“reported转inference必须实际改变正文”检查拒绝；新增删除一致性单独也判无效，但本条未走到该检查，不把旧规则的拒绝归为新增检查独有成效。修订结果仍为空，不能计内容修复通过。
+
+前瞻性的离线编辑试验把模型声明的删除操作实际应用到私有草稿（只清理相邻逗号/句号），可得到“深度畸变约束通过最小化沿光线各交点深度差的加权和，使权重分布集中。”。这不是回写或改判旧结果，也未科学核验；下一步需实现带原文位置/摘要审计的确定性草稿编辑，再独立核验及检查整题覆盖。不得编辑论文引文或凭删除声明自动计事实通过。
+
+生产8,281账本和全部payload保持，0生产写入；独立积分0。运行服务仍为.375/2048c417的加载状态，本候选未重启加载。证据：`deep-research-evidence/repair-376-associated-regression-20261030.json`、`deep-research-evidence/repair-376-confirmed-input-replay-20261030.json`、`deep-research-evidence/repair-376-provider-component-20261030.json`、`deep-research-evidence/repair-376-prospective-materialization-20261030.json`。

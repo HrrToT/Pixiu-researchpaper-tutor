@@ -5202,6 +5202,18 @@
         "sha256": "1e91bfa73ba4a374a6cea68be25639c269fac493d5eda61162448bf500ff6118"
       },
       "payloadSha256": "788f89b085b0116f95f74c2929c0a6e964132f7b604bcc3e4ba650e9fe245957"
+    },
+    "nextCandidate": {
+      "promptVersion": "dr-v2.20261030.376",
+      "factualRepairGoalContractVersion": 4,
+      "runtimeLoaded": false,
+      "associatedRegression": "deep-research-evidence/repair-376-associated-regression-20261030.json",
+      "savedInputReplay": "deep-research-evidence/repair-376-confirmed-input-replay-20261030.json",
+      "realComponent": "deep-research-evidence/repair-376-provider-component-20261030.json",
+      "prospectiveEditSimulation": "deep-research-evidence/repair-376-prospective-materialization-20261030.json",
+      "contentAccepted": false,
+      "independentCredit": 0,
+      "remaining": "Execute explicit deletion edits on private draft text before validating kind transitions, then independently verify the edited answer. Keep original outputs and do not reinterpret old results."
     }
   },
   "sharedModuleSourceCheckpoint": {

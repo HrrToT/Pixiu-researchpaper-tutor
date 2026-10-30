@@ -35,7 +35,7 @@ def test_table_rules_remain_when_original_target_has_any_table_binding():
     assert 'tableBindings' in new['prompt']
 
 
-@pytest.mark.parametrize('value',[None,0,1,4,'2',2.0])
+@pytest.mark.parametrize('value',[None,0,1,5,'2',2.0])
 def test_only_explicit_point_scope_version_is_accepted(value):
     with pytest.raises(ValueError):policy_version(value)
 

@@ -1836,7 +1836,7 @@ def make_verify_node(
             repair_targets = prepare_coverage_repair(repair_report, verification_result,
                 answer_coverage if answer_coverage.get('status') == 'checked' else {'gaps': []},
                 **({'prioritize_specific':True} if type(record.get('factualRepairGoalContractVersion')) is int
-                   and record['factualRepairGoalContractVersion']==3 else {}))
+                   and record['factualRepairGoalContractVersion'] in (3,4) else {}))
         if saved.get('repairCompleted') and saved.get('verifiedReport'):
             return {'claim_ids': [c['claimId'] for c in saved['verifiedReport'].get('verifiedClaims', [])]}
 
@@ -1934,9 +1934,9 @@ def make_verify_node(
                             if isinstance(a,dict) and isinstance(a.get('expression'),dict) and a.get('claimId') in {c.get('claimId') for c in repair_report.get('claims',[])}]}
                             if claim_check_enabled(record) and record['claimCheckContractVersion'] in (5,6,7,8,9) else {}),
                         **({'compact_source_repair':True} if compact_repair else {}),
-                        **({'target_goals':record['factualRepairGoalContractVersion'] if record['factualRepairGoalContractVersion'] in (2,3) else True} if compact_repair and factual_redraft_eligible(repair_report)
+                        **({'target_goals':record['factualRepairGoalContractVersion'] if record['factualRepairGoalContractVersion'] in (2,3,4) else True} if compact_repair and factual_redraft_eligible(repair_report)
                             and type(record.get('factualRepairGoalContractVersion')) is int
-                            and record['factualRepairGoalContractVersion'] in (1,2,3) else {}),
+                            and record['factualRepairGoalContractVersion'] in (1,2,3,4) else {}),
                         **({'ordinary_advice':True} if advice_repair else {}),
                         **({'preserve_answers':True} if type(record.get('answerPreservationContractVersion')) is int and record['answerPreservationContractVersion']==1 else {}),
                         **({'request_semantics':record['requestSemanticsContractVersion'] if record['requestSemanticsContractVersion']==2 else True} if type(record.get('requestSemanticsContractVersion')) is int and record['requestSemanticsContractVersion'] in (1,2) else {}),

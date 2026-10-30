@@ -24,7 +24,7 @@ effect or a guaranteed solution. No support means omit that target, not guess.
 
 def policy_version(value):
     if type(value) is bool:return int(value)
-    if type(value) is int and value in (2,3):return value
+    if type(value) is int and value in (2,3,4):return value
     raise ValueError('Invalid repair target goal policy')
 
 
