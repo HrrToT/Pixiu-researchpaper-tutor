@@ -148,7 +148,9 @@ class LocalTaskRetriever:
         if not self.validate(self.run_id,pdf_id):
             raise DeepResearchError('scope_revoked','论文范围已变更')
         from services.deep_research.mechanism_sources import prefer_sources
-        return prefer_sources(result,candidates,record,query,pdf_id,limit)
+        result=prefer_sources(result,candidates,record,query,pdf_id,limit)
+        from services.deep_research.section_context import include_section_context
+        return include_section_context(result,candidates,record,pdf_id,limit)
 
 
     def _stamp_identity(self, rows, pdf_id):
