@@ -181,3 +181,5 @@ eb04adf5已提交并推送，原Python容器重启一次后加载，健康与全
 正式AcademicAcquisition工厂将配置传递到AcademicSourceClient，沿用pinned_https_get的来源/路径白名单、全部解析地址公开性、固定目标IP、原域名TLS/Host校验、重定向拒绝、响应限额和一次请求规则。模型出口不受此代理设置影响。
 
 76项初步检查通过；最终9文件133项关联检查通过（33.78秒），源码冻结，0模型调用，范围重叠不相加。实际通过正式工厂创建客户端，关闭缓存后各发送一次元数据和全文请求：元数据1.82秒；全文下载及解析55.206秒，13页62,436字符，SHA256=f3091d687bef0e79ac774743e31678c3deed91c35df7d2b75ae392de5ff8f0c7，与原论文版本一致。生产8,281账本及全部payload保持。证据：`deep-research-evidence/academic-proxy-integrated-regression-20261030.json`、`deep-research-evidence/academic-proxy-integrated-client-20261030.json`。这是正式客户端出口验证，尚非研究规划到报告的外部全链路验收；本节记录时待应用进程重启加载。
+
+随后2048c417已提交推送，原Python容器重启一次加载。RAG/GROBID健康、全部研究模块及配置/正式出口/代理模块摘要一致，正式工厂确认已读取本机代理。8,281原账本与全部payload、12任务、1,102索引及嵌入保持，活动0、历史13暂停保持，0模型调用。证据：`deep-research-evidence/runtime-load-proxy-integrated-20261030.json`。Docker/WSL未重启，本地.env不提交；后续仍处理事实修订缺口及外部整轮内容验收。

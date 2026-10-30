@@ -1,0 +1,47 @@
+{
+  "academicProxy": {
+    "configured": true,
+    "productionFactoryWired": true
+  },
+  "additionalSourceHashes": {
+    "core/config.py": "8857c5a06f070305f864a55b3bcc195bf28913e65c27570aeacc1deaffe80dd3",
+    "services/deep_research_academic.py": "d8af1a76b10de9e2f5ffbdc576ab46d5ede5ada5770a8700fc4d09b577b022b7",
+    "services/academic_proxy_transport.py": "ab54ebcb785c1acd103a63d32b87bb1e9e07447ef8bb816ec728b696786a24a5"
+  },
+  "promptVersion": "dr-v2.20261030.375",
+  "localSectionContextContractVersion": 2,
+  "factualRepairGoalContractVersion": 3,
+  "answerCoherenceContractVersion": 2,
+  "audienceRewriteContractVersion": 9,
+  "quantitySpellingContractVersion": 13,
+  "factualReviewContractVersion": 2,
+  "sourceCommit": "2048c417618e68e3b2e045543f7427b23abab1f1",
+  "ledgerRows": 8281,
+  "oldLedgerAndPayloadsExact": true,
+  "protectedTasksExact": 12,
+  "active": 0,
+  "paused": 13,
+  "index": {
+    "collection": "literature_collection_v4_e5_small",
+    "count": 1102,
+    "sha256": "1e91bfa73ba4a374a6cea68be25639c269fac493d5eda61162448bf500ff6118"
+  },
+  "allSourceHashesExact": true,
+  "health": {
+    "status": "ok",
+    "checks": {
+      "grobid": {
+        "status": "ok",
+        "message": "GROBID is reachable."
+      },
+      "rag": {
+        "status": "ok",
+        "message": "RAG backend is ready."
+      }
+    },
+    "uptime_seconds": 32.5
+  },
+  "containerRestarts": 1,
+  "providerCalls": 0,
+  "contentAcceptance": false
+}
