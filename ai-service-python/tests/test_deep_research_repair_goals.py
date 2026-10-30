@@ -67,8 +67,9 @@ def test_new_policies_are_server_owned_and_frozen(tmp_path,field):
     try:
         record,_=facade.create({'workspaceTaskId':'t','operationKey':'op','question':'Explain',
             'deferStart':True,field:False},start_async=False)
-        assert record[field]==1 and type(record[field]) is int
-        for value in [None,True,0,2]:
+        expected=2 if field=='factualRepairGoalContractVersion' else 1
+        assert record[field]==expected and type(record[field]) is int
+        for value in [None,True,0,3]:
             with pytest.raises(ValueError,match='Immutable'):
                 repo.update_run(record['runId'],lambda r:{**r,field:value})
     finally:facade.shutdown()

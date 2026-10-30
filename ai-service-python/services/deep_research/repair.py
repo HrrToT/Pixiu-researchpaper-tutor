@@ -18,7 +18,11 @@ def _prepare_repair(report, verification, evidence, question, *, max_prompt_byte
                     fact_redraft=False, requirement_context=(), source_aware_redraft=False,comparison_reasoning=False,
                     question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False,shared_experiment_schema=False,experiment_evidence_context=None,experimental_edits=False,experimental_diagnostics=False,experimental_nested_tables=False,experimental_representation=False,experimental_coverage=False,citation_presentation_version=0,configuration_consistency_version=0,repair_evidence_packet_version=0,answer_intents=None,scope_expression=False,table_identity_context=False,claim_check=False,required_scope_ids=(),compact_layout=False,ordinary_advice=False,task_sources=False,request_semantics=False,preserve_answers=False,target_goals=False):
     if type(preserve_answers) is not bool:raise ValueError('Invalid answer preservation policy')
-    if type(target_goals) is not bool:raise ValueError('Invalid repair target goal policy')
+    from services.deep_research.repair_goals import policy_version
+    goal_version=policy_version(target_goals)
+    if goal_version==2 and not (fact_redraft and source_aware_redraft and concise_factual
+            and compact_source_repair and factual_redraft_eligible(report)):
+        raise ValueError('Point-scoped repair requires compact factual redrafting')
     if not (type(request_semantics) is bool or type(request_semantics) is int and request_semantics==2):raise ValueError('Invalid request semantics policy')
     if type(task_sources) is not bool:raise ValueError('Invalid task source disclosure policy')
     if type(ordinary_advice) is not bool:raise ValueError('Invalid ordinary advice repair policy')
@@ -414,12 +418,14 @@ in the paper. Maintain consistency with accepted definitions and complete requir
         prompt+='\n'+REFERENCE
     if compact_source_repair and compact_factual and source_aware_redraft:
         from services.deep_research.factual_repair import render as compact_repair_prompt, compact_rows
+        from services.deep_research.repair_goals import point_hints
         rows=compact_rows(rows,context)
         prompt=compact_repair_prompt(question=question,length_contract=length_contract,
             requirements=active_requirements,source_context=context,targets=input_claims,
             checks=packed_checks,questions=question_dictionary,permissions_marker=permissions_marker,
             evidence_marker=evidence_marker,schema=revision_shape,
-            **({'target_goals':True} if target_goals else {}))
+            **({'target_goals':target_goals} if target_goals else {}),
+            **({'target_hints':point_hints(originals.values())} if goal_version==2 else {}))
     if shared_experiment_schema and prospective:
         from services.deep_research.experiment_repair import compatible,render as experiment_prompt
         feedback_options = {}
@@ -455,7 +461,7 @@ in the paper. Maintain consistency with accepted definitions and complete requir
                 terminology=SCIENTIFIC_TERMINOLOGY,concise_policy=experiment_evidence_context is not None,**feedback_options)
     # Schema renderers above can replace the entire prompt. Keep the current
     # packet-key contract after the final renderer, inside the byte fitter.
-    if type(declared_table_refs) is int and declared_table_refs==4:
+    if type(declared_table_refs) is int and declared_table_refs==4 and not (goal_version==2 and not has_tables):
         from services.deep_research.table_bindings import reference_guidance
         prompt+='\n'+reference_guidance(4)
     if preserve_answers:
@@ -485,7 +491,7 @@ in the paper. Maintain consistency with accepted definitions and complete requir
     if answer_intents is not None:
         from services.deep_research.answer_point_intent import repair_guidance
         prompt += repair_guidance(answer_intents, originals,**({'clarify_shared_sources':True} if type(claim_check) is int and claim_check in (8,9) else {}))
-    if table_identity_context:
+    if table_identity_context and not (goal_version==2 and not has_tables):
         from services.deep_research.table_identity_context import guidance as table_identity_guidance
         prompt += '\n'+table_identity_guidance(2 if type(table_identity_context) is int and table_identity_context==2 else 1)
     if claim_check:
@@ -532,7 +538,7 @@ If a supported revision is not possible, omit that target rather than bypass sco
         from services.deep_research.condition_source_index import GUIDANCE as CONDITION_GUIDANCE
         condition_marker='__CONDITION_SOURCES_'+uuid4().hex+'__'
         prompt+='\n'+CONDITION_GUIDANCE+'\nCondition source index (navigation only):\n'+condition_marker
-    note_navigation=type(table_identity_context) is int and table_identity_context==2 and factual_redraft_eligible(report)
+    note_navigation=type(table_identity_context) is int and table_identity_context==2 and factual_redraft_eligible(report) and not (goal_version==2 and not has_tables)
     template = prompt
     from services.deep_research.experiment_edits import columnar
     def render(selected_rows):
@@ -562,7 +568,8 @@ If a supported revision is not possible, omit that target rather than bypass sco
     # Allocate required full quotes AND context first. Optional candidate
     # passages may not displace a required source's context during fitting.
     required = {ref for claim in originals.values()
-                for ref in (claim.get('evidenceRefs', []) if claim.get('text', '').strip() else [])
+                for ref in (claim.get('evidenceRefs', []) if claim.get('text', '').strip() or
+                    goal_version==2 and isinstance(claim.get('scopeExpression'),dict) and claim['scopeExpression'] else [])
                 if ref in short_ids}
     # Coverage hints are candidates, not citations the original assertion used.
     # Keep them first among optional rows without forcing every broad hint into
@@ -736,7 +743,11 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
     from services.deep_research.repair_batches import split_repair_targets
 
     if type(preserve_answers) is not bool:raise ValueError('Invalid answer preservation policy')
-    if type(target_goals) is not bool:raise ValueError('Invalid repair target goal policy')
+    from services.deep_research.repair_goals import policy_version
+    goal_version=policy_version(target_goals)
+    if goal_version==2 and not (fact_redraft and source_aware_redraft and concise_factual
+            and compact_source_repair and factual_redraft_eligible(report)):
+        raise ValueError('Point-scoped repair requires compact factual redrafting')
     if not (type(request_semantics) is bool or type(request_semantics) is int and request_semantics==2):raise ValueError('Invalid request semantics policy')
     if type(task_sources) is not bool:raise ValueError('Invalid task source disclosure policy')
     if type(ordinary_advice) is not bool:raise ValueError('Invalid ordinary advice repair policy')
@@ -807,7 +818,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
                        **({'recommendationRepairContractVersion':1} if ordinary_advice else {}),
                        **({'reportPresentationContractVersion':4} if task_sources else {}),
                        **({'answerPreservationContractVersion':1} if preserve_answers else {}),
-                       **({'factualRepairGoalContractVersion':1} if target_goals else {}),
+                       **({'factualRepairGoalContractVersion':goal_version} if target_goals else {}),
                        **({'requestSemanticsContractVersion':2 if type(request_semantics) is int and request_semantics==2 else 1} if request_semantics else {}),
                        **({'repairResponseContractVersion':1} if strict_response else {}),
                        **({'factualRepairContractVersion':1} if compact_source_repair else {}),
@@ -836,7 +847,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
             **({'task_sources':True} if task_sources else {}),
             **({'request_semantics':request_semantics} if request_semantics else {}),
             **({'preserve_answers':True} if preserve_answers else {}),
-            **({'target_goals':True} if target_goals else {}),
+            **({'target_goals':target_goals} if target_goals else {}),
             **({'answer_intents':answer_intents} if answer_intents is not None else {}),
             **({'scope_expression':scope_expression} if scope_expression else {}),
             **({'required_scope_ids':[key for key in required_scope_ids if key in ids]} if required_scope_ids else {}),
