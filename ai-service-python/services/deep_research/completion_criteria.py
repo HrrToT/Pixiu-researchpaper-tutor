@@ -19,7 +19,7 @@ def _numeric_identifiers(text):
         r'(?<![A-Za-z0-9_.])[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][-+]?\d+)?(?![\d.])', text)}
 
 
-def _identification_objects_present(criterion, obligation, bindings, *, format_limits=False):
+def _identification_objects_present(criterion, obligation, bindings, *, format_limits=False,section_locators=False):
     if criterion['responseType'] != 'identification':
         return True
     requested_text=str(obligation.get('requestExcerpt') or obligation.get('question') or '')
@@ -27,6 +27,9 @@ def _identification_objects_present(criterion, obligation, bindings, *, format_l
     if format_limits:
         from services.deep_research.joint_answer_bindings import without_character_limits
         requested_text=without_character_limits(requested_text);requirement=without_character_limits(requirement)
+    if section_locators:
+        from services.deep_research.answer_locators import without_section_locators
+        requested_text=without_section_locators(requested_text);requirement=without_section_locators(requirement)
     requested = _numeric_identifiers(requested_text)
     objects = requested & _numeric_identifiers(requirement)
     displayed = _numeric_identifiers(' '.join(str(b.get('excerpt', '')) for b in bindings))
@@ -86,7 +89,7 @@ def completion_criteria_gaps(plan, claims, verdicts, *, display_metadata=None):
                 if (unknown or len(found) != 1 or found[0].get('status') != 'covered'
                         or found[0].get('responseType') != criterion['responseType']
                         or not _criterion_bindings(found[0].get('bindings'),known,criterion,obligation,display_metadata)
-                        or not _identification_objects_present(criterion, obligation, found[0]['bindings'],format_limits=isinstance(display_metadata,dict) and type(display_metadata.get('requestSemanticsContractVersion')) is int and display_metadata['requestSemanticsContractVersion']==2)):
+                        or not _identification_objects_present(criterion, obligation, found[0]['bindings'],format_limits=isinstance(display_metadata,dict) and type(display_metadata.get('requestSemanticsContractVersion')) is int and display_metadata['requestSemanticsContractVersion']==2,section_locators=isinstance(display_metadata,dict) and type(display_metadata.get('identificationLocatorContractVersion')) is int and display_metadata['identificationLocatorContractVersion']==1)):
                     missing.append(criterion['requirement'])
             if missing:
                 result[identity] = missing

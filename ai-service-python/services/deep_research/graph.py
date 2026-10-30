@@ -1822,8 +1822,10 @@ def make_verify_node(
                 **({'claim_check':True} if claim_check_enabled(record) else {}),
                 **({'task_sources':True} if type(record.get('reportPresentationContractVersion')) is int and record['reportPresentationContractVersion']==4 else {}),
                 **({'request_semantics':2} if type(record.get('requestSemanticsContractVersion')) is int and record['requestSemanticsContractVersion']==2 else {}),
-                **({'binding_catalog':True} if type(record.get('coverageDiagnosticsContractVersion')) is int and record['coverageDiagnosticsContractVersion']==2 else {}),
-                **({'diagnostics':True} if type(record.get('coverageDiagnosticsContractVersion')) is int and record['coverageDiagnosticsContractVersion'] in (1,2) else {}),
+                **({'binding_catalog':True} if type(record.get('coverageDiagnosticsContractVersion')) is int and record['coverageDiagnosticsContractVersion'] in (2,3) else {}),
+                  **({'scoped_catalog':True} if type(record.get('coverageDiagnosticsContractVersion')) is int and record['coverageDiagnosticsContractVersion']==3 else {}),
+                  **({'identification_locators':True} if type(record.get('identificationLocatorContractVersion')) is int and record['identificationLocatorContractVersion']==1 else {}),
+                **({'diagnostics':True} if type(record.get('coverageDiagnosticsContractVersion')) is int and record['coverageDiagnosticsContractVersion'] in (1,2,3) else {}),
                 **({'literal_dimensions':True} if dimensions_enabled(record) else {}))
             if saved.get('outputKind') == 'experiment_design':
                 from services.deep_research.design_completion import prepare_design_completion
@@ -2051,8 +2053,10 @@ def make_verify_node(
                             **({'claim_check':True} if claim_check_enabled(record) else {}),
                             **({'task_sources':True} if type(record.get('reportPresentationContractVersion')) is int and record['reportPresentationContractVersion']==4 else {}),
                             **({'request_semantics':2} if type(record.get('requestSemanticsContractVersion')) is int and record['requestSemanticsContractVersion']==2 else {}),
-                            **({'binding_catalog':True} if type(record.get('coverageDiagnosticsContractVersion')) is int and record['coverageDiagnosticsContractVersion']==2 else {}),
-                            **({'diagnostics':True} if type(record.get('coverageDiagnosticsContractVersion')) is int and record['coverageDiagnosticsContractVersion'] in (1,2) else {}),
+                            **({'binding_catalog':True} if type(record.get('coverageDiagnosticsContractVersion')) is int and record['coverageDiagnosticsContractVersion'] in (2,3) else {}),
+                  **({'scoped_catalog':True} if type(record.get('coverageDiagnosticsContractVersion')) is int and record['coverageDiagnosticsContractVersion']==3 else {}),
+                  **({'identification_locators':True} if type(record.get('identificationLocatorContractVersion')) is int and record['identificationLocatorContractVersion']==1 else {}),
+                            **({'diagnostics':True} if type(record.get('coverageDiagnosticsContractVersion')) is int and record['coverageDiagnosticsContractVersion'] in (1,2,3) else {}),
                             **({'literal_dimensions':True} if dimensions_enabled(record) else {}))
                     verification_result = merged
             except BudgetExhaustedError as exc:
@@ -2148,10 +2152,11 @@ def make_publish_node(
         from services.deep_research.completion_criteria import revalidate_completion_audit
         from services.deep_research.display_metadata import answer_display_metadata
         audit = revalidate_completion_audit(brief_state.get('plan', []), accepted_claims, audit,
-            **({'display_metadata':answer_display_metadata(accepted_claims,brief_state.get('evidence',[]),task_sources=True, **({'request_semantics':2} if type(record.get('requestSemanticsContractVersion')) is int and record['requestSemanticsContractVersion']==2 else {}))}
+            **({'display_metadata':answer_display_metadata(accepted_claims,brief_state.get('evidence',[]),task_sources=True,identification_locators=type(record.get('identificationLocatorContractVersion')) is int and record['identificationLocatorContractVersion']==1, **({'request_semantics':2} if type(record.get('requestSemanticsContractVersion')) is int and record['requestSemanticsContractVersion']==2 else {}))}
                if type(record.get('reportPresentationContractVersion')) is int and record['reportPresentationContractVersion']==4 else {}))
         from services.deep_research.display_metadata import revalidate_display_metadata
         audit = revalidate_display_metadata(audit, accepted_claims, brief_state.get('evidence', []),
+            identification_locators=type(record.get('identificationLocatorContractVersion')) is int and record['identificationLocatorContractVersion']==1,
             **({'task_sources':True} if type(record.get('reportPresentationContractVersion')) is int and record['reportPresentationContractVersion']==4 else {}),
             **({'request_semantics':2} if type(record.get('requestSemanticsContractVersion')) is int and record['requestSemanticsContractVersion']==2 else {}))
         if audit != verified_report.get('answerCoverage', {}):

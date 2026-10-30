@@ -36,8 +36,10 @@ def coverage_prompt_byte_limit(budget, output_tokens=3500):
     return max(0, min(24000, remaining - output_tokens - 1024))
 
 
-def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, *, budget=None,literal_dimensions=False,diagnostics=False,request_contract=False,claim_check=False,task_sources=False,request_semantics=0,binding_catalog=False):
+def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, *, budget=None,literal_dimensions=False,diagnostics=False,request_contract=False,claim_check=False,task_sources=False,request_semantics=0,binding_catalog=False,scoped_catalog=False,identification_locators=False):
     if type(binding_catalog) is not bool:raise ValueError('Invalid binding catalog policy')
+    if type(scoped_catalog) is not bool or scoped_catalog and not (binding_catalog and request_contract):raise ValueError('Invalid scoped catalog policy')
+    if type(identification_locators) is not bool:raise ValueError('Invalid identification locator policy')
     if type(request_semantics) is not int or request_semantics not in (0,2):raise ValueError('Invalid coverage semantics policy')
     if type(task_sources) is not bool:raise ValueError('Invalid task source disclosure policy')
     from services.deep_research.answer_coverage import answer_coverage_gaps
@@ -49,7 +51,7 @@ def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, 
     audit_plan = normalize_obligation_purposes(plan, question)
     from services.deep_research.display_metadata import answer_display_metadata, display_metadata_digest
     from services.deep_research.access_disclosure import access_requirements
-    display_metadata = answer_display_metadata(claims, evidence, **({"task_sources":True} if task_sources else {}), **({"request_semantics":2} if request_semantics==2 else {}))
+    display_metadata = answer_display_metadata(claims, evidence, **({"task_sources":True} if task_sources else {}), **({"request_semantics":2} if request_semantics==2 else {}),identification_locators=identification_locators)
     if binding_catalog:display_metadata={**display_metadata,'answerBindingCatalogVersion':1}
     identity = None
     if plan and question:
@@ -155,7 +157,12 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
             prompt+='\n'+GUIDANCE
         if binding_catalog:
             from services.deep_research.coverage_binding_catalog import build,GUIDANCE as binding_guidance
-            prompt+='\n'+binding_guidance+'\nAvailable answer bindings: '+json.dumps(build(claims,display_metadata),ensure_ascii=False,separators=(',',':'))
+            if scoped_catalog:
+                from services.deep_research.coverage_binding_catalog import build_scoped,SCOPED_GUIDANCE
+                permissions=access_requirements(audit_plan,joint=request_semantics==2,citation_access=True) if task_sources else {}
+                prompt+='\n'+binding_guidance+'\n'+SCOPED_GUIDANCE+'\nAvailable answer bindings by check: '+json.dumps(build_scoped(claims,display_metadata,fixed_requirements,permissions),ensure_ascii=False,separators=(',',':'))
+            else:
+                prompt+='\n'+binding_guidance+'\nAvailable answer bindings: '+json.dumps(build(claims,display_metadata),ensure_ascii=False,separators=(',',':'))
         template = prompt
         try:
             output_tokens = coverage_output_tokens(audit_plan, claims)
@@ -265,7 +272,7 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
     from services.deep_research.completion_criteria import completion_contract_digest
     return {'status': status, 'verdicts': verdicts if isinstance(verdicts, list) else [],
             'completionContractDigest': completion_contract_digest(plan, claims),
-            'displayMetadataDigest': display_metadata_digest(claims, evidence, **({"task_sources":True} if task_sources else {}), **({"request_semantics":2} if request_semantics==2 else {})),
+            'displayMetadataDigest': display_metadata_digest(claims, evidence, **({"task_sources":True} if task_sources else {}), **({"request_semantics":2} if request_semantics==2 else {}),identification_locators=identification_locators),
             'gaps': gaps, 'invalidAspectObligations': invalid_aspects,
             **({'requestCoverageContractVersion':request_contract if type(request_contract) is int and request_contract in (2,3) else 1} if request_contract else {}),
             'wholeQuestionId': identity, 'nonblockingResearch': nonblocking,
