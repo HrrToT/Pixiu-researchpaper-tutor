@@ -36,7 +36,8 @@ def coverage_prompt_byte_limit(budget, output_tokens=3500):
     return max(0, min(24000, remaining - output_tokens - 1024))
 
 
-def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, *, budget=None,literal_dimensions=False,diagnostics=False,request_contract=False,claim_check=False,task_sources=False,request_semantics=0,binding_catalog=False,scoped_catalog=False,identification_locators=False):
+def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, *, budget=None,literal_dimensions=False,diagnostics=False,request_contract=False,claim_check=False,task_sources=False,request_semantics=0,binding_catalog=False,scoped_catalog=False,identification_locators=False,coherence=False):
+    if type(coherence) is not bool:raise ValueError('Invalid answer coherence policy')
     if type(binding_catalog) is not bool:raise ValueError('Invalid binding catalog policy')
     if type(scoped_catalog) is not bool or scoped_catalog and not (binding_catalog and request_contract):raise ValueError('Invalid scoped catalog policy')
     if type(identification_locators) is not bool:raise ValueError('Invalid identification locator policy')
@@ -68,6 +69,7 @@ def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, 
     nonblocking = []
     budget_limit = None
     diagnostic_errors, gap_details = [], {}
+    coherence_result=None
     if claims and plan and invoke:
         cited = {ref for claim in claims for ref in claim.get('evidenceRefs', [])}
         selected = balanced_sample(sorted(evidence, key=lambda e: e.get('evidenceId') not in cited),
@@ -163,6 +165,9 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
                 prompt+='\n'+binding_guidance+'\n'+SCOPED_GUIDANCE+'\nAvailable answer bindings by check: '+json.dumps(build_scoped(claims,display_metadata,fixed_requirements,permissions),ensure_ascii=False,separators=(',',':'))
             else:
                 prompt+='\n'+binding_guidance+'\nAvailable answer bindings: '+json.dumps(build(claims,display_metadata),ensure_ascii=False,separators=(',',':'))
+        if coherence:
+            from services.deep_research.answer_coherence import GUIDANCE
+            prompt+='\n'+GUIDANCE
         template = prompt
         try:
             output_tokens = coverage_output_tokens(audit_plan, claims)
@@ -183,6 +188,9 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
             finish = result.get('finishReason', result.get('finish_reason')) if isinstance(result, dict) else getattr(result, 'finish_reason', None)
             try:
                 verdicts = parse(content) if finish != 'length' else None
+                if coherence:
+                    from services.deep_research.answer_coherence import extract
+                    verdicts,coherence_result=extract(verdicts,question,claims)
                 if request_contract:
                     from services.deep_research.request_coverage import normalize
                     verdicts=normalize(verdicts,fixed_requirements)
@@ -270,7 +278,7 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
         if identity and gap.get('obligationId') == identity:
             gap['wholeQuestion'] = True
     from services.deep_research.completion_criteria import completion_contract_digest
-    return {'status': status, 'verdicts': verdicts if isinstance(verdicts, list) else [],
+    audit={'status': status, 'verdicts': verdicts if isinstance(verdicts, list) else [],
             'completionContractDigest': completion_contract_digest(plan, claims),
             'displayMetadataDigest': display_metadata_digest(claims, evidence, **({"task_sources":True} if task_sources else {}), **({"request_semantics":2} if request_semantics==2 else {}),identification_locators=identification_locators),
             'gaps': gaps, 'invalidAspectObligations': invalid_aspects,
@@ -280,6 +288,11 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
             'invalidCriterionObligations': invalid_criteria,
             'budgetLimit': budget_limit,
             **({'diagnosticErrors':diagnostic_errors} if diagnostics else {})}
+    if coherence:
+        from services.deep_research.answer_coherence import revalidate
+        if coherence_result is not None:audit['answerCoherence']=coherence_result
+        audit=revalidate(audit,question,claims)
+    return audit
 
 
 def remaining_retrieval_gaps(gaps, audit, claims, evidence, *, plan=None, question=""):

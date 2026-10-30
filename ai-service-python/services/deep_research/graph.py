@@ -1826,6 +1826,7 @@ def make_verify_node(
                 **({'binding_catalog':True} if type(record.get('coverageDiagnosticsContractVersion')) is int and record['coverageDiagnosticsContractVersion'] in (2,3) else {}),
                   **({'scoped_catalog':True} if type(record.get('coverageDiagnosticsContractVersion')) is int and record['coverageDiagnosticsContractVersion']==3 else {}),
                   **({'identification_locators':True} if type(record.get('identificationLocatorContractVersion')) is int and record['identificationLocatorContractVersion']==1 else {}),
+                  **({'coherence':True} if type(record.get('answerCoherenceContractVersion')) is int and record['answerCoherenceContractVersion']==1 else {}),
                 **({'diagnostics':True} if type(record.get('coverageDiagnosticsContractVersion')) is int and record['coverageDiagnosticsContractVersion'] in (1,2,3) else {}),
                 **({'literal_dimensions':True} if dimensions_enabled(record) else {}))
             if saved.get('outputKind') == 'experiment_design':
@@ -1844,7 +1845,7 @@ def make_verify_node(
             repo_update(run_id, lambda r: {**r, "state": {**r.get("state", {}), "repairAttempted": True,
                 "initialVerification": verification_result, 'initialAnswerCoverage': answer_coverage,
                 'repairTargets': repair_targets, 'repairReport': repair_report}}, expected_revision=None)
-            from services.deep_research.repair import repair_rejected
+            from services.deep_research.repair import repair_rejected, factual_redraft_eligible
             from services.deep_research.answer_point_intent import enabled as point_intent_enabled, from_drafting_audit
             from services.deep_research.scope_expression import enabled as scope_expression_enabled
             from services.deep_research.table_identity_context import enabled as table_identity_enabled
@@ -1931,6 +1932,9 @@ def make_verify_node(
                             if isinstance(a,dict) and isinstance(a.get('expression'),dict) and a.get('claimId') in {c.get('claimId') for c in repair_report.get('claims',[])}]}
                             if claim_check_enabled(record) and record['claimCheckContractVersion'] in (5,6,7,8,9) else {}),
                         **({'compact_source_repair':True} if compact_repair else {}),
+                        **({'target_goals':True} if compact_repair and factual_redraft_eligible(repair_report)
+                            and type(record.get('factualRepairGoalContractVersion')) is int
+                            and record['factualRepairGoalContractVersion']==1 else {}),
                         **({'ordinary_advice':True} if advice_repair else {}),
                         **({'preserve_answers':True} if type(record.get('answerPreservationContractVersion')) is int and record['answerPreservationContractVersion']==1 else {}),
                         **({'request_semantics':record['requestSemanticsContractVersion'] if record['requestSemanticsContractVersion']==2 else True} if type(record.get('requestSemanticsContractVersion')) is int and record['requestSemanticsContractVersion'] in (1,2) else {}),
@@ -2057,6 +2061,7 @@ def make_verify_node(
                             **({'binding_catalog':True} if type(record.get('coverageDiagnosticsContractVersion')) is int and record['coverageDiagnosticsContractVersion'] in (2,3) else {}),
                   **({'scoped_catalog':True} if type(record.get('coverageDiagnosticsContractVersion')) is int and record['coverageDiagnosticsContractVersion']==3 else {}),
                   **({'identification_locators':True} if type(record.get('identificationLocatorContractVersion')) is int and record['identificationLocatorContractVersion']==1 else {}),
+                  **({'coherence':True} if type(record.get('answerCoherenceContractVersion')) is int and record['answerCoherenceContractVersion']==1 else {}),
                             **({'diagnostics':True} if type(record.get('coverageDiagnosticsContractVersion')) is int and record['coverageDiagnosticsContractVersion'] in (1,2,3) else {}),
                             **({'literal_dimensions':True} if dimensions_enabled(record) else {}))
                     verification_result = merged
@@ -2160,6 +2165,9 @@ def make_publish_node(
             identification_locators=type(record.get('identificationLocatorContractVersion')) is int and record['identificationLocatorContractVersion']==1,
             **({'task_sources':True} if type(record.get('reportPresentationContractVersion')) is int and record['reportPresentationContractVersion']==4 else {}),
             **({'request_semantics':2} if type(record.get('requestSemanticsContractVersion')) is int and record['requestSemanticsContractVersion']==2 else {}))
+        if type(record.get('answerCoherenceContractVersion')) is int and record['answerCoherenceContractVersion']==1:
+            from services.deep_research.answer_coherence import revalidate
+            audit=revalidate(audit,effective_question(record),accepted_claims)
         if audit != verified_report.get('answerCoverage', {}):
             verified_report = {**verified_report, 'answerCoverage': audit}
             repo_update(run_id, lambda r: {**r, 'state': {**r.get('state', {}),

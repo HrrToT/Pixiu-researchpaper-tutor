@@ -52,9 +52,9 @@ class FixtureModel:
         elif prompt.startswith(("Synthesize", "Answer the exact research question")):
             ids = re.findall(r'"evidenceId":\s*"(E\d+)"', prompt)
             content = {"summary": "UNVERIFIED SUMMARY MUST NEVER BE SHOWN", "claims": [
-                {"claimId": "c1", "text": "Alpha reports 95% accuracy.", "kind": "reported", "evidenceRefs": [ids[0]]},
-                {"claimId": "c2", "text": "Beta reports 90% accuracy.", "kind": "reported", "evidenceRefs": [ids[1]]},
-                {"claimId": "bad", "text": "Beta reports 99% accuracy.", "kind": "reported", "evidenceRefs": [ids[1]]}],
+                {"claimId": "c1", "text": "Alpha reports 95% accuracy.", "kind": "reported", "evidenceRefs": [ids[0]], "obligationIds": ["o"]},
+                {"claimId": "c2", "text": "Beta reports 90% accuracy.", "kind": "reported", "evidenceRefs": [ids[1]], "obligationIds": ["o"]},
+                {"claimId": "bad", "text": "Beta reports 99% accuracy.", "kind": "reported", "evidenceRefs": [ids[1]], "obligationIds": ["o"]}],
                 "proposals": ["UNCHECKED PROPOSAL MUST NEVER BE SHOWN"], "gaps": []}
         elif prompt.startswith(("Verify these claims", "Check the complete factual assertions")):
             single_decision = prompt.startswith("Check the complete factual assertions")
@@ -92,6 +92,8 @@ class FixtureModel:
                         'bindings': [{'claimId': 'c1', 'excerpt': 'Alpha reports 95% accuracy.'}]} for o in obligations]
         else:
             raise AssertionError("Unexpected model node: " + prompt[:80])
+        if 'Also append EXACTLY ONE additional array row:' in prompt:
+            content.append({'auditType':'answer_coherence','coherent':True,'issues':[]})
         return LLMResult("fixture", "fixture-v1", json.dumps(content), LLMUsage(120, 80, 200))
 
 

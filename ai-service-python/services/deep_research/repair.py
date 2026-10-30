@@ -16,8 +16,9 @@ from services.deep_research.repair_scope import repair_evidence_scope
 def _prepare_repair(report, verification, evidence, question, *, max_prompt_bytes=24000,
                     metric_domains=None, draft_context=(), prior_revisions=(),
                     fact_redraft=False, requirement_context=(), source_aware_redraft=False,comparison_reasoning=False,
-                    question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False,shared_experiment_schema=False,experiment_evidence_context=None,experimental_edits=False,experimental_diagnostics=False,experimental_nested_tables=False,experimental_representation=False,experimental_coverage=False,citation_presentation_version=0,configuration_consistency_version=0,repair_evidence_packet_version=0,answer_intents=None,scope_expression=False,table_identity_context=False,claim_check=False,required_scope_ids=(),compact_layout=False,ordinary_advice=False,task_sources=False,request_semantics=False,preserve_answers=False):
+                    question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False,shared_experiment_schema=False,experiment_evidence_context=None,experimental_edits=False,experimental_diagnostics=False,experimental_nested_tables=False,experimental_representation=False,experimental_coverage=False,citation_presentation_version=0,configuration_consistency_version=0,repair_evidence_packet_version=0,answer_intents=None,scope_expression=False,table_identity_context=False,claim_check=False,required_scope_ids=(),compact_layout=False,ordinary_advice=False,task_sources=False,request_semantics=False,preserve_answers=False,target_goals=False):
     if type(preserve_answers) is not bool:raise ValueError('Invalid answer preservation policy')
+    if type(target_goals) is not bool:raise ValueError('Invalid repair target goal policy')
     if not (type(request_semantics) is bool or type(request_semantics) is int and request_semantics==2):raise ValueError('Invalid request semantics policy')
     if type(task_sources) is not bool:raise ValueError('Invalid task source disclosure policy')
     if type(ordinary_advice) is not bool:raise ValueError('Invalid ordinary advice repair policy')
@@ -417,7 +418,8 @@ in the paper. Maintain consistency with accepted definitions and complete requir
         prompt=compact_repair_prompt(question=question,length_contract=length_contract,
             requirements=active_requirements,source_context=context,targets=input_claims,
             checks=packed_checks,questions=question_dictionary,permissions_marker=permissions_marker,
-            evidence_marker=evidence_marker,schema=revision_shape)
+            evidence_marker=evidence_marker,schema=revision_shape,
+            **({'target_goals':True} if target_goals else {}))
     if shared_experiment_schema and prospective:
         from services.deep_research.experiment_repair import compatible,render as experiment_prompt
         feedback_options = {}
@@ -723,7 +725,7 @@ def factual_redraft_eligible(report):
 def repair_rejected(report, verification, evidence, question, invoke, parse, *,
                     max_prompt_bytes=24000, metric_domains=None, batch_state=None, checkpoint=None,
                     current_budget=None, invoke_request=None, fact_redraft=False, requirement_context=(),
-                    source_aware_redraft=False,comparison_reasoning=False,question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,strict_response=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False,shared_experiment_schema=False,experiment_evidence_context=None,experimental_edits=False,experimental_diagnostics=False,experimental_nested_tables=False,experimental_representation=False,experimental_coverage=False,citation_presentation_version=0,configuration_consistency_version=0,repair_evidence_packet_version=0,scheduling_version=0,answer_intents=None,scope_expression=False,defer_length_filter=False,table_identity_context=False,claim_check=False,required_scope_ids=(),compact_layout=False,ordinary_advice=False,task_sources=False,request_semantics=False,preserve_answers=False):
+                    source_aware_redraft=False,comparison_reasoning=False,question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,strict_response=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False,shared_experiment_schema=False,experiment_evidence_context=None,experimental_edits=False,experimental_diagnostics=False,experimental_nested_tables=False,experimental_representation=False,experimental_coverage=False,citation_presentation_version=0,configuration_consistency_version=0,repair_evidence_packet_version=0,scheduling_version=0,answer_intents=None,scope_expression=False,defer_length_filter=False,table_identity_context=False,claim_check=False,required_scope_ids=(),compact_layout=False,ordinary_advice=False,task_sources=False,request_semantics=False,preserve_answers=False,target_goals=False):
     """One bounded revision round, split before dispatch when evidence cannot fit.
 
     At most three requests share full sibling design definitions. Successful
@@ -734,6 +736,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
     from services.deep_research.repair_batches import split_repair_targets
 
     if type(preserve_answers) is not bool:raise ValueError('Invalid answer preservation policy')
+    if type(target_goals) is not bool:raise ValueError('Invalid repair target goal policy')
     if not (type(request_semantics) is bool or type(request_semantics) is int and request_semantics==2):raise ValueError('Invalid request semantics policy')
     if type(task_sources) is not bool:raise ValueError('Invalid task source disclosure policy')
     if type(ordinary_advice) is not bool:raise ValueError('Invalid ordinary advice repair policy')
@@ -760,6 +763,13 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
     originals = [c for c in report.get('claims', []) if c.get('claimId') in targets]
     if not originals:
         return []
+    if target_goals:
+        from services.deep_research.repair_goals import bind
+        try: bind(originals,requirement_context)
+        except ValueError:
+            if batch_state is not None:
+                raise DeepResearchError('invalid_repair_plan','保存的修订目标与冻结问题不一致，不能重新发送。')
+            return []  # No bound target means no provider dispatch, never a guessed whole-question repair.
     if type(repair_evidence_packet_version) is not int or repair_evidence_packet_version not in (0,1,2,3,4,5):
         raise ValueError('Unsupported experimental repair input contract')
     if repair_evidence_packet_version in (2,3,4,5) and not experimental_coverage:
@@ -797,6 +807,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
                        **({'recommendationRepairContractVersion':1} if ordinary_advice else {}),
                        **({'reportPresentationContractVersion':4} if task_sources else {}),
                        **({'answerPreservationContractVersion':1} if preserve_answers else {}),
+                       **({'factualRepairGoalContractVersion':1} if target_goals else {}),
                        **({'requestSemanticsContractVersion':2 if type(request_semantics) is int and request_semantics==2 else 1} if request_semantics else {}),
                        **({'repairResponseContractVersion':1} if strict_response else {}),
                        **({'factualRepairContractVersion':1} if compact_source_repair else {}),
@@ -825,6 +836,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
             **({'task_sources':True} if task_sources else {}),
             **({'request_semantics':request_semantics} if request_semantics else {}),
             **({'preserve_answers':True} if preserve_answers else {}),
+            **({'target_goals':True} if target_goals else {}),
             **({'answer_intents':answer_intents} if answer_intents is not None else {}),
             **({'scope_expression':scope_expression} if scope_expression else {}),
             **({'required_scope_ids':[key for key in required_scope_ids if key in ids]} if required_scope_ids else {}),
