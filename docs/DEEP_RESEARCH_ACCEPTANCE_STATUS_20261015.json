@@ -4789,121 +4789,388 @@
     "proof": "deep-research-evidence/compact-experiment-envelope-regression-20261020.json"
   },
   "currentCheckpoint": {
-    "sourceCommit": "5b46fa47",
+    "sourceCommit": "eb04adf5",
     "javaSourceCommit": "612c324e",
-    "promptVersion": "dr-v2.20261030.374",
+    "promptVersion": "dr-v2.20261030.375",
     "factualRepairGoalContractVersion": 3,
     "answerCoherenceContractVersion": 2,
-    "quantitySpellingContractVersion": 12,
-    "component": "specific-gap repair, coherent publication, geometric collection articles",
-    "componentOutcome": "covered fact retained, no contradiction; partial due to another spatial-label false positive and remaining scientific localization",
+    "quantitySpellingContractVersion": 13,
+    "component": "spatial dimensional labels and mechanism attribution",
+    "componentOutcome": "dimension false positives removed; unsupported localization rejected, but factual repair still hedges it instead of removing it",
     "runtimeLoadedVerified": true,
-    "runtimeProof": "deep-research-evidence/runtime-load-coherence-374-20261030.json",
+    "runtimeProof": "deep-research-evidence/runtime-load-mechanism-375-20261030.json",
     "fullDR0DR5Proved": false,
     "independentCredit": 0,
-    "lastCapturedLedgerRows": 8255,
+    "lastCapturedLedgerRows": 8281,
     "lastCapturedActiveProductionRuns": 0,
     "historicalPausedRunsAtCapture": 13,
     "lastConfirmedIndexDocuments": 1102,
     "lastConfirmedIndexSha256": "1e91bfa73ba4a374a6cea68be25639c269fac493d5eda61162448bf500ff6118",
+    "externalProxyComponent": {
+      "stage": "standalone, not integrated or configured",
+      "unitPassed": 16,
+      "unitSeconds": 4.53,
+      "liveProbe": "deep-research-evidence/academic-proxy-pinned-component-20261030.json",
+      "httpStatus": 200,
+      "publicTargetIpPinned": true,
+      "originalHostTlsVerified": true,
+      "modelCalls": 0,
+      "productionWrites": 0,
+      "externalResearchWorkflowAccepted": false
+    },
+    "externalRouteBoundary": "Public requests proxy probe passed, but actual academic transport is pinned_https_get and deliberately ignores ambient proxies. A dedicated optional proxy tunnel must retain pinned public target IP, TLS original-host verification, byte limits and redirect rejection; runtime configuration is not yet changed.",
+    "remaining": "Factual repair must remove unsupported causal/localization clauses while keeping supported operator inputs and relations, rather than retain them with possibly/inference. External integration, fresh independent content cases and full DR0-DR5 release audit remain pending.",
+    "factualReviewContractVersion": 2,
     "offlineAssociatedRegression": {
-      "files": 159,
-      "passed": 2962,
-      "seconds": 559.36,
+      "files": 161,
+      "passed": 2992,
+      "seconds": 331.99,
       "sourceFrozen": true,
       "providerCalls": 0,
-      "proof": "deep-research-evidence/coherence-374-associated-regression-20261030.json"
+      "proof": "deep-research-evidence/mechanism-375-associated-regression-20261030.json"
     },
     "lastLocalDevelopmentCase": {
-      "promptVersion": "dr-v2.20261030.374",
-      "sourceCommit": "5b46fa47",
-      "case": "X4L-v8",
-      "runId": "dr_run_a222c9bf12665526bd55801577f3b4e0",
+      "promptVersion": "dr-v2.20261030.375",
+      "sourceCommit": "eb04adf5",
+      "case": "X4L-v9",
+      "runId": "dr_run_8a7d0e08951c529599adc30fe9f891a1",
       "status": "completed",
       "machineOutcome": "partial",
-      "modelCalls": 8,
-      "tokens": 34755,
-      "elapsedSeconds": 102.04,
+      "modelCalls": 14,
+      "tokens": 59400,
+      "elapsedSeconds": 151.269,
       "initialRejected": [
         {
+          "claimId": "c2",
+          "reason": "semantic_unresolved",
+          "detail": "证据支持深度畸变损失最小化加权深度差并集中权重，但未直接证明该损失使二维高斯圆盘贴近真实表面；后者涉及几何对齐，通常由法线一致性约束处理。"
+        }
+      ],
+      "repairRejected": [
+        {
+          "claimId": "c2",
+          "reason": "semantic_unresolved",
+          "detail": "证据支持深度畸变损失最小化加权深度差并集中权重，但未直接证明该损失使二维高斯圆盘贴近真实表面；后者涉及几何对齐，通常由法线一致性约束处理。",
+          "revisionRejection": {
+            "claimId": "c2",
+            "reason": "semantic_unresolved",
+            "detail": "证据E1显示深度畸变损失通过最小化加权深度差来集中权重分布，但未直接说明这会使二维高斯圆盘贴近真实表面；该推断缺乏直接支持。"
+          }
+        }
+      ],
+      "acceptedClaims": [
+        {
           "claimId": "c1",
-          "reason": "numeric_mismatch",
-          "missingReportedNumbers": [
-            "2e0"
+          "kind": "inference",
+          "text": "这里的“2D”指用二维高斯圆盘作为基元，每个圆盘位于三维空间中并具有朝向，因此仍能表示三维场景。",
+          "evidenceRefs": [
+            "ev_f580f957d245818427832337512def14fad37c1adb4212595347250a67597847",
+            "ev_96e7d1d5264ec8b49bd7a3dcea93ccf4c4b1e62d06159091cb145bf8cb04b97f"
           ],
-          "detail": "本条引用原文未直接报告这些数值：2。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。"
+          "conditions": {},
+          "detailLevel": "fulltext",
+          "obligationIds": [
+            "ob_1"
+          ],
+          "verification": "semantic_passed"
         },
         {
           "claimId": "c3",
-          "reason": "numeric_mismatch",
-          "missingReportedNumbers": [
-            "2e0"
-          ],
-          "detail": "本条引用原文未直接报告这些数值：2。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。"
-        }
-      ],
-      "coveredPointRetainedExact": true,
-      "repairTargetIds": [
-        "c1",
-        "c3"
-      ],
-      "answerCoherence": {
-        "contractVersion": 1,
-        "status": "checked",
-        "answerDigest": "8dd7ec27cf16d8bfa82651830faddbe91809395875dc3990b7e51e3031cd19ed",
-        "coherent": true,
-        "issues": []
-      },
-      "publicationCoherence": {
-        "contractVersion": 2,
-        "answerDigest": "8dd7ec27cf16d8bfa82651830faddbe91809395875dc3990b7e51e3031cd19ed",
-        "status": "released",
-        "heldClaimIds": [],
-        "reason": null
-      },
-      "acceptedClaims": [
-        {
-          "claimId": "c2",
-          "text": "深度畸变约束通过最小化沿射线各交点深度差的加权和，使不透明度权重集中在实际表面附近，减少体积渲染中多个半透明基元导致的噪声表面。",
+          "text": "法线一致性约束通过最小化二维高斯圆盘法线与深度图梯度估计的表面法线之间的差异，使圆盘局部对齐实际表面。",
           "kind": "reported",
           "evidenceRefs": [
-            "ev_32cc51aa72a9cb4d3aeb9096d0c8e8acfb4d6587204940326f58d293e1519513",
-            "ev_8d9e7b7a4dcb490331bce72f0c7e495a5928602df5d77224de46d82545073d88",
-            "ev_c95f2e040e47f358ac28b8ab23898c8ac279a4c0af0666973157747fc06d22d2",
-            "ev_8358ddef8f9f16f3f70fb2e1220c0fc11c02cd4d3d9d858fe544e7878720ecba"
+            "ev_2130887bcc4166954e487bcfe46cf9ff20581ac3276237d82163a05f6b3a0f76",
+            "ev_cf67573e4730737b48f20cf7907871805caef2aade2ed2546e3641dc3dbf02cb"
           ],
           "conditions": {},
           "obligationIds": [
             "ob_2"
           ],
-          "detailLevel": "basic",
+          "detailLevel": "brief",
           "tableBindings": [],
           "verification": "semantic_passed"
         }
       ],
+      "coverage": {
+        "status": "checked",
+        "verdicts": [
+          {
+            "obligationId": "ob_1",
+            "status": "partial",
+            "bindings": [
+              {
+                "claimId": "c1",
+                "field": "text",
+                "excerpt": "这里的“2D”指用二维高斯圆盘作为基元，每个圆盘位于三维空间中并具有朝向，因此仍能表示三维场景。"
+              }
+            ],
+            "aspects": [
+              {
+                "aspectId": "criterion:human_aspect_1",
+                "requirement": "解释这里的“2D”为什么仍能表示三维场景",
+                "basis": {
+                  "kind": "request",
+                  "excerpt": "解释这里的“2D”为什么仍能表示三维场景"
+                },
+                "status": "partial",
+                "bindings": [
+                  {
+                    "claimId": "c1",
+                    "field": "text",
+                    "excerpt": "这里的“2D”指用二维高斯圆盘作为基元，每个圆盘位于三维空间中并具有朝向，因此仍能表示三维场景。"
+                  }
+                ]
+              }
+            ],
+            "criteria": [
+              {
+                "criterionId": "human_aspect_1",
+                "responseType": "explanation",
+                "status": "partial",
+                "bindings": [
+                  {
+                    "claimId": "c1",
+                    "field": "text",
+                    "excerpt": "这里的“2D”指用二维高斯圆盘作为基元，每个圆盘位于三维空间中并具有朝向，因此仍能表示三维场景。"
+                  }
+                ]
+              }
+            ],
+            "requestCheckReasons": [
+              {
+                "checkId": "criterion:human_aspect_1",
+                "reason": "解释了2D高斯圆盘位于三维空间并具有朝向，但未说明其如何通过多个圆盘覆盖三维表面或与光线求交来重建场景，新手可能仍不理解为何二维基元能表示三维。"
+              }
+            ],
+            "gapDetail": {
+              "criterionIds": [
+                "human_aspect_1"
+              ],
+              "aspectIds": [
+                "criterion:human_aspect_1"
+              ],
+              "missingContent": "请补全本条固定要求中标为未满足的部分，具体要求见 missingAspects。",
+              "reason": "此缺口由固定检查项的未满足状态汇总；模型说明不作为新增要求或论文事实。"
+            }
+          },
+          {
+            "obligationId": "ob_2",
+            "status": "partial",
+            "bindings": [
+              {
+                "claimId": "c3",
+                "field": "text",
+                "excerpt": "法线一致性约束通过最小化二维高斯圆盘法线与深度图梯度估计的表面法线之间的差异，使圆盘局部对齐实际表面。"
+              }
+            ],
+            "aspects": [
+              {
+                "aspectId": "criterion:human_aspect_1",
+                "requirement": "第5节中深度畸变和法线一致性两个约束分别在约束什么",
+                "basis": {
+                  "kind": "request",
+                  "excerpt": "第5节中深度畸变和法线一致性两个约束分别在约束什么"
+                },
+                "status": "partial",
+                "bindings": [
+                  {
+                    "claimId": "c3",
+                    "field": "text",
+                    "excerpt": "法线一致性约束通过最小化二维高斯圆盘法线与深度图梯度估计的表面法线之间的差异，使圆盘局部对齐实际表面。"
+                  }
+                ]
+              }
+            ],
+            "criteria": [
+              {
+                "criterionId": "human_aspect_1",
+                "responseType": "identification",
+                "status": "partial",
+                "bindings": [
+                  {
+                    "claimId": "c3",
+                    "field": "text",
+                    "excerpt": "法线一致性约束通过最小化二维高斯圆盘法线与深度图梯度估计的表面法线之间的差异，使圆盘局部对齐实际表面。"
+                  }
+                ]
+              }
+            ],
+            "requestCheckReasons": [
+              {
+                "checkId": "criterion:human_aspect_1",
+                "reason": "仅解释了法线一致性约束，未提及深度畸变约束，因此未完整回答两个约束分别约束什么。"
+              }
+            ],
+            "gapDetail": {
+              "criterionIds": [
+                "human_aspect_1"
+              ],
+              "aspectIds": [
+                "criterion:human_aspect_1"
+              ],
+              "missingContent": "请补全本条固定要求中标为未满足的部分，具体要求见 missingAspects。",
+              "reason": "此缺口由固定检查项的未满足状态汇总；模型说明不作为新增要求或论文事实。"
+            }
+          },
+          {
+            "obligationId": "answer_scope",
+            "status": "partial",
+            "bindings": [
+              {
+                "claimId": "c1",
+                "field": "text",
+                "excerpt": "这里的“2D”指用二维高斯圆盘作为基元，每个圆盘位于三维空间中并具有朝向，因此仍能表示三维场景。"
+              },
+              {
+                "claimId": "c3",
+                "field": "text",
+                "excerpt": "法线一致性约束通过最小化二维高斯圆盘法线与深度图梯度估计的表面法线之间的差异，使圆盘局部对齐实际表面。"
+              }
+            ],
+            "aspects": [
+              {
+                "aspectId": "request",
+                "requirement": "仅依据任务中已加入的 2D Gaussian Splatting for Geometrically Accurate Radiance Fields（arXiv:2403.17888v3）原文，不用外部搜索。面向了解3DGS概念的新手，解释这里的“2D”为什么仍能表示三维场景，以及第5节中深度畸变和法线一致性两个约束分别在约束什么。限350字，依据实际取得的正文区分两种作用，不做性能排名或实验设计。",
+                "basis": {
+                  "kind": "request",
+                  "excerpt": "仅依据任务中已加入的 2D Gaussian Splatting for Geometrically Accurate Radiance Fields（arXiv:2403.17888v3）原文，不用外部搜索。面向了解3DGS概念的新手，解释这里的“2D”为什么仍能表示三维场景，以及第5节中深度畸变和法线一致性两个约束分别在约束什么。限350字，依据实际取得的正文区分两种作用，不做性能排名或实验设计。"
+                },
+                "status": "partial",
+                "bindings": [
+                  {
+                    "claimId": "c1",
+                    "field": "text",
+                    "excerpt": "这里的“2D”指用二维高斯圆盘作为基元，每个圆盘位于三维空间中并具有朝向，因此仍能表示三维场景。"
+                  },
+                  {
+                    "claimId": "c3",
+                    "field": "text",
+                    "excerpt": "法线一致性约束通过最小化二维高斯圆盘法线与深度图梯度估计的表面法线之间的差异，使圆盘局部对齐实际表面。"
+                  }
+                ]
+              }
+            ],
+            "criteria": [],
+            "requestCheckReasons": [
+              {
+                "checkId": "request",
+                "reason": "未解释深度畸变约束，且对2D表示三维的解释不够充分，未完全满足新手理解需求。"
+              }
+            ],
+            "gapDetail": {
+              "criterionIds": [],
+              "aspectIds": [
+                "request"
+              ],
+              "missingContent": "请补全本条固定要求中标为未满足的部分，具体要求见 missingAspects。",
+              "reason": "此缺口由固定检查项的未满足状态汇总；模型说明不作为新增要求或论文事实。"
+            }
+          }
+        ],
+        "completionContractDigest": "0fb9b1a5d76d83d9a545595d6099c08c3729c9e7566435e3f17609aca3e3b533",
+        "displayMetadataDigest": "2977011109453e4557fee0b7dccd2e53c96e3a9846d818d437137d648793edd8",
+        "gaps": [
+          {
+            "obligationId": "ob_1",
+            "question": "解释这里的“2D”为什么仍能表示三维场景",
+            "missingEvidence": "最终回答尚未完整回应这一问题",
+            "stage": "answer",
+            "missingAspects": [
+              "解释这里的“2D”为什么仍能表示三维场景"
+            ],
+            "aspectEvidenceRefs": [],
+            "gapDetail": {
+              "criterionIds": [
+                "human_aspect_1"
+              ],
+              "aspectIds": [
+                "criterion:human_aspect_1"
+              ],
+              "missingContent": "请补全本条固定要求中标为未满足的部分，具体要求见 missingAspects。",
+              "reason": "此缺口由固定检查项的未满足状态汇总；模型说明不作为新增要求或论文事实。"
+            }
+          },
+          {
+            "obligationId": "ob_2",
+            "question": "第5节中深度畸变和法线一致性两个约束分别在约束什么",
+            "missingEvidence": "最终回答尚未完整回应这一问题",
+            "stage": "answer",
+            "missingAspects": [
+              "第5节中深度畸变和法线一致性两个约束分别在约束什么"
+            ],
+            "aspectEvidenceRefs": [],
+            "gapDetail": {
+              "criterionIds": [
+                "human_aspect_1"
+              ],
+              "aspectIds": [
+                "criterion:human_aspect_1"
+              ],
+              "missingContent": "请补全本条固定要求中标为未满足的部分，具体要求见 missingAspects。",
+              "reason": "此缺口由固定检查项的未满足状态汇总；模型说明不作为新增要求或论文事实。"
+            }
+          },
+          {
+            "obligationId": "answer_scope",
+            "question": "仅依据任务中已加入的 2D Gaussian Splatting for Geometrically Accurate Radiance Fields（arXiv:2403.17888v3）原文，不用外部搜索。面向了解3DGS概念的新手，解释这里的“2D”为什么仍能表示三维场景，以及第5节中深度畸变和法线一致性两个约束分别在约束什么。限350字，依据实际取得的正文区分两种作用，不做性能排名或实验设计。",
+            "missingEvidence": "最终回答尚未完整回应这一问题",
+            "stage": "answer",
+            "missingAspects": [
+              "仅依据任务中已加入的 2D Gaussian Splatting for Geometrically Accurate Radiance Fields（arXiv:2403.17888v3）原文，不用外部搜索。面向了解3DGS概念的新手，解释这里的“2D”为什么仍能表示三维场景，以及第5节中深度畸变和法线一致性两个约束分别在约束什么。限350字，依据实际取得的正文区分两种作用，不做性能排名或实验设计。"
+            ],
+            "aspectEvidenceRefs": [],
+            "gapDetail": {
+              "criterionIds": [],
+              "aspectIds": [
+                "request"
+              ],
+              "missingContent": "请补全本条固定要求中标为未满足的部分，具体要求见 missingAspects。",
+              "reason": "此缺口由固定检查项的未满足状态汇总；模型说明不作为新增要求或论文事实。"
+            },
+            "wholeQuestion": true
+          }
+        ],
+        "invalidAspectObligations": [],
+        "requestCoverageContractVersion": 3,
+        "wholeQuestionId": "answer_scope",
+        "nonblockingResearch": [],
+        "criterionGaps": {},
+        "invalidCriterionObligations": [],
+        "budgetLimit": null,
+        "diagnosticErrors": [],
+        "answerCoherence": {
+          "contractVersion": 1,
+          "status": "checked",
+          "answerDigest": "b66cd5b1a5799930fe96eddaea699dd104252e85b3f015deb229b7445f95f21a",
+          "coherent": true,
+          "issues": []
+        }
+      },
+      "publicationCoherence": {
+        "contractVersion": 2,
+        "answerDigest": "b66cd5b1a5799930fe96eddaea699dd104252e85b3f015deb229b7445f95f21a",
+        "status": "released",
+        "heldClaimIds": [],
+        "reason": null
+      },
       "manualReview": {
         "contentAccepted": false,
         "independentCredit": 0,
         "scores": {
-          "targetResponse": 1,
-          "evidenceSupport": 3,
-          "conditions": 3,
+          "targetResponse": 2,
+          "evidenceSupport": 4,
+          "conditions": 4,
           "synthesis": 2,
-          "readability": 3
+          "readability": 4
         },
-        "reason": "Only depth explanation published; representation and normal explanation are blocked by another spatial-label false numeric2 on 二维基元. Depth prose localizes weights near actual surfaces, which is stronger than the relative-depth distortion definition and risks suggesting known-surface supervision.",
-        "positiveObservation": "Covered c2 retained exactly, c1/c3 alone targeted; no unnecessary rewrite of c2, no contradictory source-absence assertion; publicationCoherence is current/released for that single accepted claim.",
-        "remaining": [
-          "Generalize spatial dimensional labels without dropping real feature/vector/output dimensions or measured counts.",
-          "Use precise operator inputs and penalized relations; do not assert true-surface anchoring from pairwise-depth concentration.",
-          "Live hold-on-conflict branch remains unexercised in this case; actual prior-result replay proves mechanics only."
-        ]
+        "reason": "Representation and normal mechanism are supported; depth explanation remains missing. Initial true-surface localization was rejected; repair acknowledges missing support but merely adds a modal qualifier, then fails again.",
+        "remaining": "Factual repair must remove unsupported causal/localization clauses while keeping supported operator inputs and relations, rather than retain them with possibly/inference."
       },
       "preservation": {
         "oldLedgerUnchanged": true,
         "allOldRunsUnchanged": true,
-        "newRows": 20,
-        "ledgerRows": 8255,
+        "newRows": 26,
+        "ledgerRows": 8281,
         "onlyThisRunCreatedCalls": true,
         "active": [],
         "oldPausedRetained": true,
@@ -4930,40 +5197,7 @@
         "count": 1102,
         "sha256": "1e91bfa73ba4a374a6cea68be25639c269fac493d5eda61162448bf500ff6118"
       },
-      "payloadSha256": "fa6c1b6fff586859ee915438196a6fa8b5e100c8351c7608cdf420ba6b5157b4"
-    },
-    "externalProxyComponent": {
-      "stage": "standalone, not integrated or configured",
-      "unitPassed": 16,
-      "unitSeconds": 4.53,
-      "liveProbe": "deep-research-evidence/academic-proxy-pinned-component-20261030.json",
-      "httpStatus": 200,
-      "publicTargetIpPinned": true,
-      "originalHostTlsVerified": true,
-      "modelCalls": 0,
-      "productionWrites": 0,
-      "externalResearchWorkflowAccepted": false
-    },
-    "externalRouteBoundary": "Public requests proxy probe passed, but actual academic transport is pinned_https_get and deliberately ignores ambient proxies. A dedicated optional proxy tunnel must retain pinned public target IP, TLS original-host verification, byte limits and redirect rejection; runtime configuration is not yet changed.",
-    "remaining": "Generalize spatial labels and fix unsupported mechanism localization; integrate optional pinned proxy transport without enabling it by default, validate external workflow, then independent cases and full DR0-DR5 release audit.",
-    "nextCandidate": {
-      "promptVersion": "dr-v2.20261030.375",
-      "factualReviewContractVersion": 2,
-      "quantitySpellingContractVersion": 13,
-      "runtimeLoaded": false,
-      "offlineAssociatedRegression": {
-        "files": 161,
-        "passed": 2992,
-        "seconds": 331.99,
-        "sourceFrozen": true,
-        "providerCalls": 0,
-        "proof": "deep-research-evidence/mechanism-375-associated-regression-20261030.json"
-      },
-      "savedInputReplay": "deep-research-evidence/mechanism-375-saved-input-replay-20261030.json",
-      "realComponent": "deep-research-evidence/mechanism-375-provider-component-20261030.json",
-      "contentAccepted": false,
-      "independentCredit": 0,
-      "remaining": "Actual-surface ambiguity still passes reviewer. Full new workflow not yet run; external route and full release remain pending."
+      "payloadSha256": "788f89b085b0116f95f74c2929c0a6e964132f7b604bcc3e4ba650e9fe245957"
     }
   },
   "sharedModuleSourceCheckpoint": {
@@ -6259,6 +6493,184 @@
         "modelCalls": 0,
         "productionWrites": 0,
         "externalResearchWorkflowAccepted": false
+      }
+    },
+    {
+      "sourceCommit": "5b46fa47",
+      "javaSourceCommit": "612c324e",
+      "promptVersion": "dr-v2.20261030.374",
+      "factualRepairGoalContractVersion": 3,
+      "answerCoherenceContractVersion": 2,
+      "quantitySpellingContractVersion": 12,
+      "component": "specific-gap repair, coherent publication, geometric collection articles",
+      "componentOutcome": "covered fact retained, no contradiction; partial due to another spatial-label false positive and remaining scientific localization",
+      "runtimeLoadedVerified": true,
+      "runtimeProof": "deep-research-evidence/runtime-load-coherence-374-20261030.json",
+      "fullDR0DR5Proved": false,
+      "independentCredit": 0,
+      "lastCapturedLedgerRows": 8255,
+      "lastCapturedActiveProductionRuns": 0,
+      "historicalPausedRunsAtCapture": 13,
+      "lastConfirmedIndexDocuments": 1102,
+      "lastConfirmedIndexSha256": "1e91bfa73ba4a374a6cea68be25639c269fac493d5eda61162448bf500ff6118",
+      "offlineAssociatedRegression": {
+        "files": 159,
+        "passed": 2962,
+        "seconds": 559.36,
+        "sourceFrozen": true,
+        "providerCalls": 0,
+        "proof": "deep-research-evidence/coherence-374-associated-regression-20261030.json"
+      },
+      "lastLocalDevelopmentCase": {
+        "promptVersion": "dr-v2.20261030.374",
+        "sourceCommit": "5b46fa47",
+        "case": "X4L-v8",
+        "runId": "dr_run_a222c9bf12665526bd55801577f3b4e0",
+        "status": "completed",
+        "machineOutcome": "partial",
+        "modelCalls": 8,
+        "tokens": 34755,
+        "elapsedSeconds": 102.04,
+        "initialRejected": [
+          {
+            "claimId": "c1",
+            "reason": "numeric_mismatch",
+            "missingReportedNumbers": [
+              "2e0"
+            ],
+            "detail": "本条引用原文未直接报告这些数值：2。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。"
+          },
+          {
+            "claimId": "c3",
+            "reason": "numeric_mismatch",
+            "missingReportedNumbers": [
+              "2e0"
+            ],
+            "detail": "本条引用原文未直接报告这些数值：2。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。"
+          }
+        ],
+        "coveredPointRetainedExact": true,
+        "repairTargetIds": [
+          "c1",
+          "c3"
+        ],
+        "answerCoherence": {
+          "contractVersion": 1,
+          "status": "checked",
+          "answerDigest": "8dd7ec27cf16d8bfa82651830faddbe91809395875dc3990b7e51e3031cd19ed",
+          "coherent": true,
+          "issues": []
+        },
+        "publicationCoherence": {
+          "contractVersion": 2,
+          "answerDigest": "8dd7ec27cf16d8bfa82651830faddbe91809395875dc3990b7e51e3031cd19ed",
+          "status": "released",
+          "heldClaimIds": [],
+          "reason": null
+        },
+        "acceptedClaims": [
+          {
+            "claimId": "c2",
+            "text": "深度畸变约束通过最小化沿射线各交点深度差的加权和，使不透明度权重集中在实际表面附近，减少体积渲染中多个半透明基元导致的噪声表面。",
+            "kind": "reported",
+            "evidenceRefs": [
+              "ev_32cc51aa72a9cb4d3aeb9096d0c8e8acfb4d6587204940326f58d293e1519513",
+              "ev_8d9e7b7a4dcb490331bce72f0c7e495a5928602df5d77224de46d82545073d88",
+              "ev_c95f2e040e47f358ac28b8ab23898c8ac279a4c0af0666973157747fc06d22d2",
+              "ev_8358ddef8f9f16f3f70fb2e1220c0fc11c02cd4d3d9d858fe544e7878720ecba"
+            ],
+            "conditions": {},
+            "obligationIds": [
+              "ob_2"
+            ],
+            "detailLevel": "basic",
+            "tableBindings": [],
+            "verification": "semantic_passed"
+          }
+        ],
+        "manualReview": {
+          "contentAccepted": false,
+          "independentCredit": 0,
+          "scores": {
+            "targetResponse": 1,
+            "evidenceSupport": 3,
+            "conditions": 3,
+            "synthesis": 2,
+            "readability": 3
+          },
+          "reason": "Only depth explanation published; representation and normal explanation are blocked by another spatial-label false numeric2 on 二维基元. Depth prose localizes weights near actual surfaces, which is stronger than the relative-depth distortion definition and risks suggesting known-surface supervision.",
+          "positiveObservation": "Covered c2 retained exactly, c1/c3 alone targeted; no unnecessary rewrite of c2, no contradictory source-absence assertion; publicationCoherence is current/released for that single accepted claim.",
+          "remaining": [
+            "Generalize spatial dimensional labels without dropping real feature/vector/output dimensions or measured counts.",
+            "Use precise operator inputs and penalized relations; do not assert true-surface anchoring from pairwise-depth concentration.",
+            "Live hold-on-conflict branch remains unexercised in this case; actual prior-result replay proves mechanics only."
+          ]
+        },
+        "preservation": {
+          "oldLedgerUnchanged": true,
+          "allOldRunsUnchanged": true,
+          "newRows": 20,
+          "ledgerRows": 8255,
+          "onlyThisRunCreatedCalls": true,
+          "active": [],
+          "oldPausedRetained": true,
+          "paused": [
+            "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+            "dr_run_ed10cc3347be552288079a9a588fddf5",
+            "dr_run_86b3f181a5475e99aacca3dbf4370567",
+            "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+            "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+            "dr_run_e3521b1781825273b384a26a5edb8cdc",
+            "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+            "dr_run_e9c9dc916bef519092fad8b929b2448f",
+            "dr_run_4738564f5ff35157996a35068c62ed32",
+            "dr_run_a8bd62f9ae3d52ff806f537065f55b2d",
+            "dr_run_98e66f2d3d555dfa822b859963f01419",
+            "dr_run_8be639c866c35ea092c735a04781b647",
+            "dr_run_1c0c2e6510165086962408b8e3cf698b"
+          ]
+        },
+        "protectedTasksExact": 12,
+        "repeatedTerminalGetExact": true,
+        "index": {
+          "collection": "literature_collection_v4_e5_small",
+          "count": 1102,
+          "sha256": "1e91bfa73ba4a374a6cea68be25639c269fac493d5eda61162448bf500ff6118"
+        },
+        "payloadSha256": "fa6c1b6fff586859ee915438196a6fa8b5e100c8351c7608cdf420ba6b5157b4"
+      },
+      "externalProxyComponent": {
+        "stage": "standalone, not integrated or configured",
+        "unitPassed": 16,
+        "unitSeconds": 4.53,
+        "liveProbe": "deep-research-evidence/academic-proxy-pinned-component-20261030.json",
+        "httpStatus": 200,
+        "publicTargetIpPinned": true,
+        "originalHostTlsVerified": true,
+        "modelCalls": 0,
+        "productionWrites": 0,
+        "externalResearchWorkflowAccepted": false
+      },
+      "externalRouteBoundary": "Public requests proxy probe passed, but actual academic transport is pinned_https_get and deliberately ignores ambient proxies. A dedicated optional proxy tunnel must retain pinned public target IP, TLS original-host verification, byte limits and redirect rejection; runtime configuration is not yet changed.",
+      "remaining": "Generalize spatial labels and fix unsupported mechanism localization; integrate optional pinned proxy transport without enabling it by default, validate external workflow, then independent cases and full DR0-DR5 release audit.",
+      "nextCandidate": {
+        "promptVersion": "dr-v2.20261030.375",
+        "factualReviewContractVersion": 2,
+        "quantitySpellingContractVersion": 13,
+        "runtimeLoaded": false,
+        "offlineAssociatedRegression": {
+          "files": 161,
+          "passed": 2992,
+          "seconds": 331.99,
+          "sourceFrozen": true,
+          "providerCalls": 0,
+          "proof": "deep-research-evidence/mechanism-375-associated-regression-20261030.json"
+        },
+        "savedInputReplay": "deep-research-evidence/mechanism-375-saved-input-replay-20261030.json",
+        "realComponent": "deep-research-evidence/mechanism-375-provider-component-20261030.json",
+        "contentAccepted": false,
+        "independentCredit": 0,
+        "remaining": "Actual-surface ambiguity still passes reviewer. Full new workflow not yet run; external route and full release remain pending."
       }
     }
   ]
