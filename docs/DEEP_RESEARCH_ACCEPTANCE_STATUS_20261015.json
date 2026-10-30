@@ -4918,7 +4918,26 @@
       "runtimeLoadedVerified": false,
       "contentAccepted": false,
       "independentCredit": 0,
-      "broaderRegression": "running; not yet counted as pass"
+      "broaderRegression": {
+        "files": 155,
+        "passed": 2915,
+        "failed": 9,
+        "seconds": 249.41,
+        "sourceFrozen": true,
+        "providerCalls": 0,
+        "failureBoundary": "8 stale expected server-version assertions plus1 old-invalid-version sample now valid as11",
+        "proof": "deep-research-evidence/surface-372-associated-regression-20261030.json"
+      },
+      "sourceCommit": "4a574e59",
+      "confirmedFocusedRegression": {
+        "files": 14,
+        "passed": 356,
+        "seconds": 20.15,
+        "sourceFrozen": true,
+        "providerCalls": 0,
+        "proof": "deep-research-evidence/surface-372-confirmed-regression-20261030.json",
+        "boundary": "Corrected version fixtures; entire155-file suite not rerun."
+      }
     }
   },
   "sharedModuleSourceCheckpoint": {
