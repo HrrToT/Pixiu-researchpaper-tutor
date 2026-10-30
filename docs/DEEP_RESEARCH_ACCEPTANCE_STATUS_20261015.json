@@ -4907,7 +4907,19 @@
         "deep-research-evidence/arxiv-container-proxy-probe-20261030.json"
       ]
     },
-    "remaining": "Correct false quantity requirements on Chinese surface-dimensional labels without weakening empirical counts; preserve point contribution during repair and remove unsupported surface localization. Configure a durable explicit external route and verify external workflow, then finish independent cases and full DR0-DR5 release audit."
+    "remaining": "Correct false quantity requirements on Chinese surface-dimensional labels without weakening empirical counts; preserve point contribution during repair and remove unsupported surface localization. Configure a durable explicit external route and verify external workflow, then finish independent cases and full DR0-DR5 release audit.",
+    "nextCandidate": {
+      "promptVersion": "dr-v2.20261030.372",
+      "quantitySpellingContractVersion": 11,
+      "component": "distinguish Chinese spatial surface-element labels from empirical counts",
+      "actualReplay": "deep-research-evidence/surface-372-actual-precheck-replay-20261030.json",
+      "legacyContract10Retained": true,
+      "semanticVerificationStillRequired": true,
+      "runtimeLoadedVerified": false,
+      "contentAccepted": false,
+      "independentCredit": 0,
+      "broaderRegression": "running; not yet counted as pass"
+    }
   },
   "sharedModuleSourceCheckpoint": {
     "sourceCommit": "f8ae5177",

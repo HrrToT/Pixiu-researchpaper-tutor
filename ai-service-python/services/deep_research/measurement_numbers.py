@@ -72,6 +72,8 @@ def without_dimensional_labels(text, *, surface_labels=False):
     nouns='高斯|空间|场景|几何|模型|重建|点云|辐射场'
     if surface_labels is True:
         nouns+='|椭圆盘|圆盘|盘片|盘'
+    elif type(surface_labels) is int and surface_labels==2:
+        nouns+='|椭圆盘|圆盘|盘片|盘|表面(?:片|元)|面片|薄片|片(?!段|特征|向量|矩阵|张量|数组|编码|输出|通道)'
     return re.sub(r'(?<![A-Za-z0-9_第负正+＋\-−零一二两三四五六七八九十百千万亿])'
         r'[234二两三四]维(?=(?:的)?(?:'+nouns+'))','',text)
 

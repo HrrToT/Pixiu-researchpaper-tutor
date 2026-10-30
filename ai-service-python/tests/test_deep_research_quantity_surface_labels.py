@@ -41,14 +41,14 @@ def test_version_ten_retains_previous_enumeration_and_factor_rules():
  assert precheck_claims([c],[e],quantity_spelling_version=10)['rejected'][0]['reason']=='numeric_mismatch'
 
 
-@pytest.mark.parametrize('replacement',[None,True,0,9,'10'])
+@pytest.mark.parametrize('replacement',[None,True,0,9,10,'10'])
 def test_new_quantity_contract_remains_server_owned_and_immutable(tmp_path,replacement):
  from services.deep_research.repository import DeepResearchRepository
  from services.deep_research.facade import ResearchFacade
  repo=DeepResearchRepository(tmp_path/'r.sqlite3');repo.initialize();facade=ResearchFacade(repo,lambda **_:None,llm_client=object())
  try:
   run,_=facade.create({'workspaceTaskId':'t','operationKey':'op','question':'解释二维盘','quantitySpellingContractVersion':replacement},start_async=False)
-  assert run['quantitySpellingContractVersion']==10
+  assert run['quantitySpellingContractVersion']==11
   with pytest.raises(ValueError,match='Immutable'):
    repo.update_run(run['runId'],lambda r:{**r,'quantitySpellingContractVersion':replacement})
  finally:facade.shutdown()

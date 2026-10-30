@@ -93,14 +93,14 @@ def precheck_claims(claims: list[dict], evidence: list[dict], *, absence_scope_v
     if len(by_id) != len(evidence):
         raise ValueError("Duplicate evidence identity")
     candidates, rejected, seen = [], [], set()
-    word_counts = type(quantity_spelling_version) is int and quantity_spelling_version in (1, 2, 3, 4, 5, 6, 7, 8, 9,10)
-    relative_references = type(quantity_spelling_version) is int and quantity_spelling_version in (2, 3, 4, 5, 6, 7, 8, 9,10)
-    artifact_references = type(quantity_spelling_version) is int and quantity_spelling_version in (3, 4, 5, 6, 7, 8, 9,10)
-    conceptual_articles = type(quantity_spelling_version) is int and quantity_spelling_version in (4,5,6,7,8,9,10)
-    dimensional_labels=type(quantity_spelling_version) is int and quantity_spelling_version in (5,6,7,8,9,10)
-    collection_articles=type(quantity_spelling_version) is int and quantity_spelling_version in (6,7,8,9,10)
-    enumeration_labels=(9 if quantity_spelling_version==10 else quantity_spelling_version) if type(quantity_spelling_version) is int and quantity_spelling_version in (7,8,9,10) else False
-    surface_labels=type(quantity_spelling_version) is int and quantity_spelling_version==10
+    word_counts = type(quantity_spelling_version) is int and quantity_spelling_version in (1, 2, 3, 4, 5, 6, 7, 8, 9,10,11)
+    relative_references = type(quantity_spelling_version) is int and quantity_spelling_version in (2, 3, 4, 5, 6, 7, 8, 9,10,11)
+    artifact_references = type(quantity_spelling_version) is int and quantity_spelling_version in (3, 4, 5, 6, 7, 8, 9,10,11)
+    conceptual_articles = type(quantity_spelling_version) is int and quantity_spelling_version in (4,5,6,7,8,9,10,11)
+    dimensional_labels=type(quantity_spelling_version) is int and quantity_spelling_version in (5,6,7,8,9,10,11)
+    collection_articles=type(quantity_spelling_version) is int and quantity_spelling_version in (6,7,8,9,10,11)
+    enumeration_labels=(9 if quantity_spelling_version in (10,11) else quantity_spelling_version) if type(quantity_spelling_version) is int and quantity_spelling_version in (7,8,9,10,11) else False
+    surface_labels=(2 if quantity_spelling_version==11 else quantity_spelling_version==10) if type(quantity_spelling_version) is int else False
     concurrent_feedback = type(feedback_version) is int and feedback_version == 2
     for claim in claims:
         claim_id = claim.get("claimId")
