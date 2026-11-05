@@ -381,19 +381,29 @@ Return a JSON ARRAY of plan items, NOT an object with items field."""
         validated = normalize_obligation_purposes(validated, question)
         allowed = [material.get("materialId") for material in materials]
         required_default = allowed if output_kind == "paper_comparison" else record.get("focusPaperIds") or allowed
-        for item in validated:
-            for obligation in item.get("obligations", []):
-                requested = obligation.get("requiredSources", [])
-                external_ids = []
-                if record.get("sourcePolicy", {}).get("mode") in {"academic_external", "external_only"}:
-                    from services.deep_research_academic import checked_arxiv_id
-                    for sid in requested:
-                        if sid.lower().startswith("arxiv:"):
-                            try:
-                                external_ids.append("arxiv:" + __import__('re').sub(r'v\d+$', '', checked_arxiv_id(sid.split(':', 1)[1])))
-                            except ValueError:
-                                pass
-                obligation["requiredSources"] = [sid for sid in requested if sid in allowed] + external_ids or required_default
+        from services.deep_research.source_revisions import enabled as revision_constraints_enabled, normalize_plan as bind_plan_revisions
+        revision_constraints=revision_constraints_enabled(record) and record.get('sourcePolicy',{}).get('mode') in {'academic_external','external_only'}
+        revision_audit={}
+        if revision_constraints:
+            try:
+                validated,revision_audit=bind_plan_revisions(validated,question,allowed,required_default)
+                validated=validate_plan(validated)
+            except ValueError as exc:
+                return invalid_plan(exc)
+        else:
+            for item in validated:
+                for obligation in item.get("obligations", []):
+                    requested = obligation.get("requiredSources", [])
+                    external_ids = []
+                    if record.get("sourcePolicy", {}).get("mode") in {"academic_external", "external_only"}:
+                        from services.deep_research_academic import checked_arxiv_id
+                        for sid in requested:
+                            if sid.lower().startswith("arxiv:"):
+                                try:
+                                    external_ids.append("arxiv:" + __import__('re').sub(r'v\d+$', '', checked_arxiv_id(sid.split(':', 1)[1])))
+                                except ValueError:
+                                    pass
+                    obligation["requiredSources"] = [sid for sid in requested if sid in allowed] + external_ids or required_default
         # Each comparison must inspect every selected paper, while paper-specific
         # obligations should not require irrelevant evidence from all other papers.
         if output_kind == "paper_comparison":
@@ -440,6 +450,7 @@ Return a JSON ARRAY of plan items, NOT an object with items field."""
                 **(rebind_inherited_state(r.get('state') or {}, validated)
                    if inherited else {**(r.get("state") or {}), "plan": validated}),
                 'planIdNormalization': identity_changes,
+                **({'planSourceRevisionNormalization':revision_audit} if revision_constraints else {}),
                 **({'planAccessRequestProjection':access_projection} if access_projection_enabled(record) else {}),
                 **({'planRequestSemanticsNormalization':semantics_changes} if semantics_enabled(record) else {}),
                 **({'planRequirementNormalization': requirement_changes} if requirements_enabled(record) else {}),

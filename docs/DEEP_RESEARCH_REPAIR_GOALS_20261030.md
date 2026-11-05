@@ -305,3 +305,20 @@ factualReviewContractVersion=3服务端冻结选择新机制审核提示，同�
 新增材料脚本在v1来源断言处停止，尚未创建add-source-intent或调用POST，因此首次加入/解析/索引均未做、0新索引，不能换v2绕过。保留新测试任务、原输出、v2获取记录和所有失败证据；该材料进入诊断后退役，不获得独立积分。接下来先修显式版本贯穿真实计划及获取的约束，再处理怎样做的流程覆盖，使用旧输入离线回放而不是重刷该独立案例。
 
 最终8,402账本、0活动、13历史暂停，旧账本前缀和全部旧payload、原12任务及1,102索引/嵌入保持，重复终态读取一致；新增任务另保存到13任务保护快照。证据：`deep-research-evidence/external-rade-v1-freshness-20261105.json`、`deep-research-evidence/external-x5h-v1-validation-20261105.json`。完整DR0—DR5和独立内容验收仍未完成。
+
+
+## .383候选：显式修订贯穿真实计划、获取与发布
+
+exactDiscoveryContractVersion=2保留用户问题中的现代/旧式arXiv修订和官方链接引用。真实make_plan_node不再对外部requiredSources无条件删v后缀：按原始问题恢复明确修订，保留多个修订的独立身份，并保存planSourceRevisionNormalization；原始问题、模型响应、既有运行不改。本地材料保留其内容身份，不凭人类引用重命名本地PDF。旧根契约1仍使用旧路径，不升级历史或未知请求。
+
+获取前独立重绑原始请求的明确修订，防止未版本化的旧计划或目标绕过；候选元数据与取得全文的workId/versionId/arxivId必须一致，错误版本不能静默替换。最终主张检查也按冻结问题核对外部证据修订：错误版本包括继承来源会在语义调用前被拒，改kind不能绕过。多修订比较仍逐一检查且需要独立语义支持，未因身份正确而直接批准。
+
+首次36项、补充74项聚焦路径检查通过，涵盖真实计划节点到精确元数据/PDF请求、中文连续引用、错误全文阻断和同工作不同修订联合覆盖。补充发布保护后101项聚焦检查通过，各范围重叠不累计。初版171文件3,139项关联回归通过；发布保护后的最终范围另记，不能冒充同一源码版本。
+
+X5H-v1原始规划响应逐字回放，新三项requiredSources均为arxiv:2406.01467v1，旧为未版本化workID；输入问题和原始文件保持，0模型调用/0生产写入。SQLite result字段需先解码外层JSON，最初本地回放未解码而拒绝，纠正后用同一响应成功；没有为此重发模型。该输入中的原始模型响应本来就保留v1，进一步确认错误来自服务端规划归一化。证据：`deep-research-evidence/revisions-383-saved-plan-replay-20261105.json`。
+
+真实网络组件在隔离账本各执行一次元数据和未缓存PDF获取，8.764秒、0DeepSeek调用，实际得到v1、哈希b4b71257a412123d8033e441388a71c774fbd5b244c7ba212cb5d27da1d13a9f，保存8个原始片段。旧v2缓存清单和生产8,402账本/全部payload保持，只新增正常v1来源缓存，未加任务或索引。组件在随后添加最终发布保护前执行；获取函数未改变，最终保护另有离线回放及最终回归，不把前范围当后范围。证据：`deep-research-evidence/revisions-383-network-component-20261105.json`。
+
+保存的旧X5H-v1三条v2主张在新发布策略离线回放均requested_version_mismatch，0语义/模型调用；原已发布结果未修改或改判。独立积分仍0、方法怎样做的覆盖缺陷和完整DR0—DR5门槛尚未收口。证据：`deep-research-evidence/revisions-383-publication-replay-20261105.json`。
+
+最终含发布保护的172文件3,152项关联回归通过（142.96秒），源码冻结、0模型调用、一项既有PyPDF2弃用警告。初版3,139与各聚焦范围重叠不累计；最终以`deep-research-evidence/revisions-383-final-regression-20261105.json`为准。

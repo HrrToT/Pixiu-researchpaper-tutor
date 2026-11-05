@@ -109,7 +109,7 @@ def test_server_freezes_exact_lookup_contract(tmp_path, replacement):
     try:
         run, _ = facade.create({'workspaceTaskId': 't', 'operationKey': 'op', 'question': '研究方法',
             'exactDiscoveryContractVersion': replacement, 'deferStart': True}, start_async=False)
-        assert run['exactDiscoveryContractVersion'] == 1
+        assert run['exactDiscoveryContractVersion'] == 2
         with pytest.raises(ValueError, match='Immutable'):
             repo.update_run(run['runId'], lambda r: {**r, 'exactDiscoveryContractVersion': replacement})
     finally:

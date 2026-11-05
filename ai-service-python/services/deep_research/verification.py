@@ -85,12 +85,16 @@ def _table_display_diagnostic(claim, support):
 
 
 def precheck_claims(claims: list[dict], evidence: list[dict], *, absence_scope_version=0,
-                    quantity_spelling_version=0, feedback_version=0, table_references_version=0) -> dict:
+                    quantity_spelling_version=0, feedback_version=0, table_references_version=0,
+                    requested_source_revisions=None) -> dict:
     """Pure hard checks shared by publication and pre-classification edits.
 
     Candidates still require a separate semantic verdict; nothing is accepted
     for publication here and no provider-capable callback is invoked.
     """
+    if requested_source_revisions is not None:
+        from services.deep_research.source_revisions import validate_constraints
+        validate_constraints(requested_source_revisions)
     by_id = {item["evidenceId"]: item for item in evidence}
     if len(by_id) != len(evidence):
         raise ValueError("Duplicate evidence identity")
@@ -120,6 +124,11 @@ def precheck_claims(claims: list[dict], evidence: list[dict], *, absence_scope_v
         if not isinstance(refs, list) or any(ref not in by_id for ref in refs):
             reason = reason or "unknown_evidence"
         support = [by_id[ref] for ref in refs if ref in by_id] if isinstance(refs, list) else []
+        mismatched_revisions=[item for item in support if requested_source_revisions
+            and item.get('sourceWorkId') in requested_source_revisions
+            and item.get('sourceVersionId') not in requested_source_revisions[item['sourceWorkId']]]
+        if mismatched_revisions:
+            reason=reason or 'requested_version_mismatch'
         if kind in {"reported", "inference"} and not support:
             reason = reason or "missing_evidence"
         if any(item.get("verification", {}).get("literal") != "passed" for item in support):
@@ -261,7 +270,11 @@ def precheck_claims(claims: list[dict], evidence: list[dict], *, absence_scope_v
                     continue
         if reason:
             diagnostic = {}
-            if reason == 'numeric_mismatch' and word_counts:
+            if reason == 'requested_version_mismatch':
+                diagnostic={'requestedSourceRevisions':requested_source_revisions,
+                    'observedSourceRevisions':[{'evidenceId':item['evidenceId'],'sourceVersionId':item.get('sourceVersionId')} for item in mismatched_revisions],
+                    'detail':'本条引用使用了与用户明确指定修订不一致的论文版本；不能改写来源标签或改kind绕过，需取得指定版本的原文。'}
+            elif reason == 'numeric_mismatch' and word_counts:
                 from services.deep_research.measurement_numbers import number_display
                 missing = sorted(unsupported_numbers)
                 diagnostic = {'missingReportedNumbers': missing,
@@ -297,7 +310,7 @@ def precheck_claims(claims: list[dict], evidence: list[dict], *, absence_scope_v
 def verify_claims(claims: list[dict], evidence: list[dict],
                   semantic_check: Callable[[list[dict], list[dict]], list[dict]] | None = None,
                   *, absence_scope_version=0, quantity_spelling_version=0, feedback_version=0,
-                  table_references_version=0, review_context_version=0) -> dict:
+                  table_references_version=0, review_context_version=0, requested_source_revisions=None) -> dict:
     """Publish only after hard checks and an independent semantic verdict.
 
     Missing, malformed or duplicate model verdicts fail closed. A proposal or
@@ -305,7 +318,7 @@ def verify_claims(claims: list[dict], evidence: list[dict],
     """
     checked = precheck_claims(claims, evidence, absence_scope_version=absence_scope_version,
         quantity_spelling_version=quantity_spelling_version, feedback_version=feedback_version,
-        table_references_version=table_references_version)
+        table_references_version=table_references_version, requested_source_revisions=requested_source_revisions)
     candidates, rejected = checked['candidates'], checked['rejected']
     proposals = {"suggestion", "proposal", "hypothesis"}
     # Suggestions are not established facts, but still need a logic/identity check.

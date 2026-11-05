@@ -47,7 +47,7 @@ class AcademicAcquisition:
             # Queries contain public topics from the plan, never entire document text.
             query = str(target.get("query", "")).strip()[:700]
             identities = []
-            if record.get('exactDiscoveryContractVersion') == 1:
+            if type(record.get('exactDiscoveryContractVersion')) is int and record['exactDiscoveryContractVersion'] in (1,2):
                 from services.deep_research_academic import checked_arxiv_id
                 for identity in target.get('requiredSources', []):
                     if isinstance(identity, str) and identity.startswith('arxiv:'):
@@ -56,6 +56,10 @@ class AcademicAcquisition:
                 if isinstance(missing, str) and missing.startswith('arxiv:'):
                     identities = [checked_arxiv_id(missing[6:])]
                 identities = list(dict.fromkeys(identities))
+                from services.deep_research.source_revisions import enabled as revision_constraints_enabled, bind as bind_revisions
+                if revision_constraints_enabled(record):
+                    from services.deep_research.request_context import effective_question
+                    identities=[value[6:] for value in bind_revisions(['arxiv:'+value for value in identities],effective_question(record),default=not record.get('materials'))]
             if not query and not identities:
                 continue
             # Source identity and reading question serve different purposes.
@@ -68,6 +72,8 @@ class AcademicAcquisition:
                     continue
                 if identity not in materials:
                     fulltext = (adapter.fetch_fulltext(run_id, candidate["arxivId"]) or {}) if client.policy.allow_fulltext else {}
+                    if record.get('exactDiscoveryContractVersion')==2 and fulltext and any(fulltext.get(key)!=candidate.get(key) for key in ('workId','versionId','arxivId')):
+                        raise DeepResearchError('external_version_mismatch','取得的全文与所选论文版本不一致，未替换指定版本。')
                     # Cache acquisition, not the passages selected for one question.
                     materials[identity] = {**candidate, **fulltext, "url": candidate.get("url", ""),
                                            "discoveredAt": candidate.get('retrievedAt')}

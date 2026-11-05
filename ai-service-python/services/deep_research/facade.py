@@ -280,7 +280,7 @@ class ResearchFacade:
             "materials": materials,
             "materialSnapshot": material_snapshot,  # Immutable Java snapshot
             "contextMaterials": (material_snapshot or {}).get("contextMaterials", []) if isinstance(material_snapshot, dict) else [],
-            "promptVersion": "dr-v2.20261105.382",
+            "promptVersion": "dr-v2.20261105.383",
             "factualReviewContractVersion": 3,
             "citationPresentationContractVersion": 4,
             "configurationConsistencyContractVersion": 2,
@@ -366,7 +366,7 @@ class ResearchFacade:
             "continuationContextContractVersion": 1,
             "continuationContext": continuation_context,
             "planResumeContractVersion": 1,
-            "exactDiscoveryContractVersion": 1,
+            "exactDiscoveryContractVersion": 2,
             "planEditContractVersion": 1,
             "clarificationContractVersion": 1,
             "adaptiveResearchContractVersion": 1,
@@ -1338,10 +1338,14 @@ class ResearchFacade:
         feedback = record.get('verificationFeedbackContractVersion', 0)
         table_references = record.get('tableReferencesContractVersion',0)
         context_version=record.get('experimentReviewEnvelopeContractVersion',0)
+        from services.deep_research.source_revisions import enabled as revision_constraints_enabled,explicit_revisions
+        revisions=(explicit_revisions(effective_question(record)) if revision_constraints_enabled(record)
+            and record.get('sourcePolicy',{}).get('mode') in {'academic_external','external_only'} else {})
         return lambda claims, evidence, semantic=None: verify_claims(
             claims, evidence, semantic, absence_scope_version=version, quantity_spelling_version=spelling,
             feedback_version=feedback,table_references_version=table_references,
-            review_context_version=context_version)
+            review_context_version=context_version,
+            **({'requested_source_revisions':revisions} if revisions else {}))
     
     def _get_validate_plan(self) -> Callable[[list], list]:
         from services.deep_research.coverage import validate_plan
