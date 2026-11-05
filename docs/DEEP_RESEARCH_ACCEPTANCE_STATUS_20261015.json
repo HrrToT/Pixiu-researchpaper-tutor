@@ -4789,16 +4789,16 @@
     "proof": "deep-research-evidence/compact-experiment-envelope-regression-20261020.json"
   },
   "currentCheckpoint": {
-    "sourceCommit": "5b4aa968",
+    "sourceCommit": "139b165b",
     "javaSourceCommit": "612c324e",
-    "promptVersion": "dr-v2.20261105.388",
+    "promptVersion": "dr-v2.20261105.389",
     "factualRepairGoalContractVersion": 5,
     "answerCoherenceContractVersion": 2,
     "quantitySpellingContractVersion": 15,
-    "component": "independent literal interrogative parts, distinct process roles and bounded factual layout",
-    "componentOutcome": "3430 associated checks passed; loaded388. Full X5R-v5 now terminal partial: three literal questions and mesh stage present; overlapping model-supplied process roles rejected. Original result retained. No independent credit.",
+    "component": "unified factual drafting and lossless evidence capacity",
+    "componentOutcome": "3447 checks across187 files pass. Actual G1N saved input fixed21603->16667 bytes and4->13 evidence rows; X5R saved input4->15. Loaded389 with8615 ledger/14 tasks/1215 index preserved. Upstream acquired-but-unread method/settings gap remains; no new model case or independent/content pass.",
     "runtimeLoadedVerified": true,
-    "runtimeProof": "deep-research-evidence/runtime-load-question-388-20261105.json",
+    "runtimeProof": "deep-research-evidence/runtime-load-factual-389-20261105.json",
     "fullDR0DR5Proved": false,
     "independentCredit": 0,
     "lastCapturedLedgerRows": 8615,
@@ -4823,7 +4823,7 @@
       "externalResearchWorkflowAccepted": false
     },
     "externalRouteBoundary": "User authorized current system HTTP proxy. Configured only in ignored local Python .env. Formal AcademicAcquisition factory fetched metadata and uncached fulltext using pinned public-IP/original-host TLS; application restarted once and wiring/health/data verified. Full external research quality remains unaccepted.",
-    "remaining": "Load tested389 with protected-data snapshot, then fix read allocation under unchanged12-slot cap: acquired PGSR method/settings passages not read; reference fragments consumed slots. Only after actual read->extract->synthesis replay should bounded development verification run. Original G1N-v1 partial retained. Complete experiments/insufficiency/continuation/independent/release audit remain open.",
+    "remaining": "Fix actual read allocation under unchanged12-slot cap: acquired PGSR method/settings paragraphs not read, reference fragments consumed slots. Prove actual acquired-source -> read -> literal-extract -> synthesis transmission before bounded development validation. Keep G1N first partial immutable and retired. Complete comparison/experiments/insufficiency/continuation/independent/release audit remain open.",
     "factualReviewContractVersion": 3,
     "factualDecisionContractVersion": 2,
     "repairRemovalContractVersion": 2,
@@ -5324,7 +5324,7 @@
     "candidateFactualPrompt389": {
       "promptVersion": "dr-v2.20261105.389",
       "factualPromptContractVersion": 1,
-      "runtimeLoaded": false,
+      "runtimeLoaded": true,
       "associatedTests": 3447,
       "testFiles": 187,
       "seconds": 166.015,
@@ -5338,8 +5338,12 @@
       "upstreamReadGapProof": "deep-research-evidence/geometry-389-pgsr-body-acquisition-gap-20261105.json",
       "modelCalls": 0,
       "scientificAcceptance": false,
-      "independentCredit": 0
-    }
+      "independentCredit": 0,
+      "sourceCommit": "139b165b",
+      "wholeRealCaseRun": false,
+      "runtimeProof": "deep-research-evidence/runtime-load-factual-389-20261105.json"
+    },
+    "factualPromptContractVersion": 1
   },
   "sharedModuleSourceCheckpoint": {
     "sourceCommit": "f8ae5177",
