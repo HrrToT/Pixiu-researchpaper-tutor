@@ -4789,19 +4789,19 @@
     "proof": "deep-research-evidence/compact-experiment-envelope-regression-20261020.json"
   },
   "currentCheckpoint": {
-    "sourceCommit": "a1e527ea",
+    "sourceCommit": "8577a275",
     "javaSourceCommit": "612c324e",
-    "promptVersion": "dr-v2.20261105.381",
+    "promptVersion": "dr-v2.20261105.382",
     "factualRepairGoalContractVersion": 5,
     "answerCoherenceContractVersion": 2,
     "quantitySpellingContractVersion": 15,
-    "component": "spatial cardinal syntax disambiguation",
-    "componentOutcome": "All three explanations published and complete coverage checked in one audit; workflow complete. Assistant source review retains optimization-objective wording qualification; independent content credit remains zero.",
+    "component": "shared objective-versus-outcome drafting and independent review",
+    "componentOutcome": "Two isolated semantic checks distinguish goal from guarantee; fresh external case exposes dropped explicit version and missing operational explanation.",
     "runtimeLoadedVerified": true,
-    "runtimeProof": "deep-research-evidence/runtime-load-cardinal-381-20261105.json",
+    "runtimeProof": "deep-research-evidence/runtime-load-objective-382-20261105.json",
     "fullDR0DR5Proved": false,
     "independentCredit": 0,
-    "lastCapturedLedgerRows": 8374,
+    "lastCapturedLedgerRows": 8402,
     "lastCapturedActiveProductionRuns": 0,
     "historicalPausedRunsAtCapture": 13,
     "lastConfirmedIndexDocuments": 1102,
@@ -4823,18 +4823,11 @@
       "externalResearchWorkflowAccepted": false
     },
     "externalRouteBoundary": "User authorized current system HTTP proxy. Configured only in ignored local Python .env. Formal AcademicAcquisition factory fetched metadata and uncached fulltext using pinned public-IP/original-host TLS; application restarted once and wiring/health/data verified. Full external research quality remains unaccepted.",
-    "remaining": "Keep wording-strength qualification as a release issue; proceed to fresh external, multi-paper, experiment, insufficiency and continuation gates rather than endlessly retuning this reused local paper. External, independent content and full release gates remain pending.",
-    "factualReviewContractVersion": 2,
+    "remaining": "Preserve explicit arXiv revision across actual plan normalization and acquisition, then strengthen mechanism/process coverage so performance cannot substitute for how. Use this failed first case only as diagnosis; a genuinely new material is needed for later independent acceptance. Full DR0-DR5 and independent content acceptance remain pending.",
+    "factualReviewContractVersion": 3,
     "factualDecisionContractVersion": 2,
     "repairRemovalContractVersion": 2,
     "coverageDiagnosticsContractVersion": 4,
-    "offlineAssociatedRegression": {
-      "testFiles": 168,
-      "passed": 3095,
-      "seconds": 153.81,
-      "sourceFrozen": true,
-      "proof": "deep-research-evidence/cardinal-381-confirmed-regression-20261105.json"
-    },
     "lastLocalDevelopmentCase": {
       "promptVersion": "dr-v2.20261105.381",
       "sourceCommit": "a1e527ea",
@@ -5225,27 +5218,576 @@
       },
       "payloadSha256": "b9f3c0080999aeae68fb9b0a6ae1c9ae7f867fffe9ad1e3826e397025761c043"
     },
-    "nextCandidate": {
-      "sourceCommit": "8577a275",
+    "offlineAssociatedRegression": {
+      "testFiles": 169,
+      "passed": 3108,
+      "seconds": 131.75,
+      "sourceFrozen": true,
+      "proof": "deep-research-evidence/objective-382-confirmed-regression-20261105.json"
+    },
+    "lastExternalDevelopmentCase": {
       "promptVersion": "dr-v2.20261105.382",
-      "factualReviewContractVersion": 3,
-      "component": "shared objective-versus-outcome drafting and independent review",
-      "associatedRegression": {
-        "testFiles": 169,
-        "passed": 3108,
-        "seconds": 131.75,
-        "sourceFrozen": true,
-        "proof": "deep-research-evidence/objective-382-confirmed-regression-20261105.json"
+      "sourceCommit": "8577a275",
+      "caseDefinitionCommit": "231f5a84",
+      "frozenManifest": "DEEP_RESEARCH_EXTERNAL_FRESH_RADE_20261105.json",
+      "frozenManifestSha256": "d0d3b4c5bc30c8694596ac21bea7b8f1b07e377ac89ea2f7da91799568a8351a",
+      "case": "X5H-v1",
+      "runId": "dr_run_bbcd0f844a7d5f44ba03f891b19b1186",
+      "requestedVersion": "arxiv:2406.01467v1",
+      "actualVersions": [
+        "arxiv:2406.01467v2"
+      ],
+      "machineOutcome": "complete",
+      "status": "completed",
+      "modelCalls": 12,
+      "externalSearches": 1,
+      "fulltextFetches": 1,
+      "tokens": 42859,
+      "elapsedSeconds": 164.296,
+      "sources": [
+        {
+          "sourceId": "src_0ed455e4621582b91fa4a200acaef94473c102a86d7b31567d13fbaafb5494c5",
+          "workId": "arxiv:2406.01467",
+          "versionId": "arxiv:2406.01467v2",
+          "contentHash": "7940677b85007b76d0285fa87a5782ee7a8e060d5c8db526853743950a3c4f24",
+          "accessLevel": "fulltext",
+          "url": "https://arxiv.org/abs/2406.01467v2"
+        },
+        {
+          "sourceId": "src_393be5b738589163ddafc679e9ae482c69dc016dd8b160669387f9f486a517cf",
+          "workId": "arxiv:2406.01467",
+          "versionId": "arxiv:2406.01467v2",
+          "contentHash": "7940677b85007b76d0285fa87a5782ee7a8e060d5c8db526853743950a3c4f24",
+          "accessLevel": "fulltext",
+          "url": "https://arxiv.org/abs/2406.01467v2"
+        },
+        {
+          "sourceId": "src_3b5151628dd659810b784988352b256df2df70ee8927097c3e4c69fd2c154829",
+          "workId": "arxiv:2406.01467",
+          "versionId": "arxiv:2406.01467v2",
+          "contentHash": "7940677b85007b76d0285fa87a5782ee7a8e060d5c8db526853743950a3c4f24",
+          "accessLevel": "fulltext",
+          "url": "https://arxiv.org/abs/2406.01467v2"
+        },
+        {
+          "sourceId": "src_426705e998d53f25fab3c925b4781197fd827d3eeff83ff29c96781563deaadf",
+          "workId": "arxiv:2406.01467",
+          "versionId": "arxiv:2406.01467v2",
+          "contentHash": "7940677b85007b76d0285fa87a5782ee7a8e060d5c8db526853743950a3c4f24",
+          "accessLevel": "fulltext",
+          "url": "https://arxiv.org/abs/2406.01467v2"
+        },
+        {
+          "sourceId": "src_91a0578e5503199c41d065767ecb9a0490393a06703760163f2cfc5843d425b7",
+          "workId": "arxiv:2406.01467",
+          "versionId": "arxiv:2406.01467v2",
+          "contentHash": "7940677b85007b76d0285fa87a5782ee7a8e060d5c8db526853743950a3c4f24",
+          "accessLevel": "fulltext",
+          "url": "https://arxiv.org/abs/2406.01467v2"
+        },
+        {
+          "sourceId": "src_a23d760729712f4978aa067477c0675a168e554780faee0c6f5b33af2a08a6e3",
+          "workId": "arxiv:2406.01467",
+          "versionId": "arxiv:2406.01467v2",
+          "contentHash": "7940677b85007b76d0285fa87a5782ee7a8e060d5c8db526853743950a3c4f24",
+          "accessLevel": "fulltext",
+          "url": "https://arxiv.org/abs/2406.01467v2"
+        },
+        {
+          "sourceId": "src_a4fbe9e9e362402e1d415ae73f00042afdf7f5a07b9e3cc9670072d8a5ab5198",
+          "workId": "arxiv:2406.01467",
+          "versionId": "arxiv:2406.01467v2",
+          "contentHash": "7940677b85007b76d0285fa87a5782ee7a8e060d5c8db526853743950a3c4f24",
+          "accessLevel": "fulltext",
+          "url": "https://arxiv.org/abs/2406.01467v2"
+        },
+        {
+          "sourceId": "src_aa8649434a56fd45a0a27f56df434dee3bec7c3b4ae98ef9711097d5a80847de",
+          "workId": "arxiv:2406.01467",
+          "versionId": "arxiv:2406.01467v2",
+          "contentHash": "7940677b85007b76d0285fa87a5782ee7a8e060d5c8db526853743950a3c4f24",
+          "accessLevel": "fulltext",
+          "url": "https://arxiv.org/abs/2406.01467v2"
+        },
+        {
+          "sourceId": "src_cb5cf37b26b6fe316bc5056b9136682b9578f7c6e32d8b2a2844d8fa9f9069dd",
+          "workId": "arxiv:2406.01467",
+          "versionId": "arxiv:2406.01467v2",
+          "contentHash": "7940677b85007b76d0285fa87a5782ee7a8e060d5c8db526853743950a3c4f24",
+          "accessLevel": "fulltext",
+          "url": "https://arxiv.org/abs/2406.01467v2"
+        },
+        {
+          "sourceId": "src_d69bd67fcced34b97cfc206c17224222a064bd575a4fa461ee410701303d4e93",
+          "workId": "arxiv:2406.01467",
+          "versionId": "arxiv:2406.01467v2",
+          "contentHash": "7940677b85007b76d0285fa87a5782ee7a8e060d5c8db526853743950a3c4f24",
+          "accessLevel": "fulltext",
+          "url": "https://arxiv.org/abs/2406.01467v2"
+        },
+        {
+          "sourceId": "src_d9522706642d0f1c8678f3c2d76083b21e033fc7c3628b40a41e9691f6680299",
+          "workId": "arxiv:2406.01467",
+          "versionId": "arxiv:2406.01467v2",
+          "contentHash": "7940677b85007b76d0285fa87a5782ee7a8e060d5c8db526853743950a3c4f24",
+          "accessLevel": "fulltext",
+          "url": "https://arxiv.org/abs/2406.01467v2"
+        },
+        {
+          "sourceId": "src_f205453246e0461adf41e17a5a865d34a8d255cc1ff0cfe8e7b30cb7b1d9bfff",
+          "workId": "arxiv:2406.01467",
+          "versionId": "arxiv:2406.01467v2",
+          "contentHash": "7940677b85007b76d0285fa87a5782ee7a8e060d5c8db526853743950a3c4f24",
+          "accessLevel": "fulltext",
+          "url": "https://arxiv.org/abs/2406.01467v2"
+        },
+        {
+          "sourceId": "src_f6300186a0f7adb0303a15e48550c4ba2679e93fd418430b779d7adb8edd2ab5",
+          "workId": "arxiv:2406.01467",
+          "versionId": "arxiv:2406.01467v2",
+          "contentHash": "7940677b85007b76d0285fa87a5782ee7a8e060d5c8db526853743950a3c4f24",
+          "accessLevel": "fulltext",
+          "url": "https://arxiv.org/abs/2406.01467v2"
+        },
+        {
+          "sourceId": "src_f782e71bfa09fd2d2a25866616ad0549237585fba5de1488a4d46591c39778bc",
+          "workId": "arxiv:2406.01467",
+          "versionId": "arxiv:2406.01467v2",
+          "contentHash": "7940677b85007b76d0285fa87a5782ee7a8e060d5c8db526853743950a3c4f24",
+          "accessLevel": "fulltext",
+          "url": "https://arxiv.org/abs/2406.01467v2"
+        }
+      ],
+      "plan": [
+        {
+          "itemId": "item_1",
+          "question": "解释它是否把3D高斯改成2D圆盘",
+          "obligations": [
+            {
+              "obligationId": "ob_1",
+              "question": "解释它是否把3D高斯改成2D圆盘",
+              "requiredSources": [
+                "arxiv:2406.01467"
+              ],
+              "searchQuery": "RaDe-GS Rasterizing Depth Gaussian Splatting 2D disk primitive",
+              "purpose": "answer_requirement",
+              "requestExcerpt": "解释它是否把3D高斯改成2D圆盘",
+              "completionCriteria": [
+                {
+                  "criterionId": "human_aspect_1",
+                  "requirement": "解释它是否把3D高斯改成2D圆盘",
+                  "responseType": "explanation"
+                }
+              ]
+            }
+          ],
+          "searchQuery": "RaDe-GS Rasterizing Depth Gaussian Splatting 2D disk primitive",
+          "dependencies": [],
+          "priority": 1,
+          "status": "completed"
+        },
+        {
+          "itemId": "item_2",
+          "question": "为什么要渲染深度和表面法线",
+          "obligations": [
+            {
+              "obligationId": "ob_2",
+              "question": "为什么要渲染深度和表面法线",
+              "requiredSources": [
+                "arxiv:2406.01467"
+              ],
+              "searchQuery": "RaDe-GS depth normal rendering motivation",
+              "purpose": "answer_requirement",
+              "requestExcerpt": "为什么要渲染深度和表面法线",
+              "completionCriteria": [
+                {
+                  "criterionId": "human_aspect_1",
+                  "requirement": "为什么要渲染深度和表面法线",
+                  "responseType": "explanation"
+                }
+              ]
+            }
+          ],
+          "searchQuery": "RaDe-GS depth normal rendering motivation",
+          "dependencies": [],
+          "priority": 1,
+          "status": "completed"
+        },
+        {
+          "itemId": "item_3",
+          "question": "这些图怎样用于几何重建",
+          "obligations": [
+            {
+              "obligationId": "ob_3",
+              "question": "这些图怎样用于几何重建",
+              "requiredSources": [
+                "arxiv:2406.01467"
+              ],
+              "searchQuery": "RaDe-GS depth normal geometry reconstruction",
+              "purpose": "answer_requirement",
+              "requestExcerpt": "这些图怎样用于几何重建",
+              "completionCriteria": [
+                {
+                  "criterionId": "human_aspect_1",
+                  "requirement": "这些图怎样用于几何重建",
+                  "responseType": "explanation"
+                }
+              ]
+            }
+          ],
+          "searchQuery": "RaDe-GS depth normal geometry reconstruction",
+          "dependencies": [],
+          "priority": 1,
+          "status": "completed"
+        }
+      ],
+      "acceptedClaims": [
+        {
+          "claimId": "c1",
+          "text": "RaDe-GS没有把3D高斯改成2D圆盘。它保留通用3D高斯，并引入光栅化方法渲染深度图和表面法线图。",
+          "kind": "reported",
+          "evidenceRefs": [
+            "ev_6fa979f8982f24ee21f79bcc10b6a3cea39cf48fbd84248796a34dfd66b2bb6f"
+          ],
+          "conditions": {},
+          "obligationIds": [
+            "ob_1"
+          ],
+          "detailLevel": "brief",
+          "tableBindings": [],
+          "verification": "semantic_passed"
+        },
+        {
+          "claimId": "c2",
+          "text": "渲染深度和表面法线图是为了解决高斯泼溅离散、非结构化导致的形状提取困难，从而提升形状重建精度，同时保持计算效率。",
+          "kind": "inference",
+          "evidenceRefs": [
+            "ev_c51d55dccaf571cdf354f219e2c0d00e8efa6627b48b1c654c743e1a8bed182a",
+            "ev_6fa979f8982f24ee21f79bcc10b6a3cea39cf48fbd84248796a34dfd66b2bb6f"
+          ],
+          "conditions": {},
+          "obligationIds": [
+            "ob_2"
+          ],
+          "detailLevel": "brief",
+          "tableBindings": [],
+          "verification": "semantic_passed"
+        },
+        {
+          "claimId": "c3",
+          "text": "这些深度图和法线图用于几何重建，在DTU数据集上达到与Neuralangelo相当的Chamfer距离误差，并保持与原始3DGS相近的计算效率。",
+          "kind": "reported",
+          "evidenceRefs": [
+            "ev_0622d2f00f0807cb3d5cf07264264a50ffd63644674769066a774e89cdafb2cb"
+          ],
+          "conditions": {},
+          "obligationIds": [
+            "ob_3"
+          ],
+          "detailLevel": "brief",
+          "tableBindings": [],
+          "verification": "semantic_passed"
+        }
+      ],
+      "coverage": {
+        "status": "checked",
+        "verdicts": [
+          {
+            "obligationId": "ob_1",
+            "status": "covered",
+            "bindings": [
+              {
+                "claimId": "c1",
+                "field": "text",
+                "excerpt": "RaDe-GS没有把3D高斯改成2D圆盘。它保留通用3D高斯，并引入光栅化方法渲染深度图和表面法线图。"
+              }
+            ],
+            "aspects": [
+              {
+                "aspectId": "criterion:human_aspect_1",
+                "requirement": "解释它是否把3D高斯改成2D圆盘",
+                "basis": {
+                  "kind": "request",
+                  "excerpt": "解释它是否把3D高斯改成2D圆盘"
+                },
+                "status": "covered",
+                "bindings": [
+                  {
+                    "claimId": "c1",
+                    "field": "text",
+                    "excerpt": "RaDe-GS没有把3D高斯改成2D圆盘。它保留通用3D高斯，并引入光栅化方法渲染深度图和表面法线图。"
+                  }
+                ]
+              }
+            ],
+            "criteria": [
+              {
+                "criterionId": "human_aspect_1",
+                "responseType": "explanation",
+                "status": "covered",
+                "bindings": [
+                  {
+                    "claimId": "c1",
+                    "field": "text",
+                    "excerpt": "RaDe-GS没有把3D高斯改成2D圆盘。它保留通用3D高斯，并引入光栅化方法渲染深度图和表面法线图。"
+                  }
+                ]
+              }
+            ],
+            "requestCheckReasons": [
+              {
+                "checkId": "criterion:human_aspect_1",
+                "reason": "明确说明没有把3D高斯改成2D圆盘，并解释保留通用3D高斯，直接回答了该问题。"
+              }
+            ]
+          },
+          {
+            "obligationId": "ob_2",
+            "status": "covered",
+            "bindings": [
+              {
+                "claimId": "c2",
+                "field": "text",
+                "excerpt": "渲染深度和表面法线图是为了解决高斯泼溅离散、非结构化导致的形状提取困难，从而提升形状重建精度，同时保持计算效率。"
+              }
+            ],
+            "aspects": [
+              {
+                "aspectId": "criterion:human_aspect_1",
+                "requirement": "为什么要渲染深度和表面法线",
+                "basis": {
+                  "kind": "request",
+                  "excerpt": "为什么要渲染深度和表面法线"
+                },
+                "status": "covered",
+                "bindings": [
+                  {
+                    "claimId": "c2",
+                    "field": "text",
+                    "excerpt": "渲染深度和表面法线图是为了解决高斯泼溅离散、非结构化导致的形状提取困难，从而提升形状重建精度，同时保持计算效率。"
+                  }
+                ]
+              }
+            ],
+            "criteria": [
+              {
+                "criterionId": "human_aspect_1",
+                "responseType": "explanation",
+                "status": "covered",
+                "bindings": [
+                  {
+                    "claimId": "c2",
+                    "field": "text",
+                    "excerpt": "渲染深度和表面法线图是为了解决高斯泼溅离散、非结构化导致的形状提取困难，从而提升形状重建精度，同时保持计算效率。"
+                  }
+                ]
+              }
+            ],
+            "requestCheckReasons": [
+              {
+                "checkId": "criterion:human_aspect_1",
+                "reason": "解释了渲染深度和表面法线图的原因：解决高斯泼溅离散、非结构化导致的形状提取困难，提升形状重建精度并保持计算效率。"
+              }
+            ]
+          },
+          {
+            "obligationId": "ob_3",
+            "status": "covered",
+            "bindings": [
+              {
+                "claimId": "c3",
+                "field": "text",
+                "excerpt": "这些深度图和法线图用于几何重建，在DTU数据集上达到与Neuralangelo相当的Chamfer距离误差，并保持与原始3DGS相近的计算效率。"
+              }
+            ],
+            "aspects": [
+              {
+                "aspectId": "criterion:human_aspect_1",
+                "requirement": "这些图怎样用于几何重建",
+                "basis": {
+                  "kind": "request",
+                  "excerpt": "这些图怎样用于几何重建"
+                },
+                "status": "covered",
+                "bindings": [
+                  {
+                    "claimId": "c3",
+                    "field": "text",
+                    "excerpt": "这些深度图和法线图用于几何重建，在DTU数据集上达到与Neuralangelo相当的Chamfer距离误差，并保持与原始3DGS相近的计算效率。"
+                  }
+                ]
+              }
+            ],
+            "criteria": [
+              {
+                "criterionId": "human_aspect_1",
+                "responseType": "explanation",
+                "status": "covered",
+                "bindings": [
+                  {
+                    "claimId": "c3",
+                    "field": "text",
+                    "excerpt": "这些深度图和法线图用于几何重建，在DTU数据集上达到与Neuralangelo相当的Chamfer距离误差，并保持与原始3DGS相近的计算效率。"
+                  }
+                ]
+              }
+            ],
+            "requestCheckReasons": [
+              {
+                "checkId": "criterion:human_aspect_1",
+                "reason": "说明了深度图和法线图用于几何重建，并给出了在DTU数据集上的效果，回答了如何用于几何重建。"
+              }
+            ]
+          },
+          {
+            "obligationId": "answer_scope",
+            "status": "covered",
+            "bindings": [
+              {
+                "claimId": "c1",
+                "field": "text",
+                "excerpt": "RaDe-GS没有把3D高斯改成2D圆盘。它保留通用3D高斯，并引入光栅化方法渲染深度图和表面法线图。"
+              },
+              {
+                "claimId": "c2",
+                "field": "text",
+                "excerpt": "渲染深度和表面法线图是为了解决高斯泼溅离散、非结构化导致的形状提取困难，从而提升形状重建精度，同时保持计算效率。"
+              },
+              {
+                "claimId": "c3",
+                "field": "text",
+                "excerpt": "这些深度图和法线图用于几何重建，在DTU数据集上达到与Neuralangelo相当的Chamfer距离误差，并保持与原始3DGS相近的计算效率。"
+              }
+            ],
+            "aspects": [
+              {
+                "aspectId": "request",
+                "requirement": "请联网读取 RaDe-GS: Rasterizing Depth in Gaussian Splatting（arXiv:2406.01467v1）的原文。面向了解3DGS概念的新手，解释它是否把3D高斯改成2D圆盘、为什么要渲染深度和表面法线，以及这些图怎样用于几何重建。限350字，区分方法设计与已验证效果，不做跨论文速度排名或实验设计。",
+                "basis": {
+                  "kind": "request",
+                  "excerpt": "请联网读取 RaDe-GS: Rasterizing Depth in Gaussian Splatting（arXiv:2406.01467v1）的原文。面向了解3DGS概念的新手，解释它是否把3D高斯改成2D圆盘、为什么要渲染深度和表面法线，以及这些图怎样用于几何重建。限350字，区分方法设计与已验证效果，不做跨论文速度排名或实验设计。"
+                },
+                "status": "covered",
+                "bindings": [
+                  {
+                    "claimId": "c1",
+                    "field": "text",
+                    "excerpt": "RaDe-GS没有把3D高斯改成2D圆盘。它保留通用3D高斯，并引入光栅化方法渲染深度图和表面法线图。"
+                  },
+                  {
+                    "claimId": "c2",
+                    "field": "text",
+                    "excerpt": "渲染深度和表面法线图是为了解决高斯泼溅离散、非结构化导致的形状提取困难，从而提升形状重建精度，同时保持计算效率。"
+                  },
+                  {
+                    "claimId": "c3",
+                    "field": "text",
+                    "excerpt": "这些深度图和法线图用于几何重建，在DTU数据集上达到与Neuralangelo相当的Chamfer距离误差，并保持与原始3DGS相近的计算效率。"
+                  }
+                ]
+              }
+            ],
+            "criteria": [],
+            "requestCheckReasons": [
+              {
+                "checkId": "request",
+                "reason": "回答涵盖了是否改成2D圆盘、渲染深度和法线的原因、如何用于几何重建，并区分了方法设计与已验证效果，未涉及跨论文速度排名或实验设计，符合限350字要求。"
+              }
+            ]
+          }
+        ],
+        "coverageEvidenceTransportVersion": 1,
+        "completionContractDigest": "5268f67b43ce34dd9d08d28d9a803ab35630a605dc5a6cebfcf80e07bcf76289",
+        "displayMetadataDigest": "36b133f388d02c93fcb1603773388cf1eead6c5dd54a4dfb2867d86b88b95c13",
+        "gaps": [],
+        "invalidAspectObligations": [],
+        "requestCoverageContractVersion": 3,
+        "wholeQuestionId": "answer_scope",
+        "nonblockingResearch": [],
+        "criterionGaps": {},
+        "invalidCriterionObligations": [],
+        "budgetLimit": null,
+        "diagnosticErrors": [],
+        "answerCoherence": {
+          "contractVersion": 1,
+          "status": "checked",
+          "answerDigest": "b98bc83a0ac51e355e57e8b8be46cca62f19945ed56eff80ea78622832a1aba8",
+          "coherent": true,
+          "issues": []
+        }
       },
-      "componentProof": "deep-research-evidence/objective-382-provider-component-20261105.json",
-      "componentOutcome": "same-source absolute claim rejected; objective alternative accepted in two isolated semantic checks",
-      "runtimeLoadedVerified": true,
-      "runtimeProof": "deep-research-evidence/runtime-load-objective-382-20261105.json",
-      "fullCaseSubmitted": false,
-      "independentCredit": 0,
-      "nextFrozenCase": "DEEP_RESEARCH_EXTERNAL_FRESH_RADE_20261105.json",
-      "freshnessProof": "deep-research-evidence/external-rade-v1-freshness-20261105.json"
-    }
+      "sourceReview": {
+        "reviewer": "assistant source and literal-request inspection; not human acceptance",
+        "contentAccepted": false,
+        "independentCredit": 0,
+        "firstHeldoutExecution": true,
+        "materialRetiredFromFutureIndependentUse": true,
+        "scores": {
+          "targetResponse": 2,
+          "evidenceSupportForRequestedVersion": 1,
+          "conditions": 2,
+          "synthesis": 2,
+          "readability": 4
+        },
+        "hardFailures": [
+          "Explicit requested v1 normalized to unversioned work ID; production lookup/fetch used v2",
+          "How the maps support geometry reconstruction replaced by headline performance, with no training regularization or depth/TSDF mesh workflow"
+        ],
+        "sourceObservations": "Published citations are all opening/abstract passages on page1, despite obtaining a fulltext carrier. Fulltext acquisition is not proof of substantive body reading.",
+        "planObservation": "Literal questions survived, including 怎样用于几何重建, but all requiredSources lost v1; graph.py strips version suffixes during planning normalization. Coverage marked all covered although the operational explanation was absent.",
+        "addAndIndex": "Not executed. Version guard failed before add-source intent/POST; no paper, receipt or index rows added.",
+        "nextAction": "Preserve explicit arXiv revision across actual plan normalization and acquisition, then strengthen mechanism/process coverage so performance cannot substitute for how. Use this failed first case only as diagnosis; a genuinely new material is needed for later independent acceptance."
+      },
+      "preservation": {
+        "oldLedgerUnchanged": true,
+        "allOldRunsUnchanged": true,
+        "newRows": 28,
+        "ledgerRows": 8402,
+        "onlyThisRunCreatedCalls": true,
+        "active": [],
+        "oldPausedRetained": true,
+        "paused": [
+          "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+          "dr_run_ed10cc3347be552288079a9a588fddf5",
+          "dr_run_86b3f181a5475e99aacca3dbf4370567",
+          "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+          "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+          "dr_run_e3521b1781825273b384a26a5edb8cdc",
+          "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+          "dr_run_e9c9dc916bef519092fad8b929b2448f",
+          "dr_run_4738564f5ff35157996a35068c62ed32",
+          "dr_run_a8bd62f9ae3d52ff806f537065f55b2d",
+          "dr_run_98e66f2d3d555dfa822b859963f01419",
+          "dr_run_8be639c866c35ea092c735a04781b647",
+          "dr_run_1c0c2e6510165086962408b8e3cf698b"
+        ]
+      },
+      "protectedTasksExact": 12,
+      "index": {
+        "collection": "literature_collection_v4_e5_small",
+        "count": 1102,
+        "sha256": "1e91bfa73ba4a374a6cea68be25639c269fac493d5eda61162448bf500ff6118"
+      },
+      "repeatedTerminalGetExact": true,
+      "addSourcePostCount": 0,
+      "payloadSha256": "0431b154a0044a2a9a0ebba97df0cbf581ef298186f1a285b00010c61532dcf2"
+    },
+    "protectedTaskIds": [
+      "dr-acceptance-h5f-2026-10-18",
+      "dr-acceptance-h2f-2026-10-18",
+      "dr-acceptance-h1f-2026-10-18",
+      "dr-acceptance-e1-2026-10-20",
+      "dr-live-d1-20261012",
+      "dr-survey-flow-20261029",
+      "dr-acceptance-h2r-2026-10-15",
+      "dr-comparison-mechanisms-20261029",
+      "dr-external-masking-20261030",
+      "dr-external-fresh-mip-20261030",
+      "dr-external-fresh-2dgs-20261030",
+      "dr-local-section-20261030",
+      "dr-external-fresh-rade-20261105"
+    ],
+    "protectedTaskSnapshot": "tmp/dr-acceptance-receipts/objective382-protected13-final.snapshot.json"
   },
   "sharedModuleSourceCheckpoint": {
     "sourceCommit": "f8ae5177",
@@ -8874,6 +9416,465 @@
         "independentCredit": 0,
         "runtimeProof": "deep-research-evidence/runtime-load-cardinal-381-20261105.json"
       }
+    },
+    {
+      "sourceCommit": "a1e527ea",
+      "javaSourceCommit": "612c324e",
+      "promptVersion": "dr-v2.20261105.381",
+      "factualRepairGoalContractVersion": 5,
+      "answerCoherenceContractVersion": 2,
+      "quantitySpellingContractVersion": 15,
+      "component": "spatial cardinal syntax disambiguation",
+      "componentOutcome": "All three explanations published and complete coverage checked in one audit; workflow complete. Assistant source review retains optimization-objective wording qualification; independent content credit remains zero.",
+      "runtimeLoadedVerified": true,
+      "runtimeProof": "deep-research-evidence/runtime-load-cardinal-381-20261105.json",
+      "fullDR0DR5Proved": false,
+      "independentCredit": 0,
+      "lastCapturedLedgerRows": 8374,
+      "lastCapturedActiveProductionRuns": 0,
+      "historicalPausedRunsAtCapture": 13,
+      "lastConfirmedIndexDocuments": 1102,
+      "lastConfirmedIndexSha256": "1e91bfa73ba4a374a6cea68be25639c269fac493d5eda61162448bf500ff6118",
+      "externalProxyComponent": {
+        "stage": "production client integrated, explicit current system proxy configured and loaded",
+        "sourceCommit": "2048c417",
+        "associatedRegressionPassed": 133,
+        "associatedRegressionSeconds": 33.78,
+        "regressionProof": "deep-research-evidence/academic-proxy-integrated-regression-20261030.json",
+        "liveProbe": "deep-research-evidence/academic-proxy-integrated-client-20261030.json",
+        "metadataVersion": "arxiv:2403.17888v3",
+        "fulltextPages": 13,
+        "fulltextCharacters": 62436,
+        "publicTargetIpPinned": true,
+        "originalHostTlsVerified": true,
+        "modelCalls": 0,
+        "productionWrites": 0,
+        "externalResearchWorkflowAccepted": false
+      },
+      "externalRouteBoundary": "User authorized current system HTTP proxy. Configured only in ignored local Python .env. Formal AcademicAcquisition factory fetched metadata and uncached fulltext using pinned public-IP/original-host TLS; application restarted once and wiring/health/data verified. Full external research quality remains unaccepted.",
+      "remaining": "Keep wording-strength qualification as a release issue; proceed to fresh external, multi-paper, experiment, insufficiency and continuation gates rather than endlessly retuning this reused local paper. External, independent content and full release gates remain pending.",
+      "factualReviewContractVersion": 2,
+      "factualDecisionContractVersion": 2,
+      "repairRemovalContractVersion": 2,
+      "coverageDiagnosticsContractVersion": 4,
+      "offlineAssociatedRegression": {
+        "testFiles": 168,
+        "passed": 3095,
+        "seconds": 153.81,
+        "sourceFrozen": true,
+        "proof": "deep-research-evidence/cardinal-381-confirmed-regression-20261105.json"
+      },
+      "lastLocalDevelopmentCase": {
+        "promptVersion": "dr-v2.20261105.381",
+        "sourceCommit": "a1e527ea",
+        "case": "X4L-v13",
+        "runId": "dr_run_c5a1b3b909155abb9739d92c008af181",
+        "status": "completed",
+        "machineOutcome": "complete",
+        "modelCalls": 9,
+        "tokens": 41761,
+        "elapsedSeconds": 182.158,
+        "initialRejected": [],
+        "repairRejected": [],
+        "acceptedClaims": [
+          {
+            "claimId": "c1",
+            "text": "这里的“2D”指将3D体积坍缩为一组有方向的平面高斯圆盘。每个圆盘是二维表面元素，但通过多视角图像优化后，这些圆盘在三维空间中排列并紧密贴合实际表面，从而表示三维场景。",
+            "kind": "reported",
+            "evidenceRefs": [
+              "ev_a53cbbc74e57f454e7892e6cf8cdb8d978121f3e626785f0b41d05362dd03bc1",
+              "ev_f580f957d245818427832337512def14fad37c1adb4212595347250a67597847",
+              "ev_2a4531008bffe5fa10b9a56efb035a0185a2af188352e644e378ac7c9a963a5d"
+            ],
+            "conditions": {},
+            "obligationIds": [
+              "ob_1"
+            ],
+            "detailLevel": "concise",
+            "tableBindings": [],
+            "verification": "semantic_passed"
+          },
+          {
+            "claimId": "c2",
+            "text": "深度畸变约束通过最小化沿射线的高斯圆盘交点深度之间的距离，使权重分布集中，从而减少半透明圆盘散布导致的噪声重建。",
+            "kind": "reported",
+            "evidenceRefs": [
+              "ev_32cc51aa72a9cb4d3aeb9096d0c8e8acfb4d6587204940326f58d293e1519513",
+              "ev_8d9e7b7a4dcb490331bce72f0c7e495a5928602df5d77224de46d82545073d88",
+              "ev_c95f2e040e47f358ac28b8ab23898c8ac279a4c0af0666973157747fc06d22d2",
+              "ev_8358ddef8f9f16f3f70fb2e1220c0fc11c02cd4d3d9d858fe544e7878720ecba"
+            ],
+            "conditions": {},
+            "obligationIds": [
+              "ob_2",
+              "ob_3"
+            ],
+            "detailLevel": "concise",
+            "tableBindings": [],
+            "verification": "semantic_passed"
+          },
+          {
+            "claimId": "c3",
+            "text": "法线一致性约束通过将每个2D圆盘的法线与深度图梯度估计的表面法线对齐，确保所有2D圆盘局部对齐实际表面。",
+            "kind": "reported",
+            "evidenceRefs": [
+              "ev_35c8ed39d0274f9039b8135b856ddc9eb615e8efdb77ba2b31c83e44bcbad734",
+              "ev_2130887bcc4166954e487bcfe46cf9ff20581ac3276237d82163a05f6b3a0f76",
+              "ev_cf67573e4730737b48f20cf7907871805caef2aade2ed2546e3641dc3dbf02cb"
+            ],
+            "conditions": {},
+            "obligationIds": [
+              "ob_2",
+              "ob_3"
+            ],
+            "detailLevel": "concise",
+            "tableBindings": [],
+            "verification": "semantic_passed"
+          }
+        ],
+        "coverageModelCalls": 1,
+        "coverage": {
+          "status": "checked",
+          "verdicts": [
+            {
+              "obligationId": "ob_1",
+              "status": "covered",
+              "bindings": [
+                {
+                  "claimId": "c1",
+                  "field": "text",
+                  "excerpt": "这里的“2D”指将3D体积坍缩为一组有方向的平面高斯圆盘。每个圆盘是二维表面元素，但通过多视角图像优化后，这些圆盘在三维空间中排列并紧密贴合实际表面，从而表示三维场景。"
+                }
+              ],
+              "aspects": [
+                {
+                  "aspectId": "criterion:human_aspect_1",
+                  "requirement": "解释这里的“2D”为什么仍能表示三维场景",
+                  "basis": {
+                    "kind": "request",
+                    "excerpt": "解释这里的“2D”为什么仍能表示三维场景"
+                  },
+                  "status": "covered",
+                  "bindings": [
+                    {
+                      "claimId": "c1",
+                      "field": "text",
+                      "excerpt": "这里的“2D”指将3D体积坍缩为一组有方向的平面高斯圆盘。每个圆盘是二维表面元素，但通过多视角图像优化后，这些圆盘在三维空间中排列并紧密贴合实际表面，从而表示三维场景。"
+                    }
+                  ]
+                }
+              ],
+              "criteria": [
+                {
+                  "criterionId": "human_aspect_1",
+                  "responseType": "explanation",
+                  "status": "covered",
+                  "bindings": [
+                    {
+                      "claimId": "c1",
+                      "field": "text",
+                      "excerpt": "这里的“2D”指将3D体积坍缩为一组有方向的平面高斯圆盘。每个圆盘是二维表面元素，但通过多视角图像优化后，这些圆盘在三维空间中排列并紧密贴合实际表面，从而表示三维场景。"
+                    }
+                  ]
+                }
+              ],
+              "requestCheckReasons": [
+                {
+                  "checkId": "criterion:human_aspect_1",
+                  "reason": "答案解释了“2D”指平面高斯圆盘，并通过多视角优化在三维空间中排列贴合表面来表示三维场景，满足解释要求。"
+                }
+              ]
+            },
+            {
+              "obligationId": "ob_2",
+              "status": "covered",
+              "bindings": [
+                {
+                  "claimId": "c2",
+                  "field": "text",
+                  "excerpt": "深度畸变约束通过最小化沿射线的高斯圆盘交点深度之间的距离，使权重分布集中，从而减少半透明圆盘散布导致的噪声重建。"
+                }
+              ],
+              "aspects": [
+                {
+                  "aspectId": "criterion:human_aspect_1",
+                  "requirement": "第5节中深度畸变和法线一致性两个约束分别在约束什么",
+                  "basis": {
+                    "kind": "request",
+                    "excerpt": "第5节中深度畸变和法线一致性两个约束分别在约束什么"
+                  },
+                  "status": "covered",
+                  "bindings": [
+                    {
+                      "claimId": "c2",
+                      "field": "text",
+                      "excerpt": "深度畸变约束通过最小化沿射线的高斯圆盘交点深度之间的距离，使权重分布集中，从而减少半透明圆盘散布导致的噪声重建。"
+                    }
+                  ]
+                }
+              ],
+              "criteria": [
+                {
+                  "criterionId": "human_aspect_1",
+                  "responseType": "identification",
+                  "status": "covered",
+                  "bindings": [
+                    {
+                      "claimId": "c2",
+                      "field": "text",
+                      "excerpt": "深度畸变约束通过最小化沿射线的高斯圆盘交点深度之间的距离，使权重分布集中，从而减少半透明圆盘散布导致的噪声重建。"
+                    }
+                  ]
+                }
+              ],
+              "requestCheckReasons": [
+                {
+                  "checkId": "criterion:human_aspect_1",
+                  "reason": "答案明确说明深度畸变约束通过最小化交点深度距离使权重集中，减少噪声重建，识别了其约束对象。"
+                }
+              ]
+            },
+            {
+              "obligationId": "ob_3",
+              "status": "covered",
+              "bindings": [
+                {
+                  "claimId": "c3",
+                  "field": "text",
+                  "excerpt": "法线一致性约束通过将每个2D圆盘的法线与深度图梯度估计的表面法线对齐，确保所有2D圆盘局部对齐实际表面。"
+                }
+              ],
+              "aspects": [
+                {
+                  "aspectId": "criterion:human_aspect_1",
+                  "requirement": "第5节中深度畸变和法线一致性两个约束分别在约束什么",
+                  "basis": {
+                    "kind": "request",
+                    "excerpt": "第5节中深度畸变和法线一致性两个约束分别在约束什么"
+                  },
+                  "status": "covered",
+                  "bindings": [
+                    {
+                      "claimId": "c3",
+                      "field": "text",
+                      "excerpt": "法线一致性约束通过将每个2D圆盘的法线与深度图梯度估计的表面法线对齐，确保所有2D圆盘局部对齐实际表面。"
+                    }
+                  ]
+                }
+              ],
+              "criteria": [
+                {
+                  "criterionId": "human_aspect_1",
+                  "responseType": "identification",
+                  "status": "covered",
+                  "bindings": [
+                    {
+                      "claimId": "c3",
+                      "field": "text",
+                      "excerpt": "法线一致性约束通过将每个2D圆盘的法线与深度图梯度估计的表面法线对齐，确保所有2D圆盘局部对齐实际表面。"
+                    }
+                  ]
+                }
+              ],
+              "requestCheckReasons": [
+                {
+                  "checkId": "criterion:human_aspect_1",
+                  "reason": "答案明确说明法线一致性约束通过对齐圆盘法线与深度图梯度估计的表面法线，确保局部对齐实际表面，识别了其约束对象。"
+                }
+              ]
+            },
+            {
+              "obligationId": "answer_scope",
+              "status": "covered",
+              "bindings": [
+                {
+                  "claimId": "c1",
+                  "field": "text",
+                  "excerpt": "这里的“2D”指将3D体积坍缩为一组有方向的平面高斯圆盘。每个圆盘是二维表面元素，但通过多视角图像优化后，这些圆盘在三维空间中排列并紧密贴合实际表面，从而表示三维场景。"
+                },
+                {
+                  "claimId": "c2",
+                  "field": "text",
+                  "excerpt": "深度畸变约束通过最小化沿射线的高斯圆盘交点深度之间的距离，使权重分布集中，从而减少半透明圆盘散布导致的噪声重建。"
+                },
+                {
+                  "claimId": "c3",
+                  "field": "text",
+                  "excerpt": "法线一致性约束通过将每个2D圆盘的法线与深度图梯度估计的表面法线对齐，确保所有2D圆盘局部对齐实际表面。"
+                }
+              ],
+              "aspects": [
+                {
+                  "aspectId": "request",
+                  "requirement": "仅依据任务中已加入的 2D Gaussian Splatting for Geometrically Accurate Radiance Fields（arXiv:2403.17888v3）原文，不用外部搜索。面向了解3DGS概念的新手，解释这里的“2D”为什么仍能表示三维场景，以及第5节中深度畸变和法线一致性两个约束分别在约束什么。限350字，依据实际取得的正文区分两种作用，不做性能排名或实验设计。",
+                  "basis": {
+                    "kind": "request",
+                    "excerpt": "仅依据任务中已加入的 2D Gaussian Splatting for Geometrically Accurate Radiance Fields（arXiv:2403.17888v3）原文，不用外部搜索。面向了解3DGS概念的新手，解释这里的“2D”为什么仍能表示三维场景，以及第5节中深度畸变和法线一致性两个约束分别在约束什么。限350字，依据实际取得的正文区分两种作用，不做性能排名或实验设计。"
+                  },
+                  "status": "covered",
+                  "bindings": [
+                    {
+                      "claimId": "c1",
+                      "field": "text",
+                      "excerpt": "这里的“2D”指将3D体积坍缩为一组有方向的平面高斯圆盘。每个圆盘是二维表面元素，但通过多视角图像优化后，这些圆盘在三维空间中排列并紧密贴合实际表面，从而表示三维场景。"
+                    },
+                    {
+                      "claimId": "c2",
+                      "field": "text",
+                      "excerpt": "深度畸变约束通过最小化沿射线的高斯圆盘交点深度之间的距离，使权重分布集中，从而减少半透明圆盘散布导致的噪声重建。"
+                    },
+                    {
+                      "claimId": "c3",
+                      "field": "text",
+                      "excerpt": "法线一致性约束通过将每个2D圆盘的法线与深度图梯度估计的表面法线对齐，确保所有2D圆盘局部对齐实际表面。"
+                    }
+                  ]
+                }
+              ],
+              "criteria": [],
+              "requestCheckReasons": [
+                {
+                  "checkId": "request",
+                  "reason": "答案仅依据原文，面向新手解释了2D表示三维场景的原因，并区分了深度畸变和法线一致性两个约束的作用，未做性能排名或实验设计，符合要求。"
+                }
+              ]
+            }
+          ],
+          "coverageEvidenceTransportVersion": 1,
+          "completionContractDigest": "36138de49db55ddce8aa680071209720e66e64595fba8ec6dcfb85d60a88ec69",
+          "displayMetadataDigest": "fdaafc4696c9465959adfb2402798e8fdc7e5089b478249f83c4d6ea1ca28713",
+          "gaps": [],
+          "invalidAspectObligations": [],
+          "requestCoverageContractVersion": 3,
+          "wholeQuestionId": "answer_scope",
+          "nonblockingResearch": [],
+          "criterionGaps": {},
+          "invalidCriterionObligations": [],
+          "budgetLimit": null,
+          "diagnosticErrors": [],
+          "answerCoherence": {
+            "contractVersion": 1,
+            "status": "checked",
+            "answerDigest": "1a521e9f0da706046654646aff3cbd0698299043b1c4374c92d99f6e19016f61",
+            "coherent": true,
+            "issues": []
+          }
+        },
+        "initialCoverage": null,
+        "publicationCoherence": {
+          "contractVersion": 2,
+          "answerDigest": "1a521e9f0da706046654646aff3cbd0698299043b1c4374c92d99f6e19016f61",
+          "status": "released",
+          "heldClaimIds": [],
+          "reason": null
+        },
+        "repairDraftingAudit": null,
+        "sourceReview": {
+          "reviewer": "assistant source inspection, not human acceptance",
+          "developmentWorkflowAccepted": true,
+          "contentAccepted": false,
+          "independentCredit": 0,
+          "scores": {
+            "targetResponse": 4,
+            "evidenceSupport": 4,
+            "conditions": 3,
+            "synthesis": 4,
+            "readability": 4
+          },
+          "reason": "All three requested explanations are published, source identities/pages match and coverage is complete. c1 is supported by the opening/figure passages; c2 has its own training problem and equation13 context. c3 accurately identifies normal alignment and depth-derived normals, but 确保所有 is too categorical for an optimization objective. Paper language must not become a universal achieved guarantee.",
+          "remainingTarget": {
+            "claimId": "c3",
+            "text": "法线一致性约束通过将每个2D圆盘的法线与深度图梯度估计的表面法线对齐，确保所有2D圆盘局部对齐实际表面。",
+            "kind": "reported",
+            "evidenceRefs": [
+              "ev_35c8ed39d0274f9039b8135b856ddc9eb615e8efdb77ba2b31c83e44bcbad734",
+              "ev_2130887bcc4166954e487bcfe46cf9ff20581ac3276237d82163a05f6b3a0f76",
+              "ev_cf67573e4730737b48f20cf7907871805caef2aade2ed2546e3641dc3dbf02cb"
+            ],
+            "conditions": {},
+            "obligationIds": [
+              "ob_2",
+              "ob_3"
+            ],
+            "detailLevel": "concise",
+            "tableBindings": []
+          },
+          "wordingQualification": "Describe regularization as encouraging/objective of local alignment, without promising every optimized disk exactly matches the real surface.",
+          "sourceChecks": [
+            {
+              "claimId": "c1",
+              "support": "supported",
+              "basis": "multi-view reconstruction, oriented planar disks, optimized disks aligned to surfaces; same paper page1"
+            },
+            {
+              "claimId": "c2",
+              "support": "supported as mechanism and stated regularization purpose",
+              "basis": "own cited training problem plus ray-depth weighted-pair-distance equation13, page5",
+              "boundary": "No independent experimental causal effect or universal improvement claimed by this review"
+            },
+            {
+              "claimId": "c3",
+              "support": "partially supported in strength",
+              "basis": "equations14/15 align splat normals to normals derived from rendered depth, page5",
+              "boundary": "A regularization objective is not proof that every optimized splat aligns exactly"
+            }
+          ],
+          "nextAction": "Keep wording-strength qualification as a release issue; proceed to fresh external, multi-paper, experiment, insufficiency and continuation gates rather than endlessly retuning this reused local paper."
+        },
+        "preservation": {
+          "oldLedgerUnchanged": true,
+          "allOldRunsUnchanged": true,
+          "newRows": 24,
+          "ledgerRows": 8374,
+          "onlyThisRunCreatedCalls": true,
+          "active": [],
+          "oldPausedRetained": true,
+          "paused": [
+            "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+            "dr_run_ed10cc3347be552288079a9a588fddf5",
+            "dr_run_86b3f181a5475e99aacca3dbf4370567",
+            "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+            "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+            "dr_run_e3521b1781825273b384a26a5edb8cdc",
+            "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+            "dr_run_e9c9dc916bef519092fad8b929b2448f",
+            "dr_run_4738564f5ff35157996a35068c62ed32",
+            "dr_run_a8bd62f9ae3d52ff806f537065f55b2d",
+            "dr_run_98e66f2d3d555dfa822b859963f01419",
+            "dr_run_8be639c866c35ea092c735a04781b647",
+            "dr_run_1c0c2e6510165086962408b8e3cf698b"
+          ]
+        },
+        "protectedTasksExact": 12,
+        "repeatedTerminalGetExact": true,
+        "index": {
+          "collection": "literature_collection_v4_e5_small",
+          "count": 1102,
+          "sha256": "1e91bfa73ba4a374a6cea68be25639c269fac493d5eda61162448bf500ff6118"
+        },
+        "payloadSha256": "b9f3c0080999aeae68fb9b0a6ae1c9ae7f867fffe9ad1e3826e397025761c043"
+      },
+      "nextCandidate": {
+        "sourceCommit": "8577a275",
+        "promptVersion": "dr-v2.20261105.382",
+        "factualReviewContractVersion": 3,
+        "component": "shared objective-versus-outcome drafting and independent review",
+        "associatedRegression": {
+          "testFiles": 169,
+          "passed": 3108,
+          "seconds": 131.75,
+          "sourceFrozen": true,
+          "proof": "deep-research-evidence/objective-382-confirmed-regression-20261105.json"
+        },
+        "componentProof": "deep-research-evidence/objective-382-provider-component-20261105.json",
+        "componentOutcome": "same-source absolute claim rejected; objective alternative accepted in two isolated semantic checks",
+        "runtimeLoadedVerified": true,
+        "runtimeProof": "deep-research-evidence/runtime-load-objective-382-20261105.json",
+        "fullCaseSubmitted": false,
+        "independentCredit": 0,
+        "nextFrozenCase": "DEEP_RESEARCH_EXTERNAL_FRESH_RADE_20261105.json",
+        "freshnessProof": "deep-research-evidence/external-rade-v1-freshness-20261105.json"
+      }
     }
   ],
   "candidateHistory": [
@@ -8901,6 +9902,14 @@
       "contentAccepted": false,
       "independentCredit": 0,
       "remaining": "For a single exact target, consider lossless singleton-object wrapping before all unchanged schema, decision and source-binding gates. Multi-target/mismatched/incomplete responses must still fail. Original failed case is immutable."
+    }
+  ],
+  "retiredFreshCases": [
+    {
+      "case": "X5H-v1",
+      "material": "arxiv:2406.01467",
+      "reason": "First heldout run failed version and how-explanation requirements; now implementation diagnosis. Preserve sealed definition and first result.",
+      "proof": "deep-research-evidence/external-x5h-v1-validation-20261105.json"
     }
   ]
 }
