@@ -5224,6 +5224,27 @@
         "sha256": "1e91bfa73ba4a374a6cea68be25639c269fac493d5eda61162448bf500ff6118"
       },
       "payloadSha256": "b9f3c0080999aeae68fb9b0a6ae1c9ae7f867fffe9ad1e3826e397025761c043"
+    },
+    "nextCandidate": {
+      "sourceCommit": "8577a275",
+      "promptVersion": "dr-v2.20261105.382",
+      "factualReviewContractVersion": 3,
+      "component": "shared objective-versus-outcome drafting and independent review",
+      "associatedRegression": {
+        "testFiles": 169,
+        "passed": 3108,
+        "seconds": 131.75,
+        "sourceFrozen": true,
+        "proof": "deep-research-evidence/objective-382-confirmed-regression-20261105.json"
+      },
+      "componentProof": "deep-research-evidence/objective-382-provider-component-20261105.json",
+      "componentOutcome": "same-source absolute claim rejected; objective alternative accepted in two isolated semantic checks",
+      "runtimeLoadedVerified": true,
+      "runtimeProof": "deep-research-evidence/runtime-load-objective-382-20261105.json",
+      "fullCaseSubmitted": false,
+      "independentCredit": 0,
+      "nextFrozenCase": "DEEP_RESEARCH_EXTERNAL_FRESH_RADE_20261105.json",
+      "freshnessProof": "deep-research-evidence/external-rade-v1-freshness-20261105.json"
     }
   },
   "sharedModuleSourceCheckpoint": {
