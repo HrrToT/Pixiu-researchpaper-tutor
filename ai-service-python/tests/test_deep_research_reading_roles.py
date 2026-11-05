@@ -66,9 +66,10 @@ def test_result_caption_domain_beats_nearby_table_that_only_mentions_domain_late
     assert score(right,request)>score(wrong,request)
 
 
-def test_graph_policy_is_opt_in_preserves_sources_and_rechecks_scope_before_read():
+@pytest.mark.parametrize('policy',[6,7])
+def test_graph_policy_is_opt_in_preserves_sources_and_rechecks_scope_before_read(policy):
     obs,rows=fixture();seen=[]
-    record={'readingPriorityContractVersion':6,'state':{'outputKind':'paper_comparison','sources':rows,'plan':[{'obligations':list(obs.values())}]},'budget':{}}
+    record={'readingPriorityContractVersion':policy,'state':{'outputKind':'paper_comparison','sources':rows,'plan':[{'obligations':list(obs.values())}]},'budget':{}}
     def update(rid,fn,**kwargs):
         nonlocal record
         record=fn(record);return deepcopy(record)
@@ -144,3 +145,33 @@ def test_numeric_row_retains_its_own_caption_without_borrowing_another_source(fo
     obs={'o':{'obligationId':'o','question':'Dataset-R2的精度数值','requiredSources':['a-v1']}}
     _,bundles=premise_bundles([header,row],obs)
     assert bundles[0]['evidenceIds']==(['values'] if foreign else ['caption','values'])
+
+@pytest.mark.parametrize('query,expected', [
+    ('在DTU上比较几何精度', ('dtu',)),
+    ('比较Dataset-R2的精度', ('dataset-r2',)),
+    ('核对Mip-NeRF360的质量', ('mip-nerf360',)),
+    ('比较DTU_v2的精度', ()),
+])
+def test_mixed_script_benchmark_terms_are_opt_in(query, expected):
+    from services.deep_research.reading_roles import requests
+    obs={'o':{'obligationId':'o','question':query,'requiredSources':['a-v1']}}
+    new=next(r for r in requests(obs,[],mixed_script_terms=True) if r['role']=='result')
+    assert new['terms']==expected
+    if expected:
+        old=next(r for r in requests(obs,[]) if r['role']=='result')
+        assert old['terms']==()
+
+
+def test_chinese_adjacent_benchmark_selects_own_requested_table_and_premise():
+    query='在Dataset-R2上比较几何精度和训练耗时'
+    obs={'o':{'obligationId':'o','question':query,'requiredSources':['a-v1']}}
+    wrong=source('a','wrong','Table I: Quantitative results on Dataset Z. Mean 0.91 0.92 0.93 0.94 0.95 0.96.')
+    right=source('a','right','Table II: Quantitative results on Dataset-R2. Mean 0.81 0.82 0.83 0.84 0.85 0.86.')
+    rows=[wrong,right];original=deepcopy(rows)
+    assert select_read_sources(rows,obs,1,substantive=True)==[wrong]
+    assert select_read_sources(rows,obs,1,substantive=True,mixed_script_terms=True)==[right]
+    evidence=[{'evidenceId':r['sourceId'],'sourceWorkId':r['workId'],'sourceVersionId':r['versionId'],
+        'quote':r['text'],'sourceContext':r['text'],'verification':{'literal':'passed'},'location':r['location']} for r in rows]
+    chosen,_=premise_bundles(evidence,obs,mixed_script_terms=True)
+    assert [e['evidenceId'] for e in chosen]==['right']
+    assert rows==original

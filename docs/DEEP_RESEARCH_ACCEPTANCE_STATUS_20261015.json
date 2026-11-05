@@ -4796,12 +4796,12 @@
     "answerCoherenceContractVersion": 2,
     "quantitySpellingContractVersion": 15,
     "component": "bounded direct factual/comparison drafting",
-    "componentOutcome": "3493 checks/189files pass; same24000-byte prompt/premises and8192 cap, initial role enabled/low->disabled/none, independent reviews unchanged. Loaded391 with8642 ledger/14 tasks/1215 index preserved. Real G1N-v3 still pending; independent0.",
+    "componentOutcome": "391 loaded and 3493 associated checks passed. G1N-v3 returned complete JSON but failed scope materialization before factual verification; content review found incorrect mean/support and source attribution. Not full acceptance.",
     "runtimeLoadedVerified": true,
     "runtimeProof": "deep-research-evidence/runtime-load-direct-391-20261105.json",
     "fullDR0DR5Proved": false,
     "independentCredit": 0,
-    "lastCapturedLedgerRows": 8642,
+    "lastCapturedLedgerRows": 8672,
     "lastCapturedActiveProductionRuns": 0,
     "historicalPausedRunsAtCapture": 13,
     "lastConfirmedIndexDocuments": 1215,
@@ -4823,7 +4823,7 @@
       "externalResearchWorkflowAccepted": false
     },
     "externalRouteBoundary": "User authorized current system HTTP proxy. Configured only in ignored local Python .env. Formal AcademicAcquisition factory fetched metadata and uncached fulltext using pinned public-IP/original-host TLS; application restarted once and wiring/health/data verified. Full external research quality remains unaccepted.",
-    "remaining": "Load tested391 with14-task/index/8642-ledger snapshot, then execute one unchanged G1N-v3 development verification. New bounded initial draft mode disabled/none; review/repair/prompt/budget remain unchanged. Previous v2 truncation immutable; full quality/experiments/insufficiency/continuation/independent/release audit remain open.",
+    "remaining": "Validate392 mixed-script reading and synthesis ranking; address strict scope-conflict recovery without choosing conflicting prose or approving unsupported facts. Full comparison/experiments/insufficiency/continuation/independent/release audit remain open.",
     "factualReviewContractVersion": 3,
     "factualDecisionContractVersion": 2,
     "repairRemovalContractVersion": 2,
@@ -5368,17 +5368,16 @@
     },
     "readingPriorityContractVersion": 6,
     "lastComparisonDevelopment": {
-      "case": "G1N-v2",
-      "runId": "dr_run_19728b3190ee58b9820b8222b65d2410",
+      "case": "G1N-v3",
+      "runId": "dr_run_7847d6af15ad55379b94e6faad586a24",
+      "promptVersion": "dr-v2.20261105.391",
       "status": "failed",
-      "outcome": "none",
       "errorCode": "invalid_synthesis_response",
-      "actualModelCalls": 6,
-      "tokens": 29710,
-      "apiElapsedSeconds": 162.0,
-      "allSettled": true,
+      "modelCalls": 7,
+      "tokens": 24920,
       "independentCredit": 0,
-      "proof": "deep-research-evidence/geometry-g1n-v2-truncated-synthesis-20261105.json"
+      "proof": "deep-research-evidence/geometry-g1n-v3-draft-conflict-and-source-review-20261105.json",
+      "finding": "Complete JSON, c4 text/scope conflict aborts before verification. c2 numerical support and c3 author-vs-comparator attribution also fail source review."
     },
     "candidateDirect391": {
       "promptVersion": "dr-v2.20261105.391",
@@ -5395,7 +5394,19 @@
       "independentCredit": 0,
       "sourceCommit": "2140235f"
     },
-    "factualReasoningContractVersion": 10
+    "factualReasoningContractVersion": 10,
+    "candidateReading392": {
+      "readingPriorityContractVersion": 7,
+      "runtimeLoadedVerified": false,
+      "replay": "deep-research-evidence/reading-392-mixed-script-saved-input-replay-20261105.json",
+      "change": "Recognize Latin benchmark terms adjacent to Chinese; legacy6 unchanged; read cap12 and evidence ownership unchanged. Ranking proof only, no new model calls.",
+      "regression": {
+        "passed": 3499,
+        "files": 189,
+        "proof": "deep-research-evidence/reading-392-associated-regression-20261105.json",
+        "sourceFreezeArchiveIncomplete": true
+      }
+    }
   },
   "sharedModuleSourceCheckpoint": {
     "sourceCommit": "f8ae5177",

@@ -48,7 +48,7 @@ def quality(source, query=''):
     return (not(reference and not _REF_REQUEST.search(query)), not tiny)
 
 
-def _terms(query, sources):
+def _terms(query, sources, *, mixed_script_terms=False):
     ignored=set(_STOP)
     for source in sources:
         title=str(source.get('title',''))
@@ -56,11 +56,13 @@ def _terms(query, sources):
         words=re.findall(r'[A-Za-z][A-Za-z0-9-]*', label)
         ignored.update(w.casefold() for w in words)
         if words:ignored.add(''.join(w[0] for w in words).casefold())
-    return tuple(dict.fromkeys(w.casefold() for w in re.findall(
-        r'\b[A-Za-z][A-Za-z0-9-]{1,}\b',query) if w.casefold() not in ignored))
+    pattern = (r'(?<![A-Za-z0-9_-])[A-Za-z][A-Za-z0-9-]{1,}(?![A-Za-z0-9_-])'
+               if mixed_script_terms else r'\b[A-Za-z][A-Za-z0-9-]{1,}\b')
+    return tuple(dict.fromkeys(w.casefold() for w in re.findall(pattern,query)
+                               if w.casefold() not in ignored))
 
 
-def requests(obligations, sources):
+def requests(obligations, sources, *, mixed_script_terms=False):
     """Deduplicate role/source targets; retain literal benchmark terms separately."""
     result=[];seen=set()
     for oid, obligation in obligations.items():
@@ -70,7 +72,7 @@ def requests(obligations, sources):
             if not isinstance(query,str):continue
             for role,pattern in _ASKS:
                 if not re.search(pattern,query,re.I):continue
-                terms=_terms(query,sources) if role=='result' else ()
+                terms=_terms(query,sources,mixed_script_terms=mixed_script_terms) if role=='result' else ()
                 # Later selection still checks source eligibility for each real oid.
                 key=(role,terms,tuple(obligation.get('requiredSources') or ()))
                 if key in seen:continue
@@ -120,9 +122,9 @@ def score(source, request):
     return 2*own+2*numeric+min(4,len(matches))
 
 
-def order(sources, obligations, fallback, *, extracted=()):
+def order(sources, obligations, fallback, *, extracted=(), mixed_script_terms=False):
     """Balance requested roles/papers; novelty is not permission to read rubbish."""
-    targets=requests(obligations,sources)
+    targets=requests(obligations,sources,mixed_script_terms=mixed_script_terms)
     identity=lambda s:(s.get('workId'),s.get('versionId'))
     works=list(dict.fromkeys(identity(s) for s in sources))
     extracted=set(extracted);queues=[]
@@ -154,7 +156,7 @@ def order(sources, obligations, fallback, *, extracted=()):
     return selected
 
 
-def premise_bundles(rows, obligations):
+def premise_bundles(rows, obligations, *, mixed_script_terms=False):
     """Carry request-role navigation into synthesis, not a new factual verdict.
 
     A full source passage can locate a benchmark heading while its unchanged
@@ -163,7 +165,7 @@ def premise_bundles(rows, obligations):
     """
     rows=[row for row in rows if row.get('verification',{}).get('literal')=='passed']
     sources=[{'title':row.get('sourceTitle','')} for row in rows]
-    targets=requests(obligations,sources);chosen=[];seen=set();bundles=[];result_leads={}
+    targets=requests(obligations,sources,mixed_script_terms=mixed_script_terms);chosen=[];seen=set();bundles=[];result_leads={}
     for request in targets:
         allowed=[e for e in rows if e.get('sourceWorkId') and request['obligationId'] in eligible_obligation_ids(
             {'workId':e.get('sourceWorkId'),'versionId':e.get('sourceVersionId'),

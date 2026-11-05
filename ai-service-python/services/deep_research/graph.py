@@ -689,14 +689,14 @@ def make_read_node(
         available = [sources_map[sid] for sid in source_ids if sid in sources_map]
         available.sort(key=lambda source: (source["sourceId"], source.get("contentHash")) in extracted)
         read_limit = 24 if record.get("budget", {}).get("profile") == "extended" else 12
-        if type(record.get('readingPriorityContractVersion')) is int and record['readingPriorityContractVersion'] in (1,2,3,4,5,6):
+        if type(record.get('readingPriorityContractVersion')) is int and record['readingPriorityContractVersion'] in (1,2,3,4,5,6,7):
             from services.deep_research.reading_priority import select_read_sources
             from services.deep_research.source_continuity import enabled as continuity_enabled,method_enabled
             obligations={o['obligationId']:o for item in record.get('state',{}).get('plan',[]) for o in item.get('obligations',[])}
             selected=select_read_sources(available,obligations,read_limit,extracted=extracted,
-                **({'priority_version':{2:7,3:8,4:9,5:10,6:10}[record['readingPriorityContractVersion']]}
-                   if record['readingPriorityContractVersion'] in (2,3,4,5,6) else {}),
-                **({'substantive':True} if record['readingPriorityContractVersion']==6
+                **({'priority_version':{2:7,3:8,4:9,5:10,6:10,7:10}[record['readingPriorityContractVersion']]}
+                   if record['readingPriorityContractVersion'] in (2,3,4,5,6,7) else {}),
+                **({'substantive':True,**({'mixed_script_terms':True} if record['readingPriorityContractVersion']==7 else {})} if record['readingPriorityContractVersion'] in (6,7)
                    and record.get('state',{}).get('outputKind') in {'paper_comparison','claim_verification'} else {}),
                 **({'illustrative_context':True} if continuity_enabled(record) else {}),
                 **({'method_context':True} if method_enabled(record) else {}))
@@ -1162,8 +1162,8 @@ def make_synthesize_node(
                 from services.deep_research.selection import proposal_evidence_order
                 candidates=proposal_evidence_order(candidates,question)
             candidates,premise_bundles=order_premises(candidates,brief_state.get('plan',[]),
-                **({'request_roles':True} if type(record.get('readingPriorityContractVersion')) is int
-                   and record['readingPriorityContractVersion']==6 and output_kind in {'paper_comparison','claim_verification'} else {}),
+                **({'request_roles':True,**({'mixed_script_terms':True} if record.get('readingPriorityContractVersion')==7 else {})} if type(record.get('readingPriorityContractVersion')) is int
+                   and record['readingPriorityContractVersion'] in (6,7) and output_kind in {'paper_comparison','claim_verification'} else {}),
                 **({'external_method_context':True} if type(record.get('externalReadingContractVersion')) is int and record['externalReadingContractVersion']==1 else {}),
                 **({'membership_intents':True} if record['synthesisEvidenceContractVersion'] in (2,3,4,5,6) else {}),
                 **({'module_intents':True} if record['synthesisEvidenceContractVersion'] in (3,4,5,6) else {}),
