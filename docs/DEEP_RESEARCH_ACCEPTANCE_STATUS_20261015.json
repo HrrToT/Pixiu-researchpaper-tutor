@@ -1,5 +1,5 @@
 {
-  "asOf": "2026-10-30",
+  "asOf": "2026-11-05",
   "objective": "Complete DR0-DR5 in DEEP_RESEARCH_DESIGN_20261012.md without redefining success around implemented subsets.",
   "overall": "incomplete",
   "freshMaterialReadiness": "Independent content acceptance remains 0. Retired cases remain development-only; historical unknowns are not reissued. Fresh replacements and full DR0-DR5 release audit remain pending.",
@@ -5204,16 +5204,17 @@
       "payloadSha256": "788f89b085b0116f95f74c2929c0a6e964132f7b604bcc3e4ba650e9fe245957"
     },
     "nextCandidate": {
-      "promptVersion": "dr-v2.20261030.376",
-      "factualRepairGoalContractVersion": 4,
-      "runtimeLoaded": false,
-      "associatedRegression": "deep-research-evidence/repair-376-associated-regression-20261030.json",
-      "savedInputReplay": "deep-research-evidence/repair-376-confirmed-input-replay-20261030.json",
-      "realComponent": "deep-research-evidence/repair-376-provider-component-20261030.json",
-      "prospectiveEditSimulation": "deep-research-evidence/repair-376-prospective-materialization-20261030.json",
+      "promptVersion": "dr-v2.20261105.377",
+      "factualRepairGoalContractVersion": 5,
+      "repairRemovalContractVersion": 2,
+      "runtimeLoaded": true,
+      "runtimeProof": "deep-research-evidence/runtime-load-repair-377-20261105.json",
+      "associatedRegression": "deep-research-evidence/repair-377-associated-regression-20261105.json",
+      "savedInputReplay": "deep-research-evidence/repair-377-confirmed-input-replay-20261105.json",
+      "realComponent": "deep-research-evidence/repair-377-provider-component-20261105.json",
       "contentAccepted": false,
       "independentCredit": 0,
-      "remaining": "Execute explicit deletion edits on private draft text before validating kind transitions, then independently verify the edited answer. Keep original outputs and do not reinterpret old results."
+      "remaining": "For a single exact target, consider lossless singleton-object wrapping before all unchanged schema, decision and source-binding gates. Multi-target/mismatched/incomplete responses must still fail. Original failed case is immutable."
     }
   },
   "sharedModuleSourceCheckpoint": {
@@ -6688,6 +6689,20 @@
         "independentCredit": 0,
         "remaining": "Actual-surface ambiguity still passes reviewer. Full new workflow not yet run; external route and full release remain pending."
       }
+    }
+  ],
+  "candidateHistory": [
+    {
+      "promptVersion": "dr-v2.20261030.376",
+      "factualRepairGoalContractVersion": 4,
+      "runtimeLoaded": false,
+      "associatedRegression": "deep-research-evidence/repair-376-associated-regression-20261030.json",
+      "savedInputReplay": "deep-research-evidence/repair-376-confirmed-input-replay-20261030.json",
+      "realComponent": "deep-research-evidence/repair-376-provider-component-20261030.json",
+      "prospectiveEditSimulation": "deep-research-evidence/repair-376-prospective-materialization-20261030.json",
+      "contentAccepted": false,
+      "independentCredit": 0,
+      "remaining": "Execute explicit deletion edits on private draft text before validating kind transitions, then independently verify the edited answer. Keep original outputs and do not reinterpret old results."
     }
   ]
 }

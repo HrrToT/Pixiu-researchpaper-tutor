@@ -195,3 +195,15 @@ eb04adf5已提交并推送，原Python容器重启一次后加载，健康与全
 前瞻性的离线编辑试验把模型声明的删除操作实际应用到私有草稿（只清理相邻逗号/句号），可得到“深度畸变约束通过最小化沿光线各交点深度差的加权和，使权重分布集中。”。这不是回写或改判旧结果，也未科学核验；下一步需实现带原文位置/摘要审计的确定性草稿编辑，再独立核验及检查整题覆盖。不得编辑论文引文或凭删除声明自动计事实通过。
 
 生产8,281账本和全部payload保持，0生产写入；独立积分0。运行服务仍为.375/2048c417的加载状态，本候选未重启加载。证据：`deep-research-evidence/repair-376-associated-regression-20261030.json`、`deep-research-evidence/repair-376-confirmed-input-replay-20261030.json`、`deep-research-evidence/repair-376-provider-component-20261030.json`、`deep-research-evidence/repair-376-prospective-materialization-20261030.json`。
+
+## 2026-11-05 .377：执行草稿删除，核验响应缺少外壳
+
+新运行factualRepairGoalContractVersion=5 / repairRemovalContractVersion=2：将模型自己声明的discardedDraftSpans应用于生成草稿，再判断实际正文变化和kind权限。仅处理原稿中存在的精确短语；在新正文中重复出现、编辑重叠或删除后无内容时拒绝。只清理删除边界处的逗号/分号与句末标点，不修改其他正文或论文引文。编辑的Unicode位置、原文/新文、两个SHA256摘要和unchecked状态留在私有修订审计；仍按原数值、来源和语义规则核验，不由编辑声明建立科学支持。旧契约4的拒绝行为不变。
+
+50项聚焦检查通过，最终163文件3,015项关联回归通过（139.21秒），源码冻结，0模型调用，一项既有PyPDF2弃用警告，不累计重叠范围。X4L-v9真实输入回放保留同样5条权限及原引用，新请求23,992字节，未扩大24KB限额。证据：`deep-research-evidence/repair-377-associated-regression-20261105.json`、`deep-research-evidence/repair-377-confirmed-input-replay-20261105.json`。
+
+Docker正常启动失败后，用户明确批准一次组合恢复。确认Docker已退出、两个目录共三个零字节端点后，两个临时通信目录均改名为唯一备份并正常启动一次，无删除、不重置WSL。原SQLite（含WAL）与Java H2在启动前备份，SQLite与上次8,281账本及全部payload摘要一致、0活动/13暂停。原容器、原数据卷和原Java JAR正常启动，RAG/GROBID健康，12任务、1,102索引及嵌入保持，源码摘要一致，代理配置仍在。证据：`deep-research-evidence/runtime-load-repair-377-20261105.json`，原恢复意图在tmp中保留。
+
+真实隔离组件2次调用、9,067 Token，全部结算。编辑成功删除“从而让二维高斯圆盘贴近真实表面”，保留了加权深度差/权重集中说明，审计位置和摘要完整。独立核验模型返回scopeAudit.supported=true，但给出单个JSON对象而非要求的数组/items外壳，服务按原协议拒绝，尚未完成后续字段和证据绑定检查，不能计内容通过。生产账本和全部payload保持，不重试此组件，不改判旧结果。
+
+下一步只针对单一且ID精确匹配的完整判定考虑无损单对象包装，再执行所有原schema、唯一判定和来源绑定检查；多目标、错ID、缺字段等继续拒绝。原提示与系统消息对数组外壳要求一致，此次是模型未遵守外壳，不归因为已有接口互相矛盾。证据：`deep-research-evidence/repair-377-provider-component-20261105.json`。完整DR0—DR5仍未完成，独立积分0。
