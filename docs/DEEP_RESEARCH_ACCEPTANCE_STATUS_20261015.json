@@ -4823,7 +4823,7 @@
       "externalResearchWorkflowAccepted": false
     },
     "externalRouteBoundary": "User authorized current system HTTP proxy. Configured only in ignored local Python .env. Formal AcademicAcquisition factory fetched metadata and uncached fulltext using pinned public-IP/original-host TLS; application restarted once and wiring/health/data verified. Full external research quality remains unaccepted.",
-    "remaining": "Generic synthesis fixed-content capacity repair: actual G1N fixed21603/24000bytes transmitted only4 evidence rows and missed5 premise bundles. Preserve comparison requirements/budget, replay actual pool, then bounded development verification and genuinely fresh independent replacement. Executable experiments, insufficiency, continuation and release audit remain open.",
+    "remaining": "Load tested389 with protected-data snapshot, then fix read allocation under unchanged12-slot cap: acquired PGSR method/settings passages not read; reference fragments consumed slots. Only after actual read->extract->synthesis replay should bounded development verification run. Original G1N-v1 partial retained. Complete experiments/insufficiency/continuation/independent/release audit remain open.",
     "factualReviewContractVersion": 3,
     "factualDecisionContractVersion": 2,
     "repairRemovalContractVersion": 2,
@@ -5320,6 +5320,25 @@
     "processGuidanceFollowup": {
       "observed": "New distinct-role guidance inherits conflicting legacy JSON role example; raw388 comparison and RaDe results remain unchanged.",
       "proof": "deep-research-evidence/process-388-guidance-conflict-replay-20261105.json"
+    },
+    "candidateFactualPrompt389": {
+      "promptVersion": "dr-v2.20261105.389",
+      "factualPromptContractVersion": 1,
+      "runtimeLoaded": false,
+      "associatedTests": 3447,
+      "testFiles": 187,
+      "seconds": 166.015,
+      "sourceFrozen": true,
+      "proof": "deep-research-evidence/factual-389-confirmed-associated-regression-20261105.json",
+      "capacityProof": "deep-research-evidence/factual-389-confirmed-synthesis-capacity-replay-20261105.json",
+      "geometryFixedBytes": 16667,
+      "geometryRows": 13,
+      "originalGeometryFixedBytes": 21603,
+      "originalGeometryRows": 4,
+      "upstreamReadGapProof": "deep-research-evidence/geometry-389-pgsr-body-acquisition-gap-20261105.json",
+      "modelCalls": 0,
+      "scientificAcceptance": false,
+      "independentCredit": 0
     }
   },
   "sharedModuleSourceCheckpoint": {

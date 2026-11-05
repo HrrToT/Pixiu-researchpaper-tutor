@@ -50,7 +50,14 @@ class FixtureModel:
             # readiness never approves bad99% or fills omitted final conditions.
             content=[{'unitId':u['unitId'],'ready':True,'evidenceIds':u['evidenceIds']} for u in units]
         elif prompt.startswith(("Synthesize", "Answer the exact research question")):
-            ids = re.findall(r'"evidenceId":\s*"(E\d+)"', prompt)
+            if 'Evidence summaries:\n' in prompt:
+                packet=json.JSONDecoder().raw_decode(prompt.split('Evidence summaries:\n',1)[1])[0]
+                if isinstance(packet,dict):
+                    from services.deep_research.evidence_wire import decode
+                    packet=decode(packet)
+                ids=[row['evidenceId'] for row in packet]
+            else:
+                ids = re.findall(r'"evidenceId":\s*"(E\d+)"', prompt)
             content = {"summary": "UNVERIFIED SUMMARY MUST NEVER BE SHOWN", "claims": [
                 {"claimId": "c1", "text": "Alpha reports 95% accuracy.", "kind": "reported", "evidenceRefs": [ids[0]], "obligationIds": ["o"]},
                 {"claimId": "c2", "text": "Beta reports 90% accuracy.", "kind": "reported", "evidenceRefs": [ids[1]], "obligationIds": ["o"]},

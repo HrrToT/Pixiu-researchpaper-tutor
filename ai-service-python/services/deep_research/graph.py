@@ -1410,11 +1410,14 @@ space with unsupported global absence or incidental iteration/performance values
                 drafting_schema=drafting_schema_enabled(record),point_guidance=format_guidance(point_constraint))
         from services.deep_research.experiment_template import enabled as compact_experiment_enabled,build as experiment_template
         from services.deep_research.answer_point_intent import enabled as point_intent_enabled, GUIDANCE as point_intent_guidance
+        from services.deep_research.factual_prompt import enabled as factual_prompt_enabled, scope_guidance as factual_scope_guidance
+        compact_factual_prompt=premise_mode and factual_prompt_enabled(record,output_kind)
         if point_intent_enabled(record) and output_kind != 'experiment_design':
             prompt += '\n' + point_intent_guidance
         from services.deep_research.scope_expression import enabled as scope_expression_enabled, guidance as scope_expression_guidance
         if scope_expression_enabled(record) and output_kind != 'experiment_design':
-            prompt += '\n' + scope_expression_guidance(record['scopeExpressionContractVersion'])
+            prompt += '\n' + (factual_scope_guidance(record['scopeExpressionContractVersion'])
+                if compact_factual_prompt else scope_expression_guidance(record['scopeExpressionContractVersion']))
         from services.deep_research.experiment_planning import enabled as staged_experiment,basis_limit
         staged_mode=premise_mode and output_kind=='experiment_design' and staged_experiment(record)
         from services.deep_research.experiment_capacity import input_limit as experiment_input_limit,reserved_basis_bytes,enabled as experiment_capacity_enabled
@@ -1429,11 +1432,11 @@ space with unsupported global absence or incidental iteration/performance values
             and record.get('mechanismEvidenceContractVersion')==3 and bool(requested_sections(question))))
         compact_evidence_wire=(premise_mode and ((output_kind=='experiment_design'
             and record.get('synthesisEvidenceContractVersion')==6)
-            or section_focused))
+            or section_focused or compact_factual_prompt))
         if compact_evidence_wire:
             from services.deep_research.evidence_wire import LEGEND,SHORT_LEGEND
             from services.deep_research.experiment_plan_encoding import flexible as flexible_plan
-            evidence_wire_legend=SHORT_LEGEND if section_focused or flexible_plan(record) else LEGEND
+            evidence_wire_legend=SHORT_LEGEND if section_focused or flexible_plan(record) or compact_factual_prompt else LEGEND
             prompt+='\n'+evidence_wire_legend
         from services.deep_research.access_disclosure import enabled as access_disclosure_enabled, GUIDANCE as access_disclosure_guidance
         if access_disclosure_enabled(record):
