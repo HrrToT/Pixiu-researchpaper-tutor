@@ -613,6 +613,7 @@ class BudgetedSemanticChecker:
         general_advice_review=False,
         scope_source_paths=False,
         mechanism_grounding=False,
+        singleton_factual_response=False,
     ):
         self._invoke = llm_invoker
         self._run_id = run_id
@@ -626,6 +627,7 @@ class BudgetedSemanticChecker:
         self._audit_target_fields = audit_target_fields
         self._scope_source_paths = scope_source_paths
         self._mechanism_grounding = mechanism_grounding
+        self._singleton_factual_response = singleton_factual_response
         self._factual_scope = factual_scope
         self._scope_expression_context = scope_expression_context
         self._boundary_quantity_grounding = boundary_quantity_grounding
@@ -1320,7 +1322,10 @@ The dataAvailability object is an internal audit, not new experimental results.
             parsed = _safe_parse_json(content)
             if single_decision:
                 from services.deep_research.factual_decision import decode
-                parsed=decode(parsed)
+                singleton_policy=self._singleton_factual_response
+                singleton_policy=(singleton_policy() if callable(singleton_policy) else singleton_policy) is True
+                parsed=decode(parsed,**({'singleton_claim_id':claims[0]['claimId']}
+                    if singleton_policy and len(claims)==1 else {}))
             
             expected = {claim['claimId'] for claim in claims}
             if (result.get('finishReason') == 'length' or not isinstance(parsed, list)

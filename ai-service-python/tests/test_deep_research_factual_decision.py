@@ -145,9 +145,9 @@ def test_flag_is_server_owned_and_old_records_are_not_opted_in(tmp_path):
     try:
         run,_=facade.create({'workspaceTaskId':'t','operationKey':'new','question':'核对','deferStart':True,
                             'factualDecisionContractVersion':0},start_async=False)
-        assert run['factualDecisionContractVersion']==1
+        assert run['factualDecisionContractVersion']==2
         assert facade._build_semantic_checker(run['runId'],Mock())._single_factual_decision() is True
-        for value in (None,0,True,'1',2):
+        for value in (None,0,True,'1',1,3):
             with pytest.raises(ValueError,match='Immutable'):
                 repo.update_run(run['runId'],lambda r:{**r,'factualDecisionContractVersion':value})
         old=deepcopy(run);old.update(runId='old',idempotencyKey='old');old.pop('factualDecisionContractVersion')

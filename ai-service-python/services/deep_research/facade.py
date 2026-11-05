@@ -280,7 +280,7 @@ class ResearchFacade:
             "materials": materials,
             "materialSnapshot": material_snapshot,  # Immutable Java snapshot
             "contextMaterials": (material_snapshot or {}).get("contextMaterials", []) if isinstance(material_snapshot, dict) else [],
-            "promptVersion": "dr-v2.20261105.377",
+            "promptVersion": "dr-v2.20261105.378",
             "factualReviewContractVersion": 2,
             "citationPresentationContractVersion": 4,
             "configurationConsistencyContractVersion": 2,
@@ -327,7 +327,7 @@ class ResearchFacade:
             "scopeObservationContractVersion": 2,
             "scopeExpressionReviewContractVersion": 3,
             "scopeEvidenceContractVersion": 1,
-            "factualDecisionContractVersion": 1,
+            "factualDecisionContractVersion": 2,
             "factualReasoningContractVersion": 9,
             "continuationFormatContractVersion": 1,
             "jointEvidenceContractVersion": 1,
@@ -1260,6 +1260,8 @@ class ResearchFacade:
                 and self._repo.require_run(run_id)['scopeExpressionContractVersion']==4,
             partitioned_scope_review=lambda: partitioned_scope_enabled(self._repo.require_run(run_id)),
             single_factual_decision=lambda: factual_decision_enabled(self._repo.require_run(run_id)),
+            singleton_factual_response=lambda: type(self._repo.require_run(run_id).get('factualDecisionContractVersion')) is int
+                and self._repo.require_run(run_id)['factualDecisionContractVersion']==2,
             scope_observation_assertions=lambda: assertions_enabled(self._repo.require_run(run_id)),
             consistent_scope_premises=lambda: consistent_premises_enabled(self._repo.require_run(run_id)),
             complete_factual_scope=lambda: type(self._repo.require_run(run_id).get('factualScopeContractVersion')) is int

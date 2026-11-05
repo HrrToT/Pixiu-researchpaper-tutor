@@ -5204,17 +5204,22 @@
       "payloadSha256": "788f89b085b0116f95f74c2929c0a6e964132f7b604bcc3e4ba650e9fe245957"
     },
     "nextCandidate": {
-      "promptVersion": "dr-v2.20261105.377",
+      "promptVersion": "dr-v2.20261105.378",
+      "factualDecisionContractVersion": 2,
       "factualRepairGoalContractVersion": 5,
       "repairRemovalContractVersion": 2,
-      "runtimeLoaded": true,
-      "runtimeProof": "deep-research-evidence/runtime-load-repair-377-20261105.json",
-      "associatedRegression": "deep-research-evidence/repair-377-associated-regression-20261105.json",
-      "savedInputReplay": "deep-research-evidence/repair-377-confirmed-input-replay-20261105.json",
-      "realComponent": "deep-research-evidence/repair-377-provider-component-20261105.json",
+      "runtimeLoaded": false,
+      "associatedRegression": {
+        "files": 164,
+        "passed": 3026,
+        "seconds": 361.3,
+        "sourceFrozen": true,
+        "proof": "deep-research-evidence/factual-378-associated-regression-20261105.json"
+      },
+      "exactResponseReplay": "deep-research-evidence/factual-378-exact-response-replay-20261105.json",
       "contentAccepted": false,
       "independentCredit": 0,
-      "remaining": "For a single exact target, consider lossless singleton-object wrapping before all unchanged schema, decision and source-binding gates. Multi-target/mismatched/incomplete responses must still fail. Original failed case is immutable."
+      "remaining": "Load committed source, run one fixed full case and review all key claims; external and fresh independent release gates remain."
     }
   },
   "sharedModuleSourceCheckpoint": {
@@ -6703,6 +6708,19 @@
       "contentAccepted": false,
       "independentCredit": 0,
       "remaining": "Execute explicit deletion edits on private draft text before validating kind transitions, then independently verify the edited answer. Keep original outputs and do not reinterpret old results."
+    },
+    {
+      "promptVersion": "dr-v2.20261105.377",
+      "factualRepairGoalContractVersion": 5,
+      "repairRemovalContractVersion": 2,
+      "runtimeLoaded": true,
+      "runtimeProof": "deep-research-evidence/runtime-load-repair-377-20261105.json",
+      "associatedRegression": "deep-research-evidence/repair-377-associated-regression-20261105.json",
+      "savedInputReplay": "deep-research-evidence/repair-377-confirmed-input-replay-20261105.json",
+      "realComponent": "deep-research-evidence/repair-377-provider-component-20261105.json",
+      "contentAccepted": false,
+      "independentCredit": 0,
+      "remaining": "For a single exact target, consider lossless singleton-object wrapping before all unchanged schema, decision and source-binding gates. Multi-target/mismatched/incomplete responses must still fail. Original failed case is immutable."
     }
   ]
 }

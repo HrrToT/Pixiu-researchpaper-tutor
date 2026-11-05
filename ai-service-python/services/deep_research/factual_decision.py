@@ -6,7 +6,7 @@ from services.deep_research.contracts import DeepResearchError
 
 def enabled(record):
     return (type(record.get('factualDecisionContractVersion')) is int
-            and record['factualDecisionContractVersion']==1)
+            and record['factualDecisionContractVersion'] in (1,2))
 
 
 def eligible(policy,claims,scope_enabled,complete_scope):
@@ -49,7 +49,7 @@ The short reason must identify the actual support or mismatch, not debate a seco
 decision or expose a long reasoning transcript. Do not guess missing source facts.'''
 
 
-def decode(rows):
+def decode(rows, *, singleton_claim_id=None):
     """Never reinterpret legacy status=failed, or infer a decision from prose."""
     allowed={'claimId','reason','scopeAudit','comparisonAudit','resultPurposeAudit'}
     scope_keys={'claimStrength','evidenceStrength','supported','statementPath','premises'}
@@ -57,6 +57,9 @@ def decode(rows):
         if isinstance(value,dict):
             return any(key in {'status','verdict'} or redundant(item) for key,item in value.items())
         return isinstance(value,list) and any(redundant(item) for item in value)
+    singleton=(isinstance(rows,dict) and isinstance(singleton_claim_id,str) and bool(singleton_claim_id)
+               and rows.get('claimId')==singleton_claim_id)
+    if singleton:rows=[rows]
     if not isinstance(rows,list):
         raise DeepResearchError('invalid_verification_response','事实核查未按唯一判定协议返回。',
                                 {'responseState':'received_invalid'})
@@ -71,5 +74,6 @@ def decode(rows):
                 or row['scopeAudit'].get('statementPath')!=['text']):
             raise DeepResearchError('invalid_verification_response','事实核查包含冲突判定或缺少完整声明审计，未改判。',
                                     {'responseState':'received_invalid'})
-        result.append({**deepcopy(row),'status':'passed' if row['scopeAudit']['supported'] else 'failed'})
+        result.append({**deepcopy(row),'status':'passed' if row['scopeAudit']['supported'] else 'failed',
+            **({'factualResponseEnvelope':{'version':1,'kind':'single_exact_target_object'}} if singleton else {})})
     return result
