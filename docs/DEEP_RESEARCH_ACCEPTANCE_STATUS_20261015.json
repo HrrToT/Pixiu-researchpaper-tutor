@@ -4796,12 +4796,12 @@
     "answerCoherenceContractVersion": 2,
     "quantitySpellingContractVersion": 15,
     "component": "independent literal interrogative parts, distinct process roles and bounded factual layout",
-    "componentOutcome": "3430 associated checks pass. Saved plan splits two criteria into three; repeated whole-question input/output becomes partial under new policy. Original saved-read synthesis replay retains all required method premises within23950/24000 bytes. Loaded with data preservation; whole real388 case not yet run.",
+    "componentOutcome": "3430 associated checks passed; loaded388. Full X5R-v5 now terminal partial: three literal questions and mesh stage present; overlapping model-supplied process roles rejected. Original result retained. No independent credit.",
     "runtimeLoadedVerified": true,
     "runtimeProof": "deep-research-evidence/runtime-load-question-388-20261105.json",
     "fullDR0DR5Proved": false,
     "independentCredit": 0,
-    "lastCapturedLedgerRows": 8528,
+    "lastCapturedLedgerRows": 8562,
     "lastCapturedActiveProductionRuns": 0,
     "historicalPausedRunsAtCapture": 13,
     "lastConfirmedIndexDocuments": 1215,
@@ -4823,7 +4823,7 @@
       "externalResearchWorkflowAccepted": false
     },
     "externalRouteBoundary": "User authorized current system HTTP proxy. Configured only in ignored local Python .env. Formal AcademicAcquisition factory fetched metadata and uncached fulltext using pinned public-IP/original-host TLS; application restarted once and wiring/health/data verified. Full external research quality remains unaccepted.",
-    "remaining": "Run one bounded complete388 development case, then advance genuinely fresh multi-paper comparison/experimental gates plus insufficiency, continuation and release audit. Historical machine complete X5R-v4 failed content review and is unchanged. Do not rename unknown cases or count retired materials as independent.",
+    "remaining": "First frozen G1N fresh multi-paper comparison; executable experiments, insufficiency, continuation and release audit remain open. X5R-v5 raw partial unchanged; no further RaDe repeat planned this step.",
     "factualReviewContractVersion": 3,
     "factualDecisionContractVersion": 2,
     "repairRemovalContractVersion": 2,
@@ -5219,15 +5219,16 @@
       "payloadSha256": "b9f3c0080999aeae68fb9b0a6ae1c9ae7f867fffe9ad1e3826e397025761c043"
     },
     "lastExternalDevelopmentCase": {
-      "case": "X5R-v4",
-      "runId": "dr_run_2dd777245c105cf394484899379c309f",
-      "promptVersion": "dr-v2.20261105.387",
-      "machineOutcome": "complete",
+      "case": "X5R-v5",
+      "runId": "dr_run_a0355e117afb5f87a4bc92ba180d5cf0",
+      "machineOutcome": "partial",
+      "modelCalls": 13,
+      "tokens": 47578,
+      "elapsedSeconds": 128.085,
+      "allSettled": true,
       "contentAccepted": false,
-      "modelCalls": 11,
-      "tokens": 45792,
-      "elapsedSeconds": 144.288,
-      "proof": "deep-research-evidence/external-x5r-v4-content-review-20261105.json"
+      "independentCredit": 0,
+      "proof": "deep-research-evidence/external-x5r-v5-content-review-20261105.json"
     },
     "protectedTaskIds": [
       "dr-acceptance-h5f-2026-10-18",
@@ -5291,7 +5292,17 @@
       "proof": "deep-research-evidence/external-x5r-v2-content-review-20261105.json"
     },
     "factualEnvelopeContractVersion": 1,
-    "requestGroundingContractVersion": 4
+    "requestGroundingContractVersion": 4,
+    "nextIndependentPreparation20261105": {
+      "case": "G1N",
+      "manifest": "docs\\DEEP_RESEARCH_GEOMETRY_COMPARISON_HOLDOUT_20261105.json",
+      "frozen": true,
+      "submitted": false,
+      "ownWorkHits": 0,
+      "v1Cached": false,
+      "indexBibliographyMentionGOF": 1,
+      "status": "Primary versioned references and equal-complexity comparison criteria frozen before first application POST. Both declared PDF sizes fit existing32MiB."
+    }
   },
   "sharedModuleSourceCheckpoint": {
     "sourceCommit": "f8ae5177",
