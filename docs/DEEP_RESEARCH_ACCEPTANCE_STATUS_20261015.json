@@ -11429,5 +11429,20 @@
     "providerTokens": 6158,
     "runtimeProof": "deep-research-evidence/runtime-load-process-384-20261105.json",
     "providerProof": "deep-research-evidence/process-384-provider-component-20261105.json"
+  },
+  "candidateExternalReading385": {
+    "promptVersion": "dr-v2.20261105.385",
+    "externalReadingContractVersion": 1,
+    "runtimeLoadedVerified": false,
+    "realFullResearchVerified": false,
+    "associatedFiles": 181,
+    "associatedTestsPassed": 3313,
+    "regressionProof": "deep-research-evidence/external-385-confirmed-regression-20261105.json",
+    "acquisitionReadReplay": "deep-research-evidence/external-385-confirmed-acquisition-read-replay-20261105.json",
+    "synthesisInputReplay": "deep-research-evidence/external-385-confirmed-synthesis-input-replay-20261105.json",
+    "diagnosisProof": "deep-research-evidence/external-385-pipeline-diagnosis-20261105.json",
+    "providerCalls": 0,
+    "independentCredit": 0,
+    "fullDR0DR5Proved": false
   }
 }

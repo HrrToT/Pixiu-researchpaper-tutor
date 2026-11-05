@@ -25,7 +25,7 @@ def result_role(row):
 
 
 def order_premises(evidence,plan,limit=20, *, membership_intents=False,module_intents=False,condition_intents=False,
-                   definition_context=False,read_sources=(),operational_context=False,mechanism_overview=False,mechanism_components=False,section_targets=(),indexed_sections=False):
+                   definition_context=False,read_sources=(),operational_context=False,mechanism_overview=False,mechanism_components=False,section_targets=(),indexed_sections=False,external_method_context=False):
     obligations={o['obligationId']:o for item in plan for o in item.get('obligations',[])}
     rows=[e for e in evidence if e.get('verification',{}).get('literal')=='passed']
     works=list(dict.fromkeys(e.get('sourceWorkId') for e in rows))
@@ -77,7 +77,9 @@ def order_premises(evidence,plan,limit=20, *, membership_intents=False,module_in
                     value-=20 if role=='profiling' else 0
                 # Unclassified explanations still prioritize a method premise,
                 # not a repeated packet of numerical cells.
-                return (value,not bool(row.get('tableData')),len(set(re.findall(r'[A-Za-z]{4,}',view['question'].lower()))
+                from services.deep_research.external_sections import premise_priority
+                prefix=premise_priority(row,view['question'],obligations[oid].get('searchQuery','')) if external_method_context else ()
+                return (*prefix,value,not bool(row.get('tableData')),len(set(re.findall(r'[A-Za-z]{4,}',view['question'].lower()))
                     & set(re.findall(r'[A-Za-z]{4,}',row.get('quote','').lower()))))
             ranked=sorted(own,key=score,reverse=True)
             if not ranked:

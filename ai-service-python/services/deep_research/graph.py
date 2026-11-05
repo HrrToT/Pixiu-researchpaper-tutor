@@ -1159,6 +1159,7 @@ def make_synthesize_node(
                 from services.deep_research.selection import proposal_evidence_order
                 candidates=proposal_evidence_order(candidates,question)
             candidates,premise_bundles=order_premises(candidates,brief_state.get('plan',[]),
+                **({'external_method_context':True} if type(record.get('externalReadingContractVersion')) is int and record['externalReadingContractVersion']==1 else {}),
                 **({'membership_intents':True} if record['synthesisEvidenceContractVersion'] in (2,3,4,5,6) else {}),
                 **({'module_intents':True} if record['synthesisEvidenceContractVersion'] in (3,4,5,6) else {}),
                 **({'condition_intents':True} if record['synthesisEvidenceContractVersion'] in (4,5,6) else {}),

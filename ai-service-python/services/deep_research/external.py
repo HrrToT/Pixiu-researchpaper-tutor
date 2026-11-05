@@ -84,10 +84,23 @@ class AcademicAcquisition:
                 # Always retain the translated discovery terms as well: a title
                 # match alone does not locate the requested method passage.
                 reading_query = question + ' ' + query
-                for page in _select_pages(pages, reading_query, title=material.get('title', '')):
+                from services.deep_research.external_sections import enabled as section_reading,select as select_sections,passages as section_passages
+                structured=section_reading(record) and material.get('accessLevel')=='fulltext'
+                if structured:
+                    terms=_reading_terms(reading_query)
+                    label,separator,_=str(material.get('title','')).partition(':')
+                    if separator and re.fullmatch(r'[A-Za-z][A-Za-z0-9_-]*',label.strip()):
+                        terms-=_reading_terms(label)
+                    seen={s.get('location',{}).get('page') for s in record.get('state',{}).get('sources',[])
+                          if s.get('versionId')==identity and target['obligationId'] in s.get('obligationIds',[])}
+                    selected_pages=select_sections(pages,reading_query,terms,seen=seen)
+                else:selected_pages=[(page,None) for page in _select_pages(pages, reading_query, title=material.get('title', ''))]
+                for page,parts in selected_pages:
                     text = page.get("text", "")
                     # Keep manageable passages and exact offsets within the original page.
-                    for offset, passage in _page_passages(text):
+                    chunks=(section_passages(page,parts,_page_passages) if structured else
+                            ((offset,passage,None,None) for offset,passage in _page_passages(text)))
+                    for offset, passage,section,role in chunks:
                         source_id = "src_" + digest({"version": identity, "hash": material["contentHash"],
                                                      "page": page.get("page"), "offset": offset,
                                                      "endOffset": offset + len(passage)})
@@ -102,6 +115,8 @@ class AcademicAcquisition:
                             "ownerMaterialId": material["workId"], "text": passage,
                             "location": {"page": page["page"], "offset": offset} if page.get("page") else {"section": "摘要", "offset": offset},
                             "obligationIds": [target["obligationId"]]}
+                        if structured:
+                            source['location'].update(section=section,sectionRole=role)
                         sources.append(source)
                         by_source[source_id] = source
         if not sources and adapter.discovery_outcomes and all(
