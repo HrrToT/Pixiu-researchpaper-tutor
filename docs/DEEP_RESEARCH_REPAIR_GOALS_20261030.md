@@ -322,3 +322,5 @@ X5H-v1原始规划响应逐字回放，新三项requiredSources均为arxiv:2406.
 保存的旧X5H-v1三条v2主张在新发布策略离线回放均requested_version_mismatch，0语义/模型调用；原已发布结果未修改或改判。独立积分仍0、方法怎样做的覆盖缺陷和完整DR0—DR5门槛尚未收口。证据：`deep-research-evidence/revisions-383-publication-replay-20261105.json`。
 
 最终含发布保护的172文件3,152项关联回归通过（142.96秒），源码冻结、0模型调用、一项既有PyPDF2弃用警告。初版3,139与各聚焦范围重叠不累计；最终以`deep-research-evidence/revisions-383-final-regression-20261105.json`为准。
+
+.383源码cfe4401d已提交推送，最终回归后原Python容器正常重启一次加载，源码/健康/13任务/8,402账本及全部旧payload、1,102索引和嵌入均确认保持。没有追加整题DeepSeek验证。当前方法/流程覆盖问题仍待修；旧候选池有90条证据，含正文TSDF/mesh内容，后续不能把摘要性能当作怎样做的回答。证据：`deep-research-evidence/runtime-load-revisions-383-20261105.json`。
