@@ -121,8 +121,9 @@ and causal findings. Fail an invented premise, universal guarantee, unsupported 
 expansion even when the claim is labeled inference. Reported facts still need direct source support.'''
 
 
-def _prepare(report, evidence, question, *, contract_version=1, requirement_context=(), objective_framing=False):
+def _prepare(report, evidence, question, *, contract_version=1, requirement_context=(), objective_framing=False, process_explanations=False):
     if type(objective_framing) is not bool:raise ValueError('Invalid objective framing policy')
+    if type(process_explanations) is not bool:raise ValueError('Invalid process explanation policy')
     claims = report['claims']
     ids = [c.get('claimId') for c in claims]
     if (any(not isinstance(cid, str) or not cid for cid in ids) or len(set(ids)) != len(ids)
@@ -303,6 +304,9 @@ parameters, counts and formulas. These qualitative targets cannot acquire measur
     if objective_framing:
         from services.deep_research.mechanism_grounding import DRAFT_GUIDANCE
         prompt+='\n'+DRAFT_GUIDANCE
+    if process_explanations:
+        from services.deep_research.process_explanations import DRAFT_GUIDANCE
+        prompt+='\n'+DRAFT_GUIDANCE
     if len(prompt.encode('utf8')) > MAX_INPUT_BYTES:
         return None, 'input_capacity'
     return {'prompt': prompt, 'outputTokens': OUTPUT_TOKENS}, None
@@ -383,7 +387,7 @@ def _merge(report, content, parse, question, *, contract_version=1, allowed_infe
 
 
 def rewrite_for_beginner(report, evidence, question, invoke, parse, *, saved_state=None, checkpoint=None,
-                         can_start=True, contract_version=1, requirement_context=(), verification_policy=None, objective_framing=False):
+                         can_start=True, contract_version=1, requirement_context=(), verification_policy=None, objective_framing=False, process_explanations=False):
     """Frozen request + settlement reuse; unknown transports propagate unchanged.
 
     A rejected/too-long edit leaves the original draft for normal verification.
@@ -392,6 +396,7 @@ def rewrite_for_beginner(report, evidence, question, invoke, parse, *, saved_sta
     if type(contract_version) is not int or contract_version not in (1,2,3,4,5,6,7,8,9):
         raise DeepResearchError('invalid_audience_rewrite_state','新手改写契约版本无效。')
     if type(objective_framing) is not bool:raise ValueError('Invalid objective framing policy')
+    if type(process_explanations) is not bool:raise ValueError('Invalid process explanation policy')
     identity_inputs={'report': report, 'evidence': evidence, 'question': question}
     if contract_version in (7,8,9):
         verification_policy = deepcopy(verification_policy) if verification_policy is not None else {
@@ -405,6 +410,7 @@ def rewrite_for_beginner(report, evidence, question, invoke, parse, *, saved_sta
     if contract_version in (2,3,4,5,6,7,8,9):
         identity_inputs.update(contractVersion=contract_version,requirementContext=requirement_context)
     if objective_framing:identity_inputs['objectiveFramingVersion']=1
+    if process_explanations:identity_inputs['processExplanationVersion']=1
     identity = digest(identity_inputs)
     state = deepcopy(saved_state) if saved_state is not None else None
     if state is not None:
@@ -416,7 +422,7 @@ def rewrite_for_beginner(report, evidence, question, invoke, parse, *, saved_sta
             raise DeepResearchError('invalid_audience_rewrite_state', '保存的新手改写请求与原始输入不一致，不能重新发送。')
     else:
         request, reason = _prepare(report, evidence, question,contract_version=contract_version,
-                                   requirement_context=requirement_context, objective_framing=objective_framing)
+                                   requirement_context=requirement_context, objective_framing=objective_framing, process_explanations=process_explanations)
         state = {'version': contract_version, 'inputDigest': identity, 'status': 'pending',
                  'request': request, 'requestDigest': digest(request)}
         if contract_version in (7,8,9):

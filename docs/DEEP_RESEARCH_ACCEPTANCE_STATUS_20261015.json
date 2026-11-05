@@ -10924,5 +10924,19 @@
       "reason": "First heldout run failed version and how-explanation requirements; now implementation diagnosis. Preserve sealed definition and first result.",
       "proof": "deep-research-evidence/external-x5h-v1-validation-20261105.json"
     }
-  ]
+  ],
+  "candidateProcessExplanation384": {
+    "promptVersion": "dr-v2.20261105.384",
+    "requestCoverageContractVersion": 4,
+    "jointEvidenceContractVersion": 2,
+    "runtimeLoadedVerified": false,
+    "realModelVerified": false,
+    "associatedTestsPassed": 3213,
+    "associatedTestFiles": 174,
+    "providerCalls": 0,
+    "regressionProof": "deep-research-evidence/process-384-final-regression-20261105.json",
+    "savedReplayProof": "deep-research-evidence/process-384-saved-coverage-replay-20261105.json",
+    "fullDR0DR5Proved": false,
+    "independentCredit": 0
+  }
 }

@@ -19,7 +19,7 @@ MAX_UNITS=20
 
 
 def enabled(record):
-    return type(record.get('jointEvidenceContractVersion')) is int and record['jointEvidenceContractVersion']==1
+    return type(record.get('jointEvidenceContractVersion')) is int and record['jointEvidenceContractVersion'] in (1,2)
 
 
 def _matches(row,source):
@@ -64,7 +64,21 @@ def _unit_key(group,rows):
     return digest({'group':group,'evidence':rows})
 
 
-def _render(units,rows,human):
+def _process_policy(saved):
+    value=saved.get('processResponseContractVersion')
+    if value is None:return False
+    if type(value) is not int or value!=1:
+        raise DeepResearchError('invalid_joint_assessment','过程取证协议无效，不能重发旧请求。')
+    return True
+
+
+def _response_tokens(units,process=False):
+    # Process bindings share the existing response allowance. A richer private
+    # schema must not silently expand the frozen acquisition budget.
+    return OUTPUT_TOKENS
+
+
+def _render(units,rows,human,*,process_explanations=False):
     aliases={row['evidenceId']:f'E{i+1}' for i,row in enumerate(rows)}
     identities={};sources={};wire={}
     for row in rows:
@@ -85,7 +99,10 @@ def _render(units,rows,human):
                 metadata.get('sourceWorkId'),metadata.get('sourceVersionId'),metadata.get('ownerMaterialId')}]
                 for source in group['requiredSources']},
             'evidenceIds':[aliases[eid] for eid in unit['evidenceIds']]})
-    return '''Assess JOINT EVIDENCE READINESS for each frozen requested criterion below.
+        if process_explanations:
+            from services.deep_research.process_explanations import required
+            if required(group['requirement']):targets[-1]['processRequired']=True
+    prompt='''Assess JOINT EVIDENCE READINESS for each frozen requested criterion below.
 This routes acquisition only. It is NOT factual approval, answer coverage or permission.
 Use each unit's own listed evidenceIds. Combine actual premises across its source/version
 identities: no single quote has to independently answer the entire criterion.
@@ -112,6 +129,12 @@ Return ONLY a compact JSON array, exactly one row per unitId:
 Use actual supplied IDs, no extra fields, duplicates or omissions. False uses [].
 The final answer will independently verify every factual clause and requested point.
 '''
+    if any(t.get('processRequired') for t in targets):
+        from services.deep_research.process_explanations import GUIDANCE
+        prompt=prompt.replace('Use actual supplied IDs, no extra fields, duplicates or omissions. False uses [].',
+            'Use actual supplied IDs, no duplicates or omissions. processRequired=true units additionally require processLinks; all other units omit that field. False uses evidenceIds=[] and processLinks=[].')
+        prompt+='\n'+GUIDANCE+'\nEvidence processLinks IDs must be among returned evidenceIds of the same unit. Never bind sources from another unit.\n'
+    return prompt
 
 
 def _verdicts(saved):
@@ -125,8 +148,14 @@ def _verdicts(saved):
     if not isinstance(parsed,list) or len(parsed)!=len(units):
         return None
     found={}
+    process=_process_policy(saved)
+    from services.deep_research.process_explanations import required,fields,validate_links
     for verdict in parsed:
-        if (not isinstance(verdict,dict) or set(verdict)!={'unitId','ready','evidenceIds'}
+        if not isinstance(verdict,dict):return None
+        target=units.get(verdict.get('unitId')) if isinstance(verdict.get('unitId'),str) else None
+        needs_process=process and target is not None and required(target['group']['requirement'])
+        expected_keys={'unitId','ready','evidenceIds'}|({'processLinks'} if needs_process else set())
+        if (set(verdict)!=expected_keys
                 or not isinstance(verdict['unitId'],str) or verdict['unitId'] not in units
                 or type(verdict['ready']) is not bool or not isinstance(verdict['evidenceIds'],list)
                 or any(not isinstance(eid,str) or eid not in aliases for eid in verdict['evidenceIds'])):
@@ -140,6 +169,10 @@ def _verdicts(saved):
         if verdict['ready'] and (not refs or any(not any(_matches(rows[eid],source) for eid in refs)
                                                for source in unit['group']['requiredSources'])):
             return None
+        if needs_process:
+            if not verdict['ready'] and verdict['processLinks']:return None
+            entities={alias:fields(rows[eid],evidence=True) for alias,eid in aliases.items()}
+            if verdict['ready'] and validate_links(verdict['processLinks'],entities,set(verdict['evidenceIds']),unit['group']['requirement']):return None
         found[unit['key']]={'ready':verdict['ready'],'evidenceIds':refs}
     return found if len(found)==len(units) else None
 
@@ -175,7 +208,8 @@ def _validate(saved,known):
             raise DeepResearchError('invalid_joint_assessment','联合取证问题或前提已变更。')
         keys.add(unit['key'])
     request=saved.get('request')
-    expected={'prompt':_render(saved['units'],rows,saved['human']),'outputTokens':OUTPUT_TOKENS}
+    process=_process_policy(saved)
+    expected={'prompt':_render(saved['units'],rows,saved['human'],process_explanations=process),'outputTokens':_response_tokens(saved['units'],process)}
     if (request!=expected or saved.get('requestDigest')!=digest(expected)
             or len(expected['prompt'].encode('utf8'))>24000):
         raise DeepResearchError('invalid_joint_assessment','保存的联合取证请求无效。')
@@ -190,7 +224,8 @@ def assess(state,record,update,invoke,coverage_gaps):
     if not required:
         required=list(dict.fromkeys(s.get('workId') for s in domain.get('sources',[]) if s.get('workId')))
     groups=_groups(obligations,required);known=_evidence(record)
-    scope=digest(list(groups.values()));pool_digest=digest(list(known.values()))
+    process=type(record.get('jointEvidenceContractVersion')) is int and record['jointEvidenceContractVersion']==2
+    scope=digest({'groups':list(groups.values()),'processExplanations':1} if process else list(groups.values()));pool_digest=digest(list(known.values()))
     question=effective_question(record);human=list(getattr(question,'instruction_layers',(question,)))
     round_key=digest({'scope':scope,'evidence':pool_digest,'reviewed':sorted(domain.get('reviewedExtractionPassages',{})),
                       'round':state.get('requery_count',0)})
@@ -243,6 +278,9 @@ def assess(state,record,update,invoke,coverage_gaps):
                 return max((match_priority(r[1],'\n'.join(human)+target_question) for r in packet['rows']),default=0) if packet else 0
             candidates=sorted(candidates,key=named_row_priority,reverse=True)
             candidates=prioritize_existing_evidence(candidates,target_question)
+            if process:
+                from services.deep_research.process_explanations import required,evidence_score
+                if required(group['requirement']):candidates=sorted(candidates,key=evidence_score,reverse=True)
             candidates=sorted(candidates,key=lambda e:e['evidenceId'] in used.get(gid,set()))
             selected=balanced_sample(candidates,lambda e:(e['sourceWorkId'],e['sourceVersionId']),
                                      min(MAX_EVIDENCE,max(6,len(group['requiredSources']))))
@@ -263,13 +301,13 @@ def assess(state,record,update,invoke,coverage_gaps):
                     continue
                 unit={'unitId':f'G{len(units)+1}','group':group,'evidenceIds':[e['evidenceId'] for e in subset],'key':key}
                 ids={e['evidenceId'] for e in visible};candidate=[*visible,*[e for e in subset if e['evidenceId'] not in ids]]
-                if len(candidate)<=MAX_EVIDENCE and len(_render([*units,unit],candidate,human).encode('utf8'))<=cap:
+                if len(candidate)<=MAX_EVIDENCE and len(_render([*units,unit],candidate,human,process_explanations=process).encode('utf8'))<=max(0,cap-(_response_tokens([*units,unit],process)-OUTPUT_TOKENS)):
                     units.append(unit);visible=candidate;fitted=True;break
             if not fitted:
                 capacity_blocked=True
-        request={'prompt':_render(units,visible,human),'outputTokens':OUTPUT_TOKENS}
+        request={'prompt':_render(units,visible,human,process_explanations=process),'outputTokens':_response_tokens(units,process)}
         current={'status':'pending','units':units,'evidence':visible,'human':human,'request':request,
-                 'requestDigest':digest(request),'candidatePoolDigest':pool_digest}
+                 'requestDigest':digest(request),'candidatePoolDigest':pool_digest,**({'processResponseContractVersion':1} if process else {})}
         if not units or invoke is None:
             current.update(status='skipped',reason='unavailable' if invoke is None else
                 'budget_or_capacity' if capacity_blocked or cap<=0 else 'missing_source_premise' if missing_sources else 'no_unchecked_units')
@@ -279,7 +317,7 @@ def assess(state,record,update,invoke,coverage_gaps):
         raise DeepResearchError('invalid_joint_assessment','当前联合取证候选已变更，不能重发旧请求。')
     if current['status']=='pending':
         try:
-            result=invoke(run_id,'assess_relevance',current['request']['prompt'],{'max_tokens':OUTPUT_TOKENS,'temperature':0.0})
+            result=invoke(run_id,'assess_relevance',current['request']['prompt'],{'max_tokens':current['request']['outputTokens'],'temperature':0.0})
         except BudgetExhaustedError as exc:
             current.update(status='skipped',reason='budget',budgetLimit=exc.details);save()
         else:

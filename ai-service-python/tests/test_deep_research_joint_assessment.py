@@ -204,7 +204,7 @@ def test_settled_result_reuses_exact_request_after_checkpoint_failure(tmp_path):
     assert not result['gaps'] and len(sent)==1 and repo.list_calls('r')[0]['status']=='succeeded'
 
 
-@pytest.mark.parametrize('value',[None,True,False,0,'1',2])
+@pytest.mark.parametrize('value',[None,True,False,0,'1',3])
 def test_joint_contract_is_strict(value):
     assert not enabled({'jointEvidenceContractVersion':value})
     assert enabled({'jointEvidenceContractVersion':1})
@@ -226,5 +226,5 @@ def test_client_cannot_disable_joint_contract(tmp_path):
     try:
         p,_=facade.create({'workspaceTaskId':'t','operationKey':'k','question':'比较条件','materials':[],
                           'jointEvidenceContractVersion':0},start_async=False)
-        assert repo.require_run(p['runId'])['jointEvidenceContractVersion']==1
+        assert repo.require_run(p['runId'])['jointEvidenceContractVersion']==2
     finally: facade.shutdown()

@@ -5,12 +5,12 @@ import json
 
 def enabled(record):
     return (type(record.get('requestCoverageContractVersion')) is int
-            and record['requestCoverageContractVersion'] in (1,2,3)
+            and record['requestCoverageContractVersion'] in (1,2,3,4)
             and record.get('state',{}).get('outputKind') in
             ('claim_verification','paper_comparison','direction_survey','research_entry'))
 
 
-def contract(plan,question,*,whole_question_id=None,literal_request_dimensions=False):
+def contract(plan,question,*,whole_question_id=None,literal_request_dimensions=False,process_explanations=False):
     result=[]
     for item in plan:
         for o in item.get('obligations',[]):
@@ -32,16 +32,20 @@ def contract(plan,question,*,whole_question_id=None,literal_request_dimensions=F
                 # dimensions can be safely separated. Never replace its scope.
                 if 0<len(dimensions)<=4:
                     checks.extend({'checkId':'literal_dimension_'+str(i+1),**d} for i,d in enumerate(dimensions))
+            if process_explanations:
+                from services.deep_research.process_explanations import required
+                for check in checks:
+                    if required(check['requirement']):check['processRequired']=True
             result.append({'obligationId':o['obligationId'],'question':o.get('question') or question,
                            'purpose':o.get('purpose','answer_requirement'),'checks':checks})
     return result
 
 
-def prompt(question,requirements,claims,metadata,evidence_marker,policy):
+def prompt(question,requirements,claims,metadata,evidence_marker,policy,*,process_explanations=False):
     # Preserve substantive quality standards but replace the open-ended
     # aspect-generation task and its redundant status/schema instructions.
     quality=policy.split('Before marking covered, enumerate',1)[0]
-    return f'''Audit the FINAL ACCEPTED ANSWER against the FIXED REQUEST CHECKLIST.
+    result=f'''Audit the FINAL ACCEPTED ANSWER against the FIXED REQUEST CHECKLIST.
 Question: {question}
 Fixed checks (requirements, never paper facts): {json.dumps(requirements,ensure_ascii=False,separators=(',',':'))}
 Accepted final claims: {json.dumps(claims,ensure_ascii=False,separators=(',',':'))}
@@ -71,9 +75,15 @@ notRequired: {{"reason":"specific reason >=12 chars","requestExcerpt":"exact ori
 "bindings":[{{"claimId":"ID","field":"text"}}]}}. This never exempts the original
 question or an answer_requirement and still undergoes the existing exemption checks.
 '''
+    if process_explanations and any(c.get('processRequired') for r in requirements for c in r['checks']):
+        from services.deep_research.process_explanations import GUIDANCE
+        result=result.replace('Each check has exactly checkId,status,bindings,reason.',
+            'Each check has exactly checkId,status,bindings,reason; processRequired=true checks additionally require processLinks (all other checks omit it).')
+        result+='\n'+GUIDANCE+'\nFor answer processLinks, IDs must be among that check\'s bound accepted claims. No source quotation can fill omitted answer prose.\n'
+    return result
 
 
-def normalize(value,requirements):
+def normalize(value,requirements,*,process_explanations=False,claims=()):
     """Project one decision per fixed check; do not infer semantic coverage."""
     if not isinstance(value,list):return None
     ids=[r.get('obligationId') if isinstance(r,dict) else None for r in value]
@@ -92,31 +102,44 @@ def normalize(value,requirements):
         checks=row['checks'];keys=[c.get('checkId') if isinstance(c,dict) else None for c in checks]
         wanted=[c['checkId'] for c in required['checks']]
         if any(not isinstance(k,str) for k in keys) or len(set(keys))!=len(keys) or set(keys)!=set(wanted):return None
-        actual={c['checkId']:c for c in checks};aspects=[];criteria=[];bindings=[];reasons=[]
+        actual={c['checkId']:c for c in checks};aspects=[];criteria=[];bindings=[];reasons=[];process_audits=[]
         for fixed in required['checks']:
             c=actual[fixed['checkId']]
-            if (set(c)!={'checkId','status','bindings','reason'}
+            process=process_explanations and fixed.get('processRequired') is True
+            expected_keys={'checkId','status','bindings','reason'}|({'processLinks'} if process else set())
+            if (set(c)!=expected_keys
                     or c['status'] not in ('covered','partial','missing') or not isinstance(c['bindings'],list)
                     or not isinstance(c['reason'],str) or not 1<=len(c['reason'].strip())<=800
                     or c['status']=='missing' and c['bindings']):return None
-            binding=deepcopy(c['bindings'])
+            binding=deepcopy(c['bindings']);check_status=c['status']
+            if process:
+                from services.deep_research.process_explanations import fields,validate_links
+                entities={row['claimId']:fields(row) for row in claims}
+                allowed={b.get('claimId') for b in binding if isinstance(b,dict) and isinstance(b.get('claimId'),str)}
+                errors=validate_links(c['processLinks'],entities,allowed,fixed['requirement'])
+                if check_status=='covered' and errors:check_status='partial'
+                process_audits.append({'checkId':fixed['checkId'],'reportedStatus':c['status'],
+                    'links':deepcopy(c['processLinks']),'errors':errors})
             for b in binding:
                 if b not in bindings:bindings.append(deepcopy(b))
             aspects.append({'aspectId':fixed['checkId'],'requirement':fixed['requirement'],
-                'basis':{'kind':'request','excerpt':required['question']},'status':c['status'],'bindings':binding})
+                'basis':{'kind':'request','excerpt':required['question']},'status':check_status,'bindings':binding})
             if 'criterionId' in fixed:
                 criteria.append({'criterionId':fixed['criterionId'],'responseType':fixed['responseType'],
-                                 'status':c['status'],'bindings':deepcopy(binding)})
+                                 'status':check_status,'bindings':deepcopy(binding)})
             reasons.append({'checkId':fixed['checkId'],'reason':c['reason']})
         status=('covered' if all(a['status']=='covered' for a in aspects) else
                 'missing' if all(a['status']=='missing' for a in aspects) else 'partial')
         result={'obligationId':row['obligationId'],'status':status,'bindings':bindings,
                 'aspects':aspects,'criteria':criteria,'requestCheckReasons':reasons}
+        if process_audits:result['processAudits']=process_audits
         if status!='covered':
             result['gapDetail']={'criterionIds':[c['criterionId'] for c in criteria if c['status']!='covered'],
                 'aspectIds':[a['aspectId'] for a in aspects if a['status']!='covered'],
                 'missingContent':'请补全本条固定要求中标为未满足的部分，具体要求见 missingAspects。',
                 'reason':'此缺口由固定检查项的未满足状态汇总；模型说明不作为新增要求或论文事实。'}
+            if any(a['errors'] for a in process_audits):
+                result['gapDetail']['missingContent']='补充固定问题所需的实际操作或流程关系；用途标签、方法名称和性能结论不能代替怎样做的解释。'
         out.append(result)
     return out
 
