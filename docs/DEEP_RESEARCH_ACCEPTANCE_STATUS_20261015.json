@@ -4789,16 +4789,16 @@
     "proof": "deep-research-evidence/compact-experiment-envelope-regression-20261020.json"
   },
   "currentCheckpoint": {
-    "sourceCommit": "35fd2aad",
+    "sourceCommit": "2140235f",
     "javaSourceCommit": "612c324e",
-    "promptVersion": "dr-v2.20261105.390",
+    "promptVersion": "dr-v2.20261105.391",
     "factualRepairGoalContractVersion": 5,
     "answerCoherenceContractVersion": 2,
     "quantitySpellingContractVersion": 15,
-    "component": "bounded role-aware reading and own-source synthesis premises",
-    "componentOutcome": "3471 checks/188 files pass;390 loaded. Actual G1N-v2 reads12 with0 reference rows,86 literal evidence,14 supplied within24000bytes; synthesis truncates at8192 output tokens and fails closed before any factual verification/publication.6calls29710tokens settled. No independent/content pass.",
+    "component": "bounded direct factual/comparison drafting",
+    "componentOutcome": "3493 checks/189files pass; same24000-byte prompt/premises and8192 cap, initial role enabled/low->disabled/none, independent reviews unchanged. Loaded391 with8642 ledger/14 tasks/1215 index preserved. Real G1N-v3 still pending; independent0.",
     "runtimeLoadedVerified": true,
-    "runtimeProof": "deep-research-evidence/runtime-load-reading-390-20261105.json",
+    "runtimeProof": "deep-research-evidence/runtime-load-direct-391-20261105.json",
     "fullDR0DR5Proved": false,
     "independentCredit": 0,
     "lastCapturedLedgerRows": 8642,
@@ -5383,7 +5383,7 @@
     "candidateDirect391": {
       "promptVersion": "dr-v2.20261105.391",
       "factualReasoningContractVersion": 10,
-      "runtimeLoaded": false,
+      "runtimeLoaded": true,
       "associatedTests": 3493,
       "testFiles": 189,
       "seconds": 148.281,
@@ -5392,8 +5392,10 @@
       "inputProfileProof": "deep-research-evidence/direct-391-saved-input-profile-replay-20261105.json",
       "samePromptAndPremises": true,
       "unchangedOutputCap": 8192,
-      "independentCredit": 0
-    }
+      "independentCredit": 0,
+      "sourceCommit": "2140235f"
+    },
+    "factualReasoningContractVersion": 10
   },
   "sharedModuleSourceCheckpoint": {
     "sourceCommit": "f8ae5177",
