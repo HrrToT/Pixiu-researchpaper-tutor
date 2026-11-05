@@ -1640,15 +1640,22 @@ space with unsupported global absence or incidental iteration/performance values
         from services.deep_research.answer_constraints import compact_answer, resolve_evidence_aliases
         parsed = resolve_evidence_aliases(parsed, evidence_aliases)
         scope_expression_audit = []
+        draft_validation_audit = None
         if scope_expression_enabled(record) and output_kind != 'experiment_design':
             from services.deep_research.scope_expression import materialize as materialize_scope
+            from services.deep_research.draft_validation import enabled as draft_validation_enabled, materialize_claims
             try:
-                for index, claim in enumerate(parsed['claims']):
-                    if not isinstance(claim,dict): continue
-                    parsed['claims'][index], audit = materialize_scope(claim, record['scopeExpressionContractVersion'])
-                    if audit: scope_expression_audit.append(audit)
+                if draft_validation_enabled(record):
+                    parsed, scope_expression_audit, draft_validation_audit = materialize_claims(
+                        parsed, record['scopeExpressionContractVersion'])
+                else:
+                    for index, claim in enumerate(parsed['claims']):
+                        if not isinstance(claim,dict): continue
+                        parsed['claims'][index], audit = materialize_scope(claim, record['scopeExpressionContractVersion'])
+                        if audit: scope_expression_audit.append(audit)
             except ValueError:
                 return {'error_code':'invalid_synthesis_response'}
+        blocked_draft_ids = {row['claimId'] for row in (draft_validation_audit or {}).get('rejected', [])}
         drafting_audit={}
         synthesis_presentation_audit={}
         if scope_enabled(record):
@@ -1656,6 +1663,8 @@ space with unsupported global absence or incidental iteration/performance values
             quotation_by_alias={row['evidenceId']:row.get('quote','')+'\n'+
                 json.dumps(row.get('sourceContext',{}),ensure_ascii=False) for row in evidence_summaries}
             for index,claim in enumerate(parsed['claims']):
+                if isinstance(claim,dict) and claim.get('claimId') in blocked_draft_ids:
+                    continue  # Preserve both conflicting forms for the bounded repair.
                 if isinstance(claim,dict) and 'draftingBasis' in claim:
                     drafting_audit[claim.get('claimId','')]=claim.pop('draftingBasis')
                 if isinstance(claim,dict):
@@ -1697,7 +1706,9 @@ space with unsupported global absence or incidental iteration/performance values
         editor_options=editor_request_options(record,output_kind)
         draft_compact_invoke=lambda prompt:llm_invoke(run_id,'synthesize_compact',prompt,{'max_tokens':2000,'temperature':0.0,**editor_options})
         draft_merge_audit={}
-        if scope_expression_audit and scope_compaction_enabled(record):
+        if blocked_draft_ids:
+            pass  # Never let wording edits hide the rejected structure before review.
+        elif scope_expression_audit and scope_compaction_enabled(record):
             parsed, scope_expression_audit = compact_scope(parsed, scope_expression_audit, question,
                 compact_invoke, _safe_parse_json, output_kind=output_kind, evidence=evidence,
                 presentation_version=record.get('reportPresentationContractVersion',0),
@@ -1728,7 +1739,7 @@ space with unsupported global absence or incidental iteration/performance values
             return {"error_code": "invalid_synthesis_response"}
 
         from services.deep_research.audience_rewrite import eligible, rewrite_for_beginner, has_time_for_rewrite
-        if eligible(record, parsed, output_kind):
+        if not blocked_draft_ids and eligible(record, parsed, output_kind):
             current = repo_update(run_id, lambda r: r, expected_revision=None)
             def checkpoint_audience(value):
                 repo_update(run_id, lambda r: {**r, 'state': {**r.get('state', {}),
@@ -1781,6 +1792,7 @@ space with unsupported global absence or incidental iteration/performance values
                     "reportVersionId": report_version_id,
                     "reportBody": parsed,
                     "synthesisContainer": container_kind,
+                    **({'draftValidationAudit':draft_validation_audit} if draft_validation_audit is not None else {}),
                     **({'experimentDraftingAudit':experiment_drafting_audit} if experiment_drafting_audit is not None else {}),
                     **({'experimentRepresentationAudit':experiment_representation_audit} if experiment_representation_audit else {}),
                     **({'synthesisScopeExpressionAudit':scope_expression_audit} if scope_expression_enabled(record) and output_kind!='experiment_design' else {}),
@@ -1817,6 +1829,9 @@ def make_verify_node(
         evidence = record.get("state", {}).get("evidence", [])
         
         claims = report_body.get("claims", [])
+        from services.deep_research.draft_validation import enabled as draft_validation_enabled, verification_inputs, reject_initial
+        draft_validation_audit = record.get('state', {}).get('draftValidationAudit', {}) if draft_validation_enabled(record) else {}
+        claims = verification_inputs(claims, draft_validation_audit)
         
         # Semantic check uses reserve pool (wrapped to pass use_reserve flag)
         def budgeted_semantic(claims_to_check: list, evidence_list: list, *, proposal_context=()) -> list:
@@ -1847,6 +1862,7 @@ def make_verify_node(
                 verify_claims_fn(claims, evidence, budgeted_semantic), evidence,
                 protocol_required=record.get('protocolContractVersion', 0),
                 workflow_required=record.get('workflowContractVersion', 0))
+            verification_result = reject_initial(verification_result, draft_validation_audit)
             current = repo_update(run_id, lambda r: r, expected_revision=None)
             answer_coverage = audit_final_answer(run_id, effective_question(record),
                 saved.get('plan', []), verification_result.get('accepted', []),
@@ -2182,13 +2198,20 @@ def make_publish_node(
                                              brief_state.get('evidence', []),
                                              protocol_required=record.get('protocolContractVersion', 0),
                                              workflow_required=record.get('workflowContractVersion', 0))
+        from services.deep_research.draft_validation import enabled as draft_validation_enabled, protect_release
+        draft_release_changed = False
+        if draft_validation_enabled(record):
+            protected = protect_release(checked, brief_state.get('draftValidationAudit', {}),
+                                        brief_state.get('repairVerificationChecks', {}))
+            draft_release_changed = protected['accepted'] != checked['accepted']
+            checked = protected
         if checked['accepted'] != verified_report.get('verifiedClaims', []):
             # A resumed publish must not trust inconsistent marked definitions
             # or retain a coverage verdict for an answer that has been changed.
             verified_report = {**verified_report, 'verifiedClaims': checked['accepted'],
                 'rejectedClaims': checked['rejected'],
                 'verificationSummary': {'accepted': len(checked['accepted']), 'rejected': len(checked['rejected'])},
-                'answerCoverage': {**verified_report.get('answerCoverage', {}), 'status': 'invalidated_design_contract'}}
+                'answerCoverage': {**verified_report.get('answerCoverage', {}), 'status': 'invalidated_draft_contract' if draft_release_changed else 'invalidated_design_contract'}}
             repo_update(run_id, lambda r: {**r, 'state': {**r.get('state', {}),
                         'verifiedReport': verified_report}}, expected_revision=None)
         accepted_claims = verified_report.get("verifiedClaims", [])

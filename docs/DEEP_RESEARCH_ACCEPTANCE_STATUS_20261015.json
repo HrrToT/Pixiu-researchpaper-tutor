@@ -5406,6 +5406,21 @@
         "proof": "deep-research-evidence/reading-392-associated-regression-20261105.json",
         "sourceFreezeArchiveIncomplete": true
       }
+    },
+    "candidateDraft393": {
+      "draftValidationContractVersion": 1,
+      "runtimeLoadedVerified": false,
+      "replay": "deep-research-evidence/draft-393-saved-conflict-routing-replay-20261105.json",
+      "design": "DEEP_RESEARCH_DRAFT_VALIDATION_20261105.md",
+      "change": "Retain conflicting original scope draft, exclude from initial acceptance, reuse existing bounded repair and independent verification, require exact checked replacement at publication. Legacy failure behavior unchanged.",
+      "fullContentAccepted": false,
+      "regression": {
+        "files": 190,
+        "passed": 3517,
+        "sourceFrozen": true,
+        "providerCalls": 0,
+        "proof": "deep-research-evidence/draft-393-associated-final-regression-20261105.json"
+      }
     }
   },
   "sharedModuleSourceCheckpoint": {

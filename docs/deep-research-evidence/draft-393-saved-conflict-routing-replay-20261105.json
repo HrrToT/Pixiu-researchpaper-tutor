@@ -1,0 +1,30 @@
+{
+  "case": "G1N-v3",
+  "sourceRunId": "dr_run_7847d6af15ad55379b94e6faad586a24",
+  "sourcePayloadSha256": "aeb2d2b20cf2beab609a7e35cfb45410662277d2ffda4ab08406b413316be080",
+  "sourceRawDraftSha256": "59d5c639d9007897651a22b71f22f41ad1391bec345c528b933dd290fd283546",
+  "candidate": "draftValidation1",
+  "scopeExpressionVersion": 4,
+  "verificationCandidateIds": [
+    "c1",
+    "c2",
+    "c3",
+    "c5"
+  ],
+  "quarantinedIds": [
+    "c4"
+  ],
+  "originalConflictPreserved": true,
+  "forcedCheckerCannotAcceptQuarantine": true,
+  "publishWithoutCheckedRepairCannotAcceptQuarantine": true,
+  "sourcePayloadUnchanged": true,
+  "modelCalls": 0,
+  "networkCalls": 0,
+  "productionWrites": 0,
+  "scientificAcceptance": false,
+  "limitations": [
+    "Per-claim routing proof only; remaining four drafts still require ordinary factual and completeness checks.",
+    "No attempt to correct numerical/source-provenance errors from deterministic routing.",
+    "Historical failed run not modified or regraded."
+  ]
+}
