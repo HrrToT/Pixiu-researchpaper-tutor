@@ -46,6 +46,13 @@ _GEOMETRIC_COLLECTION_INTRO = re.compile(r'(?:表示|建模|坍缩|近似|分解
 _GEOMETRIC_COLLECTION = re.compile(r'(?:(?:有方向的|有朝向的|带朝向的|定向的|平面|二维|三维|2D|3D)\s*){0,5}'
     r'(?:高斯(?:圆盘|椭圆盘|盘|面片|基元|点)?|椭圆盘|圆盘|盘片|面片|表面片|基元)'
     r'(?!特征|向量|矩阵|张量|数组|编码|输出|通道|参数)',re.I)
+_GEOMETRIC_COLLECTION_WITH_MODIFIERS = re.compile(
+    r'(?:[^，,；;。.!?！？\n的]{1,32}的\s*){0,2}'
+    r'(?:(?:(?:有方向|有朝向|带朝向|定向)的?|平面|二维|三维|2D|3D)\s*){0,5}'
+    # Commit to the longest object name: a failed parameter suffix must not
+    # backtrack from 高斯圆盘 to 高斯 and hide an actual group count.
+    r'(?>高斯(?:椭圆盘|圆盘|盘片|盘|面片|基元|点)?|椭圆盘|圆盘|盘片|面片|表面片|基元)'
+    r'(?!(?:的\s*)?(?:特征|向量|矩阵|张量|数组|编码|输出|通道|参数))',re.I)
 _SPATIAL_DIMENSION_TAG = re.compile(r'(?<![A-Za-z0-9_第负正+＋\-−±∓/／零一二两三四五六七八九十百千万亿])'
                                   r'[234二两三四]维')
 _DIMENSION_VALUE_NOUN = re.compile(r'(?:的\s*)?(?:度|向量|特征|矩阵|张量|数组|编码|输出|输入|通道|分量|参数|自由度|'
@@ -78,12 +85,14 @@ def without_collection_articles(text, *, geometric=False):
     """
     # Separate the cardinal from the final 一 in 唯一 for the exact-count parser.
     text = re.sub(r'唯一(?=一\s*组)', '唯一 ', text)
+    geometry = (_GEOMETRIC_COLLECTION_WITH_MODIFIERS if type(geometric) is int and geometric==2
+                else _GEOMETRIC_COLLECTION if geometric is True else None)
     positions = set()
     for match in _CHINESE_COUNTS.finditer(text):
         prefix, suffix = text[:match.start('word')], text[match.end():].lstrip()
         if (match['word'] == '一' and not match['sign'] and match['count_unit'] == '组'
                 and (_COLLECTION_INTRO.search(prefix) and _IMAGE_COLLECTION.match(suffix)
-                     or geometric is True and _GEOMETRIC_COLLECTION_INTRO.search(prefix) and _GEOMETRIC_COLLECTION.match(suffix))
+                     or geometry is not None and _GEOMETRIC_COLLECTION_INTRO.search(prefix) and geometry.match(suffix))
                 and not _CARDINAL_CONTEXT.search(prefix)
                 and not re.search(r'(?:而非|而不是|不是)', suffix)):
             positions.add(match.start('word'))
