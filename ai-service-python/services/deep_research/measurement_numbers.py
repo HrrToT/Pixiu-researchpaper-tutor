@@ -39,6 +39,10 @@ _CONCEPTUAL_OBJECT = re.compile(r'(?:可学习|可训练|可调节|平衡|调节
     r'(?:参数|变量|目标(?:函数)?|损失(?:函数)?|约束|公式|表达式|权重)')
 _CARDINAL_CONTEXT = re.compile(r'(?:只有|仅有|只|仅|唯一|恰好|正好|总共|共|至少|至多|最多|最少|不超过|超过)'
     r'[^，,；;。.!?！？\n]{0,12}$')
+_SPATIAL_CARDINAL_CONTEXT = re.compile(
+    r'(?:只有|仅有|只|仅|唯一|恰好|正好|总共|至少|至多|最多|最少|不超过|超过)'
+    r'[^，,；;。.!?！？\n]{0,12}$'
+    r'|共(?:计)?(?:有|使用|采用|包含|输出|生成|返回|具有)?(?:了)?\s*$')
 _IMAGE_COLLECTION = re.compile(r'(?:(?:单目|多目|多视角|动态|静态|场景|训练|输入|校准|连续|带时间标签的)\s*){0,4}'
     r'(?:图像|图片|照片|视频帧)(?!组)')
 _COLLECTION_INTRO = re.compile(r'(?:输入(?:为|是|包括|包含)?|使用|采用|给定|提供|接收|处理|由|以|从)\s*$')
@@ -62,7 +66,7 @@ _DIMENSION_VALUE_PREFIX = re.compile(r'(?:向量|特征|矩阵|张量|数组|编
                                    r'[^，,；;。.!?！？\n]{0,20}(?:(?:降|压缩|压|映射|投影|降维)[为至到成]|维数[为是]?|维度[为是]?|为|是)\s*$',re.I)
 
 
-def _spatial_dimension_tags(text):
+def _spatial_dimension_tags(text, *, cardinal_context=_CARDINAL_CONTEXT):
     """Low-dimensional labels have the same lexical role as English 2D/3D/4D.
 
     Explicit feature/vector/output dimension contexts stay numeric. Other
@@ -71,7 +75,7 @@ def _spatial_dimension_tags(text):
     """
     def replace(match):
         before,after=text[:match.start()],text[match.end():].lstrip()
-        if _DIMENSION_VALUE_NOUN.match(after) or _DIMENSION_VALUE_PREFIX.search(before) or _CARDINAL_CONTEXT.search(before):
+        if _DIMENSION_VALUE_NOUN.match(after) or _DIMENSION_VALUE_PREFIX.search(before) or cardinal_context.search(before):
             return match[0]
         return ''
     return _SPATIAL_DIMENSION_TAG.sub(replace,text)
@@ -106,6 +110,10 @@ def without_dimensional_labels(text, *, surface_labels=False):
     The independent semantic verifier still checks the dimensional identity.
     """
     if type(surface_labels) is int and surface_labels==3:return _spatial_dimension_tags(text)
+    if type(surface_labels) is int and surface_labels==4:
+        # 共 is a count prefix only in count syntax; it is also a character in
+        # compound predicates such as 共同表示. Numeric roles remain guarded.
+        return _spatial_dimension_tags(text,cardinal_context=_SPATIAL_CARDINAL_CONTEXT)
     nouns='高斯|空间|场景|几何|模型|重建|点云|辐射场'
     if surface_labels is True:
         nouns+='|椭圆盘|圆盘|盘片|盘'
