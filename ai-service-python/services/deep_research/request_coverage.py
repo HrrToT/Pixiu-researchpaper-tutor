@@ -41,16 +41,24 @@ def contract(plan,question,*,whole_question_id=None,literal_request_dimensions=F
     return result
 
 
-def prompt(question,requirements,claims,metadata,evidence_marker,policy,*,process_explanations=False,distinct_roles=False):
+
+def decision_inputs(question, requirements, claims, metadata, *, shared_inputs=False):
+    if type(shared_inputs) is not bool:raise ValueError('Invalid coverage input policy')
+    if shared_inputs:
+        from services.deep_research.shared_strings import input_text
+        return ('Exact decision input fields (question, fixed checks, complete accepted claims and server metadata):\n'
+            + input_text({'question':question,'requirements':requirements,'claims':claims,'metadata':metadata})+'\n')
+    return (f'Question: {question}\n'
+        + 'Fixed checks (requirements, never paper facts): '+json.dumps(requirements,ensure_ascii=False,separators=(',',':'))+'\n'
+        + 'Accepted final claims: '+json.dumps(claims,ensure_ascii=False,separators=(',',':'))+'\n'
+        + 'Server-rendered answer metadata: '+json.dumps(metadata,ensure_ascii=False,separators=(',',':'))+'\n')
+
+def prompt(question,requirements,claims,metadata,evidence_marker,policy,*,process_explanations=False,distinct_roles=False,shared_inputs=False):
     # Preserve substantive quality standards but replace the open-ended
     # aspect-generation task and its redundant status/schema instructions.
     quality=policy.split('Before marking covered, enumerate',1)[0]
     result=f'''Audit the FINAL ACCEPTED ANSWER against the FIXED REQUEST CHECKLIST.
-Question: {question}
-Fixed checks (requirements, never paper facts): {json.dumps(requirements,ensure_ascii=False,separators=(',',':'))}
-Accepted final claims: {json.dumps(claims,ensure_ascii=False,separators=(',',':'))}
-Server-rendered answer metadata: {json.dumps(metadata,ensure_ascii=False,separators=(',',':'))}
-Available evidence for detecting omissions, NOT inventing requirements: {evidence_marker}
+{decision_inputs(question,requirements,claims,metadata,shared_inputs=shared_inputs)}Available evidence for detecting omissions, NOT inventing requirements: {evidence_marker}
 {quality}
 Only the fixed checks define this audit's requirements. Read EACH complete accepted
 claim and conditions; several claims may jointly satisfy one check. Bind all relevant
@@ -161,13 +169,10 @@ These rules grant no factual approval and no automatic coverage from keywords or
 """
 
 
-def focus_answer(prompt_text, question, requirements, claims, metadata):
+def focus_answer(prompt_text, question, requirements, claims, metadata, *, shared_inputs=False):
     """Move exact decision inputs after evidence and policies, without truncation."""
     heading = 'Audit the FINAL ACCEPTED ANSWER against the FIXED REQUEST CHECKLIST.\n'
-    payload = (f'Question: {question}\n'
-        + 'Fixed checks (requirements, never paper facts): '+json.dumps(requirements,ensure_ascii=False,separators=(',',':'))+'\n'
-        + 'Accepted final claims: '+json.dumps(claims,ensure_ascii=False,separators=(',',':'))+'\n'
-        + 'Server-rendered answer metadata: '+json.dumps(metadata,ensure_ascii=False,separators=(',',':'))+'\n')
+    payload = decision_inputs(question,requirements,claims,metadata,shared_inputs=shared_inputs)
     prefix=heading+payload
     if not prompt_text.startswith(prefix):
         raise ValueError('Coverage decision inputs do not match their serialized prefix')

@@ -85,7 +85,14 @@ class FixtureModel:
         elif prompt.startswith(("Revise only the targets","Rebuild ONLY these rejected factual answer targets")):
             content = []  # An unsupported claim may be dropped; do not relax checks.
         elif prompt.startswith('Audit the FINAL ACCEPTED ANSWER against the FIXED REQUEST CHECKLIST'):
-            required=json.JSONDecoder().raw_decode(prompt.split('Fixed checks (requirements, never paper facts): ',1)[1])[0]
+            if 'Exact decision input fields (question, fixed checks, complete accepted claims and server metadata):\n' in prompt:
+                from services.deep_research.shared_strings import unpack
+                from services.deep_research.nested_tables import unpack as untables
+                wire=json.JSONDecoder().raw_decode(prompt.split('Exact decision input fields (question, fixed checks, complete accepted claims and server metadata):\n',1)[1])[0]
+                values=untables(unpack(wire)) if set(wire)=={'strings','value'} else wire
+                required=values['requirements']
+            else:
+                required=json.JSONDecoder().raw_decode(prompt.split('Fixed checks (requirements, never paper facts): ',1)[1])[0]
             content=[{'obligationId':o['obligationId'],'checks':[
                 {'checkId':c['checkId'],'status':'partial',
                  'bindings':[{'claimId':'c1','field':'text'}],
