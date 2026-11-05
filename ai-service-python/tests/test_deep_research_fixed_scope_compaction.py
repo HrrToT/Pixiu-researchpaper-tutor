@@ -33,7 +33,7 @@ def test_only_ordinary_prose_is_sent_for_edit_and_scope_sources_stay_exact():
 
 def test_new_strategy_is_limited_to_eligible_new_short_factual_outputs():
     from services.deep_research.factual_reasoning import fixed_scope_compaction
-    for version in (None,True,'8',7,10):
+    for version in (None,True,'8',7,11):
         assert not fixed_scope_compaction({'factualReasoningContractVersion':version},'300字以内','claim_verification')
     assert fixed_scope_compaction({'factualReasoningContractVersion':8},'300字以内','claim_verification')
     assert not fixed_scope_compaction({'factualReasoningContractVersion':8},'301字以内','claim_verification')
@@ -137,7 +137,7 @@ def test_explicit_scope_prompt_hides_readonly_ids_and_preserves_all_points():
 
 def test_explicit_prompt_is_new_profile_only_and_generation_options_are_unchanged():
     from services.deep_research.factual_reasoning import explicit_compaction_scope,request_options,compaction_options
-    for version in (None,True,'9',7,8,10):
+    for version in (None,True,'9',7,8,11):
         assert not explicit_compaction_scope({'factualReasoningContractVersion':version},'300字以内','claim_verification')
     assert explicit_compaction_scope({'factualReasoningContractVersion':9},'300字以内','claim_verification')
     assert not explicit_compaction_scope({'factualReasoningContractVersion':9},'301字以内','claim_verification')

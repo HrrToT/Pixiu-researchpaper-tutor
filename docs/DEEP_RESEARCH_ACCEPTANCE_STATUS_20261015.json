@@ -4823,7 +4823,7 @@
       "externalResearchWorkflowAccepted": false
     },
     "externalRouteBoundary": "User authorized current system HTTP proxy. Configured only in ignored local Python .env. Formal AcademicAcquisition factory fetched metadata and uncached fulltext using pinned public-IP/original-host TLS; application restarted once and wiring/health/data verified. Full external research quality remains unaccepted.",
-    "remaining": "Investigate bounded synthesis reasoning/output allocation: low-effort enabled thinking used8192 output tokens but visible JSON only2850bytes and incomplete. Preserve failed raw result; no automatic retry. Then unchanged-question development validation and fresh independent replacements. Full comparison/experiments/insufficiency/continuation/release audit remain incomplete.",
+    "remaining": "Load tested391 with14-task/index/8642-ledger snapshot, then execute one unchanged G1N-v3 development verification. New bounded initial draft mode disabled/none; review/repair/prompt/budget remain unchanged. Previous v2 truncation immutable; full quality/experiments/insufficiency/continuation/independent/release audit remain open.",
     "factualReviewContractVersion": 3,
     "factualDecisionContractVersion": 2,
     "repairRemovalContractVersion": 2,
@@ -5379,6 +5379,20 @@
       "allSettled": true,
       "independentCredit": 0,
       "proof": "deep-research-evidence/geometry-g1n-v2-truncated-synthesis-20261105.json"
+    },
+    "candidateDirect391": {
+      "promptVersion": "dr-v2.20261105.391",
+      "factualReasoningContractVersion": 10,
+      "runtimeLoaded": false,
+      "associatedTests": 3493,
+      "testFiles": 189,
+      "seconds": 148.281,
+      "sourceFrozen": true,
+      "regressionProof": "deep-research-evidence/direct-391-associated-final-regression-20261105.json",
+      "inputProfileProof": "deep-research-evidence/direct-391-saved-input-profile-replay-20261105.json",
+      "samePromptAndPremises": true,
+      "unchangedOutputCap": 8192,
+      "independentCredit": 0
     }
   },
   "sharedModuleSourceCheckpoint": {

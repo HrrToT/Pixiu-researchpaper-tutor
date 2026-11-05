@@ -24,7 +24,7 @@ def enabled():
 
 def research_model_options(node, options):
     """Apply role options BEFORE the ledger reserves tokens and fingerprints input."""
-    from services.deep_research.factual_reasoning import OPTION,DIRECT_REPAIR_OPTION,HIGH_SYNTHESIS_OPTION,COMPACTION_OPTION
+    from services.deep_research.factual_reasoning import OPTION,DIRECT_REPAIR_OPTION,HIGH_SYNTHESIS_OPTION,COMPACTION_OPTION,DIRECT_SYNTHESIS_OPTION
     from services.deep_research.factual_review import OPTION as REVIEW_OPTION
     from services.deep_research.experiment_template import REASONING_OPTION as EXPERIMENT_OPTION
     from services.deep_research.experiment_envelope import DIRECT_PLAN_OPTION
@@ -36,6 +36,10 @@ def research_model_options(node, options):
     direct_repair = options.pop(DIRECT_REPAIR_OPTION,False)
     high_synthesis = options.pop(HIGH_SYNTHESIS_OPTION,False)
     compact_reasoning = options.pop(COMPACTION_OPTION,False)
+    direct_synthesis = options.pop(DIRECT_SYNTHESIS_OPTION,False)
+    if type(direct_synthesis) is not bool or direct_synthesis and (not short_factual
+            or any((high_synthesis,bounded_review,experiment_reasoning,direct_plan,compact_reasoning))):
+        raise ValueError('Invalid direct factual synthesis profile')
     if type(compact_reasoning) is not bool or compact_reasoning and (node!='synthesize_compact'
             or any((short_factual,direct_repair,high_synthesis,bounded_review,experiment_reasoning,direct_plan))):
         raise ValueError('Invalid short factual compaction profile')
@@ -72,7 +76,8 @@ def research_model_options(node, options):
     if short_factual and node == 'synthesize':
         # Scoped to small factual/comparison outputs, not full experiment specs.
         # The same request/round budget applies; length/unknown never auto-retry.
-        return {**options, 'thinking': {'type': 'enabled'}, 'reasoning_effort': 'high' if high_synthesis else 'low',
+        return {**options, 'thinking': {'type': 'disabled' if direct_synthesis else 'enabled'},
+                'reasoning_effort': 'none' if direct_synthesis else 'high' if high_synthesis else 'low',
                 'max_tokens': 8192, 'response_format': {'type': 'json_object'}}
     if short_factual and not direct_repair and node == 'repair_claims':
         from services.deep_research.repair_budget import repair_output_options
