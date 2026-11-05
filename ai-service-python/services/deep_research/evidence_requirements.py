@@ -14,11 +14,11 @@ def enabled(record):
 
 
 def grounded(record):
-    return type(record.get('requestGroundingContractVersion')) is int and record['requestGroundingContractVersion'] in (1,2,3)
+    return type(record.get('requestGroundingContractVersion')) is int and record['requestGroundingContractVersion'] in (1,2,3,4)
 
 
 def imperative_grounded(record):
-    return type(record.get('requestGroundingContractVersion')) is int and record['requestGroundingContractVersion'] in (2,3)
+    return type(record.get('requestGroundingContractVersion')) is int and record['requestGroundingContractVersion'] in (2,3,4)
 
 
 def criteria(obligation):
@@ -98,7 +98,7 @@ def _requested_type(text):
     return 'explanation' if _EXPLAIN.search(text) else 'identification'
 
 
-def normalize_generated_requirements(plan, question, *, literal_questions=False,literal_imperatives=False,atomic_dimensions=False):
+def normalize_generated_requirements(plan, question, *, literal_questions=False,literal_imperatives=False,atomic_dimensions=False,compound_questions=False):
     """Change only the initial AI plan, never a saved human plan edit.
 
     Separate literal human questions when one generated criterion merged them.
@@ -127,8 +127,12 @@ def normalize_generated_requirements(plan, question, *, literal_questions=False,
             if not isinstance(excerpt, str) or not excerpt or not any(excerpt in layer for layer in human):
                 continue
             parts = _request_parts(excerpt) if literal_imperatives else _question_parts(excerpt)
+            if compound_questions:
+                from services.deep_research.compound_questions import split_questions,has_question,explanatory
+                parts=[piece for part in parts for piece in split_questions(part)]
             if literal_imperatives:
-                requests = [part for part in parts if _ASK.search(_outside_examples(part)) or _COMMAND.match(part)]
+                requests = [part for part in parts if _ASK.search(_outside_examples(part)) or _COMMAND.match(part)
+                            or compound_questions and has_question(part)]
             else:
                 requests = [part for part in parts if _ASK.search(part)]
             if not (1 if literal_questions else 2) <= len(requests) <= 4 or any(not 4 <= len(part) <= 500 for part in requests):
@@ -138,6 +142,9 @@ def normalize_generated_requirements(plan, question, *, literal_questions=False,
                  'responseType': _requested_type(part) if literal_imperatives else
                      'explanation' if _EXPLAIN.search(part) else 'identification'}
                 for i, part in enumerate(requests)]
+            if compound_questions:
+                for row in resolved:
+                    if row['responseType']=='identification' and explanatory(row['requirement']):row['responseType']='explanation'
             if atomic_dimensions:
                 from services.deep_research.request_dimensions import split_dimensions
                 dimensions=[dimension for row in resolved for dimension in

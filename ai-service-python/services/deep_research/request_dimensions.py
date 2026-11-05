@@ -7,7 +7,7 @@ _LIMIT=re.compile(r'条件|范围|边界|限制|\b(?:conditions?|scope|boundarie
 
 
 def enabled(record):
-    return type(record.get('requestGroundingContractVersion')) is int and record['requestGroundingContractVersion']==3
+    return type(record.get('requestGroundingContractVersion')) is int and record['requestGroundingContractVersion'] in (3,4)
 
 
 def split_dimensions(part):

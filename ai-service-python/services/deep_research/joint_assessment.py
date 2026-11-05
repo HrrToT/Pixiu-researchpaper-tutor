@@ -19,7 +19,7 @@ MAX_UNITS=20
 
 
 def enabled(record):
-    return type(record.get('jointEvidenceContractVersion')) is int and record['jointEvidenceContractVersion'] in (1,2)
+    return type(record.get('jointEvidenceContractVersion')) is int and record['jointEvidenceContractVersion'] in (1,2,3)
 
 
 def _matches(row,source):
@@ -67,9 +67,9 @@ def _unit_key(group,rows):
 def _process_policy(saved):
     value=saved.get('processResponseContractVersion')
     if value is None:return False
-    if type(value) is not int or value!=1:
+    if type(value) is not int or value not in (1,2):
         raise DeepResearchError('invalid_joint_assessment','过程取证协议无效，不能重发旧请求。')
-    return True
+    return 2 if value==2 else True
 
 
 def _response_tokens(units,process=False):
@@ -130,10 +130,10 @@ Use actual supplied IDs, no extra fields, duplicates or omissions. False uses []
 The final answer will independently verify every factual clause and requested point.
 '''
     if any(t.get('processRequired') for t in targets):
-        from services.deep_research.process_explanations import GUIDANCE
+        from services.deep_research.process_explanations import GUIDANCE,DISTINCT_GUIDANCE
         prompt=prompt.replace('Use actual supplied IDs, no extra fields, duplicates or omissions. False uses [].',
             'Use actual supplied IDs, no duplicates or omissions. processRequired=true units additionally require processLinks; all other units omit that field. False uses evidenceIds=[] and processLinks=[].')
-        prompt+='\n'+GUIDANCE+'\nEvidence processLinks IDs must be among returned evidenceIds of the same unit. Never bind sources from another unit.\n'
+        prompt+='\n'+(DISTINCT_GUIDANCE if process_explanations==2 else GUIDANCE)+'\nEvidence processLinks IDs must be among returned evidenceIds of the same unit. Never bind sources from another unit.\n'
     return prompt
 
 
@@ -172,7 +172,7 @@ def _verdicts(saved):
         if needs_process:
             if not verdict['ready'] and verdict['processLinks']:return None
             entities={alias:fields(rows[eid],evidence=True) for alias,eid in aliases.items()}
-            if verdict['ready'] and validate_links(verdict['processLinks'],entities,set(verdict['evidenceIds']),unit['group']['requirement']):return None
+            if verdict['ready'] and validate_links(verdict['processLinks'],entities,set(verdict['evidenceIds']),unit['group']['requirement'],**({'request_spans':True} if process==2 else {})):return None
         found[unit['key']]={'ready':verdict['ready'],'evidenceIds':refs}
     return found if len(found)==len(units) else None
 
@@ -224,8 +224,9 @@ def assess(state,record,update,invoke,coverage_gaps):
     if not required:
         required=list(dict.fromkeys(s.get('workId') for s in domain.get('sources',[]) if s.get('workId')))
     groups=_groups(obligations,required);known=_evidence(record)
-    process=type(record.get('jointEvidenceContractVersion')) is int and record['jointEvidenceContractVersion']==2
-    scope=digest({'groups':list(groups.values()),'processExplanations':1} if process else list(groups.values()));pool_digest=digest(list(known.values()))
+    version=record.get('jointEvidenceContractVersion')
+    process=(2 if version==3 else True) if type(version) is int and version in (2,3) else False
+    scope=digest({'groups':list(groups.values()),'processExplanations':2 if process==2 else 1} if process else list(groups.values()));pool_digest=digest(list(known.values()))
     question=effective_question(record);human=list(getattr(question,'instruction_layers',(question,)))
     round_key=digest({'scope':scope,'evidence':pool_digest,'reviewed':sorted(domain.get('reviewedExtractionPassages',{})),
                       'round':state.get('requery_count',0)})
@@ -307,7 +308,7 @@ def assess(state,record,update,invoke,coverage_gaps):
                 capacity_blocked=True
         request={'prompt':_render(units,visible,human,process_explanations=process),'outputTokens':_response_tokens(units,process)}
         current={'status':'pending','units':units,'evidence':visible,'human':human,'request':request,
-                 'requestDigest':digest(request),'candidatePoolDigest':pool_digest,**({'processResponseContractVersion':1} if process else {})}
+                 'requestDigest':digest(request),'candidatePoolDigest':pool_digest,**({'processResponseContractVersion':2 if process==2 else 1} if process else {})}
         if not units or invoke is None:
             current.update(status='skipped',reason='unavailable' if invoke is None else
                 'budget_or_capacity' if capacity_blocked or cap<=0 else 'missing_source_premise' if missing_sources else 'no_unchecked_units')

@@ -142,15 +142,15 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
         if request_contract:
             from services.deep_research.request_coverage import contract, prompt as request_prompt
             fixed_requirements=contract(audit_plan,question,whole_question_id=identity,
-                literal_request_dimensions=type(request_contract) is int and request_contract in (2,3,4),process_explanations=type(request_contract) is int and request_contract==4)
+                literal_request_dimensions=type(request_contract) is int and request_contract in (2,3,4,5),process_explanations=type(request_contract) is int and request_contract in (4,5))
             prompt=request_prompt(question,fixed_requirements,wire_claims,display_metadata,evidence_marker,FINAL_COVERAGE_POLICY,
-                **({'process_explanations':True} if type(request_contract) is int and request_contract==4 else {}))
+                **({'process_explanations':True,**({'distinct_roles':True} if request_contract==5 else {})} if type(request_contract) is int and request_contract in (4,5) else {}))
             if literal_dimensions:
                 prompt+='\n'+FINAL_DIMENSION_POLICY
         if claim_check:
             from services.deep_research.claim_check import AUDIT_GUIDANCE
             prompt+='\n'+AUDIT_GUIDANCE
-        if type(request_contract) is int and request_contract in (3,4):
+        if type(request_contract) is int and request_contract in (3,4,5):
             from services.deep_research.request_coverage import focus_answer
             prompt=focus_answer(prompt,question,fixed_requirements,wire_claims,display_metadata)
         if task_sources:
@@ -198,7 +198,7 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
                     verdicts,coherence_result=extract(verdicts,question,claims)
                 if request_contract:
                     from services.deep_research.request_coverage import normalize
-                    verdicts=normalize(verdicts,fixed_requirements,**({'process_explanations':True,'claims':wire_claims} if type(request_contract) is int and request_contract==4 else {}))
+                    verdicts=normalize(verdicts,fixed_requirements,**({'process_explanations':True,'claims':wire_claims,**({'distinct_roles':True} if request_contract==5 else {})} if type(request_contract) is int and request_contract in (4,5) else {}))
             except (ValueError, TypeError):
                 verdicts = None
             status = 'checked' if isinstance(verdicts, list) else 'invalid_response'
@@ -288,7 +288,7 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
             'completionContractDigest': completion_contract_digest(plan, claims),
             'displayMetadataDigest': display_metadata_digest(claims, evidence, **({"task_sources":True} if task_sources else {}), **({"request_semantics":2} if request_semantics==2 else {}),identification_locators=identification_locators),
             'gaps': gaps, 'invalidAspectObligations': invalid_aspects,
-            **({'requestCoverageContractVersion':request_contract if type(request_contract) is int and request_contract in (2,3,4) else 1} if request_contract else {}),
+            **({'requestCoverageContractVersion':request_contract if type(request_contract) is int and request_contract in (2,3,4,5) else 1} if request_contract else {}),
             'wholeQuestionId': identity, 'nonblockingResearch': nonblocking,
             'criterionGaps': criterion_gaps,
             'invalidCriterionObligations': invalid_criteria,

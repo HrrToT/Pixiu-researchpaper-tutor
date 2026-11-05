@@ -56,11 +56,11 @@ def prepare_coverage_repair(report, verification, audit, *, prioritize_specific=
             accepted_order.append(cid)
 
     has_specific_gap = any(not gap.get("wholeQuestion", False) for gap in gaps)
-    if has_specific_gap and audit.get('requestCoverageContractVersion') not in (2,3,4):
+    if has_specific_gap and audit.get('requestCoverageContractVersion') not in (2,3,4,5):
         active_gaps = [gap for gap in gaps if not gap.get("wholeQuestion", False)]
     else:
         active_gaps = list(gaps)
-    scoped = prioritize_specific and audit.get('status')=='checked' and audit.get('requestCoverageContractVersion') in (2,3,4)
+    scoped = prioritize_specific and audit.get('status')=='checked' and audit.get('requestCoverageContractVersion') in (2,3,4,5)
     if scoped:
         # Schedule concrete missing requirements first. The original whole-
         # question audit/gaps stay unchanged and run again after repair.

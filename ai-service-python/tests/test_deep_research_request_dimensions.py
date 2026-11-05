@@ -122,7 +122,7 @@ def test_both_initial_and_post_repair_final_audits_receive_frozen_policy(version
     assert all(kw.get('literal_dimensions',False) is (version==3) for kw in seen)
 
 
-@pytest.mark.parametrize('value',[None,True,False,0,1,2,'3',4])
+@pytest.mark.parametrize('value',[None,True,False,0,1,2,'3',5])
 def test_dimension_policy_is_strict(value):
     assert not enabled({'requestGroundingContractVersion':value})
     assert enabled({'requestGroundingContractVersion':3})

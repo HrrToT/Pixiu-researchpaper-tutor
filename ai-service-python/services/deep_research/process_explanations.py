@@ -32,6 +32,12 @@ No missing process may be invented from a title, abstract benefit or familiar me
 Partial/missing/not-ready may return processLinks=[]. Do not demand extra steps,
 experimental results or parameters beyond the literal request.'''
 
+DISTINCT_GUIDANCE=GUIDANCE+'''
+Use short, specific role excerpts. The input and output must be distinct roles;
+do not copy the whole question into both. Request-role spans may not overlap,
+just as answer/evidence-role spans may not overlap. A question is not itself an
+input-to-output process. If distinct roles cannot be established, do not mark ready/covered.'''
+
 
 def required(requirement):
     if isinstance(requirement,str) and re.search(r'(?:如何|怎样|怎么)(?:理解|看待|评价|解读|看懂|判断)|\bhow\s+(?:to\s+)?(?:understand|interpret|evaluate|judge)\b',requirement,re.I):return False
@@ -50,7 +56,7 @@ def fields(row, *, evidence=False):
     return result
 
 
-def validate_links(links,entities,allowed,requirement):
+def validate_links(links,entities,allowed,requirement,*,request_spans=False):
     """Exact role bindings are necessary, never a semantic support verdict."""
     if not isinstance(links,list) or not 1<=len(links)<=4:return ['missing_process_links']
     errors=[]
@@ -64,7 +70,12 @@ def validate_links(links,entities,allowed,requirement):
                 text=binding['request']
                 if not isinstance(text,str) or not text.strip() or text not in requirement:
                     errors.append('unbound_process_request');continue
-                resolved[role]=text;continue
+                resolved[role]=text
+                if request_spans:
+                    positions=[m.start() for m in re.finditer('(?='+re.escape(text)+')',requirement)]
+                    if len(positions)>16:errors.append('ambiguous_process_excerpt');continue
+                    spans[role]=[('@human_request','literal_requirement',p,p+len(text)) for p in positions]
+                continue
             if set(binding)!={'id','field','excerpt'}:
                 errors.append('invalid_process_binding');continue
             identity,field,text=binding['id'],binding['field'],binding['excerpt']
@@ -97,4 +108,4 @@ def evidence_score(row):
 def drafting_enabled(record):
     from services.deep_research.request_context import effective_question
     return (type(record.get('requestCoverageContractVersion')) is int
-            and record['requestCoverageContractVersion']==4 and required(effective_question(record)))
+            and record['requestCoverageContractVersion'] in (4,5) and required(effective_question(record)))

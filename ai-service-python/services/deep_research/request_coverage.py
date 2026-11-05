@@ -5,7 +5,7 @@ import json
 
 def enabled(record):
     return (type(record.get('requestCoverageContractVersion')) is int
-            and record['requestCoverageContractVersion'] in (1,2,3,4)
+            and record['requestCoverageContractVersion'] in (1,2,3,4,5)
             and record.get('state',{}).get('outputKind') in
             ('claim_verification','paper_comparison','direction_survey','research_entry'))
 
@@ -41,7 +41,7 @@ def contract(plan,question,*,whole_question_id=None,literal_request_dimensions=F
     return result
 
 
-def prompt(question,requirements,claims,metadata,evidence_marker,policy,*,process_explanations=False):
+def prompt(question,requirements,claims,metadata,evidence_marker,policy,*,process_explanations=False,distinct_roles=False):
     # Preserve substantive quality standards but replace the open-ended
     # aspect-generation task and its redundant status/schema instructions.
     quality=policy.split('Before marking covered, enumerate',1)[0]
@@ -76,14 +76,14 @@ notRequired: {{"reason":"specific reason >=12 chars","requestExcerpt":"exact ori
 question or an answer_requirement and still undergoes the existing exemption checks.
 '''
     if process_explanations and any(c.get('processRequired') for r in requirements for c in r['checks']):
-        from services.deep_research.process_explanations import GUIDANCE
+        from services.deep_research.process_explanations import GUIDANCE,DISTINCT_GUIDANCE
         result=result.replace('Each check has exactly checkId,status,bindings,reason.',
             'Each check has exactly checkId,status,bindings,reason; processRequired=true checks additionally require processLinks (all other checks omit it).')
-        result+='\n'+GUIDANCE+'\nFor answer processLinks, IDs must be among that check\'s bound accepted claims. No source quotation can fill omitted answer prose.\n'
+        result+='\n'+(DISTINCT_GUIDANCE if distinct_roles else GUIDANCE)+'\nFor answer processLinks, IDs must be among that check\'s bound accepted claims. No source quotation can fill omitted answer prose.\n'
     return result
 
 
-def normalize(value,requirements,*,process_explanations=False,claims=()):
+def normalize(value,requirements,*,process_explanations=False,claims=(),distinct_roles=False):
     """Project one decision per fixed check; do not infer semantic coverage."""
     if not isinstance(value,list):return None
     ids=[r.get('obligationId') if isinstance(r,dict) else None for r in value]
@@ -116,7 +116,7 @@ def normalize(value,requirements,*,process_explanations=False,claims=()):
                 from services.deep_research.process_explanations import fields,validate_links
                 entities={row['claimId']:fields(row) for row in claims}
                 allowed={b.get('claimId') for b in binding if isinstance(b,dict) and isinstance(b.get('claimId'),str)}
-                errors=validate_links(c['processLinks'],entities,allowed,fixed['requirement'])
+                errors=validate_links(c['processLinks'],entities,allowed,fixed['requirement'],**({'request_spans':True} if distinct_roles else {}))
                 if check_status=='covered' and errors:check_status='partial'
                 process_audits.append({'checkId':fixed['checkId'],'reportedStatus':c['status'],
                     'links':deepcopy(c['processLinks']),'errors':errors})
@@ -140,6 +140,8 @@ def normalize(value,requirements,*,process_explanations=False,claims=()):
                 'reason':'此缺口由固定检查项的未满足状态汇总；模型说明不作为新增要求或论文事实。'}
             if any(a['errors'] for a in process_audits):
                 result['gapDetail']['missingContent']='补充固定问题所需的实际操作或流程关系；用途标签、方法名称和性能结论不能代替怎样做的解释。'
+                if distinct_roles and any('overlapping_process_roles' in a['errors'] for a in process_audits):
+                    result['gapDetail']['missingContent']='当前流程角色绑定重叠，尚不能确认输入、实际操作和输出之间的关系；不能以重复整段问题作为流程证明。'
         out.append(result)
     return out
 

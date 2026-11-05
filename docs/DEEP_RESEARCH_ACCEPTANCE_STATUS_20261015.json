@@ -4801,7 +4801,7 @@
     "runtimeProof": "deep-research-evidence/runtime-load-envelope-387-20261105.json",
     "fullDR0DR5Proved": false,
     "independentCredit": 0,
-    "lastCapturedLedgerRows": 8496,
+    "lastCapturedLedgerRows": 8528,
     "lastCapturedActiveProductionRuns": 0,
     "historicalPausedRunsAtCapture": 13,
     "lastConfirmedIndexDocuments": 1215,
@@ -5219,16 +5219,15 @@
       "payloadSha256": "b9f3c0080999aeae68fb9b0a6ae1c9ae7f867fffe9ad1e3826e397025761c043"
     },
     "lastExternalDevelopmentCase": {
-      "case": "X5R-v3",
-      "runId": "dr_run_806d224c066e540daef2c03058f974b4",
-      "promptVersion": "dr-v2.20261105.386",
-      "status": "failed",
-      "errorCode": "invalid_verification_response",
+      "case": "X5R-v4",
+      "runId": "dr_run_2dd777245c105cf394484899379c309f",
+      "promptVersion": "dr-v2.20261105.387",
+      "machineOutcome": "complete",
       "contentAccepted": false,
-      "modelCalls": 10,
-      "tokens": 39082,
-      "elapsedSecondsFromAPI": 143,
-      "proof": "deep-research-evidence/external-x5r-v3-failure-20261105.json"
+      "modelCalls": 11,
+      "tokens": 45792,
+      "elapsedSeconds": 144.288,
+      "proof": "deep-research-evidence/external-x5r-v4-content-review-20261105.json"
     },
     "protectedTaskIds": [
       "dr-acceptance-h5f-2026-10-18",
@@ -12993,5 +12992,21 @@
       }
     ],
     "boundary": "Check live payload/index/cache freshness and original method/experiment sections before freezing. v1 title differs from later title; do not confuse with previously tuned 2310.08528. New scientific question/materials, never a rename to bypass unresolved historical cases."
+  },
+  "candidateJoinedQuestions388": {
+    "promptVersion": "dr-v2.20261105.388",
+    "requestGroundingContractVersion": 4,
+    "requestCoverageContractVersion": 5,
+    "jointEvidenceContractVersion": 3,
+    "runtimeLoadedVerified": false,
+    "realWholeCaseVerified": false,
+    "associatedFiles": 186,
+    "associatedTestsPassed": 3430,
+    "regressionProof": "deep-research-evidence/question-388-joined-final-regression-20261105.json",
+    "savedPlanAndRoleReplay": "deep-research-evidence/question-388-saved-plan-coverage-replay-20261105.json",
+    "synthesisInputReplay": "deep-research-evidence/question-388-joined-synthesis-input-replay-20261105.json",
+    "providerCalls": 0,
+    "independentCredit": 0,
+    "fullDR0DR5Proved": false
   }
 }
