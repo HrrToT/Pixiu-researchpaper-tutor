@@ -430,7 +430,11 @@ class TrackedLLMInvoker:
             response["reportedModel"] = reported_model
         if structured:
             from services.deep_research.structured_output import normalize
-            response = normalize(node, response)
+            response = normalize(node, response,**({'factual_singleton':True}
+                if type(transport_record.get('factualEnvelopeContractVersion')) is int
+                and transport_record['factualEnvelopeContractVersion']==1
+                and type(transport_record.get('factualDecisionContractVersion')) is int
+                and transport_record['factualDecisionContractVersion']==2 else {}))
         
         # Settle with actual usage delta
         token_delta = actual_tokens - (estimated_input + max_output)

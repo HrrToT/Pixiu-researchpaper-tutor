@@ -174,7 +174,8 @@ def messages_for_record(record, node, prompt):
         prospective=kind=='experiment_design'),prospective=kind=='experiment_design')
 
 
-def normalize(node, response):
+def normalize(node, response, *, factual_singleton=False):
+    if type(factual_singleton) is not bool:raise ValueError('Invalid factual response envelope policy')
     raw = response.get('content', '')
     output = {**response, 'rawContent': raw, 'structuredOutput': {'version': 1,
               'requestedFormat': 'json_object', 'expectedShape': 'items' if node in ARRAY_NODES else 'object'}}
@@ -225,6 +226,17 @@ def normalize(node, response):
         elif isinstance(parsed, list):
             output['content'] = text  # Valid historical array compatibility, no field filling.
             output['structuredOutput']['receivedShape'] = 'array_compat'
+        elif factual_singleton and node in {'verify','verify_repair'} and isinstance(parsed,dict):
+            # Retain only a complete candidate for the downstream exact-target
+            # decoder. It checks the actual expected claim ID and all semantic
+            # audits. Transport does not derive or upgrade a scientific verdict.
+            from services.deep_research.factual_decision import decode
+            from services.deep_research.contracts import DeepResearchError
+            try:decode(parsed,singleton_claim_id=parsed.get('claimId'))
+            except DeepResearchError:
+                output['content']='null';output['structuredOutput']['receivedShape']='invalid_wrapper'
+            else:
+                output['content']=text;output['structuredOutput']['receivedShape']='single_factual_candidate'
         else:
             output['content'] = 'null'
             output['structuredOutput']['receivedShape'] = 'invalid_wrapper'
