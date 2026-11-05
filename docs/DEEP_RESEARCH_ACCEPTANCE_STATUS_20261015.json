@@ -4789,19 +4789,19 @@
     "proof": "deep-research-evidence/compact-experiment-envelope-regression-20261020.json"
   },
   "currentCheckpoint": {
-    "sourceCommit": "026b66e7",
+    "sourceCommit": "ccb40334",
     "javaSourceCommit": "612c324e",
-    "promptVersion": "dr-v2.20261105.393",
+    "promptVersion": "dr-v2.20261105.394",
     "factualRepairGoalContractVersion": 5,
     "answerCoherenceContractVersion": 2,
     "quantitySpellingContractVersion": 15,
-    "component": "mixed-script evidence navigation and isolated malformed-draft repair",
-    "componentOutcome": "393 loaded;190files3517 frozen checks pass. G1N-v4 isolation worked but full comparison failed: c1-4 rejected, only advice published; repair preflight blocked at27192/24000bytes. Ledger8715, oldruns/other13tasks/index unchanged;0active13historicalpaused. Independent0.",
+    "component": "bounded factual/ordinary-advice repair prompt capacity",
+    "componentOutcome": "394 loaded;191files3531 frozen checks pass. Old v4 repair input fits3 batches, but real v5 remains inconclusive:4 facts rejected, coverage budget_exhausted, c3/c4 mandatory15 evidence rows32682/24000B. No published scientific conclusion;8738ledger/other13tasks/index preserved;independent0.",
     "runtimeLoadedVerified": true,
-    "runtimeProof": "deep-research-evidence/runtime-load-draft-393-20261105.json",
+    "runtimeProof": "deep-research-evidence/runtime-load-repair-394-20261105.json",
     "fullDR0DR5Proved": false,
     "independentCredit": 0,
-    "lastCapturedLedgerRows": 8715,
+    "lastCapturedLedgerRows": 8738,
     "lastCapturedActiveProductionRuns": 0,
     "historicalPausedRunsAtCapture": 13,
     "lastConfirmedIndexDocuments": 1215,
@@ -4823,7 +4823,7 @@
       "externalResearchWorkflowAccepted": false
     },
     "externalRouteBoundary": "User authorized current system HTTP proxy. Configured only in ignored local Python .env. Formal AcademicAcquisition factory fetched metadata and uncached fulltext using pinned public-IP/original-host TLS; application restarted once and wiring/health/data verified. Full external research quality remains unaccepted.",
-    "remaining": "Reduce measured factual repair fixed overhead (19064bytes for2targets) while retaining mandatory evidence and original24KB cap. Correct typed-table/source provenance and examine advice grounding, then full comparison/experiments/insufficiency/continuation/independent/release audit.",
+    "remaining": "Separate verified dependencies from broad rejected-draft citation hints when allocating repair premises; actual v5 c3/c4 has14976B fixed plus15 mandatory rows ->32682B. Trace whole-answer coverage budget admission separately. Full comparison/experiments/insufficiency/continuation/independent/release audit remain open.",
     "factualReviewContractVersion": 3,
     "factualDecisionContractVersion": 2,
     "repairRemovalContractVersion": 2,
@@ -5368,18 +5368,18 @@
     },
     "readingPriorityContractVersion": 7,
     "lastComparisonDevelopment": {
-      "case": "G1N-v4",
-      "runId": "dr_run_7dae9d334ff2582e85cca59776eb011d",
-      "promptVersion": "dr-v2.20261105.393",
+      "case": "G1N-v5",
+      "runId": "dr_run_f8571e137e88548a90f2868bcc6d3aab",
+      "promptVersion": "dr-v2.20261105.394",
       "status": "completed",
-      "machineOutcome": "partial",
+      "machineOutcome": "inconclusive",
       "contentAccepted": false,
-      "modelCalls": 9,
-      "tokens": 37831,
-      "elapsedSeconds": 75.479,
+      "modelCalls": 6,
+      "tokens": 32574,
+      "elapsedSeconds": 153.994,
       "independentCredit": 0,
-      "proof": "deep-research-evidence/geometry-g1n-v4-isolation-and-repair-capacity-review-20261105.json",
-      "repairReplay": "deep-research-evidence/draft-393-repair-preflight-saved-input-replay-20261105.json"
+      "proof": "deep-research-evidence/geometry-g1n-v5-factual-repair-and-coverage-review-20261105.json",
+      "repairReplay": "deep-research-evidence/repair-394-v5-preflight-saved-input-replay-20261105.json"
     },
     "candidateDirect391": {
       "promptVersion": "dr-v2.20261105.391",
@@ -5428,7 +5428,7 @@
     "draftValidationContractVersion": 1,
     "candidateRepair394": {
       "factualRepairPromptContractVersion": 1,
-      "runtimeLoadedVerified": false,
+      "runtimeLoadedVerified": true,
       "replay": "deep-research-evidence/repair-394-preflight-saved-input-replay-20261105.json",
       "legacyReplay": "deep-research-evidence/repair-394-legacy393-input-preservation-replay-20261105.json",
       "design": "DEEP_RESEARCH_FACTUAL_REPAIR_CAPACITY_20261105.md",
@@ -5447,7 +5447,8 @@
         "providerCalls": 0,
         "proof": "deep-research-evidence/repair-394-associated-final-regression-20261105.json"
       }
-    }
+    },
+    "factualRepairPromptContractVersion": 1
   },
   "sharedModuleSourceCheckpoint": {
     "sourceCommit": "f8ae5177",
