@@ -1,0 +1,100 @@
+{
+  "case": "X5R-v1",
+  "runId": "dr_run_62e55af08db75bd18c9c4e4da161a0ce",
+  "promptVersion": "dr-v2.20261105.384",
+  "sourceCommit": "54358457",
+  "frozenCaseCommit": "762da48b",
+  "status": "completed",
+  "machineOutcome": "inconclusive",
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "modelCalls": 14,
+  "tokens": 51619,
+  "elapsedSeconds": 138.24,
+  "allCallsSettled": true,
+  "sourceVersions": [
+    "arxiv:2406.01467v1"
+  ],
+  "acceptedClaims": 0,
+  "initialRejections": [
+    {
+      "claimId": "c1",
+      "reason": "semantic_unresolved",
+      "detail": "Evidence only provides background on MVS, NeRF, and Gaussian Splatting; it does not directly state whether RaDe-GS retains 3D Gaussians or converts them to 2D disks."
+    },
+    {
+      "claimId": "c2",
+      "reason": "semantic_unresolved",
+      "detail": "E1 和 E2 描述了传统立体方法及其在纹理缺失区域的失败，但未提供 RaDe-GS 使用渲染深度和表面法线改善几何重建的直接证据，因此该 claim 的第三部分未得到支持。"
+    },
+    {
+      "claimId": "c3",
+      "reason": "semantic_unresolved",
+      "detail": "证据仅表明深度图可经TSDF融合成完整3D模型，但未提及该融合用于几何重建，因此该目的性断言缺乏原文支持。"
+    }
+  ],
+  "repairRejections": [
+    {
+      "claimId": "c1",
+      "reason": "semantic_unresolved",
+      "detail": "Evidence only provides background on MVS, NeRF, and Gaussian Splatting; it does not directly state whether RaDe-GS retains 3D Gaussians or converts them to 2D disks."
+    },
+    {
+      "claimId": "c2",
+      "reason": "semantic_unresolved",
+      "detail": "E1 和 E2 描述了传统立体方法及其在纹理缺失区域的失败，但未提供 RaDe-GS 使用渲染深度和表面法线改善几何重建的直接证据，因此该 claim 的第三部分未得到支持。",
+      "revisionRejection": {
+        "claimId": "c2",
+        "reason": "semantic_unresolved",
+        "detail": "E1 supports traditional methods struggling with textureless regions; E2 supports recovering depth maps and fusing into 3D models. However, the claim's first clause '渲染深度图是为了利用多视图几何约束' is not directly supported by the evidence, which describes traditional methods but does not state the purpose of rendering depth maps in the proposed method."
+      }
+    },
+    {
+      "claimId": "c3",
+      "reason": "semantic_unresolved",
+      "detail": "证据仅表明深度图可经TSDF融合成完整3D模型，但未提及该融合用于几何重建，因此该目的性断言缺乏原文支持。"
+    }
+  ],
+  "evidenceCount": 96,
+  "evidencePages": {
+    "2": 16,
+    "3": 16,
+    "7": 11,
+    "1": 10,
+    "8": 43
+  },
+  "readPassages": 12,
+  "diagnosis": "Generated explanation cited related-work paragraphs about traditional stereo and prior Gaussian methods; factual review refused attribution to RaDe-GS. Main body depth/normal regularizer and implementation paragraphs were absent from acquired/read evidence pages. Repair must improve real acquisition, reading and own-method premise selection rather than relax factual checks.",
+  "preservation": {
+    "oldLedgerUnchanged": true,
+    "allOldRunsUnchanged": true,
+    "newRows": 30,
+    "ledgerRows": 8432,
+    "onlyThisRunCreatedCalls": true,
+    "active": [],
+    "oldPausedRetained": true,
+    "paused": [
+      "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+      "dr_run_ed10cc3347be552288079a9a588fddf5",
+      "dr_run_86b3f181a5475e99aacca3dbf4370567",
+      "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+      "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+      "dr_run_e3521b1781825273b384a26a5edb8cdc",
+      "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+      "dr_run_e9c9dc916bef519092fad8b929b2448f",
+      "dr_run_4738564f5ff35157996a35068c62ed32",
+      "dr_run_a8bd62f9ae3d52ff806f537065f55b2d",
+      "dr_run_98e66f2d3d555dfa822b859963f01419",
+      "dr_run_8be639c866c35ea092c735a04781b647",
+      "dr_run_1c0c2e6510165086962408b8e3cf698b"
+    ]
+  },
+  "firstSourceAddIndexProof": "external-x5r-v1-first-add-index-20261105.json",
+  "finalIndex": {
+    "collection": "literature_collection_v4_e5_small",
+    "count": 1215,
+    "sha256": "f1ab6ad746b00ce95dfb36b76fa06d011cfb04d2b0bccf1e194a826d0606465f"
+  },
+  "freshNetworkCredit": false,
+  "noAutomaticResubmission": true
+}
