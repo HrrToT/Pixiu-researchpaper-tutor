@@ -4801,7 +4801,7 @@
     "runtimeProof": "deep-research-evidence/runtime-load-external-385-20261105.json",
     "fullDR0DR5Proved": false,
     "independentCredit": 0,
-    "lastCapturedLedgerRows": 8432,
+    "lastCapturedLedgerRows": 8465,
     "lastCapturedActiveProductionRuns": 0,
     "historicalPausedRunsAtCapture": 13,
     "lastConfirmedIndexDocuments": 1215,
@@ -5219,15 +5219,18 @@
       "payloadSha256": "b9f3c0080999aeae68fb9b0a6ae1c9ae7f867fffe9ad1e3826e397025761c043"
     },
     "lastExternalDevelopmentCase": {
-      "case": "X5R-v1",
-      "runId": "dr_run_62e55af08db75bd18c9c4e4da161a0ce",
-      "promptVersion": "dr-v2.20261105.384",
-      "machineOutcome": "inconclusive",
-      "contentAccepted": false,
-      "modelCalls": 14,
-      "tokens": 51619,
-      "elapsedSeconds": 138.24,
-      "proof": "deep-research-evidence/process-384-x5r-v1-content-review-20261105.json"
+      "case": "X5R-v2",
+      "runId": "dr_run_011ef7d165255e79beca7ef442927508",
+      "promptVersion": "dr-v2.20261105.385",
+      "machineOutcome": "partial",
+      "developmentContentAcceptedByAssistantSourceReview": true,
+      "humanOrIndependentAccepted": false,
+      "acceptedClaims": 3,
+      "finalCoverageGaps": 0,
+      "modelCalls": 12,
+      "tokens": 42440,
+      "elapsedSeconds": 134.15,
+      "proof": "deep-research-evidence/external-x5r-v2-content-review-20261105.json"
     },
     "protectedTaskIds": [
       "dr-acceptance-h5f-2026-10-18",
@@ -11934,5 +11937,18 @@
     "fullDR0DR5Proved": false,
     "sourceCommit": "c4886c7e",
     "runtimeProof": "deep-research-evidence/runtime-load-external-385-20261105.json"
+  },
+  "candidateSourceClosure386": {
+    "promptVersion": "dr-v2.20261105.386",
+    "sourceGapClosureContractVersion": 1,
+    "runtimeLoadedVerified": false,
+    "associatedFiles": 182,
+    "associatedTestsPassed": 3328,
+    "regressionProof": "deep-research-evidence/closure-386-confirmed-regression-20261105.json",
+    "publicationReplay": "deep-research-evidence/closure-386-saved-publication-replay-20261105.json",
+    "providerCalls": 0,
+    "newRealWholeCase": false,
+    "independentCredit": 0,
+    "fullDR0DR5Proved": false
   }
 }

@@ -2222,7 +2222,8 @@ def make_publish_node(
                           for note in research_notes]
         gaps = [*remaining_retrieval_gaps(record.get('state', {}).get('gaps', []), audit,
                     accepted_claims, record.get('state', {}).get('evidence', []),
-                    plan=brief_state.get('plan', []), question=effective_question(record)),
+                    plan=brief_state.get('plan', []), question=effective_question(record),
+                    **({'versioned_sources':True} if type(record.get('sourceGapClosureContractVersion')) is int and record['sourceGapClosureContractVersion']==1 else {})),
                 *audit.get('gaps', [])]
         
         factual_claims = [claim for claim in accepted_claims if claim.get("kind") in {"reported", "inference"}]

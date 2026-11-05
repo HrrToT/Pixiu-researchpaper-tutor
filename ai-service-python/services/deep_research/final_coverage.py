@@ -301,7 +301,16 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
     return audit
 
 
-def remaining_retrieval_gaps(gaps, audit, claims, evidence, *, plan=None, question=""):
+def _closure_source_ids(evidence,versioned):
+    work=evidence.get('sourceWorkId');identities={work} if isinstance(work,str) and work else set()
+    version=evidence.get('sourceVersionId')
+    if versioned and isinstance(version,str) and version.startswith('arxiv:'):
+        from services.deep_research.source_revisions import explicit_revisions
+        if explicit_revisions(version)=={work:[version]}:identities.add(version)
+    return identities
+
+
+def remaining_retrieval_gaps(gaps, audit, claims, evidence, *, plan=None, question="",versioned_sources=False):
     """Return source gaps that still block the actual answer.
 
     Required research keeps the source-specific closure rule: a bounded factual
@@ -309,6 +318,7 @@ def remaining_retrieval_gaps(gaps, audit, claims, evidence, *, plan=None, questi
     Separately audited unnecessary support questions are nonblocking, not solved;
     callers retain the untouched original gap list in the run's research history.
     """
+    if type(versioned_sources) is not bool:raise ValueError('Invalid source gap closure policy')
     if audit.get('status') != 'checked':
         return list(gaps)
     # Revalidate against current accepted claims; a stored exemption list alone
@@ -324,7 +334,7 @@ def remaining_retrieval_gaps(gaps, audit, claims, evidence, *, plan=None, questi
     missing.update(g.get('obligationId') for g in answer_coverage_gaps(check_plan, claims, audit.get('verdicts')))
     accepted = {c.get('claimId'): c for c in claims
                 if c.get('verification') == 'semantic_passed' and c.get('kind') in {'reported', 'inference'}}
-    origins = {e.get('evidenceId'): e.get('sourceWorkId') for e in evidence
+    origins = {e.get('evidenceId'): _closure_source_ids(e,versioned_sources) for e in evidence
                if e.get('verification', {}).get('literal') == 'passed'}
     covered = {}
     for verdict in audit.get('verdicts', []):
@@ -334,7 +344,7 @@ def remaining_retrieval_gaps(gaps, audit, claims, evidence, *, plan=None, questi
         works = set()
         for binding in verdict.get('bindings', []):
             claim = accepted.get(binding.get('claimId'), {})
-            works.update(origins[ref] for ref in claim.get('evidenceRefs', []) if origins.get(ref))
+            for ref in claim.get('evidenceRefs', []):works.update(origins.get(ref,set()))
         covered[oid] = works
     return [gap for gap in gaps if not isinstance(gap, dict)
             or gap.get('sourceWorkId') not in covered.get(gap.get('obligationId'), set())]

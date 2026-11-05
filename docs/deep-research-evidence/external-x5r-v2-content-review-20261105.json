@@ -1,0 +1,128 @@
+{
+  "case": "X5R-v2",
+  "runId": "dr_run_011ef7d165255e79beca7ef442927508",
+  "promptVersion": "dr-v2.20261105.385",
+  "sourceCommit": "c4886c7e",
+  "machineOutcome": "partial",
+  "machineOutcomeReason": "Retained acquisition gap uses pinned v1 but closure checked unversioned workId only. Historical outcome stays partial.",
+  "modelCalls": 12,
+  "tokens": 42440,
+  "elapsedSeconds": 134.15,
+  "allCallsSettled": true,
+  "acceptedClaims": 3,
+  "rejectedClaims": [],
+  "finalCoverageStatus": "checked",
+  "finalCoverageGaps": [],
+  "sourceVersions": [
+    "arxiv:2406.01467v1"
+  ],
+  "sourceChecks": [
+    {
+      "claimId": "c1",
+      "text": "RaDe-GS没有把3D高斯改成2D圆盘。它保留一般的3D高斯，通过光栅化方法渲染深度图和表面法线图，以增强形状重建精度并保持计算效率。",
+      "kind": "reported",
+      "sources": [
+        {
+          "id": "ev_40a8dcdcebd5e81c104dba466e037b604dee9cfcd2d5f352f2cd634738b07347",
+          "location": {
+            "page": 1,
+            "offset": 0,
+            "section": "",
+            "sectionRole": "unknown",
+            "sourcePassageStart": 1307,
+            "sourcePassageEnd": 1817
+          },
+          "quote": " While recent techniques like 2D GS have attempted to im-\nprove shape reconstruction, they often reformulate the Gaussian primitives\nin ways that reduce both rendering quality and computational efficiency.\nTo address these problems, our work introduces a rasterized approach to\nrender the depth maps and surface normal maps of general 3D Gaussian\nsplats. Our method not only significantly enhances shape reconstruction ac-\ncuracy but also maintains the computational efficiency intrinsic to Gaussian\nSplatting."
+        }
+      ]
+    },
+    {
+      "claimId": "c2",
+      "text": "渲染深度和表面法线是为了提供几何监督：仅用光度损失无法恢复形状细节，因此加入深度畸变损失和法线一致性损失，促使深度和法线图与几何一致。",
+      "kind": "inference",
+      "sources": [
+        {
+          "id": "ev_1fcfff5bf7495bd8b60d5d54274ebe4906ddcb9af6924ee608307234d63d0e15",
+          "location": {
+            "page": 5,
+            "offset": 2063,
+            "section": "3 METHOD / 3.4 Loss Functions",
+            "sectionRole": "method",
+            "sourcePassageStart": 0,
+            "sourcePassageEnd": 481
+          },
+          "quote": "3.4 Loss Functions\nEven with our derived depth and normal maps, the Gaussian Splat-\nting cannot recover shape details if it is only trained with the pho-\ntometric supervision L𝑐that minimizes the difference between\nrendered and input images. To address this problem, we follow the\n2D Gaussian Splatting [Huang et al .2024] to apply additional depth\ndistortion loss and normal consistency loss. We detail these two\nterms here to make this paper self-contained.Depth distortion loss."
+        },
+        {
+          "id": "ev_e8cde3152e1d161ebb9502b87f19af942375ad84d941b5e21996f78b31bb4777",
+          "location": {
+            "page": 5,
+            "offset": 2063,
+            "section": "3 METHOD / 3.4 Loss Functions",
+            "sectionRole": "method",
+            "sourcePassageStart": 1083,
+            "sourcePassageEnd": 1134
+          },
+          "quote": "\nOur final training loss Lis,\nL=L𝑐+𝑤𝑑L𝑑+𝑤𝑛L𝑛. (25)\n"
+        }
+      ]
+    },
+    {
+      "claimId": "c3",
+      "text": "这些图用于几何重建：论文为所有训练视图渲染深度图，然后采用TSDF进行网格提取。",
+      "kind": "reported",
+      "sources": [
+        {
+          "id": "ev_528a802d7ebb1ebdcd65f74ee03aad6b725d6dac4b010a260b2c8a2ffad58ed1",
+          "location": {
+            "page": 5,
+            "offset": 3437,
+            "section": "4 EXPERIMENT / 4.1 Experimental Setup / 4.1.1 Implementation Details",
+            "sectionRole": "method",
+            "sourcePassageStart": 522,
+            "sourcePassageEnd": 874
+          },
+          "quote": " Fol-\nlowing GOF [Yu et al .2024c], We set 𝑤𝑑=100and𝑤𝑛=5in all our\nexperiments and detach the gradient propagation of the blending\nweight𝜔when calculating depth distortion loss. We render depth\nmaps for all training views and then adopt TSDF [Curless and Levoy\n1996b] for mesh extraction. All our experiments are conducted on a\nsingle NVIDIA H800 GPU.\n"
+        }
+      ]
+    }
+  ],
+  "developmentContentReview": {
+    "reviewer": "assistant source inspection; not a new human participant or independent evaluation",
+    "goalResponse": 4,
+    "evidenceSupport": 5,
+    "conditions": 4,
+    "synthesisValue": 4,
+    "readability": 4,
+    "executability": "not applicable to conceptual explanation",
+    "contentAcceptedAtDevelopmentScope": true,
+    "scope": "Three requested points; exact v1; geometry-supervision intent distinguished from tested universal guarantee; only depth maps enter stated TSDF mesh step. TSDF acronym could be explained more directly for a beginner; no broader novice learning outcome claimed."
+  },
+  "preservation": {
+    "oldLedgerUnchanged": true,
+    "allOldRunsUnchanged": true,
+    "newRows": 33,
+    "ledgerRows": 8465,
+    "onlyThisRunCreatedCalls": true,
+    "active": [],
+    "oldPausedRetained": true,
+    "paused": [
+      "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+      "dr_run_ed10cc3347be552288079a9a588fddf5",
+      "dr_run_86b3f181a5475e99aacca3dbf4370567",
+      "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+      "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+      "dr_run_e3521b1781825273b384a26a5edb8cdc",
+      "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+      "dr_run_e9c9dc916bef519092fad8b929b2448f",
+      "dr_run_4738564f5ff35157996a35068c62ed32",
+      "dr_run_a8bd62f9ae3d52ff806f537065f55b2d",
+      "dr_run_98e66f2d3d555dfa822b859963f01419",
+      "dr_run_8be639c866c35ea092c735a04781b647",
+      "dr_run_1c0c2e6510165086962408b8e3cf698b"
+    ]
+  },
+  "independentCredit": 0,
+  "fullDR0DR5Proved": false,
+  "candidateClosureProof": "closure-386-saved-publication-replay-20261105.json"
+}
