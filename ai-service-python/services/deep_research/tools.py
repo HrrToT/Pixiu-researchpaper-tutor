@@ -881,11 +881,11 @@ Return only a JSON array, one verdict per target:
 Missing configuration, contradictory choices and invalid parameter syntax fail.
 Do not require an unexecuted experiment to have results. Do not judge context claims as targets.'''
 
-        mechanism_review = (self._mechanism_grounding() if callable(self._mechanism_grounding)
-                            else self._mechanism_grounding) is True
+        from services.deep_research.mechanism_grounding import guidance as mechanism_instructions
+        mechanism_review = mechanism_instructions(self._mechanism_grounding() if callable(self._mechanism_grounding)
+                            else self._mechanism_grounding)
         if mechanism_review:
-            from services.deep_research.mechanism_grounding import GUIDANCE as mechanism_guidance
-            prompt += '\n'+mechanism_guidance
+            prompt += '\n'+mechanism_review
         inference_review = (self._qualitative_inference() if callable(self._qualitative_inference)
                             else self._qualitative_inference) is True
         if inference_review and any(c.get('kind') == 'inference' for c in claims):

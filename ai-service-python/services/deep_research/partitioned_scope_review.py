@@ -109,9 +109,10 @@ Targets:
     from services.deep_research.tools import TrackedLLMInvoker
     limit = checker._invoke.prompt_byte_limit(checker._run_id,node) if isinstance(checker._invoke,TrackedLLMInvoker) else 24000
     mechanism=getattr(checker,'_mechanism_grounding',False)
-    if (mechanism() if callable(mechanism) else mechanism) is True:
-        from services.deep_research.mechanism_grounding import GUIDANCE
-        prompt+='\n'+GUIDANCE
+    from services.deep_research.mechanism_grounding import guidance as mechanism_instructions
+    mechanism=mechanism_instructions(mechanism() if callable(mechanism) else mechanism)
+    if mechanism:
+        prompt+='\n'+mechanism
     if len(prompt.encode()) > limit:
         raise DeepResearchError('scope_review_capacity','推广命题核查的完整原文超过输入容量，未发送。')
     from services.deep_research.factual_review import OPTION

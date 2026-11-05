@@ -1439,6 +1439,8 @@ space with unsupported global absence or incidental iteration/performance values
                     'Do not add method-selection advice, experiments, rankings or a reading plan merely to populate a template. '\
                     'When advice is actually requested, preserve it and its necessary conditions. '\
                     'Explain required scientific relationships without expanding the requested scope.\n'
+        from services.deep_research.mechanism_grounding import strengthened as objective_framing_enabled, DRAFT_GUIDANCE as objective_guidance
+        if objective_framing_enabled(record):prompt+='\n'+objective_guidance
         template = prompt
         if premise_mode:
             reverse_aliases={eid:alias for alias,eid in evidence_aliases.items()}
@@ -1708,6 +1710,7 @@ space with unsupported global absence or incidental iteration/performance values
                     {'max_tokens': output, 'temperature': 0.0}), _safe_parse_json,
                 saved_state=current.get('state', {}).get('audienceRewrite'), checkpoint=checkpoint_audience,
                 can_start=has_time_for_rewrite(current),
+                **({'objective_framing':True} if objective_framing_enabled(current) else {}),
                 **({'verification_policy':{
                     'absence_scope_version':current.get('absenceScopeContractVersion',0),
                     'quantity_spelling_version':current.get('quantitySpellingContractVersion',0),
@@ -1921,10 +1924,12 @@ def make_verify_node(
                             repair_input_options['input_bytes']=32000
                     from services.deep_research.experiment_evidence import build_context as experiment_evidence_context
                     candidate_context=experiment_evidence_context(record)
+                    from services.deep_research.mechanism_grounding import strengthened as objective_framing_enabled
                     revised = repair_rejected(repair_report, repair_targets, evidence, effective_question(record),
                         invoke_repair, _safe_parse_json,
                         max_prompt_bytes=repair_prompt_byte_limit(current.get('budget', {}),**repair_input_options),
                         metric_domains=record.get('state', {}).get('metricDomains'),
+                        **({'objective_framing':True} if objective_framing_enabled(record) else {}),
                         batch_state=saved.get('repairBatchState'), checkpoint=checkpoint_repair_batches,
                         current_budget=lambda: repo_update(run_id, lambda r: r, expected_revision=None).get('budget', {}),
                         invoke_request=invoke_repair,

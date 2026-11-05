@@ -16,10 +16,11 @@ from services.deep_research.repair_scope import repair_evidence_scope
 def _prepare_repair(report, verification, evidence, question, *, max_prompt_bytes=24000,
                     metric_domains=None, draft_context=(), prior_revisions=(),
                     fact_redraft=False, requirement_context=(), source_aware_redraft=False,comparison_reasoning=False,
-                    question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False,shared_experiment_schema=False,experiment_evidence_context=None,experimental_edits=False,experimental_diagnostics=False,experimental_nested_tables=False,experimental_representation=False,experimental_coverage=False,citation_presentation_version=0,configuration_consistency_version=0,repair_evidence_packet_version=0,answer_intents=None,scope_expression=False,table_identity_context=False,claim_check=False,required_scope_ids=(),compact_layout=False,ordinary_advice=False,task_sources=False,request_semantics=False,preserve_answers=False,target_goals=False):
+                    question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False,shared_experiment_schema=False,experiment_evidence_context=None,experimental_edits=False,experimental_diagnostics=False,experimental_nested_tables=False,experimental_representation=False,experimental_coverage=False,citation_presentation_version=0,configuration_consistency_version=0,repair_evidence_packet_version=0,answer_intents=None,scope_expression=False,table_identity_context=False,claim_check=False,required_scope_ids=(),compact_layout=False,ordinary_advice=False,task_sources=False,request_semantics=False,preserve_answers=False,target_goals=False,objective_framing=False):
     if type(preserve_answers) is not bool:raise ValueError('Invalid answer preservation policy')
     from services.deep_research.repair_goals import policy_version
     goal_version=policy_version(target_goals)
+    if type(objective_framing) is not bool:raise ValueError('Invalid objective framing policy')
     if goal_version in (2,3,4,5) and not (fact_redraft and source_aware_redraft and concise_factual
             and compact_source_repair and factual_redraft_eligible(report)):
         raise ValueError('Point-scoped repair requires compact factual redrafting')
@@ -544,6 +545,9 @@ If a supported revision is not possible, omit that target rather than bypass sco
         condition_marker='__CONDITION_SOURCES_'+uuid4().hex+'__'
         prompt+='\n'+CONDITION_GUIDANCE+'\nCondition source index (navigation only):\n'+condition_marker
     note_navigation=type(table_identity_context) is int and table_identity_context==2 and factual_redraft_eligible(report) and not (goal_version in (2,3,4,5) and not has_tables)
+    if objective_framing:
+        from services.deep_research.mechanism_grounding import DRAFT_GUIDANCE
+        prompt+='\n'+DRAFT_GUIDANCE
     template = prompt
     from services.deep_research.experiment_edits import columnar
     def render(selected_rows):
@@ -753,7 +757,7 @@ def factual_redraft_eligible(report):
 def repair_rejected(report, verification, evidence, question, invoke, parse, *,
                     max_prompt_bytes=24000, metric_domains=None, batch_state=None, checkpoint=None,
                     current_budget=None, invoke_request=None, fact_redraft=False, requirement_context=(),
-                    source_aware_redraft=False,comparison_reasoning=False,question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,strict_response=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False,shared_experiment_schema=False,experiment_evidence_context=None,experimental_edits=False,experimental_diagnostics=False,experimental_nested_tables=False,experimental_representation=False,experimental_coverage=False,citation_presentation_version=0,configuration_consistency_version=0,repair_evidence_packet_version=0,scheduling_version=0,answer_intents=None,scope_expression=False,defer_length_filter=False,table_identity_context=False,claim_check=False,required_scope_ids=(),compact_layout=False,ordinary_advice=False,task_sources=False,request_semantics=False,preserve_answers=False,target_goals=False):
+                    source_aware_redraft=False,comparison_reasoning=False,question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,strict_response=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False,shared_experiment_schema=False,experiment_evidence_context=None,experimental_edits=False,experimental_diagnostics=False,experimental_nested_tables=False,experimental_representation=False,experimental_coverage=False,citation_presentation_version=0,configuration_consistency_version=0,repair_evidence_packet_version=0,scheduling_version=0,answer_intents=None,scope_expression=False,defer_length_filter=False,table_identity_context=False,claim_check=False,required_scope_ids=(),compact_layout=False,ordinary_advice=False,task_sources=False,request_semantics=False,preserve_answers=False,target_goals=False,objective_framing=False):
     """One bounded revision round, split before dispatch when evidence cannot fit.
 
     At most three requests share full sibling design definitions. Successful
@@ -766,6 +770,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
     if type(preserve_answers) is not bool:raise ValueError('Invalid answer preservation policy')
     from services.deep_research.repair_goals import policy_version
     goal_version=policy_version(target_goals)
+    if type(objective_framing) is not bool:raise ValueError('Invalid objective framing policy')
     if goal_version in (2,3,4,5) and not (fact_redraft and source_aware_redraft and concise_factual
             and compact_source_repair and factual_redraft_eligible(report)):
         raise ValueError('Point-scoped repair requires compact factual redrafting')
@@ -827,6 +832,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
                        **({'answerPointIntentContractVersion':1,'answerIntents':answer_intents} if answer_intents is not None else {}),
                        **({'experimentRepairPriorityContractVersion':scheduling_version} if scheduling_version in (1,2) else {}),
                        **({'experimentRepairInputContractVersion':repair_evidence_packet_version} if repair_evidence_packet_version in (1,2,3,4,5) else {}),
+                       **({'objectiveFramingVersion':1} if objective_framing else {}),
                        'evidence': evidence, 'question': question, 'metricDomains': metric_domains,
                        **({'citationPresentationContractVersion':citation_presentation_version} if citation_presentation_version in (2,3,4) else {}),
                        **({'configurationConsistencyContractVersion':2} if configuration_consistency_version==2 else {}),
@@ -863,6 +869,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
         return _prepare_repair(report, subset, evidence, question,
             max_prompt_bytes=state['maxPromptBytes'] if byte_limit is None else byte_limit,
             metric_domains=metric_domains, draft_context=siblings, prior_revisions=results,
+            **({'objective_framing':True} if objective_framing else {}),
             compact_layout=compact_layout,fact_redraft=fact_redraft, requirement_context=requirement_context,source_aware_redraft=source_aware_redraft,
             **({'ordinary_advice':True} if ordinary_advice else {}),
             **({'task_sources':True} if task_sources else {}),

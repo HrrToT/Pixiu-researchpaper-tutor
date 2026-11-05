@@ -280,8 +280,8 @@ class ResearchFacade:
             "materials": materials,
             "materialSnapshot": material_snapshot,  # Immutable Java snapshot
             "contextMaterials": (material_snapshot or {}).get("contextMaterials", []) if isinstance(material_snapshot, dict) else [],
-            "promptVersion": "dr-v2.20261105.381",
-            "factualReviewContractVersion": 2,
+            "promptVersion": "dr-v2.20261105.382",
+            "factualReviewContractVersion": 3,
             "citationPresentationContractVersion": 4,
             "configurationConsistencyContractVersion": 2,
             "experimentPlanEncodingContractVersion": 7,
@@ -1241,6 +1241,7 @@ class ResearchFacade:
         from services.deep_research.partitioned_scope_review import enabled as partitioned_scope_enabled, assertions_enabled,consistent_premises_enabled
         from services.deep_research.factual_decision import enabled as factual_decision_enabled
         from services.deep_research.general_advice import enabled as general_advice_enabled
+        from services.deep_research.mechanism_grounding import review_policy as mechanism_review_policy
         checker = BudgetedSemanticChecker(invoker, run_id,
             general_advice_review=lambda: general_advice_enabled(self._repo.require_run(run_id)),
             metric_domains=lambda: self._repo.require_run(run_id).get('state', {}).get('metricDomains'),
@@ -1269,8 +1270,7 @@ class ResearchFacade:
             result_attribution=lambda: type(self._repo.require_run(run_id).get('factualScopeContractVersion')) is int
                 and self._repo.require_run(run_id)['factualScopeContractVersion']==4,
             bounded_factual_review=lambda: bounded_review_enabled(self._repo.require_run(run_id)),
-            mechanism_grounding=lambda: type(self._repo.require_run(run_id).get('factualReviewContractVersion')) is int
-                and self._repo.require_run(run_id)['factualReviewContractVersion']==2,
+            mechanism_grounding=lambda: mechanism_review_policy(self._repo.require_run(run_id)),
             qualitative_inference=lambda: type(self._repo.require_run(run_id).get('audienceRewriteContractVersion')) is int
                 and self._repo.require_run(run_id)['audienceRewriteContractVersion'] in (4,5,6,7,8,9),
             experiment_intent_review=lambda: self._repo.require_run(run_id).get('experimentIntentContractVersion',0),
