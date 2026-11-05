@@ -252,3 +252,16 @@ X4L-v10原始必需8/10行完整还原后，最小必需输入降至20,925/22,89
 X4L-v11保存的原稿与修订逐字回放，旧13均复现numeric_mismatch，新14均进入语义审核，原文、引用身份及原稿不改。179项聚焦检查通过，包含相对定语、明确组数、参数角色和额外测量反例；该数量与后续关联回归重叠，不累计。证据：`deep-research-evidence/collection-380-saved-input-replay-20261105.json`。
 
 隔离语义验证仅发送保存的修订c1一次，1调用、3,532 Token，全结算；原来源绑定及语义检查接受。生产8,326账本和全部payload逐项保持，未发布、未重判原失败运行。该结果不是整题或独立验收。证据：`deep-research-evidence/collection-380-provider-component-20261105.json`。关联回归及提交加载结果待追加。
+
+首次167文件关联回归在沙箱执行，出现fixture错误并卡在本地asyncio socketpair初始化。只读py-spy调用栈确认socket.accept -> _fallback_socketpair -> ProactorEventLoop -> PDF诊断测试；保存栈后仅结束该pytest进程。原记录保留非通过exitCode及源码冻结证明，不冒充测试通过。后续同167文件使用允许本地套接字的执行权限，增加45秒faulthandler诊断，单独保存新记录；0模型重试。证据：`deep-research-evidence/collection-380-regression-environment-20261105.json`。
+
+同167文件在可访问本地套接字的权限下3,071项通过（141.04秒），源码冻结、0模型调用，一项既有PyPDF2弃用警告。首次沙箱非通过记录仍保留；179项聚焦与此范围重叠不累计。证据：`deep-research-evidence/collection-380-elevated-regression-20261105.json`。修复源码02fd72ca已提交推送。
+
+
+## .380实际整题：空间标签前的复合词“共同”误判为总数
+
+02fd72ca已提交推送且原容器正常重启一次加载，原8,326账本/12任务/完整索引保持。X4L-v12仅提交一次：12调用、56,460 Token、154.241秒，全部结算、未耗预算。两次完整性审核真正执行，一致性放行；深度与法线两条发布，表示方式仍被拒，整题partial、内容不接受、独立积分0。
+
+原稿及修订均为“这些二维基元共同表示三维场景”，没有“一组”，本轮不重复证明集合删除分支。新错误是_CARDINAL_CONTEXT把“共同表示”中的“共”当成总数语境，保留“三维”的3，再因引用没有测量值3而拒绝。已用原句离线定位该匹配，不直接补语义通过或重判旧运行。深度噪声效果在新修订中以inference保留并获模型接受；本轮不把它当已测量结果或独立科学验收。
+
+下一步区分明确计数“共/共计/共有”等语法与复合词，用原稿、修订和真实特征维度/组数反例验证后再决定真实验证。最终8,350账本，0活动、13历史暂停，12任务和完整索引/嵌入、旧账本前缀及全部旧payload保持，重复终态读取一致。证据：`deep-research-evidence/runtime-load-collection-380-20261105.json`、`deep-research-evidence/collection-380-x4l-v12-content-review-20261105.json`。

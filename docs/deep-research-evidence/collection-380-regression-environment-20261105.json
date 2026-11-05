@@ -1,0 +1,31 @@
+{
+  "sourceCommit": "02fd72ca",
+  "originalRun": {
+    "proof": "deep-research-evidence/collection-380-confirmed-regression-20261105.json",
+    "exitCode": 4294967295,
+    "sourceFrozen": true,
+    "passed": false,
+    "terminatedOnlyAfterStackInspection": true,
+    "pytestPid": 16496
+  },
+  "diagnosis": {
+    "stackPath": "tmp\\collection380-hang-stack-20261105.txt",
+    "sha256": "12ce4940bf833ed17e57b5e8d804feebfd1d111a358607ac82a9935c27c49782",
+    "frames": [
+      "socket.accept",
+      "_fallback_socketpair",
+      "BaseProactorEventLoop._make_self_pipe",
+      "Runner._lazy_init",
+      "PdfParseDiagnosticsTests.test_missing_tei_and_low_pdf_text_returns_successful_degraded_response"
+    ],
+    "interpretation": "Blocked while initializing the local asyncio socketpair before PDF test business logic. The run also showed fixture errors; no whole-suite pass claimed."
+  },
+  "nextRun": {
+    "sameTestFiles": 167,
+    "elevatedLocalSocketAccess": true,
+    "faulthandlerTimeoutSeconds": 45,
+    "automaticProviderRetry": false
+  },
+  "providerCalls": 0,
+  "productionWrites": 0
+}
