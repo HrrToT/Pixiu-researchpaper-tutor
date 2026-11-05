@@ -233,3 +233,13 @@ X4L-v10原始必需8/10行完整还原后，最小必需输入降至20,925/22,89
 52项初步聚焦检查通过；路由完善后38项相关检查通过。初版关联166文件3,044项通过；最终确认166文件3,046项通过（135.38秒），源码冻结、0模型调用、一项既有PyPDF2弃用警告，各范围不累计。最终以`deep-research-evidence/coverage-379-confirmed-regression-20261105.json`为准。
 
 真实隔离审核仅1调用、6,258 Token、7秒；全部固定检查covered、0缺口、一致性true，字段/来源/条件绑定校验正常。生产8,303账本及全部payload保持，未发布或改判原X4L-v10，不计整题或独立验收通过。记录脚本的复制意图标题仍写repair，已在证据中明确纠正，实际代码和账本node均为唯一verify_answer_coverage，执行范围未扩大。证据：`deep-research-evidence/coverage-379-provider-component-20261105.json`。待提交加载及一次完整流程验证。
+
+## .379实际整题：审核容量收口，集合定语仍误计1
+
+03da1fda已提交推送并在原数据保全后只重启Python容器一次加载。X4L-v11仅提交一次，11调用、44,910 Token、109.326秒，全结算，无新未知。初审和修订后两次verify_answer_coverage均真正执行，checked、无capacity限制，一致性true、publicationCoherence=released。新完整上下文编码已在整链生效；不是把隔离审核回写旧运行。
+
+深度说明原先无依据的降噪效果被拒绝后，修订保留光线-高斯盘交点的相对深度与权重集中关系，通过独立核验；法线说明保持，两条正常发布。修订本身已移除原效果，edits=[]且alreadyRemovedSpans保留声明，不能声称此整题实际应用了删除分支。
+
+仍partial且内容不接受：c1原稿和修订都是“一组在空间中定位的二维定向平面高斯盘”，源句为a set of oriented planar Gaussian disks。当前定义式集合规则只能识别较短的固定几何定语序列，插入“在空间中定位的”及无“的”的“定向平面”后，把不定集合引入当成测量组数1。两次都被numeric_mismatch拒绝，尚未完成该条语义核验；不能因为通用知识看似正确而直接补通过。
+
+下一步用原输入/修订及测量反例，泛化相对定语结构，保留真实实验组数、明确数量限制和额外维度/样本数硬检查，再决定唯一真实验证。最终8,326账本、0活动、13旧暂停，12任务、完整索引/嵌入、旧账本前缀与全部旧payload保持，重复终态GET一致。独立积分0，完整DR0—DR5未完成。证据：`deep-research-evidence/runtime-load-coverage-379-20261105.json`、`deep-research-evidence/coverage-379-x4l-v11-content-review-20261105.json`。
