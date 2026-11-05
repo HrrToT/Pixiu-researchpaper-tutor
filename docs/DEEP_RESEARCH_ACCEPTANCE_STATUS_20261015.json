@@ -5017,6 +5017,24 @@
       },
       "payloadSha256": "66aed5c2e0e155dc5fa777968ee3dc4143badf4a1a4a28d6884718ce5f50f76f",
       "remaining": "Losslessly compact repeated fixed coverage instructions/metadata without dropping evidence, requirements or checks, then verify full workflow and remaining external/independent release gates."
+    },
+    "nextCandidate": {
+      "promptVersion": "dr-v2.20261105.379",
+      "coverageDiagnosticsContractVersion": 4,
+      "runtimeLoaded": false,
+      "associatedRegression": {
+        "files": 166,
+        "passed": 3046,
+        "seconds": 135.38,
+        "sourceFrozen": true,
+        "proof": "deep-research-evidence/coverage-379-confirmed-regression-20261105.json"
+      },
+      "requiredInputMeasurement": "deep-research-evidence/coverage-379-required-context-replay-20261105.json",
+      "integratedInputReplay": "deep-research-evidence/coverage-379-integrated-input-replay-20261105.json",
+      "realCoverageComponent": "deep-research-evidence/coverage-379-provider-component-20261105.json",
+      "contentAccepted": false,
+      "independentCredit": 0,
+      "remaining": "Load committed source and run one full fixed workflow; do not promote this isolated audit or the old failed run into a full pass."
     }
   },
   "sharedModuleSourceCheckpoint": {

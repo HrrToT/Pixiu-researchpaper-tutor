@@ -36,7 +36,9 @@ def coverage_prompt_byte_limit(budget, output_tokens=3500):
     return max(0, min(24000, remaining - output_tokens - 1024))
 
 
-def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, *, budget=None,literal_dimensions=False,diagnostics=False,request_contract=False,claim_check=False,task_sources=False,request_semantics=0,binding_catalog=False,scoped_catalog=False,identification_locators=False,coherence=False):
+def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, *, budget=None,literal_dimensions=False,diagnostics=False,request_contract=False,claim_check=False,task_sources=False,request_semantics=0,binding_catalog=False,scoped_catalog=False,identification_locators=False,coherence=False,shared_evidence_context=False):
+    if type(shared_evidence_context) is not bool or shared_evidence_context and not diagnostics:
+        raise ValueError('Shared coverage evidence requires complete-context admission')
     if type(coherence) is not bool:raise ValueError('Invalid answer coherence policy')
     if type(binding_catalog) is not bool:raise ValueError('Invalid binding catalog policy')
     if type(scoped_catalog) is not bool or scoped_catalog and not (binding_catalog and request_contract):raise ValueError('Invalid scoped catalog policy')
@@ -172,7 +174,9 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
         try:
             output_tokens = coverage_output_tokens(audit_plan, claims)
             limit = coverage_prompt_byte_limit(budget, output_tokens)
-            render = lambda selected_rows: template.replace(evidence_marker, json.dumps(selected_rows, ensure_ascii=False, separators=(',', ':')), 1)
+            from services.deep_research.shared_strings import input_text
+            render = lambda selected_rows: template.replace(evidence_marker,
+                input_text(selected_rows) if shared_evidence_context else json.dumps(selected_rows, ensure_ascii=False, separators=(',', ':')), 1)
             fixed_bytes = len(render([]).encode('utf-8'))
             if limit <= 0 or fixed_bytes > limit:
                 raise BudgetExhaustedError('coveragePromptBytes', limit, fixed_bytes)
@@ -279,6 +283,7 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
             gap['wholeQuestion'] = True
     from services.deep_research.completion_criteria import completion_contract_digest
     audit={'status': status, 'verdicts': verdicts if isinstance(verdicts, list) else [],
+            **({'coverageEvidenceTransportVersion':1} if shared_evidence_context else {}),
             'completionContractDigest': completion_contract_digest(plan, claims),
             'displayMetadataDigest': display_metadata_digest(claims, evidence, **({"task_sources":True} if task_sources else {}), **({"request_semantics":2} if request_semantics==2 else {}),identification_locators=identification_locators),
             'gaps': gaps, 'invalidAspectObligations': invalid_aspects,

@@ -1823,11 +1823,12 @@ def make_verify_node(
                 **({'claim_check':True} if claim_check_enabled(record) else {}),
                 **({'task_sources':True} if type(record.get('reportPresentationContractVersion')) is int and record['reportPresentationContractVersion']==4 else {}),
                 **({'request_semantics':2} if type(record.get('requestSemanticsContractVersion')) is int and record['requestSemanticsContractVersion']==2 else {}),
-                **({'binding_catalog':True} if type(record.get('coverageDiagnosticsContractVersion')) is int and record['coverageDiagnosticsContractVersion'] in (2,3) else {}),
-                  **({'scoped_catalog':True} if type(record.get('coverageDiagnosticsContractVersion')) is int and record['coverageDiagnosticsContractVersion']==3 else {}),
+                **({'shared_evidence_context':True} if type(record.get('coverageDiagnosticsContractVersion')) is int and record['coverageDiagnosticsContractVersion']==4 else {}),
+                **({'binding_catalog':True} if type(record.get('coverageDiagnosticsContractVersion')) is int and record['coverageDiagnosticsContractVersion'] in (2,3,4) else {}),
+                  **({'scoped_catalog':True} if type(record.get('coverageDiagnosticsContractVersion')) is int and (record['coverageDiagnosticsContractVersion']==3 or record['coverageDiagnosticsContractVersion']==4 and request_coverage_enabled(record)) else {}),
                   **({'identification_locators':True} if type(record.get('identificationLocatorContractVersion')) is int and record['identificationLocatorContractVersion']==1 else {}),
                   **({'coherence':True} if type(record.get('answerCoherenceContractVersion')) is int and record['answerCoherenceContractVersion'] in (1,2) else {}),
-                **({'diagnostics':True} if type(record.get('coverageDiagnosticsContractVersion')) is int and record['coverageDiagnosticsContractVersion'] in (1,2,3) else {}),
+                **({'diagnostics':True} if type(record.get('coverageDiagnosticsContractVersion')) is int and record['coverageDiagnosticsContractVersion'] in (1,2,3,4) else {}),
                 **({'literal_dimensions':True} if dimensions_enabled(record) else {}))
             if saved.get('outputKind') == 'experiment_design':
                 from services.deep_research.design_completion import prepare_design_completion
@@ -2060,11 +2061,12 @@ def make_verify_node(
                             **({'claim_check':True} if claim_check_enabled(record) else {}),
                             **({'task_sources':True} if type(record.get('reportPresentationContractVersion')) is int and record['reportPresentationContractVersion']==4 else {}),
                             **({'request_semantics':2} if type(record.get('requestSemanticsContractVersion')) is int and record['requestSemanticsContractVersion']==2 else {}),
-                            **({'binding_catalog':True} if type(record.get('coverageDiagnosticsContractVersion')) is int and record['coverageDiagnosticsContractVersion'] in (2,3) else {}),
-                  **({'scoped_catalog':True} if type(record.get('coverageDiagnosticsContractVersion')) is int and record['coverageDiagnosticsContractVersion']==3 else {}),
+                            **({'shared_evidence_context':True} if type(record.get('coverageDiagnosticsContractVersion')) is int and record['coverageDiagnosticsContractVersion']==4 else {}),
+                **({'binding_catalog':True} if type(record.get('coverageDiagnosticsContractVersion')) is int and record['coverageDiagnosticsContractVersion'] in (2,3,4) else {}),
+                  **({'scoped_catalog':True} if type(record.get('coverageDiagnosticsContractVersion')) is int and (record['coverageDiagnosticsContractVersion']==3 or record['coverageDiagnosticsContractVersion']==4 and request_coverage_enabled(record)) else {}),
                   **({'identification_locators':True} if type(record.get('identificationLocatorContractVersion')) is int and record['identificationLocatorContractVersion']==1 else {}),
                   **({'coherence':True} if type(record.get('answerCoherenceContractVersion')) is int and record['answerCoherenceContractVersion'] in (1,2) else {}),
-                            **({'diagnostics':True} if type(record.get('coverageDiagnosticsContractVersion')) is int and record['coverageDiagnosticsContractVersion'] in (1,2,3) else {}),
+                            **({'diagnostics':True} if type(record.get('coverageDiagnosticsContractVersion')) is int and record['coverageDiagnosticsContractVersion'] in (1,2,3,4) else {}),
                             **({'literal_dimensions':True} if dimensions_enabled(record) else {}))
                     verification_result = merged
             except BudgetExhaustedError as exc:
