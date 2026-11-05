@@ -18,7 +18,7 @@ def template(record, kind='paper_comparison'):
         {'P1':{'workId':'paper', 'title':'Paper'}}, 'EVIDENCE', 'TABLES', drafting_schema=True)
 
 
-@pytest.mark.parametrize('version', [None, True, False, 0, 2, '1'])
+@pytest.mark.parametrize('version', [None, True, False, 0, 3, '1'])
 def test_only_strict_opt_in_changes_factual_prompts_and_legacy_text_stays_exact(version):
     legacy = {'factualScopeContractVersion':4, 'comparisonReasoningContractVersion':4}
     assert not enabled({'factualPromptContractVersion':version}, 'paper_comparison')
@@ -121,3 +121,29 @@ def test_historical_or_unknown_run_cannot_switch_to_the_new_prompt(tmp_path):
     with pytest.raises(ValueError,match='Immutable run field changed'):
         repo.update_run('r',lambda r:{**r,'factualPromptContractVersion':1})
     assert repo.require_run('r')==before
+
+
+def test_v2_post_guidance_is_new_only_and_does_not_change_saved_v1_text():
+    from services.deep_research.factual_prompt import post_guidance
+    for version in (None,True,1,3,'2'):
+        assert post_guidance({'factualPromptContractVersion':version},'points','legacy exact')=='legacy exact'
+    assert 'conditions={}' in post_guidance({'factualPromptContractVersion':2},'points','legacy')
+    assert 'server labels' in post_guidance({'factualPromptContractVersion':2},'access','legacy')
+    assert 'proposal' in post_guidance({'factualPromptContractVersion':2},'semantics','legacy')
+    assert 'never requested scope' in post_guidance({'factualPromptContractVersion':2},'preservation','legacy')
+
+
+def test_v2_requirement_packet_roundtrips_all_frozen_criteria_and_source_requirements():
+    from services.deep_research.evidence_wire import decode
+    prompt=template({'factualPromptContractVersion':2})
+    packet=json.JSONDecoder().raw_decode(prompt.split('Encoding changes no scope.\n',1)[1])[0]
+    requirements=decode(packet)
+    assert requirements==[{'obligationId':'o','question':'比较','requiredSources':['paper-v1'],
+        'completionCriteria':[{'criterionId':'human','requirement':'保留原始条件','responseType':'explanation'}],
+        'requiredSourceAliases':[]}]
+    # A bare work registry must not guess a revision mapping. An actual owned
+    # version identity can supply the reversible alias without changing scope.
+    owned=template({'factualPromptContractVersion':2,'state':{'evidence':[
+        {'sourceWorkId':'paper','sourceVersionId':'paper-v1'}]}})
+    packet=json.JSONDecoder().raw_decode(owned.split('Encoding changes no scope.\n',1)[1])[0]
+    assert decode(packet)==[{**requirements[0],'requiredSourceAliases':['P1']}]

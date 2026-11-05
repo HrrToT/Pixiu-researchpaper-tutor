@@ -25,11 +25,15 @@ def result_role(row):
 
 
 def order_premises(evidence,plan,limit=20, *, membership_intents=False,module_intents=False,condition_intents=False,
-                   definition_context=False,read_sources=(),operational_context=False,mechanism_overview=False,mechanism_components=False,section_targets=(),indexed_sections=False,external_method_context=False):
+                   definition_context=False,read_sources=(),operational_context=False,mechanism_overview=False,mechanism_components=False,section_targets=(),indexed_sections=False,external_method_context=False,request_roles=False):
     obligations={o['obligationId']:o for item in plan for o in item.get('obligations',[])}
     rows=[e for e in evidence if e.get('verification',{}).get('literal')=='passed']
     works=list(dict.fromkeys(e.get('sourceWorkId') for e in rows))
     chosen=[];seen=set();bundles=[]
+    if request_roles:
+        from services.deep_research.reading_roles import premise_bundles
+        chosen,bundles=premise_bundles(rows,obligations)
+        seen={e['evidenceId'] for e in chosen}
     section_groups={};section_owners={o['obligationId']:i for i,item in enumerate(plan) for o in item.get('obligations',[])}
     if section_targets:
         from services.deep_research.section_premises import bundle as section_bundle,requested as requested_sections

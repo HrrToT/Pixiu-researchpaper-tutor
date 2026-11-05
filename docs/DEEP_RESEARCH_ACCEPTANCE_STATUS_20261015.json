@@ -4823,7 +4823,7 @@
       "externalResearchWorkflowAccepted": false
     },
     "externalRouteBoundary": "User authorized current system HTTP proxy. Configured only in ignored local Python .env. Formal AcademicAcquisition factory fetched metadata and uncached fulltext using pinned public-IP/original-host TLS; application restarted once and wiring/health/data verified. Full external research quality remains unaccepted.",
-    "remaining": "Fix actual read allocation under unchanged12-slot cap: acquired PGSR method/settings paragraphs not read, reference fragments consumed slots. Prove actual acquired-source -> read -> literal-extract -> synthesis transmission before bounded development validation. Keep G1N first partial immutable and retired. Complete comparison/experiments/insufficiency/continuation/independent/release audit remain open.",
+    "remaining": "Load tested390 with protected14-task/index/ledger snapshot. Then one bounded unchanged-question G1N-v2 development case using frozen regression definition. First G1N partial remains immutable/retired; no independent credit. Full comparison quality, executable experiments, insufficiency, continuation, independent replacement and release audit remain open.",
     "factualReviewContractVersion": 3,
     "factualDecisionContractVersion": 2,
     "repairRemovalContractVersion": 2,
@@ -5343,7 +5343,28 @@
       "wholeRealCaseRun": false,
       "runtimeProof": "deep-research-evidence/runtime-load-factual-389-20261105.json"
     },
-    "factualPromptContractVersion": 1
+    "factualPromptContractVersion": 1,
+    "candidateReading390": {
+      "promptVersion": "dr-v2.20261105.390",
+      "readingPriorityContractVersion": 6,
+      "factualPromptContractVersion": 2,
+      "runtimeLoaded": false,
+      "associatedTests": 3471,
+      "testFiles": 188,
+      "seconds": 146.281,
+      "sourceFrozen": true,
+      "regressionProof": "deep-research-evidence/reading-390-verified-final-regression-20261105.json",
+      "chainProof": "deep-research-evidence/reading-390-verified-chain-replay-20261105.json",
+      "legacy389PromptExact": true,
+      "legacyProof": "deep-research-evidence/reading-390-legacy389-input-preservation-20261105.json",
+      "readRows": 12,
+      "literalEvidenceRows": 60,
+      "suppliedRows": 14,
+      "inputBytes": 23961,
+      "fixedInputBytes": 14156,
+      "realWholeCaseRun": false,
+      "independentCredit": 0
+    }
   },
   "sharedModuleSourceCheckpoint": {
     "sourceCommit": "f8ae5177",

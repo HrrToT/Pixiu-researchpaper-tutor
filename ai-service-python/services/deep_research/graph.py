@@ -689,13 +689,15 @@ def make_read_node(
         available = [sources_map[sid] for sid in source_ids if sid in sources_map]
         available.sort(key=lambda source: (source["sourceId"], source.get("contentHash")) in extracted)
         read_limit = 24 if record.get("budget", {}).get("profile") == "extended" else 12
-        if type(record.get('readingPriorityContractVersion')) is int and record['readingPriorityContractVersion'] in (1,2,3,4,5):
+        if type(record.get('readingPriorityContractVersion')) is int and record['readingPriorityContractVersion'] in (1,2,3,4,5,6):
             from services.deep_research.reading_priority import select_read_sources
             from services.deep_research.source_continuity import enabled as continuity_enabled,method_enabled
             obligations={o['obligationId']:o for item in record.get('state',{}).get('plan',[]) for o in item.get('obligations',[])}
             selected=select_read_sources(available,obligations,read_limit,extracted=extracted,
-                **({'priority_version':{2:7,3:8,4:9,5:10}[record['readingPriorityContractVersion']]}
-                   if record['readingPriorityContractVersion'] in (2,3,4,5) else {}),
+                **({'priority_version':{2:7,3:8,4:9,5:10,6:10}[record['readingPriorityContractVersion']]}
+                   if record['readingPriorityContractVersion'] in (2,3,4,5,6) else {}),
+                **({'substantive':True} if record['readingPriorityContractVersion']==6
+                   and record.get('state',{}).get('outputKind') in {'paper_comparison','claim_verification'} else {}),
                 **({'illustrative_context':True} if continuity_enabled(record) else {}),
                 **({'method_context':True} if method_enabled(record) else {}))
         else:
@@ -1160,6 +1162,8 @@ def make_synthesize_node(
                 from services.deep_research.selection import proposal_evidence_order
                 candidates=proposal_evidence_order(candidates,question)
             candidates,premise_bundles=order_premises(candidates,brief_state.get('plan',[]),
+                **({'request_roles':True} if type(record.get('readingPriorityContractVersion')) is int
+                   and record['readingPriorityContractVersion']==6 and output_kind in {'paper_comparison','claim_verification'} else {}),
                 **({'external_method_context':True} if type(record.get('externalReadingContractVersion')) is int and record['externalReadingContractVersion']==1 else {}),
                 **({'membership_intents':True} if record['synthesisEvidenceContractVersion'] in (2,3,4,5,6) else {}),
                 **({'module_intents':True} if record['synthesisEvidenceContractVersion'] in (3,4,5,6) else {}),
@@ -1410,10 +1414,10 @@ space with unsupported global absence or incidental iteration/performance values
                 drafting_schema=drafting_schema_enabled(record),point_guidance=format_guidance(point_constraint))
         from services.deep_research.experiment_template import enabled as compact_experiment_enabled,build as experiment_template
         from services.deep_research.answer_point_intent import enabled as point_intent_enabled, GUIDANCE as point_intent_guidance
-        from services.deep_research.factual_prompt import enabled as factual_prompt_enabled, scope_guidance as factual_scope_guidance
+        from services.deep_research.factual_prompt import enabled as factual_prompt_enabled, scope_guidance as factual_scope_guidance, post_guidance as factual_post_guidance
         compact_factual_prompt=premise_mode and factual_prompt_enabled(record,output_kind)
         if point_intent_enabled(record) and output_kind != 'experiment_design':
-            prompt += '\n' + point_intent_guidance
+            prompt += '\n' + (factual_post_guidance(record,'points',point_intent_guidance) if compact_factual_prompt else point_intent_guidance)
         from services.deep_research.scope_expression import enabled as scope_expression_enabled, guidance as scope_expression_guidance
         if scope_expression_enabled(record) and output_kind != 'experiment_design':
             prompt += '\n' + (factual_scope_guidance(record['scopeExpressionContractVersion'])
@@ -1440,14 +1444,16 @@ space with unsupported global absence or incidental iteration/performance values
             prompt+='\n'+evidence_wire_legend
         from services.deep_research.access_disclosure import enabled as access_disclosure_enabled, GUIDANCE as access_disclosure_guidance
         if access_disclosure_enabled(record):
-            prompt+='\n'+access_disclosure_guidance
+            prompt+='\n'+(factual_post_guidance(record,'access',access_disclosure_guidance) if compact_factual_prompt else access_disclosure_guidance)
         from services.deep_research.request_semantics import enabled as semantics_enabled, DRAFT_GUIDANCE
-        if semantics_enabled(record):prompt+='\n'+DRAFT_GUIDANCE
+        if semantics_enabled(record):prompt+='\n'+(factual_post_guidance(record,'semantics',DRAFT_GUIDANCE) if compact_factual_prompt else DRAFT_GUIDANCE)
         from services.deep_research.answer_preservation import enabled as preserve_answer_scope, GUIDANCE as preservation_guidance
-        if preserve_answer_scope(record):prompt+='\n'+preservation_guidance
+        if preserve_answer_scope(record):prompt+='\n'+(factual_post_guidance(record,'preservation',preservation_guidance) if compact_factual_prompt else preservation_guidance)
         if (type(record.get('compactionEditorContractVersion')) is int
                 and record['compactionEditorContractVersion'] in (7,8) and output_kind!='experiment_design'):
-            if section_focused:
+            if compact_factual_prompt and record.get('factualPromptContractVersion')==2:
+                prompt+='\n'+factual_post_guidance(record,'layout','')+'\n'
+            elif section_focused:
                 prompt+='\nTemplate sections are optional. Answer every human-requested point and necessary condition; do not add unrequested method selection, experiments, rankings or reading plans to fill a template.\n'
             else:
                 prompt+='\nThe section names above are an allowed vocabulary, NOT a checklist of deliverables. '\
