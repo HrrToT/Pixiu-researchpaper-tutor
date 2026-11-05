@@ -4789,16 +4789,16 @@
     "proof": "deep-research-evidence/compact-experiment-envelope-regression-20261020.json"
   },
   "currentCheckpoint": {
-    "sourceCommit": "139b165b",
+    "sourceCommit": "35fd2aad",
     "javaSourceCommit": "612c324e",
-    "promptVersion": "dr-v2.20261105.389",
+    "promptVersion": "dr-v2.20261105.390",
     "factualRepairGoalContractVersion": 5,
     "answerCoherenceContractVersion": 2,
     "quantitySpellingContractVersion": 15,
-    "component": "unified factual drafting and lossless evidence capacity",
-    "componentOutcome": "3447 checks across187 files pass. Actual G1N saved input fixed21603->16667 bytes and4->13 evidence rows; X5R saved input4->15. Loaded389 with8615 ledger/14 tasks/1215 index preserved. Upstream acquired-but-unread method/settings gap remains; no new model case or independent/content pass.",
+    "component": "bounded role-aware reading and own-source synthesis premises",
+    "componentOutcome": "3471 checks/188files pass; actual12-read ->60literal ->14synthesis input replay preserves all frozen criteria and key method/value/header/settings premises within23961/24000bytes. Loaded390 with8615 ledger/14 tasks/1215 index preserved. Full real comparison not yet validated; independent0.",
     "runtimeLoadedVerified": true,
-    "runtimeProof": "deep-research-evidence/runtime-load-factual-389-20261105.json",
+    "runtimeProof": "deep-research-evidence/runtime-load-reading-390-20261105.json",
     "fullDR0DR5Proved": false,
     "independentCredit": 0,
     "lastCapturedLedgerRows": 8615,
@@ -5343,12 +5343,12 @@
       "wholeRealCaseRun": false,
       "runtimeProof": "deep-research-evidence/runtime-load-factual-389-20261105.json"
     },
-    "factualPromptContractVersion": 1,
+    "factualPromptContractVersion": 2,
     "candidateReading390": {
       "promptVersion": "dr-v2.20261105.390",
       "readingPriorityContractVersion": 6,
       "factualPromptContractVersion": 2,
-      "runtimeLoaded": false,
+      "runtimeLoaded": true,
       "associatedTests": 3471,
       "testFiles": 188,
       "seconds": 146.281,
@@ -5363,8 +5363,10 @@
       "inputBytes": 23961,
       "fixedInputBytes": 14156,
       "realWholeCaseRun": false,
-      "independentCredit": 0
-    }
+      "independentCredit": 0,
+      "sourceCommit": "35fd2aad"
+    },
+    "readingPriorityContractVersion": 6
   },
   "sharedModuleSourceCheckpoint": {
     "sourceCommit": "f8ae5177",
