@@ -1,0 +1,709 @@
+{
+  "case": "G1N-v4",
+  "split": "development",
+  "runId": "dr_run_7dae9d334ff2582e85cca59776eb011d",
+  "promptVersion": "dr-v2.20261105.393",
+  "status": "completed",
+  "machineOutcome": "partial",
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "actualModelCalls": 9,
+  "tokens": 37831,
+  "elapsedSeconds": 75.479,
+  "allModelCallsSettled": true,
+  "initialRejected": [
+    {
+      "claimId": "c1",
+      "reason": "numeric_mismatch",
+      "missingReportedNumbers": [
+        "5e-1"
+      ],
+      "detail": "本条引用原文未直接报告这些数值：0.5。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。"
+    },
+    {
+      "claimId": "c2",
+      "reason": "table_binding_outside_citation"
+    },
+    {
+      "claimId": "c3",
+      "reason": "table_binding_outside_citation"
+    },
+    {
+      "claimId": "c4",
+      "reason": "invalid_scope_expression",
+      "detail": "Scope expression cannot overwrite authored factual prose"
+    }
+  ],
+  "draftValidationAudit": {
+    "version": 1,
+    "rejected": [
+      {
+        "claimId": "c4",
+        "reason": "invalid_scope_expression",
+        "detail": "Scope expression cannot overwrite authored factual prose",
+        "originalClaim": {
+          "claimId": "c4",
+          "text": "两篇论文均未报告模型存储或显存使用数据，因此无法比较。",
+          "kind": "inference",
+          "evidenceRefs": [
+            "ev_d9714d53fb3219d25b98cbe348699fc00c9843d748c9b4f55b0d93ff06edb45a",
+            "ev_6e14d5193e69c79f3b2fa464ea06f08abcf606a71c37deb48c0a876dbdad9340"
+          ],
+          "conditions": {},
+          "obligationIds": [
+            "ob_4"
+          ],
+          "detailLevel": "medium",
+          "tableBindings": [],
+          "scopeExpression": {
+            "observedSettings": [
+              {
+                "subject": "GOF",
+                "attribute": "模型存储或显存报告",
+                "value": "未提供"
+              },
+              {
+                "subject": "PGSR",
+                "attribute": "模型存储或显存报告",
+                "value": "未提供"
+              }
+            ],
+            "notEstablished": [
+              {
+                "quantifier": "all",
+                "domain": "两篇论文",
+                "subject": "模型存储或显存",
+                "comparator": "无",
+                "predicate": "可比较"
+              }
+            ]
+          },
+          "draftingBasis": {
+            "premiseStatus": "not_established",
+            "observations": [
+              {
+                "evidenceId": "E2",
+                "quote": "The geometry of each 3D Gaussian G𝑘 is parameterized by an opacity 𝛼𝑘∈[0,1], center p𝑘∈R3×1, scale s∈R3×1, and rotation R∈R3×3 parameterized by a quaternion"
+              },
+              {
+                "evidenceId": "E1",
+                "quote": "We compress the Gaussian ellipsoid along the direction of the minimum scale factor, effectively flattening the ellipsoid into a plane closest to its original shape."
+              }
+            ],
+            "scopeDecision": "bounded_inference",
+            "unresolved": "两篇论文均未提供模型存储或显存使用数据，无法比较。"
+          }
+        }
+      }
+    ]
+  },
+  "repairStatus": "skipped_budget",
+  "repairLimit": {
+    "kind": "repairEvidenceBytes",
+    "limit": 24000,
+    "used": 27192
+  },
+  "acceptedClaims": [
+    {
+      "claimId": "c5",
+      "text": "若优先几何精度且可接受较长训练时间，选 PGSR；若需快速训练且对精度要求稍低，选 GOF。渲染质量接近，可按具体指标偏好选择。",
+      "kind": "proposal",
+      "evidenceRefs": [
+        "ev_5eeb225bc9ec31711ba9d3440776342cb4e9499593e0b3a8c4a3cf94690120ea",
+        "ev_5c7fd6bcd71aead88a73e0435ce9a61d5a1e5b76fb19bc43b4e68860062b1caa",
+        "ev_aed79f8e276f90dbf65f658c61186255b2580e5009ef85be7a8fde1a93e2bf1c",
+        "ev_39bdce993dd69ac32f53edd216256c84b71818f6bd0dc78e518bf7113036bb11"
+      ],
+      "conditions": {},
+      "obligationIds": [
+        "ob_5"
+      ],
+      "detailLevel": "medium",
+      "tableBindings": [],
+      "verification": "proposal"
+    }
+  ],
+  "answerCoverage": {
+    "status": "checked",
+    "verdicts": [
+      {
+        "obligationId": "ob_1",
+        "status": "missing",
+        "bindings": [],
+        "aspects": [
+          {
+            "aspectId": "criterion:human_aspect_1",
+            "requirement": "高斯表示与网格提取路径有什么不同",
+            "basis": {
+              "kind": "request",
+              "excerpt": "高斯表示与网格提取路径有什么不同"
+            },
+            "status": "missing",
+            "bindings": []
+          }
+        ],
+        "criteria": [
+          {
+            "criterionId": "human_aspect_1",
+            "responseType": "identification",
+            "status": "missing",
+            "bindings": []
+          }
+        ],
+        "requestCheckReasons": [
+          {
+            "checkId": "criterion:human_aspect_1",
+            "reason": "回答未说明高斯表示与网格提取路径的不同。"
+          }
+        ],
+        "gapDetail": {
+          "criterionIds": [
+            "human_aspect_1"
+          ],
+          "aspectIds": [
+            "criterion:human_aspect_1"
+          ],
+          "missingContent": "请补全本条固定要求中标为未满足的部分，具体要求见 missingAspects。",
+          "reason": "此缺口由固定检查项的未满足状态汇总；模型说明不作为新增要求或论文事实。"
+        }
+      },
+      {
+        "obligationId": "ob_2",
+        "status": "missing",
+        "bindings": [],
+        "aspects": [
+          {
+            "aspectId": "criterion:req_2_1",
+            "requirement": "列出 GOF 和 PGSR 在 DTU 上报告的几何精度数值及指标方向",
+            "basis": {
+              "kind": "request",
+              "excerpt": "GOF 和 PGSR 在 DTU 数据集上报告的几何精度指标和训练耗时是多少？实验条件（分辨率、硬件）如何？"
+            },
+            "status": "missing",
+            "bindings": []
+          },
+          {
+            "aspectId": "criterion:req_2_2",
+            "requirement": "列出 GOF 和 PGSR 在 DTU 上的训练耗时及硬件条件",
+            "basis": {
+              "kind": "request",
+              "excerpt": "GOF 和 PGSR 在 DTU 数据集上报告的几何精度指标和训练耗时是多少？实验条件（分辨率、硬件）如何？"
+            },
+            "status": "missing",
+            "bindings": []
+          },
+          {
+            "aspectId": "criterion:req_2_3",
+            "requirement": "指出时间数值或条件有差异时，不能直接推成普遍速度排名",
+            "basis": {
+              "kind": "request",
+              "excerpt": "GOF 和 PGSR 在 DTU 数据集上报告的几何精度指标和训练耗时是多少？实验条件（分辨率、硬件）如何？"
+            },
+            "status": "missing",
+            "bindings": []
+          }
+        ],
+        "criteria": [
+          {
+            "criterionId": "req_2_1",
+            "responseType": "identification",
+            "status": "missing",
+            "bindings": []
+          },
+          {
+            "criterionId": "req_2_2",
+            "responseType": "identification",
+            "status": "missing",
+            "bindings": []
+          },
+          {
+            "criterionId": "req_2_3",
+            "responseType": "limitation",
+            "status": "missing",
+            "bindings": []
+          }
+        ],
+        "requestCheckReasons": [
+          {
+            "checkId": "criterion:req_2_1",
+            "reason": "回答未列出 GOF 和 PGSR 在 DTU 上的几何精度数值及指标方向。"
+          },
+          {
+            "checkId": "criterion:req_2_2",
+            "reason": "回答未列出训练耗时及硬件条件。"
+          },
+          {
+            "checkId": "criterion:req_2_3",
+            "reason": "回答未指出时间数值或条件差异，也未说明不能直接推成普遍速度排名。"
+          }
+        ],
+        "gapDetail": {
+          "criterionIds": [
+            "req_2_1",
+            "req_2_2",
+            "req_2_3"
+          ],
+          "aspectIds": [
+            "criterion:req_2_1",
+            "criterion:req_2_2",
+            "criterion:req_2_3"
+          ],
+          "missingContent": "请补全本条固定要求中标为未满足的部分，具体要求见 missingAspects。",
+          "reason": "此缺口由固定检查项的未满足状态汇总；模型说明不作为新增要求或论文事实。"
+        }
+      },
+      {
+        "obligationId": "ob_3",
+        "status": "partial",
+        "bindings": [
+          {
+            "claimId": "c5",
+            "field": "text",
+            "excerpt": "若优先几何精度且可接受较长训练时间，选 PGSR；若需快速训练且对精度要求稍低，选 GOF。渲染质量接近，可按具体指标偏好选择。"
+          }
+        ],
+        "aspects": [
+          {
+            "aspectId": "criterion:human_aspect_1",
+            "requirement": "Mip-NeRF360 的渲染质量如何",
+            "basis": {
+              "kind": "request",
+              "excerpt": "Mip-NeRF360 的渲染质量如何"
+            },
+            "status": "partial",
+            "bindings": [
+              {
+                "claimId": "c5",
+                "field": "text",
+                "excerpt": "若优先几何精度且可接受较长训练时间，选 PGSR；若需快速训练且对精度要求稍低，选 GOF。渲染质量接近，可按具体指标偏好选择。"
+              }
+            ]
+          }
+        ],
+        "criteria": [
+          {
+            "criterionId": "human_aspect_1",
+            "responseType": "explanation",
+            "status": "partial",
+            "bindings": [
+              {
+                "claimId": "c5",
+                "field": "text",
+                "excerpt": "若优先几何精度且可接受较长训练时间，选 PGSR；若需快速训练且对精度要求稍低，选 GOF。渲染质量接近，可按具体指标偏好选择。"
+              }
+            ]
+          }
+        ],
+        "requestCheckReasons": [
+          {
+            "checkId": "criterion:human_aspect_1",
+            "reason": "回答仅提及渲染质量接近，未给出具体指标或解释。"
+          }
+        ],
+        "gapDetail": {
+          "criterionIds": [
+            "human_aspect_1"
+          ],
+          "aspectIds": [
+            "criterion:human_aspect_1"
+          ],
+          "missingContent": "请补全本条固定要求中标为未满足的部分，具体要求见 missingAspects。",
+          "reason": "此缺口由固定检查项的未满足状态汇总；模型说明不作为新增要求或论文事实。"
+        }
+      },
+      {
+        "obligationId": "ob_4",
+        "status": "missing",
+        "bindings": [],
+        "aspects": [
+          {
+            "aspectId": "criterion:req_4_1",
+            "requirement": "检查两篇论文是否报告模型存储或显存使用数据",
+            "basis": {
+              "kind": "request",
+              "excerpt": "GOF 和 PGSR 是否报告了模型存储或显存使用？证据是否足以比较？"
+            },
+            "status": "missing",
+            "bindings": []
+          },
+          {
+            "aspectId": "criterion:req_4_2",
+            "requirement": "若证据不足，明确说明无法比较",
+            "basis": {
+              "kind": "request",
+              "excerpt": "GOF 和 PGSR 是否报告了模型存储或显存使用？证据是否足以比较？"
+            },
+            "status": "missing",
+            "bindings": []
+          }
+        ],
+        "criteria": [
+          {
+            "criterionId": "req_4_1",
+            "responseType": "identification",
+            "status": "missing",
+            "bindings": []
+          },
+          {
+            "criterionId": "req_4_2",
+            "responseType": "limitation",
+            "status": "missing",
+            "bindings": []
+          }
+        ],
+        "requestCheckReasons": [
+          {
+            "checkId": "criterion:req_4_1",
+            "reason": "回答未检查两篇论文是否报告模型存储或显存使用数据。"
+          },
+          {
+            "checkId": "criterion:req_4_2",
+            "reason": "回答未明确说明证据不足无法比较。"
+          }
+        ],
+        "gapDetail": {
+          "criterionIds": [
+            "req_4_1",
+            "req_4_2"
+          ],
+          "aspectIds": [
+            "criterion:req_4_1",
+            "criterion:req_4_2"
+          ],
+          "missingContent": "请补全本条固定要求中标为未满足的部分，具体要求见 missingAspects。",
+          "reason": "此缺口由固定检查项的未满足状态汇总；模型说明不作为新增要求或论文事实。"
+        }
+      },
+      {
+        "obligationId": "ob_5",
+        "status": "partial",
+        "bindings": [
+          {
+            "claimId": "c5",
+            "field": "text",
+            "excerpt": "若优先几何精度且可接受较长训练时间，选 PGSR；若需快速训练且对精度要求稍低，选 GOF。渲染质量接近，可按具体指标偏好选择。"
+          }
+        ],
+        "aspects": [
+          {
+            "aspectId": "criterion:req_5_1",
+            "requirement": "根据表示路径、几何精度、训练耗时和渲染质量的差异，提出选择建议",
+            "basis": {
+              "kind": "request",
+              "excerpt": "基于已核对的差异和性能数据，在什么条件下选择 GOF 或 PGSR？"
+            },
+            "status": "partial",
+            "bindings": [
+              {
+                "claimId": "c5",
+                "field": "text",
+                "excerpt": "若优先几何精度且可接受较长训练时间，选 PGSR；若需快速训练且对精度要求稍低，选 GOF。渲染质量接近，可按具体指标偏好选择。"
+              }
+            ]
+          },
+          {
+            "aspectId": "criterion:req_5_2",
+            "requirement": "建议必须基于已核对的证据，并说明适用条件",
+            "basis": {
+              "kind": "request",
+              "excerpt": "基于已核对的差异和性能数据，在什么条件下选择 GOF 或 PGSR？"
+            },
+            "status": "partial",
+            "bindings": [
+              {
+                "claimId": "c5",
+                "field": "text",
+                "excerpt": "若优先几何精度且可接受较长训练时间，选 PGSR；若需快速训练且对精度要求稍低，选 GOF。渲染质量接近，可按具体指标偏好选择。"
+              }
+            ]
+          }
+        ],
+        "criteria": [
+          {
+            "criterionId": "req_5_1",
+            "responseType": "explanation",
+            "status": "partial",
+            "bindings": [
+              {
+                "claimId": "c5",
+                "field": "text",
+                "excerpt": "若优先几何精度且可接受较长训练时间，选 PGSR；若需快速训练且对精度要求稍低，选 GOF。渲染质量接近，可按具体指标偏好选择。"
+              }
+            ]
+          },
+          {
+            "criterionId": "req_5_2",
+            "responseType": "explanation",
+            "status": "partial",
+            "bindings": [
+              {
+                "claimId": "c5",
+                "field": "text",
+                "excerpt": "若优先几何精度且可接受较长训练时间，选 PGSR；若需快速训练且对精度要求稍低，选 GOF。渲染质量接近，可按具体指标偏好选择。"
+              }
+            ]
+          }
+        ],
+        "requestCheckReasons": [
+          {
+            "checkId": "criterion:req_5_1",
+            "reason": "回答给出了选择建议，但未基于表示路径、几何精度、训练耗时和渲染质量的差异进行解释。"
+          },
+          {
+            "checkId": "criterion:req_5_2",
+            "reason": "回答未说明适用条件，仅给出简单建议。"
+          }
+        ],
+        "gapDetail": {
+          "criterionIds": [
+            "req_5_1",
+            "req_5_2"
+          ],
+          "aspectIds": [
+            "criterion:req_5_1",
+            "criterion:req_5_2"
+          ],
+          "missingContent": "请补全本条固定要求中标为未满足的部分，具体要求见 missingAspects。",
+          "reason": "此缺口由固定检查项的未满足状态汇总；模型说明不作为新增要求或论文事实。"
+        }
+      },
+      {
+        "obligationId": "answer_scope",
+        "status": "partial",
+        "bindings": [
+          {
+            "claimId": "c5",
+            "field": "text",
+            "excerpt": "若优先几何精度且可接受较长训练时间，选 PGSR；若需快速训练且对精度要求稍低，选 GOF。渲染质量接近，可按具体指标偏好选择。"
+          }
+        ],
+        "aspects": [
+          {
+            "aspectId": "request",
+            "requirement": "请联网读取 GOF（arXiv:2404.10772v1）和 PGSR（arXiv:2406.06521v1）两篇原文，面向了解3DGS概念的读者比较它们：高斯表示与网格提取路径有什么不同；在 DTU 上各自报告的几何精度和训练耗时，以及 Mip-NeRF360 的渲染质量如何。核对数据集、指标方向、分辨率和硬件条件，区分作者自报与同表对比；时间数值或条件有差异时指出，不能直接推成普遍速度排名。模型存储或显存若证据不足就明确说无法比较。最后给出有条件的选择建议。限500字。",
+            "basis": {
+              "kind": "request",
+              "excerpt": "请联网读取 GOF（arXiv:2404.10772v1）和 PGSR（arXiv:2406.06521v1）两篇原文，面向了解3DGS概念的读者比较它们：高斯表示与网格提取路径有什么不同；在 DTU 上各自报告的几何精度和训练耗时，以及 Mip-NeRF360 的渲染质量如何。核对数据集、指标方向、分辨率和硬件条件，区分作者自报与同表对比；时间数值或条件有差异时指出，不能直接推成普遍速度排名。模型存储或显存若证据不足就明确说无法比较。最后给出有条件的选择建议。限500字。"
+            },
+            "status": "partial",
+            "bindings": [
+              {
+                "claimId": "c5",
+                "field": "text",
+                "excerpt": "若优先几何精度且可接受较长训练时间，选 PGSR；若需快速训练且对精度要求稍低，选 GOF。渲染质量接近，可按具体指标偏好选择。"
+              }
+            ]
+          }
+        ],
+        "criteria": [],
+        "requestCheckReasons": [
+          {
+            "checkId": "request",
+            "reason": "回答仅给出选择建议，未覆盖原问题中的比较、数据核对、条件说明等要求。"
+          }
+        ],
+        "gapDetail": {
+          "criterionIds": [],
+          "aspectIds": [
+            "request"
+          ],
+          "missingContent": "请补全本条固定要求中标为未满足的部分，具体要求见 missingAspects。",
+          "reason": "此缺口由固定检查项的未满足状态汇总；模型说明不作为新增要求或论文事实。"
+        }
+      }
+    ],
+    "coverageEvidenceTransportVersion": 1,
+    "completionContractDigest": "17edbced1379f5d52eb508f2e11487b4576d1c04809432fbc619ab39e60b15e1",
+    "displayMetadataDigest": "5ac940ba7a02072d8a1b25efd4c3d1c2fd35e3196da00a5040091fea4574d8e1",
+    "gaps": [
+      {
+        "obligationId": "ob_1",
+        "question": "高斯表示与网格提取路径有什么不同",
+        "missingEvidence": "最终回答尚未完整回应这一问题",
+        "stage": "answer",
+        "missingAspects": [
+          "高斯表示与网格提取路径有什么不同"
+        ],
+        "aspectEvidenceRefs": [],
+        "gapDetail": {
+          "criterionIds": [
+            "human_aspect_1"
+          ],
+          "aspectIds": [
+            "criterion:human_aspect_1"
+          ],
+          "missingContent": "请补全本条固定要求中标为未满足的部分，具体要求见 missingAspects。",
+          "reason": "此缺口由固定检查项的未满足状态汇总；模型说明不作为新增要求或论文事实。"
+        }
+      },
+      {
+        "obligationId": "ob_2",
+        "question": "GOF 和 PGSR 在 DTU 数据集上报告的几何精度指标和训练耗时是多少？实验条件（分辨率、硬件）如何？",
+        "missingEvidence": "最终回答尚未完整回应这一问题",
+        "stage": "answer",
+        "missingAspects": [
+          "列出 GOF 和 PGSR 在 DTU 上报告的几何精度数值及指标方向",
+          "列出 GOF 和 PGSR 在 DTU 上的训练耗时及硬件条件",
+          "指出时间数值或条件有差异时，不能直接推成普遍速度排名"
+        ],
+        "aspectEvidenceRefs": [],
+        "gapDetail": {
+          "criterionIds": [
+            "req_2_1",
+            "req_2_2",
+            "req_2_3"
+          ],
+          "aspectIds": [
+            "criterion:req_2_1",
+            "criterion:req_2_2",
+            "criterion:req_2_3"
+          ],
+          "missingContent": "请补全本条固定要求中标为未满足的部分，具体要求见 missingAspects。",
+          "reason": "此缺口由固定检查项的未满足状态汇总；模型说明不作为新增要求或论文事实。"
+        }
+      },
+      {
+        "obligationId": "ob_3",
+        "question": "Mip-NeRF360 的渲染质量如何",
+        "missingEvidence": "最终回答尚未完整回应这一问题",
+        "stage": "answer",
+        "missingAspects": [
+          "Mip-NeRF360 的渲染质量如何"
+        ],
+        "aspectEvidenceRefs": [],
+        "gapDetail": {
+          "criterionIds": [
+            "human_aspect_1"
+          ],
+          "aspectIds": [
+            "criterion:human_aspect_1"
+          ],
+          "missingContent": "请补全本条固定要求中标为未满足的部分，具体要求见 missingAspects。",
+          "reason": "此缺口由固定检查项的未满足状态汇总；模型说明不作为新增要求或论文事实。"
+        }
+      },
+      {
+        "obligationId": "ob_4",
+        "question": "GOF 和 PGSR 是否报告了模型存储或显存使用？证据是否足以比较？",
+        "missingEvidence": "最终回答尚未完整回应这一问题",
+        "stage": "answer",
+        "missingAspects": [
+          "检查两篇论文是否报告模型存储或显存使用数据",
+          "若证据不足，明确说明无法比较"
+        ],
+        "aspectEvidenceRefs": [],
+        "gapDetail": {
+          "criterionIds": [
+            "req_4_1",
+            "req_4_2"
+          ],
+          "aspectIds": [
+            "criterion:req_4_1",
+            "criterion:req_4_2"
+          ],
+          "missingContent": "请补全本条固定要求中标为未满足的部分，具体要求见 missingAspects。",
+          "reason": "此缺口由固定检查项的未满足状态汇总；模型说明不作为新增要求或论文事实。"
+        }
+      },
+      {
+        "obligationId": "ob_5",
+        "question": "基于已核对的差异和性能数据，在什么条件下选择 GOF 或 PGSR？",
+        "missingEvidence": "最终回答尚未完整回应这一问题",
+        "stage": "answer",
+        "missingAspects": [
+          "根据表示路径、几何精度、训练耗时和渲染质量的差异，提出选择建议",
+          "建议必须基于已核对的证据，并说明适用条件"
+        ],
+        "aspectEvidenceRefs": [],
+        "gapDetail": {
+          "criterionIds": [
+            "req_5_1",
+            "req_5_2"
+          ],
+          "aspectIds": [
+            "criterion:req_5_1",
+            "criterion:req_5_2"
+          ],
+          "missingContent": "请补全本条固定要求中标为未满足的部分，具体要求见 missingAspects。",
+          "reason": "此缺口由固定检查项的未满足状态汇总；模型说明不作为新增要求或论文事实。"
+        }
+      },
+      {
+        "obligationId": "answer_scope",
+        "question": "请联网读取 GOF（arXiv:2404.10772v1）和 PGSR（arXiv:2406.06521v1）两篇原文，面向了解3DGS概念的读者比较它们：高斯表示与网格提取路径有什么不同；在 DTU 上各自报告的几何精度和训练耗时，以及 Mip-NeRF360 的渲染质量如何。核对数据集、指标方向、分辨率和硬件条件，区分作者自报与同表对比；时间数值或条件有差异时指出，不能直接推成普遍速度排名。模型存储或显存若证据不足就明确说无法比较。最后给出有条件的选择建议。限500字。",
+        "missingEvidence": "最终回答尚未完整回应这一问题",
+        "stage": "answer",
+        "missingAspects": [
+          "请联网读取 GOF（arXiv:2404.10772v1）和 PGSR（arXiv:2406.06521v1）两篇原文，面向了解3DGS概念的读者比较它们：高斯表示与网格提取路径有什么不同；在 DTU 上各自报告的几何精度和训练耗时，以及 Mip-NeRF360 的渲染质量如何。核对数据集、指标方向、分辨率和硬件条件，区分作者自报与同表对比；时间数值或条件有差异时指出，不能直接推成普遍速度排名。模型存储或显存若证据不足就明确说无法比较。最后给出有条件的选择建议。限500字。"
+        ],
+        "aspectEvidenceRefs": [],
+        "gapDetail": {
+          "criterionIds": [],
+          "aspectIds": [
+            "request"
+          ],
+          "missingContent": "请补全本条固定要求中标为未满足的部分，具体要求见 missingAspects。",
+          "reason": "此缺口由固定检查项的未满足状态汇总；模型说明不作为新增要求或论文事实。"
+        },
+        "wholeQuestion": true
+      }
+    ],
+    "invalidAspectObligations": [],
+    "requestCoverageContractVersion": 5,
+    "wholeQuestionId": "answer_scope",
+    "nonblockingResearch": [],
+    "criterionGaps": {},
+    "invalidCriterionObligations": [],
+    "budgetLimit": null,
+    "diagnosticErrors": [],
+    "answerCoherence": {
+      "contractVersion": 1,
+      "status": "checked",
+      "answerDigest": "e28551d8e94ba0a3ba7d91e6995ce48e0bd408aa048e13bebd3ae9627376635c",
+      "coherent": true,
+      "issues": []
+    }
+  },
+  "reportText": "本回答引用：全文片段。\n\n- 建议：若优先几何精度且可接受较长训练时间，选 PGSR；若需快速训练且对精度要求稍低，选 GOF。渲染质量接近，可按具体指标偏好选择。 [1](#research-evidence-ev_5eeb225bc9ec31711ba9d3440776342cb4e9499593e0b3a8c4a3cf94690120ea) [2](#research-evidence-ev_5c7fd6bcd71aead88a73e0435ce9a61d5a1e5b76fb19bc43b4e68860062b1caa) [3](#research-evidence-ev_aed79f8e276f90dbf65f658c61186255b2580e5009ef85be7a8fde1a93e2bf1c) [4](#research-evidence-ev_39bdce993dd69ac32f53edd216256c84b71818f6bd0dc78e518bf7113036bb11)\n\n<details>\n<summary>还有 5 项未完成</summary>\n\n- 高斯表示与网格提取路径有什么不同：最终回答尚未完整回应这一问题；缺少：高斯表示与网格提取路径有什么不同\n- GOF 和 PGSR 在 DTU 数据集上报告的几何精度指标和训练耗时是多少？实验条件（分辨率、硬件）如何？：最终回答尚未完整回应这一问题；缺少：列出 GOF 和 PGSR 在 DTU 上报告的几何精度数值及指标方向、列出 GOF 和 PGSR 在 DTU 上的训练耗时及硬件条件、指出时间数值或条件有差异时，不能直接推成普遍速度排名\n- Mip-NeRF360 的渲染质量如何：最终回答尚未完整回应这一问题；缺少：Mip-NeRF360 的渲染质量如何\n- GOF 和 PGSR 是否报告了模型存储或显存使用？证据是否足以比较？：最终回答尚未完整回应这一问题；缺少：检查两篇论文是否报告模型存储或显存使用数据、若证据不足，明确说明无法比较\n- 基于已核对的差异和性能数据，在什么条件下选择 GOF 或 PGSR？：最终回答尚未完整回应这一问题；缺少：根据表示路径、几何精度、训练耗时和渲染质量的差异，提出选择建议、建议必须基于已核对的证据，并说明适用条件\n\n</details>\n\n<details>\n<summary>原文依据</summary>\n\n**[1] PGSR: Planar-based Gaussian Splatting for Efficient and High-Fidelity Surface Reconstruction** · 第 9 页 · 全文片段\n\n> 9\n> TABLE II: Quantitative results of chamfer distance(mm) ↓on DTU dataset [23]. PGSR achieves the highest reconstruction accuracy and is over 100 times\n> faster than the SDF method based on NeRF.\n> 24 37 40 55 63 65 69 83 97 105 106 110 114 118 122 Mean Time\n> V olSDF [60] 1.14 1.26 0.81 0.49 1.25 0.70 0.72 1.29 1.18 0.70 0.66 1.08 0.42 0.61 0.55 0.86 >12h\n> NeuS [56] 1.00 1.37 0.93 0.43 1.10 0.65 0.57 1.48 1.09 0.83 0.52 1.20 0.35 0.49 0.54 0.84 >12h\n> Neuralangelo [33] 0.37 0.72 0.35 0.35 0.87 0.54 0.53 1.29 0.97 0.73 0.47 0.74 0.32 0.41 0.43 0.61 >128h\n> SuGaR [19] 1.47 1.33 1.13 0.61 2.25 1.71 1.15 1.63 1.62 1.07 0.79 2.45 0.98 0.88 0.79 1.33 1h\n> 2DGS [21] 0.48 0.91 0.39 0.39 1.01 0.83 0.81 1.36 1.27 0.76 0.70 1.40 0.40 0.76 0.52 0.80 0.32h\n> GOF [69] 0.50 0.82 0.37 0.37 1.12 0.74 0.73 1.18 1.29 0.68 0.77 0.90 0.42 0.66 0.49 0.74 2h\n> PGSR(DS) 0.34 0.58 0.29 0.29 0.78 0.58 0.54 1.01 0.73 0.51 0.49 0.69 0.31 0.37 0.38 0.53 0.6h\n> PGSR 0.31 0.52 0.27 0.27 0.76 0.54 0.49 0.98 0.69 0.49 0.46 0.56 0.28 0.35 0.36 0.49 1.0h\n> TABLE III: Quantitative results of F1 Score ↑for reconstruction on Tanks\n> and Temples dataset.\n\n**[2] Gaussian Opacity Fields: Efficient and Compact Surface Reconstruction in Unbounded Scenes** · 第 6 页 · 全文片段\n\n>  2024] 0.48 0.91 0.39 0.39 1.01 0.83 0.81 1.36 1.27 0.76 0.70 1.40 0.40 0.76 0.52 0.80 18.8 m\n> Ours 0.50 0.82 0.37 0.37 1.12 0.74 0.73 1.18 1.29 0.68 0.77 0.90 0.42 0.66 0.49 0.74 30m\n> et al.2023], GOF’s optimization is much faster. This performance\n> disparity is attributed to the DTU dataset’s strong view-dependent\n> appearance. Utilizing a better view-dependent appearance model-\n> ing [Verbin et al .2022] or a coarse-to-fine training strategy [Li et al .\n\n**[3] PGSR: Planar-based Gaussian Splatting for Efficient and High-Fidelity Surface Reconstruction** · 第 8 页 · 全文片段\n\n> \n> Indoor scenes Outdoor scenes Average on all scenes\n> PSNR↑ SSIM↑ LPIPS↓ PSNR↑ SSIM↑ LPIPS↓ PSNR↑ SSIM↑ LPIPS↓NeRF-basedNeRF [41] 26.84 0.790 0.370 21.46 0.458 0.515 24.15 0.624 0.443\n> Deep Blending [20] 26.40 0.844 0.261 21.54 0.524 0.364 23.97 0.684 0.313\n> INGP [44] 29.15 0.880 0.216 22.90 0.566 0.371 26.03 0.723 0.294\n> M-NeRF360 [2] 31.72 0.917 0.180 24.47 0.691 0.283 28.10 0.804 0.232\n> Neus [56] 25.10 0.789 0.319 21.93 0.629 0.600 23.74 0.720 0.439GS-based3DGS [27] 30.99 0.926 0.199 24.24 0.705 0.283 27.24 0.803 0.246\n> SuGaR [19] 29.44 0.911 0.216 22.76 0.631 0.349 26.10 0.771 0.283\n> 2DGS [21] 30.39 0.923 0.183 24.33 0.709 0.284 27.03 0.804 0.239\n> GOF [69] 30.80 0.928 0.167 24.76 0.742 0.225 27.78 0.835 0.196\n> PGSR 30.41 0.930 0.161 24.45 0.730 0.224 27.43 0.830 0.193\n> Fig. 9: Multi-view photometric and geometric loss.\n> those with high forward and backward projection errors.\n\n**[4] Gaussian Opacity Fields: Efficient and Compact Surface Reconstruction in Unbounded Scenes** · 第 6 页 · 全文片段\n\n> \n> Outdoor Scene Indoor scene\n> PSNR↑SSIM↑LPIPS↓PSNR↑SSIM↑LIPPS↓\n> NeRF 21.46 0.458 0.515 26.84 0.790 0.370\n> Deep Blending 21.54 0.524 0.364 26.40 0.844 0.261\n> Instant NGP 22.90 0.566 0.371 29.15 0.880 0.216\n> MERF 23.19 0.616 0.343 27.80 0.855 0.271\n> MipNeRF360 24.47 0.691 0.283 31.72 0.917 0.180\n> Mobile-NeRF 21.95 0.470 0.470 - - -\n> BakedSDF 22.47 0.585 0.349 27.06 0.836 0.258\n> SuGaR 22.93 0.629 0.356 29.43 0.906 0.225\n> BOG 23.94 0.680 0.263 27.71 0873 0.227\n> 3DGS 24.64 0.731 0.234 30.41 0.920 0.189\n> Mip-Splatting 24.65 0.729 0.245 30.90 0.921 0.194\n> 2DGS 24.21 0.709 0.276 30.10 0.913 0.211\n> Ours 24.82 0.750 0.202 30.79 0.924 0.184\n> outperforms Sugar [Guédon and Lepetit 2023] and 2DGS [Huang\n> et al.2024] in all metrics. We show a qualitative comparison of\n\n</details>",
+  "preservation": {
+    "oldLedgerUnchanged": true,
+    "allOldRunsUnchanged": true,
+    "newRows": 43,
+    "ledgerRows": 8715,
+    "onlyThisRunCreatedCalls": true,
+    "active": [],
+    "oldPausedRetained": true,
+    "paused": [
+      "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+      "dr_run_ed10cc3347be552288079a9a588fddf5",
+      "dr_run_86b3f181a5475e99aacca3dbf4370567",
+      "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+      "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+      "dr_run_e3521b1781825273b384a26a5edb8cdc",
+      "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+      "dr_run_e9c9dc916bef519092fad8b929b2448f",
+      "dr_run_4738564f5ff35157996a35068c62ed32",
+      "dr_run_a8bd62f9ae3d52ff806f537065f55b2d",
+      "dr_run_98e66f2d3d555dfa822b859963f01419",
+      "dr_run_8be639c866c35ea092c735a04781b647",
+      "dr_run_1c0c2e6510165086962408b8e3cf698b"
+    ],
+    "other13TasksExact": true,
+    "indexExact": true,
+    "index": {
+      "collection": "literature_collection_v4_e5_small",
+      "count": 1215,
+      "sha256": "f1ab6ad746b00ce95dfb36b76fa06d011cfb04d2b0bccf1e194a826d0606465f"
+    }
+  },
+  "review": [
+    "Strict scope conflict isolation worked: c4 retained and rejected; ordinary facts reached deterministic checks instead of terminating whole run.",
+    "DTU reading navigation improved: supplied exact-v1 evidence includes both papers geometry tables. Draft now states GOF0.74/30min and PGSR0.49/1h with different hardware; these drafts were not accepted facts.",
+    "c2/c3 invented typed table bindings against plain-text evidence; identifiers occur in own refs but have no corresponding verified tableData. Rejection must not be relaxed.",
+    "c3 still conflates PGSR comparator GOF averages with GOF author-reported outdoor/indoor values; requires real correction and independent checking.",
+    "c4 makes unsupported paper-wide non-reporting claim in both prose/operator; no silent choice or approval.",
+    "All repair batches were preflighted before any request. Mandatory prompt evidence required27192bytes >24000. No repair call spent; capacity issue remains.",
+    "Only c5 conditional advice published; requested factual comparison absent. This is content failure, not acceptance despite completed/partial terminal. Advice dependencies and factual premise checking remain to review."
+  ],
+  "nextAction": "Measure actual mandatory repair context/fixed overhead per batch and preserve all source permissions/quotes while fitting existing24000-byte limit; inspect recommendation grounding. No automatic new model case."
+}

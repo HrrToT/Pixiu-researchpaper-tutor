@@ -4796,12 +4796,12 @@
     "answerCoherenceContractVersion": 2,
     "quantitySpellingContractVersion": 15,
     "component": "mixed-script evidence navigation and isolated malformed-draft repair",
-    "componentOutcome": "190files3517 frozen checks pass. Loaded393; protected14 tasks,8672 ledger and1215 index preserved. G1N-v4 submitted exactly once; full quality not yet accepted.",
+    "componentOutcome": "393 loaded;190files3517 frozen checks pass. G1N-v4 isolation worked but full comparison failed: c1-4 rejected, only advice published; repair preflight blocked at27192/24000bytes. Ledger8715, oldruns/other13tasks/index unchanged;0active13historicalpaused. Independent0.",
     "runtimeLoadedVerified": true,
     "runtimeProof": "deep-research-evidence/runtime-load-draft-393-20261105.json",
     "fullDR0DR5Proved": false,
     "independentCredit": 0,
-    "lastCapturedLedgerRows": 8672,
+    "lastCapturedLedgerRows": 8715,
     "lastCapturedActiveProductionRuns": 0,
     "historicalPausedRunsAtCapture": 13,
     "lastConfirmedIndexDocuments": 1215,
@@ -4823,7 +4823,7 @@
       "externalResearchWorkflowAccepted": false
     },
     "externalRouteBoundary": "User authorized current system HTTP proxy. Configured only in ignored local Python .env. Formal AcademicAcquisition factory fetched metadata and uncached fulltext using pinned public-IP/original-host TLS; application restarted once and wiring/health/data verified. Full external research quality remains unaccepted.",
-    "remaining": "Observe same G1N-v4. Full comparison/experiments/insufficiency/continuation/independent/release audit remain open.",
+    "remaining": "Reduce measured factual repair fixed overhead (19064bytes for2targets) while retaining mandatory evidence and original24KB cap. Correct typed-table/source provenance and examine advice grounding, then full comparison/experiments/insufficiency/continuation/independent/release audit.",
     "factualReviewContractVersion": 3,
     "factualDecisionContractVersion": 2,
     "repairRemovalContractVersion": 2,
@@ -5368,16 +5368,18 @@
     },
     "readingPriorityContractVersion": 7,
     "lastComparisonDevelopment": {
-      "case": "G1N-v3",
-      "runId": "dr_run_7847d6af15ad55379b94e6faad586a24",
-      "promptVersion": "dr-v2.20261105.391",
-      "status": "failed",
-      "errorCode": "invalid_synthesis_response",
-      "modelCalls": 7,
-      "tokens": 24920,
+      "case": "G1N-v4",
+      "runId": "dr_run_7dae9d334ff2582e85cca59776eb011d",
+      "promptVersion": "dr-v2.20261105.393",
+      "status": "completed",
+      "machineOutcome": "partial",
+      "contentAccepted": false,
+      "modelCalls": 9,
+      "tokens": 37831,
+      "elapsedSeconds": 75.479,
       "independentCredit": 0,
-      "proof": "deep-research-evidence/geometry-g1n-v3-draft-conflict-and-source-review-20261105.json",
-      "finding": "Complete JSON, c4 text/scope conflict aborts before verification. c2 numerical support and c3 author-vs-comparator attribution also fail source review."
+      "proof": "deep-research-evidence/geometry-g1n-v4-isolation-and-repair-capacity-review-20261105.json",
+      "repairReplay": "deep-research-evidence/draft-393-repair-preflight-saved-input-replay-20261105.json"
     },
     "candidateDirect391": {
       "promptVersion": "dr-v2.20261105.391",
@@ -5423,14 +5425,7 @@
         "proof": "deep-research-evidence/draft-393-associated-final-regression-20261105.json"
       }
     },
-    "draftValidationContractVersion": 1,
-    "activeDevelopmentVerification": {
-      "case": "G1N-v4",
-      "runId": "dr_run_7dae9d334ff2582e85cca59776eb011d",
-      "submittedOnce": true,
-      "initialObservedStatus": "running",
-      "independentCredit": 0
-    }
+    "draftValidationContractVersion": 1
   },
   "sharedModuleSourceCheckpoint": {
     "sourceCommit": "f8ae5177",
