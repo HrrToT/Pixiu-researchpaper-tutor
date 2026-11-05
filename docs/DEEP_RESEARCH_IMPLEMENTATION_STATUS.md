@@ -3,7 +3,7 @@
 - X5R-v3共10调用39,082Token，API终态143秒，全部结算，failed/invalid_verification_response，未发布或新增未知。失败记录budget.elapsedSeconds=0、终态API时间143秒分别归档，未篡改历史。原始c3审核是完整单对象且scopeAudit.supported=false；原生JSON传输先将单对象变null，现有精确目标单对象解码器未能收到。
 - 新factualEnvelope1仅在唯一事实判定2且verify/verify_repair节点保留字段完整的单对象候选，下游继续核对实际目标ID、原文权限、全部scope/比较审计；不补字段、不从reason猜判定、不升级负面结果。其他节点和旧契约仍拒绝单对象；截断、重复键、未知包装、冲突判定及非布尔supported不修复。请求消息及预算保持。
 - 原始负面响应0模型回放：invalid_wrapper→single_factual_candidate→failed，原字段和历史失败均保持。真实TrackedLLMInvoker→checker正负/错误目标/外来证据/多目标联测通过。补入externalReading/sourceGapClosure/factualEnvelope三个新策略字段的持久化不可变及严格类型保护，旧记录不能追加策略切换恢复语义。
-- 最终183文件3,354项冻结关联回归通过，182.76秒，0模型调用，一项既有PyPDF2弃用警告；聚焦108与旧范围重叠不累计。聚焦夹具创建/Token构造错误已修复，未发送模型。当前8496账本、13任务、1215索引，0活动、13历史暂停。修复尚未加载和真实复测，不计整体/独立通过。
+- 最终183文件3,354项冻结关联回归通过，182.76秒，0模型调用，一项既有PyPDF2弃用警告；聚焦108与旧范围重叠不累计。聚焦夹具创建/Token构造错误已修复，未发送模型。当前8496账本、13任务、1215索引，0活动、13历史暂停。修复7679c62a已正常加载`.387`，RAG/GROBID健康，8496账本、13任务、1215索引及所有旧payload保持；尚未进行387真实完整复测，不计整体/独立通过。
 
 2026-11-05 `.385`完整X5R-v2真实验证与`.386`修订身份关闭候选：
 
