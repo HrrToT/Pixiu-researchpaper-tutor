@@ -4789,16 +4789,16 @@
     "proof": "deep-research-evidence/compact-experiment-envelope-regression-20261020.json"
   },
   "currentCheckpoint": {
-    "sourceCommit": "2140235f",
+    "sourceCommit": "026b66e7",
     "javaSourceCommit": "612c324e",
-    "promptVersion": "dr-v2.20261105.391",
+    "promptVersion": "dr-v2.20261105.393",
     "factualRepairGoalContractVersion": 5,
     "answerCoherenceContractVersion": 2,
     "quantitySpellingContractVersion": 15,
-    "component": "bounded direct factual/comparison drafting",
-    "componentOutcome": "391 loaded and 3493 associated checks passed. G1N-v3 returned complete JSON but failed scope materialization before factual verification; content review found incorrect mean/support and source attribution. Not full acceptance.",
+    "component": "mixed-script evidence navigation and isolated malformed-draft repair",
+    "componentOutcome": "190files3517 frozen checks pass. Loaded393; protected14 tasks,8672 ledger and1215 index preserved. G1N-v4 submitted exactly once; full quality not yet accepted.",
     "runtimeLoadedVerified": true,
-    "runtimeProof": "deep-research-evidence/runtime-load-direct-391-20261105.json",
+    "runtimeProof": "deep-research-evidence/runtime-load-draft-393-20261105.json",
     "fullDR0DR5Proved": false,
     "independentCredit": 0,
     "lastCapturedLedgerRows": 8672,
@@ -4823,7 +4823,7 @@
       "externalResearchWorkflowAccepted": false
     },
     "externalRouteBoundary": "User authorized current system HTTP proxy. Configured only in ignored local Python .env. Formal AcademicAcquisition factory fetched metadata and uncached fulltext using pinned public-IP/original-host TLS; application restarted once and wiring/health/data verified. Full external research quality remains unaccepted.",
-    "remaining": "Validate392 mixed-script reading and synthesis ranking; address strict scope-conflict recovery without choosing conflicting prose or approving unsupported facts. Full comparison/experiments/insufficiency/continuation/independent/release audit remain open.",
+    "remaining": "Observe same G1N-v4. Full comparison/experiments/insufficiency/continuation/independent/release audit remain open.",
     "factualReviewContractVersion": 3,
     "factualDecisionContractVersion": 2,
     "repairRemovalContractVersion": 2,
@@ -5366,7 +5366,7 @@
       "independentCredit": 0,
       "sourceCommit": "35fd2aad"
     },
-    "readingPriorityContractVersion": 6,
+    "readingPriorityContractVersion": 7,
     "lastComparisonDevelopment": {
       "case": "G1N-v3",
       "runId": "dr_run_7847d6af15ad55379b94e6faad586a24",
@@ -5397,7 +5397,7 @@
     "factualReasoningContractVersion": 10,
     "candidateReading392": {
       "readingPriorityContractVersion": 7,
-      "runtimeLoadedVerified": false,
+      "runtimeLoadedVerified": true,
       "replay": "deep-research-evidence/reading-392-mixed-script-saved-input-replay-20261105.json",
       "change": "Recognize Latin benchmark terms adjacent to Chinese; legacy6 unchanged; read cap12 and evidence ownership unchanged. Ranking proof only, no new model calls.",
       "regression": {
@@ -5405,11 +5405,12 @@
         "files": 189,
         "proof": "deep-research-evidence/reading-392-associated-regression-20261105.json",
         "sourceFreezeArchiveIncomplete": true
-      }
+      },
+      "loadedAs": "dr-v2.20261105.393"
     },
     "candidateDraft393": {
       "draftValidationContractVersion": 1,
-      "runtimeLoadedVerified": false,
+      "runtimeLoadedVerified": true,
       "replay": "deep-research-evidence/draft-393-saved-conflict-routing-replay-20261105.json",
       "design": "DEEP_RESEARCH_DRAFT_VALIDATION_20261105.md",
       "change": "Retain conflicting original scope draft, exclude from initial acceptance, reuse existing bounded repair and independent verification, require exact checked replacement at publication. Legacy failure behavior unchanged.",
@@ -5421,6 +5422,14 @@
         "providerCalls": 0,
         "proof": "deep-research-evidence/draft-393-associated-final-regression-20261105.json"
       }
+    },
+    "draftValidationContractVersion": 1,
+    "activeDevelopmentVerification": {
+      "case": "G1N-v4",
+      "runId": "dr_run_7dae9d334ff2582e85cca59776eb011d",
+      "submittedOnce": true,
+      "initialObservedStatus": "running",
+      "independentCredit": 0
     }
   },
   "sharedModuleSourceCheckpoint": {
