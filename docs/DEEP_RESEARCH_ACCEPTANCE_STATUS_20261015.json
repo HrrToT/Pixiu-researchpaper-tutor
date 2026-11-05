@@ -4796,12 +4796,12 @@
     "answerCoherenceContractVersion": 2,
     "quantitySpellingContractVersion": 15,
     "component": "bounded role-aware reading and own-source synthesis premises",
-    "componentOutcome": "3471 checks/188files pass; actual12-read ->60literal ->14synthesis input replay preserves all frozen criteria and key method/value/header/settings premises within23961/24000bytes. Loaded390 with8615 ledger/14 tasks/1215 index preserved. Full real comparison not yet validated; independent0.",
+    "componentOutcome": "3471 checks/188 files pass;390 loaded. Actual G1N-v2 reads12 with0 reference rows,86 literal evidence,14 supplied within24000bytes; synthesis truncates at8192 output tokens and fails closed before any factual verification/publication.6calls29710tokens settled. No independent/content pass.",
     "runtimeLoadedVerified": true,
     "runtimeProof": "deep-research-evidence/runtime-load-reading-390-20261105.json",
     "fullDR0DR5Proved": false,
     "independentCredit": 0,
-    "lastCapturedLedgerRows": 8615,
+    "lastCapturedLedgerRows": 8642,
     "lastCapturedActiveProductionRuns": 0,
     "historicalPausedRunsAtCapture": 13,
     "lastConfirmedIndexDocuments": 1215,
@@ -4823,7 +4823,7 @@
       "externalResearchWorkflowAccepted": false
     },
     "externalRouteBoundary": "User authorized current system HTTP proxy. Configured only in ignored local Python .env. Formal AcademicAcquisition factory fetched metadata and uncached fulltext using pinned public-IP/original-host TLS; application restarted once and wiring/health/data verified. Full external research quality remains unaccepted.",
-    "remaining": "Load tested390 with protected14-task/index/ledger snapshot. Then one bounded unchanged-question G1N-v2 development case using frozen regression definition. First G1N partial remains immutable/retired; no independent credit. Full comparison quality, executable experiments, insufficiency, continuation, independent replacement and release audit remain open.",
+    "remaining": "Investigate bounded synthesis reasoning/output allocation: low-effort enabled thinking used8192 output tokens but visible JSON only2850bytes and incomplete. Preserve failed raw result; no automatic retry. Then unchanged-question development validation and fresh independent replacements. Full comparison/experiments/insufficiency/continuation/release audit remain incomplete.",
     "factualReviewContractVersion": 3,
     "factualDecisionContractVersion": 2,
     "repairRemovalContractVersion": 2,
@@ -5362,11 +5362,24 @@
       "suppliedRows": 14,
       "inputBytes": 23961,
       "fixedInputBytes": 14156,
-      "realWholeCaseRun": false,
+      "realWholeCaseRun": true,
       "independentCredit": 0,
       "sourceCommit": "35fd2aad"
     },
-    "readingPriorityContractVersion": 6
+    "readingPriorityContractVersion": 6,
+    "lastComparisonDevelopment": {
+      "case": "G1N-v2",
+      "runId": "dr_run_19728b3190ee58b9820b8222b65d2410",
+      "status": "failed",
+      "outcome": "none",
+      "errorCode": "invalid_synthesis_response",
+      "actualModelCalls": 6,
+      "tokens": 29710,
+      "apiElapsedSeconds": 162.0,
+      "allSettled": true,
+      "independentCredit": 0,
+      "proof": "deep-research-evidence/geometry-g1n-v2-truncated-synthesis-20261105.json"
+    }
   },
   "sharedModuleSourceCheckpoint": {
     "sourceCommit": "f8ae5177",
