@@ -43,11 +43,30 @@ def compact_rows(rows, source_context):
 
 
 def render(*, question, length_contract, requirements, source_context, targets,
-           checks, questions, permissions_marker, evidence_marker, schema, target_goals=False, target_hints=None):
+           checks, questions, permissions_marker, evidence_marker, schema, target_goals=False, target_hints=None, shared_inputs=False):
     from services.deep_research.repair_goals import policy_version
     goal_version=policy_version(target_goals)
     if target_hints is not None and goal_version not in (2,3,4,5):raise ValueError('Point hints require repair goal contract2')
     encode = lambda value: json.dumps(value, ensure_ascii=False, separators=(',', ':'))
+    if type(shared_inputs) is not bool:raise ValueError('Invalid factual repair input policy')
+    target_checks=[{'claim':row,'check':checks[row['claimId']]} for row in targets]
+    shared_header=''
+    if shared_inputs:
+        from services.deep_research.shared_strings import pack,unpack
+        inputs={'requirements':requirements,'source_context':source_context,'questions':questions,
+                'target_checks':target_checks,'schema':schema}
+        packet=pack(inputs)
+        assert unpack(packet)==inputs
+        legend=('Shared exact JSON inputs: strings is a literal dictionary; {"$":i} copies strings[i] '
+                '(zero-based); {"~":object} escapes literal marker keys. Decode value recursively. '
+                'The field references {"$input":name} below copy value[name] after decoding. '
+                'This encoding preserves every field; it adds no sources, facts or permissions.\n')
+        header='\n'+legend+json.dumps(packet,ensure_ascii=False,separators=(',',':'))+'\n'
+        names={id(value):name for name,value in inputs.items()}
+        if len(header.encode('utf8'))+sum(len(json.dumps({'$input':name}).encode('utf8')) for name in inputs) < sum(len(encode(value).encode('utf8')) for value in inputs.values()):
+            raw_encode=encode
+            encode=lambda value:raw_encode({'$input':names[id(value)]}) if id(value) in names else raw_encode(value)
+            shared_header=header
     length_contract=length_contract.replace(
         '\nFill only the missing part. Do not repeat an accepted mechanism in a motivation repair.\n','\n')
     table_rule=('Retained table measurements need tableBindings with exact own evidenceId,rowNumber, '
@@ -85,7 +104,7 @@ in evidenceRefs/tableBindings; no P/Q labels in prose. Explain terms through con
 actions in clear Chinese; keep uncertainty explicit.
 Fill draftingBasis first as UNVERIFIED planning, not approval. Conditions already in
 text use conditions={}; obey the shared length allowance. Independent checks follow.
-Human question:
+'''+shared_header+'''Human question:
 '''+str(question)+'\n'+length_contract+goal_guidance+'''
 Frozen requested deliverables (questions only):
 '''+encode(requirements)+'''
@@ -94,7 +113,7 @@ Source registry and requirement-to-source mapping (metadata, not evidence):
 Missing-question dictionary (internal Q keys):
 '''+encode(questions)+'''
 Rejected target identities and all checks:
-'''+encode([{'claim':row,'check':checks[row['claimId']]} for row in targets])+'''
+'''+encode(target_checks)+'''
 Allowed evidence IDs per claim (candidate permissions, not proof of support):
 '''+permissions_marker+'''
 Exact available evidence (complete quotations and bounded original context):

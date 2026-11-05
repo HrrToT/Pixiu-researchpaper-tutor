@@ -1975,6 +1975,9 @@ def make_verify_node(
                         invoke_repair, _safe_parse_json,
                         max_prompt_bytes=repair_prompt_byte_limit(current.get('budget', {}),**repair_input_options),
                         metric_domains=record.get('state', {}).get('metricDomains'),
+                        **({'factual_prompt_version':1} if type(record.get('factualRepairPromptContractVersion')) is int
+                           and record['factualRepairPromptContractVersion']==1 and compact_repair
+                           and record.get('factRedraftContractVersion')==3 else {}),
                         **({'objective_framing':True} if objective_framing_enabled(record) else {}),
                         **({'process_explanations':True} if process_framing_enabled(record) else {}),
                         batch_state=saved.get('repairBatchState'), checkpoint=checkpoint_repair_batches,
