@@ -1,0 +1,43 @@
+{
+  "sourceRun": "dr_run_a0355e117afb5f87a4bc92ba180d5cf0",
+  "originalPayloadSha256": "6110add00df3974ba69a0f6a250f98750d31727a7a41b21f5e49fc28473b26ee",
+  "sourceClaim": {
+    "claimId": "c3",
+    "text": "这些深度图用于所有训练视角，然后采用TSDF进行网格提取，从而从高斯泼溅重建几何表面。",
+    "kind": "reported",
+    "evidenceRefs": [
+      "ev_528a802d7ebb1ebdcd65f74ee03aad6b725d6dac4b010a260b2c8a2ffad58ed1"
+    ],
+    "conditions": {},
+    "obligationIds": [
+      "ob_3"
+    ],
+    "detailLevel": "summary",
+    "tableBindings": [],
+    "verification": "semantic_passed"
+  },
+  "candidateBinding": [
+    {
+      "input": {
+        "id": "c3",
+        "field": "text",
+        "excerpt": "这些深度图"
+      },
+      "operation": {
+        "id": "c3",
+        "field": "text",
+        "excerpt": "采用TSDF进行网格提取"
+      },
+      "output": {
+        "id": "c3",
+        "field": "text",
+        "excerpt": "几何表面"
+      }
+    }
+  ],
+  "candidateStructuralErrors": [],
+  "observedPromptConflict": "DISTINCT_GUIDANCE currently appends distinct-role instructions to legacy GUIDANCE whose JSON example uses the same exact request excerpt for both input and output. The actual v5 responses copy whole requirements into both. This is an example/instruction conflict; observed association does not prove model causality.",
+  "guidanceSha256": "cc669e57b3fe36f1db925438be2b537a87960052ea04e6be7aa0224404ad414a",
+  "scope": "Zero-model structural replay only. Candidate binding manually constructed for diagnosis, not a semantic model verdict or production mutation. Does not upgrade historical partial or overall content acceptance.",
+  "nextRepair": "Replace conflicting example for new policy with an own-text distinct role demonstration and align schema/prompt; preserve old protocols, all factual checks, no inferred scientific approval. Separate change after current fresh run is terminal."
+}

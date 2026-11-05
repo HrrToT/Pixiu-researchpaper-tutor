@@ -4801,7 +4801,7 @@
     "runtimeProof": "deep-research-evidence/runtime-load-question-388-20261105.json",
     "fullDR0DR5Proved": false,
     "independentCredit": 0,
-    "lastCapturedLedgerRows": 8562,
+    "lastCapturedLedgerRows": 8615,
     "lastCapturedActiveProductionRuns": 0,
     "historicalPausedRunsAtCapture": 13,
     "lastConfirmedIndexDocuments": 1215,
@@ -4823,7 +4823,7 @@
       "externalResearchWorkflowAccepted": false
     },
     "externalRouteBoundary": "User authorized current system HTTP proxy. Configured only in ignored local Python .env. Formal AcademicAcquisition factory fetched metadata and uncached fulltext using pinned public-IP/original-host TLS; application restarted once and wiring/health/data verified. Full external research quality remains unaccepted.",
-    "remaining": "First frozen G1N fresh multi-paper comparison; executable experiments, insufficiency, continuation and release audit remain open. X5R-v5 raw partial unchanged; no further RaDe repeat planned this step.",
+    "remaining": "Generic synthesis fixed-content capacity repair: actual G1N fixed21603/24000bytes transmitted only4 evidence rows and missed5 premise bundles. Preserve comparison requirements/budget, replay actual pool, then bounded development verification and genuinely fresh independent replacement. Executable experiments, insufficiency, continuation and release audit remain open.",
     "factualReviewContractVersion": 3,
     "factualDecisionContractVersion": 2,
     "repairRemovalContractVersion": 2,
@@ -5297,11 +5297,29 @@
       "case": "G1N",
       "manifest": "docs\\DEEP_RESEARCH_GEOMETRY_COMPARISON_HOLDOUT_20261105.json",
       "frozen": true,
-      "submitted": false,
+      "submitted": true,
       "ownWorkHits": 0,
       "v1Cached": false,
       "indexBibliographyMentionGOF": 1,
-      "status": "Primary versioned references and equal-complexity comparison criteria frozen before first application POST. Both declared PDF sizes fit existing32MiB."
+      "status": "First case terminal partial/content failed. Frozen first result retained; now development-only diagnostic.",
+      "retired": true
+    },
+    "lastFreshComparison": {
+      "case": "G1N-v1",
+      "runId": "dr_run_e792ce01a8da5a8eb6ac2543b972fb7c",
+      "outcome": "partial",
+      "contentAccepted": false,
+      "independentCredit": 0,
+      "retired": true,
+      "actualModelCalls": 12,
+      "tokens": 44888,
+      "elapsedSeconds": 166.454,
+      "allSettled": true,
+      "proof": "deep-research-evidence/independent-geometry-g1n-v1-review-20261105.json"
+    },
+    "processGuidanceFollowup": {
+      "observed": "New distinct-role guidance inherits conflicting legacy JSON role example; raw388 comparison and RaDe results remain unchanged.",
+      "proof": "deep-research-evidence/process-388-guidance-conflict-replay-20261105.json"
     }
   },
   "sharedModuleSourceCheckpoint": {
