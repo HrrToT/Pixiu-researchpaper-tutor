@@ -1714,7 +1714,7 @@ space with unsupported global absence or incidental iteration/performance values
                 presentation_version=record.get('reportPresentationContractVersion',0),
                 **({'compact_layout':True} if compact_layout else {}),
                 **({'joint_layout':True} if joint_compaction(record,output_kind,requested_limit) else {}),
-                **({'expression_version':record['scopeExpressionContractVersion']} if record.get('scopeExpressionContractVersion') in (3,4) else {}),
+                **({'expression_version':record['scopeExpressionContractVersion']} if record.get('scopeExpressionContractVersion') in (3,4,5) else {}),
                 **({'fixed_scope_first':True,'invoke_fixed':direct_compact_invoke} if fixed_scope_compaction(record,question,output_kind) else {}),
                 **({'explicit_edit_scope':True} if explicit_compaction_scope(record,question,output_kind) else {}),
                 **({'measured_guidance':True} if compact_options else {}))
@@ -2076,7 +2076,7 @@ def make_verify_node(
                             **({'compact_layout':True} if short_layout_enabled(record,saved.get('outputKind'),requested_character_limit(effective_question(record))) else {}),
                             **({'joint_layout':True} if joint_compaction(record,saved.get('outputKind'),requested_character_limit(effective_question(record))) else {}),
                             saved=current.get('state',{}).get('repairCompaction'),checkpoint=checkpoint_compaction,
-                            **({'expression_version':record['scopeExpressionContractVersion']} if record.get('scopeExpressionContractVersion') in (3,4) else {}),
+                            **({'expression_version':record['scopeExpressionContractVersion']} if record.get('scopeExpressionContractVersion') in (3,4,5) else {}),
                             **({'fixed_scope_first':True,'invoke_fixed':lambda prompt:invoke_compaction(prompt,direct=True)}
                                 if fixed_scope_compaction(record,effective_question(record),saved.get('outputKind','')) else {}),
                             **({'explicit_edit_scope':True} if explicit_compaction_scope(record,effective_question(record),saved.get('outputKind','')) else {}))

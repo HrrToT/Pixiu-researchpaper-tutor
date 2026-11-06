@@ -19,14 +19,14 @@ def compact_repairs(report, revised, accepted, batch_state, question, invoke, pa
     audits = []
     for rows in (batch_state or {}).get('scopeExpressionAudit',{}).values():
         audits.extend(deepcopy(a) for a in rows if a.get('claimId') in ids)
-    if type(expression_version) is not int or expression_version not in (2,3,4):
+    if type(expression_version) is not int or expression_version not in (2,3,4,5):
         raise ValueError('Invalid repair compaction expression version')
     if type(joint_layout) is not bool:raise ValueError('Invalid joint repair layout policy')
     if type(compact_layout) is not bool:raise ValueError('Invalid compact repair layout policy')
     if type(explicit_edit_scope) is not bool:raise ValueError('Invalid explicit repair scope policy')
     if type(fixed_scope_first) is not bool:raise ValueError('Invalid fixed scope repair policy')
     identity = digest({**({'jointLayoutVersion':1} if joint_layout else {}),**({'compactLayoutVersion':1} if compact_layout else {}),'report':packet,'accepted':accepted,'audits':audits,'question':question,
-                       **({'scopeExpressionContractVersion':expression_version} if expression_version in (3,4) else {}),
+                       **({'scopeExpressionContractVersion':expression_version} if expression_version in (3,4,5) else {}),
                        **({'fixedScopeCompactionVersion':1} if fixed_scope_first else {}),
                        **({'explicitEditScopeVersion':1} if explicit_edit_scope else {}),
                        'evidence':evidence,'outputKind':output_kind,'presentationVersion':presentation_version})
@@ -43,7 +43,7 @@ def compact_repairs(report, revised, accepted, batch_state, question, invoke, pa
     # propagate; a confirmed invalid reply is checkpointed and never resent.
     result,new_audits = compact(packet,audits,question,invoke,parse,evidence=evidence,
         output_kind=output_kind,presentation_version=presentation_version,fixed_claims=accepted,
-        **({'expression_version':expression_version} if expression_version in (3,4) else {}),
+        **({'expression_version':expression_version} if expression_version in (3,4,5) else {}),
         **({'fixed_scope_first':True,'invoke_fixed':invoke_fixed} if fixed_scope_first else {}),
         explicit_edit_scope=explicit_edit_scope,compact_layout=compact_layout,joint_layout=joint_layout)
     state.update(status='completed' if result is not None else 'invalid',

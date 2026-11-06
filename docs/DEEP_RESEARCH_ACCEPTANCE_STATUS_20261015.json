@@ -5524,7 +5524,18 @@
       "sourceCommit": "3b11f1a9",
       "runtimeProof": "deep-research-evidence/runtime-load-comparison-path-398-20261106.json"
     },
-    "stage": "398 source-field comparison audit loaded;3574 frozen offline checks pass. Prior G1N-v7 remains partial with6 gaps; no new model case. Full DR0-DR5 incomplete."
+    "stage": "398 source-field comparison audit loaded;3574 frozen offline checks pass. Prior G1N-v7 remains partial with6 gaps; no new model case. Full DR0-DR5 incomplete.",
+    "comparisonSufficiency399Candidate": {
+      "promptVersion": "dr-v2.20261106.399",
+      "scopeExpressionContractVersion": 5,
+      "offlinePassed": 3592,
+      "testFiles": 196,
+      "sourceFrozen": true,
+      "providerCalls": 0,
+      "loaded": false,
+      "proof": "deep-research-evidence/comparison-sufficiency-399-associated-confirmed-regression-20261106.json",
+      "boundary": "Authored local comparison evidence sufficiency uses existing independent scope entailment review. Not author omission; no historical verdict upgrade or full content acceptance."
+    }
   },
   "sharedModuleSourceCheckpoint": {
     "sourceCommit": "f8ae5177",

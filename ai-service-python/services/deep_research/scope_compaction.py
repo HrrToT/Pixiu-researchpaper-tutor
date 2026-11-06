@@ -10,7 +10,7 @@ def enabled(record):
     return (type(record.get('scopeCompactionContractVersion')) is int
             and record['scopeCompactionContractVersion'] == 1
             and type(record.get('scopeExpressionContractVersion')) is int
-            and record['scopeExpressionContractVersion'] in (2,3,4))
+            and record['scopeExpressionContractVersion'] in (2,3,4,5))
 
 
 def compact(report, audits, question, invoke, parse, *, output_kind='', evidence=(), presentation_version=0,
@@ -27,7 +27,7 @@ def compact(report, audits, question, invoke, parse, *, output_kind='', evidence
     if type(measured_guidance) is not bool:raise ValueError('Invalid compaction measurement policy')
     if type(fixed_scope_first) is not bool or invoke_fixed is not None and not callable(invoke_fixed):
         raise ValueError('Invalid fixed scope compaction policy')
-    if type(expression_version) is not int or expression_version not in (2,3,4):
+    if type(expression_version) is not int or expression_version not in (2,3,4,5):
         raise ValueError('Invalid compaction expression version')
     if (not isinstance(report,dict) or not isinstance(report.get('claims'),list)
             or not isinstance(audits,list)
@@ -115,13 +115,16 @@ The service compiles each observation as subject，attribute=value under
 These prefixes, punctuation and all field strings consume the shared allowance.
 No old evidence verdict is retained: all new wording will be independently checked.
 ''' + guidance(expression_version)
-    if expression_version in (3,4):
+    if expression_version in (3,4,5):
         prompt=prompt.replace('''The service compiles each observation as subject，attribute=value under
 所引来源报告的评估设置包括： and each boundary as
 这些引用不足以证明：在范围「domain」内的所有情形中/至少一种情形中，subject相对于comparator，predicate。''',
 '''The service groups observations with the same subject as 已报告设置：subject（attribute：value；…）。
 All boundaries render as 尚不能据此确认subject相对comparator的“predicate”在domain中普遍成立。
 Existential boundaries render as 尚不能据此确认在domain中存在subject相对comparator“predicate”的情形。''')
+    if expression_version==5:
+        prompt=prompt.replace('All boundaries render as','Quantified universal boundaries render as')
+        prompt+='\nEvidence-sufficiency boundaries render as 当前引用不足以比较subjects的quantity。 Keep their exact type, subjects and quantity; they are frozen comparison scope, not wording choices.\n'
     if compact_layout:
         from services.deep_research.short_factual_layout import PROSE_GUIDANCE as GUIDANCE
         prompt+='\n'+GUIDANCE
@@ -155,9 +158,11 @@ checked against the original sources. No approval is inherited from this edit.
             if not isinstance(expr,dict) or set(expr) != set(old): return None, audits
             if any(not isinstance(expr[name],list) or len(expr[name]) != len(old[name]) for name in old):
                 return None, audits
-            if any(not isinstance(new,dict) or new.get('quantifier') != before['quantifier']
-                   for new,before in zip(expr['notEstablished'],old['notEstablished'])):
-                return None, audits
+            for new,before in zip(expr['notEstablished'],old['notEstablished']):
+                if expression_version==5 and before.get('type')=='comparison_evidence':
+                    if new!=before:return None, audits
+                elif not isinstance(new,dict) or new.get('quantifier')!=before['quantifier']:
+                    return None, audits
         if not isinstance(row['text'],str) or not isinstance(row['conditions'],dict): return None, audits
         try:
             claim,audit = materialize({**original[key],**row},expression_version)

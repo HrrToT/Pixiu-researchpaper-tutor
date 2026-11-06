@@ -4,7 +4,7 @@ from copy import deepcopy
 
 def enabled(record):
     return (type(record.get('scopeExpressionContractVersion')) is int
-            and record['scopeExpressionContractVersion'] in (1, 2, 3, 4))
+            and record['scopeExpressionContractVersion'] in (1, 2, 3, 4, 5))
 
 
 SCHEMA = {'observedSettings':[{'subject':'actual method/experiment',
@@ -45,10 +45,14 @@ the domain or predicate is meaningful: the semantic reviewer still checks both.
 
 
 def guidance(version=1):
+    if type(version) is int and version==5:
+        from services.deep_research.comparison_sufficiency import GUIDANCE as sufficiency
+        from services.deep_research.boundary_quantities import GUIDANCE as numeric
+        return sufficiency+numeric
     if type(version) is int and version==4:
         from services.deep_research.boundary_quantities import GUIDANCE as quantity_guidance
         return guidance(3).replace("including metric and tolerance where applicable","without inventing a tolerance")+quantity_guidance
-    if version in (3,4):
+    if version in (3,4,5):
         return QUANTIFIED_GUIDANCE+'''
 The display uses 已报告设置 for observations, grouping identical subjects without
 changing their attributes/values. Boundaries use 尚不能据此确认, with 普遍成立
@@ -58,7 +62,10 @@ The full rendered text still counts toward the human character limit.
     return QUANTIFIED_GUIDANCE if version == 2 else GUIDANCE
 
 
-def boundary_text(value):
+def boundary_text(value, version=1):
+    if version==5 and isinstance(value,dict) and value.get("type")=="comparison_evidence":
+        from services.deep_research.comparison_sufficiency import proposition
+        return proposition(value)
     if not isinstance(value, dict) or set(value) != {'quantifier','domain','subject','comparator','predicate'}:
         raise ValueError('Explicit quantified boundary fields required')
     if value['quantifier'] not in ('all','exists'):
@@ -73,13 +80,13 @@ def boundary_text(value):
 
 def review_expression(expression, version=1):
     result = deepcopy(expression)
-    if version in (2,3,4):
-        result['notEstablished'] = [boundary_text(p) for p in result['notEstablished']]
+    if version in (2,3,4,5):
+        result['notEstablished'] = [boundary_text(p,version) for p in result['notEstablished']]
     return result
 
 
 def materialize(claim, version=1):
-    if type(version) is not int or version not in (1,2,3,4):
+    if type(version) is not int or version not in (1,2,3,4,5):
         raise ValueError('Unsupported scope expression version')
     result = deepcopy(claim)
     expression = result.pop('scopeExpression', None)
@@ -103,16 +110,20 @@ def materialize(claim, version=1):
         observations.append(text(setting['subject'])+'，'+text(setting['attribute'])+'='+text(setting['value']))
     statements = []
     if observations:
-        if version in (3,4):
+        if version in (3,4,5):
             if all(s['subject']==settings[0]['subject'] for s in settings):
                 body=settings[0]['subject']+'（'+'；'.join(s['attribute']+'：'+s['value'] for s in settings)+'）'
             else:body='；'.join(s['subject']+'（'+s['attribute']+'：'+s['value']+'）' for s in settings)
             statements.append('已报告设置：'+body+'。')
         else:statements.append('所引来源报告的评估设置包括：'+'；'.join(observations)+'。')
     if boundaries:
-        rendered = [boundary_text(p) if version in (2,3,4) else text(p) for p in boundaries]
-        if version in (3,4):
+        rendered = [boundary_text(p,version) if version in (2,3,4,5) else text(p) for p in boundaries]
+        if version in (3,4,5):
             for p in boundaries:
+                if version==5 and isinstance(p,dict) and p.get('type')=='comparison_evidence':
+                    from services.deep_research.comparison_sufficiency import display
+                    statements.append(display(p))
+                    continue
                 if p['quantifier']=='all':
                     statements.append('尚不能据此确认'+p['subject']+'相对'+p['comparator']+'的“'+p['predicate']
                         +'”在'+p['domain']+'中普遍成立。')

@@ -107,6 +107,10 @@ All output still undergoes independent factual, scope, numeric and final-answer 
 
 
 def scope_guidance(version):
+    if type(version) is int and version==5:
+        from services.deep_research.comparison_sufficiency import GUIDANCE as sufficiency
+        from services.deep_research.boundary_quantities import GUIDANCE as numeric
+        return sufficiency+numeric
     """Same authored boundary shape; one instruction rather than additive copies."""
     from copy import deepcopy
     from services.deep_research.scope_expression import SCHEMA
