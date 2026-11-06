@@ -56,7 +56,7 @@ def test_layout_hint_is_not_an_invented_method_heading_or_scientific_approval():
     p=[{'page':1,'text':'1 Our method reaches high accuracy.\n2 We compare the method to a baseline.\nThe word method is not a section.'}]
     assert all(part['role']=='unknown' for _,parts in spans(p) for part in parts)
     assert not enabled({'externalReadingContractVersion':True})
-    assert not enabled({'externalReadingContractVersion':2})
+    assert not enabled({'externalReadingContractVersion':3})
     assert enabled({'externalReadingContractVersion':1})
 
 
@@ -92,7 +92,7 @@ def test_conceptual_overview_and_derivation_have_distinct_bounded_page_selection
     assert 1 not in [page['page'] for page,_ in derivation] and len(derivation)==3
 
 
-@pytest.mark.parametrize('version',[None,1])
+@pytest.mark.parametrize('version',[None,1,2])
 def test_real_acquisition_protocol_keeps_legacy_locations_and_new_exact_section_slices(tmp_path,version):
     from services.deep_research.repository import DeepResearchRepository
     from services.deep_research_academic import AcademicSourceClient,AcademicPolicy

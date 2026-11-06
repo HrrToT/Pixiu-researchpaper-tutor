@@ -1,0 +1,355 @@
+{
+  "sourceCase": "G1N-v7",
+  "pdfSha256": "42d2f62bb336cf6dacc11acacc03f60babc34b1cb5d7596ce9fdf2346ac48ee5",
+  "sourcePayloadSha256": "f754be91a1c381ae3850b469796bd483bed0b586cf4e3c627cfea5338ae82c41",
+  "policies": {
+    "1": {
+      "pages": [
+        3,
+        1,
+        10
+      ],
+      "parts": [
+        {
+          "page": 3,
+          "parts": [
+            {
+              "start": 0,
+              "end": 5657,
+              "section": "",
+              "role": "unknown"
+            }
+          ]
+        },
+        {
+          "page": 1,
+          "parts": [
+            {
+              "start": 0,
+              "end": 2954,
+              "section": "",
+              "role": "unknown"
+            }
+          ]
+        },
+        {
+          "page": 10,
+          "parts": [
+            {
+              "start": 0,
+              "end": 1936,
+              "section": "",
+              "role": "unknown"
+            },
+            {
+              "start": 1936,
+              "end": 6782,
+              "section": "REFERENCES",
+              "role": "references"
+            }
+          ]
+        }
+      ]
+    },
+    "2": {
+      "pages": [
+        5,
+        7,
+        1
+      ],
+      "parts": [
+        {
+          "page": 5,
+          "parts": [
+            {
+              "start": 0,
+              "end": 3166,
+              "section": "IV. M ETHOD / A. Planar-based Gaussian Splatting Representation",
+              "role": "method"
+            }
+          ]
+        },
+        {
+          "page": 7,
+          "parts": [
+            {
+              "start": 0,
+              "end": 1372,
+              "section": "IV. M ETHOD / B. Geometric Regularization",
+              "role": "method"
+            }
+          ]
+        },
+        {
+          "page": 1,
+          "parts": [
+            {
+              "start": 0,
+              "end": 2954,
+              "section": "",
+              "role": "unknown"
+            }
+          ]
+        }
+      ]
+    },
+    "oldReadNavigation": {
+      "readCount": 12,
+      "selected": [
+        {
+          "sourceId": "src_2b46f4a782e8b3da2cc83ca2194d65ddd9b0ee6c3b4573cf228326c3b922375d",
+          "version": "arxiv:2406.06521v1",
+          "location": {
+            "page": 4,
+            "offset": 0,
+            "section": "",
+            "sectionRole": "unknown"
+          }
+        },
+        {
+          "sourceId": "src_3b61f57ba96bc82fd6b4c45297a79506d28fccf2cd00d5ca1be4e603dd760f52",
+          "version": "arxiv:2404.10772v1",
+          "location": {
+            "page": 3,
+            "offset": 2022,
+            "section": "3 METHOD / 3.1 Modeling",
+            "sectionRole": "method"
+          }
+        },
+        {
+          "sourceId": "src_658719b375ec743a57d235826b1c664100ab024172015449e31d5db71ac85a03",
+          "version": "arxiv:2404.10772v1",
+          "location": {
+            "page": 4,
+            "offset": 4052,
+            "section": "3 METHOD / 3.4 Surface Extraction",
+            "sectionRole": "method"
+          }
+        },
+        {
+          "sourceId": "src_25da97de783f68c561500ed5d3338c0867cc720568228e7bd3dc6ac1a1d48d34",
+          "version": "arxiv:2406.06521v1",
+          "location": {
+            "page": 9,
+            "offset": 0,
+            "section": "",
+            "sectionRole": "unknown"
+          }
+        },
+        {
+          "sourceId": "src_d250a78ac2108f0758cdab25e2f8743635485bc3d79911d1ff81399b38ff914b",
+          "version": "arxiv:2404.10772v1",
+          "location": {
+            "page": 6,
+            "offset": 0,
+            "section": "4.2 Geometry Evaluation",
+            "sectionRole": "other"
+          }
+        },
+        {
+          "sourceId": "src_9e45c8749b31b020988b49b91a6eaf84676e0dfe640c07854d74372d142182f6",
+          "version": "arxiv:2406.06521v1",
+          "location": {
+            "page": 8,
+            "offset": 4086,
+            "section": "",
+            "sectionRole": "unknown"
+          }
+        },
+        {
+          "sourceId": "src_2255982b5e8cf2c4634eecf575b42e5250739ea975772d4e0eb7c24f6e7c8561",
+          "version": "arxiv:2404.10772v1",
+          "location": {
+            "page": 5,
+            "offset": 3782,
+            "section": "4.1 Implementation Details",
+            "sectionRole": "method"
+          }
+        },
+        {
+          "sourceId": "src_236b8fca32a89495f2d163202f5622097fd115f899ff3f4ae2c065a4069656d0",
+          "version": "arxiv:2406.06521v1",
+          "location": {
+            "page": 8,
+            "offset": 0,
+            "section": "",
+            "sectionRole": "unknown"
+          }
+        },
+        {
+          "sourceId": "src_1da3885bc3ca762919ccd494deee237555b9334c60193cfc0dd528e5473669de",
+          "version": "arxiv:2404.10772v1",
+          "location": {
+            "page": 6,
+            "offset": 2030,
+            "section": "4.3 Novel view Synthesis",
+            "sectionRole": "unknown"
+          }
+        },
+        {
+          "sourceId": "src_b1f727b14731367bc9afd867cbd9641c287f0092af3e0a33649d22babaa9b83f",
+          "version": "arxiv:2406.06521v1",
+          "location": {
+            "page": 9,
+            "offset": 2028,
+            "section": "",
+            "sectionRole": "unknown"
+          }
+        },
+        {
+          "sourceId": "src_9ce5d9bb2f3bb3e109d006246ccf1be85be6f6c3aaf28e5cd94ab62babaa6111",
+          "version": "arxiv:2404.10772v1",
+          "location": {
+            "page": 7,
+            "offset": 1655,
+            "section": "4.4 Ablation Study",
+            "sectionRole": "unknown"
+          }
+        },
+        {
+          "sourceId": "src_e553f0450785c8bb38a0e789da45c23aa2a9a0dd2c7a18edf5f6b5aa5744d9ea",
+          "version": "arxiv:2406.06521v1",
+          "location": {
+            "page": 8,
+            "offset": 2045,
+            "section": "",
+            "sectionRole": "unknown"
+          }
+        }
+      ],
+      "hasMinimumScaleMethodBody": false
+    },
+    "newReadNavigation": {
+      "readCount": 12,
+      "selected": [
+        {
+          "sourceId": "src_fe89a648be60bf461b5de22692cb30e94638548089eb5d1f8d1e19f259580189",
+          "version": "arxiv:2406.06521v1",
+          "location": {
+            "page": 5,
+            "offset": 0,
+            "section": "IV. M ETHOD / A. Planar-based Gaussian Splatting Representation",
+            "sectionRole": "method"
+          }
+        },
+        {
+          "sourceId": "src_3b61f57ba96bc82fd6b4c45297a79506d28fccf2cd00d5ca1be4e603dd760f52",
+          "version": "arxiv:2404.10772v1",
+          "location": {
+            "page": 3,
+            "offset": 2022,
+            "section": "3 METHOD / 3.1 Modeling",
+            "sectionRole": "method"
+          }
+        },
+        {
+          "sourceId": "src_2b46f4a782e8b3da2cc83ca2194d65ddd9b0ee6c3b4573cf228326c3b922375d",
+          "version": "arxiv:2406.06521v1",
+          "location": {
+            "page": 4,
+            "offset": 0,
+            "section": "",
+            "sectionRole": "unknown"
+          }
+        },
+        {
+          "sourceId": "src_658719b375ec743a57d235826b1c664100ab024172015449e31d5db71ac85a03",
+          "version": "arxiv:2404.10772v1",
+          "location": {
+            "page": 4,
+            "offset": 4052,
+            "section": "3 METHOD / 3.4 Surface Extraction",
+            "sectionRole": "method"
+          }
+        },
+        {
+          "sourceId": "src_25da97de783f68c561500ed5d3338c0867cc720568228e7bd3dc6ac1a1d48d34",
+          "version": "arxiv:2406.06521v1",
+          "location": {
+            "page": 9,
+            "offset": 0,
+            "section": "",
+            "sectionRole": "unknown"
+          }
+        },
+        {
+          "sourceId": "src_d250a78ac2108f0758cdab25e2f8743635485bc3d79911d1ff81399b38ff914b",
+          "version": "arxiv:2404.10772v1",
+          "location": {
+            "page": 6,
+            "offset": 0,
+            "section": "4.2 Geometry Evaluation",
+            "sectionRole": "other"
+          }
+        },
+        {
+          "sourceId": "src_9e45c8749b31b020988b49b91a6eaf84676e0dfe640c07854d74372d142182f6",
+          "version": "arxiv:2406.06521v1",
+          "location": {
+            "page": 8,
+            "offset": 4086,
+            "section": "",
+            "sectionRole": "unknown"
+          }
+        },
+        {
+          "sourceId": "src_2255982b5e8cf2c4634eecf575b42e5250739ea975772d4e0eb7c24f6e7c8561",
+          "version": "arxiv:2404.10772v1",
+          "location": {
+            "page": 5,
+            "offset": 3782,
+            "section": "4.1 Implementation Details",
+            "sectionRole": "method"
+          }
+        },
+        {
+          "sourceId": "src_236b8fca32a89495f2d163202f5622097fd115f899ff3f4ae2c065a4069656d0",
+          "version": "arxiv:2406.06521v1",
+          "location": {
+            "page": 8,
+            "offset": 0,
+            "section": "",
+            "sectionRole": "unknown"
+          }
+        },
+        {
+          "sourceId": "src_1da3885bc3ca762919ccd494deee237555b9334c60193cfc0dd528e5473669de",
+          "version": "arxiv:2404.10772v1",
+          "location": {
+            "page": 6,
+            "offset": 2030,
+            "section": "4.3 Novel view Synthesis",
+            "sectionRole": "unknown"
+          }
+        },
+        {
+          "sourceId": "src_b1f727b14731367bc9afd867cbd9641c287f0092af3e0a33649d22babaa9b83f",
+          "version": "arxiv:2406.06521v1",
+          "location": {
+            "page": 9,
+            "offset": 2028,
+            "section": "",
+            "sectionRole": "unknown"
+          }
+        },
+        {
+          "sourceId": "src_9ce5d9bb2f3bb3e109d006246ccf1be85be6f6c3aaf28e5cd94ab62babaa6111",
+          "version": "arxiv:2404.10772v1",
+          "location": {
+            "page": 7,
+            "offset": 1655,
+            "section": "4.4 Ablation Study",
+            "sectionRole": "unknown"
+          }
+        }
+      ],
+      "hasMinimumScaleMethodBody": true
+    }
+  },
+  "providerCalls": 0,
+  "networkCalls": 0,
+  "productionWrites": 0,
+  "oldPayloadUnchanged": true,
+  "scientificAcceptance": false,
+  "boundary": "Prospective source navigation replay only. New sources use unchanged cached PDF slices and the production source-identity formula; selection does not prove model extraction, synthesis delivery or complete answer quality."
+}

@@ -10,20 +10,22 @@ _BACKGROUND = re.compile(r'相关工作|背景方法|以往方法|传统方法|\
 _RESULTS = re.compile(r'报告.*结果|实验结果|评测结果|性能结果|性能比较|数据集表现|\b(?:benchmark|results? comparison|reported results?|evaluation results?)\b',re.I)
 
 
-def method_requested(question):
-    return bool(_ASK.search(question) and not _BACKGROUND.search(question) and not _RESULTS.search(question))
+def method_requested(question, *, outline=False):
+    return bool((_ASK.search(question) or outline and re.search(r'表示|表征|参数化|提取路径|重建路径|\b(?:representation|parameterization|mesh extraction)\b',question,re.I))
+                and not _BACKGROUND.search(question) and not _RESULTS.search(question))
 
 
 def enabled(record):
-    return type(record.get('externalReadingContractVersion')) is int and record['externalReadingContractVersion']==1
+    return type(record.get('externalReadingContractVersion')) is int and record['externalReadingContractVersion'] in (1,2)
 
 
-def spans(pages):
+def spans(pages, *, outline=False):
     """Keep page text/offsets; inherit numbered section paths across pages.
 
     This is conservative layout metadata. It neither attributes every sentence
     in a method section to its authors nor treats headings as scientific proof.
     """
+    if type(outline) is not bool:raise ValueError("Invalid PDF outline policy")
     stack=[];result=[]
     for page in pages:
         text=page.get('text','');events=[]
@@ -34,16 +36,27 @@ def spans(pages):
             if not title or len(title.split())>15 or not ('.' in m['number'] or _METHOD.match(title) or _OTHER.match(title)):
                 continue
             events.append((m.start(),m['number'],m['number']+' '+title))
+        if outline:
+            from services.deep_research.pdf_outline import events as outline_events
+            events.extend(outline_events(text))
         events.extend((m.start(),None,m.group().strip()) for m in _REFERENCES.finditer(text))
         start=0;parts=[]
         for offset,number,title in sorted(events):
             if offset>start:parts.append(_part(start,offset,stack))
             if number is None:stack=[('',title,'references')]
             else:
+                if outline and number.startswith('L:'):
+                    root=next((entry[0] for entry in stack if entry[0].startswith('R:') and '.' not in entry[0]),None)
+                    if root:number=root+'.'+number[2:]
                 level=number.count('.')+1
                 stack=[entry for entry in stack if entry[0] and entry[0].count('.')+1<level
                        and number.startswith(entry[0]+'.')]
-                role='method' if _METHOD.search(title) else 'other' if _OTHER.search(title) else (stack[-1][2] if stack else 'unknown')
+                role_title=title
+                if outline:
+                    from services.deep_research.pdf_outline import normalized_title
+                    role_title=normalized_title(title)
+                role='method' if _METHOD.search(role_title) else 'other' if (_OTHER.search(role_title)
+                    or outline and re.search(r'\b(?:preliminar\w*|experiments|evaluations)\b',role_title,re.I)) else (stack[-1][2] if stack else 'unknown')
                 stack.append((number,title,role))
             start=offset
         if start<len(text):parts.append(_part(start,len(text),stack))
@@ -56,8 +69,9 @@ def _part(start,end,stack):
             'role':stack[-1][2] if stack else 'unknown'}
 
 
-def select(pages,query,terms,*,seen=()):
-    annotated=spans(pages);method_request=method_requested(query)
+def select(pages,query,terms,*,seen=(),contract_version=1):
+    if type(contract_version) is not int or contract_version not in (1,2):raise ValueError("Invalid external reading policy")
+    annotated=spans(pages,outline=contract_version==2);method_request=method_requested(query,outline=contract_version==2)
     def score(pair):
         page,parts=pair
         body=' '.join(page['text'][p['start']:p['end']] for p in parts if p['role']=='method')

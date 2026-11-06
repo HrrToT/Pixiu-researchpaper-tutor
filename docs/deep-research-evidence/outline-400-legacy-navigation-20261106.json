@@ -1,0 +1,83 @@
+{
+  "baselineCommit": "c035ea926ef446afc738b5c85a1e5053e1f443e5",
+  "legacySpansExact": true,
+  "legacySelections": [
+    {
+      "question": "高斯表示与网格提取路径有什么不同 Gaussian representation mesh extraction path",
+      "seen": [],
+      "exact": true,
+      "sha256": "581b62f504e73a8a204b3a65f7772184ee8217c21ca051a38e60e8ba5b3dc54c"
+    },
+    {
+      "question": "高斯表示与网格提取路径有什么不同 Gaussian representation mesh extraction path",
+      "seen": [
+        1,
+        3
+      ],
+      "exact": true,
+      "sha256": "bae4fc22169a2805b34324c338cfb6db76db560170e97735a512a60ae3b8a246"
+    },
+    {
+      "question": "解释方法如何工作 depth normal",
+      "seen": [],
+      "exact": true,
+      "sha256": "0c25c43aa9f26e6679b0f7a0cc3dc5005c75bdc0f3a9372686b950891e2d5214"
+    },
+    {
+      "question": "解释方法如何工作 depth normal",
+      "seen": [
+        1,
+        3
+      ],
+      "exact": true,
+      "sha256": "e88dfc2cc311f62b62422ef1fb52a1411b26d201b8561e2090242c0e0db759cf"
+    },
+    {
+      "question": "解释相关工作 representation",
+      "seen": [],
+      "exact": true,
+      "sha256": "064bce4b55aa91bb0916a3689a332a4fac6fa107ac85d7c8493c784967849fd4"
+    },
+    {
+      "question": "解释相关工作 representation",
+      "seen": [
+        1,
+        3
+      ],
+      "exact": true,
+      "sha256": "c466970dfa4ef5e8c90f7e3fa2711c6caa426a3b686fd6f7513b1dede1e48c78"
+    },
+    {
+      "question": "报告实验结果 DTU",
+      "seen": [],
+      "exact": true,
+      "sha256": "b38697a1d1ce8825efcad450a506f2520178cbaeb8bfcc429d826f03d36c15b3"
+    },
+    {
+      "question": "报告实验结果 DTU",
+      "seen": [
+        1,
+        3
+      ],
+      "exact": true,
+      "sha256": "73dd7be7ea005593c7a44be9278458997059880a5ed567d6aad460a1d21a7f0a"
+    },
+    {
+      "question": "推导公式 depth rendering",
+      "seen": [],
+      "exact": true,
+      "sha256": "141f4b8e5fb73913a72b0e103180aee6e756e68d64070eae61f00799f88b8800"
+    },
+    {
+      "question": "推导公式 depth rendering",
+      "seen": [
+        1,
+        3
+      ],
+      "exact": true,
+      "sha256": "e88dfc2cc311f62b62422ef1fb52a1411b26d201b8561e2090242c0e0db759cf"
+    }
+  ],
+  "providerCalls": 0,
+  "scientificAcceptance": false
+}

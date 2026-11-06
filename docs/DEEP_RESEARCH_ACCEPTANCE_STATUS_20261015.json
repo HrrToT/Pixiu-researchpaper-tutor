@@ -5537,6 +5537,17 @@
       "boundary": "Authored local comparison evidence sufficiency uses existing independent scope entailment review. Not author omission; no historical verdict upgrade or full content acceptance.",
       "sourceCommit": "965f369c",
       "runtimeProof": "deep-research-evidence/runtime-load-comparison-sufficiency-399-20261106.json"
+    },
+    "pdfOutline400Candidate": {
+      "promptVersion": "dr-v2.20261106.400",
+      "externalReadingContractVersion": 2,
+      "offlinePassed": 3606,
+      "testFiles": 197,
+      "sourceFrozen": true,
+      "providerCalls": 0,
+      "loaded": false,
+      "proof": "deep-research-evidence/outline-400-associated-final-regression-20261106.json",
+      "boundary": "Cached precise PDF method page now selected/read/extracted/actually in prepared synthesis23877bytes,0provider. Original cases unchanged; full real comparison still unaccepted."
     }
   },
   "sharedModuleSourceCheckpoint": {
