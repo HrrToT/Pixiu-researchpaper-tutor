@@ -4798,7 +4798,7 @@
     "component": "source-local table shape and clean comparison rewrite",
     "componentOutcome": "397 loaded;194files3562 frozen checks pass. G1N-v7 no typed-cell guess rejection, independent fact/repair/coverage reviews actually ran;15calls74795tokens193.59s allsettled.6 final gaps, only advice published, full content not accepted.8804ledger/other13tasks/index preserved;independent0.",
     "runtimeLoadedVerified": true,
-    "runtimeProof": "deep-research-evidence/runtime-load-comparison-path-398-20261106.json",
+    "runtimeProof": "deep-research-evidence/runtime-load-comparison-sufficiency-399-20261106.json",
     "fullDR0DR5Proved": false,
     "independentCredit": 0,
     "lastCapturedLedgerRows": 8804,
@@ -5524,7 +5524,7 @@
       "sourceCommit": "3b11f1a9",
       "runtimeProof": "deep-research-evidence/runtime-load-comparison-path-398-20261106.json"
     },
-    "stage": "398 source-field comparison audit loaded;3574 frozen offline checks pass. Prior G1N-v7 remains partial with6 gaps; no new model case. Full DR0-DR5 incomplete.",
+    "stage": "399 evidence-sufficiency boundary loaded;3592 frozen offline checks pass. No additional model case; prior G1N-v7 remains partial. Full DR0-DR5 incomplete.",
     "comparisonSufficiency399Candidate": {
       "promptVersion": "dr-v2.20261106.399",
       "scopeExpressionContractVersion": 5,
@@ -5532,9 +5532,11 @@
       "testFiles": 196,
       "sourceFrozen": true,
       "providerCalls": 0,
-      "loaded": false,
+      "loaded": true,
       "proof": "deep-research-evidence/comparison-sufficiency-399-associated-confirmed-regression-20261106.json",
-      "boundary": "Authored local comparison evidence sufficiency uses existing independent scope entailment review. Not author omission; no historical verdict upgrade or full content acceptance."
+      "boundary": "Authored local comparison evidence sufficiency uses existing independent scope entailment review. Not author omission; no historical verdict upgrade or full content acceptance.",
+      "sourceCommit": "965f369c",
+      "runtimeProof": "deep-research-evidence/runtime-load-comparison-sufficiency-399-20261106.json"
     }
   },
   "sharedModuleSourceCheckpoint": {
