@@ -4796,12 +4796,12 @@
     "answerCoherenceContractVersion": 2,
     "quantitySpellingContractVersion": 15,
     "component": "coverage input sharing and rejected-draft premise allocation",
-    "componentOutcome": "193files3554 frozen checks passed. Docker normally recovered once after authorized endpoint backups;Java DB backed up.396 loaded;8738 old ledger/payloads/14 tasks preserved;index matches last verified hash. G1N-v6 submitted once, content acceptance pending.",
+    "componentOutcome": "396 loaded,193files3554 frozen checks pass. G1N-v6 dispatched all3 repair batches;10calls46550tokens98.619s allsettled. Revisions retain unsupported0.5/invalid typed bindings, no accepted claims/public conclusion.8768ledger/other13tasks/index preserved;independent0.",
     "runtimeLoadedVerified": true,
     "runtimeProof": "deep-research-evidence/runtime-load-premise-396-20261106.json",
     "fullDR0DR5Proved": false,
     "independentCredit": 0,
-    "lastCapturedLedgerRows": 8738,
+    "lastCapturedLedgerRows": 8768,
     "lastCapturedActiveProductionRuns": 0,
     "historicalPausedRunsAtCapture": 13,
     "lastConfirmedIndexDocuments": 1215,
@@ -4823,7 +4823,7 @@
       "externalResearchWorkflowAccepted": false
     },
     "externalRouteBoundary": "User authorized current system HTTP proxy. Configured only in ignored local Python .env. Formal AcademicAcquisition factory fetched metadata and uncached fulltext using pinned public-IP/original-host TLS; application restarted once and wiring/health/data verified. Full external research quality remains unaccepted.",
-    "remaining": "Observe sameG1N-v6. Full comparison/experiments/insufficiency/continuation/independent/release audit remain open.",
+    "remaining": "Fix plain-quote versus typed-table generation instruction and stop exposing rejected table bindings as drafting choices in comparison rewrite. Preserve numeric/source checks, original full question and budget. Full comparison/experiments/insufficiency/continuation/independent/release audit remain open.",
     "factualReviewContractVersion": 3,
     "factualDecisionContractVersion": 2,
     "repairRemovalContractVersion": 2,
@@ -5368,18 +5368,18 @@
     },
     "readingPriorityContractVersion": 7,
     "lastComparisonDevelopment": {
-      "case": "G1N-v5",
-      "runId": "dr_run_f8571e137e88548a90f2868bcc6d3aab",
-      "promptVersion": "dr-v2.20261105.394",
+      "case": "G1N-v6",
+      "runId": "dr_run_7b031e284ed55568aeb209fc39452d32",
+      "promptVersion": "dr-v2.20261106.396",
       "status": "completed",
       "machineOutcome": "inconclusive",
       "contentAccepted": false,
-      "modelCalls": 6,
-      "tokens": 32574,
-      "elapsedSeconds": 153.994,
+      "modelCalls": 10,
+      "tokens": 46550,
+      "elapsedSeconds": 98.619,
+      "repairModelCalls": 3,
       "independentCredit": 0,
-      "proof": "deep-research-evidence/geometry-g1n-v5-factual-repair-and-coverage-review-20261105.json",
-      "repairReplay": "deep-research-evidence/repair-394-v5-preflight-saved-input-replay-20261105.json"
+      "proof": "deep-research-evidence/geometry-g1n-v6-dispatched-repair-content-review-20261106.json"
     },
     "candidateDirect391": {
       "promptVersion": "dr-v2.20261105.391",
@@ -5488,14 +5488,7 @@
         "proof": "deep-research-evidence/premise-396-associated-final-regression-20261106.json"
       }
     },
-    "coverageInputContractVersion": 1,
-    "activeDevelopmentVerification": {
-      "case": "G1N-v6",
-      "runId": "dr_run_7b031e284ed55568aeb209fc39452d32",
-      "submittedOnce": true,
-      "initialObservedStatus": "running",
-      "independentCredit": 0
-    }
+    "coverageInputContractVersion": 1
   },
   "sharedModuleSourceCheckpoint": {
     "sourceCommit": "f8ae5177",
