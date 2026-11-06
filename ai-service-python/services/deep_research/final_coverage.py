@@ -36,7 +36,9 @@ def coverage_prompt_byte_limit(budget, output_tokens=3500):
     return max(0, min(24000, remaining - output_tokens - 1024))
 
 
-def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, *, budget=None,literal_dimensions=False,diagnostics=False,request_contract=False,claim_check=False,task_sources=False,request_semantics=0,binding_catalog=False,scoped_catalog=False,identification_locators=False,coherence=False,shared_evidence_context=False,shared_decision_inputs=False):
+def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, *, budget=None,literal_dimensions=False,diagnostics=False,request_contract=False,claim_check=False,task_sources=False,request_semantics=0,binding_catalog=False,scoped_catalog=False,identification_locators=False,coherence=False,shared_evidence_context=False,shared_decision_inputs=False,consolidated_instructions=False):
+    if type(consolidated_instructions) is not bool or consolidated_instructions and not (type(request_contract) is int and request_contract in (3,4,5)):
+        raise ValueError('Consolidated instructions require fixed request coverage')
     if type(shared_decision_inputs) is not bool or shared_decision_inputs and not (type(request_contract) is int and request_contract in (3,4,5)):
         raise ValueError('Shared decision inputs require fixed request coverage')
     if type(shared_evidence_context) is not bool or shared_evidence_context and not diagnostics:
@@ -113,8 +115,27 @@ def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, 
                         row[field + 'Ref'] = 'userQuestion'
                         del row[field]
                 wire_obligations.append(row)
-        from services.deep_research.coverage_policy import FINAL_COVERAGE_POLICY
-        prompt = f'''Audit whether the FINAL ACCEPTED ANSWER fully answers the user's question.
+        if consolidated_instructions:
+            from services.deep_research.request_coverage import contract,focus_answer
+            from services.deep_research.coverage_instructions import prompt as instruction_prompt
+            fixed_requirements=contract(audit_plan,question,whole_question_id=identity,
+                literal_request_dimensions=request_contract in (2,3,4,5),
+                process_explanations=request_contract in (4,5))
+            catalog=None
+            if binding_catalog:
+                from services.deep_research.coverage_binding_catalog import build,build_scoped
+                permissions=access_requirements(audit_plan,joint=request_semantics==2,citation_access=True) if task_sources else {}
+                catalog=(build_scoped(claims,display_metadata,fixed_requirements,permissions) if scoped_catalog
+                    else build(claims,display_metadata))
+            prompt=instruction_prompt(question,fixed_requirements,wire_claims,display_metadata,evidence_marker,
+                shared_inputs=shared_decision_inputs,task_sources=task_sources,binding_catalog=catalog,
+                scoped_catalog=scoped_catalog,coherence=coherence,request_semantics=request_semantics,
+                process_explanations=request_contract in (4,5),distinct_roles=request_contract==5)
+            prompt=focus_answer(prompt,question,fixed_requirements,wire_claims,display_metadata,
+                **({'shared_inputs':True} if shared_decision_inputs else {}))
+        else:
+            from services.deep_research.coverage_policy import FINAL_COVERAGE_POLICY
+            prompt = f'''Audit whether the FINAL ACCEPTED ANSWER fully answers the user's question.
 Question: {question}
 Research and answer obligations (including the original question): {json.dumps(wire_obligations, ensure_ascii=False, separators=(',', ':'))}
 Accepted final claims: {json.dumps(wire_claims, ensure_ascii=False, sort_keys=True, separators=(',', ':'))}
@@ -126,55 +147,55 @@ In input obligations, questionRef/requestExcerptRef="userQuestion" resolves to t
 EXACT full Question above. Return literal excerpts, never the reference label.
 Return only a JSON array, exactly one entry for each of these obligationIds,
 including the original-question scope: {json.dumps([o['obligationId'] for p in audit_plan for o in p.get('obligations', [])])}'''
-        criterion_shape = {o['obligationId']: [
-            {'criterionId': c['criterionId'], 'responseType': c['responseType'],
-             'status': 'covered|partial|missing', 'bindings': []} for c in o['completionCriteria']]
-            for item in audit_plan for o in item.get('obligations', []) if o.get('completionCriteria')}
-        if criterion_shape:
-            prompt += '\nReturn BOTH aspects and criteria. Copy the following fixed criterion identities into each corresponding obligation object. '
-            prompt += 'Replace each status with one actual verdict and supply only valid answer bindings; do not omit or rename criterionIds. '
-            prompt += 'Obligations absent from this map do not require criteria.\nRequired criterion fields by obligation: '
-            prompt += json.dumps(criterion_shape, ensure_ascii=False, separators=(',', ':'))
-        if literal_dimensions:
-            from services.deep_research.request_dimensions import FINAL_DIMENSION_POLICY
-            prompt+='\n'+FINAL_DIMENSION_POLICY
-        if diagnostics:
-            from services.deep_research.coverage_diagnostics import GUIDANCE
-            prompt += '\n' + GUIDANCE
-        if request_contract:
-            from services.deep_research.request_coverage import contract, prompt as request_prompt
-            fixed_requirements=contract(audit_plan,question,whole_question_id=identity,
-                literal_request_dimensions=type(request_contract) is int and request_contract in (2,3,4,5),process_explanations=type(request_contract) is int and request_contract in (4,5))
-            prompt=request_prompt(question,fixed_requirements,wire_claims,display_metadata,evidence_marker,FINAL_COVERAGE_POLICY,
-                **({'shared_inputs':True} if shared_decision_inputs else {}),
-                **({'process_explanations':True,**({'distinct_roles':True} if request_contract==5 else {})} if type(request_contract) is int and request_contract in (4,5) else {}))
+            criterion_shape = {o['obligationId']: [
+                {'criterionId': c['criterionId'], 'responseType': c['responseType'],
+                 'status': 'covered|partial|missing', 'bindings': []} for c in o['completionCriteria']]
+                for item in audit_plan for o in item.get('obligations', []) if o.get('completionCriteria')}
+            if criterion_shape:
+                prompt += '\nReturn BOTH aspects and criteria. Copy the following fixed criterion identities into each corresponding obligation object. '
+                prompt += 'Replace each status with one actual verdict and supply only valid answer bindings; do not omit or rename criterionIds. '
+                prompt += 'Obligations absent from this map do not require criteria.\nRequired criterion fields by obligation: '
+                prompt += json.dumps(criterion_shape, ensure_ascii=False, separators=(',', ':'))
             if literal_dimensions:
+                from services.deep_research.request_dimensions import FINAL_DIMENSION_POLICY
                 prompt+='\n'+FINAL_DIMENSION_POLICY
-        if claim_check:
-            from services.deep_research.claim_check import AUDIT_GUIDANCE
-            prompt+='\n'+AUDIT_GUIDANCE
-        if type(request_contract) is int and request_contract in (3,4,5):
-            from services.deep_research.request_coverage import focus_answer
-            prompt=focus_answer(prompt,question,fixed_requirements,wire_claims,display_metadata,
-                **({'shared_inputs':True} if shared_decision_inputs else {}))
-        if task_sources:
-            from services.deep_research.access_disclosure import COVERAGE_GUIDANCE
-            prompt=prompt.replace('Overall/criterion/scientific\nbindings still require text/conditions.','Scientific or mixed bindings still require text/conditions.')
-            prompt+='\n'+COVERAGE_GUIDANCE
-        if request_semantics==2:
-            from services.deep_research.joint_answer_bindings import GUIDANCE
-            prompt+='\n'+GUIDANCE
-        if binding_catalog:
-            from services.deep_research.coverage_binding_catalog import build,GUIDANCE as binding_guidance
-            if scoped_catalog:
-                from services.deep_research.coverage_binding_catalog import build_scoped,SCOPED_GUIDANCE
-                permissions=access_requirements(audit_plan,joint=request_semantics==2,citation_access=True) if task_sources else {}
-                prompt+='\n'+binding_guidance+'\n'+SCOPED_GUIDANCE+'\nAvailable answer bindings by check: '+json.dumps(build_scoped(claims,display_metadata,fixed_requirements,permissions),ensure_ascii=False,separators=(',',':'))
-            else:
-                prompt+='\n'+binding_guidance+'\nAvailable answer bindings: '+json.dumps(build(claims,display_metadata),ensure_ascii=False,separators=(',',':'))
-        if coherence:
-            from services.deep_research.answer_coherence import GUIDANCE
-            prompt+='\n'+GUIDANCE
+            if diagnostics:
+                from services.deep_research.coverage_diagnostics import GUIDANCE
+                prompt += '\n' + GUIDANCE
+            if request_contract:
+                from services.deep_research.request_coverage import contract, prompt as request_prompt
+                fixed_requirements=contract(audit_plan,question,whole_question_id=identity,
+                    literal_request_dimensions=type(request_contract) is int and request_contract in (2,3,4,5),process_explanations=type(request_contract) is int and request_contract in (4,5))
+                prompt=request_prompt(question,fixed_requirements,wire_claims,display_metadata,evidence_marker,FINAL_COVERAGE_POLICY,
+                    **({'shared_inputs':True} if shared_decision_inputs else {}),
+                    **({'process_explanations':True,**({'distinct_roles':True} if request_contract==5 else {})} if type(request_contract) is int and request_contract in (4,5) else {}))
+                if literal_dimensions:
+                    prompt+='\n'+FINAL_DIMENSION_POLICY
+            if claim_check:
+                from services.deep_research.claim_check import AUDIT_GUIDANCE
+                prompt+='\n'+AUDIT_GUIDANCE
+            if type(request_contract) is int and request_contract in (3,4,5):
+                from services.deep_research.request_coverage import focus_answer
+                prompt=focus_answer(prompt,question,fixed_requirements,wire_claims,display_metadata,
+                    **({'shared_inputs':True} if shared_decision_inputs else {}))
+            if task_sources:
+                from services.deep_research.access_disclosure import COVERAGE_GUIDANCE
+                prompt=prompt.replace('Overall/criterion/scientific\nbindings still require text/conditions.','Scientific or mixed bindings still require text/conditions.')
+                prompt+='\n'+COVERAGE_GUIDANCE
+            if request_semantics==2:
+                from services.deep_research.joint_answer_bindings import GUIDANCE
+                prompt+='\n'+GUIDANCE
+            if binding_catalog:
+                from services.deep_research.coverage_binding_catalog import build,GUIDANCE as binding_guidance
+                if scoped_catalog:
+                    from services.deep_research.coverage_binding_catalog import build_scoped,SCOPED_GUIDANCE
+                    permissions=access_requirements(audit_plan,joint=request_semantics==2,citation_access=True) if task_sources else {}
+                    prompt+='\n'+binding_guidance+'\n'+SCOPED_GUIDANCE+'\nAvailable answer bindings by check: '+json.dumps(build_scoped(claims,display_metadata,fixed_requirements,permissions),ensure_ascii=False,separators=(',',':'))
+                else:
+                    prompt+='\n'+binding_guidance+'\nAvailable answer bindings: '+json.dumps(build(claims,display_metadata),ensure_ascii=False,separators=(',',':'))
+            if coherence:
+                from services.deep_research.answer_coherence import GUIDANCE
+                prompt+='\n'+GUIDANCE
         template = prompt
         try:
             output_tokens = coverage_output_tokens(audit_plan, claims)
@@ -287,7 +308,7 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
         if identity and gap.get('obligationId') == identity:
             gap['wholeQuestion'] = True
     from services.deep_research.completion_criteria import completion_contract_digest
-    audit={'status': status, **({'coverageInputContractVersion':1} if shared_decision_inputs else {}), 'verdicts': verdicts if isinstance(verdicts, list) else [],
+    audit={'status': status, **({'coverageInstructionsContractVersion':1} if consolidated_instructions else {}), **({'coverageInputContractVersion':1} if shared_decision_inputs else {}), 'verdicts': verdicts if isinstance(verdicts, list) else [],
             **({'coverageEvidenceTransportVersion':1} if shared_evidence_context else {}),
             'completionContractDigest': completion_contract_digest(plan, claims),
             'displayMetadataDigest': display_metadata_digest(claims, evidence, **({"task_sources":True} if task_sources else {}), **({"request_semantics":2} if request_semantics==2 else {}),identification_locators=identification_locators),

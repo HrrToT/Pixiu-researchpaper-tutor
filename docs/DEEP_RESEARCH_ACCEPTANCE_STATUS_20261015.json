@@ -5581,6 +5581,18 @@
       "boundary": "Additional source-work/original-field/own-number prerequisite for explicitly named numerical reporting clauses. Prospective saved c2/c3 errors rejected; original V8 unchanged, no full scientific or real-case acceptance.",
       "sourceCommit": "cedaae9c",
       "runtimeProof": "deep-research-evidence/runtime-load-reporting-ownership-401-20261106.json"
+    },
+    "coverageInstructions402Candidate": {
+      "promptVersion": "dr-v2.20261106.402",
+      "coverageInstructionsContractVersion": 1,
+      "offlinePassed": 3653,
+      "testFiles": 199,
+      "sourceFrozen": true,
+      "providerCalls": 0,
+      "loaded": false,
+      "proof": "deep-research-evidence/coverage-instructions-402-associated-final-regression-20261106.json",
+      "savedCaseReplay": "deep-research-evidence/coverage-instructions-402-saved-complete-context-replay-20261106.json",
+      "boundary": "Consolidated instructions only. Actual saved request25854 rejected in legacy, new23835 prepared with all8cited quotes/context and complete decision inputs/check permissions exact, stopped before dispatch. No model coverage or scientific acceptance."
     }
   },
   "sharedModuleSourceCheckpoint": {
