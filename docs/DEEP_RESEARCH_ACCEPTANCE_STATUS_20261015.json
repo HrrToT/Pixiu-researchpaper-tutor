@@ -4789,16 +4789,16 @@
     "proof": "deep-research-evidence/compact-experiment-envelope-regression-20261020.json"
   },
   "currentCheckpoint": {
-    "sourceCommit": "ccb40334",
+    "sourceCommit": "bc3fdf66",
     "javaSourceCommit": "612c324e",
-    "promptVersion": "dr-v2.20261105.394",
+    "promptVersion": "dr-v2.20261106.396",
     "factualRepairGoalContractVersion": 5,
     "answerCoherenceContractVersion": 2,
     "quantitySpellingContractVersion": 15,
-    "component": "bounded factual/ordinary-advice repair prompt capacity",
-    "componentOutcome": "394 loaded;191files3531 frozen checks pass. Old v4 repair input fits3 batches, but real v5 remains inconclusive:4 facts rejected, coverage budget_exhausted, c3/c4 mandatory15 evidence rows32682/24000B. No published scientific conclusion;8738ledger/other13tasks/index preserved;independent0.",
+    "component": "coverage input sharing and rejected-draft premise allocation",
+    "componentOutcome": "193files3554 frozen checks passed. Docker normally recovered once after authorized endpoint backups;Java DB backed up.396 loaded;8738 old ledger/payloads/14 tasks preserved;index matches last verified hash. G1N-v6 submitted once, content acceptance pending.",
     "runtimeLoadedVerified": true,
-    "runtimeProof": "deep-research-evidence/runtime-load-repair-394-20261105.json",
+    "runtimeProof": "deep-research-evidence/runtime-load-premise-396-20261106.json",
     "fullDR0DR5Proved": false,
     "independentCredit": 0,
     "lastCapturedLedgerRows": 8738,
@@ -4823,7 +4823,7 @@
       "externalResearchWorkflowAccepted": false
     },
     "externalRouteBoundary": "User authorized current system HTTP proxy. Configured only in ignored local Python .env. Formal AcademicAcquisition factory fetched metadata and uncached fulltext using pinned public-IP/original-host TLS; application restarted once and wiring/health/data verified. Full external research quality remains unaccepted.",
-    "remaining": "Separate verified dependencies from broad rejected-draft citation hints when allocating repair premises; actual v5 c3/c4 has14976B fixed plus15 mandatory rows ->32682B. Trace whole-answer coverage budget admission separately. Full comparison/experiments/insufficiency/continuation/independent/release audit remain open.",
+    "remaining": "Observe sameG1N-v6. Full comparison/experiments/insufficiency/continuation/independent/release audit remain open.",
     "factualReviewContractVersion": 3,
     "factualDecisionContractVersion": 2,
     "repairRemovalContractVersion": 2,
@@ -5448,10 +5448,10 @@
         "proof": "deep-research-evidence/repair-394-associated-final-regression-20261105.json"
       }
     },
-    "factualRepairPromptContractVersion": 1,
+    "factualRepairPromptContractVersion": 2,
     "candidateCoverage395": {
       "coverageInputContractVersion": 1,
-      "runtimeLoadedVerified": false,
+      "runtimeLoadedVerified": true,
       "replay": "deep-research-evidence/coverage-395-saved-admission-replay-20261105.json",
       "legacyInputBytes": 24393,
       "candidatePreparedBytes": 23862,
@@ -5465,11 +5465,12 @@
         "providerCalls": 0,
         "proof": "deep-research-evidence/coverage-395-confirmed-associated-final-regression-20261105.json",
         "preliminaryFailureProof": "deep-research-evidence/coverage-395-associated-final-regression-20261105.json"
-      }
+      },
+      "loadedAs": "dr-v2.20261106.396"
     },
     "candidatePremise396": {
       "factualRepairPromptContractVersion": 2,
-      "runtimeLoadedVerified": false,
+      "runtimeLoadedVerified": true,
       "replay": "deep-research-evidence/repair-396-v5-preflight-saved-input-replay-20261106.json",
       "design": "DEEP_RESEARCH_REPAIR_PREMISES_20261106.md",
       "preparedBatchBytes": [
@@ -5486,6 +5487,14 @@
         "providerCalls": 0,
         "proof": "deep-research-evidence/premise-396-associated-final-regression-20261106.json"
       }
+    },
+    "coverageInputContractVersion": 1,
+    "activeDevelopmentVerification": {
+      "case": "G1N-v6",
+      "runId": "dr_run_7b031e284ed55568aeb209fc39452d32",
+      "submittedOnce": true,
+      "initialObservedStatus": "running",
+      "independentCredit": 0
     }
   },
   "sharedModuleSourceCheckpoint": {
