@@ -4798,7 +4798,7 @@
     "component": "source-local table shape and clean comparison rewrite",
     "componentOutcome": "397 loaded;194files3562 frozen checks pass. G1N-v7 no typed-cell guess rejection, independent fact/repair/coverage reviews actually ran;15calls74795tokens193.59s allsettled.6 final gaps, only advice published, full content not accepted.8804ledger/other13tasks/index preserved;independent0.",
     "runtimeLoadedVerified": true,
-    "runtimeProof": "deep-research-evidence/runtime-load-reporting-ownership-401-20261106.json",
+    "runtimeProof": "deep-research-evidence/runtime-load-coverage-instructions-402-20261106.json",
     "fullDR0DR5Proved": false,
     "independentCredit": 0,
     "lastCapturedLedgerRows": 8841,
@@ -4823,7 +4823,7 @@
       "externalResearchWorkflowAccepted": false
     },
     "externalRouteBoundary": "User authorized current system HTTP proxy. Configured only in ignored local Python .env. Formal AcademicAcquisition factory fetched metadata and uncached fulltext using pinned public-IP/original-host TLS; application restarted once and wiring/health/data verified. Full external research quality remains unaccepted.",
-    "remaining": "Fix full exact coverage input25854/24000 and mutually exclusive authored boundary/prose generation; then verify source ownership and full content in one bounded real run. All original comparison/experiment/insufficiency/continuation/independent/release gates remain open.",
+    "remaining": "Make authored boundary/prose branches mutually exclusive before generation, then perform one bounded real full run with reporting ownership and coverage instruction fixes. Oversized required data still stops at original budget. Original comparison/experiment/insufficiency/continuation/source-process/independent/release gates remain open.",
     "factualReviewContractVersion": 3,
     "factualDecisionContractVersion": 2,
     "repairRemovalContractVersion": 2,
@@ -5524,7 +5524,7 @@
       "sourceCommit": "3b11f1a9",
       "runtimeProof": "deep-research-evidence/runtime-load-comparison-path-398-20261106.json"
     },
-    "stage": "401 reporting ownership prerequisite loaded;3632 frozen offline checks pass. SavedV8 c2/c3 misattribution cannot pass new binding. No new real model case; oldV8 remains inconclusive. FullDR0-DR5 incomplete.",
+    "stage": "402 consolidated coverage instructions loaded;3653 frozen offline checks pass. SavedV8 complete inputs/cited context/permissions exact,25854 legacy rejection to23835 prepared,0model. OldV8 inconclusive; fullDR0-DR5 incomplete.",
     "comparisonSufficiency399Candidate": {
       "promptVersion": "dr-v2.20261106.399",
       "scopeExpressionContractVersion": 5,
@@ -5589,10 +5589,12 @@
       "testFiles": 199,
       "sourceFrozen": true,
       "providerCalls": 0,
-      "loaded": false,
+      "loaded": true,
       "proof": "deep-research-evidence/coverage-instructions-402-associated-final-regression-20261106.json",
       "savedCaseReplay": "deep-research-evidence/coverage-instructions-402-saved-complete-context-replay-20261106.json",
-      "boundary": "Consolidated instructions only. Actual saved request25854 rejected in legacy, new23835 prepared with all8cited quotes/context and complete decision inputs/check permissions exact, stopped before dispatch. No model coverage or scientific acceptance."
+      "boundary": "Consolidated instructions only. Actual saved request25854 rejected in legacy, new23835 prepared with all8cited quotes/context and complete decision inputs/check permissions exact, stopped before dispatch. No model coverage or scientific acceptance.",
+      "sourceCommit": "6c17cf98",
+      "runtimeProof": "deep-research-evidence/runtime-load-coverage-instructions-402-20261106.json"
     }
   },
   "sharedModuleSourceCheckpoint": {
