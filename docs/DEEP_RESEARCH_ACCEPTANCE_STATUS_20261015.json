@@ -1,5 +1,5 @@
 {
-  "asOf": "2026-11-05",
+  "asOf": "2026-11-06",
   "objective": "Complete DR0-DR5 in DEEP_RESEARCH_DESIGN_20261012.md without redefining success around implemented subsets.",
   "overall": "incomplete",
   "freshMaterialReadiness": "Independent content acceptance remains 0. Retired cases remain development-only; historical unknowns are not reissued. Fresh replacements and full DR0-DR5 release audit remain pending.",
@@ -4798,7 +4798,7 @@
     "component": "source-local table shape and clean comparison rewrite",
     "componentOutcome": "397 loaded;194files3562 frozen checks pass. G1N-v7 no typed-cell guess rejection, independent fact/repair/coverage reviews actually ran;15calls74795tokens193.59s allsettled.6 final gaps, only advice published, full content not accepted.8804ledger/other13tasks/index preserved;independent0.",
     "runtimeLoadedVerified": true,
-    "runtimeProof": "deep-research-evidence/runtime-load-table-397-20261106.json",
+    "runtimeProof": "deep-research-evidence/runtime-load-comparison-path-398-20261106.json",
     "fullDR0DR5Proved": false,
     "independentCredit": 0,
     "lastCapturedLedgerRows": 8804,
@@ -5518,10 +5518,13 @@
       "testFiles": 195,
       "sourceFrozen": true,
       "providerCalls": 0,
-      "loaded": false,
+      "loaded": true,
       "proof": "deep-research-evidence/comparison-path-398-associated-final-regression-20261106.json",
-      "boundary": "Existing source-field resolver and scientific acceptance rules unchanged; old G1N-v7 remains partial and full comparison unaccepted."
-    }
+      "boundary": "Existing source-field resolver and scientific acceptance rules unchanged; old G1N-v7 remains partial and full comparison unaccepted.",
+      "sourceCommit": "3b11f1a9",
+      "runtimeProof": "deep-research-evidence/runtime-load-comparison-path-398-20261106.json"
+    },
+    "stage": "398 source-field comparison audit loaded;3574 frozen offline checks pass. Prior G1N-v7 remains partial with6 gaps; no new model case. Full DR0-DR5 incomplete."
   },
   "sharedModuleSourceCheckpoint": {
     "sourceCommit": "f8ae5177",
