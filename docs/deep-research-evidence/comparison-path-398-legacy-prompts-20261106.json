@@ -1,0 +1,54 @@
+{
+  "baselineCommit": "6c06b5ec2f3b2051062deda00c5a709417f1f06f",
+  "providerCalls": 0,
+  "legacyPrompts": [
+    {
+      "version": 1,
+      "singleDecision": false,
+      "sha256": "a3ff8060036bc37952b457532e1d40017fd6b39ecc6423b02592a5ae2db91f86",
+      "exact": true
+    },
+    {
+      "version": 1,
+      "singleDecision": true,
+      "sha256": "7ca39daaf2cf66a4b4d7688052bc679f98615544d499cdc78cc8cfb3ecfa658b",
+      "exact": true
+    },
+    {
+      "version": 2,
+      "singleDecision": false,
+      "sha256": "adaeb70125c58411287806d30a7cc1f6bbb5fb8868a79c505dc0924939a4fe26",
+      "exact": true
+    },
+    {
+      "version": 2,
+      "singleDecision": true,
+      "sha256": "1f351681a2b957503d17eeceda4dff533e3badc37bb220ca334758ac8df21fe2",
+      "exact": true
+    },
+    {
+      "version": 3,
+      "singleDecision": false,
+      "sha256": "3fcf4ecb199cc2a23376e2f4f324dac29f3d323203931fd1b768aab4771888c7",
+      "exact": true
+    },
+    {
+      "version": 3,
+      "singleDecision": true,
+      "sha256": "3bc33e9a5bfd09868050e570cf9f2a9b17b96705b963bdb3ad4b484e6512544e",
+      "exact": true
+    },
+    {
+      "version": 4,
+      "singleDecision": false,
+      "sha256": "0314a9ef527e07a1da71399b10edde461ecdf07bef31b48945f90c00c2375877",
+      "exact": true
+    },
+    {
+      "version": 4,
+      "singleDecision": true,
+      "sha256": "993d338e11324e8a4aa03505d65ea1c23d6187ecbd7d23a46894ef85fdaa638b",
+      "exact": true
+    }
+  ]
+}

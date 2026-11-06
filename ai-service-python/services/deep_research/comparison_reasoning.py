@@ -54,7 +54,8 @@ def audit_scope(claim,evidence):
     return None
 
 
-def audit_prompt(targets, version=1, *, single_decision=False):
+def audit_prompt(targets, version=1, *, single_decision=False, source_paths=False):
+    if type(source_paths) is not bool:raise ValueError('Invalid comparison source path policy')
     prompt = '\n'+GUIDANCE+'''
 For the following comparative targets, a passed verdict MUST also include comparisonAudit.
 Target scopes (metadata, not evidence): '''+json.dumps(targets,separators=(',',':'))+'''
@@ -87,6 +88,10 @@ do not invent an audit or cite irrelevant quotations to satisfy the schema.
     if type(version) is int and version == 4:
         prompt=prompt.replace('differences','conditionDifferences')
         prompt+='\nconditionDifferences records only empirically established differences in relevant evaluation\nconditions (for example dataset, resolution, timing protocol or hardware). It does NOT list\nthe identities of the methods being compared, or their measured outcomes. Two different\nmethod names are expected in a method comparison and do not establish misaligned conditions.\nFor a reported within-table comparison, bind the actual rows and restrict the conclusion to\nthat reported evaluation; established means aligned for THIS bounded comparison, not a proof\nthat every possible setting is controlled. Use conditionDifferences=[] when no relevant\ncondition difference is demonstrated. Unknown conditions remain not_established; do not\ninvent matching conditions or erase a genuine condition difference to satisfy this rule.\nAn intentional whole-system comparison may include different hardware: a supported bounded\nsystem comparison is distinct from an isolated method-effect claim. Decide supportsClaim\nfrom the actual conclusion, comparison type and evidence, never from method labels alone.\n'
+    if source_paths:
+        prompt=prompt.replace('"quote":"exact own quotation excerpt"','"path":["quote"]').replace(
+            '"quote":"exact excerpt"','"path":["quote"]')
+        prompt+='\nBind comparison premises and condition sides through existing own source-field paths, not retyped quotations. The whole unchanged field is resolved; still judge the actual inference and relevant conditions independently.\n'
     if single_decision:
         prompt=prompt.replace('return status=failed','set scopeAudit.supported=false')
     return prompt

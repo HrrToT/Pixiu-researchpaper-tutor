@@ -280,7 +280,7 @@ class ResearchFacade:
             "materials": materials,
             "materialSnapshot": material_snapshot,  # Immutable Java snapshot
             "contextMaterials": (material_snapshot or {}).get("contextMaterials", []) if isinstance(material_snapshot, dict) else [],
-            "promptVersion": "dr-v2.20261106.397",
+            "promptVersion": "dr-v2.20261106.398",
             "factualPromptContractVersion": 3,
             "draftValidationContractVersion": 1,
             "factualRepairPromptContractVersion": 3,
@@ -360,7 +360,7 @@ class ResearchFacade:
             "answerPreservationContractVersion": 1,
             "accessRequestProjectionContractVersion": 2,
             "compactionEditorContractVersion": 8,
-            "auditSourceFieldsContractVersion": 3,
+            "auditSourceFieldsContractVersion": 4,
             "structuredOutputContractVersion": 15,
             "draftSystemContractVersion": 1,
             "claimIsolationContractVersion": 1,
@@ -1259,9 +1259,11 @@ class ResearchFacade:
             comparison_audit_version=lambda: self._repo.require_run(run_id).get('comparisonReasoningContractVersion', 0),
             audit_source_fields=lambda: audit_fields_enabled(self._repo.require_run(run_id)),
             audit_target_fields=lambda: type(self._repo.require_run(run_id).get('auditSourceFieldsContractVersion')) is int
-                and self._repo.require_run(run_id)['auditSourceFieldsContractVersion'] in (2,3),
+                and self._repo.require_run(run_id)['auditSourceFieldsContractVersion'] in (2,3,4),
             scope_source_paths=lambda: type(self._repo.require_run(run_id).get('auditSourceFieldsContractVersion')) is int
-                and self._repo.require_run(run_id)['auditSourceFieldsContractVersion']==3,
+                and self._repo.require_run(run_id)['auditSourceFieldsContractVersion'] in (3,4),
+            comparison_source_paths=lambda: type(self._repo.require_run(run_id).get('auditSourceFieldsContractVersion')) is int
+                and self._repo.require_run(run_id)['auditSourceFieldsContractVersion']==4,
             factual_scope=lambda: scope_enabled(self._repo.require_run(run_id)),
             scope_expression_context=lambda targets: context_for_record(self._repo.require_run(run_id),targets),
             boundary_quantity_grounding=lambda: type(self._repo.require_run(run_id).get('scopeExpressionContractVersion')) is int

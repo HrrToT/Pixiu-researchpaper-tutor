@@ -5510,6 +5510,17 @@
         "providerCalls": 0,
         "proof": "deep-research-evidence/table-397-associated-final-regression-20261106.json"
       }
+    },
+    "comparisonSourcePaths398Candidate": {
+      "promptVersion": "dr-v2.20261106.398",
+      "auditSourceFieldsContractVersion": 4,
+      "offlinePassed": 3574,
+      "testFiles": 195,
+      "sourceFrozen": true,
+      "providerCalls": 0,
+      "loaded": false,
+      "proof": "deep-research-evidence/comparison-path-398-associated-final-regression-20261106.json",
+      "boundary": "Existing source-field resolver and scientific acceptance rules unchanged; old G1N-v7 remains partial and full comparison unaccepted."
     }
   },
   "sharedModuleSourceCheckpoint": {

@@ -618,6 +618,7 @@ class BudgetedSemanticChecker:
         scope_source_paths=False,
         mechanism_grounding=False,
         singleton_factual_response=False,
+        comparison_source_paths=False,
     ):
         self._invoke = llm_invoker
         self._run_id = run_id
@@ -630,6 +631,7 @@ class BudgetedSemanticChecker:
         self._audit_source_fields = audit_source_fields
         self._audit_target_fields = audit_target_fields
         self._scope_source_paths = scope_source_paths
+        self._comparison_source_paths = comparison_source_paths
         self._mechanism_grounding = mechanism_grounding
         self._singleton_factual_response = singleton_factual_response
         self._factual_scope = factual_scope
@@ -1126,11 +1128,14 @@ The dataAvailability object is an internal audit, not new experimental results.
                             else self._comparison_reasoning) is True
         comparison_version=(self._comparison_audit_version() if callable(self._comparison_audit_version)
                             else self._comparison_audit_version)
+        comparison_source_paths=(self._comparison_source_paths() if callable(self._comparison_source_paths)
+                                 else self._comparison_source_paths) is True
         if comparison_enabled:
             from services.deep_research.comparison_reasoning import audit_scope,audit_prompt as comparison_audit_prompt
             comparison_targets={c['claimId']:audit_scope(c,evidence) for c in claims if audit_scope(c,evidence)}
             if comparison_targets:
                 prompt+=comparison_audit_prompt(comparison_targets, comparison_version,
+                    **({'source_paths':True} if comparison_source_paths else {}),
                     **({'single_decision':True} if single_decision else {}))
         scope_enabled=(self._factual_scope() if callable(self._factual_scope) else self._factual_scope) is True
         complete_scope=(self._complete_factual_scope() if callable(self._complete_factual_scope)
@@ -1167,6 +1172,10 @@ The dataAvailability object is an internal audit, not new experimental results.
                 source_field_guidance=source_field_guidance.replace(
                     'Use only one representation per premise: evidenceId+path OR evidenceId+quote, never both.',
                     'For scopeAudit premises require evidenceId+path only; comparisonAudit may use path OR quote, never both.')
+            if comparison_source_paths:
+                source_field_guidance=source_field_guidance.replace(
+                    'For scopeAudit premises require evidenceId+path only; comparisonAudit may use path OR quote, never both.',
+                    'For scopeAudit and comparisonAudit premises/condition sides use evidenceId+path, never retype a quotation; condition sides retain their literal value.')
             prompt+='\n'+(source_field_guidance.replace('comparisonAudit.differences','comparisonAudit.conditionDifferences')
                 if type(comparison_version) is int and comparison_version==4 else source_field_guidance)
         if target_bindings and scope_enabled and has_factual_targets:
