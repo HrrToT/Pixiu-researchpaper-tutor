@@ -4798,10 +4798,10 @@
     "component": "source-local table shape and clean comparison rewrite",
     "componentOutcome": "397 loaded;194files3562 frozen checks pass. G1N-v7 no typed-cell guess rejection, independent fact/repair/coverage reviews actually ran;15calls74795tokens193.59s allsettled.6 final gaps, only advice published, full content not accepted.8804ledger/other13tasks/index preserved;independent0.",
     "runtimeLoadedVerified": true,
-    "runtimeProof": "deep-research-evidence/runtime-load-comparison-sufficiency-399-20261106.json",
+    "runtimeProof": "deep-research-evidence/runtime-load-outline-400-20261106.json",
     "fullDR0DR5Proved": false,
     "independentCredit": 0,
-    "lastCapturedLedgerRows": 8804,
+    "lastCapturedLedgerRows": 8841,
     "lastCapturedActiveProductionRuns": 0,
     "historicalPausedRunsAtCapture": 13,
     "lastConfirmedIndexDocuments": 1215,
@@ -4823,7 +4823,7 @@
       "externalResearchWorkflowAccepted": false
     },
     "externalRouteBoundary": "User authorized current system HTTP proxy. Configured only in ignored local Python .env. Formal AcademicAcquisition factory fetched metadata and uncached fulltext using pinned public-IP/original-host TLS; application restarted once and wiring/health/data verified. Full external research quality remains unaccepted.",
-    "remaining": "Prefer exact already-supported source-field references over manually retyped comparison proof quotes; improve bounded-evidence wording without paper-absence or malformed quantifiers. Preserve source attribution/full question and all scientific checks. Full comparison/experiments/insufficiency/continuation/independent/release audit remain open.",
+    "remaining": "Bind author-reported measurements to actual reporting-paper/method/variant identity; make typed boundary authoring mutually exclusive with prose; fit complete accepted answer and original requirements into24KB coverage input without dropping content. Full comparison/experiment/insufficiency/continuation/independent/release gates remain open.",
     "factualReviewContractVersion": 3,
     "factualDecisionContractVersion": 2,
     "repairRemovalContractVersion": 2,
@@ -5524,7 +5524,7 @@
       "sourceCommit": "3b11f1a9",
       "runtimeProof": "deep-research-evidence/runtime-load-comparison-path-398-20261106.json"
     },
-    "stage": "399 evidence-sufficiency boundary loaded;3592 frozen offline checks pass. No additional model case; prior G1N-v7 remains partial. Full DR0-DR5 incomplete.",
+    "stage": "400 loaded;3606 frozen checks pass. RealG1N-v8 inconclusive12settled/61647tokens269.473s. Method-plane content present but source-provenance false positives, scope authoring conflict and coverage25854/24000 remain. Public conclusion withheld. FullDR0-DR5 incomplete.",
     "comparisonSufficiency399Candidate": {
       "promptVersion": "dr-v2.20261106.399",
       "scopeExpressionContractVersion": 5,
@@ -5545,9 +5545,28 @@
       "testFiles": 197,
       "sourceFrozen": true,
       "providerCalls": 0,
-      "loaded": false,
+      "loaded": true,
       "proof": "deep-research-evidence/outline-400-associated-final-regression-20261106.json",
-      "boundary": "Cached precise PDF method page now selected/read/extracted/actually in prepared synthesis23877bytes,0provider. Original cases unchanged; full real comparison still unaccepted."
+      "boundary": "Cached precise PDF method page now selected/read/extracted/actually in prepared synthesis23877bytes,0provider. Original cases unchanged; full real comparison still unaccepted.",
+      "sourceCommit": "fa771c5a",
+      "runtimeProof": "deep-research-evidence/runtime-load-outline-400-20261106.json"
+    },
+    "lastComparisonG1Nv8": {
+      "runId": "dr_run_f2f0ef8ff22c507cb90f4a8d768c96cd",
+      "status": "completed",
+      "outcome": "inconclusive",
+      "modelCalls": 12,
+      "tokens": 61647,
+      "allSettled": true,
+      "contentAccepted": false,
+      "independentCredit": 0,
+      "coverageBudgetLimit": {
+        "kind": "coveragePromptBytes",
+        "used": 25854,
+        "limit": 24000
+      },
+      "criticalFalsePositive": "c2/c3 author-report attribution accepted by private checker despite using PGSR comparator values; not scientific acceptance.",
+      "proof": "deep-research-evidence/geometry-g1n-v8-outline-and-provenance-review-20261106.json"
     }
   },
   "sharedModuleSourceCheckpoint": {
