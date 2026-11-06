@@ -4789,16 +4789,16 @@
     "proof": "deep-research-evidence/compact-experiment-envelope-regression-20261020.json"
   },
   "currentCheckpoint": {
-    "sourceCommit": "bc3fdf66",
+    "sourceCommit": "4ceed262",
     "javaSourceCommit": "612c324e",
-    "promptVersion": "dr-v2.20261106.396",
+    "promptVersion": "dr-v2.20261106.397",
     "factualRepairGoalContractVersion": 5,
     "answerCoherenceContractVersion": 2,
     "quantitySpellingContractVersion": 15,
-    "component": "coverage input sharing and rejected-draft premise allocation",
-    "componentOutcome": "396 loaded,193files3554 frozen checks pass. G1N-v6 dispatched all3 repair batches;10calls46550tokens98.619s allsettled. Revisions retain unsupported0.5/invalid typed bindings, no accepted claims/public conclusion.8768ledger/other13tasks/index preserved;independent0.",
+    "component": "source-local table shape and clean comparison rewrite",
+    "componentOutcome": "194files3562 frozen checks passed.397 loaded;8768 old ledger/payloads/14 tasks/1215index preserved. G1N-v7 submitted once; real content acceptance pending.",
     "runtimeLoadedVerified": true,
-    "runtimeProof": "deep-research-evidence/runtime-load-premise-396-20261106.json",
+    "runtimeProof": "deep-research-evidence/runtime-load-table-397-20261106.json",
     "fullDR0DR5Proved": false,
     "independentCredit": 0,
     "lastCapturedLedgerRows": 8768,
@@ -4823,7 +4823,7 @@
       "externalResearchWorkflowAccepted": false
     },
     "externalRouteBoundary": "User authorized current system HTTP proxy. Configured only in ignored local Python .env. Formal AcademicAcquisition factory fetched metadata and uncached fulltext using pinned public-IP/original-host TLS; application restarted once and wiring/health/data verified. Full external research quality remains unaccepted.",
-    "remaining": "Fix plain-quote versus typed-table generation instruction and stop exposing rejected table bindings as drafting choices in comparison rewrite. Preserve numeric/source checks, original full question and budget. Full comparison/experiments/insufficiency/continuation/independent/release audit remain open.",
+    "remaining": "Observe sameG1N-v7; full comparison/experiments/insufficiency/continuation/independent/release audit remain open.",
     "factualReviewContractVersion": 3,
     "factualDecisionContractVersion": 2,
     "repairRemovalContractVersion": 2,
@@ -5343,7 +5343,7 @@
       "wholeRealCaseRun": false,
       "runtimeProof": "deep-research-evidence/runtime-load-factual-389-20261105.json"
     },
-    "factualPromptContractVersion": 2,
+    "factualPromptContractVersion": 3,
     "candidateReading390": {
       "promptVersion": "dr-v2.20261105.390",
       "readingPriorityContractVersion": 6,
@@ -5448,7 +5448,7 @@
         "proof": "deep-research-evidence/repair-394-associated-final-regression-20261105.json"
       }
     },
-    "factualRepairPromptContractVersion": 2,
+    "factualRepairPromptContractVersion": 3,
     "candidateCoverage395": {
       "coverageInputContractVersion": 1,
       "runtimeLoadedVerified": true,
@@ -5492,7 +5492,7 @@
     "candidateTable397": {
       "factualPromptContractVersion": 3,
       "factualRepairPromptContractVersion": 3,
-      "runtimeLoadedVerified": false,
+      "runtimeLoadedVerified": true,
       "replay": "deep-research-evidence/table-397-saved-comparison-view-replay-20261106.json",
       "legacyReplay": "deep-research-evidence/table-397-legacy-factual-prompts-20261106.json",
       "design": "DEEP_RESEARCH_TABLE_INPUT_CONTRACT_20261106.md",
@@ -5511,6 +5511,13 @@
         "providerCalls": 0,
         "proof": "deep-research-evidence/table-397-associated-final-regression-20261106.json"
       }
+    },
+    "activeDevelopmentVerification": {
+      "case": "G1N-v7",
+      "runId": "dr_run_328bc976013f5c038e696fd51d9bc988",
+      "submittedOnce": true,
+      "initialObservedStatus": "running",
+      "independentCredit": 0
     }
   },
   "sharedModuleSourceCheckpoint": {
