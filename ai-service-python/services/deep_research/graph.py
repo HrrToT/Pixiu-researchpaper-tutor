@@ -1451,7 +1451,7 @@ space with unsupported global absence or incidental iteration/performance values
         if preserve_answer_scope(record):prompt+='\n'+(factual_post_guidance(record,'preservation',preservation_guidance) if compact_factual_prompt else preservation_guidance)
         if (type(record.get('compactionEditorContractVersion')) is int
                 and record['compactionEditorContractVersion'] in (7,8) and output_kind!='experiment_design'):
-            if compact_factual_prompt and record.get('factualPromptContractVersion')==2:
+            if compact_factual_prompt and record.get('factualPromptContractVersion') in (2,3):
                 prompt+='\n'+factual_post_guidance(record,'layout','')+'\n'
             elif section_focused:
                 prompt+='\nTemplate sections are optional. Answer every human-requested point and necessary condition; do not add unrequested method selection, experiments, rankings or reading plans to fill a template.\n'
@@ -1977,11 +1977,11 @@ def make_verify_node(
                         max_prompt_bytes=repair_prompt_byte_limit(current.get('budget', {}),**repair_input_options),
                         metric_domains=record.get('state', {}).get('metricDomains'),
                         **({'factual_prompt_version':record['factualRepairPromptContractVersion']} if type(record.get('factualRepairPromptContractVersion')) is int
-                           and record['factualRepairPromptContractVersion'] in (1,2) and compact_repair
+                           and record['factualRepairPromptContractVersion'] in (1,2,3) and compact_repair
                            and record.get('factRedraftContractVersion')==3 else {}),
                         **({'verified_target_ids':[c['claimId'] for c in verification_result.get('accepted',[])]}
                            if type(record.get('factualRepairPromptContractVersion')) is int
-                           and record['factualRepairPromptContractVersion']==2 and compact_repair
+                           and record['factualRepairPromptContractVersion'] in (2,3) and compact_repair
                            and record.get('factRedraftContractVersion')==3 else {}),
                         **({'objective_framing':True} if objective_framing_enabled(record) else {}),
                         **({'process_explanations':True} if process_framing_enabled(record) else {}),

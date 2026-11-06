@@ -31,7 +31,7 @@ def test_only_prompt_changes_permissions_originals_and_presentation_evidence_sta
     assert (report,checks,evidence,kwargs)==before
 
 
-@pytest.mark.parametrize('bad',[True,'1',3,-1])
+@pytest.mark.parametrize('bad',[True,'1',4,-1])
 def test_invalid_policy_never_silently_uses_new_instructions(bad):
     report,checks,evidence,kwargs=fixture()
     with pytest.raises(ValueError,match='policy'):_prepare_repair(report,checks,evidence,'解释',**kwargs,factual_prompt_version=bad)
@@ -63,7 +63,7 @@ def test_shared_inputs_decode_all_checks_requirements_and_schema_without_changes
     assert '原始问题' in prompt and 'PERMS' in prompt and 'EVIDENCE' in prompt
 
 
-@pytest.mark.parametrize('replacement',[None,0,True,'1',3])
+@pytest.mark.parametrize('replacement',[None,0,True,'1',4])
 def test_contract_is_server_owned_and_immutable(tmp_path,replacement):
     from services.deep_research.repository import DeepResearchRepository
     from services.deep_research.facade import ResearchFacade
@@ -71,12 +71,12 @@ def test_contract_is_server_owned_and_immutable(tmp_path,replacement):
     try:
         run,_=facade.create({'workspaceTaskId':'t','operationKey':'o','question':'比较论文',
                             'factualRepairPromptContractVersion':replacement,'deferStart':True},start_async=False)
-        assert run['factualRepairPromptContractVersion']==2
+        assert run['factualRepairPromptContractVersion']==3
         with pytest.raises(ValueError,match='Immutable'):
             repo.update_run(run['runId'],lambda r:{**r,'factualRepairPromptContractVersion':replacement})
     finally:facade.shutdown()
 
-@pytest.mark.parametrize('new_policy',[1,2])
+@pytest.mark.parametrize('new_policy',[1,2,3])
 def test_pending_old_request_cannot_switch_prompt_contract_or_be_resent(new_policy):
     from services.deep_research.contracts import DeepResearchError
     from llm.provider import LLMProviderError

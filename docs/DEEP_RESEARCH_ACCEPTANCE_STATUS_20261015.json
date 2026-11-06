@@ -5488,7 +5488,30 @@
         "proof": "deep-research-evidence/premise-396-associated-final-regression-20261106.json"
       }
     },
-    "coverageInputContractVersion": 1
+    "coverageInputContractVersion": 1,
+    "candidateTable397": {
+      "factualPromptContractVersion": 3,
+      "factualRepairPromptContractVersion": 3,
+      "runtimeLoadedVerified": false,
+      "replay": "deep-research-evidence/table-397-saved-comparison-view-replay-20261106.json",
+      "legacyReplay": "deep-research-evidence/table-397-legacy-factual-prompts-20261106.json",
+      "design": "DEEP_RESEARCH_TABLE_INPUT_CONTRACT_20261106.md",
+      "preparedBatchBytes": [
+        23915,
+        23872,
+        19043
+      ],
+      "capBytes": 24000,
+      "modelCalls": 0,
+      "fullContentAccepted": false,
+      "regression": {
+        "files": 194,
+        "passed": 3562,
+        "sourceFrozen": true,
+        "providerCalls": 0,
+        "proof": "deep-research-evidence/table-397-associated-final-regression-20261106.json"
+      }
+    }
   },
   "sharedModuleSourceCheckpoint": {
     "sourceCommit": "f8ae5177",

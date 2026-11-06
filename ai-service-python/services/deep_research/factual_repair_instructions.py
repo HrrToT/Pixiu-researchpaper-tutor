@@ -2,7 +2,7 @@
 
 
 def guidance(feature, legacy, version):
-    if version not in (1,2):
+    if version not in (1,2,3):
         return legacy
     return {
         'table_identity': 'Keep exact dataset/group, literal method/variant label beside metric/value; readable names may precede it. '

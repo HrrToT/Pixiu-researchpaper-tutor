@@ -1,0 +1,239 @@
+{
+  "case": "G1N-v6",
+  "sourceRunId": "dr_run_7b031e284ed55568aeb209fc39452d32",
+  "sourcePayloadSha256": "f266ba415ca96c89c56a30695dcae7fee91dce7be7c3a6db2419878d4d9528a2",
+  "replayBoundary": "Restore recorded pre-first-repair budget by subtracting settled repair usage; discard only in-memory completed repair checkpoints and align clock to that recorded elapsed time. Never modify historical run.",
+  "removedSettledRepairTokens": 19821,
+  "restoredBudget": {
+    "maxModelCalls": 18,
+    "maxTokens": 100000,
+    "maxWallClockSeconds": 360,
+    "reserveModelCalls": 5,
+    "reserveTokens": 50000,
+    "maxExternalSearches": 6,
+    "maxFulltextFetches": 6,
+    "finalizationBudgetVersion": 1,
+    "releasedReserveTokens": 0,
+    "explorationAllocationVersion": 1,
+    "modelCalls": 5,
+    "tokens": 26729,
+    "normalTokens": 13234,
+    "elapsedSeconds": 73.0,
+    "externalSearches": 3,
+    "fulltextFetches": 2,
+    "reservedModelCalls": 2,
+    "exhausted": "",
+    "profile": "standard"
+  },
+  "policies": {
+    "2": {
+      "prepared": [
+        {
+          "targetIds": [
+            "c1",
+            "c2"
+          ],
+          "bytes": 23992,
+          "hasTypedSchema": true,
+          "visibleTypedEvidenceRows": 0,
+          "generationFieldsByTarget": {
+            "c1": [
+              "claimId",
+              "kind",
+              "evidenceRefs",
+              "obligationIds",
+              "detailLevel",
+              "tableBindings"
+            ],
+            "c2": [
+              "claimId",
+              "kind",
+              "evidenceRefs",
+              "obligationIds",
+              "detailLevel",
+              "tableBindings"
+            ]
+          },
+          "privateOriginalsUnchanged": true
+        },
+        {
+          "targetIds": [
+            "c3",
+            "c4"
+          ],
+          "bytes": 23853,
+          "hasTypedSchema": true,
+          "visibleTypedEvidenceRows": 0,
+          "generationFieldsByTarget": {
+            "c3": [
+              "claimId",
+              "kind",
+              "evidenceRefs",
+              "obligationIds",
+              "detailLevel",
+              "tableBindings"
+            ],
+            "c4": [
+              "claimId",
+              "kind",
+              "evidenceRefs",
+              "obligationIds",
+              "detailLevel",
+              "tableBindings",
+              "scopeExpression"
+            ]
+          },
+          "privateOriginalsUnchanged": true
+        },
+        {
+          "targetIds": [
+            "c5"
+          ],
+          "bytes": 18842,
+          "hasTypedSchema": false,
+          "visibleTypedEvidenceRows": 0,
+          "generationFieldsByTarget": {
+            "c5": [
+              "claimId",
+              "kind",
+              "evidenceRefs",
+              "obligationIds",
+              "detailLevel",
+              "tableBindings"
+            ]
+          },
+          "privateOriginalsUnchanged": true
+        },
+        {
+          "targetIds": [
+            "c1",
+            "c2"
+          ],
+          "bytes": 23992,
+          "hasTypedSchema": true,
+          "visibleTypedEvidenceRows": 0,
+          "generationFieldsByTarget": {
+            "c1": [
+              "claimId",
+              "kind",
+              "evidenceRefs",
+              "obligationIds",
+              "detailLevel",
+              "tableBindings"
+            ],
+            "c2": [
+              "claimId",
+              "kind",
+              "evidenceRefs",
+              "obligationIds",
+              "detailLevel",
+              "tableBindings"
+            ]
+          },
+          "privateOriginalsUnchanged": true
+        }
+      ],
+      "localStop": {
+        "kind": "ReplayStopNoModel",
+        "limit": 0,
+        "used": 1
+      }
+    },
+    "3": {
+      "prepared": [
+        {
+          "targetIds": [
+            "c1",
+            "c2"
+          ],
+          "bytes": 23915,
+          "hasTypedSchema": false,
+          "visibleTypedEvidenceRows": 0,
+          "generationFieldsByTarget": {
+            "c1": [
+              "claimId",
+              "kind",
+              "obligationIds"
+            ],
+            "c2": [
+              "claimId",
+              "kind",
+              "obligationIds"
+            ]
+          },
+          "privateOriginalsUnchanged": true
+        },
+        {
+          "targetIds": [
+            "c3",
+            "c4"
+          ],
+          "bytes": 23872,
+          "hasTypedSchema": false,
+          "visibleTypedEvidenceRows": 0,
+          "generationFieldsByTarget": {
+            "c3": [
+              "claimId",
+              "kind",
+              "obligationIds"
+            ],
+            "c4": [
+              "claimId",
+              "kind",
+              "obligationIds"
+            ]
+          },
+          "privateOriginalsUnchanged": true
+        },
+        {
+          "targetIds": [
+            "c5"
+          ],
+          "bytes": 19043,
+          "hasTypedSchema": false,
+          "visibleTypedEvidenceRows": 0,
+          "generationFieldsByTarget": {
+            "c5": [
+              "claimId",
+              "kind",
+              "obligationIds"
+            ]
+          },
+          "privateOriginalsUnchanged": true
+        },
+        {
+          "targetIds": [
+            "c1",
+            "c2"
+          ],
+          "bytes": 23915,
+          "hasTypedSchema": false,
+          "visibleTypedEvidenceRows": 0,
+          "generationFieldsByTarget": {
+            "c1": [
+              "claimId",
+              "kind",
+              "obligationIds"
+            ],
+            "c2": [
+              "claimId",
+              "kind",
+              "obligationIds"
+            ]
+          },
+          "privateOriginalsUnchanged": true
+        }
+      ],
+      "localStop": {
+        "kind": "ReplayStopNoModel",
+        "limit": 0,
+        "used": 1
+      }
+    }
+  },
+  "modelCalls": 0,
+  "networkCalls": 0,
+  "productionWrites": 0,
+  "oldPayloadUnchanged": true,
+  "scientificAcceptance": false
+}

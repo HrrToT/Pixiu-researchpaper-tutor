@@ -18,7 +18,7 @@ def template(record, kind='paper_comparison'):
         {'P1':{'workId':'paper', 'title':'Paper'}}, 'EVIDENCE', 'TABLES', drafting_schema=True)
 
 
-@pytest.mark.parametrize('version', [None, True, False, 0, 3, '1'])
+@pytest.mark.parametrize('version', [None, True, False, 0, 4, '1'])
 def test_only_strict_opt_in_changes_factual_prompts_and_legacy_text_stays_exact(version):
     legacy = {'factualScopeContractVersion':4, 'comparisonReasoningContractVersion':4}
     assert not enabled({'factualPromptContractVersion':version}, 'paper_comparison')
@@ -125,7 +125,7 @@ def test_historical_or_unknown_run_cannot_switch_to_the_new_prompt(tmp_path):
 
 def test_v2_post_guidance_is_new_only_and_does_not_change_saved_v1_text():
     from services.deep_research.factual_prompt import post_guidance
-    for version in (None,True,1,3,'2'):
+    for version in (None,True,1,4,'2'):
         assert post_guidance({'factualPromptContractVersion':version},'points','legacy exact')=='legacy exact'
     assert 'conditions={}' in post_guidance({'factualPromptContractVersion':2},'points','legacy')
     assert 'server labels' in post_guidance({'factualPromptContractVersion':2},'access','legacy')

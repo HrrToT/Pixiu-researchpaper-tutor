@@ -43,7 +43,7 @@ def compact_rows(rows, source_context):
 
 
 def render(*, question, length_contract, requirements, source_context, targets,
-           checks, questions, permissions_marker, evidence_marker, schema, target_goals=False, target_hints=None, shared_inputs=False):
+           checks, questions, permissions_marker, evidence_marker, schema, target_goals=False, target_hints=None, shared_inputs=False, source_table_contract=False):
     from services.deep_research.repair_goals import policy_version
     goal_version=policy_version(target_goals)
     if target_hints is not None and goal_version not in (2,3,4,5):raise ValueError('Point hints require repair goal contract2')
@@ -72,6 +72,10 @@ def render(*, question, length_contract, requirements, source_context, targets,
     table_rule=('Retained table measurements need tableBindings with exact own evidenceId,rowNumber, '
                 'zero-based groupIndex,metric,value; no invented cells.' if 'tableBindings' in schema else
                 'No tableData is supplied: do not invent tableBindings/cells.')
+    if type(source_table_contract) is not bool:raise ValueError('Invalid source table input policy')
+    if source_table_contract:
+        from services.deep_research.table_input_contract import GUIDANCE
+        table_rule=GUIDANCE
     goal_guidance=''
     if target_goals:
         from services.deep_research.repair_goals import bind,GUIDANCE

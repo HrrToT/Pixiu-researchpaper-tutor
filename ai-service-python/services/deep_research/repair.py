@@ -18,9 +18,9 @@ def _prepare_repair(report, verification, evidence, question, *, max_prompt_byte
                     fact_redraft=False, requirement_context=(), source_aware_redraft=False,comparison_reasoning=False,
                     question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False,shared_experiment_schema=False,experiment_evidence_context=None,experimental_edits=False,experimental_diagnostics=False,experimental_nested_tables=False,experimental_representation=False,experimental_coverage=False,citation_presentation_version=0,configuration_consistency_version=0,repair_evidence_packet_version=0,answer_intents=None,scope_expression=False,table_identity_context=False,claim_check=False,required_scope_ids=(),compact_layout=False,ordinary_advice=False,task_sources=False,request_semantics=False,preserve_answers=False,target_goals=False,objective_framing=False,process_explanations=False,factual_prompt_version=0,verified_target_ids=()):
     if (not isinstance(verified_target_ids,(list,tuple)) or any(not isinstance(cid,str) or not cid for cid in verified_target_ids)
-            or len(set(verified_target_ids))!=len(verified_target_ids) or verified_target_ids and factual_prompt_version!=2):
+            or len(set(verified_target_ids))!=len(verified_target_ids) or verified_target_ids and factual_prompt_version not in (2,3)):
         raise ValueError('Invalid verified repair target protection')
-    if type(factual_prompt_version) is not int or factual_prompt_version not in (0,1,2):
+    if type(factual_prompt_version) is not int or factual_prompt_version not in (0,1,2,3):
         raise ValueError('Invalid factual repair prompt policy')
     if factual_prompt_version and not (fact_redraft and source_aware_redraft and concise_factual
             and compact_source_repair and (factual_redraft_eligible(report) or ordinary_advice)
@@ -147,7 +147,7 @@ def _prepare_repair(report, verification, evidence, question, *, max_prompt_byte
         # Omit rejected wording from the generation view, not audit storage.
         # Keep original citations mandatory below and full originals in the
         # prepared record for parsing, scope and unchanged-rejection checks.
-        if type(claim_check) is int and claim_check==9:
+        if type(claim_check) is int and claim_check==9 or factual_prompt_version==3:
             input_claims=[{key:value for key,value in row.items() if key in {'claimId','kind','obligationIds'}}
                           for row in input_claims]
         else:
@@ -207,6 +207,9 @@ def _prepare_repair(report, verification, evidence, question, *, max_prompt_byte
         revision_shape={'draftingBasis':DRAFTING_SCHEMA,**revision_shape}
     has_tables = any(row.get('tableData') for row in rows) or any(
         row.get('tableBindings') for row in originals.values())
+    if factual_prompt_version==3:
+        from services.deep_research.table_evidence import visible_table_packet
+        has_tables=any(visible_table_packet(row.get('tableData'),row.get('quote','')) for row in rows)
     if has_tables:
         revision_shape['tableBindings'] = [{'evidenceId': 'E1', 'rowNumber': 'actual integer',
             'groupIndex': 'actual zero-based integer', 'metric':
@@ -439,6 +442,7 @@ in the paper. Maintain consistency with accepted definitions and complete requir
             checks=packed_checks,questions=question_dictionary,permissions_marker=permissions_marker,
             evidence_marker=evidence_marker,schema=revision_shape,
             **({'shared_inputs':True} if factual_prompt_version else {}),
+            **({'source_table_contract':True} if factual_prompt_version==3 else {}),
             **({'target_goals':target_goals} if target_goals else {}),
             **({'target_hints':point_hints(originals.values())} if goal_version in (2,3,4,5) else {}))
     if shared_experiment_schema and prospective:
@@ -476,7 +480,7 @@ in the paper. Maintain consistency with accepted definitions and complete requir
                 terminology=SCIENTIFIC_TERMINOLOGY,concise_policy=experiment_evidence_context is not None,**feedback_options)
     # Schema renderers above can replace the entire prompt. Keep the current
     # packet-key contract after the final renderer, inside the byte fitter.
-    if type(declared_table_refs) is int and declared_table_refs==4 and not (goal_version in (2,3,4,5) and not has_tables):
+    if type(declared_table_refs) is int and declared_table_refs==4 and not (goal_version in (2,3,4,5) and not has_tables) and not (factual_prompt_version==3 and not has_tables):
         from services.deep_research.table_bindings import reference_guidance
         prompt+='\n'+reference_guidance(4)
     if preserve_answers:
@@ -607,7 +611,7 @@ If a supported revision is not possible, omit that target rather than bypass sco
                     goal_version in (2,3,4,5) and isinstance(claim.get('scopeExpression'),dict) and claim['scopeExpression'] else [])
                 if ref in short_ids}
     premise_audit=None
-    if factual_prompt_version==2:
+    if factual_prompt_version in (2,3):
         from services.deep_research.repair_premises import required_premises
         required,premise_audit=required_premises(list(originals.values()),selected,allowed,active_requirements,verified_target_ids=verified_target_ids)
     # Coverage hints are candidates, not citations the original assertion used.
@@ -802,9 +806,9 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
     from services.deep_research.repair_batches import split_repair_targets
 
     if (not isinstance(verified_target_ids,(list,tuple)) or any(not isinstance(cid,str) or not cid for cid in verified_target_ids)
-            or len(set(verified_target_ids))!=len(verified_target_ids) or verified_target_ids and factual_prompt_version!=2):
+            or len(set(verified_target_ids))!=len(verified_target_ids) or verified_target_ids and factual_prompt_version not in (2,3)):
         raise ValueError('Invalid verified repair target protection')
-    if type(factual_prompt_version) is not int or factual_prompt_version not in (0,1,2):
+    if type(factual_prompt_version) is not int or factual_prompt_version not in (0,1,2,3):
         raise ValueError('Invalid factual repair prompt policy')
     if factual_prompt_version and not (fact_redraft and source_aware_redraft and concise_factual
             and compact_source_repair and (factual_redraft_eligible(report) or ordinary_advice)
@@ -868,7 +872,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
         raise ValueError('Unsupported configuration consistency contract')
     if type(citation_presentation_version) is not int or citation_presentation_version not in (0,2,3,4):
         raise ValueError('Unsupported citation presentation contract')
-    identity = digest({**({'verifiedRepairTargets':list(verified_target_ids)} if factual_prompt_version==2 else {}),**({'factualRepairPromptContractVersion':factual_prompt_version} if factual_prompt_version else {}),**({'compactLayoutVersion':1} if compact_layout else {}),'report': report, 'verification': verification,
+    identity = digest({**({'verifiedRepairTargets':list(verified_target_ids)} if factual_prompt_version in (2,3) else {}),**({'factualRepairPromptContractVersion':factual_prompt_version} if factual_prompt_version else {}),**({'compactLayoutVersion':1} if compact_layout else {}),'report': report, 'verification': verification,
                        **({'requiredScopeIds':list(required_scope_ids)} if required_scope_ids else {}),
                        **({'claimCheckContractVersion':claim_check if type(claim_check) is int and claim_check in (4,5,6,7,8,9) else 1} if claim_check else {}),
                        **({'tableIdentityContextContractVersion':2 if type(table_identity_context) is int and table_identity_context==2 else 1} if table_identity_context else {}),
@@ -918,7 +922,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
             **({'objective_framing':True} if objective_framing else {}),
             **({'process_explanations':True} if process_explanations else {}),
             **({'factual_prompt_version':factual_prompt_version} if factual_prompt_version else {}),
-            **({'verified_target_ids':verified_target_ids} if factual_prompt_version==2 else {}),
+            **({'verified_target_ids':verified_target_ids} if factual_prompt_version in (2,3) else {}),
             compact_layout=compact_layout,fact_redraft=fact_redraft, requirement_context=requirement_context,source_aware_redraft=source_aware_redraft,
             **({'ordinary_advice':True} if ordinary_advice else {}),
             **({'task_sources':True} if task_sources else {}),
