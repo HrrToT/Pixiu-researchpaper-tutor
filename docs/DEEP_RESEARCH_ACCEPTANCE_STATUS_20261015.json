@@ -5466,6 +5466,26 @@
         "proof": "deep-research-evidence/coverage-395-confirmed-associated-final-regression-20261105.json",
         "preliminaryFailureProof": "deep-research-evidence/coverage-395-associated-final-regression-20261105.json"
       }
+    },
+    "candidatePremise396": {
+      "factualRepairPromptContractVersion": 2,
+      "runtimeLoadedVerified": false,
+      "replay": "deep-research-evidence/repair-396-v5-preflight-saved-input-replay-20261106.json",
+      "design": "DEEP_RESEARCH_REPAIR_PREMISES_20261106.md",
+      "preparedBatchBytes": [
+        23995,
+        23975
+      ],
+      "capBytes": 24000,
+      "modelCalls": 0,
+      "fullContentAccepted": false,
+      "regression": {
+        "files": 193,
+        "passed": 3554,
+        "sourceFrozen": true,
+        "providerCalls": 0,
+        "proof": "deep-research-evidence/premise-396-associated-final-regression-20261106.json"
+      }
     }
   },
   "sharedModuleSourceCheckpoint": {

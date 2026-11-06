@@ -1976,8 +1976,12 @@ def make_verify_node(
                         invoke_repair, _safe_parse_json,
                         max_prompt_bytes=repair_prompt_byte_limit(current.get('budget', {}),**repair_input_options),
                         metric_domains=record.get('state', {}).get('metricDomains'),
-                        **({'factual_prompt_version':1} if type(record.get('factualRepairPromptContractVersion')) is int
-                           and record['factualRepairPromptContractVersion']==1 and compact_repair
+                        **({'factual_prompt_version':record['factualRepairPromptContractVersion']} if type(record.get('factualRepairPromptContractVersion')) is int
+                           and record['factualRepairPromptContractVersion'] in (1,2) and compact_repair
+                           and record.get('factRedraftContractVersion')==3 else {}),
+                        **({'verified_target_ids':[c['claimId'] for c in verification_result.get('accepted',[])]}
+                           if type(record.get('factualRepairPromptContractVersion')) is int
+                           and record['factualRepairPromptContractVersion']==2 and compact_repair
                            and record.get('factRedraftContractVersion')==3 else {}),
                         **({'objective_framing':True} if objective_framing_enabled(record) else {}),
                         **({'process_explanations':True} if process_framing_enabled(record) else {}),
