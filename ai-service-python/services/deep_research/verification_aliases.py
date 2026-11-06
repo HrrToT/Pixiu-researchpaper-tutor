@@ -34,7 +34,7 @@ def restore_visible_evidence(rows, reverse):
     return restored
 
 
-def restore_verdict_evidence(verdict, reverse, *, scope_expression=False,advice=False):
+def restore_verdict_evidence(verdict, reverse, *, scope_expression=False,advice=False,reporting_ownership=False):
     restored = deepcopy(verdict)
     if advice:
         audit=restored.get('adviceAudit')
@@ -50,6 +50,11 @@ def restore_verdict_evidence(verdict, reverse, *, scope_expression=False,advice=
                 for premise in premises if isinstance(premises,list) else []:
                     if isinstance(premise,dict) and isinstance(premise.get('evidenceId'),str):
                         premise['evidenceId']=reverse.get(premise['evidenceId'],premise['evidenceId'])
+    if reporting_ownership:
+        for item in restored.get('reportingOwnershipAudit',[]) if isinstance(restored.get('reportingOwnershipAudit'),list) else []:
+            for premise in item.get('premises',[]) if isinstance(item,dict) and isinstance(item.get('premises'),list) else []:
+                if isinstance(premise,dict) and isinstance(premise.get('evidenceId'),str):
+                    premise['evidenceId']=reverse.get(premise['evidenceId'],premise['evidenceId'])
     purposes = restored.get('resultPurposeAudit')
     for row in purposes if isinstance(purposes, list) else []:
         if not isinstance(row, dict):

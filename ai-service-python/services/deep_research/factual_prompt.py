@@ -85,6 +85,8 @@ Use the active scopeExpression contract for authored evidence boundaries; never 
 Do not add unsupported absence about paper B to a paper-A fact. With contextOmitted, do not guess antecedents.
 All output still undergoes independent factual, scope, numeric and final-answer coverage checks.
 '''
+    from services.deep_research.reporting_ownership import enabled as reporting_enabled,DRAFT_GUIDANCE
+    if reporting_enabled(record):prompt+='\n'+DRAFT_GUIDANCE
     from services.deep_research.synthesis import SCIENTIFIC_TERMINOLOGY
     prompt += '\n' + SCIENTIFIC_TERMINOLOGY
     if drafting_schema:

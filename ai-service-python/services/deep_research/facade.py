@@ -280,8 +280,9 @@ class ResearchFacade:
             "materials": materials,
             "materialSnapshot": material_snapshot,  # Immutable Java snapshot
             "contextMaterials": (material_snapshot or {}).get("contextMaterials", []) if isinstance(material_snapshot, dict) else [],
-            "promptVersion": "dr-v2.20261106.400",
+            "promptVersion": "dr-v2.20261106.401",
             "factualPromptContractVersion": 3,
+            "reportingOwnershipContractVersion": 1,
             "draftValidationContractVersion": 1,
             "factualRepairPromptContractVersion": 3,
             "coverageInputContractVersion": 1,
@@ -1255,6 +1256,8 @@ class ResearchFacade:
             research_question=lambda: effective_question(self._repo.require_run(run_id)),
             isolate_factual_claims=(lambda: self._repo.require_run(run_id).get('claimIsolationContractVersion') == 1)
                 if isolation is None else isolation,
+            reporting_ownership=lambda: type(self._repo.require_run(run_id).get('reportingOwnershipContractVersion')) is int
+                and self._repo.require_run(run_id)['reportingOwnershipContractVersion']==1,
             comparison_reasoning=lambda: comparison_enabled(self._repo.require_run(run_id)),
             comparison_audit_version=lambda: self._repo.require_run(run_id).get('comparisonReasoningContractVersion', 0),
             audit_source_fields=lambda: audit_fields_enabled(self._repo.require_run(run_id)),

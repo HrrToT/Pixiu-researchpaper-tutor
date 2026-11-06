@@ -1,0 +1,8 @@
+{
+  "baselineCommit": "f20576acf2e4d1ddc93b94c05cec0f743215f736",
+  "legacyCheckerPromptAndOptionsExact": true,
+  "legacyParsedVerdictExact": true,
+  "promptSha256": "39a45b0dedc3d7a4826cb71e2dc50084dd1ef77f7ed960426f69f20e9504f52f",
+  "providerCalls": 0,
+  "boundary": "One legacy real-checker fixture, not all historical inputs or scientific acceptance."
+}

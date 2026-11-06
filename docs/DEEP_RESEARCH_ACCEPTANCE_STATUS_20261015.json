@@ -5567,6 +5567,18 @@
       },
       "criticalFalsePositive": "c2/c3 author-report attribution accepted by private checker despite using PGSR comparator values; not scientific acceptance.",
       "proof": "deep-research-evidence/geometry-g1n-v8-outline-and-provenance-review-20261106.json"
+    },
+    "reportingOwnership401Candidate": {
+      "promptVersion": "dr-v2.20261106.401",
+      "reportingOwnershipContractVersion": 1,
+      "offlinePassed": 3632,
+      "testFiles": 198,
+      "sourceFrozen": true,
+      "providerCalls": 0,
+      "loaded": false,
+      "proof": "deep-research-evidence/reporting-ownership-401-associated-confirmed-regression-20261106.json",
+      "savedCaseReplay": "deep-research-evidence/reporting-ownership-401-saved-error-replay-20261106.json",
+      "boundary": "Additional source-work/original-field/own-number prerequisite for explicitly named numerical reporting clauses. Prospective saved c2/c3 errors rejected; original V8 unchanged, no full scientific or real-case acceptance."
     }
   },
   "sharedModuleSourceCheckpoint": {

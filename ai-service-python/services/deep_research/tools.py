@@ -619,6 +619,7 @@ class BudgetedSemanticChecker:
         mechanism_grounding=False,
         singleton_factual_response=False,
         comparison_source_paths=False,
+        reporting_ownership=False,
     ):
         self._invoke = llm_invoker
         self._run_id = run_id
@@ -632,6 +633,7 @@ class BudgetedSemanticChecker:
         self._audit_target_fields = audit_target_fields
         self._scope_source_paths = scope_source_paths
         self._comparison_source_paths = comparison_source_paths
+        self._reporting_ownership = reporting_ownership
         self._mechanism_grounding = mechanism_grounding
         self._singleton_factual_response = singleton_factual_response
         self._factual_scope = factual_scope
@@ -1154,6 +1156,12 @@ The dataAvailability object is an internal audit, not new experimental results.
         if expression_context:
             from services.deep_research.scope_expression_review import guidance as expression_guidance
             prompt += expression_guidance(expression_context)
+        reporting_policy=self._reporting_ownership
+        reporting_enabled=(reporting_policy() if callable(reporting_policy) else reporting_policy) is True
+        if reporting_enabled and not advice_mode:
+            from services.deep_research.reporting_ownership import targets as reporting_targets,guidance as reporting_guidance
+            required_reporting={c['claimId']:reporting_targets(c,evidence) for c in claims if reporting_targets(c,evidence)}
+            if required_reporting:prompt+=reporting_guidance(required_reporting)
         attribution_enabled=(self._result_attribution() if callable(self._result_attribution)
                              else self._result_attribution) is True
         if attribution_enabled:
@@ -1337,7 +1345,7 @@ The dataAvailability object is an internal audit, not new experimental results.
                 from services.deep_research.factual_decision import decode
                 singleton_policy=self._singleton_factual_response
                 singleton_policy=(singleton_policy() if callable(singleton_policy) else singleton_policy) is True
-                parsed=decode(parsed,**({'singleton_claim_id':claims[0]['claimId']}
+                parsed=decode(parsed,**({'reporting_ownership':True} if reporting_enabled else {}),**({'singleton_claim_id':claims[0]['claimId']}
                     if singleton_policy and len(claims)==1 else {}))
             
             expected = {claim['claimId'] for claim in claims}
@@ -1351,6 +1359,7 @@ The dataAvailability object is an internal audit, not new experimental results.
                                         {'responseState': 'received_invalid'})
             from services.deep_research.design_audit import validate_design_audit
             parsed = [restore_verdict_evidence(v, reverse_aliases,
+                **({'reporting_ownership':True} if reporting_enabled else {}),
                 **({'advice':True} if advice_mode else {}),
                 **({'scope_expression':True} if expression_context else {})) for v in parsed]
             if comparison_enabled:
@@ -1380,6 +1389,13 @@ The dataAvailability object is an internal audit, not new experimental results.
                     verdict['status'] = 'failed'
                     verdict['reason'] = '请求容量限制导致引用证据未完整提供，不能确认该声明。'
                     continue
+                if reporting_enabled:
+                    from services.deep_research.reporting_ownership import validate as validate_reporting
+                    reporting_errors=validate_reporting(target,verdict,visible_evidence,identity_evidence=evidence)
+                    if reporting_errors:
+                        verdict['status']='failed'
+                        verdict['reason']='自报数值的论文来源尚未核实：'+', '.join(reporting_errors)
+                        continue
                 if comparison_enabled:
                     from services.deep_research.comparison_reasoning import validate_audit
                     comparison_errors=validate_audit(target,verdict,visible_evidence,
