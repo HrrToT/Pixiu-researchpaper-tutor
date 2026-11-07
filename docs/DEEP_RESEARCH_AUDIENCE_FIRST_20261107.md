@@ -21,3 +21,5 @@ AD1N-v6初始综合已返回完整JSON，后续单独压缩达到8192输出Token
 原DR0—DR5、实际读者解释与边界质量、独立内容验收仍开放。
 
 23文件409项冻结关联回归通过，覆盖先适配后压缩、拒绝编辑一次回退、未知错误不回退、旧顺序、精确服务器版本、原scope/引用/长度/读者编辑及恢复。证据：`deep-research-evidence/audience-first-415-associated-final-regression-20261107.json`。尚待加载及真实编辑输出验证。
+
+已加载2e3fac15，一次正常Python重启后RAG/GROBID健康；8995旧账本、全部历史payload、16任务/1215索引保持，0活动/15历史暂停，源码/代理一致。加载0模型。证据：`deep-research-evidence/runtime-load-audience-first-415-20261107.json`。
