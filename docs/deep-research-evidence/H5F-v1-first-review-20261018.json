@@ -1,0 +1,58 @@
+{
+  "date": "2026-10-18",
+  "case": "H5F-v1",
+  "slot": "H5",
+  "runId": "dr_run_0fdb850b82ad52e6bf3372e359ac1758",
+  "sourceCommit": "ebcf570c",
+  "promptVersion": "dr-v2.20261018.126",
+  "caseDefinitionHash": "def690cfcfcf8577adbcb8988441089494140027cd00918c30265a877211eaec",
+  "question": "基于Deformable 3D Gaussians v2，设计一个最小实验检验退火平滑训练是否缓解固定相机位姿误差下的时间插值抖动。只提一个假设、同一场景两组：关闭退火平滑与启用论文所述退火平滑；给出共同初始化、固定条件、明确有限预算、指标、可执行步骤与配对判断。只作单场景描述性比较，方案尚未执行，不保证新颖或普遍有效。",
+  "materialHashes": {
+    "deform": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854"
+  },
+  "status": "completed",
+  "outcome": "partial",
+  "contentAccepted": false,
+  "firstIndependentAttempt": true,
+  "retiredForTuning": false,
+  "modelCalls": 10,
+  "settledTokens": 35935,
+  "elapsedSeconds": 63.766,
+  "externalSearches": 0,
+  "fulltextFetches": 0,
+  "cost": null,
+  "report": "## 指标\n\n- 实验建议：指标：时间插值抖动，定义为相邻时间插值视图之间感知相似度的平均变化（例如使用LPIPS或MSE）。方向：越低越好。聚合级别：对每个评估视图计算抖动，然后取场景内所有评估视图的平均值。\n  适用条件：context：具体指标选择为拟议，非论文原设置。\n\n<details>\n<summary>还有 17 项未完成</summary>\n\n- 基于Deformable 3D Gaussians v2，设计一个最小实验检验退火平滑训练是否缓解固定相机位姿误差下的时间插值抖动。只提一个假设、同一场景两组：关闭退火平滑与启用论文所述退火平滑；给出共同初始化、固定条件、明确有限预算、指标、可执行步骤与配对判断。只作单场景描述性比较，方案尚未执行，不保证新颖或普遍有效。：最终回答尚未完整回应这一问题\n- 核对拟选数据集及准确子集的身份和实际成员依据；命名选择核对场景/样本名，按数量或全量选择核对该子集数量，不以整个父数据集替代子集。拟议划分、分辨率和训练预算由方案明确选择；仅在用户要求复现或核对原设置时追查作者的这些设置。：最终回答尚未完整回应这一问题\n- 论文中退火平滑训练的具体机制是什么？包括退火参数如何作用于3D高斯属性（位置、旋转、缩放、不透明度等）以及训练过程中退火调度如何影响模型输出。：最终回答尚未完整回应这一问题\n- 论文中使用的数据集和场景是什么？需要确定一个适合单场景描述性比较的具体场景及其相机位姿误差设置。：最终回答尚未完整回应这一问题\n- 补齐实验方案：假设：尚未形成经过检查的方案内容\n- 补齐实验方案：分组表：尚未形成经过检查的方案内容\n- 补齐实验方案：固定条件：尚未形成经过检查的方案内容\n- 补齐实验方案：执行步骤：尚未形成经过检查的方案内容\n- 补齐实验方案：结果解释：尚未形成经过检查的方案内容\n- 补齐实验方案：风险：尚未形成经过检查的方案内容\n- 补齐实验方案：待验证假设：这项方案要求尚未通过完整性和逻辑核验\n- 补齐实验方案：实验分组：这项方案要求尚未通过完整性和逻辑核验\n- 补齐实验方案：数据划分与重复试验：这项方案要求尚未通过完整性和逻辑核验\n- 补齐实验方案：训练与恢复预算：这项方案要求尚未通过完整性和逻辑核验\n- 补齐实验方案：执行步骤与记录：这项方案要求尚未通过完整性和逻辑核验\n- 补齐实验方案：结果判断方法：这项方案要求尚未通过完整性和逻辑核验\n- 补齐实验方案：风险与适用边界：这项方案要求尚未通过完整性和逻辑核验\n\n</details>\n\n假设与实验建议尚未经过实验验证。",
+  "findings": [
+    "Only a proposed jitter metric survived verification; the groups, common initialization, training budget, execution and paired decision were not usable in the final report.",
+    "The plan speculated about annealing Gaussian attributes rather than neutrally asking about the supported temporal smoothing mechanism.",
+    "The bounded repair preflight correctly stopped before sending an oversized 26983-byte fixed prompt under the 24000-byte cap.",
+    "No experimental result was invented, but a safely incomplete metric does not fulfill an executable design."
+  ],
+  "scores": {
+    "goalResponse": 1,
+    "evidenceSupport": 2,
+    "conditions": 2,
+    "synthesisValue": 1,
+    "executability": 1,
+    "readability": 2
+  },
+  "rawFiles": [
+    {
+      "path": "tmp\\dr-acceptance-receipts\\H5F-v1.json",
+      "sha256": "870d289b1a942206c5811a3f84ad01a5ea9dbfce925b2f923ef9e66cdf34d817"
+    },
+    {
+      "path": "tmp\\dr-acceptance-receipts\\H5F-v1.payload.json",
+      "sha256": "abb98533bbcd53997f33c67e2feccbe018b7ea81f56f950cecc34440f2d83f04"
+    },
+    {
+      "path": "tmp\\dr-acceptance-receipts\\H5F-v1.calls.json",
+      "sha256": "11ecc5c46ee659b98c8a995d07634ec688141586031b7e64cf31a9446a0271d9"
+    },
+    {
+      "path": "tmp\\dr-acceptance-receipts\\H5F-v1.result.json",
+      "sha256": "317907c2e8cfac418a05233b4520559df7418cc3abe7e8916a1dd5ee53e80600"
+    }
+  ],
+  "boundary": "First results scored against the sealed requirements; no failed result was overwritten or counted as a quality pass."
+}

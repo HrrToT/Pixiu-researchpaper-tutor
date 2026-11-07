@@ -1,0 +1,22 @@
+{
+  "date": "2026-10-22",
+  "sourceCase": "E1-v15",
+  "experimentInputContractVersion": 1,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "independentCredit": 0,
+  "oldRequestBytes": 24091,
+  "newRequestBytes": 30576,
+  "newWindowBytes": 32000,
+  "rawPlanBytes": 2769,
+  "wirePlanBytes": 2660,
+  "planReservationBytes": 4000,
+  "planningInputBytes": 24178,
+  "evidenceRows": 20,
+  "allOriginalEightQuotesAndPermissionsRetained": true,
+  "allRequiredMethodContextsRetained": true,
+  "completePlanUnchanged": true,
+  "newRequestFrozen": true,
+  "originalPayloadUnchanged": true,
+  "boundary": "Controlled offline reconstruction, not new provider planning/drafting or scientific acceptance. Original failed run unchanged."
+}

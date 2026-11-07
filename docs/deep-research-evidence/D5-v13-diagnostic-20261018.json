@@ -1,0 +1,136 @@
+{
+  "date": "2026-10-18",
+  "case": "D5-v13",
+  "runId": "dr_run_bacb7328aa2f598f93fe2bcc46676531",
+  "sourceCommit": "279edb95",
+  "promptVersion": "dr-v2.20261018.170",
+  "status": "completed",
+  "machineOutcome": "inconclusive",
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "modelCalls": 7,
+  "settledTokens": 34017,
+  "elapsedSeconds": 105.364,
+  "cost": null,
+  "actualSynthesisFingerprintMatched": true,
+  "actualSynthesisOptions": {
+    "max_tokens": 8192,
+    "temperature": 0.2,
+    "thinking": {
+      "type": "enabled"
+    },
+    "reasoning_effort": "high",
+    "response_format": {
+      "type": "json_object"
+    }
+  },
+  "findings": [
+    "Both initial and repair model requests are received and settled. The new bounded-current-evidence spelling now reaches the real semantic checker, rather than being rejected only by the lexical guard.",
+    "The draft still states that cross-paper FPS cannot be divided and uses platform/protocol influence as an uncited causal premise. Unknown alignment is not demonstrated difference or arithmetic impossibility.",
+    "The original 3DGS table-caption statement concerns adopted baseline results and does not alone establish the platform or protocol of the particular original-3DGS FPS being compared.",
+    "The independent checker rejects the actual visible conclusion. No supported conclusion is published; inconclusive remains correct. Content and independent acceptance do not pass."
+  ],
+  "scores": null,
+  "privateDraftingAudit": {
+    "c1": {
+      "premiseStatus": "established",
+      "observations": [
+        {
+          "evidenceId": "E7",
+          "quote": "We re-train 3D-GS, Compressed 3D-GS, Compact 3D-GS using their original code and 3D-GS configurations on our platform, to perform a fair comparison."
+        },
+        {
+          "evidenceId": "E10",
+          "quote": "Results marked with dagger † have been directly adopted from the original paper, all others were obtained in our own experiments."
+        }
+      ],
+      "scopeDecision": "bounded_inference",
+      "unresolved": "两论文FPS测量所用硬件、分辨率、场景子集是否完全相同未被提供"
+    }
+  },
+  "privateRepairDraftingAudit": null,
+  "draft": {
+    "sections": [
+      {
+        "title": "差异原因",
+        "claimIds": [
+          "c1"
+        ]
+      }
+    ],
+    "claims": [
+      {
+        "claimId": "c1",
+        "text": "不同论文的FPS直接相除缺乏可比前提：FPS受实验平台与协议影响，而当前证据只显示LightGaussian在自建平台重训3D-GS以公平比较，3D Gaussian Splatting表中部分结果直接采用原始论文，未证明两论文的测量条件一致；因此直接相除不是受控比较，可能失真。",
+        "kind": "inference",
+        "evidenceRefs": [
+          "ev_8fd3f847d043bbae423552d837a23f0207800e59770d35852b585f53e37f432a",
+          "ev_968d0018e986202e87c75f29e0e96759dc070a82e1c1754eb14e67aa7b344596"
+        ],
+        "conditions": {},
+        "obligationIds": [
+          "ob_1"
+        ],
+        "detailLevel": "fulltext",
+        "tableBindings": []
+      }
+    ]
+  },
+  "repairDraft": [
+    {
+      "claimId": "c1",
+      "kind": "inference",
+      "text": "不同论文的FPS不能直接相除，因为FPS受实验平台与协议影响；LightGaussian为公平比较在自有平台重训基线，3DGS表1部分结果直接采用原文，未建立相同测量条件。",
+      "evidenceRefs": [
+        "ev_8fd3f847d043bbae423552d837a23f0207800e59770d35852b585f53e37f432a",
+        "ev_968d0018e986202e87c75f29e0e96759dc070a82e1c1754eb14e67aa7b344596"
+      ],
+      "conditions": {},
+      "detailLevel": "fulltext",
+      "tableBindings": [],
+      "obligationIds": [
+        "ob_1"
+      ]
+    }
+  ],
+  "initialVerification": {
+    "accepted": [],
+    "rejected": [
+      {
+        "claimId": "c1",
+        "reason": "semantic_unresolved",
+        "detail": "该推断的核心前提“FPS受实验平台与协议影响”未被所引证据直接支持：E1只说明LightGaussian为公平比较在自有平台重训基线，未提及FPS或平台/协议对FPS的影响；E2只说明3DGS表部分结果直接采用原文，亦未提供FPS对平台/协议敏感的证明。因此，虽然后续‘当前证据只显示...’等子句部分可由E1/E2支持，但该因果前提缺失使‘直接相除不是受控比较’的结论不能成立。"
+      }
+    ]
+  },
+  "repairChecks": {
+    "accepted": [],
+    "rejected": [
+      {
+        "claimId": "c1",
+        "reason": "semantic_unresolved",
+        "detail": "断言主体为不同论文的FPS不可直接相除，因受平台与协议影响；LightGaussian为公平比较在自有平台重训基线，3DGS表1部分结果直接采用原文，未建立相同测量条件。E1显示LightGaussian重训基线以公平比较，E2显示3DGS表1部分结果直接采用原文，但E2未明确说明这些结果与LightGaussian的测量条件不同，也未提供平台或协议差异的直接证据。因此，证据支持了重训和直接采用的事实，但未直接支持'未建立相同测量条件'这一因果结论，且未证明FPS不可直接相除。"
+      }
+    ]
+  },
+  "report": "本次尚未形成通过核验的结论。\n\n<details>\n<summary>还有 1 项未完成</summary>\n\n- 为什么不同论文中的FPS不能直接相除：最终回答尚未完整回应这一问题\n\n</details>",
+  "rawFiles": [
+    {
+      "path": "tmp/dr-acceptance-receipts/D5-v13.json",
+      "sha256": "7b66635c469b08a011cec5dde9b285d2966a251020dc31025e6b17767f4adafb"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/D5-v13.payload.json",
+      "sha256": "dad76de8de82af009435ed1385ff782948c1a88dcc1b77d6b436a7be6e945c7b"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/D5-v13.calls.json",
+      "sha256": "d199c2274557a8cd4d8c906b2496e6bcbe295b0ce22fa7fcdb3c9d5b2dd20590"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/D5-v13.result.json",
+      "sha256": "d2734aecec39aec572e7ccb85e0ac98843d6d828e834579a010ece1bbc632a89"
+    }
+  ],
+  "boundary": "One explicit submission after a concrete generation-profile change, all calls settled. Failed content is not retried unchanged or upgraded. No independent credit."
+}

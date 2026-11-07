@@ -1,0 +1,82 @@
+{
+  "date": "2026-10-18",
+  "case": "H5F-v3",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "originalContentAccepted": false,
+  "historicalOutcomeUnchanged": true,
+  "astAlreadyAcquiredAndRead": [
+    {
+      "sourceId": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf-v3040e30052bd930d-chunk-25",
+      "location": {
+        "page": 5,
+        "chunk": 25,
+        "section": "Annealing Smooth Training"
+      }
+    },
+    {
+      "sourceId": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf-v3040e30052bd930d-chunk-26",
+      "location": {
+        "page": 5,
+        "chunk": 26,
+        "section": "Annealing Smooth Training"
+      }
+    },
+    {
+      "sourceId": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf-v3040e30052bd930d-chunk-27",
+      "location": {
+        "page": 5,
+        "chunk": 27,
+        "section": "Annealing Smooth Training"
+      }
+    }
+  ],
+  "actuallyExtractedChunks": [
+    4,
+    5,
+    23,
+    32
+  ],
+  "indexSnapshotSha256": "f48000a1992494f6a85597a06dabd621bcbd6cc720c8d1ea76ebabbca5089d2d",
+  "availableOperationAndTrainingChunks": [
+    {
+      "chunk": 26,
+      "section": "Annealing Smooth Training",
+      "textSha256": "06e536d31976e147ff42439b19c79cca6f7800f96ce60639c49748fa500165aa"
+    },
+    {
+      "chunk": 27,
+      "section": "Annealing Smooth Training",
+      "textSha256": "daf7c34324053c46290b6d00492d8ecadaa7d2ea7e9731291fb0590c8213ac8b"
+    },
+    {
+      "chunk": 30,
+      "section": "Implementation Details",
+      "textSha256": "e5750bcf14402af47ab76dd100619e3f97988fabc0622e424cabf5f2a7b54cd3"
+    }
+  ],
+  "dataAudit": {
+    "selectedEvidenceId": "ev_530e250ef8c80fb1f9afe9a11a9ae721e9ec6cd55d8f8841b2f1c7b84961193a",
+    "selectedQuoteContainsLego": false,
+    "actualHardRejection": [
+      "DA_NAME_NOT_IN_QUOTE"
+    ],
+    "ownExistingMemberEvidenceId": "ev_ac51d846787e219dc2dad5ea3887eed549a48f2289cd5f8250fdc3bd7adfdca2",
+    "ownExistingMemberQuote": "It is worth noting that we observed a discrepancy in the scenarios presented in the training and test sets of the Lego in D-NeRF dataset.",
+    "candidateBindingStructuralErrors": [],
+    "candidateBindingSemanticApproved": false
+  },
+  "groupMethodFidelity": {
+    "claimId": "c2",
+    "configVerdict": "passed",
+    "ownEvidenceRefs": [],
+    "finding": "A proposed action named paper AST plus generic smoothing weights passes syntax/config review while the actual published time-noise operation is absent. This is not scientific method-fidelity acceptance."
+  },
+  "next": [
+    "Prioritize and extract the acquired operational AST passage, not just introduction/result claims; preserve per-passage evidence cap and original source identities.",
+    "Constrain data audit candidate bindings to own literal quotations showing selected member names; parent-dataset prose cannot bind Lego. Do not change the correct literal membership guard.",
+    "Require scientific review and own premises for paper-attributed intervention operations while leaving freely proposed hyperparameters explicit.",
+    "Acquire implementation-level training premises for comparison/common initialization rather than infer an entire offline sequence from a generic joint optimizer."
+  ],
+  "boundary": "Offline diagnosis refines the earlier suggestion that scene evidence was missing: the own cited Lego/D-NeRF sentence already exists, but the model audit chose the other parent-only quote. The structural counterfactual neither retargets the stored verdict nor accepts the full experiment."
+}

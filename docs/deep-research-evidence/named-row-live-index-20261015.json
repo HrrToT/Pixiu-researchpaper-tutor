@@ -1,0 +1,64 @@
+{
+  "date": "2026-10-15",
+  "sourceRunId": "dr_run_3bd02f76f6485899bdd7f0abd24275aa",
+  "taskId": "dr-acceptance-h5r-2026-10-15",
+  "selectedCount": 3,
+  "limit": 3,
+  "namedCount": 1,
+  "sourceIds": [
+    "e9895f20dbad6b11d95974f66319dbfef68ffe3235592e5d158822f3b43c3b1e.pdf-v148d7fc98db0a2e4-chunk-30",
+    "e9895f20dbad6b11d95974f66319dbfef68ffe3235592e5d158822f3b43c3b1e.pdf-v148d7fc98db0a2e4-chunk-31",
+    "e9895f20dbad6b11d95974f66319dbfef68ffe3235592e5d158822f3b43c3b1e.pdf-v148d7fc98db0a2e4-chunk-51"
+  ],
+  "namedLocations": [
+    {
+      "page": 15,
+      "chunk": 51,
+      "section": "Table 6 . Per-scene size and quality difference in percentage of LapisGS on synthetic Blender dataset [18] at different quality levels, compared to the Freeze method.SSIM ↑ ∆ LPIPS ↓ ∆ Size ↓ ∆ SSIM ↑ ∆ LPIPS ↓ ∆ Size ↓ ∆ SSIM ↑ ∆ LPIPS ↓ ∆ Size ↓",
+      "table": "tab_7",
+      "tableColumnMappingUnverified": true
+    }
+  ],
+  "namedRetrievalModes": [
+    "indexed_requested_row"
+  ],
+  "selectedVersions": [
+    "148d7fc98db0a2e4",
+    "148d7fc98db0a2e4",
+    "148d7fc98db0a2e4"
+  ],
+  "selectedContextPairs": [
+    {
+      "e9895f20dbad6b11d95974f66319dbfef68ffe3235592e5d158822f3b43c3b1e.pdf-v148d7fc98db0a2e4-chunk-30": "e9895f20dbad6b11d95974f66319dbfef68ffe3235592e5d158822f3b43c3b1e.pdf-v148d7fc98db0a2e4-chunk-31"
+    }
+  ],
+  "namedCandidates": [
+    {
+      "sourceId": "e9895f20dbad6b11d95974f66319dbfef68ffe3235592e5d158822f3b43c3b1e.pdf-v148d7fc98db0a2e4-chunk-51",
+      "version": "148d7fc98db0a2e4",
+      "literalMatches": 1,
+      "text": "Paper: LapisGS: Layered Progressive 3D Gaussian Splatting for Adaptive Streaming\n\nSection: Table 6 . Per-scene size and quality difference in percentage of LapisGS on synthetic Blender dataset [18] at different quality levels, compared to the Freeze method.SSIM ↑ ∆ LPIPS ↓ ∆ Size ↓ ∆ SSIM ↑ ∆ LPIPS ↓ ∆ Size ↓ ∆ SSIM ↑ ∆ LPIPS ↓ ∆ Size ↓\n\nContent:\nTable caption: Table 6 . Per-scene size and quality difference in percentage of LapisGS on synthetic Blender dataset [18] at different quality levels, "
+    }
+  ],
+  "candidateCount": 57,
+  "ownSource": true,
+  "modelCalls": 0,
+  "boundary": "Read-only live index retrieval with authoritative task scope. No run was started, modified or retried; literal row retrieval alone does not approve its numbers.",
+  "requestedLabel": "hotdog",
+  "literalMatchedLabel": "Hotdog",
+  "namedSourceEvidence": [
+    {
+      "sourceId": "e9895f20dbad6b11d95974f66319dbfef68ffe3235592e5d158822f3b43c3b1e.pdf-v148d7fc98db0a2e4-chunk-51",
+      "indexVersion": "148d7fc98db0a2e4",
+      "textSha256": "57efb3a26a82575a9c686144aaea0af7443f6f756166e2ca79a0c3e4a212e5cd",
+      "location": {
+        "page": 15,
+        "chunk": 51,
+        "section": "Table 6 . Per-scene size and quality difference in percentage of LapisGS on synthetic Blender dataset [18] at different quality levels, compared to the Freeze method.SSIM ↑ ∆ LPIPS ↓ ∆ Size ↓ ∆ SSIM ↑ ∆ LPIPS ↓ ∆ Size ↓ ∆ SSIM ↑ ∆ LPIPS ↓ ∆ Size ↓",
+        "table": "tab_7",
+        "tableColumnMappingUnverified": true
+      },
+      "quote": "Table caption: Table 6 . Per-scene size and quality difference in percentage of LapisGS on synthetic Blender dataset [18] at different quality levels, compared to the Freeze method.SSIM ↑ ∆ LPIPS ↓ ∆ Size ↓ ∆ SSIM ↑ ∆ LPIPS ↓ ∆ Size ↓ ∆ SSIM ↑ ∆ LPIPS ↓ ∆ Size ↓\nTable row 1: Scene ∆ Lego 0.21% [cols=2, rows=1] | L 1 -16.43% | -113.78% | 0.65% | L 2 -40.72% | -121.51% | 1.19% | L 3 43.6% | -232.51%\nTable row 2: Hotdog | 0.25% | -7.87% | -128.50% | 0.31% | -9.39% | -62.31% | 0.18% | 8.85% | -87.35%"
+    }
+  ]
+}

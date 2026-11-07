@@ -1,0 +1,31 @@
+{
+  "sourceCase": "S1G-v8",
+  "initialClaimIds": [
+    "c1",
+    "c2",
+    "c3"
+  ],
+  "initialKinds": [
+    "reported",
+    "reported",
+    "proposal"
+  ],
+  "generalShortCoreIds": [
+    "c1",
+    "c2"
+  ],
+  "compactReplyIds": [
+    "c1",
+    "c2"
+  ],
+  "finalGeneratedReportIds": [
+    "c1",
+    "c2"
+  ],
+  "requestedReadingGuidancePresentInitiallyButDroppedByCoreSelection": true,
+  "sourceOutputKind": "direction_survey",
+  "characterLimit": 300,
+  "providerCalls": 0,
+  "productionWrite": false,
+  "scientificApproval": false
+}

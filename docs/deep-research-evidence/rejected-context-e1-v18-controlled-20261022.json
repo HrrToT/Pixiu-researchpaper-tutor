@@ -1,0 +1,71 @@
+{
+  "date": "2026-10-22",
+  "sourceCase": "E1-v18",
+  "experimentReviewEnvelopeContractVersion": 2,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "independentCredit": 0,
+  "originalPayloadUnchanged": true,
+  "requests": [
+    {
+      "node": "verify_design_config",
+      "inputBytes": 18789,
+      "targetIds": [
+        "c7"
+      ],
+      "contextIds": [
+        "c3",
+        "c4",
+        "c5",
+        "c6",
+        "c2"
+      ],
+      "allFourHardRejectionsPreserved": true
+    },
+    {
+      "node": "verify_design_science",
+      "inputBytes": 31773,
+      "targetIds": [
+        "c1",
+        "c2",
+        "c8",
+        "c9"
+      ],
+      "contextIds": [
+        "c3",
+        "c4",
+        "c5",
+        "c6",
+        "c7"
+      ],
+      "allFourHardRejectionsPreserved": true
+    }
+  ],
+  "fits": [
+    {
+      "inputBytes": 18789,
+      "maxBytes": 32000,
+      "allRowsAndBoundedContextRetained": true
+    },
+    {
+      "inputBytes": 31773,
+      "maxBytes": 32000,
+      "allRowsAndBoundedContextRetained": true
+    }
+  ],
+  "hardRejectedIds": [
+    "c3",
+    "c4",
+    "c5",
+    "c6"
+  ],
+  "eligibleIds": [
+    "c1",
+    "c2",
+    "c7",
+    "c8",
+    "c9"
+  ],
+  "boundary": "Counterfactual archived-input delivery capture under NEW envelope2. All original text/conditions/typed definitions and rejection checks retained as context, never source evidence/approval. Callback returns failed deliberately, no new scientific judgement or old-result upgrade.",
+  "sourceCommit": "8e6eb16a"
+}

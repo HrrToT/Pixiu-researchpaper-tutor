@@ -1,0 +1,19 @@
+{
+  "date": "2026-10-18",
+  "sourceCommit": "7186e037",
+  "promptVersion": "dr-v2.20261018.173",
+  "offline": {"passed": 2798, "warnings": 1, "seconds": 177.41, "log": "tmp/pytest-dr173-full.log"},
+  "focused": {"passed": 70, "seconds": 3.63, "overlapWithFullSuite": true},
+  "changes": [
+    "Comparison policy3 gives generation, repair and independent comparison audit the same logical distinction between arithmetic, whole-system comparison and an isolated method effect.",
+    "Every paper-specific empirical premise still requires its own original citations. Generic possible confounders are not established causes; unknown alignment is not a demonstrated difference or arithmetic impossibility.",
+    "No extra model call, external task source, package dependency or budget expansion. Official benchmarking documentation informed engineering definitions, not empirical evidence for task papers.",
+    "Policy1/2 real synthesis and repair fingerprints remain unchanged; pending old repair identities cannot be retargeted to this policy. Negative semantic verdicts and all quote/table/source/scope checks still reject."
+  ],
+  "recordedReplay": "docs/deep-research-evidence/comparison-methodology-real-input-replay-20261018.json",
+  "engineeringReferences": [
+    "https://google.github.io/benchmark/user_guide.html#manual-timing",
+    "https://docs.mlcommons.org/inference/submission/"
+  ],
+  "boundary": "This is offline validation and exact archived-request reconstruction. Fresh comparative content still requires a real case and manual review; D1-v27 is not rerun."
+}

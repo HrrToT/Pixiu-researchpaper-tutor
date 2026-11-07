@@ -1,0 +1,87 @@
+{
+  "caseId": "S1G-v9",
+  "runId": "dr_run_e1146177dc4e5d82b024f63469540781",
+  "promptVersion": "dr-v2.20261029.349",
+  "status": "completed",
+  "outcome": "partial",
+  "modelCalls": 7,
+  "tokens": 25082,
+  "elapsedSeconds": 53.563,
+  "allCallsSettled": true,
+  "noRetry": true,
+  "verifiedClaims": [
+    {
+      "claimId": "c1",
+      "text": "LightGaussian压缩流程三个主要环节分别改变：高斯剪枝与恢复减少高斯数量；SH蒸馏将球谐系数从3阶降到2阶；矢量量化用更低比特存储高斯属性。",
+      "kind": "reported",
+      "evidenceRefs": [
+        "ev_dc73e27d98f65ae82681705ad0bcd0f675724d67d8e180eff73563766e7e03bd",
+        "ev_86994145a215296611d1166ee452117faf62798b8375946111afcd3ee39d2e62"
+      ],
+      "conditions": {},
+      "obligationIds": [
+        "ob_1"
+      ],
+      "detailLevel": "fulltext",
+      "tableBindings": [],
+      "verification": "semantic_passed"
+    },
+    {
+      "claimId": "c2",
+      "text": "建议阅读顺序：先读方法概述了解整体流程，再读算法伪代码看具体步骤，最后读摘要把握动机。",
+      "kind": "proposal",
+      "evidenceRefs": [
+        "ev_dc73e27d98f65ae82681705ad0bcd0f675724d67d8e180eff73563766e7e03bd",
+        "ev_86994145a215296611d1166ee452117faf62798b8375946111afcd3ee39d2e62",
+        "ev_a338259d46d124ea7f2a011130fa7bf4e3da6bc823049df2cf0d15b1a793e240"
+      ],
+      "conditions": {},
+      "obligationIds": [
+        "ob_2"
+      ],
+      "detailLevel": "fulltext",
+      "tableBindings": [],
+      "verification": "proposal"
+    }
+  ],
+  "initialRejected": null,
+  "repairRejected": null,
+  "coverageGaps": 1,
+  "publishedBody": "本回答引用：全文片段。\n\n## 核心判断\n\n- LightGaussian压缩流程三个主要环节分别改变：高斯剪枝与恢复减少高斯数量；SH蒸馏将球谐系数从3阶降到2阶；矢量量化用更低比特存储高斯属性。 [1](#research-evidence-ev_dc73e27d98f65ae82681705ad0bcd0f675724d67d8e180eff73563766e7e03bd) [2](#research-evidence-ev_86994145a215296611d1166ee452117faf62798b8375946111afcd3ee39d2e62)\n\n## 推荐阅读顺序\n\n- 建议阅读顺序：先读方法概述了解整体流程，再读算法伪代码看具体步骤，最后读摘要把握动机。 [1](#research-evidence-ev_dc73e27d98f65ae82681705ad0bcd0f675724d67d8e180eff73563766e7e03bd) [2](#research-evidence-ev_86994145a215296611d1166ee452117faf62798b8375946111afcd3ee39d2e62) [3](#research-evidence-ev_a338259d46d124ea7f2a011130fa7bf4e3da6bc823049df2cf0d15b1a793e240)\n\n",
+  "publishedCounts": {
+    "artifacts": 2,
+    "messages": 1
+  },
+  "repeatTerminalGetExactlyUnchanged": true,
+  "oldResultsAndMessagesUnchanged": true,
+  "fiveOtherProtectedTasksUnchanged": true,
+  "indexExactlyPreserved": true,
+  "completeProductionIndexSha256": "9196054db7ac32450eb86fc91cfb12de27c732469e4cf629bf06857a3490788d",
+  "preservation": {
+    "oldLedgerUnchanged": true,
+    "allOldRunsUnchanged": true,
+    "newRows": 21,
+    "ledgerRows": 7650,
+    "onlyThisRunCreatedCalls": true,
+    "active": [],
+    "oldPausedRetained": true,
+    "paused": [
+      "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+      "dr_run_ed10cc3347be552288079a9a588fddf5",
+      "dr_run_86b3f181a5475e99aacca3dbf4370567",
+      "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+      "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+      "dr_run_e3521b1781825273b384a26a5edb8cdc",
+      "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+      "dr_run_e9c9dc916bef519092fad8b929b2448f",
+      "dr_run_4738564f5ff35157996a35068c62ed32",
+      "dr_run_a8bd62f9ae3d52ff806f537065f55b2d",
+      "dr_run_98e66f2d3d555dfa822b859963f01419",
+      "dr_run_8be639c866c35ea092c735a04781b647",
+      "dr_run_1c0c2e6510165086962408b8e3cf698b"
+    ]
+  },
+  "remainingDefect": "Two nonredundant points and reading guidance are present and accepted; initial answer fits length so compaction is not invoked in this real run. Only access criterion fails because lexical classifier does not recognize a benign PDF provenance parenthetical. Audit model marks every check covered but parser correctly retains invalid_response under current contract. Do not relabel this run; replace reliance on generated access-criterion wording with original human directive semantics before freezing. No independent credit.",
+  "contentAcceptance": false,
+  "independentCredit": 0
+}

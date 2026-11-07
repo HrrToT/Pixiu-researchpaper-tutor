@@ -1,0 +1,17 @@
+{
+  "date": "2026-10-23",
+  "promptVersion": "dr-v2.20261023.247",
+  "reviewEnvelopeVersion": 10,
+  "files": 236,
+  "passed": 4314,
+  "warnings": 1,
+  "seconds": 254.91,
+  "log": "tmp/pytest-dr247-full-final.log",
+  "focusedPassed": 89,
+  "legacyScripts": 38,
+  "actualLegacyReviewFingerprints": 4,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "scientificApproval": false,
+  "boundary": "Field reference identity/presence/value binding,raw feedback retention,immutable defaults,unchanged positive audits and historical compatibility. No new real provider output or content acceptance."
+}

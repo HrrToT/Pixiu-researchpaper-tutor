@@ -1,0 +1,57 @@
+{
+  "date": "2026-10-23",
+  "case": "E1-v34",
+  "sourceCommit": "c546dac6",
+  "contentAccepted": false,
+  "initialAccepted": 0,
+  "finalAccepted": 0,
+  "rejected": 9,
+  "generationInputBytes": 28135,
+  "hardGenerationFailures": {
+    "budget": {
+      "mode": "matched",
+      "unit": "optimizer_steps",
+      "groups": {
+        "0": 300,
+        "1": 400
+      }
+    },
+    "baselineShape": [
+      "N",
+      3
+    ],
+    "componentGroupIdTypes": [
+      0,
+      1
+    ]
+  },
+  "reviewProblems": [
+    {
+      "claimId": "c1",
+      "finding": "Demands an observed directional comparison for an explicitly unexecuted exploratory hypothesis",
+      "hypothesisPurpose": "explore",
+      "scope": {
+        "context": "假设为前瞻性、描述性比较；尚未执行。仅针对单场景、单帧窗口；不承诺改善或统计显著性。"
+      }
+    },
+    {
+      "claimId": "c7",
+      "finding": "missing_field findings include value for a present field; speed absence reason contradicts named hardware in its own bound value",
+      "scope": {
+        "context": "PSNR和SSIM在Frame 1评估视图上计算，先按视图平均再跨视图平均。存储包括所有3D高斯参数和NTC MLP权重及哈希表，以float32和int32存储，无压缩。时间测量在NVIDIA A100 40GB上，分辨率1352x1014，预热1次迭代，CUDA事件同步，仅计时优化器步骤，重复3次取中位数。"
+      }
+    }
+  ],
+  "repairStopped": {
+    "batch": 1,
+    "kind": "repairEvidenceBytes",
+    "limit": 17018,
+    "used": 22615
+  },
+  "actualInitialReviewFingerprintsMatched": 2,
+  "allReviewReferencesAndContextsRetained": true,
+  "providerCallsDuringDiagnosis": 0,
+  "productionWritesDuringDiagnosis": 0,
+  "independentCredit": 0,
+  "boundary": "Diagnosis distinguishes real structural failures from review instruction/schema problems. No rejected claim is promoted or scientifically approved."
+}

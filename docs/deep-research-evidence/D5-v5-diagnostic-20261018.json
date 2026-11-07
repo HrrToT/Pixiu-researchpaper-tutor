@@ -1,0 +1,87 @@
+{
+  "date": "2026-10-18",
+  "case": "D5-v5",
+  "runId": "dr_run_3717607182cd52ae8f10f305ce8da9fa",
+  "parentRunId": "dr_run_56107afc748d54828af1a50e84eb5d62",
+  "runtimeSourceCommit": "1eea6ffa",
+  "promptVersion": "dr-v2.20261018.155",
+  "status": "completed",
+  "outcome": "complete",
+  "independent": false,
+  "contentAccepted": false,
+  "modelCalls": 11,
+  "settledTokens": 38410,
+  "elapsedSeconds": 81.038,
+  "cost": null,
+  "parentPreservation": {
+    "parentPayloadUnchanged": true,
+    "previousTaskObjectsUnchanged": {
+      "notes": 0,
+      "messages": 15,
+      "artifacts": 30
+    },
+    "paperIdsAndMaterialHashesUnchanged": true,
+    "inheritedSources": 30,
+    "inheritedEvidence": 52
+  },
+  "runtimeAfter": {
+    "calls": 3795,
+    "newRows": 25,
+    "active": 0,
+    "paused": [
+      "dr_run_4738564f5ff35157996a35068c62ed32",
+      "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+      "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+      "dr_run_86b3f181a5475e99aacca3dbf4370567",
+      "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+      "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+      "dr_run_e3521b1781825273b384a26a5edb8cdc",
+      "dr_run_e9c9dc916bef519092fad8b929b2448f",
+      "dr_run_ed10cc3347be552288079a9a588fddf5"
+    ],
+    "parentPayloadUnchanged": true,
+    "oldLedgerUnchanged": true
+  },
+  "reviewer": "Primary Codex review of saved answer and exact own cited quotes; not participant rating.",
+  "scores": {
+    "goalResponse": 4,
+    "evidenceSupport": 3,
+    "conditions": 3,
+    "synthesisValue": 4,
+    "executability": null,
+    "readability": 4
+  },
+  "findings": [
+    "One explicit new child; all 25 ledger rows settled. No new unknown or automatic re-generation.",
+    "Both source-specific requirements are represented by own cited quotes. The exact production repair request fingerprint matches source-aware version 2, including both source identities and requiredSources. This proves the new repair contract was used, not a causal quality improvement across stochastic runs.",
+    "The short answer explains why an uncontrolled cross-paper FPS ratio is unsafe. However it lists possible hardware/scene/resolution/implementation differences without establishing which actually differ. Existing broader evidence states A6000 for both papers. The answer should distinguish unaligned conditions from demonstrated differences and avoid an unconditional no-comparability conclusion. Machine complete is not accepted as full content success.",
+    "Parent payload, all previous artifacts/messages/notes, papers/material hashes and old ledger prefix are unchanged. Nine historical unknown identities stay paused.",
+    "Legacy continuation has empty artifactContext. Current frontend continuation binding to a user-edited parent artifact remains a separate gate.",
+    "Terminal state GET timed out while the engine had already settled. Read-only probes showed health 31.141 seconds and both Python/Java run reads timed out at 45 seconds. Repeated per-passage synchronous live scope checks are being fixed separately; no model resubmission."
+  ],
+  "report": "## 差异原因\n\n- 有依据的推断：不同论文中的FPS不能直接相除，因为LightGaussian在自己的平台上用原始代码和3D-GS配置重新训练基线以求公平比较，而3DGS论文在A6000 GPU上以相同超参数报告结果；两篇论文的硬件、场景、分辨率和实现细节可能不同，因此FPS的比值没有可比性。 [1](#research-evidence-ev_8fd3f847d043bbae423552d837a23f0207800e59770d35852b585f53e37f432a) [2](#research-evidence-ev_7fa0ef07e954d2d0f4074b9206ed6ae6e332bec7817c80c8e47a4f9d040dfc59)\n\n推断限于所列证据和适用条件。\n\n<details>\n<summary>原文依据</summary>\n\n**[1] LightGaussian: Unbounded 3D Gaussian Compression with 15x Reduction and 200+ FPS** · 第 16 页 · 全文片段\n\n> We re-train 3D-GS, Compressed 3D-GS, Compact 3D-GS using their original code and 3D-GS configurations on our platform, to perform a fair comparison.\n\n**[2] 3D Gaussian Splatting for Real-Time Radiance Field Rendering** · 第 8 页 · 全文片段\n\n> We use the same hyperparameter configuration for all experiments in our evaluation. All results are reported running on an A6000 GPU, except for the Mip-NeRF360 method (see below).\n\n</details>",
+  "productionRequestProof": "D5-v5-production-repair-replay-20261018.json",
+  "rawFiles": [
+    {
+      "path": "tmp/dr-acceptance-receipts/D5-v5.json",
+      "sha256": "b9e6e29da99ca423bdf2cef9ed9e1d8c7368c6cfb12168a08f297411312ced37"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/D5-v5.payload.json",
+      "sha256": "bab5c331fff9bc8e3ef5100673464a3e8b1be5f6147b4155d47571cc30e959de"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/D5-v5.calls.json",
+      "sha256": "0355d16bb8a82a4a05edf1c1ca452e52bee60ac86bb72553e45708d01441247e"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/D5-v5.result.json",
+      "sha256": "6e1606d90061123ef09eb63ae3ab58b42d2fe17fe7a8da2e5897adb45d006079"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/D5-v5.parent-before.json",
+      "sha256": "7c1e4f36985d92ae315117fe84a9c9a240462817f8ec5fcd5539d07c66320c63"
+    }
+  ],
+  "boundary": "Development diagnostic only; no independent credit or overall completion. Original five independent first results remain 0/5."
+}

@@ -1,0 +1,46 @@
+{
+  "providerCalls": 0,
+  "oldVerificationPromptsByteIdentical": 3,
+  "permittedReportedInferenceIds": [
+    "c1"
+  ],
+  "repairPromptBytes": 23998,
+  "mandatoryTableRowsPresent": [
+    8,
+    10
+  ],
+  "tableCellValuesChanged": false,
+  "mockRepairResponse": "[]",
+  "contentAcceptance": false,
+  "independentCredit": 0,
+  "productionPreservation": {
+    "before": {
+      "ledgerRows": 7465,
+      "ledgerSha256": "9138a4c5c9e9397c9dce6b78007d07dc1c2f7955dd637bef1d794f0c50b97bbc",
+      "payloadSha256": "a4559eea0b66b511bed93f21a1cba7e6a39068464469aacbcd30fde6895797ad"
+    },
+    "after": {
+      "ledgerRows": 7465,
+      "ledgerSha256": "9138a4c5c9e9397c9dce6b78007d07dc1c2f7955dd637bef1d794f0c50b97bbc",
+      "payloadSha256": "a4559eea0b66b511bed93f21a1cba7e6a39068464469aacbcd30fde6895797ad"
+    },
+    "exactProductionPreservation": true,
+    "providerSubmissions": 4,
+    "productionPublish": false,
+    "fullWorkflowReplay": false,
+    "independentCredit": 0
+  },
+  "receiptHashes": {
+    "calls.json": "d858569847faa202e15d8566f1eabde2cda4699e3ea64fba4fc8fe90b27df5e8",
+    "offline-input-proof.json": "9d90a0e7f263f04468ab91737f7f937184911b5898f42456f66bd92e03612dd7",
+    "payload.json": "b75c2feb2b712953d06136668f9f2487367c355ccedfcec00cb57a1789490822",
+    "preservation.json": "e4020959709d9e175f8e9b867b3ca9486503f673a8a37daf6c2785fc947c621e",
+    "progress.json": "2ba2da9c2357082b7ba4277d19e3a82c3e9a2f0ba2c75d215ff368dd61d0a26a",
+    "request-1.json": "0ba97c679a151504ff883e78a0f63de90c49e64d2c989b7efc60d29ac9d27276",
+    "request-2.json": "94d20bd9819d92c6dd474e9fe59dcae0faf22f7fbc2bb7da5af77b8ff015fc5f",
+    "request-3.json": "a2c8e9bb8814b1117164a298b7ea68a8ce35e626710475360cd84335be6fe670",
+    "request-4.json": "b5e376419c3f8f5e20dfef7ceda291577ec9697b396cc3f1f17ee525e437d0eb",
+    "result.json": "19fd1bd17b321c175f14f25d81011037727739a4da35d44832a3b7ea44b842ee"
+  },
+  "limitation": "Archived check responses and mock empty repair; no new-provider or scientific approval."
+}

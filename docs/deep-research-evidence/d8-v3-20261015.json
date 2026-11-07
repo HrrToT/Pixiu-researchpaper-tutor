@@ -1,0 +1,17 @@
+{
+  "date": "2026-10-15",
+  "caseId": "D8-v3",
+  "split": "development",
+  "runId": "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+  "promptVersion": "dr-v2.20261015.66",
+  "submissionCount": 1,
+  "automaticResubmissions": 0,
+  "result": {"status": "paused", "outcome": "none", "errorCode": "unresolved_unknown", "stage": "resolve_brief", "providerWaitSeconds": 120},
+  "ledger": {"node": "resolve_brief", "status": "unknown", "reservedModelCalls": 1, "reservedTokens": 4256, "actualTokens": null, "cost": null},
+  "boundary": "4256 is the retained reservation, not measured usage or a confirmed charge. The provider execution/billing result is unknown. No plan, evidence extraction, final audit or report was reached; this run cannot evaluate .66 answer quality or response-schema adherence.",
+  "connectivityProbe": {"method": "Unauthenticated GET of public https://api.deepseek.com root, no API key, no paper content, no generation endpoint", "httpStatus": 401, "seconds": 0.14, "proxiesConfigured": false, "meaning": "DNS/TLS/HTTP connection was available at probe time; this does not establish authenticated generation availability or reconcile the unknown request."},
+  "preSubmissionFailure": "Before confirmed submission, a Java GET failed with connection refused and no receipt existed. Java/Vite were restored using the original jar/database. This failure sent no model request and is not counted as a second submission.",
+  "rawAuthoritativeRecord": "tmp/dr-acceptance-receipts/D8-v3.authoritative.json",
+  "nextWork": ["Keep the unknown run paused and preserve its reservation", "Do not retry or silently replace the unknown request", "Continue source/offline work and other distinct acceptance requirements without marking this case passed"],
+  "acceptance": "Not evaluated; no independent holdout credit. DR0-DR5 remains incomplete."
+}

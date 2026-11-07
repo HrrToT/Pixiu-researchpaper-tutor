@@ -1,4 +1,5 @@
 import json
+import math
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -106,15 +107,23 @@ class DeepSeekLLM:
         base_url: Optional[str] = None,
         thinking_type: Optional[str] = None,
         reasoning_effort: Optional[str] = None,
+        timeout_seconds: Optional[float] = None,
     ):
+        if timeout_seconds is not None:
+            timeout_seconds = float(timeout_seconds)
+            if not math.isfinite(timeout_seconds) or timeout_seconds <= 0:
+                raise ValueError("DeepSeekLLM timeout_seconds must be finite and positive")
         self.model = model
         self.temperature = temperature
         self.api_key = api_key
         self.base_url = (base_url or DEFAULT_DEEPSEEK_BASE_URL).rstrip("/")
         self.thinking_type = thinking_type
         self.reasoning_effort = reasoning_effort
+        self.timeout_seconds = timeout_seconds
 
     def invoke(self, request: LLMRequest) -> LLMResult:
+        from services.operation_control import check_cancelled
+        check_cancelled()
         api_key = self.api_key or settings.deepseek_api_key
         if not api_key:
             raise LLMProviderError(
@@ -141,10 +150,31 @@ class DeepSeekLLM:
 
         if request.extra_body:
             payload.update(request.extra_body)
+        # Local transport control must never become a provider JSON parameter.
+        payload.pop("timeout_seconds", None)
+        from llm.responses_transport import API_KEY, payload as responses_payload
+        responses_mode=API_KEY in (request.extra_body or {})
+        endpoint='/chat/completions'
+        schema_overhead=0
+        if responses_mode:
+            if request.stop:raise ValueError('Responses schema requests do not support stop overrides')
+            transport_options=dict(request.extra_body)
+            if self.thinking_type:transport_options.setdefault('thinking',{'type':self.thinking_type})
+            if self.reasoning_effort:transport_options.setdefault('reasoning_effort',self.reasoning_effort)
+            payload=responses_payload(resolved_messages,transport_options,model=self.model,temperature=self.temperature)
+            endpoint='/responses'
+            schema_overhead=len(json.dumps({API_KEY:'responses','response_format':transport_options['response_format']},
+                ensure_ascii=False,separators=(',',':'),allow_nan=False).encode('utf8'))
 
-        timeout = float(settings.deepseek_timeout_seconds)
+        timeout = self.timeout_seconds if self.timeout_seconds is not None else float(settings.deepseek_timeout_seconds)
+        if request.timeout_seconds is not None:
+            request_timeout = float(request.timeout_seconds)
+            if not math.isfinite(request_timeout) or request_timeout <= 0:
+                raise ValueError("LLM request timeout must be positive")
+            timeout = min(timeout, request_timeout)
         input_size = sum(len(str(item.get("content") or "")) for item in resolved_messages)
         estimated_input_tokens = sum(estimate_tokens(item.get("content") or "") for item in resolved_messages)
+        estimated_input_tokens += schema_overhead
         with trace_step(
             "llm_call",
             input_size=input_size,
@@ -153,21 +183,39 @@ class DeepSeekLLM:
             record_counter("llmCalls")
             record_counter("estimatedInputTokens", estimated_input_tokens)
             try:
-                response = requests.post(
-                    f"{self.base_url}/chat/completions",
+                from llm.deadline import call_with_deadline
+                response = call_with_deadline(lambda: requests.post(
+                    f"{self.base_url}{endpoint}",
                     headers={
                         "Authorization": f"Bearer {api_key}",
                         "Content-Type": "application/json",
                     },
                     json=payload,
                     timeout=timeout,
-                )
-            except requests.RequestException as error:
+                ), timeout)
+            except (requests.RequestException, TimeoutError) as error:
+                # Preserve a bounded category, never exception text: transport
+                # messages may contain proxy credentials or request URLs.
+                if isinstance(error, requests.exceptions.ProxyError):
+                    failure_kind = "proxy_error"
+                elif isinstance(error, requests.exceptions.SSLError):
+                    failure_kind = "tls_error"
+                elif isinstance(error, requests.exceptions.ConnectTimeout):
+                    failure_kind = "connect_timeout"
+                elif isinstance(error, requests.exceptions.ReadTimeout):
+                    failure_kind = "read_timeout"
+                elif isinstance(error, TimeoutError):
+                    failure_kind = "deadline_exceeded"
+                elif isinstance(error, requests.exceptions.ConnectionError):
+                    failure_kind = "connection_error"
+                else:
+                    failure_kind = "transport_error"
                 raise LLMProviderError(
                     "DeepSeek request failed.",
                     provider="deepseek",
                     model=self.model,
                     retryable=True,
+                    failure_kind=failure_kind,
                 ) from error
 
             if response.status_code >= 400:
@@ -179,8 +227,13 @@ class DeepSeekLLM:
                     status_code=response.status_code,
                 )
 
+            check_cancelled()
+
             try:
                 data = response.json()
+                if responses_mode:
+                    from llm.responses_transport import chat_view
+                    data=chat_view(data)
                 content = data["choices"][0]["message"]["content"]
             except (ValueError, KeyError, IndexError, TypeError) as error:
                 raise LLMProviderError(
@@ -202,7 +255,12 @@ class DeepSeekLLM:
             )
             step["outputSize"] = len(content)
             record_counter("estimatedOutputTokens", estimate_tokens(content))
-            return LLMResult("deepseek", self.model, content, usage)
+            finish_reason = (data.get('choices') or [{}])[0].get('finish_reason') if isinstance(data, dict) else None
+            reported_model = data.get('model')
+            if not isinstance(reported_model, str) or not reported_model.strip() or len(reported_model) > 256:
+                reported_model = None
+            return LLMResult("deepseek", self.model, content, usage, finish_reason=finish_reason,
+                             reported_model=reported_model)
 
     def _call(
         self,
@@ -213,6 +271,8 @@ class DeepSeekLLM:
         **kwargs: Any,
     ) -> str:
         del run_manager
+        from services.operation_control import check_cancelled
+        check_cancelled()
         extra_body = kwargs.get("extra_body")
 
         # ── 15-2: LLM response cache ────────────────────────────────

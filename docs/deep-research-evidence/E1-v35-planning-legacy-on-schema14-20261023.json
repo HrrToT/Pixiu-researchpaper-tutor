@@ -1,0 +1,16 @@
+{
+  "date": "2026-10-23",
+  "case": "E1-v35",
+  "sourceCommit": "5c443462",
+  "actualPlanningFingerprintMatched": true,
+  "actualPlanningInputBytes": 21778,
+  "actualRawResponseBytes": 6113,
+  "newColumnPlanningInputBytes": 21778,
+  "maxInputBytes": 32000,
+  "originalQuestionEvidenceSourceTablesRequirementsIdentical": true,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "independentCredit": 0,
+  "scientificApproval": false,
+  "boundary": "Actual plan7/native13 request reconstructed exactly. Original provider response retained without modification. Compatibility only, no content acceptance."
+}

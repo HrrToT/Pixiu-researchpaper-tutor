@@ -1,0 +1,24 @@
+{
+  "paper": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf",
+  "oldChunks": 55,
+  "newChunks": 112,
+  "newVersions": [
+    "b6fb16ee9617e59c"
+  ],
+  "otherRowsAndVectorsExactlyPreserved": 869,
+  "oldLedgerAndAllRunPayloadsExactlyPreserved": true,
+  "ledgerRows": 7415,
+  "active": 0,
+  "pausedUnknowns": 12,
+  "oldSourceReaderExactPreservation": {
+    "count": 4331,
+    "sha256": "e8760a7da41b9339311f28ae6bbfc574d25f51cafa6e376c21067df67dcad71b"
+  },
+  "protectedWorkspaceCount": 5,
+  "allThreeRecoveredAnchorsOnPage2": true,
+  "indexBeforeSha256": "74c5334044b909b74a42b8fab255276f77948a485aa610e82a88ebfe2531a28b",
+  "indexAfterSha256": "9196054db7ac32450eb86fc91cfb12de27c732469e4cf629bf06857a3490788d",
+  "deepseekCalls": 0,
+  "requestCount": 1,
+  "independentCredit": 0
+}

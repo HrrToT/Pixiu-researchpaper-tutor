@@ -1,0 +1,69 @@
+{
+  "sourceCase": "M1G-v2",
+  "inputSha256": "837456e3aa52c3554fe017439de1a3dda5aaabb8693dffc08a6135106e392fa8",
+  "views": [
+    {
+      "workId": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf",
+      "oldQueryMetrics": [
+        "SIZE"
+      ],
+      "newQualitativeIntent": true,
+      "selectedSections": [
+        "Introduction",
+        "Methods",
+        "Document opening",
+        "Abstract",
+        "Gaussian Attributes Vector Quantization"
+      ],
+      "firstSourceIds": [
+        "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vb6fb16ee9617e59c-chunk-6",
+        "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vb6fb16ee9617e59c-chunk-14"
+      ]
+    },
+    {
+      "workId": "6cff256c171332b72324f87ae7229c391cdc8ade63850f288d11289bda4699d5.pdf",
+      "oldQueryMetrics": [
+        "SIZE"
+      ],
+      "newQualitativeIntent": true,
+      "selectedSections": [
+        "unknown",
+        "unknown",
+        "RELATED WORK",
+        "Spatial Autoregressive Models for Triplane Coding",
+        "Spatial Autoregressive Models for Triplane Coding"
+      ],
+      "firstSourceIds": [
+        "6cff256c171332b72324f87ae7229c391cdc8ade63850f288d11289bda4699d5.pdf-v722bf931ba84e9ee-chunk-0",
+        "6cff256c171332b72324f87ae7229c391cdc8ade63850f288d11289bda4699d5.pdf-v722bf931ba84e9ee-chunk-1"
+      ]
+    }
+  ],
+  "premiseHeads": [
+    {
+      "workId": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf",
+      "section": "Methods",
+      "quote": " The 3D-GS model is trained on\nmulti-view images, initialized from SfM point clouds, and expanded to millions of Gaussians to\nrepresent the scene comprehensively. Our pipeline then processes the 3D-GS model into a compact\nformat using Gaussian Prune and Recovery to reduce the number of Gaussians, SH Distillation to\neliminate redundant SHs while retaining key lighting information, and Vector Quantization to store\nGaussians with lower bit-width."
+    },
+    {
+      "workId": "6cff256c171332b72324f87ae7229c391cdc8ade63850f288d11289bda4699d5.pdf",
+      "section": "unknown",
+      "quote": "develop a view frequency-aware masking mechanism, skipping from coding the Gaussian primitives that contribute little to the rendering quality (Figure1(c)). To sum up, our contributions include:\n• A triplane-based hyperprior that leverages the inter correlation (i.e. spatial correlation) between Gaussian primitives in the 3D space for efficient spatial autoregressive coding."
+    },
+    {
+      "workId": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf",
+      "section": "Methods",
+      "quote": "3 Methods\nOverview. The LightGaussian framework is illustrated in Fig. 2."
+    },
+    {
+      "workId": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf",
+      "section": "Introduction",
+      "quote": "that retains the original rendering quality. The heuristic densification process in 3D-GS results in\nsignificant redundancy. Our method, LightGaussian , reduces redundancy by targeting both Gaussian\ncount (N) and feature dimension (F) through a comprehensive pipeline:\n• To reduce Gaussian count (N), we propose a Gaussian Pruning and Recovery step, identi-\nfying and removing Gaussians with minimal impact on visual quality, followed by recovery\nto ensure smooth adaptation."
+    }
+  ],
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "originalRunChanged": false,
+  "scientificApproval": false,
+  "independentCredit": 0
+}

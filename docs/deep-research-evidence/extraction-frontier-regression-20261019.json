@@ -1,0 +1,42 @@
+{
+  "date": "2026-10-19",
+  "sourceCommit": "fab469c6",
+  "promptVersion": "dr-v2.20261019.182",
+  "offlineFull": {
+    "passed": 2966,
+    "warnings": 1,
+    "seconds": 153.21
+  },
+  "focused": {
+    "passed": 152,
+    "seconds": 20.42,
+    "overlapsFull": true
+  },
+  "logs": [
+    {
+      "path": "tmp/pytest-dr182-full.log",
+      "sha256": "68ed1923b74abbdb38cca497fa36a491bcf55771a6137237130f430e43bac410"
+    },
+    {
+      "path": "tmp/pytest-dr182-focused-v3.log",
+      "sha256": "8f8c735f261a8797fb71e75328148e4d6cf4497fc20d346093b43e6900bead09"
+    }
+  ],
+  "serverFrozenContracts": {
+    "extractionScheduleContractVersion": 1,
+    "budget.explorationAllocationVersion": 1
+  },
+  "changes": [
+    "Finish the current authorized bounded read pool before paid readiness assessment.",
+    "Allocate 60 percent of normal pool to acquisition, retaining 40 percent as repair target; separate finalization reserve unchanged.",
+    "Transactional admission still enforces full request envelope, same total and normal pools, calls and wall time.",
+    "Only all actually reviewed requested criteria yield assessmentStatus=checked; extraction itself grants no support."
+  ],
+  "legacyProviderFingerprintsMatched": 13,
+  "providerCallsInOfflineProofs": 0,
+  "retainedFailedDiagnostics": [
+    "Initial focused runner referenced a nonexistent tool-ledger test; collection ran zero tests. Corrected runner retained as tmp/pytest-dr182-focused.log.",
+    "Original H2F-v4 diagnostic headroom arithmetic corrected from33333 to33216; raw outputs, hashes and scores unchanged."
+  ],
+  "boundary": "Offline fixtures and one archived next-request reservation replay only. No current real content acceptance or independent credit."
+}

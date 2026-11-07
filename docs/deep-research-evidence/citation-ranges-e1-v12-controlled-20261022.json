@@ -1,0 +1,433 @@
+{
+  "date": "2026-10-22",
+  "sourceCase": "E1-v12",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "originalArchiveUnchanged": true,
+  "results": [
+    {
+      "phase": "initial",
+      "normalizedClaimIds": [
+        "c1",
+        "c2",
+        "c4",
+        "c6",
+        "c9"
+      ],
+      "presentationAudit": [
+        {
+          "claimId": "c1",
+          "originalText": "在N3DV数据集的flame salmon场景中，固定相同的第0帧模型、相机划分及第1阶段NTC结果，并逐帧不传播新增高斯时，执行第2阶段自适应新增高斯（按论文E4-E6的梯度选择、采样、继承与仅优化新增参数）相比跳过第2阶段，在帧1→2窗口上会改变重建质量（PSNR/SSIM）、每帧存储（高斯参数字节数）和额外训练开销（第2阶段优化墙钟时间）。本假设为探索性描述比较，不预设改善方向，也不将新增参数与额外优化分别归因。",
+          "originalConditions": {
+            "context": "方案尚未执行；E4-E6为论文第2阶段操作，E7为flame salmon场景与帧1→2窗口；相机划分、种子、迭代数等为拟议选择。"
+          },
+          "normalizedText": "在N3DV数据集的flame salmon场景中，固定相同的第0帧模型、相机划分及第1阶段NTC结果，并逐帧不传播新增高斯时，执行第2阶段自适应新增高斯（按所引原文的梯度选择、采样、继承与仅优化新增参数）相比跳过第2阶段，在帧1→2窗口上会改变重建质量（PSNR/SSIM）、每帧存储（高斯参数字节数）和额外训练开销（第2阶段优化墙钟时间）。本假设为探索性描述比较，不预设改善方向，也不将新增参数与额外优化分别归因。",
+          "normalizedConditions": {
+            "context": "方案尚未执行；所引原文为论文第2阶段操作，所引原文为flame salmon场景与帧1→2窗口；相机划分、种子、迭代数等为拟议选择。"
+          },
+          "removed": [
+            {
+              "field": "text",
+              "marker": "论文E4-E6",
+              "offset": 78,
+              "kind": "source_attribution_range",
+              "replacement": "所引原文",
+              "evidenceRefs": [
+                "ev_3006efb65ff33d4d129cae301b78f856b3944f4b066063a9ad5175bdf2f067a9",
+                "ev_516057b8a32881c40f1384de19b86128197089068316214ce7a984ebb4f252a4",
+                "ev_6558c554163d2cf4124a655864c29ba4e00a1996de9a7f509dc09e67eef09830"
+              ]
+            },
+            {
+              "field": "conditions.context",
+              "marker": "E4-E6",
+              "offset": 7,
+              "kind": "source_attribution_range",
+              "replacement": "所引原文",
+              "evidenceRefs": [
+                "ev_3006efb65ff33d4d129cae301b78f856b3944f4b066063a9ad5175bdf2f067a9",
+                "ev_516057b8a32881c40f1384de19b86128197089068316214ce7a984ebb4f252a4",
+                "ev_6558c554163d2cf4124a655864c29ba4e00a1996de9a7f509dc09e67eef09830"
+              ]
+            },
+            {
+              "field": "conditions.context",
+              "marker": "E7",
+              "offset": 22,
+              "kind": "source_attribution",
+              "replacement": "所引原文",
+              "evidenceRefs": [
+                "ev_e34196d11497b3956f133f4f4f9f4670ef36ac774d1a0a60f21f50a99cbc0cd3"
+              ]
+            }
+          ]
+        },
+        {
+          "claimId": "c2",
+          "originalText": "两组：对照组（跳过第2阶段）与处理组（执行第2阶段自适应新增高斯）。两组共享相同的第0帧模型、相机划分和第1阶段NTC结果；处理组逐帧新增高斯不传到下一帧。",
+          "originalConditions": {
+            "context": "分组为拟议设计；E4-E6定义第2阶段操作，但具体实现参数（如优化器学习率）为拟议值。"
+          },
+          "normalizedText": "两组：对照组（跳过第2阶段）与处理组（执行第2阶段自适应新增高斯）。两组共享相同的第0帧模型、相机划分和第1阶段NTC结果；处理组逐帧新增高斯不传到下一帧。",
+          "normalizedConditions": {
+            "context": "分组为拟议设计；所引原文定义第2阶段操作，但具体实现参数（如优化器学习率）为拟议值。"
+          },
+          "removed": [
+            {
+              "field": "conditions.context",
+              "marker": "E4-E6",
+              "offset": 8,
+              "kind": "source_attribution_range",
+              "replacement": "所引原文",
+              "evidenceRefs": [
+                "ev_3006efb65ff33d4d129cae301b78f856b3944f4b066063a9ad5175bdf2f067a9",
+                "ev_516057b8a32881c40f1384de19b86128197089068316214ce7a984ebb4f252a4",
+                "ev_6558c554163d2cf4124a655864c29ba4e00a1996de9a7f509dc09e67eef09830"
+              ]
+            }
+          ]
+        },
+        {
+          "claimId": "c4",
+          "originalText": "数据：N3DV数据集flame salmon场景，帧窗口为帧1→2（论文E7用于展示NTC有效性的窗口）。相机划分：按相机索引每3个取1个作为留出评估视图，其余为训练视图；使用种子0进行数据划分。独立单元为单个相机视图。",
+          "originalConditions": {
+            "context": "E7明确flame salmon场景与帧1→2窗口；相机划分与种子为拟议选择，需根据实际数据集文件验证。"
+          },
+          "normalizedText": "数据：N3DV数据集flame salmon场景，帧窗口为帧1→2（所引原文用于展示NTC有效性的窗口）。相机划分：按相机索引每3个取1个作为留出评估视图，其余为训练视图；使用种子0进行数据划分。独立单元为单个相机视图。",
+          "normalizedConditions": {
+            "context": "所引原文明确flame salmon场景与帧1→2窗口；相机划分与种子为拟议选择，需根据实际数据集文件验证。"
+          },
+          "removed": [
+            {
+              "field": "text",
+              "marker": "论文E7",
+              "offset": 34,
+              "kind": "source_attribution",
+              "replacement": "所引原文",
+              "evidenceRefs": [
+                "ev_e34196d11497b3956f133f4f4f9f4670ef36ac774d1a0a60f21f50a99cbc0cd3"
+              ]
+            },
+            {
+              "field": "conditions.context",
+              "marker": "E7",
+              "offset": 0,
+              "kind": "source_attribution",
+              "replacement": "所引原文",
+              "evidenceRefs": [
+                "ev_e34196d11497b3956f133f4f4f9f4670ef36ac774d1a0a60f21f50a99cbc0cd3"
+              ]
+            }
+          ]
+        },
+        {
+          "claimId": "c6",
+          "originalText": "执行步骤：准备数据（加载flame salmon帧1→2，按相机索引每3取1留出评估）；获取基线（训练第1阶段NTC 1000步，得到第0帧模型与NTC结果）；初始化组件（从基线复制完整状态到两组）；配对分组（对照组跳过第2阶段，处理组执行第2阶段）；应用干预（处理组按E4-E6执行自适应新增高斯并优化100步/帧，逐帧不传播新增高斯）；恢复（处理组记录第2阶段训练量200步，对照组0步）；评估（在留出相机视图上计算PSNR/SSIM、存储字节数、第2阶段墙钟时间）；记录（保存所有清单与测量）。",
+          "originalConditions": {
+            "context": "步骤为拟议设计；E4-E6定义第2阶段操作，但具体实现细节（如优化器）为拟议值。"
+          },
+          "normalizedText": "执行步骤：准备数据（加载flame salmon帧1→2，按相机索引每3取1留出评估）；获取基线（训练第1阶段NTC 1000步，得到第0帧模型与NTC结果）；初始化组件（从基线复制完整状态到两组）；配对分组（对照组跳过第2阶段，处理组执行第2阶段）；应用干预（处理组按所引原文执行自适应新增高斯并优化100步/帧，逐帧不传播新增高斯）；恢复（处理组记录第2阶段训练量200步，对照组0步）；评估（在留出相机视图上计算PSNR/SSIM、存储字节数、第2阶段墙钟时间）；记录（保存所有清单与测量）。",
+          "normalizedConditions": {
+            "context": "步骤为拟议设计；所引原文定义第2阶段操作，但具体实现细节（如优化器）为拟议值。"
+          },
+          "removed": [
+            {
+              "field": "text",
+              "marker": "E4-E6",
+              "offset": 135,
+              "kind": "source_attribution_range",
+              "replacement": "所引原文",
+              "evidenceRefs": [
+                "ev_3006efb65ff33d4d129cae301b78f856b3944f4b066063a9ad5175bdf2f067a9",
+                "ev_516057b8a32881c40f1384de19b86128197089068316214ce7a984ebb4f252a4",
+                "ev_6558c554163d2cf4124a655864c29ba4e00a1996de9a7f509dc09e67eef09830"
+              ]
+            },
+            {
+              "field": "conditions.context",
+              "marker": "E4-E6",
+              "offset": 8,
+              "kind": "source_attribution_range",
+              "replacement": "所引原文",
+              "evidenceRefs": [
+                "ev_3006efb65ff33d4d129cae301b78f856b3944f4b066063a9ad5175bdf2f067a9",
+                "ev_516057b8a32881c40f1384de19b86128197089068316214ce7a984ebb4f252a4",
+                "ev_6558c554163d2cf4124a655864c29ba4e00a1996de9a7f509dc09e67eef09830"
+              ]
+            }
+          ]
+        },
+        {
+          "claimId": "c9",
+          "originalText": "风险与限制：方案尚未执行，不保证改善；相机划分与帧窗口基于论文E7，但实际数据集中相机索引和文件身份需预检；训练视图是否包含新出现内容需在拟合前用训练视图判断，若不满足则拒绝该窗口；第2阶段优化器学习率等为拟议值，可能影响结果；单场景描述性方案，结论不推广到其他场景。",
+          "originalConditions": {
+            "context": "E7仅提供场景与帧窗口，未提供相机划分细节；所有拟议设置需在实际执行前验证。"
+          },
+          "normalizedText": "风险与限制：方案尚未执行，不保证改善；相机划分与帧窗口基于所引原文，但实际数据集中相机索引和文件身份需预检；训练视图是否包含新出现内容需在拟合前用训练视图判断，若不满足则拒绝该窗口；第2阶段优化器学习率等为拟议值，可能影响结果；单场景描述性方案，结论不推广到其他场景。",
+          "normalizedConditions": {
+            "context": "所引原文仅提供场景与帧窗口，未提供相机划分细节；所有拟议设置需在实际执行前验证。"
+          },
+          "removed": [
+            {
+              "field": "text",
+              "marker": "论文E7",
+              "offset": 29,
+              "kind": "source_attribution",
+              "replacement": "所引原文",
+              "evidenceRefs": [
+                "ev_e34196d11497b3956f133f4f4f9f4670ef36ac774d1a0a60f21f50a99cbc0cd3"
+              ]
+            },
+            {
+              "field": "conditions.context",
+              "marker": "E7",
+              "offset": 0,
+              "kind": "source_attribution",
+              "replacement": "所引原文",
+              "evidenceRefs": [
+                "ev_e34196d11497b3956f133f4f4f9f4670ef36ac774d1a0a60f21f50a99cbc0cd3"
+              ]
+            }
+          ]
+        }
+      ],
+      "semanticCandidateIds": [
+        "c1",
+        "c2",
+        "c3",
+        "c4",
+        "c7",
+        "c8"
+      ],
+      "remainingHardRejections": [
+        {
+          "claimId": "c5",
+          "reason": "incomplete_budget_spec",
+          "detail": "recovery: matched 模式要求所有组的预算值相等"
+        },
+        {
+          "claimId": "c6",
+          "reason": "incomplete_experiment_workflow",
+          "detail": "workflow.states.operation_rule"
+        },
+        {
+          "claimId": "c9",
+          "reason": "absence_not_established",
+          "detail": "本条引用没有明确建立作者或论文缺少这些验证。把结论限定为本次引用能支持的实验范围及其不能证明的推广；不要写成作者未在其他条件验证、论文没有提供或全文不存在。引用中的其他否定句不构成这项缺席判断的依据。"
+        }
+      ],
+      "acceptedCount": 0
+    },
+    {
+      "phase": "repair",
+      "normalizedClaimIds": [
+        "c1",
+        "c2",
+        "c4",
+        "c6",
+        "c9"
+      ],
+      "presentationAudit": [
+        {
+          "claimId": "c1",
+          "originalText": "在N3DV数据集的flame salmon场景中，固定相同的第0帧模型、相机划分及第1阶段NTC结果，并逐帧不传播新增高斯时，执行第2阶段自适应新增高斯（按论文E7、E9、E11的梯度选择、采样、继承与仅优化新增参数）相比跳过第2阶段，在帧1→2窗口上会改变重建质量（PSNR/SSIM）、每帧存储（高斯参数字节数）和额外训练开销（第2阶段优化墙钟时间）。本假设为探索性描述比较，不预设改善方向，也不将新增参数与额外优化分别归因。",
+          "originalConditions": {
+            "context": "方案尚未执行；E7、E9、E11为论文第2阶段操作，E2为flame salmon场景与帧1→2窗口；相机划分、种子、迭代数等为拟议选择。"
+          },
+          "normalizedText": "在N3DV数据集的flame salmon场景中，固定相同的第0帧模型、相机划分及第1阶段NTC结果，并逐帧不传播新增高斯时，执行第2阶段自适应新增高斯（按所引原文的梯度选择、采样、继承与仅优化新增参数）相比跳过第2阶段，在帧1→2窗口上会改变重建质量（PSNR/SSIM）、每帧存储（高斯参数字节数）和额外训练开销（第2阶段优化墙钟时间）。本假设为探索性描述比较，不预设改善方向，也不将新增参数与额外优化分别归因。",
+          "normalizedConditions": {
+            "context": "方案尚未执行；所引原文为论文第2阶段操作，所引原文为flame salmon场景与帧1→2窗口；相机划分、种子、迭代数等为拟议选择。"
+          },
+          "removed": [
+            {
+              "field": "text",
+              "marker": "论文E7、E9、E11",
+              "offset": 78,
+              "kind": "source_attribution",
+              "replacement": "所引原文",
+              "evidenceRefs": [
+                "ev_3006efb65ff33d4d129cae301b78f856b3944f4b066063a9ad5175bdf2f067a9",
+                "ev_516057b8a32881c40f1384de19b86128197089068316214ce7a984ebb4f252a4",
+                "ev_6558c554163d2cf4124a655864c29ba4e00a1996de9a7f509dc09e67eef09830"
+              ]
+            },
+            {
+              "field": "conditions.context",
+              "marker": "E7、E9、E11",
+              "offset": 7,
+              "kind": "source_attribution",
+              "replacement": "所引原文",
+              "evidenceRefs": [
+                "ev_3006efb65ff33d4d129cae301b78f856b3944f4b066063a9ad5175bdf2f067a9",
+                "ev_516057b8a32881c40f1384de19b86128197089068316214ce7a984ebb4f252a4",
+                "ev_6558c554163d2cf4124a655864c29ba4e00a1996de9a7f509dc09e67eef09830"
+              ]
+            },
+            {
+              "field": "conditions.context",
+              "marker": "E2",
+              "offset": 26,
+              "kind": "source_attribution",
+              "replacement": "所引原文",
+              "evidenceRefs": [
+                "ev_e34196d11497b3956f133f4f4f9f4670ef36ac774d1a0a60f21f50a99cbc0cd3"
+              ]
+            }
+          ]
+        },
+        {
+          "claimId": "c2",
+          "originalText": "两组：对照组（跳过第2阶段）与处理组（执行第2阶段自适应新增高斯）。两组共享相同的第0帧模型、相机划分和第1阶段NTC结果；处理组逐帧新增高斯不传到下一帧。",
+          "originalConditions": {
+            "context": "分组为拟议设计；E7、E9、E11定义第2阶段操作，但具体实现参数（如优化器学习率）为拟议值。"
+          },
+          "normalizedText": "两组：对照组（跳过第2阶段）与处理组（执行第2阶段自适应新增高斯）。两组共享相同的第0帧模型、相机划分和第1阶段NTC结果；处理组逐帧新增高斯不传到下一帧。",
+          "normalizedConditions": {
+            "context": "分组为拟议设计；所引原文定义第2阶段操作，但具体实现参数（如优化器学习率）为拟议值。"
+          },
+          "removed": [
+            {
+              "field": "conditions.context",
+              "marker": "E7、E9、E11",
+              "offset": 8,
+              "kind": "source_attribution",
+              "replacement": "所引原文",
+              "evidenceRefs": [
+                "ev_3006efb65ff33d4d129cae301b78f856b3944f4b066063a9ad5175bdf2f067a9",
+                "ev_516057b8a32881c40f1384de19b86128197089068316214ce7a984ebb4f252a4",
+                "ev_6558c554163d2cf4124a655864c29ba4e00a1996de9a7f509dc09e67eef09830"
+              ]
+            }
+          ]
+        },
+        {
+          "claimId": "c4",
+          "originalText": "数据：N3DV数据集flame salmon场景，帧窗口为帧1→2（论文E2用于展示NTC有效性的窗口）。相机划分：按相机索引每3个取1个作为留出评估视图，其余为训练视图；使用种子0进行数据划分。独立单元为单个相机视图。",
+          "originalConditions": {
+            "context": "E2明确flame salmon场景与帧1→2窗口；相机划分与种子为拟议选择，需根据实际数据集文件验证。"
+          },
+          "normalizedText": "数据：N3DV数据集flame salmon场景，帧窗口为帧1→2（所引原文用于展示NTC有效性的窗口）。相机划分：按相机索引每3个取1个作为留出评估视图，其余为训练视图；使用种子0进行数据划分。独立单元为单个相机视图。",
+          "normalizedConditions": {
+            "context": "所引原文明确flame salmon场景与帧1→2窗口；相机划分与种子为拟议选择，需根据实际数据集文件验证。"
+          },
+          "removed": [
+            {
+              "field": "text",
+              "marker": "论文E2",
+              "offset": 34,
+              "kind": "source_attribution",
+              "replacement": "所引原文",
+              "evidenceRefs": [
+                "ev_e34196d11497b3956f133f4f4f9f4670ef36ac774d1a0a60f21f50a99cbc0cd3"
+              ]
+            },
+            {
+              "field": "conditions.context",
+              "marker": "E2",
+              "offset": 0,
+              "kind": "source_attribution",
+              "replacement": "所引原文",
+              "evidenceRefs": [
+                "ev_e34196d11497b3956f133f4f4f9f4670ef36ac774d1a0a60f21f50a99cbc0cd3"
+              ]
+            }
+          ]
+        },
+        {
+          "claimId": "c6",
+          "originalText": "执行步骤：准备数据（加载flame salmon帧1→2，按相机索引每3取1留出评估）；获取基线（训练第1阶段NTC 1000步，得到第0帧模型与NTC结果）；初始化组件（从基线复制完整状态到两组）；配对分组（对照组跳过第2阶段，处理组执行第2阶段）；应用干预（处理组按E7、E9、E11执行自适应新增高斯并优化100步/帧，逐帧不传播新增高斯）；恢复（处理组记录第2阶段训练量200步，对照组0步）；评估（在留出相机视图上计算PSNR/SSIM、存储字节数、第2阶段墙钟时间）；记录（保存所有清单与测量）。",
+          "originalConditions": {
+            "context": "步骤为拟议设计；E7、E9、E11定义第2阶段操作，但具体实现细节（如优化器）为拟议值。"
+          },
+          "normalizedText": "执行步骤：准备数据（加载flame salmon帧1→2，按相机索引每3取1留出评估）；获取基线（训练第1阶段NTC 1000步，得到第0帧模型与NTC结果）；初始化组件（从基线复制完整状态到两组）；配对分组（对照组跳过第2阶段，处理组执行第2阶段）；应用干预（处理组按所引原文执行自适应新增高斯并优化100步/帧，逐帧不传播新增高斯）；恢复（处理组记录第2阶段训练量200步，对照组0步）；评估（在留出相机视图上计算PSNR/SSIM、存储字节数、第2阶段墙钟时间）；记录（保存所有清单与测量）。",
+          "normalizedConditions": {
+            "context": "步骤为拟议设计；所引原文定义第2阶段操作，但具体实现细节（如优化器）为拟议值。"
+          },
+          "removed": [
+            {
+              "field": "text",
+              "marker": "E7、E9、E11",
+              "offset": 135,
+              "kind": "source_attribution",
+              "replacement": "所引原文",
+              "evidenceRefs": [
+                "ev_3006efb65ff33d4d129cae301b78f856b3944f4b066063a9ad5175bdf2f067a9",
+                "ev_516057b8a32881c40f1384de19b86128197089068316214ce7a984ebb4f252a4",
+                "ev_6558c554163d2cf4124a655864c29ba4e00a1996de9a7f509dc09e67eef09830"
+              ]
+            },
+            {
+              "field": "conditions.context",
+              "marker": "E7、E9、E11",
+              "offset": 8,
+              "kind": "source_attribution",
+              "replacement": "所引原文",
+              "evidenceRefs": [
+                "ev_3006efb65ff33d4d129cae301b78f856b3944f4b066063a9ad5175bdf2f067a9",
+                "ev_516057b8a32881c40f1384de19b86128197089068316214ce7a984ebb4f252a4",
+                "ev_6558c554163d2cf4124a655864c29ba4e00a1996de9a7f509dc09e67eef09830"
+              ]
+            }
+          ]
+        },
+        {
+          "claimId": "c9",
+          "originalText": "风险与限制：方案尚未执行，不保证改善；相机划分与帧窗口基于论文E2，但实际数据集中相机索引和文件身份需预检；训练视图是否包含新出现内容需在拟合前用训练视图判断，若不满足则拒绝该窗口；第2阶段优化器学习率等为拟议值，可能影响结果；单场景描述性方案，结论不推广到其他场景。",
+          "originalConditions": {
+            "context": "E2仅提供场景与帧窗口，未提供相机划分细节；所有拟议设置需在实际执行前验证。"
+          },
+          "normalizedText": "风险与限制：方案尚未执行，不保证改善；相机划分与帧窗口基于所引原文，但实际数据集中相机索引和文件身份需预检；训练视图是否包含新出现内容需在拟合前用训练视图判断，若不满足则拒绝该窗口；第2阶段优化器学习率等为拟议值，可能影响结果；单场景描述性方案，结论不推广到其他场景。",
+          "normalizedConditions": {
+            "context": "所引原文仅提供场景与帧窗口，未提供相机划分细节；所有拟议设置需在实际执行前验证。"
+          },
+          "removed": [
+            {
+              "field": "text",
+              "marker": "论文E2",
+              "offset": 29,
+              "kind": "source_attribution",
+              "replacement": "所引原文",
+              "evidenceRefs": [
+                "ev_e34196d11497b3956f133f4f4f9f4670ef36ac774d1a0a60f21f50a99cbc0cd3"
+              ]
+            },
+            {
+              "field": "conditions.context",
+              "marker": "E2",
+              "offset": 0,
+              "kind": "source_attribution",
+              "replacement": "所引原文",
+              "evidenceRefs": [
+                "ev_e34196d11497b3956f133f4f4f9f4670ef36ac774d1a0a60f21f50a99cbc0cd3"
+              ]
+            }
+          ]
+        }
+      ],
+      "semanticCandidateIds": [
+        "c1",
+        "c2",
+        "c3",
+        "c4",
+        "c5",
+        "c7",
+        "c8"
+      ],
+      "remainingHardRejections": [
+        {
+          "claimId": "c6",
+          "reason": "incomplete_experiment_workflow",
+          "detail": "workflow.states.operation_rule"
+        },
+        {
+          "claimId": "c9",
+          "reason": "absence_not_established",
+          "detail": "本条引用没有明确建立作者或论文缺少这些验证。把结论限定为本次引用能支持的实验范围及其不能证明的推广；不要写成作者未在其他条件验证、论文没有提供或全文不存在。引用中的其他否定句不构成这项缺席判断的依据。"
+        }
+      ],
+      "acceptedCount": 0
+    }
+  ],
+  "independentCredit": 0,
+  "boundary": "Controlled presentation/precheck probe only. All scientific verdicts deliberately fail; no new model call or changed historical acceptance."
+}

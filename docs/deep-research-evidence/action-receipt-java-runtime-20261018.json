@@ -1,0 +1,55 @@
+{
+  "date": "2026-10-18",
+  "backendSourceCommit": "27ac4beb",
+  "javaProcessId": 161948,
+  "runtimeJar": "tmp/dr153-java-target/backend-java-0.0.1-SNAPSHOT.jar",
+  "jarSha256": "f219e0add2012fcc939ed2bd18691ab0c9e5f454eb45c16387afdbf7c463cd67",
+  "classMajorVersion": 65,
+  "jdk": "Microsoft OpenJDK 21.0.12.1+1, checksum-verified local tools",
+  "before": {
+    "ledger": {
+      "active": [],
+      "calls": 3747,
+      "ledgerSha256": "6875a4bae8cdaefe366577cf884e9a00ab952da2d8e7daedf53b75d2119ab382",
+      "paused": [
+        "dr_run_4738564f5ff35157996a35068c62ed32",
+        "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+        "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+        "dr_run_86b3f181a5475e99aacca3dbf4370567",
+        "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+        "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+        "dr_run_e3521b1781825273b384a26a5edb8cdc",
+        "dr_run_e9c9dc916bef519092fad8b929b2448f",
+        "dr_run_ed10cc3347be552288079a9a588fddf5"
+      ]
+    },
+    "tasks": {
+      "count": 91,
+      "sha256": "cad6c6617fe89b18fd01068c08f1a83acc8e0ad57ee469db57ece5fee5619d39"
+    }
+  },
+  "after": {
+    "tasks": {
+      "count": 91,
+      "sha256": "cad6c6617fe89b18fd01068c08f1a83acc8e0ad57ee469db57ece5fee5619d39"
+    },
+    "ledger": {
+      "active": [],
+      "calls": 3747,
+      "ledgerSha256": "6875a4bae8cdaefe366577cf884e9a00ab952da2d8e7daedf53b75d2119ab382",
+      "paused": [
+        "dr_run_4738564f5ff35157996a35068c62ed32",
+        "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+        "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+        "dr_run_86b3f181a5475e99aacca3dbf4370567",
+        "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+        "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+        "dr_run_e3521b1781825273b384a26a5edb8cdc",
+        "dr_run_e9c9dc916bef519092fad8b929b2448f",
+        "dr_run_ed10cc3347be552288079a9a588fddf5"
+      ]
+    }
+  },
+  "backupSha256": "0c3159aa8205f13aa9cbd9a9767960c4f1a9537f5a74c2f3a7737076e77759ee",
+  "boundary": "Exact old PID/image/start-time/8081-owner guarded, no active research. H2 copied only after process exits. New hidden process observed without relaunch. Every task and full ledger/paused identities preserved. No provider calls."
+}

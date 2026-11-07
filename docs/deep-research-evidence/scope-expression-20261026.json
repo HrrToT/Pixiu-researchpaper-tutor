@@ -1,0 +1,41 @@
+{
+  "date": "2026-10-26",
+  "sourceCommit": "2d80da32",
+  "promptVersion": "dr-v2.20261026.303",
+  "scopeExpressionContractVersion": 1,
+  "offlineChecks": {
+    "passed": 620,
+    "testFiles": 39,
+    "elapsedSeconds": 37.36,
+    "exitCode": 0,
+    "sourceAndTestsStable": true,
+    "providerCalls": 0
+  },
+  "localSavedInputReplay": {
+    "inputSha256": "6473e0d58df5fe932f0c38b29cdcc3599b079225b3741990f49fcfaeb21ecb06",
+    "oldPromptBytes": 23886,
+    "newPromptBytes": 23933,
+    "maxPromptBytes": 24000,
+    "originalClaimsAndAliasesUnchanged": true,
+    "requiredCitedQuotesUnchanged": 3,
+    "allOriginalCitationsRetained": true,
+    "candidateCountBefore": {
+      "c1": 11,
+      "c2": 11
+    },
+    "candidateCountAfter": {
+      "c1": 10,
+      "c2": 10
+    },
+    "manuallyAuthoredNewExample": "所引来源报告的评估设置包括：LightGaussian，高斯剪枝率=66%；LightGaussian，SH阶数=2阶。这些引用不足以证明：所有场景和指标都无损。",
+    "newExampleIndependentSemanticApproval": false,
+    "newExampleRejectedWithoutSemanticVerdict": true,
+    "sourceUnchanged": true,
+    "providerCalls": 0,
+    "productionWrites": 0,
+    "boundary": "Local request assembly and a manually authored new expression. No conversion or upgrade of old rejected prose; not provider generation or scientific acceptance."
+  },
+  "providerCases": 0,
+  "productionReportsRewritten": 0,
+  "boundary": "Typed expression generation/repair wiring, fixed-text compaction and old-version safeguards are offline verified. Manual new expression is not an actual model output or scientific approval. Real content quality and independent acceptance remain open."
+}

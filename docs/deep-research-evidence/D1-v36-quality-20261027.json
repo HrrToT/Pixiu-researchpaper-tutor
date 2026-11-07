@@ -1,0 +1,89 @@
+{
+  "date": "2026-10-27",
+  "caseId": "D1-v36",
+  "runId": "dr_run_c187b712d5df5760a9f50a71c2485aab",
+  "promptVersion": "dr-v2.20261027.310",
+  "sourceCommit": "4e20a862052217cc1fc1dbbeae9fa18e90da7f5e",
+  "status": "completed",
+  "outcome": "partial",
+  "elapsedSeconds": 125.791,
+  "modelCalls": 13,
+  "settledTokens": 61800,
+  "cost": null,
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "verifiedClaimIds": [
+    "c1",
+    "c2"
+  ],
+  "singleFactDecisionActuallyUsed": true,
+  "typedScopeRepairActuallyReviewed": true,
+  "jointCompactionActuallyCalled": false,
+  "visibleCharacterCount": 238,
+  "requestedCharacters": 300,
+  "coverageStatus": "checked",
+  "coverageGaps": [
+    {
+      "obligationId": "ob_1",
+      "missingAspects": [
+        "核查压缩后图像质量接近原始3DGS这一说法"
+      ]
+    },
+    {
+      "obligationId": "ob_2",
+      "missingAspects": [
+        "成立条件",
+        "未验证范围"
+      ]
+    },
+    {
+      "obligationId": "ob_3",
+      "missingAspects": [
+        "成立条件",
+        "未验证范围"
+      ]
+    },
+    {
+      "obligationId": "answer_scope",
+      "missingAspects": [
+        "核查压缩后图像质量接近原始3DGS这一说法",
+        "区分作者报告的结果、成立条件和未验证范围"
+      ]
+    }
+  ],
+  "manualLimitations": [
+    "SH degree rendered as 度 instead of 阶; wording remains unnatural.",
+    "The answer lists evaluated settings and a universal non-entailment boundary but does not clearly relate observed sensitivity to the practical quality tradeoff.",
+    "Individual setting checks do not independently establish that every listed dataset used the same exact compression setting.",
+    "Final coverage returns partial without a concrete reason explaining the residual deficiency; do not invent a cause or upgrade the verdict."
+  ],
+  "originalWorkspaceRetained": {
+    "messages": 30,
+    "notes": 0,
+    "artifacts": 60
+  },
+  "originalMaterialsAndFocusRetained": true,
+  "preservation": {
+    "oldLedgerUnchanged": true,
+    "allOldRunsUnchanged": true,
+    "newRows": 27,
+    "ledgerRows": 7370,
+    "onlyThisRunCreatedCalls": true,
+    "active": [],
+    "oldPausedRetained": true,
+    "paused": [
+      "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+      "dr_run_ed10cc3347be552288079a9a588fddf5",
+      "dr_run_86b3f181a5475e99aacca3dbf4370567",
+      "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+      "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+      "dr_run_e3521b1781825273b384a26a5edb8cdc",
+      "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+      "dr_run_e9c9dc916bef519092fad8b929b2448f",
+      "dr_run_4738564f5ff35157996a35068c62ed32",
+      "dr_run_a8bd62f9ae3d52ff806f537065f55b2d",
+      "dr_run_98e66f2d3d555dfa822b859963f01419",
+      "dr_run_8be639c866c35ea092c735a04781b647"
+    ]
+  }
+}

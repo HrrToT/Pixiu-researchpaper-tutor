@@ -1,0 +1,12 @@
+{
+  "date": "2026-10-23",
+  "nativeVersion": 15,
+  "exactFrozenRequestFingerprint": true,
+  "rawResponsePreserved": true,
+  "reversibleMoveAudited": true,
+  "resumeUsesCachedPlan": true,
+  "mockPhysicalRequests": 1,
+  "externalRequests": 0,
+  "productionWrites": 0,
+  "scientificApproval": false
+}

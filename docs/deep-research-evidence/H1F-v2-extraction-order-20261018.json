@@ -1,0 +1,43 @@
+{
+  "date": "2026-10-18",
+  "runId": "dr_run_07e8401470ac55f3881d9abdcc3b254f",
+  "testType": "offline replay of actual v2 first extraction batch",
+  "firstBatch": [
+    {
+      "sourceId": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-17",
+      "location": {
+        "page": 4,
+        "chunk": 17,
+        "section": "Method"
+      }
+    },
+    {
+      "sourceId": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-21",
+      "location": {
+        "page": 4,
+        "chunk": 21,
+        "section": "Neural Transformation Cache"
+      }
+    },
+    {
+      "sourceId": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-3",
+      "location": {
+        "page": 1,
+        "chunk": 3,
+        "section": "Introduction"
+      }
+    }
+  ],
+  "allSourceIds": [
+    "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-17",
+    "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-21",
+    "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-3",
+    "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-27",
+    "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-43",
+    "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-26",
+    "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-32",
+    "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-42",
+    "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-5"
+  ],
+  "modelCalls": 0
+}

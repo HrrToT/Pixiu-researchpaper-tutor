@@ -1,0 +1,30 @@
+{
+  "date": "2026-10-20",
+  "sourceCommit": "ba3669a1",
+  "promptVersion": "dr-v2.20261020.191",
+  "passed": 3077,
+  "warnings": 1,
+  "seconds": 164.78,
+  "log": "tmp/pytest-dr191-full.log",
+  "logSha256": "102a9b7227af26eecc9fa99499cbaa8b0c762f9fac8dc24dbda9b105ebdcad3a",
+  "focusedPassed": 50,
+  "focusedOverlap": true,
+  "legacyFingerprints": {
+    "synthesisAndAudience": 17,
+    "actualH2Fv9Verification": 3
+  },
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "factualReviewContractVersion": 1,
+  "newPolicy": {
+    "eligible": "new explicitly<=700-character factual/comparison/explanatory outputs only",
+    "initialVerifyOutputTokens": 8192,
+    "initialVerifyReasoningEffort": "low",
+    "thinking": "enabled",
+    "coldReviewSeconds": 45,
+    "finalCoverageSeconds": 30,
+    "observedReviewRule": "max(45,1.25*max(settled initial-verify duration)+5) +30 final coverage",
+    "identity": "Exact existing request reaches normal reuse/unknown ledger guard even after time expires."
+  },
+  "boundary": "No live positive content/latency acceptance for the new factual review policy. Refusal has zero reserve/send and retains prior independently verified claims; advisory latency estimates do not guarantee no future unknown. Existing unknown H2F-v9 is preserved and was not re-sent."
+}

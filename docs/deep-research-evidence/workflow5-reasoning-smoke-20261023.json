@@ -1,0 +1,17 @@
+{
+  "syntheticOnly": true,
+  "paperContentSent": false,
+  "automaticRetries": 0,
+  "productionWrites": 0,
+  "contract": 5,
+  "validPrivateShape": true,
+  "settledCalls": 1,
+  "usage": {
+    "total_tokens": 3014,
+    "input_tokens": 2421,
+    "output_tokens": 593
+  },
+  "reportedModel": "deepseek-v4-pro",
+  "fullResponseReceipt": "tmp/deepseek-workflow-reasoning-v5/result.json",
+  "boundary": "One synthetic compatibility request succeeded; does not establish scientific accuracy or reliability on real papers."
+}

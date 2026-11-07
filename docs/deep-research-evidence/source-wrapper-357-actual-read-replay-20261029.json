@@ -1,0 +1,16 @@
+{
+  "sourceCase": "M1G-v1",
+  "inputSha256": "bd081996ba0ebd1806735dacc0108c21065c31bc42a11d61c30d9ab52c0c9dcb",
+  "oldContractRetainsFailure": true,
+  "newContractAccepted": true,
+  "readSources": 12,
+  "savedEvidence": 27,
+  "bothOriginalMaterialsRepresented": true,
+  "originalReadTextAndOffsetsPreserved": true,
+  "wrapperNotQuotedAsBody": true,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "historicalRunChanged": false,
+  "semanticApproval": false,
+  "independentCredit": 0
+}

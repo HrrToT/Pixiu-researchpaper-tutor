@@ -1,0 +1,221 @@
+{
+  "date": "2026-10-18",
+  "case": "D5-v4",
+  "runId": "dr_run_143996d023b75f2cbc0e4402db795ec0",
+  "parentRunId": "dr_run_56107afc748d54828af1a50e84eb5d62",
+  "runtimeSourceCommit": "27ac4beb",
+  "harnessSourceCommit": "a82f2b25",
+  "promptVersion": "dr-v2.20261018.153",
+  "status": "completed",
+  "outcome": "partial",
+  "independent": false,
+  "contentAccepted": false,
+  "modelCalls": 9,
+  "settledTokens": 33473,
+  "elapsedSeconds": 52.677,
+  "cost": null,
+  "parentPreservation": {
+    "parentPayloadUnchanged": true,
+    "previousTaskObjectsUnchanged": {
+      "notes": 0,
+      "messages": 14,
+      "artifacts": 28
+    },
+    "paperIdsAndMaterialHashesUnchanged": true,
+    "inheritedSources": 30,
+    "inheritedEvidence": 52
+  },
+  "runtimeAfter": {
+    "calls": 3770,
+    "newRows": 23,
+    "active": 0,
+    "paused": [
+      "dr_run_4738564f5ff35157996a35068c62ed32",
+      "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+      "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+      "dr_run_86b3f181a5475e99aacca3dbf4370567",
+      "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+      "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+      "dr_run_e3521b1781825273b384a26a5edb8cdc",
+      "dr_run_e9c9dc916bef519092fad8b929b2448f",
+      "dr_run_ed10cc3347be552288079a9a588fddf5"
+    ],
+    "parentPayloadUnchanged": true,
+    "oldLedgerUnchanged": true
+  },
+  "finalCoverageAudit": {
+    "status": "checked",
+    "verdicts": [
+      {
+        "obligationId": "ob_1",
+        "status": "covered",
+        "bindings": [
+          {
+            "claimId": "c1",
+            "field": "text",
+            "excerpt": "不同论文中的FPS不能直接相除，因为FPS测量依赖各自的硬件平台、实现细节和测试场景；LightGaussian论文在自身平台上重新训练了3D-GS等基线以保证公平比较，但其他论文报告的FPS可能来自不同条件，直接相除会忽略这些差异。"
+          }
+        ],
+        "criteria": [
+          {
+            "criterionId": "human_aspect_1",
+            "responseType": "explanation",
+            "status": "covered",
+            "bindings": [
+              {
+                "claimId": "c1",
+                "field": "text",
+                "excerpt": "不同论文中的FPS不能直接相除，因为FPS测量依赖各自的硬件平台、实现细节和测试场景；LightGaussian论文在自身平台上重新训练了3D-GS等基线以保证公平比较，但其他论文报告的FPS可能来自不同条件，直接相除会忽略这些差异。"
+              }
+            ]
+          }
+        ],
+        "aspects": [
+          {
+            "aspectId": "a1",
+            "requirement": "解释为什么不同论文中的FPS不能直接相除",
+            "basis": {
+              "kind": "source",
+              "evidenceId": "ev_8fd3f847d043bbae423552d837a23f0207800e59770d35852b585f53e37f432a",
+              "field": "quote",
+              "excerpt": "We re-train 3D-GS, Compressed 3D-GS, Compact 3D-GS using their original code and 3D-GS configurations on our platform, to perform a fair comparison."
+            },
+            "status": "covered",
+            "bindings": [
+              {
+                "claimId": "c1",
+                "field": "text",
+                "excerpt": "不同论文中的FPS不能直接相除，因为FPS测量依赖各自的硬件平台、实现细节和测试场景；LightGaussian论文在自身平台上重新训练了3D-GS等基线以保证公平比较，但其他论文报告的FPS可能来自不同条件，直接相除会忽略这些差异。"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "obligationId": "ob_2",
+        "status": "covered",
+        "bindings": [
+          {
+            "claimId": "c1",
+            "field": "text",
+            "excerpt": "不同论文中的FPS不能直接相除，因为FPS测量依赖各自的硬件平台、实现细节和测试场景；LightGaussian论文在自身平台上重新训练了3D-GS等基线以保证公平比较，但其他论文报告的FPS可能来自不同条件，直接相除会忽略这些差异。"
+          }
+        ],
+        "criteria": [
+          {
+            "criterionId": "human_aspect_1",
+            "responseType": "explanation",
+            "status": "covered",
+            "bindings": [
+              {
+                "claimId": "c1",
+                "field": "text",
+                "excerpt": "不同论文中的FPS不能直接相除，因为FPS测量依赖各自的硬件平台、实现细节和测试场景；LightGaussian论文在自身平台上重新训练了3D-GS等基线以保证公平比较，但其他论文报告的FPS可能来自不同条件，直接相除会忽略这些差异。"
+              }
+            ]
+          }
+        ],
+        "aspects": [
+          {
+            "aspectId": "a1",
+            "requirement": "解释为什么不同论文中的FPS不能直接相除",
+            "basis": {
+              "kind": "source",
+              "evidenceId": "ev_8fd3f847d043bbae423552d837a23f0207800e59770d35852b585f53e37f432a",
+              "field": "quote",
+              "excerpt": "We re-train 3D-GS, Compressed 3D-GS, Compact 3D-GS using their original code and 3D-GS configurations on our platform, to perform a fair comparison."
+            },
+            "status": "covered",
+            "bindings": [
+              {
+                "claimId": "c1",
+                "field": "text",
+                "excerpt": "不同论文中的FPS不能直接相除，因为FPS测量依赖各自的硬件平台、实现细节和测试场景；LightGaussian论文在自身平台上重新训练了3D-GS等基线以保证公平比较，但其他论文报告的FPS可能来自不同条件，直接相除会忽略这些差异。"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "obligationId": "answer_scope",
+        "status": "covered",
+        "bindings": [
+          {
+            "claimId": "c1",
+            "field": "text",
+            "excerpt": "不同论文中的FPS不能直接相除，因为FPS测量依赖各自的硬件平台、实现细节和测试场景；LightGaussian论文在自身平台上重新训练了3D-GS等基线以保证公平比较，但其他论文报告的FPS可能来自不同条件，直接相除会忽略这些差异。"
+          }
+        ],
+        "criteria": [],
+        "aspects": [
+          {
+            "aspectId": "a1",
+            "requirement": "只追加解释为什么不同论文中的FPS不能直接相除；保留原成果，不重写整份比较。200字以内。",
+            "basis": {
+              "kind": "request",
+              "excerpt": "只追加解释为什么不同论文中的FPS不能直接相除；保留原成果，不重写整份比较。200字以内。"
+            },
+            "status": "covered",
+            "bindings": [
+              {
+                "claimId": "c1",
+                "field": "text",
+                "excerpt": "不同论文中的FPS不能直接相除，因为FPS测量依赖各自的硬件平台、实现细节和测试场景；LightGaussian论文在自身平台上重新训练了3D-GS等基线以保证公平比较，但其他论文报告的FPS可能来自不同条件，直接相除会忽略这些差异。"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "completionContractDigest": "02875f5ddf5516c8a6a918477317348df9125e4cb2d5898f66e53213bb44a575",
+    "displayMetadataDigest": "7d7f3d5a73ecc601b58b7355bc8bb3d82c3b3d39ab08ba07da63b26db71ae8b4",
+    "gaps": [],
+    "invalidAspectObligations": [],
+    "wholeQuestionId": "answer_scope",
+    "nonblockingResearch": [],
+    "criterionGaps": {},
+    "invalidCriterionObligations": [],
+    "budgetLimit": null
+  },
+  "reviewer": "Primary Codex review of saved output and cited source; not a human participant rating.",
+  "scores": {
+    "goalResponse": 3,
+    "evidenceSupport": 4,
+    "conditions": 3,
+    "synthesisValue": 3,
+    "executability": null,
+    "readability": 3
+  },
+  "findings": [
+    "Exact history reconciliation permits one explicit new child while all other prior D5 terminal states are still checked. No unknown or identity rename bypass.",
+    "The child reuses same-hash sources/evidence. Every old artifact, note and message, parent payload and all old ledger rows remain unchanged.",
+    "The revised paragraph states a conditional methodological reason and cites LightGaussian re-training on its own platform. It does not calculate a cross-condition speedup.",
+    "The plan duplicates the same literal question into source-specific obligations. The final coverage model marks both covered using only the LightGaussian citation, but the hard source guard retains the original-paper gap. The visible paragraph plus unfinished question is confusing; full content is not accepted.",
+    "Repair requirement context omits requiredSources and source identities are not factored explicitly into the factual redraft. This can hide the planner source requirements from the writer. Improve source-aware synthesis/repair and joint evidence reasoning without dropping source guards.",
+    "This case uses the legacy continue endpoint with inherited human instructions/evidence and an empty artifactContext. It verifies preservation/reuse, not the frontend fresh-continuation binding to a user-edited parent artifact."
+  ],
+  "report": "## 差异原因\n\n- 有依据的推断：不同论文中的FPS不能直接相除，因为FPS测量依赖各自的硬件平台、实现细节和测试场景；LightGaussian论文在自身平台上重新训练了3D-GS等基线以保证公平比较，但其他论文报告的FPS可能来自不同条件，直接相除会忽略这些差异。 [1](#research-evidence-ev_8fd3f847d043bbae423552d837a23f0207800e59770d35852b585f53e37f432a)\n\n<details>\n<summary>还有 1 项未完成</summary>\n\n- 为什么不同论文中的FPS不能直接相除：尚未取得直接支持：为什么不同论文中的FPS不能直接相除\n\n</details>\n\n推断限于所列证据和适用条件。\n\n<details>\n<summary>原文依据</summary>\n\n**[1] LightGaussian: Unbounded 3D Gaussian Compression with 15x Reduction and 200+ FPS** · 第 16 页 · 全文片段\n\n> We re-train 3D-GS, Compressed 3D-GS, Compact 3D-GS using their original code and 3D-GS configurations on our platform, to perform a fair comparison.\n\n</details>",
+  "rawFiles": [
+    {
+      "path": "tmp/dr-acceptance-receipts/D5-v4.json",
+      "sha256": "7181f8bbe679c56d7e08969bb359d66b171c122fa7b38644dd9710c46448e9c1"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/D5-v4.payload.json",
+      "sha256": "6853eaac0a1889aa4ef7d781aec002ac70b99aca450ebb8a04866e2507f01868"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/D5-v4.calls.json",
+      "sha256": "1aa1a9c52e1132a2d2c6aa2b1ecd38708ca25b9d3f25cbcd93610b7588bae775"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/D5-v4.result.json",
+      "sha256": "ea859de7c41c2ab43246c24146fb115830c5b875c7773433ec1504355fdb6837"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/D5-v4.parent-before.json",
+      "sha256": "b9d5c86814c032e76bac124baa560d0c0f64b132ec11f79939ff77c0154ed46c"
+    }
+  ],
+  "boundary": "One bounded fixed case, all calls settled, old data preserved. No complete quality, independent credit, current-parent-artifact binding proof or overall goal completion. Original five independent first results remain 0/5."
+}

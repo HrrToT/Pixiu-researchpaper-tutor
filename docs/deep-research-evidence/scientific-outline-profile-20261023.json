@@ -1,0 +1,28 @@
+{
+  "promptVersion": "dr-v2.20261023.260",
+  "scientificOutlineContractVersion": 1,
+  "workflowContractVersion": 5,
+  "executionWorkflowContractVersion": 7,
+  "profileRegression": {
+    "files": 8,
+    "passed": 149,
+    "seconds": 21.41
+  },
+  "baseFullRegression": {
+    "sourceCommit": "8bab562c",
+    "files": 249,
+    "passed": 4595,
+    "seconds": 478.76,
+    "sourceStable": true
+  },
+  "sourceHashes": {
+    "services/deep_research/facade.py": "fbf33c9841eac6fca0afe3b38dcb6995a2c19311cf6617424c3d4c4b458a20b0",
+    "tests/test_deep_research_scientific_outline.py": "1900c1019fe1a8284fe71546fc4a6347c50d31752f3440e03970c9505c233a0e",
+    "tests/test_deep_research_workflow_lifecycle_profile.py": "4cdf6d478bd3a18e87ebe0b3b4413d47e4f18ff87df598b4a8192e79ecce222f"
+  },
+  "oldRunsMigrated": false,
+  "clientOverridesAccepted": false,
+  "runtimeLoaded": false,
+  "providerCalls": 0,
+  "boundary": "New-run source activation only; prior full regression and current profile checks are distinct. Runtime and real scientific output still need verification."
+}

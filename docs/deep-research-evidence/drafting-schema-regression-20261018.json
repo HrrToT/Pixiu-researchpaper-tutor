@@ -1,0 +1,16 @@
+{
+  "date": "2026-10-18",
+  "sourceCommit": "469bbaae",
+  "promptVersion": "dr-v2.20261018.167",
+  "contracts": {"factualScopeContractVersion": 2, "factualReasoningContractVersion": 2},
+  "fullOffline": {"passed": 2703, "warnings": 1, "seconds": 189.27, "log": "tmp/pytest-dr167-full.log"},
+  "focused": {"passed": 63, "seconds": 4.78, "log": "tmp/pytest-dr167-focused-fixed.log", "overlap": true},
+  "initialFocused": {"passed": 62, "failed": 1, "reason": "Test found actual concise factual repair uses shape, not revision_shape. Added draftingBasis to the actual active-target list; original schema and source assertions retained."},
+  "oldActualProviderFingerprintsMatched": 4,
+  "actualReplayProof": "drafting-schema-real-input-replay-20261018.json",
+  "newSynthesisAndRepairTargetSchemasDeclareDraftingBasis": true,
+  "newShortFactualRepair": "Direct output; existing per-batch cap and one bounded revision only. No automatic fallback/resend of old empty response.",
+  "legacyV1RequestsUnchanged": true,
+  "originalRequiredReferencesPreserved": true,
+  "boundary": "Offline schemas, legacy fingerprints and recovery only; actual metadata return and content quality require live fixed-case verification."
+}

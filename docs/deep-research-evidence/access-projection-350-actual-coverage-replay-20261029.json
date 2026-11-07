@@ -1,0 +1,57 @@
+{
+  "sourceCase": "S1G-v9",
+  "payloadSha256": "adaa8181fbf556b7b5824de0143142525d28cfaef78b8a93ec013af54325d3c1",
+  "archivedSettledCoverageReplyReplayed": true,
+  "versions": {
+    "0": {
+      "status": "invalid_response",
+      "gapCount": 1,
+      "invalidCriterionObligations": [
+        "ob_3"
+      ],
+      "invalidAspectObligations": [],
+      "diagnosticErrors": [
+        "ob_3"
+      ]
+    },
+    "1": {
+      "status": "checked",
+      "gapCount": 0,
+      "invalidCriterionObligations": [],
+      "invalidAspectObligations": [],
+      "diagnosticErrors": []
+    }
+  },
+  "preFreezeAccessPlanNormalization": [
+    {
+      "obligationId": "ob_3",
+      "requestExcerpt": "标明实际读到的是全文还是摘要。",
+      "before": {
+        "question": "实际读到的是LightGaussian的全文还是摘要？",
+        "completionCriteria": [
+          {
+            "criterionId": "requirement_3",
+            "requirement": "明确说明所依据的材料是全文还是摘要（基于提供的PDF文件内容判断）。",
+            "responseType": "identification"
+          }
+        ]
+      },
+      "after": {
+        "question": "标明实际读到的是全文还是摘要。",
+        "completionCriteria": [
+          {
+            "criterionId": "requirement_3",
+            "requirement": "标明实际读到的是全文还是摘要。",
+            "responseType": "identification"
+          }
+        ]
+      },
+      "basis": "human_access_instruction"
+    }
+  ],
+  "acceptedClaimsAndEvidenceUnchanged": true,
+  "providerCalls": 0,
+  "productionWrite": false,
+  "scientificApproval": false,
+  "independentCredit": 0
+}

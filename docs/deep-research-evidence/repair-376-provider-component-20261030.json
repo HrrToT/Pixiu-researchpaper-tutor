@@ -1,0 +1,51 @@
+{
+  "promptVersion": "dr-v2.20261030.376",
+  "factualRepairGoalContractVersion": 4,
+  "component": "single failed depth target repair",
+  "providerCalls": 1,
+  "tokens": 5825,
+  "receivedRevision": {
+    "draftingBasis": {
+      "premiseStatus": "established",
+      "observations": [
+        {
+          "evidenceId": "E12",
+          "quote": "propose a depth distortion loss to concentrate the weight distribution along the rays by minimizing the distance between the ray-splat intersections: L𝑑=∑𝑖,𝑗𝜔𝑖𝜔𝑗|𝑧𝑖−𝑧𝑗|"
+        }
+      ],
+      "scopeDecision": "bounded_inference",
+      "unresolved": "证据未直接说明该损失使二维高斯圆盘贴近真实表面；该效果由法线一致性约束处理。"
+    },
+    "claimId": "c2",
+    "kind": "inference",
+    "text": "深度畸变约束通过最小化沿光线各交点深度差的加权和，使权重分布集中，从而让二维高斯圆盘贴近真实表面。",
+    "evidenceRefs": [
+      "E12"
+    ],
+    "conditions": {},
+    "detailLevel": "fulltext",
+    "discardedDraftSpans": [
+      "从而让二维高斯圆盘贴近真实表面"
+    ],
+    "scopeExpression": null
+  },
+  "parsedRevision": [],
+  "firstRejection": "Existing reported-to-inference guard: unchanged text is not an actual revision. New removed-span consistency also fails independently, but is not reached for this row.",
+  "semanticReviewerInvoked": false,
+  "productionPreserved": true,
+  "productionLedgerRows": 8281,
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "automaticRetry": false,
+  "artifactHashes": {
+    "calls.json": "cdc4e072066c9f5e8cc7daa2afd2c0ac90c2fb69407653ae43b530553adc98d0",
+    "payload.json": "38f529f2c4c9307438a7553ee0f11fa3bc8363fa6cf8f7736289fdc4a25bb20b",
+    "preservation.json": "df8b98964c009f1806adb48f92c7658fe6c99df1cd102de2d7d0b989c94dddf9",
+    "repair-state.json": "e02f597de25770825767c7e31d76e361e34ba159713f7e45de87943a9f7b3112",
+    "request-1.json": "6e41d6e07fb46096ced43489867a9523b3cb4be9117241d4391833a2302cbd84",
+    "response-1.json": "dd813e1f9ee3ab2c7678ff1b04e7741e784a57ccbca78be8e3229635dbeef01f",
+    "result.json": "eecbdb529157d5e9a5257ea8cdec25749ad2e68b6fc188a6aa2b0798de4bdc9b",
+    "revision.json": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+  },
+  "remaining": "Execute explicit deletion edits on private draft text before validating kind transitions, then independently verify the edited answer. Keep original outputs and do not reinterpret old results."
+}

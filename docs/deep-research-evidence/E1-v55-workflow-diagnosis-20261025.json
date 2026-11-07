@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-25",
+  "case": "E1-v55",
+  "runId": "dr_run_9c5d7a307d4c50fb8b4d8afb3d0da219",
+  "promptVersion": "dr-v2.20261025.265",
+  "status": "failed",
+  "errorCode": "invalid_workflow_unit_response",
+  "workflowMetadataRepairContractVersion": 3,
+  "originalErrors": [
+    "unit.json"
+  ],
+  "finishReason": "length",
+  "usage": {
+    "total_tokens": 9424,
+    "input_tokens": 7376,
+    "output_tokens": 2048
+  },
+  "rawBytes": 6673,
+  "rawSha256": "39db7204acdc31f88111fa3abc1164d859d0ac6848b539f176c0c52b23910de4",
+  "responseDigest": "fd580fc1f2a1d77c537f4475854e3b0616bb3eefb892d4cb35e8a35153c0f44b",
+  "requestDigest": "cd4b3279ade444c7dccfc1c0ccff7e60c25534bb21fe7e1594a138224da1da3b",
+  "repairInvoked": false,
+  "initializersInvoked": false,
+  "providerCallsForDiagnosis": 0,
+  "productionWritesForDiagnosis": 0,
+  "independentCredit": 0,
+  "boundary": "Metadata response hit 2048 output tokens and is incomplete. Revision gate correctly refuses truncated input; this case cannot validate revision3 quality. Original raw response retained, no missing tail inferred or fabricated."
+}

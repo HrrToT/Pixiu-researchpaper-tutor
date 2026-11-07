@@ -1,0 +1,286 @@
+{
+  "case": "G1N-v7",
+  "split": "development",
+  "runId": "dr_run_328bc976013f5c038e696fd51d9bc988",
+  "promptVersion": "dr-v2.20261106.397",
+  "status": "completed",
+  "machineOutcome": "partial",
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "actualModelCalls": 15,
+  "tokens": 74795,
+  "elapsedSeconds": 193.59,
+  "allModelCallsSettled": true,
+  "nodeCounts": {
+    "resolve_brief": 1,
+    "plan": 1,
+    "assess_relevance": 3,
+    "synthesize": 1,
+    "verify_advice": 1,
+    "verify": 2,
+    "verify_answer_coverage": 1,
+    "repair_claims": 2,
+    "verify_repair": 3
+  },
+  "initialRejected": [
+    {
+      "claimId": "c1",
+      "reason": "numeric_mismatch",
+      "missingReportedNumbers": [
+        "5e-1"
+      ],
+      "detail": "本条引用原文未直接报告这些数值：0.5。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。"
+    },
+    {
+      "claimId": "c2",
+      "reason": "semantic_unresolved",
+      "detail": "PGSR and GOF reported Chamfer distance means, training times, and hardware are supported by E2, E3, E1, and E4 respectively, but the assertion that neither paper explicitly stated resolution is unsupported: absence of resolution in the quoted excerpts does not prove absence in the full papers."
+    },
+    {
+      "claimId": "c3",
+      "reason": "semantic_unresolved",
+      "detail": "GOF 自报平均 PSNR 27.78、SSIM 0.835、LPIPS 0.196 未在 GOF 论文(E2)中出现，E2仅列室内/室外分项而无平均值；E1中的GOF平均值来自PGSR论文的对比表，非GOF自报，因此关键归属与数值来源不成立。"
+    },
+    {
+      "claimId": "c4",
+      "reason": "invalid_scope_expression",
+      "detail": "Scope expression cannot overwrite authored factual prose"
+    }
+  ],
+  "repairDraft": [
+    {
+      "claimId": "c1",
+      "kind": "reported",
+      "text": "GOF 用一组 3D 高斯基元表示场景，并通过识别水平集直接提取表面，无需泊松重建或 TSDF 融合；PGSR 则先渲染深度，再用 TSDF 融合生成 TSDF 场，随后从该场提取网格。",
+      "evidenceRefs": [
+        "ev_d9714d53fb3219d25b98cbe348699fc00c9843d748c9b4f55b0d93ff06edb45a",
+        "ev_569eacce4b25ed53f7d3e240369dc851d47c4a63e966e6f23bea8a8cbfa0e4a1",
+        "ev_85c7eb04158a10b01a9cde729e25358662b731f9c563d1690db1736f104d9948",
+        "ev_173b7c330817e4715607e13867a070b506633629b86c98e0663c472f273d9b55"
+      ],
+      "conditions": {},
+      "detailLevel": "fulltext",
+      "obligationIds": [
+        "ob_1"
+      ]
+    },
+    {
+      "claimId": "c2",
+      "kind": "reported",
+      "text": "在 DTU 上，PGSR 报告的平均 Chamfer 距离为 0.49 mm（越低越好），训练耗时 1.0 小时，硬件为 RTX 4090；GOF 报告的平均 Chamfer 距离为 0.74 mm，训练耗时 30 分钟，硬件为 A100。两篇论文均未在提供的证据中说明 DTU 分辨率。",
+      "evidenceRefs": [
+        "ev_5eeb225bc9ec31711ba9d3440776342cb4e9499593e0b3a8c4a3cf94690120ea",
+        "ev_5c7fd6bcd71aead88a73e0435ce9a61d5a1e5b76fb19bc43b4e68860062b1caa",
+        "ev_173b7c330817e4715607e13867a070b506633629b86c98e0663c472f273d9b55",
+        "ev_2a12cfc33f3fa8ac58ecc53a60a08ab9af2444710b56ba64d00da12fcd2ffddb"
+      ],
+      "conditions": {},
+      "detailLevel": "fulltext",
+      "obligationIds": [
+        "ob_2"
+      ]
+    },
+    {
+      "claimId": "c4",
+      "kind": "inference",
+      "text": "已报告设置：PGSR（硬件：Nvidia RTX 4090 GPU）。尚不能据此确认在两篇论文中存在模型存储或显存相对无“提供数据”的情形。",
+      "evidenceRefs": [
+        "ev_85c7eb04158a10b01a9cde729e25358662b731f9c563d1690db1736f104d9948",
+        "ev_173b7c330817e4715607e13867a070b506633629b86c98e0663c472f273d9b55"
+      ],
+      "conditions": {},
+      "detailLevel": "fulltext",
+      "obligationIds": [
+        "ob_4"
+      ]
+    }
+  ],
+  "repairVerification": {
+    "accepted": [
+      {
+        "claimId": "c5",
+        "text": "若优先考虑 DTU 几何精度且硬件为 RTX 4090，可选 PGSR；若优先考虑训练速度且硬件为 A100，可选 GOF。渲染质量接近时，可根据对 PSNR/SSIM 或 LPIPS 的侧重选择。",
+        "kind": "proposal",
+        "evidenceRefs": [
+          "ev_5eeb225bc9ec31711ba9d3440776342cb4e9499593e0b3a8c4a3cf94690120ea",
+          "ev_5c7fd6bcd71aead88a73e0435ce9a61d5a1e5b76fb19bc43b4e68860062b1caa",
+          "ev_2a12cfc33f3fa8ac58ecc53a60a08ab9af2444710b56ba64d00da12fcd2ffddb",
+          "ev_173b7c330817e4715607e13867a070b506633629b86c98e0663c472f273d9b55",
+          "ev_aed79f8e276f90dbf65f658c61186255b2580e5009ef85be7a8fde1a93e2bf1c",
+          "ev_39bdce993dd69ac32f53edd216256c84b71818f6bd0dc78e518bf7113036bb11"
+        ],
+        "conditions": {},
+        "obligationIds": [
+          "ob_5"
+        ],
+        "detailLevel": "medium",
+        "tableBindings": [],
+        "verification": "proposal"
+      }
+    ],
+    "rejected": [
+      {
+        "claimId": "c1",
+        "reason": "numeric_mismatch",
+        "missingReportedNumbers": [
+          "5e-1"
+        ],
+        "detail": "本条引用原文未直接报告这些数值：0.5。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。",
+        "revisionRejection": {
+          "claimId": "c1",
+          "reason": "semantic_unresolved",
+          "detail": "比较条件或推断前提尚未核实：comparison_premise_quote_mismatch"
+        }
+      },
+      {
+        "claimId": "c2",
+        "reason": "semantic_unresolved",
+        "detail": "PGSR and GOF reported Chamfer distance means, training times, and hardware are supported by E2, E3, E1, and E4 respectively, but the assertion that neither paper explicitly stated resolution is unsupported: absence of resolution in the quoted excerpts does not prove absence in the full papers.",
+        "revisionRejection": {
+          "claimId": "c2",
+          "reason": "absence_not_established",
+          "detail": "本条引用没有明确建立作者或论文缺少这些验证。把结论限定为本次引用能支持的实验范围及其不能证明的推广；不要写成作者未在其他条件验证、论文没有提供或全文不存在。引用中的其他否定句不构成这项缺席判断的依据。"
+        }
+      },
+      {
+        "claimId": "c3",
+        "reason": "semantic_unresolved",
+        "detail": "GOF 自报平均 PSNR 27.78、SSIM 0.835、LPIPS 0.196 未在 GOF 论文(E2)中出现，E2仅列室内/室外分项而无平均值；E1中的GOF平均值来自PGSR论文的对比表，非GOF自报，因此关键归属与数值来源不成立。"
+      },
+      {
+        "claimId": "c4",
+        "reason": "invalid_scope_expression",
+        "detail": "Scope expression cannot overwrite authored factual prose",
+        "revisionRejection": {
+          "claimId": "c4",
+          "reason": "semantic_unresolved",
+          "detail": "推广命题尚未核实：scope_boundary_entailment_unresolved"
+        }
+      }
+    ]
+  },
+  "rawRepairVerification": [
+    {
+      "content": "[{\"claimId\":\"c1\",\"reason\":\"GOF部分由E4和E1支持：E4显示GOF用一组3D高斯基元表示场景，E1显示GOF通过识别水平集直接提取表面，无需泊松重建或TSDF融合。PGSR部分由E2和E3支持：E2显示PGSR先渲染深度，再用TSDF融合生成TSDF场，E3显示随后从该场提取网格。所有断言均有直接证据，无过度推断。\",\"scopeAudit\":{\"claimStrength\":\"bounded\",\"evidenceStrength\":\"bounded\",\"supported\":true,\"statementPath\":[\"text\"],\"premises\":[{\"evidenceId\":\"E4\",\"path\":[\"quote\"]},{\"evidenceId\":\"E1\",\"path\":[\"quote\"]},{\"evidenceId\":\"E2\",\"path\":[\"quote\"]},{\"evidenceId\":\"E3\",\"path\":[\"quote\"]}]},\"comparisonAudit\":{\"scope\":\"cross_study\",\"alignment\":\"not_established\",\"supportsClaim\":true,\"premises\":[{\"evidenceId\":\"E4\",\"quote\":\"we represent the scene with a set of 3D Gaussian primitives {G𝑘|𝑘=1,···,𝐾}.\"},{\"evidenceId\":\"E1\",\"quote\":\"With GOF, we can extract surfaces directly by identifying their level sets, similar to UNISURF [Oechsle et al.2021], without resorting to Poisson reconstruction [Guédon and Lepetit 2023] or TSDF fusion [Huang et al .2024].\"},{\"evidenceId\":\"E2\",\"quote\":\"We begin by rendering the depth for each training view, followed by utilizing the TSDF Fusion algorithm [45] to generate the corresponding TSDF field.\"},{\"evidenceId\":\"E3\",\"quote\":\"Subsequently, we extract the mesh [38] from the TSDF field.\"}],\"conditionDifferences\":[]}}]",
+      "provider": "deepseek",
+      "model": "deepseek-v4-pro",
+      "finishReason": "stop",
+      "usage": {
+        "total_tokens": 4949,
+        "input_tokens": 4463,
+        "output_tokens": 486
+      },
+      "reportedModel": "deepseek-v4-pro",
+      "rawContent": "{\n  \"items\": [\n    {\n      \"claimId\": \"c1\",\n      \"reason\": \"GOF部分由E4和E1支持：E4显示GOF用一组3D高斯基元表示场景，E1显示GOF通过识别水平集直接提取表面，无需泊松重建或TSDF融合。PGSR部分由E2和E3支持：E2显示PGSR先渲染深度，再用TSDF融合生成TSDF场，E3显示随后从该场提取网格。所有断言均有直接证据，无过度推断。\",\n      \"scopeAudit\": {\n        \"claimStrength\": \"bounded\",\n        \"evidenceStrength\": \"bounded\",\n        \"supported\": true,\n        \"statementPath\": [\"text\"],\n        \"premises\": [\n          {\"evidenceId\": \"E4\", \"path\": [\"quote\"]},\n          {\"evidenceId\": \"E1\", \"path\": [\"quote\"]},\n          {\"evidenceId\": \"E2\", \"path\": [\"quote\"]},\n          {\"evidenceId\": \"E3\", \"path\": [\"quote\"]}\n        ]\n      },\n      \"comparisonAudit\": {\n        \"scope\": \"cross_study\",\n        \"alignment\": \"not_established\",\n        \"supportsClaim\": true,\n        \"premises\": [\n          {\"evidenceId\": \"E4\", \"quote\": \"we represent the scene with a set of 3D Gaussian primitives {G𝑘|𝑘=1,···,𝐾}.\"},\n          {\"evidenceId\": \"E1\", \"quote\": \"With GOF, we can extract surfaces directly by identifying their level sets, similar to UNISURF [Oechsle et al.2021], without resorting to Poisson reconstruction [Guédon and Lepetit 2023] or TSDF fusion [Huang et al .2024].\"},\n          {\"evidenceId\": \"E2\", \"quote\": \"We begin by rendering the depth for each training view, followed by utilizing the TSDF Fusion algorithm [45] to generate the corresponding TSDF field.\"},\n          {\"evidenceId\": \"E3\", \"quote\": \"Subsequently, we extract the mesh [38] from the TSDF field.\"}\n        ],\n        \"conditionDifferences\": []\n      }\n    }\n  ]\n}",
+      "structuredOutput": {
+        "version": 1,
+        "requestedFormat": "json_object",
+        "expectedShape": "items",
+        "receivedShape": "items"
+      }
+    },
+    {
+      "content": "[{\"claimId\":\"scope-observation-091f0c1abaecdca998e89cc3d3f7b9ffc6b09d10bdf6c210ffc0b4c27ec299be-0\",\"reason\":\"E2明确说明所有实验在Nvidia RTX 4090 GPU上进行，支持硬件描述；E1未提及硬件，但E2足够。\",\"scopeAudit\":{\"claimStrength\":\"bounded\",\"evidenceStrength\":\"bounded\",\"supported\":true,\"statementPath\":[\"text\"],\"premises\":[{\"evidenceId\":\"E2\",\"path\":[\"quote\"]}]}}]",
+      "provider": "deepseek",
+      "model": "deepseek-v4-pro",
+      "finishReason": "stop",
+      "usage": {
+        "total_tokens": 2580,
+        "input_tokens": 2405,
+        "output_tokens": 175
+      },
+      "reportedModel": "deepseek-v4-pro",
+      "rawContent": "{\n  \"items\": [\n    {\n      \"claimId\": \"scope-observation-091f0c1abaecdca998e89cc3d3f7b9ffc6b09d10bdf6c210ffc0b4c27ec299be-0\",\n      \"reason\": \"E2明确说明所有实验在Nvidia RTX 4090 GPU上进行，支持硬件描述；E1未提及硬件，但E2足够。\",\n      \"scopeAudit\": {\n        \"claimStrength\": \"bounded\",\n        \"evidenceStrength\": \"bounded\",\n        \"supported\": true,\n        \"statementPath\": [\"text\"],\n        \"premises\": [\n          {\n            \"evidenceId\": \"E2\",\n            \"path\": [\"quote\"]\n          }\n        ]\n      }\n    }\n  ]\n}",
+      "structuredOutput": {
+        "version": 1,
+        "requestedFormat": "json_object",
+        "expectedShape": "items",
+        "receivedShape": "items"
+      }
+    },
+    {
+      "content": "[\n  {\n    \"index\": 0,\n    \"proposition\": \"在范围「两篇论文」内的至少一种情形中，模型存储或显存相对于无，提供数据\",\n    \"relation\": \"not_entailed\",\n    \"quantification\": \"ambiguous\",\n    \"isNegation\": false,\n    \"authorOmission\": false,\n    \"reason\": \"The supplied passages discuss densification strategy, learning rate, depth rendering, TSDF fusion, mesh extraction, exposure compensation, and hardware, but contain no data comparing model storage or memory usage relative to a baseline without the method. The proposition requires at least one instance within the two papers where storage or memory data is provided relative to 'none', but no such comparison or data is present in the evidence.\",\n    \"premises\": [\n      {\n        \"evidenceId\": \"E1\",\n        \"path\": [\"quote\"]\n      },\n      {\n        \"evidenceId\": \"E2\",\n        \"path\": [\"quote\"]\n      }\n    ]\n  }\n]",
+      "provider": "deepseek",
+      "model": "deepseek-v4-pro",
+      "finishReason": "stop",
+      "usage": {
+        "total_tokens": 1479,
+        "input_tokens": 1268,
+        "output_tokens": 211
+      },
+      "reportedModel": "deepseek-v4-pro",
+      "rawContent": "[\n  {\n    \"index\": 0,\n    \"proposition\": \"在范围「两篇论文」内的至少一种情形中，模型存储或显存相对于无，提供数据\",\n    \"relation\": \"not_entailed\",\n    \"quantification\": \"ambiguous\",\n    \"isNegation\": false,\n    \"authorOmission\": false,\n    \"reason\": \"The supplied passages discuss densification strategy, learning rate, depth rendering, TSDF fusion, mesh extraction, exposure compensation, and hardware, but contain no data comparing model storage or memory usage relative to a baseline without the method. The proposition requires at least one instance within the two papers where storage or memory data is provided relative to 'none', but no such comparison or data is present in the evidence.\",\n    \"premises\": [\n      {\n        \"evidenceId\": \"E1\",\n        \"path\": [\"quote\"]\n      },\n      {\n        \"evidenceId\": \"E2\",\n        \"path\": [\"quote\"]\n      }\n    ]\n  }\n]",
+      "structuredOutput": {
+        "version": 1,
+        "requestedFormat": "json_object",
+        "expectedShape": "items",
+        "receivedShape": "array_compat"
+      }
+    }
+  ],
+  "coverageStatus": "checked",
+  "coverageGapCount": 6,
+  "acceptedClaims": [
+    {
+      "claimId": "c5",
+      "text": "若优先考虑 DTU 几何精度且硬件为 RTX 4090，可选 PGSR；若优先考虑训练速度且硬件为 A100，可选 GOF。渲染质量接近时，可根据对 PSNR/SSIM 或 LPIPS 的侧重选择。",
+      "kind": "proposal",
+      "evidenceRefs": [
+        "ev_5eeb225bc9ec31711ba9d3440776342cb4e9499593e0b3a8c4a3cf94690120ea",
+        "ev_5c7fd6bcd71aead88a73e0435ce9a61d5a1e5b76fb19bc43b4e68860062b1caa",
+        "ev_2a12cfc33f3fa8ac58ecc53a60a08ab9af2444710b56ba64d00da12fcd2ffddb",
+        "ev_173b7c330817e4715607e13867a070b506633629b86c98e0663c472f273d9b55",
+        "ev_aed79f8e276f90dbf65f658c61186255b2580e5009ef85be7a8fde1a93e2bf1c",
+        "ev_39bdce993dd69ac32f53edd216256c84b71818f6bd0dc78e518bf7113036bb11"
+      ],
+      "conditions": {},
+      "obligationIds": [
+        "ob_5"
+      ],
+      "detailLevel": "medium",
+      "tableBindings": [],
+      "verification": "proposal"
+    }
+  ],
+  "publicReportText": "本回答引用：全文片段。\n\n- 建议：若优先考虑 DTU 几何精度且硬件为 RTX 4090，可选 PGSR；若优先考虑训练速度且硬件为 A100，可选 GOF。渲染质量接近时，可根据对 PSNR/SSIM 或 LPIPS 的侧重选择。 [1](#research-evidence-ev_5eeb225bc9ec31711ba9d3440776342cb4e9499593e0b3a8c4a3cf94690120ea) [2](#research-evidence-ev_5c7fd6bcd71aead88a73e0435ce9a61d5a1e5b76fb19bc43b4e68860062b1caa) [3](#research-evidence-ev_2a12cfc33f3fa8ac58ecc53a60a08ab9af2444710b56ba64d00da12fcd2ffddb) [4](#research-evidence-ev_173b7c330817e4715607e13867a070b506633629b86c98e0663c472f273d9b55) [5](#research-evidence-ev_aed79f8e276f90dbf65f658c61186255b2580e5009ef85be7a8fde1a93e2bf1c) [6](#research-evidence-ev_39bdce993dd69ac32f53edd216256c84b71818f6bd0dc78e518bf7113036bb11)\n\n<details>\n<summary>还有 5 项未完成</summary>\n\n- GOF 和 PGSR 在 DTU 上报告的几何精度指标和训练耗时是多少？数据集、指标方向、分辨率和硬件条件是什么？：最终回答尚未完整回应这一问题；缺少：列出 GOF 和 PGSR 在 DTU 上的几何精度数值及对应指标方向、列出 GOF 和 PGSR 在 DTU 上的训练耗时及硬件条件、说明数据集、分辨率和指标方向是否一致，并指出作者自报与同表对比的差异\n- Mip-NeRF360 的渲染质量如何：最终回答尚未完整回应这一问题；缺少：Mip-NeRF360 的渲染质量如何\n- GOF 和 PGSR 是否报告了模型存储或显存？若证据不足，明确说明无法比较。：最终回答尚未完整回应这一问题；缺少：指出两篇论文是否提供模型存储或显存数据，若缺失则明确说明无法比较\n- 基于已核对的几何精度、训练耗时和渲染质量，给出在什么条件下选择 GOF 或 PGSR 的建议。：最终回答尚未完整回应这一问题；缺少：根据已核对的指标，说明在何种条件下优先选择 GOF 或 PGSR\n- 高斯表示与网格提取路径有什么不同：最终回答尚未完整回应这一问题；缺少：高斯表示与网格提取路径有什么不同\n\n</details>\n\n<details>\n<summary>原文依据</summary>\n\n**[1] PGSR: Planar-based Gaussian Splatting for Efficient and High-Fidelity Surface Reconstruction** · 第 9 页 · 全文片段\n\n> 9\n> TABLE II: Quantitative results of chamfer distance(mm) ↓on DTU dataset [23]. PGSR achieves the highest reconstruction accuracy and is over 100 times\n> faster than the SDF method based on NeRF.\n> 24 37 40 55 63 65 69 83 97 105 106 110 114 118 122 Mean Time\n> V olSDF [60] 1.14 1.26 0.81 0.49 1.25 0.70 0.72 1.29 1.18 0.70 0.66 1.08 0.42 0.61 0.55 0.86 >12h\n> NeuS [56] 1.00 1.37 0.93 0.43 1.10 0.65 0.57 1.48 1.09 0.83 0.52 1.20 0.35 0.49 0.54 0.84 >12h\n> Neuralangelo [33] 0.37 0.72 0.35 0.35 0.87 0.54 0.53 1.29 0.97 0.73 0.47 0.74 0.32 0.41 0.43 0.61 >128h\n> SuGaR [19] 1.47 1.33 1.13 0.61 2.25 1.71 1.15 1.63 1.62 1.07 0.79 2.45 0.98 0.88 0.79 1.33 1h\n> 2DGS [21] 0.48 0.91 0.39 0.39 1.01 0.83 0.81 1.36 1.27 0.76 0.70 1.40 0.40 0.76 0.52 0.80 0.32h\n> GOF [69] 0.50 0.82 0.37 0.37 1.12 0.74 0.73 1.18 1.29 0.68 0.77 0.90 0.42 0.66 0.49 0.74 2h\n> PGSR(DS) 0.34 0.58 0.29 0.29 0.78 0.58 0.54 1.01 0.73 0.51 0.49 0.69 0.31 0.37 0.38 0.53 0.6h\n> PGSR 0.31 0.52 0.27 0.27 0.76 0.54 0.49 0.98 0.69 0.49 0.46 0.56 0.28 0.35 0.36 0.49 1.0h\n> TABLE III: Quantitative results of F1 Score ↑for reconstruction on Tanks\n> and Temples dataset.\n\n**[2] Gaussian Opacity Fields: Efficient and Compact Surface Reconstruction in Unbounded Scenes** · 第 6 页 · 全文片段\n\n>  2024] 0.48 0.91 0.39 0.39 1.01 0.83 0.81 1.36 1.27 0.76 0.70 1.40 0.40 0.76 0.52 0.80 18.8 m\n> Ours 0.50 0.82 0.37 0.37 1.12 0.74 0.73 1.18 1.29 0.68 0.77 0.90 0.42 0.66 0.49 0.74 30m\n> et al.2023], GOF’s optimization is much faster. This performance\n> disparity is attributed to the DTU dataset’s strong view-dependent\n> appearance. Utilizing a better view-dependent appearance model-\n> ing [Verbin et al .2022] or a coarse-to-fine training strategy [Li et al .\n\n**[3] Gaussian Opacity Fields: Efficient and Compact Surface Reconstruction in Unbounded Scenes** · 第 5 页 · 全文片段\n\n>  For mesh\n> extraction, we adapt the Marching Tetrahedra algorithm [Shen et al .\n> 2021] from the Kaolin library [Fuji Tsang et al .2022] with our bi-\n> nary search algorithm and extract the mesh for the 0.5 level-set. All\n> experiments are conducted on an NVIDIA A100 GPU.\n> \n\n**[4] PGSR: Planar-based Gaussian Splatting for Efficient and High-Fidelity Surface Reconstruction** · 第 8 页 · 全文片段\n\n>  Subsequently, we extract the mesh [38] from the\n> TSDF field. We only utilize the exposure compensation on the\n> Tanks and Temples dataset. All experiments in this paper are\n> conducted on Nvidia RTX 4090 GPU.\n\n**[5] PGSR: Planar-based Gaussian Splatting for Efficient and High-Fidelity Surface Reconstruction** · 第 8 页 · 全文片段\n\n> \n> Indoor scenes Outdoor scenes Average on all scenes\n> PSNR↑ SSIM↑ LPIPS↓ PSNR↑ SSIM↑ LPIPS↓ PSNR↑ SSIM↑ LPIPS↓NeRF-basedNeRF [41] 26.84 0.790 0.370 21.46 0.458 0.515 24.15 0.624 0.443\n> Deep Blending [20] 26.40 0.844 0.261 21.54 0.524 0.364 23.97 0.684 0.313\n> INGP [44] 29.15 0.880 0.216 22.90 0.566 0.371 26.03 0.723 0.294\n> M-NeRF360 [2] 31.72 0.917 0.180 24.47 0.691 0.283 28.10 0.804 0.232\n> Neus [56] 25.10 0.789 0.319 21.93 0.629 0.600 23.74 0.720 0.439GS-based3DGS [27] 30.99 0.926 0.199 24.24 0.705 0.283 27.24 0.803 0.246\n> SuGaR [19] 29.44 0.911 0.216 22.76 0.631 0.349 26.10 0.771 0.283\n> 2DGS [21] 30.39 0.923 0.183 24.33 0.709 0.284 27.03 0.804 0.239\n> GOF [69] 30.80 0.928 0.167 24.76 0.742 0.225 27.78 0.835 0.196\n> PGSR 30.41 0.930 0.161 24.45 0.730 0.224 27.43 0.830 0.193\n> Fig. 9: Multi-view photometric and geometric loss.\n> those with high forward and backward projection errors.\n\n**[6] Gaussian Opacity Fields: Efficient and Compact Surface Reconstruction in Unbounded Scenes** · 第 6 页 · 全文片段\n\n> \n> Outdoor Scene Indoor scene\n> PSNR↑SSIM↑LPIPS↓PSNR↑SSIM↑LIPPS↓\n> NeRF 21.46 0.458 0.515 26.84 0.790 0.370\n> Deep Blending 21.54 0.524 0.364 26.40 0.844 0.261\n> Instant NGP 22.90 0.566 0.371 29.15 0.880 0.216\n> MERF 23.19 0.616 0.343 27.80 0.855 0.271\n> MipNeRF360 24.47 0.691 0.283 31.72 0.917 0.180\n> Mobile-NeRF 21.95 0.470 0.470 - - -\n> BakedSDF 22.47 0.585 0.349 27.06 0.836 0.258\n> SuGaR 22.93 0.629 0.356 29.43 0.906 0.225\n> BOG 23.94 0.680 0.263 27.71 0873 0.227\n> 3DGS 24.64 0.731 0.234 30.41 0.920 0.189\n> Mip-Splatting 24.65 0.729 0.245 30.90 0.921 0.194\n> 2DGS 24.21 0.709 0.276 30.10 0.913 0.211\n> Ours 24.82 0.750 0.202 30.79 0.924 0.184\n> outperforms Sugar [Guédon and Lepetit 2023] and 2DGS [Huang\n> et al.2024] in all metrics. We show a qualitative comparison of\n\n</details>",
+  "preservation": {
+    "oldLedgerUnchanged": true,
+    "allOldRunsUnchanged": true,
+    "newRows": 36,
+    "ledgerRows": 8804,
+    "onlyThisRunCreatedCalls": true,
+    "active": [],
+    "oldPausedRetained": true,
+    "paused": [
+      "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+      "dr_run_ed10cc3347be552288079a9a588fddf5",
+      "dr_run_86b3f181a5475e99aacca3dbf4370567",
+      "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+      "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+      "dr_run_e3521b1781825273b384a26a5edb8cdc",
+      "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+      "dr_run_e9c9dc916bef519092fad8b929b2448f",
+      "dr_run_4738564f5ff35157996a35068c62ed32",
+      "dr_run_a8bd62f9ae3d52ff806f537065f55b2d",
+      "dr_run_98e66f2d3d555dfa822b859963f01419",
+      "dr_run_8be639c866c35ea092c735a04781b647",
+      "dr_run_1c0c2e6510165086962408b8e3cf698b"
+    ],
+    "other13TasksExact": true,
+    "indexExact": true,
+    "index": {
+      "collection": "literature_collection_v4_e5_small",
+      "count": 1215,
+      "sha256": "f1ab6ad746b00ce95dfb36b76fa06d011cfb04d2b0bccf1e194a826d0606465f"
+    }
+  },
+  "review": [
+    "Typed-table false construction removed in this actual case: initial and repair facts now reached independent semantic review rather than failing on guessed cell indices.",
+    "Initial c1 still adds unsupported0.5. Repaired c1 removes it and has a positive model scope audit, but comparisonAudit manually retypes a nonliteral Gaussian formula quote; strict binding rejects comparison_premise_quote_mismatch. Do not auto-approve or rewrite the old verdict.",
+    "The c1 repaired text also omits PGSR planar representation, so even fixing its private audit binding would not itself prove the full requested representation comparison complete.",
+    "Initial c3 uses PGSR comparator aggregate as GOF self-report; source reviewer correctly rejects this. No accepted c3 revision.",
+    "c2 repair retains a paper-subject absence assertion for resolution. c4 authors an ambiguous quantified boundary with comparator none; neither is accepted. These are not grounds to relax absence/quantifier checks.",
+    "Final coverage actually checked and found6 gaps. Only conditional advice remains; requested factual comparison is missing. Full content not accepted and independent0.",
+    "Next examine already-supported source-field references in comparison audit guidance and natural bounded-evidence expression, retaining original scientific and complete-answer checks."
+  ]
+}

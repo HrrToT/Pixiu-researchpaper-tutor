@@ -1,0 +1,105 @@
+{
+  "date": "2026-10-18",
+  "sourceCase": "D1-v26",
+  "sourcePayloadSha256": "609235e35b49974d5d9325f90f64b1d2462f7b878b3ffc9adeaea7b9cf644b89",
+  "providerCalls": 0,
+  "originalInputsUnchanged": true,
+  "replayedModelResponses": [
+    1,
+    1
+  ],
+  "firstClaim": {
+    "old": {
+      "accepted": [],
+      "rejected": [
+        {
+          "claimId": "c1",
+          "reason": "semantic_unresolved",
+          "detail": "比较条件或推断前提尚未核实：comparison_premise_not_established"
+        }
+      ]
+    },
+    "new": {
+      "accepted": [
+        {
+          "claimId": "c1",
+          "text": "报告结果：在Mip-NeRF 360数据集上，压缩后Ours与原始3D-GS的PSNR/SSIM/LPIPS接近（27.13 vs 27.21；0.806 vs 0.815；0.237 vs 0.214），作者称视觉质量相当。仅覆盖该数据集与指标。",
+          "kind": "reported",
+          "evidenceRefs": [
+            "ev_ab9685875c28c1ea14d0b937d46acbe69e99bdfb53a13d0b0c5c698de8fcb2fd",
+            "ev_ffe2afc10303963ace5068705474a2c111bd99e53c60afe414460f77471fc747",
+            "ev_c95167a132259e9a1523f477c8a49434fa01eda5c668f4c1922082dbf9ea1190"
+          ],
+          "conditions": {},
+          "obligationIds": [
+            "ob_1",
+            "ob_2",
+            "ob_3"
+          ],
+          "detailLevel": "fulltext",
+          "tableBindings": [
+            {
+              "evidenceId": "ev_ab9685875c28c1ea14d0b937d46acbe69e99bdfb53a13d0b0c5c698de8fcb2fd",
+              "rowNumber": 8,
+              "groupIndex": 0,
+              "metric": "PSNR",
+              "value": "27.21"
+            },
+            {
+              "evidenceId": "ev_ab9685875c28c1ea14d0b937d46acbe69e99bdfb53a13d0b0c5c698de8fcb2fd",
+              "rowNumber": 8,
+              "groupIndex": 0,
+              "metric": "SSIM",
+              "value": "0.815"
+            },
+            {
+              "evidenceId": "ev_ab9685875c28c1ea14d0b937d46acbe69e99bdfb53a13d0b0c5c698de8fcb2fd",
+              "rowNumber": 8,
+              "groupIndex": 0,
+              "metric": "LPIPS",
+              "value": "0.214"
+            },
+            {
+              "evidenceId": "ev_ffe2afc10303963ace5068705474a2c111bd99e53c60afe414460f77471fc747",
+              "rowNumber": 10,
+              "groupIndex": 0,
+              "metric": "PSNR",
+              "value": "27.13"
+            },
+            {
+              "evidenceId": "ev_ffe2afc10303963ace5068705474a2c111bd99e53c60afe414460f77471fc747",
+              "rowNumber": 10,
+              "groupIndex": 0,
+              "metric": "SSIM",
+              "value": "0.806"
+            },
+            {
+              "evidenceId": "ev_ffe2afc10303963ace5068705474a2c111bd99e53c60afe414460f77471fc747",
+              "rowNumber": 10,
+              "groupIndex": 0,
+              "metric": "LPIPS",
+              "value": "0.237"
+            }
+          ],
+          "verification": "semantic_passed"
+        }
+      ],
+      "rejected": []
+    }
+  },
+  "secondClaim": {
+    "newNegativeFixture": {
+      "accepted": [],
+      "rejected": [
+        {
+          "claimId": "c2",
+          "reason": "semantic_unresolved",
+          "detail": "Fixture rejection; no semantic approval"
+        }
+      ]
+    },
+    "boundary": "Now reaches semantic review; original run had no semantic verdict for this claim. No positive semantic or content credit."
+  },
+  "wrongNumberStillRejected": true,
+  "boundary": "Offline replay of an archived model response, not a fresh model verification or an upgrade of the old production outcome. Exact original quotations, IDs, cells, prose and provider raw response are unchanged."
+}

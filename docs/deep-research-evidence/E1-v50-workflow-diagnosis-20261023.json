@@ -1,0 +1,42 @@
+{
+  "case": "E1-v50",
+  "sourceCommit": "8ac2401a",
+  "promptVersion": "dr-v2.20261023.260",
+  "runId": "dr_run_9615a457a3815fb0b557f45c10496b8f",
+  "status": "failed",
+  "errorCode": "invalid_workflow_unit_response",
+  "scientificOutline": {
+    "version": 2,
+    "format": "scientific_outline",
+    "status": "ready",
+    "scientificApproval": false
+  },
+  "outlineUsage": {
+    "total_tokens": 5541,
+    "input_tokens": 4558,
+    "output_tokens": 983
+  },
+  "metadata": {
+    "status": "invalid_response",
+    "errors": [
+      "unit.output_truncated"
+    ],
+    "requestDigest": "f73f4e7f98e1404a3b7c6e1a2da190704e7d6673dae0fbfcc8f540a3dc754ffa",
+    "ledgerDigestMatches": true,
+    "finishReason": "length",
+    "usage": {
+      "total_tokens": 8915,
+      "input_tokens": 6867,
+      "output_tokens": 2048
+    },
+    "rawBytes": 7485,
+    "rawSha256": "aac568477c3e6db253407898ba0c8287a961f4dbaf9f41787fad731fefb2c00b"
+  },
+  "initializationUnitsReached": false,
+  "publicDraftReached": false,
+  "partialRawMetadataNotReconstructed": true,
+  "providerRetries": 0,
+  "scientificApproval": false,
+  "independentCredit": 0,
+  "boundary": "Decision outline passed structural checks only. Metadata was truncated; no initialization or full scientific output was validated. Raw provider responses remain in the local ledger."
+}

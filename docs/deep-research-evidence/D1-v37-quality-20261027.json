@@ -1,0 +1,61 @@
+{
+  "date": "2026-10-27",
+  "caseId": "D1-v37",
+  "runId": "dr_run_0f4c93f7c8e75c5c9404ab338ccd1eef",
+  "promptVersion": "dr-v2.20261027.311",
+  "sourceCommit": "bf852d64b4ca8b8a701c1f45f7b5c2dc2d211a14",
+  "status": "completed",
+  "outcome": "partial",
+  "elapsedSeconds": 122.91,
+  "modelCalls": 9,
+  "settledTokens": 44113,
+  "cost": null,
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "verifiedClaimIds": [
+    "c1"
+  ],
+  "jointCompactionActuallyCalled": false,
+  "diagnosticSchemaActuallyValid": true,
+  "diagnosticActuallyPassedToRepair": true,
+  "diagnosticSemanticsAccepted": false,
+  "diagnosticFactualError": "Suggested synthetic-dataset absence conflicts with the supplied Table 7 Synthetic-NeRF results.",
+  "revisionDidNotCopyThatAbsenceClaim": true,
+  "scopeBoundaryReviewReached": false,
+  "scopeSettingRejectedForMissingPredicate": true,
+  "diagnosticDetailCount": 3,
+  "manualLimitations": [
+    "Final answer has only the reported-result point; the requested conditions/boundary point remains missing.",
+    "Valid diagnostic structure did not prevent a scientifically false example. Diagnostics remain unverified.",
+    "The internal SH setting projection uses an unlabelled equation rather than an explicit observed-setting assertion."
+  ],
+  "oldWorkspaceObjectsRetained": {
+    "messages": 31,
+    "notes": 0,
+    "artifacts": 62
+  },
+  "originalMaterialsAndFocusRetained": true,
+  "preservation": {
+    "oldLedgerUnchanged": true,
+    "allOldRunsUnchanged": true,
+    "newRows": 17,
+    "ledgerRows": 7387,
+    "onlyThisRunCreatedCalls": true,
+    "active": [],
+    "oldPausedRetained": true,
+    "paused": [
+      "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+      "dr_run_ed10cc3347be552288079a9a588fddf5",
+      "dr_run_86b3f181a5475e99aacca3dbf4370567",
+      "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+      "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+      "dr_run_e3521b1781825273b384a26a5edb8cdc",
+      "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+      "dr_run_e9c9dc916bef519092fad8b929b2448f",
+      "dr_run_4738564f5ff35157996a35068c62ed32",
+      "dr_run_a8bd62f9ae3d52ff806f537065f55b2d",
+      "dr_run_98e66f2d3d555dfa822b859963f01419",
+      "dr_run_8be639c866c35ea092c735a04781b647"
+    ]
+  }
+}

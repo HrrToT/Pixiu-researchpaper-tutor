@@ -1,0 +1,22 @@
+{
+  "case": "E1-v47",
+  "sourceCommit": "9730276e",
+  "exactFrozenReasoningRequestMatchesLedger": true,
+  "workflowMode": "low",
+  "outputCap": 6144,
+  "errors": [
+    "blueprint.output_truncated"
+  ],
+  "finishReason": "length",
+  "rawResponseBytes": 0,
+  "workflowUsage": {
+    "total_tokens": 14837,
+    "input_tokens": 8693,
+    "output_tokens": 6144
+  },
+  "publicSynthesisReached": false,
+  "automaticRetries": 0,
+  "independentCredit": 0,
+  "finding": "Thinking consumed the output cap without a returned JSON body. Low mode alone did not produce a usable workflow.",
+  "nextAction": "Decompose metadata and per-component initializations into smaller durable units under the unchanged whole-run budget, then assemble and independently validate the complete workflow. Preserve every required state and operation; no partial success promotion."
+}

@@ -1,0 +1,30 @@
+{
+  "promptVersion": "dr-v2.20261023.263",
+  "workflowMetadataRepairContractVersion": 1,
+  "workflowMetadataRowsContractVersion": 2,
+  "executionWorkflowContractVersion": 7,
+  "workflowContractVersion": 5,
+  "profileRegression": {
+    "files": 10,
+    "passed": 214,
+    "seconds": 35.12
+  },
+  "baseFullRegression": {
+    "sourceCommit": "c015ffc9",
+    "files": 253,
+    "passed": 4687,
+    "seconds": 367.12,
+    "sourceStable": true
+  },
+  "sourceHashes": {
+    "services/deep_research/facade.py": "cf8369f3a39300d5d70ac64837c44ec05727cd4aece9c97e227f89f3c200e80c",
+    "tests/test_deep_research_workflow_lifecycle_profile.py": "3f0d6c1aefd1f80dd2963f6b2299eaf2b5b8dbf8af866a91b26a7b0904c0a4f1",
+    "tests/test_deep_research_workflow_metadata_repair.py": "e6a2af87dea8a79db490af45b0b739d0aca166f1f9c34bed4cfdeeb5909c2679"
+  },
+  "oldRunsMigrated": false,
+  "clientOverridesAccepted": false,
+  "runtimeLoaded": false,
+  "providerCalls": 0,
+  "scientificApproval": false,
+  "boundary": "New-run activation only. Base full regression and current profile checks are separate. Runtime load and real revision quality require further proof."
+}

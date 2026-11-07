@@ -1,0 +1,51 @@
+{
+  "sourceCommit": "46cdb2ed",
+  "promptVersion": "dr-v2.20261029.333",
+  "freshGeneration": true,
+  "freshRetrieval": false,
+  "fromSettledCase": "D1-v40",
+  "oldReportOrVerdictsInherited": false,
+  "providerCalls": 14,
+  "tokens": 69662,
+  "elapsedSeconds": 198.488,
+  "allSettled": true,
+  "automaticRetries": 0,
+  "acceptedClaims": 2,
+  "rejectedClaims": 0,
+  "gaps": 4,
+  "fullContentAcceptance": false,
+  "independentCredit": 0,
+  "productionExactlyPreserved": true,
+  "coverageContradiction": {
+    "acceptedAssessment": "在Mip-NeRF 360上，LightGaussian PSNR为27.13，重训3D-GS*为27.40；SSIM/LPIPS接近。支持“压缩后图像质量接近”，条件为同平台（NVIDIA A6000）重训。",
+    "coverageReasons": [
+      {
+        "checkId": "criterion:human_aspect_1",
+        "reason": "The answer reports specific PSNR/SSIM/LPIPS values from Mip-NeRF 360 and notes the condition of retraining on the same platform, but it does not explicitly state whether the quality is 'close' based on these numbers; it only implies support. The assessment of closeness is not fully articulated."
+      }
+    ]
+  },
+  "rawReceiptDirectory": "D:\\aiproj\\ai_project\\tmp\\component-fresh-draft-333-20261029\\receipt",
+  "rawSha256": {
+    "calls.json": "e2534aae4222adf3facabae4b2e7f027994c698959757f5b332d4297dab0e962",
+    "generation-result.json": "913babfc57522a3047abb43534ea8ac21e41401a0c1fe05cba6cc6ba035ddeb1",
+    "payload.json": "053c0817d038f09a7ea00b10a3677c5715d5079523b2270d451fe115cc4c4c98",
+    "preservation.json": "d940308c1553ba8df87b7dcc6cf4654ded002e26d3bc2410dde0dfc5a4d876ec",
+    "progress.json": "f193f1928d2f4093dc75f112608490a05994d5e5132ae78bfe984aec9a5cb1c1",
+    "request-1.json": "e9ee269b96bc16017024e501eec0457862320cdb06ca6240301934f6e936436f",
+    "request-10.json": "324bbab73d79b52eed52fde8d0864fc21c9a9fa58fa3a59b05dad63576358399",
+    "request-11.json": "5fb79291d956a145cccf7ed645ba2ec8ccae3249cbf0491a605c3b651818aa63",
+    "request-12.json": "759df08687841328fce28aa40859a346def43a2674eed205f74df011992925fd",
+    "request-13.json": "a0e7b1576600f766da5943605bd2a835220ed226716771ad883ab06ed32cfb3b",
+    "request-14.json": "90bee6c98562d2bf4fec165e0da9396a5be747a63dc57db7408b229140af87ce",
+    "request-2.json": "fc886e77af8e4f03f6f814e5ca9986f3c326a9bf49db0d1a9f0233dd484073fd",
+    "request-3.json": "f540d0c7de40cfc340f2e69d8db14f5af0ed189b6e3906857c62dd176ee8ef4f",
+    "request-4.json": "4042c2c433d7118c1645ef322fc1ab90d8a3ebf3cd571ce747487e0708309c4a",
+    "request-5.json": "4973392df8080c1510a1800954ccf4fc74286bf6be2064b68f7a211a38f22cf2",
+    "request-6.json": "ee41f8db80c5f96dbf97ea8be33370fc1f9f7f9b4d314d8feaca5b5f2d13fc51",
+    "request-7.json": "5e74e9118945cf6af8e6d4819fbae82a765d6fef3c3d2b395bfd642d93a526bc",
+    "request-8.json": "bc9658db0591ad69609e74260f3c10a26fa3dba9097c139f929fd7c1f349af51",
+    "request-9.json": "9ffbf8162d7c9aa0dd23c79ede0980d76ea27ce4250c95613592037567297462",
+    "result.json": "6b27ca55e0db0439f217b20b68ffbf34b5221b79e47300ad5d04001089c54825"
+  }
+}

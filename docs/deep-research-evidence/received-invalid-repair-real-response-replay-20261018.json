@@ -1,0 +1,33 @@
+{
+  "date": "2026-10-18",
+  "providerCalls": 0,
+  "originalResponsesUnchanged": true,
+  "confirmedEmptyRepair": {
+    "case": "D1-v24",
+    "callId": "ecd9a577c70d46d7a91557a53984b59d",
+    "rawContentLength": 0,
+    "finishReason": "stop",
+    "oldResult": "empty revision list",
+    "newError": {
+      "code": "invalid_repair_response",
+      "responseState": "received_invalid"
+    },
+    "rawCallsSha256": "724c64aaa67982300005fc35e884ba0975c1de323ced0f29e4d78d7eddfc0792"
+  },
+  "conditionLabel": {
+    "case": "D1-v27",
+    "oldResult": "absence_not_established",
+    "newNegativeFixture": {
+      "accepted": [],
+      "rejected": [
+        {
+          "claimId": "c2",
+          "reason": "semantic_unresolved",
+          "detail": "Negative fixture, not semantic approval"
+        }
+      ]
+    },
+    "boundary": "Routes only to independent semantic checking; actual old production record/outcome unchanged."
+  },
+  "boundary": "Recorded response/claim replay plus separate graph recovery regression; no live model request or retrospective content upgrade."
+}

@@ -1,0 +1,37 @@
+{
+  "date": "2026-10-26",
+  "case": "E1-v60",
+  "runId": "dr_run_4de0b7e19c9d5add995cc579ec5e6527",
+  "promptVersion": "dr-v2.20261026.270",
+  "status": "failed",
+  "errorCode": "workflow_blueprint_input_capacity",
+  "initialMetadata": {
+    "errors": [
+      "timeline.cycle",
+      "timeline.input.before_creation"
+    ],
+    "finishReason": "stop",
+    "rawBytes": 9859,
+    "canonicalBytes": 6366,
+    "usage": {
+      "total_tokens": 10363,
+      "input_tokens": 7600,
+      "output_tokens": 2763
+    },
+    "components": 4,
+    "phases": 9
+  },
+  "uniqueRevision": {
+    "status": "not_started_capacity",
+    "inputBytes": 32804,
+    "maxInputBytes": 32000,
+    "modelInvocations": 0,
+    "requestDigest": "2bc49aa22f6811d8fb28fcea23c9b22e5f8ef9f50a6b0122d1df8cb66fa267d6"
+  },
+  "settledCalls": 7,
+  "settledTokens": 30554,
+  "elapsedSeconds": 73,
+  "scientificApproval": false,
+  "independentCredit": 0,
+  "boundary": "Named metadata types parse, but self-dependent creation/update phases fail original timeline checks. Complete revision admission exceeds original 32KB cap; no corrective request was sent. No retries, automatic array fixes or scientific credit."
+}

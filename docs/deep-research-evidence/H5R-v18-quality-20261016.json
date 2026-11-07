@@ -1,0 +1,70 @@
+{
+  "date": "2026-10-16",
+  "case": "H5R-v18",
+  "runId": "dr_run_96b39876e54e527b9270892478ff5535",
+  "sourceCommit": "174787b",
+  "promptVersion": "dr-v2.20261016.109",
+  "status": "completed",
+  "outcome": "partial",
+  "budget": {
+    "maxModelCalls": 18,
+    "maxTokens": 100000,
+    "maxWallClockSeconds": 360,
+    "reserveModelCalls": 5,
+    "reserveTokens": 50000,
+    "maxExternalSearches": 6,
+    "maxFulltextFetches": 6,
+    "finalizationBudgetVersion": 1,
+    "releasedReserveTokens": 0,
+    "modelCalls": 3,
+    "tokens": 31875,
+    "normalTokens": 5957,
+    "elapsedSeconds": 80.597,
+    "externalSearches": 0,
+    "fulltextFetches": 0,
+    "reservedModelCalls": 4,
+    "exhausted": "",
+    "profile": "standard"
+  },
+  "contentAccepted": false,
+  "independentHoldoutEligible": false,
+  "callsSucceeded": 22,
+  "modelCalls": 7,
+  "finalCoverageStatus": "checked",
+  "errorCode": "",
+  "sourcePayloadSha256": "8dd054c90b16db4bafcaec119f85402bfe7059f6712edbab2b6fe399932f8822",
+  "raw": "tmp/dr-acceptance-receipts/H5R-v18.payload.json",
+  "calls": "tmp/dr-acceptance-receipts/H5R-v18.calls.json",
+  "repair": {
+    "repairStatus": "skipped_budget",
+    "repairLimit": {
+      "kind": "repairPromptBytes",
+      "limit": 24000,
+      "used": 27357
+    }
+  },
+  "review": {
+    "status": "not_accepted",
+    "scores": {
+      "目标回应": 2,
+      "证据支持": 3,
+      "条件完整": 2,
+      "综合价值": 2,
+      "可执行性": 1,
+      "可读性": 3
+    },
+    "improved": [
+      "Explicit baseline/component initializer objects and one canonical controls reference are produced.",
+      "Unknown input-dependent dimensions are rejected before publishing the workflow."
+    ],
+    "findings": [
+      "Both fresh initializers declare inputs:[] but shape references inputIndex:0; the structural rejection is correct.",
+      "A single opaque model-parameters state does not specify all representation variables or establish renderer compatibility.",
+      "Data and limits assert that the paper lacks original view counts without a source establishing paper-wide absence.",
+      "Repair targets include all nine roles. The execution/limits batch needs 27357 bytes, exceeding its 24000-byte cap before any repair request.",
+      "Published partial answer has hypothesis/groups/budget/metrics/analysis only; no verified data, controls, executable steps or limits.",
+      "New 32KB scientific verification is exercised, but no complete initializer reaches scientific review; this is not scientific executability acceptance."
+    ]
+  },
+  "boundary": "One explicitly authorized submission each, no automatic retry. Retired development cases, no independent credit. Original responses unchanged; later offline fixes are not retrospective passes."
+}

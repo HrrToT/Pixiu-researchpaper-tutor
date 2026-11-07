@@ -1,0 +1,373 @@
+{
+  "case": "G1N-v1",
+  "splitAtFirstSubmission": "holdout",
+  "retiredAfterFirstSubmission": true,
+  "retirementReason": "First fixed comparison failed and now serves capacity diagnosis; no later tuned attempt can claim independent credit. Original manifest and first result frozen.",
+  "runId": "dr_run_e792ce01a8da5a8eb6ac2543b972fb7c",
+  "promptVersion": "dr-v2.20261105.388",
+  "machineStatus": "completed",
+  "machineOutcome": "partial",
+  "budget": {
+    "maxModelCalls": 18,
+    "maxTokens": 100000,
+    "maxWallClockSeconds": 360,
+    "reserveModelCalls": 5,
+    "reserveTokens": 50000,
+    "maxExternalSearches": 6,
+    "maxFulltextFetches": 6,
+    "finalizationBudgetVersion": 1,
+    "releasedReserveTokens": 31350,
+    "explorationAllocationVersion": 1,
+    "modelCalls": 7,
+    "tokens": 44888,
+    "normalTokens": 26238,
+    "elapsedSeconds": 166.454,
+    "externalSearches": 3,
+    "fulltextFetches": 2,
+    "reservedModelCalls": 5,
+    "exhausted": "",
+    "profile": "standard"
+  },
+  "actualModelCalls": 12,
+  "ordinaryCalls": 7,
+  "reservedCalls": 5,
+  "actualUsageTokens": 44888,
+  "allModelRowsSettled": true,
+  "sources": [
+    {
+      "workId": "arxiv:2406.06521",
+      "versionId": "arxiv:2406.06521v1",
+      "contentHash": "42d2f62bb336cf6dacc11acacc03f60babc34b1cb5d7596ce9fdf2346ac48ee5",
+      "accessLevel": "fulltext"
+    },
+    {
+      "workId": "arxiv:2404.10772",
+      "versionId": "arxiv:2404.10772v1",
+      "contentHash": "d0b7e72aa986fe0ce875e9a1ece20d67e0804d02ef0d98e5c83a1152c97f5d6f",
+      "accessLevel": "fulltext"
+    }
+  ],
+  "evidenceRows": 162,
+  "initialRejected": [
+    {
+      "claimId": "c1",
+      "reason": "absence_not_established",
+      "detail": "本条引用没有明确建立作者或论文缺少这些验证。把结论限定为本次引用能支持的实验范围及其不能证明的推广；不要写成作者未在其他条件验证、论文没有提供或全文不存在。引用中的其他否定句不构成这项缺席判断的依据。"
+    },
+    {
+      "claimId": "c2",
+      "reason": "absence_not_established",
+      "detail": "本条引用没有明确建立作者或论文缺少这些验证。把结论限定为本次引用能支持的实验范围及其不能证明的推广；不要写成作者未在其他条件验证、论文没有提供或全文不存在。引用中的其他否定句不构成这项缺席判断的依据。"
+    },
+    {
+      "claimId": "c3",
+      "reason": "missing_evidence"
+    },
+    {
+      "claimId": "c4",
+      "reason": "semantic_unresolved",
+      "detail": "目标声称基于现有证据无法给出有条件的选用建议，但用户问题要求给出有条件的选择建议，且目标未提供任何证据引用或前提来支持其结论，属于对证据不足的断言而非阅读指导。"
+    }
+  ],
+  "acceptedClaims": [
+    {
+      "claimId": "c2",
+      "kind": "inference",
+      "text": "GOF 在 Mip-NeRF360 数据集上报告了 SOTA 新视角合成结果，尤其在室外场景的 LPIPS 指标上表现突出。但 DTU 几何精度、训练耗时以及 Mip-NeRF360 渲染质量的具体数值未在提供的引文中给出。",
+      "evidenceRefs": [
+        "ev_a40350edfc9b4c1a683f5fe72de54067358e29d7d8f324ab7f39a81d88e9074e"
+      ],
+      "conditions": {},
+      "detailLevel": "fulltext",
+      "obligationIds": [
+        "ob_2",
+        "ob_3",
+        "ob_4",
+        "ob_5"
+      ],
+      "verification": "semantic_passed"
+    }
+  ],
+  "reportBody": "本回答引用：全文片段。\n\n## 共同维度表\n\n- 推断：GOF 在 Mip-NeRF360 数据集上报告了 SOTA 新视角合成结果，尤其在室外场景的 LPIPS 指标上表现突出。但 DTU 几何精度、训练耗时以及 Mip-NeRF360 渲染质量的具体数值未在提供的引文中给出。 [1](#research-evidence-ev_a40350edfc9b4c1a683f5fe72de54067358e29d7d8f324ab7f39a81d88e9074e)\n\n",
+  "coverageStatus": "checked",
+  "coverageGaps": [
+    {
+      "obligationId": "ob_1",
+      "question": "高斯表示与网格提取路径有什么不同",
+      "missingEvidence": "最终回答尚未完整回应这一问题",
+      "stage": "answer",
+      "missingAspects": [
+        "高斯表示与网格提取路径有什么不同"
+      ],
+      "aspectEvidenceRefs": [],
+      "gapDetail": {
+        "criterionIds": [
+          "human_aspect_1"
+        ],
+        "aspectIds": [
+          "criterion:human_aspect_1"
+        ],
+        "missingContent": "请补全本条固定要求中标为未满足的部分，具体要求见 missingAspects。",
+        "reason": "此缺口由固定检查项的未满足状态汇总；模型说明不作为新增要求或论文事实。"
+      }
+    },
+    {
+      "obligationId": "ob_2",
+      "question": "GOF 和 PGSR 在 DTU 数据集上报告的几何精度和训练耗时分别是多少？",
+      "missingEvidence": "最终回答尚未完整回应这一问题",
+      "stage": "answer",
+      "missingAspects": [
+        "给出 GOF 和 PGSR 在 DTU 上报告的几何精度数值和训练耗时，并注明是否来自作者自报或同表对比。",
+        "指出两篇论文在 DTU 评估中使用的数据集版本、指标方向（越低越好还是越高越好）、分辨率和硬件条件是否一致，若不一致则说明差异。"
+      ],
+      "aspectEvidenceRefs": [],
+      "gapDetail": {
+        "criterionIds": [
+          "req_1",
+          "req_2"
+        ],
+        "aspectIds": [
+          "criterion:req_1",
+          "criterion:req_2"
+        ],
+        "missingContent": "请补全本条固定要求中标为未满足的部分，具体要求见 missingAspects。",
+        "reason": "此缺口由固定检查项的未满足状态汇总；模型说明不作为新增要求或论文事实。"
+      }
+    },
+    {
+      "obligationId": "ob_3",
+      "question": "Mip-NeRF360 的渲染质量如何",
+      "missingEvidence": "最终回答尚未完整回应这一问题",
+      "stage": "answer",
+      "missingAspects": [
+        "Mip-NeRF360 的渲染质量如何"
+      ],
+      "aspectEvidenceRefs": [],
+      "gapDetail": {
+        "criterionIds": [
+          "human_aspect_1"
+        ],
+        "aspectIds": [
+          "criterion:human_aspect_1"
+        ],
+        "missingContent": "请补全本条固定要求中标为未满足的部分，具体要求见 missingAspects。",
+        "reason": "此缺口由固定检查项的未满足状态汇总；模型说明不作为新增要求或论文事实。"
+      }
+    },
+    {
+      "obligationId": "ob_4",
+      "question": "核对数据集、指标方向、分辨率和硬件条件",
+      "missingEvidence": "最终回答尚未完整回应这一问题",
+      "stage": "answer",
+      "missingAspects": [
+        "核对数据集、指标方向、分辨率和硬件条件"
+      ],
+      "aspectEvidenceRefs": [],
+      "gapDetail": {
+        "criterionIds": [
+          "human_aspect_1"
+        ],
+        "aspectIds": [
+          "criterion:human_aspect_1"
+        ],
+        "missingContent": "请补全本条固定要求中标为未满足的部分，具体要求见 missingAspects。",
+        "reason": "此缺口由固定检查项的未满足状态汇总；模型说明不作为新增要求或论文事实。"
+      }
+    },
+    {
+      "obligationId": "ob_5",
+      "question": "两篇论文中哪些数值是作者自报，哪些来自同表对比？模型存储或显存是否有可比证据？",
+      "missingEvidence": "最终回答尚未完整回应这一问题",
+      "stage": "answer",
+      "missingAspects": [
+        "区分 GOF 和 PGSR 论文中报告的数值是作者自己实验得到还是引用其他论文的同表对比结果。",
+        "判断两篇论文是否提供了模型存储大小或显存占用的可比数据，若没有则明确说明无法比较。"
+      ],
+      "aspectEvidenceRefs": [],
+      "gapDetail": {
+        "criterionIds": [
+          "req_1",
+          "req_2"
+        ],
+        "aspectIds": [
+          "criterion:req_1",
+          "criterion:req_2"
+        ],
+        "missingContent": "请补全本条固定要求中标为未满足的部分，具体要求见 missingAspects。",
+        "reason": "此缺口由固定检查项的未满足状态汇总；模型说明不作为新增要求或论文事实。"
+      }
+    },
+    {
+      "obligationId": "ob_6",
+      "question": "根据已核对的证据，在什么条件下应选择 GOF 或 PGSR？",
+      "missingEvidence": "最终回答尚未完整回应这一问题",
+      "stage": "answer",
+      "missingAspects": [
+        "基于前面核对的几何精度、训练耗时、渲染质量和硬件条件，给出在特定应用场景下选择 GOF 或 PGSR 的建议，并说明条件。"
+      ],
+      "aspectEvidenceRefs": [],
+      "gapDetail": {
+        "criterionIds": [
+          "req_1"
+        ],
+        "aspectIds": [
+          "criterion:req_1"
+        ],
+        "missingContent": "请补全本条固定要求中标为未满足的部分，具体要求见 missingAspects。",
+        "reason": "此缺口由固定检查项的未满足状态汇总；模型说明不作为新增要求或论文事实。"
+      }
+    },
+    {
+      "obligationId": "answer_scope",
+      "question": "请联网读取 GOF（arXiv:2404.10772v1）和 PGSR（arXiv:2406.06521v1）两篇原文，面向了解3DGS概念的读者比较它们：高斯表示与网格提取路径有什么不同；在 DTU 上各自报告的几何精度和训练耗时，以及 Mip-NeRF360 的渲染质量如何。核对数据集、指标方向、分辨率和硬件条件，区分作者自报与同表对比；时间数值或条件有差异时指出，不能直接推成普遍速度排名。模型存储或显存若证据不足就明确说无法比较。最后给出有条件的选择建议。限500字。",
+      "missingEvidence": "最终回答尚未完整回应这一问题",
+      "stage": "answer",
+      "missingAspects": [
+        "请联网读取 GOF（arXiv:2404.10772v1）和 PGSR（arXiv:2406.06521v1）两篇原文，面向了解3DGS概念的读者比较它们：高斯表示与网格提取路径有什么不同；在 DTU 上各自报告的几何精度和训练耗时，以及 Mip-NeRF360 的渲染质量如何。核对数据集、指标方向、分辨率和硬件条件，区分作者自报与同表对比；时间数值或条件有差异时指出，不能直接推成普遍速度排名。模型存储或显存若证据不足就明确说无法比较。最后给出有条件的选择建议。限500字。"
+      ],
+      "aspectEvidenceRefs": [],
+      "gapDetail": {
+        "criterionIds": [],
+        "aspectIds": [
+          "request"
+        ],
+        "missingContent": "请补全本条固定要求中标为未满足的部分，具体要求见 missingAspects。",
+        "reason": "此缺口由固定检查项的未满足状态汇总；模型说明不作为新增要求或论文事实。"
+      },
+      "wholeQuestion": true
+    }
+  ],
+  "synthesisAllocation": {
+    "version": 1,
+    "candidateEvidenceIds": [
+      "ev_04d1113eaf004b51f5aaa46651f7615da897866abe3181be2d3c81209a150d87",
+      "ev_cd009dfe66bfbb79bf23a8b4fad0d0cf2204399d9f2f158ef01169ab63c40537",
+      "ev_5eeb225bc9ec31711ba9d3440776342cb4e9499593e0b3a8c4a3cf94690120ea",
+      "ev_a40350edfc9b4c1a683f5fe72de54067358e29d7d8f324ab7f39a81d88e9074e",
+      "ev_370c85ad7c379d5aee202fe72c658283460132b356dead24814ace1ae84f4255",
+      "ev_da0ed4871866776c7c87d552865e151ab1dc82f241257f53d8188afb839045d5",
+      "ev_22993a1fcea6be9bf309ca39739bfb87d8fdf852f5a4d41fd91ee2eb2ca995de",
+      "ev_e11b32cfb0ac2cd573f9fd80fbe606c1fc7d590dcb6732ffd46b70e70ec673bc",
+      "ev_66f68e45ed008160d3362c48fd2cb07c073c73f84fe0a62c0cb164fa620347e8",
+      "ev_d97e646e2e886fbf801a434955a597969e33e7de4c54e680e02efe3871920207",
+      "ev_cd5c7790626f21da1c6a168c79d4af4dd0429974d0c4acc5af9362f7630289c3",
+      "ev_0e6ea6c4da8c00aa450f12f03d4ba1c2408ee156040e0d9ddea4b7cc9f9eb42a",
+      "ev_c8cc53997b98b7a5242f544832d87b7bc47eb7f797e5bddfc5ec6cf2bad48a94",
+      "ev_12d00eb3e962e1b741e910b3bee4d5ce5678770b77fdf7a8df116f4f3e2be627",
+      "ev_612ca6c2e9ac9c14729f5638cab0dff817bbee580ac1c53d199e871ff59dd106",
+      "ev_9396e929ca47c93ff20c4c58410791ec603d6ad54ec741cb1519852c735f1076",
+      "ev_004085b0b67eab75175f7dbdd448eb7a61c9c65e7987ee1f591492367da69ee6",
+      "ev_2e558db4741f8148974d118faa97917fa6bf5b242dd17903347d7def628e0057",
+      "ev_1fb8d0eb81b5a28897279974f974e6c6cd620bca650f66612faac1defb82b3a0",
+      "ev_a85a61b467df79a037a54bd6708cfd877455115abbf391eb514abf48c7e06a0f"
+    ],
+    "suppliedEvidenceIds": [
+      "ev_04d1113eaf004b51f5aaa46651f7615da897866abe3181be2d3c81209a150d87",
+      "ev_cd009dfe66bfbb79bf23a8b4fad0d0cf2204399d9f2f158ef01169ab63c40537",
+      "ev_a40350edfc9b4c1a683f5fe72de54067358e29d7d8f324ab7f39a81d88e9074e",
+      "ev_370c85ad7c379d5aee202fe72c658283460132b356dead24814ace1ae84f4255"
+    ],
+    "missingPremiseBundles": [
+      {
+        "obligationId": "ob_2",
+        "criterionId": "req_1",
+        "requirement": "给出 GOF 和 PGSR 在 DTU 上报告的几何精度数值和训练耗时，并注明是否来自作者自报或同表对比。",
+        "source": "arxiv:2406.06521v1",
+        "evidenceIds": [
+          "E3"
+        ]
+      },
+      {
+        "obligationId": "ob_3",
+        "criterionId": "human_aspect_1",
+        "requirement": "Mip-NeRF360 的渲染质量如何",
+        "source": "arxiv:2404.10772v1",
+        "evidenceIds": [
+          "E6"
+        ]
+      },
+      {
+        "obligationId": "ob_3",
+        "criterionId": "human_aspect_1",
+        "requirement": "Mip-NeRF360 的渲染质量如何",
+        "source": "arxiv:2406.06521v1",
+        "evidenceIds": [
+          "E7"
+        ]
+      },
+      {
+        "obligationId": "ob_5",
+        "criterionId": "req_1",
+        "requirement": "区分 GOF 和 PGSR 论文中报告的数值是作者自己实验得到还是引用其他论文的同表对比结果。",
+        "source": "arxiv:2406.06521v1",
+        "evidenceIds": [
+          "E3"
+        ]
+      },
+      {
+        "obligationId": "ob_6",
+        "criterionId": "req_1",
+        "requirement": "基于前面核对的几何精度、训练耗时、渲染质量和硬件条件，给出在特定应用场景下选择 GOF 或 PGSR 的建议，并说明条件。",
+        "source": "arxiv:2406.06521v1",
+        "evidenceIds": [
+          "E8"
+        ]
+      }
+    ],
+    "inputBytes": 23946,
+    "fixedInputBytes": 21603,
+    "tableDataOmittedEvidenceIds": [],
+    "sharedTablePackets": 0
+  },
+  "review": {
+    "accepted": false,
+    "independentCredit": 0,
+    "scores": {
+      "目标回应": 1,
+      "证据支持": 2,
+      "条件完整": 1,
+      "综合价值": 1,
+      "可执行性": null,
+      "可读性": 3
+    },
+    "criticalFailure": "Final report has only one GOF qualitative statement and evidence-limited missing-numbers prose; PGSR/method paths/DTU values/cost conditions/conditional choice absent. Both exact v1 fulltexts acquired, but4of20 candidate evidence rows reached synthesis; fixed21603/24000 byte content crowded out required premises. Do not count acquisition as successful comparison.",
+    "notApplicable": "No executable experiment requested. No new human-learning claim.",
+    "sourceReferenceBoundary": "Primary versioned HTML served as evaluator reference only before freezing. No gold expected facts were sent in application question.",
+    "nextAction": "Fix generic synthesis fixed-content overhead and preserve method/result/condition premises for both papers. No automatic retry or historical-case rename."
+  },
+  "preservation": {
+    "oldLedgerUnchanged": true,
+    "allOldRunsUnchanged": true,
+    "newRows": 53,
+    "ledgerRows": 8615,
+    "onlyThisRunCreatedCalls": true,
+    "active": [],
+    "oldPausedRetained": true,
+    "paused": [
+      "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+      "dr_run_ed10cc3347be552288079a9a588fddf5",
+      "dr_run_86b3f181a5475e99aacca3dbf4370567",
+      "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+      "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+      "dr_run_e3521b1781825273b384a26a5edb8cdc",
+      "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+      "dr_run_e9c9dc916bef519092fad8b929b2448f",
+      "dr_run_4738564f5ff35157996a35068c62ed32",
+      "dr_run_a8bd62f9ae3d52ff806f537065f55b2d",
+      "dr_run_98e66f2d3d555dfa822b859963f01419",
+      "dr_run_8be639c866c35ea092c735a04781b647",
+      "dr_run_1c0c2e6510165086962408b8e3cf698b"
+    ],
+    "protected13TasksUnchanged": true,
+    "index1215Unchanged": true,
+    "newTask": "dr-independent-geometry-20261105"
+  },
+  "capacityReplayProof": "deep-research-evidence/geometry-388-synthesis-capacity-replay-20261105.json",
+  "rawSha256": {
+    "G1N-v1.calls.json": "1d51728c7b277a654ff5f9ee8caf582775ff5a20c311e99209840a54b88d883b",
+    "G1N-v1.json": "cb5b1e1f05f39598bb50008f768373121b9dd3ffd3835cb540b7fca3d16caf19",
+    "G1N-v1.payload.json": "ca7a1a48a7362b5fa3c47a41f106f817ddb7724cdc099d5ba640f7ea8f4111a2",
+    "G1N-v1.preservation.json": "3f8bf44943b76ffd3bb68086de37f7c57d6fd6ac7a829717138e634a35921746",
+    "G1N-v1.result.json": "aca77978fe7db7a3c8a8f52ebd53a35a027129117c0bb5bcf4b3b50d5d78c6f4"
+  }
+}

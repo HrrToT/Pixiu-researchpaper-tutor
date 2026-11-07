@@ -1,0 +1,177 @@
+{
+  "case": "X4L-v2",
+  "candidatePromptVersion": "dr-v2.20261030.368",
+  "sourcePayloadSha256": "11e2d251db114c13669c0f713d99da2a2213048e48afc58883e953500ab8658a",
+  "synthesisReplays": [
+    {
+      "localSectionContextContractVersion": 1,
+      "inputBytes": 23734,
+      "suppliedEvidenceIds": [
+        "ev_32cc51aa72a9cb4d3aeb9096d0c8e8acfb4d6587204940326f58d293e1519513",
+        "ev_8d9e7b7a4dcb490331bce72f0c7e495a5928602df5d77224de46d82545073d88",
+        "ev_c95f2e040e47f358ac28b8ab23898c8ac279a4c0af0666973157747fc06d22d2",
+        "ev_2a4531008bffe5fa10b9a56efb035a0185a2af188352e644e378ac7c9a963a5d",
+        "ev_a53cbbc74e57f454e7892e6cf8cdb8d978121f3e626785f0b41d05362dd03bc1",
+        "ev_f580f957d245818427832337512def14fad37c1adb4212595347250a67597847",
+        "ev_96e7d1d5264ec8b49bd7a3dcea93ccf4c4b1e62d06159091cb145bf8cb04b97f",
+        "ev_1306ca99578e5bc45b6848d4e0836e6e4663218fe63d09fd405f78bf15a2254a",
+        "ev_b4b13367ae684873907d4ff029b39d92c38ec390356af31e7ab6db4ee07eaa7a",
+        "ev_6d914bd0be93cca0f7e42ea9bebdd6f8b10197c6e54b2b5a1d3b4250ba948df7",
+        "ev_7311d5cd0ac92050804faf1b6e66174be4eda1c96a7bce9efed26c481f5820a6",
+        "ev_8358ddef8f9f16f3f70fb2e1220c0fc11c02cd4d3d9d858fe544e7878720ecba",
+        "ev_35c8ed39d0274f9039b8135b856ddc9eb615e8efdb77ba2b31c83e44bcbad734",
+        "ev_4026b9a7e2a88f91eec6c1710a3b9f956b190078b9a8c123216209cb7965d30d",
+        "ev_bca7162a0b3c512fe945913d4126ebb0e2ed3eb77546942550c94ef4ad8f681e"
+      ],
+      "missingPremiseBundles": [],
+      "allNineLocalSectionUnitsRetained": false
+    },
+    {
+      "localSectionContextContractVersion": 2,
+      "inputBytes": 23885,
+      "suppliedEvidenceIds": [
+        "ev_32cc51aa72a9cb4d3aeb9096d0c8e8acfb4d6587204940326f58d293e1519513",
+        "ev_8d9e7b7a4dcb490331bce72f0c7e495a5928602df5d77224de46d82545073d88",
+        "ev_c95f2e040e47f358ac28b8ab23898c8ac279a4c0af0666973157747fc06d22d2",
+        "ev_8358ddef8f9f16f3f70fb2e1220c0fc11c02cd4d3d9d858fe544e7878720ecba",
+        "ev_35c8ed39d0274f9039b8135b856ddc9eb615e8efdb77ba2b31c83e44bcbad734",
+        "ev_4026b9a7e2a88f91eec6c1710a3b9f956b190078b9a8c123216209cb7965d30d",
+        "ev_2130887bcc4166954e487bcfe46cf9ff20581ac3276237d82163a05f6b3a0f76",
+        "ev_cf67573e4730737b48f20cf7907871805caef2aade2ed2546e3641dc3dbf02cb",
+        "ev_bca7162a0b3c512fe945913d4126ebb0e2ed3eb77546942550c94ef4ad8f681e",
+        "ev_2a4531008bffe5fa10b9a56efb035a0185a2af188352e644e378ac7c9a963a5d",
+        "ev_a53cbbc74e57f454e7892e6cf8cdb8d978121f3e626785f0b41d05362dd03bc1",
+        "ev_f580f957d245818427832337512def14fad37c1adb4212595347250a67597847",
+        "ev_96e7d1d5264ec8b49bd7a3dcea93ccf4c4b1e62d06159091cb145bf8cb04b97f",
+        "ev_1306ca99578e5bc45b6848d4e0836e6e4663218fe63d09fd405f78bf15a2254a"
+      ],
+      "missingPremiseBundles": [],
+      "allNineLocalSectionUnitsRetained": true
+    }
+  ],
+  "requiredOriginalUnits": [
+    {
+      "evidenceId": "ev_32cc51aa72a9cb4d3aeb9096d0c8e8acfb4d6587204940326f58d293e1519513",
+      "sourceId": "f3091d687bef0e79ac774743e31678c3deed91c35df7d2b75ae392de5ff8f0c7.pdf-v06e05505ce9d673a-chunk-34",
+      "location": {
+        "chunk": 34,
+        "section": "TRAINING",
+        "sourcePassageStart": 101,
+        "sourcePassageEnd": 525,
+        "page": 5,
+        "pageIndex": 4,
+        "pageResolution": "exact"
+      }
+    },
+    {
+      "evidenceId": "ev_8d9e7b7a4dcb490331bce72f0c7e495a5928602df5d77224de46d82545073d88",
+      "sourceId": "f3091d687bef0e79ac774743e31678c3deed91c35df7d2b75ae392de5ff8f0c7.pdf-v06e05505ce9d673a-chunk-34",
+      "location": {
+        "chunk": 34,
+        "section": "TRAINING",
+        "sourcePassageStart": 525,
+        "sourcePassageEnd": 834,
+        "page": 5,
+        "pageIndex": 4,
+        "pageResolution": "exact"
+      }
+    },
+    {
+      "evidenceId": "ev_c95f2e040e47f358ac28b8ab23898c8ac279a4c0af0666973157747fc06d22d2",
+      "sourceId": "f3091d687bef0e79ac774743e31678c3deed91c35df7d2b75ae392de5ff8f0c7.pdf-v06e05505ce9d673a-chunk-34",
+      "location": {
+        "chunk": 34,
+        "section": "TRAINING",
+        "sourcePassageStart": 834,
+        "sourcePassageEnd": 982,
+        "page": 5,
+        "pageIndex": 4,
+        "pageResolution": "exact"
+      }
+    },
+    {
+      "evidenceId": "ev_8358ddef8f9f16f3f70fb2e1220c0fc11c02cd4d3d9d858fe544e7878720ecba",
+      "sourceId": "f3091d687bef0e79ac774743e31678c3deed91c35df7d2b75ae392de5ff8f0c7.pdf-v06e05505ce9d673a-chunk-35",
+      "location": {
+        "chunk": 35,
+        "section": "TRAINING",
+        "sourcePassageStart": 101,
+        "sourcePassageEnd": 564,
+        "page": 5,
+        "pageIndex": 4,
+        "pageResolution": "exact"
+      }
+    },
+    {
+      "evidenceId": "ev_35c8ed39d0274f9039b8135b856ddc9eb615e8efdb77ba2b31c83e44bcbad734",
+      "sourceId": "f3091d687bef0e79ac774743e31678c3deed91c35df7d2b75ae392de5ff8f0c7.pdf-v06e05505ce9d673a-chunk-35",
+      "location": {
+        "chunk": 35,
+        "section": "TRAINING",
+        "sourcePassageStart": 564,
+        "sourcePassageEnd": 1059,
+        "page": 5,
+        "pageIndex": 4,
+        "pageResolution": "exact"
+      }
+    },
+    {
+      "evidenceId": "ev_4026b9a7e2a88f91eec6c1710a3b9f956b190078b9a8c123216209cb7965d30d",
+      "sourceId": "f3091d687bef0e79ac774743e31678c3deed91c35df7d2b75ae392de5ff8f0c7.pdf-v06e05505ce9d673a-chunk-35",
+      "location": {
+        "chunk": 35,
+        "section": "TRAINING",
+        "sourcePassageStart": 1059,
+        "sourcePassageEnd": 1159,
+        "page": 5,
+        "pageIndex": 4,
+        "pageResolution": "exact"
+      }
+    },
+    {
+      "evidenceId": "ev_2130887bcc4166954e487bcfe46cf9ff20581ac3276237d82163a05f6b3a0f76",
+      "sourceId": "f3091d687bef0e79ac774743e31678c3deed91c35df7d2b75ae392de5ff8f0c7.pdf-v06e05505ce9d673a-chunk-36",
+      "location": {
+        "chunk": 36,
+        "section": "TRAINING",
+        "sourcePassageStart": 101,
+        "sourcePassageEnd": 768,
+        "page": 5,
+        "pageIndex": 4,
+        "pageResolution": "exact"
+      }
+    },
+    {
+      "evidenceId": "ev_cf67573e4730737b48f20cf7907871805caef2aade2ed2546e3641dc3dbf02cb",
+      "sourceId": "f3091d687bef0e79ac774743e31678c3deed91c35df7d2b75ae392de5ff8f0c7.pdf-v06e05505ce9d673a-chunk-36",
+      "location": {
+        "chunk": 36,
+        "section": "TRAINING",
+        "sourcePassageStart": 768,
+        "sourcePassageEnd": 1132,
+        "page": 5,
+        "pageIndex": 4,
+        "pageResolution": "exact"
+      }
+    },
+    {
+      "evidenceId": "ev_bca7162a0b3c512fe945913d4126ebb0e2ed3eb77546942550c94ef4ad8f681e",
+      "sourceId": "f3091d687bef0e79ac774743e31678c3deed91c35df7d2b75ae392de5ff8f0c7.pdf-v06e05505ce9d673a-chunk-36",
+      "location": {
+        "chunk": 36,
+        "section": "TRAINING",
+        "sourcePassageStart": 1132,
+        "sourcePassageEnd": 1191,
+        "page": 5,
+        "pageIndex": 4,
+        "pageResolution": "exact"
+      }
+    }
+  ],
+  "scopeAuditRequestBytes": 11349,
+  "scopeAuditRequestsOriginalFieldPaths": true,
+  "providerCalls": 0,
+  "oldResultChanged": false,
+  "scientificAcceptance": false,
+  "boundary": "Actual input representation replay only; no new scientific/model decision and no upgrade of historical ellipsis-bearing audit."
+}

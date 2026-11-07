@@ -1,0 +1,259 @@
+{
+  "date": "2026-10-20",
+  "sourceCommit": "a0972326",
+  "promptVersion": "dr-v2.20261020.206",
+  "case": "E1-v7",
+  "split": "development",
+  "runId": "dr_run_7b9e2f7b662f569e93d305a89b8a9657",
+  "questionUnchanged": true,
+  "frozenCaseCommit": "a023b204",
+  "status": "completed",
+  "outcome": "partial",
+  "elapsedSeconds": 111.92,
+  "settledModelCalls": 14,
+  "settledTokens": 61836,
+  "unsettledModelCalls": 0,
+  "independentCredit": 0,
+  "verificationSummary": {
+    "accepted": 2,
+    "rejected": 7
+  },
+  "initialRepresentationAudit": [
+    {
+      "phase": "synthesis",
+      "claimId": "c1",
+      "designRole": "hypothesis",
+      "path": "/executionSpec",
+      "kind": "single_role_wrapper",
+      "role": "hypothesis"
+    },
+    {
+      "phase": "synthesis",
+      "claimId": "c2",
+      "designRole": "groups",
+      "path": "/executionSpec",
+      "kind": "single_role_wrapper",
+      "role": "groups"
+    },
+    {
+      "phase": "synthesis",
+      "claimId": "c3",
+      "designRole": "controls",
+      "path": "/executionSpec",
+      "kind": "single_role_wrapper",
+      "role": "controls"
+    },
+    {
+      "phase": "synthesis",
+      "claimId": "c4",
+      "designRole": "data",
+      "path": "/executionSpec",
+      "kind": "single_role_wrapper",
+      "role": "data"
+    },
+    {
+      "phase": "synthesis",
+      "claimId": "c5",
+      "designRole": "budget",
+      "path": "/executionSpec",
+      "kind": "single_role_wrapper",
+      "role": "budget"
+    },
+    {
+      "phase": "synthesis",
+      "claimId": "c6",
+      "designRole": "steps",
+      "path": "/executionSpec",
+      "kind": "single_role_wrapper",
+      "role": "steps"
+    },
+    {
+      "phase": "synthesis",
+      "claimId": "c8",
+      "designRole": "analysis",
+      "path": "/executionSpec",
+      "kind": "single_role_wrapper",
+      "role": "analysis"
+    }
+  ],
+  "repairRepresentationAudit": {},
+  "rejectedClaims": [
+    {
+      "claimId": "c1",
+      "reason": "internal_reference_in_prose"
+    },
+    {
+      "claimId": "c3",
+      "reason": "internal_reference_in_prose"
+    },
+    {
+      "claimId": "c4",
+      "reason": "internal_reference_in_prose",
+      "revisionRejection": {
+        "claimId": "c4",
+        "reason": "internal_reference_in_prose"
+      }
+    },
+    {
+      "claimId": "c5",
+      "reason": "incomplete_budget_spec",
+      "detail": "recovery: matched 模式要求所有组的预算值相等",
+      "revisionRejection": {
+        "claimId": "c5",
+        "reason": "semantic_unresolved",
+        "detail": "预算配置不一致：executionSpec.recovery.groups 中 Group B 为 2000 次迭代，但 claim 文本声称 Group B 每帧最多 500 次迭代、总预算 3000 次迭代（1000+4×500）。2000 与 4×500=2000 一致，但文本中的 3000 与 1000+2000=3000 一致，而 executionSpec 中 recovery.groups 的 2000 是总恢复预算，未明确每帧上限；且 baseline.maxBudget=1000 与文本一致。然而，executionSpec.recovery.groups 的 2000 与文本的 4×500=2000 一致，但文本声称总预算 3000，而 executionSpec 未明确总预算。此外，recovery.groups 的 2000 是 Group B 的总恢复预算，但文本"
+      }
+    },
+    {
+      "claimId": "c6",
+      "reason": "internal_reference_in_prose"
+    },
+    {
+      "claimId": "c9",
+      "reason": "internal_reference_in_prose"
+    },
+    {
+      "claimId": "c7",
+      "reason": "semantic_unresolved",
+      "detail": "质量协议未指定PSNR和SSIM的聚合层级（逐帧平均后取第2-5帧平均，但未说明是否跨视图平均或如何跨视图聚合）；存储协议未明确包含的文件或模型表示及计量单位；速度协议未指定设备、分辨率、预热、同步、计时区域和重复次数。"
+    }
+  ],
+  "acceptedClaims": [
+    {
+      "claimId": "c2",
+      "text": "两组共享相同的第0帧3DGS模型、相机划分和第1阶段NTC结果；Group A跳过第2阶段，Group B执行第2阶段自适应新增高斯，且新增高斯逐帧不传到下一帧。\n\n拟议分组（尚未执行）：\n- 因素：\"stage2_addition\"\n  - 对照组操作：\"skip_stage2\"\n    - 参数：未设置\n  - 实验组操作：\"execute_stage2_adaptive_addition\"\n    - 参数：\n      - \"addition_strategy\"（选项）：\"adaptive_spawn_near_emerging_objects\"\n      - \"propagate_to_next_frame\"（选项）：\"false\"",
+      "kind": "proposal",
+      "evidenceRefs": [
+        "ev_4bbeaea2b1a3fc2176d5010e025e0272c4f315f6a4481858bf4ef14db9594a4f"
+      ],
+      "conditions": {
+        "context": "第2阶段自适应新增高斯步骤来自论文；逐帧新增高斯不传到下一帧是用户要求。"
+      },
+      "obligationIds": [
+        "experiment_deliverable",
+        "ob_1"
+      ],
+      "detailLevel": "abstract",
+      "designRole": "groups",
+      "executionSpec": {
+        "factors": [
+          {
+            "name": "stage2_addition",
+            "control": {
+              "action": "skip_stage2",
+              "parameters": []
+            },
+            "treatment": {
+              "action": "execute_stage2_adaptive_addition",
+              "parameters": [
+                {
+                  "name": "addition_strategy",
+                  "type": "choice",
+                  "value": "adaptive_spawn_near_emerging_objects"
+                },
+                {
+                  "name": "propagate_to_next_frame",
+                  "type": "choice",
+                  "value": "false"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "designContractVersion": 2,
+      "verification": "proposal"
+    },
+    {
+      "claimId": "c8",
+      "text": "结果解释：对每个指标计算Group B减去Group A的配对差值（PSNR、SSIM、存储、训练开销），报告描述性统计（均值、标准差），不做显著性检验；根据差值方向描述第2阶段的增量取舍。\n\n拟议配置（尚未执行）：\n\n效应定义：\n\n- psnr_diff：psnr_groupB - psnr_groupA\n- ssim_diff：ssim_groupB - ssim_groupA\n- storage_diff：num_gaussians_groupB - num_gaussians_groupA\n- training_overhead_diff：stage2_iterations_groupB - stage2_iterations_groupA\n\n不确定性：描述性分析，边界为report mean and standard deviation of paired differences\n\n判定逻辑：描述性判断，边界为describe direction and magnitude of differences; no significance test",
+      "kind": "proposal",
+      "evidenceRefs": [],
+      "conditions": {
+        "context": "描述性比较，不承诺改善。"
+      },
+      "obligationIds": [
+        "experiment_deliverable",
+        "ob_1"
+      ],
+      "detailLevel": "abstract",
+      "designRole": "analysis",
+      "executionSpec": {
+        "effects": {
+          "psnr_diff": "psnr_groupB - psnr_groupA",
+          "ssim_diff": "ssim_groupB - ssim_groupA",
+          "storage_diff": "num_gaussians_groupB - num_gaussians_groupA",
+          "training_overhead_diff": "stage2_iterations_groupB - stage2_iterations_groupA"
+        },
+        "uncertainty": {
+          "mode": "descriptive",
+          "boundary": "report mean and standard deviation of paired differences"
+        },
+        "decision": {
+          "mode": "descriptive",
+          "boundary": "describe direction and magnitude of differences; no significance test"
+        }
+      },
+      "designContractVersion": 2,
+      "verification": "proposal"
+    }
+  ],
+  "rawFiles": [
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v7.json",
+      "sha256": "c810cfaca169825e3dba0bcb24d8ae81c904fa549374df98cd7084b5adf32abc"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v7.payload.json",
+      "sha256": "326fb2638dfe124deeaf8455e20dc75f02a8f1a58a4cb5a11fc30bdadee5c649"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v7.calls.json",
+      "sha256": "ece4bc042ed0761db55163d18adbe1677827c6087cb43fedf15f38f1c99b421c"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v7.result.json",
+      "sha256": "b3e22336684a2641819e36f4f52178f40ebf7352afb1f41339f145c824fc0ba0"
+    }
+  ],
+  "boundary": "One fixed development submission, no automatic retry. Representation normalization does not approve science or upgrade historical/independent results.",
+  "contentAccepted": false,
+  "observations": {
+    "exactRoleWrappersNormalized": 7,
+    "normalizedParameterRowsObservedInThisCase": false,
+    "repairTargets": [
+      [
+        "c4",
+        "c5"
+      ],
+      [
+        "c1",
+        "c7",
+        "c9"
+      ],
+      [
+        "c3",
+        "c6"
+      ]
+    ],
+    "repairCompletedBatches": [
+      "0"
+    ],
+    "repairStop": {
+      "batch": 1,
+      "kind": "repairPromptBytes",
+      "limit": 16580,
+      "used": 21519
+    },
+    "internalAliasesInConditions": [
+      "c1",
+      "c3",
+      "c4",
+      "c6",
+      "c9"
+    ],
+    "dataProseAndConfigDisagree": "text assigns even views to training; split stride2 offset0 assigns even views to evaluation",
+    "genuineStateAndProtocolDefects": "fresh baseline inputs empty but shapes reference input0; train baseline with fixed_checkpoint; unspecified actual pretrained-or-trained branch; incomplete MLP; quantity proxy is not serialized byte storage; timing and aggregation incomplete",
+    "reviewConcern": "Budget review repeatedly acknowledges 2000=4*500 and3000=1000+2000 then still rejects; audit independently, do not approve other genuine defects."
+  }
+}

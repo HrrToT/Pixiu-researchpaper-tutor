@@ -1,0 +1,178 @@
+{
+  "date": "2026-10-18",
+  "sourceCommit": "77e16747",
+  "purpose": "Bounded component capability probe; no routing promotion",
+  "configuredModel": "deepseek-v4-pro",
+  "thinking": "enabled",
+  "reasoningEffort": "low",
+  "outputTokenCap": 8192,
+  "modelCalls": 2,
+  "settledTokens": 18306,
+  "cost": null,
+  "records": [
+    {
+      "originalCase": "H1F-v9",
+      "componentRunId": "component_3e4709299d5c5db8a1e96418e0cd71f2",
+      "modelCalls": 1,
+      "settledTokens": 7622,
+      "finishReason": "stop",
+      "hardRejectionReasons": [
+        "numeric_mismatch",
+        "semantic_unresolved"
+      ],
+      "revised": [
+        {
+          "claimId": "c1",
+          "kind": "reported",
+          "text": "NTC预测高斯的两类变化：一是位置移动（平移），二是旋转。它会输出一组数字，前三个数字表示高斯要移动多少，后面的数字表示旋转角度（用四元数表达）。",
+          "evidenceRefs": [
+            "ev_53a20733d81449e6cca09191ffa6cd19d5f909f9adbe1b417e097e42e9772c27"
+          ],
+          "conditions": {},
+          "detailLevel": "fulltext",
+          "obligationIds": [
+            "ob_1"
+          ]
+        },
+        {
+          "claimId": "c2",
+          "kind": "reported",
+          "text": "利用前一帧表示时，先拿上一帧的高斯作为起始点，把它们交给NTC；NTC学习为这些高斯建模变换，输出变换后的高斯；然后用这些变换后的高斯渲染当前画面，并且只有它们会传给下一帧继续使用。",
+          "evidenceRefs": [
+            "ev_f51816e595f8373d3a4ec3dd73ea8147f5eb4a359e0f6b53a04cb89e24cfb73b",
+            "ev_bdb024b856972aab854c483acb7dfa600c4918cc401ccfcebcb14da2200b2d38"
+          ],
+          "conditions": {},
+          "detailLevel": "fulltext",
+          "obligationIds": [
+            "ob_2"
+          ]
+        }
+      ],
+      "contentAccepted": false,
+      "rawFiles": [
+        {
+          "path": "tmp/dr-acceptance-receipts/H1F-v9-repair-low-probe1.json",
+          "sha256": "ecde6e3f44997dccef5e32d753c3ce18bdc6a06068a06d73566754a77f548153"
+        },
+        {
+          "path": "tmp/dr-acceptance-receipts/H1F-v9-repair-low-probe1.request.json",
+          "sha256": "4470ebffe0b8ccf3e0549aab7106b9e03b2ed835748a1b667641f0a0eaca1ff0"
+        }
+      ]
+    },
+    {
+      "originalCase": "D1-v19",
+      "componentRunId": "component_b13a830bcbd6506093d3d6695beda92e",
+      "modelCalls": 1,
+      "settledTokens": 10684,
+      "finishReason": "stop",
+      "hardRejectionReasons": [
+        "ambiguous_table_series",
+        "semantic_unresolved"
+      ],
+      "revised": [
+        {
+          "claimId": "c1",
+          "kind": "reported",
+          "text": "作者在Mip-NeRF 360数据集（Table 1）上报告：原始3D-GS*的PSNR/SSIM/LPIPS为27.40/0.813/0.217，压缩后Ours为27.13/0.806/0.237，并总结SSIM仅下降0.007。",
+          "evidenceRefs": [
+            "ev_da50f72dfd60628d0b0e9d9c19d7713d15d272f28f40661eaa6ad1e7a1c33aee",
+            "ev_ffe2afc10303963ace5068705474a2c111bd99e53c60afe414460f77471fc747",
+            "ev_1190688c2c1c3ee17147f5ba7d3717adc7d84c5d3524981627bb56616ec05be1"
+          ],
+          "conditions": {},
+          "detailLevel": "fulltext",
+          "tableBindings": [
+            {
+              "evidenceId": "ev_da50f72dfd60628d0b0e9d9c19d7713d15d272f28f40661eaa6ad1e7a1c33aee",
+              "rowNumber": 9,
+              "groupIndex": 0,
+              "metric": "PSNR",
+              "value": "27.40"
+            },
+            {
+              "evidenceId": "ev_da50f72dfd60628d0b0e9d9c19d7713d15d272f28f40661eaa6ad1e7a1c33aee",
+              "rowNumber": 9,
+              "groupIndex": 0,
+              "metric": "SSIM",
+              "value": "0.813"
+            },
+            {
+              "evidenceId": "ev_da50f72dfd60628d0b0e9d9c19d7713d15d272f28f40661eaa6ad1e7a1c33aee",
+              "rowNumber": 9,
+              "groupIndex": 0,
+              "metric": "LPIPS",
+              "value": "0.217"
+            },
+            {
+              "evidenceId": "ev_ffe2afc10303963ace5068705474a2c111bd99e53c60afe414460f77471fc747",
+              "rowNumber": 10,
+              "groupIndex": 0,
+              "metric": "PSNR",
+              "value": "27.13"
+            },
+            {
+              "evidenceId": "ev_ffe2afc10303963ace5068705474a2c111bd99e53c60afe414460f77471fc747",
+              "rowNumber": 10,
+              "groupIndex": 0,
+              "metric": "SSIM",
+              "value": "0.806"
+            },
+            {
+              "evidenceId": "ev_ffe2afc10303963ace5068705474a2c111bd99e53c60afe414460f77471fc747",
+              "rowNumber": 10,
+              "groupIndex": 0,
+              "metric": "LPIPS",
+              "value": "0.237"
+            }
+          ],
+          "obligationIds": [
+            "ob_1"
+          ]
+        },
+        {
+          "claimId": "c2",
+          "kind": "inference",
+          "text": "基于上述数据，压缩后图像质量在PSNR、SSIM、LPIPS上均接近原始3D-GS*，但仅限该数据集和这三个指标；作者未在其他数据集或指标上验证接近性，因此不能泛化。",
+          "evidenceRefs": [
+            "ev_da50f72dfd60628d0b0e9d9c19d7713d15d272f28f40661eaa6ad1e7a1c33aee",
+            "ev_ffe2afc10303963ace5068705474a2c111bd99e53c60afe414460f77471fc747",
+            "ev_1190688c2c1c3ee17147f5ba7d3717adc7d84c5d3524981627bb56616ec05be1"
+          ],
+          "conditions": {},
+          "detailLevel": "fulltext",
+          "tableBindings": [],
+          "obligationIds": [
+            "ob_2"
+          ]
+        }
+      ],
+      "contentAccepted": false,
+      "rawFiles": [
+        {
+          "path": "tmp/dr-acceptance-receipts/D1-v19-repair-low-probe1.json",
+          "sha256": "b969adcb1acebc4d5969118cce3b3992c782acfc4981acb7717dbe5dce922f4c"
+        },
+        {
+          "path": "tmp/dr-acceptance-receipts/D1-v19-repair-low-probe1.request.json",
+          "sha256": "dea0e48c61fe74d95c1e4f8457effe37e18fbc9be117e7b5c25bd3204acc8fee"
+        }
+      ]
+    }
+  ],
+  "actualProductionLedgerCheck": {
+    "calls": 3708,
+    "oldPrefixUnchanged": true,
+    "newCaseRowsUnchanged": 42,
+    "active": 0,
+    "historicalPausedUnknowns": 9
+  },
+  "findings": [
+    "The beginner probe removes the unreported four-dimension count, but generic 一组数字 is falsely treated as reported quantity one. Wording about quaternion rotation still needs careful review.",
+    "The numerical probe restores a literal star but uses a slash-separated metric/value series; the strict display check rejects it. It also repeats a paper-wide absence assertion and still selects the starred baseline variant.",
+    "Low reasoning plus a larger output cap has mixed results. Two component samples do not justify promoting the global route or declaring content quality passed.",
+    "Next work should separate data bindings/variant conditions from free prose, distinguish non-quantitative collective expressions, and avoid losing a supported explanation because an optional clause fails."
+  ],
+  "boundary": "Each probe checked all prior same-case terminal states first, used the canonical receipt folder and a separate local component ledger with one request/40000-token budget. API credentials stayed in the configured container. No production mutation, unknown retry, semantic-model approval, product-path acceptance, independent credit or causal quality claim. Exact request reconstructions match recorded pre-send fingerprints."
+}

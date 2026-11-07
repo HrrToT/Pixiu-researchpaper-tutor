@@ -1,0 +1,20 @@
+{
+  "containerAlternateHostnameIdLookup": {
+    "endpoint": "https://arxiv.org/api/query",
+    "idList": "2403.17888",
+    "attempts": 1,
+    "seconds": 1.298,
+    "httpStatus": 302,
+    "bytes": 314
+  },
+  "windowsOriginalEndpoint": {
+    "httpStatus": 200,
+    "bytes": 2970,
+    "endpoint": "https://export.arxiv.org/api/query",
+    "attempts": 1,
+    "seconds": 4.937
+  },
+  "modelCalls": 0,
+  "productionWrites": 0,
+  "boundary": "Transport diagnosis only; no fallback enabled, no claim of scientific or external workflow acceptance."
+}

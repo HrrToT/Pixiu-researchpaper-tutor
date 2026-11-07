@@ -1,0 +1,59 @@
+{
+  "date": "2026-10-18",
+  "case": "H1F-v1",
+  "slot": "H1",
+  "runId": "dr_run_8b35605449c15fd98026409a338a16e5",
+  "sourceCommit": "ebcf570c",
+  "promptVersion": "dr-v2.20261018.126",
+  "caseDefinitionHash": "3d00cf3fe8b60e78a124e451fba1636924e60f9fef4d2f63954915ea48d8fa4e",
+  "question": "只依据3DGStream v4，用初学者能懂的话解释：NTC预测高斯的什么变化，怎样利用前一帧表示，为什么遇到新出现的物体还需要添加高斯？只写三点，350字以内，不泛化为所有动态场景都能无损重建。",
+  "materialHashes": {
+    "stream": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98"
+  },
+  "status": "completed",
+  "outcome": "partial",
+  "contentAccepted": false,
+  "firstIndependentAttempt": true,
+  "retiredForTuning": true,
+  "modelCalls": 14,
+  "settledTokens": 50237,
+  "elapsedSeconds": 67.656,
+  "externalSearches": 0,
+  "fulltextFetches": 0,
+  "cost": null,
+  "report": "## 判断\n\n- NTC预测每个高斯从上一帧到当前帧的变化，比如位置、旋转、缩放。它接收上一帧的高斯，输出变化量，再应用到高斯上得到当前帧的预测。 [2](#research-evidence-ev_8a6c0872104d7a1786b40986fd0c84d1d219d439b0b5bb16bc650123bd1ef13b) [1](#research-evidence-ev_ac78892b03667f013a7ab023f8ee141856e6e6b1e1d412266f3faa1d17ef5c8b) [3](#research-evidence-ev_9dbe5a8c5b420da2d339dd8936ed83308182ac85db84b59d2f521476ce2df61f) [4](#research-evidence-ev_09cb3f1b86dfcd9392692455b7d8d156232b3fd423487513b26d0ef0579a5554)\n- 利用前一帧表示：把上一帧的高斯作为当前帧的起点，先训练NTC学习每个高斯的变化，训练完后把变化后的高斯传给下一帧。 [1](#research-evidence-ev_ac78892b03667f013a7ab023f8ee141856e6e6b1e1d412266f3faa1d17ef5c8b) [2](#research-evidence-ev_8a6c0872104d7a1786b40986fd0c84d1d219d439b0b5bb16bc650123bd1ef13b) [3](#research-evidence-ev_9dbe5a8c5b420da2d339dd8936ed83308182ac85db84b59d2f521476ce2df61f) [4](#research-evidence-ev_09cb3f1b86dfcd9392692455b7d8d156232b3fd423487513b26d0ef0579a5554)\n- 新出现的物体在上一帧没有对应的高斯，NTC只能改变已有高斯，不能创造新的，所以需要额外添加高斯来建模新物体。 [5](#research-evidence-ev_cdfd48dfbddf41cd8040b67674c7a83e4046f6400cb3ba7cec77d287399252dd) [6](#research-evidence-ev_874f15b3efaa84c02564cd55bd714e1eefa7a171713ec3561ada9191bab6e55d) [7](#research-evidence-ev_b5371f49f5643ef3b4952ed30a68149ce76ec9ed4606593c786fcfe88ecb2305) [8](#research-evidence-ev_428fdbf7a6bb88461a550930b3b78b22b31c679ce02ed489d7e296fcd9c3db08) [9](#research-evidence-ev_c44552a47c47d4a3eb6db313e8a54b61bcf19478c2c9a24fff0d2d91243f95ce)\n\n<details>\n<summary>还有 1 项未完成</summary>\n\n- NTC预测高斯的哪些变化，以及如何利用前一帧的高斯表示来生成当前帧的预测？：最终回答尚未完整回应这一问题\n\n</details>\n\n论文事实已按所列原文核对。\n\n<details>\n<summary>原文依据</summary>\n\n**[1] 3DGStream: On-the-Fly Training of 3D Gaussians for Efficient Streaming of Photo-Realistic Free-Viewpoint Videos** · 全文片段\n\n> For subsequent timesteps, we employ the previous timestep's 3DGs as an initialization and pass them to a two-stage pipeline.\n\n**[2] 3DGStream: On-the-Fly Training of 3D Gaussians for Efficient Streaming of Photo-Realistic Free-Viewpoint Videos** · 第 4 页 · 全文片段\n\n> Firstly (Sec.\n> 4.1), a Neural Transformation Cache (NTC) is trained to model the transformation for each 3DG.\n\n**[3] 3DGStream: On-the-Fly Training of 3D Gaussians for Efficient Streaming of Photo-Realistic Free-Viewpoint Videos** · 全文片段\n\n> Then, for each timestep i, we use the 3DGs of previous timestep i − 1 as initialization and pass it to a two-stage pipeline.\n\n**[4] 3DGStream: On-the-Fly Training of 3D Gaussians for Efficient Streaming of Photo-Realistic Free-Viewpoint Videos** · 全文片段\n\n> (1)In Stage 1, we train a Neural Transformation Cache (NTC) to model the transformations of 3DGs.\n\n**[5] 3DGStream: On-the-Fly Training of 3D Gaussians for Efficient Streaming of Photo-Realistic Free-Viewpoint Videos** · 全文片段\n\n> (2)Then in the Stage 2, we use an adaptive 3DG addition strategy to handle emerging objects by spawning frame-specific additional 3DGs near these objects and optimize them along with periodic splitting and pruning.\n\n**[6] 3DGStream: On-the-Fly Training of 3D Gaussians for Efficient Streaming of Photo-Realistic Free-Viewpoint Videos** · 第 4 页 · 全文片段\n\n> Secondly (Sec.\n> 4.2), we employ an adaptive 3DG addition strategy to handle emerging objects.\n\n**[7] 3DGStream: On-the-Fly Training of 3D Gaussians for Efficient Streaming of Photo-Realistic Free-Viewpoint Videos** · 全文片段\n\n> Considering constraints related to model storage requirements and training complexities, it's not feasible to generate an extensive number of additional 3DGs nor allow them to be used in subsequent frames, as this would cause 3DGs to accumulate over time.\n\n**[8] 3DGStream: On-the-Fly Training of 3D Gaussians for Efficient Streaming of Photo-Realistic Free-Viewpoint Videos** · 第 5 页 · 全文片段\n\n> This necessitates a strategy for swiftly generating a limited number of frame-specific 3DGs to model these emerging objects precisely and thereby enhance the completeness of the scene at the current timestep.\n\n**[9] 3DGStream: On-the-Fly Training of 3D Gaussians for Efficient Streaming of Photo-Realistic Free-Viewpoint Videos** · 第 5 页 · 全文片段\n\n> We observed that for emerging objects, the 3DGs in proximity exhibited large view-space positional gradients.\n\n</details>",
+  "findings": [
+    "Published NTC scale prediction although the source method predicts translation and rotation; the initial verifier rejected unsupported attributes.",
+    "The repair returned identical c1/c3 wording and the same citation sets in another order. The later semantic checker flipped to passed without a changed scientific basis.",
+    "The plan had introduced speculative attribute examples into its completion criterion; those examples were not paper evidence.",
+    "Overview retrieval lacked the precise output-parameter passage. This first independent result fails factual acceptance.",
+    "Retired from independent use after motivating the generic unchanged-repair guard; the sealed manifest and first result remain unchanged."
+  ],
+  "scores": {
+    "goalResponse": 3,
+    "evidenceSupport": 1,
+    "conditions": 2,
+    "synthesisValue": 2,
+    "executability": null,
+    "readability": 4
+  },
+  "rawFiles": [
+    {
+      "path": "tmp\\dr-acceptance-receipts\\H1F-v1.json",
+      "sha256": "e29a801ced4caa1ab475053f0cd02fc69a472d45476dd2397d20ca8d33fd5aa2"
+    },
+    {
+      "path": "tmp\\dr-acceptance-receipts\\H1F-v1.payload.json",
+      "sha256": "9e39f48f2fbdc9e864140859e1fdc9b9a97307b85422372155df7792a06883d0"
+    },
+    {
+      "path": "tmp\\dr-acceptance-receipts\\H1F-v1.calls.json",
+      "sha256": "c7467932cb13e3f5d4142126a3eff87bbde1eed65635344fcc7fdf9bc02b79a5"
+    },
+    {
+      "path": "tmp\\dr-acceptance-receipts\\H1F-v1.result.json",
+      "sha256": "72d8ffa42c4c760313378a247a1ae6eb0482f524f698f1b21c4b6a29824abeeb"
+    }
+  ],
+  "boundary": "First results scored against the sealed requirements; no failed result was overwritten or counted as a quality pass."
+}

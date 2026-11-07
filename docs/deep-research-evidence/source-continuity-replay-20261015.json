@@ -1,0 +1,212 @@
+{
+  "modelCalls": 0,
+  "queryRewrite": false,
+  "results": [
+    {
+      "query": "MVSplat cost volume construction cross-view matching camera parameters image features",
+      "before": [
+        "d1becb5361d7d8aa6f2e47d1e9e257031120b4207834f5effca049a8df7e4bb9.pdf-v9f12755c3d6011c5-chunk-41",
+        "d1becb5361d7d8aa6f2e47d1e9e257031120b4207834f5effca049a8df7e4bb9.pdf-v9f12755c3d6011c5-chunk-58",
+        "d1becb5361d7d8aa6f2e47d1e9e257031120b4207834f5effca049a8df7e4bb9.pdf-v9f12755c3d6011c5-chunk-2",
+        "d1becb5361d7d8aa6f2e47d1e9e257031120b4207834f5effca049a8df7e4bb9.pdf-v9f12755c3d6011c5-chunk-45",
+        "d1becb5361d7d8aa6f2e47d1e9e257031120b4207834f5effca049a8df7e4bb9.pdf-v9f12755c3d6011c5-chunk-57"
+      ],
+      "after": [
+        {
+          "sourceId": "d1becb5361d7d8aa6f2e47d1e9e257031120b4207834f5effca049a8df7e4bb9.pdf-v9f12755c3d6011c5-chunk-41",
+          "location": {
+            "page": 13,
+            "chunk": 41,
+            "section": "Ablations"
+          },
+          "retrievalMode": "indexed_hybrid",
+          "contextForSourceId": null
+        },
+        {
+          "sourceId": "d1becb5361d7d8aa6f2e47d1e9e257031120b4207834f5effca049a8df7e4bb9.pdf-v9f12755c3d6011c5-chunk-58",
+          "location": {
+            "page": 11,
+            "chunk": 58,
+            "section": "Table 3 : 5, MVSplat renders competitive novel views, despite scenes of the targeted datasets containing significantly different camera distributions and image appearance from those of the source dataset. In contrast, views rendered by pix-Ablations on RealEstate10K. The \"base + refine\" is our final model, where \"refine\" refers to the \"depth refinement\" detailed in Sec. 3.1. All other ablations are conducted on the \"base\" model w/o depth refinement. The cost volume module plays an indispensable role in MVSplat. Results of all models are obtained from the final converged step (300K in our experiments), except the one \"w/o cross-view attention\", which suffers from over-fitting (details are shown in the supplementary material Fig.A), hence we report its best performance.",
+            "table": "tab_2",
+            "tableColumnMappingUnverified": true
+          },
+          "retrievalMode": "indexed_hybrid",
+          "contextForSourceId": null
+        },
+        {
+          "sourceId": "d1becb5361d7d8aa6f2e47d1e9e257031120b4207834f5effca049a8df7e4bb9.pdf-v9f12755c3d6011c5-chunk-2",
+          "location": {
+            "page": 1,
+            "chunk": 2,
+            "section": "PSNR (dB)"
+          },
+          "retrievalMode": "indexed_hybrid",
+          "contextForSourceId": null
+        },
+        {
+          "sourceId": "d1becb5361d7d8aa6f2e47d1e9e257031120b4207834f5effca049a8df7e4bb9.pdf-v9f12755c3d6011c5-chunk-45",
+          "location": {
+            "page": 14,
+            "chunk": 45,
+            "section": "Conclusion"
+          },
+          "retrievalMode": "indexed_hybrid",
+          "contextForSourceId": null
+        },
+        {
+          "sourceId": "d1becb5361d7d8aa6f2e47d1e9e257031120b4207834f5effca049a8df7e4bb9.pdf-v9f12755c3d6011c5-chunk-57",
+          "location": {
+            "page": 11,
+            "chunk": 57,
+            "section": "Table 3 : 5, MVSplat renders competitive novel views, despite scenes of the targeted datasets containing significantly different camera distributions and image appearance from those of the source dataset. In contrast, views rendered by pix-Ablations on RealEstate10K. The \"base + refine\" is our final model, where \"refine\" refers to the \"depth refinement\" detailed in Sec. 3.1. All other ablations are conducted on the \"base\" model w/o depth refinement. The cost volume module plays an indispensable role in MVSplat. Results of all models are obtained from the final converged step (300K in our experiments), except the one \"w/o cross-view attention\", which suffers from over-fitting (details are shown in the supplementary material Fig.A), hence we report its best performance.",
+            "table": "tab_2",
+            "tableColumnMappingUnverified": true
+          },
+          "retrievalMode": "indexed_hybrid",
+          "contextForSourceId": null
+        }
+      ],
+      "countBounded": true,
+      "independentPredecessors": []
+    },
+    {
+      "query": "MVSplat depth estimation Gaussian centers unprojection depth map",
+      "before": [
+        "d1becb5361d7d8aa6f2e47d1e9e257031120b4207834f5effca049a8df7e4bb9.pdf-v9f12755c3d6011c5-chunk-16",
+        "d1becb5361d7d8aa6f2e47d1e9e257031120b4207834f5effca049a8df7e4bb9.pdf-v9f12755c3d6011c5-chunk-2",
+        "d1becb5361d7d8aa6f2e47d1e9e257031120b4207834f5effca049a8df7e4bb9.pdf-v9f12755c3d6011c5-chunk-7",
+        "d1becb5361d7d8aa6f2e47d1e9e257031120b4207834f5effca049a8df7e4bb9.pdf-v9f12755c3d6011c5-chunk-33",
+        "d1becb5361d7d8aa6f2e47d1e9e257031120b4207834f5effca049a8df7e4bb9.pdf-v9f12755c3d6011c5-chunk-45"
+      ],
+      "after": [
+        {
+          "sourceId": "d1becb5361d7d8aa6f2e47d1e9e257031120b4207834f5effca049a8df7e4bb9.pdf-v9f12755c3d6011c5-chunk-15",
+          "location": {
+            "page": 5,
+            "chunk": 15,
+            "section": "Method"
+          },
+          "retrievalMode": "indexed_preceding_context",
+          "contextForSourceId": "d1becb5361d7d8aa6f2e47d1e9e257031120b4207834f5effca049a8df7e4bb9.pdf-v9f12755c3d6011c5-chunk-16"
+        },
+        {
+          "sourceId": "d1becb5361d7d8aa6f2e47d1e9e257031120b4207834f5effca049a8df7e4bb9.pdf-v9f12755c3d6011c5-chunk-16",
+          "location": {
+            "page": 5,
+            "chunk": 16,
+            "section": "Method"
+          },
+          "retrievalMode": "indexed_hybrid",
+          "contextForSourceId": null
+        },
+        {
+          "sourceId": "d1becb5361d7d8aa6f2e47d1e9e257031120b4207834f5effca049a8df7e4bb9.pdf-v9f12755c3d6011c5-chunk-2",
+          "location": {
+            "page": 1,
+            "chunk": 2,
+            "section": "PSNR (dB)"
+          },
+          "retrievalMode": "indexed_hybrid",
+          "contextForSourceId": null
+        },
+        {
+          "sourceId": "d1becb5361d7d8aa6f2e47d1e9e257031120b4207834f5effca049a8df7e4bb9.pdf-v9f12755c3d6011c5-chunk-7",
+          "location": {
+            "page": 1,
+            "chunk": 7,
+            "section": "Introduction"
+          },
+          "retrievalMode": "indexed_hybrid",
+          "contextForSourceId": null
+        },
+        {
+          "sourceId": "d1becb5361d7d8aa6f2e47d1e9e257031120b4207834f5effca049a8df7e4bb9.pdf-v9f12755c3d6011c5-chunk-33",
+          "location": {
+            "page": 8,
+            "chunk": 33,
+            "section": "Main Results"
+          },
+          "retrievalMode": "indexed_hybrid",
+          "contextForSourceId": null
+        }
+      ],
+      "countBounded": true,
+      "independentPredecessors": [
+        {
+          "sourceId": "d1becb5361d7d8aa6f2e47d1e9e257031120b4207834f5effca049a8df7e4bb9.pdf-v9f12755c3d6011c5-chunk-15",
+          "text": "Paper: MVSplat: Efficient 3D Gaussian Splatting from Sparse Multi-View Images\n\nSection: Method\n\nContent:\nWe begin with K sparse-view images\n) and their corresponding camera projection matrices\ncalculated via intrinsic K i , rotation R i and translation t i matrices. Our goal is to learn a mapping f θ from images to 3D Gaussian parameters:\nwhere we parameterize f θ as a feed-forward network and θ are the learnable parameters optimized from a large-scale training dataset. We predict the Gaussian parameters, including position µ j , opacity α j , covariance Σ j and color c j (represented as spherical harmonics) in a pixel-aligned manner, and thus the total number of 3D Gaussians is H × W × K for K input images with shape H × W ."
+        }
+      ]
+    },
+    {
+      "query": "MVSplat training supervision depth supervision ground truth depth labels",
+      "before": [
+        "d1becb5361d7d8aa6f2e47d1e9e257031120b4207834f5effca049a8df7e4bb9.pdf-v9f12755c3d6011c5-chunk-14",
+        "d1becb5361d7d8aa6f2e47d1e9e257031120b4207834f5effca049a8df7e4bb9.pdf-v9f12755c3d6011c5-chunk-33",
+        "d1becb5361d7d8aa6f2e47d1e9e257031120b4207834f5effca049a8df7e4bb9.pdf-v9f12755c3d6011c5-chunk-2",
+        "d1becb5361d7d8aa6f2e47d1e9e257031120b4207834f5effca049a8df7e4bb9.pdf-v9f12755c3d6011c5-chunk-8",
+        "d1becb5361d7d8aa6f2e47d1e9e257031120b4207834f5effca049a8df7e4bb9.pdf-v9f12755c3d6011c5-chunk-7"
+      ],
+      "after": [
+        {
+          "sourceId": "d1becb5361d7d8aa6f2e47d1e9e257031120b4207834f5effca049a8df7e4bb9.pdf-v9f12755c3d6011c5-chunk-13",
+          "location": {
+            "page": 3,
+            "chunk": 13,
+            "section": "Related Work"
+          },
+          "retrievalMode": "indexed_preceding_context",
+          "contextForSourceId": "d1becb5361d7d8aa6f2e47d1e9e257031120b4207834f5effca049a8df7e4bb9.pdf-v9f12755c3d6011c5-chunk-14"
+        },
+        {
+          "sourceId": "d1becb5361d7d8aa6f2e47d1e9e257031120b4207834f5effca049a8df7e4bb9.pdf-v9f12755c3d6011c5-chunk-14",
+          "location": {
+            "page": 3,
+            "chunk": 14,
+            "section": "Related Work"
+          },
+          "retrievalMode": "indexed_hybrid",
+          "contextForSourceId": null
+        },
+        {
+          "sourceId": "d1becb5361d7d8aa6f2e47d1e9e257031120b4207834f5effca049a8df7e4bb9.pdf-v9f12755c3d6011c5-chunk-33",
+          "location": {
+            "page": 8,
+            "chunk": 33,
+            "section": "Main Results"
+          },
+          "retrievalMode": "indexed_hybrid",
+          "contextForSourceId": null
+        },
+        {
+          "sourceId": "d1becb5361d7d8aa6f2e47d1e9e257031120b4207834f5effca049a8df7e4bb9.pdf-v9f12755c3d6011c5-chunk-2",
+          "location": {
+            "page": 1,
+            "chunk": 2,
+            "section": "PSNR (dB)"
+          },
+          "retrievalMode": "indexed_hybrid",
+          "contextForSourceId": null
+        },
+        {
+          "sourceId": "d1becb5361d7d8aa6f2e47d1e9e257031120b4207834f5effca049a8df7e4bb9.pdf-v9f12755c3d6011c5-chunk-8",
+          "location": {
+            "page": 1,
+            "chunk": 8,
+            "section": "Introduction"
+          },
+          "retrievalMode": "indexed_hybrid",
+          "contextForSourceId": null
+        }
+      ],
+      "countBounded": true,
+      "independentPredecessors": [
+        {
+          "sourceId": "d1becb5361d7d8aa6f2e47d1e9e257031120b4207834f5effca049a8df7e4bb9.pdf-v9f12755c3d6011c5-chunk-13",
+          "text": "Paper: MVSplat: Efficient 3D Gaussian Splatting from Sparse Multi-View Images\n\nSection: Related Work\n\nContent:\nIt demonstrates the importance of cross-view-aware features, learned from the epipolar Transformer.\nIt then directly uses these features to predict probabilistic depth distributions for sampling depths.\nHowever, the mapping from features to depth distributions is inherently ambiguous and unreliable, essentially leading to poor geometry reconstruction.\nIn contrast, we learn to predict depth from the feature matching information encoded within a cost volume, which makes it more geometry-aware and leads to a more lightweight model (10× fewer parameters and more than 2× faster) and significantly better geometries.\nAnother related work GPS-Gaussian[53]proposes a feed-forward Gaussian model for the reconstruction of humans, instead of general scenes.\nIt relies on two rectified stereo images to estimate the disparity, while our method works for general unrectified multi-view posed images.\nDuring training, GPS-Gaussian requires ground truth depth for supervision, while our model is trained from RGB images alone."
+        }
+      ]
+    }
+  ]
+}

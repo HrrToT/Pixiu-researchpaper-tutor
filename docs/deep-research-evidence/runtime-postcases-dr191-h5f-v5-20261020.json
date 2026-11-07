@@ -1,0 +1,33 @@
+{
+  "date": "2026-10-20",
+  "sourceCommit": "ba3669a1",
+  "beforeLedgerRows": 4683,
+  "after": {
+    "calls": 4709,
+    "active": [],
+    "paused": [
+      "dr_run_4738564f5ff35157996a35068c62ed32",
+      "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+      "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+      "dr_run_86b3f181a5475e99aacca3dbf4370567",
+      "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+      "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+      "dr_run_a8bd62f9ae3d52ff806f537065f55b2d",
+      "dr_run_e3521b1781825273b384a26a5edb8cdc",
+      "dr_run_e9c9dc916bef519092fad8b929b2448f",
+      "dr_run_ed10cc3347be552288079a9a588fddf5"
+    ],
+    "newRunIds": [
+      "dr_run_3e33a57306e95893bc6337c8920c9f3b"
+    ]
+  },
+  "oldLedgerAndAllPayloadsPreserved": true,
+  "oldTaskEntitiesPreserved": {
+    "dr-acceptance-h5f-2026-10-18": true
+  },
+  "modelCalls": 11,
+  "settledTokens": 43435,
+  "cost": null,
+  "contentAccepted": 0,
+  "boundary": "All new rows settled; no new unknown or old-object/ledger overwrite."
+}

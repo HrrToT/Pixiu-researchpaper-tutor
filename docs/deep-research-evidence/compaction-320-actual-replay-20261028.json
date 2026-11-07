@@ -1,0 +1,52 @@
+{
+  "sourcePromptVersion": "dr-v2.20261028.319",
+  "realStage": {
+    "providerCalls": 2,
+    "allSucceeded": true,
+    "totalTokens": 12543,
+    "result": "invalid_synthesis_response",
+    "compactedCharacters": 435,
+    "characterLimit": 300,
+    "compactionCopiedInput": true,
+    "enteredVerification": false,
+    "qualityAccepted": false,
+    "preservation": {
+      "before": {
+        "ledgerRows": 7465,
+        "ledgerSha256": "9138a4c5c9e9397c9dce6b78007d07dc1c2f7955dd637bef1d794f0c50b97bbc",
+        "payloadSha256": "a4559eea0b66b511bed93f21a1cba7e6a39068464469aacbcd30fde6895797ad"
+      },
+      "after": {
+        "ledgerRows": 7465,
+        "ledgerSha256": "9138a4c5c9e9397c9dce6b78007d07dc1c2f7955dd637bef1d794f0c50b97bbc",
+        "payloadSha256": "a4559eea0b66b511bed93f21a1cba7e6a39068464469aacbcd30fde6895797ad"
+      },
+      "exactProductionPreservation": true,
+      "providerSubmissions": 2,
+      "productionPublish": false,
+      "fullWorkflowReplay": false,
+      "independentCredit": 0
+    }
+  },
+  "newPromptVersion": "dr-v2.20261028.320",
+  "offlineReplay": {
+    "providerCalls": 0,
+    "productionWrites": 0,
+    "replayedGenerationFromSettledRaw": true,
+    "capturedNode": "synthesize_compact",
+    "measuredLengthInstruction": true,
+    "incidentalNumericExamplesMayBeOmitted": true,
+    "options": {
+      "max_tokens": 8192,
+      "temperature": 0.0,
+      "thinking": {
+        "type": "enabled"
+      },
+      "reasoning_effort": "low"
+    },
+    "promptBytes": 5956,
+    "promptSha256": "0c160710aff07046caafce9dc3e843323a4a5712162e59ca8436df2f1381574c"
+  },
+  "independentCredit": 0,
+  "rawReceipts": "tmp\\component-claim-check-319-20261028\\receipt"
+}

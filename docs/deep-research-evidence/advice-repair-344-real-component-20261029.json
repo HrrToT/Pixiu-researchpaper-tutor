@@ -1,0 +1,109 @@
+{
+  "sourceCase": "S1G-v4",
+  "sourceCommit": "9454d85c",
+  "promptVersion": "dr-v2.20261029.344",
+  "providerCalls": 5,
+  "tokens": 24217,
+  "elapsedSeconds": 37.643,
+  "allSettled": true,
+  "transportRetries": 0,
+  "initialRejection": [
+    {
+      "claimId": "c2",
+      "reason": "internal_reference_in_prose"
+    }
+  ],
+  "repairedAdvice": {
+    "claimId": "c2",
+    "kind": "proposal",
+    "text": "建议阅读顺序：先读高斯剪枝与恢复部分，理解如何减少高斯数量；再读球谐系数蒸馏部分，理解如何压缩球谐系数；最后读高斯向量量化部分，理解如何降低位宽。",
+    "evidenceRefs": [
+      "ev_a338259d46d124ea7f2a011130fa7bf4e3da6bc823049df2cf0d15b1a793e240",
+      "ev_68801d18533cd7182b698cba746ecff15805968ba6fdfaeb99fde2f29d62afd7"
+    ],
+    "conditions": {},
+    "detailLevel": "fulltext",
+    "obligationIds": [
+      "ob_2"
+    ],
+    "verification": "proposal"
+  },
+  "accepted": 2,
+  "rejected": 0,
+  "coverageGaps": [
+    {
+      "obligationId": "ob_3",
+      "question": "提供的材料是论文全文还是仅摘要？",
+      "missingEvidence": "最终回答尚未完整回应这一问题",
+      "stage": "answer",
+      "missingAspects": [
+        "根据材料内容判断并明确说明是全文还是摘要。"
+      ],
+      "aspectEvidenceRefs": [],
+      "gapDetail": {
+        "criterionIds": [
+          "requirement_1"
+        ],
+        "aspectIds": [
+          "criterion:requirement_1"
+        ],
+        "missingContent": "请补全本条固定要求中标为未满足的部分，具体要求见 missingAspects。",
+        "reason": "此缺口由固定检查项的未满足状态汇总；模型说明不作为新增要求或论文事实。"
+      }
+    },
+    {
+      "obligationId": "answer_scope",
+      "question": "仅依据任务中的LightGaussian全文，面向第一次读这篇论文的人，用不超过300字说明压缩流程三个主要环节分别改变了什么，给出理解它们的阅读顺序。不要推断所有场景都无损，也不要设计或声称执行了新实验。标明实际读到的是全文还是摘要。",
+      "missingEvidence": "最终回答尚未完整回应这一问题",
+      "stage": "answer",
+      "missingAspects": [
+        "仅依据任务中的LightGaussian全文，面向第一次读这篇论文的人，用不超过300字说明压缩流程三个主要环节分别改变了什么，给出理解它们的阅读顺序。不要推断所有场景都无损，也不要设计或声称执行了新实验。标明实际读到的是全文还是摘要。"
+      ],
+      "aspectEvidenceRefs": [],
+      "gapDetail": {
+        "criterionIds": [],
+        "aspectIds": [
+          "request"
+        ],
+        "missingContent": "请补全本条固定要求中标为未满足的部分，具体要求见 missingAspects。",
+        "reason": "此缺口由固定检查项的未满足状态汇总；模型说明不作为新增要求或论文事实。"
+      },
+      "wholeQuestion": true
+    }
+  ],
+  "allRequirementsComplete": false,
+  "remainingIssue": "Answer does not explicitly disclose actual fulltext/abstract access.",
+  "preservation": {
+    "before": {
+      "ledgerRows": 7543,
+      "ledgerSha256": "4747cdb9b723b7ed955ef6db7a25e9ca529c05cafa40b346c50510c93ccb94ee",
+      "payloadSha256": "ec8b8d22c39a875b9242371bb8b725ed3f7c1b7c983a2898893295afe7dfb82c"
+    },
+    "after": {
+      "ledgerRows": 7543,
+      "ledgerSha256": "4747cdb9b723b7ed955ef6db7a25e9ca529c05cafa40b346c50510c93ccb94ee",
+      "payloadSha256": "ec8b8d22c39a875b9242371bb8b725ed3f7c1b7c983a2898893295afe7dfb82c"
+    },
+    "exactProductionPreservation": true,
+    "providerSubmissions": 5,
+    "productionPublish": false,
+    "fullWorkflowReplay": false,
+    "independentCredit": 0,
+    "elapsedSeconds": 37.643
+  },
+  "receiptHashes": {
+    "calls.json": "ddf16774e53a404073a5135e88c47d5edca6533d54875120ab5ad205b6a57bff",
+    "payload.json": "46d58b3568ef4f7bf0f8b990d7117fa4b21704347ea6e986d03f17c127226714",
+    "preservation.json": "ca6fa14d858f9c795405a51fd9b1ed3a43da36ef369d39fdb9607d7c91baf9a4",
+    "progress.json": "5b768e26751d01c1785d91a55b1f2a82d11d3cf99bb18cdc8f557c6d09f301c3",
+    "request-1.json": "e6f3f324ee8661f0c150afa8fe6da8a5efead0f45ee770b0649357e73d3b80f6",
+    "request-2.json": "0255da0f49e5ed6511327ad779c6f6dbe8206bee420a13b529c17c4ae7b72c52",
+    "request-3.json": "cdeff79e74e93a612f38a41f0eb3ce7a5d96def8350b03f5217ca7aee4132f2c",
+    "request-4.json": "4d99a5448561c6631e0741d914b3350c7084e87fe8152020e88c876fbfde1cec",
+    "request-5.json": "4adbbaedb4aa7fc5f5462a6c59dccd65e3908b1d94518d213f26d18c7376ea02",
+    "result.json": "6b27ca55e0db0439f217b20b68ffbf34b5221b79e47300ad5d04001089c54825"
+  },
+  "fullWorkflow": false,
+  "productionPublish": false,
+  "independentCredit": 0
+}

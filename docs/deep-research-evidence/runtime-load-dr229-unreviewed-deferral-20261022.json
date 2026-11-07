@@ -1,0 +1,51 @@
+{
+  "date": "2026-10-22",
+  "sourceCommit": "43a1d2de",
+  "promptVersion": "dr-v2.20261022.229",
+  "sourceHashes": {
+    "facade.py": "1b41b2511a8d587e47c6a68b594a71a175f455d467fa4c56314c7ae6c57ff859",
+    "graph.py": "8f1d0f664be70db2c91787f16c472ab23bf95aacad4f1a3f5cf89a9bcd04fd07",
+    "repair.py": "7d4527f0e96d67d21987d38e590c7fb8469e2d79ced46880322127b31a0df725",
+    "rejection_audit.py": "6abbed6ab2f06f170b3a9f98a2afff91dd41d56d0bb367184ba7b04708f1435d",
+    "repair_batches.py": "6b1ea14f8547d573c0e4af48e7b7ffd84f73dc99b74109cd7675d1616d6c111d",
+    "tools.py": "7e4973aacbb77fce395c096d3f80f1def2d46d63cd36de011945b6606d419910",
+    "verification.py": "28aecc5f98d3e131fa20d139a4cb1d5c99e7db45071460c1e11ff639d0124147"
+  },
+  "health": {
+    "status": "ok",
+    "checks": {
+      "grobid": {
+        "status": "ok",
+        "message": "GROBID is reachable."
+      },
+      "rag": {
+        "status": "ok",
+        "message": "RAG backend is ready."
+      }
+    },
+    "uptime_seconds": 155.2
+  },
+  "after": {
+    "calls": 5317,
+    "newLedgerRows": 0,
+    "active": [],
+    "paused": [
+      "dr_run_4738564f5ff35157996a35068c62ed32",
+      "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+      "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+      "dr_run_86b3f181a5475e99aacca3dbf4370567",
+      "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+      "dr_run_98e66f2d3d555dfa822b859963f01419",
+      "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+      "dr_run_a8bd62f9ae3d52ff806f537065f55b2d",
+      "dr_run_e3521b1781825273b384a26a5edb8cdc",
+      "dr_run_e9c9dc916bef519092fad8b929b2448f",
+      "dr_run_ed10cc3347be552288079a9a588fddf5"
+    ],
+    "allOldRunPayloadsAndLedgerPrefixPreserved": true
+  },
+  "oldTaskGroupsPreserved": 4,
+  "frontend200": true,
+  "providerCalls": 0,
+  "boundary": "Idle restart, bound-source hashes, health and full prior-ledger/payload/task equality. No new actual-model request with priority2; latest real case E1-v23 used .228."
+}

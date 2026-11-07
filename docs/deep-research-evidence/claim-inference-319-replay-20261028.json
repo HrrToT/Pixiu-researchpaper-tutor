@@ -1,0 +1,47 @@
+{
+  "sourcePromptVersion": "dr-v2.20261028.318",
+  "realStage": {
+    "providerCalls": 7,
+    "allSucceeded": true,
+    "totalTokens": 37003,
+    "accepted": 1,
+    "rejected": 1,
+    "coverageStatus": "checked",
+    "coverageGaps": 4,
+    "qualityAccepted": false,
+    "manualFinding": "Result table reached generation and supported exact PSNR values after revision, but no adequate qualified assessment or conditions survived. The scope boundary remains unresolved; no relaxed approval.",
+    "preservation": {
+      "before": {
+        "ledgerRows": 7465,
+        "ledgerSha256": "9138a4c5c9e9397c9dce6b78007d07dc1c2f7955dd637bef1d794f0c50b97bbc",
+        "payloadSha256": "a4559eea0b66b511bed93f21a1cba7e6a39068464469aacbcd30fde6895797ad"
+      },
+      "after": {
+        "ledgerRows": 7465,
+        "ledgerSha256": "9138a4c5c9e9397c9dce6b78007d07dc1c2f7955dd637bef1d794f0c50b97bbc",
+        "payloadSha256": "a4559eea0b66b511bed93f21a1cba7e6a39068464469aacbcd30fde6895797ad"
+      },
+      "exactProductionPreservation": true,
+      "providerSubmissions": 7,
+      "productionPublish": false,
+      "fullWorkflowReplay": false,
+      "independentCredit": 0
+    }
+  },
+  "newPromptVersion": "dr-v2.20261028.319",
+  "offlineReplay": {
+    "providerCalls": 0,
+    "productionWrites": 0,
+    "bytes": 23911,
+    "limitBytes": 24000,
+    "bothBaselineCells": true,
+    "retrainingNote": true,
+    "blanketDifferenceBanRemoved": true,
+    "inferenceGuidancePresent": true,
+    "missingBundles": [],
+    "promptSha256": "f3abf47471914dbdaa81171c735475d2459c26c1cc117bf41f2067ce7d77454e"
+  },
+  "independentCredit": 0,
+  "rawReceipts": "tmp\\component-claim-check-318-20261028\\receipt",
+  "sourcePayloadSha256": "6d609f4fa70bbcb6ec3b9b5bd7316d27d2678d567ba96307455c507ed4b9f154"
+}

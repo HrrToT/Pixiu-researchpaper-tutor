@@ -1,0 +1,84 @@
+{
+  "date": "2026-10-18",
+  "originalRunId": "dr_run_446bfd17a61c59e086b57ee96c913709",
+  "contractVersion": 1,
+  "modelCalls": 0,
+  "productionRowsChanged": 0,
+  "legacyMachineOutcome": "complete",
+  "copiedBudgetPhase": "Usage restored from actual settled calls before the first assessment, same original maxima/reserves.",
+  "actualPreassessmentUsage": {
+    "modelCalls": 3,
+    "tokens": 4977
+  },
+  "generatedRequirementChanges": [
+    {
+      "obligationId": "ob_1",
+      "field": "requirement",
+      "change": "removed_generated_example"
+    },
+    {
+      "obligationId": "ob_1",
+      "change": "separated_literal_human_aspects",
+      "criterionCount": 2
+    }
+  ],
+  "newCopiedCoverage": [
+    {
+      "obligationId": "ob_1",
+      "sourceWorkId": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf",
+      "state": "unchecked",
+      "checked": true,
+      "criteria": [
+        {
+          "criterionId": "human_aspect_1",
+          "requirement": "NTC预测高斯的什么变化",
+          "responseType": "identification",
+          "checked": true,
+          "evidenceIds": [
+            "ev_15a8e02f885a744622caa594dd331b7481bf66e9039cec2e9de762eab6c72891"
+          ]
+        },
+        {
+          "criterionId": "human_aspect_2",
+          "requirement": "怎样利用前一帧表示",
+          "responseType": "explanation",
+          "checked": true,
+          "evidenceIds": []
+        }
+      ],
+      "missingEvidence": "尚未取得直接支持：怎样利用前一帧表示"
+    },
+    {
+      "obligationId": "ob_2",
+      "sourceWorkId": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf",
+      "state": "supported",
+      "checked": true,
+      "criteria": [
+        {
+          "criterionId": "requirement_1",
+          "requirement": "解释新出现物体无法仅通过调整现有高斯来表示的原因，以及添加新高斯的作用。",
+          "responseType": "explanation",
+          "checked": true,
+          "evidenceIds": [
+            "ev_9c77ecc67f69278101c2f3c013b1a9dd7977363a104239b5abbec8ff2b2d6841"
+          ]
+        }
+      ],
+      "missingEvidence": ""
+    }
+  ],
+  "gaps": [
+    {
+      "obligationId": "ob_1",
+      "sourceWorkId": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf",
+      "question": "NTC预测高斯属性的哪些变化，以及如何利用前一帧的高斯表示作为输入或条件？",
+      "checked": true,
+      "missingEvidence": "尚未取得直接支持：怎样利用前一帧表示"
+    }
+  ],
+  "nextRouteWithLocalPending": "extract",
+  "neededInitializationPassageWasReadButUnreviewed": true,
+  "boundary": "Saved real-input replay with deliberately specified output/reason-only fixture verdicts. Proves closure aggregation and routing, not semantic judgment or real new-answer quality. Original run and first results unchanged.",
+  "sourceCommit": "8be225d9",
+  "promptVersion": "dr-v2.20261018.136"
+}

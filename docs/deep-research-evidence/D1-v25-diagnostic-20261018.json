@@ -1,0 +1,304 @@
+{
+  "date": "2026-10-18",
+  "case": "D1-v25",
+  "runId": "dr_run_84c196c5f79150afa8f300bc4ebe16a0",
+  "sourceCommit": "469bbaae",
+  "promptVersion": "dr-v2.20261018.167",
+  "status": "completed",
+  "machineOutcome": "partial",
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "modelCalls": 10,
+  "settledTokens": 47218,
+  "privateDraftingReturned": true,
+  "elapsedSeconds": 125.482,
+  "cost": null,
+  "actualSynthesisFingerprintMatched": true,
+  "actualSynthesisOptions": {
+    "max_tokens": 8192,
+    "temperature": 0.2,
+    "thinking": {
+      "type": "enabled"
+    },
+    "reasoning_effort": "low",
+    "response_format": {
+      "type": "json_object"
+    }
+  },
+  "findings": [
+    "Actual synthesis and direct repair return private draftingBasis fields; these are separated from published claims and never count as evidence.",
+    "A same-main-table PSNR comparison is accepted after actual comparison and scope-strength audits. This validates a live bounded-scope audit path, not the entire answer.",
+    "The second point still overrestricts scope and asserts author-wide missing tests; existing absence checks reject it and the repaired substitute.",
+    "Only one point remains; conditions and unknown scope are incomplete. Final coverage correctly stays partial. Content fails."
+  ],
+  "scores": {
+    "goalResponse": 3,
+    "evidenceSupport": 3,
+    "conditions": 2,
+    "synthesisValue": 2,
+    "executability": null,
+    "readability": 3
+  },
+  "privateDraftingAudit": {
+    "c1": {
+      "premiseStatus": "established",
+      "observations": [
+        {
+          "evidenceId": "E7",
+          "quote": "3D-GS [16] | 134 | 734MB | 27.21 | 0.815 | 0.214"
+        },
+        {
+          "evidenceId": "E9",
+          "quote": "Ours | 237 | 45MB | 27.13 | 0.806 | 0.237"
+        }
+      ],
+      "scopeDecision": "bounded_inference",
+      "unresolved": "仅Mip-NeRF 360数据集，未覆盖其他场景或压缩参数"
+    },
+    "c2": {
+      "premiseStatus": "established",
+      "observations": [
+        {
+          "evidenceId": "E11",
+          "quote": "With a Gaussian pruning ratio of 66% and SH reduced to 2 degrees, LightGaussian nearly maintains rendering quality (SSIM drops slightly from 0.927 to 0.926). Reducing SH further to 1 degree lowers SSIM to 0.923. ... note a marked decline in rendering quality when the pruning ratio reaches 70%, with a more rapid deterioration as the VQ ratio approaches 65%."
+        }
+      ],
+      "scopeDecision": "reported_case",
+      "unresolved": "未验证所有压缩参数组合与场景"
+    }
+  },
+  "privateRepairDraftingAudit": {
+    "0": [
+      {
+        "claimId": "c1",
+        "basis": {
+          "premiseStatus": "established",
+          "observations": [
+            {
+              "evidenceId": "E4",
+              "quote": "With a Gaussian pruning ratio of 66% and SH reduced to 2 degrees, LightGaussian nearly maintains rendering quality (SSIM drops slightly from 0.927 to 0.926)."
+            }
+          ],
+          "scopeDecision": "reported_case",
+          "unresolved": "未提供其他压缩设置或数据集下的质量对比"
+        }
+      },
+      {
+        "claimId": "c2",
+        "basis": {
+          "premiseStatus": "not_established",
+          "observations": [
+            {
+              "evidenceId": "E5",
+              "quote": "As depicted in Fig6, we note a marked decline in rendering quality when the pruning ratio reaches 70%, with a more rapid deterioration as the VQ ratio approaches 65%."
+            }
+          ],
+          "scopeDecision": "reported_case",
+          "unresolved": "未提供其他压缩设置或数据集下的质量对比"
+        }
+      }
+    ]
+  },
+  "actualPassedScopeAudits": [
+    {
+      "claimStrength": "bounded",
+      "evidenceStrength": "bounded",
+      "supported": true,
+      "statementExcerpt": "在Mip-NeRF 360数据集上",
+      "premises": [
+        {
+          "evidenceId": "E1",
+          "quote": "Table row 8: 3D-GS [16] | 134 | 734MB | 27.21 | 0.815 | 0.214 | 154 | 411MB | 23.14 | 0.841 | 0.183"
+        },
+        {
+          "evidenceId": "E2",
+          "quote": "Table row 10: Ours | 237 | 45MB | 27.13 | 0.806 | 0.237 | 357 | 25MB | 23.44 | 0.832 | 0.202"
+        }
+      ]
+    }
+  ],
+  "draft": {
+    "claims": [
+      {
+        "claimId": "c1",
+        "text": "在Mip-NeRF 360数据集上，LightGaussian压缩后模型45MB、PSNR 27.13，与原始3DGS的734MB、PSNR 27.21接近，图像质量未大幅下降。",
+        "kind": "inference",
+        "evidenceRefs": [
+          "ev_ab9685875c28c1ea14d0b937d46acbe69e99bdfb53a13d0b0c5c698de8fcb2fd",
+          "ev_ffe2afc10303963ace5068705474a2c111bd99e53c60afe414460f77471fc747"
+        ],
+        "conditions": {},
+        "obligationIds": [
+          "ob_1"
+        ],
+        "detailLevel": "fulltext",
+        "tableBindings": [
+          {
+            "evidenceId": "ev_ab9685875c28c1ea14d0b937d46acbe69e99bdfb53a13d0b0c5c698de8fcb2fd",
+            "rowNumber": 0,
+            "groupIndex": 0,
+            "metric": "PSNR",
+            "value": "27.21"
+          },
+          {
+            "evidenceId": "ev_ab9685875c28c1ea14d0b937d46acbe69e99bdfb53a13d0b0c5c698de8fcb2fd",
+            "rowNumber": 0,
+            "groupIndex": 0,
+            "metric": "Size",
+            "value": "734MB"
+          },
+          {
+            "evidenceId": "ev_ffe2afc10303963ace5068705474a2c111bd99e53c60afe414460f77471fc747",
+            "rowNumber": 0,
+            "groupIndex": 0,
+            "metric": "PSNR",
+            "value": "27.13"
+          },
+          {
+            "evidenceId": "ev_ffe2afc10303963ace5068705474a2c111bd99e53c60afe414460f77471fc747",
+            "rowNumber": 0,
+            "groupIndex": 0,
+            "metric": "Size",
+            "value": "45MB"
+          }
+        ]
+      },
+      {
+        "claimId": "c2",
+        "text": "该接近仅在适度压缩下成立：剪枝66%、SH降至2阶时SSIM从0.927降至0.926；剪枝比>70%或VQ比>65%时质量明显下降，未验证所有场景或极端压缩。",
+        "kind": "inference",
+        "evidenceRefs": [
+          "ev_7f7bfdc77abba589cde39fc5eb483fe9c7a9352e618f9cdcecd7de5d34324fa8"
+        ],
+        "conditions": {},
+        "obligationIds": [
+          "ob_1"
+        ],
+        "detailLevel": "fulltext",
+        "tableBindings": []
+      }
+    ],
+    "sections": [
+      {
+        "title": "判断",
+        "claimIds": [
+          "c1"
+        ]
+      },
+      {
+        "title": "适用条件",
+        "claimIds": [
+          "c2"
+        ]
+      }
+    ]
+  },
+  "repairDraft": [
+    {
+      "claimId": "c1",
+      "kind": "inference",
+      "text": "作者报告在特定压缩设置下（高斯剪枝率66%、SH降至2阶）图像质量接近原始3DGS：SSIM仅从0.927降至0.926。该结论仅适用于此设置，未验证其他压缩比例或数据集。",
+      "evidenceRefs": [
+        "ev_7f7bfdc77abba589cde39fc5eb483fe9c7a9352e618f9cdcecd7de5d34324fa8"
+      ],
+      "tableBindings": [],
+      "conditions": {
+        "pruningRatio": "66%",
+        "SHCompactness": "2 degrees",
+        "metric": "SSIM",
+        "baseline": "0.927",
+        "result": "0.926"
+      },
+      "detailLevel": "fulltext",
+      "obligationIds": [
+        "ob_1"
+      ]
+    }
+  ],
+  "initialVerification": {
+    "accepted": [
+      {
+        "claimId": "c1",
+        "text": "在Mip-NeRF 360数据集上，LightGaussian压缩后模型45MB、PSNR 27.13，与原始3DGS的734MB、PSNR 27.21接近，图像质量未大幅下降。",
+        "kind": "inference",
+        "evidenceRefs": [
+          "ev_ab9685875c28c1ea14d0b937d46acbe69e99bdfb53a13d0b0c5c698de8fcb2fd",
+          "ev_ffe2afc10303963ace5068705474a2c111bd99e53c60afe414460f77471fc747"
+        ],
+        "conditions": {},
+        "obligationIds": [
+          "ob_1"
+        ],
+        "detailLevel": "fulltext",
+        "tableBindings": [
+          {
+            "evidenceId": "ev_ab9685875c28c1ea14d0b937d46acbe69e99bdfb53a13d0b0c5c698de8fcb2fd",
+            "rowNumber": 0,
+            "groupIndex": 0,
+            "metric": "PSNR",
+            "value": "27.21"
+          },
+          {
+            "evidenceId": "ev_ab9685875c28c1ea14d0b937d46acbe69e99bdfb53a13d0b0c5c698de8fcb2fd",
+            "rowNumber": 0,
+            "groupIndex": 0,
+            "metric": "Size",
+            "value": "734MB"
+          },
+          {
+            "evidenceId": "ev_ffe2afc10303963ace5068705474a2c111bd99e53c60afe414460f77471fc747",
+            "rowNumber": 0,
+            "groupIndex": 0,
+            "metric": "PSNR",
+            "value": "27.13"
+          },
+          {
+            "evidenceId": "ev_ffe2afc10303963ace5068705474a2c111bd99e53c60afe414460f77471fc747",
+            "rowNumber": 0,
+            "groupIndex": 0,
+            "metric": "Size",
+            "value": "45MB"
+          }
+        ],
+        "verification": "semantic_passed"
+      }
+    ],
+    "rejected": [
+      {
+        "claimId": "c2",
+        "reason": "absence_not_established",
+        "detail": "本条引用没有明确建立作者或论文缺少这些验证。把结论限定为本次引用能支持的实验范围及其不能证明的推广；不要写成作者未在其他条件验证、论文没有提供或全文不存在。引用中的其他否定句不构成这项缺席判断的依据。"
+      }
+    ]
+  },
+  "repairChecks": {
+    "accepted": [],
+    "rejected": [
+      {
+        "claimId": "c1",
+        "reason": "absence_not_established",
+        "detail": "本条引用没有明确建立作者或论文缺少这些验证。把结论限定为本次引用能支持的实验范围及其不能证明的推广；不要写成作者未在其他条件验证、论文没有提供或全文不存在。引用中的其他否定句不构成这项缺席判断的依据。"
+      }
+    ]
+  },
+  "report": "## 判断\n\n- 有依据的推断：在Mip-NeRF 360数据集上，LightGaussian压缩后模型45MB、PSNR 27.13，与原始3DGS的734MB、PSNR 27.21接近，图像质量未大幅下降。 [1](#research-evidence-ev_ab9685875c28c1ea14d0b937d46acbe69e99bdfb53a13d0b0c5c698de8fcb2fd) [2](#research-evidence-ev_ffe2afc10303963ace5068705474a2c111bd99e53c60afe414460f77471fc747)\n\n<details>\n<summary>还有 3 项未完成</summary>\n\n- 只依据LightGaussian，核查压缩后图像质量接近原始3DGS这一说法。区分作者报告的结果、成立条件和未验证范围。：最终回答尚未完整回应这一问题\n- 只依据LightGaussian，核查压缩后图像质量接近原始3DGS这一说法。区分作者报告的结果、成立条件和未验证范围。：最终回答尚未完整回应这一问题\n- 只依据LightGaussian，核查压缩后图像质量接近原始3DGS这一说法。区分作者报告的结果、成立条件和未验证范围。：最终回答尚未完整回应这一问题\n\n</details>\n\n推断限于所列证据和适用条件。\n\n<details>\n<summary>原文依据</summary>\n\n**[1] LightGaussian: Unbounded 3D Gaussian Compression with 15x Reduction and 200+ FPS** · 第 6 页 · 全文片段\n\n> Table row 8: 3D-GS [16] | 134 | 734MB | 27.21 | 0.815 | 0.214 | 154 | 411MB | 23.14 | 0.841 | 0.183\n\n**[2] LightGaussian: Unbounded 3D Gaussian Compression with 15x Reduction and 200+ FPS** · 第 6 页 · 全文片段\n\n> Table row 10: Ours | 237 | 45MB | 27.13 | 0.806 | 0.237 | 357 | 25MB | 23.44 | 0.832 | 0.202\n\n</details>",
+  "rawFiles": [
+    {
+      "path": "tmp/dr-acceptance-receipts/D1-v25.json",
+      "sha256": "9fb1b44a0419bd754b20873a48d75277db1149029871c090002afc4a0c06f602"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/D1-v25.payload.json",
+      "sha256": "6ce6453344292eedc47fec58d535575615afd002e5b5d20fb7ad9b19f8beac30"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/D1-v25.calls.json",
+      "sha256": "464d64613f1816c9e2c649475312539c6910733733335bca406c0911e8f56a8a"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/D1-v25.result.json",
+      "sha256": "08f7c00c5a2886a6cc76c95d9415339fc20a57272e9ab67305277982316a49e0"
+    }
+  ],
+  "boundary": "One explicit submission after a concrete generation-profile change, all calls settled. Failed content is not retried unchanged or upgraded. No independent credit."
+}

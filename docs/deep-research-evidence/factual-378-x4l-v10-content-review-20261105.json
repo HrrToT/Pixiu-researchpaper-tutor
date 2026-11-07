@@ -1,0 +1,184 @@
+{
+  "promptVersion": "dr-v2.20261105.378",
+  "sourceCommit": "8ae1f7ab",
+  "case": "X4L-v10",
+  "runId": "dr_run_7d2e3ab10daf56c0b5ce33a3e1721830",
+  "status": "completed",
+  "machineOutcome": "inconclusive",
+  "modelCalls": 10,
+  "tokens": 45311,
+  "elapsedSeconds": 174.059,
+  "acceptedClaims": [
+    {
+      "claimId": "c2",
+      "text": "深度畸变约束通过最小化沿光线各交点深度之差的加权和，使不透明度权重集中在光线与表面的交点附近，从而减少半透明高斯散布导致的噪声重建。",
+      "kind": "reported",
+      "evidenceRefs": [
+        "ev_32cc51aa72a9cb4d3aeb9096d0c8e8acfb4d6587204940326f58d293e1519513",
+        "ev_8d9e7b7a4dcb490331bce72f0c7e495a5928602df5d77224de46d82545073d88",
+        "ev_c95f2e040e47f358ac28b8ab23898c8ac279a4c0af0666973157747fc06d22d2",
+        "ev_8358ddef8f9f16f3f70fb2e1220c0fc11c02cd4d3d9d858fe544e7878720ecba",
+        "ev_35c8ed39d0274f9039b8135b856ddc9eb615e8efdb77ba2b31c83e44bcbad734"
+      ],
+      "conditions": {},
+      "obligationIds": [
+        "ob_2"
+      ],
+      "detailLevel": "concise",
+      "tableBindings": [],
+      "verification": "semantic_passed"
+    },
+    {
+      "claimId": "c3",
+      "text": "法线一致性约束通过最小化每个2D高斯圆盘法线与深度图梯度估计的表面法线之间的差异，使所有2D splats局部对齐实际表面，从而改善几何重建。",
+      "kind": "reported",
+      "evidenceRefs": [
+        "ev_35c8ed39d0274f9039b8135b856ddc9eb615e8efdb77ba2b31c83e44bcbad734",
+        "ev_4026b9a7e2a88f91eec6c1710a3b9f956b190078b9a8c123216209cb7965d30d",
+        "ev_2130887bcc4166954e487bcfe46cf9ff20581ac3276237d82163a05f6b3a0f76",
+        "ev_cf67573e4730737b48f20cf7907871805caef2aade2ed2546e3641dc3dbf02cb"
+      ],
+      "conditions": {},
+      "obligationIds": [
+        "ob_2"
+      ],
+      "detailLevel": "concise",
+      "tableBindings": [],
+      "verification": "semantic_passed"
+    },
+    {
+      "claimId": "c1",
+      "kind": "inference",
+      "text": "这里的“2D”指将三维体积坍缩为一组有方向的平面高斯圆盘；这些圆盘本身位于三维空间中，优化后紧贴表面，从而表示三维场景表面。",
+      "evidenceRefs": [
+        "ev_f580f957d245818427832337512def14fad37c1adb4212595347250a67597847",
+        "ev_2a4531008bffe5fa10b9a56efb035a0185a2af188352e644e378ac7c9a963a5d"
+      ],
+      "conditions": {},
+      "detailLevel": "fulltext",
+      "obligationIds": [
+        "ob_1"
+      ],
+      "verification": "semantic_passed"
+    }
+  ],
+  "initialRejected": [
+    {
+      "claimId": "c1",
+      "reason": "semantic_unresolved",
+      "detail": "E2/E3 only mention collapsing 3D volume into 2D oriented planar Gaussian disks and surface modeling; they do not explicitly state optimizing position, orientation, opacity, and color via multi-view images. E1 mentions optimized disks aligned to surfaces but no parameter details."
+    }
+  ],
+  "repairRejected": [],
+  "initialCoverageLimit": {
+    "kind": "coveragePromptBytes",
+    "limit": 24000,
+    "used": 24199
+  },
+  "finalCoverageLimit": {
+    "kind": "coveragePromptBytes",
+    "limit": 24000,
+    "used": 26438
+  },
+  "coverageModelCalls": 0,
+  "repairDraftingAudit": {
+    "0": [
+      {
+        "claimId": "c1",
+        "basis": {
+          "premiseStatus": "established",
+          "observations": [
+            {
+              "evidenceId": "E6",
+              "quote": "Our key idea is to collapse the 3D volume into a set of 2D oriented planar Gaussian disks. Unlike 3D Gaussians, 2D Gaussians provide view-consistent geometry while modeling surfaces intrinsically."
+            },
+            {
+              "evidenceId": "E4",
+              "quote": "optimized 2D disks are tightly aligned to the surfaces."
+            }
+          ],
+          "scopeDecision": "bounded_inference",
+          "unresolved": "E6/E4说明2D高斯圆盘位于三维空间并紧贴表面，但未明确说明优化参数（位置、朝向、不透明度、颜色）来自多视角图像。"
+        },
+        "discardedDraftSpans": [
+          "通过多视角图像优化其位置、朝向、不透明度和颜色"
+        ],
+        "removalVerification": "edit_consistency_only",
+        "draftRemovalEdit": {
+          "version": 1,
+          "offsetUnit": "unicode_code_point",
+          "inputText": "这里的“2D”指将三维体积坍缩为一组有方向的平面高斯圆盘；这些圆盘本身位于三维空间中，优化后紧贴表面，从而表示三维场景表面。",
+          "outputText": "这里的“2D”指将三维体积坍缩为一组有方向的平面高斯圆盘；这些圆盘本身位于三维空间中，优化后紧贴表面，从而表示三维场景表面。",
+          "inputSha256": "cd2d318f4638044328d0006d4c2b980f2f646afd339f4b78b3493a6db66a7e51",
+          "outputSha256": "cd2d318f4638044328d0006d4c2b980f2f646afd339f4b78b3493a6db66a7e51",
+          "edits": [],
+          "alreadyRemovedSpans": [
+            "通过多视角图像优化其位置、朝向、不透明度和颜色"
+          ],
+          "verification": "unchecked"
+        },
+        "kindTransition": {
+          "from": "reported",
+          "to": "inference",
+          "reason": "semantic_unresolved",
+          "verification": "unchecked"
+        }
+      }
+    ]
+  },
+  "publicationCoherence": {
+    "contractVersion": 2,
+    "answerDigest": "7bcb15688f1c5f091dbe1497c9498667493a782c64840c34838f9498f51234a7",
+    "status": "held",
+    "heldClaimIds": [
+      "c2",
+      "c3",
+      "c1"
+    ],
+    "reason": "coherence_unconfirmed"
+  },
+  "sourceReview": {
+    "reviewer": "assistant source inspection, not user/human acceptance",
+    "contentAccepted": false,
+    "independentCredit": 0,
+    "notes": {
+      "c1": "Represents 3D with oriented planar disks; narrowed inferred wording supported by cited introduction.",
+      "c2": "Weighted pairwise ray-intersection depths and weight concentration supported; localization near surface should still be interpreted carefully, not as known ground-truth supervision.",
+      "c3": "Normal alignment with normals derived from rendered depth is supported as an optimization objective."
+    },
+    "reason": "No complete answer published: fixed coverage prompt exceeded capacity before any coverage model request. Per-claim machine passes do not establish whole-answer completion/coherence."
+  },
+  "preservation": {
+    "oldLedgerUnchanged": true,
+    "allOldRunsUnchanged": true,
+    "newRows": 22,
+    "ledgerRows": 8303,
+    "onlyThisRunCreatedCalls": true,
+    "active": [],
+    "oldPausedRetained": true,
+    "paused": [
+      "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+      "dr_run_ed10cc3347be552288079a9a588fddf5",
+      "dr_run_86b3f181a5475e99aacca3dbf4370567",
+      "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+      "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+      "dr_run_e3521b1781825273b384a26a5edb8cdc",
+      "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+      "dr_run_e9c9dc916bef519092fad8b929b2448f",
+      "dr_run_4738564f5ff35157996a35068c62ed32",
+      "dr_run_a8bd62f9ae3d52ff806f537065f55b2d",
+      "dr_run_98e66f2d3d555dfa822b859963f01419",
+      "dr_run_8be639c866c35ea092c735a04781b647",
+      "dr_run_1c0c2e6510165086962408b8e3cf698b"
+    ]
+  },
+  "protectedTasksExact": 12,
+  "repeatedTerminalGetExact": true,
+  "index": {
+    "collection": "literature_collection_v4_e5_small",
+    "count": 1102,
+    "sha256": "1e91bfa73ba4a374a6cea68be25639c269fac493d5eda61162448bf500ff6118"
+  },
+  "payloadSha256": "66aed5c2e0e155dc5fa777968ee3dc4143badf4a1a4a28d6884718ce5f50f76f",
+  "remaining": "Losslessly compact repeated fixed coverage instructions/metadata without dropping evidence, requirements or checks, then verify full workflow and remaining external/independent release gates."
+}

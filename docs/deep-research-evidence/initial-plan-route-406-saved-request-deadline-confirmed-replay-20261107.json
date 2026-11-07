@@ -1,0 +1,23 @@
+{
+  "sourceCase": "FA1N-v1",
+  "rawPayloadSha256": "c48ca5e929905445c8a1c1a606069ad13d34a50c014d7c69fc4762db3ecd660e",
+  "oldFrozenPlanArgsDigestExact": true,
+  "argsDigest": "9945dbac1a78e8488f478c7aacc5dad2a5dff4184018758f5d4cfe03a164de4f",
+  "oldRecordRoute": "main",
+  "prospectiveNewPolicyRoute": "routine",
+  "promptMessagesOptionsExact": true,
+  "maxOutputTokens": 5000,
+  "thinking": {
+    "type": "disabled"
+  },
+  "reasoningEffort": "none",
+  "newLocalTimeoutSeconds": 180.0,
+  "newPolicyFakeInvocations": 2,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "sourceUnknownUnchanged": true,
+  "resubmitted": false,
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "boundary": "Exact saved plan prompt/messages/options reconstructed and matched to original unknown request fingerprint. The prospective copy changes only provider destination and inherits the former research request deadline; provider prompt/messages/options remain exact. Its pre-dispatch clock is restored only in memory. No real request, latency measurement, plan validity or scientific quality acceptance."
+}

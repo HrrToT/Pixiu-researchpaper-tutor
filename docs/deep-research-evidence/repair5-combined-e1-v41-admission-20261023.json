@@ -1,0 +1,61 @@
+{
+  "case": "E1-v41",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "inputCap": 30657,
+  "recordedActualInputCap": 23067,
+  "budgetScenario": {
+    "normalTokensBeforeReview": 14223,
+    "recordedTotalTokensRetained": 64188,
+    "reservedCallsBeforeReview": 2,
+    "offlineReviewRequests": 3,
+    "reserveModelCalls": 5
+  },
+  "results": [
+    {
+      "version": 4,
+      "admitted": false,
+      "error": "Budget exhausted for repairEvidenceBytes: used 32265/30657",
+      "fixtureRequests": []
+    },
+    {
+      "version": 5,
+      "admitted": true,
+      "fixtureRequests": [
+        {
+          "inputBytes": 30519,
+          "completeGrammar": true
+        },
+        {
+          "inputBytes": 30531,
+          "completeGrammar": true
+        },
+        {
+          "inputBytes": 30610,
+          "completeGrammar": true
+        }
+      ],
+      "batchIds": [
+        [
+          "c2",
+          "c3",
+          "c6"
+        ],
+        [
+          "c4",
+          "c5"
+        ],
+        [
+          "c1",
+          "c7",
+          "c8",
+          "c9"
+        ]
+      ]
+    }
+  ],
+  "boundary": "Conditional preflight only: replace old four review requests by offline three-batch plan, retain old TOTAL tokens conservatively, and use observed pre-review normal tokens. Each isolated repair fixture sees the same budget; no forecast that all sequential repairs fit, no new real verdict or scientific approval.",
+  "date": "2026-10-23",
+  "candidatePromptVersion": "dr-v2.20261023.252",
+  "independentCredit": 0
+}

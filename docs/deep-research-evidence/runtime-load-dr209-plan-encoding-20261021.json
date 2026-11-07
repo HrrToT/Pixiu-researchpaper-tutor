@@ -1,0 +1,56 @@
+{
+  "date": "2026-10-21",
+  "commit": "b85ccc0c",
+  "promptVersion": "dr-v2.20261021.209",
+  "before": {
+    "active": [],
+    "calls": 4931,
+    "ledgerSha256": "86d7e2a784b415587c1c722a09ed271524756fe86a027715d9fee870df56016a",
+    "paused": [
+      "dr_run_4738564f5ff35157996a35068c62ed32",
+      "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+      "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+      "dr_run_86b3f181a5475e99aacca3dbf4370567",
+      "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+      "dr_run_98e66f2d3d555dfa822b859963f01419",
+      "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+      "dr_run_a8bd62f9ae3d52ff806f537065f55b2d",
+      "dr_run_e3521b1781825273b384a26a5edb8cdc",
+      "dr_run_e9c9dc916bef519092fad8b929b2448f",
+      "dr_run_ed10cc3347be552288079a9a588fddf5"
+    ]
+  },
+  "after": {
+    "active": [],
+    "calls": 4931,
+    "ledgerSha256": "86d7e2a784b415587c1c722a09ed271524756fe86a027715d9fee870df56016a",
+    "paused": [
+      "dr_run_4738564f5ff35157996a35068c62ed32",
+      "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+      "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+      "dr_run_86b3f181a5475e99aacca3dbf4370567",
+      "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+      "dr_run_98e66f2d3d555dfa822b859963f01419",
+      "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+      "dr_run_a8bd62f9ae3d52ff806f537065f55b2d",
+      "dr_run_e3521b1781825273b384a26a5edb8cdc",
+      "dr_run_e9c9dc916bef519092fad8b929b2448f",
+      "dr_run_ed10cc3347be552288079a9a588fddf5"
+    ]
+  },
+  "health": {
+    "status": "ok",
+    "checks": {
+      "grobid": {
+        "status": "ok",
+        "message": "GROBID is reachable."
+      },
+      "rag": {
+        "status": "ok",
+        "message": "RAG backend is ready."
+      }
+    },
+    "uptime_seconds": 17.8
+  },
+  "boundary": "Restart only after no active research. All existing ledger records and paused runs preserved. No model request during restart verification."
+}

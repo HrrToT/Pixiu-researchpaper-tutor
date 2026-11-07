@@ -14,7 +14,8 @@ def test_llm_defaults():
     assert settings.deepseek_thinking_type == "enabled"
     assert settings.deepseek_reasoning_effort == "high"
     assert settings.deepseek_timeout_seconds == 120
-    assert settings.deepseek_translation_model == "deepseek-v4-flash"
+    # Explicit local .env choices remain valid; inspect the class default here.
+    assert Settings.model_fields['deepseek_translation_model'].default == "deepseek-flash"
     assert settings.deepseek_translation_temperature == 0.1
     assert settings.deepseek_translation_thinking_type is None
     assert settings.deepseek_translation_reasoning_effort is None
@@ -46,9 +47,11 @@ def test_grobid_default():
 
 def test_env_override(monkeypatch):
     monkeypatch.setenv("DEEPSEEK_MODEL", "deepseek-v4-flash")
+    monkeypatch.setenv("DEEPSEEK_TRANSLATION_MODEL", "deepseek-v4-flash")
     monkeypatch.setenv("PIXIU_LOG_LEVEL", "DEBUG")
     s = Settings()
     assert s.deepseek_model == "deepseek-v4-flash"
+    assert s.deepseek_translation_model == "deepseek-v4-flash"
     assert s.pixiu_log_level == "DEBUG"
 
 

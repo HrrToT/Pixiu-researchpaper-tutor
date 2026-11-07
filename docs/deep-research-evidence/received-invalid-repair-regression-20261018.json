@@ -1,0 +1,18 @@
+{
+  "date": "2026-10-18",
+  "sourceCommit": "008a288d",
+  "promptVersion": "dr-v2.20261018.172",
+  "offline": {"passed": 2794, "warnings": 1, "seconds": 182.76, "log": "tmp/pytest-dr172-full.log"},
+  "focusedRepair": {"passed": 98, "seconds": 5.41, "overlapWithFullSuite": true},
+  "focusedPresentation": {"passed": 8, "seconds": 1.61, "overlapWithFullSuite": true},
+  "changes": [
+    "Repair-progress policy2 distinguishes confirmed malformed/empty/non-array bodies from a valid empty-array abstention. Persist responseError, empty settled batch result and stop before returning earlier drafts; unknown transport still propagates with its exact pending identity.",
+    "Recovery from the saved malformed-response state dispatches neither the rewrite nor the verifier again. Prior independently checked claims remain publishable; earlier valid batch drafts can still proceed to independent verification.",
+    "Publication explicitly reports 修订结果未能解析 rather than interpreting a malformed Provider response as absent paper evidence.",
+    "Absence policy5 treats the bare condition-field label 未验证范围 as nominal metadata; its actual value and all author-absence assertions remain checked.",
+    "Presentation policy1 puts accepted claim-verification content under 依据与范围 instead of a stale 未解决事项 heading. Real remaining obligations remain separately folded; original prose, citations and conditions unchanged."
+  ],
+  "recordedReplay": "docs/deep-research-evidence/received-invalid-repair-real-response-replay-20261018.json",
+  "runtimeLoadedSeparately": false,
+  "boundary": "Offline checks and actual archived-response replay, no new model case. Planned to load with the following comparison-methodology change; old reports and old unknown requests are not rewritten."
+}

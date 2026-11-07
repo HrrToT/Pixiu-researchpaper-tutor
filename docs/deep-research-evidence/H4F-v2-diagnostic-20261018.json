@@ -1,0 +1,51 @@
+{
+  "date": "2026-10-18",
+  "case": "H4F-v2",
+  "runId": "dr_run_58cf889dda6350e3b8537477b69aaad2",
+  "sourceCommit": "1e6daa48",
+  "promptVersion": "dr-v2.20261018.133",
+  "evaluationUse": "retired-case diagnostic",
+  "independent": false,
+  "status": "completed",
+  "outcome": "complete",
+  "modelCalls": 8,
+  "settledTokens": 28997,
+  "elapsedSeconds": 122.574,
+  "cost": null,
+  "report": "## 判断\n\n- 每帧重建约12秒指在线逐帧训练/优化3D高斯，单位秒/帧，适用于训练阶段；200FPS指渲染速度，单位帧/秒，适用于渲染阶段。两者操作、单位和适用范围不同，不矛盾。 [1](#research-evidence-ev_fe1eba7b435fc54efbdc669b890d7f2f65901aa5f647c74d39dc4193a3946a76)\n- 有依据的推断：训练阶段约12秒/帧无法实时处理新帧，200FPS仅指渲染阶段。因此不能断言从新采集输入到显示的端到端流程始终实时，因训练时间远大于实时帧间隔。 [1](#research-evidence-ev_fe1eba7b435fc54efbdc669b890d7f2f65901aa5f647c74d39dc4193a3946a76)\n\n论文事实已按所列原文核对。推断限于所列证据和适用条件。\n\n<details>\n<summary>原文依据</summary>\n\n**[1] 3DGStream: On-the-Fly Training of 3D Gaussians for Efficient Streaming of Photo-Realistic Free-Viewpoint Videos** · 第 1 页 · 全文片段\n\n> Our method achieves fast on-the-fly per-\n> frame reconstruction within 12 seconds and real-time ren-\n> dering at 200 FPS.\n\n</details>",
+  "contentAccepted": true,
+  "scores": {
+    "goalResponse": 5,
+    "evidenceSupport": 4,
+    "conditions": 4,
+    "synthesisValue": 4,
+    "executability": null,
+    "readability": 4
+  },
+  "findings": [
+    "The original PDF page 1 was actually retrieved, quoted and cited; the specified 12 seconds was not replaced by a different passage's approximate 10 seconds.",
+    "The answer distinguishes per-input-frame reconstruction/training time from rendered images per second, explains that these are different operations and rejects an end-to-end real-time guarantee.",
+    "Both required distinctions are visible in the answer, within the frozen 250-character body limit. The four required checks and all forbidden checks of the original case were reviewed.",
+    "This passes the retired diagnostic question only; it does not change the failed first result, establish performance on other settings or add an independent pass."
+  ],
+  "presentationNote": "The latency conclusion should preferably stay at \"these figures cannot establish end-to-end real-time operation\"; avoid wording that could be read as universal impossibility across input rates and devices.",
+  "rawFiles": [
+    {
+      "path": "tmp/dr-acceptance-receipts/H4F-v2.json",
+      "sha256": "527e9979a9134e48ae3915288099f7ddc2a4209bff2915120798bbd8ea91d7ec"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/H4F-v2.payload.json",
+      "sha256": "054a9343466d0aa82dae693449308bd17a89bd76c0eb18256e5c7190529a2c61"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/H4F-v2.calls.json",
+      "sha256": "33b0a34f9eeeb7c329615c63fcdb8406590940cdfed1331f074f84d208cf620a"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/H4F-v2.result.json",
+      "sha256": "ec568d61e442f6aabf72103a57d0faa907c43bc2555bb4c0965d3f948443ff03"
+    }
+  ],
+  "boundary": "Each case submitted once, same frozen question/materials/budget. No automatic resend, unknown bypass or independent credit. Original first result unchanged."
+}

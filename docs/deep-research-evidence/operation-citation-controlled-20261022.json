@@ -1,0 +1,70 @@
+{
+  "date": "2026-10-22",
+  "case": "E1-v24",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "actualGenerationRequests": [
+    {
+      "node": "plan_experiment",
+      "actualRequestFingerprintMatched": true,
+      "inputBytes": 23869
+    },
+    {
+      "node": "synthesize",
+      "actualRequestFingerprintMatched": true,
+      "inputBytes": 30275
+    }
+  ],
+  "changedClaimIds": [
+    "c6"
+  ],
+  "originalHardRejects": [
+    {
+      "claimId": "c2",
+      "reason": "internal_reference_in_prose"
+    },
+    {
+      "claimId": "c6",
+      "reason": "internal_reference_in_prose"
+    }
+  ],
+  "controlledHardRejects": [
+    {
+      "claimId": "c2",
+      "reason": "internal_reference_in_prose"
+    }
+  ],
+  "allConfigsAndCitationPermissionsUnchanged": true,
+  "presentationAudit": [
+    {
+      "claimId": "c6",
+      "originalText": "执行步骤：1. 准备数据：加载flame salmon场景，按相机索引每第2个划分训练/评估视图，锁定划分。2. 获取基线：训练第0帧3D高斯模型（上限30,000步）。3. 初始化组件：对每个后续帧，训练NTC（上限100 epoch），得到变换后的3D高斯。4. 配对分组：将相同基线状态复制到Group A和Group B。5. 应用干预：Group A跳过第2阶段；Group B执行第2阶段自适应新增高斯（按E4-E6,E14-E15）。6. 恢复：Group B每帧优化新增高斯（上限500步）。7. 评估：在评估视图上计算PSNR/SSIM，记录存储和时间。8. 记录：保存所有指定记录。\n\n拟议执行流程（尚未执行）：\n1. 先枚举数据、完成预检并锁定训练与最终评估划分；最终评估集不参与任何拟合。\n2. 复用一个固定基线；多个后续种子不代表独立重训了基线。\n   基线按预算项训练，仅使用训练部分。\n\n<details>\n<summary>基线初始状态</summary>\n\n初值来源：从显式初值新建。\ninitialize_3dgs；num_gaussians：100000；position_init：random_in_scene_bounds；rotation_init：identity_quaternion；scale_init：mean_distance_to_neighbors；opacity_init：0.1；sh_degree：3\n\n- gaussian_positions：float32，形状100000×3；初值为均匀分布 [-1.0, 1.0)；固定种子0；逐状态重置 torch.manual_seed，执行时记录实现版本\n- gaussian_rotations：float32，形状100000×4；初值为常量 [1.0, 0.0, 0.0, 0.0]\n- gaussian_scales：float32，形状100000×3；初值为常量 0.01\n- gaussian_opacities：float32，形状100000×1；初值为常量 0.1\n- gaussian_sh_coeffs：float32，形状100000×16×3；初值为常量 0.0\n\n执行前按实际输入核对形状、轴和初值广播规则；维度不符或引用越界时停止，不自动替换。\n\n</details>\n\n3. 每次重复先创建所需新组件，再配对复制到各组：\n   - ntc：从显式初值新建，不复制已有组件。\n   - ntc：initialize_ntc_mlp；input_dim：16；hidden_dim：64；output_dim：7；num_layers：2；相同初始状态复制到组 0、1\n\n<details>\n<summary>ntc的初始状态</summary>\n\n初值来源：从显式初值新建。\ninitialize_ntc_mlp；input_dim：16；hidden_dim：64；output_dim：7；num_layers：2\n\n- ntc_weights：float32，形状16×64×64×7；初值为正态分布，均值0.0，标准差0.01；固定种子0；逐状态重置 torch.manual_seed，执行时记录实现版本\n\n执行前按实际输入核对形状、轴和初值广播规则；维度不符或引用越界时停止，不自动替换。\n\n</details>\n\n4. 复制配对状态，按分组项实施干预，再按预算项执行各组恢复；固定条件保持一致。\n5. 按所选检查点规则完成训练与选择，最终评估只在全部选择结束后进行。\n   使用预算结束时的检查点，不根据最终评估表现挑选。\n   最终评估集不得用于初始化、调参、早停或检查点选择。\n6. 保存：基线身份、新组件初始状态、评估输出、各组最终检查点、各组配置、原始测量、各组训练预算、随机种子清单、数据划分清单。",
+      "originalConditions": {
+        "context": "步骤为拟议执行方案，遵循论文方法但具体预算和划分是拟议选择。第2阶段新增高斯不传递到下一帧。"
+      },
+      "normalizedText": "执行步骤：1. 准备数据：加载flame salmon场景，按相机索引每第2个划分训练/评估视图，锁定划分。2. 获取基线：训练第0帧3D高斯模型（上限30,000步）。3. 初始化组件：对每个后续帧，训练NTC（上限100 epoch），得到变换后的3D高斯。4. 配对分组：将相同基线状态复制到Group A和Group B。5. 应用干预：Group A跳过第2阶段；Group B执行第2阶段自适应新增高斯（按所引原文）。6. 恢复：Group B每帧优化新增高斯（上限500步）。7. 评估：在评估视图上计算PSNR/SSIM，记录存储和时间。8. 记录：保存所有指定记录。\n\n拟议执行流程（尚未执行）：\n1. 先枚举数据、完成预检并锁定训练与最终评估划分；最终评估集不参与任何拟合。\n2. 复用一个固定基线；多个后续种子不代表独立重训了基线。\n   基线按预算项训练，仅使用训练部分。\n\n<details>\n<summary>基线初始状态</summary>\n\n初值来源：从显式初值新建。\ninitialize_3dgs；num_gaussians：100000；position_init：random_in_scene_bounds；rotation_init：identity_quaternion；scale_init：mean_distance_to_neighbors；opacity_init：0.1；sh_degree：3\n\n- gaussian_positions：float32，形状100000×3；初值为均匀分布 [-1.0, 1.0)；固定种子0；逐状态重置 torch.manual_seed，执行时记录实现版本\n- gaussian_rotations：float32，形状100000×4；初值为常量 [1.0, 0.0, 0.0, 0.0]\n- gaussian_scales：float32，形状100000×3；初值为常量 0.01\n- gaussian_opacities：float32，形状100000×1；初值为常量 0.1\n- gaussian_sh_coeffs：float32，形状100000×16×3；初值为常量 0.0\n\n执行前按实际输入核对形状、轴和初值广播规则；维度不符或引用越界时停止，不自动替换。\n\n</details>\n\n3. 每次重复先创建所需新组件，再配对复制到各组：\n   - ntc：从显式初值新建，不复制已有组件。\n   - ntc：initialize_ntc_mlp；input_dim：16；hidden_dim：64；output_dim：7；num_layers：2；相同初始状态复制到组 0、1\n\n<details>\n<summary>ntc的初始状态</summary>\n\n初值来源：从显式初值新建。\ninitialize_ntc_mlp；input_dim：16；hidden_dim：64；output_dim：7；num_layers：2\n\n- ntc_weights：float32，形状16×64×64×7；初值为正态分布，均值0.0，标准差0.01；固定种子0；逐状态重置 torch.manual_seed，执行时记录实现版本\n\n执行前按实际输入核对形状、轴和初值广播规则；维度不符或引用越界时停止，不自动替换。\n\n</details>\n\n4. 复制配对状态，按分组项实施干预，再按预算项执行各组恢复；固定条件保持一致。\n5. 按所选检查点规则完成训练与选择，最终评估只在全部选择结束后进行。\n   使用预算结束时的检查点，不根据最终评估表现挑选。\n   最终评估集不得用于初始化、调参、早停或检查点选择。\n6. 保存：基线身份、新组件初始状态、评估输出、各组最终检查点、各组配置、原始测量、各组训练预算、随机种子清单、数据划分清单。",
+      "normalizedConditions": {
+        "context": "步骤为拟议执行方案，遵循论文方法但具体预算和划分是拟议选择。第2阶段新增高斯不传递到下一帧。"
+      },
+      "removed": [
+        {
+          "field": "text",
+          "marker": "E4-E6,E14-E15",
+          "offset": 209,
+          "kind": "source_attribution_range",
+          "replacement": "所引原文",
+          "evidenceRefs": [
+            "ev_3006efb65ff33d4d129cae301b78f856b3944f4b066063a9ad5175bdf2f067a9",
+            "ev_516057b8a32881c40f1384de19b86128197089068316214ce7a984ebb4f252a4",
+            "ev_6558c554163d2cf4124a655864c29ba4e00a1996de9a7f509dc09e67eef09830",
+            "ev_74bdde823cd60a4a094c7073a39236119dace8368d04374996bdd861d9005224",
+            "ev_ac5bd8f1fb263f029d00495b36c79d2e348d6b56203e5fe262b5eaf57d112e9c"
+          ]
+        }
+      ]
+    }
+  ],
+  "independentCredit": 0,
+  "scientificApproval": false,
+  "boundary": "Offline presentation replay against an immutable failed case. No old result is upgraded; hard-precheck candidates still require independent scientific review."
+}

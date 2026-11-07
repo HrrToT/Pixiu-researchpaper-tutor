@@ -1,0 +1,10 @@
+{
+  "sourceCommit": "0dc2e751",
+  "passed": 433,
+  "testFiles": 29,
+  "elapsedSeconds": 37.69,
+  "exitCode": 0,
+  "sourceAndTestsStable": true,
+  "providerCalls": 0,
+  "boundary": "Associated report/repair/format offline checks only; D1-v28 real content remains partial and unaccepted."
+}

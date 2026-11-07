@@ -1,0 +1,208 @@
+{
+  "date": "2026-10-20",
+  "case": "E1-v4",
+  "split": "development",
+  "sourceCommit": "ebbf73ae",
+  "promptVersion": "dr-v2.20261020.202",
+  "runId": "dr_run_b64edd9941e75094aa84fbdfa5c31539",
+  "status": "completed",
+  "outcome": "inconclusive",
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "frozenCaseCommit": "a023b204",
+  "questionAndCriteriaUnchanged": true,
+  "settledModelCalls": 14,
+  "settledTokens": 66644,
+  "unknownNewCalls": 0,
+  "elapsedSeconds": 104.221,
+  "actualEdit": {
+    "sent": true,
+    "callId": "c415d5ab2fbaed30a64dc433182d2d80",
+    "fingerprintMatched": true,
+    "inputBytes": 23591,
+    "inputCapAtSend": 23626,
+    "outputCap": 4096,
+    "completeReservation": 28711,
+    "finishReason": "stop",
+    "usage": {
+      "total_tokens": 7984,
+      "input_tokens": 6698,
+      "output_tokens": 1286
+    },
+    "targets": 9,
+    "operations": 14,
+    "reconstructedCompleteClaims": 9,
+    "reconstructionMatchesSavedDrafts": true,
+    "immutableIdentitiesPreserved": true,
+    "independentConfigurationAndScienceRechecked": true
+  },
+  "initialVerification": {
+    "accepted": [],
+    "rejected": [
+      {
+        "claimId": "c2",
+        "reason": "incomplete_execution_spec",
+        "detail": "spec: 缺少键 'factors', spec: 存在多余键 'groups', spec.factors 必须是列表"
+      },
+      {
+        "claimId": "c5",
+        "reason": "incomplete_budget_spec",
+        "detail": "recovery: matched 模式要求所有组的预算值相等"
+      },
+      {
+        "claimId": "c6",
+        "reason": "incomplete_experiment_workflow",
+        "detail": "workflow.states.shape"
+      },
+      {
+        "claimId": "c9",
+        "reason": "internal_reference_in_prose"
+      },
+      {
+        "claimId": "c3",
+        "reason": "semantic_unresolved",
+        "detail": "初始化引用c6，但c6未提供，无法验证共享第0帧3DGS模型的具体获取和状态；渲染和优化器设置具体，但初始化缺失导致失败。"
+      },
+      {
+        "claimId": "c4",
+        "reason": "semantic_unresolved",
+        "detail": "场景名称 'flame salmon' 与证据中的 'flame salmon' 大小写不一致，且证据未明确支持该场景属于 N3DV 数据集；相机划分规则具体但未提供实际相机索引列表，无法验证非空且不相交。"
+      },
+      {
+        "claimId": "c7",
+        "reason": "semantic_unresolved",
+        "detail": "PSNR/SSIM 聚合级别未明确指定评估视图平均方式；存储边界仅新增 3DG 参数但未说明单位换算；时间测量缺少预热和同步的具体方法。"
+      },
+      {
+        "claimId": "c8",
+        "reason": "semantic_unresolved",
+        "detail": "分析方案缺少具体聚合规则和配对决策规则；effects字段仅给出公式，未指定视图聚合和配对方式，uncertainty和decision字段描述模糊。"
+      },
+      {
+        "claimId": "c1",
+        "reason": "inconsistent_hypothesis_analysis",
+        "detail": "analysis_claim"
+      }
+    ]
+  },
+  "finalRejectedClaims": [
+    {
+      "claimId": "c2",
+      "reason": "incomplete_execution_spec",
+      "detail": "spec: 缺少键 'factors', spec: 存在多余键 'groups', spec.factors 必须是列表",
+      "revisionRejection": {
+        "claimId": "c2",
+        "reason": "semantic_unresolved",
+        "detail": "干预水平未指定具体数值参数：处理组仅设置propagate_new_gaussians=false，但未给出新增高斯的数量、评分阈值或算法细节，无法复现操作。"
+      }
+    },
+    {
+      "claimId": "c5",
+      "reason": "incomplete_budget_spec",
+      "detail": "recovery: matched 模式要求所有组的预算值相等",
+      "revisionRejection": {
+        "claimId": "c5",
+        "reason": "semantic_unresolved",
+        "detail": "预算配置不匹配：baseline模式为train，但recovery模式为unmatched，且对照组0步、处理组100步/帧，未提供匹配预算；同时baseline的maxBudget为100步/帧，但未明确与recovery的对应关系，无法满足匹配预算要求。"
+      }
+    },
+    {
+      "claimId": "c6",
+      "reason": "incomplete_experiment_workflow",
+      "detail": "workflow.states.shape",
+      "revisionRejection": {
+        "claimId": "c6",
+        "reason": "incomplete_experiment_workflow",
+        "detail": "workflow.states.shape"
+      }
+    },
+    {
+      "claimId": "c9",
+      "reason": "internal_reference_in_prose",
+      "revisionRejection": {
+        "claimId": "c9",
+        "reason": "internal_reference_in_prose"
+      }
+    },
+    {
+      "claimId": "c3",
+      "reason": "semantic_unresolved",
+      "detail": "初始化引用c6，但c6未提供，无法验证共享第0帧3DGS模型的具体获取和状态；渲染和优化器设置具体，但初始化缺失导致失败。",
+      "revisionRejection": {
+        "claimId": "c3",
+        "reason": "incomplete_experiment_protocol",
+        "detail": "initialization.workflow_reference"
+      }
+    },
+    {
+      "claimId": "c4",
+      "reason": "semantic_unresolved",
+      "detail": "场景名称 'flame salmon' 与证据中的 'flame salmon' 大小写不一致，且证据未明确支持该场景属于 N3DV 数据集；相机划分规则具体但未提供实际相机索引列表，无法验证非空且不相交。",
+      "revisionRejection": {
+        "claimId": "c4",
+        "reason": "semantic_unresolved",
+        "detail": "数据可用性未证实：证据E1/E2仅提及flame salmon场景存在新出现内容，未提供N3DV数据集中该场景的完整可用性、帧数或相机索引范围；且相机划分规则（每5个相机索引中第5个作为评估视图）未在证据中体现，无法确认非空且不相交。"
+      }
+    },
+    {
+      "claimId": "c7",
+      "reason": "semantic_unresolved",
+      "detail": "PSNR/SSIM 聚合级别未明确指定评估视图平均方式；存储边界仅新增 3DG 参数但未说明单位换算；时间测量缺少预热和同步的具体方法。",
+      "revisionRejection": {
+        "claimId": "c7",
+        "reason": "semantic_unresolved",
+        "detail": "指标协议不完整：PSNR/SSIM的聚合级别未明确（仅提到先对每帧的评估视图取平均，再对帧窗口取平均，但未指定评估视图数量或具体聚合方式）；存储边界仅新增3DG参数，但未明确单位换算或包含文件；额外训练开销的时间测量未指定分辨率、预热次数、同步方法或计时区域。"
+      }
+    },
+    {
+      "claimId": "c8",
+      "reason": "semantic_unresolved",
+      "detail": "分析方案缺少具体聚合规则和配对决策规则；effects字段仅给出公式，未指定视图聚合和配对方式，uncertainty和decision字段描述模糊。",
+      "revisionRejection": {
+        "claimId": "c8",
+        "reason": "semantic_unresolved",
+        "detail": "分析未指定配对观察的具体方式（如逐帧配对）和聚合规则（如先对视图平均再对帧平均），且未明确存储和时间差值的计算单位，导致决策规则无法执行。"
+      }
+    },
+    {
+      "claimId": "c1",
+      "reason": "inconsistent_hypothesis_analysis",
+      "detail": "analysis_claim",
+      "revisionRejection": {
+        "claimId": "c1",
+        "reason": "semantic_unresolved",
+        "detail": "假设声称执行第2阶段会提高PSNR/SSIM，但证据E1/E2仅表明跳过第2阶段无法捕捉新出现物体，未提供PSNR/SSIM数值比较；且假设未明确配对观察和聚合规则，无法与c8的描述性分析完全对齐。"
+      }
+    }
+  ],
+  "finalVerificationSummary": {
+    "accepted": 0,
+    "rejected": 9
+  },
+  "findings": [
+    "The one bounded edit request actually executes within the unchanged run/input maximum;14edits across9IDs expand to9complete original-linked drafts, with exact request fingerprint and saved reconstruction reproduced offline.",
+    "Both ordinary repair design reviewers run afterwards. Final0accepted/9rejected and inconclusive remain; successful edit transport/reconstruction is not a scientific pass.",
+    "Genuine unresolved defects include noncanonical state shapes, workflow-reference consistency, intervention parameters and timing/storage definitions. Expose precise validator paths/expected constraints to future edits rather than vague workflow.states.shape.",
+    "Audit review policy separately: it still demands proven PSNR/SSIM gains for a prospective hypothesis, rejects explicit unmatched whole-stage cost despite the frozen question, and demands author camera indices for proposed prechecked splits. Preserve source membership requirements and all genuine defects; do not auto-approve around these policy mismatches.",
+    "Current task sources still need an explicit matching scene-to-dataset premise for the proposed N3DV attribution. No missing passage proves global absence."
+  ],
+  "rawFiles": [
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v4.json",
+      "sha256": "cef95bb7a99771ef847511ed4543d5a9e64344ab606c0f86dcc15dc6033bc1cc"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v4.payload.json",
+      "sha256": "75cf52c2eb949ca3270f7dac954d296b32af1de1f4dd6a2cd7d2ffdbf9270f63"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v4.calls.json",
+      "sha256": "754a3169bb16eb97067e6af508199668826ed905e0af7d7d33cae1ab2e80ac6b"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v4.result.json",
+      "sha256": "814fdfed30c87126a4b4fe32cd282e8a3b3bea9393da0e502b3c6021165101b0"
+    }
+  ],
+  "boundary": "One post-fix submission only, all14calls settled, no automatic retry or unknown bypass. Old E1-v1/v2 failures, E1-v3 inconclusive and independent0/5 remain unchanged. No paid request during diagnostics."
+}

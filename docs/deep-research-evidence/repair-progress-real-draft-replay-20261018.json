@@ -1,0 +1,27 @@
+{
+  "date": "2026-10-18",
+  "originalRunId": "dr_run_8b35605449c15fd98026409a338a16e5",
+  "originalOutcome": "partial",
+  "testType": "offline replay of saved actual drafts, no model invocation",
+  "candidateIds": [],
+  "retainedRejections": [
+    {
+      "claimId": "c1",
+      "reason": "unchanged_semantic_rejection",
+      "detail": "主张称NTC接收上一帧高斯并输出位置、旋转、缩放等变化量，再应用到高斯上得到当前帧预测；证据仅说明NTC训练来建模每个3DG的变换（transformation），并提到用前一时刻3DGs初始化、训练后变换并传递，但没有具体说明输入输出为变化量，也未直接支持位置、旋转、缩放这些具体属性。",
+      "originalReason": "semantic_unresolved",
+      "progressDetail": "论断内容和引用依据未变，保留原核验拒绝结果。"
+    },
+    {
+      "claimId": "c3",
+      "reason": "unchanged_semantic_rejection",
+      "detail": "主张称新出现物体在上一帧没有对应高斯，因此需额外添加高斯；证据E3/E6/E7/E8只显示采用自适应3DG添加策略为新兴物体生成帧特定的额外3DGs，E9说明邻近已有3DGs试图通过变换伪装但颜色不更新而不足，但均未直接说明新兴物体在上一帧没有对应高斯；NTC负责变换、额外添加由另一阶段完成，不能直接推出该因果表述。",
+      "originalReason": "semantic_unresolved",
+      "progressDetail": "论断内容和引用依据未变，保留原核验拒绝结果。"
+    }
+  ],
+  "providerCalls": 0,
+  "productionRowsModified": 0,
+  "originalAcceptanceChanged": false,
+  "sourceCommit": "34a465b5"
+}

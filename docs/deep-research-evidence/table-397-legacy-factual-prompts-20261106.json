@@ -1,0 +1,16 @@
+{
+  "oldPrompts": [
+    {
+      "version": 1,
+      "canonicalBodySha256": "69852244aad201d5844a5944ce383e0c708db217fb941d288c45c3ec73eccbb7",
+      "exact": true
+    },
+    {
+      "version": 2,
+      "canonicalBodySha256": "7c4d68bcf30548a09e51b184db62fd4e794d32558f4b280a2f29a92f3409d24b",
+      "exact": true
+    }
+  ],
+  "providerCalls": 0,
+  "scientificAcceptance": false
+}

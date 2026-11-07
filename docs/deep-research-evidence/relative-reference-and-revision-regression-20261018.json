@@ -1,0 +1,48 @@
+{
+  "date": "2026-10-18",
+  "sourceCommit": "5da25372",
+  "promptVersion": "dr-v2.20261018.142",
+  "originalRunId": "dr_run_838687fc88c25b888537961f934dffe2",
+  "relativeReference": "下一帧",
+  "legacyRejection": [
+    {
+      "claimId": "c3",
+      "reason": "numeric_mismatch",
+      "missingReportedNumbers": [
+        "1e0"
+      ],
+      "detail": "本条引用原文未直接报告这些数值：1。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。"
+    }
+  ],
+  "newPassedToSemanticChecker": [
+    "c3"
+  ],
+  "newSemanticRejection": [
+    {
+      "claimId": "c3",
+      "reason": "semantic_unresolved",
+      "detail": "fixture declines semantic acceptance"
+    }
+  ],
+  "systemBytes": {
+    "repair_claims": 894,
+    "synthesize": 815,
+    "synthesize_audience": 815,
+    "plan": 773
+  },
+  "focused": {
+    "passed": 122,
+    "seconds": 17.78,
+    "log": "tmp/pytest-dr142-revision-final.log",
+    "overlapsFullSuite": true
+  },
+  "realProviderCalls": 0,
+  "productionRowsChanged": 0,
+  "boundary": "Copied real draft replay with deliberately negative semantic fixture, matching runtime absence-scope 1. Proves removal of false numerical veto, not factual acceptance. Trusted revision instructions fit original 1024 framing reservation. Quantity-v1 and native-v1 to v4 requests remain frozen. Actual model willingness to revise still requires a new bounded diagnostic. Full suite is offline; it does not grant a new content pass.",
+  "full": {
+    "passed": 2294,
+    "warnings": 1,
+    "seconds": 173.21,
+    "log": "tmp/pytest-dr142-full.log"
+  }
+}

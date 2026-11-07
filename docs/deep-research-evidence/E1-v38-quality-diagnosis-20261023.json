@@ -1,0 +1,74 @@
+{
+  "date": "2026-10-23",
+  "case": "E1-v38",
+  "sourceCommit": "08883d8a",
+  "reviewEnvelopeVersion": 10,
+  "status": "completed",
+  "outcome": "inconclusive",
+  "accepted": 0,
+  "rejected": 9,
+  "actualReviewFingerprintCount": 4,
+  "allOriginalEvidenceAndContextRetained": true,
+  "rawFieldReferenceFindings": 15,
+  "allRawFindingCodesRecognized": true,
+  "invalidPresenceVerdicts": [
+    {
+      "claimId": "c3",
+      "errors": [
+        "finding.2.presence"
+      ]
+    },
+    {
+      "claimId": "c6",
+      "errors": [
+        "finding.3.presence"
+      ]
+    }
+  ],
+  "verifiedBindingVerdicts": [
+    "c1",
+    "c7",
+    "c8"
+  ],
+  "precheckFailures": [
+    {
+      "claimId": "c2",
+      "reason": "internal_reference_in_prose"
+    },
+    {
+      "claimId": "c4",
+      "reason": "internal_reference_in_prose"
+    },
+    {
+      "claimId": "c5",
+      "reason": "incomplete_budget_spec"
+    },
+    {
+      "claimId": "c9",
+      "reason": "internal_reference_in_prose"
+    }
+  ],
+  "bodyBytes": 16905,
+  "generationDefects": [
+    "Matched unequal group budgets with an extra note key.",
+    "E aliases/ranges remain in public text/conditions.",
+    "Opaque3DG_base aggregate and unresolved asset/placeholder initialization do not define a complete executable baseline."
+  ],
+  "reviewConcerns": [
+    "Existing seeds[0] and executionSpec are incorrectly labelled missing_field; rejected rather than auto-reclassified.",
+    "Analysis already has all four effects, including storage_diff/time_diff.",
+    "Workflow already has seed_manifest and split_manifest.",
+    "Prospective hypothesis is incorrectly demanded to have prior observed quality gain; named-scene evidence is demanded to provide unasserted total count/subset metadata."
+  ],
+  "repairStatus": "skipped_budget",
+  "repairLimit": {
+    "kind": "repairPromptBytes",
+    "limit": 17023,
+    "used": 31357
+  },
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "scientificApproval": false,
+  "independentCredit": 0,
+  "boundary": "Saved raw case diagnosis only. Field references improve transport organization, not scientific correctness or content acceptance. No causal quality comparison with previous different generated outputs. No retry or historical upgrade."
+}

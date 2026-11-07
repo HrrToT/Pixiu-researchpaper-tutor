@@ -1,0 +1,50 @@
+{
+  "case": "AD1N-v7",
+  "payloadSha256": "3acb486c795839b5cf4a4f964f02a0eb9d4d671166560c8dab3998642c9c5978",
+  "rawUnchanged": true,
+  "legacyPreparedRequestExactAgainstSavedAndCommit": "f14cc105",
+  "budget": {
+    "totalCharacters": 300,
+    "fixedCharacters": 95,
+    "editableCharacters": 205,
+    "protectedClaimIds": [
+      "c2"
+    ],
+    "editableClaimIds": [
+      "c1"
+    ]
+  },
+  "legacyRequestBytes": 19191,
+  "candidateRequestBytes": 16870,
+  "editableOriginalEvidenceRows": 5,
+  "editableQuotesContextVersionsAndPermissionsExact": true,
+  "counterfactualOnlyEditableResponseFromSaved": {
+    "reason": "character_limit"
+  },
+  "savedProtectedTargetReturned": {
+    "reason": "protected_target_in_response"
+  },
+  "fallbackEffectiveOptions": {
+    "max_tokens": 8192,
+    "temperature": 0.0,
+    "thinking": {
+      "type": "disabled"
+    },
+    "reasoning_effort": "none"
+  },
+  "validShortFixture": {
+    "events": [
+      "synthesize",
+      "synthesize_audience"
+    ],
+    "characters": 146,
+    "fixedC2FullObjectExact": true,
+    "verified": false
+  },
+  "receivedBudgetedEditReusedWithoutDispatch": true,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "contentAcceptance": false,
+  "independentCredit": 0,
+  "boundary": "Replay/counterfactual fixtures only. Truncated saved compaction stays failed even with new role options; valid short text is supplied by the test, not a model. No old run or verdict is upgraded."
+}

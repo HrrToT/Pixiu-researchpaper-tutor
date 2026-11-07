@@ -1,0 +1,117 @@
+{
+  "date": "2026-10-18",
+  "case": "H1F-v8",
+  "runId": "dr_run_f7aaffb1d6ad5665aced40aa199c1ce8",
+  "sourceCommit": "959011ea",
+  "promptVersion": "dr-v2.20261018.144",
+  "evaluationUse": "retired-case diagnostic",
+  "independent": false,
+  "status": "completed",
+  "outcome": "partial",
+  "contentAccepted": false,
+  "modelCalls": 12,
+  "settledTokens": 35572,
+  "elapsedSeconds": 84.746,
+  "cost": null,
+  "actualSemanticBatches": [
+    {
+      "node": "verify",
+      "claimIds": [
+        "c2"
+      ]
+    },
+    {
+      "node": "verify",
+      "claimIds": [
+        "c3"
+      ]
+    }
+  ],
+  "initialVerification": {
+    "accepted": [
+      {
+        "claimId": "c3",
+        "text": "遇到新出现的物体（如火焰、烟雾或新倒出的液体）时，只靠变换已有高斯无法表示它们，因为初始帧中没有对应的高斯；必须添加新的3D高斯来建模这些物体。",
+        "kind": "reported",
+        "evidenceRefs": [
+          "ev_9c77ecc67f69278101c2f3c013b1a9dd7977363a104239b5abbec8ff2b2d6841",
+          "ev_cdfd48dfbddf41cd8040b67674c7a83e4046f6400cb3ba7cec77d287399252dd"
+        ],
+        "conditions": {},
+        "obligationIds": [
+          "ob_2"
+        ],
+        "detailLevel": "fulltext",
+        "verification": "semantic_passed"
+      }
+    ],
+    "rejected": [
+      {
+        "claimId": "c1",
+        "reason": "numeric_mismatch",
+        "missingReportedNumbers": [
+          "4e0"
+        ],
+        "detail": "本条引用原文未直接报告这些数值：4。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。"
+      },
+      {
+        "claimId": "c2",
+        "reason": "semantic_unresolved",
+        "detail": "证据E2支持将上一帧3D高斯作为初始化并经过NTC建模变换，证据E1支持NTC用浅层MLP将hash encoding映射为平移和四元数旋转；但E1/E2均未明确说明该hash encoding的输入是“每个高斯的位置特征”。该子句属于推断，未被证据直接支持，因此整体声明不能通过。"
+      }
+    ]
+  },
+  "repairChecks": {
+    "accepted": [],
+    "rejected": [
+      {
+        "claimId": "c1",
+        "reason": "numeric_mismatch",
+        "missingReportedNumbers": [
+          "4e0"
+        ],
+        "detail": "本条引用原文未直接报告这些数值：4。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。"
+      },
+      {
+        "claimId": "c2",
+        "reason": "unchanged_semantic_rejection",
+        "detail": "证据E2支持将上一帧3D高斯作为初始化并经过NTC建模变换，证据E1支持NTC用浅层MLP将hash encoding映射为平移和四元数旋转；但E1/E2均未明确说明该hash encoding的输入是“每个高斯的位置特征”。该子句属于推断，未被证据直接支持，因此整体声明不能通过。",
+        "originalReason": "semantic_unresolved",
+        "progressDetail": "论断内容和引用依据未变，保留原核验拒绝结果。"
+      }
+    ]
+  },
+  "scores": {
+    "goalResponse": 2,
+    "evidenceSupport": 4,
+    "conditions": 3,
+    "synthesisValue": 2,
+    "executability": null,
+    "readability": 3
+  },
+  "findings": [
+    "Repair now removes conditions containing unreported dimensions, correcting the prior trusted-instruction conflict.",
+    "The model still copies the unreported count in main text and repeats the uncited precise encoder-input premise. Hard and unchanged-semantic guards preserve both rejections.",
+    "Only the new-object reason is published; original three-point explanation remains incomplete. No content pass."
+  ],
+  "report": "## 判断\n\n- 遇到新出现的物体（如火焰、烟雾或新倒出的液体）时，只靠变换已有高斯无法表示它们，因为初始帧中没有对应的高斯；必须添加新的3D高斯来建模这些物体。 [1](#research-evidence-ev_9c77ecc67f69278101c2f3c013b1a9dd7977363a104239b5abbec8ff2b2d6841) [2](#research-evidence-ev_cdfd48dfbddf41cd8040b67674c7a83e4046f6400cb3ba7cec77d287399252dd)\n\n<details>\n<summary>还有 1 项未完成</summary>\n\n- 在3DGStream v4中，NTC预测高斯的哪些变化？如何利用前一帧的高斯表示来预测这些变化？：最终回答尚未完整回应这一问题\n\n</details>\n\n论文事实已按所列原文核对。\n\n<details>\n<summary>原文依据</summary>\n\n**[1] 3DGStream: On-the-Fly Training of 3D Gaussians for Efficient Streaming of Photo-Realistic Free-Viewpoint Videos** · 全文片段\n\n> However, this approach falters when faced with objects not present in the initial frame, such as transient objects like flames or smoke, and new persistent objects like the liquid poured out of a bottle.\n> Since 3DG is an unstructured explicit representation, it's essential to add new 3DGs to model these emerging objects.\n\n**[2] 3DGStream: On-the-Fly Training of 3D Gaussians for Efficient Streaming of Photo-Realistic Free-Viewpoint Videos** · 全文片段\n\n> (2)Then in the Stage 2, we use an adaptive 3DG addition strategy to handle emerging objects by spawning frame-specific additional 3DGs near these objects and optimize them along with periodic splitting and pruning.\n\n</details>",
+  "rawFiles": [
+    {
+      "path": "tmp/dr-acceptance-receipts/H1F-v8.json",
+      "sha256": "a6a77b59dff8c0955306cf5e6f92c898a0a78ddf4a2cfca8b19fde180fd9eb1d"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/H1F-v8.payload.json",
+      "sha256": "b72dc4277f5fadb490f2307adf50d3ced3990dec2c95088c80674b85b9e49efc"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/H1F-v8.calls.json",
+      "sha256": "cc11c7f6648ed4dea27d0006c08018f79608b6b8f7a19d7391219ee07bd7fc06"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/H1F-v8.result.json",
+      "sha256": "9c1b9d2d99d44ed4fe6ed1429e1006dbd1cb408ae2cdfc4f7d5f85ad47741887"
+    }
+  ],
+  "boundary": "Submitted once, unchanged question/materials/budget, all rows settled. No historical unknown retry, first-result overwrite or independent credit. Safe partial result is not goal completion."
+}

@@ -1,0 +1,50 @@
+{
+  "date": "2026-10-22",
+  "case": "E1-v22",
+  "requests": [
+    {
+      "node": "verify_design_config",
+      "targets": [
+        "c4",
+        "c5",
+        "c7"
+      ],
+      "inputBytes": 24559,
+      "fullInputsUnchanged": true
+    },
+    {
+      "node": "verify_design_science",
+      "targets": [
+        "c1",
+        "c2"
+      ],
+      "inputBytes": 30825,
+      "fullInputsUnchanged": true
+    },
+    {
+      "node": "verify_design_science",
+      "targets": [
+        "c3",
+        "c8"
+      ],
+      "inputBytes": 27224,
+      "fullInputsUnchanged": true
+    }
+  ],
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "originalLegacyResponsesLackNewFindings": true,
+  "unreviewedIds": [
+    "c1",
+    "c2",
+    "c3",
+    "c4",
+    "c5",
+    "c7",
+    "c8"
+  ],
+  "autoApproved": 0,
+  "independentCredit": 0,
+  "boundary": "Controlled new-envelope input and old-response compatibility probe. The archived responses never claimed the new schema; no old result is upgraded. Exact bindings are not scientific truth.",
+  "sourceCommit": "00987455"
+}

@@ -1,0 +1,69 @@
+{
+  "date": "2026-10-20",
+  "sourceCase": "H5F-v5",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "literalMemberRows": [
+    {
+      "evidenceId": "ev_89b44a58a003cec86fffe1e88e749c181e2575d214116b45e5c6ea7f500183ba",
+      "sourceWorkId": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf",
+      "sourceVersionId": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854",
+      "contentHash": "3e7f657e19d64ef2d59fccdae95d0c18dd3eddb48b6ece4e79d8f039e2e38d2c",
+      "accessLevel": "fulltext",
+      "quote": "Table row 17:  | D-NeRF Dataset [cols=3, rows=1] | NeRF-DS Dataset [cols=3, rows=1] |  | HyperNeRF Dataset [cols=3, rows=1]\nTable row 18: Scene [cols=2, rows=1] | FPS Num (k) Scene FPS Num (k) Scene [cols=7, rows=1] | FPS Num (k) [cols=2, rows=1]\nTable row 19: Lego [cols=2, rows=1] | 24 | 300 | AS | 48 | 185 | Espresso [cols=2, rows=1] | 15 | 620",
+      "location": {
+        "page": 12,
+        "chunk": 56,
+        "section": "Table 3 . Quantitative comparison on NeRF-DS dataset per-scene. We color each cell as best , second best , and third best . Our method, overall, achieves the best rendering quality and robust convergence in the majority of scenes. It is worth noting that the metrics we used are the same as those in the main text, with LPIPS using the VGG network. The slight differences in our measurement metrics, compared to those used in NeRF-DS and HyperNeRF, are due to their papers employing MS-SSIM and LPIPS with the AlexNet.",
+        "table": "tab_2",
+        "tableColumnMappingUnverified": true
+      },
+      "obligationIds": [
+        "experiment_deliverable",
+        "data_availability",
+        "ob_1",
+        "ob_2"
+      ],
+      "conditions": {},
+      "sourceContext": "Paper: Deformable 3D Gaussians for High-Fidelity Monocular Dynamic Scene Reconstruction\n\nSection: Table 3 . Quantitative comparison on NeRF-DS dataset per-scene. We color each cell as best , second best , and third best . Our method, overall, achieves the best rendering quality and robust convergence in the majority of scenes. It is worth noting that the metrics we used are the same as those in the main text, with LPIPS using the VGG network. The slight differences in our measurement metrics, compared to those used in NeRF-DS and HyperNeRF, are due to their papers employing MS-SSIM and LPIPS with the AlexNet.\n\nContent:\nTable row 15: Ours (w/o AST) | 24.80 | 0.8848 0.1571 [cols=2, rows=1] | 26.29 | 0.8800 0.1830 [cols=2, rows=1] | 19.68 | 0.7869 0.1888 [cols=2, rows=1] | 23.97 | 0.8346 | 0.2037\nTable row 16: Ours | 24.86 | 0.8908 0.1532 [cols=2, rows=1] | 26.31 | 0.8842 0.1783 [cols=2, rows=1] | 19.67 | 0.7934 0.1901 [cols=2, rows=1] | 24.11 | 0.8524 | 0.1769\nTable row 17:  | D-NeRF Dataset [cols=3, rows=1] | NeRF-DS Dataset [cols=3, rows=1] |  | HyperNeRF Dataset [cols=3, rows=1]\nTable row 18: Scene [cols=2, rows=1] | FPS Num (k) Scene FPS Num (k) Scene [cols=7, rows=1] | FPS Num (k) [cols=2, rows=1]\nTable row 19: Lego [cols=2, rows=1] | 24 | 300 | AS | 48 | 185 | Espresso [cols=2, rows=1] | 15 | 620\nTable row 20: Jump [cols=2, rows=1] | 85 | 90 | Basin | 29 | 250 | Americano [cols=2, rows=1] | 6 | 1300",
+      "verification": {
+        "literal": "passed",
+        "semantic": "unchecked"
+      },
+      "sourceKind": "task_paper",
+      "sourceId": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf-v3040e30052bd930d-chunk-56",
+      "sourceTitle": "Deformable 3D Gaussians for High-Fidelity Monocular Dynamic Scene Reconstruction",
+      "sourceUrl": "",
+      "extractionKind": "literal_dataset_member_rows",
+      "sourcePublicationIdentity": {
+        "scheme": "arxiv",
+        "workId": "arxiv:2309.13101",
+        "revision": "v2",
+        "displayId": "arxiv:2309.13101v2",
+        "contentHash": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854",
+        "physicalPage": 1,
+        "literalStamp": "arXiv:2309.13101v2",
+        "origin": "owned_pdf_header"
+      }
+    }
+  ],
+  "synthesisMemberPremiseAllocated": true,
+  "readCapUnchanged": 12,
+  "selectedReadSourceIds": [
+    "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf-v3040e30052bd930d-chunk-7",
+    "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf-v3040e30052bd930d-chunk-26",
+    "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf-v3040e30052bd930d-chunk-27",
+    "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf-v3040e30052bd930d-chunk-30",
+    "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf-v3040e30052bd930d-chunk-56",
+    "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf-v3040e30052bd930d-chunk-9",
+    "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf-v3040e30052bd930d-chunk-4",
+    "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf-v3040e30052bd930d-chunk-32",
+    "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf-v3040e30052bd930d-chunk-8",
+    "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf-v3040e30052bd930d-chunk-42",
+    "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf-v3040e30052bd930d-chunk-5",
+    "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf-v3040e30052bd930d-chunk-51"
+  ],
+  "controlledPoolSizeUnchanged": 28,
+  "newModelExcerptsMockedEmpty": true,
+  "boundary": "Controlled read-order/program-extraction fixture from unchanged actually retrieved source; this member passage was NOT read in the old real case. One irrelevant old-pool excerpt is replaced for allocation fixture only; no production write, historical outcome upgrade, new real reading/extraction/content/membership/numerical-column approval."
+}

@@ -1,0 +1,25 @@
+{
+  "date": "2026-10-19",
+  "sourceCommit": "e2133482",
+  "promptVersion": "dr-v2.20261019.181",
+  "offline": {"passed": 2944, "warnings": 1, "seconds": 165.95, "log": "tmp/pytest-dr181-final-full.log"},
+  "focused": {"passed": 150, "seconds": 10.82, "log": "tmp/pytest-dr181-final-focused.log", "overlapWithFull": true},
+  "contracts": {"readingPriority": 1, "sourcePrecision": 5, "extractionPriority": 6, "experimentIntent": 3},
+  "changes": [
+    "Reading contract1 selects each obligation/paper's actual candidate passages under the unchanged12/24read cap rather than treating sorted source IDs or obligation-set powersets as relevance. Exact same-work/version/index/section predecessor bundles stay separate original sources, and indexed IDs cannot claim another work namespace.",
+    "Source precision5/extraction priority6 prioritize concrete operations, defining equations, named membership, initialization/training phases and requested measurement conditions. Own IDs, text, versions, permissions, table guards and the three-evidence-items-per-passage cap remain.",
+    "Experiment intent3 requires an own verified fulltext premise for explicitly reused paper interventions, and gives group operations scientific review. A parameter list or method label is not an implementation; genuinely new proposed operations retain separate scientific review without being falsely attributed to a paper.",
+    "Named-data audit inputs highlight only visible own literal quotations containing selected labels. These candidates are not semantic membership proof and never rebind a returned verdict or weaken the existing exact-name/source guard.",
+    "Eleven actual archived synthesis/audience Provider fingerprints match. Old saved/unknown requests retain their original contracts and cannot be retargeted.",
+    "Actual archived H2F inputs expose a prior reading-selection loss: implementation30 and both FPS passages were retrieved but omitted from the bounded read list. New selection includes them within the same12slots; this offline selection is not an executed new read or a content pass.",
+    "Archived H5F new selection prioritizes actual AST operation27 and own member quotation23. Mocked config/science requests fit28180/28557bytes within the existing32KBverification cap; all three repair batches fit22181/23132/21865bytes within24KB. No Provider is called by those probes."
+  ],
+  "proofs": [
+    "deep-research-evidence/operational-evidence-legacy-replay-20261019.json",
+    "deep-research-evidence/operational-source-selection-20261019.json",
+    "deep-research-evidence/operational-real-input-preflight-20261019.json"
+  ],
+  "diagnosticsRetained": ["tmp/pytest-dr181-focused.log", "tmp/pytest-dr181-focused-v2.log", "tmp/pytest-dr181-reading-focused.log", "tmp/pytest-dr181-full.log"],
+  "diagnosticBoundary": "Initial new-test syntax error, missing initially spelling and foreign indexed-work counterexample were corrected without relaxing assertions. The2934-pass earlier full suite predates the final reading contract and legitimate-new-operation guard; only2944is the final current-source result.",
+  "boundary": "Offline ordering, schema, capacity and failure fixtures do not prove valid experiments, complete comparison, novice comprehension or fresh independent acceptance. OriginalDR0-DR5 requirements, budgets, historical scores and paused unknown identities unchanged."
+}

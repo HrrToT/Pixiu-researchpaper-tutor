@@ -1,0 +1,110 @@
+{
+  "sourceCase": "X4L-v12",
+  "sourceSha256": "7f425925dd6ba48c7f74cc02831e2096d6fffc827c450556239d015df33ee2e7",
+  "variants": [
+    {
+      "variant": "original",
+      "claim": {
+        "claimId": "c1",
+        "text": "这里的“2D”指每个基元是二维高斯椭圆盘，但通过在世界坐标系中定位和定向，并沿光线进行体积渲染，这些二维基元共同表示三维场景。",
+        "kind": "reported",
+        "evidenceRefs": [
+          "ev_96e7d1d5264ec8b49bd7a3dcea93ccf4c4b1e62d06159091cb145bf8cb04b97f",
+          "ev_1306ca99578e5bc45b6848d4e0836e6e4663218fe63d09fd405f78bf15a2254a"
+        ],
+        "conditions": {},
+        "obligationIds": [
+          "ob_1"
+        ],
+        "detailLevel": "concise",
+        "tableBindings": []
+      },
+      "legacyResult": {
+        "candidates": [],
+        "rejected": [
+          {
+            "claimId": "c1",
+            "reason": "numeric_mismatch",
+            "missingReportedNumbers": [
+              "3e0"
+            ],
+            "detail": "本条引用原文未直接报告这些数值：3。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。"
+          }
+        ]
+      },
+      "candidateResult": {
+        "candidates": [
+          {
+            "claimId": "c1",
+            "text": "这里的“2D”指每个基元是二维高斯椭圆盘，但通过在世界坐标系中定位和定向，并沿光线进行体积渲染，这些二维基元共同表示三维场景。",
+            "kind": "reported",
+            "evidenceRefs": [
+              "ev_96e7d1d5264ec8b49bd7a3dcea93ccf4c4b1e62d06159091cb145bf8cb04b97f",
+              "ev_1306ca99578e5bc45b6848d4e0836e6e4663218fe63d09fd405f78bf15a2254a"
+            ],
+            "conditions": {},
+            "obligationIds": [
+              "ob_1"
+            ],
+            "detailLevel": "concise",
+            "tableBindings": []
+          }
+        ],
+        "rejected": []
+      }
+    },
+    {
+      "variant": "revision",
+      "claim": {
+        "claimId": "c1",
+        "kind": "reported",
+        "text": "这里的“2D”指每个基元是二维高斯椭圆盘，但通过在世界坐标系中定位和定向，并沿光线进行体积渲染，这些二维基元共同表示三维场景。",
+        "evidenceRefs": [
+          "ev_96e7d1d5264ec8b49bd7a3dcea93ccf4c4b1e62d06159091cb145bf8cb04b97f",
+          "ev_1306ca99578e5bc45b6848d4e0836e6e4663218fe63d09fd405f78bf15a2254a"
+        ],
+        "conditions": {},
+        "detailLevel": "fulltext",
+        "obligationIds": [
+          "ob_1"
+        ]
+      },
+      "legacyResult": {
+        "candidates": [],
+        "rejected": [
+          {
+            "claimId": "c1",
+            "reason": "numeric_mismatch",
+            "missingReportedNumbers": [
+              "3e0"
+            ],
+            "detail": "本条引用原文未直接报告这些数值：3。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。"
+          }
+        ]
+      },
+      "candidateResult": {
+        "candidates": [
+          {
+            "claimId": "c1",
+            "kind": "reported",
+            "text": "这里的“2D”指每个基元是二维高斯椭圆盘，但通过在世界坐标系中定位和定向，并沿光线进行体积渲染，这些二维基元共同表示三维场景。",
+            "evidenceRefs": [
+              "ev_96e7d1d5264ec8b49bd7a3dcea93ccf4c4b1e62d06159091cb145bf8cb04b97f",
+              "ev_1306ca99578e5bc45b6848d4e0836e6e4663218fe63d09fd405f78bf15a2254a"
+            ],
+            "conditions": {},
+            "detailLevel": "fulltext",
+            "obligationIds": [
+              "ob_1"
+            ]
+          }
+        ],
+        "rejected": []
+      }
+    }
+  ],
+  "sourceAndClaimUnchanged": true,
+  "providerCalls": 0,
+  "semanticAcceptance": false,
+  "independentCredit": 0
+}

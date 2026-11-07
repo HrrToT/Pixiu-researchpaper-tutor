@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-22",
+  "sourceCommit": "9587f6bb",
+  "promptVersion": "dr-v2.20261022.234",
+  "structuredOutputContractVersion": 10,
+  "fullOffline": {
+    "passed": 4133,
+    "files": 226,
+    "warnings": 1,
+    "seconds": 191.27,
+    "log": "tmp/pytest-dr234-complete-native.log",
+    "sha256": "ab87621fdbaae5565a410388790d6842fb0e55a0faec1d108c6d71383a3ccf5d"
+  },
+  "newTests": 5,
+  "newTestsAcrossTurn": 66,
+  "focusedPassed": 159,
+  "focusedOverlap": true,
+  "legacyScripts": 34,
+  "legacyPhysicalFingerprintsMatched": 98,
+  "privateSystemBytes": 844,
+  "existingFramingReservation": 1024,
+  "allNonPrivateMessagesExactlyVersion9": true,
+  "providerCalls": 0,
+  "productionWritesByTests": 0,
+  "independentCredit": 0,
+  "newPrivateTransportRealValidated": false,
+  "boundary": "Private planning uses its own concise-English schema policy. Public drafting/repair/review messages remain byte-identical to9; raw source data/quote permissions,cap and scientific checks unchanged. No new paid case after this fix."
+}

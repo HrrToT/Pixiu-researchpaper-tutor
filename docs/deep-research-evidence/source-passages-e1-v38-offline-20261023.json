@@ -1,0 +1,171 @@
+{
+  "date": "2026-10-23",
+  "sourceCase": "E1-v38",
+  "isolatedAdaptiveExtractionVersion": 2,
+  "newEvidenceRows": 30,
+  "oldEvidenceRows": 21,
+  "coverage": [
+    {
+      "oldEvidenceId": "ev_15a8e02f885a744622caa594dd331b7481bf66e9039cec2e9de762eab6c72891",
+      "exactQuoteInNewPassage": false,
+      "exactQuoteInOriginalContext": true
+    },
+    {
+      "oldEvidenceId": "ev_cd0fb52a8f6322f1840a2c415f4ffe76ebd603aa54c4f8b78c84c3bcf5b89c9c",
+      "exactQuoteInNewPassage": false,
+      "exactQuoteInOriginalContext": true
+    },
+    {
+      "oldEvidenceId": "ev_5a62ffa4ef91faeab47770ffeb7725d05e16220034d62947882c58e68891ba69",
+      "exactQuoteInNewPassage": true,
+      "exactQuoteInOriginalContext": true
+    },
+    {
+      "oldEvidenceId": "ev_925db5ee5027aed55d6fa83e9fcd88367454dbedc927a217536f139bd847f22d",
+      "exactQuoteInNewPassage": true,
+      "exactQuoteInOriginalContext": true
+    },
+    {
+      "oldEvidenceId": "ev_e34196d11497b3956f133f4f4f9f4670ef36ac774d1a0a60f21f50a99cbc0cd3",
+      "exactQuoteInNewPassage": true,
+      "exactQuoteInOriginalContext": true
+    },
+    {
+      "oldEvidenceId": "ev_9428cc150698bc1ebd5f7d4d32f2e8efa1022c319d442c3801b44c2d74cf4bca",
+      "exactQuoteInNewPassage": true,
+      "exactQuoteInOriginalContext": true
+    },
+    {
+      "oldEvidenceId": "ev_3006efb65ff33d4d129cae301b78f856b3944f4b066063a9ad5175bdf2f067a9",
+      "exactQuoteInNewPassage": true,
+      "exactQuoteInOriginalContext": true
+    },
+    {
+      "oldEvidenceId": "ev_939c67466e206bfa472828de022768b53d746d0c3d8cad4119803f209bdc3bba",
+      "exactQuoteInNewPassage": false,
+      "exactQuoteInOriginalContext": true
+    },
+    {
+      "oldEvidenceId": "ev_516057b8a32881c40f1384de19b86128197089068316214ce7a984ebb4f252a4",
+      "exactQuoteInNewPassage": true,
+      "exactQuoteInOriginalContext": true
+    },
+    {
+      "oldEvidenceId": "ev_74bdde823cd60a4a094c7073a39236119dace8368d04374996bdd861d9005224",
+      "exactQuoteInNewPassage": false,
+      "exactQuoteInOriginalContext": true
+    },
+    {
+      "oldEvidenceId": "ev_6558c554163d2cf4124a655864c29ba4e00a1996de9a7f509dc09e67eef09830",
+      "exactQuoteInNewPassage": true,
+      "exactQuoteInOriginalContext": true
+    },
+    {
+      "oldEvidenceId": "ev_ac5bd8f1fb263f029d00495b36c79d2e348d6b56203e5fe262b5eaf57d112e9c",
+      "exactQuoteInNewPassage": true,
+      "exactQuoteInOriginalContext": true
+    },
+    {
+      "oldEvidenceId": "ev_4bbeaea2b1a3fc2176d5010e025e0272c4f315f6a4481858bf4ef14db9594a4f",
+      "exactQuoteInNewPassage": true,
+      "exactQuoteInOriginalContext": true
+    },
+    {
+      "oldEvidenceId": "ev_bdb024b856972aab854c483acb7dfa600c4918cc401ccfcebcb14da2200b2d38",
+      "exactQuoteInNewPassage": true,
+      "exactQuoteInOriginalContext": true
+    },
+    {
+      "oldEvidenceId": "ev_111c8b85f4bdb617ec51de3b89943253b60530df4cd0756a2f990508c777d316",
+      "exactQuoteInNewPassage": true,
+      "exactQuoteInOriginalContext": true
+    },
+    {
+      "oldEvidenceId": "ev_ac78892b03667f013a7ab023f8ee141856e6e6b1e1d412266f3faa1d17ef5c8b",
+      "exactQuoteInNewPassage": true,
+      "exactQuoteInOriginalContext": true
+    },
+    {
+      "oldEvidenceId": "ev_874f15b3efaa84c02564cd55bd714e1eefa7a171713ec3561ada9191bab6e55d",
+      "exactQuoteInNewPassage": true,
+      "exactQuoteInOriginalContext": true
+    },
+    {
+      "oldEvidenceId": "ev_34556f9724a2d956a035545793a5beb4e8b49fe46b2aeb07d5d8e2eb3e419abb",
+      "exactQuoteInNewPassage": true,
+      "exactQuoteInOriginalContext": true
+    },
+    {
+      "oldEvidenceId": "ev_46b36d852e0bae88362ecd57bf31a15217a083a982fd72b0d2f50bfb839377a7",
+      "exactQuoteInNewPassage": true,
+      "exactQuoteInOriginalContext": true
+    },
+    {
+      "oldEvidenceId": "ev_6b74f6036ce60f534819b14a5f5b307e02909b5249e5727678d8e2e6f9359480",
+      "exactQuoteInNewPassage": true,
+      "exactQuoteInOriginalContext": true
+    },
+    {
+      "oldEvidenceId": "ev_b99516c8b05bdcf4c0a3b7571d60642fd484f1284d1dede57efc401415f7acec",
+      "exactQuoteInNewPassage": true,
+      "exactQuoteInOriginalContext": true
+    }
+  ],
+  "zeroModelTranscription": true,
+  "literalOnlyNoSemanticApproval": true,
+  "quoteRangesExact": true,
+  "oldRecordUnchanged": true,
+  "planningInputBytes": 21268,
+  "planningMaxInputBytes": 29819,
+  "generationAllocation": {
+    "version": 1,
+    "candidateEvidenceIds": [
+      "ev_0ff817bfca6f4cbf99ab90a8773558cdfe881ba6bb3c745bd800d7d428ff9fca",
+      "ev_f2a6c573d9f6b4ff8280102ca6080b6afa66437afbae1bbb0e61b3793d2ca4ee",
+      "ev_fd5779abcb7014c3f32aefe4bdd524952e7b90ba02a116e16c34098c4568a79f",
+      "ev_e54a0abbf3eb9ff0f4388a9e8a8133320338fa1a028ddcacb372016c455914ec",
+      "ev_bdb75a7a23db20f8fbbdff19ec07feca94fa8d672301db352a566d7f2a9f6549",
+      "ev_4cd88e18ced65f387ba8711e6410452027c679320272848b816a6593a1dd3c68",
+      "ev_7cba9972f606df412970ae3f9e2eb54501a420762b2750d6bdf7ee8087bbf5f7",
+      "ev_2970ba145c67496baf8569e43f5d6654b05b28c9725468f28d0c14584f586e9c",
+      "ev_4946ceaa5d297b3a187500fd676a59d2171f79548d930d25b5da1ea1abbddc1d",
+      "ev_6013946ac365d8e09a50a39698604096450a1ed0fb1585dc937067e38ba96c3a",
+      "ev_d0622e591eded6f855e77020c0f6007306ca90ceb1a8ddcffd327f4687c1bdbd",
+      "ev_dadb4061c38d03cb7055ab22b46d491a2779765ee8971e57cdb5174cd7672b2d",
+      "ev_23da2e03df6cf2d9194db34755cab7986844ba59e39a4c6eb7189cda459a2d25",
+      "ev_0951991d5adf6449b0818d885779fdd8542aad86aaeeee4751526f25b2335285",
+      "ev_93acc497b44ca63ef81e6ccca37220b6d4aa505cdcbf720251f8fc46a8d81e2c",
+      "ev_2aaa80b78988c3c4cf86d51a13613bb63dfffe63aa5009a935ef6b20d20f5da9",
+      "ev_ab77d281c0e85c676ca00c6202911db2de8e810c2962d494a18949378292cf79",
+      "ev_e05ac481a9942978ae937b441b4f0001e5930bd612b219431a275970d826b08e",
+      "ev_b6dd6fb378948b61210a5ebb98b63611879bc45806b4f0330cf4f1d85997ca3a",
+      "ev_99176dfab48250f87ac79ac1c7abfd3249477c927fdfcdedbd9bf02fdd676430"
+    ],
+    "suppliedEvidenceIds": [
+      "ev_0ff817bfca6f4cbf99ab90a8773558cdfe881ba6bb3c745bd800d7d428ff9fca",
+      "ev_f2a6c573d9f6b4ff8280102ca6080b6afa66437afbae1bbb0e61b3793d2ca4ee",
+      "ev_fd5779abcb7014c3f32aefe4bdd524952e7b90ba02a116e16c34098c4568a79f",
+      "ev_e54a0abbf3eb9ff0f4388a9e8a8133320338fa1a028ddcacb372016c455914ec",
+      "ev_bdb75a7a23db20f8fbbdff19ec07feca94fa8d672301db352a566d7f2a9f6549",
+      "ev_4cd88e18ced65f387ba8711e6410452027c679320272848b816a6593a1dd3c68",
+      "ev_7cba9972f606df412970ae3f9e2eb54501a420762b2750d6bdf7ee8087bbf5f7",
+      "ev_2970ba145c67496baf8569e43f5d6654b05b28c9725468f28d0c14584f586e9c",
+      "ev_4946ceaa5d297b3a187500fd676a59d2171f79548d930d25b5da1ea1abbddc1d"
+    ],
+    "missingPremiseBundles": [],
+    "inputBytes": 32249,
+    "fixedInputBytes": 26351,
+    "sizingContractVersion": 2,
+    "encodedInputBytes": 31980,
+    "fixedEncodedInputBytes": 26082,
+    "planningSlotReservedBytes": 8192,
+    "inputContractVersion": 1,
+    "maxInputBytes": 32000,
+    "tableDataOmittedEvidenceIds": [],
+    "sharedTablePackets": 0
+  },
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "scientificApproval": false,
+  "boundary": "Offline copied record with reset synthetic budget; scope validator is a fixture. Stops before first model dispatch. Proves raw passage retention and prepared input capacity only, not relevance, live scope, generated content, cost or acceptance."
+}

@@ -1,0 +1,178 @@
+{
+  "case": "E1-v85",
+  "runId": "dr_run_66a7025691875770b030c152a499d3ea",
+  "promptVersion": "dr-v2.20261026.296",
+  "status": "failed",
+  "elapsedSeconds": 90,
+  "settledModelCalls": 7,
+  "settledTokens": 30504,
+  "unsettledCalls": 0,
+  "metadataErrors": [
+    "timeline.input.group_leak",
+    "timeline.input.scope"
+  ],
+  "feedback": {
+    "codes": [
+      "timeline.input.group_leak",
+      "timeline.input.scope"
+    ],
+    "issues": [
+      {
+        "code": "timeline.input.scope",
+        "path": "/steps/7/reads/2",
+        "actualPresent": true,
+        "expandedStage": "operation",
+        "actual": {
+          "stepIndex": 5,
+          "savedOutputId": "additional_3dg_storage_record",
+          "selector": "additional_3dg_storage_record_value"
+        }
+      },
+      {
+        "code": "timeline.input.scope",
+        "path": "/steps/7/reads/1",
+        "actualPresent": true,
+        "expandedStage": "operation",
+        "actual": {
+          "stepIndex": 4,
+          "savedOutputId": "execute_stage2_quality_record",
+          "selector": "execute_stage2_quality_record_value"
+        }
+      },
+      {
+        "code": "timeline.input.group_leak",
+        "path": "/steps/7/reads/0",
+        "actualPresent": true,
+        "sourceGroups": [
+          "0"
+        ],
+        "consumerGroups": [
+          "1"
+        ],
+        "expected": "source availability must include every consumer group; retain all required arms",
+        "expandedStage": "operation",
+        "consumerStepIndex": 7,
+        "consumerOutputStage": "operation",
+        "actual": {
+          "stepIndex": 3,
+          "savedOutputId": "skip_stage2_quality_record",
+          "selector": "skip_stage2_quality_record_value"
+        }
+      },
+      {
+        "code": "timeline.input.scope",
+        "path": "/steps/7/reads/0",
+        "actualPresent": true,
+        "expandedStage": "operation",
+        "actual": {
+          "stepIndex": 3,
+          "savedOutputId": "skip_stage2_quality_record",
+          "selector": "skip_stage2_quality_record_value"
+        }
+      },
+      {
+        "code": "timeline.input.scope",
+        "path": "/steps/7/reads/3",
+        "actualPresent": true,
+        "expandedStage": "operation",
+        "actual": {
+          "stepIndex": 6,
+          "savedOutputId": "stage2_training_time_record",
+          "selector": "stage2_training_time_record_value"
+        }
+      }
+    ],
+    "declaredComponentIds": [
+      "frame0_3dgs",
+      "stage1_ntc_result",
+      "transformed_3dgs",
+      "additional_3dgs"
+    ],
+    "scientificApproval": false,
+    "authoredValuesPreserved": true,
+    "declaredStepCount": 8,
+    "explicitScopeEndReleases": [
+      {
+        "componentIndex": 0,
+        "componentId": "frame0_3dgs",
+        "scope": "per_repeat",
+        "disposeAfter": null
+      },
+      {
+        "componentIndex": 1,
+        "componentId": "stage1_ntc_result",
+        "scope": "per_repeat",
+        "disposeAfter": null
+      },
+      {
+        "componentIndex": 2,
+        "componentId": "transformed_3dgs",
+        "scope": "per_frame",
+        "disposeAfter": 6
+      },
+      {
+        "componentIndex": 3,
+        "componentId": "additional_3dgs",
+        "scope": "per_frame",
+        "disposeAfter": 6
+      }
+    ]
+  },
+  "lastStep": {
+    "scope": "per_repeat",
+    "kind": "evaluate",
+    "reads": [
+      {
+        "stepIndex": 3,
+        "savedOutputId": "skip_stage2_quality_record",
+        "selector": "skip_stage2_quality_record_value"
+      },
+      {
+        "stepIndex": 4,
+        "savedOutputId": "execute_stage2_quality_record",
+        "selector": "execute_stage2_quality_record_value"
+      },
+      {
+        "stepIndex": 5,
+        "savedOutputId": "additional_3dg_storage_record",
+        "selector": "additional_3dg_storage_record_value"
+      },
+      {
+        "stepIndex": 6,
+        "savedOutputId": "stage2_training_time_record",
+        "selector": "stage2_training_time_record_value"
+      }
+    ],
+    "group": "1",
+    "sharing": "per_group",
+    "updates": [],
+    "outputs": [
+      "paired_stage2_tradeoff_summary"
+    ],
+    "action": {
+      "action": "compute_paired_stage2_tradeoff",
+      "parameters": [
+        {
+          "name": "comparison_mode",
+          "type": "choice",
+          "value": "descriptive_paired_same_frames_heldout_views"
+        },
+        {
+          "name": "attribution_claim",
+          "type": "choice",
+          "value": "no_separate_attribution"
+        }
+      ]
+    },
+    "budget": null
+  },
+  "repairStatus": "not_started_capacity",
+  "repairInputBytes": 33535,
+  "repairMaxInputBytes": 32000,
+  "repairProviderCalls": 0,
+  "initializationStarted": false,
+  "payloadSha256": "fa1947f90ecdf7ae961ee6760af75054838c9810421935bca0da06fd64a1f8fe",
+  "scientificApproval": false,
+  "independentCredit": 0,
+  "boundary": "This proposal reaches timeline checks but tries post-frame paired analysis as a live per-group evaluation. Full correction33535 bytes is rejected before send. No claim that disabled reasoning caused this outcome; generated proposal differs from prior cases."
+}

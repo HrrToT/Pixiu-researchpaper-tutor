@@ -1,0 +1,41 @@
+{
+  "date": "2026-10-15",
+  "commit": "5f5c4eb",
+  "promptVersion": "dr-v2.20261015.72",
+  "changes": [
+    "Retain exact named table-row spans with their own caption before model extraction; no numeric packet is invented.",
+    "Descriptive scope does not require inferential confidence intervals or resampling; paired units, aggregation, concrete seeds and metric tradeoffs still require validation.",
+    "Controls require source-bound audit excerpts for paired initialization, rendering, optimizer and other interventions.",
+    "Opaque parsed source titles fall back to an available original filename without changing source/version hashes.",
+    "Verification audit schemas include only writable target roles to retain full evidence within the same byte limit."
+  ],
+  "offlineVerification": {
+    "focused": {
+      "passed": 77,
+      "seconds": 3.93
+    },
+    "fullResearchReadingTables": {
+      "passed": 1268,
+      "warnings": 1,
+      "seconds": 41.72
+    },
+    "scope": "All test_deep_research*.py, test_reading_*.py and test_pdf_table_columns.py; counts overlap.",
+    "initialFailures": "Two old offline fixtures assumed controls needed no audit or that every unrelated role schema fit. The positive diagnostic fixture now supplies concrete bound controls; verifier emits only target-role schema. All tests then passed."
+  },
+  "literalSourceReplay": {
+    "newEvidenceId": "ev_413a976b6e5442aa550860e417cbf1953685032c53cadee7c03800462be98161",
+    "sourceWorkId": "e9895f20dbad6b11d95974f66319dbfef68ffe3235592e5d158822f3b43c3b1e.pdf",
+    "physicalPage": 15,
+    "quoteChars": 501,
+    "quoteSha256": "706ec38ab3fabef5f62caffd14208fb855b2b47cfb26293a714368099fcc1743",
+    "captionAndRequestedUnitRetained": true,
+    "tableColumnMappingUnverified": true,
+    "verifiedNumericPacket": false,
+    "semantic": "unchecked",
+    "modelCalls": 0,
+    "originalPdf": "D:/3DGS/paper/DlapisGS/2408.14823v2.pdf",
+    "originalPdfSha256": "e9895f20dbad6b11d95974f66319dbfef68ffe3235592e5d158822f3b43c3b1e",
+    "visualReview": "Original physical page 15 Table 6 caption and Hotdog row checked; numerical column mapping is not promoted."
+  },
+  "boundary": "Offline retention and contract checks do not establish future generated quality. Seven unknown requests remain unretried."
+}

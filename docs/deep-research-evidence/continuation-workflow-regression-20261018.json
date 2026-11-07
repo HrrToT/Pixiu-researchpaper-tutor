@@ -1,0 +1,36 @@
+{
+  "date": "2026-10-18",
+  "sourceCommit": "e6c14f57",
+  "python": {
+    "passed": 2665,
+    "warnings": 1,
+    "seconds": 180.01,
+    "sourceCommit": "e6c14f57",
+    "log": "tmp/pytest-dr164-full.log",
+    "scope": "Research, reading, PDF tables and config; fixture providers."
+  },
+  "frontend": {
+    "passed": 490,
+    "files": 65,
+    "seconds": 82.38,
+    "workers": 4,
+    "sourceCommit": "e6c14f57",
+    "log": "tmp/vitest-dr164-full.log"
+  },
+  "typecheck": {
+    "passed": true,
+    "log": "tmp/typecheck-dr164.log"
+  },
+  "build": {
+    "passed": true,
+    "seconds": 28.19,
+    "log": "tmp/build-dr164.log",
+    "warnings": "Existing large chunks/dependency warnings."
+  },
+  "focused": {
+    "pythonPassed": 50,
+    "frontendPassed": 58,
+    "overlapWithFullSuites": true
+  },
+  "boundary": "Offline and UI workflow checks, not a substitute for remaining content or independent acceptance."
+}

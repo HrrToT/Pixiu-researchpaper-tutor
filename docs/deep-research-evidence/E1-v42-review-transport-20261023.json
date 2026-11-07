@@ -1,0 +1,83 @@
+{
+  "date": "2026-10-23",
+  "sourceCase": "E1-v42",
+  "sourceCommit": "08908def",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "independentCredit": 0,
+  "fixtureCallbacks": 2,
+  "requests": [
+    {
+      "actualFingerprintMatched": true,
+      "callId": "07b21f703f7f8e9d5262c6a8ace896a5",
+      "node": "verify_design_config",
+      "targetIds": [
+        "c3",
+        "c4",
+        "c7"
+      ],
+      "inputBytes": 28669,
+      "actualEnvelopeVersion": 10,
+      "contextIds": [
+        "c6",
+        "c2",
+        "c5"
+      ]
+    },
+    {
+      "actualFingerprintMatched": true,
+      "callId": "008900363380416c6254fa94e007c166",
+      "node": "verify_design_science",
+      "targetIds": [
+        "c2",
+        "c5",
+        "c8"
+      ],
+      "inputBytes": 31499,
+      "actualEnvelopeVersion": 10,
+      "contextIds": [
+        "c1",
+        "c6",
+        "c9",
+        "c3",
+        "c4",
+        "c7"
+      ]
+    }
+  ],
+  "allocationAttempts": [
+    {
+      "targetIds": [
+        "c3",
+        "c4",
+        "c7"
+      ],
+      "fullInputBytes": 28669,
+      "fixedInputBytes": 22416,
+      "maxInputBytes": 32000,
+      "referencedRows": 5,
+      "selectedRows": 5,
+      "selectedInputBytes": 28669,
+      "allRefsRetained": true,
+      "allContextsRetained": true
+    },
+    {
+      "targetIds": [
+        "c2",
+        "c5",
+        "c8"
+      ],
+      "fullInputBytes": 31499,
+      "fixedInputBytes": 25658,
+      "maxInputBytes": 32000,
+      "referencedRows": 5,
+      "selectedRows": 5,
+      "selectedInputBytes": 31499,
+      "allRefsRetained": true,
+      "allContextsRetained": true
+    }
+  ],
+  "repairStatus": "response_received",
+  "repairLimit": null,
+  "boundary": "Exact envelope10 request reconstruction with archived failed verdict fixtures. No new model judgement, approval or change to the archived run. All source/context rows retained; full inputs within32KB."
+}

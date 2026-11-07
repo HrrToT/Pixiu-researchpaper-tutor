@@ -1,0 +1,25 @@
+{
+  "date": "2026-10-23",
+  "case": "E1-v40",
+  "promptVersion": "dr-v2.20261023.249",
+  "status": "completed",
+  "outcome": "inconclusive",
+  "independentCredit": 0,
+  "contentAccepted": 0,
+  "contentTotal": 9,
+  "literalPassageEntries": 49,
+  "repairStatus": "skipped_budget",
+  "repairLimit": {
+    "kind": "repairEvidenceBytes",
+    "limit": 24000,
+    "used": 25189
+  },
+  "observations": [
+    "Source passage extraction and incremental canonical locators completed without extract model calls.",
+    "Review references bind to actual fields; binding does not establish scientific correctness.",
+    "Prospective hypotheses/settings are still sometimes rejected for lacking observed measurements or author-used numeric values.",
+    "Workflow shape, whole-group cost matching, metric aggregation and inference scope need substantive repair.",
+    "Repair skipped at 25189/24000 input bytes despite remaining normal pool."
+  ],
+  "boundary": "Development diagnostics only, no independent acceptance and no scientific rejection truth claim."
+}

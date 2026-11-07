@@ -1,0 +1,10 @@
+{
+  "date": "2026-10-20",
+  "case": "E1-v1",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "actualRequestFingerprintMatched": true,
+  "fingerprint": "5783875d01215b44ef8ef14256b33e44c190932e8e998f59aaa68f7954b292fc",
+  "savedInvalidResponseNotResent": true,
+  "historicalContentStatus": "failed; not upgraded"
+}

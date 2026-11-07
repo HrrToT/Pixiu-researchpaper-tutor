@@ -1,0 +1,52 @@
+{
+  "date": "2026-10-18",
+  "sourceCommit": "ea10273c",
+  "promptVersion": "dr-v2.20261018.157",
+  "audienceRewriteContractVersion": 2,
+  "fullOffline": {
+    "passed": 2475,
+    "warnings": 1,
+    "seconds": 178.10,
+    "log": "tmp/pytest-dr157-full.log"
+  },
+  "focused": {
+    "passed": 95,
+    "seconds": 5.32,
+    "overlapsFullSuite": true,
+    "log": "tmp/pytest-dr157-beginner-focused-final.log"
+  },
+  "initialFixtureFailures": [
+    {
+      "failed": 23,
+      "passed": 71,
+      "cause": "New test fixture omitted required make_evidence location and obligation_ids arguments.",
+      "log": "tmp/pytest-dr157-beginner-focused.log"
+    },
+    {
+      "failed": 1,
+      "passed": 94,
+      "cause": "New fixture constructed LLMProviderError without required provider/model identity.",
+      "log": "tmp/pytest-dr157-beginner-focused-fixed.log"
+    }
+  ],
+  "realInputReplay": "beginner-conditions-real-input-replay-20261018.json",
+  "checks": [
+    "Old version1 actual draft digest, request bytes and sent Provider fingerprint match exactly.",
+    "Only explicitly requested factual novice output is eligible; experimental proposals/configuration remain excluded.",
+    "Text and unverified conditions can be consolidated while original report/conditions stay in a separate audit checkpoint.",
+    "IDs/kinds/citations/obligation labels are restored from originals, never editable model fields.",
+    "Optional table values can only retain a subset of original bindings through strict integer indexes; no new bindings or identities.",
+    "Unsupported numbers in text or conditions still fail independent numeric verification, even with a permissive semantic fixture.",
+    "Rewritten text and conditions jointly obey the human character limit; invalid/overlong output keeps the original draft and raw response.",
+    "Pending requests freeze version, original report, human requirements and exact request. Actual unknown ledger calls are not reissued.",
+    "Graph passes literal human requirements, stores original audit and does not mark an edit as verified."
+  ],
+  "limitsUnchanged": {
+    "inputBytes": 24000,
+    "outputTokens": 3072,
+    "maxModelCalls": 18,
+    "maxTokens": 100000,
+    "maxWallClockSeconds": 360
+  },
+  "boundary": "Offline fixture tests and exact saved-input replay. No real answer quality or independent acceptance credit. Original DR0-DR5 content gates remain incomplete."
+}

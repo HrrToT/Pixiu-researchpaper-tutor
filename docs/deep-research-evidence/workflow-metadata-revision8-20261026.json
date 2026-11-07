@@ -1,0 +1,145 @@
+{
+  "date": "2026-10-26",
+  "candidateVersion": 8,
+  "defaultVersion": 7,
+  "runtimePromptVersion": "dr-v2.20261026.269",
+  "outputSchema": "workflow_metadata_objects_v1",
+  "associatedRegression": {
+    "files": 18,
+    "passed": 339,
+    "seconds": 40.65,
+    "fixtureDrive": "C:",
+    "log": "tmp/pytest-metadata-revision8-guidance-20261026.log"
+  },
+  "actualRepresentationAndInputReplay": {
+    "candidateVersion": 8,
+    "caseForRepresentationAssessment": "E1-v59 revision canonical value",
+    "canonicalObjectBytes": 4874,
+    "outputSchema": "workflow_metadata_objects_v1",
+    "allExistingCanonicalValuesPreserved": true,
+    "allAuthoritativeSourceInputPreserved": true,
+    "inputWithSchemaBytes": 31158,
+    "inputByteCap": 32000,
+    "lifecycleIssues": [
+      {
+        "code": "timeline.component.lifecycle",
+        "path": "/components/1/lifecycle",
+        "actualPresent": true,
+        "actual": {
+          "scope": "per_frame",
+          "createAfter": "fit_stage1",
+          "disposeAfter": "record_frame"
+        },
+        "expected": "{scope:per_repeat|per_frame,createAfter:[phaseId,...],disposeAfter:phaseId|null}; createAfter is an array, not a scalar"
+      },
+      {
+        "code": "timeline.component.lifecycle",
+        "path": "/components/2/lifecycle",
+        "actualPresent": true,
+        "actual": {
+          "scope": "per_frame",
+          "createAfter": "fit_stage2",
+          "disposeAfter": "record_frame"
+        },
+        "expected": "{scope:per_repeat|per_frame,createAfter:[phaseId,...],disposeAfter:phaseId|null}; createAfter is an array, not a scalar"
+      },
+      {
+        "code": "timeline.component.lifecycle",
+        "path": "/components/0/lifecycle",
+        "actualPresent": true,
+        "actual": {
+          "scope": "per_repeat",
+          "createAfter": "init_frame0",
+          "disposeAfter": null
+        },
+        "expected": "{scope:per_repeat|per_frame,createAfter:[phaseId,...],disposeAfter:phaseId|null}; createAfter is an array, not a scalar"
+      }
+    ],
+    "legacyResume": [
+      {
+        "case": "E1-v58",
+        "version": 6,
+        "calls": 0,
+        "writes": 0,
+        "sameFailure": true,
+        "metadataRequestDigest": "10fa4ec2bcdb8530ede0d1832c6e3fe2414559b31d248fff4e8ce54138ffbdb0",
+        "repairRequestDigest": "a17522ec618fa5d4603082efefc4273b491f5ed409a9871efdfedf23f4a266d0"
+      },
+      {
+        "case": "E1-v59",
+        "version": 7,
+        "calls": 0,
+        "writes": 0,
+        "sameFailure": true,
+        "metadataRequestDigest": "e5c388df745b6169a85dea95df8014733101449de93e9946afcd23da647f4469",
+        "repairRequestDigest": "cf3d8845b4706dbe9766753f61f0496f0db2c6c9ed9b4d651fef95ec96affa3c"
+      }
+    ],
+    "providerCalls": 0,
+    "productionWrites": 0,
+    "automaticallyWrappedArrays": 0,
+    "scientificApproval": false,
+    "boundary": "Read-only representation/input assessment using an existing canonical value. No inference from undecodable original rows, historical upgrade, or accepted scientific result.",
+    "semanticGuidanceExplicit": [
+      "evidenced available complete checkpoint",
+      "persistent state versus stateless routine",
+      "distinct arms versus execution sharing",
+      "complete combined measurement inputs/outputs/parameters/ordering"
+    ]
+  },
+  "rawResponseByteCap": 16384,
+  "canonicalContentByteCap": 8192,
+  "metadataOutputTokens": 3072,
+  "wholeRunLimits": {
+    "calls": 18,
+    "tokens": 100000,
+    "wallSeconds": 360
+  },
+  "fullRegression": {
+    "status": "cancelled_for_semantic_guidance_audit",
+    "sourceCommit": "c4175018f249fa1be43ab8321fd366d6a3e215e8",
+    "files": 260,
+    "fixtureDrive": "C:",
+    "log": "tmp/pytest-metadata-revision8-full-20261026.log",
+    "receipt": "tmp/metadata-revision8-full-receipt-20261026.json",
+    "exitCode": 4294967295,
+    "sourceStable": true,
+    "elapsedSeconds": 205.48,
+    "logSha256": "94e22943d374c54d47050954285fa1742804117435538f7857417b3edffdb2e2",
+    "boundary": "Stopped the isolated pytest child before editing source, after identifying semantic guidance that must be explicitly retained in the new named prompt. Not a pass. Original log/receipt retained."
+  },
+  "sourceHashes": {
+    "services/deep_research/workflow_metadata_objects.py": "e5c24503d1193ee8ddf374cf14a19feca0994db69be6fa406f2b6062f50f3bf4",
+    "services/deep_research/workflow_metadata_repair.py": "80b51bc79265c60ceab507ea549b662c6988ff452e305a02b7fd5ec366cd90ad",
+    "services/deep_research/workflow_units.py": "0220972c666aa18f5ed08c46d4319044e6d2dbc6b946f87f462e448eb4d5d881",
+    "services/deep_research/planning_transport.py": "bc2a65efe04fe60a030a0c7646fbea50061dc25251d12cac08f9501386051a75",
+    "tests/test_deep_research_workflow_metadata_objects.py": "fac354b8a5a80d1dead0f623efef93af5d1e9fde12e75c586757a94a39bffa35",
+    "tests/test_deep_research_workflow_metadata_repair.py": "69e1bc44d1b035cabc5df3efee3b122ef08b61bc322a1268315bced30155d36a"
+  },
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "scientificApproval": false,
+  "boundary": "Candidate only. Direct named canonical output keeps every value and existing semantic checks; malformed leaves remain invalid and are never wrapped or inferred. Old row grammars/requests and failures remain frozen. Representation/input fit does not prove actual generation or scientific quality.",
+  "guidanceAudit": {
+    "originalFullRunCancelledBeforeEdits": true,
+    "checkpointAvailabilityAndStateMeasurementRulesExplicitlyRetained": true,
+    "associatedChecksAfterAudit": 339,
+    "providerCalls": 0
+  },
+  "fullRegressionAfterGuidance": {
+    "status": "passed",
+    "sourceCommit": "cb170b2574c2ebf6841a4cc775c64f13708eebee",
+    "files": 260,
+    "fixtureDrive": "C:",
+    "log": "tmp/pytest-metadata-revision8-full-guidance-20261026.log",
+    "receipt": "tmp/metadata-revision8-full-guidance-receipt-20261026.json",
+    "passed": 4799,
+    "warnings": 1,
+    "exitCode": 0,
+    "sourceStable": true,
+    "elapsedSeconds": 460.53,
+    "logSha256": "609d9191c4d28d9281dcc0755dc36abccbbe7914cba03dd2c77f6bc899b947d9",
+    "providerCalls": 0,
+    "productionWrites": 0
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "runtimeCase": "E1-v52",
+  "diagnosticOnly": true,
+  "runtimeIntegrated": false,
+  "automaticRepairs": 0,
+  "scientificApproval": false,
+  "originalCaseValueDigest": "9df346b5aff2f71e84f4657931c54bfd858a4a4d2394ed741362d51f49f68ebf",
+  "originalValueUnchanged": true,
+  "issueCount": 34,
+  "codes": [
+    "timeline.phase.evaluation_updates",
+    "timeline.component.lifecycle"
+  ],
+  "sourceHashes": {
+    "ai-service-python/services/deep_research/workflow_metadata_feedback.py": "ba6047453e4bdbeb31820a6277e80d460bee9b7ee32491083e1d3197633aa334",
+    "ai-service-python/tests/test_deep_research_workflow_metadata_feedback.py": "5e841089863e8e0c5bca3b395898c83c62c5d1cc8046a5f3baa9e690d53d0510"
+  },
+  "focusedRegression": {
+    "files": 3,
+    "passed": 67
+  },
+  "fullRegressionForThisHelper": "not_run",
+  "baseFullRegression": {
+    "sourceCommit": "8a6b2a68",
+    "passed": 4632,
+    "files": 250
+  },
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "boundary": "Original runtime metadata stays invalid. Pointer feedback is read-only groundwork for a separately versioned bounded revision, which is not implemented or enabled."
+}

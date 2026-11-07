@@ -1,0 +1,22 @@
+{
+  "providerCalls": 0,
+  "legacyPromptsByteIdentical": 4,
+  "legacySavedRawPassPreserved": true,
+  "newInitialAndRepairRejectedBeforeDispatch": true,
+  "oldClaimAndEvidenceUnchanged": true,
+  "newVerdict": [
+    {
+      "claimId": "c2",
+      "status": "failed",
+      "reason": "unanchored_boundary_quantity",
+      "unanchoredQuantities": [
+        {
+          "value": "0.3",
+          "unit": "dB"
+        }
+      ]
+    }
+  ],
+  "contentAcceptance": false,
+  "independentCredit": 0
+}

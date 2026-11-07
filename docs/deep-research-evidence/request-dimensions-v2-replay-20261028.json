@@ -1,0 +1,16 @@
+{
+  "sourceCase": "D1-v40",
+  "oldFixedChecks": 4,
+  "newFixedChecks": 7,
+  "originalWholeQuestionPreserved": true,
+  "explicitDimensions": [
+    "作者报告的结果",
+    "成立条件",
+    "未验证范围"
+  ],
+  "realOldComponentResponseCannotApproveNewChecks": true,
+  "originalPayloadUnchanged": true,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "contentApproval": false
+}

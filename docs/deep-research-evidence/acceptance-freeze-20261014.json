@@ -1,0 +1,13 @@
+{
+  "date": "2026-10-14",
+  "change": "Freeze fresh H1R and H3R holdout definitions and reject changed inputs before any readiness check, workspace mutation or submission receipt.",
+  "manifest": "docs/DEEP_RESEARCH_HOLDOUT_REPLACEMENTS.json",
+  "activeHoldoutSlots": ["H1R", "H2", "H3R", "H4", "H5", "H6"],
+  "replacedCases": ["H1", "H3"],
+  "historicalResultsPreserved": true,
+  "sealInputs": ["question and complete case definition", "material content hashes", "budget", "review criteria", "manifest version", "freeze date"],
+  "sealBoundary": "Local SHA-256 drift detection is not a signature or a content-quality score. Paths can change if source content is identical. Legacy manifests remain readable.",
+  "preparation": "Original PDFs and author TeX were read locally to define review criteria. No replacement model case was executed. H1R still requires material ingestion before submission; H3R must acquire its source externally.",
+  "validation": {"targetedTestsPassed": 28, "offlinePreviews": ["H1R", "H3R"], "previewModelRequests": 0},
+  "acceptance": "Preparation and submission safeguards passed. Real holdout quality and DR0-DR5 final acceptance remain incomplete."
+}

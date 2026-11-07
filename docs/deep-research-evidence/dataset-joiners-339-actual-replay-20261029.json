@@ -1,0 +1,71 @@
+{
+  "sourcePayloadSha256": "09ff8d5006c450bb62b122edf14f74f9f71523445d6b198673b35eabbed8aea5",
+  "sourceCase": ".338 initial c1",
+  "claimText": "作者报告在Mip-NeRF 360和Tank&Temple数据集上，LightGaussian（Ours）与原始3D-GS的PSNR接近（27.13 vs 27.21；23.44 vs 23.14），且SSIM、LPIPS指标同样接近。",
+  "oldPrecheck": {
+    "candidates": [],
+    "rejected": [
+      {
+        "claimId": "c1",
+        "reason": "table_condition_not_displayed"
+      }
+    ]
+  },
+  "newPrecheck": {
+    "candidates": [
+      {
+        "claimId": "c1",
+        "text": "作者报告在Mip-NeRF 360和Tank&Temple数据集上，LightGaussian（Ours）与原始3D-GS的PSNR接近（27.13 vs 27.21；23.44 vs 23.14），且SSIM、LPIPS指标同样接近。",
+        "kind": "reported",
+        "evidenceRefs": [
+          "ev_74a1bac54693e4ae4612f54763a4a84db1a1c907cc4706a86d4c8cc69922d6b8"
+        ],
+        "conditions": {},
+        "obligationIds": [
+          "ob_1",
+          "ob_2",
+          "ob_3"
+        ],
+        "detailLevel": "fulltext",
+        "tableBindings": [
+          {
+            "evidenceId": "ev_74a1bac54693e4ae4612f54763a4a84db1a1c907cc4706a86d4c8cc69922d6b8",
+            "rowNumber": 8,
+            "groupIndex": 0,
+            "metric": "PSNR",
+            "value": "27.21"
+          },
+          {
+            "evidenceId": "ev_74a1bac54693e4ae4612f54763a4a84db1a1c907cc4706a86d4c8cc69922d6b8",
+            "rowNumber": 8,
+            "groupIndex": 1,
+            "metric": "PSNR",
+            "value": "23.14"
+          },
+          {
+            "evidenceId": "ev_74a1bac54693e4ae4612f54763a4a84db1a1c907cc4706a86d4c8cc69922d6b8",
+            "rowNumber": 10,
+            "groupIndex": 0,
+            "metric": "PSNR",
+            "value": "27.13"
+          },
+          {
+            "evidenceId": "ev_74a1bac54693e4ae4612f54763a4a84db1a1c907cc4706a86d4c8cc69922d6b8",
+            "rowNumber": 10,
+            "groupIndex": 1,
+            "metric": "PSNR",
+            "value": "23.44"
+          }
+        ]
+      }
+    ],
+    "rejected": []
+  },
+  "semanticCheckerReached": true,
+  "stubUnresolvedNotAccepted": true,
+  "claimsEvidenceUnchanged": true,
+  "providerCalls": 0,
+  "oldRunModified": false,
+  "scientificApproval": false,
+  "independentCredit": 0
+}

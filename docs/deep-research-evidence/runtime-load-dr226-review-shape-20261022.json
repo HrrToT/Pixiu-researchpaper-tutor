@@ -1,0 +1,22 @@
+{
+  "date": "2026-10-22",
+  "sourceCommit": "09782ac7",
+  "sourceHashes": {
+    "facade.py": "28dfa5fdf38aea3e37c49e12f2131d5781333a6532372045feb0750e7fb36194",
+    "structured_output.py": "de5de0a671b73d8428aff0a63aa9376f509e0a9aa5d6c7516d9ab5fbd388b853",
+    "graph.py": "f0ed6668a5290cb0e3c163e67e1d59cda09d99873d32f179c1e64a7aa30824cc",
+    "tools.py": "3026c59fcc4f0ab5a0e7b27f53c59d76461cffcef80afa4c18243c6797f386e7",
+    "experiment_review_envelope.py": "7efbcb092d727515f5799f707848d7643b7c16921751b47f3f832671d313445a",
+    "rejected_design_context.py": "784c641b88b7e362ed9bf3bd136eaf3920416da18ac89b0e90c90ed792d810cd"
+  },
+  "actualCreatedRun": {
+    "runId": "dr_run_ae36ec3ceb02577c8dc9e8e1bc541d63",
+    "promptVersion": "dr-v2.20261022.226",
+    "structuredOutputContractVersion": 9,
+    "experimentReviewEnvelopeContractVersion": 3,
+    "experimentRepairInputContractVersion": 1
+  },
+  "preRestartLedgerRows": 5232,
+  "preRestartActive": 0,
+  "modelRequestsByThisProbe": 0
+}

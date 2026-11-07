@@ -1,0 +1,65 @@
+{
+  "date": "2026-10-26",
+  "case": "E1-v61",
+  "runId": "dr_run_232611f32dcc5ae99ea1cb2c7bdb8f00",
+  "promptVersion": "dr-v2.20261026.271",
+  "status": "failed",
+  "errorCode": "invalid_workflow_unit_response",
+  "units": {
+    "metadata": {
+      "status": "invalid_response",
+      "errors": [
+        "timeline.cycle",
+        "timeline.input.before_creation",
+        "timeline.input.group_leak"
+      ],
+      "requestDigest": "2ea1732696c92069c833b75e0f63b4950a318e054a86585f0cc78677f9ad8a17",
+      "options": {
+        "thinking": {
+          "type": "disabled"
+        },
+        "reasoning_effort": "none",
+        "max_tokens": 3072,
+        "timeout_seconds": 45
+      },
+      "finishReason": "stop",
+      "usage": {
+        "total_tokens": 9611,
+        "input_tokens": 7463,
+        "output_tokens": 2148
+      }
+    },
+    "metadataRepair": {
+      "status": "invalid_response",
+      "errors": [
+        "timeline.cycle",
+        "timeline.input.before_creation",
+        "timeline.input.group_leak"
+      ],
+      "requestDigest": "716fe2498ac46bed619a84431a5a4639f842c3268cd55d8b829111929b24fd5e",
+      "options": {
+        "thinking": {
+          "type": "disabled"
+        },
+        "reasoning_effort": "none",
+        "max_tokens": 3072,
+        "timeout_seconds": 45
+      },
+      "finishReason": "stop",
+      "usage": {
+        "total_tokens": 10730,
+        "input_tokens": 8717,
+        "output_tokens": 2013
+      }
+    }
+  },
+  "revisionInputBytes": 30412,
+  "revisionAdmitted": true,
+  "sameComponentAndPhaseValues": true,
+  "settledCalls": 8,
+  "settledTokens": 40736,
+  "elapsedSeconds": 81,
+  "scientificApproval": false,
+  "independentCredit": 0,
+  "boundary": "Input sharing admitted one correction. Both outputs parse but retain original timeline/group violations. No initialization/public result or scientific credit. Next assess bounded reasoning on metadata only; old requests/failed evidence stay frozen."
+}

@@ -1,0 +1,46 @@
+{
+  "date": "2026-10-23",
+  "sourceCommit": "ca0ad4f6",
+  "promptVersion": "dr-v2.20261023.248",
+  "case": "E1-v39",
+  "split": "development",
+  "runId": "dr_run_6482f70c7d2c5d71b0d7e3f266eaccc8",
+  "questionUnchanged": true,
+  "frozenCaseCommit": "a023b204",
+  "status": "failed",
+  "outcome": "none",
+  "reportedPayloadElapsedSeconds": 0,
+  "observedElapsedSeconds": 38.0,
+  "settledModelCalls": 3,
+  "settledTokens": 7317,
+  "unsettledModelCalls": 0,
+  "independentCredit": 0,
+  "verificationSummary": null,
+  "generationAllocation": null,
+  "repairStatus": null,
+  "repairAdmission": null,
+  "planEncodingAudit": null,
+  "initialRepresentationAudit": [],
+  "repairRepresentationAudit": {},
+  "rejectedClaims": [],
+  "acceptedClaims": [],
+  "rawFiles": [
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v39.json",
+      "sha256": "a78663ae1a07e0a65c187ec4c1181b9b2ba8f32db9128fd595d19ba1e824f8fa"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v39.payload.json",
+      "sha256": "e3759d783a49439969e67a82995bef4eed173bee0c2e7aba5839bd551eb57e94"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v39.calls.json",
+      "sha256": "8eefbe6ebfb3f4a30976f1b29845e3990c63b2de2d49b62c6a524462d1648fcd"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v39.result.json",
+      "sha256": "cad64bcb1b4970f322ddba888846023ff254bc0d32f541550120fb8e573e1882"
+    }
+  ],
+  "boundary": "One fixed development submission, no automatic retry. Representation normalization does not approve science or upgrade historical/independent results."
+}

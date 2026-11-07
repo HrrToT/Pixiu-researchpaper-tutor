@@ -1,0 +1,62 @@
+{
+  "date": "2026-10-21",
+  "sourceCommit": "b85ccc0c",
+  "promptVersion": "dr-v2.20261021.209",
+  "experimentPlanEncodingContractVersion": 1,
+  "serverOwnedImmutable": true,
+  "fullDeepResearchOffline": {
+    "passed": 3488,
+    "files": 200,
+    "warnings": 1,
+    "seconds": 224.94,
+    "scope": "All tests/test_deep_research*.py, not all Python/reading/config integration.",
+    "log": "tmp/pytest-dr209-full-final.log",
+    "sha256": "f7b48cc3b8413087927dc8d479a6caf68c15b0af93f46ac1ea92e760e9663cd0"
+  },
+  "focusedPassed": 78,
+  "focusedSeconds": 3.38,
+  "focusedOverlap": true,
+  "newTests": 36,
+  "legacyActualFingerprintsMatched": 39,
+  "implementation": "Store complete validated raw plan and response; losslessly encode fixed sourceRefs/protocol-order/unresolved tuple under original2500slot, with explicit legend under original24000generation cap. Freeze encoding/response/request/audit; reject unknown refs, altered values or metadata, oversized/truncated output, old-state upgrades and draft overflow. No new scientific value, field omission, automatic retry or approval.",
+  "controlledOversizeReplay": "plan-encoding-e1-v8-controlled-20261021.json",
+  "actualCase": {
+    "case": "E1-v9",
+    "status": "completed",
+    "outcome": "inconclusive",
+    "settledModelCalls": 14,
+    "settledTokens": 69034,
+    "verificationSummary": {
+      "accepted": 0,
+      "rejected": 9
+    },
+    "planEncodingAudit": {
+      "rawBytes": 1782,
+      "wireBytes": 1673,
+      "slotLimit": 2500,
+      "scientificApproval": false
+    },
+    "fullConfigurationGenerated": true,
+    "semanticReviewReached": true,
+    "independentCredit": 0,
+    "realOversizePlanRecoveryProven": false
+  },
+  "actualInputs": "plan-encoding-e1-v9-actual-input-20261021.json",
+  "actualCaseFingerprintsMatched": 6,
+  "retentionProof": "runtime-postcases-dr209-e1-v9-20261021.json",
+  "runtimeProof": "runtime-load-dr209-plan-encoding-20261021.json",
+  "selectedDiagnosticTotals": {
+    "settledModelCalls": 543,
+    "measuredTokens": 2233809,
+    "notGlobalHistory": true,
+    "costUnknown": true
+  },
+  "remaining": [
+    "Fix objective-conditioned review wording: whole-stage/resource tradeoffs may use explicit unmatched budgets; oriented differences are not directional hypotheses. Require actual linked-field evidence before claiming missing effect keys. Do not auto-pass genuine scientific defects.",
+    "Separate quoted membership/native author settings from proposed nonempty ordinal splits and chosen render resolution; remove conflicting instructions, not source checks.",
+    "Generate/repair valid typed operations and complete common3DGS+NTC initialization from actual training inputs. Align every common preparation and per-group fitting phase with finite budgets; no opaque matrices, zero/COLMAP contradiction or undeclared copy rule.",
+    "Keep every required role and original scope; fix invalid parameter dictionaries/extra split fields through precise generation contracts or strictly versioned unambiguous representation, never drop requested choices.",
+    "Complete quality/storage/training-time measurement and verify usable real content before new independent replacements. Original0/5, failed/partial histories and11unknowns remain unchanged; DR0-DR5 is still incomplete."
+  ],
+  "boundary": "Production tuple/legend, full generation and four reviews truly executed. Actual plan1782/1673 was below2500;2595/2486 over-limit recovery is controlled only. Real0/9 remains inconclusive: schema/science defects plus contradictory review reasons persist. Full DR0-DR5 and fresh independent acceptance incomplete, Goal active/PR draft."
+}

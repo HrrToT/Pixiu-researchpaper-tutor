@@ -1,0 +1,29 @@
+{
+  "date": "2026-10-15",
+  "promptVersion": "dr-v2.20261015.65",
+  "planCompletionContractVersion": 1,
+  "changes": [
+    "New research plans declare one to four completion criteria per obligation before synthesis, with identification/explanation/procedure/limitation response types.",
+    "Generation receives those criteria. Final coverage requires each criterion identity, unchanged response type and bindings to current accepted answer content.",
+    "Missing, duplicated, foreign, downgraded or unbound criterion decisions cannot close an obligation; missing requirements enter the existing bounded repair flow.",
+    "A digest binds completion decisions to the exact requirements and answer fields. Changed requirements or answers invalidate old decisions at publication without another model call.",
+    "New plan edits cannot remove the criteria. Existing legacy runs have no new mandatory fields or silent contract upgrade.",
+    "Paused plan editing exposes folded answer requirements and plain-language response types. Default conversation presentation stays compact."
+  ],
+  "validation": {
+    "targetedCriteriaCoverageReferencesAndData": {"passed": 54},
+    "finalCriteriaRealGraphRecoveryAndExternalFailures": {"passed": 38, "seconds": 21.74},
+    "fullDeepResearch": {"passed": 1173, "warnings": 2, "seconds": 182.13},
+    "frontendComponent": {"passed": 19, "files": 1},
+    "frontendTypecheck": "passed",
+    "modifiedFrontendLint": "passed",
+    "frontendProductionBuild": "passed with existing dependency and chunk-size warnings"
+  },
+  "initialFailures": "The first full run failed seven older end-to-end fixtures because their new facade-created plans omitted required criteria. Fixtures now declare their requested results/conditions or transformation goals. Production admission was not relaxed.",
+  "budget": "No new dedicated model call is added. Existing call/token/wall-clock limits remain. Prompts and review responses can grow within admission limits.",
+  "limitations": [
+    "Identity and binding validation cannot prove that an explanation is semantically sufficient or that the planner found all essential criteria.",
+    "The independent original-question audit and factual source checks remain required. Primary quality review and independent holdout acceptance remain open.",
+    "Offline green tests do not establish improved real-provider explanation quality."
+  ]
+}

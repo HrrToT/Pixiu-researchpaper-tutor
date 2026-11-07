@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "promptVersion": "dr-v2.20261015.97",
+  "modelCalls": 0,
+  "networkRequests": 0,
+  "longAuditCapacity": {
+    "case": "H5R-v14",
+    "runId": "dr_run_06b9702502185a38b3ecb5b6700056a4",
+    "originalOutputLimit": 3500,
+    "originalFinishReason": "length",
+    "promptBytes": 23878,
+    "outputTokens": 6452,
+    "reservationTokens": 31354,
+    "fitsActualOrdinaryPool": true,
+    "preAuditBudget": {
+      "maxModelCalls": 18,
+      "maxTokens": 100000,
+      "maxWallClockSeconds": 360,
+      "reserveModelCalls": 5,
+      "reserveTokens": 50000,
+      "maxExternalSearches": 6,
+      "maxFulltextFetches": 6,
+      "modelCalls": 4,
+      "tokens": 46767,
+      "normalTokens": 11358,
+      "elapsedSeconds": 136.197,
+      "externalSearches": 0,
+      "fulltextFetches": 0,
+      "reservedModelCalls": 5,
+      "exhausted": "",
+      "profile": "standard"
+    },
+    "suppliedClaimCount": 9
+  },
+  "displayMetadataBindings": {
+    "case": "H3R-v10",
+    "runId": "dr_run_2ddb9d2231385b4bbbbb7e9f938cbcdf",
+    "metadata": {
+      "sourceAccessSummary": "本回答引用：全文片段。"
+    },
+    "invalidAspectObligationsBefore": [
+      "ob1",
+      "answer_scope"
+    ],
+    "invalidAspectObligationsAfter": [],
+    "bindingCorrections": 2,
+    "originalClaimsAndConditionsUnchanged": true
+  },
+  "boundary": "Capacity replay uses an empty offline response, not a successful semantic audit. Metadata replay corrects two access-label bindings, their relevant request excerpts, and uses the supplied typed access basis for the whole-question access aspect. No scientific content or historical run is edited. Neither case is content accepted; the live reviewer has not yet generated these corrections.",
+  "sourceCommit": "2cc529c",
+  "tests": {
+    "fullPassed": 1549,
+    "warnings": 1,
+    "seconds": 50.58,
+    "sourceCommit": "2cc529c",
+    "log": "tmp/pytest-dr97-full.log"
+  }
+}

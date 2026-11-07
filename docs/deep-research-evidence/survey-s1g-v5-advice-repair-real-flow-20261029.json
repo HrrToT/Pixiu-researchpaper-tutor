@@ -1,0 +1,97 @@
+{
+  "caseId": "S1G-v5",
+  "runId": "dr_run_b99d00b14ff55d6f802b3c6a3dbfa03b",
+  "promptVersion": "dr-v2.20261029.344",
+  "status": "completed",
+  "outcome": "partial",
+  "modelCalls": 8,
+  "tokens": 33961,
+  "elapsedSeconds": 79.617,
+  "allCallsSettled": true,
+  "noRetry": true,
+  "verifiedClaims": [
+    {
+      "claimId": "c2",
+      "kind": "proposal",
+      "text": "建议阅读顺序：先读摘要了解整体流程，再读方法部分中关于高斯剪枝与恢复、SH蒸馏、向量量化的具体描述，最后读实验部分中的消融研究以理解各环节的影响。",
+      "evidenceRefs": [
+        "ev_ddc954bffa5ceef4559e4278f2dc820d252b658d80c8e83fb65f3f300740ef49",
+        "ev_a338259d46d124ea7f2a011130fa7bf4e3da6bc823049df2cf0d15b1a793e240",
+        "ev_68801d18533cd7182b698cba746ecff15805968ba6fdfaeb99fde2f29d62afd7",
+        "ev_42616b2c3de5e56cefee88bd6a500de8417a5fa9bfce7977f165c9d1c27394fb"
+      ],
+      "conditions": {},
+      "detailLevel": "fulltext",
+      "obligationIds": [
+        "ob_2"
+      ],
+      "verification": "proposal"
+    }
+  ],
+  "initialRejected": [
+    {
+      "claimId": "c2",
+      "reason": "internal_reference_in_prose"
+    },
+    {
+      "claimId": "c1",
+      "reason": "semantic_unresolved",
+      "detail": "三个压缩环节的描述与E2/E3一致；但'仅报告'为排他性声明，证据仅显示论文在Mip-NeRF 360和Tank&Temple上报告了平均15倍压缩，未证明唯一性；且'实际阅读材料为论文全文'缺乏任何证据支持。"
+    }
+  ],
+  "repairRejected": [
+    {
+      "claimId": "c1",
+      "reason": "semantic_unresolved",
+      "detail": "三个压缩环节的描述与E2/E3一致；但'仅报告'为排他性声明，证据仅显示论文在Mip-NeRF 360和Tank&Temple上报告了平均15倍压缩，未证明唯一性；且'实际阅读材料为论文全文'缺乏任何证据支持。",
+      "revisionRejection": {
+        "claimId": "c1",
+        "reason": "numeric_mismatch",
+        "missingReportedNumbers": [
+          "1e0",
+          "2e0",
+          "3e0"
+        ],
+        "detail": "本条引用原文未直接报告这些数值：1、2、3。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。"
+      }
+    }
+  ],
+  "coverageGaps": 4,
+  "publishedBody": "## 推荐阅读顺序\n\n- 建议阅读顺序：先读摘要了解整体流程，再读方法部分中关于高斯剪枝与恢复、SH蒸馏、向量量化的具体描述，最后读实验部分中的消融研究以理解各环节的影响。 [1](#research-evidence-ev_ddc954bffa5ceef4559e4278f2dc820d252b658d80c8e83fb65f3f300740ef49) [2](#research-evidence-ev_a338259d46d124ea7f2a011130fa7bf4e3da6bc823049df2cf0d15b1a793e240) [3](#research-evidence-ev_68801d18533cd7182b698cba746ecff15805968ba6fdfaeb99fde2f29d62afd7) [4](#research-evidence-ev_42616b2c3de5e56cefee88bd6a500de8417a5fa9bfce7977f165c9d1c27394fb)\n\n",
+  "publishedCounts": {
+    "artifacts": 2,
+    "messages": 1
+  },
+  "repeatTerminalGetExactlyUnchanged": true,
+  "oldResultsAndMessagesUnchanged": true,
+  "fiveOtherProtectedTasksUnchanged": true,
+  "indexExactlyPreserved": true,
+  "completeProductionIndexSha256": "9196054db7ac32450eb86fc91cfb12de27c732469e4cf629bf06857a3490788d",
+  "preservation": {
+    "oldLedgerUnchanged": true,
+    "allOldRunsUnchanged": true,
+    "newRows": 22,
+    "ledgerRows": 7565,
+    "onlyThisRunCreatedCalls": true,
+    "active": [],
+    "oldPausedRetained": true,
+    "paused": [
+      "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+      "dr_run_ed10cc3347be552288079a9a588fddf5",
+      "dr_run_86b3f181a5475e99aacca3dbf4370567",
+      "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+      "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+      "dr_run_e3521b1781825273b384a26a5edb8cdc",
+      "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+      "dr_run_e9c9dc916bef519092fad8b929b2448f",
+      "dr_run_4738564f5ff35157996a35068c62ed32",
+      "dr_run_a8bd62f9ae3d52ff806f537065f55b2d",
+      "dr_run_98e66f2d3d555dfa822b859963f01419",
+      "dr_run_8be639c866c35ea092c735a04781b647",
+      "dr_run_1c0c2e6510165086962408b8e3cf698b"
+    ]
+  },
+  "remainingDefect": "Factual initial text overstates exclusive reporting and mixes access disclosure with paper facts; repaired text uses numbered list labels rejected as measurements.",
+  "contentAcceptance": false,
+  "independentCredit": 0
+}

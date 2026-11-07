@@ -1,0 +1,172 @@
+{
+  "date": "2026-10-18",
+  "case": "D1-v20",
+  "runId": "dr_run_8314ade8ac2f5e0a99b51a6bb5288ec4",
+  "sourceCommit": "03d6c25e",
+  "promptVersion": "dr-v2.20261018.151",
+  "evaluationUse": "original development case",
+  "independent": false,
+  "status": "completed",
+  "outcome": "partial",
+  "contentAccepted": false,
+  "modelCalls": 10,
+  "settledTokens": 42774,
+  "elapsedSeconds": 60.09,
+  "cost": null,
+  "initialVerification": {
+    "accepted": [],
+    "rejected": [
+      {
+        "claimId": "c2",
+        "reason": "absence_not_established",
+        "detail": "本条引用没有明确建立作者或论文缺少这些验证。把结论限定为本次引用能支持的实验范围及其不能证明的推广；不要写成作者未在其他条件验证、论文没有提供或全文不存在。引用中的其他否定句不构成这项缺席判断的依据。"
+      },
+      {
+        "claimId": "c1",
+        "reason": "semantic_unresolved",
+        "detail": "该声明断言作者报告在Mip-NeRF 360和Tank and Temple上，LightGaussian(Ours)相对3D-GS的PSNR、SSIM、LPIPS均仅小幅下降。E1/E2表行显示Mip-NeRF 360：PSNR 27.13 vs 27.21、SSIM 0.806 vs 0.815确为小幅下降；但LPIPS从0.214升至0.237，方向相反（越大越差），不能说“下降”。Tank and Temple：Ours PSNR 23.44高于3D-GS 23.14，并非下降；SSIM 0.832 vs 0.841下降，LPIPS 0.202 vs 0.183上升。因此证据仅支持Mip-NeRF 360的部分数值，不支持跨数据集所有指标小幅下降及“图像质量接近”的笼统推断。"
+      }
+    ]
+  },
+  "repairChecks": {
+    "accepted": [
+      {
+        "claimId": "c1",
+        "kind": "reported",
+        "text": "在Mip-NeRF 360数据集上，LightGaussian(Ours)的PSNR为27.13，SSIM为0.806，LPIPS为0.237；原始3D-GS的PSNR为27.21，SSIM为0.815，LPIPS为0.214。在Tank and Temple数据集上，Ours的PSNR为23.44，SSIM为0.832，LPIPS为0.202；3D-GS的PSNR为23.14，SSIM为0.841，LPIPS为0.183。",
+        "evidenceRefs": [
+          "ev_ffe2afc10303963ace5068705474a2c111bd99e53c60afe414460f77471fc747",
+          "ev_ab9685875c28c1ea14d0b937d46acbe69e99bdfb53a13d0b0c5c698de8fcb2fd"
+        ],
+        "conditions": {},
+        "detailLevel": "fulltext",
+        "tableBindings": [
+          {
+            "evidenceId": "ev_ffe2afc10303963ace5068705474a2c111bd99e53c60afe414460f77471fc747",
+            "rowNumber": 10,
+            "groupIndex": 0,
+            "metric": "PSNR",
+            "value": "27.13"
+          },
+          {
+            "evidenceId": "ev_ffe2afc10303963ace5068705474a2c111bd99e53c60afe414460f77471fc747",
+            "rowNumber": 10,
+            "groupIndex": 0,
+            "metric": "SSIM",
+            "value": "0.806"
+          },
+          {
+            "evidenceId": "ev_ffe2afc10303963ace5068705474a2c111bd99e53c60afe414460f77471fc747",
+            "rowNumber": 10,
+            "groupIndex": 0,
+            "metric": "LPIPS",
+            "value": "0.237"
+          },
+          {
+            "evidenceId": "ev_ab9685875c28c1ea14d0b937d46acbe69e99bdfb53a13d0b0c5c698de8fcb2fd",
+            "rowNumber": 8,
+            "groupIndex": 0,
+            "metric": "PSNR",
+            "value": "27.21"
+          },
+          {
+            "evidenceId": "ev_ab9685875c28c1ea14d0b937d46acbe69e99bdfb53a13d0b0c5c698de8fcb2fd",
+            "rowNumber": 8,
+            "groupIndex": 0,
+            "metric": "SSIM",
+            "value": "0.815"
+          },
+          {
+            "evidenceId": "ev_ab9685875c28c1ea14d0b937d46acbe69e99bdfb53a13d0b0c5c698de8fcb2fd",
+            "rowNumber": 8,
+            "groupIndex": 0,
+            "metric": "LPIPS",
+            "value": "0.214"
+          },
+          {
+            "evidenceId": "ev_ffe2afc10303963ace5068705474a2c111bd99e53c60afe414460f77471fc747",
+            "rowNumber": 10,
+            "groupIndex": 1,
+            "metric": "PSNR",
+            "value": "23.44"
+          },
+          {
+            "evidenceId": "ev_ffe2afc10303963ace5068705474a2c111bd99e53c60afe414460f77471fc747",
+            "rowNumber": 10,
+            "groupIndex": 1,
+            "metric": "SSIM",
+            "value": "0.832"
+          },
+          {
+            "evidenceId": "ev_ffe2afc10303963ace5068705474a2c111bd99e53c60afe414460f77471fc747",
+            "rowNumber": 10,
+            "groupIndex": 1,
+            "metric": "LPIPS",
+            "value": "0.202"
+          },
+          {
+            "evidenceId": "ev_ab9685875c28c1ea14d0b937d46acbe69e99bdfb53a13d0b0c5c698de8fcb2fd",
+            "rowNumber": 8,
+            "groupIndex": 1,
+            "metric": "PSNR",
+            "value": "23.14"
+          },
+          {
+            "evidenceId": "ev_ab9685875c28c1ea14d0b937d46acbe69e99bdfb53a13d0b0c5c698de8fcb2fd",
+            "rowNumber": 8,
+            "groupIndex": 1,
+            "metric": "SSIM",
+            "value": "0.841"
+          },
+          {
+            "evidenceId": "ev_ab9685875c28c1ea14d0b937d46acbe69e99bdfb53a13d0b0c5c698de8fcb2fd",
+            "rowNumber": 8,
+            "groupIndex": 1,
+            "metric": "LPIPS",
+            "value": "0.183"
+          }
+        ],
+        "obligationIds": [
+          "ob_1",
+          "ob_2"
+        ],
+        "verification": "semantic_passed"
+      }
+    ],
+    "rejected": []
+  },
+  "scores": {
+    "goalResponse": 3,
+    "evidenceSupport": 4,
+    "conditions": 3,
+    "synthesisValue": 2,
+    "executability": null,
+    "readability": 3
+  },
+  "findings": [
+    "The literal unstarred baseline is retained from already-read Table 1 and used in the final answer; source cells/metric identities for all 12 displayed measurements match the unstarred row and Ours.",
+    "Initial prose incorrectly says every metric decreases. Independent checking catches LPIPS direction and the Tank and Temple PSNR increase; revision publishes correct values only.",
+    "The new author-wide absence gate rejects 未验证其他数据集 and that unsupported claim is not published.",
+    "The final output is one dense measurement list, lacks the requested qualified judgement/limitations and two-point organization, and leaves the second planned item unstarted. Safe partial, not complete content acceptance."
+  ],
+  "report": "## 判断\n\n- 在Mip-NeRF 360数据集上，LightGaussian(Ours)的PSNR为27.13，SSIM为0.806，LPIPS为0.237；原始3D-GS的PSNR为27.21，SSIM为0.815，LPIPS为0.214。在Tank and Temple数据集上，Ours的PSNR为23.44，SSIM为0.832，LPIPS为0.202；3D-GS的PSNR为23.14，SSIM为0.841，LPIPS为0.183。 [1](#research-evidence-ev_ffe2afc10303963ace5068705474a2c111bd99e53c60afe414460f77471fc747) [2](#research-evidence-ev_ab9685875c28c1ea14d0b937d46acbe69e99bdfb53a13d0b0c5c698de8fcb2fd)\n\n<details>\n<summary>还有 1 项未完成</summary>\n\n- 作者在哪些数据集、场景或实验设置下报告了压缩后图像质量接近原始 3DGS 的结果？：预算不足，尚未开始\n\n</details>\n\n论文事实已按所列原文核对。\n\n<details>\n<summary>原文依据</summary>\n\n**[1] LightGaussian: Unbounded 3D Gaussian Compression with 15x Reduction and 200+ FPS** · 第 6 页 · 全文片段\n\n> Table row 10: Ours | 237 | 45MB | 27.13 | 0.806 | 0.237 | 357 | 25MB | 23.44 | 0.832 | 0.202\n\n**[2] LightGaussian: Unbounded 3D Gaussian Compression with 15x Reduction and 200+ FPS** · 第 6 页 · 全文片段\n\n> Table row 8: 3D-GS [16] | 134 | 734MB | 27.21 | 0.815 | 0.214 | 154 | 411MB | 23.14 | 0.841 | 0.183\n\n</details>",
+  "rawFiles": [
+    {
+      "path": "tmp/dr-acceptance-receipts/D1-v20.json",
+      "sha256": "11389ee550115891ba05af7e6d3198818c6c56d7c386e04d2731876da3ed890e"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/D1-v20.payload.json",
+      "sha256": "3ff2b1e7f552387f426d7757f6269dabd6da2fcc06840ef9a71c0c2b07c9a0b5"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/D1-v20.calls.json",
+      "sha256": "0ade913a3b45eb0382f06c54e67fa5ed53abdcdcfb8ae718e2d4b57d18897f5d"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/D1-v20.result.json",
+      "sha256": "9b885d919aae71d25364232a87795dc8ee55236105f124e4bedea033e531fb81"
+    }
+  ],
+  "boundary": "Submitted once through canonical prior-terminal guards. All calls settled. Original first results and historical unknowns unchanged. No independent credit or overall completion."
+}

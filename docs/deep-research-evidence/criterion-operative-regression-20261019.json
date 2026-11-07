@@ -1,0 +1,44 @@
+{
+  "date": "2026-10-19",
+  "sourceCommit": "3b69f81e",
+  "promptVersion": "dr-v2.20261019.184",
+  "fullOffline": {
+    "passed": 2987,
+    "warnings": 1,
+    "seconds": 127.19,
+    "log": "tmp/pytest-dr184-final-full.log",
+    "sha256": "615fb43b88d9e9d90cbb5105d8610b48a58606399797d25061cfb81daeec201e"
+  },
+  "focused": {
+    "passed": 168,
+    "warnings": 1,
+    "seconds": 15.44,
+    "log": "tmp/pytest-dr184-focused-v5.log",
+    "overlapsFull": true
+  },
+  "serverFrozenContracts": {
+    "sourcePrecisionContractVersion": 6,
+    "readingPriorityContractVersion": 2,
+    "extractionPriorityVersion": 7,
+    "factualReasoningContractVersion": 5
+  },
+  "bounds": {
+    "localResultsPerQuery": 5,
+    "standardReadSources": 12,
+    "extractItemsPerPassage": 3,
+    "standardModelCalls": 18,
+    "standardTokens": 100000,
+    "standardSeconds": 360
+  },
+  "legacyProviderFingerprintsMatched": 14,
+  "legacyExtractionSameInputDifferentials": 2,
+  "providerCalls": 0,
+  "retainedDiagnostics": [
+    "Four legacy fixtures exposed eager reads of new completion-criteria fields; old-policy early return repaired, same assertions pass.",
+    "One fixture incorrectly required filling all five retrieval slots even for legacy deduplicated input; corrected to original at-most-five contract, retaining positive three-aspect coverage only fornew6.",
+    "Archived replay exposed Chinese-adjacent metric token boundaries and microbenchmark-only ranking; new7 now retains both conditions and quantitative comparison without assuming Table1.",
+    "First full run:2977passed/10stale default-version assertions. Updated default7 plus different-version8 immutability probes; original safety assertions retained.",
+    "Historical first-extraction fingerprint reconstruction was inconclusive from terminal read pools; exact old/new same-input differentials are separately proven, not counted as historical Provider fingerprints."
+  ],
+  "boundary": "Offline fixtures, archived index/read input replay and exact legacy request/differential checks. Program equation evidence remains semantic unchecked. No current real generation, experiment acceptance or independent credit."
+}

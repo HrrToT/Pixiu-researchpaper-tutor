@@ -1,0 +1,25 @@
+{
+  "date": "2026-10-23",
+  "case": "E1-v35",
+  "sourceCommit": "5c443462",
+  "actualRequestFingerprintMatched": true,
+  "mockedPhysicalRequestFormat": {
+    "type": "json_object"
+  },
+  "messagesExact": true,
+  "thinking": {
+    "type": "disabled"
+  },
+  "responseRawBytes": 6113,
+  "offendingExpression": "2^16",
+  "parseError": {
+    "line": 23,
+    "column": 41,
+    "message": "Expecting ',' delimiter"
+  },
+  "clientPreservesProviderContent": true,
+  "localProviderCalls": 0,
+  "productionWrites": 0,
+  "officialHostReadOnlyCheck": true,
+  "boundary": "Exact ledger request identity and isolated physical-payload builder replay, not a new provider dispatch or server wire trace. Invalid raw result remains rejected, never evaluated."
+}

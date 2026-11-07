@@ -1,0 +1,55 @@
+{
+  "date": "2026-10-18",
+  "harnessSourceCommit": "a82f2b25",
+  "runtimePromptVersion": "dr-v2.20261018.153",
+  "originalReceiptSha256": "0c7843c20c5c414727c86445eb6ddb39f61294191a219c81251cd8192c544ba9",
+  "originalReceiptUnchanged": true,
+  "resolutionSeal": {
+    "path": "tmp/dr-live-cases/D5-v2.resolution.json",
+    "sha256": "30903ca2d84a3d28956a0c95dedf758059093e94d133a618cfe4a31f70b951ec",
+    "identity": {
+      "schemaVersion": 1,
+      "kind": "definitive_pre_child_failure",
+      "caseId": "D5",
+      "receiptSha256": "0c7843c20c5c414727c86445eb6ddb39f61294191a219c81251cd8192c544ba9",
+      "taskId": "dr-live-d2-20261012",
+      "parentRunId": "dr_run_56107afc748d54828af1a50e84eb5d62",
+      "requestId": "314db178-e5ec-5983-9917-043917274b62",
+      "fingerprint": "eebd7c21bd4a209da8838916bb5cb8f0a9ca7a3fa6e8f21b9b5bb227b1b6f849",
+      "receiptStatus": "failed",
+      "failureCode": "idempotency_conflict"
+    }
+  },
+  "freshAuthoritativeHistoryChecks": [
+    {
+      "path": "/task-workspaces/dr-live-d2-20261012/research/dr_run_56107afc748d54828af1a50e84eb5d62/actions/314db178-e5ec-5983-9917-043917274b62",
+      "kind": "action",
+      "status": "failed",
+      "fingerprint": "eebd7c21bd4a209da8838916bb5cb8f0a9ca7a3fa6e8f21b9b5bb227b1b6f849",
+      "errorCode": "idempotency_conflict"
+    },
+    {
+      "path": "/task-workspaces/dr-live-d2-20261012/research/dr_run_c56e3d09f3e45e2bbf2d63c41a348043",
+      "kind": "run",
+      "runId": "dr_run_c56e3d09f3e45e2bbf2d63c41a348043",
+      "taskId": "dr-live-d2-20261012",
+      "status": "completed",
+      "errorCode": ""
+    },
+    {
+      "path": "/task-workspaces/dr-live-d2-20261012/research/dr_run_2f15b4d30937553c8a64c807d34a683a",
+      "kind": "run",
+      "runId": "dr_run_2f15b4d30937553c8a64c807d34a683a",
+      "taskId": "dr-live-d2-20261012",
+      "status": "completed",
+      "errorCode": ""
+    }
+  ],
+  "runtime": {
+    "calls": 3747,
+    "active": 0,
+    "paused": 9
+  },
+  "providerCalls": 0,
+  "boundary": "Real read-only history preflight now recognizes exactly the failed no-child legacy intent and still GET-checks all other prior D5 runs. Original bytes unchanged, no sidecar cache trusted as terminal evidence. No child submission, provider call, parent rewrite, historical unknown settlement or content acceptance."
+}

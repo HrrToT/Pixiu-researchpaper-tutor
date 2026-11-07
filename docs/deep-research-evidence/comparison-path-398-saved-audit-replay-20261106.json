@@ -1,0 +1,21 @@
+{
+  "sourceCase": "G1N-v7",
+  "kind": "offline prospective metadata binding replay",
+  "providerCalls": 0,
+  "oldErrors": [
+    "comparison_premise_quote_mismatch"
+  ],
+  "prospectiveErrors": [],
+  "aliasMapping": {
+    "E1": "ev_569eacce4b25ed53f7d3e240369dc851d47c4a63e966e6f23bea8a8cbfa0e4a1",
+    "E2": "ev_85c7eb04158a10b01a9cde729e25358662b731f9c563d1690db1736f104d9948",
+    "E3": "ev_173b7c330817e4715607e13867a070b506633629b86c98e0663c472f273d9b55",
+    "E4": "ev_d9714d53fb3219d25b98cbe348699fc00c9843d748c9b4f55b0d93ff06edb45a"
+  },
+  "oldPayloadSha256": "f754be91a1c381ae3850b469796bd483bed0b586cf4e3c627cfea5338ae82c41",
+  "oldPayloadUnchanged": true,
+  "oldVerdictUpgraded": false,
+  "scientificAcceptance": false,
+  "independentCredit": 0,
+  "limitation": "Only own source-field identity is replayed; full answer still misses PGSR planar representation and other required dimensions. Original case remains partial."
+}

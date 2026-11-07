@@ -1,0 +1,21 @@
+{
+  "case": "G1N-v9",
+  "runId": "dr_run_dd47b2be73e45b3aa0a47c41b0be5c64",
+  "rawFilesSha256": {
+    "G1N-v9.calls.json": "50063b7b33f54ae849e7f48455ad11bedad2b712d9bc77593f4345c44c3be939",
+    "G1N-v9.payload.json": "d45b3b26c038cd1fb276a3ae0efc09931d6ea7a00e87d012f763d50f4cf7435b"
+  },
+  "rawFilesUnchanged": true,
+  "savedResponseText": "GOF使用3D高斯原语，通过射线-高斯相交评估贡献，并从四面体网格提取网格；PGSR将3D高斯压缩为平面表示，生成平面距离和法线图，再转换为无偏深度图。PGSR的网格提取细节未在证据中说明，无法确认两者网格提取路径不同。",
+  "savedDeclaredSpans": [
+    "网格提取路径不同"
+  ],
+  "legacyMaterializedText": "GOF使用3D高斯原语，通过射线-高斯相交评估贡献，并从四面体网格提取网格；PGSR将3D高斯压缩为平面表示，生成平面距离和法线图，再转换为无偏深度图。PGSR的网格提取细节未在证据中说明，无法确认两者。",
+  "newContractOutcome": "rejected_without_editing",
+  "reason": "Declared removed draft span is duplicated or retained",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "contentAcceptance": false,
+  "independentCredit": 0,
+  "boundary": "Exact saved response replay only; no corrected wording or old acceptance is invented."
+}

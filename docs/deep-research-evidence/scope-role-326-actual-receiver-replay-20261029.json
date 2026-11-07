@@ -1,0 +1,23 @@
+{
+  "source": "325 real settled repair response",
+  "responseSha256": "ab5c2bfcab27b453e1bb5dd3453f6c2b03947cf41abc0338f5ea60cd6ed91861",
+  "originalScopeIds": [
+    "c2"
+  ],
+  "legacyAcceptedScopeRoleAsOrdinaryProse": true,
+  "newScopeRoleRejection": [
+    {
+      "claimId": "c2",
+      "error": "scope_role_downgrade"
+    }
+  ],
+  "newScopeRoleClaimAdmitted": false,
+  "ordinaryRowsNotProofOfScientificSupport": [
+    "c1"
+  ],
+  "newPreparedPromptBytes": 23829,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "independentCredit": 0,
+  "limitation": "Receiver replay uses the saved report and response; it does not validate new model compliance or full graph input fitting."
+}

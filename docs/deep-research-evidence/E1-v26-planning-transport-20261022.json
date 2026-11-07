@@ -1,0 +1,16 @@
+{
+  "date": "2026-10-22",
+  "case": "E1-v26",
+  "sourceCommit": "138f0f75",
+  "actualPlanningFingerprintMatched": true,
+  "actualPlanningInputBytes": 26023,
+  "actualRawResponseBytes": 5036,
+  "newColumnPlanningInputBytes": 26023,
+  "maxInputBytes": 32000,
+  "originalQuestionEvidenceSourceTablesRequirementsIdentical": true,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "independentCredit": 0,
+  "scientificApproval": false,
+  "boundary": "Actual failed4-column-plan request reconstructed exactly. No new planning body is generated; private transport10 is separately checked with unchanged original input and reservation."
+}

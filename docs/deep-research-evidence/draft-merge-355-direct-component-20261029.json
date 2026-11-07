@@ -1,0 +1,57 @@
+{
+  "sourceCommit": "efb1bf44",
+  "component": "draft-merge-direct-profile",
+  "providerCalls": 1,
+  "allCallsSettled": true,
+  "tokens": 991,
+  "groups": [
+    {
+      "claimId": "c1",
+      "sourceClaimIds": [
+        "c1",
+        "c2"
+      ]
+    },
+    {
+      "claimId": "c3",
+      "sourceClaimIds": [
+        "c3"
+      ]
+    }
+  ],
+  "visibleCharacters": 309,
+  "characterLimit": 300,
+  "status": "rejected_length",
+  "wireUserMatchesPrompt": true,
+  "postEditVerificationRan": false,
+  "retry": false,
+  "productionPublish": false,
+  "independentCredit": 0,
+  "preservation": {
+    "before": {
+      "ledgerRows": 7682,
+      "ledgerSha256": "ccb948abe79ec858755dbc7df0b93af4853a611bd6d9247a6088ddf63bf9826f",
+      "payloadSha256": "115afaf955e35880b01e8f30243f35cad57aa65ebf5601f700898b5d0d81f002"
+    },
+    "after": {
+      "ledgerRows": 7682,
+      "ledgerSha256": "ccb948abe79ec858755dbc7df0b93af4853a611bd6d9247a6088ddf63bf9826f",
+      "payloadSha256": "115afaf955e35880b01e8f30243f35cad57aa65ebf5601f700898b5d0d81f002"
+    },
+    "exactProductionPreservation": true,
+    "providerSubmissions": 1,
+    "productionPublish": false,
+    "fullWorkflowReplay": false,
+    "independentCredit": 0,
+    "elapsedSeconds": 9.096
+  },
+  "receiptHashes": {
+    "calls.json": "177ca7e3fb2ca3bb392d85a29a83a2f23aac673d9b0be5307b9520835ed763dd",
+    "draft-merge-audit.json": "5615b875f77e841cb9b85a70b746c8ef7ca3867598865377be535038cec372d8",
+    "failure.json": "3ad93ab85860abef652441d191d258154a3150319480eb9a2d64bfefe78e3f40",
+    "payload.json": "a4bc246bcd0d7bed42b80ec03524e1473dd1a561beef25fc50e7f29669915b4b",
+    "preservation.json": "f19b8e39e6eb481cbff7735dbcce963ebad4e6225d2862053edc3f553c4a6ffc",
+    "progress.json": "2b77ca1436c21e61f9ed468030fd6a37aed95b86f7b2c3b91e1e630e7dde4764",
+    "request-1.json": "baea99a4c1163a833124c539e180ecdcef8f9c7cda6064ad00d976a8029db5d9"
+  }
+}

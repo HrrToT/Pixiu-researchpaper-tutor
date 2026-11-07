@@ -1,0 +1,76 @@
+{
+  "date": "2026-10-18",
+  "cases": [
+    {
+      "case": "D1-v24",
+      "oldSynthesisFingerprint": "d3a47d24b495af6e4f8bb78cea43f170d2d3994545ee17e100ea96d74c427a18",
+      "oldRepairFingerprint": "b456c9407183a00095cb31dc42c8a395778c2545cc2f3361c7ddf56d8bf42d3d",
+      "oldActualRequestsMatched": true,
+      "newSynthExplicitSchema": true,
+      "newRepairExplicitSchema": true,
+      "oldRepairOutputOptions": {
+        "max_tokens": 4096,
+        "temperature": 0.0,
+        "thinking": {
+          "type": "enabled"
+        },
+        "reasoning_effort": "low",
+        "response_format": {
+          "type": "json_object"
+        }
+      },
+      "newRepairOutputOptions": {
+        "max_tokens": 4096,
+        "temperature": 0.0,
+        "thinking": {
+          "type": "disabled"
+        },
+        "reasoning_effort": "none",
+        "response_format": {
+          "type": "json_object"
+        }
+      },
+      "oldRepairPromptBytes": 23859,
+      "newRepairPromptBytes": 23916,
+      "originalReferencesPreserved": true,
+      "runBudgetUnchanged": true
+    },
+    {
+      "case": "D5-v10",
+      "oldSynthesisFingerprint": "b12f6b9f21cc75ea543ba68580d22f9df205d9817325a2c45aa04590427fd5da",
+      "oldRepairFingerprint": "be58dcf96b3b2704f06b028b0e6a1b1fa3b29e9fad0a4716c4c04bb68acf957e",
+      "oldActualRequestsMatched": true,
+      "newSynthExplicitSchema": true,
+      "newRepairExplicitSchema": true,
+      "oldRepairOutputOptions": {
+        "max_tokens": 4096,
+        "temperature": 0.0,
+        "thinking": {
+          "type": "enabled"
+        },
+        "reasoning_effort": "low",
+        "response_format": {
+          "type": "json_object"
+        }
+      },
+      "newRepairOutputOptions": {
+        "max_tokens": 4096,
+        "temperature": 0.0,
+        "thinking": {
+          "type": "disabled"
+        },
+        "reasoning_effort": "none",
+        "response_format": {
+          "type": "json_object"
+        }
+      },
+      "oldRepairPromptBytes": 23991,
+      "newRepairPromptBytes": 23808,
+      "originalReferencesPreserved": true,
+      "runBudgetUnchanged": true
+    }
+  ],
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "boundary": "Exact old live synthesis/repair fingerprints and copied new JSON schemas/options. No generation, semantic acceptance or retrospective result upgrade. Old stop/empty response is not retried."
+}

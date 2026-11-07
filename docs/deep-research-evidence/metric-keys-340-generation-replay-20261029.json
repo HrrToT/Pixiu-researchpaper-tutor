@@ -1,0 +1,66 @@
+{
+  "providerCalls": 0,
+  "sourcePayloadSha256": "282be465beb3ce5c7105cb0432aaa0e9705c71c31b9eaf904d65d91790c3260d",
+  "oldActualGenerationPromptByteIdentical": true,
+  "newPromptBytes": 23856,
+  "maxInputBytes": 24000,
+  "requiredMainTableAndNoteUnchanged": true,
+  "storedEvidenceAndPlanUnchanged": true,
+  "archivedReplyReplayedWithoutCorrection": true,
+  "wrongMetricKeysStillRejected": [
+    {
+      "claimId": "c1",
+      "reason": "unverified_table_cell",
+      "availableTableReferences": [
+        {
+          "evidenceId": "ev_74a1bac54693e4ae4612f54763a4a84db1a1c907cc4706a86d4c8cc69922d6b8",
+          "rows": [
+            {
+              "rowNumber": 7,
+              "method": "Compact 3D-GS [37]"
+            },
+            {
+              "rowNumber": 8,
+              "method": "3D-GS [16]"
+            },
+            {
+              "rowNumber": 9,
+              "method": "3D-GS  *  [16]"
+            },
+            {
+              "rowNumber": 10,
+              "method": "Ours"
+            }
+          ],
+          "groups": [
+            {
+              "groupIndex": 0,
+              "label": "Mip-NeRF 360 Datasets",
+              "metrics": [
+                "FPS",
+                "Size",
+                "PSNR",
+                "SSIM",
+                "LPIPS"
+              ]
+            },
+            {
+              "groupIndex": 1,
+              "label": "Tank and Temple Datasets",
+              "metrics": [
+                "FPS",
+                "Size",
+                "PSNR",
+                "SSIM",
+                "LPIPS"
+              ]
+            }
+          ]
+        }
+      ],
+      "detail": "tableBindings必须指向本条自身原文的真实单元格；rowNumber是源行号，不是所选行的数组下标。推算值不能伪装为原表单元格。"
+    }
+  ],
+  "scientificApproval": false,
+  "independentCredit": 0
+}

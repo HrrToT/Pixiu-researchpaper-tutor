@@ -1,0 +1,13 @@
+{
+  "date": "2026-10-20",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "controlledPlanningBytes": 14220,
+  "controlledConfigurationBytes": 21911,
+  "controlledSuppliedRows": 6,
+  "currentIndexDefinitionActuallyInControlledPrompt": true,
+  "maxInputBytesUnchanged": 24000,
+  "experimentDraftContract": 4,
+  "synthesisEvidenceContract": 3,
+  "boundary": "Controlled fixture appends literal current-index text to a copied E1 evidence pool and mocks the private blueprint. This is NOT E1 production evidence, actual acquisition/extraction, model generation, latency or scientific acceptance. No archive/live state write, no resend."
+}

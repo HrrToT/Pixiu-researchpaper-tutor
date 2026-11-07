@@ -1,0 +1,84 @@
+{
+  "date": "2026-10-25",
+  "candidateVersion": 6,
+  "defaultVersion": 5,
+  "runtimePromptVersion": "dr-v2.20261025.267",
+  "outputSchema": "workflow_metadata_action_objects_v1",
+  "associatedRegression": {
+    "files": 15,
+    "passed": 259,
+    "seconds": 37.64,
+    "log": "tmp/pytest-metadata-revision6-associated-final-20261025.log"
+  },
+  "actualInputReplay": {
+    "case": "E1-v57",
+    "candidateVersion": 6,
+    "outputSchema": "workflow_metadata_action_objects_v1",
+    "allAuthoritativeInputPreserved": true,
+    "allInvalidWireValuesPreserved": true,
+    "inputWithSchemaBytes": 28952,
+    "inputByteCap": 32000,
+    "operationIssueCount": 8,
+    "providerCalls": 0,
+    "productionWrites": 0,
+    "programmaticallySplitOperations": 0,
+    "scientificApproval": false,
+    "boundary": "Offline complete-input framing only. Old malformed arrays are retained as invalid input, never converted into chosen operations or historical acceptance."
+  },
+  "legacyResumeReplay": [
+    {
+      "case": "E1-v56",
+      "revisionVersion": 4,
+      "status": "original_failure_preserved",
+      "offlineInvocations": 0,
+      "offlineWrites": 0,
+      "originalPayloadFileUnchanged": true,
+      "metadataRequestDigest": "3402e460b49295bad2dff25f129a2cb58a98a725b642f402de64cf8ef2363f38",
+      "repairRequestDigest": null
+    },
+    {
+      "case": "E1-v57",
+      "revisionVersion": 5,
+      "status": "original_failure_preserved",
+      "offlineInvocations": 0,
+      "offlineWrites": 0,
+      "originalPayloadFileUnchanged": true,
+      "metadataRequestDigest": "914709d1d189e76913362699014c0a730af82089e39b8ac5743a17b8f9badbf7",
+      "repairRequestDigest": "2ee5b5af94de30999398f06038ac26be5cf9bb8b58c5988dc46c806eff3d35d4"
+    }
+  ],
+  "rawResponseByteCap": 16384,
+  "semanticContentByteCap": 8192,
+  "metadataOutputTokens": 3072,
+  "wholeRunLimits": {
+    "calls": 18,
+    "tokens": 100000,
+    "wallSeconds": 360
+  },
+  "fullRegression": {
+    "status": "passed",
+    "sourceCommit": "8ffcdaaab0df856ac24909267b3a03c838aa803a",
+    "files": 258,
+    "log": "tmp/pytest-metadata-revision6-full-20261025.log",
+    "receipt": "tmp/metadata-revision6-full-receipt-20261025.json",
+    "passed": 4768,
+    "warnings": 1,
+    "testSeconds": 29102.48,
+    "elapsedSeconds": 29107.3,
+    "sourceStable": true,
+    "logSha256": "0357d3031b079be89638d3d1c8daf92712a221f4969b23495c85e27e48ad91f5",
+    "timingBoundary": "Long actual observation gap occurred; elapsed time is not a normal execution-performance measurement."
+  },
+  "sourceHashes": {
+    "services/deep_research/workflow_metadata_actions.py": "9334f5ca771aa402b262f1745c09095d9f0e139e5d562684f994fa3a2051f1e4",
+    "services/deep_research/workflow_metadata_repair.py": "91332de71fcd1b2988aafeb576a4d39bf3fc3db100724fc1f2373be0da0a0aee",
+    "services/deep_research/workflow_units.py": "cd6738b0b869608c4899562bf85e84d69114cc3c764954374e4a375ad592fb6d",
+    "services/deep_research/planning_transport.py": "5e90410da4dacae81e133a9cd48ec7fc072d033cb2bb8d368a23907ffd6ec466",
+    "tests/test_deep_research_workflow_metadata_actions.py": "bd720af7e974dea63ac43db9303d20450fa31ecac9855b756e9879439bc53063",
+    "tests/test_deep_research_workflow_metadata_repair.py": "19de65b6e3a749dc929884f8f4ef22a058b0a760c55de3152e682493529fabc7"
+  },
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "scientificApproval": false,
+  "boundary": "Candidate only. Named single operation objects are a lossless grammar change for new v6; ambiguous multi-operation arrays remain invalid and are never split by code. Old v4/v5 real failures resume offline with zero calls/writes and are not upgraded."
+}

@@ -1,0 +1,16 @@
+{
+  "date": "2026-10-22",
+  "case": "E1-v29",
+  "sourceCommit": "44c04d71",
+  "actualPlanningFingerprintMatched": true,
+  "actualPlanningInputBytes": 25514,
+  "actualRawResponseBytes": 4351,
+  "newColumnPlanningInputBytes": 25514,
+  "maxInputBytes": 32000,
+  "originalQuestionEvidenceSourceTablesRequirementsIdentical": true,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "independentCredit": 0,
+  "scientificApproval": false,
+  "boundary": "Exact reconstruction of the actual version6/native12 planning request fingerprint. Read-only replay; no new provider call or scientific approval."
+}

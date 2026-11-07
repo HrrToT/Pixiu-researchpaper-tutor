@@ -1,0 +1,46 @@
+{
+  "case": "E1-v48",
+  "sourceCommit": "81fb74cb",
+  "promptVersion": "dr-v2.20261023.258",
+  "runId": "dr_run_2c96c08660d354f78135c607757635f2",
+  "status": "failed",
+  "errorCode": "invalid_experiment_planning_response",
+  "planningNode": "plan_experiment",
+  "planningStatus": "invalid_response",
+  "finishReason": "stop",
+  "providerReportedModel": "deepseek-v4-pro",
+  "usage": {
+    "total_tokens": 8414,
+    "input_tokens": 6574,
+    "output_tokens": 1840
+  },
+  "rawResponseSha256": "610c9419a33cecbe9e4b2c5beb264e6c8d422d171027a6d6b9bbc32e98324aba",
+  "responseDigest": "8fab9c0a2e0785db77e0b3f66c82a60bb1e555a3ff1405d4dded0e345feaa266",
+  "requestDigest": "b28020cdeb1732686e86105c27ed52e1be0859b545bf246b0122eb13493a8e13",
+  "trackedRequestDigestMatches": true,
+  "schemaName": "private_experiment_columns_v1",
+  "schemaDigest": "9380edd6c13f532d9197d921142655179c262b6fd372d733df50e643592d42a5",
+  "reasoning": {
+    "thinking": {
+      "type": "disabled"
+    },
+    "reasoning_effort": "none",
+    "max_tokens": 6144
+  },
+  "syntax": {
+    "message": "Extra data",
+    "line": 57,
+    "column": 4,
+    "char": 6323
+  },
+  "evidenceAliasCount": 14,
+  "workflowUnitsReached": false,
+  "scientificApproval": false,
+  "providerRetries": 0,
+  "independentCredit": 0,
+  "unreviewedRawTextConcerns": [
+    "Raw text assumes copying unavailable baseline/checkpoint while listing missing identity as unresolved.",
+    "Raw text calls control 0 versus treatment 150 fitting steps matched; this has not reached valid typed assembly or independent review."
+  ],
+  "boundary": "Malformed complete response despite a frozen schema request. No syntax reconstruction, science acceptance, retry, or lifecycle-unit quality claim. Raw response remains local in the durable ledger."
+}

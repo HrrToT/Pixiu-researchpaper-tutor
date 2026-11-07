@@ -1,0 +1,100 @@
+{
+  "date": "2026-10-23",
+  "case": "E1-v42",
+  "sourceCommit": "08908def",
+  "promptVersion": "dr-v2.20261023.252",
+  "verificationSummary": {
+    "accepted": 0,
+    "rejected": 9
+  },
+  "modelCalls": 10,
+  "settledTokens": 61210,
+  "elapsedSeconds": 140.371,
+  "unknownsAdded": 0,
+  "directSourceEntries": 44,
+  "repairStatus": "response_received",
+  "completedRepairBatch": [
+    "c2",
+    "c5",
+    "c6"
+  ],
+  "completedDraftCount": 3,
+  "repairResponseCoverage": {
+    "0": {
+      "version": 1,
+      "expectedTargetIds": [
+        "c2",
+        "c5",
+        "c6"
+      ],
+      "submittedEditIds": [
+        "c2",
+        "c5",
+        "c6"
+      ],
+      "unresolvedTargets": [],
+      "missingTargetIds": [],
+      "invalidTargetIds": [],
+      "unexpectedTargetIds": [],
+      "malformedEntries": 0,
+      "responseCoverageComplete": true,
+      "scientificApproval": false,
+      "expandedRevisionIds": [
+        "c2",
+        "c5",
+        "c6"
+      ],
+      "unusableEditTargetIds": []
+    }
+  },
+  "laterBatchStop": {
+    "batch": 1,
+    "kind": "repairEvidenceBytes",
+    "limit": 20720,
+    "used": 23735
+  },
+  "repairRecheck": {
+    "accepted": [],
+    "rejected": [
+      {
+        "claimId": "c6",
+        "reason": "incomplete_experiment_workflow",
+        "detail": "workflow.states.shape, workflow.creation.unavailable_input"
+      },
+      {
+        "claimId": "c2",
+        "reason": "semantic_unresolved",
+        "detail": "完整核验输入超出容量，本条尚未核验，不能据此判断论文证据不足。",
+        "executionState": "not_started",
+        "reviewTimeAdmission": null,
+        "reviewInputCapacity": {
+          "inputBytes": 38911,
+          "maxInputBytes": 32000
+        }
+      },
+      {
+        "claimId": "c5",
+        "reason": "semantic_unresolved",
+        "detail": "完整核验输入超出容量，本条尚未核验，不能据此判断论文证据不足。",
+        "executionState": "not_started",
+        "reviewTimeAdmission": null,
+        "reviewInputCapacity": {
+          "inputBytes": 38974,
+          "maxInputBytes": 32000
+        }
+      }
+    ]
+  },
+  "observations": [
+    "One real repair5 request was sent;its exact request fingerprint and frozen input digest were reconstructed from the archived data.",
+    "Same-input offline packet4 also admits one request30304bytes;actual packet5 request30388bytes may include different optional evidence. Therefore this run alone does not prove packet5 caused admission or that byte savings caused fewer model calls.",
+    "Generation changed between cases:three initial deterministic rejections removed targets before semantic review. Do not causally attribute2review calls versus4to batching alone.",
+    "Workflow still has input-derived shapes with fresh inputs:[],unavailable asset loading and inconsistent creation rules.",
+    "One revised intervention discards added Gaussians before evaluation and restores shared states, risking removal of the very contribution the requested comparison should measure. This is a design concern,not an accepted conclusion.",
+    "Metrics feedback incorrectly demands executionSpec for a prose-only metrics role and is retained as invalid binding,not converted into approval.",
+    "Partial repaired controls/groups were not semantically reviewed:complete inputs38911/38974bytes exceed32000;workflow fails deterministic checks.",
+    "Next priority is one typed executable initialization/workflow blueprint before public generation,and bounded lossless sharing of rejected-context audit fields. No acceptance gate or budget should be weakened."
+  ],
+  "independentCredit": 0,
+  "boundary": "Engine,real repair transport and response retention pass;scientific output and independent acceptance do not pass."
+}

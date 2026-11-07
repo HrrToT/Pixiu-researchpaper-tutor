@@ -1,0 +1,134 @@
+{
+  "date": "2026-10-26",
+  "case": "E1-v72",
+  "runId": "dr_run_10f40f8410ce597dba833a603488417f",
+  "promptVersion": "dr-v2.20261026.282",
+  "status": "failed",
+  "steps": [
+    {
+      "scope": "per_repeat",
+      "kind": "fit"
+    },
+    {
+      "scope": "per_frame",
+      "kind": "fit"
+    },
+    {
+      "scope": "per_frame",
+      "kind": "fit"
+    },
+    {
+      "scope": "per_frame",
+      "kind": "observe"
+    },
+    {
+      "scope": "per_frame",
+      "kind": "observe"
+    }
+  ],
+  "originalLifecycle": [
+    {
+      "componentId": "frame0_3dgs",
+      "lifecycle": {
+        "scope": "per_repeat",
+        "createBefore": "scope_start",
+        "disposeAfter": "scope_end"
+      }
+    },
+    {
+      "componentId": "stage1_ntc_state",
+      "lifecycle": {
+        "scope": "per_frame",
+        "createBefore": 0,
+        "disposeAfter": "scope_end"
+      }
+    },
+    {
+      "componentId": "stage2_additional_3dgs",
+      "lifecycle": {
+        "scope": "per_frame",
+        "createBefore": 1,
+        "disposeAfter": "scope_end"
+      }
+    }
+  ],
+  "revisedLifecycle": [
+    {
+      "componentId": "frame0_3dgs",
+      "lifecycle": {
+        "scope": "per_repeat",
+        "createBefore": "scope_start",
+        "disposeAfter": "scope_end"
+      }
+    },
+    {
+      "componentId": "stage1_ntc_state",
+      "lifecycle": {
+        "scope": "per_frame",
+        "createBefore": 0,
+        "disposeAfter": "scope_end"
+      }
+    },
+    {
+      "componentId": "stage2_additional_3dgs",
+      "lifecycle": {
+        "scope": "per_frame",
+        "createBefore": 1,
+        "disposeAfter": "scope_end"
+      }
+    }
+  ],
+  "originalEqualsRevised": true,
+  "fieldFeedback": {
+    "issues": [
+      {
+        "code": "ordered.allocation",
+        "path": "/components/1/lifecycle/createBefore",
+        "expected": "per_frame allocation at or after the frame entrance; no implicit movement",
+        "actual": 0,
+        "actualPresent": true
+      }
+    ],
+    "scientificApproval": false,
+    "authoredValuesPreserved": true,
+    "declaredStepCount": 5,
+    "explicitScopeEndReleases": [
+      {
+        "componentIndex": 0,
+        "componentId": "frame0_3dgs",
+        "scope": "per_repeat",
+        "disposeAfter": null
+      },
+      {
+        "componentIndex": 1,
+        "componentId": "stage1_ntc_state",
+        "scope": "per_frame",
+        "disposeAfter": 4
+      },
+      {
+        "componentIndex": 2,
+        "componentId": "stage2_additional_3dgs",
+        "scope": "per_frame",
+        "disposeAfter": 4
+      }
+    ],
+    "explicitScopeStartAllocations": [
+      {
+        "componentIndex": 0,
+        "componentId": "frame0_3dgs",
+        "scope": "per_repeat",
+        "createBefore": 0
+      }
+    ],
+    "codes": [
+      "unit.json"
+    ]
+  },
+  "repairStatus": "invalid_response",
+  "repairErrors": [
+    "unit.json"
+  ],
+  "initializationRepairExercised": false,
+  "scientificApproval": false,
+  "independentCredit": 0
+}

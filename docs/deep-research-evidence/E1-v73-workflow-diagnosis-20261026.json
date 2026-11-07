@@ -1,0 +1,764 @@
+{
+  "date": "2026-10-26",
+  "case": "E1-v73",
+  "runId": "dr_run_45c38519bda0508f89b927e1ba5cf332",
+  "promptVersion": "dr-v2.20261026.283",
+  "status": "failed",
+  "originalMetadataErrors": [
+    "timeline.phase.budget"
+  ],
+  "revisionErrors": [
+    "timeline.phase.budget"
+  ],
+  "originalEqualsRevised": true,
+  "original": {
+    "sourceRefs": [
+      "E1",
+      "E2",
+      "E3",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E10",
+      "E11",
+      "E12",
+      "E13",
+      "E14"
+    ],
+    "baselineMode": "train",
+    "replicationMode": "retrained_per_seed",
+    "components": [
+      {
+        "componentId": "frame0_3dgs",
+        "appliesTo": [
+          "0",
+          "1"
+        ],
+        "lifecycle": {
+          "scope": "per_repeat",
+          "createInScope": 0,
+          "disposeAfter": "scope_end"
+        }
+      },
+      {
+        "componentId": "stage1_ntc_result",
+        "appliesTo": [
+          "0",
+          "1"
+        ],
+        "lifecycle": {
+          "scope": "per_frame",
+          "createInScope": 0,
+          "disposeAfter": "scope_end"
+        }
+      },
+      {
+        "componentId": "stage2_additions",
+        "appliesTo": [
+          "1"
+        ],
+        "lifecycle": {
+          "scope": "per_frame",
+          "createInScope": 1,
+          "disposeAfter": "scope_end"
+        }
+      }
+    ],
+    "checkpointSelection": {
+      "mode": "fixed_budget"
+    },
+    "unresolved": [
+      "Exact Stage 2 training epoch count or iteration cap in the paper's implementation.",
+      "Exact camera split and held-out view identities for the flame salmon scene.",
+      "Whether the chosen frame window contains the emerging object appearance used in the paper's ablation.",
+      "Exact frame indices for the flame salmon emerging-object event.",
+      "Whether the paper provides a released checkpoint or code asset for the flame salmon frame-0 model and Stage 1 NTC results.",
+      "Exact Stage 2 learning rate and optimizer settings if they differ from Stage 1."
+    ],
+    "frameIterations": 30,
+    "steps": [
+      {
+        "scope": "per_repeat",
+        "kind": "fit",
+        "groups": [
+          "0",
+          "1"
+        ],
+        "sharing": "shared",
+        "reads": [],
+        "updates": [
+          "frame0_3dgs"
+        ],
+        "outputs": [
+          "frame0_3dgs"
+        ],
+        "action": {
+          "action": "train_initial_3dgs",
+          "parameters": [
+            {
+              "name": "dataset",
+              "type": "choice",
+              "value": "N3DV flame salmon"
+            },
+            {
+              "name": "timestep",
+              "type": "choice",
+              "value": "0"
+            },
+            {
+              "name": "iteration",
+              "type": "number",
+              "value": 15000
+            }
+          ]
+        },
+        "budget": null
+      },
+      {
+        "scope": "per_frame",
+        "kind": "fit",
+        "groups": [
+          "0",
+          "1"
+        ],
+        "sharing": "shared",
+        "reads": [
+          {
+            "state": "frame0_3dgs",
+            "selector": "carried_3dgs"
+          }
+        ],
+        "updates": [
+          "stage1_ntc_result"
+        ],
+        "outputs": [
+          "stage1_ntc_result"
+        ],
+        "action": {
+          "action": "train_stage1_ntc",
+          "parameters": [
+            {
+              "name": "iterations",
+              "type": "number",
+              "value": 150
+            }
+          ]
+        },
+        "budget": {
+          "unit": "optimizer_steps",
+          "perExecution": 150
+        }
+      },
+      {
+        "scope": "per_frame",
+        "kind": "fit",
+        "groups": [
+          "1"
+        ],
+        "sharing": "per_group",
+        "reads": [
+          {
+            "state": "stage1_ntc_result",
+            "selector": "transformed_3dgs"
+          }
+        ],
+        "updates": [
+          "stage2_additions"
+        ],
+        "outputs": [
+          "stage2_additions"
+        ],
+        "action": {
+          "action": "adaptive_3dg_addition",
+          "parameters": [
+            {
+              "name": "tau_grad",
+              "type": "number",
+              "value": 0.00015
+            },
+            {
+              "name": "tau_alpha",
+              "type": "number",
+              "value": 0.01
+            },
+            {
+              "name": "opacity_init",
+              "type": "number",
+              "value": 0.1
+            },
+            {
+              "name": "split_scale",
+              "type": "number",
+              "value": 0.8
+            }
+          ]
+        },
+        "budget": null
+      },
+      {
+        "scope": "per_frame",
+        "kind": "observe",
+        "reads": [
+          {
+            "state": "stage1_ntc_result",
+            "selector": "transformed_3dgs"
+          },
+          {
+            "state": "stage2_additions",
+            "selector": "additional_3dgs"
+          }
+        ],
+        "measurement": {
+          "action": "render_heldout_views",
+          "parameters": [
+            {
+              "name": "views",
+              "type": "choice",
+              "value": "heldout"
+            }
+          ]
+        },
+        "outputs": [
+          "heldout_psnr"
+        ],
+        "recording": {
+          "inputs": [
+            {
+              "outputId": "heldout_psnr",
+              "selector": "psnr"
+            }
+          ],
+          "action": {
+            "action": "compute_psnr",
+            "parameters": []
+          },
+          "outputs": [
+            "psnr_record"
+          ]
+        },
+        "group": "1"
+      },
+      {
+        "scope": "per_frame",
+        "kind": "observe",
+        "reads": [
+          {
+            "state": "stage1_ntc_result",
+            "selector": "transformed_3dgs"
+          }
+        ],
+        "measurement": {
+          "action": "render_heldout_views",
+          "parameters": [
+            {
+              "name": "views",
+              "type": "choice",
+              "value": "heldout"
+            }
+          ]
+        },
+        "outputs": [
+          "heldout_psnr"
+        ],
+        "recording": {
+          "inputs": [
+            {
+              "outputId": "heldout_psnr",
+              "selector": "psnr"
+            }
+          ],
+          "action": {
+            "action": "compute_psnr",
+            "parameters": []
+          },
+          "outputs": [
+            "psnr_record"
+          ]
+        },
+        "group": "0"
+      },
+      {
+        "scope": "per_frame",
+        "kind": "observe",
+        "reads": [
+          {
+            "state": "stage2_additions",
+            "selector": "additional_3dgs"
+          }
+        ],
+        "measurement": {
+          "action": "count_additional_3dgs",
+          "parameters": []
+        },
+        "outputs": [
+          "additional_3dg_count"
+        ],
+        "recording": {
+          "inputs": [
+            {
+              "outputId": "additional_3dg_count",
+              "selector": "count"
+            }
+          ],
+          "action": {
+            "action": "record_count",
+            "parameters": []
+          },
+          "outputs": [
+            "storage_record"
+          ]
+        },
+        "group": "1"
+      },
+      {
+        "scope": "per_frame",
+        "kind": "observe",
+        "reads": [
+          {
+            "state": "stage2_additions",
+            "selector": "additional_3dgs"
+          }
+        ],
+        "measurement": {
+          "action": "measure_stage2_time",
+          "parameters": []
+        },
+        "outputs": [
+          "stage2_time"
+        ],
+        "recording": {
+          "inputs": [
+            {
+              "outputId": "stage2_time",
+              "selector": "seconds"
+            }
+          ],
+          "action": {
+            "action": "record_time",
+            "parameters": []
+          },
+          "outputs": [
+            "time_record"
+          ]
+        },
+        "group": "1"
+      }
+    ]
+  },
+  "revised": {
+    "sourceRefs": [
+      "E1",
+      "E2",
+      "E3",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E10",
+      "E11",
+      "E12",
+      "E13",
+      "E14"
+    ],
+    "baselineMode": "train",
+    "replicationMode": "retrained_per_seed",
+    "components": [
+      {
+        "componentId": "frame0_3dgs",
+        "appliesTo": [
+          "0",
+          "1"
+        ],
+        "lifecycle": {
+          "scope": "per_repeat",
+          "createInScope": 0,
+          "disposeAfter": "scope_end"
+        }
+      },
+      {
+        "componentId": "stage1_ntc_result",
+        "appliesTo": [
+          "0",
+          "1"
+        ],
+        "lifecycle": {
+          "scope": "per_frame",
+          "createInScope": 0,
+          "disposeAfter": "scope_end"
+        }
+      },
+      {
+        "componentId": "stage2_additions",
+        "appliesTo": [
+          "1"
+        ],
+        "lifecycle": {
+          "scope": "per_frame",
+          "createInScope": 1,
+          "disposeAfter": "scope_end"
+        }
+      }
+    ],
+    "checkpointSelection": {
+      "mode": "fixed_budget"
+    },
+    "unresolved": [
+      "Exact Stage 2 training epoch count or iteration cap in the paper's implementation.",
+      "Exact camera split and held-out view identities for the flame salmon scene.",
+      "Whether the chosen frame window contains the emerging object appearance used in the paper's ablation.",
+      "Exact frame indices for the flame salmon emerging-object event.",
+      "Whether the paper provides a released checkpoint or code asset for the flame salmon frame-0 model and Stage 1 NTC results.",
+      "Exact Stage 2 learning rate and optimizer settings if they differ from Stage 1."
+    ],
+    "frameIterations": 30,
+    "steps": [
+      {
+        "scope": "per_repeat",
+        "kind": "fit",
+        "groups": [
+          "0",
+          "1"
+        ],
+        "sharing": "shared",
+        "reads": [],
+        "updates": [
+          "frame0_3dgs"
+        ],
+        "outputs": [
+          "frame0_3dgs"
+        ],
+        "action": {
+          "action": "train_initial_3dgs",
+          "parameters": [
+            {
+              "name": "dataset",
+              "type": "choice",
+              "value": "N3DV flame salmon"
+            },
+            {
+              "name": "timestep",
+              "type": "choice",
+              "value": "0"
+            },
+            {
+              "name": "iteration",
+              "type": "number",
+              "value": 15000
+            }
+          ]
+        },
+        "budget": null
+      },
+      {
+        "scope": "per_frame",
+        "kind": "fit",
+        "groups": [
+          "0",
+          "1"
+        ],
+        "sharing": "shared",
+        "reads": [
+          {
+            "state": "frame0_3dgs",
+            "selector": "carried_3dgs"
+          }
+        ],
+        "updates": [
+          "stage1_ntc_result"
+        ],
+        "outputs": [
+          "stage1_ntc_result"
+        ],
+        "action": {
+          "action": "train_stage1_ntc",
+          "parameters": [
+            {
+              "name": "iterations",
+              "type": "number",
+              "value": 150
+            }
+          ]
+        },
+        "budget": {
+          "unit": "optimizer_steps",
+          "perExecution": 150
+        }
+      },
+      {
+        "scope": "per_frame",
+        "kind": "fit",
+        "groups": [
+          "1"
+        ],
+        "sharing": "per_group",
+        "reads": [
+          {
+            "state": "stage1_ntc_result",
+            "selector": "transformed_3dgs"
+          }
+        ],
+        "updates": [
+          "stage2_additions"
+        ],
+        "outputs": [
+          "stage2_additions"
+        ],
+        "action": {
+          "action": "adaptive_3dg_addition",
+          "parameters": [
+            {
+              "name": "tau_grad",
+              "type": "number",
+              "value": 0.00015
+            },
+            {
+              "name": "tau_alpha",
+              "type": "number",
+              "value": 0.01
+            },
+            {
+              "name": "opacity_init",
+              "type": "number",
+              "value": 0.1
+            },
+            {
+              "name": "split_scale",
+              "type": "number",
+              "value": 0.8
+            }
+          ]
+        },
+        "budget": null
+      },
+      {
+        "scope": "per_frame",
+        "kind": "observe",
+        "reads": [
+          {
+            "state": "stage1_ntc_result",
+            "selector": "transformed_3dgs"
+          },
+          {
+            "state": "stage2_additions",
+            "selector": "additional_3dgs"
+          }
+        ],
+        "measurement": {
+          "action": "render_heldout_views",
+          "parameters": [
+            {
+              "name": "views",
+              "type": "choice",
+              "value": "heldout"
+            }
+          ]
+        },
+        "outputs": [
+          "heldout_psnr"
+        ],
+        "recording": {
+          "inputs": [
+            {
+              "outputId": "heldout_psnr",
+              "selector": "psnr"
+            }
+          ],
+          "action": {
+            "action": "compute_psnr",
+            "parameters": []
+          },
+          "outputs": [
+            "psnr_record"
+          ]
+        },
+        "group": "1"
+      },
+      {
+        "scope": "per_frame",
+        "kind": "observe",
+        "reads": [
+          {
+            "state": "stage1_ntc_result",
+            "selector": "transformed_3dgs"
+          }
+        ],
+        "measurement": {
+          "action": "render_heldout_views",
+          "parameters": [
+            {
+              "name": "views",
+              "type": "choice",
+              "value": "heldout"
+            }
+          ]
+        },
+        "outputs": [
+          "heldout_psnr"
+        ],
+        "recording": {
+          "inputs": [
+            {
+              "outputId": "heldout_psnr",
+              "selector": "psnr"
+            }
+          ],
+          "action": {
+            "action": "compute_psnr",
+            "parameters": []
+          },
+          "outputs": [
+            "psnr_record"
+          ]
+        },
+        "group": "0"
+      },
+      {
+        "scope": "per_frame",
+        "kind": "observe",
+        "reads": [
+          {
+            "state": "stage2_additions",
+            "selector": "additional_3dgs"
+          }
+        ],
+        "measurement": {
+          "action": "count_additional_3dgs",
+          "parameters": []
+        },
+        "outputs": [
+          "additional_3dg_count"
+        ],
+        "recording": {
+          "inputs": [
+            {
+              "outputId": "additional_3dg_count",
+              "selector": "count"
+            }
+          ],
+          "action": {
+            "action": "record_count",
+            "parameters": []
+          },
+          "outputs": [
+            "storage_record"
+          ]
+        },
+        "group": "1"
+      },
+      {
+        "scope": "per_frame",
+        "kind": "observe",
+        "reads": [
+          {
+            "state": "stage2_additions",
+            "selector": "additional_3dgs"
+          }
+        ],
+        "measurement": {
+          "action": "measure_stage2_time",
+          "parameters": []
+        },
+        "outputs": [
+          "stage2_time"
+        ],
+        "recording": {
+          "inputs": [
+            {
+              "outputId": "stage2_time",
+              "selector": "seconds"
+            }
+          ],
+          "action": {
+            "action": "record_time",
+            "parameters": []
+          },
+          "outputs": [
+            "time_record"
+          ]
+        },
+        "group": "1"
+      }
+    ]
+  },
+  "loweredLifecycles": [
+    {
+      "componentId": "frame0_3dgs",
+      "lifecycle": {
+        "scope": "per_repeat",
+        "disposeAfter": "scope_end",
+        "createBefore": 0
+      }
+    },
+    {
+      "componentId": "stage1_ntc_result",
+      "lifecycle": {
+        "scope": "per_frame",
+        "disposeAfter": "scope_end",
+        "createBefore": 1
+      }
+    },
+    {
+      "componentId": "stage2_additions",
+      "lifecycle": {
+        "scope": "per_frame",
+        "disposeAfter": "scope_end",
+        "createBefore": 2
+      }
+    }
+  ],
+  "fieldFeedback": {
+    "codes": [
+      "timeline.phase.budget"
+    ],
+    "issues": [
+      {
+        "code": "timeline.phase.budget",
+        "path": "/steps/0/budget",
+        "actualPresent": true,
+        "expected": "fit requires finite {unit,perExecution}; optimizer_steps/epochs integer >=0, not bool; wall_seconds finite >=0",
+        "expandedStage": "operation",
+        "actual": null
+      },
+      {
+        "code": "timeline.phase.budget",
+        "path": "/steps/2/budget",
+        "actualPresent": true,
+        "expected": "fit requires finite {unit,perExecution}; optimizer_steps/epochs integer >=0, not bool; wall_seconds finite >=0",
+        "expandedStage": "operation",
+        "actual": null
+      }
+    ],
+    "declaredComponentIds": [
+      "frame0_3dgs",
+      "stage1_ntc_result",
+      "stage2_additions"
+    ],
+    "scientificApproval": false,
+    "authoredValuesPreserved": true,
+    "declaredStepCount": 7,
+    "explicitScopeEndReleases": [
+      {
+        "componentIndex": 0,
+        "componentId": "frame0_3dgs",
+        "scope": "per_repeat",
+        "disposeAfter": null
+      },
+      {
+        "componentIndex": 1,
+        "componentId": "stage1_ntc_result",
+        "scope": "per_frame",
+        "disposeAfter": 6
+      },
+      {
+        "componentIndex": 2,
+        "componentId": "stage2_additions",
+        "scope": "per_frame",
+        "disposeAfter": 6
+      }
+    ]
+  },
+  "initializationRepairExercised": false,
+  "independentCredit": 0,
+  "scientificApproval": false
+}

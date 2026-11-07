@@ -1,0 +1,19 @@
+{
+  "date": "2026-10-18",
+  "sourceCommit": "fc9916d7",
+  "promptVersion": "dr-v2.20261018.180",
+  "offline": {"passed": 2922, "warnings": 1, "seconds": 171.23, "log": "tmp/pytest-dr180-final-full.log"},
+  "changes": [
+    "Audience contract7 shares pure reported hard prechecks with publication verification before a source-derived why point can become inference. The frozen run's verification policy is part of the edit identity and saved journal; no semantic verdict is synthesized.",
+    "Quantity spelling4 distinguishes indefinite mathematical objects from explicit cardinality and empirical sample/frame/scene counts. Cited Greek subscript identifiers no longer donate their digits to unrelated counts. Expanded literal Chinese counts retain exact or opaque identities.",
+    "Existing inference claims still require independent reasoning checks rather than being forced into reported facts. All numerical/table/source/abstract/device/prose checks and final semantic verification remain.",
+    "Factual reasoning4 extends the existing bounded high-synthesis/direct-repair profile to explicitly limited multi-material comparisons up to700characters. The actual450-character H2F-v3 request previously selected no such profile. Output and overall call/token caps do not increase.",
+    "Experiment intent2 couples metrics with hypothesis/analysis/limits, retaining the canonical controls/steps group and at most three repair requests. Shared linked thresholds are checked without demanding repetition in every role.",
+    "Nine actual archived Provider request fingerprints match. Replayed H3F-v7 readable response now reaches independent semantic checking, and all H5F-v3 required repair inputs fit the unchanged24000byte cap with full own quotes and sibling definitions. These are offline preflight results, not content passes."
+  ],
+  "replay": "deep-research-evidence/grouped-source-science-replay-20261018.json",
+  "initialPreflight": "deep-research-evidence/scientific-repair-grouping-preflight-20261018.json",
+  "diagnosticsRetained": ["tmp/pytest-dr180-focused.log", "tmp/pytest-dr180-focused-workspace.log", "tmp/pytest-dr180-full.log"],
+  "diagnosticBoundary": "The first direct pytest command hit27 temporary-directory setup errors plus one invalid mock-verdict failure. Workspace temporary directories and a valid still-failing semantic fixture corrected these; no assertions or scientific standards were relaxed. The2921-pass earlier full suite predates the final compatibility/policy-identity guards.",
+  "boundary": "Offline checks and archived input replays do not prove novice comprehension, source-derived conclusions, valid experiments or independent-case acceptance. OriginalDR0-DR5 requirements and historical scores unchanged."
+}

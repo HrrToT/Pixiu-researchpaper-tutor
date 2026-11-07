@@ -1,0 +1,26 @@
+{
+  "date": "2026-10-23",
+  "case": "E1-v36",
+  "historicalNativeVersion": 14,
+  "historicalFailurePreserved": true,
+  "historicalRequestFingerprintMatched": true,
+  "isolatedNewNativeVersion": 15,
+  "newVersionStructuralValidation": true,
+  "audit": {
+    "version": 1,
+    "rawResponseDigest": "afd9d304ae9b613f040117870df169ee2266dbe35303c29645ff2cb1e7633ad1",
+    "originalValueDigest": "21a6b0cd753b08ac9abc93c1013e26d00c122de8568c2892dbcf0d9cd348e829",
+    "normalizedValueDigest": "36b50d0d9ecc51804849ebc2e14640736ac05bb841bda1fa46f4f113c79b849d",
+    "moves": [
+      {
+        "from": "/pairingBudget",
+        "to": "/protocol/pairingBudget"
+      }
+    ],
+    "scientificApproval": false
+  },
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "scientificApproval": false,
+  "boundary": "Offline re-interpretation only in copied version15 record. Original failed run unchanged; no scientific approval or acceptance credit."
+}

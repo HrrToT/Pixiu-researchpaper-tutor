@@ -1,0 +1,16 @@
+{
+  "promptVersion": "dr-v2.20261030.375",
+  "case": "X4L-v8",
+  "payloadSha256": "fa6c1b6fff586859ee915438196a6fa8b5e100c8351c7608cdf420ba6b5157b4",
+  "oldNumericRejectedIds": [
+    "c1",
+    "c3"
+  ],
+  "newNumericRejectedIds": [],
+  "originalInputPreserved": true,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "boundary": "Numeric precheck replay only. All three claims still require independent semantic source review; no old verdict is rewritten."
+}

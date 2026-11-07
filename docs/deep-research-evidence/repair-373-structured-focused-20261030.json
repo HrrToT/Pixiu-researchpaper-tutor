@@ -1,0 +1,26 @@
+{
+  "promptVersion": "dr-v2.20261030.373",
+  "phase": "after_structured_scope_correction",
+  "passed": 133,
+  "seconds": 20.51,
+  "files": [
+    "test_deep_research_repair_point_scope.py",
+    "test_deep_research_repair_goals.py",
+    "test_deep_research_compact_source_repair.py",
+    "test_deep_research_factual_redraft.py",
+    "test_deep_research_scope_expression.py",
+    "test_deep_research_scope_compaction.py",
+    "test_deep_research_prompt_budget.py",
+    "test_deep_research_workflow_lifecycle_profile.py"
+  ],
+  "providerCalls": 0,
+  "sourceHashesAfterTest": {
+    "ai-service-python/services/deep_research/repair_goals.py": "485c29d0f75415ffc8564c2c89f9db2e4e72ed96a114c34effdb2ee7107d2b8c",
+    "ai-service-python/services/deep_research/repair.py": "ed85745f882dc4d63bbd066eb3b79edcba1084d91172915e5013dd3febfc5d55",
+    "ai-service-python/services/deep_research/factual_repair.py": "c579322846f83425b48290f239173f5de5fb85f0f592919ab297b7d31416667d",
+    "ai-service-python/services/deep_research/graph.py": "2ea784f30917b9e2ce8869137eb5c8014427a89bd56735b316d745179e1fc2ef",
+    "ai-service-python/services/deep_research/facade.py": "a966ca2362bb808987e19936241ac91f31ea5349b20640671c481ff676311fea",
+    "ai-service-python/tests/test_deep_research_repair_point_scope.py": "dd50944ba58ee32b22ed3c2b9a4891a50d931366d46353760075f7eb226245a1"
+  },
+  "boundary": "Result captured from executed pytest tool output. Final targeted scope after structured fallback correction; earlier156-file run is a separate source snapshot, not silently promoted to current full-suite acceptance."
+}

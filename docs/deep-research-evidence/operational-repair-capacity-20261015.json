@@ -1,0 +1,41 @@
+{
+  "date": "2026-10-15",
+  "sourceCommit": "640df74",
+  "promptVersion": "dr-v2.20261015.91",
+  "inputCase": "H5R-v12",
+  "before": {
+    "kind": "repairEvidenceBytes",
+    "limit": 24000,
+    "used": 25900
+  },
+  "replay": {
+    "status": "offline_replay_completed",
+    "captures": [
+      {
+        "bytes": 23118,
+        "targetIds": [
+          "c_controls",
+          "c_data"
+        ],
+        "requiredQuotes": 2,
+        "visibleQuotes": 2,
+        "allRequiredQuotesAndContextsPreserved": true
+      }
+    ],
+    "revisions": 0,
+    "semanticChecked": false,
+    "modelCalls": 0
+  },
+  "tests": {
+    "passed": 1478,
+    "warnings": 1,
+    "seconds": 42.39,
+    "log": "tmp/pytest-dr91-full.log"
+  },
+  "boundaries": [
+    "No real model calls or changes to the saved failed run.",
+    "Operational repair retains accepted operational definitions and transitive explicit dependencies; scientific targets retain full context.",
+    "Both required original quotes and full required contexts fit. Independent verification remains mandatory before any revision can be published.",
+    "The parameter-free otherInterventions example specifies the existing operation schema; malformed output is still rejected, never silently coerced."
+  ]
+}

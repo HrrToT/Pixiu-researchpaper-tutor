@@ -1,0 +1,150 @@
+{
+  "date": "2026-10-21",
+  "sourceCase": "E1-v10",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "actualSourceCommit": "9cd5cea2",
+  "actualReviewVersion": 3,
+  "actualContinuityVersion": 2,
+  "actualRequestFingerprintsMatched": 5,
+  "requests": [
+    {
+      "node": "plan_experiment",
+      "actualFingerprintMatched": true,
+      "inputBytes": 13850
+    },
+    {
+      "node": "synthesize",
+      "actualFingerprintMatched": true,
+      "inputBytes": 23667
+    },
+    {
+      "node": "verify_design_config",
+      "actualFingerprintMatched": true,
+      "inputBytes": 26414,
+      "derived": {
+        "Derived configuration meanings (not evidence):": [
+          {
+            "claimId": "c4",
+            "role": "data",
+            "fromPath": [
+              "executionSpec",
+              "split"
+            ],
+            "splitMeaning": "按camera_id_ascending排列，样本从0开始编号，编号除以3的余数为0时划入评估集，其余为训练集"
+          }
+        ]
+      }
+    },
+    {
+      "node": "verify_design_science",
+      "actualFingerprintMatched": true,
+      "inputBytes": 31603,
+      "derived": {
+        "Derived configuration meanings (not evidence):": [
+          {
+            "claimId": "c4",
+            "role": "data",
+            "fromPath": [
+              "executionSpec",
+              "split"
+            ],
+            "splitMeaning": "按camera_id_ascending排列，样本从0开始编号，编号除以3的余数为0时划入评估集，其余为训练集"
+          }
+        ],
+        "Declared key presence (not scientific approval):": [
+          {
+            "hypothesisId": "c1",
+            "analysisId": "c8",
+            "requestedKeys": [
+              "psnr_diff",
+              "ssim_diff",
+              "storage_diff",
+              "time_diff"
+            ],
+            "presentKeys": [
+              "psnr_diff",
+              "ssim_diff",
+              "storage_diff",
+              "time_diff"
+            ],
+            "missingKeys": []
+          }
+        ]
+      }
+    },
+    {
+      "node": "verify_repair_design_config",
+      "actualFingerprintMatched": true,
+      "inputBytes": 14886,
+      "derived": {
+        "Derived configuration meanings (not evidence):": [
+          {
+            "claimId": "c5",
+            "role": "budget",
+            "fromPaths": [
+              [
+                "executionSpec",
+                "baseline"
+              ],
+              [
+                "executionSpec",
+                "recovery"
+              ]
+            ],
+            "baselineMode": "train",
+            "recoveryUnit": "optimizer_steps",
+            "baselineUnit": "optimizer_steps",
+            "perGroupUpperCaps": {
+              "0": {
+                "sum": [
+                  10000,
+                  0
+                ],
+                "upperCap": 10000
+              },
+              "1": {
+                "sum": [
+                  10000,
+                  500
+                ],
+                "upperCap": 10500
+              }
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "actualContextSources": [
+    {
+      "chunk": 28,
+      "sourceId": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-28",
+      "exactCachedTextAndHash": true,
+      "actualRead": true,
+      "evidenceCount": 2
+    },
+    {
+      "chunk": 29,
+      "sourceId": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-29",
+      "exactCachedTextAndHash": true,
+      "actualRead": true,
+      "evidenceCount": 2
+    },
+    {
+      "chunk": 37,
+      "sourceId": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-37",
+      "exactCachedTextAndHash": true,
+      "actualRead": true,
+      "evidenceCount": 2
+    }
+  ],
+  "planEncodingAudit": {
+    "rawBytes": 2349,
+    "wireBytes": 2240,
+    "slotLimit": 2500,
+    "scientificApproval": false
+  },
+  "independentCredit": 0,
+  "boundary": "Read-only exact replay of settled actual requests and original archived responses, not fresh model calls or changed judgments. Acquisition/read/evidence availability is distinct from correct use and content acceptance."
+}
