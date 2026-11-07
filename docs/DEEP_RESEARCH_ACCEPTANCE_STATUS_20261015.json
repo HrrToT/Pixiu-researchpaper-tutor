@@ -3742,6 +3742,14 @@
       "realContentAccepted": false,
       "independentCredit": 0,
       "realDevelopmentCase": "deep-research-evidence/adam-ad1n-v3-content-review-20261107.json"
+    },
+    "methodNavigation410": {
+      "passed": 738,
+      "files": 35,
+      "sourceCommit": "eaf35cbb4dcb4c64d6abc17b9009bf7f69941145",
+      "proof": "deep-research-evidence/method-navigation-410-associated-final-confirmed-regression-20261107.json",
+      "realContentAccepted": false,
+      "independentCredit": 0
     }
   },
   "stages": [
@@ -4807,16 +4815,16 @@
     "proof": "deep-research-evidence/compact-experiment-envelope-regression-20261020.json"
   },
   "currentCheckpoint": {
-    "sourceCommit": "f54ab79e535ee3e063536a1079a4fcc9fe733357",
+    "sourceCommit": "eaf35cbb4dcb4c64d6abc17b9009bf7f69941145",
     "javaSourceCommit": "612c324e",
-    "promptVersion": "dr-v2.20261107.409",
+    "promptVersion": "dr-v2.20261107.410",
     "factualRepairGoalContractVersion": 5,
     "answerCoherenceContractVersion": 2,
     "quantitySpellingContractVersion": 15,
-    "component": "auditable same-value plan duplicates plus strict schema",
-    "componentOutcome": "409 loaded;530frozen related checks/24files pass. AD1N-v3 real development completes/inconclusive84s,8settledcalls33058tokens,1search1fetch exactv1 PDF. Actual plan has0duplicatekeys.77literal evidence->20candidate->18supplied;4core method passages omitted,0acceptedclaims,coverage not_checked/6gaps. Draft later-beta convention rejected and not public.8926ledger/0active15paused,alloldpayloads/ledger/other15tasks/1215index exact. FullDR0-DR5 incomplete/independent0.",
+    "component": "generic normalized method headings and criterion premise navigation",
+    "componentOutcome": "410 loaded;738related checks/35files frozen pass.Cached realPDF adapter selects2/3/1 and preserves literal slices/versions; existing77-evidence replay supplies definition/zero-init/correction within23919bytes/16rows.Old1/2 reading and actual old synthesis fingerprint exact.No new scientific acceptance yet;8926ledger/allpayload/16tasks/1215index exact,0active15paused.FullDR0-DR5 incomplete/independent0.",
     "runtimeLoadedVerified": true,
-    "runtimeProof": "deep-research-evidence/runtime-load-initial-plan-response-409-20261107.json",
+    "runtimeProof": "deep-research-evidence/runtime-load-method-navigation-410-20261107.json",
     "fullDR0DR5Proved": false,
     "independentCredit": 0,
     "lastCapturedLedgerRows": 8926,
