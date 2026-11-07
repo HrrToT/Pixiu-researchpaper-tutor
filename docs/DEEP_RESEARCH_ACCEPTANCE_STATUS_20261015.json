@@ -13895,5 +13895,14 @@
     "oldUnknownRunsNotResent": true,
     "fullDR0DR5Proved": false,
     "independentCredit": 0
+  },
+  "freshAttentionComparison": {
+    "case": "FA1N",
+    "manifest": "DEEP_RESEARCH_ATTENTION_COMPARISON_HOLDOUT_20261107.json",
+    "frozenDefinitionHash": "608ba9ae111c92db1361d7b0b45b5544da600043034f6875a18a0a0a510e894c",
+    "stage": "sealed_not_executed",
+    "independentCredit": 0,
+    "providerCalls": 0,
+    "scope": "New H2-style attention-domain comparison plus real H3 external path; not an unknown-case retry, no experimental/release credit."
   }
 }
