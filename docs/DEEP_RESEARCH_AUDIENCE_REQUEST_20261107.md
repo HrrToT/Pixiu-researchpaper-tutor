@@ -13,3 +13,5 @@ AD1N-v5请求“面向了解梯度下降但没读过这篇论文的人”，最�
 边界完整性误判及核验理由的跨版本记号问题仍需单独处理；本修复不放行原c2，也不替代原DR0—DR5及独立验收。
 
 15文件284项冻结关联回归通过。覆盖中文/英文显式读者描述、专家和技术问题排除、否定与人类补充优先级、模型/原文数据不能触发、旧版本、不可变字段及既有来源/推断/恢复规则。首次扩展回归283通过/1失败，发现澄清测试夹具仅识别早期plan提示前缀；同步其新旧前缀识别后原invalid_plan_response故障断言保持，完整重跑通过。产品规划检查没有放宽。证据：`deep-research-evidence/audience-request-412-associated-final-confirmed-regression-20261107.json`。
+
+已加载c3f408ca，一次正常Python容器重启后RAG/GROBID健康；8975旧账本、全部历史payload、16任务和1215索引逐值保持，0活动/15历史暂停。加载及后续检查0模型调用。证据：`deep-research-evidence/runtime-load-audience-request-412-20261107.json`。
