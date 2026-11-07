@@ -27,3 +27,5 @@ AD1N-v7原始文件哈希保持，旧编辑请求与已保存请求及f14cc105�
 28文件557项冻结关联回归通过，覆盖固定对象、可编辑字数/条件、目标和表格权限、旧协议/原顺序、缓存/未知/不可变字段、原生传输及运行恢复。证据：`deep-research-evidence/audience-budget-416-associated-final-regression-20261107.json`。
 
 尚待实际编辑及内容验证，完整DR0—DR5与独立验收仍开放。
+
+已加载eb784510，一次正常Python重启后9017旧账本、全部历史payload、16任务和1215索引保持，0活动/15历史暂停，源码/代理一致，RAG/GROBID健康。加载0模型，原失败不改。证据：`deep-research-evidence/runtime-load-audience-budget-416-20261107.json`。
