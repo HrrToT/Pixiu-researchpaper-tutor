@@ -36,7 +36,9 @@ def coverage_prompt_byte_limit(budget, output_tokens=3500):
     return max(0, min(24000, remaining - output_tokens - 1024))
 
 
-def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, *, budget=None,literal_dimensions=False,diagnostics=False,request_contract=False,claim_check=False,task_sources=False,request_semantics=0,binding_catalog=False,scoped_catalog=False,identification_locators=False,coherence=False,shared_evidence_context=False,shared_decision_inputs=False,consolidated_instructions=False):
+def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, *, budget=None,literal_dimensions=False,diagnostics=False,request_contract=False,claim_check=False,task_sources=False,request_semantics=0,binding_catalog=False,scoped_catalog=False,identification_locators=False,coherence=False,shared_evidence_context=False,shared_decision_inputs=False,consolidated_instructions=False,literal_limits=False):
+    if type(literal_limits) is not bool or literal_limits and not consolidated_instructions:
+        raise ValueError('Literal limits require consolidated coverage instructions')
     if type(consolidated_instructions) is not bool or consolidated_instructions and not (type(request_contract) is int and request_contract in (3,4,5)):
         raise ValueError('Consolidated instructions require fixed request coverage')
     if type(shared_decision_inputs) is not bool or shared_decision_inputs and not (type(request_contract) is int and request_contract in (3,4,5)):
@@ -130,7 +132,8 @@ def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, 
             prompt=instruction_prompt(question,fixed_requirements,wire_claims,display_metadata,evidence_marker,
                 shared_inputs=shared_decision_inputs,task_sources=task_sources,binding_catalog=catalog,
                 scoped_catalog=scoped_catalog,coherence=coherence,request_semantics=request_semantics,
-                process_explanations=request_contract in (4,5),distinct_roles=request_contract==5)
+                process_explanations=request_contract in (4,5),distinct_roles=request_contract==5,
+                **({'literal_limits':True} if literal_limits else {}))
             prompt=focus_answer(prompt,question,fixed_requirements,wire_claims,display_metadata,
                 **({'shared_inputs':True} if shared_decision_inputs else {}))
         else:
@@ -223,7 +226,7 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
                     verdicts,coherence_result=extract(verdicts,question,claims)
                 if request_contract:
                     from services.deep_research.request_coverage import normalize
-                    verdicts=normalize(verdicts,fixed_requirements,**({'process_explanations':True,'claims':wire_claims,**({'distinct_roles':True} if request_contract==5 else {})} if type(request_contract) is int and request_contract in (4,5) else {}))
+                    verdicts=normalize(verdicts,fixed_requirements,claims=wire_claims,**({'literal_limits':True} if literal_limits else {}),**({'process_explanations':True,**({'distinct_roles':True} if request_contract==5 else {})} if type(request_contract) is int and request_contract in (4,5) else {}))
             except (ValueError, TypeError):
                 verdicts = None
             status = 'checked' if isinstance(verdicts, list) else 'invalid_response'
@@ -308,7 +311,7 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
         if identity and gap.get('obligationId') == identity:
             gap['wholeQuestion'] = True
     from services.deep_research.completion_criteria import completion_contract_digest
-    audit={'status': status, **({'coverageInstructionsContractVersion':1} if consolidated_instructions else {}), **({'coverageInputContractVersion':1} if shared_decision_inputs else {}), 'verdicts': verdicts if isinstance(verdicts, list) else [],
+    audit={'status': status, **({'coverageLimitContractVersion':1} if literal_limits else {}), **({'coverageInstructionsContractVersion':1} if consolidated_instructions else {}), **({'coverageInputContractVersion':1} if shared_decision_inputs else {}), 'verdicts': verdicts if isinstance(verdicts, list) else [],
             **({'coverageEvidenceTransportVersion':1} if shared_evidence_context else {}),
             'completionContractDigest': completion_contract_digest(plan, claims),
             'displayMetadataDigest': display_metadata_digest(claims, evidence, **({"task_sources":True} if task_sources else {}), **({"request_semantics":2} if request_semantics==2 else {}),identification_locators=identification_locators),

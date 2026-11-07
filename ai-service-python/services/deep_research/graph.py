@@ -16,6 +16,7 @@ from copy import deepcopy
 from typing import Any, Callable, TypedDict
 
 from services.deep_research.request_context import effective_question, separate_clarification
+from services.deep_research.coverage_limits import enabled as literal_limits_enabled
 from services.deep_research.authored_body import enabled as authored_body_enabled, required_scope_ids as authored_scope_ids
 
 try:
@@ -1896,6 +1897,7 @@ def make_verify_node(
                 **({'task_sources':True} if type(record.get('reportPresentationContractVersion')) is int and record['reportPresentationContractVersion']==4 else {}),
                 **({'request_semantics':2} if type(record.get('requestSemanticsContractVersion')) is int and record['requestSemanticsContractVersion']==2 else {}),
                 **({'shared_evidence_context':True} if type(record.get('coverageDiagnosticsContractVersion')) is int and record['coverageDiagnosticsContractVersion']==4 else {}),
+                **({'literal_limits':True} if literal_limits_enabled(record) and request_coverage_enabled(record) else {}),
                 **({'consolidated_instructions':True} if type(record.get('coverageInstructionsContractVersion')) is int and record['coverageInstructionsContractVersion']==1 and request_coverage_enabled(record) and record.get('requestCoverageContractVersion') in (3,4,5) else {}),
                 **({'shared_decision_inputs':True} if type(record.get('coverageInputContractVersion')) is int and record['coverageInputContractVersion']==1 and request_coverage_enabled(record) and record.get('requestCoverageContractVersion') in (3,4,5) else {}),
                 **({'binding_catalog':True} if type(record.get('coverageDiagnosticsContractVersion')) is int and record['coverageDiagnosticsContractVersion'] in (2,3,4) else {}),
@@ -2155,6 +2157,7 @@ def make_verify_node(
                             **({'task_sources':True} if type(record.get('reportPresentationContractVersion')) is int and record['reportPresentationContractVersion']==4 else {}),
                             **({'request_semantics':2} if type(record.get('requestSemanticsContractVersion')) is int and record['requestSemanticsContractVersion']==2 else {}),
                             **({'shared_evidence_context':True} if type(record.get('coverageDiagnosticsContractVersion')) is int and record['coverageDiagnosticsContractVersion']==4 else {}),
+                **({'literal_limits':True} if literal_limits_enabled(record) and request_coverage_enabled(record) else {}),
                 **({'consolidated_instructions':True} if type(record.get('coverageInstructionsContractVersion')) is int and record['coverageInstructionsContractVersion']==1 and request_coverage_enabled(record) and record.get('requestCoverageContractVersion') in (3,4,5) else {}),
                 **({'shared_decision_inputs':True} if type(record.get('coverageInputContractVersion')) is int and record['coverageInputContractVersion']==1 and request_coverage_enabled(record) and record.get('requestCoverageContractVersion') in (3,4,5) else {}),
                 **({'binding_catalog':True} if type(record.get('coverageDiagnosticsContractVersion')) is int and record['coverageDiagnosticsContractVersion'] in (2,3,4) else {}),

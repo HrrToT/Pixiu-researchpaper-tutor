@@ -87,7 +87,8 @@ prove coverage: judge the actual semantic connection and EVERY requested part.
 
 def prompt(question,requirements,claims,metadata,evidence_marker, *, shared_inputs=False,
            task_sources=False,binding_catalog=None,scoped_catalog=False,coherence=False,
-           process_explanations=False,distinct_roles=False,request_semantics=0):
+           process_explanations=False,distinct_roles=False,request_semantics=0,literal_limits=False):
+    if type(literal_limits) is not bool:raise ValueError("Invalid literal limit policy")
     from services.deep_research.request_coverage import decision_inputs
     if not distinct_roles and process_explanations:
         # v4 permits overlapping request roles; only v5 requires disjoint spans.
@@ -97,7 +98,12 @@ def prompt(question,requirements,claims,metadata,evidence_marker, *, shared_inpu
     result=('Audit the FINAL ACCEPTED ANSWER against the FIXED REQUEST CHECKLIST.\n'
         +decision_inputs(question,requirements,claims,metadata,shared_inputs=shared_inputs)
         +'Available evidence for detecting omissions, NOT inventing requirements: '+evidence_marker+'\n'
-        +CORE+OUTPUT)
+        +CORE+(OUTPUT.replace('These are the exact keys.',
+            'These are the ordinary keys; limitation checks additionally require limitSpans as specified below.')
+            if literal_limits else OUTPUT))
+    if literal_limits:
+        from services.deep_research.coverage_limits import GUIDANCE
+        result+='\n'+GUIDANCE
     if task_sources or request_semantics==2:result+=ACCESS
     if binding_catalog is not None:
         result+=CATALOG+'\nAvailable answer bindings'+(' by check' if scoped_catalog else '')+': '+json.dumps(binding_catalog,ensure_ascii=False,separators=(',',':'))+'\n'

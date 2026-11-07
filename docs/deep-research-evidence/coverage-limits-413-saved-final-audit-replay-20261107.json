@@ -1,0 +1,35 @@
+{
+  "case": "AD1N-v5",
+  "payloadSha256": "c80f74b4d148f58f8dc7e2407014aa2b441adcc9ef66d65d44a88c0610be10bf",
+  "rawFilesUnchanged": true,
+  "legacyCompleteAuditAndPromptExactAgainstCommit": "0c5ee25e",
+  "legacyO3Status": "covered",
+  "unchangedSavedResponseUnderNewSchema": "invalid_response",
+  "counterfactualResponseOnlyChange": "Add limitSpans=[] to the saved limitation check; no prose, source, reason or verdict edits.",
+  "counterfactualO3Status": "partial",
+  "limitAudit": [
+    {
+      "checkId": "criterion:human_aspect_1",
+      "reportedStatus": "covered",
+      "spans": [],
+      "errors": [
+        "missing_explicit_limit_span"
+      ]
+    }
+  ],
+  "oldGapCount": 1,
+  "candidateGapCount": 2,
+  "fixedRequirementsClaimsMetadataAndModelOptionsExact": true,
+  "allCitedEvidenceAndContextExact": true,
+  "citedEvidenceCount": 5,
+  "legacyEvidenceRows": 14,
+  "candidateEvidenceRows": 12,
+  "optionalEvidenceMayBeRefitWithinOriginalCap": true,
+  "oldPromptBytes": 23633,
+  "candidatePromptBytes": 23646,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "contentAcceptance": false,
+  "independentCredit": 0,
+  "boundary": "Saved response/absence-anchor counterfactual only. Does not claim a new model produced correct spans or that arbitrary literal spans prove semantic relevance. Original partial result remains unchanged."
+}

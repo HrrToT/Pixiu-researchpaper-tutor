@@ -91,8 +91,9 @@ question or an answer_requirement and still undergoes the existing exemption che
     return result
 
 
-def normalize(value,requirements,*,process_explanations=False,claims=(),distinct_roles=False):
+def normalize(value,requirements,*,process_explanations=False,claims=(),distinct_roles=False,literal_limits=False):
     """Project one decision per fixed check; do not infer semantic coverage."""
+    if type(literal_limits) is not bool:raise ValueError('Invalid literal limit policy')
     if not isinstance(value,list):return None
     ids=[r.get('obligationId') if isinstance(r,dict) else None for r in value]
     expected=[r['obligationId'] for r in requirements]
@@ -110,16 +111,23 @@ def normalize(value,requirements,*,process_explanations=False,claims=(),distinct
         checks=row['checks'];keys=[c.get('checkId') if isinstance(c,dict) else None for c in checks]
         wanted=[c['checkId'] for c in required['checks']]
         if any(not isinstance(k,str) for k in keys) or len(set(keys))!=len(keys) or set(keys)!=set(wanted):return None
-        actual={c['checkId']:c for c in checks};aspects=[];criteria=[];bindings=[];reasons=[];process_audits=[]
+        actual={c['checkId']:c for c in checks};aspects=[];criteria=[];bindings=[];reasons=[];process_audits=[];limit_audits=[]
         for fixed in required['checks']:
             c=actual[fixed['checkId']]
             process=process_explanations and fixed.get('processRequired') is True
-            expected_keys={'checkId','status','bindings','reason'}|({'processLinks'} if process else set())
+            limitation=literal_limits and fixed.get('responseType')=='limitation'
+            expected_keys={'checkId','status','bindings','reason'}|({'processLinks'} if process else set())|({'limitSpans'} if limitation else set())
             if (set(c)!=expected_keys
                     or c['status'] not in ('covered','partial','missing') or not isinstance(c['bindings'],list)
                     or not isinstance(c['reason'],str) or not 1<=len(c['reason'].strip())<=800
                     or c['status']=='missing' and c['bindings']):return None
             binding=deepcopy(c['bindings']);check_status=c['status']
+            if limitation:
+                from services.deep_research.coverage_limits import validate
+                limit_errors=validate(c['limitSpans'],claims,binding,covered=check_status=='covered')
+                if check_status=='covered' and limit_errors:check_status='partial'
+                limit_audits.append({'checkId':fixed['checkId'],'reportedStatus':c['status'],
+                    'spans':deepcopy(c['limitSpans']),'errors':limit_errors})
             if process:
                 from services.deep_research.process_explanations import fields,validate_links
                 entities={row['claimId']:fields(row) for row in claims}
@@ -141,11 +149,14 @@ def normalize(value,requirements,*,process_explanations=False,claims=(),distinct
         result={'obligationId':row['obligationId'],'status':status,'bindings':bindings,
                 'aspects':aspects,'criteria':criteria,'requestCheckReasons':reasons}
         if process_audits:result['processAudits']=process_audits
+        if limit_audits:result['limitAudits']=limit_audits
         if status!='covered':
             result['gapDetail']={'criterionIds':[c['criterionId'] for c in criteria if c['status']!='covered'],
                 'aspectIds':[a['aspectId'] for a in aspects if a['status']!='covered'],
                 'missingContent':'请补全本条固定要求中标为未满足的部分，具体要求见 missingAspects。',
                 'reason':'此缺口由固定检查项的未满足状态汇总；模型说明不作为新增要求或论文事实。'}
+            if any(a['errors'] for a in limit_audits):
+                result['gapDetail']['missingContent']='限制类要求缺少有效的已接受正文原句绑定；不能用未写出的保证、原文或草稿推定已回答。'
             if any(a['errors'] for a in process_audits):
                 result['gapDetail']['missingContent']='补充固定问题所需的实际操作或流程关系；用途标签、方法名称和性能结论不能代替怎样做的解释。'
                 if distinct_roles and any('overlapping_process_roles' in a['errors'] for a in process_audits):
