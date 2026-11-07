@@ -4789,16 +4789,16 @@
     "proof": "deep-research-evidence/compact-experiment-envelope-regression-20261020.json"
   },
   "currentCheckpoint": {
-    "sourceCommit": "b96b0cde272b9ed62b7afb6390ddbdfcda08df28",
+    "sourceCommit": "63fa8d7ecdd04f0324cac2e4977f017c13e87a9c",
     "javaSourceCommit": "612c324e",
-    "promptVersion": "dr-v2.20261107.403",
+    "promptVersion": "dr-v2.20261107.404",
     "factualRepairGoalContractVersion": 5,
     "answerCoherenceContractVersion": 2,
     "quantitySpellingContractVersion": 15,
-    "component": "exclusive authored prose or scope boundary",
-    "componentOutcome": "403 G1N-v9 all12 calls settled,76341tokens292.902s,partial7coverage gaps. Exclusive initial5/repair2 bodies valid; c4 scope remains unchecked. Wrong self-report rejected; original TSDF evidence not supplied to synthesis and later reviews/repair batches lack time. Full content rejected,independent0.",
+    "component": "consolidated factual synthesis input and procedure-object navigation",
+    "componentOutcome": "404 loaded after 3700 frozen checks/202files;8872oldledger/14tasks/1215index preserved. Saved-input TSDF delivered under24KB; no new real case yet, fullDR0-DR5 incomplete/independent0.",
     "runtimeLoadedVerified": true,
-    "runtimeProof": "deep-research-evidence/runtime-load-authored-body-403-20261107.json",
+    "runtimeProof": "deep-research-evidence/runtime-load-synthesis-input-404-20261107.json",
     "fullDR0DR5Proved": false,
     "independentCredit": 0,
     "lastCapturedLedgerRows": 8872,
@@ -5596,7 +5596,8 @@
       "sourceCommit": "6c17cf98",
       "runtimeProof": "deep-research-evidence/runtime-load-coverage-instructions-402-20261106.json"
     },
-    "authoredBodyContractVersion": 1
+    "authoredBodyContractVersion": 1,
+    "synthesisInputContractVersion": 1
   },
   "sharedModuleSourceCheckpoint": {
     "sourceCommit": "f8ae5177",
@@ -13854,5 +13855,18 @@
     "ledgerRows": 8872,
     "reviewProof": "deep-research-evidence/geometry-g1n-v9-exclusive-body-review-20261107.json",
     "evidenceFlowProof": "deep-research-evidence/geometry-g1n-v9-evidence-flow-20261107.json"
+  },
+  "latestSynthesisInput404": {
+    "sourceCommit": "63fa8d7ecdd04f0324cac2e4977f017c13e87a9c",
+    "offlinePassed": 3700,
+    "testFiles": 202,
+    "sourceFrozen": true,
+    "loaded": true,
+    "legacyFullPromptAndPreparationExact": true,
+    "savedInputEvidenceRows": 16,
+    "savedInputBytes": 23968,
+    "realVerification": "pending",
+    "fullDR0DR5Proved": false,
+    "independentCredit": 0
   }
 }
