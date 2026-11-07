@@ -4789,16 +4789,16 @@
     "proof": "deep-research-evidence/compact-experiment-envelope-regression-20261020.json"
   },
   "currentCheckpoint": {
-    "sourceCommit": "63fa8d7ecdd04f0324cac2e4977f017c13e87a9c",
+    "sourceCommit": "58541e2c2ece52c35eed44a738b4183492015a6f",
     "javaSourceCommit": "612c324e",
-    "promptVersion": "dr-v2.20261107.404",
+    "promptVersion": "dr-v2.20261107.405",
     "factualRepairGoalContractVersion": 5,
     "answerCoherenceContractVersion": 2,
     "quantitySpellingContractVersion": 15,
-    "component": "consolidated factual synthesis input and procedure-object navigation",
-    "componentOutcome": "404 loaded/3700 frozen checks. G1N-v10 paused before synthesis: assess_relevance HTTP500 unknown, no resend.2settled calls3828tokens;13867unknown reservation,8890ledger/0active/14paused. New synthesis real quality not evaluated, fullDR0-DR5 incomplete/independent0.",
+    "component": "persisted stopped-run elapsed accounting",
+    "componentOutcome": "405 loaded after3722 frozen checks/203files.8890oldledger/alloldpayload/14tasks/1215index exact;0active14paused, no provider calls or unknown retries. Reliable time accounting only; content/independent acceptance0 and fullDR0-DR5 incomplete.",
     "runtimeLoadedVerified": true,
-    "runtimeProof": "deep-research-evidence/runtime-load-synthesis-input-404-20261107.json",
+    "runtimeProof": "deep-research-evidence/runtime-load-elapsed-accounting-405-20261107.json",
     "fullDR0DR5Proved": false,
     "independentCredit": 0,
     "lastCapturedLedgerRows": 8890,
@@ -5599,7 +5599,8 @@
     "authoredBodyContractVersion": 1,
     "synthesisInputContractVersion": 1,
     "lastCapturedPausedProductionRuns": 14,
-    "newPausedRunId": "dr_run_fc0931756c505c6d9a29c06abe1fdd8d"
+    "newPausedRunId": "dr_run_fc0931756c505c6d9a29c06abe1fdd8d",
+    "elapsedAccountingContractVersion": 1
   },
   "sharedModuleSourceCheckpoint": {
     "sourceCommit": "f8ae5177",
@@ -13878,5 +13879,21 @@
     "resubmitted": false,
     "ledgerRows": 8890,
     "reviewProof": "deep-research-evidence/geometry-g1n-v10-provider-unknown-20261107.json"
+  },
+  "latestElapsedAccounting405": {
+    "sourceCommit": "58541e2c2ece52c35eed44a738b4183492015a6f",
+    "offlinePassed": 3722,
+    "testFiles": 203,
+    "sourceFrozen": true,
+    "newBoundaryTests": 22,
+    "loaded": true,
+    "providerCalls": 0,
+    "legacyMetadataAndRecoveryExact": true,
+    "ledgerRows": 8890,
+    "active": 0,
+    "paused": 14,
+    "oldUnknownRunsNotResent": true,
+    "fullDR0DR5Proved": false,
+    "independentCredit": 0
   }
 }
