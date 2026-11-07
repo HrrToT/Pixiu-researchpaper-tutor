@@ -1,0 +1,16 @@
+{
+  "host": "api.deepseek.com",
+  "researchModel": "deepseek-v4-pro",
+  "modelGenerationRequests": 0,
+  "paperTextSent": false,
+  "balance": {
+    "httpStatus": 200,
+    "elapsedSeconds": 0.219,
+    "isAvailable": true
+  },
+  "models": {
+    "httpStatus": 200,
+    "elapsedSeconds": 0.075,
+    "configuredModelListed": true
+  }
+}
