@@ -23,3 +23,7 @@ covered必须有非空、原样、连续的有效片段。空列表、外来/重
 27文件413项关联检查通过，再在相同源码哈希下补充3文件47项访问/字段目录权限检查，总计30文件460项。没有把前27文件表示为重复执行。测试覆盖缺失/无效原句、多个已接受字段、限定条件、旧策略、固定身份、流程、完整上下文容量、修订/恢复及未知调用。证据分别为 `coverage-limits-413-associated-first-regression-20261107.json` 和 `coverage-limits-413-access-final-regression-20261107.json`。
 
 本修复尚无新增真实模型输出验证；不会把原partial升级为通过。读者适配的实际效果、核验理由中的跨版本公式、其他科学质量和完整DR0—DR5/独立验收继续开放。
+
+## 加载
+
+fd9a0573已推送并正常重启Python容器一次。8975旧账本、全部历史payload、16任务及1215索引保持，0活动/15历史暂停，RAG/GROBID健康；源码和代理配置一致。0模型调用，原partial不变。证据：`deep-research-evidence/runtime-load-coverage-limits-413-20261107.json`。
