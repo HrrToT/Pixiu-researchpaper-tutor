@@ -1719,6 +1719,36 @@ space with unsupported global absence or incidental iteration/performance values
                     'executionWorkflowBinding': workflow_binding}}, expected_revision=None)
             parsed['claims'] = [materialize_execution_claim({**claim, 'designContractVersion': 2})
                                 if isinstance(claim, dict) else claim for claim in parsed['claims']]
+        from services.deep_research.audience_rewrite import eligible, rewrite_for_beginner, has_time_for_rewrite
+        def adapt_reader(draft):
+            current = repo_update(run_id, lambda r: r, expected_revision=None)
+            def checkpoint_audience(value):
+                repo_update(run_id, lambda r: {**r, 'state': {**r.get('state', {}),
+                    'audienceRewrite': value}}, expected_revision=None)
+            return rewrite_for_beginner(draft, evidence, question,
+                lambda prompt, output: llm_invoke(run_id, 'synthesize_audience', prompt,
+                    {'max_tokens': output, 'temperature': 0.0}), _safe_parse_json,
+                saved_state=current.get('state', {}).get('audienceRewrite'), checkpoint=checkpoint_audience,
+                **({'protected_claim_ids':[a['claimId'] for a in scope_expression_audit]} if authored_body and scope_expression_audit else {}),
+                can_start=has_time_for_rewrite(current),
+                **({'objective_framing':True} if objective_framing_enabled(current) else {}),
+                **({'process_explanations':True} if process_framing_enabled(current) else {}),
+                **({'verification_policy':{
+                    'absence_scope_version':current.get('absenceScopeContractVersion',0),
+                    'quantity_spelling_version':current.get('quantitySpellingContractVersion',0),
+                    'feedback_version':current.get('verificationFeedbackContractVersion',0),
+                    'table_references_version':current.get('tableReferencesContractVersion',0)}}
+                   if current.get('audienceRewriteContractVersion') in (7,8,9) else {}),
+                **({'contract_version':current['audienceRewriteContractVersion'],'requirement_context':[
+                    {key:o[key] for key in ('obligationId','question','completionCriteria','requiredSources') if key in o}
+                    for item in current.get('state',{}).get('plan',[]) for o in item.get('obligations',[])]}
+                   if current.get('audienceRewriteContractVersion') in (2,3,4,5,6,7,8,9) else {}))
+
+        from services.deep_research.audience_schedule import reader_first as use_reader_first
+        reader_first = not blocked_draft_ids and use_reader_first(record, parsed, output_kind)
+        if reader_first:
+            parsed = adapt_reader(parsed)
+
         from services.deep_research.scope_compaction import enabled as scope_compaction_enabled, compact as compact_scope
         from services.deep_research.factual_reasoning import compaction_options,fixed_scope_compaction,explicit_compaction_scope
         compact_options=compaction_options(record,question,output_kind)
@@ -1762,30 +1792,8 @@ space with unsupported global absence or incidental iteration/performance values
         if parsed is None:
             return {"error_code": "invalid_synthesis_response"}
 
-        from services.deep_research.audience_rewrite import eligible, rewrite_for_beginner, has_time_for_rewrite
-        if not blocked_draft_ids and eligible(record, parsed, output_kind):
-            current = repo_update(run_id, lambda r: r, expected_revision=None)
-            def checkpoint_audience(value):
-                repo_update(run_id, lambda r: {**r, 'state': {**r.get('state', {}),
-                    'audienceRewrite': value}}, expected_revision=None)
-            parsed = rewrite_for_beginner(parsed, evidence, question,
-                lambda prompt, output: llm_invoke(run_id, 'synthesize_audience', prompt,
-                    {'max_tokens': output, 'temperature': 0.0}), _safe_parse_json,
-                saved_state=current.get('state', {}).get('audienceRewrite'), checkpoint=checkpoint_audience,
-                **({'protected_claim_ids':[a['claimId'] for a in scope_expression_audit]} if authored_body and scope_expression_audit else {}),
-                can_start=has_time_for_rewrite(current),
-                **({'objective_framing':True} if objective_framing_enabled(current) else {}),
-                **({'process_explanations':True} if process_framing_enabled(current) else {}),
-                **({'verification_policy':{
-                    'absence_scope_version':current.get('absenceScopeContractVersion',0),
-                    'quantity_spelling_version':current.get('quantitySpellingContractVersion',0),
-                    'feedback_version':current.get('verificationFeedbackContractVersion',0),
-                    'table_references_version':current.get('tableReferencesContractVersion',0)}}
-                   if current.get('audienceRewriteContractVersion') in (7,8,9) else {}),
-                **({'contract_version':current['audienceRewriteContractVersion'],'requirement_context':[
-                    {key:o[key] for key in ('obligationId','question','completionCriteria','requiredSources') if key in o}
-                    for item in current.get('state',{}).get('plan',[]) for o in item.get('obligations',[])]}
-                   if current.get('audienceRewriteContractVersion') in (2,3,4,5,6,7,8,9) else {}))
+        if not reader_first and not blocked_draft_ids and eligible(record, parsed, output_kind):
+            parsed = adapt_reader(parsed)
         
         if output_kind == "experiment_design":
             # Compaction must not hide required settings back in metadata.
