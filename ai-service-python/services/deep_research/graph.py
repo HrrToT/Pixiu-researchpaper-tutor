@@ -1922,8 +1922,13 @@ def make_verify_node(
                     report_body, verification_result, evidence, saved.get('plan', []))
             repair_targets = prepare_coverage_repair(repair_report, verification_result,
                 answer_coverage if answer_coverage.get('status') == 'checked' else {'gaps': []},
+                **({'defer_binding_errors':True} if type(record.get('coverageRepairRoutingContractVersion')) is int
+                   and record['coverageRepairRoutingContractVersion']==1 else {}),
                 **({'prioritize_specific':True} if type(record.get('factualRepairGoalContractVersion')) is int
                    and record['factualRepairGoalContractVersion'] in (3,4,5) else {}))
+        if repair_targets.get('deferredAuditGaps'):
+            repo_update(run_id, lambda r: {**r, 'state': {**r.get('state', {}),
+                'deferredAuditGaps': repair_targets['deferredAuditGaps']}}, expected_revision=None)
         if saved.get('repairCompleted') and saved.get('verifiedReport'):
             return {'claim_ids': [c['claimId'] for c in saved['verifiedReport'].get('verifiedClaims', [])]}
 

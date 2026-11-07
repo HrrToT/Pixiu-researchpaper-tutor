@@ -23,14 +23,50 @@ def _rejected_row_id(row):
     return _claim_id(row)
 
 
-def prepare_coverage_repair(report, verification, audit, *, prioritize_specific=False):
+def review_binding_only(audit, gap):
+    """Identify an unproven review binding, never approve answer coverage.
+
+    Only a reported-covered check downgraded solely for overlapping role spans
+    qualifies. Missing operations, semantic partials and other audit failures
+    still require the original conservative repair path.
+    """
+    if (audit.get('status') != 'checked' or audit.get('requestCoverageContractVersion') != 5
+            or gap.get('wholeQuestion') or audit.get('diagnosticErrors') != []
+            or any(audit.get(key) for key in ('criterionGaps', 'invalidAspectObligations',
+                                            'invalidCriterionObligations'))):
+        return False
+    matches = [v for v in audit.get('verdicts', []) if isinstance(v, dict)
+               and v.get('obligationId') == gap.get('obligationId')]
+    if len(matches) != 1:
+        return False
+    verdict = matches[0]
+    if verdict.get('status') != 'partial' or verdict.get('missingDesignRoles'):
+        return False
+    if any(a.get('errors') for a in verdict.get('limitAudits', [])):
+        return False
+    aspects = verdict.get('aspects', [])
+    if not aspects or any(a.get('status') not in ('covered', 'partial') for a in aspects):
+        return False
+    partial_ids = [a.get('aspectId') for a in aspects if a.get('status') == 'partial']
+    audits = verdict.get('processAudits', [])
+    failed = [a for a in audits if a.get('errors')]
+    ids = [a.get('checkId') for a in failed]
+    if (not partial_ids or len(set(ids)) != len(ids) or set(ids) != set(partial_ids)
+            or any(a.get('reportedStatus') != 'covered'
+                   or a.get('errors') != ['overlapping_process_roles'] for a in failed)):
+        return False
+    return True
+
+
+def prepare_coverage_repair(report, verification, audit, *, prioritize_specific=False, defer_binding_errors=False):
     """Withhold accepted claims needed to close audit gaps.
 
     Returns a new verification-shaped dict whose ``accepted`` list drops the
     targeted claims and whose ``rejected`` list is the union of the original
     rejections plus one coverage row per targeted claim.
     """
-    if type(prioritize_specific) is not bool:raise ValueError('Invalid coverage repair scheduling policy')
+    if type(prioritize_specific) is not bool or type(defer_binding_errors) is not bool:
+        raise ValueError('Invalid coverage repair scheduling policy')
     report = report or {}
     verification = verification or {}
     audit = audit or {}
@@ -46,6 +82,8 @@ def prepare_coverage_repair(report, verification, audit, *, prioritize_specific=
     rejected = verification.get("rejected") or []
     gaps = [g for g in audit.get("gaps", []) if isinstance(g, dict)]
     verdicts = audit.get("verdicts") or []
+    deferred = [g for g in gaps if review_binding_only(audit, g)] if defer_binding_errors else []
+    gaps = [g for g in gaps if g not in deferred]
 
     accepted_by_id = {}
     accepted_order = []
@@ -201,7 +239,10 @@ def prepare_coverage_repair(report, verification, audit, *, prioritize_specific=
                     hints.extend(ref for ref in refs if isinstance(ref, str) and ref not in hints)
         if hints:
             row['missingEvidenceRefs'] = hints
-    return {"accepted": out_accepted, "rejected": out_rejected}
+    result = {"accepted": out_accepted, "rejected": out_rejected}
+    if deferred:
+        result["deferredAuditGaps"] = copy.deepcopy(deferred)
+    return result
 
 
 def merge_verified_revisions(initial, checked):
