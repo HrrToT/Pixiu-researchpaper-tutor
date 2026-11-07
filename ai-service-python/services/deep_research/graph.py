@@ -321,6 +321,9 @@ Return a JSON ARRAY of plan items, NOT an object with items field."""
             if record['requestSemanticsContractVersion']==2:
                 from services.deep_research.request_semantics import PLAN_GUIDANCE_V2
                 prompt+='\n'+PLAN_GUIDANCE_V2
+        from services.deep_research.initial_plan_instructions import enabled as initial_plan_instructions_enabled, prompt as initial_plan_prompt
+        if initial_plan_instructions_enabled(record):
+            prompt=initial_plan_prompt(record,data_guidance)
         result = llm_invoke(run_id, "plan", prompt, {"max_tokens": 5000, "temperature": 0.1})
         
         # Handle LLMResult dataclass - extract content attribute

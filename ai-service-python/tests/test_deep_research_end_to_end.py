@@ -31,7 +31,7 @@ class FixtureModel:
         prompt = request.prompt
         if prompt.startswith("Analyze this research question"):
             content = {"outputKind": "paper_comparison", "clarification": ""}
-        elif prompt.startswith("Create a research plan"):
+        elif prompt.startswith(("Create a research plan", "Create a PRIVATE research plan")):
             content = [{"itemId": "i", "question": "比较同一评测条件下的结果", "dependencies": [],
                 "obligations": [{"obligationId": "o", "question": "accuracy fixed benchmark",
                                   "requiredSources": ["alpha", "beta"], "completionCriteria": [

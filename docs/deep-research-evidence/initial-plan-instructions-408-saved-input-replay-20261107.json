@@ -1,0 +1,18 @@
+{
+  "sourceCase": "AD1N-v1",
+  "oldFrozenPlanArgsDigestExact": true,
+  "oldArgsDigest": "bcabe6e6c262e29658d310aa40397ec3524edc7b1932a468ba105e40b2e17706",
+  "rawPayloadSha256": "23afbdc1f00d3506f68716ebdfbef3eb462b1a9de24fd4d24f21d3aa17155eaa",
+  "sourceRawUnchanged": true,
+  "oldPromptBytes": 6481,
+  "newPromptBytes": 4334,
+  "oldContradictoryArrayInstruction": true,
+  "newSingleNativeCompatibleShape": true,
+  "exactHumanQuestionAndContext": true,
+  "modelOptionsAndSystemMessageExact": true,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "contentAcceptance": false,
+  "independentCredit": 0,
+  "boundary": "Prospective prompt only. Original duplicate-key response stays rejected and unchanged. No new plan validity/quality claim; case retired from untuned holdout after diagnosis."
+}
