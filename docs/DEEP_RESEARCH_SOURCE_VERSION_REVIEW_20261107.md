@@ -11,3 +11,5 @@ AD1N-v5的一处拒绝理由混入其他版本的一阶矩校正记号，另一�
 保存AD1N-v5的实际facade核验器工厂在临时本地数据库副本中重建三个请求。回调统一返回“不支持”的离线夹具，未调用模型。新请求除追加说明外逐值一致：17287→18816、12987→14516、13003→14532字节，均在24KB内；引文、上下文、版本登记、声明及选项完整保持。旧策略请求及夹具裁决与ac7e6f2f的旧tools实现一致；原文件哈希保持。证据：`deep-research-evidence/source-version-review-414-saved-final-input-replay-20261107.json`。这不代表新的模型认可、修正旧理由或内容通过。
 
 25文件457项冻结关联回归通过，覆盖初始/修订/分区事实核验、原失败布尔/外来前提不放行、原文控制字符和版本元数据保持、实验建议排除、旧策略、不可变字段及原生传输/未知/恢复。证据：`deep-research-evidence/source-version-review-414-associated-final-regression-20261107.json`。尚待加载与真实效果验证；原DR0—DR5和独立内容验收保持开放。
+
+已加载b162fb63并正常重启Python一次。8975旧账本、历史payload、16任务和1215索引保持，0活动/15历史暂停，RAG/GROBID健康，源码/代理一致。加载0模型。证据：`deep-research-evidence/runtime-load-source-version-review-414-20261107.json`。
