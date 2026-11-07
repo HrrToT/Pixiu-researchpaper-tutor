@@ -1162,7 +1162,9 @@ def make_synthesize_node(
             if output_kind=='experiment_design' and compact_experiment_envelope(record):
                 from services.deep_research.selection import proposal_evidence_order
                 candidates=proposal_evidence_order(candidates,question)
+            from services.deep_research.synthesis_instructions import enabled as synthesis_input_enabled
             candidates,premise_bundles=order_premises(candidates,brief_state.get('plan',[]),
+                **({'procedure_targets':True} if synthesis_input_enabled(record,output_kind) else {}),
                 **({'request_roles':True,**({'mixed_script_terms':True} if record.get('readingPriorityContractVersion')==7 else {})} if type(record.get('readingPriorityContractVersion')) is int
                    and record['readingPriorityContractVersion'] in (6,7) and output_kind in {'paper_comparison','claim_verification'} else {}),
                 **({'external_method_context':True} if type(record.get('externalReadingContractVersion')) is int and record['externalReadingContractVersion']==1 else {}),
@@ -1418,7 +1420,9 @@ space with unsupported global absence or incidental iteration/performance values
         from services.deep_research.factual_prompt import enabled as factual_prompt_enabled, scope_guidance as factual_scope_guidance, post_guidance as factual_post_guidance
         compact_factual_prompt=premise_mode and factual_prompt_enabled(record,output_kind)
         authored_body=compact_factual_prompt and authored_body_enabled(record,output_kind)
-        if point_intent_enabled(record) and output_kind != 'experiment_design':
+        from services.deep_research.synthesis_instructions import enabled as consolidated_synthesis
+        consolidated_factual=compact_factual_prompt and consolidated_synthesis(record,output_kind)
+        if point_intent_enabled(record) and output_kind != 'experiment_design' and not consolidated_factual:
             prompt += '\n' + (factual_post_guidance(record,'points',point_intent_guidance) if compact_factual_prompt else point_intent_guidance)
         from services.deep_research.scope_expression import enabled as scope_expression_enabled, guidance as scope_expression_guidance
         if scope_expression_enabled(record) and output_kind != 'experiment_design':
@@ -1447,14 +1451,14 @@ space with unsupported global absence or incidental iteration/performance values
             evidence_wire_legend=SHORT_LEGEND if section_focused or flexible_plan(record) or compact_factual_prompt else LEGEND
             prompt+='\n'+evidence_wire_legend
         from services.deep_research.access_disclosure import enabled as access_disclosure_enabled, GUIDANCE as access_disclosure_guidance
-        if access_disclosure_enabled(record):
+        if access_disclosure_enabled(record) and not consolidated_factual:
             prompt+='\n'+(factual_post_guidance(record,'access',access_disclosure_guidance) if compact_factual_prompt else access_disclosure_guidance)
         from services.deep_research.request_semantics import enabled as semantics_enabled, DRAFT_GUIDANCE
-        if semantics_enabled(record):prompt+='\n'+(factual_post_guidance(record,'semantics',DRAFT_GUIDANCE) if compact_factual_prompt else DRAFT_GUIDANCE)
+        if semantics_enabled(record) and not consolidated_factual:prompt+='\n'+(factual_post_guidance(record,'semantics',DRAFT_GUIDANCE) if compact_factual_prompt else DRAFT_GUIDANCE)
         from services.deep_research.answer_preservation import enabled as preserve_answer_scope, GUIDANCE as preservation_guidance
-        if preserve_answer_scope(record):prompt+='\n'+(factual_post_guidance(record,'preservation',preservation_guidance) if compact_factual_prompt else preservation_guidance)
+        if preserve_answer_scope(record) and not consolidated_factual:prompt+='\n'+(factual_post_guidance(record,'preservation',preservation_guidance) if compact_factual_prompt else preservation_guidance)
         if (type(record.get('compactionEditorContractVersion')) is int
-                and record['compactionEditorContractVersion'] in (7,8) and output_kind!='experiment_design'):
+                and record['compactionEditorContractVersion'] in (7,8) and output_kind!='experiment_design' and not consolidated_factual):
             if compact_factual_prompt and record.get('factualPromptContractVersion') in (2,3):
                 prompt+='\n'+factual_post_guidance(record,'layout','')+'\n'
             elif section_focused:
@@ -1519,6 +1523,10 @@ space with unsupported global absence or incidental iteration/performance values
                 'suppliedEvidenceIds':[evidence_aliases[row['evidenceId']] for row in evidence_summaries],
                 'missingPremiseBundles':missing_bundles,'inputBytes':len(prompt.encode('utf8')),
                 'fixedInputBytes':len(render_premises([]).encode('utf8')),
+                **({'factualInputContractVersion':1,'procedureObjectNavigation':
+                    type(record.get('readingPriorityContractVersion')) is int
+                    and record['readingPriorityContractVersion'] in (6,7)}
+                   if consolidated_factual else {}),
                 **({'sizingContractVersion':2,'encodedInputBytes':wire_size(prompt),
                     'fixedEncodedInputBytes':wire_size(render_premises([])),
                     'planningSlotReservedBytes':reserved_basis_bytes(record)} if encoded_allocation else {}),

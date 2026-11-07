@@ -156,13 +156,14 @@ def order(sources, obligations, fallback, *, extracted=(), mixed_script_terms=Fa
     return selected
 
 
-def premise_bundles(rows, obligations, *, mixed_script_terms=False):
+def premise_bundles(rows, obligations, *, mixed_script_terms=False,procedure_targets=False):
     """Carry request-role navigation into synthesis, not a new factual verdict.
 
     A full source passage can locate a benchmark heading while its unchanged
     quoted row carries values. This only ranks candidates; it never copies
     context from another source or replaces the independent ownership checks.
     """
+    if type(procedure_targets) is not bool:raise ValueError('Invalid procedure target policy')
     rows=[row for row in rows if row.get('verification',{}).get('literal')=='passed']
     sources=[{'title':row.get('sourceTitle','')} for row in rows]
     targets=requests(obligations,sources,mixed_script_terms=mixed_script_terms);chosen=[];seen=set();bundles=[];result_leads={}
@@ -177,7 +178,9 @@ def premise_bundles(rows, obligations, *, mixed_script_terms=False):
                 if not isinstance(context,str):context=''
                 return {'text':row.get('quote',''),'location':row.get('location',{}),
                         'tableData':row.get('tableData'),'rankingContext':context}
+            from services.deep_research.procedure_targets import score as target_score
             ranked=sorted(own,key=lambda e:(quality(view(e),request['query']),
+                target_score(e.get('quote',''),request) if procedure_targets else 0,
                 score(view(e),request),-len(e.get('quote',''))),reverse=True)
             # Generic author-report versus comparison-row provenance uses the
             # same requested result row. A separate ablation is not a substitute.

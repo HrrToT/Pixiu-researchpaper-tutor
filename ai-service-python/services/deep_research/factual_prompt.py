@@ -15,6 +15,11 @@ def enabled(record, kind):
 def build(record, question, kind, limit, claim_limit, sections, obligations,
           sources, evidence_marker, table_marker, fields, metric_key_hint,
           *, drafting_schema=False, point_guidance='', short_guidance=''):
+    from services.deep_research.synthesis_instructions import enabled as consolidated,build as consolidated_build
+    if consolidated(record,kind):
+        return consolidated_build(record,question,kind,limit,claim_limit,sections,obligations,
+            sources,evidence_marker,table_marker,fields,metric_key_hint,drafting_schema=drafting_schema,
+            point_guidance=point_guidance,short_guidance=short_guidance)
     encode = lambda value: json.dumps(value, ensure_ascii=False, separators=(',', ':'))
     requirement_packet=obligations
     requirement_legend=''
