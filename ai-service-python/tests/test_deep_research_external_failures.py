@@ -84,7 +84,7 @@ def test_real_graph_exposes_acquisition_failure_without_synthesis_or_publication
             if request.prompt.startswith('Analyze this research question'):
                 nodes.append('brief')
                 content = {'outputKind': 'direction_survey', 'clarification': ''}
-            elif request.prompt.startswith('Create a research plan'):
+            elif request.prompt.startswith(('Create a research plan','Create a PRIVATE research plan')):
                 nodes.append('plan')
                 content = [{'itemId': 'i', 'question': 'Explain encoder and decoder', 'dependencies': [],
                     'obligations': [{'obligationId': 'o1', 'question': 'encoder',
@@ -93,6 +93,13 @@ def test_real_graph_exposes_acquisition_failure_without_synthesis_or_publication
                         {'obligationId': 'o2', 'question': 'decoder',
                          'searchQuery': '2310.08528v3 decoder', 'requiredSources': [],
                          'completionCriteria': [{'criterionId': 'decoder_role', 'requirement': 'Explain how the decoder reconstructs output', 'responseType': 'explanation'}]}]}]
+                if 'purpose has exactly TWO allowed values' in request.prompt:
+                    inputs=json.JSONDecoder().raw_decode(request.prompt.split('Input data (goals, not paper facts):\n',1)[1])[0]
+                    for item in content:
+                        item.update(searchQuery='2310.08528v3 encoder decoder',priority=1)
+                        for obligation in item['obligations']:
+                            obligation.update(purpose='answer_requirement',requestExcerpt=inputs['question'])
+                    content={'items':content}
             else:
                 pytest.fail('Must not generate an answer after acquisition failure: ' + request.prompt[:80])
             return LLMResult('fixture', 'fixture', json.dumps(content), LLMUsage(10, 10, 20))

@@ -25,7 +25,8 @@ def result_role(row):
 
 
 def order_premises(evidence,plan,limit=20, *, membership_intents=False,module_intents=False,condition_intents=False,
-                   definition_context=False,read_sources=(),operational_context=False,mechanism_overview=False,mechanism_components=False,section_targets=(),indexed_sections=False,external_method_context=False,request_roles=False,mixed_script_terms=False,procedure_targets=False):
+                   definition_context=False,read_sources=(),operational_context=False,mechanism_overview=False,mechanism_components=False,section_targets=(),indexed_sections=False,external_method_context=False,request_roles=False,mixed_script_terms=False,procedure_targets=False,criterion_method_navigation=False):
+    if type(criterion_method_navigation) is not bool:raise ValueError('Invalid criterion method navigation policy')
     if type(procedure_targets) is not bool:raise ValueError('Invalid procedure target policy')
     obligations={o['obligationId']:o for item in plan for o in item.get('obligations',[])}
     rows=[e for e in evidence if e.get('verification',{}).get('literal')=='passed']
@@ -92,6 +93,11 @@ def order_premises(evidence,plan,limit=20, *, membership_intents=False,module_in
                 continue
             lead=ranked[0];bundle=[lead]
             method_contexts={};used_method_bundle=False
+            if criterion_method_navigation and active_intent is None:
+                from services.deep_research.method_navigation import bundle as navigation_bundle
+                method_group=navigation_bundle(own,view['question'],obligations[oid].get('searchQuery',''),
+                    (view.get('completionCriteria') or [{}])[0].get('responseType',''))
+                if method_group:bundle=method_group;lead=bundle[-1];used_method_bundle=True
             focused=section_groups.get((section_owners[oid],source))
             if focused and (any(b['obligationId']==oid and b['criterionId']=='requested_section' for b in bundles)
                     or active_intent is None and not requested_sections(view['question']) and re.search(r'这种|该(?:机制|设计|方法)|上述|\bthis (?:mechanism|design|method)\b',view['question'],re.I)):

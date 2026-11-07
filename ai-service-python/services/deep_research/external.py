@@ -94,7 +94,7 @@ class AcademicAcquisition:
                     seen={s.get('location',{}).get('page') for s in record.get('state',{}).get('sources',[])
                           if s.get('versionId')==identity and target['obligationId'] in s.get('obligationIds',[])}
                     selected_pages=select_sections(pages,reading_query,terms,seen=seen,
-                        **({'contract_version':2} if record.get('externalReadingContractVersion')==2 else {}))
+                        **({'contract_version':record['externalReadingContractVersion']} if record.get('externalReadingContractVersion') in (2,3) else {}))
                 else:selected_pages=[(page,None) for page in _select_pages(pages, reading_query, title=material.get('title', ''))]
                 for page,parts in selected_pages:
                     text = page.get("text", "")

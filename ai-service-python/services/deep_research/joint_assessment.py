@@ -282,7 +282,19 @@ def assess(state,record,update,invoke,coverage_gaps):
             if process:
                 from services.deep_research.process_explanations import required,evidence_score
                 if required(group['requirement']):candidates=sorted(candidates,key=evidence_score,reverse=True)
-            candidates=sorted(candidates,key=lambda e:e['evidenceId'] in used.get(gid,set()))
+            from services.deep_research.method_navigation import enabled as method_navigation_enabled,priority as method_priority
+            navigation_scores={}
+            if method_navigation_enabled(record):
+                originals={e['evidenceId']:e for e in domain.get('evidence',[])}
+                queries=' '.join(obligations[m['obligationId']].get('searchQuery','') for m in group['members'])
+                navigation_scores={e['evidenceId']:method_priority(originals[e['evidenceId']],
+                    group['requirement'],queries,group['responseType']) for e in candidates}
+            if any(score[0]>0 for score in navigation_scores.values()):
+                # Novelty breaks ties; it must not evict a necessary previously
+                # read premise in favor of irrelevant new benchmark fragments.
+                candidates=sorted(candidates,key=lambda e:(*navigation_scores[e['evidenceId']][:-1],
+                    e['evidenceId'] not in used.get(gid,set()),navigation_scores[e['evidenceId']][-1]),reverse=True)
+            else:candidates=sorted(candidates,key=lambda e:e['evidenceId'] in used.get(gid,set()))
             selected=balanced_sample(candidates,lambda e:(e['sourceWorkId'],e['sourceVersionId']),
                                      min(MAX_EVIDENCE,max(6,len(group['requiredSources']))))
             if not selected or any(not any(_matches(e,source) for e in selected) for source in group['requiredSources']):
