@@ -4796,12 +4796,12 @@
     "answerCoherenceContractVersion": 2,
     "quantitySpellingContractVersion": 15,
     "component": "exclusive authored prose or scope boundary",
-    "componentOutcome": "403 loaded after 3679 frozen offline checks; 8841 ledger rows, 14 tasks and 1215 index documents preserved. No new model validation yet; full DR0-DR5 incomplete, independent credit 0.",
+    "componentOutcome": "403 G1N-v9 all12 calls settled,76341tokens292.902s,partial7coverage gaps. Exclusive initial5/repair2 bodies valid; c4 scope remains unchecked. Wrong self-report rejected; original TSDF evidence not supplied to synthesis and later reviews/repair batches lack time. Full content rejected,independent0.",
     "runtimeLoadedVerified": true,
     "runtimeProof": "deep-research-evidence/runtime-load-authored-body-403-20261107.json",
     "fullDR0DR5Proved": false,
     "independentCredit": 0,
-    "lastCapturedLedgerRows": 8841,
+    "lastCapturedLedgerRows": 8872,
     "lastCapturedActiveProductionRuns": 0,
     "historicalPausedRunsAtCapture": 13,
     "lastConfirmedIndexDocuments": 1215,
@@ -13845,8 +13845,14 @@
     "fixtureProtocolCorrected": true,
     "legacyRequestsExact": true,
     "loaded": true,
-    "realVerification": "pending",
+    "realVerification": "G1N-v9 completed/partial; content not accepted",
     "independentCredit": 0,
-    "fullDR0DR5Proved": false
+    "fullDR0DR5Proved": false,
+    "realModelCalls": 12,
+    "realTokens": 76341,
+    "realElapsedSeconds": 292.902,
+    "ledgerRows": 8872,
+    "reviewProof": "deep-research-evidence/geometry-g1n-v9-exclusive-body-review-20261107.json",
+    "evidenceFlowProof": "deep-research-evidence/geometry-g1n-v9-evidence-flow-20261107.json"
   }
 }
