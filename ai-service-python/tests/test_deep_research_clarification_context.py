@@ -145,7 +145,7 @@ class ClarificationModel:
                 data = {'outputKind': 'claim_verification', 'clarification': '',
                         'measurementScope': [{'domain': 'quality', 'requestExcerpt': '只看画质'}],
                         'constraints': ['200字以内', '只看作者报告']}
-        elif request.prompt.startswith('Create a research plan'):
+        elif request.prompt.startswith(('Create a research plan','Create a PRIVATE research plan')):
             data = []  # Stop before retrieval; this fixture is not a quality pass.
         else:
             raise AssertionError(request.prompt[:100])

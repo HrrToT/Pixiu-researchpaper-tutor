@@ -31,11 +31,13 @@ _NEGATIVE = re.compile(r'(?:不要|不用|无需|不需要)[^。！？\n]{0,8}(?
 
 
 def eligible(record, report, output_kind):
+    from services.deep_research.audience_request import enabled as described_enabled,described_reader_request
     requested = False
     for layer in instruction_layers(record):
         if isinstance(layer, str) and _NEGATIVE.search(layer):
             break
-        if isinstance(layer, str) and _REQUEST.search(layer):
+        if isinstance(layer, str) and (_REQUEST.search(layer) or
+                described_enabled(record) and described_reader_request(layer)):
             requested = True
             break
     return (type(record.get('audienceRewriteContractVersion')) is int

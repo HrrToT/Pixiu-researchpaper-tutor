@@ -1,0 +1,17 @@
+{
+  "case": "AD1N-v5",
+  "split": "development",
+  "runId": "dr_run_bd9547afba305247a793ff2b9fb31d75",
+  "payloadSha256": "c80f74b4d148f58f8dc7e2407014aa2b441adcc9ef66d65d44a88c0610be10bf",
+  "question": "请联网读取 Adam: A Method for Stochastic Optimization（arXiv:1412.6980v1），只依据这个版本。面向了解梯度下降但没读过这篇论文的人，解释一阶矩和二阶原始矩各记录什么、为什么从零开始会有偏差、偏差校正如何参与参数更新。说明这种校正解决的具体问题及其边界，不要据此保证所有训练更快或收敛。限300字。",
+  "legacyAdmission": false,
+  "candidateAdmission": true,
+  "candidateOnly": "audienceRequestContractVersion1",
+  "legacyAdmissionMatchesCommit": "b700d2f6",
+  "originalRecordAndReportUnchanged": true,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "contentAcceptance": false,
+  "independentCredit": 0,
+  "boundary": "Admission only. Does not run or approve an audience rewrite, restore omitted boundary, correct scientific reviewer diagnostics, or change the saved partial result."
+}
