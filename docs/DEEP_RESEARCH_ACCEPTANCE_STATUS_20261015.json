@@ -1,5 +1,5 @@
 {
-  "asOf": "2026-11-06",
+  "asOf": "2026-11-07",
   "objective": "Complete DR0-DR5 in DEEP_RESEARCH_DESIGN_20261012.md without redefining success around implemented subsets.",
   "overall": "incomplete",
   "freshMaterialReadiness": "Independent content acceptance remains 0. Retired cases remain development-only; historical unknowns are not reissued. Fresh replacements and full DR0-DR5 release audit remain pending.",
@@ -4789,16 +4789,16 @@
     "proof": "deep-research-evidence/compact-experiment-envelope-regression-20261020.json"
   },
   "currentCheckpoint": {
-    "sourceCommit": "4ceed262",
+    "sourceCommit": "b96b0cde272b9ed62b7afb6390ddbdfcda08df28",
     "javaSourceCommit": "612c324e",
-    "promptVersion": "dr-v2.20261106.397",
+    "promptVersion": "dr-v2.20261107.403",
     "factualRepairGoalContractVersion": 5,
     "answerCoherenceContractVersion": 2,
     "quantitySpellingContractVersion": 15,
-    "component": "source-local table shape and clean comparison rewrite",
-    "componentOutcome": "397 loaded;194files3562 frozen checks pass. G1N-v7 no typed-cell guess rejection, independent fact/repair/coverage reviews actually ran;15calls74795tokens193.59s allsettled.6 final gaps, only advice published, full content not accepted.8804ledger/other13tasks/index preserved;independent0.",
+    "component": "exclusive authored prose or scope boundary",
+    "componentOutcome": "403 loaded after 3679 frozen offline checks; 8841 ledger rows, 14 tasks and 1215 index documents preserved. No new model validation yet; full DR0-DR5 incomplete, independent credit 0.",
     "runtimeLoadedVerified": true,
-    "runtimeProof": "deep-research-evidence/runtime-load-coverage-instructions-402-20261106.json",
+    "runtimeProof": "deep-research-evidence/runtime-load-authored-body-403-20261107.json",
     "fullDR0DR5Proved": false,
     "independentCredit": 0,
     "lastCapturedLedgerRows": 8841,
@@ -5595,7 +5595,8 @@
       "boundary": "Consolidated instructions only. Actual saved request25854 rejected in legacy, new23835 prepared with all8cited quotes/context and complete decision inputs/check permissions exact, stopped before dispatch. No model coverage or scientific acceptance.",
       "sourceCommit": "6c17cf98",
       "runtimeProof": "deep-research-evidence/runtime-load-coverage-instructions-402-20261106.json"
-    }
+    },
+    "authoredBodyContractVersion": 1
   },
   "sharedModuleSourceCheckpoint": {
     "sourceCommit": "f8ae5177",
@@ -13834,5 +13835,18 @@
     "fullDR0DR5Proved": false,
     "sourceCommit": "5b4aa968",
     "runtimeProof": "deep-research-evidence/runtime-load-question-388-20261105.json"
+  },
+  "latestAuthoredBody403": {
+    "sourceCommit": "b96b0cde272b9ed62b7afb6390ddbdfcda08df28",
+    "offlinePassed": 3679,
+    "testFiles": 200,
+    "sourceFrozen": true,
+    "firstRegressionFailures": 5,
+    "fixtureProtocolCorrected": true,
+    "legacyRequestsExact": true,
+    "loaded": true,
+    "realVerification": "pending",
+    "independentCredit": 0,
+    "fullDR0DR5Proved": false
   }
 }
