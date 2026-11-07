@@ -28,7 +28,8 @@ def policy_version(value):
     raise ValueError('Invalid repair target goal policy')
 
 
-def point_hints(targets):
+def point_hints(targets, *, authored_body=False):
+    if type(authored_body) is not bool:raise ValueError('Invalid authored point hint policy')
     result={}
     for target in targets:
         text=target.get('text')
@@ -39,6 +40,8 @@ def point_hints(targets):
             # Carry exact authored fields as private data, never source facts.
             result[target['claimId']]=json.dumps({'unverifiedScopeExpression':target['scopeExpression']},
                 ensure_ascii=False,separators=(',',':'))
+        elif authored_body and isinstance(target.get('body'),dict) and target['body']:
+            result[target['claimId']]=json.dumps({'unverifiedAuthoredBody':target['body']},ensure_ascii=False,separators=(',',':'))
         else:raise ValueError('Factual repair target has no authored point responsibility')
     return result
 

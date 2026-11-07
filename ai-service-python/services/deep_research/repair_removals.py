@@ -32,12 +32,14 @@ EDIT_GUIDANCE = GUIDANCE.replace(
     'the server applies listed deletions to draft text; do not hedge a disputed phrase.')
 
 
-def materialize(row, original):
+def materialize(row, original, *, operator_content=False):
     """Execute declared deletions only on generated draft prose, not evidence.
 
     Offsets refer to Unicode code points in the exact generated text. Ambiguous
     or overlapping edits fail instead of guessing. The result is UNVERIFIED.
     """
+    if type(operator_content) is not bool or operator_content and (row.get('text')!='' or not isinstance(row.get('scopeExpression'),dict)):
+        raise ValueError('Invalid operator-content deletion policy')
     spans=row.get('discardedDraftSpans');text=row.get('text');draft=original.get('text','')
     if not isinstance(spans,list) or len(spans)>16 or not isinstance(text,str):
         raise ValueError('Invalid declared repair removals')
@@ -63,7 +65,7 @@ def materialize(row, original):
     result=text
     for edit in reversed(edits):result=result[:edit['start']]+result[edit['end']:]
     if any(span in result for span in spans):raise ValueError('Declared removal remains')
-    if spans and not result.strip(' \t\r\n。，,；;.!?！？'):
+    if spans and not operator_content and not result.strip(' \t\r\n。，,；;.!?！？'):
         raise ValueError('Removal leaves no answer contribution')
     audit={'version':1,'offsetUnit':'unicode_code_point','inputText':text,'outputText':result,
         'inputSha256':hashlib.sha256(text.encode()).hexdigest(),

@@ -11,7 +11,8 @@ def enabled(record):
             and record['draftValidationContractVersion'] == 1)
 
 
-def materialize_claims(report, scope_version):
+def materialize_claims(report, scope_version, *, authored_body=False):
+    if type(authored_body) is not bool:raise ValueError("Invalid authored body policy")
     from services.deep_research.scope_expression import materialize
     result = deepcopy(report)
     claims = result.get('claims')
@@ -22,12 +23,18 @@ def materialize_claims(report, scope_version):
         raise ValueError('Malformed draft identities cannot be isolated')
     rejected, scopes = [], []
     for index, claim in enumerate(claims):
+        reason='invalid_scope_expression'
         try:
-            result['claims'][index], scope = materialize(claim, scope_version)
+            canonical=claim
+            if authored_body:
+                from services.deep_research.authored_body import decode
+                reason='invalid_authored_body';canonical=decode(claim)
+                reason='invalid_scope_expression'
+            result['claims'][index], scope = materialize(canonical, scope_version)
             if scope:
                 scopes.append(scope)
         except ValueError as exc:
-            rejected.append({'claimId': claim['claimId'], 'reason': 'invalid_scope_expression',
+            rejected.append({'claimId': claim['claimId'], 'reason': reason,
                              'detail': str(exc), 'originalClaim': deepcopy(claim)})
     return result, scopes, {'version': 1, 'rejected': rejected}
 

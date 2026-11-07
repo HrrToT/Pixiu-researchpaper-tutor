@@ -16,7 +16,9 @@ from services.deep_research.repair_scope import repair_evidence_scope
 def _prepare_repair(report, verification, evidence, question, *, max_prompt_bytes=24000,
                     metric_domains=None, draft_context=(), prior_revisions=(),
                     fact_redraft=False, requirement_context=(), source_aware_redraft=False,comparison_reasoning=False,
-                    question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False,shared_experiment_schema=False,experiment_evidence_context=None,experimental_edits=False,experimental_diagnostics=False,experimental_nested_tables=False,experimental_representation=False,experimental_coverage=False,citation_presentation_version=0,configuration_consistency_version=0,repair_evidence_packet_version=0,answer_intents=None,scope_expression=False,table_identity_context=False,claim_check=False,required_scope_ids=(),compact_layout=False,ordinary_advice=False,task_sources=False,request_semantics=False,preserve_answers=False,target_goals=False,objective_framing=False,process_explanations=False,factual_prompt_version=0,verified_target_ids=()):
+                    question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False,shared_experiment_schema=False,experiment_evidence_context=None,experimental_edits=False,experimental_diagnostics=False,experimental_nested_tables=False,experimental_representation=False,experimental_coverage=False,citation_presentation_version=0,configuration_consistency_version=0,repair_evidence_packet_version=0,answer_intents=None,scope_expression=False,table_identity_context=False,claim_check=False,required_scope_ids=(),compact_layout=False,ordinary_advice=False,task_sources=False,request_semantics=False,preserve_answers=False,target_goals=False,objective_framing=False,process_explanations=False,factual_prompt_version=0,verified_target_ids=(),authored_body=False):
+    if type(authored_body) is not bool or authored_body and not (fact_redraft and source_aware_redraft and concise_factual and compact_source_repair and factual_prompt_version==3 and scope_expression==5):
+        raise ValueError('Authored body requires compact source-aware factual repair and scope5')
     if (not isinstance(verified_target_ids,(list,tuple)) or any(not isinstance(cid,str) or not cid for cid in verified_target_ids)
             or len(set(verified_target_ids))!=len(verified_target_ids) or verified_target_ids and factual_prompt_version not in (2,3)):
         raise ValueError('Invalid verified repair target protection')
@@ -202,6 +204,9 @@ def _prepare_repair(report, verification, evidence, question, *, max_prompt_byte
     if goal_version in (4,5):
         revision_shape['discardedDraftSpans']=['exact unsupported phrase removed from original draft; [] if none']
     if scope_expression: revision_shape['scopeExpression'] = None
+    if authored_body:
+        from services.deep_research.authored_body import schema as body_schema
+        revision_shape=body_schema(revision_shape)
     if factual_scope in (2,3,4) and fact_redraft and redraft_eligible:
         from services.deep_research.factual_scope import DRAFTING_SCHEMA
         revision_shape={'draftingBasis':DRAFTING_SCHEMA,**revision_shape}
@@ -444,7 +449,7 @@ in the paper. Maintain consistency with accepted definitions and complete requir
             **({'shared_inputs':True} if factual_prompt_version else {}),
             **({'source_table_contract':True} if factual_prompt_version==3 else {}),
             **({'target_goals':target_goals} if target_goals else {}),
-            **({'target_hints':point_hints(originals.values())} if goal_version in (2,3,4,5) else {}))
+            **({'target_hints':point_hints(originals.values(),**({'authored_body':True} if authored_body else {}))} if goal_version in (2,3,4,5) else {}))
     if shared_experiment_schema and prospective:
         from services.deep_research.experiment_repair import compatible,render as experiment_prompt
         feedback_options = {}
@@ -508,7 +513,12 @@ in the paper. Maintain consistency with accepted definitions and complete requir
         from services.deep_research.scope_expression import guidance as scope_guidance
         if factual_prompt_version:
             from services.deep_research.factual_repair_instructions import scope_guidance
+        if authored_body:
+            from services.deep_research.authored_body import scope_guidance
         prompt += '\n' + scope_guidance(scope_expression if type(scope_expression) is int and scope_expression in (2,3,4,5) else 1)
+    if authored_body:
+        from services.deep_research.authored_body import GUIDANCE as body_guidance
+        prompt+='\n'+body_guidance
     if answer_intents is not None:
         from services.deep_research.answer_point_intent import repair_guidance
         prompt += repair_guidance(answer_intents, originals,**({'clarify_shared_sources':True} if type(claim_check) is int and claim_check in (8,9) else {}))
@@ -551,8 +561,9 @@ independently; this permission does not establish evidence support.
             checks=[check,*[c for c in extra if isinstance(c,dict)]] if isinstance(extra,list) else [check]
             inference_reasons[key]='answer_incomplete' if any(c.get('reason')=='answer_incomplete' for c in checks) else 'semantic_unresolved'
     if required_scope_ids:
-        prompt+='\nRequired scope-role claim IDs: '+json.dumps(list(required_scope_ids),ensure_ascii=False)+'''
-Each listed target must return a non-null scopeExpression, text="" and conditions={}.
+        role_rule=('Each listed target must choose body.boundary; never body.prose or top-level text/conditions/scopeExpression.'
+            if authored_body else 'Each listed target must return a non-null scopeExpression, text="" and conditions={}.')
+        prompt+='\nRequired scope-role claim IDs: '+json.dumps(list(required_scope_ids),ensure_ascii=False)+'\n'+role_rule+'''
 Revise its authored fields using permitted evidence; never downgrade it to free prose.
 If a supported revision is not possible, omit that target rather than bypass scope review.
 '''
@@ -638,7 +649,7 @@ If a supported revision is not possible, omit that target rather than bypass sco
                                   len(render([]).encode('utf-8'))) from exc
     visible = {aliases[row['evidenceId']] for row in rows}
     allowed = {key: [ref for ref in values if ref in visible] for key, values in allowed.items()}
-    return {**({'compactLayoutVersion':1} if compact_layout else {}),'prompt': prompt, 'originals': originals, 'aliases': aliases, 'allowed': allowed,
+    return {**({'authoredBodyContractVersion':1} if authored_body else {}),**({'compactLayoutVersion':1} if compact_layout else {}),'prompt': prompt, 'originals': originals, 'aliases': aliases, 'allowed': allowed,
             **({'repairPremiseAudit':premise_audit} if premise_audit is not None else {}),
             **({'repairRemovalContractVersion':1} if goal_version==4 else {}),
             **({'repairRemovalContractVersion':2} if goal_version==5 else {}),
@@ -692,6 +703,16 @@ def _parse_repair_response(prepared, response, parse, presentation_audit=None,dr
     for row in revised:
         if not isinstance(row, dict):
             continue
+        boundary_body=False;boundary_preview=None
+        if prepared.get('authoredBodyContractVersion')==1:
+            from services.deep_research.authored_body import decode
+            try:row=decode(row)
+            except ValueError:continue
+            boundary_body=isinstance(row.get('scopeExpression'),dict)
+            if boundary_body:
+                from services.deep_research.scope_expression import materialize as preview_scope
+                try:boundary_preview,_=preview_scope(row,prepared.get('scopeExpressionContractVersion',5))
+                except ValueError:continue
         if prepared.get('compactLayoutVersion')==1:
             from services.deep_research.short_factual_layout import valid_access_labels
             if not valid_access_labels([row]):continue
@@ -700,22 +721,28 @@ def _parse_repair_response(prepared, response, parse, presentation_audit=None,dr
         if not original or key in seen:
             continue
         removals=None;removal_edit=None
+        edit_original=original;edit_path=None
+        if prepared.get('authoredBodyContractVersion')==1:
+            from services.deep_research.authored_body import edit_anchor
+            edit_original,edit_path=edit_anchor(original)
         if prepared.get('repairRemovalContractVersion')==2:
             from services.deep_research.repair_removals import materialize as materialize_removals
-            try:edited,removals,removal_edit=materialize_removals(row,original)
+            try:edited,removals,removal_edit=materialize_removals(row,edit_original,**({'operator_content':True} if boundary_body else {}))
             except ValueError:continue
+            if edit_path and removal_edit is not None:removal_edit['originalDraftPath']=edit_path
             row['text']=edited
             row.pop('discardedDraftSpans')
+        transition_text=boundary_preview['text'] if boundary_preview else row.get('text')
         transition=(key in prepared.get('reportedInferenceRepairIds',[]) and original.get('kind')=='reported'
             and row.get('kind')=='inference' and isinstance(row.get('draftingBasis'),dict)
             and row['draftingBasis'].get('scopeDecision')=='bounded_inference'
-            and isinstance(row.get('text'),str) and bool(row['text'].strip())
-            and ' '.join(row['text'].split())!=' '.join(original.get('text','').split()))
+            and isinstance(transition_text,str) and bool(transition_text.strip())
+            and ' '.join(transition_text.split())!=' '.join(original.get('text','').split()))
         if row.get('kind')!=original.get('kind') and not transition:
             continue
         if prepared.get('repairRemovalContractVersion')==1:
             from services.deep_research.repair_removals import checked_spans
-            try:removals=checked_spans(row,original)
+            try:removals=checked_spans(row,edit_original)
             except ValueError:continue
             row.pop('discardedDraftSpans')
         seen.add(key)
@@ -731,6 +758,7 @@ def _parse_repair_response(prepared, response, parse, presentation_audit=None,dr
             except ValueError:
                 if scope_audit is not None: scope_audit.append({'claimId':key,'error':'invalid_scope_expression'})
                 continue
+            if boundary_body and any(span in row['text'] for span in (removals or [])):continue
             if audit and scope_audit is not None: scope_audit.append(audit)
         if original.get('designContractVersion') == 2:
             row['designContractVersion'] = 2
@@ -795,7 +823,7 @@ def factual_redraft_eligible(report):
 def repair_rejected(report, verification, evidence, question, invoke, parse, *,
                     max_prompt_bytes=24000, metric_domains=None, batch_state=None, checkpoint=None,
                     current_budget=None, invoke_request=None, fact_redraft=False, requirement_context=(),
-                    source_aware_redraft=False,comparison_reasoning=False,question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,strict_response=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False,shared_experiment_schema=False,experiment_evidence_context=None,experimental_edits=False,experimental_diagnostics=False,experimental_nested_tables=False,experimental_representation=False,experimental_coverage=False,citation_presentation_version=0,configuration_consistency_version=0,repair_evidence_packet_version=0,scheduling_version=0,answer_intents=None,scope_expression=False,defer_length_filter=False,table_identity_context=False,claim_check=False,required_scope_ids=(),compact_layout=False,ordinary_advice=False,task_sources=False,request_semantics=False,preserve_answers=False,target_goals=False,objective_framing=False,process_explanations=False,factual_prompt_version=0,verified_target_ids=()):
+                    source_aware_redraft=False,comparison_reasoning=False,question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,strict_response=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False,shared_experiment_schema=False,experiment_evidence_context=None,experimental_edits=False,experimental_diagnostics=False,experimental_nested_tables=False,experimental_representation=False,experimental_coverage=False,citation_presentation_version=0,configuration_consistency_version=0,repair_evidence_packet_version=0,scheduling_version=0,answer_intents=None,scope_expression=False,defer_length_filter=False,table_identity_context=False,claim_check=False,required_scope_ids=(),compact_layout=False,ordinary_advice=False,task_sources=False,request_semantics=False,preserve_answers=False,target_goals=False,objective_framing=False,process_explanations=False,factual_prompt_version=0,verified_target_ids=(),authored_body=False):
     """One bounded revision round, split before dispatch when evidence cannot fit.
 
     At most three requests share full sibling design definitions. Successful
@@ -805,6 +833,8 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
     from services.deep_research.contracts import digest, DeepResearchError
     from services.deep_research.repair_batches import split_repair_targets
 
+    if type(authored_body) is not bool or authored_body and not (fact_redraft and source_aware_redraft and concise_factual and compact_source_repair and factual_prompt_version==3 and scope_expression==5):
+        raise ValueError('Authored body requires compact source-aware factual repair and scope5')
     if (not isinstance(verified_target_ids,(list,tuple)) or any(not isinstance(cid,str) or not cid for cid in verified_target_ids)
             or len(set(verified_target_ids))!=len(verified_target_ids) or verified_target_ids and factual_prompt_version not in (2,3)):
         raise ValueError('Invalid verified repair target protection')
@@ -872,7 +902,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
         raise ValueError('Unsupported configuration consistency contract')
     if type(citation_presentation_version) is not int or citation_presentation_version not in (0,2,3,4):
         raise ValueError('Unsupported citation presentation contract')
-    identity = digest({**({'verifiedRepairTargets':list(verified_target_ids)} if factual_prompt_version in (2,3) else {}),**({'factualRepairPromptContractVersion':factual_prompt_version} if factual_prompt_version else {}),**({'compactLayoutVersion':1} if compact_layout else {}),'report': report, 'verification': verification,
+    identity = digest({**({'authoredBodyContractVersion':1} if authored_body else {}),**({'verifiedRepairTargets':list(verified_target_ids)} if factual_prompt_version in (2,3) else {}),**({'factualRepairPromptContractVersion':factual_prompt_version} if factual_prompt_version else {}),**({'compactLayoutVersion':1} if compact_layout else {}),'report': report, 'verification': verification,
                        **({'requiredScopeIds':list(required_scope_ids)} if required_scope_ids else {}),
                        **({'claimCheckContractVersion':claim_check if type(claim_check) is int and claim_check in (4,5,6,7,8,9) else 1} if claim_check else {}),
                        **({'tableIdentityContextContractVersion':2 if type(table_identity_context) is int and table_identity_context==2 else 1} if table_identity_context else {}),
@@ -924,6 +954,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
             **({'factual_prompt_version':factual_prompt_version} if factual_prompt_version else {}),
             **({'verified_target_ids':verified_target_ids} if factual_prompt_version in (2,3) else {}),
             compact_layout=compact_layout,fact_redraft=fact_redraft, requirement_context=requirement_context,source_aware_redraft=source_aware_redraft,
+            **({'authored_body':True} if authored_body else {}),
             **({'ordinary_advice':True} if ordinary_advice else {}),
             **({'task_sources':True} if task_sources else {}),
             **({'request_semantics':request_semantics} if request_semantics else {}),

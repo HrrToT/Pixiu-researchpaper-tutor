@@ -63,6 +63,11 @@ class FixtureModel:
                 {"claimId": "c2", "text": "Beta reports 90% accuracy.", "kind": "reported", "evidenceRefs": [ids[1]], "obligationIds": ["o"]},
                 {"claimId": "bad", "text": "Beta reports 99% accuracy.", "kind": "reported", "evidenceRefs": [ids[1]], "obligationIds": ["o"]}],
                 "proposals": ["UNCHECKED PROPOSAL MUST NEVER BE SHOWN"], "gaps": []}
+            if 'Never output text,conditions,scopeExpression at' in prompt:
+                # Emulate the requested authoring protocol. Keep the deliberate
+                # bad 99% value so the real verifier must still reject it.
+                for claim in content['claims']:
+                    claim['body']={'prose':{'text':claim.pop('text'),'conditions':{}}}
         elif prompt.startswith(("Verify these claims", "Check the complete factual assertions")):
             single_decision = prompt.startswith("Check the complete factual assertions")
             claims = json.loads(prompt.split('Claims:\n', 1)[1].split('\n\nEvidence:', 1)[0])

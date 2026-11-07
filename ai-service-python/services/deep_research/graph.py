@@ -16,6 +16,7 @@ from copy import deepcopy
 from typing import Any, Callable, TypedDict
 
 from services.deep_research.request_context import effective_question, separate_clarification
+from services.deep_research.authored_body import enabled as authored_body_enabled, required_scope_ids as authored_scope_ids
 
 try:
     from langgraph.graph import StateGraph, END
@@ -1416,10 +1417,13 @@ space with unsupported global absence or incidental iteration/performance values
         from services.deep_research.answer_point_intent import enabled as point_intent_enabled, GUIDANCE as point_intent_guidance
         from services.deep_research.factual_prompt import enabled as factual_prompt_enabled, scope_guidance as factual_scope_guidance, post_guidance as factual_post_guidance
         compact_factual_prompt=premise_mode and factual_prompt_enabled(record,output_kind)
+        authored_body=compact_factual_prompt and authored_body_enabled(record,output_kind)
         if point_intent_enabled(record) and output_kind != 'experiment_design':
             prompt += '\n' + (factual_post_guidance(record,'points',point_intent_guidance) if compact_factual_prompt else point_intent_guidance)
         from services.deep_research.scope_expression import enabled as scope_expression_enabled, guidance as scope_expression_guidance
         if scope_expression_enabled(record) and output_kind != 'experiment_design':
+            if authored_body:
+                from services.deep_research.authored_body import scope_guidance as factual_scope_guidance
             prompt += '\n' + (factual_scope_guidance(record['scopeExpressionContractVersion'])
                 if compact_factual_prompt else scope_expression_guidance(record['scopeExpressionContractVersion']))
         from services.deep_research.experiment_planning import enabled as staged_experiment,basis_limit
@@ -1647,7 +1651,8 @@ space with unsupported global absence or incidental iteration/performance values
             try:
                 if draft_validation_enabled(record):
                     parsed, scope_expression_audit, draft_validation_audit = materialize_claims(
-                        parsed, record['scopeExpressionContractVersion'])
+                        parsed, record['scopeExpressionContractVersion'],
+                        **({'authored_body':True} if authored_body else {}))
                 else:
                     for index, claim in enumerate(parsed['claims']):
                         if not isinstance(claim,dict): continue
@@ -1712,6 +1717,7 @@ space with unsupported global absence or incidental iteration/performance values
             parsed, scope_expression_audit = compact_scope(parsed, scope_expression_audit, question,
                 compact_invoke, _safe_parse_json, output_kind=output_kind, evidence=evidence,
                 presentation_version=record.get('reportPresentationContractVersion',0),
+                **({'authored_body':True} if authored_body else {}),
                 **({'compact_layout':True} if compact_layout else {}),
                 **({'joint_layout':True} if joint_compaction(record,output_kind,requested_limit) else {}),
                 **({'expression_version':record['scopeExpressionContractVersion']} if record.get('scopeExpressionContractVersion') in (3,4,5) else {}),
@@ -1748,6 +1754,7 @@ space with unsupported global absence or incidental iteration/performance values
                 lambda prompt, output: llm_invoke(run_id, 'synthesize_audience', prompt,
                     {'max_tokens': output, 'temperature': 0.0}), _safe_parse_json,
                 saved_state=current.get('state', {}).get('audienceRewrite'), checkpoint=checkpoint_audience,
+                **({'protected_claim_ids':[a['claimId'] for a in scope_expression_audit]} if authored_body and scope_expression_audit else {}),
                 can_start=has_time_for_rewrite(current),
                 **({'objective_framing':True} if objective_framing_enabled(current) else {}),
                 **({'process_explanations':True} if process_framing_enabled(current) else {}),
@@ -1992,9 +1999,12 @@ def make_verify_node(
                         **({'defer_length_filter':True} if repair_compaction_enabled(record) else {}),
                         **({'table_identity_context':2 if record.get('tableIdentityContextContractVersion')==2 and saved.get('outputKind')!='experiment_design' else True} if table_identity_enabled(record) else {}),
                         **({'claim_check':record['claimCheckContractVersion'] if record['claimCheckContractVersion'] in (4,5,6,7,8,9) else True} if claim_check_enabled(record) else {}),
-                        **({'required_scope_ids':[a['claimId'] for a in saved.get('synthesisScopeExpressionAudit',[])
+                        **({'required_scope_ids':authored_scope_ids(saved,repair_report)}
+                            if compact_repair and authored_body_enabled(record,saved.get('outputKind')) else
+                            {'required_scope_ids':[a['claimId'] for a in saved.get('synthesisScopeExpressionAudit',[])
                             if isinstance(a,dict) and isinstance(a.get('expression'),dict) and a.get('claimId') in {c.get('claimId') for c in repair_report.get('claims',[])}]}
                             if claim_check_enabled(record) and record['claimCheckContractVersion'] in (5,6,7,8,9) else {}),
+                        **({'authored_body':True} if compact_repair and authored_body_enabled(record,saved.get('outputKind')) else {}),
                         **({'compact_source_repair':True} if compact_repair else {}),
                         **({'target_goals':record['factualRepairGoalContractVersion'] if record['factualRepairGoalContractVersion'] in (2,3,4,5) else True} if compact_repair and factual_redraft_eligible(repair_report)
                             and type(record.get('factualRepairGoalContractVersion')) is int
@@ -2077,6 +2087,7 @@ def make_verify_node(
                             **({'compact_layout':True} if short_layout_enabled(record,saved.get('outputKind'),requested_character_limit(effective_question(record))) else {}),
                             **({'joint_layout':True} if joint_compaction(record,saved.get('outputKind'),requested_character_limit(effective_question(record))) else {}),
                             saved=current.get('state',{}).get('repairCompaction'),checkpoint=checkpoint_compaction,
+                            **({'authored_body':True} if authored_body_enabled(record,saved.get('outputKind')) else {}),
                             **({'expression_version':record['scopeExpressionContractVersion']} if record.get('scopeExpressionContractVersion') in (3,4,5) else {}),
                             **({'fixed_scope_first':True,'invoke_fixed':lambda prompt:invoke_compaction(prompt,direct=True)}
                                 if fixed_scope_compaction(record,effective_question(record),saved.get('outputKind','')) else {}),

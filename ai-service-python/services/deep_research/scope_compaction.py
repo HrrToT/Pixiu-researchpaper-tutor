@@ -14,13 +14,14 @@ def enabled(record):
 
 
 def compact(report, audits, question, invoke, parse, *, output_kind='', evidence=(), presentation_version=0,
-            fixed_claims=(),measured_guidance=False,expression_version=2,fixed_scope_first=False,invoke_fixed=None,explicit_edit_scope=False,compact_layout=False,joint_layout=False):
+            fixed_claims=(),measured_guidance=False,expression_version=2,fixed_scope_first=False,invoke_fixed=None,explicit_edit_scope=False,compact_layout=False,joint_layout=False,authored_body=False):
     """Return revised report and matching unchecked ASTs, or reject atomically.
 
     All existing points, kinds, citations, obligations and table bindings remain.
     Wording of ordinary facts and scope fields shares one rendered-length budget.
     Semantics are not certified here: the normal verifier checks the new wording.
     """
+    if type(authored_body) is not bool or authored_body and expression_version!=5:raise ValueError('Invalid authored compaction policy')
     if type(joint_layout) is not bool:raise ValueError('Invalid joint short layout policy')
     if type(compact_layout) is not bool:raise ValueError('Invalid compact layout policy')
     if type(explicit_edit_scope) is not bool:raise ValueError('Invalid explicit edit scope policy')
@@ -125,6 +126,19 @@ Existential boundaries render as 尚不能据此确认在domain中存在subject�
     if expression_version==5:
         prompt=prompt.replace('All boundaries render as','Quantified universal boundaries render as')
         prompt+='\nEvidence-sufficiency boundaries render as 当前引用不足以比较subjects的quantity。 Keep their exact type, subjects and quantity; they are frozen comparison scope, not wording choices.\n'
+    if authored_body:
+        from services.deep_research.authored_body import GUIDANCE as body_guidance,scope_guidance as body_scope_guidance
+        prompt=f'''Compress ALL existing points together in Chinese. Human question: {question}
+Complete compiled answer must fit {limit} characters; fixed headings/points use {overhead}.
+Return ONLY {{"claims":[{{"claimId":"original ID","body":{{"prose":{{"text":"...","conditions":{{}}}}}}}}]}}.
+Each response row has exactly claimId and body. Keep each original ID once in input order.
+No added/deleted/merged points, facts or source permissions. Ordinary points use body.prose;
+existing scope points use body.boundary. Preserve observation/boundary counts and quantifiers,
+actual domains/subjects/comparators/predicates. For comparison_evidence keep exact type,
+subjects and quantity. Shorten words, not requested scope, judgements or necessary conditions.
+When retaining numbers preserve the baseline/group/metric/value identity from requiredTableContext.
+No previous wording or metadata approves the edit; all compiled wording is independently checked.
+'''+body_guidance+'\n'+body_scope_guidance(expression_version)
     if compact_layout:
         from services.deep_research.short_factual_layout import PROSE_GUIDANCE as GUIDANCE
         prompt+='\n'+GUIDANCE
@@ -148,6 +162,12 @@ checked against the original sources. No approval is inherited from this edit.
     if not isinstance(value,dict) or set(value) != {'claims'} or not isinstance(value['claims'],list):
         return None, audits
     rows = value['claims']
+    if authored_body:
+        from services.deep_research.authored_body import decode
+        if any(not isinstance(row,dict) or set(row)!={'claimId','body'} or row.get('claimId') not in original for row in rows):return None,audits
+        try:
+            rows=[{k:v for k,v in decode({**row,'kind':original[row['claimId']]['kind']}).items() if k!='kind'} for row in rows]
+        except ValueError:return None,audits
     if (any(not isinstance(c,dict) or set(c) != {'claimId','text','conditions','scopeExpression'} for c in rows)
             or [c['claimId'] for c in rows] != list(original)): return None, audits
     revised, new_audits = [], []
