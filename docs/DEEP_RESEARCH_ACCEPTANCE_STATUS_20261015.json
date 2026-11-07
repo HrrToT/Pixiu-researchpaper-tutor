@@ -3724,6 +3724,15 @@
       "passed": 161,
       "overlapWithFocused5": true,
       "proof": "deep-research-evidence/source-export-364-java-regression-20261030.json"
+    },
+    "initialPlanInstructions408": {
+      "passed": 458,
+      "files": 22,
+      "sourceCommit": "ad7f08b6",
+      "proof": "deep-research-evidence/initial-plan-instructions-408-associated-confirmed-regression-20261107.json",
+      "realDevelopmentCase": "deep-research-evidence/adam-ad1n-v2-plan-failure-20261107.json",
+      "realContentAccepted": false,
+      "independentCredit": 0
     }
   },
   "stages": [
@@ -4796,12 +4805,12 @@
     "answerCoherenceContractVersion": 2,
     "quantitySpellingContractVersion": 15,
     "component": "one native-compatible initial planning schema",
-    "componentOutcome": "408 loaded;458 related frozen checks/22files pass. Saved AD1N-v1 plan fingerprint exact; contradictory root instructions removed, strict duplicate rejection unchanged.8894 ledger/allpayload/16tasks/1215index exact,0active15paused. AD1N-v1 failed before acquisition,2settledcalls3052tokens/13s,retired as untuned holdout. No scientific acceptance; fullDR0-DR5 incomplete/independent0.",
+    "componentOutcome": "408 loaded;458 related frozen checks/22files pass. AD1N-v2 real development case failed before acquisition: correct items wrapper but6identical repeated obligationId keys rejected by strict parser; also invalid purpose enum observed.2settledcalls2591tokens/9s,no new unknown.8896ledger,0active15paused;all old calls/payloads/other15tasks/1215index exact. No scientific acceptance, independent0; fullDR0-DR5 incomplete.",
     "runtimeLoadedVerified": true,
     "runtimeProof": "deep-research-evidence/runtime-load-initial-plan-instructions-408-20261107.json",
     "fullDR0DR5Proved": false,
     "independentCredit": 0,
-    "lastCapturedLedgerRows": 8894,
+    "lastCapturedLedgerRows": 8896,
     "lastCapturedActiveProductionRuns": 0,
     "historicalPausedRunsAtCapture": 15,
     "lastConfirmedIndexDocuments": 1215,
