@@ -13,3 +13,9 @@ AD1N-v5的一处拒绝理由混入其他版本的一阶矩校正记号，另一�
 25文件457项冻结关联回归通过，覆盖初始/修订/分区事实核验、原失败布尔/外来前提不放行、原文控制字符和版本元数据保持、实验建议排除、旧策略、不可变字段及原生传输/未知/恢复。证据：`deep-research-evidence/source-version-review-414-associated-final-regression-20261107.json`。尚待加载与真实效果验证；原DR0—DR5和独立内容验收保持开放。
 
 已加载b162fb63并正常重启Python一次。8975旧账本、历史payload、16任务和1215索引保持，0活动/15历史暂停，RAG/GROBID健康，源码/代理一致。加载0模型。证据：`deep-research-evidence/runtime-load-source-version-review-414-20261107.json`。
+
+## 真实开发复测 AD1N-v6
+
+`.414`一次提交后在133秒结束，6次模型调用全部结算27912Token，无新增未知。初始综合返回完整JSON；后续压缩达到8192输出Token上限并以length结束，原始content为空，归一化为null。流程在读者适配与事实/覆盖核验之前失败，因此尚未验证本指引或新限制审核的实际模型效果。输出Token分解不能证明提供商内部具体原因，未将草稿作为通过结果。
+
+8995条账本、0活动/15历史暂停，旧账本和全部旧payload、其他15任务及索引保持。证据：`deep-research-evidence/adam-ad1n-v6-content-review-20261107.json`。后续先检查读者适配与长度编辑的顺序和衔接，不放宽总预算、来源或科学检查；本轮不再生成。
