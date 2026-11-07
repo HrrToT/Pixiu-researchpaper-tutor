@@ -97,7 +97,8 @@ class FixtureModel:
                 for verdict in content:
                     verdict.pop('status')
                     verdict['reason']='The fixture source explicitly reports this value.'
-        elif prompt.startswith(("Revise only the targets","Rebuild ONLY these rejected factual answer targets")):
+        elif prompt.startswith(("Revise only the targets","Rebuild ONLY these rejected factual answer targets",
+                                "Rebuild ONLY the rejected targets")):
             content = []  # An unsupported claim may be dropped; do not relax checks.
         elif prompt.startswith('Audit the FINAL ACCEPTED ANSWER against the FIXED REQUEST CHECKLIST'):
             if 'Exact decision input fields (question, fixed checks, complete accepted claims and server metadata):\n' in prompt:
@@ -272,7 +273,7 @@ def test_absolute_provider_timeout_preserves_unknown_and_ignores_late_response(t
 @pytest.mark.parametrize('prefix,node', [
     ('Analyze this research question', 'resolve_brief'),
     ('Audit the FINAL ACCEPTED ANSWER against the FIXED REQUEST CHECKLIST', 'verify_answer_coverage'),
-    ('Rebuild ONLY these rejected factual answer targets', 'repair_claims'),
+    ('Rebuild ONLY the rejected targets', 'repair_claims'),
 ])
 def test_pause_keeps_known_inflight_response_and_resume_does_not_resend_it(tmp_path, prefix, node):
     entered, release = threading.Event(), threading.Event()

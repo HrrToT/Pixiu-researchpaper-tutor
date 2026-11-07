@@ -1998,6 +1998,7 @@ def make_verify_node(
                     from services.deep_research.process_explanations import drafting_enabled as process_framing_enabled
                     from services.deep_research.mechanism_grounding import strengthened as objective_framing_enabled
                     from services.deep_research.verbatim_repair import enabled as verbatim_repair_enabled
+                    from services.deep_research.repair_instructions import enabled as repair_instructions_enabled
                     revised = repair_rejected(repair_report, repair_targets, evidence, effective_question(record),
                         invoke_repair, _safe_parse_json,
                         max_prompt_bytes=repair_prompt_byte_limit(current.get('budget', {}),**repair_input_options),
@@ -2024,6 +2025,7 @@ def make_verify_node(
                             if claim_check_enabled(record) and record['claimCheckContractVersion'] in (5,6,7,8,9) else {}),
                         **({'authored_body':True} if compact_repair and authored_body_enabled(record,saved.get('outputKind')) else {}),
                         **({'verbatim_repair':True} if compact_repair and factual_redraft_eligible(repair_report) and verbatim_repair_enabled(record) else {}),
+                        **({'consolidated_instructions':True} if compact_repair and factual_redraft_eligible(repair_report) and repair_instructions_enabled(record) else {}),
                         **({'compact_source_repair':True} if compact_repair else {}),
                         **({'target_goals':record['factualRepairGoalContractVersion'] if record['factualRepairGoalContractVersion'] in (2,3,4,5) else True} if compact_repair and factual_redraft_eligible(repair_report)
                             and type(record.get('factualRepairGoalContractVersion')) is int
