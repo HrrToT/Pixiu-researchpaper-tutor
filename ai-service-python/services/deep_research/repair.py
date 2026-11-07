@@ -16,7 +16,9 @@ from services.deep_research.repair_scope import repair_evidence_scope
 def _prepare_repair(report, verification, evidence, question, *, max_prompt_bytes=24000,
                     metric_domains=None, draft_context=(), prior_revisions=(),
                     fact_redraft=False, requirement_context=(), source_aware_redraft=False,comparison_reasoning=False,
-                    question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False,shared_experiment_schema=False,experiment_evidence_context=None,experimental_edits=False,experimental_diagnostics=False,experimental_nested_tables=False,experimental_representation=False,experimental_coverage=False,citation_presentation_version=0,configuration_consistency_version=0,repair_evidence_packet_version=0,answer_intents=None,scope_expression=False,table_identity_context=False,claim_check=False,required_scope_ids=(),compact_layout=False,ordinary_advice=False,task_sources=False,request_semantics=False,preserve_answers=False,target_goals=False,objective_framing=False,process_explanations=False,factual_prompt_version=0,verified_target_ids=(),authored_body=False):
+                    question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False,shared_experiment_schema=False,experiment_evidence_context=None,experimental_edits=False,experimental_diagnostics=False,experimental_nested_tables=False,experimental_representation=False,experimental_coverage=False,citation_presentation_version=0,configuration_consistency_version=0,repair_evidence_packet_version=0,answer_intents=None,scope_expression=False,table_identity_context=False,claim_check=False,required_scope_ids=(),compact_layout=False,ordinary_advice=False,task_sources=False,request_semantics=False,preserve_answers=False,target_goals=False,objective_framing=False,process_explanations=False,factual_prompt_version=0,verified_target_ids=(),authored_body=False,verbatim_repair=False):
+    if type(verbatim_repair) is not bool or verbatim_repair and not (authored_body and type(target_goals) is int and target_goals==5):
+        raise ValueError('Verbatim repair requires authored compact factual goal5')
     if type(authored_body) is not bool or authored_body and not (fact_redraft and source_aware_redraft and concise_factual and compact_source_repair and factual_prompt_version==3 and scope_expression==5):
         raise ValueError('Authored body requires compact source-aware factual repair and scope5')
     if (not isinstance(verified_target_ids,(list,tuple)) or any(not isinstance(cid,str) or not cid for cid in verified_target_ids)
@@ -569,7 +571,10 @@ If a supported revision is not possible, omit that target rather than bypass sco
 '''
     if goal_version in (4,5):
         from services.deep_research.repair_removals import GUIDANCE as REMOVAL_GUIDANCE, EDIT_GUIDANCE
-        prompt+='\n'+(EDIT_GUIDANCE if goal_version==5 else REMOVAL_GUIDANCE)
+        if verbatim_repair:
+            from services.deep_research.repair_removals import VERBATIM_GUIDANCE
+            prompt+='\n'+VERBATIM_GUIDANCE
+        else:prompt+='\n'+(EDIT_GUIDANCE if goal_version==5 else REMOVAL_GUIDANCE)
     condition_marker=None
     if type(claim_check) is int and claim_check in (7,8,9):
         from services.deep_research.condition_source_index import GUIDANCE as CONDITION_GUIDANCE
@@ -652,7 +657,7 @@ If a supported revision is not possible, omit that target rather than bypass sco
     return {**({'authoredBodyContractVersion':1} if authored_body else {}),**({'compactLayoutVersion':1} if compact_layout else {}),'prompt': prompt, 'originals': originals, 'aliases': aliases, 'allowed': allowed,
             **({'repairPremiseAudit':premise_audit} if premise_audit is not None else {}),
             **({'repairRemovalContractVersion':1} if goal_version==4 else {}),
-            **({'repairRemovalContractVersion':2} if goal_version==5 else {}),
+            **({'repairRemovalContractVersion':3 if verbatim_repair else 2} if goal_version==5 else {}),
             **({'requiredScopeIds':list(required_scope_ids)} if required_scope_ids else {}),
             **({'reportedInferenceRepairIds':inference_ids} if inference_ids else {}),
             **({'reportedInferenceRepairReasons':inference_reasons} if inference_reasons else {}),
@@ -725,8 +730,10 @@ def _parse_repair_response(prepared, response, parse, presentation_audit=None,dr
         if prepared.get('authoredBodyContractVersion')==1:
             from services.deep_research.authored_body import edit_anchor
             edit_original,edit_path=edit_anchor(original)
-        if prepared.get('repairRemovalContractVersion')==2:
+        if prepared.get('repairRemovalContractVersion') in (2,3):
             from services.deep_research.repair_removals import materialize as materialize_removals
+            if prepared.get('repairRemovalContractVersion')==3:
+                from services.deep_research.repair_removals import preserve_revision as materialize_removals
             try:edited,removals,removal_edit=materialize_removals(row,edit_original,**({'operator_content':True} if boundary_body else {}))
             except ValueError:continue
             if edit_path and removal_edit is not None:removal_edit['originalDraftPath']=edit_path
@@ -823,7 +830,7 @@ def factual_redraft_eligible(report):
 def repair_rejected(report, verification, evidence, question, invoke, parse, *,
                     max_prompt_bytes=24000, metric_domains=None, batch_state=None, checkpoint=None,
                     current_budget=None, invoke_request=None, fact_redraft=False, requirement_context=(),
-                    source_aware_redraft=False,comparison_reasoning=False,question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,strict_response=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False,shared_experiment_schema=False,experiment_evidence_context=None,experimental_edits=False,experimental_diagnostics=False,experimental_nested_tables=False,experimental_representation=False,experimental_coverage=False,citation_presentation_version=0,configuration_consistency_version=0,repair_evidence_packet_version=0,scheduling_version=0,answer_intents=None,scope_expression=False,defer_length_filter=False,table_identity_context=False,claim_check=False,required_scope_ids=(),compact_layout=False,ordinary_advice=False,task_sources=False,request_semantics=False,preserve_answers=False,target_goals=False,objective_framing=False,process_explanations=False,factual_prompt_version=0,verified_target_ids=(),authored_body=False):
+                    source_aware_redraft=False,comparison_reasoning=False,question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,strict_response=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False,shared_experiment_schema=False,experiment_evidence_context=None,experimental_edits=False,experimental_diagnostics=False,experimental_nested_tables=False,experimental_representation=False,experimental_coverage=False,citation_presentation_version=0,configuration_consistency_version=0,repair_evidence_packet_version=0,scheduling_version=0,answer_intents=None,scope_expression=False,defer_length_filter=False,table_identity_context=False,claim_check=False,required_scope_ids=(),compact_layout=False,ordinary_advice=False,task_sources=False,request_semantics=False,preserve_answers=False,target_goals=False,objective_framing=False,process_explanations=False,factual_prompt_version=0,verified_target_ids=(),authored_body=False,verbatim_repair=False):
     """One bounded revision round, split before dispatch when evidence cannot fit.
 
     At most three requests share full sibling design definitions. Successful
@@ -833,6 +840,8 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
     from services.deep_research.contracts import digest, DeepResearchError
     from services.deep_research.repair_batches import split_repair_targets
 
+    if type(verbatim_repair) is not bool or verbatim_repair and not (authored_body and type(target_goals) is int and target_goals==5):
+        raise ValueError('Verbatim repair requires authored compact factual goal5')
     if type(authored_body) is not bool or authored_body and not (fact_redraft and source_aware_redraft and concise_factual and compact_source_repair and factual_prompt_version==3 and scope_expression==5):
         raise ValueError('Authored body requires compact source-aware factual repair and scope5')
     if (not isinstance(verified_target_ids,(list,tuple)) or any(not isinstance(cid,str) or not cid for cid in verified_target_ids)
@@ -902,7 +911,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
         raise ValueError('Unsupported configuration consistency contract')
     if type(citation_presentation_version) is not int or citation_presentation_version not in (0,2,3,4):
         raise ValueError('Unsupported citation presentation contract')
-    identity = digest({**({'authoredBodyContractVersion':1} if authored_body else {}),**({'verifiedRepairTargets':list(verified_target_ids)} if factual_prompt_version in (2,3) else {}),**({'factualRepairPromptContractVersion':factual_prompt_version} if factual_prompt_version else {}),**({'compactLayoutVersion':1} if compact_layout else {}),'report': report, 'verification': verification,
+    identity = digest({**({'verbatimRepairContractVersion':1} if verbatim_repair else {}),**({'authoredBodyContractVersion':1} if authored_body else {}),**({'verifiedRepairTargets':list(verified_target_ids)} if factual_prompt_version in (2,3) else {}),**({'factualRepairPromptContractVersion':factual_prompt_version} if factual_prompt_version else {}),**({'compactLayoutVersion':1} if compact_layout else {}),'report': report, 'verification': verification,
                        **({'requiredScopeIds':list(required_scope_ids)} if required_scope_ids else {}),
                        **({'claimCheckContractVersion':claim_check if type(claim_check) is int and claim_check in (4,5,6,7,8,9) else 1} if claim_check else {}),
                        **({'tableIdentityContextContractVersion':2 if type(table_identity_context) is int and table_identity_context==2 else 1} if table_identity_context else {}),
@@ -955,6 +964,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
             **({'verified_target_ids':verified_target_ids} if factual_prompt_version in (2,3) else {}),
             compact_layout=compact_layout,fact_redraft=fact_redraft, requirement_context=requirement_context,source_aware_redraft=source_aware_redraft,
             **({'authored_body':True} if authored_body else {}),
+            **({'verbatim_repair':True} if verbatim_repair else {}),
             **({'ordinary_advice':True} if ordinary_advice else {}),
             **({'task_sources':True} if task_sources else {}),
             **({'request_semantics':request_semantics} if request_semantics else {}),

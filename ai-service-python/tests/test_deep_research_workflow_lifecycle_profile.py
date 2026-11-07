@@ -13,7 +13,7 @@ def test_new_profile_is_consistent_and_does_not_rewrite_legacy_run(tmp_path):
     try:
         first,_=facade.create({'workspaceTaskId':'t','operationKey':'first','question':'Design an experiment',
             'deferStart':True},start_async=False)
-        assert first['promptVersion']=='dr-v2.20261107.406'
+        assert first['promptVersion']=='dr-v2.20261107.407'
         assert first['factualPromptContractVersion']==3
         assert first['recommendationRepairContractVersion']==1
         assert first['requestSemanticsContractVersion']==2
@@ -30,6 +30,7 @@ def test_new_profile_is_consistent_and_does_not_rewrite_legacy_run(tmp_path):
         assert first['synthesisInputContractVersion']==1
         assert first['elapsedAccountingContractVersion']==1
         assert first['initialPlanModelContractVersion']==1
+        assert first['verbatimRepairContractVersion']==1
         assert first['coverageInstructionsContractVersion']==1
         assert first['reportingOwnershipContractVersion']==1
         assert first['externalReadingContractVersion']==2
