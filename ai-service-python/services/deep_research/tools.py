@@ -626,6 +626,7 @@ class BudgetedSemanticChecker:
         singleton_factual_response=False,
         comparison_source_paths=False,
         reporting_ownership=False,
+        source_version_review=False,
     ):
         self._invoke = llm_invoker
         self._run_id = run_id
@@ -640,6 +641,7 @@ class BudgetedSemanticChecker:
         self._scope_source_paths = scope_source_paths
         self._comparison_source_paths = comparison_source_paths
         self._reporting_ownership = reporting_ownership
+        self._source_version_review = source_version_review
         self._mechanism_grounding = mechanism_grounding
         self._singleton_factual_response = singleton_factual_response
         self._factual_scope = factual_scope
@@ -1222,6 +1224,11 @@ The dataAvailability object is an internal audit, not new experimental results.
         if advice_mode:
             from services.deep_research.general_advice import prompt as advice_prompt
             prompt=advice_prompt(claims_text,question,evidence_text)
+        version_policy=self._source_version_review
+        version_policy=(version_policy() if callable(version_policy) else version_policy) is True
+        if version_policy:
+            from services.deep_research.source_version_review import eligible,GUIDANCE
+            if eligible(claims):prompt+='\n'+GUIDANCE
         template = prompt
         source_keys = ('workId', 'versionId', 'sourceTitle')
         source_registry = {}
