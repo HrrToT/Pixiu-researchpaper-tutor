@@ -33,3 +33,7 @@ AD1N-v4原始文件SHA保持。将终态记录仅在内存恢复到修订入口�
 首次扩展回归747通过/5失败，均定位到端到端测试用模型按旧提示前缀分派，无法识别新renderer；更新其新旧前缀识别并保留原故障、暂停、恢复及发布断言后完整重跑通过。早期新测试也修正了创建阶段尚未确定输出类型的错误假设。没有为通过测试放宽产品核验。
 
 最终证据：`deep-research-evidence/repair-instructions-411-associated-final-confirmed-regression-20261107.json`。未执行新的真实模型案例，尚不证明新输出的完整性、可读性或独立科学验收。
+
+## 加载
+
+98bd9d52已推送并正常重启Python容器一次。8950条旧账本、全部历史payload、16任务、1215索引逐值保持；0活动/15历史暂停，RAG与GROBID健康，源码和系统代理配置一致。加载未调用模型，原partial未改变。证据：`deep-research-evidence/runtime-load-repair-instructions-411-20261107.json`。
