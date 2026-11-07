@@ -123,7 +123,9 @@ and causal findings. Fail an invented premise, universal guarantee, unsupported 
 expansion even when the claim is labeled inference. Reported facts still need direct source support.'''
 
 
-def _prepare(report, evidence, question, *, contract_version=1, requirement_context=(), objective_framing=False, process_explanations=False, protected_claim_ids=()):
+def _prepare(report, evidence, question, *, contract_version=1, requirement_context=(), objective_framing=False, process_explanations=False, protected_claim_ids=(), protected_edits=False):
+    if type(protected_edits) is not bool or protected_edits and contract_version!=9:
+        raise ValueError('Protected reader edits require contract9')
     if type(objective_framing) is not bool:raise ValueError('Invalid objective framing policy')
     if type(process_explanations) is not bool:raise ValueError('Invalid process explanation policy')
     claims = report['claims']
@@ -147,6 +149,11 @@ def _prepare(report, evidence, question, *, contract_version=1, requirement_cont
             by_id[key] = item
     if set(by_id) != refs:
         return None, 'invalid_sources'
+    if protected_edits:
+        from services.deep_research.audience_edit_budget import prepare
+        return prepare(report,evidence,question,protected_claim_ids,_prepare,
+            {'contract_version':contract_version,'requirement_context':requirement_context,
+             'objective_framing':objective_framing,'process_explanations':process_explanations})
     # Only original citations, with complete quotes and necessary context. Do
     # not fit by silently deleting an original premise or adding new permission.
     source_rows = [{'evidenceId': ref, 'quote': e.get('quote', ''),
@@ -317,7 +324,15 @@ parameters, counts and formulas. These qualitative targets cannot acquire measur
 
 
 def _merge(report, content, parse, question, *, contract_version=1, allowed_inference_ids=(),
-           source_parameter_ids=None, rejection=None, evidence=(), verification_policy=None, hard_checks=None):
+           source_parameter_ids=None, rejection=None, evidence=(), verification_policy=None, hard_checks=None, protected_claim_ids=(), protected_edits=False):
+    if type(protected_edits) is not bool or protected_edits and contract_version!=9:
+        raise ValueError('Protected reader edits require contract9')
+    if protected_edits:
+        from services.deep_research.audience_edit_budget import merge
+        return merge(report,content,parse,question,protected_claim_ids,_merge,
+            {'contract_version':contract_version,'allowed_inference_ids':allowed_inference_ids,
+             'source_parameter_ids':source_parameter_ids,'evidence':evidence,
+             'verification_policy':verification_policy,'hard_checks':hard_checks},rejection)
     def reject(reason):
         if rejection:
             rejection(reason)
@@ -391,7 +406,7 @@ def _merge(report, content, parse, question, *, contract_version=1, allowed_infe
 
 
 def rewrite_for_beginner(report, evidence, question, invoke, parse, *, saved_state=None, checkpoint=None,
-                         can_start=True, contract_version=1, requirement_context=(), verification_policy=None, objective_framing=False, process_explanations=False, protected_claim_ids=()):
+                         can_start=True, contract_version=1, requirement_context=(), verification_policy=None, objective_framing=False, process_explanations=False, protected_claim_ids=(), protected_edits=False):
     """Frozen request + settlement reuse; unknown transports propagate unchanged.
 
     A rejected/too-long edit leaves the original draft for normal verification.
@@ -399,12 +414,19 @@ def rewrite_for_beginner(report, evidence, question, invoke, parse, *, saved_sta
     """
     if type(contract_version) is not int or contract_version not in (1,2,3,4,5,6,7,8,9):
         raise DeepResearchError('invalid_audience_rewrite_state','新手改写契约版本无效。')
+    if type(protected_edits) is not bool or protected_edits and contract_version!=9:
+        raise ValueError('Protected reader edits require contract9')
     if type(objective_framing) is not bool:raise ValueError('Invalid objective framing policy')
     if type(process_explanations) is not bool:raise ValueError('Invalid process explanation policy')
     if (not isinstance(protected_claim_ids,(tuple,list)) or any(not isinstance(k,str) or not k for k in protected_claim_ids)
             or len(set(protected_claim_ids))!=len(protected_claim_ids) or not set(protected_claim_ids)<={c.get('claimId') for c in report.get('claims',[])}):
         raise ValueError('Invalid protected audience point IDs')
     identity_inputs={'report': report, 'evidence': evidence, 'question': question}
+    edit_budget=None
+    if protected_edits:
+        from services.deep_research.audience_edit_budget import allocation
+        edit_budget=allocation(report,question,protected_claim_ids)
+        identity_inputs.update(audienceBudgetContractVersion=1,editBudget=edit_budget)
     if contract_version in (7,8,9):
         verification_policy = deepcopy(verification_policy) if verification_policy is not None else {
             'absence_scope_version':6 if contract_version in (8,9) else 5, 'quantity_spelling_version':5 if contract_version in (8,9) else 4,
@@ -424,6 +446,8 @@ def rewrite_for_beginner(report, evidence, question, invoke, parse, *, saved_sta
     if state is not None:
         if (not isinstance(state, dict) or type(state.get('version')) is not int or state['version'] != contract_version
                 or state.get('inputDigest') != identity
+                or protected_edits and (type(state.get('audienceBudgetContractVersion')) is not int
+                    or state['audienceBudgetContractVersion']!=1 or digest(state.get('editBudget'))!=digest(edit_budget))
                 or (contract_version in (2,3,4,5,6,7,8,9) and state.get('originalReport')!=report)
                 or (contract_version in (7,8,9) and state.get('verificationPolicy') != verification_policy)
                 or state.get('status') not in {'pending', 'received', 'skipped'}):
@@ -431,9 +455,11 @@ def rewrite_for_beginner(report, evidence, question, invoke, parse, *, saved_sta
     else:
         request, reason = _prepare(report, evidence, question,contract_version=contract_version,
                                    requirement_context=requirement_context, objective_framing=objective_framing, process_explanations=process_explanations,
+                                   **({'protected_edits':True} if protected_edits else {}),
                                    **({'protected_claim_ids':protected_claim_ids} if protected_claim_ids else {}))
         state = {'version': contract_version, 'inputDigest': identity, 'status': 'pending',
                  'request': request, 'requestDigest': digest(request)}
+        if protected_edits:state.update(audienceBudgetContractVersion=1,editBudget=deepcopy(edit_budget))
         if contract_version in (7,8,9):
             state['verificationPolicy'] = deepcopy(verification_policy)
         if contract_version in (2,3,4,5,6,7,8,9):
@@ -478,7 +504,8 @@ def rewrite_for_beginner(report, evidence, question, invoke, parse, *, saved_sta
                     allowed_inference_ids=allowed,
                     source_parameter_ids=_source_parameter_ids(report,evidence) if contract_version==6 else None,
                     rejection=reasons.append if contract_version in (6,7,8,9) else None,
-                    evidence=evidence,verification_policy=verification_policy,hard_checks=hard_checks)
+                    evidence=evidence,verification_policy=verification_policy,hard_checks=hard_checks,
+                    **({'protected_edits':True,'protected_claim_ids':protected_claim_ids} if protected_edits else {}))
     if edited is not None and protected_claim_ids:
         before={c['claimId']:c for c in report['claims']};after={c['claimId']:c for c in edited['claims']}
         if any(before[k]!=after.get(k) for k in protected_claim_ids):

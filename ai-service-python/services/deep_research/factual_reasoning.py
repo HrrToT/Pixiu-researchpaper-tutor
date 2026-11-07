@@ -42,6 +42,8 @@ def request_options(record, question, output_kind):
 
 
 def compaction_options(record,question,output_kind):
+    if type(record.get('plainCompactionContractVersion')) is int and record['plainCompactionContractVersion']==1:
+        return {}  # Existing runtime role defaults to non-thinking; no new request or cap.
     return {COMPACTION_OPTION:True} if (type(record.get('factualReasoningContractVersion')) is int
         and record['factualReasoningContractVersion'] in (7,8,9,10) and request_options(record,question,output_kind)) else {}
 
