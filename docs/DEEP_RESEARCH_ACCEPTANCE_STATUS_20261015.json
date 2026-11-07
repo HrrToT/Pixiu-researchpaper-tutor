@@ -4789,16 +4789,16 @@
     "proof": "deep-research-evidence/compact-experiment-envelope-regression-20261020.json"
   },
   "currentCheckpoint": {
-    "sourceCommit": "58541e2c2ece52c35eed44a738b4183492015a6f",
+    "sourceCommit": "248b2d7f051b7219d0c41033ab7d003294baae36",
     "javaSourceCommit": "612c324e",
-    "promptVersion": "dr-v2.20261107.405",
+    "promptVersion": "dr-v2.20261107.406",
     "factualRepairGoalContractVersion": 5,
     "answerCoherenceContractVersion": 2,
     "quantitySpellingContractVersion": 15,
-    "component": "persisted stopped-run elapsed accounting",
-    "componentOutcome": "405 loaded after3722 frozen checks/203files.8890oldledger/alloldpayload/14tasks/1215index exact;0active14paused, no provider calls or unknown retries. Reliable time accounting only; content/independent acceptance0 and fullDR0-DR5 incomplete.",
+    "component": "server-owned routine initial planning route",
+    "componentOutcome": "406 loaded;315 related frozen checks/14files pass.8892oldledger/allpayload/15tasks/1215index exact,0active15paused. FA1N first plan timeout remainsunknown and retired as holdout; no retry. New route real latency/plan/content quality not yet tested, fullDR0-DR5 incomplete/independent0.",
     "runtimeLoadedVerified": true,
-    "runtimeProof": "deep-research-evidence/runtime-load-elapsed-accounting-405-20261107.json",
+    "runtimeProof": "deep-research-evidence/runtime-load-initial-plan-route-406-20261107.json",
     "fullDR0DR5Proved": false,
     "independentCredit": 0,
     "lastCapturedLedgerRows": 8892,
@@ -5599,12 +5599,12 @@
     "authoredBodyContractVersion": 1,
     "synthesisInputContractVersion": 1,
     "lastCapturedPausedProductionRuns": 15,
-    "newPausedRunId": "dr_run_fc0931756c505c6d9a29c06abe1fdd8d",
     "elapsedAccountingContractVersion": 1,
     "newPausedRunIds": [
       "dr_run_fc0931756c505c6d9a29c06abe1fdd8d",
       "dr_run_b09de02407095586bba235843615f2b3"
-    ]
+    ],
+    "initialPlanModelContractVersion": 1
   },
   "sharedModuleSourceCheckpoint": {
     "sourceCommit": "f8ae5177",
@@ -13898,7 +13898,9 @@
     "paused": 14,
     "oldUnknownRunsNotResent": true,
     "fullDR0DR5Proved": false,
-    "independentCredit": 0
+    "independentCredit": 0,
+    "realRuntimeProof": "deep-research-evidence/attention-fa1n-v1-transport-unknown-20261107.json",
+    "actualUnknownStoredAndPublicElapsedSeconds": 191
   },
   "freshAttentionComparison": {
     "case": "FA1N",
@@ -13915,5 +13917,21 @@
     "independentEligibility": "retired_due_to_transport_routing_diagnosis",
     "resubmitted": false,
     "reviewProof": "deep-research-evidence/attention-fa1n-v1-transport-unknown-20261107.json"
+  },
+  "latestInitialPlanRoute406": {
+    "sourceCommit": "248b2d7f051b7219d0c41033ab7d003294baae36",
+    "relatedOfflinePassed": 315,
+    "testFiles": 14,
+    "sourceFrozen": true,
+    "loaded": true,
+    "realGenerationRequestsForFix": 0,
+    "savedPlanPromptMessagesOptionsExact": true,
+    "oldUnknownsNotResent": true,
+    "realLatencyAndQuality": "not_verified",
+    "priorBroaderRegression": "405:3722checks/203files; not silently upgraded",
+    "ledgerRows": 8892,
+    "paused": 15,
+    "fullDR0DR5Proved": false,
+    "independentCredit": 0
   }
 }
