@@ -23,3 +23,11 @@ AD1N-v6初始综合已返回完整JSON，后续单独压缩达到8192输出Token
 23文件409项冻结关联回归通过，覆盖先适配后压缩、拒绝编辑一次回退、未知错误不回退、旧顺序、精确服务器版本、原scope/引用/长度/读者编辑及恢复。证据：`deep-research-evidence/audience-first-415-associated-final-regression-20261107.json`。尚待加载及真实编辑输出验证。
 
 已加载2e3fac15，一次正常Python重启后RAG/GROBID健康；8995旧账本、全部历史payload、16任务/1215索引保持，0活动/15历史暂停，源码/代理一致。加载0模型。证据：`deep-research-evidence/runtime-load-audience-first-415-20261107.json`。
+
+## 真实开发复测 AD1N-v7
+
+`.415`实际执行先读者改写，再压缩。147秒、8次调用全部结算38322Token，无新增未知，终态failed/invalid_synthesis_response。读者结果从330变为343字，首先按character_limit拒绝；离线还看到它改动受保护c2，不能误写成实际执行过的第二个scope拒绝。
+
+原固定c2占95字，其他可编辑内容至多205字（还需尊重整体展示长度检查）。当前提示仍让模型在整答300字上限下复制固定点，没有单独的可编辑余额/只编辑可变目标协议。离线重放还确认联合scope压缩实际请求仍启用low推理，max_tokens8192；原响应length且无正文。不能推断提供商内部各类Token消耗，但可以据此调整编辑请求的角色配置。
+
+新调度已实际触发，编辑质量与内容仍不通过；事实与覆盖审核尚未执行。9017账本、0活动15暂停、旧记录及其他15任务和索引保持。本轮不再生成，下一步让纯措辞压缩不用推理，并由服务端合回受保护点、向可编辑点给出明确剩余长度，不扩大预算或放宽独立核验。证据：`deep-research-evidence/adam-ad1n-v7-content-review-20261107.json`、`deep-research-evidence/adam-ad1n-v7-edit-failure-replay-20261107.json`。
