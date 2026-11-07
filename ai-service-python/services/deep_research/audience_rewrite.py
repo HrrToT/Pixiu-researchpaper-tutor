@@ -123,9 +123,11 @@ and causal findings. Fail an invented premise, universal guarantee, unsupported 
 expansion even when the claim is labeled inference. Reported facts still need direct source support.'''
 
 
-def _prepare(report, evidence, question, *, contract_version=1, requirement_context=(), objective_framing=False, process_explanations=False, protected_claim_ids=(), protected_edits=False):
+def _prepare(report, evidence, question, *, contract_version=1, requirement_context=(), objective_framing=False, process_explanations=False, protected_claim_ids=(), protected_edits=False, source_first_single=False):
     if type(protected_edits) is not bool or protected_edits and contract_version!=9:
         raise ValueError('Protected reader edits require contract9')
+    if type(source_first_single) is not bool or source_first_single and (contract_version!=9 or len(report.get('claims',[]))!=1 or protected_claim_ids or protected_edits):
+        raise ValueError('Source-first reader requires one unprotected contract9 target')
     if type(objective_framing) is not bool:raise ValueError('Invalid objective framing policy')
     if type(process_explanations) is not bool:raise ValueError('Invalid process explanation policy')
     claims = report['claims']
@@ -243,7 +245,7 @@ For a claim without originalTableBindings, do not return retainedTableBindingInd
                 targets.append({**{key:value for key,value in row.items() if key not in {'draftPoint','draftConditions'}},
                     'requestedPoints':[item for item in requirement_context
                         if not requested or item.get('obligationId') in requested]})
-            if contract_version==9:
+            if contract_version==9 and not source_first_single:
                 from services.deep_research.audience_point_scope import hints
                 point_hints=hints(claims)
                 targets=[{**target,'unverifiedPointHint':point_hints[target['claimId']]} for target in targets]
@@ -277,11 +279,14 @@ unrequested values and their bindings may be omitted together, never replaced or
 Without originalTableBindings, omit retainedTableBindingIndexes. Source table context and
 bindings identify existing cells, not a license to publish an unsupported interpretation.
 '''
-            if contract_version==9:
+            if contract_version==9 and not source_first_single:
                 from services.deep_research.audience_point_scope import GUIDANCE as point_guidance
                 prompt=prompt.replace('Unverified draft prose and draft conditions are OMITTED to avoid copying their jargon or\nunsupported wording. Original drafts remain in the journal, not as facts to repeat.',
                     'Draft conditions are omitted. Original drafts remain in the journal; the private point hints below are not facts to repeat.')
                 prompt+='\n'+point_guidance
+        if source_first_single:
+            from services.deep_research.audience_single_source import GUIDANCE
+            prompt+='\n'+GUIDANCE
         if contract_version == 4:
             allowed = sorted(inference_candidates(report, requirement_context, contract_version=contract_version))
             prompt += f'''\nClassification exception for these server-selected why targets ONLY: {json.dumps(allowed)}.
@@ -406,7 +411,7 @@ def _merge(report, content, parse, question, *, contract_version=1, allowed_infe
 
 
 def rewrite_for_beginner(report, evidence, question, invoke, parse, *, saved_state=None, checkpoint=None,
-                         can_start=True, contract_version=1, requirement_context=(), verification_policy=None, objective_framing=False, process_explanations=False, protected_claim_ids=(), protected_edits=False):
+                         can_start=True, contract_version=1, requirement_context=(), verification_policy=None, objective_framing=False, process_explanations=False, protected_claim_ids=(), protected_edits=False, source_first_single=False):
     """Frozen request + settlement reuse; unknown transports propagate unchanged.
 
     A rejected/too-long edit leaves the original draft for normal verification.
@@ -416,6 +421,8 @@ def rewrite_for_beginner(report, evidence, question, invoke, parse, *, saved_sta
         raise DeepResearchError('invalid_audience_rewrite_state','新手改写契约版本无效。')
     if type(protected_edits) is not bool or protected_edits and contract_version!=9:
         raise ValueError('Protected reader edits require contract9')
+    if type(source_first_single) is not bool or source_first_single and (contract_version!=9 or len(report.get('claims',[]))!=1 or protected_claim_ids or protected_edits):
+        raise ValueError('Source-first reader requires one unprotected contract9 target')
     if type(objective_framing) is not bool:raise ValueError('Invalid objective framing policy')
     if type(process_explanations) is not bool:raise ValueError('Invalid process explanation policy')
     if (not isinstance(protected_claim_ids,(tuple,list)) or any(not isinstance(k,str) or not k for k in protected_claim_ids)
@@ -441,11 +448,14 @@ def rewrite_for_beginner(report, evidence, question, invoke, parse, *, saved_sta
     if protected_claim_ids:identity_inputs['protectedClaimIds']=list(protected_claim_ids)
     if objective_framing:identity_inputs['objectiveFramingVersion']=1
     if process_explanations:identity_inputs['processExplanationVersion']=1
+    if source_first_single:identity_inputs['audienceSingleSourceContractVersion']=1
     identity = digest(identity_inputs)
     state = deepcopy(saved_state) if saved_state is not None else None
     if state is not None:
         if (not isinstance(state, dict) or type(state.get('version')) is not int or state['version'] != contract_version
                 or state.get('inputDigest') != identity
+                or source_first_single and type(state.get('audienceSingleSourceContractVersion')) is not int
+                or source_first_single and state.get('audienceSingleSourceContractVersion')!=1
                 or protected_edits and (type(state.get('audienceBudgetContractVersion')) is not int
                     or state['audienceBudgetContractVersion']!=1 or digest(state.get('editBudget'))!=digest(edit_budget))
                 or (contract_version in (2,3,4,5,6,7,8,9) and state.get('originalReport')!=report)
@@ -455,11 +465,13 @@ def rewrite_for_beginner(report, evidence, question, invoke, parse, *, saved_sta
     else:
         request, reason = _prepare(report, evidence, question,contract_version=contract_version,
                                    requirement_context=requirement_context, objective_framing=objective_framing, process_explanations=process_explanations,
+                                   **({'source_first_single':True} if source_first_single else {}),
                                    **({'protected_edits':True} if protected_edits else {}),
                                    **({'protected_claim_ids':protected_claim_ids} if protected_claim_ids else {}))
         state = {'version': contract_version, 'inputDigest': identity, 'status': 'pending',
                  'request': request, 'requestDigest': digest(request)}
         if protected_edits:state.update(audienceBudgetContractVersion=1,editBudget=deepcopy(edit_budget))
+        if source_first_single:state['audienceSingleSourceContractVersion']=1
         if contract_version in (7,8,9):
             state['verificationPolicy'] = deepcopy(verification_policy)
         if contract_version in (2,3,4,5,6,7,8,9):
