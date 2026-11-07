@@ -16,6 +16,7 @@ import threading
 from contextlib import closing
 from datetime import datetime, UTC, timedelta
 from typing import Any, Callable, Iterable
+from services.deep_research.elapsed_accounting import freeze_transition
 
 from services.deep_research.contracts import (
     ACTIVE_STATUSES,
@@ -347,7 +348,7 @@ class DeepResearchRepository:
                                  "adaptiveResearchContractVersion", "clarificationContractVersion", "planEditContractVersion",
                                  "exactDiscoveryContractVersion", "planResumeContractVersion",
                                  "continuationContextContractVersion", "continuationFormatContractVersion", "continuationContext", "dependencyContractVersion", "adaptiveExtractionContractVersion", "sourceWrapperIdentityContractVersion", "mechanismEvidenceContractVersion", "sectionPremisesContractVersion", "localSectionContextContractVersion",
-                                 "claimIsolationContractVersion", "structuredOutputContractVersion", "draftSystemContractVersion", "repairProgressContractVersion", "sourcePrecisionContractVersion", "sourceContinuityContractVersion", "readingPriorityContractVersion", "extractionScheduleContractVersion", "synthesisEvidenceContractVersion", "authoredBodyContractVersion", "synthesisInputContractVersion", "factualPromptContractVersion", "extractionPriorityVersion", "absenceScopeContractVersion", "answerFormatContractVersion", "evidenceCoverageContractVersion", "runtimeSemanticContractVersion", "quantitySpellingContractVersion"):
+                                 "claimIsolationContractVersion", "structuredOutputContractVersion", "draftSystemContractVersion", "repairProgressContractVersion", "sourcePrecisionContractVersion", "sourceContinuityContractVersion", "readingPriorityContractVersion", "extractionScheduleContractVersion", "synthesisEvidenceContractVersion", "authoredBodyContractVersion", "synthesisInputContractVersion", "elapsedAccountingContractVersion", "factualPromptContractVersion", "extractionPriorityVersion", "absenceScopeContractVersion", "answerFormatContractVersion", "evidenceCoverageContractVersion", "runtimeSemanticContractVersion", "quantitySpellingContractVersion"):
                     if (updated.get(identity) != current.get(identity)
                             or (identity in {'factualReviewContractVersion', 'citationPresentationContractVersion', 'configurationConsistencyContractVersion', 'experimentPlanEncodingContractVersion', 'experimentOutlineEncodingContractVersion', 'experimentGenerationEnvelopeContractVersion', 'experimentInputContractVersion', 'experimentReviewEnvelopeContractVersion', 'reviewBatchPlanningContractVersion', 'executionWorkflowContractVersion', 'experimentPlanningReasoningContractVersion', 'scientificOutlineContractVersion', 'workflowMetadataRowsContractVersion', 'workflowMetadataRepairContractVersion', 'workflowInitializationOutputContractVersion', 'workflowInitializationRepairContractVersion', 'experimentExecutionGuidanceContractVersion', 'experimentDraftContractVersion', 'experimentRepairContractVersion', 'experimentRepairInputContractVersion', 'experimentRepairPriorityContractVersion', 'experimentReviewContractVersion', 'experimentEvidenceContractVersion', 'experimentIntentContractVersion', 'factualRepairContractVersion', 'factualRepairGoalContractVersion', 'answerCoherenceContractVersion', 'verificationInputContractVersion', 'audienceRewriteContractVersion', 'verificationFeedbackContractVersion', 'factRedraftContractVersion', 'factualReasoningContractVersion', 'factualScopeContractVersion', 'tableReferencesContractVersion', 'reportPresentationContractVersion', 'recommendationReviewContractVersion', 'recommendationRepairContractVersion', 'requestSemanticsContractVersion', 'answerPreservationContractVersion', 'accessRequestProjectionContractVersion', 'compactionEditorContractVersion', 'answerPointIntentContractVersion', 'scopeExpressionContractVersion', 'scopeCompactionContractVersion', 'repairCompactionContractVersion', 'tableIdentityContextContractVersion', 'coverageDiagnosticsContractVersion', 'identificationLocatorContractVersion', 'requestCoverageContractVersion', 'claimCheckContractVersion', 'scopeObservationContractVersion', 'scopeExpressionReviewContractVersion', 'scopeEvidenceContractVersion', 'factualDecisionContractVersion', 'auditSourceFieldsContractVersion', 'requestGroundingContractVersion', 'namedRowIdentityContractVersion', 'comparisonReasoningContractVersion', 'repairEvidencePriorityVersion', 'jointEvidenceContractVersion',
                                              'externalReadingContractVersion', 'sourceGapClosureContractVersion', 'factualEnvelopeContractVersion', 'reportingOwnershipContractVersion', 'draftValidationContractVersion', 'factualRepairPromptContractVersion', 'coverageInstructionsContractVersion', 'coverageInputContractVersion',
@@ -355,7 +356,7 @@ class DeepResearchRepository:
                                              'exactDiscoveryContractVersion', 'planResumeContractVersion',
                                               'continuationContextContractVersion', 'continuationFormatContractVersion', 'dependencyContractVersion',
                                              'adaptiveExtractionContractVersion', 'sourceWrapperIdentityContractVersion', 'mechanismEvidenceContractVersion', 'sectionPremisesContractVersion', 'localSectionContextContractVersion', 'claimIsolationContractVersion',
-                                             'structuredOutputContractVersion', 'draftSystemContractVersion', 'repairProgressContractVersion', 'sourcePrecisionContractVersion', 'sourceContinuityContractVersion', 'readingPriorityContractVersion', 'extractionScheduleContractVersion', 'synthesisEvidenceContractVersion', 'authoredBodyContractVersion', 'synthesisInputContractVersion', 'factualPromptContractVersion', 'extractionPriorityVersion', 'absenceScopeContractVersion', 'answerFormatContractVersion', 'evidenceCoverageContractVersion', 'runtimeSemanticContractVersion', 'quantitySpellingContractVersion'}
+                                             'structuredOutputContractVersion', 'draftSystemContractVersion', 'repairProgressContractVersion', 'sourcePrecisionContractVersion', 'sourceContinuityContractVersion', 'readingPriorityContractVersion', 'extractionScheduleContractVersion', 'synthesisEvidenceContractVersion', 'authoredBodyContractVersion', 'synthesisInputContractVersion', 'elapsedAccountingContractVersion', 'factualPromptContractVersion', 'extractionPriorityVersion', 'absenceScopeContractVersion', 'answerFormatContractVersion', 'evidenceCoverageContractVersion', 'runtimeSemanticContractVersion', 'quantitySpellingContractVersion'}
                                 and type(updated.get(identity)) is not type(current.get(identity)))):
                         raise ValueError(f"Immutable run field changed: {identity}")
                 previous_allocation=current.get('budget',{}).get('explorationAllocationVersion')
@@ -368,6 +369,7 @@ class DeepResearchRepository:
                     transition_status(current, str(updated.get("status")))
                 updated["runRevision"] = int(current.get("runRevision") or 0) + 1
                 updated["updatedAt"] = utc_now_iso()
+                updated = freeze_transition(current,updated,updated['updatedAt'])
                 serialized = json.dumps(updated, ensure_ascii=False)
                 conn.execute(
                     """
@@ -852,6 +854,7 @@ class DeepResearchRepository:
                 ).fetchall()
                 for run_id, raw in running_rows:
                     record = json.loads(raw)
+                    previous_clock = dict(record)
                     record["status"] = STATUS_PAUSED
                     record["pause"] = {
                         "requested": True,
@@ -862,6 +865,7 @@ class DeepResearchRepository:
                     }
                     record["updatedAt"] = now
                     record["runRevision"] = int(record.get("runRevision") or 0) + 1
+                    record = freeze_transition(previous_clock,record,now,recovery=True)
                     serialized = json.dumps(record, ensure_ascii=False)
                     conn.execute(
                         """
@@ -880,6 +884,7 @@ class DeepResearchRepository:
                 ).fetchall()
                 for run_id, raw in stopping_rows:
                     record = json.loads(raw)
+                    previous_clock = dict(record)
                     record["status"] = STATUS_CANCELLED
                     record["cancellation"] = {
                         "requested": True,
@@ -889,6 +894,7 @@ class DeepResearchRepository:
                     record["finishedAt"] = now
                     record["updatedAt"] = now
                     record["runRevision"] = int(record.get("runRevision") or 0) + 1
+                    record = freeze_transition(previous_clock,record,now,recovery=True)
                     serialized = json.dumps(record, ensure_ascii=False)
                     conn.execute(
                         """
@@ -990,6 +996,7 @@ class DeepResearchRepository:
                     _safe_rollback(conn)
                     raise RunNotFoundError(normalized_run)
                 run_record = json.loads(run_row[0])
+                previous_clock = dict(run_record)
                 if run_record.get("status") != STATUS_RUNNING:
                     raise CallOutsideRunningError(normalized_run, str(run_record.get("status")))
                 if expected_epoch is not None and int(run_record.get("executionEpoch") or 0) != expected_epoch:
@@ -1013,6 +1020,7 @@ class DeepResearchRepository:
                     start = datetime.fromisoformat(run_record["startedAt"].replace("Z", "+00:00"))
                     elapsed = max(0, (datetime.now(UTC) - start).total_seconds())
                     run_record["budget"] = {**run_record.get("budget", {}), "elapsedSeconds": round(elapsed, 3)}
+                run_record = freeze_transition(previous_clock,run_record,now)
                 run_record["publication"] = {
                     "published": False,
                     "publicationId": pub_id,

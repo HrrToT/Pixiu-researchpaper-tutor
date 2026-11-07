@@ -68,6 +68,8 @@ def _execution_failure_message(calls, unknown):
 
 
 def _elapsed_seconds(record):
+    from services.deep_research.elapsed_accounting import enabled as accounted,public_elapsed
+    if accounted(record):return public_elapsed(record)
     started = record.get("startedAt")
     if not started:
         return 0
@@ -280,7 +282,8 @@ class ResearchFacade:
             "materials": materials,
             "materialSnapshot": material_snapshot,  # Immutable Java snapshot
             "contextMaterials": (material_snapshot or {}).get("contextMaterials", []) if isinstance(material_snapshot, dict) else [],
-            "promptVersion": "dr-v2.20261107.404",
+            "promptVersion": "dr-v2.20261107.405",
+            "elapsedAccountingContractVersion": 1,
             "factualPromptContractVersion": 3,
             "authoredBodyContractVersion": 1,
             "synthesisInputContractVersion": 1,

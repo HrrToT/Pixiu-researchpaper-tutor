@@ -1,0 +1,17 @@
+{
+  "sourceCase": "G1N-v10",
+  "rawPayloadSha256": "839c53903d25dae0fe9dc148be6d6b1e522b18af52fcef64811d9c9eace685c5",
+  "baselineCommit": "c7786b9ebc3043dd6ddce5dadc76ea3d79d19b89",
+  "legacyMetadataUpdateAndRecoveryPayloadExact": true,
+  "oldPausedRecordsNotBackfilled": true,
+  "prospectiveNewPolicyStoppedElapsed": 49,
+  "sourceHistoricalStoredElapsed": 0,
+  "onlyElapsedAndMeasurementBudgetFieldsChanged": true,
+  "budgetReservationsUnchanged": true,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "sourcePayloadUnchanged": true,
+  "unknownRequestResent": false,
+  "contentAccepted": false,
+  "boundary": "New protocol simulated on an in-memory copy at its recorded stop timestamp; original unknown call/result and historical payload remain unchanged. Local temporary SQLite legacy/current update and recovery comparison only; no real provider retry or quality acceptance."
+}
