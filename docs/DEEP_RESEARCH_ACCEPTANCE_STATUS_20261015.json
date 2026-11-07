@@ -3733,6 +3733,14 @@
       "realDevelopmentCase": "deep-research-evidence/adam-ad1n-v2-plan-failure-20261107.json",
       "realContentAccepted": false,
       "independentCredit": 0
+    },
+    "initialPlanResponse409": {
+      "passed": 530,
+      "files": 24,
+      "sourceCommit": "f54ab79e535ee3e063536a1079a4fcc9fe733357",
+      "proof": "deep-research-evidence/initial-plan-response-409-associated-verified-regression-20261107.json",
+      "realContentAccepted": false,
+      "independentCredit": 0
     }
   },
   "stages": [
@@ -4798,16 +4806,16 @@
     "proof": "deep-research-evidence/compact-experiment-envelope-regression-20261020.json"
   },
   "currentCheckpoint": {
-    "sourceCommit": "ad7f08b6d363aab7c5e9bd5f321ffecccd829334",
+    "sourceCommit": "f54ab79e535ee3e063536a1079a4fcc9fe733357",
     "javaSourceCommit": "612c324e",
-    "promptVersion": "dr-v2.20261107.408",
+    "promptVersion": "dr-v2.20261107.409",
     "factualRepairGoalContractVersion": 5,
     "answerCoherenceContractVersion": 2,
     "quantitySpellingContractVersion": 15,
-    "component": "one native-compatible initial planning schema",
-    "componentOutcome": "408 loaded;458 related frozen checks/22files pass. AD1N-v2 real development case failed before acquisition: correct items wrapper but6identical repeated obligationId keys rejected by strict parser; also invalid purpose enum observed.2settledcalls2591tokens/9s,no new unknown.8896ledger,0active15paused;all old calls/payloads/other15tasks/1215index exact. No scientific acceptance, independent0; fullDR0-DR5 incomplete.",
+    "component": "auditable same-value plan duplicates plus strict schema",
+    "componentOutcome": "409 loaded;530related checks/24files frozen pass.Identical duplicates audited, conflicts/noninteger precision issues rejected; complete plan schema including purpose and short request boundary enforced. Both old request fingerprints/raw responses exact; v1 memory plan probe validates,v2 still rejects invalid purpose.No scientific acceptance;8896ledger/16tasks/1215index exact,0active15paused.FullDR0-DR5 incomplete/independent0.",
     "runtimeLoadedVerified": true,
-    "runtimeProof": "deep-research-evidence/runtime-load-initial-plan-instructions-408-20261107.json",
+    "runtimeProof": "deep-research-evidence/runtime-load-initial-plan-response-409-20261107.json",
     "fullDR0DR5Proved": false,
     "independentCredit": 0,
     "lastCapturedLedgerRows": 8896,
