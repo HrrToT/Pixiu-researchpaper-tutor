@@ -330,6 +330,9 @@ class TrackedLLMInvoker:
         request_identity = {"prompt": prompt, "extra": extra_body or {}}
         if structured:
             request_identity['messages'] = wire_messages
+        from services.deep_research.initial_plan_response import enabled as initial_plan_response_enabled
+        initial_plan_response=structured and initial_plan_response_enabled(transport_record,node)
+        if initial_plan_response:request_identity['initialPlanResponseContractVersion']=1
         args_digest = digest(request_identity)
         if bounded_review and self._run_record:
             from services.deep_research.factual_review import admission
@@ -368,6 +371,9 @@ class TrackedLLMInvoker:
         )
         
         if reused:
+            if initial_plan_response:
+                from services.deep_research.initial_plan_response import verify_saved
+                verify_saved(call_record.get('result'))
             return call_record.get("result", {"content": "", "usage": {}})
         
         # Execute LLM call - send-only try
@@ -430,7 +436,7 @@ class TrackedLLMInvoker:
             response["reportedModel"] = reported_model
         if structured:
             from services.deep_research.structured_output import normalize
-            response = normalize(node, response,**({'factual_singleton':True}
+            response = normalize(node, response,**({'initial_plan_response':True} if initial_plan_response else {}),**({'factual_singleton':True}
                 if type(transport_record.get('factualEnvelopeContractVersion')) is int
                 and transport_record['factualEnvelopeContractVersion']==1
                 and type(transport_record.get('factualDecisionContractVersion')) is int

@@ -67,7 +67,14 @@ def prompt(record,data_guidance):
                 'responseType':'explanation'}]}],
         'searchQuery':'<concise query>','dependencies':[],'priority':1}]}
     from services.deep_research.request_semantics import PLAN_GUIDANCE_V2
-    return (RULES+'\n'+data_guidance+'\n'+PLAN_GUIDANCE_V2
+    from services.deep_research.initial_plan_response import enabled as response_enabled
+    response_rule=('\npurpose has exactly TWO allowed values: answer_requirement or supporting_research. '
+        'Do not put responseType values such as limitation in purpose. Every displayed field is required; '
+        'no extra keys. Use responseType only inside completionCriteria. '
+        'Exception to the8-character excerpt minimum: for answer_requirement, if the entire human '
+        'question is shorter than8 characters, use that entire literal question. '
+        'supporting_research still requires at least8 literal characters.\n' if response_enabled(record) else '')
+    return (RULES+response_rule+'\n'+data_guidance+'\n'+PLAN_GUIDANCE_V2
         +'\nInput data (goals, not paper facts):\n'+json.dumps(inputs,ensure_ascii=False,separators=(',',':'))
         +'\nOnly output shape (choose appropriate responseType and purpose values):\n'
         +json.dumps(shape,ensure_ascii=False,separators=(',',':')))

@@ -356,6 +356,11 @@ Return a JSON ARRAY of plan items, NOT an object with items field."""
         if not isinstance(parsed, list):
             logger.warning("Plan response not a list, failing closed: %s", type(parsed))
             return invalid_plan('Plan response is not a JSON array')
+
+        from services.deep_research.initial_plan_response import enabled as initial_plan_response_enabled,validate_shape as validate_initial_plan_shape
+        if initial_plan_response_enabled(record):
+            try:validate_initial_plan_shape(parsed,question)
+            except ValueError as exc:return invalid_plan(exc)
         
         try:
             from services.deep_research.plan_identity import normalize_generated_obligation_ids

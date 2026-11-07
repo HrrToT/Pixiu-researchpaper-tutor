@@ -37,6 +37,16 @@ class FixtureModel:
                                   "requiredSources": ["alpha", "beta"], "completionCriteria": [
                                       {"criterionId": "results", "requirement": "State both papers' reported accuracy", "responseType": "identification"},
                                       {"criterionId": "conditions", "requirement": "State evaluation conditions and comparability", "responseType": "limitation"}]}]}]
+            if 'purpose has exactly TWO allowed values' in prompt:
+                # New server profile requests a complete plan object. Keep the
+                # same scientific fixture and deliberate downstream bad value.
+                inputs=json.JSONDecoder().raw_decode(prompt.split('Input data (goals, not paper facts):\n',1)[1])[0]
+                for item in content:
+                    item.update(searchQuery='accuracy fixed benchmark',priority=1)
+                    for obligation in item['obligations']:
+                        obligation.update(searchQuery='accuracy fixed benchmark',purpose='answer_requirement',
+                            requestExcerpt=inputs['question'])
+                content={'items':content}
         elif prompt.startswith("Extract evidence"):
             quote = next(text.split(". ")[0] + "." for text in PAPERS.values() if text in prompt)
             content = [{"quote": quote, "obligationIds": ["o"], "location": {"page": 3}}]

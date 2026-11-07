@@ -174,8 +174,10 @@ def messages_for_record(record, node, prompt):
         prospective=kind=='experiment_design'),prospective=kind=='experiment_design')
 
 
-def normalize(node, response, *, factual_singleton=False):
+def normalize(node, response, *, factual_singleton=False,initial_plan_response=False):
     if type(factual_singleton) is not bool:raise ValueError('Invalid factual response envelope policy')
+    if type(initial_plan_response) is not bool or initial_plan_response and node!='plan':
+        raise ValueError('Invalid initial planning response policy')
     raw = response.get('content', '')
     output = {**response, 'rawContent': raw, 'structuredOutput': {'version': 1,
               'requestedFormat': 'json_object', 'expectedShape': 'items' if node in ARRAY_NODES else 'object'}}
@@ -203,7 +205,11 @@ def normalize(node, response, *, factual_singleton=False):
                     raise ValueError('Duplicate JSON key')
                 result[key] = value
             return result
-        parsed = json.loads(text, parse_constant=reject_constant, object_pairs_hook=unique_object)
+        if initial_plan_response:
+            from services.deep_research.initial_plan_response import parse
+            parsed,audit=parse(text)
+            output['structuredOutput']['initialPlanResponseAudit']=audit
+        else:parsed = json.loads(text, parse_constant=reject_constant, object_pairs_hook=unique_object)
     except (ValueError, TypeError, RecursionError):
         output['content'] = 'null'
         output['structuredOutput']['receivedShape'] = 'invalid_json'
@@ -224,7 +230,8 @@ def normalize(node, response, *, factual_singleton=False):
             output['content'] = json.dumps(parsed['items'], ensure_ascii=False, separators=(',', ':'), allow_nan=False)
             output['structuredOutput']['receivedShape'] = 'items'
         elif isinstance(parsed, list):
-            output['content'] = text  # Valid historical array compatibility, no field filling.
+            output['content'] = (json.dumps(parsed,ensure_ascii=False,separators=(',',':'),allow_nan=False)
+                if initial_plan_response else text)  # Historical response remains byte-exact.
             output['structuredOutput']['receivedShape'] = 'array_compat'
         elif factual_singleton and node in {'verify','verify_repair'} and isinstance(parsed,dict):
             # Retain only a complete candidate for the downstream exact-target

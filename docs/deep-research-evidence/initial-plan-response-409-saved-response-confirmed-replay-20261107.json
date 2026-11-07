@@ -1,0 +1,294 @@
+{
+  "version": "409",
+  "replays": [
+    {
+      "case": "AD1N-v1",
+      "oldFrozenArgsDigestExact": true,
+      "argsDigest": "bcabe6e6c262e29658d310aa40397ec3524edc7b1932a468ba105e40b2e17706",
+      "originalFilesSha256": {
+        "AD1N-v1.payload.json": "23afbdc1f00d3506f68716ebdfbef3eb462b1a9de24fd4d24f21d3aa17155eaa",
+        "AD1N-v1.calls.json": "03c063b2d10099fb657451608554940c0784472a5dd2090fa8d64e15df2d3985"
+      },
+      "originalFilesUnchanged": true,
+      "duplicateAudit": {
+        "version": 1,
+        "mode": "identical_duplicate_keys_only",
+        "inputSha256": "36490af0cab75a1d2a2d26123cf4cbafc05867472f4619bc87d4359d35b9cb8b",
+        "canonicalRootSha256": "256ba57f2d5007992e07aaf5a15ff3a2108717bb60bbcdbc1c08887dbbc2b569",
+        "duplicates": [
+          {
+            "objectPath": [
+              0,
+              "obligations",
+              0
+            ],
+            "objectPairsPath": [
+              "item",
+              0,
+              "pair",
+              2,
+              "value",
+              "item",
+              0
+            ],
+            "key": "purpose",
+            "firstPairIndex": 4,
+            "duplicatePairIndex": 7,
+            "valueSha256": "a5f38ffbeb2b868e0aac66f4a9ad1bb31943289faa4505a065f914c1cccd0e82"
+          },
+          {
+            "objectPath": [
+              0,
+              "obligations",
+              1
+            ],
+            "objectPairsPath": [
+              "item",
+              0,
+              "pair",
+              2,
+              "value",
+              "item",
+              1
+            ],
+            "key": "purpose",
+            "firstPairIndex": 4,
+            "duplicatePairIndex": 7,
+            "valueSha256": "a5f38ffbeb2b868e0aac66f4a9ad1bb31943289faa4505a065f914c1cccd0e82"
+          },
+          {
+            "objectPath": [
+              1,
+              "obligations",
+              0
+            ],
+            "objectPairsPath": [
+              "item",
+              1,
+              "pair",
+              2,
+              "value",
+              "item",
+              0
+            ],
+            "key": "purpose",
+            "firstPairIndex": 4,
+            "duplicatePairIndex": 7,
+            "valueSha256": "a5f38ffbeb2b868e0aac66f4a9ad1bb31943289faa4505a065f914c1cccd0e82"
+          },
+          {
+            "objectPath": [
+              1,
+              "obligations",
+              1
+            ],
+            "objectPairsPath": [
+              "item",
+              1,
+              "pair",
+              2,
+              "value",
+              "item",
+              1
+            ],
+            "key": "purpose",
+            "firstPairIndex": 4,
+            "duplicatePairIndex": 7,
+            "valueSha256": "a5f38ffbeb2b868e0aac66f4a9ad1bb31943289faa4505a065f914c1cccd0e82"
+          }
+        ],
+        "scientificApproval": false
+      },
+      "prospectiveNodeOutcome": {
+        "plan_ids": [
+          "item_1",
+          "item_2"
+        ],
+        "assess_inherited": false,
+        "plan_revision": 0
+      },
+      "prospectiveDiagnostic": {
+        "status": "validated",
+        "requiresCompletionCriteria": true
+      },
+      "noSourceEvidenceOrScientificVerdict": true
+    },
+    {
+      "case": "AD1N-v2",
+      "oldFrozenArgsDigestExact": true,
+      "argsDigest": "924663608ba4c6913a2ce2f0e8de20c3cc385ac3d90815700fbdcf675665d5ba",
+      "originalFilesSha256": {
+        "AD1N-v2.payload.json": "4249b34d4d896cae43e24ac02f0c3d505ca90dbe5f4f60bf632ba37d27f661c4",
+        "AD1N-v2.calls.json": "d223aa3711dfdba94bf79c0de3ad555b23cf43b82320089d0fed19e29e13796b"
+      },
+      "originalFilesUnchanged": true,
+      "duplicateAudit": {
+        "version": 1,
+        "mode": "identical_duplicate_keys_only",
+        "inputSha256": "c4989d20880df2cdaff65d3a6a39c8a6a26ba47eb48d2496c95180f2f5fc93f8",
+        "canonicalRootSha256": "993a9a8e464384e49434b051e9a7ab785b6eba1262ced0b6246de96e001e25da",
+        "duplicates": [
+          {
+            "objectPath": [
+              "items",
+              0,
+              "obligations",
+              0
+            ],
+            "objectPairsPath": [
+              "pair",
+              0,
+              "value",
+              "item",
+              0,
+              "pair",
+              2,
+              "value",
+              "item",
+              0
+            ],
+            "key": "obligationId",
+            "firstPairIndex": 0,
+            "duplicatePairIndex": 7,
+            "valueSha256": "4de33337ceee3c81bc01a2a434212e6853e33ccbfeef5f5885e947472712bd16"
+          },
+          {
+            "objectPath": [
+              "items",
+              0,
+              "obligations",
+              1
+            ],
+            "objectPairsPath": [
+              "pair",
+              0,
+              "value",
+              "item",
+              0,
+              "pair",
+              2,
+              "value",
+              "item",
+              1
+            ],
+            "key": "obligationId",
+            "firstPairIndex": 0,
+            "duplicatePairIndex": 7,
+            "valueSha256": "b5299afd2a9081382990ea194c86cc4a0b853bfdf29ab0921542ea2d93887c2c"
+          },
+          {
+            "objectPath": [
+              "items",
+              1,
+              "obligations",
+              0
+            ],
+            "objectPairsPath": [
+              "pair",
+              0,
+              "value",
+              "item",
+              1,
+              "pair",
+              2,
+              "value",
+              "item",
+              0
+            ],
+            "key": "obligationId",
+            "firstPairIndex": 0,
+            "duplicatePairIndex": 7,
+            "valueSha256": "bb56bf78f2393390188f5f6571cf087763230fc727874eed70176b11af067e77"
+          },
+          {
+            "objectPath": [
+              "items",
+              1,
+              "obligations",
+              1
+            ],
+            "objectPairsPath": [
+              "pair",
+              0,
+              "value",
+              "item",
+              1,
+              "pair",
+              2,
+              "value",
+              "item",
+              1
+            ],
+            "key": "obligationId",
+            "firstPairIndex": 0,
+            "duplicatePairIndex": 7,
+            "valueSha256": "4a5b3d04e8b415092129815eeeb408ff02e52c02b7f2d9517876acba4e4826c5"
+          },
+          {
+            "objectPath": [
+              "items",
+              2,
+              "obligations",
+              0
+            ],
+            "objectPairsPath": [
+              "pair",
+              0,
+              "value",
+              "item",
+              2,
+              "pair",
+              2,
+              "value",
+              "item",
+              0
+            ],
+            "key": "obligationId",
+            "firstPairIndex": 0,
+            "duplicatePairIndex": 7,
+            "valueSha256": "da643edb82e879372a42b48d3a3964968a07db209bd55770d3baf658cde67fd0"
+          },
+          {
+            "objectPath": [
+              "items",
+              2,
+              "obligations",
+              1
+            ],
+            "objectPairsPath": [
+              "pair",
+              0,
+              "value",
+              "item",
+              2,
+              "pair",
+              2,
+              "value",
+              "item",
+              1
+            ],
+            "key": "obligationId",
+            "firstPairIndex": 0,
+            "duplicatePairIndex": 7,
+            "valueSha256": "765fda1a3af4abdad4ed81540460d4d3bf9d03efd87c4b7d7652e0b3bb942024"
+          }
+        ],
+        "scientificApproval": false
+      },
+      "prospectiveNodeOutcome": {
+        "error_code": "invalid_plan_response",
+        "outcome": "none",
+        "plan_ids": []
+      },
+      "prospectiveDiagnostic": {
+        "status": "rejected",
+        "reason": "Invalid initial plan purpose"
+      },
+      "noSourceEvidenceOrScientificVerdict": true
+    }
+  ],
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "independentCredit": 0,
+  "boundary": "Memory-only new-policy probes of exact saved bytes. v1 can reach existing plan/source/version checks; v2 remains rejected for purpose enum. Neither old run is resumed/rewritten or scientifically approved."
+}
