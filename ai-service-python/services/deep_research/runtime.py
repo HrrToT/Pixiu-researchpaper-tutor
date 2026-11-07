@@ -251,7 +251,13 @@ class ScopedModelClient:
                     if (request.messages != messages or 'messages' in (request.extra_body or {})
                             or not validate_options(record,self.node,request.extra_body or {})):
                         raise DeepResearchError('invalid_model_options', '研究模型调用选项无效，尚未发送。')
-                factory = parent.get_routine_client if self.node in {"resolve_brief", "extract", "assess_relevance"} and parent.get_routine_client else parent.get_client
+                from services.deep_research.initial_plan_routing import uses_routine_model
+                routine_node=(self.node in {"resolve_brief", "extract", "assess_relevance"}
+                              or uses_routine_model(record,self.node))
+                if uses_routine_model(record,self.node) and parent.get_routine_client:
+                    from core.config import settings
+                    timeout=min(timeout,float(settings.deep_research_request_timeout_seconds))
+                factory = parent.get_routine_client if routine_node and parent.get_routine_client else parent.get_client
                 # Respect the role policy already fingerprinted and reserved by the invoker.
                 # Unspecified/routine nodes stay non-thinking; complex nodes reserve more output.
                 extra = {"thinking": {"type": "disabled"}, **(request.extra_body or {})}
