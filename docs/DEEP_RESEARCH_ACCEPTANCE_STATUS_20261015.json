@@ -2,6 +2,17 @@
   "asOf": "2026-11-12",
   "objective": "Complete DR0-DR5 in DEEP_RESEARCH_DESIGN_20261012.md without redefining success around implemented subsets.",
   "overall": "incomplete",
+  "currentFullOfflineRegression": {
+    "sourceCommit": "5035b5a101f2f56e14be0fe579432ccd5a1e4f95",
+    "modules": 411,
+    "passed": 7419,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "warnings": 1,
+    "proof": "deep-research-evidence/current-rollback-complete-regression-20261112.json",
+    "boundary": "Current complete offline research suite after rollback fix; no real generation or independent content acceptance. Recorder recovery and sandbox abort explicitly recorded."
+  },
   "freshMaterialReadiness": "H1-GSC frozen/not executed; independent acceptance remains zero. H2-H6 fresh definitions pending. VQ pair excluded from independent eligibility due historical third-party receipt exposure; D2-VQ-v1 sealed for full development comparison only, no model execution/import. Latest official balance remains -0.19 CNY/unavailable.",
   "evidenceRule": "Machine completion, offline fixtures, real transport, source support, content quality and independent-case eligibility are separate. Historical results are not silently upgraded to current passes.",
   "latestVerification": {
