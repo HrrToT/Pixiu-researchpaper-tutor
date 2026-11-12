@@ -15,3 +15,5 @@ AD1N-v16的真实生成请求已完整包含reasoning新分支，但尾部又要
 AD1N-v16保存输入回放：旧请求、分配及字节数与原记录及提交48e5ac55一致。新请求23,879字节，仍在24KB内；次要候选从10条减为9条，五条核心原引用及全部保留原句/上下文不变，核心前提缺口为0，模型选项不变。真实效果尚待验证；当前DeepSeek请求曾返回HTTP402，余额查询为0.03元，未自动重试。
 
 证据：`docs/deep-research-evidence/reasoned-scope-429-saved-preparation-20261112.json`和`reasoned-scope-429-associated-regression-20261112.json`。DR0—DR5及独立内容验收仍未完成。
+
+67个关联测试文件1,162项通过（68.93秒），服务源码摘要保持。.429已加载，Python、RAG、GROBID健康检查通过；9,226条调用记录、15个暂停任务、16个任务及1,215条索引保持。加载没有新增模型调用。运行证据：`runtime-load-reasoned-scope-429-20261112.json`。当前仅剩真实内容效果未验证的边界，不能将离线回归当作完整功能通过。
