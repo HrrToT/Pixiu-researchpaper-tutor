@@ -4,7 +4,7 @@ from copy import deepcopy
 
 def enabled(record,kind=None):
     from services.deep_research.factual_prompt import enabled as factual_enabled
-    return (type(record.get('authoredBodyContractVersion')) is int and record['authoredBodyContractVersion'] in (1, 2)
+    return (type(record.get('authoredBodyContractVersion')) is int and record['authoredBodyContractVersion'] in (1, 2, 3)
         and record.get('scopeExpressionContractVersion')==5
         and factual_enabled(record,kind or record.get('state',{}).get('outputKind')))
 
@@ -19,7 +19,7 @@ same length limit and receives all independent checks; the branch grants no supp
 
 
 def reasoning_enabled(record, kind=None):
-    return (enabled(record, kind) and record['authoredBodyContractVersion'] == 2
+    return (enabled(record, kind) and record['authoredBodyContractVersion'] in (2, 3)
             and type(record.get('synthesisInputContractVersion')) is int
             and record['synthesisInputContractVersion'] == 1
             and type(record.get('factualPromptContractVersion')) is int
@@ -83,13 +83,25 @@ def decode(claim, *, reasoning=False):
     raise ValueError('Invalid authored boundary branch')
 
 
-def scope_guidance(version):
+def scope_guidance(version, *, local_reasoning=False):
+    if type(local_reasoning) is not bool:
+        raise ValueError('Invalid local reasoning guidance policy')
+    if local_reasoning and (type(version) is not int or version != 5):
+        raise ValueError('Local reasoning guidance requires scope contract5')
     from services.deep_research.factual_prompt import scope_guidance as canonical
-    return canonical(version).replace(
+    result = canonical(version).replace(
         'kind="inference",text="",conditions={}, own evidenceRefs,\nscopeExpression=',
         'kind="inference", own evidenceRefs, body.boundary=').replace(
         'Other points: scopeExpression=null, ordinary text.',
         'Other points use body.prose with text/conditions.')
+    if local_reasoning:
+        result=result.replace('For authored evidence boundaries use',
+            'For evidence-comparison or cross-setting generalization boundaries ONLY, use',1).replace(
+            'Other points use body.prose with text/conditions.',
+            'Local source-grounded mechanism deductions, including their logical limits, use body.reasoning; '
+            'ordinary source reports use body.prose. Do not invent a comparison or parameter inventory '
+            'to explain a local mechanism. Keep any scientific condition actually needed for the deduction.',1)
+    return result
 
 
 def required_scope_ids(state,report):

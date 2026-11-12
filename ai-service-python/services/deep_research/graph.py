@@ -1437,8 +1437,12 @@ space with unsupported global absence or incidental iteration/performance values
         from services.deep_research.scope_expression import enabled as scope_expression_enabled, guidance as scope_expression_guidance
         if scope_expression_enabled(record) and output_kind != 'experiment_design':
             if authored_body:
-                from services.deep_research.authored_body import scope_guidance as factual_scope_guidance
-            prompt += '\n' + (factual_scope_guidance(record['scopeExpressionContractVersion'])
+                from services.deep_research.authored_body import scope_guidance as factual_scope_guidance, reasoning_enabled as reasoning_body_enabled
+            prompt += '\n' + (factual_scope_guidance(record['scopeExpressionContractVersion'],
+                **({'local_reasoning':True} if authored_body
+                   and reasoning_body_enabled(record,output_kind)
+                   and type(record.get('authoredBodyContractVersion')) is int
+                   and record['authoredBodyContractVersion']==3 else {}))
                 if compact_factual_prompt else scope_expression_guidance(record['scopeExpressionContractVersion']))
         from services.deep_research.experiment_planning import enabled as staged_experiment,basis_limit
         staged_mode=premise_mode and output_kind=='experiment_design' and staged_experiment(record)

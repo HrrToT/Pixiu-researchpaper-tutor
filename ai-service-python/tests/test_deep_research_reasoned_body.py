@@ -79,3 +79,18 @@ def test_new_branch_requires_frozen_complete_initial_authoring_profile():
 def test_reasoning_policy_is_typed(bad):
     with pytest.raises(ValueError): decode(reasoning(), reasoning=bad)
     with pytest.raises(ValueError): materialize_claims({'claims': []}, 5, authored_body=True, reasoning=bad)
+
+
+def test_trailing_scope_guidance_distinguishes_local_deductions_without_waiving_comparison_audits():
+    from services.deep_research.authored_body import scope_guidance
+    old = scope_guidance(5)
+    new = scope_guidance(5, local_reasoning=True)
+    assert 'For authored evidence boundaries use' in old
+    assert 'For evidence-comparison or cross-setting generalization boundaries ONLY' in new
+    assert 'Local source-grounded mechanism deductions, including their logical limits, use body.reasoning' in new
+    assert 'Other points use body.prose with text/conditions.' not in new
+    for rule in ('Max4 settings/2 propositions', 'Own sufficient data or a theorem establishing P makes the boundary fail.',
+                 'comparison_evidence', 'receives independent factual/scope/coverage review.'):
+        assert rule in old and rule in new
+    assert scope_guidance(5, local_reasoning=False) == old
+    with pytest.raises(ValueError): scope_guidance(4, local_reasoning=True)
