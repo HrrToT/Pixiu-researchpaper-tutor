@@ -4260,19 +4260,22 @@
   },
   "currentDevelopmentMode": "Primary Codex only; Goal active. No Qoder/new agents, no automatic model retries. Current production source a7301514/.430. Offline work continues; full DR0-DR5 scope and independent gates remain open.",
   "loadedRuntime": {
-    "commit": "a7301514f1d12ddaa65cbea711e1bdd932d8a82a",
+    "commit": "5ad89bc3f42346d1231fed1285b6b0f5f408aac0",
     "promptVersion": "dr-v2.20261112.430",
     "callsAfterLatestCase": 9226,
     "active": 0,
     "historicalPausedUnknown": 15,
     "indexDocuments": 1215,
-    "proof": "deep-research-evidence/runtime-load-observation-stop-430-20261112.json",
+    "proof": "deep-research-evidence/service-fixes-loaded-20261112.json",
     "allSourceHashesExact": true,
     "lastRealModelRunCommit": "16439c50",
     "lastRealModelRunPromptVersion": "dr-v2.20261112.428",
     "lastRealCase": "AD1N-v16",
     "lastRealOutcome": "failed/provider_payment_rejected",
-    "javaAndFrontendBoundary": "Java was not rebuilt. Current frontend source has unit/type/build and closed-API browser evidence, but no new live Java/Python workbench persistence acceptance or deployment."
+    "javaAndFrontendBoundary": "Java artifact ownership fix and Python rollout fix loaded with full task/database preservation. Frontend not redeployed. Isolated UI/persistence and synthetic cross-service publication passed; real generated research and learning quality remain unverified.",
+    "javaCommit": "81a827f0c03febc4d181900b00516e38be916511",
+    "taskCount": 103,
+    "sourceAttestation": "deep-research-evidence/loaded-source-index-attestation-20261112.json"
   },
   "nextQualityWork": [
     "Continue offline robustness and current-scope audit while awaiting provider recharge confirmation.",
@@ -4863,22 +4866,23 @@
     "proof": "deep-research-evidence/compact-experiment-envelope-regression-20261020.json"
   },
   "currentCheckpoint": {
-    "sourceCommit": "a7301514f1d12ddaa65cbea711e1bdd932d8a82a",
+    "sourceCommit": "5ad89bc3f42346d1231fed1285b6b0f5f408aac0",
     "promptVersion": "dr-v2.20261112.430",
-    "component": "Reader responsibility mapping, typed local mechanism deductions, diagnostic schema consistency and short-circuit failed observation groups",
-    "componentOutcome": "Implemented and offline checked. AD1N-v16 real run failed at provider payment; the local-reasoning branch was not used. No new manual content acceptance.",
+    "component": "Verified Java artifact ownership and Python rollout continuation fixes loaded",
+    "componentOutcome": "103 task payloads and all research table hashes preserved; health normal; 9226 calls and 15 paused unchanged.",
     "runtimeLoadedVerified": true,
-    "runtimeProof": "deep-research-evidence/runtime-load-observation-stop-430-20261112.json",
+    "runtimeProof": "deep-research-evidence/service-fixes-loaded-20261112.json",
     "fullDR0DR5Proved": false,
     "independentCredit": 0,
     "lastCapturedLedgerRows": 9226,
     "lastCapturedActiveProductionRuns": 0,
     "historicalPausedRunsAtCapture": 15,
     "lastConfirmedIndexDocuments": 1215,
-    "lastConfirmedIndexSha256": "f1ab6ad746b00ce95dfb36b76fa06d011cfb04d2b0bccf1e194a826d0606465f",
+    "lastConfirmedIndexSha256": "d606c9c0c2033489fac612a13634909e2f1d5be22d7890c0b24742e5a2e12a39",
     "lastRealContentReview": "deep-research-evidence/adam-ad1n-v16-content-review-20261112.json",
     "offlineFullSuiteProof": "deep-research-evidence/dr430-complete-offline-final-regression-20261112.json",
-    "frontendAcceptance": "Current unit/component, type, build and six closed-API workbench browser cases passed. Live backend persistence and actual research/learning quality remain unverified."
+    "frontendAcceptance": "Unit/type/build, closed-API UI, isolated Java persistence and synthetic Java/Python publication verified. Fixes now loaded; frontend not redeployed; real generated research content and broader acceptance remain open.",
+    "lastConfirmedIndexDigestAlgorithm": "sha256(json.dumps(sorted(embedding_ids),ensure_ascii=False).encode(utf8)); older digest algorithm not rederived"
   },
   "sharedModuleSourceCheckpoint": {
     "sourceCommit": "f8ae5177",
@@ -13286,19 +13290,21 @@
     "javaProcessRestartVerified": true,
     "pythonRuntimeReinitializationVerified": true,
     "generatedResearchContentVerified": false,
-    "loadedInUserService": false,
+    "loadedInUserService": true,
     "modelCalls": 0,
     "productionWrites": 0,
-    "proof": "DEEP_RESEARCH_CROSS_SERVICE_PUBLICATION_20261112.md"
+    "proof": "DEEP_RESEARCH_CROSS_SERVICE_PUBLICATION_20261112.md",
+    "loadProof": "deep-research-evidence/service-fixes-loaded-20261112.json"
   },
   "rollbackContinuationFix20261112": {
     "candidateVerified": true,
-    "loadedInUserService": false,
+    "loadedInUserService": true,
     "relatedModules": 7,
     "relatedChecks": 57,
     "productionFlagChanged": false,
     "modelCalls": 0,
-    "proof": "DEEP_RESEARCH_ROLLBACK_CONTINUATION_FIX_20261112.md"
+    "proof": "DEEP_RESEARCH_ROLLBACK_CONTINUATION_FIX_20261112.md",
+    "loadProof": "deep-research-evidence/service-fixes-loaded-20261112.json"
   },
   "providerAvailability20261112": {
     "httpStatus": 200,
@@ -13309,13 +13315,14 @@
   },
   "researchArtifactOwnershipFix20261112": {
     "candidateFixVerified": true,
-    "loadedInUserService": false,
+    "loadedInUserService": true,
     "javaClasses": 18,
     "javaChecks": 168,
     "isolatedBrowserCases": 1,
     "newModelCalls": 0,
     "productionWrites": 0,
-    "proof": "DEEP_RESEARCH_ARTIFACT_OWNERSHIP_FIX_20261112.md"
+    "proof": "DEEP_RESEARCH_ARTIFACT_OWNERSHIP_FIX_20261112.md",
+    "loadProof": "deep-research-evidence/service-fixes-loaded-20261112.json"
   },
   "liveUserArtifactPersistence20261112": {
     "userAuthoredArtifactPersistenceVerified": true,

@@ -18,7 +18,7 @@
 
 使用新构建 JAR 再运行真实工作台与独立 Java/H2 的笔记持久化案例，1 项浏览器用例通过；编辑、清缓存刷新、历史恢复、过期修订号 409 保护、服务重启后的完整 JSON 保持均通过。新构建 SHA-256 为 `3172bd62c53081536f8d57288ea4accd587303226b15ae028b667e58f655a4aa`。
 
-当前用户服务尚未替换：另一交互优化任务正在使用共享项目。本轮只启动并关闭独立测试服务，不修改真实任务数据。研究来源保护证明来自 Java HTTP/服务测试，真实浏览器案例只证明用户笔记链路；不将二者冒充真实 Python 研究生成验收。
+候选验收阶段只启动并关闭独立测试服务。随后已核实另一交互任务未运行，并完成当前服务加载与103个任务数据保持核对，见[修复加载记录](DEEP_RESEARCH_SERVICE_FIXES_LOADED_20261112.md)。研究来源保护证明来自 Java HTTP/服务测试，真实浏览器案例只证明用户笔记链路；不将二者冒充真实 Python 研究生成验收。
 
 证据：`deep-research-evidence/research-artifact-ownership-20261112.json`、`deep-research-evidence/frontend-live-persistence-ownership-fix-20261112.json`。完整构建/测试日志与修复前失败报告保留在 tmp。
 
