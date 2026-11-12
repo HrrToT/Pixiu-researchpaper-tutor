@@ -2,7 +2,7 @@
   "asOf": "2026-11-12",
   "objective": "Complete DR0-DR5 in DEEP_RESEARCH_DESIGN_20261012.md without redefining success around implemented subsets.",
   "overall": "incomplete",
-  "freshMaterialReadiness": "Independent content acceptance remains 0. Retired cases remain development-only; historical unknowns are not reissued. Fresh replacements and full DR0-DR5 release audit remain pending.",
+  "freshMaterialReadiness": "H1-GSC frozen and not executed after PDF/history/cache review; zero independent acceptance. Survey candidate excluded due legacy use. H2-H6 replacement definitions remain pending; no material imported or paid request sent.",
   "evidenceRule": "Machine completion, offline fixtures, real transport, source support, content quality and independent-case eligibility are separate. Historical results are not silently upgraded to current passes.",
   "latestVerification": {
     "backendResearchModelReadingIntegration": {
@@ -4278,7 +4278,7 @@
     "sourceAttestation": "deep-research-evidence/loaded-source-index-attestation-20261112.json"
   },
   "nextQualityWork": [
-    "Review local candidate primary PDFs, exact versions, cache and historical use; freeze only after full original-complexity criteria and no tuning exposure are verified.",
+    "Prepare fresh H2-H6 definitions at original complexity. H1-GSC is frozen/unexecuted; do not tune on its evaluator anchors or treat the survey previously used in legacy demos as fresh.",
     "After provider becomes available, validate current mechanism explanation, multi-paper comparison and full executable experiment quality with bounded new cases, no old receipt retries.",
     "Run fresh untuned H1-H6 after development content passes; preserve original scoring, budgets and unknown outcomes.",
     "Complete actual generated-result interaction and final frozen regression/release/rollback audit; keep PR draft until all original gates pass."
@@ -4298,14 +4298,14 @@
     "scope": "Original full DR0-DR5; no quality or independent requirement waived by engineering checks",
     "proof": "DEEP_RESEARCH_SCOPE_AUDIT_20261112.md",
     "openItems": [
-      "Prepare genuinely fresh H1-H6 definitions with primary-source/cache/history checks; two local files only passed identity/size preflight, zero new frozen cases.",
+      "H1-GSC frozen/unexecuted; prepare genuinely fresh H2-H6 with primary-source/cache/history checks. Survey candidate excluded, zero independent credit.",
       "Complete current novice mechanism explanation, full faithful multi-paper synthesis and executable scientific experiment development quality.",
       "Execute fresh untuned H1-H6 and all original hard gates; keep old failures and 15 unknown pauses unchanged.",
       "Validate actual generated report interaction and final frozen release/failure-cutover requirements; isolated backup restore is not live production cutover."
     ]
   },
-  "nextIndependentCasesManifest": "DEEP_RESEARCH_INDEPENDENT_CASES_20261018.json",
-  "nextIndependentCasesStatus": "Original first-five results preserved,0/5 full content passes. All H1F-H5F are retired development material. H3F-v8 fixed novice explanation is now development-accepted with0independent credit; H2F-v3/H5F-v3 remain content failures. Fresh replacements still required.",
+  "nextIndependentCasesManifest": "DEEP_RESEARCH_NEXT_HOLDOUTS_20261112.json",
+  "nextIndependentCasesStatus": "Partial new replacement set only: H1-GSC frozen/unexecuted, H2-H6 pending. Original first-five0/5 and retired development claims remain unchanged; independent credit0. Do not execute fresh holdouts until development quality is ready.",
   "priorIndependentSlots": [
     [
       {
@@ -13280,6 +13280,22 @@
     "descriptionSynchronized": true,
     "mergeRequested": false,
     "proof": "deep-research-evidence/pr-status-synchronized-20261112.json"
+  },
+  "freshHoldoutPreparation20261112": {
+    "frozenCase": "H1-GSC",
+    "status": "not_executed_material_not_imported",
+    "independentCredit": 0,
+    "frozenDefinitionCount": 1,
+    "surveyExcludedForPriorUse": true,
+    "pendingSlots": [
+      "H2",
+      "H3",
+      "H4",
+      "H5",
+      "H6"
+    ],
+    "modelCalls": 0,
+    "proof": "DEEP_RESEARCH_HOLDOUT_PREPARATION_20261112.md"
   },
   "backupRestoreDrill20261112": {
     "isolatedBackupRestoreVerified": true,

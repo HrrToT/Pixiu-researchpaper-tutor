@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "asOf": "2026-11-12",
+  "scope": "Original H1-H6, partial replacement preparation only",
+  "independentAccepted": 0,
+  "slots": [
+    {
+      "id": "H1",
+      "state": "frozen_not_executed",
+      "case": "H1-GSC",
+      "manifest": "DEEP_RESEARCH_GSC_EXPLANATION_HOLDOUT_20261112.json"
+    },
+    {
+      "id": "H2",
+      "state": "fresh_definition_pending",
+      "case": null
+    },
+    {
+      "id": "H3",
+      "state": "fresh_definition_pending",
+      "case": null
+    },
+    {
+      "id": "H4",
+      "state": "fresh_definition_pending",
+      "case": null
+    },
+    {
+      "id": "H5",
+      "state": "fresh_definition_pending",
+      "case": null
+    },
+    {
+      "id": "H6",
+      "state": "fresh_definition_pending",
+      "case": null
+    }
+  ],
+  "historicalBoundary": "Original failures and retired cases unchanged; do not claim a complete fresh set from this single case."
+}
