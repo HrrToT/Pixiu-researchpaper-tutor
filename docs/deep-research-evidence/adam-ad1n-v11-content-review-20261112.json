@@ -1,0 +1,96 @@
+{
+  "case": "AD1N-v11",
+  "split": "development",
+  "runId": "dr_run_818fa8b8220058b8b2359fb6b94132d0",
+  "sourceCommit": "91e6090b",
+  "promptVersion": "dr-v2.20261112.420",
+  "status": "completed",
+  "outcome": "partial",
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "modelCalls": 12,
+  "settledTokens": 61365,
+  "elapsedSeconds": 170,
+  "allModelCallsSettled": true,
+  "newUnknownCalls": 0,
+  "newDraftingPolicyActive": true,
+  "generationPolicyReliablyFollowed": false,
+  "visibleDraftCharacters": 276,
+  "publicationBudget": {
+    "totalCharacters": 300,
+    "fixedCharacters": 86,
+    "layoutCharacters": 23,
+    "reservedCharacters": 109,
+    "editableCharacters": 191,
+    "protectedClaimIds": [
+      "c2"
+    ],
+    "editableClaimIds": [
+      "c1"
+    ]
+  },
+  "singleSourceBranchActuallyUsed": false,
+  "machineAcceptedClaims": 1,
+  "manualContentAccepted": false,
+  "initialRejections": [
+    {
+      "claimId": "c2",
+      "reason": "semantic_unresolved",
+      "detail": "观察条件尚未通过事实核查：证据仅显示在特定条件（当β1=β2时）下的讨论，并未描述该方法中β1与β2恒等；Adam默认β1=0.9、β2=0.999，不相等，故断言不受支持。"
+    }
+  ],
+  "repairRejections": [
+    {
+      "claimId": "c2",
+      "reason": "semantic_unresolved",
+      "detail": "观察条件尚未通过事实核查：证据仅显示在特定条件（当β1=β2时）下的讨论，并未描述该方法中β1与β2恒等；Adam默认β1=0.9、β2=0.999，不相等，故断言不受支持。",
+      "revisionRejection": {
+        "claimId": "c2",
+        "reason": "unchanged_semantic_rejection",
+        "detail": "观察条件尚未通过事实核查：证据仅显示在特定条件（当β1=β2时）下的讨论，并未描述该方法中β1与β2恒等；Adam默认β1=0.9、β2=0.999，不相等，故断言不受支持。",
+        "originalReason": "semantic_unresolved",
+        "progressDetail": "论断内容和引用依据未变，保留原核验拒绝结果。"
+      }
+    }
+  ],
+  "coverageStatus": "checked",
+  "coverageGaps": [
+    {
+      "obligationId": "ob_33995ad90eb136e77fd2adcf",
+      "question": "偏差校正如何参与参数更新",
+      "missingEvidence": "最终回答尚未完整回应这一问题",
+      "stage": "answer",
+      "missingAspects": [
+        "偏差校正如何参与参数更新"
+      ],
+      "aspectEvidenceRefs": [],
+      "gapDetail": {
+        "criterionIds": [
+          "human_aspect_1"
+        ],
+        "aspectIds": [
+          "criterion:human_aspect_1"
+        ],
+        "missingContent": "当前流程角色绑定重叠，尚不能确认输入、实际操作和输出之间的关系；不能以重复整段问题作为流程证明。",
+        "reason": "此缺口由固定检查项的未满足状态汇总；模型说明不作为新增要求或论文事实。"
+      }
+    }
+  ],
+  "unchangedRepairNotReverified": true,
+  "manualFindings": [
+    "Reported c1 still contains an inferred/author-wide guarantee denial; source classification not fixed by this example.",
+    "Text remains dense with statistics and formulas; novice readability not accepted.",
+    "C2 fills an unrequested optimizer comparison and method placeholder/conditional parameter settings.",
+    "Rejection diagnostic quotes later-convention defaults 0.9/0.999, inconsistent with the frozen v1 default convention; do not treat that diagnostic as sourced fact.",
+    "Original semantic acceptance of c1 and rejection of c2 are preserved; no manual auto-approval."
+  ],
+  "oldLedgerAndPayloadsExact": true,
+  "other15TasksExact": true,
+  "indexExact": true,
+  "ledgerRows": 9130,
+  "active": 0,
+  "paused": 15,
+  "sourceUnchangedSinceTests": true,
+  "rawPayloadSha256": "a5170eb3ec8074dacf5cc4ba21c196d71f78162a96a5c68987de4f4c14617457",
+  "boundary": "Partial settled development result only. New generation guidance has not reliably corrected classification or readability. Unsupported reviewer diagnostics also need evidence validation; no old run or rejection rewritten."
+}
