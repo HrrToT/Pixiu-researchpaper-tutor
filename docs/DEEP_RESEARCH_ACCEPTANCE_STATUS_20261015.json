@@ -13283,6 +13283,17 @@
     "mergeRequested": false,
     "proof": "deep-research-evidence/pr-status-synchronized-20261112.json"
   },
+  "backupRestoreDrill20261112": {
+    "isolatedBackupRestoreVerified": true,
+    "taskCount": 103,
+    "researchRunCount": 365,
+    "pausedUnknownCount": 15,
+    "allResearchTableHashesPreserved": true,
+    "liveProductionFailureCutoverVerified": false,
+    "modelCalls": 0,
+    "contentAcceptanceAdded": false,
+    "proof": "DEEP_RESEARCH_BACKUP_RESTORE_DRILL_20261112.md"
+  },
   "crossServicePublication20261112": {
     "realHttpPublicationVerified": true,
     "lostAckAndDuplicateDeliveryVerified": true,
