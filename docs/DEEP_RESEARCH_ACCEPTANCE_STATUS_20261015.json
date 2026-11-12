@@ -3,17 +3,18 @@
   "objective": "Complete DR0-DR5 in DEEP_RESEARCH_DESIGN_20261012.md without redefining success around implemented subsets.",
   "overall": "incomplete",
   "currentFullOfflineRegression": {
-    "sourceCommit": "5035b5a101f2f56e14be0fe579432ccd5a1e4f95",
-    "modules": 411,
-    "passed": 7419,
+    "sourceCommit": "4bcb7306e2f2918f474a0267a0471c50a9a4ebca",
+    "modules": 413,
+    "passed": 7433,
     "failures": 0,
     "errors": 0,
     "skipped": 0,
     "warnings": 1,
-    "proof": "deep-research-evidence/current-rollback-complete-regression-20261112.json",
-    "boundary": "Current complete offline research suite after rollback fix; no real generation or independent content acceptance. Recorder recovery and sandbox abort explicitly recorded.",
-    "appliesToCurrentPythonSource": false,
-    "subsequentChange": "PDF Form parser optimization; see postFullRegressionValidation. Original 7419 proof remains unchanged."
+    "sourceUnchanged": true,
+    "appliesToCurrentPythonSource": true,
+    "proof": "deep-research-evidence/current-full-after-pdf-20261112.json",
+    "priorProof": "deep-research-evidence/current-rollback-complete-regression-20261112.json",
+    "boundary": "Complete current offline research suite after PDF optimization and H6 tests; no real model, scientific content acceptance or full product release."
   },
   "postFullRegressionValidation": {
     "scope": "PDF Form parser optimization only",
@@ -30,7 +31,9 @@
     "fullSuiteRerun": false,
     "newModelCalls": 0,
     "independentContentAccepted": 0,
-    "H3Candidate": "H2O v1 development diagnostic, excluded from held-out credit"
+    "H3Candidate": "H2O v1 development diagnostic, excluded from held-out credit",
+    "subsequentFullSuiteProof": "deep-research-evidence/current-full-after-pdf-20261112.json",
+    "fullSuiteNowRevalidated": true
   },
   "H6OperationalAcceptance20261112": {
     "case": "H6-FAULT-CHAIN",
@@ -44,6 +47,23 @@
     "productionWrites": 0,
     "scientificContentCredit": 0,
     "liveProviderCredit": 0
+  },
+  "realValidationReadiness20261112": {
+    "nextAction": "Bounded real development quality validation, then new held-out content cases after development readiness.",
+    "providerAvailable": false,
+    "balanceCNY": "-0.19",
+    "balanceProof": "deep-research-evidence/provider-balance-current-full-20261112.json",
+    "authorizationStillValid": true,
+    "productionAfterFullRegression": {
+      "runs": 365,
+      "calls": 9226,
+      "completed": 244,
+      "failed": 106,
+      "paused": 15,
+      "active": 0
+    },
+    "contentAccepted": 0,
+    "overallComplete": false
   },
   "freshMaterialReadiness": "H1-H5 content definitions frozen/not executed; scientific accepted0. H3-STREAMING starts empty and requires actual application discovery/fresh fulltext, not evaluator PDF/cache. H6 first five offline operational fault chains passed separately. H2O excluded; no new model/import/cache or engine tuning.",
   "evidenceRule": "Machine completion, offline fixtures, real transport, source support, content quality and independent-case eligibility are separate. Historical results are not silently upgraded to current passes.",
