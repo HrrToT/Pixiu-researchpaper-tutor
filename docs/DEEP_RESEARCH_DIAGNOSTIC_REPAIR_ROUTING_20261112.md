@@ -13,4 +13,4 @@ AD1N-v14中，审核模型声称正文成立，但理由绑定了一段不存在
 - 17个关联测试文件253项通过（27.60秒），测试期间服务源码摘要不变。首轮遇到临时SQLite沙箱目录权限错误及旧版本号断言，更新断言后以正常权限完整重跑；首轮日志保留在 `tmp/diagnostic-routing424-associated.log`。
 - 关联回归与服务源码摘要见 `docs/deep-research-evidence/diagnostic-routing-424-associated-regression-20261112.json`；真实回复回放见 `diagnostic-routing-424-saved-replay-20261112.json`。
 
-这项修复减少由不可信审核引起的正文修改，不能证明回答正确或可读性改善。AD1N-v14仍为inconclusive，DR0—DR5与独立内容验收仍未完成。本提交的运行时加载另记证据。
+这项修复减少由不可信审核引起的正文修改，不能证明回答正确或可读性改善。AD1N-v14仍为inconclusive，DR0—DR5与独立内容验收仍未完成。运行时已加载.424，健康检查通过，服务源码摘要与253项回归一致。恢复时只读核对9,176条调用记录、15个暂停任务及旧任务内容，再启动原研究容器；16个任务与1,215条索引保持。Docker意外退出原因尚未查明，本次授权的备份改名及正常启动只执行一次。详见 `runtime-load-diagnostic-routing-424-20261112.json` 和 `runtime-environment-recovery-424-20261112.json`。

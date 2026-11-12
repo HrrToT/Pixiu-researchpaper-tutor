@@ -1,0 +1,55 @@
+{
+  "startupAttempts": 1,
+  "dockerExitedConfirmed": true,
+  "wslReset": false,
+  "inspections": [
+    {
+      "path": "C:\\Users\\Lenovo\\AppData\\Local\\Docker\\run",
+      "exists": true,
+      "endpoints": [
+        "dockerInference",
+        "userAnalyticsOtlpHttp.sock"
+      ]
+    },
+    {
+      "path": "C:\\Users\\Lenovo\\AppData\\Local\\docker-secrets-engine",
+      "exists": false,
+      "endpoints": []
+    }
+  ],
+  "backups": [
+    {
+      "original": "C:\\Users\\Lenovo\\AppData\\Local\\Docker\\run",
+      "backup": "C:\\Users\\Lenovo\\AppData\\Local\\Docker\\run.codex-backup-20261112-150035-554",
+      "endpoints": [
+        "dockerInference",
+        "userAnalyticsOtlpHttp.sock"
+      ]
+    }
+  ],
+  "timestamp": "2026-11-12T15:00:35.6091000+08:00",
+  "deletedFiles": 0,
+  "engineVersion": "29.1.3",
+  "causeOfUnexpectedExit": "not established",
+  "coldSnapshot": {
+    "ledgerRows": 9176,
+    "active": 0,
+    "paused": 15,
+    "priorRunPayloadsExact": true,
+    "sourceVolumeReadOnly": true,
+    "helperNetwork": "none",
+    "temporaryCopy": "512MB tmpfs",
+    "initialCopyAttempt": "128MB temporary memory insufficient; source volume untouched"
+  },
+  "project": {
+    "originalResearchContainerColdStarts": 1,
+    "javaRestoredAfterHashVerifiedH2Backup": true,
+    "loadedVersion": "dr-v2.20261112.424",
+    "health": "ok",
+    "protectedTasksExact": 16,
+    "indexRows": 1215,
+    "indexHashExact": true
+  },
+  "providerCalls": 0,
+  "contentAccepted": false
+}
