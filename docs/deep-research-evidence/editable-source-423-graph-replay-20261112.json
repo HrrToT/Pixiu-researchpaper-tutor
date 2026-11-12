@@ -1,0 +1,20 @@
+{
+  "case": "AD1N-v11",
+  "mode": "normal synthesis graph offline with actual saved synthesis and old editor reply",
+  "newPolicyActive": true,
+  "nodes": [
+    "synthesize",
+    "synthesize_audience"
+  ],
+  "newReaderStateFlag": 1,
+  "editableHintOmitted": true,
+  "fixedC2CompleteObjectExact": true,
+  "publicationBudgetExact": true,
+  "rawFileUnchanged": true,
+  "rawPayloadSha256": "a5170eb3ec8074dacf5cc4ba21c196d71f78162a96a5c68987de4f4c14617457",
+  "newModelCalls": 0,
+  "productionWrites": 0,
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "boundary": "Proves actual graph wiring and unchanged merge permissions with a reused reply only. No new generated answer, readability improvement or scientific acceptance is established."
+}
