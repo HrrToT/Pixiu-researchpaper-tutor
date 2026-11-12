@@ -4253,12 +4253,12 @@
     "httpStatus": 402,
     "case": "AD1N-v16",
     "lastBalanceCheckDate": "2026-11-12",
-    "lastConfirmedBalanceCNY": "0.03",
-    "balanceProof": "deep-research-evidence/adam-ad1n-v16-provider-balance-20261112.json",
-    "state": "Awaiting user recharge confirmation; no additional real model requests",
+    "lastConfirmedBalanceCNY": "-0.19",
+    "balanceProof": "deep-research-evidence/provider-balance-scope-audit-20261112.json",
+    "state": "Official balance unavailable; no paid requests. Existing verification authorization remains valid. Offline preparation can continue.",
     "authorization": "Existing bounded verification authorization remains valid; no automatic retry of old cases."
   },
-  "currentDevelopmentMode": "Primary Codex only; Goal active. No Qoder/new agents, no automatic model retries. Current production source a7301514/.430. Offline work continues; full DR0-DR5 scope and independent gates remain open.",
+  "currentDevelopmentMode": "Primary Codex only; Goal active, no Qoder/new agents. Java81a827f0 and Python5ad89bc3 loaded; prompt .430 unchanged. No paid model requests while official account unavailable; full DR0-DR5 quality and independent gates remain open.",
   "loadedRuntime": {
     "commit": "5ad89bc3f42346d1231fed1285b6b0f5f408aac0",
     "promptVersion": "dr-v2.20261112.430",
@@ -4278,11 +4278,10 @@
     "sourceAttestation": "deep-research-evidence/loaded-source-index-attestation-20261112.json"
   },
   "nextQualityWork": [
-    "Continue offline robustness and current-scope audit while awaiting provider recharge confirmation.",
-    "User-authored artifacts and synthetic report publication/provenance passed isolated Java/Python HTTP integration; real generated research content and deployment remain open.",
-    "Verify local mechanism reasoning and reader responsibilities with bounded real cases after provider availability is confirmed; never retry a previous receipt automatically.",
-    "Complete multi-paper and executable experiment quality before fresh untuned H1-H6 runs.",
-    "Revalidate current product flows and release/rollback requirements; keep PR draft and do not claim production maturity before all actual gates pass."
+    "Review local candidate primary PDFs, exact versions, cache and historical use; freeze only after full original-complexity criteria and no tuning exposure are verified.",
+    "After provider becomes available, validate current mechanism explanation, multi-paper comparison and full executable experiment quality with bounded new cases, no old receipt retries.",
+    "Run fresh untuned H1-H6 after development content passes; preserve original scoring, budgets and unknown outcomes.",
+    "Complete actual generated-result interaction and final frozen regression/release/rollback audit; keep PR draft until all original gates pass."
   ],
   "javaReaderRuntime": {
     "sourceCommit": "070ab1a",
@@ -4296,14 +4295,13 @@
   "developmentState": "active_after_explicit_user_resume",
   "remainingFullDesignAudit": {
     "date": "2026-11-12",
-    "scope": "Original DR0-DR5 design remains unchanged; no content or UI requirement replaced by offline tests",
+    "scope": "Original full DR0-DR5; no quality or independent requirement waived by engineering checks",
+    "proof": "DEEP_RESEARCH_SCOPE_AUDIT_20261112.md",
     "openItems": [
-      "Complete novice mechanism explanations and supported local limits; current core explanation still omits the actual update relationship.",
-      "Full faithful multi-paper comparisons and scientifically executable experiment plans, including controls, initialization, budgets and interaction interpretation.",
-      "Fresh untuned independent H1-H6 acceptance and all original hard gates; retired development cases cannot substitute.",
-      "Broader continuation/correction, interruption/late-response/idempotent publication, external failure/version conflicts, release and rollback audit against current implementation.",
-      "Current frontend unit/type/build, six closed-API cases, isolated Java artifact persistence and Java/Python synthetic publication/replay/provenance passed. Real generated report flows, deployment and further UI acceptance remain open. Full novice workflow, independent Edge recovery and legacy import remain waived.",
-      "Historical unknown outcomes remain preserved and must not be reissued or relabelled."
+      "Prepare genuinely fresh H1-H6 definitions with primary-source/cache/history checks; two local files only passed identity/size preflight, zero new frozen cases.",
+      "Complete current novice mechanism explanation, full faithful multi-paper synthesis and executable scientific experiment development quality.",
+      "Execute fresh untuned H1-H6 and all original hard gates; keep old failures and 15 unknown pauses unchanged.",
+      "Validate actual generated report interaction and final frozen release/failure-cutover requirements; isolated backup restore is not live production cutover."
     ]
   },
   "nextIndependentCasesManifest": "DEEP_RESEARCH_INDEPENDENT_CASES_20261018.json",
