@@ -61,6 +61,8 @@
 
 ## 留出材料预检与下一步
 
+后续H4：LoRA固定两版版本/条件题已冻结未执行；当前H1/H2/H4共3定义冻结、独立接受0，H3/H5/H6仍待准备。H2/H4共享v1的资格依赖显式记录，不作为统计独立样本。详见[H4准备](DEEP_RESEARCH_LORA_VERSION_PREPARATION_20261112.md)。
+
 后续进展：H2-ADAPT（LoRA/DoRA固定v1完整比较）已完成原文、历史/当前数据/缓存核查并冻结；H1未改，共2定义冻结、0执行、0独立接受，H3—H6仍待准备。VQ组因历史第三方曝光保持开发用途。详见[H2准备](DEEP_RESEARCH_ADAPTATION_HOLDOUT_PREPARATION_20261112.md)。
 
 后续补查已排除曾用于旧项目的综述，并完成H1-GSC定义冻结；新增冻结1、执行0、独立接受0，H2—H6仍待准备。见[后续原文与历史复核](DEEP_RESEARCH_HOLDOUT_PREPARATION_20261112.md)。以下15份/2份为该阶段预检记录，不再作为最终独立资格判断。

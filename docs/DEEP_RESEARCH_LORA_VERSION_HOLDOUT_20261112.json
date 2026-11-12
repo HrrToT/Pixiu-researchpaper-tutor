@@ -1,0 +1,124 @@
+{
+  "version": 1,
+  "frozenAt": "2026-11-12",
+  "frozenTimestamp": "2026-11-12T11:39:41.791739+00:00",
+  "budgetProfile": "standard",
+  "executionStatus": "frozen_not_executed_material_not_imported",
+  "independentCredit": 0,
+  "materials": {
+    "lora_v1": {
+      "path": "D:\\aiproj\\ai_project\\tmp\\pdfs\\h2-adaptation-review-20261112\\2106.09685v1.pdf",
+      "sha256": "38a259c1926b724363fcfbd8e5f80fcadf0dd8d9ab6944fea8c00e74fd7590b0",
+      "bytes": 1502998,
+      "pageCount": 20,
+      "arxiv": "2106.09685v1",
+      "reference": "https://arxiv.org/abs/2106.09685v1"
+    },
+    "lora_v2": {
+      "path": "D:\\aiproj\\ai_project\\tmp\\pdfs\\h4-lora-versions-review-20261112\\2106.09685v2.pdf",
+      "sha256": "e9a0d3128767db616085dc0f4e6e455e672e89af823e8ed1282793682787395a",
+      "bytes": 1609513,
+      "pageCount": 26,
+      "arxiv": "2106.09685v2",
+      "reference": "https://arxiv.org/abs/2106.09685v2"
+    }
+  },
+  "review": {
+    "dimensions": [
+      "目标回应",
+      "证据支持",
+      "条件完整",
+      "综合价值",
+      "可执行性",
+      "可读性"
+    ],
+    "minimumApplicableScore": 4,
+    "nonApplicable": {
+      "可执行性": "版本/条件证据核查，不提出完整实验；H5另行覆盖。"
+    },
+    "budgetLimits": {
+      "calls": 18,
+      "tokens": 100000,
+      "seconds": 360
+    },
+    "hardFailures": [
+      "将v2表格数值归给v1、合并两个版本证据身份，或使用后续网页内容补写指定版本。",
+      "只因数字变动就宣称论文自相矛盾、实验无效、模型退化，或声称已证明某个单一设置导致版本差异。",
+      "把两版所有运行视为完全一致，把参数预算等同于唯一rank/更新模块配置，或从不一致的原文配置描述编造精确映射。",
+      "把较大参数预算写成所有任务/指标必然更优，把论文概括改成每个LoRA配置在所有指标均优于FT。",
+      "把典型跨seed波动当作每个表项独立置信区间或跨版本显著性检验，给出未经实验证实的因果/显著性结论。",
+      "严重事实/数值/单位/版本身份错误，未知或未审核结果计通过，或超过18调用/100000Token/360秒。"
+    ],
+    "sourceAnchors": [
+      {
+        "paper": "lora_v1",
+        "pages": [
+          5,
+          6,
+          14,
+          15
+        ],
+        "sections": "5.2/Table1/Appendix C/E.1",
+        "checks": "GPT-3 baseline and two budgets, metrics, settings and rank/target-module ambiguity."
+      },
+      {
+        "paper": "lora_v2",
+        "pages": [
+          8,
+          19,
+          20,
+          21,
+          23
+        ],
+        "sections": "5.5/Table4/D.4/Table12/F.2/Table15",
+        "checks": "Changed and unchanged entries, task-specific sequence lengths and training protocol, budget/config ambiguity, typical seed variability."
+      }
+    ],
+    "sourceCautions": [
+      "v1 Table1 4.7M row versus nearby rq=rv=4/18.8M prose is not aligned; do not invent a unique mapping.",
+      "v2 D.4 prose mentions all-four rank2 for37.7M, while Table15 associates all-four rank2 with18.8M and rank4 with37.7M. Keep attribution/uncertainty; do not force a gold correction.",
+      "Neither version supplies a controlled causal attribution for every cross-version metric change. Separate visible setting differences from a proven cause.",
+      "Table-specific source numbers take precedence over an unqualified universal reading of the prose summary."
+    ],
+    "sharedMaterialDependency": {
+      "case": "H2-ADAPT",
+      "sha256": "38a259c1926b724363fcfbd8e5f80fcadf0dd8d9ab6944fea8c00e74fd7590b0",
+      "rule": "Both definitions frozen before model execution. If either case is used for engine tuning using this shared material, re-audit/retire dependent held-out claims; do not assume independence survives shared-source debugging."
+    },
+    "independence": "v1 shared with evaluator-only H2 definition, not prior application/model use. New v2 exact history/receipt/current task/run/index/cache checks passed. Evidence-bounded eligibility only; no model request/import/tuning.",
+    "scope": "Original H4 version/condition conflict verification, not substitute for H2 full comparison or H5 experiment.",
+    "goldInputBoundary": "Only question/material scope/budget enter application intent, not evaluator anchors or criteria."
+  },
+  "cases": [
+    {
+      "id": "H4-LORA-VERSIONS",
+      "split": "holdout",
+      "materials": [
+        "lora_v1",
+        "lora_v2"
+      ],
+      "kind": "claim_verification",
+      "policy": "task_only",
+      "question": "只依据当前LoRA两版论文，核对GPT-3在WikiSQL、MNLI-m和SAMSum上的报告是否有变化。请对应比较全参数微调与两种LoRA参数规模的相关证据和实验条件，说明哪些结果变化、哪些判断仍成立。能否据此认定较小参数规模一定更差，或LoRA每种配置在所有指标上都优于全参数微调？区分数值差异、条件差异与真正矛盾；版本更新原因无法确认时请保留未知。先给结论，再简洁列出依据，不用外部资料。",
+      "required": [
+        "分别定位v1的GPT-3主表与v2对应表，在WikiSQL、MNLI-m和SAMSum上区分FT、较小及较大LoRA参数预算的相关结果；关键对比引用双方原文。",
+        "说明至少一项结果/基线确实变化及至少一项保持的结果或结论，不能把版本差异一概归为不同模型，也不能抹去数值变化。",
+        "核对模型、参数预算、指标单位/定义、相关训练/评估设置；明确相同、改变、披露程度不同和无法确认的范围，不要求无证据补齐全部配置。",
+        "依据任务/指标逐项限定较小预算是否更差、LoRA是否全部优于FT；不将跨任务概括变成每行/每指标全称断言。",
+        "将已观察差异与原因解释分开，数值波动不充当跨版本显著性证明；原文配置冲突或未交代原因时明确未知。",
+        "结论优先，紧凑表格或对应条目保留版本/位置，形成可用判断而非简单抄两张表。"
+      ],
+      "forbidden": [
+        "将v2表格数值归给v1、合并两个版本证据身份，或使用后续网页内容补写指定版本。",
+        "只因数字变动就宣称论文自相矛盾、实验无效、模型退化，或声称已证明某个单一设置导致版本差异。",
+        "把两版所有运行视为完全一致，把参数预算等同于唯一rank/更新模块配置，或从不一致的原文配置描述编造精确映射。",
+        "把较大参数预算写成所有任务/指标必然更优，把论文概括改成每个LoRA配置在所有指标均优于FT。",
+        "把典型跨seed波动当作每个表项独立置信区间或跨版本显著性检验，给出未经实验证实的因果/显著性结论。",
+        "严重事实/数值/单位/版本身份错误，未知或未审核结果计通过，或超过18调用/100000Token/360秒。"
+      ]
+    }
+  ],
+  "caseDefinitionHashes": {
+    "H4-LORA-VERSIONS": "38949661a01c93c6f41c713d2f626b273d4ad34c5ae1da4a296d381de68b9673"
+  }
+}

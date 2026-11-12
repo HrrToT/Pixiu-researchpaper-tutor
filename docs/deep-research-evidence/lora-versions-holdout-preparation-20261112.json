@@ -1,0 +1,56 @@
+{
+  "case": "H4-LORA-VERSIONS",
+  "definitionHash": "38949661a01c93c6f41c713d2f626b273d4ad34c5ae1da4a296d381de68b9673",
+  "baseline": "cfa5dbb9",
+  "exactV2ArchiveHits": [],
+  "receiptRoots": [
+    "tmp/dr-acceptance-receipts",
+    "tmp/dr160-receipts-isolated",
+    "tmp/qoder-dr-receipt-20261013"
+  ],
+  "receiptHits": [],
+  "tasks": 103,
+  "ownedIdentityHits": [],
+  "liveScan": {
+    "runs": 365,
+    "runPayloadHits": 0,
+    "indexAnyFieldHits": 0,
+    "cacheHits": []
+  },
+  "sharedV1": "Evaluator-only H2 preparation; no prior application execution. Shared-source independence dependency explicitly sealed.",
+  "textReviewed": {
+    "lora_v1": [
+      5,
+      6,
+      14,
+      15
+    ],
+    "lora_v2": [
+      1,
+      2,
+      7,
+      8,
+      19,
+      20,
+      21,
+      23
+    ]
+  },
+  "visuallyReviewed": {
+    "lora_v1": [
+      6
+    ],
+    "lora_v2": [
+      8,
+      20
+    ]
+  },
+  "hashesVerified": true,
+  "previewNoHttpVerified": true,
+  "versionHashTamperRejected": true,
+  "modelCalls": 0,
+  "materialImports": 0,
+  "applicationSourceChanges": 0,
+  "independentCredit": 0,
+  "boundary": "Frozen H4 input/review only, not execution or acceptance. H2 unchanged; all original quality gates remain."
+}
