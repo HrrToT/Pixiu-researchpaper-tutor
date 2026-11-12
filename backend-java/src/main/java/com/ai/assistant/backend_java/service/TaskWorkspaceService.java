@@ -711,7 +711,8 @@ public class TaskWorkspaceService {
         for (Object raw : array(incoming, "artifacts")) {
             Map<?, ?> item = (Map<?, ?>) raw;
             Map<?, ?> previous = array(saved, "artifacts").stream().filter(value -> value instanceof Map<?, ?> old
-                    && java.util.Objects.equals(old.get("id"), item.get("id")) && old.get("sourceRunId") != null)
+                    && java.util.Objects.equals(old.get("id"), item.get("id"))
+                    && (old.get("sourceRunId") != null || old.get("sourceResearchId") != null))
                     .map(value -> (Map<?, ?>) value).findFirst().orElse(null);
             if (previous != null && "machine".equals(previous.get("origin"))) {
                 output.add(previous);
@@ -722,9 +723,14 @@ public class TaskWorkspaceService {
             if (previous != null) {
                 for (String field : List.of("sourceRunId", "sourceResearchId", "reportVersionId", "origin", "sources", "paperIds", "outcome", "createdAt")) {
                     if (previous.containsKey(field)) copy.put(field, previous.get(field));
+                    else copy.remove(field);
                 }
-                if (!java.util.Objects.equals(item.get("text"), previous.get("text"))) copy.put("edited", true);
-            } else if (copy.get("sourceRunId") != null || Set.of("machine", "latest").contains(java.util.Objects.toString(copy.get("origin"), ""))) {
+                // Editing is monotonic: an old client must not make a user copy
+                // eligible for replacement by clearing its flags/history.
+                if (isUserModified(previous) || !java.util.Objects.equals(item.get("text"), previous.get("text"))
+                        || !java.util.Objects.equals(item.get("title"), previous.get("title"))) copy.put("edited", true);
+            } else if (copy.get("sourceRunId") != null || copy.get("sourceResearchId") != null || copy.get("reportVersionId") != null
+                    || Set.of("machine", "latest").contains(java.util.Objects.toString(copy.get("origin"), ""))) {
                 for (String field : List.of("sourceRunId", "sourceResearchId", "reportVersionId", "origin")) copy.remove(field);
                 copy.put("edited", true);
             }

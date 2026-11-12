@@ -13279,6 +13279,16 @@
     "mergeRequested": false,
     "proof": "deep-research-evidence/pr-status-synchronized-20261112.json"
   },
+  "researchArtifactOwnershipFix20261112": {
+    "candidateFixVerified": true,
+    "loadedInUserService": false,
+    "javaClasses": 18,
+    "javaChecks": 168,
+    "isolatedBrowserCases": 1,
+    "newModelCalls": 0,
+    "productionWrites": 0,
+    "proof": "DEEP_RESEARCH_ARTIFACT_OWNERSHIP_FIX_20261112.md"
+  },
   "liveUserArtifactPersistence20261112": {
     "userAuthoredArtifactPersistenceVerified": true,
     "researchArtifactAuthorityVerified": false,

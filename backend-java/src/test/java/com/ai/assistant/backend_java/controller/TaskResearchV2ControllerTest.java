@@ -403,7 +403,21 @@ class TaskResearchV2ControllerTest {
                 break;
             }
         }
-        tasks.update("work", current);
+        tasks.updateFromClient("work", current);
+        // An older browser sends the edited text again without its edit signals.
+        // This must not make the copy replaceable by a later publication.
+        Map<String, Object> resaved = tasks.get("work");
+        List<Object> resavedArtifacts = (List<Object>) resaved.get("artifacts");
+        for (int i = 0; i < resavedArtifacts.size(); i++) {
+            Map<String, Object> a = (Map<String, Object>) resavedArtifacts.get(i);
+            if ("用户修改后的正文".equals(a.get("text"))) {
+                Map<String, Object> mutable = new LinkedHashMap<>(a);
+                mutable.put("edited", false);
+                mutable.put("versions", List.of());
+                resavedArtifacts.set(i, mutable);
+            }
+        }
+        tasks.updateFromClient("work", resaved);
 
         // New version published
         Map<String, Object> state2 = v2CompletedState("run-edit", "complete", "v-e2", "更新摘要", "新版报告");
