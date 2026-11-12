@@ -37,7 +37,8 @@ def allocation(report,question,protected_ids):
             'protectedClaimIds':[c['claimId'] for c in fixed],'editableClaimIds':[c['claimId'] for c in editable]}
 
 
-def prepare(report,evidence,question,protected_ids,base_prepare,options):
+def prepare(report,evidence,question,protected_ids,base_prepare,options, *, responsibilities=False):
+    if type(responsibilities) is not bool:raise ValueError('Invalid reader responsibility policy')
     budget=allocation(report,question,protected_ids)
     if not budget['editableClaimIds']:return None,'no_editable_targets'
     if not budget['editableCharacters']:return None,'fixed_points_exhaust_limit'
@@ -59,6 +60,12 @@ each editable target still needs its own original supplied quotations. Independe
 source/factual/scope/coverage checks still follow; this edit grants no approval.
 Fixed answer context (server merges it, never output it):
 '''+json.dumps(context,ensure_ascii=False,separators=(',',':'))
+    if responsibilities:
+        from services.deep_research.audience_responsibilities import append
+        try:
+            prompt=append(prompt,report,options.get('requirement_context',()),protected_ids)
+        except ValueError:
+            return None,'invalid_point_responsibilities'
     from services.deep_research.audience_rewrite import MAX_INPUT_BYTES
     if len(prompt.encode('utf8'))>MAX_INPUT_BYTES:return None,'input_capacity'
     return {**request,'prompt':prompt},None

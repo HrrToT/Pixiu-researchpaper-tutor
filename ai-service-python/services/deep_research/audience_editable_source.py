@@ -17,7 +17,7 @@ def one_editable(report, protected_ids):
 def enabled(record, report, protected_ids):
     from services.deep_research.audience_edit_budget import enabled as budgeted
     return (type(record.get('audienceEditableSourceContractVersion')) is int
-            and record['audienceEditableSourceContractVersion'] == 1
+            and record['audienceEditableSourceContractVersion'] in (1, 2)
             and budgeted(record) and one_editable(report, protected_ids))
 
 

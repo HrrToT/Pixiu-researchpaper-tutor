@@ -1739,6 +1739,10 @@ space with unsupported global absence or incidental iteration/performance values
                     [a['claimId'] for a in scope_expression_audit] if authored_body and scope_expression_audit else ()) else {}),
                 **({'editable_source_first':True} if authored_body and scope_expression_audit and editable_source_reader(
                     current,draft,[a['claimId'] for a in scope_expression_audit]) else {}),
+                **({'scoped_editable_source':True} if authored_body and scope_expression_audit
+                   and type(current.get('audienceEditableSourceContractVersion')) is int
+                   and current['audienceEditableSourceContractVersion']==2 and editable_source_reader(
+                       current,draft,[a['claimId'] for a in scope_expression_audit]) else {}),
                 **({'publication_context':{'outputKind':output_kind,'presentationVersion':current['reportPresentationContractVersion']}}
                    if publication_reader_budget(current,question) else {}),
                 can_start=has_time_for_rewrite(current),

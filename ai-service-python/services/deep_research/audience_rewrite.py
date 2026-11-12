@@ -123,12 +123,14 @@ and causal findings. Fail an invented premise, universal guarantee, unsupported 
 expansion even when the claim is labeled inference. Reported facts still need direct source support.'''
 
 
-def _prepare(report, evidence, question, *, contract_version=1, requirement_context=(), objective_framing=False, process_explanations=False, protected_claim_ids=(), protected_edits=False, source_first_single=False, editable_source_first=False):
+def _prepare(report, evidence, question, *, contract_version=1, requirement_context=(), objective_framing=False, process_explanations=False, protected_claim_ids=(), protected_edits=False, source_first_single=False, editable_source_first=False, scoped_editable_source=False):
     if type(protected_edits) is not bool or protected_edits and contract_version!=9:
         raise ValueError('Protected reader edits require contract9')
     if type(source_first_single) is not bool or source_first_single and (contract_version!=9 or len(report.get('claims',[]))!=1 or protected_claim_ids or protected_edits):
         raise ValueError('Source-first reader requires one unprotected contract9 target')
     if type(editable_source_first) is not bool:raise ValueError('Invalid editable source-first policy')
+    if type(scoped_editable_source) is not bool or scoped_editable_source and not editable_source_first:
+        raise ValueError('Scoped reader responsibilities require editable source-first mode')
     if editable_source_first:
         from services.deep_research.audience_editable_source import validate as validate_editable_source
         validate_editable_source(report,protected_claim_ids,contract_version,protected_edits,source_first_single)
@@ -160,7 +162,8 @@ def _prepare(report, evidence, question, *, contract_version=1, requirement_cont
         return prepare(report,evidence,question,protected_claim_ids,_prepare,
             {'contract_version':contract_version,'requirement_context':requirement_context,
              'objective_framing':objective_framing,'process_explanations':process_explanations,
-             **({'source_first_single':True} if editable_source_first else {})})
+             **({'source_first_single':True} if editable_source_first else {})},
+            **({'responsibilities':True} if scoped_editable_source else {}))
     # Only original citations, with complete quotes and necessary context. Do
     # not fit by silently deleting an original premise or adding new permission.
     source_rows = [{'evidenceId': ref, 'quote': e.get('quote', ''),
@@ -416,7 +419,7 @@ def _merge(report, content, parse, question, *, contract_version=1, allowed_infe
 
 
 def rewrite_for_beginner(report, evidence, question, invoke, parse, *, saved_state=None, checkpoint=None,
-                         can_start=True, contract_version=1, requirement_context=(), verification_policy=None, objective_framing=False, process_explanations=False, protected_claim_ids=(), protected_edits=False, source_first_single=False, publication_context=None, editable_source_first=False):
+                         can_start=True, contract_version=1, requirement_context=(), verification_policy=None, objective_framing=False, process_explanations=False, protected_claim_ids=(), protected_edits=False, source_first_single=False, publication_context=None, editable_source_first=False, scoped_editable_source=False):
     """Frozen request + settlement reuse; unknown transports propagate unchanged.
 
     A rejected/too-long edit leaves the original draft for normal verification.
@@ -429,6 +432,8 @@ def rewrite_for_beginner(report, evidence, question, invoke, parse, *, saved_sta
     if type(source_first_single) is not bool or source_first_single and (contract_version!=9 or len(report.get('claims',[]))!=1 or protected_claim_ids or protected_edits):
         raise ValueError('Source-first reader requires one unprotected contract9 target')
     if type(editable_source_first) is not bool:raise ValueError('Invalid editable source-first policy')
+    if type(scoped_editable_source) is not bool or scoped_editable_source and not editable_source_first:
+        raise ValueError('Scoped reader responsibilities require editable source-first mode')
     if editable_source_first:
         from services.deep_research.audience_editable_source import validate as validate_editable_source
         validate_editable_source(report,protected_claim_ids,contract_version,protected_edits,source_first_single)
@@ -467,14 +472,14 @@ def rewrite_for_beginner(report, evidence, question, invoke, parse, *, saved_sta
     if publication_context is not None:
         identity_inputs.update(audiencePublicationBudgetContractVersion=1,publicationContext=publication_context,publicationBudget=publication_budget)
     if source_first_single:identity_inputs['audienceSingleSourceContractVersion']=1
-    if editable_source_first:identity_inputs['audienceEditableSourceContractVersion']=1
+    if editable_source_first:identity_inputs['audienceEditableSourceContractVersion']=2 if scoped_editable_source else 1
     identity = digest(identity_inputs)
     state = deepcopy(saved_state) if saved_state is not None else None
     if state is not None:
         if (not isinstance(state, dict) or type(state.get('version')) is not int or state['version'] != contract_version
                 or state.get('inputDigest') != identity
                 or editable_source_first and (type(state.get('audienceEditableSourceContractVersion')) is not int
-                    or state['audienceEditableSourceContractVersion']!=1)
+                    or state['audienceEditableSourceContractVersion']!=(2 if scoped_editable_source else 1))
                 or publication_context is not None and (type(state.get('audiencePublicationBudgetContractVersion')) is not int
                     or state.get('audiencePublicationBudgetContractVersion')!=1
                     or state.get('publicationContext')!=publication_context or state.get('publicationBudget')!=publication_budget)
@@ -491,6 +496,7 @@ def rewrite_for_beginner(report, evidence, question, invoke, parse, *, saved_sta
                                    requirement_context=requirement_context, objective_framing=objective_framing, process_explanations=process_explanations,
                                    **({'source_first_single':True} if source_first_single else {}),
                                    **({'editable_source_first':True} if editable_source_first else {}),
+                                   **({'scoped_editable_source':True} if scoped_editable_source else {}),
                                    **({'protected_edits':True} if protected_edits else {}),
                                    **({'protected_claim_ids':protected_claim_ids} if protected_claim_ids else {}))
         if publication_context is not None and reason is None:
@@ -500,7 +506,7 @@ def rewrite_for_beginner(report, evidence, question, invoke, parse, *, saved_sta
                  'request': request, 'requestDigest': digest(request)}
         if protected_edits:state.update(audienceBudgetContractVersion=1,editBudget=deepcopy(edit_budget))
         if source_first_single:state['audienceSingleSourceContractVersion']=1
-        if editable_source_first:state['audienceEditableSourceContractVersion']=1
+        if editable_source_first:state['audienceEditableSourceContractVersion']=2 if scoped_editable_source else 1
         if publication_context is not None:
             state.update(audiencePublicationBudgetContractVersion=1,publicationContext=deepcopy(publication_context),publicationBudget=deepcopy(publication_budget))
         if contract_version in (7,8,9):

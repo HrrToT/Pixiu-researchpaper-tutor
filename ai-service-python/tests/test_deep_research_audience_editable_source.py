@@ -62,7 +62,8 @@ def test_fixed_target_in_response_still_rejects_edit():
 def test_only_exactly_one_editable_target_with_fixed_points_uses_new_mode():
     report,ev,q=fixture();r={'audienceEditableSourceContractVersion':1,'audienceBudgetContractVersion':1,'audienceRewriteContractVersion':9,'question':q}
     assert enabled(r,report,['fixed'])
-    for value in (None,False,True,2,'1'):
+    assert enabled({**r,'audienceEditableSourceContractVersion':2},report,['fixed'])
+    for value in (None,False,True,3,'1'):
         assert not enabled({**r,'audienceEditableSourceContractVersion':value},report,['fixed'])
     assert not one_editable(report,[]) and not one_editable(report,['fixed','fixed'])
     report['claims'].append({**report['claims'][0],'claimId':'another'})
@@ -76,7 +77,7 @@ def test_new_mode_is_server_owned_and_not_added_to_old_runs(tmp_path):
     repo=DeepResearchRepository(tmp_path/'r.sqlite3');repo.initialize();facade=ResearchFacade(repo,lambda **_:None,llm_client=object());key='audienceEditableSourceContractVersion'
     try:
         r,_=facade.create({'workspaceTaskId':'t','operationKey':'op','question':'Explain','deferStart':True,key:False},start_async=False)
-        assert type(r[key]) is int and r[key]==1
+        assert type(r[key]) is int and r[key]==2
         with pytest.raises(ValueError,match='Immutable'):repo.update_run(r['runId'],lambda r:{**r,key:False})
         old=deepcopy(r);old.update(runId='old',idempotencyKey='old');old.pop(key);repo.create_run(old)
         with pytest.raises(ValueError,match='Immutable'):repo.update_run('old',lambda r:{**r,key:1})

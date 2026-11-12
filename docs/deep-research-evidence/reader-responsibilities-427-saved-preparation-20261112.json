@@ -1,0 +1,30 @@
+{
+  "case": "AD1N-v15",
+  "mode": "offline exact saved reader input; old received reply reused only for merge checks",
+  "baselineCommit": "e0052555",
+  "legacyRequestStateAndResultExact": true,
+  "legacyRequestMatchesActual": true,
+  "oldInputBytes": 17272,
+  "newInputBytes": 19583,
+  "editableDraftHintOmitted": true,
+  "fixedOnlyObligations": [
+    "O4"
+  ],
+  "editableObligations": [
+    "O1",
+    "O2",
+    "O3"
+  ],
+  "ownSourceRowsQuotesContextsExact": true,
+  "targetPermissionsAndGoalsExactExceptHint": true,
+  "fixedC2CompleteObjectExact": true,
+  "publicationAndFixedBudgetsExact": true,
+  "outputTokens": 3072,
+  "rawFileUnchanged": true,
+  "rawPayloadSha256": "a39905fbf97ab70da6ddda0fc39259365297f6995250fd2132fa8bcd215d10b5",
+  "newModelCalls": 0,
+  "productionWrites": 0,
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "boundary": "Input and state/merge proof only. Reusing an old response to a different prompt does not demonstrate improved generated wording or factual acceptance."
+}
