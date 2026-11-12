@@ -1,0 +1,40 @@
+{
+  "case": "AD1N-v12",
+  "split": "development",
+  "runId": "dr_run_ad0ad02eb4815021a9102d3e44630994",
+  "sourceCommit": "f700d263",
+  "promptVersion": "dr-v2.20261112.421",
+  "status": "failed",
+  "errorCode": "invalid_verification_response",
+  "outcome": "none",
+  "modelCalls": 8,
+  "settledTokens": 35848,
+  "elapsedSeconds": 112,
+  "allModelCallsSettled": true,
+  "newUnknownCalls": 0,
+  "reviewDiagnosticContractVersion": 1,
+  "firstReview": {
+    "finishReason": "stop",
+    "diagnosticFactsPresent": true,
+    "bindingCount": 0,
+    "wholeClaimSupported": false
+  },
+  "secondReview": {
+    "finishReason": "stop",
+    "receivedContent": "null",
+    "validVerdictReturned": false
+  },
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "verifiedReportCreated": false,
+  "numericBindingEffectActuallyExercised": false,
+  "oldLedgerAndRunPayloadsExact": true,
+  "other15TasksExact": true,
+  "indexExact": true,
+  "ledgerRows": 9152,
+  "active": 0,
+  "paused": 15,
+  "sourceUnchangedSinceTests": true,
+  "rawPayloadSha256": "7f4c0c3b712b088c345c542429ab22c2e283be478c48d7cb277973dc0e969d99",
+  "boundary": "Known received null review, not transport unknown or truncation. Do not approve targets, infer a verdict or resend. Typed binding behavior is not proven by this run. Next issue: isolate known malformed single-claim reviews so they do not abort the entire initial verification."
+}
