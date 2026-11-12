@@ -3762,6 +3762,30 @@
       "priorFailureProof": "deep-research-evidence/dr430-complete-offline-regression-20261112.json",
       "modelCalls": 0,
       "contentAccepted": false
+    },
+    "frontendCurrent20261112": {
+      "testedRepositoryCommit": "c0bd84adf3a2b64b4f11984450f89df170fd96a8",
+      "latestFrontendCommit": "c7f5b3860cbe043e320de6d8d591f0099df10af7",
+      "vitestFiles": 67,
+      "vitestChecks": 501,
+      "nodeModelGroups": 19,
+      "typecheck": "passed",
+      "productionBuild": "passed, not deployed",
+      "browserCases": 6,
+      "browser": "headless installed Chromium",
+      "viewportChecks": [
+        "1366x768",
+        "1440x900",
+        "1093x614",
+        "1152x720"
+      ],
+      "scope": "Current workbench with closed API fixtures; unexpected API and external requests blocked",
+      "liveBackendPersistenceVerified": false,
+      "realResearchContentVerified": false,
+      "actualUserLearningVerified": false,
+      "newModelCalls": 0,
+      "productionWrites": 0,
+      "proof": "DEEP_RESEARCH_CURRENT_FRONTEND_CHECK_20261112.md"
     }
   },
   "stages": [
@@ -4248,10 +4272,11 @@
     "lastRealModelRunPromptVersion": "dr-v2.20261112.428",
     "lastRealCase": "AD1N-v16",
     "lastRealOutcome": "failed/provider_payment_rejected",
-    "javaAndFrontendBoundary": "Not rebuilt or visually reaccepted in this checkpoint. Sixteen existing workspace APIs were read and preserved. Prior Java/frontend evidence remains historical in statusSummaryHistory."
+    "javaAndFrontendBoundary": "Java was not rebuilt. Current frontend source has unit/type/build and closed-API browser evidence, but no new live Java/Python workbench persistence acceptance or deployment."
   },
   "nextQualityWork": [
     "Continue offline robustness and current-scope audit while awaiting provider recharge confirmation.",
+    "Validate current workbench save/reload/history against an isolated real Java persistence API without calling the model or writing user task data.",
     "Verify local mechanism reasoning and reader responsibilities with bounded real cases after provider availability is confirmed; never retry a previous receipt automatically.",
     "Complete multi-paper and executable experiment quality before fresh untuned H1-H6 runs.",
     "Revalidate current product flows and release/rollback requirements; keep PR draft and do not claim production maturity before all actual gates pass."
@@ -4274,7 +4299,7 @@
       "Full faithful multi-paper comparisons and scientifically executable experiment plans, including controls, initialization, budgets and interaction interpretation.",
       "Fresh untuned independent H1-H6 acceptance and all original hard gates; retired development cases cannot substitute.",
       "Broader continuation/correction, interruption/late-response/idempotent publication, external failure/version conflicts, release and rollback audit against current implementation.",
-      "Current UI acceptance for starting research, reading results, evidence lookup, saving and finding again; full novice workflow, independent Edge recovery and legacy import remain waived.",
+      "Current frontend unit/type/build and six closed-API cases passed; live Java/Python persistence, real report flows and further UI acceptance remain open. Full novice workflow, independent Edge recovery and legacy import remain waived.",
       "Historical unknown outcomes remain preserved and must not be reissued or relabelled."
     ]
   },
@@ -4853,7 +4878,7 @@
     "lastConfirmedIndexSha256": "f1ab6ad746b00ce95dfb36b76fa06d011cfb04d2b0bccf1e194a826d0606465f",
     "lastRealContentReview": "deep-research-evidence/adam-ad1n-v16-content-review-20261112.json",
     "offlineFullSuiteProof": "deep-research-evidence/dr430-complete-offline-final-regression-20261112.json",
-    "frontendAcceptance": "Historical only; parallel UI changes excluded from this checkpoint."
+    "frontendAcceptance": "Current unit/component, type, build and six closed-API workbench browser cases passed. Live backend persistence and actual research/learning quality remain unverified."
   },
   "sharedModuleSourceCheckpoint": {
     "sourceCommit": "f8ae5177",
@@ -13236,10 +13261,13 @@
     "offline": "7411 passed, 1 warning in 284.90s (0:04:44)",
     "realContentAcceptedThisCheckpoint": false,
     "independentCredit": 0,
-    "frontendRevalidated": false,
+    "frontendRevalidated": true,
     "oldCaseResultsModified": false,
     "waiversExpanded": false,
-    "historicalStatusValuesPreserved": true
+    "historicalStatusValuesPreserved": true,
+    "frontendValidationScope": "Unit/type/build and closed API browser only",
+    "frontendLiveBackendRevalidated": false,
+    "frontendActualUserLearningVerified": false
   },
   "pullRequestCheckpoint20261112": {
     "url": "https://github.com/HrrToT/Pixiu-researchpaper-tutor/pull/1",
@@ -13250,5 +13278,29 @@
     "descriptionSynchronized": true,
     "mergeRequested": false,
     "proof": "deep-research-evidence/pr-status-synchronized-20261112.json"
+  },
+  "currentFrontendCheckpoint20261112": {
+    "testedRepositoryCommit": "c0bd84adf3a2b64b4f11984450f89df170fd96a8",
+    "latestFrontendCommit": "c7f5b3860cbe043e320de6d8d591f0099df10af7",
+    "vitestFiles": 67,
+    "vitestChecks": 501,
+    "nodeModelGroups": 19,
+    "typecheck": "passed",
+    "productionBuild": "passed, not deployed",
+    "browserCases": 6,
+    "browser": "headless installed Chromium",
+    "viewportChecks": [
+      "1366x768",
+      "1440x900",
+      "1093x614",
+      "1152x720"
+    ],
+    "scope": "Current workbench with closed API fixtures; unexpected API and external requests blocked",
+    "liveBackendPersistenceVerified": false,
+    "realResearchContentVerified": false,
+    "actualUserLearningVerified": false,
+    "newModelCalls": 0,
+    "productionWrites": 0,
+    "proof": "DEEP_RESEARCH_CURRENT_FRONTEND_CHECK_20261112.md"
   }
 }
