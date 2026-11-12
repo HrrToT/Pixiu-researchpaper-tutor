@@ -24,3 +24,13 @@ AD1N-v15的边界解释被生成为“已报告设置＋比较证据不足”，
 - 正常综合图使用明确标记为模拟的reasoning回复，确认两段完整编译、自己的引用权限保持、待核验审计保存并进入通俗化。模拟回复不证明真实生成或科学正确性。
 
 证据文件：`docs/deep-research-evidence/reasoned-body-428-v15-saved-preparation-20261112.json`、`reasoned-body-428-saved-preparation-20261112.json`、`reasoned-body-428-graph-replay-20261112.json`及`reasoned-body-428-associated-regression-20261112.json`。真实内容效果仍待验证；DR0—DR5及独立内容验收未完成。
+
+## 运行与真实验证
+
+67个关联文件1,161项通过（62.09秒），源码摘要保持。.428已加载，Python、RAG和GROBID健康检查通过，加载时9,204条账本、16个任务及1,215条索引保持。
+
+AD1N-v16仅提交一次，145秒时因供应商HTTP402终结，8次模型调用中7次成功、1次失败，均已结算，计60,723Token，没有新增未知请求。只读余额查询返回0.03元（is_available=true）；不能把该标记当作足以支付下一次请求的证明。已提示补充余额，不自动重试。
+
+实际生成仍选择了比较证据边界，未触发reasoning分支，因此没有真实内容改善证明。职责映射版本2实际使用，本次可编辑解释未重复固定边界；首份审核回复包含diagnosticFacts，主字段清单实际被遵守。但核心解释仍未讲清更新关系，边界仍为设置清单，最终核验和覆盖未完成，没有发布内容。人工内容验收及独立计分均为0。
+
+复查实际生成提示发现，尾部仍泛称“所有作者证据边界使用body.boundary”，需要与新局部机制推理分支统一措辞。它是需要修正的提示范围冲突，不证明唯一因果。证据：`runtime-load-reasoned-body-428-20261112.json`、`adam-ad1n-v16-content-review-20261112.json`及`adam-ad1n-v16-provider-balance-20261112.json`。
