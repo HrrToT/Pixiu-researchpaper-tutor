@@ -13,7 +13,7 @@
     "proof": "deep-research-evidence/current-rollback-complete-regression-20261112.json",
     "boundary": "Current complete offline research suite after rollback fix; no real generation or independent content acceptance. Recorder recovery and sandbox abort explicitly recorded."
   },
-  "freshMaterialReadiness": "H1-GSC frozen/not executed; independent acceptance remains zero. H2-H6 fresh definitions pending. VQ pair excluded from independent eligibility due historical third-party receipt exposure; D2-VQ-v1 sealed for full development comparison only, no model execution/import. Latest official balance remains -0.19 CNY/unavailable.",
+  "freshMaterialReadiness": "H1-GSC and H2-ADAPT frozen/not executed; independent acceptance remains zero. H3-H6 definitions pending. VQ pair remains development-only. No material imported or paid request sent; provider remains unavailable.",
   "evidenceRule": "Machine completion, offline fixtures, real transport, source support, content quality and independent-case eligibility are separate. Historical results are not silently upgraded to current passes.",
   "latestVerification": {
     "backendResearchModelReadingIntegration": {
@@ -4289,7 +4289,7 @@
     "sourceAttestation": "deep-research-evidence/loaded-source-index-attestation-20261112.json"
   },
   "nextQualityWork": [
-    "Prepare fresh H2-H6 definitions at original complexity. H1-GSC is frozen/unexecuted; do not tune on its evaluator anchors or treat the survey previously used in legacy demos as fresh.",
+    "Prepare fresh H3-H6 definitions at original complexity. H1-GSC/H2-ADAPT frozen/unexecuted; keep evaluator anchors out of engine tuning and preserve original development-quality gates.",
     "After provider becomes available, validate current mechanism explanation, multi-paper comparison and full executable experiment quality with bounded new cases, no old receipt retries.",
     "Run fresh untuned H1-H6 after development content passes; preserve original scoring, budgets and unknown outcomes.",
     "Complete actual generated-result interaction and final frozen regression/release/rollback audit; keep PR draft until all original gates pass."
@@ -4309,14 +4309,14 @@
     "scope": "Original full DR0-DR5; no quality or independent requirement waived by engineering checks",
     "proof": "DEEP_RESEARCH_SCOPE_AUDIT_20261112.md",
     "openItems": [
-      "H1-GSC frozen/unexecuted; prepare genuinely fresh H2-H6 with primary-source/cache/history checks. Survey candidate excluded, zero independent credit.",
+      "H1-GSC/H2-ADAPT frozen/unexecuted; fresh H3-H6 still pending, zero independent acceptance.",
       "Complete current novice mechanism explanation, full faithful multi-paper synthesis and executable scientific experiment development quality.",
       "Execute fresh untuned H1-H6 and all original hard gates; keep old failures and 15 unknown pauses unchanged.",
       "Validate actual generated report interaction and final frozen release/failure-cutover requirements; isolated backup restore is not live production cutover."
     ]
   },
   "nextIndependentCasesManifest": "DEEP_RESEARCH_NEXT_HOLDOUTS_20261112.json",
-  "nextIndependentCasesStatus": "Partial new replacement set only: H1-GSC frozen/unexecuted, H2-H6 pending. Original first-five0/5 and retired development claims remain unchanged; independent credit0. Do not execute fresh holdouts until development quality is ready.",
+  "nextIndependentCasesStatus": "Partial new replacement set: H1-GSC and H2-ADAPT frozen/unexecuted, H3-H6 pending. Historical failures/retired cases unchanged; credit0. Execute only after development quality is ready.",
   "priorIndependentSlots": [
     [
       {

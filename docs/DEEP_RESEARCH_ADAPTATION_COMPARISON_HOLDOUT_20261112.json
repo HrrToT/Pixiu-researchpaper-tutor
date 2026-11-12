@@ -1,0 +1,122 @@
+{
+  "version": 1,
+  "frozenAt": "2026-11-12",
+  "frozenTimestamp": "2026-11-12T11:33:42.269341+00:00",
+  "budgetProfile": "standard",
+  "executionStatus": "frozen_not_executed_material_not_imported",
+  "independentCredit": 0,
+  "materials": {
+    "lora_v1": {
+      "path": "D:\\aiproj\\ai_project\\tmp\\pdfs\\h2-adaptation-review-20261112\\2106.09685v1.pdf",
+      "sha256": "38a259c1926b724363fcfbd8e5f80fcadf0dd8d9ab6944fea8c00e74fd7590b0",
+      "bytes": 1502998,
+      "pageCount": 20,
+      "arxiv": "2106.09685v1",
+      "reference": "https://arxiv.org/abs/2106.09685v1"
+    },
+    "dora_v1": {
+      "path": "D:\\aiproj\\ai_project\\tmp\\pdfs\\h2-adaptation-review-20261112\\2402.09353v1.pdf",
+      "sha256": "6c15b619c34e4fab99e2fb2c510838a66a30b94ad499a5538d4d10e8aa4cb876",
+      "bytes": 604050,
+      "pageCount": 19,
+      "arxiv": "2402.09353v1",
+      "reference": "https://arxiv.org/abs/2402.09353v1"
+    }
+  },
+  "review": {
+    "dimensions": [
+      "目标回应",
+      "证据支持",
+      "条件完整",
+      "综合价值",
+      "可执行性",
+      "可读性"
+    ],
+    "minimumApplicableScore": 4,
+    "nonApplicable": {
+      "可执行性": "完整双论文比较与选择建议，不要求提出完整新实验；原H5实验门槛仍需单独覆盖。"
+    },
+    "budgetLimits": {
+      "calls": 18,
+      "tokens": 100000,
+      "seconds": 360
+    },
+    "independence": "Evaluator-only primary PDF/metadata review and named-history/task/run/index/cache checks. No application import or model execution; no engine tuning using these materials. Absence is bounded by checked sources, not proof about every manual activity. Retire if used for debugging after first execution; retries never regain independent credit.",
+    "scope": "Original H2 full multi-paper comparison; does not substitute for H3 external freshness, H4 version/conflict, H5 executable experiment or H6 failure/budget.",
+    "sourceAnchors": [
+      {
+        "paper": "lora_v1",
+        "pages": [
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "sections": "3/3.1/5, Tables1-3",
+        "checks": "Frozen base plus BA update; merging condition; resource versus full base; exact GPT model/task/config; limited scope of empirical results."
+      },
+      {
+        "paper": "dora_v1",
+        "pages": [
+          3,
+          4,
+          5,
+          6,
+          12,
+          13
+        ],
+        "sections": "3.2/4.1/4.3/5.1, Tables1/7/8",
+        "checks": "Magnitude trainable plus low-rank direction update, merger, gradient-detach memory ablation, original baselines and rank/LR conditions."
+      }
+    ],
+    "sourceCautions": [
+      "LoRA v1 Table1 first-row trainable count (4.7M) and nearby r=4 prose (18.8M) are not fully aligned. Do not invent a reconciliation; another unambiguous row/table or explicit source qualification is acceptable.",
+      "DoRA Table1 13B halved-rank row is 80.8 versus LoRA80.5; prose says1%. Use exact table or qualified wording, not an invented value.",
+      "Accuracy percentage-point deltas differ from relative percentages. Do not require an unasked particular delta.",
+      "No extra inference overhead is tied to merging; reduced adapter/trainable parameters do not remove full base weights or guarantee smaller activations."
+    ],
+    "hardFailures": [
+      "把低秩增量写成压缩或删除整个预训练基座；把可训练参数/任务增量大小等同于部署完整模型所需内存。",
+      "将DoRA写成只训练幅值不更新方向，或把LoRA低秩约束说成对整个原始权重强制低秩。",
+      "将GPT-2/GPT-3与LLaMA的不同任务和指标直接拼成同一性能排名，或把不同rank/模块/LR设置说成完全一致。",
+      "把DoRA表7修改前后的24.4%省显存写成相对LoRA、所有模型或所有设备的普遍优势。",
+      "从参数量、准确率或无额外推理开销推出未实测的训练速度、GPU适配或通用优越性；套入后续版本数字。",
+      "严重事实、引用、单位或条件错误；未审核/未知结果计通过，或超过18调用/100000Token/360秒。"
+    ],
+    "freshnessProof": "deep-research-evidence/adaptation-holdout-preparation-20261112.json",
+    "goldInputBoundary": "Only question/material scope/budget enter application intent. Evaluation criteria and source anchors stay evaluator-only."
+  },
+  "cases": [
+    {
+      "id": "H2-ADAPT",
+      "split": "holdout",
+      "materials": [
+        "lora_v1",
+        "dora_v1"
+      ],
+      "kind": "paper_comparison",
+      "policy": "task_only",
+      "question": "只依据当前两篇v1论文，为训练资源有限、需要适配下游语言任务的团队比较LoRA与DoRA。先给结论，再用简洁表格比较更新机制、可训练参数、训练资源与任务效果、推理部署条件；结合双方具体证据说明哪些比较成立、哪些不能直接排名，并给出有条件的选择建议。不要仅并列摘要，不用外部资料，未报告或无法对齐的数据请明确说明。",
+      "required": [
+        "用双方正文说明冻结基座、低秩增量，以及DoRA幅值与方向分解和各自可训练部分的关系，不能仅并列摘要。",
+        "比较可训练参数、训练资源和推理条件，区分任务增量与完整基座；未报告或未对齐的资源数据明确保留未知。",
+        "双方各引用至少一组有模型/任务/配置与单位的性能和参数证据；数字选择可不同，不要求列全部表格或每维都有结果。",
+        "区分DoRA论文内部对LoRA的比较与两篇原始论文不同模型/任务之间的跨论文比较，明确基线来源和关键配置条件。",
+        "资源论据保持正确对照身份；若采用DoRA省显存消融，必须说明是自身修改前后，不强制要求该特定数字。",
+        "给出有条件的选择建议及必要的目标环境补测，结论先行、简洁比较表配解释，引用回查到指定v1；不将建议当实验结果。"
+      ],
+      "forbidden": [
+        "把低秩增量写成压缩或删除整个预训练基座；把可训练参数/任务增量大小等同于部署完整模型所需内存。",
+        "将DoRA写成只训练幅值不更新方向，或把LoRA低秩约束说成对整个原始权重强制低秩。",
+        "将GPT-2/GPT-3与LLaMA的不同任务和指标直接拼成同一性能排名，或把不同rank/模块/LR设置说成完全一致。",
+        "把DoRA表7修改前后的24.4%省显存写成相对LoRA、所有模型或所有设备的普遍优势。",
+        "从参数量、准确率或无额外推理开销推出未实测的训练速度、GPU适配或通用优越性；套入后续版本数字。",
+        "严重事实、引用、单位或条件错误；未审核/未知结果计通过，或超过18调用/100000Token/360秒。"
+      ]
+    }
+  ],
+  "caseDefinitionHashes": {
+    "H2-ADAPT": "93d864bfb4336094b4bd82e87e4bacd1f69d6448ebf3cfd6398b276a898f4021"
+  }
+}
