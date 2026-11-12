@@ -49,10 +49,12 @@ The short reason must identify the actual support or mismatch, not debate a seco
 decision or expose a long reasoning transcript. Do not guess missing source facts.'''
 
 
-def decode(rows, *, singleton_claim_id=None, reporting_ownership=False):
+def decode(rows, *, singleton_claim_id=None, reporting_ownership=False, diagnostic_facts=False):
     """Never reinterpret legacy status=failed, or infer a decision from prose."""
     if type(reporting_ownership) is not bool:raise ValueError('Invalid reporting ownership policy')
+    if type(diagnostic_facts) is not bool:raise ValueError('Invalid diagnostic binding policy')
     allowed={'claimId','reason','scopeAudit','comparisonAudit','resultPurposeAudit'}
+    if diagnostic_facts:allowed.add('diagnosticFacts')
     if reporting_ownership:allowed.add('reportingOwnershipAudit')
     scope_keys={'claimStrength','evidenceStrength','supported','statementPath','premises'}
     def redundant(value):

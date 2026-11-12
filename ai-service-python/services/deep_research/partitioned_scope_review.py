@@ -61,7 +61,7 @@ def review(checker, claim, expression, evidence, node):
         return {'claimId':claim['claimId'], 'status':'failed',
                 'reason':'观察条件尚未通过事实核查：'+str(failed[0].get('reason','')),
                 'partitionedScopeAudit':audit,
-                **{k:failed[0][k] for k in ('executionState','reviewTimeAdmission','reviewInputCapacity') if k in failed[0]}}
+                **{k:failed[0][k] for k in ('executionState','reviewTimeAdmission','reviewInputCapacity','reviewDiagnosticAudit') if k in failed[0]}}
     if not expression['notEstablished']:
         return {'claimId':claim['claimId'], 'status':'passed', 'reason':'全部观察条件已分别核查。',
                 'partitionedScopeAudit':audit}
@@ -106,6 +106,11 @@ Targets:
 '''+json.dumps(expression['notEstablished'],ensure_ascii=False,separators=(',',':'))+'\nEvidence:\n'+json.dumps(own,ensure_ascii=False,separators=(',',':'))
     if consistent_premises:
         prompt+='\nPrefer one source binding form per premise. If both path and quote are returned, the quote must be a contiguous excerpt of that exact visible field of the same evidenceId; both are checked. Extra fields, conflicting text and cross-field matches fail.\n'
+    diagnostics=getattr(checker,'_review_diagnostic_bindings',False)
+    diagnostics=(diagnostics() if callable(diagnostics) else diagnostics) is True
+    if diagnostics:
+        from services.deep_research.review_diagnostics import GUIDANCE as diagnostic_guidance
+        prompt+='\n'+diagnostic_guidance
     from services.deep_research.tools import TrackedLLMInvoker
     limit = checker._invoke.prompt_byte_limit(checker._run_id,node) if isinstance(checker._invoke,TrackedLLMInvoker) else 24000
     mechanism=getattr(checker,'_mechanism_grounding',False)
@@ -126,12 +131,24 @@ Targets:
     from services.deep_research.graph import _safe_parse_json
     rows=_safe_parse_json(result.get('content',''))
     keys={'index','proposition','relation','quantification','isNegation','authorOmission','reason','premises'}
+    if diagnostics:keys.add('diagnosticFacts')
     if (result.get('finishReason')=='length' or not isinstance(rows,list)
-            or len(rows)!=len(expression['notEstablished']) or any(not isinstance(r,dict) or set(r)!=keys for r in rows)):
+            or len(rows)!=len(expression['notEstablished']) or any(not isinstance(r,dict)
+                or (set(r)!=keys and not (diagnostics and set(r)==keys-{'diagnosticFacts'})) for r in rows)):
         raise DeepResearchError('invalid_verification_response','推广命题核查未完整返回，不能据此确认结论。')
     restored=restore_verdict_evidence({'scopeExpressionAudit':{'observedSettings':[], 'notEstablished':rows}},
                                      reverse,scope_expression=True)
     audit['notEstablished']=restored['scopeExpressionAudit']['notEstablished']
+    if diagnostics:
+        from services.deep_research.review_diagnostics import bind as bind_diagnostic
+        diagnostic_checks=[bind_diagnostic({'status':'passed' if row['relation']=='not_entailed' else 'failed',
+            'reason':row['reason'],'diagnosticFacts':row.get('diagnosticFacts')},claim,
+            [{**e,'sourceContext':surrounding_context(e)} for e in evidence],reverse) for row in rows]
+        invalid=next((v for v in diagnostic_checks if v['reviewDiagnosticAudit']['errors']),None)
+        if invalid:
+            return {'claimId':claim['claimId'],'status':'failed','reason':invalid['reason'],
+                'executionState':'received_invalid','reviewDiagnosticAudit':invalid['reviewDiagnosticAudit'],
+                'partitionedScopeAudit':audit}
     # Only the exact positive proposition with explicit scope and own premises
     # can establish non-entailment. Entailed/ambiguous/unknown results fail.
     errors=validate(claim,{'observedSettings':[], 'notEstablished':expression['notEstablished']},restored,

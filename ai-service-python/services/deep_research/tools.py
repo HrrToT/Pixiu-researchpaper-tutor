@@ -627,6 +627,7 @@ class BudgetedSemanticChecker:
         comparison_source_paths=False,
         reporting_ownership=False,
         source_version_review=False,
+        review_diagnostic_bindings=False,
     ):
         self._invoke = llm_invoker
         self._run_id = run_id
@@ -642,6 +643,7 @@ class BudgetedSemanticChecker:
         self._comparison_source_paths = comparison_source_paths
         self._reporting_ownership = reporting_ownership
         self._source_version_review = source_version_review
+        self._review_diagnostic_bindings = review_diagnostic_bindings
         self._mechanism_grounding = mechanism_grounding
         self._singleton_factual_response = singleton_factual_response
         self._factual_scope = factual_scope
@@ -1229,6 +1231,13 @@ The dataAvailability object is an internal audit, not new experimental results.
         if version_policy:
             from services.deep_research.source_version_review import eligible,GUIDANCE
             if eligible(claims):prompt+='\n'+GUIDANCE
+        diagnostic_policy=self._review_diagnostic_bindings
+        diagnostic_policy=(diagnostic_policy() if callable(diagnostic_policy) else diagnostic_policy) is True
+        from services.deep_research.source_version_review import eligible as diagnostic_eligible
+        diagnostic_policy=diagnostic_policy and diagnostic_eligible(claims)
+        if diagnostic_policy:
+            from services.deep_research.review_diagnostics import GUIDANCE as diagnostic_guidance
+            prompt+='\n'+diagnostic_guidance
         template = prompt
         source_keys = ('workId', 'versionId', 'sourceTitle')
         source_registry = {}
@@ -1358,7 +1367,7 @@ The dataAvailability object is an internal audit, not new experimental results.
                 from services.deep_research.factual_decision import decode
                 singleton_policy=self._singleton_factual_response
                 singleton_policy=(singleton_policy() if callable(singleton_policy) else singleton_policy) is True
-                parsed=decode(parsed,**({'reporting_ownership':True} if reporting_enabled else {}),**({'singleton_claim_id':claims[0]['claimId']}
+                parsed=decode(parsed,**({'diagnostic_facts':True} if diagnostic_policy else {}),**({'reporting_ownership':True} if reporting_enabled else {}),**({'singleton_claim_id':claims[0]['claimId']}
                     if singleton_policy and len(claims)==1 else {}))
             
             expected = {claim['claimId'] for claim in claims}
@@ -1375,12 +1384,15 @@ The dataAvailability object is an internal audit, not new experimental results.
                 **({'reporting_ownership':True} if reporting_enabled else {}),
                 **({'advice':True} if advice_mode else {}),
                 **({'scope_expression':True} if expression_context else {})) for v in parsed]
+            by_id = {c['claimId']: c for c in claims}
+            if diagnostic_policy:
+                from services.deep_research.review_diagnostics import bind as bind_diagnostic
+                parsed=[bind_diagnostic(v,by_id[v['claimId']],visible_evidence,reverse_aliases) for v in parsed]
             if comparison_enabled:
                 from services.deep_research.comparison_reasoning import normalize_audit_scope
                 target_by_id = {c['claimId']: c for c in claims}
                 parsed = [normalize_audit_scope(target_by_id[v['claimId']], v, visible_evidence,
                           version=comparison_version) for v in parsed]
-            by_id = {c['claimId']: c for c in claims}
             from services.deep_research.rejection_audit import enabled as rejection_binding,bind as bind_rejection
             if full_review_inputs and not advice_mode and rejection_binding(envelope_version):
                 if envelope_version==10:
