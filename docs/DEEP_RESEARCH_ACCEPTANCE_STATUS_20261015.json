@@ -1,5 +1,5 @@
 {
-  "asOf": "2026-11-07",
+  "asOf": "2026-11-12",
   "objective": "Complete DR0-DR5 in DEEP_RESEARCH_DESIGN_20261012.md without redefining success around implemented subsets.",
   "overall": "incomplete",
   "freshMaterialReadiness": "Independent content acceptance remains 0. Retired cases remain development-only; historical unknowns are not reissued. Fresh replacements and full DR0-DR5 release audit remain pending.",
@@ -3750,6 +3750,18 @@
       "proof": "deep-research-evidence/method-navigation-410-associated-final-confirmed-regression-20261107.json",
       "realContentAccepted": false,
       "independentCredit": 0
+    },
+    "deepResearchCompleteOffline430": {
+      "passed": 7411,
+      "files": 410,
+      "summary": "7411 passed, 1 warning in 284.90s (0:04:44)",
+      "seconds": 289.89,
+      "sourceCommit": "cc53eeda2d75496c28be2b79c649919f1e3755c7",
+      "scope": "All test_deep_research modules, exact module set asserted against original JUnit; live_llm excluded; model HTTP guard active",
+      "proof": "deep-research-evidence/dr430-complete-offline-final-regression-20261112.json",
+      "priorFailureProof": "deep-research-evidence/dr430-complete-offline-regression-20261112.json",
+      "modelCalls": 0,
+      "contentAccepted": false
     }
   },
   "stages": [
@@ -4212,28 +4224,37 @@
     "Full novice study workflow",
     "Independent Edge recovery"
   ],
-  "currentProviderConstraint": "E1-v42 one fixed submission10settled61210tokens,no new unknowns. Complex planning,generation,review and repair already use Pro. Eleven historical paused unknowns retained;uniform bounded verification authorization unchanged.",
-  "currentDevelopmentMode": "Primary Codex only;Goal active;quota pause revoked. Source/runtime08908def/.252;repair input5 and complete review batching1. No Qoder/new agents. No automatic model retry.",
+  "currentProviderConstraint": {
+    "lastRealError": "provider_payment_rejected",
+    "httpStatus": 402,
+    "case": "AD1N-v16",
+    "lastBalanceCheckDate": "2026-11-12",
+    "lastConfirmedBalanceCNY": "0.03",
+    "balanceProof": "deep-research-evidence/adam-ad1n-v16-provider-balance-20261112.json",
+    "state": "Awaiting user recharge confirmation; no additional real model requests",
+    "authorization": "Existing bounded verification authorization remains valid; no automatic retry of old cases."
+  },
+  "currentDevelopmentMode": "Primary Codex only; Goal active. No Qoder/new agents, no automatic model retries. Current production source a7301514/.430. Offline work continues; full DR0-DR5 scope and independent gates remain open.",
   "loadedRuntime": {
-    "commit": "08908def",
-    "promptVersion": "dr-v2.20261023.252",
-    "javaCommit": "27ac4beb",
-    "frontendValidationCommit": "123b0d29",
-    "frontendValidationIsHistorical": true,
-    "callsAfterLatestCase": 5815,
+    "commit": "a7301514f1d12ddaa65cbea711e1bdd932d8a82a",
+    "promptVersion": "dr-v2.20261112.430",
+    "callsAfterLatestCase": 9226,
     "active": 0,
-    "historicalPausedUnknown": 11,
-    "proof": "deep-research-evidence/runtime-load-dr252-repair5-20261023.json",
-    "postCasesProof": "deep-research-evidence/runtime-postcases-dr252-e1-v42-20261023.json",
-    "lastRealModelRunCommit": "08908def",
-    "lastRealModelRunPromptVersion": "dr-v2.20261023.252",
-    "lastLoadValidationScope": "37source hashes,5782ledger/4tasks preserved before case;after5815ledger/0active/11oldunknown. Two actual initial review fingerprints and actual repair request/input identity match;0/9accepted."
+    "historicalPausedUnknown": 15,
+    "indexDocuments": 1215,
+    "proof": "deep-research-evidence/runtime-load-observation-stop-430-20261112.json",
+    "allSourceHashesExact": true,
+    "lastRealModelRunCommit": "16439c50",
+    "lastRealModelRunPromptVersion": "dr-v2.20261112.428",
+    "lastRealCase": "AD1N-v16",
+    "lastRealOutcome": "failed/provider_payment_rejected",
+    "javaAndFrontendBoundary": "Not rebuilt or visually reaccepted in this checkpoint. Sixteen existing workspace APIs were read and preserved. Prior Java/frontend evidence remains historical in statusSummaryHistory."
   },
   "nextQualityWork": [
-    "Create and prevalidate a typed executable initialization/workflow blueprint used consistently by public generation;fix fresh/derive/input/asset contradictions without supplying invented defaults.",
-    "Measure rejected-context audit duplication before revising review transport;retain every actionable defect,source context and raw audit;do not pay for known oversized review inputs.",
-    "Correct legal missing-field catalogues for prose-only metric roles,and prospective versus observed factual judgement.",
-    "Keep all original DR0-DR5 requirements and fresh independent gates;no budget increase or automatic retry."
+    "Continue offline robustness and current-scope audit while awaiting provider recharge confirmation.",
+    "Verify local mechanism reasoning and reader responsibilities with bounded real cases after provider availability is confirmed; never retry a previous receipt automatically.",
+    "Complete multi-paper and executable experiment quality before fresh untuned H1-H6 runs.",
+    "Revalidate current product flows and release/rollback requirements; keep PR draft and do not claim production maturity before all actual gates pass."
   ],
   "javaReaderRuntime": {
     "sourceCommit": "070ab1a",
@@ -4246,13 +4267,15 @@
   },
   "developmentState": "active_after_explicit_user_resume",
   "remainingFullDesignAudit": {
-    "date": "2026-10-18",
-    "scope": "Original DR0-DR5 design is unchanged",
+    "date": "2026-11-12",
+    "scope": "Original DR0-DR5 design remains unchanged; no content or UI requirement replaced by offline tests",
     "openItems": [
-      "Full multi-paper comparison, executable experimental-plan and external novice-content quality; five fresh independent replacements.",
-      "F1 actual edited-artifact follow-up and narrow D5-v14 explanation are accepted; broader follow-up generality remains limited.",
-      "Grouped publication identity, method intent/extraction and audience-adoption correction is under test. Experimental scientific review and bounded repair capacity remain open.",
-      "Historical unknown outcomes remain unresolved; no same-case resend or attempt/task renaming bypass."
+      "Complete novice mechanism explanations and supported local limits; current core explanation still omits the actual update relationship.",
+      "Full faithful multi-paper comparisons and scientifically executable experiment plans, including controls, initialization, budgets and interaction interpretation.",
+      "Fresh untuned independent H1-H6 acceptance and all original hard gates; retired development cases cannot substitute.",
+      "Broader continuation/correction, interruption/late-response/idempotent publication, external failure/version conflicts, release and rollback audit against current implementation.",
+      "Current UI acceptance for starting research, reading results, evidence lookup, saving and finding again; full novice workflow, independent Edge recovery and legacy import remain waived.",
+      "Historical unknown outcomes remain preserved and must not be reissued or relabelled."
     ]
   },
   "nextIndependentCasesManifest": "DEEP_RESEARCH_INDEPENDENT_CASES_20261018.json",
@@ -4815,822 +4838,22 @@
     "proof": "deep-research-evidence/compact-experiment-envelope-regression-20261020.json"
   },
   "currentCheckpoint": {
-    "sourceCommit": "eaf35cbb4dcb4c64d6abc17b9009bf7f69941145",
-    "javaSourceCommit": "612c324e",
-    "promptVersion": "dr-v2.20261107.410",
-    "factualRepairGoalContractVersion": 5,
-    "answerCoherenceContractVersion": 2,
-    "quantitySpellingContractVersion": 15,
-    "component": "generic normalized method headings and criterion premise navigation",
-    "componentOutcome": "410 loaded;738related checks/35files frozen pass.Cached realPDF adapter selects2/3/1 and preserves literal slices/versions; existing77-evidence replay supplies definition/zero-init/correction within23919bytes/16rows.Old1/2 reading and actual old synthesis fingerprint exact.No new scientific acceptance yet;8926ledger/allpayload/16tasks/1215index exact,0active15paused.FullDR0-DR5 incomplete/independent0.",
+    "sourceCommit": "a7301514f1d12ddaa65cbea711e1bdd932d8a82a",
+    "promptVersion": "dr-v2.20261112.430",
+    "component": "Reader responsibility mapping, typed local mechanism deductions, diagnostic schema consistency and short-circuit failed observation groups",
+    "componentOutcome": "Implemented and offline checked. AD1N-v16 real run failed at provider payment; the local-reasoning branch was not used. No new manual content acceptance.",
     "runtimeLoadedVerified": true,
-    "runtimeProof": "deep-research-evidence/runtime-load-method-navigation-410-20261107.json",
+    "runtimeProof": "deep-research-evidence/runtime-load-observation-stop-430-20261112.json",
     "fullDR0DR5Proved": false,
     "independentCredit": 0,
-    "lastCapturedLedgerRows": 8926,
+    "lastCapturedLedgerRows": 9226,
     "lastCapturedActiveProductionRuns": 0,
     "historicalPausedRunsAtCapture": 15,
     "lastConfirmedIndexDocuments": 1215,
     "lastConfirmedIndexSha256": "f1ab6ad746b00ce95dfb36b76fa06d011cfb04d2b0bccf1e194a826d0606465f",
-    "externalProxyComponent": {
-      "stage": "production client integrated, explicit current system proxy configured and loaded",
-      "sourceCommit": "2048c417",
-      "associatedRegressionPassed": 133,
-      "associatedRegressionSeconds": 33.78,
-      "regressionProof": "deep-research-evidence/academic-proxy-integrated-regression-20261030.json",
-      "liveProbe": "deep-research-evidence/academic-proxy-integrated-client-20261030.json",
-      "metadataVersion": "arxiv:2403.17888v3",
-      "fulltextPages": 13,
-      "fulltextCharacters": 62436,
-      "publicTargetIpPinned": true,
-      "originalHostTlsVerified": true,
-      "modelCalls": 0,
-      "productionWrites": 0,
-      "externalResearchWorkflowAccepted": false
-    },
-    "externalRouteBoundary": "User authorized current system HTTP proxy. Configured only in ignored local Python .env. Formal AcademicAcquisition factory fetched metadata and uncached fulltext using pinned public-IP/original-host TLS; application restarted once and wiring/health/data verified. Full external research quality remains unaccepted.",
-    "remaining": "Make authored boundary/prose branches mutually exclusive before generation, then perform one bounded real full run with reporting ownership and coverage instruction fixes. Oversized required data still stops at original budget. Original comparison/experiment/insufficiency/continuation/source-process/independent/release gates remain open.",
-    "factualReviewContractVersion": 3,
-    "factualDecisionContractVersion": 2,
-    "repairRemovalContractVersion": 2,
-    "coverageDiagnosticsContractVersion": 4,
-    "lastLocalDevelopmentCase": {
-      "promptVersion": "dr-v2.20261105.381",
-      "sourceCommit": "a1e527ea",
-      "case": "X4L-v13",
-      "runId": "dr_run_c5a1b3b909155abb9739d92c008af181",
-      "status": "completed",
-      "machineOutcome": "complete",
-      "modelCalls": 9,
-      "tokens": 41761,
-      "elapsedSeconds": 182.158,
-      "initialRejected": [],
-      "repairRejected": [],
-      "acceptedClaims": [
-        {
-          "claimId": "c1",
-          "text": "这里的“2D”指将3D体积坍缩为一组有方向的平面高斯圆盘。每个圆盘是二维表面元素，但通过多视角图像优化后，这些圆盘在三维空间中排列并紧密贴合实际表面，从而表示三维场景。",
-          "kind": "reported",
-          "evidenceRefs": [
-            "ev_a53cbbc74e57f454e7892e6cf8cdb8d978121f3e626785f0b41d05362dd03bc1",
-            "ev_f580f957d245818427832337512def14fad37c1adb4212595347250a67597847",
-            "ev_2a4531008bffe5fa10b9a56efb035a0185a2af188352e644e378ac7c9a963a5d"
-          ],
-          "conditions": {},
-          "obligationIds": [
-            "ob_1"
-          ],
-          "detailLevel": "concise",
-          "tableBindings": [],
-          "verification": "semantic_passed"
-        },
-        {
-          "claimId": "c2",
-          "text": "深度畸变约束通过最小化沿射线的高斯圆盘交点深度之间的距离，使权重分布集中，从而减少半透明圆盘散布导致的噪声重建。",
-          "kind": "reported",
-          "evidenceRefs": [
-            "ev_32cc51aa72a9cb4d3aeb9096d0c8e8acfb4d6587204940326f58d293e1519513",
-            "ev_8d9e7b7a4dcb490331bce72f0c7e495a5928602df5d77224de46d82545073d88",
-            "ev_c95f2e040e47f358ac28b8ab23898c8ac279a4c0af0666973157747fc06d22d2",
-            "ev_8358ddef8f9f16f3f70fb2e1220c0fc11c02cd4d3d9d858fe544e7878720ecba"
-          ],
-          "conditions": {},
-          "obligationIds": [
-            "ob_2",
-            "ob_3"
-          ],
-          "detailLevel": "concise",
-          "tableBindings": [],
-          "verification": "semantic_passed"
-        },
-        {
-          "claimId": "c3",
-          "text": "法线一致性约束通过将每个2D圆盘的法线与深度图梯度估计的表面法线对齐，确保所有2D圆盘局部对齐实际表面。",
-          "kind": "reported",
-          "evidenceRefs": [
-            "ev_35c8ed39d0274f9039b8135b856ddc9eb615e8efdb77ba2b31c83e44bcbad734",
-            "ev_2130887bcc4166954e487bcfe46cf9ff20581ac3276237d82163a05f6b3a0f76",
-            "ev_cf67573e4730737b48f20cf7907871805caef2aade2ed2546e3641dc3dbf02cb"
-          ],
-          "conditions": {},
-          "obligationIds": [
-            "ob_2",
-            "ob_3"
-          ],
-          "detailLevel": "concise",
-          "tableBindings": [],
-          "verification": "semantic_passed"
-        }
-      ],
-      "coverageModelCalls": 1,
-      "coverage": {
-        "status": "checked",
-        "verdicts": [
-          {
-            "obligationId": "ob_1",
-            "status": "covered",
-            "bindings": [
-              {
-                "claimId": "c1",
-                "field": "text",
-                "excerpt": "这里的“2D”指将3D体积坍缩为一组有方向的平面高斯圆盘。每个圆盘是二维表面元素，但通过多视角图像优化后，这些圆盘在三维空间中排列并紧密贴合实际表面，从而表示三维场景。"
-              }
-            ],
-            "aspects": [
-              {
-                "aspectId": "criterion:human_aspect_1",
-                "requirement": "解释这里的“2D”为什么仍能表示三维场景",
-                "basis": {
-                  "kind": "request",
-                  "excerpt": "解释这里的“2D”为什么仍能表示三维场景"
-                },
-                "status": "covered",
-                "bindings": [
-                  {
-                    "claimId": "c1",
-                    "field": "text",
-                    "excerpt": "这里的“2D”指将3D体积坍缩为一组有方向的平面高斯圆盘。每个圆盘是二维表面元素，但通过多视角图像优化后，这些圆盘在三维空间中排列并紧密贴合实际表面，从而表示三维场景。"
-                  }
-                ]
-              }
-            ],
-            "criteria": [
-              {
-                "criterionId": "human_aspect_1",
-                "responseType": "explanation",
-                "status": "covered",
-                "bindings": [
-                  {
-                    "claimId": "c1",
-                    "field": "text",
-                    "excerpt": "这里的“2D”指将3D体积坍缩为一组有方向的平面高斯圆盘。每个圆盘是二维表面元素，但通过多视角图像优化后，这些圆盘在三维空间中排列并紧密贴合实际表面，从而表示三维场景。"
-                  }
-                ]
-              }
-            ],
-            "requestCheckReasons": [
-              {
-                "checkId": "criterion:human_aspect_1",
-                "reason": "答案解释了“2D”指平面高斯圆盘，并通过多视角优化在三维空间中排列贴合表面来表示三维场景，满足解释要求。"
-              }
-            ]
-          },
-          {
-            "obligationId": "ob_2",
-            "status": "covered",
-            "bindings": [
-              {
-                "claimId": "c2",
-                "field": "text",
-                "excerpt": "深度畸变约束通过最小化沿射线的高斯圆盘交点深度之间的距离，使权重分布集中，从而减少半透明圆盘散布导致的噪声重建。"
-              }
-            ],
-            "aspects": [
-              {
-                "aspectId": "criterion:human_aspect_1",
-                "requirement": "第5节中深度畸变和法线一致性两个约束分别在约束什么",
-                "basis": {
-                  "kind": "request",
-                  "excerpt": "第5节中深度畸变和法线一致性两个约束分别在约束什么"
-                },
-                "status": "covered",
-                "bindings": [
-                  {
-                    "claimId": "c2",
-                    "field": "text",
-                    "excerpt": "深度畸变约束通过最小化沿射线的高斯圆盘交点深度之间的距离，使权重分布集中，从而减少半透明圆盘散布导致的噪声重建。"
-                  }
-                ]
-              }
-            ],
-            "criteria": [
-              {
-                "criterionId": "human_aspect_1",
-                "responseType": "identification",
-                "status": "covered",
-                "bindings": [
-                  {
-                    "claimId": "c2",
-                    "field": "text",
-                    "excerpt": "深度畸变约束通过最小化沿射线的高斯圆盘交点深度之间的距离，使权重分布集中，从而减少半透明圆盘散布导致的噪声重建。"
-                  }
-                ]
-              }
-            ],
-            "requestCheckReasons": [
-              {
-                "checkId": "criterion:human_aspect_1",
-                "reason": "答案明确说明深度畸变约束通过最小化交点深度距离使权重集中，减少噪声重建，识别了其约束对象。"
-              }
-            ]
-          },
-          {
-            "obligationId": "ob_3",
-            "status": "covered",
-            "bindings": [
-              {
-                "claimId": "c3",
-                "field": "text",
-                "excerpt": "法线一致性约束通过将每个2D圆盘的法线与深度图梯度估计的表面法线对齐，确保所有2D圆盘局部对齐实际表面。"
-              }
-            ],
-            "aspects": [
-              {
-                "aspectId": "criterion:human_aspect_1",
-                "requirement": "第5节中深度畸变和法线一致性两个约束分别在约束什么",
-                "basis": {
-                  "kind": "request",
-                  "excerpt": "第5节中深度畸变和法线一致性两个约束分别在约束什么"
-                },
-                "status": "covered",
-                "bindings": [
-                  {
-                    "claimId": "c3",
-                    "field": "text",
-                    "excerpt": "法线一致性约束通过将每个2D圆盘的法线与深度图梯度估计的表面法线对齐，确保所有2D圆盘局部对齐实际表面。"
-                  }
-                ]
-              }
-            ],
-            "criteria": [
-              {
-                "criterionId": "human_aspect_1",
-                "responseType": "identification",
-                "status": "covered",
-                "bindings": [
-                  {
-                    "claimId": "c3",
-                    "field": "text",
-                    "excerpt": "法线一致性约束通过将每个2D圆盘的法线与深度图梯度估计的表面法线对齐，确保所有2D圆盘局部对齐实际表面。"
-                  }
-                ]
-              }
-            ],
-            "requestCheckReasons": [
-              {
-                "checkId": "criterion:human_aspect_1",
-                "reason": "答案明确说明法线一致性约束通过对齐圆盘法线与深度图梯度估计的表面法线，确保局部对齐实际表面，识别了其约束对象。"
-              }
-            ]
-          },
-          {
-            "obligationId": "answer_scope",
-            "status": "covered",
-            "bindings": [
-              {
-                "claimId": "c1",
-                "field": "text",
-                "excerpt": "这里的“2D”指将3D体积坍缩为一组有方向的平面高斯圆盘。每个圆盘是二维表面元素，但通过多视角图像优化后，这些圆盘在三维空间中排列并紧密贴合实际表面，从而表示三维场景。"
-              },
-              {
-                "claimId": "c2",
-                "field": "text",
-                "excerpt": "深度畸变约束通过最小化沿射线的高斯圆盘交点深度之间的距离，使权重分布集中，从而减少半透明圆盘散布导致的噪声重建。"
-              },
-              {
-                "claimId": "c3",
-                "field": "text",
-                "excerpt": "法线一致性约束通过将每个2D圆盘的法线与深度图梯度估计的表面法线对齐，确保所有2D圆盘局部对齐实际表面。"
-              }
-            ],
-            "aspects": [
-              {
-                "aspectId": "request",
-                "requirement": "仅依据任务中已加入的 2D Gaussian Splatting for Geometrically Accurate Radiance Fields（arXiv:2403.17888v3）原文，不用外部搜索。面向了解3DGS概念的新手，解释这里的“2D”为什么仍能表示三维场景，以及第5节中深度畸变和法线一致性两个约束分别在约束什么。限350字，依据实际取得的正文区分两种作用，不做性能排名或实验设计。",
-                "basis": {
-                  "kind": "request",
-                  "excerpt": "仅依据任务中已加入的 2D Gaussian Splatting for Geometrically Accurate Radiance Fields（arXiv:2403.17888v3）原文，不用外部搜索。面向了解3DGS概念的新手，解释这里的“2D”为什么仍能表示三维场景，以及第5节中深度畸变和法线一致性两个约束分别在约束什么。限350字，依据实际取得的正文区分两种作用，不做性能排名或实验设计。"
-                },
-                "status": "covered",
-                "bindings": [
-                  {
-                    "claimId": "c1",
-                    "field": "text",
-                    "excerpt": "这里的“2D”指将3D体积坍缩为一组有方向的平面高斯圆盘。每个圆盘是二维表面元素，但通过多视角图像优化后，这些圆盘在三维空间中排列并紧密贴合实际表面，从而表示三维场景。"
-                  },
-                  {
-                    "claimId": "c2",
-                    "field": "text",
-                    "excerpt": "深度畸变约束通过最小化沿射线的高斯圆盘交点深度之间的距离，使权重分布集中，从而减少半透明圆盘散布导致的噪声重建。"
-                  },
-                  {
-                    "claimId": "c3",
-                    "field": "text",
-                    "excerpt": "法线一致性约束通过将每个2D圆盘的法线与深度图梯度估计的表面法线对齐，确保所有2D圆盘局部对齐实际表面。"
-                  }
-                ]
-              }
-            ],
-            "criteria": [],
-            "requestCheckReasons": [
-              {
-                "checkId": "request",
-                "reason": "答案仅依据原文，面向新手解释了2D表示三维场景的原因，并区分了深度畸变和法线一致性两个约束的作用，未做性能排名或实验设计，符合要求。"
-              }
-            ]
-          }
-        ],
-        "coverageEvidenceTransportVersion": 1,
-        "completionContractDigest": "36138de49db55ddce8aa680071209720e66e64595fba8ec6dcfb85d60a88ec69",
-        "displayMetadataDigest": "fdaafc4696c9465959adfb2402798e8fdc7e5089b478249f83c4d6ea1ca28713",
-        "gaps": [],
-        "invalidAspectObligations": [],
-        "requestCoverageContractVersion": 3,
-        "wholeQuestionId": "answer_scope",
-        "nonblockingResearch": [],
-        "criterionGaps": {},
-        "invalidCriterionObligations": [],
-        "budgetLimit": null,
-        "diagnosticErrors": [],
-        "answerCoherence": {
-          "contractVersion": 1,
-          "status": "checked",
-          "answerDigest": "1a521e9f0da706046654646aff3cbd0698299043b1c4374c92d99f6e19016f61",
-          "coherent": true,
-          "issues": []
-        }
-      },
-      "initialCoverage": null,
-      "publicationCoherence": {
-        "contractVersion": 2,
-        "answerDigest": "1a521e9f0da706046654646aff3cbd0698299043b1c4374c92d99f6e19016f61",
-        "status": "released",
-        "heldClaimIds": [],
-        "reason": null
-      },
-      "repairDraftingAudit": null,
-      "sourceReview": {
-        "reviewer": "assistant source inspection, not human acceptance",
-        "developmentWorkflowAccepted": true,
-        "contentAccepted": false,
-        "independentCredit": 0,
-        "scores": {
-          "targetResponse": 4,
-          "evidenceSupport": 4,
-          "conditions": 3,
-          "synthesis": 4,
-          "readability": 4
-        },
-        "reason": "All three requested explanations are published, source identities/pages match and coverage is complete. c1 is supported by the opening/figure passages; c2 has its own training problem and equation13 context. c3 accurately identifies normal alignment and depth-derived normals, but 确保所有 is too categorical for an optimization objective. Paper language must not become a universal achieved guarantee.",
-        "remainingTarget": {
-          "claimId": "c3",
-          "text": "法线一致性约束通过将每个2D圆盘的法线与深度图梯度估计的表面法线对齐，确保所有2D圆盘局部对齐实际表面。",
-          "kind": "reported",
-          "evidenceRefs": [
-            "ev_35c8ed39d0274f9039b8135b856ddc9eb615e8efdb77ba2b31c83e44bcbad734",
-            "ev_2130887bcc4166954e487bcfe46cf9ff20581ac3276237d82163a05f6b3a0f76",
-            "ev_cf67573e4730737b48f20cf7907871805caef2aade2ed2546e3641dc3dbf02cb"
-          ],
-          "conditions": {},
-          "obligationIds": [
-            "ob_2",
-            "ob_3"
-          ],
-          "detailLevel": "concise",
-          "tableBindings": []
-        },
-        "wordingQualification": "Describe regularization as encouraging/objective of local alignment, without promising every optimized disk exactly matches the real surface.",
-        "sourceChecks": [
-          {
-            "claimId": "c1",
-            "support": "supported",
-            "basis": "multi-view reconstruction, oriented planar disks, optimized disks aligned to surfaces; same paper page1"
-          },
-          {
-            "claimId": "c2",
-            "support": "supported as mechanism and stated regularization purpose",
-            "basis": "own cited training problem plus ray-depth weighted-pair-distance equation13, page5",
-            "boundary": "No independent experimental causal effect or universal improvement claimed by this review"
-          },
-          {
-            "claimId": "c3",
-            "support": "partially supported in strength",
-            "basis": "equations14/15 align splat normals to normals derived from rendered depth, page5",
-            "boundary": "A regularization objective is not proof that every optimized splat aligns exactly"
-          }
-        ],
-        "nextAction": "Keep wording-strength qualification as a release issue; proceed to fresh external, multi-paper, experiment, insufficiency and continuation gates rather than endlessly retuning this reused local paper."
-      },
-      "preservation": {
-        "oldLedgerUnchanged": true,
-        "allOldRunsUnchanged": true,
-        "newRows": 24,
-        "ledgerRows": 8374,
-        "onlyThisRunCreatedCalls": true,
-        "active": [],
-        "oldPausedRetained": true,
-        "paused": [
-          "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
-          "dr_run_ed10cc3347be552288079a9a588fddf5",
-          "dr_run_86b3f181a5475e99aacca3dbf4370567",
-          "dr_run_5fa0e60b76805679a8e65938c744d2b8",
-          "dr_run_7c32c52acf4a5091b893d9bc99826ada",
-          "dr_run_e3521b1781825273b384a26a5edb8cdc",
-          "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
-          "dr_run_e9c9dc916bef519092fad8b929b2448f",
-          "dr_run_4738564f5ff35157996a35068c62ed32",
-          "dr_run_a8bd62f9ae3d52ff806f537065f55b2d",
-          "dr_run_98e66f2d3d555dfa822b859963f01419",
-          "dr_run_8be639c866c35ea092c735a04781b647",
-          "dr_run_1c0c2e6510165086962408b8e3cf698b"
-        ]
-      },
-      "protectedTasksExact": 12,
-      "repeatedTerminalGetExact": true,
-      "index": {
-        "collection": "literature_collection_v4_e5_small",
-        "count": 1102,
-        "sha256": "1e91bfa73ba4a374a6cea68be25639c269fac493d5eda61162448bf500ff6118"
-      },
-      "payloadSha256": "b9f3c0080999aeae68fb9b0a6ae1c9ae7f867fffe9ad1e3826e397025761c043"
-    },
-    "lastExternalDevelopmentCase": {
-      "case": "X5R-v5",
-      "runId": "dr_run_a0355e117afb5f87a4bc92ba180d5cf0",
-      "machineOutcome": "partial",
-      "modelCalls": 13,
-      "tokens": 47578,
-      "elapsedSeconds": 128.085,
-      "allSettled": true,
-      "contentAccepted": false,
-      "independentCredit": 0,
-      "proof": "deep-research-evidence/external-x5r-v5-content-review-20261105.json"
-    },
-    "protectedTaskIds": [
-      "dr-acceptance-h5f-2026-10-18",
-      "dr-acceptance-h2f-2026-10-18",
-      "dr-acceptance-h1f-2026-10-18",
-      "dr-acceptance-e1-2026-10-20",
-      "dr-live-d1-20261012",
-      "dr-survey-flow-20261029",
-      "dr-acceptance-h2r-2026-10-15",
-      "dr-comparison-mechanisms-20261029",
-      "dr-external-masking-20261030",
-      "dr-external-fresh-mip-20261030",
-      "dr-external-fresh-2dgs-20261030",
-      "dr-local-section-20261030",
-      "dr-external-fresh-rade-20261105"
-    ],
-    "protectedTaskSnapshot": "tmp/dr-acceptance-receipts/revisions383-load.before.json",
-    "exactDiscoveryContractVersion": 2,
-    "offlineAssociatedRegression": {
-      "testFiles": 172,
-      "passed": 3152,
-      "seconds": 142.96,
-      "sourceFrozen": true,
-      "proof": "deep-research-evidence/revisions-383-final-regression-20261105.json"
-    },
-    "lastVersionValidation": {
-      "savedPlanProof": "deep-research-evidence/revisions-383-saved-plan-replay-20261105.json",
-      "networkProof": "deep-research-evidence/revisions-383-network-component-20261105.json",
-      "publicationProof": "deep-research-evidence/revisions-383-publication-replay-20261105.json",
-      "modelCalls": 0,
-      "externalSearches": 1,
-      "fulltextFetches": 1,
-      "productionWrites": 0,
-      "scope": "Network component preceded addition of final publication guard; final guard separately replayed and included in final regression. Not a full research rerun."
-    },
-    "lastConfirmedProtectedTasks": 13,
-    "requestCoverageContractVersion": 5,
-    "jointEvidenceContractVersion": 3,
-    "firstExternalSourceAddIndex": {
-      "accepted": true,
-      "sourceVersion": "arxiv:2406.01467v1",
-      "newIndexedChunks": 113,
-      "modelCalls": 0,
-      "freshNetworkCredit": false,
-      "proof": "deep-research-evidence/external-x5r-v1-first-add-index-20261105.json"
-    },
-    "externalReadingContractVersion": 1,
-    "sourceGapClosureContractVersion": 1,
-    "previousPublishedDevelopmentCase": {
-      "case": "X5R-v2",
-      "runId": "dr_run_011ef7d165255e79beca7ef442927508",
-      "promptVersion": "dr-v2.20261105.385",
-      "machineOutcome": "partial",
-      "developmentContentAcceptedByAssistantSourceReview": true,
-      "humanOrIndependentAccepted": false,
-      "acceptedClaims": 3,
-      "finalCoverageGaps": 0,
-      "modelCalls": 12,
-      "tokens": 42440,
-      "elapsedSeconds": 134.15,
-      "proof": "deep-research-evidence/external-x5r-v2-content-review-20261105.json"
-    },
-    "factualEnvelopeContractVersion": 1,
-    "requestGroundingContractVersion": 4,
-    "nextIndependentPreparation20261105": {
-      "case": "G1N",
-      "manifest": "docs\\DEEP_RESEARCH_GEOMETRY_COMPARISON_HOLDOUT_20261105.json",
-      "frozen": true,
-      "submitted": true,
-      "ownWorkHits": 0,
-      "v1Cached": false,
-      "indexBibliographyMentionGOF": 1,
-      "status": "First case terminal partial/content failed. Frozen first result retained; now development-only diagnostic.",
-      "retired": true
-    },
-    "lastFreshComparison": {
-      "case": "G1N-v1",
-      "runId": "dr_run_e792ce01a8da5a8eb6ac2543b972fb7c",
-      "outcome": "partial",
-      "contentAccepted": false,
-      "independentCredit": 0,
-      "retired": true,
-      "actualModelCalls": 12,
-      "tokens": 44888,
-      "elapsedSeconds": 166.454,
-      "allSettled": true,
-      "proof": "deep-research-evidence/independent-geometry-g1n-v1-review-20261105.json"
-    },
-    "processGuidanceFollowup": {
-      "observed": "New distinct-role guidance inherits conflicting legacy JSON role example; raw388 comparison and RaDe results remain unchanged.",
-      "proof": "deep-research-evidence/process-388-guidance-conflict-replay-20261105.json"
-    },
-    "candidateFactualPrompt389": {
-      "promptVersion": "dr-v2.20261105.389",
-      "factualPromptContractVersion": 1,
-      "runtimeLoaded": true,
-      "associatedTests": 3447,
-      "testFiles": 187,
-      "seconds": 166.015,
-      "sourceFrozen": true,
-      "proof": "deep-research-evidence/factual-389-confirmed-associated-regression-20261105.json",
-      "capacityProof": "deep-research-evidence/factual-389-confirmed-synthesis-capacity-replay-20261105.json",
-      "geometryFixedBytes": 16667,
-      "geometryRows": 13,
-      "originalGeometryFixedBytes": 21603,
-      "originalGeometryRows": 4,
-      "upstreamReadGapProof": "deep-research-evidence/geometry-389-pgsr-body-acquisition-gap-20261105.json",
-      "modelCalls": 0,
-      "scientificAcceptance": false,
-      "independentCredit": 0,
-      "sourceCommit": "139b165b",
-      "wholeRealCaseRun": false,
-      "runtimeProof": "deep-research-evidence/runtime-load-factual-389-20261105.json"
-    },
-    "factualPromptContractVersion": 3,
-    "candidateReading390": {
-      "promptVersion": "dr-v2.20261105.390",
-      "readingPriorityContractVersion": 6,
-      "factualPromptContractVersion": 2,
-      "runtimeLoaded": true,
-      "associatedTests": 3471,
-      "testFiles": 188,
-      "seconds": 146.281,
-      "sourceFrozen": true,
-      "regressionProof": "deep-research-evidence/reading-390-verified-final-regression-20261105.json",
-      "chainProof": "deep-research-evidence/reading-390-verified-chain-replay-20261105.json",
-      "legacy389PromptExact": true,
-      "legacyProof": "deep-research-evidence/reading-390-legacy389-input-preservation-20261105.json",
-      "readRows": 12,
-      "literalEvidenceRows": 60,
-      "suppliedRows": 14,
-      "inputBytes": 23961,
-      "fixedInputBytes": 14156,
-      "realWholeCaseRun": true,
-      "independentCredit": 0,
-      "sourceCommit": "35fd2aad"
-    },
-    "readingPriorityContractVersion": 7,
-    "lastComparisonDevelopment": {
-      "case": "G1N-v7",
-      "runId": "dr_run_328bc976013f5c038e696fd51d9bc988",
-      "promptVersion": "dr-v2.20261106.397",
-      "status": "completed",
-      "machineOutcome": "partial",
-      "contentAccepted": false,
-      "modelCalls": 15,
-      "tokens": 74795,
-      "elapsedSeconds": 193.59,
-      "independentCredit": 0,
-      "proof": "deep-research-evidence/geometry-g1n-v7-table-and-semantic-review-20261106.json"
-    },
-    "candidateDirect391": {
-      "promptVersion": "dr-v2.20261105.391",
-      "factualReasoningContractVersion": 10,
-      "runtimeLoaded": true,
-      "associatedTests": 3493,
-      "testFiles": 189,
-      "seconds": 148.281,
-      "sourceFrozen": true,
-      "regressionProof": "deep-research-evidence/direct-391-associated-final-regression-20261105.json",
-      "inputProfileProof": "deep-research-evidence/direct-391-saved-input-profile-replay-20261105.json",
-      "samePromptAndPremises": true,
-      "unchangedOutputCap": 8192,
-      "independentCredit": 0,
-      "sourceCommit": "2140235f"
-    },
-    "factualReasoningContractVersion": 10,
-    "candidateReading392": {
-      "readingPriorityContractVersion": 7,
-      "runtimeLoadedVerified": true,
-      "replay": "deep-research-evidence/reading-392-mixed-script-saved-input-replay-20261105.json",
-      "change": "Recognize Latin benchmark terms adjacent to Chinese; legacy6 unchanged; read cap12 and evidence ownership unchanged. Ranking proof only, no new model calls.",
-      "regression": {
-        "passed": 3499,
-        "files": 189,
-        "proof": "deep-research-evidence/reading-392-associated-regression-20261105.json",
-        "sourceFreezeArchiveIncomplete": true
-      },
-      "loadedAs": "dr-v2.20261105.393"
-    },
-    "candidateDraft393": {
-      "draftValidationContractVersion": 1,
-      "runtimeLoadedVerified": true,
-      "replay": "deep-research-evidence/draft-393-saved-conflict-routing-replay-20261105.json",
-      "design": "DEEP_RESEARCH_DRAFT_VALIDATION_20261105.md",
-      "change": "Retain conflicting original scope draft, exclude from initial acceptance, reuse existing bounded repair and independent verification, require exact checked replacement at publication. Legacy failure behavior unchanged.",
-      "fullContentAccepted": false,
-      "regression": {
-        "files": 190,
-        "passed": 3517,
-        "sourceFrozen": true,
-        "providerCalls": 0,
-        "proof": "deep-research-evidence/draft-393-associated-final-regression-20261105.json"
-      }
-    },
-    "draftValidationContractVersion": 1,
-    "candidateRepair394": {
-      "factualRepairPromptContractVersion": 1,
-      "runtimeLoadedVerified": true,
-      "replay": "deep-research-evidence/repair-394-preflight-saved-input-replay-20261105.json",
-      "legacyReplay": "deep-research-evidence/repair-394-legacy393-input-preservation-replay-20261105.json",
-      "design": "DEEP_RESEARCH_FACTUAL_REPAIR_CAPACITY_20261105.md",
-      "preparedBatchBytes": [
-        23881,
-        23814,
-        20016
-      ],
-      "capBytes": 24000,
-      "modelCalls": 0,
-      "fullContentAccepted": false,
-      "regression": {
-        "files": 191,
-        "passed": 3531,
-        "sourceFrozen": true,
-        "providerCalls": 0,
-        "proof": "deep-research-evidence/repair-394-associated-final-regression-20261105.json"
-      }
-    },
-    "factualRepairPromptContractVersion": 3,
-    "candidateCoverage395": {
-      "coverageInputContractVersion": 1,
-      "runtimeLoadedVerified": true,
-      "replay": "deep-research-evidence/coverage-395-saved-admission-replay-20261105.json",
-      "legacyInputBytes": 24393,
-      "candidatePreparedBytes": 23862,
-      "capBytes": 24000,
-      "modelCalls": 0,
-      "fullContentAccepted": false,
-      "regression": {
-        "files": 192,
-        "passed": 3545,
-        "sourceFrozen": true,
-        "providerCalls": 0,
-        "proof": "deep-research-evidence/coverage-395-confirmed-associated-final-regression-20261105.json",
-        "preliminaryFailureProof": "deep-research-evidence/coverage-395-associated-final-regression-20261105.json"
-      },
-      "loadedAs": "dr-v2.20261106.396"
-    },
-    "candidatePremise396": {
-      "factualRepairPromptContractVersion": 2,
-      "runtimeLoadedVerified": true,
-      "replay": "deep-research-evidence/repair-396-v5-preflight-saved-input-replay-20261106.json",
-      "design": "DEEP_RESEARCH_REPAIR_PREMISES_20261106.md",
-      "preparedBatchBytes": [
-        23995,
-        23975
-      ],
-      "capBytes": 24000,
-      "modelCalls": 0,
-      "fullContentAccepted": false,
-      "regression": {
-        "files": 193,
-        "passed": 3554,
-        "sourceFrozen": true,
-        "providerCalls": 0,
-        "proof": "deep-research-evidence/premise-396-associated-final-regression-20261106.json"
-      }
-    },
-    "coverageInputContractVersion": 1,
-    "candidateTable397": {
-      "factualPromptContractVersion": 3,
-      "factualRepairPromptContractVersion": 3,
-      "runtimeLoadedVerified": true,
-      "replay": "deep-research-evidence/table-397-saved-comparison-view-replay-20261106.json",
-      "legacyReplay": "deep-research-evidence/table-397-legacy-factual-prompts-20261106.json",
-      "design": "DEEP_RESEARCH_TABLE_INPUT_CONTRACT_20261106.md",
-      "preparedBatchBytes": [
-        23915,
-        23872,
-        19043
-      ],
-      "capBytes": 24000,
-      "modelCalls": 0,
-      "fullContentAccepted": false,
-      "regression": {
-        "files": 194,
-        "passed": 3562,
-        "sourceFrozen": true,
-        "providerCalls": 0,
-        "proof": "deep-research-evidence/table-397-associated-final-regression-20261106.json"
-      }
-    },
-    "comparisonSourcePaths398Candidate": {
-      "promptVersion": "dr-v2.20261106.398",
-      "auditSourceFieldsContractVersion": 4,
-      "offlinePassed": 3574,
-      "testFiles": 195,
-      "sourceFrozen": true,
-      "providerCalls": 0,
-      "loaded": true,
-      "proof": "deep-research-evidence/comparison-path-398-associated-final-regression-20261106.json",
-      "boundary": "Existing source-field resolver and scientific acceptance rules unchanged; old G1N-v7 remains partial and full comparison unaccepted.",
-      "sourceCommit": "3b11f1a9",
-      "runtimeProof": "deep-research-evidence/runtime-load-comparison-path-398-20261106.json"
-    },
-    "stage": "402 consolidated coverage instructions loaded;3653 frozen offline checks pass. SavedV8 complete inputs/cited context/permissions exact,25854 legacy rejection to23835 prepared,0model. OldV8 inconclusive; fullDR0-DR5 incomplete.",
-    "comparisonSufficiency399Candidate": {
-      "promptVersion": "dr-v2.20261106.399",
-      "scopeExpressionContractVersion": 5,
-      "offlinePassed": 3592,
-      "testFiles": 196,
-      "sourceFrozen": true,
-      "providerCalls": 0,
-      "loaded": true,
-      "proof": "deep-research-evidence/comparison-sufficiency-399-associated-confirmed-regression-20261106.json",
-      "boundary": "Authored local comparison evidence sufficiency uses existing independent scope entailment review. Not author omission; no historical verdict upgrade or full content acceptance.",
-      "sourceCommit": "965f369c",
-      "runtimeProof": "deep-research-evidence/runtime-load-comparison-sufficiency-399-20261106.json"
-    },
-    "pdfOutline400Candidate": {
-      "promptVersion": "dr-v2.20261106.400",
-      "externalReadingContractVersion": 2,
-      "offlinePassed": 3606,
-      "testFiles": 197,
-      "sourceFrozen": true,
-      "providerCalls": 0,
-      "loaded": true,
-      "proof": "deep-research-evidence/outline-400-associated-final-regression-20261106.json",
-      "boundary": "Cached precise PDF method page now selected/read/extracted/actually in prepared synthesis23877bytes,0provider. Original cases unchanged; full real comparison still unaccepted.",
-      "sourceCommit": "fa771c5a",
-      "runtimeProof": "deep-research-evidence/runtime-load-outline-400-20261106.json"
-    },
-    "lastComparisonG1Nv8": {
-      "runId": "dr_run_f2f0ef8ff22c507cb90f4a8d768c96cd",
-      "status": "completed",
-      "outcome": "inconclusive",
-      "modelCalls": 12,
-      "tokens": 61647,
-      "allSettled": true,
-      "contentAccepted": false,
-      "independentCredit": 0,
-      "coverageBudgetLimit": {
-        "kind": "coveragePromptBytes",
-        "used": 25854,
-        "limit": 24000
-      },
-      "criticalFalsePositive": "c2/c3 author-report attribution accepted by private checker despite using PGSR comparator values; not scientific acceptance.",
-      "proof": "deep-research-evidence/geometry-g1n-v8-outline-and-provenance-review-20261106.json"
-    },
-    "reportingOwnership401Candidate": {
-      "promptVersion": "dr-v2.20261106.401",
-      "reportingOwnershipContractVersion": 1,
-      "offlinePassed": 3632,
-      "testFiles": 198,
-      "sourceFrozen": true,
-      "providerCalls": 0,
-      "loaded": true,
-      "proof": "deep-research-evidence/reporting-ownership-401-associated-confirmed-regression-20261106.json",
-      "savedCaseReplay": "deep-research-evidence/reporting-ownership-401-saved-error-replay-20261106.json",
-      "boundary": "Additional source-work/original-field/own-number prerequisite for explicitly named numerical reporting clauses. Prospective saved c2/c3 errors rejected; original V8 unchanged, no full scientific or real-case acceptance.",
-      "sourceCommit": "cedaae9c",
-      "runtimeProof": "deep-research-evidence/runtime-load-reporting-ownership-401-20261106.json"
-    },
-    "coverageInstructions402Candidate": {
-      "promptVersion": "dr-v2.20261106.402",
-      "coverageInstructionsContractVersion": 1,
-      "offlinePassed": 3653,
-      "testFiles": 199,
-      "sourceFrozen": true,
-      "providerCalls": 0,
-      "loaded": true,
-      "proof": "deep-research-evidence/coverage-instructions-402-associated-final-regression-20261106.json",
-      "savedCaseReplay": "deep-research-evidence/coverage-instructions-402-saved-complete-context-replay-20261106.json",
-      "boundary": "Consolidated instructions only. Actual saved request25854 rejected in legacy, new23835 prepared with all8cited quotes/context and complete decision inputs/check permissions exact, stopped before dispatch. No model coverage or scientific acceptance.",
-      "sourceCommit": "6c17cf98",
-      "runtimeProof": "deep-research-evidence/runtime-load-coverage-instructions-402-20261106.json"
-    },
-    "authoredBodyContractVersion": 1,
-    "synthesisInputContractVersion": 1,
-    "lastCapturedPausedProductionRuns": 15,
-    "elapsedAccountingContractVersion": 1,
-    "newPausedRunIds": [
-      "dr_run_fc0931756c505c6d9a29c06abe1fdd8d",
-      "dr_run_b09de02407095586bba235843615f2b3"
-    ],
-    "initialPlanModelContractVersion": 1
+    "lastRealContentReview": "deep-research-evidence/adam-ad1n-v16-content-review-20261112.json",
+    "offlineFullSuiteProof": "deep-research-evidence/dr430-complete-offline-final-regression-20261112.json",
+    "frontendAcceptance": "Historical only; parallel UI changes excluded from this checkpoint."
   },
   "sharedModuleSourceCheckpoint": {
     "sourceCommit": "f8ae5177",
@@ -13959,5 +13182,73 @@
     "paused": 15,
     "fullDR0DR5Proved": false,
     "independentCredit": 0
+  },
+  "statusSummaryHistory": [
+    {
+      "archivedAt": "2026-11-12",
+      "reason": "Synchronize stale current-state fields with verified .430 and preserve original values",
+      "values": {
+        "asOf": "2026-11-07",
+        "loadedRuntime": {
+          "commit": "08908def",
+          "promptVersion": "dr-v2.20261023.252",
+          "javaCommit": "27ac4beb",
+          "frontendValidationCommit": "123b0d29",
+          "frontendValidationIsHistorical": true,
+          "callsAfterLatestCase": 5815,
+          "active": 0,
+          "historicalPausedUnknown": 11,
+          "proof": "deep-research-evidence/runtime-load-dr252-repair5-20261023.json",
+          "postCasesProof": "deep-research-evidence/runtime-postcases-dr252-e1-v42-20261023.json",
+          "lastRealModelRunCommit": "08908def",
+          "lastRealModelRunPromptVersion": "dr-v2.20261023.252",
+          "lastLoadValidationScope": "37source hashes,5782ledger/4tasks preserved before case;after5815ledger/0active/11oldunknown. Two actual initial review fingerprints and actual repair request/input identity match;0/9accepted."
+        },
+        "currentCheckpoint": {
+          "archiveCommit": "cc53eeda2d75496c28be2b79c649919f1e3755c7",
+          "archiveFile": "docs/DEEP_RESEARCH_ACCEPTANCE_STATUS_20261015.json",
+          "jsonPointer": "/currentCheckpoint",
+          "canonicalSha256": "90fd4c82f7d66302e5483ffb587b7e0b0eb1a332c22ebea40d5428a5115bb863",
+          "boundary": "Exact prior checkpoint remains in immutable Git history; not current runtime metadata."
+        },
+        "currentProviderConstraint": "E1-v42 one fixed submission10settled61210tokens,no new unknowns. Complex planning,generation,review and repair already use Pro. Eleven historical paused unknowns retained;uniform bounded verification authorization unchanged.",
+        "currentDevelopmentMode": "Primary Codex only;Goal active;quota pause revoked. Source/runtime08908def/.252;repair input5 and complete review batching1. No Qoder/new agents. No automatic model retry.",
+        "nextQualityWork": [
+          "Create and prevalidate a typed executable initialization/workflow blueprint used consistently by public generation;fix fresh/derive/input/asset contradictions without supplying invented defaults.",
+          "Measure rejected-context audit duplication before revising review transport;retain every actionable defect,source context and raw audit;do not pay for known oversized review inputs.",
+          "Correct legal missing-field catalogues for prose-only metric roles,and prospective versus observed factual judgement.",
+          "Keep all original DR0-DR5 requirements and fresh independent gates;no budget increase or automatic retry."
+        ],
+        "remainingFullDesignAudit": {
+          "date": "2026-10-18",
+          "scope": "Original DR0-DR5 design is unchanged",
+          "openItems": [
+            "Full multi-paper comparison, executable experimental-plan and external novice-content quality; five fresh independent replacements.",
+            "F1 actual edited-artifact follow-up and narrow D5-v14 explanation are accepted; broader follow-up generality remains limited.",
+            "Grouped publication identity, method intent/extraction and audience-adoption correction is under test. Experimental scientific review and bounded repair capacity remain open.",
+            "Historical unknown outcomes remain unresolved; no same-case resend or attempt/task renaming bypass."
+          ]
+        }
+      }
+    }
+  ],
+  "verificationBoundaries20261112": {
+    "offline": "7411 passed, 1 warning in 284.90s (0:04:44)",
+    "realContentAcceptedThisCheckpoint": false,
+    "independentCredit": 0,
+    "frontendRevalidated": false,
+    "oldCaseResultsModified": false,
+    "waiversExpanded": false,
+    "historicalStatusValuesPreserved": true
+  },
+  "pullRequestCheckpoint20261112": {
+    "url": "https://github.com/HrrToT/Pixiu-researchpaper-tutor/pull/1",
+    "draft": true,
+    "state": "OPEN",
+    "mergeabilityAtRead": "MERGEABLE",
+    "headAtRead": "cc53eeda2d75496c28be2b79c649919f1e3755c7",
+    "descriptionSynchronized": true,
+    "mergeRequested": false,
+    "proof": "deep-research-evidence/pr-status-synchronized-20261112.json"
   }
 }
