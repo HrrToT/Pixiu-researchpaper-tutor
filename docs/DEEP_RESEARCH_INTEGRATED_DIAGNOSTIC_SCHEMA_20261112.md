@@ -9,3 +9,5 @@ AD1N-v15的核心解释审核返回claimId、reason、scopeAudit，却遗漏必�
 AD1N-v15核心解释的真实保存回复经完整审核器工厂离线回放：旧请求与提交c7e314d6逐值一致。新请求仅主响应字段说明变化，主张、原文、版本、别名、选项完全相同。同一遗漏回复仍被拒绝，没有补造空数组，没有新增模型调用或写入生产数据。
 
 证据：`docs/deep-research-evidence/integrated-diagnostic-426-saved-replay-20261112.json`及`integrated-diagnostic-426-associated-regression-20261112.json`。这证明提示和解析要求一致，不证明真实模型一定遵守字段，也不证明核心解释正确。DR0—DR5与独立内容验收仍未完成。
+
+63个关联测试文件1,095项通过（54.13秒），测试期间服务源码摘要保持。运行时已加载.426，Python、RAG与GROBID健康检查通过；9,204条调用记录、15个暂停任务、16个任务数据及1,215条索引核对保持一致。加载未新增模型调用。运行证据：`runtime-load-integrated-diagnostic-426-20261112.json`。
