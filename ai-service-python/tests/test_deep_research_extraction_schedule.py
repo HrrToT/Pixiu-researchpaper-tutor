@@ -62,8 +62,8 @@ def test_partial_joint_review_cannot_label_all_criteria_checked(monkeypatch):
     record['state']['plan'][0]['obligations'].append(extra)
     import services.deep_research.joint_assessment as joint
     real_render=joint._render
-    def bounded_render(units,rows,human):
-        return real_render(units,rows,human) if len(units)<=1 else 'x'*24001
+    def bounded_render(units,rows,human,*,process_explanations=False):
+        return real_render(units,rows,human,process_explanations=process_explanations) if len(units)<=1 else 'x'*24001
     monkeypatch.setattr(joint,'_render',bounded_render)
     memory=Memory(record);result=execute(memory,lambda r,n,p,o:ready_response(p))
     assert result['gaps'] and memory.record['state']['assessmentStatus']=='unchecked'

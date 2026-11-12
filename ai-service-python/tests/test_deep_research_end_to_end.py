@@ -97,6 +97,9 @@ class FixtureModel:
                 for verdict in content:
                     verdict.pop('status')
                     verdict['reason']='The fixture source explicitly reports this value.'
+            if 'Reviewer diagnostic provenance:' in prompt:
+                for verdict in content:
+                    verdict['diagnosticFacts']=[]
         elif prompt.startswith(("Revise only the targets","Rebuild ONLY these rejected factual answer targets",
                                 "Rebuild ONLY the rejected targets")):
             content = []  # An unsupported claim may be dropped; do not relax checks.
@@ -192,7 +195,8 @@ def test_real_graph_publishes_only_verified_body_and_reopens_without_generation(
         facade.shutdown()
 
 
-def test_truncated_verification_fails_without_publishing_evidence_insufficiency(tmp_path):
+@pytest.mark.parametrize('legacy', [False, True])
+def test_truncated_verification_remains_unverified_without_publishing_claims(tmp_path, legacy):
     class TruncatedVerifier(FixtureModel):
         def invoke(self, request):
             if request.prompt.startswith(('Verify these claims','Check the complete factual assertions')):
@@ -204,22 +208,38 @@ def test_truncated_verification_fails_without_publishing_evidence_insufficiency(
     model = TruncatedVerifier()
     repo, facade, _ = make_facade(tmp_path, model)
     try:
+        if legacy:
+            # Construct a genuinely old persisted task before execution; do not
+            # mutate its frozen policy or upgrade its received reply on resume.
+            create_run=repo.create_run
+            repo.create_run=lambda value: create_run({k:v for k,v in value.items()
+                if k!='perClaimReviewFailureContractVersion'})
         record = create(facade)
         rid = record['runId']
         repo.begin_execution(rid)
         facade._execute_graph(rid)
         result = facade.get(rid)
-        assert result['status'] == 'failed'
-        assert result['errorCode'] == 'invalid_verification_response'
-        assert '结论核验未完成' in result['error']
-        assert '这不表示论文证据不足' in result['error']
-        assert '查看已保存的结果' not in result['error']
-        assert not repo.list_outbox(rid)
         saved = repo.require_run(rid)
+        if legacy:
+            assert result['status'] == 'failed'
+            assert result['errorCode'] == 'invalid_verification_response'
+            assert '结论核验未完成' in result['error']
+            assert '这不表示论文证据不足' in result['error']
+            assert '查看已保存的结果' not in result['error']
+            assert not repo.list_outbox(rid)
+        else:
+            assert result['status'] == 'completed' and result['outcome'] == 'inconclusive'
+            assert saved['state']['verifiedReport']['verifiedClaims'] == []
+            assert saved['state']['deferredReviewClaims'] == ['c1','c2']
+            rejected={r['claimId']:r for r in saved['state']['verifiedReport']['rejectedClaims']}
+            assert all(rejected[c]['reviewResponseAudit']['responseState']=='received_invalid'
+                       for c in ('c1','c2'))
+            assert all(rejected[c]['executionState']=='received_invalid' for c in ('c1','c2'))
+            assert '95%' not in result['report']['body'] and '90%' not in result['report']['body']
         assert saved['state']['evidence'] and saved['state']['reportBody']
         calls = [c for c in repo.list_calls(rid) if c['node'] == 'verify']
-        assert len(calls) == 1 and calls[0]['status'] == 'succeeded'
-        assert sum(r.prompt.startswith(('Verify these claims','Check the complete factual assertions')) for r in model.requests) == 1
+        assert len(calls) == (1 if legacy else 2) and all(c['status']=='succeeded' for c in calls)
+        assert sum(r.prompt.startswith(('Verify these claims','Check the complete factual assertions')) for r in model.requests) == len(calls)
     finally:
         facade.shutdown()
 
