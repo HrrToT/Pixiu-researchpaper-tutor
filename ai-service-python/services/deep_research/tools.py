@@ -630,6 +630,7 @@ class BudgetedSemanticChecker:
         review_diagnostic_bindings=False,
         known_single_review_failure=False,
         integrated_diagnostic_schema=False,
+        short_circuit_scope_observations=False,
     ):
         self._invoke = llm_invoker
         self._run_id = run_id
@@ -648,6 +649,7 @@ class BudgetedSemanticChecker:
         self._review_diagnostic_bindings = review_diagnostic_bindings
         self._known_single_review_failure = known_single_review_failure
         self._integrated_diagnostic_schema = integrated_diagnostic_schema
+        self._short_circuit_scope_observations = short_circuit_scope_observations
         self._mechanism_grounding = mechanism_grounding
         self._singleton_factual_response = singleton_factual_response
         self._factual_scope = factual_scope

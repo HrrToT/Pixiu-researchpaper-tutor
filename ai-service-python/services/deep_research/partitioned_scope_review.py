@@ -9,7 +9,7 @@ from services.deep_research.scope_expression_review import validate
 
 def enabled(record):
     return (type(record.get('scopeExpressionReviewContractVersion')) is int
-            and record['scopeExpressionReviewContractVersion'] in (2,3))
+            and record['scopeExpressionReviewContractVersion'] in (2,3,4))
 
 
 def assertions_enabled(record):
@@ -19,7 +19,12 @@ def assertions_enabled(record):
 
 def consistent_premises_enabled(record):
     return (type(record.get('scopeExpressionReviewContractVersion')) is int
-            and record['scopeExpressionReviewContractVersion']==3)
+            and record['scopeExpressionReviewContractVersion'] in (3,4))
+
+
+def short_circuit_enabled(record):
+    return (type(record.get('scopeExpressionReviewContractVersion')) is int
+            and record['scopeExpressionReviewContractVersion'] == 4)
 
 
 def observation_claims(claim, expression, *, assertions=False, literal=False):
@@ -53,7 +58,9 @@ def review(checker, claim, expression, evidence, node):
     failure_policy=(failure_policy() if callable(failure_policy) else failure_policy) is True
     isolation=checker._isolate_factual_claims
     isolation=(isolation() if callable(isolation) else isolation) is True
-    if failure_policy and isolation:
+    short_circuit=getattr(checker,'_short_circuit_scope_observations',False)
+    short_circuit=(short_circuit() if callable(short_circuit) else short_circuit) is True
+    if (failure_policy or short_circuit) and isolation:
         from services.deep_research.review_response_failure import invalid as invalid_response
         checked=[]
         for index,observation in enumerate(observations):
@@ -66,11 +73,27 @@ def review(checker, claim, expression, evidence, node):
                 audit={'version':2,'observedSettings':checked,'notEstablished':[],
                     'unreviewedObservationIds':[c['claimId'] for c in observations[index+1:]],
                     **({'observationContractVersion':2 if literal else 1} if assertions else {})}
+                if short_circuit:
+                    audit.update(observationSchedulingVersion=1,
+                        stoppedAfterObservationId=observation['claimId'],
+                        unreviewedPropositionCount=len(expression['notEstablished']))
                 response_audit=deepcopy(rows[0]['reviewResponseAudit'])
                 response_audit['unreviewedObservationCount']=len(observations)-index-1
                 return {'claimId':claim['claimId'],'status':'failed','reason':rows[0]['reason'],
                     'executionState':'received_invalid','reviewResponseAudit':response_audit,
                     'partitionedScopeAudit':audit}
+            if short_circuit and rows[0]['status']=='failed':
+                audit={'version':2,'observedSettings':checked,'notEstablished':[],
+                    'observationSchedulingVersion':1,
+                    'stoppedAfterObservationId':observation['claimId'],
+                    'unreviewedObservationIds':[c['claimId'] for c in observations[index+1:]],
+                    'unreviewedPropositionCount':len(expression['notEstablished']),
+                    **({'observationContractVersion':2 if literal else 1} if assertions else {})}
+                return {'claimId':claim['claimId'],'status':'failed',
+                    'reason':'观察条件尚未通过事实核查：'+str(rows[0].get('reason','')),
+                    'partitionedScopeAudit':audit,
+                    **{k:rows[0][k] for k in ('executionState','reviewTimeAdmission','reviewInputCapacity',
+                        'reviewDiagnosticAudit','reviewResponseAudit') if k in rows[0]}}
     else:
         checked = checker._check(observations, evidence, [], node) if observations else []
     expected = [c['claimId'] for c in observations]
