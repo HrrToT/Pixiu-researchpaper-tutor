@@ -16,4 +16,4 @@ AD1N-v16保存输入回放：旧请求、分配及字节数与原记录及提交
 
 证据：`docs/deep-research-evidence/reasoned-scope-429-saved-preparation-20261112.json`和`reasoned-scope-429-associated-regression-20261112.json`。DR0—DR5及独立内容验收仍未完成。
 
-67个关联测试文件1,162项通过（68.93秒），服务源码摘要保持。.429已加载，Python、RAG、GROBID健康检查通过；9,226条调用记录、15个暂停任务、16个任务及1,215条索引保持。加载没有新增模型调用。运行证据：`runtime-load-reasoned-scope-429-20261112.json`。当前仅剩真实内容效果未验证的边界，不能将离线回归当作完整功能通过。
+67个关联测试文件1,162项通过（68.93秒），服务源码摘要保持。.429已加载，Python、RAG、GROBID健康检查通过；9,226条调用记录、15个暂停任务、16个任务及1,215条索引保持。加载没有新增模型调用。运行证据：`runtime-load-reasoned-scope-429-20261112.json`。本项修改的真实内容效果仍未验证；完整DR0—DR5及其他既定验收范围继续保留，不能将离线回归当作完整功能通过。
