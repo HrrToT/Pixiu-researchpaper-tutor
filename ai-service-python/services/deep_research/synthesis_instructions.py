@@ -87,6 +87,6 @@ Each claim has exactly: {body_fields(fields)}. evidenceRefs and obligationIds ar
         groups=equivalent_requirements(obligations) if explanation_only(record) else []
         if groups:
             prompt+='\nEquivalent retrieval-path requirement IDs: '+encode(groups)+'. Answer a shared question once with all IDs; each assertion keeps own citations. Equivalence transfers no evidence support.'
-    from services.deep_research.premise_drafting import enabled as premise_enabled,GUIDANCE as premise_guidance
-    if premise_enabled(record,kind):prompt+='\n'+premise_guidance
+    from services.deep_research.premise_drafting import enabled as premise_enabled,guidance as premise_guidance
+    if premise_enabled(record,kind):prompt+='\n'+premise_guidance(record)
     return prompt+'\n'+point_guidance+('\n'+short_guidance if short_guidance else '')
