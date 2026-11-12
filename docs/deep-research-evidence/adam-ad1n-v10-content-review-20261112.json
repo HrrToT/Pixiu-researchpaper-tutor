@@ -1,0 +1,81 @@
+{
+  "case": "AD1N-v10",
+  "split": "development",
+  "runId": "dr_run_7c48caba01b45c298e0146db9743f6b9",
+  "sourceCommit": "2349256c",
+  "promptVersion": "dr-v2.20261112.419",
+  "status": "completed",
+  "outcome": "inconclusive",
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "modelCalls": 13,
+  "settledTokens": 61543,
+  "elapsedSeconds": 151,
+  "allModelCallsSettled": true,
+  "newUnknownCalls": 0,
+  "publicationBudgetActuallyUsed": {
+    "totalCharacters": 300,
+    "fixedCharacters": 146,
+    "layoutCharacters": 12,
+    "reservedCharacters": 158,
+    "editableCharacters": 142,
+    "protectedClaimIds": [
+      "c2"
+    ],
+    "editableClaimIds": [
+      "c1"
+    ]
+  },
+  "readerEditOutcome": "applied",
+  "singleSourceBranchActuallyUsed": false,
+  "rawDraftCharacters": 282,
+  "visibleDraftCharacters": 294,
+  "compactionCalled": false,
+  "acceptedClaims": 0,
+  "initialRejections": [
+    {
+      "claimId": "c1",
+      "reason": "semantic_unresolved",
+      "detail": "E1-E5支持一阶矩、二阶原始矩定义、零初始化偏差及偏差校正公式，也支持稀疏梯度小β2时避免初始步长过大；但没有证据支持最后一句“不保证所有训练更快或收敛”，该负面普遍断言缺乏来源依据。"
+    },
+    {
+      "claimId": "c2",
+      "reason": "semantic_unresolved",
+      "detail": "观察条件尚未通过事实核查：Evidence only explicitly shows v0=0 initialization; no quote shows m0=0."
+    }
+  ],
+  "repairRejections": [
+    {
+      "claimId": "c1",
+      "reason": "semantic_unresolved",
+      "detail": "E1-E5支持一阶矩、二阶原始矩定义、零初始化偏差及偏差校正公式，也支持稀疏梯度小β2时避免初始步长过大；但没有证据支持最后一句“不保证所有训练更快或收敛”，该负面普遍断言缺乏来源依据。",
+      "revisionRejection": {
+        "claimId": "c1",
+        "reason": "semantic_unresolved",
+        "detail": "The claim accurately describes the first and second moment estimates, their zero initialization bias, the bias correction formula, and the parameter update. However, the final clause '避免初始步长过大（尤其稀疏梯度、小β2时）' is supported only as a conditional observation in the source, not as a universal guarantee; the source states that without correction initial steps would be much larger in the case of sparse gr"
+      }
+    },
+    {
+      "claimId": "c2",
+      "reason": "semantic_unresolved",
+      "detail": "观察条件尚未通过事实核查：Evidence only explicitly shows v0=0 initialization; no quote shows m0=0."
+    }
+  ],
+  "coverageStatus": "not_checked",
+  "manualObservations": [
+    "Rendered draft fits 300; budget mismatch no longer blocks this run.",
+    "Dense statistical terms and formula remain; reader quality not accepted.",
+    "No facts accepted: review rejected negative guarantee wording and c2 own-source observation conditions.",
+    "Do not auto-approve reviewer failures or treat absence of compaction as content acceptance."
+  ],
+  "oldLedgerAndRunPayloadsExact": true,
+  "other15TaskSnapshotsExact": true,
+  "indexExact": true,
+  "ledgerRows": 9104,
+  "active": 0,
+  "paused": 15,
+  "protectedC2ObjectExact": true,
+  "sourceUnchangedSinceAssociatedTests": true,
+  "rawPayloadSha256": "df1bcdefa25be222fcd139b2c44c4ba7eb5edfb2038718b99c2f11f18b4e39c6",
+  "boundary": "A settled known inconclusive development result, not independent acceptance. Original sources, responses, rejections and old unknowns retained; no automatic retry."
+}
