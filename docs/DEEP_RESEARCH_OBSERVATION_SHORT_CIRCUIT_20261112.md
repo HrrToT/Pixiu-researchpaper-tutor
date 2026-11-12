@@ -15,3 +15,5 @@ AD1N-v16离线回放使用两份真实收到的回复，并仅在尝试第三次
 新增测试涵盖语义失败、无效诊断、无效回复、预算未开始、先通过后失败、全部通过仍审核推断、未知错误保留及版本限制。
 
 证据：`docs/deep-research-evidence/observation-stop-430-saved-replay-20261112.json`及`observation-stop-430-associated-regression-20261112.json`。当前不追加真实模型验证。完整DR0—DR5及独立内容验收保持未完成。
+
+68个关联测试文件1,172项通过（83.63秒），服务源码摘要保持。.430已加载，Python、RAG、GROBID健康检查通过；9,226条调用记录、15个暂停任务、16个任务及1,215条索引保持。运行证据：`runtime-load-observation-stop-430-20261112.json`。本轮新增模型调用为0。
