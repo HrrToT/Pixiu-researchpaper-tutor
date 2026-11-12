@@ -4276,7 +4276,7 @@
   },
   "nextQualityWork": [
     "Continue offline robustness and current-scope audit while awaiting provider recharge confirmation.",
-    "User-authored artifact persistence passed isolated Java integration; research artifact authority and Python generation still require integration acceptance.",
+    "User-authored artifacts and synthetic report publication/provenance passed isolated Java/Python HTTP integration; real generated research content and deployment remain open.",
     "Verify local mechanism reasoning and reader responsibilities with bounded real cases after provider availability is confirmed; never retry a previous receipt automatically.",
     "Complete multi-paper and executable experiment quality before fresh untuned H1-H6 runs.",
     "Revalidate current product flows and release/rollback requirements; keep PR draft and do not claim production maturity before all actual gates pass."
@@ -4299,7 +4299,7 @@
       "Full faithful multi-paper comparisons and scientifically executable experiment plans, including controls, initialization, budgets and interaction interpretation.",
       "Fresh untuned independent H1-H6 acceptance and all original hard gates; retired development cases cannot substitute.",
       "Broader continuation/correction, interruption/late-response/idempotent publication, external failure/version conflicts, release and rollback audit against current implementation.",
-      "Current frontend unit/type/build and six closed-API cases passed; live Java/Python persistence, real report flows and further UI acceptance remain open. Full novice workflow, independent Edge recovery and legacy import remain waived.",
+      "Current frontend unit/type/build, six closed-API cases, isolated Java artifact persistence and Java/Python synthetic publication/replay/provenance passed. Real generated report flows, deployment and further UI acceptance remain open. Full novice workflow, independent Edge recovery and legacy import remain waived.",
       "Historical unknown outcomes remain preserved and must not be reissued or relabelled."
     ]
   },
@@ -13278,6 +13278,18 @@
     "descriptionSynchronized": true,
     "mergeRequested": false,
     "proof": "deep-research-evidence/pr-status-synchronized-20261112.json"
+  },
+  "crossServicePublication20261112": {
+    "realHttpPublicationVerified": true,
+    "lostAckAndDuplicateDeliveryVerified": true,
+    "userEditAndServerProvenanceProtected": true,
+    "javaProcessRestartVerified": true,
+    "pythonRuntimeReinitializationVerified": true,
+    "generatedResearchContentVerified": false,
+    "loadedInUserService": false,
+    "modelCalls": 0,
+    "productionWrites": 0,
+    "proof": "DEEP_RESEARCH_CROSS_SERVICE_PUBLICATION_20261112.md"
   },
   "rollbackContinuationFix20261112": {
     "candidateVerified": true,
