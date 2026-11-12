@@ -629,6 +629,7 @@ class BudgetedSemanticChecker:
         source_version_review=False,
         review_diagnostic_bindings=False,
         known_single_review_failure=False,
+        integrated_diagnostic_schema=False,
     ):
         self._invoke = llm_invoker
         self._run_id = run_id
@@ -646,6 +647,7 @@ class BudgetedSemanticChecker:
         self._source_version_review = source_version_review
         self._review_diagnostic_bindings = review_diagnostic_bindings
         self._known_single_review_failure = known_single_review_failure
+        self._integrated_diagnostic_schema = integrated_diagnostic_schema
         self._mechanism_grounding = mechanism_grounding
         self._singleton_factual_response = singleton_factual_response
         self._factual_scope = factual_scope
@@ -876,7 +878,15 @@ Do not accept vague connections. A partly supported claim must fail until its wo
             expressions=self._scope_expression_context(claims) if callable(self._scope_expression_context) else {}
             single_decision=eligible(decision_policy,claims,scope_policy,complete_policy) and not expressions
             if single_decision:
-                prompt=decision_prompt(claims_text,evidence_text)
+                schema_policy=self._integrated_diagnostic_schema
+                schema_policy=(schema_policy() if callable(schema_policy) else schema_policy) is True
+                if schema_policy:
+                    from services.deep_research.source_version_review import eligible as schema_eligible
+                    diagnostic_binding=self._review_diagnostic_bindings
+                    schema_policy=((diagnostic_binding() if callable(diagnostic_binding) else diagnostic_binding) is True
+                                   and schema_eligible(claims))
+                prompt=decision_prompt(claims_text,evidence_text,
+                    **({'diagnostic_facts':True} if schema_policy else {}))
 
         if all(c.get('kind') in {'proposal', 'suggestion', 'hypothesis'} for c in claims):
             # Do not inherit factual-entailment instructions for unexecuted choices.

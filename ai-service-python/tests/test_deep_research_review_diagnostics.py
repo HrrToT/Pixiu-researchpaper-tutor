@@ -93,12 +93,18 @@ def test_new_policy_is_server_owned_and_immutable_for_old_and_new_runs(tmp_path)
     repo=DeepResearchRepository(tmp_path/'r.sqlite3');repo.initialize();facade=ResearchFacade(repo,lambda **_:None,llm_client=object());key='reviewDiagnosticContractVersion'
     try:
         r,_=facade.create({'workspaceTaskId':'t','operationKey':'op','question':'Explain','deferStart':True,key:False},start_async=False)
-        assert type(r[key]) is int and r[key]==1 and enabled(r)
+        assert type(r[key]) is int and r[key]==2 and enabled(r)
         assert facade._make_semantic_checker(r['runId'])._review_diagnostic_bindings() is True
+        assert facade._make_semantic_checker(r['runId'])._integrated_diagnostic_schema() is True
         assert not enabled({**r,key:True})
         with pytest.raises(ValueError,match='Immutable'):repo.update_run(r['runId'],lambda r:{**r,key:False})
         old=deepcopy(r);old.update(runId='old',idempotencyKey='old');old.pop(key);repo.create_run(old)
         assert facade._make_semantic_checker('old')._review_diagnostic_bindings() is False
+        assert facade._make_semantic_checker('old')._integrated_diagnostic_schema() is False
+        version_one=deepcopy(old);version_one.update(runId='version-one',idempotencyKey='version-one')
+        version_one[key]=1;repo.create_run(version_one)
+        assert facade._make_semantic_checker('version-one')._review_diagnostic_bindings() is True
+        assert facade._make_semantic_checker('version-one')._integrated_diagnostic_schema() is False
         with pytest.raises(ValueError,match='Immutable'):repo.update_run('old',lambda r:{**r,key:1})
     finally:facade.shutdown()
 

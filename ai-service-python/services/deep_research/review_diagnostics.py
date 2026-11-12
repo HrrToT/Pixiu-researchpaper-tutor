@@ -14,7 +14,7 @@ def invalid(audit):
 
 def enabled(record):
     return (type(record.get('reviewDiagnosticContractVersion')) is int
-            and record['reviewDiagnosticContractVersion'] == 1)
+            and record['reviewDiagnosticContractVersion'] in (1, 2))
 
 
 GUIDANCE = '''Reviewer diagnostic provenance:
