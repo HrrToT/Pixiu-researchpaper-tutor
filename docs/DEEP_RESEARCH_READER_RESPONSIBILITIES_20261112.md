@@ -13,3 +13,5 @@ AD1N-v15实际输入离线回放：版本1的请求、状态、合并结果与�
 回放仍会合并那份旧回复，其中的职责重复没有被新的机械语义过滤器删除。本改动提供准确分工输入，不宣称从字符串中自动判定所有越界表达；真实效果仍需后续验证，事实和全答案完整性检查继续独立执行。
 
 证据：`docs/deep-research-evidence/reader-responsibilities-427-saved-preparation-20261112.json`、`reader-responsibilities-427-graph-replay-20261112.json`及`reader-responsibilities-427-associated-regression-20261112.json`。DR0—DR5和独立内容验收仍未完成。
+
+64个关联测试文件1,107项通过（69.36秒），服务源码摘要保持。运行时已加载.427，Python、RAG与GROBID健康检查通过；9,204条调用记录、15个暂停任务、16个任务及1,215条索引保持。本轮没有新增模型调用。运行证据：`runtime-load-reader-responsibilities-427-20261112.json`。
