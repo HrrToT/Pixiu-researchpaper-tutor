@@ -55,7 +55,7 @@ All compiled output still receives independent factual, numeric, scope and final
 def build(record,question,kind,limit,claim_limit,sections,obligations,sources,
           evidence_marker,table_marker,fields,metric_key_hint,*,drafting_schema=False,
           point_guidance='',short_guidance=''):
-    from services.deep_research.authored_body import fields as body_fields,GUIDANCE as BODY
+    from services.deep_research.authored_body import fields as body_fields,guidance as body_guidance,reasoning_enabled
     from services.deep_research.shared_strings import input_text
     from services.deep_research.table_input_contract import GUIDANCE as TABLES
     from services.deep_research.synthesis import SCIENTIFIC_TERMINOLOGY
@@ -75,7 +75,10 @@ Shared table packets (tableDataRef resolves ONLY for its own source/evidence row
 
 Return ONLY compact JSON: {{"sections":[{{"title":"中文标题","claimIds":["c1"]}}],"claims":[...]}}.
 Each claim has exactly: {body_fields(fields)}. evidenceRefs and obligationIds are arrays.
-'''+BODY+'\n'+CORE+'\n'+TABLES+'\n'+SCIENTIFIC_TERMINOLOGY
+'''+body_guidance(record,kind)+'\n'+(CORE.replace(
+    'Use the active body.boundary contract for authored scope, without stronger absence in prose.',
+    'Use body.boundary for evidence-comparison/generalization bounds; body.reasoning for a local mechanism deduction. Neither permits stronger author-wide absence.')
+    if reasoning_enabled(record,kind) else CORE)+'\n'+TABLES+'\n'+SCIENTIFIC_TERMINOLOGY
     if drafting_schema:
         from services.deep_research.factual_scope import DRAFTING_SCHEMA
         prompt+='\nFill draftingBasis FIRST, then draft no stronger than own premises. It is private UNVERIFIED planning, not support. Correct contradicted premises; unresolved names the remaining boundary, empty only if none. Schema:\n'+encode(DRAFTING_SCHEMA)

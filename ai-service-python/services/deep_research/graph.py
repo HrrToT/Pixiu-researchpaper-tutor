@@ -1668,8 +1668,10 @@ space with unsupported global absence or incidental iteration/performance values
             from services.deep_research.draft_validation import enabled as draft_validation_enabled, materialize_claims
             try:
                 if draft_validation_enabled(record):
+                    from services.deep_research.authored_body import reasoning_enabled
                     parsed, scope_expression_audit, draft_validation_audit = materialize_claims(
                         parsed, record['scopeExpressionContractVersion'],
+                        **({'reasoning':True} if authored_body and reasoning_enabled(record,output_kind) else {}),
                         **({'authored_body':True} if authored_body else {}))
                 else:
                     for index, claim in enumerate(parsed['claims']):

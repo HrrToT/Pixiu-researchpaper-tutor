@@ -149,14 +149,14 @@ def test_audience_polish_cannot_invalidate_compiled_scope_and_cannot_change_chec
     invoke.assert_not_called()
 
 
-@pytest.mark.parametrize('client_value',[None,True,0,2])
+@pytest.mark.parametrize('client_value',[None,True,0,3])
 def test_body_contract_is_server_owned_immutable_and_not_added_to_legacy_runs(tmp_path,client_value):
     from services.deep_research.facade import ResearchFacade
     from services.deep_research.repository import DeepResearchRepository
     repo=DeepResearchRepository(tmp_path/'r.sqlite3');repo.initialize();facade=ResearchFacade(repo,lambda **_:None,llm_client=object())
     try:
         r,_=facade.create({'workspaceTaskId':'t','operationKey':'op','question':'比较论文','deferStart':True,'authoredBodyContractVersion':client_value},start_async=False)
-        assert r['authoredBodyContractVersion']==1 and enabled(r,'paper_comparison')
+        assert r['authoredBodyContractVersion']==2 and enabled(r,'paper_comparison')
         with pytest.raises(ValueError,match='Immutable'):repo.update_run(r['runId'],lambda r:{**r,'authoredBodyContractVersion':client_value})
         old=deepcopy(r);old.update(runId='legacy',idempotencyKey='old');old.pop('authoredBodyContractVersion');repo.create_run(old)
         before=repo.require_run('legacy');facade.create({'workspaceTaskId':'t','operationKey':'next','question':'比较论文','deferStart':True},start_async=False)

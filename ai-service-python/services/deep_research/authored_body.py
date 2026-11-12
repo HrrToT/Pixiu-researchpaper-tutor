@@ -4,7 +4,7 @@ from copy import deepcopy
 
 def enabled(record,kind=None):
     from services.deep_research.factual_prompt import enabled as factual_enabled
-    return (type(record.get('authoredBodyContractVersion')) is int and record['authoredBodyContractVersion']==1
+    return (type(record.get('authoredBodyContractVersion')) is int and record['authoredBodyContractVersion'] in (1, 2)
         and record.get('scopeExpressionContractVersion')==5
         and factual_enabled(record,kind or record.get('state',{}).get('outputKind')))
 
@@ -18,6 +18,35 @@ scopeExpression and is rendered by the app. Compiled text still counts toward th
 same length limit and receives all independent checks; the branch grants no support.'''
 
 
+def reasoning_enabled(record, kind=None):
+    return (enabled(record, kind) and record['authoredBodyContractVersion'] == 2
+            and type(record.get('synthesisInputContractVersion')) is int
+            and record['synthesisInputContractVersion'] == 1
+            and type(record.get('factualPromptContractVersion')) is int
+            and record['factualPromptContractVersion'] == 3
+            and type(record.get('draftValidationContractVersion')) is int
+            and record['draftValidationContractVersion'] == 1)
+
+
+REASONING_GUIDANCE = '''body.reasoning is for a source-grounded LOCAL mechanism deduction, kind="inference".
+Its premise and consequence are nonempty Chinese strings, joined with a newline;
+the WHOLE text receives independent factual, numeric, scope and coverage checks.
+Explain the actual operation and its logical consequence or limit, with necessary
+conditions. A user prohibition is no source premise. Invent no comparator, setting
+inventory or measurement to express this deduction. No author-wide absence follows.
+Actual evidence-comparison/generalization bounds still require body.boundary and
+its operator audits; never relabel them to evade checks. One body branch only.
+'''
+
+
+def guidance(record, kind=None):
+    if not reasoning_enabled(record, kind):
+        return GUIDANCE
+    return GUIDANCE.replace('Use actual values, not the example labels.',
+        'OR {"reasoning":{"premise":"source-grounded mechanism","consequence":"local deduction or limit"}}.\n'
+        'Use actual values, not the example labels.', 1) + '\n' + REASONING_GUIDANCE
+
+
 def fields(names):
     return ','.join([n for n in names.split(',') if n not in {'text','conditions','scopeExpression'}]+['body'])
 
@@ -27,7 +56,9 @@ def schema(value):
         'body':{'prose':{'text':'revised wording','conditions':{}}}}
 
 
-def decode(claim):
+def decode(claim, *, reasoning=False):
+    if type(reasoning) is not bool:
+        raise ValueError('Invalid authored reasoning policy')
     if not isinstance(claim,dict) or {'text','conditions','scopeExpression'}&set(claim):
         raise ValueError('Authored body cannot coexist with canonical prose or scope fields')
     body=claim.get('body')
@@ -42,6 +73,13 @@ def decode(claim):
         return {**result,**deepcopy(prose),'scopeExpression':None}
     if set(body)=={'boundary'} and claim.get('kind')=='inference' and isinstance(body['boundary'],dict):
         return {**result,'text':'','conditions':{},'scopeExpression':deepcopy(body['boundary'])}
+    if reasoning and set(body)=={'reasoning'} and claim.get('kind')=='inference':
+        value=body['reasoning']
+        if (not isinstance(value,dict) or set(value)!={'premise','consequence'}
+                or any(not isinstance(value[k],str) or not value[k].strip() for k in value)):
+            raise ValueError('Explicit reasoning premise and consequence required')
+        return {**result,'text':value['premise']+'\n'+value['consequence'],
+                'conditions':{},'scopeExpression':None}
     raise ValueError('Invalid authored boundary branch')
 
 
