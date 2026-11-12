@@ -18,8 +18,9 @@
     },
     {
       "id": "H3",
-      "state": "fresh_definition_pending",
-      "case": null
+      "state": "frozen_not_executed",
+      "case": "H3-STREAMING",
+      "manifest": "DEEP_RESEARCH_STREAMING_EXTERNAL_HOLDOUT_20261112.json"
     },
     {
       "id": "H4",
@@ -43,7 +44,7 @@
       "liveProviderCredit": 0
     }
   ],
-  "historicalBoundary": "Original failures and retired cases unchanged. H1/H2/H4/H5 frozen/unexecuted; H3 pending. H6 first offline operational execution passed, no scientific content or live Provider credit. Shared-source dependencies remain.",
+  "historicalBoundary": "Original failed/retired cases unchanged. H1-H5 new content definitions frozen/unexecuted; H6 first offline operational execution passed. Scientific accepted0, no live Provider credit. Shared-source dependencies remain; H2O excluded.",
   "sharedMaterialDependencies": [
     {
       "cases": [
