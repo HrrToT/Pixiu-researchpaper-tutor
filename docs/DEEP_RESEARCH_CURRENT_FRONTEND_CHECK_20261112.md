@@ -24,4 +24,4 @@
 
 证据位于 `deep-research-evidence/frontend-current-checks-20261112.json`、`frontend-current-build-20261112.json`、`frontend-workbench-current-20261112.json`、`frontend-current-visual-review-20261112.json`。完整原日志及Playwright报告保留于tmp，截图摘要已归档。
 
-本轮证明当前源码的单元/组件、类型、构建及封闭API工作台交互，没有证明真实Java/Python数据链路中的保存、冲突与恢复，也没有重新验证真实研究生成或学习效果。后续仍需完成真实后端的持久化交互核对及完整DR0—DR5内容与发布验收。用户已省略的完整新手学习流程、独立Edge恢复及旧项目导入不重新列为门槛。
+本轮证明当前源码的单元/组件、类型、构建及封闭API工作台交互。后续同日已补充[真实Java用户笔记持久化检查](DEEP_RESEARCH_LIVE_ARTIFACT_PERSISTENCE_20261112.md)，保存、清缓存刷新、历史恢复、409冲突及服务重启保持均通过；研究成果权威来源及Python生成链路仍未重验。完整DR0—DR5内容与发布验收仍待完成。用户已省略的完整新手学习流程、独立Edge恢复及旧项目导入不重新列为门槛。
