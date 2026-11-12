@@ -1,0 +1,56 @@
+{
+  "version": 1,
+  "frozenAt": "2026-11-12",
+  "frozenTimestamp": "2026-11-12T12:13:05.059365+00:00",
+  "budgetProfile": "standard",
+  "executionStatus": "frozen_not_executed",
+  "materials": {},
+  "independentCredit": 0,
+  "review": {
+    "scope": "Original H6 offline failure/budget engineering acceptance. Five new composed acquisition -> budget stop -> durable reopen scenarios; existing production modules, synthetic providers and isolated SQLite only.",
+    "sourceCommit": "318f5b96",
+    "testSourceSha256": {
+      "ai-service-python/tests/test_deep_research_fault_acceptance_20261112.py": "c05ce6e26f8c67f191226d0b0c6964ce7f1bde99dc8bfc2f87d56f47d64dd71d",
+      "ai-service-python/tests/test_deep_research_end_to_end.py": "dd33ff933ac2a5eecaf914a4eaf9c38bed7ccc9e6bb97f57080f20da2c1528a3"
+    },
+    "liveProviderQualityCredit": 0,
+    "scientificContentCredit": 0,
+    "operationalVerdict": "not_executed",
+    "modelBudget": "Each isolated case server-narrows to max4/reserve3 model calls after acquisition; only one fixture brief is affordable. Production configuration is not changed.",
+    "sourceBudget": "Search cap1 for exhaustion case, otherwise existing standard cap6; PDF cap512 bytes in synthetic oversize fixture. Limits are narrowed for injection, never expanded.",
+    "networkBoundary": "Actual pinned_https_get, DNS/public-address and redirect/body checks execute against mocked HTTPSConnection. No Internet connection or production application state.",
+    "sourceIdentity": "arxiv:2601.99999v1/title OFFLINE FIXTURE ONLY are synthetic parser fixtures, not assertions that this publication exists.",
+    "independenceBoundary": "Frozen operational scenario definition before first execution, not an unseen-paper/model-output claim. Shared existing scientific FixtureModel returns only a brief before budget stop; no fixture research facts should be published."
+  },
+  "cases": [
+    {
+      "id": "H6-FAULT-CHAIN",
+      "split": "holdout",
+      "materials": [],
+      "mode": "offline_integration_fault_injection",
+      "faults": [
+        "acquired abstract then discovery503",
+        "acquired abstract then oversized fulltext",
+        "acquired abstract then search budget refusal",
+        "acquired abstract then private DNS refusal",
+        "acquired abstract then redirect refusal"
+      ],
+      "required": [
+        "Each scenario keeps the exact acquired abstract, version identity and abstract access level.",
+        "Limits reject before excess HTTP sends, body reads or parser dispatch.",
+        "Recreated acquisition reuses durable results and does not resend failed requests.",
+        "Actual facade and compiled graph stop on server-narrowed model budget and publish inconclusive without unsupported factual conclusions.",
+        "Persistent SQLite reload and repeated GET keep sources/report/ledger unchanged and generate/fetch nothing.",
+        "All admitted fixture calls settled; no pending/unknown, budget expansion or live provider calls."
+      ],
+      "forbidden": [
+        "Claiming synthetic network/LLM results are real Provider or scientific quality acceptance.",
+        "Retrying the same fault to obtain a pass or editing sealed checks without a new definition.",
+        "Counting H6 operational fixture success as independent scientific content credit."
+      ]
+    }
+  ],
+  "caseDefinitionHashes": {
+    "H6-FAULT-CHAIN": "f5406daff1e6be125feb91aa16d7c6fab4f3f6e3c2b5d5478b78a92da8fb6e2a"
+  }
+}

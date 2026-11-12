@@ -1,7 +1,7 @@
 {
   "version": 1,
   "asOf": "2026-11-12",
-  "scope": "Original H1-H6, partial replacement preparation only",
+  "scope": "Original H1-H6 replacements: content definitions and separately assessed operational fault case",
   "independentAccepted": 0,
   "slots": [
     {
@@ -35,11 +35,15 @@
     },
     {
       "id": "H6",
-      "state": "fresh_definition_pending",
-      "case": null
+      "state": "passed_offline_fault_injection",
+      "case": "H6-FAULT-CHAIN",
+      "manifest": "DEEP_RESEARCH_FAULT_CHAIN_HOLDOUT_20261112.json",
+      "result": "deep-research-evidence/h6-fault-chain-first-20261112.json",
+      "scientificContentCredit": 0,
+      "liveProviderCredit": 0
     }
   ],
-  "historicalBoundary": "Original failures and retired cases unchanged. H1/H2/H4/H5 definitions frozen only; zero execution/acceptance. H3/H6 pending; shared-material dependencies apply.",
+  "historicalBoundary": "Original failures and retired cases unchanged. H1/H2/H4/H5 frozen/unexecuted; H3 pending. H6 first offline operational execution passed, no scientific content or live Provider credit. Shared-source dependencies remain.",
   "sharedMaterialDependencies": [
     {
       "cases": [
@@ -67,5 +71,7 @@
       "reason": "Used to diagnose/validate PDF Form optimization; cannot regain H3 eligibility from repair success.",
       "proof": "DEEP_RESEARCH_PDF_FORM_OPTIMIZATION_20261112.md"
     }
-  ]
+  ],
+  "independentAcceptedMeaning": "Scientific content acceptance only; H6 operational fixture pass is recorded separately.",
+  "operationalAccepted": 1
 }

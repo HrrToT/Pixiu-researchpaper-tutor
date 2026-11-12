@@ -32,7 +32,20 @@
     "independentContentAccepted": 0,
     "H3Candidate": "H2O v1 development diagnostic, excluded from held-out credit"
   },
-  "freshMaterialReadiness": "H1/H2/H4/H5 definitions frozen/not executed; independent acceptance zero. H3/H6 pending. H2O v1 used for parser engineering diagnosis, excluded from holdout eligibility. No model execution/import/training; original held-out definitions and shared-source dependencies unchanged.",
+  "H6OperationalAcceptance20261112": {
+    "case": "H6-FAULT-CHAIN",
+    "tests": 5,
+    "passed": 5,
+    "firstExecution": true,
+    "proof": "deep-research-evidence/h6-fault-chain-first-20261112.json",
+    "paidModelCalls": 0,
+    "fixtureModelCalls": 5,
+    "realNetworkRequests": 0,
+    "productionWrites": 0,
+    "scientificContentCredit": 0,
+    "liveProviderCredit": 0
+  },
+  "freshMaterialReadiness": "H1/H2/H4/H5 frozen/unexecuted; scientific content acceptance zero. H3 fresh definition pending, H2O diagnostic excluded. H6 first offline fault-chain operational execution passed five scenarios, zero live Provider/scientific credit; no production source changes this turn.",
   "evidenceRule": "Machine completion, offline fixtures, real transport, source support, content quality and independent-case eligibility are separate. Historical results are not silently upgraded to current passes.",
   "latestVerification": {
     "backendResearchModelReadingIntegration": {
@@ -4308,7 +4321,7 @@
     "sourceAttestation": "deep-research-evidence/loaded-source-index-attestation-20261112.json"
   },
   "nextQualityWork": [
-    "Prepare fresh H3/H6 definitions. H2O v1 exposed a parser timeout and was used for engineering repair, so it is development-only and cannot regain H3 credit. H1/H2/H4/H5 remain frozen/unexecuted with shared-source dependencies.",
+    "Prepare a fresh H3 external discovery/fulltext case, excluding H2O used for parser diagnosis. H1/H2/H4/H5 remain frozen/unexecuted; H6 operational fixture pass does not replace genuine Provider or scientific quality verification.",
     "After provider becomes available, validate current mechanism explanation, multi-paper comparison and full executable experiment quality with bounded new cases, no old receipt retries.",
     "Run fresh untuned H1-H6 after development content passes; preserve original scoring, budgets and unknown outcomes.",
     "Complete actual generated-result interaction and final frozen regression/release/rollback audit; keep PR draft until all original gates pass."
@@ -4328,14 +4341,14 @@
     "scope": "Original full DR0-DR5; no quality or independent requirement waived by engineering checks",
     "proof": "DEEP_RESEARCH_SCOPE_AUDIT_20261112.md",
     "openItems": [
-      "H1/H2/H4/H5 frozen/unexecuted; H3/H6 pending, independent acceptance zero. Shared LoRA/DoRA sources require re-audit if used for tuning.",
+      "H1/H2/H4/H5 frozen/unexecuted; H3 fresh definition still pending, independent scientific acceptance0. H6 offline fault chains passed separately; live Provider, cost and content gates remain.",
       "Complete current novice mechanism explanation, full faithful multi-paper synthesis and executable scientific experiment development quality.",
       "Execute fresh untuned H1-H6 and all original hard gates; keep old failures and 15 unknown pauses unchanged.",
       "Validate actual generated report interaction and final frozen release/failure-cutover requirements; isolated backup restore is not live production cutover."
     ]
   },
   "nextIndependentCasesManifest": "DEEP_RESEARCH_NEXT_HOLDOUTS_20261112.json",
-  "nextIndependentCasesStatus": "Partial replacement set: H1/H2/H4/H5 frozen/unexecuted; H3/H6 pending. Shared-source dependencies require re-audit after material-informed tuning. Historical failures/retired cases unchanged; credit0. Development quality must be ready before execution.",
+  "nextIndependentCasesStatus": "H1/H2/H4/H5 frozen/unexecuted and H3 pending; scientific acceptance0. H6 separately passed five offline operational fault chains, not live Provider/content quality. Historical failures and shared-source dependencies unchanged.",
   "priorIndependentSlots": [
     [
       {
