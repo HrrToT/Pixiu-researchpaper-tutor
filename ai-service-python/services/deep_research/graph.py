@@ -1723,6 +1723,7 @@ space with unsupported global absence or incidental iteration/performance values
         def adapt_reader(draft):
             from services.deep_research.audience_edit_budget import enabled as budgeted_reader
             from services.deep_research.audience_single_source import enabled as single_source_reader
+            from services.deep_research.audience_publication_budget import enabled as publication_reader_budget
             current = repo_update(run_id, lambda r: r, expected_revision=None)
             def checkpoint_audience(value):
                 repo_update(run_id, lambda r: {**r, 'state': {**r.get('state', {}),
@@ -1735,6 +1736,8 @@ space with unsupported global absence or incidental iteration/performance values
                 **({'protected_edits':True} if authored_body and scope_expression_audit and budgeted_reader(current) else {}),
                 **({'source_first_single':True} if single_source_reader(current,draft,
                     [a['claimId'] for a in scope_expression_audit] if authored_body and scope_expression_audit else ()) else {}),
+                **({'publication_context':{'outputKind':output_kind,'presentationVersion':current['reportPresentationContractVersion']}}
+                   if publication_reader_budget(current,question) else {}),
                 can_start=has_time_for_rewrite(current),
                 **({'objective_framing':True} if objective_framing_enabled(current) else {}),
                 **({'process_explanations':True} if process_framing_enabled(current) else {}),

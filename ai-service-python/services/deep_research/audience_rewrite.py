@@ -411,7 +411,7 @@ def _merge(report, content, parse, question, *, contract_version=1, allowed_infe
 
 
 def rewrite_for_beginner(report, evidence, question, invoke, parse, *, saved_state=None, checkpoint=None,
-                         can_start=True, contract_version=1, requirement_context=(), verification_policy=None, objective_framing=False, process_explanations=False, protected_claim_ids=(), protected_edits=False, source_first_single=False):
+                         can_start=True, contract_version=1, requirement_context=(), verification_policy=None, objective_framing=False, process_explanations=False, protected_claim_ids=(), protected_edits=False, source_first_single=False, publication_context=None):
     """Frozen request + settlement reuse; unknown transports propagate unchanged.
 
     A rejected/too-long edit leaves the original draft for normal verification.
@@ -428,11 +428,18 @@ def rewrite_for_beginner(report, evidence, question, invoke, parse, *, saved_sta
     if (not isinstance(protected_claim_ids,(tuple,list)) or any(not isinstance(k,str) or not k for k in protected_claim_ids)
             or len(set(protected_claim_ids))!=len(protected_claim_ids) or not set(protected_claim_ids)<={c.get('claimId') for c in report.get('claims',[])}):
         raise ValueError('Invalid protected audience point IDs')
+    publication_budget=None
+    if publication_context is not None:
+        if contract_version!=9:raise ValueError('Reader publication budget requires contract9')
+        from services.deep_research.audience_publication_budget import allocation as publication_allocation
+        publication_budget=publication_allocation(report,evidence,question,publication_context,protected_claim_ids)
     identity_inputs={'report': report, 'evidence': evidence, 'question': question}
     edit_budget=None
     if protected_edits:
         from services.deep_research.audience_edit_budget import allocation
         edit_budget=allocation(report,question,protected_claim_ids)
+        if publication_budget is not None:
+            edit_budget.update(editableCharacters=publication_budget['editableCharacters'],layoutCharacters=publication_budget['layoutCharacters'])
         identity_inputs.update(audienceBudgetContractVersion=1,editBudget=edit_budget)
     if contract_version in (7,8,9):
         verification_policy = deepcopy(verification_policy) if verification_policy is not None else {
@@ -448,12 +455,17 @@ def rewrite_for_beginner(report, evidence, question, invoke, parse, *, saved_sta
     if protected_claim_ids:identity_inputs['protectedClaimIds']=list(protected_claim_ids)
     if objective_framing:identity_inputs['objectiveFramingVersion']=1
     if process_explanations:identity_inputs['processExplanationVersion']=1
+    if publication_context is not None:
+        identity_inputs.update(audiencePublicationBudgetContractVersion=1,publicationContext=publication_context,publicationBudget=publication_budget)
     if source_first_single:identity_inputs['audienceSingleSourceContractVersion']=1
     identity = digest(identity_inputs)
     state = deepcopy(saved_state) if saved_state is not None else None
     if state is not None:
         if (not isinstance(state, dict) or type(state.get('version')) is not int or state['version'] != contract_version
                 or state.get('inputDigest') != identity
+                or publication_context is not None and (type(state.get('audiencePublicationBudgetContractVersion')) is not int
+                    or state.get('audiencePublicationBudgetContractVersion')!=1
+                    or state.get('publicationContext')!=publication_context or state.get('publicationBudget')!=publication_budget)
                 or source_first_single and type(state.get('audienceSingleSourceContractVersion')) is not int
                 or source_first_single and state.get('audienceSingleSourceContractVersion')!=1
                 or protected_edits and (type(state.get('audienceBudgetContractVersion')) is not int
@@ -468,10 +480,15 @@ def rewrite_for_beginner(report, evidence, question, invoke, parse, *, saved_sta
                                    **({'source_first_single':True} if source_first_single else {}),
                                    **({'protected_edits':True} if protected_edits else {}),
                                    **({'protected_claim_ids':protected_claim_ids} if protected_claim_ids else {}))
+        if publication_context is not None and reason is None:
+            from services.deep_research.audience_publication_budget import prepare as prepare_publication
+            request,reason=prepare_publication(request,report,evidence,question,publication_context,protected_claim_ids,protected_edits=protected_edits)
         state = {'version': contract_version, 'inputDigest': identity, 'status': 'pending',
                  'request': request, 'requestDigest': digest(request)}
         if protected_edits:state.update(audienceBudgetContractVersion=1,editBudget=deepcopy(edit_budget))
         if source_first_single:state['audienceSingleSourceContractVersion']=1
+        if publication_context is not None:
+            state.update(audiencePublicationBudgetContractVersion=1,publicationContext=deepcopy(publication_context),publicationBudget=deepcopy(publication_budget))
         if contract_version in (7,8,9):
             state['verificationPolicy'] = deepcopy(verification_policy)
         if contract_version in (2,3,4,5,6,7,8,9):
@@ -522,6 +539,10 @@ def rewrite_for_beginner(report, evidence, question, invoke, parse, *, saved_sta
         before={c['claimId']:c for c in report['claims']};after={c['claimId']:c for c in edited['claims']}
         if any(before[k]!=after.get(k) for k in protected_claim_ids):
             reasons.append('structured_scope_changed');edited=None
+    if edited is not None and publication_context is not None:
+        from services.deep_research.audience_publication_budget import fits
+        if not fits(edited,evidence,question,publication_context):
+            reasons.append('publication_character_limit');edited=None
     result = edited or deepcopy(report)
     if contract_version in (4,5,6,7,8,9):
         changes = [{'claimId': new['claimId'], 'from': old['kind'], 'to': new['kind']}
