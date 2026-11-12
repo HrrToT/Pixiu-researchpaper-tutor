@@ -1931,6 +1931,8 @@ def make_verify_node(
                     report_body, verification_result, evidence, saved.get('plan', []))
             repair_targets = prepare_coverage_repair(repair_report, verification_result,
                 answer_coverage if answer_coverage.get('status') == 'checked' else {'gaps': []},
+                **({'defer_invalid_diagnostics':True} if type(record.get('diagnosticRepairRoutingContractVersion')) is int
+                   and record['diagnosticRepairRoutingContractVersion']==1 else {}),
                 **({'defer_invalid_reviews':True} if type(record.get('perClaimReviewFailureContractVersion')) is int
                    and record['perClaimReviewFailureContractVersion']==1 else {}),
                 **({'defer_binding_errors':True} if type(record.get('coverageRepairRoutingContractVersion')) is int

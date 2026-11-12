@@ -58,14 +58,14 @@ def review_binding_only(audit, gap):
     return True
 
 
-def prepare_coverage_repair(report, verification, audit, *, prioritize_specific=False, defer_binding_errors=False, defer_invalid_reviews=False):
+def prepare_coverage_repair(report, verification, audit, *, prioritize_specific=False, defer_binding_errors=False, defer_invalid_reviews=False, defer_invalid_diagnostics=False):
     """Withhold accepted claims needed to close audit gaps.
 
     Returns a new verification-shaped dict whose ``accepted`` list drops the
     targeted claims and whose ``rejected`` list is the union of the original
     rejections plus one coverage row per targeted claim.
     """
-    if any(type(v) is not bool for v in (prioritize_specific,defer_binding_errors,defer_invalid_reviews)):
+    if any(type(v) is not bool for v in (prioritize_specific,defer_binding_errors,defer_invalid_reviews,defer_invalid_diagnostics)):
         raise ValueError('Invalid coverage repair scheduling policy')
     report = report or {}
     verification = verification or {}
@@ -82,9 +82,12 @@ def prepare_coverage_repair(report, verification, audit, *, prioritize_specific=
     rejected = verification.get("rejected") or []
     gaps = [g for g in audit.get("gaps", []) if isinstance(g, dict)]
     deferred_reviews=[]
-    if defer_invalid_reviews:
-        from services.deep_research.review_response_failure import invalid
-        deferred_reviews=[r['claimId'] for r in rejected if invalid(r.get('reviewResponseAudit'))]
+    if defer_invalid_reviews or defer_invalid_diagnostics:
+        from services.deep_research.review_response_failure import invalid as response_invalid
+        from services.deep_research.review_diagnostics import invalid as diagnostic_invalid
+        deferred_reviews=[_claim_id(r) for r in rejected if _claim_id(r) is not None and (
+            defer_invalid_reviews and response_invalid(r.get('reviewResponseAudit'))
+            or defer_invalid_diagnostics and diagnostic_invalid(r.get('reviewDiagnosticAudit')))]
         unreviewed_obligations={oid for c in report_claims if _claim_id(c) in deferred_reviews
             for oid in c.get('obligationIds',[])}
         rejected=[r for r in rejected if _claim_id(r) not in deferred_reviews]
