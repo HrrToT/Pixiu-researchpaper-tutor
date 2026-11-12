@@ -29,8 +29,9 @@
     },
     {
       "id": "H5",
-      "state": "fresh_definition_pending",
-      "case": null
+      "state": "frozen_not_executed",
+      "case": "H5-DORA-FACTORIAL",
+      "manifest": "DEEP_RESEARCH_DORA_FACTORIAL_HOLDOUT_20261112.json"
     },
     {
       "id": "H6",
@@ -38,14 +39,23 @@
       "case": null
     }
   ],
-  "historicalBoundary": "Original failures and retired cases unchanged. H1/H2/H4 definitions frozen only; zero execution/acceptance. H3/H5/H6 pending; shared-material dependencies apply.",
+  "historicalBoundary": "Original failures and retired cases unchanged. H1/H2/H4/H5 definitions frozen only; zero execution/acceptance. H3/H6 pending; shared-material dependencies apply.",
   "sharedMaterialDependencies": [
     {
       "cases": [
         "H2-ADAPT",
-        "H4-LORA-VERSIONS"
+        "H4-LORA-VERSIONS",
+        "H5-DORA-FACTORIAL"
       ],
       "materialSha256": "38a259c1926b724363fcfbd8e5f80fcadf0dd8d9ab6944fea8c00e74fd7590b0",
+      "rule": "If shared material informs engine tuning, re-audit/retire dependent held-out cases; shared-source cases are not statistically independent."
+    },
+    {
+      "cases": [
+        "H2-ADAPT",
+        "H5-DORA-FACTORIAL"
+      ],
+      "materialSha256": "6c15b619c34e4fab99e2fb2c510838a66a30b94ad499a5538d4d10e8aa4cb876",
       "rule": "If shared material informs engine tuning, re-audit/retire dependent held-out cases; shared-source cases are not statistically independent."
     }
   ]

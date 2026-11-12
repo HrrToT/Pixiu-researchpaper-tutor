@@ -13,7 +13,7 @@
     "proof": "deep-research-evidence/current-rollback-complete-regression-20261112.json",
     "boundary": "Current complete offline research suite after rollback fix; no real generation or independent content acceptance. Recorder recovery and sandbox abort explicitly recorded."
   },
-  "freshMaterialReadiness": "H1-GSC, H2-ADAPT and H4-LORA-VERSIONS frozen/not executed; independent acceptance zero. H3/H5/H6 pending. Shared LoRA-v1 dependency between H2/H4 explicitly sealed; VQ development-only. No model execution/import or engine tuning.",
+  "freshMaterialReadiness": "H1/H2/H4/H5 definitions frozen/not executed; independent acceptance zero. H3/H6 pending. H5 retains full factorial execution/budget/effect/interaction criteria; shared-source dependencies explicitly recorded. No model execution/import/training or engine tuning.",
   "evidenceRule": "Machine completion, offline fixtures, real transport, source support, content quality and independent-case eligibility are separate. Historical results are not silently upgraded to current passes.",
   "latestVerification": {
     "backendResearchModelReadingIntegration": {
@@ -4289,7 +4289,7 @@
     "sourceAttestation": "deep-research-evidence/loaded-source-index-attestation-20261112.json"
   },
   "nextQualityWork": [
-    "Prepare fresh H3/H5/H6 at original scope. H1/H2/H4 frozen/unexecuted; keep evaluator anchors out of tuning and honor shared-source independence dependency.",
+    "Prepare fresh H3/H6 definitions at original scope. H1/H2/H4/H5 frozen/unexecuted; all six H5 dimensions apply and full four-group scientific requirements remain. Keep reviewer anchors out of tuning; shared-source dependency applies.",
     "After provider becomes available, validate current mechanism explanation, multi-paper comparison and full executable experiment quality with bounded new cases, no old receipt retries.",
     "Run fresh untuned H1-H6 after development content passes; preserve original scoring, budgets and unknown outcomes.",
     "Complete actual generated-result interaction and final frozen regression/release/rollback audit; keep PR draft until all original gates pass."
@@ -4309,14 +4309,14 @@
     "scope": "Original full DR0-DR5; no quality or independent requirement waived by engineering checks",
     "proof": "DEEP_RESEARCH_SCOPE_AUDIT_20261112.md",
     "openItems": [
-      "H1/H2/H4 frozen/unexecuted; H3/H5/H6 pending, independent acceptance zero. H2/H4 shared-source dependency applies.",
+      "H1/H2/H4/H5 frozen/unexecuted; H3/H6 pending, independent acceptance zero. Shared LoRA/DoRA sources require re-audit if used for tuning.",
       "Complete current novice mechanism explanation, full faithful multi-paper synthesis and executable scientific experiment development quality.",
       "Execute fresh untuned H1-H6 and all original hard gates; keep old failures and 15 unknown pauses unchanged.",
       "Validate actual generated report interaction and final frozen release/failure-cutover requirements; isolated backup restore is not live production cutover."
     ]
   },
   "nextIndependentCasesManifest": "DEEP_RESEARCH_NEXT_HOLDOUTS_20261112.json",
-  "nextIndependentCasesStatus": "Partial replacement set: H1/H2/H4 frozen/unexecuted; H3/H5/H6 pending. Shared-source dependencies require re-audit if used for tuning. Historical failures/retired cases unchanged; credit0. Development quality must be ready before execution.",
+  "nextIndependentCasesStatus": "Partial replacement set: H1/H2/H4/H5 frozen/unexecuted; H3/H6 pending. Shared-source dependencies require re-audit after material-informed tuning. Historical failures/retired cases unchanged; credit0. Development quality must be ready before execution.",
   "priorIndependentSlots": [
     [
       {
