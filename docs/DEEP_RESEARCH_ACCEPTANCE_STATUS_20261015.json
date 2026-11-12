@@ -11,9 +11,28 @@
     "skipped": 0,
     "warnings": 1,
     "proof": "deep-research-evidence/current-rollback-complete-regression-20261112.json",
-    "boundary": "Current complete offline research suite after rollback fix; no real generation or independent content acceptance. Recorder recovery and sandbox abort explicitly recorded."
+    "boundary": "Current complete offline research suite after rollback fix; no real generation or independent content acceptance. Recorder recovery and sandbox abort explicitly recorded.",
+    "appliesToCurrentPythonSource": false,
+    "subsequentChange": "PDF Form parser optimization; see postFullRegressionValidation. Original 7419 proof remains unchanged."
   },
-  "freshMaterialReadiness": "H1/H2/H4/H5 definitions frozen/not executed; independent acceptance zero. H3/H6 pending. H5 retains full factorial execution/budget/effect/interaction criteria; shared-source dependencies explicitly recorded. No model execution/import/training or engine tuning.",
+  "postFullRegressionValidation": {
+    "scope": "PDF Form parser optimization only",
+    "relatedModules": 7,
+    "passed": 114,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "warnings": 1,
+    "proof": "deep-research-evidence/pdf-form-optimization-20261112.json",
+    "realPdfPages": 45,
+    "containerWorkerSeconds": 6.0,
+    "allPageHashesMatchReference": true,
+    "fullSuiteRerun": false,
+    "newModelCalls": 0,
+    "independentContentAccepted": 0,
+    "H3Candidate": "H2O v1 development diagnostic, excluded from held-out credit"
+  },
+  "freshMaterialReadiness": "H1/H2/H4/H5 definitions frozen/not executed; independent acceptance zero. H3/H6 pending. H2O v1 used for parser engineering diagnosis, excluded from holdout eligibility. No model execution/import/training; original held-out definitions and shared-source dependencies unchanged.",
   "evidenceRule": "Machine completion, offline fixtures, real transport, source support, content quality and independent-case eligibility are separate. Historical results are not silently upgraded to current passes.",
   "latestVerification": {
     "backendResearchModelReadingIntegration": {
@@ -4289,7 +4308,7 @@
     "sourceAttestation": "deep-research-evidence/loaded-source-index-attestation-20261112.json"
   },
   "nextQualityWork": [
-    "Prepare fresh H3/H6 definitions at original scope. H1/H2/H4/H5 frozen/unexecuted; all six H5 dimensions apply and full four-group scientific requirements remain. Keep reviewer anchors out of tuning; shared-source dependency applies.",
+    "Prepare fresh H3/H6 definitions. H2O v1 exposed a parser timeout and was used for engineering repair, so it is development-only and cannot regain H3 credit. H1/H2/H4/H5 remain frozen/unexecuted with shared-source dependencies.",
     "After provider becomes available, validate current mechanism explanation, multi-paper comparison and full executable experiment quality with bounded new cases, no old receipt retries.",
     "Run fresh untuned H1-H6 after development content passes; preserve original scoring, budgets and unknown outcomes.",
     "Complete actual generated-result interaction and final frozen regression/release/rollback audit; keep PR draft until all original gates pass."

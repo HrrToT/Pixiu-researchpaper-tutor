@@ -58,5 +58,14 @@
       "materialSha256": "6c15b619c34e4fab99e2fb2c510838a66a30b94ad499a5538d4d10e8aa4cb876",
       "rule": "If shared material informs engine tuning, re-audit/retire dependent held-out cases; shared-source cases are not statistically independent."
     }
+  ],
+  "excludedCandidates": [
+    {
+      "arxiv": "2306.14048v1",
+      "use": "development_parser_diagnostic",
+      "independentCredit": 0,
+      "reason": "Used to diagnose/validate PDF Form optimization; cannot regain H3 eligibility from repair success.",
+      "proof": "DEEP_RESEARCH_PDF_FORM_OPTIMIZATION_20261112.md"
+    }
   ]
 }
