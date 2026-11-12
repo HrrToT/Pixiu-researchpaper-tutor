@@ -305,10 +305,33 @@ def initialize_runtime():
     # The facade binds the provider to a run, so every send uses its live scope.
     class RuntimeFacade(ResearchFacade):
         def create(self, request, **kwargs):
+            # Child continuations call create directly, bypassing the public
+            # dispatcher's rollout check. Closing the gate must cover both.
+            if not enabled():
+                raise DeepResearchError("engine_unavailable", "新版研究入口尚未启用", {"status_code": 503})
             from services.deep_research.external import capabilities
             if request.get("sourcePolicy", {}).get("mode", "task_only") != "task_only" and not capabilities()["externalAcademic"]:
                 raise DeepResearchError("external_unavailable", "外部文献服务尚未启用，请使用任务材料", {"status_code": 503})
             return super().create(request, **kwargs)
+
+        def get(self, run_id):
+            result = super().get(run_id)
+            if not enabled():
+                result["allowedActions"] = [action for action in result["allowedActions"] if action != "continue"]
+            return result
+
+        def action(self, run_id, action_name, payload):
+            if action_name == "continue" and not enabled():
+                request_id = payload.get("requestId")
+                receipt = (self._repo.get_action_receipt(run_id, request_id)
+                           if isinstance(request_id, str) and request_id.strip() and len(request_id) <= 256 else None)
+                if receipt is None:
+                    # Reject before claiming a receipt. Reopening the rollout
+                    # can accept this request; no failed receipt poisons it.
+                    raise DeepResearchError("engine_unavailable", "新版研究入口尚未启用", {"status_code": 503})
+                # The base action still validates the fingerprint and handles
+                # completed/pending/failed receipts without issuing new work.
+            return super().action(run_id, action_name, payload)
 
         def _make_llm_invoker(self, run_id):
             from services.deep_research.tools import TrackedLLMInvoker

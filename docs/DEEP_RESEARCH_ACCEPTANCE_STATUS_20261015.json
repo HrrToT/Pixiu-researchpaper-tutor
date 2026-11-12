@@ -13279,6 +13279,22 @@
     "mergeRequested": false,
     "proof": "deep-research-evidence/pr-status-synchronized-20261112.json"
   },
+  "rollbackContinuationFix20261112": {
+    "candidateVerified": true,
+    "loadedInUserService": false,
+    "relatedModules": 7,
+    "relatedChecks": 57,
+    "productionFlagChanged": false,
+    "modelCalls": 0,
+    "proof": "DEEP_RESEARCH_ROLLBACK_CONTINUATION_FIX_20261112.md"
+  },
+  "providerAvailability20261112": {
+    "httpStatus": 200,
+    "available": false,
+    "balanceCny": "-0.19",
+    "modelCalls": 0,
+    "proof": "deep-research-evidence/provider-balance-after-offline-20261112.json"
+  },
   "researchArtifactOwnershipFix20261112": {
     "candidateFixVerified": true,
     "loadedInUserService": false,
