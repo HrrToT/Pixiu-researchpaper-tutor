@@ -628,6 +628,7 @@ class BudgetedSemanticChecker:
         reporting_ownership=False,
         source_version_review=False,
         review_diagnostic_bindings=False,
+        known_single_review_failure=False,
     ):
         self._invoke = llm_invoker
         self._run_id = run_id
@@ -644,6 +645,7 @@ class BudgetedSemanticChecker:
         self._reporting_ownership = reporting_ownership
         self._source_version_review = source_version_review
         self._review_diagnostic_bindings = review_diagnostic_bindings
+        self._known_single_review_failure = known_single_review_failure
         self._mechanism_grounding = mechanism_grounding
         self._singleton_factual_response = singleton_factual_response
         self._factual_scope = factual_scope
@@ -1343,6 +1345,7 @@ The dataAvailability object is an internal audit, not new experimental results.
             return [{'claimId': claims[0]['claimId'], 'status': 'failed',
                      'reason': '请求容量限制导致引用证据未完整提供，不能确认该声明。'}]
         visible_evidence = restore_visible_evidence(visible_evidence, reverse_aliases)
+        result = None
         try:
             bounded_review=(self._bounded_factual_review() if callable(self._bounded_factual_review)
                             else self._bounded_factual_review) is True
@@ -1466,9 +1469,19 @@ The dataAvailability object is an internal audit, not new experimental results.
                     verdict['reason'] = '所选数据范围或可用数量尚未核实：' + ', '.join(availability_errors)
             return parsed
             
-        except DeepResearchError:
-            # Preserve budget, authorization and unknown-call recovery semantics.
-            # A missing verdict is an execution failure, not evidence of insufficiency.
+        except DeepResearchError as exc:
+            if (exc.code=='invalid_verification_response'
+                    and exc.details.get('responseState')=='received_invalid' and isinstance(result,dict)):
+                from services.deep_research.review_response_failure import eligible as isolate_invalid, unresolved
+                policy=self._known_single_review_failure
+                policy=(policy() if callable(policy) else policy) is True
+                if policy:
+                    isolation=self._isolate_factual_claims
+                    isolation=(isolation() if callable(isolation) else isolation) is True
+                    if isolate_invalid(policy,isolation,claims,result,exc,node):
+                        return [unresolved(claims[0],result)]
+            # Unknown calls, scope/budget/cancel errors and invalid inputs retain
+            # their original execution semantics. Never resend a malformed reply.
             raise
         except Exception as exc:
             logger.exception("Semantic check failed for run %s", self._run_id)

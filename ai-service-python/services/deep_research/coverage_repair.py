@@ -58,14 +58,14 @@ def review_binding_only(audit, gap):
     return True
 
 
-def prepare_coverage_repair(report, verification, audit, *, prioritize_specific=False, defer_binding_errors=False):
+def prepare_coverage_repair(report, verification, audit, *, prioritize_specific=False, defer_binding_errors=False, defer_invalid_reviews=False):
     """Withhold accepted claims needed to close audit gaps.
 
     Returns a new verification-shaped dict whose ``accepted`` list drops the
     targeted claims and whose ``rejected`` list is the union of the original
     rejections plus one coverage row per targeted claim.
     """
-    if type(prioritize_specific) is not bool or type(defer_binding_errors) is not bool:
+    if any(type(v) is not bool for v in (prioritize_specific,defer_binding_errors,defer_invalid_reviews)):
         raise ValueError('Invalid coverage repair scheduling policy')
     report = report or {}
     verification = verification or {}
@@ -81,6 +81,15 @@ def prepare_coverage_repair(report, verification, audit, *, prioritize_specific=
     accepted = verification.get("accepted") or []
     rejected = verification.get("rejected") or []
     gaps = [g for g in audit.get("gaps", []) if isinstance(g, dict)]
+    deferred_reviews=[]
+    if defer_invalid_reviews:
+        from services.deep_research.review_response_failure import invalid
+        deferred_reviews=[r['claimId'] for r in rejected if invalid(r.get('reviewResponseAudit'))]
+        unreviewed_obligations={oid for c in report_claims if _claim_id(c) in deferred_reviews
+            for oid in c.get('obligationIds',[])}
+        rejected=[r for r in rejected if _claim_id(r) not in deferred_reviews]
+        if deferred_reviews:
+            gaps=[g for g in gaps if not g.get('wholeQuestion') and g.get('obligationId') not in unreviewed_obligations]
     verdicts = audit.get("verdicts") or []
     deferred = [g for g in gaps if review_binding_only(audit, g)] if defer_binding_errors else []
     gaps = [g for g in gaps if g not in deferred]
@@ -242,6 +251,8 @@ def prepare_coverage_repair(report, verification, audit, *, prioritize_specific=
     result = {"accepted": out_accepted, "rejected": out_rejected}
     if deferred:
         result["deferredAuditGaps"] = copy.deepcopy(deferred)
+    if deferred_reviews:
+        result["deferredReviewClaims"] = list(deferred_reviews)
     return result
 
 

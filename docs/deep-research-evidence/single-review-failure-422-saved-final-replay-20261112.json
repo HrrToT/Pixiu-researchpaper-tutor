@@ -1,0 +1,44 @@
+{
+  "case": "AD1N-v12",
+  "mode": "offline complete checker factory with two exact saved received responses",
+  "baselineCommit": "db56d49e",
+  "legacyRequestsAndErrorExact": true,
+  "candidateRequestsSourcesVersionsAndOptionsExact": true,
+  "legacyError": {
+    "errorCode": "invalid_verification_response",
+    "details": {
+      "responseState": "received_invalid"
+    }
+  },
+  "candidateVerdicts": [
+    {
+      "claimId": "c1",
+      "status": "failed",
+      "executionState": null,
+      "reviewResponseAudit": null
+    },
+    {
+      "claimId": "c2",
+      "status": "failed",
+      "executionState": "received_invalid",
+      "reviewResponseAudit": {
+        "version": 1,
+        "responseState": "received_invalid",
+        "finishReason": "stop",
+        "contentSha256": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+        "unreviewedObservationCount": 1
+      }
+    }
+  ],
+  "priorValidFailurePreserved": true,
+  "receivedNullIsolatedToOwnParentClaim": true,
+  "reviewDispatches": 2,
+  "retryDispatches": 0,
+  "newModelCalls": 0,
+  "productionWrites": 0,
+  "rawFileUnchanged": true,
+  "rawPayloadSha256": "7f4c0c3b712b088c345c542429ab22c2e283be478c48d7cb277973dc0e969d99",
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "boundary": "No target approved and no original failed run changed. Demonstrates received-invalid isolation; a separate supported fixture tests preservation of an accepted sibling, not real content acceptance."
+}

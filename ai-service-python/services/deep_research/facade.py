@@ -20,6 +20,7 @@ from typing import Any, Callable
 from services.deep_research.request_context import effective_question
 from services.deep_research.source_version_review import enabled as source_version_review_enabled
 from services.deep_research.review_diagnostics import enabled as review_diagnostics_enabled
+from services.deep_research.review_response_failure import enabled as per_claim_review_failure_enabled
 
 from services.deep_research.contracts import (
     CONTRACT_VERSION,
@@ -284,7 +285,7 @@ class ResearchFacade:
             "materials": materials,
             "materialSnapshot": material_snapshot,  # Immutable Java snapshot
             "contextMaterials": (material_snapshot or {}).get("contextMaterials", []) if isinstance(material_snapshot, dict) else [],
-            "promptVersion": "dr-v2.20261112.421",
+            "promptVersion": "dr-v2.20261112.422",
             "initialPlanResponseContractVersion": 1,
             "initialPlanInstructionsContractVersion": 1,
             "initialPlanModelContractVersion": 1,
@@ -403,6 +404,7 @@ class ResearchFacade:
             "audiencePublicationBudgetContractVersion": 1,
             "premiseDraftContractVersion": 1,
             "reviewDiagnosticContractVersion": 1,
+            "perClaimReviewFailureContractVersion": 1,
             "verificationInputContractVersion": 1,
             "workflowContractVersion": 5,
             "extractionPriorityVersion": 10,
@@ -1299,6 +1301,7 @@ class ResearchFacade:
             single_factual_decision=lambda: factual_decision_enabled(self._repo.require_run(run_id)),
             source_version_review=lambda: source_version_review_enabled(self._repo.require_run(run_id)),
             review_diagnostic_bindings=lambda: review_diagnostics_enabled(self._repo.require_run(run_id)),
+            known_single_review_failure=lambda: per_claim_review_failure_enabled(self._repo.require_run(run_id)),
             singleton_factual_response=lambda: type(self._repo.require_run(run_id).get('factualDecisionContractVersion')) is int
                 and self._repo.require_run(run_id)['factualDecisionContractVersion']==2,
             scope_observation_assertions=lambda: assertions_enabled(self._repo.require_run(run_id)),

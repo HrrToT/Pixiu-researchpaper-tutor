@@ -340,6 +340,7 @@ def verify_claims(claims: list[dict], evidence: list[dict],
                 else:
                     verdicts[key] = verdict
     from services.deep_research.review_diagnostics import invalid as invalid_diagnostic
+    from services.deep_research.review_response_failure import invalid as invalid_response_audit
     accepted = []
     for claim in candidates:
         if verdicts.get(claim["claimId"], {}).get("status") == "passed":
@@ -350,6 +351,8 @@ def verify_claims(claims: list[dict], evidence: list[dict],
             verdict = verdicts.get(claim["claimId"], {})
             rejected.append({"claimId": claim["claimId"], "reason": "semantic_unresolved",
                              "detail": str(verdict.get("reason", ""))[:400],
+                             **({'reviewResponseAudit':verdict['reviewResponseAudit'],
+                                 'executionState':'received_invalid'} if invalid_response_audit(verdict.get('reviewResponseAudit')) else {}),
                              **({'reviewDiagnosticAudit':verdict['reviewDiagnosticAudit'],
                                  'executionState':'received_invalid'} if invalid_diagnostic(verdict.get('reviewDiagnosticAudit')) else {}),
                              **({'rejectionAudit':verdict['rejectionAudit'],

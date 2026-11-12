@@ -49,7 +49,30 @@ def review(checker, claim, expression, evidence, node):
     literal = type(policy) is int and policy==2
     assertions = policy is True or literal
     observations = observation_claims(claim, expression, assertions=assertions,literal=literal)
-    checked = checker._check(observations, evidence, [], node) if observations else []
+    failure_policy=getattr(checker,'_known_single_review_failure',False)
+    failure_policy=(failure_policy() if callable(failure_policy) else failure_policy) is True
+    isolation=checker._isolate_factual_claims
+    isolation=(isolation() if callable(isolation) else isolation) is True
+    if failure_policy and isolation:
+        from services.deep_research.review_response_failure import invalid as invalid_response
+        checked=[]
+        for index,observation in enumerate(observations):
+            rows=checker._check([observation],evidence,[],node)
+            if (len(rows)!=1 or rows[0].get('claimId')!=observation['claimId']
+                    or rows[0].get('status') not in ('passed','failed')):
+                raise DeepResearchError('invalid_verification_response','观察条件核查未完整返回。')
+            checked.extend(rows)
+            if invalid_response(rows[0].get('reviewResponseAudit')):
+                audit={'version':2,'observedSettings':checked,'notEstablished':[],
+                    'unreviewedObservationIds':[c['claimId'] for c in observations[index+1:]],
+                    **({'observationContractVersion':2 if literal else 1} if assertions else {})}
+                response_audit=deepcopy(rows[0]['reviewResponseAudit'])
+                response_audit['unreviewedObservationCount']=len(observations)-index-1
+                return {'claimId':claim['claimId'],'status':'failed','reason':rows[0]['reason'],
+                    'executionState':'received_invalid','reviewResponseAudit':response_audit,
+                    'partitionedScopeAudit':audit}
+    else:
+        checked = checker._check(observations, evidence, [], node) if observations else []
     expected = [c['claimId'] for c in observations]
     if ([c.get('claimId') for c in checked] != expected
             or any(c.get('status') not in ('passed','failed') for c in checked)):
@@ -61,7 +84,7 @@ def review(checker, claim, expression, evidence, node):
         return {'claimId':claim['claimId'], 'status':'failed',
                 'reason':'观察条件尚未通过事实核查：'+str(failed[0].get('reason','')),
                 'partitionedScopeAudit':audit,
-                **{k:failed[0][k] for k in ('executionState','reviewTimeAdmission','reviewInputCapacity','reviewDiagnosticAudit') if k in failed[0]}}
+                **{k:failed[0][k] for k in ('executionState','reviewTimeAdmission','reviewInputCapacity','reviewDiagnosticAudit','reviewResponseAudit') if k in failed[0]}}
     if not expression['notEstablished']:
         return {'claimId':claim['claimId'], 'status':'passed', 'reason':'全部观察条件已分别核查。',
                 'partitionedScopeAudit':audit}
@@ -135,7 +158,16 @@ Targets:
     if (result.get('finishReason')=='length' or not isinstance(rows,list)
             or len(rows)!=len(expression['notEstablished']) or any(not isinstance(r,dict)
                 or (set(r)!=keys and not (diagnostics and set(r)==keys-{'diagnosticFacts'})) for r in rows)):
-        raise DeepResearchError('invalid_verification_response','推广命题核查未完整返回，不能据此确认结论。')
+        from services.deep_research.review_response_failure import eligible as isolate_invalid, unresolved
+        policy=getattr(checker,'_known_single_review_failure',False)
+        policy=(policy() if callable(policy) else policy) is True
+        isolation=checker._isolate_factual_claims
+        isolation=(isolation() if callable(isolation) else isolation) is True
+        error=DeepResearchError('invalid_verification_response','推广命题核查未完整返回，不能据此确认结论。',
+            {'responseState':'received_invalid'} if policy else None)
+        if isolate_invalid(policy,isolation,[claim],result,error,node):
+            return {**unresolved(claim,result),'partitionedScopeAudit':audit}
+        raise error
     restored=restore_verdict_evidence({'scopeExpressionAudit':{'observedSettings':[], 'notEstablished':rows}},
                                      reverse,scope_expression=True)
     audit['notEstablished']=restored['scopeExpressionAudit']['notEstablished']
