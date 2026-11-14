@@ -197,7 +197,7 @@ def _review_units(saved):
     parsed=_safe_parse_json(saved.get('content','')) if isinstance(saved.get('content'),str) else None
     units={u['unitId']:u for u in saved['units']}
     ids=[r.get('unitId') for r in parsed if isinstance(r,dict)] if isinstance(parsed,list) else []
-    if (saved.get('finishReason')=='length' or not isinstance(parsed,list)
+    if (saved.get('finishReason')=='length' or not isinstance(parsed,list) or len(parsed)!=len(units)
             or len(ids)!=len(units) or any(not isinstance(i,str) for i in ids)
             or len(set(ids))!=len(ids) or set(ids)!=set(units)):
         return None,{'version':1,'status':'invalid_envelope','validUnits':[],'invalidUnits':[]}

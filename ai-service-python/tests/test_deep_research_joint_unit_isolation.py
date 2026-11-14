@@ -53,13 +53,14 @@ def test_legacy_batch_failure_remains_atomic_with_exact_archived_request():
     assert received(memory)==saved
 
 
-@pytest.mark.parametrize('mode',['duplicate','missing','foreign','nonobject','truncated'])
+@pytest.mark.parametrize('mode',['duplicate','missing','foreign','nonobject','extra_nonobject','truncated'])
 def test_unknown_envelope_ownership_never_partially_approves(mode):
     memory=setup();execute(memory,lambda r,n,p,o:response(p));saved=deepcopy(received(memory));rows=json.loads(saved['content'])
     if mode=='duplicate':rows[1]['unitId']=rows[0]['unitId']
     elif mode=='missing':rows.pop()
     elif mode=='foreign':rows[1]['unitId']='G99'
     elif mode=='nonobject':rows[1]=None
+    elif mode=='extra_nonobject':rows.append(None)
     else:saved['finishReason']='length'
     saved['content']=json.dumps(rows)
     decisions,audit=_review_units(saved)
