@@ -4318,19 +4318,19 @@
     "balanceNow": "not_checked",
     "authorization": "Existing bounded future verification authorization remains valid; no automatic retry of old cases."
   },
-  "currentDevelopmentMode": "Primary Codex only; .445 loaded;7721 complete offline tests passed across428 modules. New runs preserve full review rejection details; saved AD1N-v29 request now contains all695chars and the late specific objection.67 related tests and actual graph reconstruction passed; model revision effect still unverified. Last whole case remains AD1N-v29/.444,partial. Original DR0-DR5/scientific/novice/independent/release gates remain open;15 historical pauses unchanged,0active.",
+  "currentDevelopmentMode": "Primary Codex only; .445 loaded;7721 complete offline tests passed across428 modules. Complete feedback delivery verified with saved695char v29 reason and full graph request; AD1N-v30 real case11settled calls/49371tokens/129seconds remained inconclusive: both exact reasons were under400chars, repair exceeded300chars and compaction response was invalid. No revised draft was reverified or published; no scientific/novice/independent credit. Other102tasks and all old run/call rows unchanged;15 historical pauses retained,0active. Original full DR0-DR5 and all open gates remain.",
   "loadedRuntime": {
     "commit": "a337b287889b36a58baee9bbe032cc4a9ddd746e",
     "promptVersion": "dr-v2.20261114.445",
-    "callsAfterLatestCase": 9501,
+    "callsAfterLatestCase": 9526,
     "active": 0,
     "historicalPausedUnknown": 15,
     "proof": "deep-research-evidence/complete-feedback-445-load-20261114.json",
     "allSourceHashesExact": true,
-    "lastRealModelRunCommit": "0fddb52287bf07170cd95d451138f32cedbf84a9",
-    "lastRealModelRunPromptVersion": "dr-v2.20261114.444",
-    "lastRealCase": "AD1N-v29",
-    "lastRealOutcome": "completed/partial",
+    "lastRealModelRunCommit": "a337b287889b36a58baee9bbe032cc4a9ddd746e",
+    "lastRealModelRunPromptVersion": "dr-v2.20261114.445",
+    "lastRealCase": "AD1N-v30",
+    "lastRealOutcome": "completed/inconclusive",
     "javaAndFrontendBoundary": "This Python rollout did not redeploy Java or frontend. Earlier UI/persistence and synthetic publication evidence does not establish current real generated research or novice quality.",
     "javaCommit": "81a827f0c03febc4d181900b00516e38be916511",
     "taskCount": 103,
@@ -4342,7 +4342,7 @@
     "sourceIndexAttestationAt20261112": "deep-research-evidence/loaded-source-index-attestation-20261112.json"
   },
   "nextQualityWork": [
-    "Validate the complete review feedback path in a new bounded real case: confirm the decisive objection reaches the actual repair request and the rewrite resolves it with source-faithful wording. Independently evaluate parameter-update explanation, zero-initialization mechanism, raw second-moment terminology and repeated boundary text; full-feedback transport alone does not approve content. Preserve all original gates and old failed/unknown identities.",
+    "Reconstruct the actual AD1N-v30 repair-compaction request and raw response offline; identify the exact authoring/compaction schema mismatch before editing. Two repair rows exceed300chars and compactor returns claimId/body wrappers; parser rejects all, leaving0reverified drafts. Preserve original source ownership, boundary/scientific checks, character limit and old protocols. Full695char rejection feedback now reaches saved v29 request; do not keep rerunning full cases without resolving the next demonstrated failure.",
     "Complete the original novice explanation/full multipaper/full executable experiment development gaps under sealed budgets; latest provider calls succeeded, current monetary balance is not checked. Then execute H1-H5 frozen fresh definitions with original budgets and no retries or retired-case upgrades.",
     "Validate current mechanism explanation, multi-paper comparison and full executable experiment quality with bounded new cases as readiness warrants; preserve original receipt identities.",
     "Run fresh untuned H1-H6 after development content passes; preserve original scoring, budgets and unknown outcomes.",
@@ -14181,6 +14181,49 @@
     "originalContextTreatmentUnchanged": true,
     "newModelCalls": 0,
     "scientificContentAccepted": false,
-    "boundary": "Full validated rejection detail for new immutable contract only; legacy400-character behavior and original failure records unchanged. Actual graph request carries late objection within original24000bytes; oversized input fails explicitly. Saved replay is not proof of real revision effectiveness."
+    "boundary": "Full validated rejection detail for new immutable contract only; legacy400-character behavior and original failure records unchanged. Actual graph request carries late objection within original24000bytes; oversized input fails explicitly. Saved replay is not proof of real revision effectiveness.",
+    "realValidation": {
+      "proof": "deep-research-evidence/adam-ad1n-v30-20261114.json",
+      "case": "AD1N-v30",
+      "outcome": "inconclusive",
+      "actualModelCalls": 11,
+      "tokens": 49371,
+      "elapsedSeconds": 129.0,
+      "actualReasonOver400Exercised": false,
+      "compactionStatus": "invalid",
+      "contentAccepted": false
+    }
+  },
+  "repairCompactionCheckpoint20261114": {
+    "proof": "deep-research-evidence/adam-ad1n-v30-20261114.json",
+    "status": "diagnosis_needed",
+    "candidateRows": 2,
+    "candidateTextAndConditionsCharacters": 341,
+    "requestedLimit": 300,
+    "rawResponseShape": {
+      "topKeys": [
+        "claims"
+      ],
+      "claimRowKeys": [
+        [
+          "claimId",
+          "body"
+        ],
+        [
+          "claimId",
+          "body"
+        ]
+      ],
+      "bodyKeys": [
+        [
+          "prose"
+        ],
+        [
+          "boundary"
+        ]
+      ]
+    },
+    "compactionStatus": "invalid",
+    "scientificContentAccepted": false
   }
 }

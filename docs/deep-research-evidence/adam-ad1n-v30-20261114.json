@@ -1,0 +1,98 @@
+{
+  "case": "AD1N-v30",
+  "runId": "dr_run_ea4e0c6802715fb69c220e67656845a7",
+  "sourceCommit": "a337b287889b36a58baee9bbe032cc4a9ddd746e",
+  "promptVersion": "dr-v2.20261114.445",
+  "split": "development",
+  "independentCredit": 0,
+  "status": "completed",
+  "outcome": "inconclusive",
+  "actualModelCalls": 11,
+  "allCallsSettled": true,
+  "tokens": 49371,
+  "elapsedSeconds": 129.0,
+  "externalSearches": 1,
+  "fulltextFetches": 1,
+  "completeFeedbackContractVersion": 1,
+  "initialReasonLengths": {
+    "c1": 127,
+    "c2": 311
+  },
+  "actualReasonsStoredExactly": true,
+  "actualReasonOver400Exercised": false,
+  "longReasonSavedFlowProof": "complete-feedback-445-saved-flow-20261114.json",
+  "repairActuallyReached": true,
+  "repairRowsParsed": 2,
+  "repairTextAndConditionsCharacters": 341,
+  "removedDisputedSpanDeclared": true,
+  "candidateScienceVerified": false,
+  "compactionStatus": "invalid",
+  "compactionResponseShape": {
+    "topKeys": [
+      "claims"
+    ],
+    "claimRowKeys": [
+      [
+        "claimId",
+        "body"
+      ],
+      [
+        "claimId",
+        "body"
+      ]
+    ],
+    "bodyKeys": [
+      [
+        "prose"
+      ],
+      [
+        "boundary"
+      ]
+    ]
+  },
+  "repairDraftAfterCompaction": 0,
+  "reverificationCalled": false,
+  "automaticAcceptedClaims": 0,
+  "contentAccepted": false,
+  "manualNoviceAccepted": false,
+  "automaticRetry": false,
+  "other102TasksExact": true,
+  "preservation": {
+    "oldLedgerUnchanged": true,
+    "allOldRunsUnchanged": true,
+    "newRows": 25,
+    "ledgerRows": 9526,
+    "onlyThisRunCreatedCalls": true,
+    "active": [],
+    "oldPausedRetained": true,
+    "paused": [
+      "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+      "dr_run_ed10cc3347be552288079a9a588fddf5",
+      "dr_run_86b3f181a5475e99aacca3dbf4370567",
+      "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+      "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+      "dr_run_e3521b1781825273b384a26a5edb8cdc",
+      "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+      "dr_run_e9c9dc916bef519092fad8b929b2448f",
+      "dr_run_4738564f5ff35157996a35068c62ed32",
+      "dr_run_a8bd62f9ae3d52ff806f537065f55b2d",
+      "dr_run_98e66f2d3d555dfa822b859963f01419",
+      "dr_run_8be639c866c35ea092c735a04781b647",
+      "dr_run_1c0c2e6510165086962408b8e3cf698b",
+      "dr_run_fc0931756c505c6d9a29c06abe1fdd8d",
+      "dr_run_b09de02407095586bba235843615f2b3"
+    ]
+  },
+  "findings": [
+    "This real case used the new full-feedback contract and stored both exact reasons, but both are shorter than400chars; it does not independently demonstrate the late-objection improvement. Saved v29 replay supplies that deterministic delivery evidence.",
+    "Repair declared removal of the disputed from-zero span, but introduced wording still requires scientific review; no causal quality improvement is claimed.",
+    "Two parsed repair rows total341text/condition characters before publication metadata, exceeding the300-character question limit. The one compaction response used claimId/body wrappers and was rejected as invalid; no revised draft was reverified or published.",
+    "Next investigate actual compaction input/output protocol and preserve original scientific/length gates; do not accept malformed or unverified candidates."
+  ],
+  "rawArtifacts": {
+    "tmp\\dr-acceptance-receipts\\AD1N-v30.json": "99ad74cf59d8f92a54edb0a27f6f640d66eb8b049f7533fa75a4a80f23c6a0f5",
+    "tmp\\dr-acceptance-receipts\\AD1N-v30.payload.json": "86d9fb2b0300e77550fa961fa990b1b9a82c07287e2de9bb1102042f78ad9a9f",
+    "tmp\\dr-acceptance-receipts\\AD1N-v30.calls.json": "ff7d9fdfd8c1ff107d718194dce776ef8a0665b80c7ad386fa580ddb9dbd5187",
+    "tmp\\dr-acceptance-receipts\\AD1N-v30.preservation.json": "ca89dd74869bbf54cf62cb67a2ffef893bbd45c93a3ecb0e9290306b823b133b"
+  }
+}
