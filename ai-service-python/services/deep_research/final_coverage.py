@@ -36,7 +36,11 @@ def coverage_prompt_byte_limit(budget, output_tokens=3500):
     return max(0, min(24000, remaining - output_tokens - 1024))
 
 
-def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, *, budget=None,literal_dimensions=False,diagnostics=False,request_contract=False,claim_check=False,task_sources=False,request_semantics=0,binding_catalog=False,scoped_catalog=False,identification_locators=False,coherence=False,shared_evidence_context=False,shared_decision_inputs=False,consolidated_instructions=False,literal_limits=False):
+def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, *, budget=None,literal_dimensions=False,diagnostics=False,request_contract=False,claim_check=False,task_sources=False,request_semantics=0,binding_catalog=False,scoped_catalog=False,identification_locators=False,coherence=False,shared_evidence_context=False,shared_decision_inputs=False,consolidated_instructions=False,literal_limits=False,correct_process_bindings=False):
+    if (type(correct_process_bindings) is not bool or correct_process_bindings
+            and not (type(request_contract) is int and request_contract==5 and consolidated_instructions and diagnostics and literal_limits)):
+        raise ValueError('Process binding correction requires complete version5 coverage checks')
+    correction_note=None
     if type(literal_limits) is not bool or literal_limits and not consolidated_instructions:
         raise ValueError('Literal limits require consolidated coverage instructions')
     if type(consolidated_instructions) is not bool or consolidated_instructions and not (type(request_contract) is int and request_contract in (3,4,5)):
@@ -226,9 +230,13 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
                     verdicts,coherence_result=extract(verdicts,question,claims)
                 if request_contract:
                     from services.deep_research.request_coverage import normalize
+                    raw_review=verdicts
                     verdicts=normalize(verdicts,fixed_requirements,claims=wire_claims,**({'literal_limits':True} if literal_limits else {}),**({'process_explanations':True,**({'distinct_roles':True} if request_contract==5 else {})} if type(request_contract) is int and request_contract in (4,5) else {}))
             except (ValueError, TypeError):
                 verdicts = None
+            if correct_process_bindings and isinstance(verdicts,list):
+                from services.deep_research.coverage_binding_correction import correct
+                raw_review,verdicts,correction_note=correct(run_id,raw_review,verdicts,fixed_requirements,wire_claims,invoke,parse,max_bytes=limit,output_tokens=output_tokens)
             status = 'checked' if isinstance(verdicts, list) else 'invalid_response'
             if isinstance(verdicts, list):
                 verdicts = restore_coverage_evidence(verdicts, reverse_aliases)
@@ -308,6 +316,13 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
         if status in {'budget_exhausted', 'invalid_response'}:
             gap['missingEvidence'] = '回答完整性尚未核验'
             gap['auditStatus'] = status
+        if correct_process_bindings:
+            from services.deep_research.coverage_repair import review_binding_only
+            preview={'status':status,'requestCoverageContractVersion':5,'verdicts':verdicts,
+                'invalidAspectObligations':invalid_aspects,'invalidCriterionObligations':invalid_criteria,
+                'diagnosticErrors':diagnostic_errors,'criterionGaps':criterion_gaps}
+            if review_binding_only(preview,gap,invalid_process_reviews=True):
+                gap.update(auditStatus='binding_unresolved',missingEvidence='回答完整性尚未核验：审核定位无效')
         if identity and gap.get('obligationId') == identity:
             gap['wholeQuestion'] = True
     from services.deep_research.completion_criteria import completion_contract_digest
@@ -322,6 +337,9 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
             'invalidCriterionObligations': invalid_criteria,
             'budgetLimit': budget_limit,
             **({'diagnosticErrors':diagnostic_errors} if diagnostics else {})}
+    if correct_process_bindings:
+        audit['coverageBindingCorrectionContractVersion']=1
+        audit['processBindingCorrection']=correction_note or {'version':1,'status':'not_started','targets':[]}
     if coherence:
         from services.deep_research.answer_coherence import revalidate
         if coherence_result is not None:audit['answerCoherence']=coherence_result

@@ -1918,6 +1918,7 @@ def make_verify_node(
                 **({'proposal_context':proposal_context} if proposal_context else {}))
         
         from services.deep_research.final_coverage import audit_final_answer
+        from services.deep_research.coverage_binding_correction import enabled as correct_binding_enabled
         from services.deep_research.request_coverage import enabled as request_coverage_enabled
         from services.deep_research.factual_reasoning import fixed_scope_compaction,explicit_compaction_scope
         from services.deep_research.claim_check import enabled as claim_check_enabled
@@ -1950,6 +1951,7 @@ def make_verify_node(
                 **({'request_semantics':2} if type(record.get('requestSemanticsContractVersion')) is int and record['requestSemanticsContractVersion']==2 else {}),
                 **({'shared_evidence_context':True} if type(record.get('coverageDiagnosticsContractVersion')) is int and record['coverageDiagnosticsContractVersion']==4 else {}),
                 **({'literal_limits':True} if literal_limits_enabled(record) and request_coverage_enabled(record) else {}),
+                **({'correct_process_bindings':True} if correct_binding_enabled(record) else {}),
                 **({'consolidated_instructions':True} if type(record.get('coverageInstructionsContractVersion')) is int and record['coverageInstructionsContractVersion']==1 and request_coverage_enabled(record) and record.get('requestCoverageContractVersion') in (3,4,5) else {}),
                 **({'shared_decision_inputs':True} if type(record.get('coverageInputContractVersion')) is int and record['coverageInputContractVersion']==1 and request_coverage_enabled(record) and record.get('requestCoverageContractVersion') in (3,4,5) else {}),
                 **({'binding_catalog':True} if type(record.get('coverageDiagnosticsContractVersion')) is int and record['coverageDiagnosticsContractVersion'] in (2,3,4) else {}),
@@ -1968,6 +1970,7 @@ def make_verify_node(
                    and record['diagnosticRepairRoutingContractVersion']==1 else {}),
                 **({'defer_invalid_reviews':True} if type(record.get('perClaimReviewFailureContractVersion')) is int
                    and record['perClaimReviewFailureContractVersion']==1 else {}),
+                **({'defer_invalid_process_reviews':True} if correct_binding_enabled(record) else {}),
                 **({'defer_binding_errors':True} if type(record.get('coverageRepairRoutingContractVersion')) is int
                    and record['coverageRepairRoutingContractVersion']==1 else {}),
                 **({'prioritize_specific':True} if type(record.get('factualRepairGoalContractVersion')) is int
@@ -2243,6 +2246,7 @@ def make_verify_node(
                             **({'request_semantics':2} if type(record.get('requestSemanticsContractVersion')) is int and record['requestSemanticsContractVersion']==2 else {}),
                             **({'shared_evidence_context':True} if type(record.get('coverageDiagnosticsContractVersion')) is int and record['coverageDiagnosticsContractVersion']==4 else {}),
                 **({'literal_limits':True} if literal_limits_enabled(record) and request_coverage_enabled(record) else {}),
+                **({'correct_process_bindings':True} if correct_binding_enabled(record) else {}),
                 **({'consolidated_instructions':True} if type(record.get('coverageInstructionsContractVersion')) is int and record['coverageInstructionsContractVersion']==1 and request_coverage_enabled(record) and record.get('requestCoverageContractVersion') in (3,4,5) else {}),
                 **({'shared_decision_inputs':True} if type(record.get('coverageInputContractVersion')) is int and record['coverageInputContractVersion']==1 and request_coverage_enabled(record) and record.get('requestCoverageContractVersion') in (3,4,5) else {}),
                 **({'binding_catalog':True} if type(record.get('coverageDiagnosticsContractVersion')) is int and record['coverageDiagnosticsContractVersion'] in (2,3,4) else {}),

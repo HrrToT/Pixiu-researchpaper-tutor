@@ -23,17 +23,20 @@ def _rejected_row_id(row):
     return _claim_id(row)
 
 
-def review_binding_only(audit, gap):
+def review_binding_only(audit, gap, *, invalid_process_reviews=False):
     """Identify an unproven review binding, never approve answer coverage.
 
-    Only a reported-covered check downgraded solely for overlapping role spans
-    qualifies. Missing operations, semantic partials and other audit failures
-    still require the original conservative repair path.
+    Legacy routing defers only overlapping role spans. The explicit new policy
+    also recognizes invalid process-review bindings and role proofs. Neither establishes missing
+    answer content or approves coverage. Real semantic/limit failures still repair.
     """
+    if type(invalid_process_reviews) is not bool:raise ValueError('Invalid request binding deferral policy')
+    from services.deep_research.coverage_binding_correction import BINDING_ERRORS
+    allowed=BINDING_ERRORS if invalid_process_reviews else {'overlapping_process_roles'}
     if (audit.get('status') != 'checked' or audit.get('requestCoverageContractVersion') != 5
-            or gap.get('wholeQuestion') or audit.get('diagnosticErrors') != []
-            or any(audit.get(key) for key in ('criterionGaps', 'invalidAspectObligations',
-                                            'invalidCriterionObligations'))):
+            or gap.get('wholeQuestion') and not invalid_process_reviews or audit.get('diagnosticErrors') != []
+            or any((gap.get('obligationId') in (audit.get(key) or {}) if invalid_process_reviews else audit.get(key))
+                   for key in ('criterionGaps','invalidAspectObligations','invalidCriterionObligations'))):
         return False
     matches = [v for v in audit.get('verdicts', []) if isinstance(v, dict)
                and v.get('obligationId') == gap.get('obligationId')]
@@ -53,19 +56,20 @@ def review_binding_only(audit, gap):
     ids = [a.get('checkId') for a in failed]
     if (not partial_ids or len(set(ids)) != len(ids) or set(ids) != set(partial_ids)
             or any(a.get('reportedStatus') != 'covered'
-                   or a.get('errors') != ['overlapping_process_roles'] for a in failed)):
+                   or (not a.get('errors') or any(e not in allowed for e in a['errors'])
+                       if invalid_process_reviews else a.get('errors')!=['overlapping_process_roles']) for a in failed)):
         return False
     return True
 
 
-def prepare_coverage_repair(report, verification, audit, *, prioritize_specific=False, defer_binding_errors=False, defer_invalid_reviews=False, defer_invalid_diagnostics=False):
+def prepare_coverage_repair(report, verification, audit, *, prioritize_specific=False, defer_binding_errors=False, defer_invalid_reviews=False, defer_invalid_diagnostics=False,defer_invalid_process_reviews=False):
     """Withhold accepted claims needed to close audit gaps.
 
     Returns a new verification-shaped dict whose ``accepted`` list drops the
     targeted claims and whose ``rejected`` list is the union of the original
     rejections plus one coverage row per targeted claim.
     """
-    if any(type(v) is not bool for v in (prioritize_specific,defer_binding_errors,defer_invalid_reviews,defer_invalid_diagnostics)):
+    if any(type(v) is not bool for v in (prioritize_specific,defer_binding_errors,defer_invalid_reviews,defer_invalid_diagnostics,defer_invalid_process_reviews)):
         raise ValueError('Invalid coverage repair scheduling policy')
     report = report or {}
     verification = verification or {}
@@ -94,7 +98,7 @@ def prepare_coverage_repair(report, verification, audit, *, prioritize_specific=
         if deferred_reviews:
             gaps=[g for g in gaps if not g.get('wholeQuestion') and g.get('obligationId') not in unreviewed_obligations]
     verdicts = audit.get("verdicts") or []
-    deferred = [g for g in gaps if review_binding_only(audit, g)] if defer_binding_errors else []
+    deferred = [g for g in gaps if review_binding_only(audit, g,invalid_process_reviews=defer_invalid_process_reviews)] if defer_binding_errors else []
     gaps = [g for g in gaps if g not in deferred]
 
     accepted_by_id = {}
