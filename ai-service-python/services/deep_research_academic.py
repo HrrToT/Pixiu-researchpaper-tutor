@@ -20,6 +20,28 @@ from xml.etree import ElementTree
 class AcademicAccessError(ValueError):
     """仅包含固定错误类型，不回显 URL、正文或凭据。"""
 
+    def __init__(self,message,*,transport=None):
+        super().__init__(message)
+        self._transport=None
+        if isinstance(transport,dict) and set(transport)<= {'version','origin','category','httpStatus'}:
+            status=transport.get('httpStatus')
+            if (type(transport.get('version')) is int and transport['version']==1
+                    and transport.get('origin') in ('metadata','fulltext')
+                    and transport.get('category') in ('http_status','dns','timeout','tls','connection','protocol','proxy')
+                    and ('httpStatus' not in transport or type(status) is int and 100<=status<=599)
+                    and (transport['category']=='http_status')==('httpStatus' in transport)):
+                self._transport=dict(transport)
+
+    @property
+    def transport_diagnostic(self):
+        return dict(self._transport) if self._transport else None
+
+
+def _transport_error(message,host,category,status=None):
+    details={'version':1,'origin':'metadata' if host=='export.arxiv.org' else 'fulltext','category':category}
+    if status is not None:details['httpStatus']=status
+    return AcademicAccessError(message,transport=details)
+
 
 def public_addresses(host):
     addresses = list(dict.fromkeys(item[4][0] for item in socket.getaddrinfo(host, 443, type=socket.SOCK_STREAM)))
@@ -33,7 +55,9 @@ def pinned_https_get(host, path, max_bytes, *, resolver=public_addresses, timeou
     if not ((host == 'export.arxiv.org' and path.startswith('/api/query?'))
             or (host == 'arxiv.org' and path.startswith('/pdf/'))):
         raise AcademicAccessError('学术来源超出允许范围')
-    addresses = resolver(host)
+    try:addresses = resolver(host)
+    except OSError as cause:
+        raise _transport_error('学术来源地址不可访问',host,'dns') from cause
     if not addresses or any(not ipaddress.ip_address(address).is_global for address in addresses):
         raise AcademicAccessError('学术来源地址不可访问')
     if proxy_url:
@@ -41,7 +65,7 @@ def pinned_https_get(host, path, max_bytes, *, resolver=public_addresses, timeou
         try:
             connection = proxy_https_connection(proxy_url, host, addresses[0], timeout=timeout)
         except AcademicProxyError as cause:
-            raise AcademicAccessError('学术代理配置无效') from cause
+            raise _transport_error('学术代理配置无效',host,'proxy') from cause
     else:
         connection = http.client.HTTPSConnection(host, timeout=timeout, context=ssl.create_default_context())
         # HTTPSConnection.connect retains the original host for SNI/certificate checks.
@@ -51,7 +75,7 @@ def pinned_https_get(host, path, max_bytes, *, resolver=public_addresses, timeou
         connection.request('GET', path, headers={'User-Agent': 'PixiuDeepResearch/2.0', 'Accept-Encoding': 'identity'})
         response = connection.getresponse()
         if response.status != 200:
-            raise AcademicAccessError('学术来源暂不可获取')
+            raise _transport_error('学术来源暂不可获取',host,'http_status',response.status)
         declared = response.getheader('Content-Length')
         if declared and (not declared.isdigit() or int(declared) > max_bytes):
             raise AcademicAccessError('学术来源超过大小限制')
@@ -61,8 +85,14 @@ def pinned_https_get(host, path, max_bytes, *, resolver=public_addresses, timeou
         return response.getheader('Content-Type', '').split(';')[0].strip().lower(), body
     except AcademicAccessError:
         raise
-    except (OSError, http.client.HTTPException, ssl.SSLError) as cause:
-        raise AcademicAccessError('学术来源请求未完成') from cause
+    except TimeoutError as cause:
+        raise _transport_error('学术来源请求未完成',host,'timeout') from cause
+    except ssl.SSLError as cause:
+        raise _transport_error('学术来源请求未完成',host,'tls') from cause
+    except http.client.HTTPException as cause:
+        raise _transport_error('学术来源请求未完成',host,'protocol') from cause
+    except OSError as cause:
+        raise _transport_error('学术来源请求未完成',host,'connection') from cause
     finally:
         connection.close()
 

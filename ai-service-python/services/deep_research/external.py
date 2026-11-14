@@ -41,7 +41,9 @@ class AcademicAcquisition:
         if record.get("sourcePolicy", {}).get("mode") not in {"academic_external", "external_only"}:
             return []
         client = self.client_factory(record)
-        adapter = ExternalAcademicAdapter(client, self.repo.reserve_call, self.complete_call)
+        diagnostics=type(record.get('externalDiagnosticsContractVersion')) is int and record['externalDiagnosticsContractVersion']==1
+        adapter = ExternalAcademicAdapter(client, self.repo.reserve_call, self.complete_call,
+            **({'transport_diagnostics':True} if diagnostics else {}))
         sources, materials, by_source = [], {}, {}
         for target in targets[:4]:
             # Queries contain public topics from the plan, never entire document text.

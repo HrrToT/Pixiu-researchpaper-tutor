@@ -479,11 +479,22 @@ class ExternalAcademicAdapter:
         academic_client: Any,  # AcademicSourceClient instance
         reserve_call_fn: Callable[..., tuple],
         complete_call_fn: Callable[..., dict],
+        *, transport_diagnostics=False,
     ):
+        if type(transport_diagnostics) is not bool:raise ValueError('Invalid external diagnostic policy')
         self._client = academic_client
         self._reserve = reserve_call_fn
         self._complete = complete_call_fn
         self.discovery_outcomes = []
+        self._transport_diagnostics=transport_diagnostics
+
+    def _failure(self,exc):
+        result={'message':str(exc)}
+        if self._transport_diagnostics:
+            from services.deep_research_academic import AcademicAccessError
+            if isinstance(exc,AcademicAccessError) and exc.transport_diagnostic is not None:
+                result['transportDiagnostic']=exc.transport_diagnostic
+        return result
     
     def discover(self, run_id: str, query: str, limit: int = 6) -> list[dict[str, Any]]:
         request_identity = {"query": query, "limit": limit, "type": "discover"}
@@ -544,7 +555,7 @@ class ExternalAcademicAdapter:
             self._complete(
                 call_record["callId"],
                 status=CALL_STATUS_FAILED,
-                error={"message": str(exc)},
+                error=self._failure(exc),
                 reservation_token=call_record.get("reservationToken"),
             )
             self.discovery_outcomes.append(CALL_STATUS_FAILED)
@@ -586,7 +597,7 @@ class ExternalAcademicAdapter:
             self._complete(
                 call_record["callId"],
                 status=CALL_STATUS_FAILED,
-                error={"message": str(exc)},
+                error=self._failure(exc),
                 reservation_token=call_record.get("reservationToken"),
             )
             return {}
