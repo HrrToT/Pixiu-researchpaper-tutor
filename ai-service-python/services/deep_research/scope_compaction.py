@@ -14,7 +14,7 @@ def enabled(record):
 
 
 def compact(report, audits, question, invoke, parse, *, output_kind='', evidence=(), presentation_version=0,
-            fixed_claims=(),measured_guidance=False,expression_version=2,fixed_scope_first=False,invoke_fixed=None,explicit_edit_scope=False,compact_layout=False,joint_layout=False,authored_body=False,budget_guidance=False):
+            fixed_claims=(),measured_guidance=False,expression_version=2,fixed_scope_first=False,invoke_fixed=None,explicit_edit_scope=False,compact_layout=False,joint_layout=False,authored_body=False,budget_guidance=False,selective_editing=False):
     """Return revised report and matching unchecked ASTs, or reject atomically.
 
     All existing points, kinds, citations, obligations and table bindings remain.
@@ -23,6 +23,7 @@ def compact(report, audits, question, invoke, parse, *, output_kind='', evidence
     """
     if type(authored_body) is not bool or authored_body and expression_version!=5:raise ValueError('Invalid authored compaction policy')
     if type(budget_guidance) is not bool:raise ValueError('Invalid compaction budget guidance policy')
+    if type(selective_editing) is not bool:raise ValueError('Invalid selective compaction policy')
     if type(joint_layout) is not bool:raise ValueError('Invalid joint short layout policy')
     if type(compact_layout) is not bool:raise ValueError('Invalid compact layout policy')
     if type(explicit_edit_scope) is not bool:raise ValueError('Invalid explicit edit scope policy')
@@ -129,11 +130,13 @@ Existential boundaries render as 尚不能据此确认在domain中存在subject�
         prompt+='\nEvidence-sufficiency boundaries render as 当前引用不足以比较subjects的quantity。 Keep their exact type, subjects and quantity; they are frozen comparison scope, not wording choices.\n'
     if authored_body:
         from services.deep_research.authored_body import GUIDANCE as body_guidance,scope_guidance as body_scope_guidance
+        from services.deep_research.compaction_editing import HEADER,REPLACEMENT
+        content_rule=REPLACEMENT if selective_editing else HEADER
         prompt=f'''Compress ALL existing points together in Chinese. Human question: {question}
 Complete compiled answer must fit {limit} characters; fixed headings/points use {overhead}.
 Return ONLY {{"claims":[{{"claimId":"original ID","body":{{"prose":{{"text":"...","conditions":{{}}}}}}}}]}}.
 Each response row has exactly claimId and body. Keep each original ID once in input order.
-No added/deleted/merged points, facts or source permissions. Ordinary points use body.prose;
+{content_rule}
 existing scope points use body.boundary. Preserve observation/boundary counts and quantifiers,
 actual domains/subjects/comparators/predicates. For comparison_evidence keep exact type,
 subjects and quantity. Shorten words, not requested scope, judgements or necessary conditions.
@@ -157,6 +160,9 @@ checked against the original sources. No approval is inherited from this edit.
     if budget_guidance:
         from services.deep_research.compaction_budget import guidance as publication_budget
         prompt+=publication_budget(source,set(expressions),count,limit)
+    if selective_editing:
+        from services.deep_research.compaction_editing import GUIDANCE as editing_permissions
+        prompt+='\n'+editing_permissions
     prompt+='\nInput:\n'+json.dumps(inputs,ensure_ascii=False,separators=(',',':'))
     if fixed:
         prompt += '\nAlready accepted points are fixed outside this request; their full text and layout are included in overhead. Never return or rewrite them.\n'
