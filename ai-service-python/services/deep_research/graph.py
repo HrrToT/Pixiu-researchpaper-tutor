@@ -1788,7 +1788,9 @@ space with unsupported global absence or incidental iteration/performance values
         compact_invoke = lambda prompt: llm_invoke(run_id, "synthesize_compact", prompt,
                 {"max_tokens": 2000, "temperature": 0.0,**compact_options})
         direct_compact_invoke=lambda prompt:llm_invoke(run_id,'synthesize_compact',prompt,{'max_tokens':2000,'temperature':0.0})
-        from services.deep_research.compaction_editor import request_options as editor_request_options
+        from services.deep_research.compaction_editor import request_options as editor_request_options, fixed_scope_options
+        fixed_compact_invoke=lambda prompt:llm_invoke(run_id,'synthesize_compact',prompt,
+            {'max_tokens':2000,'temperature':0.0,**fixed_scope_options(record,question,output_kind)})
         editor_options=editor_request_options(record,output_kind)
         draft_compact_invoke=lambda prompt:llm_invoke(run_id,'synthesize_compact',prompt,{'max_tokens':2000,'temperature':0.0,**editor_options})
         draft_merge_audit={}
@@ -1811,7 +1813,7 @@ space with unsupported global absence or incidental iteration/performance values
                 **({'compact_layout':True} if compact_layout else {}),
                 **({'joint_layout':True} if joint_compaction(record,output_kind,requested_limit) else {}),
                 **({'expression_version':record['scopeExpressionContractVersion']} if record.get('scopeExpressionContractVersion') in (3,4,5) else {}),
-                **({'fixed_scope_first':True,'invoke_fixed':direct_compact_invoke} if fixed_scope_compaction(record,question,output_kind) else {}),
+                **({'fixed_scope_first':True,'invoke_fixed':fixed_compact_invoke} if fixed_scope_compaction(record,question,output_kind) else {}),
                 **({'explicit_edit_scope':True} if explicit_compaction_scope(record,question,output_kind) else {}),
                 **({'measured_guidance':True} if compact_options else {}))
         else:
@@ -2156,7 +2158,8 @@ def make_verify_node(
                         def checkpoint_compaction(value):
                             repo_update(run_id, lambda r: {**r, 'state': {**r.get('state', {}),
                                 'repairCompaction': value}}, expected_revision=None)
-                        def invoke_compaction(prompt,*,direct=False):
+                        from services.deep_research.compaction_editor import fixed_scope_profile,fixed_scope_options
+                        def invoke_compaction(prompt,*,direct=False,fixed=False):
                             # Same normal pool, tracked request identity and absolute
                             # deadline. Reserve enough time to check the new wording.
                             from datetime import datetime, UTC
@@ -2172,10 +2175,13 @@ def make_verify_node(
                             from services.deep_research.factual_reasoning import compaction_options,fixed_scope_compaction,explicit_compaction_scope
                             options=(compaction_options(record,effective_question(record),saved.get('outputKind',''))
                                 if not direct and fixed_scope_compaction(record,effective_question(record),saved.get('outputKind','')) else {})
+                            if fixed:
+                                options=fixed_scope_options(record,effective_question(record),saved.get('outputKind',''))
                             return llm_invoke(run_id,'synthesize_compact',prompt,{'max_tokens':2000,'temperature':0.0,**options})
                         revised = compact_repairs(repair_report,revised,repair_targets.get('accepted',[]),
                             current.get('state',{}).get('repairBatchState'),effective_question(record),
                             invoke_compaction,_safe_parse_json,evidence=evidence,output_kind=saved.get('outputKind',''),
+                            fixed_editor_profile=fixed_scope_profile(record,effective_question(record),saved.get('outputKind','')),
                             **({'budget_guidance':True} if type(record.get('compactionBudgetContractVersion')) is int
                                and record['compactionBudgetContractVersion']==1 else {}),
                             **({'selective_editing':True} if type(record.get('compactionEditingContractVersion')) is int
@@ -2191,7 +2197,7 @@ def make_verify_node(
                             saved=current.get('state',{}).get('repairCompaction'),checkpoint=checkpoint_compaction,
                             **({'authored_body':True} if authored_body_enabled(record,saved.get('outputKind')) else {}),
                             **({'expression_version':record['scopeExpressionContractVersion']} if record.get('scopeExpressionContractVersion') in (3,4,5) else {}),
-                            **({'fixed_scope_first':True,'invoke_fixed':lambda prompt:invoke_compaction(prompt,direct=True)}
+                            **({'fixed_scope_first':True,'invoke_fixed':lambda prompt:invoke_compaction(prompt,direct=True,fixed=True)}
                                 if fixed_scope_compaction(record,effective_question(record),saved.get('outputKind','')) else {}),
                             **({'explicit_edit_scope':True} if explicit_compaction_scope(record,effective_question(record),saved.get('outputKind','')) else {}))
                     repo_update(run_id, lambda r: {**r, 'state': {**r.get('state', {}),

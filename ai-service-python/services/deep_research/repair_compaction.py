@@ -13,7 +13,10 @@ def enabled(record):
 
 def compact_repairs(report, revised, accepted, batch_state, question, invoke, parse, *,
                     evidence=(), output_kind='', presentation_version=0, saved=None, checkpoint=None,expression_version=2,
-                    fixed_scope_first=False,invoke_fixed=None,explicit_edit_scope=False,compact_layout=False,joint_layout=False,authored_body=False,budget_guidance=False,selective_editing=False,prefer_fixed_scope=False,selective_fixed_edit=False):
+                    fixed_scope_first=False,invoke_fixed=None,explicit_edit_scope=False,compact_layout=False,joint_layout=False,authored_body=False,budget_guidance=False,selective_editing=False,prefer_fixed_scope=False,selective_fixed_edit=False,fixed_editor_profile=0):
+    if (type(fixed_editor_profile) is not int or fixed_editor_profile not in (0,1)
+            or fixed_editor_profile and not (selective_fixed_edit and prefer_fixed_scope and explicit_edit_scope)):
+        raise ValueError('Invalid fixed editor reasoning profile')
     packet = {**deepcopy(report),'claims':deepcopy(revised)}
     ids = {c['claimId'] for c in revised}
     audits = []
@@ -32,7 +35,7 @@ def compact_repairs(report, revised, accepted, batch_state, question, invoke, pa
     if type(compact_layout) is not bool:raise ValueError('Invalid compact repair layout policy')
     if type(explicit_edit_scope) is not bool:raise ValueError('Invalid explicit repair scope policy')
     if type(fixed_scope_first) is not bool:raise ValueError('Invalid fixed scope repair policy')
-    identity = digest({**({'compactionEditingContractVersion':3 if selective_fixed_edit else 2 if prefer_fixed_scope else 1} if selective_editing else {}),**({'compactionBudgetContractVersion':1} if budget_guidance else {}),**({'authoredBodyContractVersion':1} if authored_body else {}),**({'jointLayoutVersion':1} if joint_layout else {}),**({'compactLayoutVersion':1} if compact_layout else {}),'report':packet,'accepted':accepted,'audits':audits,'question':question,
+    identity = digest({**({'fixedScopeEditorReasoningContractVersion':fixed_editor_profile} if fixed_editor_profile else {}),**({'compactionEditingContractVersion':3 if selective_fixed_edit else 2 if prefer_fixed_scope else 1} if selective_editing else {}),**({'compactionBudgetContractVersion':1} if budget_guidance else {}),**({'authoredBodyContractVersion':1} if authored_body else {}),**({'jointLayoutVersion':1} if joint_layout else {}),**({'compactLayoutVersion':1} if compact_layout else {}),'report':packet,'accepted':accepted,'audits':audits,'question':question,
                        **({'scopeExpressionContractVersion':expression_version} if expression_version in (3,4,5) else {}),
                        **({'fixedScopeCompactionVersion':1} if fixed_scope_first else {}),
                        **({'explicitEditScopeVersion':1} if explicit_edit_scope else {}),

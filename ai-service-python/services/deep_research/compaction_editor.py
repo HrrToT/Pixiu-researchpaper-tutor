@@ -116,3 +116,18 @@ def request_options(record,output_kind):
     return {COMPACTION_OPTION:True} if (type(record.get('compactionEditorContractVersion')) is int
         and record['compactionEditorContractVersion'] in (6,7)
         and output_kind in {'direction_survey','claim_verification','paper_comparison'}) else {}
+
+
+def fixed_scope_profile(record,question,output_kind):
+    """Versioned reasoning only for the explicit selective fixed-prose editor."""
+    from services.deep_research.factual_reasoning import explicit_compaction_scope
+    return 1 if (type(record.get('fixedScopeEditorReasoningContractVersion')) is int
+        and record['fixedScopeEditorReasoningContractVersion']==1
+        and type(record.get('compactionEditingContractVersion')) is int
+        and record['compactionEditingContractVersion']==3
+        and explicit_compaction_scope(record,question,output_kind)) else 0
+
+
+def fixed_scope_options(record,question,output_kind):
+    from services.deep_research.factual_reasoning import COMPACTION_OPTION
+    return {COMPACTION_OPTION:True} if fixed_scope_profile(record,question,output_kind) else {}
