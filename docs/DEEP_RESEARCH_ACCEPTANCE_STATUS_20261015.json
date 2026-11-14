@@ -3,17 +3,17 @@
   "objective": "Complete DR0-DR5 in DEEP_RESEARCH_DESIGN_20261012.md without redefining success around implemented subsets.",
   "overall": "incomplete",
   "currentFullOfflineRegression": {
-    "sourceCommit": "4b0e92aa554d36c2762400ae03cce0e6811efb85",
-    "modules": 415,
-    "passed": 7451,
+    "sourceCommit": "dc5ff7c15539909eb960fd09a9d49d6270cff8be",
+    "modules": 417,
+    "passed": 7473,
     "failures": 0,
     "errors": 0,
     "skipped": 0,
     "warnings": 1,
     "sourceUnchanged": true,
     "appliesToCurrentPythonSource": true,
-    "proof": "deep-research-evidence/factual-envelope-432-host-20261114.json",
-    "boundary": "Complete offline research suite only; scientific content and independent release gates remain open."
+    "proof": "deep-research-evidence/pdf-glyphs-433-host-20261114.json",
+    "boundary": "Complete offline research suite; no substitute for novice explanation, comparison, experiment or independent content acceptance."
   },
   "postFullRegressionValidation": {
     "scope": "PDF Form parser optimization only",
@@ -4320,7 +4320,7 @@
     "state": "Official balance unavailable; no paid requests. Existing verification authorization remains valid. Offline preparation can continue.",
     "authorization": "Existing bounded verification authorization remains valid; no automatic retry of old cases."
   },
-  "currentDevelopmentMode": "Primary Codex only; no Qoder/new agents. .432 loaded;7451 full offline tests passed. AD1N-v19 executed once,7settled calls, terminal inconclusive:2valid review arrays reached diagnostic checks and failed exact source binding. Source quotes contain control characters in mathematical positions; glyph-decoding cause remains to investigate. No active research;15historical paused unknowns unchanged. Full DR0-DR5 and fresh independent gates remain open.",
+  "currentDevelopmentMode": "Primary Codex only; .433 loaded with pinned pypdf/fonttools.7473 full offline tests passed. AD1N-v20 executed once,8settled calls, partial result with2machine-verified claims; update-mechanism coverage and manual novice acceptance remain open. No active research;15historical unknown pauses unchanged. Full DR0-DR5, comparison, scientific experiment and independent gates preserved.",
   "loadedRuntime": {
     "commit": "5ad89bc3f42346d1231fed1285b6b0f5f408aac0",
     "promptVersion": "dr-v2.20261112.430",
@@ -4338,9 +4338,10 @@
     "javaCommit": "81a827f0c03febc4d181900b00516e38be916511",
     "taskCount": 103,
     "sourceAttestation": "deep-research-evidence/loaded-source-index-attestation-20261112.json",
-    "latestPromptVersion": "dr-v2.20261114.432"
+    "latestPromptVersion": "dr-v2.20261114.433"
   },
   "nextQualityWork": [
+    "Improve explanation of how corrected quantities affect the actual update, using ordinary actions before symbols; clarify initialization-bias scope. Preserve the original full novice question and300-character limit.",
     "When official provider availability is restored, complete the original novice explanation/full multipaper/full executable experiment development gaps under sealed budgets. Then execute H1-H5 fresh definitions, rechecking H3 external freshness/capabilities before submission; no cache deletion, automatic retry or retired-case upgrades.",
     "After provider becomes available, validate current mechanism explanation, multi-paper comparison and full executable experiment quality with bounded new cases, no old receipt retries.",
     "Run fresh untuned H1-H6 after development content passes; preserve original scoring, budgets and unknown outcomes.",
@@ -13529,5 +13530,45 @@
     "diagnosticChecksReached": true,
     "actualResponseShape": "items; singleton branch covered only by saved-response replay",
     "nextWork": "Investigate PDF mathematical-symbol control characters and faithful extraction before more content validation; retain exact-source binding and novice quality gates."
+  },
+  "fullOfflineBeforeGlyph20261114": {
+    "sourceCommit": "4b0e92aa554d36c2762400ae03cce0e6811efb85",
+    "modules": 415,
+    "passed": 7451,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "warnings": 1,
+    "sourceUnchanged": true,
+    "appliesToCurrentPythonSource": true,
+    "proof": "deep-research-evidence/factual-envelope-432-host-20261114.json",
+    "boundary": "Complete offline research suite only; scientific content and independent release gates remain open."
+  },
+  "pdfGlyphCheckpoint20261114": {
+    "sourceCommit": "dc5ff7c1",
+    "promptVersion": "dr-v2.20261114.433",
+    "sourceGlyphContractVersion": 1,
+    "relatedTestsPassed": 61,
+    "runtimeLoaded": true,
+    "containerProof": "deep-research-evidence/pdf-glyphs-433-container-20261114.json",
+    "loadProof": "deep-research-evidence/pdf-glyphs-433-load-20261114.json",
+    "actualPdfProof": "deep-research-evidence/pdf-glyphs-433-actual-final-20261114.json",
+    "workerProof": "deep-research-evidence/pdf-glyphs-433-worker-20261114.json",
+    "actualCase": {
+      "case": "AD1N-v20",
+      "status": "completed",
+      "outcome": "partial",
+      "modelCalls": 8,
+      "tokens": 36952,
+      "elapsedSeconds": 99,
+      "answerCharacters": 236,
+      "automaticAcceptedClaims": 2,
+      "coverage": "partial update-mechanism explanation",
+      "evidenceControlCharacters": 0,
+      "manualNoviceAccepted": false,
+      "independentCredit": 0,
+      "proof": "deep-research-evidence/adam-ad1n-v20-20261114.json"
+    },
+    "boundary": "Own-font redecoding fixes demonstrated glyph corruption; an unresolved figure on page31 of a different PDF remains explicitly unreadable. No old case upgraded; new-run unreadable evidence cannot pass literal checks."
   }
 }
