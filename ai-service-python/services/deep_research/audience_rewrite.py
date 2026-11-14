@@ -123,7 +123,9 @@ and causal findings. Fail an invented premise, universal guarantee, unsupported 
 expansion even when the claim is labeled inference. Reported facts still need direct source support.'''
 
 
-def _prepare(report, evidence, question, *, contract_version=1, requirement_context=(), objective_framing=False, process_explanations=False, protected_claim_ids=(), protected_edits=False, source_first_single=False, editable_source_first=False, scoped_editable_source=False, mapped_source_first=False, plain_explanations=False):
+def _prepare(report, evidence, question, *, contract_version=1, requirement_context=(), objective_framing=False, process_explanations=False, protected_claim_ids=(), protected_edits=False, source_first_single=False, editable_source_first=False, scoped_editable_source=False, mapped_source_first=False, plain_explanations=False, lean_reader=False):
+    if type(lean_reader) is not bool or lean_reader and not plain_explanations:
+        raise ValueError('Lean reader requires plain source-first explanations')
     if type(plain_explanations) is not bool or plain_explanations and not mapped_source_first:
         raise ValueError('Plain reader explanations require mapped source-first policy')
     if type(mapped_source_first) is not bool or mapped_source_first and contract_version!=9:
@@ -349,6 +351,10 @@ parameters, counts and formulas. These qualitative targets cannot acquire measur
     if plain_explanations:
         from services.deep_research.audience_plain_explanations import guidance
         prompt+='\n'+guidance(question)
+    if lean_reader and not protected_claim_ids:
+        from services.deep_research.audience_source_roles import build as build_source_roles
+        prompt=build_source_roles(question,targets,source_rows,limit,
+            inference_candidates(report,requirement_context,contract_version=contract_version))
     if len(prompt.encode('utf8')) > MAX_INPUT_BYTES:
         return None, 'input_capacity'
     return {'prompt': prompt, 'outputTokens': OUTPUT_TOKENS}, None
@@ -437,13 +443,14 @@ def _merge(report, content, parse, question, *, contract_version=1, allowed_infe
 
 
 def rewrite_for_beginner(report, evidence, question, invoke, parse, *, saved_state=None, checkpoint=None,
-                         can_start=True, contract_version=1, requirement_context=(), verification_policy=None, objective_framing=False, process_explanations=False, protected_claim_ids=(), protected_edits=False, source_first_single=False, publication_context=None, editable_source_first=False, scoped_editable_source=False, mapped_source_first=False, plain_explanations=False, writing_roles=False, retain_for_compaction=False):
+                         can_start=True, contract_version=1, requirement_context=(), verification_policy=None, objective_framing=False, process_explanations=False, protected_claim_ids=(), protected_edits=False, source_first_single=False, publication_context=None, editable_source_first=False, scoped_editable_source=False, mapped_source_first=False, plain_explanations=False, writing_roles=False, retain_for_compaction=False, lean_reader=False):
     """Frozen request + settlement reuse; unknown transports propagate unchanged.
 
     Legacy rejected edits retain the original draft. New opt-in handoff retains
     only a structurally valid publication-overlength edit for pending compaction.
     Neither version can be published without length, factual and coverage checks.
     """
+    if lean_reader and not writing_roles:raise ValueError('Lean reader requires writing roles')
     if type(writing_roles) is not bool or writing_roles and not plain_explanations:
         raise ValueError('Writing roles require plain reader policy')
     if (type(retain_for_compaction) is not bool or retain_for_compaction and
@@ -451,6 +458,8 @@ def rewrite_for_beginner(report, evidence, question, invoke, parse, *, saved_sta
         raise ValueError('Compaction handoff requires an unprotected publication-budgeted reader')
     if type(contract_version) is not int or contract_version not in (1,2,3,4,5,6,7,8,9):
         raise DeepResearchError('invalid_audience_rewrite_state','新手改写契约版本无效。')
+    if type(lean_reader) is not bool or lean_reader and not plain_explanations:
+        raise ValueError('Lean reader requires plain source-first explanations')
     if type(plain_explanations) is not bool or plain_explanations and not mapped_source_first:
         raise ValueError('Plain reader explanations require mapped source-first policy')
     if type(mapped_source_first) is not bool or mapped_source_first and contract_version!=9:
@@ -501,7 +510,7 @@ def rewrite_for_beginner(report, evidence, question, invoke, parse, *, saved_sta
         identity_inputs.update(audiencePublicationBudgetContractVersion=1,publicationContext=publication_context,publicationBudget=publication_budget)
     if source_first_single:identity_inputs['audienceSingleSourceContractVersion']=1
     if editable_source_first:identity_inputs['audienceEditableSourceContractVersion']=2 if scoped_editable_source else 1
-    if mapped_source_first:identity_inputs['audienceMappedSourceContractVersion']=3 if writing_roles else 2 if plain_explanations else 1
+    if mapped_source_first:identity_inputs['audienceMappedSourceContractVersion']=4 if lean_reader else 3 if writing_roles else 2 if plain_explanations else 1
     if retain_for_compaction:identity_inputs['audienceCompactionHandoffVersion']=1
     identity = digest(identity_inputs)
     state = deepcopy(saved_state) if saved_state is not None else None
@@ -509,7 +518,8 @@ def rewrite_for_beginner(report, evidence, question, invoke, parse, *, saved_sta
         if (not isinstance(state, dict) or type(state.get('version')) is not int or state['version'] != contract_version
                 or state.get('inputDigest') != identity
                 or mapped_source_first and (type(state.get('audienceMappedSourceContractVersion')) is not int
-                    or state['audienceMappedSourceContractVersion']!=(3 if writing_roles else 2 if plain_explanations else 1))
+                    or state['audienceMappedSourceContractVersion']!=(4 if lean_reader else 3 if writing_roles else 2 if plain_explanations else 1))
+                or lean_reader and state.get('readerInputFormat')!=('legacy_protected' if protected_claim_ids or protected_edits else 'source_roles_v1')
                 or retain_for_compaction and (type(state.get('audienceCompactionHandoffVersion')) is not int
                     or state['audienceCompactionHandoffVersion']!=1)
                 or editable_source_first and (type(state.get('audienceEditableSourceContractVersion')) is not int
@@ -530,6 +540,7 @@ def rewrite_for_beginner(report, evidence, question, invoke, parse, *, saved_sta
                                    requirement_context=requirement_context, objective_framing=objective_framing, process_explanations=process_explanations,
                                    **({'mapped_source_first':True} if mapped_source_first else {}),
                                    **({'plain_explanations':True} if plain_explanations else {}),
+                                   **({'lean_reader':True} if lean_reader else {}),
                                    **({'source_first_single':True} if source_first_single else {}),
                                    **({'editable_source_first':True} if editable_source_first else {}),
                                    **({'scoped_editable_source':True} if scoped_editable_source else {}),
@@ -545,10 +556,11 @@ def rewrite_for_beginner(report, evidence, question, invoke, parse, *, saved_sta
                 publication_budget['editableCharacters'] if publication_budget else None,protected_claim_ids)
         state = {'version': contract_version, 'inputDigest': identity, 'status': 'pending',
                  'request': request, 'requestDigest': digest(request)}
+        if lean_reader:state['readerInputFormat']='legacy_protected' if protected_claim_ids or protected_edits else 'source_roles_v1'
         if role_audit is not None:state['writingRoles']=role_audit
         if retain_for_compaction:state['audienceCompactionHandoffVersion']=1
         if protected_edits:state.update(audienceBudgetContractVersion=1,editBudget=deepcopy(edit_budget))
-        if mapped_source_first:state['audienceMappedSourceContractVersion']=3 if writing_roles else 2 if plain_explanations else 1
+        if mapped_source_first:state['audienceMappedSourceContractVersion']=4 if lean_reader else 3 if writing_roles else 2 if plain_explanations else 1
         if source_first_single:state['audienceSingleSourceContractVersion']=1
         if editable_source_first:state['audienceEditableSourceContractVersion']=2 if scoped_editable_source else 1
         if publication_context is not None:
