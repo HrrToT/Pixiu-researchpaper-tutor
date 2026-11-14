@@ -2056,6 +2056,8 @@ def make_verify_node(
                     from services.deep_research.repair_instructions import enabled as repair_instructions_enabled
                     revised = repair_rejected(repair_report, repair_targets, evidence, effective_question(record),
                         invoke_repair, _safe_parse_json,
+                        **({'verified_text_edits':True} if type(record.get('verifiedTextRepairContractVersion')) is int
+                           and record['verifiedTextRepairContractVersion']==1 else {}),
                         max_prompt_bytes=repair_prompt_byte_limit(current.get('budget', {}),**repair_input_options),
                         metric_domains=record.get('state', {}).get('metricDomains'),
                         **({'factual_prompt_version':record['factualRepairPromptContractVersion']} if type(record.get('factualRepairPromptContractVersion')) is int
