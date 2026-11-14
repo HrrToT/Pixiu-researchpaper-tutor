@@ -1,0 +1,12 @@
+{
+  "pdfParserHashMatches": true,
+  "promptVersion": "dr-v2.20261114.438",
+  "allDeepResearchModuleHashesMatch": true,
+  "all103TasksExact": true,
+  "all372OldRunsExact": true,
+  "all9379CallRowsExact": true,
+  "historicalPaused": 15,
+  "active": 0,
+  "health": "ok",
+  "modelCalls": 0
+}
