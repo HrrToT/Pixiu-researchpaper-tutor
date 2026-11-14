@@ -1,5 +1,5 @@
 {
-  "asOf": "2026-11-12",
+  "asOf": "2026-11-14",
   "objective": "Complete DR0-DR5 in DEEP_RESEARCH_DESIGN_20261012.md without redefining success around implemented subsets.",
   "overall": "incomplete",
   "currentFullOfflineRegression": {
@@ -11,7 +11,7 @@
     "skipped": 0,
     "warnings": 1,
     "sourceUnchanged": true,
-    "appliesToCurrentPythonSource": true,
+    "appliesToCurrentPythonSource": false,
     "proof": "deep-research-evidence/current-full-after-pdf-20261112.json",
     "priorProof": "deep-research-evidence/current-rollback-complete-regression-20261112.json",
     "boundary": "Complete current offline research suite after PDF optimization and H6 tests; no real model, scientific content acceptance or full product release."
@@ -4321,7 +4321,7 @@
     "state": "Official balance unavailable; no paid requests. Existing verification authorization remains valid. Offline preparation can continue.",
     "authorization": "Existing bounded verification authorization remains valid; no automatic retry of old cases."
   },
-  "currentDevelopmentMode": "Primary Codex only; Goal active, no Qoder/new agents. Java81a827f0 and Python5ad89bc3 loaded; prompt .430 unchanged. No paid model requests while official account unavailable; full DR0-DR5 quality and independent gates remain open.",
+  "currentDevelopmentMode": "Primary Codex only; no Qoder/new agents. Provider restored, .431 loaded. AD1N-v18 executed once:209-character draft,7settled calls, terminal inconclusive because2singleton review objects failed items-envelope decoding. Scientific review and novice quality not accepted. No active research;15historical paused unknowns unchanged. Full DR0-DR5 and fresh independent gates remain open.",
   "loadedRuntime": {
     "commit": "5ad89bc3f42346d1231fed1285b6b0f5f408aac0",
     "promptVersion": "dr-v2.20261112.430",
@@ -4338,7 +4338,8 @@
     "javaAndFrontendBoundary": "Java artifact ownership fix and Python rollout fix loaded with full task/database preservation. Frontend not redeployed. Isolated UI/persistence and synthetic cross-service publication passed; real generated research and learning quality remain unverified.",
     "javaCommit": "81a827f0c03febc4d181900b00516e38be916511",
     "taskCount": 103,
-    "sourceAttestation": "deep-research-evidence/loaded-source-index-attestation-20261112.json"
+    "sourceAttestation": "deep-research-evidence/loaded-source-index-attestation-20261112.json",
+    "latestPromptVersion": "dr-v2.20261114.431"
   },
   "nextQualityWork": [
     "When official provider availability is restored, complete the original novice explanation/full multipaper/full executable experiment development gaps under sealed budgets. Then execute H1-H5 fresh definitions, rechecking H3 external freshness/capabilities before submission; no cache deletion, automatic retry or retired-case upgrades.",
@@ -13447,5 +13448,50 @@
     "newModelCalls": 0,
     "productionWrites": 0,
     "proof": "DEEP_RESEARCH_CURRENT_FRONTEND_CHECK_20261112.md"
+  },
+  "providerAvailability20261114": {
+    "availableAtResume": true,
+    "reportedCurrency": "CNY",
+    "reportedBalance": 9.75,
+    "boundary": "Point-in-time official balance at session resume; not current balance or proof of content quality.",
+    "localEvidence": "tmp/provider-balance-resume-20261114.json"
+  },
+  "developmentValidation20261114": {
+    "case": "AD1N-v17",
+    "split": "development",
+    "independentCredit": 0,
+    "status": "failed",
+    "errorCode": "invalid_synthesis_response",
+    "actualModelCalls": 8,
+    "allCallsSettled": true,
+    "tokens": 29233,
+    "visibleCharacters": 353,
+    "characterLimit": 300,
+    "scientificVerificationReached": false,
+    "contentAccepted": false,
+    "proof": "deep-research-evidence/adam-ad1n-v17-20261114.json",
+    "repairSourceCommit": "d2657d3b",
+    "promptVersion": "dr-v2.20261114.431",
+    "relatedTestsPassed": 48,
+    "savedInputReplay": "deep-research-evidence/mapped-source-431-saved-input-20261114.json",
+    "runtimeLoaded": true,
+    "realRepairEffectVerified": "One development case reduced answer to209 characters; no general quality acceptance",
+    "loadProof": "deep-research-evidence/mapped-source-431-load-20261114.json",
+    "fullRegression": "deep-research-evidence/mapped-source-431-host-20261114.json",
+    "profileFollowup": "deep-research-evidence/mapped-source-431-profile-followup-20261114.json",
+    "latestCase": {
+      "case": "AD1N-v18",
+      "status": "completed",
+      "outcome": "inconclusive",
+      "actualModelCalls": 7,
+      "tokens": 33481,
+      "elapsedSeconds": 107,
+      "answerCharacters": 209,
+      "characterLimit": 300,
+      "contentAccepted": false,
+      "independentCredit": 0,
+      "proof": "deep-research-evidence/adam-ad1n-v18-20261114.json",
+      "nextWork": "Versioned singleton factual-review transport alignment without deriving decisions or weakening evidence gates; novice wording remains too technical."
+    }
   }
 }
