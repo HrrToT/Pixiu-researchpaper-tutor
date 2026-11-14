@@ -285,7 +285,7 @@ class ResearchFacade:
             "materials": materials,
             "materialSnapshot": material_snapshot,  # Immutable Java snapshot
             "contextMaterials": (material_snapshot or {}).get("contextMaterials", []) if isinstance(material_snapshot, dict) else [],
-            "promptVersion": "dr-v2.20261114.442",
+            "promptVersion": "dr-v2.20261114.443",
             "initialPlanResponseContractVersion": 1,
             "initialPlanInstructionsContractVersion": 1,
             "initialPlanModelContractVersion": 1,
@@ -335,6 +335,7 @@ class ResearchFacade:
             "externalReadingContractVersion": 3,
             "externalDiagnosticsContractVersion": 1,
             "reviewReasonPartsContractVersion": 1,
+            "reviewParameterIdentityContractVersion": 1,
             "verifiedTextRepairContractVersion": 2,
             "sourceGapClosureContractVersion": 1,
             "extractionScheduleContractVersion": 1,
@@ -1308,6 +1309,8 @@ class ResearchFacade:
             single_factual_decision=lambda: factual_decision_enabled(self._repo.require_run(run_id)),
             source_version_review=lambda: source_version_review_enabled(self._repo.require_run(run_id)),
             review_diagnostic_bindings=lambda: review_diagnostics_enabled(self._repo.require_run(run_id)),
+            diagnostic_parameter_ids=lambda: type(self._repo.require_run(run_id).get('reviewParameterIdentityContractVersion')) is int
+                and self._repo.require_run(run_id)['reviewParameterIdentityContractVersion']==1,
             integrated_diagnostic_schema=lambda: type(self._repo.require_run(run_id).get('reviewDiagnosticContractVersion')) is int
                 and self._repo.require_run(run_id)['reviewDiagnosticContractVersion']==2,
             review_reason_parts=lambda: type(self._repo.require_run(run_id).get('reviewReasonPartsContractVersion')) is int

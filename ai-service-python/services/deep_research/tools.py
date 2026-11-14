@@ -652,6 +652,7 @@ class BudgetedSemanticChecker:
         known_single_review_failure=False,
         integrated_diagnostic_schema=False,
         review_reason_parts=False,
+        diagnostic_parameter_ids=False,
         short_circuit_scope_observations=False,
     ):
         self._invoke = llm_invoker
@@ -672,6 +673,7 @@ class BudgetedSemanticChecker:
         self._known_single_review_failure = known_single_review_failure
         self._integrated_diagnostic_schema = integrated_diagnostic_schema
         self._review_reason_parts = review_reason_parts
+        self._diagnostic_parameter_ids = diagnostic_parameter_ids
         self._short_circuit_scope_observations = short_circuit_scope_observations
         self._mechanism_grounding = mechanism_grounding
         self._singleton_factual_response = singleton_factual_response
@@ -1431,7 +1433,10 @@ The dataAvailability object is an internal audit, not new experimental results.
             by_id = {c['claimId']: c for c in claims}
             if diagnostic_policy:
                 from services.deep_research.review_diagnostics import bind as bind_diagnostic
-                parsed=[bind_diagnostic(v,by_id[v['claimId']],visible_evidence,reverse_aliases) for v in parsed]
+                parameter_policy=self._diagnostic_parameter_ids
+                parameter_policy=(parameter_policy() if callable(parameter_policy) else parameter_policy) is True
+                parsed=[bind_diagnostic(v,by_id[v['claimId']],visible_evidence,reverse_aliases,
+                    **({'source_parameter_ids':True} if parameter_policy else {})) for v in parsed]
             if comparison_enabled:
                 from services.deep_research.comparison_reasoning import normalize_audit_scope
                 target_by_id = {c['claimId']: c for c in claims}

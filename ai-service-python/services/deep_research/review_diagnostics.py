@@ -34,7 +34,8 @@ override a failed decision or any other audit; the server checks them independen
 '''
 
 
-def bind(verdict, claim, evidence, reverse=None):
+def bind(verdict, claim, evidence, reverse=None, *, source_parameter_ids=False):
+    if type(source_parameter_ids) is not bool:raise ValueError('Invalid diagnostic parameter identity policy')
     from services.deep_research.audit_source_fields import resolve
     from services.deep_research.verification import _measurement_numbers, normalize_quote
     result = deepcopy(verdict)
@@ -45,6 +46,10 @@ def bind(verdict, claim, evidence, reverse=None):
         errors.append('diagnostic_reason_invalid');reason=''
     covered_numbers = set()
     own = {e['evidenceId']: e for e in evidence if e.get('evidenceId') in claim.get('evidenceRefs', [])}
+    numbers=lambda text:_measurement_numbers(text,word_counts=True)
+    if source_parameter_ids:
+        from services.deep_research.review_parameter_numbers import scanner
+        numbers=scanner(own)
     reverse = reverse or {}
     if not isinstance(facts, list) or len(facts) > 16:
         errors.append('diagnostic_facts_missing_or_invalid')
@@ -64,10 +69,9 @@ def bind(verdict, claim, evidence, reverse=None):
         if resolved is None or normalize_quote(fact['excerpt']) not in normalize_quote(resolved[1]):
             errors.append('diagnostic_source_not_bound')
             continue
-        covered_numbers |= (_measurement_numbers(fact['statement'], word_counts=True)
-                            & _measurement_numbers(fact['excerpt'], word_counts=True))
+        covered_numbers |= (numbers(fact['statement']) & numbers(fact['excerpt']))
     target = claim.get('text', '') + ' ' + json.dumps(claim.get('conditions', {}), ensure_ascii=False)
-    introduced = _measurement_numbers(reason, word_counts=True) - _measurement_numbers(target, word_counts=True)
+    introduced = numbers(reason) - numbers(target)
     missing = introduced - covered_numbers
     if missing:
         errors.append('new_diagnostic_numbers_not_bound')
@@ -75,6 +79,7 @@ def bind(verdict, claim, evidence, reverse=None):
              'reasonSha256': hashlib.sha256(reason.encode('utf8')).hexdigest(),
              'bindingCount': len(facts), 'newNumberCount': len(introduced),
              'unboundNewNumberCount': len(missing), 'errors': list(dict.fromkeys(errors))})
+    if source_parameter_ids:audit['sourceParameterIdentityContractVersion']=1
     result['reviewDiagnosticAudit'] = audit
     if errors:
         # Preserve the raw model response in the immutable call journal, not in
