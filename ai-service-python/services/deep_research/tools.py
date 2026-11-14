@@ -438,9 +438,17 @@ class TrackedLLMInvoker:
             from services.deep_research.structured_output import normalize
             response = normalize(node, response,**({'initial_plan_response':True} if initial_plan_response else {}),**({'factual_singleton':True}
                 if type(transport_record.get('factualEnvelopeContractVersion')) is int
-                and transport_record['factualEnvelopeContractVersion']==1
+                and transport_record['factualEnvelopeContractVersion'] in (1,2)
                 and type(transport_record.get('factualDecisionContractVersion')) is int
-                and transport_record['factualDecisionContractVersion']==2 else {}))
+                and transport_record['factualDecisionContractVersion']==2 else {}),
+                **({'factual_diagnostics':type(transport_record.get('reviewDiagnosticContractVersion')) is int
+                        and transport_record['reviewDiagnosticContractVersion']==2,
+                    'factual_ownership':type(transport_record.get('reportingOwnershipContractVersion')) is int
+                        and transport_record['reportingOwnershipContractVersion']==1}
+                   if type(transport_record.get('factualEnvelopeContractVersion')) is int
+                   and transport_record['factualEnvelopeContractVersion']==2
+                   and type(transport_record.get('factualDecisionContractVersion')) is int
+                   and transport_record['factualDecisionContractVersion']==2 else {}))
         
         # Settle with actual usage delta
         token_delta = actual_tokens - (estimated_input + max_output)

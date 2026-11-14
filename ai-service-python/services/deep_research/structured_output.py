@@ -174,8 +174,11 @@ def messages_for_record(record, node, prompt):
         prospective=kind=='experiment_design'),prospective=kind=='experiment_design')
 
 
-def normalize(node, response, *, factual_singleton=False,initial_plan_response=False):
+def normalize(node, response, *, factual_singleton=False,initial_plan_response=False,factual_diagnostics=False,factual_ownership=False):
     if type(factual_singleton) is not bool:raise ValueError('Invalid factual response envelope policy')
+    if (type(factual_diagnostics) is not bool or type(factual_ownership) is not bool
+            or (factual_diagnostics or factual_ownership) and not factual_singleton):
+        raise ValueError('Factual response fields require singleton envelope policy')
     if type(initial_plan_response) is not bool or initial_plan_response and node!='plan':
         raise ValueError('Invalid initial planning response policy')
     raw = response.get('content', '')
@@ -239,7 +242,9 @@ def normalize(node, response, *, factual_singleton=False,initial_plan_response=F
             # audits. Transport does not derive or upgrade a scientific verdict.
             from services.deep_research.factual_decision import decode
             from services.deep_research.contracts import DeepResearchError
-            try:decode(parsed,singleton_claim_id=parsed.get('claimId'))
+            try:decode(parsed,singleton_claim_id=parsed.get('claimId'),
+                **({'diagnostic_facts':True} if factual_diagnostics else {}),
+                **({'reporting_ownership':True} if factual_ownership else {}))
             except DeepResearchError:
                 output['content']='null';output['structuredOutput']['receivedShape']='invalid_wrapper'
             else:
