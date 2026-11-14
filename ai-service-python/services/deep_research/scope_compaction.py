@@ -14,7 +14,7 @@ def enabled(record):
 
 
 def compact(report, audits, question, invoke, parse, *, output_kind='', evidence=(), presentation_version=0,
-            fixed_claims=(),measured_guidance=False,expression_version=2,fixed_scope_first=False,invoke_fixed=None,explicit_edit_scope=False,compact_layout=False,joint_layout=False,authored_body=False,budget_guidance=False,selective_editing=False):
+            fixed_claims=(),measured_guidance=False,expression_version=2,fixed_scope_first=False,invoke_fixed=None,explicit_edit_scope=False,compact_layout=False,joint_layout=False,authored_body=False,budget_guidance=False,selective_editing=False,prefer_fixed_scope=False):
     """Return revised report and matching unchecked ASTs, or reject atomically.
 
     All existing points, kinds, citations, obligations and table bindings remain.
@@ -24,6 +24,8 @@ def compact(report, audits, question, invoke, parse, *, output_kind='', evidence
     if type(authored_body) is not bool or authored_body and expression_version!=5:raise ValueError('Invalid authored compaction policy')
     if type(budget_guidance) is not bool:raise ValueError('Invalid compaction budget guidance policy')
     if type(selective_editing) is not bool:raise ValueError('Invalid selective compaction policy')
+    if type(prefer_fixed_scope) is not bool or prefer_fixed_scope and not selective_editing:
+        raise ValueError('Fixed-scope preference requires selective editing')
     if type(joint_layout) is not bool:raise ValueError('Invalid joint short layout policy')
     if type(compact_layout) is not bool:raise ValueError('Invalid compact layout policy')
     if type(explicit_edit_scope) is not bool:raise ValueError('Invalid explicit edit scope policy')
@@ -64,7 +66,7 @@ def compact(report, audits, question, invoke, parse, *, output_kind='', evidence
     def count(value):
         return visible_count({**value,'claims':[*fixed,*value['claims']]},limit,output_kind,evidence,presentation_version)
     if not limit or count(source) <= limit: return source, deepcopy(audits)
-    if fixed_scope_first and not joint_layout and len(expressions)<len(original):
+    if fixed_scope_first and (not joint_layout or prefer_fixed_scope and bool(expressions)) and len(expressions)<len(original):
         preview={**source,'claims':[c if c['claimId'] in expressions else {**c,'text':'','conditions':{}}
             for c in source['claims']]}
         if count(preview)+len(original)-len(expressions)<=limit:
