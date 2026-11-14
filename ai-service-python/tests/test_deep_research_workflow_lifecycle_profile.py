@@ -13,9 +13,10 @@ def test_new_profile_is_consistent_and_does_not_rewrite_legacy_run(tmp_path):
     try:
         first,_=facade.create({'workspaceTaskId':'t','operationKey':'first','question':'Design an experiment',
             'deferStart':True},start_async=False)
-        assert first['promptVersion']=='dr-v2.20261114.432'
+        assert first['promptVersion']=='dr-v2.20261114.433'
         assert type(first['audienceMappedSourceContractVersion']) is int and first['audienceMappedSourceContractVersion']==1
         assert first['factualEnvelopeContractVersion']==2
+        assert first['sourceGlyphContractVersion']==1
         assert first['diagnosticRepairRoutingContractVersion']==1
         assert first['sourceVersionReviewContractVersion']==1
         assert first['coverageLimitContractVersion']==1
@@ -69,6 +70,7 @@ def test_new_profile_is_consistent_and_does_not_rewrite_legacy_run(tmp_path):
         assert enabled(probe) and draft_enabled(probe) and repair_enabled(probe)
         old=deepcopy(first);old.update(runId='legacy',idempotencyKey='legacy',
             promptVersion='dr-v2.20261023.257',workflowContractVersion=4,executionWorkflowContractVersion=6)
+        old.pop('sourceGlyphContractVersion')
         old.pop('audienceMappedSourceContractVersion')
         old.pop('experimentPlanningReasoningContractVersion')
         old.pop('scientificOutlineContractVersion')

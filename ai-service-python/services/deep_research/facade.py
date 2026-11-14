@@ -285,7 +285,7 @@ class ResearchFacade:
             "materials": materials,
             "materialSnapshot": material_snapshot,  # Immutable Java snapshot
             "contextMaterials": (material_snapshot or {}).get("contextMaterials", []) if isinstance(material_snapshot, dict) else [],
-            "promptVersion": "dr-v2.20261114.432",
+            "promptVersion": "dr-v2.20261114.433",
             "initialPlanResponseContractVersion": 1,
             "initialPlanInstructionsContractVersion": 1,
             "initialPlanModelContractVersion": 1,
@@ -352,6 +352,7 @@ class ResearchFacade:
             "scopeEvidenceContractVersion": 1,
             "factualDecisionContractVersion": 2,
             "factualEnvelopeContractVersion": 2,
+            "sourceGlyphContractVersion": 1,
             "factualReasoningContractVersion": 10,
             "continuationFormatContractVersion": 1,
             "jointEvidenceContractVersion": 3,
@@ -1369,7 +1370,8 @@ class ResearchFacade:
     
     def _get_make_evidence(self, run_id=None) -> Callable[..., dict]:
         from services.deep_research.verification import make_evidence
-        return make_evidence
+        from services.deep_research.text_quality import guard
+        return guard(make_evidence,self._repo.require_run(run_id)) if run_id is not None else make_evidence
     
     def _get_coverage_gaps(self) -> Callable[[list, list, list], list]:
         from services.deep_research.coverage import coverage_gaps

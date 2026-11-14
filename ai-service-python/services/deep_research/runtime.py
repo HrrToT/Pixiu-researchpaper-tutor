@@ -354,8 +354,9 @@ def initialize_runtime():
         def _get_make_evidence(self, run_id=None):
             from services.deep_research.local_sources import LocalTaskRetriever
             from services.deep_research.located_evidence import located_evidence_factory
-            return located_evidence_factory(repo, run_id,
-                LocalTaskRetriever(repo, run_id, scope, origin=scope.origin))
+            from services.deep_research.text_quality import guard
+            return guard(located_evidence_factory(repo, run_id,
+                LocalTaskRetriever(repo, run_id, scope, origin=scope.origin)),repo.require_run(run_id))
 
         def _make_retriever(self, run_id):
             from services.deep_research.local_sources import LocalTaskRetriever

@@ -5,6 +5,7 @@ import sys
 from collections import OrderedDict
 
 from PyPDF2 import PdfReader
+from services.deep_research.text_quality import control_count as _control_count
 
 
 FORM_CACHE_ENTRIES = 256
@@ -61,8 +62,33 @@ def parse_pdf(body: bytes, max_pages: int) -> list[dict]:
     reader = PdfReader(io.BytesIO(body))
     if reader.is_encrypted or len(reader.pages) > max_pages:
         raise ValueError("Unsupported PDF")
-    return [{"page": index + 1, "text": _extract_page_text(page)[:30000]}
-            for index, page in enumerate(reader.pages)]
+    modern = None
+    pages = []
+    for index, page in enumerate(reader.pages):
+        text = _extract_page_text(page)[:30000]
+        controls = _control_count(text)
+        row = {"page": index + 1, "text": text}
+        if controls:
+            # Retry decoding the SAME bytes, not acquisition or generation.
+            # The parent process deadline and original limits still apply.
+            import pypdf
+            if modern is None:
+                modern = pypdf.PdfReader(io.BytesIO(body))
+                if modern.is_encrypted or len(modern.pages) != len(reader.pages):
+                    raise ValueError("Inconsistent PDF page identity")
+            candidate = (modern.pages[index].extract_text() or "")[:30000]
+            if candidate.strip() and not _control_count(candidate):
+                row.update(text=candidate, extraction={"engine": "pypdf", "version": pypdf.__version__,
+                    "reason": "unreadable_glyphs", "originalControlCount": controls})
+            else:
+                # Keep the exact original page, including an unreadable figure.
+                # New-run evidence admission rejects affected source windows;
+                # readable pages/windows remain available, never invented glyphs.
+                row['extraction']={"engine":"PyPDF2","fallbackEngine":"pypdf",
+                    "fallbackVersion":pypdf.__version__,"status":"unreadable_glyphs",
+                    "originalControlCount":controls}
+        pages.append(row)
+    return pages
 
 
 def main():
