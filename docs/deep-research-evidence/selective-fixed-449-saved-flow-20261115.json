@@ -1,0 +1,16 @@
+{
+  "modelCalls": 0,
+  "oldPreferredPromptExact": true,
+  "oldPreferredCheckpointIdentityExact": true,
+  "newCheckpointIdentityDifferent": true,
+  "onlyEditableIds": [
+    "c1"
+  ],
+  "hardEditableCharacters": 160,
+  "readonlyScopeCharacters": 119,
+  "fixedDisplayCharacters": 21,
+  "oldPromptBytes": 3856,
+  "newPromptBytes": 5450,
+  "newPermission": "May omit repeated prose already retained in readonly context and unrequested incidental material, retaining every requested contribution and necessary qualification. Same source identities, scope and independent verification.",
+  "scientificAcceptance": false
+}
