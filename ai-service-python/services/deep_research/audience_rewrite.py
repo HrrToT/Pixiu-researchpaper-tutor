@@ -607,7 +607,8 @@ def rewrite_for_beginner(report, evidence, question, invoke, parse, *, saved_sta
     if edited is not None and publication_context is not None:
         from services.deep_research.audience_publication_budget import fits
         if not fits(edited,evidence,question,publication_context):
-            if retain_for_compaction:compaction_candidate=deepcopy(edited)
+            if retain_for_compaction and not fits(report,evidence,question,publication_context):
+                compaction_candidate=deepcopy(edited)
             reasons.append('publication_character_limit');edited=None
     if compaction_candidate is not None:
         candidate_digest=digest(compaction_candidate)

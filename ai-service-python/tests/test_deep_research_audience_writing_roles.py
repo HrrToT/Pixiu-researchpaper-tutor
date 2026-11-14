@@ -84,3 +84,10 @@ def test_actual_synthesis_node_compacts_plain_candidate_once_without_approving_i
     assert 'report_version_id' in result and events==['synthesize','synthesize_audience','synthesize_compact']
     assert record['state']['audienceRewrite']['editOutcome']=='compaction_candidate'
     assert not record['state'].get('verifiedReport')
+
+
+def test_handoff_never_adds_compaction_when_the_original_already_fits():
+    report,ev,q=fixture();report['claims']=report['claims'][:1];report['claims'][0]['text']='原来的简短回答。';states=[]
+    assert fits(report,ev,q,CTX)
+    result=rewrite_for_beginner(report,ev,q,Mock(return_value=answer('新'*100)),json.loads,checkpoint=states.append,retain_for_compaction=True,**opts())
+    assert result==report and states[-1]['editOutcome']=='rejected' and 'compactionCandidateDigest' not in states[-1]
