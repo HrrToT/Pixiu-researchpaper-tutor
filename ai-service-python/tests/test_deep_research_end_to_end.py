@@ -104,7 +104,7 @@ class FixtureModel:
                 for verdict in content:
                     verdict['reasonParts']=[{'text':verdict.pop('reason')}]
         elif prompt.startswith(("Revise only the targets","Rebuild ONLY these rejected factual answer targets",
-                                "Rebuild ONLY the rejected targets")):
+                                "Rebuild ONLY the rejected targets","请把目标段落")):
             content = []  # An unsupported claim may be dropped; do not relax checks.
         elif prompt.startswith('Audit the FINAL ACCEPTED ANSWER against the FIXED REQUEST CHECKLIST'):
             if 'Exact decision input fields (question, fixed checks, complete accepted claims and server metadata):\n' in prompt:
@@ -300,10 +300,11 @@ def test_absolute_provider_timeout_preserves_unknown_and_ignores_late_response(t
 ])
 def test_pause_keeps_known_inflight_response_and_resume_does_not_resend_it(tmp_path, prefix, node):
     entered, release = threading.Event(), threading.Event()
+    def matches(prompt):return prompt.startswith(prefix) or node=='repair_claims' and prompt.startswith('请把目标段落')
 
     class PausingModel(FixtureModel):
         def invoke(self, request):
-            if request.prompt.startswith(prefix):
+            if matches(request.prompt):
                 entered.set()
                 assert release.wait(5)
             return super().invoke(request)
@@ -320,7 +321,7 @@ def test_pause_keeps_known_inflight_response_and_resume_does_not_resend_it(tmp_p
         release.set()
         worker.result(timeout=5)
         assert repo.require_run(record["runId"])["status"] == "paused"
-        assert sum(r.prompt.startswith(prefix) for r in model.requests) == 1
+        assert sum(matches(r.prompt) for r in model.requests) == 1
         assert [c for c in repo.list_calls(record['runId']) if c['node'] == node][0]['status'] == 'succeeded'
         paused = repo.require_run(record["runId"])
         facade.action(record["runId"], "resume", {"requestId": "resume", "expectedRunRevision": paused["runRevision"]})
@@ -329,7 +330,7 @@ def test_pause_keeps_known_inflight_response_and_resume_does_not_resend_it(tmp_p
         if next_worker:
             next_worker.result(timeout=30)  # Allow the complete offline resumed graph to finish.
         assert repo.require_run(record["runId"])["status"] == "completed"
-        assert sum(r.prompt.startswith(prefix) for r in model.requests) == 1
+        assert sum(matches(r.prompt) for r in model.requests) == 1
     finally:
         release.set()
         facade.shutdown()

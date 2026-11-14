@@ -55,3 +55,24 @@ def materialize(rows,originals):
         candidate={k:deepcopy(v) for k,v in old.items() if k not in ('verification','reviewDiagnosticAudit')}
         candidate['text']=row['text'];result.append(candidate);seen.add(cid)
     return result
+
+
+def integrated_prompt(question,length_contract,requirements,originals,checks,questions,source_registry,permissions_marker,evidence_marker,plan):
+    base=prompt(question,length_contract,requirements,originals,checks,questions,source_registry,permissions_marker,evidence_marker)
+    roles={r['claimId']:r for r in plan['responsibilities']}
+    if set(roles)==set(originals) and all(r.get('primaryObligationIds') for r in roles.values()):
+        marker='Frozen edit inputs (goals, not paper facts):\n'
+        start=base.index(marker)+len(marker)
+        packet,end=json.JSONDecoder().raw_decode(base[start:])
+        for target in packet['targets']:
+            target.pop('currentText');target['writingResponsibility']=roles[target['claimId']]
+        base=base[:start]+json.dumps(packet,ensure_ascii=False,separators=(',',':'))+base[start+end:]
+        head_note='职责已由完整冻结目标和写作分工定位，因此不提供旧段落供模仿。请根据自己的原文证据重新作答；此前核验不代表新回答已获批准。\n'
+    else:head_note='职责仍需借助旧段落定位；旧文只作定位，不能直接复述充当修订。\n'
+    head='''请把目标段落整合重写，直接替换旧文。不要保留旧段落再追加补丁，也不要重复已接受段落。
+保留有依据的含义和必要条件，不要求保留旧句；可以合并、改写和删去重复措辞。
+面向问题指定的读者，把缺失的实际操作及其与下一步的关系融入正文，不用公式或口头算式代替解释。
+只有人明确要求时才写公式；不能为缩短而删掉必须回答的内容或编造步骤。只输出修订正文的JSON，不输出任务过程。
+下面的服务端字数预算已扣除固定段落、固定条件和界面出版标签；所有目标正文合计必须在editableTextCharacters内。
+写作分工只说明哪里展开细节，不改变原问题归属、引用权限或核验标准。\n'''
+    return head+head_note+'服务端共享预算与写作分工：\n'+json.dumps(plan,ensure_ascii=False,separators=(',',':'))+'\n'+base

@@ -104,13 +104,13 @@ def test_noop_is_saved_as_unusable_response_and_does_not_trigger_another_request
     assert send.call_count==1
 
 
-@pytest.mark.parametrize('value',[None,True,False,0,'1',2])
+@pytest.mark.parametrize('value',[None,True,False,0,'1',1,3])
 def test_server_owns_immutable_edit_policy(tmp_path,value):
     from services.deep_research.repository import DeepResearchRepository
     from services.deep_research.facade import ResearchFacade
     repo=DeepResearchRepository(tmp_path/'r.sqlite3');repo.initialize();facade=ResearchFacade(repo,lambda **_:None,llm_client=object())
     try:
         created,_=facade.create({'workspaceTaskId':'t','operationKey':'k','question':'核查','verifiedTextRepairContractVersion':value},start_async=False)
-        run=repo.require_run(created['runId']);assert type(run['verifiedTextRepairContractVersion']) is int and run['verifiedTextRepairContractVersion']==1
+        run=repo.require_run(created['runId']);assert type(run['verifiedTextRepairContractVersion']) is int and run['verifiedTextRepairContractVersion']==2
         with pytest.raises(ValueError,match='Immutable'):repo.update_run(run['runId'],lambda r:{**r,'verifiedTextRepairContractVersion':value})
     finally:facade.shutdown()
