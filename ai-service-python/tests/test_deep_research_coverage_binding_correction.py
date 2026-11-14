@@ -23,7 +23,7 @@ def policy():
         'coverageDiagnosticsContractVersion':4,'coverageRepairRoutingContractVersion':1,'coverageLimitContractVersion':1}
 
 
-def run(mode='valid',*,activate=True,initial='unbound'):
+def run(mode='valid',*,activate=True,initial='unbound',reasoned=False):
     sent=[];before=deepcopy((PLAN,CLAIMS))
     def invoke(rid,node,prompt,options,**kwargs):
         sent.append((node,prompt,options,kwargs))
@@ -49,7 +49,7 @@ def run(mode='valid',*,activate=True,initial='unbound'):
             rows.append({'obligationId':obligation['obligationId'],'checks':[{'checkId':c['checkId'],'status':'partial' if initial=='partial' and obligation['obligationId']=='o' else 'covered','bindings':[{'claimId':'c','field':'text'}],'reason':'Initial semantic coverage judgement.','processLinks':links('生成深度' if obligation['obligationId']=='o' and initial=='unbound' else '深度图')} for c in obligation['checks']]})
         return {'content':json.dumps(rows)}
     result=audit_final_answer('r',Q,PLAN,CLAIMS,[],invoke,json.loads,request_contract=5,diagnostics=True,
-        shared_decision_inputs=True,consolidated_instructions=True,literal_limits=True,correct_process_bindings=activate)
+        shared_decision_inputs=True,consolidated_instructions=True,literal_limits=True,correct_process_bindings=activate,reasoned_process_bindings=reasoned)
     assert (PLAN,CLAIMS)==before
     return result,sent
 
@@ -103,7 +103,7 @@ def test_capacity_is_checked_before_correction_dispatch():
     assert (a,b)==old and n['status']=='not_started_capacity';invoke.assert_not_called()
 
 
-@pytest.mark.parametrize('value',[None,True,'1',0,2])
+@pytest.mark.parametrize('value',[None,True,'1',0,3])
 def test_profile_requires_exact_server_version(value):
     assert not enabled({**policy(),KEY:value})
 
@@ -124,7 +124,7 @@ def test_server_owned_profile_is_immutable_and_does_not_migrate_legacy(tmp_path)
     repo=DeepResearchRepository(tmp_path/'r.sqlite3');repo.initialize();facade=ResearchFacade(repo,lambda **_:None,llm_client=object())
     try:
         row,_=facade.create({'workspaceTaskId':'t','operationKey':'op','question':Q,KEY:False},start_async=False)
-        assert type(row[KEY]) is int and row[KEY]==1
+        assert type(row[KEY]) is int and row[KEY]==2
         assert enabled({**row,'state':{**row['state'],'outputKind':'claim_verification'}})
         with pytest.raises(ValueError,match='Immutable'):repo.update_run(row['runId'],lambda r:{**r,KEY:True})
         old=deepcopy(row);old.pop(KEY);old.update(runId='old',idempotencyKey='old');repo.create_run(old)
@@ -174,7 +174,8 @@ def test_actual_graph_defers_failed_audit_without_attempting_text_repair():
 
 
 @pytest.mark.parametrize('failure',['unknown','invalid'])
-def test_real_ledger_recovery_reuses_original_review_and_never_resends_correction(tmp_path,failure):
+@pytest.mark.parametrize('reasoned',[False,True])
+def test_real_ledger_recovery_reuses_original_review_and_never_resends_correction(tmp_path,failure,reasoned):
     from services.deep_research.repository import DeepResearchRepository
     from services.deep_research.tools import TrackedLLMInvoker
     from services.deep_research.runtime import research_model_options
@@ -194,7 +195,7 @@ def test_real_ledger_recovery_reuses_original_review_and_never_resends_correctio
     client=Mock();client.invoke.side_effect=reply
     tracked=TrackedLLMInvoker(client,repo.reserve_call,repo.complete_call,request_options=research_model_options,run_record_fn=repo.require_run)
     def audit():return audit_final_answer('r',Q,PLAN,CLAIMS,[],tracked,json.loads,request_contract=5,diagnostics=True,
-        shared_decision_inputs=True,consolidated_instructions=True,literal_limits=True,correct_process_bindings=True)
+        shared_decision_inputs=True,consolidated_instructions=True,literal_limits=True,correct_process_bindings=True,reasoned_process_bindings=reasoned)
     if failure=='unknown':
         with pytest.raises(LLMProviderError):audit()
     else:assert audit()['processBindingCorrection']['status']=='invalid_response'

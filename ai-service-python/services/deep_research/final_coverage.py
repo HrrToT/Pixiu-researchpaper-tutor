@@ -36,7 +36,9 @@ def coverage_prompt_byte_limit(budget, output_tokens=3500):
     return max(0, min(24000, remaining - output_tokens - 1024))
 
 
-def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, *, budget=None,literal_dimensions=False,diagnostics=False,request_contract=False,claim_check=False,task_sources=False,request_semantics=0,binding_catalog=False,scoped_catalog=False,identification_locators=False,coherence=False,shared_evidence_context=False,shared_decision_inputs=False,consolidated_instructions=False,literal_limits=False,correct_process_bindings=False):
+def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, *, budget=None,literal_dimensions=False,diagnostics=False,request_contract=False,claim_check=False,task_sources=False,request_semantics=0,binding_catalog=False,scoped_catalog=False,identification_locators=False,coherence=False,shared_evidence_context=False,shared_decision_inputs=False,consolidated_instructions=False,literal_limits=False,correct_process_bindings=False,reasoned_process_bindings=False):
+    if type(reasoned_process_bindings) is not bool or reasoned_process_bindings and not correct_process_bindings:
+        raise ValueError('Reasoned binding correction requires active correction policy')
     if (type(correct_process_bindings) is not bool or correct_process_bindings
             and not (type(request_contract) is int and request_contract==5 and consolidated_instructions and diagnostics and literal_limits)):
         raise ValueError('Process binding correction requires complete version5 coverage checks')
@@ -236,7 +238,7 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
                 verdicts = None
             if correct_process_bindings and isinstance(verdicts,list):
                 from services.deep_research.coverage_binding_correction import correct
-                raw_review,verdicts,correction_note=correct(run_id,raw_review,verdicts,fixed_requirements,wire_claims,invoke,parse,max_bytes=limit,output_tokens=output_tokens)
+                raw_review,verdicts,correction_note=correct(run_id,raw_review,verdicts,fixed_requirements,wire_claims,invoke,parse,max_bytes=limit,output_tokens=output_tokens,**({'reasoning':True} if reasoned_process_bindings else {}))
             status = 'checked' if isinstance(verdicts, list) else 'invalid_response'
             if isinstance(verdicts, list):
                 verdicts = restore_coverage_evidence(verdicts, reverse_aliases)
@@ -338,7 +340,7 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
             'budgetLimit': budget_limit,
             **({'diagnosticErrors':diagnostic_errors} if diagnostics else {})}
     if correct_process_bindings:
-        audit['coverageBindingCorrectionContractVersion']=1
+        audit['coverageBindingCorrectionContractVersion']=2 if reasoned_process_bindings else 1
         audit['processBindingCorrection']=correction_note or {'version':1,'status':'not_started','targets':[]}
     if coherence:
         from services.deep_research.answer_coherence import revalidate

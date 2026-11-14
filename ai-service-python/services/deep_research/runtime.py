@@ -28,6 +28,7 @@ def research_model_options(node, options):
     from services.deep_research.factual_review import OPTION as REVIEW_OPTION
     from services.deep_research.experiment_template import REASONING_OPTION as EXPERIMENT_OPTION
     from services.deep_research.experiment_envelope import DIRECT_PLAN_OPTION
+    from services.deep_research.coverage_binding_correction import OPTION as BINDING_OPTION
     options = dict(options)
     experiment_reasoning=options.pop(EXPERIMENT_OPTION,False)
     direct_plan=options.pop(DIRECT_PLAN_OPTION,False)
@@ -37,6 +38,16 @@ def research_model_options(node, options):
     high_synthesis = options.pop(HIGH_SYNTHESIS_OPTION,False)
     compact_reasoning = options.pop(COMPACTION_OPTION,False)
     direct_synthesis = options.pop(DIRECT_SYNTHESIS_OPTION,False)
+    binding_reasoning=options.pop(BINDING_OPTION,False)
+    other_profiles=(short_factual,direct_repair,high_synthesis,bounded_review,experiment_reasoning,direct_plan,compact_reasoning,direct_synthesis)
+    if (type(binding_reasoning) is not bool or binding_reasoning and (node!='verify_answer_coverage'
+            or any(type(v) is not bool or v for v in other_profiles))):
+        raise ValueError('Invalid coverage binding reasoning profile')
+    if binding_reasoning:
+        cap=options.get('max_tokens',3500)
+        if type(cap) is not int or not 1<=cap<=3500:
+            raise ValueError('Invalid coverage binding output cap')
+        return {**options,'thinking':{'type':'enabled'},'reasoning_effort':'low','max_tokens':cap}
     if type(direct_synthesis) is not bool or direct_synthesis and (not short_factual
             or any((high_synthesis,bounded_review,experiment_reasoning,direct_plan,compact_reasoning))):
         raise ValueError('Invalid direct factual synthesis profile')

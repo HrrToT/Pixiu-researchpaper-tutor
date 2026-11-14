@@ -306,11 +306,14 @@ class TrackedLLMInvoker:
         from services.deep_research.experiment_template import REASONING_OPTION as EXPERIMENT_OPTION
         bounded_review=(extra_body or {}).get(REVIEW_OPTION,False)
         experiment_reasoning=(extra_body or {}).get(EXPERIMENT_OPTION,False)
+        from services.deep_research.coverage_binding_correction import OPTION as BINDING_OPTION
+        binding_reasoning=(extra_body or {}).get(BINDING_OPTION,False)
+        if type(binding_reasoning) is not bool:raise ValueError('Invalid coverage binding reasoning option')
         if type(bounded_review) is not bool or type(experiment_reasoning) is not bool:
             raise ValueError('Invalid bounded factual review option')
         if self._request_options:
             extra_body = self._request_options(node, dict(extra_body or {}))
-        elif bounded_review or experiment_reasoning:
+        elif bounded_review or experiment_reasoning or BINDING_OPTION in (extra_body or {}):
             from services.deep_research.runtime import research_model_options
             extra_body=research_model_options(node,dict(extra_body or {}))
         elif node == 'repair_claims' and '_repair_output_limit' in (extra_body or {}):
