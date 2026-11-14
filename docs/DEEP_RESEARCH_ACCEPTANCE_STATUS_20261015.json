@@ -4318,14 +4318,14 @@
     "balanceNow": "not_checked",
     "authorization": "Existing bounded future verification authorization remains valid; no automatic retry of old cases."
   },
-  "currentDevelopmentMode": "Primary Codex only; .442 loaded;7630 complete offline tests passed. Four isolated one-call component configurations completed, all without scientific/novice acceptance. Shared publication budget/source-role text editing is adopted; reader-system and low-reasoning prototypes were discarded. No new application research case this checkpoint. Last whole case remains AD1N-v27/.441,inconclusive. No active application research;15historical pauses preserved. Full original DR0-DR5, comparison, executable experiment, fresh independent and release gates remain open.",
+  "currentDevelopmentMode": "Primary Codex only; .443 loaded; 7669 complete offline tests passed across 426 modules. Visible original-source parameter indices are no longer counted as new diagnostic measurements. Archived v25/v27 replay used identical requests and zero model calls; real line-number and quote-binding failures remain rejected. No archived acceptance was upgraded and no new application case was submitted. Last whole case remains AD1N-v27/.441,inconclusive. No active application research;15 historical pauses preserved. Full original DR0-DR5, comparison, executable experiment, fresh independent and release gates remain open.",
   "loadedRuntime": {
-    "commit": "114dea28ecffe1e7647d9c9c0c2027be5807f348",
-    "promptVersion": "dr-v2.20261114.442",
+    "commit": "6e19a2129d9d10653a86a92aec4b2fbc33e438ba",
+    "promptVersion": "dr-v2.20261114.443",
     "callsAfterLatestCase": 9455,
     "active": 0,
     "historicalPausedUnknown": 15,
-    "proof": "deep-research-evidence/integrated-text-442-load-20261114.json",
+    "proof": "deep-research-evidence/review-parameter-443-load-20261114.json",
     "allSourceHashesExact": true,
     "lastRealModelRunCommit": "bac54165",
     "lastRealModelRunPromptVersion": "dr-v2.20261114.441",
@@ -4334,9 +4334,9 @@
     "javaAndFrontendBoundary": "This Python rollout did not redeploy Java or frontend. Earlier UI/persistence and synthetic publication evidence does not establish current real generated research or novice quality.",
     "javaCommit": "81a827f0c03febc4d181900b00516e38be916511",
     "taskCount": 103,
-    "latestPromptVersion": "dr-v2.20261114.442",
-    "latestSourceCommit": "114dea28ecffe1e7647d9c9c0c2027be5807f348",
-    "latestSourceProof": "deep-research-evidence/integrated-text-442-load-20261114.json",
+    "latestPromptVersion": "dr-v2.20261114.443",
+    "latestSourceCommit": "6e19a2129d9d10653a86a92aec4b2fbc33e438ba",
+    "latestSourceProof": "deep-research-evidence/review-parameter-443-load-20261114.json",
     "sourceScope": "Python research modules, academic transport and PDF parser",
     "indexDocumentsAt20261112": 1215,
     "sourceIndexAttestationAt20261112": "deep-research-evidence/loaded-source-index-attestation-20261112.json"
@@ -13990,5 +13990,35 @@
     "noviceAccepted": false,
     "independentCredit": 0,
     "boundary": "Shared publication budget is hard checked without clipping/retry. Source-goal input can generate a changed in-budget candidate, but novice/source quality is not accepted. Reader-system and low-reasoning experiments were discarded. No original full-design gate is replaced by this component work."
+  },
+  "runtimeBeforeParameterIdentity20261114": {
+    "commit": "114dea28ecffe1e7647d9c9c0c2027be5807f348",
+    "promptVersion": "dr-v2.20261114.442",
+    "callsAfterLatestCase": 9455,
+    "active": 0,
+    "historicalPausedUnknown": 15,
+    "proof": "deep-research-evidence/integrated-text-442-load-20261114.json",
+    "allSourceHashesExact": true,
+    "lastRealModelRunCommit": "bac54165",
+    "lastRealModelRunPromptVersion": "dr-v2.20261114.441",
+    "lastRealCase": "AD1N-v27",
+    "lastRealOutcome": "completed/inconclusive",
+    "javaAndFrontendBoundary": "This Python rollout did not redeploy Java or frontend. Earlier UI/persistence and synthetic publication evidence does not establish current real generated research or novice quality.",
+    "javaCommit": "81a827f0c03febc4d181900b00516e38be916511",
+    "taskCount": 103,
+    "latestPromptVersion": "dr-v2.20261114.442",
+    "latestSourceCommit": "114dea28ecffe1e7647d9c9c0c2027be5807f348",
+    "latestSourceProof": "deep-research-evidence/integrated-text-442-load-20261114.json",
+    "sourceScope": "Python research modules, academic transport and PDF parser",
+    "indexDocumentsAt20261112": 1215,
+    "sourceIndexAttestationAt20261112": "deep-research-evidence/loaded-source-index-attestation-20261112.json"
+  },
+  "latestParameterIdentityCheckpoint": {
+    "offlineRegression": "deep-research-evidence/review-parameter-443-host-unsandboxed-20261114.json",
+    "archivedReplay": "deep-research-evidence/review-parameter-443-archived-replay-20261114.json",
+    "loadProof": "deep-research-evidence/review-parameter-443-load-20261114.json",
+    "modelCalls": 0,
+    "scientificContentAccepted": false,
+    "initialSandboxRun": "Stopped only its test process tree after socketpair accept hung during asyncio loop initialization; rerun under permission allowing local sockets. Initial interrupted run was not counted as passed."
   }
 }
