@@ -1740,7 +1740,9 @@ space with unsupported global absence or incidental iteration/performance values
                     {'max_tokens': output, 'temperature': 0.0}), _safe_parse_json,
                 saved_state=current.get('state', {}).get('audienceRewrite'), checkpoint=checkpoint_audience,
                 **({'mapped_source_first':True} if type(current.get('audienceMappedSourceContractVersion')) is int
-                   and current['audienceMappedSourceContractVersion']==1 else {}),
+                   and current['audienceMappedSourceContractVersion'] in (1,2) else {}),
+                **({'plain_explanations':True} if type(current.get('audienceMappedSourceContractVersion')) is int
+                   and current['audienceMappedSourceContractVersion']==2 else {}),
                 **({'protected_claim_ids':[a['claimId'] for a in scope_expression_audit]} if authored_body and scope_expression_audit else {}),
                 **({'protected_edits':True} if authored_body and scope_expression_audit and budgeted_reader(current) else {}),
                 **({'source_first_single':True} if single_source_reader(current,draft,

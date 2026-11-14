@@ -65,7 +65,7 @@ def test_flag_is_server_owned_immutable_and_not_added_to_old_runs(tmp_path):
     facade=ResearchFacade(repo,lambda **_:None,llm_client=object());key='audienceMappedSourceContractVersion'
     try:
         run,_=facade.create({'workspaceTaskId':'t','operationKey':'o','question':'Explain','deferStart':True,key:False},start_async=False)
-        assert type(run[key]) is int and run[key]==1
+        assert type(run[key]) is int and run[key]==2
         with pytest.raises(ValueError,match='Immutable'):repo.update_run(run['runId'],lambda r:{**r,key:False})
         old=deepcopy(run);old.pop(key);old.update(runId='legacy',idempotencyKey='legacy');repo.create_run(old)
         with pytest.raises(ValueError,match='Immutable'):repo.update_run('legacy',lambda r:{**r,key:1})

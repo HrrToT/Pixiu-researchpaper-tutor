@@ -1,0 +1,11 @@
+{
+  "case": "AD1N-v20 saved input",
+  "legacyRequestExact": true,
+  "originalEvidenceAndTargetPrefixExact": true,
+  "readerOutputTokens": 3072,
+  "promptUtf8Bytes": 17167,
+  "maxInputBytes": 24000,
+  "modelCalls": 0,
+  "contentAccepted": false,
+  "boundary": "Request construction replay only; no model output or scientific/novice acceptance."
+}
