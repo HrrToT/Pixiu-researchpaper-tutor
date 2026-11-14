@@ -123,7 +123,9 @@ and causal findings. Fail an invented premise, universal guarantee, unsupported 
 expansion even when the claim is labeled inference. Reported facts still need direct source support.'''
 
 
-def _prepare(report, evidence, question, *, contract_version=1, requirement_context=(), objective_framing=False, process_explanations=False, protected_claim_ids=(), protected_edits=False, source_first_single=False, editable_source_first=False, scoped_editable_source=False):
+def _prepare(report, evidence, question, *, contract_version=1, requirement_context=(), objective_framing=False, process_explanations=False, protected_claim_ids=(), protected_edits=False, source_first_single=False, editable_source_first=False, scoped_editable_source=False, mapped_source_first=False):
+    if type(mapped_source_first) is not bool or mapped_source_first and contract_version!=9:
+        raise ValueError('Mapped source-first reader requires contract9')
     if type(protected_edits) is not bool or protected_edits and contract_version!=9:
         raise ValueError('Protected reader edits require contract9')
     if type(source_first_single) is not bool or source_first_single and (contract_version!=9 or len(report.get('claims',[]))!=1 or protected_claim_ids or protected_edits):
@@ -162,6 +164,7 @@ def _prepare(report, evidence, question, *, contract_version=1, requirement_cont
         return prepare(report,evidence,question,protected_claim_ids,_prepare,
             {'contract_version':contract_version,'requirement_context':requirement_context,
              'objective_framing':objective_framing,'process_explanations':process_explanations,
+             **({'mapped_source_first':True} if mapped_source_first else {}),
              **({'source_first_single':True} if editable_source_first else {})},
             **({'responsibilities':True} if scoped_editable_source else {}))
     # Only original citations, with complete quotes and necessary context. Do
@@ -256,7 +259,14 @@ For a claim without originalTableBindings, do not return retainedTableBindingInd
             if contract_version==9 and not source_first_single:
                 from services.deep_research.audience_point_scope import hints
                 point_hints=hints(claims)
-                targets=[{**target,'unverifiedPointHint':point_hints[target['claimId']]} for target in targets]
+                # Omit draft prose only with a complete explicit mapping to human goals.
+                # Missing/stale IDs keep the old hint rather than losing the point.
+                goal_ids={item.get('obligationId') for item in requirement_context
+                    if isinstance(item,dict) and isinstance(item.get('question'),str) and item['question'].strip()}
+                mapped_ids={row['claimId'] for row in inputs
+                    if row.get('obligationIds') and set(row['obligationIds'])<=goal_ids} if mapped_source_first else set()
+                targets=[target if target['claimId'] in mapped_ids else
+                    {**target,'unverifiedPointHint':point_hints[target['claimId']]} for target in targets]
             prompt=f'''Rebuild these requested points for a beginner from EACH target's own original sources.
 Question: {question}
 Total ALL text+conditions character limit: {limit or 'concise, no explicit maximum'}.
@@ -292,6 +302,8 @@ bindings identify existing cells, not a license to publish an unsupported interp
                 prompt=prompt.replace('Unverified draft prose and draft conditions are OMITTED to avoid copying their jargon or\nunsupported wording. Original drafts remain in the journal, not as facts to repeat.',
                     'Draft conditions are omitted. Original drafts remain in the journal; the private point hints below are not facts to repeat.')
                 prompt+='\n'+point_guidance
+                if mapped_source_first:
+                    prompt+='\nFor targets without unverifiedPointHint, use requestedPoints to identify the contribution and rebuild it only from its own sources. No omitted draft premise is a fact to preserve. Keep reported definitions distinct from inferred boundaries; do not repeat the same explanation in both.\n'
         if source_first_single:
             from services.deep_research.audience_single_source import GUIDANCE
             prompt+='\n'+GUIDANCE
@@ -419,7 +431,7 @@ def _merge(report, content, parse, question, *, contract_version=1, allowed_infe
 
 
 def rewrite_for_beginner(report, evidence, question, invoke, parse, *, saved_state=None, checkpoint=None,
-                         can_start=True, contract_version=1, requirement_context=(), verification_policy=None, objective_framing=False, process_explanations=False, protected_claim_ids=(), protected_edits=False, source_first_single=False, publication_context=None, editable_source_first=False, scoped_editable_source=False):
+                         can_start=True, contract_version=1, requirement_context=(), verification_policy=None, objective_framing=False, process_explanations=False, protected_claim_ids=(), protected_edits=False, source_first_single=False, publication_context=None, editable_source_first=False, scoped_editable_source=False, mapped_source_first=False):
     """Frozen request + settlement reuse; unknown transports propagate unchanged.
 
     A rejected/too-long edit leaves the original draft for normal verification.
@@ -427,6 +439,8 @@ def rewrite_for_beginner(report, evidence, question, invoke, parse, *, saved_sta
     """
     if type(contract_version) is not int or contract_version not in (1,2,3,4,5,6,7,8,9):
         raise DeepResearchError('invalid_audience_rewrite_state','新手改写契约版本无效。')
+    if type(mapped_source_first) is not bool or mapped_source_first and contract_version!=9:
+        raise ValueError('Mapped source-first reader requires contract9')
     if type(protected_edits) is not bool or protected_edits and contract_version!=9:
         raise ValueError('Protected reader edits require contract9')
     if type(source_first_single) is not bool or source_first_single and (contract_version!=9 or len(report.get('claims',[]))!=1 or protected_claim_ids or protected_edits):
@@ -473,11 +487,14 @@ def rewrite_for_beginner(report, evidence, question, invoke, parse, *, saved_sta
         identity_inputs.update(audiencePublicationBudgetContractVersion=1,publicationContext=publication_context,publicationBudget=publication_budget)
     if source_first_single:identity_inputs['audienceSingleSourceContractVersion']=1
     if editable_source_first:identity_inputs['audienceEditableSourceContractVersion']=2 if scoped_editable_source else 1
+    if mapped_source_first:identity_inputs['audienceMappedSourceContractVersion']=1
     identity = digest(identity_inputs)
     state = deepcopy(saved_state) if saved_state is not None else None
     if state is not None:
         if (not isinstance(state, dict) or type(state.get('version')) is not int or state['version'] != contract_version
                 or state.get('inputDigest') != identity
+                or mapped_source_first and (type(state.get('audienceMappedSourceContractVersion')) is not int
+                    or state['audienceMappedSourceContractVersion']!=1)
                 or editable_source_first and (type(state.get('audienceEditableSourceContractVersion')) is not int
                     or state['audienceEditableSourceContractVersion']!=(2 if scoped_editable_source else 1))
                 or publication_context is not None and (type(state.get('audiencePublicationBudgetContractVersion')) is not int
@@ -494,6 +511,7 @@ def rewrite_for_beginner(report, evidence, question, invoke, parse, *, saved_sta
     else:
         request, reason = _prepare(report, evidence, question,contract_version=contract_version,
                                    requirement_context=requirement_context, objective_framing=objective_framing, process_explanations=process_explanations,
+                                   **({'mapped_source_first':True} if mapped_source_first else {}),
                                    **({'source_first_single':True} if source_first_single else {}),
                                    **({'editable_source_first':True} if editable_source_first else {}),
                                    **({'scoped_editable_source':True} if scoped_editable_source else {}),
@@ -505,6 +523,7 @@ def rewrite_for_beginner(report, evidence, question, invoke, parse, *, saved_sta
         state = {'version': contract_version, 'inputDigest': identity, 'status': 'pending',
                  'request': request, 'requestDigest': digest(request)}
         if protected_edits:state.update(audienceBudgetContractVersion=1,editBudget=deepcopy(edit_budget))
+        if mapped_source_first:state['audienceMappedSourceContractVersion']=1
         if source_first_single:state['audienceSingleSourceContractVersion']=1
         if editable_source_first:state['audienceEditableSourceContractVersion']=2 if scoped_editable_source else 1
         if publication_context is not None:
