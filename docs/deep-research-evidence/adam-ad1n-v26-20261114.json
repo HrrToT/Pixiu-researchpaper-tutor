@@ -1,0 +1,112 @@
+{
+  "case": "AD1N-v26",
+  "runId": "dr_run_60da4506420c5bb4ae43b28cef8eb7ff",
+  "sourceCommit": "d4dd58b2",
+  "promptVersion": "dr-v2.20261114.440",
+  "split": "development",
+  "independentCredit": 0,
+  "status": "completed",
+  "outcome": "partial",
+  "actualModelCalls": 13,
+  "allCallsSettled": true,
+  "tokens": 68942,
+  "elapsedSeconds": 136,
+  "readerApplied": true,
+  "draftCharacters": 209,
+  "visibleDraftCharacters": 230,
+  "characterLimit": 300,
+  "automaticAcceptedClaims": 2,
+  "automaticRejectedClaims": 0,
+  "liveReviewEncodingChecks": [
+    {
+      "node": "verify",
+      "claims": [
+        "c1"
+      ],
+      "newEncodingValid": true
+    },
+    {
+      "node": "verify",
+      "claims": [
+        "c2"
+      ],
+      "newEncodingValid": true
+    },
+    {
+      "node": "verify_repair",
+      "claims": [
+        "c1"
+      ],
+      "newEncodingValid": true
+    }
+  ],
+  "repairAttempted": true,
+  "repairChangedText": false,
+  "finalAnswerGaps": [
+    {
+      "obligationId": "ob_33995ad90eb136e77fd2adcf",
+      "question": "偏差校正如何参与参数更新",
+      "missingEvidence": "最终回答尚未完整回应这一问题",
+      "stage": "answer",
+      "missingAspects": [
+        "偏差校正如何参与参数更新"
+      ],
+      "aspectEvidenceRefs": [],
+      "gapDetail": {
+        "criterionIds": [
+          "human_aspect_1"
+        ],
+        "aspectIds": [
+          "criterion:human_aspect_1"
+        ],
+        "missingContent": "补充固定问题所需的实际操作或流程关系；用途标签、方法名称和性能结论不能代替怎样做的解释。",
+        "reason": "此缺口由固定检查项的未满足状态汇总；模型说明不作为新增要求或论文事实。"
+      }
+    }
+  ],
+  "researchAssessment": "unchecked",
+  "researchStopReason": "max_requery",
+  "contentAccepted": false,
+  "manualNoviceAccepted": false,
+  "manualFindings": [
+    "All three factual-review responses used reasonParts and decoded under the new schema. Two final claims passed automated factual review; this is not manual scientific or novice acceptance.",
+    "The explanation still starts with technical moment definitions and recites arithmetic, rather than explaining the roles in plain words. It states initialization causes bias without explaining the causal mechanism.",
+    "The final process coverage check still found that how corrected quantities participate in the parameter update is not fully explained. Research process-premise assessment is also unchecked.",
+    "The single allowed repair response repeated the same target text. Its subsequent factual pass did not close the process coverage gap.",
+    "The text still asserts a factor starts from zero. Automated factual acceptance is insufficient to establish every condition or edge case; this wording needs source-faithful review rather than promotion to a gold answer."
+  ],
+  "automaticRetry": false,
+  "other102TasksExact": true,
+  "preservation": {
+    "oldLedgerUnchanged": true,
+    "allOldRunsUnchanged": true,
+    "newRows": 27,
+    "ledgerRows": 9432,
+    "onlyThisRunCreatedCalls": true,
+    "active": [],
+    "oldPausedRetained": true,
+    "paused": [
+      "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+      "dr_run_ed10cc3347be552288079a9a588fddf5",
+      "dr_run_86b3f181a5475e99aacca3dbf4370567",
+      "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+      "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+      "dr_run_e3521b1781825273b384a26a5edb8cdc",
+      "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+      "dr_run_e9c9dc916bef519092fad8b929b2448f",
+      "dr_run_4738564f5ff35157996a35068c62ed32",
+      "dr_run_a8bd62f9ae3d52ff806f537065f55b2d",
+      "dr_run_98e66f2d3d555dfa822b859963f01419",
+      "dr_run_8be639c866c35ea092c735a04781b647",
+      "dr_run_1c0c2e6510165086962408b8e3cf698b",
+      "dr_run_fc0931756c505c6d9a29c06abe1fdd8d",
+      "dr_run_b09de02407095586bba235843615f2b3"
+    ]
+  },
+  "rawArtifacts": {
+    "tmp\\dr-acceptance-receipts\\AD1N-v26.json": "adfcddda500a97dbd15872c241c57c8621e85910ed5ce1b227b02029ca38cbec",
+    "tmp\\dr-acceptance-receipts\\AD1N-v26.payload.json": "1f7ed219586c867834fb8c20d8e0c7d69439c88777a54373eb63e3e56d468d73",
+    "tmp\\dr-acceptance-receipts\\AD1N-v26.calls.json": "6e02347f6854d648e24d2bc8ea051bf5787de1a88ee85ab83905f5c76de904d8",
+    "tmp\\dr-acceptance-receipts\\AD1N-v26.preservation.json": "c271ff30124d5a71f1268af2e9ab1bd5ff10887088725fe9b7f3e7e01bc76c12"
+  }
+}
