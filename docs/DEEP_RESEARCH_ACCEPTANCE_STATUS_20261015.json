@@ -4318,7 +4318,7 @@
     "balanceNow": "not_checked",
     "authorization": "Existing bounded future verification authorization remains valid; no automatic retry of old cases."
   },
-  "currentDevelopmentMode": "Primary Codex only; .448 loaded;7779 complete offline tests passed across431 modules. Preference2 selects readonly scope and prose-only editing with160hard/112target. One isolated call(1092tokens,4.419seconds) reported stop but supplied incomplete225char JSON; raw content retained and invalid response rejected, no candidate parsed or published. Offline client mock shows no local text clipping/stop injection; original HTTP bytes not independently stored. Existing Responses JSONSchema adapter prototype validates shape/authoritative160cap offline only; not provider-tested or deployed. All103tasks/379applicationruns/9526callrows unchanged;15 historical pauses retained,0active. Last whole caseAD1N-v30/.445,inconclusive; full original DR0-DR5 and release gates remain.",
+  "currentDevelopmentMode": "Primary Codex only; production .448 unchanged. Complete offline regression remains7779/431 modules. One isolated Responses JSONSchema call returned complete JSON but188 text characters against160 maxLength; local schema and production replay reject it. No schema rollout or scientific acceptance. All103tasks/379applicationruns/9526callrows unchanged,15paused and0active. Original DR0-DR5 and release gates remain open.",
   "loadedRuntime": {
     "commit": "b780c9fa517c4f2a070e30d96a939181d7f19504",
     "promptVersion": "dr-v2.20261114.448",
@@ -4342,7 +4342,7 @@
     "sourceIndexAttestationAt20261112": "deep-research-evidence/loaded-source-index-attestation-20261112.json"
   },
   "nextQualityWork": [
-    "Test one isolated server-owned Responses JSONSchema prototype before further production edits: reuse existing adapter, exact preferred v30 input,160-character text bound derived from authoritative readonly/display count and exact editable ID. Current json_object call stopped with invalid JSON despite8192output cap and no stop override. Do not repair brackets or resend it. Strict schema needs provider evidence; future production wiring must keep descriptor in fingerprint/token reservation, reject caller/schema injection and preserve all source/scientific/coverage/length gates plus old transport identities.",
+    "Do not deploy the tested Responses prose schema as an enforced length guarantee: actual provider sample violates maxLength. Diagnose the size distribution between mandatory scope/display and requested explanatory content using saved evidence before another whole case. Preserve exact scope, scientific checks and total300 limit. Any future generation design must reserve real rendered space for the requested explanation, without hard-coded paper answers, silent text truncation or acceptance by JSON shape alone.",
     "Complete the original novice explanation/full multipaper/full executable experiment development gaps under sealed budgets; latest provider calls succeeded, current monetary balance is not checked. Then execute H1-H5 frozen fresh definitions with original budgets and no retries or retired-case upgrades.",
     "Validate current mechanism explanation, multi-paper comparison and full executable experiment quality with bounded new cases as readiness warrants; preserve original receipt identities.",
     "Run fresh untuned H1-H6 after development content passes; preserve original scoring, budgets and unknown outcomes.",
@@ -14449,5 +14449,58 @@
     "negativeControlsRejected": 4,
     "providerEnforcementVerified": false,
     "scientificContentAccepted": false
+  },
+  "proseSchemaCapability20261115": {
+    "date": "2026-11-15",
+    "componentOnly": true,
+    "productionPolicyChanged": false,
+    "sourceCase": "AD1N-v30",
+    "modelCalls": 1,
+    "tokens": 1253,
+    "seconds": 6.778,
+    "wire": [
+      {
+        "hostname": "api.deepseek.com",
+        "endpoint": "/responses",
+        "payloadSha256": "50cdd53a77e2da75cfa3f3a08ee8852c5df31242b70c0f6548e1971de23ec779",
+        "formatType": "json_schema",
+        "maxOutputTokens": 8192,
+        "httpStatus": 200,
+        "responseBytes": 2335,
+        "responseSha256": "50d9bcff23242bcfbe4986b98537a6df25a26b905a1f1e688cc421bc5d50538b"
+      }
+    ],
+    "finishReason": "stop",
+    "jsonParsed": true,
+    "returnedIds": [
+      "c1"
+    ],
+    "hardTextCharacters": 160,
+    "actualTextCharacters": 188,
+    "schemaErrors": [
+      {
+        "validator": "maxLength",
+        "path": [
+          "claims",
+          0,
+          "text"
+        ]
+      }
+    ],
+    "schemaValidated": false,
+    "productionReplayStatus": "invalid",
+    "productionReplayClaims": 0,
+    "automaticRetry": false,
+    "scientificContentAccepted": false,
+    "noviceAcceptance": false,
+    "isolatedRunClosed": true,
+    "rawResult": "tmp/prose-schema-capability-20261114/result.json",
+    "officialReference": "https://api-docs.deepseek.com/api/create-response/",
+    "boundary": "One fixed schema capability sample. HTTP200 and complete JSON observed, but maxLength was violated. This does not establish provider enforcement or scientific quality. Existing compiled length guard rejects candidate; no production transport integration, clipping, JSON repair, fallback or additional model call.",
+    "all103TasksExact": true,
+    "all379ApplicationRunsExact": true,
+    "all9526ApplicationCallRowsExact": true,
+    "historicalPaused": 15,
+    "activeApplicationRuns": 0
   }
 }
