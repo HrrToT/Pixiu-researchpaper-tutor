@@ -3,17 +3,17 @@
   "objective": "Complete DR0-DR5 in DEEP_RESEARCH_DESIGN_20261012.md without redefining success around implemented subsets.",
   "overall": "incomplete",
   "currentFullOfflineRegression": {
-    "sourceCommit": "b5b9091ac57ed588c8d17a10097f7480007004e7",
-    "modules": 433,
-    "passed": 7829,
+    "sourceCommit": "a68700d1b7e9f4172f979ea39be8c404e2be39ef",
+    "modules": 434,
+    "passed": 7872,
     "failures": 0,
     "errors": 0,
     "skipped": 0,
     "warnings": 1,
     "sourceUnchanged": true,
     "appliesToCurrentPythonSource": true,
-    "proof": "deep-research-evidence/fixed-editor-450-final-20261115.json",
-    "elapsedSeconds": 338.42,
+    "proof": "deep-research-evidence/coverage-binding-451-final-20261115.json",
+    "elapsedSeconds": 331.38,
     "boundary": "Complete current offline research regression only; not real generation, Provider cost/quality, independent scientific acceptance or full product release."
   },
   "postFullRegressionValidation": {
@@ -4312,13 +4312,13 @@
     "Independent Edge recovery"
   ],
   "currentProviderConstraint": {
-    "state": "Latest complete case used9 settled model calls and finished partial; no unknown or payment failure. Coverage binding and unchanged repair remain quality issues. Monetary balance not rechecked.",
+    "state": "Latest two isolated correction components succeeded and settled. Direct profile repeated invalid review binding; low prototype produced valid disjoint request roles. No payment failure or unknown call; monetary balance not rechecked.",
     "lastValidatedDate": "2026-11-15",
-    "latestValidation": "deep-research-evidence/adam-ad1n-v31-20261115.json",
+    "latestValidation": "deep-research-evidence/coverage-binding-451-components-20261115.json",
     "balanceNow": "not_checked",
     "authorization": "Existing bounded future verification authorization remains valid; no automatic retry of old cases."
   },
-  "currentDevelopmentMode": "Primary Codex only;.450 loaded;7829 complete offline tests across433modules pass. New immutable fixed-editor reasoning1 selects calibrated low profile only for eligible fixed-prose callback;8192cap unchanged; exact request matches isolated295char prototype. AD1N-v31 completed/partial:9settled calls42372tokens100seconds,1search1fulltext,227char draft,2automatic semantic accepts. Fixed editor not called because draft fits. Coverage reported-covered audit had unbound request role; parser conservatively retained gap. Coverage-only repair copied c1 exactly and was rejected as no-op,not schema mismatch. No scientific/novice/independent credit. Old379runs/9526callrows and other102tasks exact;app103tasks380runs9549callrows,15historical pauses,0active. Original full DR0-DR5 and independent/release gates remain.",
+  "currentDevelopmentMode": "Primary Codex only;production still.450. New.451source tested7872/434modules,not loaded: one bounded invalid process-audit correction with answer/source identities immutable and explicit unresolved outcome. Original v31 coverage request digest exact in actual new graph. Direct component1141tokens3.632seconds repeats invalid request reference; revalidated and deferred,not prose-repaired. Isolated low profile2574tokens17.561seconds fixes roles to exact disjoint requirement spans and saved graph coverage passes with unchanged answer; no scientific/novice/independent acceptance. Low profile not yet wired to production correction. All103tasks/380runs/9549callrows exact,15historical pauses,0active. Last whole case remainsAD1N-v31/.450,partial. Original DR0-DR5 and independent/release gates remain open.",
   "loadedRuntime": {
     "commit": "b5b9091ac57ed588c8d17a10097f7480007004e7",
     "promptVersion": "dr-v2.20261115.450",
@@ -4342,7 +4342,7 @@
     "sourceIndexAttestationAt20261112": "deep-research-evidence/loaded-source-index-attestation-20261112.json"
   },
   "nextQualityWork": [
-    "Reconstruct the actual v31 coverage request/result offline and distinguish audit-only invalid role binding from missing scientific content. Existing review_binding_only defers overlapping_process_roles, not unbound_process_request. Design one budgeted, server-owned correction for invalid coverage audit bindings without changing answer text, source permissions, required question/role semantics or scientific acceptance. Never accept malformed reported-covered verdicts or treat them as proved content deficiency. Preserve old identities, unknown calls and no-op protection. v31 has no fixed-editor call; do not claim whole-case evidence for low profile or rerun it unchanged.",
+    "Use evidence from the successful isolated low-effort binding correction to add a new immutable correction profile2, preserving profile1 direct behavior and original audit requests. Route a trusted server-only marker through research_model_options/TrackedLLMInvoker before fingerprint/reservation, strictly limited toverify_answer_coverage and3500maxoutput; no automatic retry or fallback. Include wrong-node/marker conflict/budget/digest/legacy/unknown recovery tests and full current regression. After loading the validated source, execute a new bounded whole development case rather than changing or resending AD1N-v31. Binding-format coverage is not scientific/novice or independent acceptance.",
     "Complete the original novice explanation/full multipaper/full executable experiment development gaps under sealed budgets; latest provider calls succeeded, current monetary balance is not checked. Then execute H1-H5 frozen fresh definitions with original budgets and no retries or retired-case upgrades.",
     "Validate current mechanism explanation, multi-paper comparison and full executable experiment quality with bounded new cases as readiness warrants; preserve original receipt identities.",
     "Run fresh untuned H1-H6 after development content passes; preserve original scoring, budgets and unknown outcomes.",
@@ -14643,5 +14643,81 @@
       "independentCredit": 0
     },
     "boundary": "Only new eligible explicit fixed-prose editors use existing server-owned low profile. No changes to draft/review/joint routes, source permissions, scientific/coverage/length checks or budgets. All103tasks/379oldruns/9526oldcallrows were exact before new whole submission;15historical pauses retained."
+  },
+  "fullOfflineBeforeCoverageBinding45120261115": {
+    "sourceCommit": "b5b9091ac57ed588c8d17a10097f7480007004e7",
+    "modules": 433,
+    "passed": 7829,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "warnings": 1,
+    "sourceUnchanged": true,
+    "appliesToCurrentPythonSource": true,
+    "proof": "deep-research-evidence/fixed-editor-450-final-20261115.json",
+    "elapsedSeconds": 338.42,
+    "boundary": "Complete current offline research regression only; not real generation, Provider cost/quality, independent scientific acceptance or full product release."
+  },
+  "coverageBindingCorrection20261115": {
+    "sourceCommit": "a68700d1b7e9f4172f979ea39be8c404e2be39ef",
+    "sourcePromptVersion": "dr-v2.20261115.451",
+    "productionPromptVersion": "dr-v2.20261115.450",
+    "contract": "coverageBindingCorrectionContractVersion1",
+    "relatedPassed": 88,
+    "fullTestsPassed": 7872,
+    "fullRegression": "deep-research-evidence/coverage-binding-451-final-20261115.json",
+    "savedFlow": "deep-research-evidence/coverage-binding-451-saved-flow-20261115.json",
+    "componentsProof": "deep-research-evidence/coverage-binding-451-components-20261115.json",
+    "serverOwnedImmutable": true,
+    "originalAuditRequestExact": true,
+    "correctsAtMostOneRoundPerAuditInput": true,
+    "answerAndSourcesImmutable": true,
+    "realContentGapsStillRepair": true,
+    "explicitUnresolvedResponse": true,
+    "allKnownInvalidPositiveProcessProofsRemainUncertain": true,
+    "unknownAndInvalidCorrectionsNeverResentOnRecovery": true,
+    "newModelCalls": 2,
+    "applicationModelCalls": 0,
+    "productionLoaded": false,
+    "lowProfilePrototypeOnly": true,
+    "componentResults": [
+      {
+        "component": "coverage-binding-v31-451-20261115",
+        "calls": 1,
+        "tokens": 1141,
+        "seconds": 3.632,
+        "finishReason": "stop",
+        "correctionStatus": "invalid_response",
+        "coverageGapsAfterReplay": 1,
+        "answerTextExact": true,
+        "answerMetadataExact": true,
+        "scientificProseRepairCalled": false,
+        "scientificContentAccepted": false,
+        "independentCredit": 0,
+        "profileOnlyExperiment": false,
+        "rawResult": "tmp\\coverage-binding-v31-451-20261115\\result.json",
+        "rawResultSha256": "624d4ce28c11e272448c3b2c8caa85ff3bad777c928996b8fce4c1a9d267d88d"
+      },
+      {
+        "component": "coverage-binding-v31-low-451-20261115",
+        "calls": 1,
+        "tokens": 2574,
+        "seconds": 17.561,
+        "finishReason": "stop",
+        "correctionStatus": "corrected",
+        "coverageGapsAfterReplay": 0,
+        "answerTextExact": true,
+        "answerMetadataExact": true,
+        "scientificProseRepairCalled": false,
+        "scientificContentAccepted": false,
+        "independentCredit": 0,
+        "profileOnlyExperiment": true,
+        "rawResult": "tmp\\coverage-binding-v31-low-451-20261115\\result.json",
+        "rawResultSha256": "aac65f9a40d9e6855f549c5adceba55ef365488fac9c260b46f31602271d62dd"
+      }
+    ],
+    "scientificContentAccepted": false,
+    "independentAcceptanceCredit": 0,
+    "boundary": "New version1 source separates invalid process audits from demonstrated answer deficiencies, caps one correction and validates all corrected bindings through unchanged coverage checks. Source not loaded. Direct actual component repeats invalid binding and stays uncertain; isolated low-effort prototype fixes exact role spans and passes saved graph replay, but is not the configured profile of version1. No old run/result reclassification."
   }
 }
