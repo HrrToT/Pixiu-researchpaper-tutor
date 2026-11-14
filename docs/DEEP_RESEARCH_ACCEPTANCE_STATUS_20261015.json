@@ -4312,25 +4312,25 @@
     "Independent Edge recovery"
   ],
   "currentProviderConstraint": {
-    "state": "Latest two isolated calls settled successfully. Nonthinking overlength rejected; low-effort component fits but has no source/scientific approval. No payment blocker established; monetary balance not rechecked.",
+    "state": "Latest complete case used9 settled model calls and finished partial; no unknown or payment failure. Coverage binding and unchanged repair remain quality issues. Monetary balance not rechecked.",
     "lastValidatedDate": "2026-11-15",
-    "latestValidation": "deep-research-evidence/selective-fixed-low-449-component-20261115.json",
+    "latestValidation": "deep-research-evidence/adam-ad1n-v31-20261115.json",
     "balanceNow": "not_checked",
     "authorization": "Existing bounded future verification authorization remains valid; no automatic retry of old cases."
   },
-  "currentDevelopmentMode": "Primary Codex only;.450 loaded;7829 complete offline checks across433modules pass. New immutable fixed-editor reasoning1 selects calibrated low profile only for eligible fixed-prose callback; original8192cap and budgets retained. Actual prompt/options/digest exact to isolated295char prototype; no scientific approval. AD1N-v31 submitted once with original question/version/material policy/18calls100ktokens360sec, now running; do not resubmit. Old103tasks/379runs/9526callrows exact before submission,15historical pauses preserved. Original full DR0-DR5 and independent/release gates remain open.",
+  "currentDevelopmentMode": "Primary Codex only;.450 loaded;7829 complete offline tests across433modules pass. New immutable fixed-editor reasoning1 selects calibrated low profile only for eligible fixed-prose callback;8192cap unchanged; exact request matches isolated295char prototype. AD1N-v31 completed/partial:9settled calls42372tokens100seconds,1search1fulltext,227char draft,2automatic semantic accepts. Fixed editor not called because draft fits. Coverage reported-covered audit had unbound request role; parser conservatively retained gap. Coverage-only repair copied c1 exactly and was rejected as no-op,not schema mismatch. No scientific/novice/independent credit. Old379runs/9526callrows and other102tasks exact;app103tasks380runs9549callrows,15historical pauses,0active. Original full DR0-DR5 and independent/release gates remain.",
   "loadedRuntime": {
     "commit": "b5b9091ac57ed588c8d17a10097f7480007004e7",
     "promptVersion": "dr-v2.20261115.450",
-    "callsAfterLatestCase": 9526,
+    "callsAfterLatestCase": 9549,
     "active": 0,
     "historicalPausedUnknown": 15,
     "proof": "deep-research-evidence/fixed-editor-450-load-20261115.json",
     "allSourceHashesExact": true,
-    "lastRealModelRunCommit": "a337b287889b36a58baee9bbe032cc4a9ddd746e",
-    "lastRealModelRunPromptVersion": "dr-v2.20261114.445",
-    "lastRealCase": "AD1N-v30",
-    "lastRealOutcome": "completed/inconclusive",
+    "lastRealModelRunCommit": "b5b9091ac57ed588c8d17a10097f7480007004e7",
+    "lastRealModelRunPromptVersion": "dr-v2.20261115.450",
+    "lastRealCase": "AD1N-v31",
+    "lastRealOutcome": "completed/partial",
     "javaAndFrontendBoundary": "This Python rollout did not redeploy Java or frontend. Earlier UI/persistence and synthetic publication evidence does not establish current real generated research or novice quality.",
     "javaCommit": "81a827f0c03febc4d181900b00516e38be916511",
     "taskCount": 103,
@@ -4342,7 +4342,7 @@
     "sourceIndexAttestationAt20261112": "deep-research-evidence/loaded-source-index-attestation-20261112.json"
   },
   "nextQualityWork": [
-    "Observe confirmed AD1N-v31 dr_run_038717ea26aa5a4e99d216e5c6e87f45 viaGET only, archive terminal raw payload/call journal and verify old rows/history preservation. Check actual fixed editor low dispatch, fresh source/scientific review, raw second moment explanation and requested coverage. Do not count JSON/length or automatic verdict alone as manual scientific acceptance; do not resubmit on observation timeout.",
+    "Reconstruct the actual v31 coverage request/result offline and distinguish audit-only invalid role binding from missing scientific content. Existing review_binding_only defers overlapping_process_roles, not unbound_process_request. Design one budgeted, server-owned correction for invalid coverage audit bindings without changing answer text, source permissions, required question/role semantics or scientific acceptance. Never accept malformed reported-covered verdicts or treat them as proved content deficiency. Preserve old identities, unknown calls and no-op protection. v31 has no fixed-editor call; do not claim whole-case evidence for low profile or rerun it unchanged.",
     "Complete the original novice explanation/full multipaper/full executable experiment development gaps under sealed budgets; latest provider calls succeeded, current monetary balance is not checked. Then execute H1-H5 frozen fresh definitions with original budgets and no retries or retired-case upgrades.",
     "Validate current mechanism explanation, multi-paper comparison and full executable experiment quality with bounded new cases as readiness warrants; preserve original receipt identities.",
     "Run fresh untuned H1-H6 after development content passes; preserve original scoring, budgets and unknown outcomes.",
@@ -14630,11 +14630,17 @@
     "unknownNotResent": true,
     "scientificContentAccepted": false,
     "newWholeCase": {
+      "proof": "deep-research-evidence/adam-ad1n-v31-20261115.json",
       "case": "AD1N-v31",
       "runId": "dr_run_038717ea26aa5a4e99d216e5c6e87f45",
-      "submittedOnce": true,
-      "statusAtSubmission": "running",
-      "independentAcceptanceCredit": 0
+      "status": "completed",
+      "outcome": "partial",
+      "actualModelCalls": 9,
+      "tokens": 42372,
+      "elapsedSeconds": 100.0,
+      "fixedEditorActuallyCalled": false,
+      "contentAccepted": false,
+      "independentCredit": 0
     },
     "boundary": "Only new eligible explicit fixed-prose editors use existing server-owned low profile. No changes to draft/review/joint routes, source permissions, scientific/coverage/length checks or budgets. All103tasks/379oldruns/9526oldcallrows were exact before new whole submission;15historical pauses retained."
   }
