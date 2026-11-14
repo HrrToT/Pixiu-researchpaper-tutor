@@ -661,6 +661,7 @@ class BudgetedSemanticChecker:
         review_reason_parts=False,
         review_source_fields=False,
         diagnostic_parameter_ids=False,
+        diagnostic_target_structure=False,
         short_circuit_scope_observations=False,
     ):
         self._invoke = llm_invoker
@@ -683,6 +684,7 @@ class BudgetedSemanticChecker:
         self._review_reason_parts = review_reason_parts
         self._review_source_fields = review_source_fields
         self._diagnostic_parameter_ids = diagnostic_parameter_ids
+        self._diagnostic_target_structure = diagnostic_target_structure
         self._short_circuit_scope_observations = short_circuit_scope_observations
         self._mechanism_grounding = mechanism_grounding
         self._singleton_factual_response = singleton_factual_response
@@ -1452,8 +1454,11 @@ The dataAvailability object is an internal audit, not new experimental results.
                 from services.deep_research.review_diagnostics import bind as bind_diagnostic
                 parameter_policy=self._diagnostic_parameter_ids
                 parameter_policy=(parameter_policy() if callable(parameter_policy) else parameter_policy) is True
+                structure_policy=getattr(self,'_diagnostic_target_structure',False)
+                structure_policy=(structure_policy() if callable(structure_policy) else structure_policy) is True
                 parsed=[bind_diagnostic(v,by_id[v['claimId']],visible_evidence,reverse_aliases,
-                    **({'source_parameter_ids':True} if parameter_policy else {})) for v in parsed]
+                    **({'source_parameter_ids':True} if parameter_policy else {}),
+                    **({'target_structure':True} if structure_policy else {})) for v in parsed]
             if comparison_enabled:
                 from services.deep_research.comparison_reasoning import normalize_audit_scope
                 target_by_id = {c['claimId']: c for c in claims}

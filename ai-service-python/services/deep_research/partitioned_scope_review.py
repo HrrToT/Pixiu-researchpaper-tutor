@@ -198,6 +198,8 @@ Targets:
         from services.deep_research.review_diagnostics import bind as bind_diagnostic
         parameter_policy=getattr(checker,'_diagnostic_parameter_ids',False)
         parameter_policy=(parameter_policy() if callable(parameter_policy) else parameter_policy) is True
+        # Operator inputs are typed propositions, not the original target prose.
+        # Their unseen prose cannot authorize structural navigation exemptions.
         diagnostic_checks=[bind_diagnostic({'status':'passed' if row['relation']=='not_entailed' else 'failed',
             'reason':row['reason'],'diagnosticFacts':row.get('diagnosticFacts')},claim,
             [{**e,'sourceContext':surrounding_context(e)} for e in evidence],reverse,

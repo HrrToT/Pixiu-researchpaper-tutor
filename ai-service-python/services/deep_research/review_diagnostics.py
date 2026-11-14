@@ -34,7 +34,8 @@ override a failed decision or any other audit; the server checks them independen
 '''
 
 
-def bind(verdict, claim, evidence, reverse=None, *, source_parameter_ids=False):
+def bind(verdict, claim, evidence, reverse=None, *, source_parameter_ids=False,target_structure=False):
+    if type(target_structure) is not bool:raise ValueError('Invalid target structure diagnostic policy')
     if type(source_parameter_ids) is not bool:raise ValueError('Invalid diagnostic parameter identity policy')
     from services.deep_research.audit_source_fields import resolve
     from services.deep_research.verification import _measurement_numbers, normalize_quote
@@ -50,6 +51,14 @@ def bind(verdict, claim, evidence, reverse=None, *, source_parameter_ids=False):
     if source_parameter_ids:
         from services.deep_research.review_parameter_numbers import scanner
         numbers=scanner(own)
+    review_numbers=numbers
+    target_references=[]
+    if target_structure:
+        from services.deep_research.review_target_structure import view
+        from services.deep_research.execution_materialization import verification_claim_view
+        target_text=verification_claim_view(claim).get('text','')
+        review_numbers=lambda text:numbers(view(text,target_text)[0])
+        _,target_references=view(reason,target_text)
     reverse = reverse or {}
     if not isinstance(facts, list) or len(facts) > 16:
         errors.append('diagnostic_facts_missing_or_invalid')
@@ -69,9 +78,9 @@ def bind(verdict, claim, evidence, reverse=None, *, source_parameter_ids=False):
         if resolved is None or normalize_quote(fact['excerpt']) not in normalize_quote(resolved[1]):
             errors.append('diagnostic_source_not_bound')
             continue
-        covered_numbers |= (numbers(fact['statement']) & numbers(fact['excerpt']))
+        covered_numbers |= (review_numbers(fact['statement']) & numbers(fact['excerpt']))
     target = claim.get('text', '') + ' ' + json.dumps(claim.get('conditions', {}), ensure_ascii=False)
-    introduced = numbers(reason) - numbers(target)
+    introduced = review_numbers(reason) - numbers(target)
     missing = introduced - covered_numbers
     if missing:
         errors.append('new_diagnostic_numbers_not_bound')
@@ -80,6 +89,8 @@ def bind(verdict, claim, evidence, reverse=None, *, source_parameter_ids=False):
              'bindingCount': len(facts), 'newNumberCount': len(introduced),
              'unboundNewNumberCount': len(missing), 'errors': list(dict.fromkeys(errors))})
     if source_parameter_ids:audit['sourceParameterIdentityContractVersion']=1
+    if target_structure:
+        audit.update(reviewTargetStructureContractVersion=1,targetStructureReferences=target_references)
     result['reviewDiagnosticAudit'] = audit
     if errors:
         # Preserve the raw model response in the immutable call journal, not in
