@@ -100,6 +100,9 @@ class FixtureModel:
             if 'Reviewer diagnostic provenance:' in prompt:
                 for verdict in content:
                     verdict['diagnosticFacts']=[]
+            if 'Reviewer reasonParts encoding:' in prompt:
+                for verdict in content:
+                    verdict['reasonParts']=[{'text':verdict.pop('reason')}]
         elif prompt.startswith(("Revise only the targets","Rebuild ONLY these rejected factual answer targets",
                                 "Rebuild ONLY the rejected targets")):
             content = []  # An unsupported claim may be dropped; do not relax checks.

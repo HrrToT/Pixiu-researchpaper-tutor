@@ -444,7 +444,9 @@ class TrackedLLMInvoker:
                 **({'factual_diagnostics':type(transport_record.get('reviewDiagnosticContractVersion')) is int
                         and transport_record['reviewDiagnosticContractVersion']==2,
                     'factual_ownership':type(transport_record.get('reportingOwnershipContractVersion')) is int
-                        and transport_record['reportingOwnershipContractVersion']==1}
+                        and transport_record['reportingOwnershipContractVersion']==1,
+                    **({'factual_reason_parts':True} if type(transport_record.get('reviewReasonPartsContractVersion')) is int
+                       and transport_record['reviewReasonPartsContractVersion']==1 else {})}
                    if type(transport_record.get('factualEnvelopeContractVersion')) is int
                    and transport_record['factualEnvelopeContractVersion']==2
                    and type(transport_record.get('factualDecisionContractVersion')) is int
@@ -649,6 +651,7 @@ class BudgetedSemanticChecker:
         review_diagnostic_bindings=False,
         known_single_review_failure=False,
         integrated_diagnostic_schema=False,
+        review_reason_parts=False,
         short_circuit_scope_observations=False,
     ):
         self._invoke = llm_invoker
@@ -668,6 +671,7 @@ class BudgetedSemanticChecker:
         self._review_diagnostic_bindings = review_diagnostic_bindings
         self._known_single_review_failure = known_single_review_failure
         self._integrated_diagnostic_schema = integrated_diagnostic_schema
+        self._review_reason_parts = review_reason_parts
         self._short_circuit_scope_observations = short_circuit_scope_observations
         self._mechanism_grounding = mechanism_grounding
         self._singleton_factual_response = singleton_factual_response
@@ -890,6 +894,7 @@ Do not accept vague connections. A partly supported claim must fail until its wo
         decision_policy=self._single_factual_decision
         decision_policy=(decision_policy() if callable(decision_policy) else decision_policy) is True
         single_decision=False
+        reason_parts=False
         if decision_policy:
             from services.deep_research.factual_decision import eligible, prompt as decision_prompt
             scope_policy=self._factual_scope() if callable(self._factual_scope) else self._factual_scope
@@ -906,8 +911,11 @@ Do not accept vague connections. A partly supported claim must fail until its wo
                     diagnostic_binding=self._review_diagnostic_bindings
                     schema_policy=((diagnostic_binding() if callable(diagnostic_binding) else diagnostic_binding) is True
                                    and schema_eligible(claims))
+                parts_policy=self._review_reason_parts
+                reason_parts=schema_policy and (parts_policy() if callable(parts_policy) else parts_policy) is True
                 prompt=decision_prompt(claims_text,evidence_text,
-                    **({'diagnostic_facts':True} if schema_policy else {}))
+                    **({'diagnostic_facts':True} if schema_policy else {}),
+                    **({'reason_parts':True} if reason_parts else {}))
 
         if all(c.get('kind') in {'proposal', 'suggestion', 'hypothesis'} for c in claims):
             # Do not inherit factual-entailment instructions for unexecuted choices.
@@ -1270,6 +1278,8 @@ The dataAvailability object is an internal audit, not new experimental results.
         diagnostic_policy=diagnostic_policy and diagnostic_eligible(claims)
         if diagnostic_policy:
             from services.deep_research.review_diagnostics import GUIDANCE as diagnostic_guidance
+            if reason_parts:
+                from services.deep_research.review_reason_parts import GUIDANCE as diagnostic_guidance
             prompt+='\n'+diagnostic_guidance
         template = prompt
         source_keys = ('workId', 'versionId', 'sourceTitle')
@@ -1401,7 +1411,7 @@ The dataAvailability object is an internal audit, not new experimental results.
                 from services.deep_research.factual_decision import decode
                 singleton_policy=self._singleton_factual_response
                 singleton_policy=(singleton_policy() if callable(singleton_policy) else singleton_policy) is True
-                parsed=decode(parsed,**({'diagnostic_facts':True} if diagnostic_policy else {}),**({'reporting_ownership':True} if reporting_enabled else {}),**({'singleton_claim_id':claims[0]['claimId']}
+                parsed=decode(parsed,**({'diagnostic_facts':True} if diagnostic_policy else {}),**({'reason_parts':True} if reason_parts else {}),**({'reporting_ownership':True} if reporting_enabled else {}),**({'singleton_claim_id':claims[0]['claimId']}
                     if singleton_policy and len(claims)==1 else {}))
             
             expected = {claim['claimId'] for claim in claims}
