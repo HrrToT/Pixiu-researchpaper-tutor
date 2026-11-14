@@ -4318,19 +4318,19 @@
     "balanceNow": "not_checked",
     "authorization": "Existing bounded future verification authorization remains valid; no automatic retry of old cases."
   },
-  "currentDevelopmentMode": "Primary Codex only; .444 loaded;7705 complete offline tests passed across427 modules. Exact own-field reviewer references implemented with immutable opt-in, raw transport preserved, and resolution after actual prompt fitting. Saved response replay and negative controls passed with zero model calls. Current real validation still needed; last whole case AD1N-v28/.443,inconclusive. Original full DR0-DR5 and all open release gates remain.",
+  "currentDevelopmentMode": "Primary Codex only; .444 loaded;7705 complete offline tests passed across427 modules. AD1N-v29 partial:13 settled model calls,69776tokens,174seconds. Real own-field references worked;2 final automatic factual accepts do not establish scientific/novice acceptance. Parameter-update explanation gap and unchecked research assessment remain. Existing400-character repair feedback hides the decisive objection; the disputed clause remains after repair. All old runs/call rows and other102 tasks unchanged;15 historical pauses retained;0active. Original full DR0-DR5 and release gates remain open.",
   "loadedRuntime": {
     "commit": "0fddb52287bf07170cd95d451138f32cedbf84a9",
     "promptVersion": "dr-v2.20261114.444",
-    "callsAfterLatestCase": 9474,
+    "callsAfterLatestCase": 9501,
     "active": 0,
     "historicalPausedUnknown": 15,
     "proof": "deep-research-evidence/reviewer-fields-444-load-20261114.json",
     "allSourceHashesExact": true,
-    "lastRealModelRunCommit": "336eaae0e6c761b68b1eb380aa067306ae48282a",
-    "lastRealModelRunPromptVersion": "dr-v2.20261114.443",
-    "lastRealCase": "AD1N-v28",
-    "lastRealOutcome": "completed/inconclusive",
+    "lastRealModelRunCommit": "0fddb52287bf07170cd95d451138f32cedbf84a9",
+    "lastRealModelRunPromptVersion": "dr-v2.20261114.444",
+    "lastRealCase": "AD1N-v29",
+    "lastRealOutcome": "completed/partial",
     "javaAndFrontendBoundary": "This Python rollout did not redeploy Java or frontend. Earlier UI/persistence and synthetic publication evidence does not establish current real generated research or novice quality.",
     "javaCommit": "81a827f0c03febc4d181900b00516e38be916511",
     "taskCount": 103,
@@ -4342,7 +4342,7 @@
     "sourceIndexAttestationAt20261112": "deep-research-evidence/loaded-source-index-attestation-20261112.json"
   },
   "nextQualityWork": [
-    "Reduce reviewer source retyping errors with a versioned exact-source-field binding representation, validated offline against raw failed replies before any further real case. Original source fields, target ownership, all introduced numbers and independent semantic decisions must remain checked; no heuristic quote rebinding, no acceptance of unbound plain formula segments.",
+    "Preserve complete validated rejection feedback for new runs: AD1N-v29 has a695-character reason but only400chars reach repair; decisive objection starts at417 and is missing. Implement a versioned lossless internal feedback path, preserve literal source permissions and all scientific/budget gates, reject capacity overflow explicitly rather than silently removing the objection. Keep old requests/results unchanged; replay this saved failure before new real validation.",
     "Complete the original novice explanation/full multipaper/full executable experiment development gaps under sealed budgets; latest provider calls succeeded, current monetary balance is not checked. Then execute H1-H5 frozen fresh definitions with original budgets and no retries or retired-case upgrades.",
     "Validate current mechanism explanation, multi-paper comparison and full executable experiment quality with bounded new cases as readiness warrants; preserve original receipt identities.",
     "Run fresh untuned H1-H6 after development content passes; preserve original scoring, budgets and unknown outcomes.",
@@ -14105,6 +14105,28 @@
     "loadProof": "deep-research-evidence/reviewer-fields-444-load-20261114.json",
     "modelCalls": 0,
     "scientificContentAccepted": false,
-    "boundary": "Versioned exact own-field reference representation. Transport retains raw response and only checks syntax; server resolves after prompt fitting; explicit excerpts, numeric/source/semantic gates and old protocols remain unchanged. Saved replay is not a new real model verdict."
+    "boundary": "Versioned exact own-field reference representation. Transport retains raw response and only checks syntax; server resolves after prompt fitting; explicit excerpts, numeric/source/semantic gates and old protocols remain unchanged. Saved replay is not a new real model verdict.",
+    "realValidation": {
+      "proof": "deep-research-evidence/adam-ad1n-v29-20261114.json",
+      "case": "AD1N-v29",
+      "outcome": "partial",
+      "actualModelCalls": 13,
+      "tokens": 69776,
+      "elapsedSeconds": 174.0,
+      "actualReferenceSegments": 9,
+      "automaticAcceptedClaims": 2,
+      "contentAccepted": false
+    }
+  },
+  "reviewFeedbackTruncationCheckpoint20261114": {
+    "proof": "deep-research-evidence/adam-ad1n-v29-20261114.json",
+    "fullReasonCharacters": 695,
+    "repairDetailCharacters": 400,
+    "detailIsExactFirst400": true,
+    "specificObjectionStartsAt": 417,
+    "counterexampleMissingFromRepairDetail": true,
+    "disputedWordingRetained": true,
+    "boundary": "Initial review rejects the from-zero factor clause using first applied step t=1; the 400-character prefix cuts off that objection. The repair retains the disputed clause and later review differs, so the objection was not proven resolved. No scientific acceptance is granted.",
+    "implemented": false
   }
 }
