@@ -3,18 +3,17 @@
   "objective": "Complete DR0-DR5 in DEEP_RESEARCH_DESIGN_20261012.md without redefining success around implemented subsets.",
   "overall": "incomplete",
   "currentFullOfflineRegression": {
-    "sourceCommit": "4bcb7306e2f2918f474a0267a0471c50a9a4ebca",
-    "modules": 413,
-    "passed": 7433,
+    "sourceCommit": "4b0e92aa554d36c2762400ae03cce0e6811efb85",
+    "modules": 415,
+    "passed": 7451,
     "failures": 0,
     "errors": 0,
     "skipped": 0,
     "warnings": 1,
     "sourceUnchanged": true,
-    "appliesToCurrentPythonSource": false,
-    "proof": "deep-research-evidence/current-full-after-pdf-20261112.json",
-    "priorProof": "deep-research-evidence/current-rollback-complete-regression-20261112.json",
-    "boundary": "Complete current offline research suite after PDF optimization and H6 tests; no real model, scientific content acceptance or full product release."
+    "appliesToCurrentPythonSource": true,
+    "proof": "deep-research-evidence/factual-envelope-432-host-20261114.json",
+    "boundary": "Complete offline research suite only; scientific content and independent release gates remain open."
   },
   "postFullRegressionValidation": {
     "scope": "PDF Form parser optimization only",
@@ -4321,7 +4320,7 @@
     "state": "Official balance unavailable; no paid requests. Existing verification authorization remains valid. Offline preparation can continue.",
     "authorization": "Existing bounded verification authorization remains valid; no automatic retry of old cases."
   },
-  "currentDevelopmentMode": "Primary Codex only; no Qoder/new agents. Provider restored, .431 loaded. AD1N-v18 executed once:209-character draft,7settled calls, terminal inconclusive because2singleton review objects failed items-envelope decoding. Scientific review and novice quality not accepted. No active research;15historical paused unknowns unchanged. Full DR0-DR5 and fresh independent gates remain open.",
+  "currentDevelopmentMode": "Primary Codex only; no Qoder/new agents. .432 loaded;7451 full offline tests passed. AD1N-v19 executed once,7settled calls, terminal inconclusive:2valid review arrays reached diagnostic checks and failed exact source binding. Source quotes contain control characters in mathematical positions; glyph-decoding cause remains to investigate. No active research;15historical paused unknowns unchanged. Full DR0-DR5 and fresh independent gates remain open.",
   "loadedRuntime": {
     "commit": "5ad89bc3f42346d1231fed1285b6b0f5f408aac0",
     "promptVersion": "dr-v2.20261112.430",
@@ -4339,7 +4338,7 @@
     "javaCommit": "81a827f0c03febc4d181900b00516e38be916511",
     "taskCount": 103,
     "sourceAttestation": "deep-research-evidence/loaded-source-index-attestation-20261112.json",
-    "latestPromptVersion": "dr-v2.20261114.431"
+    "latestPromptVersion": "dr-v2.20261114.432"
   },
   "nextQualityWork": [
     "When official provider availability is restored, complete the original novice explanation/full multipaper/full executable experiment development gaps under sealed budgets. Then execute H1-H5 fresh definitions, rechecking H3 external freshness/capabilities before submission; no cache deletion, automatic retry or retired-case upgrades.",
@@ -13493,5 +13492,42 @@
       "proof": "deep-research-evidence/adam-ad1n-v18-20261114.json",
       "nextWork": "Versioned singleton factual-review transport alignment without deriving decisions or weakening evidence gates; novice wording remains too technical."
     }
+  },
+  "previousFullOfflineRegression": {
+    "sourceCommit": "4bcb7306e2f2918f474a0267a0471c50a9a4ebca",
+    "modules": 413,
+    "passed": 7433,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "warnings": 1,
+    "sourceUnchanged": true,
+    "appliesToCurrentPythonSource": false,
+    "proof": "deep-research-evidence/current-full-after-pdf-20261112.json",
+    "priorProof": "deep-research-evidence/current-rollback-complete-regression-20261112.json",
+    "boundary": "Complete current offline research suite after PDF optimization and H6 tests; no real model, scientific content acceptance or full product release."
+  },
+  "factualEnvelopeCheckpoint20261114": {
+    "sourceCommit": "4b0e92aa",
+    "promptVersion": "dr-v2.20261114.432",
+    "factualEnvelopeContractVersion": 2,
+    "relatedTestsPassed": 85,
+    "savedReviewReplay": "deep-research-evidence/factual-envelope-432-saved-review-20261114.json",
+    "savedReviewBoundary": "One raw candidate passes original checks, other fails diagnostic source binding; original run unchanged, zero new model calls.",
+    "loadProof": "deep-research-evidence/factual-envelope-432-load-20261114.json",
+    "runtimeLoaded": true,
+    "realCase": "AD1N-v19",
+    "realCaseState": "completed",
+    "contentAccepted": false,
+    "independentCredit": 0,
+    "realCaseOutcome": "inconclusive",
+    "realCaseProof": "deep-research-evidence/adam-ad1n-v19-20261114.json",
+    "actualModelCalls": 7,
+    "tokens": 35796,
+    "elapsedSeconds": 107,
+    "answerCharacters": 171,
+    "diagnosticChecksReached": true,
+    "actualResponseShape": "items; singleton branch covered only by saved-response replay",
+    "nextWork": "Investigate PDF mathematical-symbol control characters and faithful extraction before more content validation; retain exact-source binding and novice quality gates."
   }
 }
