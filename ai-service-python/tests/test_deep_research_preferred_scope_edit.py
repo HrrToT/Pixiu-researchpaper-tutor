@@ -108,10 +108,11 @@ def test_preference_cannot_be_enabled_without_selective_editing_contract():
 
 
 @pytest.mark.parametrize('version',[1,2,3])
-def test_actual_graph_selects_only_new_route_and_independently_rechecks_all_claims(version):
+@pytest.mark.parametrize('question,preferred',[('100字以内',True),('500字以内',False)])
+def test_actual_graph_selects_only_new_route_and_independently_rechecks_all_claims(version,question,preferred):
     from services.deep_research.graph import make_verify_node
     report,audits,response=inputs();initial={'accepted':[],'rejected':[{'claimId':c['claimId'],'reason':'semantic_unresolved'} for c in report['claims']]}
-    record={'question':'100字以内','compactionEditingContractVersion':version,'repairCompactionContractVersion':1,
+    record={'question':question,'compactionEditingContractVersion':version,'repairCompactionContractVersion':1,
         'scopeCompactionContractVersion':1,'scopeExpressionContractVersion':5,'scopeExpressionReviewContractVersion':2,
         'reportPresentationContractVersion':2,'factualReasoningContractVersion':10,'answerFormatContractVersion':3,
         'factualPromptContractVersion':3,'authoredBodyContractVersion':1,
@@ -127,8 +128,8 @@ def test_actual_graph_selects_only_new_route_and_independently_rechecks_all_clai
     verifier=Mock(side_effect=lambda rows,*_: {'accepted':[],'rejected':[{'claimId':c['claimId'],'reason':'semantic_unresolved'} for c in rows]})
     with patch('services.deep_research.repair.repair_rejected',return_value=report['claims']):
         make_verify_node(verifier,None,update,llm_invoke=invoke)({'run_id':'r'})
-    assert len(prompts)==1 and ('editableClaims：' in prompts[0]) is (version in (2,3))
+    assert len(prompts)==1 and ('editableClaims：' in prompts[0]) is (version in (2,3) and preferred)
     from services.deep_research.compaction_editing import GUIDANCE
-    assert (GUIDANCE in prompts[0]) is (version in (1,3))
+    assert (GUIDANCE in prompts[0]) is (version in (1,3) or not preferred)
     assert [c['claimId'] for c in verifier.call_args.args[0]]==['f','c']
     assert record['state']['verifiedReport']['verifiedClaims']==[]

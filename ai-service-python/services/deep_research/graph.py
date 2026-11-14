@@ -1804,7 +1804,8 @@ space with unsupported global absence or incidental iteration/performance values
                 **({'prefer_fixed_scope':True} if type(record.get('compactionEditingContractVersion')) is int
                    and record['compactionEditingContractVersion'] in (2,3) else {}),
                 **({'selective_fixed_edit':True} if type(record.get('compactionEditingContractVersion')) is int
-                   and record['compactionEditingContractVersion']==3 else {}),
+                   and record['compactionEditingContractVersion']==3
+                   and explicit_compaction_scope(record,question,output_kind) else {}),
                 presentation_version=record.get('reportPresentationContractVersion',0),
                 **({'authored_body':True} if authored_body else {}),
                 **({'compact_layout':True} if compact_layout else {}),
@@ -2182,7 +2183,8 @@ def make_verify_node(
                             **({'prefer_fixed_scope':True} if type(record.get('compactionEditingContractVersion')) is int
                                and record['compactionEditingContractVersion'] in (2,3) else {}),
                             **({'selective_fixed_edit':True} if type(record.get('compactionEditingContractVersion')) is int
-                               and record['compactionEditingContractVersion']==3 else {}),
+                               and record['compactionEditingContractVersion']==3
+                               and explicit_compaction_scope(record,effective_question(record),saved.get('outputKind','')) else {}),
                             presentation_version=record.get('reportPresentationContractVersion',0),
                             **({'compact_layout':True} if short_layout_enabled(record,saved.get('outputKind'),requested_character_limit(effective_question(record))) else {}),
                             **({'joint_layout':True} if joint_compaction(record,saved.get('outputKind'),requested_character_limit(effective_question(record))) else {}),
