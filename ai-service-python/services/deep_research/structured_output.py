@@ -174,9 +174,10 @@ def messages_for_record(record, node, prompt):
         prospective=kind=='experiment_design'),prospective=kind=='experiment_design')
 
 
-def normalize(node, response, *, factual_singleton=False,initial_plan_response=False,factual_diagnostics=False,factual_ownership=False,factual_reason_parts=False):
+def normalize(node, response, *, factual_singleton=False,initial_plan_response=False,factual_diagnostics=False,factual_ownership=False,factual_reason_parts=False,factual_source_fields=False):
     if type(factual_singleton) is not bool:raise ValueError('Invalid factual response envelope policy')
     if type(factual_reason_parts) is not bool or factual_reason_parts and not (factual_singleton and factual_diagnostics):raise ValueError('Reason parts require factual diagnostics')
+    if type(factual_source_fields) is not bool or factual_source_fields and not factual_reason_parts:raise ValueError('Source fields require reason parts')
     if (type(factual_diagnostics) is not bool or type(factual_ownership) is not bool
             or (factual_diagnostics or factual_ownership) and not factual_singleton):
         raise ValueError('Factual response fields require singleton envelope policy')
@@ -244,6 +245,7 @@ def normalize(node, response, *, factual_singleton=False,initial_plan_response=F
             from services.deep_research.factual_decision import decode
             from services.deep_research.contracts import DeepResearchError
             try:decode(parsed,singleton_claim_id=parsed.get('claimId'),
+                **({'reason_field_references':True} if factual_source_fields else {}),
                 **({'reason_parts':True} if factual_reason_parts else {}),
                 **({'diagnostic_facts':True} if factual_diagnostics else {}),
                 **({'reporting_ownership':True} if factual_ownership else {}))

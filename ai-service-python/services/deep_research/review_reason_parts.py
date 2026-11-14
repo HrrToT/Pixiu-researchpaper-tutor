@@ -19,19 +19,25 @@ This only encodes the explanation: the whole-claim decision and EVERY independen
 source,scope,comparison,condition and numerical check still apply.'''
 
 
-def expand(row):
+def expand(row, *, field_references=False):
+    if type(field_references) is not bool:raise ValueError('Invalid reviewer source-field policy')
     if (not isinstance(row,dict) or 'reason' in row or 'diagnosticFacts' in row
             or not isinstance(row.get('reasonParts'),list) or not 1<=len(row['reasonParts'])<=16):
         raise DeepResearchError('invalid_verification_response','审核说明片段缺失或存在冲突编码。',{'responseState':'received_invalid'})
     texts=[];facts=[]
     for part in row['reasonParts']:
-        if (not isinstance(part,dict) or set(part) not in ({'text'},{'text','evidenceId','path','excerpt'})
+        from services.deep_research.review_source_fields import valid_reference
+        reference=field_references and valid_reference(part)
+        if (not isinstance(part,dict) or not reference and set(part) not in ({'text'},{'text','evidenceId','path','excerpt'})
                 or not isinstance(part.get('text'),str) or not part['text'].strip()):
             raise DeepResearchError('invalid_verification_response','审核说明片段结构无效。',{'responseState':'received_invalid'})
         texts.append(part['text'])
         if 'evidenceId' in part:
             # Validation of original source membership, paths, literal excerpts,
             # introduced numbers and actual semantics remains downstream.
-            facts.append({'statement':part['text'],**{k:deepcopy(part[k]) for k in ('evidenceId','path','excerpt')}})
+            # Syntax-only transport validation may retain an unresolved field
+            # reference. It cannot pass the downstream literal diagnostic binder.
+            keys=('evidenceId','path') if reference else ('evidenceId','path','excerpt')
+            facts.append({'statement':part['text'],**{k:deepcopy(part[k]) for k in keys}})
     return {**{k:deepcopy(v) for k,v in row.items() if k!='reasonParts'},
             'reason':'\n'.join(texts),'diagnosticFacts':facts}

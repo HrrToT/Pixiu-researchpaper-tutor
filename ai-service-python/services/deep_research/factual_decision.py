@@ -63,11 +63,12 @@ The short reason must identify the actual support or mismatch, not debate a seco
 decision or expose a long reasoning transcript. Do not guess missing source facts.'''
 
 
-def decode(rows, *, singleton_claim_id=None, reporting_ownership=False, diagnostic_facts=False,reason_parts=False):
+def decode(rows, *, singleton_claim_id=None, reporting_ownership=False, diagnostic_facts=False,reason_parts=False,reason_field_references=False):
     """Never reinterpret legacy status=failed, or infer a decision from prose."""
     if type(reporting_ownership) is not bool:raise ValueError('Invalid reporting ownership policy')
     if type(diagnostic_facts) is not bool:raise ValueError('Invalid diagnostic binding policy')
     if type(reason_parts) is not bool or reason_parts and not diagnostic_facts:raise ValueError('Reason parts require diagnostic bindings')
+    if type(reason_field_references) is not bool or reason_field_references and not reason_parts:raise ValueError('Source-field references require reason parts')
     allowed={'claimId','reason','scopeAudit','comparisonAudit','resultPurposeAudit'}
     if diagnostic_facts:allowed.add('diagnosticFacts')
     if reporting_ownership:allowed.add('reportingOwnershipAudit')
@@ -86,7 +87,7 @@ def decode(rows, *, singleton_claim_id=None, reporting_ownership=False, diagnost
     for row in rows:
         if reason_parts:
             from services.deep_research.review_reason_parts import expand
-            row=expand(row)
+            row=expand(row,**({'field_references':True} if reason_field_references else {}))
         if (not isinstance(row,dict) or redundant(row) or set(row)-allowed
                 or not isinstance(row.get('claimId'),str) or not row['claimId']
                 or not isinstance(row.get('reason'),str) or not row['reason'].strip()
