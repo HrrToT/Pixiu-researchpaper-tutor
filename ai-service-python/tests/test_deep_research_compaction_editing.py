@@ -129,9 +129,9 @@ def test_root_edit_policy_is_server_owned_immutable_and_never_added_to_legacy_ru
     facade=ResearchFacade(repo,lambda **_:None,llm_client=object())
     try:
         row,_=facade.create({'workspaceTaskId':'t','operationKey':'op','question':'Explain',key:False},start_async=False)
-        assert type(row[key]) is int and row[key]==2
+        assert type(row[key]) is int and row[key]==3
         old=deepcopy(row);old.pop(key);old.update(runId='old',idempotencyKey='old');repo.create_run(old)
         for rid in (row['runId'],'old'):
-            with pytest.raises(ValueError,match='Immutable'):repo.update_run(rid,lambda r:{**r,key:3})
+            with pytest.raises(ValueError,match='Immutable'):repo.update_run(rid,lambda r:{**r,key:4})
         assert key not in repo.require_run('old')
     finally:facade.shutdown()

@@ -14,7 +14,7 @@ def enabled(record):
 
 
 def compact(report, audits, question, invoke, parse, *, output_kind='', evidence=(), presentation_version=0,
-            fixed_claims=(),measured_guidance=False,expression_version=2,fixed_scope_first=False,invoke_fixed=None,explicit_edit_scope=False,compact_layout=False,joint_layout=False,authored_body=False,budget_guidance=False,selective_editing=False,prefer_fixed_scope=False):
+            fixed_claims=(),measured_guidance=False,expression_version=2,fixed_scope_first=False,invoke_fixed=None,explicit_edit_scope=False,compact_layout=False,joint_layout=False,authored_body=False,budget_guidance=False,selective_editing=False,prefer_fixed_scope=False,selective_fixed_edit=False):
     """Return revised report and matching unchecked ASTs, or reject atomically.
 
     All existing points, kinds, citations, obligations and table bindings remain.
@@ -24,6 +24,8 @@ def compact(report, audits, question, invoke, parse, *, output_kind='', evidence
     if type(authored_body) is not bool or authored_body and expression_version!=5:raise ValueError('Invalid authored compaction policy')
     if type(budget_guidance) is not bool:raise ValueError('Invalid compaction budget guidance policy')
     if type(selective_editing) is not bool:raise ValueError('Invalid selective compaction policy')
+    if type(selective_fixed_edit) is not bool or selective_fixed_edit and not (selective_editing and prefer_fixed_scope and explicit_edit_scope):
+        raise ValueError('Selective fixed editing requires explicit preferred scope policy')
     if type(prefer_fixed_scope) is not bool or prefer_fixed_scope and not selective_editing:
         raise ValueError('Fixed-scope preference requires selective editing')
     if type(joint_layout) is not bool:raise ValueError('Invalid joint short layout policy')
@@ -83,7 +85,8 @@ def compact(report, audits, question, invoke, parse, *, output_kind='', evidence
             full={**source,'claims':[*fixed,*source['claims']]}
             edited=compact_answer(full,question,invoke_fixed or invoke,parse_edit,output_kind=output_kind,
                 evidence=evidence,preserve_claims=True,presentation_version=presentation_version,
-                fixed_claim_ids=[*expressions,*[c['claimId'] for c in fixed]],explicit_edit_scope=explicit_edit_scope,compact_layout=compact_layout)
+                fixed_claim_ids=[*expressions,*[c['claimId'] for c in fixed]],explicit_edit_scope=explicit_edit_scope,compact_layout=compact_layout,
+                **({'selective_fixed_edit':True} if selective_fixed_edit else {}))
             if edited is None:return None,audits
             result={**source,'claims':[c for c in edited['claims'] if c['claimId'] in original]}
             if (any(not isinstance(c.get('text'),str) or not c['text'].strip() for c in result['claims'])

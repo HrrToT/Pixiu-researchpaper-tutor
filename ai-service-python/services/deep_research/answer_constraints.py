@@ -91,7 +91,9 @@ def visible_count(candidate, limit, output_kind='', evidence=(), presentation_ve
 
 
 def compact_answer(report, question, invoke, parse, *, output_kind='', evidence=(), preserve_claims=False,
-                   presentation_version=0, fixed_claim_ids=(), explicit_edit_scope=False, compact_layout=False,preserve_answers=False,measured_edit_budget=False,lean_edit=False,focused_edit=False,draft_merge=False,merge_audit=None,measured_merge=False):
+                   presentation_version=0, fixed_claim_ids=(), explicit_edit_scope=False, compact_layout=False,preserve_answers=False,measured_edit_budget=False,lean_edit=False,focused_edit=False,draft_merge=False,merge_audit=None,measured_merge=False,selective_fixed_edit=False):
+    if type(selective_fixed_edit) is not bool or selective_fixed_edit and not (explicit_edit_scope and preserve_claims):
+        raise ValueError('Selective fixed editing requires explicit preserved claim scope')
     if type(measured_merge) is not bool:raise ValueError('Invalid measured merge policy')
     if type(draft_merge) is not bool or merge_audit is not None and not isinstance(merge_audit,dict):raise ValueError('Invalid draft merge policy')
     if type(focused_edit) is not bool:raise ValueError('Invalid focused editing policy')
@@ -174,7 +176,7 @@ requiredTableContext给出原引用单元格的身份：若保留该数值，必
 只返回 JSON：{{"claims":[{{"claimId":"editableClaims中的原ID","text":"精简正文","conditions":{{}}}}]}}。
 返回 ID 的有序列表必须恰好是 {json.dumps([c['claimId'] for c in editable],ensure_ascii=False)}。
 readonlyContext 已由系统保留且从字数额度扣除；绝不能输出它。系统随后按原顺序拼回全部条目。
-只精简措辞，不新增或强化事实、因果或适用范围。保留原有结论的限定程度。
+{'可以删除正文中与只读内容重复的说明及未被要求的旁支；保留每个条目独有的必答内容、实际判断和必要条件。' if selective_fixed_edit else '只精简措辞，不新增或强化事实、因果或适用范围。保留原有结论的限定程度。'}
 requiredTableContext 是可追溯的数值依据，不是必须逐项抄写的清单。
 可以省去旁支数值示例；若保留某个数值，须同时保留其方法、数据集/组别、指标及精确值身份。
 保留回答中的比较判断和必要实验条件，不能用数值清单替代判断，也不能新编判断标准。
@@ -194,6 +196,9 @@ editableClaims：{json.dumps(inputs,ensure_ascii=False)}'''
     if lean_edit:
         from services.deep_research.compaction_editor import lean_prompt
         prompt=lean_prompt(inputs,content_limit,question,fixed)
+    if selective_fixed_edit:
+        from services.deep_research.compaction_editing import GUIDANCE
+        prompt+='\n'+GUIDANCE
     result = invoke(prompt)
     finish = (result.get('finishReason', result.get('finish_reason')) if isinstance(result, dict)
               else getattr(result, 'finish_reason', None))
