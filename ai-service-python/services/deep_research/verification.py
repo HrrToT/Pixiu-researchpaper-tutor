@@ -310,12 +310,15 @@ def precheck_claims(claims: list[dict], evidence: list[dict], *, absence_scope_v
 def verify_claims(claims: list[dict], evidence: list[dict],
                   semantic_check: Callable[[list[dict], list[dict]], list[dict]] | None = None,
                   *, absence_scope_version=0, quantity_spelling_version=0, feedback_version=0,
-                  table_references_version=0, review_context_version=0, requested_source_revisions=None) -> dict:
+                  table_references_version=0, review_context_version=0, requested_source_revisions=None,
+                  complete_review_feedback=False) -> dict:
     """Publish only after hard checks and an independent semantic verdict.
 
     Missing, malformed or duplicate model verdicts fail closed. A proposal or
     source-derived explanation never becomes a reported fact by its label.
     """
+    if type(complete_review_feedback) is not bool:
+        raise ValueError('Invalid complete review feedback policy')
     checked = precheck_claims(claims, evidence, absence_scope_version=absence_scope_version,
         quantity_spelling_version=quantity_spelling_version, feedback_version=feedback_version,
         table_references_version=table_references_version, requested_source_revisions=requested_source_revisions)
@@ -350,7 +353,8 @@ def verify_claims(claims: list[dict], evidence: list[dict],
         else:
             verdict = verdicts.get(claim["claimId"], {})
             rejected.append({"claimId": claim["claimId"], "reason": "semantic_unresolved",
-                             "detail": str(verdict.get("reason", ""))[:400],
+                             "detail": (str(verdict.get("reason", "")) if complete_review_feedback
+                                        else str(verdict.get("reason", ""))[:400]),
                              **({'reviewResponseAudit':verdict['reviewResponseAudit'],
                                  'executionState':'received_invalid'} if invalid_response_audit(verdict.get('reviewResponseAudit')) else {}),
                              **({'reviewDiagnosticAudit':verdict['reviewDiagnosticAudit'],

@@ -285,7 +285,7 @@ class ResearchFacade:
             "materials": materials,
             "materialSnapshot": material_snapshot,  # Immutable Java snapshot
             "contextMaterials": (material_snapshot or {}).get("contextMaterials", []) if isinstance(material_snapshot, dict) else [],
-            "promptVersion": "dr-v2.20261114.444",
+            "promptVersion": "dr-v2.20261114.445",
             "initialPlanResponseContractVersion": 1,
             "initialPlanInstructionsContractVersion": 1,
             "initialPlanModelContractVersion": 1,
@@ -367,6 +367,7 @@ class ResearchFacade:
             "requestGroundingContractVersion": 4,
             "factRedraftContractVersion": 3,
             "verificationFeedbackContractVersion": 2,
+            "completeReviewFeedbackContractVersion": 1,
             "quantitySpellingContractVersion": 15,
             "runtimeSemanticContractVersion": 1,
             "evidenceCoverageContractVersion": 3,
@@ -1405,6 +1406,8 @@ class ResearchFacade:
             claims, evidence, semantic, absence_scope_version=version, quantity_spelling_version=spelling,
             feedback_version=feedback,table_references_version=table_references,
             review_context_version=context_version,
+            **({'complete_review_feedback':True} if type(record.get('completeReviewFeedbackContractVersion')) is int
+               and record['completeReviewFeedbackContractVersion']==1 else {}),
             **({'requested_source_revisions':revisions} if revisions else {}))
     
     def _get_validate_plan(self) -> Callable[[list], list]:
