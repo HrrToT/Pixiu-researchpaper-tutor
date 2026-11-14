@@ -1,0 +1,18 @@
+{
+  "academicTransportHashMatches": true,
+  "pdfParserHashMatches": true,
+  "promptVersion": "dr-v2.20261115.452",
+  "allDeepResearchModuleHashesMatch": true,
+  "all103TasksExact": true,
+  "all379OldRunsExact": true,
+  "all9526CallRowsExact": true,
+  "historicalPaused": 15,
+  "active": 0,
+  "health": "ok",
+  "modelCalls": 0,
+  "all380OldRunsExact": true,
+  "all9549CallRowsExact": true,
+  "baselineSha256": "e4e4ed25555c54ea346c86fc8f41b4eb1de9190ba78d58c1528e2f199c30216a",
+  "baselinePath": "tmp\\dr-acceptance-receipts\\coverage-binding-452.before.json",
+  "sourceCommit": "0b5177910db947a13a1b5354785b815187d9da4a"
+}
