@@ -13,7 +13,7 @@ def enabled(record):
 
 def compact_repairs(report, revised, accepted, batch_state, question, invoke, parse, *,
                     evidence=(), output_kind='', presentation_version=0, saved=None, checkpoint=None,expression_version=2,
-                    fixed_scope_first=False,invoke_fixed=None,explicit_edit_scope=False,compact_layout=False,joint_layout=False,authored_body=False):
+                    fixed_scope_first=False,invoke_fixed=None,explicit_edit_scope=False,compact_layout=False,joint_layout=False,authored_body=False,budget_guidance=False):
     packet = {**deepcopy(report),'claims':deepcopy(revised)}
     ids = {c['claimId'] for c in revised}
     audits = []
@@ -22,11 +22,12 @@ def compact_repairs(report, revised, accepted, batch_state, question, invoke, pa
     if type(expression_version) is not int or expression_version not in (2,3,4,5):
         raise ValueError('Invalid repair compaction expression version')
     if type(authored_body) is not bool or authored_body and expression_version!=5:raise ValueError('Invalid authored repair compaction policy')
+    if type(budget_guidance) is not bool:raise ValueError('Invalid repair compaction budget guidance policy')
     if type(joint_layout) is not bool:raise ValueError('Invalid joint repair layout policy')
     if type(compact_layout) is not bool:raise ValueError('Invalid compact repair layout policy')
     if type(explicit_edit_scope) is not bool:raise ValueError('Invalid explicit repair scope policy')
     if type(fixed_scope_first) is not bool:raise ValueError('Invalid fixed scope repair policy')
-    identity = digest({**({'authoredBodyContractVersion':1} if authored_body else {}),**({'jointLayoutVersion':1} if joint_layout else {}),**({'compactLayoutVersion':1} if compact_layout else {}),'report':packet,'accepted':accepted,'audits':audits,'question':question,
+    identity = digest({**({'compactionBudgetContractVersion':1} if budget_guidance else {}),**({'authoredBodyContractVersion':1} if authored_body else {}),**({'jointLayoutVersion':1} if joint_layout else {}),**({'compactLayoutVersion':1} if compact_layout else {}),'report':packet,'accepted':accepted,'audits':audits,'question':question,
                        **({'scopeExpressionContractVersion':expression_version} if expression_version in (3,4,5) else {}),
                        **({'fixedScopeCompactionVersion':1} if fixed_scope_first else {}),
                        **({'explicitEditScopeVersion':1} if explicit_edit_scope else {}),
@@ -47,7 +48,8 @@ def compact_repairs(report, revised, accepted, batch_state, question, invoke, pa
         **({'expression_version':expression_version} if expression_version in (3,4,5) else {}),
         **({'fixed_scope_first':True,'invoke_fixed':invoke_fixed} if fixed_scope_first else {}),
         explicit_edit_scope=explicit_edit_scope,compact_layout=compact_layout,joint_layout=joint_layout,
-        **({'authored_body':True} if authored_body else {}))
+        **({'authored_body':True} if authored_body else {}),
+        **({'budget_guidance':True} if budget_guidance else {}))
     state.update(status='completed' if result is not None else 'invalid',
                  claims=result['claims'] if result is not None else [],
                  scopeExpressionAudit=new_audits if result is not None else [])

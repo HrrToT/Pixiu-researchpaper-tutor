@@ -14,7 +14,7 @@ def enabled(record):
 
 
 def compact(report, audits, question, invoke, parse, *, output_kind='', evidence=(), presentation_version=0,
-            fixed_claims=(),measured_guidance=False,expression_version=2,fixed_scope_first=False,invoke_fixed=None,explicit_edit_scope=False,compact_layout=False,joint_layout=False,authored_body=False):
+            fixed_claims=(),measured_guidance=False,expression_version=2,fixed_scope_first=False,invoke_fixed=None,explicit_edit_scope=False,compact_layout=False,joint_layout=False,authored_body=False,budget_guidance=False):
     """Return revised report and matching unchecked ASTs, or reject atomically.
 
     All existing points, kinds, citations, obligations and table bindings remain.
@@ -22,6 +22,7 @@ def compact(report, audits, question, invoke, parse, *, output_kind='', evidence
     Semantics are not certified here: the normal verifier checks the new wording.
     """
     if type(authored_body) is not bool or authored_body and expression_version!=5:raise ValueError('Invalid authored compaction policy')
+    if type(budget_guidance) is not bool:raise ValueError('Invalid compaction budget guidance policy')
     if type(joint_layout) is not bool:raise ValueError('Invalid joint short layout policy')
     if type(compact_layout) is not bool:raise ValueError('Invalid compact layout policy')
     if type(explicit_edit_scope) is not bool:raise ValueError('Invalid explicit edit scope policy')
@@ -153,6 +154,9 @@ requested points or by replacing the scientific predicate with a weaker one.
 Use concise names consistently; the complete revised scope will be independently
 checked against the original sources. No approval is inherited from this edit.
 '''
+    if budget_guidance:
+        from services.deep_research.compaction_budget import guidance as publication_budget
+        prompt+=publication_budget(source,set(expressions),count,limit)
     prompt+='\nInput:\n'+json.dumps(inputs,ensure_ascii=False,separators=(',',':'))
     if fixed:
         prompt += '\nAlready accepted points are fixed outside this request; their full text and layout are included in overhead. Never return or rewrite them.\n'
