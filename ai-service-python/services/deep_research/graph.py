@@ -1726,7 +1726,7 @@ space with unsupported global absence or incidental iteration/performance values
             parsed['claims'] = [materialize_execution_claim({**claim, 'designContractVersion': 2})
                                 if isinstance(claim, dict) else claim for claim in parsed['claims']]
         from services.deep_research.audience_rewrite import eligible, rewrite_for_beginner, has_time_for_rewrite
-        def adapt_reader(draft):
+        def adapt_reader(draft, *, pending_compaction=False):
             from services.deep_research.audience_edit_budget import enabled as budgeted_reader
             from services.deep_research.audience_single_source import enabled as single_source_reader
             from services.deep_research.audience_editable_source import enabled as editable_source_reader
@@ -1740,9 +1740,15 @@ space with unsupported global absence or incidental iteration/performance values
                     {'max_tokens': output, 'temperature': 0.0}), _safe_parse_json,
                 saved_state=current.get('state', {}).get('audienceRewrite'), checkpoint=checkpoint_audience,
                 **({'mapped_source_first':True} if type(current.get('audienceMappedSourceContractVersion')) is int
-                   and current['audienceMappedSourceContractVersion'] in (1,2) else {}),
+                   and current['audienceMappedSourceContractVersion'] in (1,2,3) else {}),
                 **({'plain_explanations':True} if type(current.get('audienceMappedSourceContractVersion')) is int
-                   and current['audienceMappedSourceContractVersion']==2 else {}),
+                   and current['audienceMappedSourceContractVersion'] in (2,3) else {}),
+                **({'writing_roles':True} if type(current.get('audienceMappedSourceContractVersion')) is int
+                   and current['audienceMappedSourceContractVersion']==3 else {}),
+                **({'retain_for_compaction':True} if pending_compaction
+                   and type(current.get('audienceMappedSourceContractVersion')) is int
+                   and current['audienceMappedSourceContractVersion']==3 and publication_reader_budget(current,question)
+                   and not (authored_body and scope_expression_audit) else {}),
                 **({'protected_claim_ids':[a['claimId'] for a in scope_expression_audit]} if authored_body and scope_expression_audit else {}),
                 **({'protected_edits':True} if authored_body and scope_expression_audit and budgeted_reader(current) else {}),
                 **({'source_first_single':True} if single_source_reader(current,draft,
@@ -1772,7 +1778,7 @@ space with unsupported global absence or incidental iteration/performance values
         from services.deep_research.audience_schedule import reader_first as use_reader_first
         reader_first = not blocked_draft_ids and use_reader_first(record, parsed, output_kind)
         if reader_first:
-            parsed = adapt_reader(parsed)
+            parsed = adapt_reader(parsed,pending_compaction=True)
 
         from services.deep_research.scope_compaction import enabled as scope_compaction_enabled, compact as compact_scope
         from services.deep_research.factual_reasoning import compaction_options,fixed_scope_compaction,explicit_compaction_scope

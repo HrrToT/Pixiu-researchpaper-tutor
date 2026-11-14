@@ -437,12 +437,18 @@ def _merge(report, content, parse, question, *, contract_version=1, allowed_infe
 
 
 def rewrite_for_beginner(report, evidence, question, invoke, parse, *, saved_state=None, checkpoint=None,
-                         can_start=True, contract_version=1, requirement_context=(), verification_policy=None, objective_framing=False, process_explanations=False, protected_claim_ids=(), protected_edits=False, source_first_single=False, publication_context=None, editable_source_first=False, scoped_editable_source=False, mapped_source_first=False, plain_explanations=False):
+                         can_start=True, contract_version=1, requirement_context=(), verification_policy=None, objective_framing=False, process_explanations=False, protected_claim_ids=(), protected_edits=False, source_first_single=False, publication_context=None, editable_source_first=False, scoped_editable_source=False, mapped_source_first=False, plain_explanations=False, writing_roles=False, retain_for_compaction=False):
     """Frozen request + settlement reuse; unknown transports propagate unchanged.
 
-    A rejected/too-long edit leaves the original draft for normal verification.
-    It is never a license to publish either version without checking its facts.
+    Legacy rejected edits retain the original draft. New opt-in handoff retains
+    only a structurally valid publication-overlength edit for pending compaction.
+    Neither version can be published without length, factual and coverage checks.
     """
+    if type(writing_roles) is not bool or writing_roles and not plain_explanations:
+        raise ValueError('Writing roles require plain reader policy')
+    if (type(retain_for_compaction) is not bool or retain_for_compaction and
+            (not writing_roles or publication_context is None or protected_edits or protected_claim_ids)):
+        raise ValueError('Compaction handoff requires an unprotected publication-budgeted reader')
     if type(contract_version) is not int or contract_version not in (1,2,3,4,5,6,7,8,9):
         raise DeepResearchError('invalid_audience_rewrite_state','新手改写契约版本无效。')
     if type(plain_explanations) is not bool or plain_explanations and not mapped_source_first:
@@ -495,14 +501,17 @@ def rewrite_for_beginner(report, evidence, question, invoke, parse, *, saved_sta
         identity_inputs.update(audiencePublicationBudgetContractVersion=1,publicationContext=publication_context,publicationBudget=publication_budget)
     if source_first_single:identity_inputs['audienceSingleSourceContractVersion']=1
     if editable_source_first:identity_inputs['audienceEditableSourceContractVersion']=2 if scoped_editable_source else 1
-    if mapped_source_first:identity_inputs['audienceMappedSourceContractVersion']=2 if plain_explanations else 1
+    if mapped_source_first:identity_inputs['audienceMappedSourceContractVersion']=3 if writing_roles else 2 if plain_explanations else 1
+    if retain_for_compaction:identity_inputs['audienceCompactionHandoffVersion']=1
     identity = digest(identity_inputs)
     state = deepcopy(saved_state) if saved_state is not None else None
     if state is not None:
         if (not isinstance(state, dict) or type(state.get('version')) is not int or state['version'] != contract_version
                 or state.get('inputDigest') != identity
                 or mapped_source_first and (type(state.get('audienceMappedSourceContractVersion')) is not int
-                    or state['audienceMappedSourceContractVersion']!=(2 if plain_explanations else 1))
+                    or state['audienceMappedSourceContractVersion']!=(3 if writing_roles else 2 if plain_explanations else 1))
+                or retain_for_compaction and (type(state.get('audienceCompactionHandoffVersion')) is not int
+                    or state['audienceCompactionHandoffVersion']!=1)
                 or editable_source_first and (type(state.get('audienceEditableSourceContractVersion')) is not int
                     or state['audienceEditableSourceContractVersion']!=(2 if scoped_editable_source else 1))
                 or publication_context is not None and (type(state.get('audiencePublicationBudgetContractVersion')) is not int
@@ -529,10 +538,17 @@ def rewrite_for_beginner(report, evidence, question, invoke, parse, *, saved_sta
         if publication_context is not None and reason is None:
             from services.deep_research.audience_publication_budget import prepare as prepare_publication
             request,reason=prepare_publication(request,report,evidence,question,publication_context,protected_claim_ids,protected_edits=protected_edits)
+        role_audit=None
+        if writing_roles and reason is None:
+            from services.deep_research.audience_writing_roles import prepare as prepare_roles
+            request,role_audit=prepare_roles(request,report,requirement_context,
+                publication_budget['editableCharacters'] if publication_budget else None,protected_claim_ids)
         state = {'version': contract_version, 'inputDigest': identity, 'status': 'pending',
                  'request': request, 'requestDigest': digest(request)}
+        if role_audit is not None:state['writingRoles']=role_audit
+        if retain_for_compaction:state['audienceCompactionHandoffVersion']=1
         if protected_edits:state.update(audienceBudgetContractVersion=1,editBudget=deepcopy(edit_budget))
-        if mapped_source_first:state['audienceMappedSourceContractVersion']=2 if plain_explanations else 1
+        if mapped_source_first:state['audienceMappedSourceContractVersion']=3 if writing_roles else 2 if plain_explanations else 1
         if source_first_single:state['audienceSingleSourceContractVersion']=1
         if editable_source_first:state['audienceEditableSourceContractVersion']=2 if scoped_editable_source else 1
         if publication_context is not None:
@@ -587,16 +603,23 @@ def rewrite_for_beginner(report, evidence, question, invoke, parse, *, saved_sta
         before={c['claimId']:c for c in report['claims']};after={c['claimId']:c for c in edited['claims']}
         if any(before[k]!=after.get(k) for k in protected_claim_ids):
             reasons.append('structured_scope_changed');edited=None
+    compaction_candidate=None
     if edited is not None and publication_context is not None:
         from services.deep_research.audience_publication_budget import fits
         if not fits(edited,evidence,question,publication_context):
+            if retain_for_compaction:compaction_candidate=deepcopy(edited)
             reasons.append('publication_character_limit');edited=None
-    result = edited or deepcopy(report)
+    if compaction_candidate is not None:
+        candidate_digest=digest(compaction_candidate)
+        if state.get('compactionCandidateDigest',candidate_digest)!=candidate_digest:
+            raise DeepResearchError('invalid_audience_rewrite_state','保存的压缩候选与原始改写响应不一致。')
+        state['compactionCandidateDigest']=candidate_digest
+    result = edited or compaction_candidate or deepcopy(report)
     if contract_version in (4,5,6,7,8,9):
         changes = [{'claimId': new['claimId'], 'from': old['kind'], 'to': new['kind']}
                    for old, new in zip(report['claims'], result['claims']) if old['kind'] != new['kind']]
         if contract_version in (6,7,8,9):
-            state.update(editOutcome='applied' if edited is not None else 'rejected',
+            state.update(editOutcome='applied' if edited is not None else 'compaction_candidate' if compaction_candidate is not None else 'rejected',
                          editReason='' if edited is not None else reasons[0] if reasons else 'invalid_edit')
         if state.get('classificationChanges') != changes or contract_version in (6,7,8,9):
             state['classificationChanges'] = changes
