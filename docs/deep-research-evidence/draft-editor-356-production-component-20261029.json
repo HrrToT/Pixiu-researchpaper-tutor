@@ -1,0 +1,136 @@
+{
+  "sourceCommit": "7aa97982",
+  "promptVersion": "dr-v2.20261029.356",
+  "component": "production-draft-editor-wiring",
+  "isProductionDefault": true,
+  "fullWorkflowReplay": false,
+  "providerCalls": 5,
+  "allCallsSettled": true,
+  "tokens": 21310,
+  "callNodes": [
+    "synthesize_compact",
+    "repair_claims",
+    "verify_repair_advice",
+    "verify_repair",
+    "verify_answer_coverage"
+  ],
+  "editorOptions": {
+    "thinking": {
+      "type": "enabled"
+    },
+    "reasoning_effort": "low",
+    "max_tokens": 8192
+  },
+  "mergeGroups": [
+    {
+      "claimId": "c1",
+      "sourceClaimIds": [
+        "c1",
+        "c2"
+      ]
+    },
+    {
+      "claimId": "c3",
+      "sourceClaimIds": [
+        "c3"
+      ]
+    }
+  ],
+  "postMergeCharacters": 262,
+  "finalCharacters": 170,
+  "characterLimit": 300,
+  "accepted": 2,
+  "rejected": 0,
+  "coverageStatus": "checked",
+  "coverageGaps": 0,
+  "postEditVerificationRan": true,
+  "repairRan": true,
+  "paperSha256": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634",
+  "sourceChecks": [
+    {
+      "page": 3,
+      "anchor": "Gaussian Prune and Recovery",
+      "found": true
+    },
+    {
+      "page": 3,
+      "anchor": "lower bit-width",
+      "found": true
+    },
+    {
+      "page": 15,
+      "anchor": "Global Significance Score",
+      "found": true
+    },
+    {
+      "page": 15,
+      "anchor": "3-degree to 2-degree",
+      "found": true
+    },
+    {
+      "page": 15,
+      "anchor": "Teacher render",
+      "found": true
+    },
+    {
+      "page": 15,
+      "anchor": "Student render",
+      "found": true
+    }
+  ],
+  "finalClaims": [
+    {
+      "claimId": "c1",
+      "kind": "reported",
+      "text": "压缩流程三个主要环节分别改变：高斯剪枝与恢复减少高斯数量；SH蒸馏将球谐系数从3阶降至2阶，消除冗余SH同时保留关键光照信息；矢量量化以更低比特宽度存储高斯。",
+      "evidenceRefs": [
+        "ev_dc73e27d98f65ae82681705ad0bcd0f675724d67d8e180eff73563766e7e03bd",
+        "ev_86994145a215296611d1166ee452117faf62798b8375946111afcd3ee39d2e62"
+      ]
+    },
+    {
+      "claimId": "c3",
+      "kind": "proposal",
+      "text": "建议按以下顺序阅读：先读高斯剪枝与恢复，理解如何减少高斯数量；再读SH蒸馏，理解如何降低球谐系数阶数并保留光照；最后读矢量量化，理解如何降低存储比特宽度。",
+      "evidenceRefs": [
+        "ev_dc73e27d98f65ae82681705ad0bcd0f675724d67d8e180eff73563766e7e03bd"
+      ]
+    }
+  ],
+  "sourceReview": "Assistant checked final key facts and SH 3-to-2 against Methods p3 and Algorithm1 p15 of the same PDF; not a new human learning trial.",
+  "retry": false,
+  "productionPublish": false,
+  "independentCredit": 0,
+  "preservation": {
+    "before": {
+      "ledgerRows": 7682,
+      "ledgerSha256": "ccb948abe79ec858755dbc7df0b93af4853a611bd6d9247a6088ddf63bf9826f",
+      "payloadSha256": "115afaf955e35880b01e8f30243f35cad57aa65ebf5601f700898b5d0d81f002"
+    },
+    "after": {
+      "ledgerRows": 7682,
+      "ledgerSha256": "ccb948abe79ec858755dbc7df0b93af4853a611bd6d9247a6088ddf63bf9826f",
+      "payloadSha256": "115afaf955e35880b01e8f30243f35cad57aa65ebf5601f700898b5d0d81f002"
+    },
+    "exactProductionPreservation": true,
+    "providerSubmissions": 5,
+    "productionPublish": false,
+    "fullWorkflowReplay": false,
+    "independentCredit": 0,
+    "elapsedSeconds": 86.556
+  },
+  "receiptHashes": {
+    "calls.json": "75618ec11bcf07eef79f4160d112193d131ea6a8d791caac17286b5ee9a64193",
+    "compaction-result.json": "058516ec85a2389549269259323f0e1ca2457ff823db6cdd5a12f3854a99ca59",
+    "draft-merge-audit.json": "5f9dea93ecfd7e2f92585eb129eb31b5af9b1980c6c1fb308bd81f9ec271c039",
+    "payload.json": "1189de616afa92b10b3a4f43bbf2567f6ea44217fc5c1a3a4a989250c2bebd85",
+    "preservation.json": "c7edbbcceb6f83ec41057c6852ada85d0dfc1f1585c974186cf59306d0e6c57d",
+    "progress.json": "5b768e26751d01c1785d91a55b1f2a82d11d3cf99bb18cdc8f557c6d09f301c3",
+    "request-1.json": "862c94a44f2232fb10271eab23856a1e82514d2febe5787f5c758ce02b6f63c1",
+    "request-2.json": "7651da79dfe2a15eb92f2520df157fe45d64d391d13b4d9e7d59020cb05a67ba",
+    "request-3.json": "7bd9bf3a45ff60e1e911258b6605cdc13196b3164d38e3cab16d49ad35a1662f",
+    "request-4.json": "edc479375cdec83d7fd490bd2f774d421e1ba061f4664837feccddbeb7c97fea",
+    "request-5.json": "36969543101dd0e971e1f9dc38a7027621635c18b5557cec04308bc01366a518",
+    "result.json": "48b9786904de26dcfc141ff905823e85541bdced336fddc2dd5c08afab0f8b75"
+  }
+}

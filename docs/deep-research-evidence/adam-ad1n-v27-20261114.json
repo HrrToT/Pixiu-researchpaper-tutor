@@ -1,0 +1,89 @@
+{
+  "case": "AD1N-v27",
+  "runId": "dr_run_89233ccfb09d57a0bcd31564aadc7508",
+  "sourceCommit": "bac54165",
+  "promptVersion": "dr-v2.20261114.441",
+  "split": "development",
+  "independentCredit": 0,
+  "status": "completed",
+  "outcome": "inconclusive",
+  "actualModelCalls": 9,
+  "allCallsSettled": true,
+  "tokens": 45404,
+  "elapsedSeconds": 149,
+  "readerApplied": true,
+  "automaticAcceptedClaims": 0,
+  "automaticRejectedClaims": 2,
+  "reviewFailureReasons": [
+    [
+      "new_diagnostic_numbers_not_bound"
+    ],
+    [
+      "diagnostic_source_not_bound"
+    ]
+  ],
+  "focusedRepairActuallyReached": false,
+  "focusedRepairComponentProbe": {
+    "componentOnly": true,
+    "calls": 1,
+    "seconds": 4.286,
+    "tokens": 4093,
+    "finishReason": "stop",
+    "newSchemaParsed": true,
+    "textChanged": true,
+    "textAndConditionsCharacters": 368,
+    "visibleCharacters": 389,
+    "limit": 300,
+    "scientificAcceptance": false,
+    "noviceAcceptance": false,
+    "productionWrites": 0,
+    "automaticRetry": false,
+    "isolatedRunClosed": true,
+    "resultSha256": "bae355955b03a3c7e4589c68a7014a994f80b16de3cd82410fe871b0fd02dc9f",
+    "findings": [
+      "Valid focused text output was generated, but it appended formulas to the existing prose and duplicated the accepted sibling boundary.",
+      "The merged candidate exceeds the original300-character limit. This isolated one-call generation did not run the application compaction/factual/coverage pipeline, so it cannot establish acceptance."
+    ]
+  },
+  "contentAccepted": false,
+  "manualNoviceAccepted": false,
+  "findings": [
+    "Both factual reviews remained unresolved because diagnostic source bindings failed; the new verified-target edit branch was correctly not entered.",
+    "This whole-run case cannot demonstrate the new repair path. The isolated generation probe verifies parsing/metadata preservation only and remains overlength and poorly organized.",
+    "The discarded low-reasoning control probe was independently recorded and not adopted; original runtime reasoning profiles remain unchanged."
+  ],
+  "automaticRetry": false,
+  "other102TasksExact": true,
+  "preservation": {
+    "oldLedgerUnchanged": true,
+    "allOldRunsUnchanged": true,
+    "newRows": 23,
+    "ledgerRows": 9455,
+    "onlyThisRunCreatedCalls": true,
+    "active": [],
+    "oldPausedRetained": true,
+    "paused": [
+      "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+      "dr_run_ed10cc3347be552288079a9a588fddf5",
+      "dr_run_86b3f181a5475e99aacca3dbf4370567",
+      "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+      "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+      "dr_run_e3521b1781825273b384a26a5edb8cdc",
+      "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+      "dr_run_e9c9dc916bef519092fad8b929b2448f",
+      "dr_run_4738564f5ff35157996a35068c62ed32",
+      "dr_run_a8bd62f9ae3d52ff806f537065f55b2d",
+      "dr_run_98e66f2d3d555dfa822b859963f01419",
+      "dr_run_8be639c866c35ea092c735a04781b647",
+      "dr_run_1c0c2e6510165086962408b8e3cf698b",
+      "dr_run_fc0931756c505c6d9a29c06abe1fdd8d",
+      "dr_run_b09de02407095586bba235843615f2b3"
+    ]
+  },
+  "rawArtifacts": {
+    "tmp\\dr-acceptance-receipts\\AD1N-v27.json": "9fc45594cb970ec7ae6e2d1f628856855a32a2feac159caef5afa160a5591ee8",
+    "tmp\\dr-acceptance-receipts\\AD1N-v27.payload.json": "b7f7fd934df2a42364172e4d32fb7aa5f013e11a1acb47d3512f57f66a7e5807",
+    "tmp\\dr-acceptance-receipts\\AD1N-v27.calls.json": "b0366cdb958860609bddb23482be1b91f839d6e4c48bdef636536dd632a7dbff",
+    "tmp\\dr-acceptance-receipts\\AD1N-v27.preservation.json": "a85399b4c2b68779ea5ee1f803062f3fa520e7dc301184978c0a821ce51d7c74"
+  }
+}

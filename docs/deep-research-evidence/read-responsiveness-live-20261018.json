@@ -1,0 +1,108 @@
+{
+  "date": "2026-10-18",
+  "sourceCommit": "9bd9e1fa",
+  "promptVersionUnchanged": "dr-v2.20261018.155",
+  "runId": "dr_run_3717607182cd52ae8f10f305ce8da9fa",
+  "beforeFixReadProbes": [
+    {
+      "url": "http://127.0.0.1:8000/health",
+      "status": 200,
+      "seconds": 31.141,
+      "bytes": 163
+    },
+    {
+      "url": "http://127.0.0.1:8000/api/research-tasks/dr_run_3717607182cd52ae8f10f305ce8da9fa",
+      "error": "HTTPConnectionPool(host='127.0.0.1', port=8000): Read timed out. (read timeout=45)",
+      "seconds": 45.0
+    },
+    {
+      "url": "http://127.0.0.1:8081/api/task-workspaces/dr-live-d2-20261012/research/dr_run_3717607182cd52ae8f10f305ce8da9fa",
+      "error": "HTTPConnectionPool(host='127.0.0.1', port=8081): Read timed out. (read timeout=45)",
+      "seconds": 45.015
+    }
+  ],
+  "afterFixSequential": [
+    {
+      "name": "health",
+      "status": 200,
+      "seconds": 0.047,
+      "bytes": 162
+    },
+    {
+      "name": "pythonRun",
+      "status": "completed",
+      "seconds": 0.172,
+      "bytes": 92530,
+      "sourceCount": 36,
+      "outcome": "complete"
+    },
+    {
+      "name": "javaRun",
+      "status": "completed",
+      "seconds": 0.359,
+      "bytes": 2354740,
+      "sourceCount": 36,
+      "outcome": "complete"
+    }
+  ],
+  "afterFixConcurrent": [
+    {
+      "name": "health",
+      "status": 200,
+      "seconds": 0.016,
+      "bytes": 162
+    },
+    {
+      "name": "pythonRun",
+      "status": "completed",
+      "seconds": 0.281,
+      "bytes": 92530,
+      "sourceCount": 36,
+      "outcome": "complete"
+    },
+    {
+      "name": "javaRun",
+      "status": "completed",
+      "seconds": 0.453,
+      "bytes": 2354740,
+      "sourceCount": 36,
+      "outcome": "complete"
+    }
+  ],
+  "before": {
+    "calls": 3795,
+    "ledgerSha256": "c0d9d7b7d6b57ea4d69f1ab510500a8af01e02ce2ef337d30d82d63e2fa64716",
+    "paused": [
+      "dr_run_4738564f5ff35157996a35068c62ed32",
+      "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+      "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+      "dr_run_86b3f181a5475e99aacca3dbf4370567",
+      "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+      "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+      "dr_run_e3521b1781825273b384a26a5edb8cdc",
+      "dr_run_e9c9dc916bef519092fad8b929b2448f",
+      "dr_run_ed10cc3347be552288079a9a588fddf5"
+    ],
+    "active": []
+  },
+  "after": {
+    "calls": 3795,
+    "ledgerSha256": "c0d9d7b7d6b57ea4d69f1ab510500a8af01e02ce2ef337d30d82d63e2fa64716",
+    "paused": [
+      "dr_run_4738564f5ff35157996a35068c62ed32",
+      "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+      "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+      "dr_run_86b3f181a5475e99aacca3dbf4370567",
+      "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+      "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+      "dr_run_e3521b1781825273b384a26a5edb8cdc",
+      "dr_run_e9c9dc916bef519092fad8b929b2448f",
+      "dr_run_ed10cc3347be552288079a9a588fddf5"
+    ],
+    "active": []
+  },
+  "ledgerAndUnknownsUnchanged": true,
+  "providerCalls": 0,
+  "diagnosis": "Per-passage live scope checks ran synchronously in the async GET route. Production Java thread dump showed scope-check reading paper BLOBs while other requests waited on Python. One per-request snapshot check plus thread offload removed repeated read overhead.",
+  "boundary": "Local same-run timing observation, not a load benchmark or content-quality pass. Existing authority is still rechecked on each read and on every model send; no permission cache."
+}

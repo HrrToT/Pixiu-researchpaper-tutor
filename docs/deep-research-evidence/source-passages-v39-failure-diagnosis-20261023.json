@@ -1,0 +1,18 @@
+{
+  "date": "2026-10-23",
+  "case": "E1-v39",
+  "sourceCommit": "ca0ad4f6",
+  "status": "failed",
+  "errorCode": "invalid_source_passage_state",
+  "modelExtractCalls": 0,
+  "savedPassageRows": 34,
+  "allSavedOutputDigestsMatch": true,
+  "rawVsCanonicalLocationDifferences": 34,
+  "diagnosis": "Located evidence factory resolves/removes indexed page hints; input locator and canonical evidence locator were incorrectly compared for full equality on the next reading wave. This was not evidence mutation.",
+  "fixContract": 3,
+  "inputWitnessVersion": 2,
+  "oldFailedRecordUnchanged": true,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "scientificApproval": false
+}

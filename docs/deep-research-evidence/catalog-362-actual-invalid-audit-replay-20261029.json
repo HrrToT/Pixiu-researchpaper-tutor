@@ -1,0 +1,62 @@
+{
+  "case": "M1G-v6",
+  "sourcePayloadSha256": "1dfe614937383f9cd06f8ae8fbfbf6a9d22d07bff32b20256be169311bbcf99c",
+  "results": [
+    {
+      "bindingCatalog": false,
+      "status": "invalid_response",
+      "gapCount": 1,
+      "catalog": null,
+      "inputBytes": 23577,
+      "invalidResponseStillRejected": true
+    },
+    {
+      "bindingCatalog": true,
+      "status": "invalid_response",
+      "gapCount": 1,
+      "catalog": [
+        {
+          "claimId": "c1",
+          "fields": [
+            "text",
+            "sourceAccessSummary"
+          ]
+        },
+        {
+          "claimId": "c2",
+          "fields": [
+            "text",
+            "sourceAccessSummary"
+          ]
+        },
+        {
+          "claimId": "c3",
+          "fields": [
+            "text",
+            "sourceAccessSummary"
+          ]
+        },
+        {
+          "claimId": "c4",
+          "fields": [
+            "text",
+            "sourceAccessSummary"
+          ]
+        },
+        {
+          "claimId": "c5",
+          "fields": [
+            "text",
+            "sourceAccessSummary"
+          ]
+        }
+      ],
+      "inputBytes": 23625,
+      "invalidResponseStillRejected": true
+    }
+  ],
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "independentCredit": 0,
+  "boundary": "Original invalid audit remains rejected. No new semantic verdict or content approval."
+}

@@ -1,0 +1,36 @@
+{
+  "date": "2026-10-25",
+  "case": "E1-v56",
+  "runId": "dr_run_4ed1d8203bf35cf5a7c2da7692fd8cdb",
+  "promptVersion": "dr-v2.20261025.266",
+  "status": "failed",
+  "errorCode": "invalid_workflow_unit_response",
+  "workflowMetadataRepairContractVersion": 4,
+  "errors": [
+    "unit.component",
+    "unit.output_capacity",
+    "unit.output_capacity"
+  ],
+  "finishReason": "stop",
+  "usage": {
+    "total_tokens": 9382,
+    "input_tokens": 7235,
+    "output_tokens": 2147
+  },
+  "maxOutputTokens": 3072,
+  "rawBytes": 8347,
+  "minifiedWireBytes": 4188,
+  "componentCount": 6,
+  "phaseCount": 13,
+  "reservedBaselineDeclaredAsComponent": true,
+  "responseDigest": "25452d7603501a8047c49a84e8059fa285f915c6057e04e9d0a4090e95abf14e",
+  "requestDigest": "3402e460b49295bad2dff25f129a2cb58a98a725b642f402de64cf8ef2363f38",
+  "rawSha256": "7e517096d860944c093e1f2b55e2c2d8959b406f8812a91c671270cec83b6a01",
+  "repairInvoked": false,
+  "initializersInvoked": false,
+  "providerCallsForDiagnosis": 0,
+  "productionWritesForDiagnosis": 0,
+  "scientificApproval": false,
+  "independentCredit": 0,
+  "boundary": "Complete stop response, not truncated. Raw 8KB cap and reserved component name correctly fail old contract4; minification is diagnosis only, not historical acceptance or semantic repair."
+}

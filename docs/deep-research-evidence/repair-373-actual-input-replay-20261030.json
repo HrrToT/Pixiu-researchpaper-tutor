@@ -1,0 +1,110 @@
+{
+  "promptVersion": "dr-v2.20261030.373",
+  "factualRepairGoalContractVersion": 2,
+  "case": "X4L-v6",
+  "payloadSha256": "3b97ddde3b4496f6c4676a5935d6eb77b2879f0d6b25511bf1cad2c0bd2316e0",
+  "preparation": {
+    "True": {
+      "prepared": [
+        {
+          "targets": [
+            "c1"
+          ],
+          "bytes": 23912,
+          "suppliedUnits": 8
+        },
+        {
+          "targets": [
+            "c2"
+          ],
+          "bytes": 23657,
+          "suppliedUnits": 5
+        },
+        {
+          "targets": [
+            "c3"
+          ],
+          "bytes": 23834,
+          "suppliedUnits": 5
+        },
+        {
+          "targets": [
+            "c1"
+          ],
+          "bytes": 23912,
+          "suppliedUnits": 8
+        },
+        {
+          "targets": [
+            "c2"
+          ],
+          "bytes": 23657,
+          "suppliedUnits": 5
+        },
+        {
+          "targets": [
+            "c3"
+          ],
+          "bytes": 23834,
+          "suppliedUnits": 5
+        }
+      ],
+      "error": null
+    },
+    "2": {
+      "prepared": [
+        {
+          "targets": [
+            "c1"
+          ],
+          "bytes": 23918,
+          "suppliedUnits": 9
+        },
+        {
+          "targets": [
+            "c2"
+          ],
+          "bytes": 23980,
+          "suppliedUnits": 7
+        },
+        {
+          "targets": [
+            "c3"
+          ],
+          "bytes": 23916,
+          "suppliedUnits": 7
+        },
+        {
+          "targets": [
+            "c1"
+          ],
+          "bytes": 23918,
+          "suppliedUnits": 9
+        },
+        {
+          "targets": [
+            "c2"
+          ],
+          "bytes": 23980,
+          "suppliedUnits": 7
+        },
+        {
+          "targets": [
+            "c3"
+          ],
+          "bytes": 23916,
+          "suppliedUnits": 7
+        }
+      ],
+      "error": null
+    }
+  },
+  "allOriginalCitationsAndMandatoryContextsRetained": true,
+  "allSuppliedQuotesExact": true,
+  "allOriginalTargetsUnchanged": true,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "boundary": "Offline complete preflight of every batch with controlled empty responses. Point hints are not source facts; table-only guidance omitted only with no actual tables/bindings; semantic findings are not waived."
+}

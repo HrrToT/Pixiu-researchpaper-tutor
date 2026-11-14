@@ -1,0 +1,91 @@
+{
+  "date": "2026-10-15",
+  "sourceCommit": "55c8e9c",
+  "promptVersion": "dr-v2.20261015.92",
+  "replay": {
+    "inputCase": "H5R-v12",
+    "before": [
+      {
+        "obligationId": "experiment_deliverable",
+        "status": "covered",
+        "criteria": [
+          {
+            "criterionId": "requested_scope",
+            "status": "covered"
+          },
+          {
+            "criterionId": "configuration",
+            "status": "covered"
+          },
+          {
+            "criterionId": "execution_analysis",
+            "status": "covered"
+          },
+          {
+            "criterionId": "limits",
+            "status": "covered"
+          }
+        ]
+      },
+      {
+        "obligationId": "answer_scope",
+        "status": "covered",
+        "criteria": []
+      }
+    ],
+    "after": [
+      {
+        "obligationId": "experiment_deliverable",
+        "status": "partial",
+        "missingDesignRoles": [
+          "controls"
+        ],
+        "criteria": [
+          {
+            "criterionId": "requested_scope",
+            "status": "covered"
+          },
+          {
+            "criterionId": "configuration",
+            "status": "partial",
+            "missingDesignRoles": [
+              "controls"
+            ]
+          },
+          {
+            "criterionId": "execution_analysis",
+            "status": "covered"
+          },
+          {
+            "criterionId": "limits",
+            "status": "covered"
+          }
+        ]
+      },
+      {
+        "obligationId": "answer_scope",
+        "status": "partial",
+        "missingDesignRoles": [
+          "controls"
+        ],
+        "criteria": []
+      }
+    ],
+    "inputUnchanged": true,
+    "semanticChecked": false,
+    "modelCalls": 0
+  },
+  "boundary": "The historical overall outcome was already partial. This corrects contradictory internal primary/whole-question covered verdicts; it does not rewrite the old run or perform semantic review.",
+  "tests": {
+    "fullPassed": 1492,
+    "warnings": 1,
+    "seconds": 57.15,
+    "log": "tmp/pytest-dr92-final.log"
+  },
+  "scopeRules": [
+    "Named data selection requires actual name/subset evidence; proposed split/resolution/budget need not reproduce author settings.",
+    "Explicit original-fact or reproduction requests remain in the complete mandatory user question.",
+    "Missing accepted v2 deliverables downgrade the relevant primary criterion and whole-question verdict. Present labels never establish scientific correctness.",
+    "Legacy unmarked plans keep their semantics; no auxiliary exemption while the real deliverable remains incomplete."
+  ]
+}

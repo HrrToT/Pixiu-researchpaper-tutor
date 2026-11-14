@@ -1,0 +1,38 @@
+{
+  "date": "2026-10-30",
+  "sourceCommit": "39e147c3",
+  "userAuthorized": "Backup-rename Docker/run and start once after all Docker processes exit",
+  "originalDirectoryEntries": [
+    {
+      "Name": "dockerInference",
+      "Attributes": 1056,
+      "Length": 0
+    },
+    {
+      "Name": "userAnalyticsOtlpHttp.sock",
+      "Attributes": 1056,
+      "Length": 0
+    }
+  ],
+  "rename": {
+    "backupExists": true,
+    "originalExists": false,
+    "backup": "C:\\Users\\Lenovo\\AppData\\Local\\Docker\\run.backup-20261030-coverage366"
+  },
+  "normalStartCommandExitCode": 0,
+  "engineRecovered": false,
+  "nextObservedError": "[2026-10-30T01:01:32.394032700Z][com.docker.backend.exe] backend crashed, dumping error to file and reporting to user: starting services: initializing Secrets Engine: listening on unix://<HOME>\\AppData\\Local\\docker-secrets-engine\\engine.sock: remove <HOME>\\AppData\\Local\\docker-secrets-engine\\engine.sock: The file cannot be accessed by the system. (listener: The filename, directory name, or volume label syntax is incorrect.)",
+  "backendTerminal": "Backend log shows shutdown vital services at 01:01:40 and monitor exit status 150",
+  "nextEndpointDirectoryEntries": [
+    {
+      "name": "engine.sock",
+      "length": 0,
+      "attributes": "Archive, ReparsePoint"
+    }
+  ],
+  "noContainerOrVolumeChanges": true,
+  "additionalWslShutdowns": 0,
+  "providerCalls": 0,
+  "postRecoveryDataVerified": false,
+  "nextRepairPerformed": false
+}

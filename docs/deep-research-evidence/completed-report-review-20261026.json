@@ -1,0 +1,243 @@
+{
+  "date": "2026-10-26",
+  "kind": "read-only historical report review",
+  "inputSha256": "9b902ddaffb45e6433dab6b1fc0a2deef7334649985ffcbbd7a82e1033f1820b",
+  "rows": [
+    {
+      "case": "D1",
+      "runId": "dr_run_70754e75a2c856bcadbaeafb3de0b036",
+      "claims": 2,
+      "citedEvidenceChecks": [
+        {
+          "evidenceId": "ev_ab9685875c28c1ea14d0b937d46acbe69e99bdfb53a13d0b0c5c698de8fcb2fd",
+          "sourceId": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-v2977684d0da4a8b6-chunk-38",
+          "exactQuoteInStoredSource": true,
+          "accessLevel": "fulltext"
+        },
+        {
+          "evidenceId": "ev_c95167a132259e9a1523f477c8a49434fa01eda5c668f4c1922082dbf9ea1190",
+          "sourceId": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-v2977684d0da4a8b6-chunk-26",
+          "exactQuoteInStoredSource": true,
+          "accessLevel": "fulltext"
+        },
+        {
+          "evidenceId": "ev_ffe2afc10303963ace5068705474a2c111bd99e53c60afe414460f77471fc747",
+          "sourceId": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-v2977684d0da4a8b6-chunk-38",
+          "exactQuoteInStoredSource": true,
+          "accessLevel": "fulltext"
+        }
+      ],
+      "numericBindings": [
+        {
+          "claimId": "c2",
+          "metric": "PSNR",
+          "group": "Mip-NeRF 360 Datasets",
+          "rowNumber": 10,
+          "expected": "27.13",
+          "actual": "27.13",
+          "matches": true
+        },
+        {
+          "claimId": "c2",
+          "metric": "SSIM",
+          "group": "Mip-NeRF 360 Datasets",
+          "rowNumber": 10,
+          "expected": "0.806",
+          "actual": "0.806",
+          "matches": true
+        },
+        {
+          "claimId": "c2",
+          "metric": "LPIPS",
+          "group": "Mip-NeRF 360 Datasets",
+          "rowNumber": 10,
+          "expected": "0.237",
+          "actual": "0.237",
+          "matches": true
+        },
+        {
+          "claimId": "c2",
+          "metric": "PSNR",
+          "group": "Mip-NeRF 360 Datasets",
+          "rowNumber": 8,
+          "expected": "27.21",
+          "actual": "27.21",
+          "matches": true
+        },
+        {
+          "claimId": "c2",
+          "metric": "SSIM",
+          "group": "Mip-NeRF 360 Datasets",
+          "rowNumber": 8,
+          "expected": "0.815",
+          "actual": "0.815",
+          "matches": true
+        },
+        {
+          "claimId": "c2",
+          "metric": "LPIPS",
+          "group": "Mip-NeRF 360 Datasets",
+          "rowNumber": 8,
+          "expected": "0.214",
+          "actual": "0.214",
+          "matches": true
+        }
+      ],
+      "claimTextChars": 209,
+      "visibleMainChars": 253,
+      "sections": [
+        {
+          "title": "判断",
+          "claimIds": [
+            "c1"
+          ]
+        },
+        {
+          "title": "未解决事项",
+          "claimIds": [
+            "c2"
+          ]
+        }
+      ]
+    },
+    {
+      "case": "H1F",
+      "runId": "dr_run_9490e39f37bc51f4803a4f0e7e73d881",
+      "claims": 3,
+      "citedEvidenceChecks": [
+        {
+          "evidenceId": "ev_53a20733d81449e6cca09191ffa6cd19d5f909f9adbe1b417e097e42e9772c27",
+          "sourceId": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-21",
+          "exactQuoteInStoredSource": true,
+          "accessLevel": "fulltext"
+        },
+        {
+          "evidenceId": "ev_bdb024b856972aab854c483acb7dfa600c4918cc401ccfcebcb14da2200b2d38",
+          "sourceId": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-3",
+          "exactQuoteInStoredSource": true,
+          "accessLevel": "fulltext"
+        },
+        {
+          "evidenceId": "ev_e26356dfb0f9a52b4e8e6490ad8668c7768c577629c80adc7d8a0d09449be010",
+          "sourceId": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-26",
+          "exactQuoteInStoredSource": true,
+          "accessLevel": "fulltext"
+        },
+        {
+          "evidenceId": "ev_e7de61ef0fd681ab0977e7b9fe49a474f093c8e746ee3127ae06cf46e827401d",
+          "sourceId": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-26",
+          "exactQuoteInStoredSource": true,
+          "accessLevel": "fulltext"
+        },
+        {
+          "evidenceId": "ev_f51816e595f8373d3a4ec3dd73ea8147f5eb4a359e0f6b53a04cb89e24cfb73b",
+          "sourceId": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-3",
+          "exactQuoteInStoredSource": true,
+          "accessLevel": "fulltext"
+        }
+      ],
+      "numericBindings": [],
+      "claimTextChars": 182,
+      "visibleMainChars": 203,
+      "sections": [
+        {
+          "title": "判断",
+          "claimIds": [
+            "c1",
+            "c2",
+            "c3"
+          ]
+        },
+        {
+          "title": "支持证据",
+          "claimIds": [
+            "c1",
+            "c2",
+            "c3"
+          ]
+        }
+      ]
+    },
+    {
+      "case": "H3F",
+      "runId": "dr_run_1e5563cfebfd516db26e3c213b266ca1",
+      "claims": 2,
+      "citedEvidenceChecks": [
+        {
+          "evidenceId": "ev_021a1266194b55cf8c1bde31c56b755bf2a31f13b1e24a8f42d77c2e5c5570ec",
+          "sourceId": "src_773956ee68f6e10f508558d6bcaa8f962d251d51893649f18b8e13090e37c0f0",
+          "exactQuoteInStoredSource": true,
+          "accessLevel": "fulltext"
+        },
+        {
+          "evidenceId": "ev_0d56c2481a75c0ab3ca22e9768c6fc7957b42ce6722655b2180d934c811aa0f5",
+          "sourceId": "src_b4b41816d25cd818a9e24422dbccdf7aa8cf8f70c21c714d740fcdf09ee34cb2",
+          "exactQuoteInStoredSource": true,
+          "accessLevel": "fulltext"
+        },
+        {
+          "evidenceId": "ev_359b9a72fa18a0f1df895faf3d5cf272cbe7fb665b937bd62ab188cdd69be989",
+          "sourceId": "src_b4b41816d25cd818a9e24422dbccdf7aa8cf8f70c21c714d740fcdf09ee34cb2",
+          "exactQuoteInStoredSource": true,
+          "accessLevel": "fulltext"
+        },
+        {
+          "evidenceId": "ev_9d3d1cc2c3fa36b8d2ac724f7837efebb0056bf6e7889836ad3cc91a8aa55ffe",
+          "sourceId": "src_0d5153da2f51c4551065386438a6e04bceca36a4d5777f3598ee92866d2ffae7",
+          "exactQuoteInStoredSource": true,
+          "accessLevel": "fulltext"
+        },
+        {
+          "evidenceId": "ev_ab04ecf440ade16bea0cd5b19606f1d778c6ea1521a857535bd89c167094e8c2",
+          "sourceId": "src_0d5153da2f51c4551065386438a6e04bceca36a4d5777f3598ee92866d2ffae7",
+          "exactQuoteInStoredSource": true,
+          "accessLevel": "fulltext"
+        },
+        {
+          "evidenceId": "ev_b30b47a7f4d47439f7bb6d0e575d8cb82255a831f45ad33cb696d8e3f374c201",
+          "sourceId": "src_0d5153da2f51c4551065386438a6e04bceca36a4d5777f3598ee92866d2ffae7",
+          "exactQuoteInStoredSource": true,
+          "accessLevel": "fulltext"
+        },
+        {
+          "evidenceId": "ev_c1fe84a7f2abdbc7df2e403ce40382124bfba7aee91dd73bda0bf97a1f12011d",
+          "sourceId": "src_b4b41816d25cd818a9e24422dbccdf7aa8cf8f70c21c714d740fcdf09ee34cb2",
+          "exactQuoteInStoredSource": true,
+          "accessLevel": "fulltext"
+        }
+      ],
+      "numericBindings": [],
+      "claimTextChars": 328,
+      "visibleMainChars": 384,
+      "sections": [
+        {
+          "title": "核心判断",
+          "claimIds": [
+            "c1",
+            "c2"
+          ]
+        }
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "case": "D1",
+      "issue": "supported_inference_under_unresolved_heading",
+      "nextAction": "Review deterministic report grouping without changing stored legacy reports."
+    },
+    {
+      "case": "H3F",
+      "issue": "claim_limit_does_not_bound_final_visible_answer",
+      "claimTextChars": 328,
+      "visibleMainChars": 384,
+      "requestedLimit": 350,
+      "method": "before details; replace markdown links with labels; remove list/heading markup and whitespace; retain punctuation",
+      "nextAction": "Check final rendering budget and consolidate access/verification boilerplate."
+    }
+  ],
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "independentCredit": 0,
+  "boundary": "15 cited quotes match stored fulltext excerpts; six D1 values match stored grouped row packets. This is not a new run, full-paper scientific review, current-version quality gate, or independent approval."
+}

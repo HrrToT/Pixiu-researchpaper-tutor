@@ -1,0 +1,15 @@
+{
+  "date": "2026-10-18",
+  "sourceCommit": "ce1fdf7d",
+  "promptVersion": "dr-v2.20261018.177",
+  "offline": {"passed": 2866, "warnings": 1, "seconds": 178.73, "log": "tmp/pytest-dr177-full.log"},
+  "focused": {"passed": 84, "seconds": 3.53, "overlapsFull": true},
+  "changes": [
+    "Server5 conservatively classifies eligible purely qualitative why targets as inference, without an optional model kind field. Other target kinds and every original citation remain fixed.",
+    "Durable original reports and classification changes remain; every inference still needs independent support/logic/scope and final coverage checks. Unsupported necessity/uniqueness is not approved by classification.",
+    "Numeric laundering guards cover Arabic values, spelled Chinese counts including hundreds, measured ratios and table bindings. Same one rewrite and original budgets/caps.",
+    "Unknown old policy4 requests cannot be retargeted. Seven actual old Provider fingerprints match, no historical outcome upgraded."
+  ],
+  "replay": "docs/deep-research-evidence/server-classification-legacy-replay-20261018.json",
+  "boundary": "Offline classification/negative fixtures do not establish real novice readability or independent acceptance."
+}

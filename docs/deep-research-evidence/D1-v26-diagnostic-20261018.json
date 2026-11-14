@@ -1,0 +1,296 @@
+{
+  "date": "2026-10-18",
+  "case": "D1-v26",
+  "runId": "dr_run_6bc600d3b4d15770aee13a7d65018d51",
+  "sourceCommit": "279edb95",
+  "promptVersion": "dr-v2.20261018.170",
+  "status": "completed",
+  "machineOutcome": "partial",
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "modelCalls": 12,
+  "settledTokens": 54573,
+  "elapsedSeconds": 177.509,
+  "cost": null,
+  "actualSynthesisFingerprintMatched": true,
+  "actualSynthesisOptions": {
+    "max_tokens": 8192,
+    "temperature": 0.2,
+    "thinking": {
+      "type": "enabled"
+    },
+    "reasoning_effort": "high",
+    "response_format": {
+      "type": "json_object"
+    }
+  },
+  "findings": [
+    "Actual synthesis uses the correct source row identities 8 and 10 for the main-table metric pair. All declared cell references are checked before semantic review.",
+    "The initial semantic response says passed, but comparisonAudit.scope includes a colon and explanatory prose instead of the exact within_study enum. The server conservatively rejects it as comparison_premise_not_established; this is an audit-format failure, not a negative factual verdict.",
+    "The second draft is blocked by absence_not_established for the nominal label 未验证范围 and the nonassertive phrase 不能证明...未测试维度. These grammatical contexts do not themselves assert author-wide omission. They still require independent semantic review.",
+    "Repair publishes only one limited supplemental result. The whole requested two-point main-table judgement is not satisfied; final coverage remains partial. No content or independent acceptance credit."
+  ],
+  "scores": null,
+  "privateDraftingAudit": {
+    "c1": {
+      "premiseStatus": "established",
+      "observations": [
+        {
+          "evidenceId": "E9",
+          "quote": "Table row 10: Ours | 237 | 45MB | 27.13 | 0.806 | 0.237 | 357 | 25MB | 23.44 | 0.832 | 0.202"
+        },
+        {
+          "evidenceId": "E5",
+          "quote": "Table row 8: 3D-GS [16] | 134 | 734MB | 27.21 | 0.815 | 0.214 | 154 | 411MB | 23.14 | 0.841 | 0.183"
+        }
+      ],
+      "scopeDecision": "reported_case",
+      "unresolved": "未覆盖其他数据集与质量维度"
+    },
+    "c2": {
+      "premiseStatus": "not_established",
+      "observations": [
+        {
+          "evidenceId": "E9",
+          "quote": "Table row 10: Ours | 237 | 45MB | 27.13 | 0.806 | 0.237 | 357 | 25MB | 23.44 | 0.832 | 0.202"
+        },
+        {
+          "evidenceId": "E12",
+          "quote": "Overall comparisons with previous methods are listed in Table7, where we observe our LightGaussian markedly reduces the average storage size from 52.38MB to 7.89MB, while improving the FPS from 310 to 411 with only a slight rendering quality decrease."
+        },
+        {
+          "evidenceId": "E13",
+          "quote": "Both 3D-GS and LightGaussian exhibit comparable visual quality, even in challenging scenes with thin structures, showing that LightGaussian effectively removes redundancy while preserving reconstruction fidelity."
+        }
+      ],
+      "scopeDecision": "bounded_inference",
+      "unresolved": "不能证明普遍接近"
+    }
+  },
+  "privateRepairDraftingAudit": {
+    "0": [
+      {
+        "claimId": "c1",
+        "basis": {
+          "premiseStatus": "established",
+          "observations": [
+            {
+              "evidenceId": "E3",
+              "quote": "Both 3D-GS and LightGaussian exhibit comparable visual quality, even in challenging scenes with thin structures, showing that LightGaussian effectively removes redundancy while preserving reconstruction fidelity."
+            }
+          ],
+          "scopeDecision": "reported_case",
+          "unresolved": "仅限定性比较，未提供定量阈值或统计检验"
+        }
+      },
+      {
+        "claimId": "c2",
+        "basis": {
+          "premiseStatus": "not_established",
+          "observations": [
+            {
+              "evidenceId": "E13",
+              "quote": "Overall comparisons with previous methods are listed in Table7, where we observe our LightGaussian markedly reduces the average storage size from 52.38MB to 7.89MB, while improving the FPS from 310 to 411 with only a slight rendering quality decrease."
+            }
+          ],
+          "scopeDecision": "bounded_inference",
+          "unresolved": "E13仅涉及NeRF-Synthetic数据集，未提供与原始3DGS的直接定量对比"
+        }
+      }
+    ]
+  },
+  "draft": {
+    "claims": [
+      {
+        "claimId": "c1",
+        "text": "报告结果：在Mip-NeRF 360数据集上，压缩后Ours与原始3D-GS的PSNR/SSIM/LPIPS接近（27.13 vs 27.21；0.806 vs 0.815；0.237 vs 0.214），作者称视觉质量相当。仅覆盖该数据集与指标。",
+        "kind": "reported",
+        "evidenceRefs": [
+          "ev_ab9685875c28c1ea14d0b937d46acbe69e99bdfb53a13d0b0c5c698de8fcb2fd",
+          "ev_ffe2afc10303963ace5068705474a2c111bd99e53c60afe414460f77471fc747",
+          "ev_c95167a132259e9a1523f477c8a49434fa01eda5c668f4c1922082dbf9ea1190"
+        ],
+        "conditions": {},
+        "obligationIds": [
+          "ob_1",
+          "ob_2",
+          "ob_3"
+        ],
+        "detailLevel": "fulltext",
+        "tableBindings": [
+          {
+            "evidenceId": "ev_ab9685875c28c1ea14d0b937d46acbe69e99bdfb53a13d0b0c5c698de8fcb2fd",
+            "rowNumber": 8,
+            "groupIndex": 0,
+            "metric": "PSNR",
+            "value": "27.21"
+          },
+          {
+            "evidenceId": "ev_ab9685875c28c1ea14d0b937d46acbe69e99bdfb53a13d0b0c5c698de8fcb2fd",
+            "rowNumber": 8,
+            "groupIndex": 0,
+            "metric": "SSIM",
+            "value": "0.815"
+          },
+          {
+            "evidenceId": "ev_ab9685875c28c1ea14d0b937d46acbe69e99bdfb53a13d0b0c5c698de8fcb2fd",
+            "rowNumber": 8,
+            "groupIndex": 0,
+            "metric": "LPIPS",
+            "value": "0.214"
+          },
+          {
+            "evidenceId": "ev_ffe2afc10303963ace5068705474a2c111bd99e53c60afe414460f77471fc747",
+            "rowNumber": 10,
+            "groupIndex": 0,
+            "metric": "PSNR",
+            "value": "27.13"
+          },
+          {
+            "evidenceId": "ev_ffe2afc10303963ace5068705474a2c111bd99e53c60afe414460f77471fc747",
+            "rowNumber": 10,
+            "groupIndex": 0,
+            "metric": "SSIM",
+            "value": "0.806"
+          },
+          {
+            "evidenceId": "ev_ffe2afc10303963ace5068705474a2c111bd99e53c60afe414460f77471fc747",
+            "rowNumber": 10,
+            "groupIndex": 0,
+            "metric": "LPIPS",
+            "value": "0.237"
+          }
+        ]
+      },
+      {
+        "claimId": "c2",
+        "text": "未验证范围：接近仅基于LightGaussian报告的数据集（Mip-NeRF 360、Tank&Temple、NeRF-Synthetic）和指标；有限观测不能证明所有场景或未测试维度均接近原始3DGS。",
+        "kind": "inference",
+        "evidenceRefs": [
+          "ev_ffe2afc10303963ace5068705474a2c111bd99e53c60afe414460f77471fc747",
+          "ev_7100e9cd338f35b20485d56d9f30d38726a463a0c101a4d4cd3e678bb69b7436",
+          "ev_c95167a132259e9a1523f477c8a49434fa01eda5c668f4c1922082dbf9ea1190"
+        ],
+        "conditions": {},
+        "obligationIds": [
+          "ob_1",
+          "ob_2",
+          "ob_3"
+        ],
+        "detailLevel": "fulltext",
+        "tableBindings": []
+      }
+    ],
+    "sections": [
+      {
+        "title": "判断",
+        "claimIds": [
+          "c1"
+        ]
+      },
+      {
+        "title": "未解决事项",
+        "claimIds": [
+          "c2"
+        ]
+      }
+    ]
+  },
+  "repairDraft": [
+    {
+      "claimId": "c1",
+      "kind": "reported",
+      "text": "作者报告在定性比较中，LightGaussian与3D-GS在包含薄结构的挑战性场景下视觉质量相当。该结论仅基于Fig.4的渲染结果，未给出定量指标或统计检验。",
+      "evidenceRefs": [
+        "ev_c95167a132259e9a1523f477c8a49434fa01eda5c668f4c1922082dbf9ea1190"
+      ],
+      "tableBindings": [],
+      "conditions": {},
+      "detailLevel": "fulltext",
+      "obligationIds": [
+        "ob_1",
+        "ob_2",
+        "ob_3"
+      ]
+    },
+    {
+      "claimId": "c2",
+      "kind": "inference",
+      "text": "在NeRF-Synthetic数据集上，LightGaussian相比原始3DGS存储大幅降低且FPS提升，但渲染质量仅有轻微下降。该结论不能推广到其他数据集或证明与原始3DGS在所有条件下质量接近。",
+      "evidenceRefs": [
+        "ev_7100e9cd338f35b20485d56d9f30d38726a463a0c101a4d4cd3e678bb69b7436"
+      ],
+      "tableBindings": [],
+      "conditions": {},
+      "detailLevel": "fulltext",
+      "obligationIds": [
+        "ob_1",
+        "ob_2",
+        "ob_3"
+      ]
+    }
+  ],
+  "initialVerification": {
+    "accepted": [],
+    "rejected": [
+      {
+        "claimId": "c2",
+        "reason": "absence_not_established",
+        "detail": "本条引用没有明确建立作者或论文缺少这些验证。把结论限定为本次引用能支持的实验范围及其不能证明的推广；不要写成作者未在其他条件验证、论文没有提供或全文不存在。引用中的其他否定句不构成这项缺席判断的依据。"
+      },
+      {
+        "claimId": "c1",
+        "reason": "semantic_unresolved",
+        "detail": "比较条件或推断前提尚未核实：comparison_premise_not_established"
+      }
+    ]
+  },
+  "repairChecks": {
+    "accepted": [
+      {
+        "claimId": "c2",
+        "kind": "inference",
+        "text": "在NeRF-Synthetic数据集上，LightGaussian相比原始3DGS存储大幅降低且FPS提升，但渲染质量仅有轻微下降。该结论不能推广到其他数据集或证明与原始3DGS在所有条件下质量接近。",
+        "evidenceRefs": [
+          "ev_7100e9cd338f35b20485d56d9f30d38726a463a0c101a4d4cd3e678bb69b7436"
+        ],
+        "tableBindings": [],
+        "conditions": {},
+        "detailLevel": "fulltext",
+        "obligationIds": [
+          "ob_1",
+          "ob_2",
+          "ob_3"
+        ],
+        "verification": "semantic_passed"
+      }
+    ],
+    "rejected": [
+      {
+        "claimId": "c1",
+        "reason": "absence_not_established",
+        "detail": "本条引用没有明确建立作者或论文缺少这些验证。把结论限定为本次引用能支持的实验范围及其不能证明的推广；不要写成作者未在其他条件验证、论文没有提供或全文不存在。引用中的其他否定句不构成这项缺席判断的依据。"
+      }
+    ]
+  },
+  "report": "## 未解决事项\n\n- 有依据的推断：在NeRF-Synthetic数据集上，LightGaussian相比原始3DGS存储大幅降低且FPS提升，但渲染质量仅有轻微下降。该结论不能推广到其他数据集或证明与原始3DGS在所有条件下质量接近。 [1](#research-evidence-ev_7100e9cd338f35b20485d56d9f30d38726a463a0c101a4d4cd3e678bb69b7436)\n\n<details>\n<summary>还有 3 项未完成</summary>\n\n- 只依据LightGaussian，核查压缩后图像质量接近原始3DGS这一说法。：最终回答尚未完整回应这一问题\n- 只依据LightGaussian，核查压缩后图像质量接近原始3DGS这一说法。：最终回答尚未完整回应这一问题\n- 只依据LightGaussian，核查压缩后图像质量接近原始3DGS这一说法。：最终回答尚未完整回应这一问题\n\n</details>\n\n推断限于所列证据和适用条件。\n\n<details>\n<summary>原文依据</summary>\n\n**[1] LightGaussian: Unbounded 3D Gaussian Compression with 15x Reduction and 200+ FPS** · 全文片段\n\n> Overall comparisons with previous methods are listed in Table7, where we observe our LightGaussian markedly reduces the average storage size from 52.38MB to 7.89MB, while improving the FPS from 310 to 411 with only a slight rendering quality decrease.\n\n</details>",
+  "rawFiles": [
+    {
+      "path": "tmp/dr-acceptance-receipts/D1-v26.json",
+      "sha256": "40f45314e1d2211f4ad2e2bcd377d513624322d4073c57970fa8130ec412d82d"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/D1-v26.payload.json",
+      "sha256": "609235e35b49974d5d9325f90f64b1d2462f7b878b3ffc9adeaea7b9cf644b89"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/D1-v26.calls.json",
+      "sha256": "53abd6305da0382f375f3cc71e9d24911c3be9e09395d3e3a0a30dd1af70c512"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/D1-v26.result.json",
+      "sha256": "b9d36cfe7b78177d6c4ea89a2e68c4c2fb8c711efa7c7dc3c5d29b9cb7c24a8c"
+    }
+  ],
+  "boundary": "One explicit submission after a concrete generation-profile change, all calls settled. Failed content is not retried unchanged or upgraded. No independent credit."
+}

@@ -1,0 +1,480 @@
+{
+  "mode": "Saved68-source pool -> actual read node/read_acquired_source -> source_passages.extract -> actual synthesis input;0 provider/network calls",
+  "promptVersion": "dr-v2.20261105.390",
+  "readingPriorityContractVersion": 6,
+  "factualPromptContractVersion": 2,
+  "sourceRun": "dr_run_e792ce01a8da5a8eb6ac2543b972fb7c",
+  "scope": "Known retired G1N final acquired pool. This is transmission and provenance evidence, not fresh acquisition or content acceptance.",
+  "readRows": 12,
+  "literalEvidenceRows": 60,
+  "synthesisRows": 14,
+  "promptBytes": 23961,
+  "fixedInputBytes": 14156,
+  "unchangedReadAndInputCaps": true,
+  "allFrozenCriteriaAndSourcesRetained": true,
+  "keyChecks": {
+    "planeParameterOperation": true,
+    "trainingDepthToTsdf": true,
+    "bothMeshPaths": true,
+    "bothHardware": true
+  },
+  "everyQuoteFromExactOwnedSource": true,
+  "selectedReadSources": [
+    {
+      "sourceId": "src_fe89a648be60bf461b5de22692cb30e94638548089eb5d1f8d1e19f259580189",
+      "workId": "arxiv:2406.06521",
+      "versionId": "arxiv:2406.06521v1",
+      "contentHash": "42d2f62bb336cf6dacc11acacc03f60babc34b1cb5d7596ce9fdf2346ac48ee5",
+      "location": {
+        "page": 5,
+        "offset": 0,
+        "section": "",
+        "sectionRole": "unknown"
+      }
+    },
+    {
+      "sourceId": "src_3b61f57ba96bc82fd6b4c45297a79506d28fccf2cd00d5ca1be4e603dd760f52",
+      "workId": "arxiv:2404.10772",
+      "versionId": "arxiv:2404.10772v1",
+      "contentHash": "d0b7e72aa986fe0ce875e9a1ece20d67e0804d02ef0d98e5c83a1152c97f5d6f",
+      "location": {
+        "page": 3,
+        "offset": 2022,
+        "section": "3 METHOD / 3.1 Modeling",
+        "sectionRole": "method"
+      }
+    },
+    {
+      "sourceId": "src_2b46f4a782e8b3da2cc83ca2194d65ddd9b0ee6c3b4573cf228326c3b922375d",
+      "workId": "arxiv:2406.06521",
+      "versionId": "arxiv:2406.06521v1",
+      "contentHash": "42d2f62bb336cf6dacc11acacc03f60babc34b1cb5d7596ce9fdf2346ac48ee5",
+      "location": {
+        "page": 4,
+        "offset": 0,
+        "section": "",
+        "sectionRole": "unknown"
+      }
+    },
+    {
+      "sourceId": "src_658719b375ec743a57d235826b1c664100ab024172015449e31d5db71ac85a03",
+      "workId": "arxiv:2404.10772",
+      "versionId": "arxiv:2404.10772v1",
+      "contentHash": "d0b7e72aa986fe0ce875e9a1ece20d67e0804d02ef0d98e5c83a1152c97f5d6f",
+      "location": {
+        "page": 4,
+        "offset": 4052,
+        "section": "3 METHOD / 3.4 Surface Extraction",
+        "sectionRole": "method"
+      }
+    },
+    {
+      "sourceId": "src_25da97de783f68c561500ed5d3338c0867cc720568228e7bd3dc6ac1a1d48d34",
+      "workId": "arxiv:2406.06521",
+      "versionId": "arxiv:2406.06521v1",
+      "contentHash": "42d2f62bb336cf6dacc11acacc03f60babc34b1cb5d7596ce9fdf2346ac48ee5",
+      "location": {
+        "page": 9,
+        "offset": 0,
+        "section": "",
+        "sectionRole": "unknown"
+      }
+    },
+    {
+      "sourceId": "src_d250a78ac2108f0758cdab25e2f8743635485bc3d79911d1ff81399b38ff914b",
+      "workId": "arxiv:2404.10772",
+      "versionId": "arxiv:2404.10772v1",
+      "contentHash": "d0b7e72aa986fe0ce875e9a1ece20d67e0804d02ef0d98e5c83a1152c97f5d6f",
+      "location": {
+        "page": 6,
+        "offset": 0,
+        "section": "4.2 Geometry Evaluation",
+        "sectionRole": "other"
+      }
+    },
+    {
+      "sourceId": "src_b1f727b14731367bc9afd867cbd9641c287f0092af3e0a33649d22babaa9b83f",
+      "workId": "arxiv:2406.06521",
+      "versionId": "arxiv:2406.06521v1",
+      "contentHash": "42d2f62bb336cf6dacc11acacc03f60babc34b1cb5d7596ce9fdf2346ac48ee5",
+      "location": {
+        "page": 9,
+        "offset": 2028,
+        "section": "",
+        "sectionRole": "unknown"
+      }
+    },
+    {
+      "sourceId": "src_9ce5d9bb2f3bb3e109d006246ccf1be85be6f6c3aaf28e5cd94ab62babaa6111",
+      "workId": "arxiv:2404.10772",
+      "versionId": "arxiv:2404.10772v1",
+      "contentHash": "d0b7e72aa986fe0ce875e9a1ece20d67e0804d02ef0d98e5c83a1152c97f5d6f",
+      "location": {
+        "page": 7,
+        "offset": 1655,
+        "section": "4.4 Ablation Study",
+        "sectionRole": "unknown"
+      }
+    },
+    {
+      "sourceId": "src_9e45c8749b31b020988b49b91a6eaf84676e0dfe640c07854d74372d142182f6",
+      "workId": "arxiv:2406.06521",
+      "versionId": "arxiv:2406.06521v1",
+      "contentHash": "42d2f62bb336cf6dacc11acacc03f60babc34b1cb5d7596ce9fdf2346ac48ee5",
+      "location": {
+        "page": 8,
+        "offset": 4086,
+        "section": "",
+        "sectionRole": "unknown"
+      }
+    },
+    {
+      "sourceId": "src_2255982b5e8cf2c4634eecf575b42e5250739ea975772d4e0eb7c24f6e7c8561",
+      "workId": "arxiv:2404.10772",
+      "versionId": "arxiv:2404.10772v1",
+      "contentHash": "d0b7e72aa986fe0ce875e9a1ece20d67e0804d02ef0d98e5c83a1152c97f5d6f",
+      "location": {
+        "page": 5,
+        "offset": 3782,
+        "section": "4.1 Implementation Details",
+        "sectionRole": "method"
+      }
+    },
+    {
+      "sourceId": "src_236b8fca32a89495f2d163202f5622097fd115f899ff3f4ae2c065a4069656d0",
+      "workId": "arxiv:2406.06521",
+      "versionId": "arxiv:2406.06521v1",
+      "contentHash": "42d2f62bb336cf6dacc11acacc03f60babc34b1cb5d7596ce9fdf2346ac48ee5",
+      "location": {
+        "page": 8,
+        "offset": 0,
+        "section": "",
+        "sectionRole": "unknown"
+      }
+    },
+    {
+      "sourceId": "src_1da3885bc3ca762919ccd494deee237555b9334c60193cfc0dd528e5473669de",
+      "workId": "arxiv:2404.10772",
+      "versionId": "arxiv:2404.10772v1",
+      "contentHash": "d0b7e72aa986fe0ce875e9a1ece20d67e0804d02ef0d98e5c83a1152c97f5d6f",
+      "location": {
+        "page": 6,
+        "offset": 2030,
+        "section": "4.3 Novel view Synthesis",
+        "sectionRole": "unknown"
+      }
+    }
+  ],
+  "suppliedOwnEvidence": [
+    {
+      "evidenceId": "ev_fc4e9fc637666506af728a9cd4fee2aec62fa6effa427b8399d49c4f17830927",
+      "sourceWorkId": "arxiv:2406.06521",
+      "sourceVersionId": "arxiv:2406.06521v1",
+      "contentHash": "42d2f62bb336cf6dacc11acacc03f60babc34b1cb5d7596ce9fdf2346ac48ee5",
+      "quote": "5\nFig. 5: The rendering and mesh reconstruction results in various indoor and outdoor scenes that we have achieved. PGSR achieves high-precision\ngeometric reconstruction from a series of RGB images without requiring any prior knowledge.",
+      "location": {
+        "page": 5,
+        "offset": 0,
+        "section": "",
+        "sectionRole": "unknown",
+        "sourcePassageStart": 0,
+        "sourcePassageEnd": 236
+      }
+    },
+    {
+      "evidenceId": "ev_6e14d5193e69c79f3b2fa464ea06f08abcf606a71c37deb48c0a876dbdad9340",
+      "sourceWorkId": "arxiv:2406.06521",
+      "sourceVersionId": "arxiv:2406.06521v1",
+      "contentHash": "42d2f62bb336cf6dacc11acacc03f60babc34b1cb5d7596ce9fdf2346ac48ee5",
+      "quote": "\nHere, Rirepresents the orthonormal basis of the ellipsoid’s\nthree axes, and the scale factor Sidefines the size along each\ndirection. By compressing the scale factor along specific axes,\nthe Gaussian ellipsoid can be flattened into planes aligned\nwith those axes. We compress the Gaussian ellipsoid along the\ndirection of the minimum scale factor, effectively flattening the\nellipsoid into a plane closest to its original shape.",
+      "location": {
+        "page": 5,
+        "offset": 0,
+        "section": "",
+        "sectionRole": "unknown",
+        "sourcePassageStart": 902,
+        "sourcePassageEnd": 1331
+      }
+    },
+    {
+      "evidenceId": "ev_d9714d53fb3219d25b98cbe348699fc00c9843d748c9b4f55b0d93ff06edb45a",
+      "sourceWorkId": "arxiv:2404.10772",
+      "sourceVersionId": "arxiv:2404.10772v1",
+      "contentHash": "d0b7e72aa986fe0ce875e9a1ece20d67e0804d02ef0d98e5c83a1152c97f5d6f",
+      "quote": "3.1 Modeling\nSimilar to prior works [Kerbl et al .2023; Zwicker et al .2001], we\nrepresent the scene with a set of 3D Gaussian primitives {G𝑘|𝑘=\n1,···,𝐾}. The geometry of each 3D Gaussian G𝑘is parameterized\nby an opacity 𝛼𝑘∈[0,1], center p𝑘∈R3×1, scale s∈R3×1, and\nrotation R∈R3×3parameterized by a quaternion:\nG𝑘(x)=𝛼𝑘𝑒−1\n2(x−p𝑘)𝑇𝚺−1\n𝑘(x−p𝑘)(1)\nwhere 𝚺𝑘∈R3×3is a covariance matrix defined as 𝚺𝑘=R𝑘s𝑘s𝑇\n𝑘R𝑇\n𝑘.\nRay Gaussian Intersection: Instead of projecting 3D Gaussians\nto 2D screen space and evaluating the Gaussian in 2D, we evaluate\nthe contribution of a Gaussian to a ray with explicit ray-Gaussian\nintersection [Gao et al .2023; Keselman and Hebert 2022].",
+      "location": {
+        "page": 3,
+        "offset": 2022,
+        "section": "3 METHOD / 3.1 Modeling",
+        "sectionRole": "method",
+        "sourcePassageStart": 0,
+        "sourcePassageEnd": 662
+      }
+    },
+    {
+      "evidenceId": "ev_e3d7cc78021a29706c9154278704d4bf8d26892a76bb6e9b3e0c928ec207f110",
+      "sourceWorkId": "arxiv:2404.10772",
+      "sourceVersionId": "arxiv:2404.10772v1",
+      "contentHash": "d0b7e72aa986fe0ce875e9a1ece20d67e0804d02ef0d98e5c83a1152c97f5d6f",
+      "quote": " To circumvent these challenges, we intro-\nduce a novel method for extracting compact and adaptive meshes\nusing tetrahedral grids.\nTetrahedral Grids Generation: Our primary insight is that the\nposition and scale of 3D Gaussian primitives serve as reliable indica-\ntors for the presence of surfaces. To capitalize on this, we generate a\n3D bounding box at 3-sigma around each Gaussian primitive, where\nits center has highest opacity and its corners have smallest opacity.",
+      "location": {
+        "page": 4,
+        "offset": 4052,
+        "section": "3 METHOD / 3.4 Surface Extraction",
+        "sectionRole": "method",
+        "sourcePassageStart": 1053,
+        "sourcePassageEnd": 1523
+      }
+    },
+    {
+      "evidenceId": "ev_5eeb225bc9ec31711ba9d3440776342cb4e9499593e0b3a8c4a3cf94690120ea",
+      "sourceWorkId": "arxiv:2406.06521",
+      "sourceVersionId": "arxiv:2406.06521v1",
+      "contentHash": "42d2f62bb336cf6dacc11acacc03f60babc34b1cb5d7596ce9fdf2346ac48ee5",
+      "quote": "9\nTABLE II: Quantitative results of chamfer distance(mm) ↓on DTU dataset [23]. PGSR achieves the highest reconstruction accuracy and is over 100 times\nfaster than the SDF method based on NeRF.\n24 37 40 55 63 65 69 83 97 105 106 110 114 118 122 Mean Time\nV olSDF [60] 1.14 1.26 0.81 0.49 1.25 0.70 0.72 1.29 1.18 0.70 0.66 1.08 0.42 0.61 0.55 0.86 >12h\nNeuS [56] 1.00 1.37 0.93 0.43 1.10 0.65 0.57 1.48 1.09 0.83 0.52 1.20 0.35 0.49 0.54 0.84 >12h\nNeuralangelo [33] 0.37 0.72 0.35 0.35 0.87 0.54 0.53 1.29 0.97 0.73 0.47 0.74 0.32 0.41 0.43 0.61 >128h\nSuGaR [19] 1.47 1.33 1.13 0.61 2.25 1.71 1.15 1.63 1.62 1.07 0.79 2.45 0.98 0.88 0.79 1.33 1h\n2DGS [21] 0.48 0.91 0.39 0.39 1.01 0.83 0.81 1.36 1.27 0.76 0.70 1.40 0.40 0.76 0.52 0.80 0.32h\nGOF [69] 0.50 0.82 0.37 0.37 1.12 0.74 0.73 1.18 1.29 0.68 0.77 0.90 0.42 0.66 0.49 0.74 2h\nPGSR(DS) 0.34 0.58 0.29 0.29 0.78 0.58 0.54 1.01 0.73 0.51 0.49 0.69 0.31 0.37 0.38 0.53 0.6h\nPGSR 0.31 0.52 0.27 0.27 0.76 0.54 0.49 0.98 0.69 0.49 0.46 0.56 0.28 0.35 0.36 0.49 1.0h\nTABLE III: Quantitative results of F1 Score ↑for reconstruction on Tanks\nand Temples dataset.",
+      "location": {
+        "page": 9,
+        "offset": 0,
+        "section": "",
+        "sectionRole": "unknown",
+        "sourcePassageStart": 0,
+        "sourcePassageEnd": 1110
+      }
+    },
+    {
+      "evidenceId": "ev_31cc037797cad9d3dd0aff72dbeb148242626e9a9054c87db6fd63b1979dd323",
+      "sourceWorkId": "arxiv:2404.10772",
+      "sourceVersionId": "arxiv:2404.10772v1",
+      "contentHash": "d0b7e72aa986fe0ce875e9a1ece20d67e0804d02ef0d98e5c83a1152c97f5d6f",
+      "quote": " Quantitative comparison on the DTU Dataset [Jensen et al .2014] . We show the Chamfer distance and average optimization time. Our method\nachieves the highest reconstruction accuracy among other explicit methods.",
+      "location": {
+        "page": 6,
+        "offset": 0,
+        "section": "4.2 Geometry Evaluation",
+        "sectionRole": "other",
+        "sourcePassageStart": 536,
+        "sourcePassageEnd": 748
+      }
+    },
+    {
+      "evidenceId": "ev_5c7fd6bcd71aead88a73e0435ce9a61d5a1e5b76fb19bc43b4e68860062b1caa",
+      "sourceWorkId": "arxiv:2404.10772",
+      "sourceVersionId": "arxiv:2404.10772v1",
+      "contentHash": "d0b7e72aa986fe0ce875e9a1ece20d67e0804d02ef0d98e5c83a1152c97f5d6f",
+      "quote": " 2024] 0.48 0.91 0.39 0.39 1.01 0.83 0.81 1.36 1.27 0.76 0.70 1.40 0.40 0.76 0.52 0.80 18.8 m\nOurs 0.50 0.82 0.37 0.37 1.12 0.74 0.73 1.18 1.29 0.68 0.77 0.90 0.42 0.66 0.49 0.74 30m\net al.2023], GOF’s optimization is much faster. This performance\ndisparity is attributed to the DTU dataset’s strong view-dependent\nappearance. Utilizing a better view-dependent appearance model-\ning [Verbin et al .2022] or a coarse-to-fine training strategy [Li et al .",
+      "location": {
+        "page": 6,
+        "offset": 0,
+        "section": "4.2 Geometry Evaluation",
+        "sectionRole": "other",
+        "sourcePassageStart": 1523,
+        "sourcePassageEnd": 1976
+      }
+    },
+    {
+      "evidenceId": "ev_85c7eb04158a10b01a9cde729e25358662b731f9c563d1690db1736f104d9948",
+      "sourceWorkId": "arxiv:2406.06521",
+      "sourceVersionId": "arxiv:2406.06521v1",
+      "contentHash": "42d2f62bb336cf6dacc11acacc03f60babc34b1cb5d7596ce9fdf2346ac48ee5",
+      "quote": "We adopt\nthe densification strategy of AbsGS [67]. The learning rate\nfor the exposure coefficient is 0.001. We begin by rendering\nthe depth for each training view, followed by utilizing the\nTSDF Fusion algorithm [45] to generate the corresponding\nTSDF field.",
+      "location": {
+        "page": 8,
+        "offset": 4086,
+        "section": "",
+        "sectionRole": "unknown",
+        "sourcePassageStart": 0,
+        "sourcePassageEnd": 258
+      }
+    },
+    {
+      "evidenceId": "ev_173b7c330817e4715607e13867a070b506633629b86c98e0663c472f273d9b55",
+      "sourceWorkId": "arxiv:2406.06521",
+      "sourceVersionId": "arxiv:2406.06521v1",
+      "contentHash": "42d2f62bb336cf6dacc11acacc03f60babc34b1cb5d7596ce9fdf2346ac48ee5",
+      "quote": " Subsequently, we extract the mesh [38] from the\nTSDF field. We only utilize the exposure compensation on the\nTanks and Temples dataset. All experiments in this paper are\nconducted on Nvidia RTX 4090 GPU.",
+      "location": {
+        "page": 8,
+        "offset": 4086,
+        "section": "",
+        "sectionRole": "unknown",
+        "sourcePassageStart": 258,
+        "sourcePassageEnd": 462
+      }
+    },
+    {
+      "evidenceId": "ev_2a12cfc33f3fa8ac58ecc53a60a08ab9af2444710b56ba64d00da12fcd2ffddb",
+      "sourceWorkId": "arxiv:2404.10772",
+      "sourceVersionId": "arxiv:2404.10772v1",
+      "contentHash": "d0b7e72aa986fe0ce875e9a1ece20d67e0804d02ef0d98e5c83a1152c97f5d6f",
+      "quote": " For mesh\nextraction, we adapt the Marching Tetrahedra algorithm [Shen et al .\n2021] from the Kaolin library [Fuji Tsang et al .2022] with our bi-\nnary search algorithm and extract the mesh for the 0.5 level-set. All\nexperiments are conducted on an NVIDIA A100 GPU.\n",
+      "location": {
+        "page": 5,
+        "offset": 3782,
+        "section": "4.1 Implementation Details",
+        "sectionRole": "method",
+        "sourcePassageStart": 737,
+        "sourcePassageEnd": 1003
+      }
+    },
+    {
+      "evidenceId": "ev_377b04c8d40917fa45e747ced7427cb525192de07095e6dab8edfc98216962ab",
+      "sourceWorkId": "arxiv:2406.06521",
+      "sourceVersionId": "arxiv:2406.06521v1",
+      "contentHash": "42d2f62bb336cf6dacc11acacc03f60babc34b1cb5d7596ce9fdf2346ac48ee5",
+      "quote": "8\nTABLE I: Quantitative results of rendering quality for novel view synthesis on Mip-NeRF360 dataset. ”Red”, ”Orange” and ”Yellow” denote the best,\nsecond-best, and third-best results. PGSR achieves results close to 3DGS and outperforms similar reconstruction method SuGaR.",
+      "location": {
+        "page": 8,
+        "offset": 0,
+        "section": "",
+        "sectionRole": "unknown",
+        "sourcePassageStart": 0,
+        "sourcePassageEnd": 273
+      }
+    },
+    {
+      "evidenceId": "ev_aed79f8e276f90dbf65f658c61186255b2580e5009ef85be7a8fde1a93e2bf1c",
+      "sourceWorkId": "arxiv:2406.06521",
+      "sourceVersionId": "arxiv:2406.06521v1",
+      "contentHash": "42d2f62bb336cf6dacc11acacc03f60babc34b1cb5d7596ce9fdf2346ac48ee5",
+      "quote": "\nIndoor scenes Outdoor scenes Average on all scenes\nPSNR↑ SSIM↑ LPIPS↓ PSNR↑ SSIM↑ LPIPS↓ PSNR↑ SSIM↑ LPIPS↓NeRF-basedNeRF [41] 26.84 0.790 0.370 21.46 0.458 0.515 24.15 0.624 0.443\nDeep Blending [20] 26.40 0.844 0.261 21.54 0.524 0.364 23.97 0.684 0.313\nINGP [44] 29.15 0.880 0.216 22.90 0.566 0.371 26.03 0.723 0.294\nM-NeRF360 [2] 31.72 0.917 0.180 24.47 0.691 0.283 28.10 0.804 0.232\nNeus [56] 25.10 0.789 0.319 21.93 0.629 0.600 23.74 0.720 0.439GS-based3DGS [27] 30.99 0.926 0.199 24.24 0.705 0.283 27.24 0.803 0.246\nSuGaR [19] 29.44 0.911 0.216 22.76 0.631 0.349 26.10 0.771 0.283\n2DGS [21] 30.39 0.923 0.183 24.33 0.709 0.284 27.03 0.804 0.239\nGOF [69] 30.80 0.928 0.167 24.76 0.742 0.225 27.78 0.835 0.196\nPGSR 30.41 0.930 0.161 24.45 0.730 0.224 27.43 0.830 0.193\nFig. 9: Multi-view photometric and geometric loss.\nthose with high forward and backward projection errors.",
+      "location": {
+        "page": 8,
+        "offset": 0,
+        "section": "",
+        "sectionRole": "unknown",
+        "sourcePassageStart": 273,
+        "sourcePassageEnd": 1152
+      }
+    },
+    {
+      "evidenceId": "ev_a40350edfc9b4c1a683f5fe72de54067358e29d7d8f324ab7f39a81d88e9074e",
+      "sourceWorkId": "arxiv:2404.10772",
+      "sourceVersionId": "arxiv:2404.10772v1",
+      "contentHash": "d0b7e72aa986fe0ce875e9a1ece20d67e0804d02ef0d98e5c83a1152c97f5d6f",
+      "quote": " Our method alsoTable 3. Quantitative results on Mip-NeRF 360 [Barron et al .2022b]\ndataset. Our method achieved SOTA NVS results, especially in the outdoor\nscenes in terms of LPIPS.",
+      "location": {
+        "page": 6,
+        "offset": 2030,
+        "section": "4.3 Novel view Synthesis",
+        "sectionRole": "unknown",
+        "sourcePassageStart": 867,
+        "sourcePassageEnd": 1049
+      }
+    },
+    {
+      "evidenceId": "ev_39bdce993dd69ac32f53edd216256c84b71818f6bd0dc78e518bf7113036bb11",
+      "sourceWorkId": "arxiv:2404.10772",
+      "sourceVersionId": "arxiv:2404.10772v1",
+      "contentHash": "d0b7e72aa986fe0ce875e9a1ece20d67e0804d02ef0d98e5c83a1152c97f5d6f",
+      "quote": "\nOutdoor Scene Indoor scene\nPSNR↑SSIM↑LPIPS↓PSNR↑SSIM↑LIPPS↓\nNeRF 21.46 0.458 0.515 26.84 0.790 0.370\nDeep Blending 21.54 0.524 0.364 26.40 0.844 0.261\nInstant NGP 22.90 0.566 0.371 29.15 0.880 0.216\nMERF 23.19 0.616 0.343 27.80 0.855 0.271\nMipNeRF360 24.47 0.691 0.283 31.72 0.917 0.180\nMobile-NeRF 21.95 0.470 0.470 - - -\nBakedSDF 22.47 0.585 0.349 27.06 0.836 0.258\nSuGaR 22.93 0.629 0.356 29.43 0.906 0.225\nBOG 23.94 0.680 0.263 27.71 0873 0.227\n3DGS 24.64 0.731 0.234 30.41 0.920 0.189\nMip-Splatting 24.65 0.729 0.245 30.90 0.921 0.194\n2DGS 24.21 0.709 0.276 30.10 0.913 0.211\nOurs 24.82 0.750 0.202 30.79 0.924 0.184\noutperforms Sugar [Guédon and Lepetit 2023] and 2DGS [Huang\net al.2024] in all metrics. We show a qualitative comparison of",
+      "location": {
+        "page": 6,
+        "offset": 2030,
+        "section": "4.3 Novel view Synthesis",
+        "sectionRole": "unknown",
+        "sourcePassageStart": 1049,
+        "sourcePassageEnd": 1795
+      }
+    }
+  ],
+  "allocation": {
+    "version": 1,
+    "candidateEvidenceIds": [
+      "ev_6e14d5193e69c79f3b2fa464ea06f08abcf606a71c37deb48c0a876dbdad9340",
+      "ev_d9714d53fb3219d25b98cbe348699fc00c9843d748c9b4f55b0d93ff06edb45a",
+      "ev_85c7eb04158a10b01a9cde729e25358662b731f9c563d1690db1736f104d9948",
+      "ev_173b7c330817e4715607e13867a070b506633629b86c98e0663c472f273d9b55",
+      "ev_e3d7cc78021a29706c9154278704d4bf8d26892a76bb6e9b3e0c928ec207f110",
+      "ev_5eeb225bc9ec31711ba9d3440776342cb4e9499593e0b3a8c4a3cf94690120ea",
+      "ev_31cc037797cad9d3dd0aff72dbeb148242626e9a9054c87db6fd63b1979dd323",
+      "ev_5c7fd6bcd71aead88a73e0435ce9a61d5a1e5b76fb19bc43b4e68860062b1caa",
+      "ev_2a12cfc33f3fa8ac58ecc53a60a08ab9af2444710b56ba64d00da12fcd2ffddb",
+      "ev_377b04c8d40917fa45e747ced7427cb525192de07095e6dab8edfc98216962ab",
+      "ev_aed79f8e276f90dbf65f658c61186255b2580e5009ef85be7a8fde1a93e2bf1c",
+      "ev_a40350edfc9b4c1a683f5fe72de54067358e29d7d8f324ab7f39a81d88e9074e",
+      "ev_39bdce993dd69ac32f53edd216256c84b71818f6bd0dc78e518bf7113036bb11",
+      "ev_fc4e9fc637666506af728a9cd4fee2aec62fa6effa427b8399d49c4f17830927",
+      "ev_ac6dfaf9b35c9b1cb311ec762d9ba07c2f8470f5db787502d57b8d6e76371602",
+      "ev_88d041cce6602e2b4d9e1a3ed551ba0c43dbb78df7fe34b5cf0eed696bd946b6",
+      "ev_9dc92c69622f0b96ba9e69632271ee2ffea38807abc2d8a0ba065e300129dbf1",
+      "ev_0feb2f2010abb630173a8ce4c6e9f16c29d959ba51db919b48b721f5affa9f31",
+      "ev_8d0a8b05b1aaaac5ee40d9aa83c3dd5bd97fcc613fe47d99966766ec46b2d4b2",
+      "ev_2f020fc4524b0f1a96009f10665bd3218c25f567baa0ff39cb65a8f9d24503ff"
+    ],
+    "suppliedEvidenceIds": [
+      "ev_6e14d5193e69c79f3b2fa464ea06f08abcf606a71c37deb48c0a876dbdad9340",
+      "ev_d9714d53fb3219d25b98cbe348699fc00c9843d748c9b4f55b0d93ff06edb45a",
+      "ev_85c7eb04158a10b01a9cde729e25358662b731f9c563d1690db1736f104d9948",
+      "ev_173b7c330817e4715607e13867a070b506633629b86c98e0663c472f273d9b55",
+      "ev_e3d7cc78021a29706c9154278704d4bf8d26892a76bb6e9b3e0c928ec207f110",
+      "ev_5eeb225bc9ec31711ba9d3440776342cb4e9499593e0b3a8c4a3cf94690120ea",
+      "ev_31cc037797cad9d3dd0aff72dbeb148242626e9a9054c87db6fd63b1979dd323",
+      "ev_5c7fd6bcd71aead88a73e0435ce9a61d5a1e5b76fb19bc43b4e68860062b1caa",
+      "ev_2a12cfc33f3fa8ac58ecc53a60a08ab9af2444710b56ba64d00da12fcd2ffddb",
+      "ev_377b04c8d40917fa45e747ced7427cb525192de07095e6dab8edfc98216962ab",
+      "ev_aed79f8e276f90dbf65f658c61186255b2580e5009ef85be7a8fde1a93e2bf1c",
+      "ev_a40350edfc9b4c1a683f5fe72de54067358e29d7d8f324ab7f39a81d88e9074e",
+      "ev_39bdce993dd69ac32f53edd216256c84b71818f6bd0dc78e518bf7113036bb11",
+      "ev_fc4e9fc637666506af728a9cd4fee2aec62fa6effa427b8399d49c4f17830927"
+    ],
+    "missingPremiseBundles": [
+      {
+        "obligationId": "ob_2",
+        "criterionId": "req_2",
+        "requirement": "指出两篇论文在 DTU 评估中使用的数据集版本、指标方向（越低越好还是越高越好）、分辨率和硬件条件是否一致，若不一致则说明差异。",
+        "source": "arxiv:2406.06521v1",
+        "evidenceIds": [
+          "E15"
+        ]
+      },
+      {
+        "obligationId": "ob_3",
+        "criterionId": "human_aspect_1",
+        "requirement": "Mip-NeRF360 的渲染质量如何",
+        "source": "arxiv:2404.10772v1",
+        "evidenceIds": [
+          "E16"
+        ]
+      },
+      {
+        "obligationId": "ob_3",
+        "criterionId": "human_aspect_1",
+        "requirement": "Mip-NeRF360 的渲染质量如何",
+        "source": "arxiv:2406.06521v1",
+        "evidenceIds": [
+          "E17"
+        ]
+      },
+      {
+        "obligationId": "ob_4",
+        "criterionId": "human_aspect_1",
+        "requirement": "核对数据集、指标方向、分辨率和硬件条件",
+        "source": "arxiv:2406.06521v1",
+        "evidenceIds": [
+          "E15"
+        ]
+      },
+      {
+        "obligationId": "ob_6",
+        "criterionId": "req_1",
+        "requirement": "基于前面核对的几何精度、训练耗时、渲染质量和硬件条件，给出在特定应用场景下选择 GOF 或 PGSR 的建议，并说明条件。",
+        "source": "arxiv:2406.06521v1",
+        "evidenceIds": [
+          "E15"
+        ]
+      }
+    ],
+    "inputBytes": 23961,
+    "fixedInputBytes": 14156,
+    "tableDataOmittedEvidenceIds": [],
+    "sharedTablePackets": 0
+  },
+  "rawSha256": "ca7a1a48a7362b5fa3c47a41f106f817ddb7724cdc099d5ba640f7ea8f4111a2",
+  "rawUnchanged": true,
+  "promptSha256": "dccfdf5a3f178ba239d138923c69c8b5ecdb2dc5c6e7b3df6db34ebc2f5f64b7",
+  "scientificApproval": false,
+  "independentCredit": 0,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "remaining": "Legacy summary bundles still show omissions; actual method/value/caption/settings rows arrive but a full bounded development case and semantic/manual checks remain necessary. Original first result is unchanged."
+}

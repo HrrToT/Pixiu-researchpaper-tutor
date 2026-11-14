@@ -1,0 +1,10 @@
+{
+  "baselineCommit": "6389dbb1",
+  "fixtures": "AD1N-v8 initial actual report, verification and coverage",
+  "schedulingModes": [
+    false,
+    true
+  ],
+  "legacyDefaultOutputsExact": true,
+  "newModelCalls": 0
+}

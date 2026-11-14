@@ -1,0 +1,85 @@
+{
+  "date": "2026-10-25",
+  "case": "E1-v54",
+  "runId": "dr_run_a5b8930ff4f85218ba6743fedd79a40c",
+  "status": "failed",
+  "errorCode": "invalid_workflow_unit_response",
+  "promptVersion": "dr-v2.20261025.264",
+  "workflowMetadataRepairContractVersion": 2,
+  "originalErrors": [
+    "timeline.phase.action"
+  ],
+  "repairStatus": "invalid_response",
+  "repairErrors": [
+    "unit.json"
+  ],
+  "finishReason": "stop",
+  "rawBytes": 4252,
+  "rawStartsWithFence": true,
+  "contentStrictDecodedErrors": [
+    "timeline.phase.action"
+  ],
+  "invalidOperations": [
+    {
+      "path": "/phaseRows/4/9",
+      "errors": [
+        "action: 参数名重复 'metric'",
+        "action: 参数名重复 'metric'"
+      ],
+      "actual": {
+        "action": "record_metrics",
+        "parameters": [
+          {
+            "name": "metric",
+            "type": "choice",
+            "value": "psnr"
+          },
+          {
+            "name": "metric",
+            "type": "choice",
+            "value": "additional_3dg_count"
+          },
+          {
+            "name": "metric",
+            "type": "choice",
+            "value": "stage2_time_seconds"
+          }
+        ]
+      }
+    },
+    {
+      "path": "/phaseRows/8/9",
+      "errors": [
+        "action: 参数名重复 'metric'",
+        "action: 参数名重复 'metric'"
+      ],
+      "actual": {
+        "action": "record_metrics",
+        "parameters": [
+          {
+            "name": "metric",
+            "type": "choice",
+            "value": "psnr"
+          },
+          {
+            "name": "metric",
+            "type": "choice",
+            "value": "additional_3dg_count"
+          },
+          {
+            "name": "metric",
+            "type": "choice",
+            "value": "stage2_time_seconds"
+          }
+        ]
+      }
+    }
+  ],
+  "originalResponseDigest": "d5d3e11c716ab01732165dced4f9b924d5e528467a0bf3028e706639cd6b961b",
+  "repairResponseDigest": "95fb89810a1c7a20810de7812b6529bdc2e5c36f2850814a1117ff198c65d7c5",
+  "repairRequestDigest": "5c6621f156cad09a6cde62b75297852f8dabb4b5f0c1a1c2726af5b28379b6fa",
+  "providerCallsForDiagnosis": 0,
+  "historicalRecordModified": false,
+  "independentCredit": 0,
+  "boundary": "Read-only diagnosis. Removing only the surrounding fence offline still leaves invalid operations. No automatic parameter filling or content approval."
+}

@@ -1,0 +1,12 @@
+{
+  "date": "2026-10-19",
+  "case": "H2F-v8",
+  "runId": "dr_run_9e2c2647510b5ec3918059fa863fb533",
+  "providerCalls": 0,
+  "actualRepairFingerprintMatched": false,
+  "reconstructedInputBytes": 20637,
+  "frozenInputCapacity": 20673,
+  "outputCap": 5120,
+  "actualCallStatus": "succeeded",
+  "boundary": "Actual repair request reconstruction only; matching a request or completing a repair does not approve its content."
+}

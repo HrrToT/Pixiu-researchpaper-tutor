@@ -1,0 +1,60 @@
+{
+  "case": "E1-v51",
+  "sourceCommit": "6eb0e948",
+  "promptVersion": "dr-v2.20261023.261",
+  "runId": "dr_run_303343b4ae8d5413b243aa576103997d",
+  "status": "failed",
+  "errorCode": "invalid_workflow_unit_response",
+  "workflowMetadataRowsContractVersion": 1,
+  "scientificOutline": {
+    "version": 2,
+    "format": "scientific_outline",
+    "scientificApproval": false,
+    "status": "ready"
+  },
+  "metadata": {
+    "status": "invalid_response",
+    "errors": [
+      "unit.json"
+    ],
+    "requestDigest": "ce3ca7393b39ade6af36ea20c5e2b9a5c6c3d6e13e3d30655d5ccb5670e3218d",
+    "ledgerDigestMatches": true,
+    "schemaName": "workflow_metadata_rows_v1",
+    "finishReason": "length",
+    "usage": {
+      "total_tokens": 8954,
+      "input_tokens": 6906,
+      "output_tokens": 2048
+    },
+    "normalizedContent": "null",
+    "rawBytes": 8168,
+    "rawSha256": "3ec128feafffa35d19383502312817042bf614fff0d21d90c868af6be33a3571",
+    "rawRetained": true
+  },
+  "partialSubvaluesForDiagnosisOnly": {
+    "completeComponentRows": 10,
+    "schemaMaxComponents": 8,
+    "componentIds": [
+      "frame0_initial_3dgs",
+      "camera_split",
+      "stage1_ntc_result",
+      "stage1_ntc_trainer",
+      "stage2_spawner",
+      "stage2_optimizer",
+      "renderer",
+      "quality_metrics",
+      "storage_recorder",
+      "time_recorder"
+    ],
+    "completePhaseRows": 9,
+    "stringReadEntries": 8
+  },
+  "initializationUnitsReached": false,
+  "publicDraftReached": false,
+  "providerRetries": 0,
+  "scientificApproval": false,
+  "independentCredit": 0,
+  "partialRawMetadataNotReconstructed": true,
+  "nextAction": "Version a clearer state-versus-operation contract and compact serialization instructions; retain all necessary model states, requirements, sources and whole-case caps. Do not reinterpret this truncated response.",
+  "boundary": "Partial subvalues diagnose emitted shape errors only; no full metadata or scientific content was accepted. Normalized null did not replace the preserved raw provider output."
+}

@@ -1,0 +1,42 @@
+{
+  "case": "G1N-v5",
+  "sourceRunId": "dr_run_f8571e137e88548a90f2868bcc6d3aab",
+  "sourcePayloadSha256": "f2920db772f2882cb58cd0bbb57a6e024a046bd6a0913503d8d77d88b49f0091",
+  "policies": {
+    "legacy394": {
+      "status": "budget_exhausted",
+      "budgetLimit": {
+        "kind": "coveragePromptBytes",
+        "limit": 24000,
+        "used": 24393
+      },
+      "dispatchBoundary": []
+    },
+    "candidate395": {
+      "status": "budget_exhausted",
+      "budgetLimit": {
+        "kind": "ReplayStopNoModel",
+        "limit": 0,
+        "used": 1
+      },
+      "dispatchBoundary": [
+        {
+          "node": "verify_answer_coverage",
+          "promptBytes": 23862,
+          "options": {
+            "max_tokens": 6182,
+            "temperature": 0.0
+          },
+          "kwargs": {
+            "use_reserve": true
+          }
+        }
+      ]
+    }
+  },
+  "modelCalls": 0,
+  "networkCalls": 0,
+  "productionWrites": 0,
+  "sourcePayloadUnchanged": true,
+  "scientificAcceptance": false
+}

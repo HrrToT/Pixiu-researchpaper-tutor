@@ -1,0 +1,17 @@
+{
+  "sourceCommit": "b310cebaad9a0a898321aff024b53676484825ae",
+  "case": "AD1N-v30",
+  "modelCalls": 0,
+  "actualInputDigestMatches": true,
+  "inputDigest": "10fc4be4c9ad087a4ec751e98e43f18a5f3361b18fb5c0183d9dc05d2b3cd511",
+  "originalWrapperDecoded": true,
+  "scopeChecksPassedBeforeFinalLengthCheck": true,
+  "compiledVisibleCharacters": 339,
+  "limit": 300,
+  "rejectedAt": "scope_compaction.compact final rendered-length guard",
+  "sourceLine": 194,
+  "sourceSha256": "9cc32b6ef1378f225d969419b8f3ab77e79266553ae0800fb3086cac092944dc",
+  "promptBytes": 5984,
+  "scientificContentAccepted": false,
+  "correction": "Earlier generic invalid state was hypothesized to be a body/schema mismatch. Exact replay shows the authored body is valid; final compiled length remains39characters over limit. No parser compatibility relaxation is warranted."
+}

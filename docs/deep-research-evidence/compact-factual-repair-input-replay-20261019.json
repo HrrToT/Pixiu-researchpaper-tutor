@@ -1,0 +1,33 @@
+{
+  "date": "2026-10-19",
+  "promptVersion": "dr-v2.20261019.186",
+  "sourceCase": "H2F-v7",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "oldFailure": {
+    "kind": "repairPromptBytes",
+    "limit": 10263,
+    "used": 17763
+  },
+  "oldInputCapacity": 10263,
+  "newInputCapacity": 14359,
+  "actualUnchangedOutputCap": 4096,
+  "newInputBytes": 14138,
+  "mockedRequests": 1,
+  "targetIds": [
+    "c3",
+    "c4"
+  ],
+  "allOriginalQuotesAndContextsPreserved": true,
+  "ownCitationCount": 5,
+  "suppliedEvidenceCount": 5,
+  "maxTokens": 100000,
+  "reserveTokens": 50000,
+  "legacySameInputDifferentials": 2,
+  "historicalRepairReconstruction": {
+    "case": "H2F-v6",
+    "matched": false,
+    "countedAsProviderFingerprint": false
+  },
+  "boundary": "Actual archived repair inputs/frozen budgets and mocked [] response. Two exact old-source/current-old-policy same-input differentials; attempted historical repair fingerprint reconstruction is not confirmed and earns no fingerprint credit. No generation, semantic approval, current content acceptance or independent credit. Original outcomes and unknown requests unchanged."
+}

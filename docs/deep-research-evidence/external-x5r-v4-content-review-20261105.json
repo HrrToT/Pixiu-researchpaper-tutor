@@ -1,0 +1,49 @@
+{
+  "case": "X5R-v4",
+  "runId": "dr_run_2dd777245c105cf394484899379c309f",
+  "promptVersion": "dr-v2.20261105.387",
+  "sourceCommit": "7679c62a",
+  "machineOutcome": "complete",
+  "modelCalls": 11,
+  "tokens": 45792,
+  "elapsedSeconds": 144.288,
+  "allCallsSettled": true,
+  "acceptedClaims": 3,
+  "finalCoverageStatus": "checked",
+  "finalCoverageGaps": 0,
+  "assistantContentReview": {
+    "accepted": false,
+    "reason": "Frozen reference requires the depth-to-TSDF mesh step. Final c3 repeats representation/loss summary rather than this requested operational stage; how was merged with why in one criterion. Correct individual claims do not prove complete response. Whole-question process proof repeated entire request as both input and output.",
+    "goalResponse": 2,
+    "evidenceSupport": 5,
+    "synthesisValue": 2,
+    "readability": 3,
+    "humanParticipant": false
+  },
+  "preservation": {
+    "oldLedgerUnchanged": true,
+    "allOldRunsUnchanged": true,
+    "newRows": 32,
+    "ledgerRows": 8528,
+    "onlyThisRunCreatedCalls": true,
+    "active": [],
+    "oldPausedRetained": true,
+    "paused": [
+      "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+      "dr_run_ed10cc3347be552288079a9a588fddf5",
+      "dr_run_86b3f181a5475e99aacca3dbf4370567",
+      "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+      "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+      "dr_run_e3521b1781825273b384a26a5edb8cdc",
+      "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+      "dr_run_e9c9dc916bef519092fad8b929b2448f",
+      "dr_run_4738564f5ff35157996a35068c62ed32",
+      "dr_run_a8bd62f9ae3d52ff806f537065f55b2d",
+      "dr_run_98e66f2d3d555dfa822b859963f01419",
+      "dr_run_8be639c866c35ea092c735a04781b647",
+      "dr_run_1c0c2e6510165086962408b8e3cf698b"
+    ]
+  },
+  "independentCredit": 0,
+  "nextRepair": "Preserve explicit joined interrogative parts before plan freeze and reject overlapping request-role spans, without adding paper-specific expected answers."
+}

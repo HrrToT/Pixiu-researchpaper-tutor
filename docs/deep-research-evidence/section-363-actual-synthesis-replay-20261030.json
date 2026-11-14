@@ -1,0 +1,93 @@
+{
+  "case": "X1G-v1",
+  "sourcePayloadSha256": "c74734c3cfcbd93cf3e845ee5a560e4f7ae2e6f12c96b1d0e8ea76bb6503e3fa",
+  "humanRequestedSections": [
+    "4.5"
+  ],
+  "results": [
+    {
+      "mechanismEvidenceContractVersion": 2,
+      "inputBytes": 23942,
+      "fixedInputBytes": 21142,
+      "suppliedEvidenceIds": [
+        "ev_4672389630c4aab70844df0ec63b20ccb35d7f6cb38530744e580b22b9bdd2e3",
+        "ev_0d763731a70c6c5191a0ce1a3a5fb95548d2a94932291ab5b93ddb1beab402b0",
+        "ev_ae52676889580ab962e37d8dca5d991349bc8c2b0696b6eb6211fa8f96395762",
+        "ev_4c3c222163fa20831724b93eb302bf7f6c45100d2b0114f5ee021785e870de56"
+      ],
+      "missingPremiseBundles": [],
+      "wholeSectionRetained": false
+    },
+    {
+      "mechanismEvidenceContractVersion": 3,
+      "inputBytes": 23995,
+      "fixedInputBytes": 21128,
+      "suppliedEvidenceIds": [
+        "ev_48740cb201158fee2ec12dca13c2f4ba63bce168949270d56c40c03aecedd0e6",
+        "ev_d1adf1857a44b123858ce48889f7f7dbc7e7e12cd6ac9584a51a45ed0bb6bc2f",
+        "ev_0b32a15c6150fa2fdd60c90cdf1b06117e087870d66e4321c4a8edb5d2341fe2",
+        "ev_d920d07cc8e465d2ed7d71796ae2d9e8b758fa8f05a586eca41a6aa34a097f05",
+        "ev_5875bb43407ad9a981091f32c9a4507fc6f0f35ea1514ca19caf18dccf1aa8ad"
+      ],
+      "missingPremiseBundles": [],
+      "wholeSectionRetained": true
+    }
+  ],
+  "retainedOriginalUnits": [
+    {
+      "evidenceId": "ev_48740cb201158fee2ec12dca13c2f4ba63bce168949270d56c40c03aecedd0e6",
+      "sourceId": "src_666e8c07df39df7b232eb8c8231dbff0c1a0f409239c1faf1c07817922e9ef1d",
+      "location": {
+        "page": 7,
+        "offset": 0,
+        "sourcePassageStart": 841,
+        "sourcePassageEnd": 1126
+      }
+    },
+    {
+      "evidenceId": "ev_d1adf1857a44b123858ce48889f7f7dbc7e7e12cd6ac9584a51a45ed0bb6bc2f",
+      "sourceId": "src_666e8c07df39df7b232eb8c8231dbff0c1a0f409239c1faf1c07817922e9ef1d",
+      "location": {
+        "page": 7,
+        "offset": 0,
+        "sourcePassageStart": 1126,
+        "sourcePassageEnd": 1740
+      }
+    },
+    {
+      "evidenceId": "ev_0b32a15c6150fa2fdd60c90cdf1b06117e087870d66e4321c4a8edb5d2341fe2",
+      "sourceId": "src_666e8c07df39df7b232eb8c8231dbff0c1a0f409239c1faf1c07817922e9ef1d",
+      "location": {
+        "page": 7,
+        "offset": 0,
+        "sourcePassageStart": 1740,
+        "sourcePassageEnd": 2032
+      }
+    },
+    {
+      "evidenceId": "ev_d920d07cc8e465d2ed7d71796ae2d9e8b758fa8f05a586eca41a6aa34a097f05",
+      "sourceId": "src_6a7ee2aaaa15dcdc692389fd5aa704b78a706eb0e3cb8a547c4a83d7177c147d",
+      "location": {
+        "page": 7,
+        "offset": 2032,
+        "sourcePassageStart": 0,
+        "sourcePassageEnd": 424
+      }
+    },
+    {
+      "evidenceId": "ev_5875bb43407ad9a981091f32c9a4507fc6f0f35ea1514ca19caf18dccf1aa8ad",
+      "sourceId": "src_6a7ee2aaaa15dcdc692389fd5aa704b78a706eb0e3cb8a547c4a83d7177c147d",
+      "location": {
+        "page": 7,
+        "offset": 2032,
+        "sourcePassageStart": 424,
+        "sourcePassageEnd": 827
+      }
+    }
+  ],
+  "losslessEncoding": "Production render requires decode(encode(rows))==rows on every admitted packet",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "independentCredit": 0,
+  "boundary": "Actual synthesis input completeness and unchanged literal evidence, not generated answer quality."
+}

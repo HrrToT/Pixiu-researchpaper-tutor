@@ -1,0 +1,52 @@
+{
+  "case": "AD1N-v9",
+  "split": "development",
+  "runId": "dr_run_c1f8c76f52df504ab60aae4a3637d715",
+  "sourceCommit": "717b6cb8",
+  "promptVersion": "dr-v2.20261107.418",
+  "status": "failed",
+  "outcome": "none",
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "modelCalls": 9,
+  "settledTokens": 32839,
+  "elapsedSeconds": 53,
+  "allModelCallsSettled": true,
+  "newUnknownCalls": 0,
+  "sources": [
+    [
+      "arxiv:1412.6980",
+      "arxiv:1412.6980v1",
+      "fulltext",
+      "935a5a15616961aff21529d86a754570028843407adfe858f1d18584b84293a7"
+    ]
+  ],
+  "reader": {
+    "outcome": "applied",
+    "protectedBudgetActuallyUsed": true,
+    "singleSourceBranchActuallyUsed": false,
+    "editableTextChanged": false
+  },
+  "plainCompaction": {
+    "called": true,
+    "finishReason": "stop",
+    "truncated": false
+  },
+  "factsOrCoverageReached": false,
+  "failureReplay": "adam-ad1n-v9-compaction-replay-20261112.json",
+  "rawCharacters": 292,
+  "visibleCharacters": 314,
+  "limit": 300,
+  "preservation": {
+    "oldLedgerUnchanged": true,
+    "allOldRunsUnchanged": true,
+    "newRows": 34,
+    "ledgerRows": 9077,
+    "onlyThisRunCreatedCalls": true,
+    "active": [],
+    "oldPausedRetained": true
+  },
+  "pausedCount": 15,
+  "rawPayloadSha256": "f73769697a78b95c02ae45a1a4b3b52f2da77707f136dbada8d3981e4c9c6eb9",
+  "boundary": "Known received, invalid synthesis. No factual approval or readability acceptance. No automatic retry. Original raw responses retained."
+}

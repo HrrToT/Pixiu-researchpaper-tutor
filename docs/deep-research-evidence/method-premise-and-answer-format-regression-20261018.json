@@ -1,0 +1,37 @@
+{
+  "date": "2026-10-18",
+  "sourceCommit": "4bd2a7d3",
+  "promptVersion": "dr-v2.20261018.135",
+  "full": {
+    "passed": 2193,
+    "warnings": 1,
+    "seconds": 141.13,
+    "log": "tmp/pytest-dr135-full.log"
+  },
+  "focused": {
+    "passed": 124,
+    "seconds": 9.22,
+    "log": "tmp/pytest-dr135-format-final.log",
+    "overlapsFullSuite": true
+  },
+  "initialFocusedFailure": {
+    "failed": 1,
+    "passed": 122,
+    "log": "tmp/pytest-dr135-format.log",
+    "cause": "An English negated count instruction was initially parsed as an exact requirement.",
+    "resolution": "Corrected the parser; retained the original negative-instruction assertion."
+  },
+  "contracts": {
+    "absenceScopeContractVersion": 1,
+    "answerFormatContractVersion": 1
+  },
+  "properties": [
+    "Method negative premises reach independent semantic verification rather than bypassing it.",
+    "Unestablished publication absence and source/number/device/quote checks remain enforced.",
+    "Exact point constraints come only from human instruction layers, with clarification precedence.",
+    "Compaction preserves requested point identities; publishing rechecks counts and body/condition length after repair.",
+    "No fact padding or automatic extra generation. Old saved runs keep their previous rules and identities."
+  ],
+  "modelCalls": 0,
+  "boundary": "Offline and saved-real-input replay only; actual .135 generation needs a separately recorded diagnostic."
+}

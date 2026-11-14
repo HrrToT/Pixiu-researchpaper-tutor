@@ -1,0 +1,13 @@
+{
+  "runId": "dr_run_8be639c866c35ea092c735a04781b647",
+  "status": "paused",
+  "errorCode": "unresolved_unknown",
+  "error": "上次请求结果尚未确认，不会自动重发；已取得的资料仍保留。",
+  "activity": null,
+  "allowedActions": [
+    "cancel"
+  ],
+  "method": "GET through Java to current Python projection",
+  "providerCalls": 0,
+  "productionWrites": 0
+}

@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-25",
+  "engineInitiallyUnavailable": true,
+  "failure": "Docker Desktop failed to initialize runtime AF_UNIX endpoints with Windows error 1920.",
+  "volumesRecreated": false,
+  "filesDeleted": false,
+  "preservedRuntimeDirectories": [
+    "C:/Users/Lenovo/AppData/Local/Docker/run.stale-20261025",
+    "C:/Users/Lenovo/AppData/Local/docker-secrets-engine.stale-20261025"
+  ],
+  "directoryGuards": "Stopped failed backend; only observed zero-byte reparse endpoints, no ordinary files or subdirectories; absolute source and destination checked in runtime roots.",
+  "javaRecovery": {
+    "startedAt": "2026-10-25T12:03:47.8260005+08:00",
+    "jarHash": "F219E0ADD2012FCC939ED2BD18691AB0C9E5F454EB45C16387AFDBF7C463CD67",
+    "javaPid": 56100,
+    "backupHash": "7E7EF3689AAE2758218814B39AFAE2E0D7037C47048E576F9B6B4DA4581CAA90"
+  },
+  "existingFrontendReused": true,
+  "researchContainer": "academic-dr-runtime",
+  "originalResearchVolume": "academic_dr_runtime_20261012",
+  "originalResearchContainerStarted": true,
+  "allFourTaskSnapshotsExactlyPreserved": true,
+  "ledgerRowsPreserved": 6117,
+  "oldPausedUnknowns": 11,
+  "providerCallsDuringRecovery": 0,
+  "boundary": "Recovery and data retention only; no generated scientific content or independent acceptance is established.",
+  "dockerSettingsModifiedByAssistant": false
+}

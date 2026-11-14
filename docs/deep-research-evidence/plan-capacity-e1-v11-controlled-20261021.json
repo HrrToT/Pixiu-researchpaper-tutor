@@ -1,0 +1,56 @@
+{
+  "date": "2026-10-21",
+  "sourceCase": "E1-v11",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "oldFailedStateUnchanged": true,
+  "completeArchivedResponseReusedInMemory": true,
+  "rawPlanBytes": 2859,
+  "wirePlanBytes": 2750,
+  "fullNativePlanValuesRoundtrip": true,
+  "allSevenOriginalEvidenceIdsRetained": true,
+  "requiredMethodContexts": [
+    {
+      "sourceId": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-28",
+      "evidenceId": "ev_eea706cbd96a822dae9adf0cdc055c4e86d4f30b38582a4af6ff41a671a74c1f",
+      "requiredContext": {
+        "before": "",
+        "after": "\nFor each selected 3DG, the position of the additional 3DG is sampled from X ∼ N (µ, 2Σ), where µ and Σ is the mean and the convariance matrix of the selected 3DG.",
+        "truncated": true
+      }
+    },
+    {
+      "sourceId": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-29",
+      "evidenceId": "ev_516057b8a32881c40f1384de19b86128197089068316214ce7a984ebb4f252a4",
+      "requiredContext": {
+        "before": "",
+        "after": "\nAfter spawning, the 3DGs undergo optimization utilizing the same loss function (Eq.\n(6)) as Stage 1.\nNote that only the parameters of the additional 3DGs are optimized, while those of the transformed 3DGs remain fixed.",
+        "truncated": true
+      }
+    },
+    {
+      "sourceId": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-30",
+      "evidenceId": "ev_6558c554163d2cf4124a655864c29ba4e00a1996de9a7f509dc09e67eef09830",
+      "requiredContext": {
+        "before": "",
+        "after": " These additional 3DGs inherit their rotations and SH coefficients from the original 3DG, but their scaling is adjusted to 80% of the original, mirroring the 'split' operation described by Kerbl et al.[26]. Subsequently, we discard any additional 3DGs with opacity values below τ α to suppress the growth in the quantity of 3DGs.",
+        "truncated": true
+      }
+    }
+  ],
+  "originalReservedGenerationBytes": 23830,
+  "controlledReservedGenerationBytes": 23716,
+  "controlledFinalGenerationBytes": 23966,
+  "unchangedGenerationCap": 24000,
+  "unchangedRawPlanSafetyLimit": 4000,
+  "basisEncodingAudit": {
+    "rawBytes": 2859,
+    "wireBytes": 2750,
+    "preferredSlotBytes": 2500,
+    "rawLimitBytes": 4000,
+    "fitsPreferredSlot": false,
+    "scientificApproval": false
+  },
+  "frozenDraftRequestDigest": "4d983a445ad3847f593e74cfbcbfe17a09a95f44dc1549085036af27b4cd0249",
+  "boundary": "Actual archived evidence/response pass through the new in-memory contract to a complete frozen body request. No second planning call or body provider is used; all original decisions, quotes and required contexts remain, including potentially wrong scientific decisions. Not new content/scientific/latency acceptance or an upgrade of old failed E1-v11."
+}

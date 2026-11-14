@@ -1,0 +1,137 @@
+{
+  "date": "2026-10-22",
+  "sourceCase": "E1-v17",
+  "sourceCommit": "a27f1cc7",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "independentCredit": 0,
+  "actualRequestFingerprintsMatched": 5,
+  "requests": [
+    {
+      "callId": "8f25ec04ac7afa1ab4d49a0f43c27946",
+      "node": "verify_design_config",
+      "targetIds": [
+        "c3",
+        "c7"
+      ],
+      "inputBytes": 23965,
+      "actualFingerprintMatched": true
+    },
+    {
+      "callId": "abce6b7083df18b8b775e99fe1fe44d4",
+      "node": "verify_design_science",
+      "targetIds": [
+        "c1"
+      ],
+      "inputBytes": 23416,
+      "actualFingerprintMatched": true
+    },
+    {
+      "callId": "ce3f58d37b19e4887e8f346da714336e",
+      "node": "verify_design_science",
+      "targetIds": [
+        "c2",
+        "c4"
+      ],
+      "inputBytes": 28951,
+      "actualFingerprintMatched": true
+    },
+    {
+      "callId": "e5dd6718326fbf705f6e18108582aab4",
+      "node": "verify_design_science",
+      "targetIds": [
+        "c6"
+      ],
+      "inputBytes": 28767,
+      "actualFingerprintMatched": true
+    },
+    {
+      "callId": "fd7db2ba015ac628e4829ad6f6570d43",
+      "node": "verify_design_science",
+      "targetIds": [
+        "c8",
+        "c9"
+      ],
+      "inputBytes": 22044,
+      "actualFingerprintMatched": true
+    }
+  ],
+  "allocationAttempts": [
+    {
+      "targetIds": [
+        "c3",
+        "c7"
+      ],
+      "fullInputBytes": 23965,
+      "fixedInputBytes": 16057,
+      "maxInputBytes": 32000,
+      "referencedRows": 7,
+      "selectedRows": 7,
+      "selectedInputBytes": 23965,
+      "allRefsRetained": true,
+      "allContextsRetained": true
+    },
+    {
+      "targetIds": [
+        "c1"
+      ],
+      "fullInputBytes": 23416,
+      "fixedInputBytes": 15151,
+      "maxInputBytes": 32000,
+      "referencedRows": 7,
+      "selectedRows": 7,
+      "selectedInputBytes": 23416,
+      "allRefsRetained": true,
+      "allContextsRetained": true
+    },
+    {
+      "targetIds": [
+        "c2",
+        "c4"
+      ],
+      "fullInputBytes": 28951,
+      "fixedInputBytes": 17278,
+      "maxInputBytes": 32000,
+      "referencedRows": 9,
+      "selectedRows": 9,
+      "selectedInputBytes": 28951,
+      "allRefsRetained": true,
+      "allContextsRetained": true
+    },
+    {
+      "targetIds": [
+        "c6"
+      ],
+      "fullInputBytes": 28767,
+      "fixedInputBytes": 17094,
+      "maxInputBytes": 32000,
+      "referencedRows": 9,
+      "selectedRows": 9,
+      "selectedInputBytes": 28767,
+      "allRefsRetained": true,
+      "allContextsRetained": true
+    },
+    {
+      "targetIds": [
+        "c8",
+        "c9"
+      ],
+      "fullInputBytes": 22044,
+      "fixedInputBytes": 17108,
+      "maxInputBytes": 32000,
+      "referencedRows": 5,
+      "selectedRows": 5,
+      "selectedInputBytes": 22044,
+      "allRefsRetained": true,
+      "allContextsRetained": true
+    }
+  ],
+  "allEightEligibleTargetsSent": true,
+  "repairSkippedBeforeModel": "skipped_budget",
+  "repairAdmission": {
+    "kind": "repairPromptBytes",
+    "limit": 10437,
+    "used": 19251
+  },
+  "boundary": "Exact archived request/response replay. Review capacity refusals are distinct from model scientific rejections. No change to original failed content acceptance."
+}

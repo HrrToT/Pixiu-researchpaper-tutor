@@ -1,0 +1,29 @@
+{
+  "sourceCommit": "b780c9fa517c4f2a070e30d96a939181d7f19504",
+  "modelCalls": 0,
+  "newVersionSelectsExistingFixedEditor": true,
+  "originalJointLayoutFlagRetained": true,
+  "onlyEditableIds": [
+    "c1"
+  ],
+  "readonlyScopeTextExact": true,
+  "hardEditableCharacters": 160,
+  "recommendedEditableCharacters": 112,
+  "matchesOfflinePrototypeExactly": true,
+  "legacyCheckpointIdentityDifferent": true,
+  "originalModelOptionsUnchanged": {
+    "max_tokens": 8192,
+    "temperature": 0.0,
+    "thinking": {
+      "type": "disabled"
+    },
+    "reasoning_effort": "none",
+    "response_format": {
+      "type": "json_object"
+    }
+  },
+  "promptBytes": 3856,
+  "priorJointPromptBytes": 8971,
+  "scientificContentAccepted": false,
+  "boundary": "Actual versioned preference, without changing the original joint-layout capability. Selects one prose-only request before dispatch when readonly scope fits. Keeps scope outside model output; normal metadata restoration, length guard and fresh whole-result verification remain."
+}

@@ -1,0 +1,270 @@
+{
+  "date": "2026-10-19",
+  "case": "H2F-v8",
+  "sourceCommit": "9b5f68d4",
+  "runId": "dr_run_9e2c2647510b5ec3918059fa863fb533",
+  "actualSynthesisFingerprintMatched": true,
+  "inputBytes": 23712,
+  "evidenceSupplied": 20,
+  "premiseAllocation": {
+    "version": 1,
+    "candidateEvidenceIds": [
+      "ev_e28ec6485011e1fc99874afce43b3041e486be74d12db4b3de4cb80e586f79fb",
+      "ev_29e325e167454a4f9c1a78a962a3a447163b5e5d804acd3b761ce733857152cd",
+      "ev_6eedea527444f94603173bcdab681b0ed1dc3aba84873cbc4f6a19a9eccb2322",
+      "ev_48631b8d24cdb007f4bb3a1a0cfd7dd02c194626d71880b8eb6a3da38dff7a86",
+      "ev_f8c75067e064c57424ff67d9350c14f3b52062e83902d694525ac6991ff30890",
+      "ev_370da206fca7afd03dfea3e31dd2d4c79bd5dd9f6d8b2e5211dfdce0a4684ca0",
+      "ev_4954c60dac32eec0145fc1e71da3fa818a9ab7f9a0fadd72de0521ff1f7568fd",
+      "ev_22d5ddcf5076557bfebe52c39dfd5019553e59271b70a5adbba18bbe7bcf9c1b",
+      "ev_66ed9db0a929c67a7f2044d80c26750fd5878ccae70642a3c5bbe41afa784531",
+      "ev_ac78892b03667f013a7ab023f8ee141856e6e6b1e1d412266f3faa1d17ef5c8b",
+      "ev_d5b7e7b5bea0edc9a1f7941ef30c58f08952ae6e2e1ed3edb034af0f2ffcc7ed",
+      "ev_c01f18906d4c56eab7df4447e7f0e400a26a147caa920b9bc0700d124f55d859",
+      "ev_c3b6e83df4b17b21cd7fd3592d655492af22aeb570eb01b557d0338e9cfcaf31",
+      "ev_5741cd3c3c1a274451cc3aa48e2a9c953876d9133b0bbca3bcb48ad07f306a21",
+      "ev_4882e51d34dae9d49028f77fad5472a740d2fd8ed04e1a440ba550e6ec2c01c6",
+      "ev_cb9b35a67777160145f6a501a72cdc0eb1cbd3ac560e50ec19354afa6082c1e1",
+      "ev_6d630d0eee79d5d08d8345548cdab1f02e63a2cce14c6ee8b50a46bc5566e2e8",
+      "ev_6045668951ec284de9518b6397e093740a03127a90dd821dcf04072ea25e7e8e",
+      "ev_4d607838fc748b0d0fc4dd8223bdf453639bc7a024640afc50cd0a3553080b4c",
+      "ev_c4c005c5431e2a32172c9af55bfcc2de7aa133a25b4353e2e7d561c050babc88"
+    ],
+    "suppliedEvidenceIds": [
+      "ev_e28ec6485011e1fc99874afce43b3041e486be74d12db4b3de4cb80e586f79fb",
+      "ev_29e325e167454a4f9c1a78a962a3a447163b5e5d804acd3b761ce733857152cd",
+      "ev_6eedea527444f94603173bcdab681b0ed1dc3aba84873cbc4f6a19a9eccb2322",
+      "ev_48631b8d24cdb007f4bb3a1a0cfd7dd02c194626d71880b8eb6a3da38dff7a86",
+      "ev_f8c75067e064c57424ff67d9350c14f3b52062e83902d694525ac6991ff30890",
+      "ev_370da206fca7afd03dfea3e31dd2d4c79bd5dd9f6d8b2e5211dfdce0a4684ca0",
+      "ev_4954c60dac32eec0145fc1e71da3fa818a9ab7f9a0fadd72de0521ff1f7568fd",
+      "ev_22d5ddcf5076557bfebe52c39dfd5019553e59271b70a5adbba18bbe7bcf9c1b",
+      "ev_66ed9db0a929c67a7f2044d80c26750fd5878ccae70642a3c5bbe41afa784531",
+      "ev_ac78892b03667f013a7ab023f8ee141856e6e6b1e1d412266f3faa1d17ef5c8b",
+      "ev_d5b7e7b5bea0edc9a1f7941ef30c58f08952ae6e2e1ed3edb034af0f2ffcc7ed",
+      "ev_c01f18906d4c56eab7df4447e7f0e400a26a147caa920b9bc0700d124f55d859",
+      "ev_c3b6e83df4b17b21cd7fd3592d655492af22aeb570eb01b557d0338e9cfcaf31",
+      "ev_5741cd3c3c1a274451cc3aa48e2a9c953876d9133b0bbca3bcb48ad07f306a21",
+      "ev_4882e51d34dae9d49028f77fad5472a740d2fd8ed04e1a440ba550e6ec2c01c6",
+      "ev_cb9b35a67777160145f6a501a72cdc0eb1cbd3ac560e50ec19354afa6082c1e1",
+      "ev_6d630d0eee79d5d08d8345548cdab1f02e63a2cce14c6ee8b50a46bc5566e2e8",
+      "ev_6045668951ec284de9518b6397e093740a03127a90dd821dcf04072ea25e7e8e",
+      "ev_4d607838fc748b0d0fc4dd8223bdf453639bc7a024640afc50cd0a3553080b4c",
+      "ev_c4c005c5431e2a32172c9af55bfcc2de7aa133a25b4353e2e7d561c050babc88"
+    ],
+    "missingPremiseBundles": [],
+    "inputBytes": 23712,
+    "fixedInputBytes": 12865,
+    "tableDataOmittedEvidenceIds": [],
+    "sharedTablePackets": 0
+  },
+  "wire": [
+    {
+      "evidenceId": "E1",
+      "quote": "The input to our method is a set of images of a monocular dynamic scene, together with the time label and the corresponding camera poses calibrated by SfM[37]which also produces a sparse point cloud.",
+      "source": "P1",
+      "resultRoleHintOnly": "unspecified",
+      "tableDataOmitted": false
+    },
+    {
+      "evidenceId": "E2",
+      "quote": "3DGStream constructs photo-realistic FVV streams from multi-view video streams on-the-fly using a per-frame training paradigm.",
+      "source": "P2",
+      "resultRoleHintOnly": "unspecified",
+      "tableDataOmitted": false
+    },
+    {
+      "evidenceId": "E3",
+      "quote": "To model the dynamic 3D Gaussians that vary over time, we decouple the 3D Gaussians and the deformation field.",
+      "source": "P1",
+      "resultRoleHintOnly": "unspecified",
+      "tableDataOmitted": false
+    },
+    {
+      "evidenceId": "E4",
+      "quote": "The deformation field takes the positions of the 3D Gaussians and the current time t as inputs, outputting δx, δr, and δs.",
+      "source": "P1",
+      "resultRoleHintOnly": "unspecified",
+      "tableDataOmitted": false
+    },
+    {
+      "evidenceId": "E5",
+      "quote": "During the initial 3k iterations, we solely trained the 3D Gaussians to attain relatively stable positions and shapes.",
+      "source": "P1",
+      "resultRoleHintOnly": "unspecified",
+      "tableDataOmitted": false
+    },
+    {
+      "evidenceId": "E6",
+      "quote": "Subsequently, we jointly train the 3D Gaussians and the deformation field.",
+      "source": "P1",
+      "resultRoleHintOnly": "unspecified",
+      "tableDataOmitted": false
+    },
+    {
+      "evidenceId": "E7",
+      "quote": "The results of the experiments demonstrate that our method is capable of real-time rendering on a 3090 GPU when the number of point clouds is less than 250k.",
+      "source": "P1",
+      "resultRoleHintOnly": "unspecified",
+      "tableDataOmitted": false
+    },
+    {
+      "evidenceId": "E8",
+      "quote": "The excessively high number of 3D Gaussians in HyperNeRF reflects the critical importance of the camera pose accuracy for the convergence of our method.",
+      "source": "P1",
+      "resultRoleHintOnly": "unspecified",
+      "tableDataOmitted": false
+    },
+    {
+      "evidenceId": "E9",
+      "quote": "We initiate the process by training 3DGs[26]at timestep 0.",
+      "source": "P2",
+      "resultRoleHintOnly": "unspecified",
+      "tableDataOmitted": false
+    },
+    {
+      "evidenceId": "E10",
+      "quote": "For subsequent timesteps, we employ the previous timestep's 3DGs as an initialization and pass them to a two-stage pipeline.",
+      "source": "P2",
+      "resultRoleHintOnly": "unspecified",
+      "tableDataOmitted": false
+    },
+    {
+      "evidenceId": "E11",
+      "quote": "The deformation field takes the positions of the 3D Gaussians and the current time t as inputs, outputting δx, δr, and δs.",
+      "source": "P1",
+      "resultRoleHintOnly": "unspecified",
+      "tableDataOmitted": false
+    },
+    {
+      "evidenceId": "E12",
+      "quote": "Subsequently, we put the deformed 3D Gaussians G(x + δx, r + δr, s + δs, σ) into the efficient differential Gaussian rasterization pipeline, which is a tile-based rasterizer that allows α-blending of anisotropic splats.",
+      "source": "P1",
+      "resultRoleHintOnly": "unspecified",
+      "tableDataOmitted": false
+    },
+    {
+      "evidenceId": "E13",
+      "quote": "The 3D Gaussians and deformation network are optimized jointly through the fast backward pass by tracking accumulated α values, together with the adaptive control of the Gaussian density.",
+      "source": "P1",
+      "resultRoleHintOnly": "unspecified",
+      "tableDataOmitted": false
+    },
+    {
+      "evidenceId": "E14",
+      "quote": "Another category of methods[30,31,34]introduces a deformation field to decouple time and the radiance field, mapping point coordinates to the canonical space corresponding to time t through the deformation field.",
+      "source": "P1",
+      "resultRoleHintOnly": "unspecified",
+      "tableDataOmitted": false
+    },
+    {
+      "evidenceId": "E15",
+      "quote": "We use a warm-up phase for the 3D Gaussians during the first 3k iterations without optimizing the deformation field.",
+      "source": "P1",
+      "resultRoleHintOnly": "unspecified",
+      "tableDataOmitted": false
+    },
+    {
+      "evidenceId": "E16",
+      "quote": "incorporating depth information[1]to introduce and time γ(t) with positional encoding as input to a deformation MLP network to obtain the offset (δx, δr, δs) of dynamic 3D Gaussians in canonical space.",
+      "source": "P1",
+      "resultRoleHintOnly": "unspecified",
+      "tableDataOmitted": false
+    },
+    {
+      "evidenceId": "E17",
+      "quote": "We use a warm-up phase for the 3D Gaussians during the first 3k iterations without optimizing the deformation field.",
+      "source": "P1",
+      "resultRoleHintOnly": "unspecified",
+      "tableDataOmitted": false
+    },
+    {
+      "evidenceId": "E18",
+      "quote": "Following that, we use the fast differential Gaussian rasterization pipeline to perform joint optimization of the deformation field and the 3D Gaussians, as well as to adaptively control the density of the set of Gaussians.",
+      "source": "P1",
+      "resultRoleHintOnly": "unspecified",
+      "tableDataOmitted": false
+    },
+    {
+      "evidenceId": "E19",
+      "quote": "Rather than reconstructing the scene frame by frame[26], we condition the 3D Gaussians on time and jointly train a purely implicit deformation field with the learnable 3D Gaussians in canonical space.",
+      "source": "P1",
+      "resultRoleHintOnly": "unspecified",
+      "tableDataOmitted": false
+    },
+    {
+      "evidenceId": "E20",
+      "quote": "The gradients for these two components are derived from a customized differential Gaussian rasterization pipeline.",
+      "source": "P1",
+      "resultRoleHintOnly": "unspecified",
+      "tableDataOmitted": false
+    }
+  ],
+  "claims": [
+    {
+      "claimId": "c1",
+      "text": "P1输入为单目动态场景图像、时间标签、校准相机位姿及稀疏点云；P2输入为多视角视频流。",
+      "kind": "reported",
+      "evidenceRefs": [
+        "ev_e28ec6485011e1fc99874afce43b3041e486be74d12db4b3de4cb80e586f79fb",
+        "ev_29e325e167454a4f9c1a78a962a3a447163b5e5d804acd3b761ce733857152cd"
+      ],
+      "conditions": {},
+      "obligationIds": [
+        "ob_1"
+      ],
+      "detailLevel": "brief",
+      "tableBindings": []
+    },
+    {
+      "claimId": "c2",
+      "text": "P1通过变形场表示时间变化，以3D高斯位置和当前时间t为输入输出偏移δx,δr,δs；P2未提供显式时间条件表示，推断为逐帧更新3D高斯参数。",
+      "kind": "inference",
+      "evidenceRefs": [
+        "ev_6eedea527444f94603173bcdab681b0ed1dc3aba84873cbc4f6a19a9eccb2322",
+        "ev_48631b8d24cdb007f4bb3a1a0cfd7dd02c194626d71880b8eb6a3da38dff7a86",
+        "ev_29e325e167454a4f9c1a78a962a3a447163b5e5d804acd3b761ce733857152cd",
+        "ev_ac78892b03667f013a7ab023f8ee141856e6e6b1e1d412266f3faa1d17ef5c8b"
+      ],
+      "conditions": {},
+      "obligationIds": [
+        "ob_2"
+      ],
+      "detailLevel": "brief",
+      "tableBindings": []
+    },
+    {
+      "claimId": "c3",
+      "text": "P1为整体离线训练：先3k迭代只训练3D高斯，随后联合训练变形场；P2为逐帧在线训练：初始帧训练后，后续每帧用上一帧初始化更新。",
+      "kind": "reported",
+      "evidenceRefs": [
+        "ev_f8c75067e064c57424ff67d9350c14f3b52062e83902d694525ac6991ff30890",
+        "ev_370da206fca7afd03dfea3e31dd2d4c79bd5dd9f6d8b2e5211dfdce0a4684ca0",
+        "ev_29e325e167454a4f9c1a78a962a3a447163b5e5d804acd3b761ce733857152cd",
+        "ev_66ed9db0a929c67a7f2044d80c26750fd5878ccae70642a3c5bbe41afa784531",
+        "ev_ac78892b03667f013a7ab023f8ee141856e6e6b1e1d412266f3faa1d17ef5c8b"
+      ],
+      "conditions": {},
+      "obligationIds": [
+        "ob_3"
+      ],
+      "detailLevel": "brief",
+      "tableBindings": []
+    },
+    {
+      "claimId": "c4",
+      "text": "无法比较FPS：P1仅报告在3090 GPU且点云少于250k时实时渲染，未提供P2的FPS报告，且未控制相同硬件、数据与指标，故不能凭各自主表FPS排名。",
+      "kind": "inference",
+      "evidenceRefs": [
+        "ev_4954c60dac32eec0145fc1e71da3fa818a9ab7f9a0fadd72de0521ff1f7568fd"
+      ],
+      "conditions": {},
+      "obligationIds": [
+        "ob_4"
+      ],
+      "detailLevel": "brief",
+      "tableBindings": []
+    }
+  ],
+  "boundary": "Exact actual synthesis request reconstruction and supplied-premise inventory; no new Provider calls or content approval."
+}

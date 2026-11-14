@@ -1,0 +1,131 @@
+{
+  "providerCalls": 0,
+  "oldVerificationPromptsByteIdentical": 3,
+  "permittedReportedInferenceIds": [
+    "c1"
+  ],
+  "repairPromptBytes": 23901,
+  "mandatoryTableRowsPresent": [
+    8,
+    10
+  ],
+  "tableCellValuesChanged": false,
+  "mockRepairResponse": "[]",
+  "contentAcceptance": false,
+  "independentCredit": 0,
+  "legacyProfile7PromptByteIdentical": true,
+  "newGuidanceSharesAllowedSourceNotApproval": true,
+  "newSourcePermissionsSubsetOfOriginalCandidatePool": true,
+  "requiredSourceQuotesAndContextExact": [
+    "E5",
+    "E3"
+  ],
+  "newVisibleIds": [
+    "E3",
+    "E5",
+    "E1",
+    "E2",
+    "E4",
+    "E6",
+    "E7",
+    "E9"
+  ],
+  "oldVisibleIds": [
+    "E3",
+    "E5",
+    "E1",
+    "E2",
+    "E4",
+    "E6",
+    "E7",
+    "E8"
+  ],
+  "conditionSourceIndex": {
+    "tables": [
+      {
+        "evidenceId": "E5",
+        "groups": [
+          "Mip-NeRF 360 Datasets",
+          "Tank and Temple Datasets"
+        ],
+        "methods": [
+          [
+            7,
+            "Compact 3D-GS [37]"
+          ],
+          [
+            8,
+            "3D-GS [16]"
+          ],
+          [
+            9,
+            "3D-GS  *  [16]"
+          ],
+          [
+            10,
+            "Ours"
+          ]
+        ],
+        "sourceRef": "P1",
+        "columnMappingUnverified": true
+      },
+      {
+        "evidenceId": "E4",
+        "groups": [
+          "Mip-NeRF 360 Datasets",
+          "Tank and Temple Datasets"
+        ],
+        "methods": [
+          [
+            3,
+            "INGP-Big [14]"
+          ],
+          [
+            4,
+            "Mip-NeRF 360 [7]"
+          ],
+          [
+            5,
+            "VQ-DVGO [49]"
+          ],
+          [
+            6,
+            "Compressed 3D-GS  *  [34]"
+          ]
+        ],
+        "sourceRef": "P1",
+        "columnMappingUnverified": true
+      }
+    ],
+    "allowedTablesByClaim": {
+      "c1": [
+        "E5",
+        "E4"
+      ],
+      "c2": [
+        "E4",
+        "E5"
+      ]
+    }
+  },
+  "preservation": {
+    "before": {
+      "ledgerRows": 7465,
+      "ledgerSha256": "9138a4c5c9e9397c9dce6b78007d07dc1c2f7955dd637bef1d794f0c50b97bbc",
+      "payloadSha256": "a4559eea0b66b511bed93f21a1cba7e6a39068464469aacbcd30fde6895797ad"
+    },
+    "after": {
+      "ledgerRows": 7465,
+      "ledgerSha256": "9138a4c5c9e9397c9dce6b78007d07dc1c2f7955dd637bef1d794f0c50b97bbc",
+      "payloadSha256": "a4559eea0b66b511bed93f21a1cba7e6a39068464469aacbcd30fde6895797ad"
+    },
+    "exactProductionPreservation": true,
+    "providerSubmissions": 4,
+    "productionPublish": false,
+    "fullWorkflowReplay": false,
+    "independentCredit": 0
+  },
+  "rawReceipts": "tmp\\component-shared-guidance-330-offline4-20261029\\receipt",
+  "newPromptSha256": "23a788f71eba21cafca14fb3c39691b6d777b6cf6652fd2accef29179a6ece0c",
+  "limitation": "Archived verifier responses and empty mock repair; no new scientific approval or real-model quality proof."
+}

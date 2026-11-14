@@ -1,0 +1,51 @@
+{
+  "date": "2026-10-20",
+  "sourceCase": "E1-v1",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "oldPlanningFingerprintMatched": true,
+  "oldSavedInvalidResponseNotResent": true,
+  "newControlledPlanning": {
+    "inputBytes": 14110,
+    "suppliedEvidenceRows": 7,
+    "options": {
+      "max_tokens": 6144,
+      "temperature": 0.0,
+      "thinking": {
+        "type": "disabled"
+      },
+      "reasoning_effort": "none",
+      "response_format": {
+        "type": "json_object"
+      }
+    }
+  },
+  "newControlledConfiguration": {
+    "inputBytes": 21711,
+    "fixedInputBytes": 19233,
+    "maximumReservedPlanBytes": 2500,
+    "suppliedEvidenceRows": 7,
+    "options": {
+      "max_tokens": 16384,
+      "temperature": 0.2,
+      "thinking": {
+        "type": "disabled"
+      },
+      "reasoning_effort": "none",
+      "response_format": {
+        "type": "json_object"
+      }
+    }
+  },
+  "suppliedQuotes": [
+    "After the two-stage pipeline concludes, we use both the 3DGs transformed by the NTC and the additional 3DGs for rendering at the current timestep i, with only the former carrying over for initialization of the subsequent timestep.",
+    "In Tab.\n1, we present the averaged rendering speed, training time, required storage, and peak signal-to-noise ratio (PSNR) over all scenes of the N3DV dataset.\nFor each scene, the latter three metrics are computed as averages over the whole 300 frames.",
+    "We utilize NTC for modeling the transformations of 3DGs, in conjunction with an adaptive 3DG addition strategy to tackle emerging objects within dynamic scenes.",
+    "Table row 1: Step |  | Overhead (ms) FPS [cols=2, rows=1]\nTable row 2: Render w/o NTC [cols=2, rows=1] | 1.75 | 571\nTable row 3: + Query NTC [cols=2, rows=1] | +0.46 | \nTable row 4: + Transformation [cols=2, rows=1] | +0.02 | \nTable row 5: + SH Rotation [cols=2, rows=1] | +1.24 | \nTable row 6: Total |  | 3.47 | 288",
+    "Table row 7: Dataset | NTC (KB) New 3DGs (KB) Total (KB) [cols=3, rows=1]\nTable row 8: N3DV | 7781.5 | 49.1 | 7830.6\nTable row 9: MeetRoom | 3941.5 | 195.3 | 4136.8",
+    "Note that only the parameters of the additional 3DGs are optimized, while those of the transformed 3DGs remain fixed.",
+    "Specifically, in Stage 2, we set a relatively high threshold, τ α = 0.01, for the opacity value."
+  ],
+  "fullActualPoolUnchanged": 25,
+  "boundary": "Controlled new-policy input allocation from unchanged actually read/archive evidence. Private blueprint is mocked; no new reading, generation, source adequacy, executable content or independent acceptance. Old E1 failed request and all unknowns are not reissued or upgraded."
+}

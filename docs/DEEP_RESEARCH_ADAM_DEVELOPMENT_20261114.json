@@ -1,0 +1,85 @@
+{
+  "version": 1,
+  "frozenAt": "2026-11-14",
+  "budgetProfile": "standard",
+  "materials": {},
+  "review": {
+    "dimensions": [
+      "目标回应",
+      "证据支持",
+      "条件完整",
+      "综合价值",
+      "可执行性",
+      "可读性"
+    ],
+    "minimumApplicableScore": 4,
+    "nonApplicable": {
+      "可执行性": "Single-paper explanation, no experiment requested."
+    },
+    "independence": "AD1N retired from independent acceptance after prior debugging. This is one development validation on the current source; original question, criteria, sources and budget unchanged. No original failed or unknown request is replayed.",
+    "coverageRelation": "H1 single-paper explanation with real H3 acquisition. Does not replace blocked H2 comparison or H5 experiment tasks; all previous unknown identities remain untouched.",
+    "sourceAnchors": [
+      {
+        "paper": "arxiv:1412.6980v1",
+        "reference": "https://arxiv.org/pdf/1412.6980v1",
+        "sha256": "935a5a15616961aff21529d86a754570028843407adfe858f1d18584b84293a7",
+        "pages": [
+          2,
+          3
+        ],
+        "expected": "Algorithm1 and sections2-3: m and v track gradient and squared-gradient exponential averages, initialized at zero. Early estimates are biased toward zero. In v1 m_t=beta1*g_t+(1-beta1)*m_previous and similarly v with squared g; correction divides by 1-(1-beta)^t, unlike later coefficient naming. Update subtracts alpha*mhat/(sqrt(vhat)+epsilon). Corrected raw second moment is not centered variance. Section3 distinguishes initialization factor from residual nonstationarity zeta. Explanation need not print equations/default hyperparameters, but any printed values must match v1. Correction does not establish universal training speed or convergence. Do not blindly reproduce incorrect informal SNR algebra as a universal equality."
+      }
+    ],
+    "hardFailures": [
+      "换成其他版本或把新版系数记号套进v1公式",
+      "把二阶原始矩直接等同于中心方差",
+      "把初始化偏差说成抽样噪声已被消除",
+      "未经依据保证所有步骤变小或所有训练更快/收敛",
+      "未读到正文而按常识生成原文结论",
+      "关键事实或公式错误/引用身份错误",
+      "超过18调用/100000Token/360秒",
+      "未知请求或未审核结论计为通过"
+    ],
+    "transportChecks": [
+      "exact_v1",
+      "fulltext_source",
+      "bounded_acquisition",
+      "per_claim_source_bindings"
+    ],
+    "freshnessProof": "deep-research-evidence/independent-adam-preparation-freshness-20261107.json",
+    "referencePreparationProof": "deep-research-evidence/independent-adam-reference-preparation-20261107.json"
+  },
+  "cases": [
+    {
+      "id": "AD1N",
+      "split": "development",
+      "materials": [],
+      "kind": "claim_verification",
+      "policy": "external_only",
+      "question": "请联网读取 Adam: A Method for Stochastic Optimization（arXiv:1412.6980v1），只依据这个版本。面向了解梯度下降但没读过这篇论文的人，解释一阶矩和二阶原始矩各记录什么、为什么从零开始会有偏差、偏差校正如何参与参数更新。说明这种校正解决的具体问题及其边界，不要据此保证所有训练更快或收敛。限300字。",
+      "required": [
+        "指定v1正文取得，关键引用能回查",
+        "普通语言解释梯度及其平方的历史移动平均，区分原始二阶矩与中心方差",
+        "解释零初始化导致早期矩估计偏向零",
+        "解释校正后的两种矩如何分别参与更新分子和平方根分母",
+        "校正针对初始化偏差，不泛化为消除噪声或普遍速度/收敛保证",
+        "遵守300字并有可理解的实际动作联系"
+      ],
+      "forbidden": [
+        "换成其他版本或把新版系数记号套进v1公式",
+        "把二阶原始矩直接等同于中心方差",
+        "把初始化偏差说成抽样噪声已被消除",
+        "未经依据保证所有步骤变小或所有训练更快/收敛",
+        "未读到正文而按常识生成原文结论",
+        "关键事实或公式错误/引用身份错误",
+        "超过18调用/100000Token/360秒",
+        "未知请求或未审核结论计为通过"
+      ]
+    }
+  ],
+  "caseDefinitionHashes": {
+    "AD1N": "cc5f10231535be3d81073e508d62d452681451ad066779d70e1470de7808e1f7"
+  },
+  "executionStatus": "frozen_development_not_executed",
+  "independentCredit": 0
+}

@@ -1,0 +1,74 @@
+{
+  "date": "2026-10-18",
+  "sourceCommit": "1e6daa48",
+  "testType": "offline replay of saved real source packets and original-PDF source preflight",
+  "cases": [
+    {
+      "case": "H1F-v2",
+      "runId": "dr_run_07e8401470ac55f3881d9abdcc3b254f",
+      "priority2First": [
+        "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-17",
+        "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-21",
+        "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-3"
+      ],
+      "priority3First": [
+        "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-21",
+        "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-26",
+        "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-43"
+      ],
+      "sourceInputLocations": [
+        {
+          "page": 4,
+          "chunk": 21,
+          "section": "Neural Transformation Cache"
+        },
+        {
+          "page": 5,
+          "chunk": 26,
+          "section": "Adaptive 3DG Addition"
+        },
+        {
+          "page": 9,
+          "chunk": 43,
+          "section": "Implementation Details"
+        }
+      ],
+      "passageCount": 9
+    },
+    {
+      "case": "H4F-v1",
+      "runId": "dr_run_ee62d7b47eac52e2aa87a981085bbe16",
+      "priority2First": [
+        "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-17",
+        "src_4a7aa70678814089434fe39f4ee329cffb15b569e427d0129ae49f209eb0f282",
+        "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-11"
+      ],
+      "priority3First": [
+        "src_4a7aa70678814089434fe39f4ee329cffb15b569e427d0129ae49f209eb0f282",
+        "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-11",
+        "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-42"
+      ],
+      "sourceInputLocations": [
+        {
+          "page": 1,
+          "offset": 0
+        },
+        {
+          "page": 2,
+          "chunk": 11,
+          "section": "Free-Viewpoint Videos of Dynamic Scenes"
+        },
+        {
+          "page": 8,
+          "chunk": 42,
+          "section": "Conclusion"
+        }
+      ],
+      "passageCount": 8
+    }
+  ],
+  "providerCalls": 0,
+  "productionRowsChanged": 0,
+  "independentAcceptanceChanged": false,
+  "boundary": "Proves bounded first-batch selection only; source locations are input metadata, not independently resolved final citations. Actual model answers still need review."
+}

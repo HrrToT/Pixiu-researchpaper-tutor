@@ -1,0 +1,19 @@
+{
+  "date": "2026-10-18",
+  "inputCase": "H1F-v10",
+  "runId": "dr_run_f8535efd45d4517d9651cfc527729776",
+  "originalVersionOneDraftInputDigestMatched": true,
+  "originalVersionOneRequestBytesMatched": true,
+  "actualProviderRequestFingerprintMatched": true,
+  "argsDigest": "560c1cddc9cc10f156edde62c727edf49e10ff0817e0b81bf67597d452558d8f",
+  "oldPromptBytes": 8064,
+  "newPromptBytes": 9584,
+  "outputTokensUnchanged": true,
+  "originalClaimCount": 3,
+  "mandatoryQuotesRetained": true,
+  "sourceRefsNotExpanded": true,
+  "newHumanRequirementCount": 3,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "boundary": "Exact actual legacy request replay plus copied-input version2 preparation. No generated answer, factual approval or independent credit."
+}

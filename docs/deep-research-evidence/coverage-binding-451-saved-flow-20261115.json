@@ -1,0 +1,13 @@
+{
+  "modelCalls": 0,
+  "originalCoverageRequestDigestExact": true,
+  "originalRequestDigest": "51cb2369bb1b2931f2fb7382d5d147937f8511fe59c72860d959df7e5bb8485d",
+  "correctionRequestDigest": "6a082b632e095db51b85b7c2c083e1601d0589bb487acfcb8fa761c052f3626b",
+  "correctionPromptBytes": 3200,
+  "correctionOutputCap": 3500,
+  "usesFinalizationReserve": true,
+  "originalAnswerNotRewritten": true,
+  "serverRequestsOneTarget": true,
+  "scientificContentAccepted": false,
+  "boundary": "Actual new graph replay reuses exact v31 original audit request and reaches one new correction callback. Does not execute provider, alter old receipt or approve reported-covered verdict. Complete answer and own role bindings are preserved for normal validation."
+}

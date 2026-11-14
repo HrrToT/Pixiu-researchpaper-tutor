@@ -1,0 +1,122 @@
+{
+  "case": "X4H-v1",
+  "sourcePayloadSha256": "b1141dba88c9da4febcadb984b987f032637d27bda35c32ac8ce4cec47a13e8c",
+  "humanRequestedSections": [
+    "5"
+  ],
+  "results": [
+    {
+      "sectionPremisesContractVersion": 0,
+      "inputBytes": 23904,
+      "fixedInputBytes": 20358,
+      "suppliedEvidenceIds": [
+        "ev_6f1d623a36a324c2cb63afe00f9695662d907c21706e4b748980f841fc554cff",
+        "ev_9989a3186d54c0b3acf7c2469b51fc55314ebd8704d20daead8a9f4ebf9ad116",
+        "ev_0e10fa8ba00cf49d2660fe6c73eac0172b233e963d165946c4ca24426ed04ae5",
+        "ev_6501eb04b9f9c3c3de1a072392959c26126bd9f46818347afd428798014a4d02",
+        "ev_8f287ca32e84abadb63da54cbaaa96bce3152d90287f395ac2db793e30fa6354"
+      ],
+      "missingPremiseBundles": [],
+      "wholeSectionRetained": false
+    },
+    {
+      "sectionPremisesContractVersion": 1,
+      "inputBytes": 23868,
+      "fixedInputBytes": 15610,
+      "suppliedEvidenceIds": [
+        "ev_80071a81e1cde3297c780faa1e54a2f60855ae9f50b8c87e00ee8535a204437c",
+        "ev_dc3bc783eb15ff957a4483403e5eb7e2f3cdc060a2fc0e11775ef23c04bfcd9e",
+        "ev_f7a123327860aece848010e5f83fe9fdca1a8e38c7f3b39aaeedfca62fc9c7a9",
+        "ev_9c3748d97b92b3200d2c650438a25d85fab5e04ed37690fee0c6e6bb2c4ac2f4",
+        "ev_2c6f75b784065123278901dfd0994c87a953b6242c343bb5393ca141628dc55c",
+        "ev_4938ee4d63ff3826250c289c1a41888da4a556f4b8f22a2c85c2e449fa49d805",
+        "ev_7b685ac985748dac96aecce4d9465e3917ec1a6835df3820ec1809bc75db2846",
+        "ev_6f1d623a36a324c2cb63afe00f9695662d907c21706e4b748980f841fc554cff",
+        "ev_9989a3186d54c0b3acf7c2469b51fc55314ebd8704d20daead8a9f4ebf9ad116",
+        "ev_0e10fa8ba00cf49d2660fe6c73eac0172b233e963d165946c4ca24426ed04ae5",
+        "ev_6501eb04b9f9c3c3de1a072392959c26126bd9f46818347afd428798014a4d02",
+        "ev_8f287ca32e84abadb63da54cbaaa96bce3152d90287f395ac2db793e30fa6354",
+        "ev_633e954414539adbc261cd8874561627e73ec5cc4004dbf16f609b6e0c250527"
+      ],
+      "missingPremiseBundles": [],
+      "wholeSectionRetained": true
+    }
+  ],
+  "retainedOriginalUnits": [
+    {
+      "evidenceId": "ev_80071a81e1cde3297c780faa1e54a2f60855ae9f50b8c87e00ee8535a204437c",
+      "sourceId": "src_ce0d98449d3123223813398de13128b1aea8a4b02e6be492bec021d38c469cdb",
+      "location": {
+        "page": 5,
+        "offset": 0,
+        "sourcePassageStart": 1219,
+        "sourcePassageEnd": 1866
+      }
+    },
+    {
+      "evidenceId": "ev_dc3bc783eb15ff957a4483403e5eb7e2f3cdc060a2fc0e11775ef23c04bfcd9e",
+      "sourceId": "src_ce0d98449d3123223813398de13128b1aea8a4b02e6be492bec021d38c469cdb",
+      "location": {
+        "page": 5,
+        "offset": 0,
+        "sourcePassageStart": 1866,
+        "sourcePassageEnd": 2003
+      }
+    },
+    {
+      "evidenceId": "ev_f7a123327860aece848010e5f83fe9fdca1a8e38c7f3b39aaeedfca62fc9c7a9",
+      "sourceId": "src_4b69b2b2c6ab0e2d8cf2409f8998d2aa9948e7d4074bd96c9a04022cb14d50c8",
+      "location": {
+        "page": 5,
+        "offset": 2003,
+        "sourcePassageStart": 0,
+        "sourcePassageEnd": 269
+      }
+    },
+    {
+      "evidenceId": "ev_9c3748d97b92b3200d2c650438a25d85fab5e04ed37690fee0c6e6bb2c4ac2f4",
+      "sourceId": "src_4b69b2b2c6ab0e2d8cf2409f8998d2aa9948e7d4074bd96c9a04022cb14d50c8",
+      "location": {
+        "page": 5,
+        "offset": 2003,
+        "sourcePassageStart": 269,
+        "sourcePassageEnd": 942
+      }
+    },
+    {
+      "evidenceId": "ev_2c6f75b784065123278901dfd0994c87a953b6242c343bb5393ca141628dc55c",
+      "sourceId": "src_4b69b2b2c6ab0e2d8cf2409f8998d2aa9948e7d4074bd96c9a04022cb14d50c8",
+      "location": {
+        "page": 5,
+        "offset": 2003,
+        "sourcePassageStart": 942,
+        "sourcePassageEnd": 1654
+      }
+    },
+    {
+      "evidenceId": "ev_4938ee4d63ff3826250c289c1a41888da4a556f4b8f22a2c85c2e449fa49d805",
+      "sourceId": "src_4b69b2b2c6ab0e2d8cf2409f8998d2aa9948e7d4074bd96c9a04022cb14d50c8",
+      "location": {
+        "page": 5,
+        "offset": 2003,
+        "sourcePassageStart": 1654,
+        "sourcePassageEnd": 2019
+      }
+    },
+    {
+      "evidenceId": "ev_7b685ac985748dac96aecce4d9465e3917ec1a6835df3820ec1809bc75db2846",
+      "sourceId": "src_0911dbeb7561c3c0ef230a74a8d26ca5a8fe1cff018d1418942caaed5432abff",
+      "location": {
+        "page": 5,
+        "offset": 4022,
+        "sourcePassageStart": 0,
+        "sourcePassageEnd": 486
+      }
+    }
+  ],
+  "losslessEncoding": "Production render requires decode(encode(rows))==rows on every admitted packet",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "independentCredit": 0,
+  "boundary": "Actual synthesis input completeness and unchanged literal evidence, not generated answer quality."
+}

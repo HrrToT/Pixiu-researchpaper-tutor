@@ -1,0 +1,42 @@
+{
+  "sourceCommit": "c238f0b363b53f381ff55b3502c5dfe46b3ab320",
+  "promptVersion": "dr-v2.20261028.321",
+  "scope": "isolated saved-answer verification; no generation/retrieval/production publish",
+  "providerCalls": 6,
+  "allSucceeded": true,
+  "totalTokens": 31551,
+  "accepted": 2,
+  "rejected": 0,
+  "coverageStatus": "checked",
+  "coverageGaps": 4,
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "preservation": {
+    "before": {
+      "ledgerRows": 7465,
+      "ledgerSha256": "9138a4c5c9e9397c9dce6b78007d07dc1c2f7955dd637bef1d794f0c50b97bbc",
+      "payloadSha256": "a4559eea0b66b511bed93f21a1cba7e6a39068464469aacbcd30fde6895797ad"
+    },
+    "after": {
+      "ledgerRows": 7465,
+      "ledgerSha256": "9138a4c5c9e9397c9dce6b78007d07dc1c2f7955dd637bef1d794f0c50b97bbc",
+      "payloadSha256": "a4559eea0b66b511bed93f21a1cba7e6a39068464469aacbcd30fde6895797ad"
+    },
+    "exactProductionPreservation": true,
+    "providerSubmissions": 6,
+    "productionPublish": false,
+    "fullWorkflowReplay": false,
+    "independentCredit": 0
+  },
+  "verificationHarnessLimitation": "Generation private drafting metadata was omitted from this stage seed. Its repair input contained an empty point-intent map. Scope-binding validation remains exercised; this is not a faithful full repair-chain verdict.",
+  "checkpointCorrection": {
+    "offlineOnly": true,
+    "providerCalls": 0,
+    "productionWrites": 0,
+    "oldRepairIntentEntries": 0,
+    "correctedRepairIntentEntries": 2,
+    "noScientificApprovalInherited": true,
+    "sourcePayloadSha256": "32f2e4ec454040ac277d2c081ef1c5a6c6d5b6e58c0d8da58f8ab6570ac18063"
+  },
+  "rawReceipts": "tmp\\component-consistent-premises-321-20261028\\receipt"
+}

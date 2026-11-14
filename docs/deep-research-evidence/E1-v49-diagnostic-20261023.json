@@ -1,0 +1,58 @@
+{
+  "date": "2026-10-23",
+  "sourceCommit": "517897212922019c54fbbcc9abf6d751763de2c3",
+  "promptVersion": "dr-v2.20261023.259",
+  "case": "E1-v49",
+  "split": "development",
+  "runId": "dr_run_192f831dc9f2590bae7eaabc205145dd",
+  "questionUnchanged": true,
+  "frozenCaseCommit": "a023b204",
+  "status": "failed",
+  "outcome": "none",
+  "reportedPayloadElapsedSeconds": 0,
+  "observedElapsedSeconds": 149.0,
+  "settledModelCalls": 6,
+  "settledTokens": 27373,
+  "unsettledModelCalls": 0,
+  "independentCredit": 0,
+  "verificationSummary": null,
+  "generationAllocation": null,
+  "directSourcePassageEntries": 47,
+  "modelNodeCounts": {
+    "assess_relevance": 3,
+    "plan": 1,
+    "plan_experiment": 1,
+    "resolve_brief": 1
+  },
+  "workflowBlueprint": {
+    "units": {}
+  },
+  "workflowBinding": null,
+  "errorCode": "invalid_experiment_planning_response",
+  "repairStatus": null,
+  "repairAdmission": null,
+  "planEncodingAudit": null,
+  "initialRepresentationAudit": [],
+  "repairRepresentationAudit": {},
+  "rejectedClaimIds": [],
+  "acceptedClaimIds": [],
+  "rawFiles": [
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v49.json",
+      "sha256": "98b7ef228aabf1fce64db5859f6894f2d0c5d0b84de8b3c294feb6e860e56630"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v49.payload.json",
+      "sha256": "2e89001f86e63883710cfc97fcca4d1a6147eb30963b6121bce46d8c91674621"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v49.calls.json",
+      "sha256": "d2b653203a89b87ca2dfb7616b1d601f45547b49d62072bff8fbae41bf701df7"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v49.result.json",
+      "sha256": "0586fed3405a1486287c653757e050d072a81da03cf5483d4f617fc462ed29da"
+    }
+  ],
+  "boundary": "One fixed development submission, no automatic retry. Representation normalization does not approve science or upgrade historical/independent results."
+}

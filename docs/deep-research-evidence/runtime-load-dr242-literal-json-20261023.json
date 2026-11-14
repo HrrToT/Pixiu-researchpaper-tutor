@@ -1,0 +1,41 @@
+{
+  "date": "2026-10-23",
+  "sourceCommit": "44ffeb5a",
+  "promptVersion": "dr-v2.20261023.242",
+  "experimentPlanEncodingContractVersion": 7,
+  "experimentExecutionGuidanceContractVersion": 2,
+  "experimentReviewEnvelopeContractVersion": 8,
+  "structuredOutputContractVersion": 13,
+  "sourceHashes": {
+    "experiment_execution_guidance.py": "c547a469fa0806b43b34eaa8993694d25681ae6f9b7cba0f5d0f1dd62331ab4e",
+    "experiment_review_envelope.py": "a824127c704d898d211771d5e992c176c30c1292ae98f5eb85bff38c1c620c86",
+    "experiment_template.py": "a50b774e0cec0100d5fdc6adb262b713776085f6f04f9d4cd4dd3aec463b4123",
+    "review_field_index.py": "b81390ceac0d124f36a3d968b7d8a8d32c65d82ba00ce9e97a59c981a0505e96",
+    "rejected_design_context.py": "e97618b11ef7994dd54b8b9a2ea9df7db90afe1ad278affdf1bc1aa19a4147a6",
+    "rejection_audit.py": "261cca249c74ee3c0abf0e70108bf868583ad68a33a3a9512fa87d21bf383fc2",
+    "verification.py": "1d89da7f24b636b9cb2757f07d2f3ca0e08f2ef93293217a57a0eb69ff8defa5",
+    "tools.py": "be2b51fc18d84aa5c32238d89150f70ba4f81ed6e641b65184d0bb25a14826c0",
+    "facade.py": "9a638c58ad4a549b074a218c19e8e9c4222eeba108cbf062e30f1e7542a43ce4",
+    "experiment_plan_encoding.py": "02cf5b65bffe09544c8d84bc71960666710d823818fa4040527680924ae3d529",
+    "experiment_planning.py": "64218f61e42562011ff1fc30d30d14606a66c39c298518668ac4b87a9640e186",
+    "experiment_blueprint.py": "8ecb11fd1856f190ae3d54690056f1beabf1c1ebe8bae0a5a8039c26c7e58545",
+    "blueprint_wire.py": "5a9f7c4f5608eb8eee743097fbb87dc3dbd031b86f65504830bb6b4278938089",
+    "graph.py": "d88b103ee9e5c2aedfa0d10f22f665401f91ad9197ce5f76f1414f6a9060418f",
+    "structured_output.py": "6de65ae94bc8aa7181bdcb95566052c374fd426051b07fd76a0993b149f5c28f"
+  },
+  "idleBeforeRestart": true,
+  "ledgerRows": 5537,
+  "active": 0,
+  "pausedUnknowns": 11,
+  "allPriorRunPayloadsAndLedgerExactlyPreserved": true,
+  "wholeTaskSnapshotsExactlyPreserved": 4,
+  "health": {
+    "rag": "ok",
+    "grobid": "ok"
+  },
+  "frontendHttpStatus": 200,
+  "providerCalls": 0,
+  "productionModelRunsCreated": 0,
+  "independentCredit": 0,
+  "boundary": "Idle restart,exact source hashes,health and data retention. No new model run was created; this does not validate generated scientific content or rendered browser UI."
+}

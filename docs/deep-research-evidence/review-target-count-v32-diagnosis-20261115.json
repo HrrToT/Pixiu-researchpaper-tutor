@@ -1,0 +1,31 @@
+{
+  "modelCalls": 0,
+  "sourceCase": "AD1N-v32",
+  "actualDiagnosticAuditReproducedExactly": true,
+  "reasonSha256": "8818e7255334a7c29a57886d3fc6af6b5928084c58628a23d05b045a788a6e85",
+  "originalStatus": "failed",
+  "originalDiagnosticErrors": [
+    "new_diagnostic_numbers_not_bound"
+  ],
+  "targetNumberTokens": [
+    "2e0"
+  ],
+  "reviewNumberTokens": [
+    "1e0",
+    "2e0",
+    "3e0"
+  ],
+  "metaCountSpan": "前三个分句",
+  "metaCountNumericToken": "3e0",
+  "counterfactualOnlyEdit": {
+    "from": "前三个分句",
+    "to": "这些分句"
+  },
+  "counterfactualDiagnosticErrors": [],
+  "counterfactualStillNegative": true,
+  "sourcePermissionsUnchanged": true,
+  "boundDiagnosticFactsUnchanged": true,
+  "originalCaseUnchanged": true,
+  "scientificContentAccepted": false,
+  "boundary": "Offline diagnostic counterfactual only, no automatic reason rewriting or approval. Target-structure count3 is not a paper measurement; it falsely quarantines an otherwise bound negative review. Any production fix must distinguish actual target navigation from unsupported scientific counts and retain the negative verdict/source checks, with immutable new policy and negative controls."
+}

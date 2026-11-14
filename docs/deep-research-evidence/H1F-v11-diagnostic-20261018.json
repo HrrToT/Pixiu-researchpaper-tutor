@@ -1,0 +1,93 @@
+{
+  "date": "2026-10-18",
+  "case": "H1F-v11",
+  "runId": "dr_run_9490e39f37bc51f4803a4f0e7e73d881",
+  "sourceCommit": "ea10273c",
+  "promptVersion": "dr-v2.20261018.157",
+  "evaluationUse": "retired-case development diagnostic",
+  "independent": false,
+  "independentCredit": 0,
+  "status": "completed",
+  "outcome": "complete",
+  "contentAccepted": true,
+  "modelCalls": 13,
+  "settledTokens": 42496,
+  "elapsedSeconds": 79.457,
+  "cost": null,
+  "reviewer": "Primary Codex review of saved answer against own quoted source premises and frozen rubric; not a participant rating.",
+  "scores": {
+    "goalResponse": 5,
+    "evidenceSupport": 5,
+    "conditions": 4,
+    "synthesisValue": 4,
+    "executability": null,
+    "readability": 4
+  },
+  "runtimeAfter": {
+    "calls": 3822,
+    "newRows": 27,
+    "active": 0,
+    "paused": [
+      "dr_run_4738564f5ff35157996a35068c62ed32",
+      "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+      "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+      "dr_run_86b3f181a5475e99aacca3dbf4370567",
+      "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+      "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+      "dr_run_e3521b1781825273b384a26a5edb8cdc",
+      "dr_run_e9c9dc916bef519092fad8b929b2448f",
+      "dr_run_ed10cc3347be552288079a9a588fddf5"
+    ],
+    "oldLedgerUnchanged": true
+  },
+  "taskCount": 91,
+  "oldTaskObjectsUnchanged": {
+    "notes": 0,
+    "messages": 10,
+    "artifacts": 20
+  },
+  "paperIdsAndMaterialHashUnchanged": true,
+  "actualAudienceRequestFingerprintMatched": true,
+  "argsDigest": "f313afcf059c7fbf78e7af56c17d48f43ffc21d2730a4afe4eb3f81ee916e8c9",
+  "answerCharacters": 182,
+  "extractionPriorityVersion": 4,
+  "audienceRewriteContractVersion": 2,
+  "firstExtractedChunks": [
+    21,
+    3,
+    26
+  ],
+  "findings": [
+    "All three requested points are answered within350 characters: translation/rotation, previous-frame initialization and transformed-only carryover, and additional Gaussians for content absent from the initial frame.",
+    "The extraction uses original output-definition, previous-state pipeline and new-content rationale passages, with unchanged own source/version/hash identity.",
+    "The actual audience request digest matches version2 with literal human requirements and frozen original report. Its original draft includes derived four; the received audience edit removes this optional unreported count before numeric verification.",
+    "Initial verification still rejects the first claim for lacking its own temporal premise. Bounded repair adds the exact previous-frame pipeline quotation, then independent verification and whole-answer coverage pass. No numeric or source guard was disabled.",
+    "The answer distinguishes training the per-frame transformation from rendering the current frame and does not promise lossless reconstruction for arbitrary new objects.",
+    "Some specialist wording remains, such as unstructured explicit representation, but the surrounding causal explanation is readable for the requested concept-level beginner. Further wording polish is possible without failing this frozen case.",
+    "All27callrowssettled, no repeat generation or new unknown. Original3795ledgerrows, all previous notes/messages/artifacts and nine paused identities are unchanged; tasks remain91."
+  ],
+  "report": "## 判断\n\n- NTC预测每个3D高斯从上一帧到当前帧的平移和旋转变化。 [5](#research-evidence-ev_53a20733d81449e6cca09191ffa6cd19d5f909f9adbe1b417e097e42e9772c27) [1](#research-evidence-ev_f51816e595f8373d3a4ec3dd73ea8147f5eb4a359e0f6b53a04cb89e24cfb73b)\n- 利用前一帧表示：把上一帧的3D高斯作为初始值，训练NTC来建模这些高斯的变换；变换后的高斯用于当前帧渲染，并且只有这些变换后的高斯会传递到下一帧作为初始化。 [1](#research-evidence-ev_f51816e595f8373d3a4ec3dd73ea8147f5eb4a359e0f6b53a04cb89e24cfb73b) [2](#research-evidence-ev_bdb024b856972aab854c483acb7dfa600c4918cc401ccfcebcb14da2200b2d38)\n- 遇到新出现的物体需要添加高斯，因为仅靠变换无法表示初始帧中不存在的物体（如火焰、倒出的液体）；3D高斯是非结构化显式表示，必须新增高斯来建模这些新物体。 [3](#research-evidence-ev_e7de61ef0fd681ab0977e7b9fe49a474f093c8e746ee3127ae06cf46e827401d) [4](#research-evidence-ev_e26356dfb0f9a52b4e8e6490ad8668c7768c577629c80adc7d8a0d09449be010)\n\n论文事实已按所列原文核对。\n\n<details>\n<summary>原文依据</summary>\n\n**[1] 3DGStream: On-the-Fly Training of 3D Gaussians for Efficient Streaming of Photo-Realistic Free-Viewpoint Videos** · 全文片段\n\n> Then, for each timestep i, we use the 3DGs of previous timestep i − 1 as initialization and pass it to a two-stage pipeline.(1)In Stage 1, we train a Neural Transformation Cache (NTC) to model the transformations of 3DGs.\n\n**[2] 3DGStream: On-the-Fly Training of 3D Gaussians for Efficient Streaming of Photo-Realistic Free-Viewpoint Videos** · 第 2 页 · 全文片段\n\n> After the two-stage pipeline concludes, we use both the 3DGs transformed by the NTC and the additional 3DGs for rendering at the current timestep i, with only the former carrying over for initialization of the subsequent timestep.\n\n**[3] 3DGStream: On-the-Fly Training of 3D Gaussians for Efficient Streaming of Photo-Realistic Free-Viewpoint Videos** · 第 5 页 · 全文片段\n\n> However, this approach falters when faced with objects not present in the initial frame, such as transient objects like flames or smoke, and new persistent objects like the liquid poured out of a bottle.\n\n**[4] 3DGStream: On-the-Fly Training of 3D Gaussians for Efficient Streaming of Photo-Realistic Free-Viewpoint Videos** · 全文片段\n\n> Since 3DG is an unstructured explicit representation, it's essential to add new 3DGs to model these emerging objects.\n\n**[5] 3DGStream: On-the-Fly Training of 3D Gaussians for Efficient Streaming of Photo-Realistic Free-Viewpoint Videos** · 第 5 页 · 全文片段\n\n> This maps the hash encoding to a 7-dimensional output: the first three dimensions indicate the translation of the 3DG; the remaining dimensions represent the rotation of the 3DG using quaternions.\n\n</details>",
+  "rawFiles": [
+    {
+      "path": "tmp/dr-acceptance-receipts/H1F-v11.json",
+      "sha256": "f0afa723b5995c0d79c50565a5fea6f1323dcd3c50c7fb61b3ddb638c7722690"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/H1F-v11.payload.json",
+      "sha256": "c70b5533dcbd64c9b342e1acf7058f63e3ee6c5df59204088ca4e7fb585b8eb8"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/H1F-v11.calls.json",
+      "sha256": "03250bb63179f5411a3c98db6b45712e433e49c31d6ef8a3c46d38b4da4d5d4e"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/H1F-v11.result.json",
+      "sha256": "0a6ed2c0e212fa77d8afdf1229c2037b7eedd82be7cd3f2ece7e053720aec658"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/H1F-v11.before.json",
+      "sha256": "5609debe49e1abe2505d1a460e9f78f55d3676f19443a36e10ba64367347321a"
+    }
+  ],
+  "boundary": "This one retired development case meets its applicable content criteria. No general quality guarantee, fresh independent pass or overall DR0-DR5 completion. Original independent first-five results remain0/5."
+}

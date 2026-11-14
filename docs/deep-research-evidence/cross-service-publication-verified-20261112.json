@@ -1,0 +1,27 @@
+{
+  "sourceCommit": "5ad89bc3f42346d1231fed1285b6b0f5f408aac0",
+  "sourceSha256": {
+    "scripts/verify-research-publication-integration.py": "d2778a2830325db1974d320c98ad9ff4ffcef680f5dd77fa5c0b8cd1a972287d",
+    "ai-service-python/services/deep_research/runtime.py": "497e02dbe106a0a8bcad74ec38ffc29122c3050c6018c81b40e6e4116169257d",
+    "ai-service-python/services/deep_research/publication.py": "53291769c237570bef8bb383f426ae53fa758a611c61fb851fa347d348f2da9c",
+    "ai-service-python/services/deep_research/repository.py": "333825fde8bce0307476bfedf042a2055a6c00eefaa6b29cc3df108ce1d0777b",
+    "backend-java/src/main/java/com/ai/assistant/backend_java/service/TaskWorkspaceService.java": "830907d5aeec5909fed9cc24419eff6f51685b22653911786c8ef8c9944a8ab1",
+    "backend-java/src/main/java/com/ai/assistant/backend_java/service/TaskResearchService.java": "cf2f575a65dcd68473af3e370744e89c941b6952e4bb1f480e23a612f08b7aa0"
+  },
+  "cases": [
+    "docs/deep-research-evidence/publication-integration-first-20261112.json",
+    "docs/deep-research-evidence/publication-integration-edit-replay-20261112.json"
+  ],
+  "closedPorts": {
+    "8189": true,
+    "8193": true
+  },
+  "modelCalls": 0,
+  "productionWrites": 0,
+  "loadedInUserService": false,
+  "realJavaPythonHttp": true,
+  "graphWorkerExecuted": false,
+  "reportContent": "explicit synthetic fixture via repository publication transaction",
+  "pythonRestartScope": "Production runtime factory reinitialization, HTTP router retained",
+  "javaRestartScope": "OS process stop and start"
+}

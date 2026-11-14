@@ -1,0 +1,53 @@
+{
+  "case": "E1-v46",
+  "sourceCommit": "8e2d2781",
+  "errors": [
+    "workflow.states.shape",
+    "workflow.creation.unavailable_input",
+    "workflow.states.operation_rule"
+  ],
+  "finishReason": "stop",
+  "valueBytes": 4252,
+  "recordCount": 9,
+  "recordsMatchRequiredCategories": true,
+  "exactFrozenSchemaRequestMatchesLedger": true,
+  "stateIssues": [
+    {
+      "path": "/workflow/baselineInitialization/stateDefinitions/0/shape/0",
+      "code": "states.shape"
+    },
+    {
+      "path": "/workflow/baselineInitialization/stateDefinitions/1/shape/0",
+      "code": "states.shape"
+    },
+    {
+      "path": "/workflow/baselineInitialization/stateDefinitions/2/shape/0",
+      "code": "states.shape"
+    },
+    {
+      "path": "/workflow/baselineInitialization/stateDefinitions/3/shape/0",
+      "code": "states.shape"
+    },
+    {
+      "path": "/workflow/baselineInitialization/stateDefinitions/4/shape/0",
+      "code": "states.shape"
+    },
+    {
+      "path": "/workflow/componentInitializations/1/stateDefinitions/4/initializer/rule",
+      "code": "states.operation_rule"
+    }
+  ],
+  "schemaNonconformanceObserved": [
+    "String N0 dimension violates schema state shape definition.",
+    "Empty operation-rule parameters violate minItems 1."
+  ],
+  "scientificConcerns": [
+    "Zero initial rotations/scales/appearance are not established as compatible initial states.",
+    "Fresh inputs are empty while creation names frame-0 data.",
+    "Input state names in the new-Gaussian component are not baseline/training_data/earlier component IDs."
+  ],
+  "publicSynthesisReached": false,
+  "automaticRetries": 0,
+  "independentCredit": 0,
+  "nextAction": "Investigate generation reasoning and schema behavior under complex inputs; keep independent local validation. Do not replace symbolic counts with guessed constants or add empty semantic parameters solely to pass."
+}

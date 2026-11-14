@@ -1,0 +1,16 @@
+{
+  "date": "2026-10-23",
+  "seed": 248,
+  "cases": 360,
+  "unicodeByteLimits": [
+    4,
+    31,
+    3000
+  ],
+  "exactRoundTrip": true,
+  "contiguousIntervals": true,
+  "byteLimitsRespected": true,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "scientificApproval": false
+}

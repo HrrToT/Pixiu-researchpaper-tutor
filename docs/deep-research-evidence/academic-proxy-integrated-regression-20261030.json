@@ -1,0 +1,34 @@
+{
+  "testFiles": 9,
+  "files": [
+    "ai-service-python\\tests\\test_academic_proxy_transport.py",
+    "ai-service-python\\tests\\test_academic_proxy_integration.py",
+    "ai-service-python\\tests\\test_deep_research_academic.py",
+    "ai-service-python\\tests\\test_deep_research_exact_discovery.py",
+    "ai-service-python\\tests\\test_deep_research_external_flow.py",
+    "ai-service-python\\tests\\test_deep_research_external_failures.py",
+    "ai-service-python\\tests\\test_deep_research_fulltext_cache.py",
+    "ai-service-python\\tests\\test_config.py",
+    "ai-service-python\\tests\\test_research_component_checkpoint.py"
+  ],
+  "sourceHashes": {
+    "ai-service-python\\core\\config.py": "8857c5a06f070305f864a55b3bcc195bf28913e65c27570aeacc1deaffe80dd3",
+    "ai-service-python\\services\\deep_research_academic.py": "d8af1a76b10de9e2f5ffbdc576ab46d5ede5ada5770a8700fc4d09b577b022b7",
+    "ai-service-python\\services\\academic_proxy_transport.py": "ab54ebcb785c1acd103a63d32b87bb1e9e07447ef8bb816ec728b696786a24a5",
+    "ai-service-python\\services\\deep_research\\external.py": "ea34e799b4227cfcb8fad5efd9b305ac3804ab444b470355e1b6b9ac5866c547",
+    "ai-service-python\\tests\\test_academic_proxy_transport.py": "8c9667d5deb4e8920fb6b604abf7cdb47c1465542b63a97c0a3f8054543be688",
+    "ai-service-python\\tests\\test_academic_proxy_integration.py": "1fff19711ad4911271f2a74d28f54ab22044989e10f191b4e88130c6e449c2fb",
+    "ai-service-python\\tests\\test_deep_research_academic.py": "28aa533b35a256f7e3629c463863bb38ffcdf67c1f20b077d8a2846c57996dfa",
+    "ai-service-python\\tests\\test_deep_research_exact_discovery.py": "1ab7ca8887f7b6e3f4aaca843761884c760fbd6831c2dc92a49b985b0034b441",
+    "ai-service-python\\tests\\test_deep_research_external_flow.py": "0d8ef07fce104e9e01a67b8b670866a4d38c91326c141eda0f46e8a59896ffc2",
+    "ai-service-python\\tests\\test_deep_research_external_failures.py": "b12f8d306944ddedcf8bcd069e30b8e85cd88d11da7354b54b493249c4e41bd3",
+    "ai-service-python\\tests\\test_deep_research_fulltext_cache.py": "33d15314dbd5a53a0042742dd7feda7b621486b8f3a044b5b55469829a87ace2",
+    "ai-service-python\\tests\\test_config.py": "2b82daec33f9ed0e572225e8ef3313aa34dc9e2897534552ea899d09ddd6a0b0",
+    "ai-service-python\\tests\\test_research_component_checkpoint.py": "1b733e177889f98bf146c4ebb9c1f462ecd36687ad4059e8319a82c8018bf5e9"
+  },
+  "sourceFrozen": true,
+  "exitCode": 0,
+  "seconds": 39.86,
+  "providerCalls": 0,
+  "summary": "........................................................................ [ 54%]\n.............................................................            [100%]\n133 passed in 33.78s\n"
+}

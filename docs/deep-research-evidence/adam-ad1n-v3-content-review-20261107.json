@@ -1,0 +1,193 @@
+{
+  "case": "AD1N-v3",
+  "split": "development",
+  "runId": "dr_run_87433c6322e85e47934e1a1a747ebc2d",
+  "sourceCommit": "f54ab79e",
+  "promptVersion": "dr-v2.20261107.409",
+  "status": "completed",
+  "outcome": "inconclusive",
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "modelCalls": 8,
+  "settledTokens": 33058,
+  "elapsedSeconds": 84,
+  "allModelCallsSettled": true,
+  "newUnknownCalls": 0,
+  "usedReserveCalls": 2,
+  "normalCalls": 6,
+  "publicCallsAreNormalPlusReserve": true,
+  "externalSearches": 1,
+  "fulltextFetches": 1,
+  "source": {
+    "workId": "arxiv:1412.6980",
+    "versionId": "arxiv:1412.6980v1",
+    "accessLevel": "fulltext",
+    "contentHash": "935a5a15616961aff21529d86a754570028843407adfe858f1d18584b84293a7",
+    "matchesFrozenReferencePdf": true
+  },
+  "planAccepted": true,
+  "actualPlanDuplicateKeys": 0,
+  "evidenceFlow": {
+    "availableEvidence": 77,
+    "candidates": 20,
+    "supplied": 18,
+    "fixedInputBytes": 13223,
+    "totalInputBytes": 23971,
+    "missingCorePassages": {
+      "moment_definition": [
+        {
+          "evidenceId": "ev_f38ea80b5f92a202cef242518fb742473b2326f593abdb2853cde89dcc1ae823",
+          "location": {
+            "page": 2,
+            "offset": 2028,
+            "section": "",
+            "sectionRole": "unknown",
+            "sourcePassageStart": 194,
+            "sourcePassageEnd": 611
+          },
+          "quoteSha256": "538a2ad28c75443d8de6e20f506e637d0aefb3f9064cf08e03344a28a580a8b6",
+          "obligationIds": [
+            "ob_ab81342925fc2e571fa38a28",
+            "ob_71c983b2df35552000e28e00"
+          ],
+          "candidate": false,
+          "supplied": false
+        }
+      ],
+      "zero_initialization": [
+        {
+          "evidenceId": "ev_1b22c48eee4edae679ea1bbaf12ca5cd4ae6311e1f713ec832f062c0aa6c316b",
+          "location": {
+            "page": 2,
+            "offset": 2028,
+            "section": "",
+            "sectionRole": "unknown",
+            "sourcePassageStart": 611,
+            "sourcePassageEnd": 982
+          },
+          "quoteSha256": "38bb0b402d313a497891216245b3793f18c1d6d589ba2d2c4d7440232fa2fd94",
+          "obligationIds": [
+            "ob_ab81342925fc2e571fa38a28",
+            "ob_71c983b2df35552000e28e00"
+          ],
+          "candidate": false,
+          "supplied": false
+        }
+      ],
+      "correction_derivation": [
+        {
+          "evidenceId": "ev_5380730fd0847ed19ab332842b1d87ba285c106e0012c39eab71bea0d6ec52ac",
+          "location": {
+            "page": 3,
+            "offset": 2007,
+            "section": "2.1 A DAM ’S UPDATE RULE",
+            "sectionRole": "unknown",
+            "sourcePassageStart": 0,
+            "sourcePassageEnd": 432
+          },
+          "quoteSha256": "935ef04c5b8156e8f0c0475138f8768b39aada19035f673f72ab8131d73c0c3a",
+          "obligationIds": [
+            "ob_ab81342925fc2e571fa38a28",
+            "ob_71c983b2df35552000e28e00"
+          ],
+          "candidate": false,
+          "supplied": false
+        }
+      ],
+      "division_operation": [
+        {
+          "evidenceId": "ev_8ca8b1e598bc0d318af2bd8c427a40b456c490dc9b5f30214ff31be1bfffe7f0",
+          "location": {
+            "page": 3,
+            "offset": 2007,
+            "section": "2.1 A DAM ’S UPDATE RULE",
+            "sectionRole": "unknown",
+            "sourcePassageStart": 1588,
+            "sourcePassageEnd": 1961
+          },
+          "quoteSha256": "8707b7c3be14123181f602ee3caaf8a58278807ac1e55bf24732b05c8b9fb558",
+          "obligationIds": [
+            "ob_ab81342925fc2e571fa38a28",
+            "ob_71c983b2df35552000e28e00"
+          ],
+          "candidate": false,
+          "supplied": false
+        }
+      ]
+    },
+    "acceptedClaims": 0
+  },
+  "initialRejections": [
+    {
+      "claimId": "c1",
+      "reason": "semantic_unresolved",
+      "detail": "核心断言（一阶矩/二阶原始矩的准确定义、从零初始化导致偏差及偏差校正公式）未在所提供的证据中直接或明确支持；仅部分实验表现和偏差校正重要性有间接支持。"
+    }
+  ],
+  "repairRejections": [
+    {
+      "claimId": "c1",
+      "reason": "semantic_unresolved",
+      "detail": "核心断言（一阶矩/二阶原始矩的准确定义、从零初始化导致偏差及偏差校正公式）未在所提供的证据中直接或明确支持；仅部分实验表现和偏差校正重要性有间接支持。",
+      "revisionRejection": {
+        "claimId": "c1",
+        "reason": "absence_not_established",
+        "detail": "本条引用没有明确建立作者或论文缺少这些验证。把结论限定为本次引用能支持的实验范围及其不能证明的推广；不要写成作者未在其他条件验证、论文没有提供或全文不存在。引用中的其他否定句不构成这项缺席判断的依据。"
+      }
+    }
+  ],
+  "coverageStatus": "not_checked",
+  "coverageGaps": 6,
+  "manualReview": {
+    "passed": false,
+    "reason": "No accepted explanation; draft imports later beta convention (near1 and1-beta^t) inconsistent with specifiedv1. Independent verifier rejects unsupported core, revision fails absence scope; public result remains inconclusive.",
+    "scores": {
+      "目标回应": 1,
+      "证据支持": 1,
+      "条件完整": 1,
+      "综合价值": 1,
+      "可执行性": null,
+      "可读性": 1
+    },
+    "nonApplicable": {
+      "可执行性": "No experiment requested."
+    }
+  },
+  "preservation": {
+    "oldLedgerUnchanged": true,
+    "allOldRunsUnchanged": true,
+    "newRows": 30,
+    "ledgerRows": 8926,
+    "onlyThisRunCreatedCalls": true,
+    "active": [],
+    "oldPausedRetained": true,
+    "paused": [
+      "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+      "dr_run_ed10cc3347be552288079a9a588fddf5",
+      "dr_run_86b3f181a5475e99aacca3dbf4370567",
+      "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+      "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+      "dr_run_e3521b1781825273b384a26a5edb8cdc",
+      "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+      "dr_run_e9c9dc916bef519092fad8b929b2448f",
+      "dr_run_4738564f5ff35157996a35068c62ed32",
+      "dr_run_a8bd62f9ae3d52ff806f537065f55b2d",
+      "dr_run_98e66f2d3d555dfa822b859963f01419",
+      "dr_run_8be639c866c35ea092c735a04781b647",
+      "dr_run_1c0c2e6510165086962408b8e3cf698b",
+      "dr_run_fc0931756c505c6d9a29c06abe1fdd8d",
+      "dr_run_b09de02407095586bba235843615f2b3"
+    ]
+  },
+  "otherTasksExact": 15,
+  "index": {
+    "collection": "literature_collection_v4_e5_small",
+    "count": 1215,
+    "sha256": "f1ab6ad746b00ce95dfb36b76fa06d011cfb04d2b0bccf1e194a826d0606465f"
+  },
+  "rawPayloadSha256": "521c8b13e6ef0f20f660224c966bac4dde023d916a91840851b3742f75d90884",
+  "nextAction": "Fix generic heading normalization before integer-heading filtering and trace criterion premise ranking/candidate cutoff. Core definitions exist in literal evidence but are excluded before synthesis. No further real generation this turn.",
+  "boundary": "Real native planning and exact-v1 fulltext acquisition succeeded within budget. The actual plan had zero duplicate keys, so this is not real positive evidence for the duplicate-normalization branch. Scientific output and independent acceptance still fail.",
+  "publicWrongDraftNotExposed": true,
+  "publicResponseSha256": "aadc55811408d18e913a3ceea9871d7d1aa8f1ba5edc54c29c0029ff9f86b12d"
+}

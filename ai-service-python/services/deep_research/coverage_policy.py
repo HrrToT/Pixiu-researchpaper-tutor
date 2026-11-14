@@ -1,0 +1,87 @@
+"""Final-answer completeness instructions, separate from factual verification."""
+
+FINAL_COVERAGE_POLICY = '''Factual support was checked separately; truth, retrieval relevance,
+obligationIds and citations alone do NOT prove a complete answer. Judge the accepted
+text and conditions against the original question AND frozen completionCriteria.
+Preserve requested brevity: require necessary parameters, activation/applicability,
+assumptions and comparisons, not unrelated paper/implementation details or experiments.
+For v2 proposals, text omits only the exact app-generated trailing rendering;
+executionSpec retains every displayed value. Together they form the final answer.
+Original prose/conditions remain unchanged; check their consistency too.
+
+Audit each criterionId separately, preserving its planned responseType even if missing.
+Explanation requires HOW/WHY inputs change/constrain operations or outputs; names,
+technical terms or "X then Y" are identification. For a novice request, check that
+essential unfamiliar concepts are explained through ordinary actions/consequences;
+do not assume knowledge of optimization or derivatives. A technical restatement of
+an equation is still partial. Require the requested mechanism, not a textbook survey.
+For training/feedback, connect error/signal, updated intermediate/parameter, and later
+predictions when the evidence establishes that path. Naming reparameterization or
+"gradients flow" alone is insufficient. For requested measurements, the answer must
+map EACH value to its entity, subgroup, aggregate and metric; source quotes/rejected
+claims cannot supply an omitted mapping. Compare each requested dimension and paper.
+A clearly scoped evidence limitation can answer an uncertainty question; do not demand
+a universal guarantee. An unexecuted proposal needs no measured experimental results.
+New proposed splits/resolutions/budgets need not reproduce author settings. Require
+original counts/splits/iterations only when requested or needed by a stated factual
+claim; ground existing dataset/subset membership independently.
+
+supporting_research is auxiliary, not automatically required narration. Independently
+judge its necessity for the actual deliverable. If genuinely unnecessary, return
+not_required with a specific reason (>=12 characters), requestExcerpt (>=8 characters
+copied exactly from the original question) and accepted-answer bindings showing why
+that scope suffices. Never exempt the original question or an answer_requirement.
+A label cannot waive requested facts, claim dependencies, interventions, assumptions
+or required evidence. Necessary unanswered supporting work stays partial/missing.
+not_required never means a source fact was checked. Separate proposed protocol
+completeness from retelling author benchmarks. Do not rewrite/add claims, change
+factual verdicts or judge rejected claims.
+
+Before marking covered, enumerate minimal essential aspects from the QUESTION AND
+SUPPLIED SOURCES, not just the answer: entities/relationships, distinct conditioning
+inputs, activation/applicability, comparisons and guarantee boundaries. Do not merge
+distinct inputs into a vague aspect. Every necessary aspect needs its own basis and
+actual accepted-answer binding; a true but incomplete summary stays partial.
+
+Prefer exact field references. A source basis is
+{"kind":"source","evidenceId":"supplied ID","field":"quote"}.
+sourceContext.before/after are permitted only when that exact supplied field exists;
+the server binds the entire unchanged field. Never combine field and excerpt or infer
+omitted context. Answer bindings are {"claimId":"accepted ID","field":"text"} or
+field="conditions" (that claim's serialized conditions); use only content actually
+covering the aspect. Legacy exact literal excerpts remain valid: no ellipses, spelling/
+punctuation normalization or joined noncontiguous excerpts. Source-grounded factual
+aspects require accepted facts citing the basis's EXACT evidenceId and paper/version.
+An uncited basis exposes a gap: return partial/missing with empty bindings, not covered.
+A broad request basis cannot supply paper facts. Purely proposed choices can use
+{"kind":"request","excerpt":"exact question substring"}; unrelated proposals cannot
+substitute for grounding facts.
+
+Access-level aspects ONLY: basis={"kind":"source_metadata","evidenceId":"cited ID",
+"field":"accessLevel","value":"fulltext|abstract|user_note",
+"requestExcerpt":"exact access request, >=8 characters"}. Copy supplied metadata,
+never infer access from page numbers. The bound claim must cite that exact evidence.
+For metadata-only obligations all aspects need this basis; mixed scientific aspects
+still require source quotes. Metadata never proves methods/results. Resolve pronouns
+and contrasts; do not attribute a baseline limitation to the proposed method.
+When the app supplies sourceAccessSummary, access ASPECTS may bind its displayed label:
+{"claimId":"accepted ID citing the basis evidence","field":"sourceAccessSummary"}.
+Do not duplicate this label in scientific conditions/prose. Overall/criterion/scientific
+bindings still require text/conditions. For ORIGINAL-QUESTION scope ONLY, an aggregate
+access-label aspect may instead use basis={"kind":"request","excerpt":"exact access request"};
+both its requirement and excerpt must ask about access, and every bound citation's
+access record must be supplied. Paper-specific access still needs the typed basis.
+
+Return one JSON object per listed obligationId, including original-question scope:
+{"obligationId":"ID","status":"covered|partial|missing|not_required",
+ "bindings":[{"claimId":"accepted ID","field":"text"}],
+ "criteria":[{"criterionId":"planned ID","responseType":"planned type",
+   "status":"covered|partial|missing","bindings":[{"claimId":"accepted ID","field":"text"}]}],
+ "aspects":[{"aspectId":"unique within obligation","requirement":"one essential aspect",
+   "basis":{"kind":"source","evidenceId":"supplied ID","field":"quote"},
+   "status":"covered|partial|missing","bindings":[{"claimId":"accepted ID","field":"text"}]}]}.
+Every planned criterion needs exactly one verdict; original-question scope and legacy
+obligations without criteria need none. Bind actual answer spans, never source sentences.
+Missing criteria/aspects use empty bindings. Covered requires ALL essential aspects
+answered with valid individual bindings, not just related statements or citations.
+'''

@@ -1,0 +1,94 @@
+{
+  "date": "2026-10-25",
+  "case": "E1-v57",
+  "runId": "dr_run_18838c3b5c055641a6a5177ab3da5d95",
+  "promptVersion": "dr-v2.20261025.267",
+  "status": "failed",
+  "errorCode": "invalid_workflow_unit_response",
+  "workflowMetadataRepairContractVersion": 5,
+  "metadata": {
+    "original": {
+      "status": "invalid_response",
+      "errors": [
+        "unit.json"
+      ],
+      "decodeError": "Metadata row has the wrong arity",
+      "finishReason": "stop",
+      "usage": {
+        "total_tokens": 9124,
+        "input_tokens": 7287,
+        "output_tokens": 1837
+      },
+      "rawBytes": 7270,
+      "semanticBytes": 3521,
+      "responseDigest": "c17bd6955ab9966e38754601829eeace8cdad94d7c958b53310dc0c684735e0c",
+      "requestDigest": "914709d1d189e76913362699014c0a730af82089e39b8ac5743a17b8f9badbf7",
+      "rawSha256": "cbe1267a8092758a56e9dddaec1bcdb075e190fc159b7d2729de1149dcaaf9de",
+      "operationIssues": [
+        {
+          "code": "wire.operation.columns",
+          "path": "/phaseRows/5/9",
+          "expected": "[action,[[unique_name,number|choice,value],...]]",
+          "actual": [
+            "render_and_measure_psnr",
+            [
+              [
+                "arm",
+                "choice",
+                "execute_stage2"
+              ]
+            ],
+            [
+              "count_additional_3dgs",
+              []
+            ]
+          ]
+        }
+      ]
+    },
+    "revision": {
+      "status": "invalid_response",
+      "errors": [
+        "unit.json"
+      ],
+      "decodeError": "Metadata row has the wrong arity",
+      "finishReason": "stop",
+      "usage": {
+        "total_tokens": 9654,
+        "input_tokens": 7821,
+        "output_tokens": 1833
+      },
+      "rawBytes": 7246,
+      "semanticBytes": 3519,
+      "responseDigest": "84ac05f27b44dd9cbb7a3962a41a11b4ce307fd87364fdb5c399e1ceffc5b80d",
+      "requestDigest": "2ee5b5af94de30999398f06038ac26be5cf9bb8b58c5988dc46c806eff3d35d4",
+      "rawSha256": "61614d198d13d35cf07696d83622b91144badf32ba749365d684245a197b59b9",
+      "operationIssues": [
+        {
+          "code": "wire.operation.columns",
+          "path": "/phaseRows/5/9",
+          "expected": "[action,[[unique_name,number|choice,value],...]]",
+          "actual": [
+            "render_and_measure_psnr",
+            [
+              [
+                "arm",
+                "choice",
+                "execute_stage2"
+              ]
+            ],
+            "count_additional_3dgs",
+            []
+          ]
+        }
+      ]
+    }
+  },
+  "repairInvokedExactlyOnce": true,
+  "initializersInvoked": false,
+  "providerCallsForDiagnosis": 0,
+  "productionWritesForDiagnosis": 0,
+  "scientificApproval": false,
+  "independentCredit": 0,
+  "boundary": "Both complete stop responses remain structurally invalid. Operation arity is not corrected by code; original and revision kept. No scientific quality or independent acceptance credit."
+}

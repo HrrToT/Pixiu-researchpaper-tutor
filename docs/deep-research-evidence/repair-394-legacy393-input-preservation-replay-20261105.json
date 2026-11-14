@@ -1,0 +1,54 @@
+{
+  "case": "G1N-v4",
+  "sourceRunId": "dr_run_7dae9d334ff2582e85cca59776eb011d",
+  "payloadSha256": "02765c8d31af4b9d31c1191bae93dbc32d1939a60b384e951a29b04c49f491a9",
+  "replayOverrides": {
+    "state.repairCompleted": false
+  },
+  "measurements": [
+    {
+      "targetIds": [
+        "c1",
+        "c2",
+        "c3",
+        "c4",
+        "c5"
+      ],
+      "fixedBytes": 23576,
+      "totalMandatoryBytes": 36193,
+      "mandatoryEvidenceRows": 10,
+      "evidenceKeys": [
+        "contentHash",
+        "evidenceId",
+        "location",
+        "quote",
+        "sourceContext",
+        "sourceRef"
+      ],
+      "limit": 24000
+    },
+    {
+      "targetIds": [
+        "c1",
+        "c2"
+      ],
+      "fixedBytes": 19064,
+      "totalMandatoryBytes": 27192,
+      "mandatoryEvidenceRows": 7,
+      "evidenceKeys": [
+        "contentHash",
+        "evidenceId",
+        "location",
+        "quote",
+        "sourceContext",
+        "sourceRef"
+      ],
+      "limit": 24000
+    }
+  ],
+  "modelCalls": 0,
+  "networkCalls": 0,
+  "productionWrites": 0,
+  "oldPayloadUnchanged": true,
+  "conclusion": "Actual existing repair preflight exceeds unchanged24KB before any request. Fixed vs mandatory evidence sizes measured from actual render function; no factual acceptance."
+}

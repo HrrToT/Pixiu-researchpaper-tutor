@@ -1,0 +1,21 @@
+{
+  "date": "2026-10-27",
+  "sourceCase": "D1-v37",
+  "savedPayloadSha256": "85d63f6416651b2e8d30040c65f63fd739cffac3228d20d974afad27ee4d1386",
+  "oldChildIdentitiesExactlyMatchActualStoredVerdicts": true,
+  "newChildIdentitiesDisjointFromOld": true,
+  "originalSubjectsAttributesValuesPreserved": true,
+  "exactOwnReferencesPreserved": true,
+  "newProjectionHasExplicitFiniteEvaluationPredicate": true,
+  "qualityOutcomeAdded": false,
+  "oldFailedSettingVerdictNotReinterpreted": true,
+  "savedPayloadUnchanged": true,
+  "newSentences": [
+    "所引来源报告，在对LightGaussian的一项评估中，Gaussian pruning ratio为66%。",
+    "所引来源报告，在对LightGaussian的一项评估中，SH compactness为2 degrees。"
+  ],
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "independentCredit": 0,
+  "boundary": "Formatting and identity replay only; no new scientific support verdict or model compliance proof."
+}

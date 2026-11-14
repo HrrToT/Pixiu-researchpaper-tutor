@@ -1,0 +1,59 @@
+{
+  "date": "2026-10-18",
+  "providerCalls": 0,
+  "paperTextRead": false,
+  "candidates": [
+    {
+      "path": "D:\\3DGS\\paper\\CAT-3DGS\\2503.00357v2.pdf",
+      "sha256": "6cff256c171332b72324f87ae7229c391cdc8ade63850f288d11289bda4699d5",
+      "priorReceiptFiles": [
+        "tmp/dr-acceptance-receipts\\fresh-material-preparation-20261015.json",
+        "tmp/dr-acceptance-receipts\\H2R-v1.calls.json",
+        "tmp/dr-acceptance-receipts\\H2R-v1.json",
+        "tmp/dr-acceptance-receipts\\H2R-v1.payload.json",
+        "tmp/dr-acceptance-receipts\\H2R-v1.result.json"
+      ],
+      "unusedByExactContentHashInCheckedReceipts": false
+    },
+    {
+      "path": "D:\\3DGS\\paper\\PFGS-360\\2603.23324v2.pdf",
+      "sha256": "abc53af939c9938ea19fe5877c3a04765c97e41b1bac51122975d91ee535de88",
+      "priorReceiptFiles": [
+        "tmp/dr-acceptance-receipts\\fresh-material-preparation-20261015.json",
+        "tmp/dr-acceptance-receipts\\H4R-v1.json",
+        "tmp/dr-acceptance-receipts\\H4R-v1.calls.json",
+        "tmp/dr-acceptance-receipts\\H4R-v1.payload.json",
+        "tmp/dr-acceptance-receipts\\H4R-v1.result.json",
+        "tmp/dr-acceptance-receipts\\H4R-v2.calls.json",
+        "tmp/dr-acceptance-receipts\\H4R-v2.json",
+        "tmp/dr-acceptance-receipts\\H4R-v2.payload.json",
+        "tmp/dr-acceptance-receipts\\H4R-v2.result.json",
+        "tmp/dr-acceptance-receipts\\H4R-v3.calls.json",
+        "tmp/dr-acceptance-receipts\\H4R-v3.json",
+        "tmp/dr-acceptance-receipts\\H4R-v3.payload.json",
+        "tmp/dr-acceptance-receipts\\H4R-v3.workspace-after-edit.json",
+        "tmp/dr-acceptance-receipts\\H4R-v3.result.json"
+      ],
+      "unusedByExactContentHashInCheckedReceipts": false
+    },
+    {
+      "path": "D:\\3DGS\\paper\\3DGV\\3DGV_3D_Gaussian_Splatting-Based_Holographic_Video_Streaming_over_Wireless_Networks.pdf",
+      "sha256": "053f27492ecddbe66109f8f61c3c08986752cccd18cdcc362a9f4a37a9fd1863",
+      "priorReceiptFiles": [],
+      "unusedByExactContentHashInCheckedReceipts": true
+    },
+    {
+      "path": "D:\\3DGS\\paper\\Goal-Oriented Semantic Communications\\2411.16187v1.pdf",
+      "sha256": "b75558d849e927eb2dd5816a2bce04532ea824f6ae25dc37fd4ac8467cd412ee",
+      "priorReceiptFiles": [],
+      "unusedByExactContentHashInCheckedReceipts": true
+    },
+    {
+      "path": "D:\\3DGS\\paper\\SpaGS\\cgf70171.pdf",
+      "sha256": "53c48161a76434530ea180a2abaa967d2d7f6b7fef824836df04fc518517e4e5",
+      "priorReceiptFiles": [],
+      "unusedByExactContentHashInCheckedReceipts": true
+    }
+  ],
+  "boundary": "Exact byte-hash history screen only, not final independent eligibility. Also check aliases, publication revisions, prior material names and freeze questions/rubric before submission. No holdout is claimed accepted."
+}

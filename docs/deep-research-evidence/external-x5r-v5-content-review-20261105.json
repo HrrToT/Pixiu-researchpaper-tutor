@@ -1,0 +1,562 @@
+{
+  "case": "X5R-v5",
+  "runId": "dr_run_a0355e117afb5f87a4bc92ba180d5cf0",
+  "promptVersion": "dr-v2.20261105.388",
+  "machineStatus": "completed",
+  "machineOutcome": "partial",
+  "budget": {
+    "maxModelCalls": 18,
+    "maxTokens": 100000,
+    "maxWallClockSeconds": 360,
+    "reserveModelCalls": 5,
+    "reserveTokens": 50000,
+    "maxExternalSearches": 6,
+    "maxFulltextFetches": 6,
+    "finalizationBudgetVersion": 1,
+    "releasedReserveTokens": 0,
+    "explorationAllocationVersion": 1,
+    "modelCalls": 8,
+    "tokens": 47578,
+    "normalTokens": 23312,
+    "elapsedSeconds": 128.085,
+    "externalSearches": 1,
+    "fulltextFetches": 1,
+    "reservedModelCalls": 5,
+    "exhausted": "",
+    "profile": "standard"
+  },
+  "modelLedgerRows": 13,
+  "allModelRowsSettled": true,
+  "actualReportedUsageTokens": 47578,
+  "modelRows": [
+    {
+      "node": "resolve_brief",
+      "status": "succeeded",
+      "settled": true,
+      "tokens": 604
+    },
+    {
+      "node": "plan",
+      "status": "succeeded",
+      "settled": true,
+      "tokens": 2136
+    },
+    {
+      "node": "assess_relevance",
+      "status": "succeeded",
+      "settled": true,
+      "tokens": 2772
+    },
+    {
+      "node": "assess_relevance",
+      "status": "succeeded",
+      "settled": true,
+      "tokens": 2625
+    },
+    {
+      "node": "assess_relevance",
+      "status": "succeeded",
+      "settled": true,
+      "tokens": 3281
+    },
+    {
+      "node": "assess_relevance",
+      "status": "succeeded",
+      "settled": true,
+      "tokens": 3035
+    },
+    {
+      "node": "synthesize",
+      "status": "succeeded",
+      "settled": true,
+      "tokens": 5807
+    },
+    {
+      "node": "synthesize_audience",
+      "status": "succeeded",
+      "settled": true,
+      "tokens": 3053
+    },
+    {
+      "node": "verify",
+      "status": "succeeded",
+      "settled": true,
+      "tokens": 3236
+    },
+    {
+      "node": "verify",
+      "status": "succeeded",
+      "settled": true,
+      "tokens": 3886
+    },
+    {
+      "node": "verify",
+      "status": "succeeded",
+      "settled": true,
+      "tokens": 4284
+    },
+    {
+      "node": "verify_answer_coverage",
+      "status": "succeeded",
+      "settled": true,
+      "tokens": 7053
+    },
+    {
+      "node": "repair_claims",
+      "status": "succeeded",
+      "settled": true,
+      "tokens": 5806
+    }
+  ],
+  "budgetAccountingBoundary": "13 successful llm_invoke rows = 8 ordinary modelCalls + 5 reservedModelCalls; per-row uses_reserve confirms the split. facade exposes their sum. All 47578 usage tokens and all calls are settled; within18/100000/360.",
+  "acceptedClaims": [
+    {
+      "claimId": "c1",
+      "text": "RaDe-GS没有把3D高斯改成2D圆盘。它保留一般的3D高斯泼溅，只是用光栅化方法渲染出深度图和表面法线图。",
+      "kind": "reported",
+      "evidenceRefs": [
+        "ev_40a8dcdcebd5e81c104dba466e037b604dee9cfcd2d5f352f2cd634738b07347"
+      ],
+      "conditions": {},
+      "obligationIds": [
+        "ob_1"
+      ],
+      "detailLevel": "summary",
+      "tableBindings": [],
+      "verification": "semantic_passed"
+    },
+    {
+      "claimId": "c2",
+      "text": "渲染深度和表面法线是为了增强形状重建精度，同时保持高斯泼溅的计算效率。训练时还加入深度畸变损失和法线一致性损失，促使不同高斯在射线上深度接近、法线一致，从而让几何更准确。",
+      "kind": "inference",
+      "evidenceRefs": [
+        "ev_40a8dcdcebd5e81c104dba466e037b604dee9cfcd2d5f352f2cd634738b07347",
+        "ev_1fcfff5bf7495bd8b60d5d54274ebe4906ddcb9af6924ee608307234d63d0e15"
+      ],
+      "conditions": {},
+      "obligationIds": [
+        "ob_2"
+      ],
+      "detailLevel": "summary",
+      "tableBindings": [],
+      "verification": "semantic_passed"
+    },
+    {
+      "claimId": "c3",
+      "text": "这些深度图用于所有训练视角，然后采用TSDF进行网格提取，从而从高斯泼溅重建几何表面。",
+      "kind": "reported",
+      "evidenceRefs": [
+        "ev_528a802d7ebb1ebdcd65f74ee03aad6b725d6dac4b010a260b2c8a2ffad58ed1"
+      ],
+      "conditions": {},
+      "obligationIds": [
+        "ob_3"
+      ],
+      "detailLevel": "summary",
+      "tableBindings": [],
+      "verification": "semantic_passed"
+    }
+  ],
+  "answerCoverage": {
+    "status": "checked",
+    "verdicts": [
+      {
+        "obligationId": "ob_1",
+        "status": "covered",
+        "bindings": [
+          {
+            "claimId": "c1",
+            "field": "text",
+            "excerpt": "RaDe-GS没有把3D高斯改成2D圆盘。它保留一般的3D高斯泼溅，只是用光栅化方法渲染出深度图和表面法线图。"
+          }
+        ],
+        "aspects": [
+          {
+            "aspectId": "criterion:human_aspect_1",
+            "requirement": "解释它是否把3D高斯改成2D圆盘",
+            "basis": {
+              "kind": "request",
+              "excerpt": "解释它是否把3D高斯改成2D圆盘"
+            },
+            "status": "covered",
+            "bindings": [
+              {
+                "claimId": "c1",
+                "field": "text",
+                "excerpt": "RaDe-GS没有把3D高斯改成2D圆盘。它保留一般的3D高斯泼溅，只是用光栅化方法渲染出深度图和表面法线图。"
+              }
+            ]
+          }
+        ],
+        "criteria": [
+          {
+            "criterionId": "human_aspect_1",
+            "responseType": "explanation",
+            "status": "covered",
+            "bindings": [
+              {
+                "claimId": "c1",
+                "field": "text",
+                "excerpt": "RaDe-GS没有把3D高斯改成2D圆盘。它保留一般的3D高斯泼溅，只是用光栅化方法渲染出深度图和表面法线图。"
+              }
+            ]
+          }
+        ],
+        "requestCheckReasons": [
+          {
+            "checkId": "criterion:human_aspect_1",
+            "reason": "明确说明没有改成2D圆盘，保留一般3D高斯泼溅，并解释用光栅化渲染深度和法线图。"
+          }
+        ]
+      },
+      {
+        "obligationId": "ob_2",
+        "status": "covered",
+        "bindings": [
+          {
+            "claimId": "c2",
+            "field": "text",
+            "excerpt": "渲染深度和表面法线是为了增强形状重建精度，同时保持高斯泼溅的计算效率。训练时还加入深度畸变损失和法线一致性损失，促使不同高斯在射线上深度接近、法线一致，从而让几何更准确。"
+          }
+        ],
+        "aspects": [
+          {
+            "aspectId": "criterion:human_aspect_1",
+            "requirement": "为什么要渲染深度和表面法线",
+            "basis": {
+              "kind": "request",
+              "excerpt": "为什么要渲染深度和表面法线"
+            },
+            "status": "covered",
+            "bindings": [
+              {
+                "claimId": "c2",
+                "field": "text",
+                "excerpt": "渲染深度和表面法线是为了增强形状重建精度，同时保持高斯泼溅的计算效率。训练时还加入深度畸变损失和法线一致性损失，促使不同高斯在射线上深度接近、法线一致，从而让几何更准确。"
+              }
+            ]
+          }
+        ],
+        "criteria": [
+          {
+            "criterionId": "human_aspect_1",
+            "responseType": "explanation",
+            "status": "covered",
+            "bindings": [
+              {
+                "claimId": "c2",
+                "field": "text",
+                "excerpt": "渲染深度和表面法线是为了增强形状重建精度，同时保持高斯泼溅的计算效率。训练时还加入深度畸变损失和法线一致性损失，促使不同高斯在射线上深度接近、法线一致，从而让几何更准确。"
+              }
+            ]
+          }
+        ],
+        "requestCheckReasons": [
+          {
+            "checkId": "criterion:human_aspect_1",
+            "reason": "解释了渲染深度和表面法线是为了增强形状重建精度并保持计算效率，同时说明训练中加入深度畸变损失和法线一致性损失以促使几何更准确。"
+          }
+        ]
+      },
+      {
+        "obligationId": "ob_3",
+        "status": "partial",
+        "bindings": [
+          {
+            "claimId": "c3",
+            "field": "text",
+            "excerpt": "这些深度图用于所有训练视角，然后采用TSDF进行网格提取，从而从高斯泼溅重建几何表面。"
+          }
+        ],
+        "aspects": [
+          {
+            "aspectId": "criterion:human_aspect_1",
+            "requirement": "这些图怎样用于几何重建",
+            "basis": {
+              "kind": "request",
+              "excerpt": "这些图怎样用于几何重建"
+            },
+            "status": "partial",
+            "bindings": [
+              {
+                "claimId": "c3",
+                "field": "text",
+                "excerpt": "这些深度图用于所有训练视角，然后采用TSDF进行网格提取，从而从高斯泼溅重建几何表面。"
+              }
+            ]
+          }
+        ],
+        "criteria": [
+          {
+            "criterionId": "human_aspect_1",
+            "responseType": "explanation",
+            "status": "partial",
+            "bindings": [
+              {
+                "claimId": "c3",
+                "field": "text",
+                "excerpt": "这些深度图用于所有训练视角，然后采用TSDF进行网格提取，从而从高斯泼溅重建几何表面。"
+              }
+            ]
+          }
+        ],
+        "requestCheckReasons": [
+          {
+            "checkId": "criterion:human_aspect_1",
+            "reason": "说明了深度图用于所有训练视角，然后采用TSDF进行网格提取，从而重建几何表面。"
+          }
+        ],
+        "processAudits": [
+          {
+            "checkId": "criterion:human_aspect_1",
+            "reportedStatus": "covered",
+            "links": [
+              {
+                "input": {
+                  "request": "这些图怎样用于几何重建"
+                },
+                "operation": {
+                  "id": "c3",
+                  "field": "text",
+                  "excerpt": "这些深度图用于所有训练视角，然后采用TSDF进行网格提取，从而从高斯泼溅重建几何表面。"
+                },
+                "output": {
+                  "request": "这些图怎样用于几何重建"
+                }
+              }
+            ],
+            "errors": [
+              "overlapping_process_roles"
+            ]
+          }
+        ],
+        "gapDetail": {
+          "criterionIds": [
+            "human_aspect_1"
+          ],
+          "aspectIds": [
+            "criterion:human_aspect_1"
+          ],
+          "missingContent": "当前流程角色绑定重叠，尚不能确认输入、实际操作和输出之间的关系；不能以重复整段问题作为流程证明。",
+          "reason": "此缺口由固定检查项的未满足状态汇总；模型说明不作为新增要求或论文事实。"
+        }
+      },
+      {
+        "obligationId": "answer_scope",
+        "status": "partial",
+        "bindings": [
+          {
+            "claimId": "c1",
+            "field": "text",
+            "excerpt": "RaDe-GS没有把3D高斯改成2D圆盘。它保留一般的3D高斯泼溅，只是用光栅化方法渲染出深度图和表面法线图。"
+          },
+          {
+            "claimId": "c2",
+            "field": "text",
+            "excerpt": "渲染深度和表面法线是为了增强形状重建精度，同时保持高斯泼溅的计算效率。训练时还加入深度畸变损失和法线一致性损失，促使不同高斯在射线上深度接近、法线一致，从而让几何更准确。"
+          },
+          {
+            "claimId": "c3",
+            "field": "text",
+            "excerpt": "这些深度图用于所有训练视角，然后采用TSDF进行网格提取，从而从高斯泼溅重建几何表面。"
+          }
+        ],
+        "aspects": [
+          {
+            "aspectId": "request",
+            "requirement": "请联网读取 RaDe-GS: Rasterizing Depth in Gaussian Splatting（arXiv:2406.01467v1）的原文。面向了解3DGS概念的新手，解释它是否把3D高斯改成2D圆盘、为什么要渲染深度和表面法线，以及这些图怎样用于几何重建。限350字，区分方法设计与已验证效果，不做跨论文速度排名或实验设计。",
+            "basis": {
+              "kind": "request",
+              "excerpt": "请联网读取 RaDe-GS: Rasterizing Depth in Gaussian Splatting（arXiv:2406.01467v1）的原文。面向了解3DGS概念的新手，解释它是否把3D高斯改成2D圆盘、为什么要渲染深度和表面法线，以及这些图怎样用于几何重建。限350字，区分方法设计与已验证效果，不做跨论文速度排名或实验设计。"
+            },
+            "status": "partial",
+            "bindings": [
+              {
+                "claimId": "c1",
+                "field": "text",
+                "excerpt": "RaDe-GS没有把3D高斯改成2D圆盘。它保留一般的3D高斯泼溅，只是用光栅化方法渲染出深度图和表面法线图。"
+              },
+              {
+                "claimId": "c2",
+                "field": "text",
+                "excerpt": "渲染深度和表面法线是为了增强形状重建精度，同时保持高斯泼溅的计算效率。训练时还加入深度畸变损失和法线一致性损失，促使不同高斯在射线上深度接近、法线一致，从而让几何更准确。"
+              },
+              {
+                "claimId": "c3",
+                "field": "text",
+                "excerpt": "这些深度图用于所有训练视角，然后采用TSDF进行网格提取，从而从高斯泼溅重建几何表面。"
+              }
+            ]
+          }
+        ],
+        "criteria": [],
+        "requestCheckReasons": [
+          {
+            "checkId": "request",
+            "reason": "回答涵盖了是否改成2D圆盘、渲染深度和法线的原因以及如何用于几何重建，并区分了方法设计与已验证效果，未做跨论文速度排名或实验设计。"
+          }
+        ],
+        "processAudits": [
+          {
+            "checkId": "request",
+            "reportedStatus": "covered",
+            "links": [
+              {
+                "input": {
+                  "request": "请联网读取 RaDe-GS: Rasterizing Depth in Gaussian Splatting（arXiv:2406.01467v1）的原文。面向了解3DGS概念的新手，解释它是否把3D高斯改成2D圆盘、为什么要渲染深度和表面法线，以及这些图怎样用于几何重建。限350字，区分方法设计与已验证效果，不做跨论文速度排名或实验设计。"
+                },
+                "operation": {
+                  "id": "c1",
+                  "field": "text",
+                  "excerpt": "RaDe-GS没有把3D高斯改成2D圆盘。它保留一般的3D高斯泼溅，只是用光栅化方法渲染出深度图和表面法线图。"
+                },
+                "output": {
+                  "request": "请联网读取 RaDe-GS: Rasterizing Depth in Gaussian Splatting（arXiv:2406.01467v1）的原文。面向了解3DGS概念的新手，解释它是否把3D高斯改成2D圆盘、为什么要渲染深度和表面法线，以及这些图怎样用于几何重建。限350字，区分方法设计与已验证效果，不做跨论文速度排名或实验设计。"
+                }
+              },
+              {
+                "input": {
+                  "request": "请联网读取 RaDe-GS: Rasterizing Depth in Gaussian Splatting（arXiv:2406.01467v1）的原文。面向了解3DGS概念的新手，解释它是否把3D高斯改成2D圆盘、为什么要渲染深度和表面法线，以及这些图怎样用于几何重建。限350字，区分方法设计与已验证效果，不做跨论文速度排名或实验设计。"
+                },
+                "operation": {
+                  "id": "c2",
+                  "field": "text",
+                  "excerpt": "渲染深度和表面法线是为了增强形状重建精度，同时保持高斯泼溅的计算效率。训练时还加入深度畸变损失和法线一致性损失，促使不同高斯在射线上深度接近、法线一致，从而让几何更准确。"
+                },
+                "output": {
+                  "request": "请联网读取 RaDe-GS: Rasterizing Depth in Gaussian Splatting（arXiv:2406.01467v1）的原文。面向了解3DGS概念的新手，解释它是否把3D高斯改成2D圆盘、为什么要渲染深度和表面法线，以及这些图怎样用于几何重建。限350字，区分方法设计与已验证效果，不做跨论文速度排名或实验设计。"
+                }
+              },
+              {
+                "input": {
+                  "request": "请联网读取 RaDe-GS: Rasterizing Depth in Gaussian Splatting（arXiv:2406.01467v1）的原文。面向了解3DGS概念的新手，解释它是否把3D高斯改成2D圆盘、为什么要渲染深度和表面法线，以及这些图怎样用于几何重建。限350字，区分方法设计与已验证效果，不做跨论文速度排名或实验设计。"
+                },
+                "operation": {
+                  "id": "c3",
+                  "field": "text",
+                  "excerpt": "这些深度图用于所有训练视角，然后采用TSDF进行网格提取，从而从高斯泼溅重建几何表面。"
+                },
+                "output": {
+                  "request": "请联网读取 RaDe-GS: Rasterizing Depth in Gaussian Splatting（arXiv:2406.01467v1）的原文。面向了解3DGS概念的新手，解释它是否把3D高斯改成2D圆盘、为什么要渲染深度和表面法线，以及这些图怎样用于几何重建。限350字，区分方法设计与已验证效果，不做跨论文速度排名或实验设计。"
+                }
+              }
+            ],
+            "errors": [
+              "overlapping_process_roles"
+            ]
+          }
+        ],
+        "gapDetail": {
+          "criterionIds": [],
+          "aspectIds": [
+            "request"
+          ],
+          "missingContent": "当前流程角色绑定重叠，尚不能确认输入、实际操作和输出之间的关系；不能以重复整段问题作为流程证明。",
+          "reason": "此缺口由固定检查项的未满足状态汇总；模型说明不作为新增要求或论文事实。"
+        }
+      }
+    ],
+    "coverageEvidenceTransportVersion": 1,
+    "completionContractDigest": "69237c668336afedf4887750dde73ffb818995e9aa403d73830b6e191214f22d",
+    "displayMetadataDigest": "e8119019ce75077ebbbf6cb0eb50d0e0f192b280734b938359f3d44b05583d9c",
+    "gaps": [
+      {
+        "obligationId": "ob_3",
+        "question": "这些图怎样用于几何重建",
+        "missingEvidence": "最终回答尚未完整回应这一问题",
+        "stage": "answer",
+        "missingAspects": [
+          "这些图怎样用于几何重建"
+        ],
+        "aspectEvidenceRefs": [],
+        "gapDetail": {
+          "criterionIds": [
+            "human_aspect_1"
+          ],
+          "aspectIds": [
+            "criterion:human_aspect_1"
+          ],
+          "missingContent": "当前流程角色绑定重叠，尚不能确认输入、实际操作和输出之间的关系；不能以重复整段问题作为流程证明。",
+          "reason": "此缺口由固定检查项的未满足状态汇总；模型说明不作为新增要求或论文事实。"
+        }
+      },
+      {
+        "obligationId": "answer_scope",
+        "question": "请联网读取 RaDe-GS: Rasterizing Depth in Gaussian Splatting（arXiv:2406.01467v1）的原文。面向了解3DGS概念的新手，解释它是否把3D高斯改成2D圆盘、为什么要渲染深度和表面法线，以及这些图怎样用于几何重建。限350字，区分方法设计与已验证效果，不做跨论文速度排名或实验设计。",
+        "missingEvidence": "最终回答尚未完整回应这一问题",
+        "stage": "answer",
+        "missingAspects": [
+          "请联网读取 RaDe-GS: Rasterizing Depth in Gaussian Splatting（arXiv:2406.01467v1）的原文。面向了解3DGS概念的新手，解释它是否把3D高斯改成2D圆盘、为什么要渲染深度和表面法线，以及这些图怎样用于几何重建。限350字，区分方法设计与已验证效果，不做跨论文速度排名或实验设计。"
+        ],
+        "aspectEvidenceRefs": [],
+        "gapDetail": {
+          "criterionIds": [],
+          "aspectIds": [
+            "request"
+          ],
+          "missingContent": "当前流程角色绑定重叠，尚不能确认输入、实际操作和输出之间的关系；不能以重复整段问题作为流程证明。",
+          "reason": "此缺口由固定检查项的未满足状态汇总；模型说明不作为新增要求或论文事实。"
+        },
+        "wholeQuestion": true
+      }
+    ],
+    "invalidAspectObligations": [],
+    "requestCoverageContractVersion": 5,
+    "wholeQuestionId": "answer_scope",
+    "nonblockingResearch": [],
+    "criterionGaps": {},
+    "invalidCriterionObligations": [],
+    "budgetLimit": null,
+    "diagnosticErrors": [],
+    "answerCoherence": {
+      "contractVersion": 1,
+      "status": "checked",
+      "answerDigest": "b5d04201286da69c5188bf719d4c77b34fc8e81539d590e62d582531f5857969",
+      "coherent": true,
+      "issues": []
+    }
+  },
+  "reportBody": "本回答引用：全文片段。\n\n- RaDe-GS没有把3D高斯改成2D圆盘。它保留一般的3D高斯泼溅，只是用光栅化方法渲染出深度图和表面法线图。 [1](#research-evidence-ev_40a8dcdcebd5e81c104dba466e037b604dee9cfcd2d5f352f2cd634738b07347)\n- 推断：渲染深度和表面法线是为了增强形状重建精度，同时保持高斯泼溅的计算效率。训练时还加入深度畸变损失和法线一致性损失，促使不同高斯在射线上深度接近、法线一致，从而让几何更准确。 [1](#research-evidence-ev_40a8dcdcebd5e81c104dba466e037b604dee9cfcd2d5f352f2cd634738b07347) [2](#research-evidence-ev_1fcfff5bf7495bd8b60d5d54274ebe4906ddcb9af6924ee608307234d63d0e15)\n- 这些深度图用于所有训练视角，然后采用TSDF进行网格提取，从而从高斯泼溅重建几何表面。 [3](#research-evidence-ev_528a802d7ebb1ebdcd65f74ee03aad6b725d6dac4b010a260b2c8a2ffad58ed1)\n\n",
+  "review": {
+    "independentCredit": 0,
+    "overallAccepted": false,
+    "observedImprovement": "Three literal questions are represented separately. Answer now includes original v1 implementation depth-map-to-TSDF mesh stage, with page5 exact source evidence.",
+    "remaining": "Model audit repeats the entire literal requirement in input and output; new span validation correctly rejects these bindings. This does not prove answer content missing. Repair compaction yields zero replacement claims; partial is retained. c2 compresses normal consistency too loosely as normals mutually consistent rather than Gaussian normals aligned to depth-derived normals. Do not grant full content pass.",
+    "sourceAnchors": [
+      "https://arxiv.org/html/2406.01467v1#S3.SS4",
+      "https://arxiv.org/html/2406.01467v1#S4.SS1.SSS1"
+    ],
+    "nextAction": "Keep this development result and move fresh multi-paper acceptance preparation forward; inspect prompt example conflict separately. No new RaDe resubmission."
+  },
+  "preservation": {
+    "oldLedgerUnchanged": true,
+    "allOldRunsUnchanged": true,
+    "newRows": 34,
+    "ledgerRows": 8562,
+    "onlyThisRunCreatedCalls": true,
+    "active": [],
+    "oldPausedRetained": true,
+    "paused": [
+      "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+      "dr_run_ed10cc3347be552288079a9a588fddf5",
+      "dr_run_86b3f181a5475e99aacca3dbf4370567",
+      "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+      "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+      "dr_run_e3521b1781825273b384a26a5edb8cdc",
+      "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+      "dr_run_e9c9dc916bef519092fad8b929b2448f",
+      "dr_run_4738564f5ff35157996a35068c62ed32",
+      "dr_run_a8bd62f9ae3d52ff806f537065f55b2d",
+      "dr_run_98e66f2d3d555dfa822b859963f01419",
+      "dr_run_8be639c866c35ea092c735a04781b647",
+      "dr_run_1c0c2e6510165086962408b8e3cf698b"
+    ]
+  },
+  "rawSha256": {
+    "X5R-v5.calls.json": "881e2591f7b5a1c2d796112297387749a9da70c117a054b91ac3b4bd079ffe90",
+    "X5R-v5.json": "d88ebd8ae5addce58836e39e8bbec6a68f4b02d69bc9b82483a9d941fed9ef68",
+    "X5R-v5.payload.json": "6110add00df3974ba69a0f6a250f98750d31727a7a41b21f5e49fc28473b26ee",
+    "X5R-v5.preservation.json": "6739c0e3587a444b3b74cadb3022fa6ecff209536c93ed37da35ca17926b9c63",
+    "X5R-v5.result.json": "de1c6b6ce00313c6fc5fe0e1349da7e1812ee2461ed28ee13571626f9ef74422"
+  }
+}

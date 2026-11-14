@@ -1,0 +1,61 @@
+{
+  "date": "2026-10-18",
+  "sourceCommit": "ebcf570c",
+  "manifest": "DEEP_RESEARCH_INDEPENDENT_CASES_20261018.json",
+  "cases": [
+    {
+      "case": "H1F-v1",
+      "runId": "dr_run_8b35605449c15fd98026409a338a16e5",
+      "outcome": "partial",
+      "contentAccepted": false,
+      "modelCalls": 14,
+      "settledTokens": 50237,
+      "retiredForTuning": true
+    },
+    {
+      "case": "H2F-v1",
+      "runId": "dr_run_b1c6b4aa38af55a38747beb6f684c611",
+      "outcome": "partial",
+      "contentAccepted": false,
+      "modelCalls": 13,
+      "settledTokens": 46602,
+      "retiredForTuning": false
+    },
+    {
+      "case": "H3F-v1",
+      "runId": "dr_run_70fee9d21d7b56a2b8a3d76177ed8f38",
+      "outcome": "complete",
+      "contentAccepted": false,
+      "modelCalls": 11,
+      "settledTokens": 30506,
+      "retiredForTuning": false
+    },
+    {
+      "case": "H4F-v1",
+      "runId": "dr_run_ee62d7b47eac52e2aa87a981085bbe16",
+      "outcome": "partial",
+      "contentAccepted": false,
+      "modelCalls": 11,
+      "settledTokens": 29250,
+      "retiredForTuning": false
+    },
+    {
+      "case": "H5F-v1",
+      "runId": "dr_run_0fdb850b82ad52e6bf3372e359ac1758",
+      "outcome": "partial",
+      "contentAccepted": false,
+      "modelCalls": 10,
+      "settledTokens": 35935,
+      "retiredForTuning": false
+    }
+  ],
+  "confirmedModelCalls": 59,
+  "settledTokens": 192530,
+  "contentPasses": 0,
+  "externalPathAccepted": [
+    "H3F-v1"
+  ],
+  "newUnknownCalls": 0,
+  "cost": null,
+  "boundary": "External path success and machine complete are separate from full novice/content acceptance. H1F is retired after first-score recording; the manifest is not edited."
+}

@@ -1,0 +1,43 @@
+{
+  "date": "2026-10-26",
+  "sourceCommit": "a6a11f75",
+  "promptVersion": "dr-v2.20261026.305",
+  "scopeExpressionReviewContractVersion": 1,
+  "offlineChecks": {
+    "passed": 1135,
+    "testFiles": 65,
+    "elapsedSeconds": 86.41,
+    "exitCode": 0,
+    "sourceAndTestsStable": true,
+    "providerCalls": 0
+  },
+  "requestAssembly": {
+    "inputSha256": "4c42dbacb75c0920ba8678c3f8b92ef9ee06ce43c5ab6d140d4f7bcdeb927779",
+    "preview": [
+      {
+        "mode": "old",
+        "matchedExpressionTargets": 0,
+        "inputBytes": 11489,
+        "maxInputBytes": 32000,
+        "unchangedOwnQuotes": 1,
+        "targetTextUnchanged": true
+      },
+      {
+        "mode": "new",
+        "matchedExpressionTargets": 1,
+        "inputBytes": 14141,
+        "maxInputBytes": 32000,
+        "unchangedOwnQuotes": 1,
+        "targetTextUnchanged": true
+      }
+    ],
+    "withinOriginalLimit": true,
+    "sourceUnchanged": true,
+    "providerCalls": 0,
+    "reservations": 0,
+    "productionWrites": 0,
+    "boundary": "Actual facade/checker request assembly with a transport override that only captures input and returns failed. No old case upgraded, request sent or science approval."
+  },
+  "newPolicyProviderCases": 0,
+  "boundary": "Per-operator review wiring, bindings, failure retention and capacity verified offline; no old verdict upgraded. Real provider correctness and complete DR0-DR5/independent acceptance remain open."
+}

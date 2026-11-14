@@ -1,0 +1,35 @@
+{
+  "date": "2026-10-22",
+  "sourceCommit": "138f0f75",
+  "promptVersion": "dr-v2.20261022.233",
+  "experimentPlanEncodingContractVersion": 4,
+  "sourceHashes": {
+    "experiment_blueprint.py": "887f81f9e86a634521557a468720fae6ea3677f6bf58d6080383bf23c2a4add9",
+    "experiment_plan_encoding.py": "c3ded770749bb62e2ea06e81f2ca6955394b638e42869683c0ca0de6fe254ea0",
+    "experiment_planning.py": "f6afd648dad72cfbef22da7a315efa00f2e095ea7fe98b75a16396072f5f9f00",
+    "experiment_template.py": "1dee07594d8ef35714c0b1079c4a09e0e95641ca4c72ce939eb062e2fce9a746",
+    "facade.py": "43df04e8b0a8920345ff9e24429efed0a88e5c409c047d299d3fbc7173ab0d33",
+    "graph.py": "abc5b860463a95d9db45c48d81007869e7ceb5f7a076ac67fc7e9bfc4123af57"
+  },
+  "idleBeforeRestart": true,
+  "ledgerRows": 5368,
+  "active": 0,
+  "pausedUnknowns": 11,
+  "allPriorRunPayloadsAndLedgerExactlyPreserved": true,
+  "wholeTaskSnapshotsExactlyPreserved": 4,
+  "health": {
+    "rag": "ok",
+    "grobid": "ok"
+  },
+  "frontendHttpStatus": 200,
+  "providerCalls": 0,
+  "productionModelRunsCreated": 0,
+  "independentCredit": 0,
+  "boundary": "Pre-submission idle restart,source hashes,health and exact data retention; actual created run flags confirmed by archived payload. No content acceptance.",
+  "actualCreatedRun": {
+    "runId": "dr_run_a9142d5f826956b3988ed096b5c806f5",
+    "promptVersion": "dr-v2.20261022.233",
+    "experimentPlanEncodingContractVersion": 4,
+    "structuredOutputContractVersion": 9
+  }
+}

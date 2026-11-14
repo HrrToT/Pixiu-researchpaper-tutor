@@ -1,0 +1,49 @@
+{
+  "case": "H5-DORA-FACTORIAL",
+  "definitionHash": "f8108b23befd7bae4977db2c65fe94b9c29c40adad02a62f18b5c654348a8ca7",
+  "priorFreshnessProofs": [
+    "adaptation-holdout-preparation-20261112.json",
+    "lora-versions-holdout-preparation-20261112.json"
+  ],
+  "sharedMaterialUse": "Evaluator-only definitions; shared-source independence dependency sealed, not claiming unseen papers.",
+  "receiptRoots": [
+    "tmp/dr-acceptance-receipts",
+    "tmp/dr160-receipts-isolated",
+    "tmp/qoder-dr-receipt-20261013"
+  ],
+  "receiptIdentityHits": [],
+  "currentProductionScan": {
+    "runs": 365,
+    "calls": 9226,
+    "paperIdPayloadHits": 0
+  },
+  "pdfHashesVerified": true,
+  "sourceReview": {
+    "lora_v1": [
+      3,
+      5
+    ],
+    "dora_v1": [
+      4,
+      5,
+      6,
+      12,
+      13
+    ]
+  },
+  "visuallyReviewedEarlier": {
+    "dora_v1": [
+      6,
+      12
+    ]
+  },
+  "previewNoHttpVerified": true,
+  "requirementRemovalRejected": true,
+  "allSixDimensionsApplicable": true,
+  "modelCalls": 0,
+  "gpuTrainingRuns": 0,
+  "applicationImports": 0,
+  "engineChanges": 0,
+  "independentCredit": 0,
+  "boundary": "Full experimental-proposal definition and rubric, not generated plan, actual experiment or quality acceptance."
+}

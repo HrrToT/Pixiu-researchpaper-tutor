@@ -1,0 +1,30 @@
+{
+  "date": "2026-10-25",
+  "promptVersion": "dr-v2.20261025.264",
+  "workflowMetadataRepairContractVersion": 2,
+  "workflowMetadataRowsContractVersion": 2,
+  "profileRegression": {
+    "files": 10,
+    "passed": 185,
+    "seconds": 27.48,
+    "log": "tmp/pytest-dr264-profile-20261025.log"
+  },
+  "baseFullRegression": {
+    "sourceCommit": "1de7f5f6",
+    "files": 254,
+    "passed": 4708,
+    "seconds": 361.22,
+    "sourceStable": true
+  },
+  "sourceHashes": {
+    "services/deep_research/facade.py": "1a2b23cba689d9e589ddb5c57721e35292f49a82cb97a15e4d60c058289a3966",
+    "tests/test_deep_research_workflow_lifecycle_profile.py": "80b2fef30f24b2bbbf7782e82e5ba20d80b6446241ab4a6e281a578d30e3a39d",
+    "tests/test_deep_research_workflow_metadata_repair.py": "bd37c1092bcb5682a43a9c67f24efe66b856d7a2e941313bf8c673f3efaab271"
+  },
+  "oldRunsMigrated": false,
+  "clientOverridesAccepted": false,
+  "runtimeLoaded": false,
+  "providerCalls": 0,
+  "scientificApproval": false,
+  "boundary": "New-run profile activation; complete baseline regression and current profile regression are separate. Runtime load and actual model correction remain unverified."
+}

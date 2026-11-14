@@ -1,0 +1,53 @@
+{
+  "date": "2026-11-15",
+  "componentOnly": true,
+  "productionPolicyChanged": false,
+  "sourceCase": "AD1N-v30",
+  "modelCalls": 1,
+  "tokens": 1253,
+  "seconds": 6.778,
+  "wire": [
+    {
+      "hostname": "api.deepseek.com",
+      "endpoint": "/responses",
+      "payloadSha256": "50cdd53a77e2da75cfa3f3a08ee8852c5df31242b70c0f6548e1971de23ec779",
+      "formatType": "json_schema",
+      "maxOutputTokens": 8192,
+      "httpStatus": 200,
+      "responseBytes": 2335,
+      "responseSha256": "50d9bcff23242bcfbe4986b98537a6df25a26b905a1f1e688cc421bc5d50538b"
+    }
+  ],
+  "finishReason": "stop",
+  "jsonParsed": true,
+  "returnedIds": [
+    "c1"
+  ],
+  "hardTextCharacters": 160,
+  "actualTextCharacters": 188,
+  "schemaErrors": [
+    {
+      "validator": "maxLength",
+      "path": [
+        "claims",
+        0,
+        "text"
+      ]
+    }
+  ],
+  "schemaValidated": false,
+  "productionReplayStatus": "invalid",
+  "productionReplayClaims": 0,
+  "automaticRetry": false,
+  "scientificContentAccepted": false,
+  "noviceAcceptance": false,
+  "isolatedRunClosed": true,
+  "rawResult": "tmp/prose-schema-capability-20261114/result.json",
+  "officialReference": "https://api-docs.deepseek.com/api/create-response/",
+  "boundary": "One fixed schema capability sample. HTTP200 and complete JSON observed, but maxLength was violated. This does not establish provider enforcement or scientific quality. Existing compiled length guard rejects candidate; no production transport integration, clipping, JSON repair, fallback or additional model call.",
+  "all103TasksExact": true,
+  "all379ApplicationRunsExact": true,
+  "all9526ApplicationCallRowsExact": true,
+  "historicalPaused": 15,
+  "activeApplicationRuns": 0
+}

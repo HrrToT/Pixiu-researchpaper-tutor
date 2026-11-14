@@ -1,0 +1,20 @@
+{
+  "date": "2026-10-18",
+  "javaProcessId": 83912,
+  "backendSourceCommit": "444562d4",
+  "runtimeJar": "tmp/dr116-java-target/backend-java-0.0.1-SNAPSHOT.jar",
+  "before": {
+    "taskCount": 85,
+    "taskSha256": "43a2450c549b60c0494f8f86b108cae8311430fd04fd126d6ac23bf01b68ff70",
+    "databaseSha256Before": "30c86747c40972bd5928c4e4ec5a641a9eb29bfe7ff9545e7dd490cb6eabb71a",
+    "backupDirectory": "D:\\aiproj\\ai_project\\tmp\\dr118-runtime-backup-20261018",
+    "jarSha256": "349b4668bb9be518928ccdb39ee94d022c3f1a6f823f2409761d7a89e83929d3",
+    "javaSourceCommit": "444562d4",
+    "boundary": "H2 queried in ACCESS_MODE_DATA=r with no Java listener. Full task payloads normalized privately; only aggregate proof saved."
+  },
+  "after": {
+    "taskCount": 85,
+    "taskSha256": "43a2450c549b60c0494f8f86b108cae8311430fd04fd126d6ac23bf01b68ff70"
+  },
+  "boundary": "All 85 task payloads match offline readonly H2 snapshot; no model request. Python service remains unavailable pending Docker startup recovery."
+}

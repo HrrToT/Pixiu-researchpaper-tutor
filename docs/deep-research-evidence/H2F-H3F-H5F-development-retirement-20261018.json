@@ -1,0 +1,37 @@
+{
+  "date": "2026-10-18",
+  "sourceCommitBeforeFurtherDevelopment": "7186e037",
+  "cases": [
+    {
+      "case": "H2F",
+      "originalRunId": "dr_run_b1c6b4aa38af55a38747beb6f684c611",
+      "originalCaseDefinitionHash": "9e6517491d3b392229e071ebd55ee89ba8378e805b5c77a11c5e771201b14fcb",
+      "originalFirstReviewSha256": "dd1947a014ea25166cba2cec542cf788834e6e1253273cc6e565ae29ed61e849",
+      "originalFirstOutcome": "partial",
+      "newEligibility": "development_only",
+      "reason": "Further comparison/input-coverage diagnosis after generic planning, extraction and comparative-premise fixes."
+    },
+    {
+      "case": "H3F",
+      "originalRunId": "dr_run_70fee9d21d7b56a2b8a3d76177ed8f38",
+      "originalCaseDefinitionHash": "cd0db4fbf039660ad54b3d9c747121e04bbc7f39800e3478d785ff59f1cafb41",
+      "originalFirstReviewSha256": "ed272f839706e6871d5885c01195c67f1a3836bf125e9ec0b99cabea757810c9",
+      "originalFirstOutcome": "complete",
+      "newEligibility": "development_only",
+      "reason": "Further novice explanation diagnosis after generic source-grounded/causal wording fixes; external path already separately verified."
+    },
+    {
+      "case": "H5F",
+      "originalRunId": "dr_run_0fdb850b82ad52e6bf3372e359ac1758",
+      "originalCaseDefinitionHash": "def690cfcfcf8577adbcb8988441089494140027cd00918c30265a877211eaec",
+      "originalFirstReviewSha256": "cea3e7527e1a446912e10e1aa2461c7cdd92c16ef3b43d8091e5722b9583501b",
+      "originalFirstOutcome": "partial",
+      "newEligibility": "development_only",
+      "reason": "Further executable-design diagnosis after generic neutral planning, typed initialization and bounded repair fixes."
+    }
+  ],
+  "originalFirstFiveContentPasses": 0,
+  "originalFirstFiveTotal": 5,
+  "providerCalls": 0,
+  "boundary": "Retire at this further development-diagnosis checkpoint before new submissions or paper-specific tuning. Original frozen manifest, first receipts, grades, source hashes and criteria are unchanged; any subsequent attempt earns zero independent credit. Fresh independent replacements remain required. No unknown run is renamed or resent."
+}

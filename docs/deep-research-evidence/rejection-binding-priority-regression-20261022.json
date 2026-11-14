@@ -1,0 +1,22 @@
+{
+  "date": "2026-10-22",
+  "sourceCommit": "00987455",
+  "promptVersion": "dr-v2.20261022.228",
+  "fullOffline": {
+    "passed": 4017,
+    "files": 221,
+    "warnings": 1,
+    "seconds": 255.4,
+    "log": "tmp/pytest-dr228-full.log",
+    "sha256": "c3980b28bf04e6874ceead35439a0677c3650ccf059924ecd65fbe2425b01c81"
+  },
+  "focusedPassed": 107,
+  "focusedOverlap": true,
+  "newTests": 32,
+  "legacyScripts": 30,
+  "legacyPhysicalFingerprintsMatched": 88,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "independentCredit": 0,
+  "boundary": "Binding validates exact fields/values, not scientific truth. Invalid negative feedback stays unreviewed; hard checks/positive audit/publication gates remain. Scheduling only reorders atomic groups, without raising budgets or dropping targets; old pending identities cannot change policy."
+}

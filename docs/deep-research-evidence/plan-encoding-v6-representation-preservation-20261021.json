@@ -1,0 +1,84 @@
+{
+  "date": "2026-10-20",
+  "sourceCase": "E1-v6",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "oldActualRequestFingerprintsMatched": 3,
+  "oldActualFullDraftAndRepairDraftsReproduced": true,
+  "controlledNewDraftContract": 6,
+  "controlledNewRepairContract": 5,
+  "newPlanningInputBytes": 13800,
+  "newDraftInputBytes": 23181,
+  "newRepairInputBytes": 23875,
+  "inputMaximumUnchanged": 24000,
+  "newDraftNormalizationAudit": [
+    {
+      "phase": "synthesis",
+      "claimId": "c2",
+      "designRole": "groups",
+      "path": "/executionSpec",
+      "kind": "single_role_wrapper",
+      "role": "groups"
+    },
+    {
+      "phase": "synthesis",
+      "claimId": "c3",
+      "designRole": "controls",
+      "path": "/executionSpec",
+      "kind": "single_role_wrapper",
+      "role": "controls"
+    },
+    {
+      "phase": "synthesis",
+      "claimId": "c4",
+      "designRole": "data",
+      "path": "/executionSpec",
+      "kind": "single_role_wrapper",
+      "role": "data"
+    },
+    {
+      "phase": "synthesis",
+      "claimId": "c5",
+      "designRole": "budget",
+      "path": "/executionSpec",
+      "kind": "single_role_wrapper",
+      "role": "budget"
+    },
+    {
+      "phase": "synthesis",
+      "claimId": "c6",
+      "designRole": "steps",
+      "path": "/executionSpec",
+      "kind": "single_role_wrapper",
+      "role": "steps"
+    },
+    {
+      "phase": "synthesis",
+      "claimId": "c8",
+      "designRole": "analysis",
+      "path": "/executionSpec",
+      "kind": "single_role_wrapper",
+      "role": "analysis"
+    }
+  ],
+  "newRepairNormalizationAudit": [
+    {
+      "claimId": "c2",
+      "designRole": "groups",
+      "path": "/executionSpec/factors/0/treatment/parameters",
+      "kind": "operation_parameter_rows",
+      "rows": 2
+    }
+  ],
+  "allNonconfigFieldsAndAllOriginalInnerValuesPreserved": true,
+  "unequalMatchedBudgetStillRejected": true,
+  "additionalUnwrappedRolesRelativeToLegacy": [
+    "c2",
+    "c3",
+    "c5",
+    "c6"
+  ],
+  "boundary": "Controlled replay uses actual settled plan/draft/repair responses and frozen source evidence. Same old5/4 prompts/results reproduce exactly; controlled6/5 adds4exact role-wrapper normalizations, while existing data/analysis behavior stays consistent, and restores parameter row objects. Valid syntax is not valid state initialization/method/measurement, source support or independent model approval. No new paid request, production/history upgrade, scientific content or independent credit.",
+  "sourceCommit": "b85ccc0c",
+  "verifiedAsOf": "2026-10-21"
+}

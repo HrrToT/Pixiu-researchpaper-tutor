@@ -1,0 +1,198 @@
+{
+  "case": "G1N-v2",
+  "split": "development",
+  "runId": "dr_run_19728b3190ee58b9820b8222b65d2410",
+  "promptVersion": "dr-v2.20261105.390",
+  "status": "failed",
+  "outcome": "none",
+  "errorCode": "invalid_synthesis_response",
+  "actualModelCalls": 6,
+  "actualUsageTokens": 29710,
+  "allModelRowsSettled": true,
+  "budget": {
+    "maxModelCalls": 18,
+    "maxTokens": 100000,
+    "maxWallClockSeconds": 360,
+    "reserveModelCalls": 5,
+    "reserveTokens": 50000,
+    "maxExternalSearches": 6,
+    "maxFulltextFetches": 6,
+    "finalizationBudgetVersion": 1,
+    "releasedReserveTokens": 0,
+    "explorationAllocationVersion": 1,
+    "modelCalls": 5,
+    "tokens": 29710,
+    "normalTokens": 14434,
+    "elapsedSeconds": 0,
+    "externalSearches": 3,
+    "fulltextFetches": 2,
+    "reservedModelCalls": 1,
+    "exhausted": "",
+    "profile": "standard"
+  },
+  "apiBudget": {
+    "profile": "standard",
+    "modelCalls": 6,
+    "maxModelCalls": 18,
+    "tokens": 29710,
+    "maxTokens": 100000,
+    "externalSearches": 3,
+    "fulltextFetches": 2,
+    "elapsedSeconds": 162.0,
+    "cost": null
+  },
+  "elapsedAccountingBoundary": "Stored failed payload elapsedSeconds0 and API terminal162s are retained separately; no historical rewrite. Existing failure-time accounting discrepancy remains open for release audit.",
+  "sources": [
+    "arxiv:2404.10772v1",
+    "arxiv:2406.06521v1"
+  ],
+  "sourceHashes": {
+    "arxiv:2406.06521v1": "42d2f62bb336cf6dacc11acacc03f60babc34b1cb5d7596ce9fdf2346ac48ee5",
+    "arxiv:2404.10772v1": "d0b7e72aa986fe0ce875e9a1ece20d67e0804d02ef0d98e5c83a1152c97f5d6f"
+  },
+  "readRows": 12,
+  "referenceReadRows": 0,
+  "literalEvidenceRows": 86,
+  "allocation": {
+    "version": 1,
+    "candidateEvidenceIds": [
+      "ev_6e14d5193e69c79f3b2fa464ea06f08abcf606a71c37deb48c0a876dbdad9340",
+      "ev_d9714d53fb3219d25b98cbe348699fc00c9843d748c9b4f55b0d93ff06edb45a",
+      "ev_85c7eb04158a10b01a9cde729e25358662b731f9c563d1690db1736f104d9948",
+      "ev_173b7c330817e4715607e13867a070b506633629b86c98e0663c472f273d9b55",
+      "ev_e09faf2570c596ce2ef39df199aa435cf1174ff209cec32816c89febd223ae04",
+      "ev_5eeb225bc9ec31711ba9d3440776342cb4e9499593e0b3a8c4a3cf94690120ea",
+      "ev_31cc037797cad9d3dd0aff72dbeb148242626e9a9054c87db6fd63b1979dd323",
+      "ev_5c7fd6bcd71aead88a73e0435ce9a61d5a1e5b76fb19bc43b4e68860062b1caa",
+      "ev_2a12cfc33f3fa8ac58ecc53a60a08ab9af2444710b56ba64d00da12fcd2ffddb",
+      "ev_377b04c8d40917fa45e747ced7427cb525192de07095e6dab8edfc98216962ab",
+      "ev_aed79f8e276f90dbf65f658c61186255b2580e5009ef85be7a8fde1a93e2bf1c",
+      "ev_a40350edfc9b4c1a683f5fe72de54067358e29d7d8f324ab7f39a81d88e9074e",
+      "ev_39bdce993dd69ac32f53edd216256c84b71818f6bd0dc78e518bf7113036bb11",
+      "ev_a3c2f212682511804fb34de742fbaf3137443d276d62026b7fbbf837a816079f",
+      "ev_88d041cce6602e2b4d9e1a3ed551ba0c43dbb78df7fe34b5cf0eed696bd946b6",
+      "ev_fedeeaead6d4f3dfab1298725b1cf95631a61967ea58c3579dc3260ec0b07428",
+      "ev_370c85ad7c379d5aee202fe72c658283460132b356dead24814ace1ae84f4255",
+      "ev_6823788fc68a0181ee1742d38c4bbc1b78027d661ff2eb5380e8a67fecbfccdd",
+      "ev_740aef1fa0aead4d7239dc86f6a797d6f8db77c9b5cf3fafd1bc94520bf28be4",
+      "ev_2858e6012f3917a72719ead23d2297103ce8f35f7d29c0b4a2284a230c9bbad2"
+    ],
+    "suppliedEvidenceIds": [
+      "ev_6e14d5193e69c79f3b2fa464ea06f08abcf606a71c37deb48c0a876dbdad9340",
+      "ev_d9714d53fb3219d25b98cbe348699fc00c9843d748c9b4f55b0d93ff06edb45a",
+      "ev_85c7eb04158a10b01a9cde729e25358662b731f9c563d1690db1736f104d9948",
+      "ev_173b7c330817e4715607e13867a070b506633629b86c98e0663c472f273d9b55",
+      "ev_e09faf2570c596ce2ef39df199aa435cf1174ff209cec32816c89febd223ae04",
+      "ev_5eeb225bc9ec31711ba9d3440776342cb4e9499593e0b3a8c4a3cf94690120ea",
+      "ev_31cc037797cad9d3dd0aff72dbeb148242626e9a9054c87db6fd63b1979dd323",
+      "ev_5c7fd6bcd71aead88a73e0435ce9a61d5a1e5b76fb19bc43b4e68860062b1caa",
+      "ev_2a12cfc33f3fa8ac58ecc53a60a08ab9af2444710b56ba64d00da12fcd2ffddb",
+      "ev_377b04c8d40917fa45e747ced7427cb525192de07095e6dab8edfc98216962ab",
+      "ev_aed79f8e276f90dbf65f658c61186255b2580e5009ef85be7a8fde1a93e2bf1c",
+      "ev_a40350edfc9b4c1a683f5fe72de54067358e29d7d8f324ab7f39a81d88e9074e",
+      "ev_39bdce993dd69ac32f53edd216256c84b71818f6bd0dc78e518bf7113036bb11",
+      "ev_a3c2f212682511804fb34de742fbaf3137443d276d62026b7fbbf837a816079f"
+    ],
+    "missingPremiseBundles": [
+      {
+        "obligationId": "ob_3",
+        "criterionId": "human_aspect_1",
+        "requirement": "Mip-NeRF360 的渲染质量如何",
+        "source": "arxiv:2404.10772v1",
+        "evidenceIds": [
+          "E15"
+        ]
+      },
+      {
+        "obligationId": "ob_3",
+        "criterionId": "human_aspect_1",
+        "requirement": "Mip-NeRF360 的渲染质量如何",
+        "source": "arxiv:2406.06521v1",
+        "evidenceIds": [
+          "E16"
+        ]
+      },
+      {
+        "obligationId": "ob_6",
+        "criterionId": "req_1",
+        "requirement": "基于前面核对的证据，给出在不同应用场景下的选择建议。",
+        "source": "arxiv:2406.06521v1",
+        "evidenceIds": [
+          "E17"
+        ]
+      }
+    ],
+    "inputBytes": 24000,
+    "fixedInputBytes": 13932,
+    "tableDataOmittedEvidenceIds": [],
+    "sharedTablePackets": 0
+  },
+  "synthesis": {
+    "finishReason": "length",
+    "structuredOutput": {
+      "version": 1,
+      "requestedFormat": "json_object",
+      "expectedShape": "object",
+      "receivedShape": "truncated"
+    },
+    "usage": {
+      "total_tokens": 15276,
+      "input_tokens": 7084,
+      "output_tokens": 8192
+    },
+    "rawCharacters": 2516,
+    "rawUtf8Bytes": 2850,
+    "rawSha256": "09c39d709d95d7233c93db93a42319c0ae2b0343498740de17ce82ccb53cf6c6",
+    "rawStorage": "tmp/dr-acceptance-receipts/G1N-v2.calls.json",
+    "reconstructedRoleOptions": {
+      "thinking": {
+        "type": "enabled"
+      },
+      "reasoning_effort": "low",
+      "max_tokens": 8192,
+      "response_format": {
+        "type": "json_object"
+      }
+    },
+    "diagnosis": "Structured response truncated at output8192; visible content only2516 characters/2850bytes, one sections object and three partial claim entries, not repeated JSON. Reasoning-token breakdown is not retained by LLMUsage, so do not claim an exact hidden-token count. Frozen profile reconstructs enabled thinking/low effort, not high. Next investigate separating bounded drafting from research reasoning under unchanged total budget; do not merely add prose or increase call/token limits."
+  },
+  "review": {
+    "contentAccepted": false,
+    "independentCredit": 0,
+    "published": false,
+    "boundary": "No complete draft or scientific verification. Raw partial claims are diagnostic only and cannot be presented as approved answers. Original first G1N definition/result stay immutable and retired."
+  },
+  "preservation": {
+    "oldLedgerUnchanged": true,
+    "allOldRunsUnchanged": true,
+    "newRows": 27,
+    "ledgerRows": 8642,
+    "onlyThisRunCreatedCalls": true,
+    "active": [],
+    "oldPausedRetained": true,
+    "paused": [
+      "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+      "dr_run_ed10cc3347be552288079a9a588fddf5",
+      "dr_run_86b3f181a5475e99aacca3dbf4370567",
+      "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+      "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+      "dr_run_e3521b1781825273b384a26a5edb8cdc",
+      "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+      "dr_run_e9c9dc916bef519092fad8b929b2448f",
+      "dr_run_4738564f5ff35157996a35068c62ed32",
+      "dr_run_a8bd62f9ae3d52ff806f537065f55b2d",
+      "dr_run_98e66f2d3d555dfa822b859963f01419",
+      "dr_run_8be639c866c35ea092c735a04781b647",
+      "dr_run_1c0c2e6510165086962408b8e3cf698b"
+    ],
+    "other13TasksUnchanged": true,
+    "index1215Unchanged": true
+  },
+  "rawSha256": {
+    "G1N-v2.calls.json": "798464cff4547c9b33fa22b2217f393d5ca0adfa71a0292e1e9ebd639e408774",
+    "G1N-v2.json": "452a913d3710db886f838bbfeb2412a3650f8ed2c6a5daccb77dcb8c7d711333",
+    "G1N-v2.payload.json": "7c35cd98f7bc79ad586deb3bb39153df37a39be57e9a7f8b929e432bd8ea27fa",
+    "G1N-v2.preservation.json": "cd52c926aed08ea8c37af6b6898f208ecb77416b43c3fceebb8c774a4bcc1060",
+    "G1N-v2.result.json": "30e5e7eb73877b8319665f3398d4e7c238e1f6ce057beab7d01220eb4d6d1e1f"
+  }
+}

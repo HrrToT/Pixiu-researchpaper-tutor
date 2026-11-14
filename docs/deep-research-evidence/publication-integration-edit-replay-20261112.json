@@ -1,0 +1,129 @@
+{
+  "modelCalls": 0,
+  "productionWrites": 0,
+  "jarSha256": "3172bd62c53081536f8d57288ea4accd587303226b15ae028b667e58f655a4aa",
+  "workerBoundary": "Actual HTTP routes/repository/publication dispatcher; graph worker replaced by a completed no-op Future",
+  "contentBoundary": "Synthetic stored report, not a generated or scientifically accepted research answer",
+  "lostAckPersistedInJava": true,
+  "duplicateDeliveryDidNotChangeTask": true,
+  "publicationReplayedWithoutNewOutbox": true,
+  "userEditBetweenDeliveriesPreserved": true,
+  "originalAndProvenanceProtectedThroughHttp": true,
+  "taskRevision": 3,
+  "artifactCount": 2,
+  "messageCount": 1,
+  "runId": "dr_run_210f112760c757888e2e0d34e8d3b8d0",
+  "pythonRollbackRestartReadVerified": true,
+  "newEntryDisabledThroughJava": true,
+  "javaRestartPersistenceVerified": true,
+  "persistedModelCalls": 0,
+  "suppressedWorkerCount": 1,
+  "exitCode": 0,
+  "pythonHttpStopped": true,
+  "javaStopped": true,
+  "blockedRequests": [],
+  "httpRequests": [
+    {
+      "method": "GET",
+      "path": "/probe",
+      "port": 8193,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-workspaces",
+      "port": 8189,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-workspaces",
+      "port": 8189,
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/task-workspaces",
+      "port": 8189,
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/task-workspaces/publication-integration/research/start",
+      "port": 8189,
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/task-workspaces/publication-integration/research/dr_run_210f112760c757888e2e0d34e8d3b8d0/publication-sync",
+      "port": 8189,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-workspaces/publication-integration",
+      "port": 8189,
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "path": "/api/task-workspaces/publication-integration",
+      "port": 8189,
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/task-workspaces/publication-integration/research/dr_run_210f112760c757888e2e0d34e8d3b8d0/publication-sync",
+      "port": 8189,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-workspaces/publication-integration",
+      "port": 8189,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-workspaces/publication-integration",
+      "port": 8189,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-workspaces/publication-integration/research/dr_run_210f112760c757888e2e0d34e8d3b8d0",
+      "port": 8189,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-workspaces/publication-integration",
+      "port": 8189,
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/task-workspaces/publication-integration/research/start",
+      "port": 8189,
+      "status": 503
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-workspaces",
+      "port": 8189,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-workspaces/publication-integration",
+      "port": 8189,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-workspaces/publication-integration/research/dr_run_210f112760c757888e2e0d34e8d3b8d0",
+      "port": 8189,
+      "status": 200
+    }
+  ]
+}

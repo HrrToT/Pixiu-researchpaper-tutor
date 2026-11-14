@@ -1,0 +1,119 @@
+{
+  "date": "2026-10-26",
+  "originCase": "E1-v74",
+  "fullCaseModelCalls": 8,
+  "fullCaseTokens": 40319,
+  "diagnostics": [
+    {
+      "kind": "low",
+      "status": "received",
+      "finishReason": "length",
+      "usage": {
+        "input_tokens": 8761,
+        "output_tokens": 6144,
+        "total_tokens": 14905,
+        "estimated": false
+      },
+      "elapsedSeconds": 38.3,
+      "rawContentBytes": 0,
+      "intentSha256": "ee63137512ae18c14d29c4e3f7c3616af6f05b8ac6d3e9e1b2807ec7e2b9b546",
+      "resultSha256": "e943b7af0013f64d7125c5cde17a833acbb29532e08079bdf35c85d7f9d855c1",
+      "automaticRetry": false,
+      "scientificApproval": false,
+      "assessment": "output_limit_no_visible_metadata"
+    },
+    {
+      "kind": "edits",
+      "status": "received",
+      "finishReason": "stop",
+      "usage": {
+        "input_tokens": 6547,
+        "output_tokens": 907,
+        "total_tokens": 7454,
+        "estimated": false
+      },
+      "elapsedSeconds": 7.03,
+      "rawContentBytes": 3082,
+      "intentSha256": "724480b5be5e11872379228b1c5d75ab729ef16d249199250341ceb113b96460",
+      "resultSha256": "e79e11dbbd37f30ef21561c810566d13ae299449b4ee70db864a7384e5f03c9c",
+      "automaticRetry": false,
+      "scientificApproval": false,
+      "editEnvelopeValidUnderMetadataRootGuard": false,
+      "assessment": "rejected_no_application",
+      "errorType": "ValueError"
+    },
+    {
+      "kind": "readable-edits",
+      "status": "received",
+      "finishReason": "stop",
+      "usage": {
+        "input_tokens": 6820,
+        "output_tokens": 407,
+        "total_tokens": 7227,
+        "estimated": false
+      },
+      "elapsedSeconds": 6.16,
+      "rawContentBytes": 1451,
+      "intentSha256": "a4befb90555c0b2a7e78f311a2157f634fb66ce72436c27051bb2f7a8824a73a",
+      "resultSha256": "562dd3dea139bac19daac26282ad88e1c89247dfe51ce8f42ffb115a62aa0e10",
+      "automaticRetry": false,
+      "scientificApproval": false,
+      "editEnvelopeValidUnderMetadataRootGuard": true,
+      "composedMetadataSchemaValid": false,
+      "assessment": "rejected_no_application",
+      "errorType": "ValueError"
+    },
+    {
+      "kind": "full-readable",
+      "status": "received",
+      "finishReason": "stop",
+      "usage": {
+        "input_tokens": 9022,
+        "output_tokens": 1630,
+        "total_tokens": 10652,
+        "estimated": false
+      },
+      "elapsedSeconds": 9.48,
+      "rawContentBytes": 5993,
+      "intentSha256": "205bf7659b61d04b3f505d1c49fae2df804b4a9e1906f2ce07a9d265725bc500",
+      "resultSha256": "13f09493694fb77d63b7fbd06aa44a1502c841e34ae56b790bbb7a1916a58114",
+      "automaticRetry": false,
+      "scientificApproval": false,
+      "schemaValid": true,
+      "metadataErrors": [
+        "timeline.input.group_leak"
+      ],
+      "productionWrites": 0
+    }
+  ],
+  "additionalDiagnosticCalls": 4,
+  "additionalDiagnosticTokens": 40238,
+  "combinedModelCalls": 12,
+  "combinedTokens": 80557,
+  "prototypeArchive": [
+    {
+      "originalPath": "ai-service-python/services/deep_research/workflow_metadata_edits.py",
+      "archivePath": "tmp/metadata-repair-prototypes-20261026/workflow_metadata_edits.py",
+      "sha256": "b07f16c85053462b585d381032e88ab52b00f493093a1411674fdfe954e7cd8d"
+    },
+    {
+      "originalPath": "ai-service-python/services/deep_research/workflow_metadata_readable_repair.py",
+      "archivePath": "tmp/metadata-repair-prototypes-20261026/workflow_metadata_readable_repair.py",
+      "sha256": "26bed94f6d2feff6c017c40e5db5cef99b97ca3ca9fb22b91be2e49f262d58de"
+    },
+    {
+      "originalPath": "ai-service-python/tests/test_deep_research_workflow_metadata_edits.py",
+      "archivePath": "tmp/metadata-repair-prototypes-20261026/test_deep_research_workflow_metadata_edits.py",
+      "sha256": "afbb1615187c6c0f2916faec6b3b3da45b0d16720cfee967a4bb50e6f65b60b0"
+    },
+    {
+      "originalPath": "ai-service-python/tests/test_deep_research_workflow_readable_repair.py",
+      "archivePath": "tmp/metadata-repair-prototypes-20261026/test_deep_research_workflow_readable_repair.py",
+      "sha256": "9099f72694a6608b5db76f3abaa82108d59cfd2f5291462a2b4dbaf7abafdb52"
+    }
+  ],
+  "productionWrites": 0,
+  "historicalPayloadsModified": false,
+  "independentCredit": 0,
+  "decision": "Do not activate any diagnostic variant. Preserve typed full output and original checks; make per-arm evaluation explicit in a future authored grammar."
+}

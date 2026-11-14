@@ -1,0 +1,60 @@
+{
+  "sourceCommit": "23483ec701ed3c91524ce6e7fc966be766d2e10f",
+  "promptVersion": "dr-v2.20261029.327",
+  "scope": "new verification and revision of saved settled 326 draft; no new generation or retrieval",
+  "providerCalls": 5,
+  "totalTokens": 28052,
+  "allCallsSettled": true,
+  "unknownCalls": 0,
+  "retry": false,
+  "acceptedByMachine": [
+    {
+      "claimId": "c1",
+      "kind": "reported",
+      "text": "论文表1显示LightGaussian（Ours）在Mip-NeRF 360数据集上图像质量指标与原始3D-GS接近：PSNR 27.13对27.21，SSIM 0.806对0.815，LPIPS 0.237对0.214，大小45MB对734MB。"
+    }
+  ],
+  "rejectedByMachine": [
+    {
+      "claimId": "c2",
+      "reason": "semantic_unresolved",
+      "detail": "证据E1仅显示在MipNeRF360数据集上作者定性称'comparable visual quality'，未提及Tank and Temple数据集或具体指标，因此声明中'限于论文报告的数据集（Mip-NeRF 360、Tank and Temple）与上述指标'的部分缺乏支持。"
+    }
+  ],
+  "coverageStatus": "checked",
+  "coverageGaps": 4,
+  "repairDraftIds": [],
+  "repairCompactionStatus": "invalid",
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "preservation": {
+    "before": {
+      "ledgerRows": 7465,
+      "ledgerSha256": "9138a4c5c9e9397c9dce6b78007d07dc1c2f7955dd637bef1d794f0c50b97bbc",
+      "payloadSha256": "a4559eea0b66b511bed93f21a1cba7e6a39068464469aacbcd30fde6895797ad"
+    },
+    "after": {
+      "ledgerRows": 7465,
+      "ledgerSha256": "9138a4c5c9e9397c9dce6b78007d07dc1c2f7955dd637bef1d794f0c50b97bbc",
+      "payloadSha256": "a4559eea0b66b511bed93f21a1cba7e6a39068464469aacbcd30fde6895797ad"
+    },
+    "exactProductionPreservation": true,
+    "providerSubmissions": 5,
+    "productionPublish": false,
+    "fullWorkflowReplay": false,
+    "independentCredit": 0
+  },
+  "rawReceipts": "tmp\\component-metric-translation-327-20261029\\receipt",
+  "receiptHashes": {
+    "calls.json": "e9e4e928856b44241ae6d4ed9e7d8d4036f062e15cc17758c891df54bc8c64bc",
+    "payload.json": "eadd7259b9630a12d2288fb513bc6d322dafe20f01051071d7838d2ae3c6651e",
+    "preservation.json": "7f8158190ea3d4568db131e214297d8d3647792e590a1cd438d27a6e2234829a",
+    "progress.json": "5b768e26751d01c1785d91a55b1f2a82d11d3cf99bb18cdc8f557c6d09f301c3",
+    "request-1.json": "abfacfcc9713c4c621232cd9e5b372cc79346100d180e0c8829af9c04d0cd9df",
+    "request-2.json": "f1299ce1ddc52b66afea3065fc4251d4624dfb1ed547e5cf857cf77b08ee4c85",
+    "request-3.json": "34aeacfdeac509e46575f9def8865c384b78f0367bbbe3f412c6f9be945aed88",
+    "request-4.json": "867493bb4bfd655d699eec0136c75d3b5a3c8e72ad8f8242e17ce59fda61aad0",
+    "request-5.json": "5785931d432adf1683690c291e780e82600cff29a1d9defa5ed34679387dfced",
+    "result.json": "19fd1bd17b321c175f14f25d81011037727739a4da35d44832a3b7ea44b842ee"
+  }
+}

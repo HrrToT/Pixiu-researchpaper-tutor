@@ -1,0 +1,51 @@
+{
+  "date": "2026-10-15",
+  "case": "H3R-v2",
+  "runId": "dr_run_d809d18e14515f6fb4273bf42f8b25ff",
+  "promptVersion": "dr-v2.20261015.73",
+  "machineStatus": "completed",
+  "machineOutcome": "inconclusive",
+  "contentAccepted": false,
+  "reviewer": "Primary Codex; source/content review, not an independent human study",
+  "eligibility": "Retired development case; no independent holdout credit",
+  "budget": {
+    "maxModelCalls": 18,
+    "maxTokens": 100000,
+    "maxWallClockSeconds": 360,
+    "reserveModelCalls": 5,
+    "reserveTokens": 50000,
+    "maxExternalSearches": 6,
+    "maxFulltextFetches": 6,
+    "modelCalls": 6,
+    "tokens": 20928,
+    "normalTokens": 11293,
+    "elapsedSeconds": 127.145,
+    "externalSearches": 3,
+    "fulltextFetches": 1,
+    "reservedModelCalls": 2,
+    "exhausted": "",
+    "profile": "standard"
+  },
+  "modelCalls": 8,
+  "reportBody": "本次尚未形成通过核验的结论。\n\n<details>\n<summary>还有 2 项未完成</summary>\n\n- pixelSplat中深度概率分布放置高斯的动机是什么？即为什么选择概率分布采样而不是直接回归单一深度值？：最终回答尚未完整回应这一问题\n- pixelSplat的深度概率分布采样方案在训练时是如何工作的？：最终回答尚未完整回应这一问题\n\n</details>",
+  "acceptedRoles": [],
+  "findings": [
+    "Actual external arXiv discovery and public fulltext download succeeded for 2312.12337v4; source PDF SHA256 is 606933b1f086ad92b5863b1b8d21a8af565bfb02b71ac47fb8c8f850d987f5b5. No task-local papers were used.",
+    "Both claims initially fail numeric validation: version metadata and numbered condition labels are mistaken for experimental numbers.",
+    "The repair remains semantically unsupported by its supplied excerpts: it calls the distribution depth-specific while those excerpts only say dense 3D probability.",
+    "The original page-5 opacity/depth-bucket gradient mechanism is not in the selected evidence; generic reparameterization wording is insufficient for the frozen novice explanation criterion.",
+    "No unchecked claim is published, leaving an inconclusive report. Transport passes; answer quality fails."
+  ],
+  "scoresOutOfFive": {
+    "goal": 1,
+    "evidence": 4,
+    "conditions": 2,
+    "synthesis": 1,
+    "executability": null,
+    "readability": 1
+  },
+  "rawPayloadSha256": "8a85349f34e81371ff8daffebfee4808466e279a08408b167ea148f71d9d4826",
+  "rawLedgerSha256": "92ddffe08d3f714f8fd897bae27dc62f59d23d7c06e22ee514877cc163b3181d",
+  "rawArchive": "tmp/dr-acceptance-receipts/H3R-v2.payload.json",
+  "boundary": "Single submitted attempt; no retry. Machine outcome and transport success do not establish answer quality."
+}

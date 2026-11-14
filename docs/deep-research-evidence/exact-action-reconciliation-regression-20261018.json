@@ -1,0 +1,30 @@
+{
+  "date": "2026-10-18",
+  "harnessSourceCommit": "a82f2b25",
+  "runtimeSourceCommit": "27ac4beb",
+  "runtimePromptVersion": "dr-v2.20261018.153",
+  "fullOffline": {
+    "passed": 2428,
+    "warnings": 1,
+    "seconds": 175.88,
+    "log": "tmp/pytest-dr154-full.log"
+  },
+  "receiptFocused": {
+    "passed": 72,
+    "seconds": 3.55,
+    "log": "tmp/pytest-dr154-reconciliation.log",
+    "overlapsFullSuite": true
+  },
+  "actualHistoryProof": "deep-research-evidence/exact-action-history-preflight-20261018.json",
+  "newModelCase": "deep-research-evidence/D5-v4-diagnostic-20261018.json",
+  "newModelCalls": 9,
+  "settledTokens": 33473,
+  "cost": null,
+  "productionCallRows": 3770,
+  "activeResearch": 0,
+  "pausedHistoricalUnknowns": 9,
+  "taskCount": 91,
+  "parentAndOldObjectsPreserved": true,
+  "scope": "Harness-only exact legacy continuation recovery. No engine/Java change or reload after .153.",
+  "boundary": "Definitive pre-child failed action recognized via original-byte seal plus fresh authoritative GET every admission. All other prior runs still checked. Original receipt never rewritten, no provider unknown settled. One explicit new D5 child preserves data but is partial; no content or independent credit."
+}

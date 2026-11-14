@@ -1,0 +1,191 @@
+{
+  "date": "2026-10-18",
+  "case": "H5F-v2",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "groups": [
+    {
+      "targetIds": [
+        "c4",
+        "c6",
+        "c1",
+        "c3",
+        "c8",
+        "c9",
+        "c2",
+        "c7"
+      ],
+      "original": {
+        "fits": false,
+        "details": {
+          "kind": "repairPromptBytes",
+          "limit": 24000,
+          "used": 38773
+        }
+      },
+      "withoutIrrelevantCrossPaperReference": {
+        "fits": false,
+        "details": {
+          "kind": "repairPromptBytes",
+          "limit": 24000,
+          "used": 37043
+        }
+      },
+      "referenceBytes": 1730,
+      "allTargetOriginalsAndPermissionsPreserved": true
+    },
+    {
+      "targetIds": [
+        "c4"
+      ],
+      "original": {
+        "fits": true,
+        "bytes": 23850
+      },
+      "withoutIrrelevantCrossPaperReference": {
+        "fits": true,
+        "bytes": 22120
+      },
+      "referenceBytes": 1730,
+      "allTargetOriginalsAndPermissionsPreserved": true
+    },
+    {
+      "targetIds": [
+        "c6"
+      ],
+      "original": {
+        "fits": false,
+        "details": {
+          "kind": "repairPromptBytes",
+          "limit": 24000,
+          "used": 25866
+        }
+      },
+      "withoutIrrelevantCrossPaperReference": {
+        "fits": false,
+        "details": {
+          "kind": "repairPromptBytes",
+          "limit": 24000,
+          "used": 24136
+        }
+      },
+      "referenceBytes": 1730,
+      "allTargetOriginalsAndPermissionsPreserved": true
+    },
+    {
+      "targetIds": [
+        "c1"
+      ],
+      "original": {
+        "fits": false,
+        "details": {
+          "kind": "repairPromptBytes",
+          "limit": 24000,
+          "used": 26860
+        }
+      },
+      "withoutIrrelevantCrossPaperReference": {
+        "fits": false,
+        "details": {
+          "kind": "repairPromptBytes",
+          "limit": 24000,
+          "used": 25130
+        }
+      },
+      "referenceBytes": 1730,
+      "allTargetOriginalsAndPermissionsPreserved": true
+    },
+    {
+      "targetIds": [
+        "c3"
+      ],
+      "original": {
+        "fits": true,
+        "bytes": 23877
+      },
+      "withoutIrrelevantCrossPaperReference": {
+        "fits": true,
+        "bytes": 22147
+      },
+      "referenceBytes": 1730,
+      "allTargetOriginalsAndPermissionsPreserved": true
+    },
+    {
+      "targetIds": [
+        "c8"
+      ],
+      "original": {
+        "fits": false,
+        "details": {
+          "kind": "repairPromptBytes",
+          "limit": 24000,
+          "used": 26253
+        }
+      },
+      "withoutIrrelevantCrossPaperReference": {
+        "fits": false,
+        "details": {
+          "kind": "repairPromptBytes",
+          "limit": 24000,
+          "used": 24523
+        }
+      },
+      "referenceBytes": 1730,
+      "allTargetOriginalsAndPermissionsPreserved": true
+    },
+    {
+      "targetIds": [
+        "c9"
+      ],
+      "original": {
+        "fits": false,
+        "details": {
+          "kind": "repairPromptBytes",
+          "limit": 24000,
+          "used": 24822
+        }
+      },
+      "withoutIrrelevantCrossPaperReference": {
+        "fits": true,
+        "bytes": 23092
+      },
+      "referenceBytes": 1730,
+      "allTargetOriginalsAndPermissionsPreserved": true
+    },
+    {
+      "targetIds": [
+        "c2"
+      ],
+      "original": {
+        "fits": false,
+        "details": {
+          "kind": "repairPromptBytes",
+          "limit": 24000,
+          "used": 24357
+        }
+      },
+      "withoutIrrelevantCrossPaperReference": {
+        "fits": true,
+        "bytes": 22627
+      },
+      "referenceBytes": 1730,
+      "allTargetOriginalsAndPermissionsPreserved": true
+    },
+    {
+      "targetIds": [
+        "c7"
+      ],
+      "original": {
+        "fits": true,
+        "bytes": 23753
+      },
+      "withoutIrrelevantCrossPaperReference": {
+        "fits": true,
+        "bytes": 22023
+      },
+      "referenceBytes": 1730,
+      "allTargetOriginalsAndPermissionsPreserved": true
+    }
+  ],
+  "boundary": "Offline preflight only. Larger100000 cap used only to measure rendering in memory, never dispatch. Live cap remains24000; deleting a cross-paper logical reference does not relax experiment, source, initialization or semantic checks."
+}

@@ -1,0 +1,161 @@
+{
+  "baselineCommit": "ef31d02e508738ae7e36732fdcda801f58261368",
+  "sourceSha256": {
+    "backend-java/src/main/java/com/ai/assistant/backend_java/service/TaskWorkspaceService.java": "830907d5aeec5909fed9cc24419eff6f51685b22653911786c8ef8c9944a8ab1",
+    "backend-java/src/test/java/com/ai/assistant/backend_java/controller/TaskResearchArtifactOwnershipTest.java": "34d4d89efa3dd57742c51afb4fc6e397726dcc99e848f6a8e53cdeb310f0ed21",
+    "backend-java/src/test/java/com/ai/assistant/backend_java/controller/TaskResearchV2ControllerTest.java": "27f3f314e2d63b7725e31bfa1f7be6ae5ae11105796d311f9951939fc786084a"
+  },
+  "red": [
+    {
+      "name": "com.ai.assistant.backend_java.controller.TaskResearchArtifactOwnershipTest",
+      "tests": 4,
+      "failures": 4,
+      "errors": 0,
+      "skipped": 0
+    }
+  ],
+  "full": [
+    {
+      "name": "com.ai.assistant.backend_java.BackendJavaApplicationTests",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "com.ai.assistant.backend_java.controller.AcademicControllerTest",
+      "tests": 33,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "com.ai.assistant.backend_java.controller.ApiContractSmokeTest",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "com.ai.assistant.backend_java.controller.TaskDocumentIdentityControllerTest",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "com.ai.assistant.backend_java.controller.TaskDocumentTransferControllerTest",
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "com.ai.assistant.backend_java.controller.TaskLearningControllerTest",
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "com.ai.assistant.backend_java.controller.TaskMaterialControllerTest",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "com.ai.assistant.backend_java.controller.TaskOperationControllerTest",
+      "tests": 23,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "com.ai.assistant.backend_java.controller.TaskResearchArtifactOwnershipTest",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "com.ai.assistant.backend_java.controller.TaskResearchControllerTest",
+      "tests": 9,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "com.ai.assistant.backend_java.controller.TaskResearchV2ControllerTest",
+      "tests": 49,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "com.ai.assistant.backend_java.controller.TaskWorkspaceControllerTest",
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "com.ai.assistant.backend_java.service.MaterialProcessingServiceTest",
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "com.ai.assistant.backend_java.service.PdfServiceTaskHistoryTest",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "com.ai.assistant.backend_java.service.ResearchSourceExportJsonTest",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "com.ai.assistant.backend_java.service.ResearchSourcePdfTest",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "com.ai.assistant.backend_java.service.ResearchSourceProcessingTest",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "com.ai.assistant.backend_java.service.TaskResearchReadProjectionTest",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  ],
+  "packagePassed": true,
+  "jarSha256": "3172bd62c53081536f8d57288ea4accd587303226b15ae028b667e58f655a4aa",
+  "closedPorts": {
+    "8187": true,
+    "4274": true
+  },
+  "newModelCalls": 0,
+  "productionWrites": 0,
+  "loadedInUserService": false,
+  "researchAuthorityProof": "Java HTTP/service integration with fixture research; not live Python/model provenance generation",
+  "browserProof": "frontend-live-persistence-ownership-fix-20261112.json",
+  "logs": {
+    "tmp/research-ownership-red-20261112.log": "a69f24e2e9764adf5e3194d57496b2a3a3a4293e67df768fc4ebf6c40fad4158",
+    "tmp/research-ownership-green-20261112.log": "9ae407a795ad96902a24991fcf7458331b6a68536e5670d36e8ecc2c5514968c",
+    "tmp/research-ownership-full-20261112.log": "a720b814ada83f6168383ccd8dbbed964683fc1c91eb5ca24ee4b90ab248cda3"
+  }
+}

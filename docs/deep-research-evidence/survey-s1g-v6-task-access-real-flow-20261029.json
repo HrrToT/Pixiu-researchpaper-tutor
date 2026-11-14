@@ -1,0 +1,88 @@
+{
+  "caseId": "S1G-v6",
+  "runId": "dr_run_804eccde174b5815852e7c564ecbb54a",
+  "promptVersion": "dr-v2.20261029.346",
+  "status": "completed",
+  "outcome": "partial",
+  "modelCalls": 7,
+  "tokens": 27811,
+  "elapsedSeconds": 48.492,
+  "allCallsSettled": true,
+  "noRetry": true,
+  "verifiedClaims": [
+    {
+      "claimId": "c1",
+      "text": "LightGaussian压缩流程三个主要环节分别改变：1）高斯剪枝与恢复：识别并移除对场景重建全局重要性低的高斯，减少冗余同时保持视觉质量；2）知识蒸馏与伪视图增强：将球谐系数转移到更低阶，得到紧凑表示；3）高斯向量量化：基于每个高斯的全局重要性进一步降低位宽，精度损失最小。",
+      "kind": "reported",
+      "evidenceRefs": [
+        "ev_a338259d46d124ea7f2a011130fa7bf4e3da6bc823049df2cf0d15b1a793e240",
+        "ev_68801d18533cd7182b698cba746ecff15805968ba6fdfaeb99fde2f29d62afd7"
+      ],
+      "conditions": {},
+      "obligationIds": [
+        "ob_1"
+      ],
+      "detailLevel": "fulltext",
+      "tableBindings": [],
+      "verification": "semantic_passed"
+    }
+  ],
+  "initialRejected": [
+    {
+      "claimId": "c2",
+      "reason": "internal_reference_in_prose"
+    }
+  ],
+  "repairRejected": [
+    {
+      "claimId": "c2",
+      "reason": "internal_reference_in_prose",
+      "revisionRejection": {
+        "claimId": "c2",
+        "reason": "numeric_mismatch",
+        "missingReportedNumbers": [
+          "3e0"
+        ],
+        "detail": "本条引用原文未直接报告这些数值：3。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。"
+      }
+    }
+  ],
+  "coverageGaps": 3,
+  "publishedBody": "本回答引用：全文片段。\n\n- LightGaussian压缩流程三个主要环节分别改变：1）高斯剪枝与恢复：识别并移除对场景重建全局重要性低的高斯，减少冗余同时保持视觉质量；2）知识蒸馏与伪视图增强：将球谐系数转移到更低阶，得到紧凑表示；3）高斯向量量化：基于每个高斯的全局重要性进一步降低位宽，精度损失最小。 [1](#research-evidence-ev_a338259d46d124ea7f2a011130fa7bf4e3da6bc823049df2cf0d15b1a793e240) [2](#research-evidence-ev_68801d18533cd7182b698cba746ecff15805968ba6fdfaeb99fde2f29d62afd7)\n\n",
+  "publishedCounts": {
+    "artifacts": 2,
+    "messages": 1
+  },
+  "repeatTerminalGetExactlyUnchanged": true,
+  "oldResultsAndMessagesUnchanged": true,
+  "fiveOtherProtectedTasksUnchanged": true,
+  "indexExactlyPreserved": true,
+  "completeProductionIndexSha256": "9196054db7ac32450eb86fc91cfb12de27c732469e4cf629bf06857a3490788d",
+  "preservation": {
+    "oldLedgerUnchanged": true,
+    "allOldRunsUnchanged": true,
+    "newRows": 20,
+    "ledgerRows": 7585,
+    "onlyThisRunCreatedCalls": true,
+    "active": [],
+    "oldPausedRetained": true,
+    "paused": [
+      "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+      "dr_run_ed10cc3347be552288079a9a588fddf5",
+      "dr_run_86b3f181a5475e99aacca3dbf4370567",
+      "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+      "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+      "dr_run_e3521b1781825273b384a26a5edb8cdc",
+      "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+      "dr_run_e9c9dc916bef519092fad8b929b2448f",
+      "dr_run_4738564f5ff35157996a35068c62ed32",
+      "dr_run_a8bd62f9ae3d52ff806f537065f55b2d",
+      "dr_run_98e66f2d3d555dfa822b859963f01419",
+      "dr_run_8be639c866c35ea092c735a04781b647",
+      "dr_run_1c0c2e6510165086962408b8e3cf698b"
+    ]
+  },
+  "remainingDefect": "Server disclosure renders correctly and numbered mechanism claim reaches semantic review, but planner changes assistant acquisition into user reading, so access criterion is rejected. Reading order is authored as reported, and repaired prose still fails numeric count and includes unsupported user access assertion. Minimal accuracy loss translation may overstate a global minimum.",
+  "contentAcceptance": false,
+  "independentCredit": 0
+}

@@ -1,0 +1,52 @@
+{
+  "sourceCase": "S1G-v7",
+  "characterLimitWronglyTreatedAsIdentificationObject": true,
+  "requiredNumericObjects": [
+    "300"
+  ],
+  "frozenCriterion": {
+    "criterionId": "human_aspect_1",
+    "requirement": "仅依据任务中的LightGaussian全文，面向第一次读这篇论文的人，用不超过300字说明压缩流程三个主要环节分别改变了什么",
+    "responseType": "identification"
+  },
+  "actualAnswerBindings": [
+    {
+      "claimId": "c1",
+      "field": "text",
+      "excerpt": "压缩流程三个主要环节分别改变：高斯剪枝与恢复减少高斯数量；SH蒸馏消除冗余球谐系数并保留关键光照信息；向量量化以更低比特宽度存储高斯。"
+    },
+    {
+      "claimId": "c2",
+      "field": "text",
+      "excerpt": "高斯剪枝与恢复通过计算全局显著性分数剪除低分高斯并微调恢复；SH蒸馏利用教师模型渲染伪视图监督学生模型降低SH阶数；向量量化改变存储表示以降低比特宽度。"
+    }
+  ],
+  "criterionStillFailsCurrentGuard": true,
+  "accessRequirement": {
+    "obligationId": "ob_3",
+    "question": "实际读到的是全文还是摘要？",
+    "requiredSources": [
+      "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf"
+    ],
+    "searchQuery": "LightGaussian full text or abstract access",
+    "purpose": "answer_requirement",
+    "requestExcerpt": "标明实际读到的是全文还是摘要。",
+    "completionCriteria": [
+      {
+        "criterionId": "requirement_1",
+        "requirement": "明确说明所依据的材料是论文全文还是仅摘要，并指出该信息在材料中的体现。",
+        "responseType": "identification"
+      }
+    ]
+  },
+  "accessNormalizationAudit": [],
+  "coverageInvalidCriterionObligations": [
+    "ob_3"
+  ],
+  "coverageInvalidAspectObligations": [
+    "answer_scope"
+  ],
+  "providerCalls": 0,
+  "productionWrite": false,
+  "scientificApproval": false
+}

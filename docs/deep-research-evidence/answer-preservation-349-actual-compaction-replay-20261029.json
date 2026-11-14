@@ -1,0 +1,25 @@
+{
+  "sourceCase": "S1G-v8",
+  "originalSynthesisReplySha256": "54c3b3c8a536bfe485eb079dfa12283f2bc71a293b2b0963ab2fa5ae36daeb70",
+  "archivedCompactionReplySha256": "d337f31d818320ae95cee724c39ecd8579763fe18b4b37c75279d41f9386742a",
+  "versions": {
+    "False": {
+      "inputContainsReadingClaim": false,
+      "resultIds": [
+        "c1",
+        "c2"
+      ],
+      "oldReplyAccepted": true
+    },
+    "True": {
+      "inputContainsReadingClaim": true,
+      "resultIds": null,
+      "oldReplyAccepted": false
+    }
+  },
+  "originalDraftUnchanged": true,
+  "providerCalls": 0,
+  "productionWrite": false,
+  "scientificApproval": false,
+  "independentCredit": 0
+}

@@ -1,0 +1,34 @@
+{
+  "date": "2026-10-15",
+  "sourceCommit": "7783e79",
+  "promptVersion": "dr-v2.20261015.93",
+  "replay": {
+    "inputCase": "H5R-v13",
+    "originalPromptVersion": "dr-v2.20261015.92",
+    "rawResponseSha256": "5c858fee5ea99015c58d2f315eb7b9f4e2f9a5a808607d547ebfd1865ae1177f",
+    "normalization": "mixed_section_claim_array",
+    "sections": 7,
+    "claims": 9,
+    "allClaimFieldsAndValuesPreserved": true,
+    "sectionReferencesPreserved": true,
+    "originalInputUnchanged": true,
+    "modelCalls": 0,
+    "semanticChecked": false,
+    "oldRunChanged": false
+  },
+  "tests": {
+    "fullPassed": 1504,
+    "warnings": 1,
+    "seconds": 61.12,
+    "log": "tmp/pytest-dr93-full.log"
+  },
+  "jsonOutputSpecification": "https://api-docs.deepseek.com/guides/json_mode/",
+  "liveJsonModeVerified": false,
+  "boundaries": [
+    "Only synthesis requests json_object, before reservation/fingerprinting; array-producing plan/extraction/verification nodes remain unchanged.",
+    "Only complete, disjoint mixed arrays with unique claim identities and exact closed section references normalize. Unknown rows, mixed types, duplicates, dangling/unmapped IDs and truncated responses fail.",
+    "Only the container changes; text, conditions, parameters, IDs and evidence references remain exact. Ordinary claim/source/scientific checks and publication still follow.",
+    "JSON mode and direct compaction have offline request-option evidence, not a new live .93 model response.",
+    "No provider retries or changes to the historical failed run. Fixed-version fulltext caching remains future work."
+  ]
+}

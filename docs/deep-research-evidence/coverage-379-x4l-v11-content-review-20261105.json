@@ -1,0 +1,664 @@
+{
+  "promptVersion": "dr-v2.20261105.379",
+  "sourceCommit": "03da1fda",
+  "case": "X4L-v11",
+  "runId": "dr_run_d717a86314ea571281618ac9f4c68209",
+  "status": "completed",
+  "machineOutcome": "partial",
+  "modelCalls": 11,
+  "tokens": 44910,
+  "elapsedSeconds": 109.326,
+  "initialRejected": [
+    {
+      "claimId": "c1",
+      "reason": "numeric_mismatch",
+      "missingReportedNumbers": [
+        "1e0"
+      ],
+      "detail": "本条引用原文未直接报告这些数值：1。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。"
+    },
+    {
+      "claimId": "c2",
+      "reason": "semantic_unresolved",
+      "detail": "E1证据仅显示深度畸变损失通过最小化光线与splat交点距离来集中权重分布，未明确声称该集中会减少噪声重建。"
+    }
+  ],
+  "repairRejected": [
+    {
+      "claimId": "c1",
+      "reason": "numeric_mismatch",
+      "missingReportedNumbers": [
+        "1e0"
+      ],
+      "detail": "本条引用原文未直接报告这些数值：1。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。",
+      "revisionRejection": {
+        "claimId": "c1",
+        "reason": "numeric_mismatch",
+        "missingReportedNumbers": [
+          "1e0"
+        ],
+        "detail": "本条引用原文未直接报告这些数值：1。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。"
+      }
+    }
+  ],
+  "acceptedClaims": [
+    {
+      "claimId": "c3",
+      "text": "法线一致性约束通过将二维高斯盘的法线与深度图梯度估计的表面法线对齐，使二维盘局部逼近实际物体表面。",
+      "kind": "reported",
+      "evidenceRefs": [
+        "ev_2130887bcc4166954e487bcfe46cf9ff20581ac3276237d82163a05f6b3a0f76",
+        "ev_cf67573e4730737b48f20cf7907871805caef2aade2ed2546e3641dc3dbf02cb"
+      ],
+      "conditions": {},
+      "obligationIds": [
+        "ob_2"
+      ],
+      "detailLevel": "concise",
+      "tableBindings": [],
+      "verification": "semantic_passed"
+    },
+    {
+      "claimId": "c2",
+      "kind": "inference",
+      "text": "深度畸变约束通过最小化光线与二维高斯盘交点深度之间的距离，使权重分布沿光线集中。",
+      "evidenceRefs": [
+        "ev_8358ddef8f9f16f3f70fb2e1220c0fc11c02cd4d3d9d858fe544e7878720ecba"
+      ],
+      "conditions": {},
+      "detailLevel": "fulltext",
+      "obligationIds": [
+        "ob_2"
+      ],
+      "verification": "semantic_passed"
+    }
+  ],
+  "coverageModelCalls": 2,
+  "coverage": {
+    "status": "checked",
+    "verdicts": [
+      {
+        "obligationId": "ob_1",
+        "status": "missing",
+        "bindings": [],
+        "aspects": [
+          {
+            "aspectId": "criterion:human_aspect_1",
+            "requirement": "解释这里的“2D”为什么仍能表示三维场景",
+            "basis": {
+              "kind": "request",
+              "excerpt": "解释这里的“2D”为什么仍能表示三维场景"
+            },
+            "status": "missing",
+            "bindings": []
+          }
+        ],
+        "criteria": [
+          {
+            "criterionId": "human_aspect_1",
+            "responseType": "explanation",
+            "status": "missing",
+            "bindings": []
+          }
+        ],
+        "requestCheckReasons": [
+          {
+            "checkId": "criterion:human_aspect_1",
+            "reason": "回答未解释“2D”为何能表示三维场景，缺少对二维高斯盘在三维空间中定位和朝向的说明。"
+          }
+        ],
+        "gapDetail": {
+          "criterionIds": [
+            "human_aspect_1"
+          ],
+          "aspectIds": [
+            "criterion:human_aspect_1"
+          ],
+          "missingContent": "请补全本条固定要求中标为未满足的部分，具体要求见 missingAspects。",
+          "reason": "此缺口由固定检查项的未满足状态汇总；模型说明不作为新增要求或论文事实。"
+        }
+      },
+      {
+        "obligationId": "ob_2",
+        "status": "covered",
+        "bindings": [
+          {
+            "claimId": "c2",
+            "field": "text",
+            "excerpt": "深度畸变约束通过最小化光线与二维高斯盘交点深度之间的距离，使权重分布沿光线集中。"
+          },
+          {
+            "claimId": "c3",
+            "field": "text",
+            "excerpt": "法线一致性约束通过将二维高斯盘的法线与深度图梯度估计的表面法线对齐，使二维盘局部逼近实际物体表面。"
+          }
+        ],
+        "aspects": [
+          {
+            "aspectId": "criterion:human_aspect_1",
+            "requirement": "第5节中深度畸变和法线一致性两个约束分别在约束什么",
+            "basis": {
+              "kind": "request",
+              "excerpt": "第5节中深度畸变和法线一致性两个约束分别在约束什么"
+            },
+            "status": "covered",
+            "bindings": [
+              {
+                "claimId": "c2",
+                "field": "text",
+                "excerpt": "深度畸变约束通过最小化光线与二维高斯盘交点深度之间的距离，使权重分布沿光线集中。"
+              },
+              {
+                "claimId": "c3",
+                "field": "text",
+                "excerpt": "法线一致性约束通过将二维高斯盘的法线与深度图梯度估计的表面法线对齐，使二维盘局部逼近实际物体表面。"
+              }
+            ]
+          }
+        ],
+        "criteria": [
+          {
+            "criterionId": "human_aspect_1",
+            "responseType": "identification",
+            "status": "covered",
+            "bindings": [
+              {
+                "claimId": "c2",
+                "field": "text",
+                "excerpt": "深度畸变约束通过最小化光线与二维高斯盘交点深度之间的距离，使权重分布沿光线集中。"
+              },
+              {
+                "claimId": "c3",
+                "field": "text",
+                "excerpt": "法线一致性约束通过将二维高斯盘的法线与深度图梯度估计的表面法线对齐，使二维盘局部逼近实际物体表面。"
+              }
+            ]
+          }
+        ],
+        "requestCheckReasons": [
+          {
+            "checkId": "criterion:human_aspect_1",
+            "reason": "回答分别说明了深度畸变约束通过最小化交点深度距离使权重集中，法线一致性约束通过对齐法线使二维盘逼近表面，满足区分两种作用的要求。"
+          }
+        ]
+      },
+      {
+        "obligationId": "answer_scope",
+        "status": "partial",
+        "bindings": [
+          {
+            "claimId": "c2",
+            "field": "text",
+            "excerpt": "深度畸变约束通过最小化光线与二维高斯盘交点深度之间的距离，使权重分布沿光线集中。"
+          },
+          {
+            "claimId": "c3",
+            "field": "text",
+            "excerpt": "法线一致性约束通过将二维高斯盘的法线与深度图梯度估计的表面法线对齐，使二维盘局部逼近实际物体表面。"
+          }
+        ],
+        "aspects": [
+          {
+            "aspectId": "request",
+            "requirement": "仅依据任务中已加入的 2D Gaussian Splatting for Geometrically Accurate Radiance Fields（arXiv:2403.17888v3）原文，不用外部搜索。面向了解3DGS概念的新手，解释这里的“2D”为什么仍能表示三维场景，以及第5节中深度畸变和法线一致性两个约束分别在约束什么。限350字，依据实际取得的正文区分两种作用，不做性能排名或实验设计。",
+            "basis": {
+              "kind": "request",
+              "excerpt": "仅依据任务中已加入的 2D Gaussian Splatting for Geometrically Accurate Radiance Fields（arXiv:2403.17888v3）原文，不用外部搜索。面向了解3DGS概念的新手，解释这里的“2D”为什么仍能表示三维场景，以及第5节中深度畸变和法线一致性两个约束分别在约束什么。限350字，依据实际取得的正文区分两种作用，不做性能排名或实验设计。"
+            },
+            "status": "partial",
+            "bindings": [
+              {
+                "claimId": "c2",
+                "field": "text",
+                "excerpt": "深度畸变约束通过最小化光线与二维高斯盘交点深度之间的距离，使权重分布沿光线集中。"
+              },
+              {
+                "claimId": "c3",
+                "field": "text",
+                "excerpt": "法线一致性约束通过将二维高斯盘的法线与深度图梯度估计的表面法线对齐，使二维盘局部逼近实际物体表面。"
+              }
+            ]
+          }
+        ],
+        "criteria": [],
+        "requestCheckReasons": [
+          {
+            "checkId": "request",
+            "reason": "回答覆盖了第5节两个约束的作用，但未解释“2D”为何能表示三维场景，且未明确体现仅依据原文、面向新手、限350字、不做性能排名或实验设计等要求。"
+          }
+        ],
+        "gapDetail": {
+          "criterionIds": [],
+          "aspectIds": [
+            "request"
+          ],
+          "missingContent": "请补全本条固定要求中标为未满足的部分，具体要求见 missingAspects。",
+          "reason": "此缺口由固定检查项的未满足状态汇总；模型说明不作为新增要求或论文事实。"
+        }
+      }
+    ],
+    "coverageEvidenceTransportVersion": 1,
+    "completionContractDigest": "8d937df7f456b115cf34fddb12071eced15c781d2defe166dc6b1924b882a185",
+    "displayMetadataDigest": "cf3aacc40f06343b98858588aa1ccb9c4b5e145ae5b7e07171903e289e36a04a",
+    "gaps": [
+      {
+        "obligationId": "ob_1",
+        "question": "解释这里的“2D”为什么仍能表示三维场景",
+        "missingEvidence": "最终回答尚未完整回应这一问题",
+        "stage": "answer",
+        "missingAspects": [
+          "解释这里的“2D”为什么仍能表示三维场景"
+        ],
+        "aspectEvidenceRefs": [],
+        "gapDetail": {
+          "criterionIds": [
+            "human_aspect_1"
+          ],
+          "aspectIds": [
+            "criterion:human_aspect_1"
+          ],
+          "missingContent": "请补全本条固定要求中标为未满足的部分，具体要求见 missingAspects。",
+          "reason": "此缺口由固定检查项的未满足状态汇总；模型说明不作为新增要求或论文事实。"
+        }
+      },
+      {
+        "obligationId": "answer_scope",
+        "question": "仅依据任务中已加入的 2D Gaussian Splatting for Geometrically Accurate Radiance Fields（arXiv:2403.17888v3）原文，不用外部搜索。面向了解3DGS概念的新手，解释这里的“2D”为什么仍能表示三维场景，以及第5节中深度畸变和法线一致性两个约束分别在约束什么。限350字，依据实际取得的正文区分两种作用，不做性能排名或实验设计。",
+        "missingEvidence": "最终回答尚未完整回应这一问题",
+        "stage": "answer",
+        "missingAspects": [
+          "仅依据任务中已加入的 2D Gaussian Splatting for Geometrically Accurate Radiance Fields（arXiv:2403.17888v3）原文，不用外部搜索。面向了解3DGS概念的新手，解释这里的“2D”为什么仍能表示三维场景，以及第5节中深度畸变和法线一致性两个约束分别在约束什么。限350字，依据实际取得的正文区分两种作用，不做性能排名或实验设计。"
+        ],
+        "aspectEvidenceRefs": [],
+        "gapDetail": {
+          "criterionIds": [],
+          "aspectIds": [
+            "request"
+          ],
+          "missingContent": "请补全本条固定要求中标为未满足的部分，具体要求见 missingAspects。",
+          "reason": "此缺口由固定检查项的未满足状态汇总；模型说明不作为新增要求或论文事实。"
+        },
+        "wholeQuestion": true
+      }
+    ],
+    "invalidAspectObligations": [],
+    "requestCoverageContractVersion": 3,
+    "wholeQuestionId": "answer_scope",
+    "nonblockingResearch": [],
+    "criterionGaps": {},
+    "invalidCriterionObligations": [],
+    "budgetLimit": null,
+    "diagnosticErrors": [],
+    "answerCoherence": {
+      "contractVersion": 1,
+      "status": "checked",
+      "answerDigest": "e5616787540bedec34e8a8a808e7adbace891d5d3d3b8cc96b2ff208a5124c5e",
+      "coherent": true,
+      "issues": []
+    }
+  },
+  "initialCoverage": {
+    "status": "checked",
+    "verdicts": [
+      {
+        "obligationId": "ob_1",
+        "status": "missing",
+        "bindings": [],
+        "aspects": [
+          {
+            "aspectId": "criterion:human_aspect_1",
+            "requirement": "解释这里的“2D”为什么仍能表示三维场景",
+            "basis": {
+              "kind": "request",
+              "excerpt": "解释这里的“2D”为什么仍能表示三维场景"
+            },
+            "status": "missing",
+            "bindings": []
+          }
+        ],
+        "criteria": [
+          {
+            "criterionId": "human_aspect_1",
+            "responseType": "explanation",
+            "status": "missing",
+            "bindings": []
+          }
+        ],
+        "requestCheckReasons": [
+          {
+            "checkId": "criterion:human_aspect_1",
+            "reason": "没有提供任何解释“2D”为何能表示三维场景的内容。"
+          }
+        ],
+        "gapDetail": {
+          "criterionIds": [
+            "human_aspect_1"
+          ],
+          "aspectIds": [
+            "criterion:human_aspect_1"
+          ],
+          "missingContent": "请补全本条固定要求中标为未满足的部分，具体要求见 missingAspects。",
+          "reason": "此缺口由固定检查项的未满足状态汇总；模型说明不作为新增要求或论文事实。"
+        }
+      },
+      {
+        "obligationId": "ob_2",
+        "status": "partial",
+        "bindings": [
+          {
+            "claimId": "c3",
+            "field": "text",
+            "excerpt": "法线一致性约束通过将二维高斯盘的法线与深度图梯度估计的表面法线对齐，使二维盘局部逼近实际物体表面。"
+          }
+        ],
+        "aspects": [
+          {
+            "aspectId": "criterion:human_aspect_1",
+            "requirement": "第5节中深度畸变和法线一致性两个约束分别在约束什么",
+            "basis": {
+              "kind": "request",
+              "excerpt": "第5节中深度畸变和法线一致性两个约束分别在约束什么"
+            },
+            "status": "partial",
+            "bindings": [
+              {
+                "claimId": "c3",
+                "field": "text",
+                "excerpt": "法线一致性约束通过将二维高斯盘的法线与深度图梯度估计的表面法线对齐，使二维盘局部逼近实际物体表面。"
+              }
+            ]
+          }
+        ],
+        "criteria": [
+          {
+            "criterionId": "human_aspect_1",
+            "responseType": "identification",
+            "status": "partial",
+            "bindings": [
+              {
+                "claimId": "c3",
+                "field": "text",
+                "excerpt": "法线一致性约束通过将二维高斯盘的法线与深度图梯度估计的表面法线对齐，使二维盘局部逼近实际物体表面。"
+              }
+            ]
+          }
+        ],
+        "requestCheckReasons": [
+          {
+            "checkId": "criterion:human_aspect_1",
+            "reason": "仅解释了法线一致性约束，未提及深度畸变约束。"
+          }
+        ],
+        "gapDetail": {
+          "criterionIds": [
+            "human_aspect_1"
+          ],
+          "aspectIds": [
+            "criterion:human_aspect_1"
+          ],
+          "missingContent": "请补全本条固定要求中标为未满足的部分，具体要求见 missingAspects。",
+          "reason": "此缺口由固定检查项的未满足状态汇总；模型说明不作为新增要求或论文事实。"
+        }
+      },
+      {
+        "obligationId": "answer_scope",
+        "status": "partial",
+        "bindings": [
+          {
+            "claimId": "c3",
+            "field": "text",
+            "excerpt": "法线一致性约束通过将二维高斯盘的法线与深度图梯度估计的表面法线对齐，使二维盘局部逼近实际物体表面。"
+          }
+        ],
+        "aspects": [
+          {
+            "aspectId": "request",
+            "requirement": "仅依据任务中已加入的 2D Gaussian Splatting for Geometrically Accurate Radiance Fields（arXiv:2403.17888v3）原文，不用外部搜索。面向了解3DGS概念的新手，解释这里的“2D”为什么仍能表示三维场景，以及第5节中深度畸变和法线一致性两个约束分别在约束什么。限350字，依据实际取得的正文区分两种作用，不做性能排名或实验设计。",
+            "basis": {
+              "kind": "request",
+              "excerpt": "仅依据任务中已加入的 2D Gaussian Splatting for Geometrically Accurate Radiance Fields（arXiv:2403.17888v3）原文，不用外部搜索。面向了解3DGS概念的新手，解释这里的“2D”为什么仍能表示三维场景，以及第5节中深度畸变和法线一致性两个约束分别在约束什么。限350字，依据实际取得的正文区分两种作用，不做性能排名或实验设计。"
+            },
+            "status": "partial",
+            "bindings": [
+              {
+                "claimId": "c3",
+                "field": "text",
+                "excerpt": "法线一致性约束通过将二维高斯盘的法线与深度图梯度估计的表面法线对齐，使二维盘局部逼近实际物体表面。"
+              }
+            ]
+          }
+        ],
+        "criteria": [],
+        "requestCheckReasons": [
+          {
+            "checkId": "request",
+            "reason": "缺少对“2D”表示三维场景的解释和深度畸变约束的说明，未完全满足要求。"
+          }
+        ],
+        "gapDetail": {
+          "criterionIds": [],
+          "aspectIds": [
+            "request"
+          ],
+          "missingContent": "请补全本条固定要求中标为未满足的部分，具体要求见 missingAspects。",
+          "reason": "此缺口由固定检查项的未满足状态汇总；模型说明不作为新增要求或论文事实。"
+        }
+      }
+    ],
+    "coverageEvidenceTransportVersion": 1,
+    "completionContractDigest": "b14a49b0ae6ed580f949d91d82a77690b66ebbd7dde40aae81676c9e52b32c16",
+    "displayMetadataDigest": "73385ef5cfc845f9eb04385fe74a9730353334b1d152bf5edd68819718dcce8c",
+    "gaps": [
+      {
+        "obligationId": "ob_1",
+        "question": "解释这里的“2D”为什么仍能表示三维场景",
+        "missingEvidence": "最终回答尚未完整回应这一问题",
+        "stage": "answer",
+        "missingAspects": [
+          "解释这里的“2D”为什么仍能表示三维场景"
+        ],
+        "aspectEvidenceRefs": [],
+        "gapDetail": {
+          "criterionIds": [
+            "human_aspect_1"
+          ],
+          "aspectIds": [
+            "criterion:human_aspect_1"
+          ],
+          "missingContent": "请补全本条固定要求中标为未满足的部分，具体要求见 missingAspects。",
+          "reason": "此缺口由固定检查项的未满足状态汇总；模型说明不作为新增要求或论文事实。"
+        }
+      },
+      {
+        "obligationId": "ob_2",
+        "question": "第5节中深度畸变和法线一致性两个约束分别在约束什么",
+        "missingEvidence": "最终回答尚未完整回应这一问题",
+        "stage": "answer",
+        "missingAspects": [
+          "第5节中深度畸变和法线一致性两个约束分别在约束什么"
+        ],
+        "aspectEvidenceRefs": [],
+        "gapDetail": {
+          "criterionIds": [
+            "human_aspect_1"
+          ],
+          "aspectIds": [
+            "criterion:human_aspect_1"
+          ],
+          "missingContent": "请补全本条固定要求中标为未满足的部分，具体要求见 missingAspects。",
+          "reason": "此缺口由固定检查项的未满足状态汇总；模型说明不作为新增要求或论文事实。"
+        }
+      },
+      {
+        "obligationId": "answer_scope",
+        "question": "仅依据任务中已加入的 2D Gaussian Splatting for Geometrically Accurate Radiance Fields（arXiv:2403.17888v3）原文，不用外部搜索。面向了解3DGS概念的新手，解释这里的“2D”为什么仍能表示三维场景，以及第5节中深度畸变和法线一致性两个约束分别在约束什么。限350字，依据实际取得的正文区分两种作用，不做性能排名或实验设计。",
+        "missingEvidence": "最终回答尚未完整回应这一问题",
+        "stage": "answer",
+        "missingAspects": [
+          "仅依据任务中已加入的 2D Gaussian Splatting for Geometrically Accurate Radiance Fields（arXiv:2403.17888v3）原文，不用外部搜索。面向了解3DGS概念的新手，解释这里的“2D”为什么仍能表示三维场景，以及第5节中深度畸变和法线一致性两个约束分别在约束什么。限350字，依据实际取得的正文区分两种作用，不做性能排名或实验设计。"
+        ],
+        "aspectEvidenceRefs": [],
+        "gapDetail": {
+          "criterionIds": [],
+          "aspectIds": [
+            "request"
+          ],
+          "missingContent": "请补全本条固定要求中标为未满足的部分，具体要求见 missingAspects。",
+          "reason": "此缺口由固定检查项的未满足状态汇总；模型说明不作为新增要求或论文事实。"
+        },
+        "wholeQuestion": true
+      }
+    ],
+    "invalidAspectObligations": [],
+    "requestCoverageContractVersion": 3,
+    "wholeQuestionId": "answer_scope",
+    "nonblockingResearch": [],
+    "criterionGaps": {},
+    "invalidCriterionObligations": [],
+    "budgetLimit": null,
+    "diagnosticErrors": [],
+    "answerCoherence": {
+      "contractVersion": 1,
+      "status": "checked",
+      "answerDigest": "9327d366e6ab8e919b84a5e5ef8d6bc24051bcbffbe71955a397a74790a7e9df",
+      "coherent": true,
+      "issues": []
+    }
+  },
+  "publicationCoherence": {
+    "contractVersion": 2,
+    "answerDigest": "e5616787540bedec34e8a8a808e7adbace891d5d3d3b8cc96b2ff208a5124c5e",
+    "status": "released",
+    "heldClaimIds": [],
+    "reason": null
+  },
+  "repairDraftingAudit": {
+    "0": [
+      {
+        "claimId": "c1",
+        "basis": {
+          "premiseStatus": "established",
+          "observations": [
+            {
+              "evidenceId": "E6",
+              "quote": "Our key idea is to collapse the 3D volume into a set of 2D oriented planar Gaussian disks."
+            }
+          ],
+          "scopeDecision": "reported_case",
+          "unresolved": ""
+        },
+        "discardedDraftSpans": [],
+        "removalVerification": "edit_consistency_only",
+        "draftRemovalEdit": {
+          "version": 1,
+          "offsetUnit": "unicode_code_point",
+          "inputText": "2DGS将三维体积坍缩为一组在空间中定位的二维定向平面高斯盘；每个盘虽为二维，但具有三维位置和朝向，整体可表示三维场景。",
+          "outputText": "2DGS将三维体积坍缩为一组在空间中定位的二维定向平面高斯盘；每个盘虽为二维，但具有三维位置和朝向，整体可表示三维场景。",
+          "inputSha256": "c9d04558656a5b9036a43bb2ff7b05b5d04e46cce079a8550919a00b129e8b68",
+          "outputSha256": "c9d04558656a5b9036a43bb2ff7b05b5d04e46cce079a8550919a00b129e8b68",
+          "edits": [],
+          "alreadyRemovedSpans": [],
+          "verification": "unchecked"
+        }
+      },
+      {
+        "claimId": "c2",
+        "basis": {
+          "premiseStatus": "established",
+          "observations": [
+            {
+              "evidenceId": "E14",
+              "quote": "propose a depth distortion loss to concentrate the weight distribution along the rays by minimizing the distance between the ray-splat intersections"
+            }
+          ],
+          "scopeDecision": "bounded_inference",
+          "unresolved": "E14未明确声称该集中会减少噪声重建；仅说明损失通过最小化交点距离来集中权重分布。"
+        },
+        "discardedDraftSpans": [
+          "从而减少噪声重建"
+        ],
+        "removalVerification": "edit_consistency_only",
+        "draftRemovalEdit": {
+          "version": 1,
+          "offsetUnit": "unicode_code_point",
+          "inputText": "深度畸变约束通过最小化光线与二维高斯盘交点深度之间的距离，使权重分布沿光线集中。",
+          "outputText": "深度畸变约束通过最小化光线与二维高斯盘交点深度之间的距离，使权重分布沿光线集中。",
+          "inputSha256": "1e5fe2db442362c5f385b4de7888cb059740dba6775f0afa2d70136c55e0f3e7",
+          "outputSha256": "1e5fe2db442362c5f385b4de7888cb059740dba6775f0afa2d70136c55e0f3e7",
+          "edits": [],
+          "alreadyRemovedSpans": [
+            "从而减少噪声重建"
+          ],
+          "verification": "unchecked"
+        },
+        "kindTransition": {
+          "from": "reported",
+          "to": "inference",
+          "reason": "semantic_unresolved",
+          "verification": "unchecked"
+        }
+      }
+    ]
+  },
+  "sourceReview": {
+    "reviewer": "assistant source inspection, not human acceptance",
+    "contentAccepted": false,
+    "independentCredit": 0,
+    "scores": {
+      "targetResponse": 2,
+      "evidenceSupport": 4,
+      "conditions": 4,
+      "synthesis": 2,
+      "readability": 4
+    },
+    "reason": "Two constraint explanations are published and consistent. Representation explanation remains blocked by numeric1 in an indefinite geometric collection with an intervening modifier; source uses a set of oriented planar Gaussian disks.",
+    "remainingTarget": {
+      "claimId": "c1",
+      "text": "2DGS把3D体积坍缩成一组在空间中定位的二维定向平面高斯盘。这些盘虽然本身是二维的，但每个盘在三维空间中有位置和朝向，因此整体能表示三维场景。",
+      "kind": "reported",
+      "evidenceRefs": [
+        "ev_f580f957d245818427832337512def14fad37c1adb4212595347250a67597847"
+      ],
+      "conditions": {},
+      "obligationIds": [
+        "ob_1"
+      ],
+      "detailLevel": "concise",
+      "tableBindings": []
+    },
+    "measurementMisclassification": "一组在空间中定位的二维定向平面高斯盘",
+    "nextAction": "Generalize modifier grammar in indefinite geometric collection introductions; preserve actual measured group counts and all other numbers. First use exact saved-input replay and counterexamples, not an immediate full rerun."
+  },
+  "preservation": {
+    "oldLedgerUnchanged": true,
+    "allOldRunsUnchanged": true,
+    "newRows": 23,
+    "ledgerRows": 8326,
+    "onlyThisRunCreatedCalls": true,
+    "active": [],
+    "oldPausedRetained": true,
+    "paused": [
+      "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+      "dr_run_ed10cc3347be552288079a9a588fddf5",
+      "dr_run_86b3f181a5475e99aacca3dbf4370567",
+      "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+      "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+      "dr_run_e3521b1781825273b384a26a5edb8cdc",
+      "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+      "dr_run_e9c9dc916bef519092fad8b929b2448f",
+      "dr_run_4738564f5ff35157996a35068c62ed32",
+      "dr_run_a8bd62f9ae3d52ff806f537065f55b2d",
+      "dr_run_98e66f2d3d555dfa822b859963f01419",
+      "dr_run_8be639c866c35ea092c735a04781b647",
+      "dr_run_1c0c2e6510165086962408b8e3cf698b"
+    ]
+  },
+  "protectedTasksExact": 12,
+  "repeatedTerminalGetExact": true,
+  "index": {
+    "collection": "literature_collection_v4_e5_small",
+    "count": 1102,
+    "sha256": "1e91bfa73ba4a374a6cea68be25639c269fac493d5eda61162448bf500ff6118"
+  },
+  "payloadSha256": "3ecc477466b07c293c0ab20a0b33957b24a6b6a1edfc9f60b52a54a2be22be84"
+}

@@ -1,0 +1,63 @@
+{
+  "date": "2026-10-22",
+  "sourceCommit": "c07b9104",
+  "promptVersion": "dr-v2.20261022.215",
+  "citationPresentationContractVersion": 3,
+  "serverOwnedImmutable": true,
+  "fullDeepResearchOffline": {
+    "passed": 3674,
+    "warnings": 1,
+    "seconds": 157.94,
+    "files": 207,
+    "scope": "All test_deep_research*.py; not all Python, reading or frontend integration.",
+    "log": "tmp/pytest-dr215-full-native.log",
+    "sha256": "b335c7e9d0f08e9837e194ed5355b771f110c0ad1f8ad1eb7cc28125d57cf35c"
+  },
+  "focusedPassed": 79,
+  "focusedSeconds": 2.43,
+  "focusedOverlap": true,
+  "newTests": 43,
+  "legacyActualFingerprintsMatched": 59,
+  "legacyScripts": [
+    "replay-dr210-legacy.py",
+    "replay-dr210-verification.py",
+    "replay-dr210-h5unknown.py",
+    "replay-dr210-e1-v1.py",
+    "replay-dr210-e1-v2.py",
+    "probe-dr210-legacy-actual-feedback.py",
+    "probe-dr210-legacy-review-calibration.py",
+    "probe-dr210-legacy-e1-audit.py",
+    "probe-dr210-e1-representation.py",
+    "probe-dr210-e1-attribution-final.py",
+    "probe-dr210-e1-config.py",
+    "probe-dr210-e1-v8-plan-final.py",
+    "probe-dr210-e1-v9-actual.py",
+    "probe-dr211-e1-v10-actual.py",
+    "probe-dr213-e1-coverage.py",
+    "probe-dr213-e1-v11-actual.py",
+    "probe-dr214-e1-v12-actual.py",
+    "probe-dr214-e1-v12-repair.py"
+  ],
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "independentCredit": 0,
+  "interruptedSandboxRun": "tmp/pytest-dr215-full.log, stalled at1percent, stopped precisely; not counted as passed",
+  "implementation": "Only already-owned explicit paper/range/list/action citation references become source wording; every interior range label must already be cited. Preserve mathematical/code/source symbols, unknowns, uncited labels, all numeric settings and permissions. Normalize hypothesis statement with original/normalized audit; retain old contract semantics and reject switching pending requests.",
+  "controlledReplay": "citation-ranges-e1-v12-controlled-20261022.json",
+  "remaining": [
+    "Initial unequal group amounts are still incorrectly labeled matched.",
+    "Both initial/revised workflow state operation rules fail existing nonempty-parameter requirements.",
+    "Limits still assert unsupported global absence; no reviewer/source approval follows display normalization.",
+    "Invalid workflow is excluded from semantic candidates; linked controls need an exact dependency diagnosis rather than an unsupported missing-parameter assertion.",
+    "Budget prose/config, complete representation initialization, temporal order and executable measurements remain unresolved."
+  ],
+  "boundary": "Offline and controlled archived response replay only. Historical E1-v12 stays0/9; no new scientific or independent acceptance. DR0-DR5 remains incomplete.",
+  "runtimeProof": "runtime-load-dr215-citation-ranges-20261022.json",
+  "retentionProof": "runtime-dr215-full-retention-20261022.json",
+  "selectedDiagnosticTotals": {
+    "settledModelCalls": 578,
+    "measuredTokens": 2379875,
+    "notGlobalHistory": true,
+    "costUnknown": true
+  }
+}

@@ -2,10 +2,13 @@ fastapi>=0.109.0,<0.110.0
 uvicorn>=0.27.0
 
 langchain>=0.1.10
-langgraph>=0.2.0,<2.0
+-c requirements-deep-research.lock
+langgraph==1.2.14
+langgraph-checkpoint-sqlite==3.1.1
 starlette>=0.36
 
 # Testing
+jsonschema==4.26.0
 pytest>=8.0
 pytest-timeout>=2.0
 ruff>=0.8
@@ -25,6 +28,9 @@ lxml>=4.9.0
 chromadb>=0.4.24
 sentence-transformers>=2.7.0
 PyPDF2>=3.0.1
+# Bounded research-worker fallback for unmapped TeX glyphs.
+pypdf[fonts]==6.21.4
+fonttools==4.68.0
 python-docx>=0.8.11
 pandas>=2.1.0
 tiktoken>=0.5.0

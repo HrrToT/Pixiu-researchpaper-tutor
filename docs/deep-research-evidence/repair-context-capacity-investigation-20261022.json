@@ -1,0 +1,53 @@
+{
+  "case": "E1-v30",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "contextBeforeBytes": 10732,
+  "contextAfterBytes": 10422,
+  "savedBytes": 310,
+  "exactRoundTrip": true,
+  "providerRequestEnabled": false,
+  "boundary": "Context-only measurement, not whole-request admission or model quality.",
+  "date": "2026-10-22",
+  "baseCommit": "5c78b9ed",
+  "prototypeRemoved": true,
+  "prototypeTestsPassed": 14,
+  "alternativeKeyDictionary": {
+    "beforeBytes": 10732,
+    "packetBytesWithoutLegend": 10075,
+    "entries": 17,
+    "adopted": false
+  },
+  "alternativeThreeBatches": {
+    "inputCap": 23513,
+    "groups": [
+      {
+        "ids": [
+          "c6"
+        ],
+        "bytes": 23375,
+        "admitted": true
+      },
+      {
+        "ids": [
+          "c2",
+          "c3",
+          "c4",
+          "c5"
+        ],
+        "requiredBytes": 25003,
+        "admitted": false
+      },
+      {
+        "ids": [
+          "c1",
+          "c8",
+          "c9"
+        ],
+        "requiredBytes": 24022,
+        "admitted": false
+      }
+    ]
+  },
+  "decision": "Do not integrate low-yield encoding or deploy input3. Keep exact evidence and current request identity. Redesign repair request composition and preflight every linked batch before model dispatch."
+}

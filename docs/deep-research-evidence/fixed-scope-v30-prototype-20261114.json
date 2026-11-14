@@ -1,0 +1,16 @@
+{
+  "componentPrototypeOnly": true,
+  "productionPolicyChanged": false,
+  "modelCalls": 0,
+  "fixedScopeRouteAlreadyImplemented": true,
+  "oneEditablePoint": "c1",
+  "readonlyScope": "c2",
+  "readonlyScopeTextExact": true,
+  "hardEditableCharacters": 160,
+  "recommendedEditableCharacters": 112,
+  "promptBytes": 3856,
+  "oldJointPromptBytes": 8971,
+  "promptSha256": "abb11d436d7c4ddf4b5d1c40dba063513443aa3dd06536063597b76a1710d760",
+  "scientificContentAccepted": false,
+  "boundary": "Offline counterfactual routing only: disable joint layout while retaining existing fixed-scope-first strategy. The existing editor receives only ordinary prose IDs, readonly scope is restored by code. No new model request or application-policy change; full source/scientific/coverage checks remain required."
+}

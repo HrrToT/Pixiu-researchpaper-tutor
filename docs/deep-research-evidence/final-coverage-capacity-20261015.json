@@ -1,0 +1,40 @@
+{
+  "date": "2026-10-15",
+  "sourceCommit": "abacf17",
+  "promptVersion": "dr-v2.20261015.90",
+  "inputCase": "H5R-v11",
+  "beforeFixedBytes": 29624,
+  "limit": 24000,
+  "replay": {
+    "status": "invalid_response",
+    "budgetLimit": null,
+    "captures": [
+      {
+        "bytes": 23566,
+        "targetCount": 9,
+        "visibleEvidence": 3,
+        "availableEvidence": 6,
+        "allOriginalProseAndTypedValuesPreserved": true,
+        "allQuotesExact": true,
+        "allCitedEvidenceProvided": true,
+        "contextOmitted": 2
+      }
+    ],
+    "semanticChecked": false,
+    "modelCalls": 0
+  },
+  "tests": {
+    "passed": 1476,
+    "warnings": 1,
+    "seconds": 58.42,
+    "log": "tmp/pytest-dr90-full.log"
+  },
+  "boundaries": [
+    "Local empty verdict fixture deliberately cannot close gaps; no semantic or live quality credit.",
+    "All nine answers, original prose/conditions, typed choices and cited original quotes remain visible.",
+    "Three of six available evidence rows fit. Two optional source contexts are explicitly omitted, never invented.",
+    "Evidence IDs are request-local aliases restored only in typed source/metadata bindings; excerpts, claim identities and source permissions are untouched.",
+    "Repeated full user questions use exact references; frozen criteria and required-source constraints remain intact. Acquisition queries are not answer requirements.",
+    "Unexecuted component creation and evaluation isolation receive explicit generation/review requirements; actual scientific correctness still needs real review."
+  ]
+}

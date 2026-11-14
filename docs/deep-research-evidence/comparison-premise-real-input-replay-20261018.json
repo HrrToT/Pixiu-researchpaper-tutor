@@ -1,0 +1,15 @@
+{
+  "date": "2026-10-18",
+  "inputCase": "D5-v5",
+  "runId": "dr_run_3717607182cd52ae8f10f305ce8da9fa",
+  "legacyVerificationRequestFingerprintMatched": true,
+  "legacyArgsDigest": "64389aedd91ca986010969120d762e533cc1b0769684f8f3ea4919b8a3f12121",
+  "legacyPassedVerdictRetained": true,
+  "newPolicyRejectsUnauditedPassedVerdict": true,
+  "oldPromptBytes": 7305,
+  "newPromptBytes": 10568,
+  "outputReservationUnchanged": true,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "boundary": "Exact copied legacy production verification request replay and rejection of its old unaudited verdict under the new contract. Does not establish what a new real model will generate or prove content quality."
+}

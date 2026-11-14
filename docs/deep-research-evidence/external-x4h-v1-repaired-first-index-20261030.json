@@ -1,0 +1,23 @@
+{
+  "case": "X4H-v1",
+  "runId": "dr_run_9d374c316aa05ebfacb4aa1250002d81",
+  "paperId": "f3091d687bef0e79ac774743e31678c3deed91c35df7d2b75ae392de5ff8f0c7.pdf",
+  "sourceId": "src_0911dbeb7561c3c0ef230a74a8d26ca5a8fe1cff018d1418942caaed5432abff",
+  "storedPdfBytes": 24830200,
+  "pdfHashVerified": true,
+  "readingReady": true,
+  "questionReady": true,
+  "aiAnalysisStatus": "not_requested",
+  "newIndexedChunks": 121,
+  "oldIndexRowsUnchanged": 981,
+  "idempotentRepeatedAdd": true,
+  "sourceReceiptCount": 1,
+  "taskRevisionBefore": 10,
+  "taskRevisionAfter": 10,
+  "artifactsAndRunsUnchanged": true,
+  "ledgerAndAllRunPayloadsUnchanged": true,
+  "duplicateAdditionBeforeParseDidNotRetry": true,
+  "explicitParseRepairCount": 1,
+  "modelCallsDuringAddAndParse": 0,
+  "boundary": "First acquisition/add/parse/index integration, not downstream model-answer quality."
+}

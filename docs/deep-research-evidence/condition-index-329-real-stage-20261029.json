@@ -1,0 +1,57 @@
+{
+  "sourceCommit": "b0ce6fe5816a184e782a22c7ff523648d7f3347f",
+  "promptVersion": "dr-v2.20261029.329",
+  "scope": "new independent checks and repair of saved settled draft; no generation or retrieval",
+  "providerCalls": 4,
+  "totalTokens": 20783,
+  "allCallsSettled": true,
+  "unknownCalls": 0,
+  "retry": false,
+  "accepted": 0,
+  "rejected": [
+    {
+      "claimId": "c1",
+      "reason": "semantic_unresolved",
+      "detail": "比较条件或推断前提尚未核实：unknown_alignment_is_not_difference"
+    },
+    {
+      "claimId": "c2",
+      "reason": "semantic_unresolved",
+      "detail": "声称范围包括Tank and Temple数据集，但E1引文仅提及MipNeRF360（sourceContext.after），未涉及Tank；且未给出具体指标，故范围断言缺少直接证据支持。"
+    }
+  ],
+  "repairCompactionStatus": "invalid",
+  "scopeCandidateUsage": "c2 retained E3 qualitative passage rather than permitted main-table E5",
+  "conditionIndexSent": true,
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "preservation": {
+    "before": {
+      "ledgerRows": 7465,
+      "ledgerSha256": "9138a4c5c9e9397c9dce6b78007d07dc1c2f7955dd637bef1d794f0c50b97bbc",
+      "payloadSha256": "a4559eea0b66b511bed93f21a1cba7e6a39068464469aacbcd30fde6895797ad"
+    },
+    "after": {
+      "ledgerRows": 7465,
+      "ledgerSha256": "9138a4c5c9e9397c9dce6b78007d07dc1c2f7955dd637bef1d794f0c50b97bbc",
+      "payloadSha256": "a4559eea0b66b511bed93f21a1cba7e6a39068464469aacbcd30fde6895797ad"
+    },
+    "exactProductionPreservation": true,
+    "providerSubmissions": 4,
+    "productionPublish": false,
+    "fullWorkflowReplay": false,
+    "independentCredit": 0
+  },
+  "rawReceipts": "tmp\\component-condition-index-329-20261029\\receipt",
+  "receiptHashes": {
+    "calls.json": "b469375d6cb894bf033e22190af85031231a5d67bd925612b4fc9a86c9c43a58",
+    "payload.json": "0c37bba0845151323811252a3b50688a18643496e97a1acc14f56bb1f1a38d07",
+    "preservation.json": "e4020959709d9e175f8e9b867b3ca9486503f673a8a37daf6c2785fc947c621e",
+    "progress.json": "2ba2da9c2357082b7ba4277d19e3a82c3e9a2f0ba2c75d215ff368dd61d0a26a",
+    "request-1.json": "086ed109c2a4db896d4b5625e481de1e4e75bebcfa94c0a4421d25c59cd8e543",
+    "request-2.json": "cf6479eeb9726c82bfc8ba9d56d6b0f90879a7a0a7439d1148dc698eebe67a1f",
+    "request-3.json": "4e9434394e38303a08ffab2481f1b831156b8f9fe2ddebc864d9bddca622c1d5",
+    "request-4.json": "b63569cf8d7077d04559a44f76afbbaa70c376a7b87ef334af787c355d3be468",
+    "result.json": "7043154decf76df0dc4339a2a42ccb7ed1b335ee469f8ed18fc91f1a92ad8ddc"
+  }
+}

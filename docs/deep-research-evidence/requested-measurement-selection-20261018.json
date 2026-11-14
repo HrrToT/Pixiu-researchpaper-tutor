@@ -1,0 +1,21 @@
+{
+  "date": "2026-10-18",
+  "sourceCommit": "650ad55f",
+  "promptVersion": "dr-v2.20261018.131",
+  "sourcePrecisionContractVersion": 2,
+  "checks": {
+    "passed": 2123,
+    "warnings": 1,
+    "seconds": 110.19,
+    "log": "tmp/pytest-dr131-full.log"
+  },
+  "loaded": false,
+  "behavior": [
+    "Recognize exact values with explicit units, including equivalent notation/unit names; no unit conversion or numerical rounding.",
+    "Exclude identifier suffixes, fractions, ranges and partial thousands/exponent suffixes. Paper headers do not count as measurements.",
+    "Select up to two existing slots only from the owned pinned index, preserving source text, locations and required context; ambiguous context stays excluded.",
+    "Source precision version 1 keeps its exact old indexed behavior. New version 2 adds literal measurement selection and is immutable/server-owned."
+  ],
+  "realProbe": "requested-measurement-real-index-gap-20261018.json",
+  "boundary": "Offline implementation checks passed, but the original requested duration is absent from available index text. Full PDF reading is still needed; .131 is not loaded and H4F is not repeated."
+}

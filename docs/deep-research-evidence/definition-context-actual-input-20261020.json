@@ -1,0 +1,25 @@
+{
+  "date": "2026-10-20",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "actualCase": "E1-v2",
+  "legacyActualPlanningFingerprintMatched": true,
+  "oldInvalidResponseNotResent": true,
+  "actualEvidencePoolRowsUnchanged": 20,
+  "actualReadSourcesUnchanged": 11,
+  "controlledPlannerInputBytes": 13666,
+  "controlledConfigurationInputBytes": 21646,
+  "controlledEvidenceRows": 6,
+  "actualDefinitionQuote": "This maps the hash encoding to a 7-dimensional output: the first three dimensions indicate the translation of the 3DG; the remaining dimensions represent the rotation of the 3DG using quaternions.",
+  "requiredLiteralContext": {
+    "before": " Furthermore, to enhance the NTC's performance with minimal overhead, we utilize a shallow fully-fused MLP[38]. ",
+    "after": "",
+    "truncated": true
+  },
+  "literalContextActuallySuppliedToBothRequests": true,
+  "verificationUnchanged": {
+    "literal": "passed",
+    "semantic": "unchecked"
+  },
+  "boundary": "Replays actual archived extracted ANAPHORIC evidence/read-source identities, not a synthetic whole paragraph. Controlled new contracts5/5 and mocked short plan, no provider call or production mutation. No scientific plan/content/latency/independent acceptance; old invalid E1-v2 remains failed."
+}

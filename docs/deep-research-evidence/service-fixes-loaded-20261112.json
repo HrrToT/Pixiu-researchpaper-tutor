@@ -1,0 +1,197 @@
+{
+  "taskCount": 103,
+  "allTaskPayloadsPreserved": true,
+  "allResearchTablesPreserved": true,
+  "taskSha256": {
+    "dr-independent-adam-20261107": "2e4d6ec2a242f004da20d13f20b6bd23dc85e5d3f64c7fc5b071b802b5742eeb",
+    "dr-independent-attention-20261107": "27f83060f527641f108f4fbbd7615c4525333b79da6d5040df8900601893530e",
+    "dr-independent-geometry-20261105": "e68887bb3905e30282060079cb7c00f5d7f54ab26a2ea23b28dd8ebb2cf914d7",
+    "dr-external-fresh-rade-20261105": "b1990332cfaa7e78877a558ddfb9aa84fc12d37423921b9cdd1b85b3e3e1305a",
+    "dr-local-section-20261030": "9a7fd16c1fea9aead6a872dc52061dac81399a0e39b71229e262837a9f3c6490",
+    "dr-external-fresh-2dgs-20261030": "b440f1b772ceb4c1bd046cd0575d4408d4c2af8520fd8a8e7b299747778a70c7",
+    "dr-external-fresh-mip-20261030": "6caad2c8f8b73247905865f6044f63d05adfb17eda3a52afe3fb81c76eb197c7",
+    "dr-external-masking-20261030": "930ffb78194656054d5a3609a4fe9d20be7631e404193f323480b9174b24c184",
+    "dr-comparison-mechanisms-20261029": "8931d7b6811292f6d2993ce968cf40e179d7d05d252edbefcb5aeffa803f425a",
+    "dr-survey-flow-20261029": "e4c8e90f6b989fbdf8de020e086db0dc070266cd4850e3ac8b2ca25eb965aba7",
+    "dr-live-d1-20261012": "345a44b882a668e4ad8063830716d1711c9c497ae3be663bbdbbcb7d333d97dc",
+    "dr-acceptance-e1-2026-10-20": "85824c43f36d005032a066eb57b5ea47e370caf5a9abe2848d80e82533ab7b58",
+    "task:48b89280-55b2-4673-adcf-1144c519a811": "b290f5ad1a9c0743b2cd1b91ca0b7e10a3464c894cd4ff4998c0c7ef15e62fec",
+    "dr-acceptance-h5f-2026-10-18": "fc596278cf596488d800a22575a71db5af2cce565024f378cf48b1692f067f32",
+    "dr-acceptance-h2f-2026-10-18": "6754f3c11272ec7203effe303fe5503186f9ba636398c7fd3c26e1db9a982b4b",
+    "dr-acceptance-h3f-2026-10-18": "7cffc02dd35d4afeddb2cd24a10f676fb2339fa9c1e66dff36aabc2223cdeb06",
+    "dr-live-d2-20261012": "81163ccf9792a42e2e2dc14ee5e60124b0796075c2d6c71fee0ab1b20be555df",
+    "dr-fresh-continuation-20261018": "6737cfe0d26d93c1c4916fe52f3585e0f077ee8fa01adc156efa73a83476a7ed",
+    "dr-acceptance-h1f-2026-10-18": "31b57e392e099d2c397776b0f99b3341f595b5436e1c7c539d4f2a1733a5d048",
+    "dr-acceptance-h4f-2026-10-18": "4b778fa054ba24ce633366c0b3f1a034d1dd9461c4f68e4c207ad4be5b9ecbb7",
+    "dr-fresh-holdout-materials-20261018": "730bf98964e6c2717d6dea308fea5c472710368cc66529a234aacbcbf4e3aff7",
+    "dr-acceptance-h5r-2026-10-15": "325b912515d8cdd86add7cb95c4e8d51b4d28453f84f11bb14c40b3a22e5bb56",
+    "dr-acceptance-h3r-2026-10-14": "1ff53af4cfbfaeeb3d57d679d8205b4706c62a0c154aaa58c1e20e06fda8ffec",
+    "dr-acceptance-h2r-2026-10-15": "633bd1fd36a17b505646310633623a0a29f48d4eaca752fb432f6605eca37ce6",
+    "dr-acceptance-h4r-2026-10-15": "8c449cf1c201475df9ddc96675f8bf76bcba336ced44f776d30fb17a465ff00a",
+    "dr-acceptance-h1r2-2026-10-15": "bf3fc001d5ee578d9014d45782ff9f57d3cdd737b457c1b8bcb40b725c73167c",
+    "dr-fresh-holdout-materials-20261015": "7e8a31d080be0390f07bec0a078ca499f642fabb74b2391206e25222d294411a",
+    "dr-acceptance-d3-2026-10-12": "f67ebe033d57f1b7949711b7ba15429f13e4dcaca3013e65c58f12a3634bb188",
+    "dr-acceptance-h1r-2026-10-14": "007037a16e6b024fd9e8eaa16287e39dfad883919b884b5441d3941f71b5bfea",
+    "dr-acceptance-h3-2026-10-12": "2bbe1b3e291c4e72e1b240e79f49df5d2308b0ab24bb1be38ac6d5d91aa771b1",
+    "dr-acceptance-d7-2026-10-13": "28a257030832a0c755f11d3632894953911e2338cf2529bc6d21e9d7db8a1a05",
+    "dr-acceptance-h1-2026-10-12": "f24322142c6b7c3a7706648e6fc792fc77e76904f4e312e36ba171c439eac35e",
+    "dr-live-d3-20261012": "09c2387f2863d59f8b9e4a0c2dc669d8eef64121cc014dcd391118cec1d019e3",
+    "dr-holdout-materials-20261012": "58d2500b55c9cc1f94fb823724d723cf0399301b5cfa8847f369b5c2ed60fbdb",
+    "dr-live-external-20261012": "77e01bc8e4d1d9371d2ebeb1bf9febc6aae63dbb8c529b5bb9c975fbe4993a95",
+    "dr-live-d4-20261012": "9269ac9719f5623e1e57af0ca3ccfef9d354d39364ae82013b92b0051b567f5f",
+    "task:d274ab12-6e54-45ef-8946-91bbcecdbeca": "c8fa66f569605837881e572171791b991f862890a6747cbb4eb842eec5cd524f",
+    "critique-final-20261011": "735a1759b0487490a3845c213f82391404cb89226da1c2621e9d58575a360e6a",
+    "task:082fbb61-f743-40bc-8311-792f3e20e32c": "833dd858a18cde724493eab51681daa62cce4e7ac912ee60e83e8cf224122f2b",
+    "stage4-3dgs-critique-20261010-v26": "6aa63a40aeace5897b223de916718bb962d87757bd136002b167e331db923cd0",
+    "stage4-3dgs-critique-20261010-v25": "56de0788e6b0f28b60a72a38da36d76a193863145889e60f179d8f0f4694349b",
+    "stage4-3dgs-critique-20261010-v24": "846424fe126288fa93c2b44d22f1f51c92931498f2f1a24f9ae70a41d16d6202",
+    "stage4-3dgs-critique-20261010-v22": "c3a2f427f14f8d495de5dd5893beb455b2e7b2dfb1a3b238d05c1a8f32c02534",
+    "stage4-3dgs-critique-20261010-v19": "501ca404357e6f1d3a0d93b142ae73309277c5d7639a6c5475ed1a2017f73098",
+    "stage4-3dgs-critique-20261010-v18": "bc785cc9f3582244267bc2d57ab1eb4fabca5cc260b513daca340e72c3a68a3e",
+    "stage4-3dgs-compare-20261010-v16": "288ac6ec20f7f321cf24744ac66cfb111a48f91f72b88049a7384dc260886520",
+    "stage4-3dgs-critique-20261010-v16": "437fbeb58e4387fd86a49d186fdb708d9fdedaea8574f737d158b76eebe781ff",
+    "stage4-3dgs-compare-20261010-v13": "94834554c88bdcbeb102fc9f64b4d4c22e18b1b09c0abc59eb5ad2447edff5b8",
+    "stage4-3dgs-critique-20261010-v13": "3233fdcce89c19f067fa0c33e5daf7f9688c724b48cbeb7077c038ff672c9397",
+    "stage4-3dgs-compare-20261010-v12": "fd7b1e2720e3ddb62d141299ef01fe3c07dde2abe15f81f46db5b832bdc8d7b3",
+    "stage4-3dgs-critique-20261010-v12": "35104cca7ce3e7ccd555469e25ec5dbf30e2341de17782513a1fcaf840b54ad3",
+    "stage4-3dgs-compose-20261009-v9": "00ca4e41edc13f4b6cbb96d1178e404040ccbfbf3d9dbe121b897548265b7074",
+    "stage4-3dgs-critique-20261009-v9": "700ff5f6bab23412ad5be196d20fd46767449dcfbfb82839f800121ce7c83e0e",
+    "task:f8b18af5-9681-4bda-ad15-30fd2f3dbafe": "62e2b79a75ec7d8e90da5a86a7932f329ef3ded2108a55e6e9ff694efe56e16c",
+    "stage4-readable-display-20261009-v9": "b25a0aa26ab9fbee345958e7ed0bfd1e671caf137e7c11088e4ebb66aab1aad0",
+    "stage4-partial-display-20261009-v8": "fd34c9f2a1d71f929a4576e24c0acc8c94e87b4d971c40c48e6222818bb0071e",
+    "stage4-3dgs-compose-20261009-v7": "30e66fdb288e88429b71e2ee81a368efe4e5fa6148f84450070c50f8217a99eb",
+    "stage4-3dgs-critique-20261009-v7": "2bd96a8f4bb8f30cbaa5a60f268cd8a262cc74f049baf0457a204b1ebecc8283",
+    "stage4-3dgs-compose-20261009-v6": "c6943218f1fe3ed508b156658379f29ca75c38b310cd54226490e063f34f1595",
+    "stage4-3dgs-critique-20261009-v6": "e935acb4970d0cf7370239cb0e60997040bdd6c9172d9b16287abac7207219ac",
+    "task:19cdd7c8-6bf8-46fb-ac72-0ae2c23fd339": "b702a2d87b259f115dbe882851ec92de83d75db06bb575c7af96fce2f4d200e0",
+    "task:8abdf651-8e21-4a67-ac45-1afb5c451885": "6778df95e6cfd8fe33ad138f4293336479245ffb889bd791564db540863a7900",
+    "stage4-3dgs-critique-20261009-v5": "585bd2f03739b85abcfea2eb31e90d9bb35d78059dc8b12f44498952b4f9aae1",
+    "stage4-3dgs-compose-20261009-v5": "fe77b82e3475c26235fa6889785c6d2701df0f669ba0ed4ee0e81df46781644c",
+    "stage4-3dgs-critique-20261008-v4": "18f2e99f675abaccc689b19d5e7e928489be11cca127b0f9389cc26bf8db8ba8",
+    "stage4-3dgs-compose-20261008-v4": "8078240c7193c4416dc3a691e21bed30df9c6973a524ce743a165d7ba73f23d7",
+    "stage4-3dgs-critique-20261008-v3": "c0237da3373b851910e75a6e1f0b325987ef798356daad64baf17c4b22e6a1a0",
+    "stage4-3dgs-compose-20261008-v3": "c803894d55d3d7a53f2f945cab6a2631538bacf5bb2baa10c60b43d4d57680c8",
+    "task:acaca995-12ca-4ecb-883f-8fb26899db30": "08bb4b645a7e7d0ced3b91b711e43fd74858a0b47694b2c6816737df47564d5c",
+    "task:85c04a6f-e2a5-43fa-9d84-d19d8fe4435e": "d336f40bfd6adc9043da7116c478df144ff1b1a14fcacf5c28d60c09d3a77df4",
+    "stage6-paper-tools-20261008": "38f41ab3481dce9a22d16c63b2f405badb284b3715893861ec7e4d9806065737",
+    "stage4-3dgs-materials-20261008": "c082c1768566c8e3613925fbd4f78428f5e699984cc22236e875b77756737d55",
+    "stage6-reading-demo-20261008": "e5ec1407f857369118f7601aeed1d188d1be8a15bae8dbb5422799d19e9e6b52",
+    "stage5-version-recovery-20261008": "ca4a4d66bcdb091545f7e640a95ccc7b1c1aeabc8b32aca3d529e0d21d156e9c",
+    "stage5-missing-file-20261008": "0f3f426e0cf915c13e716e51a55a0a1fa3e2fceae8f44f8336038d83d107dde2",
+    "task:057e9f7f-ac05-43ec-973c-4f4660a7a76f": "c78732056c24e2022e8ae01af361dcae77777f16cb7d51f2991cad3841365765",
+    "stage4-3dgs-critique-20261008-v2": "be5862353ec9f52ce99622e91c7985ef39292e56b4d241647f26ab110c5c07df",
+    "legacy-agent:a2a04a3d-b30f-39d6-9630-9d74a003d110": "bb229e88e2e49db45da23d86d6bff40e166382878db9f6ef887f219a3385598a",
+    "stage5-identity-runtime-20261008": "73b5d53e800f0c99757647092ffcc08af537a8aac9b0fc4f9290687d8d2c0e3e",
+    "stage5-move-target-20261008": "6036e0f39f2b8c14f0223ca7b43797066abf8617eb9eddeeea773074dd876747",
+    "stage5-move-source-20261008": "dbfc3170a5876345519bd7aab919727e3d7cef00eeef3671bc3bccb17c6764a3",
+    "stage4-3dgs-compose-20261008-v2": "d9f3f42f49a538704069b39a72d2c3ec85114818543f59debb53bc9f802193ad",
+    "stage4-3dgs-research-20261008": "70bb73bbf807bb3fb7ab809c7d01d2a5c9a70233a45f7c22f4294f151bc85c1b",
+    "stage4-3dgs-compose-20261008": "6338a5f5666f2eaa38be23ff60eac28f3ecdcca01eb3bfa291fc6d3f208ea497",
+    "stage4-3dgs-critique-20261008": "17a31f1065250b0a7d667157531074bb801ef1624681a111e09e5d2320adb60f",
+    "stage4-3dgs-compare-20261008": "47c2e547ab121eac67652f16c598b619e1d326a7b9b47254b83bd396c0c0e1cc",
+    "stage4-answer-rendering-20261008": "e5e38fcf25733b80e6c8514b5d8b0b702269b70a87c73223f12e74814768b55f",
+    "stage3-novice-active-ris-20261008": "87f3127d662a321868e36b801877e6a70a1d9182eae5a7777e9c41606507de01",
+    "stage3-quiz-active-ris-20261008": "e1e35bb806fc130acf65b2a1029866118bad5880abdbbfc1ab9956efb976ad72",
+    "stage2-current-background-20261008": "c43a94a654a9011b037b18671473fee7bb6b55155dd3b2dc7f9074c5fe4b8624",
+    "stage2-multi-paper-20261008": "50bacdbbe024135fe1540b96d7324c5b2e7e2b77ad78d44654cccb63ccace34c",
+    "stage2-research-publication-20261008": "4da9976c85857ef9b5e5f3ca35338e5fc93e1108d75127aeac8a43148c56b9f3",
+    "stage2-learning-read-20261008": "38bac6c7abeb29551593792dd1a7ed140ebd3228d0e37fab791e54c02a277b20",
+    "stage2-learning-quiz-20261008": "f2f9152faea096a79f3da1131a393b8b86d4c1a24815168a65acce3cb8adc64d",
+    "stage2-result-recovery-20261008": "be601ee76a08484a588f14529aa015cf6ea5e88178cfc300dd83c5c7e4359da3",
+    "stage2-stop-before-start-20261008": "01dfb2eda9ea29dff2d08b21cd9dec53aa24fe29d69e39faf7e8cf0761ffaaee",
+    "stage2-failed-retry-20261008": "f9ae26c80a4dd564dfd2959c493f40c656647326eb833a38cdbdbe0312c97b18",
+    "stage2-parse-only-20261007": "0153edca8e224f0078fc152a837d1d71299a074d759436aeb1c3b29dde357e73",
+    "stage2-conversation-20261007": "3b85f8fe66dfee7e57001450d1ad34bccc515df8e686d172fd8c9c345517ae95",
+    "stage1-file-1791210362": "f05cb1957c1669c6a0e92329116856f1419215ec39a26419efb956754ac10e59",
+    "stage1:编码-1791211625": "41ef5eef6d6182dc04aa48a66fd00cdbeab24e3df388b2c524ec6b00da036142",
+    "stage1-other-1791210573": "d0f4bb2b973271803a58675581ca8279ff052cc9d6ea0ac8056ef8042cd67f82",
+    "task:0192dad6-12fa-4ffc-8b4b-867f4ba39df5": "dfd4462842bd67b6ccb03470c7b22585c9da3c11cbaade9a72dee4da708d2b19"
+  },
+  "research": {
+    "tables": {
+      "deep_research_actions_v2": {
+        "rows": 403,
+        "sha256": "468b8876025ea46d9b571a04c6ee40aaae76926dbaad1699e86fe32c019fd3a3"
+      },
+      "deep_research_calls_v2": {
+        "rows": 9226,
+        "sha256": "e930dd0d4327c5762f466ae6ecd0c6500c7c41d8593c1e6c543a42a5eddc0591"
+      },
+      "deep_research_outbox_v2": {
+        "rows": 244,
+        "sha256": "f31ab06ef014349713968282d25908e8a0c8db2242c331b17065534d13ffff75"
+      },
+      "deep_research_publications_v2": {
+        "rows": 244,
+        "sha256": "9f8983817e5d3196da436f61229b0e309e24b860dae6866493990aaa59366cc9"
+      },
+      "deep_research_runs_v2": {
+        "rows": 365,
+        "sha256": "ac386ade995442860411803652404f4a95357122cfc1344617e77e0e4887ffe4"
+      }
+    },
+    "statuses": {
+      "completed": 244,
+      "failed": 106,
+      "paused": 15
+    },
+    "operations": {
+      "exists": true,
+      "statuses": {},
+      "rows": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "health": {
+    "status": "ok",
+    "checks": {
+      "grobid": {
+        "status": "ok",
+        "message": "GROBID is reachable."
+      },
+      "rag": {
+        "status": "ok",
+        "message": "RAG backend is ready."
+      }
+    },
+    "uptime_seconds": 83.7
+  },
+  "attestation": {
+    "runtimeSourceSha256": "497e02dbe106a0a8bcad74ec38ffc29122c3050c6018c81b40e6e4116169257d",
+    "sqliteBackups": [
+      {
+        "file": "research.sqlite3",
+        "bytes": 239202304,
+        "sha256": "5f64fbfe216e8e93b2852054da852513bdfda86c5cb4fade3aeefbe6b33dd7a2"
+      },
+      {
+        "file": "task_operations.sqlite3",
+        "bytes": 12288,
+        "sha256": "4361dfaec2aecb4530ad611aa5f1fdf70c0aface41e95b5b40afd5788808fee8"
+      }
+    ]
+  },
+  "containerStartedAt": "2026-11-12T10:14:03.008396806Z",
+  "java": {
+    "jarSha256": "3172BD62C53081536F8D57288EA4ACCD587303226B15AE028B667E58F655A4AA",
+    "modelCalls": 0,
+    "h2BackupPath": "D:\\aiproj\\ai_project\\tmp\\service-preload-v2-20261112\\java-backup\\academic_db.mv.db",
+    "h2BackupSha256": "BB5BA3885D8C01AEE1D946DC9574B4457A73BCCF897F442B0D63AE73C1C781DF",
+    "oldPid": 43892,
+    "newPid": 52632
+  },
+  "codeCommit": "86022bd4b71ec022e856304e2f35b658b50ebfe7",
+  "runtimeChangeCommit": "5ad89bc3f42346d1231fed1285b6b0f5f408aac0",
+  "javaChangeCommit": "81a827f0c03febc4d181900b00516e38be916511",
+  "promptVersion": "dr-v2.20261112.430",
+  "modelCallsAdded": 0,
+  "historicalLearningStatesPreserved": true,
+  "rolloutConfigurationChanged": false,
+  "realContentAcceptanceAdded": false,
+  "otherUiThreadState": "notLoaded, checked before reload",
+  "otherUiFilesExcluded": [
+    "docs/stage2-evidence/frontend-numeric-v7.stdout.log",
+    "docs/stage2-evidence/stage4-partial-v8-state.json",
+    "docs/ui-motion-stages-2-4.md"
+  ]
+}

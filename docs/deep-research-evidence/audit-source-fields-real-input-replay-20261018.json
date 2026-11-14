@@ -1,0 +1,237 @@
+{
+  "date": "2026-10-18",
+  "case": "H3F-v2",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "oldInputsUnchanged": true,
+  "checks": [
+    {
+      "node": "verify",
+      "claimId": "c1",
+      "oldActualFingerprint": "2f04c08d8c146c96d0d7fc987499f80c3e21b2f40c9807c8033844abc602e72b",
+      "oldFingerprintMatched": true,
+      "oldBindingStatus": "failed",
+      "newFieldReferenceFixtureStatus": "passed",
+      "newOwnSourcePaths": [
+        {
+          "evidenceId": "ev_359b9a72fa18a0f1df895faf3d5cf272cbe7fb665b937bd62ab188cdd69be989",
+          "path": [
+            "quote"
+          ]
+        },
+        {
+          "evidenceId": "ev_359b9a72fa18a0f1df895faf3d5cf272cbe7fb665b937bd62ab188cdd69be989",
+          "path": [
+            "sourceContext",
+            "before"
+          ]
+        },
+        {
+          "evidenceId": "ev_359b9a72fa18a0f1df895faf3d5cf272cbe7fb665b937bd62ab188cdd69be989",
+          "path": [
+            "sourceContext",
+            "after"
+          ]
+        },
+        {
+          "evidenceId": "ev_ab04ecf440ade16bea0cd5b19606f1d778c6ea1521a857535bd89c167094e8c2",
+          "path": [
+            "quote"
+          ]
+        },
+        {
+          "evidenceId": "ev_ab04ecf440ade16bea0cd5b19606f1d778c6ea1521a857535bd89c167094e8c2",
+          "path": [
+            "sourceContext",
+            "before"
+          ]
+        },
+        {
+          "evidenceId": "ev_ab04ecf440ade16bea0cd5b19606f1d778c6ea1521a857535bd89c167094e8c2",
+          "path": [
+            "sourceContext",
+            "after"
+          ]
+        }
+      ]
+    },
+    {
+      "node": "verify",
+      "claimId": "c2",
+      "oldActualFingerprint": "48150882c2f46ab74728d4a2d987320b6a959f2d32bbe2577d24fa4dbe31e850",
+      "oldFingerprintMatched": true,
+      "oldBindingStatus": "failed",
+      "newFieldReferenceFixtureStatus": "passed",
+      "newOwnSourcePaths": [
+        {
+          "evidenceId": "ev_0d56c2481a75c0ab3ca22e9768c6fc7957b42ce6722655b2180d934c811aa0f5",
+          "path": [
+            "quote"
+          ]
+        },
+        {
+          "evidenceId": "ev_0d56c2481a75c0ab3ca22e9768c6fc7957b42ce6722655b2180d934c811aa0f5",
+          "path": [
+            "sourceContext",
+            "after"
+          ]
+        },
+        {
+          "evidenceId": "ev_62a935b05a4d6c5abb5725caf70f5f69f129b7b6a67fcab4627c694ffabd1a0c",
+          "path": [
+            "quote"
+          ]
+        },
+        {
+          "evidenceId": "ev_62a935b05a4d6c5abb5725caf70f5f69f129b7b6a67fcab4627c694ffabd1a0c",
+          "path": [
+            "sourceContext",
+            "before"
+          ]
+        },
+        {
+          "evidenceId": "ev_62a935b05a4d6c5abb5725caf70f5f69f129b7b6a67fcab4627c694ffabd1a0c",
+          "path": [
+            "sourceContext",
+            "after"
+          ]
+        },
+        {
+          "evidenceId": "ev_9d3d1cc2c3fa36b8d2ac724f7837efebb0056bf6e7889836ad3cc91a8aa55ffe",
+          "path": [
+            "quote"
+          ]
+        },
+        {
+          "evidenceId": "ev_9d3d1cc2c3fa36b8d2ac724f7837efebb0056bf6e7889836ad3cc91a8aa55ffe",
+          "path": [
+            "sourceContext",
+            "before"
+          ]
+        },
+        {
+          "evidenceId": "ev_9d3d1cc2c3fa36b8d2ac724f7837efebb0056bf6e7889836ad3cc91a8aa55ffe",
+          "path": [
+            "sourceContext",
+            "after"
+          ]
+        }
+      ]
+    },
+    {
+      "node": "verify_repair",
+      "claimId": "c1",
+      "oldActualFingerprint": "adac597b9372db8f0dd0e56ceb164743e5a49f294bb88763da5e1675b3d0a5e2",
+      "oldFingerprintMatched": true,
+      "oldBindingStatus": "failed",
+      "newFieldReferenceFixtureStatus": "passed",
+      "newOwnSourcePaths": [
+        {
+          "evidenceId": "ev_359b9a72fa18a0f1df895faf3d5cf272cbe7fb665b937bd62ab188cdd69be989",
+          "path": [
+            "quote"
+          ]
+        },
+        {
+          "evidenceId": "ev_359b9a72fa18a0f1df895faf3d5cf272cbe7fb665b937bd62ab188cdd69be989",
+          "path": [
+            "sourceContext",
+            "before"
+          ]
+        },
+        {
+          "evidenceId": "ev_359b9a72fa18a0f1df895faf3d5cf272cbe7fb665b937bd62ab188cdd69be989",
+          "path": [
+            "sourceContext",
+            "after"
+          ]
+        },
+        {
+          "evidenceId": "ev_ab04ecf440ade16bea0cd5b19606f1d778c6ea1521a857535bd89c167094e8c2",
+          "path": [
+            "quote"
+          ]
+        },
+        {
+          "evidenceId": "ev_ab04ecf440ade16bea0cd5b19606f1d778c6ea1521a857535bd89c167094e8c2",
+          "path": [
+            "sourceContext",
+            "before"
+          ]
+        },
+        {
+          "evidenceId": "ev_ab04ecf440ade16bea0cd5b19606f1d778c6ea1521a857535bd89c167094e8c2",
+          "path": [
+            "sourceContext",
+            "after"
+          ]
+        }
+      ]
+    },
+    {
+      "node": "verify_repair",
+      "claimId": "c2",
+      "oldActualFingerprint": "618687ce1a19442de56bc20434e78cc75d03fe2eb2096384df878a57a631f438",
+      "oldFingerprintMatched": true,
+      "oldBindingStatus": "failed",
+      "newFieldReferenceFixtureStatus": "passed",
+      "newOwnSourcePaths": [
+        {
+          "evidenceId": "ev_0d56c2481a75c0ab3ca22e9768c6fc7957b42ce6722655b2180d934c811aa0f5",
+          "path": [
+            "quote"
+          ]
+        },
+        {
+          "evidenceId": "ev_0d56c2481a75c0ab3ca22e9768c6fc7957b42ce6722655b2180d934c811aa0f5",
+          "path": [
+            "sourceContext",
+            "after"
+          ]
+        },
+        {
+          "evidenceId": "ev_62a935b05a4d6c5abb5725caf70f5f69f129b7b6a67fcab4627c694ffabd1a0c",
+          "path": [
+            "quote"
+          ]
+        },
+        {
+          "evidenceId": "ev_62a935b05a4d6c5abb5725caf70f5f69f129b7b6a67fcab4627c694ffabd1a0c",
+          "path": [
+            "sourceContext",
+            "before"
+          ]
+        },
+        {
+          "evidenceId": "ev_62a935b05a4d6c5abb5725caf70f5f69f129b7b6a67fcab4627c694ffabd1a0c",
+          "path": [
+            "sourceContext",
+            "after"
+          ]
+        },
+        {
+          "evidenceId": "ev_9d3d1cc2c3fa36b8d2ac724f7837efebb0056bf6e7889836ad3cc91a8aa55ffe",
+          "path": [
+            "quote"
+          ]
+        },
+        {
+          "evidenceId": "ev_9d3d1cc2c3fa36b8d2ac724f7837efebb0056bf6e7889836ad3cc91a8aa55ffe",
+          "path": [
+            "sourceContext",
+            "before"
+          ]
+        },
+        {
+          "evidenceId": "ev_9d3d1cc2c3fa36b8d2ac724f7837efebb0056bf6e7889836ad3cc91a8aa55ffe",
+          "path": [
+            "sourceContext",
+            "after"
+          ]
+        }
+      ]
+    }
+  ],
+  "fixtureBoundary": "Copy only the archived passed judgement and replace its internal premise bindings with references to the same original own source fields actually visible in each new request. No source word, quotation, claim, status, reason or scientific conclusion is rewritten. This tests structural binding, not a fresh independent semantic judgement.",
+  "boundary": "Four old actual verification fingerprints match. Original inconclusive production outcome remains unchanged; fresh real content validation is still required. Arbitrary dehyphenation/fuzzy matching is not added."
+}

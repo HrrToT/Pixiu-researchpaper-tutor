@@ -1,0 +1,59 @@
+{
+  "date": "2026-10-15",
+  "caseId": "H4R",
+  "attempt": 3,
+  "runId": "dr_run_8bb7d7b0212c5e47b629c3c05cf52cb7",
+  "promptVersion": "dr-v2.20261015.69",
+  "machineStatus": "completed",
+  "machineOutcome": "complete",
+  "qualityAccepted": false,
+  "reviewer": "Primary Codex; saved final report and original PDF source review, not model self-scoring.",
+  "budget": {
+    "profile": "standard",
+    "modelCalls": 9,
+    "maxModelCalls": 18,
+    "tokens": 35044,
+    "maxTokens": 100000,
+    "externalSearches": 0,
+    "fulltextFetches": 0,
+    "elapsedSeconds": 146.0,
+    "cost": null
+  },
+  "costBoundary": "Settled provider tokens; monetary cost not supplied.",
+  "rawResultPath": "tmp/dr-acceptance-receipts/H4R-v3.result.json",
+  "rawSha256": "0bc9ca78d016250a7f19915b66fd803e856f525001e07618272cb66b1344e526",
+  "rawPayloadPath": "tmp/dr-acceptance-receipts/H4R-v3.payload.json",
+  "rawCallsPath": "tmp/dr-acceptance-receipts/H4R-v3.calls.json",
+  "independence": "Development regression only; retired after first-run diagnostic use.",
+  "scores": {
+    "目标回应": 3,
+    "证据支持": 5,
+    "条件完整": 4,
+    "综合价值": 3,
+    "可执行性": null,
+    "可读性": 4
+  },
+  "criteria": [
+    {
+      "requirement": "Table 1 Ours row, both subgroup mean PSNR values",
+      "met": true
+    },
+    {
+      "requirement": "Different novel-view synthesis trajectory subsets",
+      "met": true
+    },
+    {
+      "requirement": "Different contexts do not establish a contradiction",
+      "met": true
+    },
+    {
+      "requirement": "Explicit distinction from Table 2 RPE/ATE pose metrics",
+      "met": false
+    }
+  ],
+  "findings": [
+    "Core answer now correctly binds 35.77/30.81 to Ours, mean PSNR and the two subgroup headings. Original PDF physical page 5 was visually checked.",
+    "The frozen explicit Table 2 pose-metric contrast is absent. Machine complete does not satisfy every frozen acceptance criterion.",
+    "Three actual citations were retained. The row has physical page 5; unavailable caption/header page numbers were not invented."
+  ]
+}

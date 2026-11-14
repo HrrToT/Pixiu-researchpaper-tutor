@@ -1,0 +1,38 @@
+{
+  "source": "AD1N-v8 saved initial audit",
+  "mode": "offline counterfactual routing only",
+  "originalPayloadSha256": "8689e83d0be47fb9071fc5737d94868d08bd741da43972c3f43bbac8aed88166",
+  "oldRepairTargets": [
+    "c1"
+  ],
+  "newRepairTargets": [],
+  "deferredAuditGaps": [
+    {
+      "obligationId": "O3",
+      "question": "偏差校正如何参与参数更新",
+      "missingEvidence": "最终回答尚未完整回应这一问题",
+      "stage": "answer",
+      "missingAspects": [
+        "偏差校正如何参与参数更新"
+      ],
+      "aspectEvidenceRefs": [],
+      "gapDetail": {
+        "criterionIds": [
+          "human_aspect_1"
+        ],
+        "aspectIds": [
+          "criterion:human_aspect_1"
+        ],
+        "missingContent": "当前流程角色绑定重叠，尚不能确认输入、实际操作和输出之间的关系；不能以重复整段问题作为流程证明。",
+        "reason": "此缺口由固定检查项的未满足状态汇总；模型说明不作为新增要求或论文事实。"
+      }
+    }
+  ],
+  "acceptedFactsUnchanged": true,
+  "originalCoverageUnchanged": true,
+  "originalPayloadUnchanged": true,
+  "newModelCalls": 0,
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "limit": "Does not prove a corrected model audit or readable answer; final coverage remains partial."
+}

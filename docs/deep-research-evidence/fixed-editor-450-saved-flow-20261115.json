@@ -1,0 +1,15 @@
+{
+  "modelCalls": 0,
+  "promptExactTo449": true,
+  "modelOptionsExactToSuccessfulLowPrototype": true,
+  "actualRequestDigestExactToSuccessfulLowPrototype": true,
+  "requestDigest": "0408211709a6f0d1af13392bfb11523ea62d10914b981dff2020b67764252e8a",
+  "newRepairCheckpointIdentityDifferent": true,
+  "oldOutputCapRetained": 8192,
+  "totalEditableCharacters": 160,
+  "scopeCharacters": 119,
+  "fixedDisplayCharacters": 21,
+  "prototypeCompiledCharacters": 295,
+  "scientificAcceptance": false,
+  "boundary": "Actual server selector plus tracked payload identity matches isolated successful low-effort edit; no paper-specific answer encoded. New root flag and checkpoint digest isolate the profile. No new scientific verification or original-source judgement in this offline replay."
+}

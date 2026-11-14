@@ -1,0 +1,13 @@
+{
+  "fullRun": "plain-reader-434-resumed-20261114",
+  "fullSuitePassed": 7487,
+  "isolatedCase": "test_fulfilled_criteria_reuse_proof_after_new_unrelated_evidence[1-1]",
+  "fullSuiteCaseSeconds": 2513.36,
+  "isolatedCallSeconds": 1.26,
+  "isolatedPassed": 1,
+  "hardParentDeadlineSeconds": 30,
+  "causeEstablished": false,
+  "timingProblemReproduced": false,
+  "junitSha256": "c97a990b055d5a5f32d2201c56199195776c548c11e4286615f804c8c119775c",
+  "boundary": "First --timeout argument was rejected before execution because plugin absent. One actual isolated rerun used a parent deadline; no full suite repeated or performance root cause claimed."
+}

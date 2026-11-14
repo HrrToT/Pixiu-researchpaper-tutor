@@ -1,0 +1,84 @@
+{
+  "date": "2026-10-18",
+  "sourceCommit": "27ac4beb",
+  "runtimePromptVersion": "dr-v2.20261018.153",
+  "operationPriority": {
+    "version": 4,
+    "focusedPassed": 62,
+    "seconds": 22.4,
+    "log": "tmp/pytest-dr152-operation-priority.log",
+    "copiedRealInputProof": "deep-research-evidence/requested-operation-ranking-replay-20261018.json",
+    "boundary": "First batch now contains output, prior-state transfer and new-content rationale; selection is not a factual or quality verdict."
+  },
+  "recordedInitialFullResult": {
+    "passed": 2395,
+    "failed": 6,
+    "warnings": 1,
+    "seconds": 186.58,
+    "log": "tmp/pytest-dr152-full.log",
+    "cause": "Six existing contract tests still expected server default priority 3. Updated to version 4 and strengthened frozen old versions 1/2/3; no production rule weakened.",
+    "contractFocused": {
+      "passed": 18,
+      "seconds": 4.47,
+      "log": "tmp/pytest-dr152-contract-final.log"
+    }
+  },
+  "pythonFull": {
+    "passed": 2412,
+    "warnings": 1,
+    "seconds": 165.35,
+    "log": "tmp/pytest-dr153-full.log"
+  },
+  "pythonActionAndDispatchFocused": {
+    "passed": 59,
+    "seconds": 17.19,
+    "log": "tmp/pytest-dr153-action-lookup-complete.log",
+    "boundary": "Includes actual route/dispatcher/repository, missing/invalid identities, no writes or model dispatch, history unknown guards and graph fixtures. Overlaps full suite."
+  },
+  "java": {
+    "passed": 63,
+    "failed": 0,
+    "skipped": 0,
+    "jdk": "21.0.12.1+1",
+    "targetRelease": 21,
+    "controllerTests": {
+      "passed": 58,
+      "seconds": 55.371,
+      "log": "tmp/maven-dr153-jdk21.log"
+    },
+    "readProjectionAndSourceTests": {
+      "passed": 5,
+      "seconds": 13.717,
+      "log": "tmp/maven-dr153-projection-and-source.log"
+    },
+    "package": {
+      "success": true,
+      "seconds": 9.152,
+      "log": "tmp/maven-dr153-package.log"
+    }
+  },
+  "environmentDiagnostics": {
+    "jdk17Failure": "tmp/maven-dr153-action-lookup.log: compiler cannot target release 21",
+    "jdk25Failure": "tmp/maven-dr153-action-lookup-final.log: existing Lombok/Javac initialization incompatibility",
+    "jdk21Archive": {
+      "source": "https://learn.microsoft.com/en-us/java/openjdk/download",
+      "archiveUrl": "https://aka.ms/download-jdk/microsoft-jdk-21.0.12.1-windows-x64.zip",
+      "sha256": "192441a9d27da813bada974bb88b4cf64d37a9589ed37f204374d411ca5ce07f",
+      "bytes": 201096952,
+      "javaHome": "D:\\aiproj\\ai_project\\tmp\\jdk21-dr153\\jdk-21.0.12.1+1",
+      "boundary": "Checksum-verified official build, local workspace tools only. No system installation or global environment change."
+    },
+    "sandboxAsyncio": "tmp/dr153-focus-stacks.log locates blocked Windows socketpair during event-loop initialization. Same fixtures/asyncio.run assertions passed outside the network-restricted sandbox.",
+    "javaReload": "Original exact-identity guard stopped after old process was still briefly visible. Confirmed old PID absent/8081 free, backed up H2 and launched once using exclusive start intent; observed PID 161948, no repeated stop or relaunch."
+  },
+  "actualApiProof": "deep-research-evidence/action-receipt-live-api-20261018.json",
+  "runtimeProofs": [
+    "deep-research-evidence/runtime-load-dr153-action-lookup-20261018.json",
+    "deep-research-evidence/action-receipt-java-runtime-20261018.json"
+  ],
+  "providerCallsAfter151Diagnostics": 0,
+  "productionCallRows": 3747,
+  "taskCount": 91,
+  "pausedHistoricalUnknowns": 9,
+  "boundary": "Sorting and read-only receipt lookup implemented and loaded, with complete offline/Java checks and actual GET proof. No newer model generation or content acceptance. Acceptance harness reconciliation is not yet implemented; legacy receipt and every unknown stay intact."
+}

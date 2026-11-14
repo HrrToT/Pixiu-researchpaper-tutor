@@ -1,0 +1,35 @@
+{
+  "promptVersion": "dr-v2.20261105.388",
+  "sourceCase": "X5R-v4",
+  "mode": "offline saved plan and coverage response replay; no new model review",
+  "originalPayloadSha256": "1939f542f5fd7d7d7ff44dd681b8d0d00bb9c994f641ff8bf4b7a7c4f139f141",
+  "oldCriteria": [
+    "解释它是否把3D高斯改成2D圆盘",
+    "为什么要渲染深度和表面法线，以及这些图怎样用于几何重建"
+  ],
+  "newLiteralCriteria": [
+    "解释它是否把3D高斯改成2D圆盘",
+    "为什么要渲染深度和表面法线",
+    "这些图怎样用于几何重建"
+  ],
+  "oldCoverageAllCovered": true,
+  "newRoleCoverageStatuses": {
+    "ob_1": "covered",
+    "ob_2": "partial",
+    "answer_scope": "partial"
+  },
+  "newRoleErrors": [
+    [
+      "overlapping_process_roles"
+    ],
+    [
+      "overlapping_process_roles"
+    ]
+  ],
+  "originalMachineOutcomePreserved": "complete",
+  "originalClaimsUnchanged": true,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "contentAccepted": false,
+  "independentCredit": 0
+}

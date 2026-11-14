@@ -1,0 +1,160 @@
+{
+  "case": "H6-FAULT-CHAIN",
+  "definitionHash": "f5406daff1e6be125feb91aa16d7c6fab4f3f6e3c2b5d5478b78a92da8fb6e2a",
+  "firstExecution": true,
+  "sourceCommit": "318f5b96",
+  "sealedTestSourcesUnchanged": true,
+  "tests": 5,
+  "passed": 5,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "pytestSeconds": 9.657,
+  "operationalVerdict": "passed_offline_fault_injection",
+  "scientificContentCredit": 0,
+  "liveProviderCredit": 0,
+  "scenarios": [
+    {
+      "scenario": "discovery_503",
+      "status": "completed",
+      "outcome": "inconclusive",
+      "sourceCount": 1,
+      "sourceAccessLevel": "abstract",
+      "sourceVersion": "arxiv:2601.99999v1",
+      "sourceTextSha256": "3b998d0757d33f96502a0fe5697f54db3b5330495a04198233e983360e4a44c2",
+      "fixtureModelCalls": 1,
+      "externalSearches": 2,
+      "fulltextFetches": 0,
+      "callLedger": [
+        {
+          "tool": "external_discover",
+          "status": "succeeded"
+        },
+        {
+          "tool": "external_discover",
+          "status": "failed"
+        },
+        {
+          "tool": "llm_invoke",
+          "status": "succeeded"
+        }
+      ],
+      "dbPath": "tmp/pytest-h6-chain-first-20261112/test_h6_retains_acquired_abstr0/research.sqlite3"
+    },
+    {
+      "scenario": "oversized_pdf",
+      "status": "completed",
+      "outcome": "inconclusive",
+      "sourceCount": 1,
+      "sourceAccessLevel": "abstract",
+      "sourceVersion": "arxiv:2601.99999v1",
+      "sourceTextSha256": "3b998d0757d33f96502a0fe5697f54db3b5330495a04198233e983360e4a44c2",
+      "fixtureModelCalls": 1,
+      "externalSearches": 1,
+      "fulltextFetches": 1,
+      "callLedger": [
+        {
+          "tool": "external_discover",
+          "status": "succeeded"
+        },
+        {
+          "tool": "external_fulltext",
+          "status": "failed"
+        },
+        {
+          "tool": "llm_invoke",
+          "status": "succeeded"
+        }
+      ],
+      "dbPath": "tmp/pytest-h6-chain-first-20261112/test_h6_retains_acquired_abstr1/research.sqlite3"
+    },
+    {
+      "scenario": "search_budget",
+      "status": "completed",
+      "outcome": "inconclusive",
+      "sourceCount": 1,
+      "sourceAccessLevel": "abstract",
+      "sourceVersion": "arxiv:2601.99999v1",
+      "sourceTextSha256": "3b998d0757d33f96502a0fe5697f54db3b5330495a04198233e983360e4a44c2",
+      "fixtureModelCalls": 1,
+      "externalSearches": 1,
+      "fulltextFetches": 0,
+      "callLedger": [
+        {
+          "tool": "external_discover",
+          "status": "succeeded"
+        },
+        {
+          "tool": "llm_invoke",
+          "status": "succeeded"
+        }
+      ],
+      "dbPath": "tmp/pytest-h6-chain-first-20261112/test_h6_retains_acquired_abstr2/research.sqlite3"
+    },
+    {
+      "scenario": "private_dns",
+      "status": "completed",
+      "outcome": "inconclusive",
+      "sourceCount": 1,
+      "sourceAccessLevel": "abstract",
+      "sourceVersion": "arxiv:2601.99999v1",
+      "sourceTextSha256": "3b998d0757d33f96502a0fe5697f54db3b5330495a04198233e983360e4a44c2",
+      "fixtureModelCalls": 1,
+      "externalSearches": 2,
+      "fulltextFetches": 0,
+      "callLedger": [
+        {
+          "tool": "external_discover",
+          "status": "succeeded"
+        },
+        {
+          "tool": "external_discover",
+          "status": "failed"
+        },
+        {
+          "tool": "llm_invoke",
+          "status": "succeeded"
+        }
+      ],
+      "dbPath": "tmp/pytest-h6-chain-first-20261112/test_h6_retains_acquired_abstr3/research.sqlite3"
+    },
+    {
+      "scenario": "redirect",
+      "status": "completed",
+      "outcome": "inconclusive",
+      "sourceCount": 1,
+      "sourceAccessLevel": "abstract",
+      "sourceVersion": "arxiv:2601.99999v1",
+      "sourceTextSha256": "3b998d0757d33f96502a0fe5697f54db3b5330495a04198233e983360e4a44c2",
+      "fixtureModelCalls": 1,
+      "externalSearches": 2,
+      "fulltextFetches": 0,
+      "callLedger": [
+        {
+          "tool": "external_discover",
+          "status": "succeeded"
+        },
+        {
+          "tool": "external_discover",
+          "status": "failed"
+        },
+        {
+          "tool": "llm_invoke",
+          "status": "succeeded"
+        }
+      ],
+      "dbPath": "tmp/pytest-h6-chain-first-20261112/test_h6_retains_acquired_abstr4/research.sqlite3"
+    }
+  ],
+  "httpAssertions": "No redirect follow, private DNS rejected before connection, oversized body never read/parsed, search reservation refused before excess send; failed identities not resent on acquisition recreation.",
+  "recoveryAssertions": "After graph inconclusive publication, close facade/reopen SQLite/recover/GET twice preserves report/sources/ledger without model, graph or source calls.",
+  "paidModelCalls": 0,
+  "fixtureModelCalls": 5,
+  "realNetworkRequests": 0,
+  "productionDatabaseWrites": 0,
+  "artifacts": {
+    "tmp/h6-chain-first-20261112.xml": "17c0be811e65abffc17e6a29bf14a17788b770b3b2737f276e92e4736f47deb1",
+    "tmp/h6-chain-first-20261112.log": "a9a12fab8f15734826b02b8fbc4b5abadd632c120351291505c218c24c6239bd"
+  },
+  "boundary": "Operational H6 fixture acceptance only. No real Provider, factual research quality, representative cost/latency or H3 live discovery claim; broader original release gates remain."
+}

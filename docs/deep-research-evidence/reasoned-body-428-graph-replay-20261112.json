@@ -1,0 +1,18 @@
+{
+  "case": "AD1N-v15 source fixture",
+  "mode": "normal synthesis graph offline; saved initial response with synthetic reasoning branch and adapted synthetic reader reply",
+  "nodes": [
+    "synthesize",
+    "synthesize_audience"
+  ],
+  "newBodyCompiledInNormalGraph": true,
+  "completePremiseAndConsequencePreserved": true,
+  "ownSourcePermissionsPreserved": true,
+  "reasonedDraftAuditUnchecked": true,
+  "newModelCalls": 0,
+  "productionWrites": 0,
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "rawPayloadSha256": "a39905fbf97ab70da6ddda0fc39259365297f6995250fd2132fa8bcd215d10b5",
+  "boundary": "Synthetic branch wiring only. No scientific validity or actual generation quality demonstrated."
+}

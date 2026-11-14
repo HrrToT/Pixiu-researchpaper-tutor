@@ -1,0 +1,30 @@
+{
+  "papers": [
+    {
+      "arxivVersion": "2311.18159v1",
+      "url": "https://arxiv.org/pdf/2311.18159v1",
+      "automaticRetry": false,
+      "httpStatus": 200,
+      "bytes": 22544872,
+      "sha256": "834337574488b37f20793de624fe9598947f18fdf238444238de8320ec1b744b",
+      "path": "tmp\\pdfs\\h2-vq-review-20261112\\2311.18159v1.pdf",
+      "complete": true
+    },
+    {
+      "arxivVersion": "2401.02436v1",
+      "url": "https://arxiv.org/pdf/2401.02436v1",
+      "automaticRetry": false,
+      "httpStatus": 200,
+      "bytes": 25519387,
+      "sha256": "5e0ee4d768697333d588bf186f2b032ff4c73e9deec13618d3c9fb727148e821",
+      "path": "tmp\\pdfs\\h2-vq-review-20261112\\2401.02436v1.pdf",
+      "complete": true
+    }
+  ],
+  "modelCalls": 0,
+  "applicationCacheWrites": 0,
+  "materialImports": 0,
+  "proxy": "current system proxy",
+  "pdfGets": 2,
+  "boundary": "Evaluator-only public exact-revision PDFs; no source alteration or automatic retry."
+}

@@ -1,0 +1,1031 @@
+{
+  "date": "2026-10-23",
+  "sourceCommit": "35b77316",
+  "promptVersion": "dr-v2.20261023.250",
+  "case": "E1-v41",
+  "split": "development",
+  "runId": "dr_run_9a2730a05a895beea0288a461890c7eb",
+  "questionUnchanged": true,
+  "frozenCaseCommit": "a023b204",
+  "status": "completed",
+  "outcome": "inconclusive",
+  "reportedPayloadElapsedSeconds": 130.164,
+  "observedElapsedSeconds": 130.0,
+  "settledModelCalls": 11,
+  "settledTokens": 64188,
+  "unsettledModelCalls": 0,
+  "independentCredit": 0,
+  "verificationSummary": {
+    "accepted": 0,
+    "rejected": 9
+  },
+  "generationAllocation": {
+    "version": 1,
+    "planningEvidenceAliases": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9",
+      "E10"
+    ],
+    "suppliedEvidenceAliases": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9",
+      "E10"
+    ],
+    "requiredEvidenceAliases": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9",
+      "E10"
+    ],
+    "unverifiedPlanReferences": [
+      "E1",
+      "E2",
+      "E3",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9",
+      "E10"
+    ],
+    "missingPremiseBundles": [],
+    "rawInputBytes": 29330,
+    "encodedInputBytes": 29061,
+    "maxInputBytes": 32000,
+    "planBasisDigest": "1f0d3b6d81112e1acf78835c7077b32bff638b327afe5a7fd5bf77c5821956cd",
+    "planReferencesAreEvidenceApproval": false,
+    "planningEvidenceIds": [
+      "ev_1eb4c9fdd24de3ea264f8cefc5924a37d16ab84865925a0db5237cc11ced5b0a",
+      "ev_719100b0caa2ede9c6fd744d770dec104ae582968d6fa4fe0be3bfd4084fed66",
+      "ev_f96749bc7c0c95524f18d91b36ae6dcaa3b370ac52c9e840e87fbc2078c51b0a",
+      "ev_e7ad2ae39a57713454bf061191a27d7fe5ef3b09578876a217239ae81d7fccc8",
+      "ev_f369be52390464f7ef5b5c06970dc3cdf2d88fd5060208bd60734666d6f006e1",
+      "ev_19891f15d396196291c015e0ec23a3a507612048a4605ec5249d00155bd7e769",
+      "ev_0a689ba07517e3c4f3bd278066eb23e2db478ee98a58e9f5a7982154e4a1aeb4",
+      "ev_0ae830d93215a12677d66c33033e65bcc8e4d140262b1b65bae9ce94da27e1c1",
+      "ev_78e9b06284901b50398995002538e67e45c0c6085ee5379fea5910a21481579d",
+      "ev_c9bfdebc98f06d2ed0a5d11413eb00d3e15d551bc59e1018701fcc69668c9174"
+    ],
+    "suppliedEvidenceIds": [
+      "ev_1eb4c9fdd24de3ea264f8cefc5924a37d16ab84865925a0db5237cc11ced5b0a",
+      "ev_719100b0caa2ede9c6fd744d770dec104ae582968d6fa4fe0be3bfd4084fed66",
+      "ev_f96749bc7c0c95524f18d91b36ae6dcaa3b370ac52c9e840e87fbc2078c51b0a",
+      "ev_e7ad2ae39a57713454bf061191a27d7fe5ef3b09578876a217239ae81d7fccc8",
+      "ev_f369be52390464f7ef5b5c06970dc3cdf2d88fd5060208bd60734666d6f006e1",
+      "ev_19891f15d396196291c015e0ec23a3a507612048a4605ec5249d00155bd7e769",
+      "ev_0a689ba07517e3c4f3bd278066eb23e2db478ee98a58e9f5a7982154e4a1aeb4",
+      "ev_0ae830d93215a12677d66c33033e65bcc8e4d140262b1b65bae9ce94da27e1c1",
+      "ev_78e9b06284901b50398995002538e67e45c0c6085ee5379fea5910a21481579d",
+      "ev_c9bfdebc98f06d2ed0a5d11413eb00d3e15d551bc59e1018701fcc69668c9174"
+    ]
+  },
+  "directSourcePassageEntries": 45,
+  "modelNodeCounts": {
+    "assess_relevance": 3,
+    "plan": 1,
+    "plan_experiment": 1,
+    "resolve_brief": 1,
+    "synthesize": 1,
+    "verify_design_config": 1,
+    "verify_design_science": 3
+  },
+  "repairStatus": "skipped_budget",
+  "repairAdmission": {
+    "kind": "repairPromptBytes",
+    "limit": 23067,
+    "used": 32265
+  },
+  "planEncodingAudit": {
+    "rawBytes": 5751,
+    "wireBytes": 5272,
+    "canonicalBytes": 6546,
+    "preferredSlotBytes": 2500,
+    "rawLimitBytes": 8192,
+    "wireLimitBytes": 8192,
+    "fitsPreferredSlot": false,
+    "scientificApproval": false
+  },
+  "initialRepresentationAudit": [
+    {
+      "phase": "synthesis",
+      "claimId": "c1",
+      "designRole": "hypothesis",
+      "path": "/executionSpec",
+      "kind": "single_role_wrapper",
+      "role": "hypothesis"
+    },
+    {
+      "phase": "synthesis",
+      "claimId": "c2",
+      "designRole": "groups",
+      "path": "/executionSpec",
+      "kind": "single_role_wrapper",
+      "role": "groups"
+    },
+    {
+      "phase": "synthesis",
+      "claimId": "c3",
+      "designRole": "controls",
+      "path": "/executionSpec",
+      "kind": "single_role_wrapper",
+      "role": "controls"
+    },
+    {
+      "phase": "synthesis",
+      "claimId": "c4",
+      "designRole": "data",
+      "path": "/executionSpec",
+      "kind": "single_role_wrapper",
+      "role": "data"
+    },
+    {
+      "phase": "synthesis",
+      "claimId": "c5",
+      "designRole": "budget",
+      "path": "/executionSpec",
+      "kind": "single_role_wrapper",
+      "role": "budget"
+    },
+    {
+      "phase": "synthesis",
+      "claimId": "c6",
+      "designRole": "steps",
+      "path": "/executionSpec",
+      "kind": "single_role_wrapper",
+      "role": "steps"
+    },
+    {
+      "phase": "synthesis",
+      "claimId": "c8",
+      "designRole": "analysis",
+      "path": "/executionSpec",
+      "kind": "single_role_wrapper",
+      "role": "analysis"
+    }
+  ],
+  "repairRepresentationAudit": {},
+  "rejectedClaims": [
+    {
+      "claimId": "c6",
+      "reason": "incomplete_experiment_workflow",
+      "detail": "workflow.states.operation_rule, workflow.states.shape"
+    },
+    {
+      "claimId": "c1",
+      "reason": "semantic_unresolved",
+      "detail": "假设声称在flame salmon场景帧1..30上执行第2阶段会提高PSNR/SSIM，但证据E1仅说明基础模型和随机生成模型无法捕捉新出现物体，并未提供该场景帧1..30上执行第2阶段与跳过第2阶段的PSNR/SSIM比较结果，因此该前提缺乏直接证据支持。；效应键storage_diff和time_diff在分析c8中未定义，仅定义了psnr_diff和ssim_diff，导致假设中的效应绑定不完整。",
+      "rejectionAudit": {
+        "version": 1,
+        "bindingState": "verified",
+        "findings": [
+          {
+            "kind": "unsupported",
+            "claimId": "c1",
+            "reason": "假设声称在flame salmon场景帧1..30上执行第2阶段会提高PSNR/SSIM，但证据E1仅说明基础模型和随机生成模型无法捕捉新出现物体，并未提供该场景帧1..30上执行第2阶段与跳过第2阶段的PSNR/SSIM比较结果，因此该前提缺乏直接证据支持。",
+            "path": [
+              "text"
+            ],
+            "value": "在flame salmon场景的帧1..30上，与跳过第2阶段相比，执行第2阶段自适应新增高斯会提高重建质量（PSNR/SSIM），但会增加每帧存储和额外训练开销；该假设为描述性比较，不承诺改善。"
+          },
+          {
+            "kind": "incomplete",
+            "claimId": "c1",
+            "reason": "效应键storage_diff和time_diff在分析c8中未定义，仅定义了psnr_diff和ssim_diff，导致假设中的效应绑定不完整。",
+            "path": [
+              "executionSpec"
+            ],
+            "value": {
+              "statement": "在flame salmon场景的帧1..30上，与跳过第2阶段相比，执行第2阶段自适应新增高斯会提高重建质量（PSNR/SSIM），但会增加每帧存储和额外训练开销。",
+              "analysisClaimId": "c8",
+              "effectKeys": [
+                "psnr_diff",
+                "ssim_diff",
+                "storage_diff",
+                "time_diff"
+              ],
+              "purpose": "explore"
+            }
+          }
+        ],
+        "scientificRejectionVerified": false,
+        "referenceBinding": {
+          "version": 1,
+          "catalogueDigest": "391dc8d9ced8cc33d3cb9391fb98733781b1aa1dc3f3eb5e1509cdafe167c8f5",
+          "requestContextDigest": "9c75a11227a8bd6b8af8eadc5ec335c8f0e28d415f93b20101b1523ad7f8ea43",
+          "originalFindings": [
+            {
+              "kind": "unsupported",
+              "claimId": "c1",
+              "field": "text",
+              "reason": "假设声称在flame salmon场景帧1..30上执行第2阶段会提高PSNR/SSIM，但证据E1仅说明基础模型和随机生成模型无法捕捉新出现物体，并未提供该场景帧1..30上执行第2阶段与跳过第2阶段的PSNR/SSIM比较结果，因此该前提缺乏直接证据支持。"
+            },
+            {
+              "kind": "incomplete",
+              "claimId": "c1",
+              "field": "executionSpec",
+              "reason": "效应键storage_diff和time_diff在分析c8中未定义，仅定义了psnr_diff和ssim_diff，导致假设中的效应绑定不完整。"
+            }
+          ],
+          "originalStatus": "failed",
+          "expandedFindingsDigest": "893cb9caff49194c7d5a1ae41c44b5910b9b8eb4135ae2feaebf818956f7b5b1",
+          "scientificRejectionVerified": false
+        }
+      }
+    },
+    {
+      "claimId": "c2",
+      "reason": "semantic_unresolved",
+      "detail": "因素stage2_addition的treatment操作execute_stage2未指定具体参数，如优化步数、学习率、梯度阈值等，无法复现。；组定义未明确共享初始化的具体来源，仅依赖工作流c6，但c6的初始化组件不完整，无法保证两组共享相同的第0帧模型和第1阶段NTC结果。",
+      "rejectionAudit": {
+        "version": 1,
+        "bindingState": "verified",
+        "findings": [
+          {
+            "kind": "incomplete",
+            "claimId": "c2",
+            "reason": "因素stage2_addition的treatment操作execute_stage2未指定具体参数，如优化步数、学习率、梯度阈值等，无法复现。",
+            "path": [
+              "executionSpec"
+            ],
+            "value": {
+              "factors": [
+                {
+                  "name": "stage2_addition",
+                  "control": {
+                    "action": "skip_stage2",
+                    "parameters": []
+                  },
+                  "treatment": {
+                    "action": "execute_stage2",
+                    "parameters": []
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "kind": "incomplete",
+            "claimId": "c2",
+            "reason": "组定义未明确共享初始化的具体来源，仅依赖工作流c6，但c6的初始化组件不完整，无法保证两组共享相同的第0帧模型和第1阶段NTC结果。",
+            "path": [
+              "executionSpec"
+            ],
+            "value": {
+              "factors": [
+                {
+                  "name": "stage2_addition",
+                  "control": {
+                    "action": "skip_stage2",
+                    "parameters": []
+                  },
+                  "treatment": {
+                    "action": "execute_stage2",
+                    "parameters": []
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "scientificRejectionVerified": false,
+        "referenceBinding": {
+          "version": 1,
+          "catalogueDigest": "391dc8d9ced8cc33d3cb9391fb98733781b1aa1dc3f3eb5e1509cdafe167c8f5",
+          "requestContextDigest": "9c75a11227a8bd6b8af8eadc5ec335c8f0e28d415f93b20101b1523ad7f8ea43",
+          "originalFindings": [
+            {
+              "kind": "incomplete",
+              "claimId": "c2",
+              "field": "executionSpec",
+              "reason": "因素stage2_addition的treatment操作execute_stage2未指定具体参数，如优化步数、学习率、梯度阈值等，无法复现。"
+            },
+            {
+              "kind": "incomplete",
+              "claimId": "c2",
+              "field": "executionSpec",
+              "reason": "组定义未明确共享初始化的具体来源，仅依赖工作流c6，但c6的初始化组件不完整，无法保证两组共享相同的第0帧模型和第1阶段NTC结果。"
+            }
+          ],
+          "originalStatus": "failed",
+          "expandedFindingsDigest": "fca05c61e122d9a81c5a38398056509a4a3e701990f90dcccbf6f1dc876fbeeb",
+          "scientificRejectionVerified": false
+        }
+      }
+    },
+    {
+      "claimId": "c3",
+      "reason": "semantic_unresolved",
+      "detail": "初始化仅通过workflowClaimId引用c6，但c6的初始化状态定义不完整（形状和操作规则缺失），无法确定共享第0帧模型的具体内容。；渲染设置仅指定分辨率为640x360，但未提供渲染器版本、相机内参、背景处理等必要参数，无法复现。；优化器设置仅给出学习率0.001，但未指定优化器超参数（如β1、β2、ε）、权重衰减、梯度裁剪等，且未区分第1阶段和第2阶段的具体优化配置。；其他干预措施为空，但未明确禁用量化、占用率控制、压缩等可能影响重建质量和存储的干预，无法保证两组在这些方面一致。；声称固定第1阶段NTC结果，但证据E1-E4仅描述了NTC的架构和训练流程，未提供任何关于固定结果的具体实现或检查点信息。",
+      "rejectionAudit": {
+        "version": 1,
+        "bindingState": "verified",
+        "findings": [
+          {
+            "kind": "incomplete",
+            "claimId": "c3",
+            "reason": "初始化仅通过workflowClaimId引用c6，但c6的初始化状态定义不完整（形状和操作规则缺失），无法确定共享第0帧模型的具体内容。",
+            "path": [
+              "executionSpec"
+            ],
+            "value": {
+              "initialization": {
+                "workflowClaimId": "c6"
+              },
+              "rendering": {
+                "action": "render_3dgs",
+                "parameters": [
+                  {
+                    "name": "renderer",
+                    "type": "choice",
+                    "value": "3d_gaussian_splatting"
+                  },
+                  {
+                    "name": "resolution",
+                    "type": "choice",
+                    "value": "640x360"
+                  }
+                ]
+              },
+              "optimizer": {
+                "action": "optimize",
+                "parameters": [
+                  {
+                    "name": "optimizer",
+                    "type": "choice",
+                    "value": "adam"
+                  },
+                  {
+                    "name": "learning_rate_stage1",
+                    "type": "number",
+                    "value": 0.001
+                  },
+                  {
+                    "name": "learning_rate_stage2",
+                    "type": "number",
+                    "value": 0.001
+                  }
+                ]
+              },
+              "otherInterventions": {
+                "action": "no_other_interventions",
+                "parameters": []
+              }
+            }
+          },
+          {
+            "kind": "incomplete",
+            "claimId": "c3",
+            "reason": "渲染设置仅指定分辨率为640x360，但未提供渲染器版本、相机内参、背景处理等必要参数，无法复现。",
+            "path": [
+              "executionSpec"
+            ],
+            "value": {
+              "initialization": {
+                "workflowClaimId": "c6"
+              },
+              "rendering": {
+                "action": "render_3dgs",
+                "parameters": [
+                  {
+                    "name": "renderer",
+                    "type": "choice",
+                    "value": "3d_gaussian_splatting"
+                  },
+                  {
+                    "name": "resolution",
+                    "type": "choice",
+                    "value": "640x360"
+                  }
+                ]
+              },
+              "optimizer": {
+                "action": "optimize",
+                "parameters": [
+                  {
+                    "name": "optimizer",
+                    "type": "choice",
+                    "value": "adam"
+                  },
+                  {
+                    "name": "learning_rate_stage1",
+                    "type": "number",
+                    "value": 0.001
+                  },
+                  {
+                    "name": "learning_rate_stage2",
+                    "type": "number",
+                    "value": 0.001
+                  }
+                ]
+              },
+              "otherInterventions": {
+                "action": "no_other_interventions",
+                "parameters": []
+              }
+            }
+          },
+          {
+            "kind": "incomplete",
+            "claimId": "c3",
+            "reason": "优化器设置仅给出学习率0.001，但未指定优化器超参数（如β1、β2、ε）、权重衰减、梯度裁剪等，且未区分第1阶段和第2阶段的具体优化配置。",
+            "path": [
+              "executionSpec"
+            ],
+            "value": {
+              "initialization": {
+                "workflowClaimId": "c6"
+              },
+              "rendering": {
+                "action": "render_3dgs",
+                "parameters": [
+                  {
+                    "name": "renderer",
+                    "type": "choice",
+                    "value": "3d_gaussian_splatting"
+                  },
+                  {
+                    "name": "resolution",
+                    "type": "choice",
+                    "value": "640x360"
+                  }
+                ]
+              },
+              "optimizer": {
+                "action": "optimize",
+                "parameters": [
+                  {
+                    "name": "optimizer",
+                    "type": "choice",
+                    "value": "adam"
+                  },
+                  {
+                    "name": "learning_rate_stage1",
+                    "type": "number",
+                    "value": 0.001
+                  },
+                  {
+                    "name": "learning_rate_stage2",
+                    "type": "number",
+                    "value": 0.001
+                  }
+                ]
+              },
+              "otherInterventions": {
+                "action": "no_other_interventions",
+                "parameters": []
+              }
+            }
+          },
+          {
+            "kind": "incomplete",
+            "claimId": "c3",
+            "reason": "其他干预措施为空，但未明确禁用量化、占用率控制、压缩等可能影响重建质量和存储的干预，无法保证两组在这些方面一致。",
+            "path": [
+              "executionSpec"
+            ],
+            "value": {
+              "initialization": {
+                "workflowClaimId": "c6"
+              },
+              "rendering": {
+                "action": "render_3dgs",
+                "parameters": [
+                  {
+                    "name": "renderer",
+                    "type": "choice",
+                    "value": "3d_gaussian_splatting"
+                  },
+                  {
+                    "name": "resolution",
+                    "type": "choice",
+                    "value": "640x360"
+                  }
+                ]
+              },
+              "optimizer": {
+                "action": "optimize",
+                "parameters": [
+                  {
+                    "name": "optimizer",
+                    "type": "choice",
+                    "value": "adam"
+                  },
+                  {
+                    "name": "learning_rate_stage1",
+                    "type": "number",
+                    "value": 0.001
+                  },
+                  {
+                    "name": "learning_rate_stage2",
+                    "type": "number",
+                    "value": 0.001
+                  }
+                ]
+              },
+              "otherInterventions": {
+                "action": "no_other_interventions",
+                "parameters": []
+              }
+            }
+          },
+          {
+            "kind": "unsupported",
+            "claimId": "c3",
+            "reason": "声称固定第1阶段NTC结果，但证据E1-E4仅描述了NTC的架构和训练流程，未提供任何关于固定结果的具体实现或检查点信息。",
+            "path": [
+              "text"
+            ],
+            "value": "固定条件：共享第0帧模型、相机划分、第1阶段NTC结果；第1阶段NTC使用多分辨率哈希编码和MLP，输出7维变换（平移+四元数旋转），训练300步/帧。"
+          }
+        ],
+        "scientificRejectionVerified": false,
+        "referenceBinding": {
+          "version": 1,
+          "catalogueDigest": "391dc8d9ced8cc33d3cb9391fb98733781b1aa1dc3f3eb5e1509cdafe167c8f5",
+          "requestContextDigest": "c23c9e59cca295d05beae6b3bfb0828af740c12f53eac5269b78c11454d703b7",
+          "originalFindings": [
+            {
+              "kind": "incomplete",
+              "claimId": "c3",
+              "field": "executionSpec",
+              "reason": "初始化仅通过workflowClaimId引用c6，但c6的初始化状态定义不完整（形状和操作规则缺失），无法确定共享第0帧模型的具体内容。"
+            },
+            {
+              "kind": "incomplete",
+              "claimId": "c3",
+              "field": "executionSpec",
+              "reason": "渲染设置仅指定分辨率为640x360，但未提供渲染器版本、相机内参、背景处理等必要参数，无法复现。"
+            },
+            {
+              "kind": "incomplete",
+              "claimId": "c3",
+              "field": "executionSpec",
+              "reason": "优化器设置仅给出学习率0.001，但未指定优化器超参数（如β1、β2、ε）、权重衰减、梯度裁剪等，且未区分第1阶段和第2阶段的具体优化配置。"
+            },
+            {
+              "kind": "incomplete",
+              "claimId": "c3",
+              "field": "executionSpec",
+              "reason": "其他干预措施为空，但未明确禁用量化、占用率控制、压缩等可能影响重建质量和存储的干预，无法保证两组在这些方面一致。"
+            },
+            {
+              "kind": "unsupported",
+              "claimId": "c3",
+              "field": "text",
+              "reason": "声称固定第1阶段NTC结果，但证据E1-E4仅描述了NTC的架构和训练流程，未提供任何关于固定结果的具体实现或检查点信息。"
+            }
+          ],
+          "originalStatus": "failed",
+          "expandedFindingsDigest": "4654843c6aff0303ed2fa38a1bb05768f98bb53e03eef3dc0175991ef8264eb3",
+          "scientificRejectionVerified": false
+        }
+      }
+    },
+    {
+      "claimId": "c4",
+      "reason": "semantic_unresolved",
+      "detail": "场景名称 flame_salmon 未在提供的证据 E2、E3 中明确作为 N3DV 数据集的成员出现，无法确认该场景属于所选数据集。；相机划分规则为每3个取1个，但未提供实际相机 ID 列表或排序依据，无法枚举评估/训练视图，也无法验证至少2个评估相机和4个训练相机的条件。；种子 1234 未说明其用途（如划分、初始化或训练），且未提供生成规则或配对种子值。；独立单元为帧，但未提供帧窗口 1..30 与 flame_salmon 场景的绑定证据，无法确认该窗口属于所选场景。",
+      "rejectionAudit": {
+        "version": 1,
+        "bindingState": "verified",
+        "findings": [
+          {
+            "kind": "unsupported",
+            "claimId": "c4",
+            "reason": "场景名称 flame_salmon 未在提供的证据 E2、E3 中明确作为 N3DV 数据集的成员出现，无法确认该场景属于所选数据集。",
+            "path": [
+              "executionSpec",
+              "scenes"
+            ],
+            "value": {
+              "mode": "named",
+              "names": [
+                "flame_salmon"
+              ]
+            }
+          },
+          {
+            "kind": "incomplete",
+            "claimId": "c4",
+            "reason": "相机划分规则为每3个取1个，但未提供实际相机 ID 列表或排序依据，无法枚举评估/训练视图，也无法验证至少2个评估相机和4个训练相机的条件。",
+            "path": [
+              "executionSpec",
+              "split"
+            ],
+            "value": {
+              "mode": "every_nth",
+              "order": "lexicographic_camera_id",
+              "stride": 3,
+              "offset": 0
+            }
+          },
+          {
+            "kind": "incomplete",
+            "claimId": "c4",
+            "reason": "种子 1234 未说明其用途（如划分、初始化或训练），且未提供生成规则或配对种子值。",
+            "path": [
+              "executionSpec",
+              "seeds"
+            ],
+            "value": [
+              1234
+            ]
+          },
+          {
+            "kind": "unsupported",
+            "claimId": "c4",
+            "reason": "独立单元为帧，但未提供帧窗口 1..30 与 flame_salmon 场景的绑定证据，无法确认该窗口属于所选场景。",
+            "path": [
+              "executionSpec",
+              "independentUnit"
+            ],
+            "value": "frame"
+          }
+        ],
+        "scientificRejectionVerified": false,
+        "referenceBinding": {
+          "version": 1,
+          "catalogueDigest": "61a1b00374993b01a5cff69f2d5c0bc206769fa044c16adb11e36e78d33eceb4",
+          "requestContextDigest": "a18b21b6295f4f86b01b2c4ccd4ee32178b4f36c5da061641731325d563932cb",
+          "originalFindings": [
+            {
+              "kind": "unsupported",
+              "claimId": "c4",
+              "field": "executionSpec/scenes",
+              "reason": "场景名称 flame_salmon 未在提供的证据 E2、E3 中明确作为 N3DV 数据集的成员出现，无法确认该场景属于所选数据集。"
+            },
+            {
+              "kind": "incomplete",
+              "claimId": "c4",
+              "field": "executionSpec/split",
+              "reason": "相机划分规则为每3个取1个，但未提供实际相机 ID 列表或排序依据，无法枚举评估/训练视图，也无法验证至少2个评估相机和4个训练相机的条件。"
+            },
+            {
+              "kind": "incomplete",
+              "claimId": "c4",
+              "field": "executionSpec/seeds",
+              "reason": "种子 1234 未说明其用途（如划分、初始化或训练），且未提供生成规则或配对种子值。"
+            },
+            {
+              "kind": "unsupported",
+              "claimId": "c4",
+              "field": "executionSpec/independentUnit",
+              "reason": "独立单元为帧，但未提供帧窗口 1..30 与 flame_salmon 场景的绑定证据，无法确认该窗口属于所选场景。"
+            }
+          ],
+          "originalStatus": "failed",
+          "expandedFindingsDigest": "e6c5131c7a0fce0e3f2e3141edd4582fb323562d7ab78693c903979fc14138e3",
+          "scientificRejectionVerified": false
+        }
+      }
+    },
+    {
+      "claimId": "c5",
+      "reason": "semantic_unresolved",
+      "detail": "第1阶段NTC每帧300步共30帧，但未明确该预算是否包含所有帧的优化，且未提供墙钟时间上限的测量细节（设备、分辨率、预热、重复）。；组1每帧100步共30帧，但未明确是否覆盖全部30帧；组0恢复预算为0但未说明其作为诊断组的含义。；墙钟时间上限未指定测量设备、分辨率、预热和重复次数，无法执行。",
+      "rejectionAudit": {
+        "version": 1,
+        "bindingState": "verified",
+        "findings": [
+          {
+            "kind": "incomplete",
+            "claimId": "c5",
+            "reason": "第1阶段NTC每帧300步共30帧，但未明确该预算是否包含所有帧的优化，且未提供墙钟时间上限的测量细节（设备、分辨率、预热、重复）。",
+            "path": [
+              "executionSpec",
+              "baseline"
+            ],
+            "value": {
+              "mode": "train",
+              "unit": "optimizer_steps",
+              "maxBudget": 9000,
+              "stoppingRule": "fixed_steps"
+            }
+          },
+          {
+            "kind": "incomplete",
+            "claimId": "c5",
+            "reason": "组1每帧100步共30帧，但未明确是否覆盖全部30帧；组0恢复预算为0但未说明其作为诊断组的含义。",
+            "path": [
+              "executionSpec",
+              "recovery"
+            ],
+            "value": {
+              "mode": "unmatched",
+              "unit": "optimizer_steps",
+              "groups": {
+                "0": 0,
+                "1": 3000
+              },
+              "note": "组1执行第2阶段，组0跳过；这是整个第2阶段的增量取舍，不隔离参数归因。"
+            }
+          },
+          {
+            "kind": "incomplete",
+            "claimId": "c5",
+            "reason": "墙钟时间上限未指定测量设备、分辨率、预热和重复次数，无法执行。",
+            "path": [
+              "conditions"
+            ],
+            "value": {
+              "context": "若某阶段超过墙钟上限，记录为不完整并排除该帧比较。"
+            }
+          }
+        ],
+        "scientificRejectionVerified": false,
+        "referenceBinding": {
+          "version": 1,
+          "catalogueDigest": "61a1b00374993b01a5cff69f2d5c0bc206769fa044c16adb11e36e78d33eceb4",
+          "requestContextDigest": "a18b21b6295f4f86b01b2c4ccd4ee32178b4f36c5da061641731325d563932cb",
+          "originalFindings": [
+            {
+              "kind": "incomplete",
+              "claimId": "c5",
+              "field": "executionSpec/baseline",
+              "reason": "第1阶段NTC每帧300步共30帧，但未明确该预算是否包含所有帧的优化，且未提供墙钟时间上限的测量细节（设备、分辨率、预热、重复）。"
+            },
+            {
+              "kind": "incomplete",
+              "claimId": "c5",
+              "field": "executionSpec/recovery",
+              "reason": "组1每帧100步共30帧，但未明确是否覆盖全部30帧；组0恢复预算为0但未说明其作为诊断组的含义。"
+            },
+            {
+              "kind": "incomplete",
+              "claimId": "c5",
+              "field": "conditions",
+              "reason": "墙钟时间上限未指定测量设备、分辨率、预热和重复次数，无法执行。"
+            }
+          ],
+          "originalStatus": "failed",
+          "expandedFindingsDigest": "122704d60bbd53c1739d1e4cf7e65fd7ebe9ee3b2a4fec805262927c680db378",
+          "scientificRejectionVerified": false
+        }
+      }
+    },
+    {
+      "claimId": "c7",
+      "reason": "semantic_unresolved",
+      "detail": "PSNR/SSIM 在评估视图上逐帧计算后取平均，但未指定聚合级别（如每帧平均还是所有帧平均），且未说明配对判读方法。；存储边界列出所有3DG参数和NTC哈希表及MLP权重，但未明确包含哪些具体文件或表示，且未说明单位转换细节。；训练开销测量指定设备A100 40GB、分辨率640x360、3次预热、CUDA事件同步、5次重复取中位数，但未说明预热和重复的具体过程。",
+      "rejectionAudit": {
+        "version": 1,
+        "bindingState": "verified",
+        "findings": [
+          {
+            "kind": "incomplete",
+            "claimId": "c7",
+            "reason": "PSNR/SSIM 在评估视图上逐帧计算后取平均，但未指定聚合级别（如每帧平均还是所有帧平均），且未说明配对判读方法。",
+            "path": [
+              "text"
+            ],
+            "value": "指标：PSNR（越高越好）和SSIM（越高越好）在评估视图上逐帧计算后取平均；存储为每帧3DG参数和NTC参数的float32字节数，单位MiB；训练开销为第2阶段墙钟秒数，设备A100 40GB，分辨率640x360，3次预热，CUDA事件同步，5次重复取中位数。"
+          },
+          {
+            "kind": "incomplete",
+            "claimId": "c7",
+            "reason": "存储边界列出所有3DG参数和NTC哈希表及MLP权重，但未明确包含哪些具体文件或表示，且未说明单位转换细节。",
+            "path": [
+              "conditions"
+            ],
+            "value": {
+              "context": "质量指标方向：PSNR/SSIM越高越好；存储边界：所有3DG参数（位置、旋转、尺度、不透明度、SH系数）和NTC哈希表及MLP权重；训练开销仅第2阶段。"
+            }
+          },
+          {
+            "kind": "incomplete",
+            "claimId": "c7",
+            "reason": "训练开销测量指定设备A100 40GB、分辨率640x360、3次预热、CUDA事件同步、5次重复取中位数，但未说明预热和重复的具体过程。",
+            "path": [
+              "text"
+            ],
+            "value": "指标：PSNR（越高越好）和SSIM（越高越好）在评估视图上逐帧计算后取平均；存储为每帧3DG参数和NTC参数的float32字节数，单位MiB；训练开销为第2阶段墙钟秒数，设备A100 40GB，分辨率640x360，3次预热，CUDA事件同步，5次重复取中位数。"
+          }
+        ],
+        "scientificRejectionVerified": false,
+        "referenceBinding": {
+          "version": 1,
+          "catalogueDigest": "61a1b00374993b01a5cff69f2d5c0bc206769fa044c16adb11e36e78d33eceb4",
+          "requestContextDigest": "a18b21b6295f4f86b01b2c4ccd4ee32178b4f36c5da061641731325d563932cb",
+          "originalFindings": [
+            {
+              "kind": "incomplete",
+              "claimId": "c7",
+              "field": "text",
+              "reason": "PSNR/SSIM 在评估视图上逐帧计算后取平均，但未指定聚合级别（如每帧平均还是所有帧平均），且未说明配对判读方法。"
+            },
+            {
+              "kind": "incomplete",
+              "claimId": "c7",
+              "field": "conditions",
+              "reason": "存储边界列出所有3DG参数和NTC哈希表及MLP权重，但未明确包含哪些具体文件或表示，且未说明单位转换细节。"
+            },
+            {
+              "kind": "incomplete",
+              "claimId": "c7",
+              "field": "text",
+              "reason": "训练开销测量指定设备A100 40GB、分辨率640x360、3次预热、CUDA事件同步、5次重复取中位数，但未说明预热和重复的具体过程。"
+            }
+          ],
+          "originalStatus": "failed",
+          "expandedFindingsDigest": "9c40d1b93873e3d0afdc649ab33c67508a34b7d3306c120c9f3af238b30b2819",
+          "scientificRejectionVerified": false
+        }
+      }
+    },
+    {
+      "claimId": "c8",
+      "reason": "semantic_unresolved",
+      "detail": "决策模式为描述性，但不确定性采用配对聚类自助法（1000次重复，95%置信区间）。在单场景帧窗口内，帧间存在时间相关性，不满足独立同分布假设，聚类自助法无法提供有效的置信区间；描述性比较无需置信区间，两者不兼容。；效应定义仅给出差值公式，未指定在帧上的聚合方式（如均值、中位数），导致配对差值无法唯一确定，效应量不明确。",
+      "rejectionAudit": {
+        "version": 1,
+        "bindingState": "verified",
+        "findings": [
+          {
+            "kind": "incompatible",
+            "claimId": "c8",
+            "reason": "决策模式为描述性，但不确定性采用配对聚类自助法（1000次重复，95%置信区间）。在单场景帧窗口内，帧间存在时间相关性，不满足独立同分布假设，聚类自助法无法提供有效的置信区间；描述性比较无需置信区间，两者不兼容。",
+            "path": [
+              "executionSpec"
+            ],
+            "value": {
+              "effects": {
+                "psnr_diff": "PSNR_group1 - PSNR_group0",
+                "ssim_diff": "SSIM_group1 - SSIM_group0",
+                "storage_diff": "storage_group1 - storage_group0",
+                "time_diff": "time_group1 - time_group0"
+              },
+              "uncertainty": {
+                "mode": "paired_cluster_bootstrap",
+                "unit": "frame",
+                "repetitions": 1000,
+                "confidence": 0.95,
+                "seed": 1234
+              },
+              "decision": {
+                "mode": "descriptive",
+                "boundary": "报告效应方向和置信区间，不进行显著性检验。"
+              }
+            }
+          },
+          {
+            "kind": "incomplete",
+            "claimId": "c8",
+            "reason": "效应定义仅给出差值公式，未指定在帧上的聚合方式（如均值、中位数），导致配对差值无法唯一确定，效应量不明确。",
+            "path": [
+              "executionSpec"
+            ],
+            "value": {
+              "effects": {
+                "psnr_diff": "PSNR_group1 - PSNR_group0",
+                "ssim_diff": "SSIM_group1 - SSIM_group0",
+                "storage_diff": "storage_group1 - storage_group0",
+                "time_diff": "time_group1 - time_group0"
+              },
+              "uncertainty": {
+                "mode": "paired_cluster_bootstrap",
+                "unit": "frame",
+                "repetitions": 1000,
+                "confidence": 0.95,
+                "seed": 1234
+              },
+              "decision": {
+                "mode": "descriptive",
+                "boundary": "报告效应方向和置信区间，不进行显著性检验。"
+              }
+            }
+          }
+        ],
+        "scientificRejectionVerified": false,
+        "referenceBinding": {
+          "version": 1,
+          "catalogueDigest": "391dc8d9ced8cc33d3cb9391fb98733781b1aa1dc3f3eb5e1509cdafe167c8f5",
+          "requestContextDigest": "00e22f9ad76d18c7edcc600b988087a209b8303c0bcd58983516712aa49a364e",
+          "originalFindings": [
+            {
+              "kind": "incompatible",
+              "claimId": "c8",
+              "field": "executionSpec",
+              "reason": "决策模式为描述性，但不确定性采用配对聚类自助法（1000次重复，95%置信区间）。在单场景帧窗口内，帧间存在时间相关性，不满足独立同分布假设，聚类自助法无法提供有效的置信区间；描述性比较无需置信区间，两者不兼容。"
+            },
+            {
+              "kind": "incomplete",
+              "claimId": "c8",
+              "field": "executionSpec",
+              "reason": "效应定义仅给出差值公式，未指定在帧上的聚合方式（如均值、中位数），导致配对差值无法唯一确定，效应量不明确。"
+            }
+          ],
+          "originalStatus": "failed",
+          "expandedFindingsDigest": "0290ee828f9cdfd49316c2ac8eaf8a1d239c8b12e50a2b09ee6ade678e38de70",
+          "scientificRejectionVerified": false
+        }
+      }
+    },
+    {
+      "claimId": "c9",
+      "reason": "semantic_unresolved",
+      "detail": "未明确说明单场景描述性比较无法进行统计推断，不能将结果推广到其他场景或总体。；未提及帧窗口内帧间相关性的影响，以及配对聚类自助法在非独立数据上的局限性。；未说明第2阶段新增高斯不传到下一帧对存储和训练开销解释的限制，例如存储开销仅反映当前帧新增参数，不包含跨帧累积。",
+      "rejectionAudit": {
+        "version": 1,
+        "bindingState": "verified",
+        "findings": [
+          {
+            "kind": "incomplete",
+            "claimId": "c9",
+            "reason": "未明确说明单场景描述性比较无法进行统计推断，不能将结果推广到其他场景或总体。",
+            "path": [
+              "text"
+            ],
+            "value": "风险：方案尚未执行，不保证改善；实际相机数量和ID、第0帧模型资产、NTC超参数未在证据中提供，均为拟议选择；结论仅适用于flame salmon场景的帧1..30，且为描述性比较，不能归因于新增参数或额外优化。"
+          },
+          {
+            "kind": "incomplete",
+            "claimId": "c9",
+            "reason": "未提及帧窗口内帧间相关性的影响，以及配对聚类自助法在非独立数据上的局限性。",
+            "path": [
+              "text"
+            ],
+            "value": "风险：方案尚未执行，不保证改善；实际相机数量和ID、第0帧模型资产、NTC超参数未在证据中提供，均为拟议选择；结论仅适用于flame salmon场景的帧1..30，且为描述性比较，不能归因于新增参数或额外优化。"
+          },
+          {
+            "kind": "incomplete",
+            "claimId": "c9",
+            "reason": "未说明第2阶段新增高斯不传到下一帧对存储和训练开销解释的限制，例如存储开销仅反映当前帧新增参数，不包含跨帧累积。",
+            "path": [
+              "text"
+            ],
+            "value": "风险：方案尚未执行，不保证改善；实际相机数量和ID、第0帧模型资产、NTC超参数未在证据中提供，均为拟议选择；结论仅适用于flame salmon场景的帧1..30，且为描述性比较，不能归因于新增参数或额外优化。"
+          }
+        ],
+        "scientificRejectionVerified": false,
+        "referenceBinding": {
+          "version": 1,
+          "catalogueDigest": "391dc8d9ced8cc33d3cb9391fb98733781b1aa1dc3f3eb5e1509cdafe167c8f5",
+          "requestContextDigest": "00e22f9ad76d18c7edcc600b988087a209b8303c0bcd58983516712aa49a364e",
+          "originalFindings": [
+            {
+              "kind": "incomplete",
+              "claimId": "c9",
+              "field": "text",
+              "reason": "未明确说明单场景描述性比较无法进行统计推断，不能将结果推广到其他场景或总体。"
+            },
+            {
+              "kind": "incomplete",
+              "claimId": "c9",
+              "field": "text",
+              "reason": "未提及帧窗口内帧间相关性的影响，以及配对聚类自助法在非独立数据上的局限性。"
+            },
+            {
+              "kind": "incomplete",
+              "claimId": "c9",
+              "field": "text",
+              "reason": "未说明第2阶段新增高斯不传到下一帧对存储和训练开销解释的限制，例如存储开销仅反映当前帧新增参数，不包含跨帧累积。"
+            }
+          ],
+          "originalStatus": "failed",
+          "expandedFindingsDigest": "3313a46aa8e2121664329e6132d225cf0a29448b49c3761f8640140cd315de87",
+          "scientificRejectionVerified": false
+        }
+      }
+    }
+  ],
+  "acceptedClaims": [],
+  "rawFiles": [
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v41.json",
+      "sha256": "1b0f222dc1fded551feb6864fa2353d062f770870303ada49ee327f965d82f72"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v41.payload.json",
+      "sha256": "886588cd3d50b5b24decb5574ed3ead10c9fce133562398938408d448e51a577"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v41.calls.json",
+      "sha256": "a0052ef7a3c0086297b68c374a3a7966bb1dafcad92e7925c2f1da437a8a771a"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v41.result.json",
+      "sha256": "a784bad8e8b6fd59adc116be8eb75ea64cc47561c145e055d561b9fc56bccdad"
+    }
+  ],
+  "boundary": "One fixed development submission, no automatic retry. Representation normalization does not approve science or upgrade historical/independent results."
+}

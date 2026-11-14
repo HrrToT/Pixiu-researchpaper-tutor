@@ -1,0 +1,58 @@
+{
+  "date": "2026-10-18",
+  "case": "D1-v11",
+  "runId": "dr_run_fbdc70975d9c558db275a79dbdb66f42",
+  "sourceCommit": "985b623d",
+  "promptVersion": "dr-v2.20261018.122",
+  "question": "只依据LightGaussian，核查压缩后图像质量接近原始3DGS这一说法。区分作者报告的结果、成立条件和未验证范围。只写最关键的两点，300字以内。",
+  "status": "completed",
+  "outcome": "partial",
+  "contentAccepted": false,
+  "modelCalls": 10,
+  "settledTokens": 39450,
+  "elapsedSeconds": 39.545,
+  "cost": null,
+  "originalMachineAcceptedClaims": 2,
+  "answerCoverageStatus": "invalid_response",
+  "invalidAspectObligations": [
+    "ob_2"
+  ],
+  "findings": [
+    "The answer contains two compact points and names the Mip-NeRF360 measurements; this is progress from the prior inconclusive reports, not acceptance.",
+    "A GPU condition was added to the first claim, but its own citations contain only table rows and nearby table context. A different claim cites the GPU sentence; that cannot supply the first claim citation.",
+    "The final coverage review binds a dataset aspect to a different uncited source than the accepted first claim; the existing binding validator correctly leaves it invalid/partial.",
+    "The planner additionally asks for scene counts, although the user requested two key points under 300 characters. Future criteria should retain essential scope without adding unnecessary exhaustive narration.",
+    "Original production records remain unchanged. The post-hoc hard check is an offline diagnostic; no model request or republishing occurred."
+  ],
+  "posthocUncitedDeviceCondition": {
+    "c1": true,
+    "c2": false
+  },
+  "scores": {
+    "goalResponse": 3,
+    "evidenceSupport": 2,
+    "conditions": 2,
+    "synthesisValue": 3,
+    "executability": null,
+    "readability": 4
+  },
+  "rawFiles": [
+    {
+      "path": "tmp\\dr-acceptance-receipts\\D1-v11.json",
+      "sha256": "2f69c5a6ce3d1cf3b96587a7e3d103f3171bfb2ac78ee4ecd0362cbdcd031367"
+    },
+    {
+      "path": "tmp\\dr-acceptance-receipts\\D1-v11.payload.json",
+      "sha256": "0773395d77abf9184e19632d2563210cd1ac54745ddbf5a569e9cab5f2e41a8f"
+    },
+    {
+      "path": "tmp\\dr-acceptance-receipts\\D1-v11.calls.json",
+      "sha256": "2347edc8f3a1be0ddf143dbd10387da3552fee92749a3d0748ec37f4937453e1"
+    },
+    {
+      "path": "tmp\\dr-acceptance-receipts\\D1-v11.result.json",
+      "sha256": "bd35c448b75272842e60c1ba0f8caf9d9cc200edc6fd830dcb8624d40aa14666"
+    }
+  ],
+  "boundary": "Machine semantic passes are not manual scientific acceptance. No unknown calls, automatic retry or enlarged budget."
+}

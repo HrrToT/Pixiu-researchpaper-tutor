@@ -1,0 +1,22 @@
+{
+  "case": "X5R-v1",
+  "runId": "dr_run_62e55af08db75bd18c9c4e4da161a0ce",
+  "paperId": "b4b71257a412123d8033e441388a71c774fbd5b244c7ba212cb5d27da1d13a9f.pdf",
+  "sourceId": "src_0bdcb69e877c6470b01d8dea228c36799054eb17abf56cdc41a159f8b79c11a9",
+  "storedPdfBytes": 17740819,
+  "pdfHashVerified": true,
+  "readingReady": true,
+  "questionReady": true,
+  "aiAnalysisStatus": "not_requested",
+  "newIndexedChunks": 113,
+  "oldIndexRowsUnchanged": 1102,
+  "idempotentRepeatedAdd": true,
+  "sourceReceiptCount": 1,
+  "taskRevisionBefore": 17,
+  "taskRevisionAfter": 18,
+  "artifactsAndRunsUnchanged": true,
+  "ledgerAndAllRunPayloadsUnchanged": true,
+  "modelCallsDuringAddAndParse": 0,
+  "boundary": "First source add/parse/index integration after already-cached v1 acquisition; not fresh network acquisition or downstream model-answer quality.",
+  "sourceVersion": "arxiv:2406.01467v1"
+}

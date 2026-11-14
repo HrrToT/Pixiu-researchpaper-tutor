@@ -1,0 +1,43 @@
+{
+  "sourceCase": "AD1N-v21 archived response",
+  "legacyReceivedResponseExact": true,
+  "legacyProviderCalls": 0,
+  "newWritingPlan": {
+    "version": 1,
+    "targets": [
+      {
+        "claimId": "c1",
+        "primaryObligationIds": [
+          "ob_ab81342925fc2e571fa38a28",
+          "ob_71c983b2df35552000e28e00",
+          "ob_33995ad90eb136e77fd2adcf"
+        ],
+        "detailElsewhere": [
+          {
+            "obligationId": "ob_e9862b2c182c6a3aa43f5840",
+            "claimId": "c2"
+          }
+        ],
+        "suggestedTextAndConditionsCharacters": 208
+      },
+      {
+        "claimId": "c2",
+        "primaryObligationIds": [
+          "ob_e9862b2c182c6a3aa43f5840"
+        ],
+        "detailElsewhere": [],
+        "suggestedTextAndConditionsCharacters": 70
+      }
+    ]
+  },
+  "editableCharacters": 278,
+  "reservedLayoutCharacters": 22,
+  "candidateCharacters": 298,
+  "candidateOutcome": "compaction_candidate",
+  "originalScientificIdentitiesExact": true,
+  "originalReportRetained": true,
+  "newPromptBytes": 21211,
+  "liveModelCalls": 0,
+  "scientificAcceptance": false,
+  "boundary": "Offline archived-response handoff and role-plan construction only. The model has not generated under this plan; no old outcome upgraded."
+}

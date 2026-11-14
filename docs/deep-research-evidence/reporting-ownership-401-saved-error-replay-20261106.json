@@ -1,0 +1,83 @@
+{
+  "sourceCase": "G1N-v8",
+  "sourcePayloadSha256": "6287e9ec04dc50519f2079d2063a953164cea1e17004ad77752c0f2f503df2f1",
+  "replay": [
+    {
+      "claimId": "c2",
+      "originalPrivateVerdict": "semantic_passed",
+      "scientificAcceptance": false,
+      "targets": [
+        {
+          "statementPath": [
+            "text"
+          ],
+          "statementExcerpt": "PGSR 报告的平均 Chamfer Distance 为 0.49 mm（越低越好），训练耗时 1.0 小时（RTX 4090）",
+          "reporter": "PGSR",
+          "reportingWorkIds": [
+            "arxiv:2406.06521"
+          ]
+        },
+        {
+          "statementPath": [
+            "text"
+          ],
+          "statementExcerpt": "GOF 报告的平均 Chamfer Distance 为 0.74 mm，训练耗时 2 小时（A100）",
+          "reporter": "GOF",
+          "reportingWorkIds": [
+            "arxiv:2404.10772"
+          ]
+        }
+      ],
+      "oldResponseUnderNewPolicy": [
+        "reporting_ownership_audit_missing"
+      ],
+      "positiveWrongPaperAudit": [
+        "reporting_paper_mismatch"
+      ],
+      "ownHardwareOnlyAudit": [
+        "reporting_numbers_not_in_own_premises"
+      ]
+    },
+    {
+      "claimId": "c3",
+      "originalPrivateVerdict": "semantic_passed",
+      "scientificAcceptance": false,
+      "targets": [
+        {
+          "statementPath": [
+            "text"
+          ],
+          "statementExcerpt": "PGSR 报告的平均 PSNR 为 27.43 dB、SSIM 0.830、LPIPS 0.193",
+          "reporter": "PGSR",
+          "reportingWorkIds": [
+            "arxiv:2406.06521"
+          ]
+        },
+        {
+          "statementPath": [
+            "text"
+          ],
+          "statementExcerpt": "GOF 报告的平均 PSNR 为 27.78 dB、SSIM 0.835、LPIPS 0.196",
+          "reporter": "GOF",
+          "reportingWorkIds": [
+            "arxiv:2404.10772"
+          ]
+        }
+      ],
+      "oldResponseUnderNewPolicy": [
+        "reporting_ownership_audit_missing"
+      ],
+      "positiveWrongPaperAudit": [
+        "reporting_paper_mismatch"
+      ],
+      "ownHardwareOnlyAudit": null
+    }
+  ],
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "oldPayloadUnchanged": true,
+  "oldVerdictsRewritten": false,
+  "scientificAcceptance": false,
+  "independentCredit": 0,
+  "boundary": "Prospective deterministic reporting-paper and own-number prerequisites only; the original run remains inconclusive. No proof of future drafting, repair, full semantic quality or complete coverage."
+}

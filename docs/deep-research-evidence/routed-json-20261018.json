@@ -1,0 +1,24 @@
+{
+  "date": "2026-10-18",
+  "sourceCommit": "ebcf570c",
+  "promptVersion": "dr-v2.20261018.126",
+  "contracts": {
+    "structuredOutputContractVersion": 2
+  },
+  "checks": {
+    "passed": 2057,
+    "warnings": 1,
+    "seconds": 115.12,
+    "log": "tmp/pytest-dr126-full-final.log"
+  },
+  "behavior": [
+    "The runtime scope wrapper reconstructs the same trusted native JSON and source-as-data messages as the tracked invoker. Exact equality and response_format are checked before provider send.",
+    "Both routine and complex routes retain these instructions. HTTP-level offline tests cross the actual runtime wrapper and DeepSeek client for planning, extraction, relevance, factual checking and synthesis.",
+    "Prompt content is unchanged; the trusted system addition remains inside the existing 1024-token framing reservation. No quote clipping or increased total budget.",
+    "Native transport version 2 is server-owned and immutable. Historical version 1 keeps its exact original request fingerprint/cache behavior; unknown requests are not retried.",
+    "Confirmed malformed output remains raw in the ledger and is rejected rather than guessed or repaired with another call.",
+    "The earlier .125 direct-client transport check missed the production wrapper overwrite; D1-v14 exposed it. The integration test now covers the missing path."
+  ],
+  "runtime": "runtime-load-dr126-routed-json-20261018.json",
+  "boundary": "Native JSON controls output syntax and envelope instructions, not factual truth or field-level compliance. Real content gates remain separate."
+}

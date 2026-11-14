@@ -1,0 +1,32 @@
+{
+  "case": "AD1N-v11 c2 second observation",
+  "mode": "offline actual checker factory replay",
+  "baselineCommit": "aad1ec3e",
+  "legacyRequestAndVerdictExact": true,
+  "candidateOnlyResponseAdjustment": "append diagnosticFacts=[] to saved response to isolate grounding from old-schema rejection",
+  "candidateRequestExceptGuidanceExact": true,
+  "oldBytes": 14499,
+  "newBytes": 15601,
+  "literalSourcesVersionsAndOptionsExact": true,
+  "originalReasonSha256": "910e60fd4b6a04e40fdb1df09a86d5104c3c2a6e8d0647c1ea65bb5f76c1c90c",
+  "diagnosticAudit": {
+    "version": 1,
+    "reportedStatus": "failed",
+    "reasonSha256": "910e60fd4b6a04e40fdb1df09a86d5104c3c2a6e8d0647c1ea65bb5f76c1c90c",
+    "bindingCount": 0,
+    "newNumberCount": 2,
+    "unboundNewNumberCount": 2,
+    "errors": [
+      "new_diagnostic_numbers_not_bound"
+    ]
+  },
+  "status": "failed",
+  "safeReason": "审核说明中的新增事实未绑定本条可见原文，本条尚未核验；不能据此改动具体参数。",
+  "rawFileUnchanged": true,
+  "rawPayloadSha256": "a5170eb3ec8074dacf5cc4ba21c196d71f78162a96a5c68987de4f4c14617457",
+  "newModelCalls": 0,
+  "productionWrites": 0,
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "boundary": "Known unbound numerical correction becomes an unresolved diagnostic, never target approval. Empty bindings are counterfactual protocol adaptation, not a new model response. No claim of full semantic reason verification."
+}

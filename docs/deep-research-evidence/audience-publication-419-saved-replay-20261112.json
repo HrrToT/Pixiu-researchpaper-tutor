@@ -1,0 +1,35 @@
+{
+  "case": "AD1N-v9",
+  "mode": "saved reply offline replay, not new model output",
+  "baselineCommit": "0f5769d5",
+  "legacyDefaultRequestStateAndResultExact": true,
+  "legacyPreparedRequestMatchesActual": true,
+  "publicationBudget": {
+    "totalCharacters": 300,
+    "fixedCharacters": 104,
+    "layoutCharacters": 22,
+    "reservedCharacters": 126,
+    "editableCharacters": 174,
+    "protectedClaimIds": [
+      "c2"
+    ],
+    "editableClaimIds": [
+      "c1"
+    ]
+  },
+  "originalEditOutcome": "applied",
+  "newEditOutcome": "rejected",
+  "newEditReason": "publication_character_limit",
+  "protectedObjectsUnchanged": true,
+  "sourcePermissionsUnchanged": true,
+  "oldPromptBytes": 16807,
+  "newPromptBytes": 17444,
+  "outputTokens": 3072,
+  "newModelCalls": 0,
+  "productionWrites": 0,
+  "rawPayloadSha256": "f73769697a78b95c02ae45a1a4b3b52f2da77707f136dbada8d3981e4c9c6eb9",
+  "originalPayloadUnchanged": true,
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "boundary": "Rejects the known too-long reply; does not generate or approve a better answer. Original failed run remains unchanged."
+}

@@ -1,0 +1,13 @@
+{
+  "runtime": "academic-dr-runtime production worker subprocess only",
+  "seconds": 6.0,
+  "pages": 45,
+  "allPageHashesMatchHost": true,
+  "newModelCalls": 0,
+  "sourceNetworkRequests": 0,
+  "sourceImports": 0,
+  "applicationCacheWrites": 0,
+  "serviceRestart": false,
+  "sourceSha256": "063d6cf55f01460ee1ec782ff23608fb4f0819ecf899288f7b4a38ce75962eb5",
+  "boundary": "Actual container parser from mounted source; not a graph/model call or external fetch."
+}

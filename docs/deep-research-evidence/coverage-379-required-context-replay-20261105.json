@@ -1,0 +1,28 @@
+{
+  "sourceCase": "X4L-v10",
+  "results": {
+    "initial": {
+      "fixedBytes": 15563,
+      "literalRequiredBytes": 24199,
+      "sharedRequiredBytes": 20925,
+      "requiredRows": 8,
+      "completeRowsRoundTripExact": true,
+      "fixedTemplateSha256": "b1844f0bd030c1f2adcc533c7a0055664b01b8a1b787269fed11f34790b375de"
+    },
+    "final": {
+      "fixedBytes": 16115,
+      "literalRequiredBytes": 26438,
+      "sharedRequiredBytes": 22892,
+      "requiredRows": 10,
+      "completeRowsRoundTripExact": true,
+      "fixedTemplateSha256": "62aea1e8b90f669ffe9e1adf84ec1e9cc2228c7fedafb23a54f34e43b57ab4fc"
+    }
+  },
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "budgetBytes": 24000,
+  "budgetIncreased": false,
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "correction": "24199/26438 are required-context render sizes, not empty-evidence fixed template sizes. The fixed templates are15563/16115. No old runtime verdict or raw result is changed."
+}

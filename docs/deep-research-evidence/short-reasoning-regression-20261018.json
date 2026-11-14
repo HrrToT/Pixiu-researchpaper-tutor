@@ -1,0 +1,13 @@
+{
+  "date": "2026-10-18",
+  "sourceCommit": "cf111653",
+  "promptVersion": "dr-v2.20261018.168",
+  "factualReasoningContractVersion": 3,
+  "fullOffline": {"passed": 2705, "warnings": 1, "seconds": 169.7, "log": "tmp/pytest-dr168-full.log"},
+  "focused": {"passed": 43, "seconds": 2.57, "log": "tmp/pytest-dr168-focused.log", "overlap": true},
+  "legacyActualProviderFingerprintsMatched": 4,
+  "replayProof": "short-reasoning-real-input-replay-20261018.json",
+  "newProfile": "Only new explicitly <=300-character factual/comparison synthesis uses high effort. Output cap remains 8192; direct repair exact request is unchanged.",
+  "unchanged": ["Original evidence and prompts", "Actual JSON schemas", "Per-batch direct repair", "Call/token/wall-clock budgets", "Legacy profiles and request identities"],
+  "boundary": "Offline profile and request-identity verification only. One real comparison follow-up is planned first; no content acceptance inferred."
+}

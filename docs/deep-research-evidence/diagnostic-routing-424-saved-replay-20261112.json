@@ -1,0 +1,15 @@
+{
+  "case": "AD1N-v14",
+  "mode": "offline exact saved checker response plus normal verify graph",
+  "baselineCommit": "9b86926f",
+  "savedReviewDispatches": 1,
+  "diagnosticAuditMatchesRealRun": true,
+  "oldPolicyMatchesFrozenBaseline": true,
+  "newPolicySkipsBodyRepair": true,
+  "unverifiedClaimRetained": true,
+  "newModelCalls": 0,
+  "productionWrites": 0,
+  "rawPayloadSha256": "1f6cc34099d9a0b5f9c55fef5053b261714bd301f3ef960ab821bc7ce04c5f80",
+  "contentAccepted": false,
+  "independentCredit": 0
+}

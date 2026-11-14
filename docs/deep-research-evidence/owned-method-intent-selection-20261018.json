@@ -1,0 +1,241 @@
+{
+  "date": "2026-10-18",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "actualIndexedRows": [
+    61,
+    65
+  ],
+  "queries": [
+    {
+      "obligationId": "ob_1",
+      "pdfId": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf",
+      "query": "3DGStream input data Deformable 3D Gaussians input data",
+      "oldChunks": [
+        43,
+        12,
+        32,
+        13,
+        10
+      ],
+      "newChunks": [
+        43,
+        17,
+        12,
+        32,
+        13
+      ],
+      "added": [
+        {
+          "sourceId": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-17",
+          "location": {
+            "page": 4,
+            "chunk": 17,
+            "section": "Method"
+          },
+          "textSha256": "82f42af29502931b78e47712a88d1b452e6654c63bd35d9056934790c2fcf39a"
+        }
+      ]
+    },
+    {
+      "obligationId": "ob_1",
+      "pdfId": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf",
+      "query": "3DGStream input data Deformable 3D Gaussians input data",
+      "oldChunks": [
+        16,
+        9,
+        37,
+        30,
+        4
+      ],
+      "newChunks": [
+        16,
+        15,
+        9,
+        37,
+        30
+      ],
+      "added": [
+        {
+          "sourceId": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf-v3040e30052bd930d-chunk-15",
+          "location": {
+            "page": 3,
+            "chunk": 15,
+            "section": "Method"
+          },
+          "textSha256": "2eb9bea0536c8e57bb1f79110172d5b0404a23a3115fd7f519f8a263cb0670b1"
+        }
+      ]
+    },
+    {
+      "obligationId": "ob_2",
+      "pdfId": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf",
+      "query": "3DGStream temporal representation Deformable 3D Gaussians temporal representation",
+      "oldChunks": [
+        12,
+        13,
+        14,
+        43,
+        10
+      ],
+      "newChunks": [
+        12,
+        22,
+        23,
+        13,
+        14
+      ],
+      "added": [
+        {
+          "sourceId": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-22",
+          "location": {
+            "page": 4,
+            "chunk": 22,
+            "section": "Neural Transformation Cache"
+          },
+          "textSha256": "89009e86698fd9d3303172e46c5f22257f30254aaba0a179e080530d883cb746"
+        },
+        {
+          "sourceId": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-23",
+          "location": {
+            "page": 4,
+            "chunk": 23,
+            "section": "Neural Transformation Cache"
+          },
+          "textSha256": "d5dbbab1a282cbad15be82fc573a2b71b17dbe649bae5fbc8b0d4bd016d3eb6f"
+        }
+      ]
+    },
+    {
+      "obligationId": "ob_2",
+      "pdfId": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf",
+      "query": "3DGStream temporal representation Deformable 3D Gaussians temporal representation",
+      "oldChunks": [
+        21,
+        4,
+        37,
+        16,
+        9
+      ],
+      "newChunks": [
+        21,
+        15,
+        4,
+        37,
+        16
+      ],
+      "added": [
+        {
+          "sourceId": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf-v3040e30052bd930d-chunk-15",
+          "location": {
+            "page": 3,
+            "chunk": 15,
+            "section": "Method"
+          },
+          "textSha256": "2eb9bea0536c8e57bb1f79110172d5b0404a23a3115fd7f519f8a263cb0670b1"
+        }
+      ]
+    },
+    {
+      "obligationId": "ob_3",
+      "pdfId": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf",
+      "query": "3DGStream online training Deformable 3D Gaussians offline training",
+      "oldChunks": [
+        5,
+        2,
+        34,
+        33,
+        10
+      ],
+      "newChunks": [
+        5,
+        17,
+        2,
+        34,
+        33
+      ],
+      "added": [
+        {
+          "sourceId": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-17",
+          "location": {
+            "page": 4,
+            "chunk": 17,
+            "section": "Method"
+          },
+          "textSha256": "82f42af29502931b78e47712a88d1b452e6654c63bd35d9056934790c2fcf39a"
+        }
+      ]
+    },
+    {
+      "obligationId": "ob_3",
+      "pdfId": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf",
+      "query": "3DGStream online training Deformable 3D Gaussians offline training",
+      "oldChunks": [
+        37,
+        23,
+        30,
+        4,
+        21
+      ],
+      "newChunks": [
+        37,
+        16,
+        23,
+        30,
+        4
+      ],
+      "added": [
+        {
+          "sourceId": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf-v3040e30052bd930d-chunk-16",
+          "location": {
+            "page": 3,
+            "chunk": 16,
+            "section": "Method"
+          },
+          "textSha256": "00f4e7a2db9a5213383198db1f0afaf5db95aec1b609ba88fcf1fa7ae41abcec"
+        }
+      ]
+    },
+    {
+      "obligationId": "ob_4",
+      "pdfId": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf",
+      "query": "3DGStream FPS evaluation conditions Deformable 3D Gaussians FPS evaluation conditions",
+      "oldChunks": [
+        52,
+        34,
+        10,
+        16,
+        5
+      ],
+      "newChunks": [
+        52,
+        34,
+        10,
+        16,
+        5
+      ],
+      "added": []
+    },
+    {
+      "obligationId": "ob_4",
+      "pdfId": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf",
+      "query": "3DGStream FPS evaluation conditions Deformable 3D Gaussians FPS evaluation conditions",
+      "oldChunks": [
+        4,
+        37,
+        22,
+        28,
+        16
+      ],
+      "newChunks": [
+        4,
+        37,
+        22,
+        28,
+        16
+      ],
+      "added": []
+    }
+  ],
+  "boundary": "Offline selection probe from actual owned current index and archived exact retrieval arguments. Own IDs, index versions, source text and slot cap preserved. Selection improvement is not new extraction, source support or content acceptance."
+}

@@ -1,0 +1,14 @@
+{
+  "date": "2026-10-18",
+  "sourceCommit": "49c787cf",
+  "promptVersion": "dr-v2.20261018.169",
+  "fullOffline": {"passed": 2728, "warnings": 1, "seconds": 168.39, "log": "tmp/pytest-dr169-full.log"},
+  "focused": {"passed": 121, "seconds": 10.76, "log": "tmp/pytest-dr169-focused-fixed.log", "overlap": true},
+  "initialFocused": {"passed": 110, "failed": 9, "reason": "Old tests expected server native contract 6. Updated expectation to 7, retained immutability assertions, added old6 and new7 budget/unknown receipt cases."},
+  "contracts": {"absenceScopeContractVersion": 3, "structuredOutputContractVersion": 7},
+  "legacyActualRequestProof": "current-evidence-scope-real-input-replay-20261018.json",
+  "systemBytes": {"synthesis": 849, "repair": 866, "reservedFraming": 1024},
+  "scopeRule": "Current/available evidence must be the direct grammatical subject; a qualifier before author-wide absence cannot bypass the guard. All routed claims still require semantics.",
+  "runtimeLoaded": false,
+  "boundary": "Code committed and offline checked. Not loaded separately: a subsequently confirmed inference-cell reference omission is being fixed before loading the combined implementation. No real169 quality result is claimed."
+}

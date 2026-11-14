@@ -1,0 +1,83 @@
+{
+  "date": "2026-10-21",
+  "sourceCase": "E1-v9",
+  "controlledReviewContractVersion": 3,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "oldActualReviewFingerprintsMatched": 4,
+  "requests": [
+    {
+      "node": "verify_design_config",
+      "oldActualFingerprintMatched": true,
+      "oldInputBytes": 25977,
+      "newInputBytes": 25367,
+      "allOriginalTargetsContextEvidenceOptionsPreserved": true,
+      "actualDeclarationLinks": [],
+      "oldFailedVerdictsNotPromoted": true
+    },
+    {
+      "node": "verify_design_science",
+      "oldActualFingerprintMatched": true,
+      "oldInputBytes": 31749,
+      "newInputBytes": 31568,
+      "allOriginalTargetsContextEvidenceOptionsPreserved": true,
+      "actualDeclarationLinks": [
+        {
+          "hypothesisId": "c1",
+          "analysisId": "c8",
+          "requestedKeys": [
+            "psnr_diff",
+            "ssim_diff",
+            "storage_diff",
+            "time_diff"
+          ],
+          "presentKeys": [
+            "psnr_diff",
+            "ssim_diff",
+            "storage_diff",
+            "time_diff"
+          ],
+          "missingKeys": []
+        }
+      ],
+      "oldFailedVerdictsNotPromoted": true
+    },
+    {
+      "node": "verify_repair_design_config",
+      "oldActualFingerprintMatched": true,
+      "oldInputBytes": 21242,
+      "newInputBytes": 20632,
+      "allOriginalTargetsContextEvidenceOptionsPreserved": true,
+      "actualDeclarationLinks": [],
+      "oldFailedVerdictsNotPromoted": true
+    },
+    {
+      "node": "verify_repair_design_science",
+      "oldActualFingerprintMatched": true,
+      "oldInputBytes": 30251,
+      "newInputBytes": 30070,
+      "allOriginalTargetsContextEvidenceOptionsPreserved": true,
+      "actualDeclarationLinks": [
+        {
+          "hypothesisId": "c1",
+          "analysisId": "c8",
+          "requestedKeys": [
+            "psnr_diff",
+            "ssim_diff",
+            "storage_diff",
+            "time_diff"
+          ],
+          "presentKeys": [
+            "psnr_diff",
+            "ssim_diff",
+            "storage_diff",
+            "time_diff"
+          ],
+          "missingKeys": []
+        }
+      ],
+      "oldFailedVerdictsNotPromoted": true
+    }
+  ],
+  "boundary": "Only review instructions and an exact unverified key-presence index change. Full targets/config/source quotations/contexts/options and old failed judgments remain. No source/scientific/independent acceptance, new model call or historical upgrade; real defects still need repair."
+}

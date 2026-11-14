@@ -1,0 +1,110 @@
+{
+  "date": "2026-10-23",
+  "case": "E1-v37",
+  "sourceCommit": "0683aaf1",
+  "outcome": "inconclusive",
+  "accepted": 0,
+  "rejected": 9,
+  "planningReady": true,
+  "realPlanningNormalizationMoves": [],
+  "privateResponseBytes": 7478,
+  "publicBodyBytes": 16758,
+  "privateStateCounts": {
+    "Frame0_3DG_Model": 5,
+    "NTC_Stage1": 5,
+    "Stage2_Additional_3DGs": 5
+  },
+  "publicBaselineStates": [
+    {
+      "name": "Frame0_3DG_Model",
+      "dtype": "float32",
+      "shape": [
+        1
+      ],
+      "initializer": {
+        "mode": "constant",
+        "value": 0
+      }
+    },
+    {
+      "name": "NTC_Stage1",
+      "dtype": "float32",
+      "shape": [
+        1
+      ],
+      "initializer": {
+        "mode": "constant",
+        "value": 0
+      }
+    }
+  ],
+  "publicComponentStateCounts": {
+    "shared_preparation": 1,
+    "treatment_stage2": 1
+  },
+  "verifiedDefects": [
+    "Public state definitions collapse actual Gaussian/hash/MLP arrays into scalar shape[1],constant0 placeholders. Private plan15 state rows are unverified and also retain unresolved asset/dimension assumptions.",
+    "c9 claims paper-wide absence without supporting own citations.",
+    "c7 proposes only vague timing and storage protocols; no executable measurement details."
+  ],
+  "reviewRepresentationFailures": [
+    {
+      "claimId": "c3",
+      "errors": [
+        "finding.0.not_an_absent_schema_field",
+        "finding.1.not_an_absent_schema_field",
+        "finding.2.not_an_absent_schema_field",
+        "finding.3.not_an_absent_schema_field"
+      ]
+    },
+    {
+      "claimId": "c4",
+      "errors": [
+        "finding.0.path",
+        "finding.1.path",
+        "finding.2.path",
+        "finding.3.path"
+      ]
+    },
+    {
+      "claimId": "c5",
+      "errors": [
+        "finding.0.path",
+        "finding.1.path"
+      ]
+    },
+    {
+      "claimId": "c6",
+      "errors": [
+        "finding.0.not_an_absent_schema_field",
+        "finding.1.not_an_absent_schema_field",
+        "finding.2.not_an_absent_schema_field"
+      ]
+    },
+    {
+      "claimId": "c7",
+      "errors": [
+        "finding.0.path",
+        "finding.1.path",
+        "finding.2.path"
+      ]
+    }
+  ],
+  "reviewSemanticConcerns": [
+    "Rejects a proposed window for lacking author adoption; inspect factual availability separately.",
+    "Rejects numeric0.8 against a supplied80percent passage and0.1 against explicit initialization0.1. These feedback reasons require correction, not automatic pass.",
+    "Some missing_field findings target present values; several paths are dot strings rather than required arrays."
+  ],
+  "repairStatus": "skipped_budget",
+  "repairLimit": {
+    "kind": "repairEvidenceBytes",
+    "limit": 15423,
+    "used": 20214
+  },
+  "exactReviewFingerprintCount": 4,
+  "allReviewEvidenceContextRetained": true,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "independentCredit": 0,
+  "boundary": "Analysis of saved raw case, not new model review or scientific approval. New normalization was not exercised by the well-shaped real plan; covered by actual archived response replay and mock transport. No historical run changed."
+}

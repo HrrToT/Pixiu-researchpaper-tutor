@@ -1,0 +1,44 @@
+{
+  "date": "2026-10-18",
+  "inputCase": "D5-v12",
+  "inputRunId": "dr_run_73291abc6c2a535ea3a2f68d2bacea44",
+  "legacyActualSynthesisFingerprint": "9786bfaf160cfdef028b9477ecfde19db5e4e7cb3cff99c0a6b77e06eb881a2c",
+  "legacyActualRepairFingerprint": "a2a1da5b875c847b46ca70233b40e6bf5bfdc377b90ff50bb5b1c7ceaec8b733",
+  "legacyProviderFingerprintsMatched": true,
+  "userPromptsEvidenceSchemasAndOptionsUnchanged": true,
+  "oldScopedRepairRejection": {
+    "accepted": [],
+    "rejected": [
+      {
+        "claimId": "c1",
+        "reason": "absence_not_established",
+        "detail": "本条引用没有明确建立作者或论文缺少这些验证。把结论限定为本次引用能支持的实验范围及其不能证明的推广；不要写成作者未在其他条件验证、论文没有提供或全文不存在。引用中的其他否定句不构成这项缺席判断的依据。"
+      }
+    ]
+  },
+  "newScopedRepairNegativeFixtureResult": {
+    "accepted": [],
+    "rejected": [
+      {
+        "claimId": "c1",
+        "reason": "semantic_unresolved",
+        "detail": "Negative fixture: unsupported causal opening remains; a scoped guard change is not factual approval."
+      }
+    ]
+  },
+  "authorWideQualifierWashStillBlocked": true,
+  "semanticFixtureInvokedExactlyOnceForBoundedClaim": true,
+  "newSystemBytes": {
+    "synthesis": 849,
+    "repair": 866
+  },
+  "oldSystemBytes": {
+    "synthesis": 815,
+    "repair": 882
+  },
+  "existingSystemReservation": 1024,
+  "originalRecordUnchanged": true,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "boundary": "Exact old live Provider fingerprints plus copied actual repair routed to a deliberately negative offline semantic fixture under v3. This proves the hard-guard false positive is removed, not that the causal opening is valid or a new model would pass it. Old production outcome remains inconclusive."
+}

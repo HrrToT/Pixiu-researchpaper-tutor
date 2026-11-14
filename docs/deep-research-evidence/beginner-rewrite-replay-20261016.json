@@ -1,0 +1,37 @@
+{
+  "date": "2026-10-16",
+  "promptVersion": "dr-v2.20261016.111",
+  "audienceRewriteContractVersion": 1,
+  "sourceCase": "H3R-v15",
+  "sourcePayloadSha256": "3511700bee0bd653f577d414ea08bca82f0068a8ca8fe18f01de1d105f1d26bb",
+  "sourceRunUnchanged": true,
+  "legacyRunRemainsIneligible": true,
+  "counterfactualNewContractEligible": true,
+  "originalDraftCharacters": 206,
+  "requests": [
+    {
+      "inputBytes": 9082,
+      "outputLimit": 3072,
+      "requiredCitations": 5,
+      "allOriginalQuotesAndContextKept": true
+    }
+  ],
+  "claimIdentityAndMetadataUnchanged": true,
+  "conditionsUnchanged": true,
+  "sectionsUnchanged": true,
+  "settledEditReusedWithoutDispatch": true,
+  "independentFailedVerdictsRemainRejected": true,
+  "fixtureCalls": 1,
+  "modelCalls": 0,
+  "providerNetworkRequests": 0,
+  "boundary": "Saved-input pipeline replay with explicitly synthetic wording placeholders. No language-quality score, scientific pass or real-model generation; original .110 run remains paused/unresolved_unknown. All DR0-DR5 and independent release requirements remain.",
+  "sourceCommit": "4341a00",
+  "tests": {
+    "passed": 1819,
+    "warnings": 1,
+    "seconds": 51.21,
+    "sourceCommit": "4341a00",
+    "log": "tmp/pytest-dr111-full-final.log",
+    "scope": "Research/reading/PDF table/config; no frontend or Java source changes."
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "papers": {
+    "arxiv:2312.16812": {
+      "ownedRunIdentityHits": [],
+      "v1CachePresent": false
+    },
+    "arxiv:2402.03307": {
+      "ownedRunIdentityHits": [],
+      "v1CachePresent": false
+    }
+  },
+  "indexIdentityHits": [],
+  "indexBodyTitleMentions": {
+    "Spacetime Gaussian Feature Splatting": 0,
+    "Towards Efficient Novel View Synthesis for Dynamic Scenes": 0,
+    "4D-Rotor Gaussian Splatting": 0
+  },
+  "indexRows": 1215,
+  "providerCalls": 0,
+  "writes": 0,
+  "scope": "Read-only candidate freshness before definition; body mentions are recorded separately from owned-paper acquisition or prior focal model cases."
+}

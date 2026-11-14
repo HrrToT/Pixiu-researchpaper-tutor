@@ -1,0 +1,25 @@
+{
+  "liveDatabasesReplaced": false,
+  "productionWrites": 0,
+  "modelCalls": 0,
+  "h2BackupSha256": "bb5ba3885d8c01aee1d946dc9574b4457a73bccf897f442b0d63ae73c1c781df",
+  "sqliteBackupSha256": "5f64fbfe216e8e93b2852054da852513bdfda86c5cb4fade3aeefbe6b33dd7a2",
+  "rollbackJarSha256": "3ac7559375c93118fd6a006112e1c2d2db29b1b954bc996d5ded964c3b3c90b0",
+  "pythonPolicy": "Current durable executor, original run contracts, rollout disabled",
+  "boundary": "Backup restoration and isolated read compatibility; not live production rollback or research quality acceptance",
+  "taskCount": 103,
+  "runCount": 365,
+  "pausedUnknownCount": 15,
+  "allTasksPreserved": true,
+  "allResearchTablesPreserved": true,
+  "unknownRunsNotResumed": true,
+  "restoredReport": {
+    "runId": "dr_run_87433c6322e85e47934e1a1a747ebc2d",
+    "reportVersionId": "report_dr_run_87433c6322e85e47934e1a1a747ebc2d_v1",
+    "bodySha256": "fd444c7275b3d972de0657f9d5d4698b7c13ce67e5e912335cb8219626ab0872"
+  },
+  "blockedRequests": [],
+  "exitCode": 0,
+  "isolatedPythonStopped": true,
+  "isolatedJavaStopped": true
+}

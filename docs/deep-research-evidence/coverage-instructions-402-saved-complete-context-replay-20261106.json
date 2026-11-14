@@ -1,0 +1,39 @@
+{
+  "sourceCase": "G1N-v8",
+  "sourcePayloadSha256": "6287e9ec04dc50519f2079d2063a953164cea1e17004ad77752c0f2f503df2f1",
+  "baselineCommit": "82d99d1f5ad36d17e1a306645fd8f1c3800a0ee5",
+  "legacyFullAuditAndPromptExact": true,
+  "oldLimit": {
+    "kind": "coveragePromptBytes",
+    "limit": 24000,
+    "used": 25854
+  },
+  "oldFixedBytes": 16885,
+  "newFixedBytes": 13860,
+  "newRequiredBytes": 22829,
+  "newPreparedRequest": {
+    "node": "verify_answer_coverage",
+    "bytes": 23835,
+    "options": {
+      "max_tokens": 5852,
+      "temperature": 0.0
+    },
+    "kwargs": {
+      "use_reserve": true
+    }
+  },
+  "completeQuestionRequirementsClaimsMetadataExact": true,
+  "exactDecisionDataSha256": "ee4c9f8a0dc2b8f73b1e393dc2e3272d718cbcec5a833f69a0170aac3392ee65",
+  "checkSpecificPermissionsExact": true,
+  "catalogSha256": "9af2d617fbe6201e3045c27cbc7d303ea24c991f5cbbb305b0f0bc68f71d3976",
+  "allCitedQuotesAndContextExact": true,
+  "requiredRows": 8,
+  "visibleRows": 10,
+  "citedDataSha256": "58eb1b82e8d31d405ca196d84a4afcb64e2f8be0b476c74fe3769fb0a8b4042f",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "sourcePayloadUnchanged": true,
+  "scientificAcceptance": false,
+  "independentCredit": 0,
+  "boundary": "New request prepared then stopped locally before dispatch; no model coverage judgement, old verdict upgrade or full research acceptance."
+}

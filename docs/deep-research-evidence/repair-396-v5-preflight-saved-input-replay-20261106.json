@@ -1,0 +1,571 @@
+{
+  "case": "G1N-v5",
+  "sourceRunId": "dr_run_f8571e137e88548a90f2868bcc6d3aab",
+  "payloadSha256": "f2920db772f2882cb58cd0bbb57a6e024a046bd6a0913503d8d77d88b49f0091",
+  "replayOverrides": {
+    "state.repairCompleted": false,
+    "factualRepairPromptContractVersion": 2,
+    "startedAt": "replay current time for admission only"
+  },
+  "preparedRequests": [
+    {
+      "targetIds": [
+        "c1",
+        "c2"
+      ],
+      "promptBytes": 23995,
+      "premiseAudit": {
+        "version": 1,
+        "targets": [
+          {
+            "claimId": "c1",
+            "mode": "unverified_role_navigation",
+            "originalEvidenceIds": [
+              "ev_d9714d53fb3219d25b98cbe348699fc00c9843d748c9b4f55b0d93ff06edb45a",
+              "ev_e09faf2570c596ce2ef39df199aa435cf1174ff209cec32816c89febd223ae04",
+              "ev_85c7eb04158a10b01a9cde729e25358662b731f9c563d1690db1736f104d9948",
+              "ev_173b7c330817e4715607e13867a070b506633629b86c98e0663c472f273d9b55"
+            ],
+            "requiredEvidenceIds": [
+              "ev_1538ceb9fd94a1133696ab93e3d1cbb1092791f6b131eb2de581a9f30d01641a",
+              "ev_d9714d53fb3219d25b98cbe348699fc00c9843d748c9b4f55b0d93ff06edb45a"
+            ],
+            "preferredEvidenceIds": [
+              "ev_1538ceb9fd94a1133696ab93e3d1cbb1092791f6b131eb2de581a9f30d01641a",
+              "ev_d9714d53fb3219d25b98cbe348699fc00c9843d748c9b4f55b0d93ff06edb45a",
+              "ev_85c7eb04158a10b01a9cde729e25358662b731f9c563d1690db1736f104d9948",
+              "ev_173b7c330817e4715607e13867a070b506633629b86c98e0663c472f273d9b55",
+              "ev_e09faf2570c596ce2ef39df199aa435cf1174ff209cec32816c89febd223ae04"
+            ],
+            "navigationBundles": [
+              {
+                "obligationId": "ob_1",
+                "criterionId": "human_aspect_1",
+                "requirement": "高斯表示与网格提取路径有什么不同",
+                "source": "arxiv:2406.06521v1",
+                "navigationRole": "representation",
+                "evidenceIds": [
+                  "ev_1538ceb9fd94a1133696ab93e3d1cbb1092791f6b131eb2de581a9f30d01641a"
+                ]
+              },
+              {
+                "obligationId": "ob_1",
+                "criterionId": "human_aspect_1",
+                "requirement": "高斯表示与网格提取路径有什么不同",
+                "source": "arxiv:2404.10772v1",
+                "navigationRole": "representation",
+                "evidenceIds": [
+                  "ev_d9714d53fb3219d25b98cbe348699fc00c9843d748c9b4f55b0d93ff06edb45a"
+                ]
+              },
+              {
+                "obligationId": "ob_1",
+                "criterionId": "human_aspect_1",
+                "requirement": "高斯表示与网格提取路径有什么不同",
+                "source": "arxiv:2406.06521v1",
+                "navigationRole": "procedure",
+                "evidenceIds": [
+                  "ev_85c7eb04158a10b01a9cde729e25358662b731f9c563d1690db1736f104d9948",
+                  "ev_173b7c330817e4715607e13867a070b506633629b86c98e0663c472f273d9b55"
+                ]
+              },
+              {
+                "obligationId": "ob_1",
+                "criterionId": "human_aspect_1",
+                "requirement": "高斯表示与网格提取路径有什么不同",
+                "source": "arxiv:2404.10772v1",
+                "navigationRole": "procedure",
+                "evidenceIds": [
+                  "ev_e09faf2570c596ce2ef39df199aa435cf1174ff209cec32816c89febd223ae04"
+                ]
+              }
+            ],
+            "verification": "unchecked"
+          },
+          {
+            "claimId": "c2",
+            "mode": "unverified_role_navigation",
+            "originalEvidenceIds": [
+              "ev_5eeb225bc9ec31711ba9d3440776342cb4e9499593e0b3a8c4a3cf94690120ea",
+              "ev_5c7fd6bcd71aead88a73e0435ce9a61d5a1e5b76fb19bc43b4e68860062b1caa",
+              "ev_2a12cfc33f3fa8ac58ecc53a60a08ab9af2444710b56ba64d00da12fcd2ffddb",
+              "ev_173b7c330817e4715607e13867a070b506633629b86c98e0663c472f273d9b55"
+            ],
+            "requiredEvidenceIds": [
+              "ev_5eeb225bc9ec31711ba9d3440776342cb4e9499593e0b3a8c4a3cf94690120ea",
+              "ev_5c7fd6bcd71aead88a73e0435ce9a61d5a1e5b76fb19bc43b4e68860062b1caa"
+            ],
+            "preferredEvidenceIds": [
+              "ev_5eeb225bc9ec31711ba9d3440776342cb4e9499593e0b3a8c4a3cf94690120ea",
+              "ev_5c7fd6bcd71aead88a73e0435ce9a61d5a1e5b76fb19bc43b4e68860062b1caa",
+              "ev_173b7c330817e4715607e13867a070b506633629b86c98e0663c472f273d9b55",
+              "ev_2a12cfc33f3fa8ac58ecc53a60a08ab9af2444710b56ba64d00da12fcd2ffddb"
+            ],
+            "navigationBundles": [
+              {
+                "obligationId": "ob_2",
+                "criterionId": "req_2_1",
+                "requirement": "列出 GOF 和 PGSR 在 DTU 上报告的几何精度数值及指标方向（越低越好或越高越好）。",
+                "source": "arxiv:2406.06521v1",
+                "navigationRole": "result",
+                "evidenceIds": [
+                  "ev_5eeb225bc9ec31711ba9d3440776342cb4e9499593e0b3a8c4a3cf94690120ea"
+                ]
+              },
+              {
+                "obligationId": "ob_2",
+                "criterionId": "req_2_1",
+                "requirement": "列出 GOF 和 PGSR 在 DTU 上报告的几何精度数值及指标方向（越低越好或越高越好）。",
+                "source": "arxiv:2404.10772v1",
+                "navigationRole": "result",
+                "evidenceIds": [
+                  "ev_5c7fd6bcd71aead88a73e0435ce9a61d5a1e5b76fb19bc43b4e68860062b1caa"
+                ]
+              },
+              {
+                "obligationId": "ob_2",
+                "criterionId": "req_2_2",
+                "requirement": "列出 GOF 和 PGSR 在 DTU 上报告的训练耗时数值，并注明硬件条件。",
+                "source": "arxiv:2406.06521v1",
+                "navigationRole": "settings",
+                "evidenceIds": [
+                  "ev_173b7c330817e4715607e13867a070b506633629b86c98e0663c472f273d9b55"
+                ]
+              },
+              {
+                "obligationId": "ob_2",
+                "criterionId": "req_2_2",
+                "requirement": "列出 GOF 和 PGSR 在 DTU 上报告的训练耗时数值，并注明硬件条件。",
+                "source": "arxiv:2404.10772v1",
+                "navigationRole": "settings",
+                "evidenceIds": [
+                  "ev_2a12cfc33f3fa8ac58ecc53a60a08ab9af2444710b56ba64d00da12fcd2ffddb"
+                ]
+              },
+              {
+                "obligationId": "ob_4",
+                "criterionId": "human_aspect_1",
+                "requirement": "核对数据集、指标方向、分辨率和硬件条件",
+                "source": "arxiv:2406.06521v1",
+                "navigationRole": "result",
+                "evidenceIds": [
+                  "ev_5eeb225bc9ec31711ba9d3440776342cb4e9499593e0b3a8c4a3cf94690120ea"
+                ]
+              },
+              {
+                "obligationId": "ob_4",
+                "criterionId": "human_aspect_1",
+                "requirement": "核对数据集、指标方向、分辨率和硬件条件",
+                "source": "arxiv:2404.10772v1",
+                "navigationRole": "result",
+                "evidenceIds": [
+                  "ev_5c7fd6bcd71aead88a73e0435ce9a61d5a1e5b76fb19bc43b4e68860062b1caa"
+                ]
+              },
+              {
+                "obligationId": "ob_4",
+                "criterionId": "human_aspect_2",
+                "requirement": "区分作者自报与同表对比",
+                "source": "arxiv:2406.06521v1",
+                "navigationRole": "provenance",
+                "evidenceIds": [
+                  "ev_5eeb225bc9ec31711ba9d3440776342cb4e9499593e0b3a8c4a3cf94690120ea"
+                ]
+              }
+            ],
+            "verification": "unchecked"
+          }
+        ],
+        "preferredEvidenceIds": [
+          "ev_1538ceb9fd94a1133696ab93e3d1cbb1092791f6b131eb2de581a9f30d01641a",
+          "ev_d9714d53fb3219d25b98cbe348699fc00c9843d748c9b4f55b0d93ff06edb45a",
+          "ev_85c7eb04158a10b01a9cde729e25358662b731f9c563d1690db1736f104d9948",
+          "ev_173b7c330817e4715607e13867a070b506633629b86c98e0663c472f273d9b55",
+          "ev_e09faf2570c596ce2ef39df199aa435cf1174ff209cec32816c89febd223ae04",
+          "ev_5eeb225bc9ec31711ba9d3440776342cb4e9499593e0b3a8c4a3cf94690120ea",
+          "ev_5c7fd6bcd71aead88a73e0435ce9a61d5a1e5b76fb19bc43b4e68860062b1caa",
+          "ev_2a12cfc33f3fa8ac58ecc53a60a08ab9af2444710b56ba64d00da12fcd2ffddb"
+        ],
+        "verification": "unchecked_navigation"
+      }
+    },
+    {
+      "targetIds": [
+        "c3",
+        "c4"
+      ],
+      "promptBytes": 23975,
+      "premiseAudit": {
+        "version": 1,
+        "targets": [
+          {
+            "claimId": "c3",
+            "mode": "unverified_role_navigation",
+            "originalEvidenceIds": [
+              "ev_aed79f8e276f90dbf65f658c61186255b2580e5009ef85be7a8fde1a93e2bf1c",
+              "ev_39bdce993dd69ac32f53edd216256c84b71818f6bd0dc78e518bf7113036bb11"
+            ],
+            "requiredEvidenceIds": [
+              "ev_aed79f8e276f90dbf65f658c61186255b2580e5009ef85be7a8fde1a93e2bf1c",
+              "ev_39bdce993dd69ac32f53edd216256c84b71818f6bd0dc78e518bf7113036bb11"
+            ],
+            "preferredEvidenceIds": [
+              "ev_aed79f8e276f90dbf65f658c61186255b2580e5009ef85be7a8fde1a93e2bf1c",
+              "ev_39bdce993dd69ac32f53edd216256c84b71818f6bd0dc78e518bf7113036bb11"
+            ],
+            "navigationBundles": [
+              {
+                "obligationId": "ob_3",
+                "criterionId": "human_aspect_1",
+                "requirement": "Mip-NeRF360 的渲染质量如何",
+                "source": "arxiv:2406.06521v1",
+                "navigationRole": "result",
+                "evidenceIds": [
+                  "ev_aed79f8e276f90dbf65f658c61186255b2580e5009ef85be7a8fde1a93e2bf1c"
+                ]
+              },
+              {
+                "obligationId": "ob_3",
+                "criterionId": "human_aspect_1",
+                "requirement": "Mip-NeRF360 的渲染质量如何",
+                "source": "arxiv:2404.10772v1",
+                "navigationRole": "result",
+                "evidenceIds": [
+                  "ev_39bdce993dd69ac32f53edd216256c84b71818f6bd0dc78e518bf7113036bb11"
+                ]
+              }
+            ],
+            "verification": "unchecked"
+          },
+          {
+            "claimId": "c4",
+            "mode": "unverified_role_navigation",
+            "originalEvidenceIds": [
+              "ev_740aef1fa0aead4d7239dc86f6a797d6f8db77c9b5cf3fafd1bc94520bf28be4",
+              "ev_d9714d53fb3219d25b98cbe348699fc00c9843d748c9b4f55b0d93ff06edb45a",
+              "ev_85c7eb04158a10b01a9cde729e25358662b731f9c563d1690db1736f104d9948",
+              "ev_173b7c330817e4715607e13867a070b506633629b86c98e0663c472f273d9b55",
+              "ev_e09faf2570c596ce2ef39df199aa435cf1174ff209cec32816c89febd223ae04",
+              "ev_5eeb225bc9ec31711ba9d3440776342cb4e9499593e0b3a8c4a3cf94690120ea",
+              "ev_31cc037797cad9d3dd0aff72dbeb148242626e9a9054c87db6fd63b1979dd323",
+              "ev_5c7fd6bcd71aead88a73e0435ce9a61d5a1e5b76fb19bc43b4e68860062b1caa",
+              "ev_2a12cfc33f3fa8ac58ecc53a60a08ab9af2444710b56ba64d00da12fcd2ffddb",
+              "ev_377b04c8d40917fa45e747ced7427cb525192de07095e6dab8edfc98216962ab",
+              "ev_aed79f8e276f90dbf65f658c61186255b2580e5009ef85be7a8fde1a93e2bf1c",
+              "ev_a40350edfc9b4c1a683f5fe72de54067358e29d7d8f324ab7f39a81d88e9074e",
+              "ev_39bdce993dd69ac32f53edd216256c84b71818f6bd0dc78e518bf7113036bb11",
+              "ev_1538ceb9fd94a1133696ab93e3d1cbb1092791f6b131eb2de581a9f30d01641a",
+              "ev_e258e2eb673094067938629e050cf89a6be9674ad4618274c90030feb82b3351"
+            ],
+            "requiredEvidenceIds": [
+              "ev_377b04c8d40917fa45e747ced7427cb525192de07095e6dab8edfc98216962ab",
+              "ev_aed79f8e276f90dbf65f658c61186255b2580e5009ef85be7a8fde1a93e2bf1c",
+              "ev_a40350edfc9b4c1a683f5fe72de54067358e29d7d8f324ab7f39a81d88e9074e",
+              "ev_39bdce993dd69ac32f53edd216256c84b71818f6bd0dc78e518bf7113036bb11"
+            ],
+            "preferredEvidenceIds": [
+              "ev_377b04c8d40917fa45e747ced7427cb525192de07095e6dab8edfc98216962ab",
+              "ev_aed79f8e276f90dbf65f658c61186255b2580e5009ef85be7a8fde1a93e2bf1c",
+              "ev_a40350edfc9b4c1a683f5fe72de54067358e29d7d8f324ab7f39a81d88e9074e",
+              "ev_39bdce993dd69ac32f53edd216256c84b71818f6bd0dc78e518bf7113036bb11"
+            ],
+            "navigationBundles": [
+              {
+                "obligationId": "ob_5",
+                "criterionId": "req_5_1",
+                "requirement": "检查两篇论文是否报告模型存储大小或显存占用，并列出具体数值或说明缺失。",
+                "source": "arxiv:2406.06521v1",
+                "navigationRole": "result",
+                "evidenceIds": [
+                  "ev_377b04c8d40917fa45e747ced7427cb525192de07095e6dab8edfc98216962ab",
+                  "ev_aed79f8e276f90dbf65f658c61186255b2580e5009ef85be7a8fde1a93e2bf1c"
+                ]
+              },
+              {
+                "obligationId": "ob_5",
+                "criterionId": "req_5_1",
+                "requirement": "检查两篇论文是否报告模型存储大小或显存占用，并列出具体数值或说明缺失。",
+                "source": "arxiv:2404.10772v1",
+                "navigationRole": "result",
+                "evidenceIds": [
+                  "ev_a40350edfc9b4c1a683f5fe72de54067358e29d7d8f324ab7f39a81d88e9074e",
+                  "ev_39bdce993dd69ac32f53edd216256c84b71818f6bd0dc78e518bf7113036bb11"
+                ]
+              }
+            ],
+            "verification": "unchecked"
+          }
+        ],
+        "preferredEvidenceIds": [
+          "ev_aed79f8e276f90dbf65f658c61186255b2580e5009ef85be7a8fde1a93e2bf1c",
+          "ev_39bdce993dd69ac32f53edd216256c84b71818f6bd0dc78e518bf7113036bb11",
+          "ev_377b04c8d40917fa45e747ced7427cb525192de07095e6dab8edfc98216962ab",
+          "ev_a40350edfc9b4c1a683f5fe72de54067358e29d7d8f324ab7f39a81d88e9074e"
+        ],
+        "verification": "unchecked_navigation"
+      }
+    },
+    {
+      "targetIds": [
+        "c1",
+        "c2"
+      ],
+      "promptBytes": 23995,
+      "premiseAudit": {
+        "version": 1,
+        "targets": [
+          {
+            "claimId": "c1",
+            "mode": "unverified_role_navigation",
+            "originalEvidenceIds": [
+              "ev_d9714d53fb3219d25b98cbe348699fc00c9843d748c9b4f55b0d93ff06edb45a",
+              "ev_e09faf2570c596ce2ef39df199aa435cf1174ff209cec32816c89febd223ae04",
+              "ev_85c7eb04158a10b01a9cde729e25358662b731f9c563d1690db1736f104d9948",
+              "ev_173b7c330817e4715607e13867a070b506633629b86c98e0663c472f273d9b55"
+            ],
+            "requiredEvidenceIds": [
+              "ev_1538ceb9fd94a1133696ab93e3d1cbb1092791f6b131eb2de581a9f30d01641a",
+              "ev_d9714d53fb3219d25b98cbe348699fc00c9843d748c9b4f55b0d93ff06edb45a"
+            ],
+            "preferredEvidenceIds": [
+              "ev_1538ceb9fd94a1133696ab93e3d1cbb1092791f6b131eb2de581a9f30d01641a",
+              "ev_d9714d53fb3219d25b98cbe348699fc00c9843d748c9b4f55b0d93ff06edb45a",
+              "ev_85c7eb04158a10b01a9cde729e25358662b731f9c563d1690db1736f104d9948",
+              "ev_173b7c330817e4715607e13867a070b506633629b86c98e0663c472f273d9b55",
+              "ev_e09faf2570c596ce2ef39df199aa435cf1174ff209cec32816c89febd223ae04"
+            ],
+            "navigationBundles": [
+              {
+                "obligationId": "ob_1",
+                "criterionId": "human_aspect_1",
+                "requirement": "高斯表示与网格提取路径有什么不同",
+                "source": "arxiv:2406.06521v1",
+                "navigationRole": "representation",
+                "evidenceIds": [
+                  "ev_1538ceb9fd94a1133696ab93e3d1cbb1092791f6b131eb2de581a9f30d01641a"
+                ]
+              },
+              {
+                "obligationId": "ob_1",
+                "criterionId": "human_aspect_1",
+                "requirement": "高斯表示与网格提取路径有什么不同",
+                "source": "arxiv:2404.10772v1",
+                "navigationRole": "representation",
+                "evidenceIds": [
+                  "ev_d9714d53fb3219d25b98cbe348699fc00c9843d748c9b4f55b0d93ff06edb45a"
+                ]
+              },
+              {
+                "obligationId": "ob_1",
+                "criterionId": "human_aspect_1",
+                "requirement": "高斯表示与网格提取路径有什么不同",
+                "source": "arxiv:2406.06521v1",
+                "navigationRole": "procedure",
+                "evidenceIds": [
+                  "ev_85c7eb04158a10b01a9cde729e25358662b731f9c563d1690db1736f104d9948",
+                  "ev_173b7c330817e4715607e13867a070b506633629b86c98e0663c472f273d9b55"
+                ]
+              },
+              {
+                "obligationId": "ob_1",
+                "criterionId": "human_aspect_1",
+                "requirement": "高斯表示与网格提取路径有什么不同",
+                "source": "arxiv:2404.10772v1",
+                "navigationRole": "procedure",
+                "evidenceIds": [
+                  "ev_e09faf2570c596ce2ef39df199aa435cf1174ff209cec32816c89febd223ae04"
+                ]
+              }
+            ],
+            "verification": "unchecked"
+          },
+          {
+            "claimId": "c2",
+            "mode": "unverified_role_navigation",
+            "originalEvidenceIds": [
+              "ev_5eeb225bc9ec31711ba9d3440776342cb4e9499593e0b3a8c4a3cf94690120ea",
+              "ev_5c7fd6bcd71aead88a73e0435ce9a61d5a1e5b76fb19bc43b4e68860062b1caa",
+              "ev_2a12cfc33f3fa8ac58ecc53a60a08ab9af2444710b56ba64d00da12fcd2ffddb",
+              "ev_173b7c330817e4715607e13867a070b506633629b86c98e0663c472f273d9b55"
+            ],
+            "requiredEvidenceIds": [
+              "ev_5eeb225bc9ec31711ba9d3440776342cb4e9499593e0b3a8c4a3cf94690120ea",
+              "ev_5c7fd6bcd71aead88a73e0435ce9a61d5a1e5b76fb19bc43b4e68860062b1caa"
+            ],
+            "preferredEvidenceIds": [
+              "ev_5eeb225bc9ec31711ba9d3440776342cb4e9499593e0b3a8c4a3cf94690120ea",
+              "ev_5c7fd6bcd71aead88a73e0435ce9a61d5a1e5b76fb19bc43b4e68860062b1caa",
+              "ev_173b7c330817e4715607e13867a070b506633629b86c98e0663c472f273d9b55",
+              "ev_2a12cfc33f3fa8ac58ecc53a60a08ab9af2444710b56ba64d00da12fcd2ffddb"
+            ],
+            "navigationBundles": [
+              {
+                "obligationId": "ob_2",
+                "criterionId": "req_2_1",
+                "requirement": "列出 GOF 和 PGSR 在 DTU 上报告的几何精度数值及指标方向（越低越好或越高越好）。",
+                "source": "arxiv:2406.06521v1",
+                "navigationRole": "result",
+                "evidenceIds": [
+                  "ev_5eeb225bc9ec31711ba9d3440776342cb4e9499593e0b3a8c4a3cf94690120ea"
+                ]
+              },
+              {
+                "obligationId": "ob_2",
+                "criterionId": "req_2_1",
+                "requirement": "列出 GOF 和 PGSR 在 DTU 上报告的几何精度数值及指标方向（越低越好或越高越好）。",
+                "source": "arxiv:2404.10772v1",
+                "navigationRole": "result",
+                "evidenceIds": [
+                  "ev_5c7fd6bcd71aead88a73e0435ce9a61d5a1e5b76fb19bc43b4e68860062b1caa"
+                ]
+              },
+              {
+                "obligationId": "ob_2",
+                "criterionId": "req_2_2",
+                "requirement": "列出 GOF 和 PGSR 在 DTU 上报告的训练耗时数值，并注明硬件条件。",
+                "source": "arxiv:2406.06521v1",
+                "navigationRole": "settings",
+                "evidenceIds": [
+                  "ev_173b7c330817e4715607e13867a070b506633629b86c98e0663c472f273d9b55"
+                ]
+              },
+              {
+                "obligationId": "ob_2",
+                "criterionId": "req_2_2",
+                "requirement": "列出 GOF 和 PGSR 在 DTU 上报告的训练耗时数值，并注明硬件条件。",
+                "source": "arxiv:2404.10772v1",
+                "navigationRole": "settings",
+                "evidenceIds": [
+                  "ev_2a12cfc33f3fa8ac58ecc53a60a08ab9af2444710b56ba64d00da12fcd2ffddb"
+                ]
+              },
+              {
+                "obligationId": "ob_4",
+                "criterionId": "human_aspect_1",
+                "requirement": "核对数据集、指标方向、分辨率和硬件条件",
+                "source": "arxiv:2406.06521v1",
+                "navigationRole": "result",
+                "evidenceIds": [
+                  "ev_5eeb225bc9ec31711ba9d3440776342cb4e9499593e0b3a8c4a3cf94690120ea"
+                ]
+              },
+              {
+                "obligationId": "ob_4",
+                "criterionId": "human_aspect_1",
+                "requirement": "核对数据集、指标方向、分辨率和硬件条件",
+                "source": "arxiv:2404.10772v1",
+                "navigationRole": "result",
+                "evidenceIds": [
+                  "ev_5c7fd6bcd71aead88a73e0435ce9a61d5a1e5b76fb19bc43b4e68860062b1caa"
+                ]
+              },
+              {
+                "obligationId": "ob_4",
+                "criterionId": "human_aspect_2",
+                "requirement": "区分作者自报与同表对比",
+                "source": "arxiv:2406.06521v1",
+                "navigationRole": "provenance",
+                "evidenceIds": [
+                  "ev_5eeb225bc9ec31711ba9d3440776342cb4e9499593e0b3a8c4a3cf94690120ea"
+                ]
+              }
+            ],
+            "verification": "unchecked"
+          }
+        ],
+        "preferredEvidenceIds": [
+          "ev_1538ceb9fd94a1133696ab93e3d1cbb1092791f6b131eb2de581a9f30d01641a",
+          "ev_d9714d53fb3219d25b98cbe348699fc00c9843d748c9b4f55b0d93ff06edb45a",
+          "ev_85c7eb04158a10b01a9cde729e25358662b731f9c563d1690db1736f104d9948",
+          "ev_173b7c330817e4715607e13867a070b506633629b86c98e0663c472f273d9b55",
+          "ev_e09faf2570c596ce2ef39df199aa435cf1174ff209cec32816c89febd223ae04",
+          "ev_5eeb225bc9ec31711ba9d3440776342cb4e9499593e0b3a8c4a3cf94690120ea",
+          "ev_5c7fd6bcd71aead88a73e0435ce9a61d5a1e5b76fb19bc43b4e68860062b1caa",
+          "ev_2a12cfc33f3fa8ac58ecc53a60a08ab9af2444710b56ba64d00da12fcd2ffddb"
+        ],
+        "verification": "unchecked_navigation"
+      }
+    }
+  ],
+  "measurements": [
+    {
+      "targetIds": [
+        "c1",
+        "c2",
+        "c3",
+        "c4"
+      ],
+      "fixedBytes": 18108,
+      "totalMandatoryBytes": 29862,
+      "mandatoryEvidenceRows": 8,
+      "evidenceKeys": [
+        "contentHash",
+        "evidenceId",
+        "location",
+        "quote",
+        "sourceContext",
+        "sourceRef"
+      ],
+      "limit": 24000
+    },
+    {
+      "targetIds": [
+        "c1",
+        "c2"
+      ],
+      "fixedBytes": 15487,
+      "totalMandatoryBytes": 21203,
+      "mandatoryEvidenceRows": 4,
+      "evidenceKeys": [
+        "contentHash",
+        "evidenceId",
+        "location",
+        "quote",
+        "sourceContext",
+        "sourceRef"
+      ],
+      "limit": 24000
+    },
+    {
+      "targetIds": [
+        "c3",
+        "c4"
+      ],
+      "fixedBytes": 14976,
+      "totalMandatoryBytes": 21236,
+      "mandatoryEvidenceRows": 4,
+      "evidenceKeys": [
+        "contentHash",
+        "evidenceId",
+        "location",
+        "quote",
+        "sourceContext",
+        "sourceRef"
+      ],
+      "limit": 24000
+    },
+    {
+      "targetIds": [
+        "c1",
+        "c2"
+      ],
+      "fixedBytes": 15487,
+      "totalMandatoryBytes": 21203,
+      "mandatoryEvidenceRows": 4,
+      "evidenceKeys": [
+        "contentHash",
+        "evidenceId",
+        "location",
+        "quote",
+        "sourceContext",
+        "sourceRef"
+      ],
+      "limit": 24000
+    }
+  ],
+  "modelCalls": 0,
+  "networkCalls": 0,
+  "productionWrites": 0,
+  "oldPayloadUnchanged": true,
+  "conclusion": "Candidate factual instructions measured at actual existing repair preflight. Same original24KB cap; a ReplayStopNoModel exception prevents dispatch. No factual acceptance."
+}

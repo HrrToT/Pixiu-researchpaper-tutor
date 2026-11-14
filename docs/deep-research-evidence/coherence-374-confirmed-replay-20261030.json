@@ -1,0 +1,47 @@
+{
+  "promptVersion": "dr-v2.20261030.374",
+  "case": "X4L-v7",
+  "payloadSha256": "bc53afa25076cb7b7a83d5247255f06a4746a82adc441c9029797716c5217959",
+  "legacyRepairTargetsExact": true,
+  "quantitySpellingContractVersion": 12,
+  "newNumericCandidateIds": [
+    "c1",
+    "c2",
+    "c3"
+  ],
+  "newRepairTargetIds": [
+    "c1"
+  ],
+  "coveredAcceptedPointsRetainedExact": true,
+  "wholeQuestionAuditUnchanged": true,
+  "publicationReplay": {
+    "1": {
+      "outcome": "partial",
+      "publishedClaimIds": [
+        "c2",
+        "c3"
+      ],
+      "publicationCoherence": null
+    },
+    "2": {
+      "outcome": "inconclusive",
+      "publishedClaimIds": [],
+      "publicationCoherence": {
+        "contractVersion": 2,
+        "answerDigest": "1631cae3d6720e908a406b6b4acc92fd7223ea95943b101ca6a3d1be963d79d6",
+        "status": "held",
+        "heldClaimIds": [
+          "c2",
+          "c3"
+        ],
+        "reason": "inconsistent_answer"
+      }
+    }
+  },
+  "originalScientificVerdictsRetained": true,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "boundary": "Actual saved-input/result replay. No new answer generated, no old run rejudged or overwritten. Holding an inconsistent answer does not choose which statement is true."
+}

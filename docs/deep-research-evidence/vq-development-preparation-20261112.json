@@ -1,0 +1,39 @@
+{
+  "case": "D2-VQ-v1",
+  "definitionHash": "7a15c0a62f34672f59a6ec61c34a39ae2f8633433adafa6432dd50573d7558c3",
+  "independentEligibility": false,
+  "independentCredit": 0,
+  "historicalExposure": [
+    {
+      "case": "X1G-v1",
+      "receipt": "tmp\\dr-acceptance-receipts\\X1G-v1.calls.json",
+      "receiptSha256": "4f2d5d900489217a5f0efafdc823206f23221bfa1089756387b70faa9320f3f8",
+      "sourceVersion": "arxiv:2503.00357v2",
+      "relationship": "Third-party fulltext contains bibliography and comparison results, not evidence of reading either candidate as a primary source."
+    },
+    {
+      "case": "X1G-v2",
+      "receipt": "tmp\\dr-acceptance-receipts\\X1G-v2.calls.json",
+      "receiptSha256": "9e3c878c7ec25b1c1b815e03adeddc41ffc278acfcf568662588ba97a425a728",
+      "sourceVersion": "arxiv:2503.00357v2",
+      "relationship": "Third-party fulltext contains bibliography and comparison results, not evidence of reading either candidate as a primary source."
+    }
+  ],
+  "pdfHashesVerified": true,
+  "visuallyReviewedPages": {
+    "2311.18159v1": [
+      5
+    ],
+    "2401.02436v1": [
+      8
+    ]
+  },
+  "previewNoHttpVerified": true,
+  "questionTamperRejected": true,
+  "modelCalls": 0,
+  "materialImports": 0,
+  "applicationSourceChanges": 0,
+  "executionStatus": "not_executed",
+  "H2Slot": "fresh_definition_pending",
+  "boundary": "Development-only full comparison definition; historical results/paused requests and all independent acceptance counts unchanged."
+}

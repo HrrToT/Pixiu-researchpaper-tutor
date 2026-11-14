@@ -1,0 +1,20 @@
+{
+  "sourceCase": "AD1N-v23 archived input",
+  "legacyWireMessagesExact": true,
+  "completeUserInputExact": true,
+  "otherNodeMessagesExact": [
+    "synthesize",
+    "repair_claims",
+    "verify",
+    "verify_repair",
+    "verify_answer_coverage",
+    "assess_relevance"
+  ],
+  "oldSystemBytes": 862,
+  "newSystemBytes": 839,
+  "reservedEnvelopeBytes": 1024,
+  "unchangedOutputTokenCap": 3072,
+  "liveModelCalls": 0,
+  "scientificAcceptance": false,
+  "boundary": "Framing replay only. Model adherence, source fidelity and novice usability still require a new bounded live case; no historical response is upgraded."
+}

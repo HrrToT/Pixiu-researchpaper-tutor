@@ -1,0 +1,69 @@
+{
+  "date": "2026-10-18",
+  "case": "H1F-v5",
+  "runId": "dr_run_7a166ca064b95ce6b06aab958999ccf7",
+  "sourceCommit": "e28e7474",
+  "promptVersion": "dr-v2.20261018.137",
+  "evaluationUse": "retired-case diagnostic",
+  "independent": false,
+  "status": "completed",
+  "outcome": "partial",
+  "contentAccepted": false,
+  "modelCalls": 12,
+  "settledTokens": 38205,
+  "elapsedSeconds": 60.832,
+  "cost": null,
+  "localRetrievals": 2,
+  "localReads": 8,
+  "extractionBatches": 2,
+  "requeryCount": 0,
+  "report": "## 判断\n\n- 利用前一帧表示：每个时间步i用上一帧i-1的3D高斯作为起点，输入NTC预测变换，变换后的高斯用于当前帧渲染，并传递到下一帧作为起点。 [1](#research-evidence-ev_f51816e595f8373d3a4ec3dd73ea8147f5eb4a359e0f6b53a04cb89e24cfb73b) [2](#research-evidence-ev_bdb024b856972aab854c483acb7dfa600c4918cc401ccfcebcb14da2200b2d38)\n- 遇到新出现物体需添加高斯，因为仅靠变换无法表示初始帧不存在的物体（如火焰、烟雾或倒出的液体）。3DG是非结构化显式表示，必须添加新3D高斯建模；但新增高斯是帧特定的，不累积到后续帧。 [3](#research-evidence-ev_e7de61ef0fd681ab0977e7b9fe49a474f093c8e746ee3127ae06cf46e827401d) [4](#research-evidence-ev_e26356dfb0f9a52b4e8e6490ad8668c7768c577629c80adc7d8a0d09449be010) [5](#research-evidence-ev_353ec6eea6b67b0f3f5fa7782ee1eef537cfc4a6774ca16561bc74da3d7fc5f9) [6](#research-evidence-ev_cdfd48dfbddf41cd8040b67674c7a83e4046f6400cb3ba7cec77d287399252dd)\n\n<details>\n<summary>还有 1 项未完成</summary>\n\n- 在3DGStream v4中，NTC预测高斯的哪些变化？这些变化如何利用前一帧的高斯表示？：最终回答尚未完整回应这一问题\n\n</details>\n\n论文事实已按所列原文核对。\n\n<details>\n<summary>原文依据</summary>\n\n**[1] 3DGStream: On-the-Fly Training of 3D Gaussians for Efficient Streaming of Photo-Realistic Free-Viewpoint Videos** · 全文片段\n\n> Then, for each timestep i, we use the 3DGs of previous timestep i − 1 as initialization and pass it to a two-stage pipeline.(1)In Stage 1, we train a Neural Transformation Cache (NTC) to model the transformations of 3DGs.\n\n**[2] 3DGStream: On-the-Fly Training of 3D Gaussians for Efficient Streaming of Photo-Realistic Free-Viewpoint Videos** · 第 2 页 · 全文片段\n\n> After the two-stage pipeline concludes, we use both the 3DGs transformed by the NTC and the additional 3DGs for rendering at the current timestep i, with only the former carrying over for initialization of the subsequent timestep.\n\n**[3] 3DGStream: On-the-Fly Training of 3D Gaussians for Efficient Streaming of Photo-Realistic Free-Viewpoint Videos** · 第 5 页 · 全文片段\n\n> However, this approach falters when faced with objects not present in the initial frame, such as transient objects like flames or smoke, and new persistent objects like the liquid poured out of a bottle.\n\n**[4] 3DGStream: On-the-Fly Training of 3D Gaussians for Efficient Streaming of Photo-Realistic Free-Viewpoint Videos** · 全文片段\n\n> Since 3DG is an unstructured explicit representation, it's essential to add new 3DGs to model these emerging objects.\n\n**[5] 3DGStream: On-the-Fly Training of 3D Gaussians for Efficient Streaming of Photo-Realistic Free-Viewpoint Videos** · 全文片段\n\n> Considering constraints related to model storage requirements and training complexities, it's not feasible to generate an extensive number of additional 3DGs nor allow them to be used in subsequent frames, as this would cause 3DGs to accumulate over time.\n\n**[6] 3DGStream: On-the-Fly Training of 3D Gaussians for Efficient Streaming of Photo-Realistic Free-Viewpoint Videos** · 全文片段\n\n> (2)Then in the Stage 2, we use an adaptive 3DG addition strategy to handle emerging objects by spawning frame-specific additional 3DGs near these objects and optimize them along with periodic splitting and pruning.\n\n</details>",
+  "planRequirementNormalization": [
+    {
+      "obligationId": "ob_1",
+      "field": "requirement",
+      "change": "removed_generated_example"
+    },
+    {
+      "obligationId": "ob_1",
+      "change": "separated_literal_human_aspects",
+      "criterionCount": 2
+    }
+  ],
+  "scores": {
+    "goalResponse": 3,
+    "evidenceSupport": 4,
+    "conditions": 4,
+    "synthesisValue": 3,
+    "executability": null,
+    "readability": 3
+  },
+  "findings": [
+    "Generated compound criteria were actually split into literal output and previous-frame requirements; unprovided attribute examples were removed from the generated criterion.",
+    "The strict acquisition check did not close the input requirement after an output-only quote. A second local extraction batch ran without any requery, retrieving the actual previous-frame initialization and carry-over passages.",
+    "The final previous-frame point now cites those passages and gives the use/transform/carry-over relationship. This corrects the missing citation premise from v4.",
+    "Acquisition assessment still did not review the newly extracted input passage before the protected normal exploration pool stopped further assessment. Older pending pairs consumed its bounded window; source coverage is not claimed complete.",
+    "The output-definition claim was rejected as numeric_mismatch: the claim writes Arabic 3 and 4, while the quote has English three and an implicit remaining dimension count. Recognition of directly written three is missing; 4 is derived and must not be promoted to an author-reported number.",
+    "Repair repeated the rejected numerical wording; the hard check kept it rejected. Two points remain and the machine correctly reports partial. The answer still contains novice-unfriendly terminology.",
+    "A separate runtime-wiring audit found the production subclass omitted the isolation callback despite the base marker. This run used one verification request for c2 and c3; published remaining facts were manually checked against their own citations, but runtime isolation is not accepted on .137."
+  ],
+  "rawFiles": [
+    {
+      "path": "tmp/dr-acceptance-receipts/H1F-v5.json",
+      "sha256": "c06fb862fadf8db82e782e8add687993ed2415034336d91291c516c3bcba1b12"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/H1F-v5.payload.json",
+      "sha256": "1e0ea9ff563ded1397b6c870dedb59b291fd576874387910ca705493f61aaac3"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/H1F-v5.calls.json",
+      "sha256": "b3179310d533a4a1381a484dbb37aed13c75d0df715d7c062865659d07428f33"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/H1F-v5.result.json",
+      "sha256": "42acfdc4debc3d3220e2edc8c3e47ac92245ce93b2ba49f548f5d64daeca8fba"
+    }
+  ],
+  "boundary": "One submission with original frozen question/materials/budget. No unknown retry, first-result rewrite, independent pass or overall content pass. Acquisition routing improvement does not establish complete scientific quality."
+}

@@ -1,0 +1,69 @@
+{
+  "exitCode": 0,
+  "sourceStable": true,
+  "sourceHashes": {
+    "services\\deep_research\\facade.py": "a534f09bf178492425acb78f645a5fae7b22fefc88d671b683727f44ec8d3fe5",
+    "services\\deep_research\\repository.py": "1651824cc89644e8c354d6875ce7fde12a19803eeed72c26440e40f3e5b28947",
+    "tests\\test_deep_research_unknown_recovery.py": "8c051bf0b55304d11b7ebd578ac68137f94bfd6c91d7e48056fd2fde8532e33a",
+    "tests\\test_deep_research_complete_followup.py": "68dc72070730c8d5f2123553f2f303a38e7391eb78c1ef3442209005ab794d75",
+    "tests\\test_deep_research_core.py": "8990dbc5034df1b963089551c6812297b23b48f6d4a05a0334428f55cf1a45ce",
+    "tests\\test_deep_research_end_to_end.py": "f1f6c23dff0fe04d3d7627a5e03fa8d4931965f4df23ba27c8fd927d34bff9f8",
+    "tests\\test_deep_research_continuation_format.py": "f748c28c2aaeb846777a78bbf7c7558ec481efb9db4ed1e79f4886d2cba8f3db",
+    "tests\\test_deep_research_continuation_context.py": "e66c7bd3ccbf6869725e945c22d801859fdd021350a7474ef422f9b997c66c1f",
+    "tests\\test_deep_research_continuation.py": "604db1584adedef211952e5df9af36df320fc1f8aefe08bd690194a5cf9c5720",
+    "tests\\test_deep_research_deferred_resume.py": "b299396d020fb3e44900a0c7518b47a5e89cdc603827b5d45604d1824ce8a7a6",
+    "tests\\test_deep_research_plan_resume.py": "f8c44b862d03ca72a22969e40d6a52e1c7e02667eee2aab995db7e49c40b49a9"
+  },
+  "testFiles": [
+    "test_deep_research_unknown_recovery.py",
+    "test_deep_research_complete_followup.py",
+    "test_deep_research_core.py",
+    "test_deep_research_end_to_end.py",
+    "test_deep_research_continuation_format.py",
+    "test_deep_research_continuation_context.py",
+    "test_deep_research_continuation.py",
+    "test_deep_research_deferred_resume.py",
+    "test_deep_research_plan_resume.py"
+  ],
+  "elapsedSeconds": 46.88,
+  "logSha256": "8afd3dd450d8f5de0e5534b885952b2108dda1a3d92a76093e1c0a6dacc06e78",
+  "providerCalls": 0,
+  "passed": 130,
+  "pytestSeconds": 43.92,
+  "frontend": {
+    "tests": 70,
+    "typecheckExit": 0,
+    "providerCalls": 0,
+    "sourceHashes": {
+      "frontend/src/components/ResearchResultCard.jsx": "f51aab84626b210267bb916dde2551a3598aa3b0da01471bc4ded1cee463df4f",
+      "frontend/src/components/ResearchResultCard.test.jsx": "58b522253db781c3cf66382a3948f967711f21bd2f26db150c10f19afa8e87b8"
+    }
+  },
+  "visual": {
+    "kind": "isolated_real_component_and_styles_not_full_workbench",
+    "viewport": {
+      "width": 1366,
+      "height": 768
+    },
+    "narrowWidth": 433,
+    "beforeStaleActivityVisible": true,
+    "afterUnknownStatus": true,
+    "afterStaleActivityHidden": true,
+    "noResumeOrContinue": true,
+    "queryOnly": true,
+    "noHorizontalOverflow": true,
+    "apiRequests": 0,
+    "providerCalls": 0,
+    "pageErrors": [],
+    "files": [
+      "before.png",
+      "after.png",
+      "after-narrow.png"
+    ],
+    "imageHashes": {
+      "before.png": "874bd94eb3084a0552a8747fb4646514d43b296095f8d86fda1ffdb8e4b0b1d5",
+      "after.png": "7923235f3cf8feb0cd40a55f39300af7620b591200056238fec0d0473f982bd8",
+      "after-narrow.png": "37777798e5edb211bd2c4fa41eca245c0ea0eec8a750fd1c04b33c8097613968"
+    }
+  }
+}

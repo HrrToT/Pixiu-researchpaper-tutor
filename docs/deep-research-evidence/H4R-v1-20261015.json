@@ -1,0 +1,51 @@
+{
+  "date": "2026-10-15",
+  "caseId": "H4R",
+  "attempt": 1,
+  "runId": "dr_run_ae2f645cfcd15b49825e8113e83fcc75",
+  "promptVersion": "dr-v2.20261015.67",
+  "machineStatus": "completed",
+  "machineOutcome": "complete",
+  "qualityAccepted": false,
+  "reviewer": "Primary Codex agent; source page visually checked, not a claim of independent human review",
+  "scores": {
+    "目标回应": 2,
+    "证据支持": 4,
+    "条件完整": 2,
+    "综合价值": 3,
+    "可执行性": null,
+    "可读性": 3
+  },
+  "notApplicable": "No experiment or procedure requested",
+  "findings": [
+    "The final visible answer omits the mapping of each requested value to its cohort and metric, and does not identify the separate pose-metric table.",
+    "Draft numeric mapping was correct but removed by the unverified-table-cell gate; generic remaining inference was incorrectly marked complete by coverage.",
+    "Direct visual check of physical PDF page5 confirms first value in Egocentric/mean/PSNR, second in NonEgocentric/mean/PSNR. Table2 concerns pose estimation."
+  ],
+  "budget": {
+    "profile": "standard",
+    "modelCalls": 11,
+    "maxModelCalls": 18,
+    "tokens": 34139,
+    "maxTokens": 100000,
+    "externalSearches": 0,
+    "fulltextFetches": 0,
+    "elapsedSeconds": 75.0,
+    "cost": null
+  },
+  "costBoundary": "Provider reported token usage; monetary cost not supplied. No price inferred.",
+  "reportedModels": [
+    "deepseek-flash",
+    "deepseek-v4-pro"
+  ],
+  "rawResultPath": "tmp/dr-acceptance-receipts/H4R-v1.result.json",
+  "rawSha256": "9df19848e874b4734b6e24617f1a607fb9f12100cea4d62242a0d164d90178dd",
+  "rawPayloadPath": "tmp/dr-acceptance-receipts/H4R-v1.payload.json",
+  "rawCallsPath": "tmp/dr-acceptance-receipts/H4R-v1.calls.json",
+  "independence": "First run scored before diagnostic repair. Now retired from holdout status because its data informed general parser/completeness fixes; future attempts are development regression only.",
+  "fixEvidence": {
+    "parsedGeometry": "tmp/dr70-table-diagnostic/tables-fixed.json",
+    "sourceReadinessOnly": "Corrected parser independently recovered six parent/subgroup headers and the 18 Ours cells; no model used for cell mapping.",
+    "savedCoverageReplay": "New literal identification check marks the original missing numeric mapping as an open requirement, without paid inference."
+  }
+}

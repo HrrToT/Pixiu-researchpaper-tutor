@@ -1,0 +1,148 @@
+{
+  "date": "2026-10-22",
+  "sourceCase": "E1-v29",
+  "sourceCommit": "31cc5f0d",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "independentCredit": 0,
+  "fixtureCallbacks": 4,
+  "requests": [
+    {
+      "callId": "4711d6e6b9458c6368ba71a28bf9dd4b",
+      "node": "verify_design_config",
+      "targetIds": [
+        "c4",
+        "c7"
+      ],
+      "inputBytes": 26791,
+      "controlledNewEnvelope": true,
+      "contextIds": [
+        "c3",
+        "c6",
+        "c2",
+        "c5"
+      ]
+    },
+    {
+      "callId": "c52149a3b1f721b51fb78f26b455f0b3",
+      "node": "verify_design_science",
+      "targetIds": [
+        "c1",
+        "c2"
+      ],
+      "inputBytes": 30084,
+      "controlledNewEnvelope": true,
+      "contextIds": [
+        "c3",
+        "c6",
+        "c4",
+        "c7",
+        "c5",
+        "c8",
+        "c9"
+      ]
+    },
+    {
+      "callId": "81a66822c33a4ec22b90871e68169b74",
+      "node": "verify_design_science",
+      "targetIds": [
+        "c5"
+      ],
+      "inputBytes": 29339,
+      "controlledNewEnvelope": true,
+      "contextIds": [
+        "c3",
+        "c6",
+        "c4",
+        "c7",
+        "c1",
+        "c2",
+        "c8",
+        "c9"
+      ]
+    },
+    {
+      "callId": "f0d2ab1d0e01460437201ef7258197a1",
+      "node": "verify_design_science",
+      "targetIds": [
+        "c8",
+        "c9"
+      ],
+      "inputBytes": 28316,
+      "controlledNewEnvelope": true,
+      "contextIds": [
+        "c3",
+        "c6",
+        "c4",
+        "c7",
+        "c1",
+        "c2",
+        "c5"
+      ]
+    }
+  ],
+  "allocationAttempts": [
+    {
+      "targetIds": [
+        "c4",
+        "c7"
+      ],
+      "fullInputBytes": 26791,
+      "fixedInputBytes": 19667,
+      "maxInputBytes": 32000,
+      "referencedRows": 5,
+      "selectedRows": 5,
+      "selectedInputBytes": 26791,
+      "allRefsRetained": true,
+      "allContextsRetained": true
+    },
+    {
+      "targetIds": [
+        "c1",
+        "c2"
+      ],
+      "fullInputBytes": 30084,
+      "fixedInputBytes": 22878,
+      "maxInputBytes": 32000,
+      "referencedRows": 6,
+      "selectedRows": 6,
+      "selectedInputBytes": 30084,
+      "allRefsRetained": true,
+      "allContextsRetained": true
+    },
+    {
+      "targetIds": [
+        "c5"
+      ],
+      "fullInputBytes": 29339,
+      "fixedInputBytes": 23061,
+      "maxInputBytes": 32000,
+      "referencedRows": 5,
+      "selectedRows": 5,
+      "selectedInputBytes": 29339,
+      "allRefsRetained": true,
+      "allContextsRetained": true
+    },
+    {
+      "targetIds": [
+        "c8",
+        "c9"
+      ],
+      "fullInputBytes": 28316,
+      "fixedInputBytes": 23400,
+      "maxInputBytes": 32000,
+      "referencedRows": 5,
+      "selectedRows": 5,
+      "selectedInputBytes": 28316,
+      "allRefsRetained": true,
+      "allContextsRetained": true
+    }
+  ],
+  "repairStatus": "skipped_budget",
+  "repairLimit": {
+    "kind": "repairEvidenceBytes",
+    "limit": 15601,
+    "used": 16905
+  },
+  "boundary": "Controlled envelope7 input construction with archived failed verdict fixtures. No new model judgement, approval or change to the archived run. All source/context rows retained; full inputs within32KB."
+}

@@ -1,0 +1,61 @@
+{
+  "date": "2026-10-19",
+  "promptVersion": "dr-v2.20261019.182",
+  "sourceCase": "H2F-v4",
+  "startingSettledPreSynthesisTokens": 8577,
+  "oldRepairHeadroom": 33216,
+  "newRepairAllocation": 20000,
+  "sameMaxTokens": 100000,
+  "sameMaxModelCalls": 18,
+  "sameMaxSeconds": 360,
+  "replay": [
+    {
+      "allocationVersion": 0,
+      "request": {
+        "sourceIds": [
+          "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-2"
+        ],
+        "promptBytes": 4337,
+        "reservationTokens": 8361,
+        "allocationRejected": [
+          "explorationTokens",
+          16784,
+          16938
+        ]
+      },
+      "output": {
+        "budget_exhausted": true
+      }
+    },
+    {
+      "allocationVersion": 1,
+      "request": {
+        "sourceIds": [
+          "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-2",
+          "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf-v3040e30052bd930d-chunk-30",
+          "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-23"
+        ],
+        "promptBytes": 7669,
+        "reservationTokens": 11693,
+        "allocationRejected": null
+      },
+      "output": {
+        "evidence_ids": [
+          "ev_e28ec6485011e1fc99874afce43b3041e486be74d12db4b3de4cb80e586f79fb",
+          "ev_6eedea527444f94603173bcdab681b0ed1dc3aba84873cbc4f6a19a9eccb2322",
+          "ev_48631b8d24cdb007f4bb3a1a0cfd7dd02c194626d71880b8eb6a3da38dff7a86",
+          "ev_29e325e167454a4f9c1a78a962a3a447163b5e5d804acd3b761ce733857152cd",
+          "ev_66ed9db0a929c67a7f2044d80c26750fd5878ccae70642a3c5bbe41afa784531",
+          "ev_ac78892b03667f013a7ab023f8ee141856e6e6b1e1d412266f3faa1d17ef5c8b",
+          "ev_d5b7e7b5bea0edc9a1f7941ef30c58f08952ae6e2e1ed3edb034af0f2ffcc7ed",
+          "ev_c3b6e83df4b17b21cd7fd3592d655492af22aeb570eb01b557d0338e9cfcaf31",
+          "ev_aded98ac12364573c93f606baab45ff4098ebcacab3e67293f00d8d229448654"
+        ],
+        "extraction_pending": true
+      }
+    }
+  ],
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "boundary": "Exact archived read pool and reviewed passage identities; next extraction reservation only. No predicted multi-batch usage, semantic acceptance or independent credit."
+}

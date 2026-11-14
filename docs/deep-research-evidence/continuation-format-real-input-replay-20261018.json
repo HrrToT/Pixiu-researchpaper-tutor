@@ -1,0 +1,35 @@
+{
+  "date": "2026-10-18",
+  "inputCase": "F1C-v1",
+  "inputRunId": "dr_run_52cd2b8d6d6b5b0097189d026675b861",
+  "legacySynthesisRequestFingerprintMatched": true,
+  "legacyArgsDigest": "bf136d7729644ac72ec9c30c140553d249c9628b87db81dba6f5f07cbdecdb58",
+  "oldPointConstraint": {
+    "count": 2,
+    "mode": "exact"
+  },
+  "newPointConstraint": null,
+  "currentCharacterLimitUnchanged": 120,
+  "sameVerifiedAnswerAndEvidence": true,
+  "oldFormatGaps": [
+    {
+      "question": "按要求整理为2点",
+      "missingEvidence": "当前已核验正文有1点，尚未满足分点要求。",
+      "stage": "answer_format",
+      "wholeQuestion": true,
+      "expectedPointCount": 2,
+      "actualPointCount": 1,
+      "pointMode": "exact"
+    }
+  ],
+  "newFormatGaps": [],
+  "oldPromptBytes": 17463,
+  "newPromptBytes": 17316,
+  "outputOptionsUnchanged": true,
+  "totalRunBudgetUnchanged": true,
+  "parentContextHashUnchanged": "962c2d378eaf21b46e8caa59591909adb0eab1bef66ecddd93c2def3d0d2b38a",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "originalRecordUnchanged": true,
+  "boundary": "Exact old synthesis Provider fingerprint and copied-record format check against the same actual verified answer. No new generation, no retrospective upgrade of the original partial case, no independent credit."
+}

@@ -1,0 +1,249 @@
+{
+  "promptVersion": "dr-v2.20261105.384",
+  "sourceCase": "X5H-v1",
+  "mode": "offline saved response replay; candidate response adds only empty required processLinks",
+  "originalFilesSha256": {
+    "D:\\aiproj\\ai_project\\tmp\\dr-acceptance-receipts\\X5H-v1.payload.json": "0431b154a0044a2a9a0ebba97df0cbf581ef298186f1a285b00010c61532dcf2",
+    "D:\\aiproj\\ai_project\\tmp\\dr-acceptance-receipts\\X5H-v1.calls.json": "cd1532ee8462c52af05b68d5a07292689395bac9851bb583f637778c7fdb525a"
+  },
+  "originalsPreserved": true,
+  "legacyCovered": [
+    "ob_1",
+    "ob_2",
+    "ob_3",
+    "answer_scope"
+  ],
+  "newProtocolRejectsMissingSchema": true,
+  "candidateVerdicts": [
+    {
+      "obligationId": "ob_1",
+      "status": "covered",
+      "bindings": [
+        {
+          "claimId": "c1",
+          "field": "text"
+        }
+      ],
+      "aspects": [
+        {
+          "aspectId": "criterion:human_aspect_1",
+          "requirement": "解释它是否把3D高斯改成2D圆盘",
+          "basis": {
+            "kind": "request",
+            "excerpt": "解释它是否把3D高斯改成2D圆盘"
+          },
+          "status": "covered",
+          "bindings": [
+            {
+              "claimId": "c1",
+              "field": "text"
+            }
+          ]
+        }
+      ],
+      "criteria": [
+        {
+          "criterionId": "human_aspect_1",
+          "responseType": "explanation",
+          "status": "covered",
+          "bindings": [
+            {
+              "claimId": "c1",
+              "field": "text"
+            }
+          ]
+        }
+      ],
+      "requestCheckReasons": [
+        {
+          "checkId": "criterion:human_aspect_1",
+          "reason": "明确说明没有把3D高斯改成2D圆盘，并解释保留通用3D高斯，直接回答了该问题。"
+        }
+      ]
+    },
+    {
+      "obligationId": "ob_2",
+      "status": "covered",
+      "bindings": [
+        {
+          "claimId": "c2",
+          "field": "text"
+        }
+      ],
+      "aspects": [
+        {
+          "aspectId": "criterion:human_aspect_1",
+          "requirement": "为什么要渲染深度和表面法线",
+          "basis": {
+            "kind": "request",
+            "excerpt": "为什么要渲染深度和表面法线"
+          },
+          "status": "covered",
+          "bindings": [
+            {
+              "claimId": "c2",
+              "field": "text"
+            }
+          ]
+        }
+      ],
+      "criteria": [
+        {
+          "criterionId": "human_aspect_1",
+          "responseType": "explanation",
+          "status": "covered",
+          "bindings": [
+            {
+              "claimId": "c2",
+              "field": "text"
+            }
+          ]
+        }
+      ],
+      "requestCheckReasons": [
+        {
+          "checkId": "criterion:human_aspect_1",
+          "reason": "解释了渲染深度和表面法线图的原因：解决高斯泼溅离散、非结构化导致的形状提取困难，提升形状重建精度并保持计算效率。"
+        }
+      ]
+    },
+    {
+      "obligationId": "ob_3",
+      "status": "partial",
+      "bindings": [
+        {
+          "claimId": "c3",
+          "field": "text"
+        }
+      ],
+      "aspects": [
+        {
+          "aspectId": "criterion:human_aspect_1",
+          "requirement": "这些图怎样用于几何重建",
+          "basis": {
+            "kind": "request",
+            "excerpt": "这些图怎样用于几何重建"
+          },
+          "status": "partial",
+          "bindings": [
+            {
+              "claimId": "c3",
+              "field": "text"
+            }
+          ]
+        }
+      ],
+      "criteria": [
+        {
+          "criterionId": "human_aspect_1",
+          "responseType": "explanation",
+          "status": "partial",
+          "bindings": [
+            {
+              "claimId": "c3",
+              "field": "text"
+            }
+          ]
+        }
+      ],
+      "requestCheckReasons": [
+        {
+          "checkId": "criterion:human_aspect_1",
+          "reason": "说明了深度图和法线图用于几何重建，并给出了在DTU数据集上的效果，回答了如何用于几何重建。"
+        }
+      ],
+      "processAudits": [
+        {
+          "checkId": "criterion:human_aspect_1",
+          "reportedStatus": "covered",
+          "links": [],
+          "errors": [
+            "missing_process_links"
+          ]
+        }
+      ],
+      "gapDetail": {
+        "criterionIds": [
+          "human_aspect_1"
+        ],
+        "aspectIds": [
+          "criterion:human_aspect_1"
+        ],
+        "missingContent": "补充固定问题所需的实际操作或流程关系；用途标签、方法名称和性能结论不能代替怎样做的解释。",
+        "reason": "此缺口由固定检查项的未满足状态汇总；模型说明不作为新增要求或论文事实。"
+      }
+    },
+    {
+      "obligationId": "answer_scope",
+      "status": "partial",
+      "bindings": [
+        {
+          "claimId": "c1",
+          "field": "text"
+        },
+        {
+          "claimId": "c2",
+          "field": "text"
+        },
+        {
+          "claimId": "c3",
+          "field": "text"
+        }
+      ],
+      "aspects": [
+        {
+          "aspectId": "request",
+          "requirement": "请联网读取 RaDe-GS: Rasterizing Depth in Gaussian Splatting（arXiv:2406.01467v1）的原文。面向了解3DGS概念的新手，解释它是否把3D高斯改成2D圆盘、为什么要渲染深度和表面法线，以及这些图怎样用于几何重建。限350字，区分方法设计与已验证效果，不做跨论文速度排名或实验设计。",
+          "basis": {
+            "kind": "request",
+            "excerpt": "请联网读取 RaDe-GS: Rasterizing Depth in Gaussian Splatting（arXiv:2406.01467v1）的原文。面向了解3DGS概念的新手，解释它是否把3D高斯改成2D圆盘、为什么要渲染深度和表面法线，以及这些图怎样用于几何重建。限350字，区分方法设计与已验证效果，不做跨论文速度排名或实验设计。"
+          },
+          "status": "partial",
+          "bindings": [
+            {
+              "claimId": "c1",
+              "field": "text"
+            },
+            {
+              "claimId": "c2",
+              "field": "text"
+            },
+            {
+              "claimId": "c3",
+              "field": "text"
+            }
+          ]
+        }
+      ],
+      "criteria": [],
+      "requestCheckReasons": [
+        {
+          "checkId": "request",
+          "reason": "回答涵盖了是否改成2D圆盘、渲染深度和法线的原因、如何用于几何重建，并区分了方法设计与已验证效果，未涉及跨论文速度排名或实验设计，符合限350字要求。"
+        }
+      ],
+      "processAudits": [
+        {
+          "checkId": "request",
+          "reportedStatus": "covered",
+          "links": [],
+          "errors": [
+            "missing_process_links"
+          ]
+        }
+      ],
+      "gapDetail": {
+        "criterionIds": [],
+        "aspectIds": [
+          "request"
+        ],
+        "missingContent": "补充固定问题所需的实际操作或流程关系；用途标签、方法名称和性能结论不能代替怎样做的解释。",
+        "reason": "此缺口由固定检查项的未满足状态汇总；模型说明不作为新增要求或论文事实。"
+      }
+    }
+  ],
+  "providerCalls": 0,
+  "changesHistoricalResult": false,
+  "contentAcceptance": false,
+  "independentCredit": 0
+}

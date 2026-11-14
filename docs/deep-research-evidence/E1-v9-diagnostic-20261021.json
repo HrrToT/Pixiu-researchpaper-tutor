@@ -1,0 +1,192 @@
+{
+  "date": "2026-10-21",
+  "sourceCommit": "b85ccc0c",
+  "promptVersion": "dr-v2.20261021.209",
+  "case": "E1-v9",
+  "split": "development",
+  "runId": "dr_run_714ff107730b5019bb5647a21799681f",
+  "questionUnchanged": true,
+  "frozenCaseCommit": "a023b204",
+  "status": "completed",
+  "outcome": "inconclusive",
+  "elapsedSeconds": 114.323,
+  "settledModelCalls": 14,
+  "settledTokens": 69034,
+  "unsettledModelCalls": 0,
+  "independentCredit": 0,
+  "verificationSummary": {
+    "accepted": 0,
+    "rejected": 9
+  },
+  "planEncodingAudit": {
+    "rawBytes": 1782,
+    "wireBytes": 1673,
+    "slotLimit": 2500,
+    "scientificApproval": false
+  },
+  "initialRepresentationAudit": [],
+  "repairRepresentationAudit": {},
+  "rejectedClaims": [
+    {
+      "claimId": "c5",
+      "reason": "incomplete_budget_spec",
+      "detail": "recovery: matched 模式要求所有组的预算值相等",
+      "revisionRejection": {
+        "claimId": "c5",
+        "reason": "semantic_unresolved",
+        "detail": "预算不匹配（组0=0步，组1=200步）无法隔离第2阶段参数效应，且与用户目标中比较整个第2阶段增量取舍的意图一致，但未提供匹配预算的对照；此外，基线训练上限1000步未指定具体优化器、学习率等参数，且恢复阶段预算不匹配未说明是否用于描述性比较。"
+      }
+    },
+    {
+      "claimId": "c6",
+      "reason": "incomplete_experiment_workflow",
+      "detail": "workflow.states.operation_rule",
+      "revisionRejection": {
+        "claimId": "c6",
+        "reason": "incomplete_experiment_workflow",
+        "detail": "workflow.states.operation_rule"
+      }
+    },
+    {
+      "claimId": "c1",
+      "reason": "semantic_unresolved",
+      "detail": "假设声明与关联分析 c8 一致（描述性比较，无显著性检验），但未明确指定配对观察、聚合规则和配对决策规则；且未定义存储和时间的测量边界，导致效果键 storage_diff 和 time_diff 无法执行。",
+      "revisionRejection": {
+        "claimId": "c1",
+        "reason": "semantic_unresolved",
+        "detail": "假设声明与链接的分析（c8）不一致：c1 声称“不预设改善方向”，但 c8 定义了组1减组0的差值，这隐含了方向性比较；此外，c1 的 effectKeys 包含 storage_diff 和 time_diff，但 c8 的 effects 中未定义这些键，导致引用断裂。"
+      }
+    },
+    {
+      "claimId": "c2",
+      "reason": "semantic_unresolved",
+      "detail": "干预水平不完整：spawn_threshold 等参数为拟议值，但未指定第2阶段自适应新增的具体算法（如新增位置、优化步骤、分裂/剪枝的触发条件），且未定义与第1阶段NTC结果的交互；组构造未明确配对单元和复制方式。",
+      "revisionRejection": {
+        "claimId": "c2",
+        "reason": "incomplete_execution_spec",
+        "detail": "factors[0].treatment: parameters 必须是列表"
+      }
+    },
+    {
+      "claimId": "c3",
+      "reason": "semantic_unresolved",
+      "detail": "初始化 workflowClaimId 指向 c6，但 c6 未在提供的目标/上下文中定义，无法验证共同初始化；渲染和优化器设置虽给出数值，但未指定渲染器实现和优化器更新规则，且未定义其他干预的具体内容。",
+      "revisionRejection": {
+        "claimId": "c3",
+        "reason": "incomplete_experiment_protocol",
+        "detail": "rendering: parameters 必须是列表, optimizer: parameters 必须是列表"
+      }
+    },
+    {
+      "claimId": "c4",
+      "reason": "semantic_unresolved",
+      "detail": "数据可用性未证实：证据E1仅提及flame salmon场景，未提供N3DV数据集中该场景的相机视图数量或可用性；无法确认每5取1的划分能产生非空训练/评估集。",
+      "revisionRejection": {
+        "claimId": "c4",
+        "reason": "incomplete_experiment_protocol",
+        "detail": "split.unrecognized_fields"
+      }
+    },
+    {
+      "claimId": "c7",
+      "reason": "semantic_unresolved",
+      "detail": "速度测量协议不完整：未指定设备、分辨率、预热程序、同步方法、计时区域和重复次数。",
+      "revisionRejection": {
+        "claimId": "c7",
+        "reason": "semantic_unresolved",
+        "detail": "质量指标PSNR/SSIM未指定具体计算方式（如是否在原始分辨率、是否使用特定库）；存储指标仅列出参数类型但未明确是否包含所有高斯参数及是否包含元数据；时间测量协议中分辨率1352x1014未说明来源，且未指定数据加载是否包含在计时区域内（原文说包含数据加载，但未明确是否包含数据预处理）。"
+      }
+    },
+    {
+      "claimId": "c8",
+      "reason": "semantic_unresolved",
+      "detail": "分析未指定配对观察的聚合方式（如逐视图配对后如何汇总）和决策规则（仅报告描述性统计，但未定义如何判断效果）；效果键 storage_diff 和 time_diff 的测量单位未定义，无法计算。",
+      "revisionRejection": {
+        "claimId": "c8",
+        "reason": "semantic_unresolved",
+        "detail": "effects 槽位缺少 storage_diff 和 time_diff 的定义，而 c1 的 effectKeys 引用了它们；uncertainty 和 decision_rule 槽位仅声明描述性统计，但未指定具体的聚合函数（如均值、标准差等）或决策边界，不满足具体性要求。"
+      }
+    },
+    {
+      "claimId": "c9",
+      "reason": "semantic_unresolved",
+      "detail": "限制声明未提供具体验证步骤或失效条件，且未明确说明实验无法建立的结论；风险描述过于笼统，未指定如何验证相机总数、文件ID和帧内容。",
+      "revisionRejection": {
+        "claimId": "c9",
+        "reason": "semantic_unresolved",
+        "detail": "风险与限制声明中关于相机总数和文件ID的验证要求引用了证据 E2、E1、E3，但这些证据并未提供相机总数或文件ID的信息，属于对论文事实的错误断言；此外，预检阈值未给出具体数值，不符合可执行性要求。"
+      }
+    }
+  ],
+  "acceptedClaims": [],
+  "rawFiles": [
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v9.json",
+      "sha256": "34347137bd9bb69537f585b648a63af724c13df8c9a0195dadbe8c410fb79380"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v9.payload.json",
+      "sha256": "6ab1b22de9f89fa44467d27fb625bf371b5f2972dcc315f49519c8a98f51529b"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v9.calls.json",
+      "sha256": "6bb647f9ec9ca926bbf2c44ccca64dbde4699cc0094415b6228ff23766d54eed"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v9.result.json",
+      "sha256": "83101676bc250f69b37b95bb0e0010a941976a27ac208457e217aaac46496789"
+    }
+  ],
+  "boundary": "Real tuple-compatible generation and original scientific checks executed, but0/9 accepted. Actual raw plan1782 was under2500; over-limit2595 recovery is controlled replay only. Genuine failures and objectively contradictory model review reasons are both retained, with no historical/independent upgrade.",
+  "contentAccepted": false,
+  "wholeExperimentAccepted": false,
+  "fullConfigurationGenerated": true,
+  "semanticReviewReached": true,
+  "experimentPlanEncodingContractVersion": 1,
+  "actualRepair": {
+    "ledgerBatches": [
+      [
+        "c1",
+        "c2",
+        "c3",
+        "c4",
+        "c5",
+        "c6",
+        "c7",
+        "c8",
+        "c9"
+      ]
+    ],
+    "reconstructedDrafts": 9,
+    "scientificallyAccepted": 0
+  },
+  "observedScientificDefects": [
+    "Initial unequal budgets incorrectly labeled matched.",
+    "COLMAP-based creation declares fresh/no inputs with incompatible zero/opaque states; incomplete NTC and operation rule.",
+    "Repair uses parameter dictionaries and an extra split.validation key outside current exact schemas.",
+    "Published intervention remains underdefined; initial measurement timing is incomplete."
+  ],
+  "reviewConcerns": {
+    "repairedAnalysisBinding": {
+      "hypothesisId": "c1",
+      "analysisId": "c8",
+      "requestedKeys": [
+        "psnr_diff",
+        "ssim_diff",
+        "storage_diff",
+        "time_diff"
+      ],
+      "actualAnalysisKeys": [
+        "psnr_diff",
+        "ssim_diff",
+        "storage_diff",
+        "time_diff"
+      ],
+      "missingKeys": []
+    },
+    "wholeStageBudget": "Repaired budget is explicit unmatched0/200 with a whole-stage note; failed reason still requires matched isolation while acknowledging user whole-stage intent. Other full-plan defects remain.",
+    "direction": "Group1-minus-group0 contrast does not itself predict improvement; do not equate orientation with a directional hypothesis.",
+    "proposedChoices": "Audit actual membership separately from proposed nonempty split prechecks and chosen numeric rendering resolution; avoid unsupported source/count demands."
+  },
+  "realOversizePlanRecoveryProven": false
+}

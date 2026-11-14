@@ -1,0 +1,60 @@
+{
+  "date": "2026-10-20",
+  "sourceCommit": "dc3b9365",
+  "promptVersion": "dr-v2.20261020.200",
+  "fullOffline": {
+    "passed": 3236,
+    "warnings": 1,
+    "seconds": 189.44,
+    "log": "tmp/pytest-dr200-full.log",
+    "sha256": "440dc7959ea1db57abb7d4adaf593eea313a7d8a028ae2b5dba9210cffe595e3"
+  },
+  "focusedPassed": 124,
+  "focusedSeconds": 9.68,
+  "focusedOverlap": true,
+  "newTests": 19,
+  "oldActualRequestFingerprintsMatched": 23,
+  "newContracts": {
+    "sourcePrecision": 8,
+    "readingPriority": 5,
+    "extractionPriority": 10,
+    "synthesisEvidence": 4
+  },
+  "unchangedBounds": {
+    "retrievedPerQuery": 5,
+    "indexContextRows": 400,
+    "readSources": 12,
+    "itemsPerPassage": 3,
+    "inputBytes": 24000,
+    "modelCalls": 18,
+    "tokens": 100000,
+    "seconds": 360
+  },
+  "implementation": "Literal explicit emergence/occlusion data prerequisites rank evaluation/ablation passages with scene/sample context. Same source ownership/hash/index guards, unchanged whole passages, not automatic semantic approval. Existing profiles remain frozen.",
+  "controlledInputProof": "data-condition-source-input-20261020.json",
+  "realCase": {
+    "case": "E1-v2",
+    "status": "failed",
+    "errorCode": "invalid_experiment_planning_response",
+    "settledModelCalls": 8,
+    "settledTokens": 24837,
+    "newUnknowns": 0,
+    "contentAccepted": false,
+    "independentCredit": 0,
+    "actualNamedSceneAndEmergenceReachPlanner": true,
+    "actualNTCDefinitionReadAndExtracted": true,
+    "actualNTCDefinitionReachesPlanner": false,
+    "planFinishReason": "stop",
+    "compactPlanBytes": 3232,
+    "planByteCap": 2500,
+    "proof": "E1-v2-diagnostic-20261020.json"
+  },
+  "runtimeLoadProof": "runtime-load-dr200-data-condition-20261020.json",
+  "afterCaseRetentionProof": "runtime-postcases-dr200-e1-v2-20261020.json",
+  "remaining": [
+    "Preserve same-source anaphoric module-definition bundles through real premise scoring/fitting; do not require repeated acronyms or promote profiling as a definition.",
+    "Redesign bounded private planning for complete proposals, separate frame windows from held-out camera splits, and require training-only emergence eligibility checks. Do not merely increase the byte cap or accept the saved unreviewed plan.",
+    "Actual full-configuration/repair quality and fresh independent cases remain unproven; original independent0/5 unchanged."
+  ],
+  "boundary": "Offline/controlled paths pass; one actual post-fix case remains failed. DR0-DR5 incomplete, Goal active, PR draft. No retry after this response."
+}

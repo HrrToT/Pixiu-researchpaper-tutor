@@ -1,0 +1,112 @@
+{
+  "date": "2026-10-16",
+  "caseId": "D1-v8",
+  "runId": "dr_run_7ca40ccd0a305302b4f4e116e36c757a",
+  "taskId": "dr-live-d1-20261012",
+  "runtimePromptVersion": "dr-v2.20261016.112",
+  "status": "failed",
+  "outcome": "none",
+  "errorCode": "invalid_plan_response",
+  "submissionCount": 1,
+  "automaticRetries": 0,
+  "startedAt": "2026-10-16T10:01:08Z",
+  "finishedAt": "2026-10-16T10:01:17Z",
+  "confirmedUsage": {
+    "modelCalls": 2,
+    "tokens": 2049,
+    "elapsedSeconds": 9.0,
+    "cost": null
+  },
+  "calls": [
+    {
+      "call_id": "8a489cf0dca3453736596e81fc94e2ca",
+      "node": "resolve_brief",
+      "status": "succeeded",
+      "settled": 1
+    },
+    {
+      "call_id": "d1992b423c1a72cb938b89ea18cd8f37",
+      "node": "plan",
+      "status": "succeeded",
+      "settled": 1
+    }
+  ],
+  "planFinishReason": "stop",
+  "rejectedPlan": [
+    {
+      "itemId": "item_1",
+      "question": "LightGaussian论文中作者报告了哪些关于压缩后图像质量接近原始3DGS的结果？",
+      "obligations": [
+        {
+          "obligationId": "ob_1",
+          "question": "LightGaussian论文中作者报告了哪些关于压缩后图像质量接近原始3DGS的定量结果（如PSNR、SSIM、LPIPS）？",
+          "requiredSources": [
+            "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf"
+          ],
+          "searchQuery": "LightGaussian compression image quality PSNR SSIM LPIPS 3DGS comparison",
+          "purpose": "answer_requirement",
+          "requestExcerpt": "只依据LightGaussian，核查压缩后图像质量接近原始3DGS这一说法。区分作者报告的结果、成立条件和未验证范围。"
+        },
+        {
+          "obligationId": "ob_2",
+          "question": "LightGaussian论文中作者报告的质量接近结论的成立条件是什么（如数据集、场景类型、压缩率范围）？",
+          "requiredSources": [
+            "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf"
+          ],
+          "searchQuery": "LightGaussian compression quality conditions datasets scenes compression ratio",
+          "purpose": "answer_requirement",
+          "requestExcerpt": "只依据LightGaussian，核查压缩后图像质量接近原始3DGS这一说法。区分作者报告的结果、成立条件和未验证范围。"
+        }
+      ],
+      "searchQuery": "LightGaussian compression image quality 3DGS PSNR SSIM LPIPS conditions",
+      "dependencies": [],
+      "priority": 1
+    }
+  ],
+  "rejection": "Each obligation needs one to four completion criteria",
+  "publishedReport": false,
+  "manualQuality": {
+    "status": "not_scoreable_no_answer",
+    "scores": null,
+    "accepted": false
+  },
+  "postCaseSnapshot": {
+    "ledgerRows": 3210,
+    "oldPrefixSha256": "e87cb3930baaa3c22229f09d6e923c5ae3741e96d8eff666a511276b102328d8",
+    "active": [],
+    "paused": [
+      "dr_run_4738564f5ff35157996a35068c62ed32",
+      "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+      "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+      "dr_run_86b3f181a5475e99aacca3dbf4370567",
+      "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+      "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+      "dr_run_e3521b1781825273b384a26a5edb8cdc",
+      "dr_run_e9c9dc916bef519092fad8b929b2448f",
+      "dr_run_ed10cc3347be552288079a9a588fddf5"
+    ]
+  },
+  "offlineReplay": {
+    "providerCalls": 0,
+    "newPromptBytes": 5452,
+    "completeExamplePassesUnchangedValidator": true,
+    "savedIncompleteResponseStillRejected": true,
+    "diagnostic": {
+      "status": "rejected",
+      "reason": "Each obligation needs one to four completion criteria"
+    },
+    "boundary": "Counterfactual local copy only. New prompt compliance and real answer quality remain unverified.",
+    "sourceCommit": "68524d7",
+    "tests": {
+      "passed": 1867,
+      "warnings": 1,
+      "seconds": 67.47,
+      "sourceCommit": "68524d7",
+      "log": "tmp/pytest-dr113-full-first.log",
+      "scope": "Research, reading, PDF tables and config; no frontend or Java source change."
+    }
+  },
+  "boundary": "This one authorized case has ended. No repair/new case submitted. Missing criteria are not invented; historical unknowns untouched. Development regression, never independent acceptance. Full DR0-DR5 remains incomplete.",
+  "runtimeSourceCommit": "b77af79",
+  "submissionHarnessCommit": "9a9aeea"
+}

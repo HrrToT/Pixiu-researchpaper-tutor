@@ -1,0 +1,89 @@
+{
+  "date": "2026-10-20",
+  "sourceCase": "H5F-v5",
+  "sourcePayloadSha256": "dbb69b316762d321c00af510771c83050100dfa8038267427b6fda54d49c2bbc",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "oldCapacityFailureReproduced": {
+    "kind": "repairEvidenceBytes",
+    "limit": 19252,
+    "used": 19261
+  },
+  "inputLimitUnchanged": 19252,
+  "absoluteLimitUnchanged": 24000,
+  "comparisons": [
+    {
+      "targetIds": [
+        "c4",
+        "c5"
+      ],
+      "oldBytesAt24000Cap": 19261,
+      "newBytesAtOriginal19252Cap": 14719,
+      "sourceRows": 1,
+      "allExactEvidenceContextTablesPreserved": true,
+      "allOriginalsChecksSiblingConfigsPreserved": true,
+      "ownSourcePermissionsUnchanged": true,
+      "sourceRowsSha256": "e9ceeb75dbbfc3954c50454eebb38bab827b2f130b04d6de3a86e0b7c252590b",
+      "targetsAndChecksSha256": "ffd994704687eb65bc71727e47754d549835dac75e45f4379bb27f787348b6e7",
+      "siblingDefinitionsSha256": "42f2f68a79659d27466be3f8db030b2d1c149cea4f5f0ff2fdd414618f302baa"
+    },
+    {
+      "targetIds": [
+        "c1",
+        "c7",
+        "c8",
+        "c9"
+      ],
+      "oldBytesAt24000Cap": 20756,
+      "newBytesAtOriginal19252Cap": 17775,
+      "sourceRows": 0,
+      "allExactEvidenceContextTablesPreserved": true,
+      "allOriginalsChecksSiblingConfigsPreserved": true,
+      "ownSourcePermissionsUnchanged": true,
+      "sourceRowsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "targetsAndChecksSha256": "37a6861c1eff4c36d833ec653abc8bd5ad84dafdbbc64dc30b5b93dc856ef4b0",
+      "siblingDefinitionsSha256": "d78611723ccaae97072f94a6e8ae35b2eb50e7334617786e7897a30c4552dc4e"
+    },
+    {
+      "targetIds": [
+        "c2",
+        "c3",
+        "c6"
+      ],
+      "oldBytesAt24000Cap": 20564,
+      "newBytesAtOriginal19252Cap": 16645,
+      "sourceRows": 0,
+      "allExactEvidenceContextTablesPreserved": true,
+      "allOriginalsChecksSiblingConfigsPreserved": true,
+      "ownSourcePermissionsUnchanged": true,
+      "sourceRowsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "targetsAndChecksSha256": "8087055d14f9e6bfbfa2b5716ad8ff7dcbab63eb280b9ff2a31f2beebe672d4d",
+      "siblingDefinitionsSha256": "9ba8b2e29ba5ff4660efbd15b6532013f35fc28c8f69a22e092c88f931c48b6a"
+    }
+  ],
+  "schedulerFixture": {
+    "mockedSends": 3,
+    "groups": [
+      [
+        "c4",
+        "c5"
+      ],
+      [
+        "c1",
+        "c7",
+        "c8",
+        "c9"
+      ],
+      [
+        "c2",
+        "c3",
+        "c6"
+      ]
+    ],
+    "responses": "empty arrays, never content approvals",
+    "allPreflightedBeforeFirstSend": true
+  },
+  "independentScientificValidatorsChanged": false,
+  "historicalOutcomeChanged": false,
+  "boundary": "Generation-envelope capacity and preservation only. Actual archived evidence/checks/configs are unchanged; no new read/member evidence, model response, scientific/content pass, independent credit or unknown settlement. Every proposed revision still requires the original independent checks."
+}

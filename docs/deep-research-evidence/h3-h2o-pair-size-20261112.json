@@ -1,0 +1,17 @@
+{
+  "papers": [
+    {
+      "arxivVersion": "2306.14048v1",
+      "reference": "https://arxiv.org/abs/2306.14048v1",
+      "pdfUrl": "https://arxiv.org/pdf/2306.14048v1",
+      "maxBytes": 33554432,
+      "headStatus": 200,
+      "declaredBytes": 3210222,
+      "withinDeclaredCap": true
+    }
+  ],
+  "modelCalls": 0,
+  "pdfBodiesDownloaded": 0,
+  "automaticRetry": false,
+  "proxy": "current Windows system proxy; credentials not recorded"
+}

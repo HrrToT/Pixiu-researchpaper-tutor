@@ -1,0 +1,40 @@
+{
+  "sourceCommit": "b780c9fa517c4f2a070e30d96a939181d7f19504",
+  "sourceCase": "AD1N-v30",
+  "componentOnly": true,
+  "modelCalls": 1,
+  "tokens": 1092,
+  "seconds": 4.419,
+  "finishReason": "stop",
+  "structuredOutput": {
+    "version": 1,
+    "requestedFormat": "json_object",
+    "expectedShape": "object",
+    "receivedShape": "invalid_json"
+  },
+  "rawContentCharacters": 225,
+  "rawContentSha256": "cd4752b4d59731269d7cac52d48169556470b7fe2359ec5d932888d07c80b311",
+  "proseOnlySchemaRequested": true,
+  "hardEditableCharacters": 160,
+  "recommendedEditableCharacters": 112,
+  "completeCandidateParsed": false,
+  "compiledVisibleCharacters": null,
+  "within300Characters": null,
+  "finalParserOutcome": "invalid",
+  "productionWrites": 0,
+  "automaticRetry": false,
+  "isolatedRunStatus": "completed",
+  "scientificAcceptance": false,
+  "noviceAcceptance": false,
+  "rawResultSha256": "3077294985a9aced38c612b719579500f22e5abf23b67d42c86d1009e3b40f61",
+  "findings": [
+    "Known settled response reported stop, but its225-character content is incomplete JSON. Native normalization preserved raw content and rejected it as invalid_json. No bracket completion, clipping or resubmission was performed.",
+    "The preferred route dispatched the intended prose-only prompt, but this response cannot establish length or scientific/novice quality.",
+    "Offline client mock preserves the same text/finish and does not send stop sequences. This is not proof of original HTTP bytes or upstream cause. A strict Responses schema prototype is prepared, not deployed or provider-verified."
+  ],
+  "all103TasksExact": true,
+  "all379ApplicationRunsExact": true,
+  "all9526ApplicationCallRowsExact": true,
+  "historicalPaused": 15,
+  "activeApplicationRuns": 0
+}

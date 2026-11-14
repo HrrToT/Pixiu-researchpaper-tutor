@@ -1,0 +1,48 @@
+{
+  "date": "2026-10-20",
+  "sourceCommit": "75af6bae",
+  "promptVersion": "dr-v2.20261020.207",
+  "citationPresentationContractVersion": 2,
+  "serverOwnedImmutable": true,
+  "fullDeepResearchOffline": {
+    "passed": 3421,
+    "files": 198,
+    "warnings": 1,
+    "seconds": 209.11,
+    "scope": "All tests/test_deep_research*.py, not all Python/reading/config integration.",
+    "log": "tmp/pytest-dr207-research-full-verified.log",
+    "sha256": "34d02443b865acb09ed8d7e58148ecf94aee21d9560bc39eb6ab9c3280299d42"
+  },
+  "focusedPassed": 94,
+  "focusedOverlap": true,
+  "newTests": 36,
+  "oldActualModelFingerprintsMatched": 35,
+  "newProviderCalls": 0,
+  "implementation": "Immutable presentation2: own cited E labels only; slash bracket markers and explicit attribution become readable prose with original model fields and resolved-evidence audits retained. Unknown/uncited labels, source symbols, math/code and ambiguous ratios stay unchanged. Existing1 behavior and old request identity stay unchanged. Experimental repairs now use the same cleanup before original materialization/verification.",
+  "controlledProof": "citation-attribution-e1-v7-controlled-20261020.json",
+  "retentionProof": "runtime-dr207-full-retention-20261020.json",
+  "runtimeProof": "runtime-load-dr207-citation-attribution-20261020.json",
+  "latestRealContentCase": {
+    "case": "E1-v7",
+    "promptVersion": ".206",
+    "status": "completed",
+    "outcome": "partial",
+    "acceptedRoles": 2,
+    "rejectedRoles": 7,
+    "notRerun": true,
+    "wholeExperimentAccepted": false
+  },
+  "selectedDiagnosticTotals": {
+    "settledModelCalls": 521,
+    "measuredTokens": 2140252,
+    "notGlobalHistory": true,
+    "costUnknown": true
+  },
+  "remaining": [
+    "Resolve genuinely uncited claim references through source-faithful drafting/repair; never suppress them as presentation.",
+    "Fix text/config camera-split contradictions, full3DGS/NTC initialization and staged whole-package budget/model-review arithmetic.",
+    "Retain full original roles, actual learned modules, source identity and checks while fitting remaining repair input; complete storage/quality/timing definitions.",
+    "Run meaningful new content validation after substantive repair, then fresh independent cases against full DR0-DR5. Preserve old0/5 and11unknowns."
+  ],
+  "boundary": "Actual saved responses replayed under new presentation semantics only. No new paid generation, model semantic/independent approval, historical promotion or full DR0-DR5 completion. Goal active/PR draft."
+}

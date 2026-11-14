@@ -1,0 +1,13 @@
+{
+  "promptVersion": "dr-v2.20261105.385",
+  "mode": "offline original PDF -> new acquisition -> existing reading -> literal extraction -> real synthesis input fitting; provider captured only",
+  "promptBytes": 23970,
+  "evidenceCount": 47,
+  "methodLossAndImplementationVisible": true,
+  "originalPayloadPreserved": true,
+  "providerCalls": 0,
+  "networkCalls": 0,
+  "scientificApproval": false,
+  "independentCredit": 0,
+  "error": null
+}

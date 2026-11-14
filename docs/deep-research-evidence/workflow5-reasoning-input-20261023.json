@@ -1,0 +1,33 @@
+{
+  "sourceCase": "E1-v46",
+  "oldRequestExactlyRebuilt": true,
+  "newContract": 5,
+  "changedOptions": [
+    "thinking",
+    "reasoning_effort"
+  ],
+  "oldMode": "none",
+  "newMode": "low",
+  "promptAndMessagesExactlyPreserved": true,
+  "schemaExactlyPreserved": true,
+  "inputSchemaBytes": 31301,
+  "outputCap": 6144,
+  "requestTimeoutSeconds": 120,
+  "wholeRoundBudgetUnchanged": true,
+  "providerCalls": 0,
+  "boundary": "Offline identity and reservation comparison; no claim of improved scientific results.",
+  "profile": ".257",
+  "focused": {
+    "passed": 74,
+    "seconds": 9.54
+  },
+  "fullRegression": {
+    "files": 242,
+    "passed": 4443,
+    "warnings": 1,
+    "seconds": 322.39,
+    "logSha256": "fc1fdbfed400b7a9f686e64069304f7811c846406c4998dd6f091c77b9601e1a"
+  },
+  "runtimeLoaded": true,
+  "runtimeEvidence": "runtime-load-dr257-workflow-20261023.json"
+}

@@ -1,0 +1,121 @@
+{
+  "case": "AD1N-v3",
+  "legacyVersions12OutlineAndSelectionExact": true,
+  "legacyQueriesCompared": 6,
+  "selectedPages": [
+    2,
+    3,
+    1
+  ],
+  "sourceLiteralSlices": [
+    {
+      "page": 2,
+      "offset": 0,
+      "chars": 1625,
+      "section": "1 I NTRODUCTION",
+      "role": "other",
+      "textSha256": "a8d6733d99fec264941bd35df21b88ec7c1e95fdea0a6c60d6adc51b5cdee239"
+    },
+    {
+      "page": 2,
+      "offset": 1625,
+      "chars": 1634,
+      "section": "2 A LGORITHM",
+      "role": "method",
+      "textSha256": "e93ecfb505ba714742c63d70b88fccd11024eeb43b0a226c5a1637340b1b9955"
+    },
+    {
+      "page": 2,
+      "offset": 3259,
+      "chars": 394,
+      "section": "2 A LGORITHM / 2.1 A DAM ’S UPDATE RULE",
+      "role": "method",
+      "textSha256": "60c5a72034a50a294107d9246334cd2cbf1eecc39b2f17ff91574562559c1d7b"
+    },
+    {
+      "page": 3,
+      "offset": 0,
+      "chars": 2007,
+      "section": "2 A LGORITHM / 2.1 A DAM ’S UPDATE RULE",
+      "role": "method",
+      "textSha256": "2251332f4b4ddd2fa449879547bea2d76b05efd70cdda02d60162a541ebc3588"
+    },
+    {
+      "page": 3,
+      "offset": 2007,
+      "chars": 1961,
+      "section": "3 I NITIALIZATION BIAS CORRECTION",
+      "role": "method",
+      "textSha256": "7cdd8d62d5689c8b8696bdda512e413fed64e9eb04efb892845737b0f20a91c1"
+    },
+    {
+      "page": 1,
+      "offset": 0,
+      "chars": 1352,
+      "section": "",
+      "role": "unknown",
+      "textSha256": "2512020d197edb50f976ad9d391f849ee6d079bc0c4feccf7d408b23ae475e0d"
+    },
+    {
+      "page": 1,
+      "offset": 1352,
+      "chars": 2097,
+      "section": "1 I NTRODUCTION",
+      "role": "other",
+      "textSha256": "5f458342080725d488c68a6988ad06ae619cca15939735d38d1b0dd1fdd3d381"
+    },
+    {
+      "page": 1,
+      "offset": 3449,
+      "chars": 678,
+      "section": "1 I NTRODUCTION",
+      "role": "other",
+      "textSha256": "50ec693b577a2d907fd47000feab53367c43774e0781f400973d0d30bfd2f960"
+    }
+  ],
+  "actualAcquisitionFixtureCore": {
+    "definition": [
+      {
+        "sourceId": "src_32677dd80b0bc1a03d2bd98ad038664cb385a965852b55044be46f2d94a85630",
+        "location": {
+          "page": 2,
+          "offset": 1625,
+          "section": "2 A LGORITHM",
+          "sectionRole": "method"
+        },
+        "textSha256": "e93ecfb505ba714742c63d70b88fccd11024eeb43b0a226c5a1637340b1b9955"
+      }
+    ],
+    "initialization": [
+      {
+        "sourceId": "src_32677dd80b0bc1a03d2bd98ad038664cb385a965852b55044be46f2d94a85630",
+        "location": {
+          "page": 2,
+          "offset": 1625,
+          "section": "2 A LGORITHM",
+          "sectionRole": "method"
+        },
+        "textSha256": "e93ecfb505ba714742c63d70b88fccd11024eeb43b0a226c5a1637340b1b9955"
+      }
+    ],
+    "correction": [
+      {
+        "sourceId": "src_f013e06002352537f26143ecf1f7871157073c8223090d087d456bc01917af00",
+        "location": {
+          "page": 3,
+          "offset": 2007,
+          "section": "3 I NITIALIZATION BIAS CORRECTION",
+          "sectionRole": "method"
+        },
+        "textSha256": "7cdd8d62d5689c8b8696bdda512e413fed64e9eb04efb892845737b0f20a91c1"
+      }
+    ]
+  },
+  "cachedRealPdfPagesUnchanged": true,
+  "referencePagesSha256": "17675c00e47ab326ea94d947f954c4ea494be168c248e39fde67da62e7ca5117",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "networkRequests": 0,
+  "contentAcceptance": false,
+  "boundary": "Real frozen PDF text through actual acquisition adapter with fixture metadata/fetch transports. Own source/version/hash/offsets and three-page cap retained; no real new retrieval, LLM answer or scientific acceptance."
+}

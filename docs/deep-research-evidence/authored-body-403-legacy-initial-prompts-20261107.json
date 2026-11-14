@@ -1,0 +1,38 @@
+{
+  "legacyInitialPromptsByteExact": true,
+  "fixtures": [
+    {
+      "factualVersion": 1,
+      "scopeVersion": 4,
+      "sha256": "948f1a4486475b2c6d2bbe1bf36cdc94fade3314c28a9188ca310239794654f7"
+    },
+    {
+      "factualVersion": 1,
+      "scopeVersion": 5,
+      "sha256": "948f1a4486475b2c6d2bbe1bf36cdc94fade3314c28a9188ca310239794654f7"
+    },
+    {
+      "factualVersion": 2,
+      "scopeVersion": 4,
+      "sha256": "b71193d1a8c31d19ff946fb3f0c45b8bef5c00e00b3eca1e3302f271d8b8ccf5"
+    },
+    {
+      "factualVersion": 2,
+      "scopeVersion": 5,
+      "sha256": "b71193d1a8c31d19ff946fb3f0c45b8bef5c00e00b3eca1e3302f271d8b8ccf5"
+    },
+    {
+      "factualVersion": 3,
+      "scopeVersion": 4,
+      "sha256": "36ce5817a75a88d238877373ddd1eab5b144b9795d48b8e572ae5d4edcd97d86"
+    },
+    {
+      "factualVersion": 3,
+      "scopeVersion": 5,
+      "sha256": "36ce5817a75a88d238877373ddd1eab5b144b9795d48b8e572ae5d4edcd97d86"
+    }
+  ],
+  "baselineCommit": "92fea469f56e79beefd26c14083b7eda51219a2d",
+  "providerCalls": 0,
+  "productionWrites": 0
+}

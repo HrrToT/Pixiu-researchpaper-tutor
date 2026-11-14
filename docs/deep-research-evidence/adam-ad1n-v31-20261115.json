@@ -1,0 +1,98 @@
+{
+  "case": "AD1N-v31",
+  "runId": "dr_run_038717ea26aa5a4e99d216e5c6e87f45",
+  "sourceCommit": "b5b9091ac57ed588c8d17a10097f7480007004e7",
+  "promptVersion": "dr-v2.20261115.450",
+  "split": "development",
+  "independentCredit": 0,
+  "status": "completed",
+  "outcome": "partial",
+  "actualModelCalls": 9,
+  "allCallsSettled": true,
+  "tokens": 42372,
+  "elapsedSeconds": 100.0,
+  "externalSearches": 1,
+  "fulltextFetches": 1,
+  "allSourcesExactV1Fulltext": true,
+  "renderedDraftCharacters": 227,
+  "automaticSemanticAcceptedClaims": 2,
+  "automaticSemanticRejectedClaims": 0,
+  "coverageReviewReportedCoveredButLocallyRejected": [
+    {
+      "checkId": "criterion:human_aspect_1",
+      "reportedStatus": "covered",
+      "links": [
+        {
+          "input": {
+            "request": "偏差校正如何参与参数更新"
+          },
+          "operation": {
+            "id": "c1",
+            "field": "text",
+            "excerpt": "用一阶矩除以(1-(1-β1)^t)、二阶矩除以(1-(1-β2)^t)得到校正值，再按校正后的一阶矩除以校正后二阶矩的平方根加小常数来调整参数"
+          },
+          "output": {
+            "request": "调整参数"
+          }
+        }
+      ],
+      "errors": [
+        "unbound_process_request"
+      ]
+    }
+  ],
+  "coverageRepairActuallyReached": true,
+  "rawRepairSchemaValid": true,
+  "rawRepairCopiesOriginalExactly": true,
+  "unchangedRepairRejectionReproduced": true,
+  "reverifiedRepairClaims": 0,
+  "fixedEditorReasoningFlagLoaded": 1,
+  "fixedEditorActuallyCalled": false,
+  "contentAccepted": false,
+  "manualNoviceAccepted": false,
+  "automaticRetry": false,
+  "other102TasksExact": true,
+  "preservation": {
+    "oldLedgerUnchanged": true,
+    "allOldRunsUnchanged": true,
+    "newRows": 23,
+    "ledgerRows": 9549,
+    "onlyThisRunCreatedCalls": true,
+    "active": [],
+    "oldPausedRetained": true,
+    "paused": [
+      "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+      "dr_run_ed10cc3347be552288079a9a588fddf5",
+      "dr_run_86b3f181a5475e99aacca3dbf4370567",
+      "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+      "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+      "dr_run_e3521b1781825273b384a26a5edb8cdc",
+      "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+      "dr_run_e9c9dc916bef519092fad8b929b2448f",
+      "dr_run_4738564f5ff35157996a35068c62ed32",
+      "dr_run_a8bd62f9ae3d52ff806f537065f55b2d",
+      "dr_run_98e66f2d3d555dfa822b859963f01419",
+      "dr_run_8be639c866c35ea092c735a04781b647",
+      "dr_run_1c0c2e6510165086962408b8e3cf698b",
+      "dr_run_fc0931756c505c6d9a29c06abe1fdd8d",
+      "dr_run_b09de02407095586bba235843615f2b3"
+    ]
+  },
+  "manualReview": {
+    "accepted": false,
+    "reason": "This is a partial development result. Semantic model verdicts alone do not establish scientific/novice completion. The stated update omits explicit learning-rate and subtraction relationship; the causal account of zero initialization is terse. The step-size prevention wording is absolute and requires qualification to initialization bias. The local coverage failure itself is an invalid audit binding, not proof these substantive issues were detected."
+  },
+  "findings": [
+    "No fixed-prose editor was needed:227characters already fits300. This whole case does not independently exercise or prove the new low editor improvement. Saved-flow payload identity and isolated295char result remain its evidence.",
+    "Initial two claims passed the automatic semantic model. Coverage model reported the parameter-update explanation covered, but output-role request reference调整参数 is not an exact contiguous requirement span; unbound_process_request downgraded it. Program treated the unresolved audit as an answer gap.",
+    "Coverage-only repair returned the valid claimId/text schema but copied c1 exactly. Rejection is intentional no-op protection, NOT a JSON/schema mismatch. No repair was reverified.",
+    "Next distinguish invalid coverage bindings from demonstrated content gaps, preserve uncertain coverage, and implement bounded audit-format correction rather than reflexive scientific-prose rewriting. Never promote the reported-covered verdict until all own bindings and role semantics validate."
+  ],
+  "rawArtifacts": {
+    "tmp\\dr-acceptance-receipts\\AD1N-v31.json": "32de7bb0bb8b63599036285c32fc78d9f09d72b0be4fcdbf19868aa397df8b0f",
+    "tmp\\dr-acceptance-receipts\\AD1N-v31.result.json": "6d36cea015a8ec1b4aae9dad1638960738b88567278afe8bd3f2c39488435df2",
+    "tmp\\dr-acceptance-receipts\\AD1N-v31.payload.json": "109282e3a6ecc38209ea772cf08bf28037852d4cf0548fe4cd248dcaf2bb5937",
+    "tmp\\dr-acceptance-receipts\\AD1N-v31.calls.json": "b2bf2d20593370409f9a0cd8525e451f64552302bb0a737447cb350865a89a61",
+    "tmp\\dr-acceptance-receipts\\AD1N-v31.preservation.json": "9649204ef79c506ae024a4b8fd5e04547e0ab074e927acd35d301cd79101e099"
+  }
+}

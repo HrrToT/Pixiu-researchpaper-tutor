@@ -1,0 +1,18 @@
+{
+  "date": "2026-10-23",
+  "sourceCase": "E1-v33",
+  "sourceCommit": "44ffeb5a",
+  "rawPlanColumnBytes": 7808,
+  "wirePlanBytes": 7324,
+  "fullRequestBytes": 35052,
+  "fullRequestLimit": 32000,
+  "evidenceRows": 20,
+  "evidencePacketBytes": 9987,
+  "planningAndSuppliedEvidenceIdsIdentical": true,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "oldRunUnchanged": true,
+  "scientificApproval": false,
+  "next": "Compact repeated trusted drafting instructions while preserving full grammar, evidence, plan and requirements. Do not increase request or run budgets.",
+  "repeatedEvidenceStringsOver20CharactersGrossSaving": 457
+}

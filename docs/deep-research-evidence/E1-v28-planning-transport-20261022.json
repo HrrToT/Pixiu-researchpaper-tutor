@@ -1,0 +1,16 @@
+{
+  "date": "2026-10-22",
+  "case": "E1-v28",
+  "sourceCommit": "8760db13",
+  "actualPlanningFingerprintMatched": true,
+  "actualPlanningInputBytes": 26098,
+  "actualRawResponseBytes": 4536,
+  "newColumnPlanningInputBytes": 26098,
+  "maxInputBytes": 32000,
+  "originalQuestionEvidenceSourceTablesRequirementsIdentical": true,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "independentCredit": 0,
+  "scientificApproval": false,
+  "boundary": "Exact replay of archived version5/native11 failed planning request. No provider calls; no new output, scientific approval or validation of version6/native12."
+}

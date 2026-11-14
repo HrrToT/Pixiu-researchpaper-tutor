@@ -1,0 +1,45 @@
+{
+  "sourceCommit": "5529dea9",
+  "component": "lean-edit-envelope",
+  "providerCalls": 1,
+  "allCallsSettled": true,
+  "tokens": 1003,
+  "editableCharacters": 287,
+  "editableAllowance": 263,
+  "visibleCharacters": 321,
+  "characterLimit": 300,
+  "wireUserMatchesPrompt": true,
+  "providerInputTokens": 745,
+  "promptCharacters": 1276,
+  "result": "rejected_length",
+  "postEditVerificationRan": false,
+  "retry": false,
+  "productionPublish": false,
+  "independentCredit": 0,
+  "preservation": {
+    "before": {
+      "ledgerRows": 7682,
+      "ledgerSha256": "ccb948abe79ec858755dbc7df0b93af4853a611bd6d9247a6088ddf63bf9826f",
+      "payloadSha256": "115afaf955e35880b01e8f30243f35cad57aa65ebf5601f700898b5d0d81f002"
+    },
+    "after": {
+      "ledgerRows": 7682,
+      "ledgerSha256": "ccb948abe79ec858755dbc7df0b93af4853a611bd6d9247a6088ddf63bf9826f",
+      "payloadSha256": "115afaf955e35880b01e8f30243f35cad57aa65ebf5601f700898b5d0d81f002"
+    },
+    "exactProductionPreservation": true,
+    "providerSubmissions": 1,
+    "productionPublish": false,
+    "fullWorkflowReplay": false,
+    "independentCredit": 0,
+    "elapsedSeconds": 9.374
+  },
+  "receiptHashes": {
+    "calls.json": "952557a0b9910f2227d8becc49f2714f42712b1643918e426488d0fcc3a265af",
+    "failure.json": "97e15f2bbbe149aafc9c515c744d1a24a7353438abec6e255ddad6ae809a31e9",
+    "payload.json": "1a25e25551142223bd3dd54a07e43af782d88302a436e07cbb369a44d80873d4",
+    "preservation.json": "9d5f31016a67eb665edfd0793b9cf5a2a6f0fae5d7be04decf395904b3dd584e",
+    "progress.json": "2b77ca1436c21e61f9ed468030fd6a37aed95b86f7b2c3b91e1e630e7dde4764",
+    "request-1.json": "67efd0c7a257101bb309dd433c0e4308795a7ef53e6e3c5901fd9c074c672b0a"
+  }
+}

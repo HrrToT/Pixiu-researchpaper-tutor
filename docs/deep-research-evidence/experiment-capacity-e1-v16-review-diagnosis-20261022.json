@@ -1,0 +1,206 @@
+{
+  "date": "2026-10-22",
+  "sourceCase": "E1-v16",
+  "sourceCommit": "55f771a3",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "independentCredit": 0,
+  "actualRequestFingerprintsMatched": 4,
+  "requests": [
+    {
+      "callId": "1803cb97b8b7b3002209eb9dc9c8a858",
+      "node": "verify_design_config",
+      "targetIds": [
+        "c4"
+      ],
+      "inputBytes": 30180,
+      "actualFingerprintMatched": true
+    },
+    {
+      "callId": "4de37974f086b7d62f756f10cc211276",
+      "node": "verify_design_config",
+      "targetIds": [
+        "c5",
+        "c7"
+      ],
+      "inputBytes": 31946,
+      "actualFingerprintMatched": true
+    },
+    {
+      "callId": "d8640720456d943a2f6b690320dda5cf",
+      "node": "verify_design_science",
+      "targetIds": [
+        "c1"
+      ],
+      "inputBytes": 31928,
+      "actualFingerprintMatched": true
+    },
+    {
+      "callId": "63bfc199802ec6f87126e1a4bc4d7ceb",
+      "node": "verify_design_science",
+      "targetIds": [
+        "c3"
+      ],
+      "inputBytes": 31749,
+      "actualFingerprintMatched": true
+    }
+  ],
+  "allocationAttempts": [
+    {
+      "targetIds": [
+        "c4",
+        "c5",
+        "c7"
+      ],
+      "fullInputBytes": 41412,
+      "fixedInputBytes": 28944,
+      "maxInputBytes": 32000,
+      "referencedRows": 11,
+      "selectedRows": 4,
+      "selectedInputBytes": 31990,
+      "allRefsRetained": false
+    },
+    {
+      "targetIds": [
+        "c4"
+      ],
+      "fullInputBytes": 30180,
+      "fixedInputBytes": 26768,
+      "maxInputBytes": 32000,
+      "referencedRows": 3,
+      "selectedRows": 3,
+      "selectedInputBytes": 30180,
+      "allRefsRetained": true
+    },
+    {
+      "targetIds": [
+        "c5",
+        "c7"
+      ],
+      "fullInputBytes": 34598,
+      "fixedInputBytes": 24972,
+      "maxInputBytes": 32000,
+      "referencedRows": 8,
+      "selectedRows": 8,
+      "selectedInputBytes": 31946,
+      "allRefsRetained": true
+    },
+    {
+      "targetIds": [
+        "c1",
+        "c2",
+        "c3",
+        "c6",
+        "c8"
+      ],
+      "fullInputBytes": 52731,
+      "fixedInputBytes": 33408,
+      "maxInputBytes": 32000,
+      "referencedRows": 17
+    },
+    {
+      "targetIds": [
+        "c1",
+        "c2"
+      ],
+      "fullInputBytes": 44267,
+      "fixedInputBytes": 29546,
+      "maxInputBytes": 32000,
+      "referencedRows": 13,
+      "selectedRows": 4,
+      "selectedInputBytes": 31974,
+      "allRefsRetained": false
+    },
+    {
+      "targetIds": [
+        "c1"
+      ],
+      "fullInputBytes": 33829,
+      "fixedInputBytes": 26454,
+      "maxInputBytes": 32000,
+      "referencedRows": 7,
+      "selectedRows": 7,
+      "selectedInputBytes": 31928,
+      "allRefsRetained": true
+    },
+    {
+      "targetIds": [
+        "c2"
+      ],
+      "fullInputBytes": 38798,
+      "fixedInputBytes": 28409,
+      "maxInputBytes": 32000,
+      "referencedRows": 8,
+      "selectedRows": 5,
+      "selectedInputBytes": 31857,
+      "allRefsRetained": false
+    },
+    {
+      "targetIds": [
+        "c3",
+        "c6",
+        "c8"
+      ],
+      "fullInputBytes": 49911,
+      "fixedInputBytes": 32215,
+      "maxInputBytes": 32000,
+      "referencedRows": 16
+    },
+    {
+      "targetIds": [
+        "c3"
+      ],
+      "fullInputBytes": 34087,
+      "fixedInputBytes": 28917,
+      "maxInputBytes": 32000,
+      "referencedRows": 4,
+      "selectedRows": 4,
+      "selectedInputBytes": 31749,
+      "allRefsRetained": true
+    },
+    {
+      "targetIds": [
+        "c6",
+        "c8"
+      ],
+      "fullInputBytes": 48949,
+      "fixedInputBytes": 31253,
+      "maxInputBytes": 32000,
+      "referencedRows": 16,
+      "selectedRows": 0,
+      "selectedInputBytes": 31253,
+      "allRefsRetained": false
+    },
+    {
+      "targetIds": [
+        "c6"
+      ],
+      "fullInputBytes": 42655,
+      "fixedInputBytes": 29292,
+      "maxInputBytes": 32000,
+      "referencedRows": 11,
+      "selectedRows": 3,
+      "selectedInputBytes": 31593,
+      "allRefsRetained": false
+    },
+    {
+      "targetIds": [
+        "c8"
+      ],
+      "fullInputBytes": 34275,
+      "fixedInputBytes": 29375,
+      "maxInputBytes": 32000,
+      "referencedRows": 5,
+      "selectedRows": 4,
+      "selectedInputBytes": 31803,
+      "allRefsRetained": false
+    }
+  ],
+  "repairSkippedBeforeModel": "skipped_budget",
+  "repairAdmission": {
+    "kind": "repairEvidenceBytes",
+    "limit": 16580,
+    "used": 19568
+  },
+  "boundary": "Exact archived request/response replay. Review capacity refusals are distinct from model scientific rejections. No change to original failed content acceptance."
+}

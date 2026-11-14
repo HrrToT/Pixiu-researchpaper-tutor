@@ -1,0 +1,24 @@
+{
+  "date": "2026-10-15",
+  "runId": "dr_run_8bb7d7b0212c5e47b629c3c05cf52cb7",
+  "origin": "http://localhost:5173/",
+  "mode": "Actual application via in-app browser, no mocked API or model response.",
+  "checks": [
+    "Latest H4R report opened from its research result card.",
+    "Citation 1 opened the exact Ours row with original physical page 5.",
+    "View original navigated the PDF reader to physical page 5.",
+    "A clearly marked manual note was saved; success feedback appeared.",
+    "Machine original and user-edited versions remained separately accessible.",
+    "Navigation search found the manual note, including after browser reload.",
+    "Citation remained usable from the edited version; unverified-edit notice was visible.",
+    "Long source title no longer wraps the close button, and navigation preview no longer leaks details/summary markup."
+  ],
+  "machineTextSha256Before": "f5209750f346d8bc2df244f1cfab89e76f26b5b3c109a9b5a18dc9fda2347e08",
+  "machineTextSha256After": "f5209750f346d8bc2df244f1cfab89e76f26b5b3c109a9b5a18dc9fda2347e08",
+  "machinePreserved": true,
+  "manualNotePersisted": true,
+  "snapshot": "tmp/dr-acceptance-receipts/H4R-v3.workspace-after-edit.json",
+  "screenshot": "deep-research-evidence/live-citation-edited-report-20261015.png",
+  "screenshotSha256": "b80c7fa983fe9062de9e144bd93c6af58d291a4d7ffcf675a8121bfb3b8f7e66",
+  "boundary": "Functional UI verification on a correctly supported core claim; does not waive the missing frozen Table 2 criterion or certify all research content."
+}

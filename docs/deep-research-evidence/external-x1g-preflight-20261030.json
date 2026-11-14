@@ -1,0 +1,10 @@
+{
+  "targetId": "2503.00357v2",
+  "externalAcademic": true,
+  "fulltextEnabled": true,
+  "targetExternalFulltextCachePresent": false,
+  "productionLedgerRows": 7889,
+  "activeRuns": 0,
+  "method": "Read-only runtime capabilities and fulltext-cache lookup before frozen case submission",
+  "providerCalls": 0
+}

@@ -1,0 +1,38 @@
+{
+  "case": "AD1N-v4",
+  "runId": "dr_run_6ec7e363a7285efa8103e677c6dc4385",
+  "payloadSha256": "02576dae876a7cae3f7964718ecb50cfc3e9ff60df4b5bbe600c815ed53bf09f",
+  "replayOverrides": {
+    "state.repairCompleted": false,
+    "startedAt": "current replay time for admission only"
+  },
+  "measurements": [
+    {
+      "targetIds": [
+        "c1",
+        "c2"
+      ],
+      "fixedBytes": 19706,
+      "totalMandatoryBytes": 27329,
+      "mandatoryEvidenceRows": 5,
+      "limit": 24000,
+      "fixedPromptSha256": "7d1e53e3d7a46c557e4f8702d000850e80552072a1054fd8aa183012934e72a4"
+    },
+    {
+      "targetIds": [
+        "c1"
+      ],
+      "fixedBytes": 18283,
+      "totalMandatoryBytes": 25105,
+      "mandatoryEvidenceRows": 4,
+      "limit": 24000,
+      "fixedPromptSha256": "c573efd7b4a02db76f1b155f9dee1d65dd7d9c01882748af7dc0ff2a4291aca6"
+    }
+  ],
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "oldPayloadUnchanged": true,
+  "contentAcceptance": false,
+  "independentCredit": 0,
+  "boundary": "Actual graph and repair preparation replay on an in-memory saved terminal record. All model invocation paths are blocked; no replacement prose or scientific acceptance."
+}

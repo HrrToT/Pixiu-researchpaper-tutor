@@ -1,0 +1,26 @@
+{
+  "candidate": "arxiv:2406.01467v1",
+  "productionPayloadMatches": {
+    "2406.01467": [],
+    "rade-gs": [],
+    "radegs": [],
+    "rasterizing depth in gaussian splatting": []
+  },
+  "indexIdentityMatches": [],
+  "indexTextMatchIds": [],
+  "indexCount": 1102,
+  "cache": {
+    "v1": {
+      "path": "/research_data/store/sources/arxiv-d03630f7f478be0464ef0fbaaa11a4a5c96feba933ceb746cfbfc6683f4c45e2.json",
+      "exists": false
+    },
+    "v2": {
+      "path": "/research_data/store/sources/arxiv-f16c9e8f1c82dd450c78685cf5c4946b60250eb07483f276de45e643e00df793.json",
+      "exists": false
+    }
+  },
+  "maxPdfBytes": 33554432,
+  "active": 0,
+  "providerCalls": 0,
+  "networkCalls": 0
+}

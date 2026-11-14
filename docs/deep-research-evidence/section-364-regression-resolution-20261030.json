@@ -1,0 +1,16 @@
+{
+  "sourceFrozen": true,
+  "associatedFiles": 124,
+  "initialPassed": 2290,
+  "initialFailures": 1,
+  "failure": "Historical promptVersion literal expected .363 instead of the intended new .364. No implementation change after this suite.",
+  "correctedTest": "tests/test_deep_research_workflow_lifecycle_profile.py",
+  "correctedTestPassed": 1,
+  "correctedTestSha256": "0ef9a1a239e45253b75c738e8254a22de5cdc9dfd4fe31af15681016bf10e38a",
+  "initialProof": "section-364-confirmed-associated-regression-20261030.json",
+  "focusedSectionMechanismScopePassed": 69,
+  "focusedSectionConfigParsingPassed": 51,
+  "overlap": true,
+  "providerCalls": 0,
+  "boundary": "2290 initial passes plus one corrected version/legacy lifecycle check; not a second all-files run."
+}

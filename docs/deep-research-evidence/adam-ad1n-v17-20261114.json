@@ -1,0 +1,71 @@
+{
+  "case": "AD1N-v17",
+  "runId": "dr_run_c12020d79ba5512ea48cfccb560e7ad6",
+  "sourceCommit": "0811cdf2",
+  "promptVersion": "dr-v2.20261112.430",
+  "split": "development",
+  "independentCredit": 0,
+  "status": "failed",
+  "errorCode": "invalid_synthesis_response",
+  "outcome": "none",
+  "actualModelCalls": 8,
+  "allModelCallsSettled": true,
+  "tokens": 29233,
+  "elapsedSeconds": 38.0,
+  "limits": {
+    "modelCalls": 18,
+    "tokens": 100000,
+    "seconds": 360
+  },
+  "externalSearches": 1,
+  "fulltextFetches": [
+    {
+      "versionId": "arxiv:1412.6980v1",
+      "contentHash": "935a5a15616961aff21529d86a754570028843407adfe858f1d18584b84293a7",
+      "cacheHit": true,
+      "cacheStatus": "hit",
+      "networkRequests": 0,
+      "accessLevel": "fulltext"
+    }
+  ],
+  "formatAudit": {
+    "status": "rejected_length",
+    "visibleCharacters": 353,
+    "characterLimit": 300,
+    "verification": "unchecked"
+  },
+  "modelNodes": [
+    "resolve_brief",
+    "plan",
+    "assess_relevance",
+    "assess_relevance",
+    "assess_relevance",
+    "synthesize",
+    "synthesize_audience",
+    "synthesize_compact"
+  ],
+  "scientificVerificationReached": false,
+  "contentAccepted": false,
+  "automaticRetry": false,
+  "restoration": {
+    "javaPid": 42416,
+    "all103TasksAndAllResearchTablesMatchedPriorCheckpointBeforeRun": true,
+    "h2Backup": "tmp/service-resume-20261114/academic_db-before.mv.db"
+  },
+  "preservation": {
+    "old9226CallRowsUnchanged": true,
+    "all365OldRunsUnchanged": true,
+    "other102TaskPayloadsUnchanged": true,
+    "currentLedgerRows": 9248,
+    "onlyThisRunCreatedCalls": true,
+    "historicalPausedCount": 15,
+    "activeRuns": []
+  },
+  "diagnosis": "Initial draft, reader rewrite and compaction returned complete JSON. Reader targets included long unverifiedPointHint draft prose; the rewrite retained most technical wording and compaction still exceeded the original300-character limit. Removing draft anchoring is a next-step hypothesis, not a verified model-quality repair.",
+  "artifacts": {
+    "tmp/dr-acceptance-receipts/AD1N-v17.json": "9de103cfa1e22bdac83f9f6cb58c43e10bf82cbb393e5ec0e97b1dac483e98b1",
+    "tmp/dr-acceptance-receipts/AD1N-v17.payload.json": "20d384cc4fc42a2bf78e4c41bce2ba88f01e8c9b1346bd8f4819907205a2a89c",
+    "tmp/dr-acceptance-receipts/AD1N-v17.calls.json": "2a1469359e7f9d70485983a3c0231b3139d1c811cf952e82e1ef0d7768b0f828",
+    "tmp/dr-acceptance-receipts/AD1N-v17.preservation.json": "a63dbc804f42582e930ee5656ba7de4074135284197e1545056eb3e99095849a"
+  }
+}

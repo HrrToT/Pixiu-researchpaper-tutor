@@ -1,0 +1,155 @@
+{
+  "caseId": "S1G-v3",
+  "runId": "dr_run_c60d7072896e5c02b32b7620325e8f88",
+  "promptVersion": "dr-v2.20261029.342",
+  "status": "completed",
+  "outcome": "partial",
+  "modelCalls": 10,
+  "tokens": 34254,
+  "elapsedSeconds": 46.097,
+  "allCallsSettled": true,
+  "noRetry": true,
+  "adviceReviews": [
+    {
+      "node": "verify_advice",
+      "verdicts": [
+        {
+          "claimId": "c2",
+          "status": "passed",
+          "reason": "该目标为阅读顺序建议，属于非实验性指导。其依据的E1和E2来自引言，概述了压缩流程（高斯剪枝与恢复、SH蒸馏、向量量化），E3为实验表1，用于验证效果。建议的阅读顺序（先引言概述，再方法部分，最后实验表）与论文结构一致，且未声称执行新实验或保证无损。",
+          "adviceAudit": {
+            "purpose": "reading_guidance",
+            "targetPath": [
+              "text"
+            ],
+            "appropriate": true,
+            "premises": [
+              {
+                "evidenceId": "E1",
+                "path": [
+                  "quote"
+                ]
+              },
+              {
+                "evidenceId": "E2",
+                "path": [
+                  "quote"
+                ]
+              },
+              {
+                "evidenceId": "E3",
+                "path": [
+                  "quote"
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "node": "verify_repair_advice",
+      "verdicts": [
+        {
+          "claimId": "c2",
+          "status": "passed",
+          "reason": "该目标为阅读顺序建议，属于非实验性指导。证据E1和E2来自引言，概述了压缩流程（高斯剪枝与恢复、SH蒸馏、向量量化），E3为实验表1，用于验证效果。建议的阅读顺序（先引言概述，再方法部分，最后实验表）与论文结构一致，且未声称执行新实验或保证无损。",
+          "adviceAudit": {
+            "purpose": "reading_guidance",
+            "targetPath": [
+              "text"
+            ],
+            "appropriate": true,
+            "premises": [
+              {
+                "evidenceId": "E1",
+                "path": [
+                  "quote"
+                ]
+              },
+              {
+                "evidenceId": "E2",
+                "path": [
+                  "quote"
+                ]
+              },
+              {
+                "evidenceId": "E3",
+                "path": [
+                  "quote"
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "publishedBody": "## 推荐阅读顺序\n\n- 推荐阅读顺序：先读引言中的压缩流程概述，再读方法部分对应小节，最后读实验表1验证效果。 [1](#research-evidence-ev_0c96f872441e619c0d5950e7fb48333436d5b6b4e5be0f603e282dbd81b5200b) [2](#research-evidence-ev_c702d9140425f4efe9cf89c40e0b5a9ca61817b0fc683cadbf5e89814d066346) [3](#research-evidence-ev_618c1bc11d1c592d7899fc2fdbd630052d907a0c6bb20efab44358f4a3053af6)\n\n",
+  "experimentMislabelRemoved": true,
+  "publishedCounts": {
+    "artifacts": 2,
+    "messages": 1
+  },
+  "partialTagPreserved": true,
+  "repeatTerminalGetExactlyUnchanged": true,
+  "oldResultsAndMessagesUnchanged": true,
+  "fiveOtherProtectedTasksUnchanged": true,
+  "initialRejected": [
+    {
+      "claimId": "c1",
+      "reason": "numeric_mismatch",
+      "missingReportedNumbers": [
+        "3e0"
+      ],
+      "detail": "本条引用原文未直接报告这些数值：3。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。"
+    }
+  ],
+  "repairRejected": [
+    {
+      "claimId": "c1",
+      "reason": "numeric_mismatch",
+      "missingReportedNumbers": [
+        "3e0"
+      ],
+      "detail": "本条引用原文未直接报告这些数值：3。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。",
+      "revisionRejection": {
+        "claimId": "c1",
+        "reason": "numeric_mismatch",
+        "missingReportedNumbers": [
+          "3e0"
+        ],
+        "detail": "本条引用原文未直接报告这些数值：3。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。"
+      }
+    }
+  ],
+  "remainingDefect": "Quantity policy7 rejects otherwise complete list containing balanced explanatory parentheses. Whole answer remains partial; do not upgrade from advice success.",
+  "preservation": {
+    "oldLedgerUnchanged": true,
+    "allOldRunsUnchanged": true,
+    "newRows": 19,
+    "ledgerRows": 7520,
+    "onlyThisRunCreatedCalls": true,
+    "active": [],
+    "oldPausedRetained": true,
+    "paused": [
+      "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+      "dr_run_ed10cc3347be552288079a9a588fddf5",
+      "dr_run_86b3f181a5475e99aacca3dbf4370567",
+      "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+      "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+      "dr_run_e3521b1781825273b384a26a5edb8cdc",
+      "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+      "dr_run_e9c9dc916bef519092fad8b929b2448f",
+      "dr_run_4738564f5ff35157996a35068c62ed32",
+      "dr_run_a8bd62f9ae3d52ff806f537065f55b2d",
+      "dr_run_98e66f2d3d555dfa822b859963f01419",
+      "dr_run_8be639c866c35ea092c735a04781b647",
+      "dr_run_1c0c2e6510165086962408b8e3cf698b"
+    ]
+  },
+  "payloadSha256": "d299c7a70c3ff9d1357e5edb511669cdf52bff979eb6176c13b8072e864d757f",
+  "independentCredit": 0,
+  "scientificApproval": false,
+  "contentAcceptance": false
+}

@@ -1,0 +1,20 @@
+{
+  "papers": [
+    {
+      "arxivVersion": "2309.17453v1",
+      "url": "https://arxiv.org/pdf/2309.17453v1",
+      "automaticRetry": false,
+      "httpStatus": 200,
+      "bytes": 12386355,
+      "sha256": "90aab1280f93ca3b0fa7b8fb295a0e4b1e81593f0315746c0399387c2a8abba8",
+      "path": "tmp\\pdfs\\h3-streaming-review-20261112\\2309.17453v1.pdf",
+      "complete": true
+    }
+  ],
+  "modelCalls": 0,
+  "applicationCacheWrites": 0,
+  "materialImports": 0,
+  "proxy": "current system proxy",
+  "pdfGets": 1,
+  "boundary": "Evaluator-only public exact-revision PDFs; no source alteration or automatic retry."
+}

@@ -1,0 +1,99 @@
+{
+  "date": "2026-10-18",
+  "case": "D1-v19",
+  "runId": "dr_run_3e393a12f94655eba68a52f08be6048e",
+  "sourceCommit": "77e16747",
+  "promptVersion": "dr-v2.20261018.146",
+  "evaluationUse": "original development case",
+  "independent": false,
+  "status": "completed",
+  "outcome": "inconclusive",
+  "contentAccepted": false,
+  "modelCalls": 7,
+  "settledTokens": 25774,
+  "elapsedSeconds": 32.119,
+  "cost": null,
+  "actualSemanticBatches": [],
+  "initialVerification": {
+    "accepted": [],
+    "rejected": [
+      {
+        "claimId": "c1",
+        "reason": "table_condition_not_displayed",
+        "requiredTableDisplay": [
+          {
+            "group": "Mip-NeRF 360 Datasets",
+            "method": "3D-GS  *  [16]"
+          },
+          {
+            "group": "Mip-NeRF 360 Datasets",
+            "method": "Ours"
+          }
+        ],
+        "detail": "保留表格数值时，同条正文或条件必须显示原表的数据组和方法身份。请核对requiredTableDisplay；保留星号、变体及分组层级，末尾参考文献序号可省略。不能只写另一个方法名代替Ours等原表标签，也不能修改单元格或加入未报告的计算。"
+      },
+      {
+        "claimId": "c2",
+        "reason": "absence_not_established"
+      }
+    ]
+  },
+  "repairChecks": {
+    "accepted": [],
+    "rejected": [
+      {
+        "claimId": "c1",
+        "reason": "table_condition_not_displayed",
+        "requiredTableDisplay": [
+          {
+            "group": "Mip-NeRF 360 Datasets",
+            "method": "3D-GS  *  [16]"
+          },
+          {
+            "group": "Mip-NeRF 360 Datasets",
+            "method": "Ours"
+          }
+        ],
+        "detail": "保留表格数值时，同条正文或条件必须显示原表的数据组和方法身份。请核对requiredTableDisplay；保留星号、变体及分组层级，末尾参考文献序号可省略。不能只写另一个方法名代替Ours等原表标签，也不能修改单元格或加入未报告的计算。"
+      },
+      {
+        "claimId": "c2",
+        "reason": "absence_not_established"
+      }
+    ]
+  },
+  "scores": {
+    "goalResponse": 1,
+    "evidenceSupport": null,
+    "conditions": null,
+    "synthesisValue": 1,
+    "executability": null,
+    "readability": 2
+  },
+  "findings": [
+    "Exact star-variant identity is now supplied before repair. The model describes it as 带星号变体 rather than displaying the literal asterisk, so the strict display recognizer still rejects it.",
+    "The selected row is the starred 3D-GS variant. It must not be silently equated to the unstarred baseline in the original question or mixed with its conditions.",
+    "Repair still asserts the author did not provide other validation; the cited finite table rows cannot establish paper-wide absence.",
+    "No claim passed; inconclusive output is safe but not useful enough for the requested research answer."
+  ],
+  "report": "本次尚未形成通过核验的结论。\n\n<details>\n<summary>还有 2 项未完成</summary>\n\n- 作者报告了哪些定量指标来支持压缩后图像质量接近原始 3DGS 的说法？：最终回答尚未完整回应这一问题\n- 作者在哪些数据集、场景或实验设置下评估了压缩后图像质量？：最终回答尚未完整回应这一问题\n\n</details>",
+  "rawFiles": [
+    {
+      "path": "tmp/dr-acceptance-receipts/D1-v19.json",
+      "sha256": "f287938e51e884feab8b7f7051ade32b3088b09754c714223f5c183de24d844d"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/D1-v19.payload.json",
+      "sha256": "b2215523bcc9469217268d4e55fb0aaede3ee7397323ecac5cd650f062070f2a"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/D1-v19.calls.json",
+      "sha256": "ffa299aac5a84bc8c8d1382d35d7a686a05383b8b6c37fe292dd4c5ffb34d4d9"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/D1-v19.result.json",
+      "sha256": "7f6d29772b0264ee66435963be6db268dd1944e49d557bb3dbd9a97492186030"
+    }
+  ],
+  "boundary": "Submitted once, unchanged question/materials/budget, all rows settled. No historical unknown retry, first-result overwrite or independent credit. Safe partial result is not goal completion."
+}

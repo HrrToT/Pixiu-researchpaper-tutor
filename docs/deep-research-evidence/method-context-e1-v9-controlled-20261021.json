@@ -1,0 +1,115 @@
+{
+  "date": "2026-10-21",
+  "actualSourceCase": "E1-v9",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "cachedActualIndexSha256": "74fdb8b3d3ad2a511ba2ffa10fce08b40d60399c088462c2862e3697b3233cae",
+  "oldActualQueryIdentitiesMatched": 3,
+  "actualAnchorTextAndHashesMatched": true,
+  "retrievals": [
+    {
+      "oldActualCallId": "9af2ad56a0f0f5f37aab50967f02ef49",
+      "queryIdentityMatched": true,
+      "oldChunks": [
+        31,
+        37,
+        38,
+        21,
+        54
+      ],
+      "newChunks": [
+        31,
+        37,
+        38,
+        21,
+        54
+      ],
+      "limit": 5
+    },
+    {
+      "oldActualCallId": "2b2b6f44391deb43780971bb58379151",
+      "queryIdentityMatched": true,
+      "oldChunks": [
+        17,
+        3,
+        42,
+        5,
+        30
+      ],
+      "newChunks": [
+        17,
+        3,
+        28,
+        29,
+        30
+      ],
+      "limit": 5
+    },
+    {
+      "oldActualCallId": "0944aa37ad3e12bffb11f0e63eefb451",
+      "queryIdentityMatched": true,
+      "oldChunks": [
+        5,
+        37,
+        38,
+        3,
+        17
+      ],
+      "newChunks": [
+        5,
+        37,
+        38,
+        3,
+        17
+      ],
+      "limit": 5
+    }
+  ],
+  "controlledReadChunks": [
+    21,
+    37,
+    38,
+    31,
+    54,
+    17,
+    3,
+    28,
+    5,
+    29,
+    30
+  ],
+  "unchangedReadLimit": 12,
+  "newSources": [
+    {
+      "sourceId": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-28",
+      "workId": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf",
+      "versionId": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98",
+      "contentHash": "e22af3c8b7238a54b3bb8b2f1c19a53c50acfbddee55ec8c66816935baf6fe7c",
+      "materialContentHash": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98",
+      "location": {
+        "page": 5,
+        "chunk": 28,
+        "section": "Adaptive 3DG Addition"
+      },
+      "obligationIds": [
+        "ob_1"
+      ]
+    },
+    {
+      "sourceId": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-29",
+      "workId": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf",
+      "versionId": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98",
+      "contentHash": "eedce6b4b9b1bc05d8131e70d1391355765195796ac349a0e0f590c310e89b2b",
+      "materialContentHash": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98",
+      "location": {
+        "page": 5,
+        "chunk": 29,
+        "section": "Adaptive 3DG Addition"
+      },
+      "obligationIds": [
+        "ob_1"
+      ]
+    }
+  ],
+  "boundary": "Controlled actual-index and original-query replay with in-memory reads, not new production retrieval or scientific acceptance. Original text, hashes, owner, version and section retained separately. Missing spawn sampling/initialization contexts now readable within unchanged limits; existing membership context retained. No verdicts or provider calls generated."
+}

@@ -1,0 +1,37 @@
+{
+  "date": "2026-10-18",
+  "sourceCommit": "4a2da0e7",
+  "promptVersion": "dr-v2.20261018.140",
+  "full": {
+    "passed": 2264,
+    "warnings": 1,
+    "seconds": 139.95,
+    "log": "tmp/pytest-dr140-full.log"
+  },
+  "quantityFocused": {
+    "passed": 114,
+    "seconds": 4.15,
+    "log": "tmp/pytest-dr139-quantity.log",
+    "overlapsFullSuite": true
+  },
+  "priorityFocused": {
+    "passed": 105,
+    "seconds": 17.86,
+    "log": "tmp/pytest-dr140-priority-final.log",
+    "overlapsFullSuite": true
+  },
+  "contracts": {
+    "quantitySpellingContractVersion": 1,
+    "evidenceCoverageContractVersion": 3,
+    "runtimeSemanticContractVersion": 1
+  },
+  "realProviderCalls": 0,
+  "properties": [
+    "Finite directly written English and Chinese small count words recognized; no implicit arithmetic promoted to a reported fact.",
+    "Exact missing number identities retained in repair checks, without changing legacy rejection metadata.",
+    "Whole earlier candidate pool frozen with digest before send; new extracted evidence prioritized ahead of old unchecked backlog.",
+    "Routing only affects order; cross-obligation candidates retained and strict independent support required.",
+    "Unknown requests are not resent. Old contracts keep their exact saved requests."
+  ],
+  "boundary": "Offline and saved-input replay only. No model content pass, independent acceptance or overall completion."
+}

@@ -1,0 +1,13 @@
+{
+  "date": "2026-10-23",
+  "fullSuitePassed": 4265,
+  "testFiles": 234,
+  "seconds": 219.46,
+  "warnings": 1,
+  "focusedPassed": 170,
+  "sharedLLMChecksPassed": 49,
+  "legacyScriptsPassed": 38,
+  "providerCallsDuringOfflineChecks": 0,
+  "productionWrites": 0,
+  "boundary": "Offline routing,scope,budget,cache,unknown/failure and legacy behavior; not paper quality acceptance."
+}

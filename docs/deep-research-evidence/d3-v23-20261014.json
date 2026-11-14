@@ -1,0 +1,31 @@
+{
+  "date": "2026-10-14",
+  "caseId": "D3-v23",
+  "runId": "dr_run_6de5b270b1dd5f89800e229f00fb91b0",
+  "promptVersion": "dr-v2.20261014.58",
+  "submissionCount": 1,
+  "automaticResubmissions": 0,
+  "result": {"status": "completed", "outcome": "partial", "successfulModelCalls": 8, "actualTokensFromSettledResponses": 34332, "elapsedSeconds": 100.489, "cost": null},
+  "repairStatus": "skipped_budget",
+  "repairLimit": {"kind": "repairPromptBytes", "limit": 24000, "used": 24017},
+  "contentReview": {
+    "hypothesisMetadata": "No forbidden hypothesisContractVersion key appeared inside the generated executionSpec.",
+    "acceptedRoles": ["groups", "metrics"],
+    "failed": ["One-scene protocol cannot support the proposed across-scene bootstrap.", "Baseline, recovery steps and data split remained placeholders.", "An additional analysis claim lacked executionSpec.", "Pruning significance operation remained underspecified."],
+    "qualityAccepted": false
+  },
+  "observation": "Java report GET timed out on a terminal-state read. The preceding API receipt snapshot was running, so authoritative completed state and complete call ledger were separately saved from read-only SQLite. Do not resubmit this case because of the observation timeout.",
+  "rawAuthoritativeRecord": "tmp/dr-acceptance-receipts/D3-v23.authoritative.json",
+  "followupOfflineChange": {
+    "promptVersion": "dr-v2.20261014.59",
+    "change": "Remove server-owned version stamps and empty optional wrappers from repair wire claims only. Preserve original prose and executionSpec, server stamping and all checks.",
+    "rebuiltPromptBytes": 23959,
+    "visibleEvidenceCount": 1,
+    "providerRequests": 0,
+    "testsPassed": 44,
+    "testSeconds": 15.33,
+    "capacitySolved": false,
+    "boundary": "Admission below the byte cap with only one visible evidence item does not establish adequate repair support. Need evidence-aware repair capacity and target scheduling rather than shaving bytes or increasing limits."
+  },
+  "acceptance": "Real content still fails. DR0-DR5 remains incomplete; no new model submission follows this diagnosis."
+}

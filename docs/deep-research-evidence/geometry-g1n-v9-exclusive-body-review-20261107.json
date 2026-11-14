@@ -1,0 +1,1078 @@
+{
+  "case": "G1N-v9",
+  "split": "development",
+  "runId": "dr_run_dd47b2be73e45b3aa0a47c41b0be5c64",
+  "promptVersion": "dr-v2.20261107.403",
+  "sourceCommit": "b96b0cde",
+  "status": "completed",
+  "machineOutcome": "partial",
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "actualModelCalls": 12,
+  "tokens": 76341,
+  "elapsedSeconds": 292.902,
+  "allModelCallsSettled": true,
+  "rawPayloadSha256": "d45b3b26c038cd1fb276a3ae0efc09931d6ea7a00e87d012f763d50f4cf7435b",
+  "initialAuthoredClaims": [
+    {
+      "claimId": "c1",
+      "kind": "reported",
+      "evidenceRefs": [
+        "E1",
+        "E2",
+        "E3",
+        "E4"
+      ],
+      "obligationIds": [
+        "ob_1"
+      ],
+      "detailLevel": "summary",
+      "tableBindings": [],
+      "draftingBasis": {
+        "premiseStatus": "established",
+        "observations": [
+          {
+            "evidenceId": "E1",
+            "quote": "By compressing the scale factor along specific axes, the Gaussian ellipsoid can be flattened into planes aligned with those axes."
+          },
+          {
+            "evidenceId": "E2",
+            "quote": "we represent the scene with a set of 3D Gaussian primitives"
+          },
+          {
+            "evidenceId": "E3",
+            "quote": "compressing 3D Gaussians into a 2D flat plane representation, which is used to generate plane distance and normal maps, and subsequently converted into unbiased depth maps."
+          },
+          {
+            "evidenceId": "E4",
+            "quote": "we introduce a novel method for extracting compact and adaptive meshes using tetrahedral grids."
+          }
+        ],
+        "scopeDecision": "reported_case",
+        "unresolved": ""
+      },
+      "body": {
+        "prose": {
+          "text": "GOF使用3D高斯原语，通过射线-高斯相交评估贡献，并从四面体网格提取网格；PGSR将3D高斯压缩为平面表示，生成平面距离和法线图，再转换为无偏深度图，网格提取路径不同。",
+          "conditions": {}
+        }
+      }
+    },
+    {
+      "claimId": "c2",
+      "kind": "reported",
+      "evidenceRefs": [
+        "E5",
+        "E6",
+        "E7",
+        "E8",
+        "E9"
+      ],
+      "obligationIds": [
+        "ob_2",
+        "ob_4"
+      ],
+      "detailLevel": "summary",
+      "tableBindings": [],
+      "draftingBasis": {
+        "premiseStatus": "established",
+        "observations": [
+          {
+            "evidenceId": "E5",
+            "quote": "PGSR 0.31 0.52 0.27 0.27 0.76 0.54 0.49 0.98 0.69 0.49 0.46 0.56 0.28 0.35 0.36 0.49 1.0h"
+          },
+          {
+            "evidenceId": "E6",
+            "quote": "We show the Chamfer distance and average optimization time."
+          },
+          {
+            "evidenceId": "E7",
+            "quote": "Ours 0.50 0.82 0.37 0.37 1.12 0.74 0.73 1.18 1.29 0.68 0.77 0.90 0.42 0.66 0.49 0.74 30m"
+          },
+          {
+            "evidenceId": "E8",
+            "quote": "All experiments in this paper are conducted on Nvidia RTX 4090 GPU."
+          },
+          {
+            "evidenceId": "E9",
+            "quote": "All experiments are conducted on an NVIDIA A100 GPU."
+          }
+        ],
+        "scopeDecision": "reported_case",
+        "unresolved": ""
+      },
+      "body": {
+        "prose": {
+          "text": "DTU上，PGSR自报Chamfer距离均值0.49mm（↓），训练1.0h（RTX 4090）；GOF自报均值0.74mm（↓），训练30m（A100）。PGSR表中GOF为0.74mm/2h，与GOF自报30m不一致，硬件不同，不能直接比较速度。",
+          "conditions": {}
+        }
+      }
+    },
+    {
+      "claimId": "c3",
+      "kind": "reported",
+      "evidenceRefs": [
+        "E10",
+        "E11",
+        "E12"
+      ],
+      "obligationIds": [
+        "ob_3"
+      ],
+      "detailLevel": "summary",
+      "tableBindings": [],
+      "draftingBasis": {
+        "premiseStatus": "established",
+        "observations": [
+          {
+            "evidenceId": "E10",
+            "quote": "PGSR achieves results close to 3DGS and outperforms similar reconstruction method SuGaR."
+          },
+          {
+            "evidenceId": "E11",
+            "quote": "GOF [69] 30.80 0.928 0.167 24.76 0.742 0.225 27.78 0.835 0.196"
+          },
+          {
+            "evidenceId": "E12",
+            "quote": "Our method achieved SOTA NVS results, especially in the outdoor scenes in terms of LPIPS."
+          }
+        ],
+        "scopeDecision": "reported_case",
+        "unresolved": ""
+      },
+      "body": {
+        "prose": {
+          "text": "Mip-NeRF360上，PGSR自报PSNR 27.43、SSIM 0.830、LPIPS 0.193，接近3DGS；GOF自报PSNR 27.78、SSIM 0.835、LPIPS 0.196，两者渲染质量相近。",
+          "conditions": {}
+        }
+      }
+    },
+    {
+      "claimId": "c4",
+      "kind": "inference",
+      "evidenceRefs": [
+        "E8",
+        "E9"
+      ],
+      "obligationIds": [
+        "ob_5"
+      ],
+      "detailLevel": "summary",
+      "tableBindings": [],
+      "draftingBasis": {
+        "premiseStatus": "not_established",
+        "observations": [
+          {
+            "evidenceId": "E8",
+            "quote": "All experiments in this paper are conducted on Nvidia RTX 4090 GPU."
+          },
+          {
+            "evidenceId": "E9",
+            "quote": "All experiments are conducted on an NVIDIA A100 GPU."
+          }
+        ],
+        "scopeDecision": "bounded_inference",
+        "unresolved": "两篇论文均未报告模型存储或显存使用，无法比较。"
+      },
+      "body": {
+        "boundary": {
+          "observedSettings": [
+            {
+              "subject": "PGSR",
+              "attribute": "硬件",
+              "value": "Nvidia RTX 4090 GPU"
+            },
+            {
+              "subject": "GOF",
+              "attribute": "硬件",
+              "value": "NVIDIA A100 GPU"
+            }
+          ],
+          "notEstablished": [
+            {
+              "type": "comparison_evidence",
+              "subjects": [
+                "PGSR",
+                "GOF"
+              ],
+              "quantity": "模型存储或显存使用"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "claimId": "c5",
+      "kind": "inference",
+      "evidenceRefs": [
+        "E5",
+        "E7",
+        "E11"
+      ],
+      "obligationIds": [
+        "ob_6"
+      ],
+      "detailLevel": "summary",
+      "tableBindings": [],
+      "draftingBasis": {
+        "premiseStatus": "established",
+        "observations": [
+          {
+            "evidenceId": "E5",
+            "quote": "PGSR 0.31 0.52 0.27 0.27 0.76 0.54 0.49 0.98 0.69 0.49 0.46 0.56 0.28 0.35 0.36 0.49 1.0h"
+          },
+          {
+            "evidenceId": "E7",
+            "quote": "Ours 0.50 0.82 0.37 0.37 1.12 0.74 0.73 1.18 1.29 0.68 0.77 0.90 0.42 0.66 0.49 0.74 30m"
+          },
+          {
+            "evidenceId": "E11",
+            "quote": "GOF [69] 30.80 0.928 0.167 24.76 0.742 0.225 27.78 0.835 0.196"
+          }
+        ],
+        "scopeDecision": "bounded_inference",
+        "unresolved": ""
+      },
+      "body": {
+        "prose": {
+          "text": "若优先几何精度且可接受较长训练，选PGSR；若需快速训练且渲染质量相近，选GOF。但硬件不同，速度比较需谨慎。",
+          "conditions": {}
+        }
+      }
+    }
+  ],
+  "authoredRepairClaims": [
+    {
+      "draftingBasis": {
+        "premiseStatus": "established",
+        "observations": [
+          {
+            "evidenceId": "E7",
+            "quote": "we represent the scene with a set of 3D Gaussian primitives ... we evaluate the contribution of a Gaussian to a ray with explicit ray-Gaussian intersection"
+          },
+          {
+            "evidenceId": "E16",
+            "quote": "we introduce a novel method for extracting compact and adaptive meshes using tetrahedral grids"
+          },
+          {
+            "evidenceId": "E4",
+            "quote": "By compressing the scale factor along specific axes, the Gaussian ellipsoid can be flattened into planes aligned with those axes."
+          },
+          {
+            "evidenceId": "E13",
+            "quote": "compressing 3D Gaussians into a 2D flat plane representation, which is used to generate plane distance and normal maps, and subsequently converted into unbiased depth maps."
+          }
+        ],
+        "scopeDecision": "reported_case",
+        "unresolved": "PGSR的网格提取细节未在提供的证据中说明，无法确认两者网格提取路径不同。"
+      },
+      "claimId": "c1",
+      "kind": "reported",
+      "evidenceRefs": [
+        "E7",
+        "E16",
+        "E4",
+        "E13"
+      ],
+      "detailLevel": "fulltext",
+      "discardedDraftSpans": [
+        "网格提取路径不同"
+      ],
+      "body": {
+        "prose": {
+          "text": "GOF使用3D高斯原语，通过射线-高斯相交评估贡献，并从四面体网格提取网格；PGSR将3D高斯压缩为平面表示，生成平面距离和法线图，再转换为无偏深度图。PGSR的网格提取细节未在证据中说明，无法确认两者网格提取路径不同。",
+          "conditions": {}
+        }
+      }
+    },
+    {
+      "draftingBasis": {
+        "premiseStatus": "established",
+        "observations": [
+          {
+            "evidenceId": "E19",
+            "quote": "Ours 0.50 0.82 0.37 0.37 1.12 0.74 0.73 1.18 1.29 0.68 0.77 0.90 0.42 0.66 0.49 0.74 30m"
+          },
+          {
+            "evidenceId": "E17",
+            "quote": "GOF [69] 0.50 0.82 0.37 0.37 1.12 0.74 0.73 1.18 1.29 0.68 0.77 0.90 0.42 0.66 0.49 0.74 2h"
+          },
+          {
+            "evidenceId": "E17",
+            "quote": "PGSR 0.31 0.52 0.27 0.27 0.76 0.54 0.49 0.98 0.69 0.49 0.46 0.56 0.28 0.35 0.36 0.49 1.0h"
+          }
+        ],
+        "scopeDecision": "reported_case",
+        "unresolved": "PGSR表中GOF的耗时与GOF自报耗时不一致，且硬件条件不同，不能直接比较速度。"
+      },
+      "claimId": "c2",
+      "kind": "reported",
+      "evidenceRefs": [
+        "E19",
+        "E17"
+      ],
+      "detailLevel": "fulltext",
+      "discardedDraftSpans": [
+        "PGSR表中GOF为0.74mm/2h及硬件不同的比较性陈述"
+      ],
+      "body": {
+        "prose": {
+          "text": "DTU上，GOF自报Chamfer距离均值0.74mm（↓），训练耗时30分钟（A100）；PGSR自报Chamfer距离均值0.49mm（↓），训练耗时1.0小时（RTX 4090）。PGSR表中GOF的Chamfer距离为0.74mm，耗时为2小时，与GOF自报的30分钟不一致；两者硬件不同，不能直接比较速度。",
+          "conditions": {}
+        }
+      }
+    }
+  ],
+  "initialVerification": {
+    "accepted": [],
+    "rejected": [
+      {
+        "claimId": "c1",
+        "reason": "semantic_unresolved",
+        "detail": "GOF 使用 3D 高斯原语并通过射线-高斯相交评估贡献由 E2 支持；GOF 从四面体网格提取网格由 E4 支持；PGSR 压缩 3D 高斯为平面表示并生成平面距离/法线图再转换为无偏深度图由 E1 和 E3 支持；但声明中'网格提取路径不同'的比较子句缺少 PGSR 侧的网格提取细节，E1-E3 仅到无偏深度图，未说明 PGSR 的网格提取方法，故无法确认两者路径不同，该比较子句不受支持。"
+      },
+      {
+        "claimId": "c2",
+        "reason": "semantic_unresolved",
+        "detail": "GOF自报0.74mm/30m(A100)和PGSR自报0.49mm/1.0h(RTX 4090)有支持；但关于PGSR表中GOF为0.74mm/2h及硬件不同的比较性陈述不能仅由GOF自身证据支持，导致报告归属审计失败，因此整体声明不成立。"
+      },
+      {
+        "claimId": "c3",
+        "reason": "semantic_unresolved",
+        "detail": "PGSR自报数值与接近3DGS的断言由其论文表格支持，但GOF的数值并非GOF论文自报：E1未提供该平均值，而E2/E3来自PGSR论文的比较表，故GOF自报部分缺失，整体断言不能通过。"
+      },
+      {
+        "claimId": "c4",
+        "reason": "semantic_unresolved",
+        "detail": "观察条件尚未通过事实核查：剩余时间不足以完成独立核验及最终覆盖检查，本条尚未核验。",
+        "executionState": "not_started",
+        "reviewTimeAdmission": {
+          "allowed": false,
+          "remainingSeconds": 93.743,
+          "requiredSeconds": 138.75,
+          "observedSettledReviews": 3
+        }
+      },
+      {
+        "claimId": "c5",
+        "reason": "semantic_unresolved",
+        "detail": "剩余时间不足以完成独立核验及最终覆盖检查，本条尚未核验。",
+        "executionState": "not_started",
+        "reviewTimeAdmission": {
+          "allowed": false,
+          "remainingSeconds": 94.184,
+          "requiredSeconds": 138.75,
+          "observedSettledReviews": 3
+        }
+      }
+    ]
+  },
+  "repairVerification": {
+    "accepted": [
+      {
+        "claimId": "c1",
+        "kind": "reported",
+        "evidenceRefs": [
+          "ev_d9714d53fb3219d25b98cbe348699fc00c9843d748c9b4f55b0d93ff06edb45a",
+          "ev_e3d7cc78021a29706c9154278704d4bf8d26892a76bb6e9b3e0c928ec207f110",
+          "ev_fdb777ebeb1b30e94d23b2135f2ae7a2bb947c836c3d4a081ddf7005a406c061",
+          "ev_d89e66c6c239a4d7bbbfd9cbf11af70fb538e03d9458da253c02256c97b5a3d8"
+        ],
+        "detailLevel": "fulltext",
+        "text": "GOF使用3D高斯原语，通过射线-高斯相交评估贡献，并从四面体网格提取网格；PGSR将3D高斯压缩为平面表示，生成平面距离和法线图，再转换为无偏深度图。PGSR的网格提取细节未在证据中说明，无法确认两者。",
+        "conditions": {},
+        "obligationIds": [
+          "ob_1"
+        ],
+        "verification": "semantic_passed"
+      }
+    ],
+    "rejected": [
+      {
+        "claimId": "c2",
+        "reason": "semantic_unresolved",
+        "detail": "GOF自报0.74mm/30m(A100)和PGSR自报0.49mm/1.0h(RTX 4090)有支持；但关于PGSR表中GOF为0.74mm/2h及硬件不同的比较性陈述不能仅由GOF自身证据支持，导致报告归属审计失败，因此整体声明不成立。"
+      },
+      {
+        "claimId": "c3",
+        "reason": "semantic_unresolved",
+        "detail": "PGSR自报数值与接近3DGS的断言由其论文表格支持，但GOF的数值并非GOF论文自报：E1未提供该平均值，而E2/E3来自PGSR论文的比较表，故GOF自报部分缺失，整体断言不能通过。"
+      },
+      {
+        "claimId": "c4",
+        "reason": "semantic_unresolved",
+        "detail": "观察条件尚未通过事实核查：剩余时间不足以完成独立核验及最终覆盖检查，本条尚未核验。",
+        "executionState": "not_started",
+        "reviewTimeAdmission": {
+          "allowed": false,
+          "remainingSeconds": 93.743,
+          "requiredSeconds": 138.75,
+          "observedSettledReviews": 3
+        }
+      },
+      {
+        "claimId": "c5",
+        "reason": "semantic_unresolved",
+        "detail": "剩余时间不足以完成独立核验及最终覆盖检查，本条尚未核验。",
+        "executionState": "not_started",
+        "reviewTimeAdmission": {
+          "allowed": false,
+          "remainingSeconds": 94.184,
+          "requiredSeconds": 138.75,
+          "observedSettledReviews": 3
+        }
+      }
+    ]
+  },
+  "synthesisScopeExpressionAudit": [
+    {
+      "claimId": "c4",
+      "expression": {
+        "observedSettings": [
+          {
+            "subject": "PGSR",
+            "attribute": "硬件",
+            "value": "Nvidia RTX 4090 GPU"
+          },
+          {
+            "subject": "GOF",
+            "attribute": "硬件",
+            "value": "NVIDIA A100 GPU"
+          }
+        ],
+        "notEstablished": [
+          {
+            "type": "comparison_evidence",
+            "subjects": [
+              "PGSR",
+              "GOF"
+            ],
+            "quantity": "模型存储或显存使用"
+          }
+        ]
+      },
+      "renderedText": "已报告设置：PGSR（硬件：Nvidia RTX 4090 GPU）；GOF（硬件：NVIDIA A100 GPU）。当前引用不足以比较PGSR与GOF的模型存储或显存使用。",
+      "verification": "unchecked"
+    }
+  ],
+  "draftValidationAudit": {
+    "version": 1,
+    "rejected": []
+  },
+  "answerCoverage": {
+    "status": "checked",
+    "coverageInstructionsContractVersion": 1,
+    "coverageInputContractVersion": 1,
+    "verdicts": [
+      {
+        "obligationId": "ob_1",
+        "status": "partial",
+        "bindings": [
+          {
+            "claimId": "c1",
+            "field": "text",
+            "excerpt": "GOF使用3D高斯原语，通过射线-高斯相交评估贡献，并从四面体网格提取网格；PGSR将3D高斯压缩为平面表示，生成平面距离和法线图，再转换为无偏深度图。PGSR的网格提取细节未在证据中说明，无法确认两者。"
+          }
+        ],
+        "aspects": [
+          {
+            "aspectId": "criterion:human_aspect_1",
+            "requirement": "高斯表示与网格提取路径有什么不同",
+            "basis": {
+              "kind": "request",
+              "excerpt": "高斯表示与网格提取路径有什么不同"
+            },
+            "status": "partial",
+            "bindings": [
+              {
+                "claimId": "c1",
+                "field": "text",
+                "excerpt": "GOF使用3D高斯原语，通过射线-高斯相交评估贡献，并从四面体网格提取网格；PGSR将3D高斯压缩为平面表示，生成平面距离和法线图，再转换为无偏深度图。PGSR的网格提取细节未在证据中说明，无法确认两者。"
+              }
+            ]
+          }
+        ],
+        "criteria": [
+          {
+            "criterionId": "human_aspect_1",
+            "responseType": "identification",
+            "status": "partial",
+            "bindings": [
+              {
+                "claimId": "c1",
+                "field": "text",
+                "excerpt": "GOF使用3D高斯原语，通过射线-高斯相交评估贡献，并从四面体网格提取网格；PGSR将3D高斯压缩为平面表示，生成平面距离和法线图，再转换为无偏深度图。PGSR的网格提取细节未在证据中说明，无法确认两者。"
+              }
+            ]
+          }
+        ],
+        "requestCheckReasons": [
+          {
+            "checkId": "criterion:human_aspect_1",
+            "reason": "答案说明了GOF使用3D高斯原语和四面体网格提取，PGSR使用平面表示，但未明确说明PGSR的网格提取路径，仅表示无法确认，因此未完全回答高斯表示与网格提取路径的不同。"
+          }
+        ],
+        "gapDetail": {
+          "criterionIds": [
+            "human_aspect_1"
+          ],
+          "aspectIds": [
+            "criterion:human_aspect_1"
+          ],
+          "missingContent": "请补全本条固定要求中标为未满足的部分，具体要求见 missingAspects。",
+          "reason": "此缺口由固定检查项的未满足状态汇总；模型说明不作为新增要求或论文事实。"
+        }
+      },
+      {
+        "obligationId": "ob_2",
+        "status": "missing",
+        "bindings": [],
+        "aspects": [
+          {
+            "aspectId": "criterion:req_1",
+            "requirement": "列出 GOF 和 PGSR 在 DTU 上报告的几何精度数值和训练耗时，并注明指标方向和分辨率",
+            "basis": {
+              "kind": "request",
+              "excerpt": "GOF 和 PGSR 在 DTU 数据集上报告的几何精度指标和训练耗时分别是多少？"
+            },
+            "status": "missing",
+            "bindings": []
+          },
+          {
+            "aspectId": "criterion:req_2",
+            "requirement": "说明数值是否来自作者自报或同表对比，以及硬件条件",
+            "basis": {
+              "kind": "request",
+              "excerpt": "GOF 和 PGSR 在 DTU 数据集上报告的几何精度指标和训练耗时分别是多少？"
+            },
+            "status": "missing",
+            "bindings": []
+          }
+        ],
+        "criteria": [
+          {
+            "criterionId": "req_1",
+            "responseType": "identification",
+            "status": "missing",
+            "bindings": []
+          },
+          {
+            "criterionId": "req_2",
+            "responseType": "identification",
+            "status": "missing",
+            "bindings": []
+          }
+        ],
+        "requestCheckReasons": [
+          {
+            "checkId": "criterion:req_1",
+            "reason": "答案未提供GOF和PGSR在DTU上报告的几何精度数值和训练耗时，也未注明指标方向和分辨率。"
+          },
+          {
+            "checkId": "criterion:req_2",
+            "reason": "答案未说明数值是否来自作者自报或同表对比，也未提供硬件条件。"
+          }
+        ],
+        "gapDetail": {
+          "criterionIds": [
+            "req_1",
+            "req_2"
+          ],
+          "aspectIds": [
+            "criterion:req_1",
+            "criterion:req_2"
+          ],
+          "missingContent": "请补全本条固定要求中标为未满足的部分，具体要求见 missingAspects。",
+          "reason": "此缺口由固定检查项的未满足状态汇总；模型说明不作为新增要求或论文事实。"
+        }
+      },
+      {
+        "obligationId": "ob_3",
+        "status": "missing",
+        "bindings": [],
+        "aspects": [
+          {
+            "aspectId": "criterion:human_aspect_1",
+            "requirement": "Mip-NeRF360 的渲染质量如何",
+            "basis": {
+              "kind": "request",
+              "excerpt": "Mip-NeRF360 的渲染质量如何"
+            },
+            "status": "missing",
+            "bindings": []
+          }
+        ],
+        "criteria": [
+          {
+            "criterionId": "human_aspect_1",
+            "responseType": "explanation",
+            "status": "missing",
+            "bindings": []
+          }
+        ],
+        "requestCheckReasons": [
+          {
+            "checkId": "criterion:human_aspect_1",
+            "reason": "答案未提及Mip-NeRF360的渲染质量。"
+          }
+        ],
+        "gapDetail": {
+          "criterionIds": [
+            "human_aspect_1"
+          ],
+          "aspectIds": [
+            "criterion:human_aspect_1"
+          ],
+          "missingContent": "请补全本条固定要求中标为未满足的部分，具体要求见 missingAspects。",
+          "reason": "此缺口由固定检查项的未满足状态汇总；模型说明不作为新增要求或论文事实。"
+        }
+      },
+      {
+        "obligationId": "ob_4",
+        "status": "missing",
+        "bindings": [],
+        "aspects": [
+          {
+            "aspectId": "criterion:human_aspect_1",
+            "requirement": "核对数据集、指标方向、分辨率和硬件条件",
+            "basis": {
+              "kind": "request",
+              "excerpt": "核对数据集、指标方向、分辨率和硬件条件，区分作者自报与同表对比"
+            },
+            "status": "missing",
+            "bindings": []
+          },
+          {
+            "aspectId": "criterion:human_aspect_2",
+            "requirement": "区分作者自报与同表对比",
+            "basis": {
+              "kind": "request",
+              "excerpt": "核对数据集、指标方向、分辨率和硬件条件，区分作者自报与同表对比"
+            },
+            "status": "missing",
+            "bindings": []
+          }
+        ],
+        "criteria": [
+          {
+            "criterionId": "human_aspect_1",
+            "responseType": "explanation",
+            "status": "missing",
+            "bindings": []
+          },
+          {
+            "criterionId": "human_aspect_2",
+            "responseType": "explanation",
+            "status": "missing",
+            "bindings": []
+          }
+        ],
+        "requestCheckReasons": [
+          {
+            "checkId": "criterion:human_aspect_1",
+            "reason": "答案未核对数据集、指标方向、分辨率和硬件条件。"
+          },
+          {
+            "checkId": "criterion:human_aspect_2",
+            "reason": "答案未区分作者自报与同表对比。"
+          }
+        ],
+        "gapDetail": {
+          "criterionIds": [
+            "human_aspect_1",
+            "human_aspect_2"
+          ],
+          "aspectIds": [
+            "criterion:human_aspect_1",
+            "criterion:human_aspect_2"
+          ],
+          "missingContent": "请补全本条固定要求中标为未满足的部分，具体要求见 missingAspects。",
+          "reason": "此缺口由固定检查项的未满足状态汇总；模型说明不作为新增要求或论文事实。"
+        }
+      },
+      {
+        "obligationId": "ob_5",
+        "status": "missing",
+        "bindings": [],
+        "aspects": [
+          {
+            "aspectId": "criterion:req_1",
+            "requirement": "检查两篇论文是否报告模型存储或显存使用，并说明证据是否充分",
+            "basis": {
+              "kind": "request",
+              "excerpt": "GOF 和 PGSR 是否报告了模型存储或显存使用？如果证据不足，明确说明无法比较。"
+            },
+            "status": "missing",
+            "bindings": []
+          },
+          {
+            "aspectId": "criterion:req_2",
+            "requirement": "如果证据不足，明确说明无法比较",
+            "basis": {
+              "kind": "request",
+              "excerpt": "GOF 和 PGSR 是否报告了模型存储或显存使用？如果证据不足，明确说明无法比较。"
+            },
+            "status": "missing",
+            "bindings": []
+          }
+        ],
+        "criteria": [
+          {
+            "criterionId": "req_1",
+            "responseType": "identification",
+            "status": "missing",
+            "bindings": []
+          },
+          {
+            "criterionId": "req_2",
+            "responseType": "limitation",
+            "status": "missing",
+            "bindings": []
+          }
+        ],
+        "requestCheckReasons": [
+          {
+            "checkId": "criterion:req_1",
+            "reason": "答案未检查两篇论文是否报告模型存储或显存使用。"
+          },
+          {
+            "checkId": "criterion:req_2",
+            "reason": "答案未说明证据不足时无法比较。"
+          }
+        ],
+        "gapDetail": {
+          "criterionIds": [
+            "req_1",
+            "req_2"
+          ],
+          "aspectIds": [
+            "criterion:req_1",
+            "criterion:req_2"
+          ],
+          "missingContent": "请补全本条固定要求中标为未满足的部分，具体要求见 missingAspects。",
+          "reason": "此缺口由固定检查项的未满足状态汇总；模型说明不作为新增要求或论文事实。"
+        }
+      },
+      {
+        "obligationId": "ob_6",
+        "status": "missing",
+        "bindings": [],
+        "aspects": [
+          {
+            "aspectId": "criterion:req_1",
+            "requirement": "根据已核对的指标，给出在不同应用场景下的选择建议",
+            "basis": {
+              "kind": "request",
+              "excerpt": "基于已核对的几何精度、训练耗时和渲染质量，给出有条件的选择建议。"
+            },
+            "status": "missing",
+            "bindings": []
+          },
+          {
+            "aspectId": "criterion:req_2",
+            "requirement": "建议必须基于论文证据，并注明条件",
+            "basis": {
+              "kind": "request",
+              "excerpt": "基于已核对的几何精度、训练耗时和渲染质量，给出有条件的选择建议。"
+            },
+            "status": "missing",
+            "bindings": []
+          }
+        ],
+        "criteria": [
+          {
+            "criterionId": "req_1",
+            "responseType": "explanation",
+            "status": "missing",
+            "bindings": []
+          },
+          {
+            "criterionId": "req_2",
+            "responseType": "explanation",
+            "status": "missing",
+            "bindings": []
+          }
+        ],
+        "requestCheckReasons": [
+          {
+            "checkId": "criterion:req_1",
+            "reason": "答案未给出基于已核对指标的选择建议。"
+          },
+          {
+            "checkId": "criterion:req_2",
+            "reason": "答案未提供有条件的选择建议。"
+          }
+        ],
+        "gapDetail": {
+          "criterionIds": [
+            "req_1",
+            "req_2"
+          ],
+          "aspectIds": [
+            "criterion:req_1",
+            "criterion:req_2"
+          ],
+          "missingContent": "请补全本条固定要求中标为未满足的部分，具体要求见 missingAspects。",
+          "reason": "此缺口由固定检查项的未满足状态汇总；模型说明不作为新增要求或论文事实。"
+        }
+      },
+      {
+        "obligationId": "answer_scope",
+        "status": "partial",
+        "bindings": [
+          {
+            "claimId": "c1",
+            "field": "text",
+            "excerpt": "GOF使用3D高斯原语，通过射线-高斯相交评估贡献，并从四面体网格提取网格；PGSR将3D高斯压缩为平面表示，生成平面距离和法线图，再转换为无偏深度图。PGSR的网格提取细节未在证据中说明，无法确认两者。"
+          }
+        ],
+        "aspects": [
+          {
+            "aspectId": "request",
+            "requirement": "请联网读取 GOF（arXiv:2404.10772v1）和 PGSR（arXiv:2406.06521v1）两篇原文，面向了解3DGS概念的读者比较它们：高斯表示与网格提取路径有什么不同；在 DTU 上各自报告的几何精度和训练耗时，以及 Mip-NeRF360 的渲染质量如何。核对数据集、指标方向、分辨率和硬件条件，区分作者自报与同表对比；时间数值或条件有差异时指出，不能直接推成普遍速度排名。模型存储或显存若证据不足就明确说无法比较。最后给出有条件的选择建议。限500字。",
+            "basis": {
+              "kind": "request",
+              "excerpt": "请联网读取 GOF（arXiv:2404.10772v1）和 PGSR（arXiv:2406.06521v1）两篇原文，面向了解3DGS概念的读者比较它们：高斯表示与网格提取路径有什么不同；在 DTU 上各自报告的几何精度和训练耗时，以及 Mip-NeRF360 的渲染质量如何。核对数据集、指标方向、分辨率和硬件条件，区分作者自报与同表对比；时间数值或条件有差异时指出，不能直接推成普遍速度排名。模型存储或显存若证据不足就明确说无法比较。最后给出有条件的选择建议。限500字。"
+            },
+            "status": "partial",
+            "bindings": [
+              {
+                "claimId": "c1",
+                "field": "text",
+                "excerpt": "GOF使用3D高斯原语，通过射线-高斯相交评估贡献，并从四面体网格提取网格；PGSR将3D高斯压缩为平面表示，生成平面距离和法线图，再转换为无偏深度图。PGSR的网格提取细节未在证据中说明，无法确认两者。"
+              }
+            ]
+          }
+        ],
+        "criteria": [],
+        "requestCheckReasons": [
+          {
+            "checkId": "request",
+            "reason": "答案仅部分回答了原始问题，缺少DTU几何精度和训练耗时、Mip-NeRF360渲染质量、数据集核对、存储/显存比较以及选择建议。"
+          }
+        ],
+        "gapDetail": {
+          "criterionIds": [],
+          "aspectIds": [
+            "request"
+          ],
+          "missingContent": "请补全本条固定要求中标为未满足的部分，具体要求见 missingAspects。",
+          "reason": "此缺口由固定检查项的未满足状态汇总；模型说明不作为新增要求或论文事实。"
+        }
+      }
+    ],
+    "coverageEvidenceTransportVersion": 1,
+    "completionContractDigest": "d49588016d634102282d2fd143c4aa8c24d77711fa88789af00ba79aaff23a9a",
+    "displayMetadataDigest": "b8354ba9e1273365c37f7bd7dddb0288393a97ed4e83a83518b7789ea2a45dc0",
+    "gaps": [
+      {
+        "obligationId": "ob_1",
+        "question": "高斯表示与网格提取路径有什么不同",
+        "missingEvidence": "最终回答尚未完整回应这一问题",
+        "stage": "answer",
+        "missingAspects": [
+          "高斯表示与网格提取路径有什么不同"
+        ],
+        "aspectEvidenceRefs": [],
+        "gapDetail": {
+          "criterionIds": [
+            "human_aspect_1"
+          ],
+          "aspectIds": [
+            "criterion:human_aspect_1"
+          ],
+          "missingContent": "请补全本条固定要求中标为未满足的部分，具体要求见 missingAspects。",
+          "reason": "此缺口由固定检查项的未满足状态汇总；模型说明不作为新增要求或论文事实。"
+        }
+      },
+      {
+        "obligationId": "ob_2",
+        "question": "GOF 和 PGSR 在 DTU 数据集上报告的几何精度指标和训练耗时分别是多少？",
+        "missingEvidence": "最终回答尚未完整回应这一问题",
+        "stage": "answer",
+        "missingAspects": [
+          "列出 GOF 和 PGSR 在 DTU 上报告的几何精度数值和训练耗时，并注明指标方向和分辨率",
+          "说明数值是否来自作者自报或同表对比，以及硬件条件"
+        ],
+        "aspectEvidenceRefs": [],
+        "gapDetail": {
+          "criterionIds": [
+            "req_1",
+            "req_2"
+          ],
+          "aspectIds": [
+            "criterion:req_1",
+            "criterion:req_2"
+          ],
+          "missingContent": "请补全本条固定要求中标为未满足的部分，具体要求见 missingAspects。",
+          "reason": "此缺口由固定检查项的未满足状态汇总；模型说明不作为新增要求或论文事实。"
+        }
+      },
+      {
+        "obligationId": "ob_3",
+        "question": "Mip-NeRF360 的渲染质量如何",
+        "missingEvidence": "最终回答尚未完整回应这一问题",
+        "stage": "answer",
+        "missingAspects": [
+          "Mip-NeRF360 的渲染质量如何"
+        ],
+        "aspectEvidenceRefs": [],
+        "gapDetail": {
+          "criterionIds": [
+            "human_aspect_1"
+          ],
+          "aspectIds": [
+            "criterion:human_aspect_1"
+          ],
+          "missingContent": "请补全本条固定要求中标为未满足的部分，具体要求见 missingAspects。",
+          "reason": "此缺口由固定检查项的未满足状态汇总；模型说明不作为新增要求或论文事实。"
+        }
+      },
+      {
+        "obligationId": "ob_4",
+        "question": "核对数据集、指标方向、分辨率和硬件条件，区分作者自报与同表对比",
+        "missingEvidence": "最终回答尚未完整回应这一问题",
+        "stage": "answer",
+        "missingAspects": [
+          "核对数据集、指标方向、分辨率和硬件条件",
+          "区分作者自报与同表对比"
+        ],
+        "aspectEvidenceRefs": [],
+        "gapDetail": {
+          "criterionIds": [
+            "human_aspect_1",
+            "human_aspect_2"
+          ],
+          "aspectIds": [
+            "criterion:human_aspect_1",
+            "criterion:human_aspect_2"
+          ],
+          "missingContent": "请补全本条固定要求中标为未满足的部分，具体要求见 missingAspects。",
+          "reason": "此缺口由固定检查项的未满足状态汇总；模型说明不作为新增要求或论文事实。"
+        }
+      },
+      {
+        "obligationId": "ob_5",
+        "question": "GOF 和 PGSR 是否报告了模型存储或显存使用？如果证据不足，明确说明无法比较。",
+        "missingEvidence": "最终回答尚未完整回应这一问题",
+        "stage": "answer",
+        "missingAspects": [
+          "检查两篇论文是否报告模型存储或显存使用，并说明证据是否充分",
+          "如果证据不足，明确说明无法比较"
+        ],
+        "aspectEvidenceRefs": [],
+        "gapDetail": {
+          "criterionIds": [
+            "req_1",
+            "req_2"
+          ],
+          "aspectIds": [
+            "criterion:req_1",
+            "criterion:req_2"
+          ],
+          "missingContent": "请补全本条固定要求中标为未满足的部分，具体要求见 missingAspects。",
+          "reason": "此缺口由固定检查项的未满足状态汇总；模型说明不作为新增要求或论文事实。"
+        }
+      },
+      {
+        "obligationId": "ob_6",
+        "question": "基于已核对的几何精度、训练耗时和渲染质量，给出有条件的选择建议。",
+        "missingEvidence": "最终回答尚未完整回应这一问题",
+        "stage": "answer",
+        "missingAspects": [
+          "根据已核对的指标，给出在不同应用场景下的选择建议",
+          "建议必须基于论文证据，并注明条件"
+        ],
+        "aspectEvidenceRefs": [],
+        "gapDetail": {
+          "criterionIds": [
+            "req_1",
+            "req_2"
+          ],
+          "aspectIds": [
+            "criterion:req_1",
+            "criterion:req_2"
+          ],
+          "missingContent": "请补全本条固定要求中标为未满足的部分，具体要求见 missingAspects。",
+          "reason": "此缺口由固定检查项的未满足状态汇总；模型说明不作为新增要求或论文事实。"
+        }
+      },
+      {
+        "obligationId": "answer_scope",
+        "question": "请联网读取 GOF（arXiv:2404.10772v1）和 PGSR（arXiv:2406.06521v1）两篇原文，面向了解3DGS概念的读者比较它们：高斯表示与网格提取路径有什么不同；在 DTU 上各自报告的几何精度和训练耗时，以及 Mip-NeRF360 的渲染质量如何。核对数据集、指标方向、分辨率和硬件条件，区分作者自报与同表对比；时间数值或条件有差异时指出，不能直接推成普遍速度排名。模型存储或显存若证据不足就明确说无法比较。最后给出有条件的选择建议。限500字。",
+        "missingEvidence": "最终回答尚未完整回应这一问题",
+        "stage": "answer",
+        "missingAspects": [
+          "请联网读取 GOF（arXiv:2404.10772v1）和 PGSR（arXiv:2406.06521v1）两篇原文，面向了解3DGS概念的读者比较它们：高斯表示与网格提取路径有什么不同；在 DTU 上各自报告的几何精度和训练耗时，以及 Mip-NeRF360 的渲染质量如何。核对数据集、指标方向、分辨率和硬件条件，区分作者自报与同表对比；时间数值或条件有差异时指出，不能直接推成普遍速度排名。模型存储或显存若证据不足就明确说无法比较。最后给出有条件的选择建议。限500字。"
+        ],
+        "aspectEvidenceRefs": [],
+        "gapDetail": {
+          "criterionIds": [],
+          "aspectIds": [
+            "request"
+          ],
+          "missingContent": "请补全本条固定要求中标为未满足的部分，具体要求见 missingAspects。",
+          "reason": "此缺口由固定检查项的未满足状态汇总；模型说明不作为新增要求或论文事实。"
+        },
+        "wholeQuestion": true
+      }
+    ],
+    "invalidAspectObligations": [],
+    "requestCoverageContractVersion": 5,
+    "wholeQuestionId": "answer_scope",
+    "nonblockingResearch": [],
+    "criterionGaps": {},
+    "invalidCriterionObligations": [],
+    "budgetLimit": null,
+    "diagnosticErrors": [],
+    "answerCoherence": {
+      "contractVersion": 1,
+      "status": "checked",
+      "answerDigest": "54c94a404a5eec9c8f01fca07cb4013f616dd8817002425cadcf3dde834e1d2c",
+      "coherent": true,
+      "issues": []
+    }
+  },
+  "publicReportText": "本回答引用：全文片段。\n\n- GOF使用3D高斯原语，通过射线-高斯相交评估贡献，并从四面体网格提取网格；PGSR将3D高斯压缩为平面表示，生成平面距离和法线图，再转换为无偏深度图。PGSR的网格提取细节未在证据中说明，无法确认两者。 [1](#research-evidence-ev_d9714d53fb3219d25b98cbe348699fc00c9843d748c9b4f55b0d93ff06edb45a) [2](#research-evidence-ev_e3d7cc78021a29706c9154278704d4bf8d26892a76bb6e9b3e0c928ec207f110) [3](#research-evidence-ev_fdb777ebeb1b30e94d23b2135f2ae7a2bb947c836c3d4a081ddf7005a406c061) [4](#research-evidence-ev_d89e66c6c239a4d7bbbfd9cbf11af70fb538e03d9458da253c02256c97b5a3d8)\n\n<details>\n<summary>还有 6 项未完成</summary>\n\n- GOF 和 PGSR 在 DTU 数据集上报告的几何精度指标和训练耗时分别是多少？：最终回答尚未完整回应这一问题；缺少：列出 GOF 和 PGSR 在 DTU 上报告的几何精度数值和训练耗时，并注明指标方向和分辨率、说明数值是否来自作者自报或同表对比，以及硬件条件\n- Mip-NeRF360 的渲染质量如何：最终回答尚未完整回应这一问题；缺少：Mip-NeRF360 的渲染质量如何\n- 核对数据集、指标方向、分辨率和硬件条件，区分作者自报与同表对比：最终回答尚未完整回应这一问题；缺少：核对数据集、指标方向、分辨率和硬件条件、区分作者自报与同表对比\n- GOF 和 PGSR 是否报告了模型存储或显存使用？如果证据不足，明确说明无法比较。：最终回答尚未完整回应这一问题；缺少：检查两篇论文是否报告模型存储或显存使用，并说明证据是否充分、如果证据不足，明确说明无法比较\n- 基于已核对的几何精度、训练耗时和渲染质量，给出有条件的选择建议。：最终回答尚未完整回应这一问题；缺少：根据已核对的指标，给出在不同应用场景下的选择建议、建议必须基于论文证据，并注明条件\n- 高斯表示与网格提取路径有什么不同：最终回答尚未完整回应这一问题；缺少：高斯表示与网格提取路径有什么不同\n\n</details>\n\n<details>\n<summary>原文依据</summary>\n\n**[1] Gaussian Opacity Fields: Efficient and Compact Surface Reconstruction in Unbounded Scenes** · 第 3 页 · 全文片段\n\n> 3.1 Modeling\n> Similar to prior works [Kerbl et al .2023; Zwicker et al .2001], we\n> represent the scene with a set of 3D Gaussian primitives {G𝑘|𝑘=\n> 1,···,𝐾}. The geometry of each 3D Gaussian G𝑘is parameterized\n> by an opacity 𝛼𝑘∈[0,1], center p𝑘∈R3×1, scale s∈R3×1, and\n> rotation R∈R3×3parameterized by a quaternion:\n> G𝑘(x)=𝛼𝑘𝑒−1\n> 2(x−p𝑘)𝑇𝚺−1\n> 𝑘(x−p𝑘)(1)\n> where 𝚺𝑘∈R3×3is a covariance matrix defined as 𝚺𝑘=R𝑘s𝑘s𝑇\n> 𝑘R𝑇\n> 𝑘.\n> Ray Gaussian Intersection: Instead of projecting 3D Gaussians\n> to 2D screen space and evaluating the Gaussian in 2D, we evaluate\n> the contribution of a Gaussian to a ray with explicit ray-Gaussian\n> intersection [Gao et al .2023; Keselman and Hebert 2022].\n\n**[2] Gaussian Opacity Fields: Efficient and Compact Surface Reconstruction in Unbounded Scenes** · 第 4 页 · 全文片段\n\n>  To circumvent these challenges, we intro-\n> duce a novel method for extracting compact and adaptive meshes\n> using tetrahedral grids.\n> Tetrahedral Grids Generation: Our primary insight is that the\n> position and scale of 3D Gaussian primitives serve as reliable indica-\n> tors for the presence of surfaces. To capitalize on this, we generate a\n> 3D bounding box at 3-sigma around each Gaussian primitive, where\n> its center has highest opacity and its corners have smallest opacity.\n\n**[3] PGSR: Planar-based Gaussian Splatting for Efficient and High-Fidelity Surface Reconstruction** · 第 5 页 · 全文片段\n\n> \n> Here, Rirepresents the orthonormal basis of the ellipsoid’s\n> three axes, and the scale factor Sidefines the size along each\n> direction. By compressing the scale factor along specific axes,\n> the Gaussian ellipsoid can be flattened into planes aligned\n> with those axes. We compress the Gaussian ellipsoid along the\n> direction of the minimum scale factor, effectively flattening the\n> ellipsoid into a plane closest to its original shape.\n\n**[4] PGSR: Planar-based Gaussian Splatting for Efficient and High-Fidelity Surface Reconstruction** · 第 4 页 · 全文片段\n\n>  Initially, we improve\n> the modeling of scene geometry attributes by compressing\n> 3D Gaussians into a 2D flat plane representation, which\n> is used to generate plane distance and normal maps, and\n> subsequently converted into unbiased depth maps. We then\n> introduce single-view geometric, multi-view photometric, and\n> geometric consistency loss to ensure global geometry consis-\n> tency. Additionally, the exposure compensation model further\n> improves reconstruction accuracy.\n> \n\n论文事实已按所列原文核对。\n\n</details>",
+  "preservation": {
+    "oldLedgerUnchanged": true,
+    "allOldRunsUnchanged": true,
+    "newRows": 31,
+    "ledgerRows": 8872,
+    "onlyThisRunCreatedCalls": true,
+    "active": [],
+    "oldPausedRetained": true,
+    "paused": [
+      "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+      "dr_run_ed10cc3347be552288079a9a588fddf5",
+      "dr_run_86b3f181a5475e99aacca3dbf4370567",
+      "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+      "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+      "dr_run_e3521b1781825273b384a26a5edb8cdc",
+      "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+      "dr_run_e9c9dc916bef519092fad8b929b2448f",
+      "dr_run_4738564f5ff35157996a35068c62ed32",
+      "dr_run_a8bd62f9ae3d52ff806f537065f55b2d",
+      "dr_run_98e66f2d3d555dfa822b859963f01419",
+      "dr_run_8be639c866c35ea092c735a04781b647",
+      "dr_run_1c0c2e6510165086962408b8e3cf698b"
+    ],
+    "other13TasksExact": true,
+    "indexExact": true,
+    "index": {
+      "collection": "literature_collection_v4_e5_small",
+      "count": 1215,
+      "sha256": "f1ab6ad746b00ce95dfb36b76fa06d011cfb04d2b0bccf1e194a826d0606465f"
+    }
+  },
+  "review": [
+    "Initial all five and repair both claims use exclusive body; initial draftValidation has no rejected mixed body. c4 comparison_evidence compiles but is unchecked, not a passed scope finding.",
+    "New reporting-source check rejects c3 GOF self-report of PGSR comparator averages; no upgrade of old v8 false-positive verdict. c2 is also rejected and needs own-citation/clause ownership review; do not infer the checker is correct from rejection alone.",
+    "c1 planar representation is delivered; TSDF mesh extraction still absent from the cited selection. Its repair retains an evidence-insufficiency sentence. One accepted factual fragment is not the complete requested method comparison.",
+    "c1 repair raw prose ends with the declared removed phrase, then deletion materialization removes that phrase and leaves an ambiguous ending. Preserve before/after; no full content credit.",
+    "c2 repair declares a removal phrase copied from feedback rather than an exact original draft span, while retaining hardware without its cited passages. It obtains no accepted replacement.",
+    "After three initial reviews, remaining about94s is below estimated138.75s: c4 and c5 not started. One of three prepared repair batches actually sent; later batches skipped_time. No budget-limit increase or automatic retry performed.",
+    "Final answer coverage actually dispatched and checked seven gaps. This proves the narrow coverage path reached the provider, not complete same-input capacity or full scientific coverage acceptance.",
+    "All12 model calls settled;8872 ledger rows,0active/13oldpaused,oldpayload/ledgerprefix/other13tasks/index exact. FullDR0-DR5 incomplete; fresh independent acceptance remains0."
+  ]
+}

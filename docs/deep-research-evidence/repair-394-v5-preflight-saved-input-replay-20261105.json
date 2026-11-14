@@ -1,0 +1,82 @@
+{
+  "case": "G1N-v5",
+  "sourceRunId": "dr_run_f8571e137e88548a90f2868bcc6d3aab",
+  "payloadSha256": "f2920db772f2882cb58cd0bbb57a6e024a046bd6a0913503d8d77d88b49f0091",
+  "replayOverrides": {
+    "state.repairCompleted": false,
+    "factualRepairPromptContractVersion": 1,
+    "startedAt": "replay current time for admission only"
+  },
+  "preparedRequests": [
+    {
+      "targetIds": [
+        "c1",
+        "c2"
+      ],
+      "promptBytes": 23923
+    }
+  ],
+  "measurements": [
+    {
+      "targetIds": [
+        "c1",
+        "c2",
+        "c3",
+        "c4"
+      ],
+      "fixedBytes": 18108,
+      "totalMandatoryBytes": 35884,
+      "mandatoryEvidenceRows": 15,
+      "evidenceKeys": [
+        "contentHash",
+        "evidenceId",
+        "location",
+        "quote",
+        "sourceContext",
+        "sourceRef"
+      ],
+      "limit": 24000
+    },
+    {
+      "targetIds": [
+        "c1",
+        "c2"
+      ],
+      "fixedBytes": 15487,
+      "totalMandatoryBytes": 23602,
+      "mandatoryEvidenceRows": 7,
+      "evidenceKeys": [
+        "contentHash",
+        "evidenceId",
+        "location",
+        "quote",
+        "sourceContext",
+        "sourceRef"
+      ],
+      "limit": 24000
+    },
+    {
+      "targetIds": [
+        "c3",
+        "c4"
+      ],
+      "fixedBytes": 14976,
+      "totalMandatoryBytes": 32682,
+      "mandatoryEvidenceRows": 15,
+      "evidenceKeys": [
+        "contentHash",
+        "evidenceId",
+        "location",
+        "quote",
+        "sourceContext",
+        "sourceRef"
+      ],
+      "limit": 24000
+    }
+  ],
+  "modelCalls": 0,
+  "networkCalls": 0,
+  "productionWrites": 0,
+  "oldPayloadUnchanged": true,
+  "conclusion": "Candidate factual instructions measured at actual existing repair preflight. Same original24KB cap; a ReplayStopNoModel exception prevents dispatch. No factual acceptance."
+}

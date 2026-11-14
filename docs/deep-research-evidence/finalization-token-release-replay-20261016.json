@@ -1,0 +1,60 @@
+{
+  "date": "2026-10-16",
+  "sourcePromptVersion": "dr-v2.20261016.101",
+  "inputCase": "H5R-v15",
+  "inputPromptVersion": "dr-v2.20261015.100",
+  "rawPath": "tmp\\dr-acceptance-receipts\\H5R-v15.payload.json",
+  "rawSha256": "f17bbf258ed389c98c116162e7d27f9a9365c08d748bf7f51410d91efe8210f7",
+  "realModelCalls": 0,
+  "networkRequests": 0,
+  "liveDatabaseMutations": 0,
+  "legacy": {
+    "status": "budget_exhausted",
+    "budgetLimit": {
+      "kind": "coveragePromptBytes",
+      "limit": 16472,
+      "used": 17784
+    }
+  },
+  "versionedOfflineReplay": {
+    "promptBytes": 23841,
+    "outputTokens": 5882,
+    "reservationTokens": 30747,
+    "acceptedClaimsPreserved": 8,
+    "allTypedConfigurationsPreserved": true,
+    "allConditionsPreserved": true,
+    "fullQuestionAndObligationIdsPreserved": true,
+    "releasedReserveTokens": 13762,
+    "ledgerPool": "normal",
+    "settledUsage": "offline fixture only: 2 tokens",
+    "status": "invalid_response",
+    "remainingGaps": 5,
+    "emptyVerdictsCannotConferCompletion": true
+  },
+  "boundary": "Capacity/reservation/settlement proof only. No new model generation, scientific acceptance, or independent-case credit. Saved historical run is unchanged.",
+  "sourceCommit": "97f64d9",
+  "tests": {
+    "passed": 1624,
+    "warnings": 1,
+    "seconds": 55.61,
+    "sourceCommit": "97f64d9",
+    "log": "tmp/pytest-dr101-full.log"
+  },
+  "focusedTests": {
+    "passed": 73,
+    "seconds": 2.3,
+    "overlapWithFullSuite": true
+  },
+  "guards": [
+    "total tokens/calls unchanged",
+    "atomic release and reservation",
+    "concurrent reservations",
+    "unknown blocks",
+    "nonrunning blocks",
+    "deadline blocks",
+    "legacy partition unchanged",
+    "unapproved nodes cannot spend release",
+    "client cannot initialize or disable server release"
+  ],
+  "stopRequest": "Finish this finalization-budget fix, then stop. No paid case or subsequent feature started."
+}

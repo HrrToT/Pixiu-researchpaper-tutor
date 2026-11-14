@@ -1,0 +1,48 @@
+{
+  "component": "measured-three-point-compaction",
+  "sourceCase": "S1G-v8",
+  "sourceCommit": "c290a3b7",
+  "executionExitCode": 1,
+  "providerCalls": 1,
+  "allCallsSettled": true,
+  "tokens": 1390,
+  "originalVisibleCharacters": 326,
+  "reconstructedVisibleCharacters": 301,
+  "editableCharacters": 267,
+  "editableAllowance": 263,
+  "draftTarget": 223,
+  "characterLimit": 300,
+  "actualWireUserMatchesPrompt": true,
+  "actualWireContainsMeasuredBudget": true,
+  "sameReplyAs351": true,
+  "postEditVerificationRan": false,
+  "retry": false,
+  "productionPublish": false,
+  "independentCredit": 0,
+  "preservation": {
+    "before": {
+      "ledgerRows": 7682,
+      "ledgerSha256": "ccb948abe79ec858755dbc7df0b93af4853a611bd6d9247a6088ddf63bf9826f",
+      "payloadSha256": "115afaf955e35880b01e8f30243f35cad57aa65ebf5601f700898b5d0d81f002"
+    },
+    "after": {
+      "ledgerRows": 7682,
+      "ledgerSha256": "ccb948abe79ec858755dbc7df0b93af4853a611bd6d9247a6088ddf63bf9826f",
+      "payloadSha256": "115afaf955e35880b01e8f30243f35cad57aa65ebf5601f700898b5d0d81f002"
+    },
+    "exactProductionPreservation": true,
+    "providerSubmissions": 1,
+    "productionPublish": false,
+    "fullWorkflowReplay": false,
+    "independentCredit": 0,
+    "elapsedSeconds": 10.075
+  },
+  "receiptHashes": {
+    "calls.json": "db0e0567e76b6deed59333bc6dbd690c5e32d448451f6a1416e7987d29141c90",
+    "failure.json": "97e15f2bbbe149aafc9c515c744d1a24a7353438abec6e255ddad6ae809a31e9",
+    "payload.json": "6856922baca99a8ac98fec41240c08a81e84f7a13ac980e437d7fbb78a0346a5",
+    "preservation.json": "cbd4019ae20547a492a9e377439b34182caaef1c2f96e00e4d85a07a9be1dd06",
+    "progress.json": "2b77ca1436c21e61f9ed468030fd6a37aed95b86f7b2c3b91e1e630e7dde4764",
+    "request-1.json": "7b3079f5bf40bb337747cfa9253e1445ce028bcb2f2ed33e55bc74799d2830ea"
+  }
+}
