@@ -3,19 +3,18 @@
   "objective": "Complete DR0-DR5 in DEEP_RESEARCH_DESIGN_20261012.md without redefining success around implemented subsets.",
   "overall": "incomplete",
   "currentFullOfflineRegression": {
-    "sourceCommit": "617d7492",
-    "snapshotBaseCommit": "593d64a5",
-    "modules": 420,
-    "passed": 7502,
+    "sourceCommit": "e1e358086831298ec703d04dcbd16dd87d60e0a2",
+    "modules": 421,
+    "passed": 7518,
     "failures": 0,
     "errors": 0,
     "skipped": 0,
     "warnings": 1,
     "sourceUnchanged": true,
     "appliesToCurrentPythonSource": true,
-    "proof": "deep-research-evidence/source-roles-436-host-20261114.json",
-    "elapsedSeconds": 331.14,
-    "boundary": "Full offline suite with recorded exact source hashes; snapshot began before the same source was committed. Not real content or independent scientific acceptance."
+    "proof": "deep-research-evidence/joint-isolation-437-final-host-20261114.json",
+    "elapsedSeconds": 285.62,
+    "boundary": "Complete current offline research regression only; not real generation, Provider cost/quality, independent scientific acceptance or full product release."
   },
   "postFullRegressionValidation": {
     "scope": "PDF Form parser optimization only",
@@ -4340,10 +4339,12 @@
     "javaCommit": "81a827f0c03febc4d181900b00516e38be916511",
     "taskCount": 103,
     "sourceAttestation": "deep-research-evidence/loaded-source-index-attestation-20261112.json",
-    "latestPromptVersion": "dr-v2.20261114.436"
+    "latestPromptVersion": "dr-v2.20261114.437",
+    "latestSourceCommit": "e1e358086831298ec703d04dcbd16dd87d60e0a2",
+    "latestSourceProof": "deep-research-evidence/joint-isolation-437-load-20261114.json"
   },
   "nextQualityWork": [
-    "Diagnose why the reader retains unsolicited formulas despite the source-role request; distinguish source comprehension, role explanation and enforceable presentation requirements. Diagnose unchecked joint-premise assessment separately from the final answer coverage pass. Preserve original source fidelity, question, 300-character budget and scientific gates.",
+    "Improve actual plain role explanations and valid process binding generation. AD1N-v23 user prompt prohibited unsolicited formulas but output still used them; high-priority reader framing is a hypothesis to validate, not an established cause. Joint-unit failure isolation is offline-verified and loaded, while the invalid process unit remains unapproved. Preserve original source fidelity, full question, 300-character budget and all scientific gates.",
     "When official provider availability is restored, complete the original novice explanation/full multipaper/full executable experiment development gaps under sealed budgets. Then execute H1-H5 fresh definitions, rechecking H3 external freshness/capabilities before submission; no cache deletion, automatic retry or retired-case upgrades.",
     "After provider becomes available, validate current mechanism explanation, multi-paper comparison and full executable experiment quality with bounded new cases, no old receipt retries.",
     "Run fresh untuned H1-H6 after development content passes; preserve original scoring, budgets and unknown outcomes.",
@@ -13698,5 +13699,37 @@
     },
     "proof": "deep-research-evidence/adam-ad1n-v23-20261114.json",
     "boundary": "Lean input preserves complete materials but live output still ignores plain-language requirements. No prior case upgraded."
+  },
+  "fullOfflineBeforeJointIsolation20261114": {
+    "sourceCommit": "617d7492",
+    "snapshotBaseCommit": "593d64a5",
+    "modules": 420,
+    "passed": 7502,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "warnings": 1,
+    "sourceUnchanged": true,
+    "appliesToCurrentPythonSource": true,
+    "proof": "deep-research-evidence/source-roles-436-host-20261114.json",
+    "elapsedSeconds": 331.14,
+    "boundary": "Full offline suite with recorded exact source hashes; snapshot began before the same source was committed. Not real content or independent scientific acceptance."
+  },
+  "jointUnitIsolationCheckpoint20261114": {
+    "coreCommit": "54924e3a",
+    "envelopeGuardCommit": "e1e35808",
+    "promptVersion": "dr-v2.20261114.437",
+    "jointEvidenceContractVersion": 4,
+    "processResponseContractVersion": 3,
+    "relatedTestsPassed": 108,
+    "initialFullTestsPassed": 7517,
+    "finalFullTestsPassed": 7518,
+    "savedFlowProof": "deep-research-evidence/joint-isolation-437-saved-flow-20261114.json",
+    "loadProof": "deep-research-evidence/joint-isolation-437-load-20261114.json",
+    "readerInstructionObservation": "deep-research-evidence/reader-system-436-observation-20261114.json",
+    "runtimeLoaded": true,
+    "liveModelCalls": 0,
+    "independentCredit": 0,
+    "boundary": "Only complete uniquely owned envelopes admit per-unit evaluation. Every valid unit passes the unchanged strict source/role/schema checks. Invalid units remain unchecked, historical atomic decisions remain exact, and no received response is automatically retried. Does not prove improved live generation or novice explanation quality."
   }
 }
