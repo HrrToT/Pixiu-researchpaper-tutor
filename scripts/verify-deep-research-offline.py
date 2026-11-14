@@ -39,7 +39,11 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--run-id', required=True)
     parser.add_argument('--baseline-junit', required=True, type=Path)
+    parser.add_argument('--diagnostic-timeout', type=int, default=0,
+                        help='Dump slow-test thread stacks after N seconds; does not fail or stop a test.')
     args = parser.parse_args()
+    if args.diagnostic_timeout and not 5 <= args.diagnostic_timeout <= 600:
+        parser.error('Diagnostic timeout must be0 or5..600 seconds')
     if not re.fullmatch(r'[A-Za-z0-9_-]{1,80}', args.run_id):
         parser.error('Invalid run ID')
     root = Path(__file__).resolve().parents[1]
@@ -57,6 +61,9 @@ def main():
     before = source_snapshot(root)
     pytest_args = [str(tests), '-q', '-m', 'not live_llm', '--basetemp', str(work / 'pytest'),
                    '--junitxml', str(work / 'junit.xml'), '--durations=12']
+    if args.diagnostic_timeout:
+        pytest_args += ['-o', 'faulthandler_timeout=' + str(args.diagnostic_timeout),
+                        '-o', 'faulthandler_exit_on_timeout=false']
     inputs = {'args': pytest_args, 'modules': sorted(expected), 'sourceBefore': before,
               'baselineJUnit': str(baseline), 'baselineSha256': sha(baseline),
               'runnerSha256': sha(Path(__file__)),
