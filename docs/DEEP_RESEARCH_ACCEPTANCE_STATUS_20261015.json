@@ -3,20 +3,19 @@
   "objective": "Complete DR0-DR5 in DEEP_RESEARCH_DESIGN_20261012.md without redefining success around implemented subsets.",
   "overall": "incomplete",
   "currentFullOfflineRegression": {
-    "sourceCommit": "91f06e002b6835bde821803bf17f1f1b5450fae7",
-    "modules": 419,
-    "passed": 7497,
+    "sourceCommit": "617d7492",
+    "snapshotBaseCommit": "593d64a5",
+    "modules": 420,
+    "passed": 7502,
     "failures": 0,
     "errors": 0,
     "skipped": 0,
     "warnings": 1,
     "sourceUnchanged": true,
     "appliesToCurrentPythonSource": true,
-    "proof": "deep-research-evidence/writing-roles-435-host-20261114.json",
-    "diagnosticTimeoutSeconds": 60,
-    "diagnosticExitOnTimeout": false,
-    "elapsedSeconds": 342.83,
-    "boundary": "Complete offline suite; diagnostics only dump stacks and do not change test acceptance or scope. Not real quality or independent scientific acceptance."
+    "proof": "deep-research-evidence/source-roles-436-host-20261114.json",
+    "elapsedSeconds": 331.14,
+    "boundary": "Full offline suite with recorded exact source hashes; snapshot began before the same source was committed. Not real content or independent scientific acceptance."
   },
   "postFullRegressionValidation": {
     "scope": "PDF Form parser optimization only",
@@ -4327,24 +4326,24 @@
   "loadedRuntime": {
     "commit": "5ad89bc3f42346d1231fed1285b6b0f5f408aac0",
     "promptVersion": "dr-v2.20261112.430",
-    "callsAfterLatestCase": 9226,
+    "callsAfterLatestCase": 9379,
     "active": 0,
     "historicalPausedUnknown": 15,
     "indexDocuments": 1215,
     "proof": "deep-research-evidence/service-fixes-loaded-20261112.json",
     "allSourceHashesExact": true,
-    "lastRealModelRunCommit": "16439c50",
-    "lastRealModelRunPromptVersion": "dr-v2.20261112.428",
-    "lastRealCase": "AD1N-v16",
-    "lastRealOutcome": "failed/provider_payment_rejected",
+    "lastRealModelRunCommit": "617d7492",
+    "lastRealModelRunPromptVersion": "dr-v2.20261114.436",
+    "lastRealCase": "AD1N-v23",
+    "lastRealOutcome": "completed/partial",
     "javaAndFrontendBoundary": "Java artifact ownership fix and Python rollout fix loaded with full task/database preservation. Frontend not redeployed. Isolated UI/persistence and synthetic cross-service publication passed; real generated research and learning quality remain unverified.",
     "javaCommit": "81a827f0c03febc4d181900b00516e38be916511",
     "taskCount": 103,
     "sourceAttestation": "deep-research-evidence/loaded-source-index-attestation-20261112.json",
-    "latestPromptVersion": "dr-v2.20261114.435"
+    "latestPromptVersion": "dr-v2.20261114.436"
   },
   "nextQualityWork": [
-    "Use source-grounded plain role explanations rather than copying technical definitions or reading formulas aloud; preserve every necessary term when stating an exact update. Improve bounded source-only revision for unusable review provenance without trusting invalid correction text. Keep original full question,300-character limit and all scientific gates.",
+    "Diagnose why the reader retains unsolicited formulas despite the source-role request; distinguish source comprehension, role explanation and enforceable presentation requirements. Diagnose unchecked joint-premise assessment separately from the final answer coverage pass. Preserve original source fidelity, question, 300-character budget and scientific gates.",
     "When official provider availability is restored, complete the original novice explanation/full multipaper/full executable experiment development gaps under sealed budgets. Then execute H1-H5 fresh definitions, rechecking H3 external freshness/capabilities before submission; no cache deletion, automatic retry or retired-case upgrades.",
     "After provider becomes available, validate current mechanism explanation, multi-paper comparison and full executable experiment quality with bounded new cases, no old receipt retries.",
     "Run fresh untuned H1-H6 after development content passes; preserve original scoring, budgets and unknown outcomes.",
@@ -13658,5 +13657,46 @@
       "proof": "deep-research-evidence/adam-ad1n-v22-20261114.json"
     },
     "boundary": "This real case already had disjoint assignments and fit the limit; shared-goal delegation and retained handoff are exercised by saved flow and synthesis tests, not by this live output. Verbal update omitted a necessary stabilizing term; reviewer diagnostic provenance also failed. No previous case upgraded."
+  },
+  "fullOfflineBeforeSourceRoles20261114": {
+    "sourceCommit": "91f06e002b6835bde821803bf17f1f1b5450fae7",
+    "modules": 419,
+    "passed": 7497,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "warnings": 1,
+    "sourceUnchanged": true,
+    "appliesToCurrentPythonSource": true,
+    "proof": "deep-research-evidence/writing-roles-435-host-20261114.json",
+    "diagnosticTimeoutSeconds": 60,
+    "diagnosticExitOnTimeout": false,
+    "elapsedSeconds": 342.83,
+    "boundary": "Complete offline suite; diagnostics only dump stacks and do not change test acceptance or scope. Not real quality or independent scientific acceptance."
+  },
+  "sourceRolesCheckpoint20261114": {
+    "sourceCommit": "617d7492",
+    "promptVersion": "dr-v2.20261114.436",
+    "audienceMappedSourceContractVersion": 4,
+    "relatedTestsPassed": 49,
+    "savedFlowProof": "deep-research-evidence/source-roles-436-saved-flow-20261114.json",
+    "loadProof": "deep-research-evidence/source-roles-436-load-20261114.json",
+    "actualCase": {
+      "case": "AD1N-v23",
+      "status": "completed",
+      "outcome": "partial",
+      "actualModelCalls": 9,
+      "tokens": 43572,
+      "elapsedSeconds": 109,
+      "readerCharacters": 225,
+      "visibleDraftCharacters": 243,
+      "automaticAcceptedClaims": 2,
+      "automaticRejectedClaims": 0,
+      "contentAccepted": false,
+      "manualNoviceAccepted": false,
+      "independentCredit": 0
+    },
+    "proof": "deep-research-evidence/adam-ad1n-v23-20261114.json",
+    "boundary": "Lean input preserves complete materials but live output still ignores plain-language requirements. No prior case upgraded."
   }
 }
