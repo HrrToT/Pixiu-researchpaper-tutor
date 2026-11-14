@@ -1,0 +1,15 @@
+{
+  "initialRun": "plain-reader-434-host-20261114",
+  "initialCompleteEvidenceExists": false,
+  "initialHandleMissing": true,
+  "initialProcessObservedAbsent": true,
+  "initialLogStoppedAtApproxPercent": 84,
+  "interruptionCauseEstablished": false,
+  "initialLogSha256": "76c008aee86ba235761d3e915663701d36728568b5ee1a2072f9b05c5a71de25",
+  "initialInputsSha256": "22e5346ad92fff9f25b39967bfe433b4280054b4d59bd6e0afd751c7ee7c7ed2",
+  "resumedRun": "plain-reader-434-resumed-20261114",
+  "sameSourceSnapshot": true,
+  "same418Modules": true,
+  "sourceCommit": "7002e8256317e43739dac50ece6bb7c1ab7872c1",
+  "boundary": "Interrupted run is not counted as passed or failed tests. Old files remain; the new run completes the same scope without changing source or omitting modules."
+}

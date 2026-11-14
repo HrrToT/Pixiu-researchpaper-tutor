@@ -1,0 +1,15 @@
+{
+  "reusedNormalStartup": true,
+  "containerStartedAt": "2026-11-14T09:10:37.810785915Z",
+  "javaBackup": "tmp/service-434-resume-20261114/academic_db-before.mv.db",
+  "pdfParserHashMatches": true,
+  "promptVersion": "dr-v2.20261114.434",
+  "allDeepResearchModuleHashesMatch": true,
+  "all103TasksExact": true,
+  "all369OldRunsExact": true,
+  "all9312CallRowsExact": true,
+  "historicalPaused": 15,
+  "active": 0,
+  "health": "ok",
+  "modelCalls": 0
+}

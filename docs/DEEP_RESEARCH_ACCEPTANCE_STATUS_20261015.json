@@ -3,17 +3,19 @@
   "objective": "Complete DR0-DR5 in DEEP_RESEARCH_DESIGN_20261012.md without redefining success around implemented subsets.",
   "overall": "incomplete",
   "currentFullOfflineRegression": {
-    "sourceCommit": "dc5ff7c15539909eb960fd09a9d49d6270cff8be",
-    "modules": 417,
-    "passed": 7473,
+    "sourceCommit": "7002e8256317e43739dac50ece6bb7c1ab7872c1",
+    "modules": 418,
+    "passed": 7487,
     "failures": 0,
     "errors": 0,
     "skipped": 0,
     "warnings": 1,
     "sourceUnchanged": true,
     "appliesToCurrentPythonSource": true,
-    "proof": "deep-research-evidence/pdf-glyphs-433-host-20261114.json",
-    "boundary": "Complete offline research suite; no substitute for novice explanation, comparison, experiment or independent content acceptance."
+    "proof": "deep-research-evidence/plain-reader-434-resumed-20261114.json",
+    "interruptionProof": "deep-research-evidence/plain-reader-434-interruption-20261114.json",
+    "timingCheck": "deep-research-evidence/plain-reader-434-timing-20261114.json",
+    "boundary": "Complete offline suite; interrupted first run not counted. One slow test did not reproduce in bounded isolation; cause unknown. Not content acceptance."
   },
   "postFullRegressionValidation": {
     "scope": "PDF Form parser optimization only",
@@ -4320,7 +4322,7 @@
     "state": "Official balance unavailable; no paid requests. Existing verification authorization remains valid. Offline preparation can continue.",
     "authorization": "Existing bounded verification authorization remains valid; no automatic retry of old cases."
   },
-  "currentDevelopmentMode": "Primary Codex only; .433 loaded with pinned pypdf/fonttools.7473 full offline tests passed. AD1N-v20 executed once,8settled calls, partial result with2machine-verified claims; update-mechanism coverage and manual novice acceptance remain open. No active research;15historical unknown pauses unchanged. Full DR0-DR5, comparison, scientific experiment and independent gates preserved.",
+  "currentDevelopmentMode": "Primary Codex only; .434 restored and loaded.7487 full offline tests passed. AD1N-v21 executed once:8settled calls, failed before scientific verification because reader exceeded278editable characters plus22reserved layout and compacted original still303/300. Overlapping broad/narrow assignments repeated boundary prose. No active research;15historical unknown pauses unchanged. Original full DR0-DR5 scope and all independent gates remain open.",
   "loadedRuntime": {
     "commit": "5ad89bc3f42346d1231fed1285b6b0f5f408aac0",
     "promptVersion": "dr-v2.20261112.430",
@@ -4338,7 +4340,7 @@
     "javaCommit": "81a827f0c03febc4d181900b00516e38be916511",
     "taskCount": 103,
     "sourceAttestation": "deep-research-evidence/loaded-source-index-attestation-20261112.json",
-    "latestPromptVersion": "dr-v2.20261114.433"
+    "latestPromptVersion": "dr-v2.20261114.434"
   },
   "nextQualityWork": [
     "Improve explanation of how corrected quantities affect the actual update, using ordinary actions before symbols; clarify initialization-bias scope. Preserve the original full novice question and300-character limit.",
@@ -13570,5 +13572,45 @@
       "proof": "deep-research-evidence/adam-ad1n-v20-20261114.json"
     },
     "boundary": "Own-font redecoding fixes demonstrated glyph corruption; an unresolved figure on page31 of a different PDF remains explicitly unreadable. No old case upgraded; new-run unreadable evidence cannot pass literal checks."
+  },
+  "fullOfflineBeforePlainReader20261114": {
+    "sourceCommit": "dc5ff7c15539909eb960fd09a9d49d6270cff8be",
+    "modules": 417,
+    "passed": 7473,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "warnings": 1,
+    "sourceUnchanged": true,
+    "appliesToCurrentPythonSource": true,
+    "proof": "deep-research-evidence/pdf-glyphs-433-host-20261114.json",
+    "boundary": "Complete offline research suite; no substitute for novice explanation, comparison, experiment or independent content acceptance."
+  },
+  "plainReaderCheckpoint20261114": {
+    "sourceCommit": "7002e825",
+    "promptVersion": "dr-v2.20261114.434",
+    "audienceMappedSourceContractVersion": 2,
+    "relatedTestsPassed": 54,
+    "savedInputProof": "deep-research-evidence/plain-reader-434-saved-input-20261114.json",
+    "baselineBindingProof": "deep-research-evidence/plain-reader-434-baseline-binding-20261114.json",
+    "loadProof": "deep-research-evidence/plain-reader-434-load-20261114.json",
+    "runtimeLoaded": true,
+    "actualCase": {
+      "case": "AD1N-v21",
+      "status": "failed",
+      "errorCode": "invalid_synthesis_response",
+      "modelCalls": 8,
+      "tokens": 28243,
+      "elapsedSeconds": 43,
+      "readerCharacters": 298,
+      "reservedLayoutCharacters": 22,
+      "editableCharacters": 278,
+      "compactionCharacters": 303,
+      "scientificVerificationReached": false,
+      "contentAccepted": false,
+      "independentCredit": 0,
+      "proof": "deep-research-evidence/adam-ad1n-v21-20261114.json"
+    },
+    "nextWork": "Allocate overlapping writing responsibilities without changing original obligations/IDs/source permissions or scientific checks; account for278editable/22layout characters. Investigate retaining valid-but-overlength plain drafts for existing compaction instead of reverting to old technical prose. No trim-to-pass."
   }
 }
