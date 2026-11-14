@@ -1,0 +1,33 @@
+{
+  "sourceCase": "AD1N-v26",
+  "oldRequestDigest": "b71234c5c3299b863bf90a826411a1849e0f5198dc987b78bae953c9f123121e",
+  "oldRequestReconstructionExact": true,
+  "controlledReasoningProbe": {
+    "calls": 1,
+    "seconds": 40.588,
+    "tokens": 10507,
+    "outputTokens": 4096,
+    "finishReason": "length",
+    "validRevision": false,
+    "adopted": false,
+    "productionWrites": 0,
+    "automaticRetry": false,
+    "intentSha256": "72a0d29ca3a3b5d661b59084ec089ab8a933a2801aa903a97ea871caba1b0ce1",
+    "resultSha256": "e3be5fa81f0a9f19cb8bab8a572524ffb56892819f7d091cfbb161da85621822"
+  },
+  "focusedEditReplay": {
+    "oldPromptBytes": 23901,
+    "newPromptBytes": 13440,
+    "oldCandidateEvidenceRows": 12,
+    "originalCitationRows": 5,
+    "allOriginalCitationsPresent": true,
+    "allOriginalQuotesAndContextExact": true,
+    "unchangedOutputTokenCap": 4096,
+    "preservesOriginalMetadata": true,
+    "completeSourceRegistryExact": true,
+    "newModelCalls": 0
+  },
+  "scientificAcceptance": false,
+  "independentCredit": 0,
+  "boundary": "Controlled single component probe failed at its unchanged output cap and was not adopted. Focused-input replay proves preservation/size only, not model adherence or quality. Old application runs and outcomes remain unchanged."
+}

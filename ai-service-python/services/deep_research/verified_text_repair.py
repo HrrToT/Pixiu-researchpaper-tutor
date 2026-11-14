@@ -16,8 +16,8 @@ def eligible(originals,rejected,verified_ids,required_scope_ids):
     return True
 
 
-def prompt(question,length_contract,requirements,originals,checks,questions,permissions_marker,evidence_marker):
-    data={'question':str(question),'requirements':requirements,'questions':questions,
+def prompt(question,length_contract,requirements,originals,checks,questions,source_registry,permissions_marker,evidence_marker):
+    data={'question':str(question),'requirements':requirements,'questions':questions,'sourceRegistry':source_registry,
           'targets':[{'claimId':cid,'currentText':c['text'],'fixedConditions':c.get('conditions',{}),
             'obligationIds':c.get('obligationIds',[]),'checks':checks[cid]} for cid,c in originals.items()]}
     return '''Rebuild ONLY the rejected targets by editing their text to close the stated answer gaps.

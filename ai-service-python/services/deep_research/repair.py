@@ -606,7 +606,7 @@ If a supported revision is not possible, omit that target rather than bypass sco
         from services.deep_research.verified_text_repair import eligible,prompt as text_edit_prompt
         focused=eligible(originals,rejected,verified_target_ids,required_scope_ids)
         if focused:
-            template=text_edit_prompt(question,length_contract,active_requirements,originals,packed_checks,question_dictionary,
+            template=text_edit_prompt(question,length_contract,active_requirements,originals,packed_checks,question_dictionary,context,
                 permissions_marker,evidence_marker)
     from services.deep_research.experiment_edits import columnar
     def render(selected_rows):

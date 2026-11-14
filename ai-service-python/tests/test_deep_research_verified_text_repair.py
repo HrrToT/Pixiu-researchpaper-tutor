@@ -22,6 +22,9 @@ def test_coverage_only_text_schema_keeps_all_original_sources_conditions_and_goa
     old=prepare(False);new=prepare()
     assert new['verifiedTextRepairContractVersion']==1 and 'verifiedTextRepairContractVersion' not in old
     assert new['originals']==old['originals'] and new['aliases']==old['aliases']
+    before=json.JSONDecoder().raw_decode(old['prompt'].split('Exact repair inputs (goals and metadata, not paper facts):\n',1)[1])[0]
+    after=json.JSONDecoder().raw_decode(new['prompt'].split('Frozen edit inputs (goals, not paper facts):\n',1)[1])[0]
+    assert after['sourceRegistry']==before['sourceRegistry']
     assert new['allowed']=={cid:original['evidenceRefs'] for cid,original in new['originals'].items()}
     assert 'complete revised Chinese text' in new['prompt'] and len(new['prompt'].encode())<len(old['prompt'].encode())
     for e in inputs()[2]:
