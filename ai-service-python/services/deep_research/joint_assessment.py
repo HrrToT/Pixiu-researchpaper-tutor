@@ -19,7 +19,7 @@ MAX_UNITS=20
 
 
 def enabled(record):
-    return type(record.get('jointEvidenceContractVersion')) is int and record['jointEvidenceContractVersion'] in (1,2,3)
+    return type(record.get('jointEvidenceContractVersion')) is int and record['jointEvidenceContractVersion'] in (1,2,3,4)
 
 
 def _matches(row,source):
@@ -67,9 +67,9 @@ def _unit_key(group,rows):
 def _process_policy(saved):
     value=saved.get('processResponseContractVersion')
     if value is None:return False
-    if type(value) is not int or value not in (1,2):
+    if type(value) is not int or value not in (1,2,3):
         raise DeepResearchError('invalid_joint_assessment','过程取证协议无效，不能重发旧请求。')
-    return 2 if value==2 else True
+    return value if value in (2,3) else True
 
 
 def _response_tokens(units,process=False):
@@ -133,11 +133,21 @@ The final answer will independently verify every factual clause and requested po
         from services.deep_research.process_explanations import GUIDANCE,DISTINCT_GUIDANCE
         prompt=prompt.replace('Use actual supplied IDs, no extra fields, duplicates or omissions. False uses [].',
             'Use actual supplied IDs, no duplicates or omissions. processRequired=true units additionally require processLinks; all other units omit that field. False uses evidenceIds=[] and processLinks=[].')
-        prompt+='\n'+(DISTINCT_GUIDANCE if process_explanations==2 else GUIDANCE)+'\nEvidence processLinks IDs must be among returned evidenceIds of the same unit. Never bind sources from another unit.\n'
+        prompt+='\n'+(DISTINCT_GUIDANCE if process_explanations in (2,3) else GUIDANCE)+'\nEvidence processLinks IDs must be among returned evidenceIds of the same unit. Never bind sources from another unit.\n'
+        if process_explanations==3:
+            prompt+='''\nBinding shapes are alternatives, never mixed: a request role has ONLY the key
+request, with an exact substring of this unit's criterion requirement. A source role
+has EXACTLY id,field,excerpt. Its id is one of this unit's returned E-number evidenceIds,
+not an operation label or a source P-number. Operation must use the source shape.
+Source fields are quote,sourceContext.before,sourceContext.after. Input/output may
+also use this source shape when the requirement does not contain distinct roles.
+Do not put a source excerpt inside a request role or invent an ID for an operation.
+If no exact distinct roles support the actual process, return ready=false.
+'''
     return prompt
 
 
-def _verdicts(saved):
+def _strict_verdicts(saved):
     if saved.get('finishReason')=='length' or not isinstance(saved.get('content'),str):
         return None
     from services.deep_research.graph import _safe_parse_json
@@ -177,6 +187,34 @@ def _verdicts(saved):
     return found if len(found)==len(units) else None
 
 
+def _review_units(saved):
+    """A complete envelope owns each unit once; unit failures never approve peers.
+
+    Version3 retains the same strict source/process validator but isolates its
+    failure scope. A malformed envelope remains atomic: no guessed ownership.
+    """
+    from services.deep_research.graph import _safe_parse_json
+    parsed=_safe_parse_json(saved.get('content','')) if isinstance(saved.get('content'),str) else None
+    units={u['unitId']:u for u in saved['units']}
+    ids=[r.get('unitId') for r in parsed if isinstance(r,dict)] if isinstance(parsed,list) else []
+    if (saved.get('finishReason')=='length' or not isinstance(parsed,list)
+            or len(ids)!=len(units) or any(not isinstance(i,str) for i in ids)
+            or len(set(ids))!=len(ids) or set(ids)!=set(units)):
+        return None,{'version':1,'status':'invalid_envelope','validUnits':[],'invalidUnits':[]}
+    found={};valid=[];invalid=[]
+    for row in parsed:
+        unit=units[row['unitId']]
+        decision=_strict_verdicts({**saved,'processResponseContractVersion':2,
+            'units':[unit],'content':json.dumps([row],ensure_ascii=False)})
+        if decision is None:invalid.append(unit['unitId'])
+        else:found.update(decision);valid.append(unit['unitId'])
+    return found,{'version':1,'status':'checked','validUnits':valid,'invalidUnits':invalid}
+
+
+def _verdicts(saved):
+    return _review_units(saved)[0] if _process_policy(saved)==3 else _strict_verdicts(saved)
+
+
 def _validate(saved,known):
     if (not isinstance(saved,dict) or saved.get('status') not in {'pending','received','skipped'}
             or not isinstance(saved.get('units'),list) or len(saved['units'])>MAX_UNITS
@@ -209,6 +247,8 @@ def _validate(saved,known):
         keys.add(unit['key'])
     request=saved.get('request')
     process=_process_policy(saved)
+    if process==3 and saved['status']=='received' and saved.get('responseAudit')!=_review_units(saved)[1]:
+        raise DeepResearchError('invalid_joint_assessment','保存的逐项取证审计与原始回复不一致。')
     expected={'prompt':_render(saved['units'],rows,saved['human'],process_explanations=process),'outputTokens':_response_tokens(saved['units'],process)}
     if (request!=expected or saved.get('requestDigest')!=digest(expected)
             or len(expected['prompt'].encode('utf8'))>24000):
@@ -225,8 +265,8 @@ def assess(state,record,update,invoke,coverage_gaps):
         required=list(dict.fromkeys(s.get('workId') for s in domain.get('sources',[]) if s.get('workId')))
     groups=_groups(obligations,required);known=_evidence(record)
     version=record.get('jointEvidenceContractVersion')
-    process=(2 if version==3 else True) if type(version) is int and version in (2,3) else False
-    scope=digest({'groups':list(groups.values()),'processExplanations':2 if process==2 else 1} if process else list(groups.values()));pool_digest=digest(list(known.values()))
+    process=(3 if version==4 else 2 if version==3 else True) if type(version) is int and version in (2,3,4) else False
+    scope=digest({'groups':list(groups.values()),'processExplanations':process if process in (2,3) else 1} if process else list(groups.values()));pool_digest=digest(list(known.values()))
     question=effective_question(record);human=list(getattr(question,'instruction_layers',(question,)))
     round_key=digest({'scope':scope,'evidence':pool_digest,'reviewed':sorted(domain.get('reviewedExtractionPassages',{})),
                       'round':state.get('requery_count',0)})
@@ -254,8 +294,8 @@ def assess(state,record,update,invoke,coverage_gaps):
             if verdicts is None:
                 continue
             for unit in saved['units']:
-                gid=unit['group']['groupId'];decision=verdicts[unit['key']]
-                if decision['ready'] and gid in groups and unit['group']==groups[gid]:
+                gid=unit['group']['groupId'];decision=verdicts.get(unit['key'])
+                if decision and decision['ready'] and gid in groups and unit['group']==groups[gid]:
                     positives.setdefault(gid,decision['evidenceIds'])
     rounds=journal['scopes'].setdefault(scope,{})
 
@@ -320,7 +360,7 @@ def assess(state,record,update,invoke,coverage_gaps):
                 capacity_blocked=True
         request={'prompt':_render(units,visible,human,process_explanations=process),'outputTokens':_response_tokens(units,process)}
         current={'status':'pending','units':units,'evidence':visible,'human':human,'request':request,
-                 'requestDigest':digest(request),'candidatePoolDigest':pool_digest,**({'processResponseContractVersion':2 if process==2 else 1} if process else {})}
+                 'requestDigest':digest(request),'candidatePoolDigest':pool_digest,**({'processResponseContractVersion':process if process in (2,3) else 1} if process else {})}
         if not units or invoke is None:
             current.update(status='skipped',reason='unavailable' if invoke is None else
                 'budget_or_capacity' if capacity_blocked or cap<=0 else 'missing_source_premise' if missing_sources else 'no_unchecked_units')
@@ -335,15 +375,21 @@ def assess(state,record,update,invoke,coverage_gaps):
             current.update(status='skipped',reason='budget',budgetLimit=exc.details);save()
         else:
             current.update(status='received',content=result.get('content','') if isinstance(result,dict) else getattr(result,'content',''),
-                finishReason=result.get('finishReason',result.get('finish_reason')) if isinstance(result,dict) else getattr(result,'finish_reason',None));save()
+                finishReason=result.get('finishReason',result.get('finish_reason')) if isinstance(result,dict) else getattr(result,'finish_reason',None))
+            if process==3:current['responseAudit']=_review_units(current)[1]
+            save()
     verdicts=_verdicts(current) if current['status']=='received' else None
     if verdicts is not None:
         for unit in current['units']:
             attempted.add(unit['key'])
-            if verdicts[unit['key']]['ready']:
+            if verdicts.get(unit['key'],{}).get('ready'):
                 positives.setdefault(unit['group']['groupId'],verdicts[unit['key']]['evidenceIds'])
-    requirements={};new_links={};checked_groups={u['group']['groupId'] for rounds in journal['scopes'].values()
-        for saved in rounds.values() if saved['status']=='received' and _verdicts(saved) is not None for u in saved['units']}
+    requirements={};new_links={};checked_groups=set()
+    for rounds in journal['scopes'].values():
+        for saved in rounds.values():
+            decisions=_verdicts(saved) if saved['status']=='received' else None
+            if decisions is not None:
+                checked_groups.update(u['group']['groupId'] for u in saved['units'] if u['key'] in decisions)
     for gid,group in groups.items():
         refs=positives.get(gid,[])
         for member in group['members']:
@@ -387,7 +433,7 @@ def assess(state,record,update,invoke,coverage_gaps):
               for e in domain.get('evidence',[])]
     from services.deep_research.extraction_schedule import enabled as complete_frontier
     checked=bool(groups) and set(groups)<=checked_groups
-    if not complete_frontier(record):
+    if version!=4 and not complete_frontier(record):
         checked=verdicts is not None or checked  # Historical checkpoint behavior.
     update(run_id,lambda r:{**r,'state':{**r.get('state',{}),'plan':progress,'evidence':evidence,'coverage':coverage,'gaps':gaps,
         'stopReason':stop,'assessmentStatus':'checked' if checked else 'unchecked'}},expected_revision=None)
