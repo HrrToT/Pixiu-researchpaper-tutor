@@ -3,20 +3,20 @@
   "objective": "Complete DR0-DR5 in DEEP_RESEARCH_DESIGN_20261012.md without redefining success around implemented subsets.",
   "overall": "incomplete",
   "currentFullOfflineRegression": {
-    "sourceCommit": "029d4ae827f6aa3143a08ceb41b635bb9709d705",
+    "sourceCommit": "2ab737f0e6037df7f3d66f303f7bade0decd4c58",
     "modules": 445,
     "passed": 8185,
     "failures": 0,
     "errors": 0,
     "skipped": 0,
     "sourceUnchanged": true,
-    "elapsedSeconds": 407.61,
-    "baselineCases": 8163,
-    "retainedBaselineCases": 8163,
+    "elapsedSeconds": 392.14,
+    "baselineCases": 8185,
+    "retainedBaselineCases": 8185,
     "missingBaselineCases": [],
     "warnings": 1,
-    "appliesToCurrentPythonSource": false,
-    "proof": "deep-research-evidence/workflow-revision-reasoning-463-final-20261115.json",
+    "appliesToCurrentPythonSource": true,
+    "proof": "deep-research-evidence/workflow-revision-reasoning-464-final-20261115.json",
     "boundary": "Complete current offline research regression only; not real generation, Provider cost/quality, independent scientific acceptance or full product release."
   },
   "postFullRegressionValidation": {
@@ -15452,9 +15452,23 @@
     "newRunMarker": 0,
     "historicalVersion1Unchanged": true,
     "relatedPassed": 52,
-    "fullRegressionPending": true,
-    "productionLoaded": false,
+    "fullRegressionPending": false,
+    "productionLoaded": true,
     "newPaidCalls": 0,
-    "next": "Implement and validate explicit field-level revision while retaining complete scientific scope, original evidence and one-attempt limits."
+    "next": "Implement and validate explicit field-level revision while retaining complete scientific scope, original evidence and one-attempt limits.",
+    "fullTestsPassed": 8185,
+    "fullModules": 445,
+    "fullRegression": "deep-research-evidence/workflow-revision-reasoning-464-final-20261115.json",
+    "loadProof": "deep-research-evidence/workflow-revision-reasoning-464-load-20261115.json",
+    "explicitEditsPrototype": "deep-research-evidence/metadata-explicit-edits-prototype-20261115.json",
+    "explicitEditsImplemented": false
+  },
+  "currentRuntime": {
+    "promptVersion": "dr-v2.20261115.464",
+    "sourceCommit": "2ab737f0e6037df7f3d66f303f7bade0decd4c58",
+    "health": "ok",
+    "activeResearchRuns": 0,
+    "defaultWorkflowRevisionReasoningContractVersion": 0,
+    "loadProof": "deep-research-evidence/workflow-revision-reasoning-464-load-20261115.json"
   }
 }
