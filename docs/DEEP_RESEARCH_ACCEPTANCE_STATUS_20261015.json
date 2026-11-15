@@ -4322,18 +4322,18 @@
   "loadedRuntime": {
     "commit": "782d763f1217d0d7d44b4d93f2b1b874885a1d7f",
     "promptVersion": "dr-v2.20261115.455",
-    "callsAfterLatestCase": 9611,
+    "callsAfterLatestCase": 9647,
     "active": 0,
     "historicalPausedUnknown": 15,
     "proof": "deep-research-evidence/inverted-source-absence-455-load-20261115.json",
     "allSourceHashesExact": true,
-    "lastRealModelRunCommit": "dff2998e26d053631a27cec33e00f2cc0594f7b8",
-    "lastRealModelRunPromptVersion": "dr-v2.20261115.454",
-    "lastRealCase": "D2-VQ-v1-v2",
-    "lastRealOutcome": "completed/partial",
+    "lastRealModelRunCommit": "782d763f1217d0d7d44b4d93f2b1b874885a1d7f",
+    "lastRealModelRunPromptVersion": "dr-v2.20261115.455",
+    "lastRealCase": "D3-VQ-FACTORIAL-v1",
+    "lastRealOutcome": "failed/none",
     "javaAndFrontendBoundary": "This Python rollout did not redeploy Java or frontend. Earlier UI/persistence and synthetic publication evidence does not establish current real generated research or novice quality.",
     "javaCommit": "81a827f0c03febc4d181900b00516e38be916511",
-    "taskCount": 104,
+    "taskCount": 105,
     "latestPromptVersion": "dr-v2.20261115.455",
     "latestSourceCommit": "782d763f1217d0d7d44b4d93f2b1b874885a1d7f",
     "latestSourceProof": "deep-research-evidence/inverted-source-absence-455-load-20261115.json",
@@ -15004,5 +15004,18 @@
     "scope": "Indexed metric-table augmentation only; regular vector and PDF read routes are separate.",
     "fixed": false,
     "scientificContentAccepted": false
+  },
+  "vqFullExperimentDevelopment20261115": {
+    "manifest": "DEEP_RESEARCH_VQ_EXPERIMENT_DEVELOPMENT_20261115.json",
+    "proof": "deep-research-evidence/vq-experiment-d3-v1-20261115.json",
+    "case": "D3-VQ-FACTORIAL-v1",
+    "status": "failed",
+    "errorCode": "synthesis_evidence_capacity",
+    "calls": 5,
+    "tokens": 17963,
+    "seconds": 60.0,
+    "contentAccepted": false,
+    "independentCredit": 0,
+    "nextAction": "Replay full fixed prompt/capacity locally; preserve complete factorial protocol requirements and all evidence-source checks."
   }
 }
