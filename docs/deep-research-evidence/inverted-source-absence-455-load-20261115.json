@@ -1,0 +1,16 @@
+{
+  "sourceCommit": "782d763f1217d0d7d44b4d93f2b1b874885a1d7f",
+  "baselineFile": "tmp/dr-acceptance-receipts/inverted-source-absence-455.before.json",
+  "fullRegression": "deep-research-evidence/inverted-source-absence-455-final-20261115.json",
+  "academicTransportHashMatches": true,
+  "pdfParserHashMatches": true,
+  "promptVersion": "dr-v2.20261115.455",
+  "allDeepResearchModuleHashesMatch": true,
+  "all104TasksExact": true,
+  "all384OldRunsExact": true,
+  "all9611CallRowsExact": true,
+  "historicalPaused": 15,
+  "active": 0,
+  "health": "ok",
+  "modelCalls": 0
+}

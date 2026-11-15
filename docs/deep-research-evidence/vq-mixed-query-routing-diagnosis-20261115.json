@@ -1,0 +1,43 @@
+{
+  "sourceCase": "D2-VQ-v1-v2",
+  "observedGlobalMechanismPolicy": 3,
+  "globalQualitativeMode": true,
+  "tradeoffQueries": [
+    {
+      "obligationId": "ob-trade-a",
+      "query": "Compact3D storage size rendering speed quality metrics reported results",
+      "ownerMaterialId": "834337574488b37f20793de624fe9598947f18fdf238444238de8320ec1b744b.pdf",
+      "matchedRequirements": [
+        "列出该论文报告的存储与画质指标及其对应设置，标注为原文事实。",
+        "列出该论文报告的渲染速度结果及其测量条件，标注为原文事实。"
+      ],
+      "queryMetrics": [
+        "FPS",
+        "SIZE"
+      ],
+      "forQueryReturnsQualitative": true,
+      "indexedMetricTableAugmentationMetrics": []
+    },
+    {
+      "obligationId": "ob-trade-b",
+      "query": "Compressed 3D Gaussian Splatting storage quality rendering speed reported results",
+      "ownerMaterialId": "5e0ee4d768697333d588bf186f2b032ff4c73e9deec13618d3c9fb727148e821.pdf",
+      "matchedRequirements": [
+        "列出该论文报告的存储与画质指标及其对应设置，标注为原文事实。",
+        "列出该论文报告的渲染速度结果及其测量条件，标注为原文事实。"
+      ],
+      "queryMetrics": [
+        "FPS",
+        "SIZE"
+      ],
+      "forQueryReturnsQualitative": true,
+      "indexedMetricTableAugmentationMetrics": []
+    }
+  ],
+  "modelCalls": 0,
+  "applicationWrites": 0,
+  "scientificAcceptance": false,
+  "finding": "LocalTaskRetriever indexed route replaces requested metrics by an empty set when for_query reports qualitative. In this mixed task the global mechanism match also classified source-bound storage/performance requirements as qualitative. Thus _include_metric_tables is skipped for those queries.",
+  "boundary": "This proves an indexed metric-table augmentation routing defect, not failure of every retrieval route or sole causation of all missing content. PDF supplementation and regular vector retrieval are separate paths.",
+  "nextAction": "Separate global synthesis intent and source-bound query intent; preserve qualitative-only reading while enabling metric tables for actual measured-result requirements. Verify local retrieval against owned documents before another whole comparison."
+}
