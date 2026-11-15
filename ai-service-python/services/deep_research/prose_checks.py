@@ -81,7 +81,20 @@ def leaks_internal_reference(claim, support, *, table_aliases=False):
     return False
 
 
+_INVERTED_PAPER_ABSENCE = re.compile(
+    r'(?:未|没有)(?:在|于|被)(?:该|这篇|这些|所引)?(?:论文|原文|文章|文献)'
+    r'(?!片段|摘录|摘要|节选)(?:中|里)?(?:被)?(?:定量|量化|明确|具体|直接)?(?:报告|给出|提供|呈现|披露|说明)'
+    r'|\b(?:not|never)\s+(?:quantitatively\s+|explicitly\s+)?(?:reported|provided|presented|disclosed|given)'
+    r'\s+in\s+(?:(?:the|this|that|these|selected)\s+)?(?:papers?|articles?|publications?)\b'
+    r"(?!(?:'s)?\s+(?:excerpts?|passages?|abstracts?))",re.I)
+_NONASSERTIVE_ABSENCE = re.compile(
+    r'(?:若(?!干)|如果|假如|假设|是否|并非|不能说|不能据此认为|尚不足以认为|不意味着)'
+    r'[^，,；;。.!?]*$|\b(?:if|whether|cannot conclude|cannot claim|cannot say|does not imply)\b[^,;.!?]*$',re.I)
+
+
 def absence_not_established(claim, support, *, scope_version=0):
+    inverted_owner=type(scope_version) is int and scope_version==8
+    if inverted_owner:scope_version=7  # Retain every existing version7 check.
     if type(scope_version) is int and scope_version in (6,7) and claim.get('kind') in {'reported','inference'}:
         # A claim's selected references cannot certify what is absent from the
         # task's entire acquired pool. Positive, evidence-bounded uncertainty
@@ -96,6 +109,13 @@ def absence_not_established(claim, support, *, scope_version=0):
     explicit = any(source_pattern.search(item.get('quote', '')) for item in support)
     if explicit:
         return False  # Independent semantic verification still checks the exact subject/scope.
+    if inverted_owner:
+        for text in claim_prose(claim):
+            for sentence in re.split(r'[。！？；;.!?\n]',text):
+                for match in _INVERTED_PAPER_ABSENCE.finditer(sentence):
+                    # "Not reported IN the paper" is source-wide even when the
+                    # source noun follows the negation, including in advice.
+                    if not _NONASSERTIVE_ABSENCE.search(sentence[:match.start()]):return True
     factual = claim.get('kind') in {'reported', 'inference'}
     for text in claim_prose(claim):
         for sentence in re.split(r'[。！？；;.!?\n]', text):
