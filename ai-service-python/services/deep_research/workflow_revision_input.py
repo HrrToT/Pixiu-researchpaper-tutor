@@ -15,4 +15,6 @@ def enabled(record):
 
 
 def input_limit(record):
+    from services.deep_research.workflow_revision_context import enabled as complete, MAX_INPUT as complete_limit
+    if complete(record): return complete_limit
     return MAX_INPUT if enabled(record) else 32000

@@ -353,6 +353,7 @@ def initialize_runtime():
                                      verification_max_input_bytes=32000,
                                      experiment_max_input_bytes=32000,
                                      workflow_revision_max_input_bytes=40000,
+                                     workflow_revision_context_max_input_bytes=64000,
                                      workflow_metadata_max_input_bytes=40000)
 
         def _make_semantic_checker(self, run_id):

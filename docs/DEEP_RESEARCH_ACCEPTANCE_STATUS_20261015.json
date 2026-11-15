@@ -15711,11 +15711,26 @@
     "samePromptSchemaMessagesAndDeadline": true,
     "outputByteCapsUnchanged": true,
     "wholeRunBudgetUnchanged": true,
+    "productionLoaded": true,
+    "fullRegressionPending": false,
+    "newPaidCalls": 1,
+    "scientificAcceptance": false,
+    "independentCredit": 0,
+    "next": "Complete metadata revision context admission and single isolated real revision, then full unchanged D3 case if valid.",
+    "fullRegressionPassed": 8303,
+    "componentProof": "deep-research-evidence/metadata-planning-output-468-component-20261115.json"
+  },
+  "workflowRevisionContextDevelopment20261115": {
+    "promptVersion": "dr-v2.20261115.469",
+    "contract": "workflowRevisionContextContractVersion1",
+    "oldInputBytes": 40000,
+    "newInputBytes": 64000,
+    "actualCompleteRevisionInputBytes": 46775,
+    "wholeRunBudgetUnchanged": true,
     "productionLoaded": false,
     "fullRegressionPending": true,
     "newPaidCalls": 0,
     "scientificAcceptance": false,
-    "independentCredit": 0,
-    "next": "Complete regression, load preserving390 runs, then one same-input public metadata component before another full case."
+    "independentCredit": 0
   }
 }
