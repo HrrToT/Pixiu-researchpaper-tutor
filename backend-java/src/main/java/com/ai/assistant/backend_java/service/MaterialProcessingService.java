@@ -67,6 +67,15 @@ public class MaterialProcessingService {
     }
 
     public synchronized Map<String, Object> request(String id, boolean ai) {
+        return request(id, ai, false);
+    }
+
+    /** Explicit user action; ordinary material acquisition still reuses a ready index. */
+    public synchronized Map<String, Object> reparse(String id) {
+        return request(id, false, true);
+    }
+
+    private Map<String, Object> request(String id, boolean ai, boolean reparse) {
         Paper paper = papers.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         if (paper.getPdfBytes() == null)
             throw new ResponseStatusException(HttpStatus.CONFLICT, "请先恢复论文文件");
@@ -80,7 +89,7 @@ public class MaterialProcessingService {
                 return view(paper);
             paper.setAiAnalysisStatus("running");
         } else {
-            if (Boolean.TRUE.equals(analysis.get("ragIndexed"))) return view(paper);
+            if (!reparse && Boolean.TRUE.equals(analysis.get("ragIndexed"))) return view(paper);
             paper.setProcessingStatus("queued");
         }
         paper.setProcessingError(null);

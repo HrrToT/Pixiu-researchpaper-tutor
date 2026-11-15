@@ -59,6 +59,46 @@ class MaterialProcessingServiceTest {
         verify(http, times(2)).postForObject(eq("http://test/api/parse-pdf"), any(), eq(Map.class));
     }
 
+    @Test void explicitReparseRefreshesReadyIndexWhileAcquisitionAndPendingRequestsReuseIt() throws Exception {
+        when(http.postForObject(eq("http://test/api/parse-pdf"), any(), eq(Map.class)))
+                .thenReturn(Map.of("status", "success", "ragIndexed", true, "indexVersion", "old"));
+        String id = (String) service.upload(pdf()).get("pdfId"); awaitState(id, "ready");
+        String oldAttempt = database.get(id).getProcessingAttemptId();
+        service.request(id, false);
+        service.upload(pdf());
+        verify(http, times(1)).postForObject(anyString(), any(), eq(Map.class));
+        CountDownLatch entered = new CountDownLatch(1), release = new CountDownLatch(1);
+        when(http.postForObject(eq("http://test/api/parse-pdf"), any(), eq(Map.class))).thenAnswer(call -> {
+            entered.countDown(); assertTrue(release.await(3, TimeUnit.SECONDS));
+            return Map.of("status", "success", "ragIndexed", true, "indexVersion", "new");
+        });
+        service.reparse(id);
+        assertTrue(entered.await(3, TimeUnit.SECONDS));
+        assertNotEquals(oldAttempt, database.get(id).getProcessingAttemptId());
+        service.reparse(id); service.request(id, false);
+        verify(http, times(2)).postForObject(eq("http://test/api/parse-pdf"), any(), eq(Map.class));
+        release.countDown(); awaitState(id, "ready");
+        assertEquals("new", service.status(id).get("indexVersion"));
+        assertArrayEquals(pdf().getBytes(), database.get(id).getPdfBytes());
+        verify(http, never()).postForObject(eq("http://test/api/analyze-pdf"), any(), eq(Map.class));
+    }
+
+    @Test void failedExplicitReparsePreservesPreviousEvidenceAndAllowsAnotherExplicitAttempt() throws Exception {
+        when(http.postForObject(anyString(), any(), eq(Map.class)))
+                .thenReturn(Map.of("status", "success", "ragIndexed", true, "indexVersion", "old"))
+                .thenThrow(new IllegalStateException("private provider detail"))
+                .thenReturn(Map.of("status", "success", "ragIndexed", true, "indexVersion", "new"));
+        String id = (String) service.upload(pdf()).get("pdfId"); awaitState(id, "ready");
+        service.reparse(id); awaitState(id, "failed");
+        assertEquals("old", service.status(id).get("indexVersion"));
+        assertEquals(true, service.status(id).get("readingReady"));
+        assertEquals(true, service.status(id).get("questionReady"));
+        assertFalse(service.status(id).get("processingError").toString().contains("private provider detail"));
+        service.reparse(id); awaitState(id, "ready");
+        assertEquals("new", service.status(id).get("indexVersion"));
+        verify(http, times(3)).postForObject(eq("http://test/api/parse-pdf"), any(), eq(Map.class));
+    }
+
     @Test void restartMarksOutstandingWorkWithoutReplayingModelAndPreservesFile() {
         Paper paper = new Paper(); paper.setId("a"); paper.setPdfBytes("%PDF-test".getBytes());
         paper.setProcessingStatus("ready"); paper.setAiAnalysisStatus("running"); paper.setProcessingAttemptId("old");

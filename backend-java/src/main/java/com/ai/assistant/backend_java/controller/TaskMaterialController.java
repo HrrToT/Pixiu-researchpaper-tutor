@@ -67,7 +67,7 @@ public class TaskMaterialController {
 
     @PostMapping("/{paperId}/parse")
     public Map<String, Object> retryParse(@PathVariable String taskId, @PathVariable String paperId) {
-        owned(taskId, paperId); return processing.request(paperId, false);
+        owned(taskId, paperId); return processing.reparse(paperId);
     }
 
     @PostMapping("/{paperId}/overview")

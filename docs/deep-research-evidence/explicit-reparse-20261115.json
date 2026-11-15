@@ -1,0 +1,13 @@
+{
+  "scope": "Explicit task-owned ready-PDF reparse, preserving acquisition deduplication and pending-job reuse",
+  "javaSuites": 18,
+  "tests": 170,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "jarSha256": "228b8822df091abaac54adf834248597f46c687cefd169407350e1bd07a9cd2e",
+  "log": "tmp/explicit-reparse-20261115-maven.log",
+  "modelCalls": 0,
+  "scientificAcceptance": false,
+  "runtimeLoaded": false
+}
