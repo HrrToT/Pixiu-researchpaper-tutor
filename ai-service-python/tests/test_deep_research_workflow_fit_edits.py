@@ -45,6 +45,9 @@ def patch_for(wire, scope):
 @pytest.mark.parametrize('marker', [None, True, False, 0, 2, '1'])
 def test_marker_is_strict(marker):
     w, _, f, _ = example()
+    if type(marker) is int and marker==2:
+        assert fits.scope_for({**record(),'workflowFitEditsContractVersion':marker},w,f)['version']==2
+        return
     assert fits.scope_for({**record(), 'workflowFitEditsContractVersion': marker}, w, f) is None
 
 
@@ -195,7 +198,8 @@ def test_http_mode_budget_and_unknown_identity_are_preserved(tmp_path, monkeypat
     else: run()
     assert post.call_count == 1 and repo.list_calls('r')[0]['argsDigest'] == digest(req)
     wire = post.call_args.kwargs['json']
-    assert wire['text']['format']['name'] == fits.NAME and fits.OPTION not in wire
+    expected_name='metadata_explicit_fit_edits_v2' if r['workflowFitEditsContractVersion']==2 else fits.NAME
+    assert wire['text']['format']['name'] == expected_name and fits.OPTION not in wire
     assert wire['max_output_tokens'] == 6144 and post.call_args.kwargs['timeout'] == 90
     assert reserve.call_args.kwargs['budget_delta']['tokens'] == len(req['prompt'].encode()) + 1024 + overhead_bytes(r, fits.NODE, req['extra']) + 6144
 
@@ -246,9 +250,9 @@ def test_server_owned_immutable_flag(tmp_path, replacement):
     try:
         r, _ = facade.create({'workspaceTaskId': 't', 'operationKey': 'k', 'question': 'Design',
             'deferStart': True, 'workflowFitEditsContractVersion': replacement}, start_async=False)
-        assert r['workflowFitEditsContractVersion'] == 1
+        assert r['workflowFitEditsContractVersion'] == 2
         with pytest.raises(ValueError, match='Immutable'):
-            repo.update_run(r['runId'], lambda x: {**x, 'workflowFitEditsContractVersion': replacement})
+            repo.update_run(r['runId'], lambda x: {**x, 'workflowFitEditsContractVersion': 3 if replacement==2 else replacement})
         old = deepcopy(r); old.update(runId='old', idempotencyKey='old'); old.pop('workflowFitEditsContractVersion'); repo.create_run(old)
         with pytest.raises(ValueError, match='Immutable'):
             repo.update_run('old', lambda x: {**x, 'workflowFitEditsContractVersion': 1})

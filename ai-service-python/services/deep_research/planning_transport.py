@@ -41,7 +41,7 @@ def descriptor_for(record, node, initialization_target='component', *, metadata_
     if fit_edits:
         if node!=fits.NODE or not fits.enabled(record) or metadata_edits or revision_source_refs is not None:
             raise ValueError('Invalid fit edit mode')
-        return fits.descriptor()
+        return fits.descriptor(record['workflowFitEditsContractVersion'])
     if revision_source_refs is not None:
         from services.deep_research import workflow_revision_sources as sources
         if node!='repair_workflow_meta' or metadata_edits or not sources.enabled(record):

@@ -21,7 +21,7 @@ def payload(messages, options, *, model, temperature):
         if options['_workflow_metadata_edits'] is not True or fmt['name'] != 'metadata_explicit_read_edits_v1':
             raise ValueError('Invalid metadata edit binding')
     if '_workflow_fit_edits' in options:
-        if options['_workflow_fit_edits'] is not True or fmt['name']!='metadata_explicit_fit_edits_v1':
+        if options['_workflow_fit_edits'] is not True or fmt['name'] not in ('metadata_explicit_fit_edits_v1','metadata_explicit_fit_edits_v2'):
             raise ValueError('Invalid fit edit binding')
     if '_workflow_revision_source_refs' in options:
         refs=options['_workflow_revision_source_refs']

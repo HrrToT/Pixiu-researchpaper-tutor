@@ -15,7 +15,7 @@
     "retainedBaselineCases": 8375,
     "missingBaselineCases": [],
     "warnings": 1,
-    "appliesToCurrentPythonSource": true,
+    "appliesToCurrentPythonSource": false,
     "proof": "deep-research-evidence/fit-edits-472-final-20261115.json",
     "boundary": "Complete current offline research regression only; not real generation, Provider cost/quality, independent scientific acceptance or full product release."
   },
@@ -15825,5 +15825,19 @@
     "modelAuthoredFourFits": true,
     "componentProof": "deep-research-evidence/fit-edits-472-component-20261115.json",
     "next": "Versioned local edit output-label semantics matching existing decoder for disjoint unconsumed labels; v1 failure preserved."
+  },
+  "workflowFitGroupOutputsDevelopment20261115": {
+    "promptVersion": "dr-v2.20261115.473",
+    "contract": "workflowFitEditsContractVersion2",
+    "relatedPassed": 164,
+    "newModelCalls": 0,
+    "savedDecisionReplayedOnly": true,
+    "original28ErrorInputBytes": 45400,
+    "allFeedbackAnd20EvidenceRowsRetained": true,
+    "oldV1FailurePreserved": true,
+    "productionLoaded": false,
+    "fullRegressionPending": true,
+    "scientificAcceptance": false,
+    "independentCredit": 0
   }
 }
