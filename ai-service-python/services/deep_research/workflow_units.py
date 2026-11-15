@@ -123,7 +123,9 @@ def unit_errors(value, aliases, *, node, earlier=(), baseline=False, version=6, 
 
 def unit_prompt(source_data, *, node, context, version=6, metadata_rows=False, metadata_rows_contract=1, metadata_action_objects=False,
                 scoped_initialization_input=False, initialization_context_version=1, initialization_recipe=False,
-                structured_initialization=False):
+                structured_initialization=False, decision_input=False):
+    if type(decision_input) is not bool or decision_input and not structured_initialization:
+        raise ValueError('Invalid decision input mode')
     if (type(structured_initialization) is not bool or structured_initialization and not initialization_recipe):
         raise ValueError('Invalid structured initialization mode')
     if (type(initialization_recipe) is not bool or initialization_recipe and
@@ -171,6 +173,8 @@ def unit_prompt(source_data, *, node, context, version=6, metadata_rows=False, m
             if type(initialization_context_version) is not int or initialization_context_version not in (1,2):
                 raise ValueError('Invalid initialization context version')
             from services.deep_research.workflow_metadata_input import input_text
+            if decision_input:
+                from services.deep_research.workflow_initialization_decision_input import input_text
             scoped_prefix=STATE_POLICY if initialization_context_version==2 else POLICY+prefix
             if initialization_recipe:
                 from services.deep_research.workflow_initialization_recipe import POLICY as recipe_policy
@@ -220,6 +224,9 @@ def prepare_units(record, *, prompt, aliases, invoke, parse, checkpoint):
     from services.deep_research.workflow_initialization_structured import enabled as structured_enabled
     structured_initialization = structured_enabled(record)
     if structured_initialization: parent_request['initializationStructuredRecipeContract'] = 1
+    from services.deep_research.workflow_initialization_decision_input import enabled as decision_input_enabled
+    decision_input = decision_input_enabled(record)
+    if decision_input: parent_request['initializationDecisionInputContract'] = 1
     if premise_mode:
         parent_request.update(workflowPremiseAllocationContract=1, requiredPremiseAliases=sorted(required_premises(record)))
     identity = digest({'request': parent_request, 'aliases': aliases})
@@ -304,7 +311,8 @@ def prepare_units(record, *, prompt, aliases, invoke, parse, checkpoint):
                                    scoped_initialization_input=scoped_initialization and node==INIT,
                                    initialization_context_version=record.get('workflowInitializationContextContractVersion',1),
                                    initialization_recipe=initialization_recipe and node==INIT,
-                                   structured_initialization=structured_initialization and node==INIT)
+                                   structured_initialization=structured_initialization and node==INIT,
+                                   decision_input=decision_input and node==INIT)
             if repair_mode and node == META and record['workflowMetadataRepairContractVersion'] in (5, 6, 7, 8, 9, 10):
                 from services.deep_research.workflow_metadata_revision5 import POLICY as CAPACITY_POLICY
                 body = CAPACITY_POLICY + body

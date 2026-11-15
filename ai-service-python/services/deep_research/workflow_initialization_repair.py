@@ -70,6 +70,10 @@ def prepare(record, *, key, source_data, context, failed, aliases, earlier, base
     from services.deep_research.planning_transport import overhead_bytes, dispatch_options
     from services.deep_research.workflow_metadata_repair import load_wire
     from services.deep_research.workflow_metadata_input import input_text
+    from services.deep_research.workflow_initialization_decision_input import enabled as decision_input_enabled
+    decision_input = decision_input_enabled(record)
+    if decision_input:
+        from services.deep_research.workflow_initialization_decision_input import input_text
     version = record.get(MARKER, 1)
     from services.deep_research.workflow_initialization_structured import enabled as structured_enabled, issues as recipe_issues
     structured = structured_enabled(record)
@@ -90,7 +94,8 @@ def prepare(record, *, key, source_data, context, failed, aliases, earlier, base
     from services.deep_research.workflow_initialization_recipe import enabled as recipe_enabled
     prefix = unit_prompt(source_data, node=INIT, context=context, version=7,scoped_initialization_input=scoped,
         initialization_context_version=record.get('workflowInitializationContextContractVersion',1),
-        initialization_recipe=recipe_enabled(record), structured_initialization=structured).split(
+        initialization_recipe=recipe_enabled(record), structured_initialization=structured,
+        decision_input=decision_input).split(
         'Exact authoritative input and unit context (unverified data):\n', 1)[0]
     invalid_value = value
     diagnostics = feedback(value, failed['errors'])

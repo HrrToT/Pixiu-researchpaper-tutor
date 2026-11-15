@@ -24,6 +24,9 @@ def failed_ordered_unit():
 
 def input_value(prompt):
     value = json.loads(next(line for line in prompt.splitlines() if line.startswith('{"')))
+    if set(value) == {'stateDecision','boundInput'}:
+        from services.deep_research.workflow_initialization_decision_input import restore
+        return restore(value)
     if set(value) == {'strings', 'value'}:
         value = nested_tables.unpack(shared_strings.unpack(value))
     if set(value) == {'keys', 'value'}: value = workflow_metadata_input.unpack(value)
