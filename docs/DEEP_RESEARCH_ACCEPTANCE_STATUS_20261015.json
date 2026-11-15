@@ -11,7 +11,7 @@
     "skipped": 0,
     "warnings": 1,
     "sourceUnchanged": true,
-    "appliesToCurrentPythonSource": true,
+    "appliesToCurrentPythonSource": false,
     "proof": "deep-research-evidence/review-structure-453-alias-final-20261115.json",
     "elapsedSeconds": 354.3,
     "boundary": "Complete current offline research regression only; not real generation, Provider cost/quality, independent scientific acceptance or full product release."
@@ -14875,5 +14875,27 @@
     "productionPolicyChanged": false,
     "applicationWrites": 0,
     "nextAction": "Implement one bounded audited format correction for known initial-plan schema failures; preserve unknown identities and all existing scope/semantic limits."
+  },
+  "initialPlanCorrectionDevelopment20261115": {
+    "sourceCommit": "b00cfa02",
+    "promptVersion": "dr-v2.20261115.454",
+    "productionLoaded": false,
+    "relatedPassed": 180,
+    "fullRegressionStatus": "running",
+    "firstFullRegression": "deep-research-evidence/plan-correction-454-final-20261115.json",
+    "firstFullPassed": 7974,
+    "firstFullFailed": 2,
+    "firstFullFailureReasons": [
+      "Clarification integration expected old single-plan call count; new profile correctly made one distinct journaled correction. Updated test also asserts distinct request identities.",
+      "Lifecycle fixture expected prior .453; updated to new .454."
+    ],
+    "savedActualCorrectionReplay": "deep-research-evidence/initial-plan-correction-454-anchor-component-20261115.json",
+    "knownInvalidCorrectionLimit": 1,
+    "unknownResends": 0,
+    "wholeRunBudgetUnchanged": true,
+    "newFactoryFlagImmutable": true,
+    "legacyBehaviorUnchanged": true,
+    "scientificContentAccepted": false,
+    "independentContentAccepted": 0
   }
 }
