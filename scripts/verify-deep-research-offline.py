@@ -1,7 +1,8 @@
 """Run the complete offline research suite with exclusive, reproducible evidence.
 
 Each run uses a new directory. A baseline JUnit must retain every previously
-collected research module; collection cannot silently select a smaller suite.
+collected research module and test identity; a same-file replacement must not
+silently remove older coverage.
 """
 import argparse
 import hashlib
@@ -35,6 +36,16 @@ def junit_modules(path):
     return modules
 
 
+def junit_case_ids(path):
+    result=set()
+    for case in ET.parse(path).iter('testcase'):
+        parts=case.get('classname','').split('.')
+        start=next((i for i,value in enumerate(parts) if value.startswith('test_deep_research')),None)
+        if start is not None:
+            result.add('.'.join(parts[start:])+'::'+case.get('name',''))
+    return result
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--run-id', required=True)
@@ -51,7 +62,8 @@ def main():
     tests = root / 'ai-service-python/tests'
     expected = {p.name for p in tests.glob('test_deep_research*.py')}
     prior = junit_modules(baseline)
-    if not expected or not prior or prior - expected:
+    prior_cases = junit_case_ids(baseline)
+    if not expected or not prior or not prior_cases or prior - expected:
         parser.error('Missing baseline research modules: ' + str(sorted(prior - expected)))
     work = root / 'tmp' / ('research-offline-' + args.run_id)
     evidence = root / 'docs/deep-research-evidence' / (args.run_id + '.json')
@@ -65,6 +77,7 @@ def main():
         pytest_args += ['-o', 'faulthandler_timeout=' + str(args.diagnostic_timeout),
                         '-o', 'faulthandler_exit_on_timeout=false']
     inputs = {'args': pytest_args, 'modules': sorted(expected), 'sourceBefore': before,
+              'baselineCaseIds': sorted(prior_cases),
               'baselineJUnit': str(baseline), 'baselineSha256': sha(baseline),
               'runnerSha256': sha(Path(__file__)),
               'sourceCommit': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=root, text=True).strip()}
@@ -79,6 +92,12 @@ class ResearchOnly:
  def pytest_collection_finish(self,session):
   actual={item.path.name for item in session.items}
   if actual!=expected:raise pytest.UsageError('Frozen module collection changed: '+str(actual^expected))
+  cases=set()
+  for item in session.items:
+   classes=[node.name for node in item.listchain() if isinstance(node,pytest.Class)]
+   cases.add('.'.join([item.path.stem,*classes])+'::'+item.name)
+  missing=set(v['baselineCaseIds'])-cases
+  if missing:raise pytest.UsageError('Baseline test identities removed: '+str(sorted(missing)))
   print('Verified all '+str(len(actual))+' frozen research modules',flush=True)
 sys.exit(pytest.main(v['args'],plugins=[ResearchOnly()]))
 '''
@@ -90,19 +109,26 @@ sys.exit(pytest.main(v['args'],plugins=[ResearchOnly()]))
     suites = list(ET.parse(work / 'junit.xml').iter('testsuite')) if (work / 'junit.xml').exists() else []
     counts = {k: sum(int(s.get(k, '0')) for s in suites) for k in ('tests', 'failures', 'errors', 'skipped')}
     collected = junit_modules(work / 'junit.xml') if suites else set()
+    collected_cases = junit_case_ids(work / 'junit.xml') if suites else set()
+    missing_cases = sorted(prior_cases-collected_cases)
     log = (work / 'pytest.log').read_text(encoding='utf8')
-    success = (result.returncode == 0 and before == after and collected == expected
-               and counts['tests'] > 0 and counts['failures'] == counts['errors'] == 0)
+    runner_unchanged = sha(Path(__file__)) == inputs['runnerSha256']
+    success = (result.returncode == 0 and before == after and runner_unchanged and collected == expected
+               and counts['tests'] > 0 and counts['failures'] == counts['errors'] == counts['skipped'] == 0
+               and not missing_cases)
     proof = {'sourceCommit': inputs['sourceCommit'], 'runId': args.run_id,
              'exitCode': result.returncode, 'verified': success, **counts,
              'modules': len(expected), 'baselineModules': len(prior),
              'addedModules': sorted(expected - prior), 'removedModules': sorted(prior - expected),
+             'baselineCases': len(prior_cases), 'retainedBaselineCases': len(prior_cases & collected_cases),
+             'missingBaselineCases': missing_cases,
              'sourceUnchanged': before == after, 'sourceSha256': before,
              'elapsedSeconds': round(time.monotonic() - started, 2),
              'summary': log.strip().splitlines()[-1] if log.strip() else '',
              'artifacts': {p.relative_to(root).as_posix(): sha(p)
                            for p in work.iterdir() if p.is_file()},
              'runner': {'path': Path(__file__).relative_to(root).as_posix(), 'sha256': inputs['runnerSha256']},
+             'runnerUnchanged': runner_unchanged,
              'excludedMarker': 'live_llm', 'scientificContentAccepted': False,
              'boundary': 'Complete current offline research regression only; not real generation, Provider cost/quality, independent scientific acceptance or full product release.'}
     if before != after:

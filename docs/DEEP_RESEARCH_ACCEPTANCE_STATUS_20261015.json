@@ -15339,7 +15339,7 @@
   "workflowMetadataOutputDevelopment20261115": {
     "promptVersion": "dr-v2.20261115.460",
     "contract": "workflowMetadataOutputContractVersion1",
-    "relatedTestsPassed": 38,
+    "relatedTestsPassed": 56,
     "metadataOutputTokens": 6144,
     "metadataTimeoutSeconds": 90,
     "legacyMetadata34OutputTokens": 2048,
@@ -15351,6 +15351,10 @@
     "oldRequestsCannotOptIn": true,
     "productionLoaded": false,
     "scientificContentAccepted": false,
-    "diagnosis": "Symbolic metadata version34 fell outside prior version29-33 allowance, falling back to the small 2048-token default."
+    "diagnosis": "Symbolic metadata version34 fell outside prior version29-33 allowance, falling back to the small 2048-token default.",
+    "legacyTestFileRestored": true,
+    "newTestsFile": "ai-service-python/tests/test_deep_research_symbolic_metadata_allowance.py",
+    "baselineCaseRetentionGuard": true,
+    "componentStatus": "not_executed_auto_review_rejected_pending_payload_audit"
   }
 }
