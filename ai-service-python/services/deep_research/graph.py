@@ -1572,6 +1572,9 @@ space with unsupported global absence or incidental iteration/performance values
                     'maxPromptBytes':allocation_limit,
                     'generationTemplateBytes':len(prompt.encode('utf8')),
                     'generationTemplateIsDispatched':False} if stage_allocation else {}),
+                **({'requiredPremiseEvidenceAliases':sorted({eid for b in wire_bundles for eid in b['evidenceIds']})}
+                   if stage_allocation and type(record.get('workflowPremiseAllocationContractVersion')) is int
+                   and record['workflowPremiseAllocationContractVersion']==1 else {}),
                 **({'factualInputContractVersion':1,'procedureObjectNavigation':
                     type(record.get('readingPriorityContractVersion')) is int
                     and record['readingPriorityContractVersion'] in (6,7)}

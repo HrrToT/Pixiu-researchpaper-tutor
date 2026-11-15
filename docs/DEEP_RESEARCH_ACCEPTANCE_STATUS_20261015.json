@@ -11,7 +11,7 @@
     "skipped": 0,
     "warnings": 1,
     "sourceUnchanged": true,
-    "appliesToCurrentPythonSource": true,
+    "appliesToCurrentPythonSource": false,
     "proof": "deep-research-evidence/experiment-stage-allocation-458-final2-20261115.json",
     "elapsedSeconds": 379.49,
     "boundary": "Complete current offline research regression only; not real generation, Provider cost/quality, independent scientific acceptance or full product release."
@@ -15205,5 +15205,80 @@
       "proof": "deep-research-evidence/vq-experiment-d3-v2-20261115.json",
       "action": "Extend actual-stage capacity allocation to workflow unit dependencies including native schema overhead; keep all required sources and prior unverified plan refs. Recheck final generation with actual unit proposals before any new bounded case."
     }
-  ]
+  ],
+  "workflowPremiseAllocationDevelopment20261115": {
+    "localReplayOnly": true,
+    "modelCalls": 0,
+    "applicationWrites": 0,
+    "originalRawUnchanged": true,
+    "calledNodesIntercepted": [
+      "plan_workflow_meta"
+    ],
+    "metadataStatus": "pending",
+    "allocation": {
+      "version": 1,
+      "node": "plan_workflow_meta",
+      "parentDataDigest": "a38876f10560f7ab4717c2e268c2e4f3e8d00df328cf4d6b5e346096d63dc11a",
+      "originalContextDigest": "94a765d96a659ff622f0c4847ca58cb6a94251e859aec60701298696b38f5cad",
+      "requiredAliases": [
+        "E1",
+        "E2",
+        "E3",
+        "E4",
+        "E5",
+        "E6",
+        "E7",
+        "E11",
+        "E12",
+        "E13",
+        "E14",
+        "E15",
+        "E16",
+        "E17",
+        "E18",
+        "E19",
+        "E20"
+      ],
+      "suppliedAliases": [
+        "E1",
+        "E2",
+        "E3",
+        "E4",
+        "E5",
+        "E6",
+        "E7",
+        "E8",
+        "E11",
+        "E12",
+        "E13",
+        "E14",
+        "E15",
+        "E16",
+        "E17",
+        "E18",
+        "E19",
+        "E20"
+      ],
+      "priorProposalDigests": [],
+      "inputBytes": 31713,
+      "transportOverheadBytes": 6470,
+      "maxInputBytes": 32000,
+      "sourceSelectionIsScientificApproval": false
+    },
+    "error": null,
+    "promptVersion": "dr-v2.20261115.459",
+    "unitTestsPassed": 26,
+    "legacyRelatedTestsPassed": 68,
+    "originalCase": "D3-VQ-FACTORIAL-v2",
+    "originalInputBytes": 33410,
+    "newInputBytes": 31713,
+    "allRequiredRetained": true,
+    "requiredEvidenceCount": 17,
+    "suppliedEvidenceCount": 18,
+    "original458RefusalAndPayloadExact": true,
+    "productionLoaded": false,
+    "scientificContentAccepted": false,
+    "rawReplay": "tmp/workflow-premises-459-replay-20261115/result.json",
+    "boundary": "Metadata admission only; later initializer/final generation and actual scientific content remain unverified."
+  }
 }

@@ -183,6 +183,10 @@ def prepare_units(record, *, prompt, aliases, invoke, parse, checkpoint):
     initialization_version = record.get('workflowInitializationRepairContractVersion', 1)
     from services.deep_research.workflow_initialization_wire import enabled as init_wire_enabled
     if initialization_repair_mode: parent_request['initializationRepairContract'] = initialization_version
+    from services.deep_research.workflow_premises import enabled as premise_enabled, required as required_premises, allocate as allocate_premises
+    premise_mode = premise_enabled(record)
+    if premise_mode:
+        parent_request.update(workflowPremiseAllocationContract=1, requiredPremiseAliases=sorted(required_premises(record)))
     identity = digest({'request': parent_request, 'aliases': aliases})
     saved = deepcopy(record.get('state', {}).get('executionWorkflowBlueprint'))
     if saved is None:
@@ -200,75 +204,82 @@ def prepare_units(record, *, prompt, aliases, invoke, parse, checkpoint):
             or not isinstance(saved['initializationRepair'], dict)):
         raise DeepResearchError('invalid_workflow_blueprint_state', '初始化修正记录不属于当前契约。')
     visited = set()
+    completed_values = {}
     def stage(key, node, context, *, earlier=(), baseline=False, target=None):
+        def remember(value):
+            if value is not None:completed_values[key]=deepcopy(value)
+            return value
         visited.add(key)
         use_rows = rows_mode and node == META
         named_metadata = repair_mode and node == META and record['workflowMetadataRepairContractVersion'] in (8, 9, 10)
         ordered_metadata = repair_mode and node == META and record['workflowMetadataRepairContractVersion'] in (11, 12)
         step_metadata = repair_mode and node == META and record['workflowMetadataRepairContractVersion'] in (13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34)
-        if step_metadata:
-            if record['workflowMetadataRepairContractVersion'] == 34:
-                from services.deep_research.workflow_metadata_symbols import generation_prompt
-            elif record['workflowMetadataRepairContractVersion'] in (32, 33, 34):
-                from services.deep_research.workflow_metadata_observation_boundary import concise_generation_prompt as generation_prompt
-            elif record['workflowMetadataRepairContractVersion'] in (31, 32, 33, 34):
-                from services.deep_research.workflow_metadata_observation_boundary import complete_generation_prompt as generation_prompt
-            elif record['workflowMetadataRepairContractVersion'] in (30, 31, 32, 33, 34):
-                from services.deep_research.workflow_metadata_observation_boundary import qualified_generation_prompt as generation_prompt
-            elif record['workflowMetadataRepairContractVersion'] in (29, 30, 31, 32, 33, 34):
-                from services.deep_research.workflow_metadata_observation_boundary import compact_generation_prompt as generation_prompt
-            elif record['workflowMetadataRepairContractVersion'] in (28, 29, 30, 31, 32, 33, 34):
-                from services.deep_research.workflow_metadata_observation_boundary import generation_prompt
-            elif record['workflowMetadataRepairContractVersion'] in (27, 28, 29, 30, 31, 32, 33, 34):
-                from services.deep_research.workflow_metadata_result_refs import generation_prompt
-            elif record['workflowMetadataRepairContractVersion'] in (25, 26, 27, 28, 29, 30, 31, 32, 33, 34):
-                from services.deep_research.workflow_metadata_first_use import generation_prompt
-            elif record['workflowMetadataRepairContractVersion'] in (23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34):
-                from services.deep_research.workflow_metadata_reference_context import generation_prompt
-            elif record['workflowMetadataRepairContractVersion'] == 22:
-                from services.deep_research.workflow_metadata_compact_transport import generation_prompt
-            elif record['workflowMetadataRepairContractVersion'] == 21:
-                from services.deep_research.workflow_metadata_evaluation_groups import generation_prompt
-            elif record['workflowMetadataRepairContractVersion'] == 20:
-                from services.deep_research.workflow_metadata_fit_budget import generation_prompt
-            elif record['workflowMetadataRepairContractVersion'] == 19:
-                from services.deep_research.workflow_metadata_scope_position import generation_prompt
-            elif record['workflowMetadataRepairContractVersion'] == 18:
-                from services.deep_research.workflow_metadata_scope_start import generation_prompt
-            elif record['workflowMetadataRepairContractVersion'] == 17:
-                from functools import partial
-                from services.deep_research.workflow_metadata_scope_end import generation_prompt as scope_prompt
-                generation_prompt = partial(scope_prompt, frame_count_rules=True, compact_rules=True)
-            elif record['workflowMetadataRepairContractVersion'] == 16:
-                from functools import partial
-                from services.deep_research.workflow_metadata_scope_end import generation_prompt as scope_prompt
-                generation_prompt = partial(scope_prompt, frame_count_rules=True)
-            elif record['workflowMetadataRepairContractVersion'] == 15:
-                from services.deep_research.workflow_metadata_scope_end import generation_prompt
-            elif record['workflowMetadataRepairContractVersion'] == 14:
-                from services.deep_research.workflow_metadata_single_group import generation_prompt
+        def render_unit_body(source_data, context):
+            if step_metadata:
+                if record['workflowMetadataRepairContractVersion'] == 34:
+                    from services.deep_research.workflow_metadata_symbols import generation_prompt
+                elif record['workflowMetadataRepairContractVersion'] in (32, 33, 34):
+                    from services.deep_research.workflow_metadata_observation_boundary import concise_generation_prompt as generation_prompt
+                elif record['workflowMetadataRepairContractVersion'] in (31, 32, 33, 34):
+                    from services.deep_research.workflow_metadata_observation_boundary import complete_generation_prompt as generation_prompt
+                elif record['workflowMetadataRepairContractVersion'] in (30, 31, 32, 33, 34):
+                    from services.deep_research.workflow_metadata_observation_boundary import qualified_generation_prompt as generation_prompt
+                elif record['workflowMetadataRepairContractVersion'] in (29, 30, 31, 32, 33, 34):
+                    from services.deep_research.workflow_metadata_observation_boundary import compact_generation_prompt as generation_prompt
+                elif record['workflowMetadataRepairContractVersion'] in (28, 29, 30, 31, 32, 33, 34):
+                    from services.deep_research.workflow_metadata_observation_boundary import generation_prompt
+                elif record['workflowMetadataRepairContractVersion'] in (27, 28, 29, 30, 31, 32, 33, 34):
+                    from services.deep_research.workflow_metadata_result_refs import generation_prompt
+                elif record['workflowMetadataRepairContractVersion'] in (25, 26, 27, 28, 29, 30, 31, 32, 33, 34):
+                    from services.deep_research.workflow_metadata_first_use import generation_prompt
+                elif record['workflowMetadataRepairContractVersion'] in (23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34):
+                    from services.deep_research.workflow_metadata_reference_context import generation_prompt
+                elif record['workflowMetadataRepairContractVersion'] == 22:
+                    from services.deep_research.workflow_metadata_compact_transport import generation_prompt
+                elif record['workflowMetadataRepairContractVersion'] == 21:
+                    from services.deep_research.workflow_metadata_evaluation_groups import generation_prompt
+                elif record['workflowMetadataRepairContractVersion'] == 20:
+                    from services.deep_research.workflow_metadata_fit_budget import generation_prompt
+                elif record['workflowMetadataRepairContractVersion'] == 19:
+                    from services.deep_research.workflow_metadata_scope_position import generation_prompt
+                elif record['workflowMetadataRepairContractVersion'] == 18:
+                    from services.deep_research.workflow_metadata_scope_start import generation_prompt
+                elif record['workflowMetadataRepairContractVersion'] == 17:
+                    from functools import partial
+                    from services.deep_research.workflow_metadata_scope_end import generation_prompt as scope_prompt
+                    generation_prompt = partial(scope_prompt, frame_count_rules=True, compact_rules=True)
+                elif record['workflowMetadataRepairContractVersion'] == 16:
+                    from functools import partial
+                    from services.deep_research.workflow_metadata_scope_end import generation_prompt as scope_prompt
+                    generation_prompt = partial(scope_prompt, frame_count_rules=True)
+                elif record['workflowMetadataRepairContractVersion'] == 15:
+                    from services.deep_research.workflow_metadata_scope_end import generation_prompt
+                elif record['workflowMetadataRepairContractVersion'] == 14:
+                    from services.deep_research.workflow_metadata_single_group import generation_prompt
+                else:
+                    from services.deep_research.workflow_metadata_steps import generation_prompt
+                body = generation_prompt(source_data, context)
+            elif ordered_metadata:
+                from services.deep_research.workflow_metadata_ordered import generation_prompt
+                body = generation_prompt(source_data, context, version=2 if record['workflowMetadataRepairContractVersion'] == 12 else 1)
             else:
-                from services.deep_research.workflow_metadata_steps import generation_prompt
-            body = generation_prompt(source_data, context)
-        elif ordered_metadata:
-            from services.deep_research.workflow_metadata_ordered import generation_prompt
-            body = generation_prompt(source_data, context, version=2 if record['workflowMetadataRepairContractVersion'] == 12 else 1)
-        else:
-            body = unit_prompt(source_data, node=node, context=context, version=version, metadata_rows=use_rows and not named_metadata,
-                               metadata_rows_contract=record['workflowMetadataRowsContractVersion'] if rows_mode else 1,
-                               metadata_action_objects=repair_mode and node == META and record['workflowMetadataRepairContractVersion'] in (6, 7))
-        if repair_mode and node == META and record['workflowMetadataRepairContractVersion'] in (5, 6, 7, 8, 9, 10):
-            from services.deep_research.workflow_metadata_revision5 import POLICY as CAPACITY_POLICY
-            body = CAPACITY_POLICY + body
-        if repair_mode and node == META and record['workflowMetadataRepairContractVersion'] in (7, 8, 9, 10):
-            from services.deep_research.workflow_metadata_semantics import POLICY as SEMANTIC_POLICY
-            body = SEMANTIC_POLICY + body
-        if named_metadata:
-            from services.deep_research.workflow_metadata_objects import POLICY as OBJECT_POLICY
-            body = OBJECT_POLICY + body
-            if record['workflowMetadataRepairContractVersion'] in (9, 10):
-                from services.deep_research.workflow_metadata_input import POLICY as INPUT_POLICY
-                body = INPUT_POLICY + body
+                body = unit_prompt(source_data, node=node, context=context, version=version, metadata_rows=use_rows and not named_metadata,
+                                   metadata_rows_contract=record['workflowMetadataRowsContractVersion'] if rows_mode else 1,
+                                   metadata_action_objects=repair_mode and node == META and record['workflowMetadataRepairContractVersion'] in (6, 7))
+            if repair_mode and node == META and record['workflowMetadataRepairContractVersion'] in (5, 6, 7, 8, 9, 10):
+                from services.deep_research.workflow_metadata_revision5 import POLICY as CAPACITY_POLICY
+                body = CAPACITY_POLICY + body
+            if repair_mode and node == META and record['workflowMetadataRepairContractVersion'] in (7, 8, 9, 10):
+                from services.deep_research.workflow_metadata_semantics import POLICY as SEMANTIC_POLICY
+                body = SEMANTIC_POLICY + body
+            if named_metadata:
+                from services.deep_research.workflow_metadata_objects import POLICY as OBJECT_POLICY
+                body = OBJECT_POLICY + body
+                if record['workflowMetadataRepairContractVersion'] in (9, 10):
+                    from services.deep_research.workflow_metadata_input import POLICY as INPUT_POLICY
+                    body = INPUT_POLICY + body
+            return body
+        body = render_unit_body(source_data, context)
         options = {'temperature': 0.0}
         use_init_wire = node == INIT and init_wire_enabled(record)
         if use_init_wire:
@@ -276,12 +287,21 @@ def prepare_units(record, *, prompt, aliases, invoke, parse, checkpoint):
             bound_target = 'baseline' if baseline else 'component'
             body = bind_prompt(body, bound_target)
             options[TARGET_OPTION] = bound_target
+        unit_source_data, unit_context, unit_aliases, allocation = source_data, context, aliases, None
+        if premise_mode:
+            def render_bound(data, ctx):
+                value=render_unit_body(data, ctx)
+                return bind_prompt(value, bound_target) if use_init_wire else value
+            body,unit_source_data,unit_context,unit_aliases,allocation=allocate_premises(record,
+                source_data=source_data,context=context,aliases=aliases,
+                prior_values=list(completed_values.values()),
+                node=node,render=render_bound)
         request = request_identity(record, node, body, options)
         unit = saved['units'].get(key)
         if unit is None:
             if saved['status'] == 'ready':
                 raise DeepResearchError('invalid_workflow_blueprint_state', '完成记录缺少原始单元。')
-            unit = {'request': request, 'status': 'pending'}
+            unit = {'request': request, 'status': 'pending', **({'premiseAllocation': allocation} if premise_mode else {})}
             size = len(body.encode('utf8')) + overhead_bytes(record, node)
             if size > MAX_INPUT:
                 unit.update(status='not_started_capacity', inputBytes=size, maxInputBytes=MAX_INPUT)
@@ -290,6 +310,8 @@ def prepare_units(record, *, prompt, aliases, invoke, parse, checkpoint):
             saved['units'][key] = unit; checkpoint(deepcopy(saved))
         elif not isinstance(unit, dict) or digest(unit.get('request')) != digest(request):
             raise DeepResearchError('invalid_workflow_blueprint_state', '工作流单元请求身份已改变。')
+        if premise_mode and digest(unit.get('premiseAllocation')) != digest(allocation):
+            raise DeepResearchError('invalid_workflow_blueprint_state', '工作流证据分配记录已改变。')
         if unit.get('status') not in ('pending', 'response_received', 'ready', 'invalid_response',
                                       'not_started_capacity', 'not_started_budget'):
             raise DeepResearchError('invalid_workflow_blueprint_state', '工作流单元状态无效。')
@@ -367,6 +389,9 @@ def prepare_units(record, *, prompt, aliases, invoke, parse, checkpoint):
         if (repair_mode and record['workflowMetadataRepairContractVersion'] in (4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34)
                 and unit['response'].get('finishReason', unit['response'].get('finish_reason')) == 'length'):
             problems = ['unit.output_truncated']
+        if premise_mode and isinstance(value,dict) and isinstance(value.get('sourceRefs'),list):
+            if any(not isinstance(ref,str) or ref not in unit_aliases for ref in value['sourceRefs']):
+                problems.append('unit.unsupplied_source_reference')
         if repair_mode:problems = sorted(problems)
         if unit['status'] in ('ready', 'invalid_response'):
             if (unit.get('valueDigest') != digest(value) or digest(unit.get('value')) != digest(value)
@@ -386,23 +411,23 @@ def prepare_units(record, *, prompt, aliases, invoke, parse, checkpoint):
                     raise DeepResearchError('invalid_workflow_blueprint_state', '已使用的初始化修正记录缺失。')
                 def save_initialization_repair(value):
                     saved['initializationRepair'] = deepcopy(value); checkpoint(deepcopy(saved))
-                return repair_initialization(record, key=key, source_data=source_data, context=context,
-                    failed=unit, aliases=aliases, earlier=earlier, baseline=baseline, target=target,
-                    existing=saved.get('initializationRepair'), invoke=invoke, checkpoint=save_initialization_repair)
+                return remember(repair_initialization(record, key=key, source_data=unit_source_data, context=unit_context,
+                    failed=unit, aliases=unit_aliases, earlier=earlier, baseline=baseline, target=target,
+                    existing=saved.get('initializationRepair'), invoke=invoke, checkpoint=save_initialization_repair))
             if repair_mode and node == META and original_wire(unit, version=record['workflowMetadataRepairContractVersion']) is not None:
                 if 'metadataRepair' not in saved and (saved['status'] == 'ready' or len(saved['units']) > 1):
                     raise DeepResearchError('invalid_workflow_blueprint_state', '已使用的元信息修订记录缺失。')
                 def save_repair(value):
                     saved['metadataRepair'] = deepcopy(value); checkpoint(deepcopy(saved))
-                return prepare_repair(record, source_data=source_data, failed=unit, aliases=aliases,
-                    existing=saved.get('metadataRepair'), invoke=invoke, checkpoint=save_repair)
+                return remember(prepare_repair(record, source_data=unit_source_data, failed=unit, aliases=unit_aliases,
+                    existing=saved.get('metadataRepair'), invoke=invoke, checkpoint=save_repair))
             raise DeepResearchError('invalid_workflow_unit_response', '工作流单元未通过检查，原响应已保留。',
                                     details={'unit': key, 'errors': problems})
         if node == META and 'metadataRepair' in saved:
             raise DeepResearchError('invalid_workflow_blueprint_state', '合格原元信息不得混入修订记录。')
         if node == INIT and saved.get('initializationRepair', {}).get('unitKey') == key:
             raise DeepResearchError('invalid_workflow_blueprint_state', '合格原初始化不得混入修正记录。')
-        return value
+        return remember(value)
     meta_context = ({'allowedSourceRefs': sorted(aliases)} if repair_mode and record['workflowMetadataRepairContractVersion'] in (31, 32, 33, 34) else {})
     meta = stage('metadata', META, meta_context)
     if meta is None: return None
