@@ -35,7 +35,12 @@ def descriptor():
     return {'type':'json_schema','name':'private_experiment_columns_v1','schema':schema}
 
 
-def descriptor_for(record, node, initialization_target='component'):
+def descriptor_for(record, node, initialization_target='component', *, metadata_edits=False):
+    from services.deep_research.workflow_metadata_edits import enabled as edits_enabled, NODE as EDIT_NODE, descriptor as edits_descriptor
+    if type(metadata_edits) is not bool: raise ValueError('Invalid metadata edit mode')
+    if metadata_edits:
+        if node != EDIT_NODE or not edits_enabled(record): raise ValueError('Metadata edit mode is not enabled')
+        return edits_descriptor()
     from services.deep_research.workflow_metadata_repair import enabled as repair_enabled, NODE as REPAIR_META
     if (node in ('plan_workflow_meta', REPAIR_META) and repair_enabled(record)
             and record['workflowMetadataRepairContractVersion'] == 34):
@@ -132,6 +137,11 @@ def options_for_record(record,node,options):
     if API_KEY in options:raise ValueError('Transport selection is server-owned')
     if not enabled(record,node):return {**options,'response_format':{'type':'json_object'}}
     allowed={'response_format','thinking','reasoning_effort','max_tokens','temperature','timeout_seconds'}
+    from services.deep_research.workflow_metadata_edits import OPTION as EDIT_OPTION, enabled as edits_enabled, NODE as EDIT_NODE
+    if EDIT_OPTION in options:
+        if node != EDIT_NODE or not edits_enabled(record) or options[EDIT_OPTION] is not True:
+            raise ValueError('Invalid metadata edit mode')
+        allowed.add(EDIT_OPTION)
     from services.deep_research.workflow_initialization_wire import enabled as init_enabled, TARGET_OPTION
     if node == 'plan_workflow_init' and init_enabled(record):
         allowed.add(TARGET_OPTION)
@@ -154,7 +164,7 @@ def options_for_record(record,node,options):
     from services.deep_research.workflow_metadata_output import options as metadata_output_options
     options=metadata_output_options(record,node,options)
     return {**options,API_KEY:'responses','response_format':descriptor_for(
-        record,node,options.get(TARGET_OPTION, 'component'))}
+        record,node,options.get(TARGET_OPTION, 'component'),metadata_edits=options.get(EDIT_OPTION,False))}
 
 
 def validate_options(record,node,options):
@@ -169,7 +179,9 @@ def dispatch_options(record,node,options):
     return options
 
 
-def overhead_bytes(record,node):
+def overhead_bytes(record,node,options=None):
     if not enabled(record,node):return 0
-    return len(json.dumps({API_KEY:'responses','response_format':descriptor_for(record,node)},
+    from services.deep_research.workflow_metadata_edits import OPTION
+    return len(json.dumps({API_KEY:'responses','response_format':descriptor_for(
+        record,node,metadata_edits=(options or {}).get(OPTION,False))},
         ensure_ascii=False,separators=(',',':'),allow_nan=False).encode('utf8'))

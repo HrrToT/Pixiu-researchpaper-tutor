@@ -343,18 +343,27 @@ def prepare(record, *, source_data, failed, aliases, existing, invoke, checkpoin
         field_feedback = {**semantic_feedback(wire, aliases), 'codes': sorted(failed['errors'])}
     parent = {'requestDigest': digest(failed['request']), 'responseDigest': failed['responseDigest'],
               'valueDigest': failed['valueDigest'], 'errors': sorted(failed['errors'])}
-    body=prompt_for(source_data, wire, field_feedback, version=version)
+    from services.deep_research import workflow_metadata_edits as metadata_edits
+    edit_scope=metadata_edits.scope_for(record,wire,field_feedback)
+    body=(metadata_edits.prompt_for(source_data,wire,field_feedback,edit_scope) if edit_scope is not None
+          else prompt_for(source_data, wire, field_feedback, version=version))
     from services.deep_research.workflow_metadata_envelope import enabled as envelope_enabled,GUIDANCE
     if envelope_enabled(record):body=GUIDANCE+body
-    request = request_identity(record, NODE, body, {'temperature': 0.0})
-    identity = digest({'parent': parent, 'request': request, 'aliases': aliases})
-    size = len(request['prompt'].encode('utf8')) + overhead_bytes(record, NODE)
+    options={'temperature':0.0}
+    if edit_scope is not None:options[metadata_edits.OPTION]=True
+    request = request_identity(record, NODE, body, options)
+    identity_data={'parent': parent, 'request': request, 'aliases': aliases}
+    if edit_scope is not None:identity_data['editScope']=edit_scope
+    identity = digest(identity_data)
+    size = len(request['prompt'].encode('utf8')) + overhead_bytes(record, NODE,request['extra'])
     from services.deep_research.workflow_revision_input import input_limit
     max_input = input_limit(record)
     saved = deepcopy(existing)
     if saved is None:
         saved = {'version': version, 'parent': parent, 'request': request, 'inputDigest': identity,
                  'status': 'pending', 'scientificApproval': False}
+        if edit_scope is not None:
+            saved.update(editScope=deepcopy(edit_scope),editScopeDigest=digest(edit_scope))
         if size > max_input: saved.update(status='not_started_capacity', inputBytes=size, maxInputBytes=max_input)
         elif remaining_seconds(record) < 10: saved['status'] = 'not_started_budget'
         checkpoint(deepcopy(saved))
@@ -364,6 +373,10 @@ def prepare(record, *, source_data, failed, aliases, existing, invoke, checkpoin
           or saved.get('status') not in ('pending', 'response_received', 'ready', 'invalid_response',
                                         'not_started_capacity', 'not_started_budget')):
         raise DeepResearchError('invalid_workflow_blueprint_state', '元信息修订身份或状态已改变。')
+    if (edit_scope is not None and (digest(saved.get('editScope'))!=digest(edit_scope)
+            or saved.get('editScopeDigest')!=digest(edit_scope))
+            or edit_scope is None and any(k in saved for k in ('editScope','editScopeDigest','compiledWire','compiledWireDigest'))):
+        raise DeepResearchError('invalid_workflow_blueprint_state', '元信息编辑范围已改变。')
     if size > max_input:
         if saved['status'] != 'not_started_capacity':
             raise DeepResearchError('invalid_workflow_blueprint_state', '元信息修订容量记录已改变。')
@@ -380,10 +393,13 @@ def prepare(record, *, source_data, failed, aliases, existing, invoke, checkpoin
         checkpoint(deepcopy(saved))
     if digest(saved.get('response')) != saved.get('responseDigest'):
         raise DeepResearchError('invalid_workflow_blueprint_state', '元信息修订原始响应已改变。')
-    response = saved['response']; value = None
+    response = saved['response']; value = None; compiled_wire = None
     try:
         raw = response.get('rawContent', response.get('content', ''))
         revised_wire = load_wire(raw, version=version)
+        if edit_scope is not None:
+            compiled_wire=metadata_edits.apply(wire,revised_wire,edit_scope)
+            revised_wire=compiled_wire
         value = decode(revised_wire)
         problems = unit_errors(value, aliases, node=META, version=7, metadata_rows=True)
         from services.deep_research.workflow_metadata_revision5 import over_capacity
@@ -394,6 +410,8 @@ def prepare(record, *, source_data, failed, aliases, existing, invoke, checkpoin
             from services.deep_research.workflow_metadata_envelope import over_capacity as metadata_over_capacity
             too_large=metadata_over_capacity(record,raw,revised_wire,value)
         if too_large: problems.append('unit.output_capacity')
+    except metadata_edits.EditError as exc:
+        problems=['unit.metadata_edit.'+exc.code];value=None
     except (TypeError, ValueError, RecursionError, OverflowError):
         problems = ['unit.json']; value = None
     if response.get('finishReason', response.get('finish_reason')) != 'stop':
@@ -401,12 +419,18 @@ def prepare(record, *, source_data, failed, aliases, existing, invoke, checkpoin
                     else 'unit.output_status']
     problems = sorted(problems)
     if saved['status'] in ('ready', 'invalid_response'):
+        if edit_scope is not None and (saved.get('compiledWireDigest')!=digest(compiled_wire)
+                or digest(saved.get('compiledWire'))!=digest(compiled_wire)):
+            raise DeepResearchError('invalid_workflow_blueprint_state', '元信息编辑编译结果已改变。')
         if (saved.get('valueDigest') != digest(value) or digest(saved.get('value')) != digest(value)
                 or saved.get('errors') != problems or (saved['status'] == 'ready') != (not problems)):
             raise DeepResearchError('invalid_workflow_blueprint_state', '元信息修订检查记录已改变。')
     else:
         saved.update(status='invalid_response' if problems else 'ready', value=deepcopy(value),
-                     valueDigest=digest(value), errors=problems); checkpoint(deepcopy(saved))
+                     valueDigest=digest(value), errors=problems)
+        if edit_scope is not None:
+            saved.update(compiledWire=deepcopy(compiled_wire),compiledWireDigest=digest(compiled_wire))
+        checkpoint(deepcopy(saved))
     if problems:
         raise DeepResearchError('invalid_workflow_unit_response', '唯一一次元信息修订仍未通过，原响应已保留。',
                                 details={'unit': 'metadataRepair', 'errors': problems})

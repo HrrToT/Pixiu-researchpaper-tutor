@@ -15,7 +15,7 @@
     "retainedBaselineCases": 8185,
     "missingBaselineCases": [],
     "warnings": 1,
-    "appliesToCurrentPythonSource": true,
+    "appliesToCurrentPythonSource": false,
     "proof": "deep-research-evidence/workflow-revision-reasoning-464-final-20261115.json",
     "boundary": "Complete current offline research regression only; not real generation, Provider cost/quality, independent scientific acceptance or full product release."
   },
@@ -15470,5 +15470,20 @@
     "activeResearchRuns": 0,
     "defaultWorkflowRevisionReasoningContractVersion": 0,
     "loadProof": "deep-research-evidence/workflow-revision-reasoning-464-load-20261115.json"
+  },
+  "workflowMetadataEditsDevelopment20261115": {
+    "promptVersion": "dr-v2.20261115.465",
+    "contract": "workflowMetadataEditsContractVersion1",
+    "relatedRunPassed": 253,
+    "finalNewModulePassed": 57,
+    "onlyDiagnosedReadErrorsUseEdits": true,
+    "unsupportedErrorsKeepFullSingleRevision": true,
+    "originalScopeAndEvidenceRetained": true,
+    "compiledValueScientificApproval": false,
+    "fullRegressionPending": true,
+    "productionLoaded": false,
+    "newPaidCalls": 0,
+    "independentCredit": 0,
+    "next": "Complete regression, load and one bounded real explicit-edit repair of the saved metadata failure."
   }
 }

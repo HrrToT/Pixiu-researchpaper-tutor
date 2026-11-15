@@ -357,14 +357,15 @@ class TrackedLLMInvoker:
         # Reserve a conservative UTF-8 byte bound, then settle measured usage.
         prompt_byte_length = len(prompt.encode("utf-8"))
         from services.deep_research.planning_transport import overhead_bytes
-        estimated_input = prompt_byte_length + 1024 + overhead_bytes(transport_record,node)
+        transport_overhead = overhead_bytes(transport_record,node,extra_body)
+        estimated_input = prompt_byte_length + 1024 + transport_overhead
         max_output = (extra_body or {}).get("max_tokens", 2000)
         
         # Reject overlarge input BEFORE reserve - enforce UTF-8 byte size limit
         # Reject instead of silently clipping evidence or under-reserving it.
         max_byte_length = self.prompt_byte_limit(run_id, node)
         from services.deep_research.workflow_transport import enabled as workflow_schema
-        admission_bytes = prompt_byte_length + (overhead_bytes(transport_record,node) if workflow_schema(transport_record,node) else 0)
+        admission_bytes = prompt_byte_length + (transport_overhead if workflow_schema(transport_record,node) else 0)
         if admission_bytes > max_byte_length:
             raise ValueError(
                 f"Prompt too large: {admission_bytes} bytes (~{estimated_input} tokens) "

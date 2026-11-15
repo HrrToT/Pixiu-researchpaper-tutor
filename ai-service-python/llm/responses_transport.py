@@ -5,7 +5,7 @@ API_KEY = '_deepseek_api'
 
 def payload(messages, options, *, model, temperature):
     allowed={API_KEY,'response_format','thinking','reasoning_effort','max_tokens',
-        'temperature','timeout_seconds','_workflow_init_target'}
+        'temperature','timeout_seconds','_workflow_init_target','_workflow_metadata_edits'}
     if set(options)-allowed or options.get(API_KEY)!='responses':
         raise ValueError('Invalid Responses transport options')
     fmt=options.get('response_format')
@@ -17,6 +17,9 @@ def payload(messages, options, *, model, temperature):
         target = options['_workflow_init_target']
         if target not in ('baseline', 'component') or fmt['name'] != 'workflow_init_v2_' + target:
             raise ValueError('Invalid initialization target binding')
+    if '_workflow_metadata_edits' in options:
+        if options['_workflow_metadata_edits'] is not True or fmt['name'] != 'metadata_explicit_read_edits_v1':
+            raise ValueError('Invalid metadata edit binding')
     cap=options.get('max_tokens')
     if type(cap) is not int or cap<=0:raise ValueError('Invalid Responses output cap')
     thinking=options.get('thinking')
