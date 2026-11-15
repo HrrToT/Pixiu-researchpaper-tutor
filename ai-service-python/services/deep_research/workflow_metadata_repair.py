@@ -349,6 +349,9 @@ def prepare(record, *, source_data, failed, aliases, existing, invoke, checkpoin
           else prompt_for(source_data, wire, field_feedback, version=version))
     from services.deep_research.workflow_metadata_envelope import enabled as envelope_enabled,GUIDANCE
     if envelope_enabled(record):body=GUIDANCE+body
+    if edit_scope is None:
+        from services.deep_research.workflow_revision_context import guidance as revision_guidance
+        body=revision_guidance(record,field_feedback)+body
     options={'temperature':0.0}
     if edit_scope is not None:options[metadata_edits.OPTION]=True
     request = request_identity(record, NODE, body, options)

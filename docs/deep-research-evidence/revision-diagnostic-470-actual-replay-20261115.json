@@ -1,0 +1,12 @@
+{
+  "promptVersion": "dr-v2.20261115.470",
+  "inputBytes": 48875,
+  "oldInputBytes": 46775,
+  "fullPreviousBodyPreservedAsExactSuffix": true,
+  "outputSchemaOptionsAndDeadlineExact": true,
+  "diagnosedIssueCount": 28,
+  "newModelCalls": 0,
+  "applicationWrites": false,
+  "scientificAcceptance": false,
+  "independentCredit": 0
+}

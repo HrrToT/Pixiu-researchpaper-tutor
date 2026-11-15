@@ -15,7 +15,7 @@
     "retainedBaselineCases": 8303,
     "missingBaselineCases": [],
     "warnings": 1,
-    "appliesToCurrentPythonSource": true,
+    "appliesToCurrentPythonSource": false,
     "proof": "deep-research-evidence/revision-context-469-final-20261115.json",
     "boundary": "Complete current offline research regression only; not real generation, Provider cost/quality, independent scientific acceptance or full product release."
   },
@@ -15736,5 +15736,21 @@
     "componentValid": false,
     "componentProof": "deep-research-evidence/revision-context-469-component-20261115.json",
     "next": "Direct readable diagnostics for one complete revision; unchanged rejected metadata is not accepted."
+  },
+  "workflowRevisionDiagnosticDevelopment20261115": {
+    "promptVersion": "dr-v2.20261115.470",
+    "inputBytes": 48875,
+    "oldInputBytes": 46775,
+    "fullPreviousBodyPreservedAsExactSuffix": true,
+    "outputSchemaOptionsAndDeadlineExact": true,
+    "diagnosedIssueCount": 28,
+    "newModelCalls": 0,
+    "applicationWrites": false,
+    "scientificAcceptance": false,
+    "independentCredit": 0,
+    "contract": "workflowRevisionContextContractVersion2",
+    "relatedPassed": 104,
+    "productionLoaded": false,
+    "fullRegressionPending": true
   }
 }
