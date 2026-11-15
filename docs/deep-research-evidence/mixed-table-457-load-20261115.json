@@ -1,0 +1,18 @@
+{
+  "pdfTableColumnsHashMatches": true,
+  "pdfTableColumnsSha256": "fc6b1e5a17181f072dc31a67d2734ee5e9d060b7a29fd1e8daf0aac5037ea0f3",
+  "sourceCommit": "9b8a889f1b5da3abf660ff7f313103d03652de67",
+  "baselineFile": "tmp/dr-acceptance-receipts/mixed-table-457.before.json",
+  "fullRegression": "deep-research-evidence/mixed-table-457-final-20261115.json",
+  "academicTransportHashMatches": true,
+  "pdfParserHashMatches": true,
+  "promptVersion": "dr-v2.20261115.457",
+  "allDeepResearchModuleHashesMatch": true,
+  "all105TasksExact": true,
+  "all385OldRunsExact": true,
+  "all9647CallRowsExact": true,
+  "historicalPaused": 15,
+  "active": 0,
+  "health": "ok",
+  "modelCalls": 0
+}

@@ -3,17 +3,17 @@
   "objective": "Complete DR0-DR5 in DEEP_RESEARCH_DESIGN_20261012.md without redefining success around implemented subsets.",
   "overall": "incomplete",
   "currentFullOfflineRegression": {
-    "sourceCommit": "782d763f1217d0d7d44b4d93f2b1b874885a1d7f",
+    "sourceCommit": "7e8dde5a41a62f1a84cf1ebd16fb38dfab4d9570",
     "modules": 438,
-    "passed": 8033,
+    "passed": 8044,
     "failures": 0,
     "errors": 0,
     "skipped": 0,
     "warnings": 1,
     "sourceUnchanged": true,
-    "appliesToCurrentPythonSource": false,
-    "proof": "deep-research-evidence/inverted-source-absence-455-final-20261115.json",
-    "elapsedSeconds": 349.09,
+    "appliesToCurrentPythonSource": true,
+    "proof": "deep-research-evidence/mixed-table-457-final-20261115.json",
+    "elapsedSeconds": 353.58,
     "boundary": "Complete current offline research regression only; not real generation, Provider cost/quality, independent scientific acceptance or full product release."
   },
   "postFullRegressionValidation": {
@@ -4320,12 +4320,12 @@
   },
   "currentDevelopmentMode": "Primary Codex only;.452 loaded;7898 complete offline tests across435modules pass. Correction profile2 low routing matches successful isolated request and preserves3500cap/old identities. AD1N-v32 completed/partial:12settled model calls56414tokens100seconds,1search1fulltext. No compression or binding correction call; correction2 correctly not_needed for genuine missing accepted content. Audience rewrite introduced wrong small-step assertion absent from synthesis. c2 repaired/reverified; c1 not published because reviewer target-structure count3 was treated as unbound source number. Exact offline counterfactual removes only前三个分句 meta-count wording, clears numeric error and preserves negative verdict;not a production fix or old result change. Other102tasks and all380oldruns/9549oldcallrows exact;app103tasks381runs9575rows,15historical pauses,0active. No science/novice/independent credit;original full DR0-DR5 and release gates remain.",
   "loadedRuntime": {
-    "commit": "782d763f1217d0d7d44b4d93f2b1b874885a1d7f",
-    "promptVersion": "dr-v2.20261115.455",
+    "commit": "7e8dde5a41a62f1a84cf1ebd16fb38dfab4d9570",
+    "promptVersion": "dr-v2.20261115.457",
     "callsAfterLatestCase": 9647,
     "active": 0,
     "historicalPausedUnknown": 15,
-    "proof": "deep-research-evidence/inverted-source-absence-455-load-20261115.json",
+    "proof": "deep-research-evidence/mixed-table-457-load-20261115.json",
     "allSourceHashesExact": true,
     "lastRealModelRunCommit": "782d763f1217d0d7d44b4d93f2b1b874885a1d7f",
     "lastRealModelRunPromptVersion": "dr-v2.20261115.455",
@@ -4334,10 +4334,10 @@
     "javaAndFrontendBoundary": "This Python rollout did not redeploy Java or frontend. Earlier UI/persistence and synthetic publication evidence does not establish current real generated research or novice quality.",
     "javaCommit": "81a827f0c03febc4d181900b00516e38be916511",
     "taskCount": 105,
-    "latestPromptVersion": "dr-v2.20261115.455",
-    "latestSourceCommit": "782d763f1217d0d7d44b4d93f2b1b874885a1d7f",
-    "latestSourceProof": "deep-research-evidence/inverted-source-absence-455-load-20261115.json",
-    "sourceScope": "Python research modules, academic transport and PDF parser",
+    "latestPromptVersion": "dr-v2.20261115.457",
+    "latestSourceCommit": "7e8dde5a41a62f1a84cf1ebd16fb38dfab4d9570",
+    "latestSourceProof": "deep-research-evidence/mixed-table-457-load-20261115.json",
+    "sourceScope": "Python research modules, academic transport, PDF parser and PDF table column geometry",
     "indexDocumentsAt20261112": 1215,
     "sourceIndexAttestationAt20261112": "deep-research-evidence/loaded-source-index-attestation-20261112.json"
   },
@@ -15029,7 +15029,7 @@
     "actualOwnedRetrieval": "deep-research-evidence/mixed-query-456-owned-retrieval-20261115.json",
     "routingFixed": true,
     "actualVerifiedTableRows": 0,
-    "productionLoaded": false,
+    "productionLoaded": true,
     "scientificContentAccepted": false
   },
   "mixedTableDevelopment20261115": {
@@ -15037,9 +15037,13 @@
     "promptVersion": "dr-v2.20261115.457",
     "proof": "deep-research-evidence/mixed-table-457-core-20261115.json",
     "corePassed": 32,
-    "fullRegressionStatus": "running",
-    "productionLoaded": false,
+    "fullRegressionStatus": "passed",
+    "productionLoaded": true,
     "applicationReparseVerified": false,
-    "scientificContentAccepted": false
+    "scientificContentAccepted": false,
+    "fullTestsPassed": 8044,
+    "fullModules": 438,
+    "fullRegression": "deep-research-evidence/mixed-table-457-final-20261115.json",
+    "loadProof": "deep-research-evidence/mixed-table-457-load-20261115.json"
   }
 }
