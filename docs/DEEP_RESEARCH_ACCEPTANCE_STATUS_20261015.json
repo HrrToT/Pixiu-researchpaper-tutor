@@ -11,7 +11,7 @@
     "skipped": 0,
     "warnings": 1,
     "sourceUnchanged": true,
-    "appliesToCurrentPythonSource": true,
+    "appliesToCurrentPythonSource": false,
     "proof": "deep-research-evidence/metadata-output-460-final-20261115.json",
     "elapsedSeconds": 378.47,
     "boundary": "Complete current offline research regression only; not real generation, Provider cost/quality, independent scientific acceptance or full product release.",
@@ -15376,5 +15376,27 @@
     "unitValid": false,
     "applicationWrites": false,
     "independentCredit": 0
+  },
+  "workflowMetadataEnvelopeDevelopment20261115": {
+    "promptVersion": "dr-v2.20261115.461",
+    "contract": "workflowMetadataEnvelopeContractVersion1",
+    "relatedTestsPassed": 168,
+    "newTests": 23,
+    "limitsBytes": {
+      "raw": 32768,
+      "wire": 16384,
+      "expanded": 32000
+    },
+    "legacyLimitsUnchanged": true,
+    "wholeRunLimitsUnchanged": true,
+    "scientificChecksUnchanged": true,
+    "modelOutputRewriting": false,
+    "fixtureScientificApproval": false,
+    "productionLoaded": false,
+    "newPaidCalls": 0,
+    "independentCredit": 0,
+    "fullRegressionPending": true,
+    "relatedJUnit": "tmp/metadata-envelope-461-r5.xml",
+    "remaining": "Full regression, bounded new-request validation and full experiment quality acceptance remain open."
   }
 }

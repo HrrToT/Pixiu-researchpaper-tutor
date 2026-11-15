@@ -278,6 +278,8 @@ def prepare_units(record, *, prompt, aliases, invoke, parse, checkpoint):
                 if record['workflowMetadataRepairContractVersion'] in (9, 10):
                     from services.deep_research.workflow_metadata_input import POLICY as INPUT_POLICY
                     body = INPUT_POLICY + body
+            from services.deep_research.workflow_metadata_envelope import enabled as envelope_enabled, GUIDANCE
+            if node==META and envelope_enabled(record):body=GUIDANCE+body
             return body
         body = render_unit_body(source_data, context)
         options = {'temperature': 0.0}
@@ -372,11 +374,13 @@ def prepare_units(record, *, prompt, aliases, invoke, parse, checkpoint):
                                   or len(packed(value).encode('utf8')) > MAX_VALUE):
                 problems.append('unit.output_capacity')
             formatting_capacity = strict_wire and record['workflowMetadataRepairContractVersion'] in (5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34)
+            from services.deep_research.workflow_metadata_envelope import limits as metadata_limits
+            cap=metadata_limits(record) if node==META else {'raw':16384,'wire':MAX_VALUE,'expanded':MAX_VALUE}
             if use_rows and ((not formatting_capacity and len(unit['response'].get('content', '').encode('utf8')) > MAX_VALUE)
-                             or len(packed(wire).encode('utf8')) > MAX_VALUE
-                             or (ordered_metadata or step_metadata) and len(packed(value).encode('utf8')) > MAX_VALUE):
+                             or len(packed(wire).encode('utf8')) > cap['wire']
+                             or (ordered_metadata or step_metadata) and len(packed(value).encode('utf8')) > cap['expanded']):
                 problems.append('unit.output_capacity')
-            raw_limit = 16384 if formatting_capacity else MAX_VALUE
+            raw_limit = cap['raw'] if formatting_capacity else MAX_VALUE
             if strict_wire and len(unit['response'].get('rawContent', unit['response'].get('content', '')).encode('utf8')) > raw_limit:
                 problems.append('unit.output_capacity')
             if unit['response'].get('finishReason', unit['response'].get('finish_reason')) == 'length':
@@ -414,7 +418,7 @@ def prepare_units(record, *, prompt, aliases, invoke, parse, checkpoint):
                 return remember(repair_initialization(record, key=key, source_data=unit_source_data, context=unit_context,
                     failed=unit, aliases=unit_aliases, earlier=earlier, baseline=baseline, target=target,
                     existing=saved.get('initializationRepair'), invoke=invoke, checkpoint=save_initialization_repair))
-            if repair_mode and node == META and original_wire(unit, version=record['workflowMetadataRepairContractVersion']) is not None:
+            if repair_mode and node == META and original_wire(unit, version=record['workflowMetadataRepairContractVersion'],record=record) is not None:
                 if 'metadataRepair' not in saved and (saved['status'] == 'ready' or len(saved['units']) > 1):
                     raise DeepResearchError('invalid_workflow_blueprint_state', '已使用的元信息修订记录缺失。')
                 def save_repair(value):

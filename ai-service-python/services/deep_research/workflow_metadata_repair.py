@@ -57,7 +57,7 @@ def enabled(record):
             and record['workflowMetadataRepairContractVersion'] in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34))
 
 
-def original_wire(unit, version=1):
+def original_wire(unit, version=1, *, record=None):
     """Only complete, in-cap, exactly decoded proposals qualify for revision."""
     from services.deep_research.workflow_metadata_rows import decode
     from services.deep_research.execution_workflow_blueprint import MAX_VALUE, packed
@@ -100,6 +100,10 @@ def original_wire(unit, version=1):
         from services.deep_research.workflow_metadata_revision5 import over_capacity
         too_large = over_capacity(raw, wire) if version in (5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34) else (
             len(raw.encode('utf8')) > MAX_VALUE or len(packed(wire).encode('utf8')) > MAX_VALUE)
+        from services.deep_research.workflow_metadata_envelope import enabled as envelope_enabled,over_capacity as metadata_over_capacity
+        if envelope_enabled(record):
+            if record['workflowMetadataRepairContractVersion']!=version:return None
+            too_large=metadata_over_capacity(record,raw,wire,unit.get('value'))
         if (too_large or digest(unit.get('value')) != unit.get('valueDigest')):
             return None
         if version == 1:
@@ -272,7 +276,7 @@ def prepare(record, *, source_data, failed, aliases, existing, invoke, checkpoin
         from services.deep_research.workflow_metadata_steps import decode
     if version == 34:
         from services.deep_research.workflow_metadata_symbols import decode
-    wire = original_wire(failed, version=version)
+    wire = original_wire(failed, version=version,record=record)
     if not enabled(record) or wire is None:
         raise DeepResearchError('invalid_workflow_unit_response', '原元信息不满足有界修订条件。')
     if version == 1: field_feedback = stable_feedback(failed['value'], aliases)
@@ -339,7 +343,10 @@ def prepare(record, *, source_data, failed, aliases, existing, invoke, checkpoin
         field_feedback = {**semantic_feedback(wire, aliases), 'codes': sorted(failed['errors'])}
     parent = {'requestDigest': digest(failed['request']), 'responseDigest': failed['responseDigest'],
               'valueDigest': failed['valueDigest'], 'errors': sorted(failed['errors'])}
-    request = request_identity(record, NODE, prompt_for(source_data, wire, field_feedback, version=version), {'temperature': 0.0})
+    body=prompt_for(source_data, wire, field_feedback, version=version)
+    from services.deep_research.workflow_metadata_envelope import enabled as envelope_enabled,GUIDANCE
+    if envelope_enabled(record):body=GUIDANCE+body
+    request = request_identity(record, NODE, body, {'temperature': 0.0})
     identity = digest({'parent': parent, 'request': request, 'aliases': aliases})
     size = len(request['prompt'].encode('utf8')) + overhead_bytes(record, NODE)
     saved = deepcopy(existing)
@@ -381,6 +388,9 @@ def prepare(record, *, source_data, failed, aliases, existing, invoke, checkpoin
         too_large = over_capacity(raw, revised_wire) if version in (5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34) else (
             len(raw.encode('utf8')) > MAX_VALUE or len(packed(revised_wire).encode('utf8')) > MAX_VALUE)
         if version in (11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34): too_large = too_large or len(packed(value).encode('utf8')) > MAX_VALUE
+        if envelope_enabled(record):
+            from services.deep_research.workflow_metadata_envelope import over_capacity as metadata_over_capacity
+            too_large=metadata_over_capacity(record,raw,revised_wire,value)
         if too_large: problems.append('unit.output_capacity')
     except (TypeError, ValueError, RecursionError, OverflowError):
         problems = ['unit.json']; value = None
