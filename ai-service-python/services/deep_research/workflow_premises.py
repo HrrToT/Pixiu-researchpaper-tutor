@@ -29,8 +29,9 @@ def required(record):
 
 def allocate(record, *, source_data, context, aliases, prior_values, node, render):
     from services.deep_research.planning_transport import overhead_bytes
-    from services.deep_research.execution_workflow_blueprint import MAX_INPUT
+    from services.deep_research.workflow_metadata_window import input_limit
     if not enabled(record):raise ValueError('Workflow premise allocation is not enabled')
+    max_input=input_limit(record,node)
     data=json.loads(source_data)
     rows=data.get('evidence')
     if not isinstance(rows,list) or any(not isinstance(r,dict) or not isinstance(r.get('evidenceId'),str) for r in rows):
@@ -56,18 +57,18 @@ def allocate(record, *, source_data, context, aliases, prior_values, node, rende
         text=pack(scoped)
         return render(text,ctx),text,ctx
     selected=set(ids);body,text,ctx=request(selected)
-    if len(body.encode('utf8'))+overhead>MAX_INPUT:
+    if len(body.encode('utf8'))+overhead>max_input:
         selected=set(needed);body,text,ctx=request(selected)
         # Keep every required row even if the complete dependency set cannot fit.
-        if len(body.encode('utf8'))+overhead<=MAX_INPUT:
+        if len(body.encode('utf8'))+overhead<=max_input:
             for eid in ids:
                 if eid in selected:continue
                 trial=request(selected|{eid})
-                if len(trial[0].encode('utf8'))+overhead<=MAX_INPUT:
+                if len(trial[0].encode('utf8'))+overhead<=max_input:
                     selected.add(eid);body,text,ctx=trial
     audit={'version':1,'node':node,'parentDataDigest':digest(data),'originalContextDigest':digest(context),
         'requiredAliases':[i for i in ids if i in needed],'suppliedAliases':[i for i in ids if i in selected],
         'priorProposalDigests':[digest(v) for v in prior_values],
-        'inputBytes':len(body.encode('utf8'))+overhead,'transportOverheadBytes':overhead,'maxInputBytes':MAX_INPUT,
+        'inputBytes':len(body.encode('utf8'))+overhead,'transportOverheadBytes':overhead,'maxInputBytes':max_input,
         'sourceSelectionIsScientificApproval':False}
     return body,text,ctx,{i:aliases[i] for i in aliases if i in selected},audit

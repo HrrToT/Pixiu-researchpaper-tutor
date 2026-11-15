@@ -15,7 +15,7 @@
     "retainedBaselineCases": 8242,
     "missingBaselineCases": [],
     "warnings": 1,
-    "appliesToCurrentPythonSource": true,
+    "appliesToCurrentPythonSource": false,
     "proof": "deep-research-evidence/workflow-metadata-edits-466-final-20261115.json",
     "boundary": "Complete current offline research regression only; not real generation, Provider cost/quality, independent scientific acceptance or full product release."
   },
@@ -15606,5 +15606,27 @@
       "preservation.json": "d8648eccdfa3290abee4a8c95b0fdfd0f9da3a297b468b4420f75b01a206c85d",
       "result.json": "5f3bd318474edfd972977cbf8979a0704ae893d9989b9fe6520768bb983dc8b3"
     }
+  },
+  "workflowMetadataWindowDevelopment20261115": {
+    "promptVersion": "dr-v2.20261115.467",
+    "contract": "workflowMetadataInputContractVersion1",
+    "relatedRunPassed": 147,
+    "finalNewModulePassed": 33,
+    "oldMetadataInputBytes": 32221,
+    "oldLimitBytes": 32000,
+    "replayedMetadataInputBytes": 33667,
+    "newLimitBytes": 40000,
+    "requiredPremises": 18,
+    "replayedPremises": 20,
+    "allOriginalInputValuesExact": true,
+    "wholeRunBudgetUnchanged": true,
+    "legacyRunsCannotOptIn": true,
+    "productionLoaded": false,
+    "fullRegressionPending": true,
+    "replayProof": "deep-research-evidence/workflow-metadata-window-467-replay-20261115.json",
+    "newPaidCalls": 0,
+    "scientificAcceptance": false,
+    "independentCredit": 0,
+    "next": "Complete offline regression, load with all389 historical runs preserved, then run unchanged full D3 case once."
   }
 }

@@ -305,8 +305,10 @@ def prepare_units(record, *, prompt, aliases, invoke, parse, checkpoint):
                 raise DeepResearchError('invalid_workflow_blueprint_state', '完成记录缺少原始单元。')
             unit = {'request': request, 'status': 'pending', **({'premiseAllocation': allocation} if premise_mode else {})}
             size = len(body.encode('utf8')) + overhead_bytes(record, node)
-            if size > MAX_INPUT:
-                unit.update(status='not_started_capacity', inputBytes=size, maxInputBytes=MAX_INPUT)
+            from services.deep_research.workflow_metadata_window import input_limit
+            max_input=input_limit(record,node)
+            if size > max_input:
+                unit.update(status='not_started_capacity', inputBytes=size, maxInputBytes=max_input)
             elif remaining_seconds(record) < 10:
                 unit['status'] = 'not_started_budget'
             saved['units'][key] = unit; checkpoint(deepcopy(saved))

@@ -249,6 +249,7 @@ class TrackedLLMInvoker:
         call_history_fn: Callable | None = None,
         experiment_max_input_bytes: int | None = None,
         workflow_revision_max_input_bytes: int | None = None,
+        workflow_metadata_max_input_bytes: int | None = None,
     ):
         self._client = llm_client
         self._reserve = reserve_call_fn
@@ -278,10 +279,20 @@ class TrackedLLMInvoker:
             raise ValueError('Invalid server workflow revision input limit')
         self._workflow_revision_max_input = (max_input_tokens if workflow_revision_max_input_bytes is None
                                            else workflow_revision_max_input_bytes)
+        from services.deep_research.workflow_metadata_window import MAX_INPUT as METADATA_MAX_INPUT
+        if workflow_metadata_max_input_bytes is not None and (
+                type(workflow_metadata_max_input_bytes) is not int
+                or not 1 <= workflow_metadata_max_input_bytes <= METADATA_MAX_INPUT):
+            raise ValueError('Invalid server workflow metadata input limit')
+        self._workflow_metadata_max_input = (max_input_tokens if workflow_metadata_max_input_bytes is None
+                                           else workflow_metadata_max_input_bytes)
 
     def prompt_byte_limit(self, run_id: str, node: str) -> int:
         from services.deep_research.verification_capacity import verification_input_limit
         record = self._run_record(run_id) if self._run_record else None
+        from services.deep_research.workflow_metadata_window import enabled as metadata_enabled, NODE as METADATA_NODE, MAX_INPUT as METADATA_MAX_INPUT
+        if node == METADATA_NODE and metadata_enabled(record):
+            return min(getattr(self,'_workflow_metadata_max_input',self._max_input),METADATA_MAX_INPUT)
         from services.deep_research.workflow_revision_input import enabled as revision_enabled, NODE as REVISION_NODE, MAX_INPUT as REVISION_MAX_INPUT
         if node == REVISION_NODE and revision_enabled(record):
             return min(getattr(self, '_workflow_revision_max_input', self._max_input), REVISION_MAX_INPUT)
