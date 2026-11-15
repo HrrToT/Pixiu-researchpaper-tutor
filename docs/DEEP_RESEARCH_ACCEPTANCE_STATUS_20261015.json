@@ -3,18 +3,21 @@
   "objective": "Complete DR0-DR5 in DEEP_RESEARCH_DESIGN_20261012.md without redefining success around implemented subsets.",
   "overall": "incomplete",
   "currentFullOfflineRegression": {
-    "sourceCommit": "0e62119faa7876819114ed0a94fc822a88d1db20",
-    "modules": 440,
-    "passed": 8089,
+    "sourceCommit": "8adb47c4d8475fed07c71e5c8a1d89f386dd3566",
+    "modules": 442,
+    "passed": 8111,
     "failures": 0,
     "errors": 0,
     "skipped": 0,
     "warnings": 1,
     "sourceUnchanged": true,
-    "appliesToCurrentPythonSource": false,
-    "proof": "deep-research-evidence/workflow-premises-459-final-20261115.json",
-    "elapsedSeconds": 369.64,
-    "boundary": "Complete current offline research regression only; not real generation, Provider cost/quality, independent scientific acceptance or full product release."
+    "appliesToCurrentPythonSource": true,
+    "proof": "deep-research-evidence/metadata-output-460-final-20261115.json",
+    "elapsedSeconds": 378.47,
+    "boundary": "Complete current offline research regression only; not real generation, Provider cost/quality, independent scientific acceptance or full product release.",
+    "baselineCases": 8089,
+    "retainedBaselineCases": 8089,
+    "missingBaselineCases": []
   },
   "postFullRegressionValidation": {
     "scope": "PDF Form parser optimization only",
@@ -4320,12 +4323,12 @@
   },
   "currentDevelopmentMode": "Primary Codex only;.452 loaded;7898 complete offline tests across435modules pass. Correction profile2 low routing matches successful isolated request and preserves3500cap/old identities. AD1N-v32 completed/partial:12settled model calls56414tokens100seconds,1search1fulltext. No compression or binding correction call; correction2 correctly not_needed for genuine missing accepted content. Audience rewrite introduced wrong small-step assertion absent from synthesis. c2 repaired/reverified; c1 not published because reviewer target-structure count3 was treated as unbound source number. Exact offline counterfactual removes only前三个分句 meta-count wording, clears numeric error and preserves negative verdict;not a production fix or old result change. Other102tasks and all380oldruns/9549oldcallrows exact;app103tasks381runs9575rows,15historical pauses,0active. No science/novice/independent credit;original full DR0-DR5 and release gates remain.",
   "loadedRuntime": {
-    "commit": "0e62119faa7876819114ed0a94fc822a88d1db20",
-    "promptVersion": "dr-v2.20261115.459",
+    "commit": "8adb47c4d8475fed07c71e5c8a1d89f386dd3566",
+    "promptVersion": "dr-v2.20261115.460",
     "callsAfterLatestCase": 9758,
     "active": 0,
     "historicalPausedUnknown": 15,
-    "proof": "deep-research-evidence/workflow-premises-459-load-20261115.json",
+    "proof": "deep-research-evidence/metadata-output-460-load-20261115.json",
     "allSourceHashesExact": true,
     "lastRealModelRunCommit": "0e62119faa7876819114ed0a94fc822a88d1db20",
     "lastRealModelRunPromptVersion": "dr-v2.20261115.459",
@@ -4334,9 +4337,9 @@
     "javaAndFrontendBoundary": "Java explicit material reparse deployed with full 170-test regression and unchanged task/research history; frontend unchanged. Neither rollout nor indexed table recovery proves current generated research quality.",
     "javaCommit": "004914ea",
     "taskCount": 105,
-    "latestPromptVersion": "dr-v2.20261115.459",
-    "latestSourceCommit": "0e62119faa7876819114ed0a94fc822a88d1db20",
-    "latestSourceProof": "deep-research-evidence/workflow-premises-459-load-20261115.json",
+    "latestPromptVersion": "dr-v2.20261115.460",
+    "latestSourceCommit": "8adb47c4d8475fed07c71e5c8a1d89f386dd3566",
+    "latestSourceProof": "deep-research-evidence/metadata-output-460-load-20261115.json",
     "sourceScope": "Python research modules, academic transport, PDF parser and PDF table column geometry",
     "indexDocumentsAt20261112": 1215,
     "sourceIndexAttestationAt20261112": "deep-research-evidence/loaded-source-index-attestation-20261112.json",
@@ -15213,7 +15216,7 @@
     {
       "area": "experiment",
       "proof": "deep-research-evidence/vq-experiment-d3-v2-20261115.json",
-      "action": "Review metadata output token allocation and complete four-arm representation under unchanged whole-run limits; no retry/repair of the truncated response and no narrowing to fewer arms."
+      "action": "Represent operation parameters without duplicate names and fit complete four-arm metadata without dropping measurements or relaxing scientific checks; no unchanged component resubmission."
     }
   ],
   "workflowPremiseAllocationDevelopment20261115": {
@@ -15349,12 +15352,29 @@
     "rawOutputBytesLimitUnchanged": 16384,
     "truncationRejectionUnchanged": true,
     "oldRequestsCannotOptIn": true,
-    "productionLoaded": false,
+    "productionLoaded": true,
     "scientificContentAccepted": false,
     "diagnosis": "Symbolic metadata version34 fell outside prior version29-33 allowance, falling back to the small 2048-token default.",
     "legacyTestFileRestored": true,
     "newTestsFile": "ai-service-python/tests/test_deep_research_symbolic_metadata_allowance.py",
     "baselineCaseRetentionGuard": true,
-    "componentStatus": "not_executed_auto_review_rejected_pending_payload_audit"
+    "componentStatus": "executed_once_complete_but_invalid",
+    "fullRegressionPassed": true,
+    "fullTestsPassed": 8111,
+    "fullModules": 442,
+    "fullRegression": "deep-research-evidence/metadata-output-460-final-20261115.json",
+    "componentProof": "deep-research-evidence/metadata-output-460-component-20261115.json",
+    "componentContentAccepted": false,
+    "componentOriginalAppDataUnchanged": true,
+    "remainingBlocker": "Complete response still exceeds unchanged metadata byte caps and repeats metric parameter names; retain both negative verdicts.",
+    "loadProof": "deep-research-evidence/metadata-output-460-load-20261115.json"
+  },
+  "lastStandaloneModelValidation20261115": {
+    "proof": "deep-research-evidence/metadata-output-460-component-20261115.json",
+    "modelCalls": 1,
+    "tokens": 14377,
+    "unitValid": false,
+    "applicationWrites": false,
+    "independentCredit": 0
   }
 }
