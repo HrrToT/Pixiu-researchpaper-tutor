@@ -5,7 +5,8 @@ _SMALL={'一':1,'二':2,'两':2,'三':3,'四':4,'五':5,'六':6,'七':7,'八':8,
 _ENGLISH={w:i for i,w in enumerate(('one','two','three','four','five','six','seven','eight','nine','ten'),1)}
 _REFERENCE=re.compile(r'(?P<cnlabel>最后|第|前|后)(?P<cnnumber>[0-9]{1,3}|[一二两三四五六七八九十]{1,3})(?:个)?(?P<cnunit>分句|句|段|条陈述|条断言)'
     r'|\b(?P<enlabel>first|last|final|next|previous)\s+(?P<ennumber>[0-9]{1,3}|one|two|three|four|five|six|seven|eight|nine|ten)\s+(?P<enunit>clauses?|sentences?|paragraphs?)\b',re.I)
-_SOURCE=re.compile(r'原文|论文|来源|引文|算法|表格|章节|\b(?:source|paper|passage|quote|algorithm|table|section|line)\b',re.I)
+_SOURCE=re.compile(r'原文|论文|来源|引文|算法|表格|章节|\b(?:source|paper|passage|quote|algorithm|table|section|line|evidence|arxiv|doi)\b'
+    r'|(?<![A-Za-z0-9_])(?:[EPQT]_*\d+|ev_[0-9a-f]+)(?![A-Za-z0-9_])',re.I)
 
 
 def _number(text):
@@ -38,7 +39,9 @@ def view(text,target_text):
     if not isinstance(text,str) or not isinstance(target_text,str):return text,[]
     chars=list(text);references=[]
     for m in _REFERENCE.finditer(text):
-        before=re.split(r'[。！？!?；;，,:：\n（）()]',text[:m.start()])[-1][-24:]
+        # A colon introduces an excerpt owned by its source alias (E1: ...).
+        # Keep that owner in scope, including full evidence hash identities.
+        before=re.split(r'[。！？!?；;，,\n（）()]',text[:m.start()])[-1][-128:]
         after=text[m.end():m.end()+24]
         # Source-owned references are not target navigation. Do not mask a
         # source location even when its count coincides with target capacity.

@@ -116,3 +116,19 @@ def test_untransmitted_generated_configuration_prose_cannot_authorize_target_nav
 
 def test_source_owner_after_chinese_target_like_phrase_is_never_exempted():
     assert view('前三句原文说明条件',TEXT)[1]==[]
+
+
+@pytest.mark.parametrize('owner',['E1','E1：','E_1: ','P2：','Q3: ','T4：',
+    'ev_'+'a1'*32+'：','evidence: ','arxiv: ','doi: '])
+def test_source_alias_before_location_is_not_target_navigation(owner):
+    verdict,claim,ev=case(owner+'前三个分句说明结论。')
+    old=bind(verdict,claim,ev);new=bind(verdict,claim,ev,target_structure=True)
+    assert new['reviewDiagnosticAudit']['targetStructureReferences']==[]
+    assert new['reviewDiagnosticAudit']['errors']==old['reviewDiagnosticAudit']['errors']
+    assert new['reviewDiagnosticAudit']['newNumberCount']==old['reviewDiagnosticAudit']['newNumberCount']
+
+
+def test_completed_source_clause_does_not_own_later_target_navigation():
+    scanned,refs=view('E1支持该定义，但最后一个分句不成立。',TEXT)
+    assert len(refs)==1 and refs[0]['text']=='最后一个分句'
+    assert 'E1' in scanned
