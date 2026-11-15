@@ -4322,18 +4322,18 @@
   "loadedRuntime": {
     "commit": "283fe9d56b91343bc25ca32402832bd555e2d771",
     "promptVersion": "dr-v2.20261115.453",
-    "callsAfterLatestCase": 9577,
+    "callsAfterLatestCase": 9579,
     "active": 0,
     "historicalPausedUnknown": 15,
     "proof": "deep-research-evidence/review-structure-453-load-20261115.json",
     "allSourceHashesExact": true,
-    "lastRealModelRunCommit": "283fe9d56b91343bc25ca32402832bd555e2d771",
+    "lastRealModelRunCommit": "20972508",
     "lastRealModelRunPromptVersion": "dr-v2.20261115.453",
-    "lastRealCase": "AD1N-v33",
+    "lastRealCase": "D2-VQ-v1-v1",
     "lastRealOutcome": "failed/none",
     "javaAndFrontendBoundary": "This Python rollout did not redeploy Java or frontend. Earlier UI/persistence and synthetic publication evidence does not establish current real generated research or novice quality.",
     "javaCommit": "81a827f0c03febc4d181900b00516e38be916511",
-    "taskCount": 103,
+    "taskCount": 104,
     "latestPromptVersion": "dr-v2.20261115.453",
     "latestSourceCommit": "283fe9d56b91343bc25ca32402832bd555e2d771",
     "latestSourceProof": "deep-research-evidence/review-structure-453-load-20261115.json",
@@ -14851,5 +14851,29 @@
       "contentAccepted": false,
       "fixExercised": false
     }
+  },
+  "vqFullComparisonDevelopment20261115": {
+    "proof": "deep-research-evidence/vq-development-d2-v1-20261115.json",
+    "materialsReady": true,
+    "indexedChunks": [
+      83,
+      68
+    ],
+    "taskId": "dr-development-vq-20261115",
+    "case": "D2-VQ-v1-v1",
+    "status": "failed",
+    "errorCode": "invalid_plan_response",
+    "calls": 2,
+    "tokens": 3434,
+    "contentAccepted": false,
+    "independentCredit": 0
+  },
+  "initialPlanClientPrototypes20261115": {
+    "proof": "deep-research-evidence/initial-plan-client-prototypes-20261115.json",
+    "calls": 2,
+    "bothStrictlyRejected": true,
+    "productionPolicyChanged": false,
+    "applicationWrites": 0,
+    "nextAction": "Implement one bounded audited format correction for known initial-plan schema failures; preserve unknown identities and all existing scope/semantic limits."
   }
 }
