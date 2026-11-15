@@ -350,9 +350,14 @@ def prepare(record, *, source_data, failed, aliases, existing, invoke, checkpoin
     from services.deep_research.workflow_metadata_envelope import enabled as envelope_enabled,GUIDANCE
     if envelope_enabled(record):body=GUIDANCE+body
     if edit_scope is None:
-        from services.deep_research.workflow_revision_context import guidance as revision_guidance
-        body=revision_guidance(record,field_feedback)+body
+        from services.deep_research.workflow_revision_context import guidance as revision_guidance, completion_guidance
+        body=revision_guidance(record,field_feedback)+body+completion_guidance(record)
     options={'temperature':0.0}
+    from services.deep_research import workflow_revision_sources as revision_sources
+    source_refs=revision_sources.bound_refs(record,wire,field_feedback,aliases) if edit_scope is None else None
+    if source_refs is not None:
+        options[revision_sources.OPTION]=source_refs
+        body=revision_sources.policy(source_refs)+body
     if edit_scope is not None:options[metadata_edits.OPTION]=True
     request = request_identity(record, NODE, body, options)
     identity_data={'parent': parent, 'request': request, 'aliases': aliases}
@@ -405,6 +410,8 @@ def prepare(record, *, source_data, failed, aliases, existing, invoke, checkpoin
             revised_wire=compiled_wire
         value = decode(revised_wire)
         problems = unit_errors(value, aliases, node=META, version=7, metadata_rows=True)
+        if source_refs is not None and revised_wire.get('sourceRefs')!=source_refs:
+            problems.append('unit.sourceRefs.changed')
         from services.deep_research.workflow_metadata_revision5 import over_capacity
         too_large = over_capacity(raw, revised_wire) if version in (5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34) else (
             len(raw.encode('utf8')) > MAX_VALUE or len(packed(revised_wire).encode('utf8')) > MAX_VALUE)

@@ -35,6 +35,9 @@ def test_plain_index_keeps_exact_locations_groups_and_all_diagnoses():
 
 @pytest.mark.parametrize('version', [None, True, False, 0, 1, 3, '2'])
 def test_legacy_and_invalid_profiles_keep_original_prompts(version):
+    if type(version) is int and version == 3:
+        assert 'does NOT conditionally filter' in guidance({**record(), 'workflowRevisionContextContractVersion': version}, feedback())
+        return
     assert guidance({**record(), 'workflowRevisionContextContractVersion': version}, feedback()) == ''
 
 

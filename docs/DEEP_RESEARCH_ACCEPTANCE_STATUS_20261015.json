@@ -15,7 +15,7 @@
     "retainedBaselineCases": 8336,
     "missingBaselineCases": [],
     "warnings": 1,
-    "appliesToCurrentPythonSource": true,
+    "appliesToCurrentPythonSource": false,
     "proof": "deep-research-evidence/revision-diagnostic-470-final-20261115.json",
     "boundary": "Complete current offline research regression only; not real generation, Provider cost/quality, independent scientific acceptance or full product release."
   },
@@ -15760,5 +15760,35 @@
     "newSourceAliasError": true,
     "componentProof": "deep-research-evidence/revision-diagnostic-470-component-20261115.json",
     "next": "Explicit per-group fitting updates and exact source identity; no full D3-v6 before valid metadata."
+  },
+  "workflowRevisionSourcesDevelopment20261115": {
+    "promptVersion": "dr-v2.20261115.471",
+    "inputBytes": 50040,
+    "boundSourceRefs": [
+      "E1",
+      "E2",
+      "E5",
+      "E6",
+      "E7",
+      "E9",
+      "E13",
+      "E14",
+      "E16",
+      "E17",
+      "E19",
+      "E20"
+    ],
+    "nativeSchemaName": "metadata_symbolic_results_bound_refs_v1",
+    "all20EvidenceRowsRetained": true,
+    "outputTokens": 6144,
+    "timeoutSeconds": 90,
+    "newModelCalls": 0,
+    "applicationWrites": false,
+    "scientificAcceptance": false,
+    "independentCredit": 0,
+    "contract": "workflowRevisionContextContractVersion3",
+    "relatedPassed": 146,
+    "productionLoaded": false,
+    "fullRegressionPending": true
   }
 }
