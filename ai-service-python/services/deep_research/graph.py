@@ -327,156 +327,167 @@ Return a JSON ARRAY of plan items, NOT an object with items field."""
             prompt=initial_plan_prompt(record,data_guidance)
         result = llm_invoke(run_id, "plan", prompt, {"max_tokens": 5000, "temperature": 0.1})
         
-        # Handle LLMResult dataclass - extract content attribute
-        if hasattr(result, "content"):
-            content = result.content
-        elif isinstance(result, dict):
-            content = result.get("content", "[]")
-        else:
-            content = str(result)
+        def accept_result(result,*,can_correct=True):
+            # Handle LLMResult dataclass - extract content attribute
+            if hasattr(result, "content"):
+                content = result.content
+            elif isinstance(result, dict):
+                content = result.get("content", "[]")
+            else:
+                content = str(result)
         
-        parsed = _safe_parse_json(content)
+            parsed = _safe_parse_json(content)
 
-        def invalid_plan(reason):
-            # Keep the rejected response in the existing settled call ledger;
-            # persist a compact diagnostic without another generation or repair.
-            repo_update(run_id, lambda r: {**r, 'state': {**(r.get('state') or {}),
-                'planFormatValidation': {'status': 'rejected', 'reason': str(reason)[:500]}}},
-                expected_revision=None)
-            return {"error_code": "invalid_plan_response", "outcome": OUTCOME_NONE, "plan_ids": []}
+            def invalid_plan(reason):
+                # Keep the rejected response in the existing settled call ledger;
+                # preserve a compact rejection before any versioned correction.
+                repo_update(run_id, lambda r: {**r, 'state': {**(r.get('state') or {}),
+                    'planFormatValidation': {'status': 'rejected', 'reason': str(reason)[:500]}}},
+                    expected_revision=None)
+                from services.deep_research.initial_plan_correction import correct,finish
+                if can_correct:
+                    corrected=correct(record,result,reason,prompt,llm_invoke,repo_update)
+                    if corrected is not None:return accept_result(corrected,can_correct=False)
+                else:finish(repo_update,run_id,'rejected')
+                return {"error_code": "invalid_plan_response", "outcome": OUTCOME_NONE, "plan_ids": []}
 
-        finish_reason = getattr(result, 'finish_reason', None) if not isinstance(result, dict) else result.get('finishReason')
-        if finish_reason == 'length':
-            return invalid_plan('Plan response was truncated')
+            finish_reason = getattr(result, 'finish_reason', None) if not isinstance(result, dict) else result.get('finishReason')
+            if finish_reason == 'length':
+                return invalid_plan('Plan response was truncated')
         
-        # Handle {items: [...]} wrapper format - extract items array
-        if isinstance(parsed, dict) and "items" in parsed:
-            parsed = parsed.get("items", [])
+            # Handle {items: [...]} wrapper format - extract items array
+            if isinstance(parsed, dict) and "items" in parsed:
+                parsed = parsed.get("items", [])
         
-        # Fail closed: malformed JSON list must not proceed to retrieval
-        if not isinstance(parsed, list):
-            logger.warning("Plan response not a list, failing closed: %s", type(parsed))
-            return invalid_plan('Plan response is not a JSON array')
+            # Fail closed: malformed JSON list must not proceed to retrieval
+            if not isinstance(parsed, list):
+                logger.warning("Plan response not a list, failing closed: %s", type(parsed))
+                return invalid_plan('Plan response is not a JSON array')
 
-        from services.deep_research.initial_plan_response import enabled as initial_plan_response_enabled,validate_shape as validate_initial_plan_shape
-        if initial_plan_response_enabled(record):
-            try:validate_initial_plan_shape(parsed,question)
-            except ValueError as exc:return invalid_plan(exc)
+            from services.deep_research.initial_plan_response import enabled as initial_plan_response_enabled,validate_shape as validate_initial_plan_shape
+            if initial_plan_response_enabled(record):
+                try:validate_initial_plan_shape(parsed,question)
+                except ValueError as exc:return invalid_plan(exc)
         
-        try:
-            from services.deep_research.plan_identity import normalize_generated_obligation_ids
-            generated, identity_changes = normalize_generated_obligation_ids(parsed[:4])
-            validated = validate_plan(generated)
-            from services.deep_research.completion_criteria import validate_completion_criteria
-            validate_completion_criteria(validated, required=criteria_required)
-        except ValueError as ve:
-            logger.warning("Plan validation failed: %s", ve)
-            return invalid_plan(ve)
-        
-        if not validated:
-            return invalid_plan('Plan has no research items')
-
-        from services.deep_research.evidence_requirements import enabled as requirements_enabled, normalize_generated_requirements, grounded, imperative_grounded
-        from services.deep_research.request_dimensions import enabled as dimensions_enabled
-        requirement_changes = []
-        if requirements_enabled(record):
             try:
-                validated, requirement_changes = normalize_generated_requirements(validated, question,
-                    literal_questions=grounded(record),literal_imperatives=imperative_grounded(record),atomic_dimensions=dimensions_enabled(record),
-                    **({'compound_questions':True} if type(record.get('requestGroundingContractVersion')) is int and record['requestGroundingContractVersion']==4 else {}))
-                validated = validate_plan(validated)
-            except ValueError as exc:
-                return invalid_plan(exc)
+                from services.deep_research.plan_identity import normalize_generated_obligation_ids
+                generated, identity_changes = normalize_generated_obligation_ids(parsed[:4])
+                validated = validate_plan(generated)
+                from services.deep_research.completion_criteria import validate_completion_criteria
+                validate_completion_criteria(validated, required=criteria_required)
+            except ValueError as ve:
+                logger.warning("Plan validation failed: %s", ve)
+                return invalid_plan(ve)
+        
+            if not validated:
+                return invalid_plan('Plan has no research items')
 
-        from services.deep_research.obligation_purpose import normalize_obligation_purposes
-        validated = normalize_obligation_purposes(validated, question)
-        allowed = [material.get("materialId") for material in materials]
-        required_default = allowed if output_kind == "paper_comparison" else record.get("focusPaperIds") or allowed
-        from services.deep_research.source_revisions import enabled as revision_constraints_enabled, normalize_plan as bind_plan_revisions
-        revision_constraints=revision_constraints_enabled(record) and record.get('sourcePolicy',{}).get('mode') in {'academic_external','external_only'}
-        revision_audit={}
-        if revision_constraints:
-            try:
-                validated,revision_audit=bind_plan_revisions(validated,question,allowed,required_default)
+            from services.deep_research.evidence_requirements import enabled as requirements_enabled, normalize_generated_requirements, grounded, imperative_grounded
+            from services.deep_research.request_dimensions import enabled as dimensions_enabled
+            requirement_changes = []
+            if requirements_enabled(record):
+                try:
+                    validated, requirement_changes = normalize_generated_requirements(validated, question,
+                        literal_questions=grounded(record),literal_imperatives=imperative_grounded(record),atomic_dimensions=dimensions_enabled(record),
+                        **({'compound_questions':True} if type(record.get('requestGroundingContractVersion')) is int and record['requestGroundingContractVersion']==4 else {}))
+                    validated = validate_plan(validated)
+                except ValueError as exc:
+                    return invalid_plan(exc)
+
+            from services.deep_research.obligation_purpose import normalize_obligation_purposes
+            validated = normalize_obligation_purposes(validated, question)
+            allowed = [material.get("materialId") for material in materials]
+            required_default = allowed if output_kind == "paper_comparison" else record.get("focusPaperIds") or allowed
+            from services.deep_research.source_revisions import enabled as revision_constraints_enabled, normalize_plan as bind_plan_revisions
+            revision_constraints=revision_constraints_enabled(record) and record.get('sourcePolicy',{}).get('mode') in {'academic_external','external_only'}
+            revision_audit={}
+            if revision_constraints:
+                try:
+                    validated,revision_audit=bind_plan_revisions(validated,question,allowed,required_default)
+                    validated=validate_plan(validated)
+                except ValueError as exc:
+                    return invalid_plan(exc)
+            else:
+                for item in validated:
+                    for obligation in item.get("obligations", []):
+                        requested = obligation.get("requiredSources", [])
+                        external_ids = []
+                        if record.get("sourcePolicy", {}).get("mode") in {"academic_external", "external_only"}:
+                            from services.deep_research_academic import checked_arxiv_id
+                            for sid in requested:
+                                if sid.lower().startswith("arxiv:"):
+                                    try:
+                                        external_ids.append("arxiv:" + __import__('re').sub(r'v\d+$', '', checked_arxiv_id(sid.split(':', 1)[1])))
+                                    except ValueError:
+                                        pass
+                        obligation["requiredSources"] = [sid for sid in requested if sid in allowed] + external_ids or required_default
+            # Each comparison must inspect every selected paper, while paper-specific
+            # obligations should not require irrelevant evidence from all other papers.
+            if output_kind == "paper_comparison":
+                covered = {sid for item in validated for obl in item["obligations"] for sid in obl["requiredSources"]}
+                for sid in allowed:
+                    if sid not in covered:
+                        validated[0]["obligations"][0]["requiredSources"].append(sid)
+
+            if output_kind == 'experiment_design':
+                from services.deep_research.data_prerequisite import ensure_data_prerequisite
+                # All task materials are permitted candidates; no invented external source.
+                candidates = allowed or list(dict.fromkeys(sid for item in validated
+                    for obligation in item['obligations'] for sid in obligation['requiredSources']))
+                validated = validate_plan(ensure_data_prerequisite(validated, candidates, question,
+                    proposed_protocol=proposed_protocol))
+                if record.get('experimentPlanContractVersion')==1:
+                    from services.deep_research.experiment_deliverable import ensure_experiment_deliverable
+                    validated=validate_plan(ensure_experiment_deliverable(validated,question,required_default or candidates))
+                validate_completion_criteria(validated, required=record.get('planCompletionContractVersion') == 1)
+        
+            semantics_changes=[]
+            if semantics_enabled(record):
+                from services.deep_research.request_semantics import normalize_access_requirements
+                from services.deep_research.answer_preservation import enabled as preserve_answer_scope
+                validated,semantics_changes=normalize_access_requirements(validated,question,
+                    **({'version':3} if preserve_answer_scope(record) else {'version':2} if record['requestSemanticsContractVersion']==2 else {}))
                 validated=validate_plan(validated)
-            except ValueError as exc:
-                return invalid_plan(exc)
-        else:
-            for item in validated:
-                for obligation in item.get("obligations", []):
-                    requested = obligation.get("requiredSources", [])
-                    external_ids = []
-                    if record.get("sourcePolicy", {}).get("mode") in {"academic_external", "external_only"}:
-                        from services.deep_research_academic import checked_arxiv_id
-                        for sid in requested:
-                            if sid.lower().startswith("arxiv:"):
-                                try:
-                                    external_ids.append("arxiv:" + __import__('re').sub(r'v\d+$', '', checked_arxiv_id(sid.split(':', 1)[1])))
-                                except ValueError:
-                                    pass
-                    obligation["requiredSources"] = [sid for sid in requested if sid in allowed] + external_ids or required_default
-        # Each comparison must inspect every selected paper, while paper-specific
-        # obligations should not require irrelevant evidence from all other papers.
-        if output_kind == "paper_comparison":
-            covered = {sid for item in validated for obl in item["obligations"] for sid in obl["requiredSources"]}
-            for sid in allowed:
-                if sid not in covered:
-                    validated[0]["obligations"][0]["requiredSources"].append(sid)
+                validate_completion_criteria(validated,required=criteria_required)
 
-        if output_kind == 'experiment_design':
-            from services.deep_research.data_prerequisite import ensure_data_prerequisite
-            # All task materials are permitted candidates; no invented external source.
-            candidates = allowed or list(dict.fromkeys(sid for item in validated
-                for obligation in item['obligations'] for sid in obligation['requiredSources']))
-            validated = validate_plan(ensure_data_prerequisite(validated, candidates, question,
-                proposed_protocol=proposed_protocol))
-            if record.get('experimentPlanContractVersion')==1:
-                from services.deep_research.experiment_deliverable import ensure_experiment_deliverable
-                validated=validate_plan(ensure_experiment_deliverable(validated,question,required_default or candidates))
-            validate_completion_criteria(validated, required=record.get('planCompletionContractVersion') == 1)
+            from services.deep_research.access_request_projection import enabled as access_projection_enabled,project as project_access
+            access_projection=[]
+            if access_projection_enabled(record):
+                validated,access_projection=project_access(validated,question, **({'citation_access':True} if record['accessRequestProjectionContractVersion']==2 else {}))
+                validated=validate_plan(validated)
+                validate_completion_criteria(validated,required=criteria_required)
+
+            plan_ids = [item["itemId"] for item in validated]
+            from services.deep_research.continuation import rebind_inherited_state
+            inherited = bool(brief_state.get('inheritedEvidence'))
         
-        semantics_changes=[]
-        if semantics_enabled(record):
-            from services.deep_research.request_semantics import normalize_access_requirements
-            from services.deep_research.answer_preservation import enabled as preserve_answer_scope
-            validated,semantics_changes=normalize_access_requirements(validated,question,
-                **({'version':3} if preserve_answer_scope(record) else {'version':2} if record['requestSemanticsContractVersion']==2 else {}))
-            validated=validate_plan(validated)
-            validate_completion_criteria(validated,required=criteria_required)
+            repo_update(
+                run_id,
+                lambda r: {**r, "state": {
+                    **(rebind_inherited_state(r.get('state') or {}, validated)
+                       if inherited else {**(r.get("state") or {}), "plan": validated}),
+                    'planIdNormalization': identity_changes,
+                    **({'planSourceRevisionNormalization':revision_audit} if revision_constraints else {}),
+                    **({'planAccessRequestProjection':access_projection} if access_projection_enabled(record) else {}),
+                    **({'planRequestSemanticsNormalization':semantics_changes} if semantics_enabled(record) else {}),
+                    **({'planRequirementNormalization': requirement_changes} if requirements_enabled(record) else {}),
+                    'planFormatValidation': {'status': 'validated', 'requiresCompletionCriteria': criteria_required}}},
+                expected_revision=None,
+            )
 
-        from services.deep_research.access_request_projection import enabled as access_projection_enabled,project as project_access
-        access_projection=[]
-        if access_projection_enabled(record):
-            validated,access_projection=project_access(validated,question, **({'citation_access':True} if record['accessRequestProjectionContractVersion']==2 else {}))
-            validated=validate_plan(validated)
-            validate_completion_criteria(validated,required=criteria_required)
-
-        plan_ids = [item["itemId"] for item in validated]
-        from services.deep_research.continuation import rebind_inherited_state
-        inherited = bool(brief_state.get('inheritedEvidence'))
+            from services.deep_research.dependencies import enabled as ordered_plan, initialize
+            if ordered_plan(record):
+                repo_update(run_id, lambda r: {**r, 'state': {**r['state'],
+                    'dependencyExecution': initialize(validated, brief_state.get('planRevision', 0)),
+                    'plan': [{**item, 'status': 'pending'} for item in validated]}}, expected_revision=None)
         
-        repo_update(
-            run_id,
-            lambda r: {**r, "state": {
-                **(rebind_inherited_state(r.get('state') or {}, validated)
-                   if inherited else {**(r.get("state") or {}), "plan": validated}),
-                'planIdNormalization': identity_changes,
-                **({'planSourceRevisionNormalization':revision_audit} if revision_constraints else {}),
-                **({'planAccessRequestProjection':access_projection} if access_projection_enabled(record) else {}),
-                **({'planRequestSemanticsNormalization':semantics_changes} if semantics_enabled(record) else {}),
-                **({'planRequirementNormalization': requirement_changes} if requirements_enabled(record) else {}),
-                'planFormatValidation': {'status': 'validated', 'requiresCompletionCriteria': criteria_required}}},
-            expected_revision=None,
-        )
+            if not can_correct:
+                from services.deep_research.initial_plan_correction import finish
+                finish(repo_update,run_id,'validated')
+            return {"plan_ids": plan_ids, "assess_inherited": inherited,
+                    "plan_revision": brief_state.get('planRevision', 0)}
 
-        from services.deep_research.dependencies import enabled as ordered_plan, initialize
-        if ordered_plan(record):
-            repo_update(run_id, lambda r: {**r, 'state': {**r['state'],
-                'dependencyExecution': initialize(validated, brief_state.get('planRevision', 0)),
-                'plan': [{**item, 'status': 'pending'} for item in validated]}}, expected_revision=None)
-        
-        return {"plan_ids": plan_ids, "assess_inherited": inherited,
-                "plan_revision": brief_state.get('planRevision', 0)}
+        return accept_result(result)
     
     return node
 
