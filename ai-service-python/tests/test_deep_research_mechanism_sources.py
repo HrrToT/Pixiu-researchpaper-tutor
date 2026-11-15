@@ -25,7 +25,7 @@ def test_explicit_numeric_requests_keep_measurement_routing(q):assert not qualit
 
 
 def test_only_new_matching_source_bound_plan_can_enable_routing():
-    for version in (None,True,0,4,'1'):assert not for_query(record(version=version),'storage compression mechanism','p')
+    for version in (None,True,0,5,'1'):assert not for_query(record(version=version),'storage compression mechanism','p')
     assert for_query(record(),'storage compression mechanism','p')
     assert not for_query(record(),'unrelated query','p')
     assert not for_query(record(),'storage compression mechanism','foreign')
@@ -84,7 +84,7 @@ def test_contribution_summary_complements_method_introduction_without_using_resu
     assert overview_score(contribution['text'],'Results')==0
 
 
-@pytest.mark.parametrize('replacement',[None,True,0,4,'1'])
+@pytest.mark.parametrize('replacement',[None,True,0,5,'1'])
 def test_mechanism_intent_contract_is_server_owned_and_immutable(tmp_path,replacement):
     from services.deep_research.repository import DeepResearchRepository
     from services.deep_research.facade import ResearchFacade
@@ -92,7 +92,53 @@ def test_mechanism_intent_contract_is_server_owned_and_immutable(tmp_path,replac
     try:
         run,_=facade.create({'workspaceTaskId':'t','operationKey':'op','question':'解释机制','deferStart':True,
             'mechanismEvidenceContractVersion':replacement},start_async=False)
-        assert run['mechanismEvidenceContractVersion']==3
+        assert run['mechanismEvidenceContractVersion']==4
         with pytest.raises(ValueError,match='Immutable'):
             repo.update_run(run['runId'],lambda r:{**r,'mechanismEvidenceContractVersion':replacement})
     finally:facade.shutdown()
+
+
+def mixed_record(version=4):
+    r=record('比较压缩机制、存储与画质取舍和渲染速度。',version)
+    r['state']['plan'][0]['obligations']=[
+        {'obligationId':'method','question':'解释压缩机制','searchQuery':'compression mechanism',
+         'requiredSources':['p'],'completionCriteria':[{'requirement':'解释压缩机制','responseType':'explanation'}]},
+        {'obligationId':'measurement','question':'列出报告的存储与画质指标及测量条件',
+         'searchQuery':'storage quality rendering speed reported results','requiredSources':['p'],
+         'completionCriteria':[{'requirement':'列出该论文报告的存储与画质指标及其对应设置','responseType':'identification'},
+             {'requirement':'列出该论文报告的渲染速度结果及其测量条件','responseType':'identification'}]}]
+    return r
+
+
+def test_mixed_request_keeps_local_mechanism_priority_without_global_measurement_suppression():
+    old=mixed_record(3);new=mixed_record(4);before=deepcopy(new)
+    assert enabled(old) and not enabled(new)
+    assert for_query(old,'storage quality rendering speed reported results','p')
+    assert not for_query(new,'storage quality rendering speed reported results','p')
+    assert for_query(new,'compression mechanism','p')
+    assert not for_query(new,'compression mechanism','foreign') and new==before
+
+
+@pytest.mark.parametrize('question',['解释减少存储的机制，不要比较性能数值。',
+    'Explain the compression mechanism; do not report numbers.','请解释原理，无需列出FPS。'])
+def test_version_four_retains_pure_qualitative_reading(question):
+    r=record(question,4)
+    assert enabled(r) and for_query(r,'storage compression mechanism','p')
+
+
+def test_planner_query_numbers_do_not_override_unrequested_human_measurements():
+    r=record(version=4);r['state']['plan'][0]['obligations'][0]['searchQuery']='compression mechanism FPS PSNR'
+    assert for_query(r,'compression mechanism FPS PSNR','p')
+
+
+def test_mechanism_text_cannot_displace_metric_tables_for_its_sibling_obligation():
+    r=mixed_record();seed=[row(1,'Table 1','Table caption: measured results'),row(2,'Results','Measured speed')]
+    core=row(3,'Methods','Our pipeline encodes features.')
+    assert prefer_sources(seed,[*seed,core],r,'storage quality rendering speed reported results','p',2)==seed
+    assert prefer_sources(seed,[*seed,core],r,'compression mechanism','p',2)[0]==core
+
+
+@pytest.mark.parametrize('version',[1,2,3])
+def test_old_mixed_profiles_keep_their_exact_qualitative_route(version):
+    r=mixed_record(version)
+    assert enabled(r) and for_query(r,'storage quality rendering speed reported results','p')

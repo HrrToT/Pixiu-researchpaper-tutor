@@ -8,25 +8,53 @@ _NUMERIC=re.compile(r'多少|数值|定量|量化对比|具体(?:大小|速度|�
 _NEGATIVE=re.compile(r'^\s*(?:(?:并且|并|且|也|请)\s*)?(?:不要|不用|无需|不必|不需|不得|别|do not|don.t|no need|without)',re.I)
 
 
-def qualitative(question):
+def _positive(question):
     # Split contrast clauses so "不用公式但要数值" retains the numeric request.
     clauses=re.split(r'[，,;；。\n！？?!]|但是|不过|但|\bbut\b|\bhowever\b',str(question),flags=re.I)
-    positive=' '.join(c for c in clauses if not _NEGATIVE.search(c))
+    return ' '.join(c for c in clauses if not _NEGATIVE.search(c))
+
+
+def qualitative(question):
+    positive=_positive(question)
     return bool(_MECHANISM.search(positive) and not _NUMERIC.search(positive))
 
 
-def enabled(record):
+_MEASURE_SCOPE=re.compile(
+    r'(?:列出|报告|给出|比较|对比|测量|评估|核对|明确).{0,80}?'
+    r'(?:指标|数值|测量|结果|实验设置|存储与画质|画质取舍|渲染速度|存储大小|内存占用|帧率)'
+    r'|\b(?:report|list|compare|measure|evaluate)\b.{0,100}?'
+    r'\b(?:metrics?|results?|measurements?|settings?|memory|size|speed|quality)\b',re.I)
+
+
+def _measurement_requirement(question):
+    positive=_positive(question)
+    return bool(_NUMERIC.search(positive) or _MEASURE_SCOPE.search(positive))
+
+
+def _eligible(record):
     from services.deep_research.request_context import effective_question
     return (type(record.get('mechanismEvidenceContractVersion')) is int
-        and record['mechanismEvidenceContractVersion'] in (1,2,3)
+        and record['mechanismEvidenceContractVersion'] in (1,2,3,4)
         and record.get('state',{}).get('outputKind') in {'direction_survey','claim_verification','paper_comparison'}
         and qualitative(effective_question(record)))
 
 
+def enabled(record):
+    from services.deep_research.request_context import effective_question
+    return (_eligible(record) and not (record['mechanismEvidenceContractVersion']==4
+        and _measurement_requirement(effective_question(record))))
+
+
 def for_query(record,query,owned_id):
-    if not enabled(record):return False
+    if not _eligible(record):return False
     from services.deep_research.criterion_sources import acquisition_questions
-    return bool(acquisition_questions(record,query,owned_id))
+    questions=acquisition_questions(record,query,owned_id)
+    if record['mechanismEvidenceContractVersion']==4:
+        # One mechanism clause must not suppress metric tables for a different,
+        # source-bound measurement obligation. Model query words alone never
+        # opt a qualitative user request into numeric retrieval.
+        return bool(questions) and not any(_measurement_requirement(q) for q in questions)
+    return bool(questions)
 
 
 def overview_score(text,section):

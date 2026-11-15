@@ -174,6 +174,29 @@ def test_metric_retrieval_adds_owned_verified_tables_without_more_model_calls(mo
         local('FPS', 'p')
 
 
+@pytest.mark.parametrize('version',[3,4])
+def test_mixed_mechanism_task_reaches_owned_metric_table_augmentation(monkeypatch,version):
+    import json
+    from services.tools import retrieval_tools
+    from test_deep_research_mechanism_sources import mixed_record
+    local,get,parse,validate=fixture(monkeypatch)
+    local.repo.require_run.return_value.update(mixed_record(version))
+    monkeypatch.setattr('services.deep_research.local_sources.importlib.util.find_spec',lambda name:object())
+    prose=[{'text':f'General experimental protocol {i}.','metadata':{'id':'p','chunk_index':i}} for i in range(5)]
+    def table(owner,index):
+        return {'text':'Table row 1: Ours | 230 | 45MB','metadata':{'id':owner,'chunk_index':index,
+            'table_id':'t1','table_verified_data':json.dumps({'groups':[['Scenes',['FPS','Size']]],
+                'rows':[[1,'Ours',['230','45MB']]]})}}
+    rag=Mock();rag.normalize_id.side_effect=lambda value:value
+    rag.get_documents_by_metadata.return_value=[table('p',10),table('foreign',99)]
+    monkeypatch.setattr(retrieval_tools,'get_rag',lambda:rag)
+    retrieve=Mock(return_value=prose);monkeypatch.setattr(retrieval_tools,'retrieve_fused_evidence',retrieve)
+    found=local('storage quality rendering speed reported results','p',limit=5)
+    assert any(row.get('tableData') for row in found)==(version==4)
+    assert len(found)==5 and all(row['pdfId']=='p' for row in found)
+    get.assert_not_called();parse.assert_not_called();retrieve.assert_called_once()
+
+
 @pytest.mark.parametrize('marked', [True, False])
 def test_component_detail_selection_uses_the_existing_index_cache_and_live_scope(monkeypatch, marked):
     from services.tools import retrieval_tools

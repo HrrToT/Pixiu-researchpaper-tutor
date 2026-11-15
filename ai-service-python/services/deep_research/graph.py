@@ -1200,8 +1200,8 @@ def make_synthesize_node(
                 **({'operational_context':True}
                    if record['synthesisEvidenceContractVersion']==6 and output_kind=='experiment_design' else {}),
                 **({'mechanism_overview':True} if mechanism_premises(record) else {}),
-                **({'mechanism_components':True} if mechanism_premises(record) and record['mechanismEvidenceContractVersion'] in (2,3) else {}),
-                **({'section_targets':requested_sections(question)} if (section_priority(record) or mechanism_premises(record) and record['mechanismEvidenceContractVersion']==3) else {}),
+                **({'mechanism_components':True} if mechanism_premises(record) and record['mechanismEvidenceContractVersion'] in (2,3,4) else {}),
+                **({'section_targets':requested_sections(question)} if (section_priority(record) or mechanism_premises(record) and record['mechanismEvidenceContractVersion'] in (3,4)) else {}),
                 **({'indexed_sections':True} if type(record.get('localSectionContextContractVersion')) is int and record['localSectionContextContractVersion']==2 else {}))
         elif output_kind == 'paper_comparison':
             candidates = comparison_evidence_order(candidates, paper_titles)
@@ -1469,7 +1469,7 @@ space with unsupported global absence or incidental iteration/performance values
                 table_marker=table_marker,claim_fields=claim_fields,claim_limit=claim_limit,
                 section_templates=section_templates,**({'basis_slot':basis_slot} if staged_mode else {}))
         section_focused=(section_priority(record) or (mechanism_premises(record)
-            and record.get('mechanismEvidenceContractVersion')==3 and bool(requested_sections(question))))
+            and record.get('mechanismEvidenceContractVersion') in (3,4) and bool(requested_sections(question))))
         compact_evidence_wire=(premise_mode and ((output_kind=='experiment_design'
             and record.get('synthesisEvidenceContractVersion')==6)
             or section_focused or compact_factual_prompt))
