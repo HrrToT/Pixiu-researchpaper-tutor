@@ -4322,15 +4322,15 @@
   "loadedRuntime": {
     "commit": "283fe9d56b91343bc25ca32402832bd555e2d771",
     "promptVersion": "dr-v2.20261115.453",
-    "callsAfterLatestCase": 9575,
+    "callsAfterLatestCase": 9577,
     "active": 0,
     "historicalPausedUnknown": 15,
     "proof": "deep-research-evidence/review-structure-453-load-20261115.json",
     "allSourceHashesExact": true,
-    "lastRealModelRunCommit": "0b5177910db947a13a1b5354785b815187d9da4a",
-    "lastRealModelRunPromptVersion": "dr-v2.20261115.452",
-    "lastRealCase": "AD1N-v32",
-    "lastRealOutcome": "completed/partial",
+    "lastRealModelRunCommit": "283fe9d56b91343bc25ca32402832bd555e2d771",
+    "lastRealModelRunPromptVersion": "dr-v2.20261115.453",
+    "lastRealCase": "AD1N-v33",
+    "lastRealOutcome": "failed/none",
     "javaAndFrontendBoundary": "This Python rollout did not redeploy Java or frontend. Earlier UI/persistence and synthetic publication evidence does not establish current real generated research or novice quality.",
     "javaCommit": "81a827f0c03febc4d181900b00516e38be916511",
     "taskCount": 103,
@@ -14840,6 +14840,16 @@
     "oldRunsAndCallsUnchanged": true,
     "newModelCalls": 0,
     "independentContentAccepted": 0,
-    "scientificContentAccepted": false
+    "scientificContentAccepted": false,
+    "newWholeCase": {
+      "proof": "deep-research-evidence/adam-ad1n-v33-20261115.json",
+      "case": "AD1N-v33",
+      "status": "failed",
+      "errorCode": "invalid_plan_response",
+      "calls": 2,
+      "tokens": 2566,
+      "contentAccepted": false,
+      "fixExercised": false
+    }
   }
 }
