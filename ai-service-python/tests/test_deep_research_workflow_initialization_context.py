@@ -28,6 +28,9 @@ def context():
 
 @pytest.mark.parametrize('marker', [None, True, False, 0, 2, '1'])
 def test_strict_marker_keeps_legacy_context(marker):
+    if type(marker) is int and marker==2:
+        assert enabled({**record(),'workflowInitializationContextContractVersion':marker})
+        return
     assert not enabled({**record(), 'workflowInitializationContextContractVersion': marker})
 
 
@@ -188,7 +191,9 @@ def test_actual_http_precise_schema_budget_and_unknown_identity(tmp_path,monkeyp
         with pytest.raises((UnknownCallError,UnresolvedUnknownError)):run()
     else:run()
     assert post.call_count==1 and repo.list_calls('r')[0]['argsDigest']==digest(req)
-    actual=post.call_args.kwargs['json'];assert actual['text']['format']['name']=='workflow_init_v2_baseline'
+    actual=post.call_args.kwargs['json']
+    expected='workflow_init_v2_state_baseline' if r['workflowInitializationContextContractVersion']==2 else 'workflow_init_v2_baseline'
+    assert actual['text']['format']['name']==expected
     assert actual['max_output_tokens']==6144 and post.call_args.kwargs['timeout']==90
     assert reserve.call_args.kwargs['budget_delta']['tokens']==32000+1024+6144
     with pytest.raises(ValueError,match='Prompt too large'):
@@ -204,9 +209,9 @@ def test_marker_is_server_owned_and_immutable(tmp_path, replacement):
     try:
         r, _ = f.create({'workspaceTaskId': 't', 'operationKey': 'k', 'question': 'Design', 'deferStart': True,
             'workflowInitializationContextContractVersion': replacement}, start_async=False)
-        assert r['workflowInitializationContextContractVersion'] == 1
+        assert r['workflowInitializationContextContractVersion'] == 2
         with pytest.raises(ValueError, match='Immutable'):
-            repo.update_run(r['runId'], lambda old: {**old, 'workflowInitializationContextContractVersion': replacement})
+            repo.update_run(r['runId'], lambda old: {**old, 'workflowInitializationContextContractVersion': 3 if replacement==2 else replacement})
         old = deepcopy(r); old.update(runId='old', idempotencyKey='old'); old.pop('workflowInitializationContextContractVersion'); repo.create_run(old)
         with pytest.raises(ValueError, match='Immutable'):
             repo.update_run('old', lambda x: {**x, 'workflowInitializationContextContractVersion': 1})

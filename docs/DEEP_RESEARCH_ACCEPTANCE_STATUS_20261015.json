@@ -15,7 +15,7 @@
     "retainedBaselineCases": 8437,
     "missingBaselineCases": [],
     "warnings": 1,
-    "appliesToCurrentPythonSource": true,
+    "appliesToCurrentPythonSource": false,
     "proof": "deep-research-evidence/initialization-context-474-final-20261115.json",
     "boundary": "Complete current offline research regression only; not real generation, Provider cost/quality, independent scientific acceptance or full product release."
   },
@@ -15921,5 +15921,21 @@
     "componentValid": false,
     "componentProof": "deep-research-evidence/initialization-context-474-component-20261115.json",
     "next": "Complete numeric state interfaces, valid data-dependent dimensions and explicit compatible proposal choices; old failure preserved."
+  },
+  "workflowInitializationStateDevelopment20261115": {
+    "promptVersion": "dr-v2.20261115.475",
+    "contract": "workflowInitializationContextContractVersion2",
+    "relatedPassed": 102,
+    "inputBytes": 31703,
+    "inputLimitBytes": 32000,
+    "allInputEvidenceAndMetadataInterfacesExact": true,
+    "deriveLayoutUnchanged": true,
+    "outputTokenCap": 6144,
+    "timeoutSeconds": 90,
+    "newModelCalls": 0,
+    "productionLoaded": false,
+    "fullRegressionPending": true,
+    "scientificAcceptance": false,
+    "independentCredit": 0
   }
 }
