@@ -11,7 +11,7 @@
     "skipped": 0,
     "warnings": 1,
     "sourceUnchanged": true,
-    "appliesToCurrentPythonSource": true,
+    "appliesToCurrentPythonSource": false,
     "proof": "deep-research-evidence/inverted-source-absence-455-final-20261115.json",
     "elapsedSeconds": 349.09,
     "boundary": "Complete current offline research regression only; not real generation, Provider cost/quality, independent scientific acceptance or full product release."
@@ -15017,5 +15017,29 @@
     "contentAccepted": false,
     "independentCredit": 0,
     "nextAction": "Replay full fixed prompt/capacity locally; preserve complete factorial protocol requirements and all evidence-source checks."
+  },
+  "mixedQueryRoutingDevelopment20261115": {
+    "sourceCommit": "e6d25dff",
+    "promptVersion": "dr-v2.20261115.456",
+    "contract": "mechanismEvidenceContractVersion4",
+    "relatedPassed": 50,
+    "fullTestsPassed": 8044,
+    "fullModules": 438,
+    "fullRegression": "deep-research-evidence/mixed-query-456-final-20261115.json",
+    "actualOwnedRetrieval": "deep-research-evidence/mixed-query-456-owned-retrieval-20261115.json",
+    "routingFixed": true,
+    "actualVerifiedTableRows": 0,
+    "productionLoaded": false,
+    "scientificContentAccepted": false
+  },
+  "mixedTableDevelopment20261115": {
+    "sourceCommit": "7e8dde5a",
+    "promptVersion": "dr-v2.20261115.457",
+    "proof": "deep-research-evidence/mixed-table-457-core-20261115.json",
+    "corePassed": 32,
+    "fullRegressionStatus": "running",
+    "productionLoaded": false,
+    "applicationReparseVerified": false,
+    "scientificContentAccepted": false
   }
 }
