@@ -3,17 +3,17 @@
   "objective": "Complete DR0-DR5 in DEEP_RESEARCH_DESIGN_20261012.md without redefining success around implemented subsets.",
   "overall": "incomplete",
   "currentFullOfflineRegression": {
-    "sourceCommit": "239ff9939e97f6ceb194aeb16b7892ed88c99fc8",
-    "modules": 439,
-    "passed": 8063,
+    "sourceCommit": "0e62119faa7876819114ed0a94fc822a88d1db20",
+    "modules": 440,
+    "passed": 8089,
     "failures": 0,
     "errors": 0,
     "skipped": 0,
     "warnings": 1,
     "sourceUnchanged": true,
-    "appliesToCurrentPythonSource": false,
-    "proof": "deep-research-evidence/experiment-stage-allocation-458-final2-20261115.json",
-    "elapsedSeconds": 379.49,
+    "appliesToCurrentPythonSource": true,
+    "proof": "deep-research-evidence/workflow-premises-459-final-20261115.json",
+    "elapsedSeconds": 369.64,
     "boundary": "Complete current offline research regression only; not real generation, Provider cost/quality, independent scientific acceptance or full product release."
   },
   "postFullRegressionValidation": {
@@ -4320,12 +4320,12 @@
   },
   "currentDevelopmentMode": "Primary Codex only;.452 loaded;7898 complete offline tests across435modules pass. Correction profile2 low routing matches successful isolated request and preserves3500cap/old identities. AD1N-v32 completed/partial:12settled model calls56414tokens100seconds,1search1fulltext. No compression or binding correction call; correction2 correctly not_needed for genuine missing accepted content. Audience rewrite introduced wrong small-step assertion absent from synthesis. c2 repaired/reverified; c1 not published because reviewer target-structure count3 was treated as unbound source number. Exact offline counterfactual removes only前三个分句 meta-count wording, clears numeric error and preserves negative verdict;not a production fix or old result change. Other102tasks and all380oldruns/9549oldcallrows exact;app103tasks381runs9575rows,15historical pauses,0active. No science/novice/independent credit;original full DR0-DR5 and release gates remain.",
   "loadedRuntime": {
-    "commit": "239ff9939e97f6ceb194aeb16b7892ed88c99fc8",
-    "promptVersion": "dr-v2.20261115.458",
+    "commit": "0e62119faa7876819114ed0a94fc822a88d1db20",
+    "promptVersion": "dr-v2.20261115.459",
     "callsAfterLatestCase": 9723,
     "active": 0,
     "historicalPausedUnknown": 15,
-    "proof": "deep-research-evidence/experiment-stage-458-load-20261115.json",
+    "proof": "deep-research-evidence/workflow-premises-459-load-20261115.json",
     "allSourceHashesExact": true,
     "lastRealModelRunCommit": "239ff9939e97f6ceb194aeb16b7892ed88c99fc8",
     "lastRealModelRunPromptVersion": "dr-v2.20261115.458",
@@ -4334,9 +4334,9 @@
     "javaAndFrontendBoundary": "Java explicit material reparse deployed with full 170-test regression and unchanged task/research history; frontend unchanged. Neither rollout nor indexed table recovery proves current generated research quality.",
     "javaCommit": "004914ea",
     "taskCount": 105,
-    "latestPromptVersion": "dr-v2.20261115.458",
-    "latestSourceCommit": "239ff9939e97f6ceb194aeb16b7892ed88c99fc8",
-    "latestSourceProof": "deep-research-evidence/experiment-stage-458-load-20261115.json",
+    "latestPromptVersion": "dr-v2.20261115.459",
+    "latestSourceCommit": "0e62119faa7876819114ed0a94fc822a88d1db20",
+    "latestSourceProof": "deep-research-evidence/workflow-premises-459-load-20261115.json",
     "sourceScope": "Python research modules, academic transport, PDF parser and PDF table column geometry",
     "indexDocumentsAt20261112": 1215,
     "sourceIndexAttestationAt20261112": "deep-research-evidence/loaded-source-index-attestation-20261112.json",
@@ -15118,7 +15118,8 @@
     "historicalPausedRetained": true,
     "rawPrefix": "tmp/dr-acceptance-receipts/D2-VQ-v1-v3",
     "next": "Trace actual new-plan measurement retrieval and premise ordering/allocation; retain anti-absence/internal-reference rejection; no unchanged rerun.",
-    "savedReplay": "deep-research-evidence/vq-comparison-d2-v3-saved-replay-20261115.json"
+    "savedReplay": "deep-research-evidence/vq-comparison-d2-v3-saved-replay-20261115.json",
+    "readingDiagnosisClarification20261115": "Read-call journal absence is not proof of no graph read: make_read_node falls back to acquisition text when tracked reading returns empty. Final readResults is only the last cycle. Exact saved synthesis replay proves the Compressed numeric row is absent from the 20 candidates; reconstruct graph read/extraction cycles before claiming the CompGS table was not read."
   },
   "experimentStageAllocationDevelopment20261115": {
     "promptVersion": "dr-v2.20261115.458",
@@ -15198,7 +15199,7 @@
     {
       "area": "comparison",
       "proof": "deep-research-evidence/vq-comparison-d2-v3-saved-replay-20261115.json",
-      "action": "Preserve relevant owned verified numeric table packets through the bounded reader and premise candidate selection, then fit complete comparison requirements. Retrieval already returned both main tables; CompGS not read and read Compressed table excluded before synthesis. Keep source/absence checks and original request."
+      "action": "Preserve relevant owned verified numeric table packets through bounded extraction and premise candidate selection. Retrieval returned both main tables; only one numeric table row exists in final evidence and is excluded before synthesis. Reconcile reader fallback and per-cycle extraction before attributing the missing CompGS evidence to reader selection. Keep original scope and all source/absence checks."
     },
     {
       "area": "experiment",
@@ -15276,9 +15277,14 @@
     "requiredEvidenceCount": 17,
     "suppliedEvidenceCount": 18,
     "original458RefusalAndPayloadExact": true,
-    "productionLoaded": false,
+    "productionLoaded": true,
     "scientificContentAccepted": false,
     "rawReplay": "tmp/workflow-premises-459-replay-20261115/result.json",
-    "boundary": "Metadata admission only; later initializer/final generation and actual scientific content remain unverified."
+    "boundary": "Metadata admission only; later initializer/final generation and actual scientific content remain unverified.",
+    "fullRegressionPassed": true,
+    "fullTestsPassed": 8089,
+    "fullModules": 440,
+    "fullRegression": "deep-research-evidence/workflow-premises-459-final-20261115.json",
+    "loadProof": "deep-research-evidence/workflow-premises-459-load-20261115.json"
   }
 }

@@ -40,5 +40,7 @@
   ],
   "retrievalHasBothPapers": true,
   "rawReadCallEvidence": "tmp/dr-acceptance-receipts/D2-VQ-v1-v3.calls.json",
-  "rawReplay": "tmp/vq-comparison-premises-458-replay-20261115/result.json"
+  "rawReplay": "tmp/vq-comparison-premises-458-replay-20261115/result.json",
+  "readVerifiedTableSourceIdsMeaning": "Only successful tracked read_source ledger entries, not all graph reads or acquisition-text fallback",
+  "readingDiagnosisClarification": "Read-call journal absence is not proof of no graph read: make_read_node falls back to acquisition text when tracked reading returns empty. Final readResults is only the last cycle. Exact saved synthesis replay proves the Compressed numeric row is absent from the 20 candidates; reconstruct graph read/extraction cycles before claiming the CompGS table was not read."
 }
