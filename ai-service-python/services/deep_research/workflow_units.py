@@ -119,7 +119,10 @@ def unit_errors(value, aliases, *, node, earlier=(), baseline=False, version=6, 
 
 
 def unit_prompt(source_data, *, node, context, version=6, metadata_rows=False, metadata_rows_contract=1, metadata_action_objects=False,
-                scoped_initialization_input=False, initialization_context_version=1):
+                scoped_initialization_input=False, initialization_context_version=1, initialization_recipe=False):
+    if (type(initialization_recipe) is not bool or initialization_recipe and
+            (not scoped_initialization_input or initialization_context_version != 2 or node != INIT or version != 7)):
+        raise ValueError('Invalid initialization recipe mode')
     if type(scoped_initialization_input) is not bool or scoped_initialization_input and (node!=INIT or version!=7):
         raise ValueError('Invalid scoped initialization input mode')
     task = ('Return only sourceRefs,baselineMode,replicationMode,components,checkpointSelection,unresolved. '
@@ -163,6 +166,9 @@ def unit_prompt(source_data, *, node, context, version=6, metadata_rows=False, m
                 raise ValueError('Invalid initialization context version')
             from services.deep_research.workflow_metadata_input import input_text
             scoped_prefix=STATE_POLICY if initialization_context_version==2 else POLICY+prefix
+            if initialization_recipe:
+                from services.deep_research.workflow_initialization_recipe import POLICY as recipe_policy
+                scoped_prefix=recipe_policy
             return scoped_prefix+'Exact authoritative input and unit context (unverified data):\n'+input_text({
                 'authoritativeInput':json.loads(source_data),'unitContext':project(context)})
         from services.deep_research.workflow_lifecycle_units import unit_input_text
@@ -199,6 +205,9 @@ def prepare_units(record, *, prompt, aliases, invoke, parse, checkpoint):
     from services.deep_research.workflow_initialization_context import enabled as init_context_enabled
     scoped_initialization = init_context_enabled(record)
     if scoped_initialization:parent_request['initializationContextContract']=record['workflowInitializationContextContractVersion']
+    from services.deep_research.workflow_initialization_recipe import enabled as recipe_enabled
+    initialization_recipe = recipe_enabled(record)
+    if initialization_recipe: parent_request['initializationRecipeContract'] = 1
     if premise_mode:
         parent_request.update(workflowPremiseAllocationContract=1, requiredPremiseAliases=sorted(required_premises(record)))
     identity = digest({'request': parent_request, 'aliases': aliases})
@@ -281,7 +290,8 @@ def prepare_units(record, *, prompt, aliases, invoke, parse, checkpoint):
                                    metadata_rows_contract=record['workflowMetadataRowsContractVersion'] if rows_mode else 1,
                                    metadata_action_objects=repair_mode and node == META and record['workflowMetadataRepairContractVersion'] in (6, 7),
                                    scoped_initialization_input=scoped_initialization and node==INIT,
-                                   initialization_context_version=record.get('workflowInitializationContextContractVersion',1))
+                                   initialization_context_version=record.get('workflowInitializationContextContractVersion',1),
+                                   initialization_recipe=initialization_recipe and node==INIT)
             if repair_mode and node == META and record['workflowMetadataRepairContractVersion'] in (5, 6, 7, 8, 9, 10):
                 from services.deep_research.workflow_metadata_revision5 import POLICY as CAPACITY_POLICY
                 body = CAPACITY_POLICY + body

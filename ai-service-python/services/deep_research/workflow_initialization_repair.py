@@ -82,8 +82,10 @@ def prepare(record, *, key, source_data, context, failed, aliases, earlier, base
         raise DeepResearchError('invalid_workflow_blueprint_state', '初始化原检查记录已改变。')
     from services.deep_research.workflow_initialization_context import enabled as scoped_enabled, project
     scoped=scoped_enabled(record)
+    from services.deep_research.workflow_initialization_recipe import enabled as recipe_enabled
     prefix = unit_prompt(source_data, node=INIT, context=context, version=7,scoped_initialization_input=scoped,
-        initialization_context_version=record.get('workflowInitializationContextContractVersion',1)).split(
+        initialization_context_version=record.get('workflowInitializationContextContractVersion',1),
+        initialization_recipe=recipe_enabled(record)).split(
         'Exact authoritative input and unit context (unverified data):\n', 1)[0]
     invalid_value = value
     diagnostics = feedback(value, failed['errors'])
