@@ -11,7 +11,7 @@
     "skipped": 0,
     "warnings": 1,
     "sourceUnchanged": true,
-    "appliesToCurrentPythonSource": true,
+    "appliesToCurrentPythonSource": false,
     "proof": "deep-research-evidence/workflow-premises-459-final-20261115.json",
     "elapsedSeconds": 369.64,
     "boundary": "Complete current offline research regression only; not real generation, Provider cost/quality, independent scientific acceptance or full product release."
@@ -15335,5 +15335,22 @@
     "historicalPausedRetained": true,
     "rawPrefix": "tmp/dr-acceptance-receipts/D3-VQ-FACTORIAL-v3",
     "next": "Review metadata output token allocation and complete four-arm representation under unchanged whole-run limits; no retry/repair of the truncated response and no narrowing to fewer arms."
+  },
+  "workflowMetadataOutputDevelopment20261115": {
+    "promptVersion": "dr-v2.20261115.460",
+    "contract": "workflowMetadataOutputContractVersion1",
+    "relatedTestsPassed": 38,
+    "metadataOutputTokens": 6144,
+    "metadataTimeoutSeconds": 90,
+    "legacyMetadata34OutputTokens": 2048,
+    "wholeRunLimitsUnchanged": true,
+    "nativeSchemaUnchanged": true,
+    "canonicalOutputBytesLimitUnchanged": 8192,
+    "rawOutputBytesLimitUnchanged": 16384,
+    "truncationRejectionUnchanged": true,
+    "oldRequestsCannotOptIn": true,
+    "productionLoaded": false,
+    "scientificContentAccepted": false,
+    "diagnosis": "Symbolic metadata version34 fell outside prior version29-33 allowance, falling back to the small 2048-token default."
   }
 }

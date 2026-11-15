@@ -151,6 +151,8 @@ def options_for_record(record,node,options):
     if (node=='plan_experiment' and type(record.get('experimentPlanningReasoningContractVersion')) is int
             and record['experimentPlanningReasoningContractVersion']==1):
         options={**options,'thinking':{'type':'enabled'},'reasoning_effort':'low'}
+    from services.deep_research.workflow_metadata_output import options as metadata_output_options
+    options=metadata_output_options(record,node,options)
     return {**options,API_KEY:'responses','response_format':descriptor_for(
         record,node,options.get(TARGET_OPTION, 'component'))}
 
