@@ -1536,21 +1536,42 @@ space with unsupported global absence or incidental iteration/performance values
             numerical_request=bool(re.search(r'数值|具体值|是多少|多少|核(?:查|对)|\b(?:values?|numbers?|how many|how much|verify)\b',question,re.I))
             qualitative_comparison=bool(re.search(r'为何|为什么|可比|同条件|\b(?:why|comparab\w*|alignment)\b',question,re.I))
             from services.deep_research.experiment_outline_encoding import allocation_enabled,encode as encode_outline
-            encoded_allocation=staged_mode and allocation_enabled(record)
+            from services.deep_research.experiment_stage_allocation import enabled as stage_allocation_enabled
+            stage_allocation=staged_mode and stage_allocation_enabled(record)
+            encoded_allocation=staged_mode and allocation_enabled(record) and not stage_allocation
+            allocation_render=render_premises
+            allocation_limit=experiment_input_limit(record)
+            if stage_allocation:
+                from services.deep_research.scientific_outline import prompt_for as decision_prompt, NODE as decision_node
+                from services.deep_research.experiment_capacity import node_input_limit
+                allocation_limit=node_input_limit(record,decision_node)
+                def render_decision(rows):
+                    tids={row['tableDataRef'] for row in rows if row.get('tableDataRef')}
+                    return decision_prompt(question=question,obligations=draft_obligations,
+                        sources=source_registry,evidence=rows,
+                        tables={key:table_registry[key] for key in table_registry if key in tids},
+                        metric_domains=brief_state.get('metricDomains'))
+                allocation_render=render_decision
             def wire_size(value):
                 return len(encode_outline(record,value)[0].encode('utf8'))
-            prompt,evidence_summaries,missing_bundles=fit_premises(evidence_summaries,render_premises,wire_bundles,
-                **({'max_bytes':experiment_input_limit(record)} if staged_mode else {}),
+            prompt,evidence_summaries,missing_bundles=fit_premises(evidence_summaries,allocation_render,wire_bundles,
+                **({'max_bytes':allocation_limit} if staged_mode else {}),
                 omit_optional_table_data=output_kind=='paper_comparison' and qualitative_comparison and not numerical_request,
                 **({'prompt_byte_size':wire_size} if encoded_allocation else {}),
                 **({'required_contexts':{eid:context for b in wire_bundles
                        for eid,context in b.get('requiredContextByEvidenceId',{}).items()}}
                    if record['synthesisEvidenceContractVersion'] in (5,6) else {}))
+            allocation_prompt=prompt
+            if stage_allocation:prompt=render_premises(evidence_summaries)
             repo_update(run_id,lambda r:{**r,'state':{**r.get('state',{}),'synthesisPremiseAllocation':{
                 'version':1,'candidateEvidenceIds':[e['evidenceId'] for e in selected_candidates],
                 'suppliedEvidenceIds':[evidence_aliases[row['evidenceId']] for row in evidence_summaries],
-                'missingPremiseBundles':missing_bundles,'inputBytes':len(prompt.encode('utf8')),
-                'fixedInputBytes':len(render_premises([]).encode('utf8')),
+                'missingPremiseBundles':missing_bundles,'inputBytes':len(allocation_prompt.encode('utf8')),
+                'fixedInputBytes':len(allocation_render([]).encode('utf8')),
+                **({'stageAllocationContractVersion':1,'allocationNode':decision_node,
+                    'maxPromptBytes':allocation_limit,
+                    'generationTemplateBytes':len(prompt.encode('utf8')),
+                    'generationTemplateIsDispatched':False} if stage_allocation else {}),
                 **({'factualInputContractVersion':1,'procedureObjectNavigation':
                     type(record.get('readingPriorityContractVersion')) is int
                     and record['readingPriorityContractVersion'] in (6,7)}

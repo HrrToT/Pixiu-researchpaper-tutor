@@ -11,7 +11,7 @@
     "skipped": 0,
     "warnings": 1,
     "sourceUnchanged": true,
-    "appliesToCurrentPythonSource": true,
+    "appliesToCurrentPythonSource": false,
     "proof": "deep-research-evidence/mixed-table-457-final-20261115.json",
     "elapsedSeconds": 353.58,
     "boundary": "Complete current offline research regression only; not real generation, Provider cost/quality, independent scientific acceptance or full product release."
@@ -4322,15 +4322,15 @@
   "loadedRuntime": {
     "commit": "7e8dde5a41a62f1a84cf1ebd16fb38dfab4d9570",
     "promptVersion": "dr-v2.20261115.457",
-    "callsAfterLatestCase": 9647,
+    "callsAfterLatestCase": 9686,
     "active": 0,
     "historicalPausedUnknown": 15,
     "proof": "deep-research-evidence/mixed-table-457-load-20261115.json",
     "allSourceHashesExact": true,
-    "lastRealModelRunCommit": "782d763f1217d0d7d44b4d93f2b1b874885a1d7f",
-    "lastRealModelRunPromptVersion": "dr-v2.20261115.455",
-    "lastRealCase": "D3-VQ-FACTORIAL-v1",
-    "lastRealOutcome": "failed/none",
+    "lastRealModelRunCommit": "7e8dde5a41a62f1a84cf1ebd16fb38dfab4d9570",
+    "lastRealModelRunPromptVersion": "dr-v2.20261115.457",
+    "lastRealCase": "D2-VQ-v1-v3",
+    "lastRealOutcome": "completed/inconclusive",
     "javaAndFrontendBoundary": "Java explicit material reparse deployed with full 170-test regression and unchanged task/research history; frontend unchanged. Neither rollout nor indexed table recovery proves current generated research quality.",
     "javaCommit": "004914ea",
     "taskCount": 105,
@@ -15064,5 +15064,80 @@
     "oldPdfAndEvidencePreservedOnFailure": true,
     "modelCalls": 0,
     "scientificAcceptance": false
+  },
+  "vqComparisonDevelopmentD2V3_20261115": {
+    "case": "D2-VQ-v1-v3",
+    "runId": "dr_run_fe41425ef72f5d1684ff777810ddf350",
+    "promptVersion": "dr-v2.20261115.457",
+    "split": "development",
+    "status": "completed",
+    "outcome": "inconclusive",
+    "modelCallsIncludingReserve": 7,
+    "tokens": 27699,
+    "seconds": 115.0,
+    "allCallsSettled": true,
+    "contentAccepted": false,
+    "independentCredit": 0,
+    "draftClaims": 5,
+    "acceptedClaims": 0,
+    "publishedScientificClaims": 0,
+    "initialRejections": [
+      {
+        "claimId": "c1",
+        "reason": "internal_reference_in_prose"
+      },
+      {
+        "claimId": "c2",
+        "reason": "absence_not_established",
+        "detail": "本条引用没有明确建立作者或论文缺少这些验证。把结论限定为本次引用能支持的实验范围及其不能证明的推广；不要写成作者未在其他条件验证、论文没有提供或全文不存在。引用中的其他否定句不构成这项缺席判断的依据。"
+      },
+      {
+        "claimId": "c3",
+        "reason": "internal_reference_in_prose"
+      },
+      {
+        "claimId": "c4",
+        "reason": "internal_reference_in_prose"
+      },
+      {
+        "claimId": "c5",
+        "reason": "internal_reference_in_prose"
+      }
+    ],
+    "readResultsWithTables": 1,
+    "evidenceWithTables": 1,
+    "candidateEvidence": 20,
+    "suppliedEvidence": 8,
+    "suppliedSharedTablePackets": 0,
+    "missingPremiseBundles": 10,
+    "fixedInputBytes": 18912,
+    "inputBytes": 23914,
+    "allOldLedgerAndRunsUnchanged": true,
+    "ledgerRows": 9686,
+    "active": [],
+    "historicalPausedRetained": true,
+    "rawPrefix": "tmp/dr-acceptance-receipts/D2-VQ-v1-v3",
+    "next": "Trace actual new-plan measurement retrieval and premise ordering/allocation; retain anti-absence/internal-reference rejection; no unchanged rerun."
+  },
+  "experimentStageAllocationDevelopment20261115": {
+    "promptVersion": "dr-v2.20261115.458",
+    "contract": "experimentStageAllocationContractVersion1",
+    "relatedTestsPassed": 98,
+    "finalModuleTestsPassed": 19,
+    "localSavedCaseReplay": "tmp/vq-experiment-stage-allocation-458-20261115/captured.json",
+    "candidateEvidence": 20,
+    "suppliedEvidence": 20,
+    "missingPremiseBundles": 0,
+    "firstRequestBytes": 28911,
+    "futureGenerationTemplateBytes": 47290,
+    "wholeRunBudgetUnchanged": true,
+    "finalGenerationGuardUnchanged": true,
+    "oldRunsCannotOptIn": true,
+    "originalRawCaseUnchanged": true,
+    "modelCalls": 0,
+    "applicationWrites": 0,
+    "productionLoaded": false,
+    "scientificContentAccepted": false,
+    "boundary": "Only first-stage source allocation replay; later workflow, final generation and content acceptance remain unverified."
   }
 }

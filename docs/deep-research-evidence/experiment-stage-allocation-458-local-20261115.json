@@ -1,0 +1,21 @@
+{
+  "promptVersion": "dr-v2.20261115.458",
+  "contract": "experimentStageAllocationContractVersion1",
+  "relatedTestsPassed": 98,
+  "finalModuleTestsPassed": 19,
+  "localSavedCaseReplay": "tmp/vq-experiment-stage-allocation-458-20261115/captured.json",
+  "candidateEvidence": 20,
+  "suppliedEvidence": 20,
+  "missingPremiseBundles": 0,
+  "firstRequestBytes": 28911,
+  "futureGenerationTemplateBytes": 47290,
+  "wholeRunBudgetUnchanged": true,
+  "finalGenerationGuardUnchanged": true,
+  "oldRunsCannotOptIn": true,
+  "originalRawCaseUnchanged": true,
+  "modelCalls": 0,
+  "applicationWrites": 0,
+  "productionLoaded": false,
+  "scientificContentAccepted": false,
+  "boundary": "Only first-stage source allocation replay; later workflow, final generation and content acceptance remain unverified."
+}
