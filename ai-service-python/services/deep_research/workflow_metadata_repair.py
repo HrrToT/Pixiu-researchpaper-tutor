@@ -349,11 +349,13 @@ def prepare(record, *, source_data, failed, aliases, existing, invoke, checkpoin
     request = request_identity(record, NODE, body, {'temperature': 0.0})
     identity = digest({'parent': parent, 'request': request, 'aliases': aliases})
     size = len(request['prompt'].encode('utf8')) + overhead_bytes(record, NODE)
+    from services.deep_research.workflow_revision_input import input_limit
+    max_input = input_limit(record)
     saved = deepcopy(existing)
     if saved is None:
         saved = {'version': version, 'parent': parent, 'request': request, 'inputDigest': identity,
                  'status': 'pending', 'scientificApproval': False}
-        if size > MAX_INPUT: saved.update(status='not_started_capacity', inputBytes=size, maxInputBytes=MAX_INPUT)
+        if size > max_input: saved.update(status='not_started_capacity', inputBytes=size, maxInputBytes=max_input)
         elif remaining_seconds(record) < 10: saved['status'] = 'not_started_budget'
         checkpoint(deepcopy(saved))
     elif (not isinstance(saved, dict) or type(saved.get('version')) is not int or saved['version'] != version
@@ -362,7 +364,7 @@ def prepare(record, *, source_data, failed, aliases, existing, invoke, checkpoin
           or saved.get('status') not in ('pending', 'response_received', 'ready', 'invalid_response',
                                         'not_started_capacity', 'not_started_budget')):
         raise DeepResearchError('invalid_workflow_blueprint_state', '元信息修订身份或状态已改变。')
-    if size > MAX_INPUT:
+    if size > max_input:
         if saved['status'] != 'not_started_capacity':
             raise DeepResearchError('invalid_workflow_blueprint_state', '元信息修订容量记录已改变。')
         raise DeepResearchError('workflow_blueprint_input_capacity', '完整元信息修订输入超限，尚未发送。')

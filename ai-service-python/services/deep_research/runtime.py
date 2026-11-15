@@ -351,7 +351,8 @@ def initialize_runtime():
                                      run_record_fn=self._repo.require_run,
                                      call_history_fn=self._repo.list_calls,
                                      verification_max_input_bytes=32000,
-                                     experiment_max_input_bytes=32000)
+                                     experiment_max_input_bytes=32000,
+                                     workflow_revision_max_input_bytes=40000)
 
         def _make_semantic_checker(self, run_id):
             record = self._repo.require_run(run_id)
