@@ -4322,14 +4322,14 @@
   "loadedRuntime": {
     "commit": "0e62119faa7876819114ed0a94fc822a88d1db20",
     "promptVersion": "dr-v2.20261115.459",
-    "callsAfterLatestCase": 9723,
+    "callsAfterLatestCase": 9758,
     "active": 0,
     "historicalPausedUnknown": 15,
     "proof": "deep-research-evidence/workflow-premises-459-load-20261115.json",
     "allSourceHashesExact": true,
-    "lastRealModelRunCommit": "239ff9939e97f6ceb194aeb16b7892ed88c99fc8",
-    "lastRealModelRunPromptVersion": "dr-v2.20261115.458",
-    "lastRealCase": "D3-VQ-FACTORIAL-v2",
+    "lastRealModelRunCommit": "0e62119faa7876819114ed0a94fc822a88d1db20",
+    "lastRealModelRunPromptVersion": "dr-v2.20261115.459",
+    "lastRealCase": "D3-VQ-FACTORIAL-v3",
     "lastRealOutcome": "failed/none",
     "javaAndFrontendBoundary": "Java explicit material reparse deployed with full 170-test regression and unchanged task/research history; frontend unchanged. Neither rollout nor indexed table recovery proves current generated research quality.",
     "javaCommit": "004914ea",
@@ -15199,12 +15199,21 @@
     {
       "area": "comparison",
       "proof": "deep-research-evidence/vq-comparison-d2-v3-saved-replay-20261115.json",
-      "action": "Preserve relevant owned verified numeric table packets through bounded extraction and premise candidate selection. Retrieval returned both main tables; only one numeric table row exists in final evidence and is excluded before synthesis. Reconcile reader fallback and per-cycle extraction before attributing the missing CompGS evidence to reader selection. Keep original scope and all source/absence checks."
+      "action": "Preserve relevant owned verified numeric table packets through bounded extraction and premise candidate selection. Retrieval returned both main tables; only one numeric table row exists in final evidence and is excluded before synthesis. Reconcile reader fallback and per-cycle extraction before attributing the missing CompGS evidence to reader selection. Keep original scope and all source/absence checks.",
+      "checkpointPrototype": {
+        "raw": "tmp/comparison-measurement-navigation-459-scoped-probe-20261115/result.json",
+        "checkpointRaw": "tmp/comparison-d2-v3-checkpoints-20261115.json",
+        "scope": "Second acquisition wave, same 12-source reader cap; correct active dependency frontier and checkpoint evidence IDs. Original new-read call set reproduced exactly after accounting for cached reads.",
+        "originalTablePackets": 1,
+        "prototypeTablePackets": 3,
+        "productionLoaded": false,
+        "scientificAcceptance": false
+      }
     },
     {
       "area": "experiment",
       "proof": "deep-research-evidence/vq-experiment-d3-v2-20261115.json",
-      "action": "Extend actual-stage capacity allocation to workflow unit dependencies including native schema overhead; keep all required sources and prior unverified plan refs. Recheck final generation with actual unit proposals before any new bounded case."
+      "action": "Review metadata output token allocation and complete four-arm representation under unchanged whole-run limits; no retry/repair of the truncated response and no narrowing to fewer arms."
     }
   ],
   "workflowPremiseAllocationDevelopment20261115": {
@@ -15285,6 +15294,46 @@
     "fullTestsPassed": 8089,
     "fullModules": 440,
     "fullRegression": "deep-research-evidence/workflow-premises-459-final-20261115.json",
-    "loadProof": "deep-research-evidence/workflow-premises-459-load-20261115.json"
+    "loadProof": "deep-research-evidence/workflow-premises-459-load-20261115.json",
+    "realAdmissionVerified": true,
+    "realCaseProof": "deep-research-evidence/vq-experiment-d3-v3-20261115.json",
+    "remainingBlocker": "Metadata output used all 2048 tokens and was truncated. No initializer/final-generation/scientific acceptance."
+  },
+  "vqExperimentDevelopmentD3V3_20261115": {
+    "case": "D3-VQ-FACTORIAL-v3",
+    "runId": "dr_run_f1a0fae991515e55ad3a39074dfc71a3",
+    "promptVersion": "dr-v2.20261115.459",
+    "status": "failed",
+    "outcome": "none",
+    "errorCode": "invalid_workflow_unit_response",
+    "modelCallsIncludingReserve": 7,
+    "tokens": 39142,
+    "seconds": 87.0,
+    "allModelCallsSettled": true,
+    "metadataProviderCalled": true,
+    "originalSameCaseMetadataInputBytes": 33186,
+    "allocatedMetadataInputBytes": 31939,
+    "maximumInputBytes": 32000,
+    "allRequiredPremisesRetained": true,
+    "requiredPremises": 16,
+    "suppliedPremises": 18,
+    "metadataErrors": [
+      "unit.output_truncated"
+    ],
+    "finishReason": "length",
+    "outputTokens": 2048,
+    "rawOutputBytes": 7596,
+    "finalGenerationCalled": false,
+    "contentAccepted": false,
+    "independentCredit": 0,
+    "all387PreviousRunsExact": true,
+    "all9723PreviousCallRowsExact": true,
+    "allOther104TaskPayloadsExact": true,
+    "ledgerRows": 9758,
+    "runCount": 388,
+    "active": [],
+    "historicalPausedRetained": true,
+    "rawPrefix": "tmp/dr-acceptance-receipts/D3-VQ-FACTORIAL-v3",
+    "next": "Review metadata output token allocation and complete four-arm representation under unchanged whole-run limits; no retry/repair of the truncated response and no narrowing to fewer arms."
   }
 }
