@@ -1,0 +1,17 @@
+{
+  "promptVersion": "dr-v2.20261115.472",
+  "componentInputBytes": 40866,
+  "original28ErrorInputBytes": 50973,
+  "original28ErrorsSupported": true,
+  "explicitReadPaths": 24,
+  "explicitFitPaths": [
+    "/steps/1"
+  ],
+  "completeQuestionAnd20EvidenceRowsRetained": true,
+  "fixture": "ai-service-python/tests/fixtures/dr_fit_group_revision_20261115.json",
+  "fixtureSha256": "24c974547dd366a1bf3862a2b4e3b35eb71fc4b546b850ffcfd94abb6c36d38b",
+  "newModelCalls": 0,
+  "applicationWrites": false,
+  "scientificAcceptance": false,
+  "independentCredit": 0
+}

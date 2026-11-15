@@ -5,7 +5,7 @@ API_KEY = '_deepseek_api'
 
 def payload(messages, options, *, model, temperature):
     allowed={API_KEY,'response_format','thinking','reasoning_effort','max_tokens',
-        'temperature','timeout_seconds','_workflow_init_target','_workflow_metadata_edits','_workflow_revision_source_refs'}
+        'temperature','timeout_seconds','_workflow_init_target','_workflow_metadata_edits','_workflow_revision_source_refs','_workflow_fit_edits'}
     if set(options)-allowed or options.get(API_KEY)!='responses':
         raise ValueError('Invalid Responses transport options')
     fmt=options.get('response_format')
@@ -20,6 +20,9 @@ def payload(messages, options, *, model, temperature):
     if '_workflow_metadata_edits' in options:
         if options['_workflow_metadata_edits'] is not True or fmt['name'] != 'metadata_explicit_read_edits_v1':
             raise ValueError('Invalid metadata edit binding')
+    if '_workflow_fit_edits' in options:
+        if options['_workflow_fit_edits'] is not True or fmt['name']!='metadata_explicit_fit_edits_v1':
+            raise ValueError('Invalid fit edit binding')
     if '_workflow_revision_source_refs' in options:
         refs=options['_workflow_revision_source_refs']
         if (not isinstance(refs,list) or len(refs)>20 or any(not isinstance(x,str) or not x or len(x)>128 for x in refs)

@@ -344,8 +344,11 @@ def prepare(record, *, source_data, failed, aliases, existing, invoke, checkpoin
     parent = {'requestDigest': digest(failed['request']), 'responseDigest': failed['responseDigest'],
               'valueDigest': failed['valueDigest'], 'errors': sorted(failed['errors'])}
     from services.deep_research import workflow_metadata_edits as metadata_edits
-    edit_scope=metadata_edits.scope_for(record,wire,field_feedback)
-    body=(metadata_edits.prompt_for(source_data,wire,field_feedback,edit_scope) if edit_scope is not None
+    from services.deep_research import workflow_fit_edits as fit_edits
+    edit_scope=fit_edits.scope_for(record,wire,field_feedback)
+    edit_strategy=fit_edits if edit_scope is not None else metadata_edits
+    if edit_scope is None:edit_scope=metadata_edits.scope_for(record,wire,field_feedback)
+    body=(edit_strategy.prompt_for(source_data,wire,field_feedback,edit_scope) if edit_scope is not None
           else prompt_for(source_data, wire, field_feedback, version=version))
     from services.deep_research.workflow_metadata_envelope import enabled as envelope_enabled,GUIDANCE
     if envelope_enabled(record):body=GUIDANCE+body
@@ -358,7 +361,7 @@ def prepare(record, *, source_data, failed, aliases, existing, invoke, checkpoin
     if source_refs is not None:
         options[revision_sources.OPTION]=source_refs
         body=revision_sources.policy(source_refs)+body
-    if edit_scope is not None:options[metadata_edits.OPTION]=True
+    if edit_scope is not None:options[edit_strategy.OPTION]=True
     request = request_identity(record, NODE, body, options)
     identity_data={'parent': parent, 'request': request, 'aliases': aliases}
     if edit_scope is not None:identity_data['editScope']=edit_scope
@@ -406,7 +409,7 @@ def prepare(record, *, source_data, failed, aliases, existing, invoke, checkpoin
         raw = response.get('rawContent', response.get('content', ''))
         revised_wire = load_wire(raw, version=version)
         if edit_scope is not None:
-            compiled_wire=metadata_edits.apply(wire,revised_wire,edit_scope)
+            compiled_wire=edit_strategy.apply(wire,revised_wire,edit_scope)
             revised_wire=compiled_wire
         value = decode(revised_wire)
         problems = unit_errors(value, aliases, node=META, version=7, metadata_rows=True)

@@ -35,7 +35,13 @@ def descriptor():
     return {'type':'json_schema','name':'private_experiment_columns_v1','schema':schema}
 
 
-def descriptor_for(record, node, initialization_target='component', *, metadata_edits=False, revision_source_refs=None):
+def descriptor_for(record, node, initialization_target='component', *, metadata_edits=False, revision_source_refs=None, fit_edits=False):
+    from services.deep_research import workflow_fit_edits as fits
+    if type(fit_edits) is not bool: raise ValueError('Invalid fit edit mode')
+    if fit_edits:
+        if node!=fits.NODE or not fits.enabled(record) or metadata_edits or revision_source_refs is not None:
+            raise ValueError('Invalid fit edit mode')
+        return fits.descriptor()
     if revision_source_refs is not None:
         from services.deep_research import workflow_revision_sources as sources
         if node!='repair_workflow_meta' or metadata_edits or not sources.enabled(record):
@@ -142,6 +148,11 @@ def options_for_record(record,node,options):
     if API_KEY in options:raise ValueError('Transport selection is server-owned')
     if not enabled(record,node):return {**options,'response_format':{'type':'json_object'}}
     allowed={'response_format','thinking','reasoning_effort','max_tokens','temperature','timeout_seconds'}
+    from services.deep_research import workflow_fit_edits as fits
+    if fits.OPTION in options:
+        if node!=fits.NODE or not fits.enabled(record) or options[fits.OPTION] is not True:
+            raise ValueError('Invalid fit edit mode')
+        allowed.add(fits.OPTION)
     from services.deep_research import workflow_revision_sources as sources
     if sources.OPTION in options:
         if node!='repair_workflow_meta' or not sources.enabled(record) or not sources.valid(options[sources.OPTION]):
@@ -177,7 +188,7 @@ def options_for_record(record,node,options):
     options=planning_output_options(record,node,options)
     return {**options,API_KEY:'responses','response_format':descriptor_for(
         record,node,options.get(TARGET_OPTION, 'component'),metadata_edits=options.get(EDIT_OPTION,False),
-        revision_source_refs=options.get(sources.OPTION))}
+        revision_source_refs=options.get(sources.OPTION),fit_edits=options.get(fits.OPTION,False))}
 
 
 def validate_options(record,node,options):
@@ -196,6 +207,8 @@ def overhead_bytes(record,node,options=None):
     if not enabled(record,node):return 0
     from services.deep_research.workflow_metadata_edits import OPTION
     from services.deep_research.workflow_revision_sources import OPTION as SOURCE_OPTION
+    from services.deep_research.workflow_fit_edits import OPTION as FIT_OPTION
     return len(json.dumps({API_KEY:'responses','response_format':descriptor_for(
-        record,node,metadata_edits=(options or {}).get(OPTION,False),revision_source_refs=(options or {}).get(SOURCE_OPTION))},
+        record,node,metadata_edits=(options or {}).get(OPTION,False),revision_source_refs=(options or {}).get(SOURCE_OPTION),
+        fit_edits=(options or {}).get(FIT_OPTION,False))},
         ensure_ascii=False,separators=(',',':'),allow_nan=False).encode('utf8'))
