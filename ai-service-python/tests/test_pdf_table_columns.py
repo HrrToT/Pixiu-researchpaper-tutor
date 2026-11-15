@@ -6,6 +6,7 @@ from core.pdf_table_columns import drawing_runs, verify_table_columns, attach_ve
 from core.smart_chunker import chunk_sections
 import json
 from pathlib import Path
+import pytest
 
 
 def fixture():
@@ -201,3 +202,106 @@ def test_verified_table_metadata_only_follows_the_rows_visible_in_each_chunk():
     broken = deepcopy(section)
     broken['content'] += 'v' * 3000
     assert all('tableVerifiedData' not in chunk for chunk in chunk_sections([broken]))
+
+
+def main_table_fixture(name):
+    return json.loads((Path(__file__).parent/'fixtures'/('dr_vq_'+name+'_main_geometry.json')).read_text(encoding='utf8'))
+
+
+def test_real_mixed_dataset_groups_and_average_columns_are_verified_from_pdf():
+    data=main_table_fixture('compact')
+    assert verify_table_columns(data['section'],data['runs']) is None
+    result=verify_table_columns(data['section'],data['runs'],mixed=True)
+    assert result['groups']==[['Mip-NeRF360',['SSIM','PSNR','LPIPS']],
+        ['Tanks&Temples',['SSIM','PSNR','LPIPS']],['Deep Blending',['SSIM','PSNR','LPIPS']],['Avg',['FPS','Mem']]]
+    ours=next(r for r in result['rows'] if compact_label(r[1])=='CompGS4k')
+    baseline=next(r for r in result['rows'] if compact_label(r[1])=='3DGS*')
+    assert ours[2][:3]==['0.804','26.97','0.234'] and ours[2][-2:]==['142','51.6MB']
+    assert baseline[2][-2:]==['142','607MB']
+
+
+def compact_label(text):return ''.join(text.split())
+
+
+def test_real_unequal_groups_keep_the_standalone_compression_ratio():
+    data=main_table_fixture('compressed')
+    assert verify_table_columns(data['section'],data['runs']) is None
+    result=verify_table_columns(data['section'],data['runs'],mixed=True)
+    assert result['groups']==[['3D Gaussian Splatting',['PSNR','SSIM','LPIPS','SIZE']],
+        ['Ours',['PSNR','SSIM','LPIPS','SIZE']],['',['Compression Ratio']]]
+    average=next(r for r in result['rows'] if r[1]=='average*')
+    assert average[2]==['26.58','0.853','0.213','640.31','26.560','0.844','0.238','23.73','25.77']
+    assert len(result['rows'])==5
+
+
+@pytest.mark.parametrize('name',['compact','compressed'])
+def test_numeric_change_cannot_be_verified_by_new_header_recovery(name):
+    data=main_table_fixture(name);row=data['section']['tableRows'][-1]
+    row[-1]['text']=row[-1]['text'].replace('54.6','54.7').replace('25.77','25.78')
+    result=verify_table_columns(data['section'],data['runs'],mixed=True)
+    assert not result or len(data['section']['tableRows']) not in {r[0] for r in result['rows']}
+
+
+def test_wrong_tei_boundaries_are_recovered_only_as_actual_pdf_columns():
+    section,runs=fixture();section['section']='Table 1'
+    section['tableRows'][1][1]['text']='12';section['tableRows'][1][2]['text']='3MB'
+    result=verify_table_columns(section,runs,mixed=True)
+    recovered=next(r for r in result['rows'] if r[0]==2)
+    assert recovered[2]==['1','23MB','4','56MB']  # Never publish damaged12/3MB.
+
+
+def test_ambiguous_complete_physical_rows_are_not_selected_arbitrarily():
+    section,runs=fixture();section['section']='Table 1'
+    # A second physical baseline with exactly the same flattened value has no
+    # unique correspondence to the TEI row. Other distinct rows may survive.
+    duplicate=[{**r,'y':r['y']+15} for r in runs if r['y']==40]
+    result=verify_table_columns(section,[*runs,*duplicate],mixed=True)
+    assert not result or 2 not in {r[0] for r in result['rows']}
+
+
+def test_unmatched_or_multilevel_irregular_headers_are_still_refused():
+    data=main_table_fixture('compact');data['section']['tableRows'][0][2]['text']='Unrelated cohort'
+    assert verify_table_columns(data['section'],data['runs'],mixed=True) is None
+    section,runs,_=hierarchical_fixture();runs[0]['tokens'][0]['x']=300
+    assert verify_table_columns(section,runs,mixed=True) is None
+
+
+def test_single_level_unique_metric_columns_need_exact_physical_rows():
+    def cell(text):return {'text':text,'rows':1,'cols':1}
+    section={'section':'Table 3','tableBounds':[0,0,100,60],
+        'tableRows':[[cell('Method'),cell('PSNR'),cell('SIZE')],[cell('Ours'),cell('25.0 40MB')]]}
+    runs=[{'text':t,'x':x,'y':y,'tokens':[{'text':t,'x':x}]}
+          for t,x,y in [('Method',1,10),('PSNR',30,10),('SIZE',60,10),('Ours',1,30),('25.0',31,30),('40MB',61,30)]]
+    result=verify_table_columns(section,runs,mixed=True)
+    assert result=={'groups':[['',['PSNR','SIZE']]],'rows':[[2,'Ours',['25.0','40MB']]]}
+
+
+@pytest.mark.parametrize('name,page',[('compact',5),('compressed',6)])
+def test_actual_caption_and_checked_cells_survive_attachment_and_chunking(name,page):
+    data=main_table_fixture(name);section=deepcopy(data['section'])
+    original_label=section['section'];reader=SimpleNamespace(pages=[{} for _ in range(page)])
+    with patch('PyPDF2.PdfReader',return_value=reader),patch('core.pdf_table_columns.drawing_runs',return_value=[*data['runs'],*data['captionRuns']]):
+        attach_verified_table_columns([section],'owned-original.pdf')
+        first=deepcopy(section)
+        attach_verified_table_columns([section],'owned-original.pdf')
+        assert section==first
+    assert section['section']=='Table 1' and section['tableId']==f'pdf-page-{page}-table-1'
+    assert section['unverifiedTeiTableLabel']==original_label
+    assert section['content'].startswith('Table caption: Table 1.') and section['tableColumnMappingVersion']==2
+    chunks=chunk_sections([section]);retained=[c for c in chunks if c.get('tableVerifiedData')]
+    assert retained and all(c['section']=='Table 1' for c in retained)
+    for c in retained:
+        for number,label,values in c['tableVerifiedData']['rows']:
+            assert f'Table row {number}: '+' | '.join([label,*values]) in c['text'].splitlines()
+    if name=='compact':assert 'averaged FPS and memory over all datasets' in section['content']
+    else:assert 'Size is measured in Megabytes' in section['content']
+
+
+def test_ambiguous_physical_captions_cannot_promote_newly_recovered_columns():
+    data=main_table_fixture('compressed');section=deepcopy(data['section']);raw=deepcopy(section)
+    duplicate=deepcopy(next(r for r in data['captionRuns'] if r['text'].startswith('Table')))
+    duplicate['text']='Table2. Another possible caption.';duplicate['y']+=2
+    reader=SimpleNamespace(pages=[{} for _ in range(6)])
+    with patch('PyPDF2.PdfReader',return_value=reader),patch('core.pdf_table_columns.drawing_runs',return_value=[*data['runs'],*data['captionRuns'],duplicate]):
+        attach_verified_table_columns([section],'owned-original.pdf')
+    assert section==raw and 'tableVerifiedData' not in section

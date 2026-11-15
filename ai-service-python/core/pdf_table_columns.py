@@ -1,6 +1,7 @@
-"""Cross-check simple grouped table columns against PDF drawing operations.
+"""Cross-check table columns against independent PDF drawing operations.
 
-This deliberately leaves irregular/rotated/multiline tables unverified. The
+Regular groups, one-level mixed groups and flat headers are supported. Ambiguous
+hierarchies, rotated pages and unsupported font geometry remain unverified. The
 private PyPDF2 font adapter is isolated here; unsupported adapters fail closed.
 """
 import re
@@ -168,7 +169,57 @@ def _verified_header_groups(rows, inside, metrics, names, repeat):
     return [[label, names[:repeat]] for label in labels]
 
 
-def verify_table_columns(section, runs):
+def _mixed_header_groups(section,inside,metrics,names):
+    """Verify one physical parent band, including nonrepeating tail columns.
+
+    Only labels drawn inside each column span can own it. TEI must corroborate
+    the label (or an unambiguous long clipped suffix); it cannot assign spans.
+    Multi-level irregular headers remain unsupported rather than guessed.
+    """
+    header_y=metrics[0]['y'];cells=[]
+    for row in section.get('tableRows',[]):
+        cells.extend(c['text'] for c in row if c['text'].strip())
+        if any(compact(n).casefold() in compact(' '.join(c['text'] for c in row)).casefold() for n in names):break
+    def label(tokens):
+        value=' '.join(t['text'] for t in tokens);key=compact(value).casefold()
+        exact=[c for c in cells if compact(c).casefold()==key]
+        if exact:return exact[0]
+        clipped=[c for c in cells if len(compact(c))>=8 and
+                 (key.startswith(compact(c).casefold()) or key.endswith(compact(c).casefold()))]
+        return value if len(clipped)==1 else None
+    first=next((i for i in range(1,len(names)) if names[i].casefold()==names[0].casefold()),None)
+    prefix=0
+    if first:
+        while prefix+first<=len(names) and [n.casefold() for n in names[prefix:prefix+first]]==[n.casefold() for n in names[:first]]:
+            prefix+=first
+    groups=[];spans=[]
+    for start in range(0,prefix,first or 1):spans.append((start,start+first,True))
+    spans.extend((i,i+1,False) for i in range(prefix,len(names)))
+    bands=[]
+    right=metrics[-1]['x']+(metrics[-1]['x']-metrics[-2]['x'])/2
+    for run in inside:
+        if not 1<header_y-run['y']<50:continue
+        for token in run.get('tokens') or [run]:
+            if metrics[0]['x']-2<=token['x']<=right and re.search(r'[A-Za-z0-9]',token['text']):
+                bands.append({**token,'y':run['y']})
+    if bands and max(t['y'] for t in bands)-min(t['y'] for t in bands)>1:return None
+    for start,end,repeated in spans:
+        if repeated:
+            selected=[t for t in bands if metrics[start]['x']<=t['x']<=metrics[end-1]['x']]
+        else:
+            left=(metrics[start-1]['x']+metrics[start]['x'])/2 if start else metrics[0]['x']-2
+            bound=(metrics[end-1]['x']+metrics[end]['x'])/2 if end<len(metrics) else right
+            selected=[t for t in bands if left<=t['x']<bound]
+        parent=label(sorted(selected,key=lambda t:t['x'])) if selected else None
+        if parent is None and (selected or repeated or any(names[start].casefold()==n.casefold() for n in names[:start])):return None
+        if parent is None:parent=''  # No printed parent: never invent a dataset/group.
+        if groups and groups[-1][0]==parent and not repeated:groups[-1][1].extend(names[start:end])
+        else:groups.append([parent,list(names[start:end])])
+    if prefix and len({g[0] for g in groups[:prefix//first]})!=prefix//first:return None
+    return groups
+
+
+def verify_table_columns(section, runs, *, mixed=False):
     """Return only headers AND complete rows corroborated by PDF geometry."""
     bounds = section.get('tableBounds')
     rows = section.get('tableRows') or []
@@ -179,23 +230,26 @@ def verify_table_columns(section, runs):
               and y - 2 <= run['y'] <= y + height + 2]
     metrics = []
     for run in inside:
+        if mixed and compact(run['text']).casefold()=='compressionratio':
+            metrics.append({**run,'text':'Compression Ratio'})
+            continue
         # A single PDF text operation may draw several separated headings.
         for token in run.get('tokens') or [run]:
             name = unicodedata.normalize('NFKC', token['text'])
             if re.fullmatch(r'FPS|Size|Mem|Train|PSNR|SSIM|LPIPS', name, re.I):
                 metrics.append({**token, 'text': name, 'y': run['y']})
-    if len(metrics) < 4 or max(run['y'] for run in metrics) - min(run['y'] for run in metrics) > 1:
+    if len(metrics) < (2 if mixed else 4) or max(run['y'] for run in metrics) - min(run['y'] for run in metrics) > 1:
         return None
     metrics.sort(key=lambda run: run['x'])
     # Repeating an identical metric sequence anchors groups, rather than
     # expanding TEI colspan values whose labels may be damaged.
     names = [run['text'] for run in metrics]
     repeat = next((i for i in range(1, len(names)) if names[i].lower() == names[0].lower()), None)
-    if not repeat or len(names) % repeat or any(names[i:i + repeat] != names[:repeat]
-                                               for i in range(0, len(names), repeat)):
-        return None
+    regular=bool(repeat and not len(names)%repeat and all(names[i:i+repeat]==names[:repeat] for i in range(0,len(names),repeat)))
+    if not regular and not mixed:return None
     header_y = metrics[0]['y']
-    groups = _verified_header_groups(rows, inside, metrics, names, repeat)
+    groups = _verified_header_groups(rows, inside, metrics, names, repeat) if regular else None
+    if groups is None and mixed:groups=_mixed_header_groups(section,inside,metrics,names)
     if groups is None:
         return None
     pdf_rows = []
@@ -204,8 +258,8 @@ def verify_table_columns(section, runs):
             pdf_rows.append({'y': run['y'], 'runs': []})
         pdf_rows[-1]['runs'].append(run)
     column_x = [run['x'] for run in metrics]
-    first_boundary = column_x[0] - (column_x[1] - column_x[0]) / 2
-    literal_rows = []
+    first_boundary = column_x[0]-2 if mixed else column_x[0]-(column_x[1]-column_x[0])/2
+    literal_rows = [];literal_y=[];label_x=[]
     for row in pdf_rows:
         if row['y'] <= header_y + 3 or any(run.get('tokens') is None for run in row['runs']):
             continue
@@ -214,11 +268,36 @@ def verify_table_columns(section, runs):
             column = 0 if token['x'] < first_boundary else 1 + min(range(len(column_x)), key=lambda i: abs(column_x[i] - token['x']))
             cells[column].append(token['text'])
         literal_rows.append([compact(''.join(cell)) for cell in cells])
+        literal_y.append(row['y'])
+        label_x.append([t['x'] for r in row['runs'] for t in r['tokens'] if t['x']<first_boundary])
+    if mixed:
+        # Attach only isolated label footnotes to the unique following numeric
+        # baseline within its superscript offset. Never move numeric-column
+        # marks, digits, or markers shared by two possible physical rows.
+        for i,values in enumerate(literal_rows):
+            if not re.fullmatch(r'[*†‡]+',values[0]) or any(values[1:]):continue
+            following=[j for j,v in enumerate(literal_rows) if 0<literal_y[j]-literal_y[i]<=5
+                       and v[0] and all(v[1:]) and label_x[j]]
+            if len(following)!=1 or not label_x[i]:continue
+            j=following[0]
+            if min(label_x[i])>=max(label_x[j]):literal_rows[j][0]+=values[0]
+            elif max(label_x[i])<=min(label_x[j]):literal_rows[j][0]=values[0]+literal_rows[j][0]
     checked = []
     for number, row in enumerate(rows[1:], 2):
         if not row or any(cell['rows'] != 1 for cell in row):
             continue
         values = [cell['text'] for cell in row]
+        if mixed:
+            # TEI may merge several cells or clip their separators. Recover
+            # boundaries ONLY from independently drawn PDF columns, requiring
+            # an exact complete-row match and a unique physical row. Never
+            # publish the damaged TEI cell division or round/convert a value.
+            matches=[v for v in literal_rows if all(v) and
+                     compact(''.join(v))==compact(''.join(values))]
+            if len(matches)==1:
+                label=values[0] if compact(values[0])==matches[0][0] else matches[0][0]
+                checked.append([number,label,matches[0][1:]])
+            continue
         if len(row) != len(names) + 1:
             # Recover only explicit whitespace-separated cells, then require
             # every recovered cell to match an independently drawn PDF column.
@@ -231,6 +310,33 @@ def verify_table_columns(section, runs):
             continue
         checked.append([number, values[0], values[1:]])
     return {'groups': groups, 'rows': checked} if checked else None
+
+
+def _physical_table_caption(section,runs):
+    """Read a unique adjacent physical caption, never borrow a TEI number."""
+    bounds=section.get('tableBounds')
+    if not bounds:return None
+    x,y,w,h=bounds;candidates=[]
+    for run in runs:
+        match=re.match(r'^\s*Table\s*(\d+)\.',run['text'],re.I)
+        if match and x-30<=run['x']<=x+w+30 and (0<=y-run['y']<=160 or 0<=run['y']-(y+h)<=25):
+            candidates.append((match.group(1),run['y']))
+    if len(candidates)!=1:return None
+    number,start=candidates[0];stop=y-2 if start<y else start+100
+    selected=[r for r in runs if start<=r['y']<=stop and x-30<=r['x']<=x+w+30]
+    lines=[]
+    for run in sorted(selected,key=lambda r:(r['y'],r['x'])):
+        if not lines or run['y']-lines[-1][0]['y']>4:lines.append([])
+        lines[-1].append(run)
+    kept=[];previous=None
+    for line in lines:
+        baseline=max(r['y'] for r in line)
+        if previous is not None and baseline-previous>16:break
+        tokens=[t for r in line for t in (r.get('tokens') or [r])]
+        kept.append(' '.join(t['text'] for t in sorted(tokens,key=lambda t:t['x'])))
+        previous=baseline
+    if not kept or len(kept)>12:return None
+    return {'number':number,'text':' '.join(kept)}
 
 
 def attach_verified_table_columns(sections, pdf_path):
@@ -249,14 +355,26 @@ def attach_verified_table_columns(sections, pdf_path):
         try:
             if index not in pages:
                 pages[index] = drawing_runs(reader.pages[index])
-            verified = verify_table_columns(section, pages[index])
+            legacy = verify_table_columns(section,pages[index])
+            verified = legacy or verify_table_columns(section,pages[index],mixed=True)
+            caption=_physical_table_caption(section,pages[index]) if verified else None
+            if verified and legacy is None and caption is None:verified=None
         except (KeyError, ValueError, TypeError, ImportError, AttributeError):
             verified = None
         if verified:
             section['tableVerifiedData'] = verified
+            section['tableColumnMappingVersion'] = 2
             # Keep normalized table text and the checked packet identical for
             # downstream exact-quote checks; untouched rows retain raw TEI text.
             lines = section.get('content', '').splitlines()
+            if caption:
+                section.setdefault('unverifiedTeiTableLabel',section.get('section',''))
+                section.setdefault('unverifiedTeiTableId',section.get('tableId',''))
+                section.setdefault('unverifiedTeiCaption',lines[0] if lines else '')
+                section['section']='Table '+caption['number']
+                section['tableId']=f"pdf-page-{index+1}-table-{caption['number']}"
+                if lines:lines[0]='Table caption: '+caption['text']
+                section['tablePrefix']='\n'.join(lines[:2])
             replacements = {f'Table row {n}: ': ' | '.join([method, *values])
                             for n, method, values in verified['rows']}
             section['content'] = '\n'.join(next((prefix + value for prefix, value in replacements.items()
