@@ -1,0 +1,18 @@
+{
+  "firstObservationExpired": true,
+  "sameContainerObservedHealthyWithoutSecondRestart": true,
+  "sourceCommit": "dff2998e26d053631a27cec33e00f2cc0594f7b8",
+  "baselineFile": "tmp/dr-acceptance-receipts/plan-correction-454.before.json",
+  "fullRegression": "deep-research-evidence/plan-correction-454-anchor-final-20261115.json",
+  "academicTransportHashMatches": true,
+  "pdfParserHashMatches": true,
+  "promptVersion": "dr-v2.20261115.454",
+  "allDeepResearchModuleHashesMatch": true,
+  "all104TasksExact": true,
+  "all383OldRunsExact": true,
+  "all9579CallRowsExact": true,
+  "historicalPaused": 15,
+  "active": 0,
+  "health": "ok",
+  "modelCalls": 0
+}
