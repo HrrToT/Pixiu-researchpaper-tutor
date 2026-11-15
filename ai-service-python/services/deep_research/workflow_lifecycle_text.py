@@ -9,8 +9,9 @@ def _safe(value):
 
 
 def _input(value):
+    from services.deep_research.workflow_initialization_structured import selector_text
     source = (value['state'] if 'state' in value else value['phaseId'] + '/' + value['outputId'])
-    return _safe(source) + '；选取：' + _safe(value['selector'])
+    return _safe(source) + '；选取：' + _safe(selector_text(value['selector']))
 
 
 def _initialization(value, title):

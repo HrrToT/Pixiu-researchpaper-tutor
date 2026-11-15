@@ -15,7 +15,7 @@ def enabled(record):
             and record['workflowInitializationOutputContractVersion'] == 1)
 
 
-def original_value(unit, version=1):
+def original_value(unit, version=1, *, structured=False):
     from services.deep_research.workflow_metadata_repair import load_wire
     from services.deep_research.execution_workflow_blueprint import MAX_VALUE, packed
     if type(version) is not int or version not in (1, 2): return None
@@ -29,6 +29,8 @@ def original_value(unit, version=1):
                 or len(raw.encode('utf8')) > MAX_VALUE): return None
         if version == 2:
             from services.deep_research.workflow_initialization_wire import parse
+            if structured:
+                from services.deep_research.workflow_initialization_structured import parse
             value = parse(raw)
         else: value = load_wire(raw, version=2)
         if (not isinstance(value, dict) or set(value) != {'sourceRefs', 'initialization', 'unresolved'}
@@ -69,7 +71,9 @@ def prepare(record, *, key, source_data, context, failed, aliases, earlier, base
     from services.deep_research.workflow_metadata_repair import load_wire
     from services.deep_research.workflow_metadata_input import input_text
     version = record.get(MARKER, 1)
-    value = original_value(failed, version=version)
+    from services.deep_research.workflow_initialization_structured import enabled as structured_enabled, issues as recipe_issues
+    structured = structured_enabled(record)
+    value = original_value(failed, version=version, structured=structured)
     if not enabled(record) or value is None:
         raise DeepResearchError('invalid_workflow_unit_response', '初始化原响应不满足有界修正条件。')
     if existing is not None and not isinstance(existing, dict):
@@ -77,7 +81,8 @@ def prepare(record, *, key, source_data, context, failed, aliases, earlier, base
     if existing is not None and existing.get('unitKey') != key:
         raise DeepResearchError('invalid_workflow_unit_response', '初始化修正机会已用于另一个单元。')
     original_errors = sorted(unit_errors(value, aliases, node=INIT, earlier=earlier, baseline=baseline,
-                                        version=7, metadata=context.get('metadata'), target=target))
+                                        version=7, metadata=context.get('metadata'), target=target,
+                                        structured_initialization=structured))
     if not original_errors or original_errors != sorted(failed['errors']):
         raise DeepResearchError('invalid_workflow_blueprint_state', '初始化原检查记录已改变。')
     from services.deep_research.workflow_initialization_context import enabled as scoped_enabled, project
@@ -85,7 +90,7 @@ def prepare(record, *, key, source_data, context, failed, aliases, earlier, base
     from services.deep_research.workflow_initialization_recipe import enabled as recipe_enabled
     prefix = unit_prompt(source_data, node=INIT, context=context, version=7,scoped_initialization_input=scoped,
         initialization_context_version=record.get('workflowInitializationContextContractVersion',1),
-        initialization_recipe=recipe_enabled(record)).split(
+        initialization_recipe=recipe_enabled(record), structured_initialization=structured).split(
         'Exact authoritative input and unit context (unverified data):\n', 1)[0]
     invalid_value = value
     diagnostics = feedback(value, failed['errors'])
@@ -96,6 +101,8 @@ def prepare(record, *, key, source_data, context, failed, aliases, earlier, base
         prefix = bind_prompt(prefix, bound_target)
         invalid_value = load_wire(failed['response'].get('rawContent', failed['response'].get('content', '')), version=3)
         diagnostics = field_feedback(value, failed['errors'], target=bound_target)
+        if structured:
+            diagnostics['issues'] += recipe_issues(value['initialization'])
         options[TARGET_OPTION] = bound_target
     body = prefix + ('Correct this ONE initialization using ALL supplied input and diagnostics. '
                      'Keep required state, source evidence and unresolved prerequisites. '
@@ -141,10 +148,13 @@ def prepare(record, *, key, source_data, context, failed, aliases, earlier, base
         raw = response.get('rawContent', response.get('content', ''))
         if version == 2:
             from services.deep_research.workflow_initialization_wire import parse
+            if structured:
+                from services.deep_research.workflow_initialization_structured import parse
             revised = parse(raw)
         else: revised = load_wire(raw, version=2)
         problems = unit_errors(revised, aliases, node=INIT, earlier=earlier, baseline=baseline,
-                               version=7, metadata=context.get('metadata'), target=target)
+                               version=7, metadata=context.get('metadata'), target=target,
+                               structured_initialization=structured)
         if len(raw.encode('utf8')) > MAX_VALUE or len(packed(revised).encode('utf8')) > MAX_VALUE:
             problems.append('unit.output_capacity')
     except (TypeError, ValueError, RecursionError, OverflowError): revised = None; problems = ['unit.json']

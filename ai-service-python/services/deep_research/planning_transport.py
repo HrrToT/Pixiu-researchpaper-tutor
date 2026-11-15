@@ -59,6 +59,8 @@ def descriptor_for(record, node, initialization_target='component', *, metadata_
         return symbolic_descriptor()
     from services.deep_research.workflow_initialization_wire import enabled as init_enabled, descriptor as init_descriptor
     if node == 'plan_workflow_init' and init_enabled(record):
+        from services.deep_research.workflow_initialization_structured import enabled as structured, descriptor as structured_descriptor
+        if structured(record): return structured_descriptor(initialization_target)
         from services.deep_research.workflow_initialization_context import enabled as init_context,descriptor as state_descriptor
         if init_context(record) and record['workflowInitializationContextContractVersion']==2:
             return state_descriptor(initialization_target)

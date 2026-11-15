@@ -3,7 +3,8 @@ import json
 
 
 def operation_text(operation, *, include_action=True):
-    parts = [operation['action']] if include_action else []
+    from services.deep_research.workflow_initialization_structured import method_text
+    parts = [method_text(operation['action'])] if include_action else []
     for parameter in operation['parameters']:
         value = parameter['value']
         shown = value if isinstance(value, str) else json.dumps(value, ensure_ascii=False, allow_nan=False)

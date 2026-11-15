@@ -62,7 +62,7 @@ def descriptor(node, version=6):
 
 
 def unit_errors(value, aliases, *, node, earlier=(), baseline=False, version=6, metadata=None, target=None,
-                metadata_rows=False):
+                metadata_rows=False, structured_initialization=False):
     fields = ({'sourceRefs', 'baselineMode', 'replicationMode', 'components', 'checkpointSelection', 'unresolved'}
               if node == META else {'sourceRefs', 'initialization', 'unresolved'})
     if version == 7 and node == META:fields |= {'frameIterations','phases'}
@@ -108,6 +108,9 @@ def unit_errors(value, aliases, *, node, earlier=(), baseline=False, version=6, 
             ids={c['componentId'] for c in earlier} if version==7 else set(earlier)
             problems += _creation_input_errors(init, ids, 5 if version==7 else 4, baseline=baseline)
             problems += _operation_errors(init['creation'], 'unit.creation')
+            if structured_initialization:
+                from services.deep_research.workflow_initialization_structured import issues
+                problems += [issue['code'] for issue in issues(init)]
             if version==7 and not problems:
                 from services.deep_research.workflow_lifecycle_units import initialization_errors
                 problems += initialization_errors(metadata,target,init,earlier)
@@ -119,7 +122,10 @@ def unit_errors(value, aliases, *, node, earlier=(), baseline=False, version=6, 
 
 
 def unit_prompt(source_data, *, node, context, version=6, metadata_rows=False, metadata_rows_contract=1, metadata_action_objects=False,
-                scoped_initialization_input=False, initialization_context_version=1, initialization_recipe=False):
+                scoped_initialization_input=False, initialization_context_version=1, initialization_recipe=False,
+                structured_initialization=False):
+    if (type(structured_initialization) is not bool or structured_initialization and not initialization_recipe):
+        raise ValueError('Invalid structured initialization mode')
     if (type(initialization_recipe) is not bool or initialization_recipe and
             (not scoped_initialization_input or initialization_context_version != 2 or node != INIT or version != 7)):
         raise ValueError('Invalid initialization recipe mode')
@@ -169,6 +175,9 @@ def unit_prompt(source_data, *, node, context, version=6, metadata_rows=False, m
             if initialization_recipe:
                 from services.deep_research.workflow_initialization_recipe import POLICY as recipe_policy
                 scoped_prefix=recipe_policy
+            if structured_initialization:
+                from services.deep_research.workflow_initialization_structured import POLICY as structured_policy
+                scoped_prefix=structured_policy
             return scoped_prefix+'Exact authoritative input and unit context (unverified data):\n'+input_text({
                 'authoritativeInput':json.loads(source_data),'unitContext':project(context)})
         from services.deep_research.workflow_lifecycle_units import unit_input_text
@@ -208,6 +217,9 @@ def prepare_units(record, *, prompt, aliases, invoke, parse, checkpoint):
     from services.deep_research.workflow_initialization_recipe import enabled as recipe_enabled
     initialization_recipe = recipe_enabled(record)
     if initialization_recipe: parent_request['initializationRecipeContract'] = 1
+    from services.deep_research.workflow_initialization_structured import enabled as structured_enabled
+    structured_initialization = structured_enabled(record)
+    if structured_initialization: parent_request['initializationStructuredRecipeContract'] = 1
     if premise_mode:
         parent_request.update(workflowPremiseAllocationContract=1, requiredPremiseAliases=sorted(required_premises(record)))
     identity = digest({'request': parent_request, 'aliases': aliases})
@@ -291,7 +303,8 @@ def prepare_units(record, *, prompt, aliases, invoke, parse, checkpoint):
                                    metadata_action_objects=repair_mode and node == META and record['workflowMetadataRepairContractVersion'] in (6, 7),
                                    scoped_initialization_input=scoped_initialization and node==INIT,
                                    initialization_context_version=record.get('workflowInitializationContextContractVersion',1),
-                                   initialization_recipe=initialization_recipe and node==INIT)
+                                   initialization_recipe=initialization_recipe and node==INIT,
+                                   structured_initialization=structured_initialization and node==INIT)
             if repair_mode and node == META and record['workflowMetadataRepairContractVersion'] in (5, 6, 7, 8, 9, 10):
                 from services.deep_research.workflow_metadata_revision5 import POLICY as CAPACITY_POLICY
                 body = CAPACITY_POLICY + body
@@ -359,6 +372,8 @@ def prepare_units(record, *, prompt, aliases, invoke, parse, checkpoint):
             strict_wire = repair_mode and node == META and record['workflowMetadataRepairContractVersion'] in (2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34)
             if use_init_wire:
                 from services.deep_research.workflow_initialization_wire import parse as parse_initialization
+                if structured_initialization:
+                    from services.deep_research.workflow_initialization_structured import parse as parse_initialization
                 value = parse_initialization(unit['response'].get('rawContent', unit['response'].get('content', '')))
             elif strict_wire:
                 from services.deep_research.workflow_metadata_repair import load_wire
@@ -397,7 +412,8 @@ def prepare_units(record, *, prompt, aliases, invoke, parse, checkpoint):
                     value = decode_action_rows(value)
                 else:value = decode_rows(value)
             problems = unit_errors(value, aliases, node=node, earlier=earlier, baseline=baseline,
-                version=version,metadata=context.get('metadata'),target=target,metadata_rows=use_rows)
+                version=version,metadata=context.get('metadata'),target=target,metadata_rows=use_rows,
+                structured_initialization=structured_initialization and node==INIT)
             if use_init_wire and (len(unit['response'].get('rawContent', unit['response'].get('content', '')).encode('utf8')) > MAX_VALUE
                                   or len(packed(value).encode('utf8')) > MAX_VALUE):
                 problems.append('unit.output_capacity')
@@ -434,7 +450,8 @@ def prepare_units(record, *, prompt, aliases, invoke, parse, checkpoint):
                         valueDigest=digest(value), errors=problems)
             checkpoint(deepcopy(saved))
         if problems:
-            if node == INIT and initialization_repair_mode and original_initialization(unit, version=initialization_version) is not None:
+            if node == INIT and initialization_repair_mode and original_initialization(unit, version=initialization_version,
+                    structured=structured_initialization) is not None:
                 later_exists = (key == 'baseline' and any(k.startswith('component:') for k in saved['units']))
                 if key.startswith('component:'):
                     later_exists = any('component:'+str(i) in saved['units']
