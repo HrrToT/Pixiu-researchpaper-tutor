@@ -3,20 +3,20 @@
   "objective": "Complete DR0-DR5 in DEEP_RESEARCH_DESIGN_20261012.md without redefining success around implemented subsets.",
   "overall": "incomplete",
   "currentFullOfflineRegression": {
-    "sourceCommit": "2ab737f0e6037df7f3d66f303f7bade0decd4c58",
-    "modules": 445,
-    "passed": 8185,
+    "sourceCommit": "df8298d68811e9400ab94f5168439dd0f5151e12",
+    "modules": 446,
+    "passed": 8242,
     "failures": 0,
     "errors": 0,
     "skipped": 0,
     "sourceUnchanged": true,
-    "elapsedSeconds": 392.14,
+    "elapsedSeconds": 392.75,
     "baselineCases": 8185,
     "retainedBaselineCases": 8185,
     "missingBaselineCases": [],
     "warnings": 1,
     "appliesToCurrentPythonSource": false,
-    "proof": "deep-research-evidence/workflow-revision-reasoning-464-final-20261115.json",
+    "proof": "deep-research-evidence/workflow-metadata-edits-465-final-20261115.json",
     "boundary": "Complete current offline research regression only; not real generation, Provider cost/quality, independent scientific acceptance or full product release."
   },
   "postFullRegressionValidation": {
@@ -15370,9 +15370,9 @@
     "loadProof": "deep-research-evidence/metadata-output-460-load-20261115.json"
   },
   "lastStandaloneModelValidation20261115": {
-    "proof": "deep-research-evidence/workflow-revision-reasoning-463-component-20261115.json",
+    "proof": "deep-research-evidence/workflow-metadata-edits-465-component-20261115.json",
     "modelCalls": 1,
-    "tokens": 18208,
+    "tokens": 10453,
     "unitValid": false,
     "applicationWrites": false,
     "independentCredit": 0
@@ -15464,12 +15464,12 @@
     "explicitEditsImplemented": false
   },
   "currentRuntime": {
-    "promptVersion": "dr-v2.20261115.464",
-    "sourceCommit": "2ab737f0e6037df7f3d66f303f7bade0decd4c58",
+    "promptVersion": "dr-v2.20261115.465",
+    "sourceCommit": "df8298d68811e9400ab94f5168439dd0f5151e12",
     "health": "ok",
     "activeResearchRuns": 0,
     "defaultWorkflowRevisionReasoningContractVersion": 0,
-    "loadProof": "deep-research-evidence/workflow-revision-reasoning-464-load-20261115.json"
+    "loadProof": "deep-research-evidence/workflow-metadata-edits-465-load-20261115.json"
   },
   "workflowMetadataEditsDevelopment20261115": {
     "promptVersion": "dr-v2.20261115.465",
@@ -15480,10 +15480,29 @@
     "unsupportedErrorsKeepFullSingleRevision": true,
     "originalScopeAndEvidenceRetained": true,
     "compiledValueScientificApproval": false,
-    "fullRegressionPending": true,
-    "productionLoaded": false,
+    "fullRegressionPending": false,
+    "productionLoaded": true,
     "newPaidCalls": 0,
     "independentCredit": 0,
-    "next": "Complete regression, load and one bounded real explicit-edit repair of the saved metadata failure."
+    "next": "Complete regression, load and one bounded real explicit-edit repair of the saved metadata failure.",
+    "fullTestsPassed": 8242,
+    "fullModules": 446,
+    "fullRegression": "deep-research-evidence/workflow-metadata-edits-465-final-20261115.json",
+    "loadProof": "deep-research-evidence/workflow-metadata-edits-465-load-20261115.json",
+    "componentProof": "deep-research-evidence/workflow-metadata-edits-465-component-20261115.json",
+    "componentValid": false,
+    "reopenWithoutResend": true
+  },
+  "workflowMetadataEditsGuidanceDevelopment20261115": {
+    "promptVersion": "dr-v2.20261115.466",
+    "contract": "workflowMetadataEditsContractVersion2",
+    "relatedPassed": 167,
+    "legacyV1RequestIdentityPinned": true,
+    "sameOriginalQuestionEvidenceAndMetadata": true,
+    "sameSchemaAndBudgets": true,
+    "productionLoaded": false,
+    "fullRegressionPending": true,
+    "scientificAcceptance": false,
+    "independentCredit": 0
   }
 }

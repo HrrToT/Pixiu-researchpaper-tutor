@@ -51,7 +51,7 @@ def setup(response=None,r=None):
 
 @pytest.mark.parametrize('marker',[None,True,False,0,2,'1'])
 def test_strict_server_profile(marker):
-    assert not edits.enabled({**record(),'workflowMetadataEditsContractVersion':marker})
+    assert edits.enabled({**record(),'workflowMetadataEditsContractVersion':marker}) is (type(marker) is int and marker==2)
 
 
 @pytest.mark.parametrize('key',['workflowRevisionInputContractVersion','workflowMetadataEnvelopeContractVersion',
@@ -62,6 +62,21 @@ def test_incomplete_profiles_cannot_get_edit_mode(key):
 
 def test_reasoning_trial_profile_cannot_silently_change_to_editing():
     assert not edits.enabled({**record(),'workflowRevisionReasoningContractVersion':1})
+
+
+def test_legacy_edit_request_identity_is_frozen_after_new_guidance():
+    _,_,_,_,saved,run=setup();run()
+    assert digest(saved[-1]['request'])=='3bd456ee314ccce2faf2d4bd1400ca4ee22678abac1eb784df3d248dbac896db'
+
+
+def test_new_guidance_changes_only_new_policy_and_scope_identity():
+    r=record();r['workflowMetadataEditsContractVersion']=2
+    _,w,_,invoke,saved,run=setup(r=r);run();s=saved[-1]
+    assert s['editScope']['version']==2 and s['status']=='ready' and invoke.call_count==1
+    assert 'NOT additional requirements' in s['request']['prompt']
+    assert s['compiledWire']['sourceRefs']==w['sourceRefs']
+    assert s['request']['extra']['max_tokens']==6144 and s['request']['extra']['timeout_seconds']==90
+    assert s['scientificApproval'] is False
 
 
 def test_explicit_simultaneous_edits_preserve_source_refs_and_every_other_field():
@@ -250,6 +265,10 @@ def test_server_marker_is_immutable_and_old_runs_cannot_opt_in(tmp_path,replacem
         r,_=facade.create({'workspaceTaskId':'t','operationKey':'k','question':'Design','deferStart':True,
           'workflowMetadataEditsContractVersion':replacement},start_async=False)
         assert edits.enabled(r)
+        assert r['workflowMetadataEditsContractVersion']==2
+        # Historical version1 stays immutable while the server issues version2.
+        r={**r,'runId':'historical-edits-v1','idempotencyKey':'historical-edits-v1','workflowMetadataEditsContractVersion':1}
+        repo.create_run(r)
         with pytest.raises(ValueError,match='Immutable'):
             repo.update_run(r['runId'],lambda x:{**x,'workflowMetadataEditsContractVersion':replacement})
         old=deepcopy(r);old.update(runId='old',idempotencyKey='old');old.pop('workflowMetadataEditsContractVersion');repo.create_run(old)
