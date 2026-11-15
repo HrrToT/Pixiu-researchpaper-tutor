@@ -3,20 +3,20 @@
   "objective": "Complete DR0-DR5 in DEEP_RESEARCH_DESIGN_20261012.md without redefining success around implemented subsets.",
   "overall": "incomplete",
   "currentFullOfflineRegression": {
-    "sourceCommit": "df8298d68811e9400ab94f5168439dd0f5151e12",
+    "sourceCommit": "ce059d6946ae3953828b555f86fa8330c03c19e5",
     "modules": 446,
-    "passed": 8242,
+    "passed": 8244,
     "failures": 0,
     "errors": 0,
     "skipped": 0,
     "sourceUnchanged": true,
-    "elapsedSeconds": 392.75,
-    "baselineCases": 8185,
-    "retainedBaselineCases": 8185,
+    "elapsedSeconds": 382.14,
+    "baselineCases": 8242,
+    "retainedBaselineCases": 8242,
     "missingBaselineCases": [],
     "warnings": 1,
-    "appliesToCurrentPythonSource": false,
-    "proof": "deep-research-evidence/workflow-metadata-edits-465-final-20261115.json",
+    "appliesToCurrentPythonSource": true,
+    "proof": "deep-research-evidence/workflow-metadata-edits-466-final-20261115.json",
     "boundary": "Complete current offline research regression only; not real generation, Provider cost/quality, independent scientific acceptance or full product release."
   },
   "postFullRegressionValidation": {
@@ -15370,10 +15370,10 @@
     "loadProof": "deep-research-evidence/metadata-output-460-load-20261115.json"
   },
   "lastStandaloneModelValidation20261115": {
-    "proof": "deep-research-evidence/workflow-metadata-edits-465-component-20261115.json",
+    "proof": "deep-research-evidence/workflow-metadata-edits-466-component-20261115.json",
     "modelCalls": 1,
-    "tokens": 10453,
-    "unitValid": false,
+    "tokens": 10438,
+    "unitValid": true,
     "applicationWrites": false,
     "independentCredit": 0
   },
@@ -15464,12 +15464,12 @@
     "explicitEditsImplemented": false
   },
   "currentRuntime": {
-    "promptVersion": "dr-v2.20261115.465",
-    "sourceCommit": "df8298d68811e9400ab94f5168439dd0f5151e12",
+    "promptVersion": "dr-v2.20261115.466",
+    "sourceCommit": "ce059d6946ae3953828b555f86fa8330c03c19e5",
     "health": "ok",
     "activeResearchRuns": 0,
     "defaultWorkflowRevisionReasoningContractVersion": 0,
-    "loadProof": "deep-research-evidence/workflow-metadata-edits-465-load-20261115.json"
+    "loadProof": "deep-research-evidence/workflow-metadata-edits-466-load-20261115.json"
   },
   "workflowMetadataEditsDevelopment20261115": {
     "promptVersion": "dr-v2.20261115.465",
@@ -15500,9 +15500,17 @@
     "legacyV1RequestIdentityPinned": true,
     "sameOriginalQuestionEvidenceAndMetadata": true,
     "sameSchemaAndBudgets": true,
-    "productionLoaded": false,
-    "fullRegressionPending": true,
+    "productionLoaded": true,
+    "fullRegressionPending": false,
     "scientificAcceptance": false,
-    "independentCredit": 0
+    "independentCredit": 0,
+    "fullTestsPassed": 8244,
+    "fullModules": 446,
+    "fullRegression": "deep-research-evidence/workflow-metadata-edits-466-final-20261115.json",
+    "loadProof": "deep-research-evidence/workflow-metadata-edits-466-load-20261115.json",
+    "componentProof": "deep-research-evidence/workflow-metadata-edits-466-component-20261115.json",
+    "componentValid": true,
+    "reopenWithoutResend": true,
+    "remaining": "Full unchanged D3-VQ-FACTORIAL development case; component success is not complete experiment or scientific acceptance."
   }
 }

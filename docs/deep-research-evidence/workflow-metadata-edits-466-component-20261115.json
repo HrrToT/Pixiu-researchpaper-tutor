@@ -1,0 +1,58 @@
+{
+  "promptVersion": "dr-v2.20261115.466",
+  "sourceCommit": "ce059d6946ae3953828b555f86fa8330c03c19e5",
+  "isolatedExplicitEditRepairOnly": true,
+  "productionPrepareAndCompilerUsed": true,
+  "modelCalls": 1,
+  "maximumCalls": 1,
+  "maximumTokens": 50000,
+  "maximumSeconds": 180,
+  "actualCallSeconds": 4.0,
+  "inputBytes": 33662,
+  "usage": {
+    "total_tokens": 10438,
+    "input_tokens": 10275,
+    "output_tokens": 163
+  },
+  "finishReason": "stop",
+  "unitValid": true,
+  "savedStatus": "ready",
+  "unitErrors": [],
+  "modelAuthoredEdits": [
+    {
+      "op": "remove",
+      "path": "/steps/4/reads/2"
+    },
+    {
+      "op": "remove",
+      "path": "/steps/4/reads/3"
+    },
+    {
+      "op": "remove",
+      "path": "/steps/4/reads/4"
+    },
+    {
+      "op": "remove",
+      "path": "/steps/4/reads/5"
+    }
+  ],
+  "allFourArmsRetained": true,
+  "sourceRefsExact": true,
+  "allUneditedFieldsExact": true,
+  "reopenWithoutResend": true,
+  "applicationDataUnchanged": true,
+  "applicationCounts": {
+    "calls": 9758,
+    "runs": 388,
+    "callsSha256": "1efc49108a93480e55d96fbd523ff084f8da91e933fc175270c159edc1e22b7d",
+    "runsSha256": "02cbc43cf979f210a1ea37a582d77759bfdb72e870142dbda46190ce0db65498"
+  },
+  "rawResult": "tmp\\workflow-metadata-edits-466-reviewed-component-20261115\\result.json",
+  "rawResultSha256": "15fb4862ae4816f2f86bbeee1d6f8a9a5a3ca4b60f59afce4f38dade69613d7a",
+  "publicAudit": "tmp\\workflow-metadata-edits-466-public-review-20261115\\audit.json",
+  "publicAuditSha256": "69e715f2c9c84d30f98dcc7f23bf204af36c9ac2249a923ee92135d2d5fcaf89",
+  "scientificAcceptance": false,
+  "independentCredit": 0,
+  "automaticRetry": false,
+  "next": "Full unchanged D3-VQ-FACTORIAL development case; component success is not complete experiment or scientific acceptance."
+}
