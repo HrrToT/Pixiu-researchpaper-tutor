@@ -3,20 +3,20 @@
   "objective": "Complete DR0-DR5 in DEEP_RESEARCH_DESIGN_20261012.md without redefining success around implemented subsets.",
   "overall": "incomplete",
   "currentFullOfflineRegression": {
-    "sourceCommit": "31dcd9ec29cdc7166b7aafc4fd8ddb59318c87b2",
-    "modules": 450,
-    "passed": 8347,
+    "sourceCommit": "ef7874023f7dd27f945a87d44f19b661158706e2",
+    "modules": 451,
+    "passed": 8375,
     "failures": 0,
     "errors": 0,
     "skipped": 0,
     "sourceUnchanged": true,
-    "elapsedSeconds": 490.47,
-    "baselineCases": 8336,
-    "retainedBaselineCases": 8336,
+    "elapsedSeconds": 432.19,
+    "baselineCases": 8347,
+    "retainedBaselineCases": 8347,
     "missingBaselineCases": [],
     "warnings": 1,
-    "appliesToCurrentPythonSource": false,
-    "proof": "deep-research-evidence/revision-diagnostic-470-final-20261115.json",
+    "appliesToCurrentPythonSource": true,
+    "proof": "deep-research-evidence/revision-sources-471-final-20261115.json",
     "boundary": "Complete current offline research regression only; not real generation, Provider cost/quality, independent scientific acceptance or full product release."
   },
   "postFullRegressionValidation": {
@@ -15788,7 +15788,15 @@
     "independentCredit": 0,
     "contract": "workflowRevisionContextContractVersion3",
     "relatedPassed": 146,
-    "productionLoaded": false,
-    "fullRegressionPending": true
+    "productionLoaded": true,
+    "fullRegressionPending": false,
+    "newPaidCalls": 1,
+    "fullRegressionPassed": 8375,
+    "componentValid": false,
+    "sourceIdentityExact": true,
+    "remainingReadGroupErrors": 0,
+    "remainingUpdateGroupErrors": 4,
+    "componentProof": "deep-research-evidence/revision-sources-471-component-20261115.json",
+    "next": "Focused explicit fit-step edits with all original groups and paired budgets; no full D3-v6 before valid metadata."
   }
 }
