@@ -4331,15 +4331,16 @@
     "lastRealModelRunPromptVersion": "dr-v2.20261115.455",
     "lastRealCase": "D3-VQ-FACTORIAL-v1",
     "lastRealOutcome": "failed/none",
-    "javaAndFrontendBoundary": "This Python rollout did not redeploy Java or frontend. Earlier UI/persistence and synthetic publication evidence does not establish current real generated research or novice quality.",
-    "javaCommit": "81a827f0c03febc4d181900b00516e38be916511",
+    "javaAndFrontendBoundary": "Java explicit material reparse deployed with full 170-test regression and unchanged task/research history; frontend unchanged. Neither rollout nor indexed table recovery proves current generated research quality.",
+    "javaCommit": "004914ea",
     "taskCount": 105,
     "latestPromptVersion": "dr-v2.20261115.457",
     "latestSourceCommit": "7e8dde5a41a62f1a84cf1ebd16fb38dfab4d9570",
     "latestSourceProof": "deep-research-evidence/mixed-table-457-load-20261115.json",
     "sourceScope": "Python research modules, academic transport, PDF parser and PDF table column geometry",
     "indexDocumentsAt20261112": 1215,
-    "sourceIndexAttestationAt20261112": "deep-research-evidence/loaded-source-index-attestation-20261112.json"
+    "sourceIndexAttestationAt20261112": "deep-research-evidence/loaded-source-index-attestation-20261112.json",
+    "javaJarSha256": "228b8822df091abaac54adf834248597f46c687cefd169407350e1bd07a9cd2e"
   },
   "nextQualityWork": [
     "Implement a narrowly versioned reviewer target-structure navigation policy from the exact v32 diagnosis: distinguish reference to actual target clauses/sentences from paper measurements. Preserve unsupported scientific counts/parameters, source line numbers, unrecognized/out-of-range navigation, source permissions and every negative verdict; no paper-specific answer or blanket number exemption. Old reviewer policies/raw results stay unchanged. Exact saved v32 bind reproduced; only meta-count前三个分句 causes missing3e0. Fix enables source-bound rejection to drive genuine repair, not approval of wrong small-step claim. Track audience fidelity error separately; do not resubmit v32 unchanged. After this generic blocker is fixed, broaden to original full comparison and executable-experiment development cases before fresh heldouts/release.",
@@ -15028,9 +15029,11 @@
     "fullRegression": "deep-research-evidence/mixed-query-456-final-20261115.json",
     "actualOwnedRetrieval": "deep-research-evidence/mixed-query-456-owned-retrieval-20261115.json",
     "routingFixed": true,
-    "actualVerifiedTableRows": 0,
+    "actualVerifiedTableRows": 3,
     "productionLoaded": true,
-    "scientificContentAccepted": false
+    "scientificContentAccepted": false,
+    "actualVerifiedTableRowsMeaning": "Retrieved verified table packets, not numeric-row count",
+    "actualOwnedRetrievalAfterReparse": "deep-research-evidence/mixed-table-457-application-retrieval-20261115.json"
   },
   "mixedTableDevelopment20261115": {
     "sourceCommit": "7e8dde5a",
@@ -15039,11 +15042,27 @@
     "corePassed": 32,
     "fullRegressionStatus": "passed",
     "productionLoaded": true,
-    "applicationReparseVerified": false,
+    "applicationReparseVerified": true,
     "scientificContentAccepted": false,
     "fullTestsPassed": 8044,
     "fullModules": 438,
     "fullRegression": "deep-research-evidence/mixed-table-457-final-20261115.json",
-    "loadProof": "deep-research-evidence/mixed-table-457-load-20261115.json"
+    "loadProof": "deep-research-evidence/mixed-table-457-load-20261115.json",
+    "actualOwnedRetrievalVerified": true,
+    "applicationProof": "deep-research-evidence/mixed-table-457-application-retrieval-20261115.json",
+    "actualVerifiedTablePackets": 3
+  },
+  "explicitMaterialReparse20261115": {
+    "javaSourceCommit": "004914ea",
+    "javaTestsPassed": 170,
+    "javaSuites": 18,
+    "runtimeLoaded": true,
+    "proof": "deep-research-evidence/explicit-reparse-20261115.json",
+    "runtimeProof": "deep-research-evidence/mixed-table-457-application-retrieval-20261115.json",
+    "automaticReadyAcquisitionStillDeduplicated": true,
+    "pendingRequestsStillDeduplicated": true,
+    "oldPdfAndEvidencePreservedOnFailure": true,
+    "modelCalls": 0,
+    "scientificAcceptance": false
   }
 }
