@@ -1,0 +1,81 @@
+{
+  "promptVersion": "dr-v2.20261115.475",
+  "sourceCommit": "1942dd25f315e7fbd097d8ccf32782e71b2606f8",
+  "isolatedBaselineInitializationOnly": true,
+  "modelCalls": 1,
+  "maximumCalls": 1,
+  "maximumTokens": 50000,
+  "maximumSeconds": 180,
+  "usage": {
+    "total_tokens": 11476,
+    "input_tokens": 9756,
+    "output_tokens": 1720
+  },
+  "finishReason": "stop",
+  "rawBytes": 7235,
+  "canonicalBytes": 3486,
+  "unitValid": true,
+  "unitErrors": [],
+  "initializationMode": "derive",
+  "stateNames": [
+    "gaussian_positions",
+    "gaussian_opacities",
+    "gaussian_scales",
+    "gaussian_rotations",
+    "gaussian_dc_colors",
+    "gaussian_sh_coefficients",
+    "sh_codebook",
+    "scale_rotation_codebook",
+    "sh_indices",
+    "scale_rotation_indices"
+  ],
+  "unresolved": [
+    "exact_train_truck_frame_counts",
+    "exact_training_iterations",
+    "exact_kmeans_frequency_and_iterations",
+    "exact_codebook_sizes",
+    "exact_heldout_split_rule",
+    "exact_seed_values",
+    "exact_memory_accounting",
+    "exact_rendering_conditions"
+  ],
+  "contentReview": {
+    "accepted": false,
+    "boundary": "Manual content audit of this unexecuted initialization, not source fact verification or full experiment acceptance.",
+    "inputEntityCardinalityNotEstablished": {
+      "selector": "tanks_and_temples_train_and_truck_sfm_frames",
+      "axisReference": {
+        "inputIndex": 0,
+        "axis": 0
+      },
+      "issue": "SfM frame bundle is not an explicit 3D-point table; Gaussian cardinality is not established."
+    },
+    "opaqueOperationDefinitions": [
+      "gaussian_positions",
+      "gaussian_opacities",
+      "gaussian_scales",
+      "gaussian_rotations",
+      "gaussian_dc_colors",
+      "gaussian_sh_coefficients",
+      "sh_codebook",
+      "scale_rotation_codebook",
+      "sh_indices",
+      "scale_rotation_indices"
+    ],
+    "issue": "Source-only parameters do not define opacity values, scale estimation, rotation initialization, SH conversion or codebook seeding/assignment.",
+    "dcAndSHPartitionNotDefined": true
+  },
+  "applicationDataUnchanged": true,
+  "applicationCounts": {
+    "calls": 9872,
+    "runs": 391,
+    "callsSha256": "6c7fd0bf4480a70ed41f037ca6fbdffad1e734f5f637a64b222c5c00d5795d18",
+    "runsSha256": "83648d085850db39e8dc746b2dfa8bb8ed259d7b62b111598d6bb3b6ac542a07"
+  },
+  "rawResult": "tmp\\initialization-state-475-reviewed-component-20261115\\result.json",
+  "rawResultSha256": "59f28371145d70c4e4fc31e58d7f5d417bc6dfefd1e6e6b9db0e91f13ea6080c",
+  "scientificAcceptance": false,
+  "independentCredit": 0,
+  "automaticRetry": false,
+  "next": "Explicit input entity/axis contracts and reproducible initializer method definitions; complete target-scoped validation retained."
+}

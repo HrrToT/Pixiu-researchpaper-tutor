@@ -3,20 +3,20 @@
   "objective": "Complete DR0-DR5 in DEEP_RESEARCH_DESIGN_20261012.md without redefining success around implemented subsets.",
   "overall": "incomplete",
   "currentFullOfflineRegression": {
-    "sourceCommit": "2a3b65b1b8375d8a3970e6f9ff850254f12243dd",
-    "modules": 454,
-    "passed": 8471,
+    "sourceCommit": "1942dd25f315e7fbd097d8ccf32782e71b2606f8",
+    "modules": 455,
+    "passed": 8489,
     "failures": 0,
     "errors": 0,
     "skipped": 0,
     "sourceUnchanged": true,
-    "elapsedSeconds": 305.03,
-    "baselineCases": 8437,
-    "retainedBaselineCases": 8437,
+    "elapsedSeconds": 421.98,
+    "baselineCases": 8471,
+    "retainedBaselineCases": 8471,
     "missingBaselineCases": [],
     "warnings": 1,
-    "appliesToCurrentPythonSource": false,
-    "proof": "deep-research-evidence/initialization-context-474-final-20261115.json",
+    "appliesToCurrentPythonSource": true,
+    "proof": "deep-research-evidence/initialization-state-475-final-20261115.json",
     "boundary": "Complete current offline research regression only; not real generation, Provider cost/quality, independent scientific acceptance or full product release."
   },
   "postFullRegressionValidation": {
@@ -15466,8 +15466,8 @@
     "explicitEditsImplemented": false
   },
   "currentRuntime": {
-    "promptVersion": "dr-v2.20261115.474",
-    "sourceCommit": "2a3b65b1b8375d8a3970e6f9ff850254f12243dd",
+    "promptVersion": "dr-v2.20261115.475",
+    "sourceCommit": "1942dd25f315e7fbd097d8ccf32782e71b2606f8",
     "health": "ok",
     "activeResearchRuns": 0,
     "applicationRuns": 391,
@@ -15475,9 +15475,12 @@
     "historicalPaused": 15,
     "metadataInputWindow": 40000,
     "wholeRunBudgetUnchanged": true,
-    "loadProof": "deep-research-evidence/initialization-context-474-load-20261115.json",
+    "loadProof": "deep-research-evidence/initialization-state-475-load-20261115.json",
     "lastFullDevelopmentCase": "D3-VQ-FACTORIAL-v6",
-    "lastFullCaseProof": "deep-research-evidence/vq-experiment-d3-v6-20261115.json"
+    "lastFullCaseProof": "deep-research-evidence/vq-experiment-d3-v6-20261115.json",
+    "latestComponent": "initialization-state-475",
+    "latestComponentUnitValid": true,
+    "latestComponentContentAccepted": false
   },
   "workflowMetadataEditsDevelopment20261115": {
     "promptVersion": "dr-v2.20261115.465",
@@ -15932,10 +15935,15 @@
     "deriveLayoutUnchanged": true,
     "outputTokenCap": 6144,
     "timeoutSeconds": 90,
-    "newModelCalls": 0,
-    "productionLoaded": false,
-    "fullRegressionPending": true,
+    "newModelCalls": 1,
+    "productionLoaded": true,
+    "fullRegressionPending": false,
     "scientificAcceptance": false,
-    "independentCredit": 0
+    "independentCredit": 0,
+    "fullRegressionPassed": 8489,
+    "componentUnitValid": true,
+    "componentContentAccepted": false,
+    "componentProof": "deep-research-evidence/initialization-state-475-component-20261115.json",
+    "next": "Explicit input cardinality and reproducible initializer method contracts; no full-case quality credit."
   }
 }
