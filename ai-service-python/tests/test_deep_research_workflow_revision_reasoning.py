@@ -98,7 +98,12 @@ def test_marker_is_server_owned_and_old_rows_cannot_opt_in(tmp_path,replacement)
     try:
         r,_=facade.create({'workspaceTaskId':'t','operationKey':'k','question':'Design','deferStart':True,
           'workflowRevisionReasoningContractVersion':replacement},start_async=False)
-        assert enabled(r)
+        assert r['workflowRevisionReasoningContractVersion']==0 and not enabled(r)
+        assert request_identity(r,NODE,'same',{})['extra']['thinking']=={'type':'disabled'}
+        # A historical server-issued version1 record still has its exact policy
+        # and cannot be rewritten, even though new runs now freeze disabled.
+        r={**r,'runId':'historical-v1','idempotencyKey':'historical-v1','workflowRevisionReasoningContractVersion':1}
+        repo.create_run(r)
         with pytest.raises(ValueError,match='Immutable'):
             repo.update_run(r['runId'],lambda x:{**x,'workflowRevisionReasoningContractVersion':replacement})
         old=deepcopy(r);old.update(runId='old',idempotencyKey='old');old.pop('workflowRevisionReasoningContractVersion');repo.create_run(old)

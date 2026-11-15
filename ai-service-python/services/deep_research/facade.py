@@ -285,7 +285,7 @@ class ResearchFacade:
             "materials": materials,
             "materialSnapshot": material_snapshot,  # Immutable Java snapshot
             "contextMaterials": (material_snapshot or {}).get("contextMaterials", []) if isinstance(material_snapshot, dict) else [],
-            "promptVersion": "dr-v2.20261115.463",
+            "promptVersion": "dr-v2.20261115.464",
             "initialPlanResponseContractVersion": 1,
             "initialPlanCorrectionContractVersion": 1,
             "initialPlanInstructionsContractVersion": 1,
@@ -322,7 +322,9 @@ class ResearchFacade:
             "workflowMetadataOutputContractVersion": 1,
             "workflowMetadataEnvelopeContractVersion": 1,
             "workflowRevisionInputContractVersion": 1,
-            "workflowRevisionReasoningContractVersion": 1,
+            # The bounded .463 trial exhausted output before any visible JSON.
+            # Freeze disabled for new runs; preserve historical version1 requests.
+            "workflowRevisionReasoningContractVersion": 0,
             "workflowInitializationOutputContractVersion": 1,
             "workflowInitializationRepairContractVersion": 2,
             "experimentRepairPriorityContractVersion": 2,
