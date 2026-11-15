@@ -3,21 +3,21 @@
   "objective": "Complete DR0-DR5 in DEEP_RESEARCH_DESIGN_20261012.md without redefining success around implemented subsets.",
   "overall": "incomplete",
   "currentFullOfflineRegression": {
-    "sourceCommit": "8adb47c4d8475fed07c71e5c8a1d89f386dd3566",
-    "modules": 442,
-    "passed": 8111,
+    "sourceCommit": "4b100b35edd82a89e305d176fae0a07260ebf56f",
+    "modules": 443,
+    "passed": 8134,
     "failures": 0,
     "errors": 0,
     "skipped": 0,
-    "warnings": 1,
     "sourceUnchanged": true,
-    "appliesToCurrentPythonSource": false,
-    "proof": "deep-research-evidence/metadata-output-460-final-20261115.json",
-    "elapsedSeconds": 378.47,
-    "boundary": "Complete current offline research regression only; not real generation, Provider cost/quality, independent scientific acceptance or full product release.",
-    "baselineCases": 8089,
-    "retainedBaselineCases": 8089,
-    "missingBaselineCases": []
+    "elapsedSeconds": 399.44,
+    "baselineCases": 8111,
+    "retainedBaselineCases": 8111,
+    "missingBaselineCases": [],
+    "warnings": 1,
+    "appliesToCurrentPythonSource": true,
+    "proof": "deep-research-evidence/metadata-envelope-461-final-20261115.json",
+    "boundary": "Complete current offline research regression only; not real generation, Provider cost/quality, independent scientific acceptance or full product release."
   },
   "postFullRegressionValidation": {
     "scope": "PDF Form parser optimization only",
@@ -15392,11 +15392,16 @@
     "scientificChecksUnchanged": true,
     "modelOutputRewriting": false,
     "fixtureScientificApproval": false,
-    "productionLoaded": false,
+    "productionLoaded": true,
     "newPaidCalls": 0,
     "independentCredit": 0,
-    "fullRegressionPending": true,
+    "fullRegressionPending": false,
     "relatedJUnit": "tmp/metadata-envelope-461-r5.xml",
-    "remaining": "Full regression, bounded new-request validation and full experiment quality acceptance remain open."
+    "remaining": "New bounded model response validation, complete experiment generation, comparison quality and independent content acceptance remain open.",
+    "fullTestsPassed": 8134,
+    "fullModules": 443,
+    "fullRegression": "deep-research-evidence/metadata-envelope-461-final-20261115.json",
+    "inputReplay": "deep-research-evidence/metadata-envelope-461-input-replay-20261115.json",
+    "loadProof": "deep-research-evidence/metadata-envelope-461-load-20261115.json"
   }
 }
