@@ -1,0 +1,15 @@
+{
+  "sourceCommit": "9ac24616762c2d51a395f4fbe24656596796bcbe",
+  "promptVersion": "dr-v2.20261115.469",
+  "fullRegression": "deep-research-evidence/revision-context-469-final-20261115.json",
+  "baseline": "tmp/dr-acceptance-receipts/metadata-planning-output-468.before.json",
+  "health": "ok",
+  "all105TasksExact": true,
+  "all390OldRunsExact": true,
+  "all9838CallRowsExact": true,
+  "allDeepResearchModuleHashesMatch": true,
+  "transportParserAndTableHashesMatch": true,
+  "historicalPaused": 15,
+  "active": 0,
+  "newModelCalls": 0
+}
