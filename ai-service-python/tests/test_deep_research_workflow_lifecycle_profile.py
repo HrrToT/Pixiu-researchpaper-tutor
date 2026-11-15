@@ -13,7 +13,8 @@ def test_new_profile_is_consistent_and_does_not_rewrite_legacy_run(tmp_path):
     try:
         first,_=facade.create({'workspaceTaskId':'t','operationKey':'first','question':'Design an experiment',
             'deferStart':True},start_async=False)
-        assert first['promptVersion']=='dr-v2.20261115.462'
+        assert first['promptVersion']=='dr-v2.20261115.463'
+        assert type(first['workflowRevisionReasoningContractVersion']) is int and first['workflowRevisionReasoningContractVersion']==1
         assert type(first['workflowRevisionInputContractVersion']) is int and first['workflowRevisionInputContractVersion']==1
         assert type(first['workflowMetadataEnvelopeContractVersion']) is int and first['workflowMetadataEnvelopeContractVersion']==1
         assert type(first['workflowMetadataOutputContractVersion']) is int and first['workflowMetadataOutputContractVersion']==1
@@ -86,6 +87,7 @@ def test_new_profile_is_consistent_and_does_not_rewrite_legacy_run(tmp_path):
         old.pop('workflowMetadataOutputContractVersion')
         old.pop('workflowMetadataEnvelopeContractVersion')
         old.pop('workflowRevisionInputContractVersion')
+        old.pop('workflowRevisionReasoningContractVersion')
         old.pop('workflowInitializationOutputContractVersion')
         old.pop('workflowInitializationRepairContractVersion')
         old.pop('answerPointIntentContractVersion')

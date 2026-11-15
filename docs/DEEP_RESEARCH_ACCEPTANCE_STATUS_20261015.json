@@ -15,7 +15,7 @@
     "retainedBaselineCases": 8134,
     "missingBaselineCases": [],
     "warnings": 1,
-    "appliesToCurrentPythonSource": true,
+    "appliesToCurrentPythonSource": false,
     "proof": "deep-research-evidence/workflow-revision-input-462-final-20261115.json",
     "boundary": "Complete current offline research regression only; not real generation, Provider cost/quality, independent scientific acceptance or full product release."
   },
@@ -15422,5 +15422,23 @@
     "componentProof": "deep-research-evidence/workflow-revision-input-462-component-20261115.json",
     "componentValid": false,
     "remaining": "Review feedback presentation and bounded semantic reasoning for repair; no unchanged resend."
+  },
+  "workflowRevisionReasoningDevelopment20261115": {
+    "promptVersion": "dr-v2.20261115.463",
+    "contract": "workflowRevisionReasoningContractVersion1",
+    "relatedRunPassed": 84,
+    "newModuleFinalPassed": 22,
+    "onlyRepairRoleThinkingChanged": true,
+    "samePromptMessagesSchema": true,
+    "sameMaxOutputTokens": 6144,
+    "sameDeadlineSeconds": 90,
+    "sameInputLimitBytes": 40000,
+    "wholeRunBudgetUnchanged": true,
+    "legacyRequestIdentitiesPreserved": true,
+    "productionLoaded": false,
+    "fullRegressionPending": true,
+    "scientificAcceptance": false,
+    "independentCredit": 0,
+    "remaining": "Complete regression, load and one bounded real comparison against the same original metadata failure."
   }
 }

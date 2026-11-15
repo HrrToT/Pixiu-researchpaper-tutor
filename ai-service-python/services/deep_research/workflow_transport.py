@@ -82,6 +82,9 @@ def descriptor(version=3):
 
 def reasoning_options(record, node, options):
     """Apply a frozen role policy before request identity and reservation."""
+    from services.deep_research.workflow_revision_reasoning import enabled as revision_reasoning
+    if node == 'repair_workflow_meta' and revision_reasoning(record):
+        return {**options, 'thinking': {'type': 'enabled'}, 'reasoning_effort': 'low'}
     if (node == 'plan_workflow_init' and enabled(record, node)
             and record['executionWorkflowContractVersion'] == 7
             and type(record.get('workflowInitializationOutputContractVersion')) is int
