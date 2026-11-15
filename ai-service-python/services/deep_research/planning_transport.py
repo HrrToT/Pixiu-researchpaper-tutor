@@ -163,6 +163,8 @@ def options_for_record(record,node,options):
         options={**options,'thinking':{'type':'enabled'},'reasoning_effort':'low'}
     from services.deep_research.workflow_metadata_output import options as metadata_output_options
     options=metadata_output_options(record,node,options)
+    from services.deep_research.workflow_metadata_planning_output import options as planning_output_options
+    options=planning_output_options(record,node,options)
     return {**options,API_KEY:'responses','response_format':descriptor_for(
         record,node,options.get(TARGET_OPTION, 'component'),metadata_edits=options.get(EDIT_OPTION,False))}
 

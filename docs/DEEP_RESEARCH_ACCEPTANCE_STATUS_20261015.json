@@ -15,7 +15,7 @@
     "retainedBaselineCases": 8244,
     "missingBaselineCases": [],
     "warnings": 1,
-    "appliesToCurrentPythonSource": true,
+    "appliesToCurrentPythonSource": false,
     "proof": "deep-research-evidence/workflow-metadata-window-467-final-20261115.json",
     "boundary": "Complete current offline research regression only; not real generation, Provider cost/quality, independent scientific acceptance or full product release."
   },
@@ -15700,5 +15700,22 @@
       "preservation.json": "441b34f4bbc14ae8576b9393826228545af9664a1c671aeb6a0ec14eaf28d7fc",
       "result.json": "189ca0474ce4817cdcded7b44c55d9a053ca3748e8003c681a17a3ad071eee42"
     }
+  },
+  "workflowMetadataPlanningOutputDevelopment20261115": {
+    "promptVersion": "dr-v2.20261115.468",
+    "contract": "workflowMetadataPlanningOutputContractVersion1",
+    "relatedPassed": 138,
+    "onlyFirstMetadataOutputAllowanceChanges": true,
+    "legacyOutputTokens": 6144,
+    "newOutputTokens": 8192,
+    "samePromptSchemaMessagesAndDeadline": true,
+    "outputByteCapsUnchanged": true,
+    "wholeRunBudgetUnchanged": true,
+    "productionLoaded": false,
+    "fullRegressionPending": true,
+    "newPaidCalls": 0,
+    "scientificAcceptance": false,
+    "independentCredit": 0,
+    "next": "Complete regression, load preserving390 runs, then one same-input public metadata component before another full case."
   }
 }
