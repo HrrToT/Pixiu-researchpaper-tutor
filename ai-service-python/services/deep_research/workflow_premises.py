@@ -27,7 +27,7 @@ def required(record):
     return _refs(record.get('state', {}).get('synthesisPremiseAllocation', {}).get('requiredPremiseEvidenceAliases'))
 
 
-def allocate(record, *, source_data, context, aliases, prior_values, node, render):
+def allocate(record, *, source_data, context, aliases, prior_values, node, render, transport_options=None):
     from services.deep_research.planning_transport import overhead_bytes
     from services.deep_research.workflow_metadata_window import input_limit
     if not enabled(record):raise ValueError('Workflow premise allocation is not enabled')
@@ -44,7 +44,7 @@ def allocate(record, *, source_data, context, aliases, prior_values, node, rende
     if not needed<=set(ids):
         raise DeepResearchError('invalid_workflow_premise_state', '工作流依赖的原文未提供，不能发送。')
     pack=lambda v:json.dumps(v,ensure_ascii=False,separators=(',',':'),allow_nan=False)
-    overhead=overhead_bytes(record,node)
+    overhead=overhead_bytes(record,node,transport_options)
     def request(selected):
         chosen=[r for r in rows if r['evidenceId'] in selected]
         scoped=deepcopy(data);scoped['evidence']=chosen

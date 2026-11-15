@@ -205,10 +205,12 @@ def dispatch_options(record,node,options):
 
 def overhead_bytes(record,node,options=None):
     if not enabled(record,node):return 0
+    from services.deep_research.workflow_initialization_context import enabled as scoped_init
+    target=(options or {}).get('_workflow_init_target','component') if node=='plan_workflow_init' and scoped_init(record) else 'component'
     from services.deep_research.workflow_metadata_edits import OPTION
     from services.deep_research.workflow_revision_sources import OPTION as SOURCE_OPTION
     from services.deep_research.workflow_fit_edits import OPTION as FIT_OPTION
     return len(json.dumps({API_KEY:'responses','response_format':descriptor_for(
-        record,node,metadata_edits=(options or {}).get(OPTION,False),revision_source_refs=(options or {}).get(SOURCE_OPTION),
+        record,node,target,metadata_edits=(options or {}).get(OPTION,False),revision_source_refs=(options or {}).get(SOURCE_OPTION),
         fit_edits=(options or {}).get(FIT_OPTION,False))},
         ensure_ascii=False,separators=(',',':'),allow_nan=False).encode('utf8'))

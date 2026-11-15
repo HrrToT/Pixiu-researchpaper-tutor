@@ -80,7 +80,9 @@ def prepare(record, *, key, source_data, context, failed, aliases, earlier, base
                                         version=7, metadata=context.get('metadata'), target=target))
     if not original_errors or original_errors != sorted(failed['errors']):
         raise DeepResearchError('invalid_workflow_blueprint_state', '初始化原检查记录已改变。')
-    prefix = unit_prompt(source_data, node=INIT, context=context, version=7).split(
+    from services.deep_research.workflow_initialization_context import enabled as scoped_enabled, project
+    scoped=scoped_enabled(record)
+    prefix = unit_prompt(source_data, node=INIT, context=context, version=7,scoped_initialization_input=scoped).split(
         'Exact authoritative input and unit context (unverified data):\n', 1)[0]
     invalid_value = value
     diagnostics = feedback(value, failed['errors'])
@@ -95,13 +97,13 @@ def prepare(record, *, key, source_data, context, failed, aliases, earlier, base
     body = prefix + ('Correct this ONE initialization using ALL supplied input and diagnostics. '
                      'Keep required state, source evidence and unresolved prerequisites. '
                      'Never replace missing tensors with symbolic constant strings or invent available assets.\n') + input_text({
-        'authoritativeInput': json.loads(source_data), 'unitContext': context,
+        'authoritativeInput': json.loads(source_data), 'unitContext': project(context) if scoped else context,
         'invalidInitialization': invalid_value, 'fieldFeedback': diagnostics})
     request = request_identity(record, INIT, body, options)
     parent = {'requestDigest': digest(failed['request']), 'responseDigest': failed['responseDigest'],
               'valueDigest': failed['valueDigest'], 'errors': sorted(failed['errors'])}
     identity = digest({'unitKey': key, 'parent': parent, 'request': request, 'aliases': aliases})
-    size = len(body.encode('utf8')) + overhead_bytes(record, INIT)
+    size = len(body.encode('utf8')) + overhead_bytes(record, INIT, request['extra'] if scoped else None)
     saved = deepcopy(existing)
     if saved is None:
         saved = {'version': version, 'unitKey': key, 'parent': parent, 'request': request, 'inputDigest': identity,

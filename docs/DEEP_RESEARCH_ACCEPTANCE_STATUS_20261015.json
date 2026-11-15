@@ -15,7 +15,7 @@
     "retainedBaselineCases": 8424,
     "missingBaselineCases": [],
     "warnings": 1,
-    "appliesToCurrentPythonSource": true,
+    "appliesToCurrentPythonSource": false,
     "proof": "deep-research-evidence/fit-output-groups-473-final-20261115.json",
     "boundary": "Complete current offline research regression only; not real generation, Provider cost/quality, independent scientific acceptance or full product release."
   },
@@ -15900,5 +15900,22 @@
       "preservation.json": "3178f57385c407d7a66dfce6807b0b8dae42ddf6daeca9759200c2a6f7098208",
       "result.json": "d01ff1a6e7787ec1c6eaf4aedf7bf80b0b2bc0cb4f2a7248cb135192ec6553cf"
     }
+  },
+  "workflowInitializationContextDevelopment20261115": {
+    "promptVersion": "dr-v2.20261115.474",
+    "contract": "workflowInitializationContextContractVersion1",
+    "relatedPassed": 143,
+    "oldBaselineInputBytes": 45356,
+    "newBaselineInputBytes": 31930,
+    "inputLimitBytes": 32000,
+    "wholeRunBudgetUnchanged": true,
+    "all17RequiredEvidenceRowsRetained": true,
+    "completeMetadataStillValidated": true,
+    "productionLoaded": false,
+    "fullRegressionPending": true,
+    "newModelCalls": 0,
+    "scientificAcceptance": false,
+    "independentCredit": 0,
+    "proof": "deep-research-evidence/initialization-context-474-actual-replay-20261115.json"
   }
 }
