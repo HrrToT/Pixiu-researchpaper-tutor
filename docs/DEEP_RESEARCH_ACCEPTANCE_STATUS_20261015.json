@@ -3,20 +3,20 @@
   "objective": "Complete DR0-DR5 in DEEP_RESEARCH_DESIGN_20261012.md without redefining success around implemented subsets.",
   "overall": "incomplete",
   "currentFullOfflineRegression": {
-    "sourceCommit": "4b100b35edd82a89e305d176fae0a07260ebf56f",
-    "modules": 443,
-    "passed": 8134,
+    "sourceCommit": "ae0adcf02b4001d4bbdaa6de7b12b3f7729b7a6f",
+    "modules": 444,
+    "passed": 8163,
     "failures": 0,
     "errors": 0,
     "skipped": 0,
     "sourceUnchanged": true,
-    "elapsedSeconds": 399.44,
-    "baselineCases": 8111,
-    "retainedBaselineCases": 8111,
+    "elapsedSeconds": 423.83,
+    "baselineCases": 8134,
+    "retainedBaselineCases": 8134,
     "missingBaselineCases": [],
     "warnings": 1,
-    "appliesToCurrentPythonSource": false,
-    "proof": "deep-research-evidence/metadata-envelope-461-final-20261115.json",
+    "appliesToCurrentPythonSource": true,
+    "proof": "deep-research-evidence/workflow-revision-input-462-final-20261115.json",
     "boundary": "Complete current offline research regression only; not real generation, Provider cost/quality, independent scientific acceptance or full product release."
   },
   "postFullRegressionValidation": {
@@ -15370,9 +15370,9 @@
     "loadProof": "deep-research-evidence/metadata-output-460-load-20261115.json"
   },
   "lastStandaloneModelValidation20261115": {
-    "proof": "deep-research-evidence/metadata-envelope-461-component-20261115.json",
+    "proof": "deep-research-evidence/workflow-revision-input-462-component-20261115.json",
     "modelCalls": 1,
-    "tokens": 12735,
+    "tokens": 15089,
     "unitValid": false,
     "applicationWrites": false,
     "independentCredit": 0
@@ -15411,8 +15411,16 @@
     "legacyMaxInputBytes": 32000,
     "newMaxInputBytes": 40000,
     "wholeRunBudgetUnchanged": true,
-    "productionLoaded": false,
-    "fullRegressionPending": true,
-    "sourceResponseScientificAcceptance": false
+    "productionLoaded": true,
+    "fullRegressionPending": false,
+    "sourceResponseScientificAcceptance": false,
+    "relatedTestsPassed": 189,
+    "fullTestsPassed": 8163,
+    "fullModules": 444,
+    "fullRegression": "deep-research-evidence/workflow-revision-input-462-final-20261115.json",
+    "loadProof": "deep-research-evidence/workflow-revision-input-462-load-20261115.json",
+    "componentProof": "deep-research-evidence/workflow-revision-input-462-component-20261115.json",
+    "componentValid": false,
+    "remaining": "Review feedback presentation and bounded semantic reasoning for repair; no unchanged resend."
   }
 }
