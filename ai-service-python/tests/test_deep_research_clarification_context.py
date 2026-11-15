@@ -190,13 +190,17 @@ def test_real_graph_restart_multiple_clarifications_refresh_brief_preserve_scope
         facade.action(rid, 'clarify', second)
         finished = wait_worker(facade, repo, rid, 'failed')
         assert finished['errorCode'] == 'invalid_plan_response'
-        assert len(model.prompts) == 4  # Three distinct briefs, one plan; no hidden model retry.
+        assert len(model.prompts) == 5  # Three briefs, one plan and its single journaled correction.
+        assert finished['state']['initialPlanFormatCorrection']['status'] == 'rejected'
         assert finished['state']['metricDomains'] == ['quality']
         assert finished['state']['constraints'] == ['200字以内', '只看作者报告']
         assert [h['answer'] for h in finished['state']['clarificationHistory']] == [first['answer'], second['answer']]
         assert all(text in model.prompts[-1] for text in (first['answer'], second['answer']))
         assert (finished['materials'], finished['sourcePolicy'], finished['budget']['maxTokens']) == frozen
-        assert len(repo.list_calls(rid)) == 4 and all(c['status'] == 'succeeded' for c in repo.list_calls(rid))
+        calls=repo.list_calls(rid)
+        assert len(calls) == 5 and all(c['status'] == 'succeeded' for c in calls)
+        plans=[c for c in calls if c['node']=='plan']
+        assert len(plans)==2 and plans[0]['argsDigest']!=plans[1]['argsDigest']
     finally:
         facade.shutdown()
 

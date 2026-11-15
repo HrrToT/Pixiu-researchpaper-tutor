@@ -4,7 +4,7 @@ from unittest.mock import Mock
 
 import pytest
 
-from services.deep_research.initial_plan_correction import enabled,KEY,AUDIT
+from services.deep_research.initial_plan_correction import enabled,KEY,AUDIT,normalize_request_excerpts
 from services.deep_research.graph import make_plan_node
 from services.deep_research.coverage import validate_plan
 from services.deep_research.contracts import BudgetExhaustedError,UnknownCallError,UnresolvedUnknownError
@@ -141,6 +141,50 @@ def test_source_permissions_are_reapplied_to_corrected_plan():
     result,saved,invoke=execute([response([]),response(value)])
     assert result['plan_ids']==['i']
     assert saved['state']['plan'][0]['obligations'][0]['requiredSources']==['paper']
+
+
+@pytest.mark.parametrize('question,quote',[
+    ('请解释机制。先给结论，再说明成立条件。','先给结论'),
+    ('请解释机制并且说明边界','说明边界'),
+    ('Explain the requested mechanism.','Explain'),
+    ('先给结论    再说明成立条件。','先给结论'),
+])
+def test_unique_short_request_quote_expands_only_adjacent_original_context(question,quote):
+    value=plan();value[0]['obligations'][0]['requestExcerpt']=quote;before=deepcopy(value)
+    normalized,changes=normalize_request_excerpts(run_record(),value,question)
+    assert len(changes)==1 and value==before
+    change=changes[0];left,right=change['expandedSpan']
+    assert change['expanded']==question[left:right] and quote in change['expanded']
+    assert len(change['expanded'].strip())>=8
+    comparison=deepcopy(normalized);comparison[0]['obligations'][0]['requestExcerpt']=quote
+    assert comparison==value
+
+
+@pytest.mark.parametrize('question,quote',[
+    ('先给结论。然后先给结论。','先给结论'),
+    ('只说明质量。','先给结论'),
+    ('说明机制如何起作用。','机制'),
+    ('说明机制。','说明机制'),
+    ('aaaaa plus further words','aaaa'),
+    ('    先给结论 再说明边界。','    先给结论 '),
+])
+def test_ambiguous_missing_tiny_or_short_question_quotes_are_never_guessed(question,quote):
+    value=plan();value[0]['obligations'][0]['requestExcerpt']=quote
+    normalized,changes=normalize_request_excerpts(run_record(),value,question)
+    assert normalized==value and not changes
+
+
+def test_legacy_quote_context_and_other_fields_are_exact():
+    r=run_record();r.pop(KEY);value=plan();value[0]['obligations'][0]['requestExcerpt']='先给结论'
+    assert normalize_request_excerpts(r,value,'先给结论，再说明成立条件。')==(value,[])
+
+
+def test_final_plan_records_quote_spans_and_keeps_model_response_immutable():
+    r=run_record();r['question']='请解释机制。先给结论，再说明成立条件。'
+    value=plan();value[0]['obligations'][0]['requestExcerpt']='先给结论';raw=response(value);before=deepcopy(raw)
+    result,saved,invoke=execute([raw],r)
+    assert result['plan_ids']==['i'] and invoke.call_count==1 and raw==before
+    assert saved['state']['planRequestExcerptNormalization']['changes'][0]['original']=='先给结论'
 
 
 def test_policy_is_server_owned_immutable_and_absent_for_old_runs(tmp_path):

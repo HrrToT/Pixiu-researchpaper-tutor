@@ -232,10 +232,10 @@ def make_plan_node(
     validate_plan: Callable[[list], list],
 ) -> Callable[[GraphState], dict]:
     """Generate research plan with obligations and dependencies."""
-    
+
     def node(state: GraphState) -> dict:
         run_id = state.get("run_id", "")
-        
+
         record = repo_update(run_id, lambda r: {**r, "stage": "plan"}, expected_revision=None)
         question = effective_question(record)
         brief_state = record.get("state", {})
@@ -297,7 +297,7 @@ cannot be inferred beyond its conditions. Do not require an explicit author admi
 of every limitation, or demand a paper-wide absence claim from missing passages.
 
 Return a JSON ARRAY of plan items, NOT an object with items field."""
-        
+
         if criteria_required:
             from services.deep_research.completion_criteria import CRITERIA_GUIDANCE
             # D1-v8 matched the shorter schema and omitted the criteria requested
@@ -326,7 +326,7 @@ Return a JSON ARRAY of plan items, NOT an object with items field."""
         if initial_plan_instructions_enabled(record):
             prompt=initial_plan_prompt(record,data_guidance)
         result = llm_invoke(run_id, "plan", prompt, {"max_tokens": 5000, "temperature": 0.1})
-        
+
         def accept_result(result,*,can_correct=True):
             # Handle LLMResult dataclass - extract content attribute
             if hasattr(result, "content"):
@@ -335,7 +335,7 @@ Return a JSON ARRAY of plan items, NOT an object with items field."""
                 content = result.get("content", "[]")
             else:
                 content = str(result)
-        
+
             parsed = _safe_parse_json(content)
 
             def invalid_plan(reason):
@@ -354,21 +354,23 @@ Return a JSON ARRAY of plan items, NOT an object with items field."""
             finish_reason = getattr(result, 'finish_reason', None) if not isinstance(result, dict) else result.get('finishReason')
             if finish_reason == 'length':
                 return invalid_plan('Plan response was truncated')
-        
+
             # Handle {items: [...]} wrapper format - extract items array
             if isinstance(parsed, dict) and "items" in parsed:
                 parsed = parsed.get("items", [])
-        
+
             # Fail closed: malformed JSON list must not proceed to retrieval
             if not isinstance(parsed, list):
                 logger.warning("Plan response not a list, failing closed: %s", type(parsed))
                 return invalid_plan('Plan response is not a JSON array')
 
+            from services.deep_research.initial_plan_correction import normalize_request_excerpts
+            parsed,excerpt_changes=normalize_request_excerpts(record,parsed,question)
             from services.deep_research.initial_plan_response import enabled as initial_plan_response_enabled,validate_shape as validate_initial_plan_shape
             if initial_plan_response_enabled(record):
                 try:validate_initial_plan_shape(parsed,question)
                 except ValueError as exc:return invalid_plan(exc)
-        
+
             try:
                 from services.deep_research.plan_identity import normalize_generated_obligation_ids
                 generated, identity_changes = normalize_generated_obligation_ids(parsed[:4])
@@ -378,7 +380,7 @@ Return a JSON ARRAY of plan items, NOT an object with items field."""
             except ValueError as ve:
                 logger.warning("Plan validation failed: %s", ve)
                 return invalid_plan(ve)
-        
+
             if not validated:
                 return invalid_plan('Plan has no research items')
 
@@ -440,7 +442,7 @@ Return a JSON ARRAY of plan items, NOT an object with items field."""
                     from services.deep_research.experiment_deliverable import ensure_experiment_deliverable
                     validated=validate_plan(ensure_experiment_deliverable(validated,question,required_default or candidates))
                 validate_completion_criteria(validated, required=record.get('planCompletionContractVersion') == 1)
-        
+
             semantics_changes=[]
             if semantics_enabled(record):
                 from services.deep_research.request_semantics import normalize_access_requirements
@@ -460,13 +462,14 @@ Return a JSON ARRAY of plan items, NOT an object with items field."""
             plan_ids = [item["itemId"] for item in validated]
             from services.deep_research.continuation import rebind_inherited_state
             inherited = bool(brief_state.get('inheritedEvidence'))
-        
+
             repo_update(
                 run_id,
                 lambda r: {**r, "state": {
                     **(rebind_inherited_state(r.get('state') or {}, validated)
                        if inherited else {**(r.get("state") or {}), "plan": validated}),
                     'planIdNormalization': identity_changes,
+                    **({'planRequestExcerptNormalization':{'version':1,'changes':excerpt_changes}} if excerpt_changes else {}),
                     **({'planSourceRevisionNormalization':revision_audit} if revision_constraints else {}),
                     **({'planAccessRequestProjection':access_projection} if access_projection_enabled(record) else {}),
                     **({'planRequestSemanticsNormalization':semantics_changes} if semantics_enabled(record) else {}),
@@ -480,7 +483,7 @@ Return a JSON ARRAY of plan items, NOT an object with items field."""
                 repo_update(run_id, lambda r: {**r, 'state': {**r['state'],
                     'dependencyExecution': initialize(validated, brief_state.get('planRevision', 0)),
                     'plan': [{**item, 'status': 'pending'} for item in validated]}}, expected_revision=None)
-        
+
             if not can_correct:
                 from services.deep_research.initial_plan_correction import finish
                 finish(repo_update,run_id,'validated')
@@ -488,7 +491,7 @@ Return a JSON ARRAY of plan items, NOT an object with items field."""
                     "plan_revision": brief_state.get('planRevision', 0)}
 
         return accept_result(result)
-    
+
     return node
 
 

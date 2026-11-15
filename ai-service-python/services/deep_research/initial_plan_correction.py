@@ -1,6 +1,7 @@
 """One journaled correction of a known invalid plan, never an unknown resend."""
 import hashlib
 import json
+from copy import deepcopy
 
 KEY='initialPlanCorrectionContractVersion'
 AUDIT='initialPlanFormatCorrection'
@@ -18,6 +19,37 @@ def finish(repo_update,run_id,status):
         if not isinstance(audit,dict):return record
         return {**record,'state':{**state,AUDIT:{**audit,'status':status}}}
     repo_update(run_id,update,expected_revision=None)
+
+
+def normalize_request_excerpts(record,plan,question):
+    """Expand a unique short user quote with adjacent original context.
+
+    The requested minimum remains eight characters after normalization. Only
+    exact, unambiguous four-to-seven-character quotes qualify; scientific
+    questions, criteria, source identities and original responses never change.
+    This is source-location normalization, not evidence or semantic approval.
+    """
+    if not enabled(record) or not isinstance(question,str) or len(question.strip())<8:return plan,[]
+    out=deepcopy(plan);changes=[]
+    for i,item in enumerate(out):
+        if not isinstance(item,dict) or not isinstance(item.get('obligations'),list):continue
+        for j,o in enumerate(item['obligations']):
+            if not isinstance(o,dict):continue
+            quote=o.get('requestExcerpt')
+            if not isinstance(quote,str) or quote!=quote.strip() or not 4<=len(quote)<8:continue
+            start=question.find(quote)
+            if start<0 or question.find(quote,start+1)>=0:continue
+            end=min(len(question),start+8);left=max(0,end-8)
+            while len(question[left:end].strip())<8:
+                if end<len(question):end+=1
+                elif left>0:left-=1
+                else:break
+            expanded=question[left:end]
+            if len(expanded.strip())<8:continue
+            o['requestExcerpt']=expanded
+            changes.append({'path':[i,'obligations',j,'requestExcerpt'],'original':quote,
+                'originalSpan':[start,start+len(quote)],'expanded':expanded,'expandedSpan':[left,end]})
+    return out,changes
 
 
 def correct(record,response,reason,original_prompt,invoke,repo_update):
