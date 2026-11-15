@@ -1,0 +1,12 @@
+{
+  "baselineInputBytes": 31783,
+  "readableDecisionInputBytes": 31979,
+  "inputLimitBytes": 32000,
+  "allSourceAndContextValuesExact": true,
+  "evidenceRows": 17,
+  "stateDecisionBytes": 721,
+  "modelCalls": 0,
+  "productionImplemented": false,
+  "contentEffectVerified": false,
+  "unverifiedStateDecisionRenderedOnceWithNamedKey": true
+}
