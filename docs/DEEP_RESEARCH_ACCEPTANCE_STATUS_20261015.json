@@ -4322,15 +4322,15 @@
   "loadedRuntime": {
     "commit": "239ff9939e97f6ceb194aeb16b7892ed88c99fc8",
     "promptVersion": "dr-v2.20261115.458",
-    "callsAfterLatestCase": 9686,
+    "callsAfterLatestCase": 9723,
     "active": 0,
     "historicalPausedUnknown": 15,
     "proof": "deep-research-evidence/experiment-stage-458-load-20261115.json",
     "allSourceHashesExact": true,
-    "lastRealModelRunCommit": "7e8dde5a41a62f1a84cf1ebd16fb38dfab4d9570",
-    "lastRealModelRunPromptVersion": "dr-v2.20261115.457",
-    "lastRealCase": "D2-VQ-v1-v3",
-    "lastRealOutcome": "completed/inconclusive",
+    "lastRealModelRunCommit": "239ff9939e97f6ceb194aeb16b7892ed88c99fc8",
+    "lastRealModelRunPromptVersion": "dr-v2.20261115.458",
+    "lastRealCase": "D3-VQ-FACTORIAL-v2",
+    "lastRealOutcome": "failed/none",
     "javaAndFrontendBoundary": "Java explicit material reparse deployed with full 170-test regression and unchanged task/research history; frontend unchanged. Neither rollout nor indexed table recovery proves current generated research quality.",
     "javaCommit": "004914ea",
     "taskCount": 105,
@@ -15150,6 +15150,60 @@
       "reason": "Lifecycle profile test still expected old prompt version .457; corrected test now also checks new marker and removal from legacy fixture.",
       "proof": "deep-research-evidence/experiment-stage-allocation-458-final-20261115.json"
     },
-    "loadProof": "deep-research-evidence/experiment-stage-458-load-20261115.json"
-  }
+    "loadProof": "deep-research-evidence/experiment-stage-458-load-20261115.json",
+    "realFirstStageVerified": true,
+    "realCaseProof": "deep-research-evidence/vq-experiment-d3-v2-20261115.json",
+    "remainingBlocker": "workflow_blueprint_input_capacity: actual metadata 33410 bytes including native transport, 32000 maximum. No workflow metadata provider request or final generation."
+  },
+  "vqExperimentDevelopmentD3V2_20261115": {
+    "case": "D3-VQ-FACTORIAL-v2",
+    "runId": "dr_run_beb535c64c265c878589f7915fd0c5d0",
+    "promptVersion": "dr-v2.20261115.458",
+    "split": "development",
+    "status": "failed",
+    "outcome": "none",
+    "errorCode": "workflow_blueprint_input_capacity",
+    "modelCallsIncludingReserve": 6,
+    "tokens": 27273,
+    "seconds": 81.0,
+    "allModelCallsSucceededAndSettled": true,
+    "firstStageAllocationRealVerified": true,
+    "planningStatus": "ready",
+    "planningIsScientificApproval": false,
+    "suppliedCandidateCount": 20,
+    "missingPremiseBundles": 0,
+    "planningPromptBytes": 29682,
+    "planningPromptLimit": 31168,
+    "planningIncludingTransportLimit": 32000,
+    "workflowMetadataStatus": "not_started_capacity",
+    "workflowMetadataPromptBytes": 26940,
+    "workflowMetadataInputBytesIncludingTransport": 33410,
+    "workflowMetadataMaxInputBytes": 32000,
+    "workflowMetadataProviderCalled": false,
+    "finalGenerationCalled": false,
+    "trainingExecuted": false,
+    "contentAccepted": false,
+    "independentCredit": 0,
+    "all386PreviousRunPayloadsExact": true,
+    "all9686PreviousCallRowsExact": true,
+    "allOther104TaskPayloadsExact": true,
+    "ledgerRows": 9723,
+    "runCount": 387,
+    "active": [],
+    "historicalPausedRetained": true,
+    "rawPrefix": "tmp/dr-acceptance-receipts/D3-VQ-FACTORIAL-v2",
+    "next": "Measure each actual workflow unit with native schema overhead and complete atomic original requirement, premise, scientific-plan reference and workflow dependencies; retain 32KB and whole-run caps. Do not replay this failed receipt or drop references to fit."
+  },
+  "nextCurrentDevelopmentActions20261115": [
+    {
+      "area": "comparison",
+      "proof": "deep-research-evidence/vq-comparison-d2-v3-saved-replay-20261115.json",
+      "action": "Preserve relevant owned verified numeric table packets through the bounded reader and premise candidate selection, then fit complete comparison requirements. Retrieval already returned both main tables; CompGS not read and read Compressed table excluded before synthesis. Keep source/absence checks and original request."
+    },
+    {
+      "area": "experiment",
+      "proof": "deep-research-evidence/vq-experiment-d3-v2-20261115.json",
+      "action": "Extend actual-stage capacity allocation to workflow unit dependencies including native schema overhead; keep all required sources and prior unverified plan refs. Recheck final generation with actual unit proposals before any new bounded case."
+    }
+  ]
 }
