@@ -179,3 +179,35 @@ def test_client_cannot_disable_or_initialize_the_server_owned_release(tmp_path):
         assert stored['finalizationBudgetVersion'] == 1 and stored['releasedReserveTokens'] == 0
     finally:
         facade.shutdown()
+
+
+def test_shared_experiment_six_stage_repair_chain_uses_actual_ledger_and_cached_settlements(tmp_path):
+    """Five protected slots must not strand the sixth, already-funded audit."""
+    repo = repository(tmp_path, budget(tokens=18000, normalTokens=18000,
+        modelCalls=5, reservedModelCalls=0))
+    stages = ['plan_experiment_shared', 'review_experiment_shared', 'verify_answer_coverage',
+              'repair_experiment_shared', 'review_experiment_shared', 'verify_answer_coverage']
+    for index, node in enumerate(stages):
+        call, reused = reserve(repo, identity=f'stage-{index}', cost=10000, node=node)
+        assert not reused and call['usesReserve'] is (index < 5)
+        repo.complete_call(call['callId'], status='succeeded', reservation_token=call['reservationToken'],
+            result={'content': f'saved-{index}'}, budget_delta={'tokens': -7000})
+        settled = repo.require_run('run')['budget']
+        restored = DeepResearchRepository(repo.db_path)
+        same, reused = reserve(restored, identity=f'stage-{index}', cost=10000, node=node)
+        assert reused and same['callId'] == call['callId']
+        assert restored.require_run('run')['budget'] == settled
+    current = repo.require_run('run')['budget']
+    assert current['tokens'] == 36000 and current['reservedModelCalls'] == 5 and current['modelCalls'] == 6
+    assert current['maxTokens'] == 100000 and current['maxModelCalls'] == 18
+    assert len(repo.list_calls('run')) == 6
+
+
+@pytest.mark.parametrize('node', ['plan_experiment_shared', 'review_experiment_shared', 'repair_experiment_shared'])
+def test_shared_stages_can_use_spare_normal_capacity_without_expanding_limits(tmp_path, node):
+    repo = repository(tmp_path)
+    call, reused = reserve(repo, node=node)
+    assert not reused and call['usesReserve'] is False
+    current = repo.require_run('run')['budget']
+    assert current['tokens'] == 92860 and current['releasedReserveTokens'] == 13762
+    assert current['maxTokens'] == 100000 and current['maxModelCalls'] == 18
