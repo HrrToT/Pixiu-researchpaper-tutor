@@ -3,21 +3,21 @@
   "objective": "Complete DR0-DR5 in DEEP_RESEARCH_DESIGN_20261012.md without redefining success around implemented subsets.",
   "overall": "incomplete",
   "currentFullOfflineRegression": {
-    "sourceCommit": "0a1636795ed3f876ad55bd74831cdf1ad96f192a",
-    "modules": 485,
+    "sourceCommit": "d25a35249f8c52c1131fd9407a1e048c9601d4d2",
+    "modules": 487,
     "failures": 0,
     "errors": 0,
     "skipped": 0,
     "sourceUnchanged": true,
-    "baselineCases": 9154,
-    "retainedBaselineCases": 9154,
+    "baselineCases": 9216,
+    "retainedBaselineCases": 9216,
     "missingBaselineCases": [],
-    "elapsedSeconds": 430.17,
+    "elapsedSeconds": 463.44,
     "boundary": "Complete current offline research regression only; not real generation, Provider cost/quality, independent scientific acceptance or full product release.",
-    "passed": 9216,
-    "appliesToCurrentPythonSource": false,
+    "passed": 9255,
+    "appliesToCurrentPythonSource": true,
     "matchesLoadedRuntime": false,
-    "proof": "deep-research-evidence/comparison-integrated-joint-full-20261117.json"
+    "proof": "deep-research-evidence/comparison-resource-parser-integrated-full-20261117.json"
   },
   "postFullRegressionValidation": {
     "scope": "PDF Form parser optimization only",
@@ -16793,11 +16793,11 @@
   },
   "comparisonRealRetestReadiness20261117": {
     "ready": false,
-    "reason": "Definite parser failures now bounded per physical batch; actual exit cause unconfirmed and11-point synthesis admission still unresolved. Candidate not full-regressed/loaded.",
-    "proof": "deep-research-evidence/comparison-own-row-label-diagnosis-20261117.json",
+    "reason": "Full candidate regression passed; exact candidate loading and fresh runtime preservation snapshot pending before one real attempt4.",
+    "proof": "deep-research-evidence/comparison-resource-parser-integrated-full-20261117.json",
     "newModelCalls": 0,
     "scientificCredit": 0,
-    "next": "Resolve resource-aware draft admission and unverified overflow retention using archived response; integrated full regression before any further paid test."
+    "next": "Load exact d25a35249 candidate, verify preservation, submit unique attempt4 once, save raw and restore after settled terminal result."
   },
   "comparisonAuthorColumn20261117": {
     "status": "full_offline_and_saved_consumer_passed_not_live_accepted",
@@ -16892,7 +16892,7 @@
     "originalFailureCauseReproduced": false
   },
   "comparisonDraftAllocation20261117": {
-    "status": "related_checks_passed_full_pending",
+    "status": "full_regression_passed_runtime_pending",
     "policyVersion": 2,
     "relatedTests": 151,
     "junit": "tmp/comparison-draft-allocation-related-20261117.xml",
@@ -16902,6 +16902,7 @@
     "isolatedReason": "internal_reference_in_prose",
     "runtimeLoaded": false,
     "newModelCalls": 0,
-    "scientificCredit": 0
+    "scientificCredit": 0,
+    "fullRegression": "deep-research-evidence/comparison-resource-parser-integrated-full-20261117.json"
   }
 }
