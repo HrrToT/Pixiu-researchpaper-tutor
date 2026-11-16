@@ -499,6 +499,9 @@ class TrackedLLMInvoker:
                    and type(transport_record.get('factualDecisionContractVersion')) is int
                    and transport_record['factualDecisionContractVersion']==2 else {}))
         
+        from services.deep_research.native_schema_receipt import annotate as annotate_native_schema
+        response = annotate_native_schema(response, extra_body or {})
+
         # Settle with actual usage delta
         token_delta = actual_tokens - (estimated_input + max_output)
         settlement_delta = {"tokens": token_delta} if token_delta != 0 else {}
