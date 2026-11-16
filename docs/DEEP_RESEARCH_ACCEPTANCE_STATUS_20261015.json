@@ -3,21 +3,21 @@
   "objective": "Complete DR0-DR5 in DEEP_RESEARCH_DESIGN_20261012.md without redefining success around implemented subsets.",
   "overall": "incomplete",
   "currentFullOfflineRegression": {
-    "sourceCommit": "1d41a4d57bd319a4724527365713d16f20b02108",
-    "modules": 480,
+    "sourceCommit": "cf24fe32c5535e8df0277266e208c5eddae28c70",
+    "modules": 481,
     "failures": 0,
     "errors": 0,
     "skipped": 0,
     "sourceUnchanged": true,
-    "baselineCases": 9087,
-    "retainedBaselineCases": 9087,
+    "baselineCases": 9124,
+    "retainedBaselineCases": 9124,
     "missingBaselineCases": [],
-    "elapsedSeconds": 440.38,
+    "elapsedSeconds": 452.08,
     "boundary": "Complete current offline research regression only; not real generation, Provider cost/quality, independent scientific acceptance or full product release.",
-    "passed": 9124,
-    "appliesToCurrentPythonSource": false,
+    "passed": 9154,
+    "appliesToCurrentPythonSource": true,
     "matchesLoadedRuntime": false,
-    "proof": "deep-research-evidence/comparison-source-repair-full-20261117.json"
+    "proof": "deep-research-evidence/comparison-author-column-full-20261117.json"
   },
   "postFullRegressionValidation": {
     "scope": "PDF Form parser optimization only",
@@ -16793,19 +16793,20 @@
   },
   "comparisonRealRetestReadiness20261117": {
     "ready": false,
-    "reason": "Author-column source/variant/numeric and semantic counterexamples passed; current integrated source still requires full regression and exact candidate runtime load.",
+    "reason": "Integrated full offline passed on exact source; candidate runtime load and live previous-attempt settlement check remain required.",
     "proof": "deep-research-evidence/comparison-own-row-label-diagnosis-20261117.json",
     "newModelCalls": 0,
     "scientificCredit": 0,
-    "next": "Complete frozen full regression before loading and one eligible real comparison."
+    "next": "Load exact candidate and run one bounded D2-BASELINE-COMPRESSION attempt2 after authoritative settlement check."
   },
   "comparisonAuthorColumn20261117": {
-    "status": "related_offline_and_saved_consumer_passed_full_pending",
+    "status": "full_offline_and_saved_consumer_passed_not_live_accepted",
     "proof": "deep-research-evidence/comparison-author-column-20261117.json",
     "relatedTests": 628,
     "contextTests": 30,
     "newModelCalls": 0,
     "scientificCredit": 0,
-    "next": "Freeze source for complete regression, then load exact candidate before eligible bounded real comparison."
+    "next": "Freeze source for complete regression, then load exact candidate before eligible bounded real comparison.",
+    "fullProof": "deep-research-evidence/comparison-author-column-full-20261117.json"
   }
 }
