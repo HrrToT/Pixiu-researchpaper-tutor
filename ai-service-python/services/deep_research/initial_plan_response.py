@@ -56,8 +56,9 @@ def parse(text):
         'duplicates':duplicates,'scientificApproval':False}
 
 
-def validate_shape(plan,question):
+def validate_shape(plan,question,*,comparison_roles=False):
     """Require the new requested shape before existing semantic/scope checks."""
+    if type(comparison_roles) is not bool:raise ValueError('Invalid comparison planning policy')
     def exact(value,keys):
         if not isinstance(value,dict) or set(value)!=set(keys.split()):
             raise ValueError('Invalid initial plan fields')
@@ -73,7 +74,11 @@ def validate_shape(plan,question):
         if not isinstance(item['obligations'],list) or not 1<=len(item['obligations'])<=2:
             raise ValueError('Initial plan needs1-2 obligations per item')
         for o in item['obligations']:
-            exact(o,'obligationId question requiredSources searchQuery purpose requestExcerpt completionCriteria')
+            exact(o,'obligationId question requiredSources searchQuery purpose requestExcerpt completionCriteria'
+                  + (' comparisonRole' if comparison_roles else ''))
+            if comparison_roles:
+                from services.deep_research.comparison_intent import validate_role
+                validate_role(o,question)
             for key in ('obligationId','question','searchQuery','requestExcerpt'):text(o[key])
             if o['purpose'] not in ('answer_requirement','supporting_research'):
                 raise ValueError('Invalid initial plan purpose')

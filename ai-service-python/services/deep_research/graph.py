@@ -367,8 +367,9 @@ Return a JSON ARRAY of plan items, NOT an object with items field."""
             from services.deep_research.initial_plan_correction import normalize_request_excerpts
             parsed,excerpt_changes=normalize_request_excerpts(record,parsed,question)
             from services.deep_research.initial_plan_response import enabled as initial_plan_response_enabled,validate_shape as validate_initial_plan_shape
+            from services.deep_research.comparison_intent import enabled as comparison_intent_enabled
             if initial_plan_response_enabled(record):
-                try:validate_initial_plan_shape(parsed,question)
+                try:validate_initial_plan_shape(parsed,question,**({'comparison_roles':True} if comparison_intent_enabled(record) else {}))
                 except ValueError as exc:return invalid_plan(exc)
 
             try:
@@ -391,7 +392,8 @@ Return a JSON ARRAY of plan items, NOT an object with items field."""
                 try:
                     validated, requirement_changes = normalize_generated_requirements(validated, question,
                         literal_questions=grounded(record),literal_imperatives=imperative_grounded(record),atomic_dimensions=dimensions_enabled(record),
-                        **({'compound_questions':True} if type(record.get('requestGroundingContractVersion')) is int and record['requestGroundingContractVersion']==4 else {}))
+                        **({'compound_questions':True} if type(record.get('requestGroundingContractVersion')) is int and record['requestGroundingContractVersion']==4 else {}),
+                        **({'comparison_roles':True} if comparison_intent_enabled(record) else {}))
                     validated = validate_plan(validated)
                 except ValueError as exc:
                     return invalid_plan(exc)
@@ -458,6 +460,11 @@ Return a JSON ARRAY of plan items, NOT an object with items field."""
                 validated,access_projection=project_access(validated,question, **({'citation_access':True} if record['accessRequestProjectionContractVersion']==2 else {}))
                 validated=validate_plan(validated)
                 validate_completion_criteria(validated,required=criteria_required)
+
+            from services.deep_research.comparison_intent import enabled as comparison_intent_enabled, validate_plan as validate_comparison_plan
+            if comparison_intent_enabled(record):
+                try:validate_comparison_plan(validated,question)
+                except ValueError as exc:return invalid_plan(exc)
 
             plan_ids = [item["itemId"] for item in validated]
             from services.deep_research.continuation import rebind_inherited_state

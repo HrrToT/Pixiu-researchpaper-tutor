@@ -1,0 +1,30 @@
+{
+  "asOf": "2026-11-16",
+  "scope": "Typed comparison roles: existing planner, source-local facts, joint goals, repair ownership and publication layout v3",
+  "tests": 214,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "junit": "tmp/comparison-intent-final-reviewed-20261116.xml",
+  "sourceSha256": {
+    "ai-service-python/services/deep_research/comparison_cells.py": "dc86acc30c3d58b5d0bb5af26f9599604b70f581e3a1c850fb4be2c0b62fca59",
+    "ai-service-python/services/deep_research/comparison_generation.py": "f39a619c8fd614fa9acb3ae6d983d9d7978220b8d102cd9fa32a6880d69a001c",
+    "ai-service-python/services/deep_research/comparison_presentation.py": "d6932c1fe3b8ff754d454f76e5ebe2fdc4111669fbd4a77aa3062b0305e1dbb4",
+    "ai-service-python/services/deep_research/comparison_intent.py": "3c826d19026a5924b39263567c1af9cf2a66d270e14c32428e61affc87d5834f",
+    "ai-service-python/services/deep_research/design_drafting.py": "0cc35852f7fb7a229504bca67e4b883f8696178e6ce482daa6e3919801659718",
+    "ai-service-python/services/deep_research/evidence_requirements.py": "2a3f5ab0e19df4a420ecc41d324a198a70fbfe5a11fc250d8cf3859a834d2fe4",
+    "ai-service-python/services/deep_research/facade.py": "a6beab2c7ba12c42e1d436ba6fd3ddc960258509aeb637b86b53ff06731004cb",
+    "ai-service-python/services/deep_research/graph.py": "1e6627f9e23ed1aca2f29da39287d647970c9473f4607c857743e2fb57c7ea4b",
+    "ai-service-python/services/deep_research/initial_plan_instructions.py": "b9dfb2480b40cbfa0ee8b76086c79eef4cada2f25469a2f279d57ea4fb32c7e8",
+    "ai-service-python/services/deep_research/initial_plan_response.py": "94f89c9efac11a2fab7c7cc342c06d35035fe8796302d483837d82063b79807d",
+    "ai-service-python/services/deep_research/reporting.py": "136964cf0cf4071c1ae5a497c8deb301ccaf57de25f722ca6373997182964139",
+    "ai-service-python/services/deep_research/repository.py": "d62fdd603013ecb5c12c1eb435748a6b8a8eaa6de55ac0708824d15025b863fc",
+    "ai-service-python/tests/test_deep_research_comparison_intent.py": "9cea362bec49015f44b5baa00175caf28e373adc5e836158bede15ce31fb7622"
+  },
+  "modelCalls": 0,
+  "runtimeReloaded": false,
+  "fullRegressionCoversCandidate": false,
+  "scientificContentAccepted": false,
+  "historicalV8Replayed": false,
+  "remaining": "Whole-audit input capacity, stable current-source full regression, eligible real content, independent H1-H6 and product/release gates"
+}

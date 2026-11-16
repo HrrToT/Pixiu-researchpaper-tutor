@@ -98,7 +98,7 @@ def _requested_type(text):
     return 'explanation' if _EXPLAIN.search(text) else 'identification'
 
 
-def normalize_generated_requirements(plan, question, *, literal_questions=False,literal_imperatives=False,atomic_dimensions=False,compound_questions=False):
+def normalize_generated_requirements(plan, question, *, literal_questions=False,literal_imperatives=False,atomic_dimensions=False,compound_questions=False,comparison_roles=False):
     """Change only the initial AI plan, never a saved human plan edit.
 
     Separate literal human questions when one generated criterion merged them.
@@ -124,6 +124,12 @@ def normalize_generated_requirements(plan, question, *, literal_questions=False,
             for criterion in original:
                 criterion['requirement'] = neutral(criterion['requirement'], oid, 'requirement')
             excerpt = obligation.get('requestExcerpt', '')
+            if comparison_roles:
+                from services.deep_research.comparison_intent import validate_role
+                role = validate_role(obligation, question)
+                # The longer context excerpt can straddle adjacent dimensions.
+                # Its typed short span identifies this obligation's actual axis.
+                excerpt = role['requestExcerpt']
             if not isinstance(excerpt, str) or not excerpt or not any(excerpt in layer for layer in human):
                 continue
             parts = _request_parts(excerpt) if literal_imperatives else _question_parts(excerpt)

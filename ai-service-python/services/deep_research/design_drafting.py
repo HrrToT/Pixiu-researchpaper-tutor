@@ -180,7 +180,7 @@ def synthesis_obligations(plan):
     result = []
     for item in plan:
         for obligation in item.get('obligations', []):
-            keys = ('obligationId', 'question', 'purpose', 'requiredSources')
+            keys = ('obligationId', 'question', 'purpose', 'requiredSources', 'comparisonRole')
             if obligation.get('purpose') != 'supporting_research':
                 keys += ('requestExcerpt', 'completionCriteria')
             result.append({key: obligation[key] for key in keys if key in obligation})

@@ -15,7 +15,7 @@
     "elapsedSeconds": 613.61,
     "boundary": "Complete current offline research regression only; not real generation, Provider cost/quality, independent scientific acceptance or full product release.",
     "passed": 9049,
-    "appliesToCurrentPythonSource": true,
+    "appliesToCurrentPythonSource": false,
     "matchesLoadedRuntime": false,
     "proof": "deep-research-evidence/comparison-axes-page-batch-full-20261116.json"
   },
@@ -16717,5 +16717,14 @@
       "scientificContentAccepted": false
     },
     "next": "Full offline candidate passed. Typed per-paper/joint/supporting comparison planning contract is specified but not implemented; preserve v8 unknown and all scientific gates. No runtime load or new model call in this stage."
+  },
+  "comparisonTypedIntent20261116": {
+    "status": "implemented_related_offline_passed_not_live_accepted",
+    "proof": "deep-research-evidence/comparison-typed-intent-20261116.json",
+    "tests": 214,
+    "newModelCalls": 0,
+    "loadedRuntime": false,
+    "wholeAuditCapacityPassed": false,
+    "independentCredit": 0
   }
 }

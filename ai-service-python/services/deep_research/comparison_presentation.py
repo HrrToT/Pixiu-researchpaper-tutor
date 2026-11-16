@@ -16,8 +16,16 @@ def audit_view(value, claims):
               for row in value['layout']]
     refs = list(dict.fromkeys(ref for claim in claims for ref in claim.get('evidenceRefs', [])))
     table, _ = render_table(value, claims, {ref: i+1 for i, ref in enumerate(refs)}, counting=True)
+    if value['version'] == 3:
+        import hashlib
+        # Full accepted text and conditions are already in the audit's claims.
+        # Keep the exact table bound without duplicating all scientific prose.
+        table = {'format':'markdown_table', 'present':bool(table),
+                 'cellsFromAcceptedClaimIds':True,
+                 'renderedTextSha256':hashlib.sha256(table.encode('utf-8')).hexdigest()}
     return {'version': value['version'], 'sources': deepcopy(value['sources']), 'layout': layout,
-            'sections': sections(value, claims), 'table': table}
+            'sections': sections(value, claims), 'table': table,
+            **({'jointGoals':deepcopy(value['jointGoals'])} if value['version']==3 else {})}
 
 
 def audit_digest(value, claims):
@@ -38,10 +46,12 @@ def revalidate_audit(audit, value, claims):
 
 
 def metadata(draft):
-    shared = type(draft.get('layoutVersion')) is int and draft['layoutVersion'] == 2
+    version = draft.get('layoutVersion',1)
+    shared = type(version) is int and version in (2,3)
     fields = ('obligationId', 'question', 'source', 'claimIds')
     if shared: fields += ('axisId', 'axisTitle')
-    return {'version': 2 if shared else 1, 'sources': deepcopy(draft['sources']),
+    return {'version': version if shared else 1,
+            **({'jointGoals':deepcopy(draft['jointGoals'])} if version==3 else {}), 'sources': deepcopy(draft['sources']),
             'layout': [{k: deepcopy(row[k]) for k in
                         fields}
                        for row in draft['layout']]}
@@ -71,7 +81,7 @@ def render_table(value, claims, numbers, *, counting=False):
     columns = list(dict.fromkeys(row['source'] for row in value['layout']))
     groups = {}
     for row in value['layout']:
-        shared = value['version'] == 2
+        shared = value['version'] in (2,3)
         key = row['axisId'] if shared else row['obligationId']
         if key not in groups:
             groups[key] = {'question': row['axisTitle'] if shared else row['question'], 'cells': {}}
