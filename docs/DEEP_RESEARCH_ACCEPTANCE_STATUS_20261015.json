@@ -3,8 +3,8 @@
   "objective": "Complete DR0-DR5 in DEEP_RESEARCH_DESIGN_20261012.md without redefining success around implemented subsets.",
   "overall": "incomplete",
   "currentFullOfflineRegression": {
-    "sourceCommit": "aff24567bbaae80171578e9825326b5ecd8c2377",
-    "modules": 472,
+    "sourceCommit": "5fcc9da41160768b2022e43cf0bc96cbea68cdb7",
+    "modules": 475,
     "failures": 0,
     "errors": 0,
     "skipped": 0,
@@ -12,12 +12,12 @@
     "baselineCases": 8978,
     "retainedBaselineCases": 8978,
     "missingBaselineCases": [],
-    "elapsedSeconds": 655.49,
-    "passed": 8978,
-    "appliesToCurrentPythonSource": false,
+    "elapsedSeconds": 619.2,
+    "boundary": "Complete current offline research regression only; not real generation, Provider cost/quality, independent scientific acceptance or full product release.",
+    "passed": 9024,
+    "appliesToCurrentPythonSource": true,
     "matchesLoadedRuntime": true,
-    "proof": "deep-research-evidence/integrated-repair-488-confirmed-20261116.json",
-    "boundary": "Complete current offline research regression only; not real generation, Provider cost/quality, independent scientific acceptance or full product release."
+    "proof": "deep-research-evidence/comparison-presentation-full-native-20261116.json"
   },
   "postFullRegressionValidation": {
     "scope": "PDF Form parser optimization only",
@@ -16586,5 +16586,23 @@
     "scientificContentAccepted": false,
     "fullRegression": "pending final rendering and publication integration",
     "next": "Integrate verified-cell rendering and publication/counting, preserve whole-question coverage and repaired-cell source/version ownership, then freeze one coherent candidate for full regression and a bounded complete comparison."
+  },
+  "comparisonPresentation20261116": {
+    "sourceCommit": "5fcc9da41160768b2022e43cf0bc96cbea68cdb7",
+    "relatedTests": 66,
+    "fullTests": 9024,
+    "proof": "deep-research-evidence/comparison-presentation-audit-20261116.json",
+    "environmentProof": "deep-research-evidence/comparison-presentation-environment-20261116.json",
+    "sourceDefault": 0,
+    "scientificContentAccepted": false,
+    "candidateLoad": "verified",
+    "next": "Observe the same D2-v7 run; preserve raw result and review full comparison before restoring default runtime.",
+    "candidateProof": "deep-research-evidence/comparison-candidate-load-20261116.json",
+    "realCase": {
+      "id": "D2-VQ-v1-v7",
+      "runId": "dr_run_8611ceebde8756818fd9fbf5d6d05176",
+      "status": "running",
+      "automaticRetry": false
+    }
   }
 }
