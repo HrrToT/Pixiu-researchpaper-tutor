@@ -99,8 +99,7 @@ def renderer(question, requirements, claims, metadata, comparison, *, catalog=No
     policy = CORE + LAYOUT
     if object_envelope:
         policy=policy.replace('Return ONLY {"items":[ROWS]}, one ordinary ROW per fixed obligationId:',
-            'Return ONLY {"items":[ROWS],"auditType":"answer_coherence","coherent":true,"issues":[]}. '
-            'items contains one ordinary ROW per fixed obligationId:')
+            'items: one ordinary ROW per fixed obligationId:')
     if task_sources or request_semantics == 2:
         policy += ACCESS
     if catalog is not None:
@@ -112,7 +111,7 @@ def renderer(question, requirements, claims, metadata, comparison, *, catalog=No
         policy += LIMITS
     if coherence:
         policy += (COHERENCE.replace('Append INSIDE items (NEVER at root):',
-            'Use these coherence fields at root (NEVER inside items):') if object_envelope else COHERENCE)
+            'Root coherence fields (never items):') if object_envelope else COHERENCE)
     def render(evidence):
         return (policy + '\nComplete exact decision inputs (evidence detects omissions, never replaces answer):\n'
                 + input_text({**data, 'evidence':evidence}))

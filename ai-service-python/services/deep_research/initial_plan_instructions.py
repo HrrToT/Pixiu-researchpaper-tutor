@@ -74,12 +74,12 @@ def prompt(record,data_guidance):
         'Exception to the8-character excerpt minimum: for answer_requirement, if the entire human '
         'question is shorter than8 characters, use that entire literal question. '
         'supporting_research still requires at least8 literal characters.\n' if response_enabled(record) else '')
-    from services.deep_research.comparison_intent import enabled as comparison_enabled, GUIDANCE
+    from services.deep_research.comparison_intent import enabled as comparison_enabled, guidance as comparison_guidance
     comparison_rules = ''
     if comparison_enabled(record):
         shape['items'][0]['obligations'][0]['comparisonRole'] = {
             'kind':'per_paper','label':'<short axis label>','requestExcerpt':'<literal axis substring>'}
-        comparison_rules = '\n' + GUIDANCE
+        comparison_rules = '\n' + comparison_guidance(record)
     return (RULES+comparison_rules+response_rule+'\n'+data_guidance+'\n'+PLAN_GUIDANCE_V2
         +'\nInput data (goals, not paper facts):\n'+json.dumps(inputs,ensure_ascii=False,separators=(',',':'))
         +'\nOnly output shape (choose appropriate responseType and purpose values):\n'

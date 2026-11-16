@@ -16793,11 +16793,11 @@
   },
   "comparisonRealRetestReadiness20261117": {
     "ready": false,
-    "reason": "Literal reuse now saves8 of61 archived location calls with exact evidence/journal identity; shared reported numerical example is not representable by current joint-kind contract. Source not full-regressed or loaded.",
+    "reason": "Integrated reported-joint protocol, exact literal reuse and page diagnostics have related/source/capacity checks; complete current-source regression and exact load still required. Historical178s extraction not root-cause reproduced.",
     "proof": "deep-research-evidence/comparison-own-row-label-diagnosis-20261117.json",
     "newModelCalls": 0,
     "scientificCredit": 0,
-    "next": "Support bounded source-reported joint examples with strict original binding/kind checks and preserve complete comparison scope; then integrated capacity/full regression before one real comparison."
+    "next": "Freeze integrated candidate for complete regression, then authoritative candidate readiness and one bounded complete comparison. Retain fixed whole budget and no automatic retry."
   },
   "comparisonAuthorColumn20261117": {
     "status": "full_offline_and_saved_consumer_passed_not_live_accepted",
@@ -16850,6 +16850,14 @@
     "proof": "deep-research-evidence/source-passage-goal-reuse-20261117.json",
     "relatedTests": 197,
     "avoidedArchivedLocationCalls": 8,
+    "newModelCalls": 0,
+    "scientificCredit": 0,
+    "runtimeLoaded": false
+  },
+  "comparisonJointReports20261117": {
+    "status": "related_offline_source_counterfactual_and_capacity_passed_full_pending",
+    "proof": "deep-research-evidence/comparison-joint-reports-20261117.json",
+    "relatedTests": 548,
     "newModelCalls": 0,
     "scientificCredit": 0,
     "runtimeLoaded": false

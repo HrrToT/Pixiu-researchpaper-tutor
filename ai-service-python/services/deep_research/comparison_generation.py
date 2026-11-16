@@ -21,7 +21,9 @@ def enabled(record):
 def planning_options(record, question):
     from services.deep_research.comparison_intent import enabled as intent_enabled
     if intent_enabled(record):
-        return {'shared_axes':True,'typed_roles':True,'question':question}
+        from services.deep_research.comparison_joint_reports import enabled as joint_reports_enabled
+        return {'shared_axes':True,'typed_roles':True,'question':question,
+                **({'joint_reports':True} if joint_reports_enabled(record) else {})}
     # The frozen review profile separates new runs from historical cell inputs.
     return ({'shared_axes': True, 'question': question}
             if type(record.get('factualReviewContractVersion')) is int
@@ -51,6 +53,9 @@ def render(record, question, requirements, sources, evidence, tables, limit, max
                        'dataset/metric inventory unless the user requests it. Never omit a requested '
                        'dimension or a material qualification to shorten the answer.\n' if plan['version']==3 else '')
     table_guidance = GUIDANCE
+    if plan.get('jointReports') is True:
+        from services.deep_research.comparison_joint_reports import GENERATION
+        joint_routing=joint_routing.replace('Joint judgement targets','Joint answer targets')+'\n'+GENERATION+'\n'
     if plan['version'] == 3:
         from services.deep_research.table_bindings import reference_guidance
         table_guidance = (GUIDANCE.replace('packet metric key including its arrows',

@@ -23,9 +23,20 @@ def audit_view(value, claims):
         table = {'format':'markdown_table', 'present':bool(table),
                  'cellsFromAcceptedClaimIds':True,
                  'renderedTextSha256':hashlib.sha256(table.encode('utf-8')).hexdigest()}
+    joint_binding={}
+    if value.get('jointReports') is True:
+        import hashlib,json
+        cell_ids={cid for row in layout for cid in row['claimIds']}
+        fields=('claimId','kind','text','conditions','evidenceRefs','tableBindings','obligationIds','scopeExpression','executionSpec')
+        joint=[{k:c[k] for k in fields if k in c} for c in claims
+               if c['claimId'] not in cell_ids and c.get('kind')=='reported']
+        if joint:
+            joint_binding={'jointReportedClaimsSha256':hashlib.sha256(json.dumps(joint,ensure_ascii=False,
+                sort_keys=True,separators=(',',':')).encode()).hexdigest()}
     return {'version': value['version'], 'sources': deepcopy(value['sources']), 'layout': layout,
             'sections': sections(value, claims), 'table': table,
-            **({'jointGoals':deepcopy(value['jointGoals'])} if value['version']==3 else {})}
+            **({'jointGoals':deepcopy(value['jointGoals'])} if value['version']==3 else {}),
+            **({'jointReports':True} if value.get('jointReports') is True else {}),**joint_binding}
 
 
 def audit_digest(value, claims):
@@ -51,6 +62,7 @@ def metadata(draft):
     fields = ('obligationId', 'question', 'source', 'claimIds')
     if shared: fields += ('axisId', 'axisTitle')
     return {'version': version if shared else 1,
+            **({'jointReports':True} if version==3 and draft.get('jointReports') is True else {}),
             **({'jointGoals':deepcopy(draft['jointGoals'])} if version==3 else {}), 'sources': deepcopy(draft['sources']),
             'layout': [{k: deepcopy(row[k]) for k in
                         fields}

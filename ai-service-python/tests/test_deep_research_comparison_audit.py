@@ -52,7 +52,7 @@ def audit(mutation=None, evidence=None, wire_mode=None):
         if wire_mode is not None:
             from services.deep_research.structured_output import normalize
             if wire_mode=='object_v1':
-                assert 'Use these coherence fields at root (NEVER inside items)' in prompt
+                assert 'Root coherence fields (never items)' in prompt
                 return normalize(node,{'content':json.dumps({'items':rows[:-1],**rows[-1]})},comparison_audit_envelope=True)
             assert 'Return ONLY {"items":[ROWS]}' in prompt and 'INSIDE items (NEVER at root)' in prompt
             data={'items':rows} if wire_mode=='valid' else {'items':rows[:-1],**rows[-1]}

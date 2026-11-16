@@ -12,11 +12,13 @@ from services.deep_research.source_labels import source_display_title
 _POINT_KEYS = {'kind', 'body', 'evidenceRefs', 'tableBindings', 'draftingBasis', 'detailLevel'}
 
 
-def plan_cells(requirements, sources, evidence, *, shared_axes=False, question=None, typed_roles=False):
+def plan_cells(requirements, sources, evidence, *, shared_axes=False, question=None, typed_roles=False,joint_reports=False):
     """Keep every frozen obligation, with source-local citation permissions."""
     if (type(shared_axes) is not bool or type(typed_roles) is not bool
             or (shared_axes or typed_roles) and not isinstance(question, str)):
         raise ValueError('Shared axes require the exact user question')
+    if type(joint_reports) is not bool or joint_reports and not typed_roles:
+        raise ValueError('Joint reports require typed roles')
     if not isinstance(sources, dict) or not sources or not isinstance(requirements, list):
         raise ValueError('Invalid comparison sources or requirements')
     if any(not isinstance(k, str) or not k or not isinstance(v, dict) for k, v in sources.items()):
@@ -81,6 +83,7 @@ def plan_cells(requirements, sources, evidence, *, shared_axes=False, question=N
                           'preferredEvidenceIds': [eid for eid, row in rows.items()
                                                    if row['source'] == source and oid in row['obligations']]})
     return {'version': 3 if typed_roles else 2 if shared_axes else 1,
+            **({'jointReports':True} if joint_reports else {}),
             **({'roles': roles} if typed_roles else {}), 'requirements': deepcopy(requirements),
             'sources': deepcopy(sources), 'evidence': rows, 'cells': cells}
 
@@ -154,7 +157,7 @@ def compile_cells(payload, plan, *, max_claims):
             permitted = ({eid for eid, row in plan['evidence'].items() if row['source'] in aliases}
                          if typed else set(plan['evidence']))
             claim = _point(point['claim'], cid, point['obligationIds'], permitted,
-                           {'inference', 'proposal', 'suggestion'}, plan['evidence'])
+                           {'inference', 'proposal', 'suggestion'} | ({'reported'} if typed and plan.get('jointReports') is True else set()), plan['evidence'])
         except ValueError as exc:
             errors.append({'conclusionIndex': index, 'reason': str(exc)}); continue
         claims.append(claim); conclusion_ids.append(cid)
@@ -169,6 +172,7 @@ def compile_cells(payload, plan, *, max_claims):
     if typed:
         unresolved = [oid for oid in unresolved if oid not in covered_joint_goals]
     return {**({'layoutVersion': plan['version']} if plan['version'] in (2,3) else {}),
+            **({'jointReports':True} if typed and plan.get('jointReports') is True else {}),
             **({'jointGoals': [deepcopy(role) for role in plan['roles'].values() if role['kind'] == 'joint']}
                if typed else {}),
             'report': {'sections': sections, 'claims': claims}, 'layout': layout,

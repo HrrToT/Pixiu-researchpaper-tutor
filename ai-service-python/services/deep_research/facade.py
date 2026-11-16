@@ -303,6 +303,7 @@ class ResearchFacade:
             "comparisonCellsContractVersion": self._comparison_cells_version,
             "comparisonPlanningContractVersion": 2 if self._comparison_cells_version == 1 else 0,
             "comparisonAuditEnvelopeContractVersion": 1 if self._comparison_cells_version == 1 else 0,
+            "comparisonJointReportsContractVersion": 1 if self._comparison_cells_version == 1 else 0,
             "reportingOwnershipContractVersion": 1,
             "draftValidationContractVersion": 1,
             "factualRepairPromptContractVersion": 3,

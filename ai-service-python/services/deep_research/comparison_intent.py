@@ -58,3 +58,10 @@ the existing obligation requestExcerpt still obeys its original minimum/context 
 Labels describe answer structure, never guessed facts. Every role binds actual user text.
 Required sources, original goals, criteria, 1-4 items and at most2 obligations per item remain.
 This role grants no source permission, factual support or completeness approval.'''
+
+
+def guidance(record):
+    from services.deep_research.comparison_joint_reports import enabled,PLANNING
+    if not enabled(record):return GUIDANCE
+    return GUIDANCE.replace('Use joint for cross-paper comparability, tradeoffs and conditional choice. It requires a joint\n'
+        'judgement, not another summary of each abstract.',PLANNING)
