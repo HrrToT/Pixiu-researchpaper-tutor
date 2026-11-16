@@ -141,10 +141,13 @@ def test_server_can_select_an_isolated_rollout_without_a_client_override(tmp_pat
     facade=ResearchFacade(repo,lambda **kw:None,llm_client=object(),comparison_cells_version=1)
     try:
         run,_=facade.create({'workspaceTaskId':'t','operationKey':'op','question':'比较',
-                            'comparisonCellsContractVersion':0},start_async=False)
+                            'comparisonCellsContractVersion':0,'factualReviewContractVersion':3},start_async=False)
         assert run['comparisonCellsContractVersion']==1
+        assert run['factualReviewContractVersion']==4
         with pytest.raises(ValueError,match='Immutable'):
             repo.update_run(run['runId'],lambda r:{**r,'comparisonCellsContractVersion':0})
+        with pytest.raises(ValueError,match='Immutable'):
+            repo.update_run(run['runId'],lambda r:{**r,'factualReviewContractVersion':3})
     finally:facade.shutdown()
 
 

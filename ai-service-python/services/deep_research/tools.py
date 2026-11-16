@@ -370,7 +370,10 @@ class TrackedLLMInvoker:
         initial_plan_response=structured and initial_plan_response_enabled(transport_record,node)
         if initial_plan_response:request_identity['initialPlanResponseContractVersion']=1
         args_digest = digest(request_identity)
-        if bounded_review and self._run_record:
+        from services.deep_research.factual_review import cell_review_enabled
+        guarded_review = bounded_review or (self._run_record and node == 'verify'
+                                           and cell_review_enabled(transport_record))
+        if guarded_review and self._run_record:
             from services.deep_research.factual_review import admission
             decision=admission(transport_record,self._call_history(run_id) if self._call_history else [],args_digest)
             if decision['allowed'] is not True:

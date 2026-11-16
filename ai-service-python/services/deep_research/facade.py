@@ -307,7 +307,7 @@ class ResearchFacade:
             "coverageInputContractVersion": 1,
             "coverageInstructionsContractVersion": 1,
             "coverageLimitContractVersion": 1,
-            "factualReviewContractVersion": 3,
+            "factualReviewContractVersion": 4 if self._comparison_cells_version == 1 else 3,
             "sourceVersionReviewContractVersion": 1,
             "citationPresentationContractVersion": 4,
             "configurationConsistencyContractVersion": 2,

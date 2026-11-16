@@ -15,7 +15,7 @@
     "elapsedSeconds": 500.95,
     "boundary": "Complete current offline research regression only; not real generation, Provider cost/quality, independent scientific acceptance or full product release.",
     "passed": 9026,
-    "appliesToCurrentPythonSource": true,
+    "appliesToCurrentPythonSource": false,
     "matchesLoadedRuntime": false,
     "proof": "deep-research-evidence/comparison-missing-draft-full-native-20261116.json"
   },
@@ -16596,7 +16596,7 @@
     "sourceDefault": 0,
     "scientificContentAccepted": false,
     "candidateLoad": "verified",
-    "next": "D2-v8 candidate load in progress; one submission after verified health/history, temporary idle-sleep protection through observation and restore.",
+    "next": "D2-v8 paused at unknown verification; default runtime restored with all data exact. Preserve unknown identity and do not bypass same-case settlement. Finish source-faithful comparison axes/joint judgement design and whole-case scheduling offline before another eligible real development case.",
     "candidateProof": "deep-research-evidence/comparison-candidate-load-20261116.json",
     "realCase": {
       "id": "D2-VQ-v1-v7",
@@ -16626,10 +16626,34 @@
   },
   "comparisonCellsV8Window20261116": {
     "attempt": 8,
-    "status": "candidate_loading",
+    "status": "paused",
     "automaticRetry": false,
     "executionTrace": "tmp/dr-acceptance-receipts/D2-VQ-v1-v8.execution.json",
     "sourceCommit": "68bfc26e090158a8680f9072c9433e93e08d6acc",
-    "scientificContentAccepted": false
+    "scientificContentAccepted": false,
+    "runId": "dr_run_6724066c597453569aea8e6cda495339",
+    "errorCode": "unresolved_unknown",
+    "proof": "deep-research-evidence/comparison-cells-d2-v8-20261116.json",
+    "defaultRuntimeRestored": true,
+    "restoreProof": "deep-research-evidence/comparison-v8-default-restored-20261116.json",
+    "candidateLoadProof": "deep-research-evidence/comparison-candidate-v8-load-20261116.json"
+  },
+  "comparisonPointReview20261116": {
+    "newServerProfile": 4,
+    "legacyProfile": 3,
+    "scope": "New server-selected comparison cells only; whole-answer length no longer disables review time admission. Complex targets retain full reasoning profile; short eligible points use bounded low effort.",
+    "mechanismPolicyInherited": 3,
+    "relatedTests": 55,
+    "junit": "tmp/comparison-point-review-final-20261116.xml",
+    "proof": "deep-research-evidence/comparison-point-review-admission-20261116.json",
+    "actualLastRequestCounterfactual": {
+      "remainingSeconds": 3,
+      "newSendAllowed": false,
+      "originalRunUnchanged": true
+    },
+    "productionLoaded": false,
+    "fullRegression": "pending coherent comparison scheduling/axis changes",
+    "scientificContentAccepted": false,
+    "newModelCalls": 0
   }
 }

@@ -4,7 +4,16 @@ from datetime import datetime, UTC
 OPTION='_bounded_factual_review'
 
 
+def cell_review_enabled(record):
+    """Review independent comparison points, regardless of total answer length."""
+    from services.deep_research.comparison_generation import enabled as cells_enabled
+    return (type(record.get('factualReviewContractVersion')) is int
+            and record['factualReviewContractVersion'] == 4 and cells_enabled(record))
+
+
 def enabled(record):
+    if cell_review_enabled(record):
+        return True
     if type(record.get('factualReviewContractVersion')) is not int or record['factualReviewContractVersion'] not in (1,2,3):
         return False
     from services.deep_research.answer_constraints import requested_character_limit

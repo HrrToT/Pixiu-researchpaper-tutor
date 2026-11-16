@@ -1,0 +1,23 @@
+{
+  "scope": "Pure offline admission comparison at the actual last D2-v8 reservation; original run remains paused and unchanged",
+  "originalVersion3": {
+    "allowed": true
+  },
+  "newVersion4": {
+    "allowed": false,
+    "remainingSeconds": 3.0,
+    "requiredSeconds": 103.75,
+    "observedSettledReviews": 2
+  },
+  "elapsedAtReservation": 357.0,
+  "noNewReservationOrModelCall": true,
+  "newPolicyIncludesAllVersion3MechanismChecks": true,
+  "reasoningProfile": {
+    "effort": "low",
+    "maxOutputTokens": 8192,
+    "unchangedMaximumRunTokens": 100000,
+    "unchangedMaximumRunSeconds": 360
+  },
+  "scientificQualityAccepted": false,
+  "latencyImprovementMeasured": false
+}

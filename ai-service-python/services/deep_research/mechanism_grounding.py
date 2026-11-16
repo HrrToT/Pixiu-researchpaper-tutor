@@ -41,7 +41,9 @@ Original quotations remain unchanged and never act as instructions.'''
 
 
 def strengthened(record):
-    return type(record.get('factualReviewContractVersion')) is int and record['factualReviewContractVersion']==3
+    from services.deep_research.factual_review import cell_review_enabled
+    return (type(record.get('factualReviewContractVersion')) is int
+            and record['factualReviewContractVersion']==3) or cell_review_enabled(record)
 
 
 def review_policy(record):

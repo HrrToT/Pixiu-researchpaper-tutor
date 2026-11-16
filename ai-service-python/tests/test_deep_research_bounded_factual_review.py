@@ -23,6 +23,71 @@ def history():
         'argsDigest':'other','reservedAt':'2026-10-20T07:11:52Z','completedAt':'2026-10-20T07:12:55Z'}]
 
 
+def cell_record():
+    current=record()
+    current.update(factualReviewContractVersion=4,comparisonCellsContractVersion=1,
+        authoredBodyContractVersion=3,scopeExpressionContractVersion=5,
+        factualPromptContractVersion=3,synthesisEvidenceContractVersion=6,
+        synthesisInputContractVersion=2,draftValidationContractVersion=1,
+        question='比较两篇论文的机制、成本、质量和速度，并说明可比性。')
+    return current
+
+
+def test_cell_review_does_not_depend_on_an_explicit_whole_answer_character_cap():
+    from services.deep_research.mechanism_grounding import review_policy
+    current=cell_record()
+    assert enabled(current) and review_policy(current)==2
+    for field,value in [('comparisonCellsContractVersion',0),('draftValidationContractVersion',0),
+                        ('factualReviewContractVersion',3),('factualReviewContractVersion',True)]:
+        changed={**current,field:value}
+        assert not enabled(changed)
+    current['state']={'outputKind':'experiment_design'}
+    assert not enabled(current)
+
+
+def test_new_comparison_point_review_refuses_a_three_second_send_before_reservation():
+    current=cell_record();current['budget']['elapsedSeconds']=357
+    provider=Mock();reserve=Mock();complete=Mock()
+    tracked=TrackedLLMInvoker(provider,reserve,complete,run_record_fn=lambda _:current,
+                             call_history_fn=lambda _:history())
+    decision=tracked('r','verify','Full unchanged source evidence and review checks',{OPTION:True})
+    assert decision['notStarted']=='factual_review_time_budget'
+    assert decision['admission']['remainingSeconds']==3
+    provider.invoke.assert_not_called();reserve.assert_not_called();complete.assert_not_called()
+
+
+def test_new_comparison_time_guard_also_covers_points_requiring_the_full_reasoning_profile():
+    current=cell_record();current['budget']['elapsedSeconds']=357
+    provider=Mock();reserve=Mock()
+    tracked=TrackedLLMInvoker(provider,reserve,Mock(),run_record_fn=lambda _:current,
+        call_history_fn=lambda _:[],request_options=research_model_options)
+    # No bounded-review option: complex targets retain the full model profile,
+    # while their sends still require time for verification and publication.
+    result=tracked('r','verify','Complete complex target and all its evidence',{})
+    assert result['notStarted']=='factual_review_time_budget'
+    assert research_model_options('verify',{})['reasoning_effort']=='high'
+    provider.invoke.assert_not_called();reserve.assert_not_called()
+
+
+def test_new_comparison_review_still_retains_the_matching_unknown_identity():
+    from services.deep_research.contracts import UnknownCallError
+    current=cell_record();current['budget']['elapsedSeconds']=0
+    reserve=Mock(return_value=({'callId':'new','reservationToken':'r'},False))
+    from llm.provider import LLMResult,LLMUsage
+    provider=Mock();provider.invoke.return_value=LLMResult(content='[]',provider='fixture',
+        model='fixture',usage=LLMUsage(8,2,10))
+    rows=[]
+    tracked=TrackedLLMInvoker(provider,reserve,Mock(),run_record_fn=lambda _:current,
+                             call_history_fn=lambda _:rows)
+    tracked('r','verify','Same exact request',{OPTION:True})
+    signature=reserve.call_args.kwargs['args_digest']
+    rows.append({'node':'verify','tool':'llm_invoke','args_digest':signature,
+                 'status':'unknown','settled':0})
+    current['budget']['elapsedSeconds']=360;reserve.side_effect=UnknownCallError('new')
+    with pytest.raises(UnknownCallError):tracked('r','verify','Same exact request',{OPTION:True})
+    assert provider.invoke.call_count==1
+
+
 def test_observed_long_reviews_and_final_coverage_prevent_known_late_send_without_weakening_old_path():
     current=record();rows=history();before=deepcopy((current,rows))
     result=admission(current,rows,'new-request')
