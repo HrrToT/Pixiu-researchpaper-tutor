@@ -1314,7 +1314,10 @@ class ResearchFacade:
         from services.deep_research.factual_decision import enabled as factual_decision_enabled
         from services.deep_research.general_advice import enabled as general_advice_enabled
         from services.deep_research.mechanism_grounding import review_policy as mechanism_review_policy
+        from services.deep_research.workflow_representation_review import context as representation_review_context
         checker = BudgetedSemanticChecker(invoker, run_id,
+            workflow_representation_context=lambda claims, context: representation_review_context(
+                self._repo.require_run(run_id), claims, context),
             general_advice_review=lambda: general_advice_enabled(self._repo.require_run(run_id)),
             metric_domains=lambda: self._repo.require_run(run_id).get('state', {}).get('metricDomains'),
             research_question=lambda: effective_question(self._repo.require_run(run_id)),

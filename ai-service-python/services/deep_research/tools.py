@@ -703,9 +703,11 @@ class BudgetedSemanticChecker:
         diagnostic_parameter_ids=False,
         diagnostic_target_structure=False,
         short_circuit_scope_observations=False,
+        workflow_representation_context=None,
     ):
         self._invoke = llm_invoker
         self._run_id = run_id
+        self._workflow_representation_context = workflow_representation_context
         self._metric_domains = metric_domains
         self._research_question = research_question
         self._general_advice_review = general_advice_review
@@ -860,7 +862,15 @@ class BudgetedSemanticChecker:
         metric_domains = self._metric_domains() if callable(self._metric_domains) else self._metric_domains
         from services.deep_research.verification_aliases import (
             encode_verification_inputs, restore_visible_evidence, restore_verdict_evidence)
-        wire_claims, wire_evidence, reverse_aliases = encode_verification_inputs(claims, evidence)
+        from services.deep_research.workflow_representation_review import evidence_refs, remap_refs
+        representation_context = (self._workflow_representation_context(claims, proposal_context)
+                                  if callable(self._workflow_representation_context) else None)
+        representation_refs = evidence_refs(representation_context)
+        wire_claims, wire_evidence, reverse_aliases = encode_verification_inputs(
+            claims, evidence, additional_refs=representation_refs)
+        if representation_context:
+            representation_context = remap_refs(representation_context,
+                                               {full: short for short, full in reverse_aliases.items()})
         from services.deep_research.execution_materialization import verification_claim_view
         wire_claims = [verification_claim_view(c) for c in wire_claims]
         # Omit absent optional wrapper fields only. Typed configuration values,
@@ -895,7 +905,8 @@ class BudgetedSemanticChecker:
             "workflowContractVersion": c.get("workflowContractVersion"),
         }) for c in wire_claims], ensure_ascii=False, separators=(',', ':'))
         
-        referenced = {ref for claim in wire_claims for ref in claim.get("evidenceRefs", [])}
+        referenced = ({ref for claim in wire_claims for ref in claim.get("evidenceRefs", [])}
+                      | set(evidence_refs(representation_context)))
         evidence_map = {e["evidenceId"]: present_fields({"quote": e.get("quote", ""), "conditions": e.get("conditions", {}),
                         "sourceContext": surrounding_context(e), "location": e.get("location", {}),
                         "sourceTitle": e.get("sourceTitle", ""),
@@ -1339,6 +1350,11 @@ The dataAvailability object is an internal audit, not new experimental results.
                 if source_field_references:
                     from services.deep_research.review_source_fields import GUIDANCE as diagnostic_guidance
             prompt+='\n'+diagnostic_guidance
+        if representation_context:
+            from services.deep_research.workflow_representation_review import POLICY as representation_review_policy
+            prompt += '\n' + representation_review_policy + '\nExact unapproved shared representation:\n' + json.dumps(
+                representation_context, ensure_ascii=False, separators=(',', ':'))
+            full_review_inputs = True
         template = prompt
         source_keys = ('workId', 'versionId', 'sourceTitle')
         source_registry = {}

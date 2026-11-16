@@ -2,8 +2,10 @@
 from copy import deepcopy
 
 
-def encode_verification_inputs(claims, evidence):
-    refs = {ref for claim in claims for ref in claim.get('evidenceRefs', [])}
+def encode_verification_inputs(claims, evidence, *, additional_refs=()):
+    refs = {ref for claim in claims for ref in claim.get('evidenceRefs', [])} | set(additional_refs)
+    if set(additional_refs) - {row['evidenceId'] for row in evidence}:
+        raise ValueError('Missing bound review evidence')
     selected = [row for row in evidence if row['evidenceId'] in refs]
     identities = [row['evidenceId'] for row in selected]
     if len(identities) != len(set(identities)):
