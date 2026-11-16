@@ -12,8 +12,13 @@ VERSION = 1
 MAX_BYTES = 16384
 
 
-def descriptor():
+def descriptor(version=1):
     """No paper-specific variables, encodings, dimensions or values supplied."""
+    if type(version) is not int or version not in (1, 2):
+        raise ValueError('Unsupported representation version')
+    if version == 2:
+        from services.deep_research.workflow_representation_dependencies import descriptor as dependencies
+        return dependencies()
     text = {'type': 'string', 'minLength': 1, 'pattern': r'\S'}
     def obj(properties):
         return {'type': 'object', 'properties': properties,
@@ -50,7 +55,7 @@ def _targets(metadata):
     return (['baseline'] if metadata['baselineMode'] == 'train' else []) + names
 
 
-def issues(value, metadata, aliases):
+def issues(value, metadata, aliases, *, version=1):
     """Structural/provenance consistency only; do not infer scientific validity."""
     import json
     from jsonschema import Draft202012Validator
@@ -62,7 +67,7 @@ def issues(value, metadata, aliases):
         return [{'code': 'representation.json', 'path': ''}]
     if len(raw) > MAX_BYTES:
         return [{'code': 'representation.capacity', 'path': ''}]
-    for error in Draft202012Validator(descriptor()['schema']).iter_errors(value):
+    for error in Draft202012Validator(descriptor(version)['schema']).iter_errors(value):
         path = '/' + '/'.join(str(p).replace('~', '~0').replace('/', '~1') for p in error.absolute_path)
         result.append({'code': 'representation.schema', 'path': path})
     if any(e['code'] == 'representation.schema' for e in result):
@@ -77,6 +82,9 @@ def issues(value, metadata, aliases):
     union = set()
     entries = [(f'/conventions/{i}', c) for i, c in enumerate(conventions)]
     for i, target in enumerate(value['targets']):
+        if version == 2:
+            entries += [(f'/targets/{i}/inputDependencies/{j}', d)
+                        for j,d in enumerate(target['inputDependencies'])]
         names = [s['name'] for s in target['states']]
         if len(set(names)) != len(names):
             result.append({'code': 'representation.duplicate_state', 'path': f'/targets/{i}/states'})
@@ -97,24 +105,28 @@ def issues(value, metadata, aliases):
             result.append({'code': 'representation.provenance', 'path': path + '/sourceRefs'})
     if set(value['sourceRefs']) != union or union - known:
         result.append({'code': 'representation.source_closure', 'path': '/sourceRefs'})
+    if version == 2:
+        from services.deep_research.workflow_representation_dependencies import issues as dependency_issues
+        result += dependency_issues(value, metadata)
     return result
 
 
-def freeze(value, metadata, aliases):
+def freeze(value, metadata, aliases, *, version=1):
     """Bind a declaration to exact metadata/alias identities, without allocation."""
-    if issues(value, metadata, aliases):
+    if issues(value, metadata, aliases, version=version):
         raise ValueError('Invalid shared representation declaration')
-    return {'version': VERSION, 'metadataDigest': digest(metadata), 'aliasesDigest': digest(aliases),
+    return {'version': version, 'metadataDigest': digest(metadata), 'aliasesDigest': digest(aliases),
             'value': deepcopy(value), 'valueDigest': digest(value), 'scientificApproval': False}
 
 
 def verify(saved, metadata, aliases):
     if (not isinstance(saved, dict) or set(saved) != {
             'version', 'metadataDigest', 'aliasesDigest', 'value', 'valueDigest', 'scientificApproval'}
-            or type(saved['version']) is not int or saved['version'] != VERSION
+            or type(saved['version']) is not int or saved['version'] not in (1, 2)
             or saved['scientificApproval'] is not False
             or saved['metadataDigest'] != digest(metadata) or saved['aliasesDigest'] != digest(aliases)
-            or saved['valueDigest'] != digest(saved['value']) or issues(saved['value'], metadata, aliases)):
+            or saved['valueDigest'] != digest(saved['value'])
+            or issues(saved['value'], metadata, aliases, version=saved['version'])):
         raise ValueError('Shared representation identity changed')
     return deepcopy(saved['value'])
 
@@ -133,7 +145,7 @@ def initialization_descriptor(saved, metadata, aliases, target):
         raise ValueError('Target not declared in shared representation')
     declarations = matches[0]['states']
     result = previous('baseline' if target == 'baseline' else 'component')
-    result['name'] = 'workflow_init_representation_v1_' + ('baseline' if target == 'baseline' else 'component')
+    result['name'] = 'workflow_init_representation_v'+str(saved['version'])+'_' + ('baseline' if target == 'baseline' else 'component')
     schema = result['schema']
     definitions = schema['$defs']
     state_schema = definitions['state']
@@ -164,6 +176,9 @@ def initialization_descriptor(saved, metadata, aliases, target):
             'minItems': len(typed_states), 'maxItems': len(typed_states)}
     schema['properties']['stateSemantics'] = {'const': [
         [s['name'], s['quantity'], s['encoding']] for s in declarations]}
+    if saved['version'] == 2:
+        from services.deep_research.workflow_representation_dependencies import constrain_initialization
+        constrain_initialization(result, matches[0])
     return result
 
 
@@ -194,6 +209,9 @@ def initialization_issues(saved, metadata, aliases, target, initialization):
         return [{'code': 'representation.state_coverage', 'path': '/initialization/stateDefinitions'}]
     semantics = rows(initialization)
     expected_semantics = [[s['name'], s['quantity'], s['encoding']] for s in declarations]
+    if saved['version'] == 2:
+        from services.deep_research.workflow_representation_dependencies import initialization_issues as dependency_issues
+        result += dependency_issues(matches[0], initialization)
     if semantics != expected_semantics:
         result.append({'code': 'representation.semantics_changed', 'path': '/stateSemantics'})
     for i, (state, declared) in enumerate(zip(states, declarations)):

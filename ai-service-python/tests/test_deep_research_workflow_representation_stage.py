@@ -68,7 +68,7 @@ def test_complete_workflow_reopens_without_new_declarations_and_keeps_full_input
 @pytest.mark.parametrize('marker', [None, False, True, 0, 2, '1'])
 def test_version_and_parent_contracts_are_strict(marker):
     r = {**previous.record(), stage.MARKER:marker}
-    assert not stage.enabled(r)
+    assert stage.enabled(r) is (type(marker) is int and marker == 2)
 
 
 def test_old_workflow_cannot_opt_in_and_resend():
@@ -235,7 +235,8 @@ def test_actual_provider_payload_ledger_identity_capacity_and_unknown_no_resend(
     assert post.call_count == 1 and repo.list_calls('r')[0]['argsDigest'] == digest(request)
     wire = post.call_args.kwargs['json']
     assert stage.OPTION not in wire and wire['stream'] is False and wire['max_output_tokens'] == 6144
-    assert wire['text']['format']['name'] == ('workflow_init_representation_v1_baseline' if node == INIT else 'workflow_representation_v1')
+    version=str(record[stage.MARKER])
+    assert wire['text']['format']['name'] == ('workflow_init_representation_v'+version+'_baseline' if node == INIT else 'workflow_representation_v'+version)
     assert post.call_args.kwargs['timeout'] == 90
     assert reserve.call_args.kwargs['budget_delta']['tokens'] == 32000+1024+6144
     with pytest.raises(ValueError,match='Prompt too large'):

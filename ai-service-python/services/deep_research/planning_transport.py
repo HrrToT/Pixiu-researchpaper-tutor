@@ -55,7 +55,7 @@ def descriptor_for(record, node, initialization_target='component', *, metadata_
         return edits_descriptor()
     if node == representation.NODE and representation.enabled(record):
         from services.deep_research.workflow_representation import descriptor as shared_descriptor
-        return shared_descriptor()
+        return shared_descriptor(record[representation.MARKER])
     from services.deep_research.workflow_metadata_repair import enabled as repair_enabled, NODE as REPAIR_META
     if (node in ('plan_workflow_meta', REPAIR_META) and repair_enabled(record)
             and record['workflowMetadataRepairContractVersion'] == 34):

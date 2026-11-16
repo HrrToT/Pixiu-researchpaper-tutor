@@ -103,6 +103,8 @@ def prepare(record, *, key, source_data, context, failed, aliases, earlier, base
     if shared_representation:
         original_errors += [e['code'] for e in representation.initialization_issues(
             record, declared_target, value.get('initialization'))]
+        if record[representation.MARKER] == 2 and any(ref not in aliases for ref in value['sourceRefs']):
+            original_errors.append('unit.unsupplied_source_reference')
     original_errors = sorted(original_errors)
     if not original_errors or original_errors != sorted(failed['errors']):
         raise DeepResearchError('invalid_workflow_blueprint_state', '初始化原检查记录已改变。')
@@ -193,6 +195,8 @@ def prepare(record, *, key, source_data, context, failed, aliases, earlier, base
         if shared_representation:
             problems += [e['code'] for e in representation.initialization_issues(
                 record, declared_target, revised.get('initialization'))]
+            if record[representation.MARKER] == 2 and any(ref not in aliases for ref in revised['sourceRefs']):
+                problems.append('unit.unsupplied_source_reference')
         if len(raw.encode('utf8')) > MAX_VALUE or len(packed(revised).encode('utf8')) > MAX_VALUE:
             problems.append('unit.output_capacity')
     except (TypeError, ValueError, RecursionError, OverflowError): revised = None; problems = ['unit.json']

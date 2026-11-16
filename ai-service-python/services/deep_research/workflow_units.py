@@ -223,7 +223,7 @@ def prepare_units(record, *, prompt, aliases, invoke, parse, checkpoint):
     version=record['executionWorkflowContractVersion']
     if type(version) is not int or version not in (6,7):raise ValueError('Unsupported workflow unit version')
     parent_request = {'prompt': prompt, 'unitContract': version}
-    if shared_representation:parent_request['representationContract'] = 1
+    if shared_representation:parent_request['representationContract'] = record[representation.MARKER]
     from services.deep_research.workflow_metadata_rows import enabled as rows_enabled, decode as decode_rows
     rows_mode = rows_enabled(record)
     if rows_mode:parent_request['metadataRowsContract'] = record['workflowMetadataRowsContractVersion']
@@ -470,7 +470,8 @@ def prepare_units(record, *, prompt, aliases, invoke, parse, checkpoint):
                     from services.deep_research.workflow_metadata_actions import decode as decode_action_rows
                     value = decode_action_rows(value)
                 else:value = decode_rows(value)
-            problems = unit_errors(value, aliases, node=node, earlier=earlier, baseline=baseline,
+            validation_aliases = unit_aliases if shared_representation and record[representation.MARKER] == 2 and node == INIT else aliases
+            problems = unit_errors(value, validation_aliases, node=node, earlier=earlier, baseline=baseline,
                 version=version,metadata=context.get('metadata'),target=target,metadata_rows=use_rows,
                 structured_initialization=structured_initialization and node==INIT,
                 semantic_initialization=semantic_initialization and node==INIT)
