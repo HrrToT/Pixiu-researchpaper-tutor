@@ -1,0 +1,38 @@
+{
+  "sourceCommit": "d725f942b185325629d537413a0be82a6cf72d56",
+  "promptVersion": "dr-v2.20261116.481",
+  "sourceCase": "D3-VQ-FACTORIAL-v6",
+  "isolatedComponentOnly": true,
+  "modelCalls": 1,
+  "usage": {
+    "total_tokens": 10829,
+    "input_tokens": 9929,
+    "output_tokens": 900
+  },
+  "reportedModel": "deepseek-v4-pro",
+  "unitValid": true,
+  "unitErrors": [],
+  "inputBytes": 31872,
+  "actualInputBodyByteIdenticalTo480": true,
+  "all17RequiredEvidenceRowsRetained": true,
+  "applicationDataUnchanged": true,
+  "automaticRetry": false,
+  "providerAcceptedV4Schema": true,
+  "stateSemanticsExact": true,
+  "contentReview": {
+    "accepted": false,
+    "issues": [
+      "Numeric states are scalar zero placeholders, explicitly labeled as placeholders",
+      "Future codebooks/indices initialized before their declared creation boundaries",
+      "Frame/image input does not establish Gaussian state cardinality",
+      "Physical encodings, channel partition and actual initialization algorithms are still undefined"
+    ],
+    "boundary": "Name coverage and lossless preservation passed; self-described placeholders do not satisfy scientific completeness"
+  },
+  "productionLoaded": false,
+  "retainedRuntime": ".476",
+  "independentCredit": 0,
+  "wholeCaseSubmitted": false,
+  "rawResult": "tmp/initialization-semantics-481-reviewed-component-20261116/result.json",
+  "rawResultSha256": "d612c5a2f9fe7d67e78622079637cd2b1606c439e8e07afc00fc37c071443fbb"
+}

@@ -1,0 +1,24 @@
+{
+  "baselinePromptVersion": "dr-v2.20261116.481",
+  "model": "deepseek-v4-pro",
+  "promptMessagesSchemaOutputCapDeadlineExact": true,
+  "onlyProspectiveChange": {
+    "thinking": {
+      "type": "enabled"
+    },
+    "reasoning_effort": "low"
+  },
+  "inputBytes": 31872,
+  "maxOutputTokensIncludingReasoning": 6144,
+  "timeoutSeconds": 90,
+  "wholeRunBudgetUnchanged": true,
+  "modelCalls": 0,
+  "productionImplemented": false,
+  "contentEffectVerified": false,
+  "officialReferences": [
+    "https://api-docs.deepseek.com/guides/thinking_mode/",
+    "https://api-docs.deepseek.com/guides/responses_api/"
+  ],
+  "priorRisk": "Metadata revision463 exhausted6144 tokens with no visible JSON; initialization-specific effect remains untested",
+  "requiredBoundary": "Frozen server-owned initialization-only policy; no hidden retry or output-cap increase; reasoning never substituted for the answer"
+}
