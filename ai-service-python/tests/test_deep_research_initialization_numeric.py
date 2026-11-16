@@ -19,6 +19,9 @@ def record(): return {**decision_tests.record(), MARKER:1}
 
 @pytest.mark.parametrize('value',[None,True,False,0,2,'1'])
 def test_version_is_strict_and_cannot_enable_missing_dependencies(value):
+    if type(value) is int and value==2:
+        assert enabled({**record(),MARKER:value})
+        return
     r=record();r[MARKER]=value;assert not enabled(r)
 
 
@@ -88,9 +91,9 @@ def test_marker_is_server_owned_and_immutable(tmp_path,replacement):
     try:
         r,_=facade.create({'workspaceTaskId':'t','operationKey':'k','question':'Design','deferStart':True,
             MARKER:replacement},start_async=False)
-        assert r[MARKER]==1
+        assert r[MARKER]==2
         with pytest.raises(ValueError,match='Immutable'):
-            repo.update_run(r['runId'],lambda old:{**old,MARKER:replacement})
+            repo.update_run(r['runId'],lambda old:{**old,MARKER:0 if replacement==2 else replacement})
         old=deepcopy(r);old.update(runId='old',idempotencyKey='old');old.pop(MARKER);repo.create_run(old)
         with pytest.raises(ValueError,match='Immutable'):
             repo.update_run('old',lambda item:{**item,MARKER:1})
