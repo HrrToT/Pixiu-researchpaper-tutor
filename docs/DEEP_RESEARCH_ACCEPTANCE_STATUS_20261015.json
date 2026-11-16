@@ -15469,9 +15469,8 @@
     "promptVersion": "dr-v2.20261116.486",
     "sourceCommit": "2b3fafd2db1b02536ebe3a776b23c30796a0d581",
     "health": "ok",
-    "activeResearchRuns": 1,
+    "activeResearchRuns": 0,
     "applicationRuns": 393,
-    "applicationLedgerRows": 9872,
     "historicalPaused": 15,
     "metadataInputWindow": 40000,
     "wholeRunBudgetUnchanged": true,
@@ -16525,8 +16524,11 @@
     "realCase": {
       "id": "D2-VQ-v1-v5",
       "runId": "dr_run_bc2ac2e6a13056b5bfa658b0f0c431ed",
-      "status": "running",
-      "automaticRetry": false
-    }
+      "status": "completed",
+      "automaticRetry": false,
+      "outcome": "inconclusive",
+      "proof": "deep-research-evidence/comparison-486-d2-v5-20261116.json"
+    },
+    "next": "Inspect cumulative normal/reserve repair admission and draft/context duplication; align public source labels and evidence-qualified claims before another full case. Preserve scientific checks and whole-run budget."
   }
 }

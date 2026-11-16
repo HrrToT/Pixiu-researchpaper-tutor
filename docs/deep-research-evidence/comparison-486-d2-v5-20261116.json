@@ -1,0 +1,57 @@
+{
+  "case": "D2-VQ-v1-v5",
+  "runId": "dr_run_bc2ac2e6a13056b5bfa658b0f0c431ed",
+  "promptVersion": "dr-v2.20261116.486",
+  "status": "completed",
+  "outcome": "inconclusive",
+  "modelCalls": 9,
+  "tokens": 42063,
+  "seconds": 148.0,
+  "allModelCallsSucceededSettled": true,
+  "repairCalls": 2,
+  "repairBatchStop": {
+    "batch": 2,
+    "kind": "repairEvidenceBytes",
+    "limit": 11963,
+    "used": 13549
+  },
+  "repairCompactionStatus": "invalid",
+  "acceptedClaims": 0,
+  "rejectedClaims": [
+    {
+      "claimId": "c1",
+      "reason": "absence_not_established",
+      "detail": "本条引用没有明确建立作者或论文缺少这些验证。把结论限定为本次引用能支持的实验范围及其不能证明的推广；不要写成作者未在其他条件验证、论文没有提供或全文不存在。引用中的其他否定句不构成这项缺席判断的依据。"
+    },
+    {
+      "claimId": "c2",
+      "reason": "absence_not_established",
+      "detail": "本条引用没有明确建立作者或论文缺少这些验证。把结论限定为本次引用能支持的实验范围及其不能证明的推广；不要写成作者未在其他条件验证、论文没有提供或全文不存在。引用中的其他否定句不构成这项缺席判断的依据。"
+    },
+    {
+      "claimId": "c3",
+      "reason": "internal_reference_in_prose"
+    },
+    {
+      "claimId": "c4",
+      "reason": "internal_reference_in_prose"
+    },
+    {
+      "claimId": "c5",
+      "reason": "absence_not_established",
+      "detail": "本条引用没有明确建立作者或论文缺少这些验证。把结论限定为本次引用能支持的实验范围及其不能证明的推广；不要写成作者未在其他条件验证、论文没有提供或全文不存在。引用中的其他否定句不构成这项缺席判断的依据。"
+    }
+  ],
+  "inputBytes": 23950,
+  "sharedTablePackets": 2,
+  "missingPremiseBundles": [],
+  "scientificContentAccepted": false,
+  "independentCredit": 0,
+  "automaticRetry": false,
+  "rawSha256": {
+    "D2-VQ-v1-v5.payload.json": "e574903d54a43644e74e80004946cad256185333329516fe457f27bcfe914d03",
+    "D2-VQ-v1-v5.calls.json": "664b30c43920da2ed7b50aef44e43f732bdea0c0f0b16916b4d4f044b7037df6",
+    "D2-VQ-v1-v5.result.json": "f1a563eb293404081d4242ecfcf478f2d9961bb5b2c0d86571f58e51697a417e"
+  },
+  "next": "Inspect cumulative normal/reserve repair admission and draft/context duplication; align public source labels and evidence-qualified claims before another full case. Preserve scientific checks and whole-run budget."
+}
