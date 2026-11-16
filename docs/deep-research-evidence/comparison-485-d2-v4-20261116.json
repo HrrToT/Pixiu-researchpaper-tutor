@@ -1,0 +1,55 @@
+{
+  "case": "D2-VQ-v1-v4",
+  "runId": "dr_run_11cd0b75cde354579bce35176f3e26d0",
+  "promptVersion": "dr-v2.20261116.485",
+  "status": "completed",
+  "outcome": "inconclusive",
+  "modelCalls": 8,
+  "tokens": 31591,
+  "seconds": 180,
+  "allModelCallsSettled": true,
+  "sharedTablePackets": 3,
+  "missingPremiseBundles": [],
+  "inputBytes": 23975,
+  "fixedInputBytes": 14345,
+  "acceptedClaims": 0,
+  "rejectedClaims": [
+    {
+      "claimId": "c1",
+      "reason": "internal_reference_in_prose"
+    },
+    {
+      "claimId": "c2",
+      "reason": "absence_not_established",
+      "detail": "本条引用没有明确建立作者或论文缺少这些验证。把结论限定为本次引用能支持的实验范围及其不能证明的推广；不要写成作者未在其他条件验证、论文没有提供或全文不存在。引用中的其他否定句不构成这项缺席判断的依据。",
+      "additionalChecks": [
+        {
+          "reason": "missing_table_bindings"
+        }
+      ]
+    },
+    {
+      "claimId": "c3",
+      "reason": "internal_reference_in_prose"
+    },
+    {
+      "claimId": "c4",
+      "reason": "internal_reference_in_prose"
+    }
+  ],
+  "repairStatus": "skipped_budget",
+  "repairLimit": {
+    "kind": "repairEvidenceBytes",
+    "limit": 22918,
+    "used": 23590
+  },
+  "scientificContentAccepted": false,
+  "independentCredit": 0,
+  "automaticRetry": false,
+  "rawSha256": {
+    "D2-VQ-v1-v4.payload.json": "853c57f4cab64232c51b385b60a91e0d230ff23e2a4a181401990909010df8ec",
+    "D2-VQ-v1-v4.calls.json": "de2cd56eba5cb1a2644ddec11c3e9e99a34ffad0a4b8a850c112468256d282c7",
+    "D2-VQ-v1-v4.result.json": "8de14025759ba5731a3177362f0c541e10be613bc6b74186de1ec57f04ac0cae"
+  },
+  "next": "Fix generic output source-label/table-binding compliance and evidence-qualified absence, plus inspect bounded-repair admission; do not waive factual/numeric gates or rerun unchanged."
+}

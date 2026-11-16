@@ -16500,14 +16500,16 @@
     "productionReloaded": true,
     "newModelCalls": 0,
     "scientificContentAccepted": false,
-    "next": "Observe the same D2 attempt4 to terminal, preserve raw calls and payload, then review the full content and actual budget. No duplicate submission.",
+    "next": "Fix generic output source-label/table-binding compliance and evidence-qualified absence, plus inspect bounded-repair admission; do not waive factual/numeric gates or rerun unchanged.",
     "fullRegressionTests": 8968,
     "loadProof": "deep-research-evidence/comparison-485-load-20261116.json",
     "realCase": {
       "id": "D2-VQ-v1-v4",
       "runId": "dr_run_11cd0b75cde354579bce35176f3e26d0",
-      "status": "running",
-      "automaticRetry": false
+      "status": "completed",
+      "automaticRetry": false,
+      "outcome": "inconclusive",
+      "proof": "deep-research-evidence/comparison-485-d2-v4-20261116.json"
     }
   }
 }
