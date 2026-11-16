@@ -16793,11 +16793,11 @@
   },
   "comparisonRealRetestReadiness20261117": {
     "ready": false,
-    "reason": "Integrated full offline passed on exact source; candidate runtime load and live previous-attempt settlement check remain required.",
+    "reason": "Attempt2 completed inconclusive: acquisition consumed review time, one numerical point lacked cited support, coverage envelope invalid again. Structural saved-path diagnosis before any further paid trial.",
     "proof": "deep-research-evidence/comparison-own-row-label-diagnosis-20261117.json",
     "newModelCalls": 0,
     "scientificCredit": 0,
-    "next": "Load exact candidate and run one bounded D2-BASELINE-COMPRESSION attempt2 after authoritative settlement check."
+    "next": "No third prompt-only trial. Profile exact saved acquisition/extraction path; resolve coverage envelope at protocol layer; enforce numerical-example ownership and question-scoped output cardinality without deleting requirements."
   },
   "comparisonAuthorColumn20261117": {
     "status": "full_offline_and_saved_consumer_passed_not_live_accepted",
@@ -16808,5 +16808,19 @@
     "scientificCredit": 0,
     "next": "Freeze source for complete regression, then load exact candidate before eligible bounded real comparison.",
     "fullProof": "deep-research-evidence/comparison-author-column-full-20261117.json"
+  },
+  "comparisonBaselineSecond20261117": {
+    "status": "completed",
+    "outcome": "inconclusive",
+    "runId": "dr_run_767af2e555535391842c6e4ac32a13f4",
+    "modelRequests": 9,
+    "reportedTokens": 47507,
+    "elapsedSeconds": 306.0,
+    "allSettled": true,
+    "newUnknownRequests": 0,
+    "scientificContentAccepted": false,
+    "defaultRuntimeRestored": true,
+    "next": "No third prompt-only trial. Profile exact saved acquisition/extraction path; resolve coverage envelope at protocol layer; enforce numerical-example ownership and question-scoped output cardinality without deleting requirements.",
+    "proof": "deep-research-evidence/comparison-baseline-second-20261117.json"
   }
 }
