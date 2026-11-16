@@ -123,7 +123,7 @@ def render_report(payload, *, _counting=False):
     if compact:
         labels['inference'] = '推断：'
     comparison = payload.get('comparisonCells')
-    if isinstance(comparison, dict) and type(comparison.get('version')) is int and comparison['version']==1:
+    if isinstance(comparison, dict) and type(comparison.get('version')) is int and comparison['version'] in (1,2):
         from services.deep_research.comparison_presentation import sections as comparison_sections
         sections = comparison_sections(comparison, list(claims.values()))
     for section in sections:

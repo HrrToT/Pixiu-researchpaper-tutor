@@ -16,7 +16,7 @@ def audit_view(value, claims):
               for row in value['layout']]
     refs = list(dict.fromkeys(ref for claim in claims for ref in claim.get('evidenceRefs', [])))
     table, _ = render_table(value, claims, {ref: i+1 for i, ref in enumerate(refs)}, counting=True)
-    return {'version': 1, 'sources': deepcopy(value['sources']), 'layout': layout,
+    return {'version': value['version'], 'sources': deepcopy(value['sources']), 'layout': layout,
             'sections': sections(value, claims), 'table': table}
 
 
@@ -38,9 +38,12 @@ def revalidate_audit(audit, value, claims):
 
 
 def metadata(draft):
-    return {'version': 1, 'sources': deepcopy(draft['sources']),
+    shared = type(draft.get('layoutVersion')) is int and draft['layoutVersion'] == 2
+    fields = ('obligationId', 'question', 'source', 'claimIds')
+    if shared: fields += ('axisId', 'axisTitle')
+    return {'version': 2 if shared else 1, 'sources': deepcopy(draft['sources']),
             'layout': [{k: deepcopy(row[k]) for k in
-                        ('obligationId', 'question', 'source', 'claimIds')}
+                        fields}
                        for row in draft['layout']]}
 
 
@@ -68,9 +71,17 @@ def render_table(value, claims, numbers, *, counting=False):
     columns = list(dict.fromkeys(row['source'] for row in value['layout']))
     groups = {}
     for row in value['layout']:
-        key = row['obligationId']
-        if key not in groups: groups[key] = {'question': row['question'], 'cells': {}}
-        groups[key]['cells'][row['source']] = row
+        shared = value['version'] == 2
+        key = row['axisId'] if shared else row['obligationId']
+        if key not in groups:
+            groups[key] = {'question': row['axisTitle'] if shared else row['question'], 'cells': {}}
+        if not shared:
+            groups[key]['cells'][row['source']] = row
+            continue
+        cell = groups[key]['cells'].setdefault(row['source'], {'claimIds': []})
+        # Several obligations can share a display axis, but remain distinct
+        # claims with their original source permissions and coverage identities.
+        cell['claimIds'].extend(cid for cid in row['claimIds'] if cid not in cell['claimIds'])
     active = [group for group in groups.values()
               if any(cid in indexed for cell in group['cells'].values() for cid in cell['claimIds'])]
     if not active: return '', set()

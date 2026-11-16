@@ -1701,9 +1701,11 @@ space with unsupported global absence or incidental iteration/performance values
         comparison_cell_draft = None
         if cell_mode:
             from services.deep_research.comparison_cells import plan_cells, compile_cells
+            from services.deep_research.comparison_generation import planning_options
             try:
                 comparison_cell_draft = compile_cells(parsed,
-                    plan_cells(draft_obligations, source_registry, evidence_summaries), max_claims=claim_limit)
+                    plan_cells(draft_obligations, source_registry, evidence_summaries,
+                               **planning_options(record, question)), max_claims=claim_limit)
                 comparison_cell_draft['sources'] = deepcopy(source_registry)
                 comparison_cell_draft['evidenceAliases'] = dict(evidence_aliases)
                 parsed = comparison_cell_draft['report']
@@ -1946,6 +1948,10 @@ space with unsupported global absence or incidental iteration/performance values
             expected_revision=None,
         )
         
+        if cell_mode and planning_options(record, question):
+            from services.deep_research.comparison_capacity import after_synthesis
+            repo_update(run_id, lambda r: {**r, 'state': {**r.get('state', {}),
+                'comparisonCompletionCapacity': after_synthesis(r)}}, expected_revision=None)
         return {"report_version_id": report_version_id}
     
     return node

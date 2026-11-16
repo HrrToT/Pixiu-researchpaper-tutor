@@ -16655,5 +16655,30 @@
     "fullRegression": "pending coherent comparison scheduling/axis changes",
     "scientificContentAccepted": false,
     "newModelCalls": 0
+  },
+  "comparisonSharedAxes20261116": {
+    "selectedByFrozenReviewProfile": 4,
+    "layoutVersion": 2,
+    "legacyVersion1Preserved": true,
+    "relatedTests": 83,
+    "adjacentLegacyAndPublicationTests": 52,
+    "proof": "deep-research-evidence/comparison-shared-axes-replay-20261116.json",
+    "realSavedDraftLayout": {
+      "oldRows": 6,
+      "newRows": 4,
+      "sameCellClaimsRetained": 8
+    },
+    "wholeCandidateCallCapacity": {
+      "synthesisCallsAlreadyUsed": 8,
+      "remainingCalls": 10,
+      "minimumReviewAndAuditCalls": 10,
+      "callsBeyondLowerBound": 0,
+      "tokensAndTimeFitEstablished": false
+    },
+    "newModelCalls": 0,
+    "scientificContentAccepted": false,
+    "productionLoaded": false,
+    "fullRegression": "pending coherent comparison intent and scheduling completion",
+    "next": "Keep factual comparison axes distinct from joint judgement goals; profile actual local evidence preparation and plan the whole case before another eligible real development case. Preserve D2-v8 unknown; do not rename/retry it."
   }
 }

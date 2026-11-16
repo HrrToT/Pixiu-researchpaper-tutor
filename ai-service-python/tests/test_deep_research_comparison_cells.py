@@ -25,6 +25,39 @@ def fixture():
     return requirements, sources, evidence, plan, payload
 
 
+def test_shared_axes_align_exact_user_excerpts_without_merging_scientific_obligations():
+    req, sources, ev, _, payload = fixture()
+    req = [{'obligationId': 'a-mech', 'question': 'Paper A method', 'requestExcerpt': '比较机制',
+            'requiredSourceAliases': ['P1']},
+           {'obligationId': 'b-mech', 'question': 'Paper B method', 'requestExcerpt': '比较机制',
+            'requiredSourceAliases': ['P2']}]
+    before = deepcopy((req, sources, ev))
+    plan = plan_cells(req, sources, ev, shared_axes=True, question='请比较机制，并说明代价。')
+    assert plan['version'] == 2
+    assert plan['cells'][0]['axisId'] == plan['cells'][1]['axisId']
+    assert all(c['axisTitle'] == '比较机制' for c in plan['cells'])
+    payload['cells'][1]['cellId'] = 'cell_1_1'
+    result = compile_cells(payload, plan, max_claims=4)
+    assert result['layoutVersion'] == 2
+    assert [c['obligationIds'] for c in result['report']['claims']] == [['a-mech'], ['b-mech']]
+    assert [c['evidenceRefs'] for c in result['report']['claims']] == [['E1'], ['E2']]
+    assert before == (req, sources, ev)
+    payload['cells'][0]['claims'][0]['evidenceRefs'] = ['E2']
+    result = compile_cells(payload, plan, max_claims=4)
+    assert len(result['report']['claims']) == 1 and result['errors']
+
+
+@pytest.mark.parametrize('excerpt', [None, '', 'not present in the user question'])
+def test_missing_or_unbound_excerpt_does_not_guess_shared_axes(excerpt):
+    _, sources, ev, _, _ = fixture()
+    req = [{'obligationId': 'a', 'question': 'Identical generated question', 'requestExcerpt': excerpt},
+           {'obligationId': 'b', 'question': 'Identical generated question', 'requestExcerpt': excerpt}]
+    result = plan_cells(req, sources, ev, shared_axes=True, question='比较机制')
+    assert result['cells'][0]['axisId'] != result['cells'][2]['axisId']
+    legacy = plan_cells(req, sources, ev)
+    assert legacy['version'] == 1 and all('axisId' not in cell for cell in legacy['cells'])
+
+
 def test_source_dimension_plan_and_compile_preserve_data_without_scientific_approval():
     req, sources, ev, plan, payload = fixture()
     before = deepcopy((req, sources, ev, plan, payload))

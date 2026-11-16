@@ -38,6 +38,27 @@ def test_common_renderer_orders_judgement_table_advice_and_keeps_each_condition_
     assert payload == before
 
 
+def test_shared_axis_table_retains_both_papers_and_multiple_own_obligations_in_one_row():
+    from services.deep_research.comparison_presentation import audit_digest, revalidate_audit
+    payload = fixture(); meta = payload['comparisonCells']; meta['version'] = 2
+    for index, row in enumerate(meta['layout']):
+        row.update(obligationId='separate-paper-goal-' + str(index),
+                   axisId='shared-user-axis', axisTitle='比较压缩机制')
+    extra = deepcopy(meta['layout'][0]); extra.update(obligationId='another-a-goal', claimIds=['a-extra'])
+    meta['layout'].append(extra)
+    payload['claims'].append({'claimId':'a-extra','text':'保留另一个已核验的限定条件。',
+                              'kind':'reported','conditions':{},'evidenceRefs':['e-a']})
+    text = render_report(payload)
+    assert text.count('| 比较压缩机制 |') == 1
+    row = next(line for line in text.splitlines() if line.startswith('| 比较压缩机制 |'))
+    assert '剪除冗余基元。' in row and '量化属性。' in row and '另一个已核验' in row
+    assert '保持相同数据与预算' in row and '#research-evidence-e-a' in row and '#research-evidence-e-b' in row
+    audit = {'comparisonPresentationDigest':audit_digest(meta,payload['claims']),'gaps':[]}
+    changed = deepcopy(meta); changed['layout'][0]['axisTitle']='Changed axis'
+    assert revalidate_audit(audit,changed,payload['claims'])['status']=='invalidated_comparison_presentation'
+    assert visible_answer_character_count(payload)==len(re.sub(r'\s+','',render_report(payload,_counting=True)))
+
+
 def test_rejected_cell_is_not_reintroduced_from_layout_or_draft_metadata():
     payload = fixture(); payload['claims'] = payload['claims'][:1]
     text = render_report(payload)
@@ -136,7 +157,7 @@ def test_actual_publication_uses_verified_cells_and_rechecks_source_binding(tamp
         assert '保持相同数据与预算' in text
 
 
-def test_generation_verification_and_publication_share_the_same_cell_layout():
+def _generation_verification_publication(profile):
     import json
     from unittest.mock import Mock
     from test_deep_research_factual_prompt import node_capture
@@ -145,8 +166,11 @@ def test_generation_verification_and_publication_share_the_same_cell_layout():
     record.update(comparisonCellsContractVersion=1,authoredBodyContractVersion=3,
                   scopeExpressionContractVersion=5,draftValidationContractVersion=1,
                   synthesisInputContractVersion=2,reportPresentationContractVersion=4,
-                  answerFormatContractVersion=3)
+                  answerFormatContractVersion=3,factualReviewContractVersion=profile)
     record['question']='比较两篇论文的机制。'
+    if profile == 4:
+        record['claimIsolationContractVersion'] = 1
+        record.setdefault('budget', {}).update(maxModelCalls=18, modelCalls=8, reservedModelCalls=0)
     def update(rid,fn,**kw):
         nonlocal record
         record=fn(deepcopy(record));return deepcopy(record)
@@ -160,6 +184,9 @@ def test_generation_verification_and_publication_share_the_same_cell_layout():
             for c in cells],'conclusions':[]})}
     make_synthesize_node(generate,update)({'run_id':'r'})
     before=deepcopy(record['state']['reportBody']['comparisonCells'])
+    if profile == 4:
+        capacity = record['state']['comparisonCompletionCapacity']
+        assert capacity['remainingModelCalls'] == 10 and capacity['minimumAdditionalCalls'] == 3
     # Fixture verifier checks graph plumbing only; this is not scientific acceptance.
     checker=Mock(side_effect=lambda cs,ev,semantic:{'accepted':deepcopy(cs),'rejected':[]})
     make_verify_node(checker,None,update)({'run_id':'r'})
@@ -172,6 +199,15 @@ def test_generation_verification_and_publication_share_the_same_cell_layout():
     assert len(payload['claims'])==2 and '| 比较维度' in publish.call_args.kwargs['report_text']
     assert publish.call_args.kwargs['report_text'].count('测量深度用于三维重建。')==2
     assert payload['outcome']!='complete'  # No real final-answer audit was supplied.
+    assert payload['comparisonCells']['version'] == (2 if profile == 4 else 1)
+
+
+def test_generation_verification_and_publication_share_the_same_cell_layout():
+    _generation_verification_publication(3)
+
+
+def test_new_shared_axis_profile_flows_through_actual_generation_verification_and_publication():
+    _generation_verification_publication(4)
 
 
 def test_final_audit_receives_only_accepted_table_and_binds_its_current_identity():

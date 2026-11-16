@@ -1,0 +1,45 @@
+{
+  "scope": "Offline saved-D2-v8 layout and generation-checkpoint call-capacity replay; no original record mutations",
+  "legacyVersion1MetadataExact": true,
+  "legacyGenerationPlanningOptionsUnchanged": true,
+  "oldRows": 6,
+  "newRows": 4,
+  "sameCandidateCellClaimsRetained": 8,
+  "allScientificObligationIdsAndSourcePermissionsRetained": true,
+  "mergeBasis": "Only the same exact user requestExcerpt, never generated-title similarity",
+  "newLayoutVersion": 2,
+  "currentRelatedTests": 83,
+  "synthesisCheckpointCalls": 8,
+  "capacity": {
+    "version": 1,
+    "status": "estimated",
+    "draftPoints": 9,
+    "remainingModelCalls": 10,
+    "minimumReviewCalls": 9,
+    "minimumWholeAnswerAuditCalls": 1,
+    "minimumAdditionalCalls": 10,
+    "fitsCallLowerBound": true,
+    "callsBeyondLowerBound": 0,
+    "tokensAndTimeFitEstablished": false,
+    "scientificApproval": false
+  },
+  "knownLimitations": [
+    "Fairness/advice role separation and missing cost/mechanism content still need full-answer improvement.",
+    "No unknown request replay or new model calls.",
+    "Drafts used solely to check layout; no scientific acceptance."
+  ],
+  "scientificContentAccepted": false,
+  "productionLoaded": false,
+  "rawPayloadSha256": "743659587b2e03a195eca6d07e718b28aa3285c96095b28351e62b4ca34218da",
+  "adjacentLegacyAndPublicationTests": 52,
+  "testArtifacts": {
+    "tmp/comparison-shared-axes-20261116.xml": "55d403ef12dc0ad99be6f3d22c357017087102a3a1f6f23202c7ed8fc2652f9b",
+    "tmp/comparison-shared-axes-confirmed-20261116.xml": "4ae7fa5a7b4e42fc45fa4d06236c2d82963995b22e6816fc8a6d74a4dc0232af",
+    "tmp/comparison-shared-axes-adjacent-20261116.xml": "42119d66b64765aa8cb833b986f2a332bad6ffb9eeaebaf24939479660a5e492"
+  },
+  "firstTargetedFailures": {
+    "count": 2,
+    "cause": "The compiler still accepted only layout plan version1; integration correctly rejected new version2. Added strict version2 support and retained version1 behavior.",
+    "originalResultPreserved": true
+  }
+}
