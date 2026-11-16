@@ -20,7 +20,10 @@
     "scopeUnchanged": "Original DR0-DR5, independent content, product and release gates remain required.",
     "fullRegressionPassed": true,
     "fullRegressionTests": 9375,
-    "fullRegressionProof": "deep-research-evidence/shared-experiment-integrated-full-20261117.json"
+    "fullRegressionProof": "deep-research-evidence/shared-experiment-integrated-full-20261117.json",
+    "postFullRecoveryTests": 22,
+    "postFullRecoveryProof": "deep-research-evidence/shared-experiment-graph-recovery-20261117.json",
+    "productionCodeUnchangedSinceFull": true
   },
   "asOf": "2026-11-17",
   "objective": "Complete DR0-DR5 in DEEP_RESEARCH_DESIGN_20261012.md without redefining success around implemented subsets.",
@@ -38,9 +41,11 @@
     "elapsedSeconds": 560.47,
     "boundary": "Complete current offline research regression only; not real generation, Provider cost/quality, independent scientific acceptance or full product release.",
     "passed": 9375,
-    "appliesToCurrentPythonSource": true,
+    "appliesToCurrentPythonSource": false,
     "matchesLoadedRuntime": false,
-    "proof": "deep-research-evidence/shared-experiment-integrated-full-20261117.json"
+    "proof": "deep-research-evidence/shared-experiment-integrated-full-20261117.json",
+    "productionSourceStillMatches": true,
+    "postFullChangeBoundary": "Only shared experiment pipeline tests expanded; 22 targeted cases passed. Production Python unchanged."
   },
   "postFullRegressionValidation": {
     "scope": "PDF Form parser optimization only",

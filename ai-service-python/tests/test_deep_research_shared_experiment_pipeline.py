@@ -50,6 +50,18 @@ def test_existing_fixed_request_final_audit_is_bound_cached_and_revalidated():
     with pytest.raises(DeepResearchError):validated_saved(r,data,aliases)
 
 
+def test_final_audit_budget_stop_retains_candidate_without_sending_or_repair():
+    r,data,aliases=ready();check(r,data,aliases)
+    r['budget'].update(modelCalls=18,reservedModelCalls=0)
+    sent=Mock(side_effect=AssertionError('Exhausted budget must stop before model invocation'))
+    def save(value):r['state'][answer_slot(r)]=deepcopy(value)
+    result=answer(r,data,aliases,invoke=sent,checkpoint=save)
+    assert not result['complete'] and not result['repairEligible']
+    assert result['candidate']['markdown'] and r['state'][answer_slot(r)]['calls']=={}
+    assert validated_saved(r,data,aliases)==result
+    sent.assert_not_called()
+
+
 def diagnosed():
     r,data,aliases=ready();v=verdict(r,data)
     v['checks'][6].update(status='failed',reason='需要修正实验预算。')
@@ -123,18 +135,40 @@ def test_graph_verifier_repairs_at_most_once_and_rechecks_both_stages(fixed):
 
 @pytest.mark.parametrize('tracked_http',[False,True])
 def test_actual_synthesis_verify_publish_nodes_and_scope_gate(tmp_path,monkeypatch,tracked_http):
+    _exercise_graph(tmp_path,monkeypatch,tracked_http)
+
+
+@pytest.mark.parametrize('scenario',['final_gap_repair','settled_review_checkpoint_crash'])
+def test_tracked_graph_repair_and_checkpoint_recovery(tmp_path,monkeypatch,scenario):
+    _exercise_graph(tmp_path,monkeypatch,True,scenario)
+
+
+def _exercise_graph(tmp_path,monkeypatch,tracked_http,scenario=None):
     from services.deep_research.graph import make_synthesize_node,make_verify_node,make_publish_node
     from services.deep_research.shared_experiment_generation import NODE as GENERATE
     from test_deep_research_shared_experiment_generation import context,response
     from services.deep_research.repository import DeepResearchRepository
-    r,data,aliases=context();repo=DeepResearchRepository(tmp_path/'r.sqlite3');repo.initialize();repo.create_run(r);repo.begin_execution('r')
-    def update(rid,fn,**kw):return repo.update_run(rid,fn,**kw)
+    r,data,aliases=context()
+    if tracked_http:
+        r['budget'].update(reserveModelCalls=5,reserveTokens=50000,finalizationBudgetVersion=1,
+                           releasedReserveTokens=0,tokens=0,normalTokens=0,elapsedSeconds=0)
+    repo=DeepResearchRepository(tmp_path/'r.sqlite3');repo.initialize();repo.create_run(r);repo.begin_execution('r')
+    crash=[scenario=='settled_review_checkpoint_crash']
+    def update(rid,fn,**kw):
+        if crash[0]:
+            proposed=fn(deepcopy(repo.require_run(rid)))
+            if proposed['state'].get('sharedExperimentReview',{}).get('status')=='response_received':
+                crash[0]=False
+                raise RuntimeError('fixture: response settled before checkpoint')
+        return repo.update_run(rid,fn,**kw)
     calls=[]
     def fixture_invoke(rid,node,prompt,opts,**kw):
         calls.append(node);current=repo.require_run(rid)
         if node==GENERATE:return response()
         if node==SCIENCE:return reply(verdict(current,data))
-        assert node=='verify_answer_coverage';return coverage(prompt)
+        if node==REPAIR:return edit_response(current)
+        assert node=='verify_answer_coverage'
+        return coverage(prompt,missing=scenario=='final_gap_repair' and calls.count(node)==1)
     invoke=fixture_invoke
     if tracked_http:
         from services.deep_research.tools import TrackedLLMInvoker
@@ -161,8 +195,16 @@ def test_actual_synthesis_verify_publish_nodes_and_scope_gate(tmp_path,monkeypat
     state={'run_id':'r','execution_epoch':repo.require_run('r')['executionEpoch']}
     state.update(make_synthesize_node(invoke,update)(state))
     assert not state.get('error_code'),state
-    state.update(make_verify_node(Mock(),None,update,llm_invoke=invoke)(state))
-    assert calls==[GENERATE,SCIENCE,'verify_answer_coverage']
+    verifier=make_verify_node(Mock(),None,update,llm_invoke=invoke)
+    if scenario=='settled_review_checkpoint_crash':
+        with pytest.raises(RuntimeError,match='response settled'):verifier(state)
+        assert len(repo.list_calls('r'))==2 and all(c['settled']==1 for c in repo.list_calls('r'))
+        assert repo.require_run('r')['state']['sharedExperimentReview']['status']=='pending'
+    state.update(verifier(state))
+    expected=[GENERATE,SCIENCE,'verify_answer_coverage']
+    if scenario=='final_gap_repair':expected.extend([REPAIR,SCIENCE,'verify_answer_coverage'])
+    assert calls==expected
+    before=list(calls);assert verifier(state)['report_version_id']==state['report_version_id'] and calls==before
     with pytest.raises(DeepResearchError) as error:make_publish_node(repo.publish_report,update,scope_validator=lambda *args:False)(state)
     assert error.value.code=='scope_revoked' and not repo.require_run('r')['publication'].get('publicationId')
     assert not repo.pending_publications()
@@ -174,8 +216,12 @@ def test_actual_synthesis_verify_publish_nodes_and_scope_gate(tmp_path,monkeypat
     assert calls==before
     if tracked_http:
         ledger=repo.list_calls('r')
-        assert len(ledger)==3 and all(c['settled']==1 and c['status']=='succeeded' for c in ledger)
-        assert repo.require_run('r')['budget']['tokens']==48
+        assert len(ledger)==len(expected) and all(c['settled']==1 and c['status']=='succeeded' for c in ledger)
+        assert repo.require_run('r')['budget']['tokens']==16*len(expected)
+        if scenario=='final_gap_repair':
+            assert sum(c['usesReserve'] for c in ledger)==5
+            assert repo.require_run('r')['budget']['reservedModelCalls']==5
+            assert repo.require_run('r')['budget']['modelCalls']==1
 
 
 @pytest.mark.parametrize('question,expected',[('设计一个2×2实验',1),('Design a 2x2 experiment',1),('设计三组实验',0)])

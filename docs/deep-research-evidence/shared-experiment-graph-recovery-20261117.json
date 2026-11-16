@@ -1,0 +1,26 @@
+{
+  "scope": "Shared experiment full-node recovery and bounded repair tests with actual SQLite ledger and mocked HTTP",
+  "counts": {
+    "tests": 22,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "junit": "tmp/shared-tracked-recovery-final-20261117.xml",
+  "testSha256": "88e58bedc6b0f71adbe94cd0d445052408dc331b5f755c9af33077db292bfeab",
+  "priorFullProductionSourcesStillExact": true,
+  "changedSinceFull": [
+    "ai-service-python/tests/test_deep_research_shared_experiment_pipeline.py"
+  ],
+  "checks": [
+    "Final coverage gap leads to one revision, fresh science and final coverage before publication",
+    "Six actual calls use five protected slots and one normal slot without increasing limits",
+    "Settled review response survives failed checkpoint without repeat HTTP or billing",
+    "Exhausted final audit budget keeps candidate unpublished, sends nothing and does not repair"
+  ],
+  "providerModelCalls": 0,
+  "productionWrites": 0,
+  "scientificContentCredit": false,
+  "fullRerun": false,
+  "nextFullRun": "After candidate production changes or before final real validation readiness; existing full plus targeted test delta recorded separately."
+}
