@@ -3,21 +3,21 @@
   "objective": "Complete DR0-DR5 in DEEP_RESEARCH_DESIGN_20261012.md without redefining success around implemented subsets.",
   "overall": "incomplete",
   "currentFullOfflineRegression": {
-    "sourceCommit": "cf24fe32c5535e8df0277266e208c5eddae28c70",
-    "modules": 481,
+    "sourceCommit": "0a1636795ed3f876ad55bd74831cdf1ad96f192a",
+    "modules": 485,
     "failures": 0,
     "errors": 0,
     "skipped": 0,
     "sourceUnchanged": true,
-    "baselineCases": 9124,
-    "retainedBaselineCases": 9124,
+    "baselineCases": 9154,
+    "retainedBaselineCases": 9154,
     "missingBaselineCases": [],
-    "elapsedSeconds": 452.08,
+    "elapsedSeconds": 430.17,
     "boundary": "Complete current offline research regression only; not real generation, Provider cost/quality, independent scientific acceptance or full product release.",
-    "passed": 9154,
-    "appliesToCurrentPythonSource": false,
+    "passed": 9216,
+    "appliesToCurrentPythonSource": true,
     "matchesLoadedRuntime": false,
-    "proof": "deep-research-evidence/comparison-author-column-full-20261117.json"
+    "proof": "deep-research-evidence/comparison-integrated-joint-full-20261117.json"
   },
   "postFullRegressionValidation": {
     "scope": "PDF Form parser optimization only",
@@ -16793,11 +16793,11 @@
   },
   "comparisonRealRetestReadiness20261117": {
     "ready": false,
-    "reason": "Integrated reported-joint protocol, exact literal reuse and page diagnostics have related/source/capacity checks; complete current-source regression and exact load still required. Historical178s extraction not root-cause reproduced.",
+    "reason": "Integrated9216 offline checks passed on exact source; exact runtime load and authoritative previous-attempt settlement required before sole attempt3.",
     "proof": "deep-research-evidence/comparison-own-row-label-diagnosis-20261117.json",
     "newModelCalls": 0,
     "scientificCredit": 0,
-    "next": "Freeze integrated candidate for complete regression, then authoritative candidate readiness and one bounded complete comparison. Retain fixed whole budget and no automatic retry."
+    "next": "Load exact integrated candidate, preserve all prior payloads/unknown, and perform one bounded original-question comparison attempt3; no automatic retry."
   },
   "comparisonAuthorColumn20261117": {
     "status": "full_offline_and_saved_consumer_passed_not_live_accepted",
@@ -16824,12 +16824,13 @@
     "proof": "deep-research-evidence/comparison-baseline-second-20261117.json"
   },
   "comparisonAuditEnvelope20261117": {
-    "status": "related_offline_and_saved_response_passed_full_pending",
+    "status": "full_offline_and_saved_checks_passed_not_live_accepted",
     "proof": "deep-research-evidence/comparison-audit-envelope-20261117.json",
     "relatedTests": 395,
     "newModelCalls": 0,
     "scientificCredit": 0,
-    "runtimeLoaded": false
+    "runtimeLoaded": false,
+    "fullProof": "deep-research-evidence/comparison-integrated-joint-full-20261117.json"
   },
   "comparisonAcquisitionProfile20261117": {
     "status": "diagnostic_not_root_cause_proven",
@@ -16838,28 +16839,31 @@
     "originalRunUnchanged": true
   },
   "pageDiagnostics20261117": {
-    "status": "related_offline_and_shadow_extraction_passed_full_pending",
+    "status": "full_offline_and_saved_checks_passed_not_live_accepted",
     "proof": "deep-research-evidence/page-diagnostics-and-phase-costs-20261117.json",
     "relatedTests": 185,
     "newModelCalls": 0,
     "runtimeLoaded": false,
-    "originalRunUnchanged": true
+    "originalRunUnchanged": true,
+    "fullProof": "deep-research-evidence/comparison-integrated-joint-full-20261117.json"
   },
   "sourcePassageReuse20261117": {
-    "status": "related_offline_and_exact_saved_journal_passed_full_pending",
+    "status": "full_offline_and_saved_checks_passed_not_live_accepted",
     "proof": "deep-research-evidence/source-passage-goal-reuse-20261117.json",
     "relatedTests": 197,
     "avoidedArchivedLocationCalls": 8,
     "newModelCalls": 0,
     "scientificCredit": 0,
-    "runtimeLoaded": false
+    "runtimeLoaded": false,
+    "fullProof": "deep-research-evidence/comparison-integrated-joint-full-20261117.json"
   },
   "comparisonJointReports20261117": {
-    "status": "related_offline_source_counterfactual_and_capacity_passed_full_pending",
+    "status": "full_offline_and_saved_checks_passed_not_live_accepted",
     "proof": "deep-research-evidence/comparison-joint-reports-20261117.json",
     "relatedTests": 548,
     "newModelCalls": 0,
     "scientificCredit": 0,
-    "runtimeLoaded": false
+    "runtimeLoaded": false,
+    "fullProof": "deep-research-evidence/comparison-integrated-joint-full-20261117.json"
   }
 }
