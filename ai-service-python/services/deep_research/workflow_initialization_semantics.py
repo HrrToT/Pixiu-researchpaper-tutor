@@ -92,4 +92,5 @@ def layout_text(value):
     if (not isinstance(parsed,list) or not parsed or any(not isinstance(r,list) or len(r)!=3
             or any(not isinstance(v,str) or not v.strip() for v in r) for r in parsed)):
         return value
-    return '\n'.join(f'{name}：物理量 {quantity}；存储编码/基函数/单位 {encoding}' for name,quantity,encoding in parsed)
+    from services.deep_research.workflow_representation_slots import encoding_text
+    return '\n'.join(f'{name}：物理量 {quantity}；存储编码/基函数/单位 {encoding_text(encoding)}' for name,quantity,encoding in parsed)

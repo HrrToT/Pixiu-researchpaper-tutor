@@ -12,10 +12,13 @@ VERSION = 1
 MAX_BYTES = 16384
 
 
-def descriptor(version=1):
+def descriptor(version=1, *, metadata=None):
     """No paper-specific variables, encodings, dimensions or values supplied."""
-    if type(version) is not int or version not in (1, 2, 3):
+    if type(version) is not int or version not in (1, 2, 3, 4):
         raise ValueError('Unsupported representation version')
+    if version == 4:
+        from services.deep_research.workflow_representation_slots import descriptor as slots
+        return slots(metadata)
     if version == 3:
         from services.deep_research.workflow_representation_input_first import descriptor as input_first
         return input_first()
@@ -71,7 +74,7 @@ def issues(value, metadata, aliases, *, version=1):
     if len(raw) > MAX_BYTES:
         return [{'code': 'representation.capacity', 'path': ''}]
     # V3 native indices are expanded losslessly before canonical validation.
-    for error in Draft202012Validator(descriptor(2 if version == 3 else version)['schema']).iter_errors(value):
+    for error in Draft202012Validator(descriptor(2 if version in (3,4) else version)['schema']).iter_errors(value):
         path = '/' + '/'.join(str(p).replace('~', '~0').replace('/', '~1') for p in error.absolute_path)
         result.append({'code': 'representation.schema', 'path': path})
     if any(e['code'] == 'representation.schema' for e in result):
@@ -86,7 +89,7 @@ def issues(value, metadata, aliases, *, version=1):
     union = set()
     entries = [(f'/conventions/{i}', c) for i, c in enumerate(conventions)]
     for i, target in enumerate(value['targets']):
-        if version in (2, 3):
+        if version in (2, 3, 4):
             entries += [(f'/targets/{i}/inputDependencies/{j}', d)
                         for j,d in enumerate(target['inputDependencies'])]
         names = [s['name'] for s in target['states']]
@@ -109,12 +112,15 @@ def issues(value, metadata, aliases, *, version=1):
             result.append({'code': 'representation.provenance', 'path': path + '/sourceRefs'})
     if set(value['sourceRefs']) != union or union - known:
         result.append({'code': 'representation.source_closure', 'path': '/sourceRefs'})
-    if version in (2, 3):
+    if version in (2, 3, 4):
         from services.deep_research.workflow_representation_dependencies import issues as dependency_issues
         result += dependency_issues(value, metadata)
-    if version == 3:
+    if version in (3, 4):
         from services.deep_research.workflow_representation_input_first import issues as variable_issues
         result += variable_issues(value)
+    if version == 4:
+        from services.deep_research.workflow_representation_slots import issues as encoding_issues
+        result += encoding_issues(value)
     return result
 
 
@@ -129,7 +135,7 @@ def freeze(value, metadata, aliases, *, version=1):
 def verify(saved, metadata, aliases):
     if (not isinstance(saved, dict) or set(saved) != {
             'version', 'metadataDigest', 'aliasesDigest', 'value', 'valueDigest', 'scientificApproval'}
-            or type(saved['version']) is not int or saved['version'] not in (1, 2, 3)
+            or type(saved['version']) is not int or saved['version'] not in (1, 2, 3, 4)
             or saved['scientificApproval'] is not False
             or saved['metadataDigest'] != digest(metadata) or saved['aliasesDigest'] != digest(aliases)
             or saved['valueDigest'] != digest(saved['value'])
@@ -183,7 +189,7 @@ def initialization_descriptor(saved, metadata, aliases, target):
             'minItems': len(typed_states), 'maxItems': len(typed_states)}
     schema['properties']['stateSemantics'] = {'const': [
         [s['name'], s['quantity'], s['encoding']] for s in declarations]}
-    if saved['version'] in (2, 3):
+    if saved['version'] in (2, 3, 4):
         from services.deep_research.workflow_representation_dependencies import constrain_initialization
         constrain_initialization(result, matches[0])
     return result
@@ -216,7 +222,7 @@ def initialization_issues(saved, metadata, aliases, target, initialization):
         return [{'code': 'representation.state_coverage', 'path': '/initialization/stateDefinitions'}]
     semantics = rows(initialization)
     expected_semantics = [[s['name'], s['quantity'], s['encoding']] for s in declarations]
-    if saved['version'] in (2, 3):
+    if saved['version'] in (2, 3, 4):
         from services.deep_research.workflow_representation_dependencies import initialization_issues as dependency_issues
         result += dependency_issues(matches[0], initialization)
     if semantics != expected_semantics:

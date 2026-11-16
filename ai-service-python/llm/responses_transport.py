@@ -22,7 +22,7 @@ def payload(messages, options, *, model, temperature):
             raise ValueError('Invalid initialization target binding')
         names = ('workflow_init_v2_' + target,'workflow_init_v2_state_' + target,'workflow_init_v3_recipe_' + target,'workflow_init_v4_semantics_' + target)
         if '_workflow_representation_target' in options:
-            names += tuple('workflow_init_representation_v'+str(v)+'_' + target for v in (1,2,3))
+            names += tuple('workflow_init_representation_v'+str(v)+'_' + target for v in (1,2,3,4))
         if target not in ('baseline', 'component') or fmt['name'] not in names:
             raise ValueError('Invalid initialization target binding')
     if '_workflow_representation_target' in options:
@@ -30,7 +30,7 @@ def payload(messages, options, *, model, temperature):
         kind = 'baseline' if declared == 'baseline' else 'component'
         if (not isinstance(declared,str) or not declared.strip() or len(declared)>128
                 or options.get('_workflow_init_target') != kind
-                or fmt['name'] not in tuple('workflow_init_representation_v'+str(v)+'_' + kind for v in (1,2,3))):
+                or fmt['name'] not in tuple('workflow_init_representation_v'+str(v)+'_' + kind for v in (1,2,3,4))):
             raise ValueError('Invalid shared representation binding')
     if '_workflow_metadata_edits' in options:
         if options['_workflow_metadata_edits'] is not True or fmt['name'] != 'metadata_explicit_read_edits_v1':

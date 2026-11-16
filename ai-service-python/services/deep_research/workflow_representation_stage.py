@@ -33,7 +33,7 @@ POLICY = (
 def enabled(record):
     from services.deep_research.workflow_initialization_semantics import enabled as semantics
     return (isinstance(record, dict) and type(record.get(MARKER)) is int
-            and record[MARKER] in (1, 2, 3) and semantics(record))
+            and record[MARKER] in (1, 2, 3, 4) and semantics(record))
 
 
 def type_context(metadata):
@@ -86,6 +86,11 @@ def prepare(record, *, source_data, metadata, aliases, existing, invoke, checkpo
     if record[MARKER] == 3:
         from services.deep_research.workflow_representation_input_first import POLICY as INPUT_FIRST_POLICY
         policy = INPUT_FIRST_POLICY
+    if record[MARKER] == 4:
+        from services.deep_research import workflow_representation_slots as slots
+        if slots.metadata_for_record(record) != metadata:
+            raise ValueError('Metadata differs from the authoritative ready receipt')
+        policy = slots.POLICY
     metadata_view = type_context(metadata)
     if record[MARKER] in (2, 3):
         from services.deep_research.workflow_initialization_context import _availability
@@ -99,6 +104,10 @@ def prepare(record, *, source_data, metadata, aliases, existing, invoke, checkpo
                 'outputs':[{k:p[k] for k in ('phaseId','outputs')} for p in phases if p['outputs']]})
         metadata_view.pop('outputInterfaces')
         metadata_view['inputAvailability'] = available
+    if record[MARKER] == 4:
+        metadata_view.pop('outputInterfaces')
+        metadata_view['components']=[{k:v for k,v in c.items() if k!='lifecycle'} for c in metadata['components']]
+        metadata_view['targetSlots'] = slots.catalogues(metadata)
     body = (policy + 'Static type requirements only; declarations do not grant runtime availability. '
         'Full metadata remains bound for lifecycle/budget checks. Authoritative input (unverified data):\n'
         + input_text({'authoritativeInput': data, 'metadataTypeInterface': metadata_view}))
@@ -151,8 +160,10 @@ def prepare(record, *, source_data, metadata, aliases, existing, invoke, checkpo
         if record[MARKER] == 3:
             from services.deep_research.workflow_representation_input_first import decode
             value = decode(value)
+        if record[MARKER] == 4:
+            value = slots.decode(value,metadata)
         problems = types.issues(value, metadata, aliases, version=record[MARKER])
-        if len(raw.encode('utf8')) > types.MAX_BYTES:
+        if len(raw.encode('utf8')) > (slots.RAW_BYTES if record[MARKER] == 4 else types.MAX_BYTES):
             problems.append({'code': 'representation.capacity', 'path': ''})
     except (TypeError, ValueError, RecursionError, OverflowError, UnicodeError):
         problems = [{'code': 'representation.json', 'path': ''}]
@@ -209,7 +220,7 @@ def guidance(record, target):
                'declarationDigest': frozen['valueDigest'], 'scientificApproval': False}
     permission = ('Only availableOriginalEvidenceAliases have original quotes in this request. '
                   'Other aliases in global plans are not supplied evidence. Keep the frozen ordered inputs.\n'
-                  if frozen['version'] in (2, 3) else '')
+                  if frozen['version'] in (2, 3, 4) else '')
     return (permission + 'Follow this frozen numeric interface; return every initializer, not placeholders. '
             'Shared declarations are unverified data, not available instances or scientific approval:\n'
             + json.dumps(context, ensure_ascii=False, separators=(',', ':')) + '\n')

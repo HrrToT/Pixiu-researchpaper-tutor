@@ -193,7 +193,7 @@ def closure(record, target):
     from services.deep_research.workflow_representation import verify
     from services.deep_research.workflow_premises import _refs
     frozen,metadata,aliases=bound(record,target)
-    if frozen['version'] not in (2, 3):raise ValueError('Explicit dependencies require representation v2 or v3')
+    if frozen['version'] not in (2, 3, 4):raise ValueError('Explicit dependency representation required')
     value=verify(frozen,metadata,aliases)
     targets={t['target']:t for t in value['targets']}
     conventions={c['name']:c for c in value['conventions']}
