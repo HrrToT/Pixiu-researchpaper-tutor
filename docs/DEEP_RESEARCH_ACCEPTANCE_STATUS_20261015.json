@@ -16550,7 +16550,14 @@
     "newModelCalls": 0,
     "budgetChanged": false,
     "scientificContentAccepted": false,
-    "fullRegression": "pending",
-    "next": "Freeze integrated487+488 candidate, run complete baseline-preserving regression, then load once and run one complete comparison. Preserve all original quality and budget gates."
+    "fullRegression": "pending rerun after 75 focused checks passed",
+    "next": "Freeze integrated487+488 candidate, run complete baseline-preserving regression, then load once and run one complete comparison. Preserve all original quality and budget gates.",
+    "failedFullRegression": "deep-research-evidence/integrated-repair-488-20261116.json",
+    "nodePrefixCorrection": {
+      "focusedTests": 75,
+      "junit": "tmp/integrated-repair-488-node-prefix-20261116.xml",
+      "productionLoaded": false,
+      "newModelCalls": 0
+    }
   }
 }

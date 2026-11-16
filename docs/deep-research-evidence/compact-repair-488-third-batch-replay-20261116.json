@@ -13,5 +13,11 @@
   "applicationWrites": 0,
   "scientificContentAccepted": false,
   "marginBytes": 54,
-  "boundary": "Exact saved-case preparation passes narrowly; does not prove new-run capacity, answer quality or scientific approval. Normal-budget counters were zeroed only in the offline wrapper to expose this third batch; actual recorded11963-byte limit was then re-applied unchanged."
+  "boundary": "Exact saved-case preparation passes narrowly; does not prove new-run capacity, answer quality or scientific approval. Normal-budget counters were zeroed only in the offline wrapper to expose this third batch; actual recorded11963-byte limit was then re-applied unchanged.",
+  "postNodePrefixConfirmation": {
+    "inputBytes": 11913,
+    "limit": 11963,
+    "marginBytes": 50,
+    "nodePrefixPreserved": true
+  }
 }
