@@ -3,21 +3,20 @@
   "objective": "Complete DR0-DR5 in DEEP_RESEARCH_DESIGN_20261012.md without redefining success around implemented subsets.",
   "overall": "incomplete",
   "currentFullOfflineRegression": {
-    "sourceCommit": "f5e9502fecd4ce40acf3c07259c76de23850bead",
-    "modules": 471,
-    "passed": 8941,
+    "sourceCommit": "43e4c2515aa38e8e4e54941e26821ea929d8e401",
+    "modules": 472,
     "failures": 0,
     "errors": 0,
     "skipped": 0,
     "sourceUnchanged": true,
-    "baselineCases": 8925,
-    "retainedBaselineCases": 8925,
+    "baselineCases": 8941,
+    "retainedBaselineCases": 8941,
     "missingBaselineCases": [],
-    "elapsedSeconds": 555.94,
-    "warnings": 1,
-    "appliesToCurrentPythonSource": false,
-    "proof": "deep-research-evidence/native-schema-receipt-20261116.json",
-    "matchesLoadedRuntime": false,
+    "elapsedSeconds": 575.86,
+    "passed": 8968,
+    "appliesToCurrentPythonSource": true,
+    "matchesLoadedRuntime": true,
+    "proof": "deep-research-evidence/comparison-pipeline-485-20261116.json",
     "boundary": "Complete current offline research regression only; not real generation, Provider cost/quality, independent scientific acceptance or full product release."
   },
   "postFullRegressionValidation": {
@@ -16496,11 +16495,19 @@
     "synthesisInputContractVersion": 2,
     "relatedTests": 134,
     "preflight": "deep-research-evidence/comparison-485-pipeline-preflight-20261116.json",
-    "fullRegressionStatus": "running",
+    "fullRegressionStatus": "passed",
     "fullRegressionRunId": "comparison-pipeline-485-20261116",
-    "productionReloaded": false,
+    "productionReloaded": true,
     "newModelCalls": 0,
     "scientificContentAccepted": false,
-    "next": "Finish complete offline regression; load once if all gates pass, then submit D2-VQ-v1 attempt4 once under the original frozen question and budget. Preserve 15 historical pauses and other UI task edits."
+    "next": "Observe the same D2 attempt4 to terminal, preserve raw calls and payload, then review the full content and actual budget. No duplicate submission.",
+    "fullRegressionTests": 8968,
+    "loadProof": "deep-research-evidence/comparison-485-load-20261116.json",
+    "realCase": {
+      "id": "D2-VQ-v1-v4",
+      "runId": "dr_run_11cd0b75cde354579bce35176f3e26d0",
+      "status": "running",
+      "automaticRetry": false
+    }
   }
 }
