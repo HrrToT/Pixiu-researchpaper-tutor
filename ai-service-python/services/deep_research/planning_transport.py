@@ -4,6 +4,8 @@ from llm.responses_transport import API_KEY
 
 
 def enabled(record,node):
+    from services.deep_research.shared_experiment_generation import enabled as shared_enabled, NODE as SHARED_NODE
+    if node == SHARED_NODE and shared_enabled(record): return True
     from services.deep_research.scientific_outline import enabled as outline_enabled,NODE
     if node==NODE and outline_enabled(record):return True
     from services.deep_research.workflow_transport import enabled as workflow_enabled
@@ -36,6 +38,11 @@ def descriptor():
 
 
 def descriptor_for(record, node, initialization_target='component', *, metadata_edits=False, revision_source_refs=None, fit_edits=False):
+    from services.deep_research.shared_experiment_generation import enabled as shared_enabled, NODE as SHARED_NODE, descriptor as shared_descriptor
+    if node == SHARED_NODE and shared_enabled(record):
+        if metadata_edits or revision_source_refs is not None or fit_edits:
+            raise ValueError('Invalid shared proposal transport mode')
+        return shared_descriptor()
     from services.deep_research import workflow_representation_stage as representation
     from services.deep_research import workflow_fit_edits as fits
     if type(fit_edits) is not bool: raise ValueError('Invalid fit edit mode')

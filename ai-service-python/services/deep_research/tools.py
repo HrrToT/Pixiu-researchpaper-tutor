@@ -298,6 +298,9 @@ class TrackedLLMInvoker:
     def prompt_byte_limit(self, run_id: str, node: str) -> int:
         from services.deep_research.verification_capacity import verification_input_limit
         record = self._run_record(run_id) if self._run_record else None
+        from services.deep_research.shared_experiment_generation import enabled as shared_enabled, NODE as SHARED_NODE
+        if node == SHARED_NODE and shared_enabled(record):
+            return min(self._experiment_max_input, 32000)
         from services.deep_research.comparison_intent import operations_enabled as comparison_operations_enabled,synthesis_input_limit as comparison_input_limit
         if node=='synthesize' and comparison_operations_enabled(record):
             return min(comparison_input_limit(record),getattr(self,'_experiment_max_input',self._max_input))
@@ -393,7 +396,9 @@ class TrackedLLMInvoker:
         # Reject instead of silently clipping evidence or under-reserving it.
         max_byte_length = self.prompt_byte_limit(run_id, node)
         from services.deep_research.workflow_transport import enabled as workflow_schema
-        admission_bytes = prompt_byte_length + (transport_overhead if workflow_schema(transport_record,node) else 0)
+        from services.deep_research.shared_experiment_generation import enabled as shared_enabled, NODE as SHARED_NODE
+        shared_schema = node == SHARED_NODE and shared_enabled(transport_record)
+        admission_bytes = prompt_byte_length + (transport_overhead if workflow_schema(transport_record,node) or shared_schema else 0)
         if admission_bytes > max_byte_length:
             raise ValueError(
                 f"Prompt too large: {admission_bytes} bytes (~{estimated_input} tokens) "

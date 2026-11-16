@@ -154,6 +154,9 @@ def messages(node, prompt, version=2, *, prospective=False):
 
 def messages_for_record(record, node, prompt):
     """Use the same frozen run policy for reservation, planning and actual wire."""
+    from services.deep_research.shared_experiment_generation import enabled as shared_enabled, NODE as SHARED_NODE, POLICY as SHARED_POLICY
+    if node == SHARED_NODE and shared_enabled(record):
+        return [{'role': 'system', 'content': SHARED_POLICY}, {'role': 'user', 'content': prompt}]
     from services.deep_research.comparison_audit_envelope import enabled as comparison_envelope, POLICY
     if comparison_envelope(record, node):
         return [{'role':'system','content':POLICY},{'role':'user','content':prompt}]

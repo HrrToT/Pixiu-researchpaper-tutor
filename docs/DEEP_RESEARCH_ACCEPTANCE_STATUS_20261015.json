@@ -16970,7 +16970,7 @@
     "modelCalls": 0,
     "applicationWrites": 0,
     "scientificCredit": 0,
-    "next": "Shared definition/checks implemented offline; integrate single generation and equivalent scientific review without enabling default path prematurely."
+    "next": "Candidate single generation and request capacity verified offline; implement independent scientific review and result compilation, then graph/repair integration. Default remains off."
   },
   "sharedExperimentPlanContract20261117": {
     "scope": "Shared binary-factorial proposal contract and deterministic validation, not wired into generation, review or publication",
@@ -17007,5 +17007,46 @@
     "scientificCredit": 0,
     "fullRegressionPending": true,
     "next": "Build and measure sole complete shared-plan request on archived public evidence; integrate tracked generation and independent scientific/whole-answer checks before candidate enablement."
+  },
+  "sharedExperimentGeneration20261117": {
+    "scope": "One durable candidate generation integrated with existing tracked transport, default off; scientific review/graph/publication not implemented",
+    "relatedChecks": {
+      "tests": 142,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "junit": "tmp\\shared-experiment-generation-related-final-20261117.xml",
+    "sourceSha256": {
+      "ai-service-python/services/deep_research/shared_experiment_generation.py": "5161ccad55329ac331015b56ad650c4c186e928125bf76837a02e6140cb93cdb",
+      "ai-service-python/services/deep_research/planning_transport.py": "c834a26e378e214a46fa1c9ff06840a8f4e0ff57034b06cec3edf93268afba73",
+      "ai-service-python/services/deep_research/structured_output.py": "32df463516d8cc1f03289844e8355ba8081c7b93f4cb4d4df554b3c12dcdf917",
+      "ai-service-python/services/deep_research/tools.py": "40b02b0f5eb6d49e07ff400ffdb58a74d202fd8f574c558bd92b1de3ee39a536",
+      "ai-service-python/services/deep_research/facade.py": "71d79f40fb710cf2bd090cf2cd3717243f265f212a268deff249700aa15752e2",
+      "ai-service-python/services/deep_research/repository.py": "351f15788f89a625f0b4182989d4321c663e5d435a20fbe6a890b237620e9bd8",
+      "ai-service-python/tests/test_deep_research_shared_experiment_generation.py": "269efba70a882fc11e33790f457eabbd7a8140f04af72c0324dad961648a6e3c"
+    },
+    "capacityProof": "deep-research-evidence/shared-experiment-generation-capacity-final-20261117.json",
+    "actualComponentsExercised": [
+      "ScopedModelClient",
+      "TrackedLLMInvoker",
+      "DeepResearchRepository",
+      "DeepSeekLLM with mocked HTTP"
+    ],
+    "verifiedRecoveryCases": [
+      "settled response reused without network",
+      "unknown timeout stops without resend",
+      "crash before proposal checkpoint recovers settled ledger response",
+      "schema-inclusive input fails before reservation"
+    ],
+    "newContractChecks": 31,
+    "modelCalls": 0,
+    "realHttpRequests": 0,
+    "applicationWrites": 0,
+    "runtimeLoaded": false,
+    "facadeEnabled": false,
+    "scientificCredit": 0,
+    "fullRegressionPending": true,
+    "next": "Independent scientific verdicts bound to the complete proposal and original evidence, public result compilation, graph/repair integration before enablement."
   }
 }
