@@ -46,8 +46,10 @@ export default function ResearchReportText({ text, sources = [], onJumpToSource,
             pageIndex: selected.page != null ? selected.page - 1 : selected.pageIndex });
           close();
         }}>查看论文原文</button>}
-        {!external && selected.pdfId && onJumpToSource && <button type="button" onClick={() => onJumpToSource({ ...selected,
-          pageIndex: selected.page != null ? selected.page - 1 : selected.pageIndex })}>查看论文原文</button>}
+        {!external && selected.pdfId && onJumpToSource && <button type="button" onClick={() => {
+          onJumpToSource({ ...selected, pageIndex: selected.page != null ? selected.page - 1 : selected.pageIndex });
+          close();
+        }}>查看论文原文</button>}
       </>}
     </section></div>}
   </>;
