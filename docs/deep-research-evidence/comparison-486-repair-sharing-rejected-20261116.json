@@ -1,0 +1,13 @@
+{
+  "case": "D2-VQ-v1-v4",
+  "scope": "Isolated zero-model in-memory _prepare_repair replay with lossless shared_strings on consolidated metadata",
+  "result": "rejected_capacity",
+  "candidateMandatoryBytes": 27685,
+  "inputLimit": 22918,
+  "productionEnabled": false,
+  "modelCalls": 0,
+  "applicationWrites": 0,
+  "scientificContentAccepted": false,
+  "boundary": "Prototype did not produce an admissible request. Do not deploy or infer content quality. Saved historical result remains unchanged.",
+  "next": "Inspect repeated instruction/context ownership per repair target before another format change; preserve complete own citations and factual gates."
+}
