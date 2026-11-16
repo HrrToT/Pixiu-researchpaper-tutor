@@ -1265,6 +1265,11 @@ def make_synthesize_node(
                 "accessLevel": ev.get("accessLevel", "fulltext"),
             })
         
+        from services.deep_research.shared_experiment_generation import enabled as shared_experiment_enabled
+        if shared_experiment_enabled(record):
+            from services.deep_research.shared_experiment_pipeline import synthesize
+            return synthesize(record,evidence_summaries,evidence_aliases,source_registry,table_registry,
+                              premise_bundles if premise_mode else [],repo_update,llm_invoke)
         from uuid import uuid4
         from services.deep_research.prompt_budget import fit_evidence_prompt
         evidence_marker = uuid4().hex
@@ -2011,6 +2016,11 @@ def make_verify_node(
         if state.get("error_code"):
             return {}
         record = repo_update(run_id, lambda r: {**r, "stage": "verify"}, expected_revision=None)
+        from services.deep_research.shared_experiment_generation import enabled as shared_experiment_enabled
+        if shared_experiment_enabled(record):
+            from services.deep_research.shared_experiment_pipeline import verify
+            if llm_invoke is None: raise ValueError('Shared experiment requires the tracked model invoker')
+            return verify(record,repo_update,llm_invoke)
         report_body = record.get("state", {}).get("reportBody", {})
         evidence = record.get("state", {}).get("evidence", [])
         
@@ -2443,6 +2453,7 @@ def make_verify_node(
 def make_publish_node(
     repo_publish: Callable[..., tuple],
     repo_update: Callable[[str, Callable, dict | None], dict],
+    *, scope_validator=None,
 ) -> Callable[[GraphState], dict]:
     """Publish verified report atomically to outbox.
     
@@ -2459,6 +2470,10 @@ def make_publish_node(
         execution_epoch = state.get("execution_epoch", 0)
         
         record = repo_update(run_id, lambda r: {**r, "stage": "publish"}, expected_revision=None)
+        from services.deep_research.shared_experiment_generation import enabled as shared_experiment_enabled
+        if shared_experiment_enabled(record):
+            from services.deep_research.shared_experiment_pipeline import publish
+            return publish(record,state,repo_update,repo_publish,scope_validator)
         verified_report = record.get("state", {}).get("verifiedReport", {})
         brief_state = record.get("state", {})
         output_kind = brief_state.get("outputKind", "direction_survey")
@@ -2796,7 +2811,7 @@ def build_deep_research_graph(
     workflow.add_edge('advance_frontier', 'acquire')
     workflow.add_node("synthesize", bounded(make_synthesize_node(llm_invoke, repo_update)))
     workflow.add_node("verify", make_verify_node(verify_claims_fn, semantic_check_fn, repo_update, llm_invoke=llm_invoke))
-    workflow.add_node("publish", make_publish_node(repo_publish, repo_update))
+    workflow.add_node("publish", make_publish_node(repo_publish, repo_update,scope_validator=scope_validator))
     
     # Set entry point
     workflow.set_entry_point("resolve_brief")

@@ -85,7 +85,7 @@ def test_native_schema_and_actual_input_window_are_counted_before_send():
     invoke = Mock(); saved = []
     with pytest.raises(DeepResearchError) as error: prepare(r, data, aliases, invoke=invoke, checkpoint=saved.append)
     assert error.value.code == 'shared_experiment_input_capacity'
-    assert saved[-1]['inputBytes'] > 32000 and saved[-1]['transportOverheadBytes'] > 9000
+    assert saved[-1]['inputBytes'] > 32000 and saved[-1]['transportOverheadBytes'] > 7000
     invoke.assert_not_called()
 
 

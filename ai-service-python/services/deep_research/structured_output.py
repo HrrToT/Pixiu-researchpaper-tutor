@@ -160,6 +160,9 @@ def messages_for_record(record, node, prompt):
     if node == 'review_experiment_shared' and shared_enabled(record):
         from services.deep_research.shared_experiment_review import POLICY as REVIEW_POLICY
         return [{'role':'system','content':REVIEW_POLICY},{'role':'user','content':prompt}]
+    if node == 'repair_experiment_shared' and shared_enabled(record):
+        from services.deep_research.shared_experiment_revision import POLICY as REPAIR_POLICY
+        return [{'role':'system','content':REPAIR_POLICY},{'role':'user','content':prompt}]
     from services.deep_research.comparison_audit_envelope import enabled as comparison_envelope, POLICY
     if comparison_envelope(record, node):
         return [{'role':'system','content':POLICY},{'role':'user','content':prompt}]

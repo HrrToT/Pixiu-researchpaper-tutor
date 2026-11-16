@@ -50,7 +50,25 @@ def enabled(record):
 
 
 def descriptor():
-    return {'type': 'json_schema', 'name': 'shared_binary_factorial_v1', 'schema': schema()}
+    # Reuse native JSON Schema definitions, without encoding the model's input
+    # or output values. The independent local validator retains the full schema.
+    plain=schema(); text=plain['properties']['hypothesis']; ident=plain['properties']['states']['items']['properties']['id']
+    if '$defs' in plain: raise ValueError('Unexpected shared proposal schema definitions')
+    def share(value):
+        if value==text:return {'$ref':'#/$defs/text'}
+        if value==ident:return {'$ref':'#/$defs/id'}
+        if isinstance(value,dict):return {k:share(v) for k,v in value.items()}
+        if isinstance(value,list):return [share(v) for v in value]
+        return deepcopy(value)
+    compact=share(plain);compact['$defs']={'text':deepcopy(text),'id':deepcopy(ident)}
+    def expand(value):
+        if isinstance(value,dict):
+            if set(value)=={'$ref'}:return deepcopy(compact['$defs'][value['$ref'].split('/')[-1]])
+            return {k:expand(v) for k,v in value.items() if k!='$defs'}
+        if isinstance(value,list):return [expand(v) for v in value]
+        return deepcopy(value)
+    if digest(expand(compact))!=digest(plain):raise ValueError('Shared proposal schema changed constraints')
+    return {'type':'json_schema','name':'shared_binary_factorial_v1','schema':compact}
 
 
 def build(record, input_data, aliases, *, required_domains=()):

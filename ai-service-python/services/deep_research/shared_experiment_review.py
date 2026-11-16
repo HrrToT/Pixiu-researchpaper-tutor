@@ -56,7 +56,14 @@ def _generation(record):
             or g.get('scientificApproval') is not False or not isinstance(g.get('boundProposal'), dict)
             or not validate_bound(g['boundProposal'], expected_digest=g.get('bindingDigest'))):
         raise DeepResearchError('invalid_shared_experiment_review_state', '共享实验方案尚未就绪或绑定已改变。')
+    if 'sharedExperimentRevision' in record.get('state',{}):
+        from services.deep_research.shared_experiment_revision import view
+        return view(record)
     return g
+
+
+def review_slot(record):
+    return 'sharedExperimentRevisionReview' if 'sharedExperimentRevision' in record.get('state',{}) else 'sharedExperimentReview'
 
 
 def targets(record):
@@ -81,14 +88,17 @@ def targets(record):
 
 def descriptor(record):
     ids = [t['checkId'] for t in targets(record)]
-    text = {'type':'string', 'minLength':1, 'maxLength':600, 'pattern':r'\S'}
-    binding = _object({'path':text, 'text':text})
+    literal_text = {'type':'string', 'minLength':1, 'maxLength':600, 'pattern':r'\S'}
+    text = {'$ref':'#/$defs/text'}
+    binding = {'$ref':'#/$defs/binding'}
     evidence = _object({'evidenceId':text, 'field':{'enum':['quote', 'before', 'after']}, 'text':text})
     check = _object({'checkId':{'enum':ids}, 'status':{'enum':['passed','failed','unresolved']},
                      'planBindings':_array(binding, maximum=8), 'evidenceBindings':_array(evidence, maximum=8), 'reason':text})
-    return {'type':'json_schema', 'name':'shared_experiment_review_v1', 'schema':_object({
+    result=_object({
         'checks':_array(check, len(ids), len(ids)), 'coherent':{'type':'boolean'},
-        'issues':_array(_object({'reason':text, 'planBindings':_array(binding, maximum=8)}), maximum=8)})}
+        'issues':_array(_object({'reason':text, 'planBindings':_array(binding, maximum=8)}), maximum=8)})
+    result['$defs']={'text':literal_text,'binding':_object({'path':text,'text':text})}
+    return {'type':'json_schema','name':'shared_experiment_review_v1','schema':result}
 
 
 def build(record, input_data, aliases, *, required_domains=()):
@@ -97,10 +107,17 @@ def build(record, input_data, aliases, *, required_domains=()):
     from services.deep_research.planning_transport import overhead_bytes
     _generation(record)
     def no_action(*args, **kwargs): raise AssertionError('Ready generation must not invoke or checkpoint')
-    generation = prepare_generation(record, input_data, aliases, invoke=no_action, checkpoint=no_action,
-                                    required_domains=required_domains)
+    prepare_generation(record, input_data, aliases, invoke=no_action, checkpoint=no_action,
+                       required_domains=required_domains)
+    generation = _generation(record)
     bound = generation['boundProposal']
-    data = {**deepcopy(input_data), 'proposal':bound['proposal'], 'reviewTargets':targets(record)}
+    # Drop only server routing hints, never original scientific text, conditions,
+    # source identity, location/access or table data. Frozen input/aliases above
+    # are still checked in full; the reviewer sees every actual question/target.
+    evidence=[{k:deepcopy(v) for k,v in row.items() if k not in
+               {'resultRoleHintOnly','sourceContextRequired','contextOmitted','obligations'}}
+              for row in input_data['evidence']]
+    data = {**deepcopy(input_data),'evidence':evidence, 'proposal':bound['proposal'], 'reviewTargets':targets(record)}
     prompt = INSTRUCTIONS + input_text(data)
     request = request_identity(record,NODE,prompt,{'temperature':0.0,'max_tokens':OUTPUT_TOKENS,'timeout_seconds':90})
     return {'request':request, 'generationBindingDigest':generation['bindingDigest'],
@@ -209,7 +226,7 @@ def assess(record, input_data, aliases, response):
 def prepare(record, input_data, aliases, *, invoke, checkpoint, required_domains=()):
     from services.deep_research.planning_transport import dispatch_options
     built = build(record,input_data,aliases,required_domains=required_domains)
-    saved = deepcopy(record.get('state',{}).get('sharedExperimentReview'))
+    saved = deepcopy(record.get('state',{}).get(review_slot(record)))
     if saved is None:
         saved = {**built,'version':1,'status':'pending'}
         if built['hardIssues']: saved['status'] = 'not_started_precheck'

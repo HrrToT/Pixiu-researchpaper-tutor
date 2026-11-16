@@ -4,7 +4,7 @@ No second writer invents a different initialization/budget. Full answer audit,
 scope checks and publication integration remain mandatory after compilation.
 """
 from services.deep_research.contracts import DeepResearchError, digest
-from services.deep_research.shared_experiment_review import prepare, _generation
+from services.deep_research.shared_experiment_review import prepare, _generation, review_slot
 
 
 def _cell(value):
@@ -17,7 +17,7 @@ def _operation(op):
 
 
 def compile_candidate(record, input_data, aliases):
-    saved = record.get('state',{}).get('sharedExperimentReview')
+    saved = record.get('state',{}).get(review_slot(record))
     if not isinstance(saved,dict) or saved.get('status') != 'checked':
         raise DeepResearchError('shared_experiment_not_reviewed','科学审核尚未完成，不能生成正式结果候选。')
     def no_action(*args, **kwargs): raise AssertionError('Compilation cannot invoke or checkpoint')
@@ -101,7 +101,7 @@ def compile_candidate(record, input_data, aliases):
         lines += ['']
         for eid,citation in citations.items():
             source = input_data['sources'][citation['source']]
-            lines += ['[^'+str(citation['number'])+']: '+source.get('title',source['workId'])]
+            lines += ['[^'+str(citation['number'])+']: '+(source.get('title') or source['workId'])]
     text = '\n'.join(lines)+'\n'
     result = {'version':1, 'markdown':text, 'citations':list(citations.values()),
               'generationBindingDigest':generation['bindingDigest'], 'reviewDigest':assessment['reviewDigest'],

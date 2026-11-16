@@ -297,6 +297,9 @@ def initialize_runtime():
     if _runtime is not None:
         return _runtime
     comparison_profile = os.environ.get('DEEP_RESEARCH_COMPARISON_CELLS', '0')
+    shared_profile = os.environ.get('DEEP_RESEARCH_SHARED_EXPERIMENT_PLAN', '0')
+    if shared_profile not in ('0','1'):
+        raise ValueError('Invalid server shared experiment rollout policy')
     if comparison_profile not in ('0','1'):
         raise ValueError('Invalid server comparison cell rollout policy')
     path = Path(os.environ.get("DEEP_RESEARCH_DB_PATH", "data/deep_research_v2.sqlite3"))
@@ -391,6 +394,7 @@ def initialize_runtime():
     from functools import partial
     facade = RuntimeFacade(repo, partial(build_deep_research_graph, extract_batch_size=3), llm_client=model, scope_validator=scope,
                            comparison_cells_version=int(comparison_profile),
+                           shared_experiment_plan_version=int(shared_profile),
                            source_reader=lambda rid, sid: read_acquired_source(repo, rid, sid))
     from services.deep_research.external import AcademicAcquisition
     facade._external_acquire = AcademicAcquisition(repo, facade._complete_tracked_call)

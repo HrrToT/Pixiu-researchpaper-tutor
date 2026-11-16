@@ -9,6 +9,7 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
+import re
 import threading
 import time
 import uuid
@@ -108,10 +109,14 @@ class ResearchFacade:
         external_acquire: Callable | None = None,
         max_concurrent: int = 2,
         comparison_cells_version: int = 0,
+        shared_experiment_plan_version: int = 0,
     ):
         if type(comparison_cells_version) is not int or comparison_cells_version not in (0,1):
             raise ValueError('Invalid server comparison cell rollout policy')
         self._comparison_cells_version = comparison_cells_version
+        if type(shared_experiment_plan_version) is not int or shared_experiment_plan_version not in (0,1):
+            raise ValueError('Invalid server shared experiment rollout policy')
+        self._shared_experiment_plan_version = shared_experiment_plan_version
         self._repo = repo
         self._graph_factory = graph_factory
         self._llm_client = llm_client
@@ -304,7 +309,8 @@ class ResearchFacade:
             "comparisonPlanningContractVersion": 2 if self._comparison_cells_version == 1 else 0,
             "comparisonAuditEnvelopeContractVersion": 1 if self._comparison_cells_version == 1 else 0,
             "comparisonJointReportsContractVersion": 2 if self._comparison_cells_version == 1 else 0,
-            "experimentSharedPlanContractVersion": 0,
+            "experimentSharedPlanContractVersion": self._shared_experiment_plan_version if re.search(
+                r'(?<!\d)2\s*[xX×*]\s*2(?!\d)',str(request.get('question',''))) else 0,
             "reportingOwnershipContractVersion": 1,
             "draftValidationContractVersion": 1,
             "factualRepairPromptContractVersion": 3,
