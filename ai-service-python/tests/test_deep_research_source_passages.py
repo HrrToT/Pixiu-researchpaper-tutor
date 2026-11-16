@@ -200,3 +200,36 @@ def test_wrong_wrapper_identity_and_capacity_fail_before_checkpoint(tmp_path,mon
     monkeypatch.setattr('services.deep_research.source_passages.MAX_UNITS',1)
     with pytest.raises(DeepResearchError,match='上限'):node(repo,invoke)({'run_id':'r'})
     assert repo.require_run('r')['state']['evidence']==[]
+
+
+@pytest.mark.parametrize('final_authorized', [True, False])
+def test_local_page_batch_rechecks_scope_before_its_only_evidence_checkpoint(tmp_path, final_authorized):
+    from contextlib import contextmanager
+    from services.deep_research.text_quality import guard
+    repo, invoke, reads = fixture(tmp_path)
+    exited = []
+    def factory(*args, **kwargs):return make_evidence(*args, **kwargs)
+    @contextmanager
+    def batch():
+        try:yield
+        finally:exited.append(True)
+    factory.physical_page_batch = batch
+    factory = guard(factory, {'sourceGlyphContractVersion':1})
+    class Scope:
+        checks = 0
+        def __call__(self, *args):pytest.fail('Use one whole-snapshot check at each boundary')
+        def validate_materials(self, rid, owners):
+            self.checks += 1
+            assert set(owners) == {r['workId'] for r in reads}
+            return True if self.checks == 1 else final_authorized
+    scope = Scope()
+    extractor = make_batched_extract_node(invoke, factory, scope, repo.update_run)
+    if final_authorized:
+        extractor({'run_id':'r'})
+        assert len(repo.require_run('r')['state']['evidence']) == 3
+    else:
+        with pytest.raises(DeepResearchError, match='未保存'):extractor({'run_id':'r'})
+        saved = repo.require_run('r')['state']
+        assert saved['evidence'] == [] and 'sourcePassageExtraction' not in saved
+    assert scope.checks == 2 and exited == [True]
+    invoke.assert_not_called()

@@ -81,3 +81,69 @@ def test_page_match_does_not_bypass_literal_evidence_check():
     create, source, _, _ = setup()
     with pytest.raises(ValueError, match='Quotation'):
         create(source, QUOTE, 'Different original', location={'page': 1}, obligation_ids=['o'])
+
+
+def test_page_batch_reuses_physical_pages_only_inside_its_explicit_scope():
+    from services.deep_research.text_quality import guard
+    create, source, record, local = setup()
+    record['sourceGlyphContractVersion'] = 1
+    create = guard(create, record)
+    args = dict(location={'page':1}, obligation_ids=['o'])
+    with create.physical_page_batch():
+        first = create(source, QUOTE, QUOTE, **args)
+        second = create(source, QUOTE, QUOTE, **args)
+        assert first == second
+        assert local.load_pages.call_count == 1
+    create(source, QUOTE, QUOTE, **args)
+    assert local.load_pages.call_count == 2
+    with create.physical_page_batch():
+        create(source, QUOTE, QUOTE, **args)
+    assert local.load_pages.call_count == 3
+
+
+def test_failed_page_load_is_not_cached_and_scope_revocation_is_rechecked_after_batch():
+    create, source, _, local = setup()
+    success = local.load_pages.return_value
+    local.load_pages.side_effect = [requests.Timeout(), success]
+    args = dict(location={'page':1}, obligation_ids=['o'])
+    with create.physical_page_batch():
+        assert create(source, QUOTE, QUOTE, **args)['location']['pageResolution'] == 'unresolved'
+        assert create(source, QUOTE, QUOTE, **args)['location']['page'] == 2
+        assert create(source, QUOTE, QUOTE, **args)['location']['page'] == 2
+        assert local.load_pages.call_count == 2
+    local.load_pages.side_effect = DeepResearchError('scope_revoked','revoked')
+    with pytest.raises(DeepResearchError):create(source, QUOTE, QUOTE, **args)
+
+
+def test_page_batch_is_cleared_after_a_failed_quotation():
+    create, source, _, local = setup()
+    with pytest.raises(ValueError):
+        with create.physical_page_batch():
+            create(source, QUOTE, 'Wrong original', location={'page':1}, obligation_ids=['o'])
+    create(source, QUOTE, QUOTE, location={'page':1}, obligation_ids=['o'])
+    assert local.load_pages.call_count == 2
+
+
+def test_batch_does_not_share_pages_between_owners_with_the_same_pdf_hash():
+    create, source, record, local = setup()
+    record['materials'].append({**record['materials'][0], 'materialId':'other'})
+    local.load_pages.side_effect = [
+        (record['materials'][0], [{'page':2,'text':QUOTE}]),
+        (record['materials'][1], [{'page':7,'text':QUOTE}])]
+    with create.physical_page_batch():
+        first=create(source, QUOTE, QUOTE, location={'page':1}, obligation_ids=['o'])
+        second=create({**source,'workId':'other'}, QUOTE, QUOTE,
+                      location={'page':1}, obligation_ids=['o'])
+    assert first['location']['page']==2 and second['location']['page']==7
+    assert local.load_pages.call_count==2 and first['sourceWorkId']!=second['sourceWorkId']
+
+
+def test_changed_snapshot_hash_cannot_reuse_an_earlier_batch_entry():
+    create, source, record, local = setup()
+    with create.physical_page_batch():
+        create(source, QUOTE, QUOTE, location={'page':1}, obligation_ids=['o'])
+        record['materials'][0]['contentHash']='different-pdf-hash'
+        local.load_pages.side_effect=DeepResearchError('source_changed','changed')
+        with pytest.raises(DeepResearchError):
+            create(source, QUOTE, QUOTE, location={'page':1}, obligation_ids=['o'])
+    assert local.load_pages.call_count==2

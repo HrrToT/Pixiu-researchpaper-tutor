@@ -1,6 +1,7 @@
 """Bind new local prose evidence to the physical pages of its frozen PDF."""
 import subprocess
 import requests
+from contextlib import contextmanager
 from services.deep_research.contracts import DeepResearchError
 from services.deep_research.verification import make_evidence
 
@@ -8,6 +9,21 @@ from services.deep_research.verification import make_evidence
 def located_evidence_factory(repo, run_id, local):
     # LocalTaskRetriever owns the per-run PDF cache. Nothing is written back to
     # historical sources/reports, and evidence identity includes the new location.
+    batch_pages = None
+
+    @contextmanager
+    def physical_page_batch():
+        """Only for a local extraction bracketed by live scope validation."""
+        nonlocal batch_pages
+        if batch_pages is not None:
+            raise DeepResearchError('invalid_page_batch', '不能嵌套正文页码回查批次。')
+        batch_pages = {}
+        try:
+            yield
+        finally:
+            # A later read or provider send cannot inherit this permission window.
+            batch_pages = None
+
     def create(source, quote, original, *, location, obligation_ids, conditions=None):
         from services.deep_research.quote_pages import resolve_quote_location
         record = repo.require_run(run_id)
@@ -31,8 +47,14 @@ def located_evidence_factory(repo, run_id, local):
                 if table_row:
                     break
             if not table_row:
+                key = (material['materialId'], material.get('contentHash'))
                 try:
-                    _, pages = local.load_pages(source['workId'])
+                    if batch_pages is not None and key in batch_pages:
+                        pages = batch_pages[key]
+                    else:
+                        _, pages = local.load_pages(source['workId'])
+                        if batch_pages is not None and pages:
+                            batch_pages[key] = pages
                 except DeepResearchError as exc:
                     if exc.code in {'scope_revoked', 'source_changed', 'source_missing'}:
                         raise
@@ -44,4 +66,5 @@ def located_evidence_factory(repo, run_id, local):
                 location = resolve_quote_location(quote, pages, location)
         return make_evidence(source, quote, original, location=location,
                              obligation_ids=obligation_ids, conditions=conditions)
+    create.physical_page_batch = physical_page_batch
     return create

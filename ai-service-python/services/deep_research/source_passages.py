@@ -89,6 +89,14 @@ def projection(evidence):
 
 
 def extract(record, make_evidence, validate, update):
+    from contextlib import nullcontext
+    batch = getattr(make_evidence, '__dict__', {}).get('physical_page_batch')
+    use_batch = callable(batch)
+    with batch() if use_batch else nullcontext():
+        return _extract(record, make_evidence, validate, update, recheck_scope=use_batch)
+
+
+def _extract(record, make_evidence, validate, update, *, recheck_scope=False):
     run_id = record['runId']; state = record.get('state', {})
     canonical = record['adaptiveExtractionContractVersion'] == 3
     input_version = 2 if canonical else 1
@@ -186,6 +194,15 @@ def extract(record, make_evidence, validate, update):
                 else:
                     evidence.append(ev); by_id[eid] = ev
                 journal['entries'][key] = entry
+    # Cached pages may serve many quotes in this pure local batch. Revalidate
+    # every owner before publishing its single checkpoint; no permission cache
+    # crosses this boundary or permits a later provider send.
+    if recheck_scope:
+        owners = list(dict.fromkeys(source['workId'] for source in sources))
+        valid = (validate.validate_materials(run_id, owners) if batch_scope
+                 else all(validate(run_id, owner) for owner in owners))
+        if not valid:
+            raise DeepResearchError('scope_revoked', '材料范围已变更，未保存本批原文证据。')
     # One atomic local checkpoint: never keep half a failed scope/identity batch.
     update(run_id, lambda r:{**r,'state':{**r.get('state',{}),'evidence':evidence,
         'sourcePassageExtraction':journal}}, expected_revision=None)

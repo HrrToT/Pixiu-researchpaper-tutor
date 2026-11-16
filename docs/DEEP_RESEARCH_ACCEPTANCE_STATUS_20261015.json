@@ -16680,5 +16680,24 @@
     "productionLoaded": false,
     "fullRegression": "pending coherent comparison intent and scheduling completion",
     "next": "Keep factual comparison axes distinct from joint judgement goals; profile actual local evidence preparation and plan the whole case before another eligible real development case. Preserve D2-v8 unknown; do not rename/retry it."
+  },
+  "sourcePageBatch20261116": {
+    "proof": "deep-research-evidence/source-page-batch-20261116.json",
+    "sameEvidenceAndJournalBytes": true,
+    "replayedQuotes": 32,
+    "physicalPages": 26,
+    "permissionChecks": {
+      "before": 65,
+      "after": 6
+    },
+    "finalScopeRevocationBlocksCheckpoint": true,
+    "relatedTests": 99,
+    "scientificContentAccepted": false,
+    "productionLoaded": false,
+    "fullRegression": {
+      "status": "pending",
+      "runId": "comparison-axes-page-batch-full-20261116"
+    },
+    "next": "Freeze coherent review-time, shared-axis, call-capacity and page-batch candidate for full regression. Keep v8 unknown unchanged; comparison content and joint judgement intent remain unaccepted."
   }
 }

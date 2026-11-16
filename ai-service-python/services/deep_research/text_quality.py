@@ -20,4 +20,7 @@ def guard(factory,record):
             evidence['verification']={**evidence.get('verification',{}),'literal':'failed'}
             evidence['textQualityAudit']={'version':1,'status':'unreadable_glyphs','controlCount':count}
         return evidence
+    page_batch = getattr(factory, '__dict__', {}).get('physical_page_batch')
+    if callable(page_batch):
+        create.physical_page_batch = page_batch
     return create
