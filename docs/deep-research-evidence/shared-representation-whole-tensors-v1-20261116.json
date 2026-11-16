@@ -1,0 +1,157 @@
+{
+  "asOf": "2026-11-16",
+  "case": "SHARED-REPRESENTATION-WHOLE-TENSORS-v1",
+  "implementationSourceCommit": "a97459c89",
+  "sourceCase": "D3-VQ-FACTORIAL-v6",
+  "publicPaperUrl": "https://arxiv.org/abs/2311.18159v1",
+  "pdfSha256": "834337574488b37f20793de624fe9598947f18fdf238444238de8320ec1b744b",
+  "requestDigest": "91f449feefdb3049408127f90d5d2ec901e3373dff32c1423fd842a92501265a",
+  "inputBytes": 31937,
+  "originalEvidenceRows": 17,
+  "allOriginalSourceDataUnchanged": true,
+  "providerCalls": 1,
+  "attempt": 1,
+  "callStatus": "succeeded",
+  "settled": true,
+  "finishReason": "stop",
+  "usage": {
+    "total_tokens": 13080,
+    "input_tokens": 10170,
+    "output_tokens": 2910
+  },
+  "recordedCallSeconds": 33.0,
+  "requestBudget": {
+    "calls": 1,
+    "tokens": 50000,
+    "wallSeconds": 180,
+    "maxOutputTokens": 6144,
+    "requestDeadlineSeconds": 90
+  },
+  "unitValid": false,
+  "unitErrors": [
+    {
+      "code": "representation.schema",
+      "path": "/targets/0/states/0/shape/0"
+    },
+    {
+      "code": "representation.schema",
+      "path": "/targets/0/states/0/shape/1"
+    },
+    {
+      "code": "representation.schema",
+      "path": "/targets/1/states/0/shape/0"
+    },
+    {
+      "code": "representation.schema",
+      "path": "/targets/1/states/0/shape/1"
+    },
+    {
+      "code": "representation.schema",
+      "path": "/targets/2/states/0/shape/0"
+    },
+    {
+      "code": "representation.schema",
+      "path": "/targets/2/states/0/shape/1"
+    },
+    {
+      "code": "representation.schema",
+      "path": "/targets/5/states/0/shape/0"
+    },
+    {
+      "code": "representation.schema",
+      "path": "/targets/6/states/0/shape/0"
+    }
+  ],
+  "compactCanonicalBytes": 8168,
+  "variablesPerTarget": {
+    "baseline": [
+      "gaussian_model"
+    ],
+    "shared_initialization": [
+      "gaussian_model"
+    ],
+    "gaussian_model": [
+      "gaussian_model"
+    ],
+    "sh_codebook": [
+      "sh_codebook"
+    ],
+    "scale_rotation_codebook": [
+      "scale_rotation_codebook"
+    ],
+    "sh_indices": [
+      "sh_indices"
+    ],
+    "scale_rotation_indices": [
+      "scale_rotation_indices"
+    ]
+  },
+  "rawResponseBytes": 12940,
+  "nativeSchemaReceiptComputedOffline": {
+    "version": 1,
+    "schemaName": "workflow_representation_v4_whole_tensors",
+    "schemaDigest": "69fdc4adbc14ba9871913cd75751040848a850a0cb84f06a328ffd85609912c9",
+    "providerSchemaEnforcementVerified": false,
+    "scientificApproval": false,
+    "status": "invalid",
+    "issues": [
+      {
+        "rule": "anyOf",
+        "path": "/targets/baseline/1/0/shape/0"
+      },
+      {
+        "rule": "anyOf",
+        "path": "/targets/baseline/1/0/shape/1"
+      },
+      {
+        "rule": "anyOf",
+        "path": "/targets/shared_initialization/1/0/shape/0"
+      },
+      {
+        "rule": "anyOf",
+        "path": "/targets/shared_initialization/1/0/shape/1"
+      },
+      {
+        "rule": "anyOf",
+        "path": "/targets/gaussian_model/1/0/shape/0"
+      },
+      {
+        "rule": "anyOf",
+        "path": "/targets/gaussian_model/1/0/shape/1"
+      },
+      {
+        "rule": "anyOf",
+        "path": "/targets/sh_indices/1/0/shape/0"
+      },
+      {
+        "rule": "anyOf",
+        "path": "/targets/scale_rotation_indices/1/0/shape/0"
+      }
+    ],
+    "issuesTruncated": false
+  },
+  "nativeReceiptReplayedByNewCodeNotAddedToOriginalResult": true,
+  "manualContentReview": {
+    "accepted": false,
+    "observations": [
+      "Native dimensions include string num_gaussians and string 59, contrary to the supplied integer-or-indexed-axis schema.",
+      "Local native schema replay identifies eight anyOf violations, matching canonical rejection paths.",
+      "Gaussian targets regress to an opaque gaussian_model container; numeric fields and compatible rendering layout remain unresolved.",
+      "The derived root source summary contains only typed per-entry model-selected refs; no numeric dimensions, variables or source choices were supplied by the compiler.",
+      "This diagnostic changed prompt wording, output organization and redundant-root accounting; no single-change causal conclusion follows."
+    ]
+  },
+  "isolatedSchemaOverride": true,
+  "productWireChanged": false,
+  "automaticRetry": false,
+  "frozen": false,
+  "followupInitializationCalls": 0,
+  "scientificContentCredit": 0,
+  "independentAcceptanceCredit": 0,
+  "applicationDataUnchanged": true,
+  "artifacts": {
+    "tmp/shared-representation-whole-tensors-v1-result-20261116/result.json": "cf4f7e492aeb41f3321a05524a8b4b9f216acb98433dbd701024ca6d84905dc9",
+    "tmp/shared-representation-whole-tensors-v1-public-review-20261116/reviewed-request.json": "ae156ea5151a764a1dfaa8682dd83934e936e21c2489d024399cfd7cac3ba84f"
+  },
+  "boundary": "One isolated declaration diagnostic; not a complete experiment, application activation or independent content acceptance."
+}
