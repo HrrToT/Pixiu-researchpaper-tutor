@@ -3,21 +3,21 @@
   "objective": "Complete DR0-DR5 in DEEP_RESEARCH_DESIGN_20261012.md without redefining success around implemented subsets.",
   "overall": "incomplete",
   "currentFullOfflineRegression": {
-    "sourceCommit": "5fcc9da41160768b2022e43cf0bc96cbea68cdb7",
+    "sourceCommit": "68bfc26e090158a8680f9072c9433e93e08d6acc",
     "modules": 475,
     "failures": 0,
     "errors": 0,
     "skipped": 0,
     "sourceUnchanged": true,
-    "baselineCases": 8978,
-    "retainedBaselineCases": 8978,
+    "baselineCases": 9024,
+    "retainedBaselineCases": 9024,
     "missingBaselineCases": [],
-    "elapsedSeconds": 619.2,
+    "elapsedSeconds": 500.95,
     "boundary": "Complete current offline research regression only; not real generation, Provider cost/quality, independent scientific acceptance or full product release.",
-    "passed": 9024,
-    "appliesToCurrentPythonSource": false,
-    "matchesLoadedRuntime": true,
-    "proof": "deep-research-evidence/comparison-presentation-full-native-20261116.json"
+    "passed": 9026,
+    "appliesToCurrentPythonSource": true,
+    "matchesLoadedRuntime": false,
+    "proof": "deep-research-evidence/comparison-missing-draft-full-native-20261116.json"
   },
   "postFullRegressionValidation": {
     "scope": "PDF Form parser optimization only",
@@ -16596,7 +16596,7 @@
     "sourceDefault": 0,
     "scientificContentAccepted": false,
     "candidateLoad": "verified",
-    "next": "Observe current full regression. No active real case; default runtime restored, all 394 prior runs and 10009 prior ledger rows exact. Real comparison content remains unverified.",
+    "next": "D2-v8 candidate load in progress; one submission after verified health/history, temporary idle-sleep protection through observation and restore.",
     "candidateProof": "deep-research-evidence/comparison-candidate-load-20261116.json",
     "realCase": {
       "id": "D2-VQ-v1-v7",
@@ -16614,12 +16614,22 @@
       "productionLoaded": false,
       "fullRegression": {
         "runId": "comparison-missing-draft-full-native-20261116",
-        "status": "running",
+        "status": "passed",
         "sourceCommit": "68bfc26e0",
         "baselineCases": 9024,
-        "temporaryWindowsIdleSleepPrevention": true
+        "temporaryWindowsIdleSleepPrevention": true,
+        "tests": 9026,
+        "proof": "deep-research-evidence/comparison-missing-draft-full-native-20261116.json"
       }
     },
     "restoreProof": "deep-research-evidence/comparison-candidate-restored-20261116.json"
+  },
+  "comparisonCellsV8Window20261116": {
+    "attempt": 8,
+    "status": "candidate_loading",
+    "automaticRetry": false,
+    "executionTrace": "tmp/dr-acceptance-receipts/D2-VQ-v1-v8.execution.json",
+    "sourceCommit": "68bfc26e090158a8680f9072c9433e93e08d6acc",
+    "scientificContentAccepted": false
   }
 }
