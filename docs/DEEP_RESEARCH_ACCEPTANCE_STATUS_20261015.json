@@ -16793,11 +16793,11 @@
   },
   "comparisonRealRetestReadiness20261117": {
     "ready": false,
-    "reason": "Integrated9216 offline checks passed on exact source; exact runtime load and authoritative previous-attempt settlement required before sole attempt3.",
+    "reason": "Attempt3 failed before verification:35 source_parse_failed loads cost118s;11 generated points exceeded declared10. Four calls settled; exact default restoration. No immediate fourth trial.",
     "proof": "deep-research-evidence/comparison-own-row-label-diagnosis-20261117.json",
     "newModelCalls": 0,
     "scientificCredit": 0,
-    "next": "Load exact integrated candidate, preserve all prior payloads/unknown, and perform one bounded original-question comparison attempt3; no automatic retry."
+    "next": "No immediate fourth trial. Diagnose parser worker source_parse_failed and repeated failed loads; preserve over-limit synthesis as unverified and evaluate bounded resource-aware correction, without raising user limits or scientific approval."
   },
   "comparisonAuthorColumn20261117": {
     "status": "full_offline_and_saved_consumer_passed_not_live_accepted",
@@ -16865,5 +16865,20 @@
     "scientificCredit": 0,
     "runtimeLoaded": false,
     "fullProof": "deep-research-evidence/comparison-integrated-joint-full-20261117.json"
+  },
+  "comparisonBaselineThird20261117": {
+    "status": "failed",
+    "outcome": "none",
+    "errorCode": "invalid_synthesis_response",
+    "runId": "dr_run_5227f32917f05854be3b4c9cc450e985",
+    "modelRequests": 4,
+    "reportedTokens": 21559,
+    "elapsedSeconds": 195.0,
+    "allSettled": true,
+    "newUnknownRequests": 0,
+    "scientificContentAccepted": false,
+    "defaultRuntimeRestored": true,
+    "next": "No immediate fourth trial. Diagnose parser worker source_parse_failed and repeated failed loads; preserve over-limit synthesis as unverified and evaluate bounded resource-aware correction, without raising user limits or scientific approval.",
+    "proof": "deep-research-evidence/comparison-baseline-third-20261117.json"
   }
 }
