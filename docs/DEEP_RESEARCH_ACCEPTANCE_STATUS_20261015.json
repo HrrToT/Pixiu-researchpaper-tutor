@@ -15,7 +15,7 @@
     "elapsedSeconds": 463.44,
     "boundary": "Complete current offline research regression only; not real generation, Provider cost/quality, independent scientific acceptance or full product release.",
     "passed": 9255,
-    "appliesToCurrentPythonSource": true,
+    "appliesToCurrentPythonSource": false,
     "matchesLoadedRuntime": false,
     "proof": "deep-research-evidence/comparison-resource-parser-integrated-full-20261117.json"
   },
@@ -16970,6 +16970,42 @@
     "modelCalls": 0,
     "applicationWrites": 0,
     "scientificCredit": 0,
-    "next": "Implement versioned shared experiment artifact and equivalent scientific checks; avoid further codec-only initialization iterations."
+    "next": "Shared definition/checks implemented offline; integrate single generation and equivalent scientific review without enabling default path prematurely."
+  },
+  "sharedExperimentPlanContract20261117": {
+    "scope": "Shared binary-factorial proposal contract and deterministic validation, not wired into generation, review or publication",
+    "sourceSha256": {
+      "ai-service-python/services/deep_research/shared_experiment_plan.py": "9437c008d1009cd2b1e59c2b5d49c0e1fcf73c790198b76278c57082b1997e38",
+      "ai-service-python/tests/test_deep_research_shared_experiment_plan.py": "c6c7de6cbd8836691f0d8270bc9bc2782c2f93ae341c6853f11f14dbfcae215d"
+    },
+    "junit": "tmp\\shared-experiment-plan-bound-final-20261117.xml",
+    "relatedChecks": {
+      "tests": 102,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "newContractChecks": 41,
+    "validationCases": [
+      "factorial arm levels and operation identity",
+      "paired shared source and clone coverage",
+      "future/fixed/shared state misuse",
+      "evaluation leakage and measurement ordering",
+      "shared and per-arm budget allocation",
+      "conditional codebook existence and resource accounting",
+      "main effects and interaction coefficients",
+      "context and proposal edits invalidate binding",
+      "well-formed scientific falsehood stays unchecked"
+    ],
+    "nativeSchemaBytes": 9448,
+    "handwrittenFixtureBytes": 6162,
+    "fixtureBoundary": "Handwritten interface fixtures only; not real model output, full request size, cost or latency evidence.",
+    "modelCalls": 0,
+    "applicationWrites": 0,
+    "runtimeLoaded": false,
+    "facadeEnabled": false,
+    "scientificCredit": 0,
+    "fullRegressionPending": true,
+    "next": "Build and measure sole complete shared-plan request on archived public evidence; integrate tracked generation and independent scientific/whole-answer checks before candidate enablement."
   }
 }
