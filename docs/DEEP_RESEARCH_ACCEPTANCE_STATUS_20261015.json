@@ -16793,11 +16793,11 @@
   },
   "comparisonRealRetestReadiness20261117": {
     "ready": false,
-    "reason": "New audit transport has related tests and archived-response replay only; acquisition latency and numerical-example scope remain unresolved. No third live prompt-only trial.",
+    "reason": "Literal reuse now saves8 of61 archived location calls with exact evidence/journal identity; shared reported numerical example is not representable by current joint-kind contract. Source not full-regressed or loaded.",
     "proof": "deep-research-evidence/comparison-own-row-label-diagnosis-20261117.json",
     "newModelCalls": 0,
     "scientificCredit": 0,
-    "next": "Add bounded failure/timing diagnosis for actual source access; resolve question-scoped numerical example ownership; freeze candidate/full-regress before any further real test."
+    "next": "Support bounded source-reported joint examples with strict original binding/kind checks and preserve complete comparison scope; then integrated capacity/full regression before one real comparison."
   },
   "comparisonAuthorColumn20261117": {
     "status": "full_offline_and_saved_consumer_passed_not_live_accepted",
@@ -16844,5 +16844,14 @@
     "newModelCalls": 0,
     "runtimeLoaded": false,
     "originalRunUnchanged": true
+  },
+  "sourcePassageReuse20261117": {
+    "status": "related_offline_and_exact_saved_journal_passed_full_pending",
+    "proof": "deep-research-evidence/source-passage-goal-reuse-20261117.json",
+    "relatedTests": 197,
+    "avoidedArchivedLocationCalls": 8,
+    "newModelCalls": 0,
+    "scientificCredit": 0,
+    "runtimeLoaded": false
   }
 }

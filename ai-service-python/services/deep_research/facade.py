@@ -426,6 +426,7 @@ class ResearchFacade:
             "adaptiveExtractionContractVersion": 3,
             "sourceWrapperIdentityContractVersion": 1,
             "physicalPageDiagnosticsContractVersion": 1,
+            "sourcePassageReuseContractVersion": 1,
             "mechanismEvidenceContractVersion": 4,
             "sectionPremisesContractVersion": 2,
             "localSectionContextContractVersion": 2,

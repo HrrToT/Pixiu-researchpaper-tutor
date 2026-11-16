@@ -1,0 +1,46 @@
+{
+  "scope": "New-run source-identical literal extraction reuse across goals, never relevance/claim approval",
+  "relatedTests": 197,
+  "junit": "tmp/source-passage-reuse-related-20261117.xml",
+  "newModelCalls": 0,
+  "applicationWrites": 0,
+  "scientificCredit": 0,
+  "savedReplay": {
+    "scope": "Sequential archived source/goal inputs with frozen unresolved-page fixture; literal identity/call-count proof, not actual PDF latency or scientific acceptance",
+    "sourceGoalInputs": 28,
+    "variants": [
+      {
+        "reuseVersion": 0,
+        "localLocationLoads": 61,
+        "evidence": 53,
+        "allEvidenceProjectionsExact": true,
+        "allJournalEntriesExact": true,
+        "unverifiedSemanticsRetained": true
+      },
+      {
+        "reuseVersion": 1,
+        "localLocationLoads": 53,
+        "evidence": 53,
+        "allEvidenceProjectionsExact": true,
+        "allJournalEntriesExact": true,
+        "unverifiedSemanticsRetained": true
+      }
+    ],
+    "avoidedLocationCalls": 8,
+    "originalPayloadSha256": "ad31b419285eba9990cb1b1856f056820dcc584cde5a3392aa79824d0be981d9",
+    "originalUnchanged": true,
+    "modelCalls": 0,
+    "applicationWrites": 0,
+    "scientificCredit": 0
+  },
+  "invariants": [
+    "New server-owned immutable sourcePassageReuseContractVersion1 with canonical extraction3 only",
+    "All archived evidence/projection/input hashes and original contexts validated before reuse",
+    "Exact source/version/content/context/location input, metadata, ownership and visible table packet match; ambiguous identities not chosen",
+    "Live material permission checked before work and again before the single checkpoint, including reuse-only batches",
+    "New goal IDs merge only into evidence routing and a new frozen extraction input; semantic status remains unchecked",
+    "Old unmarked behavior unchanged; no predicted wall-clock or content-quality credit"
+  ],
+  "fullRegression": "pending; prior9154 does not cover changed candidate",
+  "runtimeLoaded": false
+}

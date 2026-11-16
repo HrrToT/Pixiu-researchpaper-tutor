@@ -136,6 +136,11 @@ def _extract(record, make_evidence, validate, update, *, recheck_scope=False):
             same_location = frozen['location'] == old.get('location')
         if not same_location:
             raise DeepResearchError('invalid_source_passage_state','原始片段与规范定位的非页码身份不一致。')
+    from services.deep_research.source_passage_reuse import enabled as reuse_enabled,key as reuse_key,register,same_metadata
+    reusable={}
+    reuse_literals=reuse_enabled(record)
+    if reuse_literals:
+        for entry in journal['entries'].values():register(reusable,entry)
     batch_scope = callable(getattr(type(validate), 'validate_materials', None))
     if batch_scope and not validate.validate_materials(run_id, list(dict.fromkeys(s['workId'] for s in sources))):
         raise DeepResearchError('scope_revoked','材料范围核对未通过，尚未提取原文证据。')
@@ -178,6 +183,14 @@ def _extract(record, make_evidence, validate, update, *, recheck_scope=False):
                     old = by_id[journal['entries'][key]['evidenceId']]
                     old['obligationIds'] = list(dict.fromkeys([*old.get('obligationIds',[]), *eligible]))
                     continue
+                previous=reusable.get(reuse_key(frozen)) if reuse_literals else None
+                if previous is not None:
+                    old=by_id[previous['evidenceId']]
+                    if same_metadata(old,source,quote,start,offset):
+                        old['obligationIds']=list(dict.fromkeys([*old.get('obligationIds',[]),*eligible]))
+                        journal['entries'][key]={'input':frozen,'evidenceId':previous['evidenceId'],
+                                                'evidenceDigest':previous['evidenceDigest']}
+                        continue
                 ev = make_evidence(source=identity, quote=quote, original=text, location=loc,
                     obligation_ids=eligible, conditions={})
                 created_quotes += 1
@@ -198,10 +211,11 @@ def _extract(record, make_evidence, validate, update, *, recheck_scope=False):
                 else:
                     evidence.append(ev); by_id[eid] = ev
                 journal['entries'][key] = entry
+                if reuse_literals:register(reusable,entry)
     # Cached pages may serve many quotes in this pure local batch. Revalidate
     # every owner before publishing its single checkpoint; no permission cache
     # crosses this boundary or permits a later provider send.
-    if recheck_scope:
+    if recheck_scope or reuse_literals:
         owners = list(dict.fromkeys(source['workId'] for source in sources))
         valid = (validate.validate_materials(run_id, owners) if batch_scope
                  else all(validate(run_id, owner) for owner in owners))
