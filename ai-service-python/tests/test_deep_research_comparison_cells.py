@@ -130,3 +130,14 @@ def test_conclusions_bind_only_explicit_frozen_goals_and_remain_unverified():
     result=compile_cells(payload,plan,max_claims=4)
     assert result['errors'][-1]['reason']=='invalid_conclusion_obligations'
     assert len(result['report']['claims'])==2
+
+
+def test_required_work_or_version_identity_does_not_add_unrequested_papers():
+    req,sources,ev,_,_=fixture();req[0].pop('requiredSourceAliases')
+    req[0]['requiredSources']=['a-v1']
+    plan=plan_cells(req,sources,ev)
+    assert [c['source'] for c in plan['cells']]==['P1']
+    req[0]['requiredSources']=['unavailable-version']
+    plan=plan_cells(req,sources,ev)
+    assert plan['cells']==[]
+    assert compile_cells({'cells':[],'conclusions':[]},plan,max_claims=4)['unresolvedObligationIds']==['mechanism']

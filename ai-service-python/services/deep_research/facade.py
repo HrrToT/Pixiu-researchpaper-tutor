@@ -296,6 +296,7 @@ class ResearchFacade:
             "factualPromptContractVersion": 3,
             "authoredBodyContractVersion": 3,
             "synthesisInputContractVersion": 2,
+            "comparisonCellsContractVersion": 0,
             "reportingOwnershipContractVersion": 1,
             "draftValidationContractVersion": 1,
             "factualRepairPromptContractVersion": 3,

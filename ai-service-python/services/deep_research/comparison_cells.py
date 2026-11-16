@@ -35,7 +35,15 @@ def plan_cells(requirements, sources, evidence):
                 or not isinstance(obligation.get('question'), str) or not obligation['question'].strip()):
             raise ValueError('Invalid comparison obligation')
         oid = obligation['obligationId']; seen.add(oid)
-        aliases = obligation.get('requiredSourceAliases', list(sources))
+        required = obligation.get('requiredSources', [])
+        if not isinstance(required, list) or any(not isinstance(v, str) for v in required):
+            raise ValueError('Invalid comparison required identities')
+        aliases = obligation.get('requiredSourceAliases')
+        if aliases is None:
+            aliases = ([alias for alias, source in sources.items() if set(required) & {
+                source.get('workId'), source.get('sourceWorkId'), source.get('versionId'),
+                source.get('sourceVersionId'), source.get('ownerMaterialId')}]
+                if required else list(sources))
         if (not isinstance(aliases, list)
                 or any(not isinstance(k, str) or k not in sources for k in aliases)
                 or len(set(aliases)) != len(aliases)):
@@ -131,3 +139,27 @@ def compile_cells(payload, plan, *, max_claims):
                 if not any(c['obligationId'] == o['obligationId'] for c in layout)
                 or any(c['obligationId'] == o['obligationId'] and c['unresolved'] for c in layout)],
             'verification': 'unchecked'}
+
+
+def partition_source_bound_claims(claims, draft, evidence):
+    """Recheck paper/version ownership after edits; do not approve any text."""
+    by_id = {e['evidenceId']: e for e in evidence}
+    owners = {cid: cell['source'] for cell in draft['layout'] for cid in cell['claimIds']}
+    retained, rejected = [], []
+    for claim in claims:
+        alias = owners.get(claim['claimId'])
+        if alias is None:
+            retained.append(deepcopy(claim))  # Joint conclusions still use normal verification.
+            continue
+        source = draft['sources'][alias]
+        work = source.get('workId', source.get('sourceWorkId'))
+        version = source.get('versionId', source.get('sourceVersionId'))
+        refs = claim.get('evidenceRefs')
+        if (not isinstance(work, str) or not work or not isinstance(version, str) or not version
+                or not isinstance(refs, list) or not refs or any(not isinstance(ref, str) or ref not in by_id
+                    or by_id[ref].get('sourceWorkId') != work
+                    or by_id[ref].get('sourceVersionId') != version for ref in refs)):
+            rejected.append({'claimId': claim['claimId'], 'reason': 'comparison_cell_source_mismatch'})
+        else:
+            retained.append(deepcopy(claim))
+    return retained, rejected

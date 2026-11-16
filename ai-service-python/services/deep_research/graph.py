@@ -1166,6 +1166,8 @@ def make_synthesize_node(
         point_constraint = requested_points(question) if format_enabled(record) else None
         if point_constraint and output_kind != 'experiment_design':
             claim_limit = point_constraint['count']
+        from services.deep_research.comparison_generation import enabled as comparison_cells_enabled
+        cell_mode = comparison_cells_enabled(record)
         paper_titles = {m.get('materialId'): m.get('title', '') for m in record.get('materials', [])}
         
         # Format evidence summaries with obligation binding
@@ -1219,14 +1221,16 @@ def make_synthesize_node(
             alias = f"E{len(evidence_aliases) + 1}"
             evidence_aliases[alias] = ev['evidenceId']
             source_id = ev.get('sourceWorkId', '')
-            if source_id not in source_aliases:
-                source_aliases[source_id] = f'P{len(source_aliases) + 1}'
+            source_key = (source_id, ev.get('sourceVersionId', '')) if cell_mode else source_id
+            if source_key not in source_aliases:
+                source_aliases[source_key] = f'P{len(source_aliases) + 1}'
                 from services.deep_research.source_labels import source_display_title
-                source_registry[source_aliases[source_id]] = {
+                source_registry[source_aliases[source_key]] = {
                     'workId': source_id,
                     'title': source_display_title(ev.get('sourceTitle'), paper_titles.get(source_id))}
+                if cell_mode: source_registry[source_aliases[source_key]]['versionId'] = ev.get('sourceVersionId', '')
                 if ev.get('sourcePublicationIdentity'):
-                    source_registry[source_aliases[source_id]]['publicationIdentity'] = ev['sourcePublicationIdentity']
+                    source_registry[source_aliases[source_key]]['publicationIdentity'] = ev['sourcePublicationIdentity']
             table_fields={}
             if ev.get('tableData') is not None:
                 if premise_mode:
@@ -1234,14 +1238,14 @@ def make_synthesize_node(
                                       'hash':ev.get('contentHash'),'table':ev['tableData']})
                     if table_key not in table_keys:
                         tid=f'T{len(table_keys)+1}';table_keys[table_key]=tid
-                        table_registry[tid]={'source':source_aliases[source_id],'tableData':ev['tableData']}
+                        table_registry[tid]={'source':source_aliases[source_key],'tableData':ev['tableData']}
                     table_fields={'tableDataRef':table_keys[table_key]}
                 else:
                     table_fields={'tableData':ev['tableData']}
             evidence_summaries.append({
                 "evidenceId": alias,
                 "quote": ev.get("quote", ""),
-                "source": source_aliases[source_id],
+                "source": source_aliases[source_key],
                 "sourceContext": surrounding_context(ev),
                 **table_fields,
                 **({'resultRoleHintOnly':result_role(ev)} if premise_mode else {}),
@@ -1269,6 +1273,8 @@ def make_synthesize_node(
                 claim_fields += ', executionSpec also required for the controls role'
         from services.deep_research.design_drafting import synthesis_obligations
         draft_obligations = synthesis_obligations(brief_state.get('plan', []))
+        if cell_mode and not point_constraint:
+            claim_limit = min(24, max(claim_limit, len(draft_obligations) * len(source_registry) + 2))
         prompt = f"""Synthesize a complete answer to the research question.
 Question: {question}
 Output kind: {output_kind}
@@ -1522,6 +1528,10 @@ space with unsupported global absence or incidental iteration/performance values
             note_literal_ids={alias for alias,eid in evidence_aliases.items() if note_originals[eid].get('verification',{}).get('literal')=='passed'} if note_navigation else set()
             def render_premises(rows):
                 tids={row['tableDataRef'] for row in rows if row.get('tableDataRef')}
+                if cell_mode:
+                    from services.deep_research.comparison_generation import render as render_cells
+                    return render_cells(record, question, draft_obligations, source_registry, rows,
+                        {key:table_registry[key] for key in table_registry if key in tids}, requested_limit, claim_limit)
                 packet=rows
                 if compact_evidence_wire:
                     from services.deep_research.evidence_wire import encode,decode
@@ -1688,6 +1698,17 @@ space with unsupported global absence or incidental iteration/performance values
             content = str(result)
         
         parsed = _safe_parse_json(content)
+        comparison_cell_draft = None
+        if cell_mode:
+            from services.deep_research.comparison_cells import plan_cells, compile_cells
+            try:
+                comparison_cell_draft = compile_cells(parsed,
+                    plan_cells(draft_obligations, source_registry, evidence_summaries), max_claims=claim_limit)
+                comparison_cell_draft['sources'] = deepcopy(source_registry)
+                comparison_cell_draft['evidenceAliases'] = dict(evidence_aliases)
+                parsed = comparison_cell_draft['report']
+            except (ValueError, TypeError):
+                return {'error_code':'invalid_synthesis_response'}
         from services.deep_research.synthesis_container import normalize_synthesis_container
         parsed, container_kind = normalize_synthesis_container(parsed)
         if not isinstance(parsed, dict) or not isinstance(parsed.get("claims"), list):
@@ -1909,6 +1930,7 @@ space with unsupported global absence or incidental iteration/performance values
                     "reportVersionId": report_version_id,
                     "reportBody": parsed,
                     "synthesisContainer": container_kind,
+                    **({'comparisonCellDraft':comparison_cell_draft} if comparison_cell_draft is not None else {}),
                     **({'draftValidationAudit':draft_validation_audit} if draft_validation_audit is not None else {}),
                     **({'experimentDraftingAudit':experiment_drafting_audit} if experiment_drafting_audit is not None else {}),
                     **({'experimentRepresentationAudit':experiment_representation_audit} if experiment_representation_audit else {}),
@@ -1970,6 +1992,15 @@ def make_verify_node(
         from services.deep_research.coverage_repair import prepare_coverage_repair, merge_verified_revisions
         from services.deep_research.design_consistency import enforce_design_consistency
         saved = record.get('state', {})
+        def verify_comparison_claims(targets, supporting_evidence, semantic):
+            from services.deep_research.comparison_generation import enabled as cell_enabled
+            if not cell_enabled(record):
+                return verify_claims_fn(targets, supporting_evidence, semantic)
+            from services.deep_research.comparison_cells import partition_source_bound_claims
+            candidates, refused = partition_source_bound_claims(targets, saved['comparisonCellDraft'], supporting_evidence)
+            result = (verify_claims_fn(candidates, supporting_evidence, semantic) if candidates
+                      else {'accepted': [], 'rejected': []})
+            return {**result, 'rejected': [*result.get('rejected', []), *refused]}
         repair_report = saved.get('repairReport', report_body)
         if saved.get('repairAttempted') and 'initialAnswerCoverage' in saved and 'repairTargets' in saved:
             verification_result = saved['initialVerification']
@@ -1977,7 +2008,7 @@ def make_verify_node(
             repair_targets = saved['repairTargets']
         else:
             verification_result = enforce_design_consistency(
-                verify_claims_fn(claims, evidence, budgeted_semantic), evidence,
+                verify_comparison_claims(claims, evidence, budgeted_semantic), evidence,
                 protocol_required=record.get('protocolContractVersion', 0),
                 workflow_required=record.get('workflowContractVersion', 0))
             verification_result = reject_initial(verification_result, draft_validation_audit)
@@ -2269,7 +2300,7 @@ def make_verify_node(
                         from services.deep_research.repair_progress import enabled as progress_required, partition_revisions
                         candidates, unchanged = (partition_revisions(repair_report, verification_result, revised)
                                                  if progress_required(record) else (revised, []))
-                        checked = (verify_claims_fn(candidates, evidence, revised_semantic) if candidates
+                        checked = (verify_comparison_claims(candidates, evidence, revised_semantic) if candidates
                                    else {'accepted': [], 'rejected': []})
                         checked = {**checked, 'rejected': [*checked.get('rejected', []), *unchanged]}
                         merged = enforce_design_consistency(merge_verified_revisions(verification_result, checked), evidence,

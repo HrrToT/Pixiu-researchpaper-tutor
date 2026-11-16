@@ -16576,5 +16576,15 @@
     "scientificContentAccepted": false,
     "fullRegression": "pending integrated generation and publication changes",
     "next": "Integrate cell protocol into actual generation, verification, publication and repair paths; distinguish factual dimensions and joint judgement goals, keep full-scope coverage and original resource budget. No real comparison quality credit."
+  },
+  "comparisonCellGeneration20261116": {
+    "serverDefault": 0,
+    "productionEnabled": false,
+    "relatedTests": 55,
+    "proof": "deep-research-evidence/comparison-cell-generation-20261116.json",
+    "newModelCalls": 0,
+    "scientificContentAccepted": false,
+    "fullRegression": "pending final rendering and publication integration",
+    "next": "Integrate verified-cell rendering and publication/counting, preserve whole-question coverage and repaired-cell source/version ownership, then freeze one coherent candidate for full regression and a bounded complete comparison."
   }
 }
