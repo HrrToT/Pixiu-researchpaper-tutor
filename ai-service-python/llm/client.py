@@ -154,6 +154,11 @@ class DeepSeekLLM:
         payload.pop("timeout_seconds", None)
         from llm.responses_transport import API_KEY, payload as responses_payload
         responses_mode=API_KEY in (request.extra_body or {})
+        from llm.response_observation import OPTION as OBSERVATION_OPTION, Observation
+        observation_option=(request.extra_body or {}).get(OBSERVATION_OPTION)
+        if OBSERVATION_OPTION in (request.extra_body or {}) and (observation_option is not True or not responses_mode):
+            raise ValueError('HTTP observation requires an explicit Responses request')
+        observation=Observation() if observation_option is True else None
         endpoint='/chat/completions'
         schema_overhead=0
         if responses_mode:
@@ -184,15 +189,22 @@ class DeepSeekLLM:
             record_counter("estimatedInputTokens", estimated_input_tokens)
             try:
                 from llm.deadline import call_with_deadline
-                response = call_with_deadline(lambda: requests.post(
-                    f"{self.base_url}{endpoint}",
-                    headers={
-                        "Authorization": f"Bearer {api_key}",
-                        "Content-Type": "application/json",
-                    },
-                    json=payload,
-                    timeout=timeout,
-                ), timeout)
+                def post(**extra):
+                    return requests.post(
+                        f"{self.base_url}{endpoint}",
+                        headers={
+                            "Authorization": f"Bearer {api_key}",
+                            "Content-Type": "application/json",
+                        },
+                        json=payload,
+                        timeout=timeout,
+                        **extra,
+                    )
+                if observation is not None:
+                    from llm.response_observation import read_json
+                    response=call_with_deadline(lambda:read_json(lambda:post(stream=True),observation),timeout)
+                else:
+                    response=call_with_deadline(post,timeout)
             except (requests.RequestException, TimeoutError) as error:
                 # Preserve a bounded category, never exception text: transport
                 # messages may contain proxy credentials or request URLs.
@@ -216,6 +228,7 @@ class DeepSeekLLM:
                     model=self.model,
                     retryable=True,
                     failure_kind=failure_kind,
+                    provider_observation=observation.freeze() if observation is not None else None,
                 ) from error
 
             if response.status_code >= 400:
@@ -225,6 +238,7 @@ class DeepSeekLLM:
                     model=self.model,
                     retryable=response.status_code == 429 or response.status_code >= 500,
                     status_code=response.status_code,
+                    provider_observation=observation.freeze() if observation is not None else None,
                 )
 
             check_cancelled()
@@ -240,12 +254,14 @@ class DeepSeekLLM:
                     "DeepSeek returned an invalid response.",
                     provider="deepseek",
                     model=self.model,
+                    provider_observation=observation.freeze() if observation is not None else None,
                 ) from error
             if not isinstance(content, str):
                 raise LLMProviderError(
                     "DeepSeek returned an invalid response.",
                     provider="deepseek",
                     model=self.model,
+                    provider_observation=observation.freeze() if observation is not None else None,
                 )
 
             usage = _normalize_usage(
@@ -260,7 +276,8 @@ class DeepSeekLLM:
             if not isinstance(reported_model, str) or not reported_model.strip() or len(reported_model) > 256:
                 reported_model = None
             return LLMResult("deepseek", self.model, content, usage, finish_reason=finish_reason,
-                             reported_model=reported_model)
+                             reported_model=reported_model,
+                             provider_observation=observation.freeze() if observation is not None else None)
 
     def _call(
         self,

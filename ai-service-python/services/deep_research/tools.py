@@ -432,6 +432,9 @@ class TrackedLLMInvoker:
             if exc.failure_kind in {"proxy_error", "tls_error", "connect_timeout", "read_timeout",
                                     "deadline_exceeded", "connection_error", "transport_error"}:
                 error["failureKind"] = exc.failure_kind
+            from llm.response_observation import sanitize as sanitize_observation
+            observation=sanitize_observation(getattr(exc,'provider_observation',None))
+            if observation is not None:error['providerObservation']=observation
             self._complete(
                 call_record["callId"],
                 status="unknown" if is_unknown else CALL_STATUS_FAILED,
@@ -469,6 +472,9 @@ class TrackedLLMInvoker:
             },
         }
         reported_model = getattr(result, "reported_model", None)
+        from llm.response_observation import sanitize as sanitize_observation
+        observation=sanitize_observation(getattr(result,'provider_observation',None))
+        if observation is not None:response['providerObservation']=observation
         if isinstance(reported_model, str) and reported_model.strip() and len(reported_model) <= 256:
             response["reportedModel"] = reported_model
         if structured:

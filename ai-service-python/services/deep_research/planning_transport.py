@@ -155,8 +155,14 @@ def descriptor_for(record, node, initialization_target='component', *, metadata_
 def options_for_record(record,node,options):
     """Own transport selection; caller/source options cannot inject an adapter."""
     if API_KEY in options:raise ValueError('Transport selection is server-owned')
+    from services.deep_research.workflow_initialization_observation import enabled as observation_enabled
+    from llm.response_observation import OPTION as OBSERVATION_OPTION
+    observe_headers=node=='plan_workflow_init' and observation_enabled(record)
+    if OBSERVATION_OPTION in options and (not observe_headers or options[OBSERVATION_OPTION] is not True):
+        raise ValueError('HTTP observation is server-owned and initialization-only')
     if not enabled(record,node):return {**options,'response_format':{'type':'json_object'}}
     allowed={'response_format','thinking','reasoning_effort','max_tokens','temperature','timeout_seconds'}
+    if observe_headers:allowed.add(OBSERVATION_OPTION)
     from services.deep_research import workflow_fit_edits as fits
     if fits.OPTION in options:
         if node!=fits.NODE or not fits.enabled(record) or options[fits.OPTION] is not True:
@@ -195,6 +201,7 @@ def options_for_record(record,node,options):
     options=metadata_output_options(record,node,options)
     from services.deep_research.workflow_metadata_planning_output import options as planning_output_options
     options=planning_output_options(record,node,options)
+    if observe_headers:options={**options,OBSERVATION_OPTION:True}
     return {**options,API_KEY:'responses','response_format':descriptor_for(
         record,node,options.get(TARGET_OPTION, 'component'),metadata_edits=options.get(EDIT_OPTION,False),
         revision_source_refs=options.get(sources.OPTION),fit_edits=options.get(fits.OPTION,False))}

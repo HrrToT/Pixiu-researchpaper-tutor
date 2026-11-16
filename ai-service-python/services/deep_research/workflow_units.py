@@ -249,6 +249,8 @@ def prepare_units(record, *, prompt, aliases, invoke, parse, checkpoint):
     from services.deep_research.workflow_initialization_readable import enabled as readable_enabled
     readable_initialization = readable_enabled(record)
     if readable_initialization: parent_request['initializationReadableInputContract'] = 1
+    from services.deep_research.workflow_initialization_observation import enabled as observation_enabled
+    if observation_enabled(record):parent_request['initializationObservationContract']=1
     if numeric_initialization:
         parent_request['initializationNumericStateContract'] = record['workflowInitializationNumericStateContractVersion']
     if premise_mode:

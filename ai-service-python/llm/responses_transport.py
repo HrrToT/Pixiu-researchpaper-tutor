@@ -4,8 +4,11 @@ API_KEY = '_deepseek_api'
 
 
 def payload(messages, options, *, model, temperature):
+    from llm.response_observation import OPTION as OBSERVATION_OPTION
     allowed={API_KEY,'response_format','thinking','reasoning_effort','max_tokens',
-        'temperature','timeout_seconds','_workflow_init_target','_workflow_metadata_edits','_workflow_revision_source_refs','_workflow_fit_edits'}
+        'temperature','timeout_seconds','_workflow_init_target','_workflow_metadata_edits','_workflow_revision_source_refs','_workflow_fit_edits',OBSERVATION_OPTION}
+    if OBSERVATION_OPTION in options and options[OBSERVATION_OPTION] is not True:
+        raise ValueError('Invalid HTTP observation option')
     if set(options)-allowed or options.get(API_KEY)!='responses':
         raise ValueError('Invalid Responses transport options')
     fmt=options.get('response_format')

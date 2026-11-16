@@ -31,6 +31,7 @@ class LLMResult:
     # Untrusted provider-reported label, distinct from the configured model ID.
     # It is audit metadata, not proof of underlying weights or a routing input.
     reported_model: Optional[str] = None
+    provider_observation: Optional[Dict[str, Any]] = None
 
 
 class LLMProviderError(RuntimeError):
@@ -43,6 +44,7 @@ class LLMProviderError(RuntimeError):
         retryable: bool = False,
         status_code: Optional[int] = None,
         failure_kind: Optional[str] = None,
+        provider_observation: Optional[Dict[str, Any]] = None,
     ) -> None:
         super().__init__(message)
         self.provider = provider
@@ -50,6 +52,7 @@ class LLMProviderError(RuntimeError):
         self.retryable = retryable
         self.status_code = status_code
         self.failure_kind = failure_kind
+        self.provider_observation = provider_observation
 
 
 @runtime_checkable
