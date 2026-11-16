@@ -1,0 +1,16 @@
+{
+  "applicationRuntimeRetained": ".476",
+  "noRestart": true,
+  "health": "ok",
+  "all105TasksExact": true,
+  "all391RunsExact": true,
+  "all9872LedgerRowsExact": true,
+  "historicalPaused": 15,
+  "active": 0,
+  "modelCallsWrittenToApplication": 0,
+  "old483IsolatedUnknownExact": true,
+  "old483UnknownAttemptCount": 1,
+  "old483UnknownResent": false,
+  "baseline": "tmp/dr-acceptance-receipts/initialization-context-474.before.json",
+  "boundary": "Application and prior unknown preservation only; no .484 runtime was loaded"
+}
