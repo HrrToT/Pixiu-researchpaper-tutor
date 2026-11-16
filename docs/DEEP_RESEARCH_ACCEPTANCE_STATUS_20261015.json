@@ -15,7 +15,7 @@
     "missingBaselineCases": [],
     "elapsedSeconds": 555.94,
     "warnings": 1,
-    "appliesToCurrentPythonSource": true,
+    "appliesToCurrentPythonSource": false,
     "proof": "deep-research-evidence/native-schema-receipt-20261116.json",
     "matchesLoadedRuntime": false,
     "boundary": "Complete current offline research regression only; not real generation, Provider cost/quality, independent scientific acceptance or full product release."
@@ -16488,5 +16488,19 @@
     "proof": "deep-research-evidence/shared-representation-review-20261116.json",
     "matchesLoadedRuntime": false,
     "boundary": "Complete current offline research regression only; not real generation, Provider cost/quality, independent scientific acceptance or full product release."
+  },
+  "comparisonPipelineCandidate20261116": {
+    "sourceCommit": "43e4c2515",
+    "promptVersion": "dr-v2.20261116.485",
+    "readingPriorityContractVersion": 8,
+    "synthesisInputContractVersion": 2,
+    "relatedTests": 134,
+    "preflight": "deep-research-evidence/comparison-485-pipeline-preflight-20261116.json",
+    "fullRegressionStatus": "running",
+    "fullRegressionRunId": "comparison-pipeline-485-20261116",
+    "productionReloaded": false,
+    "newModelCalls": 0,
+    "scientificContentAccepted": false,
+    "next": "Finish complete offline regression; load once if all gates pass, then submit D2-VQ-v1 attempt4 once under the original frozen question and budget. Preserve 15 historical pauses and other UI task edits."
   }
 }
