@@ -375,8 +375,11 @@ def initialize_runtime():
             from services.deep_research.local_sources import LocalTaskRetriever
             from services.deep_research.located_evidence import located_evidence_factory
             from services.deep_research.text_quality import guard
+            from services.deep_research.source_passage_reuse import failure_reuse_enabled
+            record=repo.require_run(run_id)
             return guard(located_evidence_factory(repo, run_id,
-                LocalTaskRetriever(repo, run_id, scope, origin=scope.origin)),repo.require_run(run_id))
+                LocalTaskRetriever(repo, run_id, scope, origin=scope.origin),
+                cache_failed_batches=failure_reuse_enabled(record)),record)
 
         def _make_retriever(self, run_id):
             from services.deep_research.local_sources import LocalTaskRetriever

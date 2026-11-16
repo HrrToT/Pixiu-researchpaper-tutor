@@ -7,7 +7,8 @@ class PageDiagnostics:
     def __init__(self):
         self.started = monotonic()
         self.value = {'version':1,'quotes':0,'repositorySeconds':0.0,'loadSeconds':0.0,
-                      'resolveSeconds':0.0,'loads':0,'cacheHits':0,'failures':{},'resolutions':{}}
+                      'resolveSeconds':0.0,'loads':0,'cacheHits':0,'failedCacheHits':0,
+                      'failures':{},'resolutions':{},'workerFailures':{},'workerExitCodes':{}}
 
     def failure(self, error):
         from services.deep_research.contracts import DeepResearchError
@@ -17,6 +18,16 @@ class PageDiagnostics:
             allowed={'scope_revoked','source_changed','source_missing','source_unavailable',
                      'source_parse_failed','source_too_large'}
             code=error.code if error.code in allowed else 'source_read_failed'
+            if code=='source_parse_failed':
+                from services.deep_research.pdf_worker_errors import KINDS
+                data=error.details if isinstance(error.details,dict) else {}
+                kind=data.get('workerFailureKind')
+                if kind in KINDS or kind in {'worker_exit','output_limit'}:
+                    self.value['workerFailures'][kind]=self.value['workerFailures'].get(kind,0)+1
+                exit_code=data.get('workerExitCode')
+                if type(exit_code) is int:
+                    key=str(exit_code) if exit_code in {-11,-9,1,2,126,127} else 'other'
+                    self.value['workerExitCodes'][key]=self.value['workerExitCodes'].get(key,0)+1
         elif isinstance(error, subprocess.TimeoutExpired):code='pdf_parse_timeout'
         elif isinstance(error, requests.Timeout):code='file_request_timeout'
         else:code='file_request_failed'

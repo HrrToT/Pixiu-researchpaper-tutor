@@ -15,7 +15,7 @@
     "elapsedSeconds": 430.17,
     "boundary": "Complete current offline research regression only; not real generation, Provider cost/quality, independent scientific acceptance or full product release.",
     "passed": 9216,
-    "appliesToCurrentPythonSource": true,
+    "appliesToCurrentPythonSource": false,
     "matchesLoadedRuntime": false,
     "proof": "deep-research-evidence/comparison-integrated-joint-full-20261117.json"
   },
@@ -16793,11 +16793,11 @@
   },
   "comparisonRealRetestReadiness20261117": {
     "ready": false,
-    "reason": "Attempt3 failed before verification:35 source_parse_failed loads cost118s;11 generated points exceeded declared10. Four calls settled; exact default restoration. No immediate fourth trial.",
+    "reason": "Definite parser failures now bounded per physical batch; actual exit cause unconfirmed and11-point synthesis admission still unresolved. Candidate not full-regressed/loaded.",
     "proof": "deep-research-evidence/comparison-own-row-label-diagnosis-20261117.json",
     "newModelCalls": 0,
     "scientificCredit": 0,
-    "next": "No immediate fourth trial. Diagnose parser worker source_parse_failed and repeated failed loads; preserve over-limit synthesis as unverified and evaluate bounded resource-aware correction, without raising user limits or scientific approval."
+    "next": "Resolve resource-aware draft admission and unverified overflow retention using archived response; integrated full regression before any further paid test."
   },
   "comparisonAuthorColumn20261117": {
     "status": "full_offline_and_saved_consumer_passed_not_live_accepted",
@@ -16880,5 +16880,15 @@
     "defaultRuntimeRestored": true,
     "next": "No immediate fourth trial. Diagnose parser worker source_parse_failed and repeated failed loads; preserve over-limit synthesis as unverified and evaluate bounded resource-aware correction, without raising user limits or scientific approval.",
     "proof": "deep-research-evidence/comparison-baseline-third-20261117.json"
+  },
+  "pdfFailureReuse20261117": {
+    "status": "related_offline_and_exact_failure_fixture_passed_full_pending",
+    "proof": "deep-research-evidence/pdf-failure-reuse-20261117.json",
+    "relatedTests": 250,
+    "archivedAttemptsBefore": 35,
+    "archivedAttemptsAfter": 4,
+    "newModelCalls": 0,
+    "runtimeLoaded": false,
+    "originalFailureCauseReproduced": false
   }
 }

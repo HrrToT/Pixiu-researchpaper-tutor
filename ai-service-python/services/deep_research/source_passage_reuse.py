@@ -4,9 +4,13 @@ from services.deep_research.contracts import digest
 
 def enabled(record):
     return (type(record.get('sourcePassageReuseContractVersion')) is int
-        and record['sourcePassageReuseContractVersion']==1
+        and record['sourcePassageReuseContractVersion'] in (1,2)
         and type(record.get('adaptiveExtractionContractVersion')) is int
         and record['adaptiveExtractionContractVersion']==3)
+
+
+def failure_reuse_enabled(record):
+    return enabled(record) and record['sourcePassageReuseContractVersion']==2
 
 
 def key(frozen):

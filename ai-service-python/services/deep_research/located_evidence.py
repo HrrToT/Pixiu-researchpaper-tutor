@@ -7,12 +7,14 @@ from services.deep_research.contracts import DeepResearchError
 from services.deep_research.verification import make_evidence
 
 
-def located_evidence_factory(repo, run_id, local):
+def located_evidence_factory(repo, run_id, local, *, cache_failed_batches=False):
+    if type(cache_failed_batches) is not bool:raise ValueError('Invalid page failure reuse policy')
     # LocalTaskRetriever owns the per-run PDF cache. Nothing is written back to
     # historical sources/reports, and evidence identity includes the new location.
     batch_pages = None
     batch_diagnostics = None
     last_diagnostics = None
+    failed_pages = set()
 
     @contextmanager
     def physical_page_batch():
@@ -21,6 +23,7 @@ def located_evidence_factory(repo, run_id, local):
         if batch_pages is not None:
             raise DeepResearchError('invalid_page_batch', '不能嵌套正文页码回查批次。')
         batch_pages = {}
+        failed_pages.clear()
         from services.deep_research.page_diagnostics import PageDiagnostics
         batch_diagnostics = PageDiagnostics()
         try:
@@ -28,6 +31,7 @@ def located_evidence_factory(repo, run_id, local):
         finally:
             # A later read or provider send cannot inherit this permission window.
             batch_pages = None
+            failed_pages.clear()
             last_diagnostics = batch_diagnostics.snapshot()
             batch_diagnostics = None
 
@@ -64,6 +68,7 @@ def located_evidence_factory(repo, run_id, local):
                     if batch_pages is not None and key in batch_pages:
                         pages = batch_pages[key]
                         if audit:audit.value['cacheHits']+=1
+                        if audit and key in failed_pages:audit.value['failedCacheHits']+=1
                     else:
                         started=monotonic()
                         if audit:audit.value['loads']+=1
@@ -80,6 +85,9 @@ def located_evidence_factory(repo, run_id, local):
                     # A transient file/parse failure must never endorse the old
                     # section page. Evidence text is still checked independently.
                     pages = []
+                    if cache_failed_batches and batch_pages is not None and exc.code=='source_parse_failed':
+                        batch_pages[key]=[]
+                        failed_pages.add(key)
                 except (requests.RequestException, subprocess.TimeoutExpired) as exc:
                     if audit:audit.failure(exc)
                     pages = []

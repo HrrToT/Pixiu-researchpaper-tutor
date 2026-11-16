@@ -364,5 +364,7 @@ def _parse_pdf(body):
     process = subprocess.run([sys.executable, '-m', 'services.deep_research_pdf_parser', '100', str(MAX_LOCAL_PDF_BYTES)],
         cwd=str(Path(__file__).resolve().parents[2]), input=body, capture_output=True, timeout=20, check=False)
     if process.returncode or len(process.stdout) > 13_000_000:
-        raise DeepResearchError('source_parse_failed', '论文正文回查未完成')
+        from services.deep_research.pdf_worker_errors import details
+        failure=details(process) if process.returncode else {'workerFailureKind':'output_limit'}
+        raise DeepResearchError('source_parse_failed', '论文正文回查未完成',failure)
     return json.loads(process.stdout)

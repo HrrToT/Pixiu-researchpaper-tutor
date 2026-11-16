@@ -4,8 +4,12 @@ import json
 import sys
 from collections import OrderedDict
 
-from PyPDF2 import PdfReader
-from services.deep_research.text_quality import control_count as _control_count
+PdfReader = None  # Imported inside parse_pdf so startup failures receive a safe category.
+
+
+def _control_count(text):
+    from services.deep_research.text_quality import control_count
+    return control_count(text)
 
 
 FORM_CACHE_ENTRIES = 256
@@ -59,7 +63,10 @@ def _extract_page_text(page):
 
 
 def parse_pdf(body: bytes, max_pages: int) -> list[dict]:
-    reader = PdfReader(io.BytesIO(body))
+    reader_type = PdfReader
+    if reader_type is None:
+        from PyPDF2 import PdfReader as reader_type
+    reader = reader_type(io.BytesIO(body))
     if reader.is_encrypted or len(reader.pages) > max_pages:
         raise ValueError("Unsupported PDF")
     modern = None
@@ -102,8 +109,10 @@ def main():
         result = parse_pdf(body, max_pages)
         sys.stdout.buffer.write(json.dumps(result, ensure_ascii=False).encode('utf-8'))
         return 0
-    except Exception:
+    except Exception as error:
         # Never forward document data or parser diagnostics into the UI/logs.
+        from services.deep_research.pdf_worker_errors import encode_failure
+        sys.stderr.write(encode_failure(error))
         return 2
 
 
