@@ -59,6 +59,8 @@ def descriptor_for(record, node, initialization_target='component', *, metadata_
         return symbolic_descriptor()
     from services.deep_research.workflow_initialization_wire import enabled as init_enabled, descriptor as init_descriptor
     if node == 'plan_workflow_init' and init_enabled(record):
+        from services.deep_research.workflow_initialization_readable import enabled as readable, descriptor as readable_descriptor
+        if readable(record):return readable_descriptor(initialization_target)
         from services.deep_research.workflow_initialization_semantics import enabled as semantics, descriptor as semantics_descriptor
         if semantics(record):return semantics_descriptor(initialization_target)
         from services.deep_research.workflow_initialization_structured import enabled as structured, descriptor as structured_descriptor

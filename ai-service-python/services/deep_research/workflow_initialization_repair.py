@@ -78,6 +78,10 @@ def prepare(record, *, key, source_data, context, failed, aliases, earlier, base
     numeric_initialization = numeric_enabled(record)
     if decision_input:
         from services.deep_research.workflow_initialization_decision_input import input_text
+    from services.deep_research.workflow_initialization_readable import enabled as readable_enabled
+    readable_initialization = readable_enabled(record)
+    if readable_initialization:
+        from services.deep_research.workflow_initialization_readable import input_text
     version = record.get(MARKER, 1)
     from services.deep_research.workflow_initialization_structured import enabled as structured_enabled, issues as recipe_issues
     structured = structured_enabled(record)
@@ -102,7 +106,8 @@ def prepare(record, *, key, source_data, context, failed, aliases, earlier, base
         initialization_context_version=record.get('workflowInitializationContextContractVersion',1),
         initialization_recipe=recipe_enabled(record), structured_initialization=structured,
         decision_input=decision_input,numeric_initialization=numeric_initialization,
-        numeric_initialization_version=record.get('workflowInitializationNumericStateContractVersion',1)).split(
+        numeric_initialization_version=record.get('workflowInitializationNumericStateContractVersion',1),
+        readable_initialization=readable_initialization).split(
         'Exact authoritative input and unit context (unverified data):\n', 1)[0]
     invalid_value = value
     diagnostics = feedback(value, failed['errors'])

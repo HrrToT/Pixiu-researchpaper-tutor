@@ -127,7 +127,9 @@ def unit_errors(value, aliases, *, node, earlier=(), baseline=False, version=6, 
 def unit_prompt(source_data, *, node, context, version=6, metadata_rows=False, metadata_rows_contract=1, metadata_action_objects=False,
                 scoped_initialization_input=False, initialization_context_version=1, initialization_recipe=False,
                 structured_initialization=False, decision_input=False, numeric_initialization=False,
-                numeric_initialization_version=1):
+                numeric_initialization_version=1, readable_initialization=False):
+    if type(readable_initialization) is not bool or readable_initialization and not numeric_initialization:
+        raise ValueError('Invalid readable initialization mode')
     if type(numeric_initialization) is not bool or numeric_initialization and not decision_input:
         raise ValueError('Invalid numeric initialization mode')
     if type(decision_input) is not bool or decision_input and not structured_initialization:
@@ -181,6 +183,8 @@ def unit_prompt(source_data, *, node, context, version=6, metadata_rows=False, m
             from services.deep_research.workflow_metadata_input import input_text
             if decision_input:
                 from services.deep_research.workflow_initialization_decision_input import input_text
+            if readable_initialization:
+                from services.deep_research.workflow_initialization_readable import input_text
             scoped_prefix=STATE_POLICY if initialization_context_version==2 else POLICY+prefix
             if initialization_recipe:
                 from services.deep_research.workflow_initialization_recipe import POLICY as recipe_policy
@@ -242,6 +246,9 @@ def prepare_units(record, *, prompt, aliases, invoke, parse, checkpoint):
     semantic_initialization = semantics_enabled(record)
     from services.deep_research.workflow_initialization_reasoning import enabled as initialization_reasoning
     if initialization_reasoning(record): parent_request['initializationReasoningContract'] = 1
+    from services.deep_research.workflow_initialization_readable import enabled as readable_enabled
+    readable_initialization = readable_enabled(record)
+    if readable_initialization: parent_request['initializationReadableInputContract'] = 1
     if numeric_initialization:
         parent_request['initializationNumericStateContract'] = record['workflowInitializationNumericStateContractVersion']
     if premise_mode:
@@ -331,7 +338,8 @@ def prepare_units(record, *, prompt, aliases, invoke, parse, checkpoint):
                                    structured_initialization=structured_initialization and node==INIT,
                                    decision_input=decision_input and node==INIT,
                                    numeric_initialization=numeric_initialization and node==INIT,
-                                   numeric_initialization_version=record.get('workflowInitializationNumericStateContractVersion',1))
+                                   numeric_initialization_version=record.get('workflowInitializationNumericStateContractVersion',1),
+                                   readable_initialization=readable_initialization and node==INIT)
             if repair_mode and node == META and record['workflowMetadataRepairContractVersion'] in (5, 6, 7, 8, 9, 10):
                 from services.deep_research.workflow_metadata_revision5 import POLICY as CAPACITY_POLICY
                 body = CAPACITY_POLICY + body
