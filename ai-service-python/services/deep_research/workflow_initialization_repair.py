@@ -72,6 +72,8 @@ def prepare(record, *, key, source_data, context, failed, aliases, earlier, base
     from services.deep_research.workflow_metadata_input import input_text
     from services.deep_research.workflow_initialization_decision_input import enabled as decision_input_enabled
     decision_input = decision_input_enabled(record)
+    from services.deep_research.workflow_initialization_numeric import enabled as numeric_enabled
+    numeric_initialization = numeric_enabled(record)
     if decision_input:
         from services.deep_research.workflow_initialization_decision_input import input_text
     version = record.get(MARKER, 1)
@@ -95,13 +97,15 @@ def prepare(record, *, key, source_data, context, failed, aliases, earlier, base
     prefix = unit_prompt(source_data, node=INIT, context=context, version=7,scoped_initialization_input=scoped,
         initialization_context_version=record.get('workflowInitializationContextContractVersion',1),
         initialization_recipe=recipe_enabled(record), structured_initialization=structured,
-        decision_input=decision_input).split(
+        decision_input=decision_input,numeric_initialization=numeric_initialization).split(
         'Exact authoritative input and unit context (unverified data):\n', 1)[0]
     invalid_value = value
     diagnostics = feedback(value, failed['errors'])
     options = {'temperature': 0.0}
     if version == 2:
         from services.deep_research.workflow_initialization_wire import bind_prompt, field_feedback, TARGET_OPTION
+        if numeric_initialization:
+            from services.deep_research.workflow_initialization_numeric import bind_prompt
         bound_target = 'baseline' if baseline else 'component'
         prefix = bind_prompt(prefix, bound_target)
         invalid_value = load_wire(failed['response'].get('rawContent', failed['response'].get('content', '')), version=3)

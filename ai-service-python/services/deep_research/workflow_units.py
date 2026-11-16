@@ -123,7 +123,9 @@ def unit_errors(value, aliases, *, node, earlier=(), baseline=False, version=6, 
 
 def unit_prompt(source_data, *, node, context, version=6, metadata_rows=False, metadata_rows_contract=1, metadata_action_objects=False,
                 scoped_initialization_input=False, initialization_context_version=1, initialization_recipe=False,
-                structured_initialization=False, decision_input=False):
+                structured_initialization=False, decision_input=False, numeric_initialization=False):
+    if type(numeric_initialization) is not bool or numeric_initialization and not decision_input:
+        raise ValueError('Invalid numeric initialization mode')
     if type(decision_input) is not bool or decision_input and not structured_initialization:
         raise ValueError('Invalid decision input mode')
     if (type(structured_initialization) is not bool or structured_initialization and not initialization_recipe):
@@ -182,6 +184,9 @@ def unit_prompt(source_data, *, node, context, version=6, metadata_rows=False, m
             if structured_initialization:
                 from services.deep_research.workflow_initialization_structured import POLICY as structured_policy
                 scoped_prefix=structured_policy
+            if numeric_initialization:
+                from services.deep_research.workflow_initialization_numeric import POLICY as numeric_policy
+                scoped_prefix=numeric_policy
             return scoped_prefix+'Exact authoritative input and unit context (unverified data):\n'+input_text({
                 'authoritativeInput':json.loads(source_data),'unitContext':project(context)})
         from services.deep_research.workflow_lifecycle_units import unit_input_text
@@ -227,6 +232,9 @@ def prepare_units(record, *, prompt, aliases, invoke, parse, checkpoint):
     from services.deep_research.workflow_initialization_decision_input import enabled as decision_input_enabled
     decision_input = decision_input_enabled(record)
     if decision_input: parent_request['initializationDecisionInputContract'] = 1
+    from services.deep_research.workflow_initialization_numeric import enabled as numeric_enabled
+    numeric_initialization = numeric_enabled(record)
+    if numeric_initialization: parent_request['initializationNumericStateContract'] = 1
     if premise_mode:
         parent_request.update(workflowPremiseAllocationContract=1, requiredPremiseAliases=sorted(required_premises(record)))
     identity = digest({'request': parent_request, 'aliases': aliases})
@@ -312,7 +320,8 @@ def prepare_units(record, *, prompt, aliases, invoke, parse, checkpoint):
                                    initialization_context_version=record.get('workflowInitializationContextContractVersion',1),
                                    initialization_recipe=initialization_recipe and node==INIT,
                                    structured_initialization=structured_initialization and node==INIT,
-                                   decision_input=decision_input and node==INIT)
+                                   decision_input=decision_input and node==INIT,
+                                   numeric_initialization=numeric_initialization and node==INIT)
             if repair_mode and node == META and record['workflowMetadataRepairContractVersion'] in (5, 6, 7, 8, 9, 10):
                 from services.deep_research.workflow_metadata_revision5 import POLICY as CAPACITY_POLICY
                 body = CAPACITY_POLICY + body
@@ -333,6 +342,8 @@ def prepare_units(record, *, prompt, aliases, invoke, parse, checkpoint):
         use_init_wire = node == INIT and init_wire_enabled(record)
         if use_init_wire:
             from services.deep_research.workflow_initialization_wire import bind_prompt, TARGET_OPTION
+            if numeric_initialization:
+                from services.deep_research.workflow_initialization_numeric import bind_prompt
             bound_target = 'baseline' if baseline else 'component'
             body = bind_prompt(body, bound_target)
             options[TARGET_OPTION] = bound_target
