@@ -16793,11 +16793,11 @@
   },
   "comparisonRealRetestReadiness20261117": {
     "ready": false,
-    "reason": "Full candidate regression passed; exact candidate loading and fresh runtime preservation snapshot pending before one real attempt4.",
-    "proof": "deep-research-evidence/comparison-resource-parser-integrated-full-20261117.json",
-    "newModelCalls": 0,
+    "reason": "Attempt4 first request rejected HTTP402; actual runtime configured account balance unavailable, -0.01 CNY. Candidate full/source/load verified; parser and draft allocation not reached in this real attempt.",
+    "proof": "deep-research-evidence/comparison-baseline-fourth-20261117.json",
+    "newModelCalls": 1,
     "scientificCredit": 0,
-    "next": "Load exact d25a35249 candidate, verify preservation, submit unique attempt4 once, save raw and restore after settled terminal result."
+    "next": "Continue unaffected offline work; after funding observed, use a new durable attempt, never retry failed/unknown receipt automatically."
   },
   "comparisonAuthorColumn20261117": {
     "status": "full_offline_and_saved_consumer_passed_not_live_accepted",
@@ -16892,7 +16892,7 @@
     "originalFailureCauseReproduced": false
   },
   "comparisonDraftAllocation20261117": {
-    "status": "full_regression_passed_runtime_pending",
+    "status": "full_passed_loaded_real_attempt_payment_rejected",
     "policyVersion": 2,
     "relatedTests": 151,
     "junit": "tmp/comparison-draft-allocation-related-20261117.xml",
@@ -16900,9 +16900,62 @@
     "compiledUncheckedPoints": 10,
     "isolatedPoints": 1,
     "isolatedReason": "internal_reference_in_prose",
-    "runtimeLoaded": false,
+    "runtimeLoaded": true,
     "newModelCalls": 0,
     "scientificCredit": 0,
-    "fullRegression": "deep-research-evidence/comparison-resource-parser-integrated-full-20261117.json"
+    "fullRegression": "deep-research-evidence/comparison-resource-parser-integrated-full-20261117.json",
+    "productionDefaultEnabled": false
+  },
+  "comparisonBaselineFourth20261117": {
+    "scope": "Sole real attempt4 rejected by provider before brief; no parser/synthesis/scientific validation occurred",
+    "sourceCommit": "d25a35249f8c52c1131fd9407a1e048c9601d4d2",
+    "runId": "dr_run_0ac5acba3d0d5f3c872572c3ebcaad05",
+    "status": "failed",
+    "outcome": "none",
+    "errorCode": "provider_payment_rejected",
+    "stage": "resolve_brief",
+    "newModelAttempts": 1,
+    "successfulModelResponses": 0,
+    "unknownCalls": 0,
+    "settledCalls": 1,
+    "budgetAccounting": {
+      "maxModelCalls": 18,
+      "maxTokens": 100000,
+      "maxWallClockSeconds": 360,
+      "reserveModelCalls": 5,
+      "reserveTokens": 50000,
+      "maxExternalSearches": 6,
+      "maxFulltextFetches": 6,
+      "finalizationBudgetVersion": 1,
+      "releasedReserveTokens": 0,
+      "explorationAllocationVersion": 1,
+      "modelCalls": 1,
+      "tokens": 4632,
+      "normalTokens": 4632,
+      "elapsedSeconds": 5.0,
+      "externalSearches": 0,
+      "fulltextFetches": 0,
+      "reservedModelCalls": 0,
+      "exhausted": "",
+      "profile": "standard",
+      "elapsedMeasurement": "wall_clock"
+    },
+    "tokenBoundary": "4632 tokens are ledger accounting for failed request, not confirmation of provider billed tokens.",
+    "rawPrefix": "tmp/dr-acceptance-receipts/D2-BASELINE-COMPRESSION-v4",
+    "originalRuntimeRestored": true,
+    "allCurrentTasksRunsCallsExact": true,
+    "preservedPriorRuns": 399,
+    "preservedPriorTasks": 108,
+    "preservedPausedRuns": 16,
+    "automaticRetry": false,
+    "scientificCredit": 0,
+    "balanceRead": {
+      "source": "Actual academic-dr-runtime configured key; read-only official /user/balance",
+      "httpStatus": 200,
+      "is_available": false,
+      "totalBalanceCNY": "-0.01",
+      "modelCalls": 0
+    },
+    "next": "Provider funding required before any further real generation; keep all prior failed/unknown attempts unchanged."
   }
 }
