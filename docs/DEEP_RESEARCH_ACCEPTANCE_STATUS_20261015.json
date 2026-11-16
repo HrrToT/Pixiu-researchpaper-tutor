@@ -16596,7 +16596,7 @@
     "sourceDefault": 0,
     "scientificContentAccepted": false,
     "candidateLoad": "verified",
-    "next": "Freeze missing-draft fix for current-source full regression. Cell generation/content quality still untested by v7; original budget and independent gates remain.",
+    "next": "Observe current full regression. No active real case; default runtime restored, all 394 prior runs and 10009 prior ledger rows exact. Real comparison content remains unverified.",
     "candidateProof": "deep-research-evidence/comparison-candidate-load-20261116.json",
     "realCase": {
       "id": "D2-VQ-v1-v7",
@@ -16611,7 +16611,15 @@
       "relatedTests": 68,
       "actualSavedPayloadReplayed": true,
       "proof": "deep-research-evidence/comparison-missing-draft-replay-20261116.json",
-      "productionLoaded": false
-    }
+      "productionLoaded": false,
+      "fullRegression": {
+        "runId": "comparison-missing-draft-full-native-20261116",
+        "status": "running",
+        "sourceCommit": "68bfc26e0",
+        "baselineCases": 9024,
+        "temporaryWindowsIdleSleepPrevention": true
+      }
+    },
+    "restoreProof": "deep-research-evidence/comparison-candidate-restored-20261116.json"
   }
 }
