@@ -15,7 +15,7 @@
     "elapsedSeconds": 619.2,
     "boundary": "Complete current offline research regression only; not real generation, Provider cost/quality, independent scientific acceptance or full product release.",
     "passed": 9024,
-    "appliesToCurrentPythonSource": true,
+    "appliesToCurrentPythonSource": false,
     "matchesLoadedRuntime": true,
     "proof": "deep-research-evidence/comparison-presentation-full-native-20261116.json"
   },
@@ -16596,13 +16596,22 @@
     "sourceDefault": 0,
     "scientificContentAccepted": false,
     "candidateLoad": "verified",
-    "next": "Observe the same D2-v7 run; preserve raw result and review full comparison before restoring default runtime.",
+    "next": "Freeze missing-draft fix for current-source full regression. Cell generation/content quality still untested by v7; original budget and independent gates remain.",
     "candidateProof": "deep-research-evidence/comparison-candidate-load-20261116.json",
     "realCase": {
       "id": "D2-VQ-v1-v7",
       "runId": "dr_run_8611ceebde8756818fd9fbf5d6d05176",
-      "status": "running",
+      "status": "failed",
+      "outcome": "none",
+      "proof": "deep-research-evidence/comparison-cells-d2-v7-20261116.json",
       "automaticRetry": false
+    },
+    "defaultRuntimeRestored": true,
+    "missingDraftFix": {
+      "relatedTests": 68,
+      "actualSavedPayloadReplayed": true,
+      "proof": "deep-research-evidence/comparison-missing-draft-replay-20261116.json",
+      "productionLoaded": false
     }
   }
 }

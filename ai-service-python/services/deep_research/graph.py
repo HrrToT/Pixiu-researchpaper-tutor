@@ -1999,13 +1999,13 @@ def make_verify_node(
         from services.deep_research.comparison_generation import enabled as cell_enabled
         from services.deep_research.comparison_presentation import metadata as comparison_metadata
         comparison_audit_args = ({'comparison_cells': comparison_metadata(saved['comparisonCellDraft'])}
-                                 if cell_enabled(record) else {})
+                                 if cell_enabled(record) and saved.get('comparisonCellDraft') is not None else {})
         def verify_comparison_claims(targets, supporting_evidence, semantic):
             from services.deep_research.comparison_generation import enabled as cell_enabled
             if not cell_enabled(record):
                 return verify_claims_fn(targets, supporting_evidence, semantic)
             from services.deep_research.comparison_cells import partition_source_bound_claims
-            candidates, refused = partition_source_bound_claims(targets, saved['comparisonCellDraft'], supporting_evidence)
+            candidates, refused = partition_source_bound_claims(targets, saved.get('comparisonCellDraft'), supporting_evidence)
             result = (verify_claims_fn(candidates, supporting_evidence, semantic) if candidates
                       else {'accepted': [], 'rejected': []})
             return {**result, 'rejected': [*result.get('rejected', []), *refused]}
@@ -2068,7 +2068,8 @@ def make_verify_node(
         # One bounded repair round may use up to three preflighted batches from
         # the normal pool. Final verification reserve stays protected, and all
         # revised wording passes the same checks again.
-        if repair_targets.get("rejected") and llm_invoke and not saved.get('repairVerificationError'):
+        if (repair_targets.get("rejected") and llm_invoke and not saved.get('repairVerificationError')
+                and not (cell_enabled(record) and saved.get('comparisonCellDraft') is None)):
             repo_update(run_id, lambda r: {**r, "state": {**r.get("state", {}), "repairAttempted": True,
                 "initialVerification": verification_result, 'initialAnswerCoverage': answer_coverage,
                 'repairTargets': repair_targets, 'repairReport': repair_report}}, expected_revision=None)
@@ -2430,7 +2431,7 @@ def make_publish_node(
         if cell_enabled(record):
             from services.deep_research.comparison_cells import partition_source_bound_claims
             kept, refused = partition_source_bound_claims(checked['accepted'],
-                brief_state['comparisonCellDraft'], brief_state.get('evidence', []))
+                brief_state.get('comparisonCellDraft'), brief_state.get('evidence', []))
             checked = {**checked, 'accepted': kept, 'rejected': [*checked.get('rejected', []), *refused]}
         if checked['accepted'] != verified_report.get('verifiedClaims', []):
             # A resumed publish must not trust inconsistent marked definitions
@@ -2457,7 +2458,8 @@ def make_publish_node(
             **({'request_semantics':2} if type(record.get('requestSemanticsContractVersion')) is int and record['requestSemanticsContractVersion']==2 else {}))
         if cell_enabled(record):
             from services.deep_research.comparison_presentation import metadata as comparison_metadata, revalidate_audit
-            audit = revalidate_audit(audit, comparison_metadata(brief_state['comparisonCellDraft']), accepted_claims)
+            audit = revalidate_audit(audit, comparison_metadata(brief_state['comparisonCellDraft'])
+                                     if brief_state.get('comparisonCellDraft') is not None else None, accepted_claims)
         if type(record.get('answerCoherenceContractVersion')) is int and record['answerCoherenceContractVersion'] in (1,2):
             from services.deep_research.answer_coherence import revalidate
             audit=revalidate(audit,effective_question(record),accepted_claims)
@@ -2509,7 +2511,7 @@ def make_publish_node(
             from services.deep_research.answer_constraints import requested_character_limit
             display_fields = {'presentationVersion':presentation_version, 'characterLimit':requested_character_limit(effective_question(record)),
                               'verificationNotice':folded_notice}
-        if cell_enabled(record):
+        if cell_enabled(record) and brief_state.get('comparisonCellDraft') is not None:
             from services.deep_research.comparison_presentation import metadata as comparison_metadata
             display_fields = {**display_fields, 'comparisonCells':comparison_metadata(brief_state['comparisonCellDraft'])}
         display_payload = {**display_fields, 'outputKind':output_kind, 'claims':accepted_claims, 'sections':sections,

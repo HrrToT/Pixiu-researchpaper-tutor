@@ -143,6 +143,11 @@ def compile_cells(payload, plan, *, max_claims):
 
 def partition_source_bound_claims(claims, draft, evidence):
     """Recheck paper/version ownership after edits; do not approve any text."""
+    if draft is None:
+        # Budget/cancellation can stop synthesis before a cell draft exists.
+        # An absent draft cannot authorize even a purported joint conclusion.
+        return [], [{'claimId': claim['claimId'], 'reason': 'comparison_cell_draft_missing'}
+                    for claim in claims]
     by_id = {e['evidenceId']: e for e in evidence}
     owners = {cid: cell['source'] for cell in draft['layout'] for cid in cell['claimIds']}
     retained, rejected = [], []

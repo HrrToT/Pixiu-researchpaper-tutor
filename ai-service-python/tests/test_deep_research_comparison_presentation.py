@@ -226,3 +226,38 @@ def test_legacy_final_audit_has_no_comparison_contract_or_prompt_changes():
         payload['claims'], [], invoke, json.loads)
     assert 'comparisonPresentationDigest' not in audit
     assert 'Server-rendered comparison presentation' not in invoke.call_args.args[2]
+
+
+@pytest.mark.parametrize('uncompiled_claims', [False, True])
+def test_no_cell_draft_after_budget_stop_preserves_evidence_and_publishes_only_gap(uncompiled_claims):
+    from unittest.mock import Mock
+    from services.deep_research.graph import make_verify_node, make_publish_node
+    payload = fixture()
+    evidence = [{'evidenceId': 'e-a', 'sourceWorkId': 'A', 'sourceVersionId': 'a-v1',
+                 'quote': 'The acquired evidence stays available.'}]
+    record = {'question': '比较两篇论文', 'comparisonCellsContractVersion': 1,
+              'authoredBodyContractVersion': 3, 'scopeExpressionContractVersion': 5,
+              'factualPromptContractVersion': 3, 'synthesisEvidenceContractVersion': 6,
+              'synthesisInputContractVersion': 2, 'draftValidationContractVersion': 1,
+              'reportPresentationContractVersion': 4,
+              'state': {'outputKind': 'paper_comparison', 'plan': [], 'gaps': [],
+                        'evidence': evidence, 'stopReason': 'assessment_unavailable'}}
+    if uncompiled_claims:
+        record['state']['reportBody'] = {'claims': payload['claims'][:1]}
+    def update(rid, fn, **kwargs):
+        nonlocal record
+        record = fn(deepcopy(record))
+        return deepcopy(record)
+    checker = Mock(side_effect=AssertionError('No uncompiled content may reach semantic approval'))
+    model = Mock(side_effect=AssertionError('No answer exists to audit'))
+    make_verify_node(checker, None, update, model)({'run_id': 'r'})
+    assert record['state']['verifiedReport']['verifiedClaims'] == []
+    if uncompiled_claims:
+        assert record['state']['verifiedReport']['rejectedClaims'][0]['reason'] == 'comparison_cell_draft_missing'
+    publish = Mock(return_value=({'publicationId': 'p'}, True))
+    make_publish_node(publish, update)({'run_id': 'r', 'report_version_id': 'v'})
+    final = publish.call_args.kwargs['payload']
+    assert not final['claims'] and 'comparisonCells' not in final
+    assert final['outcome'] != 'complete' and record['state']['evidence'] == evidence
+    assert record['state']['verifiedReport']['answerCoverage']['status'] == 'invalidated_comparison_presentation'
+    checker.assert_not_called(); model.assert_not_called()

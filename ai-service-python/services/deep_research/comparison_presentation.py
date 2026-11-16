@@ -28,7 +28,7 @@ def audit_digest(value, claims):
 
 
 def revalidate_audit(audit, value, claims):
-    if audit.get('comparisonPresentationDigest') == audit_digest(value, claims):
+    if value is not None and audit.get('comparisonPresentationDigest') == audit_digest(value, claims):
         return audit
     gap = {'obligationId': audit.get('wholeQuestionId') or 'answer_comparison_layout',
            'stage': 'answer', 'wholeQuestion': True,
