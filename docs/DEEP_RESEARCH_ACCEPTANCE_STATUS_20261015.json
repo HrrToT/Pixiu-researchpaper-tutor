@@ -14,7 +14,7 @@
     "missingBaselineCases": [],
     "elapsedSeconds": 575.86,
     "passed": 8968,
-    "appliesToCurrentPythonSource": true,
+    "appliesToCurrentPythonSource": false,
     "matchesLoadedRuntime": true,
     "proof": "deep-research-evidence/comparison-pipeline-485-20261116.json",
     "boundary": "Complete current offline research regression only; not real generation, Provider cost/quality, independent scientific acceptance or full product release."
@@ -16511,5 +16511,13 @@
       "outcome": "inconclusive",
       "proof": "deep-research-evidence/comparison-485-d2-v4-20261116.json"
     }
+  },
+  "unifiedAdviceRepairCandidate20261116": {
+    "promptVersion": "dr-v2.20261116.486",
+    "relatedTests": 69,
+    "proof": "deep-research-evidence/comparison-486-unified-advice-replay-20261116.json",
+    "productionLoaded": false,
+    "scientificContentAccepted": false,
+    "fullRegression": "pending"
   }
 }

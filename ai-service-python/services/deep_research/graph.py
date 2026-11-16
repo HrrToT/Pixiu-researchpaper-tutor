@@ -2088,6 +2088,7 @@ def make_verify_node(
                     from services.deep_research.general_advice import repair_enabled as advice_repair_enabled,repair_eligible as advice_repair_eligible
                     advice_repair=advice_repair_enabled(record) and advice_repair_eligible(repair_report)
                     compact_repair=compact_repair_enabled(record) and (factual_redraft_eligible(repair_report) or advice_repair)
+                    unified_repair_eligible=factual_redraft_eligible(repair_report) or (advice_repair and type(record.get('repairInstructionsContractVersion')) is int and record['repairInstructionsContractVersion']==2)
                     from services.deep_research.experiment_repair import enabled as shared_experiment_repair
                     from services.deep_research.experiment_edits import can_edit,OUTPUT_TOKENS as EDIT_OUTPUT_TOKENS
                     edit_repair=(shared_experiment_repair(record)
@@ -2142,10 +2143,10 @@ def make_verify_node(
                             if isinstance(a,dict) and isinstance(a.get('expression'),dict) and a.get('claimId') in {c.get('claimId') for c in repair_report.get('claims',[])}]}
                             if claim_check_enabled(record) and record['claimCheckContractVersion'] in (5,6,7,8,9) else {}),
                         **({'authored_body':True} if compact_repair and authored_body_enabled(record,saved.get('outputKind')) else {}),
-                        **({'verbatim_repair':True} if compact_repair and factual_redraft_eligible(repair_report) and verbatim_repair_enabled(record) else {}),
-                        **({'consolidated_instructions':True} if compact_repair and factual_redraft_eligible(repair_report) and repair_instructions_enabled(record) else {}),
+                        **({'verbatim_repair':True} if compact_repair and unified_repair_eligible and verbatim_repair_enabled(record) else {}),
+                        **({'consolidated_instructions':True} if compact_repair and unified_repair_eligible and repair_instructions_enabled(record) else {}),
                         **({'compact_source_repair':True} if compact_repair else {}),
-                        **({'target_goals':record['factualRepairGoalContractVersion'] if record['factualRepairGoalContractVersion'] in (2,3,4,5) else True} if compact_repair and factual_redraft_eligible(repair_report)
+                        **({'target_goals':record['factualRepairGoalContractVersion'] if record['factualRepairGoalContractVersion'] in (2,3,4,5) else True} if compact_repair and unified_repair_eligible
                             and type(record.get('factualRepairGoalContractVersion')) is int
                             and record['factualRepairGoalContractVersion'] in (1,2,3,4,5) else {}),
                         **({'ordinary_advice':True} if advice_repair else {}),

@@ -70,7 +70,7 @@ def test_only_exact_frozen_server_profile_enables_new_instructions(flag):
        'scopeExpressionContractVersion':5,'factualPromptContractVersion':3,
        'factRedraftContractVersion':3,'factualRepairPromptContractVersion':3,
        'state':{'outputKind':'paper_comparison'}}
-    assert not enabled(r)
+    assert enabled(r) == (type(flag) is int and flag==2)
     r['repairInstructionsContractVersion']=1;assert enabled(r)
     r['verbatimRepairContractVersion']=0;assert not enabled(r)
 
@@ -116,7 +116,7 @@ def test_policy_server_owned_immutable_and_cannot_be_added_to_legacy_run(tmp_pat
     try:
         r,_=facade.create({'workspaceTaskId':'t','operationKey':'op','question':'Explain','deferStart':True,
             'repairInstructionsContractVersion':False},start_async=False)
-        assert type(r['repairInstructionsContractVersion']) is int and r['repairInstructionsContractVersion']==1
+        assert type(r['repairInstructionsContractVersion']) is int and r['repairInstructionsContractVersion']==2
         ready=deepcopy(r);ready['state']['outputKind']='claim_verification';assert enabled(ready)
         with pytest.raises(ValueError,match='Immutable'):repo.update_run(r['runId'],lambda r:{**r,'repairInstructionsContractVersion':False})
         old=deepcopy(r);old.pop('repairInstructionsContractVersion');old.update(runId='legacy',idempotencyKey='old')
@@ -124,3 +124,27 @@ def test_policy_server_owned_immutable_and_cannot_be_added_to_legacy_run(tmp_pat
         with pytest.raises(ValueError,match='Immutable'):repo.update_run('legacy',lambda r:{**r,'repairInstructionsContractVersion':1})
         assert not enabled(repo.require_run('legacy'))
     finally:facade.shutdown()
+
+
+def test_unified_repair_of_mixed_facts_and_ordinary_advice_preserves_permissions():
+    report,checks,ev,opts=fixture()
+    advice=deepcopy(report['claims'][0]);advice.update(claimId='advice',kind='proposal')
+    report['claims'].append(advice)
+    checks['rejected'].append({'claimId':'advice','reason':'internal_reference_in_prose'})
+    before=deepcopy((report,checks,ev))
+    prepared=_prepare_repair(report,checks,ev,'Explain and suggest reading.',ordinary_advice=True,
+        consolidated_instructions=True,max_prompt_bytes=32000,**opts)
+    assert set(prepared['originals'])=={'c','advice'}
+    assert prepared['allowed']['advice']==prepared['allowed']['c']
+    assert prepared['originals']['advice']['kind']=='proposal'
+    assert before==(report,checks,ev)
+    assert 'Ordinary reading advice remains unexecuted' in prepared['prompt']
+
+
+@pytest.mark.parametrize('field',['executionSpec','designRole','designContractVersion'])
+def test_advice_switch_cannot_admit_experiment_targets_to_unified_point_repair(field):
+    report,checks,ev,opts=fixture()
+    report['claims'][0].update(kind='proposal',**{field:'experiment'})
+    with pytest.raises(ValueError,match='Point-scoped'):
+        _prepare_repair(report,checks,ev,'Design an experiment.',ordinary_advice=True,
+            consolidated_instructions=True,max_prompt_bytes=32000,**opts)

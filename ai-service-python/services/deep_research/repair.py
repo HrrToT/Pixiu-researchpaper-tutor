@@ -7,6 +7,7 @@ from copy import deepcopy
 from services.deep_research.answer_constraints import answer_character_count, requested_character_limit, normalize_conditions, resolve_evidence_aliases
 from services.deep_research.contracts import BudgetExhaustedError
 from services.deep_research.selection import surrounding_context
+from services.deep_research.general_advice import repair_eligible as advice_report_eligible
 from services.deep_research.prompt_budget import fit_evidence_prompt
 from services.deep_research.synthesis import SCIENTIFIC_TERMINOLOGY
 from uuid import uuid4
@@ -41,7 +42,7 @@ def _prepare_repair(report, verification, evidence, question, *, max_prompt_byte
     if type(objective_framing) is not bool:raise ValueError('Invalid objective framing policy')
     if type(process_explanations) is not bool:raise ValueError('Invalid process explanation policy')
     if goal_version in (2,3,4,5) and not (fact_redraft and source_aware_redraft and concise_factual
-            and compact_source_repair and factual_redraft_eligible(report)):
+            and compact_source_repair and (factual_redraft_eligible(report) or ordinary_advice and goal_version==5 and consolidated_instructions and advice_report_eligible(report))):
         raise ValueError('Point-scoped repair requires compact factual redrafting')
     if not (type(request_semantics) is bool or type(request_semantics) is int and request_semantics==2):raise ValueError('Invalid request semantics policy')
     if type(task_sources) is not bool:raise ValueError('Invalid task source disclosure policy')
@@ -908,7 +909,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
     if type(objective_framing) is not bool:raise ValueError('Invalid objective framing policy')
     if type(process_explanations) is not bool:raise ValueError('Invalid process explanation policy')
     if goal_version in (2,3,4,5) and not (fact_redraft and source_aware_redraft and concise_factual
-            and compact_source_repair and factual_redraft_eligible(report)):
+            and compact_source_repair and (factual_redraft_eligible(report) or ordinary_advice and goal_version==5 and consolidated_instructions and advice_report_eligible(report))):
         raise ValueError('Point-scoped repair requires compact factual redrafting')
     if not (type(request_semantics) is bool or type(request_semantics) is int and request_semantics==2):raise ValueError('Invalid request semantics policy')
     if type(task_sources) is not bool:raise ValueError('Invalid task source disclosure policy')
