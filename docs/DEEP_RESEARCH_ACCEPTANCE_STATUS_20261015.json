@@ -16,7 +16,7 @@
     "scientificContentAccepted": false,
     "integrationProof": "deep-research-evidence/shared-experiment-pipeline-integration-20261117.json",
     "capacityProof": "deep-research-evidence/shared-experiment-actual-review-repair-capacity-20261117.json",
-    "nextAction": "Real D3 on a fresh receipt after validation readiness and verified runtime load. D2, independent content, live product and release gates remain.",
+    "nextAction": "Real D3 after candidate runtime-load verification and validation readiness; synthetic upstream persistence is accepted separately from research content. D2, independent content and release gates remain.",
     "scopeUnchanged": "Original DR0-DR5, independent content, product and release gates remain required.",
     "fullRegressionPassed": true,
     "fullRegressionTests": 9379,
@@ -25,7 +25,9 @@
     "postFullRecoveryProof": "deep-research-evidence/shared-experiment-graph-recovery-20261117.json",
     "productionCodeUnchangedSinceFull": false,
     "productContractProof": "deep-research-evidence/shared-experiment-document-product-20261117.json",
-    "fullBrowserToDatabaseAccepted": false
+    "fullBrowserToDatabaseAccepted": false,
+    "syntheticUpstreamBrowserJavaPersistenceAccepted": true,
+    "isolatedResearchPublicationProof": "deep-research-evidence/shared-research-live-persistence-20261117.json"
   },
   "asOf": "2026-11-17",
   "objective": "Complete DR0-DR5 in DEEP_RESEARCH_DESIGN_20261012.md without redefining success around implemented subsets.",
