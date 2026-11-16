@@ -1,0 +1,17 @@
+{
+  "case": "D2-VQ-v1-v5",
+  "candidate": "dr-v2.20261116.488",
+  "scope": "Saved third repair batch request construction only",
+  "actualInputLimit": 11963,
+  "oldMandatoryBytes": 13549,
+  "candidateMandatoryBytes": 11909,
+  "candidateRequestBytes": 11909,
+  "sameMandatoryRowsOriginalsAliases": true,
+  "budgetChanged": false,
+  "finalizationReserveReleased": false,
+  "modelCalls": 0,
+  "applicationWrites": 0,
+  "scientificContentAccepted": false,
+  "marginBytes": 54,
+  "boundary": "Exact saved-case preparation passes narrowly; does not prove new-run capacity, answer quality or scientific approval. Normal-budget counters were zeroed only in the offline wrapper to expose this third batch; actual recorded11963-byte limit was then re-applied unchanged."
+}

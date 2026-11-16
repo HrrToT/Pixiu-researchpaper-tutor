@@ -17,9 +17,11 @@ from services.deep_research.repair_scope import repair_evidence_scope
 def _prepare_repair(report, verification, evidence, question, *, max_prompt_bytes=24000,
                     metric_domains=None, draft_context=(), prior_revisions=(),
                     fact_redraft=False, requirement_context=(), source_aware_redraft=False,comparison_reasoning=False,
-                    question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False,shared_experiment_schema=False,experiment_evidence_context=None,experimental_edits=False,experimental_diagnostics=False,experimental_nested_tables=False,experimental_representation=False,experimental_coverage=False,citation_presentation_version=0,configuration_consistency_version=0,repair_evidence_packet_version=0,answer_intents=None,scope_expression=False,table_identity_context=False,claim_check=False,required_scope_ids=(),compact_layout=False,ordinary_advice=False,task_sources=False,request_semantics=False,preserve_answers=False,target_goals=False,objective_framing=False,process_explanations=False,factual_prompt_version=0,verified_target_ids=(),authored_body=False,verbatim_repair=False,consolidated_instructions=False,verified_text_edits=False,integrated_text_edits=False,text_edit_context=None,scope_citation_presentation=False):
+                    question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False,shared_experiment_schema=False,experiment_evidence_context=None,experimental_edits=False,experimental_diagnostics=False,experimental_nested_tables=False,experimental_representation=False,experimental_coverage=False,citation_presentation_version=0,configuration_consistency_version=0,repair_evidence_packet_version=0,answer_intents=None,scope_expression=False,table_identity_context=False,claim_check=False,required_scope_ids=(),compact_layout=False,ordinary_advice=False,task_sources=False,request_semantics=False,preserve_answers=False,target_goals=False,objective_framing=False,process_explanations=False,factual_prompt_version=0,verified_target_ids=(),authored_body=False,verbatim_repair=False,consolidated_instructions=False,verified_text_edits=False,integrated_text_edits=False,text_edit_context=None,scope_citation_presentation=False,compact_repair_policy=False):
     if type(verified_text_edits) is not bool:raise ValueError('Invalid verified text edit policy')
     if type(integrated_text_edits) is not bool or integrated_text_edits and not verified_text_edits or not integrated_text_edits and text_edit_context is not None:raise ValueError('Invalid integrated text edit policy')
+    if type(compact_repair_policy) is not bool or compact_repair_policy and not consolidated_instructions:
+        raise ValueError('Invalid compact repair policy')
     if type(scope_citation_presentation) is not bool or scope_citation_presentation and not (consolidated_instructions and authored_body and citation_presentation_version in (2,3,4)):
         raise ValueError('Invalid structured scope citation presentation policy')
     if type(consolidated_instructions) is not bool or consolidated_instructions and not (verbatim_repair and authored_body and factual_prompt_version==3):
@@ -591,7 +593,7 @@ If a supported revision is not possible, omit that target rather than bypass sco
             evidence_marker=evidence_marker,schema=revision_shape,goals=bind(input_claims,active_requirements),
             hints=point_hints(originals.values(),authored_body=True),
             intentions={k:v for k,v in (answer_intents or {}).items() if k in originals},
-            inference_ids=inference_ids,required_scope_ids=required_scope_ids,has_tables=has_tables)
+            inference_ids=inference_ids,required_scope_ids=required_scope_ids,has_tables=has_tables,**({'compact_policy':True} if compact_repair_policy else {}))
     condition_marker=None
     if type(claim_check) is int and claim_check in (7,8,9):
         from services.deep_research.condition_source_index import GUIDANCE as CONDITION_GUIDANCE
@@ -690,7 +692,7 @@ If a supported revision is not possible, omit that target rather than bypass sco
     visible = {aliases[row['evidenceId']] for row in rows}
     allowed = {key: [ref for ref in values if ref in visible] for key, values in allowed.items()}
     if focused:allowed={key:[ref for ref in values if ref in originals[key]['evidenceRefs']] for key,values in allowed.items()}
-    return {**({'scopeCitationPresentationVersion':1} if scope_citation_presentation else {}),**({'repairInstructionsContractVersion':1} if consolidated_instructions else {}),**({'authoredBodyContractVersion':1} if authored_body else {}),**({'compactLayoutVersion':1} if compact_layout else {}),'prompt': prompt, 'originals': originals, 'aliases': aliases, 'allowed': allowed,
+    return {**({'compactRepairPolicyVersion':1} if compact_repair_policy else {}),**({'scopeCitationPresentationVersion':1} if scope_citation_presentation else {}),**({'repairInstructionsContractVersion':1} if consolidated_instructions else {}),**({'authoredBodyContractVersion':1} if authored_body else {}),**({'compactLayoutVersion':1} if compact_layout else {}),'prompt': prompt, 'originals': originals, 'aliases': aliases, 'allowed': allowed,
             **({'verifiedTextRepairContractVersion':2 if integrated_text_edits else 1,
                 **({'verifiedTextEditPlan':text_edit_plan} if integrated_text_edits else {})} if focused else {}),
             **({'repairPremiseAudit':premise_audit} if premise_audit is not None else {}),
@@ -881,7 +883,7 @@ def factual_redraft_eligible(report):
 def repair_rejected(report, verification, evidence, question, invoke, parse, *,
                     max_prompt_bytes=24000, metric_domains=None, batch_state=None, checkpoint=None,
                     current_budget=None, invoke_request=None, fact_redraft=False, requirement_context=(),
-                    source_aware_redraft=False,comparison_reasoning=False,question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,strict_response=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False,shared_experiment_schema=False,experiment_evidence_context=None,experimental_edits=False,experimental_diagnostics=False,experimental_nested_tables=False,experimental_representation=False,experimental_coverage=False,citation_presentation_version=0,configuration_consistency_version=0,repair_evidence_packet_version=0,scheduling_version=0,answer_intents=None,scope_expression=False,defer_length_filter=False,table_identity_context=False,claim_check=False,required_scope_ids=(),compact_layout=False,ordinary_advice=False,task_sources=False,request_semantics=False,preserve_answers=False,target_goals=False,objective_framing=False,process_explanations=False,factual_prompt_version=0,verified_target_ids=(),authored_body=False,verbatim_repair=False,consolidated_instructions=False,verified_text_edits=False,integrated_text_edits=False,text_edit_context=None,scope_citation_presentation=False):
+                    source_aware_redraft=False,comparison_reasoning=False,question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,strict_response=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False,shared_experiment_schema=False,experiment_evidence_context=None,experimental_edits=False,experimental_diagnostics=False,experimental_nested_tables=False,experimental_representation=False,experimental_coverage=False,citation_presentation_version=0,configuration_consistency_version=0,repair_evidence_packet_version=0,scheduling_version=0,answer_intents=None,scope_expression=False,defer_length_filter=False,table_identity_context=False,claim_check=False,required_scope_ids=(),compact_layout=False,ordinary_advice=False,task_sources=False,request_semantics=False,preserve_answers=False,target_goals=False,objective_framing=False,process_explanations=False,factual_prompt_version=0,verified_target_ids=(),authored_body=False,verbatim_repair=False,consolidated_instructions=False,verified_text_edits=False,integrated_text_edits=False,text_edit_context=None,scope_citation_presentation=False,compact_repair_policy=False):
     """One bounded revision round, split before dispatch when evidence cannot fit.
 
     At most three requests share full sibling design definitions. Successful
@@ -893,6 +895,8 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
 
     if type(verified_text_edits) is not bool:raise ValueError('Invalid verified text edit policy')
     if type(integrated_text_edits) is not bool or integrated_text_edits and not verified_text_edits or not integrated_text_edits and text_edit_context is not None:raise ValueError('Invalid integrated text edit policy')
+    if type(compact_repair_policy) is not bool or compact_repair_policy and not consolidated_instructions:
+        raise ValueError('Invalid compact repair policy')
     if type(scope_citation_presentation) is not bool or scope_citation_presentation and not (consolidated_instructions and authored_body and citation_presentation_version in (2,3,4)):
         raise ValueError('Invalid structured scope citation presentation policy')
     if type(consolidated_instructions) is not bool or consolidated_instructions and not (verbatim_repair and authored_body and factual_prompt_version==3):
@@ -968,7 +972,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
         raise ValueError('Unsupported configuration consistency contract')
     if type(citation_presentation_version) is not int or citation_presentation_version not in (0,2,3,4):
         raise ValueError('Unsupported citation presentation contract')
-    identity = digest({**({'scopeCitationPresentationVersion':1} if scope_citation_presentation else {}),**({'verifiedTextRepairContractVersion':2 if integrated_text_edits else 1,**({'textEditContext':text_edit_context} if integrated_text_edits else {})} if verified_text_edits else {}),**({'repairInstructionsContractVersion':1} if consolidated_instructions else {}),**({'verbatimRepairContractVersion':1} if verbatim_repair else {}),**({'authoredBodyContractVersion':1} if authored_body else {}),**({'verifiedRepairTargets':list(verified_target_ids)} if factual_prompt_version in (2,3) else {}),**({'factualRepairPromptContractVersion':factual_prompt_version} if factual_prompt_version else {}),**({'compactLayoutVersion':1} if compact_layout else {}),'report': report, 'verification': verification,
+    identity = digest({**({'compactRepairPolicyVersion':1} if compact_repair_policy else {}),**({'scopeCitationPresentationVersion':1} if scope_citation_presentation else {}),**({'verifiedTextRepairContractVersion':2 if integrated_text_edits else 1,**({'textEditContext':text_edit_context} if integrated_text_edits else {})} if verified_text_edits else {}),**({'repairInstructionsContractVersion':1} if consolidated_instructions else {}),**({'verbatimRepairContractVersion':1} if verbatim_repair else {}),**({'authoredBodyContractVersion':1} if authored_body else {}),**({'verifiedRepairTargets':list(verified_target_ids)} if factual_prompt_version in (2,3) else {}),**({'factualRepairPromptContractVersion':factual_prompt_version} if factual_prompt_version else {}),**({'compactLayoutVersion':1} if compact_layout else {}),'report': report, 'verification': verification,
                        **({'requiredScopeIds':list(required_scope_ids)} if required_scope_ids else {}),
                        **({'claimCheckContractVersion':claim_check if type(claim_check) is int and claim_check in (4,5,6,7,8,9) else 1} if claim_check else {}),
                        **({'tableIdentityContextContractVersion':2 if type(table_identity_context) is int and table_identity_context==2 else 1} if table_identity_context else {}),
@@ -1013,6 +1017,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
         subset = {'accepted': verification.get('accepted', []),
                   'rejected': [row for row in verification.get('rejected', []) if row['claimId'] in ids]}
         return _prepare_repair(report, subset, evidence, question,
+            **({'compact_repair_policy':True} if compact_repair_policy else {}),
             **({'scope_citation_presentation':True} if scope_citation_presentation else {}),
             **({'consolidated_instructions':True} if consolidated_instructions else {}),
             **({'verified_text_edits':True} if verified_text_edits else {}),

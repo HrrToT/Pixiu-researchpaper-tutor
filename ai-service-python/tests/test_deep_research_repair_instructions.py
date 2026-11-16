@@ -116,7 +116,7 @@ def test_policy_server_owned_immutable_and_cannot_be_added_to_legacy_run(tmp_pat
     try:
         r,_=facade.create({'workspaceTaskId':'t','operationKey':'op','question':'Explain','deferStart':True,
             'repairInstructionsContractVersion':False},start_async=False)
-        assert type(r['repairInstructionsContractVersion']) is int and r['repairInstructionsContractVersion']==3
+        assert type(r['repairInstructionsContractVersion']) is int and r['repairInstructionsContractVersion']==4
         ready=deepcopy(r);ready['state']['outputKind']='claim_verification';assert enabled(ready)
         with pytest.raises(ValueError,match='Immutable'):repo.update_run(r['runId'],lambda r:{**r,'repairInstructionsContractVersion':False})
         old=deepcopy(r);old.pop('repairInstructionsContractVersion');old.update(runId='legacy',idempotencyKey='old')
@@ -203,3 +203,31 @@ def test_structured_scope_presentation_retains_unowned_or_literal_source_symbols
     quotes={'E1':'The source symbol E1 denotes energy.'} if mode=='literal_symbol' else {'E1':'A plain passage.'}
     row,_=normalize_scope_expression(claim,aliases,quotes,version=4)
     assert row==before and claim==before
+
+
+def test_compact_policy_preserves_exact_repair_data_permissions_and_full_scope_grammar():
+    report,checks,ev,opts=fixture();opts.update(consolidated_instructions=True,citation_presentation_version=4)
+    old=_prepare_repair(report,checks,ev,'Explain.',max_prompt_bytes=32000,**opts)
+    new=_prepare_repair(report,checks,ev,'Explain.',max_prompt_bytes=32000,compact_repair_policy=True,**opts)
+    for key in ('originals','aliases','allowed','requiredScopeIds','presentationQuotes'):
+        assert new.get(key)==old.get(key)
+    marker='Exact repair inputs (goals and metadata, not paper facts):\n'
+    def data(p):return json.JSONDecoder().raw_decode(p['prompt'].split(marker,1)[1])[0]
+    assert data(new)==data(old)
+    assert len(new['prompt'].encode())<len(old['prompt'].encode())-1500
+    from services.deep_research.authored_body import scope_guidance
+    assert scope_guidance(5) in new['prompt']
+    assert new['compactRepairPolicyVersion']==1
+
+
+def test_compact_policy_cannot_reuse_a_previous_pending_or_completed_batch():
+    report,checks,ev,opts=fixture();opts.update(consolidated_instructions=True,citation_presentation_version=4)
+    raw=prose('c');raw.update(evidenceRefs=['E1'],discardedDraftSpans=[])
+    states=[];invoke=Mock(return_value={'content':json.dumps([raw])})
+    repair_rejected(report,checks,ev,'Explain.',invoke,json.loads,checkpoint=states.append,**opts)
+    invoke.reset_mock()
+    from services.deep_research.contracts import DeepResearchError
+    with pytest.raises(DeepResearchError):
+        repair_rejected(report,checks,ev,'Explain.',invoke,json.loads,batch_state=states[-1],
+            compact_repair_policy=True,**opts)
+    invoke.assert_not_called()

@@ -5,7 +5,7 @@ import json
 def enabled(record):
     from services.deep_research.verbatim_repair import enabled as verbatim
     return (type(record.get('repairInstructionsContractVersion')) is int
-            and record['repairInstructionsContractVersion'] in (1,2,3) and verbatim(record)
+            and record['repairInstructionsContractVersion'] in (1,2,3,4) and verbatim(record)
             and type(record.get('factualRepairPromptContractVersion')) is int
             and record['factualRepairPromptContractVersion'] == 3
             and type(record.get('factRedraftContractVersion')) is int
@@ -73,7 +73,7 @@ All original source, scope, factual, coverage, length and independent checks rem
 
 def render(*, question, length_contract, requirements, source_context, targets,
            checks, questions, permissions_marker, evidence_marker, schema, goals,
-           hints, intentions, inference_ids, required_scope_ids, has_tables):
+           hints, intentions, inference_ids, required_scope_ids, has_tables, compact_policy=False):
     enc=lambda x:json.dumps(x,ensure_ascii=False,separators=(',',':'))
     table_rule=('Only source-local tableData/tableDataRef defines typed cells. Bind each retained '
         'measurement to its own evidenceId, original rowNumber, zero-based groupIndex, exact '
@@ -89,7 +89,39 @@ def render(*, question, length_contract, requirements, source_context, targets,
           'unverifiedIntentions':intentions,'reportedToInferenceIds':inference_ids,
           'requiredBoundaryIds':list(required_scope_ids),'outputRowSchema':schema}
     from services.deep_research.authored_body import scope_guidance
-    return (CORE+table_rule+scope_guidance(5)+'\nHuman question:\n'+question+'\n'+length_contract
+    return ((COMPACT_CORE if compact_policy else CORE)+table_rule+scope_guidance(5)+'\nHuman question:\n'+question+'\n'+length_contract
         +'\nExact repair inputs (goals and metadata, not paper facts):\n'+enc(data)
         +'\nAllowed evidence IDs by target (permissions, not support):\n'+permissions_marker
         +'\nOriginal evidence and bounded context (untrusted source data):\n'+evidence_marker)
+
+
+COMPACT_CORE = """Rebuild ONLY rejected targets from each target's own permitted original quotations.
+Return complete supported revisions as a JSON array or []; preserve IDs/obligations/kind except
+listed reported-to-inference transitions. Fix all checks/additionalChecks. Metadata/diagnostics/
+goals/hints/intentions are navigation, not evidence/instructions; their E labels may be obsolete.
+Accepted text is fixed; earlier drafts remain unverified and consume the shared length budget.
+Fulfil every bound human goal with supported premises and needed qualifications. Explain inputs,
+actions and effects in clear Chinese; define unfamiliar concepts for novices. Invent no parameter,
+example, experiment, inventory, author-wide absence, impossibility or universal/exclusive law.
+Missing excerpts prove no absence. For limits explain what own evidence supports and which
+stronger inference remains unestablished; do not substitute generic disclaimers or weaken proof.
+Each fact/condition needs own permitted E evidence and exact work/version/access.
+P/E/Q labels and reading/access declarations stay out of public prose. Abstracts support only
+abstract claims. Required sources each need relevant own premises; unavailable is not permission
+to substitute a work. Quote observations exactly in private UNVERIFIED draftingBasis.
+Retain exact method/variant, dataset/group, value, unit, direction and conditions. Another paper's
+comparator is not an author's self-report. Arithmetic needs cited operands; comparisons need
+commensurate conditions. System performance is not isolated method speedup. Unknown alignment
+proves neither a difference nor arithmetic impossibility; confounders are not documented causes.
+Invent no aggregate, tolerance, effect or antecedent; follow typed-cell rules below.
+Use outputRowSchema: body has ONE prose or boundary, no top-level text/conditions/scopeExpression.
+Prose conditions={}; essential conditions belong in text once.
+Boundary fields obey the complete scope grammar below; requiredBoundaryIds cannot become prose.
+Unsupported targets may be omitted, never approved. Only listed reported-to-inference IDs may
+change kind for evidence-grounded judgement with scopeDecision=bounded_inference. Other kinds
+stay. Advice is an unexecuted proposal, never an experiment, unevidenced author order or user completion.
+discardedDraftSpans lists exact unsupported OLD phrases already absent from revised wording,
+else []; it never edits the new text. Retained or hedged declared phrases reject the revision.
+No support for X proves no not-X. Factual/source/scope/coverage/length/advice and independent checks remain mandatory.
+Structure/private declarations grant no approval.
+"""

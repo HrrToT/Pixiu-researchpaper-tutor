@@ -16540,5 +16540,17 @@
     "scientificContentAccepted": false,
     "fullRegression": "pending integrated repair-budget work",
     "next": "Complete cumulative repair admission analysis, then freeze the integrated candidate for complete regression and one full comparison. Preserve original budget and independent checks."
+  },
+  "compactRepairPolicyCandidate20261116": {
+    "promptVersion": "dr-v2.20261116.488",
+    "repairInstructionsContractVersion": 4,
+    "relatedTests": 77,
+    "replay": "deep-research-evidence/compact-repair-488-third-batch-replay-20261116.json",
+    "productionLoaded": false,
+    "newModelCalls": 0,
+    "budgetChanged": false,
+    "scientificContentAccepted": false,
+    "fullRegression": "pending",
+    "next": "Freeze integrated487+488 candidate, run complete baseline-preserving regression, then load once and run one complete comparison. Preserve all original quality and budget gates."
   }
 }
