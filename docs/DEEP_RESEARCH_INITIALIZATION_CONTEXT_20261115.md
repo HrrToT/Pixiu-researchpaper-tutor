@@ -71,3 +71,9 @@
 真实隔离组件仅一次，10829 Token（9929输入、900输出），Provider接受v4 schema、结构与名称覆盖通过、语义行逐值保存。但内容退化：模型自称scalar placeholder，生成标量零值并提前列出后续码本/索引，未定义真实数值布局。记录为内容不通过，未加载`.481`。应用继续健康的`.476`，105任务、391运行、9872账本及15暂停逐值保持。
 
 核对实际响应模型为deepseek-v4-pro，当前初始化关闭推理。DeepSeek官方Thinking Mode与Responses API文档支持low effort；只构造了下一受控请求，保持消息、schema、输出6144、期限90秒和整轮预算不变，仅拟切换初始化推理控制。原metadata revision463曾耗尽6144且无可见答案，不能假定本次一定改善；初始化独立效果尚未验证，也没有实际发送或产品实现。参考https://api-docs.deepseek.com/guides/thinking_mode/及https://api-docs.deepseek.com/guides/responses_api/。
+
+`.482`新增不可变服务器标记`workflowInitializationReasoningContractVersion1`，仅plan_workflow_init（含其唯一修正）在请求身份和预算预留前固定thinking enabled、low effort。消息、schema、6144总输出Token、90秒期限和整轮预算不变；其他节点与旧标记0/缺失的策略不变，旧完成工作流不能切换重发。新增19项检查，关联59项通过，实际HTTP payload、预算不足和未知去重已验证。
+
+真实隔离组件一次，16073 Token（9929输入、6144输出），正常结算、finishReason length，可见JSON为0字节，unit.output_truncated，内容无法评价。没有未知、重发、预算扩大或应用写入，不能将内部推理作为回答。完整回归462模块、8641项通过，8622个既有用例全部保留，零失败/错误/跳过；不加载`.482`。
+
+下一输入格式静态试算31971字节：移除数字字段字典及专门stateDecision包装，保留可读字段名，仍用字符串共享与对象行表两层无损编码。全部17条证据和上下文逐值还原。原生schema把21处完全相同的非空字符串定义共享为一个本地引用，节省195字节；展开后与原schema逐值相同，不删除约束。只精简codec说明、不改科学指令、输出或整轮预算。目前仅完成试算，未产品实现或Provider/内容验证。应用保持`.476`且健康，历史任务/运行/账本/暂停不变。
