@@ -1,6 +1,6 @@
 # 实验方案整轮重构决策
 
-日期：2026-11-17。状态：共享定义、确定性检查与一次生成部件已实现并接入账本/传输；科学审核、图节点及发布主流程尚未接入或验收。原 DR0—DR5、D3 和独立 H5 门槛不变。
+日期：2026-11-17。状态：共享定义、一次生成、独立科学审核及结果编译部件已实现；图节点、最终整答检查及发布主流程尚未接入或验收。原 DR0—DR5、D3 和独立 H5 门槛不变。
 
 实现进展：共享定义和确定性检查已落地于 `../ai-service-python/services/deep_research/shared_experiment_plan.py`；一次生成部件为 `shared_experiment_generation.py`。最新 142 项相关检查通过（与此前 102 项存在重叠，不能相加）。facade 将新契约冻结为 0，客户端请求不能开启；没有替代旧验证器，也不产生科学通过或发布。
 
@@ -75,3 +75,17 @@
 证据：`deep-research-evidence/shared-experiment-generation-capacity-final-20261117.json`、`shared-experiment-generation-related-20261117.json`；回放脚本为 `../scripts/replay-deep-research-shared-generation-capacity.py`。
 
 本次没有新模型发送，没有加载实验候选，也没有变更正在运行的工作流。最近完整回归对应 d25a35249；本批新增共享定义服务模块及测试，因此该全量不再适用当前完整源码，验收状态已标记失效。先继续生成与审核集成，稳定后再冻结全量。真实比较尚受 DeepSeek 余额不足阻塞，不能提前宣布 D3 或 H5 通过。
+
+### 独立科学审核与结果编译
+
+最新 139 项相邻检查通过，其中 25 项为新增审核与编译检查；与此前检查有重叠，不能累加。`shared_experiment_review.py` 为每条原文事实、八个科学检查项和每条冻结完成标准生成独立审核目标。收到的 verdict 必须覆盖全部目标且身份唯一，不能用整体 coherent=true 代替某一目标。
+
+通过判定必须绑定方案实际内容，事实及整体归因还要绑定自己的原文片段；无效引用、跨事实借用证据、标识符单独充当科学依据、截断、重复 JSON 字段等不能放行。有效负面发现仍允许引用状态身份或资产可用性值，避免把科学问题误判成接口无效。原有引文、数字和来源预检查在模型前执行，硬错误不发起审核。合法结构与有效绑定仍不证明模型的科学判断可靠，真实内容须另行验收。
+
+审核原始响应、请求身份、方案绑定及每个目标判定均保存。结果编译时重新检查原始审核，不信任单独改写的 passed/approval 标记。未通过目标、未解决前提、证据或预算限额改变均不能复用旧结果。原子调用计数和已消耗 Token 不参与冻结上下文摘要，正常结算不会使绑定失效；maxModelCalls/maxTokens/maxWallClockSeconds 上限参与摘要。
+
+`shared_experiment_result.py` 直接从这份定义生成四组表、共同准备、状态与更新、执行顺序、测量和效应分析，原文事实保留实际证据引用。没有第二个模型重新编造初始化或预算。输出仍为 publishable=false、finalAnswerAuditRequired=true 的候选，不进入发布。
+
+容量回放保留 D3 全部 17 条必要前提，并加入一个 7,207 字节的人工接口方案，完整审核请求为 31,120 字节，18 个审核目标，低于 32,000，上限余量 880。实际 TrackedLLMInvoker 请求身份一致，在预留前截停。该方案不是实际模型生成内容；较大真实输出能否装下、科学质量和整轮预算均尚未证明，不能据此称 D3 通过。
+
+证据：`deep-research-evidence/shared-experiment-review-related-20261117.json`、`shared-experiment-review-capacity-bound-20261117.json`。下一步接入图节点与最终正文完整性审核、一次有界修订，再冻结全量。默认新契约仍为 0。

@@ -1,0 +1,39 @@
+{
+  "scope": "Independent per-target scientific review and deterministic nonpublishable candidate compilation; graph/final audit/publication not integrated",
+  "sourceSha256": {
+    "ai-service-python/services/deep_research/shared_experiment_review.py": "73e008918c4651dbab1b6502e4d3df50b47fae0dda02a63d5fd9adafdb14950e",
+    "ai-service-python/services/deep_research/shared_experiment_result.py": "fad4f1f247208193cf2b19c85ffff1b85cd6e163914af388558f812a05a53506",
+    "ai-service-python/services/deep_research/shared_experiment_generation.py": "e20673bb2795ca1bc7c6b2b90e74c0bd575dec4227be80fb54dc5c7eb6e5e28d",
+    "ai-service-python/services/deep_research/planning_transport.py": "030c65502a110c74b0c33edcb7690dc7bc6eb6c90caeb7d8754d82623d390ea7",
+    "ai-service-python/services/deep_research/structured_output.py": "09c710a91483f96a8c326a3c9aebc42c744e15ca3ed5440803821c8c73a3eb65",
+    "ai-service-python/services/deep_research/tools.py": "fe64f16aa7ef79cc086f21d4919a3e2d1ebcb46d7fecb56b2e88316152bbad0b",
+    "ai-service-python/tests/test_deep_research_shared_experiment_review.py": "862c7fb36a48e2e6a0578637b36718b3a48c950c3c50aa7744958a6cc8c4e902",
+    "ai-service-python/tests/test_deep_research_shared_experiment_generation.py": "0ee974dc7a183138f4f7330a963c9749a6d97fedd7867ee10f18f99115aab27b"
+  },
+  "relatedChecks": {
+    "tests": 139,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "junit": "tmp\\shared-experiment-review-related-v3-20261117.xml",
+  "newReviewChecks": 25,
+  "capacityProof": "deep-research-evidence/shared-experiment-review-capacity-bound-20261117.json",
+  "preservedGates": [
+    "existing reported-fact quote/number/source prechecks",
+    "every fact and scientific section and frozen criterion has its own verdict",
+    "positive target bindings and own literal evidence",
+    "global coherence cannot waive target failure",
+    "unresolved prerequisites block compilation",
+    "edits to proposal/evidence/review/budget limits invalidate the result",
+    "compiled result requires final answer audit before publication"
+  ],
+  "modelCalls": 0,
+  "realHttpRequests": 0,
+  "applicationWrites": 0,
+  "runtimeLoaded": false,
+  "facadeEnabled": false,
+  "scientificCredit": 0,
+  "fullRegressionPending": true,
+  "next": "Graph and final rendered-answer audit plus one bounded repair before candidate load/real D3."
+}

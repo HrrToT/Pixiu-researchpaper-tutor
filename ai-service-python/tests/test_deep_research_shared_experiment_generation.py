@@ -15,6 +15,7 @@ def context():
     from test_deep_research_comparison_intent import record
     from services.deep_research.verification import make_evidence
     r = record(); r.update(runId='r', taskId='t', question='Design a paired two-factor experiment.', startedAt=None)
+    r['budget'].update(maxTokens=100000,maxWallClockSeconds=360)
     r[MARKER] = 1
     ev = make_evidence({'workId':'owned', 'versionId':'v1', 'contentHash':'hash', 'accessLevel':'fulltext'},
         'An exact public source statement.', 'An exact public source statement.', location={}, obligation_ids=['G1'])
@@ -201,4 +202,3 @@ def test_actual_tracked_scoped_http_schema_and_receipt_reuse(tmp_path, monkeypat
         invoke('r', NODE, overlarge, {'max_tokens':6144, 'temperature':0.0, 'timeout_seconds':90}, use_reserve=True)
     reserve.assert_not_called()
     assert post.call_count == 1
-

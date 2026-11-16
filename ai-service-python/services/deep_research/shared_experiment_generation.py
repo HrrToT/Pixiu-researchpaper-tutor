@@ -62,6 +62,9 @@ def build(record, input_data, aliases, *, required_domains=()):
     from services.deep_research.planning_transport import overhead_bytes
     if not enabled(record):
         raise ValueError('Shared experiment generation is not enabled')
+    if any(type(record.get('budget',{}).get(k)) is not int or record['budget'][k] <= 0
+           for k in ('maxModelCalls','maxTokens','maxWallClockSeconds')):
+        raise ValueError('Complete frozen research budget limits required')
     if (not isinstance(input_data, dict) or set(input_data) != {'question', 'requirements', 'sources', 'evidence', 'tables'}
             or input_data['question'] != effective_question(record)
             or digest(input_data['requirements']) != digest(synthesis_obligations(record['state'].get('plan', [])))
@@ -103,6 +106,8 @@ def build(record, input_data, aliases, *, required_domains=()):
     if not isinstance(required_domains, (list, tuple, set, frozenset)) or not set(required_domains) <= {'quality', 'storage', 'speed', 'memory'}:
         raise ValueError('Invalid required measurement domains')
     context_digest = digest({'input': input_data, 'evidenceIdentity': identities,
+                             'budgetLimits':{k:record.get('budget',{}).get(k) for k in
+                                             ('maxModelCalls','maxTokens','maxWallClockSeconds')},
                              'sourcePolicy': record.get('sourcePolicy'), 'requiredDomains': sorted(set(required_domains))})
     prompt = INSTRUCTIONS + input_text(input_data)
     request = request_identity(record, NODE, prompt, {'temperature': 0.0, 'max_tokens': OUTPUT_TOKENS,
