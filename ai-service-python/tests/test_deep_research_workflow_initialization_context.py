@@ -195,6 +195,8 @@ def test_actual_http_precise_schema_budget_and_unknown_identity(tmp_path,monkeyp
     expected='workflow_init_v2_state_baseline' if r['workflowInitializationContextContractVersion']==2 else 'workflow_init_v2_baseline'
     if r.get('workflowInitializationStructuredRecipeContractVersion') == 1:
         expected='workflow_init_v3_recipe_baseline'
+    if r.get('workflowInitializationNumericStateContractVersion') == 3:
+        expected='workflow_init_v4_semantics_baseline'
     assert actual['text']['format']['name']==expected
     assert actual['max_output_tokens']==6144 and post.call_args.kwargs['timeout']==90
     assert reserve.call_args.kwargs['budget_delta']['tokens']==32000+1024+6144

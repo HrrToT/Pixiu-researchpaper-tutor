@@ -15,7 +15,7 @@ def payload(messages, options, *, model, temperature):
         raise ValueError('Invalid Responses schema format')
     if '_workflow_init_target' in options:
         target = options['_workflow_init_target']
-        if target not in ('baseline', 'component') or fmt['name'] not in ('workflow_init_v2_' + target,'workflow_init_v2_state_' + target,'workflow_init_v3_recipe_' + target):
+        if target not in ('baseline', 'component') or fmt['name'] not in ('workflow_init_v2_' + target,'workflow_init_v2_state_' + target,'workflow_init_v3_recipe_' + target,'workflow_init_v4_semantics_' + target):
             raise ValueError('Invalid initialization target binding')
     if '_workflow_metadata_edits' in options:
         if options['_workflow_metadata_edits'] is not True or fmt['name'] != 'metadata_explicit_read_edits_v1':

@@ -15,7 +15,7 @@ def enabled(record):
             and record['workflowInitializationOutputContractVersion'] == 1)
 
 
-def original_value(unit, version=1, *, structured=False):
+def original_value(unit, version=1, *, structured=False, semantics=False):
     from services.deep_research.workflow_metadata_repair import load_wire
     from services.deep_research.execution_workflow_blueprint import MAX_VALUE, packed
     if type(version) is not int or version not in (1, 2): return None
@@ -31,6 +31,8 @@ def original_value(unit, version=1, *, structured=False):
             from services.deep_research.workflow_initialization_wire import parse
             if structured:
                 from services.deep_research.workflow_initialization_structured import parse
+            if semantics:
+                from services.deep_research.workflow_initialization_semantics import parse
             value = parse(raw)
         else: value = load_wire(raw, version=2)
         if (not isinstance(value, dict) or set(value) != {'sourceRefs', 'initialization', 'unresolved'}
@@ -79,7 +81,9 @@ def prepare(record, *, key, source_data, context, failed, aliases, earlier, base
     version = record.get(MARKER, 1)
     from services.deep_research.workflow_initialization_structured import enabled as structured_enabled, issues as recipe_issues
     structured = structured_enabled(record)
-    value = original_value(failed, version=version, structured=structured)
+    from services.deep_research.workflow_initialization_semantics import enabled as semantics_enabled, issues as semantics_issues
+    semantic_initialization = semantics_enabled(record)
+    value = original_value(failed, version=version, structured=structured,semantics=semantic_initialization)
     if not enabled(record) or value is None:
         raise DeepResearchError('invalid_workflow_unit_response', '初始化原响应不满足有界修正条件。')
     if existing is not None and not isinstance(existing, dict):
@@ -88,7 +92,7 @@ def prepare(record, *, key, source_data, context, failed, aliases, earlier, base
         raise DeepResearchError('invalid_workflow_unit_response', '初始化修正机会已用于另一个单元。')
     original_errors = sorted(unit_errors(value, aliases, node=INIT, earlier=earlier, baseline=baseline,
                                         version=7, metadata=context.get('metadata'), target=target,
-                                        structured_initialization=structured))
+                                        structured_initialization=structured,semantic_initialization=semantic_initialization))
     if not original_errors or original_errors != sorted(failed['errors']):
         raise DeepResearchError('invalid_workflow_blueprint_state', '初始化原检查记录已改变。')
     from services.deep_research.workflow_initialization_context import enabled as scoped_enabled, project
@@ -113,6 +117,8 @@ def prepare(record, *, key, source_data, context, failed, aliases, earlier, base
         diagnostics = field_feedback(value, failed['errors'], target=bound_target)
         if structured:
             diagnostics['issues'] += recipe_issues(value['initialization'])
+        if semantic_initialization:
+            diagnostics['issues'] += semantics_issues(value['initialization'])
         options[TARGET_OPTION] = bound_target
     body = prefix + ('Correct this ONE initialization using ALL supplied input and diagnostics. '
                      'Keep required state, source evidence and unresolved prerequisites. '
@@ -160,11 +166,13 @@ def prepare(record, *, key, source_data, context, failed, aliases, earlier, base
             from services.deep_research.workflow_initialization_wire import parse
             if structured:
                 from services.deep_research.workflow_initialization_structured import parse
+            if semantic_initialization:
+                from services.deep_research.workflow_initialization_semantics import parse
             revised = parse(raw)
         else: revised = load_wire(raw, version=2)
         problems = unit_errors(revised, aliases, node=INIT, earlier=earlier, baseline=baseline,
                                version=7, metadata=context.get('metadata'), target=target,
-                               structured_initialization=structured)
+                               structured_initialization=structured,semantic_initialization=semantic_initialization)
         if len(raw.encode('utf8')) > MAX_VALUE or len(packed(revised).encode('utf8')) > MAX_VALUE:
             problems.append('unit.output_capacity')
     except (TypeError, ValueError, RecursionError, OverflowError): revised = None; problems = ['unit.json']

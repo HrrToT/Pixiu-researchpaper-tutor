@@ -21,12 +21,15 @@ SELECTION_POLICY = (
 def enabled(record):
     from services.deep_research.workflow_initialization_decision_input import enabled as decision_input
     return (isinstance(record, dict) and type(record.get(MARKER)) is int
-            and record[MARKER] in (1, 2) and decision_input(record))
+            and record[MARKER] in (1, 2, 3) and decision_input(record))
 
 
 def policy(version):
-    if type(version) is not int or version not in (1, 2):
+    if type(version) is not int or version not in (1, 2, 3):
         raise ValueError('Invalid numeric state contract version')
+    if version == 3:
+        from services.deep_research.workflow_initialization_semantics import POLICY as semantics_policy
+        return semantics_policy
     return POLICY + (SELECTION_POLICY if version == 2 else '')
 
 

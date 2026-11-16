@@ -15,6 +15,9 @@ from test_deep_research_workflow_metadata_ordered_integration import input_value
 
 @pytest.mark.parametrize('version',[None,True,0,3,'2'])
 def test_unsupported_numeric_policy_cannot_change_prompt(version):
+    if type(version) is int and version==3:
+        assert 'stateSemantics rows' in policy(version)
+        return
     with pytest.raises(ValueError):policy(version)
 
 

@@ -62,7 +62,7 @@ def descriptor(node, version=6):
 
 
 def unit_errors(value, aliases, *, node, earlier=(), baseline=False, version=6, metadata=None, target=None,
-                metadata_rows=False, structured_initialization=False):
+                metadata_rows=False, structured_initialization=False, semantic_initialization=False):
     fields = ({'sourceRefs', 'baselineMode', 'replicationMode', 'components', 'checkpointSelection', 'unresolved'}
               if node == META else {'sourceRefs', 'initialization', 'unresolved'})
     if version == 7 and node == META:fields |= {'frameIterations','phases'}
@@ -111,6 +111,9 @@ def unit_errors(value, aliases, *, node, earlier=(), baseline=False, version=6, 
             if structured_initialization:
                 from services.deep_research.workflow_initialization_structured import issues
                 problems += [issue['code'] for issue in issues(init)]
+            if semantic_initialization:
+                from services.deep_research.workflow_initialization_semantics import issues as semantics_issues
+                problems += [issue['code'] for issue in semantics_issues(init)]
             if version==7 and not problems:
                 from services.deep_research.workflow_lifecycle_units import initialization_errors
                 problems += initialization_errors(metadata,target,init,earlier)
@@ -235,6 +238,8 @@ def prepare_units(record, *, prompt, aliases, invoke, parse, checkpoint):
     if decision_input: parent_request['initializationDecisionInputContract'] = 1
     from services.deep_research.workflow_initialization_numeric import enabled as numeric_enabled
     numeric_initialization = numeric_enabled(record)
+    from services.deep_research.workflow_initialization_semantics import enabled as semantics_enabled
+    semantic_initialization = semantics_enabled(record)
     if numeric_initialization:
         parent_request['initializationNumericStateContract'] = record['workflowInitializationNumericStateContractVersion']
     if premise_mode:
@@ -396,6 +401,8 @@ def prepare_units(record, *, prompt, aliases, invoke, parse, checkpoint):
                 from services.deep_research.workflow_initialization_wire import parse as parse_initialization
                 if structured_initialization:
                     from services.deep_research.workflow_initialization_structured import parse as parse_initialization
+                if semantic_initialization:
+                    from services.deep_research.workflow_initialization_semantics import parse as parse_initialization
                 value = parse_initialization(unit['response'].get('rawContent', unit['response'].get('content', '')))
             elif strict_wire:
                 from services.deep_research.workflow_metadata_repair import load_wire
@@ -435,7 +442,8 @@ def prepare_units(record, *, prompt, aliases, invoke, parse, checkpoint):
                 else:value = decode_rows(value)
             problems = unit_errors(value, aliases, node=node, earlier=earlier, baseline=baseline,
                 version=version,metadata=context.get('metadata'),target=target,metadata_rows=use_rows,
-                structured_initialization=structured_initialization and node==INIT)
+                structured_initialization=structured_initialization and node==INIT,
+                semantic_initialization=semantic_initialization and node==INIT)
             if use_init_wire and (len(unit['response'].get('rawContent', unit['response'].get('content', '')).encode('utf8')) > MAX_VALUE
                                   or len(packed(value).encode('utf8')) > MAX_VALUE):
                 problems.append('unit.output_capacity')
@@ -473,7 +481,7 @@ def prepare_units(record, *, prompt, aliases, invoke, parse, checkpoint):
             checkpoint(deepcopy(saved))
         if problems:
             if node == INIT and initialization_repair_mode and original_initialization(unit, version=initialization_version,
-                    structured=structured_initialization) is not None:
+                    structured=structured_initialization,semantics=semantic_initialization) is not None:
                 later_exists = (key == 'baseline' and any(k.startswith('component:') for k in saved['units']))
                 if key.startswith('component:'):
                     later_exists = any('component:'+str(i) in saved['units']

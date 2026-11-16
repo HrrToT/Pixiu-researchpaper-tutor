@@ -91,7 +91,7 @@ def test_marker_is_server_owned_and_immutable(tmp_path,replacement):
     try:
         r,_=facade.create({'workspaceTaskId':'t','operationKey':'k','question':'Design','deferStart':True,
             MARKER:replacement},start_async=False)
-        assert r[MARKER]==2
+        assert r[MARKER]==3
         with pytest.raises(ValueError,match='Immutable'):
             repo.update_run(r['runId'],lambda old:{**old,MARKER:0 if replacement==2 else replacement})
         old=deepcopy(r);old.update(runId='old',idempotencyKey='old');old.pop(MARKER);repo.create_run(old)
