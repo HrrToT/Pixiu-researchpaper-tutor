@@ -3,20 +3,20 @@
   "objective": "Complete DR0-DR5 in DEEP_RESEARCH_DESIGN_20261012.md without redefining success around implemented subsets.",
   "overall": "incomplete",
   "currentFullOfflineRegression": {
-    "sourceCommit": "2b3fafd2db1b02536ebe3a776b23c30796a0d581",
+    "sourceCommit": "aff24567bbaae80171578e9825326b5ecd8c2377",
     "modules": 472,
     "failures": 0,
     "errors": 0,
     "skipped": 0,
     "sourceUnchanged": true,
-    "baselineCases": 8968,
-    "retainedBaselineCases": 8968,
+    "baselineCases": 8978,
+    "retainedBaselineCases": 8978,
     "missingBaselineCases": [],
-    "elapsedSeconds": 538.23,
-    "passed": 8972,
-    "appliesToCurrentPythonSource": false,
+    "elapsedSeconds": 655.49,
+    "passed": 8978,
+    "appliesToCurrentPythonSource": true,
     "matchesLoadedRuntime": true,
-    "proof": "deep-research-evidence/unified-advice-repair-486-20261116.json",
+    "proof": "deep-research-evidence/integrated-repair-488-confirmed-20261116.json",
     "boundary": "Complete current offline research regression only; not real generation, Provider cost/quality, independent scientific acceptance or full product release."
   },
   "postFullRegressionValidation": {
@@ -15466,21 +15466,21 @@
     "explicitEditsImplemented": false
   },
   "currentRuntime": {
-    "promptVersion": "dr-v2.20261116.486",
-    "sourceCommit": "2b3fafd2db1b02536ebe3a776b23c30796a0d581",
+    "promptVersion": "dr-v2.20261116.488",
+    "sourceCommit": "aff24567bbaae80171578e9825326b5ecd8c2377",
     "health": "ok",
-    "activeResearchRuns": 0,
-    "applicationRuns": 393,
+    "activeResearchRuns": 1,
+    "applicationRuns": 394,
     "historicalPaused": 15,
     "metadataInputWindow": 40000,
     "wholeRunBudgetUnchanged": true,
-    "loadProof": "deep-research-evidence/comparison-486-load-20261116.json",
+    "loadProof": "deep-research-evidence/comparison-488-load-20261116.json",
     "lastFullDevelopmentCase": "D3-VQ-FACTORIAL-v6",
     "lastFullCaseProof": "deep-research-evidence/vq-experiment-d3-v6-20261115.json",
     "latestComponent": "initialization-recipe-476",
     "latestComponentUnitValid": true,
     "latestComponentContentAccepted": false,
-    "applicationLedgerRowsBeforeCase": 9923
+    "applicationLedgerRowsBeforeCase": 9955
   },
   "workflowMetadataEditsDevelopment20261115": {
     "promptVersion": "dr-v2.20261115.465",
@@ -16546,11 +16546,11 @@
     "repairInstructionsContractVersion": 4,
     "relatedTests": 77,
     "replay": "deep-research-evidence/compact-repair-488-third-batch-replay-20261116.json",
-    "productionLoaded": false,
+    "productionLoaded": true,
     "newModelCalls": 0,
     "budgetChanged": false,
     "scientificContentAccepted": false,
-    "fullRegression": "pending rerun after 75 focused checks passed",
+    "fullRegression": "passed",
     "next": "Freeze integrated487+488 candidate, run complete baseline-preserving regression, then load once and run one complete comparison. Preserve all original quality and budget gates.",
     "failedFullRegression": "deep-research-evidence/integrated-repair-488-20261116.json",
     "nodePrefixCorrection": {
@@ -16558,6 +16558,13 @@
       "junit": "tmp/integrated-repair-488-node-prefix-20261116.xml",
       "productionLoaded": false,
       "newModelCalls": 0
+    },
+    "loadProof": "deep-research-evidence/comparison-488-load-20261116.json",
+    "realCase": {
+      "id": "D2-VQ-v1-v6",
+      "runId": "dr_run_1c4ba690e465563883a339ec0f50b867",
+      "status": "running",
+      "automaticRetry": false
     }
   }
 }
