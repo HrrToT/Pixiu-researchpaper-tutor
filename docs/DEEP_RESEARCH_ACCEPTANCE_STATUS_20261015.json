@@ -3,20 +3,20 @@
   "objective": "Complete DR0-DR5 in DEEP_RESEARCH_DESIGN_20261012.md without redefining success around implemented subsets.",
   "overall": "incomplete",
   "currentFullOfflineRegression": {
-    "sourceCommit": "43e4c2515aa38e8e4e54941e26821ea929d8e401",
+    "sourceCommit": "2b3fafd2db1b02536ebe3a776b23c30796a0d581",
     "modules": 472,
     "failures": 0,
     "errors": 0,
     "skipped": 0,
     "sourceUnchanged": true,
-    "baselineCases": 8941,
-    "retainedBaselineCases": 8941,
+    "baselineCases": 8968,
+    "retainedBaselineCases": 8968,
     "missingBaselineCases": [],
-    "elapsedSeconds": 575.86,
-    "passed": 8968,
-    "appliesToCurrentPythonSource": false,
+    "elapsedSeconds": 538.23,
+    "passed": 8972,
+    "appliesToCurrentPythonSource": true,
     "matchesLoadedRuntime": true,
-    "proof": "deep-research-evidence/comparison-pipeline-485-20261116.json",
+    "proof": "deep-research-evidence/unified-advice-repair-486-20261116.json",
     "boundary": "Complete current offline research regression only; not real generation, Provider cost/quality, independent scientific acceptance or full product release."
   },
   "postFullRegressionValidation": {
@@ -15466,21 +15466,22 @@
     "explicitEditsImplemented": false
   },
   "currentRuntime": {
-    "promptVersion": "dr-v2.20261116.476",
-    "sourceCommit": "6371880656e1f8a4d579b61d203eec98af66b542",
+    "promptVersion": "dr-v2.20261116.486",
+    "sourceCommit": "2b3fafd2db1b02536ebe3a776b23c30796a0d581",
     "health": "ok",
-    "activeResearchRuns": 0,
-    "applicationRuns": 391,
+    "activeResearchRuns": 1,
+    "applicationRuns": 393,
     "applicationLedgerRows": 9872,
     "historicalPaused": 15,
     "metadataInputWindow": 40000,
     "wholeRunBudgetUnchanged": true,
-    "loadProof": "deep-research-evidence/initialization-recipe-476-load-20261116.json",
+    "loadProof": "deep-research-evidence/comparison-486-load-20261116.json",
     "lastFullDevelopmentCase": "D3-VQ-FACTORIAL-v6",
     "lastFullCaseProof": "deep-research-evidence/vq-experiment-d3-v6-20261115.json",
     "latestComponent": "initialization-recipe-476",
     "latestComponentUnitValid": true,
-    "latestComponentContentAccepted": false
+    "latestComponentContentAccepted": false,
+    "applicationLedgerRowsBeforeCase": 9923
   },
   "workflowMetadataEditsDevelopment20261115": {
     "promptVersion": "dr-v2.20261115.465",
@@ -16516,8 +16517,16 @@
     "promptVersion": "dr-v2.20261116.486",
     "relatedTests": 69,
     "proof": "deep-research-evidence/comparison-486-unified-advice-replay-20261116.json",
-    "productionLoaded": false,
+    "productionLoaded": true,
     "scientificContentAccepted": false,
-    "fullRegression": "pending"
+    "fullRegression": "passed",
+    "fullRegressionTests": 8972,
+    "loadProof": "deep-research-evidence/comparison-486-load-20261116.json",
+    "realCase": {
+      "id": "D2-VQ-v1-v5",
+      "runId": "dr_run_bc2ac2e6a13056b5bfa658b0f0c431ed",
+      "status": "running",
+      "automaticRetry": false
+    }
   }
 }
