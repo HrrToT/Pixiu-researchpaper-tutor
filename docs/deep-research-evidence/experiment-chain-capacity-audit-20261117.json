@@ -1,0 +1,76 @@
+{
+  "scope": "Archived D3 call floor and reviewed initializer input decomposition; no generation or feasibility certification",
+  "inputArtifacts": {
+    "run": {
+      "path": "tmp\\dr-acceptance-receipts\\D3-VQ-FACTORIAL-v6.payload.json",
+      "sha256": "6e39c9f26c8bd49c6de0274820d00b59b63060060179509bb925c1e0199b16a1"
+    },
+    "calls": {
+      "path": "tmp\\dr-acceptance-receipts\\D3-VQ-FACTORIAL-v6.calls.json",
+      "sha256": "d09a442459e09b475381f0192e819b7ca1978bb886ce861639e9afcab400b938"
+    },
+    "reviewedRequest": {
+      "path": "tmp\\initialization-readable-483-public-review-20261116\\reviewed-request.json",
+      "sha256": "ed4e233eeb13dca7da14c685d0afc39a40e38519b23b309cb9c832743a98b7cc"
+    },
+    "workflowImplementation": {
+      "path": "ai-service-python\\services\\deep_research\\workflow_units.py",
+      "sha256": "fe47e1b371d670666a2c8e2944871890527afccc4776f684363b38b056bc6652"
+    }
+  },
+  "runId": "dr_run_9d527112ded35be5892794bd6e643e74",
+  "archivedError": "workflow_blueprint_input_capacity",
+  "metadata": {
+    "components": 6,
+    "phases": 29,
+    "baselineMode": "train"
+  },
+  "callFloor": {
+    "maximum": 18,
+    "spentIncludingReservePool": 7,
+    "remaining": 11,
+    "remainingInitializerRequests": 7,
+    "afterWorkflow": {
+      "publicGeneration": 1,
+      "scientificReviewFloor": 1,
+      "wholeAnswerAuditFloor": 1
+    },
+    "minimumAdditionalCalls": 10,
+    "optimisticSpareCalls": 1,
+    "repairAndRecheckFloor": 2,
+    "fitsFloorWithOneRepairAndRecheck": false,
+    "sharedRepresentationExtraCallIncluded": false,
+    "tokensAndTimeFitEstablished": false
+  },
+  "reviewedInitializerInput": {
+    "promptBytes": 26795,
+    "transportOverheadBytes": 5176,
+    "inputBytes": 31971,
+    "limitBytes": 32000,
+    "headroomBytes": 29,
+    "maxOutputTokens": 6144,
+    "decodedInputFieldBytes": {
+      "authoritativeInput": 29734,
+      "unitContext": 3623
+    },
+    "decodedAuthoritativeFieldBytes": {
+      "question": 756,
+      "unverifiedScientificPlan": 4305,
+      "requirements": 3682,
+      "sources": 463,
+      "evidence": 20436,
+      "tables": 2
+    },
+    "measurementBoundary": "Decoded field sizes do not add to packed wire size; no content was dropped or rewritten."
+  },
+  "findings": [
+    "The best-case call floor fits, but does not leave the two-call repair-and-recheck floor.",
+    "The reviewed baseline input fits with little headroom; later component inputs and output completion remain unproved.",
+    "A missing initializer cannot be fabricated for downstream capacity simulation.",
+    "A complete experiment must preserve intervention, initial state provenance, update schedule, budget, measurement and paired effects."
+  ],
+  "modelCalls": 0,
+  "applicationWrites": 0,
+  "scientificCredit": 0,
+  "originalArtifactsUnchanged": true
+}

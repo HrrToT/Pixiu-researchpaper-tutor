@@ -16957,5 +16957,19 @@
       "modelCalls": 0
     },
     "next": "Provider funding required before any further real generation; keep all prior failed/unknown attempts unchanged."
+  },
+  "experimentChainStructuralAudit20261117": {
+    "status": "offline_diagnosis_complete_replacement_not_implemented",
+    "proof": "deep-research-evidence/experiment-chain-capacity-audit-20261117.json",
+    "design": "DEEP_RESEARCH_EXPERIMENT_CHAIN_REFACTOR_20261117.md",
+    "remainingCalls": 11,
+    "minimumAdditionalCalls": 10,
+    "repairAndRecheckFloor": 2,
+    "initializerInputBytes": 31971,
+    "initializerHeadroomBytes": 29,
+    "modelCalls": 0,
+    "applicationWrites": 0,
+    "scientificCredit": 0,
+    "next": "Implement versioned shared experiment artifact and equivalent scientific checks; avoid further codec-only initialization iterations."
   }
 }
