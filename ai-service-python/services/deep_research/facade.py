@@ -340,6 +340,7 @@ class ResearchFacade:
             "workflowInitializationReasoningContractVersion": 1,
             "workflowInitializationReadableInputContractVersion": 1,
             "workflowInitializationObservationContractVersion": 1,
+            "workflowRepresentationContractVersion": 0,
             "experimentRepairPriorityContractVersion": 2,
             "experimentExecutionGuidanceContractVersion": 2,
             # New experiments separate a small persisted scientific plan from

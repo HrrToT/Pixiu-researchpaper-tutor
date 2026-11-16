@@ -6,7 +6,7 @@ API_KEY = '_deepseek_api'
 def payload(messages, options, *, model, temperature):
     from llm.response_observation import OPTION as OBSERVATION_OPTION
     allowed={API_KEY,'response_format','thinking','reasoning_effort','max_tokens',
-        'temperature','timeout_seconds','_workflow_init_target','_workflow_metadata_edits','_workflow_revision_source_refs','_workflow_fit_edits',OBSERVATION_OPTION}
+        'temperature','timeout_seconds','_workflow_init_target','_workflow_representation_target','_workflow_metadata_edits','_workflow_revision_source_refs','_workflow_fit_edits',OBSERVATION_OPTION}
     if OBSERVATION_OPTION in options and options[OBSERVATION_OPTION] is not True:
         raise ValueError('Invalid HTTP observation option')
     if set(options)-allowed or options.get(API_KEY)!='responses':
@@ -18,8 +18,20 @@ def payload(messages, options, *, model, temperature):
         raise ValueError('Invalid Responses schema format')
     if '_workflow_init_target' in options:
         target = options['_workflow_init_target']
-        if target not in ('baseline', 'component') or fmt['name'] not in ('workflow_init_v2_' + target,'workflow_init_v2_state_' + target,'workflow_init_v3_recipe_' + target,'workflow_init_v4_semantics_' + target):
+        if target not in ('baseline', 'component'):
             raise ValueError('Invalid initialization target binding')
+        names = ('workflow_init_v2_' + target,'workflow_init_v2_state_' + target,'workflow_init_v3_recipe_' + target,'workflow_init_v4_semantics_' + target)
+        if '_workflow_representation_target' in options:
+            names += ('workflow_init_representation_v1_' + target,)
+        if target not in ('baseline', 'component') or fmt['name'] not in names:
+            raise ValueError('Invalid initialization target binding')
+    if '_workflow_representation_target' in options:
+        declared = options['_workflow_representation_target']
+        kind = 'baseline' if declared == 'baseline' else 'component'
+        if (not isinstance(declared,str) or not declared.strip() or len(declared)>128
+                or options.get('_workflow_init_target') != kind
+                or fmt['name'] != 'workflow_init_representation_v1_' + kind):
+            raise ValueError('Invalid shared representation binding')
     if '_workflow_metadata_edits' in options:
         if options['_workflow_metadata_edits'] is not True or fmt['name'] != 'metadata_explicit_read_edits_v1':
             raise ValueError('Invalid metadata edit binding')

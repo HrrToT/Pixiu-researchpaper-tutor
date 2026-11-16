@@ -203,6 +203,16 @@ def unit_prompt(source_data, *, node, context, version=6, metadata_rows=False, m
 
 
 def prepare_units(record, *, prompt, aliases, invoke, parse, checkpoint):
+    from services.deep_research import workflow_representation_stage as representation
+    shared_representation = representation.enabled(record)
+    if shared_representation:
+        # The tracked invoker reads the fresh repository record. Keep request
+        # preparation's local copy in sync with the same durable checkpoint.
+        record = deepcopy(record)
+        persist = checkpoint
+        def checkpoint(value):
+            persist(deepcopy(value))
+            record.setdefault('state', {})['executionWorkflowBlueprint'] = deepcopy(value)
     from services.deep_research.experiment_planning import request_identity, remaining_seconds
     from services.deep_research.planning_transport import overhead_bytes, dispatch_options
     from services.deep_research.execution_workflow_blueprint import errors
@@ -213,6 +223,7 @@ def prepare_units(record, *, prompt, aliases, invoke, parse, checkpoint):
     version=record['executionWorkflowContractVersion']
     if type(version) is not int or version not in (6,7):raise ValueError('Unsupported workflow unit version')
     parent_request = {'prompt': prompt, 'unitContract': version}
+    if shared_representation:parent_request['representationContract'] = 1
     from services.deep_research.workflow_metadata_rows import enabled as rows_enabled, decode as decode_rows
     rows_mode = rows_enabled(record)
     if rows_mode:parent_request['metadataRowsContract'] = record['workflowMetadataRowsContractVersion']
@@ -271,6 +282,8 @@ def prepare_units(record, *, prompt, aliases, invoke, parse, checkpoint):
     if 'initializationRepair' in saved and (not initialization_repair_mode
             or not isinstance(saved['initializationRepair'], dict)):
         raise DeepResearchError('invalid_workflow_blueprint_state', '初始化修正记录不属于当前契约。')
+    if 'representation' in saved and not shared_representation:
+        raise DeepResearchError('invalid_workflow_blueprint_state', '旧工作流不得包含共享变量声明。')
     visited = set()
     completed_values = {}
     def stage(key, node, context, *, earlier=(), baseline=False, target=None):
@@ -356,9 +369,14 @@ def prepare_units(record, *, prompt, aliases, invoke, parse, checkpoint):
                     body = INPUT_POLICY + body
             from services.deep_research.workflow_metadata_envelope import enabled as envelope_enabled, GUIDANCE
             if node==META and envelope_enabled(record):body=GUIDANCE+body
+            if shared_representation and node == INIT:
+                declared_target = 'baseline' if baseline else target['componentId']
+                body = representation.guidance(record, declared_target) + body
             return body
         body = render_unit_body(source_data, context)
         options = {'temperature': 0.0}
+        if shared_representation and node == INIT:
+            options[representation.OPTION] = 'baseline' if baseline else target['componentId']
         use_init_wire = node == INIT and init_wire_enabled(record)
         if use_init_wire:
             from services.deep_research.workflow_initialization_wire import bind_prompt, TARGET_OPTION
@@ -456,6 +474,9 @@ def prepare_units(record, *, prompt, aliases, invoke, parse, checkpoint):
                 version=version,metadata=context.get('metadata'),target=target,metadata_rows=use_rows,
                 structured_initialization=structured_initialization and node==INIT,
                 semantic_initialization=semantic_initialization and node==INIT)
+            if shared_representation and node == INIT and isinstance(value, dict):
+                problems += [e['code'] for e in representation.initialization_issues(record,
+                    'baseline' if baseline else target['componentId'], value.get('initialization'))]
             if use_init_wire and (len(unit['response'].get('rawContent', unit['response'].get('content', '')).encode('utf8')) > MAX_VALUE
                                   or len(packed(value).encode('utf8')) > MAX_VALUE):
                 problems.append('unit.output_capacity')
@@ -528,7 +549,19 @@ def prepare_units(record, *, prompt, aliases, invoke, parse, checkpoint):
         raise DeepResearchError('invalid_workflow_blueprint_state', '工作流包含计划之外的单元。')
     if 'initializationRepair' in saved and saved['initializationRepair'].get('unitKey') not in expected - {'metadata'}:
         raise DeepResearchError('invalid_workflow_blueprint_state', '初始化修正单元不属于当前计划。')
+    if shared_representation:
+        consumed = saved['status'] == 'ready' or any(k == 'baseline' or k.startswith('component:') for k in saved['units'])
+        if consumed and (not isinstance(saved.get('representation'), dict)
+                         or saved['representation'].get('status') != 'ready'):
+            raise DeepResearchError('invalid_workflow_blueprint_state', '已使用的共享变量声明缺失或未就绪，不能重发。')
+        def save_representation(value):
+            saved['representation'] = deepcopy(value)
+            checkpoint(deepcopy(saved))
+        shared = representation.prepare(record, source_data=source_data, metadata=meta, aliases=aliases,
+            existing=saved.get('representation'), invoke=invoke, checkpoint=save_representation)
+        if shared is None:return None
     results = [meta]; baseline = None; components = []
+    if shared_representation:results.append(shared['value'])
     if meta['baselineMode'] == 'train':
         unit = stage('baseline', INIT, {'target': 'baseline', 'metadata': meta, 'earlier': []}, baseline=True)
         if unit is None: return None

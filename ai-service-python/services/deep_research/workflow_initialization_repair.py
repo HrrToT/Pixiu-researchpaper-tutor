@@ -94,9 +94,16 @@ def prepare(record, *, key, source_data, context, failed, aliases, earlier, base
         raise DeepResearchError('invalid_workflow_blueprint_state', '初始化修正记录无效。')
     if existing is not None and existing.get('unitKey') != key:
         raise DeepResearchError('invalid_workflow_unit_response', '初始化修正机会已用于另一个单元。')
-    original_errors = sorted(unit_errors(value, aliases, node=INIT, earlier=earlier, baseline=baseline,
+    from services.deep_research import workflow_representation_stage as representation
+    shared_representation = representation.enabled(record)
+    declared_target = 'baseline' if baseline else target['componentId'] if shared_representation else None
+    original_errors = unit_errors(value, aliases, node=INIT, earlier=earlier, baseline=baseline,
                                         version=7, metadata=context.get('metadata'), target=target,
-                                        structured_initialization=structured,semantic_initialization=semantic_initialization))
+                                        structured_initialization=structured,semantic_initialization=semantic_initialization)
+    if shared_representation:
+        original_errors += [e['code'] for e in representation.initialization_issues(
+            record, declared_target, value.get('initialization'))]
+    original_errors = sorted(original_errors)
     if not original_errors or original_errors != sorted(failed['errors']):
         raise DeepResearchError('invalid_workflow_blueprint_state', '初始化原检查记录已改变。')
     from services.deep_research.workflow_initialization_context import enabled as scoped_enabled, project
@@ -112,6 +119,9 @@ def prepare(record, *, key, source_data, context, failed, aliases, earlier, base
     invalid_value = value
     diagnostics = feedback(value, failed['errors'])
     options = {'temperature': 0.0}
+    if shared_representation:
+        options[representation.OPTION] = declared_target
+        prefix = representation.guidance(record, declared_target) + prefix
     if version == 2:
         from services.deep_research.workflow_initialization_wire import bind_prompt, field_feedback, TARGET_OPTION
         if numeric_initialization:
@@ -124,6 +134,8 @@ def prepare(record, *, key, source_data, context, failed, aliases, earlier, base
             diagnostics['issues'] += recipe_issues(value['initialization'])
         if semantic_initialization:
             diagnostics['issues'] += semantics_issues(value['initialization'])
+        if shared_representation:
+            diagnostics['issues'] += representation.initialization_issues(record, declared_target, value['initialization'])
         options[TARGET_OPTION] = bound_target
     body = prefix + ('Correct this ONE initialization using ALL supplied input and diagnostics. '
                      'Keep required state, source evidence and unresolved prerequisites. '
@@ -178,6 +190,9 @@ def prepare(record, *, key, source_data, context, failed, aliases, earlier, base
         problems = unit_errors(revised, aliases, node=INIT, earlier=earlier, baseline=baseline,
                                version=7, metadata=context.get('metadata'), target=target,
                                structured_initialization=structured,semantic_initialization=semantic_initialization)
+        if shared_representation:
+            problems += [e['code'] for e in representation.initialization_issues(
+                record, declared_target, revised.get('initialization'))]
         if len(raw.encode('utf8')) > MAX_VALUE or len(packed(revised).encode('utf8')) > MAX_VALUE:
             problems.append('unit.output_capacity')
     except (TypeError, ValueError, RecursionError, OverflowError): revised = None; problems = ['unit.json']

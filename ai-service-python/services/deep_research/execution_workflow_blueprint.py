@@ -196,6 +196,11 @@ def prepare(record, *, prompt, aliases, invoke, parse, checkpoint):
 def instruction(saved):
     from services.deep_research.nested_tables import pack, unpack
     canonical = json.loads(json.dumps(saved['value'], sort_keys=True, ensure_ascii=False, allow_nan=False))
+    if saved.get('request', {}).get('representationContract') == 1:
+        from services.deep_research.workflow_representation import verify
+        shared = saved.get('representation', {})
+        canonical = {'workflow': canonical, 'sharedRepresentation': verify(
+            shared.get('frozen'), shared.get('metadata'), saved.get('aliases'))}
     wire = pack(canonical)
     legend = ('\nNested input tables only: {"@":[columns,rows]} expands to an object list; '
               '{"!":object} escapes a literal @/! object. Expand exactly before reading choices.\n')

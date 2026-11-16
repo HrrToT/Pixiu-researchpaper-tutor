@@ -1,6 +1,6 @@
 """Shared model-authored type declarations, before any state is initialized.
 
-Candidate foundation only: not activated in workflow_units. A declaration is
+Opt-in candidate (server default remains disabled). A declaration is
 not an allocated instance, an available input, or scientific approval. Existing
 lifecycle, initializer and scientific checks remain independently mandatory.
 """
@@ -21,8 +21,9 @@ def descriptor():
     def strings():
         return {'type': 'array', 'items': deepcopy(text), 'uniqueItems': True, 'maxItems': 128}
     provenance = {'origin': {'enum': ['paper', 'proposal']}, 'sourceRefs': strings()}
-    axis = obj({'state': deepcopy(text), 'entity': deepcopy(text),
-                'fields': {**strings(), 'minItems': 1}, 'axis': deepcopy(text)})
+    selection = {'entity': deepcopy(text), 'fields': {**strings(), 'minItems': 1}, 'axis': deepcopy(text)}
+    axis = {'anyOf': [obj({'state': deepcopy(text), **deepcopy(selection)}),
+                      obj({'phaseId': deepcopy(text), 'outputId': deepcopy(text), **deepcopy(selection)})]}
     state = obj({'name': deepcopy(text), 'dtype': deepcopy(text),
                  'shape': {'type': 'array', 'maxItems': 16, 'items': {'anyOf': [
                      {'type': 'integer', 'minimum': 1}, axis]}},
@@ -207,7 +208,8 @@ def initialization_issues(saved, metadata, aliases, target, initialization):
                 elif isinstance(actual, dict):
                     inp = inputs[actual['inputIndex']]
                     selected = selection(inp.get('selector')) if isinstance(inp, dict) else None
-                    same = (selected is not None and inp.get('state') == dimension['state']
+                    source_keys = ('state',) if 'state' in dimension else ('phaseId', 'outputId')
+                    same = (selected is not None and all(inp.get(k) == dimension[k] for k in source_keys)
                             and selected['entity'] == dimension['entity']
                             and selected['fields'] == dimension['fields']
                             and actual['axis'] < len(selected['axes'])

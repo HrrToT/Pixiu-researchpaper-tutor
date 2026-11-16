@@ -36,6 +36,7 @@ def descriptor():
 
 
 def descriptor_for(record, node, initialization_target='component', *, metadata_edits=False, revision_source_refs=None, fit_edits=False):
+    from services.deep_research import workflow_representation_stage as representation
     from services.deep_research import workflow_fit_edits as fits
     if type(fit_edits) is not bool: raise ValueError('Invalid fit edit mode')
     if fit_edits:
@@ -52,6 +53,9 @@ def descriptor_for(record, node, initialization_target='component', *, metadata_
     if metadata_edits:
         if node != EDIT_NODE or not edits_enabled(record): raise ValueError('Metadata edit mode is not enabled')
         return edits_descriptor()
+    if node == representation.NODE and representation.enabled(record):
+        from services.deep_research.workflow_representation import descriptor as shared_descriptor
+        return shared_descriptor()
     from services.deep_research.workflow_metadata_repair import enabled as repair_enabled, NODE as REPAIR_META
     if (node in ('plan_workflow_meta', REPAIR_META) and repair_enabled(record)
             and record['workflowMetadataRepairContractVersion'] == 34):
@@ -155,6 +159,12 @@ def descriptor_for(record, node, initialization_target='component', *, metadata_
 def options_for_record(record,node,options):
     """Own transport selection; caller/source options cannot inject an adapter."""
     if API_KEY in options:raise ValueError('Transport selection is server-owned')
+    from services.deep_research import workflow_representation_stage as representation
+    shared_init = node == 'plan_workflow_init' and representation.enabled(record)
+    if representation.OPTION in options and not shared_init:
+        raise ValueError('Shared representation binding is server-owned and initialization-only')
+    if shared_init and representation.OPTION not in options:
+        raise ValueError('Shared representation target must be bound before fingerprinting')
     from services.deep_research.workflow_initialization_observation import enabled as observation_enabled
     from llm.response_observation import OPTION as OBSERVATION_OPTION
     observe_headers=node=='plan_workflow_init' and observation_enabled(record)
@@ -162,6 +172,9 @@ def options_for_record(record,node,options):
         raise ValueError('HTTP observation is server-owned and initialization-only')
     if not enabled(record,node):return {**options,'response_format':{'type':'json_object'}}
     allowed={'response_format','thinking','reasoning_effort','max_tokens','temperature','timeout_seconds'}
+    if shared_init:
+        representation.bound(record, options[representation.OPTION])
+        allowed.add(representation.OPTION)
     if observe_headers:allowed.add(OBSERVATION_OPTION)
     from services.deep_research import workflow_fit_edits as fits
     if fits.OPTION in options:
@@ -186,6 +199,9 @@ def options_for_record(record,node,options):
     if set(options)-allowed:raise ValueError('Unsupported private planning options')
     from services.deep_research.workflow_transport import reasoning_options
     options=reasoning_options(record,node,options)
+    if node == representation.NODE and representation.enabled(record):
+        options = {**options, 'thinking': {'type': 'disabled'}, 'reasoning_effort': 'none',
+                   'max_tokens': 6144, 'timeout_seconds': 90}
     from services.deep_research.workflow_metadata_repair import enabled as metadata_revision_enabled
     if (node in ('plan_workflow_meta', 'repair_workflow_meta') and metadata_revision_enabled(record)
             and record['workflowMetadataRepairContractVersion'] in (4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33)):
@@ -202,6 +218,12 @@ def options_for_record(record,node,options):
     from services.deep_research.workflow_metadata_planning_output import options as planning_output_options
     options=planning_output_options(record,node,options)
     if observe_headers:options={**options,OBSERVATION_OPTION:True}
+    if shared_init:
+        expected_target = 'baseline' if options[representation.OPTION] == 'baseline' else 'component'
+        if options.get(TARGET_OPTION) != expected_target:
+            raise ValueError('Shared representation target kind mismatch')
+        return {**options, API_KEY: 'responses', 'response_format': representation.descriptor(
+            record, options[representation.OPTION])}
     return {**options,API_KEY:'responses','response_format':descriptor_for(
         record,node,options.get(TARGET_OPTION, 'component'),metadata_edits=options.get(EDIT_OPTION,False),
         revision_source_refs=options.get(sources.OPTION),fit_edits=options.get(fits.OPTION,False))}
@@ -221,6 +243,11 @@ def dispatch_options(record,node,options):
 
 def overhead_bytes(record,node,options=None):
     if not enabled(record,node):return 0
+    from services.deep_research import workflow_representation_stage as representation
+    if node == 'plan_workflow_init' and representation.enabled(record):
+        target = (options or {}).get(representation.OPTION)
+        return len(json.dumps({API_KEY:'responses','response_format':representation.descriptor(record,target)},
+            ensure_ascii=False,separators=(',',':'),allow_nan=False).encode('utf8'))
     from services.deep_research.workflow_initialization_context import enabled as scoped_init
     target=(options or {}).get('_workflow_init_target','component') if node=='plan_workflow_init' and scoped_init(record) else 'component'
     from services.deep_research.workflow_metadata_edits import OPTION

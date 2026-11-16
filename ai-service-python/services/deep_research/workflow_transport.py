@@ -3,6 +3,9 @@ from services.deep_research.experiment_workflow import STAGES
 
 
 def enabled(record, node):
+    from services.deep_research.workflow_representation_stage import enabled as shared, NODE
+    if node == NODE:
+        return shared(record)
     if node == 'repair_workflow_meta':
         from services.deep_research.workflow_metadata_repair import enabled as repair_enabled
         return repair_enabled(record)
