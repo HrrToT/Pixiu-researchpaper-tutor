@@ -1,0 +1,91 @@
+{
+  "asOf": "2026-11-16",
+  "case": "SHARED-REPRESENTATION-INPUTS-v2",
+  "sourceCommit": "c2ac34206d85af935fcbc476926a0d7d18b3dfba",
+  "isolatedDeclarationDiagnosticOnly": true,
+  "sourceCase": "D3-VQ-FACTORIAL-v6",
+  "publicPaperUrl": "https://arxiv.org/abs/2311.18159v1",
+  "pdfSha256": "834337574488b37f20793de624fe9598947f18fdf238444238de8320ec1b744b",
+  "requestDigest": "5519886b460e564130860fa359020017b133c862eecf079b995b3e7b82c6e458",
+  "inputBytes": 31183,
+  "originalEvidenceRows": 17,
+  "providerCalls": 1,
+  "attempt": 1,
+  "status": "succeeded",
+  "settled": true,
+  "finishReason": "stop",
+  "usage": {
+    "total_tokens": 12795,
+    "input_tokens": 9643,
+    "output_tokens": 3152
+  },
+  "nativeSchemaAccepted": true,
+  "declarationValid": false,
+  "unitErrors": [
+    {
+      "code": "representation.source_closure",
+      "path": "/sourceRefs"
+    },
+    {
+      "code": "representation.dimension_dependency",
+      "path": "/targets/0/states/0/shape/0"
+    },
+    {
+      "code": "representation.dimension_dependency",
+      "path": "/targets/1/states/0/shape/0"
+    },
+    {
+      "code": "representation.dimension_dependency",
+      "path": "/targets/2/states/0/shape/0"
+    },
+    {
+      "code": "representation.dimension_dependency",
+      "path": "/targets/3/states/0/shape/0"
+    },
+    {
+      "code": "representation.dimension_dependency",
+      "path": "/targets/4/states/0/shape/0"
+    },
+    {
+      "code": "representation.dimension_dependency",
+      "path": "/targets/5/states/0/shape/0"
+    },
+    {
+      "code": "representation.dimension_dependency",
+      "path": "/targets/6/states/0/shape/0"
+    }
+  ],
+  "missingRootAliases": [
+    "E2"
+  ],
+  "unusedRootAliases": [],
+  "targetCount": 7,
+  "statesPerTarget": {
+    "baseline": 1,
+    "shared_initialization": 1,
+    "gaussian_model": 1,
+    "sh_codebook": 1,
+    "scale_rotation_codebook": 1,
+    "sh_indices": 1,
+    "scale_rotation_indices": 1
+  },
+  "rawResponseBytes": 13625,
+  "reviewFindings": [
+    "All seven targets were represented by one aggregate variable each rather than explicit numeric variables.",
+    "All seven dynamic dimensions named the target itself and did not match a declared input edge.",
+    "Shared conventions mostly describe experiment factors and measurements, without a complete numeric renderer/parameter encoding.",
+    "Indices refer to codebooks without the original Gaussian-row input needed for their declared cardinality.",
+    "Author omissions and already proposed settings remain mixed in unresolved; this is not proof that the proposed experiment cannot choose settings."
+  ],
+  "automaticRetry": false,
+  "replayed483UnknownCall": false,
+  "applicationDataUnchanged": true,
+  "runtimeRestarted": false,
+  "productionEnabled": false,
+  "scientificContentCredit": 0,
+  "independentAcceptanceCredit": 0,
+  "wholeRunBudgetFeasibilityProven": false,
+  "rawResult": "tmp/shared-representation-inputs-v2-result-20261116/result.json",
+  "rawResultSha256": "cba271e19d9ca93cab69c5daabc7cf19e183315e54d1167d2bb5595b7fba760f",
+  "nextDirection": "Separate variable inventory, declared inputs and layout decisions in dependency order; investigate with bounded new evidence rather than assuming codec or prompt length caused the failure."
+}

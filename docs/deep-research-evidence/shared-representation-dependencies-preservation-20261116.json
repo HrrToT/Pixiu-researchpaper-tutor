@@ -1,0 +1,29 @@
+{
+  "asOf": "2026-11-16",
+  "tasks": 105,
+  "runs": 391,
+  "calls": 9872,
+  "paused": 15,
+  "active": 0,
+  "allTaskAndRunPayloadHashesUnchanged": true,
+  "allLedgerRowsUnchanged": true,
+  "runtimeRestarted": false,
+  "candidateEnabled": false,
+  "newApplicationModelCalls": 0,
+  "isolatedDeclarationModelCalls": 1,
+  "health": {
+    "status": "ok",
+    "checks": {
+      "grobid": {
+        "status": "ok",
+        "message": "GROBID is reachable."
+      },
+      "rag": {
+        "status": "ok",
+        "message": "RAG backend is ready."
+      }
+    },
+    "uptime_seconds": 44844.1
+  },
+  "baseline": "tmp/dr-acceptance-receipts/vq-experiment-d3-v6.after.json"
+}
