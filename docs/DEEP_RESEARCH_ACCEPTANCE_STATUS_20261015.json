@@ -3,21 +3,21 @@
   "objective": "Complete DR0-DR5 in DEEP_RESEARCH_DESIGN_20261012.md without redefining success around implemented subsets.",
   "overall": "incomplete",
   "currentFullOfflineRegression": {
-    "sourceCommit": "68bfc26e090158a8680f9072c9433e93e08d6acc",
-    "modules": 475,
+    "sourceCommit": "b3deff33b6c9e53f92c17deeac0dc83fe5e4daf4",
+    "modules": 476,
     "failures": 0,
     "errors": 0,
     "skipped": 0,
     "sourceUnchanged": true,
-    "baselineCases": 9024,
-    "retainedBaselineCases": 9024,
+    "baselineCases": 9026,
+    "retainedBaselineCases": 9026,
     "missingBaselineCases": [],
-    "elapsedSeconds": 500.95,
+    "elapsedSeconds": 613.61,
     "boundary": "Complete current offline research regression only; not real generation, Provider cost/quality, independent scientific acceptance or full product release.",
-    "passed": 9026,
-    "appliesToCurrentPythonSource": false,
+    "passed": 9049,
+    "appliesToCurrentPythonSource": true,
     "matchesLoadedRuntime": false,
-    "proof": "deep-research-evidence/comparison-missing-draft-full-native-20261116.json"
+    "proof": "deep-research-evidence/comparison-axes-page-batch-full-20261116.json"
   },
   "postFullRegressionValidation": {
     "scope": "PDF Form parser optimization only",
@@ -16652,7 +16652,14 @@
       "originalRunUnchanged": true
     },
     "productionLoaded": false,
-    "fullRegression": "pending coherent comparison scheduling/axis changes",
+    "fullRegression": {
+      "status": "passed",
+      "tests": 9049,
+      "modules": 476,
+      "sourceCommit": "b3deff33b6c9e53f92c17deeac0dc83fe5e4daf4",
+      "proof": "deep-research-evidence/comparison-axes-page-batch-full-20261116.json",
+      "scientificContentAccepted": false
+    },
     "scientificContentAccepted": false,
     "newModelCalls": 0
   },
@@ -16678,7 +16685,14 @@
     "newModelCalls": 0,
     "scientificContentAccepted": false,
     "productionLoaded": false,
-    "fullRegression": "pending coherent comparison intent and scheduling completion",
+    "fullRegression": {
+      "status": "passed",
+      "tests": 9049,
+      "modules": 476,
+      "sourceCommit": "b3deff33b6c9e53f92c17deeac0dc83fe5e4daf4",
+      "proof": "deep-research-evidence/comparison-axes-page-batch-full-20261116.json",
+      "scientificContentAccepted": false
+    },
     "next": "Typed fact-axis vs joint-judgement planning contract specified in DEEP_RESEARCH_COMPARISON_INTENT_20261116.md; not implemented. Current combined offline regression running with source frozen. D2-v8 unknown remains untouched."
   },
   "sourcePageBatch20261116": {
@@ -16695,9 +16709,13 @@
     "scientificContentAccepted": false,
     "productionLoaded": false,
     "fullRegression": {
-      "status": "running",
-      "runId": "comparison-axes-page-batch-full-20261116"
+      "status": "passed",
+      "tests": 9049,
+      "modules": 476,
+      "sourceCommit": "b3deff33b6c9e53f92c17deeac0dc83fe5e4daf4",
+      "proof": "deep-research-evidence/comparison-axes-page-batch-full-20261116.json",
+      "scientificContentAccepted": false
     },
-    "next": "Freeze coherent review-time, shared-axis, call-capacity and page-batch candidate for full regression. Keep v8 unknown unchanged; comparison content and joint judgement intent remain unaccepted."
+    "next": "Full offline candidate passed. Typed per-paper/joint/supporting comparison planning contract is specified but not implemented; preserve v8 unknown and all scientific gates. No runtime load or new model call in this stage."
   }
 }
