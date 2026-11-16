@@ -1,0 +1,70 @@
+{
+  "scope": "Saved unverified draft, size attribution only; no scientific approval",
+  "modelCalls": 0,
+  "runtimeWrites": 0,
+  "receiptUnchanged": true,
+  "instrumentationBypassedEarlyFixedAdmission": true,
+  "productionLimitChanged": false,
+  "variants": [
+    {
+      "variant": "saved_layout",
+      "decisionInputsSharedBytes": 9560,
+      "decisionFieldStandaloneBytes": {
+        "question": 424,
+        "requirements": 2637,
+        "claims": 6123,
+        "metadata": 1119
+      },
+      "bindingCatalogBytes": 1261,
+      "instructionTemplateBytes": 18774,
+      "fixedBytes": 25588,
+      "requiredContextBytes": 7721,
+      "minimumTotalBytes": 33309,
+      "actualLimitBytes": 24000,
+      "candidateEvidenceRows": 22,
+      "requiredEvidenceRows": 11,
+      "requiredEvidenceSerializedBytes": 7723,
+      "jointExactInputEncoding": {
+        "separateDataBytes": 23887,
+        "combinedDataBytes": 22261,
+        "savingsBytes": 1626,
+        "allValuesRoundTripEqual": true,
+        "estimatedTotalExcludingNewEnvelopeBytes": 31683
+      }
+    },
+    {
+      "variant": "hypothetical_compact_layout",
+      "decisionInputsSharedBytes": 9560,
+      "decisionFieldStandaloneBytes": {
+        "question": 424,
+        "requirements": 2637,
+        "claims": 6123,
+        "metadata": 1119
+      },
+      "bindingCatalogBytes": 1261,
+      "instructionTemplateBytes": 18774,
+      "fixedBytes": 23448,
+      "requiredContextBytes": 7721,
+      "minimumTotalBytes": 31169,
+      "actualLimitBytes": 24000,
+      "candidateEvidenceRows": 22,
+      "requiredEvidenceRows": 11,
+      "requiredEvidenceSerializedBytes": 7723,
+      "jointExactInputEncoding": {
+        "separateDataBytes": 21747,
+        "combinedDataBytes": 19445,
+        "savingsBytes": 2302,
+        "allValuesRoundTripEqual": true,
+        "estimatedTotalExcludingNewEnvelopeBytes": 28867
+      }
+    }
+  ],
+  "fixedLayoutSavingsBytes": 2140,
+  "compactOverflowBytes": 7169,
+  "sourceCommit": "3131d4037",
+  "raw": "tmp/comparison-audit-parts-expanded-20261116.json",
+  "boundary": "Hypothetical display-v3 wrapper on all nine old unverified drafts, NOT new role generation; early admission bypassed only for measurement, no fit or model executed.",
+  "next": "Keep current 24KB guard. Reduce duplicated scientific premises through typed planning, measure a representative whole candidate including required source context before any paid validation; do not claim layout compaction alone solves capacity.",
+  "jointEncodingConclusion": "Not implemented: estimated compact total still 28867 bytes before any new envelope, above 24000. Does not resolve whole-audit capacity; do not add this transport change solely for a passing local metric.",
+  "jointEncodingRaw": "tmp/comparison-audit-parts-joint-20261116.json"
+}
