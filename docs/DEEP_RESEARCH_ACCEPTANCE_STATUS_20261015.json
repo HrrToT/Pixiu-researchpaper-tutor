@@ -14,7 +14,7 @@
     "missingBaselineCases": [],
     "elapsedSeconds": 655.49,
     "passed": 8978,
-    "appliesToCurrentPythonSource": true,
+    "appliesToCurrentPythonSource": false,
     "matchesLoadedRuntime": true,
     "proof": "deep-research-evidence/integrated-repair-488-confirmed-20261116.json",
     "boundary": "Complete current offline research regression only; not real generation, Provider cost/quality, independent scientific acceptance or full product release."
@@ -16568,5 +16568,13 @@
       "outcome": "inconclusive",
       "proof": "deep-research-evidence/comparison-488-d2-v6-20261116.json"
     }
+  },
+  "comparisonCellFoundation20261116": {
+    "relatedTests": 41,
+    "proof": "deep-research-evidence/comparison-cells-foundation-20261116.json",
+    "productionEnabled": false,
+    "scientificContentAccepted": false,
+    "fullRegression": "pending integrated generation and publication changes",
+    "next": "Integrate cell protocol into actual generation, verification, publication and repair paths; distinguish factual dimensions and joint judgement goals, keep full-scope coverage and original resource budget. No real comparison quality credit."
   }
 }
