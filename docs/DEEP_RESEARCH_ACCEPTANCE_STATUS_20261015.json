@@ -3,21 +3,21 @@
   "objective": "Complete DR0-DR5 in DEEP_RESEARCH_DESIGN_20261012.md without redefining success around implemented subsets.",
   "overall": "incomplete",
   "currentFullOfflineRegression": {
-    "sourceCommit": "5d20e574dc9d8043214a0bf7bf4afaf0c6c6ff1f",
-    "modules": 478,
+    "sourceCommit": "1d41a4d57bd319a4724527365713d16f20b02108",
+    "modules": 480,
     "failures": 0,
     "errors": 0,
     "skipped": 0,
     "sourceUnchanged": true,
-    "baselineCases": 9071,
-    "retainedBaselineCases": 9071,
+    "baselineCases": 9087,
+    "retainedBaselineCases": 9087,
     "missingBaselineCases": [],
-    "elapsedSeconds": 455.64,
+    "elapsedSeconds": 440.38,
     "boundary": "Complete current offline research regression only; not real generation, Provider cost/quality, independent scientific acceptance or full product release.",
-    "passed": 9087,
-    "appliesToCurrentPythonSource": false,
+    "passed": 9124,
+    "appliesToCurrentPythonSource": true,
     "matchesLoadedRuntime": false,
-    "proof": "deep-research-evidence/comparison-compact-audit-full-20261116.json"
+    "proof": "deep-research-evidence/comparison-source-repair-full-20261117.json"
   },
   "postFullRegressionValidation": {
     "scope": "PDF Form parser optimization only",
@@ -16759,7 +16759,8 @@
     "newModelCalls": 0,
     "loadedRuntime": false,
     "scientificCredit": 0,
-    "next": "Resolve complete mechanism/cost evidence selection and bounded repair on saved inputs before another stable-candidate full suite or real retest."
+    "next": "Resolve complete mechanism/cost evidence selection and bounded repair on saved inputs before another stable-candidate full suite or real retest.",
+    "subsequentFullRegressionProof": "deep-research-evidence/comparison-source-repair-full-20261117.json"
   },
   "comparisonOperationInput20261117": {
     "status": "related_offline_and_saved_acquired_premises_passed_not_live_accepted",
@@ -16773,7 +16774,8 @@
     "newModelCalls": 0,
     "runtimeLoaded": false,
     "scientificCredit": 0,
-    "next": "Offline repair-input capacity and full content-input checks, then frozen full regression before any real retest."
+    "next": "Offline repair-input capacity and full content-input checks, then frozen full regression before any real retest.",
+    "subsequentFullRegressionProof": "deep-research-evidence/comparison-source-repair-full-20261117.json"
   },
   "comparisonRepairReleasedInput20261117": {
     "status": "related_offline_and_saved_prepare_passed_not_live_accepted",
@@ -16786,6 +16788,15 @@
     "newModelCalls": 0,
     "runtimeLoaded": false,
     "scientificCredit": 0,
-    "next": "Freeze combined candidate and full-regress before any eligible real retest; original failed run and all unknown records remain untouched."
+    "next": "Freeze combined candidate and full-regress before any eligible real retest; original failed run and all unknown records remain untouched.",
+    "subsequentFullRegressionProof": "deep-research-evidence/comparison-source-repair-full-20261117.json"
+  },
+  "comparisonRealRetestReadiness20261117": {
+    "ready": false,
+    "reason": "Offline consumer replay confirms exact table field correction alone still fails original Ours row-label display check; resolve with source-bound comparison column identity before another paid retest.",
+    "proof": "deep-research-evidence/comparison-own-row-label-diagnosis-20261117.json",
+    "newModelCalls": 0,
+    "scientificCredit": 0,
+    "next": "Fix table display identity with ownership/variant/source counterexamples, then current-candidate verification and eligible bounded real content test."
   }
 }
