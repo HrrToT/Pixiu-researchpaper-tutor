@@ -1441,13 +1441,20 @@ class ResearchFacade:
         from services.deep_research.source_revisions import enabled as revision_constraints_enabled,explicit_revisions
         revisions=(explicit_revisions(effective_question(record)) if revision_constraints_enabled(record)
             and record.get('sourcePolicy',{}).get('mode') in {'academic_external','external_only'} else {})
-        return lambda claims, evidence, semantic=None: verify_claims(
-            claims, evidence, semantic, absence_scope_version=version, quantity_spelling_version=spelling,
-            feedback_version=feedback,table_references_version=table_references,
-            review_context_version=context_version,
-            **({'complete_review_feedback':True} if type(record.get('completeReviewFeedbackContractVersion')) is int
-               and record['completeReviewFeedbackContractVersion']==1 else {}),
-            **({'requested_source_revisions':revisions} if revisions else {}))
+        def verify(claims,evidence,semantic=None):
+            context=None
+            if type(record.get('comparisonPlanningContractVersion')) is int and record['comparisonPlanningContractVersion']==2:
+                from services.deep_research.comparison_table_context import for_record
+                context=for_record(self._repo.require_run(run_id))
+            return verify_claims(
+                claims, evidence, semantic, absence_scope_version=version, quantity_spelling_version=spelling,
+                feedback_version=feedback,table_references_version=table_references,
+                review_context_version=context_version,
+                **({'complete_review_feedback':True} if type(record.get('completeReviewFeedbackContractVersion')) is int
+                   and record['completeReviewFeedbackContractVersion']==1 else {}),
+                **({'requested_source_revisions':revisions} if revisions else {}),
+                **({'comparison_context':context} if context is not None else {}))
+        return verify
     
     def _get_validate_plan(self) -> Callable[[list], list]:
         from services.deep_research.coverage import validate_plan

@@ -128,10 +128,16 @@ def _dataset_key(text, joiners):
     return _key(text)
 
 
-def validate_table_bindings(claim, evidence, *, translated_metrics=False, dataset_joiners=False):
+def validate_table_bindings(claim, evidence, *, translated_metrics=False, dataset_joiners=False,comparison_context=None):
     """Return a rejection reason; semantic checking still follows this gate."""
     if type(translated_metrics) is not bool:raise ValueError('Invalid metric translation policy')
     if type(dataset_joiners) is not bool:raise ValueError('Invalid dataset joiner policy')
+    if comparison_context is not None and not isinstance(comparison_context,dict):
+        raise ValueError('Invalid comparison display context')
+    author_headers={}
+    if comparison_context is not None:
+        from services.deep_research.comparison_table_context import author_headers as resolve_headers
+        author_headers=resolve_headers(claim,evidence,comparison_context)
     text = str(claim.get('text', ''))
     conditions = claim.get('conditions') or {}
     if isinstance(conditions, dict):
@@ -190,7 +196,8 @@ def validate_table_bindings(claim, evidence, *, translated_metrics=False, datase
         dataset_visible = all(any(re.search(r'(?<![a-z0-9])' + re.escape(_dataset_key(label, dataset_joiners)) + right_boundary, _dataset_key(text, dataset_joiners))
                                   for label in (part, dataset_label(part)))
                               for part in dataset.split(' / '))
-        if (not dataset_visible or not _method_visible(row[1], text)
+        author_column=(row[1].strip().casefold()=='ours' and source['evidenceId'] in author_headers)
+        if (not dataset_visible or not (_method_visible(row[1], text) or author_column)
                 or not _metric_visible(metric,text,translated_metrics) or _key(value) not in _key(text)):
             return 'table_condition_not_displayed'
         match = re.fullmatch(rf'({_VALUE})([A-Za-z]*)', value)

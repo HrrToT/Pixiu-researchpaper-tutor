@@ -16793,10 +16793,19 @@
   },
   "comparisonRealRetestReadiness20261117": {
     "ready": false,
-    "reason": "Offline consumer replay confirms exact table field correction alone still fails original Ours row-label display check; resolve with source-bound comparison column identity before another paid retest.",
+    "reason": "Author-column source/variant/numeric and semantic counterexamples passed; current integrated source still requires full regression and exact candidate runtime load.",
     "proof": "deep-research-evidence/comparison-own-row-label-diagnosis-20261117.json",
     "newModelCalls": 0,
     "scientificCredit": 0,
-    "next": "Fix table display identity with ownership/variant/source counterexamples, then current-candidate verification and eligible bounded real content test."
+    "next": "Complete frozen full regression before loading and one eligible real comparison."
+  },
+  "comparisonAuthorColumn20261117": {
+    "status": "related_offline_and_saved_consumer_passed_full_pending",
+    "proof": "deep-research-evidence/comparison-author-column-20261117.json",
+    "relatedTests": 628,
+    "contextTests": 30,
+    "newModelCalls": 0,
+    "scientificCredit": 0,
+    "next": "Freeze source for complete regression, then load exact candidate before eligible bounded real comparison."
   }
 }

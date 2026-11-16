@@ -71,13 +71,21 @@ def _condition_values_text(value):
     return str(value) if value is not None else ''
 
 
-def _table_display_diagnostic(claim, support):
+def _table_display_diagnostic(claim, support,comparison_context=None):
     from services.deep_research.table_bindings import bound_table_context
     required = []
     for cell in bound_table_context(claim, support):
         identity = {'group': cell['group'], 'method': cell['method']}
         if identity not in required:
             required.append(identity)
+    if comparison_context is not None:
+        from services.deep_research.comparison_table_context import author_headers
+        headers=author_headers(claim,support,comparison_context)
+        if headers:
+            return {'requiredTableDisplay':required,
+                'authorMethodColumn':next(iter(headers.values())),
+                'detail':'数据组、指标和数值仍需同条显示。原表普通Ours行可由已绑定的同论文列标题表示；'
+                    '其他方法、基线、星号和变体仍需保留其明确身份。列标题不是科学通过依据。'}
     return {'requiredTableDisplay': required,
         'detail': '保留表格数值时，同条正文或条件必须显示原表的数据组和方法身份。'
             '请核对requiredTableDisplay；保留星号、变体及分组层级，末尾参考文献序号可省略。'
@@ -86,7 +94,7 @@ def _table_display_diagnostic(claim, support):
 
 def precheck_claims(claims: list[dict], evidence: list[dict], *, absence_scope_version=0,
                     quantity_spelling_version=0, feedback_version=0, table_references_version=0,
-                    requested_source_revisions=None) -> dict:
+                    requested_source_revisions=None,comparison_context=None) -> dict:
     """Pure hard checks shared by publication and pre-classification edits.
 
     Candidates still require a separate semantic verdict; nothing is accepted
@@ -199,6 +207,8 @@ def precheck_claims(claims: list[dict], evidence: list[dict], *, absence_scope_v
                 unsupported_numbers = numbers - original_numbers
             from services.deep_research.table_bindings import validate_table_bindings
             table_options = {}
+            if comparison_context is not None:
+                table_options['comparison_context']=comparison_context
             if type(table_references_version) is int and table_references_version in (2,3,4):
                 table_options['translated_metrics'] = True
                 if table_references_version in (3,4):
@@ -281,7 +291,7 @@ def precheck_claims(claims: list[dict], evidence: list[dict], *, absence_scope_v
                     'detail': '本条引用原文未直接报告这些数值：' + '、'.join(number_display(n) for n in missing)
                         + '。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。'}
             elif reason == 'table_condition_not_displayed' and type(feedback_version) is int and feedback_version in (1, 2):
-                diagnostic = _table_display_diagnostic(claim, support)
+                diagnostic = _table_display_diagnostic(claim, support,comparison_context)
             elif reason == 'result_purpose_not_established':
                 diagnostic={'detail':'所引用的渲染剖析未建立主表结果的归属。区分算子剖析与主要比较；不得把剖析值改称主表值。'}
             elif reason == 'absence_not_established' and type(absence_scope_version) is int and absence_scope_version in (2,3,4,5,6,7,8):
@@ -300,7 +310,7 @@ def precheck_claims(claims: list[dict], evidence: list[dict], *, absence_scope_v
                     diagnostic.setdefault('additionalChecks',[]).append(reference_check)
             if concurrent_feedback and binding_reason and binding_reason != reason:
                 diagnostic.setdefault('additionalChecks',[]).append({'reason': binding_reason,
-                    **(_table_display_diagnostic(claim, support) if binding_reason == 'table_condition_not_displayed' else {})})
+                    **(_table_display_diagnostic(claim, support,comparison_context) if binding_reason == 'table_condition_not_displayed' else {})})
             rejected.append({"claimId": claim_id, "reason": reason, **diagnostic})
         else:
             candidates.append(dict(claim))
@@ -311,7 +321,7 @@ def verify_claims(claims: list[dict], evidence: list[dict],
                   semantic_check: Callable[[list[dict], list[dict]], list[dict]] | None = None,
                   *, absence_scope_version=0, quantity_spelling_version=0, feedback_version=0,
                   table_references_version=0, review_context_version=0, requested_source_revisions=None,
-                  complete_review_feedback=False) -> dict:
+                  complete_review_feedback=False,comparison_context=None) -> dict:
     """Publish only after hard checks and an independent semantic verdict.
 
     Missing, malformed or duplicate model verdicts fail closed. A proposal or
@@ -321,7 +331,8 @@ def verify_claims(claims: list[dict], evidence: list[dict],
         raise ValueError('Invalid complete review feedback policy')
     checked = precheck_claims(claims, evidence, absence_scope_version=absence_scope_version,
         quantity_spelling_version=quantity_spelling_version, feedback_version=feedback_version,
-        table_references_version=table_references_version, requested_source_revisions=requested_source_revisions)
+        table_references_version=table_references_version, requested_source_revisions=requested_source_revisions,
+        **({'comparison_context':comparison_context} if comparison_context is not None else {}))
     candidates, rejected = checked['candidates'], checked['rejected']
     proposals = {"suggestion", "proposal", "hypothesis"}
     # Suggestions are not established facts, but still need a logic/identity check.
