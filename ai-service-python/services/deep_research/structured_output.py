@@ -154,6 +154,9 @@ def messages(node, prompt, version=2, *, prospective=False):
 
 def messages_for_record(record, node, prompt):
     """Use the same frozen run policy for reservation, planning and actual wire."""
+    from services.deep_research.comparison_audit_envelope import enabled as comparison_envelope, POLICY
+    if comparison_envelope(record, node):
+        return [{'role':'system','content':POLICY},{'role':'user','content':prompt}]
     from services.deep_research.compaction_editor import enabled as editor_enabled,messages as editor_messages
     if editor_enabled(record,node) and enabled(record) and record['structuredOutputContractVersion']>=2:
         return editor_messages(prompt,version=record['compactionEditorContractVersion'])
@@ -174,7 +177,9 @@ def messages_for_record(record, node, prompt):
         prospective=kind=='experiment_design'),prospective=kind=='experiment_design')
 
 
-def normalize(node, response, *, factual_singleton=False,initial_plan_response=False,factual_diagnostics=False,factual_ownership=False,factual_reason_parts=False,factual_source_fields=False):
+def normalize(node, response, *, factual_singleton=False,initial_plan_response=False,factual_diagnostics=False,factual_ownership=False,factual_reason_parts=False,factual_source_fields=False,comparison_audit_envelope=False):
+    if type(comparison_audit_envelope) is not bool or comparison_audit_envelope and node!='verify_answer_coverage':
+        raise ValueError('Invalid comparison audit transport policy')
     if type(factual_singleton) is not bool:raise ValueError('Invalid factual response envelope policy')
     if type(factual_reason_parts) is not bool or factual_reason_parts and not (factual_singleton and factual_diagnostics):raise ValueError('Reason parts require factual diagnostics')
     if type(factual_source_fields) is not bool or factual_source_fields and not factual_reason_parts:raise ValueError('Source fields require reason parts')
@@ -185,7 +190,7 @@ def normalize(node, response, *, factual_singleton=False,initial_plan_response=F
         raise ValueError('Invalid initial planning response policy')
     raw = response.get('content', '')
     output = {**response, 'rawContent': raw, 'structuredOutput': {'version': 1,
-              'requestedFormat': 'json_object', 'expectedShape': 'items' if node in ARRAY_NODES else 'object'}}
+              'requestedFormat': 'json_object', 'expectedShape': 'comparison_audit_v1' if comparison_audit_envelope else 'items' if node in ARRAY_NODES else 'object'}}
     if response.get('finishReason')=='responses_failed':
         output['content']='null'
         output['structuredOutput']['receivedShape']='provider_failed'
@@ -230,7 +235,16 @@ def normalize(node, response, *, factual_singleton=False,initial_plan_response=F
             pending.extend((child, depth + 1) for child in value.values())
         elif isinstance(value, list):
             pending.extend((child, depth + 1) for child in value)
-    if node in ARRAY_NODES:
+    if comparison_audit_envelope:
+        from services.deep_research.comparison_audit_envelope import decode
+        try:
+            rows=decode(parsed)
+        except ValueError:
+            output['content']='null';output['structuredOutput']['receivedShape']='invalid_wrapper'
+        else:
+            output['content']=json.dumps(rows,ensure_ascii=False,separators=(',',':'),allow_nan=False)
+            output['structuredOutput']['receivedShape']='comparison_audit_v1'
+    elif node in ARRAY_NODES:
         if isinstance(parsed, dict) and set(parsed) == {'items'} and isinstance(parsed['items'], list):
             output['content'] = json.dumps(parsed['items'], ensure_ascii=False, separators=(',', ':'), allow_nan=False)
             output['structuredOutput']['receivedShape'] = 'items'

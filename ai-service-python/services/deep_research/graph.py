@@ -2024,6 +2024,9 @@ def make_verify_node(
         from services.deep_research.comparison_presentation import metadata as comparison_metadata
         comparison_audit_args = ({'comparison_cells': comparison_metadata(saved['comparisonCellDraft'])}
                                  if cell_enabled(record) and saved.get('comparisonCellDraft') is not None else {})
+        from services.deep_research.comparison_audit_envelope import enabled as comparison_envelope
+        if comparison_envelope(record) and comparison_audit_args:
+            comparison_audit_args['comparison_audit_envelope']=True
         def verify_comparison_claims(targets, supporting_evidence, semantic):
             from services.deep_research.comparison_generation import enabled as cell_enabled
             if not cell_enabled(record):

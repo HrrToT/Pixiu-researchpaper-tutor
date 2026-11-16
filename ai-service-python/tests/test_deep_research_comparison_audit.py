@@ -51,6 +51,9 @@ def audit(mutation=None, evidence=None, wire_mode=None):
               'bindings':[{'claimId':'a','field':'text'}], 'reason':'Fixture joint contradiction.'}]})
         if wire_mode is not None:
             from services.deep_research.structured_output import normalize
+            if wire_mode=='object_v1':
+                assert 'Use these coherence fields at root (NEVER inside items)' in prompt
+                return normalize(node,{'content':json.dumps({'items':rows[:-1],**rows[-1]})},comparison_audit_envelope=True)
             assert 'Return ONLY {"items":[ROWS]}' in prompt and 'INSIDE items (NEVER at root)' in prompt
             data={'items':rows} if wire_mode=='valid' else {'items':rows[:-1],**rows[-1]}
             return normalize(node,{'content':json.dumps(data)})
@@ -60,7 +63,8 @@ def audit(mutation=None, evidence=None, wire_mode=None):
         request_contract=5, diagnostics=True,literal_dimensions=True, coherence=True,
         task_sources=True,request_semantics=2,binding_catalog=True,scoped_catalog=True,
         shared_decision_inputs=True,shared_evidence_context=True,consolidated_instructions=True,
-        literal_limits=True,comparison_cells=presentation())
+        literal_limits=True,comparison_cells=presentation(),
+        **({'comparison_audit_envelope':True} if wire_mode=='object_v1' else {}))
     assert before == (PLAN, CLAIMS, evidence)
     return result, sent
 
@@ -110,6 +114,15 @@ def test_actual_native_envelope_accepts_only_coherence_inside_items(mode):
     assert len(sent)==1
     if mode=='valid':assert result['status']=='checked' and not result['gaps']
     else:assert result['status']=='invalid_response' and result['gaps']
+
+
+@pytest.mark.parametrize('mutation',[None,'foreign','metadata','drop','extra','waive','partial','incoherent','limit'])
+def test_object_envelope_keeps_all_existing_content_checks(mutation):
+    result,sent=audit(mutation,wire_mode='object_v1')
+    assert len(sent)==1
+    if mutation is None:assert result['status']=='checked' and not result['gaps']
+    else:assert result['gaps']
+    if mutation=='incoherent':assert result['answerCoherence']['coherent'] is False
 
 
 @pytest.mark.parametrize('version',[1,2])

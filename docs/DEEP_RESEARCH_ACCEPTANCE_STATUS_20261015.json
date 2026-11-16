@@ -15,7 +15,7 @@
     "elapsedSeconds": 452.08,
     "boundary": "Complete current offline research regression only; not real generation, Provider cost/quality, independent scientific acceptance or full product release.",
     "passed": 9154,
-    "appliesToCurrentPythonSource": true,
+    "appliesToCurrentPythonSource": false,
     "matchesLoadedRuntime": false,
     "proof": "deep-research-evidence/comparison-author-column-full-20261117.json"
   },
@@ -16793,11 +16793,11 @@
   },
   "comparisonRealRetestReadiness20261117": {
     "ready": false,
-    "reason": "Attempt2 completed inconclusive: acquisition consumed review time, one numerical point lacked cited support, coverage envelope invalid again. Structural saved-path diagnosis before any further paid trial.",
+    "reason": "New audit transport has related tests and archived-response replay only; acquisition latency and numerical-example scope remain unresolved. No third live prompt-only trial.",
     "proof": "deep-research-evidence/comparison-own-row-label-diagnosis-20261117.json",
     "newModelCalls": 0,
     "scientificCredit": 0,
-    "next": "No third prompt-only trial. Profile exact saved acquisition/extraction path; resolve coverage envelope at protocol layer; enforce numerical-example ownership and question-scoped output cardinality without deleting requirements."
+    "next": "Add bounded failure/timing diagnosis for actual source access; resolve question-scoped numerical example ownership; freeze candidate/full-regress before any further real test."
   },
   "comparisonAuthorColumn20261117": {
     "status": "full_offline_and_saved_consumer_passed_not_live_accepted",
@@ -16822,5 +16822,19 @@
     "defaultRuntimeRestored": true,
     "next": "No third prompt-only trial. Profile exact saved acquisition/extraction path; resolve coverage envelope at protocol layer; enforce numerical-example ownership and question-scoped output cardinality without deleting requirements.",
     "proof": "deep-research-evidence/comparison-baseline-second-20261117.json"
+  },
+  "comparisonAuditEnvelope20261117": {
+    "status": "related_offline_and_saved_response_passed_full_pending",
+    "proof": "deep-research-evidence/comparison-audit-envelope-20261117.json",
+    "relatedTests": 395,
+    "newModelCalls": 0,
+    "scientificCredit": 0,
+    "runtimeLoaded": false
+  },
+  "comparisonAcquisitionProfile20261117": {
+    "status": "diagnostic_not_root_cause_proven",
+    "proof": "deep-research-evidence/comparison-acquisition-profile-20261117.json",
+    "newModelCalls": 0,
+    "originalRunUnchanged": true
   }
 }

@@ -33,3 +33,14 @@
 5. 集成相关检查→冻结全量→一次真实完整比较。此前不启动第三次真实比较。
 
 证据：deep-research-evidence/comparison-baseline-first-20261116.json、comparison-baseline-second-20261117.json、comparison-author-column-full-20261117.json。原始响应和账本位于 tmp/dr-acceptance-receipts/D2-BASELINE-COMPRESSION-v2.*；保留原样。完整 DR0—DR5、D3、独立 H1—H6、产品与发布门槛仍未全部完成。
+
+
+## 本轮离线进展
+
+- 新运行采用 comparisonAuditEnvelopeContractVersion=1：服务端固定 items/auditType/coherent/issues 根对象；传输解码后仍进入原有逐项内容与一致性检查。旧运行不切换。
+- 相邻 395 项检查通过，最终封装相关 109 项通过（有重叠，不相加）。两次原始响应在新协议的反事实回放下分别仍有 6、7 项缺口；第二次内容响应仍为 invalid_response。历史失败保持原样。
+- 实际证据工厂61条输入的当前环境剖析约8.74秒，PDF解析调用合计约3.36秒；部分页码从历史 unresolved 变为 exact，故不是等价性能对照，不能声称真实耗时已经修好。
+- 保存53条证据的首次联合请求构建约0.406秒，使用空的本地评估日志与未花费预算，发送前截停。该实验不复现历史整轮，也未证明原来的长空档来自此函数。
+- 下一步先记录实际文件访问/解析失败及阶段耗时，以区分重复失败、冷启动、范围校验和持久化成本；目前不做未经测量的缓存优化。新源码尚未全量回归或加载，不进入第三次真实比较。
+
+补充证据：deep-research-evidence/comparison-audit-envelope-20261117.json、comparison-acquisition-profile-20261117.json。

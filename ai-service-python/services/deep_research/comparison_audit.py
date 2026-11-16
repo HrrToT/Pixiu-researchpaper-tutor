@@ -87,14 +87,20 @@ mean gaps, not paper-wide absence. Bind science to text/conditions, never layout
 
 def renderer(question, requirements, claims, metadata, comparison, *, catalog=None,
              task_sources=False, request_semantics=0, process_explanations=False,
-             literal_limits=False, coherence=False):
+             literal_limits=False, coherence=False, object_envelope=False):
     from services.deep_research.comparison_presentation import audit_view
     from services.deep_research.shared_strings import input_text
     if type(comparison.get('version')) is not int or comparison['version'] != 3:
         raise ValueError('Typed comparison presentation required')
     data = deepcopy({'question':question, 'requirements':requirements, 'claims':claims,
                      'metadata':metadata, 'comparisonPresentation':audit_view(comparison, claims)})
+    if type(object_envelope) is not bool or object_envelope and not coherence:
+        raise ValueError('Object envelope requires coherence audit')
     policy = CORE + LAYOUT
+    if object_envelope:
+        policy=policy.replace('Return ONLY {"items":[ROWS]}, one ordinary ROW per fixed obligationId:',
+            'Return ONLY {"items":[ROWS],"auditType":"answer_coherence","coherent":true,"issues":[]}. '
+            'items contains one ordinary ROW per fixed obligationId:')
     if task_sources or request_semantics == 2:
         policy += ACCESS
     if catalog is not None:
@@ -105,7 +111,8 @@ def renderer(question, requirements, claims, metadata, comparison, *, catalog=No
     if literal_limits:
         policy += LIMITS
     if coherence:
-        policy += COHERENCE
+        policy += (COHERENCE.replace('Append INSIDE items (NEVER at root):',
+            'Use these coherence fields at root (NEVER inside items):') if object_envelope else COHERENCE)
     def render(evidence):
         return (policy + '\nComplete exact decision inputs (evidence detects omissions, never replaces answer):\n'
                 + input_text({**data, 'evidence':evidence}))

@@ -36,7 +36,7 @@ def coverage_prompt_byte_limit(budget, output_tokens=3500):
     return max(0, min(24000, remaining - output_tokens - 1024))
 
 
-def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, *, budget=None,literal_dimensions=False,diagnostics=False,request_contract=False,claim_check=False,task_sources=False,request_semantics=0,binding_catalog=False,scoped_catalog=False,identification_locators=False,coherence=False,shared_evidence_context=False,shared_decision_inputs=False,consolidated_instructions=False,literal_limits=False,correct_process_bindings=False,reasoned_process_bindings=False,comparison_cells=None):
+def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, *, budget=None,literal_dimensions=False,diagnostics=False,request_contract=False,claim_check=False,task_sources=False,request_semantics=0,binding_catalog=False,scoped_catalog=False,identification_locators=False,coherence=False,shared_evidence_context=False,shared_decision_inputs=False,consolidated_instructions=False,literal_limits=False,correct_process_bindings=False,reasoned_process_bindings=False,comparison_cells=None,comparison_audit_envelope=False):
     if type(reasoned_process_bindings) is not bool or reasoned_process_bindings and not correct_process_bindings:
         raise ValueError('Reasoned binding correction requires active correction policy')
     if (type(correct_process_bindings) is not bool or correct_process_bindings
@@ -52,6 +52,11 @@ def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, 
     if type(shared_evidence_context) is not bool or shared_evidence_context and not diagnostics:
         raise ValueError('Shared coverage evidence requires complete-context admission')
     if type(coherence) is not bool:raise ValueError('Invalid answer coherence policy')
+    if (type(comparison_audit_envelope) is not bool or comparison_audit_envelope and not
+            (coherence and comparison_cells is not None and comparison_cells.get('version')==3
+             and consolidated_instructions and request_contract==5 and shared_decision_inputs
+             and shared_evidence_context and diagnostics and (not binding_catalog or scoped_catalog))):
+        raise ValueError('Invalid comparison audit envelope policy')
     if type(binding_catalog) is not bool:raise ValueError('Invalid binding catalog policy')
     if type(scoped_catalog) is not bool or scoped_catalog and not (binding_catalog and request_contract):raise ValueError('Invalid scoped catalog policy')
     if type(identification_locators) is not bool:raise ValueError('Invalid identification locator policy')
@@ -229,7 +234,7 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
                 render = renderer(question, fixed_requirements, wire_claims, display_metadata,
                     comparison_cells, catalog=catalog, task_sources=task_sources,
                     request_semantics=request_semantics, process_explanations=True,
-                    literal_limits=literal_limits, coherence=coherence)
+                    literal_limits=literal_limits, coherence=coherence, object_envelope=comparison_audit_envelope)
             fixed_bytes = len(render([]).encode('utf-8'))
             if limit <= 0 or fixed_bytes > limit:
                 raise BudgetExhaustedError('coveragePromptBytes', limit, fixed_bytes)
