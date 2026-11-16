@@ -16741,5 +16741,15 @@
     "next": "Freeze and full-regress current candidate, then eligible new real content validation; preserve v8 unknown.",
     "fullRegressionProof": "deep-research-evidence/comparison-compact-audit-full-20261116.json",
     "fullRegressionPassed": 9087
+  },
+  "baselineComparisonDevelopment20261116": {
+    "status": "executed_inconclusive_not_content_accepted",
+    "proof": "deep-research-evidence/comparison-baseline-first-20261116.json",
+    "modelRequests": 11,
+    "reportedTokens": 57635,
+    "elapsedSeconds": 259,
+    "newUnknownRequests": 0,
+    "independentCredit": 0,
+    "defaultRuntimeRestored": true
   }
 }
