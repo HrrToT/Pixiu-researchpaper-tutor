@@ -122,7 +122,18 @@ def render_report(payload, *, _counting=False):
     labels = {"inference": "有依据的推断：", "hypothesis": "待验证假设：", "suggestion": "实验建议：", "proposal": "实验建议："}
     if compact:
         labels['inference'] = '推断：'
+    comparison = payload.get('comparisonCells')
+    if isinstance(comparison, dict) and type(comparison.get('version')) is int and comparison['version']==1:
+        from services.deep_research.comparison_presentation import sections as comparison_sections
+        sections = comparison_sections(comparison, list(claims.values()))
     for section in sections:
+        if section.get('comparisonTable'):
+            from services.deep_research.comparison_presentation import render_table
+            table, table_ids = render_table(comparison, list(claims.values()), ref_numbers, counting=_counting)
+            if table:
+                lines.extend([f"{'' if _counting else '## '}{section['title']}", '', table, ''])
+                rendered.update(table_ids)
+            continue
         content = []
         analysis_protocols = set()
         for key in section.get("claimIds", []):

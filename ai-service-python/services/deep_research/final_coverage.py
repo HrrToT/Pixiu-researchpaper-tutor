@@ -36,7 +36,7 @@ def coverage_prompt_byte_limit(budget, output_tokens=3500):
     return max(0, min(24000, remaining - output_tokens - 1024))
 
 
-def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, *, budget=None,literal_dimensions=False,diagnostics=False,request_contract=False,claim_check=False,task_sources=False,request_semantics=0,binding_catalog=False,scoped_catalog=False,identification_locators=False,coherence=False,shared_evidence_context=False,shared_decision_inputs=False,consolidated_instructions=False,literal_limits=False,correct_process_bindings=False,reasoned_process_bindings=False):
+def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, *, budget=None,literal_dimensions=False,diagnostics=False,request_contract=False,claim_check=False,task_sources=False,request_semantics=0,binding_catalog=False,scoped_catalog=False,identification_locators=False,coherence=False,shared_evidence_context=False,shared_decision_inputs=False,consolidated_instructions=False,literal_limits=False,correct_process_bindings=False,reasoned_process_bindings=False,comparison_cells=None):
     if type(reasoned_process_bindings) is not bool or reasoned_process_bindings and not correct_process_bindings:
         raise ValueError('Reasoned binding correction requires active correction policy')
     if (type(correct_process_bindings) is not bool or correct_process_bindings
@@ -205,6 +205,14 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
             if coherence:
                 from services.deep_research.answer_coherence import GUIDANCE
                 prompt+='\n'+GUIDANCE
+        if comparison_cells is not None:
+            from services.deep_research.comparison_presentation import audit_view
+            prompt += ('\nServer-rendered comparison presentation (display metadata, not scientific evidence): '
+                       + json.dumps(audit_view(comparison_cells, claims), ensure_ascii=False, separators=(',', ':'))
+                       + '\nThe table contains only accepted claims. Assess their scientific content against the evidence '
+                         'and the full question as usual. Empty cells are unresolved, not proof of absence in a paper. '
+                         'The server supplies the table format; layout alone cannot establish factual support or coverage. '
+                         'Bind scientific verdicts to accepted claim text/conditions, not to layout metadata.')
         template = prompt
         try:
             output_tokens = coverage_output_tokens(audit_plan, claims)
@@ -339,6 +347,9 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
             'invalidCriterionObligations': invalid_criteria,
             'budgetLimit': budget_limit,
             **({'diagnosticErrors':diagnostic_errors} if diagnostics else {})}
+    if comparison_cells is not None:
+        from services.deep_research.comparison_presentation import audit_digest
+        audit['comparisonPresentationDigest'] = audit_digest(comparison_cells, claims)
     if correct_process_bindings:
         audit['coverageBindingCorrectionContractVersion']=2 if reasoned_process_bindings else 1
         audit['processBindingCorrection']=correction_note or {'version':1,'status':'not_started','targets':[]}

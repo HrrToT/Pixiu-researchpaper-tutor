@@ -105,7 +105,8 @@ def test_actual_verifier_rejects_a_repair_that_changes_the_cell_paper_before_sem
             {'claimId':'b','kind':'reported','text':'方法 B 的结果。','conditions':{},'evidenceRefs':['b-e']}]
     evidence=[{'evidenceId':'b-e','sourceWorkId':'B','sourceVersionId':'B-v1','quote':'B result.'}]
     draft={'sources':{'P1':{'workId':'A','versionId':'A-v1'},'P2':{'workId':'B','versionId':'B-v1'}},
-           'layout':[{'source':'P1','claimIds':['a']},{'source':'P2','claimIds':['b']}]}
+           'layout':[{'source':'P1','claimIds':['a'],'obligationId':'mechanism','question':'机制'},
+                     {'source':'P2','claimIds':['b'],'obligationId':'mechanism','question':'机制'}]}
     record={'question':'比较方法','comparisonCellsContractVersion':1,'authoredBodyContractVersion':3,
             'scopeExpressionContractVersion':5,'factualPromptContractVersion':3,
             'synthesisEvidenceContractVersion':6,'synthesisInputContractVersion':2,'draftValidationContractVersion':1,
@@ -131,3 +132,39 @@ def test_same_work_different_version_is_not_an_allowed_cell_edit():
     ev=[{'evidenceId':'e','sourceWorkId':'A','sourceVersionId':'A-v2'}]
     good,bad=partition_source_bound_claims([claim],draft,ev)
     assert not good and bad[0]['reason']=='comparison_cell_source_mismatch'
+
+
+def test_server_can_select_an_isolated_rollout_without_a_client_override(tmp_path):
+    from services.deep_research.facade import ResearchFacade
+    from services.deep_research.repository import DeepResearchRepository
+    repo=DeepResearchRepository(tmp_path/'r.sqlite3');repo.initialize()
+    facade=ResearchFacade(repo,lambda **kw:None,llm_client=object(),comparison_cells_version=1)
+    try:
+        run,_=facade.create({'workspaceTaskId':'t','operationKey':'op','question':'比较',
+                            'comparisonCellsContractVersion':0},start_async=False)
+        assert run['comparisonCellsContractVersion']==1
+        with pytest.raises(ValueError,match='Immutable'):
+            repo.update_run(run['runId'],lambda r:{**r,'comparisonCellsContractVersion':0})
+    finally:facade.shutdown()
+
+
+@pytest.mark.parametrize('bad',[True,None,'1',2])
+def test_invalid_server_rollout_is_rejected_before_facade_execution(bad):
+    from services.deep_research.facade import ResearchFacade
+    with pytest.raises(ValueError,match='rollout'):
+        ResearchFacade(None,lambda **kw:None,llm_client=object(),comparison_cells_version=bad)
+
+
+def test_legacy_model_response_cannot_inject_cell_layout_metadata():
+    from test_deep_research_factual_prompt import node_capture
+    from services.deep_research.graph import make_synthesize_node
+    _,_,record=node_capture(3)
+    def update(rid,fn,**kw):
+        nonlocal record
+        record=fn(deepcopy(record));return deepcopy(record)
+    def invoke(*args,**kw):
+        return {'content':json.dumps({'sections':[],'claims':[],
+            'comparisonCells':{'version':1,'layout':'model-injected','sources':{}}})}
+    result=make_synthesize_node(invoke,update)({'run_id':'r'})
+    assert not result.get('error_code')
+    assert 'comparisonCells' not in record['state']['reportBody']

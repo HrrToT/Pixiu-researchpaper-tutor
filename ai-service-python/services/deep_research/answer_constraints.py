@@ -84,7 +84,7 @@ def visible_count(candidate, limit, output_kind='', evidence=(), presentation_ve
     claims = candidate.get('claims', [])
     visible_notice, _ = publication_notices(claims, presentation_version=presentation_version,output_kind=output_kind)
     proposed = candidate.get('sections')
-    return visible_answer_character_count({'presentationVersion': presentation_version, 'characterLimit': limit,
+    return visible_answer_character_count({**({'comparisonCells':candidate['comparisonCells']} if candidate.get('comparisonCells') is not None else {}),'presentationVersion': presentation_version, 'characterLimit': limit,
         'outputKind': output_kind, 'claims': claims, 'evidence': evidence, 'limitations': visible_notice,
         'sections': build_sections(claims, output_kind, proposed if isinstance(proposed,list) else None,
                                    presentation_version=presentation_version)})

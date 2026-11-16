@@ -296,6 +296,9 @@ def initialize_runtime():
     global _runtime
     if _runtime is not None:
         return _runtime
+    comparison_profile = os.environ.get('DEEP_RESEARCH_COMPARISON_CELLS', '0')
+    if comparison_profile not in ('0','1'):
+        raise ValueError('Invalid server comparison cell rollout policy')
     path = Path(os.environ.get("DEEP_RESEARCH_DB_PATH", "data/deep_research_v2.sqlite3"))
     if not enabled() and not path.exists():
         return None
@@ -384,6 +387,7 @@ def initialize_runtime():
 
     from functools import partial
     facade = RuntimeFacade(repo, partial(build_deep_research_graph, extract_batch_size=3), llm_client=model, scope_validator=scope,
+                           comparison_cells_version=int(comparison_profile),
                            source_reader=lambda rid, sid: read_acquired_source(repo, rid, sid))
     from services.deep_research.external import AcademicAcquisition
     facade._external_acquire = AcademicAcquisition(repo, facade._complete_tracked_call)

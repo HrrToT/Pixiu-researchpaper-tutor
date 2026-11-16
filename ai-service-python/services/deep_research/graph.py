@@ -1707,10 +1707,14 @@ space with unsupported global absence or incidental iteration/performance values
                 comparison_cell_draft['sources'] = deepcopy(source_registry)
                 comparison_cell_draft['evidenceAliases'] = dict(evidence_aliases)
                 parsed = comparison_cell_draft['report']
+                from services.deep_research.comparison_presentation import metadata as comparison_metadata
+                parsed['comparisonCells'] = comparison_metadata(comparison_cell_draft)
             except (ValueError, TypeError):
                 return {'error_code':'invalid_synthesis_response'}
         from services.deep_research.synthesis_container import normalize_synthesis_container
         parsed, container_kind = normalize_synthesis_container(parsed)
+        if not cell_mode and isinstance(parsed, dict):
+            parsed.pop('comparisonCells', None)  # Only the server compiler may supply layout metadata.
         if not isinstance(parsed, dict) or not isinstance(parsed.get("claims"), list):
             return {"error_code": "invalid_synthesis_response"}
         if compact_layout and not valid_access_labels(parsed['claims']):
@@ -1992,6 +1996,10 @@ def make_verify_node(
         from services.deep_research.coverage_repair import prepare_coverage_repair, merge_verified_revisions
         from services.deep_research.design_consistency import enforce_design_consistency
         saved = record.get('state', {})
+        from services.deep_research.comparison_generation import enabled as cell_enabled
+        from services.deep_research.comparison_presentation import metadata as comparison_metadata
+        comparison_audit_args = ({'comparison_cells': comparison_metadata(saved['comparisonCellDraft'])}
+                                 if cell_enabled(record) else {})
         def verify_comparison_claims(targets, supporting_evidence, semantic):
             from services.deep_research.comparison_generation import enabled as cell_enabled
             if not cell_enabled(record):
@@ -2016,6 +2024,7 @@ def make_verify_node(
             answer_coverage = audit_final_answer(run_id, effective_question(record),
                 saved.get('plan', []), verification_result.get('accepted', []),
                 evidence, llm_invoke, _safe_parse_json, budget=current.get('budget'),
+                **comparison_audit_args,
                 **({'request_contract':record['requestCoverageContractVersion']} if request_coverage_enabled(record) else {}),
                 **({'claim_check':True} if claim_check_enabled(record) else {}),
                 **({'task_sources':True} if type(record.get('reportPresentationContractVersion')) is int and record['reportPresentationContractVersion']==4 else {}),
@@ -2315,6 +2324,7 @@ def make_verify_node(
                         answer_coverage = audit_final_answer(run_id, effective_question(record),
                             record.get('state', {}).get('plan', []), merged.get('accepted', []),
                             evidence, llm_invoke, _safe_parse_json, budget=current.get('budget'),
+                            **comparison_audit_args,
                             **({'request_contract':record['requestCoverageContractVersion']} if request_coverage_enabled(record) else {}),
                             **({'claim_check':True} if claim_check_enabled(record) else {}),
                             **({'task_sources':True} if type(record.get('reportPresentationContractVersion')) is int and record['reportPresentationContractVersion']==4 else {}),
@@ -2416,6 +2426,12 @@ def make_publish_node(
                                         brief_state.get('repairVerificationChecks', {}))
             draft_release_changed = protected['accepted'] != checked['accepted']
             checked = protected
+        from services.deep_research.comparison_generation import enabled as cell_enabled
+        if cell_enabled(record):
+            from services.deep_research.comparison_cells import partition_source_bound_claims
+            kept, refused = partition_source_bound_claims(checked['accepted'],
+                brief_state['comparisonCellDraft'], brief_state.get('evidence', []))
+            checked = {**checked, 'accepted': kept, 'rejected': [*checked.get('rejected', []), *refused]}
         if checked['accepted'] != verified_report.get('verifiedClaims', []):
             # A resumed publish must not trust inconsistent marked definitions
             # or retain a coverage verdict for an answer that has been changed.
@@ -2439,6 +2455,9 @@ def make_publish_node(
             identification_locators=type(record.get('identificationLocatorContractVersion')) is int and record['identificationLocatorContractVersion']==1,
             **({'task_sources':True} if type(record.get('reportPresentationContractVersion')) is int and record['reportPresentationContractVersion']==4 else {}),
             **({'request_semantics':2} if type(record.get('requestSemanticsContractVersion')) is int and record['requestSemanticsContractVersion']==2 else {}))
+        if cell_enabled(record):
+            from services.deep_research.comparison_presentation import metadata as comparison_metadata, revalidate_audit
+            audit = revalidate_audit(audit, comparison_metadata(brief_state['comparisonCellDraft']), accepted_claims)
         if type(record.get('answerCoherenceContractVersion')) is int and record['answerCoherenceContractVersion'] in (1,2):
             from services.deep_research.answer_coherence import revalidate
             audit=revalidate(audit,effective_question(record),accepted_claims)
@@ -2490,6 +2509,9 @@ def make_publish_node(
             from services.deep_research.answer_constraints import requested_character_limit
             display_fields = {'presentationVersion':presentation_version, 'characterLimit':requested_character_limit(effective_question(record)),
                               'verificationNotice':folded_notice}
+        if cell_enabled(record):
+            from services.deep_research.comparison_presentation import metadata as comparison_metadata
+            display_fields = {**display_fields, 'comparisonCells':comparison_metadata(brief_state['comparisonCellDraft'])}
         display_payload = {**display_fields, 'outputKind':output_kind, 'claims':accepted_claims, 'sections':sections,
                            'evidence':record.get('state',{}).get('evidence',[]), 'limitations':visible_notice+repair_notice}
         from services.deep_research.answer_format import publication_format_gaps

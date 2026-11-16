@@ -107,7 +107,11 @@ class ResearchFacade:
         scope_validator: Callable[[str, str], bool] | None = None,
         external_acquire: Callable | None = None,
         max_concurrent: int = 2,
+        comparison_cells_version: int = 0,
     ):
+        if type(comparison_cells_version) is not int or comparison_cells_version not in (0,1):
+            raise ValueError('Invalid server comparison cell rollout policy')
+        self._comparison_cells_version = comparison_cells_version
         self._repo = repo
         self._graph_factory = graph_factory
         self._llm_client = llm_client
@@ -296,7 +300,7 @@ class ResearchFacade:
             "factualPromptContractVersion": 3,
             "authoredBodyContractVersion": 3,
             "synthesisInputContractVersion": 2,
-            "comparisonCellsContractVersion": 0,
+            "comparisonCellsContractVersion": self._comparison_cells_version,
             "reportingOwnershipContractVersion": 1,
             "draftValidationContractVersion": 1,
             "factualRepairPromptContractVersion": 3,
