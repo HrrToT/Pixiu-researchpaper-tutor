@@ -883,6 +883,7 @@ def factual_redraft_eligible(report):
 def repair_rejected(report, verification, evidence, question, invoke, parse, *,
                     max_prompt_bytes=24000, metric_domains=None, batch_state=None, checkpoint=None,
                     current_budget=None, invoke_request=None, fact_redraft=False, requirement_context=(),
+                    released_finalization=False,
                     source_aware_redraft=False,comparison_reasoning=False,question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,strict_response=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False,shared_experiment_schema=False,experiment_evidence_context=None,experimental_edits=False,experimental_diagnostics=False,experimental_nested_tables=False,experimental_representation=False,experimental_coverage=False,citation_presentation_version=0,configuration_consistency_version=0,repair_evidence_packet_version=0,scheduling_version=0,answer_intents=None,scope_expression=False,defer_length_filter=False,table_identity_context=False,claim_check=False,required_scope_ids=(),compact_layout=False,ordinary_advice=False,task_sources=False,request_semantics=False,preserve_answers=False,target_goals=False,objective_framing=False,process_explanations=False,factual_prompt_version=0,verified_target_ids=(),authored_body=False,verbatim_repair=False,consolidated_instructions=False,verified_text_edits=False,integrated_text_edits=False,text_edit_context=None,scope_citation_presentation=False,compact_repair_policy=False):
     """One bounded revision round, split before dispatch when evidence cannot fit.
 
@@ -892,6 +893,8 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
     """
     from services.deep_research.contracts import digest, DeepResearchError
     from services.deep_research.repair_batches import split_repair_targets
+    if type(released_finalization) is not bool:
+        raise ValueError('Invalid released finalization input policy')
 
     if type(verified_text_edits) is not bool:raise ValueError('Invalid verified text edit policy')
     if type(integrated_text_edits) is not bool or integrated_text_edits and not verified_text_edits or not integrated_text_edits and text_edit_context is not None:raise ValueError('Invalid integrated text edit policy')
@@ -1005,6 +1008,9 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
                        **({'comparisonMethodologyVersion':1} if comparison_methodology else {}),
                        **({'experimentIntentContractVersion':experimental_intent if type(experimental_intent) is int and experimental_intent in (2,3) else 1}
                           if experimental_intent else {})})
+
+    if released_finalization:
+        identity=digest({'inputDigest':identity,'releasedFinalizationInputVersion':1})
 
     def prepare(ids, results=(), byte_limit=None):
         ids = set(ids)
@@ -1121,7 +1127,9 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
                     from services.deep_research.repair_budget import repair_batch_output_limit, repair_prompt_byte_limit
                     from services.deep_research.experiment_edits import OUTPUT_TOKENS
                     output = OUTPUT_TOKENS if experimental_edits else repair_batch_output_limit(len(group)) if invoke_request else 8192
-                    cap = min(state['maxPromptBytes'], repair_prompt_byte_limit(current_budget(), output, **({'input_bytes':32000} if repair_evidence_packet_version in (4,5) else {}))) \
+                    cap = min(state['maxPromptBytes'], repair_prompt_byte_limit(current_budget(), output,
+                        **({'released_finalization':True} if released_finalization else {}),
+                        **({'input_bytes':32000} if repair_evidence_packet_version in (4,5) else {}))) \
                           if current_budget else state['maxPromptBytes']
                     prepared = prepare(group, revised, cap)
                     request = {'prepared': prepared, 'outputTokens': output}

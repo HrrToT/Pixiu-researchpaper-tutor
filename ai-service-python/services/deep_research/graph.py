@@ -2158,7 +2158,9 @@ def make_verify_node(
                     from services.deep_research.experiment_edits import can_edit,OUTPUT_TOKENS as EDIT_OUTPUT_TOKENS
                     edit_repair=(shared_experiment_repair(record)
                         and record['experimentRepairContractVersion'] in (2,3,4,5,6) and can_edit(repair_report))
-                    repair_input_options={}
+                    from services.deep_research.comparison_intent import operations_enabled as comparison_operations_enabled
+                    released_finalization=comparison_operations_enabled(record)
+                    repair_input_options={'released_finalization':True} if released_finalization else {}
                     if compact_repair:
                         from services.deep_research.repair_budget import repair_batch_output_limit
                         target_count=sum(c.get('claimId') in {r['claimId'] for r in repair_targets.get('rejected',[])}
@@ -2186,6 +2188,7 @@ def make_verify_node(
                            and type(record.get('reportPresentationContractVersion')) is int
                            and record['reportPresentationContractVersion'] in (2,3,4) else {}),
                         max_prompt_bytes=repair_prompt_byte_limit(current.get('budget', {}),**repair_input_options),
+                        **({'released_finalization':True} if released_finalization else {}),
                         metric_domains=record.get('state', {}).get('metricDomains'),
                         **({'factual_prompt_version':record['factualRepairPromptContractVersion']} if type(record.get('factualRepairPromptContractVersion')) is int
                            and record['factualRepairPromptContractVersion'] in (1,2,3) and compact_repair

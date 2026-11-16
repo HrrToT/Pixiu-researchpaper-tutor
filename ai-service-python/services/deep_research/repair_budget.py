@@ -22,7 +22,9 @@ def repair_exploration_headroom(normal_pool, allocation_version=0):
                max(0, normal_pool) * 2 // 3)
 
 
-def repair_prompt_byte_limit(budget, output_tokens=REPAIR_OUTPUT_TOKENS, *, input_bytes=REPAIR_INPUT_BYTES):
+def repair_prompt_byte_limit(budget, output_tokens=REPAIR_OUTPUT_TOKENS, *, input_bytes=REPAIR_INPUT_BYTES,released_finalization=False):
+    if type(released_finalization) is not bool:
+        raise ValueError('Invalid released finalization input policy')
     if type(input_bytes) is not int or input_bytes not in (24000, 32000):
         return 0
     if type(output_tokens) is not int or not 1 <= output_tokens <= REPAIR_OUTPUT_TOKENS:
@@ -34,7 +36,11 @@ def repair_prompt_byte_limit(budget, output_tokens=REPAIR_OUTPUT_TOKENS, *, inpu
     if any(type(value) is not int or value < 0 for value in values):
         return 0
     maximum, reserve, total_used, normal_used = values
-    remaining = min(maximum - total_used, maximum - reserve - normal_used)
+    released = 0
+    if released_finalization:
+        from services.deep_research.finalization_pool import released_reserve_tokens
+        released = released_reserve_tokens(budget)
+    remaining = min(maximum - total_used, maximum - reserve - normal_used + released)
     return max(0, min(input_bytes, remaining - output_tokens - FRAMING_TOKENS))
 
 

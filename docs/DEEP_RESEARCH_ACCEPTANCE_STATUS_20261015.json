@@ -16774,5 +16774,18 @@
     "runtimeLoaded": false,
     "scientificCredit": 0,
     "next": "Offline repair-input capacity and full content-input checks, then frozen full regression before any real retest."
+  },
+  "comparisonRepairReleasedInput20261117": {
+    "status": "related_offline_and_saved_prepare_passed_not_live_accepted",
+    "proof": "deep-research-evidence/comparison-repair-released-input-20261117.json",
+    "tests": 140,
+    "oldLimitBytes": 11921,
+    "requiredInputBytes": 12184,
+    "newPreparedInputBytes": 23962,
+    "newLimitBytes": 24000,
+    "newModelCalls": 0,
+    "runtimeLoaded": false,
+    "scientificCredit": 0,
+    "next": "Freeze combined candidate and full-regress before any eligible real retest; original failed run and all unknown records remain untouched."
   }
 }
