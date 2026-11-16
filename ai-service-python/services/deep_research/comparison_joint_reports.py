@@ -4,7 +4,11 @@
 def enabled(record):
     from services.deep_research.comparison_intent import operations_enabled
     return (operations_enabled(record) and type(record.get('comparisonJointReportsContractVersion')) is int
-            and record['comparisonJointReportsContractVersion']==1)
+            and record['comparisonJointReportsContractVersion'] in (1, 2))
+
+
+def resource_allocation_enabled(record):
+    return enabled(record) and record['comparisonJointReportsContractVersion'] == 2
 
 
 PLANNING = '''Use joint for a shared source-reported contrast or numerical example as well as

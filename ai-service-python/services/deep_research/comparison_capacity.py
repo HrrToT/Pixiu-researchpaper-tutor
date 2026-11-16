@@ -5,6 +5,42 @@ No point or frozen user requirement is removed to make the candidate fit.
 """
 
 
+def before_synthesis(record, point_constraint=None):
+    """Allocate isolated review slots before generation; never grant approval.
+
+    Reserve generation, whole-answer audit and one repair request. This is only
+    call allocation: scope checks, audit splits, tokens and time can cost more.
+    Both ledger counters are spent calls, not pending reservations.
+    """
+    budget = record.get('budget', {})
+    keys = ('maxModelCalls', 'modelCalls', 'reservedModelCalls')
+    if any(type(budget.get(key)) is not int or budget[key] < 0 for key in keys):
+        raise ValueError('Invalid comparison call budget')
+    maximum, ordinary, reserved = (budget[key] for key in keys)
+    remaining = maximum - ordinary - reserved
+    if remaining < 0:
+        raise ValueError('Comparison call budget already exceeded')
+    overhead = 3
+    capacity = min(24, max(0, remaining - overhead))
+    if point_constraint is not None:
+        if (not isinstance(point_constraint, dict)
+                or type(point_constraint.get('count')) is not int
+                or point_constraint['count'] < 1
+                or point_constraint.get('mode') not in ('exact', 'max')):
+            raise ValueError('Invalid comparison point constraint')
+        required = point_constraint['count'] if point_constraint['mode'] == 'exact' else 1
+        capacity = min(capacity, point_constraint['count'])
+    else:
+        required = 1
+    if capacity < required:
+        from services.deep_research.contracts import BudgetExhaustedError
+        raise BudgetExhaustedError('comparisonDraftAllocationCalls', remaining, required + overhead)
+    return {'version': 2, 'status': 'allocated_unverified',
+            'maxDraftPoints': capacity, 'remainingModelCalls': remaining,
+            'generationAuditAndRepairCalls': overhead,
+            'tokensAndTimeFitEstablished': False, 'scientificApproval': False}
+
+
 def after_synthesis(record):
     state = record.get('state', {})
     if (record.get('stage') != 'synthesize' or state.get('outputKind') != 'paper_comparison'

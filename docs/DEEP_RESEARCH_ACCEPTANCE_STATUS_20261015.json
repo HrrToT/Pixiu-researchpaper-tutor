@@ -16890,5 +16890,18 @@
     "newModelCalls": 0,
     "runtimeLoaded": false,
     "originalFailureCauseReproduced": false
+  },
+  "comparisonDraftAllocation20261117": {
+    "status": "related_checks_passed_full_pending",
+    "policyVersion": 2,
+    "relatedTests": 151,
+    "junit": "tmp/comparison-draft-allocation-related-20261117.xml",
+    "savedReplay": "tmp/comparison-resource-admission-20261117.json",
+    "compiledUncheckedPoints": 10,
+    "isolatedPoints": 1,
+    "isolatedReason": "internal_reference_in_prose",
+    "runtimeLoaded": false,
+    "newModelCalls": 0,
+    "scientificCredit": 0
   }
 }

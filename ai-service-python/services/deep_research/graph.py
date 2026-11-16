@@ -1284,6 +1284,14 @@ def make_synthesize_node(
         draft_obligations = synthesis_obligations(brief_state.get('plan', []))
         if cell_mode and not point_constraint:
             claim_limit = min(24, max(claim_limit, len(draft_obligations) * len(source_registry) + 2))
+        from services.deep_research.comparison_joint_reports import resource_allocation_enabled
+        draft_admission = None
+        if cell_mode and resource_allocation_enabled(record):
+            from services.deep_research.comparison_capacity import before_synthesis
+            draft_admission = before_synthesis(record, point_constraint)
+            claim_limit = draft_admission['maxDraftPoints']
+            repo_update(run_id, lambda r: {**r, 'state': {**r.get('state', {}),
+                'synthesisDraftAdmission': deepcopy(draft_admission)}}, expected_revision=None)
         prompt = f"""Synthesize a complete answer to the research question.
 Question: {question}
 Output kind: {output_kind}
@@ -1718,7 +1726,7 @@ space with unsupported global absence or incidental iteration/performance values
         parsed = _safe_parse_json(content)
         comparison_cell_draft = None
         if cell_mode:
-            from services.deep_research.comparison_cells import plan_cells, compile_cells
+            from services.deep_research.comparison_cells import plan_cells, compile_cells, ComparisonDraftOverflow
             from services.deep_research.comparison_generation import planning_options
             try:
                 comparison_cell_draft = compile_cells(parsed,
@@ -1729,6 +1737,15 @@ space with unsupported global absence or incidental iteration/performance values
                 parsed = comparison_cell_draft['report']
                 from services.deep_research.comparison_presentation import metadata as comparison_metadata
                 parsed['comparisonCells'] = comparison_metadata(comparison_cell_draft)
+            except ComparisonDraftOverflow as exc:
+                if draft_admission is not None:
+                    rejection = {**draft_admission, 'status': 'rejected_unverified',
+                        'reason': 'draft_point_allocation_exceeded', 'receivedPoints': exc.received}
+                    repo_update(run_id, lambda r: {**r, 'state': {**r.get('state', {}),
+                        'synthesisDraftAdmission': rejection,
+                        'synthesisRejectedDraft': {'verification': 'unchecked',
+                            'publishable': False, 'payload': deepcopy(parsed)}}}, expected_revision=None)
+                return {'error_code':'invalid_synthesis_response'}
             except (ValueError, TypeError):
                 return {'error_code':'invalid_synthesis_response'}
         from services.deep_research.synthesis_container import normalize_synthesis_container
@@ -1954,6 +1971,8 @@ space with unsupported global absence or incidental iteration/performance values
                     "reportVersionId": report_version_id,
                     "reportBody": parsed,
                     "synthesisContainer": container_kind,
+                    **({'synthesisDraftAdmission': {**draft_admission, 'status': 'compiled_unverified',
+                        'compiledPoints': len(parsed['claims'])}} if draft_admission is not None else {}),
                     **({'comparisonCellDraft':comparison_cell_draft} if comparison_cell_draft is not None else {}),
                     **({'draftValidationAudit':draft_validation_audit} if draft_validation_audit is not None else {}),
                     **({'experimentDraftingAudit':experiment_drafting_audit} if experiment_drafting_audit is not None else {}),

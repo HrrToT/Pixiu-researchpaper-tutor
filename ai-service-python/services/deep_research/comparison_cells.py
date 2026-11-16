@@ -12,6 +12,15 @@ from services.deep_research.source_labels import source_display_title
 _POINT_KEYS = {'kind', 'body', 'evidenceRefs', 'tableBindings', 'draftingBasis', 'detailLevel'}
 
 
+class ComparisonDraftOverflow(ValueError):
+    """A well-routed container exceeded its declared, pre-generation limit."""
+
+    def __init__(self, received, limit):
+        super().__init__('Comparison claim budget exceeded')
+        self.received = received
+        self.limit = limit
+
+
 def plan_cells(requirements, sources, evidence, *, shared_axes=False, question=None, typed_roles=False,joint_reports=False):
     """Keep every frozen obligation, with source-local citation permissions."""
     if (type(shared_axes) is not bool or type(typed_roles) is not bool
@@ -124,8 +133,9 @@ def compile_cells(payload, plan, *, max_claims):
                 or type(cell['unresolved']) is not bool):
             raise ValueError('Invalid comparison cell identity')
         submitted[cell['cellId']] = cell
-    if sum(len(c['claims']) for c in submitted.values()) + len(payload['conclusions']) > max_claims:
-        raise ValueError('Comparison claim budget exceeded')
+    count = sum(len(c['claims']) for c in submitted.values()) + len(payload['conclusions'])
+    if count > max_claims:
+        raise ComparisonDraftOverflow(count, max_claims)
     claims, layout, errors = [], [], []
     for index, cell in enumerate(plan['cells']):
         raw = submitted.get(cell['cellId'])
