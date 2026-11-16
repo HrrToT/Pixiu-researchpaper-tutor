@@ -470,7 +470,7 @@ def prepare_units(record, *, prompt, aliases, invoke, parse, checkpoint):
                     from services.deep_research.workflow_metadata_actions import decode as decode_action_rows
                     value = decode_action_rows(value)
                 else:value = decode_rows(value)
-            validation_aliases = unit_aliases if shared_representation and record[representation.MARKER] == 2 and node == INIT else aliases
+            validation_aliases = unit_aliases if shared_representation and record[representation.MARKER] in (2, 3) and node == INIT else aliases
             problems = unit_errors(value, validation_aliases, node=node, earlier=earlier, baseline=baseline,
                 version=version,metadata=context.get('metadata'),target=target,metadata_rows=use_rows,
                 structured_initialization=structured_initialization and node==INIT,

@@ -29,7 +29,7 @@ def required(record):
 
 def allocate(record, *, source_data, context, aliases, prior_values, node, render, transport_options=None):
     from services.deep_research import workflow_representation_stage as representation
-    if node == 'plan_workflow_init' and representation.enabled(record) and record[representation.MARKER] == 2:
+    if node == 'plan_workflow_init' and representation.enabled(record) and record[representation.MARKER] in (2, 3):
         from services.deep_research.workflow_representation_dependencies import allocate as dependencies
         return dependencies(record,source_data=source_data,context=context,aliases=aliases,prior_values=prior_values,
                             node=node,render=render,transport_options=transport_options)

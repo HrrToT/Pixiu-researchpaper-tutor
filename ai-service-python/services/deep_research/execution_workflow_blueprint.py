@@ -196,7 +196,7 @@ def prepare(record, *, prompt, aliases, invoke, parse, checkpoint):
 def instruction(saved):
     from services.deep_research.nested_tables import pack, unpack
     canonical = json.loads(json.dumps(saved['value'], sort_keys=True, ensure_ascii=False, allow_nan=False))
-    if saved.get('request', {}).get('representationContract') in (1, 2):
+    if saved.get('request', {}).get('representationContract') in (1, 2, 3):
         from services.deep_research.workflow_representation import verify
         shared = saved.get('representation', {})
         canonical = {'workflow': canonical, 'sharedRepresentation': verify(

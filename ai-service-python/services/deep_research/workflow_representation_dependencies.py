@@ -26,16 +26,23 @@ def descriptor():
     target['properties']['inputDependencies'] = {'type':'array','maxItems':16,'items':obj({
         'input':source,'origin':{'enum':['paper','proposal']},'sourceRefs':strings()})}
     target['required'].append('inputDependencies')
+    result['schema'] = compact_schema(schema)
+    return result
+
+
+def compact_schema(schema):
+    """Share identical schema nodes, with an exact expansion check."""
+    text = {'type':'string', 'minLength':1, 'pattern':r'\S'}
     # Share only identical schema objects. No original value/constraint removed.
     def share(value):
         if value == text:return {'$ref':'#/$defs/t'}
         if isinstance(value,dict):return {k:share(v) for k,v in value.items()}
         if isinstance(value,list):return [share(v) for v in value]
         return deepcopy(value)
-    result['schema'] = share(schema)
-    result['schema']['$defs'] = {'t':deepcopy(text)}
+    shared = share(schema)
+    shared['$defs'] = {'t':deepcopy(text)}
     # Reuse repeated grammar objects; this never encodes source/model values.
-    before=deepcopy(result['schema']);counts={};objects={}
+    before=deepcopy(shared);counts={};objects={}
     def collect(value):
         if isinstance(value,dict):
             key=json.dumps(value,sort_keys=True,separators=(',',':'))
@@ -56,11 +63,11 @@ def descriptor():
             return {k:compress(v) for k,v in value.items()}
         if isinstance(value,list):return [compress(v) for v in value]
         return deepcopy(value)
-    result['schema']=compress({k:v for k,v in before.items() if k != '$defs'})
-    result['schema']['$defs']={**before['$defs'],**{name:compress(objects[k],k) for k,name in repeated.items()}}
-    if expand_schema(result['schema']) != expand_schema(before):
+    shared=compress({k:v for k,v in before.items() if k != '$defs'})
+    shared['$defs']={**before['$defs'],**{name:compress(objects[k],k) for k,name in repeated.items()}}
+    if expand_schema(shared) != expand_schema(before):
         raise ValueError('Representation schema sharing changed constraints')
-    return result
+    return shared
 
 
 def expand_schema(schema):
@@ -186,7 +193,7 @@ def closure(record, target):
     from services.deep_research.workflow_representation import verify
     from services.deep_research.workflow_premises import _refs
     frozen,metadata,aliases=bound(record,target)
-    if frozen['version'] != 2:raise ValueError('Explicit dependencies require representation v2')
+    if frozen['version'] not in (2, 3):raise ValueError('Explicit dependencies require representation v2 or v3')
     value=verify(frozen,metadata,aliases)
     targets={t['target']:t for t in value['targets']}
     conventions={c['name']:c for c in value['conventions']}
