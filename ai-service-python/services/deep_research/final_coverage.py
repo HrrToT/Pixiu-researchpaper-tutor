@@ -220,6 +220,16 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
             from services.deep_research.shared_strings import input_text
             render = lambda selected_rows: template.replace(evidence_marker,
                 input_text(selected_rows) if shared_evidence_context else json.dumps(selected_rows, ensure_ascii=False, separators=(',', ':')), 1)
+            if (comparison_cells is not None and type(comparison_cells.get('version')) is int
+                    and comparison_cells['version'] == 3 and consolidated_instructions
+                    and type(request_contract) is int and request_contract == 5
+                    and shared_decision_inputs and shared_evidence_context and diagnostics
+                    and (catalog is None or scoped_catalog)):
+                from services.deep_research.comparison_audit import renderer
+                render = renderer(question, fixed_requirements, wire_claims, display_metadata,
+                    comparison_cells, catalog=catalog, task_sources=task_sources,
+                    request_semantics=request_semantics, process_explanations=True,
+                    literal_limits=literal_limits, coherence=coherence)
             fixed_bytes = len(render([]).encode('utf-8'))
             if limit <= 0 or fixed_bytes > limit:
                 raise BudgetExhaustedError('coveragePromptBytes', limit, fixed_bytes)

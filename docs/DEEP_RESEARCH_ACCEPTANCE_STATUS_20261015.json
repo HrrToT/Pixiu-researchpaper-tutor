@@ -15,7 +15,7 @@
     "elapsedSeconds": 568.66,
     "boundary": "Complete current offline research regression only; not real generation, Provider cost/quality, independent scientific acceptance or full product release.",
     "passed": 9071,
-    "appliesToCurrentPythonSource": true,
+    "appliesToCurrentPythonSource": false,
     "matchesLoadedRuntime": false,
     "proof": "deep-research-evidence/comparison-typed-intent-full-20261116.json"
   },
@@ -16728,5 +16728,16 @@
     "independentCredit": 0,
     "fullRegressionProof": "deep-research-evidence/comparison-typed-intent-full-20261116.json",
     "fullRegressionPassed": 9071
+  },
+  "comparisonCompactAudit20261116": {
+    "status": "related_offline_and_saved_capacity_passed_not_live_accepted",
+    "proof": "deep-research-evidence/comparison-compact-audit-20261116.json",
+    "relatedTests": 138,
+    "savedCandidateInputBytes": 23988,
+    "savedCandidateLimitBytes": 24000,
+    "newModelCalls": 0,
+    "scientificCredit": 0,
+    "runtimeLoaded": false,
+    "next": "Freeze and full-regress current candidate, then eligible new real content validation; preserve v8 unknown."
   }
 }
