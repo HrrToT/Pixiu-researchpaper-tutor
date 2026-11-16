@@ -23,4 +23,6 @@ def guard(factory,record):
     page_batch = getattr(factory, '__dict__', {}).get('physical_page_batch')
     if callable(page_batch):
         create.physical_page_batch = page_batch
+    page_diagnostics = getattr(factory, '__dict__', {}).get('physical_page_diagnostics')
+    if callable(page_diagnostics):create.physical_page_diagnostics = page_diagnostics
     return create

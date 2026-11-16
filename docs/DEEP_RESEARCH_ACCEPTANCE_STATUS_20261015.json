@@ -16836,5 +16836,13 @@
     "proof": "deep-research-evidence/comparison-acquisition-profile-20261117.json",
     "newModelCalls": 0,
     "originalRunUnchanged": true
+  },
+  "pageDiagnostics20261117": {
+    "status": "related_offline_and_shadow_extraction_passed_full_pending",
+    "proof": "deep-research-evidence/page-diagnostics-and-phase-costs-20261117.json",
+    "relatedTests": 185,
+    "newModelCalls": 0,
+    "runtimeLoaded": false,
+    "originalRunUnchanged": true
   }
 }

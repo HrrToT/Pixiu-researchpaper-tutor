@@ -1,6 +1,7 @@
 """Save original read passages without model transcription or semantic approval."""
 from copy import deepcopy
 import re
+from time import monotonic
 
 from services.deep_research.contracts import DeepResearchError, digest
 from services.deep_research.obligation_binding import eligible_obligation_ids
@@ -97,6 +98,7 @@ def extract(record, make_evidence, validate, update):
 
 
 def _extract(record, make_evidence, validate, update, *, recheck_scope=False):
+    extraction_started=monotonic()
     run_id = record['runId']; state = record.get('state', {})
     canonical = record['adaptiveExtractionContractVersion'] == 3
     input_version = 2 if canonical else 1
@@ -138,6 +140,7 @@ def _extract(record, make_evidence, validate, update, *, recheck_scope=False):
     if batch_scope and not validate.validate_materials(run_id, list(dict.fromkeys(s['workId'] for s in sources))):
         raise DeepResearchError('scope_revoked','材料范围核对未通过，尚未提取原文证据。')
     units = 0
+    created_quotes = 0
     for source in sources:
         if not batch_scope and not validate(run_id, source['workId']):
             raise DeepResearchError('scope_revoked','材料范围核对未通过，尚未提取原文证据。')
@@ -177,6 +180,7 @@ def _extract(record, make_evidence, validate, update, *, recheck_scope=False):
                     continue
                 ev = make_evidence(source=identity, quote=quote, original=text, location=loc,
                     obligation_ids=eligible, conditions={})
+                created_quotes += 1
                 ev.update(sourceId=source['sourceId'],sourceKind=source.get('sourceKind','local'),
                     sourceTitle=source.get('title',''),sourceUrl=source.get('url',''),
                     sourceQuoteStart=start,sourceContextStart=offset,extractionKind='source_passage')
@@ -204,6 +208,14 @@ def _extract(record, make_evidence, validate, update, *, recheck_scope=False):
         if not valid:
             raise DeepResearchError('scope_revoked', '材料范围已变更，未保存本批原文证据。')
     # One atomic local checkpoint: never keep half a failed scope/identity batch.
+    observations={}
+    from services.deep_research.page_diagnostics import enabled as diagnostics_enabled,append as append_diagnostics
+    diagnostic=getattr(make_evidence,'__dict__',{}).get('physical_page_diagnostics')
+    if diagnostics_enabled(record) and created_quotes:
+        batch=diagnostic() if callable(diagnostic) else None
+        batch={**(batch or {'version':1,'quotes':created_quotes}),
+               'physicalBatchAvailable':recheck_scope,'extractionSeconds':monotonic()-extraction_started}
+        observations['physicalPageDiagnostics']=append_diagnostics(state.get('physicalPageDiagnostics'),batch)
     update(run_id, lambda r:{**r,'state':{**r.get('state',{}),'evidence':evidence,
-        'sourcePassageExtraction':journal}}, expected_revision=None)
+        'sourcePassageExtraction':journal,**observations}}, expected_revision=None)
     return {'evidence_ids':[e['evidenceId'] for e in evidence],'extraction_pending':False}
