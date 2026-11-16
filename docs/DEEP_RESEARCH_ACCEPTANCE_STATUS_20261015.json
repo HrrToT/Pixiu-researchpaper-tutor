@@ -15,7 +15,7 @@
     "retainedBaselineCases": 8669,
     "missingBaselineCases": [],
     "warnings": 1,
-    "appliesToCurrentPythonSource": true,
+    "appliesToCurrentPythonSource": false,
     "proof": "deep-research-evidence/provider-observation-484-final-20261116.json",
     "boundary": "Complete current offline research regression only; not real generation, Provider cost/quality, independent scientific acceptance or full product release.",
     "matchesLoadedRuntime": false
@@ -16198,5 +16198,43 @@
     "realProof": "deep-research-evidence/provider-observation-484-scalar-20261116.json",
     "preservationProof": "deep-research-evidence/provider-observation-484-preservation-20261116.json",
     "next": "Separate shared unverified representation/variable interfaces from per-target initialization values and explicit evidence dependencies. Preserve full research scope, final scientific gates and original budgets; no implicit numeric defaults or replay of unknown requests."
+  },
+  "sharedRepresentationFoundation20261116": {
+    "asOf": "2026-11-16",
+    "scope": "Unactivated shared representation declaration and initializer schema compiler foundation",
+    "newTests": 50,
+    "relatedChecks": 131,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sourceHashes": {
+      "ai-service-python/services/deep_research/workflow_representation.py": "fdc3e5ecb87eac34b906426f57c6334c3b0b20c85c4709acd59eeba9579829a9",
+      "ai-service-python/tests/test_deep_research_workflow_representation.py": "648a7ba6126d96ff73a92eca393aa0e69ab66590c8e3486d8fecece1174f4be2"
+    },
+    "junit": "tmp/representation-contract-foundation-20261116.xml",
+    "junitSha256": "cc0314896762e13a06f878b841fabc624330a5ed43470ba6997e0b381ca9bcb7",
+    "activated": false,
+    "runtimeRestarted": false,
+    "providerCalls": 0,
+    "scientificContentCredit": 0,
+    "independentAcceptanceCredit": 0,
+    "fullSuiteRerun": false,
+    "checks": [
+      "Exact ordered target and variable coverage",
+      "Model-authored quantities encodings conventions and explicit provenance",
+      "Shared type declaration has no initializer or allocated instance",
+      "Frozen metadata alias value identities and fail-closed reopen",
+      "Named source-state entity selected-fields and axis binding",
+      "No implicit values or automatic repair in native compiler",
+      "Scalar and constant dimensions; dynamic dimensions require derive",
+      "Existing initializer and scientific gates remain mandatory"
+    ],
+    "remaining": [
+      "Durable shared declaration stage using existing request identities and whole-run budgets",
+      "Integrate initializer schema and binding checks into first generation and single correction",
+      "Preserve global full evidence and final complete scientific review",
+      "Fresh complete fixed experiment and held-out content acceptance"
+    ],
+    "proof": "deep-research-evidence/shared-representation-foundation-20261116.json"
   }
 }
