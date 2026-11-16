@@ -240,6 +240,8 @@ def prepare_units(record, *, prompt, aliases, invoke, parse, checkpoint):
     numeric_initialization = numeric_enabled(record)
     from services.deep_research.workflow_initialization_semantics import enabled as semantics_enabled
     semantic_initialization = semantics_enabled(record)
+    from services.deep_research.workflow_initialization_reasoning import enabled as initialization_reasoning
+    if initialization_reasoning(record): parent_request['initializationReasoningContract'] = 1
     if numeric_initialization:
         parent_request['initializationNumericStateContract'] = record['workflowInitializationNumericStateContractVersion']
     if premise_mode:
