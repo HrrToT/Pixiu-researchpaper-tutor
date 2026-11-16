@@ -161,3 +161,50 @@ def test_sole_initializer_correction_keeps_v3_types_and_source_scope():
 def test_actual_v3_http_ledger_budget_and_unknown_no_resend(tmp_path,monkeypatch,node,scenario):
     monkeypatch.setattr(stage_tests,'setup',setup)
     stage_tests.test_actual_provider_payload_ledger_identity_capacity_and_unknown_no_resend(tmp_path,monkeypatch,node,scenario)
+
+
+def test_declaration_role_uses_existing_normal_capacity_when_protected_call_slots_are_spent(tmp_path):
+    from test_deep_research_finalization_release import repository,reserve
+    repo=repository(tmp_path);before=repo.require_run('run')['budget']
+    call,_=reserve(repo,node=stage.NODE,cost=30000)
+    after=repo.require_run('run')['budget']
+    assert call['usesReserve'] is False and after['releasedReserveTokens']==13762
+    assert after['modelCalls']==before['modelCalls']+1 and after['reservedModelCalls']==before['reservedModelCalls']
+    assert {k:after[k] for k in ('maxTokens','maxModelCalls','reserveTokens','reserveModelCalls')}=={
+        k:before[k] for k in ('maxTokens','maxModelCalls','reserveTokens','reserveModelCalls')}
+
+
+def test_nominal_protected_tokens_do_not_artificially_cap_a_valid_total_request(tmp_path):
+    from test_deep_research_finalization_release import repository,reserve,budget
+    repo=repository(tmp_path,budget(tokens=43133,normalTokens=17644,modelCalls=5,reservedModelCalls=2))
+    call,_=reserve(repo,node=stage.NODE,cost=38283)
+    after=repo.require_run('run')['budget']
+    assert call['usesReserve'] is True and after['tokens']==81416 and after['normalTokens']==17644
+    assert after['reservedModelCalls']==3 and after['releasedReserveTokens']==0
+
+
+def test_declaration_role_cannot_bypass_whole_token_limit(tmp_path):
+    from test_deep_research_finalization_release import repository,reserve
+    from services.deep_research.contracts import BudgetExhaustedError
+    repo=repository(tmp_path);before=repo.require_run('run')
+    with pytest.raises(BudgetExhaustedError):reserve(repo,node=stage.NODE,cost=40000)
+    assert repo.require_run('run')==before and repo.list_calls('run')==[]
+
+
+def test_unknown_declaration_blocks_further_work_before_any_budget_transfer(tmp_path):
+    from test_deep_research_finalization_release import repository,reserve
+    from services.deep_research.contracts import UnresolvedUnknownError
+    repo=repository(tmp_path);call,_=reserve(repo,node=stage.NODE,cost=100)
+    repo.complete_call(call['callId'],status='unknown',reservation_token=call['reservationToken'],error={'code':'unknown'})
+    before=repo.require_run('run')
+    with pytest.raises(UnresolvedUnknownError):reserve(repo,identity='new',node=stage.NODE,cost=30000)
+    assert repo.require_run('run')==before and len(repo.list_calls('run'))==1
+
+
+def test_declaration_role_does_not_upgrade_legacy_token_partitions(tmp_path):
+    from test_deep_research_finalization_release import repository,reserve,budget
+    from services.deep_research.contracts import BudgetExhaustedError
+    value=budget();value.pop('finalizationBudgetVersion');value.pop('releasedReserveTokens')
+    repo=repository(tmp_path,value);before=repo.require_run('run')
+    with pytest.raises(BudgetExhaustedError):reserve(repo,node=stage.NODE,cost=30000)
+    assert repo.require_run('run')==before and repo.list_calls('run')==[]
