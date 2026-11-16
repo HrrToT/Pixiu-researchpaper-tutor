@@ -16679,7 +16679,7 @@
     "scientificContentAccepted": false,
     "productionLoaded": false,
     "fullRegression": "pending coherent comparison intent and scheduling completion",
-    "next": "Keep factual comparison axes distinct from joint judgement goals; profile actual local evidence preparation and plan the whole case before another eligible real development case. Preserve D2-v8 unknown; do not rename/retry it."
+    "next": "Typed fact-axis vs joint-judgement planning contract specified in DEEP_RESEARCH_COMPARISON_INTENT_20261116.md; not implemented. Current combined offline regression running with source frozen. D2-v8 unknown remains untouched."
   },
   "sourcePageBatch20261116": {
     "proof": "deep-research-evidence/source-page-batch-20261116.json",
@@ -16695,7 +16695,7 @@
     "scientificContentAccepted": false,
     "productionLoaded": false,
     "fullRegression": {
-      "status": "pending",
+      "status": "running",
       "runId": "comparison-axes-page-batch-full-20261116"
     },
     "next": "Freeze coherent review-time, shared-axis, call-capacity and page-batch candidate for full regression. Keep v8 unknown unchanged; comparison content and joint judgement intent remain unaccepted."
