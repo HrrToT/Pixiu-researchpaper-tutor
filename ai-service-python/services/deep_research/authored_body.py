@@ -21,7 +21,7 @@ same length limit and receives all independent checks; the branch grants no supp
 def reasoning_enabled(record, kind=None):
     return (enabled(record, kind) and record['authoredBodyContractVersion'] in (2, 3)
             and type(record.get('synthesisInputContractVersion')) is int
-            and record['synthesisInputContractVersion'] == 1
+            and record['synthesisInputContractVersion'] in (1, 2)
             and type(record.get('factualPromptContractVersion')) is int
             and record['factualPromptContractVersion'] == 3
             and type(record.get('draftValidationContractVersion')) is int

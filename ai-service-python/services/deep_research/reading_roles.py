@@ -122,20 +122,22 @@ def score(source, request):
     return 2*own+2*numeric+min(4,len(matches))
 
 
-def order(sources, obligations, fallback, *, extracted=(), mixed_script_terms=False):
+def order(sources, obligations, fallback, *, extracted=(), mixed_script_terms=False, measurement_tables=False):
     """Balance requested roles/papers; novelty is not permission to read rubbish."""
     targets=requests(obligations,sources,mixed_script_terms=mixed_script_terms)
     identity=lambda s:(s.get('workId'),s.get('versionId'))
     works=list(dict.fromkeys(identity(s) for s in sources))
     extracted=set(extracted);queues=[]
+    from services.deep_research.measurement_table_navigation import score as table_score
+    navigation=lambda source,request:table_score(source,request) if measurement_tables else 0
     for request in targets:
         for work in works:
             own=[s for s in sources if identity(s)==work
                  and request['obligationId'] in eligible_obligation_ids(s,obligations)]
-            ranked=sorted(own,key=lambda s:(quality(s,request['query']),score(s,request),
+            ranked=sorted(own,key=lambda s:(quality(s,request['query']),navigation(s,request),score(s,request),
                 (s['sourceId'],s.get('contentHash')) not in extracted),reverse=True)
             # A failed lexical match does not become a positive evidence claim.
-            if ranked and quality(ranked[0],request['query'])==(True,True) and score(ranked[0],request)>0:
+            if ranked and quality(ranked[0],request['query'])==(True,True) and (score(ranked[0],request)>0 or navigation(ranked[0],request)>0):
                 queues.append(ranked)
     selected=[];seen=set()
     # A passage selected for two requested roles uses one slot. Do not consume
@@ -145,7 +147,7 @@ def order(sources, obligations, fallback, *, extracted=(), mixed_script_terms=Fa
         if source['sourceId'] not in seen:
             selected.append(source);seen.add(source['sourceId'])
     query=' '.join(o.get('question','') for o in obligations.values())
-    tail=sorted(fallback,key=lambda s:(quality(s,query),max((score(s,r) for r in targets),default=0),
+    tail=sorted(fallback,key=lambda s:(quality(s,query),max((navigation(s,r) for r in targets),default=0),max((score(s,r) for r in targets),default=0),
         (s['sourceId'],s.get('contentHash')) not in extracted),reverse=True)
     while tail:
         counts={work:sum(identity(s)==work for s in selected) for work in works}
@@ -156,7 +158,7 @@ def order(sources, obligations, fallback, *, extracted=(), mixed_script_terms=Fa
     return selected
 
 
-def premise_bundles(rows, obligations, *, mixed_script_terms=False,procedure_targets=False):
+def premise_bundles(rows, obligations, *, mixed_script_terms=False,procedure_targets=False,measurement_tables=False):
     """Carry request-role navigation into synthesis, not a new factual verdict.
 
     A full source passage can locate a benchmark heading while its unchanged
@@ -164,6 +166,8 @@ def premise_bundles(rows, obligations, *, mixed_script_terms=False,procedure_tar
     context from another source or replaces the independent ownership checks.
     """
     if type(procedure_targets) is not bool:raise ValueError('Invalid procedure target policy')
+    if type(measurement_tables) is not bool:raise ValueError('Invalid measurement table navigation policy')
+    from services.deep_research.measurement_table_navigation import score as table_score
     rows=[row for row in rows if row.get('verification',{}).get('literal')=='passed']
     sources=[{'title':row.get('sourceTitle','')} for row in rows]
     targets=requests(obligations,sources,mixed_script_terms=mixed_script_terms);chosen=[];seen=set();bundles=[];result_leads={}
@@ -177,10 +181,11 @@ def premise_bundles(rows, obligations, *, mixed_script_terms=False,procedure_tar
                 context=row.get('sourceContext','')
                 if not isinstance(context,str):context=''
                 return {'text':row.get('quote',''),'location':row.get('location',{}),
-                        'tableData':row.get('tableData'),'rankingContext':context}
+                        'tableData':row.get('tableData'),'rankingContext':context,'accessLevel':row.get('accessLevel')}
             from services.deep_research.procedure_targets import score as target_score
             ranked=sorted(own,key=lambda e:(quality(view(e),request['query']),
                 target_score(e.get('quote',''),request) if procedure_targets else 0,
+                table_score(view(e),request) if measurement_tables else 0,
                 score(view(e),request),-len(e.get('quote',''))),reverse=True)
             # Generic author-report versus comparison-row provenance uses the
             # same requested result row. A separate ablation is not a substitute.
@@ -193,7 +198,8 @@ def premise_bundles(rows, obligations, *, mixed_script_terms=False,procedure_tar
                     r'核对|条件|方向|\b(?:settings?|conditions?|directions?)\b',request['query'],re.I):
                 shared=[e for e in result_leads.get(work,[]) if e in own]
                 if shared:ranked=shared
-            if not ranked or quality(view(ranked[0]),request['query'])!=(True,True) or score(view(ranked[0]),request)<=0:
+            if not ranked or quality(view(ranked[0]),request['query'])!=(True,True) or (score(view(ranked[0]),request)<=0
+                    and not (measurement_tables and table_score(view(ranked[0]),request)>0)):
                 continue
             lead=ranked[0]
             if request['role']=='result':result_leads.setdefault(work,[]).append(lead)

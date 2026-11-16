@@ -73,7 +73,7 @@ def test_reading_policy_is_server_owned_and_immutable_even_for_bool_one(tmp_path
     try:
         run,_=facade.create({'workspaceTaskId':'t','operationKey':'o','question':'比较论文',
             'readingPriorityContractVersion':replacement,'deferStart':True},start_async=False)
-        assert run['readingPriorityContractVersion']==7
+        assert run['readingPriorityContractVersion']==8
         with pytest.raises(ValueError,match='Immutable'):
-            repo.update_run(run['runId'],lambda r:{**r,'readingPriorityContractVersion':replacement})
+            repo.update_run(run['runId'],lambda r:{**r,'readingPriorityContractVersion':replacement if replacement!=8 else 7})
     finally:facade.shutdown()

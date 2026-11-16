@@ -25,7 +25,8 @@ def result_role(row):
 
 
 def order_premises(evidence,plan,limit=20, *, membership_intents=False,module_intents=False,condition_intents=False,
-                   definition_context=False,read_sources=(),operational_context=False,mechanism_overview=False,mechanism_components=False,section_targets=(),indexed_sections=False,external_method_context=False,request_roles=False,mixed_script_terms=False,procedure_targets=False,criterion_method_navigation=False):
+                   definition_context=False,read_sources=(),operational_context=False,mechanism_overview=False,mechanism_components=False,section_targets=(),indexed_sections=False,external_method_context=False,request_roles=False,mixed_script_terms=False,procedure_targets=False,criterion_method_navigation=False,measurement_tables=False):
+    if type(measurement_tables) is not bool:raise ValueError('Invalid measurement table navigation policy')
     if type(criterion_method_navigation) is not bool:raise ValueError('Invalid criterion method navigation policy')
     if type(procedure_targets) is not bool:raise ValueError('Invalid procedure target policy')
     obligations={o['obligationId']:o for item in plan for o in item.get('obligations',[])}
@@ -35,7 +36,7 @@ def order_premises(evidence,plan,limit=20, *, membership_intents=False,module_in
     if request_roles:
         from services.deep_research.reading_roles import premise_bundles
         chosen,bundles=premise_bundles(rows,obligations,mixed_script_terms=mixed_script_terms,
-            **({'procedure_targets':True} if procedure_targets else {}))
+            **({'procedure_targets':True} if procedure_targets else {}),measurement_tables=measurement_tables)
         seen={e['evidenceId'] for e in chosen}
     section_groups={};section_owners={o['obligationId']:i for i,item in enumerate(plan) for o in item.get('obligations',[])}
     if section_targets:
