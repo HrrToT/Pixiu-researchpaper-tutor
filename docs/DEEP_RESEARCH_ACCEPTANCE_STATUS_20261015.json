@@ -14,7 +14,7 @@
     "missingBaselineCases": [],
     "elapsedSeconds": 538.23,
     "passed": 8972,
-    "appliesToCurrentPythonSource": true,
+    "appliesToCurrentPythonSource": false,
     "matchesLoadedRuntime": true,
     "proof": "deep-research-evidence/unified-advice-repair-486-20261116.json",
     "boundary": "Complete current offline research regression only; not real generation, Provider cost/quality, independent scientific acceptance or full product release."
@@ -16530,5 +16530,15 @@
       "proof": "deep-research-evidence/comparison-486-d2-v5-20261116.json"
     },
     "next": "Inspect cumulative normal/reserve repair admission and draft/context duplication; align public source labels and evidence-qualified claims before another full case. Preserve scientific checks and whole-run budget."
+  },
+  "scopeCitationPresentationCandidate20261116": {
+    "promptVersion": "dr-v2.20261116.487",
+    "repairInstructionsContractVersion": 3,
+    "relatedTests": 187,
+    "proof": "deep-research-evidence/scope-citation-487-saved-replay-20261116.json",
+    "productionLoaded": false,
+    "scientificContentAccepted": false,
+    "fullRegression": "pending integrated repair-budget work",
+    "next": "Complete cumulative repair admission analysis, then freeze the integrated candidate for complete regression and one full comparison. Preserve original budget and independent checks."
   }
 }

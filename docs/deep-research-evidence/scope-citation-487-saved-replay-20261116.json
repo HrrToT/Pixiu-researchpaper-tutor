@@ -1,0 +1,12 @@
+{
+  "case": "D2-VQ-v1-v5",
+  "candidate": "dr-v2.20261116.487",
+  "oldCompactionCandidates": 0,
+  "candidateCompactionCandidates": 4,
+  "rootCause": "Citation presentation changed rendered text after scope AST audit was captured; compaction rejected the mismatch atomically.",
+  "replayBoundary": "Uses saved presentation marker-to-evidence bindings and literal quotes to replay AST presentation. No budget change or model call. Four candidates remain scientifically unverified.",
+  "sameClaimIdsKindsRefsAndNonTextValues": true,
+  "modelCalls": 0,
+  "applicationWrites": 0,
+  "scientificContentAccepted": false
+}

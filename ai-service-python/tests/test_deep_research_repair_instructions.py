@@ -116,7 +116,7 @@ def test_policy_server_owned_immutable_and_cannot_be_added_to_legacy_run(tmp_pat
     try:
         r,_=facade.create({'workspaceTaskId':'t','operationKey':'op','question':'Explain','deferStart':True,
             'repairInstructionsContractVersion':False},start_async=False)
-        assert type(r['repairInstructionsContractVersion']) is int and r['repairInstructionsContractVersion']==2
+        assert type(r['repairInstructionsContractVersion']) is int and r['repairInstructionsContractVersion']==3
         ready=deepcopy(r);ready['state']['outputKind']='claim_verification';assert enabled(ready)
         with pytest.raises(ValueError,match='Immutable'):repo.update_run(r['runId'],lambda r:{**r,'repairInstructionsContractVersion':False})
         old=deepcopy(r);old.pop('repairInstructionsContractVersion');old.update(runId='legacy',idempotencyKey='old')
@@ -148,3 +148,58 @@ def test_advice_switch_cannot_admit_experiment_targets_to_unified_point_repair(f
     with pytest.raises(ValueError,match='Point-scoped'):
         _prepare_repair(report,checks,ev,'Design an experiment.',ordinary_advice=True,
             consolidated_instructions=True,max_prompt_bytes=32000,**opts)
+
+
+def test_scope_citation_presentation_keeps_ast_and_text_consistent_through_compaction():
+    from test_deep_research_authored_body import boundary
+    from services.deep_research.repair import _parse_repair_response
+    from services.deep_research.repair_compaction import compact_repairs
+    from services.deep_research.scope_expression import materialize
+    raw=boundary();raw['body']['boundary']['notEstablished'][0]['quantity']='performance (from E1)'
+    report={'claims':[decode(raw)]}
+    checks={'accepted':[],'rejected':[{'claimId':'c','reason':'internal_reference_in_prose'}]}
+    opts={**options(),'required_scope_ids':['c'],'target_goals':5,'verbatim_repair':True,
+          'consolidated_instructions':True,'citation_presentation_version':4}
+    prepared=_prepare_repair(report,checks,evidence(),'Compare.',scope_citation_presentation=True,**opts)
+    raw['evidenceRefs']=['E1'];raw['discardedDraftSpans']=[]
+    scope=[];presentation=[]
+    rows=_parse_repair_response(prepared,{'content':json.dumps([raw])},json.loads,presentation,
+        strict_response=True,scope_audit=scope)
+    assert len(rows)==len(scope)==1
+    rebuilt,audit=materialize({**rows[0],'text':'','scopeExpression':scope[0]['expression']},5)
+    assert rebuilt==rows[0] and scope[0]['renderedText']==rows[0]['text']
+    assert 'from E1' not in rows[0]['text'] and 'cited passage' in rows[0]['text']
+    invoke=Mock(side_effect=AssertionError('No model required without a length limit'))
+    compacted=compact_repairs(report,rows,[],{'scopeExpressionAudit':{'0':scope}},'Compare.',
+        invoke,json.loads,expression_version=5,authored_body=True)
+    assert compacted==rows
+    invoke.assert_not_called()
+    assert presentation and scope[0]['verification']=='unchecked'
+    from services.deep_research.verification import verify_claims
+    assert not verify_claims(compacted,[])['accepted']
+
+
+def test_scope_citation_presentation_changes_exact_batch_identity():
+    report,checks,ev,opts=fixture();opts.update(consolidated_instructions=True,citation_presentation_version=4)
+    raw=prose('c');raw.update(evidenceRefs=['E1'],discardedDraftSpans=[])
+    states=[];invoke=Mock(return_value={'content':json.dumps([raw])})
+    repair_rejected(report,checks,ev,'Explain.',invoke,json.loads,checkpoint=states.append,**opts)
+    invoke.reset_mock()
+    from services.deep_research.contracts import DeepResearchError
+    with pytest.raises(DeepResearchError):
+        repair_rejected(report,checks,ev,'Explain.',invoke,json.loads,batch_state=states[-1],
+            scope_citation_presentation=True,**opts)
+    invoke.assert_not_called()
+
+
+@pytest.mark.parametrize('mode',['foreign','literal_symbol'])
+def test_structured_scope_presentation_retains_unowned_or_literal_source_symbols(mode):
+    from services.deep_research.citation_presentation import normalize_scope_expression
+    claim={'claimId':'c','kind':'inference','text':'','conditions':{},'evidenceRefs':['a'],
+        'scopeExpression':{'observedSettings':[], 'notEstablished':[{'type':'comparison_evidence',
+            'subjects':['A','B'],'quantity':'performance (from E1)'}]}}
+    before=deepcopy(claim)
+    aliases={'E1':'foreign'} if mode=='foreign' else {'E1':'a'}
+    quotes={'E1':'The source symbol E1 denotes energy.'} if mode=='literal_symbol' else {'E1':'A plain passage.'}
+    row,_=normalize_scope_expression(claim,aliases,quotes,version=4)
+    assert row==before and claim==before

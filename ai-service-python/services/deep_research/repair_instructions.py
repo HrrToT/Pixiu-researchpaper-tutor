@@ -5,7 +5,7 @@ import json
 def enabled(record):
     from services.deep_research.verbatim_repair import enabled as verbatim
     return (type(record.get('repairInstructionsContractVersion')) is int
-            and record['repairInstructionsContractVersion'] in (1,2) and verbatim(record)
+            and record['repairInstructionsContractVersion'] in (1,2,3) and verbatim(record)
             and type(record.get('factualRepairPromptContractVersion')) is int
             and record['factualRepairPromptContractVersion'] == 3
             and type(record.get('factRedraftContractVersion')) is int

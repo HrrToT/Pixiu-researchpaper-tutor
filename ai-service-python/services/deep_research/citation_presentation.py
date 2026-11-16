@@ -131,3 +131,18 @@ def normalize(claim,aliases,quotes,*,version=1):
     if audit is not None and original_statement is not None:
         audit.update(originalStatement=original_statement,normalizedStatement=result['executionSpec']['statement'])
     return result,audit
+
+
+def normalize_scope_expression(claim, aliases, quotes, *, version):
+    """Apply existing own-citation rules to the AST before rendering it once."""
+    result=deepcopy(claim)
+    original=deepcopy(result['scopeExpression'])
+    proxy={**result,'text':'','conditions':deepcopy(original)}
+    normalized,audit=normalize(proxy,aliases,quotes,version=version)
+    result['scopeExpression']=normalized['conditions']
+    if audit:
+        audit={**audit,'originalScopeExpression':original,
+               'normalizedScopeExpression':deepcopy(result['scopeExpression'])}
+        for marker in audit.get('removed',[]):
+            marker['field']=marker['field'].replace('conditions','scopeExpression',1)
+    return result,audit
