@@ -25,7 +25,7 @@ def presentation(version=3):
                                        'axisId':'axis', 'axisTitle':'结果与条件', 'claimIds':['a','b']}]}
 
 
-def audit(mutation=None, evidence=None):
+def audit(mutation=None, evidence=None, wire_mode=None):
     evidence = deepcopy(EVIDENCE if evidence is None else evidence)
     sent = []
     def invoke(rid, node, prompt, options, **kwargs):
@@ -49,6 +49,11 @@ def audit(mutation=None, evidence=None):
         rows.append({'auditType':'answer_coherence','coherent':mutation != 'incoherent',
             'issues':[] if mutation != 'incoherent' else [{'kind':'contradiction',
               'bindings':[{'claimId':'a','field':'text'}], 'reason':'Fixture joint contradiction.'}]})
+        if wire_mode is not None:
+            from services.deep_research.structured_output import normalize
+            assert 'Return ONLY {"items":[ROWS]}' in prompt and 'INSIDE items (NEVER at root)' in prompt
+            data={'items':rows} if wire_mode=='valid' else {'items':rows[:-1],**rows[-1]}
+            return normalize(node,{'content':json.dumps(data)})
         return {'content':json.dumps(rows)}
     before = deepcopy((PLAN, CLAIMS, evidence))
     result = audit_final_answer('r',QUESTION,PLAN,CLAIMS,evidence,invoke,json.loads,
@@ -97,6 +102,14 @@ def test_oversized_required_context_stops_without_adapter_call():
     result, sent = audit(evidence=ev)
     assert not sent and result['status'] == 'budget_exhausted'
     assert result['budgetLimit']['kind'] == 'coveragePromptBytes'
+
+
+@pytest.mark.parametrize('mode',['valid','root_coherence'])
+def test_actual_native_envelope_accepts_only_coherence_inside_items(mode):
+    result,sent=audit(wire_mode=mode)
+    assert len(sent)==1
+    if mode=='valid':assert result['status']=='checked' and not result['gaps']
+    else:assert result['status']=='invalid_response' and result['gaps']
 
 
 @pytest.mark.parametrize('version',[1,2])

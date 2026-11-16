@@ -23,7 +23,7 @@ need no results/author settings unless requested/claimed; data counts/splits nee
 grounding. Auxiliary work need not be narrated but cannot waive requested facts,
 dependencies, controls, assumptions or evidence. Read executionSpec values jointly
 with prose/conditions; its omitted exact generated suffix duplicates those values.
-Return ONLY JSON array, one ordinary row per fixed obligationId:
+Return ONLY {"items":[ROWS]}, one ordinary ROW per fixed obligationId:
 {"obligationId":"ID","checks":[{"checkId":"ID","status":"covered|partial|missing",
 "bindings":[{"claimId":"accepted ID","field":"text"}],"reason":"1-800 characters"}]}.
 Every fixed checkId exactly once; exact keys, additions only as below. covered needs
@@ -34,7 +34,7 @@ ONLY supporting_research may instead return exactly obligationId and notRequired
 {"reason":"specific reason at least12 characters","requestExcerpt":"literal user
 substring at least8 characters","bindings":[{"claimId":"ID","field":"text"}]}.
 Justify why deliverable suffices; never exempt answer_requirement/original question.
-Output ordinary IDs/values, never input-sharing references.
+Output literal IDs/values.
 '''
 
 ACCESS = '''Access metadata is not science/full-paper reading. Access-only checks may bind
@@ -68,7 +68,7 @@ limit. Judge the requested applicability/assumption/evidence boundary semantical
 not just literal matching; do not demand unrelated limits or synonymous labels.
 '''
 
-COHERENCE = '''Append one row {"auditType":"answer_coherence","coherent":true,"issues":[]}.
+COHERENCE = '''Append INSIDE items (NEVER at root): {"auditType":"answer_coherence","coherent":true,"issues":[]}.
 Judge ALL text/conditions/executionSpec jointly. False only for actual misleading
 contradiction/scope ambiguity: issues has1-8 exact {"kind":"contradiction|scope_ambiguity","bindings":[{"claimId":
 "accepted ID","field":"text|conditions|executionSpec"}],"reason":"1-600 characters"}.

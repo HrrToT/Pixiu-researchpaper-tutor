@@ -1,4 +1,21 @@
 from copy import deepcopy
+
+
+def test_comparison_table_schema_matches_exact_consumer_keys_without_repairing_bad_bindings():
+    from services.deep_research.table_bindings import validate_declared_references,validate_table_bindings
+    source={'evidenceId':'e','quote':'Table row 9: Method A | 27.1',
+            'tableData':{'groups':[['Dataset A',['PSNR']]],'rows':[[9,'Method A',['27.1']]]}}
+    claim={'evidenceRefs':['e'],'text':'Dataset A：Method A，PSNR 27.1','conditions':{},
+           'tableBindings':[{'evidenceId':'e','rowNumber':9,'groupIndex':0,'metric':'PSNR','value':'27.1'}]}
+    assert validate_declared_references(claim,[source]) is None
+    assert validate_table_bindings(claim,[source]) is None
+    for key in ('metricKey','quotation_arrow'):
+        wrong=deepcopy(claim)
+        if key=='metricKey':wrong['tableBindings'][0]['metricKey']=wrong['tableBindings'][0].pop('metric')
+        else:wrong['tableBindings'][0]['metric']='PSNR↑'
+        before=deepcopy(wrong)
+        assert validate_declared_references(wrong,[source])=='unverified_table_cell'
+        assert wrong==before
 import json
 
 import pytest

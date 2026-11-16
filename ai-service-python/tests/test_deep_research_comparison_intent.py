@@ -226,6 +226,8 @@ def test_actual_planning_generation_verification_and_publication_keep_full_goals
             assert 'comparisonRole' in prompt
             return {'content':json.dumps({'items':plan()})}
         assert node=='synthesize' and 'Joint judgement targets' in prompt
+        assert 'metric is the field name, NEVER metricKey' in prompt
+        assert 'bind PSNR, not PSNR↑' in prompt
         cells=json.JSONDecoder().raw_decode(prompt.split('Cell routing and citation permissions (metadata, not evidence):\n',1)[1])[0]
         assert len(cells)==2
         def point(refs,kind='reported'):

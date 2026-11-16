@@ -1,5 +1,5 @@
 {
-  "asOf": "2026-11-16",
+  "asOf": "2026-11-17",
   "objective": "Complete DR0-DR5 in DEEP_RESEARCH_DESIGN_20261012.md without redefining success around implemented subsets.",
   "overall": "incomplete",
   "currentFullOfflineRegression": {
@@ -15,7 +15,7 @@
     "elapsedSeconds": 455.64,
     "boundary": "Complete current offline research regression only; not real generation, Provider cost/quality, independent scientific acceptance or full product release.",
     "passed": 9087,
-    "appliesToCurrentPythonSource": true,
+    "appliesToCurrentPythonSource": false,
     "matchesLoadedRuntime": false,
     "proof": "deep-research-evidence/comparison-compact-audit-full-20261116.json"
   },
@@ -16751,5 +16751,14 @@
     "newUnknownRequests": 0,
     "independentCredit": 0,
     "defaultRuntimeRestored": true
+  },
+  "comparisonInterfaceAlignment20261117": {
+    "status": "related_offline_passed_not_live_accepted",
+    "proof": "deep-research-evidence/comparison-interface-alignment-20261117.json",
+    "tests": 181,
+    "newModelCalls": 0,
+    "loadedRuntime": false,
+    "scientificCredit": 0,
+    "next": "Resolve complete mechanism/cost evidence selection and bounded repair on saved inputs before another stable-candidate full suite or real retest."
   }
 }
