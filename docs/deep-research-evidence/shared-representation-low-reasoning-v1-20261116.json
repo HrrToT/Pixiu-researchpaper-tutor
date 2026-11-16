@@ -1,0 +1,50 @@
+{
+  "asOf": "2026-11-16",
+  "case": "SHARED-REPRESENTATION-LOW-REASONING-v1",
+  "sourceCommit": "dd00043cf",
+  "isolatedPolicyOverride": {
+    "case": "SHARED-REPRESENTATION-LOW-REASONING-v1",
+    "thinking": {
+      "type": "enabled"
+    },
+    "reasoning_effort": "low",
+    "max_tokens": 16384,
+    "timeout_seconds": 150
+  },
+  "productionPolicyChanged": false,
+  "baselineCase": "SHARED-REPRESENTATION-INPUTS-v4",
+  "promptMessagesAndSchemaExactlyEqual": true,
+  "fullQuestionUnchanged": true,
+  "allOriginalSourceDataUnchanged": true,
+  "originalEvidenceRows": 17,
+  "requestDigest": "b71016b961d2c6e1ed0415a158293e2a55bb57b6abcb32d04bebdf7853d79c25",
+  "actualHttpIntent": {
+    "hostname": "api.deepseek.com",
+    "messagesDigest": "3126d75d88efd5db827382e595a514ac42baf1f9aaea9541acfb867a88c4fa57",
+    "schemaDigest": "23397672949c261c1dd923bc75a41614105c2bd901a77092b31abe68f7907e81",
+    "reasoning": {
+      "effort": "low"
+    },
+    "maxOutputTokens": 16384,
+    "timeoutSeconds": 120.0,
+    "singlePostGuard": true,
+    "isolatedPolicyOverride": true
+  },
+  "providerCalls": 1,
+  "attempt": 1,
+  "status": "unknown",
+  "settled": false,
+  "failureKind": "deadline_exceeded",
+  "reservedTokens": 49128,
+  "actualUsage": null,
+  "reservedTokensAreActualUsage": false,
+  "replayed": false,
+  "scientificContentAccepted": false,
+  "independentCredit": 0,
+  "applicationDataUnchanged": true,
+  "resultArtifact": {
+    "path": "tmp/shared-representation-low-reasoning-v1-result-20261116/result.json",
+    "sha256": "6d2b5e14a1368a2e5134acf0dd50f400ecb835acd7bac13fda9eda52744819e5"
+  },
+  "boundary": "Requested 150-second policy was clamped by the unchanged existing client limit to 120 seconds. One deadline-exceeded unknown; no answer or actual usage received. Does not prove reasoning quality, provider completion or acceptance. Never resend this identity."
+}
