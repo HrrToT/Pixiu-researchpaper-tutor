@@ -13,6 +13,8 @@ _LIMIT=re.compile(r'边界|局限|适用|\b(?:limitations?|scope|applicability)\
 _DEFINE=re.compile(r'\b(?:defin\w*|refer\w* to|estimates? of|moving averages?|represents?|records?|stores?)\b|定义|表示为|记录',re.I)
 _CAUSE=re.compile(r'\b(?:because|due to|caus\w*|leading to|leads? to|results? in|counteract\w*)\b|因为|导致|由于',re.I)
 _ACTION=re.compile(r'\b(?:comput\w*|divid\w*|updat\w*|subtract\w*|normaliz\w*|fus\w*|extract\w*|transform\w*|construct\w*|convert\w*)\b|计算|相除|除以|更新|归一化|融合|提取',re.I)
+_DETAIL_ACTION=re.compile(r'\b(?:prun\w*|recover\w*|distill\w*|quantiz\w*|encod\w*|decod\w*|optim\w*|fine.tun\w*|densif\w*|project\w*|filter\w*|creat\w*|adapt\w*|rasteriz\w*|render\w*|split\w*|clon\w*)\b|剪枝|恢复|蒸馏|量化|编码|解码|优化|微调|投影|筛选|创建|自适应|渲染|分裂|克隆',re.I)
+_OPERATIVE_REQUEST=re.compile(r'机制|原理|流程|管线|步骤|阶段|场景表示|表示要素|存储形式|额外处理|开销|成本|代价|\b(?:mechanism|pipeline|procedur\w*|steps?|stages?|overhead|cost)\b',re.I)
 _BOUND=re.compile(r'\b(?:if|under|assum\w*|provided|bounded|conditions?)\b|如果|假设|条件|前提',re.I)
 _STOP={'arxiv','paper','method','methods','algorithm','definition','definitions','explain','what','which','where',
        'does','with','from','that','this','their','according','source','original'}
@@ -28,9 +30,13 @@ def requested(question):
         and bool(_CONCEPT.search(question) or method_requested(question,outline=True)))
 
 
-def priority(row,requirement,query='',response_type=''):
+def priority(row,requirement,query='',response_type='',*,operations=False):
+    if type(operations) is not bool:raise ValueError('Invalid operation navigation policy')
     from services.deep_research.reading_roles import quality
-    if not requested(requirement):return (0,0,0,0,0)
+    operation_request=(operations and response_type in {'identification','explanation','procedure'}
+                       and not _EXCLUDE.search(requirement)
+                       and bool(_OPERATIVE_REQUEST.search(requirement)))
+    if not requested(requirement) and not operation_request:return (0,0,0,0,0)
     text=unicodedata.normalize('NFKC',row.get('quote',''))
     from services.deep_research.pdf_outline import normalized_title
     section=normalized_title(str((row.get('location') or {}).get('section','')))
@@ -38,7 +44,12 @@ def priority(row,requirement,query='',response_type=''):
     q=quality({'text':text,'location':row.get('location',{})},requirement)
     if background or q!=(True,True):return (-1,0,0,0,0)
     method=(row.get('location') or {}).get('sectionRole')=='method'
-    if _WHY.search(requirement):relation=3*bool(_CAUSE.search(text))+bool(_DEFINE.search(text))
+    if operation_request:
+        # A measurement packet or benchmark retraining note is not a method
+        # operation merely because it repeats the method name or a cost word.
+        relation=0 if row.get('tableData') or text.lstrip().startswith('Table caption:') else min(3,
+            len({m.group().casefold()[:5] for p in (_ACTION,_DETAIL_ACTION) for m in p.finditer(text)}))
+    elif _WHY.search(requirement):relation=3*bool(_CAUSE.search(text))+bool(_DEFINE.search(text))
     elif _HOW.search(requirement) or response_type=='procedure':relation=min(3,len(_ACTION.findall(text)))
     elif _LIMIT.search(requirement) or response_type=='limitation':relation=3*bool(_BOUND.search(text))
     else:relation=3*bool(_DEFINE.search(text))
@@ -51,15 +62,19 @@ def priority(row,requirement,query='',response_type=''):
     return (int(relation>0),relation,int(method),hits,-len(text))
 
 
-def bundle(rows,requirement,query='',response_type=''):
+def bundle(rows,requirement,query='',response_type='',*,operations=False):
     """At most three exact existing passages for complementary operations/context."""
-    ranked=sorted(rows,key=lambda e:priority(e,requirement,query,response_type),reverse=True)
-    if not ranked or priority(ranked[0],requirement,query,response_type)[0]<=0:return []
+    rank=lambda row:priority(row,requirement,query,response_type,**({'operations':True} if operations else {}))
+    if type(operations) is not bool:raise ValueError('Invalid operation navigation policy')
+    ranked=sorted(rows,key=rank,reverse=True)
+    if not ranked or rank(ranked[0])[0]<=0:return []
     lead=ranked[0];leads=[lead]
-    if _HOW.search(requirement) or response_type=='procedure':
-        def actions(row):return {m.group().casefold()[:5] for m in _ACTION.finditer(row.get('quote',''))}
-        secondary=next((e for e in ranked[1:] if priority(e,requirement,query,response_type)[0]>0
-            and priority(e,requirement,query,response_type)[3]>0 and actions(e)-actions(lead)),None)
+    if _HOW.search(requirement) or response_type=='procedure' or operations:
+        def actions(row):
+            text=row.get('quote','')
+            return {m.group().casefold()[:5] for p in ((_ACTION,_DETAIL_ACTION) if operations else (_ACTION,)) for m in p.finditer(text)}
+        secondary=next((e for e in ranked[1:] if rank(e)[0]>0
+            and (operations or rank(e)[3]>0) and actions(e)-actions(lead)),None)
         if secondary is not None:leads.append(secondary)
     result=[]
     # Anaphoric operations/causes need their actual immediately preceding

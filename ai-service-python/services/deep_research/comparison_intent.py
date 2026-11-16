@@ -4,9 +4,19 @@
 def enabled(record):
     from services.deep_research.comparison_generation import enabled as cells_enabled
     return (type(record.get('comparisonPlanningContractVersion')) is int
-            and record['comparisonPlanningContractVersion'] == 1
+            and record['comparisonPlanningContractVersion'] in (1,2)
             and type(record.get('factualReviewContractVersion')) is int
             and record['factualReviewContractVersion'] == 4 and cells_enabled(record))
+
+
+def operations_enabled(record):
+    return isinstance(record,dict) and enabled(record) and record['comparisonPlanningContractVersion'] == 2
+
+
+def synthesis_input_limit(record):
+    # A per-request source window, NOT an increase to the run's atomic budget.
+    # Frozen v1/legacy requests retain their original window and selection.
+    return 32000 if operations_enabled(record) else 24000
 
 
 def validate_role(obligation, question):

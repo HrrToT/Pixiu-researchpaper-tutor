@@ -1196,7 +1196,9 @@ def make_synthesize_node(
                 from services.deep_research.selection import proposal_evidence_order
                 candidates=proposal_evidence_order(candidates,question)
             from services.deep_research.synthesis_instructions import enabled as synthesis_input_enabled
+            from services.deep_research.comparison_intent import operations_enabled as comparison_operations_enabled
             candidates,premise_bundles=order_premises(candidates,brief_state.get('plan',[]),
+                **({'comparison_operations':True} if comparison_operations_enabled(record) else {}),
                 **({'procedure_targets':True} if synthesis_input_enabled(record,output_kind) else {}),
                 **({'request_roles':True,**({'mixed_script_terms':True} if record.get('readingPriorityContractVersion') in (7,8) else {})} if type(record.get('readingPriorityContractVersion')) is int
                    and record['readingPriorityContractVersion'] in (6,7,8) and output_kind in {'paper_comparison','claim_verification'} else {}),
@@ -1560,6 +1562,13 @@ space with unsupported global absence or incidental iteration/performance values
             encoded_allocation=staged_mode and allocation_enabled(record) and not stage_allocation
             allocation_render=render_premises
             allocation_limit=experiment_input_limit(record)
+            from services.deep_research.comparison_intent import operations_enabled as comparison_operations_enabled,synthesis_input_limit as comparison_input_limit
+            comparison_input=cell_mode and comparison_operations_enabled(record)
+            if comparison_input:
+                from services.deep_research.tools import TrackedLLMInvoker
+                allocation_limit=comparison_input_limit(record)
+                if isinstance(llm_invoke,TrackedLLMInvoker):
+                    allocation_limit=min(allocation_limit,llm_invoke.prompt_byte_limit(run_id,'synthesize'))
             if stage_allocation:
                 from services.deep_research.scientific_outline import prompt_for as decision_prompt, NODE as decision_node
                 from services.deep_research.experiment_capacity import node_input_limit
@@ -1574,7 +1583,7 @@ space with unsupported global absence or incidental iteration/performance values
             def wire_size(value):
                 return len(encode_outline(record,value)[0].encode('utf8'))
             prompt,evidence_summaries,missing_bundles=fit_premises(evidence_summaries,allocation_render,wire_bundles,
-                **({'max_bytes':allocation_limit} if staged_mode else {}),
+                **({'max_bytes':allocation_limit} if staged_mode or comparison_input else {}),
                 omit_optional_table_data=output_kind=='paper_comparison' and qualitative_comparison and not numerical_request,
                 **({'prompt_byte_size':wire_size} if encoded_allocation else {}),
                 **({'required_contexts':{eid:context for b in wire_bundles
@@ -1587,6 +1596,8 @@ space with unsupported global absence or incidental iteration/performance values
                 'suppliedEvidenceIds':[evidence_aliases[row['evidenceId']] for row in evidence_summaries],
                 'missingPremiseBundles':missing_bundles,'inputBytes':len(allocation_prompt.encode('utf8')),
                 'fixedInputBytes':len(allocation_render([]).encode('utf8')),
+                **({'comparisonInputPolicyVersion':2,'maxInputBytes':allocation_limit,
+                    'sourceOperationsPrioritized':True} if comparison_input else {}),
                 **({'stageAllocationContractVersion':1,'allocationNode':decision_node,
                     'maxPromptBytes':allocation_limit,
                     'generationTemplateBytes':len(prompt.encode('utf8')),

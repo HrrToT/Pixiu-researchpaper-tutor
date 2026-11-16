@@ -16760,5 +16760,19 @@
     "loadedRuntime": false,
     "scientificCredit": 0,
     "next": "Resolve complete mechanism/cost evidence selection and bounded repair on saved inputs before another stable-candidate full suite or real retest."
+  },
+  "comparisonOperationInput20261117": {
+    "status": "related_offline_and_saved_acquired_premises_passed_not_live_accepted",
+    "proof": "deep-research-evidence/comparison-operation-input-v2-20261117.json",
+    "relatedTests": 146,
+    "planningContractVersionForNewControlledRuns": 2,
+    "generationInputLimitBytes": 32000,
+    "savedGenerationInputBytes": 31993,
+    "suppliedRows": 20,
+    "missingAcquiredPremiseGroups": 0,
+    "newModelCalls": 0,
+    "runtimeLoaded": false,
+    "scientificCredit": 0,
+    "next": "Offline repair-input capacity and full content-input checks, then frozen full regression before any real retest."
   }
 }

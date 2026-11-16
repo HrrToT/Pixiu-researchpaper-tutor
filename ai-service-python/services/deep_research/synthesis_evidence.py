@@ -25,7 +25,8 @@ def result_role(row):
 
 
 def order_premises(evidence,plan,limit=20, *, membership_intents=False,module_intents=False,condition_intents=False,
-                   definition_context=False,read_sources=(),operational_context=False,mechanism_overview=False,mechanism_components=False,section_targets=(),indexed_sections=False,external_method_context=False,request_roles=False,mixed_script_terms=False,procedure_targets=False,criterion_method_navigation=False,measurement_tables=False):
+                   definition_context=False,read_sources=(),operational_context=False,mechanism_overview=False,mechanism_components=False,section_targets=(),indexed_sections=False,external_method_context=False,request_roles=False,mixed_script_terms=False,procedure_targets=False,criterion_method_navigation=False,measurement_tables=False,comparison_operations=False):
+    if type(comparison_operations) is not bool:raise ValueError('Invalid comparison operation policy')
     if type(measurement_tables) is not bool:raise ValueError('Invalid measurement table navigation policy')
     if type(criterion_method_navigation) is not bool:raise ValueError('Invalid criterion method navigation policy')
     if type(procedure_targets) is not bool:raise ValueError('Invalid procedure target policy')
@@ -94,11 +95,16 @@ def order_premises(evidence,plan,limit=20, *, membership_intents=False,module_in
                 continue
             lead=ranked[0];bundle=[lead]
             method_contexts={};used_method_bundle=False
-            if criterion_method_navigation and active_intent is None:
+            operation_navigation=(comparison_operations and obligations[oid].get('comparisonRole',{}).get('kind')=='per_paper')
+            if (criterion_method_navigation and active_intent is None) or operation_navigation:
                 from services.deep_research.method_navigation import bundle as navigation_bundle
                 method_group=navigation_bundle(own,view['question'],obligations[oid].get('searchQuery',''),
-                    (view.get('completionCriteria') or [{}])[0].get('responseType',''))
-                if method_group:bundle=method_group;lead=bundle[-1];used_method_bundle=True
+                    (view.get('completionCriteria') or [{}])[0].get('responseType',''),
+                    **({'operations':True} if operation_navigation else {}))
+                if method_group:
+                    bundle=method_group;lead=bundle[-1];used_method_bundle=True
+                    if operation_navigation:
+                        method_contexts={e['evidenceId']:surrounding_context(e) for e in bundle if surrounding_context(e)}
             focused=section_groups.get((section_owners[oid],source))
             if focused and (any(b['obligationId']==oid and b['criterionId']=='requested_section' for b in bundles)
                     or active_intent is None and not requested_sections(view['question']) and re.search(r'这种|该(?:机制|设计|方法)|上述|\bthis (?:mechanism|design|method)\b',view['question'],re.I)):
@@ -128,10 +134,15 @@ def order_premises(evidence,plan,limit=20, *, membership_intents=False,module_in
                     if context:contexts[e['evidenceId']]=context
             bundles.append({'obligationId':oid,'criterionId':(view.get('completionCriteria') or [{}])[0].get('criterionId','whole_obligation'),
                             'requirement':view['question'],'source':source,'evidenceIds':ids,
+                            **({'navigationRole':'comparison_operation'} if operation_navigation and used_method_bundle else {}),
                             **({'requiredContextByEvidenceId':contexts} if contexts else {})})
             for row in bundle:
                 if row['evidenceId'] not in seen:
                     chosen.append(row);seen.add(row['evidenceId'])
+    if comparison_operations:
+        bundles.sort(key=lambda b:b.get('navigationRole')!='comparison_operation')
+        preferred={eid for b in bundles if b.get('navigationRole')=='comparison_operation' for eid in b['evidenceIds']}
+        chosen.sort(key=lambda e:e['evidenceId'] not in preferred)
     remainder=[row for row in rows if row['evidenceId'] not in seen]
     if mechanism_overview:
         from services.deep_research.mechanism_sources import overview_score

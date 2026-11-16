@@ -83,7 +83,7 @@ def test_comparison_role_contract_is_server_selected_and_frozen(tmp_path,server_
     try:
         run,_=facade.create({'workspaceTaskId':'t','operationKey':'op','question':QUESTION,
                             'comparisonPlanningContractVersion':1-server_profile},start_async=False)
-        assert run['comparisonPlanningContractVersion']==server_profile
+        assert run['comparisonPlanningContractVersion']==(2 if server_profile else 0)
         for value in (None,True,1-server_profile,'1'):
             with pytest.raises(ValueError,match='Immutable'):
                 repo.update_run(run['runId'],lambda r:{**r,'comparisonPlanningContractVersion':value})

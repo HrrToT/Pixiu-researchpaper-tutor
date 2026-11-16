@@ -298,6 +298,9 @@ class TrackedLLMInvoker:
     def prompt_byte_limit(self, run_id: str, node: str) -> int:
         from services.deep_research.verification_capacity import verification_input_limit
         record = self._run_record(run_id) if self._run_record else None
+        from services.deep_research.comparison_intent import operations_enabled as comparison_operations_enabled,synthesis_input_limit as comparison_input_limit
+        if node=='synthesize' and comparison_operations_enabled(record):
+            return min(comparison_input_limit(record),getattr(self,'_experiment_max_input',self._max_input))
         from services.deep_research.workflow_revision_context import enabled as context_enabled, NODE as CONTEXT_NODE, MAX_INPUT as CONTEXT_MAX_INPUT
         if node == CONTEXT_NODE and context_enabled(record):
             return min(getattr(self,'_workflow_revision_context_max_input',self._max_input),CONTEXT_MAX_INPUT)
