@@ -15469,7 +15469,7 @@
     "promptVersion": "dr-v2.20261116.488",
     "sourceCommit": "aff24567bbaae80171578e9825326b5ecd8c2377",
     "health": "ok",
-    "activeResearchRuns": 1,
+    "activeResearchRuns": 0,
     "applicationRuns": 394,
     "historicalPaused": 15,
     "metadataInputWindow": 40000,
@@ -16551,7 +16551,7 @@
     "budgetChanged": false,
     "scientificContentAccepted": false,
     "fullRegression": "passed",
-    "next": "Freeze integrated487+488 candidate, run complete baseline-preserving regression, then load once and run one complete comparison. Preserve all original quality and budget gates.",
+    "next": "Stop repeated prompt-only trials. Implement source-by-dimension evidence allocation and separately verifiable comparison cells with canonical source labels; compose concise results from verified cells, preserving full original comparison and independent scientific gates.",
     "failedFullRegression": "deep-research-evidence/integrated-repair-488-20261116.json",
     "nodePrefixCorrection": {
       "focusedTests": 75,
@@ -16563,8 +16563,10 @@
     "realCase": {
       "id": "D2-VQ-v1-v6",
       "runId": "dr_run_1c4ba690e465563883a339ec0f50b867",
-      "status": "running",
-      "automaticRetry": false
+      "status": "completed",
+      "automaticRetry": false,
+      "outcome": "inconclusive",
+      "proof": "deep-research-evidence/comparison-488-d2-v6-20261116.json"
     }
   }
 }
