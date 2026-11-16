@@ -3,6 +3,7 @@ import { fireEvent, render, screen, within } from '@testing-library/react';
 import { expect, it, vi } from 'vitest';
 import ResearchReportText from './ResearchReportText';
 import fixture from './__fixtures__/sharedExperimentReport.json';
+import { reviseDocument } from '../utils/documentVersions';
 
 // Produced through the Python compiler/audit/publication path with synthetic
 // input and mocked verdicts. This checks the interface, never scientific quality.
@@ -21,7 +22,12 @@ it('opens the published experiment as a document and restores its exact evidence
   expect(jump).toHaveBeenCalledWith(expect.objectContaining({ pdfId: fixture.sources[0].pdfId, evidenceId: id }));
   expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   view.unmount();
-  render(<ResearchReportText {...props} text={`${fixture.report}\n\n我的补充：先核对实验资源。`} />);
+  const original = { id: 'artifact', text: fixture.report, sources: fixture.sources,
+    sourceRunId: fixture.researchContext.runId, reportVersionId: 'v1', origin: 'latest', versions: [] };
+  const edited = reviseDocument(original, `${fixture.report}\n\n我的补充：先核对实验资源。`);
+  expect(edited).toMatchObject({ edited: true, sourceRunId: original.sourceRunId, reportVersionId: 'v1', sources: original.sources });
+  expect(edited.versions[0].text).toBe(fixture.report);
+  render(<ResearchReportText {...props} sources={edited.sources} text={edited.text} />);
   expect(screen.getByText('我的补充：先核对实验资源。')).toBeInTheDocument();
   openEvidence();
   expect(within(screen.getByRole('dialog')).getByText(fixture.sources[0].evidenceQuotes[id].quote)).toBeInTheDocument();
