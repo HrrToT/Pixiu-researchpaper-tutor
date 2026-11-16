@@ -141,4 +141,15 @@ sys.exit(pytest.main(v['args'],plugins=[ResearchOnly()]))
 
 
 if __name__ == '__main__':
-    raise SystemExit(main())
+    import os
+    if os.name == 'nt':
+        import ctypes
+        # Keep idle sleep from interrupting a frozen verification candidate.
+        # This thread-owned request expires on exit; no power plan is changed.
+        if not ctypes.windll.kernel32.SetThreadExecutionState(0x80000001):
+            raise RuntimeError('Could not establish temporary verification wake request')
+    try:
+        raise SystemExit(main())
+    finally:
+        if os.name == 'nt':
+            ctypes.windll.kernel32.SetThreadExecutionState(0x80000000)
