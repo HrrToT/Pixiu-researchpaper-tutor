@@ -1,0 +1,15 @@
+{
+  "oldInputBytes": 31954,
+  "candidateInputBytes": 31792,
+  "inputLimitBytes": 32000,
+  "allActualInputBodyBytesExact": true,
+  "newOutputField": "stateSemantics: [state name, physical quantity, stored encoding/basis/units]",
+  "outputAndWholeRunBudgetsUnchanged": true,
+  "modelCalls": 0,
+  "productionImplemented": false,
+  "contentEffectVerified": false,
+  "plannedPreservation": "Exact model-authored rows in existing explicit state_layout creation choice; no inferred or auto-filled values",
+  "schemaDraft202012Valid": true,
+  "providerSchemaAccepted": false,
+  "plannedToRetainOldMathLifecycleAndScientificChecks": true
+}
