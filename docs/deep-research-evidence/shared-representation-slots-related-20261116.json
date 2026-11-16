@@ -1,0 +1,89 @@
+{
+  "sourceCommit": "6cb82856204f1a6361ce85170a2052a2818fbec2",
+  "relatedChecks": {
+    "tests": 274,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "junit": {
+    "path": "tmp/shared-representation-slots-related-final-20261116.xml",
+    "sha256": "4d7a938633745b07f2c815aee5c06433dd40ca3204438ceac124b41f616d63ab"
+  },
+  "zeroCallReadableEvidenceProbes": [
+    {
+      "probeOnly": true,
+      "modelCalls": 0,
+      "runtimeChanges": false,
+      "originalEvidenceRows": 17,
+      "allOriginalValuesRoundtrip": true,
+      "allQuotesLiteral": true,
+      "originalQuoteBytes": 7468,
+      "sectionsBytes": {
+        "question": 756,
+        "originalEvidence": 17571,
+        "targetSlots": 1268,
+        "otherExactContext": 11350
+      },
+      "schemaBytes": 3559,
+      "inputBytes": 35900,
+      "maximumBytes": 32000,
+      "fits": false,
+      "sourceDataDigest": "543b5ba1eee940b13253309d77554e945db3bf26b9b4cea85b7e1be5d3525724",
+      "metadataDigest": "53570c3e035742b5fcd003cbc6683160057a4d4773453662e38162c6b9677f22",
+      "bodySha256": "f435d02fcca6ec98fbf4165fbb0b1c68372538daab53b94c360ea196cf4f22fa",
+      "scientificContentCredit": 0,
+      "providerAccepted": false
+    },
+    {
+      "probeOnly": true,
+      "modelCalls": 0,
+      "runtimeChanges": false,
+      "allOriginalValuesRoundtrip": true,
+      "evidenceRows": 17,
+      "allQuotesLiteral": true,
+      "sectionsBytes": {
+        "question": 756,
+        "ownedSources": 463,
+        "originalEvidence": 10648,
+        "targetSlots": 1268,
+        "otherExactContext": 18826
+      },
+      "schemaBytes": 3559,
+      "inputBytes": 36922,
+      "maximumBytes": 32000,
+      "fits": false,
+      "sourceDataDigest": "543b5ba1eee940b13253309d77554e945db3bf26b9b4cea85b7e1be5d3525724",
+      "metadataDigest": "53570c3e035742b5fcd003cbc6683160057a4d4773453662e38162c6b9677f22",
+      "scientificContentCredit": 0,
+      "providerAccepted": false
+    },
+    {
+      "probeOnly": true,
+      "modelCalls": 0,
+      "runtimeChanges": false,
+      "allOriginalEvidenceValuesRoundtrip": true,
+      "evidenceRows": 17,
+      "literalSourceBlocks": 16,
+      "literalTextBytes": 12473,
+      "sectionsBytes": {
+        "question": 756,
+        "ownedSources": 463,
+        "originalSourceFields": 20222,
+        "targetSlots": 1268,
+        "otherExactContext": 10939
+      },
+      "schemaBytes": 3559,
+      "inputBytes": 38659,
+      "maximumBytes": 32000,
+      "fits": false,
+      "sourceDataDigest": "543b5ba1eee940b13253309d77554e945db3bf26b9b4cea85b7e1be5d3525724",
+      "metadataDigest": "53570c3e035742b5fcd003cbc6683160057a4d4773453662e38162c6b9677f22",
+      "scientificContentCredit": 0,
+      "providerAccepted": false
+    }
+  ],
+  "probesShipped": false,
+  "modelCallsForProbes": 0,
+  "boundary": "All three lossless literal-evidence prototypes exceeded the existing 32000-byte request cap; none was sent or enabled. Original source contexts were retained."
+}

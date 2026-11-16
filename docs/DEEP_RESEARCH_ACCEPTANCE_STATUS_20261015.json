@@ -3,22 +3,21 @@
   "objective": "Complete DR0-DR5 in DEEP_RESEARCH_DESIGN_20261012.md without redefining success around implemented subsets.",
   "overall": "incomplete",
   "currentFullOfflineRegression": {
-    "sourceCommit": "cdae14df6191c80e27f63304c93bb766eca5dd19",
-    "modules": 468,
-    "passed": 8860,
+    "sourceCommit": "6cb82856204f1a6361ce85170a2052a2818fbec2",
+    "modules": 469,
+    "passed": 8899,
     "failures": 0,
     "errors": 0,
     "skipped": 0,
     "sourceUnchanged": true,
-    "elapsedSeconds": 402.67,
-    "baselineCases": 8855,
-    "retainedBaselineCases": 8855,
+    "baselineCases": 8860,
+    "retainedBaselineCases": 8860,
     "missingBaselineCases": [],
     "warnings": 1,
     "appliesToCurrentPythonSource": true,
-    "proof": "deep-research-evidence/shared-representation-input-first-final-20261116.json",
-    "boundary": "Complete current offline research regression only; not real generation, Provider cost/quality, independent scientific acceptance or full product release.",
-    "matchesLoadedRuntime": false
+    "proof": "deep-research-evidence/shared-representation-slots-20261116.json",
+    "matchesLoadedRuntime": false,
+    "boundary": "Complete current offline research regression only; not real generation, Provider cost/quality, independent scientific acceptance or full product release."
   },
   "postFullRegressionValidation": {
     "scope": "PDF Form parser optimization only",
@@ -16346,6 +16345,50 @@
       "Complete model-authored representation/renderer semantics",
       "Whole-run initialization and final scientific-review budget feasibility",
       "Fresh full experiment and independent holdout"
+    ]
+  },
+  "fullOfflineBeforeSharedSlots20261116": {
+    "sourceCommit": "cdae14df6191c80e27f63304c93bb766eca5dd19",
+    "modules": 468,
+    "passed": 8860,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sourceUnchanged": true,
+    "elapsedSeconds": 402.67,
+    "baselineCases": 8855,
+    "retainedBaselineCases": 8855,
+    "missingBaselineCases": [],
+    "warnings": 1,
+    "appliesToCurrentPythonSource": true,
+    "proof": "deep-research-evidence/shared-representation-input-first-final-20261116.json",
+    "boundary": "Complete current offline research regression only; not real generation, Provider cost/quality, independent scientific acceptance or full product release.",
+    "matchesLoadedRuntime": false
+  },
+  "sharedRepresentationSlots20261116": {
+    "sourceCommit": "6cb82856204f1a6361ce85170a2052a2818fbec2",
+    "sharedRepresentationVersion": 4,
+    "serverDefault": 0,
+    "productionEnabled": false,
+    "newTests": 39,
+    "relatedChecks": 274,
+    "fullRegression": 8899,
+    "baselineCasesRetained": 8860,
+    "fullRegressionProof": "deep-research-evidence/shared-representation-slots-20261116.json",
+    "realProof": "deep-research-evidence/shared-representation-inputs-v4-real-20261116.json",
+    "preservationProof": "deep-research-evidence/shared-representation-slots-preservation-20261116.json",
+    "inputBytes": 31720,
+    "evidenceRows": 17,
+    "newProviderCalls": 1,
+    "declarationAccepted": false,
+    "scientificContentCredit": 0,
+    "independentAcceptanceCredit": 0,
+    "boundary": "Exact targets and available source identifiers are bound to checked metadata; actual numeric inventory and renderer semantics remain unacceptable. Capacity failure is not the only defect. No candidate activation, initialization or full-case acceptance.",
+    "next": [
+      "Discriminate semantic comprehension and output-budget causes before adding another permanent wire contract.",
+      "Preserve complete source evidence and scientific requirements; do not raise semantic size or whole-run caps to admit invalid content.",
+      "Complete model-authored numeric representation, initializers and explicit final scientific review.",
+      "Prove whole-run feasibility and execute fresh full experiment, comparison and external holdout acceptance."
     ]
   }
 }

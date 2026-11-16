@@ -1,0 +1,125 @@
+{
+  "asOf": "2026-11-16",
+  "case": "SHARED-REPRESENTATION-INPUTS-v4",
+  "sourceCommit": "6cb82856204f1a6361ce85170a2052a2818fbec2",
+  "isolatedDeclarationDiagnosticOnly": true,
+  "sourceCase": "D3-VQ-FACTORIAL-v6",
+  "publicPaperUrl": "https://arxiv.org/abs/2311.18159v1",
+  "pdfSha256": "834337574488b37f20793de624fe9598947f18fdf238444238de8320ec1b744b",
+  "requestDigest": "914460410aa9dc873ced5d1bc9c74903d385d304f7fb81ff381c366fb93ab834",
+  "inputBytes": 31720,
+  "allOriginalSourceDataUnchanged": true,
+  "originalEvidenceRows": 17,
+  "metadataReceiptVerified": true,
+  "providerCalls": 1,
+  "attempt": 1,
+  "status": "succeeded",
+  "settled": true,
+  "finishReason": "stop",
+  "usage": {
+    "total_tokens": 14876,
+    "input_tokens": 9956,
+    "output_tokens": 4920
+  },
+  "declarationValid": false,
+  "unitErrors": [
+    {
+      "code": "representation.capacity",
+      "path": ""
+    }
+  ],
+  "rawResponseBytes": 16735,
+  "compactNativeBytes": 13178,
+  "compactCanonicalBytes": 17691,
+  "rawWireLimit": 32768,
+  "canonicalContentLimit": 16384,
+  "actualTargets": [
+    "baseline",
+    "shared_initialization",
+    "gaussian_model",
+    "sh_codebook",
+    "scale_rotation_codebook",
+    "sh_indices",
+    "scale_rotation_indices"
+  ],
+  "variablesPerTarget": {
+    "baseline": [
+      "baseline_gaussian_state"
+    ],
+    "shared_initialization": [
+      "shared_initialization_gaussian_state",
+      "baseline_gaussian_state"
+    ],
+    "gaussian_model": [
+      "shared_initialization_gaussian_state",
+      "baseline_gaussian_state",
+      "shared_initialization_gaussian_state",
+      "trained_gaussian_model_gaussian_state"
+    ],
+    "sh_codebook": [
+      "shared_initialization_gaussian_state",
+      "baseline_gaussian_state",
+      "shared_initialization_gaussian_state",
+      "trained_gaussian_model_gaussian_state"
+    ],
+    "scale_rotation_codebook": [
+      "shared_initialization_gaussian_state",
+      "baseline_gaussian_state",
+      "shared_initialization_gaussian_state",
+      "trained_gaussian_model_gaussian_state"
+    ],
+    "sh_indices": [
+      "shared_initialization_gaussian_state",
+      "baseline_gaussian_state",
+      "shared_initialization_gaussian_state",
+      "trained_gaussian_model_gaussian_state"
+    ],
+    "scale_rotation_indices": [
+      "shared_initialization_gaussian_state",
+      "baseline_gaussian_state",
+      "shared_initialization_gaussian_state",
+      "trained_gaussian_model_gaussian_state"
+    ]
+  },
+  "duplicateNamesWithinTarget": {
+    "gaussian_model": [
+      "shared_initialization_gaussian_state"
+    ],
+    "sh_codebook": [
+      "shared_initialization_gaussian_state"
+    ],
+    "scale_rotation_codebook": [
+      "shared_initialization_gaussian_state"
+    ],
+    "sh_indices": [
+      "shared_initialization_gaussian_state"
+    ],
+    "scale_rotation_indices": [
+      "shared_initialization_gaussian_state"
+    ]
+  },
+  "manualContentReview": {
+    "accepted": false,
+    "observations": [
+      "All seven metadata-bound target slots are present; this is structural coverage only.",
+      "All variables are aggregate gaussian_parameters states rather than numeric parameter, codebook and index inventories.",
+      "Five targets repeat a variable name within the same target.",
+      "All encoding tuples repeat physical/identity/identity/unquantized, including codebook and index targets.",
+      "Baseline training_data selector refers to a baseline gaussian_state rather than a justified source-field inventory.",
+      "Canonical size guard returns before other validation; representation.capacity is not an exhaustive error list."
+    ],
+    "causalInference": "One output does not establish whether positional groups, input encoding or disabled reasoning caused the semantic failure."
+  },
+  "automaticRetry": false,
+  "frozen": false,
+  "followupInitializationCalls": 0,
+  "scientificContentCredit": 0,
+  "independentAcceptanceCredit": 0,
+  "applicationDataUnchanged": true,
+  "productionEnabled": false,
+  "artifacts": {
+    "tmp/shared-representation-inputs-v4-result-20261116/result.json": "c96eb7b090e69025f885081199e429f540891044435eb43240accd850408e981",
+    "tmp/shared-representation-inputs-v4-public-review-20261116/audit.json": "3d66dec3b34152db6b0b6b39b1639efe0f69bd060428d9b8a69480b6112674c1"
+  },
+  "boundary": "Isolated shared-declaration diagnostic, not a complete experiment, application activation or scientific acceptance. No capacity increase or replay follows this failure."
+}
