@@ -15,7 +15,7 @@
     "elapsedSeconds": 440.38,
     "boundary": "Complete current offline research regression only; not real generation, Provider cost/quality, independent scientific acceptance or full product release.",
     "passed": 9124,
-    "appliesToCurrentPythonSource": true,
+    "appliesToCurrentPythonSource": false,
     "matchesLoadedRuntime": false,
     "proof": "deep-research-evidence/comparison-source-repair-full-20261117.json"
   },
