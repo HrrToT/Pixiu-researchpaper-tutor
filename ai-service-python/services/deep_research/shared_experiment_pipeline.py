@@ -110,6 +110,7 @@ def publish(record,state,update,publish,scope_validator):
     else:gaps=[{'wholeQuestion':True,'question':record['question'],'missingEvidence':'实验方案尚有未通过或未完成的核验，草稿与原材料已保留。'}]
     version=record['state'].get('reportVersionId') or 'report_'+rid+'_shared_incomplete'
     payload={'presentationVersion':4,'reportVersionId':version,'outputKind':'experiment_design',
+        'sharedExperimentDocumentVersion':1,
         'summary':'四组实验方案已保存，训练与测量尚未执行。' if claims else '实验方案尚未完成，草稿与原材料已保留。',
         'sections':[{'title':'实验方案','claimIds':[c['claimId'] for c in claims]}] if claims else [],
         'claims':claims,'evidence':record['state'].get('evidence',[]),'limitations':'假设与实验建议尚未经过实验验证。' if claims else '',

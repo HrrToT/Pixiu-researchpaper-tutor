@@ -96,12 +96,9 @@ def compile_candidate(record, input_data, aliases):
     if p['sourceFacts']:
         lines += ['', '## 论文依据', '']
         for fact in p['sourceFacts']:
-            refs=''.join('[^'+str(citations[e]['number'])+']' for e in fact['evidenceRefs'])
-            lines += ['- '+fact['text']+refs]
-        lines += ['']
-        for eid,citation in citations.items():
-            source = input_data['sources'][citation['source']]
-            lines += ['[^'+str(citation['number'])+']: '+(source.get('title') or source['workId'])]
+            refs=' '.join('['+str(citations[e]['number'])+'](#research-evidence-'+citations[e]['evidenceId']+')'
+                          for e in fact['evidenceRefs'])
+            lines += ['- '+fact['text']+' '+refs]
     text = '\n'.join(lines)+'\n'
     result = {'version':1, 'markdown':text, 'citations':list(citations.values()),
               'generationBindingDigest':generation['bindingDigest'], 'reviewDigest':assessment['reviewDigest'],

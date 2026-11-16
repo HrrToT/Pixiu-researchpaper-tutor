@@ -3,6 +3,26 @@ from copy import deepcopy
 from services.deep_research.reporting import render_report, conversation_summary, verification_notice
 
 
+def test_compiled_experiment_document_preserves_markdown_and_exact_inline_citations():
+    document='# 实验方案（尚未执行）\n\n## 四组对照\n\n| 组别 | A |\n| --- | --- |\n| 00 | 关闭 |\n\n原文事实 [1](#research-evidence-e1)'
+    payload={'presentationVersion':4,'outputKind':'experiment_design','sharedExperimentDocumentVersion':1,
+        'sharedExperimentCertificate':{'complete':True},
+        'claims':[{'claimId':'shared_experiment_answer','kind':'proposal','text':document,'evidenceRefs':['e1']}],
+        'evidence':[{'evidenceId':'e1','sourceTitle':'测试论文','quote':'Exact evidence'}]}
+    body=render_report(payload)
+    assert body.startswith('# 实验方案（尚未执行）\n')
+    assert body.count('](#research-evidence-e1)')==1 and '实验建议：#' not in body
+    assert '<summary>原文依据</summary>' in body and 'Exact evidence' in body
+    for change in ('legacy','not_approved','missing_link','extra_condition'):
+        other=deepcopy(payload)
+        if change=='legacy':other.pop('sharedExperimentDocumentVersion')
+        elif change=='not_approved':other['sharedExperimentCertificate']['complete']=False
+        elif change=='missing_link':other['claims'][0]['text']=document.replace('](#research-evidence-e1)',']')
+        else:other['claims'][0]['conditions']={'context':'必须保留的条件'}
+        assert '- 实验建议：' in render_report(other)
+        if change=='extra_condition':assert '必须保留的条件' in render_report(other)
+
+
 def test_generic_context_metadata_does_not_leak_but_all_condition_values_remain():
     claim={'claimId':'c','text':'剪枝可能损失细节。','kind':'inference',
         'conditions':{'context':'简单不透明度剪枝时','scope':'原文中的有限场景'}}

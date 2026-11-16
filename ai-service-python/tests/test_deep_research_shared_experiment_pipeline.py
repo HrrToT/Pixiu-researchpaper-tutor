@@ -211,6 +211,9 @@ def _exercise_graph(tmp_path,monkeypatch,tracked_http,scenario=None):
     result=make_publish_node(repo.publish_report,update,scope_validator=lambda *args:True)(state)
     assert result['outcome']=='complete'
     published=repo.require_run('r');assert published['status']=='completed' and published['state']['reportText']
+    assert '# 实验方案（尚未执行）' in published['state']['reportText']
+    assert '- 实验建议：#' not in published['state']['reportText']
+    assert '](#research-evidence-' in published['state']['reportText'] and '[^1]' not in published['state']['reportText']
     assert published['state']['sharedExperimentRelease']['complete'] is True
     before=list(calls);make_publish_node(repo.publish_report,update,scope_validator=lambda *args:True)(state)
     assert calls==before

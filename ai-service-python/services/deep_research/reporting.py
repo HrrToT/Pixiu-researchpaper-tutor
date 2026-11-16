@@ -126,6 +126,19 @@ def render_report(payload, *, _counting=False):
     if isinstance(comparison, dict) and type(comparison.get('version')) is int and comparison['version'] in (1,2,3):
         from services.deep_research.comparison_presentation import sections as comparison_sections
         sections = comparison_sections(comparison, list(claims.values()))
+    # This server-compiled answer is already a complete, audited document.
+    # Retain its headings/tables and evidence links without a list-item wrapper.
+    # Other reports and malformed/missing citation maps keep the legacy path.
+    if (type(payload.get('sharedExperimentDocumentVersion')) is int
+            and payload['sharedExperimentDocumentVersion']==1
+            and payload.get('outputKind')=='experiment_design'
+            and payload.get('sharedExperimentCertificate',{}).get('complete') is True
+            and set(claims)=={'shared_experiment_answer'}
+            and not claims['shared_experiment_answer'].get('conditions')):
+        document=claims['shared_experiment_answer']['text']
+        linked=set(re.findall(r'\]\(#research-evidence-([^\)]+)\)',document))
+        if linked==set(refs):
+            lines.extend([document,'']);rendered.add('shared_experiment_answer');sections=[]
     for section in sections:
         if section.get('comparisonTable'):
             from services.deep_research.comparison_presentation import render_table
