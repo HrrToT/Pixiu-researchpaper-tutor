@@ -1,0 +1,125 @@
+{
+  "asOf": "2026-11-16",
+  "case": "SHARED-REPRESENTATION-INPUTS-v3",
+  "representationSourceCommit": "7dd19857a3d7136a7acc14e2474c34d94f8b8caa",
+  "isolatedDeclarationDiagnosticOnly": true,
+  "sourceCase": "D3-VQ-FACTORIAL-v6",
+  "publicPaperUrl": "https://arxiv.org/abs/2311.18159v1",
+  "pdfSha256": "834337574488b37f20793de624fe9598947f18fdf238444238de8320ec1b744b",
+  "requestDigest": "ff93740cee8eeff3c90002a197dbaaedfa3c72670f825c5b81d24334b2627e73",
+  "inputBytes": 31115,
+  "originalEvidenceRows": 17,
+  "providerCalls": 1,
+  "attempt": 1,
+  "status": "succeeded",
+  "settled": true,
+  "finishReason": "stop",
+  "usage": {
+    "total_tokens": 13509,
+    "input_tokens": 9568,
+    "output_tokens": 3941
+  },
+  "nativeSchemaAccepted": true,
+  "declarationValid": false,
+  "unitErrors": [
+    {
+      "code": "representation.target_coverage",
+      "path": "/targets"
+    },
+    {
+      "code": "representation.unavailable_dependency",
+      "path": "/targets/0/inputDependencies/0/input"
+    },
+    {
+      "code": "representation.unavailable_dependency",
+      "path": "/targets/4/inputDependencies/1/input"
+    },
+    {
+      "code": "representation.unavailable_dependency",
+      "path": "/targets/5/inputDependencies/1/input"
+    },
+    {
+      "code": "representation.capacity",
+      "path": ""
+    }
+  ],
+  "expectedTargets": [
+    "baseline",
+    "shared_initialization",
+    "gaussian_model",
+    "sh_codebook",
+    "scale_rotation_codebook",
+    "sh_indices",
+    "scale_rotation_indices"
+  ],
+  "actualTargets": [
+    "baseline",
+    "gaussian_model",
+    "sh_codebook",
+    "scale_rotation_codebook",
+    "sh_indices",
+    "scale_rotation_indices"
+  ],
+  "missingTargets": [
+    "shared_initialization"
+  ],
+  "extraTargets": [],
+  "variableCount": 16,
+  "variablesPerTarget": {
+    "baseline": [
+      "position",
+      "opacity",
+      "scale",
+      "rotation",
+      "dc_color",
+      "sh_color"
+    ],
+    "gaussian_model": [
+      "position",
+      "opacity",
+      "scale",
+      "rotation",
+      "dc_color",
+      "sh_color"
+    ],
+    "sh_codebook": [
+      "sh_codebook_entries"
+    ],
+    "scale_rotation_codebook": [
+      "scale_rotation_codebook_entries"
+    ],
+    "sh_indices": [
+      "sh_cluster_assignment_indices"
+    ],
+    "scale_rotation_indices": [
+      "scale_rotation_cluster_assignment_indices"
+    ]
+  },
+  "sourceUnionConsistent": true,
+  "nativeFieldOrder": [
+    "target",
+    "inputDependencies",
+    "variables"
+  ],
+  "rawResponseBytes": 17044,
+  "compactNativeBytes": 8484,
+  "compactCanonicalBytes": 10192,
+  "existingRawLimit": 16384,
+  "findings": [
+    "This single response enumerates six Gaussian numeric variables for baseline and gaussian_model.",
+    "One required target is omitted; baseline reads shared_initialization before that component exists.",
+    "Two named phase outputs do not match available metadata output identities.",
+    "Encoding entries remain dtype labels and do not establish renderer domains, transforms, units or SH basis semantics.",
+    "Raw formatted response exceeds the current byte guard although compact native/canonical JSON fits; independent target/input errors still reject it."
+  ],
+  "automaticRetry": false,
+  "replayed483UnknownCall": false,
+  "applicationDataUnchanged": true,
+  "runtimeRestarted": false,
+  "productionEnabled": false,
+  "scientificContentCredit": 0,
+  "independentAcceptanceCredit": 0,
+  "wholeRunBudgetFeasibilityProven": false,
+  "rawResult": "tmp/shared-representation-inputs-v3-result-20261116/result.json",
+  "rawResultSha256": "915953b230bc26c605f5485472cd464240b181e3594773c42d96cedbe5c51c56"
+}
