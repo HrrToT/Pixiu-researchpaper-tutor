@@ -1,0 +1,97 @@
+{
+  "version": 1,
+  "frozenAt": "2026-11-16",
+  "frozenTimestamp": "2026-11-16T15:39:09.611103+00:00",
+  "budgetProfile": "standard",
+  "executionStatus": "frozen_not_submitted",
+  "independentCredit": 0,
+  "materials": {
+    "original_3dgs_v1": {
+      "path": "D:\\3DGS\\paper\\3DGS原始论文\\2308.04079v1.pdf",
+      "sha256": "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11",
+      "bytes": 35829709
+    },
+    "lightgaussian_v6": {
+      "path": "D:\\3DGS\\paper\\LightGaussian\\2311.17245v6.pdf",
+      "sha256": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634",
+      "bytes": 12954089
+    }
+  },
+  "review": {
+    "dimensions": [
+      "目标回应",
+      "证据支持",
+      "条件完整",
+      "综合价值",
+      "可执行性",
+      "可读性"
+    ],
+    "minimumApplicableScore": 4,
+    "nonApplicable": {
+      "可执行性": "比较与选择，不要求完整实验方案；实验方案门槛仍开放。"
+    },
+    "budgetLimits": {
+      "calls": 18,
+      "tokens": 100000,
+      "seconds": 360
+    },
+    "independentEligibility": false,
+    "independenceReason": "Previously used public development papers; no holdout credit.",
+    "scope": "Different material pair and baseline-vs-compressed question from unresolved D2-VQ-v1; never replaces, resumes or replays that case.",
+    "sourceAnchors": [
+      {
+        "paper": "lightgaussian_v6",
+        "pages": [
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "checks": "Actual pipeline and recovery/SH/VQ treatments; Table1 whole results versus Table2 Room ablations, original baseline and stored-size/quality/FPS conditions."
+      },
+      {
+        "paper": "original_3dgs_v1",
+        "pages": [
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "checks": "Anisotropic Gaussians, view-dependent appearance, optimization/density control, renderer and own reporting protocol."
+      }
+    ],
+    "goldInputBoundary": "Only question/material selection/budget enter application intent. Review anchors and criteria never enter model input."
+  },
+  "cases": [
+    {
+      "id": "D2-BASELINE-COMPRESSION",
+      "split": "development",
+      "materials": [
+        "original_3dgs_v1",
+        "lightgaussian_v6"
+      ],
+      "kind": "paper_comparison",
+      "policy": "task_only",
+      "question": "只依据任务中的原始3DGS v1和LightGaussian v6，向初学者比较原始表示与压缩后部署的取舍。先给结论，再用简洁表格比较表示与压缩机制、额外处理成本、存储与画质、渲染速度。数字只选一组来源和口径明确的基线对照作例子，不列全部数据集；说明能比较什么、为什么不能直接拿两篇的FPS排名，并给出显存受限时的有条件选择建议。不用外部资料。",
+      "required": [
+        "结论优先，共同维度覆盖双方；说明3DGS场景表示与LightGaussian压缩既有模型之间的关系，不能当成互不相关的两个建模底座。",
+        "机制解释有实际操作，覆盖剪枝与恢复、SH降阶/蒸馏、量化，区分压缩对象；不以缩略语清单代替新手解释。",
+        "区分原始训练和额外压缩/适配处理成本；不编造端到端时长、免训练或零成本。",
+        "至少一组同来源且口径明确的基线与压缩结果，绑定指标、单位和场景/汇总范围；画质权衡不概括为严格无损或必然逐场景下降。",
+        "速度论断保留来源条件；不能跨论文按裸FPS排名，不能从文件压缩倍数直接推断显存或速度收益。",
+        "选择建议有证据、条件和待实测边界；双方原文可回查，必要限制贴近结论。"
+      ],
+      "forbidden": [
+        "混用LightGaussian版本、基线、场景和汇总范围；将Room消融结果当作全数据集均值。",
+        "将体积缩减等同于相同比例显存/速度增益，或把质量变化表述为严格无损、普遍提升、必然下降。",
+        "捏造GPU、压缩耗时或数据未对齐事实；未说明的条件应记为未知。",
+        "任何严重来源、事实、数值或比较条件错误；预算超限、未知结果或未审核内容计通过。"
+      ]
+    }
+  ],
+  "caseDefinitionHashes": {
+    "D2-BASELINE-COMPRESSION": "7be10cf7ae80a29d251db502ad41c2f4705e55225a35f3160f55765d73bd25f9"
+  }
+}

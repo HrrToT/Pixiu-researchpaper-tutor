@@ -3,21 +3,21 @@
   "objective": "Complete DR0-DR5 in DEEP_RESEARCH_DESIGN_20261012.md without redefining success around implemented subsets.",
   "overall": "incomplete",
   "currentFullOfflineRegression": {
-    "sourceCommit": "3131d40379bb171d468f283c5f3f537a9b9e4961",
-    "modules": 477,
+    "sourceCommit": "5d20e574dc9d8043214a0bf7bf4afaf0c6c6ff1f",
+    "modules": 478,
     "failures": 0,
     "errors": 0,
     "skipped": 0,
     "sourceUnchanged": true,
-    "baselineCases": 9049,
-    "retainedBaselineCases": 9049,
+    "baselineCases": 9071,
+    "retainedBaselineCases": 9071,
     "missingBaselineCases": [],
-    "elapsedSeconds": 568.66,
+    "elapsedSeconds": 455.64,
     "boundary": "Complete current offline research regression only; not real generation, Provider cost/quality, independent scientific acceptance or full product release.",
-    "passed": 9071,
-    "appliesToCurrentPythonSource": false,
+    "passed": 9087,
+    "appliesToCurrentPythonSource": true,
     "matchesLoadedRuntime": false,
-    "proof": "deep-research-evidence/comparison-typed-intent-full-20261116.json"
+    "proof": "deep-research-evidence/comparison-compact-audit-full-20261116.json"
   },
   "postFullRegressionValidation": {
     "scope": "PDF Form parser optimization only",
@@ -16730,7 +16730,7 @@
     "fullRegressionPassed": 9071
   },
   "comparisonCompactAudit20261116": {
-    "status": "related_offline_and_saved_capacity_passed_not_live_accepted",
+    "status": "full_offline_and_saved_capacity_passed_not_live_accepted",
     "proof": "deep-research-evidence/comparison-compact-audit-20261116.json",
     "relatedTests": 138,
     "savedCandidateInputBytes": 23988,
@@ -16738,6 +16738,8 @@
     "newModelCalls": 0,
     "scientificCredit": 0,
     "runtimeLoaded": false,
-    "next": "Freeze and full-regress current candidate, then eligible new real content validation; preserve v8 unknown."
+    "next": "Freeze and full-regress current candidate, then eligible new real content validation; preserve v8 unknown.",
+    "fullRegressionProof": "deep-research-evidence/comparison-compact-audit-full-20261116.json",
+    "fullRegressionPassed": 9087
   }
 }

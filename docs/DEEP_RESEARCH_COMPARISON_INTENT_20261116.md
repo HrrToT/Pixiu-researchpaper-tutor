@@ -65,3 +65,5 @@ D2-v8 的规划包含单篇机制、单篇测量、联合可比性、联合选�
 `deep-research-evidence/comparison-compact-audit-20261116.json`：138 项相关检查通过；保存的 9 个未核验草稿点、10 个固定检查和 11 条必要证据，在假设版本 3 布局下以 23,988 字节通过原 24KB 准入，没有修补容量函数。全部必要证据的 quote/sourceContext/source/conditions/accessLevel 值逐项一致。闭合适配器返回空审核，结果仍无效，不构造科学通过。
 
 这份输入仅余 12 字节，不说明一般容量或实时预算已稳定。新增指令的内容质量仍需真实验证；旧 v8 未重放。源码已变化，前述 9,071 项全量仅覆盖此前角色契约，当前候选需单独冻结全量检查。
+
+当前候选的后续全量验证已完成：源码 `5d20e574d`，9,087 项、478 模块，0 失败/错误/跳过，全部 9,071 项基线保留，受测源码未变化；见 `deep-research-evidence/comparison-compact-audit-full-20261116.json`。新开发案例 `D2-BASELINE-COMPRESSION` 使用另一组已授权公开材料（原始 3DGS v1、LightGaussian v6），问题及评分已冻结；不替代未知 VQ 案例、不计独立验收。真实调用前准备记录不代表案例已执行或内容通过。
