@@ -1,0 +1,42 @@
+{
+  "sourceCommit": "d3266760b62bc76596e1bf486cb8c72c9c039060",
+  "promptVersion": "dr-v2.20261116.479",
+  "sourceCase": "D3-VQ-FACTORIAL-v6",
+  "isolatedComponentOnly": true,
+  "modelCalls": 1,
+  "usage": {
+    "total_tokens": 11283,
+    "input_tokens": 9838,
+    "output_tokens": 1445
+  },
+  "unitValid": true,
+  "unitErrors": [],
+  "inputBytes": 31742,
+  "all17RequiredEvidenceRowsRetained": true,
+  "actualInputBodyByteIdenticalTo478": true,
+  "schemaAndOutputAllowanceUnchanged": true,
+  "applicationDataUnchanged": true,
+  "automaticRetry": false,
+  "contentReview": {
+    "accepted": false,
+    "stateCount": 6,
+    "improvements": [
+      "Six parameter families individually defined",
+      "SfM positions and explicit numeric constants",
+      "Scale procedure specifies three neighbors, Euclidean metric, mean distance and log-space output"
+    ],
+    "issues": [
+      "Selected scene combines sfm_points and training_images with point and frame axes, without a single selected tensor/table relation",
+      "Scale source parameter names gaussian_positions but inputIndices only declares the selected training_data, not that sibling state",
+      "Opacity and DC parameterizations do not establish compatibility with the selected renderer",
+      "Eight global author-setting gaps still copied; relevance to initialization remains unfiltered"
+    ],
+    "boundary": "One generation improved state expansion, not scientific acceptance or a causal proof"
+  },
+  "productionLoaded": false,
+  "retainedRuntime": ".476",
+  "independentCredit": 0,
+  "wholeCaseSubmitted": false,
+  "rawResult": "tmp/initialization-numeric-479-reviewed-component-20261116/result.json",
+  "rawResultSha256": "8f1ee706c5ca5df97324005f242d175806788ebb23eae3480f79a8ad3d2b5af0"
+}
