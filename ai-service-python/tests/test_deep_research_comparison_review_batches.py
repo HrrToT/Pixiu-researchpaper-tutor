@@ -109,7 +109,8 @@ def test_groups_preserve_all_targets_when_singleton_cannot_fit():
     assert result==[[c] for c in claims] and claims==before
 
 
-@pytest.mark.parametrize('replacement',[None,True,'1',0,1,3])
+@pytest.mark.parametrize('replacement',[None,True,pytest.param('1',id='1'),0,2,
+                                       pytest.param(1,id='integer-1'),3])
 def test_server_owned_marker_cannot_be_changed_or_injected(tmp_path,replacement):
     from services.deep_research.facade import ResearchFacade
     from services.deep_research.repository import DeepResearchRepository
@@ -120,8 +121,16 @@ def test_server_owned_marker_cannot_be_changed_or_injected(tmp_path,replacement)
         r,_=facade.create({'workspaceTaskId':'t','operationKey':'k','question':'Compare methods',
             'deferStart':True,MARKER:replacement},start_async=False)
         assert type(r[MARKER]) is int and r[MARKER]==2
-        with pytest.raises(ValueError,match='Immutable'):
-            repo.update_run(r['runId'],lambda old:{**old,MARKER:replacement})
+        if replacement==2 and type(replacement) is int:
+            # Profile2 is now a valid server-selected value; a historical
+            # profile1 must still reject the same attempted upgrade.
+            old={**r,'runId':'old-profile1','taskId':'old-profile1','idempotencyKey':'old-profile1',MARKER:1}
+            repo.create_run(old)
+            with pytest.raises(ValueError,match='Immutable'):
+                repo.update_run(old['runId'],lambda row:{**row,MARKER:replacement})
+        else:
+            with pytest.raises(ValueError,match='Immutable'):
+                repo.update_run(r['runId'],lambda old:{**old,MARKER:replacement})
     finally:facade.shutdown()
 
 
@@ -158,8 +167,9 @@ def test_actual_source_field_resolver_quarantines_only_borrowed_target():
     assert invoke.call_count==1
 
 
-@pytest.mark.parametrize('scenario',['success','unknown'])
-@pytest.mark.parametrize('repair',[False,True])
+@pytest.mark.parametrize('scenario,repair',[
+    pytest.param('success',False,id='success'),pytest.param('unknown',False,id='unknown'),
+    pytest.param('success',True,id='repair-success'),pytest.param('unknown',True,id='repair-unknown')])
 def test_real_sqlite_ledger_reuses_batch_identity_and_never_resends_unknown(tmp_path,scenario,repair):
     from llm.provider import LLMResult,LLMUsage,LLMProviderError
     from services.deep_research.contracts import DeepResearchError
@@ -202,14 +212,16 @@ def test_real_sqlite_ledger_reuses_batch_identity_and_never_resends_unknown(tmp_
         assert REPAIR_OUTPUT_OPTION not in request.extra_body
 
 
-@pytest.mark.parametrize('value',[None,True,'1',0,3])
+@pytest.mark.parametrize('value',[None,True,'1',0,2,3])
 def test_batch_policy_requires_exact_server_marker_and_isolated_comparison_profile(value):
     from test_deep_research_shared_experiment_generation import context
     r,_,_=context();r['comparisonPlanningContractVersion']=2;r['state']['outputKind']='paper_comparison'
     r[MARKER]=1
     assert enabled(r)
     r[MARKER]=value
-    assert not enabled(r)
+    # Version2 was introduced after this baseline: accept only its exact int
+    # form while retaining the original invalid-isolation check below.
+    assert enabled(r) is (type(value) is int and value==2)
     r[MARKER]=1;r['claimIsolationContractVersion']=value
     assert not enabled(r)
 
