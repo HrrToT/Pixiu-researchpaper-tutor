@@ -80,6 +80,63 @@ def test_preparation_keeps_each_bundle_once_source_local_with_typed_tables_and_n
     assert (r,p,rows,aliases,bundles)==before
 
 
+def test_new_authoring_projects_task_but_preserves_full_question_and_freezes_profile():
+    r, p, rows, aliases, bundles = fixture()
+    r.update(comparisonPlanningContractVersion=6, comparisonReviewBatchContractVersion=2)
+    old = prepare(r, p['requirements'], p['sources'], rows, {}, bundles, aliases)
+    assert all('Answer the human question in clear Chinese:' in s['prompt'] for s in old['stages'])
+    r['comparisonAuthoringContractVersion'] = 1
+    new = prepare(r, p['requirements'], p['sources'], rows, {}, bundles, aliases)
+    for stage in new['stages']:
+        assert 'Complete ONLY the supplied paper targets' in stage['prompt']
+        assert 'Answer the human question in clear Chinese:' not in stage['prompt']
+        assert packet(stage)['requestContext']['question'] == r['question']
+        assert packet(stage)['requestContext']['instructionLayers'] == [r['question']]
+        assert stage['inputBytes'] <= 32000
+    assert new['requirements'] == old['requirements']
+    assert new['inputDigest'] != old['inputDigest']
+    r['state']['comparisonStageInput'] = old
+    with pytest.raises(DeepResearchError, match='身份改变'):
+        prepare(r, p['requirements'], p['sources'], rows, {}, bundles, aliases)
+
+
+def test_actual_graph_persists_exact_measurement_conditions_without_semantic_approval(tmp_path):
+    from services.deep_research.graph import make_synthesize_node
+    from services.deep_research.repository import DeepResearchRepository
+    from services.deep_research.verification import verify_claims
+    r, repo = graph_fixture(tmp_path)
+    def seed(row):
+        row['comparisonAuthoringContractVersion'] = 1
+        for ev in row['state']['evidence']:
+            ev.update(quote='Table row 8: Ours | 134', sourceContext='Table row 8: Ours | 134',
+                tableData={'groups': [['Benchmark', ['FPS']]], 'rows': [[8, 'Ours', ['134']]]})
+        return row
+    repo.update_run(r['runId'], seed)
+    raw = []
+    def invoke(rid, node, prompt, options, **kw):
+        data = packet({'prompt': prompt})
+        response = json.loads(graph_response(prompt)['content'])
+        target = next(a for a in response['answers'] if a['point'] is not None)
+        paper = next(p for p in data['papers'] if p['targets'])
+        catalog = paper['tableCatalog'][0]
+        target['point']['body']['prose']['text'] = '该方法在此组评测中报告渲染速度。'
+        target['point']['cellRefs'] = [catalog['rows'][0][2][0][0]]
+        target['point']['evidenceRefs'] = [catalog['evidenceId']]
+        raw.append(deepcopy(response))
+        return {'content': json.dumps(response), 'finishReason': 'stop'}
+    update = lambda rid, fn, **kw: repo.update_run(rid, fn, **kw)
+    make_synthesize_node(invoke, update, scope_validator=lambda *_: True)({'run_id': r['runId']})
+    reopened = DeepResearchRepository(tmp_path / 'graph.sqlite3')
+    reopened.initialize()
+    saved = reopened.require_run(r['runId'])['state']
+    claims = saved['reportBody']['claims']
+    assert len(claims) == 2
+    assert all(c['conditions']['原表测量'] == 'Benchmark / Ours：FPS 134' for c in claims)
+    assert all(not a['point']['body']['prose']['conditions'] for payload in raw
+               for a in payload['answers'] if a['point'] is not None)
+    assert not verify_claims(claims, saved['evidence'], Mock(return_value=[]))['accepted']
+
+
 @pytest.mark.parametrize('mutation',['missing','mixed_owner','unknown_goal','capacity'])
 def test_incomplete_evidence_or_mixed_source_bundle_stops_before_generation(mutation):
     r,p,rows,aliases,bundles=fixture()

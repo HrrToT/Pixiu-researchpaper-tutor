@@ -78,7 +78,7 @@ def table_catalog(plan, tables):
     return registry, catalog
 
 
-def _point(point, target, registry):
+def _point(point, target, registry, *, measurement_display=False):
     required = {'kind', 'body', 'evidenceRefs', 'cellRefs'}
     if (not isinstance(point, dict) or not required <= set(point)
             or set(point) - required - {'draftingBasis', 'detailLevel'}):
@@ -106,8 +106,12 @@ def _point(point, target, registry):
                 yield from strings(child)
     if any(ref in text for text in strings(point['body']) for ref in registry):
         raise ValueError('table_reference_in_public_prose')
-    return {**{k: deepcopy(v) for k, v in point.items() if k != 'cellRefs'},
-            'tableBindings': bindings}
+    result = {**{k: deepcopy(v) for k, v in point.items() if k != 'cellRefs'},
+              'tableBindings': bindings}
+    if measurement_display:
+        from services.deep_research.comparison_measurement_display import attach
+        result = attach(result, [registry[ref] for ref in cells])
+    return result
 
 
 def decode(payload, plan, tables, *, max_claims):
@@ -123,6 +127,11 @@ def decode(payload, plan, tables, *, max_claims):
             raise ValueError('Unknown or duplicate comparison target')
         submitted[row['targetId']] = row
     registry, _ = table_catalog(plan, tables)
+    display_version = plan.get('measurementDisplayVersion', 0)
+    if type(display_version) is not int or display_version not in (0, 1):
+        raise ValueError('Invalid comparison measurement display version')
+    if display_version == 1 and plan.get('answerWireVersion') != 2:
+        raise ValueError('Measurement display requires local-goal wire')
     local_goals = plan.get('answerWireVersion') == 2
     goal_field = 'goalRefs' if local_goals else 'obligationIds'
     catalog = goal_catalog(plan) if local_goals else {}
@@ -151,7 +160,7 @@ def decode(payload, plan, tables, *, max_claims):
                     or len(set(goals)) != len(goals)):
                 raise ValueError('invalid_answer_target_goals')
             if row['point'] is not None:
-                point = _point(row['point'], target, registry)
+                point = _point(row['point'], target, registry, measurement_display=display_version == 1)
                 count += 1
         except ValueError as exc:
             errors.append({'targetId': key, 'reason': str(exc)})
@@ -211,7 +220,15 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
                            for alias, owner in data['sources'].items() if alias in allowed],
                 'jointTargets': [t for t in data['targets'] if t['role'] == 'joint']
                                 if include_joint else []}
-    prompt = f'''Answer the human question in clear Chinese: {question}
+    task = f'Answer the human question in clear Chinese: {question}'
+    if source_scope is not None and plan.get('measurementDisplayVersion') == 1:
+        # Preserve the full user request as context rather than repeating its
+        # cross-paper imperative as each single-paper stage's immediate task.
+        data['requestContext'] = {'question': str(question),
+            'instructionLayers': list(getattr(question, 'instruction_layers', (str(question),)))}
+        task = ('Complete ONLY the supplied paper targets and jointTargets in clear Chinese. '
+                'The full human request in requestContext is context; each target defines this stage contribution.')
+    prompt = f'''{task}
 Maximum {max_claims} points; complete answer character limit: {limit or 'concise, no explicit maximum'}.
 Return ONLY {{"answers":[{{"targetId":"exact supplied ID","obligationIds":["allowed goal ID"],"point":POINT_OR_NULL}}]}}.
 Use the SAME row schema for every paper cell and joint conclusion. Answer every target once.
@@ -257,5 +274,16 @@ Exact question obligations, source permissions, unchanged quotations/context, an
         prompt = ('Source-local packets: answer each paper target ONLY for its named paper, using ONLY its own packet.\n'
                   'A shared goal can mention both papers; the paper target supplies only this paper contribution.\n'
                   'Only jointTargets may combine papers. Return only targets supplied in this stage, no other targets.\n'
+                  + prompt)
+    if plan.get('measurementDisplayVersion') == 1:
+        prompt = ('For prose points the server appends visible 原表测量 conditions from your exact cellRefs: '
+                  'literal dataset, method, metric and value. Do not output that reserved condition key. '
+                  'Select only measurements needed for this dimension; these conditions count toward length '
+                  'and remain subject to independent factual/semantic and whole-answer checks. '
+                  'Do not infer disk size, GPU memory, units or performance from the reference itself.\n'
+                  'In paper targets do not discuss another paper or conclude that it lacks data. '
+                  'Joint targets alone evaluate cross-paper evidence. Use the verified source title; '
+                  'a publication-version label in the human request is not version evidence. '
+                  'Missing trustworthy version metadata does not prevent explaining this exact supplied document.\n'
                   + prompt)
     return prompt

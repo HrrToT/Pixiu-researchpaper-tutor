@@ -43,6 +43,99 @@ def test_uniform_local_and_joint_answers_compile_exact_server_cells_without_appr
     assert 'choice' in draft['unresolvedObligationIds'] and (plan, payload)==before
 
 
+def _display_fixture():
+    from services.deep_research.comparison_wire import goal_catalog
+    plan, payload, registry = fixture()
+    plan['answerWireVersion'] = 2
+    plan['measurementDisplayVersion'] = 1
+    reverse = {row['obligationId']: ref for ref, row in goal_catalog(plan).items()}
+    for row in payload['answers']:
+        row['goalRefs'] = [reverse[key] for key in row.pop('obligationIds')]
+    return plan, payload, registry
+
+
+def test_server_cell_conditions_are_visible_without_rewriting_or_approving_prose():
+    from services.deep_research.comparison_measurement_display import CONDITION
+    from services.deep_research.table_bindings import validate_table_bindings
+    from services.deep_research.reporting import display_conditions
+    plan, payload, _ = _display_fixture()
+    before = deepcopy((plan, payload))
+    draft = compile_cells(payload, plan, max_claims=10)
+    claim = decode(draft['report']['claims'][0], reasoning=True)
+    assert claim['text'] == payload['answers'][0]['point']['body']['prose']['text']
+    assert claim['conditions'][CONDITION] == 'Benchmark / Ours-30K：FPS 134'
+    assert 'FPS 134' in display_conditions(claim['conditions'])
+    evidence = {**plan['evidence']['E1'], 'evidenceId': 'E1'}
+    assert validate_table_bindings(claim, [evidence]) is None
+    assert not draft['answerWireAudit']['scientificApproval']
+    assert (plan, payload) == before
+
+
+@pytest.mark.parametrize('mutation', ['wrong_value', 'foreign_cell', 'reserved_key'])
+def test_display_never_repairs_bad_values_or_grants_source_permission(mutation):
+    from services.deep_research.comparison_measurement_display import CONDITION
+    from services.deep_research.table_bindings import validate_table_bindings
+    plan, payload, registry = _display_fixture()
+    point = payload['answers'][0]['point']
+    if mutation == 'wrong_value':
+        point['body']['prose']['text'] = 'Ours-30K FPS 999。'
+    elif mutation == 'foreign_cell':
+        point['cellRefs'] = [k for k, v in registry.items() if v['source'] == 'P2'][:1]
+    else:
+        point['body']['prose']['conditions'][CONDITION] = 'invented'
+    draft = compile_cells(payload, plan, max_claims=10)
+    if mutation == 'wrong_value':
+        claim = decode(draft['report']['claims'][0], reasoning=True)
+        assert validate_table_bindings(claim, [plan['evidence']['E1']]) == 'unbound_table_measurement'
+        assert '999' in claim['text']  # Never silently edited to the bound 134.
+    else:
+        assert draft['layout'][0]['unresolved']
+        assert len(draft['report']['claims']) == 1
+        assert draft['answerWireAudit']['errors']
+
+
+def test_display_does_not_create_measurements_or_modify_other_authored_branches():
+    from services.deep_research.comparison_measurement_display import attach
+    point = {'body': {'prose': {'text': 'Qualitative explanation', 'conditions': {'hardware': 'GPU'}}}}
+    assert attach(point, []) == point
+    for branch in ('boundary', 'reasoning'):
+        value = {'body': {branch: {'premise': 'A', 'consequence': 'B'}}}
+        assert attach(value, [{'not': 'a selected table cell'}]) == value
+
+
+def test_historical_wire_keeps_same_compilation_and_new_display_requires_explicit_opt_in():
+    plan, payload, _ = fixture()
+    old = compile_cells(payload, plan, max_claims=10)
+    assert all('原表测量' not in c['body']['prose']['conditions'] for c in old['report']['claims'])
+    plan['measurementDisplayVersion'] = 1
+    with pytest.raises(ValueError, match='local-goal'):
+        compile_cells(payload, plan, max_claims=10)
+    plan['measurementDisplayVersion'] = True
+    with pytest.raises(ValueError, match='version'):
+        compile_cells(payload, plan, max_claims=10)
+
+
+def test_exact_condition_display_still_requires_independent_semantic_verdict():
+    plan, payload, _ = _display_fixture()
+    claim = decode(compile_cells(payload, plan, max_claims=10)['report']['claims'][0], reasoning=True)
+    q = plan['evidence']['E1']['quote']
+    ev = make_evidence({'workId': 'a', 'versionId': 'a-v1', 'contentHash': 'hash', 'accessLevel': 'fulltext'},
+        q, q, location={}, obligation_ids=['method'])
+    ev.update(evidenceId='E1', tableData=plan['evidence']['E1']['tableData'])
+    checker = Mock(return_value=[])
+    result = verify_claims([claim], [ev], checker, table_references_version=4)
+    assert checker.call_count == 1 and not result['accepted']
+
+
+def test_new_run_display_policy_is_strict_and_historical_records_remain_disabled():
+    from services.deep_research.comparison_measurement_display import enabled
+    r = {'comparisonPlanningContractVersion': 6, 'comparisonReviewBatchContractVersion': 2}
+    assert not enabled(r)
+    assert enabled({**r, 'comparisonAuthoringContractVersion': 1})
+    assert not enabled({**r, 'comparisonAuthoringContractVersion': True})
+    assert not enabled({**r, 'comparisonPlanningContractVersion': 5, 'comparisonAuthoringContractVersion': 1})
+
+
 def test_catalog_only_exposes_quoted_rows_and_references_change_with_source_version():
     plan, _, registry = fixture(); before = deepcopy(plan)
     assert len(registry)==4 and all(v['binding']['rowNumber']==8 for v in registry.values())
@@ -163,6 +256,7 @@ def test_facade_selects_duration_policy_only_for_new_comparison_run(tmp_path):
     try:
         r,_=facade.create({'workspaceTaskId':'t','operationKey':'k','question':QUESTION,'deferStart':True},start_async=False)
         assert r['comparisonPlanningContractVersion']==6
+        assert r['comparisonAuthoringContractVersion']==1
         old={**r,'runId':'old','taskId':'old','idempotencyKey':'old','comparisonPlanningContractVersion':3}
         repo.create_run(old)
         check=Mock(return_value=[])

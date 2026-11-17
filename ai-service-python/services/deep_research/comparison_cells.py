@@ -22,8 +22,10 @@ class ComparisonDraftOverflow(ValueError):
         self.limit = limit
 
 
-def plan_cells(requirements, sources, evidence, *, shared_axes=False, question=None, typed_roles=False,joint_reports=False,literal_axes=False,fixed_slots=False,unified_answers=False,local_goal_refs=False):
+def plan_cells(requirements, sources, evidence, *, shared_axes=False, question=None, typed_roles=False,joint_reports=False,literal_axes=False,fixed_slots=False,unified_answers=False,local_goal_refs=False,measurement_display=False):
     """Keep every frozen obligation, with source-local citation permissions."""
+    if type(measurement_display) is not bool or measurement_display and not local_goal_refs:
+        raise ValueError('Measurement display requires explicit local-goal wire')
     if (type(shared_axes) is not bool or type(typed_roles) is not bool
             or (shared_axes or typed_roles) and not isinstance(question, str)):
         raise ValueError('Shared axes require the exact user question')
@@ -117,6 +119,7 @@ def plan_cells(requirements, sources, evidence, *, shared_axes=False, question=N
         from services.deep_research.comparison_layout import apply_slots
         result=apply_slots(result,question)
     if unified_answers:result['answerWireVersion']=2 if local_goal_refs else 1
+    if measurement_display:result['measurementDisplayVersion']=1
     return result
 
 

@@ -21,12 +21,14 @@ def enabled(record):
 def planning_options(record, question):
     from services.deep_research.comparison_intent import enabled as intent_enabled
     if intent_enabled(record):
+        from services.deep_research.comparison_measurement_display import enabled as measurement_display
         from services.deep_research.comparison_joint_reports import enabled as joint_reports_enabled
         from services.deep_research.comparison_review_batches import current_profile
         return {'shared_axes':True,'typed_roles':True,'question':question,
                 **({'fixed_slots':True} if record['comparisonPlanningContractVersion'] in (3,4,5,6) else {}),
                 **({'unified_answers':True} if record['comparisonPlanningContractVersion'] in (4,5,6) else {}),
                 **({'local_goal_refs':True} if record['comparisonPlanningContractVersion'] in (5,6) else {}),
+                **({'measurement_display':True} if measurement_display(record) else {}),
                 **({'literal_axes':True} if current_profile(record) else {}),
                 **({'joint_reports':True} if joint_reports_enabled(record) else {})}
     # The frozen review profile separates new runs from historical cell inputs.

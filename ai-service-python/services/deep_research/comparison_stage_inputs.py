@@ -41,6 +41,9 @@ def prepare(record, requirements, sources, rows, tables, bundles, aliases, *,
     plan_options = dict(shared_axes=True, typed_roles=True, joint_reports=True,
                         question=question, literal_axes=True, fixed_slots=True,
                         unified_answers=True, local_goal_refs=True)
+    from services.deep_research.comparison_measurement_display import enabled as measurement_display
+    if measurement_display(record):
+        plan_options['measurement_display'] = True
     full_plan = plan_cells(requirements, sources, rows, **plan_options)
     all_targets = targets(full_plan)
     by_id = {r['evidenceId']: r for r in rows}
