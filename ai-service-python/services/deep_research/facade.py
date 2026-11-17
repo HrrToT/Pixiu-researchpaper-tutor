@@ -316,7 +316,7 @@ class ResearchFacade:
             "synthesisInputContractVersion": 2,
             "comparisonCellsContractVersion": self._comparison_cells_version,
             "comparisonReviewBatchContractVersion": 2 if self._comparison_review_batch_version == 1 else 0,
-            "comparisonPlanningContractVersion": 2 if self._comparison_cells_version == 1 else 0,
+            "comparisonPlanningContractVersion": (3 if self._comparison_review_batch_version == 1 else 2) if self._comparison_cells_version == 1 else 0,
             "comparisonAuditEnvelopeContractVersion": 1 if self._comparison_cells_version == 1 else 0,
             "comparisonJointReportsContractVersion": 2 if self._comparison_cells_version == 1 else 0,
             "experimentSharedPlanContractVersion": self._shared_experiment_plan_version if re.search(
@@ -1468,7 +1468,7 @@ class ResearchFacade:
             and record.get('sourcePolicy',{}).get('mode') in {'academic_external','external_only'} else {})
         def verify(claims,evidence,semantic=None):
             context=None
-            if type(record.get('comparisonPlanningContractVersion')) is int and record['comparisonPlanningContractVersion']==2:
+            if type(record.get('comparisonPlanningContractVersion')) is int and record['comparisonPlanningContractVersion'] in (2,3):
                 from services.deep_research.comparison_table_context import for_record
                 context=for_record(self._repo.require_run(run_id))
             return verify_claims(

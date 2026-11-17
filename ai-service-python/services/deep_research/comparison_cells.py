@@ -22,7 +22,7 @@ class ComparisonDraftOverflow(ValueError):
         self.limit = limit
 
 
-def plan_cells(requirements, sources, evidence, *, shared_axes=False, question=None, typed_roles=False,joint_reports=False,literal_axes=False):
+def plan_cells(requirements, sources, evidence, *, shared_axes=False, question=None, typed_roles=False,joint_reports=False,literal_axes=False,fixed_slots=False):
     """Keep every frozen obligation, with source-local citation permissions."""
     if (type(shared_axes) is not bool or type(typed_roles) is not bool
             or (shared_axes or typed_roles) and not isinstance(question, str)):
@@ -31,6 +31,8 @@ def plan_cells(requirements, sources, evidence, *, shared_axes=False, question=N
         raise ValueError('Joint reports require typed roles')
     if type(literal_axes) is not bool or literal_axes and not typed_roles:
         raise ValueError('Literal axes require typed roles')
+    if type(fixed_slots) is not bool or fixed_slots and not typed_roles:
+        raise ValueError('Fixed slots require typed roles')
     if not isinstance(sources, dict) or not sources or not isinstance(requirements, list):
         raise ValueError('Invalid comparison sources or requirements')
     if any(not isinstance(k, str) or not k or not isinstance(v, dict) for k, v in sources.items()):
@@ -103,10 +105,14 @@ def plan_cells(requirements, sources, evidence, *, shared_axes=False, question=N
                           'evidenceIds': [eid for eid, row in rows.items() if row['source'] == source],
                           'preferredEvidenceIds': [eid for eid, row in rows.items()
                                                    if row['source'] == source and oid in row['obligations']]})
-    return {'version': 3 if typed_roles else 2 if shared_axes else 1,
+    result={'version': 3 if typed_roles else 2 if shared_axes else 1,
             **({'jointReports':True} if joint_reports else {}),
             **({'roles': roles} if typed_roles else {}), 'requirements': deepcopy(requirements),
             'sources': deepcopy(sources), 'evidence': rows, 'cells': cells}
+    if fixed_slots:
+        from services.deep_research.comparison_layout import apply_slots
+        return apply_slots(result,question)
+    return result
 
 
 def _point(raw, cid, obligations, allowed, kinds, evidence):
@@ -131,6 +137,11 @@ def _point(raw, cid, obligations, allowed, kinds, evidence):
 
 def compile_cells(payload, plan, *, max_claims):
     """Isolate bad cell points; no compiled claim has scientific approval."""
+    bindings={}
+    if plan.get('fixedSlots') is True:
+        if type(max_claims) is not int or max_claims<1:raise ValueError('Invalid comparison point limit')
+        from services.deep_research.comparison_layout import decode_slots
+        payload,bindings=decode_slots(payload,plan,max_claims=max_claims)
     if (type(max_claims) is not int or max_claims < 1 or not isinstance(payload, dict)
             or set(payload) != {'cells', 'conclusions'}
             or not isinstance(payload['cells'], list) or not isinstance(payload['conclusions'], list)
@@ -152,10 +163,14 @@ def compile_cells(payload, plan, *, max_claims):
     for index, cell in enumerate(plan['cells']):
         raw = submitted.get(cell['cellId'])
         entry = {**deepcopy(cell), 'claimIds': [], 'unresolved': raw is None or raw['unresolved']}
+        goals=bindings.get(cell['cellId'],[cell['obligationId']])
+        if 'allowedObligationIds' in cell:
+            entry['obligationIds']=goals
+            if goals:entry['obligationId']=goals[0]
         for ordinal, point in enumerate(raw['claims'] if raw else []):
             cid = f'cmp_{index}_{ordinal}'
             try:
-                claim = _point(point, cid, [cell['obligationId']], set(cell['evidenceIds']),
+                claim = _point(point, cid, goals, set(cell['evidenceIds']),
                                {'reported', 'inference'}, plan['evidence'])
             except ValueError as exc:
                 errors.append({'cellId': cell['cellId'], 'pointIndex': ordinal, 'reason': str(exc)})
@@ -193,7 +208,15 @@ def compile_cells(payload, plan, *, max_claims):
                   or any(c['obligationId'] == o['obligationId'] and c['unresolved'] for c in layout)]
     if typed:
         unresolved = [oid for oid in unresolved if oid not in covered_joint_goals]
+    if plan.get('fixedSlots') is True:
+        # IDs record routing only; final semantic coverage still checks the
+        # complete question, criteria and every rendered cell.
+        routed={oid for claim in claims for oid in claim.get('obligationIds',[])}
+        missing={oid for row in layout if row['unresolved'] for oid in
+                 (row.get('obligationIds') or row.get('allowedObligationIds',[row['obligationId']]))}
+        unresolved=[o['obligationId'] for o in plan['requirements'] if o['obligationId'] not in routed or o['obligationId'] in missing]
     return {**({'layoutVersion': plan['version']} if plan['version'] in (2,3) else {}),
+            **({'fixedSlots':True} if plan.get('fixedSlots') is True else {}),
             **({'jointReports':True} if typed and plan.get('jointReports') is True else {}),
             **({'jointGoals': [deepcopy(role) for role in plan['roles'].values() if role['kind'] == 'joint']}
                if typed else {}),
@@ -212,7 +235,7 @@ def partition_source_bound_claims(claims, draft, evidence):
     by_id = {e['evidenceId']: e for e in evidence}
     owners = {cid: cell['source'] for cell in draft['layout'] for cid in cell['claimIds']}
     typed = draft.get('layoutVersion') == 3
-    goals = {cid: cell['obligationId'] for cell in draft['layout'] for cid in cell['claimIds']} if typed else {}
+    goals = {cid: cell.get('obligationIds',[cell['obligationId']]) for cell in draft['layout'] for cid in cell['claimIds']} if typed else {}
     retained, rejected = [], []
     for claim in claims:
         alias = owners.get(claim['claimId'])
@@ -240,7 +263,7 @@ def partition_source_bound_claims(claims, draft, evidence):
                     continue
             retained.append(deepcopy(claim))  # Joint conclusions still use normal verification.
             continue
-        if typed and claim.get('obligationIds') != [goals[claim['claimId']]]:
+        if typed and claim.get('obligationIds') != goals[claim['claimId']]:
             rejected.append({'claimId':claim['claimId'],'reason':'comparison_cell_goal_mismatch'})
             continue
         source = draft['sources'][alias]

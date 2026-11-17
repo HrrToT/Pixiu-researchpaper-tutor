@@ -1,0 +1,68 @@
+{
+  "scope": "same saved v7 plan/evidence, production synthesis node and native request reconstruction",
+  "receipts": [
+    {
+      "planningVersion": 2,
+      "inputBytes": 31968,
+      "requestDigest": "253ded9a0fdf1a9bd45745053c8b92bc9a116ca969812e041db0534cfe649ec8",
+      "maxDraftPoints": 10,
+      "cellCount": 4,
+      "axes": [
+        "表示与压缩机制",
+        "额外处理成本"
+      ],
+      "missingPremiseBundles": [],
+      "errorCode": "invalid_synthesis_response",
+      "allocation": {
+        "version": 2,
+        "status": "rejected_unverified",
+        "plannedStructurePoints": 7,
+        "batchedCallLowerBoundOnly": true,
+        "maxDraftPoints": 10,
+        "remainingModelCalls": 13,
+        "generationAuditAndRepairCalls": 3,
+        "tokensAndTimeFitEstablished": false,
+        "scientificApproval": false,
+        "reason": "draft_point_allocation_exceeded",
+        "receivedPoints": 16
+      }
+    },
+    {
+      "planningVersion": 3,
+      "inputBytes": 31804,
+      "requestDigest": "401350665b1392158128a2bc77a4d99c7f67889351c13de0000439aafccdb5de",
+      "maxDraftPoints": 11,
+      "cellCount": 8,
+      "axes": [
+        "表示与压缩机制",
+        "额外处理成本",
+        "存储与画质",
+        "渲染速度"
+      ],
+      "missingPremiseBundles": [],
+      "errorCode": null,
+      "allocation": {
+        "version": 2,
+        "status": "compiled_unverified",
+        "plannedStructurePoints": 11,
+        "batchedCallLowerBoundOnly": true,
+        "maxDraftPoints": 11,
+        "remainingModelCalls": 13,
+        "generationAuditAndRepairCalls": 3,
+        "tokensAndTimeFitEstablished": false,
+        "scientificApproval": false,
+        "cellSlots": 8,
+        "maxPointsPerCell": 1,
+        "conclusionSlots": 3,
+        "compiledPoints": 0
+      },
+      "emptySlotsRemainUnresolved": true
+    }
+  ],
+  "oldRequestIdentityUnchanged": true,
+  "oldReceivedOverflowNotReclassified": true,
+  "networkRequests": 0,
+  "providerCalls": 0,
+  "scientificApproval": false,
+  "newResponseBoundary": "All-null local fixture validates routing only, not answer quality or whole-run budget fit."
+}

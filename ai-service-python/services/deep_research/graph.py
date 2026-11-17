@@ -1310,6 +1310,13 @@ def make_synthesize_node(
                 if needed:allocation_options['planned_points']=needed
             draft_admission = before_synthesis(record, point_constraint,**allocation_options)
             claim_limit = draft_admission['maxDraftPoints']
+            if allocation_options and allocation_plan.get('fixedSlots') is True:
+                minimum=len(allocation_plan['cells'])+len(joint_ids)
+                if claim_limit<minimum:
+                    from services.deep_research.contracts import BudgetExhaustedError
+                    raise BudgetExhaustedError('comparisonAnswerSlots',claim_limit,minimum)
+                draft_admission.update(cellSlots=len(allocation_plan['cells']),maxPointsPerCell=1,
+                    conclusionSlots=min(allocation_plan['conclusionSlots'],claim_limit-len(allocation_plan['cells'])))
             repo_update(run_id, lambda r: {**r, 'state': {**r.get('state', {}),
                 'synthesisDraftAdmission': deepcopy(draft_admission)}}, expected_revision=None)
         prompt = f"""Synthesize a complete answer to the research question.

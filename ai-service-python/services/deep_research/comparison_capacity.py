@@ -30,7 +30,10 @@ def before_synthesis(record, point_constraint=None, *, planned_points=None):
         # Use batching only to avoid starving the requested structure. Do not
         # inflate every answer to the theoretical 24-point batch capacity.
         upper=max(0,remaining-overhead)*MAX_TARGETS
-        capacity=min(24,max(capacity,min(planned_points,upper)))
+        if record.get('comparisonPlanningContractVersion')==3:
+            capacity=min(24,planned_points,upper)
+        else:
+            capacity=min(24,max(capacity,min(planned_points,upper)))
         allocation={'plannedStructurePoints':planned_points,'batchedCallLowerBoundOnly':True}
     if point_constraint is not None:
         if (not isinstance(point_constraint, dict)

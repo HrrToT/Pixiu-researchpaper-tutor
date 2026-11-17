@@ -65,7 +65,7 @@ def metadata(draft):
             **({'jointReports':True} if version==3 and draft.get('jointReports') is True else {}),
             **({'jointGoals':deepcopy(draft['jointGoals'])} if version==3 else {}), 'sources': deepcopy(draft['sources']),
             'layout': [{k: deepcopy(row[k]) for k in
-                        fields}
+                        (*fields, *(['obligationIds'] if 'obligationIds' in row else []))}
                        for row in draft['layout']]}
 
 
