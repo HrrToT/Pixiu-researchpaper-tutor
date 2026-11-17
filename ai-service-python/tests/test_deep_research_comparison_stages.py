@@ -392,6 +392,50 @@ def test_actual_staged_synthesis_uses_ordinary_verification_and_publication(tmp_
     blocked.assert_not_called()
 
 
+def test_actual_isolated_graph_keeps_three_stages_on_reopen_and_withholds_unverified_facts(tmp_path):
+    from services.deep_research.graph import make_synthesize_node, make_verify_node, make_publish_node
+    from services.deep_research.verification import verify_claims
+    from services.deep_research.repository import DeepResearchRepository
+    r, repo = graph_fixture(tmp_path, authoring=2)
+    sent = []
+    def update(rid, fn, **kw):
+        return repo.update_run(rid, fn, **kw)
+    def invoke(rid, node, prompt, options, **kw):
+        data = packet({'prompt': prompt})
+        local = [p for p in data['papers'] if p['targets']]
+        targets = [t for p in local for t in p['targets']] + data['jointTargets']
+        if local:
+            assert len(data['papers']) == 1 and not data['jointTargets']
+            ev = [local[0]['evidence'][0]]
+        else:
+            assert data['jointTargets'] and len(data['papers']) == 2
+            ev = [p['evidence'][0] for p in data['papers']]
+        rows = [{'targetId': t['targetId'], 'goalRefs': [], 'point': None} for t in targets]
+        rows[0].update(goalRefs=[targets[0]['goalChoices'][0]['goalRef']], point={
+            'kind': 'reported', 'body': {'prose': {'text': ' '.join(e['quote'] for e in ev), 'conditions': {}}},
+            'evidenceRefs': [e['evidenceId'] for e in ev], 'cellRefs': [], 'detailLevel': 'fulltext',
+            'draftingBasis': {'premiseStatus': 'established',
+                'observations': [{'evidenceId': e['evidenceId'], 'quote': e['quote']} for e in ev],
+                'scopeDecision': 'reported_case', 'unresolved': ''}})
+        sent.append(prompt)
+        return {'content': json.dumps({'answers': rows}), 'finishReason': 'stop'}
+    result = make_synthesize_node(invoke, update, scope_validator=lambda *_: True)({'run_id': r['runId']})
+    saved = repo.require_run(r['runId'])['state']
+    assert len(sent) == len(saved['comparisonStageGeneration']['stages']) == 3
+    assert len(saved['reportBody']['claims']) == 3
+    repo = DeepResearchRepository(tmp_path / 'graph.sqlite3')
+    repo.initialize()
+    blocked = Mock(side_effect=AssertionError('No stage resend'))
+    again = make_synthesize_node(blocked, update, scope_validator=lambda *_: True)({'run_id': r['runId']})
+    assert again['report_version_id'] == result['report_version_id']
+    blocked.assert_not_called()
+    make_verify_node(verify_claims, None, update)({'run_id': r['runId'], **result})
+    publish = Mock(return_value=({'publicationId': 'isolated-fixture'}, True))
+    make_publish_node(publish, update, scope_validator=lambda *_: True)({'run_id': r['runId'], **result})
+    payload = publish.call_args.kwargs['payload']
+    assert not payload['claims'] and payload['outcome'] != 'complete'
+
+
 def test_real_ledger_recovers_a_received_stage_after_checkpoint_write_interruption(tmp_path):
     from services.deep_research.graph import make_synthesize_node
     from services.deep_research.tools import TrackedLLMInvoker
