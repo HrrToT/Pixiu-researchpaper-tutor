@@ -25,11 +25,27 @@ def enabled():
 def research_model_options(node, options):
     """Apply role options BEFORE the ledger reserves tokens and fingerprints input."""
     from services.deep_research.factual_reasoning import OPTION,DIRECT_REPAIR_OPTION,HIGH_SYNTHESIS_OPTION,COMPACTION_OPTION,DIRECT_SYNTHESIS_OPTION
-    from services.deep_research.factual_review import OPTION as REVIEW_OPTION,REPAIR_OUTPUT_OPTION
+    from services.deep_research.factual_review import OPTION as REVIEW_OPTION,REPAIR_OUTPUT_OPTION,DIRECT_REVIEW_OPTION
     from services.deep_research.experiment_template import REASONING_OPTION as EXPERIMENT_OPTION
     from services.deep_research.experiment_envelope import DIRECT_PLAN_OPTION
     from services.deep_research.coverage_binding_correction import OPTION as BINDING_OPTION
     options = dict(options)
+    direct_review = options.pop(DIRECT_REVIEW_OPTION, False)
+    if type(direct_review) is not bool:
+        raise ValueError('Invalid direct comparison review profile')
+    if direct_review:
+        profiles = (
+                OPTION, DIRECT_REPAIR_OPTION, HIGH_SYNTHESIS_OPTION, COMPACTION_OPTION,
+                DIRECT_SYNTHESIS_OPTION, REVIEW_OPTION, REPAIR_OUTPUT_OPTION,
+                EXPERIMENT_OPTION, DIRECT_PLAN_OPTION, BINDING_OPTION)
+        if node != 'verify' or any(options.get(key, False) is not False for key in profiles):
+            raise ValueError('Direct comparison review requires an isolated factual review')
+        cap = options.get('max_tokens', 4000)
+        if type(cap) is not int or not 1 <= cap <= 4000:
+            raise ValueError('Invalid direct comparison review output cap')
+        for key in profiles:
+            options.pop(key, None)
+        return {**options, 'thinking': {'type': 'disabled'}, 'reasoning_effort': 'none', 'max_tokens': cap}
     experiment_reasoning=options.pop(EXPERIMENT_OPTION,False)
     direct_plan=options.pop(DIRECT_PLAN_OPTION,False)
     bounded_review=options.pop(REVIEW_OPTION,False)

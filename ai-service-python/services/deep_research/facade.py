@@ -1345,8 +1345,9 @@ class ResearchFacade:
         from services.deep_research.mechanism_grounding import review_policy as mechanism_review_policy
         from services.deep_research.workflow_representation_review import context as representation_review_context
         from services.deep_research.comparison_review_batches import enabled as comparison_batch_enabled,current_profile
-        from services.deep_research.comparison_measurement_display import isolated as isolated_comparison
+        from services.deep_research.comparison_measurement_display import isolated as isolated_comparison, local_contributions
         checker = BudgetedSemanticChecker(invoker, run_id,
+            direct_comparison_review=lambda: local_contributions(self._repo.require_run(run_id)),
             preserve_initial_review_budget=lambda: isolated_comparison(self._repo.require_run(run_id)),
             comparison_review_batches=lambda: comparison_batch_enabled(self._repo.require_run(run_id)),
             comparison_repair_review_output=lambda: current_profile(self._repo.require_run(run_id)),

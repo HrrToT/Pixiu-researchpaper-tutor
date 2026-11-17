@@ -3,6 +3,7 @@ from datetime import datetime, UTC
 
 OPTION='_bounded_factual_review'
 REPAIR_OUTPUT_OPTION='_bounded_factual_repair_output'
+DIRECT_REVIEW_OPTION='_direct_comparison_review'
 
 
 def cell_review_enabled(record):

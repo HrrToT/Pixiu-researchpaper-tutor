@@ -348,10 +348,17 @@ class TrackedLLMInvoker:
         use_reserve: bool = False,
     ) -> dict[str, Any]:
         from llm.provider import LLMRequest, LLMProviderError
-        from services.deep_research.factual_review import OPTION as REVIEW_OPTION,REPAIR_OUTPUT_OPTION
+        from services.deep_research.factual_review import OPTION as REVIEW_OPTION,REPAIR_OUTPUT_OPTION,DIRECT_REVIEW_OPTION
         from services.deep_research.experiment_template import REASONING_OPTION as EXPERIMENT_OPTION
         bounded_review=(extra_body or {}).get(REVIEW_OPTION,False)
         repair_output=(extra_body or {}).get(REPAIR_OUTPUT_OPTION,False)
+        direct_review=(extra_body or {}).get(DIRECT_REVIEW_OPTION,False)
+        if type(direct_review) is not bool:
+            raise ValueError('Invalid direct comparison review profile')
+        if direct_review:
+            from services.deep_research.comparison_measurement_display import local_contributions
+            if node != 'verify' or self._run_record is None or not local_contributions(self._run_record(run_id)):
+                raise DeepResearchError('invalid_model_options','初审直答配置与运行版本不匹配，尚未发送。')
         if type(repair_output) is not bool:
             raise ValueError('Invalid factual repair review output profile')
         if repair_output:
@@ -366,7 +373,7 @@ class TrackedLLMInvoker:
             raise ValueError('Invalid bounded factual review option')
         if self._request_options:
             extra_body = self._request_options(node, dict(extra_body or {}))
-        elif bounded_review or repair_output or experiment_reasoning or BINDING_OPTION in (extra_body or {}):
+        elif bounded_review or repair_output or direct_review or experiment_reasoning or BINDING_OPTION in (extra_body or {}):
             from services.deep_research.runtime import research_model_options
             extra_body=research_model_options(node,dict(extra_body or {}))
         elif node == 'repair_claims' and '_repair_output_limit' in (extra_body or {}):
@@ -391,7 +398,7 @@ class TrackedLLMInvoker:
         if initial_plan_response:request_identity['initialPlanResponseContractVersion']=1
         args_digest = digest(request_identity)
         from services.deep_research.factual_review import cell_review_enabled
-        guarded_review = bounded_review or (self._run_record and node == 'verify'
+        guarded_review = bounded_review or direct_review or (self._run_record and node == 'verify'
                                            and cell_review_enabled(transport_record))
         if guarded_review and self._run_record:
             from services.deep_research.factual_review import admission
@@ -736,6 +743,7 @@ class BudgetedSemanticChecker:
         comparison_review_batches=False,
         comparison_repair_review_output=False,
         preserve_initial_review_budget=False,
+        direct_comparison_review=False,
     ):
         self._invoke = llm_invoker
         self._run_id = run_id
@@ -781,6 +789,7 @@ class BudgetedSemanticChecker:
         self._comparison_review_batches = comparison_review_batches
         self._comparison_repair_review_output = comparison_repair_review_output
         self._preserve_initial_review_budget = preserve_initial_review_budget
+        self._direct_comparison_review = direct_comparison_review
     
     def __call__(self, claims: list[dict], evidence: list[dict], *, proposal_context=()) -> list[dict]:
         return self._check(claims,evidence,list(proposal_context),'verify')
@@ -1542,6 +1551,11 @@ The dataAvailability object is an internal audit, not new experimental results.
                             else self._bounded_factual_review) is True
             from services.deep_research.factual_review import eligible as review_eligible,OPTION as REVIEW_OPTION
             review_options={REVIEW_OPTION:True} if bounded_review and node=='verify' and review_eligible(claims) else {}
+            direct_review = self._direct_comparison_review
+            direct_review = (direct_review() if callable(direct_review) else direct_review) is True
+            if direct_review and complete_factual_batch and node == 'verify' and review_eligible(claims):
+                from services.deep_research.factual_review import DIRECT_REVIEW_OPTION
+                review_options = {DIRECT_REVIEW_OPTION: True}
             repair_output=self._comparison_repair_review_output
             repair_output=(repair_output() if callable(repair_output) else repair_output) is True
             if repair_output and complete_factual_batch and node=='verify_repair' and review_eligible(claims):

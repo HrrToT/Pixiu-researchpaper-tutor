@@ -29,9 +29,10 @@ def main(prefix, output):
     settled = [c for c in calls if c[2] == 'verify' and c[5] == 'succeeded']
     alternatives = []
     native_limit = capacity.verification_input_limit
-    for window in (32000, 24000):
+    for profile, window in ((2, 32000), (2, 24000), (3, 32000)):
         r = deepcopy(original)
         r.update(status='running', startedAt=None)
+        r['comparisonAuthoringContractVersion'] = profile
         repo = DeepResearchRepository(ROOT / 'tmp' / ('comparison-review-capacity-' + uuid.uuid4().hex + '.sqlite3'))
         repo.initialize()
         repo.create_run(r)
@@ -58,7 +59,7 @@ def main(prefix, output):
             facade.shutdown()
         client.invoke.assert_not_called()
         assert not result['accepted'] and not repo.list_calls(r['runId'])
-        alternatives.append({'prototypeWindow': window, 'requests': requests,
+        alternatives.append({'authoringVersion': profile, 'prototypeWindow': window, 'requests': requests,
             'callCount': len(requests), 'sumReservationUpperBounds': sum(x['reservation']['tokens'] for x in requests),
             'scientificApproval': False})
     assert path.read_bytes() == raw
