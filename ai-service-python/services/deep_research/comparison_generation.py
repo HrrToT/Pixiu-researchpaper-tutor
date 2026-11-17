@@ -24,8 +24,9 @@ def planning_options(record, question):
         from services.deep_research.comparison_joint_reports import enabled as joint_reports_enabled
         from services.deep_research.comparison_review_batches import current_profile
         return {'shared_axes':True,'typed_roles':True,'question':question,
-                **({'fixed_slots':True} if record['comparisonPlanningContractVersion'] in (3,4) else {}),
-                **({'unified_answers':True} if record['comparisonPlanningContractVersion']==4 else {}),
+                **({'fixed_slots':True} if record['comparisonPlanningContractVersion'] in (3,4,5) else {}),
+                **({'unified_answers':True} if record['comparisonPlanningContractVersion'] in (4,5) else {}),
+                **({'local_goal_refs':True} if record['comparisonPlanningContractVersion']==5 else {}),
                 **({'literal_axes':True} if current_profile(record) else {}),
                 **({'joint_reports':True} if joint_reports_enabled(record) else {})}
     # The frozen review profile separates new runs from historical cell inputs.
@@ -42,7 +43,7 @@ def render(record, question, requirements, sources, evidence, tables, limit, max
     from services.deep_research.evidence_wire import encode, SHORT_LEGEND
     from services.deep_research.shared_strings import input_text
     plan = plan_cells(requirements, sources, evidence, **planning_options(record, question))
-    if plan.get('answerWireVersion')==1:
+    if plan.get('answerWireVersion') in (1,2):
         from services.deep_research.comparison_wire import render as render_answers
         return render_answers(record,question,plan,tables,limit,max_claims)
     enc = lambda value: json.dumps(value, ensure_ascii=False, separators=(',', ':'))

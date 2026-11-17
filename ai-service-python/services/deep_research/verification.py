@@ -94,13 +94,14 @@ def _table_display_diagnostic(claim, support,comparison_context=None):
 
 def precheck_claims(claims: list[dict], evidence: list[dict], *, absence_scope_version=0,
                     quantity_spelling_version=0, feedback_version=0, table_references_version=0,
-                    requested_source_revisions=None,comparison_context=None,bound_duration_spelling=False) -> dict:
+                    requested_source_revisions=None,comparison_context=None,bound_duration_spelling=False,comparison_embedded_measurements=False) -> dict:
     """Pure hard checks shared by publication and pre-classification edits.
 
     Candidates still require a separate semantic verdict; nothing is accepted
     for publication here and no provider-capable callback is invoked.
     """
     if type(bound_duration_spelling) is not bool:raise ValueError('Invalid bound duration spelling policy')
+    if type(comparison_embedded_measurements) is not bool:raise ValueError('Invalid comparison measurement policy')
     if requested_source_revisions is not None:
         from services.deep_research.source_revisions import validate_constraints
         validate_constraints(requested_source_revisions)
@@ -224,6 +225,19 @@ def precheck_claims(claims: list[dict], evidence: list[dict], *, absence_scope_v
                 reason = reason or binding_reason
             else:
                 reason = reason or validate_table_bindings(claim, support, **table_options)
+        if comparison_embedded_measurements and kind in {'inference', 'proposal', 'suggestion', 'hypothesis'}:
+            # Ordinary comparison advice can embed reported measurements. Its
+            # label cannot waive exact table identity/display checks. This is
+            # not the experimental-design path and does not prove semantics.
+            table_options = {'bound_duration_spelling': bound_duration_spelling}
+            if comparison_context is not None:
+                table_options['comparison_context'] = comparison_context
+            if type(table_references_version) is int and table_references_version in (2,3,4):
+                table_options['translated_metrics'] = True
+                if table_references_version in (3,4):
+                    table_options['dataset_joiners'] = True
+            from services.deep_research.table_bindings import validate_comparison_measurements
+            reason = reason or validate_comparison_measurements(claim, support, **table_options)
         if (claim.get('designRole') is not None or
                 (claim.get('designContractVersion') == 2 and kind in {'proposal', 'suggestion', 'hypothesis'})):
             from services.deep_research.experimental_reasoning import DESIGN_ROLES
@@ -325,7 +339,7 @@ def verify_claims(claims: list[dict], evidence: list[dict],
                   semantic_check: Callable[[list[dict], list[dict]], list[dict]] | None = None,
                   *, absence_scope_version=0, quantity_spelling_version=0, feedback_version=0,
                   table_references_version=0, review_context_version=0, requested_source_revisions=None,
-                  complete_review_feedback=False,comparison_context=None,bound_duration_spelling=False) -> dict:
+                  complete_review_feedback=False,comparison_context=None,bound_duration_spelling=False,comparison_embedded_measurements=False) -> dict:
     """Publish only after hard checks and an independent semantic verdict.
 
     Missing, malformed or duplicate model verdicts fail closed. A proposal or
@@ -335,10 +349,13 @@ def verify_claims(claims: list[dict], evidence: list[dict],
         raise ValueError('Invalid complete review feedback policy')
     if type(bound_duration_spelling) is not bool:
         raise ValueError('Invalid bound duration spelling policy')
+    if type(comparison_embedded_measurements) is not bool:
+        raise ValueError('Invalid comparison measurement policy')
     checked = precheck_claims(claims, evidence, absence_scope_version=absence_scope_version,
         quantity_spelling_version=quantity_spelling_version, feedback_version=feedback_version,
         table_references_version=table_references_version, requested_source_revisions=requested_source_revisions,
         **({'bound_duration_spelling':True} if bound_duration_spelling else {}),
+        **({'comparison_embedded_measurements':True} if comparison_embedded_measurements else {}),
         **({'comparison_context':comparison_context} if comparison_context is not None else {}))
     candidates, rejected = checked['candidates'], checked['rejected']
     proposals = {"suggestion", "proposal", "hypothesis"}

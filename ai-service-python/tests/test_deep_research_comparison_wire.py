@@ -162,7 +162,7 @@ def test_facade_selects_duration_policy_only_for_new_comparison_run(tmp_path):
     facade=ResearchFacade(repo,lambda **_:None,llm_client=object(),comparison_cells_version=1,comparison_review_batch_version=1)
     try:
         r,_=facade.create({'workspaceTaskId':'t','operationKey':'k','question':QUESTION,'deferStart':True},start_async=False)
-        assert r['comparisonPlanningContractVersion']==4
+        assert r['comparisonPlanningContractVersion']==5
         old={**r,'runId':'old','taskId':'old','idempotencyKey':'old','comparisonPlanningContractVersion':3}
         repo.create_run(old)
         check=Mock(return_value=[])
@@ -173,7 +173,7 @@ def test_facade_selects_duration_policy_only_for_new_comparison_run(tmp_path):
     finally:facade.shutdown()
 
 
-def test_real_synthesis_node_compiles_uniform_wire_and_authors_for_reader_once(tmp_path):
+def _exercise_real_synthesis_node(tmp_path, profile):
     from services.deep_research.graph import make_synthesize_node
     from services.deep_research.repository import DeepResearchRepository
     from services.deep_research.shared_strings import unpack
@@ -181,7 +181,7 @@ def test_real_synthesis_node_compiles_uniform_wire_and_authors_for_reader_once(t
     from test_deep_research_comparison_intent import record
     plan,_,_=fixture();r=record()
     r.update(runId='wire-r',taskId='wire-t',idempotencyKey='wire-k',status='running',
-             question=QUESTION+'向新手解释。',comparisonPlanningContractVersion=4,
+             question=QUESTION+'向新手解释。',comparisonPlanningContractVersion=profile,
              comparisonReviewBatchContractVersion=2,comparisonJointReportsContractVersion=3,
              audienceRewriteContractVersion=9,audienceMappedSourceContractVersion=5,audienceFirstContractVersion=1,
              materials=[{'materialId':v['workId'],'title':v['title']} for v in plan['sources'].values()])
@@ -200,9 +200,14 @@ def test_real_synthesis_node_compiles_uniform_wire_and_authors_for_reader_once(t
         sent.append(prompt)
         packet=json.JSONDecoder().raw_decode(prompt.split('Exact question obligations, source permissions, unchanged quotations/context, and visible typed cells:\n',1)[1])[0]
         data=untables(unpack(packet)) if set(packet)=={'strings','value'} else packet
-        answers=[{'targetId':t['targetId'],'obligationIds':[],'point':None} for t in data['targets']]
+        field = 'goalRefs' if profile == 5 else 'obligationIds'
+        answers=[{'targetId':t['targetId'],field:[],'point':None} for t in data['targets']]
         table=data['tableCatalog'][0];ref=table['rows'][0][2][0][0]
-        answers[0].update(obligationIds=['method'],point={'kind':'reported',
+        answers[0][field] = ['G1'] if profile == 5 else ['method']
+        if profile == 5:
+            assert data['targets'][0]['goalChoices'][0] == {'goalRef': 'G1', 'question': plan['requirements'][0]['question']}
+            assert data['targets'][0]['paper'] == 'Paper A'
+        answers[0].update(point={'kind':'reported',
             'body':{'prose':{'text':'Ours-30K FPS 134。','conditions':{}}},
             'evidenceRefs':[table['evidenceId']],'cellRefs':[ref],'detailLevel':'fulltext'})
         return {'content':json.dumps({'answers':answers}),'finishReason':'stop'}
@@ -214,3 +219,117 @@ def test_real_synthesis_node_compiles_uniform_wire_and_authors_for_reader_once(t
     assert len(saved['reportBody']['claims'])==1 and 'audienceRewrite' not in saved
     assert saved['reportBody']['claims'][0]['tableBindings'][0]['rowNumber']==8
     assert not saved.get('verifiedReport')
+
+
+def test_real_synthesis_node_compiles_uniform_wire_and_authors_for_reader_once(tmp_path):
+    _exercise_real_synthesis_node(tmp_path, 4)
+
+
+def test_real_synthesis_node_uses_readable_goal_choices_for_new_profile(tmp_path):
+    _exercise_real_synthesis_node(tmp_path, 5)
+
+
+def test_short_goal_references_restore_only_explicit_frozen_goals():
+    from services.deep_research.comparison_wire import goal_catalog
+    plan, payload, _ = fixture()
+    plan['answerWireVersion'] = 2
+    refs = {row['obligationId']: ref for ref, row in goal_catalog(plan).items()}
+    for row in payload['answers']:
+        row['goalRefs'] = [refs[oid] for oid in row.pop('obligationIds')]
+    draft = compile_cells(payload, plan, max_claims=10)
+    assert draft['answerWireAudit']['version'] == 2 and not draft['answerWireAudit']['errors']
+    assert draft['report']['claims'][0]['obligationIds'] == ['method']
+    assert draft['report']['claims'][1]['obligationIds'] == ['fairness']
+    payload['answers'][0]['goalRefs'] = ['method']  # No guessing a raw ID into a short reference.
+    draft = compile_cells(payload, plan, max_claims=10)
+    assert draft['layout'][0]['unresolved'] and len(draft['report']['claims']) == 1
+
+
+def test_short_reference_from_a_foreign_goal_is_not_accepted_as_a_local_one():
+    from services.deep_research.comparison_wire import goal_catalog
+    plan, payload, _ = fixture()
+    plan['answerWireVersion'] = 2
+    refs = {row['obligationId']: ref for ref, row in goal_catalog(plan).items()}
+    for row in payload['answers']:
+        row['goalRefs'] = [refs[oid] for oid in row.pop('obligationIds')]
+    plan['cells'][0]['allowedObligationIds'] = ['cost']
+    draft = compile_cells(payload, plan, max_claims=10)
+    assert draft['layout'][0]['unresolved'] and len(draft['report']['claims']) == 1
+    assert draft['answerWireAudit']['errors'][0]['reason'] == 'invalid_answer_target_goals'
+
+
+def test_advice_metric_transition_requires_both_exact_cells_and_display_conditions():
+    from services.deep_research.table_bindings import validate_comparison_measurements
+    evidence = [{'evidenceId':'E1', 'quote':'Table row 1: Baseline | 0.815\nTable row 2: Ours | 0.806',
+                 'tableData':{'groups':[['Benchmark',['SSIM']]],
+                              'rows':[[1,'Baseline',['0.815']],[2,'Ours',['0.806']]]}}]
+    claim = {'claimId':'c', 'kind':'proposal', 'evidenceRefs':['E1'],
+             'text':'建议权衡：Benchmark上Baseline与Ours的SSIM从0.815降至0.806。', 'tableBindings':[]}
+    assert validate_comparison_measurements(claim,evidence) == 'missing_table_bindings'
+    claim['tableBindings'] = [{'evidenceId':'E1','rowNumber':1,'groupIndex':0,'metric':'SSIM','value':'0.815'}]
+    assert validate_comparison_measurements(claim,evidence) == 'unbound_table_measurement'
+    claim['tableBindings'].append({'evidenceId':'E1','rowNumber':2,'groupIndex':0,'metric':'SSIM','value':'0.806'})
+    assert validate_comparison_measurements(claim,evidence) is None
+    claim['text'] = claim['text'].replace('Benchmark上','')
+    assert validate_comparison_measurements(claim,evidence) == 'table_condition_not_displayed'
+
+
+def test_new_embedded_measurement_policy_tracks_current_output_and_preserves_legacy(tmp_path):
+    from unittest.mock import patch
+    from services.deep_research.facade import ResearchFacade
+    from services.deep_research.repository import DeepResearchRepository
+    repo = DeepResearchRepository(tmp_path/'measurement-policy.sqlite3'); repo.initialize()
+    facade = ResearchFacade(repo, lambda **_:None, llm_client=object(),
+                            comparison_cells_version=1, comparison_review_batch_version=1)
+    try:
+        r,_ = facade.create({'workspaceTaskId':'t','operationKey':'k','question':QUESTION,'deferStart':True},start_async=False)
+        with patch('services.deep_research.verification.verify_claims',return_value={}) as check:
+            verifier = facade._get_verify_claims(r['runId'])
+            verifier([],[])
+            assert 'comparison_embedded_measurements' not in check.call_args.kwargs
+            repo.update_run(r['runId'],lambda row:{**row,'state':{**row['state'],'outputKind':'paper_comparison'}})
+            verifier([],[])  # Closure created before the brief still reads the current output kind.
+            assert check.call_args.kwargs['comparison_embedded_measurements'] is True
+            old = {**r,'runId':'old4','taskId':'old4','idempotencyKey':'old4',
+                   'comparisonPlanningContractVersion':4,'state':{'outputKind':'paper_comparison'}}
+            repo.create_run(old)
+            facade._get_verify_claims('old4')([],[])
+            assert 'comparison_embedded_measurements' not in check.call_args.kwargs
+            with pytest.raises(ValueError):
+                repo.update_run('old4',lambda row:{**row,'comparisonPlanningContractVersion':5})
+            repo.update_run(r['runId'],lambda row:{**row,'state':{**row['state'],'outputKind':'experiment_design'}})
+            verifier([],[])
+            assert 'comparison_embedded_measurements' not in check.call_args.kwargs
+    finally:
+        facade.shutdown()
+
+
+@pytest.mark.parametrize('kind', ['proposal', 'suggestion', 'inference'])
+def test_embedded_table_measurements_cannot_use_advice_or_inference_to_waive_bindings(kind):
+    plan, payload, _ = fixture()
+    point = next(row for row in payload['answers'] if row['targetId']=='joint_fairness')['point']
+    point.update(kind=kind, cellRefs=[])
+    point['body'] = {'prose': {'text': '建议采用Benchmark上的Ours-30K，因为其FPS为134。', 'conditions': {}}}
+    claim = decode(next(c for c in compile_cells(payload, plan, max_claims=10)['report']['claims']
+                        if c['kind']==kind), reasoning=True)
+    q = plan['evidence']['E1']['quote']
+    e = make_evidence({'workId':'a','versionId':'a-v1','contentHash':'hash','accessLevel':'fulltext'},
+                      q, q, location={}, obligation_ids=['method'])
+    e.update(evidenceId='E1', tableData=plan['evidence']['E1']['tableData'])
+    checker = Mock(return_value=[{'claimId':claim['claimId'], 'status':'passed'}])
+    result = verify_claims([claim], [e], checker, table_references_version=4,
+                           comparison_embedded_measurements=True)
+    assert not result['accepted'] and result['rejected'][0]['reason'] in {'missing_table_bindings', 'table_condition_not_displayed'}
+    checker.assert_not_called()
+    claim['tableBindings'] = [{'evidenceId':'E1','rowNumber':8,'groupIndex':0,'metric':'FPS','value':'134'}]
+    missing_verdict = Mock(return_value=[])
+    result = verify_claims([claim], [e], missing_verdict, table_references_version=4,
+                           comparison_embedded_measurements=True)
+    assert not result['accepted']  # Exact cells only reach independent review.
+    missing_verdict.assert_called_once()
+    claim['tableBindings'][0]['rowNumber'] = 7
+    checker.reset_mock()
+    result = verify_claims([claim], [e], checker, table_references_version=4,
+                           comparison_embedded_measurements=True)
+    assert not result['accepted']
+    checker.assert_not_called()

@@ -1761,7 +1761,7 @@ space with unsupported global absence or incidental iteration/performance values
                 comparison_cell_draft = compile_cells(parsed,
                     plan_cells(draft_obligations, source_registry, evidence_summaries,
                                **planning_options(record, question)), max_claims=claim_limit,
-                    **({'table_registry':table_registry} if record.get('comparisonPlanningContractVersion')==4 else {}))
+                    **({'table_registry':table_registry} if record.get('comparisonPlanningContractVersion') in (4,5) else {}))
                 comparison_cell_draft['sources'] = deepcopy(source_registry)
                 comparison_cell_draft['evidenceAliases'] = dict(evidence_aliases)
                 parsed = comparison_cell_draft['report']
@@ -1913,7 +1913,7 @@ space with unsupported global absence or incidental iteration/performance values
 
         from services.deep_research.audience_schedule import reader_first as use_reader_first
         direct_comparison_authoring = (cell_mode and isinstance(comparison_cell_draft,dict)
-                                       and comparison_cell_draft.get('answerWireAudit',{}).get('version')==1)
+                                       and comparison_cell_draft.get('answerWireAudit',{}).get('version') in (1,2))
         reader_first = not direct_comparison_authoring and not blocked_draft_ids and use_reader_first(record, parsed, output_kind)
         if reader_first:
             parsed = adapt_reader(parsed,pending_compaction=True)

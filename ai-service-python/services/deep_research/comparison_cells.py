@@ -22,7 +22,7 @@ class ComparisonDraftOverflow(ValueError):
         self.limit = limit
 
 
-def plan_cells(requirements, sources, evidence, *, shared_axes=False, question=None, typed_roles=False,joint_reports=False,literal_axes=False,fixed_slots=False,unified_answers=False):
+def plan_cells(requirements, sources, evidence, *, shared_axes=False, question=None, typed_roles=False,joint_reports=False,literal_axes=False,fixed_slots=False,unified_answers=False,local_goal_refs=False):
     """Keep every frozen obligation, with source-local citation permissions."""
     if (type(shared_axes) is not bool or type(typed_roles) is not bool
             or (shared_axes or typed_roles) and not isinstance(question, str)):
@@ -35,6 +35,8 @@ def plan_cells(requirements, sources, evidence, *, shared_axes=False, question=N
         raise ValueError('Fixed slots require typed roles')
     if type(unified_answers) is not bool or unified_answers and not fixed_slots:
         raise ValueError('Unified answers require fixed comparison slots')
+    if type(local_goal_refs) is not bool or local_goal_refs and not unified_answers:
+        raise ValueError('Local goal references require unified answers')
     if not isinstance(sources, dict) or not sources or not isinstance(requirements, list):
         raise ValueError('Invalid comparison sources or requirements')
     if any(not isinstance(k, str) or not k or not isinstance(v, dict) for k, v in sources.items()):
@@ -114,7 +116,7 @@ def plan_cells(requirements, sources, evidence, *, shared_axes=False, question=N
     if fixed_slots:
         from services.deep_research.comparison_layout import apply_slots
         result=apply_slots(result,question)
-    if unified_answers:result['answerWireVersion']=1
+    if unified_answers:result['answerWireVersion']=2 if local_goal_refs else 1
     return result
 
 
@@ -141,7 +143,7 @@ def _point(raw, cid, obligations, allowed, kinds, evidence):
 def compile_cells(payload, plan, *, max_claims, table_registry=None):
     """Isolate bad cell points; no compiled claim has scientific approval."""
     bindings={};wire_audit=None
-    if plan.get('answerWireVersion')==1:
+    if plan.get('answerWireVersion') in (1,2):
         from services.deep_research.comparison_wire import decode as decode_answers
         payload,wire_audit=decode_answers(payload,plan,table_registry or {},max_claims=max_claims)
     if plan.get('fixedSlots') is True:

@@ -174,6 +174,28 @@ def _dataset_key(text, joiners):
     return _key(text)
 
 
+def validate_comparison_measurements(claim, evidence, **options):
+    """Check factual metric operands embedded in ordinary comparison advice.
+
+    Expand bounded display spellings in a validation-only view. No numeric
+    conversion, table selection, rewritten claim or semantic approval occurs.
+    """
+    text = str(claim.get('text', ''))
+    labels = r'(FPS|PSNR|SSIM|LPIPS|Size|Mem)'
+    first = rf'(?<![A-Za-z]){labels}\s*(?:[↑↓:=：]|为|是|从|由|of|is|from)?\s*({_VALUE})'
+    continuation = re.compile(rf'\s*(?:下降到|下降至|降低至|提高至|提升至|降至|升至|到|至|→|->|to|versus|vs\.?|and|与|和|、|/)\s*({_VALUE})', re.I)
+    measurements = []
+    for match in re.finditer(first, text, re.I):
+        metric, value = match.groups()
+        measurements.append(f'{metric} {value}')
+        end = match.end()
+        while (following := continuation.match(text, end)) is not None:
+            measurements.append(f'{metric} {following.group(1)}')
+            end = following.end()
+    view = {**claim, 'text': text + ' ' + ' '.join(measurements)}
+    return validate_table_bindings(view, evidence, **options)
+
+
 def validate_table_bindings(claim, evidence, *, translated_metrics=False, dataset_joiners=False,comparison_context=None,bound_duration_spelling=False):
     """Return a rejection reason; semantic checking still follows this gate."""
     if type(translated_metrics) is not bool:raise ValueError('Invalid metric translation policy')
