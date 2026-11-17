@@ -1436,7 +1436,9 @@ The dataAvailability object is an internal audit, not new experimental results.
             return verdicts
 
         if _preview:
-            if not full_review_inputs:
+            # A factual-decision preview also renders every own source field.
+            # It does not select a batch, fit/trim evidence, reserve or dispatch.
+            if not (full_review_inputs or single_decision):
                 raise ValueError('Preview requires complete review inputs')
             full_prompt = render_evidence([{"evidenceId": key, **value} for key, value in evidence_map.items()])
             return {'inputBytes': len(full_prompt.encode('utf8')), 'maxInputBytes': byte_limit}

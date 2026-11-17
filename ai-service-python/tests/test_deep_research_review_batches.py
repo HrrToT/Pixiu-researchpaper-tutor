@@ -67,6 +67,53 @@ def test_exact_prospective_preview_never_dispatches_or_mutates_inputs():
     assert (claims, k['context']) == before
 
 
+def factual_preview_fixture():
+    from services.deep_research.tools import BudgetedSemanticChecker
+    invoke=Mock()
+    checker=BudgetedSemanticChecker(invoke,'offline',single_factual_decision=True,
+        factual_scope=True,complete_factual_scope=True,isolate_factual_claims=True)
+    claims=[{'claimId':f'c{i}','kind':'reported','text':f'Method {i} uses its own representation.',
+             'conditions':{},'evidenceRefs':[f'e{i}']} for i in range(3)]
+    evidence=[{'evidenceId':f'e{i}','sourceWorkId':f'p{i}',
+               'quote':f'Exact evidence for method {i}.','sourceContext':
+                   'Necessary original context. '+f'Exact evidence for method {i}. '+'Scope qualifications.'}
+              for i in range(3)]
+    return checker,invoke,claims,evidence
+
+
+def test_complete_factual_preview_can_measure_batch_without_selecting_or_dispatching_it():
+    checker,invoke,claims,evidence=factual_preview_fixture()
+    before=deepcopy((claims,evidence))
+    single=[checker._check_batch([c],evidence,[],_preview=True) for c in claims]
+    batch=checker._check_batch(claims,evidence,[],_preview=True)
+    assert 0<batch['inputBytes']<sum(p['inputBytes'] for p in single)
+    assert batch['maxInputBytes']==24000
+    assert (claims,evidence)==before
+    invoke.assert_not_called()
+
+
+def test_factual_preview_measures_all_own_context_and_excludes_unreferenced_sources():
+    checker,invoke,claims,evidence=factual_preview_fixture()
+    base=checker._check_batch(claims,evidence,[],_preview=True)
+    evidence.append({'evidenceId':'foreign','sourceWorkId':'foreign','quote':'private '*10000})
+    assert checker._check_batch(claims,evidence,[],_preview=True)==base
+    evidence[0]['quote']+='x'*40000
+    evidence[0]['sourceContext']='Necessary original context. '+evidence[0]['quote']+' Scope qualifications.'
+    expanded=checker._check_batch(claims,evidence,[],_preview=True)
+    assert expanded['inputBytes']>=base['inputBytes']+40000
+    assert expanded['inputBytes']>expanded['maxInputBytes']
+    invoke.assert_not_called()
+
+
+def test_factual_preview_does_not_enable_unsupported_or_legacy_review_profiles():
+    from services.deep_research.tools import BudgetedSemanticChecker
+    checker,invoke,claims,evidence=factual_preview_fixture()
+    legacy=BudgetedSemanticChecker(invoke,'offline')
+    with pytest.raises(ValueError,match='Preview requires complete review inputs'):
+        legacy._check_batch(claims,evidence,[],_preview=True)
+    invoke.assert_not_called()
+
+
 @pytest.mark.parametrize('replacement', [None, True, '1', 0, 2])
 def test_planner_contract_is_server_owned_and_immutable(tmp_path, replacement):
     from services.deep_research.facade import ResearchFacade
