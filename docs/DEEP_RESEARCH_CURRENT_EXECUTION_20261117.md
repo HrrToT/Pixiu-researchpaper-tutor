@@ -10,14 +10,22 @@
 
 | 项目 | 当前证据 | 边界 |
 | --- | --- | --- |
-| 上次完整回归 | 源码ec9a2f68a完成9654项、498模块完整离线回归，0失败/错误/跳过，旧9654项全部保留，源码及执行器哈希一致 | 候选已装载，v15运行中；唯一警告为既有PyPDF2弃用提示 |
-| 候选装载 | ec9a2f68a源码及全部旧记录身份核对；规划版本6、比较审核版本2；v15已确认写作策略2 | v15候选窗口开启，原容器和独立备份保留；旧记录不升级 |
-| 最新真实验证 | D2-BASELINE-COMPRESSION-v14仅提交一次，10次模型调用均succeeded，65771账本Token、170秒，completed + inconclusive | 4个论文目标引用越权而隔离，1个综合边界结构无效，最终5条草稿且0条通过核验；修订复核被预算准入拒绝 |
+| 上次完整回归 | 源码ec9a2f68a完成9654项、498模块完整离线回归，0失败/错误/跳过，旧9654项全部保留，源码及执行器哈希一致 | v15已终止且未通过；唯一警告为既有PyPDF2弃用提示 |
+| 候选装载 | ec9a2f68a源码及全部旧记录身份核对；规划版本6、比较审核版本2；v15已确认写作策略2 | v15候选已停止，原服务已恢复；旧记录不升级 |
+| 最新真实验证 | v15仅提交一次，11次调用均succeeded，68398实际Token、228秒，failed / budget_exhausted | 三阶段保留28组必要证据、0跨阶段引用越权、9条草稿；初审两批后下一批准入拒绝，无最终成果，不计质量通过 |
 | v9主要失效 | 首稿6条；新手化改写扩大两条单论文机制的对象并改变成本单元格主题，引用仍为原局部证据；一条审核未启动 | 修订因证据17558字节超过14640上限而skipped_budget；不能放松事实审核换完整结果 |
-| 服务恢复 | v14恢复已确认；当前等待v15终态后核对恢复 | 历史未知请求冻结，不自动重发；未知新请求不自动切换服务 |
+| 服务恢复 | v15原服务恢复已确认，全部当前任务/运行/调用一致，恢复新增模型调用0 | 历史未知请求冻结，不自动重发；未知新请求不自动切换服务 |
 | 缓存回放 | 103项相关检查通过；保存读取上下文经新建离线缓存回放，36条证据中3条字符拒绝保持失败，增量后54条，重复执行无新工厂调用 | 回放未调用真实PDF页工厂或模型，不计科学质量通过；上方全量另有独立证据 |
 
 证据：[9559项完整回归](deep-research-evidence/scoped-comparison-completion-host-full-20261117.json)、[本批装载](deep-research-evidence/scoped-comparison-candidate-load-20261117.json)、[9545项历史回归](deep-research-evidence/rejected-source-journal-full-20261117.json)、[本批候选装载](deep-research-evidence/source-journal-candidate-load-20261117.json)、[D2-v8真实结果与恢复](deep-research-evidence/baseline-comparison-v8-real-20261117.json)、[拒绝状态缓存回放](deep-research-evidence/rejected-source-journal-v8-replay-20261117.json)。[D2-v9真实结果与恢复](deep-research-evidence/baseline-comparison-v9-real-20261117.json)。原始论文、模型响应、任务快照及账户信息仅本地保存。
+
+## v15终态与下一交付
+
+下一批按[复审方案](DEEP_RESEARCH_DELIVERY_PLAN_20261118.md)执行：初次审核中断保留、整轮预算容量、局部任务与综合职责联动修复；不立即同题付费重跑。
+
+精确离线回放复用了两次原审核响应，下一请求预留31936Token，投影总量100334超过100000，同时预留调用投影6次超过5次。错误只报告modelCalls 6/18，不能解释成实际支出或整体调用已经超限。已完成原始响应仍在账本，但没有初审检查点、最终报告或发布。共享问题与来源局部职责冲突及错误缺席推断仍需正反例核查；原始模型认可不作科学验收。
+
+证据：[v15真实结果与恢复](deep-research-evidence/baseline-comparison-v15-real-20261118.json)、[下一初审请求精确准入回放](deep-research-evidence/comparison-v15-initial-review-admission-20261118.json)。
 
 ## 当前候选：分阶段比较接入主图（2026-11-18）
 
@@ -29,11 +37,11 @@
 - v14修订的原单批预留34983，加已用65771达到100754；新固定窗口将完整目标拆成两批，单次预留21808/27620，分别以同一已用账本计算为87579/93391。空响应fixture不消耗真实费用，不能据此声称两次真实结算后或终审仍有足够预算；整轮成本和质量继续待验收。
 - v13、v14两组保存输入均验证了必要证据完整、生产策略与原型布局一致，复核请求身份与24KB原型相同。相关1357项/73模块通过、源码前后一致；增加的实际三阶段主图、纯综合阶段、SQLite重开与无语义批准不得发布检查随36项模块集通过，随后6ef21732d完整9654项/498模块通过，旧9646项保留，源码/执行器一致，总耗时449.19秒。计数重叠不相加。
 - v14综合边界输出字符串数组，而比较提示只给observedSettings空数组示例、未给非空元素字段。ec9a2f68a仅对新策略2加入已有完整边界语法（subject/attribute/value及命题格式），没有容错改写坏数组；75项针对检查通过，实际主图能编译非空对象，未获语义批准仍不发布事实。两组必要证据仍完整，v14旧策略请求逐字不变。该修正发生在前次全量之后，已独立完成最终9654项/498模块全量，源码/执行器一致，总耗时463.2秒。
-- 全量期间源码冻结；新策略已装载，真实v15运行中，尚无新质量通过结论。
+- 全量期间源码冻结；新策略已装载并执行v15，终态失败，尚无新质量通过结论；原服务已恢复。
 
 证据：[1357项相关回归](deep-research-evidence/comparison-isolation-related-20261118.json)、[v14结构与复核对照](deep-research-evidence/comparison-v14-isolated-structure-20261118.json)、[v13保存输入对照](deep-research-evidence/comparison-v13-isolated-structure-20261118.json)。全部为离线开发证据，不计独立验收。
 
-阶段隔离候选完整回归：[6ef21732d完整9654项](deep-research-evidence/comparison-isolated-stages-full-20261118.json)。最终语法候选另有正在执行的独立全量，不混用源码身份。
+阶段隔离候选完整回归：[6ef21732d完整9654项](deep-research-evidence/comparison-isolated-stages-full-20261118.json)。最终语法候选ec9a2f68a独立全量也已通过，源码身份分别记录。
 
 最终候选证据：[ec9a2f68a完整9654项](deep-research-evidence/comparison-isolated-grammar-full-20261118.json)、[策略2候选装载](deep-research-evidence/comparison-isolated-candidate-load-20261118.json)。
 
