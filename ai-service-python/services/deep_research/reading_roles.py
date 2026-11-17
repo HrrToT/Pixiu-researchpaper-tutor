@@ -182,7 +182,7 @@ def order(sources, obligations, fallback, *, extracted=(), mixed_script_terms=Fa
     return selected
 
 
-def premise_bundles(rows, obligations, *, mixed_script_terms=False,procedure_targets=False,measurement_tables=False,processing_cost=False):
+def premise_bundles(rows, obligations, *, mixed_script_terms=False,procedure_targets=False,measurement_tables=False,processing_cost=False,authored_rows=False):
     """Carry request-role navigation into synthesis, not a new factual verdict.
 
     A full source passage can locate a benchmark heading while its unchanged
@@ -194,6 +194,8 @@ def premise_bundles(rows, obligations, *, mixed_script_terms=False,procedure_tar
     from services.deep_research.measurement_table_navigation import score as table_score
     rows=[row for row in rows if row.get('verification',{}).get('literal')=='passed']
     sources=[{'title':row.get('sourceTitle','')} for row in rows]
+    if type(authored_rows) is not bool:raise ValueError('Invalid authored row navigation policy')
+    from services.deep_research.measurement_table_navigation import row_priority
     targets=requests(obligations,sources,mixed_script_terms=mixed_script_terms,processing_cost=processing_cost);chosen=[];seen=set();bundles=[];result_leads={}
     for request in targets:
         allowed=[e for e in rows if e.get('sourceWorkId') and request['obligationId'] in eligible_obligation_ids(
@@ -210,6 +212,7 @@ def premise_bundles(rows, obligations, *, mixed_script_terms=False,procedure_tar
             ranked=sorted(own,key=lambda e:(quality(view(e),request['query']),
                 target_score(e.get('quote',''),request) if procedure_targets else 0,
                 table_score(view(e),request) if measurement_tables else 0,
+                row_priority(view(e),request) if authored_rows and measurement_tables else 0,
                 score(view(e),request),-len(e.get('quote',''))),reverse=True)
             # Generic author-report versus comparison-row provenance uses the
             # same requested result row. A separate ablation is not a substitute.

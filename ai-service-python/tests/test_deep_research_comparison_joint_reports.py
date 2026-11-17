@@ -110,7 +110,7 @@ def test_server_selects_and_freezes_joint_report_policy(tmp_path):
     try:
         r,_=facade.create({'workspaceTaskId':'t','operationKey':'op','question':QUESTION,
             'comparisonJointReportsContractVersion':0},start_async=False)
-        assert r['comparisonJointReportsContractVersion']==2
+        assert r['comparisonJointReportsContractVersion']==3
         r=repo.update_run(r['runId'],lambda r:{**r,'state':{**r.get('state',{}),'outputKind':'paper_comparison'}})
         assert planning_options(r,QUESTION)['joint_reports'] is True
         for value in [0,None,True]:
@@ -168,3 +168,18 @@ def test_example_alone_does_not_pass_complete_question_audit():
         consolidated_instructions=True,literal_limits=True,comparison_cells=metadata(draft),comparison_audit_envelope=True)
     assert len(sent)==1 and result['gaps']
     assert {'mechanism','fairness','choice'}<={gap['obligationId'] for gap in result['gaps']}
+
+
+def test_new_joint_input_removes_conflicting_kind_rule_and_preserves_other_cells():
+    from services.deep_research.comparison_generation import render
+    cp, _, ev, question = fixture(); current = record()
+    current.update(comparisonPlanningContractVersion=2,comparisonJointReportsContractVersion=2)
+    wire=[{'evidenceId':'E1','source':'P1','obligations':['example'],'quote':ev['quote'],'tableData':ev['tableData']}]
+    old=render(current,question,cp['requirements'],cp['sources'],wire,{},None,8)
+    current['comparisonJointReportsContractVersion']=3
+    new=render(current,question,cp['requirements'],cp['sources'],wire,{},None,8)
+    assert 'conclusions, kind inference/proposal/suggestion' in old
+    assert 'conclusions, kind inference/proposal/suggestion' not in new
+    assert 'Answer EACH joint target' in new and 'does not replace qualitative entries' in new
+    marker='Cell routing and citation permissions (metadata, not evidence):\n'
+    assert json.JSONDecoder().raw_decode(old.split(marker,1)[1])[0]==json.JSONDecoder().raw_decode(new.split(marker,1)[1])[0]

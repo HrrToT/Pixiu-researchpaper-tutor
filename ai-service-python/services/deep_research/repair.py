@@ -20,7 +20,8 @@ def _prepare_repair(report, verification, evidence, question, *, max_prompt_byte
                     question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False,shared_experiment_schema=False,experiment_evidence_context=None,experimental_edits=False,experimental_diagnostics=False,experimental_nested_tables=False,experimental_representation=False,experimental_coverage=False,citation_presentation_version=0,configuration_consistency_version=0,repair_evidence_packet_version=0,answer_intents=None,scope_expression=False,table_identity_context=False,claim_check=False,required_scope_ids=(),compact_layout=False,ordinary_advice=False,task_sources=False,request_semantics=False,preserve_answers=False,target_goals=False,objective_framing=False,process_explanations=False,factual_prompt_version=0,verified_target_ids=(),authored_body=False,verbatim_repair=False,consolidated_instructions=False,verified_text_edits=False,integrated_text_edits=False,text_edit_context=None,scope_citation_presentation=False,compact_repair_policy=False):
     if type(verified_text_edits) is not bool:raise ValueError('Invalid verified text edit policy')
     if type(integrated_text_edits) is not bool or integrated_text_edits and not verified_text_edits or not integrated_text_edits and text_edit_context is not None:raise ValueError('Invalid integrated text edit policy')
-    if type(compact_repair_policy) is not bool or compact_repair_policy and not consolidated_instructions:
+    if (type(compact_repair_policy) is not bool and not (type(compact_repair_policy) is int and compact_repair_policy == 2)
+            or compact_repair_policy and not consolidated_instructions):
         raise ValueError('Invalid compact repair policy')
     if type(scope_citation_presentation) is not bool or scope_citation_presentation and not (consolidated_instructions and authored_body and citation_presentation_version in (2,3,4)):
         raise ValueError('Invalid structured scope citation presentation policy')
@@ -587,13 +588,17 @@ If a supported revision is not possible, omit that target rather than bypass sco
     if consolidated_instructions:
         from services.deep_research.repair_instructions import render as unified_repair_prompt
         from services.deep_research.repair_goals import bind,point_hints
+        from services.deep_research.repair_premises import comparison_scope
         prompt=unified_repair_prompt(question=question,length_contract=length_contract,
             requirements=active_requirements,source_context=context,targets=input_claims,
             checks=packed_checks,questions=question_dictionary,permissions_marker=permissions_marker,
             evidence_marker=evidence_marker,schema=revision_shape,goals=bind(input_claims,active_requirements),
             hints=point_hints(originals.values(),authored_body=True),
+            **({'comparison_scopes':{cid:scope for cid,c in originals.items()
+                if (scope:=comparison_scope(c,report.get('comparisonCells'),evidence)) is not None}}
+               if compact_repair_policy == 2 else {}),
             intentions={k:v for k,v in (answer_intents or {}).items() if k in originals},
-            inference_ids=inference_ids,required_scope_ids=required_scope_ids,has_tables=has_tables,**({'compact_policy':True} if compact_repair_policy else {}))
+            inference_ids=inference_ids,required_scope_ids=required_scope_ids,has_tables=has_tables,**({'compact_policy':compact_repair_policy} if compact_repair_policy else {}))
     condition_marker=None
     if type(claim_check) is int and claim_check in (7,8,9):
         from services.deep_research.condition_source_index import GUIDANCE as CONDITION_GUIDANCE
@@ -642,8 +647,16 @@ If a supported revision is not possible, omit that target rather than bypass sco
             candidate_legend=SHORT_LEGEND
             if len((json.dumps(candidate,ensure_ascii=False,separators=(',',':'))+'\n'+candidate_legend).encode('utf8')) < len(json.dumps(wire,ensure_ascii=False,separators=(',',':')).encode('utf8')):
                 wire,legend=candidate,candidate_legend
+        if compact_repair_policy == 2:
+            from services.deep_research.shared_strings import input_text
+            shared = input_text(selected_rows)
+            literal = json.dumps(wire,ensure_ascii=False,separators=(',',':')) + ('\n'+legend if legend else '')
+            if len(shared.encode('utf-8')) >= len(literal.encode('utf-8')):
+                shared = literal
+        else:
+            shared = json.dumps(wire,ensure_ascii=False,separators=(',',':')) + ('\n'+legend if legend else '')
         result=template.replace(permissions_marker, json.dumps(permissions, ensure_ascii=False, separators=(',', ':')), 1).replace(
-            evidence_marker,json.dumps(wire,ensure_ascii=False,separators=(',',':'))+('\n'+legend if legend else ''),1)
+            evidence_marker,shared,1)
         if condition_marker:
             from services.deep_research.condition_source_index import build as condition_index
             literal_ids={short_ids[e['evidenceId']] for e in selected if e.get('verification',{}).get('literal')=='passed'}
@@ -665,7 +678,8 @@ If a supported revision is not possible, omit that target rather than bypass sco
     premise_audit=None
     if factual_prompt_version in (2,3):
         from services.deep_research.repair_premises import required_premises
-        required,premise_audit=required_premises(list(originals.values()),selected,allowed,active_requirements,verified_target_ids=verified_target_ids)
+        required,premise_audit=required_premises(list(originals.values()),selected,allowed,active_requirements,verified_target_ids=verified_target_ids,
+            **({'comparison_context':report.get('comparisonCells')} if compact_repair_policy == 2 else {}))
     # Coverage hints are candidates, not citations the original assertion used.
     # Keep them first among optional rows without forcing every broad hint into
     # every batch. Full original citations and their contexts remain mandatory;
@@ -692,7 +706,7 @@ If a supported revision is not possible, omit that target rather than bypass sco
     visible = {aliases[row['evidenceId']] for row in rows}
     allowed = {key: [ref for ref in values if ref in visible] for key, values in allowed.items()}
     if focused:allowed={key:[ref for ref in values if ref in originals[key]['evidenceRefs']] for key,values in allowed.items()}
-    return {**({'compactRepairPolicyVersion':1} if compact_repair_policy else {}),**({'scopeCitationPresentationVersion':1} if scope_citation_presentation else {}),**({'repairInstructionsContractVersion':1} if consolidated_instructions else {}),**({'authoredBodyContractVersion':1} if authored_body else {}),**({'compactLayoutVersion':1} if compact_layout else {}),'prompt': prompt, 'originals': originals, 'aliases': aliases, 'allowed': allowed,
+    return {**({'compactRepairPolicyVersion':2 if compact_repair_policy == 2 else 1} if compact_repair_policy else {}),**({'scopeCitationPresentationVersion':1} if scope_citation_presentation else {}),**({'repairInstructionsContractVersion':1} if consolidated_instructions else {}),**({'authoredBodyContractVersion':1} if authored_body else {}),**({'compactLayoutVersion':1} if compact_layout else {}),'prompt': prompt, 'originals': originals, 'aliases': aliases, 'allowed': allowed,
             **({'verifiedTextRepairContractVersion':2 if integrated_text_edits else 1,
                 **({'verifiedTextEditPlan':text_edit_plan} if integrated_text_edits else {})} if focused else {}),
             **({'repairPremiseAudit':premise_audit} if premise_audit is not None else {}),
@@ -898,7 +912,8 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
 
     if type(verified_text_edits) is not bool:raise ValueError('Invalid verified text edit policy')
     if type(integrated_text_edits) is not bool or integrated_text_edits and not verified_text_edits or not integrated_text_edits and text_edit_context is not None:raise ValueError('Invalid integrated text edit policy')
-    if type(compact_repair_policy) is not bool or compact_repair_policy and not consolidated_instructions:
+    if (type(compact_repair_policy) is not bool and not (type(compact_repair_policy) is int and compact_repair_policy == 2)
+            or compact_repair_policy and not consolidated_instructions):
         raise ValueError('Invalid compact repair policy')
     if type(scope_citation_presentation) is not bool or scope_citation_presentation and not (consolidated_instructions and authored_body and citation_presentation_version in (2,3,4)):
         raise ValueError('Invalid structured scope citation presentation policy')
@@ -975,7 +990,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
         raise ValueError('Unsupported configuration consistency contract')
     if type(citation_presentation_version) is not int or citation_presentation_version not in (0,2,3,4):
         raise ValueError('Unsupported citation presentation contract')
-    identity = digest({**({'compactRepairPolicyVersion':1} if compact_repair_policy else {}),**({'scopeCitationPresentationVersion':1} if scope_citation_presentation else {}),**({'verifiedTextRepairContractVersion':2 if integrated_text_edits else 1,**({'textEditContext':text_edit_context} if integrated_text_edits else {})} if verified_text_edits else {}),**({'repairInstructionsContractVersion':1} if consolidated_instructions else {}),**({'verbatimRepairContractVersion':1} if verbatim_repair else {}),**({'authoredBodyContractVersion':1} if authored_body else {}),**({'verifiedRepairTargets':list(verified_target_ids)} if factual_prompt_version in (2,3) else {}),**({'factualRepairPromptContractVersion':factual_prompt_version} if factual_prompt_version else {}),**({'compactLayoutVersion':1} if compact_layout else {}),'report': report, 'verification': verification,
+    identity = digest({**({'compactRepairPolicyVersion':2 if compact_repair_policy == 2 else 1} if compact_repair_policy else {}),**({'scopeCitationPresentationVersion':1} if scope_citation_presentation else {}),**({'verifiedTextRepairContractVersion':2 if integrated_text_edits else 1,**({'textEditContext':text_edit_context} if integrated_text_edits else {})} if verified_text_edits else {}),**({'repairInstructionsContractVersion':1} if consolidated_instructions else {}),**({'verbatimRepairContractVersion':1} if verbatim_repair else {}),**({'authoredBodyContractVersion':1} if authored_body else {}),**({'verifiedRepairTargets':list(verified_target_ids)} if factual_prompt_version in (2,3) else {}),**({'factualRepairPromptContractVersion':factual_prompt_version} if factual_prompt_version else {}),**({'compactLayoutVersion':1} if compact_layout else {}),'report': report, 'verification': verification,
                        **({'requiredScopeIds':list(required_scope_ids)} if required_scope_ids else {}),
                        **({'claimCheckContractVersion':claim_check if type(claim_check) is int and claim_check in (4,5,6,7,8,9) else 1} if claim_check else {}),
                        **({'tableIdentityContextContractVersion':2 if type(table_identity_context) is int and table_identity_context==2 else 1} if table_identity_context else {}),
@@ -1023,7 +1038,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
         subset = {'accepted': verification.get('accepted', []),
                   'rejected': [row for row in verification.get('rejected', []) if row['claimId'] in ids]}
         return _prepare_repair(report, subset, evidence, question,
-            **({'compact_repair_policy':True} if compact_repair_policy else {}),
+            **({'compact_repair_policy':compact_repair_policy} if compact_repair_policy else {}),
             **({'scope_citation_presentation':True} if scope_citation_presentation else {}),
             **({'consolidated_instructions':True} if consolidated_instructions else {}),
             **({'verified_text_edits':True} if verified_text_edits else {}),

@@ -1201,6 +1201,8 @@ def make_synthesize_node(
             from services.deep_research.comparison_intent import operations_enabled as comparison_operations_enabled
             from services.deep_research.processing_cost_sources import enabled as cost_premises_enabled
             candidates,premise_bundles=order_premises(candidates,brief_state.get('plan',[]),
+                **({'authored_rows':True} if type(record.get('comparisonJointReportsContractVersion')) is int
+                   and record['comparisonJointReportsContractVersion']==3 else {}),
                 **({'processing_cost':True} if cost_premises_enabled(record) else {}),
                 **({'comparison_operations':True} if comparison_operations_enabled(record) else {}),
                 **({'procedure_targets':True} if synthesis_input_enabled(record,output_kind) else {}),
@@ -2136,7 +2138,10 @@ def make_verify_node(
                 repair_report, verification_result = prepare_design_completion(
                     report_body, verification_result, evidence, saved.get('plan', []))
             repair_targets = prepare_coverage_repair(repair_report, verification_result,
-                answer_coverage if answer_coverage.get('status') == 'checked' else {'gaps': []},
+                **({'bound_comparison_targets':True} if saved.get('comparisonCellDraft') is not None
+                   and type(record.get('repairInstructionsContractVersion')) is int
+                   and record['repairInstructionsContractVersion']==5 else {}),
+                audit=answer_coverage if answer_coverage.get('status') == 'checked' else {'gaps': []},
                 **({'defer_invalid_diagnostics':True} if type(record.get('diagnosticRepairRoutingContractVersion')) is int
                    and record['diagnosticRepairRoutingContractVersion']==1 else {}),
                 **({'defer_invalid_reviews':True} if type(record.get('perClaimReviewFailureContractVersion')) is int
@@ -2219,7 +2224,7 @@ def make_verify_node(
                     from services.deep_research.general_advice import repair_enabled as advice_repair_enabled,repair_eligible as advice_repair_eligible
                     advice_repair=advice_repair_enabled(record) and advice_repair_eligible(repair_report)
                     compact_repair=compact_repair_enabled(record) and (factual_redraft_eligible(repair_report) or advice_repair)
-                    unified_repair_eligible=factual_redraft_eligible(repair_report) or (advice_repair and type(record.get('repairInstructionsContractVersion')) is int and record['repairInstructionsContractVersion'] in (2,3,4))
+                    unified_repair_eligible=factual_redraft_eligible(repair_report) or (advice_repair and type(record.get('repairInstructionsContractVersion')) is int and record['repairInstructionsContractVersion'] in (2,3,4,5))
                     from services.deep_research.experiment_repair import enabled as shared_experiment_repair
                     from services.deep_research.experiment_edits import can_edit,OUTPUT_TOKENS as EDIT_OUTPUT_TOKENS
                     edit_repair=(shared_experiment_repair(record)
@@ -2279,8 +2284,8 @@ def make_verify_node(
                         **({'authored_body':True} if compact_repair and authored_body_enabled(record,saved.get('outputKind')) else {}),
                         **({'verbatim_repair':True} if compact_repair and unified_repair_eligible and verbatim_repair_enabled(record) else {}),
                         **({'consolidated_instructions':True} if compact_repair and unified_repair_eligible and repair_instructions_enabled(record) else {}),
-                        **({'compact_repair_policy':True} if compact_repair and unified_repair_eligible and repair_instructions_enabled(record) and record.get('repairInstructionsContractVersion')==4 else {}),
-                        **({'scope_citation_presentation':True} if compact_repair and unified_repair_eligible and repair_instructions_enabled(record) and record.get('repairInstructionsContractVersion') in (3,4) else {}),
+                        **({'compact_repair_policy':2 if record['repairInstructionsContractVersion']==5 else True} if compact_repair and unified_repair_eligible and repair_instructions_enabled(record) and record.get('repairInstructionsContractVersion') in (4,5) else {}),
+                        **({'scope_citation_presentation':True} if compact_repair and unified_repair_eligible and repair_instructions_enabled(record) and record.get('repairInstructionsContractVersion') in (3,4,5) else {}),
                         **({'compact_source_repair':True} if compact_repair else {}),
                         **({'target_goals':record['factualRepairGoalContractVersion'] if record['factualRepairGoalContractVersion'] in (2,3,4,5) else True} if compact_repair and unified_repair_eligible
                             and type(record.get('factualRepairGoalContractVersion')) is int

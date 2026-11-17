@@ -378,3 +378,19 @@ class MergeVerifiedRevisionsTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+def test_missing_joint_comparison_does_not_withhold_unrelated_verified_local_fact():
+    from services.deep_research.coverage_repair import prepare_coverage_repair
+    claim={'claimId':'metrics','kind':'reported','text':'有来源的单论文结果。','obligationIds':['local']}
+    report={'claims':[claim]};verification={'accepted':[claim],'rejected':[]}
+    audit={'status':'checked','requestCoverageContractVersion':5,'diagnosticErrors':[],
+           'gaps':[{'obligationId':'joint','question':'这些条件能否比较？'}],'verdicts':[]}
+    snapshot=copy.deepcopy((report,verification,audit))
+    legacy=prepare_coverage_repair(report,verification,audit)
+    scoped=prepare_coverage_repair(report,verification,audit,bound_comparison_targets=True)
+    assert legacy['rejected'] and not legacy['accepted']
+    assert scoped['accepted']==[claim] and not scoped['rejected']
+    assert (report,verification,audit)==snapshot  # The missing answer stays missing in its audit.
+    audit['gaps'][0]['obligationId']='local'
+    assert prepare_coverage_repair(report,verification,audit,bound_comparison_targets=True)['rejected']

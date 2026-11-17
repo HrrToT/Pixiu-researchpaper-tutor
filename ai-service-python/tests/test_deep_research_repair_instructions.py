@@ -35,6 +35,38 @@ def test_actual_preparation_preserves_source_permissions_and_goals_with_one_inst
     assert snapshot==(report,verification,ev,opts)
 
 
+def test_shared_repair_input_roundtrips_every_goal_check_and_output_constraint():
+    from services.deep_research.shared_strings import unpack
+    from services.deep_research.nested_tables import unpack as untables
+    report, verification, ev, opts = fixture()
+    old = _prepare_repair(report,verification,ev,'Explain the operation.',
+                          consolidated_instructions=True,compact_repair_policy=True,**opts)
+    new = _prepare_repair(report,verification,ev,'Explain the operation.',
+                          consolidated_instructions=True,compact_repair_policy=2,**opts)
+    def data(prepared):
+        wire = prepared['prompt'].split('Exact repair inputs (goals and metadata, not paper facts):\n',1)[1]
+        value = json.JSONDecoder().raw_decode(wire)[0]
+        return untables(unpack(value)) if set(value)=={'strings','value'} else value
+    before, after = data(old), data(new)
+    assert after.pop('comparisonScopes') == {}
+    assert before == after
+    assert new['compactRepairPolicyVersion']==2 and old['compactRepairPolicyVersion']==1
+    assert new['originals']==old['originals']
+    assert new['repairPremiseAudit']==old['repairPremiseAudit']
+
+
+def test_received_repair_cannot_switch_between_shared_and_legacy_input_identity():
+    from services.deep_research.contracts import DeepResearchError
+    report,verification,ev,opts=fixture();raw=prose('c');raw['evidenceRefs']=['E1'];raw['discardedDraftSpans']=[]
+    states=[];invoke=Mock(return_value={'content':json.dumps([raw])})
+    args=(report,verification,ev,'Explain the operation.',invoke,json.loads)
+    result=repair_rejected(*args,consolidated_instructions=True,compact_repair_policy=2,checkpoint=states.append,**opts)
+    assert repair_rejected(*args,consolidated_instructions=True,compact_repair_policy=2,batch_state=states[-1],**opts)==result
+    with pytest.raises(DeepResearchError):
+        repair_rejected(*args,consolidated_instructions=True,compact_repair_policy=True,batch_state=states[-1],**opts)
+    assert invoke.call_count==1
+
+
 def test_response_is_still_unverified_and_cached_batches_cannot_switch_instruction_policy():
     report,verification,ev,opts=fixture(); raw=prose('c');raw['evidenceRefs']=['E1'];raw['discardedDraftSpans']=[]
     states=[]; invoke=Mock(return_value={'content':json.dumps([raw])})
@@ -116,7 +148,7 @@ def test_policy_server_owned_immutable_and_cannot_be_added_to_legacy_run(tmp_pat
     try:
         r,_=facade.create({'workspaceTaskId':'t','operationKey':'op','question':'Explain','deferStart':True,
             'repairInstructionsContractVersion':False},start_async=False)
-        assert type(r['repairInstructionsContractVersion']) is int and r['repairInstructionsContractVersion']==4
+        assert type(r['repairInstructionsContractVersion']) is int and r['repairInstructionsContractVersion']==5
         ready=deepcopy(r);ready['state']['outputKind']='claim_verification';assert enabled(ready)
         with pytest.raises(ValueError,match='Immutable'):repo.update_run(r['runId'],lambda r:{**r,'repairInstructionsContractVersion':False})
         old=deepcopy(r);old.pop('repairInstructionsContractVersion');old.update(runId='legacy',idempotencyKey='old')

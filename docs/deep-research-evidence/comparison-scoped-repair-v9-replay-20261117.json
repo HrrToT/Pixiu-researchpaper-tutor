@@ -1,0 +1,99 @@
+{
+  "baseCommit": "e1a2ef3b5",
+  "sourceSha256": {
+    "ai-service-python/services/deep_research/comparison_generation.py": "748ee9d5a26f40900b455362d7e2549b00b712afc537cc1daa49d743ca10c3ea",
+    "ai-service-python/services/deep_research/comparison_joint_reports.py": "eecd5f635e40d0a720de78c2f566a7fccfc8a3ec89cfbca654680f60a2f66518",
+    "ai-service-python/services/deep_research/coverage_repair.py": "8a9252f6d5284d3425b2c808642fc70e1db54ebd2751f8c18537fe8ab45f27d1",
+    "ai-service-python/services/deep_research/facade.py": "5c7968c8fedfac54e97b0f8e58173f144db29194e71cf014d43da07cfd78f705",
+    "ai-service-python/services/deep_research/graph.py": "456eae924a562a0be3c0a5b7aaeb808ab292d7ccbba6a2c341f6bf4e25ef45ba",
+    "ai-service-python/services/deep_research/repair.py": "31cd98e338af06157e879b88e95ee429f484fb2be0ca5ae2807405d55622dd4f",
+    "ai-service-python/services/deep_research/repair_instructions.py": "bfca31cec1aad0e3b46c8098e8ede31b2bcf7e130c8041c6c7487c2c8f603698",
+    "ai-service-python/services/deep_research/repair_premises.py": "5f75c8fc29713efb5526d04637b210efdceaddbccc7dd2b554872755b2c33cf3",
+    "ai-service-python/services/deep_research/measurement_table_navigation.py": "b00430761e4f48fffc654a120aa5d838abde0b6c96d5bcdbbd9603c610e2f6c1",
+    "ai-service-python/services/deep_research/reading_roles.py": "83d03d0596760bb00edbbe3128b46f6749e4d639f118759e557509f799f4a036",
+    "ai-service-python/services/deep_research/synthesis_evidence.py": "8183022e5a4c15816f4b4f65a95f4d06dcd83215d27c9744e2717d2d210e4ab6"
+  },
+  "networkRequests": 0,
+  "providerCalls": 0,
+  "scientificApproval": false,
+  "scope": "Saved v9 response/state through production synthesis and verify/repair nodes; synthesis uses isolated SQLite. Repair dispatch intercepted before provider operation.",
+  "legacyRequestIdentitiesPreserved": true,
+  "legacyRepairRefusalPreserved": {
+    "kind": "repairEvidenceBytes",
+    "limit": 14640,
+    "used": 17558
+  },
+  "newGenerationInputBytes": 31894,
+  "generationInputLimitBytes": 32000,
+  "newReaderInputBytes": 22307,
+  "selection": [
+    {
+      "profile": 4,
+      "originalPaperOwnResultEvidenceIds": [],
+      "missingNavigationBundleCount": 9
+    },
+    {
+      "profile": 5,
+      "originalPaperOwnResultEvidenceIds": [
+        "ev_316730eba3c54f0381e6cde2d5ac0d2f8d5fbb94944a1d7536b15ffee224a96d"
+      ],
+      "missingNavigationBundleCount": 4
+    }
+  ],
+  "selectionBoundary": "Author-labelled rows guide navigation only. Four heuristic premise bundles remain missing; this is not semantic coverage approval.",
+  "repairPreflight": [
+    {
+      "maxPromptBytes": 15664,
+      "status": "refused",
+      "limit": {
+        "kind": "repairPromptBytes",
+        "limit": 15664,
+        "used": 21048
+      },
+      "fullUnboundedDiagnosticBytes": 47337
+    },
+    {
+      "maxPromptBytes": 15664,
+      "status": "fits",
+      "inputBytes": 15626
+    },
+    {
+      "maxPromptBytes": 15664,
+      "status": "fits",
+      "inputBytes": 15578
+    },
+    {
+      "maxPromptBytes": 15664,
+      "status": "fits",
+      "inputBytes": 15423
+    },
+    {
+      "maxPromptBytes": 15664,
+      "status": "fits",
+      "inputBytes": 15626
+    },
+    {
+      "dispatchPreviewBytes": 15626,
+      "providerCalls": 0
+    }
+  ],
+  "repairTargetPolicy": "Keep the verified local metric; unbound missing joint goals remain missing in the answer audit.",
+  "budgetChanges": "None. Five actual targets reserve 6144 output tokens instead of 7168 for six, using the existing formula. Input limit is consequently 15664; total and pool limits unchanged.",
+  "tests": [
+    {
+      "runId": "scoped-comparison-repair-related-20261117",
+      "cases": 707,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "runId": "joint-comparison-completeness-related-20261117",
+      "cases": 84,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  ],
+  "boundary": "Three repair INPUT previews fit. This does not prove settlement-dependent ledger admission, completion time, new model compliance or full content. Old model responses are replayed; no independent quality credit."
+}

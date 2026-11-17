@@ -141,3 +141,23 @@ def test_unchecked_or_foreign_literal_evidence_never_enters_navigation_bundles()
     assert premise_bundles([evidence], obs, measurement_tables=True) == ([], [])
     evidence['verification']['literal'] = 'passed'; evidence['sourceVersionId'] = 'b-v2'
     assert premise_bundles([evidence], obs, measurement_tables=True) == ([], [])
+
+
+def test_visible_author_result_beats_shorter_comparator_chunk_only_in_new_navigation():
+    obs,_=inputs();obs={'o':{**obs['o'],'requiredSources':['a-v1']}}
+    original=source('a');comparison=deepcopy(original)
+    comparison['text']=comparison['text'].replace('Ours','Baseline')
+    comparison['tableData']['rows'][0][1]='Baseline'
+    rows=[]
+    for i,row in enumerate([comparison,original]):
+        e=make_evidence(row,row['text'],row['text'],location=row['location'],obligation_ids=['o'])
+        e['evidenceId']='e'+str(i);e['tableData']=row['tableData'];rows.append(e)
+    before=deepcopy(rows)
+    selected,bundles=premise_bundles(rows,obs,measurement_tables=True,authored_rows=True)
+    assert selected[0]['evidenceId']=='e1'
+    assert rows==before and all(b['source']=='a-v1' for b in bundles)
+    from services.deep_research.measurement_table_navigation import row_priority
+    request={'role':'result','query':'Report PSNR for Baseline'}
+    assert row_priority(comparison,request)>row_priority(original,request)
+    original['text']='A caption with no visible row.'
+    assert row_priority(original,request)==0

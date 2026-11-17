@@ -62,14 +62,14 @@ def review_binding_only(audit, gap, *, invalid_process_reviews=False):
     return True
 
 
-def prepare_coverage_repair(report, verification, audit, *, prioritize_specific=False, defer_binding_errors=False, defer_invalid_reviews=False, defer_invalid_diagnostics=False,defer_invalid_process_reviews=False):
+def prepare_coverage_repair(report, verification, audit, *, prioritize_specific=False, defer_binding_errors=False, defer_invalid_reviews=False, defer_invalid_diagnostics=False,defer_invalid_process_reviews=False, bound_comparison_targets=False):
     """Withhold accepted claims needed to close audit gaps.
 
     Returns a new verification-shaped dict whose ``accepted`` list drops the
     targeted claims and whose ``rejected`` list is the union of the original
     rejections plus one coverage row per targeted claim.
     """
-    if any(type(v) is not bool for v in (prioritize_specific,defer_binding_errors,defer_invalid_reviews,defer_invalid_diagnostics,defer_invalid_process_reviews)):
+    if any(type(v) is not bool for v in (prioritize_specific,defer_binding_errors,defer_invalid_reviews,defer_invalid_diagnostics,defer_invalid_process_reviews,bound_comparison_targets)):
         raise ValueError('Invalid coverage repair scheduling policy')
     report = report or {}
     verification = verification or {}
@@ -183,7 +183,14 @@ def prepare_coverage_repair(report, verification, audit, *, prioritize_specific=
             # still pass the independent full-question coverage audit afterwards.
             gap_targets = rejected_candidates
 
-        if not gap_targets:
+        if bound_comparison_targets and not gap.get('wholeQuestion'):
+            # A missing joint conclusion is not a defect in an accepted local
+            # fact. Keep that gap in the answer audit; do not make an unrelated
+            # cell answer it or relabel its source permissions as joint support.
+            bound_ids = {_claim_id(c) for c in report_claims
+                         if obligation_id in (c.get('obligationIds') or [])}
+            gap_targets &= bound_ids
+        if not gap_targets and not (bound_comparison_targets and not gap.get('wholeQuestion')):
             # Conservative fallback: an unmapped specific requirement withholds
             # every accepted claim already present in the report.
             gap_targets = set(accepted_report_ids)

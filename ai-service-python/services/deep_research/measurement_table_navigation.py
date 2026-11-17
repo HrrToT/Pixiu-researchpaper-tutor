@@ -29,6 +29,24 @@ def _benchmark_hints(query):
     return {_key(name) for name in names if name.casefold() not in _GENERIC}
 
 
+def row_priority(source, request):
+    """Prefer an explicitly named row, then a visible author-labelled result.
+
+    This only breaks ties between matching metric packets. 'Ours' is a literal
+    table label, not permission to infer provenance, variants or comparability.
+    """
+    if score(source, request) <= 0:
+        return 0
+    from services.deep_research.reading_roles import _text
+    packet = visible_table_packet(source.get('tableData'), _text(source))
+    query = request.get('query', '').casefold()
+    labels = [row[1] for row in packet['rows']]
+    if any(len(label.strip()) >= 3 and label.casefold() in query for label in labels):
+        return 2
+    return int(any(re.match(r'^(?:ours|our method|proposed)(?:\b|[-_*])', label, re.I)
+                   for label in labels))
+
+
 def score(source, request):
     """Count requested metric columns with a visible numeric cell, under scope.
 

@@ -68,3 +68,27 @@ def test_previously_verified_target_retains_all_original_citations():
     ids,audit=required_premises([claim],evidence,{'c':claim['evidenceRefs']},req,verified_target_ids=['c'])
     assert ids==set(claim['evidenceRefs'])
     assert audit['targets'][0]['mode']=='verified_citations'
+
+
+def test_compiled_cost_dimension_navigates_processing_work_without_rewriting_frozen_goals():
+    claim, ev, req = fixture()
+    claim['evidenceRefs'] = ['a0']
+    ev[0].update(quote='We fine-tune the compressed representation for 5,000 steps.',
+                 sourceContext='We fine-tune the compressed representation for 5,000 steps.',
+                 location={'section': 'Experimental Settings'})
+    req[0].update(question='比较额外处理成本、存储、画质和速度。', completionCriteria=[])
+    context={'sources':{'P1':{'workId':'a','versionId':'a-v1'}},
+             'layout':[{'claimIds':['c'],'source':'P1','axisTitle':'额外处理成本'}]}
+    before=deepcopy((claim,ev,req,context));allowed={'c':[e['evidenceId'] for e in ev if e['sourceWorkId']=='a']}
+    ids,audit=required_premises([claim],ev,allowed,req,comparison_context=context)
+    assert 'a0' in ids and ids<=set(allowed['c'])
+    assert any(b['navigationRole']=='processing_cost' for b in audit['targets'][0]['navigationBundles'])
+    assert (claim,ev,req,context)==before
+
+
+def test_scoped_navigation_cannot_reassign_a_cell_to_another_source_version():
+    claim,ev,req=fixture();claim['evidenceRefs']=['a0']
+    context={'sources':{'P1':{'workId':'a','versionId':'a-v2'}},
+             'layout':[{'claimIds':['c'],'source':'P1','axisTitle':'成本'}]}
+    with pytest.raises(ValueError,match='sources'):
+        required_premises([claim],ev,{'c':claim['evidenceRefs']},req,comparison_context=context)
