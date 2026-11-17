@@ -11,8 +11,13 @@ def enabled(record):
 
 def retire_outputs(state, new_plan, revision):
     state = deepcopy(state)
+    staged_outputs = ({'comparisonStageInput','comparisonStageGeneration','comparisonCellDraft',
+                       'comparisonAuthoring','comparisonCompletionCapacity','synthesisPremiseAllocation',
+                       'synthesisDraftAdmission','draftValidationAudit','factualDraftingAudit'}
+                      if 'comparisonStageInput' in state else set())
     retired = {key: state.pop(key) for key in list(state)
                if key.startswith(('repair', 'report', 'initialVerification', 'initialAnswerCoverage'))
+               or key in staged_outputs
                or key in {'verifiedReport', 'audienceRewrite', 'synthesisContainer', 'coverage', 'gaps',
                           'stopReason', 'assessmentStatus', 'publicationId', 'dependencyExecution'}}
     history = state.setdefault('planEditHistory', [])

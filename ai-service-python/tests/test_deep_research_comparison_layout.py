@@ -150,7 +150,7 @@ def test_server_selects_new_planning_wire_only_for_opt_in_and_never_upgrades_sav
     try:
         run,_=facade.create({'workspaceTaskId':'t','operationKey':'o','question':QUESTION,
                             'deferStart':True,'comparisonPlanningContractVersion':2},start_async=False)
-        assert run['comparisonPlanningContractVersion']==5 and run['comparisonReviewBatchContractVersion']==2
+        assert run['comparisonPlanningContractVersion']==6 and run['comparisonReviewBatchContractVersion']==2
         old={**run,'runId':'old','taskId':'old','idempotencyKey':'old','comparisonPlanningContractVersion':2}
         repo.create_run(old)
         with pytest.raises(ValueError,match='Immutable'):
@@ -162,6 +162,12 @@ def test_server_selects_new_planning_wire_only_for_opt_in_and_never_upgrades_sav
         with pytest.raises(ValueError,match='Immutable'):
             repo.update_run('previous',lambda r:{**r,'comparisonPlanningContractVersion':4})
         assert repo.require_run('previous')['comparisonPlanningContractVersion']==3
+        old5={**run,'runId':'old5','taskId':'old5','idempotencyKey':'old5',
+              'comparisonPlanningContractVersion':5}
+        repo.create_run(old5)
+        with pytest.raises(ValueError):
+            repo.update_run('old5',lambda r:{**r,'comparisonPlanningContractVersion':6})
+        assert repo.require_run('old5')['comparisonPlanningContractVersion']==5
     finally:facade.shutdown()
 
 

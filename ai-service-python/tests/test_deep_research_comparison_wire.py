@@ -162,7 +162,7 @@ def test_facade_selects_duration_policy_only_for_new_comparison_run(tmp_path):
     facade=ResearchFacade(repo,lambda **_:None,llm_client=object(),comparison_cells_version=1,comparison_review_batch_version=1)
     try:
         r,_=facade.create({'workspaceTaskId':'t','operationKey':'k','question':QUESTION,'deferStart':True},start_async=False)
-        assert r['comparisonPlanningContractVersion']==5
+        assert r['comparisonPlanningContractVersion']==6
         old={**r,'runId':'old','taskId':'old','idempotencyKey':'old','comparisonPlanningContractVersion':3}
         repo.create_run(old)
         check=Mock(return_value=[])

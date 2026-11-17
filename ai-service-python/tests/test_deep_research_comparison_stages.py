@@ -225,3 +225,165 @@ def test_readonly_ledger_lookup_requires_exact_native_request_identity():
     assert recorded_response(r,prompt,options,[row,row]) is None
     row['status']='unknown'
     assert recorded_response(r,prompt,options,[row]) is None
+
+
+def graph_fixture(tmp_path):
+    from services.deep_research.repository import DeepResearchRepository
+    from services.deep_research.verification import make_evidence
+    r,p,_,_,_=fixture()
+    r.update(comparisonPlanningContractVersion=6,comparisonReviewBatchContractVersion=2,
+             comparisonJointReportsContractVersion=3,structuredOutputContractVersion=15)
+    r['materials']=[{'materialId':owner['workId'],'title':owner['title']} for owner in p['sources'].values()]
+    evidence=[]
+    for alias,owner in p['sources'].items():
+        quote=f"{owner['title']} removes redundant features while keeping the scene representation."
+        ev=make_evidence({**owner,'contentHash':'hash-'+alias,'accessLevel':'fulltext'},quote,quote,
+                         location={},obligation_ids=[o['obligationId'] for o in p['requirements']])
+        evidence.append(ev)
+    r['state'].update(plan=[{'itemId':'p','obligations':p['requirements']}],evidence=evidence)
+    repo=DeepResearchRepository(tmp_path/'graph.sqlite3');repo.initialize();repo.create_run(r)
+    return r,repo
+
+
+def graph_response(prompt):
+    value=json.JSONDecoder().raw_decode(prompt.split(
+        'Exact question obligations, source permissions, unchanged quotations/context, and visible typed cells:\n',1)[1])[0]
+    data=untables(unpack(value)) if set(value)=={'strings','value'} else value
+    targets=[t for paper in data['papers'] for t in paper['targets']]+data['jointTargets']
+    answers=[{'targetId':t['targetId'],'goalRefs':[],'point':None} for t in targets]
+    paper=next(p for p in data['papers'] if p['targets']);t=paper['targets'][0];e=paper['evidence'][0]
+    answers[0].update(goalRefs=[t['goalChoices'][0]['goalRef']],point={
+        'kind':'reported','body':{'prose':{'text':e['quote'],'conditions':{}}},
+        'evidenceRefs':[e['evidenceId']],'cellRefs':[],'detailLevel':'fulltext',
+        'draftingBasis':{'premiseStatus':'established','observations':[{'evidenceId':e['evidenceId'],'quote':e['quote']}],
+                         'scopeDecision':'reported_case','unresolved':''}})
+    return {'content':json.dumps({'answers':answers}),'finishReason':'stop'}
+
+
+@pytest.mark.parametrize('fixture_accepts_facts',[False,True])
+def test_actual_staged_synthesis_uses_ordinary_verification_and_publication(tmp_path,fixture_accepts_facts):
+    from services.deep_research.graph import make_synthesize_node,make_verify_node,make_publish_node
+    from services.deep_research.verification import verify_claims
+    r,repo=graph_fixture(tmp_path);sent=[]
+    def update(rid,fn,**kwargs):return repo.update_run(rid,fn,**kwargs)
+    def invoke(rid,node,prompt,options,**kwargs):
+        assert node=='synthesize';sent.append(prompt);return graph_response(prompt)
+    synth=make_synthesize_node(invoke,update,scope_validator=lambda *_:True)({'run_id':r['runId']})
+    saved=repo.require_run(r['runId'])['state']
+    assert len(sent)==2 and len(saved['reportBody']['claims'])==2 and not saved.get('verifiedReport')
+    assert not saved['comparisonCellDraft']['answerWireAudit']['errors']
+    assert saved['reportBody']['comparisonCells']['checkOutputShapeVersion']==1
+    # Positive fixture checks plumbing only, not scientific quality. The real
+    # verifier without semantic verdicts must withhold every generated fact.
+    checker=(lambda cs,ev,semantic:{'accepted':deepcopy(cs),'rejected':[]}) if fixture_accepts_facts else verify_claims
+    make_verify_node(checker,None,update)({'run_id':r['runId'],**synth})
+    publish=Mock(return_value=({'publicationId':'fixture-publication'},True))
+    make_publish_node(publish,update,scope_validator=lambda *_:True)({'run_id':r['runId'],**synth})
+    payload=publish.call_args.kwargs['payload']
+    assert payload['outcome']!='complete'
+    assert len(payload['claims'])==(2 if fixture_accepts_facts else 0)
+    blocked=Mock(side_effect=AssertionError('Received stages must not be regenerated'))
+    again=make_synthesize_node(blocked,update,scope_validator=lambda *_:True)({'run_id':r['runId']})
+    assert again['report_version_id']==synth['report_version_id']
+    blocked.assert_not_called()
+
+
+def test_real_ledger_recovers_a_received_stage_after_checkpoint_write_interruption(tmp_path):
+    from services.deep_research.graph import make_synthesize_node
+    from services.deep_research.tools import TrackedLLMInvoker
+    from services.deep_research.runtime import research_model_options
+    from llm.provider import LLMResult,LLMUsage
+    r,repo=graph_fixture(tmp_path);requests=[];interrupt=[True]
+    class Client:
+        def invoke(self,request):
+            requests.append(request.prompt);reply=graph_response(request.prompt)
+            return LLMResult(provider='fixture',model='fixture',content=reply['content'],
+                             usage=LLMUsage(8,4,12),finish_reason='stop')
+    tracked=TrackedLLMInvoker(Client(),repo.reserve_call,repo.complete_call,max_input_tokens=32000,
+        run_record_fn=repo.require_run,call_history_fn=repo.list_calls,request_options=research_model_options)
+    def update(rid,fn,**kwargs):
+        value=fn(repo.require_run(rid))
+        journal=value.get('state',{}).get('comparisonStageGeneration',{})
+        if interrupt[0] and any(s.get('status')=='response_received' for s in journal.get('stages',{}).values()):
+            interrupt[0]=False;raise RuntimeError('Simulated checkpoint write interruption')
+        return repo.update_run(rid,lambda _:value,**kwargs)
+    with pytest.raises(RuntimeError):
+        make_synthesize_node(tracked,update,scope_validator=lambda *_:True)({'run_id':r['runId']})
+    assert len(requests)==1 and repo.list_calls(r['runId'])[0]['status']=='succeeded'
+    result=make_synthesize_node(tracked,update,scope_validator=lambda *_:True)({'run_id':r['runId']})
+    assert 'report_version_id' in result and len(requests)==2
+    assert len(repo.list_calls(r['runId']))==2 and all(c['status']=='succeeded' for c in repo.list_calls(r['runId']))
+
+
+def test_scope_revocation_between_real_graph_stages_refuses_the_next_send(tmp_path):
+    from services.deep_research.graph import make_synthesize_node
+    r,repo=graph_fixture(tmp_path);allowed=[True];sent=[]
+    def update(rid,fn,**kwargs):return repo.update_run(rid,fn,**kwargs)
+    def invoke(rid,node,prompt,options,**kwargs):
+        sent.append(prompt);allowed[0]=False;return graph_response(prompt)
+    with pytest.raises(DeepResearchError,match='权限'):
+        make_synthesize_node(invoke,update,scope_validator=lambda *_:allowed[0])({'run_id':r['runId']})
+    assert len(sent)==1
+    journal=repo.require_run(r['runId'])['state']['comparisonStageGeneration']['stages']
+    assert len(journal)==1 and next(iter(journal.values()))['status']=='compiled_unverified'
+
+
+def test_real_unknown_ledger_call_is_never_resent_on_graph_reentry(tmp_path):
+    from services.deep_research.graph import make_synthesize_node
+    from services.deep_research.tools import TrackedLLMInvoker
+    from services.deep_research.runtime import research_model_options
+    from llm.provider import LLMResult,LLMUsage
+    r,repo=graph_fixture(tmp_path);requests=[]
+    class Client:
+        def invoke(self,request):
+            requests.append(request.prompt)
+            if len(requests)==2:raise TimeoutError('timed out after send')
+            return LLMResult(provider='fixture',model='fixture',content=graph_response(request.prompt)['content'],
+                             usage=LLMUsage(8,4,12),finish_reason='stop')
+    tracked=TrackedLLMInvoker(Client(),repo.reserve_call,repo.complete_call,max_input_tokens=32000,
+        run_record_fn=repo.require_run,call_history_fn=repo.list_calls,request_options=research_model_options)
+    def update(rid,fn,**kwargs):return repo.update_run(rid,fn,**kwargs)
+    with pytest.raises(TimeoutError):
+        make_synthesize_node(tracked,update,scope_validator=lambda *_:True)({'run_id':r['runId']})
+    calls=repo.list_calls(r['runId']);unknown=next(c for c in calls if c['status']=='unknown')
+    assert len(calls)==2 and not unknown['settled']
+    with pytest.raises(DeepResearchError):
+        make_synthesize_node(tracked,update,scope_validator=lambda *_:True)({'run_id':r['runId']})
+    assert len(requests)==2 and repo.get_call(unknown['callId'])==unknown
+
+
+def test_new_staged_graph_requires_scope_validation_before_the_first_send(tmp_path):
+    from services.deep_research.graph import make_synthesize_node
+    r,repo=graph_fixture(tmp_path);invoke=Mock()
+    def update(rid,fn,**kwargs):return repo.update_run(rid,fn,**kwargs)
+    with pytest.raises(DeepResearchError,match='范围确认'):
+        make_synthesize_node(invoke,update)({'run_id':r['runId']})
+    invoke.assert_not_called()
+
+
+def test_cached_stages_do_not_bypass_current_material_permission(tmp_path):
+    from services.deep_research.graph import make_synthesize_node
+    r,repo=graph_fixture(tmp_path)
+    def update(rid,fn,**kwargs):return repo.update_run(rid,fn,**kwargs)
+    make_synthesize_node(lambda rid,node,prompt,options,**kw:graph_response(prompt),update,
+                         scope_validator=lambda *_:True)({'run_id':r['runId']})
+    blocked=Mock()
+    with pytest.raises(DeepResearchError,match='权限'):
+        make_synthesize_node(blocked,update,scope_validator=lambda *_:False)({'run_id':r['runId']})
+    blocked.assert_not_called()
+
+
+def test_human_plan_edit_retires_stage_inputs_and_keeps_raw_journal_in_history(tmp_path):
+    from services.deep_research.graph import make_synthesize_node
+    from services.deep_research.plan_resume import retire_outputs
+    r,repo=graph_fixture(tmp_path)
+    def update(rid,fn,**kwargs):return repo.update_run(rid,fn,**kwargs)
+    make_synthesize_node(lambda rid,node,prompt,options,**kw:graph_response(prompt),update,
+                         scope_validator=lambda *_:True)({'run_id':r['runId']})
+    state=repo.require_run(r['runId'])['state'];before=deepcopy(state)
+    edited=retire_outputs(state,state['plan'],0)
+    assert 'comparisonStageInput' not in edited and 'comparisonStageGeneration' not in edited
+    assert 'comparisonCellDraft' not in edited and 'reportBody' not in edited
+    retired=edited['planEditHistory'][-1]['retiredOutputs']
+    assert retired['comparisonStageInput']==before['comparisonStageInput']
+    assert retired['comparisonStageGeneration']==before['comparisonStageGeneration'] and state==before

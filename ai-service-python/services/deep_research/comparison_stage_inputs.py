@@ -1,6 +1,6 @@
 """Build complete source-local comparison inputs before any model dispatch.
 
-No server default selects this module yet. Input preparation grants no coverage,
+New comparison planning version6 selects this module. Preparation grants no coverage,
 scientific approval, provider token estimate or end-to-end latency guarantee.
 """
 from copy import deepcopy
@@ -11,6 +11,15 @@ from services.deep_research.comparison_cells import plan_cells
 from services.deep_research.comparison_wire import render, targets, table_catalog
 from services.deep_research.request_context import effective_question
 from services.deep_research.synthesis_evidence import fit_premises
+
+
+def enabled(record):
+    from services.deep_research.comparison_generation import enabled as comparison_enabled
+    return (type(record.get('comparisonPlanningContractVersion')) is int
+            and record['comparisonPlanningContractVersion'] == 6
+            and type(record.get('comparisonReviewBatchContractVersion')) is int
+            and record['comparisonReviewBatchContractVersion'] == 2
+            and comparison_enabled(record))
 
 
 def prepare(record, requirements, sources, rows, tables, bundles, aliases, *,
@@ -134,7 +143,7 @@ def prepare(record, requirements, sources, rows, tables, bundles, aliases, *,
     # Three more calls are the MINIMUM edit/recheck/re-audit reserve, not a
     # guarantee that every rejection fits one recheck or advice shares a batch.
     call_floor = len(stages) + ceil(len(all_targets) / 3) + 1 + 3
-    snapshot = {'version': 1, 'question': str(question),
+    snapshot = {'version': 1, 'maxInputBytes':max_input_bytes, 'question': str(question),
                 'questionLayers': list(getattr(question,'instruction_layers',(str(question),))),
                 'requirements': deepcopy(requirements),
                 'sources': deepcopy(sources), 'aliases': {eid: aliases[eid] for eid in sorted(retained)},

@@ -331,6 +331,13 @@ class TrackedLLMInvoker:
         from services.deep_research.verification_capacity import has_verification_input_contract
         record = self._run_record(run_id) if self._run_record else None
         return has_verification_input_contract(record, node)
+
+    def recorded_comparison_response(self, run_id, prompt, options):
+        """Read only an exact succeeded stage call; do not reserve or send."""
+        if self._run_record is None or self._call_history is None:
+            return None
+        from services.deep_research.comparison_stage_generation import recorded_response
+        return recorded_response(self._run_record(run_id),prompt,options,self._call_history(run_id))
     
     def __call__(
         self,

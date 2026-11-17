@@ -1,6 +1,6 @@
 """Checkpoint source-local drafts without publishing or approving them.
 
-This module is not selected by server defaults yet. The tracked invoker remains
+New comparison planning version6 selects this module. The tracked invoker remains
 the authority for request identity, material permission and atomic budget usage.
 """
 from copy import deepcopy
@@ -30,7 +30,7 @@ def recorded_response(record, prompt, options, calls):
     return deepcopy(found[0]['result'])
 
 
-def generate(snapshot, *, current, checkpoint, invoke, recover=None):
+def generate(snapshot, *, current, checkpoint, invoke, recover=None, before_dispatch=None):
     """Return the combined unverified envelope; never retry an uncertain stage.
 
     Received responses are checkpointed before parsing. Malformed responses and
@@ -78,6 +78,8 @@ def generate(snapshot, *, current, checkpoint, invoke, recover=None):
                 raise BudgetExhaustedError('comparisonStageCalls',max(0,remaining),1)
             if remaining_seconds(record) <= 0:
                 raise BudgetExhaustedError('comparisonStageWallClock',0,1)
+            if before_dispatch is not None:
+                before_dispatch()
             entry = {'inputDigest':stage['inputDigest'],'status':'invoking'}
             saved['stages'][sid] = entry
             checkpoint(deepcopy(saved))

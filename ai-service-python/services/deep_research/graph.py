@@ -1141,10 +1141,12 @@ Only mark relevant=true if the evidence directly bears on the obligation questio
 def make_synthesize_node(
     llm_invoke: Callable[..., dict],
     repo_update: Callable[[str, Callable, dict | None], dict],
+    *, scope_validator=None,
 ) -> Callable[[GraphState], dict]:
     """Synthesize total answer from verified evidence. Uses reserve pool.
     
-    Generates ONE synthesis for the total question. Sections organized by output kind
+    Legacy runs generate one synthesis; new comparison runs use bounded stages.
+    Sections organized by output kind
     using claim IDs mapped to sections. No unchecked model prose in report body.
     """
     
@@ -1177,6 +1179,9 @@ def make_synthesize_node(
             claim_limit = point_constraint['count']
         from services.deep_research.comparison_generation import enabled as comparison_cells_enabled
         cell_mode = comparison_cells_enabled(record)
+        from services.deep_research.comparison_stage_inputs import enabled as comparison_stages_enabled
+        source_stages = comparison_stages_enabled(record)
+        comparison_stage_input = None
         paper_titles = {m.get('materialId'): m.get('title', '') for m in record.get('materials', [])}
         
         # Format evidence summaries with obligation binding
@@ -1201,6 +1206,7 @@ def make_synthesize_node(
             from services.deep_research.comparison_intent import operations_enabled as comparison_operations_enabled
             from services.deep_research.processing_cost_sources import enabled as cost_premises_enabled
             candidates,premise_bundles=order_premises(candidates,brief_state.get('plan',[]),
+                **({'limit':len(candidates)} if source_stages else {}),
                 **({'authored_rows':True} if type(record.get('comparisonJointReportsContractVersion')) is int
                    and record['comparisonJointReportsContractVersion']==3 else {}),
                 **({'processing_cost':True} if cost_premises_enabled(record) else {}),
@@ -1310,7 +1316,18 @@ def make_synthesize_node(
                 needed=len(allocation_plan['cells'])+sum(max(1,len(o.get('completionCriteria',[])))
                     for o in draft_obligations if o['obligationId'] in joint_ids)
                 if needed:allocation_options['planned_points']=needed
-            draft_admission = before_synthesis(record, point_constraint,**allocation_options)
+            if source_stages:
+                # The complete stage builder admits initial calls after fitting;
+                # received stages must remain reusable as the ledger advances.
+                maximum = min(24,allocation_options.get('planned_points',claim_limit))
+                if point_constraint:
+                    maximum = min(maximum,point_constraint['count'])
+                draft_admission = {'version':2,'status':'allocated_unverified',
+                    **({'plannedStructurePoints':allocation_options['planned_points']} if allocation_options else {}),
+                    'maxDraftPoints':maximum,'sourceStageAdmissionDeferred':True,
+                    'tokensAndTimeFitEstablished':False,'scientificApproval':False}
+            else:
+                draft_admission = before_synthesis(record, point_constraint,**allocation_options)
             claim_limit = draft_admission['maxDraftPoints']
             if allocation_options and allocation_plan.get('fixedSlots') is True:
                 minimum=len(allocation_plan['cells'])+len(joint_ids)
@@ -1619,13 +1636,27 @@ space with unsupported global absence or incidental iteration/performance values
                 allocation_render=render_decision
             def wire_size(value):
                 return len(encode_outline(record,value)[0].encode('utf8'))
-            prompt,evidence_summaries,missing_bundles=fit_premises(evidence_summaries,allocation_render,wire_bundles,
-                **({'max_bytes':allocation_limit} if staged_mode or comparison_input else {}),
-                omit_optional_table_data=output_kind=='paper_comparison' and qualitative_comparison and not numerical_request,
-                **({'prompt_byte_size':wire_size} if encoded_allocation else {}),
-                **({'required_contexts':{eid:context for b in wire_bundles
-                       for eid,context in b.get('requiredContextByEvidenceId',{}).items()}}
-                   if record['synthesisEvidenceContractVersion'] in (5,6) else {}))
+            if source_stages:
+                from services.deep_research.comparison_stage_inputs import prepare as prepare_comparison_stages
+                previous = record.get('state',{}).get('comparisonStageInput')
+                if previous is not None:
+                    allocation_limit = previous.get('maxInputBytes')
+                comparison_stage_input = prepare_comparison_stages(record,draft_obligations,source_registry,
+                    evidence_summaries,table_registry,wire_bundles,evidence_aliases,
+                    max_input_bytes=allocation_limit,character_limit=requested_limit)
+                repo_update(run_id,lambda r:{**r,'state':{**r['state'],
+                    'comparisonStageInput':deepcopy(comparison_stage_input)}},expected_revision=None)
+                evidence_summaries = deepcopy(comparison_stage_input['rows'])
+                prompt = max(comparison_stage_input['stages'],key=lambda s:s['inputBytes'])['prompt']
+                missing_bundles = []
+            else:
+                prompt,evidence_summaries,missing_bundles=fit_premises(evidence_summaries,allocation_render,wire_bundles,
+                    **({'max_bytes':allocation_limit} if staged_mode or comparison_input else {}),
+                    omit_optional_table_data=output_kind=='paper_comparison' and qualitative_comparison and not numerical_request,
+                    **({'prompt_byte_size':wire_size} if encoded_allocation else {}),
+                    **({'required_contexts':{eid:context for b in wire_bundles
+                           for eid,context in b.get('requiredContextByEvidenceId',{}).items()}}
+                       if record['synthesisEvidenceContractVersion'] in (5,6) else {}))
             allocation_prompt=prompt
             if stage_allocation:prompt=render_premises(evidence_summaries)
             repo_update(run_id,lambda r:{**r,'state':{**r.get('state',{}),'synthesisPremiseAllocation':{
@@ -1653,6 +1684,12 @@ space with unsupported global absence or incidental iteration/performance values
                    if staged_mode and experiment_capacity_enabled(record) else {}),
                 'tableDataOmittedEvidenceIds':[evidence_aliases[row['evidenceId']] for row in evidence_summaries if row.get('tableDataOmitted')],
                 'sharedTablePackets':len({row['tableDataRef'] for row in evidence_summaries if row.get('tableDataRef')})}}},expected_revision=None)
+            if comparison_stage_input is not None:
+                repo_update(run_id,lambda r:{**r,'state':{**r['state'],
+                    'synthesisPremiseAllocation':{**r['state']['synthesisPremiseAllocation'],
+                        'comparisonStageInputVersion':1,'totalStageInputBytes':sum(s['inputBytes'] for s in comparison_stage_input['stages']),
+                        'stages':[{k:s[k] for k in ('stageId','inputBytes','targetIds','suppliedEvidenceIds')}
+                                  for s in comparison_stage_input['stages']]}}},expected_revision=None)
         else:
             prompt, evidence_summaries = fit_evidence_prompt(evidence_summaries,
                 lambda rows: template.replace(evidence_marker, json.dumps(rows, ensure_ascii=False, separators=(',', ':')), 1))
@@ -1737,9 +1774,32 @@ space with unsupported global absence or incidental iteration/performance values
                 return {'error_code':'budget_exhausted'}
         from services.deep_research.factual_reasoning import request_options as factual_options
         from services.deep_research.experiment_template import request_options as experiment_options,reasoning_enabled as experiment_reasoning
-        result = llm_invoke(run_id, "synthesize", prompt,
-            {"max_tokens": 4000, "temperature": 0.2, **factual_options(record,question,output_kind),
-             **experiment_options(record,output_kind)}, use_reserve=True)
+        if comparison_stage_input is not None:
+            from services.deep_research.comparison_stage_generation import generate as generate_comparison_stages
+            recover = getattr(llm_invoke,'recorded_comparison_response',None)
+            def checkpoint_comparison_stages(value):
+                repo_update(run_id,lambda r:{**r,'state':{**r['state'],
+                    'comparisonStageGeneration':deepcopy(value)}},expected_revision=None)
+            def validate_comparison_stage_scope():
+                from services.deep_research.contracts import DeepResearchError
+                if scope_validator is None:
+                    raise DeepResearchError('scope_revoked','分阶段比较缺少材料范围确认，尚未发送。')
+                validate_run = getattr(scope_validator,'validate_run',None)
+                if callable(validate_run) and not validate_run(run_id):
+                    raise DeepResearchError('scope_revoked','任务材料范围已改变，尚未发送。')
+                if not all(scope_validator(run_id,owner['workId']) for owner in comparison_stage_input['sources'].values()):
+                    raise DeepResearchError('scope_revoked','论文访问权限已改变，尚未发送。')
+            validate_comparison_stage_scope()
+            result = generate_comparison_stages(comparison_stage_input,
+                current=lambda:repo_update(run_id,lambda r:r,expected_revision=None),
+                checkpoint=checkpoint_comparison_stages,
+                invoke=lambda node,text,options:llm_invoke(run_id,node,text,options,use_reserve=True),
+                before_dispatch=validate_comparison_stage_scope,
+                recover=(lambda text,options:recover(run_id,text,options)) if callable(recover) else None)
+        else:
+            result = llm_invoke(run_id, "synthesize", prompt,
+                {"max_tokens": 4000, "temperature": 0.2, **factual_options(record,question,output_kind),
+                 **experiment_options(record,output_kind)}, use_reserve=True)
         finish = (result.get('finishReason', result.get('finish_reason')) if isinstance(result, dict)
                   else getattr(result, 'finish_reason', None))
         if finish == 'length':
@@ -1761,7 +1821,7 @@ space with unsupported global absence or incidental iteration/performance values
                 comparison_cell_draft = compile_cells(parsed,
                     plan_cells(draft_obligations, source_registry, evidence_summaries,
                                **planning_options(record, question)), max_claims=claim_limit,
-                    **({'table_registry':table_registry} if record.get('comparisonPlanningContractVersion') in (4,5) else {}))
+                    **({'table_registry':table_registry} if record.get('comparisonPlanningContractVersion') in (4,5,6) else {}))
                 comparison_cell_draft['sources'] = deepcopy(source_registry)
                 comparison_cell_draft['evidenceAliases'] = dict(evidence_aliases)
                 parsed = comparison_cell_draft['report']
@@ -2843,7 +2903,7 @@ def build_deep_research_graph(
     workflow.add_node("assess", assess_frontier)
     workflow.add_node('advance_frontier', lambda state: advance_frontier(state, repo_update))
     workflow.add_edge('advance_frontier', 'acquire')
-    workflow.add_node("synthesize", bounded(make_synthesize_node(llm_invoke, repo_update)))
+    workflow.add_node("synthesize", bounded(make_synthesize_node(llm_invoke, repo_update,scope_validator=scope_validator)))
     workflow.add_node("verify", make_verify_node(verify_claims_fn, semantic_check_fn, repo_update, llm_invoke=llm_invoke))
     workflow.add_node("publish", make_publish_node(repo_publish, repo_update,scope_validator=scope_validator))
     
