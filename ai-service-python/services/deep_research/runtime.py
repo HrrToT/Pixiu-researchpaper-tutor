@@ -298,6 +298,9 @@ def initialize_runtime():
         return _runtime
     comparison_profile = os.environ.get('DEEP_RESEARCH_COMPARISON_CELLS', '0')
     shared_profile = os.environ.get('DEEP_RESEARCH_SHARED_EXPERIMENT_PLAN', '0')
+    shared_observation_profile = os.environ.get('DEEP_RESEARCH_SHARED_HTTP_OBSERVATION', '0')
+    if shared_observation_profile not in ('0','1'):
+        raise ValueError('Invalid shared experiment HTTP observation policy')
     if shared_profile not in ('0','1'):
         raise ValueError('Invalid server shared experiment rollout policy')
     if comparison_profile not in ('0','1'):
@@ -395,6 +398,7 @@ def initialize_runtime():
     facade = RuntimeFacade(repo, partial(build_deep_research_graph, extract_batch_size=3), llm_client=model, scope_validator=scope,
                            comparison_cells_version=int(comparison_profile),
                            shared_experiment_plan_version=int(shared_profile),
+                           shared_experiment_http_observation_version=int(shared_observation_profile),
                            source_reader=lambda rid, sid: read_acquired_source(repo, rid, sid))
     from services.deep_research.external import AcademicAcquisition
     facade._external_acquire = AcademicAcquisition(repo, facade._complete_tracked_call)

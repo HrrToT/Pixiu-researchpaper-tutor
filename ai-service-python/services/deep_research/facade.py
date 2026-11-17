@@ -110,6 +110,7 @@ class ResearchFacade:
         max_concurrent: int = 2,
         comparison_cells_version: int = 0,
         shared_experiment_plan_version: int = 0,
+        shared_experiment_http_observation_version: int = 0,
     ):
         if type(comparison_cells_version) is not int or comparison_cells_version not in (0,1):
             raise ValueError('Invalid server comparison cell rollout policy')
@@ -117,6 +118,9 @@ class ResearchFacade:
         if type(shared_experiment_plan_version) is not int or shared_experiment_plan_version not in (0,1):
             raise ValueError('Invalid server shared experiment rollout policy')
         self._shared_experiment_plan_version = shared_experiment_plan_version
+        if type(shared_experiment_http_observation_version) is not int or shared_experiment_http_observation_version not in (0,1):
+            raise ValueError('Invalid shared experiment HTTP observation policy')
+        self._shared_experiment_http_observation_version = shared_experiment_http_observation_version
         self._repo = repo
         self._graph_factory = graph_factory
         self._llm_client = llm_client
@@ -311,6 +315,7 @@ class ResearchFacade:
             "comparisonJointReportsContractVersion": 2 if self._comparison_cells_version == 1 else 0,
             "experimentSharedPlanContractVersion": self._shared_experiment_plan_version if re.search(
                 r'(?<!\d)2\s*[xX×*]\s*2(?!\d)',str(request.get('question',''))) else 0,
+            "sharedExperimentHttpObservationContractVersion": self._shared_experiment_http_observation_version,
             "reportingOwnershipContractVersion": 1,
             "draftValidationContractVersion": 1,
             "factualRepairPromptContractVersion": 3,

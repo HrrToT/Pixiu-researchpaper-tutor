@@ -188,10 +188,11 @@ def options_for_record(record,node,options):
     if shared_init and representation.OPTION not in options:
         raise ValueError('Shared representation target must be bound before fingerprinting')
     from services.deep_research.workflow_initialization_observation import enabled as observation_enabled
+    from services.deep_research.shared_experiment_observation import enabled as shared_observation
     from llm.response_observation import OPTION as OBSERVATION_OPTION
-    observe_headers=node=='plan_workflow_init' and observation_enabled(record)
+    observe_headers=(node=='plan_workflow_init' and observation_enabled(record)) or shared_observation(record,node)
     if OBSERVATION_OPTION in options and (not observe_headers or options[OBSERVATION_OPTION] is not True):
-        raise ValueError('HTTP observation is server-owned and initialization-only')
+        raise ValueError('HTTP observation is server-owned and versioned')
     if not enabled(record,node):return {**options,'response_format':{'type':'json_object'}}
     allowed={'response_format','thinking','reasoning_effort','max_tokens','temperature','timeout_seconds'}
     if shared_init:
