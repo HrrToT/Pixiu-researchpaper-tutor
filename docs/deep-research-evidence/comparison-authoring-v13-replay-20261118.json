@@ -1,0 +1,157 @@
+{
+  "schemaVersion": 1,
+  "sourceCommit": "6c2cfa15846d153fd469c91348c02010b7fc62d6",
+  "receiptSha256": "a64b83637f562b3fd42c8260431c4c1da2c0184d717c816b6e2c0ae777119bba",
+  "results": [
+    {
+      "authoringEnabled": false,
+      "stages": [
+        {
+          "stageId": "P1",
+          "inputBytes": 29444,
+          "requiredBundleCount": 9,
+          "suppliedEvidenceCount": 20
+        },
+        {
+          "stageId": "P2_joint",
+          "inputBytes": 30022,
+          "requiredBundleCount": 15,
+          "suppliedEvidenceCount": 20
+        }
+      ],
+      "allFrozenPremiseBundlesRetained": true,
+      "claims": [
+        {
+          "claimId": "cmp_0_0",
+          "tableConditionGenerated": false,
+          "tableGate": null
+        },
+        {
+          "claimId": "cmp_1_0",
+          "tableConditionGenerated": false,
+          "tableGate": null
+        },
+        {
+          "claimId": "cmp_2_0",
+          "tableConditionGenerated": false,
+          "tableGate": "table_condition_not_displayed"
+        },
+        {
+          "claimId": "cmp_3_0",
+          "tableConditionGenerated": false,
+          "tableGate": null
+        },
+        {
+          "claimId": "cmp_4_0",
+          "tableConditionGenerated": false,
+          "tableGate": "table_condition_not_displayed"
+        },
+        {
+          "claimId": "cmp_5_0",
+          "tableConditionGenerated": false,
+          "tableGate": "table_condition_not_displayed"
+        },
+        {
+          "claimId": "cmp_6_0",
+          "tableConditionGenerated": false,
+          "tableGate": null
+        },
+        {
+          "claimId": "cmp_7_0",
+          "tableConditionGenerated": false,
+          "tableGate": null
+        },
+        {
+          "claimId": "cmp_conclusion_0",
+          "tableConditionGenerated": false,
+          "tableGate": "table_condition_not_displayed"
+        },
+        {
+          "claimId": "cmp_conclusion_1",
+          "tableConditionGenerated": false,
+          "tableGate": "table_condition_not_displayed"
+        }
+      ],
+      "wireErrors": [],
+      "isolatedTargets": [],
+      "sqliteReopenNoResend": true,
+      "semanticApproval": false
+    },
+    {
+      "authoringEnabled": true,
+      "stages": [
+        {
+          "stageId": "P2",
+          "inputBytes": 29411,
+          "requiredBundleCount": 9,
+          "suppliedEvidenceCount": 18
+        },
+        {
+          "stageId": "P1_joint",
+          "inputBytes": 31891,
+          "requiredBundleCount": 15,
+          "suppliedEvidenceCount": 20
+        }
+      ],
+      "allFrozenPremiseBundlesRetained": true,
+      "claims": [
+        {
+          "claimId": "cmp_1_0",
+          "tableConditionGenerated": false,
+          "tableGate": null
+        },
+        {
+          "claimId": "cmp_2_0",
+          "tableConditionGenerated": true,
+          "tableGate": null
+        },
+        {
+          "claimId": "cmp_3_0",
+          "tableConditionGenerated": false,
+          "tableGate": null
+        },
+        {
+          "claimId": "cmp_4_0",
+          "tableConditionGenerated": true,
+          "tableGate": null
+        },
+        {
+          "claimId": "cmp_5_0",
+          "tableConditionGenerated": true,
+          "tableGate": null
+        },
+        {
+          "claimId": "cmp_6_0",
+          "tableConditionGenerated": true,
+          "tableGate": null
+        },
+        {
+          "claimId": "cmp_7_0",
+          "tableConditionGenerated": true,
+          "tableGate": null
+        }
+      ],
+      "wireErrors": [],
+      "isolatedTargets": [
+        {
+          "targetId": "table_0_0",
+          "reason": "stage_evidence_permission"
+        },
+        {
+          "targetId": "joint_ob-2-1",
+          "reason": "stage_evidence_permission"
+        },
+        {
+          "targetId": "joint_ob-2-2",
+          "reason": "stage_evidence_permission"
+        }
+      ],
+      "sqliteReopenNoResend": true,
+      "semanticApproval": false
+    }
+  ],
+  "providerRequests": 0,
+  "sourceReceiptUnchanged": true,
+  "scientificAcceptance": false,
+  "boundary": "Actual synthesis graph and SQLite; saved responses copied unchanged, not generated for new instructions. No semantic approval."
+}
