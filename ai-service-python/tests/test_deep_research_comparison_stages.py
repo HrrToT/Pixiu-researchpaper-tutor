@@ -112,6 +112,7 @@ def test_isolated_profile_keeps_paper_and_joint_evidence_physically_separate():
     for stage in saved['stages']:
         data = packet(stage)
         assert stage['inputBytes'] <= 24000
+        assert '"subject":"method","attribute":"setting","value":"exact observed value"' in stage['prompt']
         if stage['stageId'] == 'joint':
             assert data['jointTargets'] and not any(p['targets'] for p in data['papers'])
         else:
@@ -417,12 +418,18 @@ def test_actual_isolated_graph_keeps_three_stages_on_reopen_and_withholds_unveri
             'draftingBasis': {'premiseStatus': 'established',
                 'observations': [{'evidenceId': e['evidenceId'], 'quote': e['quote']} for e in ev],
                 'scopeDecision': 'reported_case', 'unresolved': ''}})
+        if not local:
+            rows[0]['point']['kind'] = 'inference'
+            rows[0]['point']['body'] = {'boundary': {
+                'observedSettings': [{'subject': '论文中的方法', 'attribute': '表示', 'value': '场景表示'}],
+                'notEstablished': [{'type': 'comparison_evidence', 'subjects': ['方法A', '方法B'], 'quantity': '同条件排名'}]}}
         sent.append(prompt)
         return {'content': json.dumps({'answers': rows}), 'finishReason': 'stop'}
     result = make_synthesize_node(invoke, update, scope_validator=lambda *_: True)({'run_id': r['runId']})
     saved = repo.require_run(r['runId'])['state']
     assert len(sent) == len(saved['comparisonStageGeneration']['stages']) == 3
     assert len(saved['reportBody']['claims']) == 3
+    assert not saved['comparisonCellDraft']['errors']
     repo = DeepResearchRepository(tmp_path / 'graph.sqlite3')
     repo.initialize()
     blocked = Mock(side_effect=AssertionError('No stage resend'))
