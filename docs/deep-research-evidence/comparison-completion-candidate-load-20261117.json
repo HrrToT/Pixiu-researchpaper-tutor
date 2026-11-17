@@ -1,0 +1,15 @@
+{
+  "sourceCommit": "257d35efcb94310cc7814942f9e532fa49690cfd",
+  "fullRegression": "comparison-completion-candidate-full-v2-20261117.json",
+  "candidate": "academic-dr-comparison-completion-candidate-20261117",
+  "originalContainerRetained": true,
+  "allOldTasksRunsCallsExact": true,
+  "sourceHashesMatch": true,
+  "sharedExperimentProfile": 1,
+  "sharedHttpObservationProfile": 1,
+  "comparisonCellsProfile": 1,
+  "comparisonReviewBatchProfile": 2,
+  "sourceDefault": 0,
+  "newModelCalls": 0,
+  "scientificContentAccepted": false
+}
