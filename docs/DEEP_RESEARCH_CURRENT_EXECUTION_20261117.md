@@ -4,15 +4,15 @@
 
 ## 当前代码、验证与运行边界
 
-最新补充：分阶段候选已装载并执行D2-BASELINE-COMPRESSION-v13。两阶段生成10条草稿均通过结构编译，但最终没有通过核验的条目；11次调用、63843账本Token、193秒，completed + inconclusive。原服务已恢复，全部当前任务/运行/调用一致，恢复无新增调用。下表v12及“尚未装载”描述属于此前快照。当前下一动作按[开发复审与收敛方案](DEEP_RESEARCH_DELIVERY_PLAN_20261118.md)执行：先人工区分生成错误、审核误拒和修订容量，不立即同题重跑。原始v13记录仅本地保存于tmp/dr-acceptance-receipts/。
+最新诊断已完成：[十条草稿、显示正反例与修订过程](DEEP_RESEARCH_COMPARISON_DIAGNOSIS_20261118.md)。确定性表格显示阻断已复现；出版版本标签尚无可信元数据，不直接算误拒；修订两次实际发送，先空返回、再照抄，第三批因动态窗口不足停止。生成/核验/修订实际使用Pro，不再基于单条Flash调用推断全程模型。下一批按[开发复审与收敛方案](DEEP_RESEARCH_DELIVERY_PLAN_20261118.md)集中评审生成职责、精确指标展示和有效修订容量，不立即同题重跑。
 
 | 项目 | 当前证据 | 边界 |
 | --- | --- | --- |
-| 上次完整回归 | 源码05bc4831e完成9627项、498模块完整离线回归，0失败/错误/跳过，旧9600项全部保留，源码及执行器哈希一致 | 当前分阶段主图候选尚未装载或真实验证；唯一警告为既有PyPDF2弃用提示 |
-| 候选装载 | 统一候选源码哈希及全部旧任务、运行、调用逐项核对；规划版本4、比较审核版本2、原文缓存版本3 | v11后原服务已恢复；候选保留，旧记录不升级 |
-| 最新真实验证 | D2-BASELINE-COMPRESSION-v12仅提交一次，9次模型调用均succeeded，42853账本Token、144秒，completed + inconclusive | 目标短引用有效；8格来源权限被拒、3综合点缺表格绑定，最终无通过结论；完整比较未过 |
+| 上次完整回归 | 源码05bc4831e完成9627项、498模块完整离线回归，0失败/错误/跳过，旧9600项全部保留，源码及执行器哈希一致 | 分阶段候选已装载并执行v13；内容未过；唯一警告为既有PyPDF2弃用提示 |
+| 候选装载 | 分阶段候选源码及旧记录身份核对；规划版本6、比较审核版本2 | v13后原服务已恢复；候选保留，旧记录不升级 |
+| 最新真实验证 | D2-BASELINE-COMPRESSION-v13仅提交一次，11次模型调用均succeeded，63843账本Token、193秒，completed + inconclusive | 两阶段10条草稿结构编译通过，最终0条通过核验；完整比较未过；诊断回放无新模型请求 |
 | v9主要失效 | 首稿6条；新手化改写扩大两条单论文机制的对象并改变成本单元格主题，引用仍为原局部证据；一条审核未启动 | 修订因证据17558字节超过14640上限而skipped_budget；不能放松事实审核换完整结果 |
-| 服务恢复 | v12后原服务已恢复，全部当前任务、运行及调用核对一致，恢复无新增模型调用 | 候选与备份保留；历史未知请求冻结，不自动重发 |
+| 服务恢复 | v13后原服务已恢复，全部当前任务、运行及调用核对一致，恢复无新增模型调用 | 候选与备份保留；历史未知请求冻结，不自动重发 |
 | 缓存回放 | 103项相关检查通过；保存读取上下文经新建离线缓存回放，36条证据中3条字符拒绝保持失败，增量后54条，重复执行无新工厂调用 | 回放未调用真实PDF页工厂或模型，不计科学质量通过；上方全量另有独立证据 |
 
 证据：[9559项完整回归](deep-research-evidence/scoped-comparison-completion-host-full-20261117.json)、[本批装载](deep-research-evidence/scoped-comparison-candidate-load-20261117.json)、[9545项历史回归](deep-research-evidence/rejected-source-journal-full-20261117.json)、[本批候选装载](deep-research-evidence/source-journal-candidate-load-20261117.json)、[D2-v8真实结果与恢复](deep-research-evidence/baseline-comparison-v8-real-20261117.json)、[拒绝状态缓存回放](deep-research-evidence/rejected-source-journal-v8-replay-20261117.json)。[D2-v9真实结果与恢复](deep-research-evidence/baseline-comparison-v9-real-20261117.json)。原始论文、模型响应、任务快照及账户信息仅本地保存。
