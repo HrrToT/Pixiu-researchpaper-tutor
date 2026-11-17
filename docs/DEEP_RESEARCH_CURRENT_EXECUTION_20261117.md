@@ -6,15 +6,15 @@
 
 最新诊断已完成：[十条草稿、显示正反例与修订过程](DEEP_RESEARCH_COMPARISON_DIAGNOSIS_20261118.md)。确定性表格显示阻断已复现；出版版本标签尚无可信元数据，不直接算误拒；修订两次实际发送，先空返回、再照抄，第三批因动态窗口不足停止。生成/核验/修订实际使用Pro，不再基于单条Flash调用推断全程模型。
 
-当前开发源码71362f2d8已通过9646项/498模块完整回归，原9645项全部保留，源码与执行器一致。候选装载及全部旧任务/运行/调用核对通过；D2-v14已仅提交一次，runId=dr_run_b6c6793930d6504fa2d126d136e796b6，真实比较运行中，尚无新内容通过结论。运行期间源码冻结。执行顺序见[开发复审与收敛方案](DEEP_RESEARCH_DELIVERY_PLAN_20261118.md)。
+当前开发源码71362f2d8已通过9646项/498模块完整回归、装载及旧记录核对。D2-v14仅提交一次，10次调用、65771账本Token、170秒，completed + inconclusive，最终0条通过核验；原服务已恢复，全部当前记录一致。运行期间源码冻结。下一步离线评审混合阶段的来源选择、边界结构和复核预留，不立即同题付费重跑。执行顺序见[开发复审与收敛方案](DEEP_RESEARCH_DELIVERY_PLAN_20261118.md)。
 
 | 项目 | 当前证据 | 边界 |
 | --- | --- | --- |
-| 上次完整回归 | 源码71362f2d8完成9646项、498模块完整离线回归，0失败/错误/跳过，旧9645项全部保留，源码及执行器哈希一致 | 候选已装载，真实v14运行中；唯一警告为既有PyPDF2弃用提示 |
-| 候选装载 | 71362f2d8源码及全部旧记录身份核对；规划版本6、比较审核版本2；v14已确认写作策略1 | 候选当前用于v14，原容器与独立备份保留；旧记录不升级 |
-| 最新真实验证 | D2-BASELINE-COMPRESSION-v13仅提交一次，11次模型调用均succeeded，63843账本Token、193秒，completed + inconclusive | 两阶段10条草稿结构编译通过，最终0条通过核验；完整比较未过；诊断回放无新模型请求 |
+| 上次完整回归 | 源码71362f2d8完成9646项、498模块完整离线回归，0失败/错误/跳过，旧9645项全部保留，源码及执行器哈希一致 | 候选已装载及执行v14，内容未过；唯一警告为既有PyPDF2弃用提示 |
+| 候选装载 | 71362f2d8源码及全部旧记录身份核对；规划版本6、比较审核版本2；v14已确认写作策略1 | v14结束后原服务恢复；候选和独立备份保留；旧记录不升级 |
+| 最新真实验证 | D2-BASELINE-COMPRESSION-v14仅提交一次，10次模型调用均succeeded，65771账本Token、170秒，completed + inconclusive | 4个论文目标引用越权而隔离，1个综合边界结构无效，最终5条草稿且0条通过核验；修订复核被预算准入拒绝 |
 | v9主要失效 | 首稿6条；新手化改写扩大两条单论文机制的对象并改变成本单元格主题，引用仍为原局部证据；一条审核未启动 | 修订因证据17558字节超过14640上限而skipped_budget；不能放松事实审核换完整结果 |
-| 服务恢复 | v13恢复证据成立；v14候选窗口已开启，等待真实案例终态后核对恢复 | 历史未知请求冻结，不自动重发；未知新请求不自动切换服务 |
+| 服务恢复 | v14后原服务已恢复，全部当前任务/运行/调用精确一致，恢复没有新增模型调用 | 历史未知请求冻结，不自动重发；没有新未知请求 |
 | 缓存回放 | 103项相关检查通过；保存读取上下文经新建离线缓存回放，36条证据中3条字符拒绝保持失败，增量后54条，重复执行无新工厂调用 | 回放未调用真实PDF页工厂或模型，不计科学质量通过；上方全量另有独立证据 |
 
 证据：[9559项完整回归](deep-research-evidence/scoped-comparison-completion-host-full-20261117.json)、[本批装载](deep-research-evidence/scoped-comparison-candidate-load-20261117.json)、[9545项历史回归](deep-research-evidence/rejected-source-journal-full-20261117.json)、[本批候选装载](deep-research-evidence/source-journal-candidate-load-20261117.json)、[D2-v8真实结果与恢复](deep-research-evidence/baseline-comparison-v8-real-20261117.json)、[拒绝状态缓存回放](deep-research-evidence/rejected-source-journal-v8-replay-20261117.json)。[D2-v9真实结果与恢复](deep-research-evidence/baseline-comparison-v9-real-20261117.json)。原始论文、模型响应、任务快照及账户信息仅本地保存。
@@ -32,6 +32,15 @@
 证据：[1341项相关回归](deep-research-evidence/comparison-repair-related-20261118.json)、[修订压力回放](deep-research-evidence/comparison-repair-v13-stress-20261118.json)、[c52115643完整9645项](deep-research-evidence/comparison-authoring-repair-full-20261118.json)。下方保留前一批显示实现及验证边界。
 
 最终证据：[71362f2d8完整9646项](deep-research-evidence/comparison-repair-boundaries-full-20261118.json)、[最终候选装载](deep-research-evidence/comparison-authoring-repair-candidate-load-20261118.json)。模型质量另由v14真实结果核对，不从离线测试或装载推断。
+
+### 最新真实案例：v14（未通过）
+
+- 两篇论文和24个必要证据组合均保留；原问题和来源映射正确，没有上游漏掉原始论文。P1阶段4条草稿含跨论文描述；P2_joint阶段为4个P2论文目标选择了P1的证据，全部按权限隔离，不根据文字猜测修正引用。综合可比性点的observedSettings字段无效，编译拒绝。最终5条草稿，初次0接受。
+- 表格条件显示未成为本次主要拒绝；仍有未证实版本、论文缺席、派生15倍数值、报告归属和建议中的未绑定比较。建议还涉及跨来源口径和磁盘/显存推断，不能仅修显示就放行。
+- 新修订实际执行2批并结算，3条为revised_unverified，2条not_revised；未出现把照抄当通过。生成了修订不等于事实成立：独立复核在调用前因总预估预留100754超过100000而拒绝，实际结算为65771，并未实际超支。整答仍not_checked，0接受，不能声称完整修订或科学质量通过。
+- 原服务恢复、全部当前记录一致。下一步先在保存输入上评审“论文与综合阶段混合”是否仍适合：比较物理隔离的论文阶段/综合阶段与当前载荷及别名负担，并重建复核真实请求预留。停止重复增加提示或同题付费重现；不扩大预算、不改旧失败、不用5条部分草稿替代双方完整比较。
+
+证据：[v14终态与恢复](deep-research-evidence/baseline-comparison-v14-real-20261118.json)。原始论文、模型回答及完整请求仅本地保留。
 
 ### 写作职责与原表条件（6c2cfa158）
 
