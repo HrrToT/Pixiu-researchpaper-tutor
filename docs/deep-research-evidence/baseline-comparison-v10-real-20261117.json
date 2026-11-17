@@ -1,0 +1,95 @@
+{
+  "caseId": "D2-BASELINE-COMPRESSION-v10",
+  "runId": "dr_run_cec888c89d6a53cfb47b9cbdf136dd85",
+  "sourceCommit": "1986db407c02cbde1ed04f016c2c5f5870835c58",
+  "status": "completed",
+  "outcome": "partial",
+  "scientificAcceptance": false,
+  "independentHoldout": false,
+  "automaticRetry": false,
+  "modelCalls": 10,
+  "modelCallStatuses": {
+    "succeeded": 10
+  },
+  "ledgerTokens": 59683,
+  "elapsedSeconds": 246.0,
+  "generation": {
+    "cells": 8,
+    "rawConclusions": 2,
+    "compiledPoints": 8,
+    "compilerErrors": [
+      {
+        "conclusionIndex": 0,
+        "reason": "invalid_conclusion_obligations"
+      },
+      {
+        "conclusionIndex": 1,
+        "reason": "invalid_conclusion_obligations"
+      }
+    ]
+  },
+  "reader": {
+    "editOutcome": "rejected",
+    "editReason": "invalid_schema"
+  },
+  "acceptedClaimIds": [
+    "cmp_0_0"
+  ],
+  "rejections": [
+    {
+      "claimId": "cmp_2_0",
+      "reason": "numeric_mismatch"
+    },
+    {
+      "claimId": "cmp_3_0",
+      "reason": "absence_not_established"
+    },
+    {
+      "claimId": "cmp_4_0",
+      "reason": "table_cell_mismatch"
+    },
+    {
+      "claimId": "cmp_5_0",
+      "reason": "table_cell_mismatch"
+    },
+    {
+      "claimId": "cmp_6_0",
+      "reason": "table_cell_mismatch"
+    },
+    {
+      "claimId": "cmp_7_0",
+      "reason": "table_cell_mismatch"
+    },
+    {
+      "claimId": "cmp_1_0",
+      "reason": "semantic_unresolved"
+    }
+  ],
+  "repairStatus": "skipped_budget",
+  "repairLimit": {
+    "kind": "repairEvidenceBytes",
+    "limit": 12972,
+    "used": 15486
+  },
+  "restoration": {
+    "originalRestored": true,
+    "allCurrentTasksRunsCallsExact": true,
+    "newModelCalls": 0
+  },
+  "observations": [
+    "Both generated conclusions were structurally refused with invalid_conclusion_obligations; each contains the extra unresolved:false field.",
+    "Original-paper values from row 8 Ours-30K were bound to row 7 Ours-7K; LightGaussian values from row 10 Ours were bound to row 9. These are not acceptable source bindings.",
+    "Reader response puts retainedTableBindingIndexes at the root instead of individual claims; no edit applied.",
+    "A duration wording 41 minutes 33 seconds produced a numeric mismatch diagnostic; source uses 41m33s. This is not automatically reclassified as supported.",
+    "One mechanism mixes general VQ attribute discussion with the final SH-only restriction and remains unresolved.",
+    "Only one local mechanism point is publishable; no complete comparison or independent acceptance. No new unknown model call."
+  ],
+  "nextAction": "No immediate paid retry. Evaluate a unified output envelope and server-owned typed cell references via saved-response production-node replay; keep factual and complete-answer checks.",
+  "rawReceiptSha256": {
+    ".payload.json": "c985811ce88846e6f2a7f742225de7456f960e0683337c7b49b338bf1ea154c3",
+    ".calls.json": "2efd4a27d7ac56c7c93a4ef31527f3b6f2b0afc343f1717621efa04e40ad05b9",
+    ".result.json": "ede8661632409cc628f2132e4a7348546555cf6c439f0ca506d359dac4a2e7be",
+    ".execution.json": "e2cd9c5f7ac81cf394afce757c40640a80781e860746ac82d750727d5717403a",
+    ".restore.log": "0a1795d4cbe3e70da783d961f477fdfa28cb670d1e852a4884544f88673a4a24"
+  }
+}
