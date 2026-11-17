@@ -5,7 +5,7 @@ def enabled(record):
     from services.deep_research.comparison_generation import enabled as cells_enabled
     return (type(record.get('comparisonPlanningContractVersion')) is int
             and (record['comparisonPlanningContractVersion'] in (1,2)
-                 or record['comparisonPlanningContractVersion']==3
+                 or record['comparisonPlanningContractVersion'] in (3,4)
                  and type(record.get('comparisonReviewBatchContractVersion')) is int
                  and record['comparisonReviewBatchContractVersion']==2)
             and type(record.get('factualReviewContractVersion')) is int
@@ -13,7 +13,7 @@ def enabled(record):
 
 
 def operations_enabled(record):
-    return isinstance(record,dict) and enabled(record) and record['comparisonPlanningContractVersion'] in (2,3)
+    return isinstance(record,dict) and enabled(record) and record['comparisonPlanningContractVersion'] in (2,3,4)
 
 
 def synthesis_input_limit(record):

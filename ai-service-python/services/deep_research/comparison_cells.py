@@ -22,7 +22,7 @@ class ComparisonDraftOverflow(ValueError):
         self.limit = limit
 
 
-def plan_cells(requirements, sources, evidence, *, shared_axes=False, question=None, typed_roles=False,joint_reports=False,literal_axes=False,fixed_slots=False):
+def plan_cells(requirements, sources, evidence, *, shared_axes=False, question=None, typed_roles=False,joint_reports=False,literal_axes=False,fixed_slots=False,unified_answers=False):
     """Keep every frozen obligation, with source-local citation permissions."""
     if (type(shared_axes) is not bool or type(typed_roles) is not bool
             or (shared_axes or typed_roles) and not isinstance(question, str)):
@@ -33,6 +33,8 @@ def plan_cells(requirements, sources, evidence, *, shared_axes=False, question=N
         raise ValueError('Literal axes require typed roles')
     if type(fixed_slots) is not bool or fixed_slots and not typed_roles:
         raise ValueError('Fixed slots require typed roles')
+    if type(unified_answers) is not bool or unified_answers and not fixed_slots:
+        raise ValueError('Unified answers require fixed comparison slots')
     if not isinstance(sources, dict) or not sources or not isinstance(requirements, list):
         raise ValueError('Invalid comparison sources or requirements')
     if any(not isinstance(k, str) or not k or not isinstance(v, dict) for k, v in sources.items()):
@@ -111,7 +113,8 @@ def plan_cells(requirements, sources, evidence, *, shared_axes=False, question=N
             'sources': deepcopy(sources), 'evidence': rows, 'cells': cells}
     if fixed_slots:
         from services.deep_research.comparison_layout import apply_slots
-        return apply_slots(result,question)
+        result=apply_slots(result,question)
+    if unified_answers:result['answerWireVersion']=1
     return result
 
 
@@ -135,9 +138,12 @@ def _point(raw, cid, obligations, allowed, kinds, evidence):
     return claim
 
 
-def compile_cells(payload, plan, *, max_claims):
+def compile_cells(payload, plan, *, max_claims, table_registry=None):
     """Isolate bad cell points; no compiled claim has scientific approval."""
-    bindings={}
+    bindings={};wire_audit=None
+    if plan.get('answerWireVersion')==1:
+        from services.deep_research.comparison_wire import decode as decode_answers
+        payload,wire_audit=decode_answers(payload,plan,table_registry or {},max_claims=max_claims)
     if plan.get('fixedSlots') is True:
         if type(max_claims) is not int or max_claims<1:raise ValueError('Invalid comparison point limit')
         from services.deep_research.comparison_layout import decode_slots
@@ -215,7 +221,7 @@ def compile_cells(payload, plan, *, max_claims):
         missing={oid for row in layout if row['unresolved'] for oid in
                  (row.get('obligationIds') or row.get('allowedObligationIds',[row['obligationId']]))}
         unresolved=[o['obligationId'] for o in plan['requirements'] if o['obligationId'] not in routed or o['obligationId'] in missing]
-    return {**({'layoutVersion': plan['version']} if plan['version'] in (2,3) else {}),
+    return {**({'answerWireAudit':wire_audit} if wire_audit is not None else {}),**({'layoutVersion': plan['version']} if plan['version'] in (2,3) else {}),
             **({'fixedSlots':True} if plan.get('fixedSlots') is True else {}),
             **({'jointReports':True} if typed and plan.get('jointReports') is True else {}),
             **({'jointGoals': [deepcopy(role) for role in plan['roles'].values() if role['kind'] == 'joint']}

@@ -1760,7 +1760,8 @@ space with unsupported global absence or incidental iteration/performance values
             try:
                 comparison_cell_draft = compile_cells(parsed,
                     plan_cells(draft_obligations, source_registry, evidence_summaries,
-                               **planning_options(record, question)), max_claims=claim_limit)
+                               **planning_options(record, question)), max_claims=claim_limit,
+                    **({'table_registry':table_registry} if record.get('comparisonPlanningContractVersion')==4 else {}))
                 comparison_cell_draft['sources'] = deepcopy(source_registry)
                 comparison_cell_draft['evidenceAliases'] = dict(evidence_aliases)
                 parsed = comparison_cell_draft['report']
@@ -1911,7 +1912,9 @@ space with unsupported global absence or incidental iteration/performance values
                    if current.get('audienceRewriteContractVersion') in (2,3,4,5,6,7,8,9) else {}))
 
         from services.deep_research.audience_schedule import reader_first as use_reader_first
-        reader_first = not blocked_draft_ids and use_reader_first(record, parsed, output_kind)
+        direct_comparison_authoring = (cell_mode and isinstance(comparison_cell_draft,dict)
+                                       and comparison_cell_draft.get('answerWireAudit',{}).get('version')==1)
+        reader_first = not direct_comparison_authoring and not blocked_draft_ids and use_reader_first(record, parsed, output_kind)
         if reader_first:
             parsed = adapt_reader(parsed,pending_compaction=True)
 
@@ -1969,7 +1972,7 @@ space with unsupported global absence or incidental iteration/performance values
         if parsed is None:
             return {"error_code": "invalid_synthesis_response"}
 
-        if not reader_first and not blocked_draft_ids and eligible(record, parsed, output_kind):
+        if not direct_comparison_authoring and not reader_first and not blocked_draft_ids and eligible(record, parsed, output_kind):
             parsed = adapt_reader(parsed)
         
         if output_kind == "experiment_design":
@@ -2001,6 +2004,7 @@ space with unsupported global absence or incidental iteration/performance values
                     **(r.get("state") or {}),
                     "reportVersionId": report_version_id,
                     "reportBody": parsed,
+                    **({'comparisonAuthoring':{'version':1,'readerExpression':'first_draft','verification':'unchecked'}} if direct_comparison_authoring else {}),
                     "synthesisContainer": container_kind,
                     **({'synthesisDraftAdmission': {**draft_admission, 'status': 'compiled_unverified',
                         'compiledPoints': len(parsed['claims'])}} if draft_admission is not None else {}),

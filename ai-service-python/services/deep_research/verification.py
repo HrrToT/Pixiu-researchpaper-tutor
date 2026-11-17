@@ -94,12 +94,13 @@ def _table_display_diagnostic(claim, support,comparison_context=None):
 
 def precheck_claims(claims: list[dict], evidence: list[dict], *, absence_scope_version=0,
                     quantity_spelling_version=0, feedback_version=0, table_references_version=0,
-                    requested_source_revisions=None,comparison_context=None) -> dict:
+                    requested_source_revisions=None,comparison_context=None,bound_duration_spelling=False) -> dict:
     """Pure hard checks shared by publication and pre-classification edits.
 
     Candidates still require a separate semantic verdict; nothing is accepted
     for publication here and no provider-capable callback is invoked.
     """
+    if type(bound_duration_spelling) is not bool:raise ValueError('Invalid bound duration spelling policy')
     if requested_source_revisions is not None:
         from services.deep_research.source_revisions import validate_constraints
         validate_constraints(requested_source_revisions)
@@ -190,6 +191,9 @@ def precheck_claims(claims: list[dict], evidence: list[dict], *, absence_scope_v
                 known = set().union(*(parameter_identifiers(text) for text in source_texts))
                 claim_text = without_parameter_identifiers(claim_text, known)
                 source_texts = [without_parameter_identifiers(text) for text in source_texts]
+            if bound_duration_spelling:
+                from services.deep_research.table_bindings import normalize_bound_duration_spelling
+                claim_text = normalize_bound_duration_spelling(claim_text,claim,support)
             numbers = _measurement_numbers(claim_text, word_counts=word_counts, relative_references=relative_references,
                                           artifact_references=artifact_references, conceptual_articles=conceptual_articles,
                                           expanded_counts=conceptual_articles,dimensional_labels=dimensional_labels,
@@ -206,7 +210,7 @@ def precheck_claims(claims: list[dict], evidence: list[dict], *, absence_scope_v
                 reason = reason or "numeric_mismatch"
                 unsupported_numbers = numbers - original_numbers
             from services.deep_research.table_bindings import validate_table_bindings
-            table_options = {}
+            table_options = {'bound_duration_spelling':True} if bound_duration_spelling else {}
             if comparison_context is not None:
                 table_options['comparison_context']=comparison_context
             if type(table_references_version) is int and table_references_version in (2,3,4):
@@ -321,7 +325,7 @@ def verify_claims(claims: list[dict], evidence: list[dict],
                   semantic_check: Callable[[list[dict], list[dict]], list[dict]] | None = None,
                   *, absence_scope_version=0, quantity_spelling_version=0, feedback_version=0,
                   table_references_version=0, review_context_version=0, requested_source_revisions=None,
-                  complete_review_feedback=False,comparison_context=None) -> dict:
+                  complete_review_feedback=False,comparison_context=None,bound_duration_spelling=False) -> dict:
     """Publish only after hard checks and an independent semantic verdict.
 
     Missing, malformed or duplicate model verdicts fail closed. A proposal or
@@ -329,9 +333,12 @@ def verify_claims(claims: list[dict], evidence: list[dict],
     """
     if type(complete_review_feedback) is not bool:
         raise ValueError('Invalid complete review feedback policy')
+    if type(bound_duration_spelling) is not bool:
+        raise ValueError('Invalid bound duration spelling policy')
     checked = precheck_claims(claims, evidence, absence_scope_version=absence_scope_version,
         quantity_spelling_version=quantity_spelling_version, feedback_version=feedback_version,
         table_references_version=table_references_version, requested_source_revisions=requested_source_revisions,
+        **({'bound_duration_spelling':True} if bound_duration_spelling else {}),
         **({'comparison_context':comparison_context} if comparison_context is not None else {}))
     candidates, rejected = checked['candidates'], checked['rejected']
     proposals = {"suggestion", "proposal", "hypothesis"}

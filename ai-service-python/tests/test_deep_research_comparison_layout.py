@@ -150,12 +150,18 @@ def test_server_selects_new_planning_wire_only_for_opt_in_and_never_upgrades_sav
     try:
         run,_=facade.create({'workspaceTaskId':'t','operationKey':'o','question':QUESTION,
                             'deferStart':True,'comparisonPlanningContractVersion':2},start_async=False)
-        assert run['comparisonPlanningContractVersion']==3 and run['comparisonReviewBatchContractVersion']==2
+        assert run['comparisonPlanningContractVersion']==4 and run['comparisonReviewBatchContractVersion']==2
         old={**run,'runId':'old','taskId':'old','idempotencyKey':'old','comparisonPlanningContractVersion':2}
         repo.create_run(old)
         with pytest.raises(ValueError,match='Immutable'):
             repo.update_run('old',lambda r:{**r,'comparisonPlanningContractVersion':3})
         assert repo.require_run('old')['comparisonPlanningContractVersion']==2
+        previous={**run,'runId':'previous','taskId':'previous','idempotencyKey':'previous',
+                  'comparisonPlanningContractVersion':3}
+        repo.create_run(previous)
+        with pytest.raises(ValueError,match='Immutable'):
+            repo.update_run('previous',lambda r:{**r,'comparisonPlanningContractVersion':4})
+        assert repo.require_run('previous')['comparisonPlanningContractVersion']==3
     finally:facade.shutdown()
 
 

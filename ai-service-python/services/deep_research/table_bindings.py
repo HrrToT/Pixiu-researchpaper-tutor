@@ -1,11 +1,23 @@
 """Validate reported table measurements against exact cited cells."""
 import re
+from decimal import Decimal
 
 from services.deep_research.table_evidence import visible_table_packet
 
 _VALUE = r'\d+(?:\.\d+)?'
 _METRIC = re.compile(rf'(?<![A-Za-z])(FPS|PSNR|SSIM|LPIPS|Size|Mem)\s*[↑↓:=：]?\s*({_VALUE})', re.I)
 _UNIT = re.compile(rf'({_VALUE})\s*(FPS|[KMG]i?B|dB)(?![A-Za-z])', re.I)
+_DURATION_LABELS = {
+    'train': ('训练时间','训练耗时'), 'training': ('训练时间','训练耗时'),
+    'traintime': ('训练时间','训练耗时'), 'trainingtime': ('训练时间','训练耗时'),
+    'time': ('时间','耗时','时长'), 'duration': ('持续时间','时长'),
+    'latency': ('延迟','时延'), 'runtime': ('运行时间','耗时'),
+    'rendertime': ('渲染时间','渲染耗时'), 'renderingtime': ('渲染时间','渲染耗时'),
+    'optimizationtime': ('优化时间','优化耗时'), 'optimisationtime': ('优化时间','优化耗时')}
+
+
+def _duration_metric_key(metric):
+    return re.sub(r'[^a-z]', '', re.sub(r'\([^)]*\)', '', metric).casefold())
 
 
 def _key(text):
@@ -59,6 +71,40 @@ def bound_table_context(claim, evidence):
             continue
         result.append({'group': dataset, 'method': row[1], 'metric': metric, 'value': value})
     return result
+
+
+def normalize_bound_duration_spelling(text, claim, evidence):
+    """Compare equivalent time spellings only for exact, valid own table cells.
+
+    No unit arithmetic, rounding, source edits or public-text edits. A whole
+    component sequence such as 41m33s may match 41分33秒; 2433秒 is a derived
+    conversion and is deliberately not admitted here.
+    """
+    units = {'h':'h','hr':'h','hrs':'h','hour':'h','hours':'h','小时':'h',
+             'm':'m','min':'m','mins':'m','minute':'m','minutes':'m','分':'m','分钟':'m',
+             's':'s','sec':'s','secs':'s','second':'s','seconds':'s','秒':'s'}
+    unit = '|'.join(re.escape(u) for u in sorted(units, key=len, reverse=True))
+    token = re.compile(r'(\d+(?:\.\d+)?)\s*(' + unit + r')', re.I)
+    duration = re.compile(r'(?<![A-Za-z0-9])(?:\d+(?:\.\d+)?\s*(?:' + unit
+                          + r')\s*){1,3}(?![A-Za-z0-9])', re.I)
+    def parts(value):
+        matches = list(token.finditer(value.strip()))
+        if not matches or token.sub('', value.strip()).strip():
+            return None
+        values = [(Decimal(m[1]), units[m[2].casefold()]) for m in matches]
+        order = ['hms'.index(u) for _, u in values]
+        return tuple(values) if order == sorted(set(order)) else None
+    allowed = {}
+    for cell in bound_table_context(claim, evidence):
+        metric = re.sub(r'\([^)]*\)', '', cell['metric']).strip().casefold()
+        if _duration_metric_key(metric) not in _DURATION_LABELS \
+                and not any(u in metric for u in ('时间','耗时','时长')):
+            continue
+        components = parts(cell['value'])
+        if components is not None:
+            allowed[components] = cell['value']
+    return duration.sub(lambda m: allowed.get(parts(m[0]), m[0]) +
+                        (m[0][len(m[0].rstrip()):] if parts(m[0]) in allowed else ''), text)
 
 
 def declared_references_enabled(record):
@@ -128,10 +174,11 @@ def _dataset_key(text, joiners):
     return _key(text)
 
 
-def validate_table_bindings(claim, evidence, *, translated_metrics=False, dataset_joiners=False,comparison_context=None):
+def validate_table_bindings(claim, evidence, *, translated_metrics=False, dataset_joiners=False,comparison_context=None,bound_duration_spelling=False):
     """Return a rejection reason; semantic checking still follows this gate."""
     if type(translated_metrics) is not bool:raise ValueError('Invalid metric translation policy')
     if type(dataset_joiners) is not bool:raise ValueError('Invalid dataset joiner policy')
+    if type(bound_duration_spelling) is not bool:raise ValueError('Invalid bound duration spelling policy')
     if comparison_context is not None and not isinstance(comparison_context,dict):
         raise ValueError('Invalid comparison display context')
     author_headers={}
@@ -142,6 +189,8 @@ def validate_table_bindings(claim, evidence, *, translated_metrics=False, datase
     conditions = claim.get('conditions') or {}
     if isinstance(conditions, dict):
         text += ' ' + ' '.join(str(v) for v in conditions.values())
+    if bound_duration_spelling:
+        text = normalize_bound_duration_spelling(text,claim,evidence)
     metric_mentions = {(v, m.upper()) for m, v in _METRIC.findall(text)}
     unit_mentions = {(v, u.upper()) for v, u in _UNIT.findall(text)}
     bindings = claim.get('tableBindings')
@@ -198,7 +247,10 @@ def validate_table_bindings(claim, evidence, *, translated_metrics=False, datase
                               for part in dataset.split(' / '))
         author_column=(row[1].strip().casefold()=='ours' and source['evidenceId'] in author_headers)
         if (not dataset_visible or not (_method_visible(row[1], text) or author_column)
-                or not _metric_visible(metric,text,translated_metrics) or _key(value) not in _key(text)):
+                or not (_metric_visible(metric,text,translated_metrics)
+                    or bound_duration_spelling and any(label in text for label in
+                        _DURATION_LABELS.get(_duration_metric_key(metric), ())))
+                or _key(value) not in _key(text)):
             return 'table_condition_not_displayed'
         match = re.fullmatch(rf'({_VALUE})([A-Za-z]*)', value)
         if match:
