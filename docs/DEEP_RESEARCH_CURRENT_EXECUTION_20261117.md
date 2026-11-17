@@ -15,6 +15,16 @@
 
 证据：[9545项完整回归](deep-research-evidence/rejected-source-journal-full-20261117.json)、[本批候选装载](deep-research-evidence/source-journal-candidate-load-20261117.json)、[D2-v8真实结果与恢复](deep-research-evidence/baseline-comparison-v8-real-20261117.json)、[拒绝状态缓存回放](deep-research-evidence/rejected-source-journal-v8-replay-20261117.json)。[D2-v9真实结果与恢复](deep-research-evidence/baseline-comparison-v9-real-20261117.json)。原始论文、模型响应、任务快照及账户信息仅本地保存。
 
+## 当前开发增量：改写角色与修订容量
+
+- 新运行将既有audienceMappedSourceContractVersion递增为5，比较单元格向改写传递论文对象、实际维度和未核实原始表达；综合结论与单论文分工区分。来源/版本与单元格不匹配时不发送改写请求，原草稿仍由后续审核处理。旧版本1—4不升级。
+- 重复研究要求共享存储，每个目标可精确还原原要求；全部原文、上下文、表格及条件保留。v9实际节点与隔离SQLite回放中，旧生成/改写请求摘要与原记录均一致；新改写22307字节，原22236字节，仅增加71字节。
+- 236项相关检查通过，0失败/错误/跳过。此为新源码局部/相邻验证；上方9545项全量仍仅对应8c6a74242，不能拼成新源码全量通过。本增量尚未装载或真实调用。
+- 回放使用旧模型坏响应，结构合并仍可能接纳其文字；新角色输入不证明语义遵守，原事实与整答审核不能省略。本轮不宣称改写质量或完整比较通过。
+- 实际verify节点重现v9修订阻断：普通池剩22832，减输出7168与框架1024后输入限14640；拆批必要内容17558，差2918。总剩41158不等于普通池可用量。未调大任何上限，未发送模型请求。
+
+证据：[改写角色与旧身份回放](deep-research-evidence/comparison-reader-scope-v9-replay-20261117.json)、[修订容量回放](deep-research-evidence/comparison-repair-capacity-v9-replay-20261117.json)。下一动作：检查修订请求重复目标/审核诊断及必需证据组织，解决整轮容量与首稿缺格/综合结论后，才形成稳定候选做一次全量和有界真实比较。
+
 ## 已完成的比较结构修复
 
 - 人类明确列举的表格维度独立于模型的per_paper/joint研究分类。原研究义务、材料范围和权限不变，模型为单元格选择允许的实际研究义务，目标ID不证明覆盖。

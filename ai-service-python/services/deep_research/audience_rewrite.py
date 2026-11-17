@@ -443,13 +443,16 @@ def _merge(report, content, parse, question, *, contract_version=1, allowed_infe
 
 
 def rewrite_for_beginner(report, evidence, question, invoke, parse, *, saved_state=None, checkpoint=None,
-                         can_start=True, contract_version=1, requirement_context=(), verification_policy=None, objective_framing=False, process_explanations=False, protected_claim_ids=(), protected_edits=False, source_first_single=False, publication_context=None, editable_source_first=False, scoped_editable_source=False, mapped_source_first=False, plain_explanations=False, writing_roles=False, retain_for_compaction=False, lean_reader=False):
+                         can_start=True, contract_version=1, requirement_context=(), verification_policy=None, objective_framing=False, process_explanations=False, protected_claim_ids=(), protected_edits=False, source_first_single=False, publication_context=None, editable_source_first=False, scoped_editable_source=False, mapped_source_first=False, plain_explanations=False, writing_roles=False, retain_for_compaction=False, lean_reader=False, comparison_roles=False):
     """Frozen request + settlement reuse; unknown transports propagate unchanged.
 
     Legacy rejected edits retain the original draft. New opt-in handoff retains
     only a structurally valid publication-overlength edit for pending compaction.
     Neither version can be published without length, factual and coverage checks.
     """
+    if type(comparison_roles) is not bool or comparison_roles and not lean_reader:
+        raise ValueError('Comparison roles require the lean source reader')
+    mapped_version = 5 if comparison_roles else 4 if lean_reader else 3 if writing_roles else 2 if plain_explanations else 1
     if lean_reader and not writing_roles:raise ValueError('Lean reader requires writing roles')
     if type(writing_roles) is not bool or writing_roles and not plain_explanations:
         raise ValueError('Writing roles require plain reader policy')
@@ -510,7 +513,7 @@ def rewrite_for_beginner(report, evidence, question, invoke, parse, *, saved_sta
         identity_inputs.update(audiencePublicationBudgetContractVersion=1,publicationContext=publication_context,publicationBudget=publication_budget)
     if source_first_single:identity_inputs['audienceSingleSourceContractVersion']=1
     if editable_source_first:identity_inputs['audienceEditableSourceContractVersion']=2 if scoped_editable_source else 1
-    if mapped_source_first:identity_inputs['audienceMappedSourceContractVersion']=4 if lean_reader else 3 if writing_roles else 2 if plain_explanations else 1
+    if mapped_source_first:identity_inputs['audienceMappedSourceContractVersion']=mapped_version
     if retain_for_compaction:identity_inputs['audienceCompactionHandoffVersion']=1
     identity = digest(identity_inputs)
     state = deepcopy(saved_state) if saved_state is not None else None
@@ -518,7 +521,7 @@ def rewrite_for_beginner(report, evidence, question, invoke, parse, *, saved_sta
         if (not isinstance(state, dict) or type(state.get('version')) is not int or state['version'] != contract_version
                 or state.get('inputDigest') != identity
                 or mapped_source_first and (type(state.get('audienceMappedSourceContractVersion')) is not int
-                    or state['audienceMappedSourceContractVersion']!=(4 if lean_reader else 3 if writing_roles else 2 if plain_explanations else 1))
+                    or state['audienceMappedSourceContractVersion']!=mapped_version)
                 or lean_reader and state.get('readerInputFormat')!=('legacy_protected' if protected_claim_ids or protected_edits else 'source_roles_v1')
                 or retain_for_compaction and (type(state.get('audienceCompactionHandoffVersion')) is not int
                     or state['audienceCompactionHandoffVersion']!=1)
@@ -554,13 +557,20 @@ def rewrite_for_beginner(report, evidence, question, invoke, parse, *, saved_sta
             from services.deep_research.audience_writing_roles import prepare as prepare_roles
             request,role_audit=prepare_roles(request,report,requirement_context,
                 publication_budget['editableCharacters'] if publication_budget else None,protected_claim_ids)
+        comparison_audit = None
+        if comparison_roles and reason is None and not (protected_claim_ids or protected_edits):
+            from services.deep_research.audience_source_roles import prepare_comparison_roles
+            request, comparison_audit = prepare_comparison_roles(request, report, evidence)
+            if request is None:
+                reason = comparison_audit['status']
         state = {'version': contract_version, 'inputDigest': identity, 'status': 'pending',
                  'request': request, 'requestDigest': digest(request)}
         if lean_reader:state['readerInputFormat']='legacy_protected' if protected_claim_ids or protected_edits else 'source_roles_v1'
         if role_audit is not None:state['writingRoles']=role_audit
+        if comparison_audit is not None:state['comparisonRoles']=comparison_audit
         if retain_for_compaction:state['audienceCompactionHandoffVersion']=1
         if protected_edits:state.update(audienceBudgetContractVersion=1,editBudget=deepcopy(edit_budget))
-        if mapped_source_first:state['audienceMappedSourceContractVersion']=4 if lean_reader else 3 if writing_roles else 2 if plain_explanations else 1
+        if mapped_source_first:state['audienceMappedSourceContractVersion']=mapped_version
         if source_first_single:state['audienceSingleSourceContractVersion']=1
         if editable_source_first:state['audienceEditableSourceContractVersion']=2 if scoped_editable_source else 1
         if publication_context is not None:

@@ -60,3 +60,89 @@ def test_structured_fixed_points_keep_existing_protected_request_exact():
     report,ev,q=fixture();kw={**options(),'requirement_context':GOALS,'mapped_source_first':True,'plain_explanations':True}
     old,_=_prepare(report,ev,q,**kw);new,reason=_prepare(report,ev,q,lean_reader=True,**kw)
     assert reason is None and old==new
+
+
+def comparison_opts():
+    kw = opts(); kw.pop('publication_context'); return kw
+
+
+def comparison_request(report, ev):
+    request, reason = _prepare(report, ev, '向新手比较。', contract_version=9,
+        requirement_context=GOALS, mapped_source_first=True, plain_explanations=True, lean_reader=True)
+    assert reason is None
+    return request
+
+
+def comparison_fixture():
+    report, ev, _ = fixture()
+    report['claims'] = report['claims'][:1]
+    report['claims'][0].update(text='从已有表示中去除冗余元素。', conditions={})
+    owner = ev[0]
+    owner.update(sourceWorkId='paper-a', sourceVersionId='v1')
+    report['comparisonCells'] = {'sources': {
+        'P1': {'workId': 'paper-a', 'versionId': 'v1', 'title': 'Paper A'},
+        'P2': {'workId': 'paper-b', 'versionId': 'v2', 'title': 'Paper B'}},
+        'layout': [{'claimIds': ['edit'], 'source': 'P1', 'axisTitle': '额外处理成本'}],
+        'jointGoals': [{'obligationId': 'joint', 'question': '条件是否可比？', 'sourceAliases': ['P1', 'P2']}]}
+    return report, ev, '向新手比较两篇论文。'
+
+
+def test_comparison_cell_keeps_narrow_subject_dimension_and_unverified_hint():
+    from services.deep_research.audience_source_roles import prepare_comparison_roles
+    report, ev, _ = comparison_fixture(); before = deepcopy((report, ev))
+    request, audit = prepare_comparison_roles(comparison_request(report, ev), report, ev)
+    role = audit['roles'][0]
+    assert role['scope'] == {'kind': 'source_cell', 'source': 'P1', 'title': 'Paper A',
+                             'workId': 'paper-a', 'versionId': 'v1', 'dimension': '额外处理成本'}
+    assert role['unverifiedPointHint'] == report['claims'][0]['text']
+    assert 'Broad researchGoals' in request['prompt'] and 'NOT established facts' in request['prompt']
+    raw = request['prompt'].split('输入数据（完整保留的目标与原文）：\n', 1)[1]
+    data = json.JSONDecoder().raw_decode(raw)[0]
+    old = packet(comparison_request(report, ev))
+    assert data['sources'] == old['sources']
+    assert data['researchGoals'][data['targets'][0]['requestedPointIds'][0]] == old['targets'][0]['requestedPoints'][0]
+    assert data['targets'][0]['comparisonScope']['dimension'] == '额外处理成本'
+    assert (report, ev) == before
+
+
+@pytest.mark.parametrize('change', ['foreign_source', 'wrong_version', 'duplicate_cell', 'missing_role'])
+def test_comparison_role_mismatch_is_not_sent_to_provider(change):
+    report, ev, q = comparison_fixture()
+    if change == 'foreign_source': ev[0]['sourceWorkId'] = 'paper-b'
+    elif change == 'wrong_version': ev[0]['sourceVersionId'] = 'v2'
+    elif change == 'duplicate_cell': report['comparisonCells']['layout'] *= 2
+    else: report['comparisonCells']['layout'] = []
+    invoke = Mock(); states = []
+    assert rewrite_for_beginner(report, ev, q, invoke, json.loads, checkpoint=states.append,
+                                comparison_roles=True, **comparison_opts()) == report
+    invoke.assert_not_called()
+    assert states[-1]['reason'] == 'invalid_comparison_roles'
+
+
+def test_joint_conclusion_may_use_both_sources_without_becoming_a_local_cell():
+    from services.deep_research.audience_source_roles import prepare_comparison_roles
+    report, ev, _ = comparison_fixture()
+    report['claims'][0]['obligationIds'] = ['joint']
+    report['claims'][0]['evidenceRefs'].append('b')
+    ev[1].update(sourceWorkId='paper-b', sourceVersionId='v2')
+    report['comparisonCells']['layout'] = []
+    _, audit = prepare_comparison_roles(comparison_request(report, ev), report, ev)
+    assert audit['status'] == 'prepared'
+    assert audit['roles'][0]['scope']['kind'] == 'joint_conclusion'
+    assert audit['roles'][0]['scope']['sources'] == ['P1', 'P2']
+
+
+def test_scoped_comparison_request_is_durable_and_cannot_reuse_legacy_identity():
+    report, ev, q = comparison_fixture(); states = []
+    invoke = Mock(return_value=answer('根据来源解释本论文的处理步骤。'))
+    kw = {**comparison_opts(), 'comparison_roles': True}
+    edited = rewrite_for_beginner(report, ev, q, invoke, json.loads, checkpoint=states.append, **kw)
+    assert states[-1]['audienceMappedSourceContractVersion'] == 5
+    assert states[-1]['comparisonRoles']['status'] == 'prepared'
+    assert rewrite_for_beginner(report, ev, q, invoke, json.loads, saved_state=states[-1], **kw) == edited
+    assert invoke.call_count == 1
+    with pytest.raises(DeepResearchError):
+        rewrite_for_beginner(report, ev, q, invoke, json.loads, saved_state=states[-1], **comparison_opts())
+    assert invoke.call_count == 1
+    assert edited['claims'][0]['evidenceRefs'] == report['claims'][0]['evidenceRefs']
+    assert edited['comparisonCells'] == report['comparisonCells']

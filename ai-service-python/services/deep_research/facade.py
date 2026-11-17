@@ -457,7 +457,7 @@ class ResearchFacade:
             "clarificationContractVersion": 1,
             "adaptiveResearchContractVersion": 1,
             "audienceRewriteContractVersion": 9,
-            "audienceMappedSourceContractVersion": 4,
+            "audienceMappedSourceContractVersion": 5,
             "audienceRequestContractVersion": 1,
             "audienceFirstContractVersion": 1,
             "audienceBudgetContractVersion": 1,

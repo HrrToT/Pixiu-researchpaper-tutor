@@ -1,6 +1,112 @@
 """Lean source-and-role reader input. No draft prose or scientific approval."""
 import json
+from copy import deepcopy
 from services.deep_research.audience_plain_explanations import notation_requested
+
+
+def prepare_comparison_roles(request, report, evidence):
+    """Carry the compiled cell's subject and dimension into the wording edit.
+
+    Research obligations can span both papers and several dimensions. They are
+    not a replacement for the narrower contribution of a compiled table cell.
+    This is request metadata, never a semantic verdict on edited prose.
+    """
+    comparison = report.get('comparisonCells')
+    if comparison is None:
+        return request, {'status': 'not_applicable'}
+    if not isinstance(comparison, dict):
+        return None, {'status': 'invalid_comparison_roles'}
+    sources = comparison.get('sources', {})
+    layout = comparison.get('layout', [])
+    goals = comparison.get('jointGoals', [])
+    claims = report.get('claims', [])
+    by_id = {e.get('evidenceId'): e for e in evidence}
+    roles = []
+    if not isinstance(sources, dict) or not isinstance(layout, list) or not isinstance(goals, list):
+        return None, {'status': 'invalid_comparison_roles'}
+    for claim in claims:
+        cid = claim['claimId']
+        cells = [row for row in layout if isinstance(row, dict) and cid in row.get('claimIds', [])]
+        own = [by_id.get(ref) for ref in claim.get('evidenceRefs', [])]
+        if not own or any(not isinstance(e, dict) for e in own) or len(cells) > 1:
+            return None, {'status': 'invalid_comparison_roles'}
+        if cells:
+            cell = cells[0]
+            source = sources.get(cell.get('source'))
+            axis = cell.get('axisTitle', cell.get('question'))
+            if (not isinstance(source, dict) or not source.get('workId') or not source.get('versionId')
+                    or not isinstance(axis, str) or not axis.strip()
+                    or any((e.get('sourceWorkId'), e.get('sourceVersionId')) !=
+                           (source['workId'], source['versionId']) for e in own)):
+                return None, {'status': 'invalid_comparison_roles'}
+            role = {'kind': 'source_cell', 'source': cell['source'],
+                    'title': source.get('title', ''), 'workId': source['workId'],
+                    'versionId': source['versionId'], 'dimension': axis}
+        else:
+            selected = [g for g in goals if isinstance(g, dict)
+                        and g.get('obligationId') in claim.get('obligationIds', [])]
+            if not selected:
+                return None, {'status': 'invalid_comparison_roles'}
+            aliases = {a for g in selected for a in g.get('sourceAliases', [])}
+            owners = {(s['workId'], s['versionId']) for a, s in sources.items()
+                      if a in aliases and isinstance(s, dict) and s.get('workId') and s.get('versionId')}
+            if any((e.get('sourceWorkId'), e.get('sourceVersionId')) not in owners for e in own):
+                return None, {'status': 'invalid_comparison_roles'}
+            role = {'kind': 'joint_conclusion', 'questions': [g['question'] for g in selected],
+                    'sources': sorted(aliases)}
+        roles.append({'claimId': cid, 'scope': role,
+                      'unverifiedPointHint': claim['text']})
+    # Store broad goals once instead of repeating each multi-paper obligation in
+    # every cell. Keep every original value; this is not evidence truncation.
+    marker = '输入数据（完整保留的目标与原文）：\n'
+    try:
+        prefix, wire = request['prompt'].split(marker, 1)
+        packet, end = json.JSONDecoder().raw_decode(wire)
+        targets = packet['targets']
+        by_claim = {role['claimId']: role for role in roles}
+        goals_by_value = {}
+        goal_registry = {}
+        for target in targets:
+            points = target.pop('requestedPoints')
+            target['requestedPointIds'] = []
+            for point in points:
+                key = json.dumps(point, ensure_ascii=False, sort_keys=True, separators=(',', ':'))
+                if key not in goals_by_value:
+                    alias = 'G' + str(len(goals_by_value) + 1)
+                    goals_by_value[key] = alias
+                    goal_registry[alias] = point
+                target['requestedPointIds'].append(goals_by_value[key])
+            role = by_claim[target['claimId']]
+            target['comparisonScope'] = {k: v for k, v in role['scope'].items()
+                                         if k not in {'title', 'workId', 'versionId'}}
+            target['unverifiedPointHint'] = role['unverifiedPointHint']
+        if {target['claimId'] for target in targets} != set(by_claim):
+            raise ValueError('Incomplete comparison targets')
+        # Verify exact reconstruction of the old goal list for every target.
+        old_packet = json.JSONDecoder().raw_decode(wire)[0]
+        for old, target in zip(old_packet['targets'], targets):
+            if old['requestedPoints'] != [goal_registry[g] for g in target['requestedPointIds']]:
+                raise ValueError('Changed research goals')
+        packet['researchGoals'] = goal_registry
+        packet['comparisonSubjects'] = sources
+        updated = deepcopy(request)
+        updated['prompt'] = prefix + marker + json.dumps(packet, ensure_ascii=False, separators=(',', ':')) + wire[end:]
+    except (KeyError, ValueError, TypeError):
+        return None, {'status': 'invalid_comparison_roles'}
+    addition = ('\nCompiled comparison contributions are scope metadata, NOT established facts. '
+                'requestedPointIds refer to the complete researchGoals; source aliases refer to comparisonSubjects. '
+                'A source_cell explains ONLY its named paper and dimension. Broad researchGoals '
+                'describe the whole research obligation, not everything to repeat in this cell. '
+                'Do not turn a local mechanism into a two-paper comparison or replace processing cost '
+                'with performance metrics. Joint comparisons and recommendations belong only in '
+                'joint_conclusion targets. Never fill an unresolved sibling in another cell. '
+                'The point hint preserves the narrow contribution, not its truth: correct unsupported '
+                'details only from this target\'s OWN evidence. No new evidence permission or approval.\n')
+    from services.deep_research.audience_rewrite import MAX_INPUT_BYTES
+    if len((updated['prompt'] + addition).encode('utf-8')) > MAX_INPUT_BYTES:
+        return None, {'status': 'input_capacity'}
+    updated['prompt'] += addition
+    return updated, {'status': 'prepared', 'roles': roles}
 
 
 def build(question, targets, sources, limit, inference_ids):

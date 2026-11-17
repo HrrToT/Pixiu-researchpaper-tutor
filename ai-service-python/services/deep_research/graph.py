@@ -1869,17 +1869,19 @@ space with unsupported global absence or incidental iteration/performance values
                     {'max_tokens': output, 'temperature': 0.0}), _safe_parse_json,
                 saved_state=current.get('state', {}).get('audienceRewrite'), checkpoint=checkpoint_audience,
                 **({'mapped_source_first':True} if type(current.get('audienceMappedSourceContractVersion')) is int
-                   and current['audienceMappedSourceContractVersion'] in (1,2,3,4) else {}),
+                   and current['audienceMappedSourceContractVersion'] in (1,2,3,4,5) else {}),
                 **({'plain_explanations':True} if type(current.get('audienceMappedSourceContractVersion')) is int
-                   and current['audienceMappedSourceContractVersion'] in (2,3,4) else {}),
+                   and current['audienceMappedSourceContractVersion'] in (2,3,4,5) else {}),
                 **({'writing_roles':True} if type(current.get('audienceMappedSourceContractVersion')) is int
-                   and current['audienceMappedSourceContractVersion'] in (3,4) else {}),
+                   and current['audienceMappedSourceContractVersion'] in (3,4,5) else {}),
                 **({'retain_for_compaction':True} if pending_compaction
                    and type(current.get('audienceMappedSourceContractVersion')) is int
-                   and current['audienceMappedSourceContractVersion'] in (3,4) and publication_reader_budget(current,question)
+                   and current['audienceMappedSourceContractVersion'] in (3,4,5) and publication_reader_budget(current,question)
                    and not (authored_body and scope_expression_audit) else {}),
                 **({'lean_reader':True} if type(current.get('audienceMappedSourceContractVersion')) is int
-                   and current['audienceMappedSourceContractVersion']==4 else {}),
+                   and current['audienceMappedSourceContractVersion'] in (4,5) else {}),
+                **({'comparison_roles':True} if type(current.get('audienceMappedSourceContractVersion')) is int
+                   and current['audienceMappedSourceContractVersion']==5 else {}),
                 **({'protected_claim_ids':[a['claimId'] for a in scope_expression_audit]} if authored_body and scope_expression_audit else {}),
                 **({'protected_edits':True} if authored_body and scope_expression_audit and budgeted_reader(current) else {}),
                 **({'source_first_single':True} if single_source_reader(current,draft,

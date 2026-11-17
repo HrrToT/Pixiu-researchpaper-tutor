@@ -1,0 +1,96 @@
+{
+  "baseCommit": "9ba3dad4c",
+  "networkRequests": 0,
+  "providerCalls": 0,
+  "scientificApproval": false,
+  "scope": "Saved v9 repair state through production verify node and actual repair preflight; unbounded prompt generation is diagnostic only, never sent.",
+  "budget": {
+    "maxModelCalls": 18,
+    "maxTokens": 100000,
+    "maxWallClockSeconds": 360,
+    "reserveModelCalls": 5,
+    "reserveTokens": 50000,
+    "maxExternalSearches": 6,
+    "maxFulltextFetches": 6,
+    "finalizationBudgetVersion": 1,
+    "releasedReserveTokens": 0,
+    "explorationAllocationVersion": 1,
+    "modelCalls": 7,
+    "tokens": 58842,
+    "normalTokens": 27168,
+    "elapsedSeconds": 237.0,
+    "externalSearches": 0,
+    "fulltextFetches": 0,
+    "reservedModelCalls": 3,
+    "exhausted": "",
+    "profile": "standard",
+    "elapsedMeasurement": "wall_clock"
+  },
+  "events": [
+    {
+      "targetIds": [
+        "cmp_0_0",
+        "cmp_1_0",
+        "cmp_2_0",
+        "cmp_3_0",
+        "cmp_4_0",
+        "cmp_6_0"
+      ],
+      "maxPromptBytes": 14640,
+      "status": "refused",
+      "limit": {
+        "kind": "repairPromptBytes",
+        "limit": 14640,
+        "used": 27272
+      },
+      "fullUnboundedDiagnosticBytes": 55057
+    },
+    {
+      "targetIds": [
+        "cmp_0_0",
+        "cmp_1_0",
+        "cmp_2_0",
+        "cmp_3_0",
+        "cmp_4_0",
+        "cmp_6_0"
+      ],
+      "maxPromptBytes": 14640,
+      "status": "fits",
+      "inputBytes": 14628
+    },
+    {
+      "targetIds": [
+        "cmp_0_0",
+        "cmp_1_0",
+        "cmp_2_0",
+        "cmp_3_0",
+        "cmp_4_0",
+        "cmp_6_0"
+      ],
+      "maxPromptBytes": 14640,
+      "status": "refused",
+      "limit": {
+        "kind": "repairEvidenceBytes",
+        "limit": 14640,
+        "used": 17558
+      },
+      "fullUnboundedDiagnosticBytes": 45968
+    }
+  ],
+  "repairStatus": "skipped_budget",
+  "repairLimit": {
+    "kind": "repairEvidenceBytes",
+    "limit": 14640,
+    "used": 17558
+  },
+  "diagnosis": {
+    "remainingTotalTokens": 41158,
+    "remainingNormalTokens": 22832,
+    "repairOutputReservation": 7168,
+    "framingReservation": 1024,
+    "effectivePromptBytes": 14640,
+    "failingSplitMandatoryBytes": 17558,
+    "shortfallBytes": 2918
+  },
+  "boundary": "No limit was increased and no proof of whole-run fit is claimed. Investigate duplicate goal/check metadata and source layout before changing budget allocation."
+}
