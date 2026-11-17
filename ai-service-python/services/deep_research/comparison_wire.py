@@ -170,7 +170,7 @@ def decode(payload, plan, tables, *, max_claims):
                         'tableReferenceCount': len(registry), 'scientificApproval': False}
 
 
-def render(record, question, plan, tables, limit, max_claims):
+def render(record, question, plan, tables, limit, max_claims, *, source_scope=None):
     from services.deep_research.authored_body import guidance
     from services.deep_research.factual_scope import DRAFTING_SCHEMA
     from services.deep_research.shared_strings import input_text
@@ -192,6 +192,25 @@ def render(record, question, plan, tables, limit, max_claims):
                            for target in data['targets']]
         data['evidence'] = [{**e, 'obligations': [refs[oid] for oid in e.get('obligations', [])]}
                             for e in evidence]
+    if source_scope is not None:
+        scopes = (source_scope,) if isinstance(source_scope, str) else source_scope
+        if (plan.get('answerWireVersion') != 2 or not isinstance(scopes, tuple) or not scopes
+                or any(not isinstance(v, str) or v not in {*plan['sources'], 'joint'} for v in scopes)
+                or len(set(scopes)) != len(scopes)):
+            raise ValueError('Invalid comparison source packet scope')
+        include_joint = 'joint' in scopes
+        paper_scopes = set(scopes) - {'joint'}
+        allowed = set(plan['sources']) if include_joint else paper_scopes
+        data = {'requirements': data['requirements'],
+                'papers': [{'source': alias, 'identity': owner,
+                            'targets': [t for t in data['targets']
+                                        if t['role'] == 'paper_cell' and t['source'] == alias]
+                                       if alias in paper_scopes else [],
+                            'evidence': [e for e in data['evidence'] if e['source'] == alias],
+                            'tableCatalog': [t for t in data['tableCatalog'] if t['source'] == alias]}
+                           for alias, owner in data['sources'].items() if alias in allowed],
+                'jointTargets': [t for t in data['targets'] if t['role'] == 'joint']
+                                if include_joint else []}
     prompt = f'''Answer the human question in clear Chinese: {question}
 Maximum {max_claims} points; complete answer character limit: {limit or 'concise, no explicit maximum'}.
 Return ONLY {{"answers":[{{"targetId":"exact supplied ID","obligationIds":["allowed goal ID"],"point":POINT_OR_NULL}}]}}.
@@ -233,5 +252,10 @@ Exact question obligations, source permissions, unchanged quotations/context, an
                   'Only explicitly listed goalChoices are permitted; never output raw obligation IDs.\n'
                   'Every table-derived measurement in reported facts, inferences AND recommendations needs\n'
                   'its exact cellRefs plus visible dataset/method/metric conditions. Advice labels waive no facts.\n'
+                  + prompt)
+    if source_scope is not None:
+        prompt = ('Source-local packets: answer each paper target ONLY for its named paper, using ONLY its own packet.\n'
+                  'A shared goal can mention both papers; the paper target supplies only this paper contribution.\n'
+                  'Only jointTargets may combine papers. Return only targets supplied in this stage, no other targets.\n'
                   + prompt)
     return prompt

@@ -1,0 +1,66 @@
+{
+  "sourceReceiptSha256": "1082d609e9f260a007de66ebe87b3795f6955d8700ba18e994f7e61e37368769",
+  "sourceCommit": "cc3d7f004cc40d507bd45d498a0a594501aacd6c",
+  "providerCalls": 0,
+  "networkRequests": 0,
+  "scientificApproval": false,
+  "results": [
+    {
+      "stage": "grouped_single",
+      "inputBytes": 31962,
+      "maxInputBytes": 32000,
+      "evidenceRows": 17,
+      "requiredBundles": 30,
+      "missingBundles": 7,
+      "tableCatalogs": 3,
+      "tableCells": 130,
+      "targetCount": 11,
+      "quoteStringsUnchanged": true,
+      "sourcePermissionsExact": true,
+      "scientificApproval": false
+    },
+    {
+      "stage": "P1",
+      "inputBytes": 30060,
+      "maxInputBytes": 32000,
+      "evidenceRows": 20,
+      "requiredBundles": 9,
+      "missingBundles": 0,
+      "tableCatalogs": 2,
+      "tableCells": 80,
+      "targetCount": 4,
+      "quoteStringsUnchanged": true,
+      "sourcePermissionsExact": true,
+      "scientificApproval": false
+    },
+    {
+      "stage": "P2",
+      "inputBytes": 30001,
+      "maxInputBytes": 32000,
+      "evidenceRows": 20,
+      "requiredBundles": 9,
+      "missingBundles": 0,
+      "tableCatalogs": 2,
+      "tableCells": 90,
+      "targetCount": 4,
+      "quoteStringsUnchanged": true,
+      "sourcePermissionsExact": true,
+      "scientificApproval": false
+    },
+    {
+      "stage": "joint",
+      "inputBytes": 30010,
+      "maxInputBytes": 32000,
+      "evidenceRows": 20,
+      "requiredBundles": 12,
+      "missingBundles": 0,
+      "tableCatalogs": 1,
+      "tableCells": 36,
+      "targetCount": 3,
+      "quoteStringsUnchanged": true,
+      "sourcePermissionsExact": true,
+      "scientificApproval": false
+    }
+  ],
+  "boundary": "Offline monkeypatched input prototypes only. Candidate retention moved before per-stage fitting. No production change, model output, timing estimate, end-to-end cost fit or content acceptance."
+}
