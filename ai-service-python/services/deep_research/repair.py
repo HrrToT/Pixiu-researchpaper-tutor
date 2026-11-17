@@ -15,9 +15,12 @@ from services.deep_research.repair_scope import repair_evidence_scope
 
 
 def _prepare_repair(report, verification, evidence, question, *, max_prompt_bytes=24000,
-                    metric_domains=None, draft_context=(), prior_revisions=(),
+                    metric_domains=None, draft_context=(), prior_revisions=(), comparison_authoring=False,
                     fact_redraft=False, requirement_context=(), source_aware_redraft=False,comparison_reasoning=False,
                     question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False,shared_experiment_schema=False,experiment_evidence_context=None,experimental_edits=False,experimental_diagnostics=False,experimental_nested_tables=False,experimental_representation=False,experimental_coverage=False,citation_presentation_version=0,configuration_consistency_version=0,repair_evidence_packet_version=0,answer_intents=None,scope_expression=False,table_identity_context=False,claim_check=False,required_scope_ids=(),compact_layout=False,ordinary_advice=False,task_sources=False,request_semantics=False,preserve_answers=False,target_goals=False,objective_framing=False,process_explanations=False,factual_prompt_version=0,verified_target_ids=(),authored_body=False,verbatim_repair=False,consolidated_instructions=False,verified_text_edits=False,integrated_text_edits=False,text_edit_context=None,scope_citation_presentation=False,compact_repair_policy=False):
+    if (type(comparison_authoring) is not bool or comparison_authoring and
+            (not consolidated_instructions or compact_repair_policy != 2 or verified_text_edits)):
+        raise ValueError('Comparison repair requires the explicit compact authored policy')
     if type(verified_text_edits) is not bool:raise ValueError('Invalid verified text edit policy')
     if type(integrated_text_edits) is not bool or integrated_text_edits and not verified_text_edits or not integrated_text_edits and text_edit_context is not None:raise ValueError('Invalid integrated text edit policy')
     if (type(compact_repair_policy) is not bool and not (type(compact_repair_policy) is int and compact_repair_policy == 2)
@@ -215,6 +218,8 @@ def _prepare_repair(report, verification, evidence, question, *, max_prompt_byte
                       'evidenceRefs': ['E1'], 'conditions': {}, 'detailLevel': 'fulltext'}
     if goal_version in (4,5):
         revision_shape['discardedDraftSpans']=['exact unsupported phrase removed from original draft; [] if none']
+    if comparison_authoring:
+        revision_shape.pop('discardedDraftSpans', None)
     if scope_expression: revision_shape['scopeExpression'] = None
     if authored_body:
         from services.deep_research.authored_body import schema as body_schema
@@ -598,7 +603,9 @@ If a supported revision is not possible, omit that target rather than bypass sco
                 if (scope:=comparison_scope(c,report.get('comparisonCells'),evidence)) is not None}}
                if compact_repair_policy == 2 else {}),
             intentions={k:v for k,v in (answer_intents or {}).items() if k in originals},
-            inference_ids=inference_ids,required_scope_ids=required_scope_ids,has_tables=has_tables,**({'compact_policy':compact_repair_policy} if compact_repair_policy else {}))
+            inference_ids=inference_ids,required_scope_ids=required_scope_ids,has_tables=has_tables,
+            **({'comparison_authoring':True} if comparison_authoring else {}),
+            **({'compact_policy':compact_repair_policy} if compact_repair_policy else {}))
     condition_marker=None
     if type(claim_check) is int and claim_check in (7,8,9):
         from services.deep_research.condition_source_index import GUIDANCE as CONDITION_GUIDANCE
@@ -710,8 +717,11 @@ If a supported revision is not possible, omit that target rather than bypass sco
             **({'verifiedTextRepairContractVersion':2 if integrated_text_edits else 1,
                 **({'verifiedTextEditPlan':text_edit_plan} if integrated_text_edits else {})} if focused else {}),
             **({'repairPremiseAudit':premise_audit} if premise_audit is not None else {}),
-            **({'repairRemovalContractVersion':1} if goal_version==4 else {}),
-            **({'repairRemovalContractVersion':3 if verbatim_repair else 2} if goal_version==5 else {}),
+            **({'comparisonAuthoringContractVersion':1, 'comparisonDisplayEvidence': [
+                {k: deepcopy(e[k]) for k in ('evidenceId','quote','tableData','sourceWorkId','sourceVersionId') if k in e}
+                for e in selected if e['evidenceId'] in visible]} if comparison_authoring else {}),
+            **({'repairRemovalContractVersion':1} if goal_version==4 and not comparison_authoring else {}),
+            **({'repairRemovalContractVersion':3 if verbatim_repair else 2} if goal_version==5 and not comparison_authoring else {}),
             **({'requiredScopeIds':list(required_scope_ids)} if required_scope_ids else {}),
             **({'reportedInferenceRepairIds':inference_ids} if inference_ids else {}),
             **({'reportedInferenceRepairReasons':inference_reasons} if inference_reasons else {}),
@@ -771,6 +781,8 @@ def _parse_repair_response(prepared, response, parse, presentation_audit=None,dr
     for row in revised:
         if not isinstance(row, dict):
             continue
+        if prepared.get('comparisonAuthoringContractVersion') == 1 and 'discardedDraftSpans' in row:
+            continue  # Never reinterpret an old deletion schema as the new protocol.
         boundary_body=False;boundary_preview=None
         if prepared.get('authoredBodyContractVersion')==1:
             from services.deep_research.authored_body import decode
@@ -874,6 +886,12 @@ def _parse_repair_response(prepared, response, parse, presentation_audit=None,dr
             row['designRole'] = original['designRole']
         from services.deep_research.execution_materialization import materialize_execution_claim
         normalized = normalize_conditions({'claims': [dict(row)]})['claims'][0]
+        if prepared.get('comparisonAuthoringContractVersion') == 1:
+            from services.deep_research.comparison_measurement_display import refresh
+            try:
+                normalized = refresh(normalized, prepared['comparisonDisplayEvidence'])
+            except ValueError:
+                continue
         if type(prepared.get('presentationVersion')) is int and prepared['presentationVersion'] in (1,2,3,4):
             from services.deep_research.citation_presentation import normalize as normalize_markers
             normalized,audit=normalize_markers(normalized,aliases,prepared['presentationQuotes'],
@@ -897,7 +915,7 @@ def factual_redraft_eligible(report):
 def repair_rejected(report, verification, evidence, question, invoke, parse, *,
                     max_prompt_bytes=24000, metric_domains=None, batch_state=None, checkpoint=None,
                     current_budget=None, invoke_request=None, fact_redraft=False, requirement_context=(),
-                    released_finalization=False,
+                    released_finalization=False, comparison_authoring=False,
                     source_aware_redraft=False,comparison_reasoning=False,question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,strict_response=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False,shared_experiment_schema=False,experiment_evidence_context=None,experimental_edits=False,experimental_diagnostics=False,experimental_nested_tables=False,experimental_representation=False,experimental_coverage=False,citation_presentation_version=0,configuration_consistency_version=0,repair_evidence_packet_version=0,scheduling_version=0,answer_intents=None,scope_expression=False,defer_length_filter=False,table_identity_context=False,claim_check=False,required_scope_ids=(),compact_layout=False,ordinary_advice=False,task_sources=False,request_semantics=False,preserve_answers=False,target_goals=False,objective_framing=False,process_explanations=False,factual_prompt_version=0,verified_target_ids=(),authored_body=False,verbatim_repair=False,consolidated_instructions=False,verified_text_edits=False,integrated_text_edits=False,text_edit_context=None,scope_citation_presentation=False,compact_repair_policy=False):
     """One bounded revision round, split before dispatch when evidence cannot fit.
 
@@ -907,6 +925,9 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
     """
     from services.deep_research.contracts import digest, DeepResearchError
     from services.deep_research.repair_batches import split_repair_targets
+    if (type(comparison_authoring) is not bool or comparison_authoring and
+            (not consolidated_instructions or compact_repair_policy != 2 or verified_text_edits)):
+        raise ValueError('Comparison repair requires the explicit compact authored policy')
     if type(released_finalization) is not bool:
         raise ValueError('Invalid released finalization input policy')
 
@@ -1026,6 +1047,8 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
 
     if released_finalization:
         identity=digest({'inputDigest':identity,'releasedFinalizationInputVersion':1})
+    if comparison_authoring:
+        identity=digest({'inputDigest':identity,'comparisonAuthoringContractVersion':1})
 
     def prepare(ids, results=(), byte_limit=None):
         ids = set(ids)
@@ -1038,6 +1061,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
         subset = {'accepted': verification.get('accepted', []),
                   'rejected': [row for row in verification.get('rejected', []) if row['claimId'] in ids]}
         return _prepare_repair(report, subset, evidence, question,
+            **({'comparison_authoring':True} if comparison_authoring else {}),
             **({'compact_repair_policy':compact_repair_policy} if compact_repair_policy else {}),
             **({'scope_citation_presentation':True} if scope_citation_presentation else {}),
             **({'consolidated_instructions':True} if consolidated_instructions else {}),
@@ -1079,6 +1103,11 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
         'version': 1, 'inputDigest': identity, 'maxPromptBytes': max_prompt_bytes,
         'batches': [[c['claimId'] for c in originals]], 'results': {}}
     if scheduling_version in (1,2) and batch_state is None:state['deferredReviewIds']=sorted(deferred)
+    if comparison_authoring and batch_state is None:
+        from services.deep_research.comparison_repair import source_batches
+        groups = source_batches(originals, report.get('comparisonCells'))
+        if groups:
+            state['batches'] = groups
     if (type(state.get('version')) is not int or state['version'] != 1 or state.get('inputDigest') != identity
             or type(state.get('maxPromptBytes')) is not int or not 0 <= state['maxPromptBytes'] <= (32000 if repair_evidence_packet_version in (4,5) else 24000)
             or not isinstance(state.get('batches'), list) or not 1 <= len(state['batches']) <= 3
@@ -1114,7 +1143,8 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
             raise DeepResearchError('invalid_repair_plan', '保存的待发送修订请求范围无效。')
     if batch_state is None:
         try:
-            prepare(state['batches'][0])
+            for group in state['batches'] if comparison_authoring else state['batches'][:1]:
+                prepare(group)
         except BudgetExhaustedError as exc:
             if exc.details.get('kind') not in {'repairPromptBytes', 'repairEvidenceBytes'}:
                 raise
@@ -1201,6 +1231,11 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
                 # permission/structure/science checks may still reject them.
                 state.setdefault('representationNormalizationAudit',{})[key]=representation_audit
             state['results'][key] = rows
+            if comparison_authoring:
+                from services.deep_research.comparison_repair import outcome_audit
+                rows, audit = outcome_audit(prepared, rows)
+                state['results'][key] = rows
+                state.setdefault('comparisonOutcomeAudit', {})[key] = audit
             state.pop('pending', None)
             if checkpoint:
                 checkpoint(deepcopy(state))

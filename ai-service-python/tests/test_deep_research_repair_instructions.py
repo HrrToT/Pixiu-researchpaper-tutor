@@ -16,6 +16,98 @@ def fixture():
     return report,verification,evidence(),opts
 
 
+def comparison_fixture():
+    report, verification, ev, opts = fixture()
+    report['comparisonCells'] = {'version': 3, 'sources': {}, 'layout': []}
+    opts.update(consolidated_instructions=True, compact_repair_policy=2, comparison_authoring=True)
+    return report, verification, ev, opts
+
+
+def test_comparison_repair_omits_deletion_declarations_but_keeps_originals_and_evidence():
+    report, verification, ev, opts = comparison_fixture()
+    old_opts = {**opts, 'comparison_authoring': False}
+    old = _prepare_repair(report, verification, ev, 'Explain the operation.', **old_opts)
+    new = _prepare_repair(report, verification, ev, 'Explain the operation.', **opts)
+    assert new['originals'] == old['originals'] and new['allowed'] == old['allowed']
+    assert new['aliases'] == old['aliases']
+    assert 'repairRemovalContractVersion' not in new
+    assert new['comparisonAuthoringContractVersion'] == 1
+    assert 'discardedDraftSpans' not in new['prompt']
+    assert 'unverifiedPointHints' not in new['prompt']
+    assert all(e['quote'] in new['prompt'] for e in ev if e['evidenceId'] in new['allowed']['c'])
+    assert len(new['prompt'].encode()) < len(old['prompt'].encode())
+
+
+@pytest.mark.parametrize('response_kind', ['empty', 'unchanged', 'changed', 'old_deletion_schema'])
+def test_comparison_repair_records_outcomes_and_never_resends_received_batch(response_kind):
+    report, verification, ev, opts = comparison_fixture()
+    revision = prose('c')
+    if response_kind == 'changed':
+        revision['body']['prose']['text'] = '该方法在所述条件下评估。'
+    elif response_kind == 'old_deletion_schema':
+        revision['discardedDraftSpans'] = []
+    invoke = Mock(return_value={'content': json.dumps([] if response_kind == 'empty' else [revision]), 'finishReason': 'stop'})
+    saved = []
+    result = repair_rejected(report, verification, ev, 'Explain the operation.', invoke, json.loads,
+        checkpoint=saved.append, **opts)
+    assert invoke.call_count == 1
+    expected = {'empty': 'not_revised', 'unchanged': 'unchanged', 'changed': 'revised_unverified',
+                'old_deletion_schema': 'not_revised'}[response_kind]
+    assert saved[-1]['comparisonOutcomeAudit']['0']['targets'] == [{'claimId': 'c', 'status': expected}]
+    assert bool(result) == (response_kind == 'changed')
+    invoke.reset_mock()
+    assert repair_rejected(report, verification, ev, 'Explain the operation.', invoke, json.loads,
+        batch_state=saved[-1], **opts) == result
+    invoke.assert_not_called()
+    from services.deep_research.contracts import DeepResearchError
+    with pytest.raises(DeepResearchError):
+        repair_rejected(report, verification, ev, 'Explain the operation.', invoke, json.loads,
+            batch_state=saved[-1], **{**opts, 'comparison_authoring': False})
+    invoke.assert_not_called()
+    if result:
+        from services.deep_research.verification import verify_claims
+        assert not verify_claims(result, ev, Mock(return_value=[]))['accepted']
+
+
+def test_comparison_source_batches_keep_all_targets_once_and_preserve_joint_goals():
+    from services.deep_research.comparison_repair import source_batches
+    claims = [{'claimId': x} for x in ('a1', 'b1', 'a2', 'b2', 'joint')]
+    context = {'version': 3, 'sources': {'A': {}, 'B': {}}, 'layout': [
+        {'source': 'A', 'claimIds': ['a1', 'a2']}, {'source': 'B', 'claimIds': ['b1', 'b2']}]}
+    assert source_batches(claims, context) == [['a1', 'a2'], ['b1', 'b2'], ['joint']]
+    context['layout'].append({'source': 'B', 'claimIds': ['a1']})
+    with pytest.raises(ValueError, match='Ambiguous'):
+        source_batches(claims, context)
+
+
+def test_comparison_outcome_fingerprint_keeps_citation_only_corrections():
+    from services.deep_research.comparison_repair import outcome_audit
+    old = decode(prose('c'))
+    revision = {**deepcopy(old), 'evidenceRefs': ['b']}
+    result, audit = outcome_audit({'originals': {'c': old}}, [revision])
+    assert result == [revision] and audit['targets'][0]['status'] == 'revised_unverified'
+
+
+def test_repaired_measurement_display_rebuilds_only_exact_current_bindings():
+    from services.deep_research.comparison_measurement_display import refresh
+    from services.deep_research.authored_body import decode
+    from services.deep_research.comparison_cells import compile_cells
+    from test_deep_research_comparison_wire import fixture as wire_fixture
+    plan, payload, _ = wire_fixture()
+    claim = decode(compile_cells(payload, plan, max_claims=10)['report']['claims'][0], reasoning=True)
+    evidence = list(plan['evidence'].values())
+    fixed = refresh(claim, evidence)
+    assert fixed['conditions']['原表测量'] == 'Benchmark / Ours-30K：FPS 134'
+    assert refresh(fixed, evidence) == fixed
+    forged = deepcopy(fixed)
+    forged['conditions']['原表测量'] = 'Benchmark / Ours-30K：FPS 999'
+    with pytest.raises(ValueError, match='Conflicting'):
+        refresh(forged, evidence)
+    invalid = deepcopy(claim)
+    invalid['tableBindings'][0]['value'] = '999'
+    assert refresh(invalid, evidence) == invalid
+
+
 def test_actual_preparation_preserves_source_permissions_and_goals_with_one_instruction_set():
     report,verification,ev,opts=fixture();snapshot=deepcopy((report,verification,ev,opts))
     old=_prepare_repair(report,verification,ev,'Explain the operation.',max_prompt_bytes=32000,**opts)

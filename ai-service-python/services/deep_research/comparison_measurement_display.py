@@ -45,3 +45,31 @@ def attach(point, selected):
         f"{group} / {method}：" + '，'.join(values)
         for (_, group, method), values in groups.items())
     return result
+
+
+def refresh(claim, evidence):
+    """Rebuild a repaired prose condition from its own exact retained bindings.
+
+    This verifies display identity only. Invalid bindings remain for ordinary
+    rejection; they never acquire generated conditions. A forged display field
+    is not overwritten into apparently valid output.
+    """
+    from services.deep_research.table_bindings import bound_table_context
+    if isinstance(claim.get('scopeExpression'), dict):
+        return deepcopy(claim)
+    bindings = claim.get('tableBindings') or []
+    cells = bound_table_context(claim, evidence)
+    if len(cells) != len(bindings):
+        return deepcopy(claim)
+    by_id = {e['evidenceId']: e for e in evidence if e['evidenceId'] in claim.get('evidenceRefs', [])}
+    selected = [{**cell, 'binding': binding,
+                 'source': (by_id[binding['evidenceId']].get('sourceWorkId'),
+                            by_id[binding['evidenceId']].get('sourceVersionId'))}
+                for cell, binding in zip(cells, bindings)]
+    conditions = deepcopy(claim.get('conditions') or {})
+    declared = conditions.pop(CONDITION, None)
+    point = attach({'body': {'prose': {'text': claim['text'], 'conditions': conditions}}}, selected)
+    new = point['body']['prose']['conditions']
+    if declared is not None and declared != new.get(CONDITION):
+        raise ValueError('Conflicting repaired measurement display')
+    return {**deepcopy(claim), 'conditions': new}

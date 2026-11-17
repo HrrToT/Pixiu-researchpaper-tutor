@@ -2312,14 +2312,19 @@ def make_verify_node(
                     from services.deep_research.mechanism_grounding import strengthened as objective_framing_enabled
                     from services.deep_research.verbatim_repair import enabled as verbatim_repair_enabled
                     from services.deep_research.repair_instructions import enabled as repair_instructions_enabled
+                    from services.deep_research.comparison_measurement_display import enabled as comparison_authoring_enabled
                     revised = repair_rejected(repair_report, repair_targets, evidence, effective_question(record),
                         invoke_repair, _safe_parse_json,
+                        **({'comparison_authoring':True} if comparison_authoring_enabled(record)
+                           and compact_repair and unified_repair_eligible else {}),
                         **({'verified_text_edits':True} if type(record.get('verifiedTextRepairContractVersion')) is int
-                           and record['verifiedTextRepairContractVersion'] in (1,2) else {}),
+                           and record['verifiedTextRepairContractVersion'] in (1,2)
+                           and not comparison_authoring_enabled(record) else {}),
                         **({'integrated_text_edits':True,'text_edit_context':{
                             'outputKind':saved.get('outputKind'),'presentationVersion':record['reportPresentationContractVersion']}}
                            if type(record.get('verifiedTextRepairContractVersion')) is int
                            and record['verifiedTextRepairContractVersion']==2
+                           and not comparison_authoring_enabled(record)
                            and type(record.get('reportPresentationContractVersion')) is int
                            and record['reportPresentationContractVersion'] in (2,3,4) else {}),
                         max_prompt_bytes=repair_prompt_byte_limit(current.get('budget', {}),**repair_input_options),

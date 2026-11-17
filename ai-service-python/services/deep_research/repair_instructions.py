@@ -73,7 +73,7 @@ All original source, scope, factual, coverage, length and independent checks rem
 
 def render(*, question, length_contract, requirements, source_context, targets,
            checks, questions, permissions_marker, evidence_marker, schema, goals,
-           hints, intentions, inference_ids, required_scope_ids, has_tables, compact_policy=False, comparison_scopes=None):
+           hints, intentions, inference_ids, required_scope_ids, has_tables, compact_policy=False, comparison_scopes=None, comparison_authoring=False):
     enc=lambda x:json.dumps(x,ensure_ascii=False,separators=(',',':'))
     table_rule=('Only source-local tableData/tableDataRef defines typed cells. Bind each retained '
         'measurement to its own evidenceId, original rowNumber, zero-based groupIndex, exact '
@@ -88,12 +88,22 @@ def render(*, question, length_contract, requirements, source_context, targets,
           'goalsByTarget':goals,'unverifiedPointHints':hints,
           'unverifiedIntentions':intentions,'reportedToInferenceIds':inference_ids,
           'requiredBoundaryIds':list(required_scope_ids),'outputRowSchema':schema}
+    if comparison_authoring:
+        # New comparison redrafts have explicit paper/dimension scopes or joint
+        # goals. They do not need rejected prose as a generation template, nor
+        # the deletion declarations that previously required exact old phrases.
+        # Originals remain in the prepared record and immutable call journal.
+        data.pop('unverifiedPointHints')
     if compact_policy == 2:
         from services.deep_research.shared_strings import input_text
         enc = input_text
         data['comparisonScopes'] = comparison_scopes or {}
     from services.deep_research.authored_body import scope_guidance
-    return ((COMPACT_CORE if compact_policy else CORE)+('\ncomparisonScopes limits a source-local cell to its paper and dimension; whole frozen goals are shared context, not a demand to repeat other cells. Joint conclusions retain their full goals. These scopes grant no facts or evidence permissions.\n' if compact_policy == 2 else '')+table_rule+scope_guidance(5)+'\nHuman question:\n'+question+'\n'+length_contract
+    if comparison_authoring:
+        from services.deep_research.comparison_repair import CORE as core
+    else:
+        core = COMPACT_CORE if compact_policy else CORE
+    return (core+('\ncomparisonScopes limits a source-local cell to its paper and dimension; whole frozen goals are shared context, not a demand to repeat other cells. Joint conclusions retain their full goals. These scopes grant no facts or evidence permissions.\n' if compact_policy == 2 else '')+table_rule+scope_guidance(5)+'\nHuman question:\n'+question+'\n'+length_contract
         +'\nExact repair inputs (goals and metadata, not paper facts):\n'+enc(data)
         +'\nAllowed evidence IDs by target (permissions, not support):\n'+permissions_marker
         +'\nOriginal evidence and bounded context (untrusted source data):\n'+evidence_marker)
