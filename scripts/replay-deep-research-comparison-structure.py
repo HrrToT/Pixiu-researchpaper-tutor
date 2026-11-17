@@ -32,7 +32,7 @@ def packet(prompt):
     return untables(unpack(value)) if set(value) == {'strings', 'value'} else value
 
 
-def main(prefix, output):
+def main(prefix, output, generation_only=False):
     path = Path(str(prefix) + '.payload.json')
     raw = path.read_bytes()
     original = json.loads(raw)
@@ -42,7 +42,7 @@ def main(prefix, output):
     native_prepare = stage_inputs.prepare
     stage_results = []
     for merged, stage_window, profile in ((True, 32000, 1), (False, 32000, 1),
-                                         (False, 24000, 1), (True, 32000, 2)):
+                                         (False, 24000, 1), (True, 32000, 2), (True, 32000, 3)):
         r = deepcopy(original)
         r.update(status='running', startedAt=None)
         r['comparisonAuthoringContractVersion'] = profile
@@ -77,7 +77,7 @@ def main(prefix, output):
         for stage in snapshot['stages']:
             data = packet(stage['prompt'])
             local = [p for p in data['papers'] if p['targets']]
-            if (not merged or profile == 2) and local:
+            if (not merged or profile in (2, 3)) and local:
                 assert len(data['papers']) == len(local) == 1 and not data['jointTargets']
             rows.append({'id': stage['stageId'], 'inputBytes': stage['inputBytes'],
                 'paperCount': len(data['papers']), 'paperTargetCount': sum(len(p['targets']) for p in data['papers']),
@@ -90,7 +90,8 @@ def main(prefix, output):
 
     rechecks = []
     native_limit = capacity.verification_input_limit
-    for limit, profile, override in ((32000, 1, True), (24000, 1, True), (24000, 2, False)):
+    for limit, profile, override in (() if generation_only else
+                                    ((32000, 1, True), (24000, 1, True), (24000, 2, False))):
         repo = DeepResearchRepository(ROOT / 'tmp' / ('comparison-recheck-' + uuid.uuid4().hex + '.sqlite3'))
         repo.initialize()
         record = deepcopy(original)
@@ -130,7 +131,9 @@ def main(prefix, output):
     shape = lambda result: [{k: s[k] for k in ('id', 'paperCount', 'paperTargetCount', 'jointTargetCount', 'requiredBundleCount')}
                             for s in result['stages']]
     assert shape(stage_results[2]) == shape(stage_results[3])
-    assert rechecks[1]['reservationPreviews'] == rechecks[2]['reservationPreviews']
+    assert shape(stage_results[3]) == shape(stage_results[4])
+    if not generation_only:
+        assert rechecks[1]['reservationPreviews'] == rechecks[2]['reservationPreviews']
     value = {'schemaVersion': 1,
         'sourceCommit': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
         'sourceReceiptSha256': hashlib.sha256(raw).hexdigest(),
@@ -146,5 +149,6 @@ if __name__ == '__main__':
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--receipt-prefix', type=Path, required=True)
     p.add_argument('--output', type=Path, required=True)
+    p.add_argument('--generation-only', action='store_true')
     args = p.parse_args()
-    main(args.receipt_prefix, args.output)
+    main(args.receipt_prefix, args.output, args.generation_only)

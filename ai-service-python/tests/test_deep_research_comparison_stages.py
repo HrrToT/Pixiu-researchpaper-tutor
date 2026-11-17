@@ -61,6 +61,50 @@ def null_response(stage):
                                            for key in stage['targetIds']]}),'finishReason':'stop'}
 
 
+def test_local_contributions_keep_global_goals_but_do_not_assign_peer_questions_to_paper():
+    r, p, rows, aliases, bundles = fixture()
+    r.update(comparisonPlanningContractVersion=6, comparisonReviewBatchContractVersion=2,
+             comparisonAuthoringContractVersion=3)
+    before = deepcopy((p, rows, bundles))
+    snapshot = prepare(r, p['requirements'], p['sources'], rows, {}, bundles, aliases)
+    assert [s['stageId'] for s in snapshot['stages']] == ['P1', 'P2', 'joint']
+    assert snapshot['requirements'] == p['requirements']
+    assert sum(s['requiredBundleCount'] for s in snapshot['stages']) == len(bundles)
+    for stage in snapshot['stages']:
+        data = packet(stage)
+        assert 'requirements' not in data
+        goals = data['requestContext']['researchGoals']
+        assert [{k: v for k, v in row.items() if k != 'goalRef'} for row in goals] == [
+            {k: v for k, v in row.items() if k != 'obligationId'} for row in p['requirements']]
+        assert data['requestContext']['question'] == r['question']
+        assert 'complete questions' not in stage['prompt']
+        assert 'The assembled report must answer all human goals' in stage['prompt']
+        for paper in data['papers']:
+            for target in paper['targets']:
+                assert target['contribution'] == {'source': paper['source'],
+                    'dimension': target['question'], 'scope': 'own_paper_only'}
+                assert all(set(choice) == {'goalRef'} for choice in target['goalChoices'])
+        if stage['stageId'] == 'joint':
+            assert data['jointTargets']
+            assert all(t['goalChoices'][0]['question'] for t in data['jointTargets'])
+    assert (p, rows, bundles) == before
+
+
+def test_previous_isolated_profile_retains_full_goal_questions_and_original_identity():
+    r, p, rows, aliases, bundles = fixture()
+    r.update(comparisonPlanningContractVersion=6, comparisonReviewBatchContractVersion=2,
+             comparisonAuthoringContractVersion=2)
+    old = prepare(r, p['requirements'], p['sources'], rows, {}, bundles, aliases)
+    assert all('requirements' in packet(stage) for stage in old['stages'])
+    assert all('researchGoals' not in packet(stage)['requestContext'] for stage in old['stages'])
+    assert all('complete questions' in stage['prompt'] for stage in old['stages'])
+    assert prepare(r, p['requirements'], p['sources'], rows, {}, bundles, aliases) == old
+    r['state']['comparisonStageInput'] = old
+    r['comparisonAuthoringContractVersion'] = 3
+    with pytest.raises(DeepResearchError, match='身份改变'):
+        prepare(r, p['requirements'], p['sources'], rows, {}, bundles, aliases)
+
+
 def test_preparation_keeps_each_bundle_once_source_local_with_typed_tables_and_no_approval():
     r,p,rows,aliases,bundles=fixture();before=deepcopy((r,p,rows,aliases,bundles))
     snapshot=prepare(r,p['requirements'],p['sources'],rows,{},bundles,aliases,merge_joint=False)

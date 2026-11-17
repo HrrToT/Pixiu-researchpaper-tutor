@@ -233,6 +233,23 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
             'instructionLayers': list(getattr(question, 'instruction_layers', (str(question),)))}
         task = ('Complete ONLY the supplied paper targets and jointTargets in clear Chinese. '
                 'The full human request in requestContext is context; each target defines this stage contribution.')
+    from services.deep_research.comparison_measurement_display import local_contributions
+    projected = source_scope is not None and local_contributions(record)
+    if projected:
+        # Frozen questions/criteria remain intact in one global catalogue.
+        # Repeating their both-paper imperative inside each local target had
+        # asked a paper-only stage to answer an unavailable peer's contribution.
+        data['requestContext']['researchGoals'] = data.pop('requirements')
+        cells = {c['cellId']: c for c in plan['cells']}
+        for paper in data['papers']:
+            for target in paper['targets']:
+                cell = cells[target['targetId']]
+                dimension = cell.get('axisTitle', cell['question'])
+                target['question'] = dimension
+                target['contribution'] = {'source': paper['source'], 'dimension': dimension,
+                    'scope': 'own_paper_only'}
+                target['goalChoices'] = [{'goalRef': choice['goalRef']}
+                                         for choice in target['goalChoices']]
     prompt = f'''{task}
 Maximum {max_claims} points; complete answer character limit: {limit or 'concise, no explicit maximum'}.
 Return ONLY {{"answers":[{{"targetId":"exact supplied ID","obligationIds":["allowed goal ID"],"point":POINT_OR_NULL}}]}}.
@@ -275,6 +292,13 @@ Exact question obligations, source permissions, unchanged quotations/context, an
                   'Every table-derived measurement in reported facts, inferences AND recommendations needs\n'
                   'its exact cellRefs plus visible dataset/method/metric conditions. Advice labels waive no facts.\n'
                   + prompt)
+        if projected:
+            prompt = prompt.replace(
+                'Each target lists its paper, dimension and allowed goalChoices with complete questions.',
+                'Paper targets assign one source and dimension; goalChoices are links to the unchanged '
+                'researchGoals catalogue in requestContext, not additional cross-paper tasks.')
+            prompt = prompt.replace('Answer all human goals,\nincluding every joint target.',
+                'The assembled report must answer all human goals; this stage supplies only its assigned targets.')
     if source_scope is not None:
         prompt = ('Source-local packets: answer each paper target ONLY for its named paper, using ONLY its own packet.\n'
                   'A shared goal can mention both papers; the paper target supplies only this paper contribution.\n'

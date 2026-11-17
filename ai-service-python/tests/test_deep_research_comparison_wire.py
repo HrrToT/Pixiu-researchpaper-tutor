@@ -260,7 +260,7 @@ def test_facade_selects_duration_policy_only_for_new_comparison_run(tmp_path):
     try:
         r,_=facade.create({'workspaceTaskId':'t','operationKey':'k','question':QUESTION,'deferStart':True},start_async=False)
         assert r['comparisonPlanningContractVersion']==6
-        assert r['comparisonAuthoringContractVersion']==2
+        assert r['comparisonAuthoringContractVersion']==3
         with pytest.raises(ValueError, match='Immutable run field'):
             repo.update_run(r['runId'], lambda value: {**value, 'comparisonAuthoringContractVersion': 1})
         old={**r,'runId':'old','taskId':'old','idempotencyKey':'old','comparisonPlanningContractVersion':3}
