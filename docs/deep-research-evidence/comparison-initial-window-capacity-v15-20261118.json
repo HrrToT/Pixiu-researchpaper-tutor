@@ -1,0 +1,105 @@
+{
+  "sourceReceiptSha256": "e817d6681e889dc94b44b9ba4a64d7b5d083de9a96400e3d2f8ef8c94f538ad4",
+  "alternatives": [
+    {
+      "prototypeWindow": 32000,
+      "requests": [
+        {
+          "node": "verify",
+          "argsDigest": "8b48dbbbdd56336310e9d010a553139dc774cb644dec9dbbd11ec91e1f6d3ce1",
+          "reservation": {
+            "modelCalls": 1,
+            "tokens": 29057
+          }
+        },
+        {
+          "node": "verify",
+          "argsDigest": "fd8d967d107c2422ba3e86f07399292ebb25fe56df2cb299e6a7c0ba26f6825c",
+          "reservation": {
+            "modelCalls": 1,
+            "tokens": 33795
+          }
+        },
+        {
+          "node": "verify",
+          "argsDigest": "4a4d43d89d2e2ef8fc8c501979af83aa67e27d93fd2f9afcbac1c6c4a5f644bb",
+          "reservation": {
+            "modelCalls": 1,
+            "tokens": 31936
+          }
+        }
+      ],
+      "callCount": 3,
+      "sumReservationUpperBounds": 94788,
+      "scientificApproval": false
+    },
+    {
+      "prototypeWindow": 24000,
+      "requests": [
+        {
+          "node": "verify",
+          "argsDigest": "8b48dbbbdd56336310e9d010a553139dc774cb644dec9dbbd11ec91e1f6d3ce1",
+          "reservation": {
+            "modelCalls": 1,
+            "tokens": 29057
+          }
+        },
+        {
+          "node": "verify",
+          "argsDigest": "6faa851fb60edf94346d04fb897e84cf1d9274610708b16192bbfc79ad425fab",
+          "reservation": {
+            "modelCalls": 1,
+            "tokens": 33157
+          }
+        },
+        {
+          "node": "verify",
+          "argsDigest": "cf03239c8f215fe97a1b6ea51d13d9a9523cd824380fa5fc967a96c550019f56",
+          "reservation": {
+            "modelCalls": 1,
+            "tokens": 32448
+          }
+        },
+        {
+          "node": "verify",
+          "argsDigest": "4a4d43d89d2e2ef8fc8c501979af83aa67e27d93fd2f9afcbac1c6c4a5f644bb",
+          "reservation": {
+            "modelCalls": 1,
+            "tokens": 31936
+          }
+        }
+      ],
+      "callCount": 4,
+      "sumReservationUpperBounds": 126598,
+      "scientificApproval": false
+    }
+  ],
+  "observedSettledInitialReviews": [
+    {
+      "usage": {
+        "total_tokens": 10652,
+        "input_tokens": 4420,
+        "output_tokens": 6232
+      },
+      "responseBytes": 1611
+    },
+    {
+      "usage": {
+        "total_tokens": 10928,
+        "input_tokens": 6008,
+        "output_tokens": 4920
+      },
+      "responseBytes": 1831
+    }
+  ],
+  "providerRequests": 0,
+  "liveLedgerMutations": 0,
+  "boundary": "Empty fixture decisions only. Window prototypes do not establish sequential cost, time, repair/final-audit capacity or quality.",
+  "validatedSourceCommit": "65cfec17db8c7590d2fff876b54d5e3fb218c0c6",
+  "sourceCommitAtInvocation": null,
+  "sourceSha256": {
+    "ai-service-python/services/deep_research/comparison_wire.py": "93c44d97a8320cf9b9bc9e8f2ac06398657e3148d9e2a7b7537c780753df0d1e",
+    "ai-service-python/services/deep_research/comparison_measurement_display.py": "0ea971552614f9e881c5c177e1fad7eba3555f1cfabe16a82460779fe6d5d80a",
+    "ai-service-python/services/deep_research/tools.py": "415fdb1b8adcd6468fcad15ce99341fe74cb2e1431599e3270217dedde881515"
+  }
+}

@@ -1,0 +1,185 @@
+{
+  "schemaVersion": 1,
+  "sourceReceiptSha256": "e817d6681e889dc94b44b9ba4a64d7b5d083de9a96400e3d2f8ef8c94f538ad4",
+  "stageAlternatives": [
+    {
+      "requestedMergeJoint": true,
+      "authoringVersion": 1,
+      "maxStageInputBytes": 32000,
+      "stages": [
+        {
+          "id": "P2",
+          "inputBytes": 28685,
+          "paperCount": 1,
+          "paperTargetCount": 4,
+          "jointTargetCount": 0,
+          "requiredBundleCount": 7
+        },
+        {
+          "id": "P1_joint",
+          "inputBytes": 31892,
+          "paperCount": 2,
+          "paperTargetCount": 4,
+          "jointTargetCount": 2,
+          "requiredBundleCount": 21
+        }
+      ],
+      "inputBytesTotal": 60577,
+      "allFrozenPremiseBundlesRetained": true,
+      "callLowerBound": 10,
+      "scientificApproval": false
+    },
+    {
+      "requestedMergeJoint": false,
+      "authoringVersion": 1,
+      "maxStageInputBytes": 32000,
+      "stages": [
+        {
+          "id": "P1",
+          "inputBytes": 30855,
+          "paperCount": 1,
+          "paperTargetCount": 4,
+          "jointTargetCount": 0,
+          "requiredBundleCount": 7
+        },
+        {
+          "id": "P2",
+          "inputBytes": 28685,
+          "paperCount": 1,
+          "paperTargetCount": 4,
+          "jointTargetCount": 0,
+          "requiredBundleCount": 7
+        },
+        {
+          "id": "joint",
+          "inputBytes": 31994,
+          "paperCount": 2,
+          "paperTargetCount": 0,
+          "jointTargetCount": 2,
+          "requiredBundleCount": 14
+        }
+      ],
+      "inputBytesTotal": 91534,
+      "allFrozenPremiseBundlesRetained": true,
+      "callLowerBound": 11,
+      "scientificApproval": false
+    },
+    {
+      "requestedMergeJoint": false,
+      "authoringVersion": 1,
+      "maxStageInputBytes": 24000,
+      "stages": [
+        {
+          "id": "P1",
+          "inputBytes": 23974,
+          "paperCount": 1,
+          "paperTargetCount": 4,
+          "jointTargetCount": 0,
+          "requiredBundleCount": 7
+        },
+        {
+          "id": "P2",
+          "inputBytes": 23987,
+          "paperCount": 1,
+          "paperTargetCount": 4,
+          "jointTargetCount": 0,
+          "requiredBundleCount": 7
+        },
+        {
+          "id": "joint",
+          "inputBytes": 23990,
+          "paperCount": 2,
+          "paperTargetCount": 0,
+          "jointTargetCount": 2,
+          "requiredBundleCount": 14
+        }
+      ],
+      "inputBytesTotal": 71951,
+      "allFrozenPremiseBundlesRetained": true,
+      "callLowerBound": 11,
+      "scientificApproval": false
+    },
+    {
+      "requestedMergeJoint": true,
+      "authoringVersion": 2,
+      "maxStageInputBytes": 24000,
+      "stages": [
+        {
+          "id": "P1",
+          "inputBytes": 23992,
+          "paperCount": 1,
+          "paperTargetCount": 4,
+          "jointTargetCount": 0,
+          "requiredBundleCount": 7
+        },
+        {
+          "id": "P2",
+          "inputBytes": 23967,
+          "paperCount": 1,
+          "paperTargetCount": 4,
+          "jointTargetCount": 0,
+          "requiredBundleCount": 7
+        },
+        {
+          "id": "joint",
+          "inputBytes": 23999,
+          "paperCount": 2,
+          "paperTargetCount": 0,
+          "jointTargetCount": 2,
+          "requiredBundleCount": 14
+        }
+      ],
+      "inputBytesTotal": 71958,
+      "allFrozenPremiseBundlesRetained": true,
+      "callLowerBound": 11,
+      "scientificApproval": false
+    },
+    {
+      "requestedMergeJoint": true,
+      "authoringVersion": 3,
+      "maxStageInputBytes": 24000,
+      "stages": [
+        {
+          "id": "P1",
+          "inputBytes": 23936,
+          "paperCount": 1,
+          "paperTargetCount": 4,
+          "jointTargetCount": 0,
+          "requiredBundleCount": 7
+        },
+        {
+          "id": "P2",
+          "inputBytes": 24000,
+          "paperCount": 1,
+          "paperTargetCount": 4,
+          "jointTargetCount": 0,
+          "requiredBundleCount": 7
+        },
+        {
+          "id": "joint",
+          "inputBytes": 23982,
+          "paperCount": 2,
+          "paperTargetCount": 0,
+          "jointTargetCount": 2,
+          "requiredBundleCount": 14
+        }
+      ],
+      "inputBytesTotal": 71918,
+      "allFrozenPremiseBundlesRetained": true,
+      "callLowerBound": 11,
+      "scientificApproval": false
+    }
+  ],
+  "recheckAlternatives": [],
+  "providerRequests": 0,
+  "liveLedgerMutations": 0,
+  "sourceReceiptUnchanged": true,
+  "boundary": "Actual graph and semantic request construction; null stage and reused empty review fixtures. Stage-only preparation and individual reservations do not establish full-round costs, time or quality.",
+  "validatedSourceCommit": "65cfec17db8c7590d2fff876b54d5e3fb218c0c6",
+  "sourceCommitAtInvocation": "c3d4b41d491a2f2f102c3c562536174604cdd4b9",
+  "sourceSha256": {
+    "ai-service-python/services/deep_research/comparison_wire.py": "93c44d97a8320cf9b9bc9e8f2ac06398657e3148d9e2a7b7537c780753df0d1e",
+    "ai-service-python/services/deep_research/comparison_measurement_display.py": "0ea971552614f9e881c5c177e1fad7eba3555f1cfabe16a82460779fe6d5d80a",
+    "ai-service-python/services/deep_research/tools.py": "415fdb1b8adcd6468fcad15ce99341fe74cb2e1431599e3270217dedde881515"
+  }
+}

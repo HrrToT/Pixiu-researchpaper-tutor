@@ -1,0 +1,12 @@
+{
+  "sourceCommit": "65cfec17db8c7590d2fff876b54d5e3fb218c0c6",
+  "modules": 9,
+  "counts": {
+    "tests": 245,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "junitSha256": "f6e2d3b4515adebd60e5a9c7976590e3bd2e1a64fd0929e06a6f9c4852a6a455",
+  "boundary": "Related offline tests only; no full regression, runtime load or real-model quality acceptance for this candidate."
+}
