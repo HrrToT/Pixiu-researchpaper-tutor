@@ -149,9 +149,14 @@
   "nextDiagnosis": [
     "negative missing coverage item omitted required empty limitSpans; whole audit invalid",
     "repair generated but verification reservation exceeded remaining token budget; no repaired claim published",
-    "source revision label v1 treated as unsupported measurement number",
+    "conceptual geometry-set article is treated as an unsupported count; controlled replay excludes the v1 hypothesis",
     "numeric reporting ownership field omitted in one reviewer result"
   ],
   "comparisonBoundary": "Observed 280s versus v5 323s is not a controlled causal estimate; drafts and targets differ.",
-  "privateArtifacts": "Raw paper passages, prompts, responses and local receipts remain private; no account information published."
+  "privateArtifacts": "Raw paper passages, prompts, responses and local receipts remain private; no account information published.",
+  "diagnosticCorrection": {
+    "evidence": "baseline-comparison-v6-article-correction-20261117.json",
+    "previousVersionLabelHypothesisWithdrawn": true,
+    "savedRunAndOriginalResponsesUnchanged": true
+  }
 }

@@ -36,3 +36,23 @@ def test_legacy_normalization_keeps_geometry_set_words_unchanged():
     text='将体积坍缩为一组平面高斯圆盘。'
     assert without_collection_articles(text)==text
     assert without_collection_articles(text,geometric=True)!=text
+
+
+@pytest.mark.parametrize('verb',['用','使用','采用'])
+def test_representation_use_is_an_indefinite_geometry_set_and_still_requires_semantics(verb):
+    c,e=pair(f'3DGS v1{verb}一组3D高斯表示场景。','We represent the scene with 3D Gaussians.')
+    assert precheck_claims([c],[e],quantity_spelling_version=15)['rejected']==[]
+    semantic=Mock(return_value=[{'claimId':'c','status':'failed','reason':'Own evidence still required.'}])
+    assert verify_claims([c],[e],semantic,quantity_spelling_version=15)['accepted']==[]
+    semantic.assert_called_once()
+
+
+@pytest.mark.parametrize('text',[
+    '本实验用一组3D高斯作为对照。','本实验采用一组3D高斯作为对照。',
+    '本实验只用一组3D高斯表示场景。','本实验用唯一一组3D高斯表示场景。',
+    '用1组3D高斯表示场景。','用两组3D高斯表示场景。',
+    '用一组3D高斯表示场景，而不是两组。','用一组3D高斯表示场景，训练5个场景。',
+    '用一组高斯参数表示场景。','用一组向量表示场景。'])
+def test_representation_grammar_keeps_actual_groups_counts_and_features(text):
+    c,e=pair(text,'We represent the scene with 3D Gaussians.')
+    assert precheck_claims([c],[e],quantity_spelling_version=15)['rejected'][0]['reason']=='numeric_mismatch'

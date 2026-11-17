@@ -1,0 +1,28 @@
+{
+  "caseId": "D2-BASELINE-COMPRESSION-v6",
+  "scope": "saved-input controlled lexical replay",
+  "oldSourceCommit": "2601436d8",
+  "oldSourceSha256": "22978e868e3b0cb70a0a73f2a3d540148fc8f8d1730200f1a47061c1abb3f332",
+  "controls": [
+    {
+      "variant": "original",
+      "reasons": [
+        "numeric_mismatch"
+      ]
+    },
+    {
+      "variant": "remove_version",
+      "reasons": [
+        "numeric_mismatch"
+      ]
+    },
+    {
+      "variant": "remove_group_article",
+      "reasons": []
+    }
+  ],
+  "newHardRejections": [],
+  "semanticApproval": false,
+  "networkRequests": 0,
+  "correction": "The unsupported one was the indefinite geometry-set article, not the v1 label."
+}
