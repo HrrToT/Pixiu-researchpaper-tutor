@@ -1,0 +1,17 @@
+{
+  "sourceCommit": "8c6a74242c48d32c75044f6030bab393e139767e",
+  "fullRegression": "rejected-source-journal-full-20261117.json",
+  "candidate": "academic-dr-source-journal-candidate-20261117",
+  "originalContainerRetained": true,
+  "allOldTasksRunsCallsExact": true,
+  "sourceHashesMatch": true,
+  "sharedExperimentProfile": 1,
+  "sharedHttpObservationProfile": 1,
+  "comparisonCellsProfile": 1,
+  "comparisonReviewBatchProfile": 2,
+  "comparisonPlanningProfile": 3,
+  "sourcePassageReuseProfile": 3,
+  "sourceDefault": 0,
+  "newModelCalls": 0,
+  "scientificContentAccepted": false
+}
