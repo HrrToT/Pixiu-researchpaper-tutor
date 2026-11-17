@@ -723,8 +723,10 @@ def make_read_node(
         if type(record.get('readingPriorityContractVersion')) is int and record['readingPriorityContractVersion'] in (1,2,3,4,5,6,7,8):
             from services.deep_research.reading_priority import select_read_sources
             from services.deep_research.source_continuity import enabled as continuity_enabled,method_enabled
+            from services.deep_research.processing_cost_sources import enabled as cost_enabled
             obligations={o['obligationId']:o for item in record.get('state',{}).get('plan',[]) for o in item.get('obligations',[])}
             selected=select_read_sources(available,obligations,read_limit,extracted=extracted,
+                **({'processing_cost':True} if cost_enabled(record) else {}),
                 **({'priority_version':{2:7,3:8,4:9,5:10,6:10,7:10,8:10}[record['readingPriorityContractVersion']]}
                    if record['readingPriorityContractVersion'] in (2,3,4,5,6,7,8) else {}),
                 **({'substantive':True,**({'mixed_script_terms':True} if record['readingPriorityContractVersion'] in (7,8) else {})} if record['readingPriorityContractVersion'] in (6,7,8)

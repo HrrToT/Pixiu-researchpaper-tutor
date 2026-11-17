@@ -5,7 +5,7 @@ from services.deep_research.source_continuity import needs_preceding_context,met
 from services.deep_research.obligation_binding import eligible_obligation_ids
 
 
-def select_read_sources(sources, obligations, limit, *, extracted=(),priority_version=6,illustrative_context=False,method_context=False,substantive=False,mixed_script_terms=False,measurement_tables=False):
+def select_read_sources(sources, obligations, limit, *, extracted=(),priority_version=6,illustrative_context=False,method_context=False,substantive=False,mixed_script_terms=False,measurement_tables=False,processing_cost=False):
     """Retain owned source identities and exact predecessor bundles.
 
     Storage ID order is not relevance order. Rank retrieved text by each
@@ -14,6 +14,7 @@ def select_read_sources(sources, obligations, limit, *, extracted=(),priority_ve
     and section; neither its text nor its source permissions are merged.
     """
     if type(measurement_tables) is not bool:raise ValueError('Invalid measurement table navigation policy')
+    if type(processing_cost) is not bool:raise ValueError('Invalid processing cost navigation policy')
     readable=[]
     for source in sources:
         namespace=re.fullmatch(r'(.+)-v[0-9a-f]{16}-chunk-\d+',source['sourceId'])
@@ -26,7 +27,7 @@ def select_read_sources(sources, obligations, limit, *, extracted=(),priority_ve
     if substantive:
         from services.deep_research.reading_roles import order
         ordered=order(readable,obligations,ordered,extracted=extracted,mixed_script_terms=mixed_script_terms,
-                      measurement_tables=measurement_tables)
+                      measurement_tables=measurement_tables,processing_cost=processing_cost)
     else:
         ordered.sort(key=lambda s:(s['sourceId'],s.get('contentHash')) in extracted)
     selected=[];used=set()

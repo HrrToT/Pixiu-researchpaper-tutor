@@ -122,9 +122,15 @@ def score(source, request):
     return 2*own+2*numeric+min(4,len(matches))
 
 
-def order(sources, obligations, fallback, *, extracted=(), mixed_script_terms=False, measurement_tables=False):
+def order(sources, obligations, fallback, *, extracted=(), mixed_script_terms=False, measurement_tables=False,processing_cost=False):
     """Balance requested roles/papers; novelty is not permission to read rubbish."""
     targets=requests(obligations,sources,mixed_script_terms=mixed_script_terms)
+    if processing_cost:
+        from services.deep_research.processing_cost_sources import obligation_requested
+        for oid,obligation in reversed(list(obligations.items())):
+            if obligation_requested(obligation):
+                targets.insert(0,{'role':'processing_cost','terms':(),'query':obligation.get('question',''),
+                                  'obligationId':oid})
     identity=lambda s:(s.get('workId'),s.get('versionId'))
     works=list(dict.fromkeys(identity(s) for s in sources))
     extracted=set(extracted);queues=[]
@@ -134,6 +140,13 @@ def order(sources, obligations, fallback, *, extracted=(), mixed_script_terms=Fa
         for work in works:
             own=[s for s in sources if identity(s)==work
                  and request['obligationId'] in eligible_obligation_ids(s,obligations)]
+            if request['role']=='processing_cost':
+                from services.deep_research.processing_cost_sources import score as cost_score
+                ranked=sorted(own,key=lambda s:(quality(s,request['query']),cost_score(s),
+                    (s['sourceId'],s.get('contentHash')) not in extracted),reverse=True)
+                if ranked and quality(ranked[0],request['query'])==(True,True) and cost_score(ranked[0])>0:
+                    queues.append(ranked)
+                continue
             ranked=sorted(own,key=lambda s:(quality(s,request['query']),navigation(s,request),score(s,request),
                 (s['sourceId'],s.get('contentHash')) not in extracted),reverse=True)
             # A failed lexical match does not become a positive evidence claim.
@@ -147,7 +160,8 @@ def order(sources, obligations, fallback, *, extracted=(), mixed_script_terms=Fa
         if source['sourceId'] not in seen:
             selected.append(source);seen.add(source['sourceId'])
     query=' '.join(o.get('question','') for o in obligations.values())
-    tail=sorted(fallback,key=lambda s:(quality(s,query),max((navigation(s,r) for r in targets),default=0),max((score(s,r) for r in targets),default=0),
+    ordinary_targets=[r for r in targets if r['role']!='processing_cost']
+    tail=sorted(fallback,key=lambda s:(quality(s,query),max((navigation(s,r) for r in ordinary_targets),default=0),max((score(s,r) for r in ordinary_targets),default=0),
         (s['sourceId'],s.get('contentHash')) not in extracted),reverse=True)
     while tail:
         counts={work:sum(identity(s)==work for s in selected) for work in works}
