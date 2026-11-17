@@ -253,3 +253,29 @@ def test_old_runs_cannot_inject_new_repair_output_before_reservation(version):
     with pytest.raises(DeepResearchError,match='版本不匹配'):
         invoke('r','verify_repair','unchanged sources',{'max_tokens':4000,REPAIR_OUTPUT_OPTION:True},use_reserve=True)
     reserve.assert_not_called();client.invoke.assert_not_called()
+
+
+@pytest.mark.parametrize('repair',[False,True])
+def test_current_profile_shares_only_exact_source_values_and_preserves_all_restored_fields(monkeypatch,repair):
+    from services.deep_research import shared_strings
+    from services.deep_research.nested_tables import unpack as untables
+    claims,evidence=inputs();captured=[]
+    for e in evidence:e['conditions']={'setup':'The same exact documented setup. '*60}
+    before=deepcopy((claims,evidence));original=shared_strings.input_text
+    def encode(value):
+        rendered=original(value);wire=json.JSONDecoder().raw_decode(rendered)[0]
+        restored=untables(shared_strings.unpack(wire)) if set(wire)=={'strings','value'} else wire
+        assert restored==value
+        captured.append((deepcopy(value),rendered));return rendered
+    monkeypatch.setattr(shared_strings,'input_text',encode)
+    invoke=Mock(return_value={'content':json.dumps([response(c['claimId'],i) for i,c in enumerate(claims)])})
+    current=checker(invoke);current._comparison_repair_review_output=True
+    result=current.check_revisions(claims,evidence,[]) if repair else current(claims,evidence)
+    assert captured and all(v['status']=='passed' for v in result)
+    view,rendered=captured[-1]
+    assert len(view['evidence'])==3 and len(view['sources'])==3
+    assert len(rendered.encode())<len(json.dumps(view,ensure_ascii=False,separators=(',',':')).encode())
+    assert (claims,evidence)==before
+    captured.clear();old=checker(invoke);old._comparison_repair_review_output=False
+    old.check_revisions(claims,evidence,[]) if repair else old(claims,evidence)
+    assert not captured

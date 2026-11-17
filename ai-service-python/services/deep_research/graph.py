@@ -2074,6 +2074,27 @@ def make_verify_node(
         from services.deep_research.comparison_review_batches import current_profile
         if current_profile(record) and literal_limits_enabled(record) and request_coverage_enabled(record):
             comparison_audit_args['empty_missing_limits']=True
+        def audit_accepted(accepted, budget):
+            return audit_final_answer(run_id, effective_question(record),
+                    saved.get('plan', []), accepted,
+                    evidence, llm_invoke, _safe_parse_json, budget=budget,
+                    **comparison_audit_args,
+                    **({'request_contract':record['requestCoverageContractVersion']} if request_coverage_enabled(record) else {}),
+                    **({'claim_check':True} if claim_check_enabled(record) else {}),
+                    **({'task_sources':True} if type(record.get('reportPresentationContractVersion')) is int and record['reportPresentationContractVersion']==4 else {}),
+                    **({'request_semantics':2} if type(record.get('requestSemanticsContractVersion')) is int and record['requestSemanticsContractVersion']==2 else {}),
+                    **({'shared_evidence_context':True} if type(record.get('coverageDiagnosticsContractVersion')) is int and record['coverageDiagnosticsContractVersion']==4 else {}),
+                    **({'literal_limits':True} if literal_limits_enabled(record) and request_coverage_enabled(record) else {}),
+                    **({'correct_process_bindings':True} if correct_binding_enabled(record) else {}),
+                    **({'reasoned_process_bindings':True} if correct_binding_enabled(record) and record['coverageBindingCorrectionContractVersion']==2 else {}),
+                    **({'consolidated_instructions':True} if type(record.get('coverageInstructionsContractVersion')) is int and record['coverageInstructionsContractVersion']==1 and request_coverage_enabled(record) and record.get('requestCoverageContractVersion') in (3,4,5) else {}),
+                    **({'shared_decision_inputs':True} if type(record.get('coverageInputContractVersion')) is int and record['coverageInputContractVersion']==1 and request_coverage_enabled(record) and record.get('requestCoverageContractVersion') in (3,4,5) else {}),
+                    **({'binding_catalog':True} if type(record.get('coverageDiagnosticsContractVersion')) is int and record['coverageDiagnosticsContractVersion'] in (2,3,4) else {}),
+                      **({'scoped_catalog':True} if type(record.get('coverageDiagnosticsContractVersion')) is int and (record['coverageDiagnosticsContractVersion']==3 or record['coverageDiagnosticsContractVersion']==4 and request_coverage_enabled(record)) else {}),
+                      **({'identification_locators':True} if type(record.get('identificationLocatorContractVersion')) is int and record['identificationLocatorContractVersion']==1 else {}),
+                      **({'coherence':True} if type(record.get('answerCoherenceContractVersion')) is int and record['answerCoherenceContractVersion'] in (1,2) else {}),
+                    **({'diagnostics':True} if type(record.get('coverageDiagnosticsContractVersion')) is int and record['coverageDiagnosticsContractVersion'] in (1,2,3,4) else {}),
+                    **({'literal_dimensions':True} if dimensions_enabled(record) else {}))
         def verify_comparison_claims(targets, supporting_evidence, semantic):
             from services.deep_research.comparison_generation import enabled as cell_enabled
             if not cell_enabled(record):
@@ -2095,26 +2116,12 @@ def make_verify_node(
                 workflow_required=record.get('workflowContractVersion', 0))
             verification_result = reject_initial(verification_result, draft_validation_audit)
             current = repo_update(run_id, lambda r: r, expected_revision=None)
-            answer_coverage = audit_final_answer(run_id, effective_question(record),
-                saved.get('plan', []), verification_result.get('accepted', []),
-                evidence, llm_invoke, _safe_parse_json, budget=current.get('budget'),
-                **comparison_audit_args,
-                **({'request_contract':record['requestCoverageContractVersion']} if request_coverage_enabled(record) else {}),
-                **({'claim_check':True} if claim_check_enabled(record) else {}),
-                **({'task_sources':True} if type(record.get('reportPresentationContractVersion')) is int and record['reportPresentationContractVersion']==4 else {}),
-                **({'request_semantics':2} if type(record.get('requestSemanticsContractVersion')) is int and record['requestSemanticsContractVersion']==2 else {}),
-                **({'shared_evidence_context':True} if type(record.get('coverageDiagnosticsContractVersion')) is int and record['coverageDiagnosticsContractVersion']==4 else {}),
-                **({'literal_limits':True} if literal_limits_enabled(record) and request_coverage_enabled(record) else {}),
-                **({'correct_process_bindings':True} if correct_binding_enabled(record) else {}),
-                **({'reasoned_process_bindings':True} if correct_binding_enabled(record) and record['coverageBindingCorrectionContractVersion']==2 else {}),
-                **({'consolidated_instructions':True} if type(record.get('coverageInstructionsContractVersion')) is int and record['coverageInstructionsContractVersion']==1 and request_coverage_enabled(record) and record.get('requestCoverageContractVersion') in (3,4,5) else {}),
-                **({'shared_decision_inputs':True} if type(record.get('coverageInputContractVersion')) is int and record['coverageInputContractVersion']==1 and request_coverage_enabled(record) and record.get('requestCoverageContractVersion') in (3,4,5) else {}),
-                **({'binding_catalog':True} if type(record.get('coverageDiagnosticsContractVersion')) is int and record['coverageDiagnosticsContractVersion'] in (2,3,4) else {}),
-                  **({'scoped_catalog':True} if type(record.get('coverageDiagnosticsContractVersion')) is int and (record['coverageDiagnosticsContractVersion']==3 or record['coverageDiagnosticsContractVersion']==4 and request_coverage_enabled(record)) else {}),
-                  **({'identification_locators':True} if type(record.get('identificationLocatorContractVersion')) is int and record['identificationLocatorContractVersion']==1 else {}),
-                  **({'coherence':True} if type(record.get('answerCoherenceContractVersion')) is int and record['answerCoherenceContractVersion'] in (1,2) else {}),
-                **({'diagnostics':True} if type(record.get('coverageDiagnosticsContractVersion')) is int and record['coverageDiagnosticsContractVersion'] in (1,2,3,4) else {}),
-                **({'literal_dimensions':True} if dimensions_enabled(record) else {}))
+            from services.deep_research.comparison_capacity import defer_initial_audit
+            if llm_invoke is not None and defer_initial_audit(record, verification_result):
+                answer_coverage = {'status':'deferred_factual_repair','gaps':[],'verdicts':[],
+                                   'scientificApproval':False}
+            else:
+                answer_coverage = audit_accepted(verification_result.get('accepted', []), current.get('budget'))
             if saved.get('outputKind') == 'experiment_design':
                 from services.deep_research.design_completion import prepare_design_completion
                 repair_report, verification_result = prepare_design_completion(
@@ -2397,28 +2404,13 @@ def make_verify_node(
                             'repairVerificationChecks': checked,
                             'repairUnchangedRejections': unchanged,
                             'repairVerification': merged}}, expected_revision=None)
-                    if merged.get('accepted') != verification_result.get('accepted'):
+                    if answer_coverage.get('status') == 'deferred_factual_repair':
+                        # Keep independently checked revisions even if the final
+                        # audit is budget-limited. It runs once at the common tail.
+                        verification_result = merged
+                    elif merged.get('accepted') != verification_result.get('accepted'):
                         current = repo_update(run_id, lambda r: r, expected_revision=None)
-                        answer_coverage = audit_final_answer(run_id, effective_question(record),
-                            record.get('state', {}).get('plan', []), merged.get('accepted', []),
-                            evidence, llm_invoke, _safe_parse_json, budget=current.get('budget'),
-                            **comparison_audit_args,
-                            **({'request_contract':record['requestCoverageContractVersion']} if request_coverage_enabled(record) else {}),
-                            **({'claim_check':True} if claim_check_enabled(record) else {}),
-                            **({'task_sources':True} if type(record.get('reportPresentationContractVersion')) is int and record['reportPresentationContractVersion']==4 else {}),
-                            **({'request_semantics':2} if type(record.get('requestSemanticsContractVersion')) is int and record['requestSemanticsContractVersion']==2 else {}),
-                            **({'shared_evidence_context':True} if type(record.get('coverageDiagnosticsContractVersion')) is int and record['coverageDiagnosticsContractVersion']==4 else {}),
-                **({'literal_limits':True} if literal_limits_enabled(record) and request_coverage_enabled(record) else {}),
-                **({'correct_process_bindings':True} if correct_binding_enabled(record) else {}),
-                **({'reasoned_process_bindings':True} if correct_binding_enabled(record) and record['coverageBindingCorrectionContractVersion']==2 else {}),
-                **({'consolidated_instructions':True} if type(record.get('coverageInstructionsContractVersion')) is int and record['coverageInstructionsContractVersion']==1 and request_coverage_enabled(record) and record.get('requestCoverageContractVersion') in (3,4,5) else {}),
-                **({'shared_decision_inputs':True} if type(record.get('coverageInputContractVersion')) is int and record['coverageInputContractVersion']==1 and request_coverage_enabled(record) and record.get('requestCoverageContractVersion') in (3,4,5) else {}),
-                **({'binding_catalog':True} if type(record.get('coverageDiagnosticsContractVersion')) is int and record['coverageDiagnosticsContractVersion'] in (2,3,4) else {}),
-                  **({'scoped_catalog':True} if type(record.get('coverageDiagnosticsContractVersion')) is int and (record['coverageDiagnosticsContractVersion']==3 or record['coverageDiagnosticsContractVersion']==4 and request_coverage_enabled(record)) else {}),
-                  **({'identification_locators':True} if type(record.get('identificationLocatorContractVersion')) is int and record['identificationLocatorContractVersion']==1 else {}),
-                  **({'coherence':True} if type(record.get('answerCoherenceContractVersion')) is int and record['answerCoherenceContractVersion'] in (1,2) else {}),
-                            **({'diagnostics':True} if type(record.get('coverageDiagnosticsContractVersion')) is int and record['coverageDiagnosticsContractVersion'] in (1,2,3,4) else {}),
-                            **({'literal_dimensions':True} if dimensions_enabled(record) else {}))
+                        answer_coverage = audit_accepted(merged.get('accepted', []), current.get('budget'))
                     verification_result = merged
             except BudgetExhaustedError as exc:
                 repo_update(run_id, lambda r: {**r, 'state': {**r.get('state', {}),
@@ -2438,6 +2430,12 @@ def make_verify_node(
                     'repairVerificationError': {'code': exc.code, 'responseState': 'received_invalid'}}},
                     expected_revision=None)
         
+        # Deferral changes ordering only. Even an empty, unchanged, rejected,
+        # invalid or budget-limited repair must still audit the retained answer.
+        if answer_coverage.get('status') == 'deferred_factual_repair':
+            current = repo_update(run_id, lambda r: r, expected_revision=None)
+            answer_coverage = audit_accepted(verification_result.get('accepted', []), current.get('budget'))
+
         accepted = verification_result.get("accepted", [])
         rejected = verification_result.get("rejected", [])
 

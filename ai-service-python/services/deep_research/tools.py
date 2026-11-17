@@ -1421,8 +1421,17 @@ The dataAvailability object is an internal audit, not new experimental results.
                     [e for e in wire_evidence if e['evidenceId'] in packed])
                 if candidates:
                     view['literalNameCandidatesNotMembershipProof'] = candidates
-            return template.replace(evidence_text, json.dumps(
-                view, ensure_ascii=False, separators=(',', ':')), 1)
+            compact_sources=self._comparison_repair_review_output
+            compact_sources=(compact_sources() if callable(compact_sources) else compact_sources) is True
+            if compact_sources and complete_factual_batch:
+                # Reuse the existing round-trip checked input codec. Identical
+                # table packets/contexts are sent once, with no quote clipping,
+                # field deletion or change to the restored diagnostic paths.
+                from services.deep_research.shared_strings import input_text
+                rendered=input_text(view)
+            else:
+                rendered=json.dumps(view,ensure_ascii=False,separators=(',', ':'))
+            return template.replace(evidence_text,rendered,1)
 
         def context_for(batch):
             selected = {c['claimId'] for c in batch}

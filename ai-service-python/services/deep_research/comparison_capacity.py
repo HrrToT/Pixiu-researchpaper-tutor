@@ -92,3 +92,25 @@ def after_synthesis(record):
             'fitsCallLowerBound': remaining >= review + audit,
             'callsBeyondLowerBound': max(0, remaining - review - audit),
             'tokensAndTimeFitEstablished': False, 'scientificApproval': False}
+
+
+def defer_initial_audit(record, verification):
+    """Repair a populated factual draft before auditing its known broken form.
+
+    A later whole-answer audit is still mandatory, including when repair fails.
+    Unpopulated cells need coverage diagnosis first. Invalid/unresolved semantic
+    replies alone do not prove a correctable factual failure.
+    """
+    from services.deep_research.comparison_review_batches import current_profile
+    from services.deep_research.repair import factual_redraft_eligible
+    state=record.get('state',{})
+    if not current_profile(record) or not factual_redraft_eligible(state.get('reportBody',{})):
+        return False
+    layout=(state.get('comparisonCellDraft') or {}).get('layout',[])
+    if not layout or any(not row.get('claimIds') or row.get('unresolved') is not False for row in layout):
+        return False
+    # These existing hard checks provide actionable local repair targets;
+    # this predicate grants no factual or whole-answer approval.
+    reasons={'numeric_mismatch','absence_not_established',
+             'comparison_cell_source_mismatch','comparison_cell_goal_mismatch'}
+    return any(row.get('reason') in reasons for row in verification.get('rejected',[]))
