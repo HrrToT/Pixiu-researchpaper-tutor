@@ -1,0 +1,12 @@
+{
+  "sourceCommit": "43df0becf6318b648ba73a1424d75353e73d4600",
+  "fullRegression": "shared-experiment-document-full-20261117.json",
+  "candidate": "academic-dr-shared-experiment-candidate-20261117",
+  "originalContainerRetained": true,
+  "allOldTasksRunsCallsExact": true,
+  "sourceHashesMatch": true,
+  "sharedExperimentProfile": 1,
+  "sourceDefault": 0,
+  "newModelCalls": 0,
+  "scientificContentAccepted": false
+}

@@ -98,3 +98,20 @@ def test_server_owned_default_policy_cannot_be_injected_or_changed(tmp_path,repl
         with pytest.raises(ValueError,match='Immutable'):
             repo.update_run(r['runId'],lambda r:{**r,MARKER:replacement})
     finally:facade.shutdown()
+
+
+def test_explicit_server_rollout_and_legacy_missing_policy_remain_separate(tmp_path):
+    from services.deep_research.facade import ResearchFacade
+    from services.deep_research.repository import DeepResearchRepository
+    repo=DeepResearchRepository(tmp_path/'r.sqlite3');repo.initialize()
+    facade=ResearchFacade(repo,lambda **k:None,llm_client=object(),shared_experiment_plan_version=1,
+        shared_experiment_http_observation_version=1)
+    try:
+        created,_=facade.create({'workspaceTaskId':'t','operationKey':'o','question':'Design 2x2',MARKER:0},start_async=False)
+        assert created[MARKER]==1 and created['experimentSharedPlanContractVersion']==1
+    finally:facade.shutdown()
+    legacy,_,_=context();assert MARKER not in legacy;repo.create_run(legacy)
+    updated=repo.update_run('r',lambda r:{**r,'state':{**r['state'],'savedDraft':'preserved'}})
+    assert MARKER not in updated and updated['state']['savedDraft']=='preserved'
+    with pytest.raises(ValueError,match='Immutable'):
+        repo.update_run('r',lambda r:{**r,MARKER:0})
