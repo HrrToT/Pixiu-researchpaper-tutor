@@ -25,6 +25,37 @@ def fixture():
     return requirements, sources, evidence, plan, payload
 
 
+def test_literal_enumerated_axes_expand_layout_without_expanding_goals_or_source_permissions():
+    requirements,sources,evidence,_,_=fixture()
+    excerpt='处理成本、存储与画质、渲染速度'
+    question='比较'+excerpt+'。'
+    requirements[0].update(purpose='answer_requirement',comparisonRole={
+        'kind':'per_paper','label':'成本与性能','requestExcerpt':excerpt})
+    before=deepcopy((requirements,sources,evidence))
+    legacy=plan_cells(requirements,sources,evidence,shared_axes=True,typed_roles=True,question=question)
+    plan=plan_cells(requirements,sources,evidence,shared_axes=True,typed_roles=True,question=question,literal_axes=True)
+    assert len(legacy['cells'])==2 and len(plan['cells'])==6
+    assert [c['axisTitle'] for c in plan['cells']]==[v for title in excerpt.split('、') for v in (title,title)]
+    assert len({c['cellId'] for c in plan['cells']})==6
+    assert all(c['obligationId']=='mechanism' for c in plan['cells'])
+    for c in plan['cells']:
+        assert c['evidenceIds']==[e['evidenceId'] for e in evidence if e['source']==c['source']]
+    payload={'cells':[{'cellId':c['cellId'],'claims':[],'unresolved':True} for c in plan['cells']], 'conclusions':[]}
+    result=compile_cells(payload,plan,max_claims=8)
+    assert len(result['layout'])==6 and result['unresolvedObligationIds']==['mechanism']
+    assert result['verification']=='unchecked' and not result['report']['claims']
+    assert before==(requirements,sources,evidence)
+
+
+@pytest.mark.parametrize('excerpt',['存储与画质','cost and speed','成本、成本','成本、','成本、'+('长'*41),'成本、速度。请排序'])
+def test_literal_axes_do_not_guess_or_split_ambiguous_enumerations(excerpt):
+    requirements,sources,evidence,_,_=fixture()
+    requirements[0].update(purpose='answer_requirement',comparisonRole={
+        'kind':'per_paper','label':'维度','requestExcerpt':excerpt})
+    plan=plan_cells(requirements,sources,evidence,typed_roles=True,question=excerpt,literal_axes=True)
+    assert len(plan['cells'])==2
+
+
 def test_shared_axes_align_exact_user_excerpts_without_merging_scientific_obligations():
     req, sources, ev, _, payload = fixture()
     req = [{'obligationId': 'a-mech', 'question': 'Paper A method', 'requestExcerpt': '比较机制',

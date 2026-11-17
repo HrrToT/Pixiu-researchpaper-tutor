@@ -24,6 +24,19 @@ def test_allocation_counts_both_spent_pools_and_reserves_generation_audit_repair
     assert value == before
 
 
+def test_current_batch_profile_allocates_requested_structure_without_filling_batch_maximum():
+    from test_deep_research_comparison_intent import record
+    r=record();r.update(comparisonPlanningContractVersion=2,comparisonReviewBatchContractVersion=2)
+    r['budget'].update(budget(6,0)['budget']);before=deepcopy(r)
+    result=before_synthesis(r,planned_points=12)
+    assert result['maxDraftPoints']==12 and result['plannedStructurePoints']==12
+    assert result['batchedCallLowerBoundOnly'] and not result['tokensAndTimeFitEstablished']
+    assert before_synthesis(r,{'count':8,'mode':'max'},planned_points=12)['maxDraftPoints']==8
+    r['comparisonReviewBatchContractVersion']=1
+    assert before_synthesis(r,planned_points=12)['maxDraftPoints']==9
+    assert r=={**before,'comparisonReviewBatchContractVersion':1}
+
+
 @pytest.mark.parametrize('key', ['maxModelCalls', 'modelCalls', 'reservedModelCalls'])
 @pytest.mark.parametrize('value', [True, -1, 1.0, None, '2'])
 def test_invalid_ledger_is_never_coerced(key, value):

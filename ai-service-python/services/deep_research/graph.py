@@ -1199,7 +1199,9 @@ def make_synthesize_node(
                 candidates=proposal_evidence_order(candidates,question)
             from services.deep_research.synthesis_instructions import enabled as synthesis_input_enabled
             from services.deep_research.comparison_intent import operations_enabled as comparison_operations_enabled
+            from services.deep_research.processing_cost_sources import enabled as cost_premises_enabled
             candidates,premise_bundles=order_premises(candidates,brief_state.get('plan',[]),
+                **({'processing_cost':True} if cost_premises_enabled(record) else {}),
                 **({'comparison_operations':True} if comparison_operations_enabled(record) else {}),
                 **({'procedure_targets':True} if synthesis_input_enabled(record,output_kind) else {}),
                 **({'request_roles':True,**({'mixed_script_terms':True} if record.get('readingPriorityContractVersion') in (7,8) else {})} if type(record.get('readingPriorityContractVersion')) is int
@@ -1295,7 +1297,18 @@ def make_synthesize_node(
         draft_admission = None
         if cell_mode and resource_allocation_enabled(record):
             from services.deep_research.comparison_capacity import before_synthesis
-            draft_admission = before_synthesis(record, point_constraint)
+            from services.deep_research.comparison_review_batches import current_profile
+            allocation_options={}
+            if current_profile(record):
+                from services.deep_research.comparison_cells import plan_cells
+                from services.deep_research.comparison_generation import planning_options
+                allocation_plan=plan_cells(draft_obligations,source_registry,evidence_summaries,
+                                            **planning_options(record,question))
+                joint_ids={oid for oid,role in allocation_plan.get('roles',{}).items() if role['kind']=='joint'}
+                needed=len(allocation_plan['cells'])+sum(max(1,len(o.get('completionCriteria',[])))
+                    for o in draft_obligations if o['obligationId'] in joint_ids)
+                if needed:allocation_options['planned_points']=needed
+            draft_admission = before_synthesis(record, point_constraint,**allocation_options)
             claim_limit = draft_admission['maxDraftPoints']
             repo_update(run_id, lambda r: {**r, 'state': {**r.get('state', {}),
                 'synthesisDraftAdmission': deepcopy(draft_admission)}}, expected_revision=None)

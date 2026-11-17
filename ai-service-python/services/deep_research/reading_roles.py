@@ -62,10 +62,16 @@ def _terms(query, sources, *, mixed_script_terms=False):
                                if w.casefold() not in ignored))
 
 
-def requests(obligations, sources, *, mixed_script_terms=False):
+def requests(obligations, sources, *, mixed_script_terms=False,processing_cost=False):
     """Deduplicate role/source targets; retain literal benchmark terms separately."""
+    if type(processing_cost) is not bool:raise ValueError('Invalid processing cost navigation policy')
     result=[];seen=set()
     for oid, obligation in obligations.items():
+        if processing_cost:
+            from services.deep_research.processing_cost_sources import obligation_requested
+            if obligation_requested(obligation):
+                result.append({'role':'processing_cost','terms':(),'query':obligation.get('question',''),
+                               'obligationId':oid,'criterionId':'whole_obligation'})
         criteria=obligation.get('completionCriteria') or [{'requirement':obligation.get('question','')}]
         for criterion in criteria:
             query=criterion.get('requirement','')
@@ -83,6 +89,9 @@ def requests(obligations, sources, *, mixed_script_terms=False):
 
 
 def score(source, request):
+    if request['role']=='processing_cost':
+        from services.deep_research.processing_cost_sources import score as cost_score
+        return cost_score(source)
     text=_text(source);role=request['role'];matches=list(re.finditer(_BODY[role],text,re.I))
     if not matches and not (role=='result' and len(re.findall(r'\d+\.\d+',text))>=5
                             and re.search(r'\b(?:Table|Mean|PSNR|SSIM|LPIPS|F1)\b',source.get('rankingContext',''),re.I)):
@@ -124,6 +133,7 @@ def score(source, request):
 
 def order(sources, obligations, fallback, *, extracted=(), mixed_script_terms=False, measurement_tables=False,processing_cost=False):
     """Balance requested roles/papers; novelty is not permission to read rubbish."""
+    if type(processing_cost) is not bool:raise ValueError('Invalid processing cost navigation policy')
     targets=requests(obligations,sources,mixed_script_terms=mixed_script_terms)
     if processing_cost:
         from services.deep_research.processing_cost_sources import obligation_requested
@@ -172,7 +182,7 @@ def order(sources, obligations, fallback, *, extracted=(), mixed_script_terms=Fa
     return selected
 
 
-def premise_bundles(rows, obligations, *, mixed_script_terms=False,procedure_targets=False,measurement_tables=False):
+def premise_bundles(rows, obligations, *, mixed_script_terms=False,procedure_targets=False,measurement_tables=False,processing_cost=False):
     """Carry request-role navigation into synthesis, not a new factual verdict.
 
     A full source passage can locate a benchmark heading while its unchanged
@@ -184,7 +194,7 @@ def premise_bundles(rows, obligations, *, mixed_script_terms=False,procedure_tar
     from services.deep_research.measurement_table_navigation import score as table_score
     rows=[row for row in rows if row.get('verification',{}).get('literal')=='passed']
     sources=[{'title':row.get('sourceTitle','')} for row in rows]
-    targets=requests(obligations,sources,mixed_script_terms=mixed_script_terms);chosen=[];seen=set();bundles=[];result_leads={}
+    targets=requests(obligations,sources,mixed_script_terms=mixed_script_terms,processing_cost=processing_cost);chosen=[];seen=set();bundles=[];result_leads={}
     for request in targets:
         allowed=[e for e in rows if e.get('sourceWorkId') and request['obligationId'] in eligible_obligation_ids(
             {'workId':e.get('sourceWorkId'),'versionId':e.get('sourceVersionId'),

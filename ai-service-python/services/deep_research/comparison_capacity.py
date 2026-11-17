@@ -5,7 +5,7 @@ No point or frozen user requirement is removed to make the candidate fit.
 """
 
 
-def before_synthesis(record, point_constraint=None):
+def before_synthesis(record, point_constraint=None, *, planned_points=None):
     """Allocate isolated review slots before generation; never grant approval.
 
     Reserve generation, whole-answer audit and one repair request. This is only
@@ -22,6 +22,16 @@ def before_synthesis(record, point_constraint=None):
         raise ValueError('Comparison call budget already exceeded')
     overhead = 3
     capacity = min(24, max(0, remaining - overhead))
+    from services.deep_research.comparison_review_batches import current_profile,MAX_TARGETS
+    allocation={}
+    if current_profile(record) and planned_points is not None:
+        if type(planned_points) is not int or planned_points<1:
+            raise ValueError('Invalid planned comparison point count')
+        # Use batching only to avoid starving the requested structure. Do not
+        # inflate every answer to the theoretical 24-point batch capacity.
+        upper=max(0,remaining-overhead)*MAX_TARGETS
+        capacity=min(24,max(capacity,min(planned_points,upper)))
+        allocation={'plannedStructurePoints':planned_points,'batchedCallLowerBoundOnly':True}
     if point_constraint is not None:
         if (not isinstance(point_constraint, dict)
                 or type(point_constraint.get('count')) is not int
@@ -36,6 +46,7 @@ def before_synthesis(record, point_constraint=None):
         from services.deep_research.contracts import BudgetExhaustedError
         raise BudgetExhaustedError('comparisonDraftAllocationCalls', remaining, required + overhead)
     return {'version': 2, 'status': 'allocated_unverified',
+            **allocation,
             'maxDraftPoints': capacity, 'remainingModelCalls': remaining,
             'generationAuditAndRepairCalls': overhead,
             'tokensAndTimeFitEstablished': False, 'scientificApproval': False}

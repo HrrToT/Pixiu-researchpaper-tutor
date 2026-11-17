@@ -4,6 +4,7 @@ This module owns layout and routing only. The existing factual, numerical,
 scope, advice and whole-answer verifiers remain responsible for publication.
 """
 from copy import deepcopy
+import re
 
 from services.deep_research.authored_body import decode
 from services.deep_research.source_labels import source_display_title
@@ -21,13 +22,15 @@ class ComparisonDraftOverflow(ValueError):
         self.limit = limit
 
 
-def plan_cells(requirements, sources, evidence, *, shared_axes=False, question=None, typed_roles=False,joint_reports=False):
+def plan_cells(requirements, sources, evidence, *, shared_axes=False, question=None, typed_roles=False,joint_reports=False,literal_axes=False):
     """Keep every frozen obligation, with source-local citation permissions."""
     if (type(shared_axes) is not bool or type(typed_roles) is not bool
             or (shared_axes or typed_roles) and not isinstance(question, str)):
         raise ValueError('Shared axes require the exact user question')
     if type(joint_reports) is not bool or joint_reports and not typed_roles:
         raise ValueError('Joint reports require typed roles')
+    if type(literal_axes) is not bool or literal_axes and not typed_roles:
+        raise ValueError('Literal axes require typed roles')
     if not isinstance(sources, dict) or not sources or not isinstance(requirements, list):
         raise ValueError('Invalid comparison sources or requirements')
     if any(not isinstance(k, str) or not k or not isinstance(v, dict) for k, v in sources.items()):
@@ -70,20 +73,29 @@ def plan_cells(requirements, sources, evidence, *, shared_axes=False, question=N
                           'question': obligation['question'], 'sourceAliases': list(aliases)}
             if role['kind'] != 'per_paper':
                 continue
-        axis = {}
-        if shared_axes or typed_roles:
-            excerpt = obligation.get('requestExcerpt')
-            # Exact user text can align independently planned paper subtasks.
-            # Do not infer semantic equivalence from similar generated questions.
-            shared = isinstance(excerpt, str) and bool(excerpt.strip()) and excerpt in question
-            key = (('typed', role['label'], role['requestExcerpt']) if role else
-                   ('request', excerpt) if shared else ('obligation', oid))
-            if key not in axes: axes[key] = f'axis_{len(axes)}'
-            axis = {'axisId': axes[key], 'axisTitle': role['label'] if role else
-                    excerpt if shared else obligation['question']}
-        # An empty required mapping is unresolved, never permission to borrow a paper.
-        for source in aliases:
-            cells.append({'cellId': f'cell_{index}_{list(sources).index(source)}',
+        # Split only an explicit short enumeration in the already-validated
+        # literal role excerpt. Never guess axes from generated labels or
+        # split conjunctions inside a dimension such as storage AND quality.
+        parts=re.split('、',role['requestExcerpt']) if literal_axes and role else []
+        parts=[p.strip() for p in parts]
+        expanded=(2<=len(parts)<=6 and len(set(parts))==len(parts)
+                  and all(p and len(p)<=40 and not re.search(r'[。！？；;\n]',p) for p in parts))
+        labels=parts if expanded else [None]
+        for part_index,label in enumerate(labels):
+            axis = {}
+            if shared_axes or typed_roles:
+                excerpt = obligation.get('requestExcerpt')
+                # Exact user text can align independently planned paper subtasks.
+                shared = isinstance(excerpt, str) and bool(excerpt.strip()) and excerpt in question
+                key = (('literal',label) if label is not None else
+                       ('typed', role['label'], role['requestExcerpt']) if role else
+                       ('request', excerpt) if shared else ('obligation', oid))
+                if key not in axes: axes[key] = f'axis_{len(axes)}'
+                axis = {'axisId': axes[key], 'axisTitle': label if label is not None else role['label'] if role else
+                        excerpt if shared else obligation['question']}
+            # An empty required mapping never permits borrowing a paper.
+            for source in aliases:
+                cells.append({'cellId': f'cell_{index}_{list(sources).index(source)}'+(f'_axis_{part_index}' if expanded else ''),
                           'obligationId': oid, 'question': obligation['question'], **axis,
                           'source': source,
                           'sourceTitle': source_display_title(sources[source].get('title'),

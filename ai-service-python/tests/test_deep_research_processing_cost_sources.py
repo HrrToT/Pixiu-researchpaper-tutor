@@ -125,6 +125,12 @@ def test_production_read_and_direct_extraction_preserve_owned_cost_quotes_withou
         assert all(e['sourceWorkId']==source['workId'] and e['sourceVersionId']==source['versionId']
                    and e['verification']=={'literal':'passed','semantic':'unchecked'} for e in evidence)
     invoke.assert_not_called()
+    from services.deep_research.synthesis_evidence import order_premises
+    chosen,bundles=order_premises(r['state']['evidence'],r['state']['plan'],
+        request_roles=True,processing_cost=True,measurement_tables=True)
+    cost_bundles=[b for b in bundles if b.get('navigationRole')=='processing_cost']
+    assert {b['source'] for b in cost_bundles}=={'a-v1','b-v1'}
+    assert all(set(b['evidenceIds'])<={e['evidenceId'] for e in chosen} for b in cost_bundles)
 
 
 @pytest.mark.parametrize('version',[None,0,1,True,'2'])
