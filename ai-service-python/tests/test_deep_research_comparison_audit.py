@@ -25,7 +25,7 @@ def presentation(version=3):
                                        'axisId':'axis', 'axisTitle':'结果与条件', 'claimIds':['a','b']}]}
 
 
-def audit(mutation=None, evidence=None, wire_mode=None):
+def audit(mutation=None, evidence=None, wire_mode=None, explicit_shapes=False):
     evidence = deepcopy(EVIDENCE if evidence is None else evidence)
     sent = []
     def invoke(rid, node, prompt, options, **kwargs):
@@ -59,11 +59,14 @@ def audit(mutation=None, evidence=None, wire_mode=None):
             return normalize(node,{'content':json.dumps(data)})
         return {'content':json.dumps(rows)}
     before = deepcopy((PLAN, CLAIMS, evidence))
+    comparison = presentation()
+    if explicit_shapes:
+        comparison['checkOutputShapeVersion'] = 1
     result = audit_final_answer('r',QUESTION,PLAN,CLAIMS,evidence,invoke,json.loads,
         request_contract=5, diagnostics=True,literal_dimensions=True, coherence=True,
         task_sources=True,request_semantics=2,binding_catalog=True,scoped_catalog=True,
         shared_decision_inputs=True,shared_evidence_context=True,consolidated_instructions=True,
-        literal_limits=True,comparison_cells=presentation(),
+        literal_limits=True,comparison_cells=comparison,
         **({'comparison_audit_envelope':True} if wire_mode=='object_v1' else {}))
     assert before == (PLAN, CLAIMS, evidence)
     return result, sent
@@ -143,6 +146,40 @@ def test_renderer_copies_mutable_inputs_and_rejects_legacy_layout():
     assert data['claims'][0]['text']==CLAIMS[0]['text']
     assert data['comparisonPresentation']['layout'][0]['axisTitle']=='结果与条件'
     with pytest.raises(ValueError):renderer(QUESTION,[],CLAIMS,{},presentation(2))
+
+
+def test_explicit_output_fields_bind_each_check_to_its_own_obligation_without_verdicts():
+    comparison = presentation(); comparison['checkOutputShapeVersion'] = 1
+    requirements = [
+        {'obligationId':'first','checks':[
+            {'checkId':'criterion:C1','processRequired':True},
+            {'checkId':'criterion:C2','responseType':'limitation'},
+            {'checkId':'criterion:C3','processRequired':True,'responseType':'limitation'}]},
+        {'obligationId':'second','checks':[{'checkId':'criterion:C1','responseType':'explanation'}]}]
+    before = deepcopy((comparison,requirements,CLAIMS))
+    data = decode(renderer(QUESTION,requirements,CLAIMS,{},comparison,
+                           process_explanations=True,literal_limits=True,coherence=True,
+                           object_envelope=True)([]))
+    shapes = data['checkOutputShapes']
+    base = ['checkId','status','bindings','reason']
+    assert shapes == [
+        {'obligationId':'first','checks':[
+            {'checkId':'criterion:C1','fields':base+['processLinks']},
+            {'checkId':'criterion:C2','fields':base+['limitSpans']},
+            {'checkId':'criterion:C3','fields':base+['processLinks','limitSpans']}]},
+        {'obligationId':'second','checks':[{'checkId':'criterion:C1','fields':base}]}]
+    assert data['requirements'] == requirements and data['claims'] == CLAIMS
+    assert (comparison,requirements,CLAIMS) == before
+    assert all(set(check)=={'checkId','fields'} for row in shapes for check in row['checks'])
+    comparison.pop('checkOutputShapeVersion')
+    assert 'checkOutputShapes' not in decode(renderer(QUESTION,requirements,CLAIMS,{},comparison)([]))
+
+
+@pytest.mark.parametrize('mutation',[None,'foreign','metadata','drop','extra','waive','partial','incoherent','limit'])
+def test_explicit_shapes_preserve_all_existing_acceptance_and_negative_checks(mutation):
+    result,sent = audit(mutation,wire_mode='object_v1',explicit_shapes=True)
+    assert len(sent)==1 and sent[0]['checkOutputShapes']
+    assert (result['status']=='checked' and not result['gaps']) == (mutation is None)
 
 
 @pytest.mark.parametrize('mutation',[None,'overlap','invented_operation'])

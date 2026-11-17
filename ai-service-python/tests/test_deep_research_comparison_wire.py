@@ -219,6 +219,8 @@ def _exercise_real_synthesis_node(tmp_path, profile):
     assert len(saved['reportBody']['claims'])==1 and 'audienceRewrite' not in saved
     assert saved['reportBody']['claims'][0]['tableBindings'][0]['rowNumber']==8
     assert not saved.get('verifiedReport')
+    from services.deep_research.comparison_presentation import metadata
+    assert metadata(saved['comparisonCellDraft']).get('checkOutputShapeVersion') == (1 if profile==5 else None)
 
 
 def test_real_synthesis_node_compiles_uniform_wire_and_authors_for_reader_once(tmp_path):

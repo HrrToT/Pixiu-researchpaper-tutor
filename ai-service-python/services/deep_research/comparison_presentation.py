@@ -62,6 +62,9 @@ def metadata(draft):
     fields = ('obligationId', 'question', 'source', 'claimIds')
     if shared: fields += ('axisId', 'axisTitle')
     return {'version': version if shared else 1,
+            **({'checkOutputShapeVersion':1} if version==3
+               and type(draft.get('answerWireAudit',{}).get('version')) is int
+               and draft['answerWireAudit']['version']==2 else {}),
             **({'jointReports':True} if version==3 and draft.get('jointReports') is True else {}),
             **({'jointGoals':deepcopy(draft['jointGoals'])} if version==3 else {}), 'sources': deepcopy(draft['sources']),
             'layout': [{k: deepcopy(row[k]) for k in

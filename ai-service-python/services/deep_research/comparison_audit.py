@@ -84,6 +84,17 @@ Read cells via claims and conditions. Layout/labels are not evidence; empty cell
 mean gaps, not paper-wide absence. Bind science to text/conditions, never layout.
 '''
 
+SHAPES = '''checkOutputShapes is the server's exact output field catalog, not a verdict.
+For ordinary rows return EVERY listed obligationId and checkId exactly once, no new checks. Each check
+returns EXACTLY its listed fields. In particular, omit limitSpans/processLinks when
+not listed, even for partial/missing. Fill their arrays only when explicitly listed.
+Decide status, bindings, reason and any spans from the complete accepted answer;
+the catalog supplies no status, binding, span, evidence or coverage approval.
+Keep root coherence fields separate from ordinary items as required above.
+The existing supporting_research notRequired alternative remains available only
+under its original exemption conditions; it never exempts an answer requirement.
+'''
+
 
 def renderer(question, requirements, claims, metadata, comparison, *, catalog=None,
              task_sources=False, request_semantics=0, process_explanations=False,
@@ -112,6 +123,19 @@ def renderer(question, requirements, claims, metadata, comparison, *, catalog=No
     if coherence:
         policy += (COHERENCE.replace('Append INSIDE items (NEVER at root):',
             'Root coherence fields (never items):') if object_envelope else COHERENCE)
+    if (type(comparison.get('checkOutputShapeVersion')) is int
+            and comparison['checkOutputShapeVersion'] == 1):
+        data['checkOutputShapes'] = [
+            {'obligationId': row['obligationId'],
+             'checks': [{'checkId': check['checkId'],
+                         'fields': ['checkId', 'status', 'bindings', 'reason']
+                                   + (['processLinks'] if process_explanations
+                                      and check.get('processRequired') is True else [])
+                                   + (['limitSpans'] if literal_limits
+                                      and check.get('responseType') == 'limitation' else [])}
+                        for check in row['checks']]}
+            for row in requirements]
+        policy += SHAPES
     def render(evidence):
         return (policy + '\nComplete exact decision inputs (evidence detects omissions, never replaces answer):\n'
                 + input_text({**data, 'evidence':evidence}))
