@@ -735,6 +735,7 @@ class BudgetedSemanticChecker:
         workflow_representation_context=None,
         comparison_review_batches=False,
         comparison_repair_review_output=False,
+        preserve_initial_review_budget=False,
     ):
         self._invoke = llm_invoker
         self._run_id = run_id
@@ -779,6 +780,7 @@ class BudgetedSemanticChecker:
         self._review_batch_planning = review_batch_planning
         self._comparison_review_batches = comparison_review_batches
         self._comparison_repair_review_output = comparison_repair_review_output
+        self._preserve_initial_review_budget = preserve_initial_review_budget
     
     def __call__(self, claims: list[dict], evidence: list[dict], *, proposal_context=()) -> list[dict]:
         return self._check(claims,evidence,list(proposal_context),'verify')
@@ -865,6 +867,7 @@ class BudgetedSemanticChecker:
                 if 'reviewContextState' in c}
             context_states.update({row['claimId']:{'status':'rejected','phase':'source_prerequisite',
                 'checks':[row]} for row in premise_failures})
+        from services.deep_research.contracts import BudgetExhaustedError
         for batch, batch_node in batches:
             targets = {c['claimId'] for c in batch}
             context = [{'claimId': c.get('claimId'), 'text': c.get('text'), 'kind': c.get('kind'),
@@ -877,13 +880,31 @@ class BudgetedSemanticChecker:
                         | ({'reviewContextState':context_states[c['claimId']]}
                            if c['claimId'] in context_states else {})
                        for c in [*accepted_context, *proposals] if c['claimId'] not in targets]
-            verdicts.extend(self._check_batch(batch, evidence, context, node=batch_node))
+            try:
+                verdicts.extend(self._check_batch(batch, evidence, context, node=batch_node))
+            except BudgetExhaustedError as exc:
+                policy = self._preserve_initial_review_budget
+                policy = policy() if callable(policy) else policy
+                if node != 'verify' or policy is not True:
+                    raise
+                from services.deep_research.initial_review_stop import InitialReviewBudgetStop
+                raise InitialReviewBudgetStop(exc, verdicts) from exc
         # Preserve the ordinary answer's review opportunity before spending
         # additional calls on decomposed settings and epistemic operators.
         if expression_targets:
             from services.deep_research.partitioned_scope_review import review
-            verdicts.extend(review(self,c,expression,evidence,node)
-                            for c,expression in expression_targets)
+            try:
+                for c, expression in expression_targets:
+                    verdicts.append(review(self, c, expression, evidence, node))
+            except BudgetExhaustedError as exc:
+                policy = self._preserve_initial_review_budget
+                policy = policy() if callable(policy) else policy
+                if node != 'verify' or policy is not True:
+                    raise
+                from services.deep_research.initial_review_stop import InitialReviewBudgetStop
+                # A partially checked decomposed expression is not a verdict
+                # for its parent. Keep only completed whole-target decisions.
+                raise InitialReviewBudgetStop(exc, verdicts) from exc
         by_id = {v['claimId']: v for v in verdicts}
         return [by_id[c['claimId']] for c in claims]
 

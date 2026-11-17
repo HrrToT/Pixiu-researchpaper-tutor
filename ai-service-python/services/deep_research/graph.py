@@ -2120,11 +2120,30 @@ def make_verify_node(
         claims = verification_inputs(claims, draft_validation_audit)
         
         # Semantic check uses reserve pool (wrapped to pass use_reserve flag)
+        initial_review_stop = record.get('state', {}).get('initialReviewBudgetStop')
         def budgeted_semantic(claims_to_check: list, evidence_list: list, *, proposal_context=()) -> list:
+            nonlocal initial_review_stop
             if semantic_check_fn is None:
                 return []
-            return semantic_check_fn(claims_to_check,evidence_list,
-                **({'proposal_context':proposal_context} if proposal_context else {}))
+            from services.deep_research.initial_review_stop import (
+                InitialReviewBudgetStop, input_digest, stopped_verdicts)
+            from services.deep_research.comparison_measurement_display import isolated
+            digest = input_digest(claims_to_check, evidence_list, proposal_context)
+            if isolated(record) and initial_review_stop:
+                if initial_review_stop['inputDigest'] != digest:
+                    raise ValueError('Stopped initial review inputs changed')
+                return stopped_verdicts(claims_to_check, initial_review_stop['verdicts'])
+            try:
+                return semantic_check_fn(claims_to_check,evidence_list,
+                    **({'proposal_context':proposal_context} if proposal_context else {}))
+            except InitialReviewBudgetStop as exc:
+                if not isolated(record):
+                    raise
+                initial_review_stop = {'inputDigest': digest, 'verdicts': exc.verdicts,
+                    'limit': exc.details, 'scientificApproval': False}
+                repo_update(run_id, lambda r: {**r, 'state': {**r.get('state', {}),
+                    'initialReviewBudgetStop': initial_review_stop}}, expected_revision=None)
+                return stopped_verdicts(claims_to_check, exc.verdicts)
         
         from services.deep_research.final_coverage import audit_final_answer
         from services.deep_research.coverage_binding_correction import enabled as correct_binding_enabled
@@ -2192,7 +2211,13 @@ def make_verify_node(
             verification_result = reject_initial(verification_result, draft_validation_audit)
             current = repo_update(run_id, lambda r: r, expected_revision=None)
             from services.deep_research.comparison_capacity import defer_initial_audit
-            if llm_invoke is not None and defer_initial_audit(record, verification_result):
+            if initial_review_stop:
+                answer_coverage = {'status': 'not_checked', 'gaps': [], 'verdicts': [],
+                    'reason': 'initial_review_budget_stop', 'scientificApproval': False}
+                repo_update(run_id, lambda r: {**r, 'state': {**r.get('state', {}),
+                    'initialVerification': verification_result,
+                    'initialAnswerCoverage': answer_coverage}}, expected_revision=None)
+            elif llm_invoke is not None and defer_initial_audit(record, verification_result):
                 answer_coverage = {'status':'deferred_factual_repair','gaps':[],'verdicts':[],
                                    'scientificApproval':False}
             else:
@@ -2227,7 +2252,7 @@ def make_verify_node(
         # One bounded repair round may use up to three preflighted batches from
         # the normal pool. Final verification reserve stays protected, and all
         # revised wording passes the same checks again.
-        if (repair_targets.get("rejected") and llm_invoke and not saved.get('repairVerificationError')
+        if (repair_targets.get("rejected") and llm_invoke and not initial_review_stop and not saved.get('repairVerificationError')
                 and not (cell_enabled(record) and saved.get('comparisonCellDraft') is None)):
             repo_update(run_id, lambda r: {**r, "state": {**r.get("state", {}), "repairAttempted": True,
                 "initialVerification": verification_result, 'initialAnswerCoverage': answer_coverage,
@@ -2669,6 +2694,8 @@ def make_publish_node(
                          if brief_state.get('repairStatus') == 'verification_invalid_response' else
                          '修订结果未能解析；已保留此前核实的内容。'
                          if brief_state.get('repairStatus') == 'response_invalid' else '')+coherence_notice
+        if brief_state.get('initialReviewBudgetStop'):
+            repair_notice += '预算内未完成全部核验；仅展示已核对内容，完整比较尚未完成。'
         display_fields = {}
         if type(presentation_version) is int and presentation_version in (2,3,4):
             from services.deep_research.answer_constraints import requested_character_limit
