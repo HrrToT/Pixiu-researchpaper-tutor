@@ -91,36 +91,50 @@ question or an answer_requirement and still undergoes the existing exemption che
     return result
 
 
-def normalize(value,requirements,*,process_explanations=False,claims=(),distinct_roles=False,literal_limits=False):
+def normalize(value,requirements,*,process_explanations=False,claims=(),distinct_roles=False,literal_limits=False,response_errors=None):
     """Project one decision per fixed check; do not infer semantic coverage."""
     if type(literal_limits) is not bool:raise ValueError('Invalid literal limit policy')
-    if not isinstance(value,list):return None
+    if response_errors is not None and not isinstance(response_errors,list):
+        raise ValueError('Invalid coverage response diagnostic sink')
+    def fail(code, *, obligation_id=None, check_id=None, missing=(), unexpected=()):
+        # Server-owned locations only: do not copy reviewer prose, source text or
+        # arbitrary returned keys into repair instructions or published reports.
+        if response_errors is not None:
+            response_errors.append({'code':code,
+                **({'obligationId':obligation_id} if obligation_id is not None else {}),
+                **({'checkId':check_id} if check_id is not None else {}),
+                **({'missingFields':sorted(missing)} if missing else {}),
+                **({'unexpectedFieldCount':len(unexpected)} if unexpected else {})})
+        return None
+    if not isinstance(value,list):return fail('response_not_array')
     ids=[r.get('obligationId') if isinstance(r,dict) else None for r in value]
     expected=[r['obligationId'] for r in requirements]
-    if any(not isinstance(k,str) for k in ids) or len(set(ids))!=len(ids) or set(ids)!=set(expected):return None
+    if any(not isinstance(k,str) for k in ids) or len(set(ids))!=len(ids) or set(ids)!=set(expected):return fail('obligation_identity_mismatch')
     by_id={r['obligationId']:r for r in value};out=[]
     for required in requirements:
         row=by_id[required['obligationId']]
         if set(row)=={'obligationId','notRequired'}:
             n=row['notRequired']
             if (required['purpose']!='supporting_research' or not isinstance(n,dict)
-                    or set(n)!={'reason','requestExcerpt','bindings'}):return None
+                    or set(n)!={'reason','requestExcerpt','bindings'}):return fail('invalid_exemption',obligation_id=required['obligationId'])
             out.append({'obligationId':row['obligationId'],'status':'not_required',**deepcopy(n)})
             continue
-        if set(row)!={'obligationId','checks'} or not isinstance(row['checks'],list):return None
+        if set(row)!={'obligationId','checks'} or not isinstance(row['checks'],list):return fail('invalid_obligation_shape',obligation_id=required['obligationId'])
         checks=row['checks'];keys=[c.get('checkId') if isinstance(c,dict) else None for c in checks]
         wanted=[c['checkId'] for c in required['checks']]
-        if any(not isinstance(k,str) for k in keys) or len(set(keys))!=len(keys) or set(keys)!=set(wanted):return None
+        if any(not isinstance(k,str) for k in keys) or len(set(keys))!=len(keys) or set(keys)!=set(wanted):return fail('check_identity_mismatch',obligation_id=required['obligationId'])
         actual={c['checkId']:c for c in checks};aspects=[];criteria=[];bindings=[];reasons=[];process_audits=[];limit_audits=[]
         for fixed in required['checks']:
             c=actual[fixed['checkId']]
             process=process_explanations and fixed.get('processRequired') is True
             limitation=literal_limits and fixed.get('responseType')=='limitation'
             expected_keys={'checkId','status','bindings','reason'}|({'processLinks'} if process else set())|({'limitSpans'} if limitation else set())
-            if (set(c)!=expected_keys
-                    or c['status'] not in ('covered','partial','missing') or not isinstance(c['bindings'],list)
+            if set(c)!=expected_keys:
+                return fail('invalid_check_fields',obligation_id=required['obligationId'],check_id=fixed['checkId'],
+                            missing=expected_keys-set(c),unexpected=set(c)-expected_keys)
+            if (c['status'] not in ('covered','partial','missing') or not isinstance(c['bindings'],list)
                     or not isinstance(c['reason'],str) or not 1<=len(c['reason'].strip())<=800
-                    or c['status']=='missing' and c['bindings']):return None
+                    or c['status']=='missing' and c['bindings']):return fail('invalid_check_value',obligation_id=required['obligationId'],check_id=fixed['checkId'])
             binding=deepcopy(c['bindings']);check_status=c['status']
             if limitation:
                 from services.deep_research.coverage_limits import validate

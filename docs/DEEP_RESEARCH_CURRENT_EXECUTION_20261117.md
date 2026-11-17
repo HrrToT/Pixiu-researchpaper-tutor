@@ -2,6 +2,12 @@
 
 ## 最新补充：D2比较已执行，内容未通过
 
+### 保存响应诊断进展
+
+已增加失败关闭的审核结构定位：只记录服务端固定obligation/check位置、错误代码、缺失的规定字段及额外字段数量；不复制任意返回字段名、审核正文或原文，不修改请求，不补齐响应，不改变通过判定，也不新增调用。实际D2-v5保存响应回放定位到ob-1-2 / criterion:c-1-2-2缺少limitSpans，前后均为invalid_response。87项相关检查通过；源码已变，9397项旧全量不能声称覆盖本次新增代码。当前服务未重新装载。
+
+证据：[实际审核定位回放](deep-research-evidence/baseline-comparison-v5-audit-location-replay-20261117.json)。下一步进入P1容量与调度设计：基于实际请求测量小批审核能否容纳每条自身原文，保留失败隔离和最终审核；尚未实施批量策略，不追加真实案例来调试已知错误。
+
 D2-BASELINE-COMPRESSION-v5已执行一次，11次模型调用均有确认结果，账本56331 Token、323秒，最终completed + partial。正文仅一条建议，缺比较表及主要分析；修订因时间不足跳过。不能计为完整内容通过。实际verify_advice已执行，不存在由proposal结果标签即可推断的免审。
 
 比较候选已停止，并恢复此前共享实验候选；下文“诊断代码尚未装载”和“评估执行D2”属于此前快照。D3-v7仍冻结，无新增重发。接下来的主要工作按[最新完成开发指导](DEEP_RESEARCH_COMPLETION_GUIDANCE_20261117.md)执行：先保存响应诊断，再改善比较关键路径。详见[本次比较过程证据](deep-research-evidence/baseline-comparison-v5-process-review-20261117.json)。本补充未重新检查运行服务健康，不将代码或历史装载记录当作当前健康证明。

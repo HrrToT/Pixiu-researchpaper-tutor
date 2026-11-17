@@ -1,0 +1,23 @@
+{
+  "caseId": "D2-BASELINE-COMPRESSION-v5",
+  "runId": "dr_run_67b4e3df18b95a4baccad52c85b5f55d",
+  "scope": "saved actual response replay only",
+  "networkRequests": 0,
+  "modelCalls": 0,
+  "responseSha256": "877bc8d99f5fad47a19e0f7b02732d8b43884c25e8479c03a34310930207309b",
+  "oldAndNewAcceptanceUnchanged": true,
+  "status": "invalid_response",
+  "responseErrors": [
+    {
+      "code": "invalid_check_fields",
+      "obligationId": "ob-1-2",
+      "checkId": "criterion:c-1-2-2",
+      "missingFields": [
+        "limitSpans"
+      ]
+    }
+  ],
+  "repairStatus": "skipped_time",
+  "scientificAcceptance": false,
+  "nextWork": "Measure complete comparison review batches and time allocation; no automatic audit correction or resend."
+}

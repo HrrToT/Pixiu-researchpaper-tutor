@@ -88,6 +88,7 @@ def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, 
     nonblocking = []
     budget_limit = None
     diagnostic_errors, gap_details = [], {}
+    request_response_errors = []
     coherence_result=None
     if claims and plan and invoke:
         cited = {ref for claim in claims for ref in claim.get('evidenceRefs', [])}
@@ -256,7 +257,9 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
                 if request_contract:
                     from services.deep_research.request_coverage import normalize
                     raw_review=verdicts
-                    verdicts=normalize(verdicts,fixed_requirements,claims=wire_claims,**({'literal_limits':True} if literal_limits else {}),**({'process_explanations':True,**({'distinct_roles':True} if request_contract==5 else {})} if type(request_contract) is int and request_contract in (4,5) else {}))
+                    verdicts=normalize(verdicts,fixed_requirements,claims=wire_claims,
+                        **({'response_errors':request_response_errors} if diagnostics else {}),
+                        **({'literal_limits':True} if literal_limits else {}),**({'process_explanations':True,**({'distinct_roles':True} if request_contract==5 else {})} if type(request_contract) is int and request_contract in (4,5) else {}))
             except (ValueError, TypeError):
                 verdicts = None
             if correct_process_bindings and isinstance(verdicts,list):
@@ -362,6 +365,8 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
             'invalidCriterionObligations': invalid_criteria,
             'budgetLimit': budget_limit,
             **({'diagnosticErrors':diagnostic_errors} if diagnostics else {})}
+    if request_response_errors:
+        audit['requestResponseErrors'] = request_response_errors
     if comparison_cells is not None:
         from services.deep_research.comparison_presentation import audit_digest
         audit['comparisonPresentationDigest'] = audit_digest(comparison_cells, claims)
