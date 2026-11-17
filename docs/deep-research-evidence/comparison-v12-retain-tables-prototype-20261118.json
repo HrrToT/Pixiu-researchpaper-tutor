@@ -1,0 +1,207 @@
+{
+  "sourceCommit": "cc3d7f004cc40d507bd45d498a0a594501aacd6c",
+  "providerCalls": 0,
+  "networkRequests": 0,
+  "sourceReceiptSha256": "1082d609e9f260a007de66ebe87b3795f6955d8700ba18e994f7e61e37368769",
+  "requests": [
+    {
+      "matchesSavedRequest": false,
+      "requestDigest": "6a0472b4084b9433631687afaef7d60abb446ea3299d8ebd117cd0da5ecd46ab",
+      "inputBytes": 31988,
+      "targetCount": 11,
+      "paperTargetCount": 8,
+      "suppliedEvidenceCount": 17,
+      "tableCatalogCount": 3,
+      "tableDataOmittedEvidenceIds": [],
+      "targetSourcePermissions": {
+        "table_0_0": [
+          "E4",
+          "E1",
+          "E5",
+          "E7",
+          "E9",
+          "E11",
+          "E15",
+          "E16"
+        ],
+        "table_0_1": [
+          "E2",
+          "E3",
+          "E6",
+          "E8",
+          "E10",
+          "E12",
+          "E13",
+          "E14",
+          "E18"
+        ],
+        "table_1_0": [
+          "E4",
+          "E1",
+          "E5",
+          "E7",
+          "E9",
+          "E11",
+          "E15",
+          "E16"
+        ],
+        "table_1_1": [
+          "E2",
+          "E3",
+          "E6",
+          "E8",
+          "E10",
+          "E12",
+          "E13",
+          "E14",
+          "E18"
+        ],
+        "table_2_0": [
+          "E4",
+          "E1",
+          "E5",
+          "E7",
+          "E9",
+          "E11",
+          "E15",
+          "E16"
+        ],
+        "table_2_1": [
+          "E2",
+          "E3",
+          "E6",
+          "E8",
+          "E10",
+          "E12",
+          "E13",
+          "E14",
+          "E18"
+        ],
+        "table_3_0": [
+          "E4",
+          "E1",
+          "E5",
+          "E7",
+          "E9",
+          "E11",
+          "E15",
+          "E16"
+        ],
+        "table_3_1": [
+          "E2",
+          "E3",
+          "E6",
+          "E8",
+          "E10",
+          "E12",
+          "E13",
+          "E14",
+          "E18"
+        ],
+        "joint_ob_6911642554432323f4639076": [
+          "E2",
+          "E3",
+          "E4",
+          "E1",
+          "E5",
+          "E6",
+          "E7",
+          "E8",
+          "E9",
+          "E10",
+          "E11",
+          "E12",
+          "E13",
+          "E14",
+          "E15",
+          "E16",
+          "E18"
+        ],
+        "joint_ob_4fd595ec34487dd6040828b6": [
+          "E2",
+          "E3",
+          "E4",
+          "E1",
+          "E5",
+          "E6",
+          "E7",
+          "E8",
+          "E9",
+          "E10",
+          "E11",
+          "E12",
+          "E13",
+          "E14",
+          "E15",
+          "E16",
+          "E18"
+        ],
+        "joint_ob_8c4c8d300d4e7867006a2dc6": [
+          "E2",
+          "E3",
+          "E4",
+          "E1",
+          "E5",
+          "E6",
+          "E7",
+          "E8",
+          "E9",
+          "E10",
+          "E11",
+          "E12",
+          "E13",
+          "E14",
+          "E15",
+          "E16",
+          "E18"
+        ]
+      },
+      "scientificApproval": false
+    }
+  ],
+  "originalEvidenceCount": 64,
+  "originalTypedEvidenceCount": 4,
+  "wireAudit": {
+    "version": 2,
+    "status": "compiled_unverified",
+    "errors": [
+      {
+        "targetId": "table_0_0",
+        "reason": "invalid_answer_source_permission"
+      },
+      {
+        "targetId": "table_0_1",
+        "reason": "invalid_answer_source_permission"
+      },
+      {
+        "targetId": "table_1_0",
+        "reason": "invalid_answer_source_permission"
+      },
+      {
+        "targetId": "table_1_1",
+        "reason": "invalid_answer_source_permission"
+      },
+      {
+        "targetId": "table_2_0",
+        "reason": "invalid_answer_source_permission"
+      },
+      {
+        "targetId": "table_2_1",
+        "reason": "invalid_answer_source_permission"
+      },
+      {
+        "targetId": "table_3_0",
+        "reason": "invalid_answer_source_permission"
+      },
+      {
+        "targetId": "table_3_1",
+        "reason": "invalid_answer_source_permission"
+      }
+    ],
+    "tableReferenceCount": 130,
+    "scientificApproval": false
+  },
+  "compiledPoints": 3,
+  "missingNavigationBundleCount": 7,
+  "boundary": "Offline allocation prototype only: disable typed-table omission, keep exact bad model response. No production policy change, new model response or approval."
+}
