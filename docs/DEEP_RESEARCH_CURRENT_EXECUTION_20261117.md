@@ -6,24 +6,24 @@
 
 | 项目 | 当前证据 | 边界 |
 | --- | --- | --- |
-| 缓存修复候选 | 源码8c6a74242完成9545项、496模块离线回归，0失败/错误/跳过，旧9539项全部保留，源码及执行器哈希一致 | 证明离线行为，不代表真实内容通过 |
+| 本批候选 | 源码1986db407完成9559项、496模块完整离线回归，0失败/错误/跳过，旧9545项全部保留，源码及执行器哈希一致 | 正常本机权限通过；证明离线行为，不代表真实内容通过 |
 | 候选装载 | 源码哈希及全部旧任务、运行、调用逐项核对；规划版本3、比较审核版本2、原文缓存版本3 | 比较/实验路径由服务端开关选择，默认关闭；原文缓存3为新运行默认协议，旧记录不升级 |
-| 最新真实验证 | D2-BASELINE-COMPRESSION-v9仅提交一次，10次模型调用均succeeded，58842账本Token、237秒，completed + partial | 固定槽位进入生成，但最终仅一格事实可发布；不是完整比较通过，不计独立验收 |
+| 当前真实验证 | D2-BASELINE-COMPRESSION-v10已且仅提交一次，dr_run_cec888c89d6a53cfb47b9cbdf136dd85，当前执行中 | 18调用/10万Token/360秒，原问题和同两篇论文；无质量结论、不自动重试 |
 | v9主要失效 | 首稿6条；新手化改写扩大两条单论文机制的对象并改变成本单元格主题，引用仍为原局部证据；一条审核未启动 | 修订因证据17558字节超过14640上限而skipped_budget；不能放松事实审核换完整结果 |
-| 服务恢复 | v9结束后原服务已恢复，全部当前任务、运行及调用记录逐项一致，恢复没有新增模型调用 | 原容器与备份保留，未知请求仍冻结，不自动重发 |
+| 当前装载 | 本批候选已健康装载，源码哈希及全部旧任务、运行、调用核对一致；改写5、修订5、综合报告3 | 原容器及备份保留；v10终态确认后核对恢复，未知请求不自动重发或切换 |
 | 缓存回放 | 103项相关检查通过；保存读取上下文经新建离线缓存回放，36条证据中3条字符拒绝保持失败，增量后54条，重复执行无新工厂调用 | 回放未调用真实PDF页工厂或模型，不计科学质量通过；上方全量另有独立证据 |
 
-证据：[9545项完整回归](deep-research-evidence/rejected-source-journal-full-20261117.json)、[本批候选装载](deep-research-evidence/source-journal-candidate-load-20261117.json)、[D2-v8真实结果与恢复](deep-research-evidence/baseline-comparison-v8-real-20261117.json)、[拒绝状态缓存回放](deep-research-evidence/rejected-source-journal-v8-replay-20261117.json)。[D2-v9真实结果与恢复](deep-research-evidence/baseline-comparison-v9-real-20261117.json)。原始论文、模型响应、任务快照及账户信息仅本地保存。
+证据：[9559项完整回归](deep-research-evidence/scoped-comparison-completion-host-full-20261117.json)、[本批装载](deep-research-evidence/scoped-comparison-candidate-load-20261117.json)、[9545项历史回归](deep-research-evidence/rejected-source-journal-full-20261117.json)、[本批候选装载](deep-research-evidence/source-journal-candidate-load-20261117.json)、[D2-v8真实结果与恢复](deep-research-evidence/baseline-comparison-v8-real-20261117.json)、[拒绝状态缓存回放](deep-research-evidence/rejected-source-journal-v8-replay-20261117.json)。[D2-v9真实结果与恢复](deep-research-evidence/baseline-comparison-v9-real-20261117.json)。原始论文、模型响应、任务快照及账户信息仅本地保存。
 
 ## 当前开发增量：改写角色与修订容量
 
 - 新运行将既有audienceMappedSourceContractVersion递增为5，比较单元格向改写传递论文对象、实际维度和未核实原始表达；综合结论与单论文分工区分。来源/版本与单元格不匹配时不发送改写请求，原草稿仍由后续审核处理。旧版本1—4不升级。
 - 重复研究要求共享存储，每个目标可精确还原原要求；全部原文、上下文、表格及条件保留。v9实际节点与隔离SQLite回放中，旧生成/改写请求摘要与原记录均一致；新改写22307字节，原22236字节，仅增加71字节。
-- 236项相关检查通过，0失败/错误/跳过。此为新源码局部/相邻验证；上方9545项全量仍仅对应8c6a74242，不能拼成新源码全量通过。本增量尚未装载或真实调用。
+- 236项相关检查通过，0失败/错误/跳过。此为新源码局部/相邻验证；历史9545项对应8c6a74242；当前整批另有9559项独立全量证据，不能靠拼接局部结果代替。其后已并入本批9559项全量及装载；真实内容以v10核对。
 - 回放使用旧模型坏响应，结构合并仍可能接纳其文字；新角色输入不证明语义遵守，原事实与整答审核不能省略。本轮不宣称改写质量或完整比较通过。
 - 实际verify节点重现v9修订阻断：普通池剩22832，减输出7168与框架1024后输入限14640；拆批必要内容17558，差2918。总剩41158不等于普通池可用量。未调大任何上限，未发送模型请求。
 
-证据：[改写角色与旧身份回放](deep-research-evidence/comparison-reader-scope-v9-replay-20261117.json)、[修订容量回放](deep-research-evidence/comparison-repair-capacity-v9-replay-20261117.json)。下一动作：检查修订请求重复目标/审核诊断及必需证据组织，解决整轮容量与首稿缺格/综合结论后，才形成稳定候选做一次全量和有界真实比较。
+证据：[改写角色与旧身份回放](deep-research-evidence/comparison-reader-scope-v9-replay-20261117.json)、[修订容量回放](deep-research-evidence/comparison-repair-capacity-v9-replay-20261117.json)。后续修订与首稿证据修正已并入本批，下一动作是观察同一个v10运行并核对完整成果。
 
 ## 当前开发增量：修订分工与首稿证据
 
@@ -32,7 +32,7 @@
 - 保存v9输入的实际verify/repair预检通过三批输入，15626/15578/15423字节。五个实际目标按原公式预留6144输出Token，输入限15664。总预算与普通池上限未增加；发送前停止，不证明结算后整轮预算/时间可完成。
 - 新比较运行comparisonJointReportsContractVersion=3统一直接报告对照的结论类型规则，说明一个数字例子不能代替其余定性单元格。匹配指标的可见表格中，显式指定方法行优先，其次论文作者标记的行；这只是导航，不判数值可比或事实通过。
 - 实际节点及隔离SQLite回放：旧生成/改写请求摘要均保持；新版输入31894字节，仍在32000内。原始论文自身结果行从未选入变为选入，缺失导航分组从9降为4，不能称全部前提或完整内容通过。
-- 修订相关707项、生成/表格相关84项分别通过。尚无本批完整回归、装载和真实回答结论；下一步冻结一次全量，通过后再核对装载及单次有界真实比较。
+- 修订相关707项、生成/表格相关84项分别通过；本批9559项完整回归与装载已通过，D2-v10正在执行，尚无真实内容通过结论。
 
 证据：[修订与首稿输入回放](deep-research-evidence/comparison-scoped-repair-v9-replay-20261117.json)。未新增真实模型调用，不计独立验收。
 
