@@ -10,7 +10,8 @@ CONDITION = '原表测量'
 
 
 def enabled(record):
-    return (type(record.get('comparisonAuthoringContractVersion')) is int
+    return (record.get('state', {}).get('outputKind') == 'paper_comparison'
+            and type(record.get('comparisonAuthoringContractVersion')) is int
             and record['comparisonAuthoringContractVersion'] == 1
             and type(record.get('comparisonPlanningContractVersion')) is int
             and record['comparisonPlanningContractVersion'] == 6

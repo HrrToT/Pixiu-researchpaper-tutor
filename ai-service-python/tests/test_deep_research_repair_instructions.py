@@ -88,6 +88,14 @@ def test_comparison_outcome_fingerprint_keeps_citation_only_corrections():
     assert result == [revision] and audit['targets'][0]['status'] == 'revised_unverified'
 
 
+def test_access_level_correction_is_a_real_revision_not_unchanged():
+    from services.deep_research.comparison_repair import outcome_audit
+    old = decode(prose('c'))
+    revision = {**deepcopy(old), 'detailLevel': 'abstract'}
+    result, audit = outcome_audit({'originals': {'c': old}}, [revision])
+    assert result == [revision] and audit['targets'][0]['status'] == 'revised_unverified'
+
+
 def test_repaired_measurement_display_rebuilds_only_exact_current_bindings():
     from services.deep_research.comparison_measurement_display import refresh
     from services.deep_research.authored_body import decode

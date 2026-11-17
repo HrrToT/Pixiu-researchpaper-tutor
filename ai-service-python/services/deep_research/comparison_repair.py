@@ -30,7 +30,7 @@ def source_batches(claims, presentation):
 
 def outcome_audit(prepared, rows):
     def fingerprint(row):
-        keys = ('kind', 'text', 'conditions', 'scopeExpression', 'tableBindings')
+        keys = ('kind', 'text', 'conditions', 'scopeExpression', 'tableBindings', 'detailLevel')
         value = {key: row.get(key) for key in keys}
         value['evidenceRefs'] = sorted(row.get('evidenceRefs', []))
         return json.dumps(value, sort_keys=True, ensure_ascii=False)

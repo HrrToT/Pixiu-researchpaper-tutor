@@ -129,11 +129,14 @@ def test_exact_condition_display_still_requires_independent_semantic_verdict():
 
 def test_new_run_display_policy_is_strict_and_historical_records_remain_disabled():
     from services.deep_research.comparison_measurement_display import enabled
-    r = {'comparisonPlanningContractVersion': 6, 'comparisonReviewBatchContractVersion': 2}
+    r = {'comparisonPlanningContractVersion': 6, 'comparisonReviewBatchContractVersion': 2,
+         'state': {'outputKind': 'paper_comparison'}}
     assert not enabled(r)
     assert enabled({**r, 'comparisonAuthoringContractVersion': 1})
     assert not enabled({**r, 'comparisonAuthoringContractVersion': True})
     assert not enabled({**r, 'comparisonPlanningContractVersion': 5, 'comparisonAuthoringContractVersion': 1})
+    for kind in ('experiment_design', 'claim_verification', 'reading_summary', None):
+        assert not enabled({**r, 'comparisonAuthoringContractVersion': 1, 'state': {'outputKind': kind}})
 
 
 def test_catalog_only_exposes_quoted_rows_and_references_change_with_source_version():
