@@ -1,0 +1,46 @@
+{
+  "caseId": "D2-BASELINE-COMPRESSION-v7",
+  "runId": "dr_run_d02f64f2927053c983b842b79e0c429a",
+  "sourceCommit": "257d35efcb94310cc7814942f9e532fa49690cfd",
+  "submissions": 1,
+  "automaticRetries": 0,
+  "status": "failed",
+  "outcome": "none",
+  "errorCode": "invalid_synthesis_response",
+  "modelCalls": 6,
+  "allModelCallsConfirmedSettled": true,
+  "newUnknownCalls": 0,
+  "ledgerTokens": 27299,
+  "elapsedSeconds": 112.0,
+  "budgetLimits": {
+    "maxModelCalls": 18,
+    "maxTokens": 100000,
+    "maxWallClockSeconds": 360
+  },
+  "synthesis": {
+    "finishReason": "stop",
+    "validJson": true,
+    "receivedDraftPoints": 16,
+    "allocatedDraftPoints": 10,
+    "plannedStructurePoints": 7,
+    "cells": 4,
+    "jointPoints": 3,
+    "perPaperAxes": [
+      "表示与压缩机制",
+      "额外处理成本"
+    ],
+    "generationInputBytes": 31968
+  },
+  "factualReviewsExecuted": false,
+  "scientificContentAccepted": false,
+  "independentCredit": 0,
+  "originalRestored": true,
+  "allCurrentTasksRunsCallsExactAfterRestore": true,
+  "receiptSha256": {
+    ".payload.json": "b108bc00675be6a45cea1394fe111b085b0785b6127c56fb6b0e5c06e39660a7",
+    ".calls.json": "20d2ae18cb42d59f64c3ffd9c48d8272bad4ebe5856f1ff161343c096ca1fbed",
+    ".execution.json": "99b72641e421063418a78301f1edbe2df0e0e59401cfc147a43d4fae23ecf848",
+    ".restore.log": "0a1795d4cbe3e70da783d961f477fdfa28cb670d1e852a4884544f88673a4a24"
+  },
+  "boundary": "Generation exceeded declared point allocation; no claims reviewed or published. Not a token/time overrun or truncated JSON. Do not increase the cap or claim quality without checking structure, coverage and complete review capacity."
+}
